@@ -171,7 +171,7 @@ void KTJGantt::slSetWeekStartsMonday(bool t)
     m_weekStartMon = t;
 }
 
-void KTJGantt::slCanvasMoved( int, int y )
+void KTJGantt::slCanvasMoved( int x, int y )
 {
     /* if the canvas moved, set the table accordingly. */
     if( m_doTableMove )
@@ -182,6 +182,12 @@ void KTJGantt::slCanvasMoved( int, int y )
     {
 	m_doTableMove = true;
 	m_canvas->updateContents();
+    }
+
+    /* Header to move? */
+    if( x != m_header->contentsX() )
+    {
+	m_header->setContentsPos( x, 0 );
     }
 }
 
