@@ -46,7 +46,8 @@ CREATE TABLE ktBookings(
  */
 
 Kotrus::Kotrus()
-   :kotrusDB( 0L )
+   : kotrusDB( 0L ),
+     mode( NoKotrus )
 {
    QSettings settings;
 
@@ -64,10 +65,6 @@ Kotrus::Kotrus()
       settings.writeEntry( "/taskjuggler/general/defaultmailpostfix", "@suse.de" );
 
    }
-   
-   connect();
-
-   
 }
 
 Kotrus::~Kotrus()
@@ -88,6 +85,7 @@ QString Kotrus::Param( QString key ) const
 
 int Kotrus::personID( const QString& resourcename )
 {
+   connect();
    QSqlCursor cur( "persons");
    cur.select( "login_name='" + resourcename + "'" );
    
@@ -108,6 +106,7 @@ int Kotrus::personID( const QString& resourcename )
  */
 int Kotrus::ktID( const QString& ktName )
 {
+   connect();
    QSqlCursor cur( "kt");
    // qDebug( "Selecting for " + resourcename );
    cur.select( "naem='" + ktName + "'" );
@@ -128,6 +127,9 @@ int Kotrus::ktID( const QString& ktName )
  */
 int Kotrus::lockBookings( int pid, int lockID )
 {
+   if( mode != DB ) return( 0 );
+   connect();
+   
    /* Check if the lockID > 0. If not, read it from the parameter file */
    if( lockID == 0 )
    {
@@ -179,6 +181,25 @@ void Kotrus::unlockBookings( const QString& kotrusID )
 
 			   
 BookingList Kotrus::loadBookings( const QString& kotrusID, const QString& skipProjectID, int user )
+{
+   
+   connect();
+   if( mode == DB ) return( loadBookingsDB( kotrusID, skipProjectID, user ));
+   if( mode == XML ) return( loadBookingsXML( kotrusID, skipProjectID, user ));
+
+   BookingList blist;
+   return( blist );
+}
+
+BookingList Kotrus::loadBookingsXML( const QString& kotrusID, const QString& skipProjectID, int user )
+{
+   BookingList blist;
+   /* TODO */
+   
+   return( blist );
+}
+
+BookingList Kotrus::loadBookingsDB( const QString& kotrusID, const QString& skipProjectID, int user )
 {
    QSqlCursor cur( "ktBookings" );
    BookingList blist;
@@ -255,6 +276,11 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
 			  const BookingList& blist,
 			  int   lockedFor )
 {
+   if( mode == NoKotrus ) return( 0 );
+   if( mode == XML ) return( saveBookingsXML( kotrusID, projectID, blist, lockedFor ));
+
+   connect();
+   
    int pid = personID( kotrusID );
    int cnt_bookings = 0;
 
@@ -316,6 +342,14 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
    return( cnt_bookings );
 }
 
+int Kotrus::saveBookingsXML( const QString& kotrusID,  /* the user id */
+			  const QString& projectID, 
+			  const BookingList& blist,
+			  int   lockedFor )
+{
+   /* TODO */
+   return( 0 );
+}
 
 int Kotrus::getKotrusAccountId( const QString& acc )
 {
@@ -324,6 +358,8 @@ int Kotrus::getKotrusAccountId( const QString& acc )
 
 void Kotrus::connect()
 {
+   if( mode != DB || kotrusDB ) return;
+
    kotrusDB = QSqlDatabase::addDatabase( "QMYSQL3" );
 
    QStringList drivers = QSqlDatabase::drivers();
@@ -365,4 +401,21 @@ void Kotrus::connect()
    {
       qDebug( "Failed to connect :(\n" );
    }
+}
+
+void Kotrus::setKotrusMode( const QString& newKotrusMode )
+{
+   if( newKotrusMode == "XML" )
+   {
+      mode = XML;
+   }
+   else if( newKotrusMode == "DB" )
+   {
+      mode = DB;
+   }
+   else
+   {
+      mode = NoKotrus;
+   }
+  
 }

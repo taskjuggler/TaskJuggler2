@@ -7,23 +7,25 @@ copyright "(c) 2001 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
 rate 0.479
 
+kotrusMode "NoKotrus"
+
 htmlTaskReport "test1.html" {
   columns  no, name, start, end, daily
   start 2001-09-28
   end 2002-03-08
 }
 
-#htmlTaskReport "test2.html" {
-#  columns  no, name, start, end, depends
-#  start 2001-09-28
-#  end 2002-03-08
-#}
+htmlTaskReport "test2.html" {
+  columns  no, name, start, end, costs
+  start 2001-09-28
+  end 2002-03-08
+}
 
-#htmlResourceReport "test-res.html" {
-#  columns resource, daily
-#  start 2001-11-28
-#  end 2002-03-06
-#}
+htmlResourceReport "test-res.html" {
+  columns resource, daily
+  start 2001-11-28
+  end 2002-03-06
+}
 
 macro version [SL 8.0]
 

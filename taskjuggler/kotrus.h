@@ -15,6 +15,8 @@
 
 class QSqlDatabase;
 
+enum kotrusMode{ NoKotrus = 0, DB, XML};
+
 class Kotrus
 {
 public:
@@ -52,16 +54,23 @@ public:
    void        unlockBookings( const QString& kotrusID );
    int         lockBookings( int personID, int lockID );
 
+   void        setKotrusMode( const QString& newKotrusMode = "NoKotrus" );
+       
+   kotrusMode  getKotrusMode() const { return mode; }
+   
 private:
-   /**
-    * locks the bookings for a person with the id of the locker. Pass zero for lockID to
-    * unlock the entries.
-    */
+   BookingList loadBookingsDB( const QString& kotrusID, const QString& skipProjectID, int user=0 );
+   BookingList loadBookingsXML( const QString& kotrusID, const QString& skipProjectID, int user=0 );
+
+   int         saveBookingsXML( const QString& kotrusID , const QString& projectID,
+				const BookingList&, int lockedFor  );
    
    
    void 		connect();
    QString 		Param( QString key ) const;
    
    QSqlDatabase 	*kotrusDB;
+   kotrusMode           mode;
+   
    
 };
