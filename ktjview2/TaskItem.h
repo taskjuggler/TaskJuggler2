@@ -40,12 +40,15 @@ public:
      * @param start Task's start date
      * @param end Task's end date
      */
-    TaskItem( KListView * parent, const QString & id, QDateTime start, QDateTime end ):
+    TaskItem( KListView * parent, const QString & id, QDateTime start, QDateTime end,
+              const QString & df = QString::null, uint dl = 0 ):
         KListViewItem( parent, id )
         {
             m_id = id;
             m_start = start;
             m_end = end;
+            m_df = df;
+            m_dline = dl;
         }
     /**
      * CTOR
@@ -54,12 +57,15 @@ public:
      * @param start Task's start date
      * @param end Task's end date
      */
-    TaskItem( KListViewItem * parent, const QString & id, QDateTime start, QDateTime end ):
+    TaskItem( KListViewItem * parent, const QString & id, QDateTime start, QDateTime end,
+              const QString & df = QString::null, uint dl = 0 ):
         KListViewItem( parent, id )
         {
             m_id = id;
             m_start = start;
             m_end = end;
+            m_df = df;
+            m_dline = dl;
         }
 
     /**
@@ -78,6 +84,16 @@ public:
     QDateTime endDate() const { return m_end; }
 
     /**
+     * @return the file where the task is defined
+     */
+    QString definitionFile() const { return m_df; }
+
+    /**
+     * @return the line number where the task is defined
+     */
+    uint definitionLine() const { return m_dline - 1; }
+
+    /**
      * Reimplemented from QListViewItem to get correct sorting (dates, numbers, etc)
      */
     virtual int compare( QListViewItem * i, int col, bool ascending ) const;
@@ -85,6 +101,8 @@ public:
 private:
     QString m_id;
     QDateTime m_start, m_end;
+    QString m_df;
+    uint m_dline;
 };
 
 #endif

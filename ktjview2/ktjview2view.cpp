@@ -159,6 +159,10 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_resListView->setRootIsDecorated( true );
     m_resListView->restoreLayout( kapp->config(), "ResListView Columns" );
     m_widgetStack->addWidget( m_resListView );
+    connect( m_resListView, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int ) ),
+             this, SLOT( slotEditResource( QListViewItem * ) ) );
+    connect( m_resListView, SIGNAL( returnPressed( QListViewItem * ) ),
+             this, SLOT( slotEditResource( QListViewItem * ) ) );
 
     // task list view
     m_taskView = new KListView( this, "task_view" );
@@ -178,6 +182,10 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_taskView->setAllColumnsShowFocus( true );
     m_taskView->restoreLayout( kapp->config(), "TaskListView Columns" );
     m_widgetStack->addWidget( m_taskView );
+    connect( m_taskView, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int ) ),
+             this, SLOT( slotEditTask( QListViewItem * ) ) );
+    connect( m_taskView, SIGNAL( returnPressed( QListViewItem * ) ),
+             this, SLOT( slotEditTask( QListViewItem * ) ) );
 
     m_textBrowser->setText( i18n( "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>" ) );
     m_widgetStack->raiseWidget( m_textBrowser );
@@ -373,7 +381,7 @@ bool ktjview2View::openURL( const KURL& url )
         m_ganttView->sort();
 
         progressDlg.setLabel( i18n( "Building the Gantt chart links" ) );
-        parseLinks( m_project->getTaskListIterator() );
+        //parseLinks( m_project->getTaskListIterator() );
 
         progressDlg.setLabel( i18n( "Building the Resource usage view" ) );
         parseResUsage();
@@ -461,7 +469,8 @@ void ktjview2View::parseTasks( TaskListIterator it, int sc )
         ++it;
 
         TaskItem * item = new TaskItem( m_taskView, task->getId(), KtjUtils::time_t2Q( task->getStart( sc ) ),
-                                        KtjUtils::time_t2Q( task->getEnd( sc ) ) );
+                                        KtjUtils::time_t2Q( task->getEnd( sc ) ),
+                                        task->getDefinitionFile(), task->getDefinitionLine() );
         item->setText( 1, task->getName() );
         item->setText( 2, KGlobal::locale()->formatDateTime( item->startDate() ) );
         item->setText( 3, KGlobal::locale()->formatDateTime( item->endDate() ) );
@@ -670,11 +679,11 @@ void ktjview2View::parseResources( ResourceListIterator it )
 
         ResourceItem * item;
         if ( isRoot )
-            item = new ResourceItem( m_resListView, id );
+            item = new ResourceItem( m_resListView, id, res->getDefinitionFile(), res->getDefinitionLine() );
         else if ( isGroup || isLeaf )
         {
             KListViewItem * parentItem = static_cast<KListViewItem *>( m_resListView->findItem( res->getParent()->getId(), 0 ) );
-            item = new ResourceItem( parentItem, id );
+            item = new ResourceItem( parentItem, id, res->getDefinitionFile(), res->getDefinitionLine() );
         }
         else
         {
@@ -1385,6 +1394,28 @@ void ktjview2View::showPSGantt()
         KMessageBox::sorry( this, i18n( "XML report could not have been generated; PostScript Gantt chart won't be shown.\n"
                                         "This is probably because you haven't defined the <tt>xmlreport</tt> to be generated in "
                                         "the project definition file." ) );
+    }
+}
+
+void ktjview2View::slotEditTask( QListViewItem * item )
+{
+    if ( item )
+    {
+        TaskItem * task = static_cast<TaskItem *>( item );
+        m_editorView->loadDocument( KURL::fromPathOrURL( task->definitionFile() ) );
+        m_editorView->gotoLine( task->definitionLine() );
+        emit signalSwitchView( ID_VIEW_EDITOR );
+    }
+}
+
+void ktjview2View::slotEditResource( QListViewItem * item )
+{
+    if ( item )
+    {
+        ResourceItem * res = static_cast<ResourceItem *>( item );
+        m_editorView->loadDocument( KURL::fromPathOrURL( res->definitionFile() ) );
+        m_editorView->gotoLine( res->definitionLine() );
+        emit signalSwitchView( ID_VIEW_EDITOR );
     }
 }
 

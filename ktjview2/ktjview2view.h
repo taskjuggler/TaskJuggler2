@@ -315,6 +315,16 @@ private slots:
      */
     void slotScaleChanged( KDGanttView::Scale scale );
 
+    /**
+     * Jump to the editor part and select the Task coresponding to @p item
+     */
+    void slotEditTask( QListViewItem * item );
+
+    /**
+     * Jump to the editor part and select the Resource coresponding to @p item
+     */
+    void slotEditResource( QListViewItem * item );
+
 private:
     void recreateProject();
 

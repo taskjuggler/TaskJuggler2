@@ -38,20 +38,26 @@ public:
      * @param parent Parent item (see KListView)
      * @param id ID of the corresponding resource
      */
-    ResourceItem( KListView * parent, const QString & id ):
+    ResourceItem( KListView * parent, const QString & id,
+                  const QString & df = QString::null, uint dl = 0 ):
         KListViewItem( parent, id )
         {
             m_id = id;
+            m_df = df;
+            m_dline = dl;
         }
     /**
      * CTOR
      * @param parent Parent item (see KListViewItem)
      * @param id ID of the corresponding resource
      */
-    ResourceItem( KListViewItem * parent, const QString & id ):
+    ResourceItem( KListViewItem * parent, const QString & id,
+                  const QString & df = QString::null, uint dl = 0 ):
         KListViewItem( parent, id )
         {
             m_id = id;
+            m_df = df;
+            m_dline = dl;
         }
 
     /**
@@ -60,12 +66,24 @@ public:
     QString id() const { return m_id ;}
 
     /**
+     * @return the file where the task is defined
+     */
+    QString definitionFile() const { return m_df; }
+
+    /**
+     * @return the line number where the task is defined
+     */
+    uint definitionLine() const { return m_dline - 1; }
+
+    /**
      * Reimplemented from QListViewItem to get correct sorting (dates, numbers, etc)
      */
     virtual int compare( QListViewItem * i, int col, bool ascending ) const;
 
 private:
     QString m_id;
+    QString m_df;
+    uint m_dline;
 };
 
 #endif

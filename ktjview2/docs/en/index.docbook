@@ -209,7 +209,14 @@ similar to the <link linkend="resource-view">resource view</link>.
 
 <para>Both Resource and Task view contain a very useful feature called Quick
 Search. Using the Quick Search toolbar you can easily search and filter for the
-text you want, optionally in some columns only.</para>
+text you want, optionally in some columns only.
+</para>
+
+<para>
+New from version 0.6, you can directly jump to a resource or task definition in
+the editor component by double-clicking on an item in the listview or by
+pressing the Enter key.
+</para>
 
 </sect1>
 

@@ -39,9 +39,9 @@ static KCmdLineOptions options[] =
 int main(int argc, char **argv)
 {
     KAboutData about("ktjview2", I18N_NOOP("TaskJuggler IDE"), KTJIDE_VERSION, description,
-                     KAboutData::License_GPL, "(C) 2004 SUSE AG", 0,
+                     KAboutData::License_GPL, "(C) 2004, 2005 SUSE AG", 0,
                      "http://www.taskjuggler.org/ide.php", "lukas.tinkl@suse.cz");
-    about.addAuthor( "Lukáš Tinkl", I18N_NOOP( "Author and maintainer " ), "lukas.tinkl@suse.cz" );
+    about.addAuthor( "Lukáš Tinkl", I18N_NOOP( "Author and maintainer" ), "lukas.tinkl@suse.cz" );
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication app;
