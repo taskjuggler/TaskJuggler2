@@ -364,6 +364,10 @@ fixed now.</para></listitem>
 tasks with only milestones get properly scheduled.
 </para></listitem>
 
+<listitem><para>Only export min/max start/end times when they were
+explicitly specified and do no longer inherit project start/end times
+for this purpose.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -164,8 +164,8 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		// Set attributes that are inherited from global attributes.
 		projectId = proj->getCurrentId();
 		priority = proj->getPriority();
-		minStart = minEnd = proj->getStart();
-		maxStart = maxEnd = proj->getEnd();
+		minStart = minEnd = 0;
+		maxStart = maxEnd = 0;
 	}
 
 	start = end = 0;
@@ -1502,12 +1502,22 @@ Task::scheduleOk(int& errors, QString scenario) const
 
 	if (start == 0)
 	{
-		errorMessage(i18n("Task '%1' has no %2 start time.")
+		errorMessage(i18n("Task %1 has no %2 start time.")
 					 .arg(id).arg(scenario.lower()));
 		errors++;
 		return FALSE;
 	}
-	if (start < minStart)
+	if (start < project->getStart() || start > project->getEnd())
+	{
+		errorMessage(i18n("Start time of task %1 is outside of the "
+						  "project interval (%2 - %3).")
+					 .arg(time2tjp(start))
+					 .arg(time2tjp(project->getStart()))
+					 .arg(time2tjp(project->getEnd())));
+		errors++;
+		return FALSE;
+	}
+	if (minStart != 0 && start < minStart)
 	{
 		errorMessage(i18n("%1 start time of task %2 is too early\n"
 						  "Date is:  %3\n"
@@ -1517,7 +1527,7 @@ Task::scheduleOk(int& errors, QString scenario) const
 		errors++;
 		return FALSE;
 	}
-	if (maxStart < start)
+	if (maxStart != 0 && maxStart < start)
 	{
 		errorMessage(i18n("%1 start time of task %2 is too late\n"
 						  "Date is:  %3\n"
@@ -1534,7 +1544,18 @@ Task::scheduleOk(int& errors, QString scenario) const
 		errors++;
 		return FALSE;
 	}
-	if (end + (milestone ? 1 : 0) < minEnd)
+	if (end + (milestone ? 1 : 0) < project->getStart() || 
+		end + (milestone ? 1 : 0) > project->getEnd())
+	{
+		errorMessage(i18n("End time of task %1 is outside of the "
+						  "project interval (%2 - %3).")
+					 .arg(time2tjp(end))
+					 .arg(time2tjp(project->getStart()))
+					 .arg(time2tjp(project->getEnd())));
+		errors++;
+		return FALSE;
+	}
+	if (minEnd != 0 && end + (milestone ? 1 : 0) < minEnd)
 	{
 		errorMessage(i18n("%1 end time of task %2 is too early\n"
 						  "Date is:  %3\n"
@@ -1545,7 +1566,7 @@ Task::scheduleOk(int& errors, QString scenario) const
 		errors++;
 		return FALSE;
 	}
-	if (maxEnd < end + (milestone ? 1 : 0))
+	if (maxEnd != 0 && maxEnd < end + (milestone ? 1 : 0))
 	{
 		errorMessage(i18n("%1 end time of task %2 is too late\n"
 						  "Date is:  %2\n"

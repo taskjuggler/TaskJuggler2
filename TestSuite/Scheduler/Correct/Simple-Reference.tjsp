@@ -55,58 +55,22 @@ task t7.t8.t9 "Task8" {
   projectid simple
 }
 supplement task t1 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t2 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t4 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t4.t5 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t4.t5.t6 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t3 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t7 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t7.t8 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement task t7.t8.t9 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement resource tux {
   planbooking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3

@@ -197,202 +197,70 @@ task container2.c18 "- <-x |D" {
   projectid prj
 }
 supplement task container3 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c21 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c28 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c11 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c14 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c9 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c19 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c24 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c23 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c30 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c22 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c29 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c13 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c15 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c12 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c10 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c20 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c25 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c26 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c3 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c6 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c1 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c16 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c5 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c8 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c4 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c7 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c2 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c17 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c18 {
-  minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-30-23:59:59-+0000
-  minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-30-23:59:59-+0000
 }
 supplement resource tux1 {
   planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container1.c1

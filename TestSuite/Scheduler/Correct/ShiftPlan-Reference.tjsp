@@ -27,26 +27,16 @@ task t3 "Network Support" {
   depends start
 }
 supplement task start {
-  minstart 2002-06-01-00:00:00-+0000
-  maxstart 2002-07-30-23:59:59-+0000
-  minend 2002-06-01-00:00:00-+0000
-  maxend 2002-07-30-23:59:59-+0000
 }
 supplement task t2 {
-  minstart 2002-06-01-00:00:00-+0000
-  maxstart 2002-07-30-23:59:59-+0000
   minend 2002-07-19-14:29:00-+0000
   maxend 2002-07-19-14:30:00-+0000
 }
 supplement task t1 {
-  minstart 2002-06-01-00:00:00-+0000
-  maxstart 2002-07-30-23:59:59-+0000
   minend 2002-07-26-11:59:00-+0000
   maxend 2002-07-26-12:00:00-+0000
 }
 supplement task t3 {
-  minstart 2002-06-01-00:00:00-+0000
-  maxstart 2002-07-30-23:59:59-+0000
   minend 2002-07-29-11:29:00-+0000
   maxend 2002-07-29-11:30:00-+0000
 }

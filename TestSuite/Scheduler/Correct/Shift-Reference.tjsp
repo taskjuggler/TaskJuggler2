@@ -5,10 +5,6 @@ task t1 "Task1" {
   projectid test
 }
 supplement task t1 {
-  minstart 2000-01-01-00:00:00-+0000
-  maxstart 2000-01-30-23:59:59-+0000
-  minend 2000-01-01-00:00:00-+0000
-  maxend 2000-01-30-23:59:59-+0000
 }
 supplement resource r1 {
   planbooking 2000-01-03-10:00:00-+0000 2000-01-03-12:00:00-+0000 t1
