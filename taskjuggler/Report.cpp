@@ -52,7 +52,7 @@ Report::open()
 {
 	if (fileName == "--")
 	{
-		if (f.open(IO_WriteOnly, stdout))
+		if (!f.open(IO_WriteOnly, stdout))
 		{
 			qWarning("Cannout open stdout");
 			return FALSE;
