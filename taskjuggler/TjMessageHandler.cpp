@@ -12,6 +12,8 @@
 
 #include "TjMessageHandler.h"
 
+TjMessageHandler TJMH(TRUE);
+
 void
 TjMessageHandler::warningMessage(const QString& msg, const QString& file, int
                                  line)

@@ -15,6 +15,7 @@
 
 #include <qapplication.h>
 #include <qglobal.h>
+#include <qfile.h>
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
@@ -28,8 +29,6 @@
 #include "OptimizerRun.h"
 #include "XMLFile.h"
 #include "kotrus.h"
-
-TjMessageHandler TJMH(TRUE);
 
 void
 banner()
@@ -51,7 +50,7 @@ copyright()
              .arg(TJURL));
 }
 
-void 
+void
 usage(QApplication& a)
 {
     qWarning(i18n(
@@ -68,7 +67,7 @@ usage(QApplication& a)
         "   -M                   - output include dependencies for\n"
         "                          make utilities\n"
         "   --makefile <file>    - generate include dependencies for make\n"
-        "                          utilities into the specified file\n" 
+        "                          utilities into the specified file\n"
         "   --maxerrors N        - stop after N errors. If N is 0 show all\n"
         "                          errors\n"
         "   --nodepcheck         - don't search for dependency loops\n"
@@ -156,7 +155,7 @@ int main(int argc, char *argv[])
             updateKotrusDB = TRUE;
         else
             showCopyright = showHelp = terminateProgram = TRUE;
-    
+
     if (a.argc() - i < 1)
     {
         if (!showCopyright && !showHelp)
@@ -171,13 +170,13 @@ int main(int argc, char *argv[])
     }
     else if (debugLevel > 0)
         banner();
-        
+
     if (showHelp)
         usage(a);
     if (terminateProgram)
         exit(EXIT_FAILURE);
 
-    DebugCtrl.setDebugLevel(debugLevel);    
+    DebugCtrl.setDebugLevel(debugLevel);
     DebugCtrl.setDebugMode(debugMode);
 
     bool parseErrors = FALSE;
@@ -194,7 +193,7 @@ int main(int argc, char *argv[])
         if (fileName.right(4) == ".tjx")
         {
             XMLFile* xf = new XMLFile(&p);
-            if (!xf->readDOM(fileName, QString(cwd) + "/", "", TRUE))
+            if (!xf->readDOM(fileName, QFile::decodeName(cwd) + "/", "", TRUE))
                 exit(EXIT_FAILURE);
             parseErrors |= !xf->parse();
             delete xf;
@@ -213,7 +212,7 @@ int main(int argc, char *argv[])
                 // parseErrors = TRUE;
             }
             ProjectFile* pf = new ProjectFile(&p);
-            if (!pf->open(a.argv()[i], QString(cwd) + "/", "", TRUE))
+            if (!pf->open(a.argv()[i], QFile::decodeName(cwd) + "/", "", TRUE))
                 exit(EXIT_FAILURE);
             parseErrors |= !pf->parse();
             if (generateMakeDepList)
