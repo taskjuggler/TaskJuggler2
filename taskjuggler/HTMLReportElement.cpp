@@ -1,7 +1,7 @@
 /*
  * HTMLReportElement.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -304,9 +304,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         {
             QStringList* sl = new QStringList();
             sl->append(text);
-            mt.pushArguments(sl);
-            cellText = mt.expandReportVariable(tci->tci->getCellText());
-            mt.popArguments();
+            cellText = mt.expandReportVariable(tci->tci->getCellText(), sl);
         }
     }
     if (!tci->tci->getCellURL().isEmpty() && (tci->tli->ca1 == 0 ||
@@ -314,12 +312,9 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
     {
         QStringList* sl = new QStringList();
         sl->append(text);
-        mt.pushArguments(sl);
-        QString cellURL = mt.expandReportVariable(tci->tci->getCellURL());
-        qDebug("Celltext: %s", cellText.latin1());
+        QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(), sl);
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
-        mt.popArguments();
     }
     if (cellText.isEmpty())
         cellText = "&nbsp;";
@@ -445,18 +440,16 @@ HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 {
     QStringList* sl = new QStringList();
     sl->append(str);
-    mt.pushArguments(sl);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
-        cellText = mt.expandReportVariable(tci->tci->getTitle());
+        cellText = mt.expandReportVariable(tci->tci->getTitle(), sl);
     else
         cellText = str;
     cellText = htmlFilter(cellText);
-    QString cellURL = mt.expandReportVariable(tci->tci->getTitleURL());
+    QString cellURL = mt.expandReportVariable(tci->tci->getTitleURL(), sl);
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
-    mt.popArguments();
 
     puts(cellText);
 }
@@ -466,18 +459,16 @@ HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
 {
     QStringList* sl = new QStringList();
     sl->append(str);
-    mt.pushArguments(sl);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
-        cellText = mt.expandReportVariable(tci->tci->getTitle());
+        cellText = mt.expandReportVariable(tci->tci->getTitle(), sl);
     else
         cellText = str;
     cellText = htmlFilter(cellText);
-    QString cellURL = mt.expandReportVariable(tci->tci->getSubTitleURL());
+    QString cellURL = mt.expandReportVariable(tci->tci->getSubTitleURL(), sl);
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
-    mt.popArguments();
 
     puts(cellText);
 }

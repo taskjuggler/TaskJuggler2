@@ -1,7 +1,7 @@
 /*
  * main.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -38,7 +38,7 @@ void
 copyright()
 {
     qWarning(i18n(
-        "\nCopyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>\n"
+        "\nCopyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>\n"
         "and Klaas Freitag <freitag@suse.de>\n\n"
         "This program is free software; you can redistribute it and/or\n"
         "modify it under the terms of version 2 of the GNU General\n"

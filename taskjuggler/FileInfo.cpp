@@ -1,7 +1,7 @@
 /*
  * FileInfo.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -98,7 +98,6 @@ FileInfo::getC(bool expandMacros)
         if (c.unicode() == EOMacro)
         {
             macroStack.removeLast();
-            pf->getMacros().popArguments();
             goto BEGIN;
         }
     }
@@ -492,12 +491,9 @@ FileInfo::readMacroCall()
         return FALSE;
     }
 
-    // push string list to global argument stack
-    pf->getMacros().pushArguments(sl);
-
     // expand the macro
     pf->getMacros().setLocation(file, currLine);
-    QString macro = pf->getMacros().resolve();
+    QString macro = pf->getMacros().resolve(sl);
 
     if (macro.isNull() && prefix.isEmpty())
         return FALSE;
@@ -594,15 +590,7 @@ FileInfo::errorMessage(const char* msg, ...)
         int line = 0;
         for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
         {
-            if (pf->getMacros().getArguments(i))
-            {
-                QStringList argList(*pf->getMacros().getArguments(i));
-                argList.pop_front();
-                stackDump += "\n  ${" + (*mli)->getName() + " \""
-                    + argList.join("\" \"") + "\"}";
-            }
-            else
-                stackDump += "\n  ${" + (*mli)->getName() + " ... }";
+            stackDump += "\n  ${" + (*mli)->getName() + " ... }";
 
             file = (*mli)->getFile();
             line = (*mli)->getLine();

@@ -1,7 +1,7 @@
 /*
  * MacroTable.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -18,7 +18,6 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
-#include <qptrlist.h>
 
 class Macro
 {
@@ -47,33 +46,18 @@ public:
     MacroTable()
     {
         macros.setAutoDelete(TRUE);
-        argStack.setAutoDelete(TRUE);
     }
     ~MacroTable() { }
 
     bool addMacro(Macro* m);
     void setMacro(Macro* m);
 
-    void pushArguments(QStringList* sl)
-    {
-        argStack.append(sl);
-    }
-    void popArguments()
-    {
-        argStack.removeLast();
-    }
-    const QStringList* getArguments(int i)
-    {
-        return argStack.at(i);
-    }
     void clear()
     {
         macros.clear();
-        argStack.clear();
     }
-    QString resolve();
-    QString expand(const QString& text);
-    QString expandReportVariable(QString text);
+    QString resolve(const QStringList* argList);
+    QString expandReportVariable(QString text, const QStringList* argList);
     Macro* getMacro(const QString& name) const { return macros[name]; }
 
     void setLocation(const QString& df, int dl)
@@ -83,6 +67,7 @@ public:
     }
 
 private:
+    bool evalExpression(const QString expr) const;
     void errorMessage(const char* txt, ... ) const;
 
     /* We store a file name and a line number in case we need this for
@@ -91,7 +76,6 @@ private:
     int defFileLine;
     
     QDict<Macro> macros;
-    QPtrList<QStringList> argStack;
 } ;
 
 #endif

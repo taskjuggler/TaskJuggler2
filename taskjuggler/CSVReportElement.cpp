@@ -1,7 +1,7 @@
 /*
  * Report.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -159,10 +159,9 @@ CSVReportElement::genCell(const QString& text, TableCellInfo* tci,
         {
             QStringList* sl = new QStringList();
             sl->append(text);
-            mt.pushArguments(sl);
-            cellText = mt.expandReportVariable(tci->tci->getCellText());
-            QString cellURL = mt.expandReportVariable(tci->tci->getCellURL());
-            mt.popArguments();
+            cellText = mt.expandReportVariable(tci->tci->getCellText(), sl);
+            QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(),
+                                                      sl);
         }
     }
     s() << "\"" << cellText << "\"";
@@ -199,18 +198,17 @@ CSVReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 {
     QStringList* sl = new QStringList();
     sl->append(str);
-    mt.pushArguments(sl);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
     {
-        cellText = mt.expandReportVariable(tci->tci->getTitle());
+        cellText = mt.expandReportVariable(tci->tci->getTitle(), sl);
         if (!tci->tci->getSubTitle().isEmpty())
-            cellText += " " + mt.expandReportVariable(tci->tci->getSubTitle());
+            cellText += " " + mt.expandReportVariable(tci->tci->getSubTitle(),
+                                                      sl);
     }
     else
         cellText = str;
     cellText = filter(cellText);
-    mt.popArguments();
 
     s() << "\"" << cellText << "\"";
 }
