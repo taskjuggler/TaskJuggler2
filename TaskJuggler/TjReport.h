@@ -22,6 +22,7 @@
 
 #include "TaskList.h"
 #include "ResourceList.h"
+#include "ReportLayers.h"
 
 class QSplitter;
 class QCanvas;
@@ -69,17 +70,19 @@ private slots:
     void updateStatusBar();
 
 protected:
-    enum StepUnits { day = 0, week, month, quarter, year };
+    enum StepUnits { hour = 0, day, week, month, quarter, year };
     TjReport() : reportDef(0) { }
 
     int time2x(time_t t) const;
     time_t x2time(int x) const;
 
+    virtual bool event(QEvent* ev);
     virtual bool generateList() = 0;
     virtual bool generateChart(bool autoFit) = 0;
 
     void prepareChart(bool autoFit, QtReportElement* repElement);
     void generateHeaderAndGrid();
+    void generateHourHeader(int y);
     void generateDayHeader(int y);
     void generateWeekHeader(int y);
     void generateMonthHeader(int y, bool withYear);
@@ -88,8 +91,8 @@ protected:
     void generateGanttBackground();
     void markNonWorkingHoursOnBackground();
     void markNonWorkingDaysOnBackground();
-    void markBoundary(int x, const QColor& col, int layer = 2);
-    void markHourBoundaries();
+    void markBoundary(int x, bool now = FALSE, int layer = TJRL_GRIDLINES);
+    void markHourBoundaries(int distance);
     void markDayBoundaries();
     void markWeekBoundaries();
     void markMonthsBoundaries();

@@ -15,9 +15,9 @@
 #include "pref.h"
 
 #include <qdragobject.h>
-#include <kprinter.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
+#include <qmessagebox.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -38,6 +38,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kdebug.h>
+#include <kprinter.h>
 
 TaskJuggler::TaskJuggler()
     : KMainWindow( 0, "TaskJuggler" ),
@@ -259,13 +260,7 @@ TaskJuggler::fileSave()
 void TaskJuggler::fileSaveAs()
 {
     // this slot is called whenever the File->Save As menu is selected,
-    KURL file_url = KFileDialog::getSaveURL
-        (i18n("Pick an alternative name for the current file"),
-         "*.tjp, *.tji");
-    if (!file_url.isEmpty() && file_url.isValid())
-    {
-        m_view->saveAs(file_url);
-    }
+    m_view->saveAs();
 }
 
 void
@@ -276,6 +271,12 @@ TaskJuggler::fileClose()
 
 void TaskJuggler::filePrint()
 {
+    QMessageBox::information(this, "TaskJuggler",
+                             i18n("Sorry, printing is not yet implemented!"),
+                             QMessageBox::Ok | QMessageBox::Default,
+                             QMessageBox::NoButton);
+    return;
+#if 0
     // this slot is called whenever the File->Print menu is selected,
     // the Print shortcut is pressed (usually CTRL+P) or the Print toolbar
     // button is clicked
@@ -295,6 +296,7 @@ void TaskJuggler::filePrint()
         // and send the result to the printer
         p.end();
     }
+#endif
 }
 
 void TaskJuggler::optionsShowToolbar()

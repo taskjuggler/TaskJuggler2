@@ -197,7 +197,7 @@ TjTaskReport::generateStatusBarText(const QPoint& pos,
         double load = t->getLoad(scenario, iv);
         text = i18n("%1(%2) - %3:  Load=%4")
             .arg(t->getName())
-            .arg(t->getFullId())
+            .arg(t->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
                  (load, reportDef->getNumberFormat()));
@@ -214,7 +214,7 @@ TjTaskReport::generateStatusBarText(const QPoint& pos,
             .arg(reportElement->scaledLoad
                  (load, reportDef->getNumberFormat()))
             .arg(t->getName())
-            .arg(t->getFullId());
+            .arg(t->getId());
     }
 
     return text;
@@ -449,33 +449,42 @@ TjTaskReport::drawTaskResources(Task* const t)
             (*rli)->getFullId()]->itemPos();
         switch (stepUnit)
         {
+            case hour:
+                for (time_t i = beginOfHour(t->getStart(scenario));
+                     i <= (t->getEnd(scenario)); i = hoursLater(1, i))
+                    drawResourceLoadColum(t, *rli, i, hoursLater(1, i) - 1, rY);
+                break;
             case day:
                 for (time_t i = midnight(t->getStart(scenario));
                      i <= (t->getEnd(scenario)); i = sameTimeNextDay(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextDay(i), rY);
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextDay(i) - 1,
+                                          rY);
                 break;
             case week:
                 for (time_t i = beginOfWeek(t->getStart(scenario),
                                             t->getProject()->
                                             getWeekStartsMonday());
                      i <= (t->getEnd(scenario)); i = sameTimeNextWeek(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextWeek(i), rY);
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextWeek(i) - 1,
+                                          rY);
                 break;
             case month:
                 for (time_t i = beginOfMonth(t->getStart(scenario));
                      i <= (t->getEnd(scenario)); i = sameTimeNextMonth(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextMonth(i), rY);
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextMonth(i) - 1,
+                                          rY);
                 break;
             case quarter:
                 for (time_t i = beginOfQuarter(t->getStart(scenario));
                      i <= (t->getEnd(scenario)); i = sameTimeNextQuarter(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextQuarter(i),
-                                          rY);
+                    drawResourceLoadColum(t, *rli, i,
+                                          sameTimeNextQuarter(i) - 1, rY);
                 break;
             case year:
                 for (time_t i = beginOfYear(t->getStart(scenario));
                      i <= (t->getEnd(scenario)); i = sameTimeNextYear(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextYear(i), rY);
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextYear(i) - 1,
+                                          rY);
                 break;
             default:
                 kdError() << "Unknown stepUnit";

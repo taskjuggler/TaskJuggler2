@@ -243,7 +243,7 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
             .arg(reportElement->scaledLoad
                  (load, reportDef->getNumberFormat()))
             .arg(t->getName())
-            .arg(t->getFullId());
+            .arg(t->getId());
     }
     else
     {
@@ -289,6 +289,11 @@ TjResourceReport::drawResource(const Resource* r, int y)
 
     switch (stepUnit)
     {
+        case hour:
+            for (time_t i = beginOfHour(start); i <= end;
+                 i = hoursLater(1, i))
+                drawResourceLoadColumn(r, i, hoursLater(1, i), y);
+            break;
         case day:
             for (time_t i = midnight(start); i <= end;
                  i = sameTimeNextDay(i))
@@ -420,6 +425,11 @@ TjResourceReport::drawResourceTasks(const Resource* r)
 
         switch (stepUnit)
         {
+            case hour:
+                for (time_t i = beginOfHour(start); i <= end;
+                     i = hoursLater(1, i))
+                    drawTaskLoadColumn(*tli, r, i, hoursLater(1, i), y);
+                break;
             case day:
                 for (time_t i = midnight(start); i <= end;
                      i = sameTimeNextDay(i))

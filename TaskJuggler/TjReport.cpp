@@ -43,7 +43,7 @@
 #include "ReportLayers.h"
 
 //                                           Boundary
-const int TjReport::minStepHour = 4;    //   365 * 24 * 4 = 35040
+const int TjReport::minStepHour = 20;    //   365 * 24 * 20 = 175200
 const int TjReport::minStepDay = 20;     //   365 * 20 = 7300
 const int TjReport::minStepWeek = 35;    //   52 * 35 = 1820
 const int TjReport::minStepMonth = 35;   //   12 * 35 = 420
@@ -63,9 +63,8 @@ const int TjReport::zoomSteps[] =
     4302,  // Week       Day
     7602,  // Day
     13434, // Day
-    23738, // Day        Hour
     41946, // Hour
-    74118  // Hour
+    176000
 } ;
 
 TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
@@ -80,6 +79,7 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     listView->setRootIsDecorated(TRUE);
     listView->setVScrollBarMode(QScrollView::AlwaysOff);
     listView->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+    listView->setAllColumnsShowFocus(TRUE);
 
     canvasFrame = new QWidget(splitter);
     QVBoxLayout* vl = new QVBoxLayout(canvasFrame, 0, 0);
@@ -91,8 +91,7 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     ganttHeaderView->setVScrollBarMode(QScrollView::AlwaysOff);
 
     ganttChart = new QCanvas(this);
-    ganttChart->setBackgroundColor
-        (KGlobalSettings::alternateBackgroundColor());
+    ganttChart->setBackgroundColor(listView->colorGroup().base());
     ganttChartView = new QCanvasView(ganttChart, canvasFrame);
 
     currentZoomStep = 5;
@@ -117,6 +116,19 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
 TjReport::~TjReport()
 {
     delete statusBarUpdateTimer;
+}
+
+bool
+TjReport::event(QEvent* ev)
+{
+    // Regenerate the chart in case of a palette change.
+    if (ev->type() == QEvent::ApplicationPaletteChange)
+    {
+        ganttChart->setBackgroundColor(listView->colorGroup().base());
+        regenerateChart();
+    }
+
+    return QWidget::event(ev);
 }
 
 bool
@@ -455,6 +467,11 @@ TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
     if (endTime - startTime < 60 * 60 * 24)
         endTime = startTime + 60 * 60 * 24 + 1;
 
+    /* QCanvas can only handle 32767 pixel width. So we have to shorten the
+     * report period if the chart exceeds this size. */
+    if (time2x(endTime) > 32767)
+        endTime = x2time(32767 - 2);
+
     canvasWidth = time2x(endTime);
     canvasFrame->setMaximumWidth(canvasWidth + 2);
 
@@ -492,6 +509,12 @@ TjReport::generateHeaderAndGrid()
 
     switch (stepUnit)
     {
+        case hour:
+            generateDayHeader(0);
+            generateHourHeader(headerHeight / 2);
+            markHourBoundaries(1);
+            markNonWorkingHoursOnBackground();
+            break;
         case day:
             generateMonthHeader(0, TRUE);
             generateDayHeader(headerHeight / 2);
@@ -501,7 +524,7 @@ TjReport::generateHeaderAndGrid()
             else
                 markNonWorkingDaysOnBackground();
             if (pixelPerYear > 365 * 8 * 8)
-                markHourBoundaries();
+                markHourBoundaries(3);
             break;
         case week:
             generateMonthHeader(0, TRUE);
@@ -543,7 +566,35 @@ TjReport::generateHeaderAndGrid()
         reportDef->getProject()->getStart() &&
         reportDef->getProject()->getNow() < reportDef->getProject()->getEnd())
         markBoundary(time2x(reportDef->getProject()->getNow()),
-                            Qt::red, TJRL_NOWLINE);
+                            TRUE, TJRL_NOWLINE);
+}
+
+void
+TjReport::generateHourHeader(int y)
+{
+    for (time_t hour = midnight(startTime); hour < endTime;
+         hour = hoursLater(1, hour))
+    {
+        int x = time2x(hour);
+        if (x < 0)
+            continue;
+        QCanvasLine* line = new QCanvasLine(ganttHeader);
+        line->setPoints(x, y, x, y + headerHeight / 2);
+        QPen pen = line->pen();
+        pen.setColor(colorGroup().mid());
+        line->setPen(pen);
+        line->setZ(TJRL_GRIDLINES);
+        line->show();
+
+        // Write hour of day.
+        QString label;
+        label = QString("%1").arg(hourOfDay(hour));
+        QCanvasText* text = new QCanvasText(label, ganttHeader);
+        text->setX(x + 2);
+        text->setY(y);
+        text->setZ(TJRL_GRIDLABLES);
+        text->show();
+    }
 }
 
 void
@@ -563,7 +614,7 @@ TjReport::generateDayHeader(int y)
         line->setZ(TJRL_GRIDLINES);
         line->show();
 
-        // Draw day of month.
+        // Write day of month.
         QString label;
         int stepSize = pixelPerYear / 365;
         if (stepSize > 70)
@@ -606,7 +657,7 @@ TjReport::generateWeekHeader(int y)
         line->setZ(TJRL_GRIDLINES);
         line->show();
 
-        // Draw week number.
+        // Write week number.
         QCanvasText* text = new QCanvasText
             (i18n("short for week of year", "W%1")
              .arg(weekOfYear(week, weekStartsMonday)),
@@ -635,7 +686,7 @@ TjReport::generateMonthHeader(int y, bool withYear)
         line->setZ(TJRL_GRIDLINES);
         line->show();
 
-        // Draw month name (and year).
+        // Write month name (and year).
         QString s = withYear ?
             QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(month)))
             .arg(::year(month)) :
@@ -679,7 +730,7 @@ TjReport::generateQuarterHeader(int y)
         line->setZ(TJRL_GRIDLINES);
         line->show();
 
-        // Draw quarter number.
+        // Write quarter number.
         QCanvasText* text =
             new QCanvasText(i18n("short for quater of year", "Q%1")
                             .arg(quarterOfYear(quarter)),
@@ -707,7 +758,7 @@ TjReport::generateYearHeader(int y)
         line->setZ(TJRL_GRIDLINES);
         line->show();
 
-        // Draw year.
+        // Write year.
         QCanvasText* text =
             new QCanvasText(QString("%1").arg(::year(year)), ganttHeader);
         text->move(x + 2, y);
@@ -720,7 +771,7 @@ void
 TjReport::markNonWorkingHoursOnBackground()
 {
     QColor col = KGlobalSettings::calculateAlternateBackgroundColor
-        (KGlobalSettings::alternateBackgroundColor()).dark(110);
+        (listView->colorGroup().base()).dark(110);
     // Mark non-working days with a light grey background.
     for (time_t hour = midnight(startTime);
          hour < endTime; )
@@ -743,7 +794,7 @@ TjReport::markNonWorkingHoursOnBackground()
             new QCanvasRectangle(x, 0, w, listHeight, ganttChart);
         rect->setPen(QPen(col));
         rect->setBrush(QBrush(col));
-        rect->setZ(TJRL_WEEKENDS);
+        rect->setZ(TJRL_OFFTIME);
         rect->show();
     }
 }
@@ -752,7 +803,7 @@ void
 TjReport::markNonWorkingDaysOnBackground()
 {
     QColor col = KGlobalSettings::calculateAlternateBackgroundColor
-        (KGlobalSettings::alternateBackgroundColor()).dark(110);
+        (listView->colorGroup().base()).dark(110);
     // Mark non-working days with a light grey background.
     for (time_t day = midnight(startTime);
          day < endTime; day = sameTimeNextDay(day))
@@ -769,15 +820,22 @@ TjReport::markNonWorkingDaysOnBackground()
                 new QCanvasRectangle(x, 0, w, listHeight, ganttChart);
             rect->setPen(QPen(NoPen));
             rect->setBrush(QBrush(col));
-            rect->setZ(TJRL_WEEKENDS);
+            rect->setZ(TJRL_OFFTIME);
             rect->show();
         }
     }
 }
 
 void
-TjReport::markBoundary(int x, const QColor& col, int layer)
+TjReport::markBoundary(int x, bool now, int layer)
 {
+    QColor col;
+    if (now)
+        col = QColor(Qt::red);
+    else
+        col = KGlobalSettings::calculateAlternateBackgroundColor
+            (listView->colorGroup().base()).dark(130);
+
     // Draws a vertical line on the ganttChart to higlight a time period
     // boundary.
     if (x < 0)
@@ -791,11 +849,11 @@ TjReport::markBoundary(int x, const QColor& col, int layer)
 }
 
 void
-TjReport::markHourBoundaries()
+TjReport::markHourBoundaries(int distance)
 {
     for (time_t hour = midnight(startTime);
-         hour < endTime; hour = hoursLater(3, hour))
-        markBoundary(time2x(hour), colorGroup().mid());
+         hour < endTime; hour = hoursLater(distance, hour))
+        markBoundary(time2x(hour));
 }
 
 void
@@ -803,7 +861,7 @@ TjReport::markDayBoundaries()
 {
     for (time_t day = midnight(startTime);
          day < endTime; day = sameTimeNextDay(day))
-        markBoundary(time2x(day), colorGroup().mid());
+        markBoundary(time2x(day));
 }
 
 void
@@ -814,7 +872,7 @@ TjReport::markWeekBoundaries()
     for (time_t week = beginOfWeek(startTime, weekStartsMonday);
          week < endTime;
          week = sameTimeNextWeek(week))
-        markBoundary(time2x(week), colorGroup().mid());
+        markBoundary(time2x(week));
 }
 
 void
@@ -823,7 +881,7 @@ TjReport::markMonthsBoundaries()
     for (time_t month = beginOfMonth(startTime);
          month < endTime; month =
          sameTimeNextMonth(month))
-        markBoundary(time2x(month), colorGroup().mid());
+        markBoundary(time2x(month));
 }
 
 void
@@ -832,7 +890,7 @@ TjReport::markQuarterBoundaries()
     for (time_t quarter = beginOfQuarter(startTime);
          quarter < endTime; quarter =
          sameTimeNextQuarter(quarter))
-        markBoundary(time2x(quarter), colorGroup().mid());
+        markBoundary(time2x(quarter));
 }
 
 void
@@ -842,7 +900,9 @@ TjReport::generateGanttBackground()
         new QCanvasRectangle(0, 0, ganttChart->width(), ganttChart->height(),
                              ganttChart);
     rect->setPen(QPen(NoPen));
-    QColor bgColor = KGlobalSettings::alternateBackgroundColor();
+    QColor bgColor = listView->colorGroup().base();
+    QColor altBgColor = KGlobalSettings::calculateAlternateBackgroundColor
+        (bgColor);
     rect->setBrush(QBrush(bgColor));
     rect->setZ(TJRL_BACKGROUND);
     rect->show();
@@ -856,8 +916,7 @@ TjReport::generateGanttBackground()
 
         rect = new QCanvasRectangle(0, y, canvasWidth, itemHeight, ganttChart);
         rect->setPen(QPen(NoPen));
-        rect->setBrush(QBrush
-             (KGlobalSettings::calculateAlternateBackgroundColor(bgColor)));
+        rect->setBrush(QBrush(altBgColor));
         rect->setZ(TJRL_BACKLINES);
         rect->show();
     }
@@ -999,7 +1058,9 @@ TjReport::hide()
 void
 TjReport::setBestStepUnit()
 {
-    if (pixelPerYear / minStepDay >= 365)
+    if (pixelPerYear / minStepHour > 365 * 24)
+        stepUnit = hour;
+    else if (pixelPerYear / minStepDay >= 365)
         stepUnit = day;
     else if (pixelPerYear / minStepWeek >= 52)
         stepUnit = week;
@@ -1049,6 +1110,10 @@ TjReport::stepInterval(time_t ref) const
     Interval iv;
     switch (stepUnit)
     {
+        case hour:
+            iv.setStart(beginOfHour(ref));
+            iv.setEnd(hoursLater(1, iv.getStart()) - 1);
+            break;
         case day:
             iv.setStart(midnight(ref));
             iv.setEnd(sameTimeNextDay(iv.getStart()) - 1);
@@ -1082,6 +1147,10 @@ TjReport::stepIntervalName(time_t ref) const
     QString name;
     switch (stepUnit)
     {
+        case hour:
+            name = time2user(beginOfHour(ref), "%k:%M " +
+                             KGlobal::locale()->dateFormat());
+            break;
         case day:
             name = time2user(midnight(ref), KGlobal::locale()->dateFormat());
             break;

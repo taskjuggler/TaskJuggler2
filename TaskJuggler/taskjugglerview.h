@@ -81,7 +81,7 @@ public:
 
     virtual void save();
 
-    virtual void saveAs(const KURL& url);
+    virtual void saveAs();
 
     virtual void close();
 
@@ -147,8 +147,13 @@ private slots:
 private:
     bool loadProject(const KURL& url);
 
+    void updateTaskList();
+    void updateResourceList();
+    void updateAccountList();
+
     void closeProject();
 
+    void saveAs(const KURL& url);
     void setLoadingProject(bool lp);
 
     void addMessage(const QString& msg, const QString& file, int line,

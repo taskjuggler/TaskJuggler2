@@ -13,11 +13,11 @@
 #define _ReportLayers_h_
 
 #define TJRL_BACKGROUND 0
-#define TJRL_BACKLINES 1
-#define TJRL_WEEKENDS 2
-#define TJRL_GRIDLINES 3
-#define TJRL_GRIDLABLES 4
-#define TJRL_NOWLINE 4
+#define TJRL_BACKLINES 2
+#define TJRL_OFFTIME 3
+#define TJRL_GRIDLINES 4
+#define TJRL_GRIDLABLES 5
+#define TJRL_NOWLINE 5
 #define TJRL_TASKS 10
 #define TJRL_TASKCOMP 11
 #define TJRL_DEPARROWS 12
