@@ -46,11 +46,11 @@ AccountList::compareItemsLevel(Account* a1, Account* a2, int level)
     {
         /* Since we like to show all cost accounts first, we have add a
          * bit of extra code to the usual tree sort handling. */
-        if (a1->getType() == Cost &&
-            a2->getType() != Cost)
+        if (a1->getAcctType() == Cost &&
+            a2->getAcctType() != Cost)
             return -1;
-        if (a1->getType() != Cost &&
-            a2->getType() == Cost)
+        if (a1->getAcctType() != Cost &&
+            a2->getAcctType() == Cost)
             return 1;
         if (level == 0)
             return compareTreeItemsT(this, a1, a2);

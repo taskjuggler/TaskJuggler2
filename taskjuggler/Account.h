@@ -36,7 +36,7 @@ public:
             AccountType at);
     virtual ~Account();
 
-    virtual const char* getType() const { return "Account"; }
+    virtual CAType getType() const { return CA_Account; }
 
     Account* getParent() const { return (Account*) parent; }
 

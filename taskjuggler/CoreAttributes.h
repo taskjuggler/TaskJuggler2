@@ -41,7 +41,7 @@ public:
     }
     virtual ~CoreAttributes();
 
-    virtual const char* getType() const { return "CoreAttributes"; }
+    virtual CAType getType() const { return CA_Undefined; }
 
     const QString& getId() const { return id; }
     QString getFullId() const;

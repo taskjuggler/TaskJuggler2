@@ -56,6 +56,7 @@ task start "Start of plan" {
   plan:start 2002-06-01-00:00:00-+0000
   plan:scheduled
   milestone 
+  scheduling asap
 }
 task t2 "Printer Support" {
   projectid simple
@@ -63,6 +64,7 @@ task t2 "Printer Support" {
   plan:start 2002-06-03-07:00:00-+0000
   plan:end 2002-07-23-09:30:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t1 "Installation Support" {
   projectid simple
@@ -70,6 +72,7 @@ task t1 "Installation Support" {
   plan:start 2002-06-03-09:00:00-+0000
   plan:end 2002-07-26-12:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t3 "Network Support" {
   projectid simple
@@ -77,6 +80,7 @@ task t3 "Network Support" {
   plan:start 2002-06-03-11:00:00-+0000
   plan:end 2002-07-30-16:30:00-+0000
   plan:scheduled
+  scheduling asap
 }
 supplement task start {
   priority 500

@@ -399,38 +399,11 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
         switch (TaskAttributeDict[*it])
         {
             case TA_DEPENDS:
-                if (task->hasPrevious())
-                {
-                    bool first = TRUE;
-                    for (TaskListIterator
-                         pli(task->getPreviousIterator()); *pli != 0;
-                         ++pli)
-                    {
-                        /* Save current list item since findRef() modifies
-                         * it. Remember, we are still iterating the list.
-                         */
-                        CoreAttributes* curr = filteredTaskList.current();
-                        if (filteredTaskList.findRef(*pli) > -1 &&
-                            !(task->getParent() != 0 &&
-                              task->getParent()->hasPrevious(*pli)))
-                        {
-                            if (first)
-                            {
-                                s << QString().fill(' ', indent + 2) 
-                                    << "depends ";
-                                first = FALSE;
-                            }
-                            else
-                                s << ", ";
-                            s << stripTaskRoot((*pli)->getId());
-                        }
-                        /* Restore current list item to continue
-                         * iteration. */
-                        filteredTaskList.findRef(curr);
-                    }
-                    if (!first)
-                        s << endl;
-                }
+                generateDepList(filteredTaskList, task,
+                                task->getDependsIterator(), "depends", indent);
+                generateDepList(filteredTaskList, task,
+                                task->getPrecedesIterator(), "precedes",
+                                indent);
                 break;
             default:
                 break;
@@ -476,8 +449,47 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
     if (task->isMilestone())
         s << QString().fill(' ', indent + 2) << "milestone " << endl;
 
+    s << QString().fill(' ', indent + 2)
+        << "scheduling " << (task->getScheduling() == Task::ASAP ?
+                             "asap" : "alap") << endl;
+    
     s << QString().fill(' ', indent) << "}" << endl;
     
+    return TRUE;
+}
+
+bool
+ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
+                              TaskListIterator depIt, const char* tag,
+                              int indent) 
+{
+    bool first = TRUE;
+    for ( ; *depIt != 0; ++depIt)
+    {
+        /* Save current list item since findRef() modifies
+         * it. Remember, we are still iterating the list. */
+        CoreAttributes* curr = filteredTaskList.current();
+        if (filteredTaskList.findRef(*depIt) > -1 &&
+            !(task->getParent() != 0 &&
+              task->getParent()->hasPrevious(*depIt)))
+        {
+            if (first)
+            {
+                s << QString().fill(' ', indent + 2) 
+                    << tag << " ";
+                first = FALSE;
+            }
+            else
+                s << ", ";
+            s << stripTaskRoot((*depIt)->getId());
+        }
+        /* Restore current list item to continue
+         * iteration. */
+        filteredTaskList.findRef(curr);
+    }
+    if (!first)
+        s << endl;
+
     return TRUE;
 }
 
@@ -691,7 +703,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "complete " 
-                                << (int) task->getComplete(Task::Plan) 
+                                << (int) task->getComplete(*it) 
                                 << endl;
                         }
                     }

@@ -34,6 +34,11 @@ public:
     
     virtual int compareItemsLevel(Scenario* r1, Scenario* r2, int level);
 
+    virtual Scenario* operator[](int i)
+    {
+        return (Scenario*) at(i);
+    }
+
 protected:
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;

@@ -45,11 +45,6 @@ Project::Project()
     /* Pick some reasonable initial number since we don't know the
      * project time frame yet. */
     initUtility(20000);
-    taskList.setAutoDelete(TRUE);
-    resourceList.setAutoDelete(TRUE);
-    accountList.setAutoDelete(TRUE);
-    shiftList.setAutoDelete(TRUE);
-    scenarioList.setAutoDelete(TRUE);
 
     vacationList.setAutoDelete(TRUE);
     
@@ -59,8 +54,7 @@ Project::Project()
     htmlWeeklyCalendars.setAutoDelete(TRUE);
     exportReports.setAutoDelete(TRUE);
 
-    Scenario* plan = new Scenario(this, "plan", "Plan", 0);
-    new Scenario(this, "actual", "Actual", plan);
+    new Scenario(this, "plan", "Plan", 0);
     scenarioList.createIndex(TRUE);
     scenarioList.createIndex(FALSE);
 
@@ -118,6 +112,56 @@ Project::Project()
 
 Project::~Project()
 {
+    while (!taskList.isEmpty())
+    {
+        for (TaskListIterator tli(taskList); *tli; ++tli)
+            if ((*tli)->getParent() == 0)
+            {
+                delete *tli;
+                break;
+            }
+    }
+
+    while (!resourceList.isEmpty())
+    {
+        for (ResourceListIterator tli(resourceList); *tli; ++tli)
+            if ((*tli)->getParent() == 0)
+            {
+                delete *tli;
+                break;
+            }
+    }
+
+    while (!accountList.isEmpty())
+    {
+        for (AccountListIterator tli(accountList); *tli; ++tli)
+            if ((*tli)->getParent() == 0)
+            {
+                delete *tli;
+                break;
+            }
+    }
+
+    while (!shiftList.isEmpty())
+    {
+        for (ShiftListIterator tli(shiftList); *tli; ++tli)
+            if ((*tli)->getParent() == 0)
+            {
+                delete *tli;
+                break;
+            }
+    }
+    
+    while (!scenarioList.isEmpty())
+    {
+        for (ScenarioListIterator tli(scenarioList); *tli; ++tli)
+            if ((*tli)->getParent() == 0)
+            {
+                delete *tli;
+                break;
+            }
+    }
+
     delete xmlreport;
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -204,6 +248,11 @@ void
 Project::addScenario(Scenario* s)
 {
     scenarioList.append(s);
+
+    /* This is not too efficient, but since there are usually only a few
+     * scenarios in a project, this doesn't hurt too much. */
+    scenarioList.createIndex(TRUE);
+    scenarioList.createIndex(FALSE);
 }
 
 void
@@ -392,20 +441,14 @@ Project::pass2(bool noDepCheck)
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->implicitXRef();
 
-    // Find out what scenarios need to be scheduled.
-    // TODO: No multiple scenario support yet.
-    hasExtraValues = FALSE;
-    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        if ((*tli)->hasExtraValues(Task::Actual))
-        {
-            hasExtraValues = TRUE;
-            break;
-        }
-
     /* Now we can copy the missing values from the plan scenario to the other
      * scenarios. */
-    for (int sc = 1; sc < getMaxScenarios(); sc++)
-        overlayScenario(sc);
+    if (scenarioList.count() > 1)
+    {
+        for (ScenarioListIterator sli(scenarioList[0]->getSubListIterator());
+             *sli; ++sli)
+            overlayScenario(0, (*sli)->getSequenceNo() - 1);
+    }
 
     // Now check that all tasks have sufficient data to be scheduled.
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
@@ -432,29 +475,19 @@ Project::scheduleAllScenarios()
 {
     bool error = FALSE;
 
-    if (DEBUGPS(1))
-        qDebug("Scheduling plan scenario...");
-    prepareScenario(Task::Plan);
-    if (!schedule(0))
-    {
-        if (DEBUGPS(2))
-            qDebug("Scheduling errors in plan scenario.");
-        error = TRUE;
-    }
-    finishScenario(Task::Plan);
-
-    if (hasExtraValues)
+    for (ScenarioListIterator sli(scenarioList); *sli; ++sli)
     {
         if (DEBUGPS(1))
-            qDebug("Scheduling actual scenario...");
-        prepareScenario(Task::Actual);
-        if (!schedule(1))
+            qDebug(i18n("Scheduling scenario '%1'...").arg((*sli)->getId()));
+        prepareScenario((*sli)->getSequenceNo() - 1);
+        if (!schedule(0))
         {
             if (DEBUGPS(2))
-                qDebug("Scheduling errors in actual scenario.");
+                qDebug(i18n("Scheduling errors in scenario '%1'.")
+                       .arg((*sli)->getId()));
             error = TRUE;
         }
-        finishScenario(Task::Actual);
+        finishScenario((*sli)->getSequenceNo() - 1);
     }
 
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
@@ -471,10 +504,14 @@ Project::scheduleAllScenarios()
 }
 
 void
-Project::overlayScenario(int sc)
+Project::overlayScenario(int base, int sc)
 {
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        (*tli)->overlayScenario(sc);
+        (*tli)->overlayScenario(base, sc);
+
+    for (ScenarioListIterator sli(scenarioList[base]->getSubListIterator());
+         *sli; ++sli)
+        overlayScenario(sc, (*sli)->getSequenceNo() - 1);
 }
 
 void

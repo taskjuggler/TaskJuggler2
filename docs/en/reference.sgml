@@ -62,82 +62,75 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 
 <variablelist>
 
-<varlistentry><term>ischildof(<link linkend="id">ID</link>)</term>
+<varlistentry><term>isChildOf(<link linkend="id">ID</link>)</term>
 <listitem><para>true if the property has ID as sub.</para></listitem></varlistentry>
 
-<varlistentry><term>isparentof(<link linkend="id">ID</link>)</term>
+<varlistentry><term>isParentOf(<link linkend="id">ID</link>)</term>
 <listitem><para>true if the property has ID as enclosing property.
 </para></listitem></varlistentry>
 
-<varlistentry><term>isleaf(<link linkend="id">ID</link>)</term>
+<varlistentry><term>isLeaf(<link linkend="id">ID</link>)</term>
 <listitem><para>true if the property has no sub properties.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>endsafter(<link linkend="id">ID</link>, <link
+<varlistentry><term>endsAfter(<link linkend="id">ID</link>, <link
 																 linkend="date">DATE</link>)</term>
 
 <listitem><para>true if the task ends in scenario ID after the
 specified date</para></listitem>
 
 </varlistentry>
-<varlistentry><term>endsafter(<link linkend="id">ID</link>, <link
+<varlistentry><term>endsAfter(<link linkend="id">ID</link>, <link
 																 linkend="date">DATE</link>)</term>
 
 <listitem><para>true if the task ends in scenario ID after the
 specified date</para></listitem>
 
 </varlistentry>
-<varlistentry><term>isaccount(<link linkend="id">ID</link>)</term>
+<varlistentry><term>isAccount(<link linkend="id">ID</link>)</term>
 
 <listitem><para>true if the account has the listed
 ID.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>isactuallallocated(<link linkend="id">ID</link>,
-																			 <link linkend="date">DATE</link>,
-																			 <link
-																			 linkend="date">DATE</link>)</term>
+<varlistentry><term>isAllocated(<link linkend="id">ID</link>,
+																<link linkend="date">DATE</link>,
+																<link linkend="date">DATE</link>)</term>
 
 <listitem><para>true if the resource has been
-allocated to the project ID in the specified time interval in the
-actual scenario
+allocated in the specified time interval in the scenario with the
+specified ID.
 </para></listitem>
 
 </varlistentry>
-<varlistentry><term>ismilestone()</term>
+<varlistentry><term>isAllocatedToProject(<link linkend="id">PRJID</link>
+																				 <link linkend="id">SCENARIOID</link>,
+																<link linkend="date">DATE</link>,
+																<link linkend="date">DATE</link>)</term>
+
+<listitem><para>true if the resource has been
+allocated to the specified project in the specified time interval in
+the scenario with the specified ID.
+</para></listitem>
+
+</varlistentry>
+<varlistentry><term>isMilestone()</term>
 
 <listitem><para>true if the task is a milestone.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>isplanallocated(<link linkend="id">ID</link>,
-																		<link linkend="date">DATE</link>,
-																		<link
-																		linkend="date">DATE</link>)</term>
-
-<listitem><para>true if the resource has been
-allocated to the project ID in the specified time interval in the plan
-scenario
-</para></listitem>
-
-</varlistentry>
-<varlistentry><term>isresource(<link linkend="id">ID</link>)</term>
+<varlistentry><term>isResource(<link linkend="id">ID</link>)</term>
 
 <listitem><para>true if the resource has the listed
 ID.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>issubtaskof(<link linkend="id">ID</link>)</term>
-
-<listitem><para>true if the task is a sub task of task
-ID.</para></listitem>
-
-</varlistentry>
-<varlistentry><term>istask(<link linkend="id">ID</link>)</term>
+<varlistentry><term>isTask(<link linkend="id">ID</link>)</term>
 
 <listitem><para>true if the task has the listed ID.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>istaskstatus(<link linkend="id">ID</link>,
+<varlistentry><term>isTaskStatus(<link linkend="id">ID</link>,
 																 STATUS)</term>
 <listitem><para>true if the task has in scenario ID the specified
 status. STATUS can be any of
@@ -149,14 +142,14 @@ status. STATUS can be any of
 	<computeroutput>finished</computeroutput>.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>startsafter(<link linkend="id">ID</link>, <link
+<varlistentry><term>startsAfter(<link linkend="id">ID</link>, <link
 																 linkend="date">DATE</link>)</term>
 
 <listitem><para>true if the task starts in scenario ID after the
 specified date</para></listitem>
 
 </varlistentry>
-<varlistentry><term>startsbefore(<link linkend="id">ID</link>, <link
+<varlistentry><term>startsBefore(<link linkend="id">ID</link>, <link
 																 linkend="date">DATE</link>)</term>
 
 <listitem><para>true if the task starts in scenario ID before the

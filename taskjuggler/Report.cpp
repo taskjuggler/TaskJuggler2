@@ -150,8 +150,7 @@ Report::setAccountSorting(int sc, int level)
 bool
 Report::isHidden(const CoreAttributes* c, ExpressionTree* et) const
 {
-    if (!taskRoot.isEmpty() &&
-        strcmp(c->getType(), "Task") == 0 &&
+    if (!taskRoot.isEmpty() && c->getType() == CA_Task &&
         taskRoot != c->getId().left(taskRoot.length()))
     {
         return TRUE;
@@ -237,27 +236,28 @@ const
         if (r != 0)
         {
             QValueList<int>::const_iterator it;
-            for (it = scenarios.begin(); it != scenarios.end();
-                 ++it)
-                if (r->getLoad(*it, Interval(start, end),
-                               AllAccounts,
-                               *tli)
+            for (it = scenarios.begin(); it != scenarios.end(); ++it)
+                if (r->getLoad(*it, Interval(start, end), AllAccounts, *tli) 
                     > 0.0)
                 {
-                    resourceLoadedInAnyScenario =
-                        TRUE;
+                    resourceLoadedInAnyScenario = TRUE;
                     break;
                 }
         }
+        bool taskOverlapsInAnyScenario = FALSE;
         Interval iv(start, end);
-        if (!isHidden(*tli, hideExp) &&
-            iv.overlaps(Interval((*tli)->getStart(Task::Plan),
+        QValueList<int>::const_iterator it;
+        for (it = scenarios.begin(); it != scenarios.end(); ++it)
+            if (iv.overlaps(Interval((*tli)->getStart(*it),
                                  (*tli)->isMilestone() ?
-                                 (*tli)->getStart(Task::Plan) :
-                                 (*tli)->getEnd(Task::Plan)))
-            &&
-            (r == 0 ||
-             resourceLoadedInAnyScenario))
+                                 (*tli)->getStart(*it) :
+                                 (*tli)->getEnd(*it))))
+            {
+                taskOverlapsInAnyScenario = TRUE;
+                break;
+            }
+        if (!isHidden(*tli, hideExp) && taskOverlapsInAnyScenario &&
+            (r == 0 || resourceLoadedInAnyScenario))
         {
             filteredList.append(tli);
         }

@@ -26,6 +26,7 @@ task start "Start" {
   plan:start 2002-07-15-00:00:00-+0200
   plan:scheduled
   milestone 
+  scheduling asap
 }
 task amelioration "Amelioration" {
   projectid arc
@@ -34,45 +35,54 @@ task amelioration "Amelioration" {
     plan:start 2002-07-15-09:00:00-+0200
     plan:end 2002-07-17-18:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task supuniv "Suppression du code Universe" {
     plan:start 2002-07-15-09:00:00-+0200
     plan:end 2002-07-16-11:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task supdyn "Suppression du code Dynatext" {
     plan:start 2002-07-16-11:00:00-+0200
     plan:end 2002-07-17-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task modpre "Modification de la preconversion" {
     depends amelioration.supuniv, amelioration.gesttable, amelioration.supdyn
     plan:start 2002-07-18-09:00:00-+0200
     plan:end 2002-07-18-18:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task nomrex "Creation du nom du REX" {
     depends amelioration.gesttable
     plan:start 2002-07-18-09:00:00-+0200
     plan:end 2002-07-18-16:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task errpre "Gestion des erreurs dans la preconversion" {
     plan:start 2002-07-17-14:00:00-+0200
     plan:end 2002-07-29-11:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task errshell "Gestion des erreur dans les shells" {
     plan:start 2002-07-19-09:00:00-+0200
     plan:end 2002-07-23-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task testmod "Test des modifications" {
     depends amelioration.gesttable, amelioration.supuniv, amelioration.supdyn, amelioration.modpre, amelioration.nomrex, amelioration.errpre, amelioration.errshell
     plan:start 2002-07-29-11:00:00-+0200
     plan:end 2002-08-02-11:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
+  scheduling asap
 }
 task ctm "Mise sous Control-M" {
   projectid arc
@@ -81,35 +91,42 @@ task ctm "Mise sous Control-M" {
     plan:start 2002-07-23-14:00:00-+0200
     plan:end 2002-07-29-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task modchaine "Module chaines" {
     plan:start 2002-07-29-14:00:00-+0200
     plan:end 2002-08-02-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task defchaine "Definition des chaines" {
     depends ctm.modchaine
     plan:start 2002-08-02-14:00:00-+0200
     plan:end 2002-08-05-16:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task lancechaine "Lanceur de chaines" {
     depends ctm.modchaine, ctm.defchaine
     plan:start 2002-08-05-16:00:00-+0200
     plan:end 2002-08-07-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task dlibm "Download de l IBM" {
     plan:start 2002-08-02-11:00:00-+0200
     plan:end 2002-08-06-11:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task testchaine "Tests de l enchainement" {
     depends ctm.dlibm, ctm.lancechaine, ctm.defchaine, ctm.modchaine, ctm.jobsup
     plan:start 2002-08-07-15:00:00-+0200
     plan:end 2002-08-13-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
+  scheduling asap
 }
 task validation "Validation des modifs" {
   projectid arc
@@ -118,49 +135,58 @@ task validation "Validation des modifs" {
     plan:start 2002-08-13-15:00:00-+0200
     plan:end 2002-08-14-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task integerr "Integration gestion err" {
     depends ctm, amelioration
     plan:start 2002-08-14-15:00:00-+0200
     plan:end 2002-08-27-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task integctm "Integration Control-M" {
     depends ctm, amelioration
     plan:start 2002-08-27-15:00:00-+0200
     plan:end 2002-09-02-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task planrec "Redaction plan de recette" {
     depends validation.integctm, validation.integerr
     plan:start 2002-09-02-15:00:00-+0200
     plan:end 2002-09-05-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task val "Validation" {
     depends validation.planrec
     plan:start 2002-09-05-15:00:00-+0200
     plan:end 2002-09-10-15:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task majdd "Mise a jour doc conception" {
     depends validation.integctm, validation.integerr
     plan:start 2002-09-02-15:00:00-+0200
     plan:end 2002-09-04-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task docexp "Redaction doc exploitation" {
     depends validation.integctm, validation.integerr, validation.majdd
     plan:start 2002-09-04-14:00:00-+0200
     plan:end 2002-09-09-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
   task docinst "Redaction doc installation" {
     depends validation.integctm, validation.integerr, validation.majdd
     plan:start 2002-09-09-14:00:00-+0200
     plan:end 2002-09-12-14:00:00-+0200
     plan:scheduled
+    scheduling asap
   }
+  scheduling asap
 }
 task fini "Fini" {
   projectid arc
@@ -168,6 +194,7 @@ task fini "Fini" {
   plan:start 2002-09-12-14:00:00-+0200
   plan:scheduled
   milestone 
+  scheduling asap
 }
 supplement task start {
   priority 500

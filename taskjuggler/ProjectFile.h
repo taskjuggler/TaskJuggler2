@@ -23,6 +23,7 @@
 #include "FileInfo.h"
 
 class Project;
+class Scenario;
 class CoreAttributes;
 class Task;
 class Resource;
@@ -112,6 +113,7 @@ private:
 
     bool readProject();
     bool readExtend();
+    bool readScenario(Scenario* parent);
     bool readInclude();
     bool readCustomAttribute(CoreAttributes* property, const QString& id, 
                              CustomAttributeType type);

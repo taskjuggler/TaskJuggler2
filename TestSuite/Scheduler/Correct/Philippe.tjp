@@ -1,5 +1,8 @@
 project arc "Passage  sous Control-M" "1.0" 2002-07-15 2002-10-30 {
-        now 2002-07-15
+	now 2002-07-15
+	scenario plan "Plan" {
+		scenario actual "Actual"
+	}
 }
 
 resource pmm "PMM" {

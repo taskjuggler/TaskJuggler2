@@ -67,7 +67,7 @@ public:
          const QString& f, int l);
     virtual ~Task();
 
-    virtual const char* getType() const { return "Task"; }
+    virtual CAType getType() const { return CA_Task; }
 
     Task* getParent() const { return (Task*) parent; }
 
@@ -77,8 +77,6 @@ public:
     }
 
     enum SchedulingInfo { ASAP, ALAP };
-
-    enum Scenario { Plan = 0, Actual };
 
     void setProjectId(const QString& i) { projectId = i; }
     const QString& getProjectId() const { return projectId; }
@@ -110,8 +108,15 @@ public:
     Account* getAccount() const { return account; }
 
     bool addDepends(const QString& id);
+    TaskListIterator getDependsIterator() const
+    {
+        return TaskListIterator(depends);
+    }
     bool addPrecedes(const QString& id);
-
+    TaskListIterator getPrecedesIterator() const
+    {
+        return TaskListIterator(precedes);
+    }
     bool addShift(const Interval& i, Shift* s);
 
     void addAllocation(Allocation* a) { allocations.append(a); }
@@ -230,7 +235,7 @@ public:
 
     void addBookedResource(int sc, Resource* r)
     {
-        if (scenarios[sc].bookedResources.find((CoreAttributes*) r) == -1)
+        if (scenarios[sc].bookedResources.findRef((CoreAttributes*) r) == -1)
             scenarios[sc].bookedResources.inSort((CoreAttributes*) r);
     }
     bool isBookedResource(int sc, Resource* r)
@@ -248,7 +253,7 @@ public:
     void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
     bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
 
-    void overlayScenario(int sc);
+    void overlayScenario(int base, int sc);
     void prepareScenario(int sc);
     void finishScenario(int sc);
 
@@ -300,7 +305,7 @@ private:
     bool bookResources(time_t day, time_t duration);
     void addBookedResource(Resource* r)
     {
-        if (bookedResources.find((CoreAttributes*) r) == -1)
+        if (bookedResources.findRef((CoreAttributes*) r) == -1)
             bookedResources.inSort((CoreAttributes*) r);
     }
     QPtrList<Resource> createCandidateList(time_t date, Allocation* a);

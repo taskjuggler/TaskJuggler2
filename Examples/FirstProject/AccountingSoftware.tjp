@@ -15,6 +15,12 @@ project acso "Accounting Software" "$Id$" 2002-01-16 2002-04-26 {
 	timeformat "%Y-%m-%d"
 	# The currency for all money values is EUR.
   currency "EUR"
+
+	# We want to compare the baseline scenario, to one with a slightly
+	# delayed start.
+	scenario plan "Plan" {
+		scenario delayed "Delayed"
+	}
 }
 
 # The daily default rate of all resources. This can be overriden for each
@@ -102,8 +108,8 @@ task AcSo "Accounting Software" {
 			effort 35d
 			# This task has taken 5 man days more than originally planned.
 			# We record this as well, so that we can generate reports that
-			# compare the actual run of the project to the original plan.
-			actual:effort 40d 
+			# compare the delayed schedule of the project to the original plan.
+			delayed:effort 40d 
 			depends !database, !backend 
 			allocate dev2, dev3
 		}
@@ -136,8 +142,7 @@ task AcSo "Accounting Software" {
 		task beta "Beta Test" { 
 			effort 4w 
 			depends !alpha 
-			allocate test
-			allocate dev1 
+			allocate test, dev1
 		} 
 	}
 
@@ -160,8 +165,8 @@ task AcSo "Accounting Software" {
 			milestone start 2002-01-16
 			# For some reason the actual start of the project got delayed.
 			# We record this, so that we can compare the plan run to the
-			# actual run of the project.
-			actual:start 2002-01-20
+			# delayed run of the project.
+			delayed:start 2002-01-20
 			# At the begining of this task we receive a payment from the
 			# customer. This is credited to the account assiciated with this
 			# task when the task starts.
@@ -245,19 +250,19 @@ htmltaskreport "Tasks-Overview.html" {
 
 # Now a more detailed report that shows all jobs and the people
 # assigned to the tasks. It also features a comparison of the plan and
-# actual scenario.
+# delayed scenario.
 htmltaskreport "Tasks-Details.html" {
 	${navbar}
 	# Now we use a daily calendar.
   columns no, name, start, end, scenario, daily
 	start 2002-03-01
 	end 2002-04-01
-	# Show plan and actual scenario values.
-	scenarios plan, actual
+	# Show plan and delayed scenario values.
+	scenarios plan, delayed 
 	headline "Accounting Software Project - March 2002"
 	caption "This table shows the load of each day for all the tasks.
 	Additionally the resources used for each task are listed. Since the
-	project start was delayed, the actual schedule differs significantly
+	project start was delayed, the delayed schedule differs significantly
 	from the original plan."
 	# Don't hide any resources, that is show them all.
   hideresource 0
@@ -269,7 +274,7 @@ htmlresourcereport "Staff-Overview.html" {
 	${navbar}
 	# Add a column with the total effort per task.
   columns no, name, scenario, weekly, effort
-  scenarios plan, actual	
+  scenarios plan, delayed
 	# Since we want to see the load values as hours per week, we switch
 	# the unit loads are reported in to hours.
 	loadunit hours
@@ -312,7 +317,7 @@ htmlaccountreport "Accounting.html" {
 	# Since this is a cashflow calculation we show accumulated values
 	# per account.
 	accumulate
- 	scenarios plan, actual 
+ 	scenarios plan, delayed 
 }
 
 htmlweeklycalendar "Calendar.html" {

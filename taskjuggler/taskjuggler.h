@@ -15,6 +15,11 @@
 
 #define TJURL "http://www.taskjuggler.org"
 
+typedef enum CAType 
+{
+    CA_Undefined = 0, CA_Task, CA_Resource, CA_Account, CA_Shift, CA_Scenario 
+};
+
 typedef enum CustomAttributeType
 {
     CAT_Undefined = 0, CAT_Reference, CAT_Text

@@ -1,4 +1,8 @@
-project simple "Simple Project" "$Id" 2000-01-01 2000-01-20
+project simple "Simple Project" "$Id" 2000-01-01 2000-01-20 {
+	scenario plan "Plan" {
+		scenario actual "Actual"
+	}
+}
 
 vacation "Free1" 2000-01-04
 vacation "Free2" 2000-01-13

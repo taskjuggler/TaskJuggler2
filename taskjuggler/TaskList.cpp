@@ -53,7 +53,7 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
     if (level < 0 || level >= maxSortingLevel)
         return -1;
 
-    int sc = sorting[level] >> 16;
+    int sc = ((unsigned int) sorting[level]) >> 16;
     switch (sorting[level] & 0xFFFF)
     {
     case TreeMode:

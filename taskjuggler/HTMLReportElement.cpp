@@ -422,7 +422,7 @@ void
 HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString& str)
 {
     int topIndent = 0, subIndent = 0, maxDepth = 0;
-    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
+    if (tci->tli->ca1->getType() == CA_Task)
     {
         if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
             subIndent = tci->tli->ca2 == 0 ? 8 : 5;
@@ -430,7 +430,7 @@ HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString& str)
             topIndent = (tci->tli->ca2 != 0 ? 0 : 5) * maxDepthResourceList;
         maxDepth = maxDepthTaskList;
     }
-    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
+    else if (tci->tli->ca1->getType() == CA_Resource)
     {
         if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
             subIndent = tci->tli->ca2 == 0 ? 8 : 5;
@@ -878,9 +878,9 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
 {
     int lPadding = 0;
     int fontSize = tci->tli->ca2 == 0 ? 100 : 90; 
-    if ((tci->tli->ca2 && (strcmp(tci->tli->ca2->getType(), "Resource") == 0 &&
+    if ((tci->tli->ca2 && (tci->tli->ca2->getType() == CA_Resource &&
           resourceSortCriteria[0] == CoreAttributesList::TreeMode)) ||
-        (tci->tli->ca2 && strcmp(tci->tli->ca2->getType(), "Task") == 0 &&
+        (tci->tli->ca2 && tci->tli->ca2->getType() == CA_Task &&
          taskSortCriteria[0] == CoreAttributesList::TreeMode))
         for (const CoreAttributes* cp = tci->tli->ca2 ; cp != 0;
              cp = cp->getParent())
@@ -899,11 +899,11 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
             mt.setMacro(new Macro(KW("accountid"), tci->tli->account->getId(),
                                   defFileName, defFileLine));
 
-        if ((strcmp(tci->tli->ca1->getType(), "Resource") == 0 &&
+        if ((tci->tli->ca1->getType() == CA_Resource &&
              resourceSortCriteria[0] == CoreAttributesList::TreeMode) ||
-            (strcmp(tci->tli->ca1->getType(), "Task") == 0 &&
+            (tci->tli->ca1->getType() == CA_Task &&
              taskSortCriteria[0] == CoreAttributesList::TreeMode) ||
-            (strcmp(tci->tli->ca1->getType(), "Account") == 0 &&
+            (tci->tli->ca1->getType() == CA_Account &&
              accountSortCriteria[0] == CoreAttributesList::TreeMode))
         {
             lPadding += tci->tli->ca1->treeLevel();
@@ -988,12 +988,12 @@ void
 HTMLReportElement::genCellEffort(TableCellInfo* tci)
 {
     double val = 0.0;
-    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
+    if (tci->tli->ca1->getType() == CA_Task)
     {
         val = tci->tli->task->getLoad(tci->tli->sc, Interval(start, end),
                                       tci->tli->resource);
     }
-    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
+    else if (tci->tli->ca1->getType() == CA_Resource)
     {
         val = tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end), 
                                           AllAccounts, tci->tli->task);
@@ -1071,12 +1071,12 @@ void
 HTMLReportElement::genCellCost(TableCellInfo* tci)
 {
     double val = 0.0;
-    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
+    if (tci->tli->ca1->getType() == CA_Task)
     {
         val = tci->tli->task->getCredits(tci->tli->sc, Interval(start, end),
                                        Cost, tci->tli->resource);
     }
-    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
+    else if (tci->tli->ca1->getType() == CA_Resource)
     {
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Cost, tci->tli->task);
@@ -1088,12 +1088,12 @@ void
 HTMLReportElement::genCellRevenue(TableCellInfo* tci)
 {
     double val = 0.0;
-    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
+    if (tci->tli->ca1->getType() == CA_Task)
     {
         val = tci->tli->task->getCredits(tci->tli->sc, Interval(start, end),
                                        Revenue, tci->tli->resource);
     }
-    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
+    else if (tci->tli->ca1->getType() == CA_Resource)
     {
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Revenue, tci->tli->task);
@@ -1105,14 +1105,14 @@ void
 HTMLReportElement::genCellProfit(TableCellInfo* tci)
 {
     double val = 0.0;
-    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
+    if (tci->tli->ca1->getType() == CA_Task)
     {
         val = tci->tli->task->getCredits(tci->tli->sc, Interval(start, end),
                                     Revenue, tci->tli->resource) - 
             tci->tli->task->getCredits(tci->tli->sc, Interval(start, end),
                                   Cost, tci->tli->resource);
     }
-    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
+    else if (tci->tli->ca1->getType() == CA_Resource)
     {
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Revenue, tci->tli->task) -

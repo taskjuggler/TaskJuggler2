@@ -85,18 +85,21 @@ task t1 "Task1" {
   plan:start 2002-01-01-22:00:00-+0100
   plan:end 2002-01-25-22:00:00-+0100
   plan:scheduled
+  scheduling asap
 }
 task t2 "Task2" {
   projectid test
   plan:start 2002-03-09-22:00:00-+0100
   plan:end 2002-04-03-09:00:00-+0200
   plan:scheduled
+  scheduling asap
 }
 task t3 "task3" {
   projectid test
   plan:start 2002-10-24-22:00:00-+0200
   plan:end 2002-11-17-21:00:00-+0100
   plan:scheduled
+  scheduling asap
 }
 supplement task t1 {
   plan:maxend 2002-01-25-22:00:00-+0100

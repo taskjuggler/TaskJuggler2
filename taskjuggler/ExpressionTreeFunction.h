@@ -15,6 +15,8 @@
 #include "qstring.h"
 #include "qstringlist.h"
 
+#include "taskjuggler.h"
+
 class ExpressionTreeFunction;
 class ExpressionTree;
 class Operation;
@@ -34,7 +36,7 @@ public:
     const QString& getName() const { return name; }
     int getArgumentCount() const { return args; }
 
-    void addSupportedCoreAttributes(const QString& ca)
+    void addSupportedCoreAttributes(CAType ca)
     {
         supportedCoreAttributes.append(ca);
     }
@@ -55,6 +57,9 @@ public:
     long startsAfter(const ExpressionTree* et, Operation* const ops[]) const;
     long endsBefore(const ExpressionTree* et, Operation* const ops[]) const;
     long endsAfter(const ExpressionTree* et, Operation* const ops[]) const;
+    long isAllocated(const ExpressionTree* et, Operation* const ops[]) const;
+    long isAllocatedToProject(const ExpressionTree* et, Operation* const ops[])
+        const;
    
     /* Deprecated functions */ 
     long isTaskStatus(const ExpressionTree* et, Operation* const ops[]) const;
@@ -71,7 +76,7 @@ private:
     QString name;
     ExpressionTreeFunctionLongPtr longFunc;
     int args;
-    QStringList supportedCoreAttributes;
+    QValueList<CAType> supportedCoreAttributes;
 } ;
 
 #endif

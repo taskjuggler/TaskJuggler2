@@ -25,6 +25,7 @@ task t1 "Task1" {
   plan:start 2000-01-01-00:00:00-+0000
   plan:end 2000-01-03-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t2 "Task2" {
   projectid simple
@@ -32,6 +33,7 @@ task t2 "Task2" {
   plan:start 2000-01-03-18:00:00-+0000
   plan:end 2000-01-04-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t4 "Task4" {
   projectid simple
@@ -40,8 +42,11 @@ task t4 "Task4" {
       plan:start 2000-01-05-00:00:00-+0000
       plan:end 2000-01-11-18:00:00-+0000
       plan:scheduled
+      scheduling asap
     }
+    scheduling asap
   }
+  scheduling asap
 }
 task t3 "Task3" {
   projectid simple
@@ -49,6 +54,7 @@ task t3 "Task3" {
   plan:start 2000-01-05-09:00:00-+0000
   plan:end 2000-01-05-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t7 "Task7" {
   projectid simple
@@ -57,8 +63,11 @@ task t7 "Task7" {
       plan:start 2000-01-10-09:00:00-+0000
       plan:end 2000-01-15-00:00:00-+0000
       plan:scheduled
+      scheduling alap
     }
+    scheduling alap
   }
+  scheduling alap
 }
 supplement task t1 {
   priority 500

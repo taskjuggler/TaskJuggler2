@@ -31,7 +31,7 @@ public:
     Shift(Project* prj, const QString& i, const QString& n, Shift* p);
     virtual ~Shift();
 
-    virtual const char* getType() const { return "Shift"; }
+    virtual CAType getType() const { return CA_Shift; }
 
     Shift* getParent() const { return (Shift*) parent; }
 

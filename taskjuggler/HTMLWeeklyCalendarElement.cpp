@@ -155,7 +155,7 @@ HTMLWeeklyCalendarElement::generate()
                 for (TaskListIterator tli(filteredTaskList); *tli != 0;
                      ++tli, ++no)
                 {
-                    if ((*tli)->isActive(Task::Plan,
+                    if ((*tli)->isActive(scenarios[0],
                                          Interval(wd, sameTimeNextDay(wd))))
                     {
                         if (first)
@@ -203,7 +203,7 @@ HTMLWeeklyCalendarElement::generate()
                 for (ResourceListIterator rli(filteredResourceList); 
                      *rli != 0; ++rli, ++no) 
                 {
-                    if ((*rli)->getLoad(Task::Plan,
+                    if ((*rli)->getLoad(scenarios[0],
                                         Interval(wd, 
                                                  sameTimeNextDay(wd))) > 0.0)
                     {

@@ -113,7 +113,7 @@ public:
      */
     Scenario* getScenario(int sc) const;
     /**
-     * Returns the id of a scenario.
+     * Returns a pointer to the scenario with index sc.
      * @param sc Specifies the scenario.
      */
     const QString& getScenarioId(int sc) const;
@@ -753,7 +753,7 @@ public:
     void generateReports() const;
 
 private:
-    void overlayScenario(int sc);
+    void overlayScenario(int base, int sc);
     void prepareScenario(int sc);
     void finishScenario(int sc);
     
@@ -845,7 +845,6 @@ private:
      * used. */
     QStringList projectIDs;
 
-    bool hasExtraValues;    // TODO: Fix this for multiple scenarios
     bool allocationErrors;
 
     VacationList vacationList;

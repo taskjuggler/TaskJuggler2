@@ -82,5 +82,5 @@ task t5 "Task 5" {
 
 htmltaskreport "." {
 	columns index, name, start, end, completed, status
-	sorttasks planstatusup
+	sorttasks plan:statusup
 }

@@ -26,11 +26,17 @@ public:
     Scenario(Project* p, const QString& i, const QString& n, Scenario* p);
     virtual ~Scenario();
 
-    virtual const char* getType() const { return "Scenario"; }
+    virtual CAType getType() const { return CA_Scenario; }
 
     Scenario* getParent() const { return (Scenario*) parent; }
 
     ScenarioListIterator getSubListIterator() const;
+
+    void setEnabled(bool e) { enabled = e; }
+    bool getEnabled() const { return enabled; }
+
+private:
+    bool enabled;
 } ;
 
 #endif

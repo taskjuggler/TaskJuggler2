@@ -968,7 +968,7 @@ Task::xRef(QDict<Task>& hash)
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
             error = TRUE;
         }
-        else if (depends.find(t) != -1)
+        else if (depends.findRef(t) != -1)
         {
             errorMessage(i18n("No need to specify dependency %1 multiple "
                               "times.").arg(absId));
@@ -997,7 +997,7 @@ Task::xRef(QDict<Task>& hash)
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
             error = TRUE;
         }
-        else if (precedes.find(t) != -1)
+        else if (precedes.findRef(t) != -1)
         {
             errorMessage(i18n("No need to specify dependency '%1'")
                          .arg(absId));
@@ -1022,59 +1022,46 @@ Task::xRef(QDict<Task>& hash)
 void
 Task::implicitXRef()
 {
-    /* Propagate implicit dependencies. If a task has no specified start or
-     * end date and no start or end dependencies, we check if a parent task
-     * has an explicit start or end date which can be used. */
-    if (!sub.isEmpty() || milestone)
-        return;
+    for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+    {
+        /* Propagate implicit dependencies. If a task has no specified start or
+         * end date and no start or end dependencies, we check if a parent task
+         * has an explicit start or end date which can be used. */
+        if (!sub.isEmpty() || milestone)
+            return;
 
-    bool planDurationSpec = scenarios[0].duration > 1 ||
-        scenarios[0].length > 0 || scenarios[0].effort > 0;
-    bool actualDurationSpec = scenarios[1].duration > 0 ||
-        scenarios[1].length > 0 || scenarios[1].effort > 0 || planDurationSpec;
-
-    if ((scenarios[0].start == 0 || scenarios[1].start == 0) &&
-        depends.isEmpty())
-        for (Task* tp = getParent(); tp; tp = tp->getParent())
-        {
-            if (tp->scenarios[0].start != 0 && scenarios[0].start == 0 &&
-                (scheduling == ASAP || !planDurationSpec))
+        bool hasDurationSpec = scenarios[sc].duration != 0 ||
+            scenarios[sc].length != 0 ||
+            scenarios[sc].effort != 0;
+        
+        if (scenarios[sc].start == 0 && depends.isEmpty() &&
+            !(hasDurationSpec && scheduling == ALAP))
+            for (Task* tp = getParent(); tp; tp = tp->getParent())
             {
-                if (DEBUGPF(11))
-                    qDebug("Setting plan start of %s to %s", id.latin1(),
-                           time2ISO(tp->scenarios[0].start).latin1());
-                scenarios[0].start = tp->scenarios[0].start;
+                if (tp->scenarios[sc].start != 0)
+                {
+                    if (DEBUGPF(11))
+                        qDebug("Setting start of task '%s' to %s", id.latin1(),
+                               time2ISO(tp->scenarios[sc].start).latin1());
+                    scenarios[sc].start = tp->scenarios[sc].start;
+                    break;
+                }
             }
-            if (tp->scenarios[1].start != 0 && scenarios[1].start == 0 &&
-                (scheduling == ASAP || !actualDurationSpec))
+        /* And the same for end values */
+        if (scenarios[sc].end == 0 && precedes.isEmpty() &&
+            !(hasDurationSpec && scheduling == ASAP))
+            for (Task* tp = getParent(); tp; tp = tp->getParent())
             {
-                if (DEBUGPF(11))
-                    qDebug("Setting actual start of %s to %s", id.latin1(),
-                           time2ISO(tp->scenarios[1].start).latin1());
-                scenarios[1].start = tp->scenarios[1].start;
+                if (tp->scenarios[sc].end != 0)
+                {
+                    if (DEBUGPF(11))
+                        qDebug("Setting end of task '%s' to %s", id.latin1(),
+                               time2ISO(tp->scenarios[sc].end).latin1());
+                    scenarios[sc].end = tp->scenarios[sc].end;
+                    break;
+                }
             }
-        }
-    /* And the same for end values */
-    if ((scenarios[0].end == 0 || scenarios[1].end == 0) && precedes.isEmpty())
-        for (Task* tp = getParent(); tp; tp = tp->getParent())
-        {
-            if (tp->scenarios[0].end != 0 && scenarios[0].end == 0 &&
-                (scheduling == ALAP || !planDurationSpec))
-            {
-                if (DEBUGPF(11))
-                    qDebug("Setting plan end of %s to %s", id.latin1(),
-                           time2ISO(tp->scenarios[0].end).latin1());
-                scenarios[0].end = tp->scenarios[0].end;
-            }
-            if (tp->scenarios[1].end != 0 && scenarios[1].end == 0 &&
-                (scheduling == ALAP || !actualDurationSpec))
-            {
-                if (DEBUGPF(11))
-                    qDebug("Setting actual end of %s to %s", id.latin1(),
-                           time2ISO(tp->scenarios[1].end).latin1());
-                scenarios[1].end = tp->scenarios[1].end;
-            }
-        }
+    }
 }
 
 bool
@@ -1827,9 +1814,15 @@ Task::scheduleOk(int sc, int& errors) const
             {
                 if (!(*tli)->runAway)
                 {
-                    errorMessage(i18n("Task '%1' has ealier '%2' start than "
-                                      "parent")
-                                 .arg(id).arg(scenario));
+                    errorMessage(i18n("Task '%1' has earlier '%2' start than "
+                                      "parent\n"
+                                      "%3 start date: %4\n"
+                                      "%5 start date: %6")
+                                 .arg((*tli)->getId()).arg(scenario)
+                                 .arg(id.latin1())
+                                 .arg(time2ISO(start).latin1())
+                                 .arg((*tli)->getId().latin1())
+                                 .arg(time2ISO((*tli)->start).latin1()));
                     errors++;
                 }
                 return FALSE;
@@ -1934,30 +1927,38 @@ Task::isSubTask(Task* tsk) const
 }
 
 void
-Task::overlayScenario(int sc)
+Task::overlayScenario(int base, int sc)
 {
-    /* Scenario 0 is always the baseline. If another scenario does not provide
-     * a certain value, the value from the plan scenario is copied over. */
+    /* Copy all values that the scenario sc does not provide, but that are
+     * provided by the base scenario to the scenario sc. */
     if (scenarios[sc].start == 0.0)
-        scenarios[sc].start = scenarios[0].start;
+        scenarios[sc].start = scenarios[base].start;
     if (scenarios[sc].end == 0.0)
-        scenarios[sc].end = scenarios[0].end;
+        scenarios[sc].end = scenarios[base].end;
+    if (scenarios[sc].minStart == 0.0)
+        scenarios[sc].minStart = scenarios[base].minStart;
+    if (scenarios[sc].maxStart == 0.0)
+        scenarios[sc].maxStart = scenarios[base].maxStart;
+    if (scenarios[sc].minEnd == 0.0)
+        scenarios[sc].minEnd = scenarios[base].minEnd;
+    if (scenarios[sc].maxEnd == 0.0)
+        scenarios[sc].maxEnd = scenarios[base].maxEnd;
     if (scenarios[sc].duration == 0.0)
-        scenarios[sc].duration =  scenarios[0].duration;
+        scenarios[sc].duration =  scenarios[base].duration;
     if (scenarios[sc].length == 0.0)
-        scenarios[sc].length = scenarios[0].length;
+        scenarios[sc].length = scenarios[base].length;
     if (scenarios[sc].effort == 0.0)
-        scenarios[sc].effort = scenarios[0].effort;
+        scenarios[sc].effort = scenarios[base].effort;
     if (scenarios[sc].startBuffer < 0.0)
-        scenarios[sc].startBuffer = scenarios[0].startBuffer;
+        scenarios[sc].startBuffer = scenarios[base].startBuffer;
     if (scenarios[sc].endBuffer < 0.0)
-        scenarios[sc].endBuffer = scenarios[0].endBuffer;
+        scenarios[sc].endBuffer = scenarios[base].endBuffer;
     if (scenarios[sc].startCredit < 0.0)
-        scenarios[sc].startCredit = scenarios[0].startCredit;
+        scenarios[sc].startCredit = scenarios[base].startCredit;
     if (scenarios[sc].endCredit < 0.0)
-        scenarios[sc].endCredit = scenarios[0].endCredit;
+        scenarios[sc].endCredit = scenarios[base].endCredit;
     if (scenarios[sc].complete == -1)
-        scenarios[sc].complete = scenarios[0].complete;
+        scenarios[sc].complete = scenarios[base].complete;
 }
 
 bool
@@ -2140,7 +2141,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( ReportXML::createXMLElem( doc, "ProjectID", projectId ));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number(getPriority())));
 
-   double cmplt = getCompletionDegree( Task::Plan);
+   double cmplt = getCompletionDegree(0);
    taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(cmplt, 'f', 1) ));
 
    QString tType = "Milestone";
@@ -2202,19 +2203,21 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
                                time2ISO(scenarios[0].maxEnd));
         taskElem.appendChild( tempElem );
     }
+    if (project->getMaxScenarios() > 1)
+    {
+        tempElem = ReportXML::createXMLElem( doc, "actualStart",
+                                             QString::number(scenarios[1].start));
+        tempElem.setAttribute( "humanReadable",
+                               time2ISO(scenarios[1].start));
+        taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "actualStart",
-                                        QString::number(scenarios[1].start));
-   tempElem.setAttribute( "humanReadable",
-                          time2ISO(scenarios[1].start));
-   taskElem.appendChild( tempElem );
-
-   tempElem = ReportXML::createXMLElem( doc, "actualEnd",
-                                        QString::number(scenarios[1].end +
-                                                        (milestone ? 1 : 0)));
-   tempElem.setAttribute( "humanReadable",
-                          time2ISO(scenarios[1].end + (milestone ? 1 : 0)));
-   taskElem.appendChild( tempElem );
+        tempElem = ReportXML::createXMLElem( doc, "actualEnd",
+                                             QString::number(scenarios[1].end +
+                                                             (milestone ? 1 : 0)));
+        tempElem.setAttribute( "humanReadable",
+                               time2ISO(scenarios[1].end + (milestone ? 1 : 0)));
+        taskElem.appendChild( tempElem );
+    }
 
    tempElem = ReportXML::createXMLElem( doc, "planStart", QString::number( scenarios[0].start ));
    tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].start ));
@@ -2228,48 +2231,48 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( tempElem );
 
    /* Start- and Endbuffer */
-   if(getStartBuffer(Task::Plan) > 0.01)
+   if(getStartBuffer(0) > 0.01)
    {
        /* startbuffer exists */
        tempElem = ReportXML::createXMLElem
            (doc, "startBufferSize",
-            QString::number(getStartBuffer(Task::Plan)));
+            QString::number(getStartBuffer(0)));
        taskElem.appendChild( tempElem );
 
        tempElem = ReportXML::createXMLElem
            (doc, "PlanStartBufferEnd",
-            QString::number(getStartBufferEnd(Task::Plan)));
+            QString::number(getStartBufferEnd(0)));
        tempElem.setAttribute("humanReadable",
-                             time2ISO(getStartBufferEnd(Task::Plan)));
+                             time2ISO(getStartBufferEnd(0)));
        taskElem.appendChild(tempElem);
 
        tempElem = ReportXML::createXMLElem
            (doc, "PlanStartBufferEnd",
-            QString::number(getStartBufferEnd(Task::Plan)));
+            QString::number(getStartBufferEnd(0)));
        tempElem.setAttribute("humanReadable",
-                             time2ISO(getStartBufferEnd(Task::Plan)));
+                             time2ISO(getStartBufferEnd(0)));
        taskElem.appendChild(tempElem);
    }
 
-   if(getEndBuffer(Task::Plan) > 0.01)
+   if(getEndBuffer(0) > 0.01)
    {
        /* startbuffer exists */
        tempElem = ReportXML::createXMLElem
-           (doc, "EndBufferSize", QString::number(getEndBuffer(Task::Plan)));
+           (doc, "EndBufferSize", QString::number(getEndBuffer(0)));
        taskElem.appendChild(tempElem);
 
        tempElem = ReportXML::createXMLElem
            (doc, "PlanEndBufferStart",
-            QString::number(getEndBufferStart(Task::Plan)));
+            QString::number(getEndBufferStart(0)));
        tempElem.setAttribute("humanReadable",
-                             time2ISO(getEndBufferStart(Task::Plan)));
+                             time2ISO(getEndBufferStart(0)));
        taskElem.appendChild(tempElem);
 
        tempElem = ReportXML::createXMLElem
            (doc, "PlanEndBufferStart",
-            QString::number(getEndBufferStart(Task::Plan)));
+            QString::number(getEndBufferStart(0)));
        tempElem.setAttribute("humanReadable",
-                             time2ISO(getStartBufferEnd(Task::Plan)));
+                             time2ISO(getStartBufferEnd(0)));
        taskElem.appendChild(tempElem);
    }
 
@@ -2444,7 +2447,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "Priority" )
         setPriority( elem.text().toInt() );
       else if( elemTagName == "complete" )
-     setComplete(Task::Plan, elem.text().toInt() );
+     setComplete(0, elem.text().toInt() );
 
       /* time-stuff: */
       else if( elemTagName == "minStart" )
@@ -2456,13 +2459,21 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "maxEnd" )
      setMaxEnd(0, elem.text().toLong() );
       else if( elemTagName == "actualStart" )
-     setStart(Task::Actual, elem.text().toLong() );
+      {
+          if (project->getScenarioIndex("actual") > 0)
+              setStart(project->getScenarioIndex("actual"), 
+                       elem.text().toLong());
+      }
       else if( elemTagName == "actualEnd" )
-     setEnd(Task::Actual, elem.text().toLong() );
+      {
+          if (project->getScenarioIndex("actual") > 0)
+              setEnd(project->getScenarioIndex("actual"),
+                     elem.text().toLong());
+      }
       else if( elemTagName == "planStart" )
-     setStart(Task::Plan, elem.text().toLong() );
+     setStart(0, elem.text().toLong() );
       else if( elemTagName == "planEnd" )
-     setEnd(Task::Plan, elem.text().toLong() );
+     setEnd(0, elem.text().toLong() );
 
       /* Allocations */
       else if( elemTagName == "Allocation" )

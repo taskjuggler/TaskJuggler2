@@ -50,6 +50,8 @@ private:
     bool generateTask(TaskList& ftl, const Task* task, int indent);
     bool generateTaskAttributeList(TaskList& ftl);
     bool generateTaskSupplement(TaskList& ftl, const Task* task, int indent);
+    bool generateDepList(TaskList& filteredTaskList, const Task* task,
+                         TaskListIterator depIt, const char* tag, int indent); 
     bool generateResourceAttributesList(TaskList& ftl, ResourceList& frl);
     
     QStringList taskAttributes;

@@ -31,24 +31,28 @@ task t4 "Task4" {
   plan:start 2000-01-01-00:00:00-+0000
   plan:end 2000-01-27-00:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t1 "Task1" {
   projectid test
   plan:start 2000-01-04-09:00:00-+0000
   plan:end 2000-01-26-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t2 "Task2" {
   projectid test
   plan:start 2000-01-04-09:00:00-+0000
   plan:end 2000-01-26-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t3 "Task3" {
   projectid test
   plan:start 2000-01-04-09:00:00-+0000
   plan:end 2000-01-26-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 supplement task t4 {
   plan:maxend 2000-01-26-23:59:59-+0000

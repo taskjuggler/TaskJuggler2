@@ -47,6 +47,7 @@ task t1 "|->" {
   plan:start 2003-01-06-00:00:00-+0000
   plan:end 2003-01-10-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task m1 "Milestone1" {
   projectid prj
@@ -54,6 +55,7 @@ task m1 "Milestone1" {
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
   milestone 
+  scheduling asap
 }
 task c21 "-D --> |" {
   projectid prj
@@ -61,13 +63,16 @@ task c21 "-D --> |" {
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c23 "-D --> |D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c28 "-D <-- |" {
   projectid prj
@@ -75,51 +80,64 @@ task c28 "-D <-- |" {
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c30 "-D <-- |D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c22 "-D --> -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c29 "-D <-- -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c3 "| --> |" {
   projectid prj
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c5 "| --> |D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c6 "| <-- |" {
   projectid prj
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c8 "| <-- |D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c11 "|D --> |" {
   projectid prj
@@ -127,13 +145,16 @@ task c11 "|D --> |" {
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c13 "|D --> |D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c14 "|D <-- |" {
   projectid prj
@@ -141,44 +162,56 @@ task c14 "|D <-- |" {
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c15 "|D <-- -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c4 "| --> -D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c7 "| <-- -D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c12 "|D --> -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c1 "| x-> -" {
   projectid prj
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c2 "| x-> -D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c9 "|D x-> -" {
   projectid prj
@@ -186,31 +219,39 @@ task c9 "|D x-> -" {
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c10 "|D x-> -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c16 "- <-x |" {
   projectid prj
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c17 "- <-x -D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c18 "- <-x |D" {
   projectid prj
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c19 "-D x-> -" {
   projectid prj
@@ -218,13 +259,16 @@ task c19 "-D x-> -" {
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c20 "-D x-> -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task c24 "-D <-x |" {
   projectid prj
@@ -232,34 +276,40 @@ task c24 "-D <-x |" {
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c25 "-D <-x -D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task c26 "-D <-x |D" {
   projectid prj
   depends m1
+  precedes m2
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task m2 "Milestone2" {
   projectid prj
-  depends c2, c4, c5, c7, c8, c10, c12, c13, c15, c17, c18, c20, c22, c23, c25, c26, c29, c30
+  precedes t2
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
   milestone 
+  scheduling alap
 }
 task t2 "<-|" {
   projectid prj
-  depends m2
   plan:start 2003-01-20-09:00:00-+0000
   plan:end 2003-01-27-00:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 supplement task t1 {
   priority 500

@@ -23,19 +23,23 @@ task t1 "Task1" {
   plan:start 2000-01-01-00:00:00-+0000
   plan:end 2000-01-14-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 task t2 "Task2" {
   projectid simple
+  precedes m1
   plan:start 2000-01-10-09:00:00-+0000
   plan:end 2000-01-14-18:00:00-+0000
   plan:scheduled
+  scheduling alap
 }
 task m1 "Milestone1" {
   projectid simple
-  depends t1, t2
+  depends t1
   plan:start 2000-01-14-18:00:00-+0000
   plan:scheduled
   milestone 
+  scheduling asap
 }
 task t3 "Task3" {
   projectid simple
@@ -43,6 +47,7 @@ task t3 "Task3" {
   plan:start 2000-01-14-18:00:00-+0000
   plan:end 2000-01-21-18:00:00-+0000
   plan:scheduled
+  scheduling asap
 }
 supplement task t1 {
   priority 500

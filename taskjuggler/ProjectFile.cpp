@@ -22,6 +22,7 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
+#include "Scenario.h"
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
@@ -549,6 +550,7 @@ ProjectFile::readProject()
     proj->setEnd(end - 1);
 
     TokenType tt;
+    bool scenariosDefined = FALSE;
     if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
@@ -672,6 +674,19 @@ ProjectFile::readProject()
                 if (!readExtend())
                     return FALSE;
             }
+            else if (token == KW("scenario"))
+            {
+                if (scenariosDefined)
+                {
+                    errorMessage("There can only be one top-level scenario. "
+                                 "All other scenarios must be nested into "
+                                 "the top-level scenario.");
+                    return FALSE;
+                }
+                if (!readScenario(0))
+                    return FALSE;
+                scenariosDefined = TRUE;
+            }
             else if (token == KW("include"))
             {
                 if (!readInclude())
@@ -686,7 +701,7 @@ ProjectFile::readProject()
     }
     else
         returnToken(tt, token);
-    
+   
     return TRUE;
 }
 
@@ -786,6 +801,58 @@ ProjectFile::readExtend()
     }
    
     return TRUE; 
+}
+
+bool
+ProjectFile::readScenario(Scenario* parent)
+{
+    QString id;
+    if (nextToken(id) != ID)
+    {
+        errorMessage(i18n("Scenario ID expected. '%1' is not a scenario "
+                          "id.").arg(id));
+        return FALSE;
+    }
+    QString name;
+    if (nextToken(name) != STRING)
+    {
+        errorMessage(i18n("Scenario name expected. '%1' is not a valid "
+                          "scenario name.").arg(name));
+        return FALSE;
+    }
+
+    /* If the scenario has no parent, we delete the old top-level scenario and
+     * all included scenarios. */
+    if (!parent)
+        delete proj->getScenario(0);
+
+    Scenario* scenario = new Scenario(proj, id, name, parent);
+    QString token;
+    TokenType tt;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        for ( ; ; )
+        {
+            tt = nextToken(token);
+            if (tt == RBRACE)
+            {
+                return TRUE;
+            }
+            else if (token == KW("scenario"))
+            {
+                if (!readScenario(scenario))
+                    return FALSE;
+            }
+            else if (token == KW("disabled"))
+            {
+                scenario->setEnabled(FALSE);
+            }
+        }
+    }
+    else
+        returnToken(tt, token);        
+    
+    return TRUE;
 }
 
 TokenType
@@ -1134,7 +1201,18 @@ ProjectFile::readTaskBody(Task* task)
                 time_t val;
                 if (!readDate(val, 0))
                     return FALSE;
-                task->setStart(Task::Actual, val);
+                int actualIdx = proj->getScenarioIndex("actual");
+                if (actualIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'actual' scenario by default "
+                              "any more. Please put the following line in "
+                              "your project header:\n"
+                              "scenario plan \"Plan\" { "
+                              "scenario actual \"Actual\" }"));
+                    return FALSE;
+                }
+                task->setStart(actualIdx, val);
                 task->setScheduling(Task::ASAP);
             }
             else if (token == "actualend")
@@ -1145,7 +1223,18 @@ ProjectFile::readTaskBody(Task* task)
                 time_t val;
                 if (!readDate(val, 1))
                     return FALSE;
-                task->setEnd(Task::Actual, val);
+                int actualIdx = proj->getScenarioIndex("actual");
+                if (actualIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'actual' scenario by default "
+                              "any more. Please put the following line in "
+                              "your project header:\n"
+                              "scenario plan \"Plan\" { "
+                              "scenario actual \"Actual\" }"));
+                    return FALSE;
+                }
+                task->setEnd(actualIdx, val);
                 task->setScheduling(Task::ALAP);
             }
             else if (token == "actuallength")
@@ -1156,7 +1245,18 @@ ProjectFile::readTaskBody(Task* task)
                 double d;
                 if (!readTimeFrame(d, TRUE))
                     return FALSE;
-                task->setLength(Task::Actual, d);
+                int actualIdx = proj->getScenarioIndex("actual");
+                if (actualIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'actual' scenario by default "
+                              "any more. Please put the following line in "
+                              "your project header:\n"
+                              "scenario plan \"Plan\" { "
+                              "scenario actual \"Actual\" }"));
+                    return FALSE;
+                }
+                task->setLength(actualIdx, d);
             }
             else if (token == "actualeffort")
             {
@@ -1166,7 +1266,18 @@ ProjectFile::readTaskBody(Task* task)
                 double d;
                 if (!readTimeFrame(d, TRUE))
                     return FALSE;
-                task->setEffort(Task::Actual, d);
+                int actualIdx = proj->getScenarioIndex("actual");
+                if (actualIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'actual' scenario by default "
+                              "any more. Please put the following line in "
+                              "your project header:\n"
+                              "scenario plan \"Plan\" { "
+                              "scenario actual \"Actual\" }"));
+                    return FALSE;
+                }
+                task->setEffort(actualIdx, d);
             }
             else if (token == "actualduration")
             {
@@ -1176,21 +1287,50 @@ ProjectFile::readTaskBody(Task* task)
                 double d;
                 if (!readTimeFrame(d, FALSE))
                     return FALSE;
-                task->setDuration(Task::Actual, d);
+                int actualIdx = proj->getScenarioIndex("actual");
+                if (actualIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'actual' scenario by default "
+                              "any more. Please put the following line in "
+                              "your project header:\n"
+                              "scenario plan \"Plan\" { "
+                              "scenario actual \"Actual\" }"));
+                    return FALSE;
+                }
+                task->setDuration(actualIdx, d);
             }
             else if (token == "planscheduled")
             {
                 errorMessage(i18n("WARNING: 'planscheduled' has been "
                                   "deprecated. Please use 'plan:scheduled' "
                                   "instead."));
-                task->setScheduled(Task::Plan, TRUE);
+                int planIdx = proj->getScenarioIndex("plan");
+                if (planIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'plan' scenario."));
+                    return FALSE;
+                }
+                task->setScheduled(planIdx, TRUE);
             }
             else if (token == "actualscheduled")
             {
                 errorMessage(i18n("WARNING: 'actualscheduled' has been "
                                   "deprecated. Please use 'actual:scheduled' "
                                   "instead."));
-                task->setScheduled(Task::Actual, TRUE);
+                int actualIdx = proj->getScenarioIndex("actual");
+                if (actualIdx <= 0)
+                {
+                    errorMessage
+                        (i18n("ERROR: There is no 'actual' scenario by default "
+                              "any more. Please put the following line in "
+                              "your project header:\n"
+                              "scenario plan \"Plan\" { "
+                              "scenario actual \"Actual\" }"));
+                    return FALSE;
+                }
+                task->setScheduled(actualIdx, TRUE);
             }
             else if (token == KW("responsible"))
             {
@@ -2650,7 +2790,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     }
                     if (proj->getScenarioIndex(scId) == -1)
                     {
-                        errorMessage(i18n("Unknown scenario %1")
+                        errorMessage(i18n("Unknown scenario '%1'")
                                      .arg(scId));
                         return FALSE;
                     }
@@ -3715,84 +3855,185 @@ bool
 ProjectFile::readSortingMode(int& sorting)
 {
     QString token;
-
+    
     nextToken(token);
-    if (token == KW("tree"))
-        sorting = CoreAttributesList::TreeMode;
-    else if (token == KW("sequenceup"))
-        sorting = CoreAttributesList::SequenceUp;
-    else if (token == KW("sequencedown"))
-        sorting = CoreAttributesList::SequenceDown;
-    else if (token == KW("indexup"))
-        sorting = CoreAttributesList::IndexUp;
-    else if (token == KW("indexdown"))
-        sorting = CoreAttributesList::IndexDown;
-    else if (token == KW("idup"))
-        sorting = CoreAttributesList::IdUp;
-    else if (token == KW("iddown"))
-        sorting = CoreAttributesList::IdDown;
-    else if (token == KW("fullnameup"))
-        sorting = CoreAttributesList::FullNameUp;
-    else if (token == KW("fullnamedown"))
-        sorting = CoreAttributesList::FullNameDown;
-    else if (token == KW("nameup"))
-        sorting = CoreAttributesList::NameUp;
-    else if (token == KW("namedown"))
-        sorting = CoreAttributesList::NameDown;
-    else if (token == KW("startup") || token == KW("planstartup"))
-        sorting = CoreAttributesList::StartUp;
-    else if (token == KW("startdown") || token == KW("planstartdown"))
-        sorting = CoreAttributesList::StartDown;
-    else if (token == KW("endup") || token == KW("planendup"))
-        sorting = CoreAttributesList::EndUp;
-    else if (token == KW("enddown") || token == KW("planenddown"))
-        sorting = CoreAttributesList::EndDown;
-    else if (token == KW("actualstartup"))
-        sorting = CoreAttributesList::StartUp + 0xFFFF;
-    else if (token == KW("actualstartdown"))
-        sorting = CoreAttributesList::StartDown + 0xFFFF;
-    else if (token == KW("actualendup"))
-        sorting = CoreAttributesList::EndUp + 0xFFFF;
-    else if (token == KW("actualenddown"))
-        sorting = CoreAttributesList::EndDown + 0xFFFF;
-    else if (token == KW("planstatusup"))
-        sorting = CoreAttributesList::StatusUp;
-    else if (token == KW("planstatusdown"))
-        sorting = CoreAttributesList::StatusDown;
-    else if (token == KW("plancompletedup"))
-        sorting = CoreAttributesList::CompletedUp;
-    else if (token == KW("plancompleteddown"))
-        sorting = CoreAttributesList::CompletedDown;
-    else if (token == KW("priorityup"))
-        sorting = CoreAttributesList::PrioUp;
-    else if (token == KW("prioritydown"))
-        sorting = CoreAttributesList::PrioDown;
-    else if (token == KW("responsibleup"))
-        sorting = CoreAttributesList::ResponsibleUp;
-    else if (token == KW("responsibledown"))
-        sorting = CoreAttributesList::ResponsibleDown;
-    else if (token == KW("mineffortup"))
-        sorting = CoreAttributesList::MinEffortUp;
-    else if (token == KW("mineffortdown"))
-        sorting = CoreAttributesList::MinEffortDown;
-    else if (token == KW("maxeffortup"))
-        sorting = CoreAttributesList::MaxEffortUp;
-    else if (token == KW("maxeffortdown"))
-        sorting = CoreAttributesList::MaxEffortDown;
-    else if (token == KW("rateup"))
-        sorting = CoreAttributesList::RateUp;
-    else if (token == KW("ratedown"))
-        sorting = CoreAttributesList::RateDown;
-    else if (token == KW("kotrusidup"))
-        sorting = CoreAttributesList::KotrusIdUp;
-    else if (token == KW("kotrusiddown"))
-        sorting = CoreAttributesList::KotrusIdDown;
+    QString laToken;
+    TokenType tt;
+    if ((tt = nextToken(laToken)) == COLON)
+    {
+        int scenarioIdx = proj->getScenarioIndex(token);
+        if (scenarioIdx <= 0)
+        {
+            errorMessage
+                (i18n("Unknown scenario '%s'").arg(token));
+            return FALSE;
+        }
+        nextToken(token);
+        
+        if (token == KW("startup"))
+            sorting = CoreAttributesList::StartUp;
+        else if (token == KW("startdown"))
+            sorting = CoreAttributesList::StartDown;
+        else if (token == KW("endup"))
+            sorting = CoreAttributesList::EndUp;
+        else if (token == KW("enddown"))
+            sorting = CoreAttributesList::EndDown;
+        else if (token == KW("statusup"))
+            sorting = CoreAttributesList::StatusUp;
+        else if (token == KW("statusdown"))
+            sorting = CoreAttributesList::StatusDown;
+        else if (token == KW("completedup"))
+            sorting = CoreAttributesList::CompletedUp;
+        else if (token == KW("completeddown"))
+            sorting = CoreAttributesList::CompletedDown;
+        else
+        {
+            errorMessage(i18n("Sorting criteria expected"));
+            return FALSE;
+        }
+        sorting += (scenarioIdx - 1) << 16;
+    }
     else
     {
-        errorMessage(i18n("Sorting criteria expected"));
-        return FALSE;
-    }
+        returnToken(tt, laToken);
+       
+        bool deprecatedWarning = FALSE;
+        
+        if (token == KW("tree"))
+            sorting = CoreAttributesList::TreeMode;
+        else if (token == KW("sequenceup"))
+            sorting = CoreAttributesList::SequenceUp;
+        else if (token == KW("sequencedown"))
+            sorting = CoreAttributesList::SequenceDown;
+        else if (token == KW("indexup"))
+            sorting = CoreAttributesList::IndexUp;
+        else if (token == KW("indexdown"))
+            sorting = CoreAttributesList::IndexDown;
+        else if (token == KW("idup"))
+            sorting = CoreAttributesList::IdUp;
+        else if (token == KW("iddown"))
+            sorting = CoreAttributesList::IdDown;
+        else if (token == KW("fullnameup"))
+            sorting = CoreAttributesList::FullNameUp;
+        else if (token == KW("fullnamedown"))
+            sorting = CoreAttributesList::FullNameDown;
+        else if (token == KW("nameup"))
+            sorting = CoreAttributesList::NameUp;
+        else if (token == KW("namedown"))
+            sorting = CoreAttributesList::NameDown;
+        else if (token == KW("priorityup"))
+            sorting = CoreAttributesList::PrioUp;
+        else if (token == KW("prioritydown"))
+            sorting = CoreAttributesList::PrioDown;
+        else if (token == KW("responsibleup"))
+            sorting = CoreAttributesList::ResponsibleUp;
+        else if (token == KW("responsibledown"))
+            sorting = CoreAttributesList::ResponsibleDown;
+        else if (token == KW("mineffortup"))
+            sorting = CoreAttributesList::MinEffortUp;
+        else if (token == KW("mineffortdown"))
+            sorting = CoreAttributesList::MinEffortDown;
+        else if (token == KW("maxeffortup"))
+            sorting = CoreAttributesList::MaxEffortUp;
+        else if (token == KW("maxeffortdown"))
+            sorting = CoreAttributesList::MaxEffortDown;
+        else if (token == KW("rateup"))
+            sorting = CoreAttributesList::RateUp;
+        else if (token == KW("ratedown"))
+            sorting = CoreAttributesList::RateDown;
+        else if (token == KW("kotrusidup"))
+            sorting = CoreAttributesList::KotrusIdUp;
+        else if (token == KW("kotrusiddown"))
+            sorting = CoreAttributesList::KotrusIdDown;
+        else if (token == KW("startup"))
+            sorting = CoreAttributesList::StartUp;
+        else if (token == KW("startdown"))
+            sorting = CoreAttributesList::StartDown;
+        else if (token == KW("endup"))
+            sorting = CoreAttributesList::EndUp;
+        else if (token == KW("enddown"))
+            sorting = CoreAttributesList::EndDown;
+        else if (token == KW("statusup"))
+            sorting = CoreAttributesList::StatusUp;
+        else if (token == KW("statusdown"))
+            sorting = CoreAttributesList::StatusDown;
+        else if (token == KW("completedup"))
+            sorting = CoreAttributesList::CompletedUp;
+        else if (token == KW("completeddown"))
+            sorting = CoreAttributesList::CompletedDown;
+        else if (token == "planstartup")
+        {
+            sorting = CoreAttributesList::StartUp;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "planstartdown")
+        {
+            sorting = CoreAttributesList::StartDown;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "planendup")
+        {
+            sorting = CoreAttributesList::EndUp;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "planenddown")
+        {
+            sorting = CoreAttributesList::EndDown;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "actualstartup")
+        {
+            sorting = CoreAttributesList::StartUp + 0x1FFFF;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "actualstartdown")
+        {
+            sorting = CoreAttributesList::StartDown + 0x1FFFF;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "actualendup")
+        {
+            sorting = CoreAttributesList::EndUp + 0x1FFFF;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "actualenddown")
+        {
+            sorting = CoreAttributesList::EndDown + 0x1FFFF;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "planstatusup")
+        {
+            sorting = CoreAttributesList::StatusUp;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "planstatusdown")
+        {
+            sorting = CoreAttributesList::StatusDown;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "plancompletedup")
+        {
+            sorting = CoreAttributesList::CompletedUp;
+            deprecatedWarning = TRUE;
+        }
+        else if (token == "plancompleteddown")
+        {
+            sorting = CoreAttributesList::CompletedDown;
+            deprecatedWarning = TRUE;
+        }
+        else
+        {
+            errorMessage(i18n("Sorting criteria expected"));
+            return FALSE;
+        }
 
+        if (deprecatedWarning)
+            errorMessage
+                (i18n("WARNING: Concatenating the scenario name and the "
+                      "sorting criteria has been deprecated. Please separate "
+                      "them by a colon. E. g. 'plan:start', 'actual:end'"));
+    }
+    
     return TRUE;
 }
 

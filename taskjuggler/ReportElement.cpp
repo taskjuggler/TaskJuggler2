@@ -478,8 +478,7 @@ ReportElement::isHidden(const CoreAttributes* c, ExpressionTree* et) const
 
     /* First check if the object is part of the sub-tree specified by
      * taskRoot. The check only applies to Task objects. */
-    if (strcmp(c->getType(), "Task") == 0 &&
-        !taskRoot.isEmpty() &&
+    if (c->getType() == CA_Task && !taskRoot.isEmpty() &&
         taskRoot != c->getId().left(taskRoot.length()))
     {
         return TRUE;
@@ -593,7 +592,7 @@ const
     /* Create a new list that contains only those tasks that were not
      * hidden. */
     filteredList.clear();
-    for (TaskListIterator tli(report->getProject()->getTaskListIterator()); 
+    for (TaskListIterator tli(report->getProject()->getTaskListIterator());
          *tli != 0; ++tli)
     {
         bool resourceLoadedInAnyScenario = FALSE;
@@ -601,20 +600,27 @@ const
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
-                if (r->getLoad(*it, Interval(start, end), 
-                               AllAccounts, *tli) > 0.0)
+                if (r->getLoad(*it, Interval(start, end), AllAccounts, *tli) 
+                    > 0.0)
                 {
                     resourceLoadedInAnyScenario = TRUE;
                     break;
                 }
-        } 
+        }
+        bool taskOverlapsInAnyScenario = FALSE;
         Interval iv(start, end);
-        if (!isHidden(*tli, hideExp) &&
-            iv.overlaps(Interval((*tli)->getStart(Task::Plan),
-                                 (*tli)->isMilestone() ? 
-                                 (*tli)->getStart(Task::Plan) :
-                                 (*tli)->getEnd(Task::Plan))) &&
-            (r == 0 || resourceLoadedInAnyScenario)) 
+        QValueList<int>::const_iterator it;
+        for (it = scenarios.begin(); it != scenarios.end(); ++it)
+            if (iv.overlaps(Interval((*tli)->getStart(*it),
+                                 (*tli)->isMilestone() ?
+                                 (*tli)->getStart(*it) :
+                                 (*tli)->getEnd(*it))))
+            {
+                taskOverlapsInAnyScenario = TRUE;
+                break;
+            }
+        if (!isHidden(*tli, hideExp) && taskOverlapsInAnyScenario &&
+            (r == 0 || resourceLoadedInAnyScenario))
         {
             filteredList.append(tli);
         }
