@@ -63,7 +63,8 @@ public:
     QStringList getSourceFiles() const;
     // Called to emit a signal with the currently processed file.
     void setProgressInfo(const QString& i);
-
+    // Called to emit a signal with the current process of the scheduler.
+    void setProgressBar(int i, int of);
     /**
      * Projects have at least one ID, but can have multiple IDs. This usually
      * happens when projects are composed of serveral sub-projects. Each sub
@@ -770,6 +771,7 @@ public:
 
 signals:
     void updateProgressInfo(const QString& i);
+    void updateProgressBar(int i, int of);
 
 private:
     void overlayScenario(int base, int sc);

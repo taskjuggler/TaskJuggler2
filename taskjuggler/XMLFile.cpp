@@ -288,7 +288,10 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
                  bool masterfile)
 {
     if (masterfile)
+    {
+        project->setProgressBar(0, 100);
         masterFile = file;
+    }
 
     gzFile zf;
     if (file == ".")

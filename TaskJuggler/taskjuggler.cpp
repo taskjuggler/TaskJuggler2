@@ -69,6 +69,7 @@ TaskJuggler::TaskJuggler()
     connect(m_view, SIGNAL(announceRecentURL(const KURL&)),
             this, SLOT(addRecentURL(const KURL&)));
 
+    readProperties(kapp->config());
 }
 
 TaskJuggler::~TaskJuggler()
@@ -98,7 +99,6 @@ void TaskJuggler::setupActions()
     // Setup "Open Recent" menu and load old recent files.
     m_recentAction = KStdAction::openRecent(this, SLOT( load(const KURL&)),
                                             actionCollection());
-    m_recentAction->loadEntries(kapp->config());
 
     m_toolbarAction = KStdAction::showToolbar(this, SLOT(optionsShowToolbar()),
                                               actionCollection());
@@ -146,6 +146,13 @@ void TaskJuggler::setupActions()
                 m_view, SLOT(nextProblem()),
                 actionCollection(), "next_problem");
 
+    new KAction(i18n("Zoom &In"), "viewmag+", KShortcut(KKey("F7")),
+                m_view, SLOT(zoomIn()),
+                actionCollection(), "zoom_in");
+    new KAction(i18n("Zoom &Out"), "viewmag-", KShortcut(KKey("F8")),
+                m_view, SLOT(zoomOut()),
+                actionCollection(), "zoom_out");
+
     new KAction(i18n("Explain Keyword" ), "kghostview", KShortcut(KKey("F2")),
                 m_view, SLOT(keywordHelp()),
                 actionCollection(), "keyword_help");
@@ -156,23 +163,22 @@ void TaskJuggler::setupActions()
 void
 TaskJuggler::saveProperties(KConfig* config)
 {
-    if (!m_view->currentURL().isEmpty()) {
-#if KDE_IS_VERSION(3,1,3)
+    config->setGroup("Global Settings");
+    if (!m_view->currentURL().isEmpty())
         config->writePathEntry("lastURL", m_view->currentURL());
-#else
-        config->writeEntry("lastURL", m_view->currentURL());
-#endif
-    }
+
     m_recentAction->saveEntries(config);
 }
 
 void
 TaskJuggler::readProperties(KConfig* config)
 {
+    config->setGroup("Global Settings");
     QString url = config->readPathEntry("lastURL");
 
     if (!url.isEmpty())
         m_view->openURL(KURL(url));
+
     m_recentAction->loadEntries(config);
 }
 

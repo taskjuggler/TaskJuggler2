@@ -987,6 +987,12 @@ ReportElement::addCustomAttributeColumns
     }
 }
 
+const TableColumnFormat*
+ReportElement::getColumnFormat(const QString& key) const
+{
+    return columnFormat[key];
+}
+
 void
 ReportElement::setMacros(TableLineInfo* tli)
 {

@@ -143,6 +143,7 @@ public:
     {
         columnFormat.insert(id, tcf);
     }
+    const TableColumnFormat* getColumnFormat(const QString& key) const;
 
     void setMacros(TableLineInfo* tli);
 

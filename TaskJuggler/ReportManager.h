@@ -20,8 +20,8 @@
 
 class QWidgetStack;
 class QString;
+class QListViewItem;
 class KListView;
-class KListViewItem;
 class Report;
 
 class ReportManager : public QObject
@@ -35,7 +35,9 @@ public:
 
     ManagedReportInfo* getCurrentReport() const;
 
-    QWidgetStack* getViewStack() const { return viewStack; }
+    QListViewItem* getFirstInteractiveReportItem() const;
+
+    QWidgetStack* getReportStack() const { return reportStack; }
 
     void setFocusToReport() const;
 
@@ -44,7 +46,9 @@ public:
     void clear();
 
 public slots:
-    void showReport(KListViewItem*);
+    void zoomIn();
+    void zoomOut();
+    void showReport(QListViewItem*);
     void closeCurrentReport();
 
 private:
@@ -52,7 +56,7 @@ private:
 
     void updateReportBrowser();
 
-    QWidgetStack* viewStack;
+    QWidgetStack* reportStack;
     KListView* browser;
 
     KListViewItem* qtReports;

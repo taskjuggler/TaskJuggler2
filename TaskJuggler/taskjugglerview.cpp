@@ -26,8 +26,10 @@
 #include <qheader.h>
 #include <qfont.h>
 #include <qwidgetstack.h>
+#include <qprogressbar.h>
 
 #include <kdebug.h>
+#include <kmainwindow.h>
 #include <kapp.h>
 #include <kurl.h>
 #include <ktrader.h>
@@ -37,6 +39,7 @@
 #include <klistview.h>
 #include <klocale.h>
 #include <kcursor.h>
+#include <kstatusbar.h>
 
 #include "TjMessageHandler.h"
 #include "MainWidget.h"
@@ -51,6 +54,8 @@
 #include "QtTaskReportElement.h"
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
+#include "ReportManager.h"
+#include "ManagedReportInfo.h"
 
 TaskJugglerView::TaskJugglerView(QWidget *parent)
     : DCOPObject("TaskJugglerIface"), QWidget(parent)
@@ -90,6 +95,7 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     l->addWidget(editorSplitter);
 
     fileManager = new FileManager(editorStack, mw->fileListView);
+    reportManager = new ReportManager(mw->reportStack, mw->reportListView);
 
     connect(&TJMH, SIGNAL(printWarning(const QString&, const QString&, int)),
             this, SLOT(addWarningMessage(const QString&, const QString&, int)));
@@ -131,10 +137,10 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     connect(messageListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(messageListClicked(QListViewItem*)));
 
-    connect(mw->leftReport, SIGNAL(expanded(QListViewItem*)),
-            this, SLOT(expandReportItem(QListViewItem*)));
-    connect(mw->leftReport, SIGNAL(collapsed(QListViewItem*)),
-            this, SLOT(collapsReportItem(QListViewItem*)));
+    KStatusBar* statusBar = (static_cast<KMainWindow*>(parent))->statusBar();
+    progressBar = new QProgressBar(statusBar);
+    progressBar->setMaximumSize(150, progressBar->maximumHeight());
+    statusBar->addWidget(progressBar, 0, TRUE);
 }
 
 TaskJugglerView::~TaskJugglerView()
@@ -151,7 +157,7 @@ TaskJugglerView::print(QPainter*, int, int)
 QString
 TaskJugglerView::currentURL()
 {
-    return 0;
+    return fileManager->getMasterFile().url();
 }
 
 void
@@ -263,6 +269,8 @@ TaskJugglerView::loadProject(const KURL& url)
     project = new Project();
     connect(project, SIGNAL(updateProgressInfo(const QString&)),
             this, SLOT(showProgressInfo(const QString&)));
+    connect(project, SIGNAL(updateProgressBar(int, int)),
+            progressBar, SLOT(setProgress(int, int)));
 
     ProjectFile* pf = new ProjectFile(project);
     setCursor(KCursor::workingCursor());
@@ -281,25 +289,6 @@ TaskJugglerView::loadProject(const KURL& url)
         errors = TRUE;
 
     setCursor(KCursor::arrowCursor());
-
-    // Show message list when errors have occured
-    QValueList<int> vl;
-    int h = editorSplitter->height();
-    if (errors)
-    {
-        vl.append(int(h * 0.85));
-        vl.append(int(h * 0.15));
-        emit signalChangeStatusbar(i18n("The project contains problems!"));
-        messageListClicked(messageListView->firstChild());
-    }
-    else
-    {
-        vl.append(int(h));
-        vl.append(int(0));
-        emit signalChangeStatusbar(i18n("The project has been scheduled "
-                                        "without problems!"));
-    }
-    editorSplitter->setSizes(vl);
 
     // Load tasks into Task List View
     KListView* tlv = mw->taskListView;
@@ -364,54 +353,42 @@ TaskJugglerView::loadProject(const KURL& url)
                                                 (*ali)->getDefinitionLine()));
 
     // Load reports into Report List View
-    KListView* plv = mw->reportListView;
-    plv->clear();
-    plv->setColumnWidthMode(1, QListView::Manual);
-    plv->hideColumn(1);
-    KListViewItem* qtReports =
-        new KListViewItem(plv, i18n("Interactive Reports"));
-    KListViewItem* htmlReports = new KListViewItem(plv, i18n("HTML Reports"));
-    KListViewItem* csvReports = new KListViewItem(plv, i18n("CSV Reports"));
-    KListViewItem* xmlReports = new KListViewItem(plv, i18n("XML Reports"));
-
-    int i = 0;
-    for (QPtrListIterator<Report> pli(project->getReportListIterator()); *pli;
-         ++pli, ++i)
-        if (strncmp((*pli)->getType(), "Qt", 2) == 0)
-            new KListViewItem(qtReports, (*pli)->getFileName(),
-                              QString().sprintf("%d", i),
-                              (*pli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                            (*pli)->getDefinitionLine()));
-        else if (strncmp((*pli)->getType(), "HTML", 4) == 0)
-            new KListViewItem(htmlReports, (*pli)->getFileName(),
-                              QString().sprintf("%d", i),
-                              (*pli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*pli)->getDefinitionLine()));
-        else if (strncmp((*pli)->getType(), "CSV", 3) == 0)
-            new KListViewItem(csvReports, (*pli)->getFileName(),
-                              QString().sprintf("%d", i),
-                              (*pli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*pli)->getDefinitionLine()));
-        else if (strncmp((*pli)->getType(), "XML", 3) == 0)
-            new KListViewItem(xmlReports, (*pli)->getFileName(),
-                              QString().sprintf("%d", i),
-                              (*pli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*pli)->getDefinitionLine()));
-        else
-            new KListViewItem(plv, (*pli)->getFileName(),
-                              QString().sprintf("%d", i),
-                              (*pli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*pli)->getDefinitionLine()));
-    qtReports->setOpen(TRUE);
+    reportManager->updateReportList(project->getReportListIterator());
 
     // Load file list into File List View
     fileManager->updateFileList(project->getSourceFiles(), url);
-    fileManager->showInEditor(fileName);
+
+    // Show message list when errors have occured
+    QValueList<int> vl;
+    int h = editorSplitter->height();
+    if (errors)
+    {
+        vl.append(int(h * 0.85));
+        vl.append(int(h * 0.15));
+        emit signalChangeStatusbar(i18n("The project contains problems!"));
+        messageListClicked(messageListView->firstChild());
+    }
+    else
+    {
+        vl.append(int(h));
+        vl.append(int(0));
+        emit signalChangeStatusbar(i18n("The project has been scheduled "
+                                        "without problems!"));
+        // Load the main file into the editor.
+        fileManager->showInEditor(fileName);
+        QListViewItem* firstReport =
+            reportManager->getFirstInteractiveReportItem();
+        if (firstReport)
+        {
+            // Open the report list.
+            mw->listViews->setCurrentItem(mw->reportsPage);
+            // Simulate a click on the first interactive report to open the
+            // report view and show the first report.
+            mw->reportListView->setSelected(firstReport, TRUE);
+            reportListClicked(firstReport);
+        }
+    }
+    editorSplitter->setSizes(vl);
 
     return TRUE;
 }
@@ -484,15 +461,27 @@ TaskJugglerView::setFocusToFileList()
 void
 TaskJugglerView::setFocusToEditor()
 {
-    mw->bigTab->showPage(mw->tab);
+    mw->bigTab->showPage(mw->editorTab);
     fileManager->setFocusToEditor();
 }
 
 void
 TaskJugglerView::setFocusToReport()
 {
-    mw->bigTab->showPage(mw->tab_2);
-    mw->leftReport->setFocus();
+    mw->bigTab->showPage(mw->reportTab);
+    reportManager->setFocusToReport();
+}
+
+void
+TaskJugglerView::zoomIn()
+{
+    reportManager->zoomIn();
+}
+
+void
+TaskJugglerView::zoomOut()
+{
+    reportManager->zoomOut();
 }
 
 void
@@ -524,10 +513,12 @@ TaskJugglerView::focusBigTab(QWidget*)
     switch (mw->bigTab->currentPageIndex())
     {
         case 0:
-            fileManager->setFocusToEditor();
+            if (fileManager)
+                fileManager->setFocusToEditor();
             break;
         case 1:
-            mw->leftReport->setFocus();
+            if (reportManager)
+                reportManager->setFocusToReport();
             break;
     }
 }
@@ -539,7 +530,7 @@ TaskJugglerView::taskListClicked(QListViewItem* lvi)
     {
         fileManager->showInEditor(KURL(lvi->text(2)),
                                   lvi->text(3).toUInt() - 1, 0);
-        mw->bigTab->showPage(mw->tab);
+        mw->bigTab->showPage(mw->editorTab);
     }
 }
 
@@ -550,7 +541,7 @@ TaskJugglerView::resourceListClicked(QListViewItem* lvi)
     {
         fileManager->showInEditor(KURL(lvi->text(2)),
                                   lvi->text(3).toUInt() - 1, 0);
-        mw->bigTab->showPage(mw->tab);
+        mw->bigTab->showPage(mw->editorTab);
     }
 }
 
@@ -561,7 +552,7 @@ TaskJugglerView::accountListClicked(QListViewItem* lvi)
     {
         fileManager->showInEditor(KURL(lvi->text(2)),
                                   lvi->text(3).toUInt() - 1, 0);
-        mw->bigTab->showPage(mw->tab);
+        mw->bigTab->showPage(mw->editorTab);
     }
 }
 
@@ -571,92 +562,8 @@ TaskJugglerView::reportListClicked(QListViewItem* lvi)
     if (!lvi)
         return;
 
-    mw->bigTab->showPage(mw->tab_2);
-    mw->leftReport->setFocus();
-
-    mw->leftReport->clear();
-    while (mw->leftReport->columns())
-        mw->leftReport->removeColumn(0);
-    mw->rightReport->clear();
-    while (mw->rightReport->columns())
-        mw->rightReport->removeColumn(0);
-
-    Report* report = project->getReport(lvi->text(1).toUInt());
-    if (!report)
-        return;
-
-    if (strcmp(report->getType(), "QtTaskReport") == 0)
-    {
-        QFont f = mw->rightReport->header()->font();
-        f.setPixelSize(10);
-        mw->rightReport->header()->setFont(f);
-        mw->leftReport->addColumn(i18n("Task"));
-        mw->leftReport->addColumn(i18n("Id"));
-        mw->leftReport->setColumnWidthMode(1, QListView::Manual);
-        mw->rightReport->addColumn(i18n("Task"));
-        mw->rightReport->setColumnWidthMode(0, QListView::Manual);
-        mw->rightReport->addColumn(i18n("Id"));
-        mw->rightReport->addColumn("Line1\nLine2");
-        mw->rightReport->setColumnWidthMode(1, QListView::Manual);
-        mw->leftReport->hideColumn(1);
-        mw->rightReport->hideColumn(0);
-        mw->rightReport->hideColumn(1);
-        mw->leftReport->header()->setFixedHeight
-            (mw->rightReport->header()->height());
-        mw->leftReport->move(mw->rightReport->pos());
-
-        QtTaskReportElement* tab =
-            (dynamic_cast<QtTaskReport*>(report))->getTable();
-        for (QPtrListIterator<TableColumnInfo>
-             ci = tab->getColumnsIterator(); *ci; ++ci)
-        {
-            mw->leftReport->addColumn((*ci)->getName());
-        }
-        for (TaskListIterator tli(project->getTaskListIterator()); *tli;
-             ++tli)
-        {
-            KListViewItem* lLine;
-            KListViewItem* rLine;
-            if ((*tli)->getParent())
-            {
-                lLine = new KListViewItem
-                    (mw->leftReport->findItem((*tli)->getParent()->getId(),
-                                              1), (*tli)->getName(),
-                     (*tli)->getId());
-                rLine = new KListViewItem
-                    (mw->rightReport->findItem((*tli)->getParent()->getId(),
-                                               1), (*tli)->getName(),
-                     (*tli)->getId());
-            }
-            else
-            {
-                lLine = new KListViewItem(mw->leftReport, (*tli)->getName(),
-                                          (*tli)->getId());
-                rLine = new KListViewItem(mw->rightReport,
-                                          (*tli)->getName(),
-                                          (*tli)->getId());
-            }
-
-            int column = 2;
-            for (QPtrListIterator<TableColumnInfo>
-                 ci = tab->getColumnsIterator(); *ci; ++ci, ++column)
-            {
-                if ((*ci)->getName() == "start")
-                    lLine->setText(column,
-                                   time2user((*tli)->getStart(0),
-                                             report->getTimeFormat()));
-                else if ((*ci)->getName() == "end")
-                    lLine->setText(column,
-                                   time2user(((*tli)->isMilestone() ? 1 :
-                                              0) + (*tli)->getEnd(0),
-                                             report->getTimeFormat()));
-            }
-        }
-    }
-/*    QValueList<int> vl;
-    vl.append(int(mw->leftReport->columnWidth(0)));
-    vl.append(int(mw->reportSplitter->width() - vl[0]));
-    mw->reportSplitter->setSizes(vl);*/
+    mw->bigTab->showPage(mw->reportTab);
+    reportManager->showReport(lvi);
 }
 
 void
@@ -688,18 +595,6 @@ TaskJugglerView::keywordHelp()
         QString keyword = fileManager->getWordUnderCursor();
         kapp->invokeHelp(QString("PROPERTY_") + keyword);
     }
-}
-
-void
-TaskJugglerView::collapsReportItem(QListViewItem* lvi)
-{
-    mw->rightReport->setOpen(mw->rightReport->findItem(lvi->text(1), 1), FALSE);
-}
-
-void
-TaskJugglerView::expandReportItem(QListViewItem* lvi)
-{
-    mw->rightReport->setOpen(mw->rightReport->findItem(lvi->text(1), 1), TRUE);
 }
 
 #include "taskjugglerview.moc"

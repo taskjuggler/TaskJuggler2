@@ -17,6 +17,7 @@ TaskJuggler_LDADD = -lktexteditor -ltaskjuggler $(LIB_KFILE) $(LIB_KDEPRINT)
 TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \
 	ReportManager.cpp ManagedReportInfo.cpp \
+	TjReport.cpp \
 	taskjuggleriface.skel MainWidget.ui
 
 # these are the headers for your project

@@ -24,11 +24,13 @@
 class QPainter;
 class QListViewItem;
 class QSplitter;
+class QProgressBar;
 class KURL;
 class KListView;
 class MainWidget;
 class Project;
 class FileManager;
+class ReportManager;
 
 /**
  * This is the main view class for TaskJuggler.  Most of the non-menu,
@@ -96,8 +98,8 @@ public slots:
     void setFocusToFileList();
     void setFocusToEditor();
     void setFocusToReport();
-    void expandReportItem(QListViewItem*);
-    void collapsReportItem(QListViewItem*);
+    void zoomIn();
+    void zoomOut();
 
 signals:
     /**
@@ -132,10 +134,12 @@ private:
 
     Project* project;
     MainWidget* mw;
+    QProgressBar* progressBar;
     KListView* messageListView;
     QSplitter* editorSplitter;
 
     FileManager* fileManager;
+    ReportManager* reportManager;
 };
 
 #endif // _TASKJUGGLERVIEW_H_

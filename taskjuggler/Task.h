@@ -317,6 +317,8 @@ public:
 
     bool isSubTask(Task* t) const;
 
+    bool isSchedulingDone() const { return schedulingDone; }
+
     void errorMessage(const char*, ...) const;
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );

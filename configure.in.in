@@ -37,7 +37,7 @@ AM_INIT_AUTOMAKE(taskjuggler, [2.0.1+cvs])
 
 dnl AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
-dnl KDE_SET_PREFIX
+KDE_SET_PREFIX
 
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
@@ -59,13 +59,13 @@ dnl End of configure.in.min
 
 AC_MSG_CHECKING([for KDE support])
 AC_ARG_WITH(kde-support,
-        [  --with-kde-support[={yes|no}] Integrate KDE support [default=no]],
+        [  --with-kde-support[={yes|no}] Integrate KDE support [default=yes]],
         [
                 case "${withval}" in
                         yes|no) cv_option_kdesupport=$withval;;
                         *)  AC_MSG_ERROR(bad value ${withval} for --with-kde-support) ;;
                 esac
-        ], [cv_option_kdesupport=no])
+        ], [cv_option_kdesupport=yes])
 AC_MSG_RESULT([$cv_option_kdesupport])
 
 AM_CONDITIONAL(include_KDE, test "$cv_option_kdesupport" = yes)
@@ -82,10 +82,10 @@ if test "$cv_option_kdesupport" = yes ;then
     KDE_LIBS=''
    dnl LIBICAL="-lical -lkcal"
    AC_SUBST(KDE_LIBS)
-   DO_NOT_COMPILE="Contrib"
+   DO_NOT_COMPILE="ktjview Contrib"
 else
    kde_htmldir=${datadir}/taskjuggler
-   DO_NOT_COMPILE="ktjview ktjview2 Contrib"
+   DO_NOT_COMPILE="ktjview ktjview2 TaskJuggler Contrib"
 fi
 
 AC_CHECK_PROG(PERL, perl, perl, no)

@@ -177,6 +177,23 @@ Resource::~Resource()
 }
 
 void
+Resource::deleteStaticData()
+{
+    delete [] DayStartIndex;
+    delete [] WeekStartIndex;
+    delete [] MonthStartIndex;
+    delete [] DayEndIndex;
+    delete [] WeekEndIndex;
+    delete [] MonthEndIndex;
+    DayStartIndex = 0;
+    WeekStartIndex = 0;
+    MonthStartIndex = 0;
+    DayEndIndex = 0;
+    WeekEndIndex = 0;
+    MonthEndIndex = 0;
+}
+
+void
 Resource::inheritValues()
 {
     Resource* pr = (Resource*) parent;

@@ -1,13 +1,13 @@
 /*
- * the taskjuggler project management software
+ * The TaskJuggler Project Management Software
  *
- * copyright (c) 2001, 2002, 2003, 2004, 2005 by chris schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
- * this program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the gnu general public license as
- * published by the free software foundation.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
  *
- * $id$
+ * $Id$
  */
 
 #ifndef _ManagedFileInfo_h_

@@ -699,9 +699,9 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 <listitem><para>New optimizer that achieves much better resource
 selection resulting in shorter overall project times.</para></listitem>
 
-<listitem><para>Passive resources like meeting rooms, mashines and the
+<listitem><para>Passive resources like meeting rooms, machines and the
 like, that do not contribute to the effort of a task can now be
-modelled by setting the efficiency to 0.0.</para></listitem>
+modelled by setting their efficiency to 0.0.</para></listitem>
 
 <listitem><para>Task dependency specifications (<link
 linkend="PROPERTY_depends">depends</link> or <link

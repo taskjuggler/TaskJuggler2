@@ -43,6 +43,8 @@ public:
              const QString& df = QString::null, uint dl = 0);
     virtual ~Resource();
 
+    static void deleteStaticData();
+
     virtual CAType getType() const { return CA_Resource; }
 
     Resource* getParent() const { return (Resource*) parent; }

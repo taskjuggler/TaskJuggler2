@@ -40,5 +40,8 @@
   <Action name="schedule"/>
   <Action name="previous_problem"/>
   <Action name="next_problem"/>
+  <Separator/>
+  <Action name="zoom_in"/>
+  <Action name="zoom_out"/>
 </ToolBar>
 </kpartgui>

@@ -25,7 +25,7 @@
 #include "TjReport.h"
 
 ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
-    viewStack(v), browser(b)
+    reportStack(v), browser(b)
 {
     reports.setAutoDelete(TRUE);
 
@@ -33,6 +33,16 @@ ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
     // to the user.
     browser->setColumnWidthMode(1, QListView::Manual);
     browser->hideColumn(1);
+}
+
+QListViewItem*
+ReportManager::getFirstInteractiveReportItem() const
+{
+    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+        if (strncmp((*mri)->getProjectReport()->getType(), "Qt", 2) == 0)
+            return (*mri)->getBrowserEntry();
+
+    return 0;
 }
 
 void
@@ -59,7 +69,7 @@ ReportManager::updateReportBrowser()
     for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri, ++i)
     {
         Report* r = (*mri)->getProjectReport();
-        KListViewItem* parent;
+        KListViewItem* parent = 0;
         if (strncmp(r->getType(), "Qt", 2) == 0)
             parent = qtReports;
         else if (strncmp(r->getType(), "HTML", 4) == 0)
@@ -84,14 +94,33 @@ ReportManager::updateReportBrowser()
 }
 
 void
-ReportManager::showReport(KListViewItem*)
+ReportManager::showReport(QListViewItem* lvi)
 {
+    ManagedReportInfo* mr = 0;
+    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+        if ((*mri)->getBrowserEntry() == lvi)
+            mr = *mri;
+
+    if (!mr)
+        return;
+
+    TjReport* tjr;
+    if ((tjr = mr->getReport()) == 0)
+    {
+        tjr = new TjReport(reportStack, mr->getProjectReport());
+        reportStack->addWidget(tjr);
+        mr->setReport(tjr);
+    }
+    reportStack->raiseWidget(tjr);
 }
 
 ManagedReportInfo*
 ReportManager::getCurrentReport() const
 {
-    // TODO: Add real code!
+    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+        if ((*mri)->getBrowserEntry() == browser->currentItem())
+            return *mri;
+
     return 0;
 }
 
@@ -101,8 +130,8 @@ ReportManager::closeCurrentReport()
     ManagedReportInfo* mri;
     if ((mri = getCurrentReport()) != 0)
     {
-        viewStack->removeWidget(mri->getReport());
-        viewStack->raiseWidget(0);
+        reportStack->removeWidget(mri->getReport());
+        reportStack->raiseWidget(0);
         reports.removeRef(mri);
         updateReportBrowser();
     }
@@ -115,9 +144,23 @@ ReportManager::clear()
 }
 
 void
-ReportManager::setFocusToReport() const
+ReportManager::zoomIn()
 {
     if (getCurrentReport())
+        getCurrentReport()->getReport()->zoomIn();
+}
+
+void
+ReportManager::zoomOut()
+{
+    if (getCurrentReport())
+        getCurrentReport()->getReport()->zoomOut();
+}
+
+void
+ReportManager::setFocusToReport() const
+{
+    if (getCurrentReport() && getCurrentReport()->getReport())
         getCurrentReport()->getReport()->setFocus();
 }
 

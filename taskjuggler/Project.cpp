@@ -139,6 +139,7 @@ Project::~Project()
                 break;
             }
     }
+    Resource::deleteStaticData();
 
     while (!accountList.isEmpty())
     {
@@ -198,6 +199,12 @@ void
 Project::setProgressInfo(const QString& i)
 {
     emit updateProgressInfo(i);
+}
+
+void
+Project::setProgressBar(int i, int of)
+{
+    emit updateProgressBar(i, of);
 }
 
 void
@@ -686,6 +693,11 @@ Project::schedule(int sc)
                 if (++updateMsgTimer > 2000)
                 {
                     updateMsgTimer = 0;
+                    int completedTasks = 0;
+                    for (TaskListIterator tli2(sortedTasks); *tli2; ++tli2)
+                        if ((*tli2)->isSchedulingDone())
+                            completedTasks++;
+                    setProgressBar(completedTasks, sortedTasks.count());
                     setProgressInfo
                         (i18n("Scheduling scenario %1 at %1")
                          .arg(getScenarioId(sc)).arg(time2tjp(slot)));
@@ -727,6 +739,9 @@ Project::schedule(int sc)
 
     if (!checkSchedule(sc))
         error = TRUE;
+
+    if (!error)
+        setProgressBar(100, 100);
 
     return !error;
 }

@@ -17,8 +17,7 @@
 #include <kiconloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/viewcursorinterface.h>
-#include <kate/document.h>
-#include <kdebug.h>
+#include <ktexteditor/editinterface.h>
 
 ManagedFileInfo::ManagedFileInfo(FileManager* fm, const KURL& url) :
     manager(fm), fileURL(url)

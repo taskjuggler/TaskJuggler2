@@ -83,7 +83,11 @@ ProjectFile::open(const QString& file, const QString& parentPath,
                   const QString& taskPrefix, bool masterfile)
 {
     if (masterfile)
+    {
+        proj->setProgressBar(0, 100);
         masterFile = file;
+    }
+
     QString absFileName = file;
     if (DEBUGPF(10))
         qDebug("Requesting to open file %s", file.latin1());
