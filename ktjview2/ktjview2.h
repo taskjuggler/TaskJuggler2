@@ -154,8 +154,6 @@ private:
      */
     void setupSidebar();
 
-
-
     ktjview2View *m_view;
 
     // actions

@@ -80,8 +80,7 @@ ktjview2::ktjview2()
 
     m_activeFilter = 0;
 
-    //slotSwitchView( ID_VIEW_INFO );
-    slotSidebarInfo();
+    slotSwitchView( ID_VIEW_INFO );
 }
 
 ktjview2::~ktjview2()
