@@ -927,6 +927,9 @@ Task::xRef(QDict<Task>& hash)
 			depends.append(t);
 			previous.append(t);
 			t->followers.append(this);
+			if (debugLevel > 3)
+				qDebug("Registering follower %s with task %s",
+					   t->getId().latin1(), id.latin1());
 		}
 	}
 
@@ -951,6 +954,9 @@ Task::xRef(QDict<Task>& hash)
 			preceeds.append(t);
 			followers.append(t);
 			t->previous.append(this);
+			if (debugLevel > 3)
+				qDebug("Registering predecessor %s with task %s",
+					   t->getId().latin1(), id.latin1());
 		}
 	}
 
