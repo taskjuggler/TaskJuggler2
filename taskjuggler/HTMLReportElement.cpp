@@ -1067,6 +1067,13 @@ HTMLReportElement::genCellProjectId(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellProjectIDs(TableCellInfo* tci)
+{
+    genCell(tci->tli->resource->getProjectIDs(tci->tli->sc,
+                                              Interval(start, end)), tci, TRUE);
+}
+
+void
 HTMLReportElement::genCellResources(TableCellInfo* tci)
 {
     QString text;

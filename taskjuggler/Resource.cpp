@@ -591,8 +591,7 @@ Resource::getProjectIDs(int sc, const Interval& period, const Task* task) const
     getPIDs(sc, period, task, pids);
     QString pidStr;
     for (QStringList::Iterator it = pids.begin(); it != pids.end(); ++it)
-        pidStr += QString(it != pids.begin() ? ", " : "") +
-            project->getIdIndex(*it);
+        pidStr += QString(it != pids.begin() ? ", " : "") + *it;
 
     return pidStr;
 }

@@ -1604,7 +1604,10 @@ every listed item by 1.</member>
 <member>The accumulated profit of the task and its sub tasks</member>
 
 <member><computeroutput>projectid</computeroutput></member>
-<member>The project id of the task</member>
+<member>The project ID of the task</member>
+
+<member><computeroutput>projectids</computeroutput></member>
+<member>The project IDs of the projects a resource is allocated to</member>
 
 <member><computeroutput>quarterly</computeroutput></member>
 <member>A quarter-by-quarter calendar view of the tasks</member>

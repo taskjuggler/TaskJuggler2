@@ -650,6 +650,13 @@ CSVReportElement::genCellProjectId(TableCellInfo* tci)
 }
 
 void
+CSVReportElement::genCellProjectIDs(TableCellInfo* tci)
+{
+    genCell(tci->tli->resource->getProjectIDs(tci->tli->sc,
+                                              Interval(start, end)), tci, TRUE);
+}
+
+void
 CSVReportElement::genCellResources(TableCellInfo* tci)
 {
     QString text;

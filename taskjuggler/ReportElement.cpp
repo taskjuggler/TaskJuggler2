@@ -163,6 +163,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(KW("projectid"), this, i18n("Project ID"));
     tcf->genTaskLine1 = &ReportElement::genCellProjectId;
     
+    tcf = new TableColumnFormat(KW("projectids"), this, i18n("Project IDs"));
+    tcf->genResourceLine1 = &ReportElement::genCellProjectIDs;
+    
     tcf = new TableColumnFormat(KW("resources"), this, i18n("Resources"));
     tcf->genTaskLine1 = &ReportElement::genCellResources;
     tcf->genTaskLine2 = &ReportElement::genCellResources;

@@ -178,6 +178,7 @@ public:
     virtual void genCellDuration(TableCellInfo*) = 0;
     virtual void genCellEffort(TableCellInfo*) = 0;
     virtual void genCellProjectId(TableCellInfo*) = 0;
+    virtual void genCellProjectIDs(TableCellInfo*) = 0;
     virtual void genCellResources(TableCellInfo*) = 0;
     virtual void genCellResponsible(TableCellInfo*) = 0;
     virtual void genCellText(TableCellInfo*) = 0;
