@@ -668,6 +668,15 @@ as umlauts.</para></listitem>
 <listitem><para>Added query function isDutyOf() to select tasks where
 a certain resource has been assigned to.</para></listitem>
 
+<listitem><para>The contense of XML reports can now be limited with
+the usual filter mechanisms. Support for <link
+linkend="PROPERTY_hideresource">hideresource</link>, <link
+linkend="PROPERTY_hidetask">hidetask</link>, <link
+linkend="PROPERTY_rollupresource">rollupresource</link> and <link
+linkend="PROPERTY_rolluptask">rolluptask</link> has been added. Also
+<link linkend="PROPERTY_scenarios">scenario filtering</link> was
+implemented for XML reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

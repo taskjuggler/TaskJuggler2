@@ -2205,6 +2205,11 @@ should be generated.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
    <optattr>version</optattr>
   </optattributes>
  </property>

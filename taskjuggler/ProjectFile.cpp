@@ -2863,7 +2863,17 @@ ProjectFile::readXMLReport()
         errorMessage(i18n("File name expected"));
         return FALSE;
     }
+    /* We don't know yet what version of the report the user wants, so we
+     * generate data structures for both reports. */
     int version = 1;
+
+    // Data structure for version 1 format.
+    ReportXML *rep = new ReportXML(proj, fileName, getFile(), getLine());
+    // Data structure for version 2 format.
+    XMLReport* report;
+    report = new XMLReport(proj, fileName, getFile(), getLine());
+    report->setMasterFile(TRUE);
+    report->addTaskAttribute("all");
     TokenType tt;
     QString token;
     if ((tt = nextToken(token)) == LBRACE)
@@ -2881,6 +2891,65 @@ ProjectFile::readXMLReport()
                 }
                 version = token.toInt();
             }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setRollUpTask(et);
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setRollUpResource(et);
+            }
+            else if (token == KW("scenarios"))
+            {
+                report->clearScenarios();
+                for ( ; ; )
+                {
+                    QString scId;
+                    if ((tt = nextToken(scId)) != ID)
+                    {
+                        errorMessage(i18n("Scenario ID expected"));
+                        return FALSE;
+                    }
+                    int scIdx;
+                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                    {
+                        errorMessage(i18n("Unknown scenario %1")
+                                     .arg(scId));
+                        return FALSE;
+                    }
+                    if (proj->getScenario(scIdx - 1)->getEnabled())
+                        report->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute '%1'").arg(token));
@@ -2893,15 +2962,12 @@ ProjectFile::readXMLReport()
    
     if (version == 1)
     {
-        ReportXML *rep = new ReportXML(proj, fileName, getFile(), getLine());
+        delete report;
         proj->addXMLReport(rep);
     }
     else
     {
-        XMLReport* report;
-        report = new XMLReport(proj, fileName, getFile(), getLine());
-        report->setMasterFile(TRUE);
-        report->addTaskAttribute("all");
+        delete rep;
         proj->addReport(report);
     }
 
