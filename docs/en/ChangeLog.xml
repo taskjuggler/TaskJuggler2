@@ -770,6 +770,9 @@ directory where you started the program.</para></listitem>
 <listitem><para>Fixed build problems in the doc directory on Debian
 Unstable and FC3.</para></listitem>
 
+<listitem><para>Fixed generation of reports with absolute file
+names.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

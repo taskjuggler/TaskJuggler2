@@ -89,15 +89,25 @@ Report::open()
     }
     else
     {
-        QString path;
-        if (defFileName[0] == '/')
-            path = defFileName.left(defFileName.findRev('/', -1) + 1);
-        f.setName(path + fileName);
+        QString absFileName = fileName;
+        // Check if the fileName is not an absolute file name.
+        if (fileName[0] != '/')
+        {
+            // Prepend the path of the file where the report was defined, so
+            // relative report file names are always interpreted relative to
+            // their definition.
+            QString path;
+            if (defFileName[0] == '/')
+                path = defFileName.left(defFileName.findRev('/', -1) + 1);
+            absFileName = path + fileName;
+        }
+        f.setName(absFileName);
+
         if (!f.open(IO_WriteOnly))
         {
             TJMH.errorMessage
                 (QString(i18n("Cannot open report file %1!\n"))
-                 .arg((path + fileName).latin1()));
+                 .arg(absFileName.latin1()));
             return FALSE;
         }
     }

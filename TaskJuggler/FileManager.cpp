@@ -114,6 +114,8 @@ FileManager::addFile(const KURL& url, const KURL& newURL)
     // Add new file to list of managed files.
     ManagedFileInfo* mfi = new ManagedFileInfo(this, url);
     files.append(mfi);
+    // First show the file with the old name so it get's loaded.
+    showInEditor(url);
     mfi->saveAs(newURL);
 
     // Insert the file into the browser and update the directory hierachy if
