@@ -36,16 +36,17 @@ public:
 
    /**
     * @returns a list of bookings for the person identified by the kotrusID
-    * for all projects except the one given in skipProjectID. If skipProjectID
+	* for all projects except the one given in skipProjectID. If skipProjectID
     * is 0, all projects are in the return list.
     * The member task remains emtpy in the bookings.
-    * @param kotrusID is the email address of the user for whom the projects should be loaded
-    * @param skipProjectID points to a project which should be excluded. Pass zero for getting
+	* @param kotrusID is the email address of the user for whom the projects should be loaded
+	* @param skipProjectID points to a project which should be excluded. Pass zero for getting
     *        all projects.
     * @param user is the user ID of the person locking the bookings.
     *
     */
-   BookingList loadBookings( const QString& kotrusID, const QString& skipProjectID, int user=0 );
+   BookingList loadBookings( const QString& kotrusID,
+							 const QStringList& skipProjectIDs, int user=0 );
 
    int         saveBookings( const QString& kotrusID , const QString& projectID,
 			     const BookingList&, int lockedFor  );
@@ -59,8 +60,10 @@ public:
    kotrusMode  getKotrusMode() const { return mode; }
    
 private:
-   BookingList loadBookingsDB( const QString& kotrusID, const QString& skipProjectID, int user=0 );
-   BookingList loadBookingsXML( const QString& kotrusID, const QString& skipProjectID, int user=0 );
+   BookingList loadBookingsDB( const QString& kotrusID,
+							   const QStringList& skipProjectIDs, int user=0 );
+   BookingList loadBookingsXML( const QString& kotrusID,
+							   	const QStringList& skipProjectIDs, int user=0 );
 
    int         saveBookingsXML( const QString& kotrusID , const QString& projectID,
 				const BookingList&, int lockedFor  );

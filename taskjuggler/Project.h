@@ -29,6 +29,8 @@
 #include "ExportReport.h"
 #include "ReportXML.h"
 
+class Kotrus;
+
 class Project
 {
 public:
@@ -85,9 +87,7 @@ public:
 
 	void addResource(Resource* r)
 	{
-	   r->dbLoadBookings( r->getKotrusId(), 0 );
 		resourceList.append(r);
-		
 	}
 	Resource* getResource(const QString& id)
 	{
@@ -168,6 +168,12 @@ public:
 		return ((double) secs / (dailyWorkingHours * ONEHOUR));
 	}
 
+	void setKotrus(Kotrus* k);
+	Kotrus* getKotrus() const { return kotrus; }
+
+	bool readKotrus();
+	bool updateKotrus();
+
 	TaskList getTaskList() { return taskList; }
 	ResourceList getResourceList() { return resourceList; }
 	AccountList getAccountList() { return accountList; }
@@ -245,10 +251,11 @@ private:
 	VacationList vacationList;
 	AccountList accountList;
 
+	Kotrus* kotrus;
 	TaskList activeAsap;
 	TaskList activeAlap;
 
-	ReportXML *xmlreport;
+	ReportXML* xmlreport;
    
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;

@@ -17,6 +17,7 @@
 
 #include "Project.h"
 #include "Utility.h"
+#include "kotrus.h"
 
 int Project::debugLevel = 0;
 
@@ -38,7 +39,8 @@ Project::Project()
 	rate = 0.0;
 	currency = "";
 	currencyDigits = 3;
-	xmlreport = 0L;
+	kotrus = 0;
+	xmlreport = 0;
 }
 
 bool
@@ -265,6 +267,14 @@ Project::checkSchedule()
 }
 
 void
+Project::setKotrus(Kotrus* k)
+{
+	if (kotrus)
+		delete kotrus;
+	kotrus = k;
+}
+
+void
 Project::generateReports()
 {
 	if (debugLevel > 0)
@@ -354,3 +364,22 @@ Project::addActiveTask(Task* t)
 		}
 	}
 }
+
+bool
+Project::readKotrus()
+{
+	if (!kotrus)
+		return TRUE;
+		
+	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
+		r->dbLoadBookings(r->getKotrusId(), 0);
+
+	return TRUE;
+}
+
+bool
+Project::updateKotrus()
+{
+	return TRUE;
+}
+

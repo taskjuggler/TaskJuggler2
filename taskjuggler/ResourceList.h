@@ -164,7 +164,8 @@ public:
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
-	bool dbLoadBookings(const QString& kotrusID, const QString& skipProjectID);
+	bool dbLoadBookings(const QString& kotrusID,
+					   	const QStringList& skipProjectIDs);
 
         QDomElement xmlIDElement( QDomDocument& doc ) const
         {

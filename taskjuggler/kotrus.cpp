@@ -180,18 +180,21 @@ void Kotrus::unlockBookings( const QString& kotrusID )
 
 
 			   
-BookingList Kotrus::loadBookings( const QString& kotrusID, const QString& skipProjectID, int user )
+BookingList Kotrus::loadBookings( const QString& kotrusID,
+								  const QStringList& skipProjectIDs, int user )
 {
    
    connect();
-   if( mode == DB ) return( loadBookingsDB( kotrusID, skipProjectID, user ));
-   if( mode == XML ) return( loadBookingsXML( kotrusID, skipProjectID, user ));
+   if( mode == DB ) return( loadBookingsDB( kotrusID, skipProjectIDs, user ));
+   if( mode == XML ) return( loadBookingsXML( kotrusID, skipProjectIDs, user ));
 
    BookingList blist;
    return( blist );
 }
 
-BookingList Kotrus::loadBookingsXML( const QString& kotrusID, const QString& skipProjectID, int user )
+BookingList Kotrus::loadBookingsXML( const QString& kotrusID,
+									 const QStringList& skipProjectIDs,
+									 int user )
 {
    BookingList blist;
    /* TODO */
@@ -199,7 +202,9 @@ BookingList Kotrus::loadBookingsXML( const QString& kotrusID, const QString& ski
    return( blist );
 }
 
-BookingList Kotrus::loadBookingsDB( const QString& kotrusID, const QString& skipProjectID, int user )
+BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
+								   	const QStringList& skipProjectIDs,
+								   	int user )
 {
    QSqlCursor cur( "ktBookings" );
    BookingList blist;
@@ -214,10 +219,11 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID, const QString& skip
    
    if( pid > 0 )
    {
+	   // TODO: Extend search to multiple skipProjectIDs
       QString sql( "select kt.name, UNIX_TIMESTAMP(b.startTS), UNIX_TIMESTAMP(b.endTS),"
 		   "b.projectID, b.LockTime, b.lockedBy "
 		   "from kt, ktBookings b where b.ktNo=kt.ktNo AND "
-		   "b.projectID    !='" + QString(skipProjectID) +"'"
+		   "b.projectID    !='" + QString(skipProjectIDs[0]) +"'"
 		   + " AND b.userID =" + QString::number(pid)
 		   + " ORDER BY b.startTS, b.projectID" );
 

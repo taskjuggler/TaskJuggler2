@@ -17,9 +17,6 @@
 #include "Project.h"
 #include "kotrus.h"
 
-
-extern Kotrus *kotrus;
-
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
  * division. We therefor use a buffer that stores the index of the
@@ -485,15 +482,12 @@ Resource::getActualProjectIDs(const Interval& period, Task* task)
 
 /* retrieve all bookings _not_ belonging to this project */
 bool
-Resource::dbLoadBookings( const QString& kotrusID, const QString& skipProjectID )
+Resource::dbLoadBookings(const QString& kotrusID,
+						 const QStringList& skipProjectIDs)
 {
-   bool result = true;
-
-   if( ! kotrus ) return( false );
-
-   BookingList blist = kotrus->loadBookings( kotrusID, skipProjectID );
-   
-   return( result );
+	BookingList blist = project->getKotrus()->loadBookings
+		(kotrusID, skipProjectIDs);
+	return TRUE;   
 }
 
 bool

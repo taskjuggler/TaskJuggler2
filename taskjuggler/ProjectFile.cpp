@@ -24,8 +24,6 @@
 #include "ExpressionTree.h"
 #include "kotrus.h"
 
-extern Kotrus *kotrus;
-
 #define READ_DATE(a, b) \
 (token == a) \
 { \
@@ -796,26 +794,21 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
-			else if( token == "kotrusmode" )
+			else if (token == "kotrusmode")
 			{
-			   if( kotrus )
-			   {
-			      if( nextToken(token) != STRING )
-			      {
-				 kotrus->setKotrusMode( "NoKotrus" );
-			      }
-			      else
-			      {
-				 if( token == "db" || token == "xml" || token == "nokotrus" )
-				    kotrus->setKotrusMode( token );
-				 else
-				 {
-				    fatalError( "Unknown kotrus-mode");
-				    return( false );
-				 }
-			      }
-			   }
-			   break;
+				if (nextToken(token) != STRING ||
+					(token != "db" && token != "xml" && token != "nokotrus"))
+				{
+					fatalError("Unknown kotrus mode");
+					return FALSE;
+				}
+				if (token != "nokotrus")
+				{
+					Kotrus* kotrus = new Kotrus();
+					kotrus->setKotrusMode(token);
+					proj->setKotrus(kotrus);
+				}
+				break;
 			}
 			// break missing on purpose!
 		default:
