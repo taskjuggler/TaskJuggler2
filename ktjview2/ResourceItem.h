@@ -7,8 +7,8 @@
 #include <klistview.h>
 
 /**
- * This class represents an item in the tasks listview.
- * @short Task item (listview)
+ * This class represents an item in the resource listview.
+ * @short Resource item (listview)
  * @author Lukas Tinkl <lukas.tinkl@suse.cz>
  */
 class ResourceItem: public KListViewItem
