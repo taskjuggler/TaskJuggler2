@@ -493,6 +493,7 @@ void ktjview2::enableResourceActions( bool enable )
 void ktjview2::enableResUsageActions( bool enable )
 {
     m_resScaleAction->setEnabled( enable );
+    m_ruFindAction->setEnabled( enable );
 }
 
 void ktjview2::expandAll()
