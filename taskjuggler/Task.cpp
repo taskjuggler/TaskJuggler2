@@ -916,9 +916,15 @@ Task::earliestStart() const
         if ((*tli)->end > date)
             date = (*tli)->end;
     }
+    /* If any of the parent tasks has an explicit start date, the task must
+     * start at or after this date. */
+    for (Task* t = getParent(); t; t = t->getParent())
+        if (t->start > date)
+            return t->start;
+    
     if (date == 0)
         return 0;
-
+   
     return date + 1;
 }
 
@@ -934,6 +940,12 @@ Task::latestEnd() const
         if (date == 0 || (*tli)->start < date)
             date = (*tli)->start;
     }
+    /* If any of the parent tasks has an explicit end date, the task must
+     * end at or before this date. */
+    for (Task* t = getParent(); t; t = t->getParent())
+        if (t->end != 0 && t->end < date)
+            return t->end;
+
     if (date == 0)
         return 0;
 

@@ -711,6 +711,9 @@ the rating can be listed in the HTML and CSV report.</para></listitem>
 <listitem><para>Added some missing properties to the documentation.
 Mainly the sorting criterias were missing.</para></listitem>
 
+<listitem><para>Fixed scheduling of nested task that had an external
+dependency and an inherited start/end date.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
