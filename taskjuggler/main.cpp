@@ -106,7 +106,11 @@ int main(int argc, char *argv[])
 		return (1);
 
 	if (updateKotrusDB)
-		p.updateKotrus();
+		if (parseErrors)
+			qWarning("Due to parse errors the Kotrus DB will NOT be "
+					 "updated.");
+		else
+			p.updateKotrus();
 
 	p.generateReports();
 
