@@ -47,18 +47,27 @@ public:
      * @param multi whether multiple selection is allowed
      */
     SelectDialog( TaskListIterator it, bool multi = false, QWidget* parent = 0, const char* name = 0 );
+
     /**
      * Construct a dialog for selecting resources
      * @param it iterator over list of resources
      * @param multi whether multiple selection is allowed
      */
     SelectDialog( ResourceListIterator it, bool multi = false, QWidget* parent = 0, const char* name = 0 );
+
+     /**
+     * Construct a dialog for selecting flags
+     * @param it iterator over list of flags
+     * @param multi whether multiple selection is allowed
+     */
+    SelectDialog( QStringList::ConstIterator it, bool multi = false, QWidget* parent = 0, const char* name = 0 );
+
     ~SelectDialog();
 
     /**
      * Contains the result list of task/resource IDs selected by the user
      */
-    QStringList resultList() const;
+    const QStringList resultList() const;
 
 private:
     /**

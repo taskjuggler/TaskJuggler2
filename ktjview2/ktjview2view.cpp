@@ -840,6 +840,15 @@ bool ktjview2View::filterForTasks( int id )
             return false;
         resultList = dlg.resultList();
     }
+    else if ( id == 7 )         // flag selection dialog
+    {
+        SelectDialog dlg( m_project->getAllowedFlags().begin(), true, this );
+        if ( dlg.exec() != QDialog::Accepted )
+            return false;
+        resultList = dlg.resultList();
+    }
+
+    kdDebug() << "result list: " << resultList << endl;
 
     QListViewItemIterator it( m_taskView );
 
@@ -886,6 +895,13 @@ bool ktjview2View::filterForTasks( int id )
                 showIt = showIt || task->isDutyOf( 0, m_project->getResource( ( *it ) ) );
             }
         }
+        else if ( id == 7 )     // Having Flag
+        {
+            for ( QStringList::ConstIterator it = resultList.begin(); it != resultList.end(); ++it )
+            {
+                showIt = showIt || task->hasFlag( ( *it ) );
+            }
+        }
 
         ( *it )->setVisible( showIt );
         ++it;
@@ -898,6 +914,7 @@ bool ktjview2View::filterForResources( int id )
 {
     time_t start, end;
     time_t vacation;
+    QStringList resultList;
 
     if ( id == 1 )              // on vacation
     {
@@ -914,6 +931,13 @@ bool ktjview2View::filterForResources( int id )
             return false;
         start = dlg.getStartDate().toTime_t();
         end = dlg.getEndDate().toTime_t();
+    }
+    else if ( id == 4 )         // flag selection dialog
+    {
+        SelectDialog dlg( m_project->getAllowedFlags().begin(), true, this );
+        if ( dlg.exec() != QDialog::Accepted )
+            return false;
+        resultList = dlg.resultList();
     }
 
     bool showIt;
@@ -941,6 +965,13 @@ bool ktjview2View::filterForResources( int id )
         else if ( id == 3 )     // allocated
         {
             showIt = ( res->isAllocated( 0, Interval( start, end ) ) ); // FIXME scenario
+        }
+        else if ( id == 4 )     // having flag
+        {
+            for ( QStringList::ConstIterator it = resultList.begin(); it != resultList.end(); ++it )
+            {
+                showIt = showIt || res->hasFlag( ( *it ) );
+            }
         }
 
         ( *it )->setVisible( showIt );

@@ -123,7 +123,7 @@ void ktjview2::setupActions()
                                                 this, SLOT( slotFilterForTasks() ), actionCollection(), "filter_for_tasks" );
     m_taskFilterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
                       << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
-                      << i18n( "Using Resource..." );
+                      << i18n( "Using Resource..." ) << i18n( "Having Flag..." );
 
     m_filterForTasksAction->setItems( m_taskFilterItems );
     m_filterForTasksAction->setCurrentItem( 0 ); // All Tasks by default
@@ -169,7 +169,7 @@ void ktjview2::setupActions()
     m_filterForResourcesAction = new KSelectAction( i18n( "&Filter for: All Resources" ), "filter", KShortcut(),
                                                     this, SLOT( slotFilterForResources() ), actionCollection(), "filter_for_resources" );
     m_resourceFilterItems << i18n( "All Resources" ) << i18n( "Resources On Vacation..." ) << i18n( "Resources On Shift..." )
-                          << i18n( "Allocated Resources..." );
+                          << i18n( "Allocated Resources..." ) << i18n( "Having Flag..." );
 
     m_filterForResourcesAction->setItems( m_resourceFilterItems );
     m_filterForResourcesAction->setCurrentItem( 0 ); // All Resources by default

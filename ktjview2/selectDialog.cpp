@@ -63,6 +63,24 @@ SelectDialog::SelectDialog( ResourceListIterator it, bool multi, QWidget* parent
     }
 }
 
+SelectDialog::SelectDialog( QStringList::ConstIterator it, bool multi, QWidget* parent, const char* name )
+    : KDialogBase( parent, name, true, i18n( "Flags" ), Ok|Cancel, Ok ), m_multi( multi )
+{
+    init();
+    lbSelect->setText( i18n( "Select flags:" ) );
+    lvContents->removeColumn( 1 );
+    lvContents->setColumnText( 0, i18n( "Flag" ) );
+
+    // fill the listview with flags
+    for ( ; *it != 0; ++it )
+    {
+        if ( m_multi )
+            ( void ) new QCheckListItem( lvContents, ( *it ), QCheckListItem::CheckBox );
+        else
+            ( void ) new KListViewItem( lvContents, ( *it ) );
+    }
+}
+
 SelectDialog::~SelectDialog()
 {
     // no need to delete child widgets, Qt does it all for us
@@ -86,7 +104,7 @@ void SelectDialog::init()
     clearWState( WState_Polished );
 }
 
-QStringList SelectDialog::resultList() const
+const QStringList SelectDialog::resultList() const
 {
     QStringList result;
 
