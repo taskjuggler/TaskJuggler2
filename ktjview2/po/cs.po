@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-09 14:42+0100\n"
+"POT-Creation-Date: 2005-03-03 14:21+0100\n"
 "PO-Revision-Date: 2005-02-09 14:44+0100\n"
 "Last-Translator: Lukáš Tinkl <lukas@kde.org>\n"
 "Language-Team: Czech <kde-czech-apps@lists.sf.net>\n"
@@ -15,7 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.10\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: editorView.cpp:66
 msgid ""
@@ -131,7 +132,8 @@ msgid "Name"
 msgstr "Jméno"
 
 #: ktjview2.cpp:115
-msgid "The file '%1' can not be found; it was probably removed from the system."
+msgid ""
+"The file '%1' can not be found; it was probably removed from the system."
 msgstr "Nelze najít soubor '%1', pravděpodobně byl odstraněn ze systému."
 
 #: ktjview2.cpp:156
@@ -495,7 +497,8 @@ msgid "Allocations"
 msgstr "Přiřazení"
 
 #: ktjview2view.cpp:190
-msgid "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
+msgid ""
+"<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
 msgstr ""
 "<h1>Žádný projekt není načten</h1><p>Zvolte 'Soubor -> Otevřít...' a nějaký "
 "zvolte.</p>"
@@ -513,8 +516,10 @@ msgid "Opening XML project"
 msgstr "Otevírání XML projektu"
 
 #: ktjview2view.cpp:280 ktjview2view.cpp:309
-msgid "Taskjuggler failed to open the project file. Please check your permissions."
-msgstr "Nelze otevřít soubor s projektem. Zkontrolujte svá přístupová práva k němu."
+msgid ""
+"Taskjuggler failed to open the project file. Please check your permissions."
+msgstr ""
+"Nelze otevřít soubor s projektem. Zkontrolujte svá přístupová práva k němu."
 
 #: ktjview2view.cpp:286
 msgid "Parsing XML project"
@@ -1332,4 +1337,3 @@ msgstr "Vyjmout položku"
 #: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
 msgid "Tasklink"
 msgstr "Propojení úkolů"
-
