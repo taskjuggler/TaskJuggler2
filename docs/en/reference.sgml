@@ -613,6 +613,9 @@ depends</member>
 <member><computeroutput>endbufferstart</computeroutput></member>
 <member>The start time of the end buffer</member>
 
+<member><computeroutput>flags</computeroutput></member>
+<member>The list of flags assigned to the task or resource</member>
+
 <member><computeroutput>follows</computeroutput></member>
 <member>The task index of the tasks that depend on this task</member>
 

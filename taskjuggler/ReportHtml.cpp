@@ -413,7 +413,10 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			  << (showActual ? "2" : "1")
 			  << "\" style=\"text-align:left\">"
 			  << "<span style=\"font-size:0.8em\">";
-			s << htmlFilter(t->getNote());
+			if (t->getNote().isEmpty())
+				s << "&nbsp;";
+			else
+				s << htmlFilter(t->getNote());
 			s << "</span></td>" << endl;
 		}
 		else if (*it == KW("costs"))
@@ -425,6 +428,8 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		else if (*it == KW("priority"))
 			textTwoRows(QString().sprintf("%d", t->getPriority()), r != 0,
 						"right");
+		else if (*it == KW("flags"))
+			flagList(t);
 		else if (*it == KW("daily"))
 			dailyTaskPlan(t, r);
 		else if (*it == KW("weekly"))
@@ -583,6 +588,8 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 				"right");
 		else if (*it == KW("priority"))
 			emptyPlan(t != 0);
+		else if (*it == KW("flags"))
+			flagList(r);
 		else if (*it == KW("daily"))
 			dailyResourcePlan(r, t);
 		else if (*it == KW("weekly"))
@@ -765,6 +772,8 @@ ReportHtml::generateTableHeader()
 			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Effort</td>";
 		else if (*it == KW("maxeffort"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Effort</td>";
+		else if (*it == KW("flags"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">Flags</td>";
 		else if (*it == KW("rate"))
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">Rate";
@@ -1050,7 +1059,7 @@ ReportHtml::textTwoRows(const QString& text, bool light, const QString& align)
 	  << "\" rowspan=\""
 	  << (showActual ? "2" : "1") << "\"";
 	if (!align.isEmpty())
-		s << " style=\"text-align:" << align << " white-space:nowrap\"";
+		s << " style=\"text-align:" << align << "; white-space:nowrap\"";
 	s << ">" << text << "</td>";
 }
 
@@ -1651,6 +1660,23 @@ ReportHtml::actualSchedule(Resource* r, Task* t)
 		s << "&nbsp;";
 
 	s << "</td>" << endl;
+}
+
+void
+ReportHtml::flagList(CoreAttributes* c)
+{
+	FlagList allFlags = c->getFlagList();
+	QString flagStr;
+	for (QStringList::Iterator it = allFlags.begin();
+		 it != allFlags.end(); ++it)
+	{
+		if (it != allFlags.begin())
+			flagStr += ", ";
+		flagStr += htmlFilter(*it);
+	}
+	if (flagStr.isEmpty())
+		flagStr = "&nbsp";
+	textTwoRows(flagStr, false, "left");
 }
 
 QString

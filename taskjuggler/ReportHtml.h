@@ -89,6 +89,8 @@ public:
 	void planSchedule(Resource* r, Task* t);
 	void actualSchedule(Resource* r, Task* t);
 
+	void flagList(CoreAttributes* c);
+
 	void registerUrl(const QString& key, const QString& url = "")
 	{
 		urls[key] = url;
