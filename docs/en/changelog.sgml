@@ -315,6 +315,14 @@ resource reports can now be turned on and off using the <link
 linkend="htmltaskreport_barlabels"> barlabels </link>
 attribute.</para></listitem>
 
+<listitem><para>The HTML reports feature now 3 kind of index numbers.
+The sequence number reflectes the order of declaration in the project
+files. The index is a logical order based on the hierachy and other
+attributes. The number is the index in the generated list. What used
+to be the <computeroutput>no</computeroutput> <link
+linkend="htmltaskreport_columns">column</link> is now the
+<computeroutput>index</computeroutput> column.</para></listitem>
+
 <listitem><para>The sequence of properties in the project file can now
 be used as sorting criteria as well. </para></listitem>
 
@@ -322,4 +330,3 @@ be used as sorting criteria as well. </para></listitem>
 
 </sect2>
 </sect1>
-

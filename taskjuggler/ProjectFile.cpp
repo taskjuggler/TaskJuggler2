@@ -1294,9 +1294,6 @@ ProjectFile::readTask(Task* parent)
 	Task* task = new Task(proj, id, name, parent, getFile(), getLine());
 
 	proj->addTask(task);
-	if (parent)
-		parent->addSub(task);
-
 
 	if (!readTaskBody(task))
 		return FALSE;
@@ -1749,6 +1746,8 @@ ProjectFile::readResource(Resource* parent)
 
 	Resource* r = new Resource(proj, id, name, parent);
 
+	proj->addResource(r);
+
 	TokenType tt;
 	QString token;
 	if ((tt = nextToken(token)) == LCBRACE)
@@ -1759,8 +1758,6 @@ ProjectFile::readResource(Resource* parent)
 	}
 	else
 		returnToken(tt, token);
-
-	proj->addResource(r);
 
 	return TRUE;
 }
@@ -2118,8 +2115,6 @@ ProjectFile::readAccount(Account* parent)
 		acctType = parent->getAcctType();
 
 	Account* a = new Account(proj, id, name, parent, acctType);
-	if (parent)
-		parent->addSub(a);
 
 	TokenType tt;
 	QString token;

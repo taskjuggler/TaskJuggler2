@@ -37,10 +37,10 @@ public:
 
 	enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
 
-	void generatePlanTask(Task* t, Resource* r);
+	void generatePlanTask(Task* t, Resource* r, uint no);
 	void generateActualTask(Task* t, Resource* r);
 
-	void generatePlanResource(Resource* r, Task* t);
+	void generatePlanResource(Resource* r, Task* t, uint no);
 	void generateActualResource(Resource* r, Task* t);
 
 	void reportHTMLHeader();

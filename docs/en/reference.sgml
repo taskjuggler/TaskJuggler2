@@ -644,6 +644,11 @@ depends</member>
 <member><computeroutput>id</computeroutput></member>
 <member>The global <link linkend="id">ID</link> of a task</member>
 
+<member><computeroutput>index</computeroutput></member>
+<member>The index of a task. The index is calculated from the
+hierachical structure of the list as well as the start and end dates.
+</member>
+
 <member><computeroutput>kotrusid</computeroutput></member>
 <member>The KotrRUs ID of the resource</member>
 
@@ -672,7 +677,8 @@ depends</member>
 <member>The name of a task, resource, or account</member>
 
 <member><computeroutput>no</computeroutput></member>
-<member>The task index</member>
+<member>The task index in the list. It starts with 1 and increases for
+every listed item by 1.</member>
 
 <member><computeroutput>note</computeroutput></member>
 <member>The description of the task</member>
@@ -695,6 +701,11 @@ responsible </member>
 
 <member><computeroutput>responsible</computeroutput></member>
 <member>The name of the resource responsible for a task</member>
+
+<member><computeroutput>seqno</computeroutput></member>
+<member>The task index in the order of finished declarations. Each
+time a task declaration is completed, the sequence number is increased
+by 1. </member>
 
 <member><computeroutput>start</computeroutput></member>
 <member>The start date of a task</member>

@@ -53,7 +53,7 @@ HTMLResourceReport::generate()
 	for (Resource* r = filteredResourceList.first(); r != 0;
 		 r = filteredResourceList.next())
 	{
-		generatePlanResource(r, 0);
+		generatePlanResource(r, 0, filteredResourceList.at() + 1);
 		if (showActual)
 			generateActualResource(r, 0);
 
@@ -64,7 +64,7 @@ HTMLResourceReport::generate()
 		for (Task* t = filteredTaskList.first(); t != 0;
 			 t = filteredTaskList.next())
 		{
-			generatePlanTask(t, r);
+			generatePlanTask(t, r, filteredTaskList.at() + 1);
 			if (showActual)
 				generateActualTask(t, r);
 		}

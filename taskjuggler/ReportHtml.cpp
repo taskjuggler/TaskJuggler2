@@ -323,13 +323,19 @@ ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e,
 }
 
 void
-ReportHtml::generatePlanTask(Task* t, Resource* r)
+ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 {
 	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == KW("no"))
+		if (*it == KW("seqno"))
+			textTwoRows((r == 0 ? QString().sprintf("%d.", t->getSequenceNo()) :
+						 QString("")), r != 0, "");
+		else if (*it == KW("no"))
+			textTwoRows((r == 0 ? QString().sprintf("%d.", no) :
+						 QString("")), r != 0, "");
+		else if (*it == KW("index"))
 			textTwoRows((r == 0 ? QString().sprintf("%d.", t->getIndex()) :
 						 QString("")), r != 0, "");
 		else if (*it == KW("id"))
@@ -521,13 +527,19 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 }
 
 void
-ReportHtml::generatePlanResource(Resource* r, Task* t)
+ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 {
 	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == KW("no"))
+		if (*it == KW("seqno"))
+			textTwoRows((t == 0 ? QString().sprintf("%d.", r->getSequenceNo()) :
+						 QString("")), t != 0, "");
+		else if (*it == KW("no"))
+			textTwoRows((t == 0 ? QString().sprintf("%d.", no) :
+						 QString("")), t != 0, "");
+		else if (*it == KW("index"))
 			textTwoRows((t == 0 ? QString().sprintf("%d.", r->getIndex()) :
 						 QString("")), t != 0, "");
 		else if (*it == KW("id"))
@@ -737,8 +749,12 @@ ReportHtml::generateTableHeader()
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == KW("no"))
+		if (*it == KW("seqno"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">Seq. No.</td>";
+		else if (*it == KW("no"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
+		else if (*it == KW("index"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">Index No.</td>";
 		else if (*it == KW("id"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">ID</td>";
 		else if (*it == KW("name"))

@@ -67,7 +67,11 @@ class CoreAttributes
 public:
 	CoreAttributes(Project* p, const QString& i, const QString& n,
 				   CoreAttributes* parent_) :
-		project(p), id(i), name(n), parent(parent_) { }
+		project(p), id(i), name(n), parent(parent_)
+	{
+		if (parent_)
+			parent_->sub.append(this);
+   	}
 	virtual ~CoreAttributes() { }
 
 	virtual const char* getType() { return "CoreAttributes"; }
@@ -91,7 +95,6 @@ public:
 
 	uint treeLevel() const;
 
-	void addSub(CoreAttributes* c) { sub.append(c); }
 	virtual CoreAttributesList getSubList()  const { return sub; }
 
 	void addFlag(QString flag) { flags.addFlag(flag); }

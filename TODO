@@ -1,11 +1,11 @@
 For 1.4 release
-- clean up index, no, and sequence number mess in reports
 - valgrind
 - proofread documentation
 - run HTML checker on reports
 
 After 1.4:
 - Add support for completed and status column to HTML task reports.
+- Report filter for task status (done/WIP/not started)
 - Implement 'mandatory' attribute for task allocations.
 - Allocation selection by skill set.
 - Improve scheduler performance.

@@ -18,6 +18,6 @@ for d in $dirs ; do
   fi
 done
 
-echo $errors test failed!
+echo $errors errors detected!
 exit $errors
 

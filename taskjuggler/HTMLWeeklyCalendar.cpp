@@ -128,7 +128,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 								"style=\"font-size:100%\">" << endl;
 							first = FALSE;
 						}
-						generatePlanTask(t, 0);
+						generatePlanTask(t, 0, filteredTaskList.at() + 1);
 					}
 				}
 				if (!first)
@@ -169,7 +169,8 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 								"style=\"font-size:100%\">" << endl;
 							first = FALSE;
 						}
-						generatePlanResource(r, 0);
+						generatePlanResource(r, 0,
+											 filteredResourceList.at() + 1);
 					}
 				}
 				if (!first)
