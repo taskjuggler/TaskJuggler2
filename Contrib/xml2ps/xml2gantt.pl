@@ -4,7 +4,7 @@
 # !!!  This Software is __ALPHA__  !!!
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-# xml2ps.pl - gantt chart generator for TaskJuggler
+# xml2gantt.pl - gantt chart generator for TaskJuggler
 #
 # Copyright (c) 2001, 2002 by Remo Behn <ray@suse.de>
 #
@@ -35,7 +35,8 @@ package tjTask;
                                 h_maxStart h_maxEnd
                                 h_actualStart h_actualEnd
                                 h_planStart h_planEnd
-                                x1 y1 x2 y2 ) ],
+                                x1 y1 x2 y2
+                                label label_x label_y ) ],
         struct          => [ qw(Followers Depends Previous Allocations bookedResources) ];
 
 use XML::Parser;
@@ -238,6 +239,7 @@ sub _make_postscript_file {
       _draw_grid($p);
       _draw_task($p, $page_x, $page_y);
       _draw_depends($p);
+      _draw_label($p);
 
       #-- rahmen um alles
       #$p->setcolour(0,0,0);
@@ -324,6 +326,17 @@ sub __get_Index_from_Task {
     }
 }
 
+sub _draw_label {
+  my $p = shift;
+  $p->setcolour(0,0,0);
+  foreach my $task (@all_tasks) {
+    print "+";
+    $p->setfont("Helvetica", 8) if ( $task->Type eq 'Task' );
+    $p->setfont("Helvetica", 6) if ( $task->Type eq 'Milestone' );
+    $p->text($task->label_x, $task->label_y, $task->label);
+  }
+}
+
 sub _draw_task {
   my ($p, $page_x, $page_y) = @_;
   foreach my $task (@all_tasks) {
@@ -381,8 +394,11 @@ sub _draw_task {
         $p->setcolour(0,0,0);
         $p->box($x1, $y1, $x2, $y2, 0);
         #-- text auf task
-        $p->setfont("Helvetica", 8);
-        $p->text($x1+1, $y1-($task_height/1.5), $name);
+        $task->label("$name");
+        $task->label_x($x1+1);
+        $task->label_y($y1-($task_height/1.5));
+        #$p->setfont("Helvetica", 8);
+        #$p->text($x1+1, $y1-($task_height/1.5), $name);
     }
     if ( $task->Type eq 'Milestone' ) {
         $p->setcolour(0,0,0);
@@ -391,7 +407,11 @@ sub _draw_task {
         $p->setfont("Helvetica", 6);
         my $am = sprintf('%02d', $start_month);
         my $ad = sprintf('%02d', $start_day);
-        $p->text($x1+2, $y1-($task_height/2), "$name ($am-$ad)");
+        #-- text
+        $task->label("$name ($am-$ad)");
+        $task->label_x($x1+2);
+        $task->label_y($y1-($task_height/2));
+        #$p->text($x1+2, $y1-($task_height/2), "$name ($am-$ad)");
     }
   }
 }
