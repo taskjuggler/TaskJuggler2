@@ -433,6 +433,15 @@ QString time2rfc(time_t t)
 	return buf;
 }
 
+QString time2user(time_t t, const QString& timeFormat)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[128];
+
+	strftime(buf, 127, timeFormat, tms);
+	return buf;
+}
+
 QString time2time(time_t t)
 {
 	struct tm* tms = localtime(&t);

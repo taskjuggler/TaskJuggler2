@@ -1,6 +1,6 @@
-project prj "htmltaskreport test" "1.0" 2003-01-01-0:00-GMT
-2003-04-01-00:00-GMT {
+project prj "htmltaskreport test" "1.0" 2003-01-01-0:00-GMT 2003-04-01-00:00-GMT {
 	timezone "GMT"
+	timeformat "%Y-%m-%d %H:%M:%S %Z"	
 }
 
 flags flag1, flag2, flag3, flag4

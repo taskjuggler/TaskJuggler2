@@ -1,507 +1,540 @@
 task container3 "Container3" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c21 "-D --> |" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c28 "-D <-- |" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c11 "|D --> |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c14 "|D <-- |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c9 "|D x-> -" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c19 "-D x-> -" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container3.c24 "-D <-x |" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4 "Container4" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c23 "-D --> |D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c30 "-D <-- |D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c22 "-D --> -D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c29 "-D <-- -D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c13 "|D --> |D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c15 "|D <-- -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c12 "|D --> -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c10 "|D x-> -D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c20 "-D x-> -D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c25 "-D <-x -D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container4.c26 "-D <-x |D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container1 "Container1" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container1.c3 "| --> |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container1.c6 "| <-- |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container1.c1 "| x-> -" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container1.c16 "- <-x |" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container2 "Container2" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c5 "| --> |D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c8 "| <-- |D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c4 "| --> -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c7 "| <-- -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-19-23:59:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c2 "| x-> -D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c17 "- <-x -D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 task container2.c18 "- <-x |D" {
   start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-17:59:59-+0000
+  end 2003-01-17-18:00:00-+0000
+  planscheduled
   projectid prj
 }
 supplement task container3 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c21 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c28 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c11 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c14 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c9 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c19 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container3.c24 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c23 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c30 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c22 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c29 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c13 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c15 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c12 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c10 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c20 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c25 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container4.c26 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c3 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c6 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c1 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container1.c16 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c5 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c8 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c4 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c7 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c2 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c17 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement task container2.c18 {
   minstart 2003-01-01-00:00:00-+0000
-  maxstart 2003-01-31-00:00:00-+0000
+  maxstart 2003-01-30-23:59:59-+0000
   minend 2003-01-01-00:00:00-+0000
-  maxend 2003-01-31-00:00:00-+0000
+  maxend 2003-01-30-23:59:59-+0000
 }
 supplement resource tux1 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container1.c1
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container1.c1
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container1.c1
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container1.c1
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container1.c1
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container1.c1
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container1.c1
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container1.c1
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container1.c1
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container1.c1
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container1.c1
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container1.c1
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container1.c1
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container1.c1
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container1.c1
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container1.c1
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container1.c1
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container1.c1
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container1.c1
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container1.c1
 }
 supplement resource tux10 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container3.c24
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container3.c24
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container3.c24
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container3.c24
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container3.c24
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container3.c24
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container3.c24
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container3.c24
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container3.c24
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container3.c24
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container3.c24
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container3.c24
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container3.c24
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container3.c24
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container3.c24
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container3.c24
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container3.c24
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container3.c24
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container3.c24
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container3.c24
 }
 supplement resource tux11 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container4.c25
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container4.c25
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container4.c25
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container4.c25
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container4.c25
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container4.c25
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container4.c25
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container4.c25
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container4.c25
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container4.c25
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container4.c25
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container4.c25
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container4.c25
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container4.c25
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container4.c25
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container4.c25
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container4.c25
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container4.c25
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container4.c25
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container4.c25
 }
 supplement resource tux12 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container4.c26
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container4.c26
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container4.c26
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container4.c26
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container4.c26
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container4.c26
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container4.c26
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container4.c26
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container4.c26
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container4.c26
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container4.c26
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container4.c26
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container4.c26
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container4.c26
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container4.c26
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container4.c26
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container4.c26
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container4.c26
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container4.c26
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container4.c26
 }
 supplement resource tux2 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container2.c2
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container2.c2
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container2.c2
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container2.c2
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container2.c2
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container2.c2
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container2.c2
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container2.c2
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container2.c2
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container2.c2
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container2.c2
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container2.c2
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container2.c2
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container2.c2
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container2.c2
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container2.c2
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container2.c2
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container2.c2
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container2.c2
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container2.c2
 }
 supplement resource tux3 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container3.c9
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container3.c9
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container3.c9
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container3.c9
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container3.c9
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container3.c9
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container3.c9
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container3.c9
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container3.c9
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container3.c9
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container3.c9
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container3.c9
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container3.c9
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container3.c9
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container3.c9
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container3.c9
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container3.c9
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container3.c9
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container3.c9
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container3.c9
 }
 supplement resource tux4 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container4.c10
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container4.c10
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container4.c10
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container4.c10
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container4.c10
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container4.c10
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container4.c10
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container4.c10
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container4.c10
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container4.c10
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container4.c10
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container4.c10
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container4.c10
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container4.c10
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container4.c10
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container4.c10
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container4.c10
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container4.c10
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container4.c10
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container4.c10
 }
 supplement resource tux5 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container1.c16
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container1.c16
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container1.c16
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container1.c16
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container1.c16
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container1.c16
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container1.c16
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container1.c16
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container1.c16
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container1.c16
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container1.c16
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container1.c16
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container1.c16
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container1.c16
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container1.c16
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container1.c16
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container1.c16
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container1.c16
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container1.c16
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container1.c16
 }
 supplement resource tux6 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container2.c17
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container2.c17
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container2.c17
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container2.c17
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container2.c17
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container2.c17
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container2.c17
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container2.c17
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container2.c17
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container2.c17
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container2.c17
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container2.c17
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container2.c17
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container2.c17
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container2.c17
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container2.c17
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container2.c17
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container2.c17
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container2.c17
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container2.c17
 }
 supplement resource tux7 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container2.c18
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container2.c18
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container2.c18
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container2.c18
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container2.c18
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container2.c18
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container2.c18
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container2.c18
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container2.c18
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container2.c18
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container2.c18
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container2.c18
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container2.c18
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container2.c18
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container2.c18
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container2.c18
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container2.c18
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container2.c18
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container2.c18
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container2.c18
 }
 supplement resource tux8 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container3.c19
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container3.c19
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container3.c19
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container3.c19
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container3.c19
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container3.c19
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container3.c19
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container3.c19
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container3.c19
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container3.c19
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container3.c19
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container3.c19
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container3.c19
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container3.c19
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container3.c19
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container3.c19
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container3.c19
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container3.c19
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container3.c19
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container3.c19
 }
 supplement resource tux9 {
-  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-11:59:59-+0000 container4.c20
-  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-17:59:59-+0000 container4.c20
-  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-11:59:59-+0000 container4.c20
-  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-17:59:59-+0000 container4.c20
-  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-11:59:59-+0000 container4.c20
-  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-17:59:59-+0000 container4.c20
-  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-11:59:59-+0000 container4.c20
-  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-17:59:59-+0000 container4.c20
-  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-11:59:59-+0000 container4.c20
-  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-17:59:59-+0000 container4.c20
+  planbooking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container4.c20
+  planbooking 2003-01-13-13:00:00-+0000 2003-01-13-18:00:00-+0000 container4.c20
+  planbooking 2003-01-14-09:00:00-+0000 2003-01-14-12:00:00-+0000 container4.c20
+  planbooking 2003-01-14-13:00:00-+0000 2003-01-14-18:00:00-+0000 container4.c20
+  planbooking 2003-01-15-09:00:00-+0000 2003-01-15-12:00:00-+0000 container4.c20
+  planbooking 2003-01-15-13:00:00-+0000 2003-01-15-18:00:00-+0000 container4.c20
+  planbooking 2003-01-16-09:00:00-+0000 2003-01-16-12:00:00-+0000 container4.c20
+  planbooking 2003-01-16-13:00:00-+0000 2003-01-16-18:00:00-+0000 container4.c20
+  planbooking 2003-01-17-09:00:00-+0000 2003-01-17-12:00:00-+0000 container4.c20
+  planbooking 2003-01-17-13:00:00-+0000 2003-01-17-18:00:00-+0000 container4.c20
 }

@@ -1046,6 +1046,18 @@ only be used as the first criteria.</member>
 <para>The start date for the calender view.</para>
 
 </sect2>
+<sect2 id="htmltaskreport_timeformat"><title>timeformat
+&lt;format&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>format:</member><member><link
+linkend="string">STRING</link>/member>
+</simplelist><para>
+
+<para>Specifies time format for time specifications. See <link
+linkend="project_timeformat">timeformat</link> for details.</para>
+
+</sect2>
 <sect2 id="htmltaskreport_url"><title>url &lt;id&gt;
 &lt;href&gt;</title>
 
@@ -1279,6 +1291,186 @@ The value you specifiy should match the settings you specified for
 
 <para>Use the specified day and time for computation of the project status
 instead of the current moment.<para>
+
+</sect2>
+<sect2 id="project_timeformat"><title>timeformat &lt;format&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>format:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>Determins how time specifications in reports look like. It is
+just a global default settings, since it can be specified for each
+report <link linkend="htmltaskreport_timeformat">individually</link>.</para>
+
+<para>
+Ordinary characters placed in the format string are copied to s
+without conversion.  Conversion specifiers are intro­ duced  by  a
+`%' character, and are replaced in s as follows:</para>
+
+<para><simplelist type=horiz columns=2>
+
+<member>%a</member><member>The abbreviated weekday name according to
+the  current locale.</member>
+																								 
+<member>%A</member><member>The full weekday name according  to the
+current locale.</member>
+																																			
+<member>%b</member><member>The abbreviated month name according to the
+current locale.</member>
+
+<member>%B</member><member> The full month name according to
+the current locale.</member>  
+
+<member>%c</member><member> The preferred date and time
+representation for the current locale.</member>
+
+<member>%C</member><member> The century number (year/100) as a 2-digit
+integer.  (SU)</member>
+	
+<member>%d</member><member>The day of the month as a decimal number
+(range  01 to 31).</member>
+
+<member>%D</member><member>Equivalent  to  %m/%d/%y.  (Yecch  -  for
+Americans only.  Americans should note that in other countries %d/%m/%y 
+is rather common.  This means that in international context this format is
+ambiguous  and should not be used.) (SU)</member>
+
+<member>%e</member><member>Like  %d, the day of the month as a decimal number,
+but a leading zero is replaced by a space. (SU)</member>
+	
+<member>%E</member><member>Modifier: use alternative format, see
+below. (SU)</member>
+	
+<member>%F</member><member>Equivalent to %Y-%m-%d (the ISO 8601 date
+format). (C99)</member>
+
+<member>%G</member><member>The ISO 8601 year with century as a decimal
+number.  The 4-digit year corresponding to the ISO week number  (see
+%V). This has the same format and value as %y, except that if the ISO week
+number belongs to  the previous or next year, that year is used
+instead. (TZ)</member>
+	
+<member>%g</member><member>Like %G, but without century, i.e., with a  2-digit
+year (00-99). (TZ)</member>
+	
+<member>%h</member><member>Equivalent to %b. (SU)</member>
+	
+<member>%H</member><member>The  hour as a decimal number using a
+24-hour clock (range 00 to 23).</member>
+											 
+<member>%I</member><member>The hour as a decimal number using a
+12-hour  clock (range 01 to 12).</member>
+																						
+<member>%j</member><member>The  day of the year as a decimal number
+(range 001 to 366).</member>
+
+<member>%k</member><member>The hour (24-hour clock) as a decimal
+number (range 0 to 23); single digits are preceded by a blank.  (See
+also %H.) (TZ)</member>
+	
+<member>%l</member><member>The hour (12-hour clock) as a decimal
+number (range 1 to 12); single digits are preceded by a blank. (See
+also %I.) (TZ)</member>
+	
+<member>%m</member><member>The month as a decimal number (range 01 to
+12).</member>
+				 
+<member>%M</member><member>The minute as a decimal number (range 00 to
+59).</member>
+								
+<member>%n</member><member>A newline character. (SU)</member>
+	
+<member>%O</member><member>Modifier: use alternative format, see
+below. (SU)</member>
+	
+<member>%p</member><member>Either 'AM' or 'PM' according  to  the
+given  time value, or the corresponding strings for the
+current locale.  Noon is treated as `pm'  and  midnight as
+'am'.</member>
+							
+<member>%P</member><member>Like  %p but in lowercase: 'am' or 'pm' or
+%a corresponding string for the current locale. (GNU)</member>
+	
+<member>%r</member><member>The time in a.m. or p.m. notation.   In
+the  POSIX locale this is equivalent to '%I:%M:%S %p'. (SU)</member>
+	
+<member>%R</member><member>The  time  in  24-hour notation (%H:%M).
+(SU) For a version including the seconds, see %T below.</member>
+
+<member>%s</member><member>The number of seconds since the Epoch,
+i.e.,  since 1970-01-01 00:00:00 UTC. (TZ)</member>
+	
+<member>%S</member><member>The second as a decimal number (range 00 to
+61).</member>
+				 
+<member>%t</member><member>A tab character. (SU)</member>
+	
+<member>%T</member><member>The time in 24-hour notation (%H:%M:%S).
+(SU)</member>
+	
+<member>%u</member><member>The  day  of  the  week as a decimal, range
+1 to 7, Monday being 1.  See also %w. (SU)</member>
+	
+<member>%U</member><member>The week number of the current year  as  a
+decimal number,  range  00  to  53, starting with the first Sunday as
+the first day of week 01. See also %V and %W.</member>
+																									 
+<member>%V</member><member>The ISO 8601:1988 week number of the
+current year as a decimal number, range 01 to 53, where week 1 is the
+first week that has at least 4 days in the current year, and with
+Monday as the first day of the week.  See also %U %and %W.
+%(SU)</member>
+	
+<member>%w</member><member>The  day  of  the  week as a decimal, range
+0 to 6, Sunday being 0.  See also %u.</member>
+
+<member>%W</member><member>The week number of the current %year  as  a
+decimal number,  range  00  to  53, starting with the first Monday as
+the first day of week 01.</member>
+							
+<member>%x</member><member>The preferred date representation for  the
+current locale without the time.</member>
+
+<member>%X</member><member>The  preferred  time representation for
+the current locale without the date.</member>
+																												
+<member>%y</member><member>The year as a decimal number without
+a century (range 00 to 99).</member>
+
+<member>%Y</member><member> The year as a decimal number
+including the century.</member>
+
+<member>%z</member><member> The time zone as hour offset from
+GMT. Required to emit RFC822-conformant dates (using "%a, %d %%b
+%Y %H:%M:%S %%z"). (GNU)</member>
+	
+<member>%Z</member><member>The time zone or name or
+abbreviation.</member>
+				 
+<member>%+</member><member>The date and time in date(1) format.
+(TZ)</member>
+	
+<member>%%</member><member>A literal '%' character.</member>
+
+</simplelist></para>
+
+<para>Some conversion specifiers can be  modified  by preceding them
+by  the E or O modifier to indicate that an alterna­ tive format
+should be used.  If the alternative format  or specification  does
+not exist for the current locale, the behaviour will be as if the
+unmodified conversion specifi­ cation  were used.  (SU) The Single
+Unix Specification mentions %Ec, %EC, %Ex, %%EX, %Ry, %EY, %Od,
+%Oe,  %OH, %OI, %Om, %OM, %OS, %Ou, %OU, %OV, %Ow, %OW,
+%Oy, where the effect of the O modifier is to use alternative
+numeric symbols (say, roman numerals), and that of the E modifier is
+to use a locale-dependent alternative representation.</para>
+
+<para>The documentation of the
+<computeroutput>timeformat</computeroutput> attribute has been taken
+from the man page of the GNU <computeroutput>strftime</computeroutput>
+function.</para>
 
 </sect2>
 <sect2 id="project_timezone"><title>timezone &lt;value&gt;</title>

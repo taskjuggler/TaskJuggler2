@@ -33,6 +33,7 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 	}
 
 	weekStartsMonday = p->getWeekStartsMonday();
+	timeFormat = p->getTimeFormat();
 
 	hideTask = 0;
 	rollUpTask = 0;
@@ -266,7 +267,9 @@ Report::filterTaskList(TaskList& filteredList, Resource* r)
 	{
 		Interval iv(start, end);
 		if (!isHidden(t, hideTask) &&
-			iv.overlaps(Interval(t->getPlanStart(), t->getPlanEnd())) &&
+			iv.overlaps(Interval(t->getPlanStart(),
+								 t->isMilestone() ? t->getPlanStart() :
+								 t->getPlanEnd())) &&
 			(r == 0 || r->getPlanLoad(Interval(start, end), t) > 0.0 ||
 			 (showActual && r->getActualLoad(Interval(start, end), t) > 0.0)))
 		{

@@ -246,6 +246,9 @@ public:
 	bool readKotrus();
 	bool updateKotrus();
 
+	void setTimeFormat(const QString& tf) { timeFormat = tf; }
+	const QString& getTimeFormat() const { return timeFormat; }
+
 	TaskList getTaskList() { return taskList; }
 	ResourceList getResourceList() { return resourceList; }
 	AccountList getAccountList() { return accountList; }
@@ -279,6 +282,7 @@ private:
 	/// The current date used in reports.
 	time_t now;
 
+	/// True if week based calculations use Monday as first day of week.
 	bool weekStartsMonday;
 
 	/// The name of the Project
@@ -287,6 +291,8 @@ private:
 	QString version;
 	/// Some legal words to please the boss.
 	QString copyright;
+
+	QString timeFormat;
 
 	/**
 	 * The default priority that will be inherited by all tasks. Sub tasks

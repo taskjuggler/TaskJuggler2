@@ -56,24 +56,6 @@ HTMLWeeklyCalendar::generate()
 	
 	generateCalendar(filteredTaskList, filteredResourceList);
 
-/*	for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
-	{
-		generatePlanTask(t, 0);
-		if (showActual)
-			generateActualTask(t, 0);
-
-		ResourceList filteredResourceList;
-		filterResourceList(filteredResourceList, t);
-		sortResourceList(filteredResourceList);
-
-		for (Resource* r = filteredResourceList.first(); r != 0;
-			 r = filteredResourceList.next())
-		{
-			generatePlanResource(r, t);
-			if (showActual)
-				generateActualResource(r, t);
-		}
-	}*/
 	reportHTMLFooter();
 
 	f.close();
@@ -84,9 +66,8 @@ bool
 HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 									 filteredResourceList)
 {
-	// TODO: Make first day of week configurable.
-	for (time_t week = beginOfWeek(start, TRUE);
-		 week <= sameTimeNextWeek(beginOfWeek(end, TRUE)); )
+	for (time_t week = beginOfWeek(start, weekStartsMonday);
+		 week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)); )
 	{
 		time_t wd = week;
 		/* Generate table row that contains the day of the month, the month

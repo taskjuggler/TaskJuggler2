@@ -83,18 +83,22 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 		 t = filteredTaskList.next())
 	{
 		QString start = time2rfc(t->getPlanStart());
-		QString end = time2rfc(t->getPlanEnd());
+		QString end = time2rfc(t->getPlanEnd() + 1);
 
 		s << "task " << stripTaskRoot(t->getId()) 
 			<< " \"" << t->getName() << "\"" << " {" << endl 
 			<< "  start " << start << endl
 			<< "  end " << end << endl;
+		if (t->getPlanScheduled())
+			s << "  planscheduled" << endl;
 		if (showActual)
 		{
-			QString start = time2rfc(t->getActualStart());
-			QString end = time2rfc(t->getActualEnd());
+			start = time2rfc(t->getActualStart());
+			end = time2rfc(t->getActualEnd() + 1);
 			s << "  actualStart " << start << endl
 				<< "  actualEnd " << end << endl;
+			if (t->getActualScheduled())
+				s << "  actualscheduled" << endl;
 		}
 
 		s << "  projectid " << t->getProjectId() << endl;
@@ -228,11 +232,13 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 					break;
 				case TA_MINEND:
 					if (t->getMinEnd() != 0)
-						s << "  minend " << time2rfc(t->getMinEnd()) << endl;
+						s << "  minend " << time2rfc(t->getMinEnd())
+						   	<< endl;
 					break;
 				case TA_MAXEND:
 					if (t->getMaxEnd() != 0)
-						s << "  maxend " << time2rfc(t->getMaxEnd()) << endl;
+						s << "  maxend " << time2rfc(t->getMaxEnd())
+						   	<< endl;
 					break;
 				case TA_COMPLETE:
 					if (t->getComplete() >= 0.0)
@@ -273,7 +279,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 			if (filteredTaskList.findRef(b->getTask()) >= 0)
 			{
 				QString start = time2rfc(b->getStart());
-				QString end = time2rfc(b->getEnd());
+				QString end = time2rfc(b->getEnd() + 1);
 				s << "  planbooking " << start << " " << end 
 					<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
 			}
@@ -285,7 +291,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 			if (filteredTaskList.findRef(b->getTask()) >= 0)
 			{
 				QString start = time2rfc(b->getStart());
-				QString end = time2rfc(b->getEnd());
+				QString end = time2rfc(b->getEnd() + 1);
 				s << "  actualbooking " << start << " " << end 
 					<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
 			}

@@ -39,10 +39,13 @@ Project::Project()
 	dailyWorkingHours = 8.0;
 	yearlyWorkingDays = 252;
 	scheduleGranularity = ONEHOUR;
+	weekStartsMonday = TRUE;
+	timeFormat = "%Y-%m-%d %H:%M %Z";
+
 	start = 0;
 	end = 0;
 	now = time(0);
-	weekStartsMonday = FALSE;
+	
 	copyright = "";
 	minEffort = 0.0;
 	maxEffort = 1.0;
@@ -64,31 +67,13 @@ Project::Project()
 	workingHours[0] = new QPtrList<Interval>();
 	workingHours[0]->setAutoDelete(TRUE);
 
-	// Monday
-	workingHours[1] = new QPtrList<Interval>();
-	workingHours[1]->setAutoDelete(TRUE);
-	workingHours[1]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
-	workingHours[1]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
-	// Tuesday
-	workingHours[2] = new QPtrList<Interval>();
-	workingHours[2]->setAutoDelete(TRUE);
-	workingHours[2]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
-	workingHours[2]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
-	// Wednesday
-	workingHours[3] = new QPtrList<Interval>();
-	workingHours[3]->setAutoDelete(TRUE);
-	workingHours[3]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
-	workingHours[3]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
-	// Thursday
-	workingHours[4] = new QPtrList<Interval>();
-	workingHours[4]->setAutoDelete(TRUE);
-	workingHours[4]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
-	workingHours[4]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
-	// Friday
-	workingHours[5] = new QPtrList<Interval>();
-	workingHours[5]->setAutoDelete(TRUE);
-	workingHours[5]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
-	workingHours[5]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
+	for (int i = 1; i < 6; ++i)
+	{
+		workingHours[i] = new QPtrList<Interval>();
+		workingHours[i]->setAutoDelete(TRUE);
+		workingHours[i]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
+		workingHours[i]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
+	}
 
 	// Saturday
 	workingHours[6] = new QPtrList<Interval>();

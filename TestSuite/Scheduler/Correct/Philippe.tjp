@@ -193,6 +193,8 @@ task fini "Fini" {
 	depends !validation, !ctm, !amelioration
   minstart 2002-09-12-18:00:00
 	maxstart 2002-09-12-18:00:00
+	minend 2002-09-12-18:00:00
+	maxend 2002-09-12-18:00:00
 }
 
 htmltaskreport "Philippe.html" {

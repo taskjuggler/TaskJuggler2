@@ -110,8 +110,8 @@ task t1 "Task1" {
   start 2002-01-01-22:00
   effort 60d
   allocate r3 { alternative r1, r2 }
-	minend 2002-01-25-21:59
-	maxend 2002-01-25-22:00
+	minend 2002-01-25-21:59:59
+	maxend 2002-01-25-22:00:00
 }
 
 # ST to DST switch
@@ -119,8 +119,8 @@ task t2 "Task2" {
   start 2002-03-09-22:00
   effort 60d
   allocate r3 { alternative r1, r2 }
-	minend 2002-04-03-08:59
-	maxend 2002-04-03-09:00
+	minend 2002-04-03-08:59:59
+	maxend 2002-04-03-09:00:00
 }
 
 # DST to ST switch
@@ -129,8 +129,8 @@ task t3 "task3" {
 	effort 60d
 	# needs extended load for switch day
 	allocate r3 { alternative r1, r2 load 1.2 }
-	minend 2002-11-17-20:59
-	maxend 2002-11-17-21:00
+	minend 2002-11-17-20:59:59
+	maxend 2002-11-17-21:00:00
 }
 
 htmltaskreport "NightShift.html" {
@@ -139,10 +139,10 @@ htmltaskreport "NightShift.html" {
 	hideresource 0
 }
 
-htmlresourcereport "NightShiftTimes.html" {
+htmlweeklycalendar "NightShiftTimes.html" {
 	columns name, schedule
-	start 2002-01-01
-	end 2002-01-30
+	hidetask 1
+	hideresource 0
 }
 
 export "NightShift-Export.tjsp" {

@@ -1,8 +1,21 @@
-project fibu "Accounting Software" "1.0" 2002-01-16 2002-05-01 {
-  now 2002-03-04
+/*
+ * This file contains an example project. It is part of the
+ * TaskJuggler project management tool. It uses a made up software
+ * development project to demontrate some of the basis features of
+ * TaskJuggler. Please see the TaskJuggler manual for a more detailed
+ * description of the various syntax elements.
+ */
+project fibu "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
+  # Pick a day during the project that will be reported as 'today' in
+	# the project reports. If not specified the current day will be
+	# used, but this will likely be ouside of the project range, so it
+	# can't be seen in the reports.
+ 	now 2002-03-04
 }
 
-# The daily rate of all resources
+# The daily default rate of all resources. This can be overriden for each
+# resource. We specify this, so that we can do a good calculation of
+# the costs of the project.
 rate 310.0
 currency "EUR"
 
@@ -13,36 +26,69 @@ macro allocate_developers [
   allocate dev3
 ]
 
+flags team
+
 resource dev "Developers" {
-  resource dev1 "Paul Smith"
+  resource dev1 "Paul Smith" { rate 330.0 }
   resource dev2 "Larry Bono"
   resource dev3 "Klaus Mueller" { vacation 2002-02-01 - 2002-02-05 }
+
+	flags team
 }
 resource misc "The Others" {
   resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
-  resource doc "Dim Sung"
+  resource doc "Dim Sung" { rate 280.0 }
+
+	flags team
 }
 
+# In order to do a simple P&L analysis of the project we specify 3
+# accounts. One for the development costs, one for the documentation
+# costs and one account to credit the customer payments to.
 account dev "Development" cost {}
 account doc "Dokumentation" cost {}
 account rev "Payments" revenue {}
 
+# Now we specify the work packages. The whole project is described as
+# a task that contains sub tasks. These sub tasks are then broken down
+# into smaller tasks and so on. The innermost tasks describe the real
+# work and have resources allocated to them. Many attributes of tasks
+# are inherited from the enclosing task. This saves a lot of wrinting.
 task AcSo "Accounting Software" {
 
+	# All work related costs will be booked to this account unless the
+	# sub tasks specifies it differently.
   account dev
 
-  task spec "Spezification" {
+  task spec "Specification" {
+		# The effort to finish is task is 20 man days. 
     effort 20d
+		# Now we use the above declared macro to allocate the resources
+		# for this task. Since they can work in parallel, this task may be
+		# finshed earlier than 20 working days.
     ${allocate_developers}
+		# Each task must have a start or end criteria and a duration. For
+		# this task we use a reference to a further down defined milestone
+		# as a start criteria. So this task cannot start, before the
+		# specified milestone has been reached. References to other tasks
+		# may be relative. Each ! means 'in the scope of the enclosing
+		# task'. To descent into a task the . together with the id of the
+		# tasks have to be specified.
     depends !deliveries.start
   }
 
   task software "Software Development" {
 
+		# The software is the most critical task of the project. So we set
+		# the priority of this tasks (and all sub tasks) to 1000, the top
+		# priority. The higher the priority the more likely will the task
+		# get the requested resources.
     priority 1000
 
     task database "Database coupling" {
       effort 20d
+			# This task depends on a task in the scope of the enclosing
+			# tasks enclosing task. So we need 2 ! to get there.
       depends !!spec
       allocate dev1
       allocate dev2
@@ -50,6 +96,9 @@ task AcSo "Accounting Software" {
 
     task gui "Graphical User Interface" {
       effort 35d
+			# This task has taken 5 man days more than originally planned.
+			# We record this as well, so that we can generate reports that
+			# compare the actual run of the project to the original plan.
       actualeffort 40d
       depends !database, !backend
       allocate dev2
@@ -58,7 +107,12 @@ task AcSo "Accounting Software" {
 
     task backend "Back-End Functions" {
       effort 30d
-      complete 80 # This task is ahead of schedule.
+			# This task is ahead of schedule but not yet finished. To
+			# document this we specify that the tasks is 80% completed. If
+			# nothing is specified, TaskJuggler assumes that the task is on
+			# schedule and computes the completion rate according to the
+			# current day and the plan data.
+      complete 95
       depends !database, !!spec
       allocate dev1
       allocate dev2
@@ -69,6 +123,10 @@ task AcSo "Accounting Software" {
   task test "Software testing" {
 
     task alpha "Alpha Test" {
+			# Efforts can not only be specified as man days, but also man
+			# weeks, man hours, etc. Per default taskjuggler assumes a man
+			# week is 40 man hours or 5 man days. These values can be
+			# changed though.
       effort 1w
       depends !!software
       allocate test
@@ -91,42 +149,101 @@ task AcSo "Accounting Software" {
     account doc
   }
 
-  task deliveries "Ship to customer" {
+  task deliveries "Milestones" {
 
+		# Some milestones have customer payments associated with them. We
+		# credit these payments to the 'rev' account.
     account rev
 
     task start "Projectstart" {
+			# A task that has no duration is a milestone. It only needs a
+			# start or end criteria. All other tasks depend on this task.
       milestone
       start 2002-01-16
+			# For some reason the actual start of the project got delayed.
+			# We record this, so that we can compare the plan run to the
+			# actual run of the project.
       actualstart 2002-01-20
-      startcredit 30000.0
+			# At the begining of this task we receive a payment from the
+			# customer. This is credited to the account assiciated with this
+			# task when the task starts.
+      startcredit 33000.0
     }
+
+		task prev "Technology Preview" {
+			milestone
+			depends !!software.backend
+			startcredit 13000.0
+		}
 
     task beta "Betaversion" {
       milestone
       depends !!test.alpha
-      startcredit 10000.0
+      startcredit 13000.0
     }
 
     task done "Ship Product to customer" {
       milestone
-# Uncomment this to trigger a warning that the project is late.
-#      maxend 2002-04-17
+			# The next line can be uncommented to trigger a warning about
+			# the project being late. For all tasks limits for the start and
+			# end value can be specified. Those limits are checked after the
+			# project has been scheduled. For all violated limits a warning
+			# is issued.
+			# maxend 2002-04-17
       depends !!test.beta, !!manual
-      startcredit 20000.0
+      startcredit 14000.0
     }
   }
 }
 
-htmltaskreport "AcSo-Overview.html" {
+# Now the project has been completely specified. Stopping here would
+# result in a valid TaskJuggler file that could be processed and
+# scheduled. But no reports would be generated to visualize the
+# results. So we request 4 HTML reports to be generated.
+
+# For conveniance we would like each report to contain links to the
+# other reports. So we declare a macro with a fragment of raw HTML
+# code to be embedded into all the HTML reports.
+macro navbar [
+rawhead
+	'<p><center>
+	<table border="2" cellpadding="10">
+	<tr>
+	  <td class="default" style="font-size:120%" rowspan="2">
+		<a href="Tasks-Overview.html">Tasks Overview</td>
+	  <td class="default" style="font-size:120%" rowspan="2">
+		<a href="Tasks-Details.html">Tasks Details</td>
+	  <td class="default" style="font-size:120%" rowspan="2">
+		<a href="Staff-Overview.html">Staff Overview</td>
+	  <td class="default" style="font-size:120%" rowspan="2">
+		<a href="Staff-Details.html">Staff Details</td>
+	  <td class="default" style="font-size:120%" rowspan="2">
+		<a href="Accounting.html">Accounting</td>
+	</tr>
+  </table>
+  </center></p><br>'
+]
+
+# As the first report, we would like to have a general overview of all
+# tasks with their computed start and end dates. For better
+# readability we include a calender like column that lists the effort
+# for each week.
+htmltaskreport "Tasks-Overview.html" {
+	# This report should contain the navigation bar we have declared
+	# above.
+	${navbar}
+	# The report should be a table that contains several columns. The
+	# task and their information form the rows of the table.
   columns no, name, start, end, weekly, effort
+	# Set a title for the report
 	headline "Accounting Software Project"
+	# And a short description what this report is about.
 	caption "This table shows the load for each task on a weekly basis.
-	All values are man-days. Additionally the resources used for each
-	task are listed."
+	All values are man-days."
 }
 
-htmltaskreport "AcSo-Tasks.html" {
+htmltaskreport "Tasks-Details.html" {
+	${navbar}
   columns no, name, start, end, daily
 	headline "Accounting Software Project"
 	caption "This table shows the load of each day for all the tasks.
@@ -137,14 +254,27 @@ htmltaskreport "AcSo-Tasks.html" {
   showactual
 }
 
-htmlresourcereport "AcSo-Resources.html" {
+htmlresourcereport "Staff-Overview.html" {
+	${navbar}
   columns no, name, weekly, effort
-	end 2002-04-30
+	showactual
 	loadunit hours
 	headline "Weekly working hours for the Accounting Software Project"
 }
 
-htmlaccountreport "AcSo-Accounting.html" {
+htmlresourcereport "Staff-Details.html" {
+	${navbar}
+  columns name, daily, effort
+	showactual
+	hidetask 0
+	hideresource team
+	sortresources nameup
+	loadunit hours
+	headline "Weekly working hours for the Accounting Software Project"
+}
+
+htmlaccountreport "Accounting.html" {
+	${navbar}
   columns no, name, total, monthly
 	headline "P&L for the Accounting Software Project"
 	caption "The table shows the profit and loss analysis as well as the

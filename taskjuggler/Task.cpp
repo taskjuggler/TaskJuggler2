@@ -120,6 +120,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	doneDuration = 0.0;
 	doneLength = 0.0;
 	schedulingDone = FALSE;
+	planScheduled = actualScheduled = FALSE;
 	responsible = 0;
 
 	if (p)
@@ -395,12 +396,12 @@ Task::schedule(time_t& date, time_t slotDuration)
 		// Task is a milestone.
 		if (scheduling == ASAP)
 		{
-			end = start;
+			end = start - 1;
 			propagateEnd();
 		}
 		else
 		{
-			start = end;
+			start = end + 1;
 			propagateStart();
 		}
 		project->removeActiveTask(this);
@@ -844,12 +845,11 @@ Task::earliestStart()
 		// All tasks this task depends on must have an end date set.
 		if (t->end == 0)
 			return 0;
-		// Milestones are assumed to have duration 0.
 		if (t->end > date)
-			date = t->end + (t->milestone ? 0 : 1);
+			date = t->end;
 	}
 
-	return date;
+	return date + 1;
 }
 
 time_t
@@ -862,10 +862,10 @@ Task::latestEnd()
 		if (t->start == 0)
 			return 0;
 		if (date == 0 || t->start < date)
-			date = t->start - 1;
+			date = t->start;
 	}
 
-	return date;
+	return date - 1;
 }
 
 double
@@ -1132,15 +1132,16 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub)
 	 * detected a loop. */
 	if (list.find(thisTask) != list.end())
 	{
-		fatalError("Loop detected at task %s (%s)!", id.latin1(), atEnd ?
-				   "End" : "Start");
+		fatalError("Dependency loop detected at task %s (%s)!",
+				   id.latin1(), atEnd ? "End" : "Begining");
 		LDIList::iterator it;
 		for (it = list.begin(); it != list.end() && (*it).getTask() != this;
 			 ++it)
 		{
 			(*it).getTask()->fatalError("%s (%s) is part of loop",
 										(*it).getTask()->getId().latin1(),
-										(*it).getAtEnd() ? "End" : "Start");
+										(*it).getAtEnd() ?
+									   	"End" : "Begining");
 		}
 		return TRUE;
 	}
@@ -1420,18 +1421,19 @@ Task::preScheduleOk()
 		|D M |
 		|D M |D
 		*/
-		if (planStart != 0 && planEnd != 0 && planStart != planEnd)
+		if (planStart != 0 && planEnd != 0 && planStart != planEnd + 1)
 		{
 			fatalError(QString("Milestone %1 may not have both a plan start "
 							   "and a plan end specification that do not "
 							   "match.").arg(id));
 			return FALSE;
 		}
-		if ((actualStart != 0 && actualEnd != 0 && actualStart != actualEnd) ||
+		if ((actualStart != 0 && actualEnd != 0 &&
+			 actualStart != actualEnd + 1) ||
 			(actualStart == 0 && planStart != 0 && actualEnd != 0 &&
-			 planStart != actualEnd) ||
+			 planStart != actualEnd + 1) ||
 			(actualStart != 0 && actualEnd == 0 && planEnd != 0 &&
-			 actualStart != planEnd))
+			 actualStart != planEnd + 1))
 		{
 			fatalError(QString("Milestone %1 may not have both an actual start "
 							   "and actual end specification.").arg(id));
@@ -1626,7 +1628,7 @@ Task::scheduleOk(int& errors)
 		errors++;
 		return FALSE;
 	}
-	if (minStart != 0 && start < minStart)
+	if (start < minStart)
 	{
 		fatalError("Start time of task %s is too early\n"
 				   "Date is:  %s\n"
@@ -1637,7 +1639,7 @@ Task::scheduleOk(int& errors)
 		errors++;
 		return FALSE;
 	}
-	if (maxStart != 0 && start > maxStart)
+	if (maxStart < start)
 	{
 		fatalError("Start time of task %s is too late\n"
 				   "Date is:  %s\n"
@@ -1648,44 +1650,30 @@ Task::scheduleOk(int& errors)
 		errors++;
 		return FALSE;
 	}
-	if (start < project->getStart() || start > project->getEnd())
-	{
-		fatalError("Start time %s of task %s is outside of project period",
-			time2tjp(start).latin1(), id.latin1());
-		errors++;
-		return FALSE;
-	}
 	if (end == 0)
 	{
 		fatalError("Task '%s' has no end time.", id.latin1());
 		return FALSE;
 	}
-	if (minEnd != 0 && end < minEnd)
+	if (end + (milestone ? 1 : 0) < minEnd)
 	{
 		fatalError("End time of task %s is too early\n"
 				   "Date is:  %s\n"
 				   "Limit is: %s",
 				   id.latin1(),
-				   time2tjp(end).latin1(),
+				   time2tjp(end + (milestone ? 1 : 0)).latin1(),
 				   time2tjp(minEnd).latin1());
 		errors++;
 		return FALSE;
 	}
-	if (maxEnd != 0 && end > maxEnd)
+	if (maxEnd < end + (milestone ? 1 : 0))
 	{
 		fatalError("End time of task %s is too late\n"
 				   "Date is:  %s\n"
 				   "Limit is: %s",
 				   id.latin1(),
-				   time2tjp(end).latin1(),
+				   time2tjp(end + (milestone ? 1 : 0)).latin1(),
 				   time2tjp(maxEnd).latin1());
-		errors++;
-		return FALSE;
-	}
-	if (end < project->getStart() || end > project->getEnd())
-	{
-		fatalError("End time %s of task %s is outside of project period",
-			time2tjp(end).latin1(), id.latin1());
 		errors++;
 		return FALSE;
 	}
@@ -1772,13 +1760,15 @@ Task::isActive()
 bool
 Task::isPlanActive(const Interval& period) const
 {
-	return period.overlaps(Interval(planStart, planEnd));
+	return period.overlaps(Interval(planStart,
+									milestone ? planStart : planEnd));
 }
 
 bool
 Task::isActualActive(const Interval& period) const
 {
-	return period.overlaps(Interval(actualStart, actualEnd));
+	return period.overlaps(Interval(actualStart,
+									milestone ? actualStart : actualEnd));
 }
 
 void
@@ -1811,7 +1801,7 @@ Task::preparePlan()
 	length = planLength;
 	effort = planEffort;
 	lastSlot = 0;
-	schedulingDone = FALSE;
+	schedulingDone = planScheduled;
 	runAway = FALSE;
 	bookedResources.clear();
 	bookedResources = planBookedResources;
@@ -1837,6 +1827,7 @@ Task::finishPlan()
 	planLength = doneLength;
 	planEffort = doneEffort;
 	planBookedResources = bookedResources;
+	planScheduled = schedulingDone;
 }
 
 void
@@ -1849,7 +1840,7 @@ Task::prepareActual()
 	length = actualLength;
 	effort = actualEffort;
 	lastSlot = 0;
-	schedulingDone = FALSE;
+	schedulingDone = actualScheduled;
 	runAway = FALSE;
 	bookedResources.clear();
 	bookedResources = actualBookedResources;
@@ -1864,6 +1855,7 @@ Task::finishActual()
 	actualLength = doneLength;
 	actualEffort = doneEffort;
 	actualBookedResources = bookedResources;
+	actualScheduled = schedulingDone;
 }
 
 void

@@ -333,7 +333,7 @@ operate properly when TZ environment variable is set.</para>
 
 </itemizedlist>
 </sect2>
-<sect2><title>Next Version (Some Day)</title>
+<sect2><title>Version 1.4 (Some Day)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -420,6 +420,10 @@ other errors should be not be so promiment anymore.</para></listitem>
 <listitem><para>A new report type has been added. <link
 linkend="htmlweeklycalendar"> htmlweeklyreport </link> can be used to
 generate weekly calendars.</para></listitem>
+
+<listitem><para>The format of time specifications in HTML reports is
+now configurable via <link linkend="project_timeformat"> timeformat 
+</link></para></listitem>
 
 </itemizedlist> </para>
 

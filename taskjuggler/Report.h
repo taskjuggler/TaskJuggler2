@@ -93,6 +93,8 @@ public:
 
 	bool setLoadUnit(const QString& u);
 
+	void setTimeFormat(const QString& tf) { timeFormat = tf; }
+
 	Report() { }
 
 	bool open();
@@ -122,6 +124,9 @@ protected:
 	QStringList columns;
 	time_t start;
 	time_t end;
+
+	QString timeFormat;
+
 	/* We store the location of the report definition in case we need it
 	 * for error reporting. */
 	QString defFileName;

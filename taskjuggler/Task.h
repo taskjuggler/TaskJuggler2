@@ -168,11 +168,12 @@ public:
 
 	bool isPlanStartOk()
 	{
-		return planStart >= minStart && planStart <= maxStart;
+		return (minStart <= planStart && planStart <= maxStart);
 	}
 	bool isPlanEndOk()
 	{
-		return planEnd >= minEnd && planEnd <= maxEnd;
+		return (minEnd <= planEnd + (milestone ? 1 : 0) &&
+				planEnd + (milestone ? 1 : 0) <= maxEnd);
 	}
 
 	bool isPlanBuffer(const Interval& iv) const
@@ -204,6 +205,8 @@ public:
 		return planBookedResources.find(r) != -1;
 	}
 	QPtrList<Resource> getPlanBookedResources() { return planBookedResources; }
+	void setPlanScheduled(bool ps) { planScheduled = ps; }
+	bool getPlanScheduled() const { return planScheduled; }
 
 	/* The following group of functions operates exclusively on 'actual'
 	 * variables. */
@@ -227,11 +230,12 @@ public:
 
 	bool isActualStartOk()
 	{
-		return actualStart >= minStart && actualStart <= maxStart;
+		return minStart <= actualStart && actualStart <= maxStart;
 	}
 	bool isActualEndOk()
 	{
-		return actualEnd >= minEnd && actualEnd <= maxEnd;
+		return (minEnd <= actualEnd + (milestone ? 1 : 0) &&
+				actualEnd + (milestone ? 1 : 0) <= maxEnd);
 	}
 
 	bool isActualBuffer(const Interval& iv) const
@@ -266,6 +270,8 @@ public:
 	{
 		return actualBookedResources;
 	}
+	void setActualScheduled(bool as) { actualScheduled = as; }
+	bool getActualScheduled() const { return actualScheduled; }
 
 	bool isContainer() const { return !sub.isEmpty(); }
    
@@ -514,6 +520,13 @@ private:
 	/// List of booked resources for the 'actual' scenario.
 	QPtrList<Resource> actualBookedResources;
 
+	/// TRUE if the task has been completely scheduled for the plan scenario.
+	bool planScheduled;
+
+	/** TRUE if the task has been completely scheduled for the actual
+	 * scenario. */
+  	bool actualScheduled;
+	
 	/* The following group of variables store values generated during a
 	 * scheduler run. They might be initialized by other values and/or
 	 * they might contain results of the scheduling run. But they should

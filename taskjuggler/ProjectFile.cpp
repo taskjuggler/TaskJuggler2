@@ -29,18 +29,19 @@
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
 
-#define READ_DATE(a, b) \
+#define READ_DATE(a, b, c) \
 (token == a) \
 { \
 	if ((tt = nextToken(token)) == DATE) \
 	{ \
-		if (date2time(token) < proj->getStart() || \
-			date2time(token) > proj->getEnd()) \
+		time_t val = date2time(token) - c; \
+		if (val < proj->getStart() || \
+			val > proj->getEnd()) \
 		{ \
 			fatalError("Date is outside of project time frame"); \
 			return FALSE; \
 		} \
-		task->b(date2time(token)); \
+		task->b(val); \
 	} \
 	else \
 	{ \
@@ -986,7 +987,7 @@ ProjectFile::readProject()
 		return FALSE;
 	}
 	proj->setStart(start);
-	proj->setEnd(end);
+	proj->setEnd(end - 1);
 
 	TokenType tt;
 	if ((tt = nextToken(token)) == LCBRACE)
@@ -1049,6 +1050,15 @@ ProjectFile::readProject()
 				if (setenv("TZ", token, 1) < 0)
 					qFatal("Ran out of space in environment section while "
 						   "setting timezone.");
+			}
+			else if (token == KW("timeformat"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Time format string expected");
+					return FALSE;
+				}
+				proj->setTimeFormat(token);
 			}
 			else if (token == KW("weekstartsmonday"))
 			{
@@ -1354,14 +1364,14 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				task->setMilestone();
 			}
-			else if READ_DATE(KW("start"), setPlanStart)
-			else if READ_DATE(KW("end"), setPlanEnd)
-			else if READ_DATE(KW("minstart"), setMinStart)
-			else if READ_DATE(KW("maxstart"), setMaxStart)
-			else if READ_DATE(KW("minend"), setMinEnd)
-			else if READ_DATE(KW("maxend"), setMaxEnd)
-			else if READ_DATE(KW("actualstart"), setActualStart)
-			else if READ_DATE(KW("actualend"), setActualEnd)
+			else if READ_DATE(KW("start"), setPlanStart, 0)
+			else if READ_DATE(KW("end"), setPlanEnd, 1)
+			else if READ_DATE(KW("minstart"), setMinStart, 0)
+			else if READ_DATE(KW("maxstart"), setMaxStart, 0)
+			else if READ_DATE(KW("minend"), setMinEnd, 0)
+			else if READ_DATE(KW("maxend"), setMaxEnd, 0)
+			else if READ_DATE(KW("actualstart"), setActualStart, 0)
+			else if READ_DATE(KW("actualend"), setActualEnd, 1)
 			else if (token == KW("length"))
 			{
 				double d;
@@ -1404,6 +1414,10 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				task->setActualDuration(d);
 			}
+			else if (token == KW("planscheduled"))
+				task->setPlanScheduled(TRUE);
+			else if (token == KW("actualscheduled"))
+				task->setActualScheduled(TRUE);
 			else if (token == KW("complete"))
 			{
 				if (nextToken(token) != INTEGER)
@@ -2032,7 +2046,7 @@ ProjectFile::readBooking()
 		fatalError("End date expected");
 		return 0;
 	}
-	time_t end = date2time(token);
+	time_t end = date2time(token) - 1;
 	if (end <= proj->getStart() || end > proj->getEnd())
 	{
 		fatalError("End date must be within the project timeframe");
@@ -2554,7 +2568,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 					fatalError("Date expected");
 					return FALSE;
 				}
-				report->setEnd(date2time(token));
+				report->setEnd(date2time(token) - 1);
 			}
 			else if (token == KW("headline"))
 			{
@@ -2664,6 +2678,15 @@ ProjectFile::readHTMLReport(const QString& reportType)
 					return FALSE;
 				}
 			}
+			else if (token == KW("timeformat"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Time format string expected");
+					return FALSE;
+				}
+				report->setTimeFormat(token);
+			}
 			else
 			{
 				fatalError("Illegal attribute");
@@ -2749,7 +2772,7 @@ ProjectFile::readHTMLAccountReport()
 				fatalError("Date expected");
 				return FALSE;
 			}
-			report->setEnd(date2time(token));
+			report->setEnd(date2time(token) - 1);
 		}
 		else if (token == KW("headline"))
 		{
@@ -2801,6 +2824,33 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (!readSorting(report, 2))
 				return FALSE;
+		}
+		else if (token == KW("rawhead"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			report->setRawHead(token);
+		}
+		else if (token == KW("rawtail"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			report->setRawTail(token);
+		}
+		else if (token == KW("rawstylesheet"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			report->setRawStyleSheet(token);
 		}
 		else
 		{

@@ -1,6 +1,6 @@
 For 1.4 release
 - valgrind
-- Add Makefiles to Examptle directories.
+- Add Makefiles to Example directories.
 - Add more test cases to the test suite.
 - run HTML checker on reports
 
@@ -9,7 +9,6 @@ After 1.4:
 - Allocation selection by skill set.
 - Improve scheduler performance.
 - Improve report generation performance.
-- Support different timezone in reports.
 - i18n messages.
 - Explain more features with examples in the documentation.
 - Read XML files just as *.tjp files.

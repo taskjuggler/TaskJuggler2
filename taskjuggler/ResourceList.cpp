@@ -89,7 +89,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 		efficiency = 1.0;
 	}
 
-	sbSize = (p->getEnd() - p->getStart()) /
+	sbSize = (p->getEnd() + 1 - p->getStart()) /
 		p->getScheduleGranularity() + 1;
 	planScoreboard = actualScoreboard = 0;
 
@@ -155,7 +155,7 @@ Resource::initScoreboard()
 		scoreboard[i] = (SbBooking*) 1;
 
 	// Then change all worktime slots to 0 (available) again.
-	for (time_t day = project->getStart(); day < project->getEnd();
+	for (time_t day = project->getStart(); day < project->getEnd() + 1;
 		 day += project->getScheduleGranularity())
 	{
 		if (isOnShift(Interval(day,
@@ -167,7 +167,7 @@ Resource::initScoreboard()
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
 		for (time_t date = i->getStart() > project->getStart() ?
 			 i->getStart() : project->getStart();
-			 date < i->getEnd() && date < project->getEnd();
+			 date < i->getEnd() && date < project->getEnd() + 1;
 			 date += project->getScheduleGranularity())
 			scoreboard[sbIndex(date)] = (SbBooking*) 2;
 
@@ -177,7 +177,7 @@ Resource::initScoreboard()
 	{
 		for (time_t date = i->getStart();
 			 date < i->getEnd() &&
-				 project->getStart() <= date && date < project->getEnd();
+				 project->getStart() <= date && date < project->getEnd() + 1;
 			 date += project->getScheduleGranularity())
 			scoreboard[sbIndex(date)] = (SbBooking*) 2;
 	}

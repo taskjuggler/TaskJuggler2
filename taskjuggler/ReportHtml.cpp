@@ -339,23 +339,24 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			  << (t->isPlanStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left white-space:nowrap\">"
-			  << time2ISO(t->getPlanStart())
+			  << time2user(t->getPlanStart(), timeFormat)
 			  << "</td>" << endl;
 		else if (*it == KW("end"))
 			s << "<td class=\""
 			  << (t->isPlanEndOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left white-space:nowrap\">"
-			  << time2ISO(t->getPlanEnd())
+			  << time2user(t->getPlanEnd() + 1, timeFormat)
 			  << "</td>" << endl;
 		else if (*it == KW("minstart"))
-			textTwoRows(time2ISO(t->getMinStart()), r != 0, "");
+			textTwoRows(time2user(t->getMinStart(), timeFormat), r != 0, "");
 		else if (*it == KW("maxstart"))
-			textTwoRows(time2ISO(t->getMaxStart()), r != 0, "");
+			textTwoRows(time2user(t->getMaxStart(), timeFormat),
+					   	r != 0, "");
 		else if (*it == KW("minend"))
-			textTwoRows(time2ISO(t->getMinEnd()), r != 0, "");
+			textTwoRows(time2user(t->getMinEnd(), timeFormat), r != 0, "");
 		else if (*it == KW("maxend"))
-			textTwoRows(time2ISO(t->getMaxEnd()), r != 0, "");
+			textTwoRows(time2user(t->getMaxEnd(), timeFormat), r != 0, "");
 		else if (*it == KW("startbuffer"))
 			textTwoRows(QString().sprintf("%3.0f", t->getStartBuffer()),
 						r != 0, "right");
@@ -363,9 +364,11 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			textTwoRows(QString().sprintf("%3.0f", t->getEndBuffer()),
 						r != 0, "right");
 		else if (*it == KW("startbufferend"))
-			textOneRow(time2ISO(t->getPlanStartBufferEnd()), r != 0, "left");
+			textOneRow(time2user(t->getPlanStartBufferEnd() + 1, timeFormat),
+					   r != 0, "left");
 		else if (*it == KW("endbufferstart"))
-			textOneRow(time2ISO(t->getPlanEndBufferStart()), r != 0, "left");
+			textOneRow(time2user(t->getPlanEndBufferStart(), timeFormat),
+					   r != 0, "left");
 		else if (*it == KW("duration"))
 		{
 			s << "<td class=\""
@@ -462,7 +465,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			  << (t->isActualStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left white-space:nowrap\">"
-			  << time2ISO(t->getActualStart())
+			  << time2user(t->getActualStart(), timeFormat)
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("end"))
@@ -471,13 +474,15 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			  << (t->isActualEndOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"white-space:nowrap\">"
-			  << time2ISO(t->getActualEnd())
+			  << time2user(t->getActualEnd() + 1, timeFormat)
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("startbufferend"))
-			textOneRow(time2ISO(t->getActualStartBufferEnd()), r != 0, "left");
+			textOneRow(time2user(t->getActualStartBufferEnd() + 1, timeFormat),
+					   r != 0, "left");
 		else if (*it == KW("endbufferstart"))
-			textOneRow(time2ISO(t->getActualEndBufferStart()), r != 0, "left");
+			textOneRow(time2user(t->getActualEndBufferStart(), timeFormat),
+					   r != 0, "left");
 		else if (*it == KW("duration"))
 		{
 			s << "<td class=\""
@@ -1395,13 +1400,10 @@ void
 ReportHtml::taskName(Task* t, Resource* r, bool big)
 {
 	QString spaces = "";
-	int fontSize = big ? 120 : 100;
+	int fontSize = big ? 100 : 90; 
 	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-		for (Resource* rp = r ; rp != 0; fontSize = (int) (fontSize * 0.85))
-		{
+		for (Resource* rp = r ; rp != 0; rp = rp->getParent())
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-			rp = rp->getParent();
-		}
 
 	mt.clear();
 	mt.addMacro(new Macro(KW("taskid"), t->getId(), defFileName,
@@ -1411,8 +1413,7 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 	{
 		for (uint i = 0; i < t->treeLevel(); i++)
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-		fontSize = (int) (fontSize * 1.4 *
-		   	(1.0 - t->treeLevel() / maxDepthTaskList));
+		fontSize = fontSize + 5 * (maxDepthTaskList - 1 - t->treeLevel()); 
 		s << "<td class=\""
 		  << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
 		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
@@ -1441,13 +1442,10 @@ void
 ReportHtml::resourceName(Resource* r, Task* t, bool big)
 {
 	QString spaces = "";
-	int fontSize = big ? 120 : 100;
+	int fontSize = big ? 100 : 90;
 	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
-		for (Task* tp = t; tp != 0; fontSize = (int) (fontSize * 0.85))
-		{
+		for (Task* tp = t; tp != 0; tp = tp->getParent())
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-			tp = tp->getParent();
-		}
 
 	mt.clear();
 	mt.addMacro(new Macro(KW("resourceid"), r->getId(), defFileName,
@@ -1457,8 +1455,7 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 	{
 		for (uint i = 0; i < r->treeLevel(); i++)
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-		fontSize = (int) (fontSize * 1.4 *
-		   	(1.0 - r->treeLevel() / maxDepthResourceList));
+		fontSize = fontSize + 5 * (maxDepthResourceList - 1 - r->treeLevel());
 		s << "<td class=\""
 		  << (t == 0 ? "task" : "tasklight") << "\" rowspan=\""
 		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
@@ -1603,11 +1600,11 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 		BookingList planJobs = r->getPlanJobs();
 		planJobs.setAutoDelete(TRUE);
 		time_t prevTime = 0;
+		Interval reportPeriod(start, end);
 		for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
 		{
 			if ((t == 0 || t == b->getTask()) && 
-				Interval(start, end).overlaps(Interval(b->getStart(),
-													   b->getEnd())))
+				reportPeriod.overlaps(Interval(b->getStart(), b->getEnd())))
 			{
 				/* If the reporting interval is not more than a day, we
 				 * do not print the day since this information is most
@@ -1621,8 +1618,10 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 				}
 				if (!isSameDay(start, end - 1))
 					s << "&nbsp;&nbsp;&nbsp;";
-				s << time2time(b->getStart()) << " - "
-					<< time2time(b->getEnd());
+				Interval workPeriod(b->getStart(), b->getEnd());
+				workPeriod.overlap(reportPeriod);
+				s << time2time(workPeriod.getStart()) << " - "
+					<< time2time(workPeriod.getEnd() + 1);
 				if (t == 0)
 					s << " " << htmlFilter(b->getTask()->getName());
 				s << "<br>" << endl;
