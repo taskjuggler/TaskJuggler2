@@ -1,14 +1,12 @@
 For 1.9.1:
-- Save Export reports in nested Remo-style.
+- Document CSV reports.
+
+For 1.9.2:
 - Remove old color support
 - Save user-defined attributes to XML.
-- Remove KDE stuff from automake/autoconf for default build.
-- Replace isplanallocated() and isactualallocated() with scenario
-  specific function.
 - 1.x -> 2.x migration guide chapter.
 
 For 2.0:
-- Finish multi scenario support
 - Improve scheduler performance.
 - Improve report generation performance.
 - Explain more features with examples in the documentation.
@@ -16,7 +14,6 @@ For 2.0:
 
 After 2.0:
 - Generic HTML report
-- CSV reports
 - Allocation selection by skill set.
 - Add support for flexible rates (per task, per shift)
 - Global cost function driven optimizer.

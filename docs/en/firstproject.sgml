@@ -648,10 +648,10 @@ resources.</para>
 
 <para>To add even more information to this report, we also turn on the
 reporting of values of the actual scenario by using the <link
-linkend="htmltaskreport_showactual">showactual</link> attribute. This
-causes TaskJuggler to split the lines of the report into two where
-appropriate and report the actual value underneath the plan
-value.</para>
+linkend="htmltaskreport_scenarios">scenarios</link> attribute. This
+causes TaskJuggler to split the lines of the report into one for each
+scenario where appropriate and report the values underneath each
+other.</para>
 
 </sect2>
 <sect2><title>Generating HTML Resource Reports</title>

@@ -648,7 +648,7 @@ HTMLReportElement::genHeadMonthly1(TableCellInfo* tci)
 {
     // Generates 1st header line of monthly calendar view.
     for (time_t year = beginOfMonth(start); year < end;
-         year = sameTimeNextYear(beginOfMonth(year)))
+         year = sameTimeNextYear(beginOfYear(year)))
     {
         int left = monthLeftInYear(year);
         if (left > monthsBetween(year, end))
@@ -722,7 +722,7 @@ HTMLReportElement::genHeadQuarterly1(TableCellInfo* tci)
 {
     // Generates 1st header line of quarterly calendar view.
     for (time_t year = beginOfQuarter(start); year < end;
-         year = sameTimeNextYear(beginOfQuarter(year)))
+         year = sameTimeNextYear(beginOfYear(year)))
     {
         int left = quartersLeftInYear(year);
         if (left > quartersBetween(year, end))

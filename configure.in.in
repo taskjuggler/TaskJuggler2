@@ -86,6 +86,7 @@ if test "$cv_option_kdesupport" = yes ;then
    DO_NOT_COMPILE="Contrib"
 else
    AC_MSG_RESULT(no)
+   kde_htmldir=${datadir}/taskjuggler
    DO_NOT_COMPILE="ktjview Contrib"
 fi
 

@@ -285,6 +285,873 @@ This is a special reserved keyword.</para>
 
 </sect2>
 </sect1>
+<sect1 id="csvaccountreport"><title>csvaccountreport &lt;filename&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>filename:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Optional attributes:</para>
+
+<sect2 id="csvaccountreport_accumulate"><title>accumulate</title>
+
+<para>If this attribute is specified the values in the calendar columns are
+accumulated over the reported interval.</para>
+
+</sect2>
+<sect2 id="csvaccountreport_columns"><title>columns
+&lt;colid&gt; [, &lt;colid&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>colid:</><member><link linkend="id">ID</link></>
+</simplelist></para>
+
+<para>Specifies which columns should be included in the task report. The
+following values for colid are available:</para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>no</computeroutput></>
+<member>The task index</>
+
+<member><computeroutput>id</computeroutput></>
+<member>The global <link linkend="id">ID</link> of a
+task</member>
+
+<member><computeroutput>name</computeroutput></>
+<member>The name of a task, resource, or
+account</member>
+
+<member><computeroutput>total</computeroutput></>
+<member>Total accumulated values</>
+
+<member><computeroutput>daily</computeroutput></>
+<member>A day-by-day calendar view of the accounts</>
+
+<member><computeroutput>weekly</computeroutput></>
+<member>A week-by-week calendar view of the
+accounts</>
+
+<member><computeroutput>monthly</computeroutput></>
+<member>A month-by-month calendar view of the
+accounts</>
+
+<member><computeroutput>quaterly</computeroutput></>
+<member>A quarter-by-quarter calender view of the
+accounts</>
+
+<member><computeroutput>yearly</computeroutput></>
+<member>A year-by-year calender view of the accounts</>
+
+</simplelist></para>
+
+</sect2>
+<sect2 id="csvaccountreport_end"><title>end &lt;day&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>day:</><member><link linkend="date">DATE</link></>
+</simplelist></para>
+
+<para>The end date for the calender view.</para>
+
+</sect2>
+<sect2 id="csvaccountreport_rollupaccount"><title>rollupaccount
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></member>
+</simplelist></para>
+
+<para>Do not show sub-accounts of accounts that match the specified logical
+expression.</para>
+
+</sect2>
+<sect2 id="csvaccountreport_hideaccount"><title>hideaccount
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></member>
+</simplelist></para>
+
+<para>Do not show accounts that match the specified logical
+expression.</para>
+
+</sect2>
+<sect2 id="csvaccountreport_sortaccounts"><title>sortaccounts
+&lt;criteria&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>criteria:</member><member><link linkend="sortingcriteria">
+SORTINGCRITERIA</link></member>
+</simplelist></para>
+
+</sect2>
+<sect2 id="csvaccountreport_start"><title>start &lt;day&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>day:</><member><link linkend="date">DATE</link></>
+</simplelist></para>
+
+<para>The start date for the calender view.</para>
+
+</sect2>
+</sect1>
+<sect1 id="csvresourcereport"><title>csvresourcereport
+&lt;filename&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>filename:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Optional attributes:</para>
+
+<para>See <link linkend="csvtaskreport">csvtaskreport</link></para>
+
+</sect1>
+<sect1 id="csvtaskreport"><title>csvtaskreport &lt;filename&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>filename:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Generates a report of all tasks (excluding hidden and filtered) in
+csv format. Multiple declarations of csvtaskreport can be made to
+generate several different reports with one run of TaskJuggler.</para>
+
+<para>Optional attributes:</para>
+
+<sect2 id="csvtaskreport_barlabels"><title>barlabels
+&lt;mode&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>mode:</member><member>Can be any of the following
+values:</member>
+</simplelist></para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>empty</computeroutput></member>
+<member>Do not show any values on calendar bars.</member>
+
+<member><computeroutput>load</computeroutput></member>
+<member>Show task or resource load on calendar bars.</member>
+
+</simplelist></para>
+
+<para> The default setting is to print load values on the bars.
+</para>
+
+</sect2>
+<sect2 id="csvtaskreport_caption"><title>caption &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the caption used for the report. The caption is printed right
+above the task list.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_columns"><title>columns
+&lt;colid&gt; [, &lt;colid&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>colid:</member><member><link linkend="id">ID</link></member>
+</simplelist></para>
+
+<para>Specifies which columns should be included in the task report. The
+following values for colid are available:</para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>completed</computeroutput></member>
+<member>The percentage the task has been completed already. This is
+either the value specified by <link
+linkend="task_complete">complete</link> or a value computed according
+to the current date (or the date specified by <link
+linkend="project_now">now</link>) and the length, duration or effort.</member>
+
+<member><computeroutput>cost</computeroutput></member>
+<member>The accumulated costs of the task and its sub tasks</member>
+
+<member><computeroutput>daily</computeroutput></member>
+<member>A day-by-day calendar view of the tasks</member>
+
+<member><computeroutput>depends</computeroutput></member>
+<member>The task index of the tasks on which this task
+depends</member>
+
+<member><computeroutput>duration</computeroutput></member>
+<member>The duration of the task</member>
+
+<member><computeroutput>effort</computeroutput></member>
+<member>The effort put into the task</member>
+
+<member><computeroutput>end</computeroutput></member>
+<member>The end date of a task</member>
+
+<member><computeroutput>endbuffer</computeroutput></member>
+<member>The percentage of the endbuffer</member>
+
+<member><computeroutput>endbufferstart</computeroutput></member>
+<member>The start time of the end buffer</member>
+
+<member><computeroutput>flags</computeroutput></member>
+<member>The list of flags assigned to the task or resource</member>
+
+<member><computeroutput>follows</computeroutput></member>
+<member>The task index of the tasks that depend on this task</member>
+
+<member><computeroutput>hierarchindex</computeroutput></member>
+<member>The hierarchical index of a task. The index is calculated from the
+hierachical structure of the list as well as the start and end dates.
+</member>
+
+<member><computeroutput>hierarchno</computeroutput></member>
+<member>The hierarchical number of a task. It is based on the order of
+declaration.</member>
+
+<member><computeroutput>id</computeroutput></member>
+<member>The global <link linkend="id">ID</link> of a task</member>
+
+<member><computeroutput>index</computeroutput></member>
+<member>The index of a task. The index is calculated from the
+hierachical structure of the list as well as the start and end dates.
+</member>
+
+<member><computeroutput>kotrusid</computeroutput></member>
+<member>The KotrRUs ID of the resource</member>
+
+<member><computeroutput>maxeffort</computeroutput></member>
+<member>The maximum daily load wanted for the resource</member>
+
+<member><computeroutput>maxend</computeroutput></member>
+<member>The latest desired end date</member>
+
+<member><computeroutput>maxstart</computeroutput></member>
+<member>The latest desired start date</member>
+
+<member><computeroutput>mineffort</computeroutput></member>
+<member>The minimum daily load wanted for the resource</member>
+
+<member><computeroutput>minend</computeroutput></member>
+<member>The earliest desired end date</member>
+
+<member><computeroutput>minstart</computeroutput></member>
+<member>The earliest desired start date</member>
+
+<member><computeroutput>monthly</computeroutput></member>
+<member>A month-by-month calendar view of the tasks</member>
+
+<member><computeroutput>name</computeroutput></member>
+<member>The name of a task, resource, or account</member>
+
+<member><computeroutput>no</computeroutput></member>
+<member>The task index in the list. It starts with 1 and increases for
+every listed item by 1.</member>
+
+<member><computeroutput>note</computeroutput></member>
+<member>The description of the task</member>
+
+<member><computeroutput>priority</computeroutput></member>
+<member>The scheduling priority</member>
+
+<member><computeroutput>profit</computeroutput></member>
+<member>The accumulated profit of the task and its sub tasks</member>
+
+<member><computeroutput>projectid</computeroutput></member>
+<member>The project id of the task</member>
+
+<member><computeroutput>quarterly</computeroutput></member>
+<member>A quarter-by-quarter calendar view of the tasks</member>
+
+<member><computeroutput>rate</computeroutput></member>
+<member>The daily rate of the resource</member>
+
+<member><computeroutput>reference</computeroutput></member>
+<member>A reference to a URL that contains further information.</member>
+
+<member><computeroutput>resources</computeroutput></member>
+<member>The names of the used resources</member>
+
+<member><computeroutput>responsibilies</computeroutput></member>
+<member>A list of all tasks indicies for which a resource is
+responsible </member>
+
+<member><computeroutput>responsible</computeroutput></member>
+<member>The name of the resource responsible for a task</member>
+
+<member><computeroutput>revenue</computeroutput></member>
+<member>The accumulated revenue of the task and its sub tasks</member>
+
+<member><computeroutput>scenario</computeroutput></member>
+<member>The name of the scenario. This column is helpful when multiple
+scenarios are shown in the table. See also <link
+linkend="csvtaskreport_scenarios">scenarios</link>.</member>
+
+<member><computeroutput>seqno</computeroutput></member>
+<member>The task index in the order of declaration. Each
+time a task declaration is completed, the sequence number is increased
+by 1. </member>
+
+<member><computeroutput>schedule</computeroutput></member>
+<member>A detailed schedule of the allocations for the resource.</member>
+
+<member><computeroutput>start</computeroutput></member>
+<member>The start date of a task</member>
+
+<member><computeroutput>startbuffer</computeroutput></member>
+<member>The percentage of the start buffer</member>
+
+<member><computeroutput>startbufferend</computeroutput></member>
+<member>The end time of the start buffer</member>
+
+<member><computeroutput>status</computeroutput></member>
+<member>The current status of the task. This is derived from the
+current date or the date specified by <link
+linkend="project_now">now</link> and the degree of completion. The
+degree of completion is either computed or has been specified by <link
+linkend="task_complete">complete</link>.</member>
+
+<member><computeroutput>weekly</computeroutput></member>
+<member>A week-by-week calendar view of the tasks</member>
+
+<member><computeroutput>yearly</computeroutput></member>
+<member>A year-by-year calendar view of the tasks</member>
+</simplelist></para>
+
+<para>Optional attributes of each column:</para>
+
+<para>All optional attributes that have a single text argument support
+macro expansion. Contrary to the normal macro expansion, these macros
+are expanded during the report generation. So the value of the macro
+is being changed after each table cell or table line. Consequently
+only build in macros can be used. To protect the macro calls agains
+expansion during the initial file processing, the report macros must
+be prefixed with an additional <computeroutput>$</computeroutput>.</para>
+
+<para>The following macros are supported for normal table cells:</para>
+
+<para><simplelist type=horiz columns=2>
+<member><computeroutput>$${0}</computeroutput></member>
+<member>This is the original value of the table cell. This macro is
+useful if the user would like to extend the cell text with a fixed
+string.</member>
+
+<member><computeroutput>$${accountid}</computeroutput></member>
+<member>The ID of the account.</member>
+
+<member><computeroutput>$${resourceid}</computeroutput></member>
+<member>The ID of the resource.</member>
+
+<member><computeroutput>$${taskid}</computeroutput></member> <member>the
+id of the task.</member>
+
+</simplelist></para>
+
+<para>Additionally the contense of other cell of the same report line can be
+accessed by the column ID. The following columns are supported:</para>
+
+<para><computeroutput>index, no, hierachindex, hierachno, id,
+name</computeroutput></para>
+
+<para>For the title or sub title of the calendar columns
+(<computeroutput>daily, weekly, monthly, quarterly,
+ yearly</computeroutput>) the
+following macros are supported:</para>
+
+<para><computeroutput>$${day}, $${month}, $${week}, $${quarter},
+	$${year}</computeroutput>.</para>
+
+<sect3 id="csvtaskreport_columns_celltext"><title>celltext &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the text to be shown in each table cell of the column.</para>
+
+</sect3>
+<sect3 id="csvtaskreport_columns_cellurl"><title>cellurl &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>If the text is not empty a hyperlink is attached to the cell
+contense that points to the URL specified here.</para>
+
+</sect3>
+<sect3 id="csvtaskreport_columns_subtitle"><title>subtitle &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the new column sub title. This is only useful for
+columns which have a two-line title like
+<computeroutput>daily</computeroutput>,
+<computeroutput>weekly</computeroutput> and the like.</para>
+
+</sect3>
+<sect3 id="csvtaskreport_columns_subtitleurl"><title>
+subtitleurl &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>If the text is not empty a hyperlink is attached to the cell
+sub title that points to the URL specified here.</para>
+
+</sect3>
+<sect3 id="csvtaskreport_columns_title"><title>title &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the new column title.</para>
+
+</sect3>
+<sect3 id="csvtaskreport_columns_titleurl"><title>titleurl &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>If the text is not empty a hyperlink is attached to the cell
+title that points to the URL specified here.</para>
+
+</sect3>
+<sect3><title>Examples</title>
+
+<para>To replace the tiltle of the
+<computeroutput>name</computeroutput> column with the text Description
+one has to write the following:</para>
+
+<para><screen>
+columns no, name { title "Description" }, daily
+</screen></para>
+
+<para>The next example adds the value of the <link
+linkend="project_extend">user-defined attribute</link>
+<computeroutput>category</computeroutput> enclosed in brackets in front of
+the original name.</para>
+
+<para><screen>
+columns no, name { celltext "[$${Category}] $${0}" }
+</screen></para>
+
+<para>The following example shows how to add a link to the week number
+in the title of a weekly report. The link can point to another report
+that contains a report with more details, but limited to the specified
+week only.</para>
+
+<para><screen>
+columns no, name, weekly { subtitleurl "http://Report-Week-$${week}.csv" }
+</screen></para>
+
+</sect3>
+</sect2>
+<sect2 id="csvtaskreport_end"><title>end &lt;day&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>day:</member><member><link linkend="date">DATE</link></member>
+</simplelist></para>
+
+<para>The end date for the calender view.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_headline"><title>headline
+&lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>Defines the headline used for the report. The headline is printed on
+top of the page and with a larger font.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_hideresource"><title>hideresource
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</member><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></member>
+</simplelist></para>
+
+<para>List only resources that do not have flags meeting the described logical
+expression.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_hidetask"><title>hidetask
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</member><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></member>
+</simplelist></para>
+
+<para>List only tasks that do not have flags meeting the described logical
+expression.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_loadunit"><title>loadunit
+&lt;unit&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>unit:</member><member>Can be any of the following
+values:</member>
+</simplelist></para>
+
+<para><simplelist type=horiz columns=2>
+<member><computeroutput>days</computeroutput></member>
+<member>Show load in man or resource-days.</member>
+
+<member><computeroutput>hours</computeroutput></member>
+<member>Show load in man resource-hours.</member>
+
+<member><computeroutput>longauto</computeroutput></member>
+<member>Show load in the most appropriate unit and show long
+unit name.</member>
+
+<member><computeroutput>minutes</computeroutput></member>
+<member>Show load in man or resource-minutes.</member>
+
+<member><computeroutput>months</computeroutput></member>
+<member>Show load in man or resource-months.</member>
+
+<member><computeroutput>shortauto</computeroutput></member>
+<member>Show load in the most appropriate unit and show short
+unit name.</member>
+
+<member><computeroutput>weeks</computeroutput></member>
+<member>Show load in man or resource-weeks.</member>
+
+<member><computeroutput>years</computeroutput></member>
+<member>Show load in man or resource-years.</member>
+
+</simplelist></para>
+
+<para>The conversion between the load values is controlled by the values of
+<link linkend="project_dailyworkinghours">dailyworkinghours</link> and
+<link linkend="project_yearlyworkingdays">yearlyworkingdays</link>.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_rawhead"><title>rawhead &lt;csv&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>csv:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>The <computeroutput>rawhead</computeroutput> attribute can be
+used to insert csv code between the <link
+linkend="csvtaskreport_caption">caption</link> and the table.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_rawstylesheet"><title>rawstylesheet
+&lt;csv&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>csv:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>The <computeroutput>rawstylesheet</computeroutput> attribute can
+be used to change the style sheet of the csv report. A user-defined
+stylesheet could look like this one:</para>
+
+<para><screen>
+.tj_table { text-align:center }
+.tj_header_row { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
+.tj_row { text-algin:left }
+.tj_cell { background-color:#f3ebae; font-size:70%; text-align:center }
+.tj_header_cell { background-color:#a5c2ff; font-size:70%; text-align:center }
+</screen></para>
+</sect2>
+<sect2 id="csvtaskreport_rawtail"><title>rawtail &lt;csv&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>csv:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>The <computeroutput>rawtail</computeroutput> attribute can be
+used to insert raw csv code after the table.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_rollupresource"><title>rollupresource
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</member><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></member>
+</simplelist></para>
+
+<para>Do not show sub-resources of resources with flags meeting the
+described logical expression.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_rolluptask"><title>rolluptask
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</member><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></member>
+</simplelist></para>
+
+<para>Do not show subtasks of tasks with flags meeting the described
+logical expression.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_scenarios"><title>scenarios
+&lt;id&gt; [, &lt;id&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>id:</member><member><link
+linkend="id">ID</link></member>
+</simplelist></para>
+
+<para>Specifies which scenarios should be included in the
+report.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_shorttimeformat"><title>shorttimeformat
+&lt;format&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>format:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>Specifies time format for time short specifications. This is
+normal just the hour and minutes. See <link
+linkend="project_timeformat">timeformat</link> for details.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_showprojectids"><title>showprojectids</title>
+
+<para>If used, the project id is shown after the load values in the
+calendar columns.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_sorttasks"><title>sorttasks
+&lt;criteria&gt;[, &lt; cirteria&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>criteria:</member><member><link
+linkend="sortingcriteria">SORTINGCRITERIA</link></member>
+</simplelist></para>
+
+<para>The sorting criteria specifies how the tasks in the generated report
+will be sorted. If two items match a criteria they are sorted
+according to the next criteria. Up to three criteria are supported.
+Most sorting criteria come as pair of two, so the list can be sorted
+in ascending order (suffix -up) or descending order (suffix -down).
+Possible values are:</para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>tree</computeroutput></member>
+<member>This is the default and creates a list with subtasks
+indented and grouped together. If this sorting is used, parent tasks
+are shown when subtasks are not hidden, even if the parent task
+matches the hide expression. <computeroutput>tree</computeroutput> can
+only be used as the first criteria.</member>
+
+<member><computeroutput>sequenceup</computeroutput></member>
+<member>First in project file on top</member>
+
+<member><computeroutput>sequencedown</computeroutput></member>
+<member>Last in project file on top</member>
+
+<member><computeroutput>tree</computeroutput></member>
+<member>Show nesting with indentation</member>
+
+<member><computeroutput>indexup</computeroutput></member>
+<member>Lowest index on top</member>
+
+<member><computeroutput>indexdown</computeroutput></member>
+<member>Highest index on top</member>
+
+<member><computeroutput>idup</computeroutput></member>
+<member>First <link linkend="id">ID</link> on top</member>
+
+<member><computeroutput>iddown</computeroutput></member>
+<member>Last <link linkend="id">ID</link> on top</member>
+
+<member><computeroutput>fullnameup</computeroutput></member>
+<member>First full name on top</member>
+
+<member><computeroutput>fullnamedown</computeroutput></member>
+<member>Last full name on top</member>
+
+<member><computeroutput>nameup</computeroutput></member>
+<member>First name on top</member>
+
+<member><computeroutput>namedown</computeroutput></member>
+<member>Last name on top</member>
+
+<member><computeroutput>planstartup</computeroutput></member>
+<member>Earliest plan start date on top. This has replaced the bogus
+<computeroutput>startup</computeroutput></member>
+
+<member><computeroutput>planstartdown</computeroutput></member>
+<member>Latest plan start date on top. This has replaced the bogus
+<computeroutput>startdown</computeroutput></member>
+
+<member><computeroutput>planendup</computeroutput></member>
+<member>Earliest plan end date on top. This has replaced the bogus
+<computeroutput>endup</computeroutput></member>
+
+<member><computeroutput>planenddown</computeroutput></member>
+<member>Latest plan end date on top. This has replaced the bogus
+<computeroutput>enddown</computeroutput></member>
+
+<member><computeroutput>actualstartup</computeroutput></member>
+<member>Earliest actual start date on top</member>
+
+<member><computeroutput>actualstartdown</computeroutput></member>
+<member>Latest actual start date on top</member>
+
+<member><computeroutput>actualendup</computeroutput></member>
+<member>Earliest actual end date on top</member>
+
+<member><computeroutput>actualenddown</computeroutput></member>
+<member>Latest actual end date on top</member>
+
+<member><computeroutput>completedup</computeroutput></member>
+<member>Least completed task first</member>
+
+<member><computeroutput>completeddown</computeroutput></member>
+<member>Most completed task first</member>
+
+<member><computeroutput>statusup</computeroutput></member>
+<member>Earliest status first</member>
+
+<member><computeroutput>statusdown</computeroutput></member>
+<member>Latest status first</member>
+
+<member><computeroutput>priorityup</computeroutput></member>
+<member>Lowest priority on top</member>
+
+<member><computeroutput>prioritydown</computeroutput></member>
+<member>Highest priority on top</member>
+
+<member><computeroutput>responsibleup</computeroutput></member>
+<member>First name of responsible on top</member>
+
+<member><computeroutput>responsibledown</computeroutput></member>
+<member>Last name of responsible on top</member>
+
+</simplelist></para>
+
+</sect2>
+<sect2 id="csvtaskreport_sortresources"><title>sortresources
+&lt;criteria&gt;[, &lt; cirteria&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>criteria:</member><member><link
+linkend="sortingcriteria">SORTINGCRITERIA</link></member>
+</simplelist></para>
+
+<para>The sorting criteria specifies how the resources in the
+generated report will be sorted. If two items match a criteria they
+are sorted according to the next criteria. Up to three criteria are
+supported.  Most sorting criterias come as pair of two, so the list
+can be sorted in ascending order (suffix -up) or descending order
+(suffix -down).  Possible values are:</para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>tree</computeroutput></member>
+<member>This is the default and creates a list with subtasks
+indented and grouped together. If this sorting is used, parent tasks
+are shown when subtasks are not hidden, even if the parent task
+matches the hide expression. <computeroutput>tree</computeroutput> can
+only be used as the first criteria.</member>
+
+<member><computeroutput>tree</computeroutput></member>
+<member>Show nesting with indentation</member>
+
+<member><computeroutput>indexup</computeroutput></member>
+<member>Lowest index on top</member>
+
+<member><computeroutput>indexdown</computeroutput></member>
+<member>Highest index on top</member>
+
+<member><computeroutput>idup</computeroutput></member>
+<member>First <link linkend="id">ID</link> on top</member>
+
+<member><computeroutput>iddown</computeroutput></member>
+<member>Last <link linkend="id">ID</link> on top</member>
+
+<member><computeroutput>fullnameup</computeroutput></member>
+<member>First full name on top</member>
+
+<member><computeroutput>fullnamedown</computeroutput></member>
+<member>Last full name on top</member>
+
+<member><computeroutput>nameup</computeroutput></member>
+<member>First name on top</member>
+
+<member><computeroutput>namedown</computeroutput></member>
+<member>Last name on top</member>
+
+<member><computeroutput>mineffortup</computeroutput></member>
+<member>Smallest minimal effort on top</member>
+
+<member><computeroutput>mineffortdown</computeroutput></member>
+<member>Largest minimal effort on top</member>
+
+<member><computeroutput>maxeffortup</computeroutput></member>
+<member>Smallest maximum effort on top</member>
+
+<member><computeroutput>maxeffortdown</computeroutput></member>
+<member>Largest maximum effort on top</member>
+
+<member><computeroutput>rateup</computeroutput></member>
+<member>Smallest rate on top</member>
+
+<member><computeroutput>ratedown</computeroutput></member>
+<member>Largest rate on top</member>
+
+<member><computeroutput>kotrusidup</computeroutput></member>
+<member>First kotrusid on top</member>
+
+<member><computeroutput>kotrusiddown</computeroutput></member>
+<member>Last kotrusid on top</member>
+</simplelist></para>
+
+</sect2>
+<sect2 id="csvtaskreport_start"><title>start &lt;day&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>day:</member><member><link linkend="date">DATE</link></member>
+</simplelist></para>
+
+<para>The start date for the calender view.</para>
+
+</sect2>
+<sect2 id="csvtaskreport_timeformat"><title>timeformat
+&lt;format&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>format:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>Specifies time format for time specifications. See <link
+linkend="project_timeformat">timeformat</link> for details.</para>
+
+</sect2>
+</sect1>
 <sect1 id="copyright"><title>copyright &lt;text&gt;</title>
 
 <para>Define the copyright or other legal statement for your project
@@ -530,14 +1397,6 @@ top of the page and with a larger font.</para>
 <para>The end date for the calender view.</para>
 
 </sect2>
-<sect2 id="htmlaccountreport_hideplan"><title>hideplan</title>
-
-<para>Do not show the values of the plan scenario.</para>
-
-<para>See also: <link
-linkend="htmlaccountreport_showactual">showactual</link></para>
-
-</sect2>
 <sect2 id="htmlaccountreport_rollupaccount"><title>rollupaccount
 &lt;expression&gt;</title>
 
@@ -560,15 +1419,6 @@ linkend="logicalexpression">LOGICALEXPRESSION</link></member>
 
 <para>Do not show accounts that match the specified logical
 expression.</para>
-
-</sect2>
-<sect2 id="htmlaccountreport_showactual"><title>showactual</title>
-
-<para>If this attribute is specified the values of the actual scenario are
-listed.</para>
-
-<para>See also: <link
-linkend="htmlaccountreport_hideplan">hideplan</link></para>
 
 </sect2>
 <sect2 id="htmlaccountreport_sorttasks"><title>sortaccounts
@@ -1125,13 +1975,6 @@ linkend="string">STRING</link></member>
 <para>Specifies time format for time short specifications. This is
 normal just the hour and minutes. See <link
 linkend="project_timeformat">timeformat</link> for details.</para>
-
-</sect2>
-<sect2 id="htmltaskreport_showactual"><title>showactual</title>
-
-<para>If used, not only the plan values are listed in the table, but also the
-actual values. The actual values are put underneath the plan
-values.</para>
 
 </sect2>
 <sect2 id="htmltaskreport_showprojectids"><title>showprojectids</title>

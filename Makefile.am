@@ -31,5 +31,5 @@ dist-hook:
 
 SUBDIRS=$(COMPILE_FIRST) $(TOPSUBDIRS)
 
-include admin/Doxyfile.am
+# include admin/Doxyfile.am
 
