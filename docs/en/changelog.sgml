@@ -554,7 +554,7 @@ cells. This enhances readability both on the screen and on printouts.
 </para></listitem>
 
 <listitem><para>The functions for <link
-linkend="logical_expressions">Logical Expressions</link> are now using
+linkend="logicalexpression">Logical Expressions</link> are now using
 capital letters to improve their readability. The all lowercase
 versions are still supported, but the recommended versions are now the
 ones with intermixed uppercase letters.</para></listitem>
