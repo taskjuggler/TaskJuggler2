@@ -54,7 +54,7 @@ class Interval;
  * manipulte them. It provides fundamental functions like the scheduler.
  *
  * @short The class that holds all task related information.
- * @see Resource 
+ * @see Resource
  * @see CoreAttributes
  * @author Chris Schlaeger <cs@suse.de>
  */
@@ -143,7 +143,7 @@ public:
         return TaskListIterator(followers);
     }
     bool hasFollowers() { return !followers.isEmpty(); }
-    
+
     bool hasPrevious(Task* t) { return previous.find(t) != -1; }
     bool hasFollower(Task* t) { return followers.find(t) != -1; }
 
@@ -154,13 +154,13 @@ public:
     void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
     const time_t getEnd(int sc) const { return scenarios[sc].end; }
 
-    time_t getStartBufferEnd(int sc) const 
+    time_t getStartBufferEnd(int sc) const
     {
-        return scenarios[sc].startBufferEnd; 
+        return scenarios[sc].startBufferEnd;
     }
-    time_t getEndBufferStart(int sc) const 
-    { 
-        return scenarios[sc].endBufferStart; 
+    time_t getEndBufferStart(int sc) const
+    {
+        return scenarios[sc].endBufferStart;
     }
 
     void setLength(int sc, double days) { scenarios[sc].length = days; }
@@ -179,29 +179,29 @@ public:
     }
     bool isEndOk(int sc) const
     {
-        return !((minEnd > 0 && minEnd > scenarios[sc].end + 
+        return !((minEnd > 0 && minEnd > scenarios[sc].end +
                   (milestone ? 1 : 0)) ||
                  (maxEnd > 0 && scenarios[sc].end +
                   (milestone ? 1 : 0)) > maxEnd);
     }
 
     bool isBuffer(int sc, const Interval& iv) const;
-    
+
     void setComplete(int sc, int c) { scenarios[sc].complete = c; }
     double getComplete(int sc) const { return scenarios[sc].complete; }
 
-    void setStatusNote(int sc, const QString& d) 
+    void setStatusNote(int sc, const QString& d)
     {
-        scenarios[sc].statusNote = d; 
+        scenarios[sc].statusNote = d;
     }
-    const QString& getStatusNote(int sc) const 
-    { 
-        return scenarios[sc].statusNote; 
+    const QString& getStatusNote(int sc) const
+    {
+        return scenarios[sc].statusNote;
     }
 
     void setStartBuffer(int sc, double p) { scenarios[sc].startBuffer = p; }
     double getStartBuffer(int sc) const { return scenarios[sc].startBuffer; }
-    
+
     void setEndBuffer(int sc, double p) { scenarios[sc]. endBuffer = p; }
     double getEndBuffer(int sc) const { return scenarios[sc].endBuffer; }
 
@@ -214,14 +214,14 @@ public:
     double getCalcEffort(int sc) const;
     double getCalcDuration(int sc) const;
 
-    double getCredits(int sc, const Interval& period, AccountType acctType, 
+    double getCredits(int sc, const Interval& period, AccountType acctType,
                       const Resource* resource = 0, bool recursive = TRUE)
         const;
 
     bool isActive(int sc, const Interval& period) const;
     TaskStatus getStatus(int sc) const { return scenarios[sc].status; }
     bool isCompleted(int sc, time_t date) const;
-    void calcCompletionDegree(int sc); 
+    void calcCompletionDegree(int sc);
     double getCompletionDegree(int sc) const;
     double getCalcedCompletionDegree(int sc) const;
     TaskStatus getCompletionStatus(int sc) const
@@ -247,7 +247,7 @@ public:
     }
     ResourceList getBookedResources(int sc) const
     {
-        return scenarios[sc].bookedResources; 
+        return scenarios[sc].bookedResources;
     }
     void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
     bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
@@ -259,7 +259,7 @@ public:
     bool hasExtraValues(int sc) const;
 
     bool isContainer() const { return !sub.isEmpty(); }
-   
+
     bool xRef(QDict<Task>& hash);
     void implicitXRef();
     QString resolveId(QString relId);
@@ -292,8 +292,8 @@ public:
    void toTodo( KCal::Todo *, KCal::CalendarLocal * );
 #endif
 #endif
-   void loadFromXML( QDomElement& parent, Project *project );
-   
+   void loadFromXML( QDomElement& parent, Project *p );
+    void allocationFromXML( const QDomElement& );
 private:
     bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                        caller);
@@ -323,7 +323,7 @@ private:
     /// A reference to an external document
     QString ref;
 
-    /// A label used instead of the reference 
+    /// A label used instead of the reference
     QString refLabel;
 
     /**
@@ -416,7 +416,7 @@ private:
     Account* account;
 
     TaskScenario* scenarios;
-    
+
     /* The following group of variables store values generated during a
      * scheduler run. They might be initialized by other values and/or
      * they might contain results of the scheduling run. But they should
@@ -488,7 +488,7 @@ private:
      */
     bool loopDetectorMarkStart;
     bool loopDetectorMarkEnd;
-    
+
     /// A list of all the resources booked for this task.
     ResourceList bookedResources;
 } ;

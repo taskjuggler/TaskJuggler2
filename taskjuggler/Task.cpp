@@ -2341,6 +2341,69 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
      setStart(Task::Plan, elem.text().toLong() );
       else if( elemTagName == "planEnd" )
      setEnd(Task::Plan, elem.text().toLong() );
+
+      /* Allocations */
+      else if( elemTagName == "Allocation" )
+      {
+          allocationFromXML( elem );
+      }
+      else if( elemTagName == "Resource" )
+      {
+          const QString resId = elem.attribute( "Id" );
+          Resource *r = project->getResource( resId );
+          const QString name = elem.text();
+
+          if( ! r )
+          {
+              r = new Resource( project, resId, name , 0L );
+              project->addResource( r );
+          }
+          else
+          {
+              /* Resource does already exist, only correct the name */
+              r->setName( name );
+          }
+      }
    }
 }
 
+void Task::allocationFromXML( const QDomElement& alloElem  )
+{
+
+    QString alloID = alloElem.attribute("ResourceID" );
+    Project *project = getProject();
+    if( ! project ) return;
+    Resource *r = project->getResource( alloID );
+
+    if( ! r )
+    {
+        /* Resource does not yet exist, create it. */
+        r = new Resource( project, alloID, QString(), 0L );
+        project->addResource( r );
+    }
+
+    Allocation *allocation = 0L;
+    if( r )
+    {
+        allocation = new Allocation( r );
+    }
+
+    if( allocation )
+    {
+        QDomElement subElem = alloElem.firstChild().toElement();
+        for( ; !subElem.isNull(); subElem = subElem.nextSibling().toElement() )
+        {
+            const QString tagName = subElem.tagName();
+
+            if( tagName == "Load" )
+            {
+                allocation->setLoad( subElem.text().toInt());
+            }
+            else if( tagName == "Persistent" )
+            {
+                allocation->setPersistent( subElem.text() != "No" );
+            }
+        }
+        addAllocation( allocation );
+    }
+}
