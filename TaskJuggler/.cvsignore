@@ -3,6 +3,8 @@
 .libs
 *.moc.cpp
 *.moc
+FindDialog.cpp
+FindDialog.h
 MainWidget.cpp
 MainWidget.h
 RichTextDisplay.cpp

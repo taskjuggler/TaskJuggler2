@@ -26,6 +26,7 @@ class KMainWindow;
 class KListView;
 class KURL;
 class CoreAttributes;
+class FindDialog;
 
 class FileManager : public QObject
 {
@@ -58,6 +59,10 @@ public:
     void saveAllFiles();
     void clear();
 
+    void find();
+    void findNext();
+    void findPrevious();
+
     void undo();
     void redo();
     void cut();
@@ -80,6 +85,7 @@ public slots:
     void enableClipboardActions(bool enable = TRUE);
     void enableUndoActions(bool enable = TRUE);
 
+    void startSearch();
 
 private:
     FileManager() { }
@@ -92,6 +98,17 @@ private:
     QString findCommonPath();
     void updateFileBrowser();
     void setMasterFile(const KURL& url);
+
+    void search();
+
+    FindDialog* findDialog;
+    QString searchPattern;
+    uint matchLen;
+    bool searchCaseSensitive;
+    bool searchWholeWords;
+    bool searchFromCursor;
+    bool searchBackwards;
+    uint lastMatchLine, lastMatchCol;
 
     QWidgetStack* viewStack;
     KListView* browser;

@@ -99,7 +99,7 @@ void TaskJuggler::setupActions()
     KStdAction::quit(kapp, SLOT(closeAllWindows()), actionCollection());
 
     // Setup "Open Recent" menu and load old recent files.
-    m_recentAction = KStdAction::openRecent(this, SLOT( load(const KURL&)),
+    m_recentAction = KStdAction::openRecent(this, SLOT(load(const KURL&)),
                                             actionCollection());
 
 
@@ -110,34 +110,39 @@ void TaskJuggler::setupActions()
     KStdAction::copy(m_view, SLOT(copy()), actionCollection());
     KStdAction::paste(m_view, SLOT(paste()), actionCollection());
     KStdAction::selectAll(m_view, SLOT(selectAll()), actionCollection());
+    KStdAction::find(m_view, SLOT(find()), actionCollection());
+    KStdAction::findNext(m_view, SLOT(findNext()), actionCollection());
+    new KAction(i18n("Find Pre&vious"), "back",
+                KShortcut(KKey("Shift+F3")), m_view, SLOT(findPrevious()),
+                actionCollection(), "find_previous");
 
     // "Goto" menu
-    new KAction(i18n("Tas&ks" ), "tj_task_group", KShortcut(KKey("ALT+k")),
+    new KAction(i18n("Tas&ks"), "tj_task_group", KShortcut(KKey("ALT+k")),
                 m_view, SLOT(setFocusToTaskList()),
                 actionCollection(), "tasks");
-    new KAction(i18n("&Resources" ), "tj_resource_group",
+    new KAction(i18n("&Resources"), "tj_resource_group",
                 KShortcut(KKey("ALT+r")),
                 m_view, SLOT(setFocusToResourceList()),
                 actionCollection(), "resources");
-    new KAction(i18n("&Accounts" ), "tj_account_group",
+    new KAction(i18n("&Accounts"), "tj_account_group",
                 KShortcut(KKey("ALT+a")),
                 m_view, SLOT(setFocusToAccountList()),
                 actionCollection(), "accounts");
-    new KAction(i18n("Re&ports" ), "tj_reports", KShortcut(KKey("ALT+p")),
+    new KAction(i18n("Re&ports"), "tj_reports", KShortcut(KKey("ALT+p")),
                 m_view, SLOT(setFocusToReportList()),
                 actionCollection(), "reports");
-    new KAction(i18n("F&iles" ), "tj_file_list", KShortcut(KKey("ALT+i")),
+    new KAction(i18n("F&iles"), "tj_file_list", KShortcut(KKey("ALT+i")),
                 m_view, SLOT(setFocusToFileList()),
                 actionCollection(), "files");
-    new KAction(i18n("&Editor" ), "tj_editor", KShortcut(),
+    new KAction(i18n("&Editor"), "tj_editor", KShortcut(),
                 m_view, SLOT(setFocusToEditor()),
                 actionCollection(), "editor");
-    new KAction(i18n("Rep&ort" ), "tj_report", KShortcut(),
+    new KAction(i18n("Rep&ort"), "tj_report", KShortcut(),
                 m_view, SLOT(setFocusToReport()),
                 actionCollection(), "report");
 
     // "Tools" menu
-    new KAction(i18n("&Schedule" ), "tj_schedule", KShortcut(KKey("F9")),
+    new KAction(i18n("&Schedule"), "tj_schedule", KShortcut(KKey("F9")),
                 m_view, SLOT(schedule()),
                 actionCollection(), "schedule");
     new KAction(i18n("Goto &previous Problem"), "tj_previous_problem",

@@ -14,8 +14,11 @@
 #include <qstring.h>
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <qpushbutton.h>
+#include <qcheckbox.h>
 
 #include <kmainwindow.h>
+#include <kstatusbar.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -24,6 +27,7 @@
 #include <kiconloader.h>
 #include <kstdaction.h>
 #include <kaction.h>
+#include <klineedit.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/viewcursorinterface.h>
@@ -32,12 +36,14 @@
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
 #include <ktexteditor/configinterface.h>
+#include <ktexteditor/searchinterface.h>
 
 #include <kdebug.h>
 
 #include "CoreAttributes.h"
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
+#include "FindDialog.h"
 
 FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b) :
     mainWindow(m), viewStack(v), browser(b)
@@ -45,6 +51,9 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b) :
     files.setAutoDelete(TRUE);
     masterFile = 0;
     editorConfigured = FALSE;
+
+    findDialog = 0;
+    lastMatchLine = lastMatchCol = (uint) -1;
 
     // We don't want the URL column to be visible. This is internal data only.
     browser->setColumnWidthMode(1, QListView::Manual);
@@ -431,6 +440,130 @@ FileManager::clear()
 }
 
 void
+FileManager::find()
+{
+    if (!findDialog)
+    {
+        findDialog = new FindDialog(mainWindow);
+        findDialog->setCaption(QString("TaskJuggler"));
+        connect(findDialog->findButton, SIGNAL(clicked()),
+                this, SLOT(startSearch()));
+    }
+
+    findDialog->show();
+}
+
+void
+FileManager::findNext()
+{
+    search();
+}
+
+void
+FileManager::findPrevious()
+{
+    searchBackwards = !searchBackwards;
+    search();
+    searchBackwards = !searchBackwards;
+}
+
+void
+FileManager::startSearch()
+{
+    if (!getCurrentFile())
+        return;
+
+    searchPattern = findDialog->pattern->text();
+    searchCaseSensitive = findDialog->caseSensitiveCB->isChecked();
+    searchFromCursor = findDialog->fromCursorCB->isChecked();
+    searchBackwards = findDialog->backwardsCB->isChecked();
+
+    if (searchPattern.isEmpty())
+        return;
+
+    KTextEditor::View* editor = getCurrentFile()->getEditor();
+
+    if (searchFromCursor)
+    {
+        KTextEditor::viewCursorInterface(editor)->
+            cursorPositionReal(&lastMatchLine, &lastMatchCol);
+    }
+    else
+    {
+        if (searchBackwards)
+        {
+            KTextEditor::Document* document = editor->document();
+            lastMatchLine =
+                KTextEditor::editInterface(document)->numLines() - 1;
+            lastMatchCol = KTextEditor::editInterface(document)->
+                lineLength(lastMatchLine) - 1;
+            matchLen = 0;
+        }
+        else
+            lastMatchLine = lastMatchCol = matchLen = 0;
+    }
+    search();
+}
+
+void
+FileManager::search()
+{
+    if (!getCurrentFile() || searchPattern.isEmpty())
+        return;
+
+    KTextEditor::View* editor = getCurrentFile()->getEditor();
+    KTextEditor::Document* document = editor->document();
+
+    if (searchBackwards)
+    {
+        /* This is a rather ugly workaround for the strange searchText()
+         * behaviour. In backwards mode it find the string right of the
+         * position as well. So we need to move the last find position one
+         * character to the left. */
+        if (lastMatchCol > 0)
+            lastMatchCol -= 1;
+        else
+        {
+            lastMatchCol = KTextEditor::editInterface(document)->
+                lineLength(--lastMatchLine);
+        }
+    }
+    else
+        lastMatchCol += matchLen;
+
+    /* Now try to find the text pattern. */
+    if (KTextEditor::searchInterface(document)->searchText
+        (lastMatchLine, lastMatchCol, searchPattern,
+         &lastMatchLine, &lastMatchCol, &matchLen,
+         searchCaseSensitive, searchBackwards))
+    {
+        // Found it!
+        KTextEditor::viewCursorInterface(editor)->
+            setCursorPosition(lastMatchLine, lastMatchCol);
+        mainWindow->statusBar()->message("");
+    }
+    else
+    {
+        // Nothing found. Prepare wrap-around.
+        if (searchBackwards)
+        {
+            mainWindow->statusBar()->message
+                (i18n("Nothing found. Press F3 again to start from bottom!"));
+            lastMatchLine =
+                KTextEditor::editInterface(document)->numLines() - 1;
+            lastMatchCol = KTextEditor::editInterface(document)->
+                lineLength(lastMatchLine) - 1;
+        }
+        else
+        {
+            mainWindow->statusBar()->message
+                (i18n("Nothing found. Press F3 again to start from top!"));
+            lastMatchLine = lastMatchCol = 0;
+        }
+    }
+}
+
+void
 FileManager::undo()
 {
     if (getCurrentFile())
@@ -490,6 +623,10 @@ FileManager::enableEditorActions(bool enable)
     mainWindow->action(KStdAction::name(KStdAction::SelectAll))->
         setEnabled(enable);
     mainWindow->action("configure_editor")->setEnabled(enable);
+    mainWindow->action(KStdAction::name(KStdAction::Find))->setEnabled(enable);
+    mainWindow->action(KStdAction::name(KStdAction::FindNext))->
+        setEnabled(enable);
+    mainWindow->action("find_previous")->setEnabled(enable);
 
     enableClipboardActions(enable);
     enableUndoActions(enable);

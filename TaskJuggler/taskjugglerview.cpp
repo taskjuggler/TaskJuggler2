@@ -452,6 +452,24 @@ TaskJugglerView::selectAll()
 }
 
 void
+TaskJugglerView::find()
+{
+    fileManager->find();
+}
+
+void
+TaskJugglerView::findNext()
+{
+    fileManager->findNext();
+}
+
+void
+TaskJugglerView::findPrevious()
+{
+    fileManager->findPrevious();
+}
+
+void
 TaskJugglerView::schedule()
 {
     if (fileManager->getMasterFile().path().isEmpty())

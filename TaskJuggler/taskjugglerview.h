@@ -103,6 +103,10 @@ public slots:
     void paste();
     void selectAll();
 
+    void find();
+    void findNext();
+    void findPrevious();
+
     void schedule();
     void nextProblem();
     void previousProblem();
