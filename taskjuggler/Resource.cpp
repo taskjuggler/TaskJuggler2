@@ -890,7 +890,8 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
         if ((task == 0 ||
             (task != 0 && task == b->getTask()) &&
              (acctType == AllAccounts ||
-              b->getTask()->getAccount()->getAcctType() == acctType)))
+              (b->getTask()->getAccount() &&
+               b->getTask()->getAccount()->getAcctType() == acctType))))
             bookings++;
     }
 

@@ -3062,7 +3062,7 @@ ProjectFile::readICalTaskReport()
     bool result = false;
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
-    
+
    QString filename;
    if (nextToken(filename) != STRING)
    {
@@ -3075,7 +3075,7 @@ ProjectFile::readICalTaskReport()
        result = true;
    }
 #endif
-#endif   
+#endif
    return( result );
 }
 
@@ -3294,8 +3294,9 @@ ProjectFile::readReport(const QString& reportType)
     }*/
     else
     {
-        qFatal("readReport: bad report type");
-        return FALSE;   // Just to please the compiler.
+        errorMessage(i18n("Report type %1 not yet supported!")
+                     .arg(reportType));
+        return FALSE;
     }
 
     TokenType tt;
