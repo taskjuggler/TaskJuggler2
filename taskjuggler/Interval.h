@@ -57,6 +57,15 @@ public:
 		return ((start <= i.start && i.start < end) ||
 				(i.start <= start && start < i.end));
 	}
+	bool prepend(const Interval& i)
+	{
+		if (((i.end + 1) == start) && (i.start < start))
+		{
+			start = i.start;
+			return TRUE;
+		}
+		return FALSE;
+	}
 	bool append(const Interval& i)
 	{
 		if (((end + 1) == i.start) && ((end + 1) <= i.end))

@@ -22,6 +22,8 @@ Project::Project()
 {
 	taskList.setAutoDelete(TRUE);
 	resourceList.setAutoDelete(TRUE);
+	activeAsap.setSorting(CoreAttributesList::PrioDown);
+	activeAlap.setSorting(CoreAttributesList::PrioDown);
 	priority = 500;
 	dailyWorkingHours = 8.0;
 	scheduleGranularity = ONEHOUR;
@@ -116,6 +118,8 @@ Project::preparePlan()
 {
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->preparePlan();
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->propagateInitialValues();
 	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
 		r->preparePlan();
 }
@@ -134,6 +138,8 @@ Project::prepareActual()
 {
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->prepareActual();
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->propagateInitialValues();
 	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
 		r->prepareActual();
 }
@@ -159,37 +165,45 @@ Project::schedule()
 	time_t timeDelta = scheduleGranularity;
 	bool done = FALSE;
 	time_t day;
-	for (day = start; !done && day >= start && day < end; day += timeDelta)
+
+	updateActiveTaskList(sortedTasks);
+	for (day = start; !(activeAsap.isEmpty() && activeAlap.isEmpty()) &&
+			 day >= start && day < end; day += timeDelta)
 	{
+		timeDelta = scheduleGranularity;
 		do
 		{
 			done = TRUE;
-			for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
+			for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
+			{
 				if (!t->schedule(day, scheduleGranularity))
 				{
 					done = FALSE;
 					break;	// Start with top priority tasks again.
 				}
+				if (t->needsEarlierTimeSlot(day + scheduleGranularity))
+					timeDelta = -scheduleGranularity;
+			}
 		} while (!done);
 
-		/* If we have at least one ALAP task that has an end date but no
-		 * start date then we move backwards in time. Otherwise we move
-		 * forward in time. */
-		timeDelta = scheduleGranularity;
-		for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
+		if (timeDelta < 0)
+			continue;
+
+		do
 		{
-			if (t->needsEarlierTimeSlot(day + scheduleGranularity))
+			done = TRUE;
+			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
 			{
-				timeDelta = -scheduleGranularity;
-				done = FALSE;
-				break;
+				if (!t->schedule(day, scheduleGranularity))
+				{
+					done = FALSE;
+					break;	// Start with top priority tasks again.
+				}
 			}
-			if (!t->isScheduled())
-				done = FALSE;
-		}
+		} while (!done);
 	}
 
-	if (!done)
+	if (!activeAsap.isEmpty() || !activeAlap.isEmpty())
 	{
 		if (day < start)
 		{
@@ -209,6 +223,14 @@ Project::schedule()
 		error = TRUE;
 
 	return !error;
+}
+
+void
+Project::updateActiveTaskList(TaskList& sortedTasks)
+{
+	for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
+		if (t->isActive())
+			addActiveTask(t);
 }
 
 bool
@@ -248,4 +270,30 @@ Project::generateReports()
 
 	if( xmlreport )
 	   xmlreport->generate();
+}
+
+void
+Project::removeActiveTask(Task* t)
+{
+	t->setScheduled();
+
+	if (t->getScheduling() == Task::ASAP)
+		activeAsap.removeRef(t);
+	else
+		activeAlap.removeRef(t);
+}
+
+void
+Project::addActiveTask(Task* t)
+{
+	if (t->getScheduling() == Task::ASAP)
+	{
+		if (activeAsap.findRef(t) == -1)
+			activeAsap.inSort(t);
+	}
+	else
+	{
+		if (activeAlap.findRef(t) == -1)
+			activeAlap.append(t);
+	}
 }

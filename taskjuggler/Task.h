@@ -261,8 +261,12 @@ public:
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
 	bool schedule(time_t reqStart, time_t duration);
-	bool isScheduled() { return schedulingDone; }
+	bool isScheduled() const { return schedulingDone; }
+	void setScheduled() { schedulingDone = TRUE; }
 	bool needsEarlierTimeSlot(time_t date);
+	void propagateStart(bool safeMode = TRUE);
+	void propagateEnd(bool safeMode = TRUE);
+	void propagateInitialValues();
 
 	/**
 	 * @returns TRUE if the work planned for a day has been completed.
@@ -275,9 +279,10 @@ public:
 	bool isCompleted(time_t date) const;
 	bool scheduleOk();
 	bool preScheduleOk();
+	bool isActive();
 
 	void setMilestone() { milestone = TRUE; }
-	bool isMilestone() const { return start != 0 && start == end; }
+	bool isMilestone() const { return milestone; }
 
 	void setAccount(Account* a) { account = a; }
 	Account* getAccount() const { return account; }

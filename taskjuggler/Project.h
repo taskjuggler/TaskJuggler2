@@ -156,10 +156,12 @@ public:
 	AccountList getAccountList() { return accountList; }
 
 	void generateReports();
-
+	void removeActiveTask(Task* t);
+	void addActiveTask(Task* t);
    
 private:
 	bool checkSchedule();
+	void updateActiveTaskList(TaskList& sortedTasks);
 
 	/// The start date of the project
 	time_t start;
@@ -217,6 +219,9 @@ private:
 	ResourceList resourceList;
 	VacationList vacationList;
 	AccountList accountList;
+
+	TaskList activeAsap;
+	TaskList activeAlap;
 
 	ReportXML *xmlreport;
    

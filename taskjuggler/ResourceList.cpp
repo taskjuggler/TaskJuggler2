@@ -214,7 +214,8 @@ Resource::book(Booking* nb)
 	{
 		if (b->getTask() == nb->getTask() &&
 			b->getProjectId() == nb->getProjectId() &&
-			b->getInterval().append(nb->getInterval()))
+			(b->getInterval().append(nb->getInterval()) ||
+			 b->getInterval().prepend(nb->getInterval())))
 		{
 			// booking appended
 			delete nb;

@@ -112,7 +112,10 @@ Task::schedule(time_t date, time_t slotDuration)
 {
 	// Task is already scheduled.
 	if (schedulingDone)
+	{
+		qFatal("Task %s is already scheduled", id.latin1());
 		return TRUE;
+	}
 
 	/* Check whether this task is a container tasks (task with sub-tasks).
 	 * Container tasks are scheduled when all sub tasks have been
@@ -138,9 +141,13 @@ Task::schedule(time_t date, time_t slotDuration)
 				start = getParent()->start;
 			else
 				return TRUE;
+			propagateStart();
 		}
 		else if ((es = earliestStart()) > 0)
+		{
 			start = es;
+			propagateStart();
+		}
 		else
 			return TRUE;	// Task cannot be scheduled yet.
 
@@ -164,9 +171,13 @@ Task::schedule(time_t date, time_t slotDuration)
 				end = getParent()->end;
 			else
 				return TRUE;
+			propagateEnd();
 		}
 		else if ((le = latestEnd()) > 0)
+		{
 			end = le;
+			propagateEnd();
+		}
 		else
 			return TRUE;	// Task cannot be scheduled yet.
 		
@@ -224,11 +235,16 @@ Task::schedule(time_t date, time_t slotDuration)
 			(duration > 0.0 && doneDuration >= duration))
 		{
 			if (scheduling == ASAP)
-				end = allocations.isEmpty() ? date + slotDuration - 1 :
-					tentativeEnd;
+			{
+				end = date + slotDuration - 1;
+				propagateEnd();
+			}
 			else
-				start = allocations.isEmpty() ? date : tentativeStart;
-			schedulingDone = TRUE;
+			{
+				start = date;
+				propagateStart();
+			}
+			project->removeActiveTask(this);
 			return FALSE;
 		}
 	}
@@ -245,10 +261,16 @@ Task::schedule(time_t date, time_t slotDuration)
 		if (doneEffort >= effort)
 		{
 			if (scheduling == ASAP)
+			{
 				end = tentativeEnd;
+				propagateEnd();
+			}
 			else
+			{
 				start = tentativeStart;
-			schedulingDone = TRUE;
+				propagateStart();
+			}
+			project->removeActiveTask(this);
 			return FALSE;
 		}
 	}
@@ -256,10 +278,16 @@ Task::schedule(time_t date, time_t slotDuration)
 	{
 		// Task is a milestone.
 		if (scheduling == ASAP)
+		{
 			end = start;
+			propagateEnd();
+		}
 		else
+		{
 			start = end;
-		schedulingDone = TRUE;
+			propagateStart();
+		}
+		project->removeActiveTask(this);
 		return FALSE;
 	}
 	else if (start != 0 && end != 0)
@@ -270,7 +298,9 @@ Task::schedule(time_t date, time_t slotDuration)
 
 		if ((scheduling == ASAP && (date + slotDuration) >= end) ||
 			(scheduling == ALAP && date <= start))
-			schedulingDone = TRUE;
+		{
+			project->removeActiveTask(this);
+		}
 	}
 
 	return TRUE;
@@ -284,11 +314,13 @@ Task::scheduleContainer()
 	if (start != earliestStart())
 	{
 		start = earliestStart();
+		propagateStart();
 		changeMade = TRUE;
 	}
 	if (end != latestEnd())
 	{
 		end = latestEnd();
+		propagateEnd();
 		changeMade = TRUE;
 	}
 	time_t nstart = 0;
@@ -321,12 +353,86 @@ Task::scheduleContainer()
 	}
 
 	if (start == 0)
+	{
 		start = nstart;
+		propagateStart();
+	}
 	if (end == 0)
+	{
 		end = nend;
+		propagateEnd();
+	}
+
 	schedulingDone = TRUE;
 
 	return FALSE;
+}
+
+void
+Task::propagateStart(bool safeMode)
+{
+	for (Task* t = previous.first(); t != 0; t = previous.next())
+		if (t->end == 0 && t->scheduling == ALAP &&
+			t->latestEnd() != 0)
+		{
+			t->end = t->latestEnd();
+			t->propagateEnd(safeMode);
+			if (safeMode && t->isActive())
+				project->addActiveTask(t);
+		}
+
+	/* Propagate start time to sub tasks which have only an implicit
+	 * dependancy on the parent task. */
+	for (Task* t = subFirst(); t != 0; t = subNext())
+		if (t->start == 0 && t->previous.isEmpty() && t->scheduling == ASAP)
+		{
+			t->start = start;
+			if (safeMode && t->isActive())
+				project->addActiveTask(t);
+			t->propagateStart(safeMode);
+		}
+
+	if (safeMode && parent)
+		getParent()->scheduleContainer();
+}
+
+void
+Task::propagateEnd(bool safeMode)
+{
+	for (Task* t = followers.first(); t != 0; t = followers.next())
+		if (t->start == 0 && t->scheduling == ASAP &&
+			t->earliestStart() != 0)
+		{
+			t->start = t->earliestStart();
+			t->propagateStart(safeMode);
+			if (safeMode && t->isActive())
+				project->addActiveTask(t);
+		}
+
+	/* Propagate end time to sub tasks which have only an implicit
+	 * dependancy on the parent task. */
+	for (Task* t = subFirst(); t != 0; t = subNext())
+		if (t->end == 0 && t->followers.isEmpty() && t->scheduling == ALAP)
+		{
+			t->end = end;
+			if (safeMode && t->isActive())
+				project->addActiveTask(t);
+			t->propagateEnd(safeMode);
+		}
+
+
+	if (safeMode && parent)
+		getParent()->scheduleContainer();
+}
+
+void
+Task::propagateInitialValues()
+{
+	// I'm not sure if this isn't dangerous.
+	if (start != 0)
+		propagateStart(FALSE);
+	if (end != 0)
+		propagateEnd(FALSE);
 }
 
 bool
@@ -907,6 +1013,19 @@ Task::scheduleOk()
 }
 
 bool
+Task::isActive()
+{
+	if (schedulingDone || !sub.isEmpty())
+		return FALSE;
+
+	if ((scheduling == ASAP && start != 0) ||
+		(scheduling == ALAP && end != 0))
+		return TRUE;
+
+	return FALSE;
+}
+
+bool
 Task::isPlanActive(const Interval& period) const
 {
 	Interval work;
@@ -963,6 +1082,7 @@ Task::preparePlan()
 {
 	start = planStart;
 	end = planEnd;
+
 	duration = planDuration;
 	length = planLength;
 	effort = planEffort;
@@ -998,6 +1118,7 @@ Task::prepareActual()
 {
 	start = actualStart;
 	end = actualEnd;
+
 	duration = actualDuration;
 	length = actualLength;
 	effort = actualEffort;

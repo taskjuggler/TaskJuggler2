@@ -22,7 +22,6 @@ htmltaskreport "test1.html" {
   end 2002-04-01
 #  showactual
 #  hideresource 1
-  hidetask (((~type1) & ~(type2 | type3)))
 #  rollupresource team
 #  hidetask media | deadline | type1
 #  rolluptask beta | preview
