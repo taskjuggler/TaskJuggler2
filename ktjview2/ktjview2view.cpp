@@ -282,6 +282,9 @@ void ktjview2View::openURL( const KURL& url )
 void ktjview2View::slotKoolBar( int /*grp*/, int item )
 {
     //kdDebug() << k_funcinfo << grp << " " << item << endl;
+
+    emit signalUpdateToolbars( item );     // notify the view change
+
     if ( item == infoPage )
         m_widgetStack->raiseWidget( m_textBrowser );
     else if ( item == ganttPage )
@@ -311,6 +314,10 @@ void ktjview2View::parseProjectInfo()
 
     // TJ current date
     text += i18n( "XML report generated: %1<br>" ).arg( time_t2QS( m_project->getNow() ) );
+
+    text += "<hr>";
+
+    text += m_project->getCopyright();
 
     m_textBrowser->setText( text );
 }

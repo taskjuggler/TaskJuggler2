@@ -21,6 +21,7 @@
 #include "ktjview2.h"
 #include "settings.h"
 #include "gantt.h"
+#include "klistviewsearchline.h"
 
 #include <qdragobject.h>
 #include <kprinter.h>
@@ -32,6 +33,7 @@
 #include <kiconloader.h>
 #include <kdeversion.h>
 #include <kmenubar.h>
+#include <ktoolbar.h>
 #include <kstatusbar.h>
 #include <kkeydialog.h>
 #include <kaccel.h>
@@ -44,6 +46,7 @@
 #include <kedittoolbar.h>
 #include <kstdaccel.h>
 #include <kaction.h>
+#include <kactionclasses.h>
 #include <kstdaction.h>
 #include <kconfigdialog.h>
 
@@ -70,10 +73,12 @@ ktjview2::ktjview2()
     setAutoSaveSettings();
 
     // allow the view to change the statusbar and caption
-    connect(m_view, SIGNAL(signalChangeStatusbar(const QString&)),
-            this,   SLOT(changeStatusbar(const QString&)));
-    connect(m_view, SIGNAL(signalChangeCaption(const QString&)),
-            this,   SLOT(changeCaption(const QString&)));
+    connect( m_view, SIGNAL(signalChangeStatusbar(const QString&)),
+             this,   SLOT(changeStatusbar(const QString&)) );
+    connect( m_view, SIGNAL(signalChangeCaption(const QString&)),
+             this,   SLOT(changeCaption(const QString&)) );
+    connect( m_view, SIGNAL( signalUpdateToolbars( int ) ),
+             this, SLOT( slotUpdateToolbars( int ) ) );
 }
 
 ktjview2::~ktjview2()
@@ -125,6 +130,10 @@ void ktjview2::setupActions()
     m_scaleAction->setCurrentItem( 5 ); // TODO make configurable
     connect( m_scaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotScale( int ) ) );
+
+    // Filter widget action
+    m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
+    new KWidgetAction( m_searchLine, i18n( "Filter:" ), KShortcut(), 0, 0, actionCollection(), "filter_widget" );
 
 #if 0
     // Resource menu
@@ -265,6 +274,25 @@ bool ktjview2::queryExit()
 {
     m_recentAction->saveEntries( kapp->config() );
     return true;
+}
+
+void ktjview2::slotUpdateToolbars( int item )
+{
+    if ( item == 2 )            // Gantt view
+        toolBar( "ganttToolBar" )->show();
+    else
+        toolBar( "ganttToolBar" )->hide();
+
+    if ( item == 3 )            // Resources view
+        m_searchLine->setListView( m_view->resListView() );
+
+    if ( item == 4 )            // Task view
+        m_searchLine->setListView( m_view->taskListView() );
+
+    if ( item == 3 || item == 4 )
+        toolBar( "filterToolBar" )->show();
+    else
+        toolBar( "filterToolBar" )->hide();
 }
 
 #include "ktjview2.moc"

@@ -33,6 +33,7 @@
 
 class KToggleAction;
 class KURL;
+class KListViewSearchLine;
 
 /**
  * This class serves as the main window for ktjview2.  It handles the
@@ -115,6 +116,8 @@ private slots:
     void changeStatusbar( const QString& text );
     void changeCaption( const QString& text );
 
+    void slotUpdateToolbars( int item );
+
 private:
     void setupActions();
 
@@ -123,7 +126,7 @@ private:
     // actions
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
-
+    KListViewSearchLine * m_searchLine;
 };
 
 #endif // _KTJVIEW2_H_

@@ -18,12 +18,12 @@ ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/
 # which sources should be compiled for ktjview2
 ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp \
 	ktjview2iface.skel koKoolBar.cc timedialog.cpp \
-	settings.kcfgc gantt.ui filterWidget.ui filterDialog.cpp filter.cpp
+	settings.kcfgc gantt.ui filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp
 
 kde_kcfg_DATA = ktjview2.kcfg
 
 # these are the headers for your project
-noinst_HEADERS = ktjview2.h ktjview2view.h koKoolBar.h TaskItem.h timedialog.h filterDialog.h filter.h
+noinst_HEADERS = ktjview2.h ktjview2view.h koKoolBar.h TaskItem.h timedialog.h filterDialog.h filter.h klistviewsearchline.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO

@@ -89,6 +89,12 @@ public:
      */
     void print( KPrinter * printer );
 
+    KListView * taskListView() const
+        { return m_taskView; }
+
+    KListView * resListView() const
+        { return m_resListView; }
+
 public slots:
     /**
      * Zoom in by 10%
@@ -140,6 +146,12 @@ signals:
      * Use this signal to change the content of the caption
      */
     void signalChangeCaption( const QString& text );
+
+    /**
+     * Notify when the view component changes
+     * @param item The corresponding sidebar entry that was clicked
+     */
+    void signalUpdateToolbars( int item );
 
 protected slots:
     /**
