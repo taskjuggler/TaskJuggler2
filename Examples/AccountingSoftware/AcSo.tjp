@@ -1,0 +1,119 @@
+project fibu "Accounting Software" "1.0" 2002-01-16 2002-06-30
+
+now 2002-02-17
+
+# The daily rate of all resources
+rate 310.0
+currency "EUR"
+
+# This is one way to form teams
+macro allocate_developers [
+  allocate dev1
+  allocate dev2 { load 0.5 }
+  allocate dev3
+]
+
+resource dev "Developers" {
+  resource dev1 "Paul Smith"
+  resource dev2 "Larry Bono"
+  resource dev3 "Klaus Mueller" { vacation 2002-02-01 - 2002-02-05 }
+}
+resource misc "The Others" {
+  resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
+  resource doc "Dim Sung"
+}
+
+account dev "Development" cost {}
+account doc "Dokumentation" cost {}
+account rev "Payments" revenue {}
+
+task AcSo "Accounting Software" {
+
+  account dev
+
+  task spec "Spezification" {
+    effort 20d
+    ${allocate_developers}
+    depends !deliveries.start
+  }
+
+  task software "Software Development" {
+
+    priority 1000
+
+    task database "Database coupling" {
+      effort 20d
+      depends !!spec
+      allocate dev1
+      allocate dev2
+    }
+
+    task gui "Graphical User Interface" {
+      effort 35d
+      actualeffort 40d
+      depends !database, !backend
+      allocate dev2
+      allocate dev3
+    }
+
+    task backend "Back-End Functions" {
+      effort 30d
+      complete 100
+      depends !database, !!spec
+      allocate dev1
+      allocate dev2
+    }
+    
+  }
+
+  task test "Software testing" {
+
+    task alpha "Alpha Test" {
+      effort 1w
+      depends !!software
+      allocate test
+      allocate dev2
+    }
+
+    task beta "Beta Test" {
+      effort 4w
+      depends !alpha
+      allocate test
+      allocate dev1
+    }
+  }
+
+  task manual "Manual" {
+    effort 10w
+    depends !deliveries.start
+    allocate doc
+    allocate dev3
+    account doc
+  }
+
+  task deliveries "Ship to customer" {
+
+    account rev
+
+    task start "Projectstart" {
+      milestone
+      start 2002-01-16
+      actualstart 2002-01-20
+      startcredit 30000.0
+    }
+
+    task beta "Betaversion" {
+      milestone
+      depends !!test.alpha
+      startcredit 10000.0
+    }
+
+    task done "Ship Product to customer" {
+      milestone
+      maxend 2002-04-17
+      depends !!test.beta, !!manual
+      startcredit 20000.0
+    }
+  }
+}
+
