@@ -7,6 +7,7 @@ docprefix = $(DESTDIR)$(prefix)/share/doc/packages
 
 install-data-local:
 	$(mkinstalldirs) $(docprefix)/taskjuggler/
+	$(INSTALL_DATA) $(srcdir)/index.shtml $(docprefix)/taskjuggler/index.shtml
 	$(INSTALL_DATA) $(srcdir)/index.html $(docprefix)/taskjuggler/index.html
 	$(INSTALL_DATA) $(srcdir)/index-1.html $(docprefix)/taskjuggler/index-1.html
 	$(INSTALL_DATA) $(srcdir)/index-2.html $(docprefix)/taskjuggler/index-2.html
@@ -34,4 +35,6 @@ uninstall-local:
 	-rm -f $(docprefix)/taskjuggler/index-10.html
 	-rm -f $(docprefix)/taskjuggler/index-11.html
 
-####### kdevelop will overwrite this part!!! (end)############
+all:
+	sed 's,TJVER,@VERSION@,' index.sgml.in > index.sgml
+	sgml2html index.sgml
