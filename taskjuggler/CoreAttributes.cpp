@@ -14,8 +14,8 @@
 
 CoreAttributes::~CoreAttributes()
 {
-    for (CoreAttributesListIterator cli(sub); *cli; ++cli)
-        delete *cli;
+    while (!sub.isEmpty())
+        delete sub.getFirst();
     if (parent)
         parent->sub.removeRef(this);
 }

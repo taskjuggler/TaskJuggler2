@@ -33,6 +33,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	: CoreAttributes(p, i, n, pr)
 {
 	vacations.setAutoDelete(TRUE);
+    shifts.setAutoDelete(TRUE);
 
 	p->addResource(this);
 

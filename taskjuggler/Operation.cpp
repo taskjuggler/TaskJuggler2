@@ -16,8 +16,10 @@
 
 Operation::~Operation()
 {
-	for (int i = 0; i < opsCount; ++i)
+    for (int i = 0 ; i < opsCount; ++i)
 		delete ops[i];
+    if (opsCount > 0)
+        delete [] ops;
 }
 
 long

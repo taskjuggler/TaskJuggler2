@@ -30,6 +30,7 @@
 Allocation::Allocation( Resource *r) :
 	load(100), persistent(FALSE), lockedResource(0)
 {
+    shifts.setAutoDelete(TRUE);
 	candidates.append(r);
 	selectionMode = order;
 }

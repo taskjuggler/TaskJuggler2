@@ -98,6 +98,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	: CoreAttributes(proj, id_, n, p), file(f), line(l)
 {
 	allocations.setAutoDelete(TRUE);
+    shifts.setAutoDelete(TRUE);
 
 	proj->addTask(this);
 
