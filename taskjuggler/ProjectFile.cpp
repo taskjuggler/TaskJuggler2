@@ -1213,8 +1213,8 @@ ProjectFile::readTaskBody(Task* task)
                 time_t val;
                 if (!readDate(val, 0))
                     return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual");
-                if (actualIdx <= 0)
+                int actualIdx = proj->getScenarioIndex("actual") - 1;
+                if (actualIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'actual' scenario by default "
@@ -1235,8 +1235,8 @@ ProjectFile::readTaskBody(Task* task)
                 time_t val;
                 if (!readDate(val, 1))
                     return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual");
-                if (actualIdx <= 0)
+                int actualIdx = proj->getScenarioIndex("actual") - 1;
+                if (actualIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'actual' scenario by default "
@@ -1257,8 +1257,8 @@ ProjectFile::readTaskBody(Task* task)
                 double d;
                 if (!readTimeFrame(d, TRUE))
                     return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual");
-                if (actualIdx <= 0)
+                int actualIdx = proj->getScenarioIndex("actual") - 1;
+                if (actualIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'actual' scenario by default "
@@ -1278,8 +1278,8 @@ ProjectFile::readTaskBody(Task* task)
                 double d;
                 if (!readTimeFrame(d, TRUE))
                     return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual");
-                if (actualIdx <= 0)
+                int actualIdx = proj->getScenarioIndex("actual") - 1;
+                if (actualIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'actual' scenario by default "
@@ -1299,8 +1299,8 @@ ProjectFile::readTaskBody(Task* task)
                 double d;
                 if (!readTimeFrame(d, FALSE))
                     return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual");
-                if (actualIdx <= 0)
+                int actualIdx = proj->getScenarioIndex("actual") - 1;
+                if (actualIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'actual' scenario by default "
@@ -1317,8 +1317,8 @@ ProjectFile::readTaskBody(Task* task)
                 errorMessage(i18n("WARNING: 'planscheduled' has been "
                                   "deprecated. Please use 'plan:scheduled' "
                                   "instead."));
-                int planIdx = proj->getScenarioIndex("plan");
-                if (planIdx <= 0)
+                int planIdx = proj->getScenarioIndex("plan") - 1;
+                if (planIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'plan' scenario."));
@@ -1331,8 +1331,8 @@ ProjectFile::readTaskBody(Task* task)
                 errorMessage(i18n("WARNING: 'actualscheduled' has been "
                                   "deprecated. Please use 'actual:scheduled' "
                                   "instead."));
-                int actualIdx = proj->getScenarioIndex("actual");
-                if (actualIdx <= 0)
+                int actualIdx = proj->getScenarioIndex("actual") - 1;
+                if (actualIdx < 0)
                 {
                     errorMessage
                         (i18n("ERROR: There is no 'actual' scenario by default "
