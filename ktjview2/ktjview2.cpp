@@ -89,8 +89,8 @@ ktjview2::~ktjview2()
 
 void ktjview2::load( const KURL& url )
 {
-    m_view->openURL( url );
-    m_recentAction->addURL( url );
+    if ( m_view->openURL( url ) )
+        m_recentAction->addURL( url );
 }
 
 void ktjview2::setupActions()

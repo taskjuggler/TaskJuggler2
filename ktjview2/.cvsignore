@@ -9,5 +9,5 @@ settings.cc
 settings.h
 gantt.cc
 gantt.h
-filterWidget.cc
+filterWidget.cpp
 filterWidget.h

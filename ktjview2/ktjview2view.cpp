@@ -223,13 +223,13 @@ void ktjview2View::openURL( QString url )
     openURL( KURL::fromPathOrURL( url ) );
 }
 
-void ktjview2View::openURL( const KURL& url )
+bool ktjview2View::openURL( const KURL& url )
 {
     //kdDebug() << "Loading project from URL: " << url << endl;
 
     QString tmpFile;
     if ( !KIO::NetAccess::download( url, tmpFile, this ) )
-        return;
+        return false;
 
     //kdDebug() << "Project is in temp file: " << tmpFile << endl;
 
@@ -243,7 +243,7 @@ void ktjview2View::openURL( const KURL& url )
         if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete xf;
-            return;
+            return false;
         }
         m_progressDlg->setProgress( 2 );
         m_progressDlg->setLabelText( i18n( "Parsing XML project" ) );
@@ -259,7 +259,7 @@ void ktjview2View::openURL( const KURL& url )
         if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete pf;
-            return;
+            return false;
         }
         //kdDebug() << "Parsing TJP project" << endl;
         m_progressDlg->setProgress( 2 );
@@ -271,7 +271,7 @@ void ktjview2View::openURL( const KURL& url )
     {
         m_progressDlg->cancel();
         KMessageBox::sorry( this, i18n( "This filetype is not supported." ) );
-        return;
+        return false;
     }
 
     KIO::NetAccess::removeTempFile( tmpFile );
@@ -283,7 +283,7 @@ void ktjview2View::openURL( const KURL& url )
     {
         m_progressDlg->cancel();
         KMessageBox::error( this, i18n( "Taskjugggler failed to generate cross references on data structures." ) );
-        return;
+        return false;
     }
 
     //kdDebug() << "Scheduling all scenarios " << endl;
@@ -293,7 +293,7 @@ void ktjview2View::openURL( const KURL& url )
     {
         m_progressDlg->cancel();
         KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
-        return;
+        return false;
     }
     //m_project->generateReports(); // FIXME do we need that?
 
@@ -318,6 +318,8 @@ void ktjview2View::openURL( const KURL& url )
     signalChangeCaption( m_project->getName() );
 
     m_progressDlg->setProgress( 6 );
+
+    return true;
 }
 
 void ktjview2View::parseProjectInfo()
@@ -584,6 +586,10 @@ void ktjview2View::parseLinks( TaskListIterator it )
         ++it;
 
         TaskListIterator depIt = task->getDependsIterator();
+
+        if ( depIt.isEmpty() )
+            continue;
+
         Task * depTask;
         QPtrList<KDGanttViewItem> fromList;
         while ( ( depTask = static_cast<Task *>( depIt.current() ) ) != 0 )
@@ -752,8 +758,8 @@ void ktjview2View::filter()
 
 void ktjview2View::clearAllViews()
 {
-    //m_ganttView->taskLinks().clear();
-    //m_ganttView->clear();
+    m_ganttView->taskLinks().clear();
+    m_ganttView->clear();
     m_resListView->clear();
     m_taskView->clear();
 }

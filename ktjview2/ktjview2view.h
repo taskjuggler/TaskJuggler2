@@ -85,7 +85,7 @@ public:
     /**
      * Open a project from a given @p url
      */
-    virtual void openURL( const KURL& url );
+    bool openURL( const KURL& url );
 
     /**
      * Invokes the print dialog and prints the view
