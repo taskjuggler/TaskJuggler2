@@ -24,6 +24,8 @@
 #include <krun.h>
 
 #include "Report.h"
+#include "HTMLReport.h"
+
 #include "ManagedReportInfo.h"
 #include "TjReport.h"
 #include "TjTaskReport.h"
@@ -123,6 +125,10 @@ ReportManager::showReport(QListViewItem* lvi)
             tjr = new TjResourceReport(reportStack, mr->getProjectReport());
         else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
         {
+            HTMLReport* htmlReport =
+                dynamic_cast<HTMLReport*>(mr->getProjectReport());
+            if (!htmlReport->generate())
+                return FALSE;
             // show the HTML file in web browser
             KURL reportUrl = KURL::fromPathOrURL( mr->getProjectReport()->getDefinitionFile() );
             reportUrl.setFileName( mr->getProjectReport()->getFileName() );
