@@ -89,6 +89,7 @@ ktjview2::ktjview2()
 
 ktjview2::~ktjview2()
 {
+    delete m_view;
 }
 
 void ktjview2::load( const KURL& url )
