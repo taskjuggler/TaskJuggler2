@@ -56,6 +56,11 @@ public:
         return bookedResources.containsRef((const CoreAttributes*) r) > 0;
     }
 
+    ResourceListIterator getBookedResourcesIterator() const
+    {
+	return ResourceListIterator(bookedResources);
+    }
+    
 private:
     /// Pointer to the corresponding task.
     Task* task;

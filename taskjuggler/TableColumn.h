@@ -15,7 +15,6 @@
 
 #include <qstring.h>
 
-#include "TableColumn.h"
 
 /**
  * @short A column of a report.

@@ -38,13 +38,13 @@ XMLReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp
 
 libtaskjuggler_la_LDFLAGS = $(all_libraries) $(QT_LDFLAGS) -version-info 2:1:0 -no-undefined
-libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS)
+libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS) -lkcal 
 libtaskjuggler_la_METASOURCES = AUTO
 
 bin_PROGRAMS = taskjuggler
 taskjuggler_SOURCES = main.cpp 
 
-taskjuggler_LDADD = libtaskjuggler.la
+taskjuggler_LDADD = libtaskjuggler.la 
 
 # set the include path for X, qt and KDE
 INCLUDES = $(ICAL_INCLUDES) $(all_includes)

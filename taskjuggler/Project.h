@@ -19,7 +19,7 @@
 #include <qptrlist.h>
 #include <qstringlist.h>
 #include <qdict.h>
-
+#include "config.h"
 #include "VacationList.h"
 #include "ScenarioList.h"
 #include "TaskList.h"
@@ -29,6 +29,9 @@
 #include "RealFormat.h"
 #include "QtReport.h"
 #include "Journal.h"
+#ifdef HAVE_ICAL
+#include "ReportICal.h"
+#endif
 
 class QStringList;
 class QDomElement;

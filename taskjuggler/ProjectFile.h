@@ -161,9 +161,8 @@ private:
     bool readReportElement(ReportElement* el);
     bool checkReportInterval(ReportElement* report);
     bool checkReportInterval(HTMLReport* report);
-#ifdef HAVE_KDE
     bool readICalTaskReport();
-#endif
+
     Operation* readLogicalExpression(int precedence = 0);
     Operation* readFunctionCall(const QString& name);
     bool readSorting(Report* report, int which);

@@ -59,6 +59,9 @@
 #include "CSVAccountReportElement.h"
 #include "CSVReport.h"
 #include "XMLReport.h"
+#ifdef HAVE_ICAL
+#include "ReportICal.h"
+#endif
 #include "ExportReport.h"
 #include "TableColumnInfo.h"
 #include "ReportXML.h"
@@ -479,7 +482,7 @@ ProjectFile::parse()
                   return FALSE;
                break;
             }
-            else if (token == "icalreport" )
+            else if (token == KW("icalreport"))
             {
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -3053,24 +3056,28 @@ ProjectFile::readPriority(int& priority)
     return TRUE;
 }
 
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
 bool
 ProjectFile::readICalTaskReport()
 {
-   QString token;
-   if (nextToken(token) != STRING)
+    bool result = false;
+#ifdef HAVE_ICAL
+#ifdef HAVE_KDE
+    
+   QString filename;
+   if (nextToken(filename) != STRING)
    {
       errorMessage(i18n("File name expected"));
-      return FALSE;
    }
-   ReportICal *rep = new ReportICal( proj, token, proj->getStart(), proj->getEnd());
-   proj->addICalReport( rep );
-
-   return( true );
+   else
+   {
+       ReportICal *rep = new ReportICal( proj, filename, getFile(), getLine() );
+       proj->addICalReport( rep );
+       result = true;
+   }
+#endif
+#endif   
+   return( result );
 }
-#endif
-#endif
 
 bool
 ProjectFile::readXMLReport()

@@ -24,6 +24,7 @@
 #ifdef HAVE_KDE
 #include <libkcal/todo.h>
 #include <libkcal/icalformat.h>
+#include <libkcal/calendarlocal.h>
 #endif
 
 #include "Report.h"
@@ -34,10 +35,10 @@ class ExpressionTree;
 class ReportICal: public Report
 {
 public:
-   ReportICal(Project* p, const QString& f, time_t s, time_t e);
+   ReportICal(Project* p, const QString& file, const QString& defFile, int dl );
    virtual ~ReportICal() { }
 
-   void generate();
+   virtual bool generate();
    
 protected:
    KCal::Todo* addATask( Task *task, KCal::CalendarLocal *cal );

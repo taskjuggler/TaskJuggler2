@@ -15,7 +15,8 @@
 
 #ifdef HAVE_KDE
 #ifdef HAVE_ICAL
-
+#include <qptrdict.h>
+#include <klocale.h>
 #include <qfile.h>
 #include <config.h>
 #include <libkcal/calendarlocal.h>
@@ -23,12 +24,20 @@
 #include "Project.h"
 #include "ReportICal.h"
 #include "Utility.h"
+#include "ExpressionTree.h"
+#include "Task.h"
+#include "Operation.h"
 
-
-ReportICal::ReportICal(Project* p, const QString& f, time_t s, time_t e) :
-   Report(p, f, s, e, QString(), 0 )
+ReportICal::ReportICal(Project* p, const QString& file, const QString& defFile, int dl) :
+    Report(p, file, defFile, dl)
 {
-   
+    taskSortCriteria[0] = CoreAttributesList::TreeMode;
+    taskSortCriteria[1] = CoreAttributesList::StartUp;
+    taskSortCriteria[2] = CoreAttributesList::EndUp;
+    resourceSortCriteria[0] = CoreAttributesList::TreeMode;
+    resourceSortCriteria[1] = CoreAttributesList::IdUp;
+    scenarios.append(0);
+
 }
 
 bool
@@ -37,19 +46,52 @@ ReportICal::generate()
    KCal::CalendarLocal cal;
    qDebug( "Generate ical output to "+  fileName );
 
-   cal.setEmail( "");
-
+   if( !open()) {
+       qWarning( i18n("Can not open ICal File for writing!"));
+       return false;
+   }
+   
    TaskList filteredList;
-   if (!filterTaskList(filteredList, 0))
-       return FALSE;
-   sortTaskList(filteredList);
- 
-    for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
-        if ((*tli)->isContainer() && (*tli)->getParent() == 0)
-            addTask(*tli, &cal);    
+   // show all tasks
+   hideTask = new ExpressionTree(new Operation(0));
+   // show all resources
+   hideResource = new ExpressionTree(new Operation(0));
 
-   KCal::ICalFormat *format = new KCal::ICalFormat( ); // &cal );
-   cal.save( fileName, format );
+   if (!filterTaskList(filteredList, 0, getHideTask(), getRollUpTask() ))
+       return FALSE;
+   qDebug( "Anzahl der tasks: "+QString::number(filteredList.count()));
+   sortTaskList(filteredList);
+
+   QPtrDict<KCal::Todo> dict;
+
+   /* First go over all tasks and create a todo for it. Store the todos
+    * with task keys into a dict to create the relations later.
+    */
+   for (TaskListIterator tli(filteredList); *tli != 0; ++tli) {
+       KCal::Todo *todo = addATask(*tli, &cal);
+       dict.insert( *tli, todo );
+   }
+
+   /* Now go again over all tasks and create a relation in the todo
+    * in case the task has a parent task. After that add the todo
+    * to the calendar.
+    */
+   for(TaskListIterator tli(filteredList); *tli != 0; ++tli) {
+       Task *t = *tli;
+       if( t->getParent() && dict.find(t->getParent())) {
+	   KCal::Todo *todo = dict[t];
+	   // qDebug("Adding relation from "+t->getName()+" to " + t->getParent()->getName());
+	   KCal::Todo *paTodo = dict[t->getParent()];
+	   todo->setRelatedTo( paTodo );
+       }
+       cal.addTodo( dict[t] );
+   }
+
+   KCal::ICalFormat *format = new KCal::ICalFormat( );
+
+   s << format->toString(&cal) << endl;
+   f.close();
+   
    qDebug( "saving ical to file " + fileName + " OK" );
    return TRUE;
 }
@@ -61,30 +103,7 @@ KCal::Todo* ReportICal::addATask( Task *task, KCal::CalendarLocal *cal )
 
    KCal::Todo *todo = new KCal::Todo();
    task->toTodo( todo, cal );
-   cal->addTodo( todo );
-   // qDebug("--- OK --- for " + task->getName() );
 
-   if( task->isContainer() )
-   {
-      /* Task is has subtasks */
-      TaskList subs;
-      task->getSubTaskList(subs);
-      for (TaskListIterator tli(task->getSubListIterator()); *tli != 0; ++tli)
-      {
-     // qDebug("Turniing wheel" );
-     
-     if( *tli != task )
-     {
-        // qDebug("Adding subtask " + subTask->getName());
-        KCal::Todo *subTodo = addATask( *tli, cal );
-        subTodo->setRelatedTo( todo );
-        // qDebug("Added subtask OK" );
-
-        // todo->setRelatedTo( subTodo );
-        // cal->addTodo( subTodo );
-     }
-      }
-   }
    return( todo );
 }
 
