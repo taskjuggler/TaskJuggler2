@@ -18,11 +18,13 @@
 #include <qheader.h>
 #include <qcanvas.h>
 #include <qdatetime.h>
+#include <qtimer.h>
 
 #include <klistview.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kiconloader.h>
+#include <kapp.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -114,15 +116,249 @@ TjReport::generateReport()
         setLoadingProject(FALSE);
         return FALSE;
     }
-    if (!this->generateChart(TRUE))
-    {
-        setLoadingProject(FALSE);
-        return FALSE;
-    }
-
     setLoadingProject(FALSE);
 
+    if (!this->generateChart(TRUE))
+        return FALSE;
+
+    QTimer* delayTimer = new QTimer(this);
+    connect(delayTimer, SIGNAL(timeout()),
+            this, SLOT(regenerateChart()));
+    delayTimer->start(200, TRUE);
+
     return TRUE;
+}
+
+void
+TjReport::regenerateChart()
+{
+    this->generateChart(FALSE);
+}
+
+void
+TjReport::generateTaskListLine(const QtReportElement* reportElement,
+                               const Task* t, QListViewItem* lvi,
+                               const Resource* r)
+{
+    // Skip the first colum. It contains the hardwired task name.
+    int column = 1;
+    for (QPtrListIterator<TableColumnInfo>
+         ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
+    {
+        QString cellText;
+        const TableColumnFormat* tcf =
+            reportElement->getColumnFormat((*ci)->getName());
+
+        if ((*ci)->getName() == "completed")
+        {
+            if (t->getCompletionDegree(scenario) ==
+                t->getCalcedCompletionDegree(scenario))
+            {
+                cellText = QString("%1%")
+                    .arg((int) t->getCompletionDegree(scenario));
+            }
+            else
+            {
+                cellText = QString("%1% (%2%)")
+                    .arg((int) t->getCompletionDegree(scenario))
+                    .arg((int) t->getCalcedCompletionDegree(scenario));
+            }
+        }
+        else if ((*ci)->getName() == "cost")
+        {
+            double val = t->getCredits
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()), Cost, r);
+            cellText = indent(tcf->realFormat.format(val, FALSE),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "criticalness")
+        {
+            cellText = indent(QString().sprintf("%f",
+                                                t->getCriticalness(scenario)),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "duration")
+            cellText = reportElement->scaledLoad
+                (t->getCalcDuration(scenario), tcf);
+        else if ((*ci)->getName() == "effort")
+        {
+            double val = 0.0;
+            val = t->getLoad(scenario, Interval(t->getStart(scenario),
+                                                t->getEnd(scenario)), r);
+            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
+                              tcf->getHAlign() == TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "end")
+            cellText = time2user((t->isMilestone() ? 1 : 0) +
+                                 t->getEnd(scenario),
+                                 reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "endbuffer")
+        {
+        }
+        else if ((*ci)->getName() == "endbufferstart")
+        {
+        }
+        else if ((*ci)->getName() == "id")
+            cellText = t->getId();
+        else if ((*ci)->getName() == "maxend")
+            cellText = time2user(t->getMaxEnd(scenario),
+                                 reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "maxstart")
+            cellText = time2user(t->getMaxStart(scenario),
+                                 reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "minend")
+            cellText = time2user(t->getMinEnd(scenario),
+                                 reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "minstart")
+            cellText = time2user(t->getMinStart(scenario),
+                                 reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "note")
+            cellText = t->getNote();
+        else if ((*ci)->getName() == "pathcriticalness")
+        {
+        }
+        else if ((*ci)->getName() == "priority")
+            cellText = indent(QString().sprintf("%d", t->getPriority()),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        else if ((*ci)->getName() == "projectid")
+        {
+        }
+        else if ((*ci)->getName() == "projectids")
+        {
+        }
+        else if ((*ci)->getName() == "profit")
+        {
+            double val = t->getCredits
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()), Revenue, r) -
+                t->getCredits
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()), Cost, r);
+            cellText = indent(tcf->realFormat.format(val, FALSE),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "responsible")
+        {
+        }
+        else if ((*ci)->getName() == "revenue")
+        {
+            double val = t->getCredits
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()), Revenue, r);
+            cellText = indent(tcf->realFormat.format(val, FALSE),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "start")
+            cellText = time2user(t->getStart(scenario),
+                                 reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "startbuffer")
+        {
+        }
+        else if ((*ci)->getName() == "startbufferend")
+        {
+        }
+        else if ((*ci)->getName() == "status")
+        {
+        }
+        else if ((*ci)->getName() == "statusnote")
+        {
+        }
+
+        lvi->setText(column, cellText);
+    }
+}
+
+void
+TjReport::generateResourceListLine(const QtReportElement* reportElement,
+                                   const Resource* r, QListViewItem* lvi,
+                                   const Task* t)
+{
+    // Skip the first colum. It contains the hardwired resource name.
+    int column = 1;
+    for (QPtrListIterator<TableColumnInfo>
+         ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
+    {
+        QString cellText;
+        const TableColumnFormat* tcf =
+            reportElement->getColumnFormat((*ci)->getName());
+
+        if ((*ci)->getName() == "cost")
+        {
+            double val = r->getCredits
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()), Cost, t);
+            cellText = indent(tcf->realFormat.format(val, FALSE),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "id")
+        {
+            cellText = r->getFullId();
+        }
+        else if ((*ci)->getName() == "freeload")
+        {
+            if (!t)
+            {
+                double val = 0.0;
+                val = r->getAvailableWorkLoad
+                    (scenario, Interval(reportElement->getStart(),
+                                        reportElement->getEnd()));
+                cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
+                                  tcf->getHAlign() == TableColumnFormat::right);
+            }
+        }
+        else if ((*ci)->getName() == "effort")
+        {
+            double val = 0.0;
+            if (t)
+                val = r->getLoad(scenario, Interval(t->getStart(scenario),
+                                                    t->getEnd(scenario)),
+                                 AllAccounts, t);
+            else
+                val = r->getLoad(scenario, Interval(reportElement->getStart(),
+                                                    reportElement->getEnd()));
+            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
+                              tcf->getHAlign() == TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "utilization")
+        {
+            if (!t)
+            {
+                double load = r->getLoad
+                    (scenario, Interval(reportElement->getStart(),
+                                        reportElement->getEnd()));
+                double freeLoad = r->getAvailableWorkLoad
+                    (scenario, Interval(reportElement->getStart(),
+                                        reportElement->getEnd()));
+                double val = 100.0 / (1.0 + (freeLoad / load));
+                cellText = indent(QString().sprintf("%.1f%%", val), lvi,
+                                  tcf->getHAlign() == TableColumnFormat::right);
+            }
+        }
+        else if ((*ci)->getName() == "rate")
+        {
+            cellText = indent(tcf->realFormat.format(r->getRate(), FALSE),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "revenue")
+        {
+            double val = r->getCredits
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()), Revenue, t);
+            cellText = indent(tcf->realFormat.format(val, FALSE),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
+        }
+
+        lvi->setText(column, cellText);
+    }
 }
 
 void

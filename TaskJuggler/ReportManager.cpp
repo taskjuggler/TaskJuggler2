@@ -116,10 +116,11 @@ ReportManager::showReport(QListViewItem* lvi)
         else if (strcmp(mr->getProjectReport()->getType(),
                         "QtResourceReport") == 0)
             tjr = new TjResourceReport(reportStack, mr->getProjectReport());
-        else {
+        else
+        {
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
                 << " not yet supported" << endl;
-            return false;
+            return FALSE;
         }
 
         reportStack->addWidget(tjr);

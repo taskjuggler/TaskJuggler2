@@ -39,7 +39,7 @@ index.docbook : taskjuggler.xml
 	cp taskjuggler.xml index.docbook
 	patch index.docbook < kde-doc.patch
 
-index.cache.bz2 : index.docbook GenPropertyReference.xml
+index.cache.bz2 : index.docbook GenPropertyReference.xml Example.xml
 	meinproc --check --cache index.cache.bz2 ./index.docbook
 
 taskjuggler/book1.html: $(SGMLSOURCES)

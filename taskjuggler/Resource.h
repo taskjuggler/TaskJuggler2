@@ -1,7 +1,7 @@
 /*
  * Resource.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -18,6 +18,7 @@
 #include "CoreAttributes.h"
 #include "ResourceList.h"
 #include "ShiftSelectionList.h"
+#include "ResourceScenario.h"
 
 class Project;
 class Shift;
@@ -161,6 +162,11 @@ public:
         return allocationProbability[sc];
     }
 
+    TaskListIterator getTaskListIterator(int sc) const
+    {
+        return TaskListIterator(scenarios[sc].allocatedTasks);
+    }
+
 private:
     void getPIDs(int sc, const Interval& period, const Task* task,
                  QStringList& pids) const;
@@ -172,6 +178,11 @@ private:
                     const Task* task) const;
 
     long getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const;
+
+    bool isAllocatedSub(int sc, uint startIdx, uint endIdx, const QString&
+                        prjId) const;
+    bool isAllocatedSub(int sc, uint startIdx, uint endIdx, const Task* task)
+        const;
 
     uint sbIndex(time_t date) const;
 
@@ -220,6 +231,8 @@ private:
 
     SbBooking*** specifiedBookings;
     SbBooking*** scoreboards;
+
+    ResourceScenario* scenarios;
 
     /**
      * The allocation probability is calculated prior to scheduling a

@@ -1822,6 +1822,13 @@ HTMLReportElement::genCellMaxEffort(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellEfficiency(TableCellInfo* tci)
+{
+    genCell(tci->tcf->realFormat.format(tci->tli->resource->getEfficiency(),
+                                        tci), tci, TRUE);
+}
+
+void
 HTMLReportElement::genCellRate(TableCellInfo* tci)
 {
     genCell(tci->tcf->realFormat.format(tci->tli->resource->getRate(), tci),

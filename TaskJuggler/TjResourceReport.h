@@ -28,7 +28,6 @@ public:
     virtual bool generateChart(bool autoFit);
 
 private:
-    void generateListLine(const Resource* r, QListViewItem* lvi);
     bool generateChartLoadBars();
     void drawResource(const Resource* r, int y);
     bool drawResourceTasks(const Resource* r);

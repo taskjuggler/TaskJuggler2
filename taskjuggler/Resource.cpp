@@ -1,7 +1,7 @@
 /*
  * Resource.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -56,6 +56,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     sbSize = (p->getEnd() + 1 - p->getStart()) /
         p->getScheduleGranularity() + 1;
 
+    scenarios = new ResourceScenario[p->getMaxScenarios()];
     scoreboards = new SbBooking**[p->getMaxScenarios()];
     specifiedBookings = new SbBooking**[p->getMaxScenarios()];
     for (int sc = 0; sc < p->getMaxScenarios(); sc++)
@@ -170,6 +171,7 @@ Resource::~Resource()
     delete [] allocationProbability;
     delete [] specifiedBookings;
     delete [] scoreboards;
+    delete [] scenarios;
 
     delete limits;
 
@@ -662,10 +664,19 @@ Resource::getLoad(int sc, const Interval& period, AccountType acctType,
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
         return 0.0;
+    uint startIdx = sbIndex(iv.getStart());
+    uint endIdx = sbIndex(iv.getEnd());
+    if (scenarios[sc].firstSlot > 0 && scenarios[sc].lastSlot > 0)
+    {
+        if (startIdx < (uint) scenarios[sc].firstSlot)
+            startIdx = scenarios[sc].firstSlot;
+        if (endIdx > (uint) scenarios[sc].lastSlot)
+            endIdx = scenarios[sc].lastSlot;
+    }
 
     return efficiency * project->convertToDailyLoad
-        (getLoadSub(sc, sbIndex(iv.getStart()), sbIndex(iv.getEnd()),
-                    acctType, task) * project->getScheduleGranularity());
+        (getLoadSub(sc, startIdx, endIdx, acctType, task) *
+         project->getScheduleGranularity());
 }
 
 long
@@ -680,6 +691,23 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
     // If the scoreboard has not been initialized there is no load.
     if (!scoreboards[sc])
         return bookings;
+
+    if (task && scenarios[sc].firstSlot >= 0 && scenarios[sc].lastSlot >= 0)
+    {
+        /* If the load is to be calculated for a certain task, we check
+         * whether this task is in the resource allocation list. This is much
+         * faster than iterating over the whole scoreboard without finding
+         * an allocation. */
+        bool isAllocated = FALSE;
+        for (TaskListIterator tli(scenarios[sc].allocatedTasks); *tli; ++tli)
+            if (task == *tli)
+            {
+                isAllocated = TRUE;
+                break;
+            }
+        if (!isAllocated)
+            return bookings;
+    }
 
     for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
     {
@@ -751,15 +779,34 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
         return FALSE;
 
+    uint startIdx = sbIndex(iv.getStart());
+    uint endIdx = sbIndex(iv.getEnd());
+    if (scenarios[sc].firstSlot > 0 && scenarios[sc].lastSlot > 0)
+    {
+        if (startIdx < (uint) scenarios[sc].firstSlot)
+            startIdx = scenarios[sc].firstSlot;
+        if (endIdx > (uint) scenarios[sc].lastSlot)
+            endIdx = scenarios[sc].lastSlot;
+    }
+
+    if (endIdx < startIdx)
+        return FALSE;
+
+    return isAllocatedSub(sc, startIdx, endIdx, prjId);
+}
+
+bool
+Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const QString&
+                         prjId) const
+{
     /* If resource is a group, check members first. */
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
-        if ((*rli)->isAllocated(sc, iv, prjId))
+        if ((*rli)->isAllocatedSub(sc, startIdx, endIdx, prjId))
             return TRUE;
 
     if (!scoreboards[sc])
         return FALSE;
-    for (uint i = sbIndex(iv.getStart());
-         i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+    for (uint i = startIdx; i <= endIdx; i++)
     {
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
@@ -777,15 +824,33 @@ Resource::isAllocated(int sc, const Interval& period, const Task* task) const
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
         return FALSE;
 
+    uint startIdx = sbIndex(iv.getStart());
+    uint endIdx = sbIndex(iv.getEnd());
+    if (scenarios[sc].firstSlot > 0 && scenarios[sc].lastSlot > 0)
+    {
+        if (startIdx < (uint) scenarios[sc].firstSlot)
+            startIdx = scenarios[sc].firstSlot;
+        if (endIdx > (uint) scenarios[sc].lastSlot)
+            endIdx = scenarios[sc].lastSlot;
+    }
+    if (endIdx < startIdx)
+        return FALSE;
+
+    return isAllocatedSub(sc, startIdx, endIdx, task);
+}
+
+bool
+Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const Task* task)
+    const
+{
     /* If resource is a group, check members first. */
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
-        if ((*rli)->isAllocated(sc, iv, task))
+        if ((*rli)->isAllocatedSub(sc, startIdx, endIdx, task))
             return TRUE;
 
     if (!scoreboards[sc])
         return FALSE;
-    for (uint i = sbIndex(iv.getStart());
-         i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+    for (uint i = startIdx; i <= endIdx; i++)
     {
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
@@ -1001,12 +1066,32 @@ Resource::prepareScenario(int sc)
 {
     copyBookings(sc, specifiedBookings, scoreboards);
     scoreboard = scoreboards[sc];
+    scenarios[sc].allocatedTasks.clear();
+
+    scenarios[sc].firstSlot = -1;
+    scenarios[sc].lastSlot = -1;
 }
 
 void
 Resource::finishScenario(int sc)
 {
     scoreboards[sc] = scoreboard;
+
+    if (!scoreboard)
+        return;
+
+    scenarios[sc].firstSlot = -1;
+    scenarios[sc].lastSlot = -1;
+    /* Create a list of all tasks that the resource is allocated to in this
+     * scenario. */
+    for (uint i = 0; i < sbSize; i++)
+        if (scoreboard[i] > (SbBooking*) 4)
+        {
+            if (scenarios[sc].firstSlot == -1)
+                scenarios[sc].firstSlot = i;
+            scenarios[sc].lastSlot = i;
+            scenarios[sc].addTask(scoreboard[i]->getTask());
+        }
 }
 
 bool

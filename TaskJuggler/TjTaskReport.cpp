@@ -136,14 +136,16 @@ TjTaskReport::generateList()
     for (TaskListIterator tli(reportDef->getProject()->
                               getTaskListIterator()); *tli; ++tli)
     {
-        generateListLine(*tli, ca2lviDict[QString("t:") + (*tli)->getId()]);
+        generateTaskListLine(reportElement, *tli,
+                             ca2lviDict[QString("t:") + (*tli)->getId()]);
         if (!(*tli)->isContainer() && !(*tli)->isMilestone())
         {
             for (ResourceListIterator rli((*tli)->
                                           getBookedResourcesIterator(scenario));
                  *rli; ++rli)
             {
-                generateResourceListLine(*rli, ca2lviDict[QString("r:") +
+                generateResourceListLine(reportElement,
+                                         *rli, ca2lviDict[QString("r:") +
                                          (*tli)->getId() + ":" +
                                          (*rli)->getFullId()], *tli);
             }
@@ -179,110 +181,6 @@ TjTaskReport::generateGanttTasks()
             if (lvi->isOpen())
                 drawTaskResources(*tli);
         }
-    }
-}
-
-void
-TjTaskReport::generateListLine(Task* t, QListViewItem* lvi)
-{
-    // Skip the first colum. It contains the hardwired task name.
-    int column = 1;
-    for (QPtrListIterator<TableColumnInfo>
-         ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
-    {
-        QString cellText;
-        const TableColumnFormat* tcf =
-            reportElement->getColumnFormat((*ci)->getName());
-
-        if ((*ci)->getName() == "completed")
-        {
-            if (t->getCompletionDegree(scenario) ==
-                t->getCalcedCompletionDegree(scenario))
-            {
-                cellText = QString("%1%")
-                    .arg((int) t->getCompletionDegree(scenario));
-            }
-            else
-            {
-                cellText = QString("%1% (%2%)")
-                    .arg((int) t->getCompletionDegree(scenario))
-                    .arg((int) t->getCalcedCompletionDegree(scenario));
-            }
-        }
-        else if ((*ci)->getName() == "cost")
-        {
-        }
-        else if ((*ci)->getName() == "criticalness")
-        {
-        }
-        else if ((*ci)->getName() == "duration")
-            cellText = reportElement->scaledLoad
-                (t->getCalcDuration(scenario), tcf);
-        else if ((*ci)->getName() == "effort")
-        {
-            double val = 0.0;
-            val = t->getLoad(scenario, Interval(t->getStart(scenario),
-                                                t->getEnd(scenario)), 0);
-            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
-        }
-        else if ((*ci)->getName() == "end")
-            cellText = time2user((t->isMilestone() ? 1 : 0) +
-                                 t->getEnd(scenario),
-                                 reportDef->getTimeFormat());
-        else if ((*ci)->getName() == "note")
-        {
-        }
-        else if ((*ci)->getName() == "pathcriticalness")
-        {
-        }
-        else if ((*ci)->getName() == "priority")
-        {
-        }
-        else if ((*ci)->getName() == "profit")
-        {
-        }
-        else if ((*ci)->getName() == "responsible")
-        {
-        }
-        else if ((*ci)->getName() == "revenue")
-        {
-        }
-        else if ((*ci)->getName() == "start")
-            cellText = time2user(t->getStart(scenario),
-                                 reportDef->getTimeFormat());
-        else if ((*ci)->getName() == "status")
-        {
-        }
-
-        lvi->setText(column, cellText);
-    }
-}
-
-void
-TjTaskReport::generateResourceListLine(Resource* r, QListViewItem* lvi,
-                                           Task* t)
-{
-    // Skip the first colum. It contains the hardwired resource name.
-    int column = 1;
-    for (QPtrListIterator<TableColumnInfo>
-         ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
-    {
-        QString cellText;
-        const TableColumnFormat* tcf =
-            reportElement->getColumnFormat((*ci)->getName());
-
-        if ((*ci)->getName() == "effort")
-        {
-            double val = 0.0;
-            val = r->getLoad(scenario, Interval(t->getStart(scenario),
-                                                t->getEnd(scenario)),
-                             AllAccounts, t);
-            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
-        }
-
-        lvi->setText(column, cellText);
     }
 }
 

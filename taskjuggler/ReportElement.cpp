@@ -268,6 +268,10 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellScenario;
     tcf->hAlign = TableColumnFormat::left;
 
+    tcf = new TableColumnFormat(KW("efficiency"), this, i18n("Efficiency"));
+    tcf->genResourceLine1 = &ReportElement::genCellEfficiency;
+    tcf->hAlign = TableColumnFormat::right;
+
     tcf = new TableColumnFormat(KW("rate"), this, i18n("Rate"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genResourceLine1 = &ReportElement::genCellRate;

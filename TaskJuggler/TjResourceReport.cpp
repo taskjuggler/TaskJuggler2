@@ -170,72 +170,22 @@ TjResourceReport::generateList()
     for (ResourceListIterator rli(reportDef->getProject()->
                                   getResourceListIterator()); *rli; ++rli)
     {
-        generateListLine
-            (*rli, ca2lviDict[QString("r:") + (*rli)->getFullId()]);
-#if 0
+        generateResourceListLine
+            (reportElement,
+             *rli, ca2lviDict[QString("r:") + (*rli)->getFullId()]);
         if (!(*rli)->hasSubs())
         {
-            for (ResourceListIterator rli((*tli)->
-                                          getBookedResourcesIterator(scenario));
-                 *rli; ++rli)
+            for (TaskListIterator tli((*rli)->getTaskListIterator(scenario));
+                 *tli; ++tli)
             {
-                generateResourceListLine(*rli, ca2lviDict[QString("r:") +
-                                         (*tli)->getId() + ":" +
-                                         (*rli)->getFullId()], *tli);
+                generateTaskListLine(reportElement,
+                                     *tli, ca2lviDict[QString("t:") +
+                                     (*rli)->getFullId() + ":" +
+                                     (*tli)->getId()], *rli);
             }
         }
-#endif
     }
     return TRUE;
-}
-
-void
-TjResourceReport::generateListLine(const Resource* r, QListViewItem* lvi)
-{
-    // Skip the first colum. It contains the hardwired task name.
-    int column = 1;
-    for (QPtrListIterator<TableColumnInfo>
-         ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
-    {
-        QString cellText;
-        const TableColumnFormat* tcf =
-            reportElement->getColumnFormat((*ci)->getName());
-
-        if ((*ci)->getName() == "effort")
-        {
-            double val = 0.0;
-            val = r->getLoad(scenario, Interval(reportElement->getStart(),
-                                                reportElement->getEnd()));
-            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
-        }
-        else if ((*ci)->getName() == "freeload")
-        {
-            double val = 0.0;
-            val = r->getAvailableWorkLoad
-                (scenario, Interval(reportElement->getStart(),
-                                    reportElement->getEnd()));
-            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
-        }
-        else if ((*ci)->getName() == "utilization")
-        {
-            double load = r->getLoad
-                (scenario, Interval(reportElement->getStart(),
-                                    reportElement->getEnd()));
-            double freeLoad = r->getAvailableWorkLoad
-                (scenario, Interval(reportElement->getStart(),
-                                    reportElement->getEnd()));
-            double val = 100.0 / (1.0 + (freeLoad / load));
-            cellText = indent(QString().sprintf("%.1f%%", val), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
-        }
-        else if ((*ci)->getName() == "note")
-        {
-        }
-
-        lvi->setText(column, cellText);
-    }
 }
 
 bool

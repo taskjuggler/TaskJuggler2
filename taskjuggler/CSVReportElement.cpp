@@ -1266,6 +1266,13 @@ CSVReportElement::genCellMaxEffort(TableCellInfo* tci)
 }
 
 void
+CSVReportElement::genCellEfficiency(TableCellInfo* tci)
+{
+    genCell(tci->tcf->realFormat.format(tci->tli->resource->getEfficiency(),
+                                        tci), tci, TRUE);
+}
+
+void
 CSVReportElement::genCellRate(TableCellInfo* tci)
 {
     genCell(tci->tcf->realFormat.format(tci->tli->resource->getRate(), tci),

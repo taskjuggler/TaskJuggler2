@@ -43,11 +43,18 @@ public:
 
     void setLoadingProject(bool lp) { loadingProject = lp; }
 
+    void generateTaskListLine(const QtReportElement* reportElement,
+                              const Task* t, QListViewItem* lvi,
+                              const Resource* r = 0);
+    void generateResourceListLine(const QtReportElement* reportElement,
+                                  const Resource* r, QListViewItem* lvi,
+                                  const Task* t = 0);
 public slots:
     void zoomIn();
     void zoomOut();
 
 private slots:
+    void regenerateChart();
     void collapsReportItem(QListViewItem* lvi);
     void expandReportItem(QListViewItem* lvi);
     void syncVSliders(int, int);

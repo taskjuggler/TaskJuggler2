@@ -234,6 +234,7 @@ public:
     virtual void genCellSchedule(TableCellInfo*) = 0;
     virtual void genCellMinEffort(TableCellInfo*) = 0;
     virtual void genCellMaxEffort(TableCellInfo*) = 0;
+    virtual void genCellEfficiency(TableCellInfo*) = 0;
     virtual void genCellRate(TableCellInfo*) = 0;
     virtual void genCellKotrusId(TableCellInfo*) = 0;
     virtual void genCellTotal(TableCellInfo*) = 0;

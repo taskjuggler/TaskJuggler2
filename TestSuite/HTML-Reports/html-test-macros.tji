@@ -1,6 +1,6 @@
 macro AllColumns [	
 	columns completed, cost, depends, duration, effort, criticalness,
-	pathcriticalness, end, endbuffer,
+	pathcriticalness, efficiency, end, endbuffer,
 	endbufferstart, flags, follows, freeload, id, index, kotrusid, maxeffort,
 	maxend, maxstart, mineffort, minend, minstart, name, no, note,
 	priority, profit, projectid, rate, reference, resources,

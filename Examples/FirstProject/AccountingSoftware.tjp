@@ -209,12 +209,12 @@ task AcSo "Accounting Software" {
 
 # This task report is for use with the TaskJuggler GUI
 taskreport "Project Overview" {
-  columns start, end, effort, duration, completed
+  columns start, end, effort, duration, completed, cost, revenue
 }
 
 # A resource report for use with the TaskJuggler GUI  
 resourcereport "Resource Usage" {
-  columns effort, freeload, utilization
+  columns effort, freeload, utilization, rate
   hideresource 0
 }
 

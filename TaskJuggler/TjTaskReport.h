@@ -29,10 +29,6 @@ private:
     virtual bool generateList();
     virtual bool generateChart(bool autoFit);
 
-    void generateListLine(Task* t, QListViewItem* lvi);
-    void generateResourceListLine(Resource* r, QListViewItem* lvi,
-                                  Task* t);
-
     void generateGanttTasks();
     void drawTask(Task* const t, int y);
     void drawDependencies(Task* const t1, QListViewItem* t1lvi);
