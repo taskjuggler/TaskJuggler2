@@ -574,7 +574,7 @@ Resource::getActualProjectIDs(const Interval& period, Task* task)
 /* retrieve all bookings _not_ belonging to this project */
 bool
 Resource::dbLoadBookings(const QString& kotrusID,
-						 const QStringList& skipProjectIDs)
+			 const QStringList& skipProjectIDs)
 {
 	BookingList blist = project->getKotrus()->loadBookings
 		(kotrusID, skipProjectIDs);
@@ -682,10 +682,23 @@ Resource::finishActual()
 	actualScoreboard = scoreboard;
 }
 
+
+QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
+{
+   QDomElement elem = ReportXML::createXMLElem( doc, "Resource", getName());
+   elem.setAttribute( "Name", getName() );
+   
+   return( elem );
+}
+
+
+/* ================================================================================ */
+
 ResourceList::ResourceList()
 {
 	sorting = Pointer;
 }
+
 
 int
 ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
