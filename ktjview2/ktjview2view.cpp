@@ -260,6 +260,8 @@ void ktjview2View::openURL( const KURL& url )
     m_project->scheduleAllScenarios();
     //m_project->generateReports(); // FIXME do we need that?
 
+    clearAllViews();
+
     KIO::NetAccess::removeTempFile( tmpFile );
 
     m_ganttView->setUpdateEnabled( false );
@@ -358,6 +360,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         const QString taskName = task->getName();
         QDateTime start = time_t2Q( task->getStart( sc ) );
         QDateTime end = time_t2Q( task->getEnd( sc ) );
+        QString duration = KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 1 );
         //int prio = task->getPriority();
 
         QString toolTip;
@@ -376,7 +379,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                       .arg( KGlobal::locale()->formatDateTime( start ) )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
             item->setTooltipText( toolTip );
-            item->setText( taskName );
+            item->setText( taskName + " " +i18n( "(%1 d)" ).arg( duration ) ) ;
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
@@ -392,7 +395,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                       .arg( KGlobal::locale()->formatDateTime( start ) )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
             item->setTooltipText( toolTip );
-            item->setText( taskName );
+            item->setText( taskName + " " +i18n( "(%1 d)" ).arg( duration ) );
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
@@ -425,7 +428,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                           .arg( KGlobal::locale()->formatDateTime( start ) )
                           .arg( KGlobal::locale()->formatDateTime( end ) ) ;
                 item->setTooltipText( toolTip );
-                item->setText( taskName );
+                item->setText( taskName  + " " +i18n( "(%1 d)" ).arg( duration ) );
             }
         }
 //#endif
@@ -437,6 +440,10 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
         kdDebug() << "Done parsing gantt item: " << id << endl;
     }
+
+    KDGanttViewItem * root = m_ganttView->firstChild(); // expand the root item
+    if ( root )
+        root->setOpen( true );
 }
 
 void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * parentItem )
@@ -667,6 +674,13 @@ void ktjview2View::filter()
     dlg->exec();
     delete dlg;
     dlg = 0;
+}
+
+void ktjview2View::clearAllViews()
+{
+    m_ganttView->clear();
+    m_resListView->clear();
+    m_taskView->clear();
 }
 
 #include "ktjview2view.moc"

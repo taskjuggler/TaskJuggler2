@@ -157,9 +157,14 @@ private slots:
 
 private:
     /**
-     *
+     * Apply settings dialog changes for the Gantt
      */
     void setupGantt();
+
+    /**
+     * Clear all view components, e.g. before loading a new project
+     */
+    void clearAllViews();
 
     /**
      * Convert TaskStatus enum to human readable string
