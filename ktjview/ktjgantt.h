@@ -54,8 +54,6 @@ public slots:
    void slZoomOriginal();
 signals:
    void statusBarChange( const QString& );
-   
-protected:
 
 private:
    KTVTaskCanvasView *m_canvas;

@@ -29,6 +29,9 @@ class QPoint;
 class KTVTaskCanvasView: public QCanvasView
 {
     Q_OBJECT
+
+    friend class KTVTaskTable;
+   
 public:
     KTVTaskCanvasView( QWidget *parent, KTVTaskTable *tab=0, const char *name = 0 );
     virtual ~KTVTaskCanvasView(){ }
@@ -43,19 +46,23 @@ public:
    KTVCanvasItemBase* taskItemAt( const QPoint& );
 
    void finalise( Project *p );
+
+signals:
+   void scrolledBy( int, int );
    
 public slots:
    void zoomIn();
    void zoomOut();
    void zoomOriginal();
-protected:
-   void wheelEvent( QWheelEvent * ) {};
+   void slScrollTo(int, int);
+   
    
 private:
    void addTask( Task *t );
    Project *m_pro;
 
    KTVTaskCanvas *m_canvas;
+   double         m_scaleFactor;
 
 };
 

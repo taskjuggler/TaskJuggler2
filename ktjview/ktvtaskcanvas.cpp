@@ -85,9 +85,12 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
 {
    m_dayWidth = _w;
 
+
    QSize s = size();
    resize( m_dayWidth * m_days, s.height() );
-
+   // setAllChanged();
+   // update();
+#if 0
    /* recalc width an x-positions of all items*/
    const CanvasItemList ktvItems = getCanvasItemsList();
    CanvasItemListIterator it(ktvItems);
@@ -105,6 +108,7 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
    }
    setAllChanged();
    update();
+#endif
 }
 
 

@@ -20,15 +20,21 @@
 
 
 KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const char *name )
-   :QCanvasView( parent, name )
+   :QCanvasView( parent, name ),
+    m_canvas(0),
+    m_scaleFactor(1.0)
 {
    m_canvas = new KTVTaskCanvas( parent, tab, name );
    setCanvas( m_canvas );
    (void) new TaskTip( this );
-   
-   setVScrollBarMode( QScrollView::AlwaysOff );
 
-   m_canvas->resize( 400, 300);
+   connect( this, SIGNAL( contentsMoving( int, int )),
+	    this, SLOT( slScrollTo( int, int )));
+
+   setResizePolicy( QScrollView::Default);
+   setVScrollBarMode( QScrollView::AlwaysOn );
+
+   // m_canvas->resize( 400, 300);
 }
 
 
@@ -40,6 +46,7 @@ void KTVTaskCanvasView::showProject( Project *p )
    QString pName = p->getName();
    
    /* resize the canvas */
+   m_canvas->slSetDayWidthStandard();
    m_canvas->setInterval( p->getStart(), p->getEnd() );
 
 }
@@ -115,31 +122,34 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 
 void KTVTaskCanvasView::zoomIn()
 {
-   int w = m_canvas->getDayWidth();
 
-   w += (w/5);
-   qDebug( "setting day-Width = %d", w );
-
-   m_canvas->slSetDayWidth( w );
+   m_scaleFactor += 0.1;
+   QWMatrix wm;
+   wm.scale( m_scaleFactor, 1.0);
+   setWorldMatrix(wm);
 
    update();
 }
 
 void KTVTaskCanvasView::zoomOut()
 {
-   int w = m_canvas->getDayWidth();
-
-   w -= (w/5);
-   qDebug( "setting day-Width = %d", w );
-   m_canvas->slSetDayWidth( w );
-
+   m_scaleFactor -= 0.1;
+   QWMatrix wm;
+   wm.scale( m_scaleFactor, 1.0);
+   setWorldMatrix(wm);
    update();
+   
 }
 
 void KTVTaskCanvasView::zoomOriginal()
 {
-   m_canvas->slSetDayWidthStandard();
+   m_scaleFactor = 1.0;
+   QWMatrix wm;
+   wm.scale( m_scaleFactor, 1.0);
+   setWorldMatrix(wm);
+
    update();
+
 }
 
 
@@ -151,3 +161,15 @@ void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* )
  
 }
 
+
+/*
+ * This slot is automating the scrolling synchronisation between the listview
+ * and the canvas. To this slot the signal contentsMove of the list is connected,
+ * which scrolls automagically.
+ */
+void KTVTaskCanvasView::slScrollTo( int, int y)
+{
+   // qDebug( "Scrolling!");
+   emit scrolledBy( 0, y - contentsY() );
+
+}

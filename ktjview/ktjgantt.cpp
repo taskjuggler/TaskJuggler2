@@ -30,11 +30,12 @@ void KTJGantt::showProject( Project *p )
     // we need an instance
     m_table = new KTVTaskTable( this, "TABLE");
     m_canvas = new KTVTaskCanvasView( this, m_table, "CANVAS");
-
-    /* synchron y scroll */
-    connect( m_table, SIGNAL(scrolledBy(int,int)),
-	     m_canvas, SLOT(scrollBy( int, int ) ));
+    m_table->setCanvasView( m_canvas );
     
+    /* synchron y scroll */
+    connect( m_canvas, SIGNAL(scrolledBy(int,int)),
+	     m_table,    SLOT(scrollBy( int, int ) ));
+
     connect( m_table, SIGNAL(itemHeightChanged(int)),
 	     m_canvas->canvas(), SLOT  (slSetRowHeight(int) ));
 
@@ -52,9 +53,6 @@ void KTJGantt::showProject( Project *p )
 
     connect( m_table, SIGNAL(moveMarker(int)),
     	     m_canvas->canvas(), SLOT(slShowMarker(int)) );
-
-    connect( m_table, SIGNAL( needUpdate() ),
-    	     m_canvas->canvas(), SLOT(update()) );
 
     connect( m_table, SIGNAL( moveItems( int, int )),
 	     m_canvas->canvas(), SLOT( slMoveItems( int, int )));
@@ -102,7 +100,5 @@ void KTJGantt::slZoomOriginal()
 KTJGantt::~KTJGantt()
 {
 }
-
-
 
 #include "ktjgantt.moc"

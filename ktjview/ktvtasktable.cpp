@@ -1,5 +1,6 @@
 #include <qdatetime.h>
 #include <qheader.h>
+#include <qtimer.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -7,6 +8,7 @@
 #include <kiconloader.h>
 
 #include "ktvtasktable.h"
+#include "ktvtaskcanvasview.h"
 #include "Project.h"
 #include "Task.h"
 #include "ktvreport.h"
@@ -21,7 +23,8 @@
 KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    :KListView( parent, name ),
     m_itemHeight(16),
-    m_root(0)
+    m_root(0),
+    m_canvasView(0)
 {
    // addColumn( i18n( "No." ));
    addColumn( i18n("Task" ));
@@ -36,9 +39,6 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
 
    setSorting( -1, false );
 
-   connect( this, SIGNAL( contentsMoving( int, int )),
-	    this, SLOT( slScrollTo( int, int )));
-   
    connect( this, SIGNAL( expanded( QListViewItem* )),
 	    this, SLOT( slExpanded( QListViewItem* )));
    
@@ -48,6 +48,9 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    connect( this, SIGNAL( selectionChanged(QListViewItem*)),
 	    this, SLOT(slSelectionChanged(QListViewItem*)));
    
+
+   setVScrollBarMode( QScrollView::AlwaysOff );
+
    /* load pixmaps */
    KIconLoader *loader = KGlobal::iconLoader();
    m_milestonePix = loader->loadIcon( PIX_MILESTONE, KIcon::Small );
@@ -55,6 +58,12 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    m_containerPix = loader->loadIcon( PIX_CONTAINER, KIcon::Small );
    
    
+}
+
+
+void KTVTaskTable::setCanvasView( KTVTaskCanvasView *view )
+{
+   m_canvasView = view;
 }
 
 
@@ -203,8 +212,7 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
    }
 
    emit moveItems( y + m_itemHeight, -1 * childCnt * m_itemHeight );
-   emit needUpdate();
-      
+   slUpdateCanvas();
 }
 
 
@@ -234,8 +242,35 @@ void KTVTaskTable::slExpanded( QListViewItem* it)
       emit showTaskByItem( static_cast<KTVTaskTableItem*>(child) );
       child = child->nextSibling();
    }
-   emit needUpdate();
+   slUpdateCanvas();
 }
+
+
+void KTVTaskTable::slUpdateCanvas()
+{
+   if( m_canvasView )
+      m_canvasView->canvas()->update();
+}
+
+/*
+ * reimplementation of resizeContents which additionally informs the
+ * canvas of the new height of both scrollview contents. Both of the
+ * contents need to be synced in height in order to provide one correct
+ * scrollbar for both scrollviews.
+ * 
+ */
+void KTVTaskTable::resizeContents( int w, int h )
+{
+   QScrollView::resizeContents(w, h);
+   if( m_canvasView )
+   {
+      int width = m_canvasView->contentsWidth();
+      m_canvasView->resizeContents(width, h);
+   }
+   
+   qDebug( "Setting height to %d", h );
+}
+
 
 void KTVTaskTable::slScrollTo( int, int y )
 {

@@ -39,6 +39,7 @@ class QListViewItem;
 class KTVTaskTable: public KListView
 {
    friend class KTVTaskCanvas;
+   friend class KTVTaskCanvasView;
     Q_OBJECT
 public:
     KTVTaskTable( QWidget *parent, const char *name = 0 );
@@ -46,13 +47,22 @@ public:
 
    void showProject( Project * );
    void setItemHeight(int h);
+   void setCanvasView( KTVTaskCanvasView* );
+   
+   
+public slots:
+   void resizeContents( int, int );
+   
+protected:
+   virtual void wheelEvent( QWheelEvent * ) {};
 
 protected slots:
-
+   void slUpdateCanvas();
    void slExpanded( QListViewItem* );
    void slCollapsed( QListViewItem* );
    void slSelectionChanged( QListViewItem* );
    void slScrollTo( int, int );
+   
 signals:
    void itemHeightChanged(int);
    void topOffsetChanged(int);
@@ -72,6 +82,8 @@ private:
 
    KTVTaskTableItem *m_root;
 
+   KTVTaskCanvasView *m_canvasView;
+   
    QPixmap m_milestonePix;
    QPixmap m_taskPix;
    QPixmap m_containerPix;
