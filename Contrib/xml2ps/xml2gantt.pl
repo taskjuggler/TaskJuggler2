@@ -105,7 +105,7 @@ my $day_x         = 5; #-- day-width
 my $task_height   = 5; #-- task-height
 my $task_space    = 3; #-- task-space
 my $header_height = 10;
-my $poster        = '/usr/bin/poster';
+my $poster        = 'poster';
 my $out_file      = $project{'Id'}.'.eps';
 my $out_file_p    = $project{'Id'}.'_poster.eps';
 my $res_count     = scalar (keys %rmap);
@@ -139,13 +139,8 @@ sub _make_poster {
             $format = $_;
         }
     close(IN);
-    if (-f $poster) {
-        print "make poster $out_file_p ... ";
-            `$poster -i$format -mA4 -p$format $out_file > $out_file_p`;
-        print "done\n";
-    } else {
-        print "INFO: can't make poster, $poster not found !\n";
-    }
+    print "make poster $out_file_p ... \n";
+    `exec $poster -i$format -mA4 -p$format $out_file > $out_file_p`;
 }
 
 #---------------- xml stuff --------------------------------

@@ -1,0 +1,514 @@
+%!PS-Adobe-3.0 EPSF-1.2
+%%Title: (test.eps)
+%%LanguageLevel: 1
+%%Creator: PostScript::Simple perl module version 0.04
+%%CreationDate: Mon Jun 24 21:17:30 2002
+%%For: pmidol
+%%Orientation: Portrait
+%%Pages: 1
+%%BoundingBox: 0 0 1179 165
+%%EndComments
+%%BeginProlog
+%%BeginResource: PostScript::Simple
+/u {72 mul 2.54 div} def
+/STARTDIFFENC { mark } bind def
+/ENDDIFFENC { 
+
+% /NewEnc BaseEnc STARTDIFFENC number or glyphname ... ENDDIFFENC -
+	counttomark 2 add -1 roll 256 array copy
+	/TempEncode exch def
+	
+	% pointer for sequential encodings
+	/EncodePointer 0 def
+	{
+		% Get the bottom object
+		counttomark -1 roll
+		% Is it a mark?
+		dup type dup /marktype eq {
+			% End of encoding
+			pop pop exit
+		} {
+			/nametype eq {
+			% Insert the name at EncodePointer 
+
+			% and increment the pointer.
+			TempEncode EncodePointer 3 -1 roll put
+			/EncodePointer EncodePointer 1 add def
+			} {
+			% Set the EncodePointer to the number
+			/EncodePointer exch def
+			} ifelse
+		} ifelse
+	} loop	
+
+	TempEncode def
+} bind def
+
+% Define ISO Latin1 encoding if it doesnt exist
+/ISOLatin1Encoding where {
+%	(ISOLatin1 exists!) =
+	pop
+} {
+	(ISOLatin1 does not exist, creating...) =
+	/ISOLatin1Encoding StandardEncoding STARTDIFFENC
+		144 /dotlessi /grave /acute /circumflex /tilde 
+		/macron /breve /dotaccent /dieresis /.notdef /ring 
+		/cedilla /.notdef /hungarumlaut /ogonek /caron /space 
+		/exclamdown /cent /sterling /currency /yen /brokenbar 
+		/section /dieresis /copyright /ordfeminine 
+		/guillemotleft /logicalnot /hyphen /registered 
+		/macron /degree /plusminus /twosuperior 
+		/threesuperior /acute /mu /paragraph /periodcentered 
+		/cedilla /onesuperior /ordmasculine /guillemotright 
+		/onequarter /onehalf /threequarters /questiondown 
+		/Agrave /Aacute /Acircumflex /Atilde /Adieresis 
+		/Aring /AE /Ccedilla /Egrave /Eacute /Ecircumflex 
+		/Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+		/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde 
+		/Odieresis /multiply /Oslash /Ugrave /Uacute 
+		/Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+		/agrave /aacute /acircumflex /atilde /adieresis 
+		/aring /ae /ccedilla /egrave /eacute /ecircumflex 
+		/edieresis /igrave /iacute /icircumflex /idieresis 
+		/eth /ntilde /ograve /oacute /ocircumflex /otilde 
+		/odieresis /divide /oslash /ugrave /uacute 
+		/ucircumflex /udieresis /yacute /thorn /ydieresis
+	ENDDIFFENC
+} ifelse
+
+% Name: Re-encode Font
+% Description: Creates a new font using the named encoding. 
+
+/REENCODEFONT { % /Newfont NewEncoding /Oldfont
+	findfont dup length 4 add dict
+	begin
+		{ % forall
+			1 index /FID ne 
+			2 index /UniqueID ne and
+			2 index /XUID ne and
+			{ def } { pop pop } ifelse
+		} forall
+		/Encoding exch def
+		% defs for DPS
+		/BitmapWidths false def
+		/ExactSize 0 def
+		/InBetweenSize 0 def
+		/TransformedChar 0 def
+		currentdict
+	end
+	definefont pop
+} bind def
+
+% Reencode the std fonts: 
+/Courier-iso ISOLatin1Encoding /Courier REENCODEFONT
+/Courier-Bold-iso ISOLatin1Encoding /Courier-Bold REENCODEFONT
+/Courier-BoldOblique-iso ISOLatin1Encoding /Courier-BoldOblique REENCODEFONT
+/Courier-Oblique-iso ISOLatin1Encoding /Courier-Oblique REENCODEFONT
+/Helvetica-iso ISOLatin1Encoding /Helvetica REENCODEFONT
+/Helvetica-Bold-iso ISOLatin1Encoding /Helvetica-Bold REENCODEFONT
+/Helvetica-BoldOblique-iso ISOLatin1Encoding /Helvetica-BoldOblique REENCODEFONT
+/Helvetica-Oblique-iso ISOLatin1Encoding /Helvetica-Oblique REENCODEFONT
+/Times-Roman-iso ISOLatin1Encoding /Times-Roman REENCODEFONT
+/Times-Bold-iso ISOLatin1Encoding /Times-Bold REENCODEFONT
+/Times-BoldItalic-iso ISOLatin1Encoding /Times-BoldItalic REENCODEFONT
+/Times-Italic-iso ISOLatin1Encoding /Times-Italic REENCODEFONT
+/Symbol-iso ISOLatin1Encoding /Symbol REENCODEFONT
+/box {
+  newpath 3 copy pop exch 4 copy pop pop
+  8 copy pop pop pop pop exch pop exch
+  3 copy pop pop exch moveto lineto
+  lineto lineto pop pop pop pop closepath
+} bind def
+%%EndResource
+%%EndProlog
+/Times-Roman findfont 9 scalefont setfont
+ 0 5.85 u translate 
+newpath
+4.6 u -4.875 u moveto
+5.8 u -0.975 u lineto stroke
+newpath
+4.6 u -4.875 u moveto
+5.8 u -2.925 u lineto stroke
+1 setgray
+5.8 u -1.725 u 9.8 u -0.225 u box fill
+0 setgray
+5.8 u -1.725 u 9.8 u -0.225 u box stroke
+newpath
+5.8 u -1.35 u moveto
+9.8 u -1.35 u lineto stroke
+newpath
+5.8 u -0.6 u moveto
+9.8 u -0.6 u lineto stroke
+newpath
+7.13333333333333 u -1.725 u moveto
+7.13333333333333 u -1.35 u lineto stroke
+newpath
+8.46666666666667 u -1.725 u moveto
+8.46666666666667 u -1.35 u lineto stroke
+newpath
+7.13333333333333 u -0.6 u moveto
+7.13333333333333 u -0.225 u lineto stroke
+newpath
+8.46666666666667 u -0.6 u moveto
+8.46666666666667 u -0.225 u lineto stroke
+newpath
+7.8 u -0.88125 u moveto
+(AcSo.spec) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+6.46666666666667 u -0.50625 u moveto
+(01/21/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+9.13333333333333 u -0.50625 u moveto
+(02/07/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+0.3 u -0.1125 u 41.3 u -5.7375 u box stroke
+0 setgray
+newpath
+9.8 u -0.975 u moveto
+11 u -0.975 u lineto stroke
+newpath
+15 u -0.975 u moveto
+21.4 u -0.975 u lineto stroke
+newpath
+20.2 u -0.975 u moveto
+21.4 u -0.975 u lineto stroke
+newpath
+15 u -0.975 u moveto
+16.2 u -0.975 u lineto stroke
+newpath
+9.8 u -0.975 u moveto
+16.2 u -0.975 u lineto stroke
+1 setgray
+11 u -1.725 u 15 u -0.225 u box fill
+0 setgray
+11 u -1.725 u 15 u -0.225 u box stroke
+newpath
+11 u -1.35 u moveto
+15 u -1.35 u lineto stroke
+newpath
+11 u -0.6 u moveto
+15 u -0.6 u lineto stroke
+newpath
+12.3333333333333 u -1.725 u moveto
+12.3333333333333 u -1.35 u lineto stroke
+newpath
+13.6666666666667 u -1.725 u moveto
+13.6666666666667 u -1.35 u lineto stroke
+newpath
+12.3333333333333 u -0.6 u moveto
+12.3333333333333 u -0.225 u lineto stroke
+newpath
+13.6666666666667 u -0.6 u moveto
+13.6666666666667 u -0.225 u lineto stroke
+newpath
+13 u -0.88125 u moveto
+(AcSo.software.database) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+11.6666666666667 u -0.50625 u moveto
+(02/07/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+14.3333333333333 u -0.50625 u moveto
+(02/21/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+10.7 u -0.1125 u 25.7 u -1.8375 u box stroke
+0 setgray
+1 setgray
+21.4 u -1.725 u 25.4 u -0.225 u box fill
+0 setgray
+21.4 u -1.725 u 25.4 u -0.225 u box stroke
+newpath
+21.4 u -1.35 u moveto
+25.4 u -1.35 u lineto stroke
+newpath
+21.4 u -0.6 u moveto
+25.4 u -0.6 u lineto stroke
+newpath
+22.7333333333333 u -1.725 u moveto
+22.7333333333333 u -1.35 u lineto stroke
+newpath
+24.0666666666667 u -1.725 u moveto
+24.0666666666667 u -1.35 u lineto stroke
+newpath
+22.7333333333333 u -0.6 u moveto
+22.7333333333333 u -0.225 u lineto stroke
+newpath
+24.0666666666667 u -0.6 u moveto
+24.0666666666667 u -0.225 u lineto stroke
+newpath
+23.4 u -0.88125 u moveto
+(AcSo.software.gui) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+22.0666666666667 u -0.50625 u moveto
+(03/14/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+24.7333333333333 u -0.50625 u moveto
+(04/11/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+10.7 u -0.1125 u 25.7 u -1.8375 u box stroke
+0 setgray
+1 setgray
+16.2 u -1.725 u 20.2 u -0.225 u box fill
+0 setgray
+16.2 u -1.725 u 20.2 u -0.225 u box stroke
+newpath
+16.2 u -1.35 u moveto
+20.2 u -1.35 u lineto stroke
+newpath
+16.2 u -0.6 u moveto
+20.2 u -0.6 u lineto stroke
+newpath
+17.5333333333333 u -1.725 u moveto
+17.5333333333333 u -1.35 u lineto stroke
+newpath
+18.8666666666667 u -1.725 u moveto
+18.8666666666667 u -1.35 u lineto stroke
+newpath
+17.5333333333333 u -0.6 u moveto
+17.5333333333333 u -0.225 u lineto stroke
+newpath
+18.8666666666667 u -0.6 u moveto
+18.8666666666667 u -0.225 u lineto stroke
+newpath
+18.2 u -0.88125 u moveto
+(AcSo.software.backend) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+16.8666666666667 u -0.50625 u moveto
+(02/21/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+19.5333333333333 u -0.50625 u moveto
+(03/14/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+10.7 u -0.1125 u 25.7 u -1.8375 u box stroke
+0 setgray
+0.7 setgray
+0.3 u -0.1125 u 41.3 u -5.7375 u box stroke
+0 setgray
+newpath
+25.4 u -0.975 u moveto
+26.6 u -0.975 u lineto stroke
+newpath
+30.6 u -0.975 u moveto
+31.8 u -0.975 u lineto stroke
+1 setgray
+26.6 u -1.725 u 30.6 u -0.225 u box fill
+0 setgray
+26.6 u -1.725 u 30.6 u -0.225 u box stroke
+newpath
+26.6 u -1.35 u moveto
+30.6 u -1.35 u lineto stroke
+newpath
+26.6 u -0.6 u moveto
+30.6 u -0.6 u lineto stroke
+newpath
+27.9333333333333 u -1.725 u moveto
+27.9333333333333 u -1.35 u lineto stroke
+newpath
+29.2666666666667 u -1.725 u moveto
+29.2666666666667 u -1.35 u lineto stroke
+newpath
+27.9333333333333 u -0.6 u moveto
+27.9333333333333 u -0.225 u lineto stroke
+newpath
+29.2666666666667 u -0.6 u moveto
+29.2666666666667 u -0.225 u lineto stroke
+newpath
+28.6 u -0.88125 u moveto
+(AcSo.test.alpha) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+27.2666666666667 u -0.50625 u moveto
+(04/11/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+29.9333333333333 u -0.50625 u moveto
+(04/15/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+26.3 u -0.1125 u 36.1 u -1.8375 u box stroke
+0 setgray
+1 setgray
+31.8 u -1.725 u 35.8 u -0.225 u box fill
+0 setgray
+31.8 u -1.725 u 35.8 u -0.225 u box stroke
+newpath
+31.8 u -1.35 u moveto
+35.8 u -1.35 u lineto stroke
+newpath
+31.8 u -0.6 u moveto
+35.8 u -0.6 u lineto stroke
+newpath
+33.1333333333333 u -1.725 u moveto
+33.1333333333333 u -1.35 u lineto stroke
+newpath
+34.4666666666667 u -1.725 u moveto
+34.4666666666667 u -1.35 u lineto stroke
+newpath
+33.1333333333333 u -0.6 u moveto
+33.1333333333333 u -0.225 u lineto stroke
+newpath
+34.4666666666667 u -0.6 u moveto
+34.4666666666667 u -0.225 u lineto stroke
+newpath
+33.8 u -0.88125 u moveto
+(AcSo.test.beta) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+32.4666666666667 u -0.50625 u moveto
+(04/16/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+35.1333333333333 u -0.50625 u moveto
+(05/01/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+26.3 u -0.1125 u 36.1 u -1.8375 u box stroke
+0 setgray
+0.7 setgray
+0.3 u -0.1125 u 41.3 u -5.7375 u box stroke
+0 setgray
+1 setgray
+5.8 u -3.675 u 9.8 u -2.175 u box fill
+0 setgray
+5.8 u -3.675 u 9.8 u -2.175 u box stroke
+newpath
+5.8 u -3.3 u moveto
+9.8 u -3.3 u lineto stroke
+newpath
+5.8 u -2.55 u moveto
+9.8 u -2.55 u lineto stroke
+newpath
+7.13333333333333 u -3.675 u moveto
+7.13333333333333 u -3.3 u lineto stroke
+newpath
+8.46666666666667 u -3.675 u moveto
+8.46666666666667 u -3.3 u lineto stroke
+newpath
+7.13333333333333 u -2.55 u moveto
+7.13333333333333 u -2.175 u lineto stroke
+newpath
+8.46666666666667 u -2.55 u moveto
+8.46666666666667 u -2.175 u lineto stroke
+newpath
+7.8 u -2.83125 u moveto
+(AcSo.manual) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+6.46666666666667 u -2.45625 u moveto
+(01/21/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+9.13333333333333 u -2.45625 u moveto
+(02/25/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+0.3 u -0.1125 u 41.3 u -5.7375 u box stroke
+0 setgray
+newpath
+30.6 u -0.975 u moveto
+31.8 u -4.875 u lineto stroke
+newpath
+35.8 u -0.975 u moveto
+37 u -4.875 u lineto stroke
+newpath
+9.8 u -2.925 u moveto
+37 u -4.875 u lineto stroke
+1 setgray
+0.6 u -5.625 u 4.6 u -4.125 u box fill
+0 setgray
+0.6 u -5.625 u 4.6 u -4.125 u box stroke
+newpath
+0.6 u -5.25 u moveto
+4.6 u -5.25 u lineto stroke
+newpath
+0.6 u -4.5 u moveto
+4.6 u -4.5 u lineto stroke
+newpath
+1.93333333333333 u -5.625 u moveto
+1.93333333333333 u -5.25 u lineto stroke
+newpath
+3.26666666666667 u -5.625 u moveto
+3.26666666666667 u -5.25 u lineto stroke
+newpath
+1.93333333333333 u -4.5 u moveto
+1.93333333333333 u -4.125 u lineto stroke
+newpath
+3.26666666666667 u -4.5 u moveto
+3.26666666666667 u -4.125 u lineto stroke
+newpath
+2.6 u -4.78125 u moveto
+(AcSo.deliveries.start) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+1.26666666666667 u -4.40625 u moveto
+(01/20/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+3.93333333333333 u -4.40625 u moveto
+(01/20/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+0.3 u -4.0125 u 41.3 u -5.7375 u box stroke
+0 setgray
+1 setgray
+31.8 u -5.625 u 35.8 u -4.125 u box fill
+0 setgray
+31.8 u -5.625 u 35.8 u -4.125 u box stroke
+newpath
+31.8 u -5.25 u moveto
+35.8 u -5.25 u lineto stroke
+newpath
+31.8 u -4.5 u moveto
+35.8 u -4.5 u lineto stroke
+newpath
+33.1333333333333 u -5.625 u moveto
+33.1333333333333 u -5.25 u lineto stroke
+newpath
+34.4666666666667 u -5.625 u moveto
+34.4666666666667 u -5.25 u lineto stroke
+newpath
+33.1333333333333 u -4.5 u moveto
+33.1333333333333 u -4.125 u lineto stroke
+newpath
+34.4666666666667 u -4.5 u moveto
+34.4666666666667 u -4.125 u lineto stroke
+newpath
+33.8 u -4.78125 u moveto
+(AcSo.deliveries.beta) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+32.4666666666667 u -4.40625 u moveto
+(04/15/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+35.1333333333333 u -4.40625 u moveto
+(04/15/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+0.3 u -4.0125 u 41.3 u -5.7375 u box stroke
+0 setgray
+1 setgray
+37 u -5.625 u 41 u -4.125 u box fill
+0 setgray
+37 u -5.625 u 41 u -4.125 u box stroke
+newpath
+37 u -5.25 u moveto
+41 u -5.25 u lineto stroke
+newpath
+37 u -4.5 u moveto
+41 u -4.5 u lineto stroke
+newpath
+38.3333333333333 u -5.625 u moveto
+38.3333333333333 u -5.25 u lineto stroke
+newpath
+39.6666666666667 u -5.625 u moveto
+39.6666666666667 u -5.25 u lineto stroke
+newpath
+38.3333333333333 u -4.5 u moveto
+38.3333333333333 u -4.125 u lineto stroke
+newpath
+39.6666666666667 u -4.5 u moveto
+39.6666666666667 u -4.125 u lineto stroke
+newpath
+39 u -4.78125 u moveto
+(AcSo.deliveries.done) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+37.6666666666667 u -4.40625 u moveto
+(05/01/02) dup stringwidth pop 2 div neg 0 rmoveto show
+newpath
+40.3333333333333 u -4.40625 u moveto
+(05/01/02) dup stringwidth pop 2 div neg 0 rmoveto show
+0.7 setgray
+0.3 u -4.0125 u 41.3 u -5.7375 u box stroke
+0 setgray
+0.7 setgray
+0.3 u -0.1125 u 41.3 u -5.7375 u box stroke
+0 setgray
+0.7 setgray
+0.3 u 1.8375 u 41.3 u -3.7875 u box stroke
+0 setgray
+%%EOF
