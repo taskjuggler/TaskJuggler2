@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="TaskJuggler" version="1.1" kateversion="2.1" section="Scripts"
-extensions="*.tjp;*.tji" mimetype="">
+<language name="TaskJuggler" version="1.1" kateversion="2.1" section="Scripts" extensions="*.tjp;*.tji" mimetype="">
 <highlighting>
     <list name="keywords">
         <item> account </item>
@@ -9,6 +8,7 @@ extensions="*.tjp;*.tji" mimetype="">
         <item> task </item>
         <item> resource </item>
         <item> shift </item>
+	<item> scenario </item>
     </list>
     <list name="builtinfuncs">
         <item> accumulate </item>
@@ -227,51 +227,54 @@ extensions="*.tjp;*.tji" mimetype="">
         <item>Map</item>
     </list>
     <contexts>
-
-      <context attribute="0" lineEndContext="0" name="Normal">
-       <keyword attribute="Builtin Function" String="builtinfuncs" context="#stay"/>
-       <keyword attribute="1" context="0" String="keywords"/>
-
-    <Float attribute="6" context="0">
-          <AnyChar String="fF" attribute="6" context="0"/>
-        </Float>
-    <Int attribute="3" context="0" >
-          <StringDetect attribute="3" context="0" String="ULL"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LUL"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LLU"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="UL"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LU"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="LL"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="U"
-insensitive="TRUE"/>
-          <StringDetect attribute="3" context="0" String="L"
-insensitive="TRUE"/>
-        </Int>
-    <HlCChar attribute="7" context="0"/>
-        <DetectChar attribute="8" context="1" char="&quot;"/>
-        <Detect2Chars attribute="10" context="2" char="/" char1="/"/>
-        <Detect2Chars attribute="10" context="3" char="/" char1="*"/>
-        <AnyChar attribute="11" context="0"
-String="!%&amp;()+,-&lt;=&gt;?[]^{|}~"/>
-    <RegExpr String= "#.*$" attribute = "Comment" context="0"/>
+     <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+        <!-- keywords and other builtins -->
+	<keyword attribute="Builtin Function" String="builtinfuncs" context="#stay"/>
+	<keyword attribute="Keyword" String="keywords" context="#stay"/>
+	<keyword attribute="Data Types" String="types" context="#stay"/>
+	
+	<!-- region (brace) folding -->
+	<DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace1" />
+        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace1" />
+	
+	<!-- number hilighting -->
+	<Float attribute="Float" context="#stay">
+    	    <AnyChar String="fF" attribute="Float" context="#stay"/>
+	</Float>
+	<Int attribute="Decimal" context="#stay">
+          <StringDetect attribute="Decimal" context="#stay" String="ULL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LUL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LLU" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="UL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LU" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="U" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="L" insensitive="TRUE"/>
+	</Int>
+	
+	<!-- string -->
+	<DetectChar attribute="String" context="String" char="&quot;"/>
+	
+	<!-- comments -->
+	<DetectChar attribute="Comment" context="Comment1" char="#"/>
+        <Detect2Chars attribute="Comment" context="Comment2" char="/" char1="*"/>
       </context>
-     <context attribute="8" lineEndContext="0" name="String">
-        <LineContinue attribute="8" context="#stay"/>
-        <HlCStringChar attribute="9" context="1"/>
-        <DetectChar attribute="8" context="0" char="&quot;"/>
+      
+      <context attribute="String" lineEndContext="#pop" name="String">
+        <DetectChar attribute="String" context="#pop" char="&quot;"/>
+      </context>
+      <context attribute="Comment" lineEndContext="#pop" name="Comment1">
+        <IncludeRules context="##Alerts" />
+      </context>
+      <context attribute="Comment" lineEndContext="#stay" name="Comment2">
+        <Detect2Chars attribute="Comment" context="#pop" char="*" char1="/"/>
       </context>
     </contexts>
-
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal"/>
       <itemData name="Keyword"  defStyleNum="dsKeyword"/>
-      <itemData name="Builtin Function"  defStyleNum="dsDataType"/>
+      <itemData name="Builtin Function"  defStyleNum="dsFunction"/>
+      <itemData name="Data Types" defStyleNum="dsDataType"/>
       <itemData name="Decimal"  defStyleNum="dsDecVal"/>
       <itemData name="Octal"  defStyleNum="dsBaseN"/>
       <itemData name="Hex"  defStyleNum="dsBaseN"/>
