@@ -20,11 +20,15 @@ example.sgml : ../../Examples/FirstProject/AccountingSoftware.tjp
 	echo "</screen></para>" >> example.sgml
 
 taskjuggler/book1.html: $(SGMLSOURCES)
-	db2html taskjuggler.sgml
-	-rm -rf taskjuggler.junk
+	@if test "${HTMLMANUAL}" != "no" ; then \ 
+	  db2html taskjuggler.sgml ;\
+	  rm -rf taskjuggler.junk ;\
+	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
-	db2ps taskjuggler.sgml
+	@if test ${PSMANUAL} != "no" ; then \
+	  db2ps taskjuggler.sgml ;\
+	fi
 
 all: taskjuggler/book1.html taskjuggler.ps
 

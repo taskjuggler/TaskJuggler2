@@ -21,7 +21,9 @@ $(TARGETNAME).tjx : $(TARGETNAME).tjp
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
 acso.eps : $(TARGETNAME).tjx
-	$(TJX2GANTT) $(TARGETNAME).tjx
+	@if test "${TJX2GANT}" != "no" ; then \
+	  $(TJX2GANTT) $(TARGETNAME).tjx ;\
+	fi
 
 all: $(TARGETNAME).tjx acso.eps
 

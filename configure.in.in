@@ -1,5 +1,23 @@
 #MIN_CONFIG
 
+dnl    Configure check stuff for TaskJuggler
+dnl    Copyright (c) 2002 Chris Schlaeger <cs@suse.de>
+dnl    Copyright (c) 2002 Klaas Freitag <freitag@suse.de>
+
+dnl    This file is free software; you can redistribute it and/or
+dnl    modify it under the terms of version 2 of the GNU General
+dnl    Public License as published by the Free Software Foundation.
+
+dnl    This library is distributed in the hope that it will be useful,
+dnl    but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl    GNU General Public License for more details.
+
+dnl    You should have received a copy of the GNU General Public License
+dnl    along with this library; see the file COPYING.  If not, write to
+dnl    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+dnl    Boston, MA 02111-1307, USA.
+
 AC_MSG_CHECKING([for KDE support])
 AC_CACHE_VAL(cv_option_kdesupport, [ cv_option_kdesupport=no ])
 AC_ARG_WITH(kde-support,
@@ -29,16 +47,67 @@ else
    DO_NOT_COMPILE="ktjview Contrib"
 fi
 
+AC_CHECK_PROG(PERL, perl, perl, no)
+
+AC_DEFUN([CHECK_PERL_MODULE],[ 
+AC_MSG_CHECKING([for Perl module $1])
+TMPFILE=conftest.pl
+rm -f $TMPFILE
+cat >$TMPFILE <<'EOT'
+use $1;
+EOT
+$PERL $TMPFILE 2> /dev/null
+if test $? -eq 0 ; then
+    $2="yes"
+    AC_MSG_RESULT(found)
+else
+    $2="no"
+    AC_MSG_RESULT(not found)
+fi
+rm -f $TMPFILE
+])
+
+dnl Check for the stuff the GANTT chart generator needs
+CHECK_PERL_MODULE(Date::Calc, DATECALC)
+CHECK_PERL_MODULE(XML::Parser, XMLPARSER)
+CHECK_PERL_MODULE(Class::MethodMaker, CLASSMETHODMAKER)
+CHECK_PERL_MODULE(PostScript::Simple, POSTSCRIPTSIMPLE)
+AC_CHECK_PROG(POSTER, poster, poster, no)
+if test "$DATECALC" = no -o "$XMLPARSER" = no -o \
+        "$CLASSMETHODMAKER" = no -o "$POSTSCRIPTSIMPLE" = no -o \
+        "$POSTER" = no ; then
+  AC_MSG_WARN(tjx2gantt GANTT chart generator will not work)
+  TJX2GANTT="no"
+fi
+
+dnl Check for the stuff needed to create the HTML manual
 AC_CHECK_PROG(SGML2HTML, sgml2html, sgml2html, no)
 AC_CHECK_PROG(DB2HTML, db2html, db2html, no)
+if test "$SGML2HTML" = no -o "$DB2HTML" = no ; then
+  AC_MSG_WARN([HTML manual will not be generated])
+  HTMLMANUAL="no"
+else
+  HTMLMANUAL="yes"
+fi
+AC_SUBST(HTMLMANUAL)
+
+dnl Check for the stuff needed to create the PS manual
 AC_CHECK_PROG(DB2PS, db2ps, db2ps, no)
 AC_CHECK_PROG(JADE, jade, jade, no)
 AC_CHECK_PROG(JADETEX, jadetex, jadetex, no)
+AC_CHECK_PROG(DVIPS, dvips, dvips, no)
+if test "$DB2PS" = no -o "$JADE" = no -o "$JADETEX" = no -o \
+        "$DVIPS" = no ; then
+  AC_MSG_WARN([Postscript manual will not be generated])
+  PSMANUAL="no"
+else
+  PSMANUAL="yes"
+fi
+AC_SUBST(PSMANUAL)
 
-dnl AC_SUBST(LIBICAL)
 AC_SUBST(KDE_LIBS)
 
 AM_INIT_AUTOMAKE(taskjuggler, 1.4-beta2)
 
-dnl AC_OUTPUT(docs/en/taskjuggler.sgml)
+AC_OUTPUT(docs/en/taskjuggler.sgml)
 
