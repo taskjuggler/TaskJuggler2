@@ -63,7 +63,7 @@ public:
 	void emptyNthRow(bool light);
 
 	void textOneRow(const QString& text, bool light, const QString& align);
-	void textTwoRows(const QString& text, bool light, const QString& align);
+	void textMultiRows(const QString& text, bool light, const QString& align);
 
 	void dailyResource1stRow(const Resource* r, const Task* t);
 	void dailyResourceNthRow(const Resource* r, const Task* t);

@@ -1433,7 +1433,8 @@ ProjectFile::readResourceBody(Resource* r)
 				return FALSE;
 			if (!r->addBooking(Task::Plan, b))
 			{
-				errorMessage(i18n("Resource is already booked during this period"));
+				errorMessage(i18n("Resource %1 cannot be allocated during this "
+								  "period").arg(r->getId()));
 				return FALSE;
 			}
 		}
@@ -1444,7 +1445,8 @@ ProjectFile::readResourceBody(Resource* r)
 				return FALSE;
 			if (!r->addBooking(Task::Actual, b))
 			{
-				errorMessage(i18n("Resource is already booked during this period"));
+				errorMessage(i18n("Resource %1 cannot be allocated during this "
+								  "period").arg(r->getId()));
 				return FALSE;
 			}
 		}

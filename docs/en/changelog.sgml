@@ -360,6 +360,10 @@ nested resources. The bug was introduced between versions 1.2 and 1.3.
 problems with a sub task no error message was generated. This has been
 fixed now.</para></listitem>
 
+<listitem><para>Fixed scheduling of container tasks, so that container
+tasks with only milestones get properly scheduled.
+</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

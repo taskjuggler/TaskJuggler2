@@ -374,32 +374,32 @@ Task::scheduleContainer(bool safeMode)
 	if (schedulingDone)
 		return TRUE;
 
-	Task* t;
 	time_t nstart = 0;
 	time_t nend = 0;
 
+	TaskListIterator tli(sub);
 	// Check that this is really a container task
-	if ((t = subFirst()))
+	if (*tli != 0)
 	{
-		if (t->start == 0 || t->end == 0)
+		if ((*tli)->start == 0 || (*tli)->end == 0)
 			return TRUE;
-		nstart = t->start;
-		nend = t->end;
+		nstart = (*tli)->start;
+		nend = (*tli)->end;
 	}
 	else
 		return TRUE;
 
-	for (t = subNext() ; t != 0; t = subNext())
+	for ( ++tli; *tli != 0; ++tli)
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
-		if (t->start == 0 || t->end == 0)
+		if ((*tli)->start == 0 || (*tli)->end == 0)
 			return TRUE;
 
-		if (t->start < nstart)
-			nstart = t->start;
-		if (t->end > nend)
-			nend = t->end;
+		if ((*tli)->start < nstart)
+			nstart = (*tli)->start;
+		if ((*tli)->end > nend)
+			nend = (*tli)->end;
 	}
 
 	if (start == 0 || (!depends.isEmpty() && start < nstart))
@@ -420,7 +420,7 @@ Task::scheduleContainer(bool safeMode)
 }
 
 void
-Task::propagateStart(bool safeMode)
+Task::propagateStart(bool notUpwards)
 {
 	if (start == 0)
 		return;
@@ -435,7 +435,7 @@ Task::propagateStart(bool safeMode)
 	{
 		end = start - 1;
 		schedulingDone = TRUE;
-		propagateEnd(safeMode);
+		propagateEnd(notUpwards);
 	}
 
 	/* Set start date to all previous that have no start date yet, but are
@@ -451,7 +451,7 @@ Task::propagateStart(bool safeMode)
 				qDebug("PS2: Setting end of %s to %s",
 					   (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
 			/* Recursively propagate the end date */
-			(*tli)->propagateEnd(safeMode);
+			(*tli)->propagateEnd(notUpwards);
 		}
 
 	/* Propagate start time to sub tasks which have only an implicit
@@ -466,16 +466,16 @@ Task::propagateStart(bool safeMode)
 				qDebug("PS3: Setting start of %s to %s",
 					   (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());	 
 			/* Recursively propagate the start date */
-			(*tli)->propagateStart(safeMode);
+			(*tli)->propagateStart(TRUE);
 		}
 	}
 
-	if (safeMode && parent)
+	if (notUpwards && parent)
 		getParent()->scheduleContainer(TRUE);
 }
 
 void
-Task::propagateEnd(bool safeMode)
+Task::propagateEnd(bool notUpwards)
 {
 	if (end == 0)
 		return;
@@ -490,7 +490,7 @@ Task::propagateEnd(bool safeMode)
 	{
 		start = end + 1;
 		schedulingDone = TRUE;
-		propagateStart(safeMode);
+		propagateStart(notUpwards);
 	}
 
 	/* Set start date to all followers that have no start date yet, but are
@@ -506,7 +506,7 @@ Task::propagateEnd(bool safeMode)
 				qDebug("PE2: Setting start of %s to %s",
 					   (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
 			/* Recursively propagate the start date */
-			(*tli)->propagateStart(safeMode);
+			(*tli)->propagateStart(notUpwards);
 		}
 	/* Propagate end time to sub tasks which have only an implicit
 	 * dependancy on the parent task. Do not touch container tasks. */
@@ -519,10 +519,10 @@ Task::propagateEnd(bool safeMode)
 				qDebug("PE3: Setting end of %s to %s",
 					   (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
 			/* Recursively propagate the end date */
-			(*tli)->propagateEnd(safeMode);
+			(*tli)->propagateEnd(TRUE);
 		}
 
-	if (safeMode && parent)
+	if (notUpwards && parent)
 		getParent()->scheduleContainer(TRUE);
 }
 
@@ -530,9 +530,9 @@ void
 Task::propagateInitialValues()
 {
 	if (start != 0)
-		propagateStart(FALSE);
+		propagateStart(TRUE);
 	if (end != 0)
-		propagateEnd(FALSE);
+		propagateEnd(TRUE);
 	// Check if the some data of sub tasks can already be propagated.
 	if (!sub.isEmpty())
 		scheduleContainer(TRUE);
@@ -1107,7 +1107,8 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 						qDebug("%sChecking previous %s of task %s",
 							   QString().fill(' ', list.count()).latin1(),
 							   (*tli)->getId().latin1(), id.latin1());
-					if((*tli)->loopDetection(list, TRUE, LoopDetectorInfo::fromSucc))
+					if((*tli)->loopDetection(list, TRUE, 
+											 LoopDetectorInfo::fromSucc))
 						return TRUE;
 				}
 		}
@@ -1251,8 +1252,8 @@ Task::preScheduleOk()
 		if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
 		{
 			errorMessage(i18n
-						 ("Start and end buffers may not overlap in %2 scenario. "
-						  "So their sum must be smaller then 100%.")
+						 ("Start and end buffers may not overlap in %2 "
+						  "scenario. So their sum must be smaller then 100%.")
 						 .arg(project->getScenarioId(sc)));
 			return FALSE;
 		}
@@ -1487,6 +1488,9 @@ Task::scheduleOk(int& errors, QString scenario) const
 	if (runAway)
 		return FALSE;
 
+	if (DEBUGPS(3))
+		qDebug("Checking task %s", id.latin1());
+
 	/* If any of the dependant tasks is a runAway, we can safely surpress all
 	 * other error messages. */
 	for (TaskListIterator tli(depends); *tli != 0; ++tli)
@@ -1498,10 +1502,8 @@ Task::scheduleOk(int& errors, QString scenario) const
 
 	if (start == 0)
 	{
-		// Only report this for leaf tasks.
-		if (DEBUGPS(1) || sub.isEmpty())
-			errorMessage(i18n("Task '%1' has no %2 start time.")
-						 .arg(id).arg(scenario.lower()));
+		errorMessage(i18n("Task '%1' has no %2 start time.")
+					 .arg(id).arg(scenario.lower()));
 		errors++;
 		return FALSE;
 	}
@@ -1527,10 +1529,9 @@ Task::scheduleOk(int& errors, QString scenario) const
 	}
 	if (end == 0)
 	{
-		// Only report this for leaf tasks.
-		if (DEBUGPS(1) || sub.isEmpty())
-			errorMessage(i18n("Task '%1' has no %2 end time.")
-						 .arg(id).arg(scenario.lower()));
+		errorMessage(i18n("Task '%1' has no %2 end time.")
+					 .arg(id).arg(scenario.lower()));
+		errors++;
 		return FALSE;
 	}
 	if (end + (milestone ? 1 : 0) < minEnd)
