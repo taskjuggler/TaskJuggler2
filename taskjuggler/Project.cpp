@@ -51,15 +51,7 @@ Project::Project()
 
     vacationList.setAutoDelete(TRUE);
     
-    htmlTaskReports.setAutoDelete(TRUE);
-    htmlResourceReports.setAutoDelete(TRUE);
-    htmlAccountReports.setAutoDelete(TRUE);
-    htmlWeeklyCalendars.setAutoDelete(TRUE);
-    htmlStatusReports.setAutoDelete(TRUE);
-    csvTaskReports.setAutoDelete(TRUE);
-    csvResourceReports.setAutoDelete(TRUE);
-    csvAccountReports.setAutoDelete(TRUE);
-    exportReports.setAutoDelete(TRUE);
+    reports.setAutoDelete(TRUE);
 
     new Scenario(this, "plan", "Plan", 0);
     scenarioList.createIndex(TRUE);
@@ -465,7 +457,7 @@ Project::pass2(bool noDepCheck)
     if (!noDepCheck)
     {
         if (DEBUGPS(1))
-            qDebug("Searching for dependency loops...");
+            qDebug("Searching for dependency loops ...");
         // Check all tasks for dependency loops.
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             (*tli)->initLoopDetector();
@@ -485,7 +477,7 @@ Project::scheduleAllScenarios()
     for (ScenarioListIterator sli(scenarioList); *sli; ++sli)
     {
         if (DEBUGPS(1))
-            qDebug(i18n("Scheduling scenario '%1'...").arg((*sli)->getId()));
+            qDebug(i18n("Scheduling scenario '%1' ...").arg((*sli)->getId()));
         prepareScenario((*sli)->getSequenceNo() - 1);
         if (!schedule(0))
         {
@@ -629,40 +621,15 @@ Project::checkSchedule(int sc) const
 void
 Project::generateReports() const
 {
-    if (DEBUGPS(1))
-        qDebug("Generating reports...");
+    // Generate reports
+    for (QPtrListIterator<Report> ri(reports); *ri != 0; ++ri)
+    {
+        if (DEBUGPS(1))
+            qDebug(i18n("Generating report '%1' ...")
+                   .arg((*ri)->getFileName()));
 
-    // Generate task reports
-    for (QPtrListIterator<HTMLTaskReport> ri(htmlTaskReports); *ri != 0; ++ri)
         (*ri)->generate();
-
-    // Generate resource reports
-    for (QPtrListIterator<HTMLResourceReport> ri(htmlResourceReports); 
-         *ri != 0; ++ri)
-        (*ri)->generate();
-
-    // Generate account reports
-    for (QPtrListIterator<HTMLAccountReport> ri(htmlAccountReports); 
-         *ri != 0; ++ri)
-        (*ri)->generate();
-
-    // Generate calendar reports
-    for (QPtrListIterator<HTMLWeeklyCalendar> ri(htmlWeeklyCalendars); 
-         *ri != 0; ++ri)
-        (*ri)->generate();
-
-    // Generate status reports
-    for (QPtrListIterator<HTMLStatusReport> ri(htmlStatusReports); 
-         *ri != 0; ++ri)
-        (*ri)->generate();
-
-    /// Generate CSV task reports
-    for (QPtrListIterator<CSVTaskReport> ri(csvTaskReports); *ri != 0; ++ri)
-        (*ri)->generate();
-
-    // Generate export files
-    for (QPtrListIterator<ExportReport> ri(exportReports); *ri != 0; ++ri)
-        (*ri)->generate();
+    }
 
     if( xmlreport )
        xmlreport->generate();

@@ -33,7 +33,7 @@ public:
    ReportXML(Project* p, const QString& f, const QString& df, int dl);
    virtual ~ReportXML() { }
 
-   void generate();
+   bool generate();
 
    static QDomElement createXMLElem( QDomDocument& doc, const QString& name,
                      const QString& val );

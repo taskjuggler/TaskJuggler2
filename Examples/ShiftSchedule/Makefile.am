@@ -8,7 +8,7 @@ CLEANFILES = *.html *.tjx *.eps
 docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/$(TARGETNAME)
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(docprefix)
+	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)
 	$(INSTALL_DATA) $(srcdir)/*.html $(DESTDIR)$(docprefix)
 	$(INSTALL_DATA) $(srcdir)/*.tjp $(DESTDIR)$(docprefix)
 

@@ -6,7 +6,7 @@ SGMLSOURCES = taskjuggler.sgml changelog.sgml firstproject.sgml reference.sgml e
 CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.sgml example.sgml
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(docprefix)
+	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)
 	@if test "${HTMLMANUAL}" != "no" ; then \
 	  $(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(DESTDIR)$(docprefix);\
 	fi
@@ -33,6 +33,8 @@ taskjuggler/book1.html: $(SGMLSOURCES)
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test ${PSMANUAL} != "no" ; then \
 	  db2ps taskjuggler.sgml ;\
+	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
+	    CATALOG.local *.dsl ; \
 	fi
 
 tarball: 

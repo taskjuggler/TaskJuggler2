@@ -35,6 +35,13 @@ for f in *.tjp ; do
   fi
   echo $referenceFile created
 done
+cd ..
 
+cd CSV-Reports
+for f in *.tjp ; do
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.csv/g`
+  ../../taskjuggler/taskjuggler $f > $referenceFile || exit 1
+  echo $referenceFile created
+done
 cd ..
 

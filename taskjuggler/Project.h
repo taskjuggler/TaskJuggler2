@@ -30,16 +30,8 @@
 class QStringList;
 class QDomElement;
 
-class HTMLTaskReport;
-class HTMLResourceReport;
-class HTMLAccountReport;
-class HTMLWeeklyCalendar;
-class HTMLStatusReport;
-class CSVTaskReport;
-class CSVResourceReport;
-class CSVAccountReport;
-class ExportReport;
 class ReportXML;
+class Report;
 class Kotrus;
 class CustomAttributeDefinition;
 
@@ -683,46 +675,9 @@ public:
 
     void addXMLReport(ReportXML *r ) { xmlreport = r; }
 
-    void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
-
-    void addHTMLResourceReport(HTMLResourceReport* r)
+    void addReport(Report* r)
     {
-        htmlResourceReports.append(r);
-    }
-
-    void addHTMLAccountReport(HTMLAccountReport* a)
-    {
-        htmlAccountReports.append(a);
-    }
-
-    void addHTMLWeeklyCalendar(HTMLWeeklyCalendar* r)
-    {
-        htmlWeeklyCalendars.append(r);
-    }
-
-    void addHTMLStatusReport(HTMLStatusReport* r)
-    {
-        htmlStatusReports.append(r);
-    }
-
-    void addCSVTaskReport(CSVTaskReport* r)
-    {
-        csvTaskReports.append(r);
-    }
-
-    void addCSVResourceReport(CSVResourceReport* r)
-    {
-        csvResourceReports.append(r);
-    }
-
-    void addCSVAccountReport(CSVAccountReport* r)
-    {
-        csvAccountReports.append(r);
-    }
-
-    void addExportReport(ExportReport* e)
-    {
-        exportReports.append(e);
+        reports.append(r);
     }
 
     bool loadFromXML( const QString& file );
@@ -884,16 +839,8 @@ private:
     ReportICal *icalReport;
 #endif
 #endif
-   
-    QPtrList<HTMLTaskReport> htmlTaskReports;
-    QPtrList<HTMLResourceReport> htmlResourceReports;
-    QPtrList<HTMLAccountReport> htmlAccountReports;
-    QPtrList<HTMLWeeklyCalendar> htmlWeeklyCalendars;
-    QPtrList<HTMLStatusReport> htmlStatusReports;
-    QPtrList<CSVTaskReport> csvTaskReports;
-    QPtrList<CSVResourceReport> csvResourceReports;
-    QPtrList<CSVAccountReport> csvAccountReports;
-    QPtrList<ExportReport> exportReports;
+
+    QPtrList<Report> reports;   
 } ;
 
 #endif

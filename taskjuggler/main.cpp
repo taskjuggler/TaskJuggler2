@@ -17,6 +17,7 @@
 #include <qglobal.h>
 
 #include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "taskjuggler.h"
 #include "debug.h"
 #include "Project.h"
@@ -26,38 +27,51 @@
 TjMessageHandler TJMH(TRUE);
 
 void
+banner()
+{
+    qWarning(i18n(
+        "TaskJuggler v%1 - A Project Management Software").arg(VERSION));
+}
+
+void
 copyright()
 {
-    qWarning("TaskJuggler v%s - A Project Management Software\n"
-             "Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>\n"
-             "and Klaas Freitag <freitag@suse.de>\n\n"
-             "This program is free software; you can redistribute it and/or\n"
-             "modify it under the terms of version 2 of the GNU General\n"
-             "Public License as published by the Free Software Foundation.\n\n"
-             "For more information about TaskJuggler see \n%s\n",
-             VERSION, TJURL);
+    qWarning(i18n(
+        "\nCopyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>\n"
+        "and Klaas Freitag <freitag@suse.de>\n\n"
+        "This program is free software; you can redistribute it and/or\n"
+        "modify it under the terms of version 2 of the GNU General\n"
+        "Public License as published by the Free Software Foundation.\n\n"
+        "For more information about TaskJuggler see \n%1\n")
+             .arg(TJURL));
 }
 
 void 
 usage(QApplication& a)
 {
-    qWarning("Usage: %s [options] <filename1> [<filename2> ...]", a.argv()[0]);
-    qWarning(
+    qWarning(i18n(
+        "TaskJuggler must be called with at least one file that\n"
+        "contains the project description and the report definitions.\n"
+        "\n"
+        "Usage: %1 [options] <filename1> [<filename2> ...]")
+             .arg(a.argv()[0]));
+    qWarning(i18n(
         "   --help               - print this message\n"
         "   --version            - print the version and copyright info\n"
         "   -v                   - same as '--version'\n"
         "   -s                   - stop after syntax check\n"
         "   --nodepcheck         - don't search for dependency loops\n"
         "   --debug N            - print debug output, N must be between\n"
-        "                          0 and 4, the higher N the more output\n"
+        "                          0 and 40, the higher N the more output\n"
         "                          is printed\n"
         "   --dbmode N           - activate debug mode only for certain\n"
         "                          parts of the code\n"
         "   --updatedb           - update the Kotrus database with the\n"
-        "                          new resource usage information\n");
-    qWarning("To report bugs please follow the instructions in the manual\n"
-             "and send the information to the taskjuggler developer mailing\n"
-             "list at taskjuggler-devel@suse.de\n");
+        "                          new resource usage information\n"));
+    qWarning(i18n(
+        "To report bugs please follow the instructions in the manual\n"
+        "and send the information to the taskjuggler developer mailing\n"
+        "list at taskjuggler-devel@suse.de\n"));
 }
 
 int main(int argc, char *argv[])
@@ -115,7 +129,13 @@ int main(int argc, char *argv[])
     }
 
     if (showCopyright)
+    {
+        banner();
         copyright();
+    }
+    else if (debugLevel > 0)
+        banner();
+        
     if (showHelp)
         usage(a);
     if (terminateProgram)
@@ -129,8 +149,6 @@ int main(int argc, char *argv[])
     char cwd[1024];
     if (getcwd(cwd, 1023) == 0)
         qFatal("main(): getcwd() failed");
-    if (debugLevel >= 1)
-        qWarning("Reading input files...");
     Project p;
     for ( ; i < argc; i++)
     {

@@ -3019,14 +3019,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
     if (!checkReportInterval(tab))
         return FALSE;
     
-    if (reportType == KW("htmltaskreport"))
-        proj->addHTMLTaskReport((HTMLTaskReport*) report);
-    else if (reportType == KW("htmlresourcereport"))
-        proj->addHTMLResourceReport((HTMLResourceReport*) report);
-    else if (reportType == KW("htmlweeklycalendar"))
-        proj->addHTMLWeeklyCalendar((HTMLWeeklyCalendar*) report);
-    else if (reportType == KW("htmlaccountreport"))
-        proj->addHTMLAccountReport((HTMLAccountReport*) report);
+    proj->addReport(report);
 
     return TRUE;
 }
@@ -3123,7 +3116,7 @@ ProjectFile::readHTMLStatusReport()
     else
         returnToken(tt, token);
 
-    proj->addHTMLStatusReport(report);
+    proj->addReport(report);
 
     return TRUE;
 }
@@ -3383,12 +3376,7 @@ ProjectFile::readCSVReport(const QString& reportType)
     if (!checkReportInterval(tab))
         return FALSE;
     
-    if (reportType == KW("csvtaskreport"))
-        proj->addCSVTaskReport((CSVTaskReport*) report);
-    else if (reportType == KW("csvresourcereport"))
-        proj->addCSVResourceReport((CSVResourceReport*) report);
-    else if (reportType == KW("csvaccountreport"))
-        proj->addCSVAccountReport((CSVAccountReport*) report);
+    proj->addReport(report);
 
     return TRUE;
 }
@@ -3514,7 +3502,7 @@ ProjectFile::readExportReport()
     else
         returnToken(tt, token);
 
-    proj->addExportReport(report);
+    proj->addReport(report);
 
     return TRUE;
 }

@@ -147,6 +147,8 @@ public:
         return timeStamp;
     }
 
+    virtual bool generate() = 0;
+
 protected:
     Report() { }
 

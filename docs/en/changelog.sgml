@@ -531,6 +531,14 @@ tasks.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
+<listitem><para>A new class of reports has been added. CSV reports
+(Comma separated values) are usefull to import TaskJuggler reports
+into other productivity applications such as
+spreadsheets. The new reports are called <link
+linkend="csvtaskreport">csvtaskreport</link>, <link
+linkend="csvresourcereport">csvresourcereport</link> and <link
+linkend="csvaccountreport">csvaccountreport</link>.</para></listitem>
+
 <listitem><para>The <link linkend="export">export report</link>
 can now be a main project file as well.</para></listitem>
 

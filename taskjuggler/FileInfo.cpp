@@ -16,6 +16,7 @@
 #include "tjlib-internal.h"
 #include "FileInfo.h"
 #include "ProjectFile.h"
+#include "debug.h"
 
 FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp)
     : pf(p), taskPrefix(tp)
@@ -38,6 +39,9 @@ FileInfo::open()
             return FALSE;
         f = new QTextStream(fh, IO_ReadOnly);
     }
+
+    if (DEBUGLEVEL > 0)
+        qWarning(i18n("Processing file \'%1\'").arg(file));
 
     lineBuf = QString::null;
     currLine = 1;
