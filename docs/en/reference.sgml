@@ -1411,9 +1411,14 @@ to korganiser.</para>
 </simplelist></para>
 
 <para>Includes the specified file name as if its contents would be written
-instead of the include property. include commands can be used within
+instead of the include property.
+<computeroutput>include</computeroutput> commands can be used within
 global scope or between property declarations of tasks, resources, and
 accounts.</para>
+
+<para>For technical reasons you have to supply the optional pair of
+curly brackets if the include is followed immediately by a macro that
+is defined within the included file.</para>
 
 <para>Optional attributes:</para>
 
