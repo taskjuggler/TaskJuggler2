@@ -1,0 +1,35 @@
+project simple "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+	timezone "GMT"
+}
+
+task t1 "Task1" {
+  start 2000-01-01
+  length 10d
+}
+
+task m1 "Milestone1" {
+	depends !t1
+	milestone
+}
+
+task t2 "Task2" {
+  preceeds !m1
+  length 5d
+}
+
+task t3 "Task3" {
+  depends !m1
+	length 5d
+}
+
+htmltaskreport "TaskTree.html" {
+	columns name, start, end, daily
+}
+
+export "TaskTree-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+

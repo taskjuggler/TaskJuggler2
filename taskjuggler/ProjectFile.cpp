@@ -32,7 +32,15 @@
 (token == a) \
 { \
 	if ((tt = nextToken(token)) == DATE) \
+	{ \
+		if (date2time(token) < proj->getStart() || \
+			date2time(token) > proj->getEnd()) \
+		{ \
+			fatalError("Date is outside of project time frame"); \
+			return FALSE; \
+		} \
 		task->b(date2time(token)); \
+	} \
 	else \
 	{ \
 		fatalError("Date expected"); \
@@ -1590,8 +1598,12 @@ ProjectFile::readTaskBody(Task* task)
 			}	
 			else if (token == KW("include"))
 			{
-				if (!readInclude())
-					return FALSE;
+				fatalError("The 'include' attribute is no longer supported "
+						   "within tasks since it caused ambiguoties between "
+						   "flag declaration and flag attributes. Please use "
+						   "the 'taskprefix' attribute of 'include' ouside "
+						   "of tasks instead.");
+				return FALSE;
 			}
 			else
 			{

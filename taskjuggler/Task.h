@@ -277,6 +277,8 @@ public:
 	void propagateStart(bool safeMode = TRUE);
 	void propagateEnd(bool safeMode = TRUE);
 	void propagateInitialValues();
+	bool setRunaway(time_t date, int slotDuration);
+	bool isRunaway();
 
 	/**
 	 * @returns TRUE if the work planned for a day has been completed.
@@ -308,6 +310,8 @@ public:
 	void getSubTaskList(TaskList& tl);
 
 	bool isSubTask(Task* t);
+
+	void fatalError(const char* msg, ...) const;
 
 	void preparePlan();
 	void finishPlan();
@@ -350,7 +354,6 @@ private:
 	bool hasPlanEndDependency();
 	bool hasActualStartDependency();
 	bool hasActualEndDependency();
-	void fatalError(const char* msg, ...) const;
 
 	/// A longer description of the task.
 	QString note;
@@ -567,6 +570,10 @@ private:
 
 	/// This variable is set to true when the task has been scheduled.
 	bool schedulingDone;
+
+	/** This flag is set when the task does not fit into the project time
+	 * frame. */
+	bool runAway;
 
 	/// A list of all the resources booked for this task.
 	QPtrList<Resource> bookedResources;

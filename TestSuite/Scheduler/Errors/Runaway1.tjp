@@ -1,0 +1,21 @@
+project test "test" "$Id" 2000-01-01 2000-01-31
+
+task t1 "Task1" {
+	start 2000-01-01
+	length 5d
+}
+
+task t2 "Task2" {
+  start 2000-01-01
+	length 60d
+}
+
+task t3 "Task3" {
+	start 2000-01-01
+	length 10d
+}
+
+htmltaskreport "Runaway1.html" {
+	columns name, start, end, daily
+}
+

@@ -1,0 +1,47 @@
+task t1 "Task1" {
+  start 2000-01-01-00:00:00-+0000
+  end 2000-01-14-23:59:59-+0000
+  projectid simple
+}
+task t2 "Task2" {
+  start 2000-01-10-00:00:00-+0000
+  end 2000-01-14-23:59:59-+0000
+  projectid simple
+}
+task m1 "Milestone1" {
+  start 2000-01-15-00:00:00-+0000
+  end 2000-01-15-00:00:00-+0000
+  projectid simple
+  milestone 
+  depends t1, t2
+}
+task t3 "Task3" {
+  start 2000-01-15-00:00:00-+0000
+  end 2000-01-21-23:59:59-+0000
+  projectid simple
+  depends m1
+}
+supplement task t1 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t2 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task m1 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t3 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}

@@ -356,6 +356,10 @@ linkend="include_taskprefix">taskprefix</link> has been added to <link
 linkend="include">include</link>. This allows exported projects to be
 added at arbitrary points in the task tree.</para></listitem>
 
+<listitem><para>Include statements within tasks are no longer
+supported. They caused in ambiguous interpretation of
+'flags'.</para></listitem>
+
 <listitem><para>The optional attribute <link
 linkend="export_taskroot">taskroot</link> has been added to <link
 linkend="export">export</link>. This allows to export sub tasks of a
@@ -389,6 +393,10 @@ completely rewritten. Since it probably catches some more errors, you
 might have to fix your project now. Such cases would have resulted in
 wrong results anyhow. Lots of test cases have been added to the test
 suite to check the checker.</para></listitem>
+
+<listitem><para>The error reporting has been drastically improved. The
+messages should be more precise now and errors that are triggered by
+other errors should be not so promiment anymore.</para></listitem>
 
 </itemizedlist> </para>
 

@@ -248,10 +248,14 @@ Project::schedule()
 	bool done = FALSE;
 	time_t day;
 
+	/* Find all tasks than have enough information to be scheduled and sort
+	 * them into two lists; one list for all ASAP tasks and one list for all
+	 * ALAP tasks. */
 	updateActiveTaskList(sortedTasks);
-	for (day = start; !(activeAsap.isEmpty() && activeAlap.isEmpty()) &&
-		 day >= start && day < end; day += timeDelta)
+	for (day = start; !(activeAsap.isEmpty() && activeAlap.isEmpty()); )
 	{
+		if (debugLevel > 5)
+			qDebug("Scheduling slot %s", time2ISO(day).latin1());
 		timeDelta = scheduleGranularity;
 		do
 		{
@@ -264,41 +268,76 @@ Project::schedule()
 					break;	// Start with top priority tasks again.
 				}
 				if (t->needsEarlierTimeSlot(day + scheduleGranularity))
-					timeDelta = -scheduleGranularity;
-			}
-		} while (!done);
-
-		if (timeDelta < 0)
-			continue;
-		uint i = 0;
-		do
-		{
-			done = TRUE;
-			i = 0;
-			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
-			{
-				i++;
-				if (!t->schedule(day, scheduleGranularity))
 				{
-					done = FALSE;
-					break;	// Start with top priority tasks again.
+					if (debugLevel > 5)
+						qDebug("Scheduling backwards now");
+					timeDelta = -scheduleGranularity;
 				}
 			}
 		} while (!done);
-		if (i != activeAsap.count())
-			qFatal("activeAsap list corrupted");
+
+		if (timeDelta >= 0)
+		{
+			do
+			{
+				done = TRUE;
+				for (Task* t = activeAsap.first(); t != 0;
+					 t = activeAsap.next())
+				{
+					if (!t->schedule(day, scheduleGranularity))
+					{
+						done = FALSE;
+						break;	// Start with top priority tasks again.
+					}
+				}
+			} while (!done);
+		}
+		day += timeDelta;
+	
+		/* Runaway detection */
+		if (day < start)
+		{
+			if (debugLevel > 2)
+				qDebug("Scheduler ran over start of project");
+			
+			for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
+				if (t->setRunaway(day - timeDelta, scheduleGranularity))
+				{
+					if (debugLevel > 2)
+						qDebug("Marking task %s as runaway",
+							   t->getId().latin1());
+					error = TRUE;
+				}
+			day = start;
+		}
+		if (day >= end)
+		{
+			if (debugLevel > 2)
+				qDebug("Scheduler ran over end of project");
+			
+			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
+				if (t->setRunaway(day - timeDelta, scheduleGranularity))
+				{
+					if (debugLevel > 2)
+						qDebug("Marking task %s as runaway",
+							   t->getId().latin1());
+					error = TRUE;
+				}
+			day = end - scheduleGranularity;
+		}
 	}
 
-	if (!activeAsap.isEmpty() || !activeAlap.isEmpty())
-	{
-		for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
-			qWarning("Task %s does not fit into the project time frame",
-					 t->getId().latin1());
-		for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
-			qWarning("Task %s does not fit into the project time frame",
-					 t->getId().latin1());
-		error = TRUE;
-	}
+	if (error)
+		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
+			if (t->isRunaway())
+				if (t->getScheduling() == Task::ASAP)
+					t->fatalError(QString(
+						"End of task %1 does not fit into the project time "
+						"frame.").arg(t->getId()));
+				else
+					t->fatalError(QString(
+						"Start of task %1 does not fit into the project time "
+						"frame.").arg(t->getId()));
 
 	if (!checkSchedule())
 		error = TRUE;

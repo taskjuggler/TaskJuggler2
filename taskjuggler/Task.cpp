@@ -569,6 +569,53 @@ Task::propagateInitialValues()
 }
 
 bool
+Task::setRunaway(time_t date, int slotDuration)
+{
+	/* Only mark tasks that have been scheduled in the last timeslot */
+	if (scheduling == ASAP)
+	{	
+		if (debugLevel > 4)
+			qDebug("Task %s: lastSlot: %s, date + slotDuration - 1: %s",
+				   id.latin1(),
+				   time2ISO(lastSlot).latin1(),
+				   time2ISO(date + slotDuration - 1).latin1());
+		if (lastSlot == 0 || lastSlot > date + slotDuration - 1)
+			return FALSE;
+	}
+	else
+	{
+		if (debugLevel > 4)
+			qDebug("Task %s: lastSlot: %s, date: %s", id.latin1(),
+				   time2ISO(lastSlot).latin1(),
+				   time2ISO(date).latin1());
+		if (lastSlot == 0 || lastSlot > date)
+			return FALSE;
+	}
+
+	project->removeActiveTask(this);
+	runAway = TRUE;
+	if (scheduling == ASAP)
+		end = maxEnd + 1;
+	else
+		start = minStart - 1;
+
+	return TRUE;
+}
+
+bool
+Task::isRunaway()
+{
+	/* If a container task has runaway sub tasts, it is very likely that they
+	 * are the culprits. So we don't report such a container task as runaway.
+	 */
+	for (Task* t = subFirst(); t; t = subNext())
+		if (t->isRunaway())
+			return FALSE;
+	
+	return runAway;
+}
+
+bool
 Task::bookResources(time_t date, time_t slotDuration)
 {
 	bool allocFound = FALSE;
@@ -1372,6 +1419,18 @@ Task::preScheduleOk()
 bool
 Task::scheduleOk()
 {
+	if (runAway)
+		return FALSE;
+	
+	/* If any of the tasks is a runAway, we can safely surpress all other
+	 * error messages. */
+	for (Task* t = depends.first(); t; t = depends.next())
+		if (t->runAway)
+			return FALSE;
+	for (Task* t = preceeds.first(); t; t = preceeds.next())
+		if (t->runAway)
+			return FALSE;
+
 	if (!sub.isEmpty())
 	{
 		// All sub task must fit into their parent task.
@@ -1379,13 +1438,16 @@ Task::scheduleOk()
 		{
 			if (start > t->start)
 			{
-				fatalError("Task %s starts ealier than parent",
-						   t->id.latin1());
+				if (!t->runAway)
+					fatalError("Task %s starts ealier than parent",
+							   t->id.latin1());
 				return FALSE;
 			}
 			if (end < t->end)
 			{
-				fatalError("Task %s ends later than parent", t->id.latin1());
+				if (!t->runAway)
+					fatalError("Task %s ends later than parent",
+							   t->id.latin1());
 				return FALSE;
 			}
 		}
@@ -1455,7 +1517,7 @@ Task::scheduleOk()
 	}
 	// Check if all previous tasks end before start of this task.
 	for (Task* t = previous.first(); t != 0; t = previous.next())
-		if (t->end > start)
+		if (t->end > start && !t->runAway)
 		{
 			fatalError("Impossible dependency:\n"
 					   "Task %s ends at %s but needs to preceed\n"
@@ -1466,7 +1528,7 @@ Task::scheduleOk()
 		}
 	// Check if all following task start after this tasks end.
 	for (Task* t = followers.first(); t != 0; t = followers.next())
-		if (end > t->start)
+		if (end > t->start && !t->runAway)
 		{
 			fatalError("Impossible dependency:\n"
 					   "Task %s starts at %s but needs to follow\n"
@@ -1545,6 +1607,7 @@ Task::preparePlan()
 	effort = planEffort;
 	lastSlot = 0;
 	schedulingDone = FALSE;
+	runAway = FALSE;
 	bookedResources.clear();
 	bookedResources = planBookedResources;
 
@@ -1582,6 +1645,7 @@ Task::prepareActual()
 	effort = actualEffort;
 	lastSlot = 0;
 	schedulingDone = FALSE;
+	runAway = FALSE;
 	bookedResources.clear();
 	bookedResources = actualBookedResources;
 }
