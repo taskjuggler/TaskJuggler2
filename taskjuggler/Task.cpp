@@ -1671,7 +1671,8 @@ Task::preScheduleOk()
         project->convertToDailyLoad(project->getScheduleGranularity());
 
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
-        if ((*ali)->getLoad() < intervalLoad * 100.0)
+        if ((*ali)->getLoad() != 0 &&
+            (*ali)->getLoad() < intervalLoad * 100.0)
         {
             QPtrListIterator<Resource> rli((*ali)->getCandidatesIterator());
             errorMessage(i18n

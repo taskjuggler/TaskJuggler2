@@ -561,6 +561,16 @@ ones with intermixed uppercase letters.
 <computeroutput>isTaskOfProject</computeroutput> was added as new
 query function.</para></listitem>
 
+<listitem><para>The maximum allocation of a resource for a task is no
+longer limited by default. <link
+linkend="resource_maxeffort">maxeffort</link> now defaults to 0
+(unlimited) instead of 1.0 (8 hours per day). To have the same
+behaviour as in TaskJuggler 1.x version you need to specify
+<computeroutput>maxeffort 1.0</computeroutput> before any resource
+definition. This change was made since many users were confused when
+after increasing the daily working hours resources were still only
+allocated 8 hours per day.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

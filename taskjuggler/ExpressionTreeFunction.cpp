@@ -291,18 +291,18 @@ ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
                     "unknown '%1' scenario.")
                .arg(ops[0]->evalAsString(et)));
-    if (et->getCoreAttributes()->getProject()->getStart() >
-        ops[1]->evalAsTime(et) ||
-        et->getCoreAttributes()->getProject()->getEnd() <
-        ops[2]->evalAsTime(et) ||
-        ops[1]->evalAsTime(et) >= ops[2]->evalAsTime(et))
-    {
-        return 0;
-    }
+    time_t start = ops[1]->evalAsTime(et);
+    time_t end = ops[2]->evalAsTime(et);
+    if (et->getCoreAttributes()->getProject()->getStart() > start)
+        start = et->getCoreAttributes()->getProject()->getStart();
+    if (et->getCoreAttributes()->getProject()->getEnd() < end)
+        end = et->getCoreAttributes()->getProject()->getEnd();
+    if (start > end)
+        qFatal("ExpressionTreeFunction::isAllocated: start date "
+               "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(ops[1]->evalAsTime(et), 
-                                   ops[2]->evalAsTime(et)), 
+        (scenarioId, Interval(start, end), 
          QString::null);
 }
 
@@ -324,18 +324,18 @@ ExpressionTreeFunction::isAllocatedToProject(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isAllocatedToProject() "
                     "called for unknown '%1' scenario.")
                .arg(ops[1]->evalAsString(et)));
-    if (et->getCoreAttributes()->getProject()->getStart() >
-        ops[2]->evalAsTime(et) ||
-        et->getCoreAttributes()->getProject()->getEnd() <
-        ops[3]->evalAsTime(et) ||
-        ops[2]->evalAsTime(et) >= ops[3]->evalAsTime(et))
-    {
-        return 0;
-    }
+    time_t start = ops[2]->evalAsTime(et);
+    time_t end = ops[3]->evalAsTime(et);
+    if (et->getCoreAttributes()->getProject()->getStart() > start)
+        start = et->getCoreAttributes()->getProject()->getStart();
+    if (et->getCoreAttributes()->getProject()->getEnd() < end)
+        end = et->getCoreAttributes()->getProject()->getEnd();
+    if (start > end)
+        qFatal("ExpressionTreeFunction::isAllocatedToProject(): start date "
+               "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(ops[2]->evalAsTime(et), 
-                                   ops[3]->evalAsTime(et)), 
+        (scenarioId, Interval(start, end), 
          ops[0]->evalAsString(et));
 }
 
@@ -352,18 +352,18 @@ ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
     if (scenarioId < 0)
         qFatal(i18n("ExpressionTreeFunction::isplanallocated() called, but "
                     "there is no 'plan' scenario."));
-    if (et->getCoreAttributes()->getProject()->getStart() >
-        ops[1]->evalAsTime(et) ||
-        et->getCoreAttributes()->getProject()->getEnd() <
-        ops[2]->evalAsTime(et) ||
-        ops[1]->evalAsTime(et) >= ops[2]->evalAsTime(et))
-    {
-        return 0;
-    }
+    time_t start = ops[1]->evalAsTime(et);
+    time_t end = ops[2]->evalAsTime(et);
+    if (et->getCoreAttributes()->getProject()->getStart() > start)
+        start = et->getCoreAttributes()->getProject()->getStart();
+    if (et->getCoreAttributes()->getProject()->getEnd() < end)
+        end = et->getCoreAttributes()->getProject()->getEnd();
+    if (start > end)
+        qFatal("ExpressionTreeFunction::isPlanAllocated(): start date "
+               "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(ops[1]->evalAsTime(et), 
-                              ops[2]->evalAsTime(et)), 
+        (scenarioId, Interval(start, end), 
          ops[0]->evalAsString(et));
 }
 
@@ -379,18 +379,18 @@ ExpressionTreeFunction::isActualAllocated(const ExpressionTree* et,
     if (scenarioId < 0)
         qFatal("ExpressionTreeFunction::isactualallocated() called, but "
                "there is no 'actual' scenario.");
-    if (et->getCoreAttributes()->getProject()->getStart() >
-        ops[1]->evalAsTime(et) ||
-        et->getCoreAttributes()->getProject()->getEnd() <
-        ops[2]->evalAsTime(et) ||
-        ops[1]->evalAsTime(et) >= ops[2]->evalAsTime(et))
-    {
-        return 0;
-    }
+    time_t start = ops[1]->evalAsTime(et);
+    time_t end = ops[2]->evalAsTime(et);
+    if (et->getCoreAttributes()->getProject()->getStart() > start)
+        start = et->getCoreAttributes()->getProject()->getStart();
+    if (et->getCoreAttributes()->getProject()->getEnd() < end)
+        end = et->getCoreAttributes()->getProject()->getEnd();
+    if (start > end)
+        qFatal("ExpressionTreeFunction::isAccountAllocated(): start date "
+               "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(ops[1]->evalAsTime(et), 
-                                ops[2]->evalAsTime(et)), 
+        (scenarioId, Interval(start, end), 
          ops[0]->evalAsString(et));
 }
 

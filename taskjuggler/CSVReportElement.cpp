@@ -184,8 +184,7 @@ CSVReportElement::reportResourceLoad(double load, TableCellInfo* tci,
 }
 
 void
-CSVReportElement::reportCurrency(double value, TableCellInfo* tci, 
-                                  time_t iv_start)
+CSVReportElement::reportCurrency(double value, TableCellInfo* tci, time_t)
 {
     genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
 }

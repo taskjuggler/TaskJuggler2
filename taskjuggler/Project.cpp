@@ -90,7 +90,7 @@ Project::Project()
     now = time(0);
     
     minEffort = 0.0;
-    maxEffort = 1.0;
+    maxEffort = 0.0;
     rate = 0.0;
     currencyDigits = 3;
     kotrus = 0;

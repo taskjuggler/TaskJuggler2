@@ -225,6 +225,9 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
         return FALSE;
     }
 
+    if (maxEffort == 0.0 && loadFactor == 0)
+        return TRUE;
+
     // Now check that the resource is not overloaded on this day.
     time_t bookedTime = duration;
     time_t bookedTimeTask = duration;
@@ -272,19 +275,20 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
     }
     if (DEBUGRS(6))
     {
-        if (resourceLoad > maxEffort)
+        if (maxEffort > 0.0 && resourceLoad > maxEffort)
         {
             qDebug("  Resource %s overloaded (%f)", id.latin1(), resourceLoad);
             return FALSE;
         }
-        if (taskLoad > (loadFactor / 100.0))
+        if (loadFactor > 0 && taskLoad > (loadFactor / 100.0))
         {
             qDebug("  %s overloaded for task %s (%f)", id.latin1(),
                    t->getId().latin1(), loadFactor / 100.0);
             return FALSE;
         }
     }
-    return  resourceLoad <= maxEffort && taskLoad <= (loadFactor / 100.0);
+    return  (maxEffort == 0.0 || resourceLoad <= maxEffort) &&
+        (loadFactor == 0 || taskLoad <= (loadFactor / 100.0));
 }
 
 bool

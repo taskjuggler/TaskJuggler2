@@ -27,7 +27,7 @@
 */
 
 Allocation::Allocation(Resource *r) :
-    load(100), lockedResource(0)
+    load(0), lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
     candidates.append(r);

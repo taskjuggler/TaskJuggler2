@@ -39,6 +39,8 @@ shift s3 "Shift3" {
 	workinghours sun 0:00 - 6:00, 22:00 - 24:00
 }
 
+maxeffort 1.0
+
 resource r1 "Resource1" {
 	shift s1 2002-01-01-22:00 - 2002-01-08-22:00
 	vacation 2002-01-08-22:00 - 2002-01-10-22:00

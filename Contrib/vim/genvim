@@ -5,5 +5,5 @@ tr ' ' '\n' | grep '.*KW(".*").*' |\
 sed 's%.*KW("\(.*\)").*%syn keyword tjspkeyword \1%g' | sort -u > \
 center
 
-cat head.vim center tail.vim > tjsp.vim
+cat head.vim center tail.vim > tjp.vim
 

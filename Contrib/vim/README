@@ -18,9 +18,9 @@ To use them you need to add the following lines to the respective files:
        " [...]
        "
        " taskjuggler files
-       au! BufNewFile,BufRead *.tjsp,*tjp              set ft=tjsp
+       au! BufNewFile,BufRead *.tjp,*.tji,*.tjp              set ft=tjp
        augroup END
 
 
 ~/.vim/syntax.vim:
-       au! Syntax tjsp         so ~/.vim/tjsp.vim
+       au! Syntax tjp         so ~/.vim/tjp.vim
