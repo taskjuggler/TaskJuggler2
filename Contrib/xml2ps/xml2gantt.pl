@@ -426,7 +426,7 @@ sub _draw_task {
 #-- monate, wocjen, tage usw. malen
 sub _draw_grid {
     my $p = shift;
-    #-- wenn die project-laufzeit 14 tage über das ende des letzten tasks hinausgeht
+    #-- wenn die project-laufzeit 21 tage über das ende des letzten tasks hinausgeht
     #-- meckern wir mal rum ;)))
     my $last_task = $all_tasks[$#all_tasks];
     my $last_task_end = $last_task->h_planEnd;
@@ -437,8 +437,21 @@ sub _draw_grid {
     my $delta = Delta_Days($l_end_year, $l_end_month, $l_end_day,
                            $p_end_year, $p_end_month, $p_end_day);
     if ( $delta  > 21 ) {
-        my ($l_end_year, $l_end_month, $l_end_day) = Add_Delta_Days($l_end_year, $l_end_month, $l_end_day, 21);
+        my ($l_end_year, $l_end_month, $l_end_day) = Add_Delta_Days($l_end_year, $l_end_month, $l_end_day, 20);
         print "\n\tproject-end  : $project_end\n\tlast task-end: $last_task_end\n\tdelta is $delta days\n\tplease use $l_end_year-$l_end_month-$l_end_day as end of project for nice graph drawing ;)))\n";
+    }
+    #-- wenn der project-start 7 tage vor dem des ersten tasks liegt meckern wir mal rum ;)))
+    my $first_task = $all_tasks[0];
+    my $first_task_start = $first_task->h_planStart;
+        $first_task_start =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+    my ($f_start_year,
+        $f_start_month,
+        $f_start_day)   = split(/-/, $first_task_start);
+    my $first_delta = Delta_Days($p_start_year, $p_start_month, $p_start_day,
+                                 $f_start_year, $f_start_month, $f_start_day);
+    if ( $first_delta  > 7 ) {
+        my ($l_end_year, $l_end_month, $l_end_day) = Add_Delta_Days($f_start_year, $f_start_month, $f_start_day, -7);
+        print "\n\tproject-start  : $project_start\n\tfirst task-start: $first_task_start\n\tdelta is $first_delta days\n\tplease use $l_end_year-$l_end_month-$l_end_day as start of project for nice graph drawing ;)))\n";
     }
     for(my $i = 0; $i <= $project_days; $i++) {
         #-- bei welchem tag sind wir gerade
