@@ -40,7 +40,7 @@ void KtjTaskReport::generate()
 
 void KtjTaskReport::generatePrimaryRow( KtjReportView * parent, Task * task, int columns )
 {
-    kdDebug() << "Generating primary row, task: " << task->getName() << endl;
+    //kdDebug() << "Generating primary row, task: " << task->getName() << endl;
 
     TaskItem * item = new TaskItem( parent, task->getName(), // FIXME scenario
                                     KtjUtils::time_t2Q( task->getStart(0) ),
@@ -64,8 +64,8 @@ void KtjTaskReport::generatePrimaryRow( KtjReportView * parent, Task * task, int
 
 void KtjTaskReport::generateSecondaryRow( KListViewItem * parent, Task * task, Resource * res, int columns )
 {
-    kdDebug() << "  Generating secondary row, task: " << task->getName()
-              << " , resource: " << res->getName() << endl;
+    //kdDebug() << "  Generating secondary row, task: " << task->getName()
+    //          << " , resource: " << res->getName() << endl;
 
     ResourceItem * item = new ResourceItem( parent, res->getName() );
 
