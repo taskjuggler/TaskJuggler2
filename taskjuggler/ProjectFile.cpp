@@ -22,6 +22,7 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
+#include "Task.h"
 #include "Resource.h"
 #include "Account.h"
 #include "Token.h"
@@ -30,6 +31,18 @@
 #include "Allocation.h"
 #include "Booking.h"
 #include "kotrus.h"
+#include "HTMLTaskReport.h"
+#include "HTMLTaskReportElement.h"
+#include "HTMLResourceReport.h"
+#include "HTMLResourceReportElement.h"
+#include "HTMLAccountReport.h"
+#include "HTMLWeeklyCalendar.h"
+#include "HTMLStatusReport.h"
+#include "HTMLReportElement.h"
+#include "HTMLTaskReport.h"
+#include "ExportReport.h"
+#include "TableColumn.h"
+#include "ReportXML.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
@@ -410,11 +423,15 @@ ProjectFile::parse()
                break;
 #endif
             }
-            
+           
             else if (token == KW("htmltaskreport") ||
-                     token == KW("htmlresourcereport") ||
-                     token == KW("htmlweeklycalendar") ||
-                     token == KW("htmlstatusreport"))
+                     token == KW("htmlresourcereport"))
+            {
+               if (!readNewHTMLReport(token))
+                   return FALSE;
+               break;
+            }
+            else if (token == KW("htmlweeklycalendar"))
             {
                 if (!readHTMLReport(token))
                     return FALSE;
@@ -423,6 +440,12 @@ ProjectFile::parse()
             else if (token == KW("htmlaccountreport"))
             {
                 if (!readHTMLAccountReport())
+                    return FALSE;
+                break;
+            }
+            else if (token == KW("htmlstatusreport"))
+            {
+                if (!readHTMLStatusReport())
                     return FALSE;
                 break;
             }
@@ -2145,11 +2168,35 @@ ProjectFile::readXMLReport()
       errorMessage(i18n("File name expected"));
       return FALSE;
    }
-   ReportXML *rep = new ReportXML(proj, token, proj->getStart(),
-                                  proj->getEnd(), getFile(), getLine());
+   ReportXML *rep = new ReportXML(proj, token, getFile(), getLine());
    proj->addXMLReport( rep );
 
    return( true );
+}
+
+bool
+ProjectFile::checkReportInterval(ReportElement* tab)
+{
+    if (tab->getEnd() < tab->getStart())
+    {   
+        errorMessage(i18n("End date must be later than start date"));
+        return FALSE;
+    }
+    if (proj->getStart() > tab->getStart() ||
+        tab->getStart() > proj->getEnd())
+    {
+        errorMessage(i18n("Start date must be within the project time "
+                          "frame"));
+        return FALSE;
+    }
+    if (proj->getStart() > tab->getEnd() ||
+        tab->getEnd() > proj->getEnd())
+    {
+        errorMessage(i18n("End date must be within the project time frame"));
+        return FALSE;
+    }
+
+    return TRUE;
 }
 
 bool
@@ -2178,6 +2225,273 @@ ProjectFile::checkReportInterval(ReportHtml* report)
 }
 
 bool
+ProjectFile::readNewHTMLReport(const QString& reportType)
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return FALSE;
+    }
+    
+    HTMLReport* report = 0;
+    HTMLReportElement* tab = 0;
+    if (reportType == KW("htmltaskreport"))
+    {
+        report = new HTMLTaskReport(proj, token, getFile(), getLine());
+        tab = ((HTMLTaskReport*) report)->getTable();
+    }
+    else if (reportType == KW("htmlresourcereport"))
+    {
+        report = new HTMLResourceReport(proj, token, getFile(), getLine());
+        tab = ((HTMLResourceReport*) report)->getTable();
+    }
+/*    else if (reportType == KW("htmlweeklycalendar"))
+        report = new HTMLWeeklyCalendar(proj, token, getFile(), getLine());*/
+    else
+    {
+        qFatal("readNewHTMLReport: bad report type");
+        return FALSE;   // Just to please the compiler.
+    }
+        
+    TokenType tt;
+    if ((tt = nextToken(token)) == LCBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RCBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+            if (token == KW("columns"))
+            {
+                tab->clearColumns();
+                for ( ; ; )
+                {
+                    QString col;
+                    if ((tt = nextToken(col)) != ID)
+                    {
+                        errorMessage(i18n("Column ID expected"));
+                        return FALSE;
+                    }
+                    tab->addColumn(new TableColumn(col));
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("scenarios"))
+            {
+                tab->clearScenarios();
+                for ( ; ; )
+                {
+                    QString scId;
+                    if ((tt = nextToken(scId)) != ID)
+                    {
+                        errorMessage(i18n("Scenario ID expected"));
+                        return FALSE;
+                    }
+                    if (proj->getScenarioIndex(scId) == -1)
+                    {
+                        errorMessage(i18n("Unknown scenario %1")
+                                     .arg(scId));
+                        return FALSE;
+                    }
+                    tab->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("start"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                tab->setStart(date2time(token));
+            }
+            else if (token == KW("end"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                tab->setEnd(date2time(token) - 1);
+            }
+            else if (token == KW("headline"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                tab->setHeadline(token);
+            }
+            else if (token == KW("caption"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                tab->setCaption(token);
+            }
+            else if (token == KW("rawhead"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                tab->setRawHead(token);
+            }
+            else if (token == KW("rawtail"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                tab->setRawTail(token);
+            }
+            else if (token == KW("rawstylesheet"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                ((HTMLReport*) (tab->getReport()))->setRawStyleSheet(token);
+            }
+            else if (token == KW("showprojectids"))
+            {
+                tab->setShowPIDs(TRUE);
+            }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setRollUpTask(et);
+            }
+            else if (token == KW("sorttasks"))
+            {
+                if (!readSorting(tab, 0))
+                    return FALSE;
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setRollUpResource(et);
+            }
+            else if (token == KW("sortresources"))
+            {
+                if (!readSorting(tab, 1))
+                    return FALSE;
+            }
+            else if (token == KW("url"))
+            {
+                if (!readHtmlUrl(tab))
+                    return FALSE;
+            }
+            else if (token == KW("loadunit"))
+            {
+                if (nextToken(token) != ID || !tab->setLoadUnit(token))
+                {
+                    errorMessage(i18n("Illegal load unit"));
+                    return FALSE;
+                }
+            }
+            else if (token == KW("timeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                tab->setTimeFormat(token);
+            }
+            else if (token == KW("shorttimeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                tab->setShortTimeFormat(token);
+            }
+            else if (token == KW("barlabels"))
+            {
+                if (nextToken(token) != ID)
+                {
+                    errorMessage(i18n("Bar label mode expected"));
+                    return FALSE;
+                }
+                if (token == KW("empty"))
+                    tab->setBarLabels(HTMLReportElement::BLT_EMPTY);
+                else if (token == KW("load"))
+                    tab->setBarLabels(HTMLReportElement::BLT_LOAD);
+                else
+                {
+                    errorMessage(i18n("Unknown bar label mode '%1'")
+                                 .arg(token));
+                    return FALSE;
+                }
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    if (!checkReportInterval(tab))
+        return FALSE;
+    
+    if (reportType == KW("htmltaskreport"))
+        proj->addHTMLTaskReport((HTMLTaskReport*) report);
+    else if (reportType == KW("htmlresourcereport"))
+        proj->addHTMLResourceReport((HTMLResourceReport*) report);
+/*    else if (reportType == KW("htmlweeklycalendar"))
+        proj->addHTMLWeeklyCalendar((HTMLWeeklyCalendar*) report);*/
+
+    return TRUE;
+}
+
+bool
 ProjectFile::readHTMLReport(const QString& reportType)
 {
     QString token;
@@ -2188,18 +2502,8 @@ ProjectFile::readHTMLReport(const QString& reportType)
     }
     
     ReportHtml* report;
-    if (reportType == KW("htmltaskreport"))
-        report = new HTMLTaskReport(proj, token, proj->getStart(),
-                                    proj->getEnd(), getFile(), getLine());
-    else if (reportType == KW("htmlresourcereport"))
-        report = new HTMLResourceReport(proj, token, proj->getStart(),
-                                        proj->getEnd(), getFile(), getLine());
-    else if (reportType == KW("htmlweeklycalendar"))
-        report = new HTMLWeeklyCalendar(proj, token, proj->getStart(),
-                                        proj->getEnd(), getFile(), getLine());
-    else if (reportType == KW("htmlstatusreport"))
-        report = new HTMLStatusReport(proj, token, proj->getStart(),
-                                      proj->getEnd(), getFile(), getLine());
+    if (reportType == KW("htmlweeklycalendar"))
+        report = new HTMLWeeklyCalendar(proj, token, getFile(), getLine());
     else
     {
         qFatal("readHTMLReport: bad report type");
@@ -2230,6 +2534,29 @@ ProjectFile::readHTMLReport(const QString& reportType)
                         return FALSE;
                     }
                     report->addReportColumn(col);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("scenarios"))
+            {
+                for ( ; ; )
+                {
+                    QString scId;
+                    if ((tt = nextToken(scId)) != ID)
+                    {
+                        errorMessage(i18n("Scenario ID expected"));
+                        return FALSE;
+                    }
+                    if (proj->getScenarioIndex(scId) == -1)
+                    {
+                        errorMessage(i18n("Unknown scenario %1")
+                                     .arg(scId));
+                        return FALSE;
+                    }
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);
@@ -2412,14 +2739,8 @@ ProjectFile::readHTMLReport(const QString& reportType)
     if (!checkReportInterval(report))
         return FALSE;
     
-    if (reportType == KW("htmltaskreport"))
-        proj->addHTMLTaskReport((HTMLTaskReport*) report);
-    else if (reportType == KW("htmlresourcereport"))
-        proj->addHTMLResourceReport((HTMLResourceReport*) report);
-    else if (reportType == KW("htmlweeklycalendar"))
+    if (reportType == KW("htmlweeklycalendar"))
         proj->addHTMLWeeklyCalendar((HTMLWeeklyCalendar*) report);
-    else
-        proj->addHTMLStatusReport((HTMLStatusReport*) report);
 
     return TRUE;
 }
@@ -2435,151 +2756,269 @@ ProjectFile::readHTMLAccountReport()
     }
     
     HTMLAccountReport* report;
-    report = new HTMLAccountReport(proj, token, proj->getStart(),
-                                   proj->getEnd(), getFile(), getLine());
+    report = new HTMLAccountReport(proj, token, getFile(), getLine());
         
     TokenType tt;
-    if ((tt = nextToken(token)) != LCBRACE)
+    if ((tt = nextToken(token)) == LCBRACE)
     {
-        returnToken(tt, token);
-        return TRUE;
-    }
-
-    for ( ; ; )
-    {
-        if ((tt = nextToken(token)) == RCBRACE)
-            break;
-        else if (tt != ID)
+        for ( ; ; )
         {
-            errorMessage(i18n("Attribute ID or '}' expected"));
-            return FALSE;
-        }
-        if (token == KW("columns"))
-        {
-            report->clearColumns();
-            for ( ; ; )
+            if ((tt = nextToken(token)) == RCBRACE)
+                break;
+            else if (tt != ID)
             {
-                QString col;
-                if ((tt = nextToken(col)) != ID)
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+            if (token == KW("columns"))
+            {
+                report->clearColumns();
+                for ( ; ; )
                 {
-                    errorMessage(i18n("Column ID expected"));
+                    QString col;
+                    if ((tt = nextToken(col)) != ID)
+                    {
+                        errorMessage(i18n("Column ID expected"));
+                        return FALSE;
+                    }
+                    report->addReportColumn(col);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("scenarios"))
+            {
+                for ( ; ; )
+                {
+                    QString scId;
+                    if ((tt = nextToken(scId)) != ID)
+                    {
+                        errorMessage(i18n("Scenario ID expected"));
+                        return FALSE;
+                    }
+                    if (proj->getScenarioIndex(scId) == -1)
+                    {
+                        errorMessage(i18n("Unknown scenario %1")
+                                     .arg(scId));
+                        return FALSE;
+                    }
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("start"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
                     return FALSE;
                 }
-                report->addReportColumn(col);
-                if ((tt = nextToken(token)) != COMMA)
+                report->setStart(date2time(token));
+            }
+            else if (token == KW("end"))
+            {
+                if (nextToken(token) != DATE)
                 {
-                    returnToken(tt, token);
-                    break;
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
                 }
+                report->setEnd(date2time(token) - 1);
             }
-        }
-        else if (token == KW("start"))
-        {
-            if (nextToken(token) != DATE)
+            else if (token == KW("headline"))
             {
-                errorMessage(i18n("Date expected"));
-                return FALSE;
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                report->setHeadline(token);
             }
-            report->setStart(date2time(token));
-        }
-        else if (token == KW("end"))
-        {
-            if (nextToken(token) != DATE)
+            else if (token == KW("caption"))
             {
-                errorMessage(i18n("Date expected"));
-                return FALSE;
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                report->setCaption(token);
             }
-            report->setEnd(date2time(token) - 1);
-        }
-        else if (token == KW("headline"))
-        {
-            if (nextToken(token) != STRING)
+            else if (token == KW("hideplan"))
             {
-                errorMessage(i18n("String exptected"));
-                return FALSE;
+                report->setHidePlan(TRUE);
             }
-            report->setHeadline(token);
-        }
-        else if (token == KW("caption"))
-        {
-            if (nextToken(token) != STRING)
+            else if (token == KW("showactual"))
             {
-                errorMessage(i18n("String exptected"));
-                return FALSE;
+                report->setShowActual(TRUE);
             }
-            report->setCaption(token);
-        }
-        else if (token == KW("hideplan"))
-        {
-            report->setHidePlan(TRUE);
-        }
-        else if (token == KW("showactual"))
-        {
-            report->setShowActual(TRUE);
-        }
-        else if (token == KW("accumulate"))
-        {
-            report->setAccumulate(TRUE);
-        }
-        else if (token == KW("hideaccount"))
-        {
-            Operation* op;
-            if ((op = readLogicalExpression()) == 0)
-                return FALSE;
-            ExpressionTree* et = new ExpressionTree(op);
-            report->setHideAccount(et);
-        }
-        else if (token == KW("rollupaccount"))
-        {
-            Operation* op;
-            if ((op = readLogicalExpression()) == 0)
-                return FALSE;
-            ExpressionTree* et = new ExpressionTree(op);
-            report->setRollUpAccount(et);
-        }
-        else if (token == KW("sortaccounts"))
-        {
-            if (!readSorting(report, 2))
-                return FALSE;
-        }
-        else if (token == KW("rawhead"))
-        {
-            if (nextToken(token) != STRING)
+            else if (token == KW("accumulate"))
             {
-                errorMessage(i18n("String expected"));
-                return FALSE;
+                report->setAccumulate(TRUE);
             }
-            report->setRawHead(token);
-        }
-        else if (token == KW("rawtail"))
-        {
-            if (nextToken(token) != STRING)
+            else if (token == KW("hideaccount"))
             {
-                errorMessage(i18n("String expected"));
-                return FALSE;
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setHideAccount(et);
             }
-            report->setRawTail(token);
-        }
-        else if (token == KW("rawstylesheet"))
-        {
-            if (nextToken(token) != STRING)
+            else if (token == KW("rollupaccount"))
             {
-                errorMessage(i18n("String expected"));
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setRollUpAccount(et);
+            }
+            else if (token == KW("sortaccounts"))
+            {
+                if (!readSorting(report, 2))
+                    return FALSE;
+            }
+            else if (token == KW("rawhead"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawHead(token);
+            }
+            else if (token == KW("rawtail"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawTail(token);
+            }
+            else if (token == KW("rawstylesheet"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawStyleSheet(token);
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
                 return FALSE;
             }
-            report->setRawStyleSheet(token);
-        }
-        else
-        {
-            errorMessage(i18n("Illegal attribute"));
-            return FALSE;
         }
     }
+    else
+        returnToken(tt, token);
 
     if (!checkReportInterval(report))
         return FALSE;
     
     proj->addHTMLAccountReport(report);
+
+    return TRUE;
+}
+
+bool
+ProjectFile::readHTMLStatusReport()
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return FALSE;
+    }
+    
+    HTMLStatusReport* report;
+    report = new HTMLStatusReport(proj, token, getFile(), getLine());
+
+    TokenType tt;
+    if ((tt = nextToken(token)) == LCBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RCBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+            if (token == KW("table"))
+            {
+                if (nextToken(token) != INTEGER || token.toInt() < 1 ||
+                    token.toInt() > 4)
+                {
+                    errorMessage(i18n("Number between 1 and 4 expected"));
+                    return FALSE;
+                }
+                HTMLReportElement* tab = report->getTable(token.toInt() - 1);
+                if (!readReportElement(tab))
+                    return FALSE;
+            }
+            else if (token == KW("headline"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                report->setHeadline(token);
+            }
+            else if (token == KW("caption"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                report->setCaption(token);
+            }
+            else if (token == KW("rawhead"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawHead(token);
+            }
+            else if (token == KW("rawtail"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawTail(token);
+            }
+            else if (token == KW("rawstylesheet"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawStyleSheet(token);
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    proj->addHTMLStatusReport(report);
 
     return TRUE;
 }
@@ -2598,104 +3037,363 @@ ProjectFile::readExportReport()
     report = new ExportReport(proj, token, getFile(), getLine());
         
     TokenType tt;
-    if ((tt = nextToken(token)) != LCBRACE)
+    if ((tt = nextToken(token)) == LCBRACE)
     {
-        returnToken(tt, token);
-        return TRUE;
-    }
-
-    for ( ; ; )
-    {
-        if ((tt = nextToken(token)) == RCBRACE)
-            break;
-        else if (tt != ID)
+        for ( ; ; )
         {
-            errorMessage(i18n("Attribute ID or '}' expected"));
-            return FALSE;
-        }
-        
-        if (token == KW("hidetask"))
-        {
-            Operation* op;
-            if ((op = readLogicalExpression()) == 0)
-                return FALSE;
-            ExpressionTree* et = new ExpressionTree(op);
-            report->setHideTask(et);
-        }
-        else if (token == KW("rolluptask"))
-        {
-            Operation* op;
-            if ((op = readLogicalExpression()) == 0)
-                return FALSE;
-            ExpressionTree* et = new ExpressionTree(op);
-            report->setRollUpTask(et);
-        }
-        else if (token == KW("hideresource"))
-        {
-            Operation* op;
-            if ((op = readLogicalExpression()) == 0)
-                return FALSE;
-            ExpressionTree* et = new ExpressionTree(op);
-            report->setHideResource(et);
-        }
-        else if (token == KW("rollupresource"))
-        {
-            Operation* op;
-            if ((op = readLogicalExpression()) == 0)
-                return FALSE;
-            ExpressionTree* et = new ExpressionTree(op);
-            report->setRollUpResource(et);
-        }
-        else if (token == KW("taskroot"))
-        {
-            if ((tt = nextToken(token)) == ID ||
-                tt == ABSOLUTE_ID)
+            if ((tt = nextToken(token)) == RCBRACE)
+                break;
+            else if (tt != ID)
             {
-                if (!proj->getTask(token))
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+
+            if (token == KW("hidetask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setRollUpTask(et);
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                report->setRollUpResource(et);
+            }
+            else if (token == KW("taskroot"))
+            {
+                if ((tt = nextToken(token)) == ID ||
+                    tt == ABSOLUTE_ID)
                 {
-                    errorMessage(i18n("taskroot must be a known task"));
+                    if (!proj->getTask(token))
+                    {
+                        errorMessage(i18n("taskroot must be a known task"));
+                        return FALSE;
+                    }
+                    report->setTaskRoot(token + ".");
+                }
+                else
+                {
+                    errorMessage(i18n("Task ID expected"));
                     return FALSE;
                 }
-                report->setTaskRoot(token + ".");
+            }
+            else if (token == KW("taskattributes"))
+            {
+                for ( ; ; )
+                {
+                    QString ta;
+                    if (nextToken(ta) != ID ||
+                        !report->addTaskAttribute(ta))
+                    {
+                        errorMessage(i18n("task attribute expected"));
+                        return FALSE;
+                    }
+
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("showactual"))
+            {
+                report->setShowActual(TRUE);
             }
             else
             {
-                errorMessage(i18n("Task ID expected"));
+                errorMessage(i18n("Illegal attribute"));
                 return FALSE;
             }
         }
-        else if (token == KW("taskattributes"))
-        {
-            for ( ; ; )
-            {
-                QString ta;
-                if (nextToken(ta) != ID ||
-                    !report->addTaskAttribute(ta))
-                {
-                    errorMessage(i18n("task attribute expected"));
-                    return FALSE;
-                }
-
-                if ((tt = nextToken(token)) != COMMA)
-                {
-                    returnToken(tt, token);
-                    break;
-                }
-            }
-        }
-        else if (token == KW("showactual"))
-        {
-            report->setShowActual(TRUE);
-        }
-        else
-        {
-            errorMessage(i18n("Illegal attribute"));
-            return FALSE;
-        }
     }
+    else
+        returnToken(tt, token);
 
     proj->addExportReport(report);
 
+    return TRUE;
+}
+
+bool
+ProjectFile::readReportElement(ReportElement* el)
+{
+    QString token;
+    TokenType tt;
+    if ((tt = nextToken(token)) == LCBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RCBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+
+            if (token == KW("columns"))
+            {
+                el->clearColumns();
+                for ( ; ; )
+                {
+                    QString col;
+                    if ((tt = nextToken(col)) != ID)
+                    {
+                        errorMessage(i18n("Column ID expected"));
+                        return FALSE;
+                    }
+                    el->addColumn(new TableColumn(col));
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("scenarios"))
+            {
+                el->clearScenarios();
+                for ( ; ; )
+                {
+                    QString scId;
+                    if ((tt = nextToken(scId)) != ID)
+                    {
+                        errorMessage(i18n("Scenario ID expected"));
+                        return FALSE;
+                    }
+                    if (proj->getScenarioIndex(scId) == -1)
+                    {
+                        errorMessage(i18n("Unknown scenario %1")
+                                     .arg(scId));
+                        return FALSE;
+                    }
+                    el->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("start"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                el->setStart(date2time(token));
+            }
+            else if (token == KW("end"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                el->setEnd(date2time(token) - 1);
+            }
+            else if (token == KW("headline"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                el->setHeadline(token);
+            }
+            else if (token == KW("caption"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                el->setCaption(token);
+            }
+#if 0
+            else if (token == KW("rawhead"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                el->setRawHead(token);
+            }
+            else if (token == KW("rawtail"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                el->setRawTail(token);
+            }
+#endif
+            else if (token == "showactual")
+            {
+                errorMessage
+                    (i18n("The keyword 'showactual' has been deprecated."
+                          "Please use the keyword 'scenarios' instead."));
+            }
+            else if (token == KW("showprojectids"))
+            {
+                el->setShowPIDs(TRUE);
+            }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                el->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                el->setRollUpTask(et);
+            }
+            else if (token == KW("sorttasks"))
+            {
+                if (!readSorting(el, 0))
+                    return FALSE;
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                el->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                el->setRollUpResource(et);
+            }
+            else if (token == KW("sortresources"))
+            {
+                if (!readSorting(el, 1))
+                    return FALSE;
+            }
+#if 0
+            else if (token == KW("url"))
+            {
+                if (!readHtmlUrl(report))
+                    return FALSE;
+            }
+#endif
+            else if (token == KW("loadunit"))
+            {
+                if (nextToken(token) != ID || !el->setLoadUnit(token))
+                {
+                    errorMessage(i18n("Illegal load unit"));
+                    return FALSE;
+                }
+            }
+            else if (token == KW("timeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                el->setTimeFormat(token);
+            }
+            else if (token == KW("shorttimeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                el->setShortTimeFormat(token);
+            }
+#if 0
+            else if (token == KW("barlabels"))
+            {
+                if (nextToken(token) != ID)
+                {
+                    errorMessage(i18n("Bar label mode expected"));
+                    return FALSE;
+                }
+                if (token == KW("empty"))
+                    el->setBarLabels(ReportHtml::BLT_EMPTY);
+                else if (token == KW("load"))
+                    el->setBarLabels(ReportHtml::BLT_LOAD);
+                else
+                {
+                    errorMessage(i18n("Unknown bar label mode '%1'")
+                                 .arg(token));
+                    return FALSE;
+                }
+            }
+#endif
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    return TRUE;
+}
+
+bool
+ProjectFile::readHtmlUrl(ReportElement* tab)
+{
+    QString key;
+    QString url;
+
+    if (nextToken(key) != ID)
+    {
+        errorMessage(i18n("URL ID expected"));
+        return FALSE;
+    }
+    if (nextToken(url) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return FALSE;
+    }
+    // TODO: Fix this ugly hack.
+    if (!((HTMLReportElement*) tab)->setUrl(key, url))
+    {
+        errorMessage(i18n("Unknown URL ID"));
+        return FALSE;
+    }
     return TRUE;
 }
 
@@ -2857,6 +3555,50 @@ ProjectFile::readFunctionCall(const QString& name)
 }
 
 bool
+ProjectFile::readSorting(ReportElement* tab, int which)
+{
+    TokenType tt;
+    QString token;
+
+    int i = 0;
+    do
+    {
+        int sorting;
+        if (!readSortingMode(sorting))
+            return FALSE;
+
+        bool ok = TRUE;
+        switch (which)
+        {
+            case 0:
+                ok = tab->setTaskSorting(sorting, i);
+                break;
+            case 1:
+                ok = tab->setResourceSorting(sorting, i);
+                break;
+            case 2:
+                ok = tab->setAccountSorting(sorting, i);
+                break;
+            default:
+                qFatal("readSorting: Unknown sorting attribute");
+                return FALSE;
+        }
+        if (!ok)
+        {
+            errorMessage
+                (i18n("This sorting criteria is not supported for the list "
+                      "or it is used at the wrong position."));
+            return FALSE;
+        }
+        tt = nextToken(token);
+    } while (++i < CoreAttributesList::maxSortingLevel && tt == COMMA);
+
+    returnToken(tt, token);
+
+    return TRUE;
+}
+
+bool
 ProjectFile::readSorting(Report* report, int which)
 {
     TokenType tt;
@@ -2865,83 +3607,9 @@ ProjectFile::readSorting(Report* report, int which)
     int i = 0;
     do
     {
-        nextToken(token);
         int sorting;
-        if (token == KW("tree"))
-            sorting = CoreAttributesList::TreeMode;
-        else if (token == KW("sequenceup"))
-            sorting = CoreAttributesList::SequenceUp;
-        else if (token == KW("sequencedown"))
-            sorting = CoreAttributesList::SequenceDown;
-        else if (token == KW("indexup"))
-            sorting = CoreAttributesList::IndexUp;
-        else if (token == KW("indexdown"))
-            sorting = CoreAttributesList::IndexDown;
-        else if (token == KW("idup"))
-            sorting = CoreAttributesList::IdUp;
-        else if (token == KW("iddown"))
-            sorting = CoreAttributesList::IdDown;
-        else if (token == KW("fullnameup"))
-            sorting = CoreAttributesList::FullNameUp;
-        else if (token == KW("fullnamedown"))
-            sorting = CoreAttributesList::FullNameDown;
-        else if (token == KW("nameup"))
-            sorting = CoreAttributesList::NameUp;
-        else if (token == KW("namedown"))
-            sorting = CoreAttributesList::NameDown;
-        else if (token == KW("startup") || token == KW("planstartup"))
-            sorting = CoreAttributesList::StartUp;
-        else if (token == KW("startdown") || token == KW("planstartdown"))
-            sorting = CoreAttributesList::StartDown;
-        else if (token == KW("endup") || token == KW("planendup"))
-            sorting = CoreAttributesList::EndUp;
-        else if (token == KW("enddown") || token == KW("planenddown"))
-            sorting = CoreAttributesList::EndDown;
-        else if (token == KW("actualstartup"))
-            sorting = CoreAttributesList::StartUp + 0xFFFF;
-        else if (token == KW("actualstartdown"))
-            sorting = CoreAttributesList::StartDown + 0xFFFF;
-        else if (token == KW("actualendup"))
-            sorting = CoreAttributesList::EndUp + 0xFFFF;
-        else if (token == KW("actualenddown"))
-            sorting = CoreAttributesList::EndDown + 0xFFFF;
-        else if (token == KW("planstatusup"))
-            sorting = CoreAttributesList::StatusUp;
-        else if (token == KW("planstatusdown"))
-            sorting = CoreAttributesList::StatusDown;
-        else if (token == KW("plancompletedup"))
-            sorting = CoreAttributesList::CompletedUp;
-        else if (token == KW("plancompleteddown"))
-            sorting = CoreAttributesList::CompletedDown;
-        else if (token == KW("priorityup"))
-            sorting = CoreAttributesList::PrioUp;
-        else if (token == KW("prioritydown"))
-            sorting = CoreAttributesList::PrioDown;
-        else if (token == KW("responsibleup"))
-            sorting = CoreAttributesList::ResponsibleUp;
-        else if (token == KW("responsibledown"))
-            sorting = CoreAttributesList::ResponsibleDown;
-        else if (token == KW("mineffortup"))
-            sorting = CoreAttributesList::MinEffortUp;
-        else if (token == KW("mineffortdown"))
-            sorting = CoreAttributesList::MinEffortDown;
-        else if (token == KW("maxeffortup"))
-            sorting = CoreAttributesList::MaxEffortUp;
-        else if (token == KW("maxeffortdown"))
-            sorting = CoreAttributesList::MaxEffortDown;
-        else if (token == KW("rateup"))
-            sorting = CoreAttributesList::RateUp;
-        else if (token == KW("ratedown"))
-            sorting = CoreAttributesList::RateDown;
-        else if (token == KW("kotrusidup"))
-            sorting = CoreAttributesList::KotrusIdUp;
-        else if (token == KW("kotrusiddown"))
-            sorting = CoreAttributesList::KotrusIdDown;
-        else
-        {
-            errorMessage(i18n("Sorting criteria expected"));
+        if (!readSortingMode(sorting))
             return FALSE;
-        }
 
         bool ok = TRUE;
         switch (which)
@@ -2970,6 +3638,91 @@ ProjectFile::readSorting(Report* report, int which)
     } while (++i < CoreAttributesList::maxSortingLevel && tt == COMMA);
 
     returnToken(tt, token);
+
+    return TRUE;
+}
+
+bool
+ProjectFile::readSortingMode(int& sorting)
+{
+    QString token;
+
+    nextToken(token);
+    if (token == KW("tree"))
+        sorting = CoreAttributesList::TreeMode;
+    else if (token == KW("sequenceup"))
+        sorting = CoreAttributesList::SequenceUp;
+    else if (token == KW("sequencedown"))
+        sorting = CoreAttributesList::SequenceDown;
+    else if (token == KW("indexup"))
+        sorting = CoreAttributesList::IndexUp;
+    else if (token == KW("indexdown"))
+        sorting = CoreAttributesList::IndexDown;
+    else if (token == KW("idup"))
+        sorting = CoreAttributesList::IdUp;
+    else if (token == KW("iddown"))
+        sorting = CoreAttributesList::IdDown;
+    else if (token == KW("fullnameup"))
+        sorting = CoreAttributesList::FullNameUp;
+    else if (token == KW("fullnamedown"))
+        sorting = CoreAttributesList::FullNameDown;
+    else if (token == KW("nameup"))
+        sorting = CoreAttributesList::NameUp;
+    else if (token == KW("namedown"))
+        sorting = CoreAttributesList::NameDown;
+    else if (token == KW("startup") || token == KW("planstartup"))
+        sorting = CoreAttributesList::StartUp;
+    else if (token == KW("startdown") || token == KW("planstartdown"))
+        sorting = CoreAttributesList::StartDown;
+    else if (token == KW("endup") || token == KW("planendup"))
+        sorting = CoreAttributesList::EndUp;
+    else if (token == KW("enddown") || token == KW("planenddown"))
+        sorting = CoreAttributesList::EndDown;
+    else if (token == KW("actualstartup"))
+        sorting = CoreAttributesList::StartUp + 0xFFFF;
+    else if (token == KW("actualstartdown"))
+        sorting = CoreAttributesList::StartDown + 0xFFFF;
+    else if (token == KW("actualendup"))
+        sorting = CoreAttributesList::EndUp + 0xFFFF;
+    else if (token == KW("actualenddown"))
+        sorting = CoreAttributesList::EndDown + 0xFFFF;
+    else if (token == KW("planstatusup"))
+        sorting = CoreAttributesList::StatusUp;
+    else if (token == KW("planstatusdown"))
+        sorting = CoreAttributesList::StatusDown;
+    else if (token == KW("plancompletedup"))
+        sorting = CoreAttributesList::CompletedUp;
+    else if (token == KW("plancompleteddown"))
+        sorting = CoreAttributesList::CompletedDown;
+    else if (token == KW("priorityup"))
+        sorting = CoreAttributesList::PrioUp;
+    else if (token == KW("prioritydown"))
+        sorting = CoreAttributesList::PrioDown;
+    else if (token == KW("responsibleup"))
+        sorting = CoreAttributesList::ResponsibleUp;
+    else if (token == KW("responsibledown"))
+        sorting = CoreAttributesList::ResponsibleDown;
+    else if (token == KW("mineffortup"))
+        sorting = CoreAttributesList::MinEffortUp;
+    else if (token == KW("mineffortdown"))
+        sorting = CoreAttributesList::MinEffortDown;
+    else if (token == KW("maxeffortup"))
+        sorting = CoreAttributesList::MaxEffortUp;
+    else if (token == KW("maxeffortdown"))
+        sorting = CoreAttributesList::MaxEffortDown;
+    else if (token == KW("rateup"))
+        sorting = CoreAttributesList::RateUp;
+    else if (token == KW("ratedown"))
+        sorting = CoreAttributesList::RateDown;
+    else if (token == KW("kotrusidup"))
+        sorting = CoreAttributesList::KotrusIdUp;
+    else if (token == KW("kotrusiddown"))
+        sorting = CoreAttributesList::KotrusIdDown;
+    else
+    {
+        errorMessage(i18n("Sorting criteria expected"));
+        return FALSE;
+    }
 
     return TRUE;
 }

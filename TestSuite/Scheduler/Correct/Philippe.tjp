@@ -1,4 +1,4 @@
-project arc "Passage  sous Control-M" "1.0" 2002-07-15 2002-09-30 {
+project arc "Passage  sous Control-M" "1.0" 2002-07-15 2002-10-30 {
         now 2002-07-15
 }
 
@@ -47,6 +47,7 @@ task amelioration "Amelioration" {
         }
         task nomrex "Creation du nom du REX" {
                 effort 6h
+								actualeffort 12h
                 depends !gesttable
                 allocate Ekow {
                     alternative pmm
@@ -191,14 +192,14 @@ task validation "Validation des modifs" {
 task fini "Fini" {
 	milestone
 	depends !validation, !ctm, !amelioration
-  minstart 2002-09-12-14:00:00
+/*  minstart 2002-09-12-14:00:00
 	maxstart 2002-09-12-14:00:00
 	minend 2002-09-12-14:00:00
-	maxend 2002-09-12-14:00:00
+	maxend 2002-09-12-14:00:00 */
 }
 
 htmltaskreport "Philippe.html" {
   columns id, name, start, end, daily
-	showactual
+	scenarios plan, actual
 }
 

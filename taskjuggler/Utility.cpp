@@ -544,10 +544,7 @@ sameTimeNextWeek(time_t t)
         t = sameTimeNextDay(t);
         tms = clocaltime(&t);
     } while (tms->tm_wday != weekday);
-    struct tm tmc;
-    memcpy(&tmc, tms, sizeof(struct tm));
-    tmc.tm_isdst = -1;
-    return mktime(&tmc);
+    return t;
 }
 
 time_t
@@ -560,10 +557,7 @@ sameTimeLastWeek(time_t t)
         t = sameTimeYesterday(t);
         tms = clocaltime(&t);
     } while (tms->tm_wday != weekday);
-    struct tm tmc;
-    memcpy(&tmc, tms, sizeof(struct tm));
-    tmc.tm_isdst = -1;
-    return mktime(&tmc);
+    return t;
 }
 
 time_t

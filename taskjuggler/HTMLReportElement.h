@@ -13,101 +13,48 @@
 #ifndef _HTMLReportElement_h_
 #define _HTMLReportElement_h_
 
-#include <stdio.h>
-#include <time.h>
-
 #include <qstring.h>
-#include <qstringlist.h>
-#include <qcolor.h>
-#include <qtextstream.h>
 #include <qmap.h>
 
 #include "ReportElement.h"
 #include "HTMLPrimitives.h"
 #include "MacroTable.h"
-#include "taskjuggler.h"
 
 class Project;
 class Report;
 class ExpressionTree;
+class TableLineInfo;
 
 /**
- * @short Stores all information about an HTML report.
+ * @short Models the basic component of an HTML report.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class HTMLReportElement : public ReportElement, public HTMLPrimitives
 {
 public:
-    HTMLReportElement(Project* p, Report* r, const QString& df, int dl);
+    HTMLReportElement(Report* r, const QString& df, int dl);
     virtual ~HTMLReportElement() { }
 
     enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
 
-    void generatePlanTask(const Task* t, const Resource* r, uint no);
-    void generateActualTask(const Task* t, const Resource* r);
+    void generateTableHeader();
 
-    void generatePlanResource(const Resource* r, const Task* t, uint no);
-    void generateActualResource(const Resource* r, const Task* t);
+    void generateHeader();
+    void generateFooter();
 
-    void reportHTMLHeader();
-    void reportHTMLFooter();
+    void generateFirstTask(const Task* t, const Resource* r, uint no);
+    void generateNextTask(int sc, const Task* t, const Resource* r);
 
-    bool generateTableHeader();
-
-    void generateDepends(const Task* t, bool light);
-    void generateFollows(const Task* t, bool light);
-    void generateResponsibilities(const Resource* r, bool light);
-    void htmlDailyHeaderDays(bool highlightNow = TRUE);
-    void htmlDailyHeaderMonths();
-    void htmlWeeklyHeaderWeeks(bool highlightNow = TRUE);
-    void htmlWeeklyHeaderMonths();
-    void htmlMonthlyHeaderMonths(bool highlightNow = TRUE);
-    void htmlMonthlyHeaderYears();
-    void htmlQuarterlyHeaderQuarters(bool highlightNow = TRUE);
-    void htmlQuarterlyHeaderYears();
-    void htmlYearHeader();
-
-    void emptyPlan(bool light);
-    void emptyActual(bool light);
+    void generateFirstResource(const Resource* r, const Task* t, uint no);
+    void generateNextResource(int sc, const Resource* r, const Task* t);
 
     void textOneRow(const QString& text, bool light, const QString& align);
-    void textTwoRows(const QString& text, bool light, const QString& align);
+    void textMultiRows(const QString& text, bool light, const QString& align);
 
-    void dailyResourcePlan(const Resource* r, const Task* t);
-    void dailyResourceActual(const Resource* r, const Task* t);
-    void dailyTaskPlan(const Task* t, const Resource* r);
-    void dailyTaskActual(const Task* t, const Resource* r);
-
-    void weeklyResourcePlan(const Resource* r, const Task* t);
-    void weeklyResourceActual(const Resource* r, const Task* t);
-    void weeklyTaskPlan(const Task* t, const Resource* r);
-    void weeklyTaskActual(const Task* t, const Resource* r);
-
-    void monthlyResourcePlan(const Resource* r, const Task* t);
-    void monthlyResourceActual(const Resource* r, const Task* t);
-    void monthlyTaskPlan(const Task* t, const Resource* r);
-    void monthlyTaskActual(const Task* t, const Resource* r);
-
-    void taskName(const Task* t, const Resource* r, bool big);
-    void resourceName(const Resource* t, const Task* t, bool big);
-
-    void taskCostRev(const Task* t, const Resource* r, double val);
-    void resourceCostRev(const Task* t, const Resource* r, double val);
-
-    void taskLoadValue(const Task* t, const Resource* r, double val);
-    void resourceLoadValue(const Task* t, const Resource* r, double val);
-    
-    void scenarioResources(int sc, const Task* t, bool light);
+    void reportPIDs(const QString& pids, const QString bgCol, bool bold);
 
     void reportLoad(double load, const QString& bgcol, bool bold,
                     bool milestone = FALSE);
-    void reportPIDs(const QString& pids, const QString bgCol, bool bold);
-
-    void generateSchedule(int sc, const Resource* r, const Task* t);
-
-    void flagList(const CoreAttributes* c1, const CoreAttributes* c2);
-
-    void generateTaskStatus(TaskStatus status, bool light);
 
     void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
@@ -128,37 +75,77 @@ public:
         rawTail = tail;
     }
 
-    void setRawStyleSheet(const QString& styleSheet)
-    {
-        rawStyleSheet = styleSheet;
-    }
-    
+    virtual void genHeadDefault(TableColumnFormat* tcf);
+    virtual void genHeadCurrency(TableColumnFormat* tcf);
+    virtual void genHeadDaily1(TableColumnFormat* tcf);
+    virtual void genHeadDaily2(TableColumnFormat* tcf);
+    virtual void genHeadWeekly1(TableColumnFormat* tcf);
+    virtual void genHeadWeekly2(TableColumnFormat* tcf);
+    virtual void genHeadMonthly1(TableColumnFormat* tcf);
+    virtual void genHeadMonthly2(TableColumnFormat* tcf);
+    virtual void genHeadQuarterly1(TableColumnFormat* tcf);
+    virtual void genHeadQuarterly2(TableColumnFormat* tcf);
+    virtual void genHeadYear(TableColumnFormat* tcf);
+   
+    virtual void genCellEmpty(TableLineInfo*); 
+    virtual void genCellSequenceNo(TableLineInfo* tli);
+    virtual void genCellNo(TableLineInfo* tli);
+    virtual void genCellIndex(TableLineInfo* tli);
+    virtual void genCellId(TableLineInfo* tli);
+    virtual void genCellName(TableLineInfo* tli);
+    virtual void genCellStart(TableLineInfo* tli);
+    virtual void genCellEnd(TableLineInfo* tli);
+    virtual void genCellMinStart(TableLineInfo* tli);
+    virtual void genCellMaxStart(TableLineInfo* tli);
+    virtual void genCellMinEnd(TableLineInfo* tli);
+    virtual void genCellMaxEnd(TableLineInfo* tli);
+    virtual void genCellStartBuffer(TableLineInfo* tli);
+    virtual void genCellEndBuffer(TableLineInfo* tli);
+    virtual void genCellStartBufferEnd(TableLineInfo* tli);
+    virtual void genCellEndBufferStart(TableLineInfo* tli);
+    virtual void genCellDuration(TableLineInfo* tli);
+    virtual void genCellEffort(TableLineInfo* tli);
+    virtual void genCellProjectId(TableLineInfo* tli);
+    virtual void genCellResources(TableLineInfo* tli);
+    virtual void genCellResponsible(TableLineInfo* tli);
+    virtual void genCellNote(TableLineInfo* tli);
+    virtual void genCellStatusNote(TableLineInfo* tli);
+    virtual void genCellCost(TableLineInfo* tli);
+    virtual void genCellRevenue(TableLineInfo* tli);
+    virtual void genCellProfit(TableLineInfo* tli);
+    virtual void genCellPriority(TableLineInfo* tli);
+    virtual void genCellFlags(TableLineInfo* tli);
+    virtual void genCellCompleted(TableLineInfo* tli);
+    virtual void genCellStatus(TableLineInfo* tli);
+    virtual void genCellReference(TableLineInfo* tli);
+    virtual void genCellScenario(TableLineInfo* tli);
+    virtual void genCellDepends(TableLineInfo* tli);
+    virtual void genCellFollows(TableLineInfo* tli);
+    virtual void genCellDailyTask(TableLineInfo* tli);
+    virtual void genCellDailyResource(TableLineInfo* tli);
+    virtual void genCellWeeklyTask(TableLineInfo* tli);
+    virtual void genCellWeeklyResource(TableLineInfo* tli);
+    virtual void genCellMonthlyTask(TableLineInfo* tli);
+    virtual void genCellMonthlyResource(TableLineInfo* tli);
+    virtual void genCellResponsibilities(TableLineInfo* tli);
+    virtual void genCellSchedule(TableLineInfo* tli);
+    virtual void genCellMinEffort(TableLineInfo* tli);
+    virtual void genCellMaxEffort(TableLineInfo* tli);
+    virtual void genCellRate(TableLineInfo* tli);
+    virtual void genCellKotrusId(TableLineInfo* tli);
 
 protected:
     HTMLReportElement() { }
 
     QString generateUrl(const QString& key, const QString& txt);
+    void generateRightIndented(TableLineInfo* tli, const QString str);
 
     MacroTable mt;
-
-    uint colDefault;
-    uint colDefaultLight;
-    uint colWeekend;
-    uint colVacation;
-    uint colAvailable;
-    uint colBooked;
-    uint colBookedLight;
-    uint colHeader;
-    uint colMilestone;
-    uint colCompleted;
-    uint colCompletedLight;
-    uint colToday;
 
     BarLabelText barLabels;
 
     QString rawHead;
     QString rawTail;
-    QString rawStyleSheet;
 
     QMap<QString, QString> urls;
 } ;

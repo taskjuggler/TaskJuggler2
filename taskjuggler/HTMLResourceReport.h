@@ -13,23 +13,28 @@
 #ifndef _HTMLResourceReport_h_
 #define _HTMLResourceReport_h_
 
-#include <Report.h>
+#include "HTMLReport.h"
+
+class Project;
+class HTMLResourceReportElement;
 
 /**
  * @short Stores all information about an HTML resource report.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class HTMLResourceReport : public ReportHtml
+class HTMLResourceReport : public HTMLReport
 {
 public:
-    HTMLResourceReport(Project* p, const QString& f, time_t s, time_t e,
-                       const QString& df, int dl);
+    HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLResourceReport() { }
 
     bool generate();
+    HTMLResourceReportElement* getTable() { return tab; }
 
 private:
     HTMLResourceReport() { }
+
+    HTMLResourceReportElement* tab;
 } ;
 
 #endif

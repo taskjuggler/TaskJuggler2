@@ -9,11 +9,15 @@
  *
  * $Id$
  */
-#ifndef __ALLOCATION_H
-#define __ALLOCATION_H
+#ifndef _Allocation_h_
+#define _Allocation_h_
+
+#include <qdom.h>
 
 #include "ShiftSelectionList.h"
 #include "ShiftSelection.h"
+
+class Resource;
 
 class Allocation
 {

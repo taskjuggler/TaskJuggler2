@@ -29,6 +29,7 @@ class ExpressionTree
 {
 public:
     ExpressionTree(const Operation* op);
+    ExpressionTree(const ExpressionTree& et);
     ~ExpressionTree();
 
     long evalAsInt(const CoreAttributes* c);

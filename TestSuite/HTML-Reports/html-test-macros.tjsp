@@ -3,7 +3,7 @@ macro AllColumns [
 	endbufferstart, flags, follows, id, index, kotrusid, maxeffort,
 	maxend, maxstart, mineffort, minend, minstart, name, no, note,
 	priority, profit, projectid, rate, reference, resources,
-	responsibilities, responsible, revenue, seqno, start,
+	responsibilities, responsible, revenue, scenario, seqno, start,
 	startbuffer, startbufferend, status, daily, weekly, monthly
 ]
 

@@ -1,5 +1,5 @@
 /*
- * ProjectFile.cpp - TaskJuggler
+ * VacationList.h - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
@@ -15,29 +15,11 @@
 
 #include "time.h"
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 
-#include "Interval.h"
-
-/**
- * @short An interval with a name.
- * @author Chris Schlaeger <cs@suse.de>
- */
-class VacationInterval : public Interval
-{
-public:
-    VacationInterval() { }
-
-    VacationInterval(const QString& n, const Interval& i)
-        : Interval(i), name(n) { }
-    virtual ~VacationInterval() { }
-
-    const QString& getName() const { return name; }
-
-private:
-    QString name;
-} ;
+class Interval;
+class VacationInterval;
 
 /**
  * @short A list of vacations.
@@ -49,10 +31,7 @@ public:
     VacationList() { setAutoDelete(TRUE); }
     virtual ~VacationList() {}
 
-    void add(const QString& name, const Interval& i)
-    {
-        inSort(new VacationInterval(name, i));
-    }
+    void add(const QString& name, const Interval& i);
     bool isVacation(time_t date) const;
 
 protected:

@@ -1,4 +1,6 @@
-project prj "htmltaskreport test" "1.0" 2003-01-01-0:00-GMT 2003-04-01-00:00-GMT {
+macro prjStart [ 2003-01-01-0:00-GMT ]
+macro prjEnd [2003-04-01-0:00-GMT ]
+project prj "htmltaskreport test" "$Id$" ${prjStart}  ${prjEnd} {
 	timezone "GMT"
   timeformat "%Y-%m-%d %H:%M:%S %Z"	
 	now 2003-02-01
@@ -62,8 +64,18 @@ task t1 "Task 1" {
 	}
 }
 
-htmlstatusreport "." 
-/*{
-	headline "Weekly status report"
-	caption "Put some meaningless words here to please your boss."
-}*/
+htmlstatusreport "." {
+	headline "The big headline"
+	caption "The big caption"
+	rawhead "<h1>Some raw HTML stuff as head.</h1>"
+	rawtail "<h1>Some raw HTML stuff as tail.</h1>"
+	table 1 {
+		headline "This is the headline of the first table."
+		caption "This is the caption of the first table."
+		sorttasks indexup
+		hidetask 0
+	}
+	table 2 {
+		columns seqno, name, cost, weekly
+	}
+}

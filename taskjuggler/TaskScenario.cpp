@@ -11,6 +11,7 @@
  */
 
 #include "Resource.h"
+#include "Interval.h"
 #include "TaskScenario.h"
 #include "Task.h"
 #include "Project.h"

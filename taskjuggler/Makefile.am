@@ -5,7 +5,6 @@ noinst_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp TjMessageHandler.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
-TaskResourceTable.cpp \
 Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \
 BookingList.cpp TransactionList.cpp \
@@ -16,9 +15,11 @@ ScenarioList.cpp Scenario.cpp \
 TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
-HTMLPrimitives.cpp \
-ReportElement.cpp HTMLReportElement.cpp \
-HTMLTaskReport.cpp HTMLResourceReport.cpp HTMLAccountReport.cpp \
+HTMLPrimitives.cpp TableColumnFormat.cpp \
+ReportElement.cpp HTMLReport.cpp HTMLReportElement.cpp \
+HTMLTaskReport.cpp HTMLTaskReportElement.cpp \
+HTMLResourceReport.cpp HTMLResourceReportElement.cpp \
+HTMLAccountReport.cpp \
 HTMLStatusReport.cpp HTMLWeeklyCalendar.cpp ReportHtml.cpp \
 ExportReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp

@@ -1,7 +1,7 @@
 /*
  * HTMLStatusReport.h - TaskJuggler
  *
- * Copyright (c) 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -13,31 +13,34 @@
 #ifndef _HTMLStatusReport_h_
 #define _HTMLStatusReport_h_
 
-#include "ReportHtml.h"
+#include "HTMLReport.h"
 
 class Project;
 class TaskList;
-class TaskResourceTable;
+class HTMLReportElement;
 
-class HTMLStatusReport : public ReportHtml
+/**
+ * @short A class that generates HTML status reports. 
+ * @author Chris Schlaeger <cs@suse.de>
+ */
+class HTMLStatusReport : public HTMLReport
 {
 public:
-    HTMLStatusReport(Project* p, const QString& f, time_t s, time_t e,
-                       const QString& df, int dl);
+    HTMLStatusReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLStatusReport();
 
-    void setTable(int tab, TaskResourceTable* tp);
-    TaskResourceTable* getTable(int tab) const;
+    void setTable(int tabIdx, HTMLReportElement* tab);
+    HTMLReportElement* getTable(int tabIdx) const;
 
     bool generate();
 
 private:
     HTMLStatusReport() { }  // don't call this directly
 
-    bool generateTable(TaskList& filteredTaskList,
-                       ResourceList& filteredResourceList);
+    bool generateTable(HTMLReportElement* tab);
 
-    TaskResourceTable* tables[4];
+    static const int tablesCount = 4;
+    HTMLReportElement* tables[tablesCount];
 } ;
 
 #endif

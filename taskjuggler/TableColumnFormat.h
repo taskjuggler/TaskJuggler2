@@ -1,0 +1,55 @@
+/*
+ * TableColumnFormat.h - TaskJuggler
+ *
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
+
+#ifndef _TableColumnFormat_h_
+#define _TableColumnFormat_h_
+
+#include <qstring.h>
+
+#include "TableColumnFormat.h"
+
+class ReportElement;
+class TableColumnFormat;
+class TableLineInfo;
+
+typedef void (ReportElement::*GenHeadPtr) (TableColumnFormat*);
+typedef void (ReportElement::*GenCellPtr) (TableLineInfo*);
+
+/**
+ * @short Stores the format information of a table column.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
+class TableColumnFormat
+{
+public:
+    TableColumnFormat(ReportElement* e, const QString& t);
+    ~TableColumnFormat() { }
+
+    const QString& getTitle() const { return title; }
+
+    GenHeadPtr genHeadLine1;
+    GenHeadPtr genHeadLine2;
+
+    GenCellPtr genTaskLine1;
+    GenCellPtr genTaskLine2;
+    GenCellPtr genResourceLine1;
+    GenCellPtr genResourceLine2;
+
+protected:
+    TableColumnFormat() { }
+    
+    ReportElement* el;
+    QString title;
+} ;
+
+#endif
+

@@ -20,7 +20,7 @@
 #include <qstringlist.h>
 #include <qcolor.h>
 #include <qtextstream.h>
-
+#include <qdom.h>
 
 #include "Report.h"
 
@@ -30,8 +30,7 @@ class ExpressionTree;
 class ReportXML : public Report
 {
 public:
-   ReportXML(Project* p, const QString& f, time_t s, time_t e,
-             const QString& df, int dl);
+   ReportXML(Project* p, const QString& f, const QString& df, int dl);
    virtual ~ReportXML() { }
 
    void generate();

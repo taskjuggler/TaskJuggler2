@@ -14,14 +14,20 @@
 
 #include "Resource.h"
 #include "Project.h"
+#include "Interval.h"
+#include "VacationInterval.h"
 #include "ShiftSelection.h"
 #include "Booking.h"
 #include "BookingList.h"
 #include "SbBooking.h"
 #include "Account.h"
+#include "Task.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "kotrus.h"
+#include "debug.h"
+#include "ReportXML.h"
+
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
  * division. We therefor use a buffer that stores the index of the

@@ -37,8 +37,7 @@ class ExpressionTree;
 class ReportHtml : public Report, public HTMLPrimitives
 {
 public:
-    ReportHtml(Project* p, const QString& f, time_t s, time_t e,
-               const QString& df, int dl);
+    ReportHtml(Project* p, const QString& f, const QString& df, int dl);
     virtual ~ReportHtml() { }
 
     enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };

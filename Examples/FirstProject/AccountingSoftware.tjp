@@ -219,7 +219,7 @@ htmltaskreport "Tasks-Details.html" {
 	# Don't hide any resources, that is show them all.
   hideresource 0
 	# And show the actual scenario values as well.
-  showactual
+	scenarios plan, actual
 }
 
 # The previous report listed the resources per task. Now we generate a
@@ -228,7 +228,7 @@ htmlresourcereport "Staff-Overview.html" {
 	${navbar}
 	# Add a column with the total effort per task.
   columns no, name, weekly, effort
-	showactual
+  scenarios plan, actual	
 	# Since we want to see the load values as hours per week, we switch
 	# the unit loads are reported in to hours.
 	loadunit hours
@@ -266,7 +266,8 @@ htmlaccountreport "Accounting.html" { ${navbar}
 	Software Project."
 	# Since this is a cashflow calculation we show accumulated values
 	# per account.
-	accumulate showactual 
+	accumulate
+ 	scenarios plan, actual 
 }
 
 # Finally we generate an XML report that contains all info about the

@@ -12,9 +12,11 @@
 
 #include <config.h>
 
+#include "ReportHtml.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
+#include "Task.h"
 #include "Resource.h"
 #include "Report.h"
 #include "Booking.h"
@@ -24,9 +26,8 @@
 
 #define KW(a) a
 
-ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e,
-                       const QString& df, int dl) :
-   Report(p, f, s, e, df, dl)
+ReportHtml::ReportHtml(Project* p, const QString& f, const QString& df, int dl) :
+   Report(p, f, df, dl)
 {
     colDefault = 0xf3ebae;
     colDefaultLight = 0xfffadd;

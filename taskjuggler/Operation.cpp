@@ -14,6 +14,20 @@
 #include "ExpressionTree.h"
 #include "Utility.h"
 
+Operation::Operation(const Operation& op)
+{
+    opt = op.opt;
+    value = op.value;
+    name = op.name;
+    opsCount = op.opsCount;
+    if (opsCount > 0)
+    {
+        ops = new Operation*[opsCount];
+        for (int i = 0; i < opsCount; ++i)
+            ops[i] = new Operation(*op.ops[i]);
+    }
+}
+
 Operation::~Operation()
 {
     for (int i = 0 ; i < opsCount; ++i)

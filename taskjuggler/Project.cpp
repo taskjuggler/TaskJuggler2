@@ -16,6 +16,7 @@
 #include <qdom.h>
 #include <qdict.h>
 
+#include "Interval.h"
 #include "Project.h"
 #include "debug.h"
 #include "TjMessageHandler.h"
@@ -23,8 +24,17 @@
 #include "Scenario.h"
 #include "Shift.h"
 #include "Account.h"
+#include "Task.h"
 #include "Resource.h"
 #include "Utility.h"
+#include "VacationInterval.h"
+#include "HTMLTaskReport.h"
+#include "HTMLResourceReport.h"
+#include "HTMLAccountReport.h"
+#include "HTMLWeeklyCalendar.h"
+#include "HTMLStatusReport.h"
+#include "ExportReport.h"
+#include "ReportXML.h"
 #include "kotrus.h"
 
 DebugController DebugCtrl;
@@ -115,25 +125,39 @@ Project::~Project()
 }
 
 Scenario*
-Project::getScenario(int sc)
+Project::getScenario(int sc) const
 {
-    return scenarioList.at(sc);
+    int i = 0;
+    for (ScenarioListIterator sli(scenarioList); sli; ++sli)
+        if (i++ == sc)
+            return *sli;
+    return 0;
 }
 
 const QString&
-Project::getScenarioName(int sc)
+Project::getScenarioName(int sc) const
 {
-    return scenarioList.at(sc)->getName();
+    int i = 0;
+    for (ScenarioListIterator sli(scenarioList); sli; ++sli)
+        if (i++ == sc)
+            return (*sli)->getName();
+
+    return QString::null;
 }
 
 const QString&
-Project::getScenarioId(int sc)
+Project::getScenarioId(int sc) const
 {
-    return scenarioList.at(sc)->getId();
+    int i = 0;
+    for (ScenarioListIterator sli(scenarioList); sli; ++sli)
+        if (i++ == sc)
+            return (*sli)->getId();
+
+    return QString::null;
 }
 
 int
-Project::getScenarioIndex(const QString& id)
+Project::getScenarioIndex(const QString& id) const
 {
     return scenarioList.getIndex(id);
 }
@@ -224,6 +248,13 @@ Project::deleteAccount(Account* a)
     accountList.removeRef(a);
 }
 
+bool
+Project::isWorkingDay(time_t d) const
+{
+    return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || 
+             isVacation(d));
+}
+
 int
 Project::calcWorkingDays(const Interval& iv) const
 {
@@ -235,6 +266,12 @@ Project::calcWorkingDays(const Interval& iv) const
             workingDays++;
 
     return workingDays;
+}
+
+double 
+Project::convertToDailyLoad(long secs) const
+{
+    return ((double) secs / (dailyWorkingHours * ONEHOUR));
 }
 
 bool

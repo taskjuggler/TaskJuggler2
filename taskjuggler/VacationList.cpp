@@ -11,6 +11,13 @@
  */
 
 #include "VacationList.h"
+#include "VacationInterval.h"
+
+void 
+VacationList::add(const QString& name, const Interval& i)
+{
+    inSort(new VacationInterval(name, i));
+}
 
 int
 VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)

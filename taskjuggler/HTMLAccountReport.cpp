@@ -16,15 +16,16 @@
 #include "tjlib-internal.h"
 #include "HTMLAccountReport.h"
 #include "Project.h"
+#include "Task.h"
 #include "Account.h"
 #include "Interval.h"
 #include "Utility.h"
 
 #define KW(a) a
 
-HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f, time_t s,
-                               time_t e, const QString& df, int dl) :
-    ReportHtml(p, f, s, e, df, dl)
+HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f, 
+                                     const QString& df, int dl) :
+    ReportHtml(p, f, df, dl)
 {
     columns.append("no");
     columns.append("name");

@@ -1,5 +1,5 @@
 /*
- * TableColumn.h - TaskJuggler
+ * VacationInterval.h - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
@@ -9,28 +9,30 @@
  *
  * $Id$
  */
-
-#ifndef _TableColumn_h_
-#define _TableColumn_h_
+#ifndef _VacationInterval_h_
+#define _VacationInterval_h_
 
 #include <qstring.h>
 
-#include "TableColumn.h"
+#include "Interval.h"
 
 /**
- * @short A column of a report.
+ * @short An interval with a name.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class TableColumn
+class VacationInterval : public Interval
 {
 public:
-    TableColumn(const QString& n) : name(n) { }
-    ~TableColumn() { }
+    VacationInterval() { }
+
+    VacationInterval(const QString& n, const Interval& i)
+        : Interval(i), name(n) { }
+    virtual ~VacationInterval() { }
 
     const QString& getName() const { return name; }
 
-protected:
-    QString name;   
+private:
+    QString name;
 } ;
 
 #endif

@@ -12,29 +12,18 @@
 
 #include <qfile.h>
 
-#include "Project.h"
-#include "ResourceList.h"
 #include "HTMLResourceReport.h"
-#include "ExpressionTree.h"
-#include "Operation.h"
+//#include "Project.h"
+//#include "ResourceList.h"
+#include "HTMLResourceReportElement.h"
+//#include "ExpressionTree.h"
+//#include "Operation.h"
 
 HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
-                                       time_t s, time_t e, const QString& df,
-                                       int dl) :
-    ReportHtml(p, f, s, e, df, dl)
+                                       const QString& df, int dl) :
+    HTMLReport(p, f, df, dl)
 {
-    columns.append("name");
-
-    showActual = FALSE;
-    // hide all tasks
-    hideTask = new ExpressionTree(new Operation(1));
-    // show all resources
-    hideResource = new ExpressionTree(new Operation(0));
-
-    taskSortCriteria[0] = CoreAttributesList::TreeMode;
-    taskSortCriteria[1] = CoreAttributesList::StartUp;
-    taskSortCriteria[2] = CoreAttributesList::EndUp;
-    resourceSortCriteria[0] = CoreAttributesList::TreeMode;
+    tab = new HTMLResourceReportElement(this, df, dl);
 }
 
 bool
@@ -42,44 +31,10 @@ HTMLResourceReport::generate()
 {
     if (!open())
         return FALSE;
-    reportHTMLHeader();
 
-    if (!generateTableHeader())
-        return FALSE;
-
-    s << "<tbody>" << endl;
-    
-    ResourceList filteredResourceList;
-    filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
-    sortResourceList(filteredResourceList);
-    maxDepthResourceList = filteredResourceList.maxDepth();
-
-    TaskList filteredTaskList;
-    filterTaskList(filteredTaskList, 0, hideTask, rollUpResource);
-    maxDepthTaskList = filteredTaskList.maxDepth();
-    
-    int rNo = 1;
-    for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
-         ++rli, ++rNo)
-    {
-        generatePlanResource(*rli, 0, rNo);
-        if (showActual)
-            generateActualResource(*rli, 0);
-
-        filterTaskList(filteredTaskList, *rli, hideTask, rollUpResource);
-        sortTaskList(filteredTaskList);
-
-        int tNo = 1;
-        for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
-        {
-            generatePlanTask(*tli, *rli, tNo);
-            if (showActual)
-                generateActualTask(*tli, *rli);
-        }
-    }
-    s << "</tbody>" << endl;
-    s << "</table>" << endl;
-    reportHTMLFooter();
+    generateHeader();
+    tab->generate();
+    generateFooter();
 
     f.close();
     return TRUE;

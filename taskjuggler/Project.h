@@ -16,25 +16,24 @@
 #include <time.h>
 
 #include <qptrlist.h>
+#include <qstringlist.h>
 
+#include "VacationList.h"
 #include "ScenarioList.h"
 #include "TaskList.h"
 #include "ShiftList.h"
 #include "ResourceList.h"
 #include "AccountList.h"
-#include "VacationList.h"
-#include "HTMLTaskReport.h"
-#include "HTMLResourceReport.h"
-#include "HTMLAccountReport.h"
-#include "HTMLWeeklyCalendar.h"
-#include "HTMLStatusReport.h"
-#include "ExportReport.h"
-#include "ReportXML.h"
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-#include "ReportICal.h"
-#endif
-#endif
+
+class QStringList;
+class QDomElement;
+class HTMLTaskReport;
+class HTMLResourceReport;
+class HTMLAccountReport;
+class HTMLWeeklyCalendar;
+class HTMLStatusReport;
+class ExportReport;
+class ReportXML;
 class Kotrus;
 
 /**
@@ -100,23 +99,23 @@ public:
      * Returns a pointer to the scenario.
      * @param sc Index of the scenario in the project scenario list.
      */
-    Scenario* getScenario(int sc);
+    Scenario* getScenario(int sc) const;
     /**
      * Returns the id of a scenario.
      * @param sc Specifies the scenario.
      */
-    const QString& getScenarioId(int sc);
+    const QString& getScenarioId(int sc) const;
     /**
      * Returns the name of a scenario.
      * @param sc Specifies the scenario.
      */
-    const QString& getScenarioName(int sc);
+    const QString& getScenarioName(int sc) const;
     /**
      * Returns the index of the scenario. The index of the first item in the
      * list is 1, not 0!
      * @param id the ID of the scenario.
      */
-    int getScenarioIndex(const QString& id);
+    int getScenarioIndex(const QString& id) const;
 
     /**
      * Set the name of the project. The project name is mainly used for the
@@ -239,11 +238,8 @@ public:
      * If there is a working interval defined for this weekday and the
      * day is not registered as a vacation day then it is a workday. 
      */
-    bool isWorkingDay(time_t d) const
-    {
-        return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || 
-                 isVacation(d));
-    }
+    bool isWorkingDay(time_t d) const;
+    
     /**
      * Returns the number of working days that overlap with the specified
      * interval.
@@ -613,10 +609,7 @@ public:
         return allowedFlags.contains(flag) > 0;
     }
 
-    double convertToDailyLoad(long secs) const
-    {
-        return ((double) secs / (dailyWorkingHours * ONEHOUR));
-    }
+    double convertToDailyLoad(long secs) const;
 
     void setKotrus(Kotrus* k);
     Kotrus* getKotrus() const { return kotrus; }

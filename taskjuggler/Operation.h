@@ -60,6 +60,7 @@ public:
     }
     Operation(const QString& n, Operation* args[], int c) :
        opt(Function), name(n), ops(args), opsCount(c) { }
+    Operation(const Operation& op);
     ~Operation();
 
     long evalAsInt(const ExpressionTree* et) const;

@@ -46,6 +46,6 @@ htmltaskreport "Buffer.html" {
 	columns no, name, start, startbufferend, endbufferstart, end,
 	startbuffer, endbuffer, duration, effort, daily
 	sorttasks nameup
-	showactual
+	scenarios plan, actual
 	hideresource 0
 }

@@ -15,15 +15,17 @@
 #include <qfile.h>
 
 #include "Project.h"
+#include "Interval.h"
+#include "Task.h"
 #include "Resource.h"
 #include "HTMLWeeklyCalendar.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "Utility.h"
 
-HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f, time_t s,
-                                       time_t e, const QString& df, int dl) :
-    ReportHtml(p, f, s, e, df, dl)
+HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f, 
+                                       const QString& df, int dl) :
+    ReportHtml(p, f, df, dl)
 {
     columns.append("name");
 

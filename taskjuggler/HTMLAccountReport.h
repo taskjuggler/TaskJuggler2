@@ -25,8 +25,7 @@ class Account;
 class HTMLAccountReport : public ReportHtml
 {
 public:
-    HTMLAccountReport(Project* p, const QString& f, time_t s, time_t e,
-                      const QString& df, int dl);
+    HTMLAccountReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLAccountReport() { }
 
     void setAccumulate(bool s) { accumulate = s; }

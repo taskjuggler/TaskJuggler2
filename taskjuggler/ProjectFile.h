@@ -31,6 +31,7 @@ class Interval;
 class Operation;
 class Report;
 class ReportHtml;
+class ReportElement;
 
 /**
  * @short File Parser for project files.
@@ -128,11 +129,16 @@ private:
     bool readPercent(double& value);
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
     bool readPriority(int& priority);
-    bool checkReportInterval(ReportHtml* report);
     bool readHTMLReport(const QString& reportType);
+    bool readNewHTMLReport(const QString& reportType);
     bool readHTMLAccountReport();
+    bool readHTMLStatusReport();
     bool readExportReport();
     bool readXMLReport();
+    bool readReportElement(ReportElement* el);
+    bool checkReportInterval(ReportElement* report);
+    bool readHtmlUrl(ReportElement* report);
+    bool checkReportInterval(ReportHtml* report);
     bool readHtmlUrl(ReportHtml* report);
 #ifdef HAVE_KDE
     bool readICalTaskReport();
@@ -140,6 +146,8 @@ private:
     Operation* readLogicalExpression(int precedence = 0);
     Operation* readFunctionCall(const QString& name);
     bool readSorting(Report* report, int which);
+    bool readSorting(ReportElement* el, int which);
+    bool readSortingMode(int& sorting);
     time_t date2time(const QString& date);
     int hhmm2time(const QString& hhmm);
 

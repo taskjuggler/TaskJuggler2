@@ -76,5 +76,5 @@ task t1 "Task 1" {
 htmlresourcereport "." {
 	${AllColumns}
 	hidetask 0
-	showactual
+	scenarios plan, actual
 }

@@ -17,6 +17,7 @@
 
 #include "taskjuggler.h"
 #include "Project.h"
+#include "Task.h"
 #include "Resource.h"
 #include "Booking.h"
 #include "BookingList.h"
@@ -33,7 +34,7 @@ typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,
 
 ExportReport::ExportReport(Project* p, const QString& f,
                            const QString& df, int dl) :
-    Report(p, f, p->getStart(), p->getEnd(), df, dl)
+    Report(p, f, df, dl)
 {
     if (TaskAttributeDict.empty())
     {

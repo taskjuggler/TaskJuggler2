@@ -39,12 +39,12 @@
 #include <config.h>
 
 #include "Project.h"
+#include "Task.h"
 #include "ReportXML.h"
 #include "Utility.h"
 
-ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e,
-                     const QString& df, int dl) :
-   Report(p, f, s, e, df, dl)
+ReportXML::ReportXML(Project* p, const QString& f, const QString& df, int dl) :
+   Report(p, f, df, dl)
 {
 
 }

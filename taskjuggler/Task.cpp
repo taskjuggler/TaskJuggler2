@@ -89,6 +89,7 @@
 #include "ResourceTreeIterator.h"
 #include "Allocation.h"
 #include "Booking.h"
+#include "ReportXML.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& f, int l)
@@ -1412,6 +1413,12 @@ Task::preScheduleOk()
                              ("Container task %1 may not have a plan duration "
                               "criteria in %2 scenario").arg(id)
                              .arg(project->getScenarioId(sc)));
+                return FALSE;
+            }
+            if (milestone)
+            {
+                errorMessage(i18n
+                             ("A container task may not be a milestone."));
                 return FALSE;
             }
         }

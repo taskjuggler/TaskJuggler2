@@ -78,6 +78,13 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
     }
 }
 
+ExpressionTree::ExpressionTree(const ExpressionTree& et)
+{
+    ca = et.ca;
+    symbolTable = et.symbolTable;
+    expression = new Operation(*et.expression);
+}
+
 ExpressionTree::~ExpressionTree()
 {
     delete expression;

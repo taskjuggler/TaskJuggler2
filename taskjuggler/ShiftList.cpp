@@ -13,6 +13,7 @@
 #include "ShiftList.h"
 #include "Shift.h"
 #include "Project.h"
+#include "Interval.h"
 
 Shift*
 ShiftList::getShift(const QString& id) const

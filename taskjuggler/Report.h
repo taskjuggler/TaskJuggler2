@@ -38,8 +38,7 @@ class ExpressionTree;
 class Report
 {
 public:
-    Report(const Project* p, const QString& f, time_t s, time_t e,
-           const QString& df, int dl);
+    Report(const Project* p, const QString& f, const QString& df, int dl);
     virtual ~Report();
 
     QTextStream& stream() { return s; }
@@ -53,7 +52,9 @@ public:
     bool getShowActual() const { return showActual; }
 
     void setHidePlan(bool s) { hidePlan = s; }
+    
     void setShowPIDs(bool s) { showPIDs = s; }
+    bool getShowPIDs() const { return showPIDs; }
 
     void addReportColumn(const QString& c) { columns.append(c); }
     const QString& columnsAt(uint idx) { return columns[idx]; }
@@ -72,28 +73,49 @@ public:
     bool isRolledUp(const CoreAttributes* c, ExpressionTree* et) const;
 
     void setHideTask(ExpressionTree* et);
+    ExpressionTree* getHideTask() const { return hideTask; }
+    
     void setHideResource(ExpressionTree* et);
+    ExpressionTree* getHideResource() const { return hideResource; }
+    
     void setHideAccount(ExpressionTree* et);
+    ExpressionTree* getHideAccount() const { return hideAccount; }
+    
     void setRollUpTask(ExpressionTree* et);
+    ExpressionTree* getRollUpTask() const { return rollUpTask; }
+    
     void setRollUpResource(ExpressionTree* et);
+    ExpressionTree* getRollUpResource() const { return rollUpResource; }
+    
     void setRollUpAccount(ExpressionTree* et);
+    ExpressionTree* getRollUpAccount() const { return rollUpAccount; }
 
     bool setTaskSorting(int sc, int level);
+    int getTaskSorting(int level) const { return taskSortCriteria[level]; }
+    
     bool setResourceSorting(int sc, int level);
+    int getResourceSorting(int level) const 
+    {
+        return resourceSortCriteria[level];
+    }
+    
     bool setAccountSorting(int sc, int level);
+    int getAccountSorting(int level) const
+    {
+        return accountSortCriteria[level];
+    }
 
     void setTaskRoot(const QString& root) { taskRoot = root; }
     const QString& getTaskRoot() const { return taskRoot; }
 
-    enum LoadUnit { minutes, hours, days, weeks, months, years, shortAuto,
-        longAuto };
-
     bool setLoadUnit(const QString& u);
+    LoadUnit getLoadUnit() const { return loadUnit; }
 
     void setTimeFormat(const QString& tf) { timeFormat = tf; }
+    const QString& getTimeFormat() const { return timeFormat; }
+    
     void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
-
-    Report() { }
+    const QString& getShortTimeFormat() const { return shortTimeFormat; }
 
     bool open();
 
@@ -114,6 +136,8 @@ public:
 
     QString scaledLoad(double t) const;
 protected:
+    Report() { }
+
     void errorMessage(const char* msg, ... );
 
     /**
@@ -123,29 +147,44 @@ protected:
     QString stripTaskRoot(QString taskId) const;
     
     const Project* project;
-    bool weekStartsMonday;
     QString fileName;
-    QStringList columns;
-    time_t start;
-    time_t end;
-
-    QString timeFormat;
-    QString shortTimeFormat;
+    QFile f;
+    QTextStream s;
     
     /* We store the location of the report definition in case we need it
      * for error reporting. */
     QString defFileName;
     int defFileLine;
     
+    bool weekStartsMonday;
+
     QString headline;
     QString caption;
+   
+    /* TODO: These two are obsolete soon */
+    bool hidePlan;
+    bool showActual;
 
+    /* The maximum depth of the tree that we have to report in tree-sorting
+     * mode. */
+    uint maxDepthTaskList;
+    uint maxDepthResourceList;
+    uint maxDepthAccountList;
+    
+    /* The following variables store values that are not used by the Report
+     * class or its derived classes directly if the class contains
+     * ReportElements. They only contain the default values for the
+     * ReportElements. */
+    QStringList columns;
+    time_t start;
+    time_t end;
+    QString timeFormat;
+    QString shortTimeFormat;
+    
     int taskSortCriteria[CoreAttributesList::maxSortingLevel];
     int resourceSortCriteria[CoreAttributesList::maxSortingLevel];
     int accountSortCriteria[CoreAttributesList::maxSortingLevel];
 
-    QFile f;
-    QTextStream s;
     ExpressionTree* hideTask;
     ExpressionTree* hideResource;
     ExpressionTree* hideAccount;
@@ -159,14 +198,6 @@ protected:
     
     LoadUnit loadUnit;
 
-    /* The maximum depth of the tree that we have to report in tree-sorting
-     * mode. */
-    uint maxDepthTaskList;
-    uint maxDepthResourceList;
-    uint maxDepthAccountList;
-    
-    bool hidePlan;
-    bool showActual;
     bool showPIDs;
 } ;
 

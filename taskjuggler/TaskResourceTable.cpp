@@ -13,6 +13,7 @@
 #include <qtextstream.h>
 
 #include "TaskResourceTable.h"
+#include "Interval.h"
 #include "TaskList.h"
 #include "ResourceList.h"
 #include "Report.h"
@@ -21,6 +22,8 @@
 #include "Task.h"
 #include "Resource.h"
 #include "Scenario.h"
+#include "ReportHtml.h"
+#include "TableColumnFormat.h"
 
 TaskResourceTable::TaskResourceTable(Report* r, QTextStream& ts) :
     report(r), s(ts)

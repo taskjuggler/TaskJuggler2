@@ -14,6 +14,7 @@
 #include <stdio.h>
 
 #include "Report.h"
+#include "Interval.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
@@ -28,10 +29,8 @@
 
 #define KW(a) a
 
-Report::Report(const Project* p, const QString& f, time_t s, time_t e,
-               const QString& df, int dl) :
-        project(p), fileName(f), start(s), end(e), defFileName(df),
-        defFileLine(dl)
+Report::Report(const Project* p, const QString& f, const QString& df, int dl) :
+        project(p), fileName(f), defFileName(df), defFileLine(dl)
 {
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
     {
@@ -39,6 +38,9 @@ Report::Report(const Project* p, const QString& f, time_t s, time_t e,
         resourceSortCriteria[i] = CoreAttributesList::SequenceUp;
         accountSortCriteria[i] = CoreAttributesList::SequenceUp;
     }
+
+    start = p->getStart();
+    end = p->getEnd();
 
     weekStartsMonday = p->getWeekStartsMonday();
     timeFormat = p->getTimeFormat();
