@@ -81,11 +81,21 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 		return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
 			t1->scenarios[sc].status > t2->scenarios[sc].status ? -1 : 1;
 	case CompletedUp:
-		return t1->getCompletionDegree(sc) == t2->getCompletionDegree(sc) ? 0 :
-			t1->getCompletionDegree(sc) < t2->getCompletionDegree(sc) ? -1 : 1;
+    {
+        /* Unfortunately the floating point arithmetic on x86 processors is
+         * slightly different from other processors. To get identical
+         * results on all CPUs we ignore some precision that we don't need
+         * anyhow. */
+        int cd1 = (int) (t1->getCompletionDegree(sc) * 1000);
+        int cd2 = (int) (t2->getCompletionDegree(sc) * 1000);
+        return cd1 == cd2 ? 0 : cd1 < cd2 ? -1 : 1;
+    }
 	case CompletedDown:
-		return t1->getCompletionDegree(sc) == t2->getCompletionDegree(sc) ? 0 :
-			t1->getCompletionDegree(sc) > t2->getCompletionDegree(sc) ? -1 : 1;
+    {
+        int cd1 = (int) (t1->getCompletionDegree(sc) * 1000);
+        int cd2 = (int) (t2->getCompletionDegree(sc) * 1000);
+        return cd1 == cd2 ? 0 : cd1 > cd2 ? -1 : 1;
+    }
 	case PrioUp:
 		if (t1->priority == t2->priority)
 			return 0;
