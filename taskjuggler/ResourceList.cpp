@@ -686,7 +686,7 @@ Resource::finishActual()
 QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 {
    QDomElement elem = ReportXML::createXMLElem( doc, "Resource", getName());
-   elem.setAttribute( "Name", getName() );
+   elem.setAttribute( "Id", getId() );
    
    return( elem );
 }

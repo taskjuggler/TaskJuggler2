@@ -1361,6 +1361,22 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
       }
    }
 
+   /** Allocations and Booked Resources
+    *  With the following code, the task in XML contains simply a list of all Allocations
+    *  wiht the ResourceID for which resource the allocation is. After that, there comes
+    *  a list of all Resources, again having the Resource Id as key. That could be put
+    *  in a hirarchy like
+    *  <Resource Id="dev2" >Larry Bono
+    *       <Gehalt>1000</Gehalt>
+    *       <Allocation>
+    *          <Load>100</Load>
+    *          <Persistent>Yes</Persistent>
+    *       </Allocation>
+    *  </Resource>
+    *
+    *  But we do not ;-) to have full flexibility. 
+    *  
+    */
    /* Allocations */
    if( allocations.count() > 0 )
    {
@@ -1380,7 +1396,6 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
 	 taskElem.appendChild( r->xmlIDElement( doc ));
       }
    }
-
    
    /* Comment */
    if( ! note.isEmpty())

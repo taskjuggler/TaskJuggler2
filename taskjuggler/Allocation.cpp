@@ -20,6 +20,8 @@
     <!ATTLIST Allocation ResourceID, #REQUIRED>
   /-- DTD --/
 
+*/
+
 /* Constructor */
 Allocation::Allocation( Resource *r):	
    resource(r),
@@ -34,7 +36,9 @@ Allocation::Allocation( Resource *r):
 /* Creation of the XML Reprsentation of the Allocation */
 QDomElement Allocation::xmlElement( QDomDocument& doc ) const
 {
-   QDomElement elem = ReportXML::createXMLElem( doc, "Allocation", QString::number(load) );
+   QDomElement elem = doc.createElement( "Allocation" );
+   elem.appendChild(ReportXML::createXMLElem( doc, "Load", QString::number(getLoad()) ));
+   elem.appendChild(ReportXML::createXMLElem( doc, "Persistent", isPersistent() ? "Yes":"No" ));
    elem.setAttribute( "ResourceID", resource->getId());
    
    /* Alternatives are missing TODO */
