@@ -70,6 +70,7 @@ int KTVTaskTableItem::compare( QListViewItem *i, int col, bool ascending ) const
 	    r = COMPARE( me, other );
 	    break;
 	 case COL_NAME:
+	 case COL_ID:
 	 default:
 	    return KListViewItem::compare(i, col, ascending );
 	    break;

@@ -1,10 +1,16 @@
 #include <qdatetime.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kiconloader.h>
 
 #include "ktvtasktable.h"
 #include "Project.h"
 #include "Task.h"
+
+#define PIX_MILESTONE "flag"
+#define PIX_TASK      "package_settings"
+#define PIX_CONTAINER "attach"
+
 
 KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    :KListView( parent, name ),
@@ -23,6 +29,13 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
 
    setShowSortIndicator( true );
 
+   /* load pixmaps */
+   KIconLoader *loader = KGlobal::iconLoader();
+   m_milestonePix = loader->loadIcon( PIX_MILESTONE, KIcon::Small );
+   m_taskPix      = loader->loadIcon( PIX_TASK     , KIcon::Small );
+   m_containerPix = loader->loadIcon( PIX_CONTAINER, KIcon::Small );
+   
+   
 }
 
 
@@ -45,8 +58,12 @@ void KTVTaskTable::showProject( Project *p )
 
    for (Task* t = taskList.first(); t != 0; t = taskList.next())
    {
-      if( t->getParent() == 0 && t->isContainer() )
-	 addTask( static_cast<KTVTaskTableItem*>(m_root), t );
+      if( (t->getParent() == 0) && t->isContainer() )
+	 {
+	    qDebug( "showProject: Adding a Task" );
+	    addTask( static_cast<KTVTaskTableItem*>(m_root), t );
+	    qDebug( "showProject: Adding a Task <FIN>" );
+	 }
    }
 
    /* open the first child of the project */
@@ -66,13 +83,18 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    
    KTVTaskTableItem *ktv =  new KTVTaskTableItem( parent, t );
    ktv->setText( COL_NAME, name );
-   ktv->setText( COL_ID, t->getId());
-//    ktv->setText( 1, idx );
-
+   if( t->isContainer() )
+      ktv->setPixmap( COL_NAME, m_containerPix );
+   else if( t->isMilestone() )
+      ktv->setPixmap( COL_NAME, m_milestonePix );
+   else
+      ktv->setPixmap( COL_NAME, m_taskPix );
+   
+   ktv->setText( COL_ID, t->getId() );
    ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getPlanEnd(), t->getPlanStart() ));
    ktv->setText( COL_PRIORITY, QString::number( t->getPriority() ));
    
-   int cmplt = t->getComplete();
+   double cmplt = t->getComplete();
    ktv->setText( COL_COMPLETE, cmplt == -1 ? i18n("iP"):  i18n("%1%").arg(cmplt));
    
    dt.setTime_t( t->getPlanStart() );
@@ -90,14 +112,17 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    int cnt = subTasks.count();
    qDebug( "Amount of subtasks: " + QString::number(cnt) );
 
+   qDebug( "START: Subpackages for "+ t->getId());
    for (Task* st = subTasks.first(); st != 0; st = subTasks.next())
    {
       qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
-      addTask( ktv, st );
+      if( st->getParent() == t )
+	 addTask( ktv, st );
       qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
    }
-   
-   
+   qDebug( "END: Subpackages for "+ t->getId());
+   qDebug( "Adding task: " + t->getId() + "<FIN>");
+
 }
 
 
