@@ -28,7 +28,6 @@
 #include "Utility.h"
 
 // Qt includes
-#include <qpainter.h>
 #include <qrect.h>
 #include <qpalette.h>
 #include <qstringlist.h>
@@ -100,6 +99,8 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     //kdDebug() << "Painting cell, available workload: " << aload << endl;
 
     QRect cRect = cellRect( row, col );
+    p->eraseRect( cRect );
+    cRect.setRect( cRect.left(), cRect.top(), cRect.width() - 1, cRect.height() - 1 );
     p->setClipRect( cRect, QPainter::CoordPainter );
     QTable::paintCell( p, row, col, cr, selected, cg );
 
@@ -113,6 +114,7 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
 
     if ( m_proj && ( getWorkingDays( ival ) == 0 ) ) // holidays and weekends
         p->fillRect( cRect, Settings::holidayTimeColor() );
+
 
     // TODO perhaps would be better to draw a rectangle *around* for vacations and holidays
 
