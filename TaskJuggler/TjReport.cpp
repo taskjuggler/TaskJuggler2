@@ -282,7 +282,7 @@ TjReport::generateHeaderAndGrid()
         reportDef->getProject()->getStart() &&
         reportDef->getProject()->getNow() < reportDef->getProject()->getEnd())
         markBoundary(time2x(reportDef->getProject()->getNow()),
-                            QColor("red"), 3);
+                            Qt::red, 3);
 }
 
 void

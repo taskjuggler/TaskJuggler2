@@ -521,7 +521,7 @@ TjResourceReport::drawTaskOutline(const Task* t, int y)
         for (uint i = 0; i < a.count() - 1; ++i)
         {
             QCanvasLine* line = new QCanvasLine(ganttChart);
-            QPen pen(QColor("black"));
+            QPen pen(Qt::black);
             line->setPen(pen);
             int x1, y1, x2, y2;
             a.point(i, &x1, &y1);
@@ -540,7 +540,7 @@ TjResourceReport::drawTaskOutline(const Task* t, int y)
                                  time2x(t->getStart(scenario)),
                                  itemHeight - 8, ganttChart);
 
-        rect->setPen(QPen(QColor("black")));
+        rect->setPen(Qt::black);
         rect->setBrush(QBrush(NoBrush));
         rect->setZ(15);
         rect->show();
@@ -567,7 +567,7 @@ TjResourceReport::drawTaskOutline(const Task* t, int y)
                 (time2x(t->getStart(scenario)), y + 8, barWidth,
                  itemHeight - 16, ganttChart);
 
-            rect->setPen(QPen(QColor("black")));
+            rect->setPen(Qt::black);
             rect->setBrush(QBrush(NoBrush));
             rect->setZ(16);
             rect->show();

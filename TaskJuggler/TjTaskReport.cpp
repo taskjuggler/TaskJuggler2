@@ -304,8 +304,8 @@ TjTaskReport::drawTask(Task* const t, int y)
 
         QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
         polygon->setPoints(a);
-        polygon->setPen(QColor("#000000"));
-        polygon->setBrush(QColor("#000000"));
+        polygon->setPen(Qt::black);
+        polygon->setBrush(Qt::black);
         polygon->setZ(10);
         polygon->show();
     }
@@ -331,8 +331,8 @@ TjTaskReport::drawTask(Task* const t, int y)
 
         QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
         polygon->setPoints(a);
-        polygon->setPen(QColor("#000000"));
-        polygon->setBrush(QColor("#000000"));
+        polygon->setPen(Qt::black);
+        polygon->setBrush(Qt::black);
         polygon->setZ(10);
         polygon->show();
     }
@@ -372,8 +372,8 @@ TjTaskReport::drawTask(Task* const t, int y)
                 (time2x(t->getStart(scenario)), y + 8, barWidth,
                  itemHeight - 16, ganttChart);
 
-            rect->setPen(QPen(QColor("black")));
-            rect->setBrush(QBrush(QColor("black")));
+            rect->setPen(Qt::black);
+            rect->setBrush(Qt::black);
             rect->setZ(11);
             rect->show();
         }
@@ -460,7 +460,7 @@ TjTaskReport::drawDependencies(Task* const t1, QListViewItem* t1lvi)
             for (uint i = 0; i < a.count() - 1; ++i)
             {
                 QCanvasLine* line = new QCanvasLine(ganttChart);
-                QPen pen(QColor("black"));
+                QPen pen(Qt::black);
                 line->setPen(pen);
                 int x1, y1, x2, y2;
                 a.point(i, &x1, &y1);
@@ -480,8 +480,8 @@ TjTaskReport::drawDependencies(Task* const t1, QListViewItem* t1lvi)
 
             QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
             polygon->setPoints(a);
-            polygon->setPen(QColor("black"));
-            polygon->setBrush(QColor("black"));
+            polygon->setPen(Qt::black);
+            polygon->setBrush(Qt::black);
             polygon->setZ(20);
             polygon->show();
         }
