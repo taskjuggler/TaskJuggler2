@@ -79,7 +79,8 @@ task AcSo "Accounting Software" {
 		# may be relative. Each ! means 'in the scope of the enclosing
 		# task'. To descent into a task the . together with the id of the
 		# tasks have to be specified.
-		depends !deliveries.start }
+		depends !deliveries.start 
+	}
 
 	task software "Software Development" {
 
@@ -89,27 +90,35 @@ task AcSo "Accounting Software" {
 		# get the requested resources.
 		priority 1000
 
-		task database "Database coupling" { effort 20d
+		task database "Database coupling" { 
+			effort 20d
 			# This task depends on a task in the scope of the enclosing
 			# tasks enclosing task. So we need 2 ! to get there.
-			depends !!spec allocate dev1 allocate dev2 }
+			depends !!spec 
+			allocate dev1, dev2 
+		}
 
-		task gui "Graphical User Interface" { effort 35d
+		task gui "Graphical User Interface" { 
+			effort 35d
 			# This task has taken 5 man days more than originally planned.
 			# We record this as well, so that we can generate reports that
 			# compare the actual run of the project to the original plan.
-			actualeffort 40d depends !database, !backend allocate dev2
-			allocate dev3 }
+			actual:effort 40d 
+			depends !database, !backend 
+			allocate dev2, dev3
+		}
 
-		task backend "Back-End Functions" { effort 30d
+		task backend "Back-End Functions" { 
+			effort 30d
 			# This task is ahead of schedule but not yet finished. To
 			# document this we specify that the tasks is 80% completed. If
 			# nothing is specified, TaskJuggler assumes that the task is on
 			# schedule and computes the completion rate according to the
 			# current day and the plan data.
-			complete 95 depends !database, !!spec allocate dev1 allocate
-			dev2 }
-    
+			complete 95 
+			depends !database, !!spec 
+			allocate dev1, dev2 
+		}
 	}
 
 	task test "Software testing" {
@@ -119,13 +128,25 @@ task AcSo "Accounting Software" {
 			# weeks, man hours, etc. Per default taskjuggler assumes a man
 			# week is 40 man hours or 5 man days. These values can be
 			# changed though.
-			effort 1w depends !!software allocate test allocate dev2 }
+			effort 1w 
+			depends !!software 
+			allocate test, dev2 
+		}
 
-		task beta "Beta Test" { effort 4w depends !alpha allocate test
-			allocate dev1 } }
+		task beta "Beta Test" { 
+			effort 4w 
+			depends !alpha 
+			allocate test
+			allocate dev1 
+		} 
+	}
 
-	task manual "Manual" { effort 10w depends !deliveries.start allocate
-		doc allocate dev3 account doc }
+	task manual "Manual" { 
+		effort 10w 
+		depends !deliveries.start 
+		allocate doc, dev3
+	 	account doc 
+	}
 
 	task deliveries "Milestones" {
 
@@ -140,25 +161,36 @@ task AcSo "Accounting Software" {
 			# For some reason the actual start of the project got delayed.
 			# We record this, so that we can compare the plan run to the
 			# actual run of the project.
-			actualstart 2002-01-20
+			actual:start 2002-01-20
 			# At the begining of this task we receive a payment from the
 			# customer. This is credited to the account assiciated with this
 			# task when the task starts.
 			startcredit 33000.0 }
 
-		task prev "Technology Preview" { milestone depends
-			!!software.backend startcredit 13000.0 }
+		task prev "Technology Preview" { 
+			milestone 
+			depends !!software.backend 
+			startcredit 13000.0 
+		}
 
-		task beta "Betaversion" { milestone depends !!test.alpha
-			startcredit 13000.0 }
+		task beta "Betaversion" { 
+			milestone 
+			depends !!test.alpha
+			startcredit 13000.0 
+		}
 
-		task done "Ship Product to customer" { milestone
+		task done "Ship Product to customer" { 
+			milestone
 			# The next line can be uncommented to trigger a warning about
 			# the project being late. For all tasks limits for the start and
 			# end value can be specified. Those limits are checked after the
 			# project has been scheduled. For all violated limits a warning
 			# is issued.  maxend 2002-04-17
-			depends !!test.beta, !!manual startcredit 14000.0 } } }
+			depends !!test.beta, !!manual 
+			startcredit 14000.0 
+		} 
+	} 
+}
 
 # Now the project has been completely specified. Stopping here would
 # result in a valid TaskJuggler file that could be processed and

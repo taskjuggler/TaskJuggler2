@@ -100,18 +100,6 @@ public:
     void setPriority(int p) { priority = p; }
     int getPriority() const { return priority; }
 
-    void setMinStart(time_t s) { minStart = s; }
-    time_t getMinStart() const { return minStart; }
-
-    void setMaxStart(time_t s) { maxStart = s; }
-    time_t getMaxStart() const { return maxStart; }
-
-    void setMinEnd(time_t e) { minEnd = e; }
-    time_t getMinEnd() const { return minEnd; }
-
-    void setMaxEnd(time_t e) { maxEnd = e; }
-    time_t getMaxEnd() const { return maxEnd; }
-
     void setResponsible(Resource* r) { responsible = r; }
     Resource* getResponsible() const { return responsible; }
 
@@ -163,6 +151,18 @@ public:
         return scenarios[sc].endBufferStart;
     }
 
+    void setMinStart(int sc, time_t s) { scenarios[sc].minStart = s; }
+    time_t getMinStart(int sc) const { return scenarios[sc].minStart; }
+
+    void setMaxStart(int sc, time_t s) { scenarios[sc].maxStart = s; }
+    time_t getMaxStart(int sc) const { return scenarios[sc].maxStart; }
+
+    void setMinEnd(int sc, time_t e) { scenarios[sc].minEnd = e; }
+    time_t getMinEnd(int sc) const { return scenarios[sc].minEnd; }
+
+    void setMaxEnd(int sc, time_t e) { scenarios[sc].maxEnd = e; }
+    time_t getMaxEnd(int sc) const { return scenarios[sc].maxEnd; }
+
     void setLength(int sc, double days) { scenarios[sc].length = days; }
     double getLength(int sc) const { return scenarios[sc].length; }
 
@@ -174,15 +174,11 @@ public:
 
     bool isStartOk(int sc) const
     {
-        return !((minStart > 0 && minStart > scenarios[sc].start) ||
-                 (maxStart > 0 && scenarios[sc].start > maxStart));
+        return scenarios[sc].isStartOk();
     }
     bool isEndOk(int sc) const
     {
-        return !((minEnd > 0 && minEnd > scenarios[sc].end +
-                  (milestone ? 1 : 0)) ||
-                 (maxEnd > 0 && scenarios[sc].end +
-                  (milestone ? 1 : 0)) > maxEnd);
+        return scenarios[sc].isEndOk(milestone);
     }
 
     bool isBuffer(int sc, const Interval& iv) const;
@@ -265,7 +261,7 @@ public:
     QString resolveId(QString relId);
 
     bool preScheduleOk();
-    bool scheduleOk(int& errors, QString scenario) const;
+    bool scheduleOk(int sc, int& errors) const;
     void initLoopDetector()
     {
         loopDetectorMarkStart = FALSE;
@@ -390,18 +386,6 @@ private:
      * The priority is used during scheduling. The higher the priority
      * the more likely the task will get the requested resources. */
     int priority;
-
-    /// Ealiest day when the task should start
-    time_t minStart;
-
-    /// Latest day when the task should start
-    time_t maxStart;
-
-    /// Ealiest day when the task should end
-    time_t minEnd;
-
-    /// Latest day when the task should end
-    time_t maxEnd;
 
     /// The scheduling policy of the task.
     SchedulingInfo scheduling;

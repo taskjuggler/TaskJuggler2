@@ -134,14 +134,17 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
         // Set attributes that are inherited from parent task.
         projectId = p->projectId;
         priority = p->priority;
-        minStart = p->minStart;
-        maxStart = p->maxEnd;
-        minEnd = p->minStart;
-        maxEnd = p->maxEnd;
         responsible = p->responsible;
         account = p->account;
         scheduling = p->scheduling;
 
+        for (int sc = 0; sc < proj->getMaxScenarios(); ++sc)
+        {
+            scenarios[sc].minStart = p->scenarios[sc].minStart;
+            scenarios[sc].maxStart = p->scenarios[sc].maxEnd;
+            scenarios[sc].minEnd = p->scenarios[sc].minStart;
+            scenarios[sc].maxEnd = p->scenarios[sc].maxEnd;
+        }
         // Inherit depends from parent. Relative IDs need to get another '!'.
         dependsIds = p->dependsIds;
         for (QStringList::Iterator it = dependsIds.begin();
@@ -172,8 +175,11 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
         // Set attributes that are inherited from global attributes.
         projectId = proj->getCurrentId();
         priority = proj->getPriority();
-        minStart = minEnd = 0;
-        maxStart = maxEnd = 0;
+        for (int sc = 0; sc < proj->getMaxScenarios(); ++sc)
+        {
+            scenarios[sc].minStart = scenarios[sc].minEnd = 0;
+            scenarios[sc].maxStart = scenarios[sc].maxEnd = 0;
+        }
     }
 
     start = end = 0;
@@ -1644,13 +1650,15 @@ Task::preScheduleOk()
 }
 
 bool
-Task::scheduleOk(int& errors, QString scenario) const
+Task::scheduleOk(int sc, int& errors) const
 {
+    const QString scenario = project->getScenarioId(sc);
+
     /* It is of little use to report errors of container tasks, if any of
      * their sub tasks has errors. */
     int currErrors = errors;
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
-        (*tli)->scheduleOk(errors, scenario);
+        (*tli)->scheduleOk(sc, errors);
     if (errors > currErrors)
     {
         if (DEBUGPS(2))
@@ -1695,23 +1703,24 @@ Task::scheduleOk(int& errors, QString scenario) const
         errors++;
         return FALSE;
     }
-    if (minStart != 0 && start < minStart)
+    if (scenarios[sc].minStart != 0 && start < scenarios[sc].minStart)
     {
         errorMessage(i18n("'%1' start time of task '%2' is too early\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id).arg(time2tjp(start))
-                     .arg(time2tjp(minStart)));
+                     .arg(time2tjp(scenarios[sc].minStart)));
         errors++;
         return FALSE;
     }
-    if (maxStart != 0 && maxStart < start)
+    if (scenarios[sc].maxStart != 0 && scenarios[sc].maxStart < start)
     {
         errorMessage(i18n("'%1' start time of task '%2' is too late\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id)
-                     .arg(time2tjp(start)).arg(time2tjp(maxStart)));
+                     .arg(time2tjp(start))
+                     .arg(time2tjp(scenarios[sc].maxStart)));
         errors++;
         return FALSE;
     }
@@ -1734,25 +1743,27 @@ Task::scheduleOk(int& errors, QString scenario) const
         errors++;
         return FALSE;
     }
-    if (minEnd != 0 && end + (milestone ? 1 : 0) < minEnd)
+    if (scenarios[sc].minEnd != 0 && 
+        end + (milestone ? 1 : 0) < scenarios[sc].minEnd)
     {
         errorMessage(i18n("'%1' end time of task '%2' is too early\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id)
                      .arg(time2tjp(end + (milestone ? 1 : 0)))
-                     .arg(time2tjp(minEnd)));
+                     .arg(time2tjp(scenarios[sc].minEnd)));
         errors++;
         return FALSE;
     }
-    if (maxEnd != 0 && maxEnd < end + (milestone ? 1 : 0))
+    if (scenarios[sc].maxEnd != 0 && 
+        scenarios[sc].maxEnd < end + (milestone ? 1 : 0))
     {
         errorMessage(i18n("'%1' end time of task '%2' is too late\n"
                           "Date is:  %2\n"
                           "Limit is: %3")
                      .arg(scenario).arg(id)
                      .arg(time2tjp(end + (milestone ? 1 : 0)))
-                     .arg(time2tjp(maxEnd)));
+                     .arg(time2tjp(scenarios[sc].maxEnd)));
         errors++;
         return FALSE;
     }
@@ -2105,31 +2116,39 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
        taskElem.appendChild(ReportXML::createXMLElem(doc, "ReferenceLabel",
                                                      refLabel));
 
-    if (minStart != 0)
+    if (scenarios[0].minStart != 0)
     {
-        tempElem = ReportXML::createXMLElem( doc, "minStart", QString::number( minStart ));
-        tempElem.setAttribute( "humanReadable", time2ISO( minStart ));
+        tempElem = ReportXML::createXMLElem
+            ( doc, "minStart", QString::number(scenarios[0].minStart));
+        tempElem.setAttribute( "humanReadable", 
+                               time2ISO(scenarios[0].minStart));
         taskElem.appendChild( tempElem );
     }
 
-    if (maxStart != 0)
+    if (scenarios[0].maxStart != 0)
     {
-        tempElem = ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart ));
-        tempElem.setAttribute( "humanReadable", time2ISO( maxStart ));
+        tempElem = ReportXML::createXMLElem
+            (doc, "maxStart", QString::number(scenarios[0].maxStart));
+        tempElem.setAttribute( "humanReadable", 
+                               time2ISO(scenarios[0].maxStart));
         taskElem.appendChild( tempElem );
     }
 
-    if (minEnd != 0)
+    if (scenarios[0].minEnd != 0)
     {
-        tempElem = ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd ));
-        tempElem.setAttribute( "humanReadable", time2ISO( minEnd ));
+        tempElem = ReportXML::createXMLElem
+            (doc, "minEnd", QString::number(scenarios[0].minEnd));
+        tempElem.setAttribute( "humanReadable", 
+                               time2ISO(scenarios[0].minEnd));
         taskElem.appendChild( tempElem );
     }
 
-    if (maxEnd != 0)
+    if (scenarios[0].maxEnd != 0)
     {
-        tempElem = ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd ));
-        tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
+        tempElem = ReportXML::createXMLElem
+            (doc, "maxEnd", QString::number(scenarios[0].maxEnd));
+        tempElem.setAttribute( "humanReadable", 
+                               time2ISO(scenarios[0].maxEnd));
         taskElem.appendChild( tempElem );
     }
 
@@ -2378,13 +2397,13 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
 
       /* time-stuff: */
       else if( elemTagName == "minStart" )
-     setMinStart( elem.text().toLong());
+     setMinStart(0, elem.text().toLong());
       else if( elemTagName == "maxStart" )
-     setMaxStart( elem.text().toLong() );
+     setMaxStart(0, elem.text().toLong() );
       else if( elemTagName == "minEnd" )
-     setMinEnd( elem.text().toLong() );
+     setMinEnd(0, elem.text().toLong() );
       else if( elemTagName == "maxEnd" )
-     setMaxEnd( elem.text().toLong() );
+     setMaxEnd(0, elem.text().toLong() );
       else if( elemTagName == "actualStart" )
      setStart(Task::Actual, elem.text().toLong() );
       else if( elemTagName == "actualEnd" )

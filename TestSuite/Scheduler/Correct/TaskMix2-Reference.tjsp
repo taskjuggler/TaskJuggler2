@@ -1,13 +1,13 @@
 task t1 "|->" {
   start 2003-01-06-00:00:00-+0000
   end 2003-01-11-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task m1 "Milestone1" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-11-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -15,199 +15,199 @@ task m1 "Milestone1" {
 task c21 "-D --> |" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c23 "-D --> |D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c28 "-D <-- |" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c30 "-D <-- |D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c22 "-D --> -D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c29 "-D <-- -D" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c3 "| --> |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c5 "| --> |D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c6 "| <-- |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c8 "| <-- |D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c11 "|D --> |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c13 "|D --> |D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c14 "|D <-- |" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c15 "|D <-- -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c4 "| --> -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c7 "| <-- -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c12 "|D --> -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c1 "| x-> -" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c2 "| x-> -D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c9 "|D x-> -" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c10 "|D x-> -D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c16 "- <-x |" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c17 "- <-x -D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c18 "- <-x |D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task c19 "-D x-> -" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c20 "-D x-> -D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c24 "-D <-x |" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c25 "-D <-x -D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task c26 "-D <-x |D" {
   start 2003-01-13-09:00:00-+0000
   end 2003-01-17-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m1
 }
 task m2 "Milestone2" {
   start 2003-01-20-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends c2, c4, c5, c7, c8, c10, c12, c13, c15, c17, c18, c20, c22, c23, c25, c26, c29, c30
@@ -215,7 +215,7 @@ task m2 "Milestone2" {
 task t2 "<-|" {
   start 2003-01-20-00:00:00-+0000
   end 2003-01-27-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m2
 }

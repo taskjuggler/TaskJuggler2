@@ -1,13 +1,13 @@
 task t1 "Task1" {
   start 2000-01-01-00:00:00-+0000
   end 2000-01-04-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid simple
 }
 task t2 "Task2" {
   start 2000-01-04-00:00:00-+0000
   end 2000-01-05-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid simple
   depends t1
 }
@@ -20,13 +20,13 @@ task t4.t5 "Task5" {
 task t4.t5.t6 "Task6" {
   start 2000-01-05-00:00:00-+0000
   end 2000-01-12-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid simple
 }
 task t3 "Task3" {
   start 2000-01-05-09:00:00-+0000
   end 2000-01-05-18:00:00-+0000
-  planscheduled
+  scheduled
   projectid simple
   depends t2
 }
@@ -39,7 +39,7 @@ task t7.t8 "Task8" {
 task t7.t8.t9 "Task8" {
   start 2000-01-10-00:00:00-+0000
   end 2000-01-15-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid simple
 }
 supplement task t1 {

@@ -112,15 +112,19 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     
     tcf = new TableColumnFormat(KW("minstart"), this, i18n("Min. Start"));
     tcf->genTaskLine1 = &ReportElement::genCellMinStart;
+    tcf->genTaskLine2 = &ReportElement::genCellMinStart;
     
     tcf = new TableColumnFormat(KW("maxstart"), this, i18n("Max. Start"));
     tcf->genTaskLine1 = &ReportElement::genCellMaxStart;
+    tcf->genTaskLine2 = &ReportElement::genCellMaxStart;
     
     tcf = new TableColumnFormat(KW("minend"), this, i18n("Min. End"));
     tcf->genTaskLine1 = &ReportElement::genCellMinEnd;
+    tcf->genTaskLine2 = &ReportElement::genCellMinEnd;
     
     tcf = new TableColumnFormat(KW("maxend"), this, i18n("Max. End"));
     tcf->genTaskLine1 = &ReportElement::genCellMaxEnd;
+    tcf->genTaskLine2 = &ReportElement::genCellMaxEnd;
     
     tcf = new TableColumnFormat(KW("startbufferend"), this, 
                                 i18n("Start Buf. End"));

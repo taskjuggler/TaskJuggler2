@@ -1,32 +1,26 @@
 task t1 "Task1" {
   start 2002-01-01-22:00:00-+0100
   end 2002-01-25-22:00:00-+0100
-  planscheduled
+  scheduled
   projectid test
 }
 task t2 "Task2" {
   start 2002-03-09-22:00:00-+0100
   end 2002-04-03-09:00:00-+0200
-  planscheduled
+  scheduled
   projectid test
 }
 task t3 "task3" {
   start 2002-10-24-22:00:00-+0200
   end 2002-11-17-21:00:00-+0100
-  planscheduled
+  scheduled
   projectid test
 }
 supplement task t1 {
-  minend 2002-01-25-21:59:59-+0100
-  maxend 2002-01-25-22:00:00-+0100
 }
 supplement task t2 {
-  minend 2002-04-03-08:59:59-+0200
-  maxend 2002-04-03-09:00:00-+0200
 }
 supplement task t3 {
-  minend 2002-11-17-20:59:59-+0100
-  maxend 2002-11-17-21:00:00-+0100
 }
 supplement resource r1 {
   planbooking 2002-01-02-06:00:00-+0100 2002-01-02-14:00:00-+0100 t1

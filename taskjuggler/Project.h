@@ -116,7 +116,7 @@ public:
     const QString& getScenarioName(int sc) const;
     /**
      * Returns the index of the scenario. The index of the first item in the
-     * list is 1, not 0!
+     * list is 1, not 0! If the scenario is unknown -1 is returned.
      * @param id the ID of the scenario.
      */
     int getScenarioIndex(const QString& id) const;
@@ -713,9 +713,9 @@ private:
     void prepareScenario(int sc);
     void finishScenario(int sc);
     
-    bool schedule(const QString& scenario);
+    bool schedule(int sc);
 
-    bool checkSchedule(const QString& scenario) const;
+    bool checkSchedule(int sc) const;
 
     /// The start date of the project
     time_t start;

@@ -43,7 +43,7 @@ task t1 "Task 1" {
 	flags flag1
 	account c
 	start 2003-01-01
-	actualstart 2003-01-03
+	actual:start 2003-01-03
 	task t2 "Task 2" {
 		effort 30d
 		allocate tux1

@@ -924,9 +924,9 @@ HTMLReportElement::genCellEnd(TableCellInfo* tci)
 void \
 HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
-    genCell(tci->tli->task->get##a() == 0 ? "&nbsp;" : \
-            time2user(tci->tli->task->get##a(), timeFormat), \
-            tci, TRUE); \
+    genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? "&nbsp;" : \
+            time2user(tci->tli->task->get##a(tci->tli->sc), timeFormat), \
+            tci, FALSE); \
 }
 
 GCMMSE(MinStart)

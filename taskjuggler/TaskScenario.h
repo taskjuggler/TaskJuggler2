@@ -31,6 +31,17 @@ public:
     TaskScenario();
     ~TaskScenario() { }
     
+    bool isStartOk() const
+    {
+        return !((minStart > 0 && minStart > start) ||
+                 (maxStart > 0 && start > maxStart));
+    }
+    bool isEndOk(bool milestone) const
+    {
+        return !((minEnd > 0 && minEnd > (end + milestone ? 1 : 0)) ||
+                 (maxEnd > 0 && end + (milestone ? 1 : 0)) > maxEnd);
+    }
+
     void calcCompletionDegree(time_t now);
 
 private:
@@ -45,6 +56,18 @@ private:
 
     /// Time when the task ends
     time_t end;
+
+    /// Ealiest day when the task should start
+    time_t minStart;
+
+    /// Latest day when the task should start
+    time_t maxStart;
+
+    /// Ealiest day when the task should end
+    time_t minEnd;
+
+    /// Latest day when the task should end
+    time_t maxEnd;
 
     /* Specifies how many percent the task start can be delayed but still
      * finish in time if all goes well. This value is for documentation
@@ -71,9 +94,6 @@ private:
     /// The effort of the task (in resource-days).
     double effort;
 
-    /// List of booked resources.
-    ResourceList bookedResources;
-
     /// Amount that is credited to the account at the start date.
     double startCredit;
     
@@ -94,6 +114,9 @@ private:
 
     /// TRUE if the task has been completely scheduled.
     bool scheduled;
+    
+    /// List of booked resources.
+    ResourceList bookedResources;
 } ;
 
 #endif

@@ -118,6 +118,8 @@ private:
     bool readTask(Task* parent);
     bool readTaskSupplement(QString prefix);
     bool readTaskBody(Task* task);
+    int readTaskScenarioAttribute(const QString attribute, Task* t, int sc,
+                                  bool enforce);
     bool readResource(Resource* parent);
     bool readResourceSupplement();
     bool readResourceBody(Resource* r);
@@ -129,7 +131,7 @@ private:
     Booking* readBooking();
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
-    bool readPlanTimeFrame(double& d, bool workingDays);
+    bool readTimeFrame(double& d, bool workingDays);
     bool readDate(time_t& val, time_t correction);
     bool readRealFormat(RealFormat* format);
     bool readReference(QString& ref, QString& label);

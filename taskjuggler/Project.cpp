@@ -410,7 +410,7 @@ Project::scheduleAllScenarios()
     if (DEBUGPS(1))
         qDebug("Scheduling plan scenario...");
     prepareScenario(Task::Plan);
-    if (!schedule("Plan"))
+    if (!schedule(0))
     {
         if (DEBUGPS(2))
             qDebug("Scheduling errors in plan scenario.");
@@ -423,7 +423,7 @@ Project::scheduleAllScenarios()
         if (DEBUGPS(1))
             qDebug("Scheduling actual scenario...");
         prepareScenario(Task::Actual);
-        if (!schedule("Actual"))
+        if (!schedule(1))
         {
             if (DEBUGPS(2))
                 qDebug("Scheduling errors in actual scenario.");
@@ -473,7 +473,7 @@ Project::finishScenario(int sc)
 }
 
 bool
-Project::schedule(const QString& scenario)
+Project::schedule(int sc)
 {
     bool error = FALSE;
 
@@ -529,14 +529,14 @@ Project::schedule(const QString& scenario)
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
 
-    if (!checkSchedule(scenario))
+    if (!checkSchedule(sc))
         error = TRUE;
 
     return !error;
 }
 
 bool
-Project::checkSchedule(const QString& scenario) const
+Project::checkSchedule(int sc) const
 {
     int errors = 0;
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
@@ -544,12 +544,12 @@ Project::checkSchedule(const QString& scenario) const
         /* Only check top-level tasks, since they recursively check their sub
          * tasks. */
         if ((*tli)->getParent() == 0)
-            (*tli)->scheduleOk(errors, scenario);
+            (*tli)->scheduleOk(sc, errors);
         if (errors >= 10)
         {
             TJMH.errorMessage
                 (i18n("Too many errors in %1 scenario. Giving up.")
-                 .arg(scenario.lower()));
+                 .arg(getScenarioId(sc)));
             break;
         }
     }

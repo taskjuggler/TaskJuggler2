@@ -1069,9 +1069,27 @@ ProjectFile::readTaskBody(Task* task)
     
     for (bool done = false ; !done; )
     {
+        QString next;
+        TokenType nextTT;
         switch (tt = nextToken(token))
         {
         case ID:
+            if ((nextTT = nextToken(next)) == COLON)
+            {
+                int sc;
+                if ((sc = proj->getScenarioIndex(token)) < 1)
+                {
+                    errorMessage(i18n("Scenario ID expected. '%1' is not "
+                                      "a defined scenario.").arg(token));
+                    return FALSE;
+                }
+                tt = nextToken(token);
+                if (readTaskScenarioAttribute(token, task, sc - 1, TRUE) < 1)
+                    return FALSE;
+                continue;
+            }
+            else
+                returnToken(nextTT, next);
             if (proj->getTaskAttribute(token))
             {
                 if (!readCustomAttribute(task, token,
@@ -1079,6 +1097,8 @@ ProjectFile::readTaskBody(Task* task)
                                          getType()))
                     return FALSE;
             }
+            else if ((readTaskScenarioAttribute(token, task, 0, FALSE)) > 0)
+                ;   // intentionally empty statement
             else if (token == KW("task"))
             {
                 if (!readTask(task))
@@ -1094,155 +1114,75 @@ ProjectFile::readTaskBody(Task* task)
                     return FALSE;
                 }
             }
-            else if (token == KW("statusnote"))
-            {
-                if ((tt = nextToken(token)) == STRING)
-                    task->setStatusNote(Task::Plan, token);
-                else
-                {
-                    errorMessage(i18n("String expected"));
-                    return FALSE;
-                }
-            }
             else if (token == KW("milestone"))
             {
                 task->setMilestone();
             }
-            else if (token == KW("start"))
+            else if (token == "actualstart")
             {
-                time_t val;
-                if (!readDate(val, 0))
-                    return FALSE;
-                task->setStart(Task::Plan, val);
-                task->setScheduling(Task::ASAP);
-            }
-            else if (token == KW("end"))
-            {
-                time_t val;
-                if (!readDate(val, 1))
-                    return FALSE;
-                task->setEnd(Task::Plan, val);
-                task->setScheduling(Task::ALAP);
-            }
-            else if (token == KW("actualstart"))
-            {
+                errorMessage(i18n("WARNING: 'actualstart' has been "
+                                  "deprecated. Please use 'actual:start' "
+                                  "instead."));
                 time_t val;
                 if (!readDate(val, 0))
                     return FALSE;
                 task->setStart(Task::Actual, val);
                 task->setScheduling(Task::ASAP);
             }
-            else if (token == KW("actualend"))
+            else if (token == "actualend")
             {
+                errorMessage(i18n("WARNING: 'actualend' has been "
+                                  "deprecated. Please use 'actual:end' "
+                                  "instead."));
                 time_t val;
                 if (!readDate(val, 1))
                     return FALSE;
                 task->setEnd(Task::Actual, val);
                 task->setScheduling(Task::ALAP);
             }
-            else if (token == KW("minstart"))
+            else if (token == "actuallength")
             {
-                time_t val;
-                if (!readDate(val, 0))
-                    return FALSE;
-                task->setMinStart(val);
-            }
-            else if (token == KW("maxstart"))
-            {
-                time_t val;
-                if (!readDate(val, 0))
-                    return FALSE;
-                task->setMaxStart(val);
-            }
-            else if (token == KW("minend"))
-            {
-                time_t val;
-                if (!readDate(val, 0))
-                    return FALSE;
-                task->setMinEnd(val);
-            }
-            else if (token == KW("maxend"))
-            {
-                time_t val;
-                if (!readDate(val, 0))
-                    return FALSE;
-                task->setMaxEnd(val);
-            }
-            else if (token == KW("length"))
-            {
+                errorMessage(i18n("WARNING: 'actuallength' has been "
+                                  "deprecated. Please use 'actual:length' "
+                                  "instead."));
                 double d;
-                if (!readPlanTimeFrame(d, TRUE))
-                    return FALSE;
-                task->setLength(Task::Plan, d);
-            }
-            else if (token == KW("effort"))
-            {
-                double d;
-                if (!readPlanTimeFrame(d, TRUE))
-                    return FALSE;
-                task->setEffort(Task::Plan, d);
-            }
-            else if (token == KW("duration"))
-            {
-                double d;
-                if (!readPlanTimeFrame(d, FALSE))
-                    return FALSE;
-                task->setDuration(Task::Plan, d);
-            }
-            else if (token == KW("actuallength"))
-            {
-                double d;
-                if (!readPlanTimeFrame(d, TRUE))
+                if (!readTimeFrame(d, TRUE))
                     return FALSE;
                 task->setLength(Task::Actual, d);
             }
-            else if (token == KW("actualeffort"))
+            else if (token == "actualeffort")
             {
+                errorMessage(i18n("WARNING: 'actualeffort' has been "
+                                  "deprecated. Please use 'actual:effort' "
+                                  "instead."));
                 double d;
-                if (!readPlanTimeFrame(d, TRUE))
+                if (!readTimeFrame(d, TRUE))
                     return FALSE;
                 task->setEffort(Task::Actual, d);
             }
-            else if (token == KW("actualduration"))
+            else if (token == "actualduration")
             {
+                errorMessage(i18n("WARNING: 'actualduration' has been "
+                                  "deprecated. Please use 'actual:duration' "
+                                  "instead."));
                 double d;
-                if (!readPlanTimeFrame(d, FALSE))
+                if (!readTimeFrame(d, FALSE))
                     return FALSE;
                 task->setDuration(Task::Actual, d);
             }
-            else if (token == KW("planscheduled"))
+            else if (token == "planscheduled")
+            {
+                errorMessage(i18n("WARNING: 'planscheduled' has been "
+                                  "deprecated. Please use 'plan:scheduled' "
+                                  "instead."));
                 task->setScheduled(Task::Plan, TRUE);
-            else if (token == KW("actualscheduled"))
+            }
+            else if (token == "actualscheduled")
+            {
+                errorMessage(i18n("WARNING: 'actualscheduled' has been "
+                                  "deprecated. Please use 'actual:scheduled' "
+                                  "instead."));
                 task->setScheduled(Task::Actual, TRUE);
-            else if (token == KW("complete"))
-            {
-                if (nextToken(token) != INTEGER)
-                {
-                    errorMessage(i18n("Integer value expected"));
-                    return FALSE;
-                }
-                int complete = token.toInt();
-                if (complete < 0 || complete > 100)
-                {
-                    errorMessage(i18n("Value of complete must be between 0 "
-                                      "and 100"));
-                    return FALSE;
-                }
-                task->setComplete(Task::Plan, complete);
-            }
-            else if (token == KW("startbuffer"))
-            {
-                double value;
-                if (!readPercent(value))
-                    return FALSE;
-                task->setStartBuffer(Task::Plan, value);
-            }
-            else if (token == KW("endbuffer"))
-            {
-                double value;
-                if (!readPercent(value))
-                    return FALSE;
-                task->setEndBuffer(Task::Plan, value);
             }
             else if (token == KW("responsible"))
             {
@@ -1385,24 +1325,6 @@ ProjectFile::readTaskBody(Task* task)
                 }
                 task->setAccount(proj->getAccount(account));
             }
-            else if (token == KW("startcredit"))
-            {
-                if (nextToken(token) != REAL)
-                {
-                    errorMessage(i18n("Real value expected"));
-                    return FALSE;
-                }
-                task->setStartCredit(Task::Plan, token.toDouble());
-            }
-            else if (token == KW("endcredit"))
-            {
-                if (nextToken(token) != REAL)
-                {
-                    errorMessage(i18n("Real value expected"));
-                    return FALSE;
-                }
-                task->setEndCredit(Task::Plan, token.toDouble());
-            }
             else if (token == KW("projectid"))
             {
                 if (nextToken(token) != ID ||
@@ -1452,12 +1374,158 @@ ProjectFile::readTaskBody(Task* task)
             done = true;
             break;
         default:
-            errorMessage(i18n("Syntax Error at '%1'").arg(token));
+            errorMessage(i18n("Task attribute expected. '%1' is no "
+                              "known task attribute.").arg(token));
             return FALSE;
         }
     }
 
     return TRUE;
+}
+
+int
+ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
+                                       int sc, bool enforce)
+{
+    if (attribute == KW("length"))
+    {
+        double d;
+        if (!readTimeFrame(d, TRUE))
+            return -1;
+        task->setLength(sc, d);
+    }
+    else if (attribute == KW("effort"))
+    {
+        double d;
+        if (!readTimeFrame(d, TRUE))
+            return -1;
+        task->setEffort(sc, d);
+    }
+    else if (attribute == KW("duration"))
+    {
+        double d;
+        if (!readTimeFrame(d, FALSE))
+            return -1;
+        task->setDuration(sc, d);
+    }
+    else if (attribute == KW("start"))
+    {
+        time_t val;
+        if (!readDate(val, 0))
+            return -1;
+        task->setStart(sc, val);
+        task->setScheduling(Task::ASAP);
+    }
+    else if (attribute == KW("end"))
+    {
+        time_t val;
+        if (!readDate(val, 1))
+            return -1;
+        task->setEnd(sc, val);
+        task->setScheduling(Task::ALAP);
+    }
+    else if (attribute == KW("minstart"))
+    {
+        time_t val;
+        if (!readDate(val, 0))
+            return -1;
+        task->setMinStart(sc, val);
+    }
+    else if (attribute == KW("maxstart"))
+    {
+        time_t val;
+        if (!readDate(val, 0))
+            return -1;
+        task->setMaxStart(sc, val);
+    }
+    else if (attribute == KW("minend"))
+    {
+        time_t val;
+        if (!readDate(val, 0))
+            return -1;
+        task->setMinEnd(sc, val);
+    }
+    else if (attribute == KW("maxend"))
+    {
+        time_t val;
+        if (!readDate(val, 0))
+            return -1;
+        task->setMaxEnd(sc, val);
+    }
+    else if (attribute == KW("scheduled"))
+        task->setScheduled(sc, TRUE);
+    else if (attribute == KW("startbuffer"))
+    {
+        double value;
+        if (!readPercent(value))
+            return -1;
+        task->setStartBuffer(sc, value);
+    }
+    else if (attribute == KW("endbuffer"))
+    {
+        double value;
+        if (!readPercent(value))
+            return -1;
+        task->setEndBuffer(sc, value);
+    }
+    else if (attribute == KW("complete"))
+    {
+        QString token;
+        if (nextToken(token) != INTEGER)
+        {
+            errorMessage(i18n("Integer value expected"));
+            return -1;
+        }
+        int complete = token.toInt();
+        if (complete < 0 || complete > 100)
+        {
+            errorMessage(i18n("Value of complete must be between 0 "
+                              "and 100"));
+            return -1;
+        }
+        task->setComplete(sc, complete);
+    }
+    else if (attribute == KW("statusnote"))
+    {
+        QString token;
+        if (nextToken(token) == STRING)
+            task->setStatusNote(sc, token);
+        else
+        {
+            errorMessage(i18n("String expected"));
+            return -1;
+        }
+    }
+    else if (attribute == KW("startcredit"))
+    {
+        QString token;
+        if (nextToken(token) != REAL)
+        {
+            errorMessage(i18n("Real value expected"));
+            return -1;
+        }
+        task->setStartCredit(sc, token.toDouble());
+    }
+    else if (attribute == KW("endcredit"))
+    {
+        QString token;
+        if (nextToken(token) != REAL)
+        {
+            errorMessage(i18n("Real value expected"));
+            return -1;
+        }
+        task->setEndCredit(sc, token.toDouble());
+    }
+    else if (enforce)
+    {
+        // Only if the enforce flag is set an unknown attribute is an error.
+        errorMessage(i18n("Scenario specific task attribute expected."));
+        return -1;
+    }
+    else
+        return 0;
+
+    return 1;
 }
 
 bool
@@ -2248,7 +2316,7 @@ ProjectFile::readTimeValue(ulong& value)
 }
 
 bool
-ProjectFile::readPlanTimeFrame(double& value, bool workingDays)
+ProjectFile::readTimeFrame(double& value, bool workingDays)
 {
     QString val;
     TokenType tt;
@@ -2837,6 +2905,15 @@ ProjectFile::readHTMLStatusReport()
                     return FALSE;
                 }
                 report->setRawTail(token);
+            }
+            else if (token == KW("rawstylesheet"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                report->setRawStyleSheet(token);
             }
             else
             {

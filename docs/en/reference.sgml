@@ -1285,16 +1285,113 @@ digits.</para>
 
 </sect2>
 </sect1>
+<sect1 id="htmlstatusreport"><title>htmlstatusreport &lt;filename&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>filename:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Generates a report covering the current status of the project.
+The report consists of 4 tables. The first lists all tasks that should
+have been finished already, but are not. The scenario specific
+attribute <link linkend="task_statusnote">statusnote</link> can be
+used to explain the reason for the delay of add a more detailed
+description of the task status. The second table lists all tasks that
+are still in progress and are on or ahead of schedule. The third table
+lists all task that have been completed during the report interval.
+The default interval is one week, but can be changed by specifying
+another start and end date. The fourth table lists all task that will
+start during the next report interval, by default, the next week. 
+
+<para>Optional attributes:</para>
+
+<sect2 id="htmlstatusreport_caption"><title>caption &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the caption used for the report. The caption is printed right
+above the task list.</para>
+
+</sect2>
+<sect2 id="htmlstatusreport_headline"><title>headline
+&lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>Defines the headline used for the report. The headline is printed on
+top of the page and with a larger font.</para>
+
+</sect2>
+<sect2 id="htmlstatusreport_rawhead"><title>rawhead &lt;html&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>html:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>The <computeroutput>rawhead</computeroutput> attribute can be
+used to insert HTML code between the <link
+linkend="htmlstatusreport_caption">caption</link> and the table.</para>
+
+</sect2>
+<sect2 id="htmlstatusreport_rawstylesheet"><title>rawstylesheet
+&lt;html&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>html:</member><member><link
+linkend="string">STRING</link><member>
+</simplelist></para>
+
+<para>The <computeroutput>rawstylesheet</computeroutput> attribute can
+be used to change the style sheet of the html report. The default
+style sheet looks similar to this one:</para>
+
+<para><screen>
+.default { background-color:#f3ebae; font-size:70%; text-align:center }
+.defaultlight { background-color:#fffadd; font-size:70%; text-align:center }
+.task { background-color:#f3ebae; font-size:100%; text-align:left }
+.tasklight { background-color:#fffadd; font-size:100%; text-align:left }
+.available { background-color:#a4ff8d; font-size:70%; text-align:center }
+.vacation { background-color:#fffc60; font-size:70%; text-align:center }
+.weekend { background-color:#ffec80; font-size:70%; text-align:center }
+.milestone { background-color:#ff2a2a; font-size:70%; text-align:center }
+.booked { background-color:#ff9191; font-size:70%; text-align:center }
+.bookedlight { background-color:#ffbfbf; font-size:70%; text-align:center }
+.headersmall { background-color:#a5c2ff; font-size:70%; text-align:center }
+.headerbig { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
+.completed { background-color:#87ff75; font-size:70%; text-align:center }
+.completedlight { background-color:#a1ff9a; font-size:70%; text-align:center }
+.today { background-color:#a387ff; font-size:70%; text-align:center }
+</screen></para>
+
+</sect2>
+<sect2 id="htmlstatusreport_table"><title>table &lt;number&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>number:</member><member>Specifies the index of the report (1 -
+4)</member>
+</simplelist></para>
+
+<para>The report consists of 4 specilized htmltaskreport tables. With
+this attribute the user can customize the tables towards the
+individual needs.</para>
+
+<para>Optional attributes:</para>
+
+<para>See <link linkend="htmltaskreport">htmltaskreport</link>.</para>
+</sect2>
+</sect1>
 <sect1 id="htmlweeklycalendar"><title>htmlweeklycalendar
 &lt;filename&gt;</title>
 
 <para><simplelist type=horiz columns=2>
 <member>filename:</><member><link linkend="string">STRING</link></>
 </simplelist></para>
-
-<para>Optional attributes:</para>
-
-<para>See <link linkend="htmltaskreport">htmltaskreport</link></para>
 
 </sect1>
 <sect1 id="icalreport"><title>icalreport &lt;filename&gt;</title>
@@ -1497,6 +1594,67 @@ The value you specify should match the settings you specified for
 <para>Use the specified day and time for computation of the project status
 instead of the current moment.<para>
 
+</sect2>
+<sect2 id="project_extend"><title>extend &lt;property&gt; {
+	[&lt;attribute definition&gt;] } 
+	</title>
+
+<para><simplelist type=horiz columns=2>
+<member>property:</member><member>Which property you like to extend.
+Possible values are <computeroutput>task</computeroutput>,
+<computeroutput> resource</computeroutput> or <computeroutput>
+account</computeroutput></member>
+<member>attribute definition:</member><member>See below.</member>
+</simplelist></para>
+
+<para>Often it is desireable to collect more information in the
+project file than is necessary for task scheduling and resource
+allocation. To add such information to tasks, resources or accounts
+the user can extend these properties with user-defined attributes. The
+new attributes can be <computeroutput>text</computeroutput> or
+<computeroutput>reference</computeroutput> attributes. Optionally the
+user can specify if the attribute value should be inherited from the
+enclosing property.</para>
+
+<sect3 id="project_extend_attribute"><title>&lt;type&gt; &lt;id&gt;
+&lt;name&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>type:</member><member>Specifies the type of the user-defined
+attribute. <computeroutput>text</computeroutput> is a simple text
+attribute. <computeroutput>reference</computeroutput> is an URL to
+another document.</member>
+<member>id:</member><member>An user-defined ID that is unique within
+the used-defined task attributes. To avoid conflicts with future
+built-in attributes, all user defined attributes must start with a
+capital letter.</member>
+<member>name:</member><member>A short description of the attribute. It
+will be used as default column header in reports.</member>
+</simplelist></para>
+
+<para>The following example shows how user-defined attributes can be
+used.</para>
+
+<para><screen>
+project prj "Project" "1.0" 2003-06-15 2003-07-15 {
+	extend task {
+		text MyText "My Text" { inherit }
+		reference MyLink "My Link"
+	}
+}
+
+task myTask "My Task" {
+	start 2003-06-15
+	milestone
+	MyText "This is a little text I wrote"
+	MyLink "http://www.taskjuggler.org" { label "The Taskjuggler Web Site"}
+}
+
+htmltaskreport "report.html" {
+	columns no, name, MyText, MyLink
+}
+</screen></para>
+</sect3>
 </sect2>
 <sect2 id="project_numberformat"><title>numberformat 
 &lt;negativeprefix&gt;
@@ -2700,6 +2858,15 @@ tasks starts.</para>
 
 <para>See also: <link linkend="account">account</link>, <link
 linkend="task_endcredit">endcredit</link></para>
+
+</sect2>
+<sect2 id="task_statusnote"><title>statusnote &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</member><member><link linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>A description or explanation of the task status.</para>
 
 </sect2>
 <sect2 id="task_task"><title>task &lt;id&gt; &lt;name&gt;</title>

@@ -47,7 +47,7 @@ task amelioration "Amelioration" {
         }
         task nomrex "Creation du nom du REX" {
                 effort 6h
-								actualeffort 12h
+								actual:effort 12h
                 depends !gesttable
                 allocate Ekow {
                     alternative pmm

@@ -158,16 +158,19 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
             s << "  start " << start << endl
                 << "  end " << end << endl;
             if ((*tli)->getScheduled(Task::Plan))
-                s << "  planscheduled" << endl;
-            // TODO: Fix scenario handling
-            if (scenarios.count() > 1)
+                s << "  scheduled" << endl;
+            for (QValueListIterator<int> it = scenarios.begin(); 
+                 it != scenarios.end(); ++it)
             {
                 start = time2rfc((*tli)->getStart(1));
                 end = time2rfc((*tli)->getEnd(Task::Actual) + 1);
-                s << "  actualstart " << start << endl
-                    << "  actualend " << end << endl;
+                s << "  " << project->getScenarioId(*it) << ":"
+                    << "start " << start << endl
+                    << "  " << project->getScenarioName(*it) << ":"
+                    << "end " << end << endl;
                 if ((*tli)->getScheduled(Task::Actual))
-                    s << "  actualscheduled" << endl;
+                    s << "  " << project->getScenarioName(*it) << ":"
+                        << "scheduled" << endl;
             }
         }
 
@@ -323,31 +326,70 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
                         s << "  note \"" << (*tli)->getNote() << "\"" << endl;
                     break;
                 case TA_MINSTART:
-                    if ((*tli)->getMinStart() != 0)
-                        s << "  minstart " << time2rfc((*tli)->getMinStart()) 
-                            << endl;
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if ((*tli)->getMinStart(*it) != 0)
+                            s << "  " << project->getScenarioId(*it) << ":"
+                                << "minstart " 
+                                << time2rfc((*tli)->getMinStart(*it)) 
+                                << endl;
+                    }
                     break;
+                }
                 case TA_MAXSTART:
-                    if ((*tli)->getMaxStart() != 0)
-                        s << "  maxstart " << time2rfc((*tli)->getMaxStart()) 
-                            << endl;
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if ((*tli)->getMaxStart(*it) != 0)
+                            s << "  " << project->getScenarioId(*it) << ":"
+                                << "maxstart " 
+                                << time2rfc((*tli)->getMaxStart(*it)) 
+                                << endl;
+                    }
                     break;
+                }
                 case TA_MINEND:
-                    if ((*tli)->getMinEnd() != 0)
-                        s << "  minend " << time2rfc((*tli)->getMinEnd())
-                            << endl;
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if ((*tli)->getMinEnd(*it) != 0)
+                            s << "  " << project->getScenarioId(*it) << ":"
+                                << "minend " 
+                                << time2rfc((*tli)->getMinEnd(*it))
+                                << endl;
+                    }
                     break;
+                }
                 case TA_MAXEND:
-                    if ((*tli)->getMaxEnd() != 0)
-                        s << "  maxend " << time2rfc((*tli)->getMaxEnd())
-                            << endl;
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if ((*tli)->getMaxEnd(*it) != 0)
+                            s << "  " << project->getScenarioId(*it) << ":"
+                                << "maxend " 
+                                << time2rfc((*tli)->getMaxEnd(*it))
+                                << endl;
+                    }
                     break;
+                }
                 case TA_COMPLETE:
-                    // TODO: Fix scenario handling
-                    if ((*tli)->getComplete(Task::Plan) >= 0.0)
-                        s << "  complete " 
-                            << (int) (*tli)->getComplete(Task::Plan) << endl;
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if ((*tli)->getComplete(*it) >= 0.0)
+                            s << "  " << project->getScenarioId(*it) << ":"
+                                << "complete " 
+                                << (int) (*tli)->getComplete(Task::Plan) 
+                                << endl;
+                    }
                     break;
+                }
                 case TA_RESPONSIBLE:
                     if ((*tli)->getResponsible())
                         s << "  responsible " 

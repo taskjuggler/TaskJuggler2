@@ -71,7 +71,7 @@ FileInfo::getC(bool expandMacros)
     else
     {
         c = ungetBuf.last();
-        ungetBuf.remove(ungetBuf.fromLast());
+        ungetBuf.pop_back();
         if (c.unicode() == EOMacro)
         {
             macroStack.removeLast();
@@ -375,6 +375,8 @@ FileInfo::nextToken(QString& token)
                 return COMMA;
             case '~':
                 return TILDE;
+            case ':':
+                return COLON;
             case '-':
                 return MINUS;
             case '&':

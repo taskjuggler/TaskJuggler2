@@ -1,20 +1,28 @@
-- Document user-defined attributes.
+For 1.9.0:
 - Save user-defined attributes to XML.
+- Implement 'mandatory' attribute for task allocations.
+- Document user-defined attributes.
+- Document optional column attributes
+- Document htmlstatusreport
+
+For 1.9.1:
 - Remove old color support
 - Complete new color support
 - Color support for tasks and resources
-- Document optional column attributes
-- Document htmlstatusreport
+
+For 2.0:
 - Finish multi scenario support
-- Generic HTML report
-- CSV reports
-- Implement 'mandatory' attribute for task allocations.
-- Allocation selection by skill set.
-- Add support for flexible rates (per task, per shift)
-- Global cost function driven optimizer.
 - Improve scheduler performance.
 - Improve report generation performance.
 - Explain more features with examples in the documentation.
+- Remove KDE dependencies from base components.
+
+After 2.0:
+- Generic HTML report
+- CSV reports
+- Allocation selection by skill set.
+- Add support for flexible rates (per task, per shift)
+- Global cost function driven optimizer.
 - Read XML files just like *.tjp files.
 - Calculate earliest start and latest end.
 - Add support for risk documentation.

@@ -1,13 +1,13 @@
 task t1 "|->" {
   start 2003-01-06-00:00:00-+0000
   end 2003-01-11-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
 }
 task m8 "-D M -" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-11-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -15,7 +15,7 @@ task m8 "-D M -" {
 task m10_asap "-D M -D (ASAP)" {
   start 2003-01-11-00:00:00-+0000
   end 2003-01-11-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -23,21 +23,21 @@ task m10_asap "-D M -D (ASAP)" {
 task m1 "|  M -" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-13-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
 }
 task m2 "|  M -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-13-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
 }
 task m3 "|D M -" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-13-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -45,7 +45,7 @@ task m3 "|D M -" {
 task m4 "|D M -D" {
   start 2003-01-13-00:00:00-+0000
   end 2003-01-13-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -53,21 +53,21 @@ task m4 "|D M -D" {
 task m5 "- M |" {
   start 2003-01-18-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
 }
 task m7 "- M |D" {
   start 2003-01-18-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
 }
 task m9 "-D M |" {
   start 2003-01-18-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -75,7 +75,7 @@ task m9 "-D M |" {
 task m11 "-D M |D" {
   start 2003-01-18-00:00:00-+0000
   end 2003-01-18-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -83,14 +83,14 @@ task m11 "-D M |D" {
 task m6 "- M -D" {
   start 2003-01-20-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
 }
 task m10_alap "-D M -D (ALAP)" {
   start 2003-01-20-00:00:00-+0000
   end 2003-01-20-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   milestone 
   depends t1
@@ -98,7 +98,7 @@ task m10_alap "-D M -D (ALAP)" {
 task t2 "<-|" {
   start 2003-01-20-00:00:00-+0000
   end 2003-01-27-00:00:00-+0000
-  planscheduled
+  scheduled
   projectid prj
   depends m2, m4, m6, m7, m10_asap, m10_alap, m11
 }
