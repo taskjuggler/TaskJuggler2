@@ -6,35 +6,42 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
+ *
+ * $Id$
  */
 
 #ifndef _Project_h_
 #define _Project_h_
 
-#include "time.h"
+#include <time.h>
+#include <stdio.h>
 
 #include <qlist.h>
 
 #include "Task.h"
 #include "ResourceList.h"
 #include "VacationList.h"
+#include "Account.h"
 
 class Project
 {
 public:
-	Project()
-	{
-		start = 0;
-		end = (time_t) ~((time_t) 0);
-		minEffort = 0.0;
-		maxEffort = 1.0;
-		rate = 0.0;
-	}
+	Project();
 	~Project() { }
 
 	bool addTask(Task* t);
-	void printText();
 	bool pass2();
+
+	void printText();
+
+	bool reportHTMLTaskList();
+	bool reportHTMLHeader(FILE* f);
+	bool reportHTMLFooter(FILE* f);
+
+	bool reportHTMLResourceList();
+
+	void setPriority(int p) { priority = p; }
+	int getPriority() const { return priority; }
 
 	void setStart(time_t s) { start = s; }
 	time_t getStart() const { return start; }
@@ -59,11 +66,20 @@ public:
 
 	void addResource(Resource* r)
 	{
-		resourceList.add(r);
+		resourceList.append(r);
 	}
 	Resource* getResource(const QString& id)
 	{
 		return resourceList.getResource(id);
+	}
+
+	void addAccount(Account* a)
+	{
+		accountList.inSort(a);
+	}
+	Account* getAccount(const QString& id)
+	{
+		return accountList.getAccount(id);
 	}
 
 	void setMinEffort(double m) { minEffort = m; }
@@ -75,8 +91,29 @@ public:
 	void setRate(double r) { rate = r; }
 	double getRate() const { return rate; }
 
+	void setHtmlTaskReport(const QString& f) { htmlTaskReport = f; }
+	void addHtmlTaskReportColumn(const QString& c)
+	{
+		htmlTaskReportColumns.append(c);
+	}
+
+	void setHtmlResourceReport(const QString& f) { htmlResourceReport = f; }
+	void setHtmlResourceReportStart(time_t t) { htmlResourceReportStart = t; }
+	void setHtmlResourceReportEnd(time_t t) { htmlResourceReportEnd = t; }
+
+	void addAllowedFlag(QString flag)
+	{
+		if (!isAllowedFlag(flag))
+			allowedFlags.append(flag);
+	}
+	bool isAllowedFlag(const QString& flag)
+	{
+		return allowedFlags.contains(flag) > 0;
+	}
+	
 private:
 	bool checkSchedule();
+	QString htmlFilter(const QString& s);
 
 	int unscheduledTasks();
 	time_t start;
@@ -86,14 +123,32 @@ private:
 	QString name;
 	QString manager;
 
+	/* The default priority that will be inherited by all tasks. Sub tasks
+	 * will inherit the priority of its parent task. */
+	int priority;
+
 	// Default values for Resource variables
 	double minEffort;
 	double maxEffort;
 	double rate;
 
-	QList<Task> taskList;
+	/* To be able to detect flag conflicts between multiple parts of a project
+	 * all flags must be registered before they can be used. This variable
+	 * contains the list of all registered flags. Some flags like 'hidden'
+	 * or 'closed' are pre-registered and will be set automatically. */
+	QStringList allowedFlags;
+
+	TaskList taskList;
 	ResourceList resourceList;
 	VacationList vacationList;
+	AccountList accountList;
+
+	QString htmlTaskReport;
+	QStringList htmlTaskReportColumns;
+
+	QString htmlResourceReport;
+    time_t htmlResourceReportStart;
+	time_t htmlResourceReportEnd;
 } ;
 
 #endif

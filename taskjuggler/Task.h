@@ -24,6 +24,7 @@
 
 class Project;
 class Resource;
+class Account;
 
 class Allocation
 {
@@ -68,6 +69,9 @@ public:
 	void setNote(const QString& d) { note = d; }
 	const QString& getNote() const { return note; }
 
+	void setPriority(int p) { priority = p; }
+	int getPriority() const { return priority; }
+
 	void setStart(time_t s) { start = s; }
 	const time_t getStart() const { return start; }
 	const QString getStartISO() const { return time2ISO(start); }
@@ -77,11 +81,31 @@ public:
 	const QString getEndISO() const { return time2ISO(end); }
 
 	void setMinStart(time_t s) { minStart = s; }
+	time_t getMinStart() const { return minStart; }
+
 	void setMaxStart(time_t s) { maxStart = s; }
+	time_t getMaxStart() const { return maxStart; }
+
 	void setMinEnd(time_t e) { minEnd = e; }
+	time_t getMinEnd() const { return minEnd; }
+
 	void setMaxEnd(time_t e) { maxEnd = e; }
+	time_t getMaxEnd() const { return maxEnd; }
+
 	void setActualStart(time_t s) { actualStart = s; }
+	time_t getActualStart() const { return actualStart; }
+
 	void setActualEnd(time_t e) { actualEnd = e; }
+	time_t getActualEnd() const { return actualEnd; }
+
+	bool isStartOk()
+	{
+		return start >= minStart && start <= maxStart;
+	}
+	bool isEndOk()
+	{
+		return end >= minEnd && end <= maxEnd;
+	}
 
 	void setLength(int days) { length = days; }
 	int getLength() const { return length; }
@@ -93,21 +117,54 @@ public:
 	double getComplete() const { return complete; }
 
 	void addDependency(const QString& id) { depends.append(id); }
+	Task* firstPrevious() { return previous.first(); }
+	Task* nextPrevious() { return previous.next(); }
+
 	void addFollower(Task* t) { followers.append(t); }
+	Task* firstFollower() { return followers.first(); }
+	Task* nextFollower() { return followers.next(); }
 
 	void addAllocation(Allocation* a) { allocations.append(a); }
+	Allocation* firstAllocation() { return allocations.first(); }
+	Allocation* nextAllocation() { return allocations.next(); }
+
+	void addBookedResource(Resource* r)
+	{
+		if (bookedResources.find(r) == -1)
+			bookedResources.inSort(r);
+	}
+	Resource* firstBookedResource() { return bookedResources.first(); }
+	Resource* nextBookedResource() { return bookedResources.next(); }
 
 	Task* getParent() const { return parent; }
 	void addSubTask(Task* t) { subTasks.append(t); }
 
 	bool xRef(QDict<Task>& hash);
+	QString resolveId(QString relId);
 	bool schedule(time_t reqStart);
-	void scheduleContainer();
 	bool isScheduled();
 	bool scheduleOK();
 
+	void setAccount(Account* a) { account = a; }
+
+	void addFlag(QString flag)
+	{
+		if (!hasFlag(flag))
+			flags.append(flag);
+	}
+	void clearFlag(const QString& flag)
+	{
+		flags.remove(flag);
+	}
+	bool hasFlag(const QString& flag)
+	{
+		return flags.contains(flag) > 0;
+	}
+
 private:
-	bool bookResource(time_t day, bool& workStarted, double& done);
+	bool scheduleContainer();
+	bool bookResources(time_t day, bool& workStarted,
+					   double& done, double& costs);
 	bool isWorkingDay(time_t day) const;
 	time_t nextWorkingDay(time_t day) const;
 	time_t earliestStart();
@@ -130,6 +187,10 @@ private:
 	QString file;
 	// Line in the file where the task definition starts
 	int line;
+
+	/* The priority is used during scheduling. The higher the priority the
+	 * more likely the task will get the requested resources. */
+	int priority;
 
 	// Day when the task should start
 	time_t start;
@@ -155,7 +216,10 @@ private:
 	int complete;
 
 	// Account where the costs of the task are credited to.
-	QString account;
+	Account* account;
+
+	// A list of flags that can be used to select a sub-set of tasks.
+	QStringList flags;
 
 	// List of tasks Ids that need to be completed before this task can start
 	QStringList depends;
@@ -165,12 +229,25 @@ private:
 	QList<Task> followers;
 	// List of resource allocations requested by the task
 	QList<Allocation> allocations;
+	// List of booked resources
+	QList<Resource> bookedResources;
+} ;
+
+class TaskList : public QList<Task>
+{
+public:
+	TaskList();
+	virtual ~TaskList();
+
+	enum SortCriteria { PrioUp, PrioDown };
+
+	void setSorting(SortCriteria s) { sorting = s; }
+
+protected:
+	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+
+private:
+	SortCriteria sorting;
 } ;
 
 #endif
-
-
-
-
-
-

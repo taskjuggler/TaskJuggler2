@@ -1,22 +1,161 @@
-start 2002-10-13
+# This is a test file for TaskJuggler
+
+start 2001-09-28 # The start Date.
+
+flags deadline, media
 
 vacation "Xmas" 2002-12-21 - 2003-01-04
 
+htmlTaskReport "test.html" no, task, start, end, depends, resources
+htmlResourceReport "resource.html" 2001-09-28 2001-12-12
+
 include "resource.task"
 
-task task1 "foo"{
-	start 2002-12-18
-	effort 10md
-	allocate joe { load 50 alternative bill }
+account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
+
+
+task sl80 "SuSE Linux 8.0" {
+
+task sl80start "Start of 8.0 development" {
+  start 2001-09-28
 }
 
-task task2 "foo 2" { effort 11md allocate bill depends task1 }
-
-task container "Container" {
-	task short1 "short1" { effort 0.5md allocate zman depends task1 }
-	task short2 "short2" { effort 0.6md allocate zman depends short1}
-	task task3 "foo 3" { effort 5md allocate bill depends task1 }
-	task untertask "unter" { length 20d depends task3, task2}
+task yast "YaST2 development"{
+  length 56d
+  depends !sl80start
 }
-task obertask "ober" { length 7d depends untertask}
 
+task pack "SL 8.0 package updates" {
+  length 56d
+  depends !sl80start
+}
+
+task dist "SL 8.0 distribution modifications" {
+  length 56d
+  depends !sl80start
+}
+
+
+task pre1 "SL 8.0 preview 1" {
+
+  task boot "SL 8.0 x86 make bootable system" {
+    length 5d
+    depends !!yast, !!pack, !!dist
+  }
+
+  task dl "SL 8.0 x86 deadline for preview 1 (1800 CET)" {
+    depends !boot
+    flags deadline
+  }
+
+  task build "SL 8.0 x86 build preview 1" {
+    length 2d
+    depends !boot
+  }
+
+  task done "SL 8.0 preview 1" {
+    depends !build
+    flags media
+  }
+}
+
+task pre2 "SL 8.0 preview2" {
+
+  task usable "SL 8.0 x86 make fairly usable system" {
+    length 5d
+    depends !!pre1.boot
+  }
+
+  task dl "SL 8.0 x86 deadline for preview 2 (1800 CET)" {
+    depends !usable
+    flags deadline
+  }
+
+  task build "SL 8.0 x86 build preview 2" {
+    length 2d
+    depends !usable
+  }
+
+  task done "SL 8.0 x86 preview 2" {
+    depends !build
+    flags media
+  }
+}
+
+task pre3 "SL 8.0 preview3" {
+
+  task usable "SL 8.0 x86 make usable system" {
+    length 5d
+    depends !!pre2.usable
+  }
+
+  task dl "SL 8.0 x86 deadline for preview 3 (1800 CET)" {
+    depends !usable
+    flags deadline
+  }
+
+  task build "SL 8.0 x86 build preview 3" {
+    length 2d
+    depends !usable
+  }
+
+  task done "SL 8.0 x86 preview 3" {
+    depends !build
+    flags media
+  }
+}
+
+
+task pre4 "SL 8.0 x86 preview 4" {
+
+  task work "SL 8.0 finish all major features" {
+    length 5d
+    depends !!pre3.usable
+  }
+
+  task dl "SL 8.0 x86 deadline for preview 4 (1800 CET)" {
+    depends !work
+    flags deadline
+  }
+
+  task build "SL 8.0 x86 build preview 4" {
+    length 2d
+    depends !work
+  }
+
+  task done "SL 8.0 x86 preview 4" {
+    depends !build
+    flags media
+  }
+}
+
+task beta1 "SL 8.0 beta1" {
+
+  task work "SL 8.0 finish all coding work" {
+    length 5d
+    depends !!pre4.work
+  }
+
+  task dl "SL 8.0 x86 deadline for beta 1 (1800 CET)" {
+    depends !work
+    flags deadline
+  }
+
+  task build "SL 8.0 x86 build beta 1" {
+    length 2d
+    depends !work
+  }
+
+  task ship "SL 8.0 x86 ship beta 1 to external testers" {
+    length 2d
+    depends !build
+    maxStart 2002-02-06
+  }
+
+  task test "SL 8.0 x86 test beta 1" {
+    length 2d
+    depends !build
+  }
+}
+
+}

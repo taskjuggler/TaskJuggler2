@@ -1,0 +1,8 @@
+Makefile
+config.status
+configure
+libtool
+config.log
+stamp-h
+config.h
+.cvsignore

@@ -1,6 +1,6 @@
 bin_PROGRAMS = taskjuggler
-taskjuggler_SOURCES = main.cpp ProjectFile.cpp Project.cpp Task.cpp \
-ResourceList.cpp VacationList.cpp Utility.cpp
+taskjuggler_SOURCES = Task.cpp ResourceList.cpp VacationList.cpp \
+Account.cpp Utility.cpp ProjectFile.cpp Project.cpp main.cpp
 
 SOURCES = main.cpp 
 INTERFACES = 

@@ -32,6 +32,18 @@ public:
 	bool open();
 	bool close();
 
+	int getC()
+	{
+		int c = getc(f);
+		lineBuf += c;
+		return c;
+	}
+	void ungetC(int c)
+	{
+		lineBuf = lineBuf.left(lineBuf.length() - 1);
+		ungetc(c, f);
+	}
+
 	const QString& getFile() const { return file; }
 	int getLine() const { return currLine; }
 
@@ -44,6 +56,7 @@ private:
 	QString file;
 	FILE* f;
 	int currLine;
+	QString lineBuf;
 	TokenType tokenTypeBuf;
 	QString tokenBuf;
 };
@@ -70,9 +83,11 @@ private:
 	bool readTask(Task* parent);
 	bool readResource();
 	bool readVacation();
+	bool readAccount();
 	bool readAllocate(Task* t);
 	bool readLength(Task* t);
 	bool readEffort(Task* t);
+	bool readPriority(int& priority);
 	time_t date2time(const QString& date);
 
 	QString masterFile;

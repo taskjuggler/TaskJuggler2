@@ -33,6 +33,37 @@ Resource::book(Booking* b)
 	return TRUE;
 }
 
+double
+Resource::getLoadOnDay(time_t date)
+{
+	double load = 0.0;
+
+	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		if (date == b->getDate())
+			load += b->getEffort();
+	return load;
+}
+
+double
+Resource::getLoadOnDay(time_t date, Task* task)
+{
+	double load = 0.0;
+
+	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		if (date == b->getDate() && task == b->getTask())
+			load += b->getEffort();
+	return load;
+}
+
+bool
+Resource::isBusyWith(Task* task)
+{
+	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		if (task == b->getTask())
+			return TRUE;
+	return FALSE;
+}
+
 int
 ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
@@ -40,12 +71,6 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	Resource* r2 = static_cast<Resource*>(i2);
 
 	return r1->getId().compare(r2->getId());
-}
-
-void
-ResourceList::add(Resource* r)
-{
-	inSort(r);
 }
 
 Resource*

@@ -20,21 +20,33 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	: project(proj), id(id_), name(n), parent(p), file(f), line(l)
 {
 	start = end = 0;
+	actualStart = actualEnd = 0;
+	length = 0;
+	effort = 0.0;
+	complete = -1;
+	note = "";
+	account = 0;
 	if (p)
 	{
+		// Set attributes that are inherited from parent task.
+		priority = p->priority;
 		minStart = p->minStart;
 		maxStart = p->maxStart;
 		minEnd = p->minEnd;
 		maxEnd = p->maxEnd;
+		flags = p->flags;
+		/* If parent task has attribute closed, all sub tasks will be
+		 * hidden. */
+		if (p->hasFlag("closed"))
+			addFlag("hidden");
 	}
 	else
 	{
-		minStart = maxStart = proj->getStart();
-		minEnd = maxEnd = proj->getEnd();
+		// Set attributes that are inherited from global attributes.
+		priority = proj->getPriority();
+		minStart = minEnd = proj->getStart();
+		maxStart = maxEnd = proj->getEnd();
 	}
-	actualStart = actualEnd = 0;
-	length = 0;
-	effort = 0.0;
 }
 
 void
@@ -46,11 +58,15 @@ Task::fatalError(const QString& msg) const
 bool
 Task::schedule(time_t reqStart)
 {
+	// Task is already scheduled.
+	if (start != 0 && end != 0)
+		return TRUE;
+
 	/* Check whether this task is a container tasks (task with sub-tasks).
-	 * Container tasks are scheduled when all other tasks have been
+	 * Container tasks are scheduled when all sub tasks have been
 	 * scheduled. */
 	if (!subTasks.isEmpty())
-		return TRUE;
+		return scheduleContainer();
 
 	if (start == 0)
 	{
@@ -67,6 +83,8 @@ Task::schedule(time_t reqStart)
 		{
 			start = earliestStart();
 		}
+		if (start == 0)
+			return FALSE;	// Task cannot be scheduled yet.
 	}
 
 	if (length > 0)
@@ -87,21 +105,32 @@ Task::schedule(time_t reqStart)
 		/* The effort of the task has been specified. We have look how much
 		 * the resources can contribute over the following workings days
 		 * until we have reached the specified effort. */
-		double done = 0;
+		if (allocations.count() == 0)
+		{
+			fatalError("No allocations specified for effort based task");
+			return FALSE;
+		}
+		double done = 0.0;
 		const int oneDay = 60 * 60 * 24;
 		int day;
 		bool workStarted = FALSE;
 		day = start;
 		for ( ; ; )
 		{
+			double costs = 0.0;
 			if (isWorkingDay(day))
 			{
-				if (!bookResource(day, workStarted, done))
-					fprintf(stderr,
-							"No resource available for task '%s' on %s\n",
-							id.latin1(),
-							time2ISO(day).latin1());
+				if (!bookResources(day, workStarted, done, costs))
+//					fprintf(stderr,
+//							"No resource available for task '%s' on %s\n",
+//							id.latin1(),
+//							time2ISO(day).latin1())
+					;
 			}
+			/* If an account has been specified load account with the
+			 * accumulated costs of this day. */
+			if (account)
+				account->book(new Transaction(day, -costs, this));
 			if (done < effort)
 				day += oneDay;
 			else
@@ -119,27 +148,45 @@ Task::schedule(time_t reqStart)
 	return TRUE;
 }
 
-void
+bool
 Task::scheduleContainer()
 {
 	Task* t;
+	time_t nstart = 0;
+	time_t nend = 0;
+
 	if ((t = subTasks.first()) && (t != 0))
 	{
-		start = t->getStart();
-		end = t->getEnd();
+		if (t->getStart() > 0)
+			nstart = t->getStart();
+		if (t->getEnd() > 0)
+			nend = t->getEnd();
 	}
+	else
+		return TRUE;
 
 	for (t = subTasks.next() ; t != 0; t = subTasks.next())
 	{
 		if (t->getStart() < start)
-			start = t->getStart();
+			nstart = t->getStart();
 		if (t->getEnd() > end)
-			end = t->getEnd();
+			nend = t->getEnd();
 	}
+
+	/* Make sure that all sub tasks have been scheduled. If not we can't
+	 * yet schedule this task. */
+	if (nstart > 0 && nend > 0)
+	{
+		start = nstart;
+		end = nend;
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 bool
-Task::bookResource(time_t day, bool& workStarted, double& done)
+Task::bookResources(time_t day, bool& workStarted, double& done, double& costs)
 {
 	bool allocFound = FALSE;
 
@@ -160,16 +207,18 @@ Task::bookResource(time_t day, bool& workStarted, double& done)
 			if (a->getResource()->book(new Booking(
 				day, this, remaining)))
 			{
+				addBookedResource(a->getResource());
 				done += remaining;
+				costs += a->getResource()->getRate() * remaining;
 			}
 			allocFound = TRUE;
 		}
 		else
 		{
-			fprintf(stderr,
-					"Resource %s cannot be used for task '%s' on %s.\n",
-					a->getResource()->getId().latin1(),
-					id.latin1(), time2ISO(day).latin1());
+//			fprintf(stderr,
+//					"Resource %s cannot be used for task '%s' on %s.\n",
+//					a->getResource()->getId().latin1(),
+//					id.latin1(), time2ISO(day).latin1());
 			for (Resource* r = a->first(); r != 0; r = a->next())
 				if ((remaining = r->isAvailable(day)) > 0.0)
 				{
@@ -180,7 +229,9 @@ Task::bookResource(time_t day, bool& workStarted, double& done)
 					if (r->book(new Booking(
 						day, this, remaining)))
 					{
+						addBookedResource(a->getResource());
 						done += remaining;
+						costs += r->getRate() * remaining;
 					}
 					allocFound = TRUE;
 					break;
@@ -224,15 +275,16 @@ Task::xRef(QDict<Task>& hash)
 
 	for (QStringList::Iterator it = depends.begin(); it != depends.end(); ++it)
 	{
+		QString absId = resolveId(*it);
 		Task* t;
-		if ((t = hash.find(*it)) == 0)
+		if ((t = hash.find(absId)) == 0)
 		{
-			fatalError(QString("Unknown dependency '") + *it + "'");
+			fatalError(QString("Unknown dependency '") + absId + "'");
 			error = TRUE;
 		}
 		else if (previous.find(t) != -1)
 		{
-			fatalError(QString("No need to specify dependency '") + *it +
+			fatalError(QString("No need to specify dependency '") + absId +
 							   "' twice.");
 			error = TRUE;
 		}
@@ -244,6 +296,32 @@ Task::xRef(QDict<Task>& hash)
 	}
 
 	return error;
+}
+
+QString
+Task::resolveId(QString relId)
+{
+	/* Converts a relative ID to an absolute ID. Relative IDs start
+	 * with a number of bangs. A set of bangs means 'Name of the n-th
+	 * parent task' with n being the number of bangs. */
+	if (relId[0] != '!')
+		return relId;
+
+	Task* t = this;
+	unsigned int i;
+	for (i = 0; i < relId.length() && relId.mid(i, 1) == "!"; ++i)
+	{
+		if (!t->parent)
+		{
+			fatalError(QString("Illegal relative ID '") + relId + "'");
+			return relId;
+		}
+		t = t->parent;
+	}
+	if (t)
+		return t->id + "." + relId.right(relId.length() - i);
+	else
+		return relId.right(relId.length() - i);
 }
 
 bool
@@ -300,4 +378,36 @@ Task::scheduleOK()
 		}
 
 	return TRUE;
+}
+
+TaskList::TaskList()
+{
+}
+
+TaskList::~TaskList()
+{
+}
+
+int
+TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
+{
+	Task* t1 = static_cast<Task*>(i1);
+	Task* t2 = static_cast<Task*>(i2);
+
+	switch (sorting)
+	{
+	case PrioUp:
+		if (t1->getPriority() == t2->getPriority())
+			return 0; // TODO: Use duration as next criteria
+		else
+			return (t1->getPriority() - t2->getPriority());
+	case PrioDown:
+		if (t1->getPriority() == t2->getPriority())
+			return 0; // TODO: Use duration as next criteria
+		else
+			return (t2->getPriority() - t1->getPriority());
+	default:
+		fprintf(stderr, "Unknown sorting criteria!\n");
+		return 0;
+	}		
 }

@@ -15,8 +15,8 @@
 
 typedef enum
 {
-	INVALID = 0, EndOfStatement, EndOfFile, TASK,
-	ID, GLOBAL_ID,
+	INVALID = 0, EndOfStatement, EndOfFile,
+	ID, RELATIVE_ID,
 	RBRACKET, LBRACKET, COMMA, MINUS,
 	DATE, INTEGER, REAL, STRING
 } TokenType;

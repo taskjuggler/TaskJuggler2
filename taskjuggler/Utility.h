@@ -16,6 +16,16 @@
 #include <time.h>
 #include <qstring.h>
 
+#define MAXTIME 0x7FFFFFFF
+
+const char* monthAndYear(time_t d);
+
+int daysLeftInMonth(time_t d);
+
+bool isWeekend(time_t d);
+
+int dayOfMonth(time_t d);
+
 QString time2ISO(time_t t);
 
 #endif

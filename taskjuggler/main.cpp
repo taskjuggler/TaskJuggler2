@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
 		return (-1);
 	pf->parse();
 	p.pass2();
-	p.printText();
+	p.reportHTMLTaskList();
+	p.reportHTMLResourceList();
 
 	return (0);
 }

@@ -12,6 +12,42 @@
 
 #include "Utility.h"
 
+const char*
+monthAndYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char s[32];
+	strftime(s, sizeof(s), "%b %Y", tms);
+	return s;
+}
+
+bool
+isWeekend(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return (tms->tm_wday < 1 || tms->tm_wday > 5);
+}
+
+int
+daysLeftInMonth(time_t t)
+{
+	int left = 0;
+	struct tm* tms = localtime(&t);
+	for (int m = tms->tm_mon; tms->tm_mon == m;
+		 t += 60 * 60 * 24, localtime(&t))
+	{
+		left++;
+	}
+	return left;
+}
+
+int 
+dayOfMonth(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_mday;
+}
+
 QString time2ISO(time_t t)
 {
 	struct tm* tms = localtime(&t);

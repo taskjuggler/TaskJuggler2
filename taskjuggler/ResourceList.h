@@ -74,6 +74,10 @@ public:
 	double isAvailable(time_t date);
 	bool book(Booking* b);
 
+	double getLoadOnDay(time_t date);
+	double getLoadOnDay(time_t date, Task* task);
+
+	bool isBusyWith(Task* t);
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
@@ -101,13 +105,12 @@ private:
 	QList<Booking> jobs;
 } ;
 
-class ResourceList : protected QList<Resource>
+class ResourceList : public QList<Resource>
 {
 public:
 	ResourceList() { setAutoDelete(TRUE); }
 	~ResourceList() { }
 
-	void add(Resource* r);
 	Resource* getResource(const QString& id);
 
 	void printText();

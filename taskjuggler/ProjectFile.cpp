@@ -19,7 +19,7 @@
 #include "Token.h"
 
 #define READ_DATE(a, b) \
-(token == a) \
+(token == a && !hasSubTasks) \
 { \
 	if ((tt = nextToken(token)) == DATE) \
 		task->b(date2time(token)); \
@@ -28,6 +28,7 @@
 		fatalError("Date expected"); \
 		return FALSE; \
 	} \
+	cantBeParent = TRUE; \
 }
 
 FileInfo::FileInfo(const QString& file_)
@@ -68,10 +69,10 @@ FileInfo::nextToken(QString& token)
 
 	token = "";
 
-	// skip blanks
+	// skip blanks and comments
 	for ( ; ; )
 	{
-		int c = getc(f);
+		int c = getC();
 		switch (c)
 		{
 		case EOF:
@@ -79,11 +80,18 @@ FileInfo::nextToken(QString& token)
 		case ' ':
 		case '\t':
 			break;
+		case '#':	// Comments start with '#' and reach towards end of line
+			while ((c = getC()) != '\n' && c != EOF)
+				;
+			if (c == EOF)
+				return EndOfFile;
+			// break missing on purpose
 		case '\n':
 			currLine++;
+			lineBuf = "";
 			break;
 		default:
-			ungetc(c, f);
+			ungetC(c);
 			goto BLANKS_DONE;
 		}
 	}
@@ -92,35 +100,21 @@ FileInfo::nextToken(QString& token)
 	// analyse non blank characters
 	for ( ; ; )
 	{
-		int c = getc(f);
+		int c = getC();
 		if (c == EOF)
 		{
 			fatalError("Unexpected end of file");
 			return EndOfFile;
 		}
-		else if (isalpha(c))
+		else if (isalpha(c) || (c == '_') || (c == '!'))
 		{
 			token += c;
-			while ((c = getc(f)) != EOF &&
-				   (isalnum(c) || (c == '_')))
+			while ((c = getC()) != EOF &&
+				   (isalnum(c) || (c == '_') || (c == '.') || (c == '!')))
 				token += c;
-			if (c == '.')
-			{
-				token += c;
-				while ((c = getc(f)) != EOF &&
-					   (isalnum(c) || (c == '_') || (c == '.')))
-					token += c;
-				if (token.right(1) == ".")
-				{
-					fatalError("Global ID may not end with '.'");
-					return EndOfFile;
-				}
-			}
-			ungetc(c, f);
-			if (token == "task")
-				return TASK;
-			else if (token.contains('.'))
-				return GLOBAL_ID;
+			ungetC(c);
+			if (token.contains('!') || token.contains('.'))
+				return RELATIVE_ID;
 			else
 				return ID;
 		}
@@ -128,13 +122,13 @@ FileInfo::nextToken(QString& token)
 		{
 			// read first number (maybe a year)
 			token += c;
-			while ((c = getc(f)) != EOF && isdigit(c))
+			while ((c = getC()) != EOF && isdigit(c))
 				token += c;
 			if (c == '-')
 			{
 				// this must be a ISO date yyyy-mm-dd
 				token += c;
-				c = getc(f);
+				c = getC();
 				// c must be a digit
 				if (!isdigit(c))
 				{
@@ -143,7 +137,7 @@ FileInfo::nextToken(QString& token)
 				}
 				token += c;
 				// read rest of month
-				while ((c = getc(f)) != EOF && isdigit(c))
+				while ((c = getC()) != EOF && isdigit(c))
 					token += c;
 				if (c != '-')
 				{
@@ -151,7 +145,7 @@ FileInfo::nextToken(QString& token)
 					return EndOfFile;
 				}
 				token += c;
-				c = getc(f);
+				c = getC();
 				// c must be a digit
 				if (!isdigit(c))
 				{
@@ -160,30 +154,30 @@ FileInfo::nextToken(QString& token)
 				}
 				token += c;
 				// read rest of day
-				while ((c = getc(f)) != EOF && isdigit(c))
+				while ((c = getC()) != EOF && isdigit(c))
 					token += c;
-				ungetc(c, f);
+				ungetC(c);
 				return DATE;
 			}
 			else if (c == '.')
 			{
 				// must be a real number
 				token += c;
-				while ((c = getc(f)) != EOF && isdigit(c))
+				while ((c = getC()) != EOF && isdigit(c))
 					token += c;
-				ungetc(c, f);
+				ungetC(c);
 				return REAL;
 			}
 			else
 			{
-				ungetc(c, f);
+				ungetC(c);
 				return INTEGER;
 			}
 		}
 		else if (c == '"')
 		{
 			// quoted string
-			while ((c = getc(f)) != EOF && c != '"')
+			while ((c = getC()) != EOF && c != '"')
 			{
 				token += c;
 			}
@@ -230,6 +224,7 @@ void
 FileInfo::fatalError(const QString& msg) const
 {
 	cerr << file << ":" << currLine << ":" << msg << endl;
+	cerr << lineBuf << endl;
 }
 
 ProjectFile::ProjectFile(Project* p)
@@ -277,17 +272,25 @@ ProjectFile::parse()
 	{
 		switch (tt = nextToken(token))
 		{
-		case TASK:
-			readTask(0);
-			break;
 		case EndOfFile:
 			close();
-			printf("File closed\n");
 			if (openFiles.isEmpty())
 				return TRUE;
 			break;
 		case ID:
-			if (token == "start")
+			if (token == "task")
+			{
+				if (!readTask(0))
+					return FALSE;
+				break;
+			}
+			if (token == "account")
+			{
+				if (!readAccount())
+					return FALSE;
+				break;
+			}
+			else if (token == "start")
 			{
 				if ((tt = nextToken(token)) != DATE)
 				{
@@ -297,7 +300,7 @@ ProjectFile::parse()
 				proj->setStart(date2time(token));
 				break;
 			}
-			if (token == "end")
+			else if (token == "end")
 			{
 				if ((tt = nextToken(token)) != DATE)
 				{
@@ -317,6 +320,14 @@ ProjectFile::parse()
 			{
 				if (!readVacation())
 					return FALSE;
+				break;
+			}
+			else if (token == "priority")
+			{
+				int priority;
+				if (!readPriority(priority))
+					return FALSE;
+				proj->setPriority(priority);
 				break;
 			}
 			else if (token == "minEffort")
@@ -340,8 +351,7 @@ ProjectFile::parse()
 				break;
 			}
 			else if (token == "rate")
-			{
-				if (nextToken(token) != REAL)
+			{				if (nextToken(token) != REAL)
 				{
 					fatalError("Real value exptected");
 					return FALSE;
@@ -358,6 +368,78 @@ ProjectFile::parse()
 				}
 				if (!open(token))
 					return FALSE;
+				break;
+			}
+			else if (token == "flags")
+			{
+				for ( ; ; )
+				{
+					QString flag;
+					if (nextToken(flag) != ID)
+					{
+						fatalError("flag ID expected");
+						return FALSE;
+					}
+					if (proj->isAllowedFlag(flag))
+					{
+						fatalError(QString("Flag ") + flag +
+								   " can't be registered twice");
+						return FALSE;
+					}
+					proj->addAllowedFlag(flag);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
+					}
+				}
+				break;
+			}
+			else if (token == "htmlTaskReport")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("File name expected");
+					return FALSE;
+				}
+				proj->setHtmlTaskReport(token);
+				for ( ; ; )
+				{
+					QString col;
+					if ((tt = nextToken(col)) != ID)
+					{
+						fatalError("Column ID expected");
+						return FALSE;
+					}
+					proj->addHtmlTaskReportColumn(col);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
+					}
+				}
+				break;
+			}
+			else if (token == "htmlResourceReport")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("File name expected");
+					return FALSE;
+				}
+				proj->setHtmlResourceReport(token);
+				if (nextToken(token) != DATE)
+				{
+					fatalError("Start date expected");
+					return FALSE;
+				}
+				proj->setHtmlResourceReportStart(date2time(token));
+				if (nextToken(token) != DATE)
+				{
+					fatalError("End date expected");
+					return FALSE;
+				}
+				proj->setHtmlResourceReportEnd(date2time(token));
 				break;
 			}
 			// break missing on purpose!
@@ -414,26 +496,26 @@ ProjectFile::readTask(Task* parent)
 	Task* task = new Task(proj, parentId + id, name, parent,
 						  getFile(), getLine());
 
+	proj->addTask(task);
+	if (parent)
+		parent->addSubTask(task);
+
 	for (bool done = false ; !done; )
 	{
 		bool hasSubTasks = FALSE;
 		bool cantBeParent = FALSE;
 		switch (tt = nextToken(token))
 		{
-		case TASK:
-			hasSubTasks = TRUE;
-			if (cantBeParent)
-			{
-				fatalError("This attribute is not allowed in parent tasks");
-				return FALSE;
-			}
-			if (!readTask(task))
-				return FALSE;
-			break;
 		case ID:
 			/* These attributes can be used in any type of task (normal,
 			 * container, milestone. */
-			if (token == "note")
+			if (token == "task" && !cantBeParent)
+			{
+				if (!readTask(task))
+					return FALSE;
+				hasSubTasks = TRUE;
+			}
+			else if (token == "note")
 			{
 				if ((tt = nextToken(token)) == STRING)
 					task->setNote(token);
@@ -443,62 +525,111 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 			}
-			else
+			else if READ_DATE("start", setStart)
+			else if READ_DATE("minStart", setMinStart)
+			else if READ_DATE("maxStart", setMaxStart)
+			else if READ_DATE("minEnd", setMinEnd)
+			else if READ_DATE("maxEnd", setMaxEnd)
+			else if READ_DATE("actualStart", setActualStart)
+			else if READ_DATE("actualEnd", setActualEnd)
+			else if (token == "length" && !hasSubTasks)
 			{
-				/* These attributes can only be used in normal tasks. */
+				if (!readLength(task))
+					return FALSE;
 				cantBeParent = TRUE;
-				if (hasSubTasks)
+			}
+			else if (token == "effort" && !hasSubTasks)
+			{
+				if (!readEffort(task))
+					return FALSE;
+				cantBeParent = TRUE;
+			}
+			else if (token == "complete" && !hasSubTasks)
+			{
+				if (nextToken(token) != INTEGER)
 				{
-					fatalError("This attribute is not allowed in parent tasks");
+					fatalError("Integer value expected");
 					return FALSE;
 				}
-				if READ_DATE("start", setStart)
-				else if READ_DATE("minStart", setMinStart)
-				else if READ_DATE("maxStart", setMaxStart)
-				else if READ_DATE("minEnd", setMinEnd)
-				else if READ_DATE("maxEnd", setMaxEnd)
-				else if READ_DATE("actualStart", setActualStart)
-				else if READ_DATE("actualEnd", setActualEnd)
-				else if (token == "length")
+				int complete = token.toInt();
+				if (complete < 0 || complete > 100)
 				{
-					if (!readLength(task))
-						return FALSE;
+					fatalError("Value of complete must be between 0 and 100");
+					return FALSE;
 				}
-				else if (token == "effort")
+				cantBeParent = TRUE;
+				task->setComplete(complete);
+			}
+			else if (token == "allocate" && !hasSubTasks)
+			{
+				if (!readAllocate(task))
+					return FALSE;
+				cantBeParent = TRUE;
+			}
+			else if (token == "depends" && !hasSubTasks)
+			{
+				cantBeParent = TRUE;
+				for ( ; ; )
 				{
-					if (!readEffort(task))
-						return FALSE;
-				}
-				else if (token == "allocate")
-				{
-					if (!readAllocate(task))
-						return FALSE;
-				}
-				else if (token == "depends")
-				{
-					for ( ; ; )
+					QString id;
+					if ((tt = nextToken(id)) != ID &&
+						tt != RELATIVE_ID)
 					{
-						QString id;
-						if ((tt = nextToken(id)) != ID &&
-							tt != GLOBAL_ID)
-						{
-							fatalError("Task ID expected");
-							return FALSE;
-						}
-						task->addDependency(id);
-						if ((tt = nextToken(token)) != COMMA)
-						{
-							openFiles.last()->returnToken(tt, token);
-							break;
-						}
+						fatalError("Task ID expected");
+						return FALSE;
+					}
+					task->addDependency(id);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
 					}
 				}
-				else
+			}
+			else if (token == "flags")
+			{
+				for ( ; ; )
 				{
-					fatalError(QString("Unknown task attribute '")
-							   + token + "'");
+					QString flag;
+					if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
+					{
+						fatalError("flag unknown");
+						return FALSE;
+					}
+					task->addFlag(flag);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
+					}
+				}
+			}
+			else if (token == "priority" && !hasSubTasks)
+			{
+				int priority;
+				if (!readPriority(priority))
+					return FALSE;
+				task->setPriority(priority);
+				cantBeParent = TRUE;
+				break;
+			}
+			else if (token == "account")
+			{
+				QString account;
+				if (nextToken(account) != ID ||
+					proj->getAccount(account) == 0)
+				{
+					fatalError("Account ID expected");
 					return FALSE;
 				}
+				task->setAccount(proj->getAccount(account));
+				break;
+			}
+			else
+			{
+				fatalError(QString("Illegal task attribute '")
+						   + token + "'");
+				return FALSE;
 			}
 			break;
 		case RBRACKET:
@@ -515,9 +646,6 @@ ProjectFile::readTask(Task* parent)
 		fatalError(QString("No name specified for task ") + id + "!");
 		return FALSE;
 	}
-	proj->addTask(task);
-	if (parent)
-		parent->addSubTask(task);
 
 	return TRUE;
 }
@@ -644,6 +772,64 @@ ProjectFile::readResource()
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addResource(r);
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readAccount()
+{
+	// Syntax: 'account id "name" { ... }
+	QString id;
+	if (nextToken(id) != ID)
+	{
+		fatalError("ID expected");
+		return FALSE;
+	}
+	QString name;
+	if (nextToken(name) != STRING)
+	{
+		fatalError("String expected");
+		return FALSE;
+	}
+
+	Account* a = new Account(id, name);
+	TokenType tt;
+	QString token;
+	if ((tt = nextToken(token)) == LBRACKET)
+	{
+		// read optional attributes
+		while ((tt = nextToken(token)) != RBRACKET)
+		{
+			if (tt != ID)
+			{
+				fatalError(QString("Unknown attribute '") + token + "'");
+				return FALSE;
+			}
+			if (token == "balance")
+			{
+				if (nextToken(token) != REAL)
+				{
+					fatalError("Real value exptected");
+					return FALSE;
+				}
+				a->setOpeningBalance(token.toDouble());
+			}
+			else if (token == "kotrusId")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				a->setKotrusId(token);
+			}
+		}
+	}
+	else
+		openFiles.last()->returnToken(tt, token);
+
+	proj->addAccount(a);
 
 	return TRUE;
 }
@@ -778,6 +964,25 @@ ProjectFile::readEffort(Task* task)
 		return FALSE;
 	}
 
+	return TRUE;
+}
+
+bool
+ProjectFile::readPriority(int& priority)
+{
+	QString token;
+
+	if (nextToken(token) != INTEGER)
+	{
+		fatalError("Integer value expected");
+		return FALSE;
+	}
+	priority = token.toInt();
+	if (priority < 1 || priority > 100)
+	{
+		fatalError("Priority value must be between 1 and 100");
+		return FALSE;
+	}
 	return TRUE;
 }
 
