@@ -37,6 +37,17 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
 
     // create our actions
     KStdAction::open(this, SLOT(fileOpen()), actionCollection());
+    (void) new KAction(i18n("Zoom In"), "viewmag+", CTRL+Key_I,
+		       m_widget, SLOT(slZoomIn()),
+		       actionCollection(), "zoomIn" );
+
+    (void) new KAction(i18n("Zoom Out"), "viewmag-", CTRL+Key_O,
+		       m_widget, SLOT(slZoomOut()),
+		       actionCollection(), "zoomOut" );
+
+    (void) new KAction(i18n("Zoom 1:1"), "viewmag1", CTRL+Key_S,
+		       m_widget, SLOT(slZoomOriginal()),
+		       actionCollection(), "zoomOriginal" );
 
     // set our XML-UI resource file
     setXMLFile("ktjview_part.rc");

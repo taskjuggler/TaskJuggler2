@@ -1,3 +1,14 @@
+/*
+ * ktvtaskcanvas.h - TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
 #ifndef _KTVTASKCANVAS_H
 #define _KTVTASKCANVAS_H
 
@@ -30,6 +41,7 @@ public:
    void setInterval( time_t start, time_t end );
    void setTable( KTVTaskTable *tab );
    const CanvasItemList& getCanvasItemsList() const { return m_canvasItemList; }
+   int getDayWidth() { return m_dayWidth; }
    
 public slots:
    void slSetRowHeight(int);
@@ -47,6 +59,9 @@ public slots:
     * canvas and we mostly like to know what KTVCanvasItem we are talking about.
     */
    KTVCanvasItemBase* qCanvasItemToItemBase( QCanvasItem* );
+   void slSetDayWidth( int );
+   void slSetDayWidthStandard();
+   
 protected:
    time_t timeFromX( int x );
    int    timeToX( time_t );

@@ -243,11 +243,3 @@ void KTVTaskTable::slScrollTo( int, int y )
 }
 
 
-#if 0
-void KTVTaskTable::viewportResizeEvent ( QResizeEvent * e )
-{
-   qDebug("Was resized to %dx%d", e->size().width(), e->size().height() );
-   emit( heightChanged( contentsHeight() )); // e->size().height()));
-   QListView::resizeEvent ( e );
-}
-#endif

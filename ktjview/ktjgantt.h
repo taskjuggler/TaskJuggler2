@@ -1,3 +1,14 @@
+/*
+ * ktgantt.h - TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
 #ifndef KTJGANTT_H
 #define KTJGANTT_H
 
@@ -18,6 +29,8 @@ class Project;
  * @author Klaas Freitag <freitag@kde.org>
  * @version 0.1
  */
+class KActionCollection;
+
 class KTJGantt : public QSplitter
 {
     Q_OBJECT
@@ -34,6 +47,11 @@ public:
 
 
    void showProject( Project * );
+   
+public slots:
+   void slZoomIn();
+   void slZoomOut();
+   void slZoomOriginal();
 signals:
    void statusBarChange( const QString& );
    

@@ -7,6 +7,7 @@
 #include <qpainter.h>
 
 #include <qtooltip.h>
+#include <qwmatrix.h>
 
 #include "ktvtasktable.h"
 #include "ktvtaskcanvas.h"
@@ -88,9 +89,9 @@ void KTVTaskCanvasView::addTask(Task *t )
 
 KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 {
-   qDebug( "On related widget: x=%d", p.x() );
+   // qDebug( "On related widget: x=%d", p.x() );
    QPoint r = viewportToContents(p);
-   qDebug( "Converted: x=%d", r.x() );
+   // qDebug( "Converted: x=%d", r.x() );
    
    QCanvasItemList il = canvas()->collisions ( r );
 
@@ -106,6 +107,34 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
    return item;
 }
 
+void KTVTaskCanvasView::zoomIn()
+{
+   int w = m_canvas->getDayWidth();
+
+   w += (w/5);
+   qDebug( "setting day-Width = %d", w );
+
+   m_canvas->slSetDayWidth( w );
+
+   update();
+}
+
+void KTVTaskCanvasView::zoomOut()
+{
+   int w = m_canvas->getDayWidth();
+
+   w -= (w/5);
+   qDebug( "setting day-Width = %d", w );
+   m_canvas->slSetDayWidth( w );
+
+   update();
+}
+
+void KTVTaskCanvasView::zoomOriginal()
+{
+   m_canvas->slSetDayWidthStandard();
+   update();
+}
 
 
 void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* )

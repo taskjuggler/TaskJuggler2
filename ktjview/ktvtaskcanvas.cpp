@@ -12,12 +12,14 @@
 #include <qheader.h>
 
 #include "ktvtaskcanvas.h"
-#include "ktvtaskcanvasitem.h"
 #include "ktvtasktable.h"
 #include "Project.h"
 #include "Task.h"
 #include "Utility.h"
 #include "ktvcanvasitem.h"
+
+#define STD_DAYWIDTH 20
+
 
 KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *name )
    :QCanvas( parent, name ),
@@ -26,7 +28,7 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *na
 {
    m_taskTable = tab;
    m_days = 0;
-   m_dayWidth = 20;
+   m_dayWidth = STD_DAYWIDTH;
    if( m_taskTable )
       m_dayHeight = m_taskTable->header()->height()-1;
 
@@ -68,6 +70,36 @@ void KTVTaskCanvas::slSetTopOffset( int o )
    m_topOffset = o;
 }
 
+void KTVTaskCanvas::slSetDayWidthStandard( )
+{
+   slSetDayWidth( STD_DAYWIDTH );
+}
+
+void KTVTaskCanvas::slSetDayWidth( int _w )
+{
+   m_dayWidth = _w;
+
+   QSize s = size();
+   resize( m_dayWidth * m_days, s.height() );
+
+   /* recalc width an x-positions of all items*/
+   const CanvasItemList ktvItems = getCanvasItemsList();
+   CanvasItemListIterator it(ktvItems);
+   
+   for ( ; it.current(); ++it )
+   {
+      Task *t = (*it)->getTask();
+      int old_x = (*it)->x();
+      int new_x = timeToX( t->getPlanStart() );
+      int w = timeToX( t->getPlanEnd() )-new_x;
+
+      (*it)->setSize(w, (*it)->height() );
+
+      (*it)->moveBy(new_x - old_x, 0);
+   }
+   setAllChanged();
+   update();
+}
 
 void KTVTaskCanvas::setInterval( time_t start, time_t end )
 {
@@ -144,7 +176,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    // 	   painter.hasClipping()? "on": "off");
 
    int x = 0;
-   int y = clip.top() > topOffset() ? clip.top()-1: topOffset()-1;
+   int y = clip.top() > topOffset() ? clip.top(): topOffset();
 
    /* wind to start of the clipping area */
    while ( x < clip.left() ) 
@@ -156,20 +188,18 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
       if( isWeekend( timeFromX(x) ) )
       {
 	 /* Colorize Weekend */
+	 painter.setPen( NoPen );
 	 painter.setBrush( weekEndBrush);
 	 painter.drawRect( x, y,
 			   m_dayWidth, clip.height()+2);
-
       }
       else
       {
 	 painter.setBrush( weekDayBrush );
-	 // painter.drawRect(r);
-      
-	 QPen p1 ( black, 0 );
-	 painter.setPen( p1 );
-	 painter.drawLine( x, y , x, y+clip.height()+2);
       }
+      QPen p1 ( QColor(222,222,222), 0 );
+      painter.setPen( p1 );
+      painter.drawLine( x, y , x, y+clip.height()+2);
       /* Do drawing */
       x += m_dayWidth;
    }   
@@ -274,12 +304,10 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 	 
 	 /* A list of all items */
 	 m_canvasItemList.append( cItem );
-	 
-	 int w = timeToX( t->getPlanEnd() )-x;
-	 cItem->setSize( w, cItem->height() );
-
-            
       }
+
+      int w = timeToX( t->getPlanEnd() )-x;
+      cItem->setSize( w, cItem->height() );
 
       bool itemConnects = false; /* local flag if item connects to others with a line */
       itemConnects = !( t->isContainer() );
@@ -409,3 +437,5 @@ KTVCanvasItemBase* KTVTaskCanvas::qCanvasItemToItemBase( QCanvasItem* qItem )
    }
    return 0L;
 }
+
+

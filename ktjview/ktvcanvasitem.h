@@ -1,3 +1,14 @@
+/*
+ * ktvcanvasitem.h - TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
 #ifndef _KTVCANVASITEM_H
 #define _KTVCANVASITEM_H
 
@@ -24,7 +35,9 @@ public:
       { if( m_cText ) m_cText->setFont( f ); }
 
    virtual int  y(){ return 0; }
-   virtual void setSize( int, int ){}
+   virtual int  x(){ return 0; }
+   
+   virtual void setSize( int, int );
    virtual void move( double, double ){}
    virtual void moveBy( int, int );
    virtual void show(){}
@@ -46,9 +59,6 @@ public:
 protected:
    Task             *m_task;
    QCanvasText      *m_cText;
-
-   
-private:
    /* Connectorlists */
    KTVConnectorList  m_conIn;
    KTVConnectorList  m_conOut;
@@ -85,7 +95,7 @@ public:
    QRect rect() { return cRect->rect(); }
 
    int y();
-
+   int x();
    bool isVisible() { return cRect->isVisible();};
    
    QPoint getConnectorIn() const;
@@ -109,6 +119,7 @@ public:
    void show();
    bool contains( QCanvasItem* );
    int y();
+   int x();
    bool isVisible() { return cPoly->isVisible();};
 
    QPoint getConnectorOut() const;
@@ -136,6 +147,7 @@ public:
    void show();
    bool contains( QCanvasItem* );
    int y();
+   int x();
    QRect rect() { return cPoly->boundingRect(); }
    bool isVisible() { return cPoly->isVisible();};
 private:

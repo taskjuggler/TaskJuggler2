@@ -42,6 +42,11 @@ void KTVCanvasItemBase::hide()
    }
 }
 
+void KTVCanvasItemBase::setSize( int, int )
+{
+   
+}
+
 void KTVCanvasItemBase::moveBy( int dx, int dy)
 {
    KTVConnectorListIterator it( m_conIn );
@@ -111,7 +116,27 @@ KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
 void KTVCanvasItemTask::setSize( int w, int h )
 {
    if( cRect )
+   {
+      int dx = w-cRect->width();
+      /* TODO: Height adjusting */
+      
+      /* Move the outgoing connectors */
+      KTVConnectorListIterator conIt( m_conOut );
+      KTVConnector *c;
+      while( (c = conIt.current()) != 0 )
+      {
+	 ++conIt;
+	 QPoint ps = c->startPoint();
+	 
+	 ps.setX( ps.x()+dx );
+	 // ps.setY( ps.y()+dy );
+	 c->setConnectPoints( ps, c->endPoint() );
+      }
+
+      /* And now resize the box */
       cRect->setSize( w, h );
+   }
+
 }
 
 void KTVCanvasItemTask::move( double x, double y )
@@ -202,6 +227,11 @@ int KTVCanvasItemTask::y()
    return ( int( cRect->y() ));
 }
 
+int KTVCanvasItemTask::x()
+{
+   return ( int( cRect->x() ));
+}
+
 /* **********************************************************************
  * Milestone
  */
@@ -272,6 +302,12 @@ int KTVCanvasItemMilestone::y()
    return ( int(cPoly->y()));
 }
 
+int KTVCanvasItemMilestone::x()
+{
+   if( ! cPoly ) return 0;
+
+   return ( int(cPoly->x()));
+}
 
 QPoint KTVCanvasItemMilestone::getConnectorIn() const
 {
@@ -373,3 +409,10 @@ int KTVCanvasItemContainer::y()
    return ( int(cPoly->y()));
 }
 
+
+int KTVCanvasItemContainer::x()
+{
+   if( ! cPoly ) return 0;
+
+   return ( int(cPoly->x()));
+}

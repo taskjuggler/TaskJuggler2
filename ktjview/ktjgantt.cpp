@@ -5,7 +5,9 @@
 #include <kstdaction.h>
 #include <kfiledialog.h>
 #include <kdebug.h>
+#include <kaction.h>
 #include <qsplitter.h>
+#include <klocale.h>
 
 #include <qvaluelist.h>
 #include <qfile.h>
@@ -74,6 +76,23 @@ void KTJGantt::showProject( Project *p )
     m_canvas->show(); 
     update();
 }
+
+void KTJGantt::slZoomIn()
+{
+   m_canvas->zoomIn();
+   update();
+}
+
+void KTJGantt::slZoomOut()
+{
+   m_canvas->zoomOut();
+}
+
+void KTJGantt::slZoomOriginal()
+{
+   m_canvas->zoomOriginal();
+}
+
 
 KTJGantt::~KTJGantt()
 {
