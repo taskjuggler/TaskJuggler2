@@ -865,11 +865,22 @@ ProjectFile::readTask(Task* parent)
 		return FALSE;
 	}
 
-	QString parentId;
 	if (parent)
-		parentId = parent->getId() + ".";
-	Task* task = new Task(proj, parentId + id, name, parent,
-						  getFile(), getLine());
+	{
+		id = parent->getId() + "." + id;
+		// We need to check that the task id has not been declared before.
+		TaskList tl;
+		parent->getSubTaskList(tl);
+		for (Task* t = tl.first(); t != 0; t = tl.next())
+			if (t->getId() == id)
+			{
+				fatalError(QString().sprintf(
+					"Task %s has already been declared", id.latin1()));
+				return FALSE;
+			}
+	}
+
+	Task* task = new Task(proj, id, name, parent, getFile(), getLine());
 
 	proj->addTask(task);
 	if (parent)
@@ -1177,6 +1188,13 @@ ProjectFile::readResource(Resource* parent)
 		return FALSE;
 	}
 
+	if (proj->getResource(id))
+	{
+		fatalError(QString().sprintf(
+			"Resource %s has already been defined", id.latin1()));
+		return FALSE;
+	}
+
 	Resource* r = new Resource(proj, id, name, parent);
 
 	TokenType tt;
@@ -1307,6 +1325,14 @@ ProjectFile::readAccount(Account* parent)
 		fatalError("ID expected");
 		return FALSE;
 	}
+
+	if (proj->getAccount(id))
+	{
+		fatalError(QString().sprintf(
+			"Account %s has already been defined", id));
+		return FALSE;
+	}
+
 	QString name;
 	if (nextToken(name) != STRING)
 	{
@@ -1443,18 +1469,18 @@ ProjectFile::readAllocate(Task* t)
 			}
 			if (token == "load")
 			{
-				if (nextToken(token) != INTEGER)
+				if (nextToken(token) != REAL)
 				{
-					fatalError("Integer expected");
+					fatalError("Real value expected");
 					return FALSE;
 				}
-				int load = token.toInt();
-				if (load < 1 || load > 100)
+				double load = token.toDouble();
+				if (load < 0.01 || load > 1.0)
 				{
-					fatalError("Value must be in the range 1 - 100");
+					fatalError("Value must be in the range 0.01 - 1.0");
 					return FALSE;
 				}
-				a->setLoad(token.toInt());
+				a->setLoad((int) (100 * load));
 			}
 			else if (token == "persistent")
 			{

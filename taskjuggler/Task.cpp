@@ -231,17 +231,12 @@ Task::schedule(time_t date, time_t slotDuration)
 	}
 	else if (effort > 0.0)
 	{
-		if (project->isVacation(date))
-			return TRUE;
 		/* The effort of the task has been specified. We have to look
 		 * how much the resources can contribute over the following
 		 * workings days until we have reached the specified
 		 * effort. */
-		if (allocations.count() == 0)
-		{
-			fatalError("No allocations specified for effort based task");
+		if (project->isVacation(date))
 			return TRUE;
-		}
 		bookResources(date, slotDuration);
 		// Check whether we are done with this task.
 		if (doneEffort >= effort)
@@ -660,6 +655,14 @@ Task::resolveId(QString relId)
 bool
 Task::preScheduleOk()
 {
+	if ((planEffort > 0 || actualEffort > 0) && allocations.count() == 0)
+	{
+		fatalError(QString().sprintf(
+			"No allocations specified for effort based task %s",
+			id.latin1()));
+		return FALSE;
+	}
+
 	// Check plan values.
 	int durationSpec = 0;
 	if (planEffort > 0.0)
@@ -872,6 +875,13 @@ Task::scheduleOk()
 				id.latin1(), time2ISO(end).latin1()));
 			return FALSE;
 		}
+
+	if (!schedulingDone)
+	{
+		fatalError("An unknown scheduling problem occured. This is "
+				   "probably a bug in the scheduler.");
+		return FALSE;
+	}
 
 	return TRUE;
 }

@@ -99,13 +99,11 @@ Project::pass2()
 		return FALSE;
 
 	preparePlan();
-	if (!schedule())
-		return FALSE;
+	schedule();
 	finishPlan();
 
 	prepareActual();
-	if (!schedule())
-		return FALSE;
+	schedule();
 	finishActual();
 
 	return TRUE;
@@ -157,9 +155,10 @@ Project::schedule()
 	sortedTasks.sort();
 
 	time_t timeDelta = scheduleGranularity;
-	for (int day = start; day >= start && day < end; day += timeDelta)
+	bool done = FALSE;
+	time_t day;
+	for (day = start; !done && day >= start && day < end; day += timeDelta)
 	{
-		bool done;
 		do
 		{
 			done = TRUE;
@@ -176,32 +175,38 @@ Project::schedule()
 		 * forward in time. */
 		timeDelta = scheduleGranularity;
 		for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
+		{
 			if (t->needsEarlierTimeSlot(day + scheduleGranularity))
 			{
 				timeDelta = -scheduleGranularity;
+				done = FALSE;
 				break;
 			}
+			if (!t->isScheduled())
+				done = FALSE;
+		}
 	}
 
-	if (unscheduledTasks() > 0)
+	if (!done)
+	{
+		if (day < start)
+		{
+			qWarning("Some tasks need to start earlier than the specified "
+					 "project start date.");
+			error = TRUE;
+		}
+		if (day >= end)
+		{
+			qWarning("Some tasks need to finish later than the specified "
+					 "project end date.");
+			error = TRUE;
+		}
+	}
+
+	if (!checkSchedule())
 		error = TRUE;
-	checkSchedule();
 
 	return !error;
-}
-
-int
-Project::unscheduledTasks()
-{
-	int cntr = 0;
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		if (!t->isScheduled())
-		{
-			qWarning("Task %s cannot be scheduled", t->getId().latin1());
-			cntr++;
-		}
-
-	return cntr;
 }
 
 bool
@@ -214,8 +219,8 @@ Project::checkSchedule()
 	for (Task* t = tl.first(); t != 0; t = tl.next())
 	{
 		if (!t->scheduleOk())
-			return errors++;
-		if (errors > 10)
+			errors++;
+		if (errors >= 10)
 			break;
 	}
 

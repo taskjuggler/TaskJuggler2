@@ -155,7 +155,6 @@ public:
 private:
 	bool checkSchedule();
 
-	int unscheduledTasks();
 	time_t start;
 	time_t end;
 	time_t now;
