@@ -91,6 +91,8 @@ public:
 
     void addJournalEntry(JournalEntry* entry);
 
+    bool hasJournal() const { return !journal.isEmpty(); }
+
     JournalIterator getJournalIterator() const;
 
     void setReference(const QString& r, const QString& l)

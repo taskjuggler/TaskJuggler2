@@ -757,6 +757,8 @@ public:
 
     void addJournalEntry(JournalEntry* entry);
 
+    bool hasJournal() const { return !journal.isEmpty(); }
+
     JournalIterator getJournalIterator() const;
 
     /**
