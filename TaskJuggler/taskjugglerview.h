@@ -141,6 +141,9 @@ private:
 
     void setLoadingProject(bool lp);
 
+    void addMessage(const QString& msg, const QString& file, int line,
+                    bool error);
+
     Project* project;
     MainWidget* mw;
     QProgressBar* progressBar;
@@ -150,6 +153,7 @@ private:
     FileManager* fileManager;
     ReportManager* reportManager;
 
+    int messageCounter;
     QTimer* loadDelayTimer;
     KURL urlToLoad;
     bool loadingProject;

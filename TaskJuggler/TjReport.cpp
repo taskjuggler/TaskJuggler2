@@ -25,6 +25,7 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kapp.h>
+#include <kcursor.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -111,12 +112,15 @@ TjReport::generateReport()
 {
     setLoadingProject(TRUE);
 
+    setCursor(KCursor::waitCursor());
     if (!this->generateList())
     {
         setLoadingProject(FALSE);
+        setCursor(KCursor::arrowCursor());
         return FALSE;
     }
     setLoadingProject(FALSE);
+    setCursor(KCursor::arrowCursor());
 
     if (!this->generateChart(TRUE))
         return FALSE;
@@ -956,6 +960,8 @@ TjReport::treeLevel(const QListViewItem* lvi) const
     {
         level++;
         lvi = lvi->parent();
+        if (level > 30)
+            kdFatal() << "Tree level explosion";
     }
     return level;
 }

@@ -89,10 +89,17 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     messageListView->setSizePolicy(QSizePolicy::Maximum,
                                    QSizePolicy::Preferred);
     messageListView->setMinimumSize(400, 100);
+    messageListView->setRootIsDecorated(TRUE);
     messageListView->setAllColumnsShowFocus(TRUE);
+    messageListView->setSortOrder(Qt::Ascending);
+    messageListView->setSortColumn(4);
+    messageListView->addColumn("");
     messageListView->addColumn(i18n("Error Message"));
     messageListView->addColumn(i18n("File"));
     messageListView->addColumn(i18n("Line"));
+    messageListView->addColumn(i18n("Counter"));
+    messageListView->setColumnWidthMode(4, QListView::Manual);
+    messageListView->hideColumn(4);
 
     vl.clear();
     vl.append(int(100));
@@ -250,6 +257,7 @@ TaskJugglerView::close()
         mw->accountListView->clear();
         mw->reportListView->clear();
         messageListView->clear();
+        messageCounter = 0;
     }
 }
 
@@ -269,7 +277,12 @@ TaskJugglerView::nextProblem()
     QListViewItem* oldLvi = messageListView->currentItem();
     if (!oldLvi)
         return;
-    QListViewItem* lvi = oldLvi->itemBelow();
+    QListViewItem* lvi;
+    // Not all items have a file name, skip those.
+    do
+    {
+        lvi = oldLvi->itemBelow();
+    } while (lvi && lvi->text(2).isEmpty());
     if (!lvi)
         return;
     messageListView->setSelected(lvi, TRUE);
@@ -282,7 +295,12 @@ TaskJugglerView::previousProblem()
     QListViewItem* oldLvi = messageListView->currentItem();
     if (!oldLvi)
         return;
-    QListViewItem* lvi = oldLvi->itemAbove();
+    QListViewItem* lvi;
+    // Not all items have a file name, skip those.
+    do
+    {
+        lvi = oldLvi->itemAbove();
+    } while (lvi && lvi->text(2).isEmpty());
     if (!lvi)
         return;
     messageListView->setSelected(lvi, TRUE);
@@ -318,7 +336,7 @@ TaskJugglerView::loadProject(const KURL& url)
             progressBar, SLOT(setProgress(int, int)));
 
     ProjectFile* pf = new ProjectFile(project);
-    setCursor(KCursor::workingCursor());
+    setCursor(KCursor::waitCursor());
     if (!pf->open(fileName, "", "", TRUE))
     {
         setLoadingProject(FALSE);
@@ -329,6 +347,7 @@ TaskJugglerView::loadProject(const KURL& url)
 
     bool errors = FALSE;
     messageListView->clear();
+    messageCounter = 0;
     if (!pf->parse())
         errors = TRUE;
     emit signalChangeStatusbar(i18n("Checking project..."));
@@ -439,7 +458,7 @@ TaskJugglerView::loadProject(const KURL& url)
 
     // We handle warnings like errors, so in case there any messages, we open
     // the message window.
-    if (messageListView->lastItem())
+    if (messageCounter)
         errors = TRUE;
 
     // Show message list when errors have occured
@@ -482,36 +501,58 @@ void
 TaskJugglerView::addWarningMessage(const QString& msg, const QString& file,
                                    int line)
 {
-    QListViewItem* lvi;
-    if (!file.isEmpty() && line > 0)
-        lvi = new KListViewItem(messageListView, msg, file,
-                                QString().sprintf("%d", line));
-    else
-        lvi = new KListViewItem(messageListView, msg);
-
-    lvi->setPixmap(0, KGlobal::iconLoader()->
-                   loadIcon("tj_warning", KIcon::Small));
+    addMessage(msg, file, line, FALSE);
 }
 
 void
 TaskJugglerView::addErrorMessage(const QString& msg, const QString& file,
                                  int line)
 {
-    QString shortMsg;
-    if (msg.find("\n") >= 0)
-        shortMsg = msg.left(msg.find("\n"));
-    else
-        shortMsg = msg;
+    addMessage(msg, file, line, TRUE);
+}
 
-    KListViewItem* lvi;
-    if (!file.isEmpty() && line > 0)
-        lvi = new KListViewItem(messageListView, shortMsg, file,
-                                QString().sprintf("%d", line));
-    else
-        lvi = new KListViewItem(messageListView, shortMsg);
+void
+TaskJugglerView::addMessage(const QString& msg, const QString& file,
+                            int line, bool error)
+{
+    ++messageCounter;
+    QString text = msg;
+    QListViewItem* parent = 0;
+    do
+    {
+        QString textLine;
+        if (text.find("\n") >= 0)
+        {
+            textLine = text.left(text.find("\n"));
+            text = text.right(text.length() - text.find("\n") - 1);
+        }
+        else
+        {
+            textLine = text;
+            text = "";
+        }
 
-    lvi->setPixmap(0, KGlobal::iconLoader()->
-                   loadIcon("tj_error", KIcon::Small));
+        if (!parent)
+        {
+            if (!file.isEmpty() && line > 0)
+                parent= new KListViewItem
+                    (messageListView, "", textLine, file,
+                     QString().sprintf("%d", line),
+                     QString().sprintf("%03d", messageCounter));
+            else
+                parent = new KListViewItem
+                    (messageListView, "", textLine, "", "",
+                     QString().sprintf("%03d", messageCounter));
+
+            parent->setOpen(TRUE);
+            parent->setPixmap(0, KGlobal::iconLoader()->
+                              loadIcon(error ? "tj_error" : "tj_warning",
+                                       KIcon::Small));
+        }
+        else
+            new KListViewItem(parent, "", textLine, "", "",
+                              QString().sprintf("%03d", messageCounter));
+    } while (!text.isEmpty());
 }
 
 void
@@ -686,9 +727,9 @@ TaskJugglerView::fileListClicked(QListViewItem*)
 void
 TaskJugglerView::messageListClicked(QListViewItem* lvi)
 {
-    if (lvi && !lvi->text(1).isEmpty() && !lvi->text(2).isEmpty())
-        fileManager->showInEditor(KURL(lvi->text(1)),
-                                  lvi->text(2).toUInt() - 1, 0);
+    if (lvi && !lvi->text(2).isEmpty() && !lvi->text(3).isEmpty())
+        fileManager->showInEditor(KURL(lvi->text(2)),
+                                  lvi->text(3).toUInt() - 1, 0);
 }
 
 void

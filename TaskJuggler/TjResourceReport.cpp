@@ -20,6 +20,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kdebug.h>
+#include <kcursor.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -45,6 +46,7 @@ TjResourceReport::generateList()
     ca2lviDict.clear();
     while (listView->columns())
         listView->removeColumn(0);
+    maxDepth = 0;
 
     if (!reportDef)
         return FALSE;
@@ -194,14 +196,19 @@ TjResourceReport::generateChart(bool autoFit)
     if (!listView->firstChild())
         return TRUE;
 
+    setCursor(KCursor::waitCursor());
     prepareChart(autoFit, reportElement);
 
     if (!generateChartLoadBars())
+    {
+        setCursor(KCursor::arrowCursor());
         return FALSE;
+    }
 
     ganttHeader->update();
     ganttChart->update();
 
+    setCursor(KCursor::arrowCursor());
     return TRUE;
 }
 
