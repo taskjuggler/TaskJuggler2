@@ -23,6 +23,7 @@
 
 class Project;
 class ExpressionTree;
+
 class Report
 {
 public:
@@ -41,16 +42,10 @@ public:
 
 	void setHide(ExpressionTree* et) { hide = et; }
 
-	void reportHTMLHeader();
-	void reportHTMLFooter();
-	void htmlDayHeader();
-	void htmlMonthHeader();
 
 protected:
 	Report() { }
 
-	QString htmlFilter(const QString& s);
-	
 	Project* project;
 	QString fileName;
 	QStringList columns;
@@ -58,18 +53,8 @@ protected:
 	time_t end;
 
 	QTextStream s;
+   ExpressionTree* hide;
 
-    uint colDefault;
-	uint colWeekend;
-	uint colVacation;
-	uint colAvailable;
-	uint colBooked;
-	uint colHeader;
-	uint colMilestone;
-	uint colCompleted;
-	uint colToday;
-
-	ExpressionTree* hide;
 } ;
 
 #endif

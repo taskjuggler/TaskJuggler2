@@ -13,15 +13,15 @@
 #ifndef _HTMLTaskReport_h_
 #define _HTMLTaskReport_h_
 
-#include "Report.h"
+#include "ReportHtml.h"
 
 class Project;
 
-class HTMLTaskReport : public Report
+class HTMLTaskReport : public ReportHtml
 {
 public:
 	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e) :
-		Report(p, f, s, e) { showActual = FALSE; }
+		ReportHtml(p, f, s, e) { showActual = FALSE; }
 	~HTMLTaskReport() { }
 
 	bool generate();

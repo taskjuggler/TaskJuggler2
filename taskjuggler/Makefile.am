@@ -2,7 +2,7 @@ bin_PROGRAMS = taskjuggler
 taskjuggler_SOURCES = Task.cpp ResourceList.cpp VacationList.cpp \
 Account.cpp Utility.cpp MacroTable.cpp ProjectFile.cpp \
 Report.cpp HTMLTaskReport.cpp HTMLResourceReport.cpp \
-Project.cpp main.cpp kotrus.cpp
+Project.cpp main.cpp kotrus.cpp ReportHtml.cpp ReportXML.cpp
 
 SOURCES = main.cpp 
 INTERFACES = 
@@ -14,6 +14,8 @@ CXXFLAGS = -Wall
 SUBDIRS = docs 
 
 EXTRA_DIST = main.cpp ProjectFile.cpp
+
+
 
 # set the include path for X, qt and KDE
 INCLUDES= $(all_includes)
