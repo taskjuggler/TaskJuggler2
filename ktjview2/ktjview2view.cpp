@@ -899,6 +899,8 @@ void ktjview2View::clearAllViews()
     m_taskView->clear();
 
     m_resUsageView->clear();
+
+    m_reportView->clear();
 }
 
 QString ktjview2View::formatAllocations( Task* task ) const
