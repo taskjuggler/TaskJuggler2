@@ -1,4 +1,6 @@
 <!-- DTD for TaskJuggler 2.0 XML Files -->
+<!-- Valid TaskJuggler files have the extension ".tjx" and are
+compressed according to RFC1951 and RFC1952 (zlib). -->
 <!-- (c) 2003 Chris Schlaeger <cs@suse.de> -->
 <!-- This file is licensed under the GNU GPL Version 2.0 -->
 <!-- $Id$ -->

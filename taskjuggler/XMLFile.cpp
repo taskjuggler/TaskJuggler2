@@ -11,6 +11,8 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
+#include <zlib.h>
 
 #include <qdom.h>
 #include <qtextstream.h>
@@ -276,36 +278,49 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
     if (masterfile)
         masterFile = file;
     
-    FILE* fh;
-    QTextStream* f;    
+    gzFile zf;
     if (file == ".")
     {
-        f = new QTextStream(stdin, IO_ReadOnly);
-        fh = stdin;
+        if ((zf = gzdopen(dup(STDIN_FILENO), "rb")) == NULL)
+        {
+            qWarning(i18n("Cannot open compressed STDIN for reading."));
+            return FALSE;
+        }
     }
     else
     {
-        if ((fh = fopen(file, "r")) == 0)
+        if ((zf = gzopen(file, "rb")) == NULL)
         {
-            qWarning(i18n("Cannot open file '%1'.").arg(file));
+            qWarning(i18n("Cannot open compressed file %1 for "
+                          "reading.").arg(file));
             return FALSE;
         }
-        f = new QTextStream(fh, IO_ReadOnly);
     }
-
+    
     if (DEBUGLEVEL > 0)
         qWarning(i18n("Processing file \'%1\'").arg(file));
 
-    doc = new QDomDocument(file);
-    QString buf(f->read());
+    QString buf;
+    while (!gzeof(zf))
+    {
+        char cbuf[1024];
+        gzgets(zf, cbuf, 1024);
+        buf += cbuf;
+    }
+    int zError;
+    if ((zError = gzclose(zf)) != 0)
+    {
+        qWarning(i18n("Cannot close compressed file %1: %2")
+                 .arg(file).arg(gzerror(zf, &zError)));
+        return FALSE;
+    }
     
+    doc = new QDomDocument(file);
     if (!doc->setContent(buf))
     {
         qWarning(i18n("Syntax error in XML file '%1'.").arg(file));
         return FALSE;
     }
-    delete f;
-    fclose(fh);
     
     return TRUE;
 }

@@ -11,11 +11,13 @@
  */
 
 #include <config.h>
+#include <zlib.h>
 
 #include <qfile.h>
 #include <qmap.h>
 #include <qdom.h>
 
+#include "tjlib-internal.h"
 #include "taskjuggler.h"
 #include "Project.h"
 #include "Scenario.h"
@@ -87,9 +89,14 @@ XMLReport::generate()
     if (!open())
         return FALSE;
   
-    doc = new QDomDocument("taskjuggler SYSTEM \"taskjuggler.dtd\"");
+    doc = new QDomDocument
+        ("taskjuggler PUBLIC "
+         "\"-//The TaskJuggler Project//DTD TaskJuggler 2.0//EN\""
+         " \"http://www.taskjuggler.org/dtds/TaskJuggler-2.0.dtd\"");
+    
     doc->appendChild(doc->createProcessingInstruction
-                     ("xml", "version=\"1.0\" encoding=\"UTF-8\""));
+                     ("xml", "version=\"1.0\" encoding=\"UTF-8\" "
+                      "standalone=\"no\""));
 
     QDomElement tjEl = doc->createElement("taskjuggler");
     doc->appendChild(tjEl);
@@ -124,9 +131,28 @@ XMLReport::generate()
     if (!generateBookingList(&tjEl, filteredTaskList, filteredResourceList))
        return FALSE;
 
-    s << doc->toString();
-
+    gzFile zf = gzdopen(dup(f.handle()), "wb");
+    if (!zf)
+    {
+        qWarning(i18n("Cannot open compressed file %1 for writing.")
+                 .arg(fileName));
+        return FALSE;
+    }
+    int bytes;
+    if ((bytes = gzputs(zf, (const char*) (doc->toCString()))) == 0)
+    {
+        qWarning(i18n("Compression of %1 failed").arg(fileName));
+        return FALSE;
+    }
+    int zError;
+    if ((zError = gzclose(zf)) != 0)
+    {
+        qWarning(i18n("Closing of file %1 failed: %2").arg(fileName)
+                 .arg(gzerror(zf, &zError)));
+        return FALSE;
+    }
     f.close();
+
     return TRUE;
 }
 
