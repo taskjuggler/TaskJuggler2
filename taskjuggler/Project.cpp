@@ -43,8 +43,8 @@ Project::Project()
 	htmlWeeklyCalendars.setAutoDelete(TRUE);
 	exportReports.setAutoDelete(TRUE);
 
-	scenarioNames.append("Plan");
-	scenarioNames.append("Actual");
+	scenarioNames.append("plan");
+	scenarioNames.append("actual");
 
 	xmlreport = 0;
 #ifdef HAVE_ICAL
@@ -108,6 +108,15 @@ const QString&
 Project::getScenarioName(int sc)
 {
 	return scenarioNames[sc];
+}
+
+int
+Project::getScenarioIndex(const QString& id)
+{
+	for (uint i = 0; i < scenarioNames.count(); ++i)
+		if (scenarioNames[i] == id)
+			return i;
+	return -1;
 }
 
 bool
@@ -205,9 +214,13 @@ Project::pass2()
 
 	// Find out what scenarios need to be scheduled.
 	// TODO: No multiple scenario support yet.
+	hasExtraValues = FALSE;
 	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-		if (!hasExtraValues && (*tli)->hasExtraValues(Task::Actual))
+		if ((*tli)->hasExtraValues(Task::Actual))
+		{
 			hasExtraValues = TRUE;
+			break;
+		}
 
 	/* Now we can copy the missing values from the plan scenario to the	other
 	 * scenarios. */
@@ -398,6 +411,11 @@ Project::generateReports() const
 
 	// Generate calendar reports
 	for (QPtrListIterator<HTMLWeeklyCalendar> ri(htmlWeeklyCalendars); 
+		 *ri != 0; ++ri)
+		(*ri)->generate();
+
+	// Generate status reports
+	for (QPtrListIterator<HTMLStatusReport> ri(htmlStatusReports); 
 		 *ri != 0; ++ri)
 		(*ri)->generate();
 

@@ -48,7 +48,7 @@ CoreAttributesList::createIndex(bool initial)
 }
 
 uint
-CoreAttributesList::maxDepth()
+CoreAttributesList::maxDepth() const
 {
 	uint md = 0;
 	for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli)

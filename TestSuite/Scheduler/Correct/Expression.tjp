@@ -1,4 +1,6 @@
-project test "Test Project" "$Id" 2000-01-01 2000-01-04
+project test "Test Project" "$Id" 2000-01-01 2000-01-06 {
+	now 2000-01-04-12:00
+}
 
 resource tux "Tux"
 
@@ -15,14 +17,14 @@ task t1 "FooTask1" {
 
 task t2 "FooTask2" {
 	flags flag1
-  start 2000-01-01
+	depends !t1
   duration 1d
 }
 
 task t3 "FooTask3" {
 	flags flag4
 	milestone
-  start 2000-01-01
+	depends !t2
 }
 
 htmltaskreport "Expression_istask.html" {
@@ -59,3 +61,12 @@ htmltaskreport "Expression_ismilestone_ref.html" {
 	hidetask flag4
 }
 
+htmltaskreport "Expression_istaskstatus.html" {
+	columns no, name, start, end, status
+	hidetask ~istaskstatus(plan,"ontime")
+}
+
+htmltaskreport "Expression_istaskstatus_ref.html" {
+	columns no, name, start, end, status
+	hidetask ~flag1
+}

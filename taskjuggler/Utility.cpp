@@ -384,6 +384,20 @@ sameTimeNextWeek(time_t t)
 }
 
 time_t
+sameTimeLastWeek(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	int weekday = tms->tm_wday;
+	do
+	{
+		t = sameTimeYesterday(t);
+		tms = localtime(&t);
+	} while (tms->tm_wday != weekday);
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
 sameTimeNextMonth(time_t t)
 {
 	struct tm* tms = localtime(&t);

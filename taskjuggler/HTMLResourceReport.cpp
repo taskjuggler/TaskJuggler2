@@ -16,6 +16,7 @@
 #include "ResourceList.h"
 #include "HTMLResourceReport.h"
 #include "ExpressionTree.h"
+#include "Operation.h"
 
 HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
 									   time_t s, time_t e, const QString& df,
@@ -47,7 +48,7 @@ HTMLResourceReport::generate()
 		return FALSE;
 
 	ResourceList filteredResourceList;
-	filterResourceList(filteredResourceList);
+	filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
 	sortResourceList(filteredResourceList);
 
 	int rNo = 1;
@@ -59,7 +60,7 @@ HTMLResourceReport::generate()
 			generateActualResource(*rli, 0);
 
 		TaskList filteredTaskList;
-		filterTaskList(filteredTaskList, *rli);
+		filterTaskList(filteredTaskList, *rli, hideTask, rollUpResource);
 		sortTaskList(filteredTaskList);
 
 		int tNo = 1;
@@ -70,6 +71,7 @@ HTMLResourceReport::generate()
 				generateActualTask(*tli, *rli);
 		}
 	}
+	s << "</table>" << endl;
 	reportHTMLFooter();
 
 	f.close();

@@ -92,14 +92,19 @@ public:
 
 	bool open();
 
-	void filterTaskList(TaskList& filteredList, const Resource* r);
+	void filterTaskList(TaskList& filteredList, const Resource* r,
+						ExpressionTree* hideExp, ExpressionTree* rollUpExp)
+		const;
 	void sortTaskList(TaskList& filteredList);
 
-	void filterResourceList(ResourceList& filteredList, const Task* t = 0)
+	void filterResourceList(ResourceList& filteredList, const Task* t,
+							ExpressionTree* hideExp, ExpressionTree* rollUpExp)
 		const;
 	void sortResourceList(ResourceList& filteredList);
 
-	void filterAccountList(AccountList& filteredList, AccountType at);
+	void filterAccountList(AccountList& filteredList, AccountType at,
+						   ExpressionTree* hideExp, ExpressionTree*
+						   rollUpExp) const;
 	void sortAccountList(AccountList& filteredList);
 
 	QString scaledLoad(double t) const;

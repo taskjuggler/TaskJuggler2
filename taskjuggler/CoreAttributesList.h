@@ -54,7 +54,7 @@ public:
 	static const int maxSortingLevel = 3;
 	void setSorting(int s, int level);
 	void createIndex(bool initial = FALSE);
-	uint maxDepth();
+	uint maxDepth() const;
 
 	static bool isSupportedSortingCriteria(int sc);
 

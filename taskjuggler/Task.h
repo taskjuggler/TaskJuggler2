@@ -180,6 +180,15 @@ public:
 	void setComplete(int sc, int c) { scenarios[sc].complete = c; }
 	double getComplete(int sc) const { return scenarios[sc].complete; }
 
+	void setStatusNote(int sc, const QString& d) 
+	{
+	   	scenarios[sc].statusNote = d; 
+	}
+	const QString& getStatusNote(int sc) const 
+	{ 
+		return scenarios[sc].statusNote; 
+	}
+
 	void setStartBuffer(int sc, double p) { scenarios[sc].startBuffer = p; }
 	double getStartBuffer(int sc) const { return scenarios[sc].startBuffer; }
 	
@@ -204,6 +213,7 @@ public:
 	bool isCompleted(int sc, time_t date) const;
 	void calcCompletionDegree(int sc); 
 	double getCompletionDegree(int sc) const;
+	double getCalcedCompletionDegree(int sc) const;
 	TaskStatus getCompletionStatus(int sc) const
 	{
 		return scenarios[sc].status;
@@ -291,7 +301,7 @@ private:
 
 	/// A longer description of the task.
 	QString note;
-	
+
 	/**
 	 * List of tasks Ids that need to be completed before this task
 	 * can start. */

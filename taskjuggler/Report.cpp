@@ -241,14 +241,17 @@ Report::setLoadUnit(const QString& u)
 }
 
 void
-Report::filterTaskList(TaskList& filteredList, const Resource* r)
+Report::filterTaskList(TaskList& filteredList, const Resource* r,
+					   ExpressionTree* hideExp, ExpressionTree* rollUpExp)
+const
 {
 	/* Create a new list that contains only those tasks that were not
 	 * hidden. */
+	filteredList.clear();
 	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
 	{
 		Interval iv(start, end);
-		if (!isHidden(*tli, hideTask) &&
+		if (!isHidden(*tli, hideExp) &&
 			iv.overlaps(Interval((*tli)->getStart(Task::Plan),
 								 (*tli)->isMilestone() ? 
 								 (*tli)->getStart(Task::Plan) :
@@ -265,7 +268,7 @@ Report::filterTaskList(TaskList& filteredList, const Resource* r)
 	/* Now we have to remove all sub tasks of task in the roll-up list
      * from the filtered list */
 	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
-		if (isRolledUp(*tli, rollUpTask))
+		if (isRolledUp(*tli, rollUpExp))
 			for (TaskListIterator thi((*tli)->getSubListIterator()); 
 				 *thi != 0; ++thi)
 				filteredList.remove(*thi);
@@ -301,14 +304,17 @@ Report::sortTaskList(TaskList& filteredList)
 }
 
 void
-Report::filterResourceList(ResourceList& filteredList, const Task* t) const
+Report::filterResourceList(ResourceList& filteredList, const Task* t,
+						   ExpressionTree* hideExp, ExpressionTree* rollUpExp)
+const
 {
 	/* Create a new list that contains only those resources that were
 	 * not hidden. */
-	ResourceList resourceList = project->getResourceList();
-	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+	filteredList.clear();
+	for (ResourceListIterator rli(project->getResourceListIterator());
+		 *rli != 0; ++rli)
 	{
-		if (!isHidden(*rli, hideResource) &&
+		if (!isHidden(*rli, hideExp) &&
 			(t == 0 || 
 			 (*rli)->getLoad(Task::Plan, Interval(start, end), t) > 0.0 ||
 			 (showActual && (*rli)->getLoad(Task::Actual, 
@@ -320,8 +326,9 @@ Report::filterResourceList(ResourceList& filteredList, const Task* t) const
 
 	/* Now we have to remove all sub resources of resource in the
      * roll-up list from the filtered list */
-	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
-		if (isRolledUp(*rli, rollUpResource))
+	for (ResourceListIterator rli(project->getResourceListIterator());
+		 *rli != 0; ++rli)
+		if (isRolledUp(*rli, rollUpExp))
 			for (ResourceListIterator thi((*rli)->getSubListIterator());
 				 *thi != 0; ++thi)
 				filteredList.remove(*thi);
@@ -354,22 +361,25 @@ Report::sortResourceList(ResourceList& filteredList)
 }
 
 void
-Report::filterAccountList(AccountList& filteredList, AccountType at)
+Report::filterAccountList(AccountList& filteredList, AccountType at,
+						  ExpressionTree* hideExp, ExpressionTree* rollUpExp)
+const
 {
 	/* Create a new list that contains only those accounts that were not
 	 * hidden. */
 	filteredList.clear();
-	AccountList accountList = project->getAccountList();
-	for (AccountListIterator ali(accountList); *ali != 0; ++ali)
+	for (AccountListIterator ali(project->getAccountListIterator()); 
+		 *ali != 0; ++ali)
 	{
-		if (!isHidden(*ali, hideAccount) && (*ali)->getAcctType() == at)
+		if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
 			filteredList.append(*ali);
 	}
 
 	/* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */
-	for (AccountListIterator ali(accountList); *ali != 0; ++ali)
-		if (isRolledUp(*ali, rollUpAccount))
+	for (AccountListIterator ali(project->getAccountListIterator()); 
+		 *ali != 0; ++ali)
+		if (isRolledUp(*ali, rollUpExp))
 			for (AccountListIterator thi((*ali)->getSubListIterator());
 				 *thi != 0; ++thi)
 				filteredList.remove(*thi);

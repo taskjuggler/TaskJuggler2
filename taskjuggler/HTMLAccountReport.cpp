@@ -44,7 +44,7 @@ HTMLAccountReport::generate()
 		return FALSE;
 
 	AccountList filteredList;
-	filterAccountList(filteredList, Cost);
+	filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
 	sortAccountList(filteredList);
 
 	for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
@@ -60,7 +60,7 @@ HTMLAccountReport::generate()
 	planTotals.clear();
 	actualTotals.clear();
 
-	filterAccountList(filteredList, Revenue);
+	filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount);
 	sortAccountList(filteredList);
 
 	for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
@@ -93,6 +93,7 @@ HTMLAccountReport::generate()
 	}
 	generateTotals(i18n("Total"), "default");
 		
+	s << "</table>" << endl;
 	reportHTMLFooter();
 
 	f.close();
@@ -176,6 +177,7 @@ bool
 HTMLAccountReport::generateTableHeader()
 {
 	// Header line 1
+	s << "<table align=\"center\" cellpadding=\"1\">\n" << endl;
 	s << "<tr>" << endl;
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )

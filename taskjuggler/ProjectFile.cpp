@@ -16,15 +16,17 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 
+#include "ProjectFile.h"
 #include "debug.h"
+#include "taskjuggler.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "ProjectFile.h"
 #include "Project.h"
 #include "Resource.h"
 #include "Account.h"
 #include "Token.h"
 #include "ExpressionTree.h"
+#include "Operation.h"
 #include "Allocation.h"
 #include "Booking.h"
 #include "kotrus.h"
@@ -410,7 +412,8 @@ ProjectFile::parse()
 			
 			else if (token == KW("htmltaskreport") ||
 					 token == KW("htmlresourcereport") ||
-					 token == KW("htmlweeklycalendar"))
+					 token == KW("htmlweeklycalendar") ||
+					 token == KW("htmlstatusreport"))
 			{
 				if (!readHTMLReport(token))
 					return FALSE;
@@ -897,6 +900,16 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				if ((tt = nextToken(token)) == STRING)
 					task->setNote(token);
+				else
+				{
+					errorMessage(i18n("String expected"));
+					return FALSE;
+				}
+			}
+			else if (token == KW("statusnote"))
+			{
+				if ((tt = nextToken(token)) == STRING)
+					task->setStatusNote(Task::Plan, token);
 				else
 				{
 					errorMessage(i18n("String expected"));
@@ -2083,6 +2096,9 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	else if (reportType == KW("htmlweeklycalendar"))
 		report = new HTMLWeeklyCalendar(proj, token, proj->getStart(),
 										proj->getEnd(), getFile(), getLine());
+	else if (reportType == KW("htmlstatusreport"))
+		report = new HTMLStatusReport(proj, token, proj->getStart(),
+									  proj->getEnd(), getFile(), getLine());
 	else
 	{
 		qFatal("readHTMLReport: bad report type");
@@ -2299,8 +2315,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		proj->addHTMLTaskReport((HTMLTaskReport*) report);
 	else if (reportType == KW("htmlresourcereport"))
 		proj->addHTMLResourceReport((HTMLResourceReport*) report);
-	else
+	else if (reportType == KW("htmlweeklycalendar"))
 		proj->addHTMLWeeklyCalendar((HTMLWeeklyCalendar*) report);
+	else
+		proj->addHTMLStatusReport((HTMLStatusReport*) report);
 
 	return TRUE;
 }
@@ -2617,6 +2635,7 @@ ProjectFile::readLogicalExpression(int precedence)
 			proj->getTask(token) ||
 			proj->getResource(token) ||
 			proj->getAccount(token) ||
+			(proj->getScenarioIndex(token) >= 0) ||
 			proj->isValidId(token))
 		{
 			op = new Operation(Operation::Id, token);
@@ -2632,6 +2651,10 @@ ProjectFile::readLogicalExpression(int precedence)
 						 arg(token));
 			return 0;
 		}
+	}
+	else if (tt == STRING)
+	{
+		op = new Operation(Operation::String, token);
 	}
 	else if (tt == DATE)
 	{
@@ -2725,7 +2748,11 @@ ProjectFile::readFunctionCall(const QString& name)
 		errorMessage(i18n("')' expected"));
 		return 0;
 	}
-	return new Operation(name, args);
+	Operation** argsArr = new Operation*[args.count()];
+	int i = 0;
+	for (QPtrListIterator<Operation> oli(args); *oli != 0; ++oli)
+		argsArr[i++] = *oli;
+	return new Operation(name, argsArr, args.count());
 }
 
 bool

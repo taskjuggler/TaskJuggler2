@@ -4,7 +4,8 @@ taskjuggler_SOURCES =  main.cpp
 noinst_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp TjMessageHandler.cpp \
-ExpressionTree.cpp Report.cpp ReportXML.cpp \
+Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
+Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \
 BookingList.cpp TransactionList.cpp \
 TaskScenario.cpp VacationList.cpp \
@@ -14,7 +15,8 @@ TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
 HTMLTaskReport.cpp HTMLResourceReport.cpp HTMLAccountReport.cpp \
-HTMLWeeklyCalendar.cpp ReportHtml.cpp ExportReport.cpp \
+HTMLStatusReport.cpp HTMLWeeklyCalendar.cpp ReportHtml.cpp \
+ExportReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp
 
 libtaskjuggler_la_METASOURCES = AUTO

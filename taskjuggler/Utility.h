@@ -54,6 +54,8 @@ time_t sameTimeYesterday(time_t t);
 
 time_t sameTimeNextWeek(time_t t);
 
+time_t sameTimeLastWeek(time_t t);
+
 time_t sameTimeNextMonth(time_t t);
 
 time_t sameTimeNextYear(time_t t);

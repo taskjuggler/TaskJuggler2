@@ -22,6 +22,7 @@
 #include "BookingList.h"
 #include "ExportReport.h"
 #include "ExpressionTree.h"
+#include "Operation.h"
 
 #define KW(a) a
 
@@ -72,11 +73,11 @@ ExportReport::generate()
 	  << " * " << TJURL << endl
 	  << " */" << endl;	  
 	TaskList filteredTaskList;
-	filterTaskList(filteredTaskList, 0);
+	filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
 	sortTaskList(filteredTaskList);
 
 	ResourceList filteredResourceList;
-	filterResourceList(filteredResourceList, 0);
+	filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
 	sortResourceList(filteredResourceList);
 
 	generateTaskList(filteredTaskList, filteredResourceList);

@@ -14,7 +14,6 @@
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "taskjuggler.h"
 #include "Project.h"
 #include "Resource.h"
 #include "Report.h"
@@ -441,6 +440,18 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 				s << htmlFilter(t->getNote());
 			s << "</span></td>" << endl;
 		}
+		else if (*it == KW("statusnote"))
+		{
+			s << "<td class=\""
+			  << (r == 0 ? "default" : "defaultlight")
+			  << "\" style=\"text-align:left\">"
+			  << "<span style=\"font-size:100%\">";
+			if (t->getStatusNote(Task::Plan).isEmpty())
+				s << "&nbsp;";
+			else
+				s << htmlFilter(t->getStatusNote(Task::Plan));
+			s << "</span></td>" << endl;
+		}
 		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
@@ -454,9 +465,20 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 		else if (*it == KW("flags"))
 			flagList(t, r);
 		else if (*it == KW("completed"))
-			textOneRow(QString("%1%")
-					   .arg((int) t->getCompletionDegree(Task::Plan)),
-					   r != 0, "right");
+			if (t->getCompletionDegree(Task::Plan) ==
+				t->getCalcedCompletionDegree(Task::Plan))
+			{
+				textOneRow(QString("%1%")
+						   .arg((int) t->getCompletionDegree(Task::Plan)),
+						   r != 0, "right");
+			}
+			else
+			{
+				textOneRow(QString("%1% (%2%)")
+						   .arg((int) t->getCompletionDegree(Task::Plan))
+						   .arg((int) t->getCalcedCompletionDegree(Task::Plan)),
+						   r != 0, "right");
+			}
 		else if (*it == KW("status"))
 			generateTaskStatus(t->getStatus(Task::Plan), r != 0);
 		else if (*it == KW("daily"))
@@ -529,11 +551,35 @@ ReportHtml::generateActualTask(const Task* t, const Resource* r)
 												Interval(start, end), r)),
 				r != 0, "right");
 		else if (*it == KW("completed"))
-			textOneRow(QString("%1%")
-					   .arg((int) t->getCompletionDegree(Task::Actual)),
-					   r != 0, "right");
+			if (t->getCompletionDegree(Task::Actual) ==
+				t->getCalcedCompletionDegree(Task::Actual))
+			{
+				textOneRow(QString("%1%")
+						   .arg((int) t->getCompletionDegree(Task::Actual)),
+						   r != 0, "right");
+			}
+			else
+			{
+				textOneRow(QString("%1% (%2%)")
+						   .arg((int) t->getCompletionDegree(Task::Actual))
+						   .arg((int)
+								t->getCalcedCompletionDegree(Task::Actual)),
+						   r != 0, "right");
+			}
 		else if (*it == KW("status"))
 			generateTaskStatus(t->getStatus(Task::Actual), r != 0);
+		else if (*it == KW("statusnote"))
+		{
+			s << "<td class=\""
+			  << (r == 0 ? "default" : "defaultlight")
+			  << "\" style=\"text-align:left\">"
+			  << "<span style=\"font-size:100%\">";
+			if (t->getStatusNote(Task::Actual).isEmpty())
+				s << "&nbsp;";
+			else
+				s << htmlFilter(t->getStatusNote(Task::Actual));
+			s << "</span></td>" << endl;
+		}
 		else if (*it == KW("daily"))
 			dailyTaskActual(t, r);
 		else if (*it == KW("weekly"))
@@ -742,13 +788,11 @@ ReportHtml::reportHTMLHeader()
 		s << "<p>" << htmlFilter(caption) << "</p>" << endl;
 	if (!rawHead.isEmpty())
 		s << rawHead << endl;
-	s << "<table align=\"center\" cellpadding=\"1\">\n" << endl;
 }
 
 void
 ReportHtml::reportHTMLFooter()
 {
-	s << "</table>" << endl;
 	if (!rawTail.isEmpty())
 		s << rawTail << endl;
 
@@ -765,6 +809,7 @@ bool
 ReportHtml::generateTableHeader()
 {
 	// Header line 1
+	s << "<table align=\"center\" cellpadding=\"1\">\n" << endl;
 	s << "<tr>" << endl;
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
@@ -870,6 +915,9 @@ ReportHtml::generateTableHeader()
 		else if (*it == KW("note"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">"
 				<< i18n("Note") << "</td>";
+		else if (*it == KW("statusnote"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Status Note") << "</td>";
 		else if (*it == KW("costs"))
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">"

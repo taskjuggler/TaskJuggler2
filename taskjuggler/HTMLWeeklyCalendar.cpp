@@ -18,6 +18,7 @@
 #include "Resource.h"
 #include "HTMLWeeklyCalendar.h"
 #include "ExpressionTree.h"
+#include "Operation.h"
 #include "Utility.h"
 
 HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f, time_t s,
@@ -48,11 +49,11 @@ HTMLWeeklyCalendar::generate()
 	reportHTMLHeader();
 
 	TaskList filteredTaskList;
-	filterTaskList(filteredTaskList, 0);
+	filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
 	sortTaskList(filteredTaskList);
 
 	ResourceList filteredResourceList;
-	filterResourceList(filteredResourceList, 0);
+	filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
 	sortResourceList(filteredResourceList);
 	
 	generateCalendar(filteredTaskList, filteredResourceList);
@@ -67,6 +68,7 @@ bool
 HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 									 filteredResourceList)
 {
+	s << "<table align=\"center\" cellpadding=\"1\">\n" << endl;
 	for (time_t week = beginOfWeek(start, weekStartsMonday);
 		 week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)); )
 	{
@@ -192,6 +194,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 		week = wd;	
 	}
 
+	s << "</table>" << endl;
 	return TRUE;
 }
 

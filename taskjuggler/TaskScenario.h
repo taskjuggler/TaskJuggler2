@@ -88,7 +88,10 @@ private:
 
 	/// Status that the task is in (according to 'now' date)
 	TaskStatus status;
-	
+
+	/// A longer description of the task status.
+	QString statusNote;
+
 	/// TRUE if the task has been completely scheduled.
 	bool scheduled;
 } ;

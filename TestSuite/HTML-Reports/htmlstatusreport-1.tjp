@@ -1,0 +1,68 @@
+project prj "htmltaskreport test" "1.0" 2003-01-01-0:00-GMT 2003-04-01-00:00-GMT {
+	timezone "GMT"
+  timeformat "%Y-%m-%d %H:%M:%S %Z"	
+	now 2003-02-01
+}
+
+flags flag1, flag2, flag3, flag4
+
+include "html-test-macros.tjsp"
+
+resource tux1 "Tux 1" {
+	rate 300.0
+	kotrusid "tux1"
+}
+
+resource tux2 "Tux 2" {
+	rate 500.0
+	kotrusid "tux der 2."
+}
+
+resource tux3 "Tux 3" {
+	rate 400.0
+}
+
+task t1 "Task 1" {
+	flags flag1
+	start 2003-01-01
+	task t2 "Task 2" {
+		effort 5d
+		allocate tux1
+		flags flag2, flag3
+		note "This is Task2"
+	}
+	task t3 "Task 3" {
+		effort 10d
+		allocate tux2
+		complete 50
+		flags flag4
+		statusnote "Messed things up big time."
+	}
+	task t4 "Task 4" {
+		effort 30d
+		allocate tux3
+		depends !t2
+		complete 50
+		statusnote "We might still make it."
+	}
+	task t5 "Task 5" {
+		length 30d
+		complete 100
+		depends !t2
+	}
+	task t6 "Task 6" {
+		effort 10d
+		allocate tux2
+		depends !t3
+	}
+	task t7 "Task 7" {
+		effort 5d
+		allocate tux1
+		start 2003-02-02
+	}
+}
+
+htmlstatusreport "." {
+	headline "Weekly status report"
+	caption "Put some meaningless words here to please your boss."
+}

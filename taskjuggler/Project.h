@@ -26,6 +26,7 @@
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
 #include "HTMLWeeklyCalendar.h"
+#include "HTMLStatusReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
 #ifdef HAVE_ICAL
@@ -99,6 +100,11 @@ public:
 	 * @param sc Specifies the scenario.
 	 */
 	const QString& getScenarioName(int sc);
+	/**
+	 * Returns the index of the scenario.
+	 * @param id the ID of the scenario.
+	 */
+	int getScenarioIndex(const QString& id);
 
 	/**
 	 * Set the name of the project. The project name is mainly used for the
@@ -468,6 +474,11 @@ public:
 		htmlWeeklyCalendars.append(r);
 	}
 
+	void addHTMLStatusReport(HTMLStatusReport* r)
+	{
+		htmlStatusReports.append(r);
+	}
+
 	void addExportReport(ExportReport* e)
 	{
 		exportReports.append(e);
@@ -633,6 +644,7 @@ private:
 	QPtrList<HTMLResourceReport> htmlResourceReports;
 	QPtrList<HTMLAccountReport> htmlAccountReports;
 	QPtrList<HTMLWeeklyCalendar> htmlWeeklyCalendars;
+	QPtrList<HTMLStatusReport> htmlStatusReports;
 	QPtrList<ExportReport> exportReports;
 } ;
 

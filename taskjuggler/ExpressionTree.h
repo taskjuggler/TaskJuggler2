@@ -19,50 +19,11 @@
 #include <qdict.h>
 #include <qptrlist.h>
 
+#include "ExpressionTreeFunction.h"
+
 class CoreAttributes;
 class ExpressionTree;
-
-class Operation
-{
-public:
-	enum opType { Const = 1, Variable, Function, Id, Date, Not, And, Or };
-
-	Operation(long v) : opt(Const), value(v) { }
-	Operation(opType ot, const QString& n) : opt(ot), name(n) { }
-	Operation(opType ot, long v) : opt(ot), value(v) { }
-	Operation(opType ot, const QString& n, long v) :
-	   	opt(ot), value(v), name(n) { }
-	Operation(const QString& v) : opt(Variable), name(v) { }
-	Operation(Operation* o1, opType o, Operation* o2 = 0)
-		: opt(o)
-	{
-		ops.setAutoDelete(TRUE);
-		ops.append(o1);
-		ops.append(o2);
-	}
-	Operation(const QString n, QPtrList<Operation> args) :
-	   opt(Function), name(n)
-   	{
-		ops = args;
-		ops.setAutoDelete(TRUE);
-   	}
-	~Operation() { }
-
-	long evalAsInt(const ExpressionTree* et) const;
-	time_t evalAsTime(const ExpressionTree* et) const;
-	QString evalAsString(const ExpressionTree* et) const;
-
-private:
-	Operation() { } // don't use this
-
-	long evalFunction(const ExpressionTree* et) const;
-	QString evalFunctionAsString(const ExpressionTree* et) const;
-
-	opType opt;
-	long value;
-	QString name;
-	QPtrList<Operation> ops;
-} ;
+class Operation;
 
 class ExpressionTree
 {
@@ -70,11 +31,7 @@ public:
 	ExpressionTree(const Operation* op);
 	~ExpressionTree() { }
 
-	long evalAsInt(const CoreAttributes* c)
-   	{
-		ca = c;
-		return expression->evalAsInt(this);
-   	}
+	long evalAsInt(const CoreAttributes* c);
 	long resolve(const QString& symbol) const;
 
 	void registerSymbol(const QString& symbol, long value)
@@ -89,6 +46,11 @@ public:
 
 	static int arguments(const QString& name);
 
+	ExpressionTreeFunction* getFunction(const QString& name) const
+	{
+		return functions[name];
+	}
+	
 private:
 	ExpressionTree() { }	// don't use this
 
@@ -96,7 +58,7 @@ private:
 	QDict<long> symbolTable;
 	const Operation* expression;
 	
-	static QDict<int> funcArgc;
+	static QDict<ExpressionTreeFunction> functions;
 } ;
 
 #endif

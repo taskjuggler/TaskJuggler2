@@ -1830,6 +1830,11 @@ Task::getCompletionDegree(int sc) const
 	return scenarios[sc].completionDegree;
 }
 
+double
+Task::getCalcedCompletionDegree(int sc) const
+{
+	return scenarios[sc].completionDegree;
+}
 
 QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 {
