@@ -21,7 +21,8 @@
 class Interval
 {
 public:
-	Interval(time_t s, time_t e) : start(s), end(e) {}
+	Interval(time_t s, time_t e) : start(s), end(e) { }
+	Interval(time_t s) : start(s), end(s) { }
 	Interval() { start = 0; end = 0; }
 	~Interval() { }
 
@@ -51,7 +52,7 @@ public:
 			end = i.end;
 		return TRUE;
 	}
-	bool overlaps(const Interval& i)
+	bool overlaps(const Interval& i) const
 	{
 		return ((start <= i.start && i.start < end) ||
 				(i.start <= start && start < i.end));
@@ -77,6 +78,27 @@ public:
 	time_t getStart() const { return start; }
 	time_t getEnd() const { return end; }
 	time_t getDuration() const { return end >= start ? end - start + 1: 0; }
+
+	const Interval& firstDay()
+	{
+		start = midnight(start);
+		end = sameTimeNextDay(start) - 1;
+		return *this;
+	}
+
+	const Interval& firstWeek()
+	{
+		start = beginOfWeek(start);
+		end = sameTimeNextWeek(start) - 1;
+		return *this;
+	}
+
+	const Interval& firstMonth()
+	{
+		start = beginOfMonth(start);
+		end = sameTimeNextMonth(start) - 1;
+		return *this;
+	}
 
 private:
 	/// The start of the time interval.

@@ -95,12 +95,11 @@ private:
 					  QString* = 0);
 	bool readAccount();
 	bool readAllocate(Task* t);
-	bool readTimeFrame(Task* t, double& d);
+	bool readPlanTimeFrame(Task* t, double& d);
 	bool readTimeValue(ulong& value);
 	bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
 	bool readPriority(int& priority);
-	bool readHTMLTaskReport();
-	bool readHTMLResourceReport();
+	bool readHTMLReport(const QString& reportType);
 	bool readXMLTaskReport();
 	Operation* readLogicalExpression();
 	bool readTaskSorting(Report* report);

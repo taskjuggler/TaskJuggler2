@@ -35,6 +35,12 @@ public:
 	bool addTask(Task* t);
 	bool pass2();
 
+	void preparePlan();
+	void finishPlan();
+	void prepareActual();
+	void finishActual();
+	bool schedule();
+
 	bool reportHTMLHeader(FILE* f);
 	bool reportHTMLFooter(FILE* f);
 
@@ -127,10 +133,8 @@ public:
 		return ((double) secs / (dailyWorkingHours * ONEHOUR));
 	}
 
-	Task* taskListFirst() { return taskList.first(); }
-	Task* taskListNext() { return taskList.next(); }
-	Resource* resourceListFirst() { return resourceList.first(); }
-	Resource* resourceListNext() { return resourceList.next(); }
+	TaskList getTaskList() { return taskList; }
+	ResourceList getResourceList() { return resourceList; }
 
 	void generateReports();
 

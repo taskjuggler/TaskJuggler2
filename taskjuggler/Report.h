@@ -30,6 +30,8 @@ public:
 	Report(Project* p, const QString& f, time_t s, time_t e);
 	virtual ~Report();
 
+	void setShowActual(bool s) { showActual = s; }
+
 	void addColumn(const QString& c) { columns.append(c); }
 	const QString& columnsAt(uint idx) { return columns[idx]; }
 	void clearColumns() { columns.clear(); }
@@ -40,22 +42,34 @@ public:
 	void setEnd(time_t e) { end = e; }
 	time_t getEnd() const { return end; }
 
-	void setHideTask(ExpressionTree* et) { hideTask = et; }
+	void setHideTask(ExpressionTree* et);
 	bool isTaskHidden(Task* t);
 
-	void setRollUpTask(ExpressionTree* et) { rollUpTask = et; }
+	void setRollUpTask(ExpressionTree* et);
 	bool isTaskRolledUp(Task* t);
 
-	void setHideResource(ExpressionTree* et) { hideTask = et; }
+	void setHideResource(ExpressionTree* et);
 	bool isResourceHidden(Resource* t);
 
+	void setRollUpResource(ExpressionTree* et);
+	bool isResourceRolledUp(Resource* t);
+
 	void setTaskSorting(TaskList::SortCriteria sc) { taskSortCriteria = sc; }
+	void setResourceSorting(TaskList::SortCriteria sc)
+	{
+		taskSortCriteria = sc;
+	}
 
 protected:
 	Report() { }
 
-	void filterTaskList(TaskList& filteredList);
+	void filterTaskList(TaskList& filteredList, Resource* r);
 	void sortTaskList(TaskList& filteredList);
+
+	void filterResourceList(ResourceList& filteredList, Task* t = 0);
+	void sortResourceList(ResourceList& filteredList);
+
+	void scaleTime(double t, bool verboseUnit = TRUE);
 
 	Project* project;
 	QString fileName;
@@ -64,11 +78,15 @@ protected:
 	time_t end;
 
 	TaskList::SortCriteria taskSortCriteria;
+	ResourceList::SortCriteria resourceSortCriteria;
 
 	QTextStream s;
 	ExpressionTree* hideTask;
 	ExpressionTree* hideResource;
 	ExpressionTree* rollUpTask;
+	ExpressionTree* rollUpResource;
+
+	bool showActual;
 } ;
 
 #endif

@@ -21,38 +21,13 @@ class Project;
 class HTMLTaskReport : public ReportHtml
 {
 public:
-	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e) :
-		ReportHtml(p, f, s, e)
-	{
-		showActual = FALSE;
-	}
-	~HTMLTaskReport();
+	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e);
+	~HTMLTaskReport() { }
 
 	bool generate();
 
-	void setShowActual(bool s) { showActual = s; }
-
 private:
 	HTMLTaskReport() { }
-
-	bool generateTableHeader();
-
-	void generateTaskName(Task* t);
-
-	void generateResources(Task* t);
-	void generateDepends(Task* t, const QDict<int>& idxDict);
-	void generateFollows(Task* t, const QDict<int>& idxDict);
-
-	void generateDailyPlan(Task* t);
-	void generateDailyActual(Task* t);
-
-	void generateWeeklyPlan(Task* t);
-	void generateWeeklyActual(Task* t);
-
-	void generateMonthlyPlan(Task* t);
-	void generateMonthlyActual(Task* t);
-
-	bool showActual;
 } ;
 
 #endif

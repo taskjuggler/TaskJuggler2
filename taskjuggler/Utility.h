@@ -63,7 +63,7 @@ inline bool isSameDay(time_t d1, time_t d2)
 
 inline bool isSameWeek(time_t d1, time_t d2)
 {
-	return beginOfWeek(d1) == beginOfMonth(d2);
+	return beginOfWeek(d1) == beginOfWeek(d2);
 }
 
 inline bool isSameMonth(time_t d1, time_t d2)

@@ -73,10 +73,11 @@ void ReportXML::generate()
    					       QString::number(project->getNow())));
 
    doc.appendChild( proj );
-   
-   Task *task = project->taskListFirst();
+
+   TaskList taskList = project->getTaskList();
+   Task *task = taskList.first();
    proj.appendChild( task->xmlElement( doc ));
-   while( (task = project->taskListNext()) != 0 )
+   while( (task = taskList.next()) != 0 )
    {
       proj.appendChild( task->xmlElement( doc ));
    }	

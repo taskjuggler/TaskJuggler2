@@ -75,8 +75,8 @@ private:
 class BookingList : public QPtrList<Booking>
 {
 public:
-	BookingList() { setAutoDelete(TRUE); }
-	~BookingList() {}
+	BookingList() { }
+	~BookingList() { }
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
@@ -92,11 +92,13 @@ public:
 	ResourceList();
 	~ResourceList() { }
 
-	enum SortCriteria { Pointer, ResourceTree, WorkTime };
+	enum SortCriteria { Pointer, Index, ResourceTree };
 
 	Resource* getResource(const QString& id);
 
 	void setSorting(SortCriteria sc) { sorting = sc; }
+
+	void createIndex();
 
 	void printText();
 
@@ -114,11 +116,24 @@ public:
 	virtual ~Resource() { }
 
 	const QString& getId() const { return id; }
+
+	void setIndex(uint idx) { index = idx; }
+	uint getIndex() const { return index; }
+
 	const QString& getName() const { return name; }
+	void getFullName(QString& fullName)
+	{
+		fullName = "";
+		for (Resource* r = this; r != 0; r = r->parent)
+			fullName = r->name + "." + fullName;
+		fullName.remove(fullName.length() - 1, 1);
+	}
 
 	Resource* getParent() const { return parent; }
 
 	bool isGroup() const { return !subResources.isEmpty(); }
+	void getSubResourceList(ResourceList& rl);
+
 	Resource* subResourcesFirst();
 	Resource* subResourcesNext();
 
@@ -148,11 +163,14 @@ public:
 
 	void book(Booking* b);
 
-	double getLoadOnDay(time_t date, Task* task = 0);
+	double getPlanLoad(const Interval& i, Task* task = 0);
 
-	double getLoad(const Interval& i, Task* task = 0);
+	double getActualLoad(const Interval& i, Task* task = 0);
 
-	bool isAssignedTo(Task* t);
+	double getPlanCosts(const Interval& i, Task* task = 0);
+
+	double getActualCosts(const Interval& i, Task* task = 0);
+
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
@@ -171,8 +189,14 @@ public:
 	   return( elem );
         }
 
-	Booking* jobsFirst() { return jobs.first(); }
-	Booking* jobsNext() { return jobs.next(); }
+	BookingList getPlanJobs() { return planJobs; }
+	BookingList getActualJobs() { return actualJobs; }
+
+	void preparePlan();
+	void finishPlan();
+
+	void prepareActual();
+	void finishActual();
 
 private:
 	/// The ID of the resource. Must be unique in the project.
@@ -180,6 +204,10 @@ private:
 
 	/// The ID of the resource. Must be unique in the project.
 	QString id;
+
+	/// A unique integer ID.
+	uint index;
+
 	/// The resource name. E. g. real name or room number.
 	QString name;
 
@@ -198,8 +226,10 @@ private:
 
 	/// The minimum effort (in man days) the resource should be used per day.
 	double minEffort;
+
 	/// The maximum effort (in man days) the resource should be used per day.
 	double maxEffort;
+
 	/**
 	 * The efficiency of the resource. A team of five should have an
 	 * efficiency of 5.0 */
@@ -217,7 +247,13 @@ private:
 	/// List of all intervals the resource is not available.
 	QList<Interval> vacations;
 
-	/// A list of all uses of the resource.
+	/// A list of all planned usages of the resource.
+	BookingList planJobs;
+
+	/// A list of all actual usages of the resource.
+	BookingList actualJobs;
+
+	/// A list of all scheduled uses of the resource.
 	BookingList jobs;
 } ;
 

@@ -34,10 +34,17 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	: project(p), id(i), name(n), parent(pr)
 {
 	vacations.setAutoDelete(TRUE);
-	subResources.setAutoDelete(FALSE);
+	jobs.setAutoDelete(TRUE);
+	planJobs.setAutoDelete(TRUE);
+	actualJobs.setAutoDelete(TRUE);
 
 	if (pr)
 	{
+		// Inherit flags from parent resource.
+		for (QStringList::Iterator it = ((FlagList*) pr)->begin();
+			 it != ((FlagList*) pr)->end(); ++it)
+			addFlag(*it);
+
 		pr->subResources.append(this);
 
 		// Inherit start values from parent resource.
@@ -106,6 +113,16 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 			rate = 0.0;
 		}
 		efficiency = 1.0;
+	}
+}
+
+void
+Resource::getSubResourceList(ResourceList& rl)
+{
+	for (Resource* r = subResources.first(); r != 0; r = subResources.next())
+	{
+		rl.append(r);
+		r->getSubResourceList(rl);
 	}
 }
 
@@ -200,20 +217,18 @@ Resource::book(Booking* nb)
 }
 
 double
-Resource::getLoadOnDay(time_t date, Task* task)
-{
-	return getLoad(Interval(midnight(date), sameTimeNextDay(midnight(date))),
-				   task);
-}
-
-double
-Resource::getLoad(const Interval& period, Task* task)
+Resource::getPlanLoad(const Interval& period, Task* task)
 {
 	time_t bookedTime = 0;
 
-	for (Booking* b = jobs.first();
+	double subLoad = 0.0;
+	for (Resource* r = subResources.first(); r != 0;
+		 r = subResources.next())
+		subLoad += r->getPlanLoad(period, task);
+
+	for (Booking* b = planJobs.first();
 		 b != 0 && b->getEnd() <= period.getEnd();
-		 b = jobs.next())
+		 b = planJobs.next())
 	{
 		Interval i = period;
 		if (i.overlap(b->getInterval()) &&
@@ -221,19 +236,43 @@ Resource::getLoad(const Interval& period, Task* task)
 			bookedTime += i.getDuration();
 	}
 
-	return project->convertToDailyLoad(bookedTime) * efficiency;
+	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
 }
 
-bool
-Resource::isAssignedTo(Task* task)
+double
+Resource::getActualLoad(const Interval& period, Task* task)
 {
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-		if (task == b->getTask())
-			return TRUE;
-	return FALSE;
+	time_t bookedTime = 0;
+
+	double subLoad = 0.0;
+	for (Resource* r = subResources.first(); r != 0;
+		 r = subResources.next())
+		subLoad += r->getActualLoad(period, task);
+
+	for (Booking* b = actualJobs.first();
+		 b != 0 && b->getEnd() <= period.getEnd();
+		 b = actualJobs.next())
+	{
+		Interval i = period;
+		if (i.overlap(b->getInterval()) &&
+			(task == 0 || task == b->getTask()))
+			bookedTime += i.getDuration();
+	}
+
+	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
 }
 
+double
+Resource::getPlanCosts(const Interval& period, Task* task)
+{
+	return getPlanLoad(period, task) * rate;
+}
 
+double
+Resource::getActualCosts(const Interval& period, Task* task)
+{
+	return getActualLoad(period, task) * rate;
+}
 
 /* retrieve all bookings _not_ belonging to this project */
 bool
@@ -264,10 +303,52 @@ Resource::hasVacationDay(time_t day)
 	return FALSE;
 }
 
+void
+Resource::preparePlan()
+{
+	jobs.clear();
+}
+
+void
+Resource::finishPlan()
+{
+	planJobs.clear();
+	// Make deep copy of jobs to planJobs.
+	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		planJobs.append(new Booking(*b));
+}
+
+void
+Resource::prepareActual()
+{
+	jobs.clear();
+}
+
+void
+Resource::finishActual()
+{
+	actualJobs.clear();
+	// Make deep copy of jobs to actualJobs.
+	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		actualJobs.append(new Booking(*b));
+}
+
 ResourceList::ResourceList()
 {
-	setAutoDelete(TRUE);
 	sorting = Pointer;
+}
+
+void
+ResourceList::createIndex()
+{
+	SortCriteria savedSorting = sorting;
+	sorting = ResourceTree;
+	sort();
+	int i = 1;
+	for (Resource* r = first(); r != 0; r = next(), ++i)
+		r->setIndex(i);
+	sorting = savedSorting;
+	sort();
 }
 
 int
@@ -281,12 +362,17 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	case Pointer:
 		return r1->getId().compare(r2->getId());
 	case ResourceTree:
-		return 0;	// TODO: Compare full resource names
-	case WorkTime:
-//		double wt1 = r1->getLoad(Interval(start, end));
-//		double wt2 = r2->getLoad(Interval(start, end));
-//		return wt1 == wt2 ? 0 : wt1 < wt2 ? -1 : 1;
-		return 0;	// TODO: Haven't found an elegant way to do this yet.
+	{
+		QString key1;
+		r1->getFullName(key1);
+		QString key2;
+		r2->getFullName(key2);
+		if (key1 == key2)
+			return 0;
+		else if (key1 < key2)
+			return -1;
+		return 1;
+	}
 	default:
 		qFatal("Unknown sorting criteria!\n");
 		return 0;

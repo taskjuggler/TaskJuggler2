@@ -18,30 +18,13 @@
 class HTMLResourceReport : public ReportHtml
 {
 public:
-	HTMLResourceReport(Project* p, const QString& f, time_t s, time_t e) :
-		ReportHtml(p, f, s, e)
-	{
-		// The default columns
-		columns.append("resource");
-		columns.append("daily");
-	}
+	HTMLResourceReport(Project* p, const QString& f, time_t s, time_t e);
 	~HTMLResourceReport() { }
 
 	bool generate();
 
 private:
 	HTMLResourceReport() { }
-
-	bool generateTableHeader();
-
-	void schedulePlan(Resource* r, Task* t);
-
-	void dailyResourcePlan(Resource* r);
-	void dailyTaskPlan(Resource* r, Task* t);
-	void weeklyResourcePlan(Resource* r);
-	void weeklyTaskPlan(Resource* r, Task* t);
-	void monthlyResourcePlan(Resource* r);
-	void monthlyTaskPlan(Resource* r, Task* t);
 } ;
 
 #endif

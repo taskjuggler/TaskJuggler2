@@ -647,15 +647,10 @@ ProjectFile::parse()
 			      return FALSE;
 			   break;
 			}
-			else if (token == "htmlTaskReport")
+			else if (token == "htmltaskreport" ||
+					 token == "htmlresourcereport")
 			{
-				if (!readHTMLTaskReport())
-					return FALSE;
-				break;
-			}
-			else if (token == "htmlResourceReport")
-			{
-				if (!readHTMLResourceReport())
+				if (!readHTMLReport(token))
 					return FALSE;
 				break;
 			}
@@ -769,7 +764,7 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 			}
-			else if READ_DATE("start", setStart)
+			else if READ_DATE("start", setPlanStart)
 			else if READ_DATE("minStart", setMinStart)
 			else if READ_DATE("maxStart", setMaxStart)
 			else if READ_DATE("minEnd", setMinEnd)
@@ -779,25 +774,25 @@ ProjectFile::readTask(Task* parent)
 			else if (token == "length" && !hasSubTasks)
 			{
 				double d;
-				if (!readTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d))
 					return FALSE;
-				task->setLength(d);
+				task->setPlanLength(d);
 				cantBeParent = TRUE;
 			}
 			else if (token == "effort" && !hasSubTasks)
 			{
 				double d;
-				if (!readTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d))
 					return FALSE;
-				task->setEffort(d);
+				task->setPlanEffort(d);
 				cantBeParent = TRUE;
 			}
 			else if (token == "duration" && !hasSubTasks)
 			{
 				double d;
-				if (!readTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d))
 					return FALSE;
-				task->setDuration(d);
+				task->setPlanDuration(d);
 				cantBeParent = TRUE;
 			}
 			else if (token == "complete" && !hasSubTasks)
@@ -1276,11 +1271,11 @@ ProjectFile::readTimeValue(ulong& value)
 }
 
 bool
-ProjectFile::readTimeFrame(Task* task, double& value)
+ProjectFile::readPlanTimeFrame(Task* task, double& value)
 {
-	if (task->getEffort() > 0.0 ||
-		task->getLength() > 0.0 ||
-		task->getDuration() > 0.0)
+	if (task->getPlanEffort() > 0.0 ||
+		task->getPlanLength() > 0.0 ||
+		task->getPlanDuration() > 0.0)
 	{
 		fatalError(
 			"You can specify either a length, a duration or an effort.");
@@ -1406,7 +1401,7 @@ ProjectFile::readXMLTaskReport()
 
 
 bool
-ProjectFile::readHTMLTaskReport()
+ProjectFile::readHTMLReport(const QString& reportType)
 {
 	QString token;
 	if (nextToken(token) != STRING)
@@ -1414,109 +1409,17 @@ ProjectFile::readHTMLTaskReport()
 		fatalError("File name expected");
 		return FALSE;
 	}
-	HTMLTaskReport* report = new HTMLTaskReport(proj, token, proj->getStart(),
-												proj->getEnd());
-	TokenType tt;
-	if (nextToken(token) != LCBRACE)
-	{
-		openFiles.last()->returnToken(tt, token);
-		return TRUE;
-	}
-
-	for ( ; ; )
-	{
-		if ((tt = nextToken(token)) == RCBRACE)
-			break;
-		else if (tt != ID)
-		{
-			fatalError("Attribute ID or '}' expected");
-			return FALSE;
-		}
-		if (token == "columns")
-		{
-			for ( ; ; )
-			{
-				QString col;
-				if ((tt = nextToken(col)) != ID)
-				{
-					fatalError("Column ID expected");
-					return FALSE;
-				}
-				report->addColumn(col);
-				if ((tt = nextToken(token)) != COMMA)
-				{
-					openFiles.last()->returnToken(tt, token);
-					break;
-				}
-			}
-		}
-		else if (token == "start")
-		{
-			if (nextToken(token) != DATE)
-			{
-				fatalError("Date expected");
-				return FALSE;
-			}
-			report->setStart(date2time(token));
-		}
-		else if (token == "end")
-		{
-			if (nextToken(token) != DATE)
-			{
-				fatalError("Date expected");
-				return FALSE;
-			}
-			report->setEnd(date2time(token));
-		}
-		else if (token == "showActual")
-		{
-			report->setShowActual(TRUE);
-		}
-		else if (token == "hidetask")
-		{
-			Operation* op;
-			if ((op = readLogicalExpression()) == 0)
-				return FALSE;
-			ExpressionTree* et = new ExpressionTree(op);
-			report->setHideTask(et);
-		}
-		else if (token == "rolluptask")
-		{
-			Operation* op;
-			if ((op = readLogicalExpression()) == 0)
-				return FALSE;
-			ExpressionTree* et = new ExpressionTree(op);
-			report->setRollUpTask(et);
-		}
-		else if (token == "sorttasks")
-		{
-			if (!readTaskSorting(report))
-				return FALSE;
-		}
-		else
-		{
-			fatalError("Illegal attribute");
-			return FALSE;
-		}
-	}
-	proj->addHTMLTaskReport(report);
-	return TRUE;
-}
-
-bool
-ProjectFile::readHTMLResourceReport()
-{
-	QString token;
-
-	if (nextToken(token) != STRING)
-	{
-		fatalError("File name expected");
-		return FALSE;
-	}
-
-	HTMLResourceReport* report = new HTMLResourceReport(
-		proj, token, proj->getStart(), proj->getEnd());
-
+	
+	ReportHtml* report;
+	if (reportType == "htmltaskreport")
+		report = new HTMLTaskReport(proj, token, proj->getStart(),
+									proj->getEnd());
+	else if (reportType == "htmlresourcereport")
+		report = new HTMLResourceReport(proj, token, proj->getStart(),
+										proj->getEnd());
+	else
+		qFatal("readHTMLReport: bad report type");
+		
 	TokenType tt;
 	if (nextToken(token) != LCBRACE)
 	{
@@ -1570,6 +1473,10 @@ ProjectFile::readHTMLResourceReport()
 			}
 			report->setEnd(date2time(token));
 		}
+		else if (token == "showactual")
+		{
+			report->setShowActual(TRUE);
+		}
 		else if (token == "hidetask")
 		{
 			Operation* op;
@@ -1577,6 +1484,30 @@ ProjectFile::readHTMLResourceReport()
 				return FALSE;
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setHideTask(et);
+		}
+		else if (token == "rolluptask")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setRollUpTask(et);
+		}
+		else if (token == "hideresource")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setHideResource(et);
+		}
+		else if (token == "rollupresource")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setRollUpResource(et);
 		}
 		else if (token == "sorttasks")
 		{
@@ -1589,7 +1520,12 @@ ProjectFile::readHTMLResourceReport()
 			return FALSE;
 		}
 	}
-	proj->addHTMLResourceReport(report);
+
+	if (reportType == "htmltaskreport")
+		proj->addHTMLTaskReport((HTMLTaskReport*) report);
+	else
+		proj->addHTMLResourceReport((HTMLResourceReport*) report);
+
 	return TRUE;
 }
 

@@ -18,17 +18,10 @@
 #include "Project.h"
 #include "Utility.h"
 
-#define COL_DEFAULT "#fffadd"
-#define COL_WEEKEND "#ffec80"
-#define COL_BOOKED "#ffc0a3"
-#define COL_HEADER "#a5c2ff"
-#define COL_MILESTONE "#ff2a2a"
-#define COL_COMPLETED "#a1ff9a"
-#define COL_TODAY "#a387ff"
-
 Project::Project()
 {
 	taskList.setAutoDelete(TRUE);
+	resourceList.setAutoDelete(TRUE);
 	priority = 500;
 	dailyWorkingHours = 8.0;
 	scheduleGranularity = ONEHOUR;
@@ -55,6 +48,9 @@ Project::pass2()
 	QDict<Task> idHash;
 	bool error = FALSE;
 
+	taskList.createIndex();
+	resourceList.createIndex();
+
 	// Create hash to map task IDs to pointers.
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 	{
@@ -68,13 +64,65 @@ Project::pass2()
 			error = TRUE;
 	}
 
+	preparePlan();
+	if (!schedule())
+		error = TRUE;
+	finishPlan();
+
+	prepareActual();
+	if (!schedule())
+		error = TRUE;
+	finishActual();
+
+	return error;
+}
+
+void
+Project::preparePlan()
+{
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->preparePlan();
+	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
+		r->preparePlan();
+}
+
+void
+Project::finishPlan()
+{
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->finishPlan();
+	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
+		r->finishPlan();
+}
+
+void
+Project::prepareActual()
+{
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->prepareActual();
+	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
+		r->prepareActual();
+}
+
+void
+Project::finishActual()
+{
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->finishActual();
+	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
+		r->finishActual();
+}
+
+bool
+Project::schedule()
+{
+	bool error = FALSE;
+
 	TaskList sortedTasks(taskList);
-	sortedTasks.setAutoDelete(FALSE);
 	sortedTasks.setSorting(TaskList::PrioDown);
 	sortedTasks.sort();
 
 	time_t timeDelta = scheduleGranularity;
-	bool forward = TRUE;
 	for (int day = start; day >= start && day < end; day += timeDelta)
 	{
 		bool done;
@@ -99,12 +147,6 @@ Project::pass2()
 				timeDelta = -scheduleGranularity;
 				break;
 			}
-		if ((timeDelta < 0 && forward) || (timeDelta > 0 && !forward))
-		{
-			qDebug("Going %s at %s", timeDelta < 0 ? "backwards" : "foward",
-				   time2ISO(day).latin1());
-			forward = !forward;
-		}
 	}
 
 	if (unscheduledTasks() > 0)

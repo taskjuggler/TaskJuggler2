@@ -1,9 +1,9 @@
 bin_PROGRAMS = taskjuggler
-taskjuggler_SOURCES = ExpressionTree.cpp \
-Task.cpp ResourceList.cpp VacationList.cpp \
-Account.cpp Utility.cpp MacroTable.cpp ProjectFile.cpp \
-Report.cpp HTMLTaskReport.cpp HTMLResourceReport.cpp \
-Project.cpp main.cpp kotrus.cpp ReportHtml.cpp ReportXML.cpp
+taskjuggler_SOURCES = Utility.cpp ExpressionTree.cpp \
+ResourceList.cpp Task.cpp VacationList.cpp \
+Account.cpp MacroTable.cpp ProjectFile.cpp \
+HTMLTaskReport.cpp HTMLResourceReport.cpp ReportHtml.cpp Report.cpp \
+Project.cpp main.cpp kotrus.cpp ReportXML.cpp
 
 SOURCES = main.cpp 
 DTDFILE = taskjuggler.dtd
@@ -11,7 +11,7 @@ INTERFACES =
 TRANSLATIONS = 
 KDE_OPTIONS = qtonly
 taskjuggler_LDADD   =  $(LIB_QT) $(LIBSOCKET)
-CXXFLAGS = -Wall
+CXXFLAGS = -Wall -g
 
 SUBDIRS = docs 
 

@@ -2,7 +2,7 @@
 
 project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 
-now 2002-01-05
+now 2002-01-16
 copyright "(c) 2001 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
 rate 0.479
@@ -12,25 +12,31 @@ kotrusMode "NoKotrus"
 flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
-htmlTaskReport "test1.html" {
-  columns  no, name, start, end, daily
-  start 2001-09-20
+htmltaskreport "test1.html" {
+  columns no, name, start, end, weekly
+  start 2001-09-01
   end 2002-04-01
+  showactual
+  hideresource 1
+  hidetask 0
+#  rollupresource team
 #  hidetask media | deadline | type1
 #  rolluptask beta | preview
 }
 
-#htmlTaskReport "test2.html" {
+#htmltaskreport "test2.html" {
 #  columns  no, name, start, end, costs
 #  start 2001-09-28
 #  end 2002-03-08
 #}
 
-htmlResourceReport "test-res.html" {
-  columns resource, weekly
-  sorttasks startdown
-  start 2001-09-20
-  end 2002-03-10
+htmlresourcereport "test-res.html" {
+  columns no, name, weekly
+  start 2001-09-01
+  end 2002-04-01
+  hidetask 1
+  hideresource 0
+#  showactual
 }
 
 macro version [SL 8.0]
@@ -110,7 +116,7 @@ resource ro "Ruediger Oertel" {
   vacation 2001-12-10 - 2001-12-14
 }
 resource kukuk "Thorsten Kukuk" {
-  workingHours MON 08:00-12:00, 13:00-16:00
+#  workingHours MON 08:00-12:00, 13:00-16:00
 }
 
 resource overhead "Administration" {
@@ -120,7 +126,7 @@ resource overhead "Administration" {
 resource bg "Berthold Gunreben"
 resource packagers "Package Maintainers" {  flags team efficiency 18.0 }
 resource dist "Dist Team" {
-  workingHours MON 08:00-12:00, 13:00-16:00
+#  workingHours MON 08:00-12:00, 13:00-16:00
 
   resource snwint "Steffen Winterfeld"
   resource werner "Werner Fink"
@@ -128,6 +134,7 @@ resource dist "Dist Team" {
   resource mls "Michael Schroeder"
   resource adrian "Adrian Schroeter"
   resource sndirsch "Stefan Dirsch"
+  flags team
 }
 resource yast "YaST2 Team" { flags team efficiency 12.0 }
 
@@ -135,6 +142,7 @@ task sl80 "SuSE Linux 8.0" {
 
 task sl80start "Start of 8.0 development" {
   start 2001-09-28
+  actualStart 2001-10-03
 }
 
 task yast "YaST2 development"{

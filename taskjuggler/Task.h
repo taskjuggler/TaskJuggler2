@@ -37,7 +37,6 @@ class Allocation
 public:
 	Allocation(Resource* r) : resource(r)
 	{
-		alternatives.setAutoDelete(TRUE);
 		load = 100;
 		persistent = FALSE;
 		lockedResource = 0;
@@ -97,9 +96,10 @@ public:
 	virtual ~TaskList();
 
 	enum SortCriteria { Pointer, TaskTree, StartUp, StartDown, EndUp, EndDown,
-						PrioUp, PrioDown };
+						PrioUp, PrioDown, IndexUp, IndexDown };
 
 	void setSorting(SortCriteria s) { sorting = s; }
+	void createIndex();
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
@@ -114,6 +114,9 @@ typedef QPtrListIterator<TaskList> TaskListIterator;
 
 class Task : public FlagList
 {
+	friend int TaskList::compareItems(QCollection::Item i1,
+									  QCollection::Item i2);
+
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,
 		 const QString f, int l);
@@ -123,20 +126,20 @@ public:
 
 	const QString& getId() const { return id; }
 
+	void setIndex(uint idx) { index = idx; }
+	uint getIndex() const { return index; }
+
 	void setName(const QString& n) { name = n; }
 	const QString& getName() const { return name; }
 
 	void setNote(const QString& d) { note = d; }
 	const QString& getNote() const { return note; }
 
+	void setScheduling(SchedulingInfo si) { scheduling = si; }
+	SchedulingInfo getScheduling() const { return scheduling; }
+
 	void setPriority(int p) { priority = p; }
 	int getPriority() const { return priority; }
-
-	void setStart(time_t s) { start = s; }
-	const time_t getStart() const { return start; }
-
-	void setEnd(time_t s) { end = s; }
-	const time_t getEnd() const { return end; }
 
 	void setMinStart(time_t s) { minStart = s; }
 	time_t getMinStart() const { return minStart; }
@@ -150,46 +153,15 @@ public:
 	void setMaxEnd(time_t e) { maxEnd = e; }
 	time_t getMaxEnd() const { return maxEnd; }
 
-	void setActualStart(time_t s) { actualStart = s; }
-	time_t getActualStart() const { return actualStart; }
-
-	void setActualEnd(time_t e) { actualEnd = e; }
-	time_t getActualEnd() const { return actualEnd; }
-
-	bool isStartOk()
-	{
-		return start >= minStart && start <= maxStart;
-	}
-	bool isActualStartOk()
-	{
-		return actualStart >= minStart && actualStart <= maxStart;
-	}
-	bool isEndOk()
-	{
-		return end >= minEnd && end <= maxEnd;
-	}
-	bool isActualEndOk()
-	{
-		return actualEnd >= minEnd && actualEnd <= maxEnd;
-	}
-
-	void setLength(int days) { length = days; }
-	double getLength() const { return length; }
-
-	void setEffort(double e) { effort = e; }
-	double getEffort() const { return effort; }
-
-	void setDuration(double d) { duration = d; }
-	double getDuration() const { return duration; }
-
 	void setComplete(int c) { complete = c; }
 	double getComplete() const { return complete; }
 
 	void addDependency(const QString& id) { dependsIds.append(id); }
 	void addPreceeds(const QString& id) { preceedsIds.append(id); }
 
-	void setScheduling(SchedulingInfo si) { scheduling = si; }
-	SchedulingInfo getScheduling() const { return scheduling; }
+	void addAllocation(Allocation* a) { allocations.append(a); }
+	Allocation* firstAllocation() { return allocations.first(); }
+	Allocation* nextAllocation() { return allocations.next(); }
 
 	Task* firstPrevious() { return previous.first(); }
 	Task* nextPrevious() { return previous.next(); }
@@ -197,27 +169,101 @@ public:
 	Task* firstFollower() { return followers.first(); }
 	Task* nextFollower() { return followers.next(); }
 
-	void addAllocation(Allocation* a) { allocations.append(a); }
-	Allocation* firstAllocation() { return allocations.first(); }
-	Allocation* nextAllocation() { return allocations.next(); }
+	/* The following group of functions operates exclusively on 'plan'
+	 * variables. */
+	void setPlanStart(time_t s) { planStart = s; }
+	const time_t getPlanStart() const { return planStart; }
 
-	double getLoadOnDay(time_t day);
-	double getLoadOnMonth(time_t month);
-	double getLoad(const Interval& period);
+	void setPlanEnd(time_t s) { planEnd = s; }
+	const time_t getPlanEnd() const { return planEnd; }
 
-	void addBookedResource(Resource* r)
+	void setPlanLength(int days) { planLength = days; }
+	double getPlanLength() const { return planLength; }
+
+	void setPlanEffort(double e) { planEffort = e; }
+	double getPlanEffort() const { return planEffort; }
+
+	void setPlanDuration(double d) { planDuration = d; }
+	double getPlanDuration() const { return planDuration; }
+
+	bool isPlanStartOk()
 	{
-		if (bookedResources.find(r) == -1)
-			bookedResources.inSort(r);
+		return planStart >= minStart && planStart <= maxStart;
 	}
-	Resource* firstBookedResource() { return bookedResources.first(); }
-	Resource* nextBookedResource() { return bookedResources.next(); }
+	bool isPlanEndOk()
+	{
+		return planEnd >= minEnd && planEnd <= maxEnd;
+	}
 
-	double getPlanCosts();
+	double getPlanCalcEffort()
+	{
+		return getPlanLoad(Interval(planStart, planEnd));
+	}
+	double getPlanCalcDuration() const;
+
+	double getPlanCosts(const Interval& period, Resource* resource = 0);
+
+	bool isPlanActive(const Interval& period) const;
+
+	double getPlanLoad(const Interval& period, Resource* resource = 0);
+
+	bool isPlanBookedResource(Resource* r)
+	{
+		return planBookedResources.find(r) != -1;
+	}
+	QPtrList<Resource> getPlanBookedResources() { return planBookedResources; }
+
+	/* The following group of functions operates exclusively on 'actual'
+	 * variables. */
+	void setActualStart(time_t s) { actualStart = s; }
+	time_t getActualStart() const { return actualStart; }
+
+	void setActualEnd(time_t e) { actualEnd = e; }
+	time_t getActualEnd() const { return actualEnd; }
+
+	void setActualLength(int days) { actualLength = days; }
+	double getActualLength() const { return actualLength; }
+
+	void setActualEffort(double e) { actualEffort = e; }
+	double getActualEffort() const { return actualEffort; }
+
+	void setActualDuration(double d) { actualDuration = d; }
+	double getActualDuration() const { return actualDuration; }
+
+	bool isActualStartOk()
+	{
+		return actualStart >= minStart && actualStart <= maxStart;
+	}
+	bool isActualEndOk()
+	{
+		return actualEnd >= minEnd && actualEnd <= maxEnd;
+	}
+
+	double getActualCalcEffort()
+	{
+		return getActualLoad(Interval(actualStart, actualEnd));
+	}
+	double getActualCalcDuration() const;
+
+	double getActualCosts(const Interval& period, Resource* resource = 0);
+
+	bool isActualActive(const Interval& period) const;
+
+	double getActualLoad(const Interval& period, Resource* r = 0);
+	bool isActualBookedResource(Resource* r)
+	{
+		return actualBookedResources.find(r) != -1;
+	}
+
+	QPtrList<Resource> getActualBookedResources()
+	{
+		return actualBookedResources;
+	}
 
 	Task* getParent() const { return parent; }
 	void addSubTask(Task* t) { subTasks.append(t); }
 	TaskList getSubTaskList()  const { return subTasks; }
+	bool isContainer() const { return !subTasks.isEmpty(); }
    
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
@@ -229,24 +275,25 @@ public:
 	 * @returns TRUE if the work planned for a day has been completed.
 	 * This is either specified by the 'complete' attribute or if no
 	 * complete attribute is specified, the day is completed if it has
-	 * passed.
+	 * passed. This function operates on the actual start and end dates.
+	 *
 	 * @param date specifies the day that should be checked.
 	 */
-	bool isDayCompleted(time_t date) const;
+	bool isCompleted(time_t date) const;
 	bool scheduleOK();
 
 	bool isMilestone() const { return start != 0 && start == end; }
-	bool isActiveToday(time_t date) const;
-
-	bool isActiveThisWeek(time_t date) const;
-
-	bool isActiveThisMonth(time_t date) const;
-
 	void setAccount(Account* a) { account = a; }
 
 	void getSubTaskList(TaskList& tl);
 
 	void treeSortKey(QString& key);
+
+	void preparePlan();
+	void finishPlan();
+
+	void prepareActual();
+	void finishActual();
 
 	QDomElement xmlElement( QDomDocument& doc ) const;
 
@@ -254,91 +301,206 @@ private:
 	bool scheduleContainer();
 	bool bookResource(Resource* r, time_t day, time_t duration);
 	bool bookResources(time_t day, time_t duration);
+	void addBookedResource(Resource* r)
+	{
+		if (bookedResources.find(r) == -1)
+			bookedResources.inSort(r);
+	}
 
 	time_t earliestStart();
 	time_t latestEnd();
 	void fatalError(const QString& msg) const;
 
+	/// A pointer to access information that are global to the project.
 	Project* project;
-	// The task Id. Must be unique in a project.
+
+	/// The task Id. Must be unique in a project.
 	QString id;
-	// The task name. A short description.
+
+	/// A unique integer number.
+	uint index;
+
+	/// The task name. A short description of the task.
 	QString name;
-	// A longer description.
+
+	/// A longer description of the task.
 	QString note;
 	
-	// Pointer to parent task.
+	/// Pointer to parent task. If there is no parent the pointer is 0.
 	Task* parent;
-	// List of sub tasks.
+
+	/// List of sub tasks. 
 	TaskList subTasks;
 
-	// Name if the file where this task has been defined.
-	QString file;
-	// Line in the file where the task definition starts
-	int line;
-
-	/* The priority is used during scheduling. The higher the priority the
-	 * more likely the task will get the requested resources. */
-	int priority;
-
-	// Day when the task should start
-	time_t start;
-	// Day when the task should end
-	time_t end;
-	// Ealiest day when the task should start
-	time_t minStart;
-	// Latest day when the task should start
-	time_t maxStart;
-	// Ealiest day when the task should end
-	time_t minEnd;
-	// Latest day when the task should end
-	time_t maxEnd;
-	// Day when it really started
-	time_t actualStart;
-	// Day when it really ended
-	time_t actualEnd;
-	// Length in working days
-	double length;
-	// Effort (in man days) needed to complete the task
-	double effort;
-	// Duration in calender days
-	double duration;
-
-	// Percentage of completion of the task
-	int complete;
-
-	// The following block of variables are used during scheduling.
-	double planCosts;
-	double doneEffort;
-	double doneLength;
-	double doneDuration;
-	bool workStarted;
-	time_t tentativeEnd;
-	time_t tentativeStart;
-	time_t lastSlot;
-
-	// Account where the costs of the task are credited to.
-	Account* account;
-
-	SchedulingInfo scheduling;
-
-	/// List of tasks Ids that need to be completed before this task can start
+	/**
+	 * List of tasks Ids that need to be completed before this task
+	 * can start. */
 	QStringList dependsIds;
+
 	/// A list of task pointers created from dependsIds in xRef.
 	TaskList depends;
 
-	/// List of tasks Ids that have to follow when this task is completed
+	/// List of tasks Ids that have to follow when this task is completed.
 	QStringList preceedsIds;
+
 	/// A list of task pointers created from preceedsIds in xRef.
 	TaskList preceeds;
 
-	/// A list of all tasks that preceed this task.
+	/**
+	 * A list of all tasks that preceed this task. This is redundant
+	 * information but stored for conveniance. Interdependant tasks are
+	 * linked in a doubly linked list. */
 	TaskList previous;
-	/// A list of all tasks that follow this task.
+
+	/**
+	 * A list of all tasks that follow this task. This is redundant
+	 * information but stored for conveniance. Interdependant tasks are
+	 * linked in a doubly linked list. */
 	TaskList followers;
-	// List of resource allocations requested by the task
+
+	/**
+	 * Name of the file where this task has been defined. This is used
+	 * for error reports. */
+	QString file;
+
+	/**
+	 * Line in the file where the task definition starts. This is used
+	 * for error reports. */
+	int line;
+
+	/**
+	 * The priority is used during scheduling. The higher the priority
+	 * the more likely the task will get the requested resources. */
+	int priority;
+
+	/// Ealiest day when the task should start
+	time_t minStart;
+
+	/// Latest day when the task should start
+	time_t maxStart;
+
+	/// Ealiest day when the task should end
+	time_t minEnd;
+
+	/// Latest day when the task should end
+	time_t maxEnd;
+
+	/// The scheduling policy of the task.
+	SchedulingInfo scheduling;
+
+	/// Percentage of completion of the task
+	int complete;
+
+	/// List of resource allocations requested by the task
 	QPtrList<Allocation> allocations;
-	// List of booked resources
+
+	/// Account where the costs of the task are credited to.
+	Account* account;
+
+	/* The following group of variables store plan values. Their
+	 * values are copied to the runtime equivalents (without the
+	 * 'plan' prefix) before the 'plan' scheduling is done. */
+
+	/// Day when the task is planned to start.
+	time_t planStart;
+
+	/// Day when the task is planned to finish.
+	time_t planEnd;
+
+	/// The planned duration of the task (in calendar days).
+	double planDuration;
+
+	/// The planned length of the task (in working days).
+	double planLength;
+
+	/// The planned effort of the task (in resource-days).
+	double planEffort;
+
+	/// List of booked resources for the 'plan' scenario.
+	QPtrList<Resource> planBookedResources;
+
+	/* The following group of variables store actual values. Their
+	 * values are copied to the runtime equivalents (without the
+	 * 'actual' prefix) before the 'actual' scheduling is done. */
+
+	/// Day when it really started
+	time_t actualStart;
+
+	/// Day when it really ended
+	time_t actualEnd;
+
+	/// The actual duration of the task (in calendar days).
+	double actualDuration;
+
+	/// The actual length of the task (in working days).
+	double actualLength;
+
+	/// The actual Effort of the task (in resource-days).
+	double actualEffort;
+
+	/// List of booked resources for the 'actual' scenario.
+	QPtrList<Resource> actualBookedResources;
+
+	/* The following group of variables store values generated during a
+	 * scheduler run. They might be initialized by other values and/or
+	 * they might contain results of the scheduling run. But they should
+	 * never be initialized directly or read out directly. They should have
+	 * corresponding variables which have a plan or acutal prefix that are
+	 * used to initialize them or to store there values. The get/set
+	 * interface functions should only access the plan/actual variables. */
+
+	/// Day when the task should start
+	time_t start;
+
+	/// Day when the task should end
+	time_t end;
+
+	/// Length in working days
+	double length;
+
+	/// Effort (in man days) needed to complete the task
+	double effort;
+
+	/// Duration in calender days
+	double duration;
+
+	/// The already completed effort in a scheduler run.
+	double doneEffort;
+
+	/// The already completed length in a scheduler run.
+	double doneLength;
+
+	/// The already completed duration in a scheduler run.
+	double doneDuration;
+
+	/**
+	 * Set to TRUE when the first time slots have with resource usage
+	 * have been allocated. */
+	bool workStarted;
+
+	/**
+	 * Since the full time slot might not be available we need to
+	 * store the tentative start of a task in a seperate
+	 * variable. Storing the information in 'start' would mark the
+	 * task as fully scheduled which might not yet be the case. */
+	time_t tentativeStart;
+
+	/**
+	 * Since the full time slot might not be available we need to
+	 * store the tentative end of a task in a seperate
+	 * variable. Storing the information in 'end' would mark the task
+	 * as fully scheduled which might not yet be the case. */
+	time_t tentativeEnd;
+
+	/**
+	 * Depending on the scheduling policy the tasks need to be scheduled
+	 * from one end the other in a continuous way. No timeslot may be
+	 * scheduled twice. This variable stores information about the last
+	 * allocation, so we can make sure the next slot is exactly adjacent
+	 * the the previous one. */
+	time_t lastSlot;
+
+	/// A list of all the resources booked for this task.
 	QPtrList<Resource> bookedResources;
 } ;
 

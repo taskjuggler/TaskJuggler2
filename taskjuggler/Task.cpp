@@ -51,22 +51,24 @@
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		   const QString f, int l)
-	: FlagList(p ? *p : FlagList()), project(proj), id(id_), name(n),
+	: project(proj), id(id_), name(n),
 	  parent(p), file(f), line(l)
 {
-	start = end = 0;
+	allocations.setAutoDelete(TRUE);
+
 	scheduling = ASAP;
-	actualStart = actualEnd = 0;
-	length = 0.0;
-	effort = 0.0;
-	duration = 0.0;
 	complete = -1;
 	note = "";
 	account = 0;
 	lastSlot = 0;
-	planCosts = 0.0;
+
 	if (p)
 	{
+		// Inherit flags from parent task.
+		for (QStringList::Iterator it = ((FlagList*) p)->begin();
+			 it != ((FlagList*) p)->end(); ++it)
+			addFlag(*it);
+
 		// Set attributes that are inherited from parent task.
 		priority = p->priority;
 		minStart = p->minStart;
@@ -81,6 +83,15 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		minStart = minEnd = proj->getStart();
 		maxStart = maxEnd = proj->getEnd();
 	}
+
+	planStart = planEnd = 0;
+	planDuration = planLength = planEffort = 0.0;
+
+	actualStart = actualEnd = 0;
+	actualDuration = actualLength = actualEffort = 0.0;
+
+	start = end = 0;
+	duration = length = effort = 0.0;
 }
 
 void
@@ -112,28 +123,29 @@ Task::schedule(time_t date, time_t slotDuration)
 			 * previous tasks, or the start time is determined by the
 			 * end date of the last previous task. */
 			if (depends.count() == 0)
-			{
 				start = project->getStart();
-				startChanged = TRUE;
-				lastSlot = start - 1;
-			}
 			else if (earliestStart() > 0)
-			{
 				start = earliestStart();
-				startChanged = TRUE;
-				lastSlot = start - 1;
-				doneEffort = 0.0;
-				doneDuration = 0.0;
-				doneLength = 0.0;
-				planCosts = 0.0;
-				workStarted = FALSE;
-				tentativeStart = date;
-			}
 			else
 				return TRUE;	// Task cannot be scheduled yet.
+
+			startChanged = TRUE;
+			lastSlot = start - 1;
+			doneEffort = 0.0;
+			doneDuration = 0.0;
+			doneLength = 0.0;
+			workStarted = FALSE;
+			tentativeEnd = date + slotDuration - 1;
 		}
 		else if (lastSlot == 0)
+		{
 			lastSlot = start - 1;
+			doneEffort = 0.0;
+			doneDuration = 0.0;
+			doneLength = 0.0;
+			workStarted = FALSE;
+			tentativeEnd = date + slotDuration - 1;
+		}
 		/* Do not schedule anything if the time slot is not directly
 		 * following the time slot that was previously scheduled. */
 		if (date != lastSlot + 1)
@@ -151,28 +163,29 @@ Task::schedule(time_t date, time_t slotDuration)
 			 * tasks, or the end time is determined by the start date
 			 * of the earliest following task. */
 			if (preceeds.count() == 0)
-			{
 				end = project->getEnd();
-				endChanged = TRUE;
-				lastSlot = end + 1;
-			}
 			else if (latestEnd() > 0)
-			{
 				end = latestEnd();
-				endChanged = TRUE;
-				lastSlot = end + 1;
-				doneEffort = 0.0;
-				doneDuration = 0.0;
-				doneLength = 0.0;
-				planCosts = 0.0;
-				workStarted = FALSE;
-				tentativeEnd = date + slotDuration - 1;
-			}
 			else
 				return TRUE;	// Task cannot be scheduled yet.
+
+			endChanged = TRUE;
+			lastSlot = end + 1;
+			doneEffort = 0.0;
+			doneDuration = 0.0;
+			doneLength = 0.0;
+			workStarted = FALSE;
+			tentativeStart = date;
 		}
 		else if (lastSlot == 0)
+		{
 			lastSlot = end + 1;
+			doneEffort = 0.0;
+			doneDuration = 0.0;
+			doneLength = 0.0;
+			workStarted = FALSE;
+			tentativeStart = date;
+		}
 		/* Do not schedule anything if the currently time slot is not
 		 * directly preceeding the previously scheduled time slot. */
 		if (date + slotDuration != lastSlot)
@@ -180,17 +193,17 @@ Task::schedule(time_t date, time_t slotDuration)
 		lastSlot = date;
 	}
 
-	if (length > 0.0 || duration > 0.0)
+	if ((duration > 0.0) || (length > 0.0))
 	{
 		/* Length specifies the number of working days (as daily load)
 		 * and duration specifies the number of calender days. */
 		if (!allocations.isEmpty() && !project->isVacation(date))
 			bookResources(date, slotDuration);
 
-		doneDuration += (double) slotDuration / ONEDAY;
+		doneDuration += ((double) slotDuration) / ONEDAY;
 		if (!(isWeekend(date) || project->isVacation(date)))
 		{
-			doneLength += (double) slotDuration / ONEDAY;
+			doneLength += ((double) slotDuration) / ONEDAY;
 			/* Move the start date to make sure that there is
 			 * some work going on on the start date. */
 			if (!workStarted && allocations.isEmpty())
@@ -259,10 +272,10 @@ Task::scheduleContainer()
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
-		if (t->getStart() == 0 || t->getEnd() == 0)
+		if (t->start == 0 || t->end == 0)
 			return TRUE;
-		nstart = t->getStart();
-		nend = t->getEnd();
+		nstart = t->start;
+		nend = t->end;
 	}
 	else
 		return TRUE;
@@ -271,13 +284,13 @@ Task::scheduleContainer()
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
-		if (t->getStart() == 0 || t->getEnd() == 0)
+		if (t->start == 0 || t->end == 0)
 			return TRUE;
 
-		if (t->getStart() < nstart)
-			nstart = t->getStart();
-		if (t->getEnd() > nend)
-			nend = t->getEnd();
+		if (t->start < nstart)
+			nstart = t->start;
+		if (t->end > nend)
+			nend = t->end;
 	}
 
 	start = nstart;
@@ -306,6 +319,8 @@ Task::bookResources(time_t date, time_t slotDuration)
 		}
 		else
 		{
+			/* TODO: Try to free the main resource from a lower
+			 * priority task. */
 			for (Resource* r = a->first(); r != 0; r = a->next())
 				if (bookResource(r, date, slotDuration))
 				{
@@ -333,9 +348,10 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 		{
 			double intervalLoad = project->convertToDailyLoad(
 				interval.getDuration());
-			(*rit).book(new Booking(interval, this,
-								account ? account->getKotrusId() : QString(""),
-								project->getId()));
+			(*rit).book(new Booking(
+				interval, this,
+				account ? account->getKotrusId() : QString(""),
+				project->getId()));
 			addBookedResource(rit);
 
 			/* Move the start date to make sure that there is
@@ -354,8 +370,6 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 			tentativeStart = interval.getStart();
 			tentativeEnd = interval.getEnd();
 			doneEffort += intervalLoad * (*rit).getEfficiency();
-			planCosts += (*rit).getRate() * intervalLoad *
-				(*rit).getEfficiency();
 
 			booked = TRUE;
 		}
@@ -381,20 +395,17 @@ Task::needsEarlierTimeSlot(time_t date)
 }
 
 bool
-Task::isDayCompleted(time_t date) const
+Task::isCompleted(time_t date) const
 {
-	// If task is not scheduled for this day, the day can not be completed.
-	if ((date < midnight(start)) || (sameTimeNextDay(midnight(end)) <= date))
-		return FALSE;
-
 	if (complete != -1)
 	{
 		// some completion degree was specified.
-		return ((complete / 100.0) * (end - start) + start) > midnight(date);
+		return ((complete / 100.0) *
+				(actualEnd - actualStart) + actualStart) > date;
 	}
 	
 
-	return (project->getNow() > sameTimeNextDay(midnight(date)));
+	return (project->getNow() > date);
 }
 
 time_t
@@ -404,11 +415,11 @@ Task::earliestStart()
 	for (Task* t = depends.first(); t != 0; t = depends.next())
 	{
 		// All tasks this task depends on must have an end date set.
-		if (t->getEnd() == 0)
+		if (t->end == 0)
 			return 0;
 		// Milestones are assumed to have duration 0.
-		if (t->getEnd() > date)
-			date = t->getEnd() + (t->getStart() == t->getEnd() ? 0 : 1);
+		if (t->end > date)
+			date = t->end + (t->start == t->end ? 0 : 1);
 	}
 
 	return date;
@@ -421,76 +432,117 @@ Task::latestEnd()
 	for (Task* t = preceeds.first(); t != 0; t = preceeds.next())
 	{
 		// All tasks this task preceeds must have an start date set.
-		if (t->getStart() == 0)
+		if (t->start == 0)
 			return 0;
-		if (date == 0 || t->getStart() < date)
-			date = t->getStart() - 1;
+		if (date == 0 || t->start < date)
+			date = t->start - 1;
 	}
 
 	return date;
 }
 
 double
-Task::getLoadOnDay(time_t date)
+Task::getPlanCalcDuration() const
+{
+	time_t delta = planEnd - planStart;
+	if (delta < ONEDAY)
+		return (project->convertToDailyLoad(delta));
+	else
+		return (double) delta / ONEDAY;
+}
+
+double
+Task::getPlanLoad(const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
 	if (subTasks.first())
 	{
 		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
-			load += t->getLoadOnDay(date);
-		return load;
+			load += t->getPlanLoad(period, resource);
 	}
 
-	for (Resource* r = bookedResources.first(); r != 0;
-		 r = bookedResources.next())
-	{
-		load += r->getLoadOnDay(date, this);
-	}
+	if (resource)
+		load += resource->getPlanLoad(period, this);
+	else
+		for (Resource* r = planBookedResources.first(); r != 0;
+			 r = planBookedResources.next())
+			load += r->getPlanLoad(period, this);
+
 	return load;
 }
 
 double
-Task::getLoadOnMonth(time_t date)
+Task::getActualCalcDuration() const
 {
-	Interval month(beginOfMonth(date),
-				   sameTimeNextMonth(beginOfMonth(date)) - 1);
-	return getLoad(month);
+	time_t delta = actualEnd - actualStart;
+	if (delta < ONEDAY)
+		return (project->convertToDailyLoad(delta));
+	else
+		return (double) delta / ONEDAY;
 }
 
 double
-Task::getLoad(const Interval& period)
+Task::getActualLoad(const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
 	if (subTasks.first())
 	{
 		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
-			load += t->getLoad(period);
-		return load;
+			load += t->getActualLoad(period, resource);
 	}
+	
+	if (resource)
+		load += resource->getActualLoad(period, this);
+	else
+		for (Resource* r = actualBookedResources.first(); r != 0;
+			 r = actualBookedResources.next())
+			load += r->getActualLoad(period, this);
 
-	for (Resource* r = bookedResources.first(); r != 0;
-		 r = bookedResources.next())
-	{
-		load += r->getLoad(period, this);
-	}
 	return load;
 }
 
 double
-Task::getPlanCosts()
+Task::getPlanCosts(const Interval& period, Resource* resource)
 {
 	double costs = 0.0;
 
 	if (subTasks.first())
 	{
 		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
-			costs += t->getPlanCosts();
-		return costs;
+			costs += t->getPlanCosts(period, resource);
 	}
 
-	return planCosts;
+	if (resource)
+		costs += resource->getPlanCosts(period, this);
+	else
+		for (Resource* r = planBookedResources.first(); r != 0;
+			 r = planBookedResources.next())
+			costs += r->getPlanCosts(period, this);
+
+	return costs;
+}
+
+double
+Task::getActualCosts(const Interval& period, Resource* resource)
+{
+	double costs = 0.0;
+
+	if (subTasks.first())
+	{
+		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+			costs += t->getActualCosts(period, resource);
+	}
+
+	if (resource)
+		costs += resource->getActualCosts(period, this);
+	else
+		for (Resource* r = actualBookedResources.first(); r != 0;
+			 r = actualBookedResources.next())
+			costs += r->getActualCosts(period, this);
+
+	return costs;
 }
 
 bool
@@ -593,18 +645,18 @@ Task::scheduleOK()
 	}
 	// Check if all previous tasks end before start of this task.
 	for (Task* t = previous.first(); t != 0; t = previous.next())
-		if (t->getEnd() > start)
+		if (t->end > start)
 		{
 			fatalError(QString("Task '") + id + "' cannot follow task '" +
-					   t->getId() + "'.");
+					   t->id + "'.");
 			return false;
 		}
 	// Check if all following task start after this tasks end.
 	for (Task* t = followers.first(); t != 0; t = followers.next())
-		if (end > t->getStart())
+		if (end > t->start)
 		{
 			fatalError(QString("Task '") + id + "' cannot preceed task '" +
-					   t->getId() + "'.");
+					   t->id + "'.");
 			return false;
 		}
 
@@ -612,40 +664,25 @@ Task::scheduleOK()
 }
 
 bool
-Task::isActiveToday(time_t date) const
+Task::isPlanActive(const Interval& period) const
 {
-	Interval day(midnight(date), sameTimeNextDay(midnight(date)) - 1);
 	Interval work;
 	if (isMilestone())
-		work = Interval(start, start + 1);
+		work = Interval(planStart, planStart + 1);
 	else
-		work = Interval(start, end);
-	return day.overlap(work);
+		work = Interval(planStart, planEnd);
+	return period.overlaps(work);
 }
 
 bool
-Task::isActiveThisWeek(time_t date) const
+Task::isActualActive(const Interval& period) const
 {
-	Interval week(beginOfWeek(date), sameTimeNextWeek(midnight(date)) - 1);
 	Interval work;
 	if (isMilestone())
-		work = Interval(start, start + 1);
+		work = Interval(actualStart, actualStart + 1);
 	else
-		work = Interval(start, end);
-	return week.overlap(work);
-}
-
-bool
-Task::isActiveThisMonth(time_t date) const
-{
-	Interval month(beginOfMonth(date),
-				   sameTimeNextMonth(beginOfMonth(date)) - 1);
-	Interval work;
-	if (isMilestone())
-		work = Interval(start, start + 1);
-	else
-		work = Interval(start, end);
-	return month.overlap(work);
+		work = Interval(actualStart, actualEnd);
+	return period.overlaps(work);
 }
 
 void
@@ -672,6 +709,63 @@ Task::treeSortKey(QString& key)
 			break;
 		}
 	parent->treeSortKey(key);
+}
+
+void
+Task::preparePlan()
+{
+	start = planStart;
+	end = planEnd;
+	duration = planDuration;
+	length = planLength;
+	effort = planEffort;
+	lastSlot = 0;
+	bookedResources.clear();
+
+	if (actualStart == 0.0)
+		actualStart = planStart;
+	if (actualEnd == 0.0)
+		actualEnd = planEnd;
+	if (actualDuration == 0.0)
+		actualDuration =  planDuration;
+	if (actualLength == 0.0)
+		actualLength = planLength;
+	if (actualEffort == 0.0)
+		actualEffort = planEffort;
+}
+
+void
+Task::finishPlan()
+{
+	planStart = start;
+	planEnd = end;
+	planDuration = doneDuration;
+	planLength = doneLength;
+	planEffort = doneEffort;
+	planBookedResources = bookedResources;
+}
+
+void
+Task::prepareActual()
+{
+	start = actualStart;
+	end = actualEnd;
+	duration = actualDuration;
+	length = actualLength;
+	effort = actualEffort;
+	lastSlot = 0;
+	bookedResources.clear();
+}
+
+void
+Task::finishActual()
+{
+	actualStart = start;
+	actualEnd = end;
+	actualDuration = doneDuration;
+	actualLength = doneLength;
+	actualEffort = doneEffort;
+	actualBookedResources = bookedResources;
 }
 
 QDomElement Task::xmlElement( QDomDocument& doc ) const
@@ -799,6 +893,19 @@ TaskList::~TaskList()
 {
 }
 
+void
+TaskList::createIndex()
+{
+	SortCriteria savedSorting = sorting;
+	sorting = TaskTree;
+	sort();
+	int i = 1;
+	for (Task* t = first(); t != 0; t = next(), ++i)
+		t->setIndex(i);
+	sorting = savedSorting;
+	sort();
+}
+
 int
 TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
@@ -813,43 +920,47 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	{
 		QString key1;
 		t1->treeSortKey(key1);
-		key1 += QString("0000") + time2ISO(t1->getStart());
+		key1 += QString("0000") + time2ISO(t1->start);
 		QString key2;
 		t2->treeSortKey(key2);
-		key2 += QString("0000") + time2ISO(t2->getStart());
+		key2 += QString("0000") + time2ISO(t2->start);
 		if (key1 == key2)
 		{
 			/* If the keys are identical we do an inverse sort for the
 			 * end date. That way the parent tasks are sorted above
 			 * their childs. */
-			return t1->getEnd() == t2->getEnd() ? 0 :
-				t1->getEnd() > t2->getEnd() ? -1 : 1;
+			return t1->end == t2->end ? 0 :
+				t1->end > t2->end ? -1 : 1;
 		}
 		else
 			return key1 < key2 ? -1 : 1;
 	}
 	case StartUp:
-		return t1->getStart() == t2->getStart() ? 0 :
-			t1->getStart() > t2->getStart() ? -1 : 1;
+		return t1->start == t2->start ? 0 :
+			t1->start > t2->start ? -1 : 1;
 	case StartDown:
-		return t1->getStart() == t2->getStart() ? 0 :
-			t1->getStart() < t2->getStart() ? -1 : 1;
+		return t1->start == t2->start ? 0 :
+			t1->start < t2->start ? -1 : 1;
 	case EndUp:
-		return t1->getEnd() == t2->getEnd() ? 0 :
-			t1->getEnd() > t2->getEnd() ? -1 : 1;
+		return t1->end == t2->end ? 0 :
+			t1->end > t2->end ? -1 : 1;
 	case EndDown:
-		return t1->getEnd() == t2->getEnd() ? 0 :
-			t1->getEnd() < t2->getEnd() ? -1 : 1;
+		return t1->end == t2->end ? 0 :
+			t1->end < t2->end ? -1 : 1;
 	case PrioUp:
-		if (t1->getPriority() == t2->getPriority())
+		if (t1->priority == t2->priority)
 			return 0; // TODO: Use duration as next criteria
 		else
-			return (t1->getPriority() - t2->getPriority());
+			return (t1->priority - t2->priority);
 	case PrioDown:
-		if (t1->getPriority() == t2->getPriority())
+		if (t1->priority == t2->priority)
 			return 0; // TODO: Use duration as next criteria
 		else
-			return (t2->getPriority() - t1->getPriority());
+			return (t2->priority - t1->priority);
+	case IndexUp:
+		return t2->index - t1->index;
+	case IndexDown:
+		return t1->index - t2->index;
 	default:
 		qFatal("Unknown sorting criteria!\n");
 		return 0;
