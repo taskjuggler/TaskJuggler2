@@ -109,6 +109,8 @@ Project::~Project()
 	delete icalReport;
 #endif
 #endif
+    for (int i = 0; i < 7; ++i)
+        delete workingHours[i];
     exitUtility();
 }
 

@@ -117,6 +117,7 @@ void exitUtility()
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
+            delete htep->tms;
             delete htep;
             htep = tmp;
         }
@@ -138,6 +139,7 @@ setTimezone(const char* tz)
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
+            delete htep->tms;
             delete htep;
             htep = tmp;
         }
