@@ -45,6 +45,9 @@
 #include <kmainwindow.h>
 #include <kprogress.h>
 
+#include <ktexteditor/clipboardinterface.h>
+#include <ktexteditor/undointerface.h>
+
 // local includes
 #include "kdgantt/KDGanttViewEventItem.h"
 #include "kdgantt/KDGanttViewSummaryItem.h"
@@ -1112,17 +1115,27 @@ void ktjview2View::slotResDisplay( int display )
 
 void ktjview2View::slotCut()
 {
-    m_editorView->slotCut();
+    KTextEditor::clipboardInterface( m_editorView->view() )->cut();
 }
 
 void ktjview2View::slotCopy()
 {
-    m_editorView->slotCopy();
+    KTextEditor::clipboardInterface( m_editorView->view() )->copy();
 }
 
 void ktjview2View::slotPaste()
 {
-    m_editorView->slotPaste();
+    KTextEditor::clipboardInterface( m_editorView->view() )->paste();
+}
+
+void ktjview2View::slotUndo()
+{
+    KTextEditor::undoInterface( m_editorView->doc() )->undo();
+}
+
+void ktjview2View::slotRedo()
+{
+    KTextEditor::undoInterface( m_editorView->doc() )->redo();
 }
 
 #include "ktjview2view.moc"

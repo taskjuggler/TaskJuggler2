@@ -133,6 +133,10 @@ public:
     void activateView( int id );
 
 public slots:
+    void slotUndo();
+
+    void slotRedo();
+
     /**
      * Cut the selected text to cliboard (Editor slot)
      */

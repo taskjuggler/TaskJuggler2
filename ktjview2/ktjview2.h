@@ -176,7 +176,15 @@ private slots:
     void outline9();
     void collapseAll();
 
+    /**
+     * Enable/disable editor clipboard actions
+     */
     void enableClipboardActions( bool enable = true );
+
+    /**
+     * Enable/disable editor undo and redo actions
+     */
+    void enableUndoActions( bool enable = true );
 
 private:
     /**

@@ -74,22 +74,6 @@ public:
      KTextEditor::View * view() const
         { return m_view; }
 
-public slots:
-    /**
-     * Cut the selected text to cliboard
-     */
-    void slotCut();
-
-    /**
-     * Copy the selected text to cliboard
-     */
-    void slotCopy();
-
-    /**
-     * Paste the selected text from cliboard
-     */
-    void slotPaste();
-
 private:
     /**
      * Initialize the KTextEditor components (Document and View)

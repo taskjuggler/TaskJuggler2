@@ -55,6 +55,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/selectioninterface.h>
+#include <ktexteditor/undointerface.h>
 
 ktjview2::ktjview2()
     : KMainWindow( 0, "ktjview2" ),
@@ -86,6 +87,10 @@ ktjview2::ktjview2()
     // react to clipboard changes
     connect( m_view->editor()->doc(), SIGNAL( selectionChanged() ),
              this, SLOT( enableClipboardActions() ) );
+
+    // react to undo/redo changes
+    connect( m_view->editor()->doc(), SIGNAL( undoChanged() ),
+             this, SLOT( enableUndoActions() ) );
 
     m_activeTaskFilter = 0;
     m_activeResourceFilter = 0;
@@ -127,6 +132,8 @@ void ktjview2::setupActions()
     KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
 
     // Edit menu
+    KStdAction::undo( m_view, SLOT( slotUndo() ), actionCollection() );
+    KStdAction::redo( m_view, SLOT( slotRedo() ), actionCollection() );
     KStdAction::cut( m_view, SLOT( slotCut() ), actionCollection() );
     KStdAction::copy( m_view, SLOT( slotCopy() ), actionCollection() );
     KStdAction::paste( m_view, SLOT( slotPaste() ), actionCollection() );
@@ -570,15 +577,24 @@ void ktjview2::enableEditorActions( bool enable )
 {
     action( KStdAction::name( KStdAction::Save ) )->setEnabled( enable );
     enableClipboardActions( enable );
+    enableUndoActions( enable );
 }
 
 void ktjview2::enableClipboardActions( bool enable )
 {
     bool hasSelection = KTextEditor::selectionInterface( m_view->editor()->doc() )->hasSelection();
     bool isClipEmpty = QApplication::clipboard()->text( QClipboard::Clipboard ).isEmpty();
-    action( KStdAction::name( KStdAction::Cut ) )->setEnabled( enable && hasSelection);
+    action( KStdAction::name( KStdAction::Cut ) )->setEnabled( enable && hasSelection );
     action( KStdAction::name( KStdAction::Copy ) )->setEnabled( enable && hasSelection );
     action( KStdAction::name( KStdAction::Paste ) )->setEnabled( enable && !isClipEmpty );
+}
+
+void ktjview2::enableUndoActions( bool enable )
+{
+    bool undoEnable = ( KTextEditor::undoInterface( m_view->editor()->doc() )->undoCount() > 0 );
+    bool redoEnable = ( KTextEditor::undoInterface( m_view->editor()->doc() )->redoCount() > 0 );
+    action( KStdAction::name( KStdAction::Undo ) )->setEnabled( enable && undoEnable );
+    action( KStdAction::name( KStdAction::Redo ) )->setEnabled( enable && redoEnable );
 }
 
 void ktjview2::expandAll()
