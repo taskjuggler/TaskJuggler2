@@ -1288,6 +1288,7 @@ ProjectFile::readTaskBody(Task* task)
 {
     QString token;
     TokenType tt;
+    int res = 0;
 
     for (bool done = false ; !done; )
     {
@@ -1319,8 +1320,11 @@ ProjectFile::readTaskBody(Task* task)
                                          getType()))
                     return FALSE;
             }
-            else if ((readTaskScenarioAttribute(token, task, 0, FALSE)) > 0)
+            else if ((res = readTaskScenarioAttribute(token, task, 0, FALSE))
+                     > 0)
                 ;   // intentionally empty statement
+            else if (res < 0)
+                return -1;
             else if (token == KW("task"))
             {
                 if (!readTask(task))
