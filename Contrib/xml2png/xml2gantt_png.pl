@@ -69,6 +69,7 @@ my ($p_start_year,
     $p_start_month,
     $p_start_day)   = split(/-/, $project_start);
     $p_start_day    = 01;
+    ($p_start_year, $p_start_month, $p_start_day) = Add_Delta_Days($p_start_year, $p_start_month, $p_start_day, -5);
 $project{'h_end'}   =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
 my $project_end     = $project{'h_end'};
 my ($p_end_year,

@@ -24,9 +24,9 @@ output format
 
     PostScript document text conforming at level 3.0 - type EPS
 
-    <project name>.eps              big gantt one page
-    <project name>_poster.eps       big gantt on multiple page (a4) poster, ready
-                                    for printing (require Poster)
+    <project name>.eps              big gantt on one page
+    <project name>_poster.eps       big gantt on multiple page (a4) poster,
+                                    ready for printing (require Poster)
 
 
 
