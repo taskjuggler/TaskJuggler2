@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="TaskJuggler" version="1.21" kateversion="2.1" section="Scripts" extensions="*.tjp;*.tji;*.tjsp" mimetype="">
+<language name="TaskJuggler" version="1.22" kateversion="2.3" section="Scripts" extensions="*.tjp;*.tji;*.tjsp" mimetype="">
 <highlighting>
     <list name="keywords">
         <item> account </item>
