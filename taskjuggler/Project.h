@@ -750,6 +750,8 @@ public:
     bool scheduleAllScenarios();
     void generateReports() const;
 
+    bool generateXMLReport() const;
+
 private:
     void overlayScenario(int base, int sc);
     void prepareScenario(int sc);

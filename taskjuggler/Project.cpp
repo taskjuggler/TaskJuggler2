@@ -53,7 +53,7 @@ Project::Project()
     initUtility(20000);
 
     vacationList.setAutoDelete(TRUE);
-    
+
     reports.setAutoDelete(TRUE);
 
     allowRedefinitions = FALSE;
@@ -87,13 +87,13 @@ Project::Project()
     start = 0;
     end = 0;
     now = time(0);
-    
+
     minEffort = 0.0;
     resourceLimits = 0;
     rate = 0.0;
     currencyDigits = 3;
     kotrus = 0;
-    
+
     /* Initialize working hours with default values that match the Monday -
      * Friday 9 - 6 (with 1 hour lunch break) pattern used by many western
      * countries. */
@@ -158,7 +158,7 @@ Project::~Project()
                 break;
             }
     }
-    
+
     while (!scenarioList.isEmpty())
     {
         for (ScenarioListIterator tli(scenarioList); *tli; ++tli)
@@ -235,7 +235,7 @@ Project::addId(const QString& id, bool changeCurrentId)
 
     if (changeCurrentId)
         currentId = id;
-    
+
     return TRUE;
 }
 
@@ -255,7 +255,7 @@ Project::getIdIndex(const QString& i) const
     return idxStr;
 }
 
-void 
+void
 Project::addScenario(Scenario* s)
 {
     scenarioList.append(s);
@@ -274,13 +274,13 @@ Project::deleteScenario(Scenario* s)
 
 void
 Project::setResourceLimits(UsageLimits* l)
-{ 
+{
     if (resourceLimits)
         delete resourceLimits;
-    resourceLimits = l; 
+    resourceLimits = l;
 }
 
-void 
+void
 Project::addTask(Task* t)
 {
     taskList.append(t);
@@ -320,7 +320,7 @@ Project::deleteShift(Shift* s)
     shiftList.removeRef(s);
 }
 
-void 
+void
 Project::addResource(Resource* r)
 {
     resourceList.append(r);
@@ -333,7 +333,7 @@ Project::deleteResource(Resource* r)
 }
 
 bool
-Project::addResourceAttribute(const QString& id, 
+Project::addResourceAttribute(const QString& id,
                               CustomAttributeDefinition* cad)
 {
     if (resourceAttributes.find(id))
@@ -349,7 +349,7 @@ Project::getResourceAttribute(const QString& id) const
     return resourceAttributes[id];
 }
 
-void 
+void
 Project::addAccount(Account* a)
 {
     accountList.append(a);
@@ -362,7 +362,7 @@ Project::deleteAccount(Account* a)
 }
 
 bool
-Project::addAccountAttribute(const QString& id, 
+Project::addAccountAttribute(const QString& id,
                               CustomAttributeDefinition* cad)
 {
     if (resourceAttributes.find(id))
@@ -381,7 +381,7 @@ Project::getAccountAttribute(const QString& id) const
 bool
 Project::isWorkingDay(time_t d) const
 {
-    return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || 
+    return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() ||
              isVacation(d));
 }
 
@@ -406,7 +406,7 @@ Project::calcWorkingDays(const Interval& iv) const
 {
     int workingDays = 0;
 
-    for (time_t s = midnight(iv.getStart()); s <= iv.getEnd(); 
+    for (time_t s = midnight(iv.getStart()); s <= iv.getEnd();
          s = sameTimeNextDay(s))
         if (isWorkingDay(s))
             workingDays++;
@@ -414,7 +414,7 @@ Project::calcWorkingDays(const Interval& iv) const
     return workingDays;
 }
 
-double 
+double
 Project::convertToDailyLoad(long secs) const
 {
     return ((double) secs / (dailyWorkingHours * ONEHOUR));
@@ -444,7 +444,7 @@ Project::pass2(bool noDepCheck)
 
     // Initialize random generator.
     srand((int) start);
-    
+
     // Create hash to map task IDs to pointers.
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
     {
@@ -460,7 +460,7 @@ Project::pass2(bool noDepCheck)
     {
         // Set dates according to implicit dependencies
         (*tli)->implicitXRef();
-        
+
         // Save so far booked resources as specified resources
         (*tli)->saveSpecifiedBookedResources();
     }
@@ -506,7 +506,7 @@ Project::scheduleScenario(Scenario* sc)
 
     int scIdx = sc->getSequenceNo() - 1;
     prepareScenario(scIdx);
-    
+
     if (!schedule(scIdx))
     {
         if (DEBUGPS(2))
@@ -525,7 +525,7 @@ Project::scheduleScenario(Scenario* sc)
         }
     }
 
-    return !error;  
+    return !error;
 }
 
 void
@@ -556,9 +556,9 @@ Project::scheduleAllScenarios()
             if (!scheduleScenario(*sci))
                 schedulingOk = FALSE;
         }
-    
+
     completeBuffersAndIndices();
-    
+
     return schedulingOk;
 }
 
@@ -578,7 +578,7 @@ Project::prepareScenario(int sc)
 {
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->prepareScenario(sc);
-    
+
     /* First we compute the criticalness of the individual task without their
      * dependency context. */
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
@@ -588,10 +588,10 @@ Project::prepareScenario(int sc)
      * of a task taking their dependency context into account. */
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->computePathCriticalness(sc);
-    
+
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->propagateInitialValues();
-    
+
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->prepareScenario(sc);
     if (DEBUGTS(4))
@@ -644,9 +644,9 @@ Project::schedule(int sc)
                 if (slot == 0)
                     continue;
                 if (DEBUGPS(5))
-                    qDebug("Task '%s' requests slot %s", 
+                    qDebug("Task '%s' requests slot %s",
                            (*tli)->getId().latin1(), time2ISO(slot).latin1());
-                if (slot < start || 
+                if (slot < start ||
                     slot > (end - (time_t) scheduleGranularity + 1))
                 {
                     (*tli)->setRunaway();
@@ -662,7 +662,7 @@ Project::schedule(int sc)
             done = FALSE;
         }
     } while (!done);
-    
+
     if (error)
         for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
             if ((*tli)->isRunaway())
@@ -737,8 +737,7 @@ Project::generateReports() const
         (*ri)->generate();
     }
 
-    if( xmlreport )
-       xmlreport->generate();
+    generateXMLReport();
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
     if( icalReport )
@@ -761,8 +760,8 @@ Project::readKotrus()
 {
     if (!kotrus)
         return TRUE;
-    
-    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)  
+
+    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->dbLoadBookings((*rli)->getKotrusId(), 0);
 
     return TRUE;
@@ -806,9 +805,9 @@ void Project::parseDomElem( QDomElement& parentElem )
    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
    {
       QString tagName = elem.tagName();
-      
+
       qDebug(  "|| elemType: " + tagName );
-      
+
       if( tagName == "Task" )
       {
      QString tId = elem.attribute("Id");
@@ -837,7 +836,15 @@ void Project::parseDomElem( QDomElement& parentElem )
      setStart( elem.text().toLong());
       else if( tagName == "end" )
      setEnd( elem.text().toLong());
-           
+
       // parseDomElem( elem );
    }
+}
+
+bool Project::generateXMLReport() const
+{
+    if ( xmlreport )
+        return xmlreport->generate();
+    else
+        return false;
 }
