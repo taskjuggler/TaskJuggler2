@@ -1,9 +1,12 @@
 <chapter><title>Your First Project</title>
 
-<para>The easiest way to give an overview of the functionality of
-TaskJuggler is by example.</para>
+<para>We have mentioned already that TaskJuggler uses plain text files
+that describe the project to schedule it. As you will see now, the
+syntax of the file is easy to understand and very intuitive. This
+chapter will walk you step by step through your first project. You
+create the project plan for an accounting software project. </para>
 
-<sect1><title> Introducing the Example: Accounting Software</title>
+<sect1><title>Starting the project</title>
 
 <para>Refer to <xref linkend="example"> for a printout of the
 example.</para>
@@ -45,6 +48,9 @@ scope. We'll se further down, what this actually means. Here we are at
 top-level scope, so this is the default for all following
 properties.</para>
 
+</sect1>
+<sect1><title>Global Attributes</title>
+
 <para><screen>
 rate 310.0
 currency "EUR"
@@ -68,6 +74,9 @@ ${allocate_developers} </computeroutput> and TaskJuggler will replace
 the <computeroutput> ${allocate_developers} </computeroutput> with the
 pattern. We will use the macro further down in the example and then
 exmplain the meaning of the pattern.</para>
+
+</sect1>
+<sect1><title>Declaring Resources</title>
 
 <para>A TaskJuggler feature that you will probably make heavy use of
 is <link linkend="flags"> flags </link>. Once declared you can attach
@@ -139,6 +148,9 @@ team resources. This way, they flags don't get inherited by the
 sub-resources. If we would have declared the flags before the
 sub-resources, then they would have the flags attached as well.</para>
 
+</sect1>
+<sect1><title>Declaring Accounts</title>
+
 <para>The use of our resources will create costs. For a profit and
 loss analysis, we need to balance the costs agains the customer
 payments. So that we don't get lost with all the amounts, we declare 3
@@ -158,6 +170,9 @@ fixed attributes, an ID, a name and a type. The type can either be
 </computeroutput>. For the analysis TaskJuggler subtracts the total
 amount of all cost accounts from the total amount from all revenue
 accounts. </para>
+
+</sect1>
+<sect1><title>Specifying the Tasks</title>
 
 <para>Let's focus on the real work now. The project should solve a
 problem - the creation of an accounting software. Since the job is
@@ -414,6 +429,9 @@ certain moment in your project plan. These moments are usually called
 milestones since they have some level of importance for the progress
 of the project.</para>
 
+</sect1>
+<sect1><title>Specifying Milestones</title>
+
 <para>TaskJuggler has support for milestones as well. They are handled
 as special types of tasks. By using the optional attribute
 <link linkend="task_milestone">milestone</link> for a task, this task
@@ -483,6 +501,9 @@ popular ones are the HTML reports. You can advice TaskJuggler to
 generate one or more HTML pages that contains lists of your tasks,
 resources or accounts.</para>
 
+</sect1>
+<sect1><title>Generating Reports of the scheduled Project</title>
+
 <para>Before we start with the reports, we present you another macro.
 We like to add a navigation bar to each HTML page that holds a number
 of buttons. Each button changes the page to another report. This way
@@ -525,10 +546,19 @@ rawhead
 ]
 </screen></para>
 
+<sect2><title>Generating HTML Task Reports</title>
+
 <para>As the first report, we would like to have a general overview of all
 tasks with their computed start and end dates. For better
 readability we include a calendar like column that lists the effort
-for each week.</para>
+for each week. The report shell consists mainly of a listing of the
+tasks in a table form. The property <link
+linkend="htmltaskreport">htmltaskreport</link> generates exactly this,
+a list of all tasks in a table. The columns are flexible and
+can be specified with the <link
+linkend="htmltaskreport_columns">column</link> attribute. For this
+report we like to see the number, the name, the start and end
+date, a weekly calendar and the total effort in the table.</para>
 
 <para><screen>
 htmltaskreport "Tasks-Overview.html" {
@@ -540,11 +570,20 @@ htmltaskreport "Tasks-Overview.html" {
 }
 </screen></para>
 
+<para>With the <link linkend="htmltaskreport_headline">headline</link>
+attribute we can specify a headline for the report. To have a little
+more info included as well, we use the <link
+linkend="htmltaskreport_caption">caption</link> attribute. Both of
+these attributes are followed by the string to be included into the
+report.</para>
+
 <para>
-# Now a more detailed report that shows all jobs and the people
-# assigned to the tasks. It also features a comparison of the plan and
-# actual scenario.
-</para>
+Now we like to generate a report that contains a lot more details
+about the task. The weekly calendar is replaced by a daily calendar.
+The weekly calendar had a column for each week. The daily calendar
+features a column for each day. The column includes the load for the
+task for the week or day and a colored background in case the task is
+active that day or week.</para>
 
 <para><screen>
 htmltaskreport "Tasks-Details.html" {
@@ -560,10 +599,31 @@ htmltaskreport "Tasks-Details.html" {
 }
 </screen></para>
 
-<para>
-# The previous report listed the resources per task. Now we generate a
-# report the lists tasks per resource.
-</para>
+<para>We also like to list all assigned resources right after each
+task. Normally resources are hidden in task reports but they can be
+enabled by using the <link
+linkend="htmltaskreport_hideresource">hideresource</link> attribute.
+The attribute is followed by a logical expression that specifies what
+resources to hide. The expression is evaluated for each resource and
+if the result is true (not 0) than the resource is hidden. Since we
+want to show all resources we put a 0 in, so it's false for all
+resources.</para>
+
+<para>To add even more information to this report, we also turn on the
+reporting of values of the actual scenario by using the <link
+linkend="htmltaskreport_showactual">showactual</link> attribute. This
+causes TaskJuggler to split the lines of the report into two where
+appropriate and report the actual value underneath the plan
+value.</para>
+
+</sect2>
+<sect2><title>Generating HTML Resource Reports</title>
+
+<para> The previous report listed the resources per task. Now we want
+to generate a report the lists all resources. It's again a report with
+a weekly calendar. This time we use the attribute <link
+linkend="htmltaskreport_loadunit">loadunit</link> to report the load
+in hours instead of days.</para>
 
 <para><screen>
 htmlresourcereport "Staff-Overview.html" {
@@ -575,9 +635,16 @@ htmlresourcereport "Staff-Overview.html" {
 }
 </screen></para>
 
-<para>
-# Now a report similar to the above one but with much more details.
-</para>
+<para> Now a similar report but with much more details. We want to
+include that tasks again, this time each resource should be followed
+by the tasks the resource is assigned to. In <link
+linkend="htmltaskreport">htmltaskreports</link> resources are hidden
+by default while in <link
+linkend="htmlresourcereport">htmlresourcereports</link> tasks are
+hidded by default. To include tasks the attribute <link
+linkend="htmltaskreport_hidetask">hidetask</link> needs to be used. It
+is followed by a logical expression just like <link
+linkend="htmltaskreport_hideresource">hideresource</link>.</para>
 
 <para><screen>
 htmlresourcereport "Staff-Details.html" {
@@ -592,31 +659,60 @@ htmlresourcereport "Staff-Details.html" {
 }
 </screen></para>
 
-<para>
-# To conclude the HTML reports a report that shows how badly the
-# project is calculated.  The company won't get rich with this
-# project. Due to the slip, it actually needs some money from the bank
-# to pay the salaries.
-</para>
+<para>When specifying the resources we have grouped the resources into
+two teams by creating two pseudo resources that had the real employees
+as sub resources. We have attached the flag
+<computeroutput>team</computeroutput> to those pseudo resources. We
+now use this flag as logical expression for <link
+linkend="htmltaskreport_hideresource">hideresource</link>. So all
+resources that have this flag will be hidden in the report. For better
+readability we sort the resource list by name in ascending order. The
+attribute <link
+linkend="htmltaskreport_sortresources">sortresources</link> is taking
+care of this.</para>
+
+</sect2>
+<sect2><title>Generating HTML Account Reports</title>
+
+<para> To conclude the HTML reports a report that shows how badly the
+project is calculated is generated. The company won't get rich with this
+project. Due to the slip, it actually needs some money from the bank
+to pay the salaries. </para>
 
 <para><screen>
-htmlaccountreport "Accounting.html" { ${navbar}
+htmlaccountreport "Accounting.html" {
+	${navbar}
   columns no, name, total, monthly 
 	headline "P&amp;L for the Accounting Software Project" 
 	caption "The table shows the profit and loss analysis as well as the
 	         cashflow situation of the Accounting Software Project."
-  accumulate showactual
+  accumulate
+	showactual
 }
 </screen></para>
 
-<para>
-# Finally we generate an XML report that contains all info about the
-# scheduled project. This will be used by tjx2gantt to create a nice
-# GANTT chart of our project.
-</para>
+<para>The <link linkend="htmlaccountreport">htmlaccountreport</link>
+property produces similar reports as the above ones, but it lists
+accounts instead of tasks or resources. The
+<computeroutput>total</computeroutput> column shows the value of the
+account at the end of the reported time interval. The <link
+linkend="htmlaccountreport_accumulate">accumulate</link> attribute
+puts the calendar in accumulation mode. The monthly columns list the
+value of the account at the end of the month. Normaly the amount that
+has been added or subtraced from the account would be listed.</para>
+
+</sect2>
+<sect2><title>Generating XML Reports</title>
+
+<para> Finally we generate an XML report that contains all info about
+the scheduled project. This report will be used by tjx2gantt to create
+a nice GANTT chart of our project. The file can also be read by tools
+like tjGUI or the KDE Konqueror plugin. </para>
 
 <para><screen>
 xmlreport "AccountingSoftware.tjx"
 </screen></para>
 
+</sect2>
+</sect1>
 </chapter>

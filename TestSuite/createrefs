@@ -1,5 +1,9 @@
 #! /bin/sh
 
+# Use a well defined LOCALE to create the reference files.
+export LANG=en_US
+export LC_COLLATE=POSIX 
+
 export TASKJUGGLER=../../taskjuggler/taskjuggler
 if test ! -x $TASKJUGGLER ; then
   export TASKJUGGLER=taskjuggler

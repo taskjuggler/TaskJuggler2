@@ -1,5 +1,8 @@
 #! /bin/sh
 
+export LANG=en_US
+export LC_COLLATE=POSIX
+
 errors=0
 export TASKJUGGLER=../../taskjuggler/taskjuggler
 if test ! -x $TASKJUGGLER ; then

@@ -1,8 +1,9 @@
 For 1.4 release
+- clean up index, no, and sequence number mess in reports
+- Complete description of example in documentation.
 - valgrind
-- Add Makefiles to Example directories.
-- Add more test cases to the test suite.
 - run HTML checker on reports
+- Make sure that autoconf checks for everything needed.
 
 After 1.4:
 - Implement 'mandatory' attribute for task allocations.
@@ -11,4 +12,7 @@ After 1.4:
 - Improve report generation performance.
 - i18n messages.
 - Explain more features with examples in the documentation.
-- Read XML files just as *.tjp files.
+- Read XML files just like *.tjp files.
+- Calculate ealiest start and latest end.
+- Add support for risk documentation.
+

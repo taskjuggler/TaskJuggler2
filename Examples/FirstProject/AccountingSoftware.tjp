@@ -224,7 +224,7 @@ htmltaskreport "Tasks-Details.html" {
 }
 
 # The previous report listed the resources per task. Now we generate a
-# report the lists tasks per resource.
+# report the lists all resources.
 htmlresourcereport "Staff-Overview.html" {
 	${navbar}
 	# Add a column with the total effort per task.
@@ -254,9 +254,9 @@ htmlresourcereport "Staff-Details.html" {
 }
 
 # To conclude the HTML reports a report that shows how badly the
-# project is calculated.  The company won't get rich with this
-# project. Due to the slip, it actually needs some money from the bank
-# to pay the salaries.
+# project is calculated is generated. The company won't get rich with
+# this project. Due to the slip, it actually needs some money from the
+# bank to pay the salaries.
 htmlaccountreport "Accounting.html" { ${navbar}
 	# Besides the number of the account and the name we have a column
 	# with the total values (at the end of the project) and the values
