@@ -7,6 +7,8 @@ moc_KDMinimizeSplitter.cpp
 moc_KDSemiSizingControl.cpp
 moc_KDSizingControl.cpp
 moc_itemAttributeDialog.cpp
+.deps
+.libs
 *.moc
 *.la
 *.lo

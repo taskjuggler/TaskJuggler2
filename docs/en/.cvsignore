@@ -8,6 +8,7 @@ Example.xml
 *.tex
 *.dvi
 *.ps
+*.pdf
 taskjuggler
 taskjuggler.junk
 CATALOG.local
