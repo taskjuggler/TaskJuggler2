@@ -84,7 +84,8 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 		QString start = time2rfc(t->getPlanStart());
 		QString end = time2rfc(t->getPlanEnd());
 
-		s << "task " << t->getId() << " \"" << t->getName() << "\""
+		s << "task " << stripTaskRoot(t->getId()) 
+			<< " \"" << t->getName() << "\""
 			<< " { start " << start
 			<< " end " << end;
 		if (showActual)
@@ -143,7 +144,7 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 	for (Task* t = filteredTaskList.first(); t != 0;
 		 t = filteredTaskList.next())
 	{
-		s << "supplement task " << t->getId() << " {" << endl;
+		s << "supplement task " << stripTaskRoot(t->getId()) << " {" << endl;
 		for (QStringList::Iterator it = taskAttributes.begin(); 
 			 it != taskAttributes.end(); ++it)
 		{
@@ -218,7 +219,7 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 								}
 								else
 									s << ", ";
-								s << tp->getId();
+								s << stripTaskRoot(tp->getId());
 							}
 							/* Restore current list item to continue
 							 * iteration. */
@@ -257,7 +258,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 				QString start = time2rfc(b->getStart());
 				QString end = time2rfc(b->getEnd());
 				s << "  planbooking " << start << " " << end 
-					<< " " << b->getTask()->getId() << endl;
+					<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
 			}
 		}
 		bl = r->getActualJobs();
@@ -269,7 +270,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 				QString start = time2rfc(b->getStart());
 				QString end = time2rfc(b->getEnd());
 				s << "  actualbooking " << start << " " << end 
-					<< " " << b->getTask()->getId() << endl;
+					<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
 			}
 		}
 		s << "}" << endl;

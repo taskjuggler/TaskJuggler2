@@ -1,4 +1,3 @@
-- Export only subtasks of a certain tasks as if it was the root task.
 - Implement 'mandatory' attribute for task allocations.
 - Allocation selection by skill set.
 - Improve scheduler performance.
@@ -11,4 +10,4 @@
 - Convert documentation from sgml to DocBook to have it more
   structured.
 - Read XML files just as *.tjp files.
-
+- Add an HTML report for weekly overviews.

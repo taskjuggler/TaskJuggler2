@@ -21,8 +21,17 @@ task t3 "Task3" {
 }
 
 task t4 "Task4" {
-	depends t3
-	duration 26d
+	task t1 "Task1"
+	{
+		depends !!t3
+		duration 26d
+	}
+	task t2 "Task2"
+	{
+		depends !t1
+		effort 10d
+		allocate r3
+	}
 }
 
 task t5 "Task5" {
@@ -30,6 +39,13 @@ task t5 "Task5" {
 	priority 1000
 	length 5d
 	allocate r2
+}
+
+export "project_a_sub.tjsp" {
+	taskroot t4
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+	hideresource 0
 }
 
 htmltaskreport "project_a.html" {

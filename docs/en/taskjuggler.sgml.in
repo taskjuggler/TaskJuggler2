@@ -332,7 +332,12 @@ fixed. <computeroutput>startup</computeroutput>,
 <listitem><para>The optional attribute <link
 linkend="include_taskprefix">taskprefix</link> has been added to <link
 linkend="include">include</link>. This allows exported projects to be
-added at arbitrary points in the task tree.</listitem>
+added at arbitrary points in the task tree.</para></listitem>
+
+<listitem><para>The optional attribute <link
+linkend="export_taskroot">taskroot</link> has been added to <link
+linkend="export">export</link>. This allows to export sub tasks of a
+tasks to be exported as root-level tasks.</para></listitem>
 
 </itemizedlist> </para>
 

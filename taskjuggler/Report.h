@@ -83,6 +83,9 @@ public:
 	bool setResourceSorting(CoreAttributesList::SortCriteria sc, int level);
 	bool setAccountSorting(CoreAttributesList::SortCriteria sc, int level);
 
+	void setTaskRoot(const QString& root) { taskRoot = root; }
+	const QString& getTaskRoot() const { return taskRoot; }
+
 	enum LoadUnit { minutes, hours, days, weeks, months, years, shortAuto,
 		longAuto };
 
@@ -105,6 +108,12 @@ public:
 protected:
 	void warningMsg(const char* msg, ... );
 
+	/**
+	 * This utility function removes the path that matches the taskRoot
+	 * variable from the passed taskId.
+	 */
+	QString stripTaskRoot(QString taskId) const;
+	
 	Project* project;
 	QString fileName;
 	QStringList columns;
@@ -134,6 +143,10 @@ protected:
 	ExpressionTree* rollUpResource;
 	ExpressionTree* rollUpAccount;
 
+	/* A report can be limited to the sub-tasks of a certain task. The 
+	 * taskRoot specifies this task. If set it always ends with a '.'. */
+	QString taskRoot;
+	
 	LoadUnit loadUnit;
 
 	bool hidePlan;

@@ -309,12 +309,25 @@ described logical expression.</para>
 &lt;expression&gt;</title>
 
 <para><simplelist type=horiz columns=2>
-<member>expression:</><member><link linkend="logicalexpression">
-LOGICALEXPRESSION</link></>
+<member>expression:</member><member><link linkend="logicalexpression">
+LOGICALEXPRESSION</link></member>
 </simplelist></para>
 
 <para>Do not show subtasks of tasks with flags meeting the described
 logical expression.</para>
+
+</sect2>
+<sect2 id="export_taskroot"><title>taskroot &lt;ID&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>ID:</member><member>ID of a task that specifies the new root
+level</member>
+</simplelist></para>
+
+<para>Only tasks below the specified root-level tasks are exported.
+The exported tasks will have the id of the root-level task stripped
+from their ID, so that the sub-tasks of the root-level task become
+top-level tasks in the exported file.</para>
 
 </sect2>
 <sect2 id="export_taskattributes"><title>taskattributes

@@ -127,6 +127,13 @@ Report::setAccountSorting(CoreAttributesList::SortCriteria sc, int level)
 bool
 Report::isHidden(CoreAttributes* c, ExpressionTree* et)
 {
+	if (!taskRoot.isEmpty() &&
+		strcmp(c->getType(), "Task") == 0 &&
+		taskRoot != c->getId().left(taskRoot.length()))
+	{
+		return TRUE;
+	}
+	
 	if (!et)
 		return FALSE;
 
@@ -287,7 +294,10 @@ Report::sortTaskList(TaskList& filteredList)
 		for (Task* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{
-			for (Task* p = t->getParent(); p != 0; p = p->getParent())
+			// Do not add the taskRoot task or any of it's parents.
+			for (Task* p = t->getParent();
+				 p != 0 && (p->getId() + "." != taskRoot);
+				 p = p->getParent())
 				if (list.contains(p) == 0)
 					list.append(p);
 		}
@@ -506,5 +516,14 @@ Report::warningMsg(const char* msg, ... )
 	vsnprintf(buf, 1024, msg, ap);
 	va_end(ap);
 	qWarning("%s:%d:%s", defFileName.latin1(), defFileLine, buf);
+}
+
+QString
+Report::stripTaskRoot(QString taskId) const
+{
+	if (taskRoot == taskId.left(taskRoot.length()))
+		return taskId.right(taskId.length() - taskRoot.length());
+	else
+		return taskId;
 }
 

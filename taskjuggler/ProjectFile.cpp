@@ -2823,6 +2823,24 @@ ProjectFile::readExportReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpResource(et);
 		}
+		else if (token == KW("taskroot"))
+		{
+			if ((tt = nextToken(token)) == ID ||
+				tt == ABSOLUTE_ID)
+			{
+				if (!proj->getTask(token))
+				{
+					fatalError("taskroot must be a known task");
+					return FALSE;
+				}
+				report->setTaskRoot(token + ".");
+			}
+			else
+			{
+				fatalError("Task ID expected");
+				return FALSE;
+			}
+		}
 		else if (token == KW("taskattributes"))
 		{
 			for ( ; ; )

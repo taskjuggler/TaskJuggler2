@@ -12,9 +12,9 @@ task t2 "Task2" {
 }
 
 task t4 "Task4" {
-	depends t3
-	duration 26d
 }
+
+include "project_a_sub.tjsp" { taskprefix t4 }
 
 htmltaskreport "project_b.html" {
 	columns name, start, end, daily
