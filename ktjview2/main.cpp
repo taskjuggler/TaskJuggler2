@@ -28,7 +28,7 @@
 static const char description[] =
     I18N_NOOP("A KDE frontend for TaskJuggler.");
 
-static const char version[] = "0.2";
+static const char version[] = "0.3";
 
 static KCmdLineOptions options[] =
 {
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 {
     KAboutData about("ktjview2", I18N_NOOP("TaskJuggler viewer"), version, description,
                      KAboutData::License_GPL, "(C) 2004 SUSE AG", 0, 0, "lukas.tinkl@suse.cz");
-    about.addAuthor( "Lukáš Tinkl", 0, "lukas.tinkl@suse.cz" );
+    about.addAuthor( "Lukáš Tinkl", I18N_NOOP( "Author and maintainer " ), "lukas.tinkl@suse.cz" );
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication app;
