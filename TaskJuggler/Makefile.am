@@ -10,7 +10,8 @@ bin_PROGRAMS = TaskJuggler TaskJuggler_client
 INCLUDES = -I ../taskjuggler $(all_includes)
 
 # the library search path. 
-TaskJuggler_LDFLAGS = -L../taskjuggler $(KDE_RPATH) $(all_libraries)
+LIBADD=-L../taskjuggler/libtaskjuggler.la
+TaskJuggler_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
 TaskJuggler_LDADD = -lktexteditor -ltaskjuggler $(LIB_KFILE) $(LIB_KDEPRINT)

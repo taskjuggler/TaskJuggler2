@@ -158,3 +158,8 @@ AC_OUTPUT(docs/en/taskjuggler.xml)
 
 dnl KDE_INIT_DOXYGEN([The TaskJuggler API Reference], [Version $VERSION])
 
+KDE_CHECK_HEADER( libkcal/calendarlocal.h, [have_ical=yes],[have_ical=no])
+if test "$have_ical" = yes ; then
+    AC_DEFINE(HAVE_ICAL, 1, [defined if support for kde pim calendar files])
+fi
+
