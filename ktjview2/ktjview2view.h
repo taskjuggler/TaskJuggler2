@@ -195,6 +195,8 @@ private slots:
     void slotJumpToTask();
 
 private:
+    void recreateProject();
+
     /**
      * Apply settings dialog changes for the Gantt
      */
@@ -217,9 +219,10 @@ private:
 
     /**
      * Parse the task list of the project and fill the list view
+     * @param it iterator over the list of tasks
      * @param sc Index of the scenario
      */
-    void parseTasks( int sc = 0 );
+    void parseTasks( TaskListIterator it, int sc = 0 );
 
     /**
      * Parse the task list and build the gantt chart

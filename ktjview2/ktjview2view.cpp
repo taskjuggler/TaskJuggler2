@@ -80,7 +80,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_progressDlg->setAutoReset( true );
     m_progressDlg->setCaption( i18n( "Loading project" ) );
 
-    m_project = new Project();
+    recreateProject();
 
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
@@ -233,6 +233,8 @@ void ktjview2View::openURL( const KURL& url )
 
     //kdDebug() << "Project is in temp file: " << tmpFile << endl;
 
+    recreateProject();
+
     if ( tmpFile.endsWith( ".tjx" ) ) // XML file
     {
         XMLFile* xf = new XMLFile( m_project );
@@ -272,7 +274,6 @@ void ktjview2View::openURL( const KURL& url )
         return;
     }
 
-    clearAllViews();
     KIO::NetAccess::removeTempFile( tmpFile );
 
     //kdDebug() << "Generating cross references (pass2)" << endl;
@@ -300,9 +301,12 @@ void ktjview2View::openURL( const KURL& url )
     m_progressDlg->setLabelText( i18n( "Building the views" ) );
 
     m_ganttView->setUpdateEnabled( false );
+
+    clearAllViews();
+
     parseProjectInfo();
     parseResources( m_project->getResourceListIterator() );
-    parseTasks();
+    parseTasks( m_project->getTaskListIterator() );
     parseGantt( m_project->getTaskListIterator() );
     parseLinks( m_project->getTaskListIterator() );
 
@@ -343,12 +347,11 @@ void ktjview2View::parseProjectInfo()
     m_textBrowser->setText( text );
 }
 
-void ktjview2View::parseTasks( int sc )
+void ktjview2View::parseTasks( TaskListIterator it, int sc )
 {
-    TaskListIterator it = m_project->getTaskListIterator();
     Task * task;
 
-    while ( ( task = dynamic_cast<Task *>( it.current() ) ) != 0 )
+    while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
     {
         ++it;
 
@@ -582,8 +585,7 @@ void ktjview2View::parseLinks( TaskListIterator it )
 
         TaskListIterator depIt = task->getDependsIterator();
         Task * depTask;
-        QPtrList<KDGanttViewItem> fromList;   // ### auto delete?
-        //fromList.setAutoDelete( true );
+        QPtrList<KDGanttViewItem> fromList;
         while ( ( depTask = static_cast<Task *>( depIt.current() ) ) != 0 )
         {
             ++depIt;
@@ -597,9 +599,8 @@ void ktjview2View::parseLinks( TaskListIterator it )
             continue;
 
         QString toId = task->getId();
-        QPtrList<KDGanttViewItem> toList; // ### auto delete?
+        QPtrList<KDGanttViewItem> toList;
         //kdDebug() << "Got toId: " << toId << endl;
-        //toList.setAutoDelete( true );
         toList.append( KDGanttViewItem::find( toId ) );
 
         KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromList, toList );
@@ -751,9 +752,10 @@ void ktjview2View::filter()
 
 void ktjview2View::clearAllViews()
 {
-    m_ganttView->clear();
     m_resListView->clear();
     m_taskView->clear();
+    //m_ganttView->taskLinks().clear();
+    //m_ganttView->clear();
 }
 
 QString ktjview2View::formatAllocations( Task* task )
@@ -830,7 +832,7 @@ bool ktjview2View::filterFor( int id )
 
         Task * task = m_project->getTask( static_cast<TaskItem *>( *it )->id() );
 
-        if ( id == 0 )
+        if ( id == 0 )          // All tasks
         {
             showIt = true;
         }
@@ -872,14 +874,21 @@ bool ktjview2View::filterFor( int id )
 
 void ktjview2View::activateView( int id )
 {
-    if ( id == 0 )
+    if ( id == ID_VIEW_INFO )
         m_widgetStack->raiseWidget( m_textBrowser );
-    else if ( id == 1 )
+    else if ( id == ID_VIEW_GANTT )
         m_widgetStack->raiseWidget( m_ganttView );
-    else if ( id == 2 )
+    else if ( id == ID_VIEW_RESOURCES )
         m_widgetStack->raiseWidget( m_resListView );
-    else if ( id == 3 )
+    else if ( id == ID_VIEW_TASKS )
         m_widgetStack->raiseWidget( m_taskView );
+}
+
+void ktjview2View::recreateProject()
+{
+    delete m_project;
+    m_project = 0;
+    m_project = new Project();
 }
 
 #include "ktjview2view.moc"
