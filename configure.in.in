@@ -25,5 +25,5 @@ fi
 AC_SUBST(LIBICAL)
 AC_MSG_RESULT($cv_option_kdesupport)
 
-AM_INIT_AUTOMAKE(taskjuggler, 1.0.0)
+AM_INIT_AUTOMAKE(taskjuggler, 1.0.1)
 
