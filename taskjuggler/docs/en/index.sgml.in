@@ -24,8 +24,19 @@ The output can be a report showing the several tasks, the resource usage,
 or the account information. Multiple reports can be created as html files, 
 enabling easy display with a web browser. 
 
+<p>
+<sect1>TaskJuggler on the Web
+<p>
+The official TaskJuggler web page can be found at <url
+url="http://www.suse.de/~freitag/taskjuggler"
+name="http://www.suse.de/~freitag/taskjuggler">.
+
 <sect1>Changes
 <p>
+
+<bf> Version 1.0 </bf>
+<p>
+- First public release
 
 <sect>Installation
 <p>
@@ -96,8 +107,11 @@ compute and create the output. For example, if you have created the
 % taskjuggler AcSo.tjp
 </verb></tscreen>
 
-TaskJuggler will create the type of report specified in the
-<tt>AcSo.tjp</tt> file.
+TaskJuggler will try to schedule all tasks with the specified
+conditions and generate the reports that were requested with the <ref
+id="htmltaskreport" name="htmltaskreport">, <ref
+id="htmlresourcereport" name="htmlresourcereport"> or other report
+attributes.
 
 <sect1> The Command Line Options
 <p>
