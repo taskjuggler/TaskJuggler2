@@ -12,11 +12,22 @@
 
 /* -- DTD --
  <!-- Task element, child of projects and for subtasks -->
- <!ELEMENT Task		(TaskName, Priority, start, end, minStart, maxStart,
-                         minEnd, maxEnd, actualStart, actualEnd,
+ <!ELEMENT Task		(TaskName, Note*,
+                         minStart, maxStart,
+                         minEnd, maxEnd,
+			 actualStart, actualEnd,
+			 planStart, planEnd,
 			 SubTasks*, Depends*, Previous*, Followers*,
 			 Allocations*, bookedResources*, note*)>
+ <!ATTLIST Task         ProjectID CDATA #IMPLIED
+                        Priority  CDATA #IMPLIED
+			complete  CDATA #REQUIRED
+                        Type (Task|Milestone) #REQUIRED>
+			
  <!ELEMENT TaskName     (#PCDATA)>
+ <!ELEMENT Note         (#PCDATA)>
+ <!ELEMENT ProjectID    (#PCDATA)>
+ <!ELEMENT TaskType     (#PCDATA)>
  <!ELEMENT Priority     (#PCDATA)>
  <!ELEMENT start        (#PCDATA)>
  <!ELEMENT end          (#PCDATA)>
@@ -26,6 +37,8 @@
  <!ELEMENT maxEnd       (#PCDATA)>
  <!ELEMENT actualStart  (#PCDATA)>
  <!ELEMENT actualEnd    (#PCDATA)>
+ <!ELEMENT planStart    (#PCDATA)>
+ <!ELEMENT planEnd      (#PCDATA)>
  <!ELEMENT SubTasks     (Task+)>
  <!ELEMENT Depends      (TaskID+)>
  <!ELEMENT TaskID       (#PCDATA)>
@@ -1197,18 +1210,24 @@ QDomElement Task::xmlElement( QDomDocument& doc )
 {
    QDomElement elem = doc.createElement( "Task" );
    QDomText t;
-   
-   elem.appendChild( ReportXML::createXMLElem( doc, "TaskName", getName()));
-   elem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number( priority )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "start", QString::number( start )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "end", QString::number( end )));
+   elem.appendChild( doc.createTextNode( getName()));
+   if( !note.isEmpty())
+      elem.appendChild( ReportXML::createXMLElem( doc, "Note", getNote()));
+
    elem.appendChild( ReportXML::createXMLElem( doc, "minStart", QString::number( minStart )));
    elem.appendChild( ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "minEnd", QString::number( maxStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "actualStart", QString::number( maxStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "actualEnd", QString::number( maxStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "actualStart", QString::number( actualStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "actualEnd", QString::number( actualEnd )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "planStart", QString::number( planStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "planEnd", QString::number( planEnd )));
 
+   elem.setAttribute( "ProjectID", projectId );
+   elem.setAttribute( "Priority", getPriority() );
+   elem.setAttribute( "complete", complete );
+   elem.setAttribute( "Type", milestone ? "Milestone" : "Task" );
+   
    /* Now start the subtasks */
    int cnt = 0;
    QDomElement subtElem = doc.createElement( "SubTasks" );
@@ -1366,3 +1385,45 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		return CoreAttributesList::compareItems(i1, i2);
 	}		
 }
+
+#ifdef HAVE_KDE
+
+void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal *cal )
+{
+   if( !todo ) return;
+   QDateTime dt;
+
+   // todo->setReadOnly( true );
+   
+   /* Start-Time of the task */
+   dt.setTime_t( getPlanStart() );
+   todo->setDtStart( dt );
+   todo->setHasDueDate( true );
+   
+   /* Due-Time of the todo -> plan End  */
+   dt.setTime_t( getPlanEnd());
+   todo->setDtDue( dt );
+   todo->setHasStartDate(true);
+
+   /* Description and summary -> project ID */
+   todo->setDescription( getNote() );
+   todo->setSummary( getName() );
+   todo->setPriority( getPriority() );
+   todo->setCompleted( getComplete() );
+
+   /* Resources */
+   QPtrList<Resource> resList;
+   resList = getPlanBookedResources();
+   QStringList strList;
+   
+   Resource *res = 0;
+   for ( res = resList.first(); res; res = resList.next() )
+   {
+      strList.append( res->getName());
+   }
+   todo->setResources(strList);
+   
+}
+
+
+#endif

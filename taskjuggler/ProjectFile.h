@@ -110,6 +110,9 @@ private:
 	bool readHTMLAccountReport();
 	bool readExportReport();
 	bool readXMLTaskReport();
+#ifdef HAVE_KDE
+        bool readICalTaskReport();
+#endif
 	Operation* readLogicalExpression(int precedence = 0);
 	bool readSorting(Report* report, int which);
 	time_t date2time(const QString& date);

@@ -287,3 +287,35 @@ addTimeToDate(time_t day, time_t hour)
 	tms->tm_isdst = -1;
 	return mktime(tms);
 }
+
+
+time_t dateToTime( const QString& date)
+{
+        int y, m, d, hour, min;
+        if (date.find(':') == -1)
+        {
+                sscanf(date, "%d-%d-%d", &y, &m, &d);
+                hour = min = 0;
+        }
+        else
+                sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min);
+
+        if (y < 1970)
+        {
+                y = 1970;
+        }
+        if (m < 1 || m > 12)
+        {
+                m = 1;
+        }
+        if (d < 1 || d > 31)
+        {
+                d = 1;
+        }
+
+        struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
+        time_t localTime = mktime(&t);
+
+        return localTime;
+}
+

@@ -28,6 +28,7 @@
 #include "HTMLAccountReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
+#include "ReportICal.h"
 
 class Kotrus;
 
@@ -135,6 +136,7 @@ public:
 	ulong getScheduleGranularity() const { return scheduleGranularity; }
 
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
+        void addICalReport( ReportICal *ic ) { icalReport = ic; }
    
 	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
 
@@ -256,6 +258,7 @@ private:
 	TaskList activeAlap;
 
 	ReportXML* xmlreport;
+        ReportICal *icalReport;
    
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;

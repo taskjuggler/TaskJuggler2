@@ -294,8 +294,8 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
    {
       if( kotrusID.isEmpty() )
 	 qDebug( "WRN: Can not load bookings for empty user!"); 
-      else
-	 qDebug( "WRN: Could not resolve user " + kotrusID );
+      // else
+	 // qDebug( "WRN: Could not resolve user " + kotrusID );
    }
    return( blist );
 }

@@ -301,6 +301,9 @@ Project::generateReports()
 
 	if( xmlreport )
 	   xmlreport->generate();
+
+	if( icalReport )
+	   icalReport->generate();
 }
 
 bool

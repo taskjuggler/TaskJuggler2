@@ -4,7 +4,8 @@ CoreAttributes.cpp ShiftList.cpp ResourceList.cpp Task.cpp VacationList.cpp \
 Account.cpp MacroTable.cpp ProjectFile.cpp \
 HTMLTaskReport.cpp HTMLResourceReport.cpp HTMLAccountReport.cpp \
 ReportHtml.cpp ExportReport.cpp Report.cpp \
-Project.cpp main.cpp kotrus.cpp ReportXML.cpp
+Project.cpp main.cpp kotrus.cpp ReportXML.cpp \
+ReportICal.cpp
 
 SOURCES = main.cpp 
 DTDFILE = taskjuggler.dtd
@@ -17,12 +18,12 @@ CXXFLAGS = -Wall -g
 SUBDIRS = docs 
 
 # set the include path for X, qt and KDE
-INCLUDES= $(all_includes)
+INCLUDES= $(all_includes) $(kde_includes) -I/space/projects/
 
 taskjuggler_METASOURCES = AUTO
 
 # the library search path. 
-taskjuggler_LDFLAGS = $(all_libraries) 
+taskjuggler_LDFLAGS = $(all_libraries) -lkcal
 
 # them while "make clean", use CLEANFILES
 DISTCLEANFILES = $(taskjuggler_METASOURCES)

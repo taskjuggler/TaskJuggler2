@@ -19,10 +19,15 @@
 #include <qstringlist.h>
 #include <qdom.h>
 #include <time.h>
-
+#include "config.h"
 #include "ResourceList.h"
 #include "Utility.h"
 #include "CoreAttributes.h"
+
+#ifdef HAVE_KDE
+#include <libkcal/todo.h>
+#include <libkcal/calendarlocal.h>
+#endif
 
 class Project;
 class Resource;
@@ -67,9 +72,6 @@ public:
 		/* Alternatives are missing TODO */
 		return elem;
 	};
-
-   
-   
 private:
 	// Don't use this.
 	Allocation();
@@ -311,6 +313,10 @@ public:
 	QDomElement xmlElement( QDomDocument& doc );
 
 	static void setDebugLevel(int l) { debugLevel = l; }
+
+#ifdef HAVE_KDE
+   void toTodo( KCal::Todo *, KCal::CalendarLocal * );
+#endif
 
 private:
 	bool scheduleContainer(bool safeMode);

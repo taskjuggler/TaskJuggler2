@@ -1,10 +1,10 @@
 # This is a test file for TaskJuggler
 
-project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
+project sl80 "SuSE Linux 8.0 Projekt" "$Id$" 2001-09-28 2002-04-01
 
 projectid secondId
 
-include "../../test.tjsp"
+# include "./test.tjsp"
 
 now 2002-01-16
 copyright "(c) 2001, 2002 SuSE GmbH - This is SuSE CONFIDENTIAL information"
@@ -17,6 +17,9 @@ kotrusmode "nokotrus"
 
 flags type1, type2, type3
 flags deadline, media, beta, preview, team
+
+xmltaskreport "task.xml"
+icalreport    "/tmp/task.ics"
 
 htmltaskreport "test1.html" {
   columns no, name, start, end, duration, costs

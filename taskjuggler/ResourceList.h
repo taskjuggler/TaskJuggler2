@@ -105,7 +105,7 @@ protected:
 class Resource : public CoreAttributes
 {
 	friend int ResourceList::compareItems(QCollection::Item i1,
-										  QCollection::Item i2);
+					      QCollection::Item i2);
 public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource();

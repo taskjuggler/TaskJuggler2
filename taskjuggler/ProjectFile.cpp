@@ -787,6 +787,14 @@ ProjectFile::parse()
 			      return FALSE;
 			   break;
 			}
+#ifdef HAVE_KDE
+			else if (token == "icalreport" )
+			{
+			   if( !readICalTaskReport())
+			      return FALSE;
+			   break;
+			}
+#endif
 			else if (token == KW("htmltaskreport") ||
 					 token == KW("htmlresourcereport"))
 			{
@@ -1850,6 +1858,23 @@ ProjectFile::readPriority(int& priority)
 	}
 	return TRUE;
 }
+
+#ifdef HAVE_KDE
+bool
+ProjectFile::readICalTaskReport()
+{
+   QString token;
+   if (nextToken(token) != STRING)
+   {
+      fatalError("File name expected");
+      return FALSE;
+   }
+   ReportICal *rep = new ReportICal( proj, token, proj->getStart(), proj->getEnd());
+   proj->addICalReport( rep );
+
+   return( true );
+}
+#endif
 
 bool
 ProjectFile::readXMLTaskReport()
