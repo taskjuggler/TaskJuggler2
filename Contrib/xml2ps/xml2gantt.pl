@@ -240,6 +240,8 @@ sub text {
         $t->actualEnd("$string")    if ( $elm_fifo[$#elm_fifo] eq 'actualEnd' );
         $t->planStart("$string")    if ( $elm_fifo[$#elm_fifo] eq 'planStart' );
         $t->planEnd("$string")      if ( $elm_fifo[$#elm_fifo] eq 'planEnd' );
+        $t->startBuffer("$string")  if ( $elm_fifo[$#elm_fifo] eq 'startBufferSize' );
+        $t->endBuffer("$string")    if ( $elm_fifo[$#elm_fifo] eq 'EndBufferSize' );
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
@@ -456,8 +458,7 @@ sub _draw_task {
         $task->x1($x1); $task->y1($y1-($task_height/2));
         $task->x2($x2); $task->y2($y2+($task_height/2));
         if ( $task->Type eq 'Task' ) {
-            #-- länge von % feritg balken
-            my ($per_length, $d) = _trans_coord($_x1 + (($task_length/100*$persent) * $day_x), 0);
+            #-- den task pinseln
             #-- wenn das ende vor heute liegt und der task nicht 100% fertig hat, dann rot
             if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
                 if ( $persent < 100 ) {
@@ -468,7 +469,22 @@ sub _draw_task {
                 $p->setcolour(255,255,255);
                 $p->box($x1, $y1, $x2, $y2, 1);
             }
-            #-- % done balken oben drüber pinseln
+            #-- buffer balken pinseln
+            if ( $task->startBuffer ) {
+                my $buf = $task->startBuffer;
+                my ($buf_length, $d) = _trans_coord($_x1 + (($task_length/100*$buf) * $day_x), 0);
+                $p->setcolour(222,222,222);
+                $p->box($x1, $y1, $buf_length, $y2, 1);
+            }
+            if ( $task->endBuffer ) {
+                my $buf = $task->endBuffer;
+                my ($buf_length, $d) = _trans_coord($_x2 - (($task_length/100*$buf) * $day_x), 0);
+                $p->setcolour(222,222,222);
+                $p->box($buf_length, $y1, $x2, $y2, 1);
+            }
+            #-- länge von % feritg balken
+            my ($per_length, $d) = _trans_coord($_x1 + (($task_length/100*$persent) * $day_x), 0);
+            #-- % done balken pinseln
             if ($persent > 0) {
                 $p->setcolour(0,255,0);
                 $p->box($x1, $y1, $per_length, $y2, 1);

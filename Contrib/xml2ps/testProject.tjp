@@ -33,12 +33,14 @@ task testProject "testProject for xml2gantt" {
             length 7d
             complete 100
             ${__worker}
+            startbuffer 10
             depends !!start
         }
         task dev_2 "Devel-Job 2" {
             length 13d
             complete 90
             ${__worker}
+            endbuffer 10
             depends !dev_1
         }
         task dev_21 "Devel-Job 2.1" {
@@ -51,6 +53,7 @@ task testProject "testProject for xml2gantt" {
             length 23d
             complete 35
             ${__worker}
+            endbuffer 5
             depends !dev_2
         }
         task dev_4 "Devel-Job 4" {
