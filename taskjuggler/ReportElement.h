@@ -25,6 +25,7 @@
 #include "TableColorSet.h"
 #include "MacroTable.h"
 #include "RealFormat.h"
+#include "TableColumnFormat.h"
 
 class QStringList;
 
@@ -39,7 +40,6 @@ class Resource;
 class ResourceList;
 class Account;
 class AccountList;
-class TableColumnFormat;
 class TableColumnInfo;
 class TableCellInfo;
 class TableLineInfo;

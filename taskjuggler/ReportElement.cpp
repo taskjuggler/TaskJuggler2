@@ -937,7 +937,7 @@ ReportElement::setMacros(TableLineInfo* tli)
                               defFileName, defFileLine));
     
     // Set macros for built-in attributes.
-    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() : "", 
+    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() : QString(), 
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("no"), tli->ca1 ? 
                           QString("%1").arg(tli->ca1->getSequenceNo()) :
@@ -948,12 +948,12 @@ ReportElement::setMacros(TableLineInfo* tli)
                           QString(),
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ? 
-                          tli->ca1->getHierarchNo() : "", 
+                          tli->ca1->getHierarchNo() : QString(), 
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("hierarchindex"), 
-                          tli->ca1 ? tli->ca1->getHierarchIndex() : "", 
+                          tli->ca1 ? tli->ca1->getHierarchIndex() : QString(), 
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : "", 
+    mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : QString(), 
                           defFileName, defFileLine));
     
     QPtrList< QDict<const CustomAttributeDefinition> > dictList;

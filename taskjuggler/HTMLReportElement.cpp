@@ -908,7 +908,7 @@ HTMLReportElement::genCellEnd(TableCellInfo* tci)
 void \
 HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
-    genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? "" : \
+    genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? QString() : \
             time2user(tci->tli->task->get##a(tci->tli->sc), timeFormat), \
             tci, FALSE); \
 }
