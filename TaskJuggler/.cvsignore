@@ -5,6 +5,8 @@
 *.moc
 MainWidget.cpp
 MainWidget.h
+RichTextDisplay.cpp
+RichTextDisplay.h
 Makefile
 Makefile.in
 Screenshots
