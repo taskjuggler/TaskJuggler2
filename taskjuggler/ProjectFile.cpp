@@ -1306,8 +1306,8 @@ ProjectFile::readDate(time_t& val, time_t correction)
     if (val < proj->getStart() ||
         val > proj->getEnd())
     {
-        errorMessage(i18n("Date %s is outside of project time frame "
-                          "(%s - %s")
+        errorMessage(i18n("Date %1 is outside of project time frame "
+                          "(%2 - %3")
                      .arg(time2ISO(val))
                      .arg(time2ISO(proj->getStart()))
                      .arg(time2ISO(proj->getEnd())));
