@@ -59,8 +59,9 @@ public slots:
 private slots:
     /**
      * Tell the search line to search in column @p index only
+     * @param update whether to apply the search immediately
      */
-    void setSearchColumn( int index );
+    void setSearchColumn( int index, bool update = true );
 
 private:
     /**

@@ -67,7 +67,7 @@ void QuickSearchWidget::setListView( KListView * view )
 {
     m_searchLine->setListView( view );
     fillColumnCombo();
-    setSearchColumn( m_colCombo->currentItem() );
+    setSearchColumn( m_colCombo->currentItem(), false );
 }
 
 void QuickSearchWidget::reset()
@@ -88,12 +88,13 @@ void QuickSearchWidget::fillColumnCombo()
     }
 }
 
-void QuickSearchWidget::setSearchColumn( int index )
+void QuickSearchWidget::setSearchColumn( int index, bool update )
 {
     QValueList<int> list;
     list.append( index );
     m_searchLine->setSearchColumns( list );
-    m_searchLine->updateSearch();
+    if ( update )
+        m_searchLine->updateSearch();
 }
 
 #include "quickSearchWidget.moc"
