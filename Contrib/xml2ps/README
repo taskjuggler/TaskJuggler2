@@ -2,7 +2,7 @@
 !!!  This Software is __APLHA__  !!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-xml2ps.pl - gantt chart generator for TaskJuggler
+xml2gantt.pl - gantt chart generator for TaskJuggler
 
 
 required
@@ -18,7 +18,7 @@ required
 
 usage
 
-    xml2ps.pl export_from_taskjuggler.xml
+    xml2gantt.pl export_from_taskjuggler.xml
 
 output format
 
