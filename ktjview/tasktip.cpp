@@ -64,14 +64,22 @@ QString TaskTip::beautyTask( Task *t ) const
           ret += QString( " (%1% completed)").arg(comp);
       ret+="<BR>";
       ret += QString("<table width=\"280\" cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(0) /* Task::Plan */ ) );
-   ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR>").arg(time2ISO(t->getEnd( 0 /* Task::Plan */) ));
+      ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR>").arg(time2ISO(t->getEnd( 0 /* Task::Plan */) ));
 
-      for (QPtrListIterator<Allocation> tli( t->getAllocationIterator() );
-           *tli != 0; ++tli)
+
+      for ( ResourceListIterator tli(t->getBookedResourcesIterator(0)); *tli != 0; ++tli )
       {
-          Resource *r = (*tli)->getLockedResource();
+	  Resource *r = (*tli);
           if( r )
-              ret += QString("<tr><td>Working:</td><td>") + r->getName() + QString(" (%1%)").arg((*tli)->getLoad()) + "</td></tr>";
+	  {
+	      time_t start = t->getStart(0);
+	      time_t end   = t->getEnd(0);
+	      qDebug("Start: %ld, End: %ld", start, end);
+	      
+	      double load = r->getLoad(0, Interval(start, end), AllAccounts, t ); 
+	      qDebug("Load: %f", load );
+              ret += QString("<tr><td>Working:</td><td>") + r->getName() + QString(" (%1%)").arg(load) + "</td></tr>";
+	  }
       }
       ret += "</TABLE>";
    }
