@@ -932,10 +932,12 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
 {
     int lPadding = 0;
     int fontSize = tci->tli->ca2 == 0 ? 100 : 90; 
-    if ((tci->tli->ca2 && (tci->tli->ca2->getType() == CA_Resource &&
-          resourceSortCriteria[0] == CoreAttributesList::TreeMode)) ||
+    if ((tci->tli->ca2 && tci->tli->ca2->getType() == CA_Resource &&
+          resourceSortCriteria[0] == CoreAttributesList::TreeMode) ||
         (tci->tli->ca2 && tci->tli->ca2->getType() == CA_Task &&
-         taskSortCriteria[0] == CoreAttributesList::TreeMode))
+         taskSortCriteria[0] == CoreAttributesList::TreeMode) ||
+        (tci->tli->ca2 && tci->tli->ca2->getType() == CA_Account &&
+          accountSortCriteria[0] == CoreAttributesList::TreeMode))
         for (const CoreAttributes* cp = tci->tli->ca2 ; cp != 0;
              cp = cp->getParent())
             lPadding++;
