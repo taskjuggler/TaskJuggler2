@@ -38,8 +38,12 @@ class KoKoolBar;
 class QWidgetStack;
 class QTextBrowser;
 class QListView;
+class KListView;
+class QListViewItem;
+class KListViewItem;
 class QDateTime;
 class KPrinter;
+class TaskList;
 
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
@@ -119,12 +123,12 @@ signals:
     /**
      * Use this signal to change the content of the statusbar
      */
-    void signalChangeStatusbar(const QString& text);
+    void signalChangeStatusbar( const QString& text );
 
     /**
      * Use this signal to change the content of the caption
      */
-    void signalChangeCaption(const QString& text);
+    void signalChangeCaption( const QString& text );
 
 protected slots:
     /**
@@ -136,33 +140,44 @@ protected slots:
 
 private slots:
     /**
-     * Centers the gantt chart on the selected item
+     * Centers the gantt chart on the selected @p item
      */
     void ensureItemVisible( KDGanttViewItem * item );
 
 private:
+
     /**
-     * Parse <project>
+     * Convert TaskStatus enum to human readable string
+     */
+    QString status2Str( int ts ) const;
+
+    /**
+     * Parse and display general project info
      */
     void parseProjectInfo();
 
     /**
-     * Parse children of <taskList>
+     * Parse the task list of the project and fill the list view
+     * @param sc Index of the scenario
      */
-    void parseTasks( QDomNode node, KDGanttViewItem * parent = 0 );
+    void parseTasks( int sc = 0 );
     /**
      * Parse an individual <task> element
      */
-    void parseTask( const QDomElement & taskElem, KDGanttViewItem * parent = 0);
+    void parseTask( const QDomElement & taskElem, KDGanttViewItem * parent = 0 );
 
     /**
-     * Parse children of <resourceList>
+     * Parse the task list and build the gantt chart
+     * @param sc Index of the scenario
      */
-    void parseResources( QDomNode node, QListView * view, const QString & group = QString::null );
+    void parseGantt( TaskList tlist, int sc = 0 );
+
     /**
-     * Parse an individual <resource> element
+     * Parse the resources list and fill the list view
+     * @param it iterator over the list of resources
+     * @param parentItem the parent item in the list view to append this item to
      */
-    void parseResource( const QDomElement & resElem, QListView * view, const QString & group = QString::null );
+    void parseResources( ResourceListIterator it, KListViewItem * parentItem = 0 );
 
     /**
      * Parses relations between tasks (dependencies)
@@ -188,9 +203,7 @@ private:
      */
     KURL m_projectURL;
 
-    /**
-     * Our project
-     */
+    /// our project, @see Project
     Project m_project;
 
     int mainGroup;
@@ -207,9 +220,9 @@ private:
     /// project info view
     QTextBrowser * m_textBrowser;
     /// resources list view
-    QListView * m_resListView;
+    KListView * m_resListView;
     /// task (flat) view
-    QListView * m_taskView;
+    KListView * m_taskView;
 };
 
 #endif // _KTJVIEW2VIEW_H_
