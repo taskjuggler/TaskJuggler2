@@ -1766,11 +1766,30 @@ ProjectFile::readResourceBody(Resource* r)
 
     while ((tt = nextToken(token)) != RBRACE)
     {
+        QString next;
+        TokenType nextTT;
         if (tt != ID)
         {
             errorMessage(i18n("Unknown attribute '%1'").arg(token));
             return FALSE;
         }
+        if ((nextTT = nextToken(next)) == COLON)
+        {
+            int sc;
+            if ((sc = proj->getScenarioIndex(token)) < 1)
+            {
+                errorMessage(i18n("Scenario ID expected. '%1' is not "
+                                  "a defined scenario.").arg(token));
+                return FALSE;
+            }
+            tt = nextToken(token);
+            if (readResourceScenarioAttribute(token, r, sc - 1, TRUE) < 1)
+                return FALSE;
+            continue;
+        }
+        else
+            returnToken(nextTT, next);
+        
         if (proj->getResourceAttribute(token))
         {
             if (!readCustomAttribute(r, token,
@@ -1778,6 +1797,8 @@ ProjectFile::readResourceBody(Resource* r)
                                      getType()))
                 return FALSE;
         }
+        else if ((readResourceScenarioAttribute(token, r, 0, FALSE)) > 0)
+            ;   // intentionally empty statement
         else if (token == KW("resource"))
         {
             if (!readResource(r))
@@ -1858,30 +1879,6 @@ ProjectFile::readResourceBody(Resource* r)
                 return FALSE;
             }
         }
-        else if (token == KW("planbooking"))
-        {
-            Booking* b;
-            if ((b = readBooking()) == 0)
-                return FALSE;
-            if (!r->addBooking(Task::Plan, b))
-            {
-                errorMessage(i18n("Resource %1 cannot be allocated during this "
-                                  "period").arg(r->getId()));
-                return FALSE;
-            }
-        }
-        else if (token == KW("actualbooking"))
-        {
-            Booking* b;
-            if ((b = readBooking()) == 0)
-                return FALSE;
-            if (!r->addBooking(Task::Actual, b))
-            {
-                errorMessage(i18n("Resource %1 cannot be allocated during this "
-                                  "period").arg(r->getId()));
-                return FALSE;
-            }
-        }
         else if (token == KW("flags"))
         {
             for ( ; ; )
@@ -1914,6 +1911,35 @@ ProjectFile::readResourceBody(Resource* r)
     }
 
     return TRUE;
+}
+
+int
+ProjectFile::readResourceScenarioAttribute(const QString attribute, 
+                                           Resource* resource,
+                                           int sc, bool enforce)
+{
+    if (attribute == KW("booking"))
+    {
+        Booking* b;
+        if ((b = readBooking()) == 0)
+            return FALSE;
+        if (!resource->addBooking(sc, b))
+        {
+            errorMessage(i18n("Resource %1 cannot be allocated during this "
+                              "period").arg(resource->getId()));
+            return FALSE;
+        }
+    }
+    else if (enforce)
+    {
+        // Only if the enforce flag is set an unknown attribute is an error.
+        errorMessage(i18n("Scenario specific resource attribute expected."));
+        return -1;
+    }
+    else
+        return 0;
+
+    return 1;
 }
 
 bool
@@ -2242,6 +2268,10 @@ ProjectFile::readAllocate(Task* t)
             {
                 a->setPersistent(TRUE);
             }
+            else if (token == KW("mandatory"))
+            {
+                a->setMandatory(TRUE);
+            }
             else if (token == KW("alternative"))
             {
                 do
@@ -2332,9 +2362,11 @@ ProjectFile::readTimeFrame(double& value, bool workingDays)
         return FALSE;
     }
     if (unit == KW("min"))
-        value = val.toDouble() / (proj->getDailyWorkingHours() * 60);
+        value = val.toDouble() / 
+            (workingDays ? proj->getDailyWorkingHours() * 60 : 24 * 60);
     else if (unit == KW("h"))
-        value = val.toDouble() / proj->getDailyWorkingHours();
+        value = val.toDouble() / 
+            (workingDays ? proj->getDailyWorkingHours() : 24);
     else if (unit == KW("d"))
         value = val.toDouble();
     else if (unit == KW("w"))
@@ -2808,6 +2840,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     return FALSE;
                 }
             }
+            else if (token == KW("notimestamp"))
+            {
+                report->setTimeStamp(FALSE);
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
@@ -3024,6 +3060,10 @@ ProjectFile::readExportReport()
                         break;
                     }
                 }
+            }
+            else if (token == KW("notimestamp"))
+            {
+                report->setTimeStamp(FALSE);
             }
             else
             {

@@ -1,6 +1,5 @@
 For 1.9.0:
 - Save user-defined attributes to XML.
-- Implement 'mandatory' attribute for task allocations.
 - Document optional column attributes
 
 For 1.9.1:

@@ -443,6 +443,9 @@ for details.</para></listitem>
 linkend="project_extend">user-defined attributes</link> has been
 added.</para></listitem>
 
+<listitem><para>Resource allocations can now be made <link
+linkend="task_allocate_mandatory">mandatory</link>.</para></listitem>
+
 <listitem><para>The format of numbers and currency values can now be
 specified with <link
 linkend="project_numberformat">numberformat</link> and <link

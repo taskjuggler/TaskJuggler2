@@ -198,6 +198,7 @@ task container4 "Container4" {
 
 htmltaskreport "TaskMix3.html" {
 	columns id, name, start, end, daily
+	notimestamp
 }
 
 export "TaskMix3-Export.tjsp" {
@@ -205,5 +206,6 @@ export "TaskMix3-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 

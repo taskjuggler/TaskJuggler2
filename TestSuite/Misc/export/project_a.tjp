@@ -59,10 +59,12 @@ htmltaskreport "project_a.html" {
 	columns name, start, end, daily
 	sorttasks nameup
 	hideresource 0
+	notimestamp
 }
 
 htmlresourcereport "project_a_res.html" {
 	columns name, daily
   hidetask 0
 	sorttasks nameup
+	notimestamp
 }

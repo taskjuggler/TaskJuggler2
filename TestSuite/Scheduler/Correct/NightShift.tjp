@@ -136,12 +136,14 @@ htmltaskreport "NightShift.html" {
   columns no, name, start, end, daily
 	loadunit hours
 	hideresource 0
+	notimestamp
 }
 
 htmlweeklycalendar "NightShiftTimes.html" {
 	columns name, schedule
 	hidetask 1
 	hideresource 0
+	notimestamp
 }
 
 export "NightShift-Export.tjsp" {
@@ -149,5 +151,6 @@ export "NightShift-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 

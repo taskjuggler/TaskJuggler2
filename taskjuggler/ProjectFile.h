@@ -123,6 +123,8 @@ private:
     bool readResource(Resource* parent);
     bool readResourceSupplement();
     bool readResourceBody(Resource* r);
+    int readResourceScenarioAttribute(const QString attribute, Resource* t,
+                                      int sc, bool enforce);
     bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
                       QString* = 0);
     bool readAccount(Account* parent);

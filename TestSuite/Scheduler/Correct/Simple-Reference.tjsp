@@ -1,12 +1,15 @@
+/* For details about TaskJuggler see 
+ * http://www.taskjuggler.org
+ */
 task t1 "Task1" {
   start 2000-01-01-00:00:00-+0000
-  end 2000-01-04-00:00:00-+0000
+  end 2000-01-03-18:00:00-+0000
   scheduled
   projectid simple
 }
 task t2 "Task2" {
-  start 2000-01-04-00:00:00-+0000
-  end 2000-01-05-00:00:00-+0000
+  start 2000-01-03-18:00:00-+0000
+  end 2000-01-04-18:00:00-+0000
   scheduled
   projectid simple
   depends t1
@@ -19,7 +22,7 @@ task t4.t5 "Task5" {
 }
 task t4.t5.t6 "Task6" {
   start 2000-01-05-00:00:00-+0000
-  end 2000-01-12-00:00:00-+0000
+  end 2000-01-11-18:00:00-+0000
   scheduled
   projectid simple
 }
@@ -37,7 +40,7 @@ task t7.t8 "Task8" {
   projectid simple
 }
 task t7.t8.t9 "Task8" {
-  start 2000-01-10-00:00:00-+0000
+  start 2000-01-10-09:00:00-+0000
   end 2000-01-15-00:00:00-+0000
   scheduled
   projectid simple
@@ -61,6 +64,6 @@ supplement task t7.t8 {
 supplement task t7.t8.t9 {
 }
 supplement resource tux {
-  planbooking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3
-  planbooking 2000-01-05-13:00:00-+0000 2000-01-05-18:00:00-+0000 t3
+  plan:booking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3
+  plan:booking 2000-01-05-13:00:00-+0000 2000-01-05-18:00:00-+0000 t3
 }

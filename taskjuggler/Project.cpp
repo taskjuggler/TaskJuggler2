@@ -308,6 +308,22 @@ Project::isWorkingDay(time_t d) const
              isVacation(d));
 }
 
+bool
+Project::isWorkingTime(const Interval& iv) const
+{
+    if (isVacation(iv.getStart()))
+        return FALSE;
+
+    int dow = dayOfWeek(iv.getStart(), FALSE);
+    for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
+    {
+        if ((*ili)->contains(Interval(secondsOfDay(iv.getStart()),
+                                  secondsOfDay(iv.getEnd()))))
+            return TRUE;
+    }
+    return FALSE;
+}
+
 int
 Project::calcWorkingDays(const Interval& iv) const
 {

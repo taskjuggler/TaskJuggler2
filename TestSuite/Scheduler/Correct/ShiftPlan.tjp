@@ -84,16 +84,19 @@ task t3 "Network Support" {
 htmltaskreport "ShiftPlan.html" {
 	columns name, start, end, effort, daily
 	hideresource 0
+	notimestamp
 }
 
 htmlresourcereport "ShiftPlanResources.html" {
 	columns name, daily, effort
+	notimestamp
 }
 
 htmlresourcereport "ShiftTimes.html" {
 	columns name, schedule
 	start 2002-06-03
 	end 2002-06-30
+	notimestamp
 }
 
 export "ShiftPlan-Export.tjsp" {
@@ -101,4 +104,5 @@ export "ShiftPlan-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }

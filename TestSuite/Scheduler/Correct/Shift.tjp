@@ -30,6 +30,7 @@ task t1 "Task1" {
 
 htmltaskreport "Shift.html" {
   columns no, name, start, end, daily
+	notimestamp
 }
 
 export "Shift-Export.tjsp" {
@@ -37,5 +38,6 @@ export "Shift-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 

@@ -27,11 +27,12 @@
 */
 
 Allocation::Allocation(Resource *r) :
-    load(100), persistent(FALSE), lockedResource(0)
+    load(100), lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
     candidates.append(r);
     selectionMode = order;
+    persistent = mandatory = FALSE;
 }
 
 Allocation::Allocation(const Allocation& a)
@@ -40,6 +41,7 @@ Allocation::Allocation(const Allocation& a)
 
     load = a.load;
     persistent = a.persistent;
+    mandatory = a.mandatory;
     lockedResource = a.lockedResource;
     selectionMode = a.selectionMode;
     

@@ -80,8 +80,10 @@ export "Team-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 
 htmltaskreport "Team.html" {
 	columns name, start, end, daily
+	notimestamp
 }

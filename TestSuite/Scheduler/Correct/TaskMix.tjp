@@ -101,6 +101,7 @@ task t12 "|<-|M2" {
 
 htmltaskreport "TaskMix.html" {
 	columns name, start, end, daily
+	notimestamp
 }
 
 export "TaskMix-Export.tjsp" {
@@ -108,5 +109,6 @@ export "TaskMix-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 

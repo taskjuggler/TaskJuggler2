@@ -138,6 +138,15 @@ public:
                            rollUpExp) const;
     void sortAccountList(AccountList& filteredList);
 
+    void setTimeStamp(bool t)
+    {
+        timeStamp = t;
+    }
+    bool getTimeStamp() const
+    {
+        return timeStamp;
+    }
+
 protected:
     Report() { }
 
@@ -202,6 +211,8 @@ protected:
     LoadUnit loadUnit;
 
     bool showPIDs;
+
+    bool timeStamp;
 } ;
 
 #endif

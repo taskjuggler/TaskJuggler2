@@ -295,8 +295,8 @@ Task::schedule(time_t& date, time_t slotDuration)
             bookResources(date, slotDuration);
 
         doneDuration += ((double) slotDuration) / ONEDAY;
-        if (project->isWorkingDay(date))
-            doneLength += ((double) slotDuration) / ONEDAY;
+        if (project->isWorkingTime(Interval(date, date + slotDuration - 1)))
+            doneLength += project->convertToDailyLoad(slotDuration);
 
         if (DEBUGTS(10))
             qDebug("Length: %f/%f   Duration: %f/%f",
@@ -602,9 +602,51 @@ Task::bookResources(time_t date, time_t slotDuration)
         return FALSE;
     }
 
+    /* If any of the resources is marked as being mandatory, we have to check
+     * if this resource is available. In case it's not available we do not
+     * allocate any of the other resources for the time slot. */
+    bool allMandatoriesAvailables = TRUE;
+    for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
+        if ((*ali)->isMandatory())
+        {
+            if (!(*ali)->isOnShift(Interval(date, date + slotDuration - 1)))
+            {
+                allMandatoriesAvailables = FALSE;
+                break;
+            }
+            if ((*ali)->isPersistent() && (*ali)->getLockedResource())
+            {
+                if (!(*ali)->getLockedResource()->
+                    isAvailable(date, slotDuration, (*ali)->getLoad(), this))
+                {
+                    allMandatoriesAvailables = FALSE;
+                    break;
+                }
+            }
+            else
+            {
+                bool found = FALSE;
+                QPtrList<Resource> candidates = (*ali)->getCandidates();
+                for (QPtrListIterator<Resource> rli(candidates); 
+                     *rli && !found; ++rli)
+                    for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
+                        if ((*rti)->isAvailable(date, slotDuration,
+                                                (*ali)->getLoad(), this))
+                        {
+                            found = TRUE;
+                            break;
+                        }
+                if (!found)
+                {
+                    allMandatoriesAvailables = FALSE;
+                    break;
+                }
+            }
+        }
+        
     for (QPtrListIterator<Allocation> ali(allocations);
-         *ali != 0 && (effort == 0.0 || doneEffort < effort);
-         ++ali)
+         *ali != 0 && allMandatoriesAvailables &&
+         (effort == 0.0 || doneEffort < effort); ++ali)
     {
         /* If a shift has been defined for a resource for this task, there
          * must be a shift interval defined for this day and the time must

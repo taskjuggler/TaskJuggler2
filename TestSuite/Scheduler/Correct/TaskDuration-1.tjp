@@ -1,0 +1,211 @@
+project test "Task Duration" "$Id$" 2003-06-20-0:00-GMT 2003-07-30-0:00-GMT {
+	timezone "GMT"
+}
+
+resource rl0 "R0"
+resource rl1 "R1"
+resource rl2 "R2"
+resource rl3 "R3"
+resource rl4 "R4"
+resource rl5 "R5"
+resource rl6 "R6"
+resource rl7 "R7"
+resource rd0 "R0"
+resource rd1 "R1"
+resource rd2 "R2"
+resource rd3 "R3"
+resource rd4 "R4"
+resource rd5 "R5"
+resource rd6 "R6"
+resource rd7 "R7"
+resource re0 "R0"
+resource re1 "R1"
+resource re2 "R2"
+resource re3 "R3"
+resource re4 "R4"
+resource re5 "R5"
+resource re6 "R6"
+resource re7 "R7"
+
+task l "Length Tasks" {
+	start 2003-06-20
+
+	task t0 "180 min" {
+	  length 180min
+	}
+	task t1 "4 Hours" {
+		length 4h
+	}
+	task t2 "12 Hours" {
+		length 12h
+	}
+	task t3 "1.5 Days" {
+		length 1.5d
+	}
+	task t4 "5 Days" {
+		length 5d
+	}
+	task t5 "1 Week" {
+		length 1w
+	}
+	task t6 "2.5 Weeks" {
+		length 2.5w
+	}
+	task t7 "1 Month" {
+		length 1m
+	}
+}
+
+task la "Length Tasks with allocation" {
+	start 2003-06-20
+	
+	task t0 "180 min" {
+	  length 180min
+		allocate rl0
+	}
+	task t1 "4 Hours" {
+		length 4h
+		allocate rl1
+	}
+	task t2 "12 Hours" {
+		length 12h
+		allocate rl2
+	}
+	task t3 "1.5 Days" {
+		length 1.5d
+		allocate rl3
+	}
+	task t4 "5 Days" {
+		length 5d
+		allocate rl4
+	}
+	task t5 "1 Week" {
+		length 1w
+		allocate rl5
+	}
+	task t6 "2.5 Weeks" {
+		length 2.5w
+		allocate rl6
+	}
+	task t7 "1 Month" {
+		length 1m
+		allocate rl7
+	}
+}
+
+task d "Duration Tasks" {
+	start 2003-06-20
+	
+	task t0 "180 min" {
+		duration 180 min
+	}
+	task t1 "4 Hours" {
+		duration 4h
+	}
+	task t2 "12 Hours" {
+		duration 12h
+	}
+	task t3 "1.5 Days" {
+		duration 1.5d
+	}
+	task t4 "5 Days" {
+		duration 5d
+	}
+	task t5 "1 Week" {
+		duration 1w
+	}
+	task t6 "2.5 Weeks" {
+		duration 2.5w
+	}
+	task t7 "1 Month" {
+		duration 1m
+	}
+}
+
+task da "Duration Tasks with Allocation" {
+	start 2003-06-20
+	
+	task t0 "180 min" {
+		duration 180 min
+		allocate rd0
+	}
+	task t1 "4 Hours" {
+		duration 4h
+		allocate rd1
+	}
+	task t2 "12 Hours" {
+		duration 12h
+		allocate rd2
+	}
+	task t3 "1.5 Days" {
+		duration 1.5d
+		allocate rd3
+	}
+	task t4 "5 Days" {
+		duration 5d
+		allocate rd4
+	}
+	task t5 "1 Week" {
+		duration 1w
+		allocate rd5
+	}
+	task t6 "2.5 Weeks" {
+		duration 2.5w
+		allocate rd6
+	}
+	task t7 "1 Month" {
+		duration 1m
+		allocate rd7
+	}
+}
+
+task e "Effort Tasks" {
+	start 2003-06-20
+	
+	task t0 "180 min" {
+		effort 180 min
+		allocate re0
+	}
+	task t1 "4 Hours" {
+		effort 4h
+		allocate re1
+	}
+	task t2 "12 Hours" {
+		effort 12h
+		allocate re2
+	}
+	task t3 "1.5 Days" {
+		effort 1.5d
+		allocate re3
+	}
+	task t4 "5 Days" {
+		effort 5d
+		allocate re4
+	}
+	task t5 "1 Week" {
+		effort 1w
+		allocate re5
+	}
+	task t6 "2.5 Weeks" {
+		effort 2.5w
+		allocate re6
+	}
+	task t7 "1 Month" {
+		effort 1m
+		allocate re7
+	}
+}
+
+htmltaskreport "TaskDuration-1.html" {
+	columns name, start, end, duration, effort, daily
+	notimestamp
+}
+
+export "TaskDuration-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+	notimestamp
+}
+

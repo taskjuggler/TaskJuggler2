@@ -1,20 +1,23 @@
+/* For details about TaskJuggler see 
+ * http://www.taskjuggler.org
+ */
 task t1 "|->" {
   start 2003-01-06-00:00:00-+0000
-  end 2003-01-11-00:00:00-+0000
+  end 2003-01-10-18:00:00-+0000
   scheduled
   projectid prj
 }
 task m8 "-D M -" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-11-00:00:00-+0000
+  start 2003-01-10-18:00:00-+0000
+  end 2003-01-10-18:00:00-+0000
   scheduled
   projectid prj
   milestone 
   depends t1
 }
 task m10_asap "-D M -D (ASAP)" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-11-00:00:00-+0000
+  start 2003-01-10-18:00:00-+0000
+  end 2003-01-10-18:00:00-+0000
   scheduled
   projectid prj
   milestone 
@@ -81,22 +84,22 @@ task m11 "-D M |D" {
   depends t1
 }
 task m6 "- M -D" {
-  start 2003-01-20-00:00:00-+0000
-  end 2003-01-20-00:00:00-+0000
+  start 2003-01-20-09:00:00-+0000
+  end 2003-01-20-09:00:00-+0000
   scheduled
   projectid prj
   milestone 
 }
 task m10_alap "-D M -D (ALAP)" {
-  start 2003-01-20-00:00:00-+0000
-  end 2003-01-20-00:00:00-+0000
+  start 2003-01-20-09:00:00-+0000
+  end 2003-01-20-09:00:00-+0000
   scheduled
   projectid prj
   milestone 
   depends t1
 }
 task t2 "<-|" {
-  start 2003-01-20-00:00:00-+0000
+  start 2003-01-20-09:00:00-+0000
   end 2003-01-27-00:00:00-+0000
   scheduled
   projectid prj

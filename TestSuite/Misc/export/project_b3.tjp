@@ -8,12 +8,14 @@ htmltaskreport "project_b3.html" {
 	columns name, start, end, daily
 	sorttasks nameup
 	hideresource 0
+	notimestamp
 }
 
 htmlresourcereport "project_b3_res.html" {
 	columns name, daily
 	hidetask 0
 	sorttasks nameup
+	notimestamp
 }
 
 export "project_b3_export.tjsp" {

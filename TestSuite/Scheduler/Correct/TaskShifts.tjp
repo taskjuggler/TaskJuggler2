@@ -47,6 +47,7 @@ task t2 "Task2" {
 }
 htmltaskreport "TaskShifts.html" {
 	columns no, name, start, end, daily
+	notimestamp
 }
 
 export "TaskShifts-Export.tjsp" {
@@ -54,6 +55,7 @@ export "TaskShifts-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 
 

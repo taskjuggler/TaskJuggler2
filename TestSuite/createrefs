@@ -17,8 +17,8 @@ for f in *.tjp ; do
   exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjsp/g`
   $TASKJUGGLER $f
   if [ -f $exportFile ] ; then
-    rm -f $referenceFile
-    sed "1,4d" $exportFile > $referenceFile
+    mv -f $exportFile $referenceFile
+#    sed "1,4d" $exportFile > $referenceFile
     echo $referenceFile created
   fi
   rm -f *.html

@@ -245,6 +245,12 @@ public:
     bool isWorkingDay(time_t d) const;
     
     /**
+     * If the interval overlaps with a vacation day or the interval is outside
+     * of the defined working hours, FALSE is returned. Otherwise TRUE.
+     */
+    bool isWorkingTime(const Interval& iv) const;
+
+    /**
      * Returns the number of working days that overlap with the specified
      * interval.
      */
@@ -776,7 +782,7 @@ private:
     double yearlyWorkingDays;
 
     /* The list of standard working or opening hours. These values will be
-     * inherited by the resources. */
+     * inherited by the resources as default working hours. */
     QPtrList<Interval>* workingHours[7];
     
     /**

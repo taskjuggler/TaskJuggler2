@@ -33,6 +33,9 @@ public:
     void setPersistent(bool p) { persistent = p; }
     bool isPersistent() const { return persistent; }
 
+    void setMandatory(bool m) { mandatory = m; }
+    bool isMandatory() const { return mandatory; }
+
     void setLockedResource(Resource* r) { lockedResource = r; }
     Resource* getLockedResource() const { return lockedResource; }
 
@@ -75,6 +78,14 @@ private:
     * If set the first selection will not be changed even if there is an
     * available alternative. */
    bool persistent;
+
+   /**
+    * True if the resource is mandatory. This means, that only if this
+    * allocation can be made, all other allocations will be made. If this
+    * allocation cannot be made for a time slot, no other allocations will be
+    * made for the task.
+    */
+   bool mandatory;
 
    /// The persintent resource picked by the scheduler.
    Resource* lockedResource;

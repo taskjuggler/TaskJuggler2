@@ -234,6 +234,7 @@ task c30 "-D <-- |D" {
 
 htmltaskreport "TaskMix2.html" {
 	columns id, name, start, end, daily
+	notimestamp
 }
 
 export "TaskMix2-Export.tjsp" {
@@ -241,5 +242,6 @@ export "TaskMix2-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 

@@ -2296,6 +2296,15 @@ used per day for this task. A load of 0.5 means that the resource will
 be used for at most half a working day for this task.</para>
 
 </sect3>
+<sect3 id="task_allocate_mandatory"><title>mandatory</title>
+
+<para>If an allocation for a task is marked as being mandatory, no
+allocations are booked for the time slots where any of the mandatory
+resources are not available. If the mandatory resource is a group,
+then at least one of the resources of the group must be available, not
+all resources.</para>
+
+</sect3>
 <sect3 id="task_allocate_select"><title>select
 &lt;criteria&gt;</title>
 

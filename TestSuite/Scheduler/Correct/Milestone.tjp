@@ -108,6 +108,7 @@ task m11 "-D M |D" {
 
 htmltaskreport "Milestone.html" {
 	columns id, name, start, end, daily
+	notimestamp
 }
 
 export "Milestone-Export.tjsp" {
@@ -115,5 +116,6 @@ export "Milestone-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 

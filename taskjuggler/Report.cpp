@@ -59,6 +59,8 @@ Report::Report(const Project* p, const QString& f, const QString& df, int dl) :
 
     loadUnit = days;
 
+    timeStamp = TRUE;
+
     maxDepthTaskList = 1;
     maxDepthResourceList = 1;
     maxDepthAccountList = 1;

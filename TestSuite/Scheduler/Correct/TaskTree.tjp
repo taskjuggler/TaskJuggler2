@@ -24,6 +24,7 @@ task t3 "Task3" {
 
 htmltaskreport "TaskTree.html" {
 	columns name, start, end, daily
+	notimestamp
 }
 
 export "TaskTree-Export.tjsp" {
@@ -31,5 +32,6 @@ export "TaskTree-Export.tjsp" {
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
+	notimestamp
 }
 
