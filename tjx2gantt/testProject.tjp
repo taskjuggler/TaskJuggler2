@@ -1,4 +1,4 @@
-project testProject  "testProject for xml2gantt" "$Id$" 2002-04-15 2002-10-01
+project testProject  "testProject for tjx2gantt" "$Id$" 2002-04-15 2002-10-01
 
 rate 0.330
 currency "KEUR"
@@ -20,7 +20,7 @@ macro __worker [
 ]
 
 #-- tasks
-task testProject "testProject for xml2gantt" {
+task testProject "testProject for tjx2gantt" {
     priority 500
     task start "Start of Development" {
         start 2002-05-01
@@ -33,12 +33,14 @@ task testProject "testProject for xml2gantt" {
             length 7d
             complete 100
             ${__worker}
+            startbuffer 10
             depends !!start
         }
         task dev_2 "Devel-Job 2" {
             length 13d
             complete 90
             ${__worker}
+            endbuffer 10
             depends !dev_1
         }
         task dev_21 "Devel-Job 2.1" {
@@ -51,6 +53,7 @@ task testProject "testProject for xml2gantt" {
             length 23d
             complete 35
             ${__worker}
+            endbuffer 5
             depends !dev_2
         }
         task dev_4 "Devel-Job 4" {
@@ -102,5 +105,5 @@ task testProject "testProject for xml2gantt" {
 }
 
 #-- export xml-file
-xmltaskreport "testProject.xml"
+xmlreport "testProject.tjx"
 

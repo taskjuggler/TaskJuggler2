@@ -852,7 +852,15 @@ ProjectFile::parse()
 			}
 			else if (token == KW("xmltaskreport"))
 			{
-			   if( !readXMLTaskReport())
+				fatalError("The keyword 'xmltaskreport' is deprecated. Please "
+						   "use the keyword 'xmlreport' instead.");
+				if(!readXMLReport())
+					return FALSE;
+				break;
+			}
+			else if (token == KW("xmlreport"))
+			{
+			   if(!readXMLReport())
 			      return FALSE;
 			   break;
 			}
@@ -2479,7 +2487,7 @@ ProjectFile::readICalTaskReport()
 #endif
 
 bool
-ProjectFile::readXMLTaskReport()
+ProjectFile::readXMLReport()
 {
    QString token;
    if (nextToken(token) != STRING)

@@ -2,7 +2,7 @@
 !!!  This Software is __APLHA__  !!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-xml2gantt.pl - gantt chart generator for TaskJuggler
+tjx2gantt.pl - gantt chart generator for TaskJuggler
 
 
 required
@@ -29,7 +29,7 @@ required
 
 usage
 
-    xml2gantt.pl export_from_taskjuggler.xml
+    tjx2gantt.pl xml_export_from_taskjuggler.tjx
 
 
 output
@@ -38,7 +38,7 @@ output
 
     <project name>.eps              big gantt on one page
     <project name>_poster.eps       big gantt on multiple page (a4) poster,
-                                    ready for printing (require Poster)
+                                    ready for printing (requires poster utility)
 
 
 

@@ -28,7 +28,9 @@ task project1 "First Project" {
 
 # Create the export file.
 export "Project1-Interface.tjsp" {
-	hidetask ~interface
+  taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+	hideresource 0
 }
 
 htmltaskreport "Project1.html" {

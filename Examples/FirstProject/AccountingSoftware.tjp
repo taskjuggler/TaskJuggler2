@@ -5,7 +5,7 @@
  * TaskJuggler. Please see the TaskJuggler manual for a more detailed
  * description of the various syntax elements.
  */
-project fibu "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
+project acso "Accounting Software" "$Id" 2002-01-16 2002-04-26 {
   # Pick a day during the project that will be reported as 'today' in
 	# the project reports. If not specified the current day will be
 	# used, but this will likely be ouside of the project range, so it
@@ -30,8 +30,8 @@ flags team
 
 resource dev "Developers" {
   resource dev1 "Paul Smith" { rate 330.0 }
-  resource dev2 "Larry Bono"
-  resource dev3 "Klaus Mueller" { vacation 2002-02-01 - 2002-02-05 }
+  resource dev2 "Sébastien Bono"
+  resource dev3 "Klaus Müller" { vacation 2002-02-01 - 2002-02-05 }
 
 	flags team
 }
@@ -219,6 +219,8 @@ rawhead
 		<a href="Staff-Details.html">Staff Details</td>
 	  <td class="default" style="font-size:120%" rowspan="2">
 		<a href="Accounting.html">Accounting</td>
+	  <td class="default" style="font-size:120%" rowspan="2">
+		<a href="acso.eps">GANTT Chart (Postscript)</td>
 	</tr>
   </table>
   </center></p><br>'
@@ -226,7 +228,7 @@ rawhead
 
 # As the first report, we would like to have a general overview of all
 # tasks with their computed start and end dates. For better
-# readability we include a calender like column that lists the effort
+# readability we include a calendar like column that lists the effort
 # for each week.
 htmltaskreport "Tasks-Overview.html" {
 	# This report should contain the navigation bar we have declared
@@ -242,44 +244,72 @@ htmltaskreport "Tasks-Overview.html" {
 	All values are man-days."
 }
 
+# Now a more detailed report that shows all jobs and the people
+# assigned to the tasks. It also features a comparison of the plan and
+# actual scenario.
 htmltaskreport "Tasks-Details.html" {
 	${navbar}
+	# Now we use a daily calendar.
   columns no, name, start, end, daily
 	headline "Accounting Software Project"
 	caption "This table shows the load of each day for all the tasks.
 	Additionally the resources used for each task are listed. Since the
 	project start was delayed, the actual schedule differs significantly
 	from the original plan."
+	# Don't hide any resources, that is show them all.
   hideresource 0
+	# And show the actual scenario values as well.
   showactual
 }
 
+# The previous report listed the resources per task. Now we generate a
+# report the lists tasks per resource.
 htmlresourcereport "Staff-Overview.html" {
 	${navbar}
+	# Add a column with the total effort per task.
   columns no, name, weekly, effort
 	showactual
+	# Since we want to see the load values as hours per week, we switch
+	# the unit loads are reported in to hours.
 	loadunit hours
 	headline "Weekly working hours for the Accounting Software Project"
 }
 
+# Now a report similar to the above one but with much more details.
 htmlresourcereport "Staff-Details.html" {
 	${navbar}
   columns name, daily, effort
 	showactual
 	hidetask 0
+	# The teams are virtual resources that we don't want to see. Since
+	# we have assigned a flag to those virtual resource, we can just
+	# hide them.
 	hideresource team
+	# We also like to have the report sorted alphabetically ascending by
+	# resource name.
 	sortresources nameup
 	loadunit hours
-	headline "Weekly working hours for the Accounting Software Project"
+	headline "Daily working hours for the Accounting Software Project"
 }
 
-htmlaccountreport "Accounting.html" {
-	${navbar}
-  columns no, name, total, monthly
-	headline "P&L for the Accounting Software Project"
-	caption "The table shows the profit and loss analysis as well as the
-	cashflow situation of the Accounting Software Project."
-  accumulate
-  showactual
-}
+# To conclude the HTML reports a report that shows how badly the
+# project is calculated.  The company won't get rich with this
+# project. Due to the slip, it actually needs some money from the bank
+# to pay the salaries.
+htmlaccountreport "Accounting.html" { ${navbar}
+	# Besides the number of the account and the name we have a column
+	# with the total values (at the end of the project) and the values
+	# for each month of the project.
+	columns no, name, total, monthly headline "P&L for the Accounting
+	Software Project" caption "The table shows the profit and loss
+	analysis as well as the cashflow situation of the Accounting
+	Software Project."
+	# Since this is a cashflow calculation we show accumulated values
+	# per account.
+	accumulate showactual }
+
+# Finally we generate an XML report that contains all info about the
+# scheduled project. This will be used by tjx2gantt to create a nice
+# GANTT chart of our project.
+xmlreport "AccountingSoftware.tjx"
 

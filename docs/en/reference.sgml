@@ -1809,6 +1809,14 @@ planned and actual dates.</para>
 linkend="task_actualstart">actualstart</link></para>
 
 </sect2>
+<sect2 id="task_actualscheduled"><title>actualscheduled</title>
+
+<para> This marks the task as being scheduled for the actual scenario.
+If this attribute is specified, the task must have a fixed actual
+start and end date. It's primerly intended for internal use only.
+</para>
+
+</sect2>
 <sect2 id="task_actualstart"><title>actualstart &lt;date&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -1924,7 +1932,6 @@ its specified alternatives will be used for the entire task.</para>
 
 </sect3>
 </sect2>
-
 <sect2 id="task_complete"><title>complete &lt;percent&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -2123,6 +2130,14 @@ met, the task is marked in the task list.</para>
 <para>See also: <link linkend="task_minstart">minstart</link></para>
 
 </sect2>
+<sect2 id="task_milestone"><title>milestone</title>
+
+<para> Marks the task as a milestone. A milestone may not have any
+form of duration criteria. If both a start and an end value are
+specified, they have to be identical. A milestone may not have sub
+tasks.</para>
+
+</sect2>
 <sect2 id="task_minend"><title>minend &lt;date&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -2156,6 +2171,13 @@ be met, the task is marked in the task list.</para>
 </simplelist></para>
 
 <para>A longer description of the task.</para>
+
+</sect2>
+<sect2 id="task_planscheduled"><title>planscheduled</title>
+
+<para> This marks the task as being scheduled for the plan scenario.
+If this attribute is specified, the task must have a fixed plan start and
+end date. It's primerly intended for internal use only. </para>
 
 </sect2>
 <sect2 id="task_preceeds"><title>preceeds
@@ -2372,14 +2394,14 @@ a day, the daily load is 1.5. Change this value with care as it
 affects many internal calculations.</para>
 
 </sect1>
-<sect1 id="xmltaskreport"><title>xmltaskreport &lt;filename&gt;</title>
+<sect1 id="xmlreport"><title>xmlreport &lt;filename&gt;</title>
 
 <para><simplelist type=horiz columns=2>
 <member>filename:</member><member><link
 linkend="string">STRING</link></member>
 </simplelist></para>
 
-<para>Creates a xml task report to the given file. Note that this is still
+<para>Creates a xml report of the scheduled project. Note that this is still
 experimental. The format might change in future releases.</para>
 
 </sect1>

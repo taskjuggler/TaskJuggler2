@@ -2,14 +2,12 @@
 # Chris Schlaeger <cs@suse.de>
 # Klaas Freitag <freitag@suse.de>
 # Stephan Kulow <coolo@kde.org>
+# $Id
 #
 COMPILE_FIRST = taskjuggler
 
 EXTRA_DIST = taskjuggler.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO taskjuggler.lsm 
 
-####### kdevelop will overwrite this part!!! (end)############
-# not a GNU package. You can remove this line, if 
-# have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 
 
 $(top_srcdir)/configure.in: $(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.files $(shell test -f $(top_srcdir)/configure.files && sed -e "s%^%\$(top_srcdir)/%" $(top_srcdir)/configure.files) $(top_srcdir)/subdirs

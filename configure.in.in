@@ -29,6 +29,7 @@ else
    DO_NOT_COMPILE="Examples ktjview Contrib"
 fi
 
+AC_CHECK_PROG(SGML2HTML, sgml2html, sgml2html, no)
 AC_CHECK_PROG(DB2HTML, db2html, db2html, no)
 AC_CHECK_PROG(DB2PS, db2ps, db2ps, no)
 AC_CHECK_PROG(JADE, jade, jade, no)

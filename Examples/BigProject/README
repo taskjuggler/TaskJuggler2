@@ -5,17 +5,10 @@ the other project (project2). So project2 can reference tasks from
 project1 without knowing all the details and without the need to
 combine both project into one mega project.
 
-There are a few things to watch though. Project1 and Project2 share a
-common resource pool. Since the projects are scheduled seperately from
-each other, there is no warning for double-booking of resources. You
-probably want to use distinct groups of people for each project.
-
-Theoretically you can do cyclic includes, but this would require an
-extra amount of care since alternating scheduling runs are not
-guaranteed to result in fixed interface dates. With such situations
-you have no way but to create a super project.
-
-In future versions of taskjuggler we might add support for exporting
-resource scheduling information as well. But there is no way to use
-this with cyclic imports. So better don't use them at all.
+Project1 and Project2 share a common resource pool. The resource
+allocations can be included in the exported files, but the project
+part that is scheduled first, always gets it's resources first. The
+including project then has to live with the remaining free slots. With
+good project and resource partitioning this should be no problem. If
+you can't take that route, you have to take the mega project approach.
 

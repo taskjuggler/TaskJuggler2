@@ -425,6 +425,17 @@ generate weekly calendars.</para></listitem>
 now configurable via <link linkend="project_timeformat"> timeformat 
 </link></para></listitem>
 
+<listitem><para>The keyword <computeroutput> xmltaskreport
+</computeroutput> is now deprecated. It has been replaced by <link
+linkend="xmlreport"> xmlreport </link>. The rest of the syntax
+remains identical. </para></listitem>
+
+<listitem><para>The tool <computeroutput> xml2gantt.pl </computeroutput>
+has been renamed to <computeroutput> tjx2gantt </computeroutput> and
+moved from the contrib directory to the main directory. The tool
+<computeroutput> xml2png </computeroutput> has been
+removed.</para></listitem>
+
 </itemizedlist> </para>
 
 </sect2>

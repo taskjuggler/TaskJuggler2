@@ -4,7 +4,7 @@
 # !!!  This Software is __ALPHA__  !!!
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-# xml2gantt.pl - gantt chart generator for TaskJuggler
+# tjx2gantt - gantt chart generator for TaskJuggler
 #
 # Copyright (c) 2001, 2002 by Remo Behn <ray@suse.de>
 #
@@ -96,7 +96,7 @@ my $project_days    = Delta_Days($p_start_year, $p_start_month, $p_start_day,
                                  $p_end_year, $p_end_month, $p_end_day);
 my ($today_year, $today_month, $today_day) = Today();
 #-- only for test file ;)
-if ( $ARGV[0] eq 'testProject.xml' ) {
+if ( $ARGV[0] eq 'testProject.tjx' ) {
     ($today_year, $today_month, $today_day) = (2002, 05, 30);
 }
 #-- psfile const-settings
@@ -160,7 +160,7 @@ sub _pars_xml {
             exit 128;
         }
     } else {
-        print "no inputfile...\n\n\tUsage: $0 <project.xml>\n\n";
+        print "no inputfile...\n\n\tUsage: $0 <project.tjx>\n\n";
         exit 255;
     }
 

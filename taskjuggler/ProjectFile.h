@@ -181,7 +181,7 @@ private:
 	bool readHTMLReport(const QString& reportType);
 	bool readHTMLAccountReport();
 	bool readExportReport();
-	bool readXMLTaskReport();
+	bool readXMLReport();
 	bool readHtmlUrl(ReportHtml* report);
 #ifdef HAVE_KDE
 	bool readICalTaskReport();

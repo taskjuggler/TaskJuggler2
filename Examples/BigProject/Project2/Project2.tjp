@@ -4,11 +4,14 @@ include "../Common/Resources.tjsp"
 /* This project depends on tasks from project1. So we include a file
  * that contains the fully scheduled tasks from project1 so we can
  * reference these tasks. */
+
+projectid project1
 include "../Project1/Project1-Interface.tjsp"
 
 flags interface
 
 task project2 "Second Project" {
+	projectid project2
 	task task1 "Task 1" {
 		length 12d
 		start 2002-01-16
@@ -31,5 +34,10 @@ task project2 "Second Project" {
 htmltaskreport "Project2.html" {
 	columns no, name, start, end, weekly
 	hideresource 0
+	headline "Combined Projects"
+	caption "This report has been composed out of two projects. The
+	first project has been scheduled independently from the second
+	project. The projects were combined while scheduling the second
+	project."
 }
 
