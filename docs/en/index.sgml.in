@@ -132,6 +132,14 @@ used when calling TaskJuggler from CGI scripts.
 
 </itemize>
 
+<sect2>Next Release
+<p>
+<itemize>
+
+<item>Fixed sorting by ID for all HTML reports.
+
+</itemize>
+
 <sect>Installation
 <p>
 <sect1>Obtaining TaskJuggler 
