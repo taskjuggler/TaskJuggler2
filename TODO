@@ -8,7 +8,7 @@ For 2.0:
 
 After 2.0:
 - Expand env. variables or parameters as macros.
-- Generic HTML report
+- Generic HTML report.
 - Allocation selection by skill set.
 - Add support for flexible rates (per task, per shift)
 - Global cost function driven optimizer.
@@ -16,6 +16,6 @@ After 2.0:
 - Calculate earliest start and latest end.
 - Add support for risk documentation.
 - Cleanup taskjuggler library API, so it can be used by other apps.
-- Color support for tasks and resources
+- Color support for tasks and resources.
 - More general concept of limits per time unit.
 
