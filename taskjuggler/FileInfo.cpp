@@ -310,8 +310,11 @@ FileInfo::nextToken(QString& token)
             // single quoted string
             while ((c = getC()).unicode() != EOFile && c != '\'')
             {
-                if (c == '\n')
+                if ((c == '\n')
+		    && macroStack.isEmpty())
+		{
                     currLine++;
+		}
                 token += c;
             }
             if (c.unicode() == EOFile)
