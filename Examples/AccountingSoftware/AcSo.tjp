@@ -110,10 +110,30 @@ task AcSo "Accounting Software" {
 
     task done "Ship Product to customer" {
       milestone
-      maxend 2002-04-17
+# Uncomment this to trigger a warning that the project is late.
+#      maxend 2002-04-17
       depends !!test.beta, !!manual
       startcredit 20000.0
     }
   }
+}
+
+htmltaskreport "AcSo-Tasks.html" {
+  columns no, name, start, end, daily
+	headline "Accounting Software Project"
+	caption "This table shows the load of each day for all the tasks.
+	Additionally the resources used for each task are listed."
+  hideresource 0
+  showactual
+}
+
+htmlresourcereport "AcSo-Resources.html" {
+  columns no, name, weekly
+}
+
+htmlaccountreport "AcSo-Accounting.html" {
+  columns no, name, total, monthly
+  accumulate
+  showactual
 }
 

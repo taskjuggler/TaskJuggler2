@@ -2,26 +2,36 @@
 
 set errors=0
 
+function do_testing
+{
+  f=$1
+  op=$2
+  echo "Running test $f" >> log
+  ../../taskjuggler/taskjuggler $f 2>> log
+  if [ $? $op 0 ]; then
+    errors=$(( $errors + 1 ))
+    echo "Test $f failed!"
+  fi
+  checkscript=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.sh/g`
+  if [ -x $checkscript ] ; then
+    sh $checkscript
+    if [ $? -ne 0 ] ; then
+      errors=$(( $errors + 1 ))
+      echo "Text $f failed (check script)!"
+    fi
+  fi
+}
+
 rm -f log
 touch log
 
 for f in Correct/*.tjp ; do
-  echo "Running test $f" >> log
-  ../../taskjuggler/taskjuggler $f 2>> log
-  if [ $? -ne 0 ]; then
-    errors=$(( $errors + 1 ))
-    echo "Test $f failed!"
-  fi
+  do_testing $f -ne
 done
-  
+ 
 for f in Errors/*.tjp ; do
-  echo "Running test $f" >> log
-  ../../taskjuggler/taskjuggler $f 2>> log
-  if [ $? -eq 0 ]; then
-    errors=$(( $errors + 1 ))
-    echo "Test $f failed!"
-  fi
+  do_testing $f -eq
 done
-
+ 
 exit $errors
 

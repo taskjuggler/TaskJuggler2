@@ -83,7 +83,9 @@ public:
 	{
 		kotrusId = "";
 	}
-	~Account() { };
+	virtual ~Account() { };
+
+	virtual char* getType() { return "Account"; }
 
 	Account* getParent() { return (Account*) parent; }
 
@@ -92,8 +94,8 @@ public:
 	void setKotrusId(const QString& k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
-	void setType(AccountType at) { acctType = at; }
-	AccountType getType() const { return acctType; }
+	void setAcctType(AccountType at) { acctType = at; }
+	AccountType getAcctType() const { return acctType; }
 
 	void credit(Transaction* t)
 	{

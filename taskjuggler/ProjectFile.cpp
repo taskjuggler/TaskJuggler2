@@ -559,9 +559,14 @@ ProjectFile::parse()
 			else if (token == KW("vacation"))
 			{
 				time_t from, to;
+				bool isResourceVacation;
 				QString name;
-				if (!readVacation(from, to, TRUE, &name))
+				if (!readVacation(from, to, TRUE, &name,
+								  &isResourceVacation))
 					return FALSE;
+				if (isResourceVacation)
+					proj->getResource(name)->addVacation(
+						new Interval(from, to));
 				proj->addVacation(name, from, to);
 				break;
 			}
@@ -841,6 +846,19 @@ ProjectFile::parse()
 				}
 				break;
 			}
+			else if (token == KW("supplement"))
+			{
+				if (nextToken(token) != ID ||
+				   	(token != KW("task") && (token != KW("resource"))))
+				{
+					fatalError("'task' or 'resource' expected");
+					return FALSE;
+				}
+				if ((token == "task" && !readTaskSupplement()) ||
+					(token == "resource" && !readResourceSupplement()))
+					return FALSE;
+				break;
+			}	
 			// break missing on purpose!
 		default:
 			fatalError(QString("Syntax Error at '") + token + "'!");
@@ -981,6 +999,46 @@ ProjectFile::readTask(Task* parent)
 	if (parent)
 		parent->addSub(task);
 
+
+	if (!readTaskBody(task))
+		return FALSE;
+	
+	if (task->getName().isEmpty())
+	{
+		fatalError(QString("No name specified for task ") + id + "!");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readTaskSupplement()
+{
+	QString token;
+	TokenType tt;
+	Task* task;
+
+	if (((tt = nextToken(token)) != ID && tt != RELATIVE_ID) ||
+		((task = proj->getTask(token)) == 0))
+	{
+		fatalError("Already defined task ID expected");
+		return FALSE;
+	}
+	if (nextToken(token) != LCBRACE)
+	{
+		fatalError("'}' expected");
+		return FALSE;
+	}
+	return readTaskBody(task);
+}
+
+bool
+ProjectFile::readTaskBody(Task* task)
+{
+	QString token;
+	TokenType tt;
+	
 	for (bool done = false ; !done; )
 	{
 		switch (tt = nextToken(token))
@@ -1230,22 +1288,36 @@ ProjectFile::readTask(Task* parent)
 		}
 	}
 
-	if (task->getName().isEmpty())
-	{
-		fatalError(QString("No name specified for task ") + id + "!");
-		return FALSE;
-	}
-
 	return TRUE;
 }
 
 bool
-ProjectFile::readVacation(time_t& from, time_t& to, bool readName, QString* n)
+ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
+						  QString* n, bool* isResourceVacation)
 {
 	TokenType tt;
 	if (readName)
 	{
-		if ((tt = nextToken(*n)) != STRING)
+		/* If we find a string then we expect a global vacation
+		 * definition. If we find an ID then this is an out-of-scope
+		 * vacation definition for the resource with this particular
+		 * ID. */
+		*isResourceVacation = FALSE;
+		if ((tt = nextToken(*n)) == STRING)
+			;	// We don't have to do anything
+#if 0
+		else if (tt == ID)
+		{
+			if (!proj->getResource(*n))
+		   	{
+			   	fatalError(QString().sprintf(
+					"Resource %s is undefined", n->latin1()));
+				return FALSE;
+		   	}
+			*isResourceVacation = TRUE;
+		}
+#endif
+		else
 		{
 			fatalError("String expected");
 			return FALSE;
@@ -1316,137 +1388,167 @@ ProjectFile::readResource(Resource* parent)
 	if ((tt = nextToken(token)) == LCBRACE)
 	{
 		// read optional attributes
-		while ((tt = nextToken(token)) != RCBRACE)
-		{
-			if (tt != ID)
-			{
-				fatalError(QString("Unknown attribute '") + token + "'");
-				return FALSE;
-			}
-			if (token == KW("resource"))
-			{
-				if (!readResource(r))
-					return FALSE;
-			}
-			else if (token == KW("mineffort"))
-			{
-				if (nextToken(token) != REAL)
-				{
-					fatalError("Real value exptected");
-					return FALSE;
-				}
-				r->setMinEffort(token.toDouble());
-			}
-			else if (token == KW("maxeffort"))
-			{
-				if (nextToken(token) != REAL)
-				{
-					fatalError("Real value exptected");
-					return FALSE;
-				}
-				r->setMaxEffort(token.toDouble());
-			}
-			else if (token == KW("efficiency"))
-			{
-				if (nextToken(token) != REAL)
-				{
-					fatalError("Read value expected");
-					return FALSE;
-				}
-				r->setEfficiency(token.toDouble());
-			}
-			else if (token == KW("rate"))
-			{
-				if (nextToken(token) != REAL)
-				{
-					fatalError("Real value exptected");
-					return FALSE;
-				}
-				r->setRate(token.toDouble());
-			}
-			else if (token == KW("kotrusid"))
-			{
-				if (nextToken(token) != STRING)
-				{
-					fatalError("String expected");
-					return FALSE;
-				}
-				r->setKotrusId(token);
-			}
-			else if (token == KW("vacation"))
-			{
-				time_t from, to;
-				if (!readVacation(from, to))
-					return FALSE;
-				r->addVacation(new Interval(from, to));
-			}
-			else if (token == KW("workinghours"))
-			{
-				int dow;
-				QPtrList<Interval>* l = new QPtrList<Interval>();
-				if (!readWorkingHours(dow, l))
-					return FALSE;
-				
-				r->setWorkingHours(dow, l);
-			}
-			else if (token == KW("shift"))
-			{
-				QString id;
-				if (nextToken(id) != ID)
-				{
-					fatalError("Shift ID expected");
-					return FALSE;
-				}
-				Shift* s;
-				if ((s = proj->getShift(id)) == 0)
-				{
-					fatalError("Unknown shift");
-					return FALSE;
-				}
-				time_t from, to;
-				if (!readVacation(from, to))
-					return FALSE;
-				if (!r->addShift(Interval(from, to), s))
-				{
-					fatalError("Shift interval overlaps with other");
-					return FALSE;
-				}
-			}
-			else if (token == KW("flags"))
-			{
-				for ( ; ; )
-				{
-					QString flag;
-					if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
-					{
-						fatalError("flag unknown");
-						return FALSE;
-					}
-					r->addFlag(flag);
-					if ((tt = nextToken(token)) != COMMA)
-					{
-						openFiles.last()->returnToken(tt, token);
-						break;
-					}
-				}
-			}
-			else if (token == KW("include"))
-			{
-				if (!readInclude())
-					return FALSE;
-				break;
-			}
-			else
-			{
-				fatalError(QString("Unknown attribute '") + token + "'");
-				return FALSE;
-			}
-		}
+		if (!readResourceBody(r))
+			return FALSE;
 	}
 	else
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addResource(r);
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readResourceSupplement()
+{
+	QString token;
+	Resource* r;
+	if (nextToken(token) != ID || (r = proj->getResource(token)) == 0)
+	{
+		fatalError("Already defined resource ID expected");
+		return FALSE;
+	}
+	if (nextToken(token) != LCBRACE)
+	{
+		fatalError("'{' expected");
+		return FALSE;
+	}
+	return readResourceBody(r);
+}
+
+bool
+ProjectFile::readResourceBody(Resource* r)
+{
+	QString token;
+	TokenType tt;
+
+	while ((tt = nextToken(token)) != RCBRACE)
+	{
+		if (tt != ID)
+		{
+			fatalError(QString("Unknown attribute '") + token + "'");
+			return FALSE;
+		}
+		if (token == KW("resource"))
+		{
+			if (!readResource(r))
+				return FALSE;
+		}
+		else if (token == KW("mineffort"))
+		{
+			if (nextToken(token) != REAL)
+			{
+				fatalError("Real value exptected");
+				return FALSE;
+			}
+			r->setMinEffort(token.toDouble());
+		}
+		else if (token == KW("maxeffort"))
+		{
+			if (nextToken(token) != REAL)
+			{
+				fatalError("Real value exptected");
+				return FALSE;
+			}
+			r->setMaxEffort(token.toDouble());
+		}
+		else if (token == KW("efficiency"))
+		{
+			if (nextToken(token) != REAL)
+			{
+				fatalError("Read value expected");
+				return FALSE;
+			}
+			r->setEfficiency(token.toDouble());
+		}
+		else if (token == KW("rate"))
+		{
+			if (nextToken(token) != REAL)
+			{
+				fatalError("Real value exptected");
+				return FALSE;
+			}
+			r->setRate(token.toDouble());
+		}
+		else if (token == KW("kotrusid"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			r->setKotrusId(token);
+		}
+		else if (token == KW("vacation"))
+		{
+			time_t from, to;
+			if (!readVacation(from, to))
+				return FALSE;
+			r->addVacation(new Interval(from, to));
+		}
+		else if (token == KW("workinghours"))
+		{
+			int dow;
+			QPtrList<Interval>* l = new QPtrList<Interval>();
+			if (!readWorkingHours(dow, l))
+				return FALSE;
+
+			r->setWorkingHours(dow, l);
+		}
+		else if (token == KW("shift"))
+		{
+			QString id;
+			if (nextToken(id) != ID)
+			{
+				fatalError("Shift ID expected");
+				return FALSE;
+			}
+			Shift* s;
+			if ((s = proj->getShift(id)) == 0)
+			{
+				fatalError("Unknown shift");
+				return FALSE;
+			}
+			time_t from, to;
+			if (!readVacation(from, to))
+				return FALSE;
+			if (!r->addShift(Interval(from, to), s))
+			{
+				fatalError("Shift interval overlaps with other");
+				return FALSE;
+			}
+		}
+		else if (token == KW("flags"))
+		{
+			for ( ; ; )
+			{
+				QString flag;
+				if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
+				{
+					fatalError("flag unknown");
+					return FALSE;
+				}
+				r->addFlag(flag);
+				if ((tt = nextToken(token)) != COMMA)
+				{
+					openFiles.last()->returnToken(tt, token);
+					break;
+				}
+			}
+		}
+		else if (token == KW("include"))
+		{
+			if (!readInclude())
+				return FALSE;
+			break;
+		}
+		else
+		{
+			fatalError(QString("Unknown attribute '") + token + "'");
+			return FALSE;
+		}
+	}
 
 	return TRUE;
 }
@@ -1563,7 +1665,7 @@ ProjectFile::readAccount(Account* parent)
 		acctType = at == KW("cost") ? Account::Cost : Account::Revenue;
 	}
 	else
-		acctType = parent->getType();
+		acctType = parent->getAcctType();
 
 	Account* a = new Account(proj, id, name, parent, acctType);
 	if (parent)
@@ -2257,14 +2359,26 @@ ProjectFile::readLogicalExpression(int precedence)
 	QString token;
 	TokenType tt;
 
-	if ((tt = nextToken(token)) == ID)
+	if ((tt = nextToken(token)) == ID || tt == RELATIVE_ID)
 	{
-		if (!proj->isAllowedFlag(token))
+		if (proj->isAllowedFlag(token))
+			op = new Operation(token);
+		else if (proj->getTask(token))
+			op = new Operation(Operation::TaskId, token);
+		else if (proj->getResource(token))
+			op = new Operation(Operation::ResourceId, token);
+		else if (proj->getAccount(token))
+			op = new Operation(Operation::AccountId, token);
+		else if (ExpressionTree::isFunction(token))
 		{
-			fatalError(QString("Flag ") + token + " is unknown.");
+			if ((op = readFunctionCall(token)) == 0)
+				return 0;
+		}
+		else
+		{
+			fatalError(QString("Flag or function '") + token + "' is unknown.");
 			return 0;
 		}
-		op = new Operation(token);
 	}
 	else if (tt == INTEGER)
 	{
@@ -2315,6 +2429,39 @@ ProjectFile::readLogicalExpression(int precedence)
 	}
 
 	return op;
+}
+
+Operation*
+ProjectFile::readFunctionCall(const QString& name)
+{
+	QString token;
+	TokenType tt;
+	
+	if ((tt = nextToken(token)) != LBRACE)
+	{
+		fatalError("'(' expected");
+		return 0;
+	}
+	QPtrList<Operation> args;
+	for (int i = 0; i < ExpressionTree::arguments(name); i++)
+	{
+		Operation* op;
+		if ((op = readLogicalExpression()) == 0)
+			return 0;
+		args.append(op);
+		if ((i < ExpressionTree::arguments(name) - 1) &&
+			nextToken(token) != COMMA)
+		{
+			fatalError("Comma expected");
+			return 0;
+		}
+	}
+	if ((tt = nextToken(token)) != RBRACE)
+	{
+		fatalError("')' expected");
+		return 0;
+	}
+	return new Operation(name, args);
 }
 
 bool

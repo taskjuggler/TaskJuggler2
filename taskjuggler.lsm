@@ -1,14 +1,14 @@
 Begin3
 Title:          TaskJuggler 
-Version:        0.1
+Version:        1.0.1
 Entered-date:   
-Description:    
-Keywords:        
+Description:    Project Management Software
+Keywords:       project planing, scheduling, project management, tasks, milestones
 Author:         Chris Schlaeger <cs@suse.de> 
 Maintained-by:  Chris Schlaeger <cs@suse.de> 
-Primary-site:   	        
-Home-page:      http:// 
-Original-site:  
-Platforms:       Linux and other Unices
-Copying-policy: GNU Public License
+Primary-site:   http://www.suse.de/~freitag/taskjuggler	        
+Home-page:      http://www.suse.de/~freitag/taskjuggler 
+Original-site:  http://www.suse.de/~freitag/taskjuggler
+Platforms:      Linux and other Unices
+Copying-policy: GNU Public License Version 2.0
 End

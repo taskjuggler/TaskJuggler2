@@ -137,6 +137,7 @@ syn keyword tjspkeyword start
 syn keyword tjspkeyword startcredit
 syn keyword tjspkeyword startdown
 syn keyword tjspkeyword startup
+syn keyword tjspkeyword supplement
 syn keyword tjspkeyword timingresolution
 syn keyword tjspkeyword tree
 syn keyword tjspkeyword vacation

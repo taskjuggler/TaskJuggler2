@@ -54,7 +54,7 @@ Report::isHidden(CoreAttributes* c, ExpressionTree* et)
 	QStringList flags = c->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		et->registerSymbol(*it, 1);
-	return et->eval() != 0;
+	return et->evalAsInt(c) != 0;
 }
 
 bool
@@ -67,7 +67,7 @@ Report::isRolledUp(CoreAttributes* c, ExpressionTree* et)
 	QStringList flags = c->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		et->registerSymbol(*it, 1);
-	return et->eval() != 0;
+	return et->evalAsInt(c) != 0;
 }
 
 bool
@@ -80,7 +80,7 @@ Report::isTaskRolledUp(Task* t)
 	QStringList flags = t->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		rollUpTask->registerSymbol(*it, 1);
-	return rollUpTask->eval() != 0;
+	return rollUpTask->evalAsInt(t) != 0;
 }
 
 bool
@@ -93,7 +93,7 @@ Report::isResourceRolledUp(Resource* r)
 	QStringList flags = r->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		rollUpResource->registerSymbol(*it, 1);
-	return rollUpResource->eval() != 0;
+	return rollUpResource->evalAsInt(r) != 0;
 }
 
 void

@@ -110,6 +110,8 @@ public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource();
 
+	virtual char* getType() { return "Resource"; }
+
 	Resource* getParent() const { return (Resource*) parent; }
 
 	bool isGroup() const { return !sub.isEmpty(); }

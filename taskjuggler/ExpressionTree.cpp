@@ -11,26 +11,117 @@
  */
 
 #include "ExpressionTree.h"
+#include "CoreAttributes.h"
+#include "Project.h"
+#include "Task.h"
+
+QDict<int> ExpressionTree::funcArgc;
 
 long
-Operation::eval(ExpressionTree* et)
+Operation::evalAsInt(ExpressionTree* et)
 {
 	switch (opt)
 	{
 	case Const:
 		return value;
 	case Variable:
-		return et->resolve(variable);
+		return et->resolve(name);
+	case Function:
+		return evalFunction(et);
+	case TaskId:
+	case ResourceId:
+	case AccountId:
+		return 0;
 	case Not:
-		return !op1->eval(et);
+		return !ops.at(0)->evalAsInt(et);
 	case And:
-		return op1->eval(et) && op2->eval(et);
+		return ops.at(0)->evalAsInt(et) && ops.at(1)->evalAsInt(et);
 	case Or:
-		return op1->eval(et) || op2->eval(et);
+		return ops.at(0)->evalAsInt(et) || ops.at(1)->evalAsInt(et);
 	default:
-		qFatal("Unknown opType");
+		qFatal("Unknown opType %d (name: %s)", opt, name.ascii());
+		return 0;
 	}
-	return 0;	// should never be reached
+}
+
+QString
+Operation::evalAsString(ExpressionTree* et)
+{
+	switch(opt)
+	{
+		case Const:
+			return QString("%1").arg(value);
+		case Variable:
+			return QString("%1").arg(et->resolve(name));
+		case Function:
+			return evalFunctionAsString(et);
+		case TaskId:
+		case ResourceId:
+		case AccountId:
+			return name;
+		default:
+			return QString("%1").arg(ops.at(0)->evalAsInt(et));
+	}
+}
+
+long
+Operation::evalFunction(ExpressionTree* et)
+{
+	if (name == "istask")
+	{
+		return strcmp(et->getCoreAttributes()->getType(), "Task") == 0
+			&& et->getCoreAttributes()->getId() ==
+			ops.at(0)->evalAsString(et);
+	}
+	else if (name == "issubtaskof")
+	{
+		if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
+			return 0;
+		Task* p;
+		if ((p = et->getCoreAttributes()->getProject()->getTask
+			 (ops.at(0)->evalAsString(et))) == 0)
+			return 0;
+		return p->isSubTask((Task*) et->getCoreAttributes());
+	}
+	else if (name == "containstask")
+	{
+		if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
+			return 0;
+		Task* st;
+		if ((st = et->getCoreAttributes()->getProject()->getTask
+			 (ops.at(0)->evalAsString(et))) == 0)
+			return 0;
+		return ((Task*) et->getCoreAttributes())->isSubTask(st);
+	}
+	else if (name == "ismilestone")
+	{
+		if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
+			return 0;
+		return ((Task*) et->getCoreAttributes())->isMilestone();
+	}
+	else
+		qFatal("Unknown function %s", name.data());	
+
+	return 0;
+}
+
+QString
+Operation::evalFunctionAsString(ExpressionTree* et)
+{
+	// There are no functions yet that return a string.
+	return "";
+}
+
+ExpressionTree::ExpressionTree(Operation* op) : expression(op)
+{
+	symbolTable.setAutoDelete(TRUE);
+	if (funcArgc.isEmpty())
+	{
+		funcArgc.insert("istask", new int(1));
+		funcArgc.insert("issubtaskof", new int(1));
+		funcArgc.insert("containstask", new int(1));
+		funcArgc.insert("ismilestone", new int(0));
+	}
 }
 
 long
@@ -38,3 +129,16 @@ ExpressionTree::resolve(const QString& symbol)
 {
 	return symbolTable[symbol] != 0 ? *(symbolTable[symbol]) : 0;
 }
+
+bool
+ExpressionTree::isFunction(const QString& name)
+{
+	return funcArgc[name];
+}
+
+int
+ExpressionTree::arguments(const QString& name)
+{
+	return *funcArgc[name];
+}
+

@@ -1,0 +1,6 @@
+project test "Test" "$Id" 2000-01-01 2000-01-31
+
+# Resource r2 does not exist
+vacation r2 2000-01-18
+
+

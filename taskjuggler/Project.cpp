@@ -184,7 +184,7 @@ Project::schedule()
 
 	updateActiveTaskList(sortedTasks);
 	for (day = start; !(activeAsap.isEmpty() && activeAlap.isEmpty()) &&
-			 day >= start && day < end; day += timeDelta)
+		 day >= start && day < end; day += timeDelta)
 	{
 		timeDelta = scheduleGranularity;
 		do

@@ -13,9 +13,7 @@ INTERFACES =
 TRANSLATIONS = 
 # KDE_OPTIONS = qtonly
 taskjuggler_LDADD   =  $(LIB_QT) $(LIBSOCKET)
-CXXFLAGS = -Wall -g
-
-SUBDIRS = docs 
+CXXFLAGS = -Wall -O2
 
 # set the include path for X, qt and KDE
 INCLUDES= $(all_includes)

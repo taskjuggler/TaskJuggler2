@@ -1,0 +1,4 @@
+#! /bin/sh
+
+taskjuggler --debug 1 AcSo.tjp
+

@@ -96,9 +96,13 @@ private:
 
 	bool readInclude();
 	bool readTask(Task* parent);
+	bool readTaskSupplement();
+	bool readTaskBody(Task* task);
 	bool readResource(Resource* parent);
+	bool readResourceSupplement();
+	bool readResourceBody(Resource* r);
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
-					  QString* = 0);
+					  QString* = 0, bool* isResourceVacation = 0);
 	bool readAccount(Account* parent);
 	bool readShift(Shift* parent);
 	bool readCredit(Account* a);
@@ -112,9 +116,10 @@ private:
 	bool readExportReport();
 	bool readXMLTaskReport();
 #ifdef HAVE_KDE
-        bool readICalTaskReport();
+	bool readICalTaskReport();
 #endif
 	Operation* readLogicalExpression(int precedence = 0);
+	Operation* readFunctionCall(const QString& name);
 	bool readSorting(Report* report, int which);
 	time_t date2time(const QString& date);
 	time_t hhmm2time(const QString& hhmm);

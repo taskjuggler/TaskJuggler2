@@ -85,6 +85,16 @@
 
 int Task::debugLevel = 0;
 
+Task*
+TaskList::getTask(const QString& id)
+{
+	for (Task* t = first(); t != 0; t = next())
+		if (t->getId() == id)
+			return t;
+
+	return 0;
+}
+
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		   const QString f, int l)
 	: CoreAttributes(proj, id_, n, p), file(f), line(l)
@@ -1143,6 +1153,16 @@ Task::getSubTaskList(TaskList& tl)
 		tl.append(t);
 		t->getSubTaskList(tl);
 	}
+}
+
+bool
+Task::isSubTask(Task* tsk)
+{
+	for (Task* t = subFirst(); t != 0; t = subNext())
+		if (t == tsk || t->isSubTask(tsk))
+			return TRUE;
+
+	return FALSE;
 }
 
 void

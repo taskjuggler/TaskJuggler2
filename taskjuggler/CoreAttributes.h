@@ -54,12 +54,16 @@ public:
 		project(p), id(i), name(n), parent(parent_) { }
 	virtual ~CoreAttributes() { }
 
+	virtual char* getType() { return "CoreAttributes"; }
+
 	const QString& getId() const { return id; }
 
 	void setIndex(uint idx) { index = idx; }
 	uint getIndex() const { return index; }
 
 	void setSequenceNo(uint no) { sequenceNo = no; }
+
+	Project* getProject() { return project; }
 
 	void setName(const QString& n) { name = n; }
 	const QString& getName() const { return name; }

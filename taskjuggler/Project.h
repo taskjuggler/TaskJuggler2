@@ -96,6 +96,11 @@ public:
 		return vacationList.next();
 	}
 
+	Task* getTask(const QString& id)
+	{
+		return taskList.getTask(id);
+	}
+
 	void addResource(Resource* r)
 	{
 		resourceList.append(r);
@@ -147,7 +152,7 @@ public:
 
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
 #ifdef HAVE_KDE
-        void addICalReport( ReportICal *ic ) { icalReport = ic; }
+	void addICalReport( ReportICal *ic ) { icalReport = ic; }
 #endif
    
 	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
@@ -266,12 +271,10 @@ private:
 	AccountList accountList;
 
 	Kotrus* kotrus;
-	TaskList activeAsap;
-	TaskList activeAlap;
 
 	ReportXML* xmlreport;
 #ifdef HAVE_KDE
-        ReportICal *icalReport;
+	ReportICal *icalReport;
 #endif
    
 	QList<HTMLTaskReport> htmlTaskReports;
@@ -280,6 +283,13 @@ private:
 	QList<ExportReport> exportReports;
 
 	static int debugLevel;
+
+	/**
+	 * The task lists for active ASAP and ALAP tasks are only used
+	 * during the scheduling process.
+	 */
+	TaskList activeAsap;
+	TaskList activeAlap;
 } ;
 
 #endif

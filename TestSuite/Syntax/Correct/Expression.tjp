@@ -1,0 +1,61 @@
+project test "Test Project" "$Id" 2000-01-01 2000-01-04
+
+resource tux "Tux"
+
+flags flag1, flag2, flag3, flag4
+
+task t1 "FooTask1" {
+	task t1_1 "FooTask1_1" {
+		flags flag2
+		start 2000-01-01
+		length 1d
+	}
+	flags flag3
+}
+
+task t2 "FooTask2" {
+	flags flag1
+  start 2000-01-01
+  duration 1d
+}
+
+task t3 "FooTask3" {
+	flags flag4
+	milestone
+  start 2000-01-01
+}
+
+htmltaskreport "Expression_istask.html" {
+	hidetask istask(t2)
+}
+
+htmltaskreport "Expression_istask_ref.html" {
+	hidetask flag1
+}
+
+htmltaskreport "Expression_issubtaskof.html" {
+	hidetask issubtaskof(t1)
+}
+
+htmltaskreport "Expression_issubtaskof_ref.html" {
+	hidetask flag2
+}
+
+htmltaskreport "Expression_containstask.html" {
+	hidetask containstask(t1.t1_1)
+	sorttasks indexdown
+}
+
+htmltaskreport "Expression_containstask_ref.html" {
+	hidetask flag3
+	sorttasks indexdown
+}
+
+htmltaskreport "Expression_ismilestone.html" {
+	hidetask ismilestone()
+}
+
+htmltaskreport "Expression_ismilestone_ref.html" {
+	hidetask flag4
+}
+

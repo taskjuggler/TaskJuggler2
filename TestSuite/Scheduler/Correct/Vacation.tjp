@@ -12,8 +12,11 @@ resource team "Team" {
 	}
 
 	resource r2 "Resource2" {
-		vacation 2000-01-18
 	}
+}
+
+supplement resource r2 {
+	vacation 2000-01-18
 }
 
 resource r3 "Resource3" {

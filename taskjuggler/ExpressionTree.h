@@ -15,42 +15,61 @@
 
 #include <qstring.h>
 #include <qdict.h>
+#include <qptrlist.h>
 
+class CoreAttributes;
 class ExpressionTree;
 
 class Operation
 {
 public:
-	enum opType { Const, Variable, Not, And, Or };
+	enum opType { Const = 1, Variable, Function, TaskId, ResourceId,
+		AccountId, Not, And, Or };
 
 	Operation(long v) : opt(Const), value(v) { }
-	Operation(const QString& v) : opt(Variable), variable(v) { }
+	Operation(opType ot, const QString& n) : opt(ot), name(n) { }
+	Operation(const QString& v) : opt(Variable), name(v) { }
 	Operation(Operation* o1, opType o, Operation* o2 = 0)
-		: opt(o), op1(o1), op2(o2) { }
+		: opt(o)
+	{
+		ops.setAutoDelete(TRUE);
+		ops.append(o1);
+		ops.append(o2);
+	}
+	Operation(const QString n, QPtrList<Operation> args) :
+	   opt(Function), name(n)
+   	{
+		ops = args;
+		ops.setAutoDelete(TRUE);
+   	}
 	~Operation() { }
 
-	long eval(ExpressionTree* et);
+	long evalAsInt(ExpressionTree* et);
+	QString evalAsString(ExpressionTree* et);
 
 private:
 	Operation() { } // don't use this
 
+	long evalFunction(ExpressionTree* et);
+	QString evalFunctionAsString(ExpressionTree* et);
+
 	opType opt;
 	long value;
-	QString variable;
-	Operation* op1;
-	Operation* op2;
+	QString name;
+	QPtrList<Operation> ops;
 } ;
 
 class ExpressionTree
 {
 public:
-	ExpressionTree(Operation* op) : expression(op)
-	{
-		symbolTable.setAutoDelete(TRUE);
-	}
+	ExpressionTree(Operation* op);
 	~ExpressionTree() { }
 
-	long eval() { return expression->eval(this); }
+	long evalAsInt(CoreAttributes* c)
+   	{
+		ca = c;
+		return expression->evalAsInt(this);
+   	}
 	long resolve(const QString& symbol);
 
 	void registerSymbol(const QString& symbol, long value)
@@ -59,11 +78,20 @@ public:
 	}
 	void clearSymbolTable() { symbolTable.clear(); }
 
+	CoreAttributes* getCoreAttributes() { return ca; }
+
+	static bool isFunction(const QString& name);
+
+	static int arguments(const QString& name);
+
 private:
 	ExpressionTree() { }	// don't use this
 
+	CoreAttributes* ca;
 	QDict<long> symbolTable;
 	Operation* expression;
+	
+	static QDict<int> funcArgc;
 } ;
 
 #endif

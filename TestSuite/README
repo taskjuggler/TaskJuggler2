@@ -1,0 +1,11 @@
+This is what may become a real testsuite. There are 2 classes of
+tests; Syntactical tests and scheduler tests. For each class there are
+tests that must pass and tests that must fail. All *.tjp files that
+are found in the respective directories are executed by the test
+suite. You can run the test suite by executing ./runtests in the
+TestSuite directory.
+
+If you want to help the taskjuggler development you can help to
+complete the test suite. Ideally each syntax struct should have a pass
+and at least one fail test.
+

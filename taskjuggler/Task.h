@@ -100,6 +100,8 @@ public:
 	Task* first() { return (Task*) CoreAttributesList::first(); }
 	Task* next() { return (Task*) CoreAttributesList::next(); }
 
+	Task* getTask(const QString& id);
+
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
@@ -116,7 +118,9 @@ class Task : public CoreAttributes
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,
 		 const QString f, int l);
-	~Task() { }
+	virtual ~Task() { }
+
+	virtual char* getType() { return "Task"; }
 
 	enum SchedulingInfo { ASAP, ALAP };
 
@@ -297,6 +301,8 @@ public:
 
 	void getSubTaskList(TaskList& tl);
 
+	bool isSubTask(Task* t);
+
 	void treeSortKey(QString& key);
 
 	void preparePlan();
@@ -354,13 +360,13 @@ private:
 
 	/**
 	 * A list of all tasks that preceed this task. This is redundant
-	 * information but stored for conveniance. Interdependant tasks are
+	 * information but stored for conveniance. Interdependent tasks are
 	 * linked in a doubly linked list. */
 	TaskList previous;
 
 	/**
 	 * A list of all tasks that follow this task. This is redundant
-	 * information but stored for conveniance. Interdependant tasks are
+	 * information but stored for conveniance. Interdependent tasks are
 	 * linked in a doubly linked list. */
 	TaskList followers;
 

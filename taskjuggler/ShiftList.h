@@ -42,6 +42,8 @@ public:
 	Shift(Project* prj, const QString& i, const QString& n, Shift* p);
 	virtual ~Shift();
 
+	virtual char* getType() { return "Shift"; }
+
 	void setWorkingHours(int day, QPtrList<Interval>* l)
 	{
 		if (day < 0 || day > 6)
