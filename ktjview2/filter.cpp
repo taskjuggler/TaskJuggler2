@@ -95,9 +95,6 @@ QString Filter::exprToString( FilterExpr exp )
     case FEX_GREATER_EQUAL:
         return i18n( "greater than or equal" );
         break;
-    case FEX_LAST:
-        return QString::null;
-        break;
     }
     return QString::null;
 }

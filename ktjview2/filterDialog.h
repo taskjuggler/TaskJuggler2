@@ -22,6 +22,8 @@
 #ifndef _FILTER_DIALOG_
 #define _FILTER_DIALOG_
 
+#include "filter.h"
+
 class QListBox;
 
 class KDialogBase;
@@ -45,7 +47,7 @@ public:
     /**
      * Standard CTOR
      */
-    FilterDialog( QWidget * parent = 0, const char * name = 0 );
+    FilterDialog( FilterType type, QWidget * parent = 0, const char * name = 0 );
 
     /**
      * Standard DTOR
@@ -89,7 +91,6 @@ private slots:
      */
     void slotFilterChanged( QListBoxItem * item );
 
-private slots:
     /**
      * Save the filters back to the XML file
      */
@@ -101,6 +102,16 @@ private:
      */
     bool filterExists( const QString & name ) const;
 
+    /**
+     * Store the filter being currently edited
+     */
+    void saveEntry( const QString & name );
+
+    /**
+     * Load a new filter
+     */
+    void loadEntry( const QString & name );
+
     /// the base widget
     FilterWidget * m_base;
 
@@ -109,6 +120,11 @@ private:
 
     /// filter manager
     FilterManager * m_manager;
+
+    FilterType m_type;
+
+    /// name of the current filter
+    QString m_currentName;
 };
 
 #endif

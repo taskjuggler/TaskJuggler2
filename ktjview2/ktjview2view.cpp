@@ -757,7 +757,7 @@ QString ktjview2View::time_t2QS( time_t secs ) const
 
 void ktjview2View::filter()
 {
-    FilterDialog * dlg = new FilterDialog( this, "filter_dlg" );
+    FilterDialog * dlg = new FilterDialog( FT_TASK, this, "filter_dlg" ); // FIXME
     dlg->exec();
     delete dlg;
     dlg = 0;

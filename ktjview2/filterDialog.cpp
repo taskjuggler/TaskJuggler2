@@ -25,6 +25,8 @@
 #include <qtable.h>
 #include <qbuttongroup.h>
 #include <qpushbutton.h>
+#include <qvaluevector.h>
+#include <qradiobutton.h>
 
 // KDE includes
 #include <kdialogbase.h>
@@ -43,12 +45,12 @@
 // local includes
 #include "filterDialog.h"
 #include "filterWidget.h"
-#include "filter.h"
 
 
-FilterDialog::FilterDialog( QWidget * parent, const char * name )
-    : KDialogBase( parent, name, true, i18n( "Filter" ), Ok|Cancel, Ok )
+FilterDialog::FilterDialog( FilterType type, QWidget * parent, const char * name )
+    : KDialogBase( parent, name, true, i18n( "Filter" ), Ok|Cancel, Ok ), m_type( type )
 {
+    // WARNING: don't change the order of items, must match FilterExpr
     m_conditions << i18n( "contains" ) << i18n( "doesn't contain" )
                  << i18n( "equals" ) << i18n( "doesn't equal" )
                  << i18n( "matches reqexp" ) << i18n( "doesn't match regexp" )
@@ -77,6 +79,8 @@ FilterDialog::FilterDialog( QWidget * parent, const char * name )
     m_base->tbConditions->setColumnStretchable( true, 1 ); // stretch the Expr column
 
     connect( this, SIGNAL( okClicked() ), this, SLOT( slotSaveFilters() ) );
+
+    m_base->lbFilters->setCurrentItem( 0 ); // select the first filter
 }
 
 FilterDialog::~FilterDialog()
@@ -99,6 +103,7 @@ void FilterDialog::slotMore()
 void FilterDialog::slotFewer()
 {
     m_base->tbConditions->removeRow( m_base->tbConditions->numRows() - 1 ); // remove the last row
+    // FIXME remove selected row instead?
 }
 
 void FilterDialog::slotClear()
@@ -156,13 +161,24 @@ void FilterDialog::slotRenameFilter()
 void FilterDialog::slotFilterChanged( QListBoxItem * item )
 {
     // enable/disable buttons when the listbox is empty
-    bool enable = ( m_base->lbFilters->currentItem() != -1 );
+    bool enable = ( item != 0 );
     m_base->btnRename->setEnabled( enable );
     m_base->btnDelete->setEnabled( enable );
     m_base->gbCriteria->setEnabled( enable );
 
-    // TODO save the current filter
-    // TODO load the new filter
+    if ( !item )
+        return;
+
+    // save the current filter
+    if ( !m_currentName.isEmpty() ) // not on startup
+        saveEntry( m_currentName );
+
+    // load the new filter
+    QString newName = item->text();
+    loadEntry( newName );
+
+    // change "current" filter name
+    m_currentName = newName;
 }
 
 bool FilterDialog::filterExists( const QString & name ) const
@@ -173,6 +189,32 @@ bool FilterDialog::filterExists( const QString & name ) const
 void FilterDialog::slotSaveFilters()
 {
     m_manager->save();
+}
+
+void FilterDialog::saveEntry( const QString & name )
+{
+    FilterOp fop = FOP_AND;
+    if ( m_base->rbOr->isChecked() )
+        fop = FOP_OR;
+
+    QTable * table = m_base->tbConditions;
+    QValueVector<FilterCondition> conds( table->numRows() );
+
+    for ( int i = 0; i < table->numRows(); i++ )
+    {
+        FilterCondition cond;
+        cond.prop = table->text( i, 0 );
+        cond.expr = static_cast<FilterExpr>( m_conditions.findIndex( table->text( i, 1 ) ) );
+        cond.val = table->text( i, 2 );
+        conds.append( cond );
+    }
+
+    m_manager->addFilter( name, m_type, fop, conds );
+}
+
+void FilterDialog::loadEntry( const QString & name )
+{
+    // TODO implement
 }
 
 #include "filterDialog.moc"

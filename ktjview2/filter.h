@@ -38,7 +38,7 @@ enum FilterOp { FOP_AND = 0, FOP_OR };
  */
 enum FilterExpr { FEX_CONTAINS = 0, FEX_DOESNTCONTAIN, FEX_EQUALS, FEX_DOESNTEQUAL,
                   FEX_REGEXP, FEX_NOTREGEXP, FEX_GREATER, FEX_LESS_EQUAL,
-                  FEX_LESS, FEX_GREATER_EQUAL, FEX_LAST = 99 };
+                  FEX_LESS, FEX_GREATER_EQUAL };
 
 /**
  * Container struct holding one row of filter conditions
@@ -70,8 +70,6 @@ enum FilterType { FT_TASK = 0, FT_RESOURCE };
 class Filter
 {
 public:
-
-
     /**
      * CTOR
      * @param name name of the filter
@@ -217,14 +215,26 @@ public:
      */
     void save();
 
-    void addFilter( const QString & name, FilterType type, FilterOp fop, const QValueVector<FilterCondition> & conditions );
+    /**
+     * Add a new filter (checks for an already existing filter with @p name)
+     */
+    void addFilter( const QString & name, FilterType type, FilterOp fop,
+                    const QValueVector<FilterCondition> & conditions );
 
+    /**
+     * Remove filter with @p name
+     */
     void removeFilter( const QString & name );
 
+    /**
+     * @return a string list containing all the filter names
+     */
     QStringList filterStringList() const;
 
 private:
+    /// filename where the DOM is stored
     QString m_filename;
+    /// QDict holding the filters
     FilterList m_filterList;
 };
 
