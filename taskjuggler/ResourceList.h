@@ -107,9 +107,10 @@ public:
 
 	Resource* getResource(const QString& id);
 
+	virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
+
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-	virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
 } ;
 
 class Resource : public CoreAttributes

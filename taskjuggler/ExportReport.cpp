@@ -46,8 +46,10 @@ ExportReport::ExportReport(Project* p, const QString& f,
 	// hide all resources
 	hideResource = new ExpressionTree(new Operation(1));
 
-	taskSortCriteria = CoreAttributesList::TreeMode;
-	resourceSortCriteria = CoreAttributesList::TreeMode;
+	taskSortCriteria[0] = CoreAttributesList::TreeMode;
+	taskSortCriteria[1] = CoreAttributesList::PlanStartUp;
+	taskSortCriteria[2] = CoreAttributesList::PlanEndUp;
+	resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 }
 
 bool

@@ -109,5 +109,9 @@ AccountList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	Account* a1 = static_cast<Account*>(i1);
 	Account* a2 = static_cast<Account*>(i2);
 
-	return compareItemsLevel(a1, a2, 0);
+	int res;
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+		if ((res = compareItemsLevel(a1, a2, i)) != 0)
+			return res;
+	return res;
 }

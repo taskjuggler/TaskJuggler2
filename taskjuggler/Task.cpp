@@ -1255,7 +1255,7 @@ Task::scheduleOk()
 				   time2tjp(end).latin1());
 		return FALSE;
 	}
-
+	
 	return TRUE;
 }
 
@@ -1312,26 +1312,6 @@ Task::isSubTask(Task* tsk)
 			return TRUE;
 
 	return FALSE;
-}
-
-void
-Task::treeSortKey(QString& key)
-{
-	if (!parent)
-	{
-		key = QString().sprintf("%06d", sequenceNo) + key;
-		return;
-	}
-
-	int i = 1;
-	for (Task* t = getParent()->subFirst(); t != 0;
-		 t = getParent()->subNext(), i++)
-		if (t == this)
-		{
-			key = QString().sprintf("%06d", i) + key;
-			break;
-		}
-	getParent()->treeSortKey(key);
 }
 
 void
@@ -1718,39 +1698,49 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 int
 TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 {
-	if (level > 2)
+	if (level < 0 || level >= maxSortingLevel)
 		return -1;
 
 	switch (sorting[level])
 	{
 	case TreeMode:
-	{
-		QString key1;
-		t1->treeSortKey(key1);
-		QString key2;
-		t2->treeSortKey(key2);
-		return key1 < key2 ? -1 : 1;
-	}
-	case StartUp:
-		return t1->start == t2->start ? 0 :
-			t1->start > t2->start ? -1 : 1;
-	case StartDown:
-		return t1->start == t2->start ? 0 :
-			t1->start < t2->start ? -1 : 1;
-	case EndUp:
-		return t1->end == t2->end ? 0 :
-			t1->end > t2->end ? -1 : 1;
-	case EndDown:
-		return t1->end == t2->end ? 0 :
-			t1->end < t2->end ? -1 : 1;
+		if (level == 0)
+			return compareTreeItemsT(this, t1, t2);
+		else
+			return t1->getSequenceNo() == t2->getSequenceNo() ? 0 :
+				t1->getSequenceNo() < t2->getSequenceNo() ? -1 : 1;
+	case PlanStartUp:
+		return t1->planStart == t2->planStart ? 0 :
+			t1->planStart < t2->planStart ? -1 : 1;
+	case PlanStartDown:
+		return t1->planStart == t2->planStart ? 0 :
+			t1->planStart > t2->planStart ? -1 : 1;
+	case ActualStartUp:
+		return t1->actualStart == t2->actualStart ? 0 :
+			t1->actualStart < t2->actualStart ? -1 : 1;
+	case ActualStartDown:
+		return t1->actualStart == t2->actualStart ? 0 :
+			t1->actualStart > t2->actualStart ? -1 : 1;
+	case PlanEndUp:
+		return t1->planEnd == t2->planEnd ? 0 :
+			t1->planEnd < t2->planEnd ? -1 : 1;
+	case PlanEndDown:
+		return t1->planEnd == t2->planEnd ? 0 :
+			t1->planEnd > t2->planEnd ? -1 : 1;
+	case ActualEndUp:
+		return t1->actualEnd == t2->actualEnd ? 0 :
+			t1->actualEnd < t2->actualEnd ? -1 : 1;
+	case ActualEndDown:
+		return t1->actualEnd == t2->actualEnd ? 0 :
+			t1->actualEnd > t2->actualEnd ? -1 : 1;
 	case PrioUp:
 		if (t1->priority == t2->priority)
-			return 0; // TODO: Use duration as next criteria
+			return 0;
 		else
 			return (t1->priority - t2->priority);
 	case PrioDown:
 		if (t1->priority == t2->priority)
-			return 0; // TODO: Use duration as next criteria
+			return 0;
 		else
 			return (t2->priority - t1->priority);
 	case ResponsibleUp:
@@ -1780,7 +1770,11 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	Task* t1 = static_cast<Task*>(i1);
 	Task* t2 = static_cast<Task*>(i2);
 
-	return compareItemsLevel(t1, t2, 0);
+	int res;
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+		if ((res = compareItemsLevel(t1, t2, i)) != 0)
+			return res;
+	return res;
 }
 
 #ifdef HAVE_ICAL

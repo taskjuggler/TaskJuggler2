@@ -2980,81 +2980,97 @@ ProjectFile::readFunctionCall(const QString& name)
 bool
 ProjectFile::readSorting(Report* report, int which)
 {
+	TokenType tt;
 	QString token;
 
-	nextToken(token);
-	CoreAttributesList::SortCriteria sorting;
-	if (token == KW("tree"))
-		sorting = CoreAttributesList::TreeMode;
-	else if (token == KW("indexup"))
-		sorting = CoreAttributesList::IndexUp;
-	else if (token == KW("indexdown"))
-		sorting = CoreAttributesList::IndexDown;
-	else if (token == KW("idup"))
-		sorting = CoreAttributesList::IdUp;
-	else if (token == KW("iddown"))
-		sorting = CoreAttributesList::IdDown;
-	else if (token == KW("fullnameup"))
-		sorting = CoreAttributesList::FullNameUp;
-	else if (token == KW("fullnamedown"))
-		sorting = CoreAttributesList::FullNameDown;
-	else if (token == KW("nameup"))
-		sorting = CoreAttributesList::NameUp;
-	else if (token == KW("namedown"))
-		sorting = CoreAttributesList::NameDown;
-	else if (token == KW("startup"))
-		sorting = CoreAttributesList::StartUp;
-	else if (token == KW("startdown"))
-		sorting = CoreAttributesList::StartDown;
-	else if (token == KW("endup"))
-		sorting = CoreAttributesList::EndUp;
-	else if (token == KW("enddown"))
-		sorting = CoreAttributesList::EndDown;
-	else if (token == KW("priorityup"))
-		sorting = CoreAttributesList::PrioUp;
-	else if (token == KW("prioritydown"))
-		sorting = CoreAttributesList::PrioDown;
-	else if (token == KW("responsibleup"))
-		sorting = CoreAttributesList::ResponsibleUp;
-	else if (token == KW("responsibledown"))
-		sorting = CoreAttributesList::ResponsibleDown;
-	else if (token == KW("mineffortup"))
-		sorting = CoreAttributesList::MinEffortUp;
-	else if (token == KW("mineffortdown"))
-		sorting = CoreAttributesList::MinEffortDown;
-	else if (token == KW("maxeffortup"))
-		sorting = CoreAttributesList::MaxEffortUp;
-	else if (token == KW("maxeffortdown"))
-		sorting = CoreAttributesList::MaxEffortDown;
-	else if (token == KW("rateup"))
-		sorting = CoreAttributesList::RateUp;
-	else if (token == KW("ratedown"))
-		sorting = CoreAttributesList::RateDown;
-	else if (token == KW("kotrusidup"))
-		sorting = CoreAttributesList::KotrusIdUp;
-	else if (token == KW("kotrusiddown"))
-		sorting = CoreAttributesList::KotrusIdDown;
-	else
+	int i = 0;
+	do
 	{
-		fatalError("Sorting criteria expected");
-		return FALSE;
-	}
+		nextToken(token);
+		CoreAttributesList::SortCriteria sorting;
+		if (token == KW("tree"))
+			sorting = CoreAttributesList::TreeMode;
+		else if (token == KW("indexup"))
+			sorting = CoreAttributesList::IndexUp;
+		else if (token == KW("indexdown"))
+			sorting = CoreAttributesList::IndexDown;
+		else if (token == KW("idup"))
+			sorting = CoreAttributesList::IdUp;
+		else if (token == KW("iddown"))
+			sorting = CoreAttributesList::IdDown;
+		else if (token == KW("fullnameup"))
+			sorting = CoreAttributesList::FullNameUp;
+		else if (token == KW("fullnamedown"))
+			sorting = CoreAttributesList::FullNameDown;
+		else if (token == KW("nameup"))
+			sorting = CoreAttributesList::NameUp;
+		else if (token == KW("namedown"))
+			sorting = CoreAttributesList::NameDown;
+		else if (token == KW("startup") || token == KW("planstartup"))
+			sorting = CoreAttributesList::PlanStartUp;
+		else if (token == KW("startdown") || token == KW("planstartdown"))
+			sorting = CoreAttributesList::PlanStartDown;
+		else if (token == KW("endup") || token == KW("planendup"))
+			sorting = CoreAttributesList::PlanEndUp;
+		else if (token == KW("enddown") || token == KW("planenddown"))
+			sorting = CoreAttributesList::PlanEndDown;
+		else if (token == KW("actualstartup"))
+			sorting = CoreAttributesList::ActualStartUp;
+		else if (token == KW("actualstartdown"))
+			sorting = CoreAttributesList::ActualStartDown;
+		else if (token == KW("actualendup"))
+			sorting = CoreAttributesList::ActualEndUp;
+		else if (token == KW("actualenddown"))
+			sorting = CoreAttributesList::ActualEndDown;
+		else if (token == KW("priorityup"))
+			sorting = CoreAttributesList::PrioUp;
+		else if (token == KW("prioritydown"))
+			sorting = CoreAttributesList::PrioDown;
+		else if (token == KW("responsibleup"))
+			sorting = CoreAttributesList::ResponsibleUp;
+		else if (token == KW("responsibledown"))
+			sorting = CoreAttributesList::ResponsibleDown;
+		else if (token == KW("mineffortup"))
+			sorting = CoreAttributesList::MinEffortUp;
+		else if (token == KW("mineffortdown"))
+			sorting = CoreAttributesList::MinEffortDown;
+		else if (token == KW("maxeffortup"))
+			sorting = CoreAttributesList::MaxEffortUp;
+		else if (token == KW("maxeffortdown"))
+			sorting = CoreAttributesList::MaxEffortDown;
+		else if (token == KW("rateup"))
+			sorting = CoreAttributesList::RateUp;
+		else if (token == KW("ratedown"))
+			sorting = CoreAttributesList::RateDown;
+		else if (token == KW("kotrusidup"))
+			sorting = CoreAttributesList::KotrusIdUp;
+		else if (token == KW("kotrusiddown"))
+			sorting = CoreAttributesList::KotrusIdDown;
+		else
+		{
+			fatalError("Sorting criteria expected");
+			return FALSE;
+		}
 
-	switch (which)
-	{
-	case 0:
-		report->setTaskSorting(sorting);
-		break;
-	case 1:
-		report->setResourceSorting(sorting);
-		break;
-	case 2:
-		report->setAccountSorting(sorting);
-		break;
-	default:
-		qFatal("readSorting: Unknown sorting attribute");
-		return FALSE;
-	}
+		switch (which)
+		{
+			case 0:
+				report->setTaskSorting(sorting, i);
+				break;
+			case 1:
+				report->setResourceSorting(sorting, i);
+				break;
+			case 2:
+				report->setAccountSorting(sorting, i);
+				break;
+			default:
+				qFatal("readSorting: Unknown sorting attribute");
+				return FALSE;
+		}
+		tt = nextToken(token);
+	} while (++i < CoreAttributesList::maxSortingLevel && tt == COMMA);
+
+	returnToken(tt, token);
 
 	return TRUE;
 }

@@ -734,13 +734,32 @@ ResourceList::ResourceList()
 }
 
 int
+ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
+{
+	Resource* r1 = static_cast<Resource*>(i1);
+	Resource* r2 = static_cast<Resource*>(i2);
+
+	int res;
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+		if ((res = compareItemsLevel(r1, r2, i)) != 0)
+			return res;
+	return res;
+}
+
+int
 ResourceList::compareItemsLevel(Resource* r1, Resource* r2, int level)
 {
-	if (level > 2)
+	if (level < 0 || level >= maxSortingLevel)
 		return -1;
 
 	switch (sorting[level])
 	{
+	case TreeMode:
+		if (level == 0)
+			return compareTreeItemsT(this, r1, r2);
+		else
+			return r1->getSequenceNo() == r2->getSequenceNo() ? 0 :
+				r1->getSequenceNo() < r2->getSequenceNo() ? -1 : 1;
 	case MinEffortUp:
 		return r1->minEffort == r2->minEffort ? 0 :
 			r1->minEffort < r2->minEffort ? 1 : -1;
@@ -764,15 +783,6 @@ ResourceList::compareItemsLevel(Resource* r1, Resource* r2, int level)
 	default:
 		return CoreAttributesList::compareItemsLevel(r1, r2, level);
 	}
-}
-
-int
-ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-	Resource* r1 = static_cast<Resource*>(i1);
-	Resource* r2 = static_cast<Resource*>(i2);
-
-	return compareItemsLevel(r1, r2, 0);
 }
 
 Resource*

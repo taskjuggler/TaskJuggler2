@@ -494,7 +494,7 @@ HTMLAccountReport::accountName(Account* a)
 	QString spaces = "";
 	int fontSize = 0;
 
-	if (accountSortCriteria == CoreAttributesList::TreeMode)
+	if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		Account* ap = a->getParent();
 		for ( ; ap != 0; --fontSize)

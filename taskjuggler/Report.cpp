@@ -25,9 +25,12 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 		project(p), fileName(f), start(s), end(e), defFileName(df),
 		defFileLine(dl)
 {
-	taskSortCriteria = CoreAttributesList::TreeMode;
-	resourceSortCriteria = CoreAttributesList::TreeMode;
-	accountSortCriteria = CoreAttributesList::TreeMode;
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+	{
+		taskSortCriteria[i] = CoreAttributesList::Sequence;
+		resourceSortCriteria[i] = CoreAttributesList::Sequence;
+		accountSortCriteria[i] = CoreAttributesList::Sequence;
+	}
 
 	hideTask = 0;
 	rollUpTask = 0;
@@ -232,9 +235,10 @@ Report::sortTaskList(TaskList& filteredList)
 	/* In tasktree sorting mode we need to make sure that we don't hide
 	 * parents of shown tasks. */
 	TaskList list = filteredList;
-	if (taskSortCriteria == CoreAttributesList::TreeMode)
+	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
-		filteredList.setSorting(CoreAttributesList::IndexUp);
+		// Set sorting criteria so sequence no since list.contains() needs it.
+		filteredList.setSorting(CoreAttributesList::Sequence, 0);
 		for (Task* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{
@@ -245,7 +249,8 @@ Report::sortTaskList(TaskList& filteredList)
 	}
 	filteredList = list;
 
-	filteredList.setSorting(taskSortCriteria);
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
+		filteredList.setSorting(taskSortCriteria[i], i);
 	filteredList.sort();
 }
 
@@ -286,9 +291,10 @@ Report::sortResourceList(ResourceList& filteredList)
 	/* In resourcetree sorting mode we need to make sure that we don't
 	 * hide parents of shown resources. */
 	ResourceList list = filteredList;
-	if (resourceSortCriteria == CoreAttributesList::TreeMode)
+	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
-		filteredList.setSorting(ResourceList::IndexUp);
+		// Set sorting criteria so sequence no since list.contains() needs it.
+		filteredList.setSorting(CoreAttributesList::Sequence, 0);
 		for (Resource* r = filteredList.first(); r != 0;
 			 r = filteredList.next())
 		{
@@ -299,7 +305,8 @@ Report::sortResourceList(ResourceList& filteredList)
 	}
 	filteredList = list;
 
-	filteredList.setSorting(resourceSortCriteria);
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
+		filteredList.setSorting(resourceSortCriteria[i], i);
 	filteredList.sort();
 }
 
@@ -335,9 +342,10 @@ Report::sortAccountList(AccountList& filteredList)
 	/* In accounttree sorting mode we need to make sure that we don't hide
 	 * parents of shown accounts. */
 	AccountList list = filteredList;
-	if (accountSortCriteria == CoreAttributesList::TreeMode)
+	if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
-		list.setSorting(CoreAttributesList::IndexUp);
+		// Set sorting criteria so sequence no since list.contains() needs it.
+		list.setSorting(CoreAttributesList::Sequence, 0);
 		for (Account* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{
@@ -348,7 +356,8 @@ Report::sortAccountList(AccountList& filteredList)
 	}
 	filteredList = list;
 
-	filteredList.setSorting(accountSortCriteria);
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
+		filteredList.setSorting(accountSortCriteria[i], i);
 	filteredList.sort();
 }
 

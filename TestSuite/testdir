@@ -17,6 +17,7 @@ function do_testing
   if [ $? $op 0 ] ; then
     errors=$(( $errors + 1 ))
     echo "Test $f failed!"
+    echo "Test $f failed!" >> ../log
   fi
   checkscript=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.sh/g`
   referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
@@ -26,6 +27,7 @@ function do_testing
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
       echo "Test $f failed (check script)!"
+      echo "Test $f failed (check script)!" >> ../log
     fi
   fi
   if [ -f $referenceFile ] ; then
@@ -33,6 +35,7 @@ function do_testing
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
       echo "Test $f failed (Reference file differs)!"
+      echo "Test $f failed (Reference file differs)!" >> ../log
     else
       rm $exportFile
     fi

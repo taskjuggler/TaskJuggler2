@@ -19,48 +19,59 @@ CoreAttributesList::~CoreAttributesList()
 void
 CoreAttributesList::setSorting(SortCriteria s, int level)
 {
-	sorting[level] = s;
+	if (level >=0 && level < maxSortingLevel)
+		sorting[level] = s;
+	else
+		qFatal("CoreAttributesList::setSorting: level out of range: %d",
+			   level);
 }
 
 void
-CoreAttributesList::createIndex()
+CoreAttributesList::createIndex(bool initial)
 {
+	/* In "initial" mode the sequenceNo is set. This should only be done once
+	 * for each list. In the other mode the index is set. This is most likely
+	 * called after the sorting criteria have been changed. */
 	int i = 1;
-	for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
-		c->setSequenceNo(i);
-
-	SortCriteria savedSorting = sorting[0];
-	sorting[0] = TreeMode;
-	sort();
-	i = 1;
-	for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
-		c->setIndex(i);
-	sorting[0] = savedSorting;
-	sort();
+	if (initial)
+	{
+		for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
+			c->setSequenceNo(i);
+	}
+	else
+	{
+		sort();
+		for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
+			c->setIndex(i);
+	}
 }
 
 int
-CoreAttributesList::compareItemsLevel(CoreAttributes* c1,
-									  CoreAttributes* c2, int level)
+CoreAttributesList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+									  int level)
 {
-	if (level > 2)
+	if (level < 0 || level >= maxSortingLevel)
 		return -1;
 	
 	switch (sorting[level])
 	{
 	case Sequence:
-			return c2->getSequenceNo() - c1->getSequenceNo();
+		return c1->getSequenceNo() == c2->getSequenceNo() ? 0 :
+			c1->getSequenceNo() < c2->getSequenceNo() ? -1 : 1;
 	case TreeMode:
+	{
+		if (level == 0)
+			return compareTreeItemsT(this, c1, c2);
+		else
+			return c1->getSequenceNo() < c2->getSequenceNo() ? -1 : 1;
+	}
 	case FullNameDown:
 	{
 		QString fn1;
 		c1->getFullName(fn1);
 		QString fn2;
 		c2->getFullName(fn2);
-		if (fn1.compare(fn2) == 0)
-			return this->compareItemsLevel(c1, c2, level + 1);
-		else
-			return fn1.compare(fn2);
+		return fn1.compare(fn2);
 	}
 	case FullNameUp:
 	{
@@ -71,9 +82,11 @@ CoreAttributesList::compareItemsLevel(CoreAttributes* c1,
 		return fn2.compare(fn1);
 	}
 	case IndexUp:
-		return c2->getIndex() - c1->getIndex();
+		return c2->getIndex() == c1->getIndex() ? 0 :
+			c2->getIndex() < c1->getIndex() ? -1 : 1;
 	case IndexDown:
-		return c1->getIndex() - c2->getIndex();
+		return c1->getIndex() == c2->getIndex() ? 0:
+			c1->getIndex() > c2->getIndex() ? -1 : 1;
 	case IdUp:
 		return QString::compare(c1->getId(), c2->getId());
 	case IdDown:
@@ -83,10 +96,11 @@ CoreAttributesList::compareItemsLevel(CoreAttributes* c1,
 	case NameDown:
 		return c2->getName().compare(c1->getName());
 	default:
-		qFatal("Please implement sorting for mode %d in sub class!", sorting);
+		qFatal("CoreAttributesList:compareItemsLevel: "
+			   "Please implement sorting for mode (%d/%d) in sub class!",
+			   sorting, level);
 	}
 	return 0;
-	
 }
 
 int
@@ -95,7 +109,11 @@ CoreAttributesList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	CoreAttributes* c1 = static_cast<CoreAttributes*>(i1);
 	CoreAttributes* c2 = static_cast<CoreAttributes*>(i2);
 
-	compareItemsLevel(c1, c2, 0);
+	int res;
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+		if ((res = compareItemsLevel(c1, c2, i)) != 0)
+			return res;
+	return res;
 }
 
 void

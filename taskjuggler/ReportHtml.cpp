@@ -1085,7 +1085,7 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 {
 	QString spaces = "";
 	int fontSize = big ? 150 : 100;
-	if (resourceSortCriteria == CoreAttributesList::TreeMode)
+	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
 		for (Resource* rp = r ; rp != 0; fontSize = (int) (fontSize * 0.85))
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -1096,7 +1096,7 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 	mt.addMacro(new Macro(KW("taskid"), t->getId(), defFileName,
 						  defFileLine));
 
-	if (taskSortCriteria == CoreAttributesList::TreeMode)
+	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		Task* tp = t->getParent();
 		for ( ; tp != 0; fontSize = (int) (fontSize * 0.85))
@@ -1133,7 +1133,7 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 {
 	QString spaces = "";
 	int fontSize = big ? 150 : 100;
-	if (taskSortCriteria == CoreAttributesList::TreeMode)
+	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
 		for (Task* tp = t; tp != 0; fontSize = (int) (fontSize * 0.85))
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -1144,7 +1144,7 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 	mt.addMacro(new Macro(KW("resourceid"), r->getId(), defFileName,
 						  defFileLine));
 	
-	if (resourceSortCriteria == CoreAttributesList::TreeMode)
+	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		Resource* rp = r->getParent();
 		for ( ; rp != 0; fontSize = (int) (fontSize * 0.85))

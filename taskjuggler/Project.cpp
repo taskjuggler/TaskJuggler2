@@ -28,8 +28,8 @@ Project::Project()
 	taskList.setAutoDelete(TRUE);
 	resourceList.setAutoDelete(TRUE);
 	accountList.setAutoDelete(TRUE);
-	activeAsap.setSorting(CoreAttributesList::PrioDown);
-	activeAlap.setSorting(CoreAttributesList::PrioDown);
+	activeAsap.setSorting(CoreAttributesList::PrioDown, 0);
+	activeAlap.setSorting(CoreAttributesList::PrioDown, 0);
 	priority = 500;
 	/* The following settings are country and culture dependent. Those
 	 * defaults are probably true for many Western countries, but have to be
@@ -131,9 +131,11 @@ Project::pass2()
 	QDict<Task> idHash;
 	bool error = FALSE;
 
-	taskList.createIndex();
-	resourceList.createIndex();
-	accountList.createIndex();
+	// Generate sequence numbers for all lists.
+	taskList.createIndex(TRUE);
+	resourceList.createIndex(TRUE);
+	accountList.createIndex(TRUE);
+	shiftList.createIndex(TRUE);
 
 	// Initialize random generator.
 	srand((int) start);
@@ -183,6 +185,13 @@ Project::pass2()
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->computeBuffers();
 
+	/* Create indices for all lists according to their default sorting
+	 * criteria. */
+	taskList.createIndex();
+	resourceList.createIndex();
+	accountList.createIndex();
+	shiftList.createIndex();
+	
 	return !error;
 }
 
@@ -232,7 +241,7 @@ Project::schedule()
 	bool error = FALSE;
 
 	TaskList sortedTasks(taskList);
-	sortedTasks.setSorting(CoreAttributesList::PrioDown);
+	sortedTasks.setSorting(CoreAttributesList::PrioDown, 0);
 	sortedTasks.sort();
 
 	time_t timeDelta = scheduleGranularity;
@@ -308,11 +317,8 @@ Project::updateActiveTaskList(TaskList& sortedTasks)
 bool
 Project::checkSchedule()
 {
-	TaskList tl = taskList;
-	tl.setSorting(CoreAttributesList::StartDown);
-	tl.sort();
 	int errors = 0;
-	for (Task* t = tl.first(); t != 0; t = tl.next())
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 	{
 		if (!t->scheduleOk())
 			errors++;

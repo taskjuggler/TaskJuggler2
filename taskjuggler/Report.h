@@ -79,17 +79,20 @@ public:
 
 	void setRollUpAccount(ExpressionTree* et);
 
-	void setTaskSorting(CoreAttributesList::SortCriteria sc)
+	void setTaskSorting(CoreAttributesList::SortCriteria sc, int level)
 	{
-		taskSortCriteria = sc;
+		if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
+			taskSortCriteria[level] = sc;
 	}
-	void setResourceSorting(CoreAttributesList::SortCriteria sc)
+	void setResourceSorting(CoreAttributesList::SortCriteria sc, int level)
 	{
-		resourceSortCriteria = sc;
+		if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
+			resourceSortCriteria[level] = sc;
 	}
-	void setAccountSorting(CoreAttributesList::SortCriteria sc)
+	void setAccountSorting(CoreAttributesList::SortCriteria sc, int level)
 	{
-		accountSortCriteria = sc;
+		if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
+			accountSortCriteria[level] = sc;
 	}
 
 	enum LoadUnit { minutes, hours, days, weeks, months, years, shortAuto,
@@ -128,9 +131,12 @@ protected:
 	QString headline;
 	QString caption;
 
-	CoreAttributesList::SortCriteria taskSortCriteria;
-	CoreAttributesList::SortCriteria resourceSortCriteria;
-	CoreAttributesList::SortCriteria accountSortCriteria;
+	CoreAttributesList::SortCriteria
+		taskSortCriteria[CoreAttributesList::maxSortingLevel];
+	CoreAttributesList::SortCriteria
+		resourceSortCriteria[CoreAttributesList::maxSortingLevel];
+	CoreAttributesList::SortCriteria
+		accountSortCriteria[CoreAttributesList::maxSortingLevel];
 
 	QFile f;
 	QTextStream s;

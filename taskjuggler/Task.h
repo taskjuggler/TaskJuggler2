@@ -56,18 +56,17 @@ public:
 
 	Task* getTask(const QString& id);
 
+	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
 } ;
 
 typedef QPtrListIterator<TaskList> TaskListIterator;
 
 
-
 class Task : public CoreAttributes
 {
-	friend int TaskList::compareItemsLevel(Task* t1, Task* t2, int level);
+	friend int TaskList::compareItemsLevel(Task*, Task*, int);
 
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,
@@ -297,8 +296,6 @@ public:
 	void getSubTaskList(TaskList& tl);
 
 	bool isSubTask(Task* t);
-
-	void treeSortKey(QString& key);
 
 	void preparePlan();
 	void finishPlan();

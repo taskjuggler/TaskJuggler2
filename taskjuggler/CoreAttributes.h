@@ -25,15 +25,16 @@ class CoreAttributesList : public QPtrList<CoreAttributes>
 public:
 	CoreAttributesList()
    	{
-	   	sorting[0] = Sequence;
-	   	sorting[1] = Sequence;
-	   	sorting[2] = Sequence;
+		for (int i = 0; i < maxSortingLevel; i++)
+			sorting[i] = Sequence;
    	}
 	virtual ~CoreAttributesList();
 
 	enum SortCriteria { Sequence, TreeMode, NameUp, NameDown, FullNameUp,
 						FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
-						StartUp, StartDown, EndUp, EndDown,
+						PlanStartUp, PlanStartDown, PlanEndUp, PlanEndDown,
+						ActualStartUp, ActualStartDown,
+					   	ActualEndUp, ActualEndDown,
 						PrioUp, PrioDown,
 						ResponsibleUp, ResponsibleDown,
 						MinEffortUp, MinEffortDown,
@@ -42,15 +43,17 @@ public:
 						KotrusIdUp, KotrusIdDown
 	};
 
-	void setSorting(SortCriteria s, int level = 0);
-	void createIndex();
+	static const int maxSortingLevel = 3;
+	void setSorting(SortCriteria s, int level);
+	void createIndex(bool initial = FALSE);
 
-protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 	virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 								  int level);
+	
+protected:
+	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 
-	SortCriteria sorting[3];
+	SortCriteria sorting[maxSortingLevel];
 } ;
 
 class CoreAttributes
@@ -95,11 +98,17 @@ protected:
 	/// An ID that must be unique within the attribute class.
 	QString id;
 
-	/// An index number that must be unique within the attribute class.
-	uint index;
-
-	/// The index of the task declaration.
+	/**
+     * The index of the attribute declaration within the project files. Each
+	 * attribute lists has it's own indices.
+	 */
 	uint sequenceNo;
+
+	/** The index of the attributes in a logical order that takes the tree
+	 * structure and the start and end date into account. Each attribute list
+	 * has it's own indices.
+	 */
+	uint index;
 
 	/// A short description of the attribute.
 	QString name;
@@ -115,5 +124,45 @@ protected:
 
 	CoreAttributes() { }	// Don't use this!
 } ;
+
+template<class TL, class T> int compareTreeItemsT(TL* list, T* c1, T* c2)
+{
+	if (c1 == c2)
+		return 0;
+
+	QList<T> cl1, cl2;
+	int res1 = 0;
+	for ( ; c1 || c2; )
+	{
+		if (c1)
+		{
+			cl1.prepend(c1);
+			c1 = c1->getParent();
+		}
+		else
+			res1 = -1;
+		if (c2)
+		{
+			cl2.prepend(c2);
+			c2 = c2->getParent();
+		}
+		else
+			res1 = 1;
+	}
+	
+	for (c1 = cl1.first(), c2 = cl2.first(); c1 && c2; c1 = cl1.next(), c2 =
+		 cl2.next())
+	{
+		int res;
+		for (int j = 1; j < CoreAttributesList::maxSortingLevel; ++j)
+		{
+			if ((res = list->compareItemsLevel(c1, c2, j)) != 0)
+				return res;
+		}
+		if ((res = c1->getSequenceNo() - c2->getSequenceNo()) != 0)
+			return res < 0 ? -1 : 1;
+	}
+	return res1;
+}
 
 #endif

@@ -30,8 +30,10 @@ HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
 	// show all resources
 	hideResource = new ExpressionTree(new Operation(0));
 
-	taskSortCriteria = CoreAttributesList::TreeMode;
-	resourceSortCriteria = CoreAttributesList::TreeMode;
+	taskSortCriteria[0] = CoreAttributesList::TreeMode;
+	taskSortCriteria[1] = CoreAttributesList::PlanStartUp;
+	taskSortCriteria[2] = CoreAttributesList::PlanEndUp;
+	resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 }
 
 bool

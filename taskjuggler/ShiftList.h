@@ -36,6 +36,11 @@ public:
 	Shift* next() { return (Shift*) CoreAttributesList::next(); }
 
 	Shift* getShift(const QString& id);
+
+	virtual int compareItemsLevel(Shift* s1, Shift* s2, int level);
+
+protected:
+	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 class Shift : public CoreAttributes
@@ -45,6 +50,8 @@ public:
 	virtual ~Shift();
 
 	virtual const char* getType() { return "Shift"; }
+
+	Shift* getParent() { return (Shift*) parent; }
 
 	void setWorkingHours(int day, QPtrList<Interval>* l)
 	{
@@ -90,15 +97,13 @@ public:
 
 private:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-	virtual int compareItemsLevel(ShiftSelection* s1, ShiftSelection* s2,
-								  int level);
 };
 
 class ShiftSelection
 {
-	friend int ShiftSelectionList::compareItemsLevel(ShiftSelection* s1,
-													 ShiftSelection* s2,
-													 int level);
+	friend int ShiftSelectionList::compareItems(QCollection::Item i1, 
+												QCollection::Item i2);
+
 public:
 	ShiftSelection(const Interval& p, Shift* s) : period(p), shift(s) { }
 	~ShiftSelection() { }

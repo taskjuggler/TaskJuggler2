@@ -13,27 +13,13 @@
 #include "ShiftList.h"
 #include "Project.h"
 
-int 
-ShiftSelectionList::compareItemsLevel(ShiftSelection* s1, ShiftSelection *s2,
-									  int level)
-{
-	if (level > 2)
-		return -1;
-	
-	if (s1->period.compare(s2->period) == 0)
-		return this->compareItemsLevel(s1, s2, level + 1);
-	
-	return s1->period.compare(s2->period);
-}
-
-										  
 int
 ShiftSelectionList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
 	ShiftSelection* s1 = static_cast<ShiftSelection*>(i1);
 	ShiftSelection* s2 = static_cast<ShiftSelection*>(i2);
 
-	compareItemsLevel(s1, s2, 0);
+	return s1->period.compare(s2->period);
 }
 
 bool
@@ -110,6 +96,39 @@ Shift::~Shift()
 {
 	for (int i = 0; i < 7; i++)
 		delete workingHours[i];
+}
+
+int
+ShiftList::compareItems(QCollection::Item i1, QCollection::Item i2)
+{
+	Shift* s1 = static_cast<Shift*>(i1);
+	Shift* s2 = static_cast<Shift*>(i2);
+
+	int res;
+	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+		if ((res = compareItemsLevel(s1, s2, i)) != 0)
+			return res;
+	return res;
+}
+
+int 
+ShiftList::compareItemsLevel(Shift* s1, Shift *s2,
+									  int level)
+{
+	if (level < 0 || level >= maxSortingLevel)
+		return -1;
+
+	switch (sorting[level])
+	{
+	case TreeMode:
+		if (level == 0)
+			return compareTreeItemsT(this, s1, s2);
+		else
+			return s1->getSequenceNo() == s2->getSequenceNo() ? 0 :
+				s1->getSequenceNo() < s2->getSequenceNo() ? -1 : 1;
+	default:
+		return CoreAttributesList::compareItemsLevel(s1, s2, level);
+	}		
 }
 
 bool
