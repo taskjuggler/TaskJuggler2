@@ -31,11 +31,14 @@
 #include <qpalette.h>
 #include <qstringlist.h>
 #include <qpainter.h>
+#include <qpopupmenu.h>
+#include <qclipboard.h>
 
 //KDE includes
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kapplication.h>
 
 #include <time.h>
 
@@ -52,6 +55,8 @@ ResUsageView::ResUsageView( QWidget * parent, const char * name )
     setShowGrid( true );
 
     connect( this, SIGNAL( scaleChanged( Scale ) ), this, SLOT( updateColumns() ) );
+    connect( this, SIGNAL( contextMenuRequested ( int, int, const QPoint & ) ),
+             this, SLOT( slotPopupMenu( int, int, const QPoint & ) ) );
 
     setScale( SC_DAY );
 }
@@ -68,44 +73,11 @@ void ResUsageView::resizeData( int len )
 
 void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, bool selected, const QColorGroup & cg )
 {
-    //kdDebug() << "Painting cell, row: " << row << " , col: " << col << endl;
-
-    if ( m_resList.isEmpty() )
-        return;
-
-    Resource * res = resourceForRow( row );
-    if ( !res )
-        return;
-
-    //kdDebug() << "Painting cell, resource: " << res << endl;
-
-    Interval ival = intervalForCol( col );
-    if ( ival.isNull() )
-        return;
-
-    //kdDebug() << "Painting cell, interval: " << ival << endl;
-
-    double aload = res->getAvailableWorkLoad( 0, ival );
-
-    //kdDebug() << "Painting cell, available workload: " << aload << endl;
-
-    double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
-
-    //kdDebug() << "Painting cell, load: " << load << endl;
-
-    const QString text = QString( "%1 / %2" )
-                         .arg( KGlobal::locale()->formatNumber( aload, 2 ) )
-                         .arg( KGlobal::locale()->formatNumber( load, 2 ) );
-
-    //kdDebug() << "Painting cell, text: " << text << endl;
-
-    //kdDebug() << "===========================" << endl;
-
     QRect cRect = cellRect( row, col );
     p->setClipRect( cRect, QPainter::CoordPainter );
     // TODO set colors
     QTable::paintCell( p, row, col, cr, selected, cg );
-    p->drawText( cRect, Qt::AlignCenter, text );
+    p->drawText( cRect, Qt::AlignCenter, text( row, col ) );
     p->setClipping( false );
 }
 
@@ -173,8 +145,6 @@ Interval ResUsageView::intervalForCol( int col ) const
 {
     // get the start point, get the start of the next point (Utility.h) and calc the delta
 
-    // FIXME this is in the relative coords, we may need to rework it to real weeks/months/quarters, days should be fine
-
     QDateTime intervalStart = m_start;
     time_t intervalEnd = intervalStart.toTime_t();
     switch ( m_scale )
@@ -203,9 +173,9 @@ Interval ResUsageView::intervalForCol( int col ) const
     return Interval( intervalStart.toTime_t(), intervalEnd );
 }
 
-Resource * ResUsageView::resourceForRow( int row )
+Resource * ResUsageView::resourceForRow( int row ) const
 {
-    return static_cast<Resource *>( m_resList.at( row ) );
+    return static_cast<Resource *>( resList().at( row ) );
 }
 
 void ResUsageView::updateColumns()
@@ -275,6 +245,52 @@ QString ResUsageView::formatDate( time_t date, QString format ) const
     static char s[32];
     strftime(s, sizeof(s), format.latin1(), tms);
     return QString::fromLocal8Bit(s);
+}
+
+void ResUsageView::slotPopupMenu( int, int, const QPoint & pos )
+{
+    QPopupMenu * menu = new QPopupMenu( this, "cell_popup" );
+    menu->insertItem( i18n( "&Copy" ), this, SLOT( slotCopy() ) );
+    menu->exec( pos );
+    delete menu;
+}
+
+void ResUsageView::slotCopy()
+{
+    QClipboard *cb = kapp->clipboard();
+    cb->setText( text( currentRow(), currentColumn() ), QClipboard::Clipboard );
+}
+
+QString ResUsageView::text( int row, int col ) const
+{
+    if ( m_resList.isEmpty() )
+        return QString::null;
+
+    Resource * res = resourceForRow( row );
+    if ( !res )
+        return QString::null;
+
+    //kdDebug() << "Painting cell, resource: " << res << endl;
+
+    Interval ival = intervalForCol( col );
+    if ( ival.isNull() )
+        return QString::null;
+
+    //kdDebug() << "Painting cell, interval: " << ival << endl;
+
+    double aload = res->getAvailableWorkLoad( 0, ival );
+
+    //kdDebug() << "Painting cell, available workload: " << aload << endl;
+
+    double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
+
+    //kdDebug() << "Painting cell, load: " << load << endl;
+
+    const QString text = QString( "%1 / %2" )
+                         .arg( KGlobal::locale()->formatNumber( aload, 2 ) )
+                         .arg( KGlobal::locale()->formatNumber( load, 2 ) );
+
+    return text;
 }
 
 #include "resUsageView.moc"

@@ -59,6 +59,9 @@ protected:
      // @reimp, noop
     virtual void resizeData( int len );
 
+    // @reimp
+    virtual QString text ( int row, int col ) const;
+
 signals:
     /**
      * Emitted when the horizontal (time) scale changes
@@ -72,6 +75,16 @@ private slots:
      */
     void updateColumns();
 
+    /**
+     * Popup up a context menu over cell at (@p row, @p col), at position @p pos
+     */
+    void slotPopupMenu( int row, int col, const QPoint & pos );
+
+    /**
+     * Copy the current's cell text to the clipboard
+     */
+    void slotCopy();
+
 private:
     /**
      * @return the Interval which corresponds to column @p col according to the current Scale
@@ -81,7 +94,7 @@ private:
     /**
      * @return Resource which corresponds to @p row
      */
-    Resource * resourceForRow( int row );
+    Resource * resourceForRow( int row ) const;
 
     /**
      * @return list of column labels, depending on the current scale
@@ -93,6 +106,9 @@ private:
      * (uses strftime)
      */
     QString formatDate( time_t date, QString format ) const;
+
+    ResourceList resList() const
+        { return m_resList; }
 
     /// list of resources
     ResourceList m_resList;
