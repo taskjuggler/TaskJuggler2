@@ -442,6 +442,16 @@ task.</para></listitem>
 values are now indented in tree sorting mode for all HTML reports.
 </para></listitem>
 
+<listitem><para>Length and duration tasks are with resource
+allocations are no longer trimmed to the first and last resource
+allocation.</para></listitem>
+
+<listitem><para>Fixed rounding error in effort calculation that led to
+the allocation of an extra time slot in some cases.</para></listitem>
+
+<listitem><para>isplanallocated and isactualallocated had broken time
+interval handling. This is fixed now.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

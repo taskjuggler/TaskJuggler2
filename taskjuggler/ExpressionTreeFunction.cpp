@@ -207,8 +207,8 @@ ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
         qFatal("Operation::evalFunction: isplanallocated called for "
                "non-resource");
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (Task::Plan, Interval(ops[0]->evalAsTime(et), 
-                              ops[1]->evalAsTime(et)), 
+        (Task::Plan, Interval(ops[1]->evalAsTime(et), 
+                              ops[2]->evalAsTime(et)), 
          ops[0]->evalAsString(et));
 }
 
@@ -220,8 +220,8 @@ ExpressionTreeFunction::isActualAllocated(const ExpressionTree* et,
         qFatal("Operation::evalFunction: isactualallocated called for "
                "non-resource");
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (Task::Actual, Interval(ops[0]->evalAsTime(et), 
-                                ops[1]->evalAsTime(et)), 
+        (Task::Actual, Interval(ops[1]->evalAsTime(et), 
+                                ops[2]->evalAsTime(et)), 
          ops[0]->evalAsString(et));
 }
 
