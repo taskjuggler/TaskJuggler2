@@ -246,6 +246,7 @@ bool ktjview2View::openURL( const KURL& url )
         return false;
 
     KProgressDialog progressDlg( this, "progress_dialog", i18n( "Loading project" ), QString::null, true );
+    progressDlg.setMinimumDuration( 0 ); // no delay
     progressDlg.progressBar()->setTotalSteps( 6 );
     progressDlg.setAutoReset( true );
     progressDlg.setAllowCancel( false );
