@@ -8,8 +8,10 @@
 #
 tmpdir=/tmp/tjball
 v=cvs
-tj=taskjuggler-${1:-$v}
+ver=${1:-$v}
+tj=taskjuggler-$ver
 dir=`pwd`
+wantdocs=1
 
 echo "Building version" $tj tarball
 
@@ -34,6 +36,26 @@ archive=$tj.tar.bz2
 
 tar cjf $archive $tj
 
+# Archvive is created now, start to produce documentation
+if [ -n $wantdocs ] ; then
+    cd $tj
+    ./configure &> /dev/null 
+    cd docs
+  
+    doctarball=manual-$ver.tar.bz2
+  
+    if make  ; then
+      
+	cd en
+	rm -rf manual-$ver
+	cp -r taskjuggler manual-$ver
+	chmod 755 manual-$ver
+	tar cjf $dir/$doctarball manual-$ver
+	cd ..
+    fi
+    cd ../..
+fi
+# Copy stuff home
 cp $archive $dir
 cd $dir
 
