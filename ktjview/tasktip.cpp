@@ -58,7 +58,11 @@ QString TaskTip::beautyTask( Task *t ) const
    {
       QString h;
 
-      ret = i18n( "Task <B>" ) + t->getName() + "</B><BR>";
+      ret = i18n( "Task <B>" ) + t->getName() + "</B>";
+      int comp = int( t->getComplete(0));
+      if( comp > 0 )
+          ret += QString( " (%1% completed)").arg(comp);
+      ret+="<BR>";
       ret += QString("<table width=\"280\" cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(0) /* Task::Plan */ ) );
    ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR>").arg(time2ISO(t->getEnd( 0 /* Task::Plan */) ));
 

@@ -235,6 +235,8 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
       KTVCanvasItemBase *cItem = taskToCanvasItem( t );
       int x = m_header->timeToX( t->getStart(0)); // Task::Plan) );
 
+      bool isTask = false;
+
       if( ! cItem )
       {
           // qDebug(" ***** creating new !" );
@@ -249,6 +251,7 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
 	  else
 	  {
 	      cItem = new KTVCanvasItemTask( this );
+              isTask = true;
 	  }
 	  Q_ASSERT(cItem );
 	  cItem->setFont( m_itemFont );

@@ -95,6 +95,7 @@ public:
     ~KTVCanvasItemTask();
 
     void setSize( int, int );
+    void setComplete(double);
     void move(double, double );
     void moveBy( int, int );
     void hide();
@@ -115,7 +116,7 @@ public:
 private:
     QCanvasRectangle *cRect;
     QCanvasText      *m_cText;
-
+    QCanvasLine      *m_cmplLine;
     int m_TaskTextXOffset;
 };
 

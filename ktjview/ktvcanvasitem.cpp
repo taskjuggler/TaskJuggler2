@@ -170,26 +170,55 @@ KTVConnector* KTVCanvasItemBase::connectorOut( Task *t )
 
 KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
     :KTVCanvasItemBase(),
+     m_cmplLine(0),
      m_TaskTextXOffset(10)
 {
-   cRect = new QCanvasRectangle(c);
-   m_height = 16;
-   cRect->setBrush( QColor(0xDB, 0xE8, 0x4F));
+    /* Rectangle that shows the task */
+    cRect = new QCanvasRectangle(c);
+    m_height = 16;
+    cRect->setBrush( QColor(0xDB, 0xE8, 0x4F));
 
-   /* Text */
-   m_cText = new QCanvasText(c);
-   m_cText->setFont( KTVCanvasItemBase::smFont );
-   m_cText->hide();
+    /* Line that shows the completeness */
+    m_cmplLine = new QCanvasLine(c);
+    m_cmplLine->hide();
+    QPen pen( QColor(0xe6, 0x79, 0x00), 2 );
+    // green: QColor(0x00, 0x7d, 0x00)
+    // orange: QColor(0xe6, 0x79, 0x00);
+    m_cmplLine->setPen(pen);
 
-   m_cText->setZ( 12.0 );
-   cRect->setZ( 10.0 );
+    /* Text */
+    m_cText = new QCanvasText(c);
+    m_cText->setFont( KTVCanvasItemBase::smFont );
+    m_cText->hide();
+
+    m_cText->setZ( 12.0 );
+    m_cmplLine->setZ(11.0);
+    cRect->setZ( 10.0 );
 }
 
 KTVCanvasItemTask::~KTVCanvasItemTask()
 {
     delete cRect;
     delete m_cText;
+    delete m_cmplLine;
 }
+
+void KTVCanvasItemTask::setComplete(double percent)
+{
+    if( percent > 0 && percent <= 100 )
+    {
+        int startX = x()+1;
+        int pcent  = int(cRect->width() * percent/100.0) -1;
+        int ty = y()+2;
+        m_cmplLine->setPoints( startX, ty, startX+pcent, ty );
+        m_cmplLine->show();
+    }
+    else
+    {
+        m_cmplLine->hide();
+    }
+}
+
 
 void KTVCanvasItemTask::setSize( int w, int h )
 {
@@ -203,6 +232,9 @@ void KTVCanvasItemTask::setSize( int w, int h )
 
       /* And now resize the box */
       cRect->setSize( w, h );
+
+      if( m_task )
+          setComplete( m_task->getComplete(0));
    }
    m_height = h;
 }
@@ -213,6 +245,8 @@ void KTVCanvasItemTask::move( double x, double y )
 
     if( cRect )
         cRect->move(x,y);
+    if( m_cmplLine )
+        m_cmplLine->move(x,y);
     if( m_cText )
     {
         QFontMetrics fm(m_cText->font());
@@ -231,6 +265,8 @@ void KTVCanvasItemTask::moveBy( int dx, int dy)
    moveConnectorsBy( dx, dy );
 
 
+    if( m_cmplLine )
+        m_cmplLine->moveBy(dx,dy);
    if( cRect )
       cRect->moveBy( dx, dy );
    if( m_cText )
@@ -240,6 +276,8 @@ void KTVCanvasItemTask::moveBy( int dx, int dy)
 void KTVCanvasItemTask::hide()
 {
    KTVCanvasItemBase::hide();
+   if( m_cmplLine )
+       m_cmplLine->hide();
    if( cRect )
       cRect->hide();
    if( m_cText )
@@ -248,6 +286,8 @@ void KTVCanvasItemTask::hide()
 
 void KTVCanvasItemTask::show()
 {
+   if( m_cmplLine )
+       m_cmplLine->show();
    if( cRect )
       cRect->show();
    if( m_cText )
