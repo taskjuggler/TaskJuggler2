@@ -54,7 +54,7 @@ public:
 		project(p), id(i), name(n), parent(parent_) { }
 	virtual ~CoreAttributes() { }
 
-	virtual char* getType() { return "CoreAttributes"; }
+	virtual const char* getType() { return "CoreAttributes"; }
 
 	const QString& getId() const { return id; }
 	QString getFullId() const;

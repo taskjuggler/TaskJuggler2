@@ -85,7 +85,7 @@ public:
 	}
 	virtual ~Account() { };
 
-	virtual char* getType() { return "Account"; }
+	virtual const char* getType() { return "Account"; }
 
 	Account* getParent() { return (Account*) parent; }
 
