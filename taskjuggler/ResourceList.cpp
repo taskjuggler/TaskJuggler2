@@ -20,6 +20,13 @@
 
 extern Kotrus *kotrus;
 
+/*
+ * Calls to sbIndex are fairly expensive due to the floating point
+ * division. We therefor use a buffer that stores the index of the
+ * first slot of a day for each slot.
+ */
+static int* MidnightIndex = 0;
+
 int
 BookingList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
@@ -115,6 +122,20 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	sbSize = (p->getEnd() - p->getStart()) /
 		p->getScheduleGranularity() + 1;
 	planScoreboard = actualScoreboard = 0;
+
+	if (!MidnightIndex)
+	{
+		/*
+		 * Since we need to take daylight saving time switches into account
+		 * we have to add more than 24 hours to get to the next day. The
+		 * buffer must be big enough so we don't create overflows.
+		 */
+		uint midnightIndexSize = sbSize + 
+			(ONEDAY * 2) / p->getScheduleGranularity();
+		MidnightIndex = new int[midnightIndexSize];
+		for (uint i = 0; i < midnightIndexSize; i++)
+			MidnightIndex[i] = -1;
+	}
 }
 
 Resource::~Resource()
@@ -147,6 +168,8 @@ Resource::~Resource()
 			}
 		delete actualScoreboard;
 	}
+	delete MidnightIndex;
+	MidnightIndex = 0;
 }
 
 void
@@ -242,15 +265,25 @@ bool
 Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 {
 	// Check if the interval is booked or blocked already.
-	if (scoreboard[sbIndex(date)])
+	uint sbIdx = sbIndex(date);
+	if (scoreboard[sbIdx])
 		return FALSE;
 
 	time_t bookedTime = duration;
 	time_t bookedTimeTask = duration;
 
-	for (uint i = sbIndex(midnight(date));
-		 i < sbIndex(sameTimeNextDay(midnight(date)) - 1); i++)
-	{
+	if (MidnightIndex[sbIdx] == -1)
+		MidnightIndex[sbIdx] = sbIndex(midnight(date));
+	uint sbStart = MidnightIndex[sbIdx];
+
+	uint sbIdxEnd = sbIdx +
+	   	(uint) ((ONEDAY / project->getScheduleGranularity()) * 1.5);	
+	if (MidnightIndex[sbIdxEnd] == -1)
+		MidnightIndex[sbIdxEnd] = sbIndex(sameTimeNextDay(midnight(date)) - 1);
+	uint sbEnd = MidnightIndex[sbIdxEnd];
+	
+	for (uint i = sbStart; i < sbEnd; i++)
+   	{
 		Booking* b = scoreboard[i];
 		if (b < (Booking*) 4)
 			continue;

@@ -117,12 +117,6 @@ Task::schedule(time_t& date, time_t slotDuration)
 		return TRUE;
 	}
 
-	/* Check whether this task is a container tasks (task with sub-tasks).
-	 * Container tasks are scheduled when all sub tasks have been
-	 * scheduled. */
-	if (!sub.isEmpty())
-		return scheduleContainer();
-
 	bool limitChanged = FALSE;
 	if (start == 0 &&
 		(scheduling == Task::ASAP ||
@@ -321,42 +315,30 @@ Task::schedule(time_t& date, time_t slotDuration)
 bool
 Task::scheduleContainer()
 {
+	if (schedulingDone)
+		return TRUE;
+
 	Task* t;
-	bool changeMade = FALSE;
-	if (start != earliestStart() && earliestStart() != 0)
-	{
-		start = earliestStart();
-		propagateStart();
-		changeMade = TRUE;
-	}
-	if (end != latestEnd() && latestEnd() != 0)
-	{
-		end = latestEnd();
-		propagateEnd();
-		changeMade = TRUE;
-	}
 	time_t nstart = 0;
 	time_t nend = 0;
 
 	// Check that this is really a container task
 	if ((t = subFirst()))
 	{
-		/* Make sure that all sub tasks have been scheduled. If not we
-		 * can't yet schedule this task. */
 		if (t->start == 0 || t->end == 0)
-			return !changeMade;
+			return TRUE;
 		nstart = t->start;
 		nend = t->end;
 	}
 	else
-		return !changeMade;
+		return TRUE;
 
 	for (t = subNext() ; t != 0; t = subNext())
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
 		if (t->start == 0 || t->end == 0)
-			return !changeMade;
+			return TRUE;
 
 		if (t->start < nstart)
 			nstart = t->start;

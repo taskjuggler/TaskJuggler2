@@ -234,8 +234,11 @@ it's specified alternatives will be used for the whole task.
 ...............................................................................
 
 Specifies a resource that can be used to fullfill the task. More than
-one resource can be specified for a task. All resources must be
-declared before they can be used. Ref. 'resource'.
+one resource can be  specified for a task. All resources must be
+declared before they can be used. Ref. 'resource'. Resource
+allocations are mandatory for 'effort' based tasks. Task with a
+'length' or 'duration' specification may have resources allocated but
+do not require them.
 
 -------------------------------------------------------------------------------
 scheduling <policy>
