@@ -6,7 +6,7 @@
 #
 COMPILE_FIRST = taskjuggler
 
-EXTRA_DIST = taskjuggler.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO taskjuggler.lsm 
+EXTRA_DIST = admin AUTHORS COPYING ChangeLog INSTALL README TODO taskjuggler.lsm 
 
 AUTOMAKE_OPTIONS = foreign 
 
