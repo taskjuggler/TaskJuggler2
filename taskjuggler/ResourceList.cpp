@@ -188,19 +188,23 @@ Resource::initScoreboard()
 	for (time_t day = project->getStart(); day < project->getEnd();
 		 day = sameTimeNextDay(day))
 	{
+		const int dow = dayOfWeek(day);
+		QPtrList<Interval>* wHours = 0;
 		for (ShiftSelection* sl = shifts.first(); sl != 0;
 				sl = shifts.next())
-		{
 			if (sl->getPeriod().contains(day))
 			{
-				// TODO: Not yet implemented.
+				wHours = sl->getShift()->getWorkingHours(dow);
+				break;
 			}
-		}
+	
+		/* If we haven't found the day in the shifts we will fallback to
+		 * the standard working hours. */
+		if (!wHours)
+			wHours = workingHours[dow];
 		
 		// Iterate through all the work time intervals for the week day.
-		const int dow = dayOfWeek(day);
-		for (Interval* i = workingHours[dow]->first(); i != 0;
-			 i = workingHours[dow]->next())
+		for (Interval* i = wHours->first(); i != 0; i = wHours->next())
 		{
 			/* Construct an Interval that describes the working hours for
 			 * the current day using time_t. */

@@ -49,6 +49,13 @@ public:
 		delete workingHours[day];
 		workingHours[day] = l;
 	}
+
+	QPtrList<Interval>* getWorkingHours(int day)
+	{
+		if (day < 0 || day > 6)
+			qFatal("day out of range");
+		return workingHours[day];
+	}
 	
 private:
 	Shift() { }		// Don't use this.
@@ -79,6 +86,7 @@ public:
 	~ShiftSelection() { }
 
 	const Interval& getPeriod() const { return period; }
+	Shift* getShift() const { return shift; }
 
 private:
 	Interval period;
