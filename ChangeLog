@@ -2,8 +2,8 @@ Version 1.0.0 (2002-03-14)
 ==========================
 - Initial stable public release
 
-Unreleased Changes
-==================
+Version 1.0.1 (2002-03-15)
+==========================
 - Fixed completely broken global vacation handling
 - Added test case for vacation handling to test suite
 
