@@ -21,12 +21,12 @@
 #include "ktjview2.h"
 #include "settings.h"
 #include "gantt.h"
-#include "klistviewsearchline.h"
+//#include "klistviewsearchline.h"
 
 #include <qdragobject.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
-#include <qlabel.h>
+//#include <qlabel.h>
 
 #include <kprinter.h>
 #include <kglobal.h>
@@ -154,14 +154,9 @@ void ktjview2::setupActions()
              m_scaleAction, SLOT( setCurrentItem( int ) ) );
 
     // Filter toolbar
-    m_searchLabel = new QLabel( i18n( "&Filter:" ), this, "search_label" ); // FIXME
-    m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
-
-    m_searchLabel->setBuddy( m_searchLine );
-    ( void ) new KWidgetAction( m_searchLabel, i18n( "Filter label" ), KShortcut(), 0, 0,
-                                actionCollection(), "filter_label" );
-    ( void ) new KWidgetAction( m_searchLine, i18n( "Filter lineedit" ), KShortcut(), 0, 0,
-                                actionCollection(), "filter_lineedit" );
+    m_quickSearch = new QuickSearchWidget( this );
+    ( void ) new KWidgetAction( m_quickSearch, i18n( "Quick search" ), KShortcut(), 0, 0,
+                                actionCollection(), "quick_search" );
 
 #if 0
     // Resource menu
@@ -348,7 +343,8 @@ void ktjview2::slotSidebarGantt()
 
 void ktjview2::slotSidebarResources()
 {
-    m_searchLine->setListView( m_view->resListView() );
+    m_quickSearch->reset();
+    m_quickSearch->setListView( m_view->resListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
     enableGanttActions( false );
@@ -358,7 +354,8 @@ void ktjview2::slotSidebarResources()
 
 void ktjview2::slotSidebarTasks()
 {
-    m_searchLine->setListView( m_view->taskListView() );
+    m_quickSearch->reset();
+    m_quickSearch->setListView( m_view->taskListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
     enableGanttActions( false );

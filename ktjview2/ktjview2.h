@@ -30,10 +30,9 @@
 #include <kactionclasses.h>
 
 #include "ktjview2view.h"
+#include "quickSearchWidget.h"
 
-class QLabel;
 class KURL;
-class KListViewSearchLine;
 
 /**
  * This class serves as the main window for ktjview2.  It handles the
@@ -178,8 +177,7 @@ private:
     int m_activeFilter;
 
     // search line
-    QLabel * m_searchLabel;
-    KListViewSearchLine * m_searchLine;
+    QuickSearchWidget * m_quickSearch;
 
     // sidebar actions
     KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks;
