@@ -354,7 +354,7 @@ void ktjview2::fileNew()
 void ktjview2::fileOpen()
 {
     KURL url = KFileDialog::getOpenURL( ":projects", "*.tjp *.tjx *.tji|" + i18n( "Taskjuggler files (*.tjp *.tjx *.tji)" ),
-                                        this, i18n( "to open ...", "Open Project" ) );
+                                        this, i18n( "Open Project" ) );
     if ( !url.isEmpty() )
         load( url );
 

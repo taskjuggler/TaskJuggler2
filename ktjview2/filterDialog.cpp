@@ -53,7 +53,7 @@ FilterDialog::FilterDialog( FilterType type, QWidget * parent, const char * name
     // WARNING: don't change the order of items, must match FilterExpr
     m_conditions << i18n( "contains" ) << i18n( "doesn't contain" )
                  << i18n( "equals" ) << i18n( "doesn't equal" )
-                 << i18n( "matches reqexp" ) << i18n( "doesn't match regexp" )
+                 << i18n( "matches regexp" ) << i18n( "doesn't match regexp" )
                  << i18n( "greater than" ) << i18n( "less than or equal" )
                  << i18n( "less than" ) << i18n( "greater than or equal" );
     // TODO perhaps move this list to the filter class
