@@ -88,8 +88,8 @@ FileInfo::getC(bool expandMacros)
             QChar d;
             if ((d = getC(FALSE)) == '{')
             {
-                // remove $ from lineBuf;
-                lineBuf = lineBuf.left(lineBuf.length() - 1);
+                // remove ${ from lineBuf;
+                lineBuf = lineBuf.left(lineBuf.length() - 2);
                 readMacroCall();
                 goto BEGIN;
             }
@@ -400,11 +400,17 @@ FileInfo::readMacroCall()
 {
     QString id;
     TokenType tt;
+    /* For error reporting we need to replace the macro call with the macro
+     * text. So we save a copy of the current line buf (the ${ has already
+     * been removed) and copy it over the lineBuf again after we have read the
+     * complete macro call. */
+    QString lineBufCopy = lineBuf;
     if ((tt = nextToken(id)) != ID && tt != INTEGER)
     {
         errorMessage(i18n("Macro ID expected"));
         return FALSE;
     }
+    
     QString token;
     // Store all arguments in a newly created string list.
     QStringList* sl = new QStringList;
@@ -428,14 +434,16 @@ FileInfo::readMacroCall()
         return FALSE;
     }
 
+    lineBuf = lineBufCopy;
+
     // Push pointer to macro on stack. Needed for error handling.
     macroStack.append(pf->getMacros().getMacro(id));
 
     // mark end of macro
-    ungetC(QChar(EOMacro));
+    ungetBuf.append(QChar(EOMacro));
     // push expanded macro reverse into ungetC buffer.
     for (int i = macro.length() - 1; i >= 0; --i)
-        ungetC(macro[i].latin1());
+        ungetBuf.append(macro[i].latin1());
     return TRUE;
 }
 
@@ -451,6 +459,17 @@ FileInfo::returnToken(TokenType tt, const QString& buf)
     tokenBuf = buf;
 }
 
+QString
+FileInfo::cleanupLine(const QString& line)
+{
+    QString res;
+    for (uint i = 0; i < line.length(); ++i)
+        if (line[i] != QChar(EOMacro))
+            res += line[i];
+
+    return res;
+}
+
 void
 FileInfo::errorMessage(const char* msg, ...)
 {
@@ -459,9 +478,9 @@ FileInfo::errorMessage(const char* msg, ...)
     va_start(ap, msg);
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
-    
+   
     if (macroStack.isEmpty())
-        TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(lineBuf),
+        TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(lineBuf)),
                           file, currLine); 
     else
     {
@@ -472,7 +491,7 @@ FileInfo::errorMessage(const char* msg, ...)
                 + pf->getMacros().getArguments(i)->join("\" \"") + "\"}";
         TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
                                "\nThis is the macro call stack:%2").
-                          arg(buf).arg(lineBuf).arg(stackDump),
+                          arg(buf).arg(cleanupLine(lineBuf)).arg(stackDump),
                           macroStack.last()->getFile(),
                           macroStack.last()->getLine());
     }

@@ -3127,7 +3127,9 @@ ProjectFile::readFunctionCall(const QString& name)
         if ((i < ExpressionTree::arguments(name) - 1) &&
             nextToken(token) != COMMA)
         {
-            errorMessage(i18n("Comma expected"));
+            errorMessage(i18n("Comma expected. "
+                              "Function '%1' needs %2 arguments.")
+                         .arg(name).arg(ExpressionTree::arguments(name)));
             return 0;
         }
     }

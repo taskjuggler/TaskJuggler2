@@ -1,0 +1,18 @@
+project test "Test" "1.0" 2003-01-01 2003-02-01
+
+macro foo [
+  ${bar "${2}" "${1}"}
+]
+
+macro bar [
+  ${foobar "${1}" "hello" "${2}"}
+]
+
+macro foobar [
+  task ${1} "${2}" { ${3} }
+]
+
+task t1 "Task1" {
+  ${foo "arg1" "arg2"}
+}
+

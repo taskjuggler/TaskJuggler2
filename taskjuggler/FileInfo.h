@@ -54,6 +54,7 @@ public:
 
 private:
     bool getDateFragment(QString& token, QChar& c);
+    QString cleanupLine(const QString& line);
 
     /**
      * A pointer to the ProjectFile class that stores all read-in
