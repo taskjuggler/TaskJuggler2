@@ -233,7 +233,7 @@ void ktjview2::setupActions()
                                   m_view, SLOT( slotRUFind() ), actionCollection(), "ru_find" );
 
     // Tools menu
-    m_buildAction = new KAction( i18n( "&Rebuild project" ), "exec", KShortcut(),
+    m_buildAction = new KAction( i18n( "&Rebuild project" ), "gear", KShortcut(),
                                  m_view, SLOT( slotBuild() ), actionCollection(), "build" );
 
     // Sidebar
