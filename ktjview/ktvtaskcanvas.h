@@ -48,7 +48,10 @@ public slots:
     void slShowTask( Task*, int );
 
     void slHideTask( KTVTaskTableItem* );
-    void slMoveItems( int, int );
+    void slMoveItemsY( int, int );
+    void slUpdateTasks( );
+    /* move items horizontally */
+    void slMoveItemsX( int );
     void slShowMarker( int );
     void slShowDebugMarker( int );
     /**

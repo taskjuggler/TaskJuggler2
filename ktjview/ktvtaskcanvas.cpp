@@ -156,7 +156,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
 }
 
 
-void KTVTaskCanvas::slMoveItems( int y, int dy )
+void KTVTaskCanvas::slMoveItemsY( int y, int dy )
 {
    // Move all items residing on a higher y position than y by dy.
    qDebug( "Moving canvas items from %d by %d", y, dy );
@@ -177,6 +177,20 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
 
    if( m_canvasMarker && m_canvasMarker->y() >= y )
        m_canvasMarker->moveBy( 0, dy );
+}
+
+void KTVTaskCanvas::slMoveItemsX( int dx )
+{
+   // Move all items residing on a higher y position than y by dy.
+   qDebug( "Moving canvas items by %d (X-Axis)", dx );
+
+   const CanvasItemList ktvItems = getCanvasItemsList();
+   CanvasItemListIterator it(ktvItems);
+
+   for ( ; it.current(); ++it )
+   {
+       (*it)->moveBy(dx, 0);
+   }
 }
 
 
@@ -339,6 +353,32 @@ void KTVTaskCanvas::connectTasks( Task *fromTask, Task* actTask,
    /* No update here - slows down everything */
 }
 
+/*
+ *  Called if a new daywidth was applied. All tasks need to recalc
+ *  their x position and width.
+ */
+void KTVTaskCanvas::slUpdateTasks( )
+{
+   const CanvasItemList ktvItems = getCanvasItemsList();
+   CanvasItemListIterator it(ktvItems);
+
+   for ( ; it.current(); ++it )
+   {
+       KTVCanvasItemBase *item = (KTVCanvasItemBase*)(*it);
+       Task *t = item->getTask();
+       
+       if( t )
+       {
+	   int x = item->x();
+
+	   int newStartX = m_header->timeToX( t->getStart(0)); // calculated with new values
+	   int newEndX   = m_header->timeToX( t->getEnd(0));
+
+	   item->setSize( newEndX-newStartX, item->height() );
+	   item->moveBy( newStartX-x, 0 );
+       }
+   }
+}
 
 
 /* called on selectionChanged of the listview */

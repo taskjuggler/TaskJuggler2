@@ -63,6 +63,15 @@ void KTVTaskCanvasView::showProject( Project *p )
    m_canvas->resize( w, h );
 }
 
+void KTVTaskCanvasView::syncInterval()
+{
+   int w = m_header->overallWidth();
+   int h = m_canvas->height();
+   qDebug("Resizing canvas to %dx%d", w, h );
+   m_canvas->resize( w, h );
+   updateContents();
+    
+}
 
 KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 {
@@ -127,7 +136,9 @@ void KTVTaskCanvasView::zoomIn()
     qDebug("Setting daywidth %d", w );
     m_header->slSetDayWidth( w );
     xScrollToTime( 50, centerTime );
-    update();
+    syncInterval();
+    m_canvas->slUpdateTasks();
+    updateContents();
 }
 
 void KTVTaskCanvasView::zoomOut()
@@ -142,7 +153,9 @@ void KTVTaskCanvasView::zoomOut()
     m_header->slSetDayWidth( w );
     int perc = 50;
     xScrollToTime( perc, centerTime );
-    update();
+    syncInterval();
+    m_canvas->slUpdateTasks();
+    updateContents();
 
 }
 
@@ -151,7 +164,9 @@ void KTVTaskCanvasView::zoomOriginal()
     time_t centerTime = getCenterTime();
     // m_canvas->slSetDayWidthStandard();
     xScrollToTime( 50, centerTime );
-    update();
+    syncInterval();
+    m_canvas->slUpdateTasks();
+    updateContents();
 }
 
 void KTVTaskCanvasView::clear()

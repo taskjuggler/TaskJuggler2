@@ -335,7 +335,7 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
            child = child->nextSibling();
        }
 
-       m_canvasView->getCanvas()->slMoveItems(y + m_itemHeight, -1 * childCnt * m_itemHeight );
+       m_canvasView->getCanvas()->slMoveItemsY(y + m_itemHeight, -1 * childCnt * m_itemHeight );
        emit moveItems( y + m_itemHeight, -1 * childCnt * m_itemHeight );
        slUpdateCanvas();
    }
@@ -352,7 +352,7 @@ void KTVTaskTable::slExpanded( QListViewItem* it)
 
         // emit moveItems( y, childCnt * m_itemHeight );
         /* move items of the whole canvas to gain space for the new subproject */
-        m_canvasView->getCanvas()->slMoveItems( y, childCnt*m_itemHeight );
+        m_canvasView->getCanvas()->slMoveItemsY( y, childCnt*m_itemHeight );
 
         QListViewItem* child = it->firstChild();
         while( child )

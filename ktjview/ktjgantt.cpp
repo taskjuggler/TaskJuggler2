@@ -115,15 +115,54 @@ void KTJGantt::showProject( Project *p )
 
 void KTJGantt::setInterval( time_t start, time_t end )
 {
-    m_start = start;
-    m_end = end;
-    m_header->setInterval( start, end );
+    time_t oldStart = m_header->startTime();
+    time_t oldEnd   = m_header->endTime();
+
+    bool needNewInterval = false;
+
+    if( oldStart == 0 || oldEnd == 0 )
+    {
+	needNewInterval = true;
+    }
+    else
+    {
+	if( oldStart != start ) {
+	    /* We need to resize the canvas and move the items of the canvas
+	     * by the difference
+	     */
+	    long diff = (m_header->timeToX(oldStart)) - (m_header->timeToX(start));
+	    m_canvas->getCanvas()->slMoveItemsX(diff);
+	    qDebug("Diff to move horizontal: %ld", diff );
+	    needNewInterval = true;
+	}
+
+	if( oldEnd != end )
+	{
+	    /* We need to resize the canvas but do not have to move items */
+	    needNewInterval = true;
+	}
+    }
+
+    if( needNewInterval )
+    {
+	m_header->setInterval( start, end );
+	m_canvas->syncInterval();
+	update();
+    }
 }
+
+#if 0 
+void KTJGantt::update()
+{
+    QSplitter::update();
+    m_header->repaint();
+    m_canvas->repaint();
+}
+#endif
 
 void KTJGantt::slZoomIn()
 {
    m_canvas->zoomIn();
-   update();
 }
 
 void KTJGantt::slZoomOut()
@@ -138,10 +177,11 @@ void KTJGantt::slZoomOriginal()
 
 void KTJGantt::slTimeFrame()
 {
-    qDebug("Changing Time Frame" );
-
-    m_timeDialog = new TimeDialog( this, m_start, m_end );
+    m_timeDialog = new TimeDialog( this,
+				   m_header->startTime(),
+				   m_header->endTime() );
     connect( m_timeDialog, SIGNAL( applyClicked()), this, SLOT( slTimeFromDialog() ) );
+    connect( m_timeDialog, SIGNAL( okClicked()), this, SLOT( slTimeFromDialog()));
     m_timeDialog->exec();
 
 }
@@ -153,6 +193,9 @@ void KTJGantt::slTimeFromDialog()
         QDate dFrom = m_timeDialog->getStartDate();
         QDate dTo   = m_timeDialog->getEndDate();
 
+	qDebug("New time interval: "+dFrom.toString() );
+
+	setInterval( QDateTime(dFrom).toTime_t(), QDateTime(dTo).toTime_t() );
 
     }
 }

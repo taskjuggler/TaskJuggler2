@@ -59,6 +59,9 @@ public:
     void clear();
     
 public slots:
+
+// void update();
+    
     void slZoomIn();
     void slZoomOut();
     void slZoomOriginal();
@@ -85,8 +88,6 @@ private:
 
     bool                m_weekStartMon;
     bool                m_doTableMove;
-    time_t              m_start;
-    time_t              m_end;
 
     TimeDialog          *m_timeDialog;
 };

@@ -56,6 +56,11 @@ public:
      */
     void xScrollToTime( int, time_t );
 
+    /**
+     * sync to the time frame of the header and redraw.
+     */
+    void syncInterval();
+    
 protected:
     void contentsMousePressEvent( QMouseEvent * );
 
