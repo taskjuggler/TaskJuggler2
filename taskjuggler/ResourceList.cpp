@@ -115,7 +115,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 		efficiency = 1.0;
 	}
 
-	long sbSize = (p->getEnd() - p->getStart()) /
+	sbSize = (p->getEnd() - p->getStart()) /
 		p->getScheduleGranularity() + 1;
 	scoreboard = new (Booking*)[sbSize];
 }
@@ -400,7 +400,7 @@ void
 Resource::preparePlan()
 {
 	jobs.clear();
-	for (long i = 0; i < sbSize; i++)
+	for (uint i = 0; i < sbSize; i++)
 		scoreboard[i] = (Booking*) 0;
 }
 
@@ -418,7 +418,7 @@ void
 Resource::prepareActual()
 {
 	jobs.clear();
-	for (long i = 0; i < sbSize; i++)
+	for (uint i = 0; i < sbSize; i++)
 		scoreboard[i] = (Booking*) 0;
 }
 

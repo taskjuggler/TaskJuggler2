@@ -225,6 +225,7 @@ private:
 	BookingList jobs;
 
 	Booking** scoreboard;
+	uint sbSize;
 } ;
 
 #endif
