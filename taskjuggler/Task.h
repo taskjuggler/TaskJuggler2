@@ -298,7 +298,7 @@ public:
 	 */
 	bool isCompleted(time_t date) const;
 	double getCompleteAtTime(time_t) const;
-	bool scheduleOk(int& errors);
+	bool scheduleOk(int& errors, QString scenario);
 	bool preScheduleOk();
 	bool loopDetector();
 	bool loopDetection(LDIList list, bool atEnd, bool fromSub);
@@ -331,7 +331,7 @@ public:
 	bool hasActualValues() const
 	{
 		return actualStart != 0 || actualEnd != 0 || actualLength != 0 ||
-			actualDuration != 0 || actualEffort != 0;
+			actualDuration != 0 || actualEffort != 0 || complete != -1;
 	}
 
 	QDomElement xmlElement( QDomDocument& doc, bool absId = true );

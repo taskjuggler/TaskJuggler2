@@ -162,7 +162,7 @@ Project::pass2()
 	if (DEBUGPS(1))
 		qWarning("Scheduling plan scenario...");
 	preparePlan();
-	if (!schedule())
+	if (!schedule("Plan"))
 		error = TRUE;
 	finishPlan();
 
@@ -171,7 +171,7 @@ Project::pass2()
 		if (DEBUGPS(1))
 			qWarning("Scheduling actual scenario...");
 		prepareActual();
-		if (!schedule())
+		if (!schedule("Actual"))
 			error = TRUE;
 		finishActual();
 	}
@@ -230,13 +230,19 @@ Project::finishActual()
 }
 
 bool
-Project::schedule()
+Project::schedule(const QString& scenario)
 {
 	bool error = FALSE;
 
 	TaskList sortedTasks(taskList);
 	sortedTasks.setSorting(CoreAttributesList::PrioDown, 0);
+	sortedTasks.setSorting(CoreAttributesList::SequenceUp, 1);
 	sortedTasks.sort();
+
+	activeAsap.setSorting(CoreAttributesList::PrioDown, 0);
+	activeAsap.setSorting(CoreAttributesList::SequenceUp, 1);
+	activeAlap.setSorting(CoreAttributesList::PrioDown, 0);
+	activeAlap.setSorting(CoreAttributesList::SequenceUp, 1);
 
 	time_t timeDelta = scheduleGranularity;
 	bool done = FALSE;
@@ -337,7 +343,7 @@ Project::schedule()
 						"Start of task %1 does not fit into the project time "
 						"frame.").arg(t->getId()));
 
-	if (!checkSchedule())
+	if (!checkSchedule(scenario))
 		error = TRUE;
 
 	return !error;
@@ -352,7 +358,7 @@ Project::updateActiveTaskList(TaskList& sortedTasks)
 }
 
 bool
-Project::checkSchedule()
+Project::checkSchedule(const QString& scenario)
 {
 	int errors = 0;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
@@ -360,7 +366,7 @@ Project::checkSchedule()
 		/* Only check top-level tasks, since they recursively check their sub
 		 * tasks. */
 		if (t->getParent() == 0)
-			t->scheduleOk(errors);
+			t->scheduleOk(errors, scenario);
 		if (errors >= 10)
 			break;
 	}

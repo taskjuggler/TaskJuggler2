@@ -207,6 +207,10 @@ Task::fatalError(const char* msg, ...) const
 bool
 Task::schedule(time_t& date, time_t slotDuration)
 {
+	if (DEBUGTS(15))
+		qWarning("Scheduling %s at %s",
+				 id.latin1(), time2tjp(date).latin1());
+
 	// Task is already scheduled.
 	if (schedulingDone)
 	{
@@ -1600,12 +1604,12 @@ Task::preScheduleOk()
 }
 
 bool
-Task::scheduleOk(int& errors)
+Task::scheduleOk(int& errors, QString scenario)
 {
 	/* It is of little use to report errors of container tasks, if any of
 	 * their sub tasks has errors. */
 	for (Task* t = subFirst(); t; t = subNext())
-		if (t->scheduleOk(errors))
+		if (t->scheduleOk(errors, scenario))
 			return FALSE;
 	
 	/* Runaway errors have already been reported. Since the data of this task
@@ -1624,56 +1628,56 @@ Task::scheduleOk(int& errors)
 
 	if (start == 0)
 	{
-		fatalError("Task '%s' has no start time.", id.latin1());
+		fatalError(QString("Task '%1' has no %2 start time.")
+				   .arg(id).arg(scenario.lower()));
 		errors++;
 		return FALSE;
 	}
 	if (start < minStart)
 	{
-		fatalError("Start time of task %s is too early\n"
-				   "Date is:  %s\n"
-				   "Limit is: %s",
-				   id.latin1(),
-				   time2tjp(start).latin1(),
-				   time2tjp(minStart).latin1());
+		fatalError(QString("%1 start time of task %2 is too early\n"
+						   "Date is:  %3\n"
+						   "Limit is: %4")
+				   .arg(scenario).arg(id).arg(time2tjp(start))
+				   .arg(time2tjp(minStart)));
 		errors++;
 		return FALSE;
 	}
 	if (maxStart < start)
 	{
-		fatalError("Start time of task %s is too late\n"
-				   "Date is:  %s\n"
-				   "Limit is: %s",
-				   id.latin1(),
-				   time2tjp(start).latin1(),
-				   time2tjp(maxStart).latin1());
+		fatalError(QString("%1 start time of task %2 is too late\n"
+						   "Date is:  %3\n"
+						   "Limit is: %4")
+				   .arg(scenario).arg(id)
+				   .arg(time2tjp(start)).arg(time2tjp(maxStart)));
 		errors++;
 		return FALSE;
 	}
 	if (end == 0)
 	{
-		fatalError("Task '%s' has no end time.", id.latin1());
+		fatalError(QString("Task '%1' has no %2 end time.")
+				   .arg(id).arg(scenario.lower()));
 		return FALSE;
 	}
 	if (end + (milestone ? 1 : 0) < minEnd)
 	{
-		fatalError("End time of task %s is too early\n"
-				   "Date is:  %s\n"
-				   "Limit is: %s",
-				   id.latin1(),
-				   time2tjp(end + (milestone ? 1 : 0)).latin1(),
-				   time2tjp(minEnd).latin1());
+		fatalError(QString("%1 end time of task %2 is too early\n"
+						   "Date is:  %3\n"
+						   "Limit is: %4")
+				   .arg(scenario).arg(id)
+				   .arg(time2tjp(end + (milestone ? 1 : 0)))
+				   .arg(time2tjp(minEnd)));
 		errors++;
 		return FALSE;
 	}
 	if (maxEnd < end + (milestone ? 1 : 0))
 	{
-		fatalError("End time of task %s is too late\n"
-				   "Date is:  %s\n"
-				   "Limit is: %s",
-				   id.latin1(),
-				   time2tjp(end + (milestone ? 1 : 0)).latin1(),
-				   time2tjp(maxEnd).latin1());
+		fatalError(QString("%1 end time of task %2 is too late\n"
+						   "Date is:  %2\n"
+						   "Limit is: %3")
+				   .arg(scenario).arg(id)
+				   .arg(time2tjp(end + (milestone ? 1 : 0)))
+				   .arg(time2tjp(maxEnd)));
 		errors++;
 		return FALSE;
 	}
@@ -1686,8 +1690,9 @@ Task::scheduleOk(int& errors)
 			{
 				if (!t->runAway)
 				{
-					fatalError("Task %s starts ealier than parent",
-							   t->id.latin1());
+					fatalError(QString("Task %1 has ealier %2 start than "
+									   "parent")
+							   .arg(id).arg(scenario.lower()));
 					errors++;
 				}
 				return FALSE;
@@ -1696,8 +1701,8 @@ Task::scheduleOk(int& errors)
 			{
 				if (!t->runAway)
 				{
-					fatalError("Task %s ends later than parent",
-							   t->id.latin1());
+					fatalError(QString("Task %1 has later %2 end than parent")
+							   .arg(id).arg(scenario.lower()));
 					errors++;
 				}
 				return FALSE;
@@ -1709,11 +1714,11 @@ Task::scheduleOk(int& errors)
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end > start && !t->runAway)
 		{
-			fatalError("Impossible dependency:\n"
-					   "Task %s ends at %s but needs to preceed\n"
-					   "task %s which starts at %s",
-					   t->id.latin1(), time2tjp(t->end).latin1(),
-					   id.latin1(), time2tjp(start).latin1());
+			fatalError(QString("Impossible dependency:\n"
+							   "Task %1 ends at %2 but needs to preceed\n"
+							   "task %3 which has a %4 start time of %5")
+					   .arg(t->id).arg(time2tjp(t->end).latin1())
+					   .arg(id).arg(scenario.lower()).arg(time2tjp(start)));
 			errors++;
 			return FALSE;
 		}
@@ -1721,22 +1726,21 @@ Task::scheduleOk(int& errors)
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (end > t->start && !t->runAway)
 		{
-			fatalError("Impossible dependency:\n"
-					   "Task %s starts at %s but needs to follow\n"
-					   "task %s which ends at %s",
-					   t->id.latin1(), time2tjp(t->start).latin1(),
-					   id.latin1(), time2tjp(end).latin1());
+			fatalError(QString("Impossible dependency:\n"
+							   "Task %1 starts at %2 but needs to follow\n"
+							   "task %3 which has a %4 end time of %5")
+					   .arg(t->id).arg(time2tjp(t->start))
+					   .arg(id).arg(scenario.lower()).arg(time2tjp(end)));
 			errors++;
 			return FALSE;
 		}
 
 	if (!schedulingDone)
 	{
-		fatalError("Task %s has not been marked completed.\n"
-				   "It is scheduled to last from %s to %s.\n"
-				   "This might be a bug in the TaskJuggler scheduler.",
-				   id.latin1(), time2tjp(start).latin1(),
-				   time2tjp(end).latin1());
+		fatalError(QString("Task %1 has not been marked completed.\n"
+						   "It is scheduled to last from %2 to %3.\n"
+						   "This might be a bug in the TaskJuggler scheduler.")
+				   .arg(id).arg(time2tjp(start)).arg(time2tjp(end)));
 		errors++;
 		return FALSE;
 	}

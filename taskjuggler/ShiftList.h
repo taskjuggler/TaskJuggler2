@@ -27,8 +27,8 @@ public:
 	ShiftList()
 	{
 		sorting[0] = IndexUp;
-		sorting[1] = Sequence;
-		sorting[2] = Sequence;
+		sorting[1] = SequenceUp;
+		sorting[2] = SequenceUp;
 	}
 	~ShiftList() { }
 

@@ -62,7 +62,8 @@ CoreAttributesList::isSupportedSortingCriteria
 {
 	switch (sc)
 	{
-	case Sequence:
+	case SequenceUp:
+	case SequenceDown:
 	case TreeMode:
 	case FullNameDown:
 	case FullNameUp:
@@ -86,9 +87,12 @@ CoreAttributesList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 	
 	switch (sorting[level])
 	{
-	case Sequence:
+	case SequenceUp:
 		return c1->getSequenceNo() == c2->getSequenceNo() ? 0 :
 			c1->getSequenceNo() < c2->getSequenceNo() ? -1 : 1;
+	case SequenceDown:
+		return c1->getSequenceNo() == c2->getSequenceNo() ? 0 :
+			c1->getSequenceNo() > c2->getSequenceNo() ? -1 : 1;
 	case TreeMode:
 	{
 		if (level == 0)

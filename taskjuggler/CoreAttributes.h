@@ -26,21 +26,23 @@ public:
 	CoreAttributesList()
    	{
 		for (int i = 0; i < maxSortingLevel; i++)
-			sorting[i] = Sequence;
+			sorting[i] = SequenceUp;
    	}
 	virtual ~CoreAttributesList();
 
-	enum SortCriteria { Sequence, TreeMode, NameUp, NameDown, FullNameUp,
-						FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
-						PlanStartUp, PlanStartDown, PlanEndUp, PlanEndDown,
-						ActualStartUp, ActualStartDown,
-					   	ActualEndUp, ActualEndDown,
-						PrioUp, PrioDown,
-						ResponsibleUp, ResponsibleDown,
-						MinEffortUp, MinEffortDown,
-						MaxEffortUp, MaxEffortDown,
-						RateUp, RateDown,
-						KotrusIdUp, KotrusIdDown
+	enum SortCriteria {
+	   	SequenceUp, SequenceDown,
+		TreeMode, NameUp, NameDown, FullNameUp,
+		FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
+		PlanStartUp, PlanStartDown, PlanEndUp, PlanEndDown,
+		ActualStartUp, ActualStartDown,
+		ActualEndUp, ActualEndDown,
+		PrioUp, PrioDown,
+		ResponsibleUp, ResponsibleDown,
+		MinEffortUp, MinEffortDown,
+		MaxEffortUp, MaxEffortDown,
+		RateUp, RateDown,
+		KotrusIdUp, KotrusIdDown
 	};
 
 	static const int maxSortingLevel = 3;

@@ -27,9 +27,9 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 {
 	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
 	{
-		taskSortCriteria[i] = CoreAttributesList::Sequence;
-		resourceSortCriteria[i] = CoreAttributesList::Sequence;
-		accountSortCriteria[i] = CoreAttributesList::Sequence;
+		taskSortCriteria[i] = CoreAttributesList::SequenceUp;
+		resourceSortCriteria[i] = CoreAttributesList::SequenceUp;
+		accountSortCriteria[i] = CoreAttributesList::SequenceUp;
 	}
 
 	weekStartsMonday = p->getWeekStartsMonday();
@@ -299,7 +299,7 @@ Report::sortTaskList(TaskList& filteredList)
 	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		// Set sorting criteria so sequence no since list.contains() needs it.
-		filteredList.setSorting(CoreAttributesList::Sequence, 0);
+		filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
 		for (Task* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{
@@ -360,7 +360,7 @@ Report::sortResourceList(ResourceList& filteredList)
 	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		// Set sorting criteria so sequence no since list.contains() needs it.
-		filteredList.setSorting(CoreAttributesList::Sequence, 0);
+		filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
 		for (Resource* r = filteredList.first(); r != 0;
 			 r = filteredList.next())
 		{
@@ -413,7 +413,7 @@ Report::sortAccountList(AccountList& filteredList)
 	if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		// Set sorting criteria so sequence no since list.contains() needs it.
-		list.setSorting(CoreAttributesList::Sequence, 0);
+		list.setSorting(CoreAttributesList::SequenceUp, 0);
 		for (Account* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{

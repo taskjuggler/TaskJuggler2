@@ -10,8 +10,8 @@
  * $Id$
  */
 
-#define DEBUGPF(l) ((debugMode & 1) && debugLevel >= l)
-#define DEBUGPS(l) ((debugMode & 2) && debugLevel >= l)
-#define DEBUGTS(l) ((debugMode & 4) && debugLevel >= l)
-#define DEBUGRS(l) ((debugMode & 8) && debugLevel >= l)
+#define DEBUGPF(l) ((debugMode & 1) && debugLevel >= l)	// Project File Reader
+#define DEBUGPS(l) ((debugMode & 2) && debugLevel >= l)	// Project Scheduler
+#define DEBUGTS(l) ((debugMode & 4) && debugLevel >= l)	// Task Scheduler
+#define DEBUGRS(l) ((debugMode & 8) && debugLevel >= l)	// Resource Scheduler
 

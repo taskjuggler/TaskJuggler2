@@ -49,7 +49,7 @@ public:
 	void finishPlan();
 	void prepareActual();
 	void finishActual();
-	bool schedule();
+	bool schedule(const QString& scenario);
 
 	void setName(const QString& n) { name = n; }
 	const QString& getName() const { return name; }
@@ -272,7 +272,7 @@ public:
 	}
 
 private:
-	bool checkSchedule();
+	bool checkSchedule(const QString& scenario);
 	void updateActiveTaskList(TaskList& sortedTasks);
 
 	/// The start date of the project
