@@ -5,10 +5,14 @@ Current features:
 - (flat) task list
 - (tree) resource list
 - gantt chart (with task dependencies)
-
 - sorting
+- quick search bar for searching and filtering the listviews
 
 
 Planned features:
-- filtering
-- searching
+- storable filters
+
+
+For the complete list, see:
+http://w3d.suse.de/Members/joe/projects/taskjuggler/ScheduleViewer
+
