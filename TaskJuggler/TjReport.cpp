@@ -25,6 +25,7 @@
 
 #include "Project.h"
 #include "Task.h"
+#include "Resource.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
 #include "Report.h"
@@ -103,6 +104,23 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
 bool
 TjReport::generateTaskReport()
 {
+    setLoadingProject(TRUE);
+
+    if (!generateTaskList())
+    {
+        setLoadingProject(FALSE);
+        return FALSE;
+    }
+    generateGanttChart(TRUE);
+
+    setLoadingProject(FALSE);
+
+    return TRUE;
+}
+
+bool
+TjReport::generateTaskList()
+{
     // Remove all items and columns from list view.
     listView->clear();
     while (listView->columns())
@@ -111,14 +129,19 @@ TjReport::generateTaskReport()
     if (!reportDef)
         return FALSE;
 
+    // We need those values frequently. So let's store them in a more
+    // accessible place.
     reportElement =
         (dynamic_cast<QtTaskReport*>(reportDef))->getTable();
     scenario = reportElement->getScenario(0);
-
     taskList = reportDef->getProject()->getTaskList();
 
+    // QListView can hide subtasks. So we feed the list with all tasks first
+    // and then later close those items that we want to roll up. This
+    // expression means "roll-up none".
     ExpressionTree* et = new ExpressionTree;
     et->setTree("0", reportDef->getProject());
+
     if (!reportElement->filterTaskList(taskList, 0,
                                        reportElement->getHideTask(), et))
         return FALSE;
@@ -126,65 +149,65 @@ TjReport::generateTaskReport()
     if (taskList.isEmpty())
         return TRUE;
 
-    setLoadingProject(TRUE);
-    if (strcmp(reportDef->getType(), "QtTaskReport") == 0)
-    {
-        generateLeftHeader();
-        generateRightHeader();
+    generateLeftHeader();
 
-        for (TaskListIterator tli(reportDef->getProject()->
-                                  getTaskListIterator()); *tli; ++tli)
+    for (TaskListIterator tli(reportDef->getProject()->
+                              getTaskListIterator()); *tli; ++tli)
+    {
+        KListViewItem* newLvi;
+        if ((*tli)->getParent())
         {
-            KListViewItem* newLvi;
-            if ((*tli)->getParent())
+            newLvi = new KListViewItem
+                (listView->findItem((*tli)->getParent()->getId(),
+                                    1), (*tli)->getName(),
+                 (*tli)->getId());
+        }
+        else
+        {
+            newLvi = new KListViewItem(listView, (*tli)->getName(),
+                                       (*tli)->getId());
+        }
+
+        if ((*tli)->isContainer())
+        {
+            if (reportDef->getRollUpTask())
             {
-                newLvi = new KListViewItem
-                    (listView->findItem((*tli)->getParent()->getId(),
-                                              1), (*tli)->getName(),
-                     (*tli)->getId());
+                if (!reportDef->isRolledUp(*tli,
+                                           reportElement->getRollUpTask()))
+                    newLvi->setOpen(TRUE);
+                if (reportElement->getRollUpTask()->getErrorFlag())
+                    return FALSE;
             }
             else
-            {
-                newLvi = new KListViewItem(listView, (*tli)->getName(),
-                                          (*tli)->getId());
-            }
-
-            if (!reportDef->isRolledUp(*tli, reportElement->getRollUpTask()))
-            {
                 newLvi->setOpen(TRUE);
-            }
-
-            if (reportElement->getRollUpTask()->getErrorFlag())
-                return FALSE;
-
-            int column = 2;
-            for (QPtrListIterator<TableColumnInfo>
-                 ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
+        }
+        else
+        {
+            for (ResourceListIterator rli((*tli)->
+                                          getBookedResourcesIterator(scenario));
+                 *rli; ++rli)
             {
-                if ((*ci)->getName() == "start")
-                    newLvi->setText(column,
-                                   time2user((*tli)->getStart(scenario),
-                                             reportDef->getTimeFormat()));
-                else if ((*ci)->getName() == "end")
-                    newLvi->setText(column,
-                                   time2user(((*tli)->isMilestone() ? 1 :
-                                              0) + (*tli)->getEnd(scenario),
-                                             reportDef->getTimeFormat()));
+                new KListViewItem(newLvi, (*rli)->getName(),
+                                  (*rli)->getFullId());
             }
         }
+
+        int column = 2;
+        for (QPtrListIterator<TableColumnInfo>
+             ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
+        {
+
+            if ((*ci)->getName() == "start")
+                newLvi->setText(column,
+                                time2user((*tli)->getStart(scenario),
+                                          reportDef->getTimeFormat()));
+            else if ((*ci)->getName() == "end")
+                newLvi->setText(column,
+                                time2user(((*tli)->isMilestone() ? 1 :
+                                           0) + (*tli)->getEnd(scenario),
+                                          reportDef->getTimeFormat()));
+        }
     }
-
-    // Insert the Y Position of the lvi into the hash table. Use the
-    // address converted to a QString as key.
-    int yPos = 0;
-    for (QListViewItem* lvi = listView->firstChild(); lvi;
-         yPos += lvi->height(), lvi = lvi->itemBelow())
-        lvi2yPosDict.insert(QString().sprintf("%p", lvi), new int(yPos));
-    // Same for the core attribute pointer.
-//        ca2lviDict.insert(QString().sprintf("%p", *tli), newLvi);
-
-    generateGanttChart(TRUE);
-    setLoadingProject(FALSE);
 
     return TRUE;
 }
@@ -205,7 +228,7 @@ TjReport::generateGanttChart(bool autoFit)
     // Calculate some commenly used values;
     headerHeight = listView->header()->height();
     itemHeight = listView->lastItem()->height();
-    listHeight = listView->lastItem()->itemPos() + itemHeight;
+    listHeight = listView->lastItem()->itemPos();
 
     int overallDuration;
     if (autoFit)
@@ -356,8 +379,20 @@ TjReport::generateDayHeader(int y)
         line->show();
 
         // Draw day of month.
-        QCanvasText* text = new QCanvasText
-            (QString("%1").arg(dayOfMonth(day)), ganttHeader);
+        QString label;
+        int stepSize = pixelPerYear / 365;
+        if (stepSize > 70)
+            label = QString("%1, %2 %3")
+                .arg(QDate::shortDayName(dayOfWeek(day, TRUE) + 1))
+                .arg(QDate::shortMonthName(monthOfYear(day)))
+                .arg(dayOfMonth(day));
+        else if (stepSize > 45)
+            label = QString("%1 %2")
+                .arg(QDate::shortDayName(dayOfWeek(day, TRUE) + 1))
+                .arg(dayOfMonth(day));
+        else
+            label = QString("%1").arg(dayOfMonth(day));
+        QCanvasText* text = new QCanvasText(label, ganttHeader);
         text->setX(x + 2);
         text->setY(y);
         text->setZ(1);
@@ -424,6 +459,20 @@ TjReport::generateMonthHeader(int y, bool withYear)
         text->move(x + 2, y);
         text->setZ(1);
         text->show();
+
+        if (pixelPerYear / 12 > 600)
+        {
+            x += pixelPerYear / (2 * 12);
+            // Draw month name (and year).
+            QString s = withYear ?
+                QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(month)))
+                .arg(::year(month)) :
+                QString("%1").arg(QDate::shortMonthName(monthOfYear(month)));
+            QCanvasText* text = new QCanvasText(s, ganttHeader);
+            text->move(x + 2, y);
+            text->setZ(1);
+            text->show();
+        }
     }
 }
 
@@ -623,6 +672,8 @@ TjReport::generateGanttTasks()
         {
             generateTask(*tli, lvi->itemPos());
             generateDependencies(*tli, lvi);
+            if (lvi->isOpen())
+                generateTaskResources(*tli, lvi->itemPos());
         }
     }
 }
@@ -800,6 +851,146 @@ TjReport::generateDependencies(Task* const t1, QListViewItem* t1lvi)
     }
 }
 
+void
+TjReport::generateTaskResources(Task* const t, int taskY)
+{
+    Interval iv;
+    int rY = taskY + itemHeight;
+    for (ResourceListIterator rli(t->getBookedResourcesIterator(scenario));
+         *rli; ++rli)
+    {
+        switch (stepUnit)
+        {
+            case day:
+                for (time_t i = midnight(t->getStart(scenario));
+                     i <= (t->getEnd(scenario)); i = sameTimeNextDay(i))
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextDay(i), rY);
+                break;
+            case week:
+                for (time_t i = beginOfWeek(t->getStart(scenario),
+                                            t->getProject()->
+                                            getWeekStartsMonday());
+                     i <= (t->getEnd(scenario)); i = sameTimeNextWeek(i))
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextWeek(i), rY);
+                break;
+            case month:
+                for (time_t i = beginOfMonth(t->getStart(scenario));
+                     i <= (t->getEnd(scenario)); i = sameTimeNextMonth(i))
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextMonth(i), rY);
+                break;
+            case quarter:
+                for (time_t i = beginOfQuarter(t->getStart(scenario));
+                     i <= (t->getEnd(scenario)); i = sameTimeNextQuarter(i))
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextQuarter(i),
+                                          rY);
+                break;
+            case year:
+                for (time_t i = beginOfYear(t->getStart(scenario));
+                     i <= (t->getEnd(scenario)); i = sameTimeNextYear(i))
+                    drawResourceLoadColum(t, *rli, i, sameTimeNextYear(i), rY);
+                break;
+            default:
+                kdError() << "Unknown stepUnit";
+                break;
+        }
+        rY += itemHeight;
+    }
+}
+
+void
+TjReport::drawResourceLoadColum(Task* const t, Resource* const r,
+                                time_t start, time_t end, int rY)
+{
+    int cellStart = time2x(start);
+    int cellEnd = time2x(end);
+
+    // We will draw the load column into the cell with a margin of 1 pixel
+    // plus the cell seperation line.
+    // Let's try a first shot for column start and width.
+    int cx = cellStart + 2;
+    int cw = cellEnd - cellStart - 3;
+    // Now we trim it so it does not extend over the ends of the task bar. We
+    // also trim the interval so the load is only calculated for intervals
+    // within the task period.
+    if (start < t->getStart(scenario))
+    {
+        start = t->getStart(scenario);
+        cx = time2x(t->getStart(scenario));
+        cw -= time2x(end) - 1 - cx;
+    }
+    if (end > t->getEnd(scenario))
+    {
+        end = t->getEnd(scenario);
+        cw = time2x(t->getEnd(scenario)) - cx;
+    }
+    // Since the above calculation might have destroyed our 1 pixel margin, we
+    // check it again.
+    if (cx < cellStart + 2)
+        cx = cellStart + 2;
+    if (cx + cw > cellEnd - 2)
+        cw = cellEnd - 2 - cx;
+
+    // Now we are calculation the load of the resource with respect to this
+    // task, to all tasks, and we calculate the not yet allocated load.
+    Interval period(start, end);
+    double freeLoad = r->getAvailableWorkLoad(scenario, period);
+    double taskLoad = r->getLoad(scenario, period, AllAccounts, t);
+    double load = r->getLoad(scenario, period, AllAccounts);
+    double otherLoad = load - taskLoad;
+    double maxLoad = load + freeLoad;
+    if (maxLoad <= 0.0)
+        return;
+
+    // Transform the load values into colum Y coordinates.
+    int colBottom = rY + itemHeight - 1;
+    int colTop = rY + 1;
+    int colTaskLoadTop = colBottom - (int) ((colBottom - colTop) *
+                                            (taskLoad / maxLoad));
+    int colOtherLoadTop = colBottom - (int) ((colBottom - colTop) *
+                                             (load / maxLoad));
+
+    // Just some interim variables so we can change the color with only a
+    // single change.
+    QColor thisTaskCol = QColor("#FD13C6");
+    QColor otherTaskCol = QColor("#1AE85B");
+    QColor freeLoadCol = QColor("#C4E00E");
+
+    // Now we draw the columns. But only if the load is larger than 0.
+    if (taskLoad > 0.0)
+    {
+        // Load for this task.
+        QCanvasRectangle* rect = new QCanvasRectangle
+            (cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
+             ganttChart);
+        rect->setBrush(QBrush(thisTaskCol, Dense4Pattern));
+        rect->setPen(thisTaskCol);
+        rect->setZ(10);
+        rect->show();
+    }
+
+    if (otherLoad > 0.0)
+    {
+        QCanvasRectangle* rect = new QCanvasRectangle
+            (cx, colOtherLoadTop, cw,
+             colTaskLoadTop - colOtherLoadTop, ganttChart);
+        rect->setBrush(QBrush(otherTaskCol, Dense4Pattern));
+        rect->setPen(otherTaskCol);
+        rect->setZ(10);
+        rect->show();
+    }
+
+    if (freeLoad > 0.0)
+    {
+        QCanvasRectangle* rect = new QCanvasRectangle
+            (cx, colTop, cw, colOtherLoadTop - colTop,
+             ganttChart);
+        rect->setBrush(QBrush(freeLoadCol, Dense4Pattern));
+        rect->setPen(freeLoadCol);
+        rect->setZ(10);
+        rect->show();
+    }
+}
+
 QListViewItem*
 TjReport::getTaskListEntry(Task* const t)
 {
@@ -858,17 +1049,14 @@ TjReport::generateLeftHeader()
 }
 
 void
-TjReport::generateRightHeader()
-{
-}
-
-void
 TjReport::collapsReportItem(QListViewItem*)
 {
     if (loadingProject)
         return;
 
     generateGanttChart(FALSE);
+
+    syncVSliders(ganttChartView->contentsX(), listView->contentsY());
 }
 
 void
@@ -878,6 +1066,7 @@ TjReport::expandReportItem(QListViewItem*)
         return;
 
     generateGanttChart(FALSE);
+    syncVSliders(ganttChartView->contentsX(), listView->contentsY());
 }
 
 void
@@ -936,13 +1125,5 @@ TjReport::setBestStepUnit()
         stepUnit = quarter;
     else
         stepUnit = year;
-}
-
-int
-TjReport::lvi2yPos(QListViewItem* lvi) const
-{
-    static QString s = "                               ";
-    return *lvi2yPosDict[s.sprintf("%p", lvi)];
-//    return lvi->itemPos();
 }
 

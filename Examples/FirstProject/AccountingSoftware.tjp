@@ -206,6 +206,10 @@ task AcSo "Accounting Software" {
 # generated. The XML report is used to create a Postscript Gantt
 # chart.
 
+taskreport "Project Overview" {
+  columns start, end
+}
+  
 # For conveniance we would like each report to contain links to the
 # other reports. So we declare a macro with a fragment of raw HTML
 # code to be embedded into all the HTML reports.

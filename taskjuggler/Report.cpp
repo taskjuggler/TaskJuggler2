@@ -297,15 +297,13 @@ const
     TaskList list = filteredList;
     if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
     {
-        // Set sorting criteria to sequence no. since list.contains() needs it.
-        filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
         for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
         {
             // Do not add the taskRoot task or any of it's parents.
             for (Task* p = (*tli)->getParent();
                  p != 0 && (p->getId() + "." != taskRoot);
                  p = p->getParent())
-                if (list.contains(p) == 0)
+                if (list.containsRef(p) == 0)
                     list.append(p);
         }
     }
@@ -376,12 +374,10 @@ const
     ResourceList list = filteredList;
     if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
     {
-        // Set sorting criteria to sequence no since list.contains() needs it.
-        filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
         for (ResourceListIterator rli(filteredList); *rli != 0; ++rli)
         {
             for (Resource* p = (*rli)->getParent(); p != 0; p = p->getParent())
-                if (list.contains(p) == 0)
+                if (list.containsRef(p) == 0)
                     list.append(p);
         }
     }
@@ -436,12 +432,10 @@ const
     AccountList list = filteredList;
     if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
     {
-        // Set sorting criteria so sequence no since list.contains() needs it.
-        list.setSorting(CoreAttributesList::SequenceUp, 0);
         for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
         {
             for (Account* p = (*ali)->getParent(); p != 0; p = p->getParent())
-                if (list.contains(p) == 0)
+                if (list.containsRef(p) == 0)
                     list.append(p);
         }
     }

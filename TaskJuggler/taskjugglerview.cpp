@@ -289,6 +289,9 @@ TaskJugglerView::slotSetTitle(const QString& title)
 bool
 TaskJugglerView::loadProject(const KURL& url)
 {
+    if (loadingProject)
+        return TRUE;
+
     QString fileName = url.path();
 
     delete project;

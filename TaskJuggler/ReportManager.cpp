@@ -112,8 +112,14 @@ ReportManager::showReport(QListViewItem* lvi)
         tjr = new TjReport(reportStack, mr->getProjectReport());
         reportStack->addWidget(tjr);
         mr->setReport(tjr);
-        if (!tjr->generateTaskReport())
-            return FALSE;
+        if (strcmp(mr->getProjectReport()->getType(), "QtTaskReport") == 0)
+        {
+            if (!tjr->generateTaskReport())
+                return FALSE;
+        }
+        else
+            kdDebug() << "Report type " << mr->getProjectReport()->getType()
+                << " not yet supported" << endl;
     }
     reportStack->raiseWidget(tjr);
 

@@ -28,6 +28,7 @@ class Report;
 class QCanvas;
 class QCanvasView;
 class Task;
+class Resource;
 class QtTaskReportElement;
 
 class TjReport : public QWidget
@@ -57,6 +58,7 @@ private:
     int time2x(time_t t);
     time_t x2time(int x);
 
+    bool generateTaskList();
     void generateGanttChart(bool autoFit);
     void generateHeaderAndGrid();
     void generateDayHeader(int y);
@@ -77,12 +79,12 @@ private:
     void generateTask(Task* const t, int y);
     void generateDependencies(Task* const t, QListViewItem* lvi);
     void generateLeftHeader();
-    void generateRightHeader();
+    void generateTaskResources(Task* const t, int taskY);
+    void drawResourceLoadColum(Task* const t, Resource* const r, time_t start,
+                               time_t end, int rY);
 
     QListViewItem* getTaskListEntry(Task* const t);
     void setBestStepUnit();
-
-    int lvi2yPos(QListViewItem* lvi) const;
 
     Report* const reportDef;
     QSplitter* splitter;
@@ -103,13 +105,6 @@ private:
     static const int minStepYear;
     static const int zoomSteps[];
     uint currentZoomStep;
-    /**
-     * This hash table is used to speed up calculation of the Y coordinate of
-     * an item in the list view. We use the Address of the LVI converted to a
-     * QString as the lookup key. */
-    QDict<int> lvi2yPosDict;
-    // And the same for the CoreAttribute pointer.
-    QDict<QListViewItem> ca2lviDict;
 
     QtTaskReportElement* reportElement;
     int scenario;
