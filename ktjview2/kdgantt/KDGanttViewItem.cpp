@@ -2172,21 +2172,9 @@ int  KDGanttViewItem::computeHeight()
   return hei;
 }
 
-int KDGanttViewItem::compare( QListViewItem * i, int col, bool ascending ) const
+int KDGanttViewItem::compare( QListViewItem * i, int /*col*/, bool /*ascending*/ ) const
 {
-    if ( col == 1 )
-    {
-        QDateTime aStart = startTime();
-        QDateTime bStart = dynamic_cast<KDGanttViewItem *>( i )->startTime();
-
-        if ( aStart < bStart )
-            return -1;
-        else if ( aStart > bStart )
-            return 1;
-        else return 0;
-    }
-    else
-        return KDGanttViewItem::compare( i, col, ascending );
+    return static_cast<KDGanttViewItem *>( i )->startTime().secsTo( startTime() );
 }
 
 // if this item has at least one subitem which has the property displaySubitemsAsGroup(),

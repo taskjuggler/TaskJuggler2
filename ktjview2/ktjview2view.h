@@ -120,6 +120,8 @@ public slots:
      */
     void slotZoomTimeframe();
 
+    void queryResource();
+
 signals:
     /**
      * Use this signal to change the content of the statusbar
@@ -178,8 +180,9 @@ private:
 
     /**
      * Parses relations between tasks (dependencies)
+     * @param it iterator over the list of resources
      */
-    void parseLinks( const QDomElement & taskList, KDGanttView * view );
+    void parseLinks( TaskListIterator it );
 
     /**
      * Converts a time_t representation into QDateTime

@@ -52,6 +52,7 @@
 #include "ktjview2view.h"
 #include "timedialog.h"
 #include "TaskItem.h"
+#include "settings.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -62,6 +63,7 @@
 #include "Resource.h"
 #include "taskjuggler.h"
 #include "CoreAttributes.h"
+#include "UsageLimits.h"
 
 ktjview2View::ktjview2View(QWidget *parent)
     : DCOPObject("ktjview2Iface"), QWidget(parent)
@@ -77,7 +79,7 @@ ktjview2View::ktjview2View(QWidget *parent)
                                       i18n( "Info" ), this, SLOT( slotKoolBar( int, int ) ) );
     ganttPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "gantt", KIcon::Desktop ),
                                        i18n( "Gantt" ), this, SLOT( slotKoolBar( int, int ) ) );
-    resPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "resources", KIcon::Desktop ),
+    resPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "identity", KIcon::Desktop ),
                                      i18n( "Resources" ), this, SLOT( slotKoolBar( int, int ) ) );
     tasksPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "tasks", KIcon::Desktop ),
                                        i18n( "Tasks" ), this, SLOT( slotKoolBar( int, int ) ) );
@@ -95,7 +97,8 @@ ktjview2View::ktjview2View(QWidget *parent)
     m_ganttView = new KDGanttView( this, "gantt_view" );
     m_ganttView->setEditorEnabled( false );
     m_ganttView->setEditable( false );
-    m_ganttView->setWeekendBackgroundColor( Qt::lightGray );
+    m_ganttView->setWeekendBackgroundColor( Settings::weekendColor() );
+    // TODO set weekday bg color
     m_ganttView->setScale( KDGanttView::Auto );
     //m_ganttView->setCalendarMode( true );
     m_ganttView->setDisplaySubitemsAsGroup( false );
@@ -118,6 +121,11 @@ ktjview2View::ktjview2View(QWidget *parent)
     m_resListView->addColumn( i18n( "ID" ) );
     m_resListView->addColumn( i18n( "Name" ) );
     m_resListView->addColumn( i18n( "Rate" ) );
+    m_resListView->addColumn( i18n( "Efficiency" ) );
+    m_resListView->addColumn( i18n( "Min. Effort" ) );
+    m_resListView->addColumn( i18n( "Daily Max" ) );
+    m_resListView->addColumn( i18n( "Weekly Max" ) );
+    m_resListView->addColumn( i18n( "Monthly Max" ) );
     m_resListView->setShowSortIndicator( true );
     m_resListView->setSortColumn( 1 ); // sort by name by default
     m_resListView->setAllColumnsShowFocus( true );
@@ -251,7 +259,7 @@ void ktjview2View::openURL( const KURL& url )
     parseResources( m_project.getResourceListIterator() );
     parseTasks();
     parseGantt( m_project.getTaskListIterator() );
-    //parseLinks( m_dom.documentElement().namedItem( "taskList" ).toElement(), m_ganttView );
+    parseLinks( m_project.getTaskListIterator() );
 
     m_ganttView->setUpdateEnabled( true );
     m_ganttView->setTimelineToStart();
@@ -261,7 +269,7 @@ void ktjview2View::openURL( const KURL& url )
     signalChangeCaption( m_projectURL.fileName() );
 }
 
-void ktjview2View::slotKoolBar( int grp, int item )
+void ktjview2View::slotKoolBar( int /*grp*/, int item )
 {
     //kdDebug() << k_funcinfo << grp << " " << item << endl;
     if ( item == infoPage )
@@ -332,25 +340,26 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
     {
         ++it;
 
-        QString id = task->getId();
+        const QString id = task->getId();
 
-        if ( m_ganttView->getItemByName( id ) ) // seen this task, go on
-            continue;           // FIXME speed this up
+        if ( KDGanttViewItem::find( id ) ) // seen this task, go on
+            continue;
 
         kdDebug() << "Parsing gantt item: " << id << endl;
 
-        QString taskName = task->getName();
+        const QString taskName = task->getName();
         QDateTime start = time_t2Q( task->getStart( sc ) );
         QDateTime end = time_t2Q( task->getEnd( sc ) );
-        int prio = task->getPriority();
+        //int prio = task->getPriority();
 
         QString toolTip;
 
-        bool hasParent = ( task->getParent() != 0 );
+        bool isRoot = task->isRoot();
         bool isContainer = task->isContainer();
+        bool isLeaf = task->isLeaf();
         bool isMilestone = task->isMilestone();
 
-        if ( !hasParent && isContainer ) // toplevel container task
+        if ( isRoot ) // toplevel container task
         {
             KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( m_ganttView, taskName, id );
             item->setStartTime( start );
@@ -363,9 +372,9 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
-        else if ( hasParent && isContainer ) // non-toplevel container task
+        else if ( isContainer ) // non-toplevel container task
         {
-            KDGanttViewItem * parentItem = m_ganttView->getItemByName( task->getParent()->getId() );
+            KDGanttViewItem * parentItem = KDGanttViewItem::find( task->getParent()->getId() );
 
             KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( parentItem, taskName, id );
             item->setStartTime( start );
@@ -378,29 +387,12 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
-        else if ( !hasParent && !isContainer ) // standalone task
-        {
-            if ( isMilestone )
-            {
-                KDGanttViewEventItem * item = new KDGanttViewEventItem( m_ganttView, taskName, id );
-                item->setStartTime( start );
-            }
-            else
-            {
-                KDGanttViewTaskItem * item = new KDGanttViewTaskItem( m_ganttView, taskName, id );
-                item->setStartTime( start );
-                item->setEndTime( end );
-            }
-        }
-#if 0                           // FIXME crashes here
-        else if ( hasParent )   // terminal (leaf) task
+//#if 0
+        else if ( isLeaf )   // terminal (leaf) task
         {
             kdDebug() << "Parent ID: " << task->getParent()->getId() << endl;
 
-            KDGanttViewItem * parentItem = m_ganttView->getItemByName( task->getParent()->getId() );
-
-            if ( !parentItem )
-                continue;
+            KDGanttViewItem * parentItem = KDGanttViewItem::find( task->getParent()->getId() );
 
             if ( isMilestone )  // milestone
             {
@@ -425,7 +417,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                 item->setTooltipText( toolTip );
             }
         }
-#endif
+//#endif
         else
         {
             kdWarning() << "Unsupported task type with ID: " << id << endl;
@@ -444,34 +436,52 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
     {
         ++it;
 
-        QString id = res->getId(); // ID of the resource
+        const QString id = res->getId();
 
         if ( m_resListView->findItem( id, 0 ) ) // been there, seen that, go on :)
             continue;           // FIXME speed this up
 
-        QString rate = KGlobal::locale()->formatMoney( res->getRate(), m_project.getCurrency() );
+        const QString rate = KGlobal::locale()->formatMoney( res->getRate(), m_project.getCurrency() );
+        const QString name = res->getName();
+        const QString eff = KGlobal::locale()->formatNumber( res->getEfficiency() );
+        const QString minEffort = KGlobal::locale()->formatNumber( res->getMinEffort() );
+        const UsageLimits * limits = res->getLimits();
+        QString dailyMax = "0";
+        QString weeklyMax = "0";
+        QString monthlyMax = "0";
+
+        if ( limits )
+        {
+            dailyMax = QString::number( limits->getDailyMax() );
+            weeklyMax = QString::number( limits->getWeeklyMax() );
+            monthlyMax = QString::number( limits->getMonthlyMax() );
+        }
 
         if ( res->isGroup() && ( res->getParent() == 0 ) ) // toplevel group item
         {
-            kdDebug() << "Case1: " << id << endl;
-            KListViewItem * item = new KListViewItem( m_resListView, id, res->getName(), rate );
+            //kdDebug() << "Case1: " << id << endl;
+            KListViewItem * item = new KListViewItem( m_resListView, id, name, rate, eff, minEffort,
+                                                      dailyMax, weeklyMax, monthlyMax );
             parseResources( res->getSubListIterator(), item );
         }
         else if ( res->isGroup() && ( res->getParent() != 0 ) && parentItem ) // group item, non-toplevel
         {
-            kdDebug() << "Case2: " << id << endl;
-            KListViewItem * item = new KListViewItem( parentItem, id, res->getName(), rate );
+            //kdDebug() << "Case2: " << id << endl;
+            KListViewItem * item = new KListViewItem( parentItem, id, name, rate, eff, minEffort,
+                                                      dailyMax, weeklyMax, monthlyMax );
             parseResources( res->getSubListIterator(), item );
         }
         else if ( parentItem )                   // leaf item
         {
-            kdDebug() << "Case3: " << id << endl;
-            ( void ) new KListViewItem( parentItem, id, res->getName(), rate );
+            //kdDebug() << "Case3: " << id << endl;
+            ( void ) new KListViewItem( parentItem, id, name, rate, eff, minEffort,
+                                        dailyMax, weeklyMax, monthlyMax );
         }
         else if ( ( res->getParent() == 0 ) || ( parentItem == 0 ) ) // standalone item
         {
-            kdDebug() << "Case4: " << id << endl;
-            ( void ) new KListViewItem( m_resListView, id, res->getName(), rate );
+            //kdDebug() << "Case4: " << id << endl;
+            ( void ) new KListViewItem( m_resListView, id, name, rate, eff, minEffort,
+                                        dailyMax, weeklyMax, monthlyMax );
         }
         else
         {
@@ -481,27 +491,39 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
     }
 }
 
-void ktjview2View::parseLinks( const QDomElement & taskList, KDGanttView * view )
+void ktjview2View::parseLinks( TaskListIterator it )
 {
-    // ### perhaps get all <task> elements separately and parse <depends> individually
-    // to be able to insert links into groups
-    QDomNodeList dependencies = taskList.elementsByTagName( "depends" );
+    Task * task;
 
-    for ( uint i = 0; i < dependencies.count(); i++ )
+    while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
     {
-        QDomElement depElem = dependencies.item( i ).toElement();
+        ++it;
 
-        QString fromName = depElem.text();
-        KDGanttViewItem * fromItem = view->getItemByName( fromName );
+        TaskListIterator depIt = task->getDependsIterator();
+        Task * depTask;
+        QPtrList<KDGanttViewItem> fromList;   // ### auto delete?
+        //fromList.setAutoDelete( true );
+        while ( ( depTask = static_cast<Task *>( depIt.current() ) ) != 0 )
+        {
+            ++depIt;
 
-        QString toName = depElem.parentNode().toElement().attribute( "id" );
-        KDGanttViewItem * toItem = view->getItemByName( toName );
+            QString depId = depTask->getId();
+            //kdDebug() << "Got depId: " << depId << endl;
 
-        kdDebug() << "Got dependency from: " << fromName << " to: " << toName << endl;
+            fromList.append( KDGanttViewItem::find( depId ) );
+        }
 
-        KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromItem, toItem );
-        taskLink->setVisible( true );
-        taskLink->setTooltipText( fromName  + " -> " + toName );
+        if ( fromList.isEmpty() )
+            continue;
+
+        QString toId = task->getId();
+        QPtrList<KDGanttViewItem> toList; // ### auto delete?
+        //kdDebug() << "Got toId: " << toId << endl;
+        //toList.setAutoDelete( true );
+        toList.append( KDGanttViewItem::find( toId ) );
+
+        KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromList, toList );
+        //taskLink->setTooltipText( fromName  + " -> " + toName );
     }
 }
 
@@ -519,10 +541,13 @@ QString ktjview2View::time_t2QS( time_t secs )
 
 void ktjview2View::ensureItemVisible( KDGanttViewItem * item )
 {
-    //kdDebug() << "Centering on item: " << item->name() << endl;
-    m_ganttView->ensureVisible( item );
-    m_ganttView->center( item );
-    m_ganttView->centerTimeline( item->startTime() );
+    if ( item )
+    {
+        //kdDebug() << "Centering on item: " << item->name() << endl;
+        m_ganttView->ensureVisible( item );
+        m_ganttView->center( item );
+        m_ganttView->centerTimeline( item->startTime() );
+    }
 }
 
 void ktjview2View::zoomIn()
@@ -582,6 +607,11 @@ QString ktjview2View::status2Str( int ts ) const
         return i18n( "Undefined" );
         break;
     }
+}
+
+void ktjview2View::queryResource()
+{
+    //TODO res->isAvailable, isAllocated, getCredits, getLoad/getAvailableWorkload/getCurrentLoad, hasVacationDay
 }
 
 #include "ktjview2view.moc"

@@ -95,7 +95,7 @@ protected:
     int myItemSize;
     bool blockUpdating;
 
-    //@reimp
+    //@reimp for correct sorting
     virtual int compare( QListViewItem * i, int col, bool ascending ) const;
 public:
     virtual ~KDGanttViewItem();

@@ -102,6 +102,7 @@ void ktjview2::setupActions()
     KStdAction::configureToolbars( this, SLOT(optionsConfigureToolbars()), actionCollection() );
     KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
 
+    // Gantt menu
     new KAction( i18n( "Zoom In" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
                  m_view, SLOT( zoomIn() ), actionCollection(), "zoom_in" );
     new KAction( i18n( "Zoom Out" ), "viewmag-", KStdAccel::shortcut( KStdAccel::ZoomOut ),
@@ -110,6 +111,10 @@ void ktjview2::setupActions()
                  m_view, SLOT( zoomFit() ), actionCollection(), "fit_to_page" );
     new KAction( i18n( "Set Timeframe" ), "timespan", KShortcut(),
                  m_view, SLOT( slotZoomTimeframe() ), actionCollection(), "timeframe" );
+
+    // Resource menu
+    new KAction( i18n( "Query resource..." ), 0, KShortcut(),
+                 m_view, SLOT( queryVacation() ), actionCollection(), "query_resource" );
 
     m_scaleAction = new KSelectAction( i18n( "Scale" ), 0, actionCollection(), "scale" );
     QStringList items = QStringList();

@@ -2668,13 +2668,12 @@ KDListView::KDListView(QWidget* parent, KDGanttView* gantView):QListView (parent
     new KDListViewWhatsThis(viewport(),this);
     setRootIsDecorated( true );
     setAllColumnsShowFocus( true );
-    addColumn( tr( "Task Name" ) );
-    setSorting( -1 );
+    addColumn( i18n( "Task Name" ) );
     addColumn( "hack" );
     setSortColumn( 1 );           // HACK for correct time-aware sorting
     //setVScrollBarMode (QScrollView::AlwaysOn );
     setHScrollBarMode (QScrollView::Auto );
-    setDefaultRenameAction(QListView::Accept);
+    setDefaultRenameAction(QListView::Reject);
     setColumnWidthMode ( 0,Maximum  );
     _calendarMode = false;
     // QObject::connect(this, SIGNAL (  pressed ( QListViewItem * )) , this, SLOT( dragItem( QListViewItem *))) ;

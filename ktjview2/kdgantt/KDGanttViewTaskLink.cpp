@@ -37,6 +37,8 @@
 #include "KDGanttViewSubwidgets.h"
 #include "KDGanttXMLTools.h"
 
+#include <klocale.h>
+
 
 /*! \class KDGanttViewTaskLink KDGanttViewTaskLink.h
   This class represents a link between a number of Gantt chart items.
@@ -174,8 +176,8 @@ void KDGanttViewTaskLink::initTaskLink()
     }
   }
 
-  setTooltipText( "Tasklink" );
-  setWhatsThisText( "Tasklink" );
+  setTooltipText( i18n( "Tasklink" ) );
+  setWhatsThisText( i18n( "Tasklink" ) );
   myTimeTable->myTaskLinkList.append(this);
   setHighlight( false);
   setHighlightColor(Qt::red );
