@@ -1,6 +1,6 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
 /***************************************************************************
- *   Copyright (C) 2004 by Lukas Tinkl                                     *
+ *   Copyright (C) 2004, 2005 by Lukas Tinkl                               *
  *   lukas.tinkl@suse.cz                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -108,6 +108,20 @@ void EditorView::closeDocument()
 void EditorView::gotoLine( int number )
 {
     KTextEditor::viewCursorInterface( m_view )->setCursorPosition( number, 0 );
+}
+
+QString EditorView::wordUnderCursor() const
+{
+    unsigned int line, row;
+    KTextEditor::viewCursorInterface( m_view )->cursorPositionReal( &line, &row );
+    QString textLine = KTextEditor::editInterface( doc() )->textLine( line );
+    uint start, length;
+    for ( start = row; textLine[start - 1].isLetter(); --start )
+        ;
+    for ( length = 0; textLine[start + length].isLetter(); ++length )
+        ;
+
+    return textLine.mid( start, length );
 }
 
 #include "editorView.moc"

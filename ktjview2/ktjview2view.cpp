@@ -1412,4 +1412,13 @@ void ktjview2View::slotEditResource( QListViewItem * item )
     }
 }
 
+void ktjview2View::slotKeywordHelp()
+{
+    QString keyword = m_editorView->wordUnderCursor();
+
+    kdDebug() << "Getting help for keyword: " << keyword << endl;
+
+    kapp->invokeHelp( QString("PROPERTY_") + keyword, "taskjuggler" );
+}
+
 #include "ktjview2view.moc"

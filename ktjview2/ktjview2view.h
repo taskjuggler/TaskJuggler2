@@ -261,6 +261,8 @@ public slots:
      */
     void slotBuild();
 
+    void slotKeywordHelp();
+
 signals:
     /**
      * Use this signal to change the content of the statusbar

@@ -1,6 +1,6 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
 /***************************************************************************
- *   Copyright (C) 2004 by Lukas Tinkl                                     *
+ *   Copyright (C) 2004, 2005 by Lukas Tinkl                               *
  *   lukas.tinkl@suse.cz                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -78,6 +78,11 @@ public:
      * Jump to line with @p number
      */
     void gotoLine( int number );
+
+    /**
+     * @return the current word under the edit cursor
+     */
+    QString wordUnderCursor() const;
 
 private:
     /**

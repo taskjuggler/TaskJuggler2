@@ -259,6 +259,10 @@ void ktjview2::setupActions()
     m_buildAction = new KAction( i18n( "&Rebuild project" ), "gear", KShortcut(),
                                  m_view, SLOT( slotBuild() ), actionCollection(), "build" );
 
+    // "Help" menu
+    new KAction( i18n( "Explain Keyword" ), "help", KShortcut( KKey( "F2" ) ),
+                 m_view, SLOT( slotKeywordHelp() ), actionCollection(), "keyword_help" );
+
     // Sidebar
     m_sidebarInfo = new KRadioAction( i18n( "Info" ), "projectinfo", KShortcut(), actionCollection(), "sidebar_info" );
     m_sidebarInfo->setToolTip( i18n( "Project Info" ) );
