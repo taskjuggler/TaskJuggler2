@@ -1088,6 +1088,22 @@ List only accounts that do not have the listed flags. This attribute
 conflicts with 'show'.
 </descrip>
 
+<sect1>xmltaskreport &lt;filename&gt;<label id="xmltaskreport">
+<p>
+
+filename: <ref id="string" name="STRING">
+
+create a xml task report to the given file. Note that this is still
+experimental. The format might change in future releases.
+
+<sect1>icalreport &lt;filename&gt;<label id="icalreport">
+<p>
+
+filename: <ref id="string" name="STRING">
+
+create an ical calender format output file which can be imported
+to korganiser.
+
 <sect1>kotrusMode &lt;mode&gt;<label id="kotrusMode">
 <p>
 
