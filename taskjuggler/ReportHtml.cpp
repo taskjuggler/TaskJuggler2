@@ -360,14 +360,17 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 			  << time2user(t->getEnd(Task::Plan) + 1, timeFormat)
 			  << "</td>" << endl;
 		else if (*it == KW("minstart"))
-			textTwoRows(time2user(t->getMinStart(), timeFormat), r != 0, "");
+			textTwoRows(t->getMinStart() == 0 ? "&nbsp;" :
+						time2user(t->getMinStart(), timeFormat), r != 0, "");
 		else if (*it == KW("maxstart"))
-			textTwoRows(time2user(t->getMaxStart(), timeFormat),
-					   	r != 0, "");
+			textTwoRows(t->getMaxStart() == 0 ? "&nbsp;" :
+						time2user(t->getMaxStart(), timeFormat), r != 0, "");
 		else if (*it == KW("minend"))
-			textTwoRows(time2user(t->getMinEnd(), timeFormat), r != 0, "");
+			textTwoRows(t->getMinEnd() == 0 ? "&nbsp;" :
+						time2user(t->getMinEnd(), timeFormat), r != 0, "");
 		else if (*it == KW("maxend"))
-			textTwoRows(time2user(t->getMaxEnd(), timeFormat), r != 0, "");
+			textTwoRows(t->getMaxEnd() == 0 ? "&nbsp;" :
+						time2user(t->getMaxEnd(), timeFormat), r != 0, "");
 		else if (*it == KW("startbuffer"))
 			textTwoRows(QString().sprintf
 						("%3.0f", t->getStartBuffer(Task::Plan)), r != 0, 

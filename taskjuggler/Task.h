@@ -166,13 +166,15 @@ public:
 
 	bool isStartOk(int sc) const
 	{
-		return (minStart <= scenarios[sc].start && 
-				scenarios[sc].start <= maxStart);
+		return !((minStart > 0 && minStart > scenarios[sc].start) ||
+				 (maxStart > 0 && scenarios[sc].start > maxStart));
 	}
 	bool isEndOk(int sc) const
 	{
-		return (minEnd <= scenarios[sc].end + (milestone ? 1 : 0) &&
-				scenarios[sc].end + (milestone ? 1 : 0) <= maxEnd);
+		return !((minEnd > 0 && minEnd > scenarios[sc].end + 
+				  (milestone ? 1 : 0)) ||
+				 (maxEnd > 0 && scenarios[sc].end +
+				  (milestone ? 1 : 0)) > maxEnd);
 	}
 
 	bool isBuffer(int sc, const Interval& iv) const;
