@@ -38,7 +38,7 @@ QuickSearchWidget::QuickSearchWidget( QWidget * parent, const char * name )
     lay->setSpacing( KDialog::spacingHint() );
 
     m_clearButton = new KToolBarButton( QApplication::reverseLayout() ? "clear_left" : "locationbar_erase",
-                                         0, this );
+                                        0, this );
 
     connect( m_clearButton, SIGNAL( clicked() ), this, SLOT( reset() ) );
     lay->add( m_clearButton );
