@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:		Taskjuggler
 " Maintainer:	Peter Poeml <poeml@suse.de>
-" Last Change:	$Id
+" Last Change:	$Id$
 
 setlocal softtabstop=2
 setlocal cindent shiftwidth=2
@@ -46,6 +46,7 @@ syn match	tjpcomment		"#.*"
 
 syn keyword tjspkeyword account
 syn keyword tjspkeyword accountid
+syn keyword tjspkeyword accountreport
 syn keyword tjspkeyword accumulate
 syn keyword tjspkeyword alap
 syn keyword tjspkeyword all
@@ -102,6 +103,7 @@ syn keyword tjspkeyword extend
 syn keyword tjspkeyword finished
 syn keyword tjspkeyword flags
 syn keyword tjspkeyword follows
+syn keyword tjspkeyword freeload
 syn keyword tjspkeyword fri
 syn keyword tjspkeyword fullnamedown
 syn keyword tjspkeyword fullnameup
@@ -152,6 +154,7 @@ syn keyword tjspkeyword issubtaskof
 syn keyword tjspkeyword isTask
 syn keyword tjspkeyword isTaskOfProject
 syn keyword tjspkeyword isTaskStatus
+syn keyword tjspkeyword journalentry
 syn keyword tjspkeyword kotrusid
 syn keyword tjspkeyword kotrusiddown
 syn keyword tjspkeyword kotrusidup
@@ -225,6 +228,7 @@ syn keyword tjspkeyword rawtail
 syn keyword tjspkeyword reference
 syn keyword tjspkeyword resource
 syn keyword tjspkeyword resourceid
+syn keyword tjspkeyword resourcereport
 syn keyword tjspkeyword resources
 syn keyword tjspkeyword responsibilities
 syn keyword tjspkeyword responsible
@@ -273,6 +277,7 @@ syn keyword tjspkeyword task
 syn keyword tjspkeyword taskattributes
 syn keyword tjspkeyword taskid
 syn keyword tjspkeyword taskprefix
+syn keyword tjspkeyword taskreport
 syn keyword tjspkeyword taskroot
 syn keyword tjspkeyword text
 syn keyword tjspkeyword thu
@@ -287,6 +292,7 @@ syn keyword tjspkeyword treeLevel
 syn keyword tjspkeyword tue
 syn keyword tjspkeyword undefined
 syn keyword tjspkeyword url
+syn keyword tjspkeyword utilization
 syn keyword tjspkeyword vacation
 syn keyword tjspkeyword version
 syn keyword tjspkeyword w
