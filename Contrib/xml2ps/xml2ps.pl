@@ -306,6 +306,9 @@ sub _draw_depends {
                         $task->x1,$task->y1,
                         $task->x1-2, $task->y1+1,
                         $task->x1-2, $task->y1-1,   1);
+            #$p->setcolour(0,0,0);
+            #$p->setfont("Helvetica", 8);
+            #$p->text($task->x1+2, $task->y1-1, $task->Name);
         }
     }
 }
@@ -397,7 +400,8 @@ sub _draw_task {
         my ($x, $y) = _trans_coord($_x1, $_y1+($task_height/2));
         $p->circle($x, $y, 1, 1);
         $p->setfont("Helvetica", 8);
-        $p->text($x1+2, $y1-($task_height/1.5), $name);
+        #$p->text($x1+2, $y1-($task_height/1.5), $name);
+        $p->text($x1+2, $y1-($task_height/2), $name);
     }
   }
 }
