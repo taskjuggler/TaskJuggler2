@@ -272,6 +272,72 @@ Resource::getActualCosts(const Interval& period, Task* task)
 	return getActualLoad(period, task) * rate;
 }
 
+void
+Resource::getPlanPIDs(const Interval& period, Task* task, QStringList& pids)
+{
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		r->getPlanPIDs(period, task, pids);
+
+	for (Booking* b = planJobs.first();
+		 b != 0 && b->getEnd() <= period.getEnd();
+		 b = planJobs.next())
+	{
+		Interval i = period;
+		if (i.overlap(b->getInterval()) &&
+			(task == 0 || task == b->getTask()) &&
+			pids.findIndex(b->getProjectId()) == -1)
+		{
+			pids.append(b->getProjectId());
+		}
+	}
+}
+
+QString
+Resource::getPlanProjectIDs(const Interval& period, Task* task)
+{
+	QStringList pids;
+	getPlanPIDs(period, task, pids);
+	QString pidStr;
+	for (QStringList::Iterator it = pids.begin(); it != pids.end(); ++it)
+		pidStr += QString(it != pids.begin() ? ", " : "") +
+			project->getIdIndex(*it);
+
+	return pidStr;
+}
+
+void
+Resource::getActualPIDs(const Interval& period, Task* task, QStringList& pids)
+{
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		r->getActualPIDs(period, task, pids);
+
+	for (Booking* b = actualJobs.first();
+		 b != 0 && b->getEnd() <= period.getEnd();
+		 b = actualJobs.next())
+	{
+		Interval i = period;
+		if (i.overlap(b->getInterval()) &&
+			(task == 0 || task == b->getTask()) &&
+			pids.findIndex(b->getProjectId()) == -1)
+		{
+			pids.append(b->getProjectId());
+		}
+	}
+}
+
+QString
+Resource::getActualProjectIDs(const Interval& period, Task* task)
+{
+	QStringList pids;
+	getActualPIDs(period, task, pids);
+	QString pidStr;
+	for (QStringList::Iterator it = pids.begin(); it != pids.end(); ++it)
+		pidStr += QString(it != pids.begin() ? ", " : "") +
+			project->getIdIndex(*it);
+
+	return pidStr;
+}
+
 /* retrieve all bookings _not_ belonging to this project */
 bool
 Resource::dbLoadBookings( const QString& kotrusID, const QString& skipProjectID )

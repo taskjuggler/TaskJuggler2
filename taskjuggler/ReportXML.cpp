@@ -61,7 +61,8 @@ void ReportXML::generate()
    /* Create the Project xml representation */
    QDomElement proj = doc.createElement( "Project" );
    proj.setAttribute( "Name", project->getName());
-   proj.setAttribute( "Id", project->getId());
+   // FIXME: All projectIDs need to be saved here.
+   proj.setAttribute( "Id", project->getCurrentId());
    proj.setAttribute( "Version", project->getVersion());
    proj.setAttribute( "Copyright", project->getCopyright());
 

@@ -72,6 +72,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 			addFlag(*it);
 
 		// Set attributes that are inherited from parent task.
+		projectId = p->projectId;
 		priority = p->priority;
 		minStart = p->minStart;
 		maxStart = p->maxStart;
@@ -83,6 +84,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	else
 	{
 		// Set attributes that are inherited from global attributes.
+		projectId = proj->getCurrentId();
 		priority = proj->getPriority();
 		minStart = minEnd = proj->getStart();
 		maxStart = maxEnd = proj->getEnd();
@@ -382,7 +384,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 			(*rit).book(new Booking(
 				interval, this,
 				account ? account->getKotrusId() : QString(""),
-				project->getId()));
+				projectId));
 			addBookedResource(rit);
 
 			/* Move the start date to make sure that there is
@@ -754,6 +756,20 @@ Task::preScheduleOk()
 		return FALSE;
 	}
 
+	if (!sub.isEmpty())
+	{
+		if (durationSpec > 0)
+		{
+			fatalError("A container tasks may never have a duration criteria");
+			return FALSE;
+		}
+		if (!allocations.isEmpty())
+		{
+			fatalError("A container tasks may never have resource "
+					   "allocations");
+			return FALSE;
+		}
+	}
 	return TRUE;
 }
 
@@ -761,7 +777,24 @@ bool
 Task::scheduleOk()
 {
 	if (!sub.isEmpty())
-		return TRUE;
+	{
+		// All sub task must fit into their parent task.
+		for (Task* t = subFirst(); t != 0; t = subNext())
+		{
+			if (start > t->start)
+			{
+				fatalError(QString().sprintf(
+					"Task %s starts ealier than parent", t->id.latin1()));
+				return FALSE;
+			}
+			if (end < t->end)
+			{
+				fatalError(QString().sprintf(
+					"Task %s ends later than parent", t->id.latin1()));
+				return FALSE;
+			}
+		}
+	}
 
 	if (start == 0)
 	{

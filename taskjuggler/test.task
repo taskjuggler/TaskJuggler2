@@ -2,6 +2,8 @@
 
 project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 
+projectid secondId
+
 now 2002-01-16
 copyright "(c) 2001 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
@@ -13,7 +15,7 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmltaskreport "test1.html" {
-  columns no, name, start, end, costs, monthly
+  columns no, name, start, end
   start 2001-09-01
   end 2002-04-01
   showactual
@@ -34,9 +36,10 @@ htmlresourcereport "test-res.html" {
   columns no, name, weekly
   start 2001-09-01
   end 2002-04-01
-  hidetask 0
+  hidetask 1
   hideresource 0
-#  showactual
+  showactual
+#  showprojectids
 }
 
 htmlaccountreport "test-account.html" {
@@ -163,6 +166,7 @@ resource yast "YaST2 Team" { flags team efficiency 12.0 }
 resource kkaempf "Klaus Kaempf"
 
 task sl80 "SuSE Linux 8.0" {
+  projectid secondId
   responsible cs
   account suselinux
 
@@ -206,6 +210,7 @@ task alap "ALAP Task" {
 }
 
 task asap "ASAP after ALAP" {
+  projectid sl80
   depends !alap
   effort 19d
   allocate cs
@@ -303,3 +308,9 @@ task rc1 "${version} RC1" {
 
 }
 
+task sl80.outOfScope "Out of Scope" {
+  length 5d
+  depends !sl80start
+
+  task !!global "Global Task" { milestone depends sl80.sl80start }
+}

@@ -42,12 +42,6 @@ public:
 	void finishActual();
 	bool schedule();
 
-	bool reportHTMLHeader(FILE* f);
-	bool reportHTMLFooter(FILE* f);
-
-	void setId(const QString& i) { id = i; }
-	const QString& getId() const { return id; }
-
 	void setName(const QString& n) { name = n; }
 	const QString& getName() const { return name; }
 
@@ -69,6 +63,18 @@ public:
 	void setNow(time_t n) { now = n; }
 	time_t getNow() const { return now; }
 	
+	bool addId(const QString& i);
+	QString getCurrentId() const
+	{
+		return projectIDs.isEmpty() ? QString() : projectIDs.last();
+	}
+	QStringList getProjectIdList() const { return projectIDs; }
+	bool isValidId(const QString& i) const
+	{
+		return projectIDs.findIndex(i) != -1;
+	}
+	QString getIdIndex(const QString& i) const;
+
 	void addVacation(const QString& n, time_t s, time_t e)
 	{
 		vacationList.add(n, s, e);
@@ -154,8 +160,6 @@ private:
 	time_t end;
 	time_t now;
 
-	// A unique (with respect to the resource database) project id
-	QString id;
 	// The name of the Project
 	QString name;
 	// The revision of the project description.
@@ -179,11 +183,18 @@ private:
 	 * than this time will be scheduled. */
 	ulong scheduleGranularity;
 
-	/* To be able to detect flag conflicts between multiple parts of a project
-	 * all flags must be registered before they can be used. This variable
-	 * contains the list of all registered flags. Some flags like 'hidden'
-	 * or 'closed' are pre-registered and will be set automatically. */
+	/* To avoid difficult to find typos in flag names all flags must
+	 * be registered before they can be used. This variable contains
+	 * the list of all registered flags. It is legal to declare a flag
+	 * twice, so we can merge projects to a larger project. */
 	QStringList allowedFlags;
+
+	/* Each project has a unique ID but can have multiple other IDs as
+     * well. This happens usually when small projects are merged to a
+     * create a big project. Each task can be assigned to a different
+     * project ID but all IDs must be declared before they can be
+     * used. */
+	QStringList projectIDs;
 
 	TaskList taskList;
 	ResourceList resourceList;

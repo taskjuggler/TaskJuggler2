@@ -13,6 +13,9 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stream.h>
+#include <unistd.h>
+
+#include <qregexp.h>
 
 #include "ProjectFile.h"
 #include "Project.h"
@@ -23,7 +26,7 @@
 extern Kotrus *kotrus;
 
 #define READ_DATE(a, b) \
-(token == a && !hasSubTasks) \
+(token == a) \
 { \
 	if ((tt = nextToken(token)) == DATE) \
 		task->b(date2time(token)); \
@@ -32,7 +35,6 @@ extern Kotrus *kotrus;
 		fatalError("Date expected"); \
 		return FALSE; \
 	} \
-	cantBeParent = TRUE; \
 }
 
 FileInfo::FileInfo(ProjectFile* p, const QString& file_)
@@ -128,6 +130,15 @@ FileInfo::getDateFragment(QString& token, int& c)
 		token += c;
 
 	return TRUE;
+}
+
+QString
+FileInfo::getPath() const
+{
+	if (file.find('/'))
+		return file.left(file.findRev('/') + 1);
+	else
+		return "";
 }
 
 TokenType
@@ -406,15 +417,35 @@ ProjectFile::ProjectFile(Project* p)
 bool
 ProjectFile::open(const QString& file)
 {
-	FileInfo* fi = new FileInfo(this, file);
+	QString absFileName = file;
+	if (absFileName[0] != '/')
+	{
+		if (openFiles.isEmpty())
+		{
+			char buf[1024];
+			if (getcwd(buf, 1023) != 0)
+				absFileName = QString(buf) + "/" + absFileName;
+		}
+		else
+			absFileName = openFiles.last()->getPath() + absFileName;
+	}
+	while (absFileName.find("/../") >= 0)
+		absFileName.replace(QRegExp("/[^/]+/../"), "/");
+
+	// Make sure that we include each file only once.
+	if (includedFiles.findIndex(absFileName) != -1)
+		return TRUE;
+		
+	FileInfo* fi = new FileInfo(this, absFileName);
 
 	if (!fi->open())
 	{
-		qFatal("Cannot open '%s'", file.latin1());
+		qFatal("Cannot open '%s'", absFileName.latin1());
 		return FALSE;
 	}
 
 	openFiles.append(fi);
+	includedFiles.append(absFileName);
 	return TRUE;
 }
 
@@ -443,10 +474,7 @@ ProjectFile::parse()
 		switch (tt = nextToken(token))
 		{
 		case EndOfFile:
-			close();
-			if (openFiles.isEmpty())
-				return TRUE;
-			break;
+			return TRUE;
 		case ID:
 			if (token == "task")
 			{
@@ -548,12 +576,7 @@ ProjectFile::parse()
 			}
 			else if (token == "include")
 			{
-				if (nextToken(token) != STRING)
-				{
-					fatalError("File name expected");
-					return FALSE;
-				}
-				if (!open(token))
+				if (!readInclude())
 					return FALSE;
 				break;
 			}
@@ -591,13 +614,12 @@ ProjectFile::parse()
 						fatalError("flag ID expected");
 						return FALSE;
 					}
-					if (proj->isAllowedFlag(flag))
-					{
-						fatalError(QString("Flag ") + flag +
-								   " can't be registered twice");
-						return FALSE;
-					}
-					proj->addAllowedFlag(flag);
+
+					/* Flags can be declared multiple times, but we
+					 * register a flag only once. */
+					if (!proj->isAllowedFlag(flag))
+						proj->addAllowedFlag(flag);
+
 					if ((tt = nextToken(token)) != COMMA)
 					{
 						openFiles.last()->returnToken(tt, token);
@@ -613,7 +635,13 @@ ProjectFile::parse()
 					fatalError("Project ID expected");
 					return FALSE;
 				}
-				proj->setId(token);
+				if (!proj->addId(token))
+				{
+					fatalError(QString().sprintf(
+						"Project ID %s has already been registered",
+						token.latin1()));
+					return FALSE;
+				}
 				if (nextToken(token) != STRING)
 				{
 					fatalError("Project name expected");
@@ -646,6 +674,33 @@ ProjectFile::parse()
 				}
 				proj->setStart(start);
 				proj->setEnd(end);
+				break;
+			}
+			else if (token == "projectid")
+			{
+				for ( ; ; )
+				{
+					QString id;
+					if (nextToken(id) != ID)
+					{
+						fatalError("Project ID expected");
+						return FALSE;
+					}
+
+					if (!proj->addId(id))
+					{
+						fatalError(QString().sprintf(
+							"Project ID %s has already been registered",
+							id.latin1()));
+						return FALSE;
+					}
+
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
+					}
+				}
 				break;
 			}
 			else if (token == "xmltaskreport" )
@@ -701,7 +756,15 @@ ProjectFile::parse()
 TokenType
 ProjectFile::nextToken(QString& buf)
 {
-	return openFiles.last()->nextToken(buf);
+	TokenType tt;
+	while ((tt = openFiles.last()->nextToken(buf)) == EndOfFile)
+	{
+		close();
+		if (openFiles.isEmpty())
+			return EndOfFile;
+	}
+
+	return tt;
 }
 
 void
@@ -711,22 +774,78 @@ ProjectFile::fatalError(const QString& msg)
 }
 
 bool
+ProjectFile::readInclude()
+{
+	QString token;
+
+	if (nextToken(token) != STRING)
+	{
+		fatalError("File name expected");
+		return FALSE;
+	}
+	if (!open(token))
+		return FALSE;
+
+	return TRUE;
+}
+
+bool
 ProjectFile::readTask(Task* parent)
 {
 	TokenType tt;
 	QString token;
 
-	if (proj->getStart() == 0)
-	{
-		fatalError("Project start date must be specified first");
-		return FALSE;
-	}
-
 	QString id;
-	if ((tt = nextToken(id)) != ID)
+	if ((tt = nextToken(id)) != ID &&
+		(tt != RELATIVE_ID))
 	{
 		fatalError("ID expected");
 		return FALSE;
+	}
+
+	if (tt == RELATIVE_ID)
+	{
+		/* If a relative ID has been specified the task is declared out of
+		 * it's actual scope. So we have to set 'parent' to point to the
+		 * correct parent task. */
+		do
+		{
+			if (id[0] == '!')
+			{
+				if (parent != 0)
+					parent = parent->getParent();
+				else
+				{
+					fatalError("Invalid relative task ID");
+					return FALSE;
+				}
+				id = id.right(id.length() - 1);
+			}
+			else if (id.find('.') >= 0)
+			{
+				QString tn = (parent ? parent->getId() + "." : QString())
+					+ id.left(id.find('.'));
+				TaskList tl;
+				if (parent)
+					parent->getSubTaskList(tl);
+				else
+					tl = proj->getTaskList();
+				bool found = FALSE;
+				for (Task* t = tl.first(); t != 0; t = tl.next())
+					if (t->getId() == tn)
+					{
+						parent = t;
+						id = id.right(id.length() - id.find('.') - 1);
+						found = TRUE;
+						break;
+					}
+				if (!found)
+				{
+					fatalError(QString("Task ") + tn + " unknown");
+					return FALSE;
+				}
+			}
+		} while (id[0] == '!' || id.find('.') >= 0);
 	}
 
 	QString name;
@@ -755,18 +874,13 @@ ProjectFile::readTask(Task* parent)
 
 	for (bool done = false ; !done; )
 	{
-		bool hasSubTasks = FALSE;
-		bool cantBeParent = FALSE;
 		switch (tt = nextToken(token))
 		{
 		case ID:
-			/* These attributes can be used in any type of task (normal,
-			 * container, milestone. */
-			if (token == "task" && !cantBeParent)
+			if (token == "task")
 			{
 				if (!readTask(task))
 					return FALSE;
-				hasSubTasks = TRUE;
 			}
 			else if (token == "note")
 			{
@@ -778,10 +892,9 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 			}
-			else if (token == "milestone" && !hasSubTasks)
+			else if (token == "milestone")
 			{
 				task->setMilestone();
-				cantBeParent = TRUE;
 			}
 			else if READ_DATE("start", setPlanStart)
 			else if READ_DATE("end", setPlanEnd)
@@ -791,55 +904,49 @@ ProjectFile::readTask(Task* parent)
 			else if READ_DATE("maxend", setMaxEnd)
 			else if READ_DATE("actualstart", setActualStart)
 			else if READ_DATE("actualsnd", setActualEnd)
-			else if (token == "length" && !hasSubTasks)
+			else if (token == "length")
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanLength(d);
-				cantBeParent = TRUE;
 			}
-			else if (token == "effort" && !hasSubTasks)
+			else if (token == "effort")
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanEffort(d);
-				cantBeParent = TRUE;
 			}
-			else if (token == "duration" && !hasSubTasks)
+			else if (token == "duration")
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanDuration(d);
-				cantBeParent = TRUE;
 			}
-			else if (token == "actuallength" && !hasSubTasks)
+			else if (token == "actuallength")
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setActualLength(d);
-				cantBeParent = TRUE;
 			}
-			else if (token == "actualeffort" && !hasSubTasks)
+			else if (token == "actualeffort")
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setActualEffort(d);
-				cantBeParent = TRUE;
 			}
-			else if (token == "actualduration" && !hasSubTasks)
+			else if (token == "actualduration")
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setActualDuration(d);
-				cantBeParent = TRUE;
 			}
-			else if (token == "complete" && !hasSubTasks)
+			else if (token == "complete")
 			{
 				if (nextToken(token) != INTEGER)
 				{
@@ -852,7 +959,6 @@ ProjectFile::readTask(Task* parent)
 					fatalError("Value of complete must be between 0 and 100");
 					return FALSE;
 				}
-				cantBeParent = TRUE;
 				task->setComplete(complete);
 			}
 			else if (token == "responsible")
@@ -866,15 +972,13 @@ ProjectFile::readTask(Task* parent)
 				}
 				task->setResponsible(r);
 			}
-			else if (token == "allocate" && !hasSubTasks)
+			else if (token == "allocate")
 			{
 				if (!readAllocate(task))
 					return FALSE;
-				cantBeParent = TRUE;
 			}
-			else if (token == "depends" && !hasSubTasks)
+			else if (token == "depends")
 			{
-				cantBeParent = TRUE;
 				for ( ; ; )
 				{
 					QString id;
@@ -893,9 +997,8 @@ ProjectFile::readTask(Task* parent)
 					}
 				}
 			}
-			else if (token == "preceeds" && !hasSubTasks)
+			else if (token == "preceeds")
 			{
-				cantBeParent = TRUE;
 				for ( ; ; )
 				{
 					QString id;
@@ -945,13 +1048,12 @@ ProjectFile::readTask(Task* parent)
 					}
 				}
 			}
-			else if (token == "priority" && !hasSubTasks)
+			else if (token == "priority")
 			{
 				int priority;
 				if (!readPriority(priority))
 					return FALSE;
 				task->setPriority(priority);
-				cantBeParent = TRUE;
 				break;
 			}
 			else if (token == "account")
@@ -964,6 +1066,23 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 				task->setAccount(proj->getAccount(account));
+				break;
+			}
+			else if (token == "projectid")
+			{
+				if (nextToken(token) != ID ||
+					!proj->isValidId(token))
+				{
+					fatalError("Project ID expected");
+					return FALSE;
+				}
+				task->setProjectId(token);
+				break;
+			}
+			else if (token == "include")
+			{
+				if (!readInclude())
+					return FALSE;
 				break;
 			}
 			else
@@ -1152,6 +1271,12 @@ ProjectFile::readResource(Resource* parent)
 					}
 				}
 			}
+			else if (token == "include")
+			{
+				if (!readInclude())
+					return FALSE;
+				break;
+			}
 			else
 			{
 				fatalError(QString("Unknown attribute '") + token + "'");
@@ -1238,6 +1363,11 @@ ProjectFile::readAccount(Account* parent)
 				}
 				a->setKotrusId(token);
 				cantBeParent = TRUE;
+			}
+			else if (token == "include")
+			{
+				if (!readInclude())
+					return FALSE;
 			}
 			else
 			{
@@ -1583,6 +1713,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		else if (token == "showactual")
 		{
 			report->setShowActual(TRUE);
+		}
+		else if (token == "showprojectids")
+		{
+			report->setShowPIDs(TRUE);
 		}
 		else if (token == "hidetask")
 		{

@@ -36,6 +36,32 @@ Project::Project()
 }
 
 bool
+Project::addId(const QString& id)
+{
+	if (projectIDs.findIndex(id) != -1)
+		return FALSE;
+	else
+		projectIDs.append(id);
+	return TRUE;
+}
+
+QString
+Project::getIdIndex(const QString& i) const
+{
+	int idx;
+	if ((idx = projectIDs.findIndex(i)) == -1)
+		return QString("?");
+	QString idxStr;
+	do
+	{
+		idxStr = QChar('A' + idx % ('Z' - 'A')) + idxStr;
+		idx /= 'Z' - 'A';
+	} while (idx > 'Z' - 'A');
+
+	return idxStr;
+}
+
+bool
 Project::addTask(Task* t)
 {
 	taskList.append(t);

@@ -25,7 +25,7 @@ Kotrus *kotrus;
 void 
 usage(QApplication& a)
 {
-	qWarning("Usage: %s <filename>", a.argv()[0]);
+	qWarning("Usage: %s <filename1> [<filename2> ...]", a.argv()[0]);
 	exit(1);
 }
 
@@ -33,19 +33,23 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv, false);
 
-	if (argc != 2)
+	if (argc < 2)
 		usage(a);
 
 	Project p;
 	kotrus = new Kotrus();
 	
-	ProjectFile* pf = new ProjectFile(&p);
-	if (!pf->open(a.argv()[1]))
-		return (-1);
-	pf->parse();
+	for (int i = 1; i < argc; i++)
+	{
+		ProjectFile* pf = new ProjectFile(&p);
+		if (!pf->open(a.argv()[i]))
+			return (-1);
+		pf->parse();
+	}
+	qDebug("Scheduling...");
 	if (!p.pass2())
 		return (1);
-
+	qDebug("Generating reports...");
 	p.generateReports();
 
 	return (0);

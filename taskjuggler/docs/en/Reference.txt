@@ -76,12 +76,12 @@ end: DATE
 Optional attributes: none
 
 The project property is mandatory and should be the first property in
-a project file. <id> is a ID used to register resource allocations in
-a global database. <name> is the name of the project. <version> is the
-version of the project file. Typically this is the CVS id. <start> and
-<end> define the timeframe of the project. The end may be well after
-the end of the last task but must be specified to terminate the
-scheduling process.
+a project file. <id> is the default project ID used to register
+resource allocations in a global database. <name> is the name of the
+project. <version> is the version of the project file. Typically this
+is the CVS id. <start> and <end> define the timeframe of the
+project. The end may be well after the end of the last task but must
+be specified to terminate the scheduling process.
 
 ===============================================================================
 task <id> <name>
@@ -512,7 +512,9 @@ include <filename>
 filename: STRING
 
 Includes the specified filename as if its contense would be written
-instead of the include property.
+instead of the include property. include commands can be used within
+global scope or between property declarations of tasks, resources and
+accounts.
 
 ===============================================================================
 macro <id> [ body ]
@@ -532,12 +534,17 @@ macro foo [ This ${1} text ]
 will expend to ' This stupid text ] if called as ${foo
 "stupid"}. Macros may call other macros.
 
+Macro IDs should have at least one upper case letter as all lower case
+letter IDs may be used in later version for build-in macros like 'if',
+'expr' or 'for'.
+
 ===============================================================================
 flags <id>[,<id>]
 id: ID
 
-Declares the specified flags. Flags can be assigned to tasks to be
-used as filters during report generation.
+Declares the specified flags. Flags can be assigned to tasks,
+resources or accounts to be used as filters during report
+generation. It is legal to declared a flag more than once.
 
 ===============================================================================
 timingresolution <value> <unit>

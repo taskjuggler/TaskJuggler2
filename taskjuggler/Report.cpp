@@ -33,6 +33,7 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e) :
 
 	hidePlan = FALSE;
 	showActual = FALSE;
+	showPIDs = FALSE;
 }
 
 Report::~Report()

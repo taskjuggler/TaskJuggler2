@@ -87,6 +87,10 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			scaleTime(t->getPlanLoad(Interval(start, end), r));
 			s << "</td>" << endl;
 		}
+		else if (*it == "projectid")
+			textTwoRows(t->getProjectId() + " (" +
+						project->getIdIndex(t->getProjectId()) + ")", r != 0,
+						"left");
 		else if (*it == "resources")
 			planResources(t, r != 0);
 		else if (*it == "responsible")
@@ -232,6 +236,8 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 			scaleTime(r->getPlanLoad(Interval(start, end), t));
 			s << "</td>" << endl;
 		}
+		else if (*it == "projectid")
+			emptyPlan(t != 0);
 		else if (*it == "resources")
 			emptyPlan(t != 0);
 		else if (*it == "responsible")
@@ -395,6 +401,8 @@ ReportHtml::generateTableHeader()
 			s << "<td class=\"headerbig\" rowspan=\"2\">Duration</td>";
 		else if (*it == "effort")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Effort</td>";
+		else if (*it == "projectid")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Project ID</td>";
 		else if (*it == "resources")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Resources</td>";
 		else if (*it == "responsible")
@@ -602,7 +610,12 @@ ReportHtml::textTwoRows(const QString& text, bool light, const QString& align)
 void
 ReportHtml::dailyResourcePlan(Resource* r, Task* t)
 {
-	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	if (hidePlan)
+		return;
+
+	if (showActual)
+		s << "<td class=\"headersmall\">Plan</td>" << endl;
+
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
@@ -622,7 +635,9 @@ ReportHtml::dailyResourcePlan(Resource* r, Task* t)
 void
 ReportHtml::dailyResourceActual(Resource* r, Task* t)
 {
-	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	if (!hidePlan)
+		s << "<td class=\"headersmall\">Actual</td>" << endl;
+
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
@@ -644,7 +659,12 @@ ReportHtml::dailyResourceActual(Resource* r, Task* t)
 void 
 ReportHtml::dailyTaskPlan(Task* t, Resource* r)
 {
-	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	if (hidePlan)
+		return;
+
+	if (showActual)
+		s << "<td class=\"headersmall\">Plan</td>" << endl;
+
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
@@ -657,6 +677,12 @@ ReportHtml::dailyTaskPlan(Task* t, Resource* r)
 			isWeekend(day) ? "weekend" :
 			project->isVacation(day) ? "vacation" :
 			(r == 0 ? "default" : "defaultlight");
+		if (showPIDs)
+		{
+			QString pids = r->getPlanProjectIDs(Interval(day).firstDay(), t);
+			reportPIDs(pids, bgCol, !r->isGroup());
+		}
+		else
 		reportLoad(load, bgCol, !t->isContainer());
 	}
 }
@@ -664,7 +690,9 @@ ReportHtml::dailyTaskPlan(Task* t, Resource* r)
 void
 ReportHtml::dailyTaskActual(Task* t, Resource* r)
 {
-	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	if (!hidePlan)
+		s << "<td class=\"headersmall\">Actual</td>" << endl;
+
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
@@ -679,14 +707,25 @@ ReportHtml::dailyTaskActual(Task* t, Resource* r)
 			isWeekend(day) ? "weekend" :
 			project->isVacation(day) ? "vacation" :
 			(r == 0 ? "default" : "defaultlight");
-		reportLoad(load, bgCol, !t->isContainer());
+		if (showPIDs)
+		{
+			QString pids = r->getActualProjectIDs(Interval(day).firstDay(), t);
+			reportPIDs(pids, bgCol, !r->isGroup());
+		}
+		else
+			reportLoad(load, bgCol, !t->isContainer());
 	}
 }
 
 void
 ReportHtml::weeklyResourcePlan(Resource* r, Task* t)
 {
-	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	if (hidePlan)
+		return;
+
+	if (showActual)
+		s << "<td class=\"headersmall\">Plan</td>" << endl;
+
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -696,14 +735,22 @@ ReportHtml::weeklyResourcePlan(Resource* r, Task* t)
 			(t == 0 ? "booked" : "bookedlight") :
 			isSameWeek(project->getNow(), week) ? "today" :
 			(t == 0 ? "default" : "defaultlight");
-		reportLoad(load, bgCol, !r->isGroup());
+		if (showPIDs)
+		{
+			QString pids = r->getPlanProjectIDs(Interval(week).firstWeek(), t);
+			reportPIDs(pids, bgCol, !r->isGroup());
+		}
+		else
+			reportLoad(load, bgCol, !r->isGroup());
 	}
 }
 
 void
 ReportHtml::weeklyResourceActual(Resource* r, Task* t)
 {
-	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	if (!hidePlan)
+		s << "<td class=\"headersmall\">Actual</td>" << endl;
+
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -715,14 +762,26 @@ ReportHtml::weeklyResourceActual(Resource* r, Task* t)
 			  "completedlight" : "bookedLight")) :
 			isSameWeek(project->getNow(), week) ? "today" :
 			(t == 0 ? "default" : "defaultlight");
-		reportLoad(load, bgCol, !r->isGroup());
+		if (showPIDs)
+		{
+			QString pids = r->getActualProjectIDs(Interval(week).firstWeek(),
+												  t);
+			reportPIDs(pids, bgCol, !r->isGroup());
+		}
+		else
+			reportLoad(load, bgCol, !r->isGroup());
 	}
 }
 
 void 
 ReportHtml::weeklyTaskPlan(Task* t, Resource* r)
 {
-	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	if (hidePlan)
+		return;
+
+	if (showActual)
+		s << "<td class=\"headersmall\">Plan</td>" << endl;
+
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -740,7 +799,9 @@ ReportHtml::weeklyTaskPlan(Task* t, Resource* r)
 void
 ReportHtml::weeklyTaskActual(Task* t, Resource* r)
 {
-	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	if (!hidePlan)
+		s << "<td class=\"headersmall\">Actual</td>" << endl;
+
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -760,7 +821,12 @@ ReportHtml::weeklyTaskActual(Task* t, Resource* r)
 void
 ReportHtml::monthlyResourcePlan(Resource* r, Task* t)
 {
-	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	if (hidePlan)
+		return;
+
+	if (showActual)
+		s << "<td class=\"headersmall\">Plan</td>" << endl;
+
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
@@ -777,7 +843,9 @@ ReportHtml::monthlyResourcePlan(Resource* r, Task* t)
 void
 ReportHtml::monthlyResourceActual(Resource* r, Task* t)
 {
-	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	if (!hidePlan)
+		s << "<td class=\"headersmall\">Actual</td>" << endl;
+
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
@@ -796,7 +864,12 @@ ReportHtml::monthlyResourceActual(Resource* r, Task* t)
 void
 ReportHtml::monthlyTaskPlan(Task* t, Resource* r)
 {
-	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	if (hidePlan)
+		return;
+
+	if (showActual)
+		s << "<td class=\"headersmall\">Plan</td>" << endl;
+
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
@@ -814,7 +887,9 @@ ReportHtml::monthlyTaskPlan(Task* t, Resource* r)
 void
 ReportHtml::monthlyTaskActual(Task* t, Resource* r)
 {
-	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	if (!hidePlan)
+		s << "<td class=\"headersmall\">Actual</td>" << endl;
+
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
@@ -1111,4 +1186,17 @@ ReportHtml::reportLoad(double load, const QString& bgCol, bool bold)
 	else
 		s << "<td class=\""
 		  << bgCol << "\">&nbsp;</td>" << endl;
+}
+
+void
+ReportHtml::reportPIDs(const QString& pids, const QString bgCol, bool bold)
+{
+	s << "<td class=\""
+	  << bgCol << "\" nowrap>";
+	if (bold)
+		s << "<b>";
+	s << pids;
+	if (bold)
+		s << "</b>";
+	s << "</td>" << endl;
 }

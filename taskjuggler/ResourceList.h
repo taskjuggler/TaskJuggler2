@@ -149,6 +149,9 @@ public:
 
 	double getActualCosts(const Interval& i, Task* task = 0);
 
+	QString getPlanProjectIDs(const Interval& i, Task* task = 0);
+	QString getActualProjectIDs(const Interval& i, Task* task = 0);
+
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
@@ -177,6 +180,9 @@ public:
 private:
 	Resource* subFirst() { return (Resource*) sub.first(); }
 	Resource* subNext() { return (Resource*) sub.next(); }
+
+	void getPlanPIDs(const Interval& period, Task* task, QStringList& pids);
+	void getActualPIDs(const Interval& period, Task* task, QStringList& pids);
 
 	/// Pointer used by subResourceFirst() and subResourceNext().
 	Resource* currentSR;

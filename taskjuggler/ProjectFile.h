@@ -41,6 +41,8 @@ public:
 	void expandMarco(QString& c);
 
 	const QString& getFile() const { return file; }
+	QString getPath() const;
+
 	int getLine() const { return currLine; }
 
 	TokenType nextToken(QString& buf);
@@ -82,6 +84,8 @@ public:
 	const QString& getFile() { return openFiles.last()->getFile(); }
 	int getLine() { return openFiles.last()->getLine(); }
 
+	bool moreFiles() { return !openFiles.isEmpty(); }
+
 	void fatalError(const QString& msg);
 
 	MacroTable& getMacros() { return macros; }
@@ -89,6 +93,7 @@ public:
 private:
 	ProjectFile() {};	// don't use
 
+	bool readInclude();
 	bool readTask(Task* parent);
 	bool readResource(Resource* parent);
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
@@ -111,6 +116,7 @@ private:
 	QString masterFile;
 	Project* proj;
 	QList<FileInfo> openFiles;
+	QStringList includedFiles;
 	MacroTable macros;
 	uint taskCntr;
 	uint resourceCntr;

@@ -42,6 +42,7 @@ public:
 
 	void setShowActual(bool s) { showActual = s; }
 	void setHidePlan(bool s) { hidePlan = s; }
+	void setShowPIDs(bool s) { showPIDs = s; }
 
 	void addColumn(const QString& c) { columns.append(c); }
 	const QString& columnsAt(uint idx) { return columns[idx]; }
@@ -117,6 +118,7 @@ protected:
 
 	bool hidePlan;
 	bool showActual;
+	bool showPIDs;
 } ;
 
 #endif

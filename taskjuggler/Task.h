@@ -120,6 +120,9 @@ public:
 
 	Task* getParent() { return (Task*) parent; }
 
+	void setProjectId(const QString& i) { projectId = i; }
+	const QString& getProjectId() const { return projectId; }
+
 	void setNote(const QString& d) { note = d; }
 	const QString& getNote() const { return note; }
 
@@ -335,6 +338,12 @@ private:
 	 * information but stored for conveniance. Interdependant tasks are
 	 * linked in a doubly linked list. */
 	TaskList followers;
+
+	/**
+	 * The ID of the project this task belongs to. This is only
+	 * meaningful if multiple projects are joined to create a big
+	 * project. */
+	QString projectId;
 
 	/**
 	 * Name of the file where this task has been defined. This is used
