@@ -28,7 +28,7 @@ class FileInfo
 {
 public:
     FileInfo(ProjectFile* p, const QString& file_, const QString& tp);
-    ~FileInfo() { }
+    ~FileInfo();
 
     bool open();
     bool close();

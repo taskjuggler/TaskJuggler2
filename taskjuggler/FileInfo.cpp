@@ -26,6 +26,11 @@ FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp)
     file = file_;
 }
 
+FileInfo::~FileInfo()
+{
+    delete f;
+}
+
 bool
 FileInfo::open()
 {
@@ -53,6 +58,7 @@ bool
 FileInfo::close()
 {
     delete f;
+    f = 0;
     if (fh == stdin)
         return TRUE;
 

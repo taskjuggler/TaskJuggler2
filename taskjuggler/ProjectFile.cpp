@@ -4904,7 +4904,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return 0;
+                goto exit_error;
             }
 
             if (token == KW("title"))
@@ -4912,7 +4912,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return 0;
+                    goto exit_error;
                 }
                 tci->setTitle(token);
             }
@@ -4921,7 +4921,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return 0;
+                    goto exit_error;
                 }
                 tci->setTitleURL(token);
             }
@@ -4930,7 +4930,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return 0;
+                    goto exit_error;
                 }
                 tci->setSubTitle(token);
             }
@@ -4939,7 +4939,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return 0;
+                    goto exit_error;
                 }
                 tci->setSubTitleURL(token);
             }
@@ -4948,7 +4948,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return 0;
+                    goto exit_error;
                 }
                 tci->setCellText(token);
             }
@@ -4957,7 +4957,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return 0;
+                    goto exit_error;
                 }
                 tci->setCellURL(token);
             }
@@ -4967,7 +4967,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return 0;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tci->setHideCellText(et);
@@ -4978,7 +4978,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return 0;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tci->setHideCellURL(et);
@@ -4986,7 +4986,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return 0;
+                goto exit_error;
             }
         }
     }
@@ -4994,6 +4994,10 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
         returnToken(tt, token);
 
     return tci;
+
+exit_error:
+    delete tci;
+    return 0;
 }
 
 bool
