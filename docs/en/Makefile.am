@@ -29,6 +29,7 @@ GenPropertyReference.xml: PropertyReference.xml PropertyReference.xsl
 
 taskjuggler/book1.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
+	  mkdir -p taskjuggler ; \
 	  db2html --xencoding utf-8 taskjuggler.xml ;\
 	  cp index.html taskjuggler/index.html ; \
 	  rm -rf taskjuggler.junk ;\
