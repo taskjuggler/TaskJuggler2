@@ -9,3 +9,4 @@ Comment=A Taskjuggler IDE for KDE
 GenericName=Taskjuggler IDE
 Terminal=0
 MimeType=application/x-tjp;application/x-tjxml
+Categories=Qt;KDE;ProjectManagement
