@@ -108,6 +108,9 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	account = 0;
 	startCredit = endCredit = 0.0;
 	lastSlot = 0;
+	doneEffort = 0.0;
+	doneDuration = 0.0;
+	doneLength = 0.0;
 	schedulingDone = FALSE;
 	responsible = 0;
 

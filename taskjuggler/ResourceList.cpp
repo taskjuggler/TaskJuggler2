@@ -152,7 +152,7 @@ Resource::~Resource()
 				delete planScoreboard[i];
 				i = j - 1;
 			}
-		delete planScoreboard;
+		delete [] planScoreboard;
 	}
 	if (actualScoreboard)
 	{
@@ -166,9 +166,9 @@ Resource::~Resource()
 				delete actualScoreboard[i];
 				i = j - 1;
 			}
-		delete actualScoreboard;
+		delete [] actualScoreboard;
 	}
-	delete MidnightIndex;
+	delete [] MidnightIndex;
 	MidnightIndex = 0;
 }
 
@@ -407,6 +407,7 @@ Resource::addPlanBooking(Booking* nb)
 	// Cross register booking with task.
 	if (retVal && nb->getTask())
 		nb->getTask()->addPlanBookedResource(this);
+	delete nb;
 	planScoreboard = scoreboard;
 	scoreboard = tmp;
 	return retVal;

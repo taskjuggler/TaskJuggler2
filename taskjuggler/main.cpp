@@ -42,6 +42,9 @@ usage(QApplication& a)
 			 "                          0 and 4, the higher N the more output\n"	         "                          is printed\n"
 			 "   --updatedb           - update the Kotrus database with the\n"
 			 "                          new resource usage information\n");
+	qWarning("To report bugs please follow the instructions in the manual\n"
+			 "and send the information to the taskjuggler developer mailing\n"
+			 "list at taskjuggler-devel@suse.de\n");
 }
 
 int main(int argc, char *argv[])

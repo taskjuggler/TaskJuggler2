@@ -34,7 +34,7 @@ conflict solver.
 <item>Powerful project description syntax with macro support.
 <item>Flexible working hours and vacation handling.
 <item>Support for shifts.
-<item>Timezone support.
+<item>Multiple timezone support.
 <item>Flexibel resource grouping.
 <item>Project accounting support.
 <item>Task may have initial costs, finishing costs.
@@ -203,6 +203,31 @@ option:
 <tscreen><verb>
 % taskjuggler --help
 </verb></tscreen>
+
+<sect1> Reporting Bugs and Sending Feedback
+<p>
+All official releases of taskjuggler are meant to be stable releases
+unless explicitly noted differently. But our test suite is still very
+small and some features cannot be tested automatically very well. So
+it's very likely that your current version of taskjuggler contains
+bugs. If you find a bug please follow this procedure:
+
+<itemize>
+
+<item>Read this manual to make sure that it is actually a bug and not
+a feature.
+
+<item>Check the taskjuggler <url
+url="http://www.suse.de/~freitag/taskjuggler" name="web page">.
+Possibly the bug was already found and a patch or workaround exists.
+
+<item>Try to create a test project that is as small as possible but
+still reproduces the bug.
+
+<item>Send the test project and a detailed description of the problem
+to the developer mailing list at taskjuggler-devel@suse.de.
+
+</itemize>
 
 <sect>An Example
 <p>

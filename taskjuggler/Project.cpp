@@ -25,6 +25,7 @@ Project::Project()
 {
 	taskList.setAutoDelete(TRUE);
 	resourceList.setAutoDelete(TRUE);
+	accountList.setAutoDelete(TRUE);
 	activeAsap.setSorting(CoreAttributesList::PrioDown);
 	activeAlap.setSorting(CoreAttributesList::PrioDown);
 	priority = 500;
