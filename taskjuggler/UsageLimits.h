@@ -10,6 +10,9 @@
  * $Id$
  */
 
+#ifndef _UsageLimits_h_
+#define _UsageLimits_h_
+
 /**
  * This class stores usage limits of resources or task allocations. The values
  * are stored as number of scoreboard slots.
@@ -18,7 +21,7 @@
  * @see Resource
  * @see Allocation
  * @author Chris Schlaeger <cs@suse.de>
- */ 
+ */
 class UsageLimits
 {
     public:
@@ -36,10 +39,12 @@ class UsageLimits
 
         void setMonthlyMax(uint m) { monthlyMax = m; }
         uint getMonthlyMax() const { return monthlyMax; }
-        
+
     private:
         uint dailyMax;
         uint weeklyMax;
         uint monthlyMax;
 } ;
+
+#endif
 
