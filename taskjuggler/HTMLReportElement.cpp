@@ -188,7 +188,8 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
 }
 
 void
-HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
+HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, 
+                           bool multi, bool filter)
 {
     if (!multi)
         tci->setFontFactor(90);
@@ -233,7 +234,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
                 << "%; ";
         s() << "\"";
     }
-    QString cellText(text);
+    QString cellText = filter ? htmlFilter(text) : text;
     if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
     {
         QStringList* sl = new QStringList();
@@ -243,10 +244,12 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
         QString cellURL = mt.expand(tci->tci->getCellURL());
         if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
-            + "\">" + cellText + "</a>";
+            + "\">" + htmlFilter(cellText) + "</a>";
 
         mt.popArguments();
     }
+    if (cellText.isEmpty())
+        cellText = "&nbsp;";
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_cell\"";
     s() << ">" << cellText << "</td>" << endl;
@@ -310,8 +313,6 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
         }
         tci->setHAlign("center");
     }
-    else
-        text = "&nbsp;";
     genCell(text, tci, FALSE);
 }
 
@@ -327,8 +328,6 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
         if (tci->tli->resource->hasSubs())
             tci->setBoldText(true);
     }
-    else
-        text = "&nbsp;";
     genCell(text, tci, FALSE);
 }
 
@@ -789,7 +788,7 @@ HTMLReportElement::genHeadYear(TableCellInfo* tci)
 void
 HTMLReportElement::genCellEmpty(TableCellInfo* tci)
 {
-    genCell("&nbsp;", tci, TRUE);
+    genCell("", tci, TRUE);
 }
 
 void
@@ -797,21 +796,21 @@ HTMLReportElement::genCellSequenceNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? 
             QString().sprintf("%d.", tci->tli->ca1->getSequenceNo()) :
-            QString("&nbsp;"), tci, TRUE);
+            QString(""), tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? QString().sprintf("%d.", tci->tli->idxNo) :
-            QString("&nbsp;"), tci, TRUE);
+            QString(""), tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellHierarchNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchNo() : QString("&nbsp;"), tci, TRUE);
+            tci->tli->ca1->getHierarchNo() : QString(""), tci, TRUE);
 }
 
 void
@@ -819,20 +818,20 @@ HTMLReportElement::genCellIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? 
             QString().sprintf("%d.", tci->tli->ca1->getIndex()) :
-            QString("&nbsp;"), tci, TRUE);
+            QString(""), tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellHierarchIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchIndex() : QString("&nbsp;"), tci, TRUE);
+            tci->tli->ca1->getHierarchIndex() : QString(""), tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellId(TableCellInfo* tci)
 {
-    genCell(htmlFilter(tci->tli->ca1->getId()), tci, TRUE); 
+    genCell(tci->tli->ca1->getId(), tci, TRUE); 
 }
 
 void
@@ -903,7 +902,7 @@ HTMLReportElement::genCellEnd(TableCellInfo* tci)
 void \
 HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
-    genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? "&nbsp;" : \
+    genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? "" : \
             time2user(tci->tli->task->get##a(tci->tli->sc), timeFormat), \
             tci, FALSE); \
 }
@@ -984,7 +983,7 @@ HTMLReportElement::genCellResources(TableCellInfo* tci)
         if (!text.isEmpty())
             text += ", ";
                     
-        text += htmlFilter((*rli)->getName());
+        text += (*rli)->getName();
     }
     genCell(text, tci, FALSE);
 }
@@ -993,10 +992,10 @@ void
 HTMLReportElement::genCellResponsible(TableCellInfo* tci)
 {
     if (tci->tli->task->getResponsible())
-        genCell(htmlFilter(tci->tli->task->getResponsible()->getName()),
+        genCell(tci->tli->task->getResponsible()->getName(),
                 tci, TRUE);
     else
-        genCell("&nbsp", tci, TRUE);
+        genCell("", tci, TRUE);
 }
 
 void
@@ -1005,27 +1004,27 @@ HTMLReportElement::genCellText(TableCellInfo* tci)
     if (tci->tcf->getId() == "note")
     {
         if (tci->tli->task->getNote().isEmpty())
-            genCell("&nbsp;", tci, TRUE);
+            genCell("", tci, TRUE);
         else
-            genCell(htmlFilter(tci->tli->task->getNote()), tci, TRUE);
+            genCell(tci->tli->task->getNote(), tci, TRUE);
         return;
     }
    
     const TextAttribute* ta = (const TextAttribute*) 
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
     if (!ta || ta->getText().isEmpty())
-        genCell("&nbsp;", tci, TRUE);
+        genCell("", tci, TRUE);
     else
-        genCell(htmlFilter(ta->getText()), tci, TRUE);
+        genCell(ta->getText(), tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellStatusNote(TableCellInfo* tci)
 {
     if (tci->tli->task->getStatusNote(tci->tli->sc).isEmpty())
-        genCell("&nbsp;", tci, TRUE);
+        genCell("", tci, TRUE);
     else
-        genCell(htmlFilter(tci->tli->task->getStatusNote(tci->tli->sc)),
+        genCell(tci->tli->task->getStatusNote(tci->tli->sc),
                 tci, TRUE);
 }
 
@@ -1101,10 +1100,8 @@ HTMLReportElement::genCellFlags(TableCellInfo* tci)
     {
         if (it != allFlags.begin())
             flagStr += ", ";
-        flagStr += htmlFilter(*it);
+        flagStr += *it;
     }
-    if (flagStr.isEmpty())
-        flagStr = "&nbsp";
     genCell(flagStr, tci, TRUE);
 }
 
@@ -1165,7 +1162,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
     if (tci->tcf->getId() == "reference")
     {
         if (tci->tli->task->getReference().isEmpty())
-            genCell("&nbsp;", tci, TRUE);
+            genCell("", tci, TRUE);
         else
         {
             QString text ="<a href=\"" + tci->tli->task->getReference() + "\">";
@@ -1174,7 +1171,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
             else
                 text += htmlFilter(tci->tli->task->getReferenceLabel());
             text += "<a>";
-            genCell(text, tci, TRUE);
+            genCell(text, tci, TRUE, FALSE);
         }
         return;
     }
@@ -1182,7 +1179,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
     const ReferenceAttribute* ra =  (const ReferenceAttribute*)
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
     if (!ra || ra->getUrl().isEmpty())
-        genCell("&nbsp;", tci, TRUE);
+        genCell("", tci, TRUE);
     else
     {
         QString text ="<a href=\"" + ra->getUrl() + "\">";
@@ -1191,15 +1188,14 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
         else
             text += htmlFilter(ra->getLabel());
         text += "<a>";
-        genCell(text, tci, TRUE);
+        genCell(text, tci, TRUE, FALSE);
     }
 }
 
 void
 HTMLReportElement::genCellScenario(TableCellInfo* tci)
 {
-    genCell(htmlFilter(report->getProject()->
-                       getScenarioName(tci->tli->sc)), tci, FALSE);
+    genCell(report->getProject()->getScenarioName(tci->tli->sc), tci, FALSE);
 }
 
 #define GCDEPFOL(a, b) \
@@ -1214,8 +1210,6 @@ HTMLReportElement::genCell##a(TableCellInfo* tci) \
             text += ", "; \
         text += (*it)->getId(); \
     } \
-    if (text.isEmpty()) \
-        text = "&nbsp;"; \
     genCell(text, tci, TRUE); \
 }
 
@@ -1652,6 +1646,6 @@ HTMLReportElement::genCellSummary(TableCellInfo* tci)
         }
     }
     else
-        genCell("&nbsp;", tci, FALSE);
+        genCell("", tci, FALSE);
 }
 

@@ -120,7 +120,8 @@ protected:
 
     void generateLine(TableLineInfo* tli, int funcSel);
 
-    void genCell(const QString& text, TableCellInfo* tli, bool multi);
+    void genCell(const QString& text, TableCellInfo* tli, bool multi,
+                 bool filter = TRUE);
 
     void generateTitle(TableCellInfo* tci, const QString& str);
     
