@@ -393,7 +393,7 @@ Task::scheduleContainer(bool safeMode)
         if ((*tli)->start == 0 || (*tli)->end == 0)
             return TRUE;
         nstart = (*tli)->start;
-        nend = (*tli)->end + ((*tli)->milestone ? 1 : 0);
+        nend = (*tli)->end;
     }
     else
         return TRUE;
@@ -407,8 +407,8 @@ Task::scheduleContainer(bool safeMode)
 
         if ((*tli)->start < nstart)
             nstart = (*tli)->start;
-        if ((*tli)->end + ((*tli)->milestone ? 1 : 0) > nend)
-            nend = (*tli)->end + ((*tli)->milestone ? 1 : 0);
+        if ((*tli)->end > nend)
+            nend = (*tli)->end;
     }
 
     if (start == 0 || (!depends.isEmpty() && start < nstart))
@@ -454,6 +454,7 @@ Task::propagateStart(bool notUpwards)
      * ALAP task or have no duration. */
     for (TaskListIterator tli(previous); *tli != 0; ++tli)
         if ((*tli)->end == 0 && (*tli)->latestEnd() != 0 &&
+            !(*tli)->schedulingDone &&
             ((*tli)->scheduling == ALAP ||
              ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
@@ -470,7 +471,7 @@ Task::propagateStart(bool notUpwards)
      * dependancy on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
     {
-        if (!(*tli)->hasStartDependency())
+        if (!(*tli)->hasStartDependency() && !(*tli)->schedulingDone)
         {
             (*tli)->start = start;
             if (DEBUGTS(11))
@@ -515,6 +516,7 @@ Task::propagateEnd(bool notUpwards)
      * ASAP task or have no duration. */
     for (TaskListIterator tli(followers); *tli != 0; ++tli)
         if ((*tli)->start == 0 && (*tli)->earliestStart() != 0 &&
+            !(*tli)->schedulingDone &&
             ((*tli)->scheduling == ASAP ||
              ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
@@ -529,7 +531,7 @@ Task::propagateEnd(bool notUpwards)
     /* Propagate end time to sub tasks which have only an implicit
      * dependancy on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
-        if (!(*tli)->hasEndDependency())
+        if (!(*tli)->hasEndDependency() && !(*tli)->schedulingDone)
         {
             (*tli)->end = end;
             if (DEBUGTS(11))
@@ -1503,6 +1505,15 @@ Task::preScheduleOk()
 {
     for (int sc = 0; sc < project->getMaxScenarios(); sc++)
     {
+        if (scenarios[sc].scheduled && !sub.isEmpty() &&
+            (scenarios[sc].start == 0 || scenarios[sc].end == 0))
+        {
+            errorMessage(i18n
+                         ("Task '%1' is marked as scheduled but does not have "
+                          "a fixed start and end date.").arg(id));
+            return FALSE;
+        }
+                          
         if (scenarios[sc].effort > 0.0 && allocations.count() == 0 &&
             !scenarios[sc].scheduled)
         {
@@ -1807,9 +1818,10 @@ Task::scheduleOk(int sc, int& errors) const
     }
     if (start < project->getStart() || start > project->getEnd())
     {
-        errorMessage(i18n("Start time of task '%1' is outside of the "
-                          "project interval (%2 - %3) in '%4' scenario.")
+        errorMessage(i18n("Start time '%1' of task '%2' is outside of the "
+                          "project interval (%3 - %4) in '%5' scenario.")
                      .arg(time2tjp(start))
+                     .arg(id)
                      .arg(time2tjp(project->getStart()))
                      .arg(time2tjp(project->getEnd()))
                      .arg(scenario));
@@ -1826,7 +1838,7 @@ Task::scheduleOk(int sc, int& errors) const
         errors++;
         return FALSE;
     }
-    if (scenarios[sc].maxStart != 0 && scenarios[sc].maxStart < start)
+    if (scenarios[sc].maxStart != 0 && start > scenarios[sc].maxStart)
     {
         errorMessage(i18n("'%1' start time of task '%2' is too late\n"
                           "Date is:  %3\n"
@@ -1844,39 +1856,37 @@ Task::scheduleOk(int sc, int& errors) const
         errors++;
         return FALSE;
     }
-    if (end + (milestone ? 1 : 0) < project->getStart() ||
-        end + (milestone ? 1 : 0) > project->getEnd())
+    if ((end + 1) < project->getStart() || (end > project->getEnd()))
     {
-        errorMessage(i18n("End time of task '%1' is outside of the "
-                          "project interval (%2 - %3) in '%4' scenario.")
-                     .arg(time2tjp(end))
+        errorMessage(i18n("End time '%1' of task '%2' is outside of the "
+                          "project interval (%3 - %4) in '%5' scenario.")
+                     .arg(time2tjp(end + 1))
+                     .arg(id)
                      .arg(time2tjp(project->getStart()))
-                     .arg(time2tjp(project->getEnd()))
+                     .arg(time2tjp(project->getEnd() + 1))
                      .arg(scenario));
         errors++;
         return FALSE;
     }
-    if (scenarios[sc].minEnd != 0 && 
-        (end + (milestone ? 1 : 0) < scenarios[sc].minEnd))
+    if (scenarios[sc].minEnd != 0 && (end + 1) < scenarios[sc].minEnd)
     {
         errorMessage(i18n("'%1' end time of task '%2' is too early\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id)
-                     .arg(time2tjp(end + (milestone ? 1 : 0)))
-                     .arg(time2tjp(scenarios[sc].minEnd)));
+                     .arg(time2tjp(end + 1))
+                     .arg(time2tjp(scenarios[sc].minEnd + 1)));
         errors++;
         return FALSE;
     }
-    if (scenarios[sc].maxEnd != 0 && 
-        (scenarios[sc].maxEnd < end + (milestone ? 1 : 0)))
+    if (scenarios[sc].maxEnd != 0 && end > scenarios[sc].maxEnd)
     {
         errorMessage(i18n("'%1' end time of task '%2' is too late\n"
                           "Date is:  %2\n"
                           "Limit is: %3")
                      .arg(scenario).arg(id)
-                     .arg(time2tjp(end + (milestone ? 1 : 0)))
-                     .arg(time2tjp(scenarios[sc].maxEnd)));
+                     .arg(time2tjp(end + 1))
+                     .arg(time2tjp(scenarios[sc].maxEnd + 1)));
         errors++;
         return FALSE;
     }
@@ -2069,7 +2079,8 @@ Task::prepareScenario(int sc)
     /* The user could have made manual bookings already. The effort of these
      * bookings needs to be calculated so that the scheduler only schedules
      * the still missing effort. Scheduling will begin after the last booking.
-     * This will only work for ASAP tasks. ALAP tasks cannot be partly booked. */
+     * This will only work for ASAP tasks. ALAP tasks cannot be partly booked.
+     */
     time_t firstSlot = 0;
     for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
     {
@@ -2079,14 +2090,17 @@ Task::prepareScenario(int sc)
                                       AllAccounts, this);
         if (doneEffort > 0.0)
         {
-            if (firstSlot == 0 || firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
+            if (firstSlot == 0 || 
+                firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
+            {
                 firstSlot = (*rli)->getStartOfFirstSlot(sc, this);
+            }
             time_t ls = (*rli)->getEndOfLastSlot(sc, this);
             if (ls > lastSlot)
                 lastSlot = ls;
         }
     }
-    if (lastSlot > 0)
+    if (lastSlot > 0 && !schedulingDone)
     {
         workStarted = TRUE;
         // Trim start to first booked time slot.
@@ -2329,10 +2343,9 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
         taskElem.appendChild( tempElem );
 
         tempElem = ReportXML::createXMLElem( doc, "actualEnd",
-                                             QString::number(scenarios[1].end +
-                                                             (milestone ? 1 : 0)));
+                                             QString::number(scenarios[1].end + 1));
         tempElem.setAttribute( "humanReadable",
-                               time2ISO(scenarios[1].end + (milestone ? 1 : 0)));
+                               time2ISO(scenarios[1].end + 1));
         taskElem.appendChild( tempElem );
     }
 
@@ -2341,10 +2354,8 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( tempElem );
 
    tempElem = ReportXML::createXMLElem( doc, "planEnd",
-                                        QString::number(scenarios[0].end +
-                                                        (milestone ? 1 : 0)));
-   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].end +
-                                                     (milestone ? 1 : 0)));
+                                        QString::number(scenarios[0].end + 1));
+   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].end + 1));
    taskElem.appendChild( tempElem );
 
    /* Start- and Endbuffer */

@@ -715,7 +715,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "minend " 
-                                << time2rfc(task->getMinEnd(*it))
+                                << time2rfc(task->getMinEnd(*it) + 1)
                                 << endl;
                         }
                     }
@@ -731,7 +731,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "maxend " 
-                                << time2rfc(task->getMaxEnd(*it))
+                                << time2rfc(task->getMaxEnd(*it) + 1)
                                 << endl;
                         }
                     }

@@ -606,6 +606,9 @@ no longer allocated ontop of the bookings.</para></listitem>
 writing <literal>$(VAR)</literal> as a means to pass runtime
 values to taskjuggler.</para></listitem>
 
+<listitem><para>Several inconsistencies and off-by-one errors with
+respect to task end times have been fixed.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

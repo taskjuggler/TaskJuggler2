@@ -549,12 +549,12 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                 case TA_MINEND:
                     if (task->getMinEnd(*it) != 0)
                         genDateElement(&scEl, "minEnd",
-                                       task->getMinEnd(*it));
+                                       task->getMinEnd(*it) + 1);
                     break;
                 case TA_MAXEND:
                     if (task->getMaxEnd(*it) != 0)
                         genDateElement(&scEl, "maxEnd",
-                                       task->getMaxEnd(*it));
+                                       task->getMaxEnd(*it) + 1);
                     break;
                 case TA_COMPLETE:
                     if (task->getComplete(*it) >= 0.0)

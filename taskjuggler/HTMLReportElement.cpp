@@ -988,24 +988,23 @@ HTMLReportElement::genCellEnd(TableCellInfo* tci)
 {
     if (!tci->tli->task->isEndOk(tci->tli->sc))
         tci->setBgColor(colors.getColor("error"));
-    genCell(time2user(tci->tli->task->getEnd(tci->tli->sc) +
-                      (tci->tli->task->isMilestone() ? 1 : 0), timeFormat),
+    genCell(time2user(tci->tli->task->getEnd(tci->tli->sc) + 1, timeFormat),
             tci, FALSE);
 }
 
-#define GCMMSE(a) \
+#define GCMMSE(a, b) \
 void \
 HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
     genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? QString() : \
-            time2user(tci->tli->task->get##a(tci->tli->sc), timeFormat), \
+            time2user(tci->tli->task->get##a(tci->tli->sc) + b, timeFormat), \
             tci, FALSE); \
 }
 
-GCMMSE(MinStart)
-GCMMSE(MaxStart)
-GCMMSE(MinEnd)
-GCMMSE(MaxEnd)
+GCMMSE(MinStart, 0)
+GCMMSE(MaxStart, 0)
+GCMMSE(MinEnd, 1)
+GCMMSE(MaxEnd, 1)
 
 #define GCSEBUFFER(a) \
 void \

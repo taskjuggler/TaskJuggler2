@@ -251,7 +251,8 @@ const
         QValueList<int>::const_iterator it;
         for (it = scenarios.begin(); it != scenarios.end(); ++it)
             if (iv.overlaps(Interval((*tli)->getStart(*it),
-                                 (*tli)->isMilestone() ?
+                                 (*tli)->getEnd(*it) == 
+                                 (*tli)->getStart(*it) - 1 ?
                                  (*tli)->getStart(*it) :
                                  (*tli)->getEnd(*it))))
             {

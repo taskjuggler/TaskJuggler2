@@ -183,7 +183,8 @@ int main(int argc, char *argv[])
         }
         else
         {
-            if (fileName.right(4) != ".tjp" &&
+            if (fileName != "." &&
+                fileName.right(4) != ".tjp" &&
                 fileName.right(4) != ".tji")
             {
                 qWarning(i18n("WARNING: %1 has an unsupported file extension. "

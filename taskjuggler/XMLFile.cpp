@@ -672,7 +672,7 @@ XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
     t->setLength(sc, el.attribute("length", "0.0").toDouble());
     t->setScheduled(sc, el.attribute("scheduled", "0").toInt());
     t->setComplete(sc, el.attribute("complete", "-1").toInt()); 
-    
+
     return TRUE;
 }
 
@@ -696,7 +696,7 @@ bool
 XMLFile::doTaskScenarioMaxEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setMaxEnd(ptc.getScenarioIndex(),
-                             n.toElement().text().toLong());
+                             n.toElement().text().toLong() - 1);
     return TRUE;
 }
 
@@ -704,7 +704,7 @@ bool
 XMLFile::doTaskScenarioMinEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setMinEnd(ptc.getScenarioIndex(),
-                             n.toElement().text().toLong());
+                             n.toElement().text().toLong() - 1);
     return TRUE;
 }
 

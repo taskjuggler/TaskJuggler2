@@ -1706,14 +1706,14 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
     else if (attribute == KW("minend"))
     {
         time_t val;
-        if (!readDate(val, 0))
+        if (!readDate(val, 1))
             return -1;
         task->setMinEnd(sc, val);
     }
     else if (attribute == KW("maxend"))
     {
         time_t val;
-        if (!readDate(val, 0))
+        if (!readDate(val, 1))
             return -1;
         task->setMaxEnd(sc, val);
     }
@@ -1854,7 +1854,7 @@ ProjectFile::readDate(time_t& val, time_t correction)
     }
     
     val = date2time(token) - correction;
-    if (val < proj->getStart() ||
+    if (val + correction < proj->getStart() ||
         val > proj->getEnd())
     {
         errorMessage(i18n("Date %1 is outside of project time frame "

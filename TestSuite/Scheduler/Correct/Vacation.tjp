@@ -28,31 +28,31 @@ task t1 "Task1" {
 	start 2000-01-01
 	effort 10d
 	allocate r1
-	minend 2000-01-26-17:59:59
-	maxend 2000-01-26-17:59:59
+	minend 2000-01-26-18:00:00
+	maxend 2000-01-26-18:00:00
 }
 
 task t2 "Task2" {
 	start 2000-01-01
 	effort 10d
 	allocate r2
-	minend 2000-01-26-17:59:59
-	maxend 2000-01-26-17:59:59
+	minend 2000-01-26-18:00:00
+	maxend 2000-01-26-18:00:00
 }
 
 task t3 "Task3" {
 	start 2000-01-01
 	length 13d
 	allocate r3
-  minend 2000-01-26-17:59:59
-	maxend 2000-01-26-17:59:59
+  minend 2000-01-26-18:00:00
+	maxend 2000-01-26-18:00:00
 }
 
 task t4 "Task4" {
 	start 2000-01-01
 	duration 26d
-  minend 2000-01-26-23:59:59
-  maxend 2000-01-26-23:59:59
+  minend 2000-01-27-0:00:00
+  maxend 2000-01-27-0:00:00
 }
 
 htmltaskreport "Vacation.html" {

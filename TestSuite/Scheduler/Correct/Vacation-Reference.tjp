@@ -58,23 +58,23 @@ task t3 "Task3" {
   scheduling asap
 }
 supplement task t4 {
-  plan:maxend 2000-01-26-23:59:59-+0000
-  plan:minend 2000-01-26-23:59:59-+0000
+  plan:maxend 2000-01-27-00:00:00-+0000
+  plan:minend 2000-01-27-00:00:00-+0000
   priority 500
 }
 supplement task t1 {
-  plan:maxend 2000-01-26-17:59:59-+0000
-  plan:minend 2000-01-26-17:59:59-+0000
+  plan:maxend 2000-01-26-18:00:00-+0000
+  plan:minend 2000-01-26-18:00:00-+0000
   priority 500
 }
 supplement task t2 {
-  plan:maxend 2000-01-26-17:59:59-+0000
-  plan:minend 2000-01-26-17:59:59-+0000
+  plan:maxend 2000-01-26-18:00:00-+0000
+  plan:minend 2000-01-26-18:00:00-+0000
   priority 500
 }
 supplement task t3 {
-  plan:maxend 2000-01-26-17:59:59-+0000
-  plan:minend 2000-01-26-17:59:59-+0000
+  plan:maxend 2000-01-26-18:00:00-+0000
+  plan:minend 2000-01-26-18:00:00-+0000
   priority 500
 }
 supplement resource r3 {
