@@ -369,8 +369,6 @@ void ktjview2View::parseTasks( TaskListIterator it, int sc )
 
         item->setText( 9, KGlobal::locale()->formatNumber( task->getEffort( sc ) ) );
         item->setText( 10, formatAllocations( task ) );
-
-        kapp->processEvents();
     }
 }
 
@@ -470,8 +468,6 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         }
 
         //kdDebug() << "Done parsing gantt item: " << id << endl;
-
-        kapp->processEvents();
     }
 
     KDGanttViewItem * root = m_ganttView->firstChild(); // expand the root item
@@ -569,8 +565,6 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
             kdWarning() << "Unsupported resource type with ID: " << id << endl;
             continue;             // uhoh, something bad happened
         }
-
-        kapp->processEvents();
     }
 }
 
@@ -608,8 +602,6 @@ void ktjview2View::parseLinks( TaskListIterator it )
 
         KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromList, toList );
         //taskLink->setTooltipText( fromName  + " -> " + toName );
-
-        kapp->processEvents();
     }
 }
 
@@ -772,9 +764,15 @@ void ktjview2View::filter()
 
 void ktjview2View::clearAllViews()
 {
+#if 0                           // FIXME: crashes when loading a second project
+    m_ganttView->setUpdateEnabled( false );
     m_ganttView->taskLinks().clear();
     m_ganttView->clear();
+    m_ganttView->setUpdateEnabled( true );
+#endif
+
     m_resListView->clear();
+
     m_taskView->clear();
 }
 
