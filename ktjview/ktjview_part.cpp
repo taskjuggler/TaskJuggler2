@@ -29,6 +29,7 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
 
     // this should be your custom internal widget
     m_widget = new KTJGantt( parentWidget, "GANTT" );
+
     // notify the part that this is our internal widget
     setWidget(m_widget);
 

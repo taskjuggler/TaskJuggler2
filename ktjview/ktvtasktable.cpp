@@ -11,7 +11,7 @@
 #define PIX_MILESTONE "flag"
 #define PIX_TASK      "package_settings"
 #define PIX_CONTAINER "attach"
-
+#define PIX_PROJECT   "finish"
 
 KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    :KListView( parent, name ),
@@ -57,15 +57,21 @@ void KTVTaskTable::showProject( Project *p )
    QString pName = p->getName();
 
    m_root = new KTVTaskTableItem( this, m_itemHeight );
-   setItemHeight( m_root->height() );
-   emit itemHeightChanged(m_root->height() );
    
    m_root->setExpandable( true );
+
+   KIconLoader *loader = KGlobal::iconLoader();
+   m_root->setPixmap( COL_NAME, loader->loadIcon( PIX_MILESTONE, KIcon::Small ));
+   
    m_root->setOpen( true );
    
    m_root->setText( COL_NAME, i18n("Project: %1").arg(pName) );
 
-		       
+   setItemHeight( m_root->height() );
+   emit itemHeightChanged(m_root->height() );
+   qDebug( "Y-Pos of root: %d, height is %d", m_root->itemPos(), m_root->height() );
+   
+   
    TaskList taskList = p->getTaskList();
 
    for (Task* t = taskList.first(); t != 0; t = taskList.next())
