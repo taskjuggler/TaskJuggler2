@@ -1265,7 +1265,17 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
    taskElem.appendChild( ReportXML::createXMLElem( doc, "ProjectID", projectId ));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number(getPriority())));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(complete) ));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "Type", milestone ? "Milestone":"Task" ));
+
+   QString tType = "Milestone";
+   if( !milestone )
+   {
+      if( isContainer() )
+	 tType = "Container";
+      else
+	 tType = "Task";
+      
+   }
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Type", tType  ));
 
    CoreAttributes *parent = getParent();
    if( parent )
