@@ -1,5 +1,5 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!  This Software is very alpha !!!
+!!!  This Software is __APLHA__  !!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 xml2ps.pl - gantt chart generator for TaskJuggler
@@ -25,7 +25,7 @@ output format
     PostScript document text conforming at level 3.0 - type EPS
 
     <project name>.eps              big gantt one page
-    <project name>_poster.eps       big gantt on multiiple page (a4) poster, ready
+    <project name>_poster.eps       big gantt on multiple page (a4) poster, ready
                                     for printing (require Poster)
 
 

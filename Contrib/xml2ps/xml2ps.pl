@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# !!!  This Software is very alpha !!!
+# !!!  This Software is __ALPHA__  !!!
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
 # xml2ps.pl - gantt chart generator for TaskJuggler
