@@ -14,4 +14,5 @@ subdirs
 configure.files
 configure.in
 stamp-h1
+stamp-h2
 autom4te.cache

@@ -178,6 +178,7 @@ private:
 	bool readPercent(double& value);
 	bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
 	bool readPriority(int& priority);
+	bool checkReportInterval(ReportHtml* report);
 	bool readHTMLReport(const QString& reportType);
 	bool readHTMLAccountReport();
 	bool readExportReport();

@@ -2,7 +2,7 @@ EXTRA_DIST = taskjuggler/*.html
 
 docprefix = $(DESTDIR)$(prefix)/share/doc/packages/taskjuggler/manual
 
-SGMLSOURCES = taskjuggler.sgml firstproject.sgml reference.sgml example.sgml
+SGMLSOURCES = taskjuggler.sgml changelog.sgml firstproject.sgml reference.sgml example.sgml
 CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.sgml example.sgml
 
 install-data-local:
