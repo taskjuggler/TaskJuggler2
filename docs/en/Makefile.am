@@ -33,10 +33,14 @@ taskjuggler.ps: $(SGMLSOURCES)
 	  db2ps taskjuggler.sgml ;\
 	fi
 
-tarball: $(SGMLSOURCES)
+tarball: taskjuggler/index.html 
 	@if test -d taskjuggler ; then \
-	doctarball = "tjmanual-$(VERSION).tar.gz" ; \
-	echo " created" ; \
+	  rm -f $$doctarball ; \
+	  doctarball="tjmanual-$(VERSION).tar.gz" ; \
+	  cp -a taskjuggler manual ; \
+	  tar czf $$doctarball manual ; \
+	  rm -r manual ; \
+	  echo $$doctarball " created" ; \
 	fi
 
 all: taskjuggler/index.html taskjuggler.ps
