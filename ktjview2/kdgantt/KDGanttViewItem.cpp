@@ -4,7 +4,7 @@
 */
 
 /****************************************************************************
- ** Copyright (C)  2002-2004 Klarälvdalens Datakonsult AB.  All rights reserved.
+ ** Copyright (C)  2002-2004 Klarï¿½vdalens Datakonsult AB.  All rights reserved.
  **
  ** This file is part of the KDGantt library.
  **
@@ -456,7 +456,7 @@ void KDGanttViewItem::setDisplaySubitemsAsGroup( bool show )
   _displaySubitemsAsGroup = show;
   if ( parent() )
     if ( parent()->isOpen() )
-	 parent()->setOpen( true );
+         parent()->setOpen( true );
   if ( isOpen() )
     setOpen( true );
   updateCanvasItems();
@@ -741,8 +741,8 @@ void KDGanttViewItem::setHighlight( bool highlight )
       myGanttView->myTimeTable->inc_blockUpdating();
       KDGanttViewItem* temp = (KDGanttViewItem*) firstChild();
       while (temp != 0) {
-	temp->setHighlight( highlight );
-	temp = temp->nextSibling();
+        temp->setHighlight( highlight );
+        temp = temp->nextSibling();
       }
       myGanttView->myTimeTable->dec_blockUpdating();
     }
@@ -956,8 +956,8 @@ void KDGanttViewItem::setColors( const QColor& start, const QColor& middle,
       myGanttView->myTimeTable->inc_blockUpdating();
       KDGanttViewItem* temp = (KDGanttViewItem*) firstChild();
       while (temp != 0) {
-	temp->setColors( start, middle, end );
-	temp = temp->nextSibling();
+        temp->setColors( start, middle, end );
+        temp = temp->nextSibling();
       }
       myGanttView->myTimeTable->dec_blockUpdating();
     }
@@ -1008,8 +1008,8 @@ void KDGanttViewItem::setHighlightColors( const QColor& start, const QColor& mid
       myGanttView->myTimeTable->inc_blockUpdating();
       KDGanttViewItem* temp = (KDGanttViewItem*) firstChild();
       while (temp != 0) {
-	temp->setHighlightColors( start,  middle,  end );
-	temp = temp->nextSibling();
+        temp->setHighlightColors( start,  middle,  end );
+        temp = temp->nextSibling();
       }
       myGanttView->myTimeTable->dec_blockUpdating();
     }
@@ -1053,8 +1053,8 @@ void KDGanttViewItem::setTextColor( const QColor& color )
       myGanttView->myTimeTable->inc_blockUpdating();
       KDGanttViewItem* temp = (KDGanttViewItem*) firstChild();
       while (temp != 0) {
-	temp->setTextColor(color);
-	temp = temp->nextSibling();
+        temp->setTextColor(color);
+        temp = temp->nextSibling();
       }
       myGanttView->myTimeTable->dec_blockUpdating();
     }
@@ -1147,8 +1147,8 @@ void KDGanttViewItem::setDefaultColor( const QColor& color )
       myGanttView->myTimeTable->inc_blockUpdating();
       KDGanttViewItem* temp = (KDGanttViewItem*) firstChild();
       while (temp != 0) {
-	temp->setDefaultColor( color );
-	temp = temp->nextSibling();
+        temp->setDefaultColor( color );
+        temp = temp->nextSibling();
       }
       myGanttView->myTimeTable->dec_blockUpdating();
     }
@@ -1192,8 +1192,8 @@ void KDGanttViewItem::setDefaultHighlightColor( const QColor& color )
       myGanttView->myTimeTable->inc_blockUpdating();
       KDGanttViewItem* temp = (KDGanttViewItem*) firstChild();
       while (temp != 0) {
-	temp->setDefaultHighlightColor( color );
-	temp = temp->nextSibling();
+        temp->setDefaultHighlightColor( color );
+        temp = temp->nextSibling();
       }
       myGanttView->myTimeTable->dec_blockUpdating();
     }
@@ -1316,7 +1316,7 @@ void KDGanttViewItem::updateCanvasItems()
       } else {
         b.setStyle(Qt::SolidPattern);
         b.setColor(myStartColor);
-	//  qDebug("update color  %s %s", listViewText().latin1(),myStartColor.name().latin1() );
+        //  qDebug("update color  %s %s", listViewText().latin1(),myStartColor.name().latin1() );
         startShape->setBrush(b);
         b.setColor(myMiddleColor);
         midShape->setBrush(b);
@@ -1331,7 +1331,7 @@ void KDGanttViewItem::updateCanvasItems()
     } else {
       //QColor discol = Qt::lightGray;
         QColor discol = QColor(232,232,232);
-	textCanvas->setColor( QColor(150,150,150) );
+        textCanvas->setColor( QColor(150,150,150) );
         b.setStyle(Qt::SolidPattern);
         b.setColor(discol);
         startShape->setBrush(b);
@@ -1350,7 +1350,7 @@ void KDGanttViewItem::updateCanvasItems()
     textCanvas->setFont(f);
     //if (isvisible) {
         myGanttView->myTimeTable->updateMyContent();
-	//}
+        //}
 }
 
 
@@ -1383,14 +1383,13 @@ void KDGanttViewItem::showItem( bool, int )
 
 QPoint KDGanttViewItem::getTaskLinkStartCoord(QPoint p)
 {
-    textCanvas->move(p.x()+myItemSize, itemPos() + height()/2-myItemSize/2);
-    return QPoint (myGanttView->myTimeHeader->getCoordX(myEndTime) +myItemSize/2,itemPos()+height()/2);
+    return QPoint (myGanttView->myTimeHeader->getCoordX(myEndTime)+myItemSize/2,itemPos()+height()/2);
 }
 
 
 QPoint KDGanttViewItem::getTaskLinkEndCoord()
 {
-    return QPoint (myGanttView->myTimeHeader->getCoordX(myStartTime)-myItemSize/2 ,itemPos()-myItemSize/2+height()/2-2);
+    return QPoint (myGanttView->myTimeHeader->getCoordX(myStartTime)-myItemSize/2-3,itemPos()+height()/2);
 }
 
 
@@ -1463,7 +1462,7 @@ void KDGanttViewItem::initColorAndShapes(Type t)
     if ( type() == Task ) {
       //qDebug("new task %s ", listViewText().latin1());
       if ( startShape )
-	delete startShape;
+        delete startShape;
       startShape = (KDCanvasPolygonItem*)new  KDCanvasRectangle(myGanttView->myTimeTable,this,Type_is_KDGanttViewItem);
     }
 
@@ -1905,15 +1904,15 @@ void KDGanttViewItem::showSubitemTree( int CoordY )
   if (temp) {
     while (temp != 0) {
       if (temp->isOpen() || !temp->displaySubitemsAsGroup() ) {
-	temp->showItem( true, CoordY );
-	if ( temp->firstChild() )
-	  temp->firstChild()->hideSubtree();
+        temp->showItem( true, CoordY );
+        if ( temp->firstChild() )
+          temp->firstChild()->hideSubtree();
       } else {
-       	if ( temp->displaySubitemsAsGroup() && temp->firstChild() )
-	  temp->hideSubtree();
-	else {
-	  temp->showSubitemTree( CoordY );
-	}
+        if ( temp->displaySubitemsAsGroup() && temp->firstChild() )
+          temp->hideSubtree();
+        else {
+          temp->showSubitemTree( CoordY );
+        }
       }
       temp = temp->nextSibling();
     }
@@ -1937,17 +1936,17 @@ QDateTime KDGanttViewItem::myChildStartTime()
   if (temp) {
     while (temp != 0) {
       if ( !temp->displaySubitemsAsGroup() ) {
-	tempTime = temp->startTime();
+        tempTime = temp->startTime();
       } else {
-	tempTime = temp->myChildStartTime();
+        tempTime = temp->myChildStartTime();
       }
       if ( set ) {
-	set = false;
-	ret = tempTime;
+        set = false;
+        ret = tempTime;
       } else {
-	if ( tempTime < ret ) {
-	  ret = tempTime;
-	}
+        if ( tempTime < ret ) {
+          ret = tempTime;
+        }
       }
       temp = temp->nextSibling();
     }
@@ -1971,17 +1970,17 @@ QDateTime KDGanttViewItem::myChildEndTime()
   if (temp) {
     while (temp != 0) {
       if ( !temp->displaySubitemsAsGroup() ) {
-	tempTime = temp->endTime();
+        tempTime = temp->endTime();
       } else {
-	tempTime = temp->myChildEndTime();
+        tempTime = temp->myChildEndTime();
       }
       if ( set ) {
-	set = false;
-	ret = tempTime;
+        set = false;
+        ret = tempTime;
       } else {
-	if ( tempTime > ret ) {
-	  ret = tempTime;
-	}
+        if ( tempTime > ret ) {
+          ret = tempTime;
+        }
       }
       temp = temp->nextSibling();
     }
@@ -2136,16 +2135,16 @@ int  KDGanttViewItem::computeHeight()
     while (temp != 0) {
       tempHeight = temp->computeHeight();
       if ( special ) {
-	if ( temp->displaySubitemsAsGroup() ) {
-	  hei += tempHeight;
-	  //qDebug(" hei added ");
-	} else {
-	  temp->showSubitemTree( getCoordY() );
+        if ( temp->displaySubitemsAsGroup() ) {
+          hei += tempHeight;
+          //qDebug(" hei added ");
+        } else {
+          temp->showSubitemTree( getCoordY() );
 
-	}
+        }
       } else {
-	hei += tempHeight;
-	//qDebug(" hei added ");
+        hei += tempHeight;
+        //qDebug(" hei added ");
       }
       temp = temp->nextSibling();
     }
@@ -2154,12 +2153,12 @@ int  KDGanttViewItem::computeHeight()
 
     if ( !displaySubitemsAsGroup() ) {
       if ( firstChild() ) {
-	firstChild()->hideSubtree();
+        firstChild()->hideSubtree();
       }
     } else {
       if ( firstChild() ) {
-	showSubitemTree( getCoordY() );
-	show =  false ;
+        showSubitemTree( getCoordY() );
+        show =  false ;
       }
     }
 
@@ -2204,26 +2203,26 @@ void  KDGanttViewItem::paintBranches ( QPainter* p, const QColorGroup& cg,
     KDGanttViewItem * temp = firstChild();
     while ( temp ) {
       if ( temp->showNoCross() ) {
-	//qDebug("paintNoCross %s ", temp->listViewText(0).latin1());
-	int y_coord = temp->itemPos() -height ()- itemPos();
-	int hei = temp->height();
-	//qDebug(" y %d w %d h %d ", y,w,h);
-	//qDebug("yc %d  hei %d",y_coord,hei );
-	myGanttView->myListView->paintemptyarea( p, QRect( 0,y+y_coord,w,hei));
-	int x_c = w/2;
-	int y_c = y+y_coord+ temp->height ()/2;
-	int y_ce ;
-	if ( temp->itemBelow() && temp->itemBelow()->parent() == this )
-	  y_ce =y+y_coord+ temp->height ();
-	else
-	  y_ce = y_c;
-	int i;
-	for (i = y+y_coord+1; i <= y_ce; i+=2 ) {
-	  p->drawPoint( x_c, i );
-	}
-       	for (i = x_c+2; i < w; i+=2 ) {
-	  p->drawPoint( i, y_c  );
-	}
+        //qDebug("paintNoCross %s ", temp->listViewText(0).latin1());
+        int y_coord = temp->itemPos() -height ()- itemPos();
+        int hei = temp->height();
+        //qDebug(" y %d w %d h %d ", y,w,h);
+        //qDebug("yc %d  hei %d",y_coord,hei );
+        myGanttView->myListView->paintemptyarea( p, QRect( 0,y+y_coord,w,hei));
+        int x_c = w/2;
+        int y_c = y+y_coord+ temp->height ()/2;
+        int y_ce ;
+        if ( temp->itemBelow() && temp->itemBelow()->parent() == this )
+          y_ce =y+y_coord+ temp->height ();
+        else
+          y_ce = y_c;
+        int i;
+        for (i = y+y_coord+1; i <= y_ce; i+=2 ) {
+          p->drawPoint( x_c, i );
+        }
+        for (i = x_c+2; i < w; i+=2 ) {
+          p->drawPoint( i, y_c  );
+        }
       }
       temp = temp->nextSibling();
     }
@@ -2241,21 +2240,21 @@ void  KDGanttViewItem::resetSubitemVisibility()
     // in calendarmode only items can be opened which have subitems which have subitems
     if ( ! temp ) {
       if ( !parent() )
-	// has no parent, has no child : show!
-	setVisible( true );
+        // has no parent, has no child : show!
+        setVisible( true );
       else
-	// has parent, has no child : hide!
-	setVisible( false );
+        // has parent, has no child : hide!
+        setVisible( false );
       return;
     }
     setVisible( true );
     while (temp) {
       if (temp->firstChild()) {
-	allow = true;
-	temp->resetSubitemVisibility();
+        allow = true;
+        temp->resetSubitemVisibility();
       }
       else {
-	temp->setVisible(false);
+        temp->setVisible(false);
       }
       temp = temp->nextSibling();
     }

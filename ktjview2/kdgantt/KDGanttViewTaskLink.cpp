@@ -271,11 +271,11 @@ void KDGanttViewTaskLink::showMe( bool visible )
                 end = (*toIt)->getTaskLinkEndCoord();
                 start = (*fromIt)->getTaskLinkStartCoord(end);
                 (*horIt1)->setPoints(start.x(),start.y(),start.x()+4,start.y());
-                (*verIt1)->setPoints(start.x()+4,start.y(),start.x()+4,start.y()+4+(end.y()-start.y())/2);
-                (*horIt2)->setPoints(start.x()+4,start.y()+4+(end.y()-start.y())/2,end.x()-12,start.y()+4+(end.y()-start.y())/2);
-                (*verIt2)->setPoints(end.x()-12,start.y()+4+(end.y()-start.y())/2,end.x()-12,end.y()+7);
-                (*horIt3)->setPoints(end.x()-12,end.y()+7,end.x()-2,end.y()+7);
-                (*topIt)->move(end.x()-2,end.y()+7);
+                (*verIt1)->setPoints(start.x()+4,start.y(),start.x()+4,start.y()+2+(end.y()-start.y())/2);
+                (*horIt2)->setPoints(start.x()+4,start.y()+2+(end.y()-start.y())/2,end.x()-12,start.y()+2+(end.y()-start.y())/2);
+                (*verIt2)->setPoints(end.x()-12,start.y()+2+(end.y()-start.y())/2,end.x()-12,end.y());
+                (*horIt3)->setPoints(end.x()-12,end.y(),end.x(),end.y());
+                (*topIt)->move(end.x(),end.y());
                 (*horIt1)->show();
                 (*verIt1)->show();
                 (*horIt2)->show();
