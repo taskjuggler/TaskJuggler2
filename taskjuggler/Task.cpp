@@ -1342,7 +1342,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
       {	
 	 if( t != this )
 	 {
-	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Depend", t->getId()));
+	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Previous", t->getId()));
 	 }
       }
    }
