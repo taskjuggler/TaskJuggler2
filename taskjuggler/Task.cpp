@@ -978,8 +978,8 @@ Task::preScheduleOk()
 		if (a->getLoad() < intervalLoad * 100.0)
 		{
 			qWarning("Warning: Load is smaller than scheduling granularity "
-					 "(Task: %s, Resource: %s). Minimal load is %.3f.",
-					 id.latin1(), a->getResource()->getId().latin1(), intervalLoad);
+					 "(Task: %s, Resource: %s). Minimal load is %.2f.",
+					 id.latin1(), a->getResource()->getId().latin1(), intervalLoad + 0.005);
 			a->setLoad((int) (intervalLoad * 100.0));
 		}
 	}
