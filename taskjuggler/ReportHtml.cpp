@@ -1291,13 +1291,12 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 	  << (t == 0 ? "default" : "defaultlight") 
 	  << "\" style=\"text-align:left\">";
 
-	bool first = TRUE;
 	BookingList planJobs = r->getPlanJobs();
 	planJobs.setAutoDelete(TRUE);
 	time_t prevTime = 0;
 	for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
 	{
-		if (t == b->getTask() && 
+		if ((t == 0 || t == b->getTask()) && 
 			Interval(start, end).overlaps(Interval(b->getStart(),
 												   b->getEnd())))
 		{
@@ -1306,14 +1305,13 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 				s << "<p><span style=\"font-size:160%\">"
 					<< time2weekday(b->getStart()) << ", "
 					<< time2date(b->getStart()) << "</span><p>" << endl;
-				first = TRUE;
 			}
-			if (!first)
-				s << ", ";
-			else
-				first = FALSE;
-			s << time2time(b->getStart()) << " - "
-			  << time2time(b->getEnd()) << endl;
+			s << "&nbsp;&nbsp;&nbsp;"
+				<< time2time(b->getStart()) << " - "
+				<< time2time(b->getEnd());
+			if (t == 0)
+				s << " " << htmlFilter(b->getTask()->getName());
+			s << "<br>" << endl;
 			prevTime = b->getStart();
 		}
 	}

@@ -157,7 +157,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 }
 
 void
-Task::fatalError(const QString& msg, ...) const
+Task::fatalError(const char* msg, ...) const
 {
 	va_list ap;
 	va_start(ap, msg);

@@ -335,7 +335,7 @@ private:
 	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
 	time_t earliestStart();
 	time_t latestEnd();
-	void fatalError(const QString& msg, ...) const;
+	void fatalError(const char* msg, ...) const;
 
 	/// A longer description of the task.
 	QString note;
