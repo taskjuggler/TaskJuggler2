@@ -160,6 +160,7 @@ syn keyword tjspkeyword kotrusiddown
 syn keyword tjspkeyword kotrusidup
 syn keyword tjspkeyword kotrusmode
 syn keyword tjspkeyword label
+syn keyword tjspkeyword late
 syn keyword tjspkeyword length
 syn keyword tjspkeyword limits
 syn keyword tjspkeyword load

@@ -15,9 +15,9 @@
 
 #define TJURL "http://www.taskjuggler.org"
 
-typedef enum CAType 
+typedef enum CAType
 {
-    CA_Undefined = 0, CA_Task, CA_Resource, CA_Account, CA_Shift, CA_Scenario 
+    CA_Undefined = 0, CA_Task, CA_Resource, CA_Account, CA_Shift, CA_Scenario
 };
 
 typedef enum CustomAttributeType
@@ -25,16 +25,16 @@ typedef enum CustomAttributeType
     CAT_Undefined = 0, CAT_Reference, CAT_Text
 };
 
-typedef enum TaskStatus 
-{ 
-    Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime, 
-    InProgressEarly, Finished
+typedef enum TaskStatus
+{
+    Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime,
+    InProgressEarly, Finished, Late
 };
 
 typedef enum AccountType { AllAccounts = 0, Cost, Revenue };
 
 typedef enum LoadUnit
-{ 
+{
     minutes, hours, days, weeks, months, years, shortAuto, longAuto
 };
 

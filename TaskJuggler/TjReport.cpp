@@ -316,6 +316,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         }
         else if ((*ci)->getName() == "status")
         {
+            cellText = t->getStatusText(scenario);
         }
         else if ((*ci)->getName() == "statusnote")
         {
@@ -507,10 +508,20 @@ void
 TjReport::generateHeaderAndGrid()
 {
     QCanvasLine* line = new QCanvasLine(ganttHeader);
-    line->setPoints(0, headerHeight - 1, canvasWidth, headerHeight - 1);
+    line->setPoints(0, headerHeight / 2,
+                    canvasWidth, headerHeight / 2);
     QPen pen = line->pen();
+    pen.setColor(colorGroup().mid());
+    line->setPen(pen);
+    line->setZ(TJRL_GRIDLINES);
+    line->show();
+
+    line = new QCanvasLine(ganttHeader);
+    line->setPoints(0, headerHeight - 1, canvasWidth, headerHeight - 1);
+    pen = line->pen();
     pen.setColor(colorGroup().background());
     line->setPen(pen);
+    line->setZ(TJRL_BACKGROUND);
     line->show();
 
     QCanvasRectangle* rect =

@@ -731,6 +731,10 @@ reports.</para></listitem>
 <listitem><para>Added critical path analyser. Each task is rated and
 the rating can be listed in the HTML and CSV report.</para></listitem>
 
+<listitem><para>New task state added. When a task is not finished by
+the planned end date, it now marked as
+<computeroutput>late</computeroutput>.</para></listitem>
+
 <listitem><para>Added some missing properties to the documentation.
 Mainly the sorting criterias were missing.</para></listitem>
 

@@ -243,6 +243,8 @@ public:
 
     bool isActive(int sc, const Interval& period) const;
     TaskStatus getStatus(int sc) const { return scenarios[sc].status; }
+    QString getStatusText(int sc) const;
+
     bool isCompleted(int sc, time_t date) const;
     void calcCompletionDegree(int sc);
     double getCompletionDegree(int sc) const;

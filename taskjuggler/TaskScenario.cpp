@@ -42,7 +42,7 @@ TaskScenario::calcCompletionDegree(time_t now)
     {
         completionDegree = 100.0;
         status = reportedCompletion >= 0 && reportedCompletion < 100 ?
-            InProgressLate : Finished;
+            Late : Finished;
     }
     else if (now <= start)
     {

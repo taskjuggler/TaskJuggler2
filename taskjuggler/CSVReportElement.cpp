@@ -864,32 +864,7 @@ CSVReportElement::genCellCompleted(TableCellInfo* tci)
 void
 CSVReportElement::genCellStatus(TableCellInfo* tci)
 {
-    QString text;
-    switch (tci->tli->task->getStatus(tci->tli->sc))
-    {
-    case NotStarted:
-        text = i18n("Not yet started");
-        break;
-    case InProgressLate:
-        text = i18n("Behind schedule");
-        break;
-    case InProgress:
-        text = i18n("Work in progress");
-        break;
-    case OnTime:
-        text = i18n("On schedule");
-        break;
-    case InProgressEarly:
-        text = i18n("Ahead of schedule");
-        break;
-    case Finished:
-        text = i18n("Finished");
-        break;
-    default:
-        text = i18n("Unknown status");
-        break;
-    }
-    genCell(text, tci, FALSE);
+    genCell(tci->tli->task->getStatusText(tci->tli->sc), tci, FALSE);
 }
 
 void

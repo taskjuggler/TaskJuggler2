@@ -161,6 +161,7 @@ status. STATUS can be any of
 	<computeroutput>inprogress</computeroutput>,
 	<computeroutput>ontime</computeroutput>,
 	<computeroutput>inprogressearly</computeroutput>,
+	<computeroutput>late</computeroutput>,
 	<computeroutput>finished</computeroutput>.</para></listitem>
 
 </varlistentry>

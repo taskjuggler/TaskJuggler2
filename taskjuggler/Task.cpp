@@ -967,6 +967,40 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
     return cl;
 }
 
+QString
+Task::getStatusText(int sc) const
+{
+    QString text;
+    switch (getStatus(sc))
+    {
+        case NotStarted:
+            text = i18n("Not yet started");
+            break;
+        case InProgressLate:
+            text = i18n("Behind schedule");
+            break;
+        case InProgress:
+            text = i18n("Work in progress");
+            break;
+        case OnTime:
+            text = i18n("On schedule");
+            break;
+        case InProgressEarly:
+            text = i18n("Ahead of schedule");
+            break;
+        case Finished:
+            text = i18n("Finished");
+            break;
+        case Late:
+            text = i18n("Late");
+            break;
+        default:
+            text = i18n("Unknown status");
+            break;
+    }
+    return text;
+}
+
 bool
 Task::isCompleted(int sc, time_t date) const
 {

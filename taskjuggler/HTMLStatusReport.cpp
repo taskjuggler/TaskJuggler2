@@ -46,9 +46,8 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[0]->setStart(project->getStart());
     tables[0]->setEnd(project->getEnd());
     ExpressionTree* et = new ExpressionTree();
-    et->setTree(QString("~(istaskstatus(") + scenarioName +
-                ", inprogresslate) & endsbefore(" + scenarioName + "," +
-                time2tjp(project->getNow()) + "))", project);
+    et->setTree(QString("~(istaskstatus(") + scenarioName + ", late))",
+                project);
     tables[0]->setHideTask(et);
     tables[0]->setHeadline
         (i18n("Tasks that should have been finished already"));
@@ -79,6 +78,7 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[1]->addColumn(new TableColumnInfo(sc, "end"));
     tables[1]->addColumn(new TableColumnInfo(sc, "completed"));
     tables[1]->addColumn(new TableColumnInfo(sc, "resources"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "status"));
     tables[1]->addColumn(new TableColumnInfo(sc, "statusnote"));
 
     // Completed tasks

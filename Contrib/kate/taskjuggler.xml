@@ -80,6 +80,7 @@
         <item> kotrusid </item>
         <item> kotrusmode </item>
         <item> label </item>
+        <item> late </item>
         <item> length </item>
         <item> limits </item>
         <item> load </item>

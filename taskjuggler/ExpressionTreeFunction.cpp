@@ -117,7 +117,7 @@ ExpressionTreeFunction::isParentOf(ExpressionTree* et,
                          .arg(ops[0]->evalAsString(et)));
         return 0;
     }
- 
+
     if (et->getCoreAttributes()->getType() != p->getType())
     {
         et->errorMessage(i18n
@@ -261,7 +261,7 @@ ExpressionTreeFunction::isTaskStatus(ExpressionTree* et,
     static const char* stati[] = {
         KW("undefined"), KW("notstarted"), KW("inprogresslate"),
         KW("inprogress"), KW("ontime"), KW("inprogressearly"),
-        KW("finished")
+        KW("finished"), KW("late")
     };
     if (!ops[1]->isValid())
     {
