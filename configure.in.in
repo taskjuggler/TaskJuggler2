@@ -58,7 +58,6 @@ dnl AC_PATH_KDE
 dnl End of configure.in.min
 
 AC_MSG_CHECKING([for KDE support])
-AC_CACHE_VAL(cv_option_kdesupport, [ cv_option_kdesupport=no ])
 AC_ARG_WITH(kde-support,
         [  --with-kde-support[={yes|no}] Integrate KDE support [default=no]],
         [
@@ -66,14 +65,14 @@ AC_ARG_WITH(kde-support,
                         yes|no) cv_option_kdesupport=$withval;;
                         *)  AC_MSG_ERROR(bad value ${withval} for --with-kde-support) ;;
                 esac
-        ])
+        ], [cv_option_kdesupport=no])
+AC_MSG_RESULT([$cv_option_kdesupport])
 
 AM_CONDITIONAL(include_KDE, test "$cv_option_kdesupport" = yes)
 AM_CONDITIONAL(include_ARTS, false)
 AC_PATH_QT
 
 if test "$cv_option_kdesupport" = yes ;then
-    AC_MSG_RESULT([KDE-Support Jippie !])
     AC_DEFINE(HAVE_KDE,1,[Define if you have KDE])
     KDE_CHECK_THREADING
     AC_PATH_KDE 
@@ -85,7 +84,6 @@ if test "$cv_option_kdesupport" = yes ;then
    AC_SUBST(KDE_LIBS)
    DO_NOT_COMPILE="Contrib"
 else
-   AC_MSG_RESULT(no)
    kde_htmldir=${datadir}/taskjuggler
    DO_NOT_COMPILE="ktjview Contrib"
 fi
