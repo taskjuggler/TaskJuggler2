@@ -169,65 +169,7 @@ CSVReportElement::reportTaskLoad(double load, TableCellInfo* tci,
 {
     QString text;
     if (tci->tli->task->isActive(tci->tli->sc, period))
-    {
-        if (tci->tli->task->isContainer())
-        {
-            QString pre, post;
-            if (period.contains(tci->tli->task->getStart(tci->tli->sc)))
-                pre = "v=";
-            if (period.contains(tci->tli->task->getEnd(tci->tli->sc)))
-                post += "=v";
-            if (load > 0.0 && barLabels != BLT_EMPTY)
-                text = scaledLoad(load, tci);
-            else if (pre.isEmpty() && post.isEmpty())
-                text = "==";
-            else if (!pre.isEmpty() && !post.isEmpty())
-            {
-                pre = post = "v";
-                text = "=";
-            }
-            text = pre + text + post;
-            tci->setBoldText(true);
-        }
-        else
-        {
-            if (tci->tli->task->isMilestone())
-            {
-                text += "<>";
-                tci->setBoldText(true);
-            }
-            else
-            {
-                QString pre, post;
-                if (period.contains(tci->tli->task->
-                                    getStart(tci->tli->sc)))
-                    pre = "[=";
-                if (period.contains(tci->tli->task->
-                                    getEnd(tci->tli->sc)))
-                    post = "=]";
-                if (!pre.isEmpty() && !post.isEmpty())
-                {
-                    pre = "[";
-                    post = "]";
-                }
-                if (load > 0.0 && barLabels != BLT_EMPTY)
-                    text = scaledLoad(load, tci);
-                else if (pre.isEmpty() && post.isEmpty())
-                    text = "==";
-                else if (pre == "[")
-                   text = "="; 
-                text = pre + text + post;
-            }
-        }
-        tci->setHAlign("center");
-        tci->setStatusText(time2user(period.getStart(), "%Y-%m-%d / [") +
-                           tci->tli->task->getId() + "] " +
-                           filter(tci->tli->task->getName()));
-    }
-    else
-    {
-        tci->setStatusText("");
-    }
+        text = scaledLoad(load, tci);
     genCell(text, tci, FALSE);
 }
 
@@ -237,20 +179,7 @@ CSVReportElement::reportResourceLoad(double load, TableCellInfo* tci,
 {
     QString text;
     if (load > 0.0)
-    {
-        if (barLabels != BLT_EMPTY)
-            text += scaledLoad(load, tci);
-        if (tci->tli->resource->hasSubs())
-            tci->setBoldText(true);
-        tci->setHAlign("center");
-        tci->setStatusText(time2user(period.getStart(), "%Y-%m-%d / [") +
-                           tci->tli->resource->getId() + "] " +
-                           filter(tci->tli->resource->getName()));
-    }
-    else
-    {
-        tci->setStatusText("");
-    }
+        text += scaledLoad(load, tci);
     genCell(text, tci, FALSE);
 }
 
@@ -258,9 +187,6 @@ void
 CSVReportElement::reportCurrency(double value, TableCellInfo* tci, 
                                   time_t iv_start)
 {
-    tci->setStatusText(time2user(iv_start, "%Y-%m-%d / [") +
-                       tci->tli->account->getId() + "] " +
-                       filter(tci->tli->account->getName()));
     genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
 }
 
@@ -331,41 +257,15 @@ CSVReportElement::genHeadCurrency(TableCellInfo* tci)
 void
 CSVReportElement::genHeadDaily1(TableCellInfo* tci)
 {
-    // Generates the 1st header line for daily calendar views.
-    bool weekStartsMonday = report->getWeekStartsMonday();
-    for (time_t day = midnight(start); day < end;
-         day = sameTimeNextMonth(beginOfMonth(day)))
-    {
-        int left = daysLeftInMonth(day);
-        if (left > daysBetween(day, end))
-            left = daysBetween(day, end);
-        mt.setMacro(new Macro(KW("day"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfYear(day)),
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("quarter"),
-                              QString().sprintf
-                              ("%02d", quarterOfYear(day)),
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"),
-                              QString().sprintf
-                              ("%02d", weekOfYear(day, weekStartsMonday)),
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", year(day)),
-                              defFileName, defFileLine));
-        generateTitle(tci, monthAndYear(day));
-    }
-}
-
-void
-CSVReportElement::genHeadDaily2(TableCellInfo* tci)
-{
-    // Generates the 2nd header line for daily calendar views.
+    bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         int dom = dayOfMonth(day);
         mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
                               defFileName, defFileLine));
@@ -383,17 +283,28 @@ CSVReportElement::genHeadDaily2(TableCellInfo* tci)
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(day)),
                               defFileName, defFileLine));
-        generateSubTitle(tci, QString().sprintf("%d", dom));
+        generateTitle(tci, time2user(day, "%Y-%m-%d"));
     }
+}
+
+void
+CSVReportElement::genHeadDaily2(TableCellInfo*)
+{
 }
 
 void
 CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
 {
     // Generates the 1st header line for weekly calendar views.
+    bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end; )
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         int currMonth = monthOfWeek(week, weekStartsMonday);
         int left;
         time_t wi = sameTimeNextWeek(week);
@@ -422,22 +333,33 @@ CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
                               ("%04d", yearOfWeek(week, weekStartsMonday)),
                               defFileName, defFileLine));
         generateTitle(tci, 
-                      QString("%1 %2").arg(shortMonthName(monthOfWeek(week, 
-                                                          weekStartsMonday) 
-                                                          - 1)).
-                      arg(yearOfWeek(week, weekStartsMonday)));
+                      QString(i18n("%1 %2/Week %3"))
+                      .arg(shortMonthName(monthOfWeek(week, weekStartsMonday) 
+                                          - 1))
+                      .arg(yearOfWeek(week, weekStartsMonday))
+                      .arg(weekOfYear(week, weekStartsMonday)));
         week = wi;
     }
 }
 
 void
-CSVReportElement::genHeadWeekly2(TableCellInfo* tci)
+CSVReportElement::genHeadWeekly2(TableCellInfo*)
 {
-    // Generates the 2nd header line for weekly calendar views.
+}
+
+void
+CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
+{
+    bool first = TRUE;
     bool wsm = report->getWeekStartsMonday();
     for (time_t week = beginOfWeek(start, wsm); week < end; 
          week = sameTimeNextWeek(week))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         int woy = weekOfYear(week, wsm);
         mt.setMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
@@ -456,103 +378,38 @@ CSVReportElement::genHeadWeekly2(TableCellInfo* tci)
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", yearOfWeek(week, wsm)),
                               defFileName, defFileLine));
-        generateSubTitle(tci, QString().sprintf("%d", woy));
+        generateTitle(tci, 
+                      QString(i18n("%1 %2/Week %3"))
+                      .arg(shortMonthName(monthOfWeek(week, wsm) 
+                                          - 1))
+                      .arg(yearOfWeek(week, wsm)).arg(woy));
     }
 }
 
 void
-CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
+CSVReportElement::genHeadMonthly2(TableCellInfo*)
 {
-    // Generates 1st header line of monthly calendar view.
-    for (time_t year = beginOfMonth(start); year < end;
-         year = sameTimeNextYear(beginOfMonth(year)))
-    {
-        int left = monthLeftInYear(year);
-        if (left > monthsBetween(year, end))
-            left = monthsBetween(year, end);
-        mt.setMacro(new Macro(KW("day"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("month"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("quarter"), "1",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", ::year(year)),
-                              defFileName, defFileLine));
-        generateTitle(tci, QString().sprintf("%d", ::year(year)));
-    }
-}
-
-void
-CSVReportElement::genHeadMonthly2(TableCellInfo* tci)
-{
-    // Generates 2nd header line of monthly calendar view.
-    bool weekStartsMonday = report->getWeekStartsMonday();
-    for (time_t month = beginOfMonth(start); month < end;
-         month = sameTimeNextMonth(month))
-    {
-        int moy = monthOfYear(month);
-        mt.setMacro(new Macro(KW("day"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", moy),
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("quarter"),
-                              QString().sprintf
-                              ("%02d", quarterOfYear(month)),
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"),
-                              QString().sprintf
-                              ("%02d", weekOfYear(month, weekStartsMonday)),
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", year(month)),
-                              defFileName, defFileLine));
-        generateSubTitle(tci, shortMonthName(moy - 1));
-    }
 }
 
 void
 CSVReportElement::genHeadQuarterly1(TableCellInfo* tci)
 {
-    // Generates 1st header line of quarterly calendar view.
-    for (time_t year = beginOfQuarter(start); year < end;
-         year = sameTimeNextYear(beginOfQuarter(year)))
-    {
-        int left = quartersLeftInYear(year);
-        if (left > quartersBetween(year, end))
-            left = quartersBetween(year, end);
-        mt.setMacro(new Macro(KW("day"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("month"), "01",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("quarter"), "1",
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"), "01", 
-                              defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", ::year(year)),
-                              defFileName, defFileLine));
-        generateTitle(tci, QString().sprintf("%d", ::year(year)));
-    }
-}
-
-void
-CSVReportElement::genHeadQuarterly2(TableCellInfo* tci)
-{
-    // Generates 2nd header line of quarterly calendar view.
     static const char* qnames[] =
     {
         I18N_NOOP("1st Quarter"), I18N_NOOP("2nd Quarter"),
         I18N_NOOP("3rd Quarter"), I18N_NOOP("4th Quarter")
     };
 
+    bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t quarter = beginOfQuarter(start); quarter < end;
          quarter = sameTimeNextQuarter(quarter))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         int qoy = quarterOfYear(quarter);
         mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(quarter)),
@@ -570,17 +427,29 @@ CSVReportElement::genHeadQuarterly2(TableCellInfo* tci)
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(quarter)),
                               defFileName, defFileLine));
-        generateSubTitle(tci, i18n(qnames[qoy - 1]));
+        generateSubTitle(tci, i18n(qnames[qoy - 1]) + " " +
+                         QString().sprintf("%d", ::year(quarter)));
     }
+}
+
+void
+CSVReportElement::genHeadQuarterly2(TableCellInfo*)
+{
 }
 
 void
 CSVReportElement::genHeadYear(TableCellInfo* tci)
 {
+    bool first = TRUE;
     // Generates 1st header line of monthly calendar view.
     for (time_t year = beginOfYear(start); year < end;
          year = sameTimeNextYear(year))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(year)),
                               defFileName, defFileLine));
@@ -1099,148 +968,103 @@ CSVReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
 }
 
 void
-CSVReportElement::genCellTaskFunc(TableCellInfo* tci, bool daily,
-                                   time_t (*beginOfT)(time_t),
-                                   time_t (*sameTimeNextT)(time_t))
+CSVReportElement::genCellTaskFunc(TableCellInfo* tci,
+                                  time_t (*beginOfT)(time_t),
+                                  time_t (*sameTimeNextT)(time_t))
 {
+    bool first = TRUE;
     for (time_t t = (*beginOfT)(start); t < end; t = (*sameTimeNextT)(t))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         Interval period = Interval(t, sameTimeNextT(t) - 1);
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
-        QColor bgCol = selectTaskBgColor(tci, load, period, daily);
-
-        int runLength = 1;
-        if (!tci->tli->task->isActive(tci->tli->sc, period))
-        {
-            time_t lastEndT = t;
-            for (time_t endT = sameTimeNextT(t); endT < end;
-                 endT = sameTimeNextT(endT))
-            {
-                Interval periodProbe = Interval(endT, sameTimeNextT(endT) - 1);
-                double loadProbe = tci->tli->task->getLoad(tci->tli->sc,
-                                                           periodProbe, 
-                                                           tci->tli->resource);
-                QColor bgColProbe = selectTaskBgColor(tci, loadProbe,
-                                                      periodProbe, daily);
-                if (load != loadProbe || bgCol != bgColProbe)
-                    break;
-                lastEndT = endT;
-                runLength++;
-            }
-            t = lastEndT;
-        }
-        tci->setColumns(runLength);
-        tci->setBgColor(bgCol);
-        
         reportTaskLoad(load, tci, period);
     }
 }
 
 void
-CSVReportElement::genCellResourceFunc(TableCellInfo* tci, bool daily,
-                                   time_t (*beginOfT)(time_t),
-                                   time_t (*sameTimeNextT)(time_t))
+CSVReportElement::genCellResourceFunc(TableCellInfo* tci,
+                                      time_t (*beginOfT)(time_t),
+                                      time_t (*sameTimeNextT)(time_t))
 {
+    bool first = TRUE;
     for (time_t t = beginOfT(start); t < end; t = sameTimeNextT(t))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         Interval period = Interval(t, sameTimeNextT(t) - 1);
         double load = tci->tli->resource->getLoad(tci->tli->sc, period,
                                                   AllAccounts, tci->tli->task);
-        QColor bgCol = selectResourceBgColor(tci, load, period, daily); 
-
-        int runLength = 1;
-        if (load == 0.0)
-        {
-            time_t lastEndT = t;
-            for (time_t endT = sameTimeNextT(t); endT < end;
-                 endT = sameTimeNextT(endT))
-            {
-                Interval periodProbe = Interval(endT, sameTimeNextT(endT) - 1);
-                double loadProbe = 
-                    tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
-                                                AllAccounts, tci->tli->task);
-                QColor bgColProbe = selectResourceBgColor(tci, loadProbe,
-                                                          periodProbe, daily);
-
-                if (load != loadProbe || bgCol != bgColProbe)
-                    break;
-                lastEndT = endT;
-                runLength++;
-            }
-            t = lastEndT;
-        }
-        tci->setColumns(runLength);
-        tci->setBgColor(bgCol);
-        
         reportResourceLoad(load, tci, period);
+    }
+}
+
+void
+CSVReportElement::genCellAccountFunc(TableCellInfo* tci,
+                                     time_t (*beginOfT)(time_t),
+                                     time_t (*sameTimeNextT)(time_t))
+{
+    bool first = TRUE;
+    tci->tcf->realFormat = currencyFormat;
+    for (time_t t = beginOfT(start); t < end; t = sameTimeNextT(t))
+    {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
+        double volume = tci->tli->account->
+            getVolume(tci->tli->sc, Interval(t, sameTimeNextT(t) - 1));
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
+            tci->tci->addToSum(tci->tli->sc, time2ISO(t), volume);
+        reportCurrency(volume, tci, t);
     }
 }
 
 void
 CSVReportElement::genCellDailyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, TRUE, midnight, sameTimeNextDay);
+    genCellTaskFunc(tci, midnight, sameTimeNextDay);
 }
 
 void
 CSVReportElement::genCellDailyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, TRUE, midnight, sameTimeNextDay);
+    genCellResourceFunc(tci, midnight, sameTimeNextDay);
 }
 
 void
 CSVReportElement::genCellDailyAccount(TableCellInfo* tci)
 {
-    for (time_t day = midnight(start); day < end;
-         day = sameTimeNextDay(day))
-    {
-        double volume = tci->tli->account->getVolume(tci->tli->sc, 
-                                                     Interval(day).firstDay());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode &&
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(day), volume);
-        reportCurrency(volume, tci, day);
-    }
+    genCellAccountFunc(tci, midnight, sameTimeNextDay);
 }
 
 void
 CSVReportElement::genCellWeeklyTask(TableCellInfo* tci)
 {
+    bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         Interval period = Interval(week).firstWeek(weekStartsMonday);
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
-        QColor bgCol = selectTaskBgColor(tci, load, period, FALSE);
-
-        int runLength = 1;
-        if (!tci->tli->task->isActive(tci->tli->sc, period))
-        {
-            time_t lastEndWeek = week;
-            for (time_t endWeek = sameTimeNextWeek(week); endWeek < end;
-                 endWeek = sameTimeNextWeek(endWeek))
-            {
-                Interval periodProbe = Interval(endWeek)
-                    .firstWeek(weekStartsMonday);
-                double loadProbe = tci->tli->task->getLoad(tci->tli->sc,
-                                                           periodProbe, 
-                                                           tci->tli->resource);
-                QColor bgColProbe = selectTaskBgColor(tci, loadProbe,
-                                                      periodProbe, FALSE);
-                if (load != loadProbe || bgCol != bgColProbe)
-                    break;
-                lastEndWeek = endWeek;
-                runLength++;
-            }
-            week = lastEndWeek;
-        }
-        tci->setColumns(runLength);
-        tci->setBgColor(bgCol);
-
         reportTaskLoad(load, tci, period);
     }
 }
@@ -1248,39 +1072,19 @@ CSVReportElement::genCellWeeklyTask(TableCellInfo* tci)
 void
 CSVReportElement::genCellWeeklyResource(TableCellInfo* tci)
 {
+    bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         Interval period = Interval(week).firstWeek(weekStartsMonday);
         double load = tci->tli->resource->getLoad(tci->tli->sc, period,
                                                   AllAccounts, tci->tli->task);
-        QColor bgCol = selectResourceBgColor(tci, load, period, FALSE);
-
-        int runLength = 1;
-        if (load == 0.0)
-        {
-            time_t lastEndWeek = week;
-            for (time_t endWeek = sameTimeNextWeek(week); endWeek < end;
-                 endWeek = sameTimeNextWeek(endWeek))
-            {
-                Interval periodProbe = Interval(endWeek)
-                    .firstWeek(weekStartsMonday);
-                double loadProbe = 
-                    tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
-                                                AllAccounts, tci->tli->task);
-                QColor bgColProbe = selectResourceBgColor(tci, loadProbe,
-                                                          periodProbe, FALSE);
-                if (load != loadProbe || bgCol != bgColProbe)
-                    break;
-                lastEndWeek = endWeek;
-                runLength++;
-            }
-            week = lastEndWeek;
-        }
-        tci->setColumns(runLength); 
-        tci->setBgColor(bgCol);
-        
         reportResourceLoad(load, tci, period);
     }
 }
@@ -1288,10 +1092,16 @@ CSVReportElement::genCellWeeklyResource(TableCellInfo* tci)
 void
 CSVReportElement::genCellWeeklyAccount(TableCellInfo* tci)
 {
+    bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
+        if (first)
+            first = FALSE;
+        else
+            s() << fieldSeparator;
+
         double volume = tci->tli->account->
             getVolume(tci->tli->sc, Interval(week).firstWeek(weekStartsMonday));
         if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
@@ -1305,86 +1115,55 @@ CSVReportElement::genCellWeeklyAccount(TableCellInfo* tci)
 void
 CSVReportElement::genCellMonthlyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, FALSE, beginOfMonth, sameTimeNextMonth);
+    genCellTaskFunc(tci, beginOfMonth, sameTimeNextMonth);
 }
 
 void
 CSVReportElement::genCellMonthlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, FALSE, beginOfMonth, sameTimeNextMonth);   
+    genCellResourceFunc(tci, beginOfMonth, sameTimeNextMonth);   
 }
 
 void
 CSVReportElement::genCellMonthlyAccount(TableCellInfo* tci)
 {
-    tci->tcf->realFormat = currencyFormat;
-    for (time_t month = beginOfMonth(start); month < end;
-         month = sameTimeNextMonth(month))
-    {
-        double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(month).firstMonth());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(month), volume);
-        reportCurrency(volume, tci, month);
-    }
+    genCellAccountFunc(tci, beginOfMonth, sameTimeNextMonth);
 }
 
 void
 CSVReportElement::genCellQuarterlyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, FALSE, beginOfQuarter, sameTimeNextQuarter);
+    genCellTaskFunc(tci, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
 CSVReportElement::genCellQuarterlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, FALSE, beginOfQuarter, sameTimeNextQuarter);
+    genCellResourceFunc(tci, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
 CSVReportElement::genCellQuarterlyAccount(TableCellInfo* tci)
 {
-    for (time_t quarter = beginOfQuarter(start); quarter < end;
-         quarter = sameTimeNextQuarter(quarter))
-    {
-        double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(quarter).firstQuarter());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(quarter), volume);
-        reportCurrency(volume, tci, quarter);
-    }
+    genCellAccountFunc(tci, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
 CSVReportElement::genCellYearlyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, FALSE, beginOfYear, sameTimeNextYear);
+    genCellTaskFunc(tci, beginOfYear, sameTimeNextYear);
 }
 
 void
 CSVReportElement::genCellYearlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, FALSE, beginOfYear, sameTimeNextYear);
+    genCellResourceFunc(tci, beginOfYear, sameTimeNextYear);
 }
 
 void
 CSVReportElement::genCellYearlyAccount(TableCellInfo* tci)
 {
-    for (time_t year = beginOfYear(start); year < end;
-         year = sameTimeNextYear(year))
-    {
-        double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(year).firstYear());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(year), volume);
-        reportCurrency(volume, tci, year);
-    }
+    genCellAccountFunc(tci, beginOfYear, sameTimeNextYear);
 }
 
 void

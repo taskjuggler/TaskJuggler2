@@ -1410,6 +1410,24 @@ HTMLReportElement::genCellResourceFunc(TableCellInfo* tci, bool daily,
 }
 
 void
+HTMLReportElement::genCellAccountFunc(TableCellInfo* tci,
+                                      time_t (*beginOfT)(time_t),
+                                      time_t (*sameTimeNextT)(time_t))
+{
+    tci->tcf->realFormat = currencyFormat;
+    for (time_t t = beginOfT(start); t < end; t = sameTimeNextT(t))
+    {
+        double volume = tci->tli->account->
+            getVolume(tci->tli->sc, Interval(t, sameTimeNextT(t) - 1));
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
+            tci->tci->addToSum(tci->tli->sc, time2ISO(t), volume);
+        reportCurrency(volume, tci, t);
+    }
+}
+
+void
 HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
 {
     genCellTaskFunc(tci, TRUE, midnight, sameTimeNextDay);
@@ -1424,17 +1442,7 @@ HTMLReportElement::genCellDailyResource(TableCellInfo* tci)
 void
 HTMLReportElement::genCellDailyAccount(TableCellInfo* tci)
 {
-    for (time_t day = midnight(start); day < end;
-         day = sameTimeNextDay(day))
-    {
-        double volume = tci->tli->account->getVolume(tci->tli->sc, 
-                                                     Interval(day).firstDay());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode &&
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(day), volume);
-        reportCurrency(volume, tci, day);
-    }
+    genCellAccountFunc(tci, midnight, sameTimeNextDay);
 }
 
 void
@@ -1549,18 +1557,7 @@ HTMLReportElement::genCellMonthlyResource(TableCellInfo* tci)
 void
 HTMLReportElement::genCellMonthlyAccount(TableCellInfo* tci)
 {
-    tci->tcf->realFormat = currencyFormat;
-    for (time_t month = beginOfMonth(start); month < end;
-         month = sameTimeNextMonth(month))
-    {
-        double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(month).firstMonth());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(month), volume);
-        reportCurrency(volume, tci, month);
-    }
+    genCellAccountFunc(tci, beginOfMonth, sameTimeNextMonth);
 }
 
 void
@@ -1578,17 +1575,7 @@ HTMLReportElement::genCellQuarterlyResource(TableCellInfo* tci)
 void
 HTMLReportElement::genCellQuarterlyAccount(TableCellInfo* tci)
 {
-    for (time_t quarter = beginOfQuarter(start); quarter < end;
-         quarter = sameTimeNextQuarter(quarter))
-    {
-        double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(quarter).firstQuarter());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(quarter), volume);
-        reportCurrency(volume, tci, quarter);
-    }
+    genCellAccountFunc(tci, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
@@ -1606,17 +1593,7 @@ HTMLReportElement::genCellYearlyResource(TableCellInfo* tci)
 void
 HTMLReportElement::genCellYearlyAccount(TableCellInfo* tci)
 {
-    for (time_t year = beginOfYear(start); year < end;
-         year = sameTimeNextYear(year))
-    {
-        double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(year).firstYear());
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
-             tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
-            tci->tci->addToSum(tci->tli->sc, time2ISO(year), volume);
-        reportCurrency(volume, tci, year);
-    }
+    genCellAccountFunc(tci, beginOfYear, sameTimeNextYear);
 }
 
 void

@@ -44,6 +44,10 @@
 #include "HTMLReportElement.h"
 #include "CSVTaskReport.h"
 #include "CSVTaskReportElement.h"
+#include "CSVResourceReport.h"
+#include "CSVResourceReportElement.h"
+#include "CSVAccountReport.h"
+#include "CSVAccountReportElement.h"
 #include "CSVReport.h"
 #include "ExportReport.h"
 #include "TableColumnInfo.h"
@@ -3143,8 +3147,13 @@ ProjectFile::readCSVReport(const QString& reportType)
     }
     else if (reportType == KW("csvresourcereport"))
     {
-        report = new CSVTaskReport(proj, token, getFile(), getLine());
-        tab = ((CSVTaskReport*) report)->getTable();
+        report = new CSVResourceReport(proj, token, getFile(), getLine());
+        tab = ((CSVResourceReport*) report)->getTable();
+    }
+    else if (reportType == KW("csvaccountreport"))
+    {
+        report = new CSVAccountReport(proj, token, getFile(), getLine());
+        tab = ((CSVAccountReport*) report)->getTable();
     }
     else
     {
@@ -3378,6 +3387,8 @@ ProjectFile::readCSVReport(const QString& reportType)
         proj->addCSVTaskReport((CSVTaskReport*) report);
     else if (reportType == KW("csvresourcereport"))
         proj->addCSVResourceReport((CSVResourceReport*) report);
+    else if (reportType == KW("csvaccountreport"))
+        proj->addCSVAccountReport((CSVAccountReport*) report);
 
     return TRUE;
 }

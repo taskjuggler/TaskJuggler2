@@ -147,6 +147,8 @@ protected:
     void genCellResourceFunc(TableCellInfo* tci, bool daily,
                              time_t (*beginOfT)(time_t),
                              time_t (*sameTimeNextT)(time_t));
+    void genCellAccountFunc(TableCellInfo* tci, time_t (*beginOfT)(time_t),
+                            time_t (*sameTimeNextT)(time_t));
 } ;
 
 #endif

@@ -144,12 +144,15 @@ protected:
 
     void reportCurrency(double value, TableCellInfo* tci, time_t iv_start);
 
-    void genCellTaskFunc(TableCellInfo* tci, bool daily,
+    void genCellTaskFunc(TableCellInfo* tci,
                          time_t (*beginOfT)(time_t),
                          time_t (*sameTimeNextT)(time_t));
-    void genCellResourceFunc(TableCellInfo* tci, bool daily,
+    void genCellResourceFunc(TableCellInfo* tci,
                              time_t (*beginOfT)(time_t),
                              time_t (*sameTimeNextT)(time_t));
+    void genCellAccountFunc(TableCellInfo* tci,
+                            time_t (*beginOfT)(time_t),
+                            time_t (*sameTimeNextT)(time_t));
 
     QString fieldSeparator;
 } ;

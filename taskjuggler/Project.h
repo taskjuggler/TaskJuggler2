@@ -37,6 +37,7 @@ class HTMLWeeklyCalendar;
 class HTMLStatusReport;
 class CSVTaskReport;
 class CSVResourceReport;
+class CSVAccountReport;
 class ExportReport;
 class ReportXML;
 class Kotrus;
@@ -714,6 +715,11 @@ public:
         csvResourceReports.append(r);
     }
 
+    void addCSVAccountReport(CSVAccountReport* r)
+    {
+        csvAccountReports.append(r);
+    }
+
     void addExportReport(ExportReport* e)
     {
         exportReports.append(e);
@@ -886,6 +892,7 @@ private:
     QPtrList<HTMLStatusReport> htmlStatusReports;
     QPtrList<CSVTaskReport> csvTaskReports;
     QPtrList<CSVResourceReport> csvResourceReports;
+    QPtrList<CSVAccountReport> csvAccountReports;
     QPtrList<ExportReport> exportReports;
 } ;
 

@@ -35,6 +35,7 @@
 #include "HTMLStatusReport.h"
 #include "CSVTaskReport.h"
 #include "CSVResourceReport.h"
+#include "CSVAccountReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
 #include "kotrus.h"
@@ -57,6 +58,7 @@ Project::Project()
     htmlStatusReports.setAutoDelete(TRUE);
     csvTaskReports.setAutoDelete(TRUE);
     csvResourceReports.setAutoDelete(TRUE);
+    csvAccountReports.setAutoDelete(TRUE);
     exportReports.setAutoDelete(TRUE);
 
     new Scenario(this, "plan", "Plan", 0);

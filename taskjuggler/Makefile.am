@@ -26,6 +26,7 @@ HTMLStatusReport.cpp \
 CSVPrimitives.cpp CSVReport.cpp CSVReportElement.cpp \
 CSVTaskReport.cpp CSVTaskReportElement.cpp \
 CSVResourceReport.cpp CSVResourceReportElement.cpp \
+CSVAccountReport.cpp CSVAccountReportElement.cpp \
 ExportReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp
 
