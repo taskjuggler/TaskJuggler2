@@ -200,6 +200,8 @@ private:
      */
     void parseGantt( TaskListIterator it, int sc = 0 );
 
+    QString formatAllocations( Task* task );
+
     /**
      * Parse the resources list and fill the list view
      * @param it iterator over the list of resources

@@ -430,10 +430,11 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                 item->setStartTime( start );
                 item->setEndTime( end );
 
-                toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3" )
+                toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3\nAllocations: %4" )
                           .arg( taskName )
                           .arg( KGlobal::locale()->formatDateTime( start ) )
-                          .arg( KGlobal::locale()->formatDateTime( end ) ) ;
+                          .arg( KGlobal::locale()->formatDateTime( end ) )
+                          .arg( formatAllocations( task ) );
                 item->setTooltipText( toolTip );
                 item->setText( taskName  + " " +i18n( "(%1 d)" ).arg( duration ) );
             }
@@ -690,6 +691,19 @@ void ktjview2View::clearAllViews()
     m_ganttView->clear();
     m_resListView->clear();
     m_taskView->clear();
+}
+
+QString ktjview2View::formatAllocations( Task* task )
+{
+    QStringList result;
+
+    for ( ResourceListIterator tli(task->getBookedResourcesIterator(0)); *tli != 0; ++tli )
+    {
+        Resource* res = (*tli);
+        result.append( res->getName() );
+    }
+
+    return result.join( ", " );
 }
 
 #include "ktjview2view.moc"

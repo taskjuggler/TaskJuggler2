@@ -695,7 +695,7 @@ KDTimeHeaderWidget:: KDTimeHeaderWidget( QWidget* parent,KDGanttView* gant ):QWi
     myMinScale = KDGanttView::Minute;
     myAutoScaleMinorTickcount = 100;
     setMajorScaleCount( 1 );
-    setMinorScaleCount( 1);
+    setMinorScaleCount( 1 );
     setMinimumColumnWidth( 5 );
     setYearFormat(KDGanttView::FourDigit );
     setHourFormat( KDGanttView::Hour_12 );
@@ -796,8 +796,6 @@ void  KDTimeHeaderWidget::preparePopupMenu()
     gridPopupMenu->setItemChecked ( gridPopupMenu->idAt ( 1 ), showMajorTicks() );
     gridPopupMenu->setItemChecked ( gridPopupMenu->idAt ( 2 ),
                                     !(showMajorTicks() || showMinorTicks()) );
-
-
 }
 
 QString  KDTimeHeaderWidget::getToolTipText(QPoint p)
@@ -1273,7 +1271,7 @@ void  KDTimeHeaderWidget::setMinimumScale( Scale unit )
   \return the unit of the lower scale of the header.
   \sa setScale()
 */
-KDTimeHeaderWidget::Scale  KDTimeHeaderWidget::minimumScale() const
+KDTimeHeaderWidget::Scale KDTimeHeaderWidget::minimumScale() const
 {
     return myMinScale;
 }
@@ -1472,6 +1470,7 @@ void KDTimeHeaderWidget::computeIntervals( int height )
         }
     }
 }
+
 bool KDTimeHeaderWidget::changeBackgroundInterval( const QDateTime& oldstart,
                                                    const QDateTime& oldend,
                                                    const QDateTime& newstart,
@@ -1493,6 +1492,7 @@ bool KDTimeHeaderWidget::changeBackgroundInterval( const QDateTime& oldstart,
     }
     return false;
 }
+
 bool KDTimeHeaderWidget::deleteBackgroundInterval( const QDateTime& start,
                                                    const QDateTime& end)
 {
@@ -1554,6 +1554,7 @@ void KDTimeHeaderWidget::clearBackgroundColor()
     icList.clear();
     updateTimeTable();
 }
+
 QDateTime KDTimeHeaderWidget::getDateTimeForIndex(int X, bool local )
 {
     int coordX = X;
@@ -1567,6 +1568,7 @@ QDateTime KDTimeHeaderWidget::getDateTimeForIndex(int X, bool local )
     secs = secs - ( ((int) days) *86400.0 );
     return (myRealStart.addDays ( (int) days )).addSecs( (int) secs);
 }
+
 bool KDTimeHeaderWidget::getColumnColor(QColor& col,int coordLow, int coordHigh)
 {
     if (!flagShowMajorTicks && !flagShowMinorTicks)
