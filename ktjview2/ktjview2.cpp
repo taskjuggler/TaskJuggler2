@@ -678,10 +678,7 @@ void ktjview2::collapseAll()
 
 void ktjview2::updateCaption()
 {
-    bool modified = m_view->editor()->doc()->isModified();
-    QString projectName = m_view->projectName();
-
-    setCaption( projectName, modified );
+    setCaption( m_view->projectName(), m_view->editor()->doc()->isModified() );
 }
 
 #include "ktjview2.moc"
