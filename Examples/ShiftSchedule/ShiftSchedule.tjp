@@ -1,4 +1,12 @@
-project shifts "Duty Schedule SysAdmin Team" "$Id" 2002-06-01 2002-08-01
+/*
+ * This is an example project for the TaskJuggler project management
+ * software. It illustrates the versatility of the tool by creating a
+ * load balanced shift schedule for a team of system administrators.
+ */
+project shifts "Duty Schedule SysAdmin Team" "$Id" 2002-06-01 2002-08-01 {
+	dailyworkinghours 8
+	yearlyworkingdays 256
+}	
 
 flags hidden
 
@@ -11,13 +19,16 @@ shift phonesupport "Phone support" {
 }
 
 shift studenthours "Student Hours" {
-	workinghours mon 9:00 - 12:00
+	workinghours mon 9:00 - 14:00
 	workinghours tue off
 	workinghours wed 13:00 - 18:00
 	workinghours thu 8:00 - 10:00, 16:00 - 18:00
 	workinghours fri 9:00 - 14:00
 }
 
+/*
+ * Define the staff of the team.
+ */
 resource joe "Joe Bughunter" {
 	vacation 2002-06-10 - 2002-06-13
 }
@@ -30,33 +41,57 @@ resource sally "Sally MacPrinter" {
 resource anders "Anders Gundstrom" {
 	maxeffort 0.8
 }
+resource paul "Paul Gutier" {
+	vacation 2002-07-02 - 2002-07-08
+}
 
+/*
+ * Now we define the tasks of the team.
+ */
+task sysadmin "System Administration" {
+	
+# This milestone is used so we can change the start quickly.
 task start "Start of plan" {
 	start 2002-06-01
 	milestone
 	flags hidden
 }
 
+# User support. Very important task.
 task usersup "User Support" {
   depends !start
 	duration 2m
 	shift phonesupport
+	priority 900
 	allocate joe { alternative anders, khaled, sally select minloaded }
 }
 
-task t2 "Printer Maintenance" {
+# Make printers happy again. Not that important.
+task printers "Printer Maintenance" {
 	depends !start
   duration 2m
+	priority 600
 	allocate khaled { alternative sally select minloaded }
 }
 
-task t3 "Network Restructuring" {
+# This is a longer running project. Low priority.
+task network "Network Restructuring Project" {
   depends !start
 	priority 300
   duration 2m
 	allocate anders { alternative joe, sally select minloaded }
 }
 
+# Security is important. So higher priority.
+task security "Firewall and User Administration" {
+	depends !start
+	duration 2m
+	priority 800
+	allocate joe { alternative anders, paul select minloaded }
+}
+
+# This is just the overhead. All folks who can work but have no other
+# jobs are assiged to this task.
 task t4 "Backup Team" {
 	depends !start
 	priority 100
@@ -65,22 +100,64 @@ task t4 "Backup Team" {
 	allocate sally
 	allocate khaled
 	allocate anders
+	allocate paul
 }
 
-htmltaskreport "TaskCoverage.html" {
-	columns name, daily
+} # of task sysadmin
+
+/*
+ * To see what TaskJuggler has done for us, let's define some reports.
+ */
+
+/*
+ * First, let's get a global overview of all tasks for the 2 month
+ * period. We nest the resource allocations into the task list. All
+ * resource loads should be in man hours.
+ */
+htmltaskreport "TaskCoverage-Jun.html" {
+	columns name, daily, effort
+	start 2002-06-01
+	end 2002-07-01
+	headline "Task Coverage - System Administration - Jun 2002"
+  caption "All effort values are man-hours."
 	hideresource 0
+	loadunit hours
 	hidetask hidden
 }
 
-htmlresourcereport "ResourceUsage.html" {
-	columns name, daily
+/*
+ * We also want to see the resource to task mappings. Resources are
+ * sorted by name and a loads are again in man hours.
+ */
+htmlresourcereport "ResourceUsage-Jun.html" {
+	columns name, daily, effort
+	start 2002-06-01
+	end 2002-07-01
+	headline "Resource Usage - System Administration - Jun 2002"
+	caption "All effort values are man-hours"
+	hidetask hidden
+	sorttasks namedown
+	loadunit hours
 }
 
-htmlresourcereport "ShiftTimes.html" {
+/*
+ * Now we want a detailed schedule with exact start and end times for
+ * a whole week. To save some typing we define a macro fro this and
+ * hand over the start and end times of the weeks as arguments.
+ */
+macro shifttimes [
+htmlresourcereport "ShiftTimes-${1}.html" {
 	columns name, schedule
-	start 2002-06-03
-	end 2002-06-07
-	hidetask 0
+	start 2002-${1}
+	end 2002-${2}
 }
+]
+
+/*
+ * Now call the macro with the start and end dates of the weeks that
+ * we want reports for.
+ */
+${shifttimes "06-03" "06-07"}
+${shifttimes "06-10" "06-14"}
+
 
