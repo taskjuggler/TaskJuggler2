@@ -340,7 +340,7 @@ sub _draw_task {
         #-- wieviele tage vom anfang her fängt der task an
         my ($start_year, $start_month, $start_day)  = split(/-/, $start);
         my ($end_year, $end_month, $end_day)        = split(/-/, $end);
-        if ($task->Type eq 'Task') {
+        if ( ($task->Type eq 'Task') && ($task->Type eq 'Container') ) {
            ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
         }
         my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
