@@ -36,60 +36,7 @@ class TaskList;
 class QDomElement;
 class QDomDocument;
 class Task;
-
-class Allocation
-{
-public:
-	Allocation(Resource* r) : resource(r)
-	{
-		load = 100;
-		persistent = FALSE;
-		lockedResource = 0;
-	}
-	~Allocation() { }
-
-	Resource* getResource() const { return resource; }
-
-	void setLoad(int l) { load = l; }
-	int getLoad() const { return load; }
-
-	void setPersistent(bool p) { persistent = p; }
-	bool isPersistent() const { return persistent; }
-
-	void setLockedResource(Resource* r) { lockedResource = r; }
-	Resource* getLockedResource() const { return lockedResource; }
-
-	void addAlternative(Resource* r) { alternatives.append(r); }
-	Resource* first() { return alternatives.first(); }
-	Resource* next() { return alternatives.next(); }
-
-	QDomElement xmlElement( QDomDocument& doc ) const
-	{
-		QDomElement elem = doc.createElement( "Allocation" );
-		elem.setAttribute( "load", load );
-		elem.setAttribute( "ResourceID", resource->getId());
-
-		/* Alternatives are missing TODO */
-		return elem;
-	};
-private:
-	// Don't use this.
-	Allocation();
-
-	Resource* resource;
-	// The maximum daily usage of the resource.
-	int load;
-
-	/* True if the allocation should be persistent over the whole task.
-	 * If set the first selection will not be changed even if there is an
-	 * available alternative. */
-	bool persistent;
-
-	Resource* lockedResource;
-
-	// List of alternative resources.
-	QList<Resource> alternatives;
-} ;
+class Allocation;
 
 class TaskList : public virtual CoreAttributesList
 {
@@ -326,7 +273,7 @@ public:
 			actualDuration != 0 || actualEffort != 0;
 	}
 
-	QDomElement xmlElement( QDomDocument& doc );
+	QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
 	static void setDebugLevel(int l) { debugLevel = l; }
 
