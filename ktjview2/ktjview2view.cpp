@@ -1087,4 +1087,9 @@ void ktjview2View::slotResScale( int scale )
     m_resUsageView->setScale( scale );
 }
 
+void ktjview2View::slotRUFind()
+{
+    m_resUsageView->find();
+}
+
 #include "ktjview2view.moc"

@@ -22,6 +22,7 @@
 // local includes
 #include "resUsageView.h"
 #include "settings.h"
+#include "ruFindDialog.h"
 
 // TJ includes
 #include "Utility.h"
@@ -40,11 +41,12 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kapplication.h>
+#include <kmessagebox.h>
 
 #include <time.h>
 
 ResUsageView::ResUsageView( QWidget * parent, const char * name )
-    : QTable( parent, name ), m_proj( 0 )
+    : QTable( parent, name ), m_proj( 0 ), m_findDia( 0 )
 {
     clear();
     setReadOnly( true );
@@ -65,6 +67,7 @@ ResUsageView::ResUsageView( QWidget * parent, const char * name )
 
 ResUsageView::~ResUsageView()
 {
+    delete m_findDia;
 }
 
 void ResUsageView::resizeData( int len )
@@ -367,11 +370,49 @@ int ResUsageView::getWorkingDays( const Interval & ival ) const
 {
     int workingDays = 0;
 
-    for (time_t s = midnight(ival.getStart()); s < ival.getEnd(); s = sameTimeNextDay(s))
-        if (m_proj->isWorkingDay(s))
+    for ( time_t s = midnight( ival.getStart() ); s < ival.getEnd(); s = sameTimeNextDay( s ) )
+        if ( m_proj->isWorkingDay( s ) )
             workingDays++;
 
     return workingDays;
+}
+
+void ResUsageView::find()
+{
+    if ( !m_findDia )
+    {
+        m_findDia = new ruFindDlg( m_rowLabels, this, "ru_find_dialog" );
+        connect( m_findDia, SIGNAL( signalMatch( int ) ), this, SLOT( slotFoundMatch( int ) ) );
+        connect( m_findDia, SIGNAL( closeClicked() ), this, SLOT( slotCloseFindDialog() ) );
+    }
+
+    m_findDia->show();
+    m_findDia->raise();
+}
+
+
+void ResUsageView::slotCloseFindDialog()
+{
+    m_findDia->delayedDestruct();
+    m_findDia = 0;
+}
+
+void ResUsageView::slotFoundMatch( int match )
+{
+    if ( match == -1 )          // nothing found
+    {
+        slotCloseFindDialog();
+        KMessageBox::sorry( this, i18n( "No matching resource found." ) );
+    }
+    else if ( match == -2 )
+    {
+        slotCloseFindDialog();
+        KMessageBox::sorry( this, i18n( "No more matching resources found." ) );
+    }
+    else                        // found a matching resource, select the row
+    {
+        selectRow( match );
+    }
 }
 
 #include "resUsageView.moc"

@@ -31,6 +31,8 @@
 #include "ResourceList.h"
 #include "Interval.h"
 
+class ruFindDlg;
+
 /**
  * Time scale for the horizontal line
  */
@@ -102,6 +104,11 @@ public:
      */
     void setEndDate( const QDateTime & date );
 
+    /**
+     * Invoke the Find dialog
+     */
+    void find();
+
 protected:
     /**
      * @override
@@ -116,7 +123,7 @@ protected:
     /**
      * @override
      */
-    virtual QString text ( int row, int col ) const;
+    virtual QString text( int row, int col ) const;
 
 signals:
     /**
@@ -140,6 +147,18 @@ private slots:
      * Copy the current's cell text to the clipboard
      */
     void slotCopy();
+
+    /**
+     * Invoked when a matching resource was (not) found
+     *
+     * @param match the new match index, or -1 if none
+     */
+    void slotFoundMatch( int match );
+
+    /**
+     * Close the find dialog
+     */
+    void slotCloseFindDialog();
 
 private:
     /**
@@ -189,6 +208,9 @@ private:
     Scale m_scale;
     /// project start, project end
     QDateTime m_start, m_end;
+
+    /// search dialog
+    ruFindDlg * m_findDia;
 };
 
 #endif

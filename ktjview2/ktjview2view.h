@@ -160,6 +160,11 @@ public slots:
     void slotResScale( int scale );
 
     /**
+     * Invoke the Find dialog for the RU view
+     */
+    void slotRUFind();
+
+    /**
      * Zooms so that at least the selected time period is visible after the zoom.
      *
      * @param from the start date

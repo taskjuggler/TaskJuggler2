@@ -190,11 +190,14 @@ void ktjview2::setupActions()
     // Resource usage menu
     m_resScaleAction = new KSelectAction( i18n( "&Scale" ), 0, actionCollection(), "res_scale" );
     items.clear();
-    items << i18n( "Days" ) << i18n( "Weeks" ) << i18n( "Months" ) << i18n( "Quarters" );
+    items << i18n( "&Days" ) << i18n( "&Weeks" ) << i18n( "&Months" ) << i18n( "&Quarters" );
     m_resScaleAction->setItems( items );
     m_resScaleAction->setCurrentItem( 0 ); // TODO make configurable
     connect( m_resScaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotResScale( int ) ) );
+
+    m_ruFindAction = new KAction( i18n( "&Find..." ), "find", KStdAccel::find(),
+                                  m_view, SLOT( slotRUFind() ), actionCollection(), "ru_find" );
 
     // Sidebar
     m_sidebarInfo = new KRadioAction( i18n( "Info" ), "projectinfo", KShortcut(), actionCollection(), "sidebar_info" );

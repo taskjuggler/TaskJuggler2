@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="30">
+<kpartgui name="ktjview2" version="31">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -40,6 +40,7 @@
   </Menu>
   <Menu name="res_usage"><text>Resource &amp;Usage</text>
     <Action name="res_scale"/>
+    <Action name="ru_find"/>
   </Menu>
 </MenuBar>
 
