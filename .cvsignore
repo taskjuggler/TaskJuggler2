@@ -7,3 +7,6 @@ config.log
 stamp-h
 config.h
 .cvsignore
+configure.files
+configure.in
+stamp-h1
