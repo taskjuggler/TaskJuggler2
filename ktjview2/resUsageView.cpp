@@ -305,6 +305,9 @@ QString ResUsageView::formatDate( time_t date, QString format ) const
 
 void ResUsageView::slotPopupMenu( int, int, const QPoint & pos )
 {
+    if ( m_resList.isEmpty() || !m_proj )
+        return;
+
     QPopupMenu * menu = new QPopupMenu( this, "cell_popup" );
     menu->insertItem( i18n( "&Copy" ), this, SLOT( slotCopy() ) );
     menu->exec( pos );
