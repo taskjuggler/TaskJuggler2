@@ -10,6 +10,25 @@
  * $Id$
  */
 
+/* -- DTD --
+ <!ELEMENT Task		(Priority, start, end, minStart, maxStart,
+                         minEnd, maxEnd, actualStart, actualEnd,
+			 SubTasks*, Depends*, note)>
+ <!ELEMENT start        (#PCDATA)>
+ <!ELEMENT end          (#PCDATA)>
+ <!ELEMENT minStart     (#PCDATA)>
+ <!ELEMENT maxStart     (#PCDATA)>
+ <!ELEMENT minEnd       (#PCDATA)>
+ <!ELEMENT maxEnd       (#PCDATA)>
+ <!ELEMENT actualStart  (#PCDATA)>
+ <!ELEMENT actualEnd    (#PCDATA)>
+ <!ELEMENT SubTasks     (Task+)>
+ <!ELEMENT Depends      (TaskID)>
+ <!ELEMENT TaskID       (#PCDATA)>
+
+   /-- DTD --/
+*/
+ 
 #include <stdio.h>
 
 #include "Task.h"
@@ -427,6 +446,76 @@ Task::scheduleOK()
 
 	return TRUE;
 }
+
+QDomElement Task::createXMLElem( QDomDocument& doc, const QString& name, const QString& val ) const
+{
+   QDomElement elem = doc.createElement( name );
+   QDomText t=doc.createTextNode( val );
+
+   elem.appendChild( t );
+
+   return( elem );
+}
+
+
+QDomElement Task::xmlElement( QDomDocument& doc ) const
+{
+   QDomElement elem = doc.createElement( "Task" );
+
+   QDomText t = doc.createTextNode(name);
+   elem.appendChild( t );
+
+   elem.appendChild( createXMLElem( doc, "Priority", QString::number( priority )));
+   elem.appendChild( createXMLElem( doc, "start", QString::number( start )));
+   elem.appendChild( createXMLElem( doc, "end", QString::number( end )));
+   elem.appendChild( createXMLElem( doc, "minStart", QString::number( minStart )));
+   elem.appendChild( createXMLElem( doc, "maxStart", QString::number( maxStart )));
+   elem.appendChild( createXMLElem( doc, "minEnd", QString::number( maxStart )));
+   elem.appendChild( createXMLElem( doc, "maxEnd", QString::number( maxStart )));
+   elem.appendChild( createXMLElem( doc, "actualStart", QString::number( maxStart )));
+   elem.appendChild( createXMLElem( doc, "actualEnd", QString::number( maxStart )));
+
+   /* Now start the subtasks */
+   int cnt = 0;
+   QDomElement subtElem = doc.createElement( "SubTasks" );
+   TaskList tl ( subTasks );
+   for (Task* t = tl.first(); t != 0; t = tl.next())
+   {
+      if( t != this )
+      {
+	 QDomElement sTask = t->xmlElement( doc );
+	 subtElem.appendChild( sTask );
+	 cnt++;
+      }
+   }
+   if( cnt > 0 )
+      elem.appendChild( subtElem );
+
+   /* Tasks (by id) on which this task depends */
+   if( depends.count() > 0 )
+   {
+      QDomElement deps = doc.createElement( "Depends" );
+      
+      for (QValueListConstIterator<QString> it1= depends.begin(); it1 != depends.end(); ++it1)
+      {
+	 deps.appendChild( createXMLElem( doc, "TaskID", *it1 ));
+      }
+      elem.appendChild( deps );
+   }
+   
+   /* Comment */
+   if( ! note.isEmpty())
+   {
+      QDomElement e = doc.createElement( "note" );
+      elem.appendChild( e );
+      t = doc.createTextNode( note );
+      e.appendChild( t );
+   }
+
+   return( elem );
+}
+
+
 
 TaskList::TaskList()
 {
