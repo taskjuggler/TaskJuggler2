@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="27">
+<kpartgui name="ktjview2" version="28">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -40,7 +40,7 @@
   </Menu>
 </MenuBar>
 
-<ToolBar name="sidebar" position="left" iconSize="48" iconText="icontextbottom" noEdit="true"><text>Sidebar</text>
+<ToolBar name="sidebar" position="left" iconSize="32" iconText="icontextbottom" noEdit="true"><text>Sidebar</text>
   <Action name="sidebar_info"/>
   <Action name="sidebar_gantt"/>
   <Action name="sidebar_resources"/>

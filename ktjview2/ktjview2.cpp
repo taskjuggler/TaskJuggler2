@@ -187,7 +187,7 @@ void ktjview2::setupActions()
 #endif
 
     // Sidebar
-    m_sidebarInfo = new KRadioAction( i18n( "Info" ), "info", KShortcut(), actionCollection(), "sidebar_info" );
+    m_sidebarInfo = new KRadioAction( i18n( "Info" ), "projectinfo", KShortcut(), actionCollection(), "sidebar_info" );
     m_sidebarInfo->setExclusiveGroup( "sidebar" );
     connect( m_sidebarInfo, SIGNAL( activated() ), this, SLOT( slotSidebarInfo() ) );
 
