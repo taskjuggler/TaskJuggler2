@@ -442,13 +442,23 @@ Specifies a vacation for a resource. The to value is NOT included in
 the vacation.
 
 -------------------------------------------------------------------------------
-workinghours <weekday> <from>-<to>[,<from>-<to>]
+workinghours <weekday> <from> - <to>[,<from>-<to>]
 weekday: WEEKDAY
 from: TIME
 to: TIME
 
 Sets the working hours to the specified intervals. If no hours are
 specified for a day, the global definitions are used.
+
+-------------------------------------------------------------------------------
+shift <id> <from> - <to>
+id: ID
+from: DATE
+to: DATE
+
+Assignes the resource to a defined shift during the specified
+interval. Multiple shifts can be defined but shift invervals may not
+overlap.
 
 -------------------------------------------------------------------------------
 
@@ -458,13 +468,34 @@ shift <id> <name>
 id: ID
 name: STRING
 
+The following optional parameter may be used. At least one optional
+parameter must be specified.
+
 -------------------------------------------------------------------------------
 
 shift <id> <name>
 id: ID
 name: STRING
 
+Shifts may be nested. A nested shift inherits the attributes of the
+enclosing shift.
+
 -------------------------------------------------------------------------------
+workinghours <weekday> <from>-<to>[,<from>-<to>]
+weekday: WEEKDAY
+from: TIME
+to: TIME
+
+Sets the working hours to the specified intervals. If no hours are
+specified for a day, the global definitions are used. If no working
+hours should be specified for a day the keyword 'off' must be used
+instead of the time interval.
+
+-------------------------------------------------------------------------------
+When several resource have the same working hours these working hours
+should be defined as shifts. Each shift must have a unique ID.
+Resources can be assigned to shifts for certain intervals. Ref.
+Resources.
 
 ===============================================================================
 vacation name <start> [- <end>]
