@@ -80,7 +80,14 @@ XMLReport::XMLReport(Project* p, const QString& f,
     // All XML reports default to just showing the first scenario.   
     scenarios.append(0);
 
+    doc = 0;
+    
     masterFile = FALSE;
+}
+
+XMLReport::~XMLReport()
+{
+    delete doc;
 }
 
 bool

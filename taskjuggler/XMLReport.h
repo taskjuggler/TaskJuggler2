@@ -29,7 +29,7 @@ class XMLReport : public Report
 {
 public:
     XMLReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~XMLReport() { }
+    virtual ~XMLReport();
 
     bool generate();
 
