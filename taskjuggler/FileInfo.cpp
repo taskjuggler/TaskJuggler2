@@ -464,9 +464,9 @@ FileInfo::errorMessage(const char* msg, ...)
         for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
             stackDump += "\n  ${" + (*mli)->getName() + " \""
                 + pf->getMacros().getArguments(i)->join("\" \"") + "\"}";
-        TJMH.errorMessage(i18n("Error in expanded macro\n%1"
+        TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
                                "\nThis is the macro call stack:%2").
-                          arg(buf).arg(stackDump),
+                          arg(buf).arg(lineBuf).arg(stackDump),
                           macroStack.last()->getFile(),
                           macroStack.last()->getLine());
     }
