@@ -641,6 +641,12 @@ ProjectFile::parse()
 				proj->setEnd(end);
 				break;
 			}
+			else if (token == "xmlTaskReport" )
+			{
+			   if( !readXMLTaskReport())
+			      return FALSE;
+			   break;
+			}
 			else if (token == "htmlTaskReport")
 			{
 				if (!readHTMLTaskReport())
@@ -1323,6 +1329,22 @@ ProjectFile::readPriority(int& priority)
 	}
 	return TRUE;
 }
+
+bool
+ProjectFile::readXMLTaskReport()
+{
+   QString token;
+   if (nextToken(token) != STRING)
+   {
+      fatalError("File name expected");
+      return FALSE;
+   }
+   ReportXML *rep = new ReportXML( proj, token, proj->getStart(), proj->getEnd());
+   proj->addXMLReport( rep );
+
+   return( true );
+}
+
 
 bool
 ProjectFile::readHTMLTaskReport()
