@@ -635,9 +635,14 @@ time2rfc(time_t t)
 }
 
 QString 
-time2user(time_t t, const QString& timeFormat)
+time2user(time_t t, const QString& timeFormat, bool localtime)
 {
-    const struct tm* tms = clocaltime(&t);
+    const struct tm* tms;
+    if (localtime)
+        tms = clocaltime(&t);
+    else
+        tms = gmtime(&t);
+
     static char buf[128];
 
     strftime(buf, 127, timeFormat, tms);

@@ -136,7 +136,7 @@ QString time2tjp(time_t t);
 
 QString time2rfc(time_t t);
 
-QString time2user(time_t t, const QString& timeFormat);
+QString time2user(time_t t, const QString& timeFormat, bool localtime = TRUE);
 
 QString time2time(time_t t);
 

@@ -796,7 +796,7 @@ XMLReport::genTimeElement(QDomElement* parentEl, const QString& name,
    el.appendChild(tEl);
    
    QDomAttr at = doc->createAttribute("humanReadable");
-   at.setValue(time2user(val, shortTimeFormat));
+   at.setValue(time2user(val, shortTimeFormat, FALSE));
    el.setAttributeNode(at);
 
    parentEl->appendChild(el);
