@@ -25,6 +25,7 @@
 #include "ResourceList.h"
 #include "BookingList.h"
 #include "Task.h"
+#include "Account.h"
 #include "Project.h"
 #include "kotrus.h"
 #include "Interval.h"
@@ -277,9 +278,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
 
 	    qDebug("Loaded booking for project " + project );
 	    
-	    Booking *nbook = new Booking( interval, 0L,
-					  account,
-					  project );
+	    Booking *nbook = new Booking( interval, (Task*) 0L);
 	    nbook->setLockTS( ltime );
 	    nbook->setLockerId( locker );
 	    
@@ -362,7 +361,8 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
    BookingListIterator it( blist );
    for( ; it.current(); ++it )
    {
-      int kotrusNumId = getKotrusAccountId( (*it)->getAccount());
+      int kotrusNumId =
+          getKotrusAccountId((*it)->getTask()->getAccount()->getKotrusId());
       QSqlRecord *buffer = cur.primeInsert();
       buffer->setValue( "userID", pid );
       buffer->setValue( "ktNo", kotrusNumId );

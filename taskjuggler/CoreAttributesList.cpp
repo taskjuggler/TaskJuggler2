@@ -15,6 +15,19 @@
 
 CoreAttributesList::~CoreAttributesList()
 {
+    if (autoDelete())
+    {
+        /* We need to make sure that the CoreAttributes are first removed from
+         * the list and then deleted. */
+        setAutoDelete(FALSE);
+        while (!isEmpty())
+        {
+            CoreAttributes* tp = getFirst();
+            removeRef(tp);
+            delete tp;
+        }
+        setAutoDelete(TRUE);
+    }
 }
 
 void

@@ -22,6 +22,11 @@ Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
 	kotrusId = "";
 }
 
+Account::~Account()
+{
+    project->deleteAccount(this);
+}
+
 double
 Account::getVolume(int sc, const Interval& period) const
 {

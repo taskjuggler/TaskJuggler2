@@ -31,10 +31,11 @@ DebugController DebugCtrl;
 
 Project::Project()
 {
-	taskList.setAutoDelete(TRUE);
-	resourceList.setAutoDelete(TRUE);
-	accountList.setAutoDelete(TRUE);
-	shiftList.setAutoDelete(TRUE);
+    taskList.setAutoDelete(TRUE);
+    resourceList.setAutoDelete(TRUE);
+    accountList.setAutoDelete(TRUE);
+    shiftList.setAutoDelete(TRUE);
+    scenarioList.setAutoDelete(TRUE);
 
 	vacationList.setAutoDelete(TRUE);
 	
@@ -99,7 +100,7 @@ Project::Project()
 
 Project::~Project()
 {
-	delete xmlreport;
+    delete xmlreport;
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 	delete icalReport;
@@ -157,10 +158,22 @@ Project::addScenario(Scenario* s)
 	scenarioList.append(s);
 }
 
+void
+Project::deleteScenario(Scenario* s)
+{
+    scenarioList.removeRef(s);
+}
+
 void 
 Project::addTask(Task* t)
 {
 	taskList.append(t);
+}
+
+void
+Project::deleteTask(Task* t)
+{
+    taskList.removeRef(t);
 }
 
 void
@@ -169,16 +182,34 @@ Project::addShift(Shift* s)
 	shiftList.append(s);
 }
 
+void
+Project::deleteShift(Shift* s)
+{
+    shiftList.removeRef(s);
+}
+
 void 
 Project::addResource(Resource* r)
 {
 	resourceList.append(r);
 }
 
+void
+Project::deleteResource(Resource* r)
+{
+    resourceList.removeRef(r);
+}
+
 void 
 Project::addAccount(Account* a)
 {
 	accountList.append(a);
+}
+
+void
+Project::deleteAccount(Account* a)
+{
+    accountList.removeRef(a);
 }
 
 int

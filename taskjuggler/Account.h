@@ -34,7 +34,7 @@ class Account : public CoreAttributes
 public:
 	Account(Project* p, const QString& i, const QString& n, Account* pr,
 			AccountType at);
-	virtual ~Account() { };
+	virtual ~Account();
 
 	virtual const char* getType() const { return "Account"; }
 

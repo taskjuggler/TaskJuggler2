@@ -24,9 +24,8 @@
 class Booking : public SbBooking
 {
 public:
-	Booking(const Interval& iv, Task* t, QString a = "",
-			QString i = "")
-		: SbBooking(t, a, i), interval(iv) { }
+	Booking(const Interval& iv, Task* t)
+		: SbBooking(t), interval(iv) { }
 	Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
 			interval(iv) { }
 	~Booking() { }

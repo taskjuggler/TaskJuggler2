@@ -50,6 +50,7 @@ Shift::~Shift()
 {
 	for (int i = 0; i < 7; i++)
 		delete workingHours[i];
+    project->deleteShift(this);
 }
 
 bool 

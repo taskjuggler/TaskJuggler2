@@ -29,7 +29,7 @@ class ExpressionTree
 {
 public:
 	ExpressionTree(const Operation* op);
-	~ExpressionTree() { }
+	~ExpressionTree();
 
 	long evalAsInt(const CoreAttributes* c);
 	long resolve(const QString& symbol) const;

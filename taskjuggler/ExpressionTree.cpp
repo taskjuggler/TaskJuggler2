@@ -26,6 +26,7 @@ QDict<ExpressionTreeFunction> ExpressionTree::functions;
 
 ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
 {
+    functions.setAutoDelete(TRUE);
 	symbolTable.setAutoDelete(TRUE);
 	if (functions.isEmpty())
 	{
@@ -75,6 +76,11 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
 			 &ExpressionTreeFunction::isActualAllocated, 3);
 		functions.insert(etf->getName(), etf);
 	}
+}
+
+ExpressionTree::~ExpressionTree()
+{
+    delete expression;
 }
 
 long 

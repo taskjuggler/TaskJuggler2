@@ -1625,7 +1625,7 @@ ProjectFile::readBooking()
 		errorMessage(i18n("Task ID expected"));
 		return 0;
 	}
-	return new Booking(Interval(start, end), task, "", task->getProjectId());
+	return new Booking(Interval(start, end), task);
 }
 
 bool

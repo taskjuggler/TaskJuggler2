@@ -36,7 +36,7 @@ public:
 		if (parent_)
 			parent_->sub.append(this);
    	}
-	virtual ~CoreAttributes() { }
+	virtual ~CoreAttributes();
 
 	virtual const char* getType() const { return "CoreAttributes"; }
 

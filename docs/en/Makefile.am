@@ -32,3 +32,6 @@ taskjuggler.ps: $(SGMLSOURCES)
 
 all: taskjuggler/book1.html taskjuggler.ps
 
+check:
+	xmllint ${SGMLSOURCES}
+

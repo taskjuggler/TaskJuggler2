@@ -23,6 +23,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
 
 Scenario::~Scenario()
 {
+    project->deleteScenario(this);
 }
 
 ScenarioListIterator 

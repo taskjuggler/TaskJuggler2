@@ -172,6 +172,12 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	duration = length = effort = 0.0;
 }
 
+Task::~Task()
+{
+    project->deleteTask(this);
+    delete [] scenarios;
+}
+
 bool
 Task::addDepends(const QString& rid)
 {
@@ -622,8 +628,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 		if ((*rti)->isAvailable(date, slotDuration, loadFactor, this))
 		{
 			(*rti)->book(new Booking(Interval(date, date + slotDuration - 1), 
-									 this, account ? account->getKotrusId() : 
-									 QString(""), projectId));
+									 this));
 			addBookedResource(*rti);
 
 			/* Move the start date to make sure that there is

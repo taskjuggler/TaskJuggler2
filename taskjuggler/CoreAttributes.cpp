@@ -12,6 +12,14 @@
 
 #include "CoreAttributes.h"
 
+CoreAttributes::~CoreAttributes()
+{
+    for (CoreAttributesListIterator cli(sub); *cli; ++cli)
+        delete *cli;
+    if (parent)
+        parent->sub.removeRef(this);
+}
+
 uint
 CoreAttributes::treeLevel() const
 {

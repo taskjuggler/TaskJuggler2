@@ -325,6 +325,12 @@ public:
 	 * scenario list of the project.
 	 */
 	void addScenario(Scenario* r);
+    /**
+     * This function is for library internal use only. Deleting a Scenario
+     * will automatically delete it from the respective list of the
+     * project.
+     */
+    void deleteScenario(Scenario* s);
 	
 	/**
 	 * This function is for library internal use only. Creating a Task object
@@ -332,6 +338,12 @@ public:
 	 * list of the project.
 	 */
 	void addTask(Task* t);
+    /**
+     * This function is for library internal use only. Deleting a Task
+     * will automatically delete it from the respective list of the
+     * project.
+     */
+    void deleteTask(Task* t);
 	/**
 	 * Returns a pointer to the Task with the specified ID. The ID must be an
 	 * absolute ID of the form "foo.bar". If no Task with the ID exists 0 is
@@ -364,6 +376,12 @@ public:
 	 * resource list of the project.
 	 */
 	void addResource(Resource* r);
+    /**
+     * This function is for library internal use only. Deleting a Resource
+     * will automatically delete it from the respective list of the
+     * project.
+     */
+    void deleteResource(Resource* r);
 	/**
 	 * Returns a pointer to the Resource with the specified ID. The ID must
 	 * not be an absolute ID since the Resource list has a flat namespace. If
@@ -396,6 +414,12 @@ public:
 	 * Account list of the project.
 	 */
 	void addAccount(Account* a);
+    /**
+     * This function is for library internal use only. Deleting a Account
+     * will automatically delete it from the respective list of the
+     * project.
+     */
+    void deleteAccount(Account* a);
 	/**
 	 * Returns a pointer to the Account with the specified ID. The ID may
 	 * not be an absolute ID since the account list has a flat namespace. If
@@ -428,11 +452,17 @@ public:
 	 * Shift list of the project.
 	 */
 	void addShift(Shift* s);
-	/**
-	 * Returns a pointer to the Shift with the specified ID. The ID may
-	 * not be an absolute ID since the Shift list has a flat namespace. If
-	 * no Shift with the ID exists 0 is returned.
-	 */
+    /**
+     * This function is for library internal use only. Deleting a Shift
+     * will automatically delete it from the respective list of the
+     * project.
+     */
+    void deleteShift(Shift* s);
+    /**
+     * Returns a pointer to the Shift with the specified ID. The ID may
+     * not be an absolute ID since the Shift list has a flat namespace. If
+     * no Shift with the ID exists 0 is returned.
+     */
 	Shift* getShift(const QString& id) const
 	{
 		return shiftList.getShift(id);

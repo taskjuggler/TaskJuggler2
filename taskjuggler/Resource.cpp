@@ -127,6 +127,7 @@ Resource::~Resource()
 	
 	delete [] MidnightIndex;
 	MidnightIndex = 0;
+    project->deleteResource(this);
 }
 
 void
@@ -287,8 +288,7 @@ Resource::bookSlot(uint idx, SbBooking* nb)
 	SbBooking* b;
 	// Try to merge the booking with the booking in the previous slot.
 	if (idx > 0 && (b = scoreboard[idx - 1]) > (SbBooking*) 3 &&
-		b->getTask() == nb->getTask() &&
-		b->getProjectId() == nb->getProjectId())
+		b->getTask() == nb->getTask())
 	{
 		scoreboard[idx] = b;
 		delete nb;
@@ -296,8 +296,7 @@ Resource::bookSlot(uint idx, SbBooking* nb)
 	}
 	// Try to merge the booking with the booking in the following slot.
 	if (idx < sbSize - 1 && (b = scoreboard[idx + 1]) > (SbBooking*) 3 &&
-		b->getTask() == nb->getTask() &&
-		b->getProjectId() == nb->getProjectId())
+		b->getTask() == nb->getTask())
 	{
 		scoreboard[idx] = b;
 		delete nb;
@@ -456,7 +455,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
 		SbBooking* b = scoreboards[sc][i];
 		if (b < (SbBooking*) 4)
 			continue;
-		if (b->getProjectId() == prjId)
+		if (b->getTask()->getProjectId() == prjId)
 			return TRUE;
 	}
 	return FALSE;
@@ -481,9 +480,9 @@ Resource::getPIDs(int sc, const Interval& period, const Task* task,
 		if (b < (SbBooking*) 4)
 			continue;
 		if ((task == 0 || task == b->getTask()) &&
-			pids.findIndex(b->getProjectId()) == -1)
+			pids.findIndex(b->getTask()->getProjectId()) == -1)
 		{
-			pids.append(b->getProjectId());
+			pids.append(b->getTask()->getProjectId());
 		}
 	}
 }

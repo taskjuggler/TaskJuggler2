@@ -65,7 +65,7 @@ class Task : public CoreAttributes
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,
 		 const QString& f, int l);
-	virtual ~Task() { }
+	virtual ~Task();
 
 	virtual const char* getType() const { return "Task"; }
 

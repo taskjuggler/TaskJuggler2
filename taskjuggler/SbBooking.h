@@ -23,25 +23,18 @@ class Task;
 class SbBooking
 {
 public:
-	SbBooking(Task* t, QString a = "", QString i = "")
-		: task(t), account(a), projectId(i) { }
+	SbBooking(Task* t)
+		: task(t) { }
 	~SbBooking() { }
 	
 	Task* getTask() const { return task; }
 
-	void setAccount(const QString a) { account = a; }
-	const QString& getAccount() const { return account; }
-
-	void setProjectId(const QString i) { projectId = i; }
-	const QString& getProjectId() const { return projectId; }
-
 private:
 	/// A pointer to the task that caused the booking
 	Task* task;
-	/// String identifying the KoTrus account the effort is credited to.
-	QString account;
-	/// The Project ID
-	QString projectId;
+
+    /// For future use.
+    // double amount;
 };
 
 #endif

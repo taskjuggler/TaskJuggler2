@@ -1,4 +1,4 @@
-<!DOCTYPE BOOK PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!ENTITY changelog SYSTEM "changelog.sgml">
 <!ENTITY firstproject SYSTEM "firstproject.sgml">
 <!ENTITY reference SYSTEM "reference.sgml">
