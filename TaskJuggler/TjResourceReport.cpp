@@ -164,6 +164,7 @@ TjResourceReport::generateList()
                 ca2lviDict.insert(QString("t:") + (*rli)->getFullId() +
                                   ":" + (*tli)->getId(), lvi);
                 lvi2caDict.insert(QString().sprintf("%p", lvi), *tli);
+                lvi2ParentCaDict.insert(QString().sprintf("%p", lvi), *rli);
 
                 // Adjust the maxDepth setting if new treelevel maximum has
                 // been found.
@@ -233,7 +234,7 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
     {
         const Task* t = dynamic_cast<const Task*>(ca);
         const Resource* r = dynamic_cast<const Resource*>(parent);
-        double load = r->getLoad(scenario, iv, AllAccounts, t);
+        double load = t->getLoad(scenario, iv, r);
         text = i18n("%1(%2) - %3:  Load=%4  Task %5(%6)")
             .arg(r->getName())
             .arg(r->getFullId())
