@@ -1,5 +1,5 @@
 /*
- * timedialog.h - TaskJuggler Viewer time Dialog
+ * timedialog.h - TaskJuggler Viewer time dialog
  *
  * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
  *
@@ -18,9 +18,8 @@
 
 /**
  *
- * @short TaskJuggler Gantt Viewer Header Widget
+ * @short TaskJuggler Gantt Viewer time dialog
  * @author Klaas Freitag <freitag@suse.de>
- * @version 0.1
  */
 class QDateTime;
 
@@ -33,8 +32,14 @@ public:
      */
     TimeDialog( QWidget *parentWidget, const QDateTime & start, const QDateTime & end );
 
+    /**
+     * @return the selected start date
+     */
     QDateTime getStartDate() const
         { return m_dateStart->dateTime(); }
+    /**
+     * @return the selected end date
+     */
     QDateTime getEndDate() const
         { return m_dateEnd->dateTime(); }
 

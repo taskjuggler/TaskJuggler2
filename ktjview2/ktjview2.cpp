@@ -114,7 +114,7 @@ void ktjview2::setupActions()
 
     // Resource menu
     new KAction( i18n( "Query resource..." ), 0, KShortcut(),
-                 m_view, SLOT( queryVacation() ), actionCollection(), "query_resource" );
+                 m_view, SLOT( queryResource() ), actionCollection(), "query_resource" );
 
     m_scaleAction = new KSelectAction( i18n( "Scale" ), 0, actionCollection(), "scale" );
     QStringList items = QStringList();
