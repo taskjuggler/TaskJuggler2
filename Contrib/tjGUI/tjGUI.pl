@@ -644,7 +644,7 @@ sub _draw_task {
         }
         if ( $task->Type eq 'Milestone' ) {
             my ($x, $y) = ($x1+($day_x/2), $y1+($task_height/2));
-            $c->createOval($x-($task_height/3), $y-($task_height/3), $x+($task_height/3), $y+($task_height/3), -outline => 'black', -fill => 'black', -tags => 'MILE');
+            $c->createOval($x-($task_height/3), $y-($task_height/3), $x+($task_height/3), $y+($task_height/3), -outline => 'black', -fill => 'black', -tags => ['TASK', $task->Id]);
             #-- text
             my $am = sprintf('%02d', $start_month);
             my $ad = sprintf('%02d', $start_day);
