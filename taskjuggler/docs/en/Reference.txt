@@ -8,10 +8,14 @@ may have fixed and optional attributes. It is recommended to use the
 extension ".tjp" for TaskJuggler project files and to use the
 extension ".tjsp" for sub project (include) files.
 
+There are two ways to annotate a project file with comments. All text
+after a '#' will be ignored. Comments that span multiple rows must be
+started with '/*' and ended with '*/'.
+
 Attributes may be of the following types:
 
-ID: A string that may consist of the characters A-Z, a-z, 0-9 and _. It may
-not start with a number.
+ID: A string that may consist of the characters A-Z, a-z, 0-9 and _.
+It may not start with a number.
 
 GLOBAL_ID: A GLOBAL_ID may have the same characters as ID but
 additionally it may contain '.' and '!'. '!' may only be used at the
@@ -25,12 +29,8 @@ and second are optional. If not specified the values are set to 0.
 
 TIME: A time in the format HH:MM.
 
-UNIT: May be
-h for hours,
-d for days,
-w for weeks,
-m for months,
-y for years.
+UNIT: May be h for hours, d for days, w for weeks, m for months, y for
+years.
 
 WEEKDAY: May be
 Mon for Monday

@@ -165,6 +165,32 @@ FileInfo::nextToken(QString& token)
 		case ' ':
 		case '\t':
 			break;
+		case '/':
+			/* This code skips c-style comments like the one you are just
+			 * reading. */
+			if ((c = getC(FALSE)) == '*')
+			{
+				do
+				{
+					while ((c = getC(FALSE)) != '*')
+					{
+						if (c == '\n')
+							currLine++;
+						else if (c == EOF)
+						{
+							fatalError("Unterminated comment");
+							return EndOfFile;
+						}
+					}
+				} while ((c = getC(FALSE)) != '/');
+			}
+			else
+			{
+				ungetC(c);
+				ungetC('/');
+				goto BLANKS_DONE;
+			}
+			break;
 		case '#':	// Comments start with '#' and reach towards end of line
 			while ((c = getC(FALSE)) != '\n' && c != EOF)
 				;
