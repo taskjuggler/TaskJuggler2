@@ -12,7 +12,7 @@
 
 /* -- DTD --
  <!-- Task element, child of projects and for subtasks -->
- <!ELEMENT Task		(TaskName, Note*,
+ <!ELEMENT Task		(Id, Name, ParentTask*, Note*,
                          minStart, maxStart,
                          minEnd, maxEnd,
 			 actualStart, actualEnd,
@@ -20,11 +20,13 @@
 			 SubTasks*, Depends*, Previous*, Followers*,
 			 Allocations*, bookedResources*, note*)>
  <!ATTLIST Task         ProjectID CDATA #IMPLIED
-                        Priority  CDATA #IMPLIED
 			complete  CDATA #REQUIRED
+                        Priority  CDATA #IMPLIED
                         Type (Task|Milestone) #REQUIRED>
 			
- <!ELEMENT TaskName     (#PCDATA)>
+ <!ELEMENT ParentTask   (#PCDATA)>
+ <!ELEMENT Id           (#PCDATA)>
+ <!ELEMENT Name         (#PCDATA)>
  <!ELEMENT Note         (#PCDATA)>
  <!ELEMENT ProjectID    (#PCDATA)>
  <!ELEMENT TaskType     (#PCDATA)>
@@ -49,11 +51,30 @@
  <!ELEMENT bookedResources (ResourceID+)>
  <!ELEMENT ResourceID   (#PCDATA)>
  <!ELEMENT note         (#PCDATA)>
+
  <!ATTLIST ResourceID
            Name CDATA #REQUIRED>
  <!ATTLIST Allocation
            load CDATA #REQUIRED
 	   ResourceID CDATA #REQUIRED>
+	   
+ <!-- Date values contain human readable date -->
+ <!ATTLIST minStart
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST maxStart
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST minEnd
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST maxEnd
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST actualStart
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST actualEnd
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST planStart
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST planEnd
+           humanReadable CDATA #REQUIRED>
    /-- DTD --/
 */
  
@@ -187,8 +208,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 			end = le;
 			propagateEnd();
 		}
-		else
-			return TRUE;	// Task cannot be scheduled yet.
+		else			return TRUE;	// Task cannot be scheduled yet.
 		
 		limitChanged = TRUE;
 	}
@@ -1208,40 +1228,79 @@ Task::finishActual()
 
 QDomElement Task::xmlElement( QDomDocument& doc )
 {
-   QDomElement elem = doc.createElement( "Task" );
+   QDomElement taskElem = doc.createElement( "Task" );
+   QDomElement tempElem;
+   
    QDomText t;
-   elem.appendChild( doc.createTextNode( getName()));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Id", getId()));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Name",getName() ));
+   CoreAttributes *parent = getParent();
+   if( parent )
+      taskElem.appendChild( ReportXML::ReportXML::createXMLElem( doc, "ParentTask", parent->getId()));
+	 
    if( !note.isEmpty())
-      elem.appendChild( ReportXML::createXMLElem( doc, "Note", getNote()));
+      taskElem.appendChild( ReportXML::createXMLElem( doc, "Note", getNote()));
+   
+   tempElem = ReportXML::createXMLElem( doc, "minStart", QString::number( minStart ));
+   tempElem.setAttribute( "humanReadable", time2ISO( minStart ));
+   taskElem.appendChild( tempElem );
+   
+   tempElem = ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart ));
+   tempElem.setAttribute( "humanReadable", time2ISO( maxStart ));
+   taskElem.appendChild( tempElem );
 
-   elem.appendChild( ReportXML::createXMLElem( doc, "minStart", QString::number( minStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "actualStart", QString::number( actualStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "actualEnd", QString::number( actualEnd )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "planStart", QString::number( planStart )));
-   elem.appendChild( ReportXML::createXMLElem( doc, "planEnd", QString::number( planEnd )));
+   tempElem = ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd ));
+   tempElem.setAttribute( "humanReadable", time2ISO( minEnd ));
+   taskElem.appendChild( tempElem );
 
-   elem.setAttribute( "ProjectID", projectId );
-   elem.setAttribute( "Priority", getPriority() );
-   elem.setAttribute( "complete", complete );
-   elem.setAttribute( "Type", milestone ? "Milestone" : "Task" );
+   tempElem = ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd ));
+   tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
+   taskElem.appendChild( tempElem );
+   
+   tempElem = ReportXML::createXMLElem( doc, "actualStart", QString::number( actualStart ));
+   tempElem.setAttribute( "humanReadable", time2ISO( actualStart ));
+   taskElem.appendChild( tempElem );
+
+   tempElem = ReportXML::createXMLElem( doc, "actualEnd", QString::number( actualEnd ));
+   tempElem.setAttribute( "humanReadable", time2ISO( actualEnd ));
+   taskElem.appendChild( tempElem );
+   
+   tempElem = ReportXML::createXMLElem( doc, "planStart", QString::number( planStart ));
+   tempElem.setAttribute( "humanReadable", time2ISO( planStart ));
+   taskElem.appendChild( tempElem );
+
+   tempElem = ReportXML::createXMLElem( doc, "planEnd", QString::number( planEnd ));
+   tempElem.setAttribute( "humanReadable", time2ISO( planEnd ));
+   taskElem.appendChild( tempElem );
+
+#if 0
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart )));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd )));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd )));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "actualStart", QString::number( actualStart )));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "actualEnd", QString::number( actualEnd )));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "planStart", QString::number( planStart )));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "planEnd", QString::number( planEnd )));
+#endif
+   taskElem.setAttribute( "ProjectID", projectId );
+   taskElem.setAttribute( "Priority", getPriority() );
+   taskElem.setAttribute( "complete", complete );
+   taskElem.setAttribute( "Type", milestone ? "Milestone" : "Task" );
    
    /* Now start the subtasks */
    int cnt = 0;
-   QDomElement subtElem = doc.createElement( "SubTasks" );
+   QDomElement subTaskElem = doc.createElement( "SubTasks" );
    for (Task* t = subFirst(); t != 0; t = subNext())
    {
       if( t != this )
       {
 	 QDomElement sTask = t->xmlElement( doc );
-	 subtElem.appendChild( sTask );
+	 subTaskElem.appendChild( sTask );
 	 cnt++;
       }
    }
    if( cnt > 0 )
-      elem.appendChild( subtElem );
+      taskElem.appendChild( subTaskElem);
 
    /* Tasks (by id) on which this task depends */
    if( dependsIds.count() > 0 )
@@ -1252,7 +1311,7 @@ QDomElement Task::xmlElement( QDomDocument& doc )
       {
 	 deps.appendChild( ReportXML::createXMLElem( doc, "TaskID", *it1 ));
       }
-      elem.appendChild( deps );
+      taskElem.appendChild( deps );
    }
 
    /* list of tasks by id which are previous */
@@ -1268,7 +1327,7 @@ QDomElement Task::xmlElement( QDomDocument& doc )
 	    prevs.appendChild( ReportXML::createXMLElem( doc, "TaskID", t->getId()));
 	 }
       }
-      elem.appendChild( prevs );
+      taskElem.appendChild( prevs );
    }
    
    /* list of tasks by id which follow */
@@ -1285,7 +1344,7 @@ QDomElement Task::xmlElement( QDomDocument& doc )
 	 }
       }
 
-      elem.appendChild( foll );
+      taskElem.appendChild( foll );
    }
 
    /* Allocations */
@@ -1298,7 +1357,7 @@ QDomElement Task::xmlElement( QDomDocument& doc )
       {
 	 alloc.appendChild( a->xmlElement( doc ));
       }
-      elem.appendChild( alloc );
+      taskElem.appendChild( alloc );
    }
 
    /* booked Ressources */
@@ -1311,7 +1370,7 @@ QDomElement Task::xmlElement( QDomDocument& doc )
       {
 	 bres.appendChild( r->xmlIDElement( doc ));
       }
-      elem.appendChild( bres );
+      taskElem.appendChild( bres );
    }
 
    
@@ -1319,12 +1378,12 @@ QDomElement Task::xmlElement( QDomDocument& doc )
    if( ! note.isEmpty())
    {
       QDomElement e = doc.createElement( "note" );
-      elem.appendChild( e );
+      taskElem.appendChild( e );
       t = doc.createTextNode( note );
       e.appendChild( t );
    }
 
-   return( elem );
+   return( taskElem );
 }
 
 int
