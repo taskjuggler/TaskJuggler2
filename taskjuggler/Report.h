@@ -45,6 +45,11 @@ public:
 
     QTextStream& stream() { return s; }
 
+    void puts(const QString& str) 
+    { 
+        s.writeRawBytes(str.data(), str.length());
+    } 
+
     const Project* getProject() const { return project; }
     const QString& getFileName() const { return fileName; }
 
@@ -153,7 +158,7 @@ protected:
     Report() { }
 
     void errorMessage(const char* msg, ... );
-    
+   
     /**
      * This utility function removes the path that matches the taskRoot
      * variable from the passed taskId.

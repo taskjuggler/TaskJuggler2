@@ -26,13 +26,13 @@
 #include "MacroTable.h"
 #include "RealFormat.h"
 #include "TableColumnFormat.h"
+#include "Report.h"
 
 class QStringList;
 
 class Project;
 class CoreAttributes;
 class ExpressionTree;
-class Report;
 class Scenario;
 class Task;
 class TaskList;
@@ -224,6 +224,8 @@ protected:
         (const QDict<const CustomAttributeDefinition>& cad);
 
     QTextStream& s() const;
+    void puts(const QString& str) { report->puts(str); }
+
     void errorMessage(const char* msg, ... );
 
     /**

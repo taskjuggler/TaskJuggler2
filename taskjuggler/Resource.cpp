@@ -206,7 +206,7 @@ Resource::index2end(uint idx) const
         project->getScheduleGranularity() - 1;
 }
 
-bool
+int
 Resource::isAvailable(time_t date, time_t duration, int loadFactor,
                       const Task* t)
 {
@@ -222,11 +222,11 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
         if (DEBUGRS(6))
             qDebug("  Resource %s is busy (%ld)", id.latin1(), (long)
                    scoreboard[sbIdx]);
-        return FALSE;
+        return scoreboard[sbIdx] < ((SbBooking*) 4) ? 1 : 4;
     }
 
     if (maxEffort == 0.0 && loadFactor == 0)
-        return TRUE;
+        return 0;
 
     // Now check that the resource is not overloaded on this day.
     time_t bookedTime = duration;
@@ -273,22 +273,20 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
                id.latin1(), resourceLoad, maxEffort, taskLoad, loadFactor /
                100.0);
     }
-    if (DEBUGRS(6))
+    if (maxEffort > 0.0 && resourceLoad > maxEffort)
     {
-        if (maxEffort > 0.0 && resourceLoad > maxEffort)
-        {
+        if (DEBUGRS(6))
             qDebug("  Resource %s overloaded (%f)", id.latin1(), resourceLoad);
-            return FALSE;
-        }
-        if (loadFactor > 0 && taskLoad > (loadFactor / 100.0))
-        {
+        return 2;
+    }
+    if (loadFactor > 0 && taskLoad > (loadFactor / 100.0))
+    {
+        if (DEBUGRS(6))
             qDebug("  %s overloaded for task %s (%f)", id.latin1(),
                    t->getId().latin1(), loadFactor / 100.0);
-            return FALSE;
-        }
+        return 3;
     }
-    return  (maxEffort == 0.0 || resourceLoad <= maxEffort) &&
-        (loadFactor == 0 || taskLoad <= (loadFactor / 100.0));
+    return 0;
 }
 
 bool

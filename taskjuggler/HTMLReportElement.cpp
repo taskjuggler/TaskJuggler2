@@ -43,18 +43,32 @@ void
 HTMLReportElement::generateHeader()
 {
     if (!rawHead.isEmpty())
-        s() << rawHead << endl;
+    {
+        puts(rawHead);
+        puts("\n");
+    }
     if (!headline.isEmpty())
-        s() << "<h3>" << htmlFilter(headline) << "</h3>" << endl;
+    {
+        puts("<h3>");
+        puts(htmlFilter(headline));
+        puts("</h3>\n");
+    }
     if (!caption.isEmpty())
-        s() << "<p>" << htmlFilter(caption) << "</p>" << endl;
+    {
+        puts("<p>");
+        puts(htmlFilter(caption));
+        puts("</p>\n");
+    }
 }
 
 void
 HTMLReportElement::generateFooter()
 {
     if (!rawTail.isEmpty())
-        s() << rawTail << endl;
+    {
+        puts(rawTail);
+        puts("\n");
+    }
 }
 
 void
@@ -129,21 +143,29 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
 {
     setMacros(tli);
 
-    s() << "  <tr valign=\"middle\"";
+    puts("  <tr valign=\"middle\"");
     if (tli->bgCol.isValid() || tli->boldText || tli->fontFactor != 100)
     {
-       s() << " style=\"";
+       puts(" style=\"");
        if (tli->bgCol.isValid())
-           s() << "background-color:" << tli->bgCol.name() << "; ";
+       {
+           puts("background-color:");
+           puts(tli->bgCol.name());
+           puts("; ");
+       }
        if (tli->boldText)    
-           s() << "font-weight:bold; ";
+           puts("font-weight:bold; ");
        if (tli->fontFactor != 100)
-           s() << "font-size:" << QString("%1").arg(tli->fontFactor) << "%; ";
-       s() << "\"";
+       {
+           puts("font-size:");
+           puts(QString("%1").arg(tli->fontFactor));
+           puts("%; ");
+       }
+       puts("\"");
     }
     if (((HTMLReport*) report)->hasStyleSheet())
-        s() << " class=\"tj_row\"";
-    s() << ">" << endl;
+        puts(" class=\"tj_row\"");
+    puts(">\n");
     
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
@@ -190,7 +212,7 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
             }
         }
     }
-    s() << "  </tr>" << endl;
+    puts("  </tr>\n");
 }
 
 void
@@ -200,19 +222,24 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
     if (!multi)
         tci->setFontFactor(90);
 
-    s() << "   <td";
+    puts("   <td");
     if (tci->tcf->noWrap)
-        s() << " nowrap=\"nowrap\"";
+        puts(" nowrap=\"nowrap\"");
     if (tci->getRows() != 1 || (multi && scenarios.count() > 1))
-        s() << " rowspan=\"" << QString("%1")
-            .arg(tci->getRows() != 1 ?
-                 tci->getRows() : scenarios.count()) << "\"";
+        puts(" rowspan=\"" + QString("%1")
+             .arg(tci->getRows() != 1 ?
+                  tci->getRows() : scenarios.count()) + "\"");
     if (tci->getColumns() != 1)
-        s() << " colspan=\"" << QString("%1").arg(tci->getColumns()) << "\"";
+    {
+        puts(" colspan=\"");
+        puts(QString("%1").arg(tci->getColumns()));
+        puts("\"");
+    }
     if (!tci->getStatusText().isEmpty())
     {
-        s() << " onmouseover=\"status='" << tci->getStatusText() 
-            << "';return true;\"";
+        puts(" onmouseover=\"status='");
+        puts(tci->getStatusText());
+        puts("';return true;\"");
     }
     if (!tci->tcf->hAlign.isEmpty() || 
         !tci->getHAlign().isEmpty() ||
@@ -223,27 +250,50 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         tci->getBoldText() ||
         tci->tcf->fontFactor != 100)
     {
-        s() << " style=\"";
+        puts(" style=\"");
         if (tci->getBgColor().isValid())
-            s() << "background-color:" << tci->getBgColor().name() << "; ";
+        {
+            puts("background-color:");
+            int r, g, b;
+            tci->getBgColor().rgb(&r, &g, &b);
+            char buf[10];
+            sprintf(buf, "#%02x%02x%02x; ", r, g, b);
+            puts(buf);
+        }
         if (!tci->getHAlign().isEmpty())
-            s() << "text-align:" << tci->getHAlign() << "; ";
+        {
+            puts("text-align:");
+            puts(tci->getHAlign());
+            puts("; ");
+        }
         else if (!tci->tcf->hAlign.isEmpty())
-            s() << "text-align:" << tci->tcf->hAlign << "; ";
+        {
+            puts("text-align:");
+            puts(tci->tcf->hAlign);
+            puts("; ");
+        }
         if (tci->getLeftPadding() > 0)
-            s() << "padding-left:" <<
-                QString("%1").arg(tci->getLeftPadding()) << "; ";
+        {
+            puts("padding-left:");
+            puts(QString("%1").arg(tci->getLeftPadding()));
+            puts("; ");
+        }
         if (tci->getRightPadding() > 0)
-            s() << "padding-right:" <<
-                QString("%1").arg(tci->getRightPadding()) << "; ";
+        {
+            puts("padding-right:");
+            puts(QString("%1").arg(tci->getRightPadding()));
+            puts("; ");
+        }
         if (tci->getBoldText())
-            s() << "font-weight:bold; ";
+            puts("font-weight:bold; ");
         if (tci->getFontFactor() != 100 || tci->tcf->fontFactor != 100)
-            s() << "font-size:" 
-                << QString("%1").arg(tci->getFontFactor() *
-                                     tci->tcf->fontFactor / 100)
-                << "%; ";
-        s() << "\"";
+        {
+            puts("font-size:");
+            puts(QString("%1").arg(tci->getFontFactor() *
+                                   tci->tcf->fontFactor / 100));
+            puts("%; ");
+        }
+        puts("\"");
     }
     QString cellText = filter ? htmlFilter(text) : text;
     if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
@@ -262,17 +312,19 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
     if (cellText.isEmpty())
         cellText = "&nbsp;";
     if (((HTMLReport*) report)->hasStyleSheet())
-        s() << " class=\"tj_cell\"";
-    s() << ">";
+        puts(" class=\"tj_cell\"");
+    puts(">");
     if (!tci->getToolTipText().isEmpty())
     {
-        s() << "<div id=\"" << tci->getToolTipID() 
-            << "\" class=\"tj_tooltip\" style=\"visibility:hidden\">"
-            << tci->getToolTipText()
-            << "</div>";
+        puts("<div id=\"");
+        puts(tci->getToolTipID());
+        puts("\" class=\"tj_tooltip\" style=\"visibility:hidden\">");
+        puts(tci->getToolTipText());
+        puts("</div>");
     }
 
-    s() << cellText << "</td>" << endl;
+    puts(cellText);
+    puts("</td>\n");
 }
 
 void
@@ -394,7 +446,7 @@ HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
             + "\">" + cellText + "</a>";
     mt.popArguments();
 
-    s() << cellText;
+    puts(cellText);
 }
 
 void
@@ -415,7 +467,7 @@ HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
             + "\">" + cellText + "</a>";
     mt.popArguments();
 
-    s() << cellText;
+    puts(cellText);
 }
 
 void
@@ -448,27 +500,26 @@ HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString& str)
 void
 HTMLReportElement::genHeadDefault(TableCellInfo* tci)
 {
-    s() << "   <td rowspan=\"2\"";
+    puts("   <td rowspan=\"2\"");
     if (((HTMLReport*) report)->hasStyleSheet())
-        s() << " class=\"tj_header_cell\"";
-    s() << ">";
+        puts(" class=\"tj_header_cell\"");
+    puts(">");
     generateTitle(tci, tci->tcf->getTitle());
-    s() << "</td>" << endl;
+    puts("</td>\n");
 }
 
 void
 HTMLReportElement::genHeadCurrency(TableCellInfo* tci)
 {
-
-    s() << "   <td rowspan=\"2\"";
+    puts("   <td rowspan=\"2\"");
     if (((HTMLReport*) report)->hasStyleSheet())
-        s() << " class=\"tj_header_cell\"";
-    s() << ">";
+        puts(" class=\"tj_header_cell\"");
+    puts(">");
     generateTitle(tci, tci->tcf->getTitle() +
                   (!report->getProject()->getCurrency().isEmpty() ?
                    QString(" ") + report->getProject()->getCurrency() :
                    QString()));
-    s() << "</td>" << endl;
+    puts("</td>\n");
 }
 
 void

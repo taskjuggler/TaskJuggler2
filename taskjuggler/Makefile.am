@@ -59,5 +59,5 @@ $(DTDFILE): $(taskjuggler_SOURCES)
 messages: 
 	$(XGETTEXT) -ki18n -kI18N_NOOP -d taskjuggler `find . -name "*.cpp"`
 
-include ../admin/Doxyfile.am
+#include ../admin/Doxyfile.am
 

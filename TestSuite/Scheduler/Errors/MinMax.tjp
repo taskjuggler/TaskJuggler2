@@ -1,0 +1,40 @@
+project minmax "MinMax Test" "$Id" 2003-07-20 2003-09-01 {
+}
+
+task t1 "Task1" {
+	start 2003-07-20
+	length 5d
+}
+
+task t2 "Min Start/End Test (both errors)" {
+	depends !t1
+	minstart 2003-07-25-18:00:01
+	minend 2003-08-01-18:00:00
+	length 5d
+}
+
+task t3 "Max Start/End Test (both errors)" {
+	depends !t2
+	maxstart 2003-08-01-17:59:59
+	maxend 2003-08-08-17:59:58
+	length 5d
+}
+
+task t4 "Max Start/End Test Milestone (both errors)" {
+	milestone
+	depends !t3
+	maxstart 2003-08-08-17:59:59
+	maxend 2003-08-08-17:59:59
+}
+
+task t5 "Max Start/End Test Milestone (both ok)" {
+	milestone
+	depends !t3
+	maxstart 2003-08-08-18:00:00
+	maxend 2003-08-08-18:00:00
+}
+
+htmltaskreport "MinMax-Export.html" {
+	columns no, name, start, end
+}
+

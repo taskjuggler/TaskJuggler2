@@ -63,39 +63,51 @@ public:
 
     QDomElement xmlElement(QDomDocument& doc);
 
+    void setConflictStart(time_t cs) { conflictStart = cs; }
+    time_t getConflictStart() const { return conflictStart; }
+
+    void init()
+    {
+        lockedResource = 0;
+        conflictStart = 0;
+    }
+    
 private:
-   /// Don't use this.
-   Allocation();
+    /// Don't use this.
+    Allocation();
 
-   /// The maximum daily usage of the resource in percent.
-   int load;
+    /// The maximum daily usage of the resource in percent.
+    int load;
 
-   /// The shifts that can limit the allocation to certain intervals.
-   ShiftSelectionList shifts;
+    /// The shifts that can limit the allocation to certain intervals.
+    ShiftSelectionList shifts;
 
-   /**
-    * True if the allocation should be persistent over the whole task.
-    * If set the first selection will not be changed even if there is an
-    * available alternative. */
-   bool persistent;
+    /**
+     * True if the allocation should be persistent over the whole task.
+     * If set the first selection will not be changed even if there is an
+     * available alternative. */
+    bool persistent;
 
-   /**
-    * True if the resource is mandatory. This means, that only if this
-    * allocation can be made, all other allocations will be made. If this
-    * allocation cannot be made for a time slot, no other allocations will be
-    * made for the task.
-    */
-   bool mandatory;
+    /**
+     * True if the resource is mandatory. This means, that only if this
+     * allocation can be made, all other allocations will be made. If this
+     * allocation cannot be made for a time slot, no other allocations will be
+     * made for the task.
+     */
+    bool mandatory;
 
-   /// The persintent resource picked by the scheduler.
-   Resource* lockedResource;
-   
-   /// List of potential resources.
-   QPtrList<Resource> candidates;
+    /// The persintent resource picked by the scheduler.
+    Resource* lockedResource;
 
-   /* The selection mode determines how the resource is selected from
-    * the candidate list. */
-   SelectionModeType selectionMode;
+    /// Start of a resource conflict. Used during scheduling only.
+    time_t conflictStart;
+
+    /// List of potential resources.
+    QPtrList<Resource> candidates;
+
+    /* The selection mode determines how the resource is selected from
+     * the candidate list. */
+    SelectionModeType selectionMode;
 } ;
 
 #endif

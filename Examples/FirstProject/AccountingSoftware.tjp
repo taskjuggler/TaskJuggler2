@@ -5,7 +5,7 @@
  * TaskJuggler. Please see the TaskJuggler manual for a more detailed
  * description of the various syntax elements.
  */
-project acso "Accounting Software" "$Id$" 2002-01-16 2002-04-26 {
+project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
   # Pick a day during the project that will be reported as 'today' in
 	# the project reports. If not specified the current day will be
 	# used, but this will likely be ouside of the project range, so it
@@ -72,19 +72,19 @@ task AcSo "Accounting Software" {
 	account dev
 
 	task spec "Specification" {
-		# The effort to finish is task is 20 man days. 
+		# The effort to finish this task is 20 man days. 
 		effort 20d
 		# Now we use the above declared macro to allocate the resources
 		# for this task. Since they can work in parallel, this task may be
 		# finshed earlier than 20 working days.
 		${allocate_developers}
-		# Each task must have a start or end criteria and a duration. For
-		# this task we use a reference to a further down defined milestone
-		# as a start criteria. So this task cannot start, before the
-		# specified milestone has been reached. References to other tasks
-		# may be relative. Each ! means 'in the scope of the enclosing
-		# task'. To descent into a task the . together with the id of the
-		# tasks have to be specified.
+		# Each task that does not have sub tasks must have a start or end
+		# criteria and a duration. For this task we use a reference to a
+		# further down defined milestone as a start criteria. So this task
+		# cannot start, before the specified milestone has been reached.
+		# References to other tasks may be relative. Each ! means 'in the
+		# scope of the enclosing task'. To descent into a task the .
+		# together with the id of the tasks have to be specified.
 		depends !deliveries.start 
 	}
 
@@ -116,11 +116,11 @@ task AcSo "Accounting Software" {
 
 		task backend "Back-End Functions" { 
 			effort 30d
-			# This task is ahead of schedule but not yet finished. To
-			# document this we specify that the tasks is 80% completed. If
-			# nothing is specified, TaskJuggler assumes that the task is on
-			# schedule and computes the completion rate according to the
-			# current day and the plan data.
+			# This task is behind schedule since it should have been
+			# finished already. To document this we specify that the tasks
+			# is 95% completed. If nothing is specified, TaskJuggler assumes
+			# that the task is on schedule and computes the completion rate
+			# according to the current day and the plan data.
 			complete 95 
 			depends !database, !!spec 
 			allocate dev1, dev2 
@@ -170,7 +170,8 @@ task AcSo "Accounting Software" {
 			# At the begining of this task we receive a payment from the
 			# customer. This is credited to the account assiciated with this
 			# task when the task starts.
-			startcredit 33000.0 }
+			startcredit 33000.0 
+		}
 
 		task prev "Technology Preview" { 
 			milestone 
@@ -190,7 +191,8 @@ task AcSo "Accounting Software" {
 			# the project being late. For all tasks limits for the start and
 			# end value can be specified. Those limits are checked after the
 			# project has been scheduled. For all violated limits a warning
-			# is issued.  maxend 2002-04-17
+			# is issued.  
+			# maxend 2002-04-17
 			depends !!test.beta, !!manual 
 			startcredit 14000.0 
 		} 
@@ -200,7 +202,9 @@ task AcSo "Accounting Software" {
 # Now the project has been completely specified. Stopping here would
 # result in a valid TaskJuggler file that could be processed and
 # scheduled. But no reports would be generated to visualize the
-# results. So we request 4 HTML reports to be generated.
+# results. So we request 7 HTML reports and 1 XML report to be
+# generated. The XML report is used to create a Postscript Gantt
+# chart.
 
 # For conveniance we would like each report to contain links to the
 # other reports. So we declare a macro with a fragment of raw HTML
@@ -234,18 +238,21 @@ htmltaskreport "Tasks-Overview.html" {
 	# above.
 	${navbar}
 	# The report should be a table that contains several columns. The
-	# task and their information form the rows of the table.
+	# task and their information form the rows of the table. Since we
+	# don't like the title of the effort column, we change it to "Work".
   columns hierarchindex, name, duration, effort { title "Work"},
 	        start, end, weekly
+	# For this report we like to have the abbreviated weekday in front
+	# of the date. %a is the tag for this.
 	timeformat "%a %Y-%m-%d"
-  loadunit shortauto	
+	
 	# Don't show load values.
 	barlabels empty
 	# Set a title for the report
 	headline "Accounting Software Project"
 	# And a short description what this report is about.
 	caption "This table presents a management-level overview of the
-	project."
+	project. The values are days or man-days."
 }
 
 # Now a more detailed report that shows all jobs and the people
@@ -276,7 +283,7 @@ htmlresourcereport "Staff-Overview.html" {
   columns no, name, scenario, weekly, effort
   scenarios plan, delayed
 	# Since we want to see the load values as hours per week, we switch
-	# the unit loads are reported in to hours.
+	# the unit that loads are reported in to hours.
 	loadunit hours
 	headline "Weekly working hours for the Accounting Software Project"
 }
@@ -285,6 +292,8 @@ htmlresourcereport "Staff-Overview.html" {
 htmlresourcereport "Staff-Details.html" {
 	${navbar}
   columns name, daily, effort
+	# To still keep the report readable we limit it to show only the
+	# data for March 2002.
 	start 2002-03-01
 	end 2002-04-01
 	hidetask 0
@@ -298,6 +307,17 @@ htmlresourcereport "Staff-Details.html" {
 	loadunit hours
 	headline "Daily working hours for the Accounting Software Project -
 	March 2002"
+}
+
+htmlweeklycalendar "Calendar.html" {
+	${navbar}
+	headline "Ongoing Tasks - March 2002"
+	start 2002-03-01
+	end 2002-04-01
+}
+
+htmlstatusreport "Status-Report.html" {
+	${navbar}
 }
 
 # To conclude the HTML reports a report that shows how badly the
@@ -320,19 +340,8 @@ htmlaccountreport "Accounting.html" {
  	scenarios plan, delayed 
 }
 
-htmlweeklycalendar "Calendar.html" {
-	${navbar}
-	headline "Ongoing Tasks - March 2002"
-	start 2002-03-01
-	end 2002-04-01
-}
-
-htmlstatusreport "Status-Report.html" {
-	${navbar}
-}
-
 # Finally we generate an XML report that contains all info about the
 # scheduled project. This will be used by tjx2gantt to create a nice
-# GANTT chart of our project.
+# Gantt chart of our project.
 xmlreport "AccountingSoftware.tjx"
 

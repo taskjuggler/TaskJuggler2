@@ -616,7 +616,7 @@ Task::bookResources(time_t date, time_t slotDuration)
             }
             if ((*ali)->isPersistent() && (*ali)->getLockedResource())
             {
-                if (!(*ali)->getLockedResource()->
+                if ((*ali)->getLockedResource()->
                     isAvailable(date, slotDuration, (*ali)->getLoad(), this))
                 {
                     allMandatoriesAvailables = FALSE;
@@ -630,8 +630,8 @@ Task::bookResources(time_t date, time_t slotDuration)
                 for (QPtrListIterator<Resource> rli(candidates); 
                      *rli && !found; ++rli)
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
-                        if ((*rti)->isAvailable(date, slotDuration,
-                                                (*ali)->getLoad(), this))
+                        if (!(*rti)->isAvailable(date, slotDuration,
+                                                 (*ali)->getLoad(), this))
                         {
                             found = TRUE;
                             break;
@@ -689,7 +689,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
     {
-        if ((*rti)->isAvailable(date, slotDuration, loadFactor, this))
+        if (!(*rti)->isAvailable(date, slotDuration, loadFactor, this))
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));
@@ -1986,6 +1986,9 @@ Task::prepareScenario(int sc)
     runAway = FALSE;
     bookedResources.clear();
     bookedResources = scenarios[sc].bookedResources;
+    
+    for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
+        (*ali)->init();
 }
 
 void
