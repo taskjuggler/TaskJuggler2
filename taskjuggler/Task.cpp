@@ -1864,7 +1864,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "Priority" )
         setPriority( elem.text().toInt() );
       else if( elemTagName == "complete" )
-	 setComplete( elem.text().toDouble() );
+	 setComplete( elem.text().toInt() );
 
       /* time-stuff: */
       else if( elemTagName == "minStart" )
