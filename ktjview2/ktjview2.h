@@ -186,6 +186,11 @@ private slots:
      */
     void enableUndoActions( bool enable = true );
 
+    /**
+     * Update the caption if the document is modified or saved
+     */
+    void updateCaption();
+
 private:
     /**
      * Create actions

@@ -119,6 +119,11 @@ public:
         { return m_editorView; }
 
     /**
+     * @return the name of the current project or QString::null if no project opened
+     */
+    QString projectName() const;
+
+    /**
      * Apply preselected filter (@p id) on the task list.
      *
      * @return whether the filter was actually applied
@@ -162,6 +167,11 @@ public slots:
      * Paste the selected text from cliboard (Editor slot)
      */
     void slotPaste();
+
+    /**
+     * Select all the text (Editor slot)
+     */
+    void slotSelectAll();
 
     /**
      * Set the Gantt to calendar mode depending on @p flag

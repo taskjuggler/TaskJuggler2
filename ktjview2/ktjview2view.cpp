@@ -47,6 +47,7 @@
 
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
+#include <ktexteditor/selectioninterface.h>
 
 // local includes
 #include "kdgantt/KDGanttViewEventItem.h"
@@ -336,7 +337,6 @@ bool ktjview2View::openURL( const KURL& url )
 
     m_projectURL = url;
     signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
-    signalChangeCaption( m_project->getName() );
 
     progressDlg.progressBar()->setProgress( 6 );
 
@@ -1146,6 +1146,19 @@ void ktjview2View::slotRedo()
 void ktjview2View::slotBuild()
 {
     openURL( m_projectURL );
+}
+
+void ktjview2View::slotSelectAll()
+{
+    KTextEditor::selectionInterface( m_editorView->doc() )->selectAll();
+}
+
+QString ktjview2View::projectName() const
+{
+    if ( m_project )
+        return m_project->getName();
+    else
+        return QString::null;
 }
 
 #include "ktjview2view.moc"

@@ -92,6 +92,10 @@ ktjview2::ktjview2()
     connect( m_view->editor()->doc(), SIGNAL( undoChanged() ),
              this, SLOT( enableUndoActions() ) );
 
+    // update caption if necessary
+    connect( m_view->editor()->doc(), SIGNAL( textChanged() ),
+             this, SLOT( updateCaption() ) );
+
     m_activeTaskFilter = 0;
     m_activeResourceFilter = 0;
 
@@ -106,7 +110,10 @@ ktjview2::~ktjview2()
 void ktjview2::load( const KURL& url )
 {
     if ( m_view->openURL( url ) )
+    {
         m_recentAction->addURL( url );
+        updateCaption();
+    }
 }
 
 void ktjview2::setupActions()
@@ -137,6 +144,7 @@ void ktjview2::setupActions()
     KStdAction::cut( m_view, SLOT( slotCut() ), actionCollection() );
     KStdAction::copy( m_view, SLOT( slotCopy() ), actionCollection() );
     KStdAction::paste( m_view, SLOT( slotPaste() ), actionCollection() );
+    KStdAction::selectAll( m_view, SLOT( slotSelectAll() ), actionCollection() );
 
     // View menu
 #if 0
@@ -349,6 +357,8 @@ void ktjview2::fileOpen()
                                         this, i18n( "to open ...", "Open Project" ) );
     if ( !url.isEmpty() )
         load( url );
+
+    updateCaption();
 }
 
 void ktjview2::fileSave()
@@ -358,6 +368,8 @@ void ktjview2::fileSave()
         changeStatusbar( i18n( "Project '%1' successfully saved." ).arg( url ) );
     else
         KMessageBox::error( this, i18n( "Saving project '%1' failed." ).arg( url ) );
+
+    updateCaption();
 }
 
 void ktjview2::filePrint()
@@ -580,6 +592,7 @@ void ktjview2::enableResUsageActions( bool enable )
 void ktjview2::enableEditorActions( bool enable )
 {
     action( KStdAction::name( KStdAction::Save ) )->setEnabled( enable );
+    action( KStdAction::name( KStdAction::SelectAll ) )->setEnabled( enable );
     enableClipboardActions( enable );
     enableUndoActions( enable );
 }
@@ -654,6 +667,14 @@ void ktjview2::outline9()
 void ktjview2::collapseAll()
 {
     m_view->collapseAll( m_view->resListView() );
+}
+
+void ktjview2::updateCaption()
+{
+    bool modified = m_view->editor()->doc()->isModified();
+    QString projectName = m_view->projectName();
+
+    setCaption( projectName, modified );
 }
 
 #include "ktjview2.moc"
