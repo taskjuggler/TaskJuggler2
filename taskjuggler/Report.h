@@ -43,11 +43,19 @@ public:
 	void setHideTask(ExpressionTree* et) { hideTask = et; }
 	bool isTaskHidden(Task* t);
 
+	void setRollUpTask(ExpressionTree* et) { rollUpTask = et; }
+	bool isTaskRolledUp(Task* t);
+
 	void setHideResource(ExpressionTree* et) { hideTask = et; }
 	bool isResourceHidden(Resource* t);
 
+	void setTaskSorting(TaskList::SortCriteria sc) { taskSortCriteria = sc; }
+
 protected:
 	Report() { }
+
+	void filterTaskList(TaskList& filteredList);
+	void sortTaskList(TaskList& filteredList);
 
 	Project* project;
 	QString fileName;
@@ -55,9 +63,12 @@ protected:
 	time_t start;
 	time_t end;
 
+	TaskList::SortCriteria taskSortCriteria;
+
 	QTextStream s;
 	ExpressionTree* hideTask;
 	ExpressionTree* hideResource;
+	ExpressionTree* rollUpTask;
 } ;
 
 #endif

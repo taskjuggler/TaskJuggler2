@@ -231,6 +231,8 @@ public:
 	bool isMilestone() const { return start != 0 && start == end; }
 	bool isActiveToday(time_t date) const;
 
+	bool isActiveThisWeek(time_t date) const;
+
 	bool isActiveThisMonth(time_t date) const;
 
 	void setAccount(Account* a) { account = a; }

@@ -43,6 +43,19 @@ daysLeftInMonth(time_t t)
 }
 
 int
+weeksLeftInMonth(time_t t)
+{
+	int left = 0;
+	struct tm* tms = localtime(&t);
+	for (int m = tms->tm_mon; tms->tm_mon == m;
+		 t = sameTimeNextWeek(t), localtime(&t))
+	{
+		left++;
+	}
+	return left;
+}
+
+int
 monthLeftInYear(time_t t)
 {
 	int left = 0;
@@ -66,6 +79,16 @@ daysBetween(time_t t1, time_t t2)
 }
 
 int
+weeksBetween(time_t t1, time_t t2)
+{
+	int days = 0;
+	// TODO: Very slow!!!
+	for (time_t t = t1; t < t2; t = sameTimeNextWeek(t))
+		days++;
+	return days;
+}
+
+int
 monthsBetween(time_t t1, time_t t2)
 {
 	int months = 0;
@@ -80,6 +103,26 @@ dayOfMonth(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	return tms->tm_mday;
+}
+
+int
+weekOfYear(time_t t)
+{
+	time_t boy = beginOfYear(t);
+	struct tm* tms = localtime(&boy);
+	int i;
+	for (i = 0; tms->tm_wday != 0; boy = sameTimeNextDay(boy))
+		tms = localtime(&boy);
+	// If t is in last year's week, we have to do it again for last year.
+	if (boy > t)
+	{
+		boy = beginOfYear(sameTimeLastYear(t));
+		tms = localtime(&boy);
+		for (i = 0; tms->tm_wday != 0; boy = sameTimeNextDay(boy))
+			tms = localtime(&boy);
+	}
+	tms = localtime(&t);
+	return (tms->tm_yday - i) / 7;
 }
 
 int 
@@ -107,6 +150,18 @@ time_t
 midnight(time_t t)
 {
 	struct tm* tms = localtime(&t);
+	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+beginOfWeek(time_t t)
+{
+	struct tm* tms;
+	for (tms = localtime(&t) ; tms->tm_wday != 0;
+		 t = sameTimeYesterday(t), tms = localtime(&t))
+		;
 	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
 	tms->tm_isdst = -1;
 	return mktime(tms);
@@ -143,6 +198,29 @@ sameTimeNextDay(time_t t)
 }
 
 time_t
+sameTimeYesterday(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mday--;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+sameTimeNextWeek(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	int weekday = tms->tm_wday;
+	do
+	{
+		t = sameTimeNextDay(t);
+		tms = localtime(&t);
+	} while (tms->tm_wday != weekday);
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
 sameTimeNextMonth(time_t t)
 {
 	struct tm* tms = localtime(&t);
@@ -160,7 +238,16 @@ sameTimeNextYear(time_t t)
 	return mktime(tms);
 }
 
-const char* time2ISO(time_t t)
+time_t
+sameTimeLastYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_year--;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+QString time2ISO(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	static char buf[128];

@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include <stdlib.h>
+
 #include <qfile.h>
 
 #include "Project.h"
@@ -22,62 +24,8 @@ HTMLTaskReport::~HTMLTaskReport()
 }
 
 bool
-HTMLTaskReport::isTaskRolledUp(Task* t)
-{
-	if (!rollUpTask)
-		return FALSE;
-
-	rollUpTask->clearSymbolTable();
-	QStringList flags = *t;
-	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
-		rollUpTask->registerSymbol(*it, 1);
-	return rollUpTask->eval() != 0;
-}
-
-bool
 HTMLTaskReport::generate()
 {
-	/* Created a new list that contains only those tasks that were not
-	 * hidden. */
-	TaskList filteredList;
-	for (Task* t = project->taskListFirst(); t != 0;
-		 t = project->taskListNext())
-	{
-		Interval iv(start, end);
-		if (!isTaskHidden(t) &&
-			iv.overlaps(Interval(t->getStart(), t->getEnd())))
-			filteredList.append(t);
-	}
-
-	/* Now we have to remove all sub tasks of task in the roll-up list
-     * from the filtered list */
-	for (Task* t = project->taskListFirst(); t != 0;
-		 t = project->taskListNext())
-	{
-		TaskList toHide;
-		if (isTaskRolledUp(t))
-			t->getSubTaskList(toHide);
-
-		for (Task* l = toHide.first(); l != 0; l = toHide.next())
-			filteredList.remove(l);
-	}
-	/* In tasktree sorting mode we need to make sure that we don't hide
-	 * parents of shown tasks. */
-	if (sortCriteria == TaskList::TaskTree)
-	{
-		filteredList.setSorting(TaskList::Pointer);
-		for (Task* t = filteredList.first(); t != 0;
-			 t = filteredList.next())
-		{
-			for (Task* p = t->getParent(); p != 0; p = p->getParent())
-				if (filteredList.contains(p) == 0)
-					filteredList.append(p);
-		}
-	}
-
-	filteredList.setSorting(sortCriteria);
-	filteredList.sort();
-
 	QFile f(fileName);
 	if (!f.open(IO_WriteOnly))
 	{
@@ -87,65 +35,14 @@ HTMLTaskReport::generate()
 	}
 	s.setDevice(&f);
 	reportHTMLHeader();
-	s << "<table border=\"0\" cellpadding=\"1\">\n" << endl
-	  << "<tr>" << endl;
-	for (QStringList::Iterator it = columns.begin(); it != columns.end();
-		 ++it )
-	{
-		if (*it == "no")
-			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
-		else if (*it == "taskId")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Task ID</td>";
-		else if (*it == "name")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Task/Milestone</td>";
-		else if (*it == "start")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Start</td>";
-		else if (*it == "end")
-			s << "<td class=\"headerbig\" rowspan=\"2\">End</td>";
-		else if (*it == "minStart")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Start</td>";
-		else if (*it == "maxStart")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Start</td>";
-		else if (*it == "resources")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Resources</td>";
-		else if (*it == "depends")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Dependencies</td>";
-		else if (*it == "follows")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Followers</td>";
-		else if (*it == "note")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Note</td>";
-		else if (*it == "costs")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Costs</td>";
-		else if (*it == "priority")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
-		else if (*it == "daily")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
-			htmlDayHeaderMonths();
-		}
-		else if (*it == "monthly")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
-			htmlMonthHeaderYears();
-		}
-		else
-		{
-			qWarning("Unknown Column '%s' for HTML Task Report\n",
-					(*it).latin1());
-			return FALSE;
-		}
-	}
-	s << "</tr>" << endl;
-	s << "<tr>" << endl;
-	for (QStringList::Iterator it = columns.begin(); it != columns.end();
-		 ++it )
-	{
-		if (*it == "daily")
-			htmlDayHeaderDays();
-		else if (*it == "monthly")
-			htmlMonthHeaderMonths();
-	}
-	s << "</tr>\n" << endl;
+	s << "<table border=\"0\" cellpadding=\"1\">\n" << endl;
+
+	if (!generateTableHeader())
+		return FALSE;
+
+	TaskList filteredList;
+	filterTaskList(filteredList);
+	sortTaskList(filteredList);
 
 	// Create a task->index no. dictionary.
 	int i = 1;
@@ -172,32 +69,7 @@ HTMLTaskReport::generate()
 				  << (showActual ? "2" : "1") << "\" nowrap>"
 				  << htmlFilter(t->getId()) << "</td>";
 			else if (*it == "name")
-			{
-				if (sortCriteria == TaskList::TaskTree)
-				{
-					int indent;
-					Task* tp = t->getParent();
-					QString spaces = "";
-					for (indent = 0; tp != 0; ++indent)
-					{
-						spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-						tp = tp->getParent();
-					}
-					s << "<td class=\"task\" rowspan=\""
-					  << (showActual ? "2" : "1") << "\" nowrap>"
-					  << spaces
-					  << "<font size=\""
-					  << (2 - indent < 0 ? '-' : '+') 
-					  << (2 - indent < 0 ? -(2 - indent) : 2 - indent) << "\">"
-					  << htmlFilter(t->getName())
-					  << "</font></td>" << endl;
-				}
-				else
-					s << "<td class=\"task\" rowspan=\""
-					  << (showActual ? "2" : "1") << "\" nowrap>"
-					  << htmlFilter(t->getName())
-					  << "</td>" << endl;
-			}
+				generateTaskName(t);
 			else if (*it == "start")
 				s << "<td class=\""
 				  << (t->isStartOk() ? "default" : "milestone")
@@ -221,64 +93,16 @@ HTMLTaskReport::generate()
 				  << time2ISO(t->getMaxStart())
 				  << "</td>" << endl;
 			else if (*it == "resources")
-			{
-				s << "<td class=\"default\" style=\"text-align:left\">"
-				  << "<font size=\"-2\">";
-				bool first = TRUE;
-				for (Resource* r = t->firstBookedResource(); r != 0;
-					 r = t->nextBookedResource())
-				{
-					if (!first)
-						s << ", ";
-					
-					s << htmlFilter(r->getName());
-					first = FALSE;
-				}
-				s << "</font></td>" << endl;
-			}
+				generateResources(t);
 			else if (*it == "depends")
-			{
-				s << "<td class=\"default\" rowspan=\""
-				  << (showActual ? "2" : "1")
-				  << "\" style=\"text-align:left\"><font size=\"-2\">";
-				bool first = TRUE;
-				for (Task* d = t->firstPrevious(); d != 0;
-					 d = t->nextPrevious())
-				{
-					if (idxDict[d->getId()])
-					{
-						if (!first)
-							s << ", ";
-						s << QString().sprintf("%d", *(idxDict[d->getId()]));
-						first = FALSE;
-					}
-				}
-				s << "</font></td>" << endl;
-			}
+				generateDepends(t, idxDict);
 			else if (*it == "follows")
+				generateFollows(t, idxDict);
+			else if (*it == "note")
 			{
 				s << "<td class=\"default\" rowspan=\""
 				  << (showActual ? "2" : "1")
 				  << "\" style=\"text-align:left\">"
-						"<font size=\"-2\">";
-				bool first = TRUE;
-				for (Task* d = t->firstFollower(); d != 0;
-					 d = t->nextFollower())
-				{
-					if (idxDict[d->getId()])
-					{
-						if (!first)
-							s << ", ";
-						s << QString().sprintf("%d", *(idxDict[d->getId()]));
-						first = FALSE;
-					}
-				}
-				s << "</font></td>" << endl;
-			}
-			else if (*it == "note")
-			{
-				s << "<td class=\"default\" rowspan=\""
-				  << (showActual ? "2" : "1") << "\">"
 				  << "<font size=\"-2\">";
 				s << htmlFilter(t->getNote());
 				s << "</font></td>" << endl;
@@ -299,54 +123,11 @@ HTMLTaskReport::generate()
 				  << "</td>" << endl;
 			}
 			else if (*it == "daily")
-			{
-				s << "<td class=\"headersmall\">Plan</td>" << endl;
-				for (time_t day = midnight(start); day < end;
-					 day = sameTimeNextDay(day))
-				{
-					double load = t->getLoadOnDay(day);
-					QString bgCol = 
-						(t->isMilestone() && t->isActiveToday(day) ?
-						 "milestone" :
-						 (t->isActiveToday(day) &&
-						  !(isWeekend(day) && load == 0.0)) ? "booked" :
-						 isSameDay(project->getNow(), day) ? "today" :
-						 isWeekend(day) ? "weekend" :
-						 project->isVacation(day) ? "vacation" :
-						 "default");
-					if (load > 0.0)
-						s << "<td class=\""
-						  << bgCol << "\">"
-						  << QString().sprintf("%3.1f", load)
-						  << "</td>" << endl;
-					else
-						s << "<td class=\""
-						  << bgCol << "\">&nbsp;</td>" << endl;
-				}
-			}
+				generateDailyPlan(t);
+			else if (*it == "weekly")
+				generateWeeklyPlan(t);
 			else if (*it == "monthly")
-			{
-				s << "<td class=\"headersmall\">Plan</td>" << endl;
-				for (time_t day = beginOfMonth(start); day < end;
-					 day = sameTimeNextMonth(day))
-				{
-					double load = t->getLoadOnMonth(day);
-					QString bgCol = 
-						(t->isMilestone() && t->isActiveThisMonth(day) ?
-						 "milestone" :
-						 (t->isActiveThisMonth(day)) ? "booked" :
-						 isSameMonth(project->getNow(), day) ? "today" :
-						 "default");
-					if (load > 0.0)
-						s << "<td class=\""
-						  << bgCol << "\">"
-						  << QString().sprintf("%4.1f", load)
-						  << "</td>" << endl;
-					else
-						s << "<td class=\""
-						  << bgCol << "\">&nbsp;</td>" << endl;
-				}
-			}
+				generateMonthlyPlan(t);
 		}
 		s << "</tr>" << endl;
 
@@ -382,23 +163,11 @@ HTMLTaskReport::generate()
 					s << "<td>&nbsp;</td>" << endl;
 				}
 				if (*it == "daily")
-				{
-					s << "<td class=\"headersmall\">Actual</td>" << endl;
-					for (time_t day = midnight(start); day < end;
-						 day = sameTimeNextDay(day))
-					{
-						double load = t->getLoadOnDay(day);
-						QString bgCol = 
-							(isSameDay(project->getNow(), day) ? "today" :
-							 (t->isDayCompleted(day) &&
-							  (load > 0.0 || t->isMilestone())) ? "completed" :
-							 isWeekend(day) ? "weekend" :
-							 project->isVacation(day) ? "vacation" :
-							 "default");
-						s << "<td class=\""
-						  << bgCol << "\">&nbsp;</td>";
-					}
-				}
+					generateDailyActual(t);
+				else if (*it == "weekly")
+					generateWeeklyActual(t);
+				else if (*it == "monthly")
+					generateMonthlyActual(t);
 			}
 			s << "</tr>" << endl;
 		}
@@ -408,4 +177,306 @@ HTMLTaskReport::generate()
 
 	f.close();
 	return TRUE;
+}
+
+bool
+HTMLTaskReport::generateTableHeader()
+{
+	// Header line 1
+	s << "<tr>" << endl;
+	for (QStringList::Iterator it = columns.begin(); it != columns.end();
+		 ++it )
+	{
+		if (*it == "no")
+			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
+		else if (*it == "taskId")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Task ID</td>";
+		else if (*it == "name")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Task/Milestone</td>";
+		else if (*it == "start")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Start</td>";
+		else if (*it == "end")
+			s << "<td class=\"headerbig\" rowspan=\"2\">End</td>";
+		else if (*it == "minStart")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Start</td>";
+		else if (*it == "maxStart")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Start</td>";
+		else if (*it == "resources")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Resources</td>";
+		else if (*it == "depends")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Dependencies</td>";
+		else if (*it == "follows")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Followers</td>";
+		else if (*it == "note")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Note</td>";
+		else if (*it == "costs")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Costs</td>";
+		else if (*it == "priority")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
+		else if (*it == "daily")
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+			htmlDayHeaderMonths();
+		}
+		else if (*it == "weekly")
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+			htmlWeekHeaderMonths();
+		}
+		else if (*it == "monthly")
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+			htmlMonthHeaderYears();
+		}
+		else
+		{
+			qWarning("Unknown Column '%s' for HTML Task Report\n",
+					(*it).latin1());
+			return FALSE;
+		}
+	}
+	s << "</tr>" << endl;
+
+	// Header line 2
+	s << "<tr>" << endl;
+	for (QStringList::Iterator it = columns.begin(); it != columns.end();
+		 ++it )
+	{
+		if (*it == "daily")
+			htmlDayHeaderDays();
+		else if (*it == "weekly")
+			htmlWeekHeaderWeeks();
+		else if (*it == "monthly")
+			htmlMonthHeaderMonths();
+	}
+	s << "</tr>\n" << endl;
+
+	return TRUE;
+}
+
+void
+HTMLTaskReport::generateTaskName(Task* t)
+{
+	if (taskSortCriteria == TaskList::TaskTree)
+	{
+		int indent;
+		Task* tp = t->getParent();
+		QString spaces = "";
+		for (indent = 0; tp != 0; ++indent)
+		{
+			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+			tp = tp->getParent();
+		}
+		s << "<td class=\"task\" rowspan=\""
+		  << (showActual ? "2" : "1") << "\" nowrap>"
+		  << spaces
+		  << "<font size=\""
+		  << (2 - indent < 0 ? '-' : '+') 
+		  << (2 - indent < 0 ? -(2 - indent) : 2 - indent) << "\">"
+		  << htmlFilter(t->getName())
+		  << "</font></td>" << endl;
+	}
+	else
+		s << "<td class=\"task\" rowspan=\""
+		  << (showActual ? "2" : "1") << "\" nowrap>"
+		  << htmlFilter(t->getName())
+		  << "</td>" << endl;
+}
+
+void
+HTMLTaskReport::generateResources(Task* t)
+{
+	s << "<td class=\"default\" style=\"text-align:left\">"
+	  << "<font size=\"-2\">";
+	bool first = TRUE;
+	for (Resource* r = t->firstBookedResource(); r != 0;
+		 r = t->nextBookedResource())
+	{
+		if (!first)
+			s << ", ";
+					
+		s << htmlFilter(r->getName());
+		first = FALSE;
+	}
+	s << "</font></td>" << endl;
+}
+
+void
+HTMLTaskReport::generateDepends(Task* t, const QDict<int>& idxDict)
+{
+	s << "<td class=\"default\" rowspan=\""
+	  << (showActual ? "2" : "1")
+	  << "\" style=\"text-align:left\"><font size=\"-2\">";
+	bool first = TRUE;
+	for (Task* d = t->firstPrevious(); d != 0;
+		 d = t->nextPrevious())
+	{
+		if (idxDict[d->getId()])
+		{
+			if (!first)
+				s << ", ";
+			s << QString().sprintf("%d", *(idxDict[d->getId()]));
+			first = FALSE;
+		}
+	}
+	s << "</font></td>" << endl;
+}
+
+void
+HTMLTaskReport::generateFollows(Task* t, const QDict<int>& idxDict)
+{
+	s << "<td class=\"default\" rowspan=\""
+	  << (showActual ? "2" : "1")
+	  << "\" style=\"text-align:left\">"
+		"<font size=\"-2\">";
+	bool first = TRUE;
+	for (Task* d = t->firstFollower(); d != 0;
+		 d = t->nextFollower())
+	{
+		if (idxDict[d->getId()])
+		{
+			if (!first)
+				s << ", ";
+			s << QString().sprintf("%d", *(idxDict[d->getId()]));
+			first = FALSE;
+		}
+	}
+	s << "</font></td>" << endl;
+}
+
+void
+HTMLTaskReport::generateDailyPlan(Task* t)
+{
+	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	for (time_t day = midnight(start); day < end;
+		 day = sameTimeNextDay(day))
+	{
+		double load = t->getLoadOnDay(day);
+		QString bgCol = 
+			(t->isMilestone() && t->isActiveToday(day) ?
+			 "milestone" :
+			 (t->isActiveToday(day) &&
+			  !(isWeekend(day) && load == 0.0)) ? "booked" :
+			 isSameDay(project->getNow(), day) ? "today" :
+			 isWeekend(day) ? "weekend" :
+			 project->isVacation(day) ? "vacation" :
+			 "default");
+		if (load > 0.0)
+			s << "<td class=\""
+			  << bgCol << "\">"
+			  << QString().sprintf("%3.1f", load)
+			  << "</td>" << endl;
+		else
+			s << "<td class=\""
+			  << bgCol << "\">&nbsp;</td>" << endl;
+	}
+}
+
+void
+HTMLTaskReport::generateDailyActual(Task* t)
+{
+	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	for (time_t day = midnight(start); day < end;
+		 day = sameTimeNextDay(day))
+	{
+		double load = t->getLoadOnDay(day);
+		QString bgCol = 
+			(isSameDay(project->getNow(), day) ? "today" :
+			 (t->isDayCompleted(day) &&
+			  (load > 0.0 || t->isMilestone())) ? "completed" :
+			 isWeekend(day) ? "weekend" :
+			 project->isVacation(day) ? "vacation" :
+			 "default");
+		s << "<td class=\""
+		  << bgCol << "\">&nbsp;</td>";
+	}
+}
+
+void
+HTMLTaskReport::generateWeeklyPlan(Task* t)
+{
+	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	for (time_t week = beginOfWeek(start); week < end;
+		 week = sameTimeNextWeek(week))
+	{
+		double load = t->getLoad(Interval(week,
+										  sameTimeNextWeek(week)));
+		QString bgCol = 
+			(t->isMilestone() && t->isActiveThisWeek(week) ?
+			 "milestone" :
+			 t->isActiveThisWeek(week) ? "booked" :
+			 isSameWeek(project->getNow(), week) ? "today" :
+			 "default");
+		if (load > 0.0)
+			s << "<td class=\""
+			  << bgCol << "\">"
+			  << QString().sprintf("%3.1f", load)
+			  << "</td>" << endl;
+		else
+			s << "<td class=\""
+			  << bgCol << "\">&nbsp;</td>" << endl;
+	}
+}
+
+void
+HTMLTaskReport::generateWeeklyActual(Task* t)
+{
+	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	for (time_t week = beginOfWeek(start); week < end;
+		 week = sameTimeNextWeek(week))
+	{
+		double load = t->getLoad(
+			Interval(week, sameTimeNextWeek(week) - 1));
+		QString bgCol = 
+			(isSameWeek(project->getNow(), week) ? "today" :
+			 (t->isDayCompleted(week) &&
+			  (load > 0.0 || t->isMilestone())) ? "completed" :
+			 "default");
+		s << "<td class=\""
+		  << bgCol << "\">&nbsp;</td>";
+	}
+}
+
+void
+HTMLTaskReport::generateMonthlyPlan(Task* t)
+{
+	s << "<td class=\"headersmall\">Plan</td>" << endl;
+	for (time_t day = beginOfMonth(start); day < end;
+		 day = sameTimeNextMonth(day))
+	{
+		double load = t->getLoadOnMonth(day);
+		QString bgCol = 
+			(t->isMilestone() && t->isActiveThisMonth(day) ?
+			 "milestone" :
+			 (t->isActiveThisMonth(day)) ? "booked" :
+			 isSameMonth(project->getNow(), day) ? "today" :
+			 "default");
+		if (load > 0.0)
+			s << "<td class=\""
+			  << bgCol << "\">"
+			  << QString().sprintf("%4.1f", load)
+			  << "</td>" << endl;
+		else
+			s << "<td class=\""
+			  << bgCol << "\">&nbsp;</td>" << endl;
+	}
+}
+
+void
+HTMLTaskReport::generateMonthlyActual(Task* t)
+{
+	s << "<td class=\"headersmall\">Actual</td>" << endl;
+	for (time_t month = beginOfMonth(start); month < end;
+		 month = sameTimeNextMonth(month))
+	{
+		double load = t->getLoad(
+			Interval(month, sameTimeNextMonth(month) - 1));
+		QString bgCol = 
+			(isSameMonth(project->getNow(), month) ? "today" :
+			 (t->isDayCompleted(month) &&
+			  (load > 0.0 || t->isMilestone())) ? "completed" :
+			 "default");
+		s << "<td class=\""
+		  << bgCol << "\">&nbsp;</td>";
+	}
 }

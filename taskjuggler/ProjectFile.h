@@ -101,8 +101,9 @@ private:
 	bool readPriority(int& priority);
 	bool readHTMLTaskReport();
 	bool readHTMLResourceReport();
-   bool readXMLTaskReport();
+	bool readXMLTaskReport();
 	Operation* readLogicalExpression();
+	bool readTaskSorting(Report* report);
 	time_t date2time(const QString& date);
 	time_t hhmm2time(const QString& hhmm);
 

@@ -32,8 +32,14 @@ public:
 private:
 	HTMLResourceReport() { }
 
+	bool generateTableHeader();
+
 	void dailyResourcePlan(Resource* r);
 	void dailyTaskPlan(Resource* r, Task* t);
+	void weeklyResourcePlan(Resource* r);
+	void weeklyTaskPlan(Resource* r, Task* t);
+	void monthlyResourcePlan(Resource* r);
+	void monthlyTaskPlan(Resource* r, Task* t);
 } ;
 
 #endif

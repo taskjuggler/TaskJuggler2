@@ -87,7 +87,7 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 		/* If there is an overlap between working time and the requested
 		 * interval we exclude the time starting with the first busy
 		 * interval in that working time. */
-		if (interval.overlap(Interval(date, date + duration - 1)))
+		if (interval.overlap(Interval(date, date + duration)))
 		{
 			time_t bookedTime = duration;
 			Interval day = Interval(midnight(date),
@@ -131,37 +131,26 @@ Resource::book(Booking* nb)
 double
 Resource::getLoadOnDay(time_t date, Task* task)
 {
-	time_t bookedTime = 0;
-
-	const Interval day(midnight(date),
-					   sameTimeNextDay(midnight(date)) - 1);
-	for (Booking* b = jobs.first();
-		 b != 0 && b->getEnd() <= day.getEnd();
-		 b = jobs.next())
-	{
-		if (day.contains(b->getInterval()) &&
-			(task == 0 || task == b->getTask()))
-			bookedTime += b->getDuration();
-	}
-	return project->convertToDailyLoad(bookedTime) * efficiency;
+	return getLoad(Interval(midnight(date), sameTimeNextDay(midnight(date))),
+				   task);
 }
 
 double
-Resource::getLoad(const Interval& i, Task* task)
+Resource::getLoad(const Interval& period, Task* task)
 {
-	ulong workingDays = 0;
-	double load = 0.0;
-	for (time_t day = midnight(i.getStart());
-		 day < sameTimeNextDay(midnight(i.getEnd()));
-		 day = sameTimeNextDay(day))
+	time_t bookedTime = 0;
+
+	for (Booking* b = jobs.first();
+		 b != 0 && b->getEnd() <= period.getEnd();
+		 b = jobs.next())
 	{
-		if (!(project->isVacation(day) || hasVacationDay(day)))
-		{
-			workingDays++;
-			load += getLoadOnDay(day, task);
-		}
+		Interval i = period;
+		if (i.overlap(b->getInterval()) &&
+			(task == 0 || task == b->getTask()))
+			bookedTime += i.getDuration();
 	}
-	return load;
+
+	return project->convertToDailyLoad(bookedTime) * efficiency;
 }
 
 bool

@@ -498,6 +498,18 @@ Task::isActiveToday(time_t date) const
 }
 
 bool
+Task::isActiveThisWeek(time_t date) const
+{
+	Interval week(beginOfWeek(date), sameTimeNextWeek(midnight(date)) - 1);
+	Interval work;
+	if (isMilestone())
+		work = Interval(start, start + 1);
+	else
+		work = Interval(start, end);
+	return week.overlap(work);
+}
+
+bool
 Task::isActiveThisMonth(time_t date) const
 {
 	Interval month(beginOfMonth(date),

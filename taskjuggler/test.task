@@ -13,10 +13,10 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmlTaskReport "test1.html" {
-  columns  no, name, start, end, priority, monthly
+  columns  no, name, start, end, weekly
   start 2001-09-20
-  end 2003-02-01
-  hidetask media | deadline | type1
+  end 2002-04-01
+#  hidetask media | deadline | type1
 #  rolluptask beta | preview
 }
 
@@ -27,9 +27,10 @@ htmlTaskReport "test1.html" {
 #}
 
 htmlResourceReport "test-res.html" {
-  columns resource, daily
-  start 2002-01-01
-  end 2002-02-02
+  columns resource, start, end, workdays
+  sorttasks startdown
+  start 2002-01-1
+  end 2002-03-01
 }
 
 macro version [SL 8.0]

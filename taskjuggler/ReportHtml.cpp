@@ -84,8 +84,6 @@ ReportHtml::htmlDayHeaderDays()
 	for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
 	{
 		int dom = dayOfMonth(day);
-		s.reset();
-		s.setf(QTextStream::hex);
 		s << "<td class=\"" <<
 			(isSameDay(project->getNow(), day) ? "today" :
 			 isWeekend(day) ? "weekend" :
@@ -93,8 +91,7 @@ ReportHtml::htmlDayHeaderDays()
 		  << "\"><font size=\"-2\">&nbsp;";
 		if (dom < 10)
 			s << "&nbsp;";
-		s.setf(QTextStream::dec);
-		s << dom << "</font></td>";
+		s << QString().sprintf("%d", dom) << "</font></td>";
 	}
 }
 
@@ -105,13 +102,50 @@ ReportHtml::htmlDayHeaderMonths()
 		 day = beginOfMonth(sameTimeNextMonth(day)))
 	{
 		int left = daysLeftInMonth(day);
-		if (left > daysBetween(day, end) + 1)
-			left = daysBetween(day, end) + 1;
-		s << "<td class=\"headerbig\" colspan=\"";
-		s.setf(QTextStream::dec);
-		s << left
-		  << "\">";
-		s << monthAndYear(day) << "</td>" << endl;
+		if (left > daysBetween(day, end))
+			left = daysBetween(day, end);
+		s << "<td class=\"headerbig\" colspan=\""
+		  << QString().sprintf("%d", left)
+		  << "\">"
+		  << monthAndYear(day) << "</td>" << endl;
+	}
+}
+
+void
+ReportHtml::htmlWeekHeaderWeeks()
+{
+	for (time_t day = beginOfWeek(start); day < end;
+		 day = sameTimeNextWeek(day))
+	{
+		int woy = weekOfYear(day);
+		s << "<td class=\"" <<
+			(isSameDay(project->getNow(), day) ? "today" :
+			 "headersmall")
+		  << "\"><font size=\"-2\">&nbsp;";
+		if (woy < 10)
+			s << "&nbsp;";
+		s << QString().sprintf("%d", woy) << "</font></td>";
+	}
+}
+
+void
+ReportHtml::htmlWeekHeaderMonths()
+{
+	for (time_t week = beginOfWeek(start); week < end; )
+	{
+		int left = weeksLeftInMonth(week);
+		if (left > weeksBetween(week, end))
+			left = weeksBetween(week, end);
+		s << "<td class=\"headerbig\" colspan=\""
+		  << QString().sprintf("%d", left)
+		  << "\">"
+		  << monthAndYear(week) << "</td>" << endl;
+
+		time_t newWeek = beginOfWeek(beginOfMonth(sameTimeNextMonth(week)));
+		if (isSameMonth(newWeek, week))
+			week = sameTimeNextWeek(newWeek);
+		else
+			week = newWeek;
 	}
 }
 
@@ -139,8 +173,8 @@ ReportHtml::htmlMonthHeaderYears()
 		 day = beginOfYear(sameTimeNextYear(day)))
 	{
 		int left = monthLeftInYear(day);
-		if (left > monthsBetween(day, end) + 1)
-			left = monthsBetween(day, end) + 1;
+		if (left > monthsBetween(day, end))
+			left = monthsBetween(day, end);
 		s << "<td class=\"headerbig\" colspan=\""
 		  << QString().sprintf("%d", left) << "\">"
 		  << QString().sprintf("%d", year(day)) << "</td>" << endl;
@@ -150,7 +184,29 @@ ReportHtml::htmlMonthHeaderYears()
 QString
 ReportHtml::htmlFilter(const QString& s)
 {
-	// TODO: All special characters must be html-ized.
-	return s;
-}
+	QString out;
+	bool parTags = FALSE;
+	for (uint i = 0; i < s.length(); i++)
+	{
+		QString repl;
+		if (s[i] == '&')
+			repl = "&amp;";
+		else if (s[i] == '<')
+			repl = "&lt;";
+		else if (s[i] == '>')
+			repl = "&gt;";
+		else if (s.mid(i, 2) == "\n\n")
+		{
+			repl = "</p><p>";
+			parTags = TRUE;
+			i++;
+		}
 
+		if (repl.isEmpty())
+			out += s[i];
+		else
+			out += repl;
+	}
+
+	return parTags ? QString("<p>") + out + "</p>" : out;
+}

@@ -1448,28 +1448,10 @@ ProjectFile::readHTMLTaskReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpTask(et);
 		}
-		else if (token == "sort")
+		else if (token == "sorttasks")
 		{
-			nextToken(token);
-			if (token == "tasktree")
-				report->setSorting(TaskList::TaskTree);
-			else if (token == "startup")
-				report->setSorting(TaskList::StartUp);
-			else if (token == "startdown")
-				report->setSorting(TaskList::StartDown);
-			else if (token == "endup")
-				report->setSorting(TaskList::EndUp);
-			else if (token == "enddown")
-				report->setSorting(TaskList::EndDown);
-			else if (token == "priorityup")
-				report->setSorting(TaskList::PrioUp);
-			else if (token == "prioritydown")
-				report->setSorting(TaskList::PrioDown);
-			else
-			{
-				fatalError("Sorting criteria expected");
+			if (!readTaskSorting(report))
 				return FALSE;
-			}
 		}
 		else
 		{
@@ -1556,6 +1538,11 @@ ProjectFile::readHTMLResourceReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setHideTask(et);
 		}
+		else if (token == "sorttasks")
+		{
+			if (!readTaskSorting(report))
+				return FALSE;
+		}
 		else
 		{
 			fatalError("Illegal attribute");
@@ -1628,6 +1615,35 @@ ProjectFile::readLogicalExpression()
 	return op;
 }
 
+bool
+ProjectFile::readTaskSorting(Report* report)
+{
+	QString token;
+
+	nextToken(token);
+	if (token == "tasktree")
+		report->setTaskSorting(TaskList::TaskTree);
+	else if (token == "startup")
+		report->setTaskSorting(TaskList::StartUp);
+	else if (token == "startdown")
+		report->setTaskSorting(TaskList::StartDown);
+	else if (token == "endup")
+		report->setTaskSorting(TaskList::EndUp);
+	else if (token == "enddown")
+		report->setTaskSorting(TaskList::EndDown);
+	else if (token == "priorityup")
+		report->setTaskSorting(TaskList::PrioUp);
+	else if (token == "prioritydown")
+		report->setTaskSorting(TaskList::PrioDown);
+	else
+	{
+		fatalError("Sorting criteria expected");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 time_t
 ProjectFile::date2time(const QString& date)
 {
@@ -1658,14 +1674,8 @@ ProjectFile::date2time(const QString& date)
 
 	struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	time_t localTime = mktime(&t);
-#ifndef UTCTIME
+
 	return localTime;
-#else
-	// The code is needed after we switch internal time handling to UTC.
-	struct tm* tms = localtime(&localTime);
-	time_t gmTime = localTime + timezone + (tms->tm_isdst == 1 ? -3600 : 0);
-	return gmTime;
-#endif
 }
 
 time_t

@@ -36,6 +36,8 @@ public:
 	void reportHTMLFooter();
 	void htmlDayHeaderDays();
 	void htmlDayHeaderMonths();
+	void htmlWeekHeaderWeeks();
+	void htmlWeekHeaderMonths();
 	void htmlMonthHeaderMonths();
 	void htmlMonthHeaderYears();
 

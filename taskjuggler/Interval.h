@@ -100,7 +100,7 @@ public:
 	}
 	time_t getStart() const { return start; }
 	time_t getEnd() const { return end; }
-	time_t getDuration() const { return end >= start ? end - start + 1 : 0; }
+	time_t getDuration() const { return end >= start ? end - start : 0; }
 
 private:
 	time_t start;

@@ -25,26 +25,34 @@ public:
 		ReportHtml(p, f, s, e)
 	{
 		showActual = FALSE;
-		rollUpTask = 0;
-		sortCriteria = TaskList::TaskTree;
 	}
 	~HTMLTaskReport();
 
 	bool generate();
 
-	void setSorting(TaskList::SortCriteria sc) { sortCriteria = sc; }
-
 	void setShowActual(bool s) { showActual = s; }
 
-	void setRollUpTask(ExpressionTree* et) { rollUpTask = et; }
-	bool isTaskRolledUp(Task* t);
-
 private:
-	bool showActual;
-	TaskList::SortCriteria sortCriteria;
-
 	HTMLTaskReport() { }
-	ExpressionTree* rollUpTask;
+
+	bool generateTableHeader();
+
+	void generateTaskName(Task* t);
+
+	void generateResources(Task* t);
+	void generateDepends(Task* t, const QDict<int>& idxDict);
+	void generateFollows(Task* t, const QDict<int>& idxDict);
+
+	void generateDailyPlan(Task* t);
+	void generateDailyActual(Task* t);
+
+	void generateWeeklyPlan(Task* t);
+	void generateWeeklyActual(Task* t);
+
+	void generateMonthlyPlan(Task* t);
+	void generateMonthlyActual(Task* t);
+
+	bool showActual;
 } ;
 
 #endif
