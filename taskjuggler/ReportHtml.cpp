@@ -359,6 +359,11 @@ ReportHtml::reportHTMLHeader()
 	  << "--></style>" << endl
 	  << "</head>" << endl
 	  << "<body>" << endl;
+
+	if (!headline.isEmpty())
+		s << "<h1>" << htmlFilter(headline) << "</h1>" << endl;
+	if (!caption.isEmpty())
+		s << "<p>" << htmlFilter(caption) << "<p>" << endl;
 }
 
 void

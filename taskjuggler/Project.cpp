@@ -171,7 +171,7 @@ Project::schedule()
 		} while (!done);
 
 		/* If we have at least one ALAP task that has an end date but no
-		 * start date then we move backwards in time. Otherwise we more
+		 * start date then we move backwards in time. Otherwise we move
 		 * forward in time. */
 		timeDelta = scheduleGranularity;
 		for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())

@@ -54,6 +54,9 @@ public:
 	void setEnd(time_t e) { end = e; }
 	time_t getEnd() const { return end; }
 
+	void setHeadline(const QString& hl) { headline = hl; }
+	void setCaption(const QString& c) { caption = c; }
+
 	bool isHidden(CoreAttributes* c, ExpressionTree* et);
 	bool isRolledUp(CoreAttributes* c, ExpressionTree* et);
 
@@ -103,6 +106,9 @@ protected:
 	QStringList columns;
 	time_t start;
 	time_t end;
+
+	QString headline;
+	QString caption;
 
 	CoreAttributesList::SortCriteria taskSortCriteria;
 	CoreAttributesList::SortCriteria resourceSortCriteria;

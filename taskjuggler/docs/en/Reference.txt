@@ -620,6 +620,18 @@ day: DATE
 The end date for the calender view.
 
 -------------------------------------------------------------------------------
+headline <text>
+text: STRING
+
+Defines the headline used for the report.
+
+-------------------------------------------------------------------------------
+caption <text>
+text: STRING
+
+Defines the caption used for the report.
+
+-------------------------------------------------------------------------------
 sorttasks <criteria>
 criteria: SORTINGCRITERIA
 

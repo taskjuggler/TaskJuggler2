@@ -1684,10 +1684,13 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		report = new HTMLResourceReport(proj, token, proj->getStart(),
 										proj->getEnd());
 	else
+	{
 		qFatal("readHTMLReport: bad report type");
+		return FALSE;	// Just to please the compiler.
+	}
 		
 	TokenType tt;
-	if (nextToken(token) != LCBRACE)
+	if ((tt = nextToken(token)) != LCBRACE)
 	{
 		openFiles.last()->returnToken(tt, token);
 		return TRUE;
@@ -1738,6 +1741,24 @@ ProjectFile::readHTMLReport(const QString& reportType)
 				return FALSE;
 			}
 			report->setEnd(date2time(token));
+		}
+		else if (token == "headline")
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String exptected");
+				return FALSE;
+			}
+			report->setHeadline(token);
+		}
+		else if (token == "caption")
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String exptected");
+				return FALSE;
+			}
+			report->setCaption(token);
 		}
 		else if (token == "showactual")
 		{
@@ -1819,7 +1840,7 @@ ProjectFile::readHTMLAccountReport()
 								   proj->getEnd());
 		
 	TokenType tt;
-	if (nextToken(token) != LCBRACE)
+	if ((tt = nextToken(token)) != LCBRACE)
 	{
 		openFiles.last()->returnToken(tt, token);
 		return TRUE;

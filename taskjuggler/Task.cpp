@@ -129,6 +129,7 @@ Task::schedule(time_t date, time_t slotDuration)
 			 * time if the tasks has no previous tasks) or the start
 			 * time is determined by the end date of the last previous
 			 * task. */
+			time_t es;
 			if (depends.count() == 0)
 			{
 				if (parent == 0)
@@ -138,8 +139,8 @@ Task::schedule(time_t date, time_t slotDuration)
 				else
 					return TRUE;
 			}
-			else if (earliestStart() > 0)
-				start = earliestStart();
+			else if ((es = earliestStart()) > 0)
+				start = es;
 			else
 				return TRUE;	// Task cannot be scheduled yet.
 
@@ -172,6 +173,7 @@ Task::schedule(time_t date, time_t slotDuration)
 			 * tasks has no previous tasks) or the end time is
 			 * determined by the start date of the earliest following
 			 * task. */
+			time_t le;
 			if (preceeds.count() == 0)
 			{
 				if (parent == 0)
@@ -181,8 +183,8 @@ Task::schedule(time_t date, time_t slotDuration)
 				else
 					return TRUE;
 			}
-			else if (latestEnd() > 0)
-				end = latestEnd();
+			else if ((le = latestEnd()) > 0)
+				end = le;
 			else
 				return TRUE;	// Task cannot be scheduled yet.
 
