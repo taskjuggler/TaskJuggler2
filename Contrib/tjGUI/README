@@ -1,0 +1,39 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!  This Software is __APLHA__  !!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+tjGUI.pl - display the taskjuggler xml-export file,
+           include an gantt chart view
+
+
+required
+
+    Perl > 5.6.x
+    XML::Parser
+            http://www.cpan.org/modules/by-module/XML/XML-Parser-2.31.tar.gz
+
+    Date::Calc
+            http://www.cpan.org/modules/by-module/Date/Date-Calc-5.0.tar.gz
+
+    Class::MethodMaker
+            http://www.cpan.org/modules/by-module/Class/Class-MethodMaker-1.06.tar.gz
+
+    Tk
+            http://www.cpan.org/modules/by-module/Tk/Tk-800.024.tar.gz
+
+
+usage
+
+    tjGUI.pl export_from_taskjuggler.xml
+
+
+
+--
+Copyright (c) 2001, 2002 by Remo Behn <ray@suse.de>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of version 2 of the GNU General Public License as
+published by the Free Software Foundation.
+
+$Id$
+
