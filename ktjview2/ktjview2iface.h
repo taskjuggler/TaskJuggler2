@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Luká¹ Tinkl                                     *
- *   lukas@kde.org                                                         *
+ *   Copyright (C) 2004 by Lukas Tinkl                                     *
+ *   lukas.tinkl@suse.cz                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
