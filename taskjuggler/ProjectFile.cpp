@@ -1329,7 +1329,7 @@ ProjectFile::readAccount(Account* parent)
 	if (proj->getAccount(id))
 	{
 		fatalError(QString().sprintf(
-			"Account %s has already been defined", id));
+			"Account %s has already been defined", id.latin1()));
 		return FALSE;
 	}
 
