@@ -111,6 +111,7 @@ Project::Project()
     workingHours[6]->setAutoDelete(TRUE);
 
     allocationErrors = FALSE;
+    maxErrors = 0;
 }
 
 Project::~Project()
@@ -626,7 +627,7 @@ Project::checkSchedule(int sc) const
          * tasks. */
         if ((*tli)->getParent() == 0)
             (*tli)->scheduleOk(sc, errors);
-        if (errors >= 10)
+        if (maxErrors > 0 && errors >= maxErrors)
         {
             TJMH.errorMessage
                 (i18n("Too many errors in %1 scenario. Giving up.")

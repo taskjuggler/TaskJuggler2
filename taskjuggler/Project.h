@@ -718,6 +718,8 @@ public:
     void setAllocationErrors(bool e) { allocationErrors = e; }
     bool getAllocationErrors() const { return allocationErrors; }
 
+    void setMaxErrors(int me) { maxErrors = me; }
+
     /**
      * Generate cross references between all data structures and run a
      * consistency check. This function must be called after the project data
@@ -831,6 +833,8 @@ private:
     QString currentId;
 
     bool allocationErrors;
+
+    int maxErrors;
 
     VacationList vacationList;
 

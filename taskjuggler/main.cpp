@@ -65,6 +65,8 @@ usage(QApplication& a)
         "                          make utilities\n"
         "   --makefile <file>    - generate include dependencies for make\n"
         "                          utilities into the specified file\n" 
+        "   --maxerrors N        - stop after N errors. If N is 0 show all\n"
+        "                          errors\n"
         "   --nodepcheck         - don't search for dependency loops\n"
         "   --debug N            - print debug output, N must be between\n"
         "                          0 and 40, the higher N the more output\n"
@@ -85,6 +87,7 @@ int main(int argc, char *argv[])
 
     int debugLevel = 0;
     int debugMode = -1;
+    int maxErrors = 10;
     bool updateKotrusDB = FALSE;
     bool checkOnlySyntax = FALSE;
     bool generateMakeDepList = FALSE;
@@ -125,6 +128,16 @@ int main(int argc, char *argv[])
             }
             makeDepFile = a.argv()[++i];
             generateMakeDepList = TRUE;
+        }
+        else if (strcmp(a.argv()[i], "--maxerrors") == 0)
+        {
+            bool ok;
+            if (i + 1 >= a.argc() ||
+                (maxErrors = QString(a.argv()[++i]).toInt(&ok), !ok))
+            {
+                qWarning(i18n("--maxerrors needs a numerical argument"));
+                showCopyright = showHelp = terminateProgram = TRUE;
+            }
         }
         else if (strcmp(a.argv()[i], "--version") == 0 ||
                  strcmp(a.argv()[i], "-v") == 0)
@@ -169,6 +182,7 @@ int main(int argc, char *argv[])
     if (getcwd(cwd, 1023) == 0)
         qFatal("main(): getcwd() failed");
     Project p;
+    p.setMaxErrors(maxErrors);
     bool first = TRUE;
     for ( ; i < argc; i++)
     {
