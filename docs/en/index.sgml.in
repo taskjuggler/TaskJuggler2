@@ -148,6 +148,11 @@ id="export_taskattributes">.
 some values were added and corrected. 
 
 <item>Added a first simple TaskJuggler XML-output viewer for KDE. 
+See ktjview/README for installation. Configure with KDE support enabled.
+
+<item>Disabled ical support by introducing the HAVE_ICAL switch in the code.
+The switch is not yet configure supported, but building with --with-kde-support
+should work now without failing on missing libical.
 
 <item>Support for URLs in HTML reports added.
 
