@@ -2241,7 +2241,7 @@ Task::computePathCriticalness(int sc)
         scenarios[sc].pathCriticalness = computeBackwardCriticalness(sc) -
             scenarios[sc].criticalness + computeForwardCriticalness(sc);
     else
-        scenarios[sc].criticalness = 0.0;
+        scenarios[sc].pathCriticalness = 0.0;
 }
 
 double
