@@ -21,7 +21,7 @@ ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp ResourceI
 	ktjview2iface.skel timedialog.cpp settings.kcfgc gantt.ui \
 	filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp \
 	resUsageView.cpp resUsageCfg.ui ruFindDialog.cpp editorView.cpp ktjUtils.cpp \
-	ktjReportView.cpp ktjTaskReport.cpp ktjReport.cpp
+	ktjReportView.cpp ktjTaskReport.cpp ktjReport.cpp reportSelectionWidget.ui ktjReportDialog.cpp
 
 kde_kcfg_DATA = ktjview2.kcfg
 

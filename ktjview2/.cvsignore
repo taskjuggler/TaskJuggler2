@@ -17,3 +17,5 @@ filterWidget.h
 ktjview2iface_skel.cpp
 resUsageCfg.cpp
 resUsageCfg.h
+reportSelectionWidget.cpp
+reportSelectionWidget.h

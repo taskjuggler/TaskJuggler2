@@ -71,6 +71,7 @@
 #include "ktjUtils.h"
 #include "ktjReportView.h"
 #include "ktjTaskReport.h"
+#include "ktjReportDialog.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -1279,10 +1280,19 @@ void ktjview2View::slotTaskCoverage()
         return;
     }
 
-    KtjTaskReport * report = new KtjTaskReport( m_project, m_reportView );
-    report->generate();
-    delete report;
-    emit setQuickSearchView( m_reportView );
+    KtjReportDialog dlg( KtjUtils::time_t2Q( m_project->getStart() ),
+                         KtjUtils::time_t2Q( m_project->getEnd() ),
+                         this, "report_dialog" );
+    if ( dlg.exec() == KDialogBase::Accepted )
+    {
+        KtjTaskReport * report = new KtjTaskReport( m_project, m_reportView );
+        report->setStartDate( dlg.startDate() );
+        report->setEndDate( dlg.endDate() );
+        report->setScale( dlg.scale() );
+        report->generate();
+        delete report;
+        emit setQuickSearchView( m_reportView );
+    }
 }
 
 #include "ktjview2view.moc"

@@ -252,7 +252,7 @@ void ktjview2::setupActions()
                                   m_view, SLOT( slotRUFind() ), actionCollection(), "ru_find" );
 
     // Reports menu
-    m_taskCoverageAction = new KAction( i18n( "Task coverage" ), 0, KShortcut(),
+    m_taskCoverageAction = new KAction( i18n( "&Task coverage..." ), 0, KShortcut(),
                                         m_view, SLOT( slotTaskCoverage() ), actionCollection(), "task_coverage" );
 
     // Tools menu
