@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "gantt.h"
 #include "resUsageCfg.h"
+#include "editorView.h"
 
 #include <qdragobject.h>
 #include <qpainter.h>
@@ -48,7 +49,10 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kconfigdialog.h>
+#include <kmessagebox.h>
 
+#include <ktexteditor/document.h>
+#include <ktexteditor/view.h>
 
 ktjview2::ktjview2()
     : KMainWindow( 0, "ktjview2" ),
@@ -100,7 +104,10 @@ void ktjview2::setupActions()
     KStdAction::openNew( this, SLOT(fileNew()), actionCollection() ); // FIXME
 #endif
 
-    KStdAction::open( this, SLOT(fileOpen()), actionCollection() );
+
+    // File menu
+    KStdAction::open( this, SLOT( fileOpen() ), actionCollection() );
+    KStdAction::save( this, SLOT( fileSave() ), actionCollection() );
 
     m_recentAction = KStdAction::openRecent( this, SLOT( load( const KURL& ) ), actionCollection() );
     m_recentAction->setMaxItems( 10 );
@@ -115,7 +122,6 @@ void ktjview2::setupActions()
 
     // View menu
 #if 0
-    KStdAction::find( m_view, SLOT( find() ), actionCollection()); // TODO
     new KAction( i18n( "&Filter..." ), "filter", KShortcut(),
                  m_view, SLOT( filter() ), actionCollection(), "filter" );
 #endif
@@ -323,6 +329,15 @@ void ktjview2::fileOpen()
         load( url );
 }
 
+void ktjview2::fileSave()
+{
+    QString url = m_view->currentURL().prettyURL();
+    if ( m_view->editor()->doc()->save() )
+        changeStatusbar( i18n( "Project '%1' successfully saved." ).arg( url ) );
+    else
+        KMessageBox::error( this, i18n( "Saving project '%1' failed." ).arg( url ) );
+}
+
 void ktjview2::filePrint()
 {
     KPrinter * printer = new KPrinter();
@@ -391,6 +406,7 @@ void ktjview2::slotSidebarInfo()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableEditorActions( false );
     m_view->activateView( ID_VIEW_INFO );
 }
 
@@ -402,6 +418,7 @@ void ktjview2::slotSidebarGantt()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableEditorActions( false );
     m_view->activateView( ID_VIEW_GANTT );
 }
 
@@ -415,6 +432,7 @@ void ktjview2::slotSidebarResources()
     enableTasksActions( false );
     enableResourceActions( true );
     enableResUsageActions( false );
+    enableEditorActions( false );
     m_view->activateView( ID_VIEW_RESOURCES );
 }
 
@@ -428,6 +446,7 @@ void ktjview2::slotSidebarTasks()
     enableTasksActions( true );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableEditorActions( false );
     m_view->activateView( ID_VIEW_TASKS );
 }
 
@@ -439,6 +458,7 @@ void ktjview2::slotSidebarResUsage()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( true );
+    enableEditorActions( false );
     m_view->activateView( ID_VIEW_RES_USAGE );
 }
 
@@ -532,7 +552,7 @@ void ktjview2::enableResUsageActions( bool enable )
 
 void ktjview2::enableEditorActions( bool enable )
 {
-
+    actionCollection()->action( KStdAction::name( KStdAction::Save ) )->setEnabled( enable );
 }
 
 void ktjview2::expandAll()
@@ -589,5 +609,7 @@ void ktjview2::collapseAll()
 {
     m_view->collapseAll( m_view->resListView() );
 }
+
+
 
 #include "ktjview2.moc"

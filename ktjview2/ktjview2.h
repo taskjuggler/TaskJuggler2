@@ -25,8 +25,6 @@
 #include <config.h>
 #endif
 
-#include <qguardedptr.h>
-
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <kactionclasses.h>
@@ -94,6 +92,11 @@ private slots:
      * Open a file
      */
     void fileOpen();
+
+    /**
+     *  Save the changed Project (Editor View)
+     */
+    void fileSave();
 
     /**
      * Tell the view to print
@@ -198,7 +201,7 @@ private:
     void enableEditorActions( bool enable );
 
     /// pointer to the main view
-    QGuardedPtr<ktjview2View> m_view;
+    ktjview2View * m_view;
 
     // actions
     KRecentFilesAction *m_recentAction;

@@ -108,6 +108,12 @@ public:
         { return m_resListView; }
 
     /**
+     * @return the EditorView component
+     */
+    EditorView * editor() const
+        { return m_editorView; }
+
+    /**
      * Apply preselected filter (@p id) on the task list.
      *
      * @return whether the filter was actually applied
