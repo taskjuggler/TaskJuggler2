@@ -55,11 +55,6 @@ libktjviewpart_la_LIBADD  = $(LIB_KPARTS) $(LIB_KFILE)  ../taskjuggler/libtaskju
 partdesktopdir   = $(kde_servicesdir)
 partdesktop_DATA = ktjview.desktop
 
-# register the mimetype
-kdemimedir = $(kde_mimedir)/application
-kdemime_DATA = x-tjxml.desktop
-
-
 # this is where the part's XML-GUI resource file goes
 partrcdir   = $(kde_datadir)/ktjviewpart
 partrc_DATA = ktjview_part.rc
