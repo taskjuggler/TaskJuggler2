@@ -1,7 +1,7 @@
 project simple "Simple Project" "$Id" 2000-01-01 2000-01-20 {
-	scenario plan "Plan" {
-		scenario actual "Actual"
-	}
+  scenario plan "Plan" {
+    scenario actual "Actual"
+  }
 }
 
 vacation "Free1" 2000-01-04
@@ -13,43 +13,43 @@ resource tux3 "Tux3"
 
 task t1 "Task1" {
   start 2000-01-01
-	actualstart 2000-01-05
+  actualstart 2000-01-05
   length 10d
-	startbuffer 20
-	endbuffer 20
-	allocate tux1
+  startbuffer 20
+  endbuffer 20
+  allocate tux1
 }
 
 task t2 "Task2" {
   start 2000-01-01
-	actualstart 2000-01-05
+  actualstart 2000-01-05
   duration 10d
-	startbuffer 20.0
-	endbuffer 20.0
-	allocate tux2
+  startbuffer 20.0
+  endbuffer 20.0
+  allocate tux2
 }
 
 task t3 "Task3" {
   start 2000-01-01
-	actualstart 2000-01-05
+  actualstart 2000-01-05
   effort 10d
   allocate tux3
-	startbuffer 20
-	endbuffer 20
+  startbuffer 20
+  endbuffer 20
 }
 
 task t4 "Task4" {
-	start 2000-01-01
-	actualstart 2000-01-05
-	end 2000-01-15
-	startbuffer 20
-	endbuffer 20
+  start 2000-01-01
+  actualstart 2000-01-05
+  end 2000-01-15
+  startbuffer 20
+  endbuffer 20
 }
 
 htmltaskreport "Buffer.html" {
-	columns no, name, start, startbufferend, endbufferstart, end,
-	startbuffer, endbuffer, duration, effort, daily
-	sorttasks nameup
-	scenarios plan, actual
-	hideresource 0
+  columns no, name, start, startbufferend, endbufferstart, end,
+  startbuffer, endbuffer, duration, effort, daily
+  sorttasks nameup
+  scenarios plan, actual
+  hideresource 0
 }

@@ -19,11 +19,11 @@ task t3 "Task3" {
 }
 
 htmltaskreport "RawTask.html" {
-	rawhead '<h1>This is a line of text</h1>'
-	rawtail '<h2>This is another line of text with "double qoutes"</h2>'
+  rawhead '<h1>This is a line of text</h1>'
+  rawtail '<h2>This is another line of text with "double qoutes"</h2>'
 }
 
 htmlresourcereport "RawResource.html" {
-	rawhead '<h1>This is a line of text</h1>'
-	rawtail '<h2>This is another line of text with "double qoutes"</h2>'
+  rawhead '<h1>This is a line of text</h1>'
+  rawtail '<h2>This is another line of text with "double qoutes"</h2>'
 }

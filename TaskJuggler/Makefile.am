@@ -39,9 +39,8 @@ messages: rc.cpp
 
 KDE_ICON = taskjuggler taskjuggler_tjp taskjuggler_tji taskjuggler_tjx
 
-# this is where the kdelnk file will go 
-kdelnkdir = $(kde_appsdir)/Utilities
-kdelnk_DATA = taskjuggler.desktop
+# register the application mimetype
+xdg_apps_DATA = taskjuggler.desktop
 
 # register the mimetype
 tjmimedir = $(kde_mimedir)/application

@@ -16,7 +16,7 @@ resource r1 "Resource1" {
 }
 
 task t1 "Task1" {
-	start 2000-01-01
-	milestone
+  start 2000-01-01
+  milestone
 }
 

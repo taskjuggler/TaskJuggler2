@@ -1,16 +1,15 @@
 project journal "Project" "$Id" 2000-01-01 2000-01-04 {
-  journalentry 2000-01-02 "the first entry"
-	journalentry 2000-01-03 "the next entry"
+  journalentry 2000-01-02 "The project started."
+  journalentry 2000-01-03 "We made some progress."
 }
 
 resource tux "Tux" {
-  journalentry 2000-01-02 "the first entry"
-	journalentry 2000-01-03 "the next entry"
+  journalentry 2000-01-02 "This guy is a bummer."
 }
 
 task t1 "Task1" {
-  journalentry 2000-01-01 "the first entry"
-	journalentry 2000-01-03 "the next entry"
+  journalentry 2000-01-01 "Probably will be done sooner."
+  journalentry 2000-01-03 "Maybe not."
   start 2000-01-01
   milestone
 }

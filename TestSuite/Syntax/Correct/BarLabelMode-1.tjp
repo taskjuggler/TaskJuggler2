@@ -19,7 +19,7 @@ task t3 "Task3" {
 }
 
 htmltaskreport "BarLabelMode-1.html" {
-	columns name, start, end, daily, weekly, monthly
-	barlabels empty
+  columns name, start, end, daily, weekly, monthly
+  barlabels empty
 }
 

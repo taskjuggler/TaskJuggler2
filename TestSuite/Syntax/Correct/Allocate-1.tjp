@@ -4,12 +4,12 @@ resource r1 "Resource 1"
 resource r2 "Resource 2"
 
 task t1 "Task 1" {
-	start 2003-06-05
-	allocate r1
-	task t2 "Task 2" {
-		effort 10d
-	}
-	task m1 "Milestone 1" {
-		milestone
-	}
+  start 2003-06-05
+  allocate r1
+  task t2 "Task 2" {
+    effort 10d
+  }
+  task m1 "Milestone 1" {
+    milestone
+  }
 }
