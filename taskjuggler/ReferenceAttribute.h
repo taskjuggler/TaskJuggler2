@@ -24,6 +24,12 @@ class ReferenceAttribute : public CustomAttribute
 {
 public:
     ReferenceAttribute() { }
+    ReferenceAttribute(const ReferenceAttribute& ra) :
+        CustomAttribute(ra)
+    {
+        url = ra.url;
+        label = ra.label;
+    }
     ReferenceAttribute(const QString& u, const QString& l) :
         url(u), label(l) { }
     virtual ~ReferenceAttribute() { }

@@ -364,13 +364,13 @@ FileInfo::nextToken(QString& token)
             switch (c)
             {
             case '{':
-                return LCBRACE;
-            case '}':
-                return RCBRACE;
-            case '(':
                 return LBRACE;
-            case ')':
+            case '}':
                 return RBRACE;
+            case '(':
+                return LBRACKET;
+            case ')':
+                return RBRACKET;
             case ',':
                 return COMMA;
             case '~':
@@ -433,7 +433,7 @@ FileInfo::readMacroCall()
     sl->append(id);
     while ((tt = nextToken(token)) == STRING)
         sl->append(token);
-    if (tt != RCBRACE)
+    if (tt != RBRACE)
     {
         errorMessage(i18n("'}' expected"));
         return FALSE;

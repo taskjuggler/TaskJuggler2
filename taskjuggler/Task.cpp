@@ -91,6 +91,7 @@
 #include "Allocation.h"
 #include "Booking.h"
 #include "ReportXML.h"
+#include "CustomAttributeDefinition.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& f, int l)
@@ -162,6 +163,9 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
         // Inherit allocations from parent.
         for (QPtrListIterator<Allocation> ali(p->allocations); *ali; ++ali)
             allocations.append(new Allocation(**ali));
+
+        // Inherit inheritable custom attributes
+        inheritCustomAttributes(proj->getTaskAttributeDict());
     }
     else
     {

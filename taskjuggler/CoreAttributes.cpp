@@ -11,6 +11,9 @@
  */
 
 #include "CoreAttributes.h"
+#include "CustomAttributeDefinition.h"
+#include "TextAttribute.h"
+#include "ReferenceAttribute.h"
 
 CoreAttributes::~CoreAttributes()
 {
@@ -133,5 +136,35 @@ const CustomAttribute*
 CoreAttributes::getCustomAttribute(const QString& id) const
 {
     return customAttributes[id];
+}
+
+void
+CoreAttributes::inheritCustomAttributes(const 
+                                        QDict<CustomAttributeDefinition>& dict) 
+{
+    QDictIterator<CustomAttributeDefinition> cadi(dict);
+    for ( ; cadi.current(); ++cadi)
+    {
+        const CustomAttribute* custAttr;
+        if (cadi.current()->getInherit() &&
+            (custAttr = parent->getCustomAttribute(cadi.currentKey())))
+        {
+            switch (custAttr->getType())
+            {
+                case CAT_Text:
+                    addCustomAttribute(cadi.currentKey(), new TextAttribute
+                                       (*((TextAttribute*) custAttr)));
+                    break;
+                case CAT_Reference:
+                    addCustomAttribute(cadi.currentKey(), new ReferenceAttribute
+                                       (*((ReferenceAttribute*) custAttr)));
+                    break;
+                default:
+                    qFatal("CoreAttributes::inheritCustomAttributes: "
+                           "Unknown CAT %d", custAttr->getType());
+                    break;
+            }
+        }
+    }
 }
 

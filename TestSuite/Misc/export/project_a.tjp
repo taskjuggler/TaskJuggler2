@@ -1,7 +1,7 @@
 project test "Test" "$Id" 2000-01-01 2000-03-10 {
 	extend task {
-		text userText "User Text"
-		reference userRef "User Reference"
+		text UserText "User Text"
+		reference UserRef "User Reference"
 	}
 }
 
@@ -30,14 +30,14 @@ task t4 "Task4" {
 	{
 		depends !!t3
 		duration 26d
-		userText "Hello, world!"
+		UserText "Hello, world!"
 	}
 	task t2 "Task2"
 	{
 		depends !t1
 		effort 10d
 		allocate r3
-		userRef "http://www.taskjuggler.org" { label "TaskJuggler" }
+		UserRef "http://www.taskjuggler.org" { label "TaskJuggler" }
 	}
 }
 
@@ -51,7 +51,7 @@ task t5 "Task5" {
 export "project_a_sub.tjsp" {
 	taskroot t4
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
-	complete, responsible, depends, userText, userRef
+	complete, responsible, depends, UserText, UserRef
 	hideresource 0
 }
 

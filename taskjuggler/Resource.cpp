@@ -27,6 +27,7 @@
 #include "kotrus.h"
 #include "debug.h"
 #include "ReportXML.h"
+#include "CustomAttributeDefinition.h"
 
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
@@ -70,6 +71,9 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
         maxEffort = pr->maxEffort;
         rate = pr->rate;
         efficiency = pr->efficiency;
+
+        // Inherit inheritable custom attributes
+        inheritCustomAttributes(p->getResourceAttributeDict());
     }
     else
     {

@@ -541,16 +541,16 @@ ProjectFile::readProject()
     proj->setEnd(end - 1);
 
     TokenType tt;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
         {
-            if ((tt = nextToken(token)) != ID && tt != RCBRACE)
+            if ((tt = nextToken(token)) != ID && tt != RBRACE)
             {
                 errorMessage(i18n("Attribute ID expected"));
                 return FALSE;
             }
-            if (tt == RCBRACE)
+            if (tt == RBRACE)
                 break;
             if (token == KW("workinghours"))
             {
@@ -695,7 +695,7 @@ ProjectFile::readExtend()
         return FALSE;
     }
     QString token;
-    if (nextToken(token) != LCBRACE)
+    if (nextToken(token) != LBRACE)
     {
         errorMessage(i18n("'{' expected."));
         return FALSE;
@@ -704,7 +704,7 @@ ProjectFile::readExtend()
     for ( ; ; )
     {
         QString attrType;
-        if ((tt = nextToken(attrType)) == RCBRACE)
+        if ((tt = nextToken(attrType)) == RBRACE)
             break;
         else if (tt != ID || 
                  (attrType != KW("reference") && attrType != KW("text")))
@@ -720,6 +720,13 @@ ProjectFile::readExtend()
             errorMessage(i18n("Attribute ID expected."));
             return FALSE;
         }
+        if (attrID[0].upper() != attrID[0])
+        {
+            errorMessage(i18n("User defined attribute IDs must start with "
+                              "a capital letter to avoid conflicts with "
+                              "future TaskJuggler keywords."));
+            return FALSE;
+        }
         QString attrName;
         if (nextToken(attrName) != STRING)
         {
@@ -727,23 +734,46 @@ ProjectFile::readExtend()
             return FALSE;
         }
         CustomAttributeType cat = CAT_Undefined;
-        if (attrType == "reference")
+        if (attrType == KW("reference"))
             cat = CAT_Reference;
-        else if (attrType == "text")
+        else if (attrType == KW("text"))
             cat = CAT_Text;
         bool ok = FALSE;
+        CustomAttributeDefinition* ca = 
+            new CustomAttributeDefinition(attrName, cat);
         if (property == "task")
-            ok = proj->addTaskAttribute
-                (attrID, new CustomAttributeDefinition(attrName, cat));
+            ok = proj->addTaskAttribute(attrID, ca);
         else if (property == "resource")
-            ok = proj->addResourceAttribute
-                (attrID, new CustomAttributeDefinition(attrName, cat));
+            ok = proj->addResourceAttribute(attrID, ca);
         if (!ok)
         {
             errorMessage(i18n("The custom attribute '%1' has already been "
                          "declared for the property '%2'.")
                 .arg(attrID).arg(property));
             return FALSE;
+        }
+    
+        if ((tt = nextToken(token)) != LBRACE)
+        {
+            returnToken(tt, token);
+            continue;
+        }
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID exprected."));
+                return FALSE;
+            }
+            if (token == KW("inherit"))
+                ca->setInherit(TRUE);
+            else
+            {
+                errorMessage(i18n("Attribute ID expected."));
+                return FALSE;
+            }
         }
     }
    
@@ -809,9 +839,9 @@ ProjectFile::readInclude()
      * later to open(). */
     QString parentPath = openFiles.last()->getPath();
     
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
-        while ((tt = nextToken(token)) != RCBRACE)
+        while ((tt = nextToken(token)) != RBRACE)
         {
             if (tt == ID && token == KW("taskprefix"))
             {
@@ -952,7 +982,7 @@ ProjectFile::readTask(Task* parent)
         return FALSE;
     }
 
-    if ((tt = nextToken(token)) != LCBRACE)
+    if ((tt = nextToken(token)) != LBRACE)
     {
         errorMessage(i18n("{ expected"));
         return FALSE;
@@ -1023,7 +1053,7 @@ ProjectFile::readTaskSupplement(QString prefix)
             .arg(prefix.isEmpty() ? token : prefix + token));
         return FALSE;
     }
-    if (nextToken(token) != LCBRACE)
+    if (nextToken(token) != LBRACE)
     {
         errorMessage(i18n("'}' expected"));
         return FALSE;
@@ -1418,7 +1448,7 @@ ProjectFile::readTaskBody(Task* task)
                 return FALSE;
             }
             break;
-        case RCBRACE:
+        case RBRACE:
             done = true;
             break;
         default:
@@ -1557,9 +1587,9 @@ ProjectFile::readReference(QString& ref, QString& label)
     
     TokenType tt;
     QString token;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
-        while ((tt = nextToken(token)) != RCBRACE)
+        while ((tt = nextToken(token)) != RBRACE)
         {
             if (tt == ID && token == KW("label"))
             {
@@ -1630,7 +1660,7 @@ ProjectFile::readResource(Resource* parent)
 
     TokenType tt;
     QString token;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         // read optional attributes
         if (!readResourceBody(r))
@@ -1652,7 +1682,7 @@ ProjectFile::readResourceSupplement()
         errorMessage(i18n("Already defined resource ID expected"));
         return FALSE;
     }
-    if (nextToken(token) != LCBRACE)
+    if (nextToken(token) != LBRACE)
     {
         errorMessage(i18n("'{' expected"));
         return FALSE;
@@ -1666,7 +1696,7 @@ ProjectFile::readResourceBody(Resource* r)
     QString token;
     TokenType tt;
 
-    while ((tt = nextToken(token)) != RCBRACE)
+    while ((tt = nextToken(token)) != RBRACE)
     {
         if (tt != ID)
         {
@@ -1846,10 +1876,10 @@ ProjectFile::readShift(Shift* parent)
 
     TokenType tt;
     QString token;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         // read optional attributes
-        while ((tt = nextToken(token)) != RCBRACE)
+        while ((tt = nextToken(token)) != RBRACE)
         {
             if (tt != ID)
             {
@@ -2007,12 +2037,12 @@ ProjectFile::readAccount(Account* parent)
 
     TokenType tt;
     QString token;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         bool hasSubAccounts = FALSE;
         bool cantBeParent = FALSE;
         // read optional attributes
-        while ((tt = nextToken(token)) != RCBRACE)
+        while ((tt = nextToken(token)) != RBRACE)
         {
             if (tt != ID)
             {
@@ -2102,9 +2132,9 @@ ProjectFile::readAllocate(Task* t)
     Allocation* a = new Allocation(r);
     QString token;
     TokenType tt;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
-        while ((tt = nextToken(token)) != RCBRACE)
+        while ((tt = nextToken(token)) != RBRACE)
         {
             if (tt != ID)
             {
@@ -2475,11 +2505,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
     }
         
     TokenType tt;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
         {
-            if ((tt = nextToken(token)) == RCBRACE)
+            if ((tt = nextToken(token)) == RBRACE)
                 break;
             else if (tt != ID)
             {
@@ -2749,11 +2779,11 @@ ProjectFile::readHTMLStatusReport()
     report = new HTMLStatusReport(proj, token, getFile(), getLine());
 
     TokenType tt;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
         {
-            if ((tt = nextToken(token)) == RCBRACE)
+            if ((tt = nextToken(token)) == RBRACE)
                 break;
             else if (tt != ID)
             {
@@ -2837,11 +2867,11 @@ ProjectFile::readExportReport()
     report = new ExportReport(proj, token, getFile(), getLine());
         
     TokenType tt;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
         {
-            if ((tt = nextToken(token)) == RCBRACE)
+            if ((tt = nextToken(token)) == RBRACE)
                 break;
             else if (tt != ID)
             {
@@ -2938,11 +2968,11 @@ ProjectFile::readReportElement(ReportElement* el)
 {
     QString token;
     TokenType tt;
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
         {
-            if ((tt = nextToken(token)) == RCBRACE)
+            if ((tt = nextToken(token)) == RBRACE)
                 break;
             else if (tt != ID)
             {
@@ -3203,7 +3233,7 @@ ProjectFile::readLogicalExpression(int precedence)
     if (tt == ID || tt == ABSOLUTE_ID)
     {
         QString lookAhead;
-        if ((tt = nextToken(lookAhead)) == LBRACE)
+        if ((tt = nextToken(lookAhead)) == LBRACKET)
         {
             if (ExpressionTree::isFunction(token))
             {
@@ -3269,7 +3299,7 @@ ProjectFile::readLogicalExpression(int precedence)
         }
         op = new Operation(op, Operation::Not);
     }
-    else if (tt == LBRACE)
+    else if (tt == LBRACKET)
     {
         if ((op = readLogicalExpression()) == 0)
         {
@@ -3277,7 +3307,7 @@ ProjectFile::readLogicalExpression(int precedence)
                 qDebug("exit after ()");
             return 0;
         }
-        if ((tt = nextToken(token)) != RBRACE)
+        if ((tt = nextToken(token)) != RBRACKET)
         {
             errorMessage(i18n("')' expected"));
             return 0;
@@ -3362,7 +3392,7 @@ ProjectFile::readFunctionCall(const QString& name)
             return 0;
         }
     }
-    if ((tt = nextToken(token)) != RBRACE)
+    if ((tt = nextToken(token)) != RBRACKET)
     {
         errorMessage(i18n("')' expected"));
         return 0;
@@ -3482,11 +3512,11 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
     }
     TableColumnInfo* tci = new TableColumnInfo(maxScenarios, token);
 
-    if ((tt = nextToken(token)) == LCBRACE)
+    if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
         {
-            if ((tt = nextToken(token)) == RCBRACE)
+            if ((tt = nextToken(token)) == RBRACE)
                 break;
             else if (tt != ID)
             {

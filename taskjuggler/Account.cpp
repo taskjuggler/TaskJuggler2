@@ -14,12 +14,19 @@
 #include "Interval.h"
 #include "Task.h"
 #include "Project.h"
+#include "CustomAttributeDefinition.h"
 
 Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
                  AccountType at) : CoreAttributes(p, i, n, pr), acctType(at)
 {
     p->addAccount(this);
     kotrusId = "";
+
+    if (pr)
+    {
+        // Inherit inheritable custom attributes
+        inheritCustomAttributes(p->getAccountAttributeDict());
+    }
 }
 
 Account::~Account()

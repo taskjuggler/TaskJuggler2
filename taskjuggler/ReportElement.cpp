@@ -36,6 +36,7 @@
 #include "AccountTreeIterator.h"
 #include "CustomAttributeDefinition.h"
 #include "TextAttribute.h"
+#include "ReferenceAttribute.h"
 #include "MacroTable.h"
 
 #define KW(a) a
@@ -964,23 +965,41 @@ ReportElement::setMacros(TableLineInfo* tli)
                           defFileName, defFileLine));*/
     mt.addMacro(new Macro(KW("name"), tli->ca1->getName(), 
                           defFileName, defFileLine));
-    
-    // Set macros for user-defined attributes.
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it)
+ 
+    QDict<CustomAttributeDefinition> dict; 
+    if (strcmp(tli->ca1->getType(), "Task") == 0)
+        dict = report->getProject()->getTaskAttributeDict();
+    else if (strcmp(tli->ca1->getType(), "Resource") == 0)
+        dict = report->getProject()->getResourceAttributeDict();
+    else if (strcmp(tli->ca1->getType(), "Account") == 0)
+        dict = report->getProject()->getAccountAttributeDict();
+    else
+        return;
+
+    /* TODO: I really don't like this solution since it creates empty macros
+     * and there is no clean way to avoid 'undefined macro' errors in mixed
+     * task/resource reports. */
+    QDictIterator<CustomAttributeDefinition> cadi(dict);
+    for ( ; cadi.current(); ++cadi)
     {
-        /* Currently only user-defined attributes of type CAT_Text are
-         * supported. */
-        const CoreAttributes* ca = tli->ca1;
-        if (ca->getType() == "Task" &&
-            ca->getCustomAttribute((*it)->getName()) &&
-            ca->getCustomAttribute((*it)->getName())->getType() == CAT_Text)
+        const CustomAttribute* custAttr;
+        QString macroName = cadi.currentKey();
+        QString macroValue;
+        if ((custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
         {
-            mt.addMacro(new Macro
-                        ((*it)->getName(),
-                         ((TextAttribute*) ca->getCustomAttribute
-                               ((*it)->getName()))->getText(),
-                         defFileName, defFileLine));
+            switch (custAttr->getType())
+            {
+                case CAT_Text:
+                    macroValue = ((TextAttribute*) custAttr)->getText();
+                    break;
+                case CAT_Reference:
+                    macroValue = ((ReferenceAttribute*) custAttr)->getUrl();
+                    break;
+                default:
+                    break;
+            }
         }
+        mt.addMacro(new Macro(macroName, macroValue, defFileName, defFileLine));
     }
 }
 

@@ -1,7 +1,7 @@
 project test "Test" "$Id" 2000-01-01 2000-03-10 {
 	extend task {
-		text userText "User Text"
-		reference userRef "User Reference"
+		text UserText "User Text"
+		reference UserRef "User Reference"
 	}
 }
 

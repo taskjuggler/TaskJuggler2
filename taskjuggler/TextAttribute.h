@@ -24,6 +24,11 @@ class TextAttribute : public CustomAttribute
 {
 public:
     TextAttribute() { }
+    TextAttribute(const TextAttribute& ta) :
+        CustomAttribute(ta)
+    {
+        text = ta.text;
+    }
     TextAttribute(const QString& t) { text = t; }
     virtual ~TextAttribute() { }
 

@@ -22,6 +22,7 @@
 
 class Project;
 class CoreAttributes;
+class CustomAttributeDefinition;
 
 /**
  * @short This class is the base class for all attribute classes.
@@ -91,6 +92,7 @@ public:
     {
         return customAttributes;
     }
+    void inheritCustomAttributes(const QDict<CustomAttributeDefinition>& dict);
 
 protected:
     /// A pointer to access information that are global to the project.
