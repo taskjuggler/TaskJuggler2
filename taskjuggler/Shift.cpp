@@ -19,11 +19,31 @@ Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
 {
     prj->addShift(this);
 
+    for (int i = 0; i < 7; i++)
+    {
+        workingHours[i] = new QPtrList<Interval>();
+        workingHours[i]->setAutoDelete(TRUE);
+    }
+}
+
+Shift::~Shift()
+{
+    for (int i = 0; i < 7; i++)
+        delete workingHours[i];
+    project->deleteShift(this);
+}
+
+void
+Shift::inheritValues()
+{
+    Shift* p = (Shift*) parent;
+
     if (p)
     {
         // Inherit start values from parent resource.
         for (int i = 0; i < 7; i++)
         {
+            delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
             workingHours[i]->setAutoDelete(TRUE);
             for (QPtrListIterator<Interval> ivi(*(p->workingHours[i]));
@@ -36,21 +56,15 @@ Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
         // Inherit start values from project defaults.
         for (int i = 0; i < 7; i++)
         {
+            delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
             workingHours[i]->setAutoDelete(TRUE);
             for (QPtrListIterator<Interval>
-                 ivi(prj->getWorkingHoursIterator(i));
+                 ivi(project->getWorkingHoursIterator(i));
                  *ivi != 0; ++ivi)
                 workingHours[i]->append(new Interval(**ivi));
         }
     }
-}
-
-Shift::~Shift()
-{
-    for (int i = 0; i < 7; i++)
-        delete workingHours[i];
-    project->deleteShift(this);
 }
 
 ShiftListIterator

@@ -127,6 +127,12 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 
     start = end = 0;
     duration = length = effort = 0.0;
+
+    for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+    {
+        scenarios[sc].minStart = scenarios[sc].minEnd = 0;
+        scenarios[sc].maxStart = scenarios[sc].maxEnd = 0;
+    }
 }
 
 Task::~Task()
@@ -2646,6 +2652,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
           if( ! r )
           {
               r = new Resource( project, resId, name , 0L );
+              r->inheritValues();
               project->addResource( r );
           }
           else

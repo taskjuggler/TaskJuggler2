@@ -45,54 +45,6 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 
     p->addResource(this);
 
-    if (pr)
-    {
-        // Inherit flags from parent resource.
-        for (QStringList::Iterator it = pr->flags.begin();
-             it != pr->flags.end(); ++it)
-            addFlag(*it);
-
-        // Inherit default working hours from parent resource.
-        for (int i = 0; i < 7; i++)
-        {
-            workingHours[i] = new QPtrList<Interval>();
-            workingHours[i]->setAutoDelete(TRUE);
-            for (QPtrListIterator<Interval> ivi(*pr->workingHours[i]);
-                 *ivi != 0; ++ivi)
-                workingHours[i]->append(new Interval(**ivi));
-        }
-
-        // Inherit vacation intervals from parent resource.
-        for (QPtrListIterator<Interval> vli(pr->vacations);
-             *vli != 0; ++vli)
-            vacations.append(new Interval(**vli));
-
-        minEffort = pr->minEffort;
-        maxEffort = pr->maxEffort;
-        rate = pr->rate;
-        efficiency = pr->efficiency;
-
-        // Inherit inheritable custom attributes
-        inheritCustomAttributes(p->getResourceAttributeDict());
-    }
-    else
-    {
-        // Inherit from default working hours project defaults.
-        for (int i = 0; i < 7; i++)
-        {
-            workingHours[i] = new QPtrList<Interval>();
-            workingHours[i]->setAutoDelete(TRUE);
-            for (QPtrListIterator<Interval> ivi(p->getWorkingHoursIterator(i));
-                 *ivi != 0; ++ivi)
-                workingHours[i]->append(new Interval(**ivi));
-        }
-
-        minEffort = p->getMinEffort();
-        maxEffort = p->getMaxEffort();
-        rate = project->getRate();
-        efficiency = 1.0;
-    }
-
     sbSize = (p->getEnd() + 1 - p->getStart()) /
         p->getScheduleGranularity() + 1;
 
@@ -112,6 +64,12 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
         MidnightIndex = new int[midnightIndexSize];
         for (uint i = 0; i < midnightIndexSize; i++)
             MidnightIndex[i] = -1;
+    }
+        
+    for (int i = 0; i < 7; i++)
+    {
+        workingHours[i] = new QPtrList<Interval>();
+        workingHours[i]->setAutoDelete(TRUE);
     }
 }
 
@@ -142,6 +100,63 @@ Resource::~Resource()
     delete [] MidnightIndex;
     MidnightIndex = 0;
     project->deleteResource(this);
+}
+
+void
+Resource::inheritValues()
+{
+    Resource* pr = (Resource*) parent;
+
+    if (pr)
+    {
+        // Inherit flags from parent resource.
+        for (QStringList::Iterator it = pr->flags.begin();
+             it != pr->flags.end(); ++it)
+            addFlag(*it);
+
+        // Inherit default working hours from parent resource.
+        for (int i = 0; i < 7; i++)
+        {
+            delete workingHours[i];
+            workingHours[i] = new QPtrList<Interval>();
+            workingHours[i]->setAutoDelete(TRUE);
+            for (QPtrListIterator<Interval> ivi(*pr->workingHours[i]);
+                 *ivi != 0; ++ivi)
+                workingHours[i]->append(new Interval(**ivi));
+        }
+
+        // Inherit vacation intervals from parent resource.
+        for (QPtrListIterator<Interval> vli(pr->vacations);
+             *vli != 0; ++vli)
+            vacations.append(new Interval(**vli));
+
+        minEffort = pr->minEffort;
+        maxEffort = pr->maxEffort;
+        rate = pr->rate;
+        efficiency = pr->efficiency;
+
+        // Inherit inheritable custom attributes
+        inheritCustomAttributes(project->getResourceAttributeDict());
+    }
+    else
+    {
+        // Inherit from default working hours project defaults.
+        for (int i = 0; i < 7; i++)
+        {
+            delete workingHours[i];
+            workingHours[i] = new QPtrList<Interval>();
+            workingHours[i]->setAutoDelete(TRUE);
+            for (QPtrListIterator<Interval> 
+                 ivi(project->getWorkingHoursIterator(i));
+                 *ivi != 0; ++ivi)
+                workingHours[i]->append(new Interval(**ivi));
+        }
+
+        minEffort = project->getMinEffort();
+        maxEffort = project->getMaxEffort();
+        rate = project->getRate();
+        efficiency = 1.0;
+    }
 }
 
 void

@@ -50,6 +50,8 @@ public:
         return ResourceListIterator(sub);
     }
 
+    void inheritValues();
+
     bool isGroup() const { return !sub.isEmpty(); }
 
     void setMinEffort(double e) { minEffort = e; }

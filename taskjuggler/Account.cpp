@@ -21,17 +21,21 @@ Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
 {
     p->addAccount(this);
     kotrusId = "";
-
-    if (pr)
-    {
-        // Inherit inheritable custom attributes
-        inheritCustomAttributes(p->getAccountAttributeDict());
-    }
 }
 
 Account::~Account()
 {
     project->deleteAccount(this);
+}
+
+void
+Account::inheritValues()
+{
+    if (parent)
+    {
+        // Inherit inheritable custom attributes
+        inheritCustomAttributes(project->getAccountAttributeDict());
+    }
 }
 
 double

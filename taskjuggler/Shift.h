@@ -36,7 +36,9 @@ public:
     Shift* getParent() const { return (Shift*) parent; }
 
     ShiftListIterator getSubListIterator() const;
-    
+
+    void inheritValues();
+
     void setWorkingHours(int day, QPtrList<Interval>* l)
     {
         delete workingHours[day];

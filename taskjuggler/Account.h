@@ -44,6 +44,9 @@ public:
     {
         return AccountListIterator(sub);
     }
+
+    void inheritValues();
+
     void setKotrusId(const QString& k) { kotrusId = k; }
     const QString& getKotrusId() const { return kotrusId; }
 

@@ -822,8 +822,6 @@ XMLFile::doPrecedes(QDomNode& n, ParserTreeContext& ptc)
 bool
 XMLFile::doNote(QDomNode& n, ParserTreeContext& ptc)
 {
-    qDebug("Adding note '%s' to task %s", n.toElement().text().latin1(),
-           ptc.getTask()->getId().latin1());
     ptc.getTask()->setNote(n.toElement().text());
     return TRUE;
 }

@@ -2010,7 +2010,10 @@ ProjectFile::readResource(Resource* parent)
         }
     }
     else
+    {
         r = new Resource(proj, id, name, parent);
+        r->inheritValues();
+    }
 
     TokenType tt;
     QString token;
@@ -2254,6 +2257,7 @@ ProjectFile::readShift(Shift* parent)
     }
 
     Shift* s = new Shift(proj, id, name, parent);
+    s->inheritValues();
 
     TokenType tt;
     QString token;
@@ -2464,7 +2468,10 @@ ProjectFile::readAccount(Account* parent)
         }
     }
     else
+    {
         a = new Account(proj, id, name, parent, acctType);
+        a->inheritValues();
+    }
 
     TokenType tt;
     QString token;
