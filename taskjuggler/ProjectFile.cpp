@@ -3163,7 +3163,7 @@ ProjectFile::readSorting(Report* report, int which)
 			sorting = CoreAttributesList::TreeMode;
 		else if (token == KW("sequenceup"))
 			sorting = CoreAttributesList::SequenceUp;
-		else if (token == KW("setquencedown"))
+		else if (token == KW("sequencedown"))
 			sorting = CoreAttributesList::SequenceDown;
 		else if (token == KW("indexup"))
 			sorting = CoreAttributesList::IndexUp;
