@@ -912,6 +912,12 @@ are shown when subtasks are not hidden, even if the parent task
 matches the hide expression. <computeroutput>tree</computeroutput> can
 only be used as the first criteria.</member>
 
+<member><computeroutput>sequenceup</computeroutput></member>
+<member>First in project file on top</member>
+
+<member><computeroutput>sequencedown</computeroutput></member>
+<member>Last in project file on top</member>
+
 <member><computeroutput>tree</computeroutput></member>
 <member>Show nesting with indentation</member>
 
@@ -1817,6 +1823,49 @@ definition of the subtask.</para>
 <para>See also: <link linkend="account">account</link></para>
 
 </sect2>
+<sect2 id="task_actualduration"><title>actualduration &lt;number&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>number:</member><member><link linkend="real">REAL</link></member>
+<member>unit:</member><member><link linkend="unit">UNIT</link></member>
+</simplelist></para>
+
+<para>Specifies the actual time the task occupies the resources. This
+is calender time, not working time. 7d means one week.</para>
+
+<para>Tasks may not have subtasks if this attribute is used.</para>
+
+<para>See also: <link linkend="task_actualeffort">actualeffort</link>,
+<link linkend="task_actuallength">actuallength</link>, <link
+linkend="task_duration">duration</link></para>
+
+</sect2>
+<sect2 id="task_actualeffort"><title>actualeffort &lt;number&gt;
+&lt;unit&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>number:</member><member><link
+linkend="real">REAL</link></member>
+<member>unit:</member><member><link
+linkend="unit">UNIT</link></member>
+</simplelist></para>
+
+<para>Specifies the actual effort needed to complete the task. An
+effort of 4d can be done with 2 full-time resources in 2 days.</para>
+
+<para>WARNING: In almost all real world projects effort is not the product
+of time and resources. This is only true if the task can be
+partitioned without adding any overhead. For more information about
+this read "The Mythical Man-Month" by Frederick P. Brooks, Jr.</para>
+
+<para>Tasks may not have subtasks if this attribute is used.</para>
+
+<para>See also: <link
+linkend="task_actualduration">actualduration</link>, <link
+linkend="task_actuallength">actuallength</link>, <link
+linkend="task_effort">effort</link></para>
+
+</sect2>
 <sect2 id="task_actualend"><title>actualend &lt;date&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -1829,6 +1878,28 @@ planned and actual dates.</para>
 
 <para>See also: <link linkend="task_end">end</link>, <link
 linkend="task_actualstart">actualstart</link></para>
+
+</sect2>
+<sect2 id="task_actuallength"><title>actuallength &lt;number&gt;
+&lt;unit&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>number:</member><member><link linkend="real">REAL</link></member>
+
+<member>unit:</member><member><link linkend="unit">UNIT</link></member>
+</simplelist></para>
+
+<para>Specifies the actual time the task occupies the resources. This
+is working time, not calender time. 7d means 7 working days, not one
+week. Whether a day is considered a working day or not depends on the
+defined <link linkend="workinghours">working hours</link> and global
+<link linkend="vacation">vacations</link>.<para>
+
+<para>Tasks may not have subtasks if this attribute is used.</para>
+
+<para>See also: <link linkend="task_actualduration">actualduration</link>, <link
+linkend="task_actualeffort">actualeffort</link>, <link
+linkend="task_length">length</link></para>
 
 </sect2>
 <sect2 id="task_actualscheduled"><title>actualscheduled</title>

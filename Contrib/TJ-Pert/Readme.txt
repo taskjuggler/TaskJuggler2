@@ -10,12 +10,17 @@ Each task is shown as a rectangle including several pieces of information. Actua
 - the start date
 - the end date
 - the task name
+- a gray scale bar showing tasks completness
 
-More informations will be added in future releases
+More informations will be added in future releases earliest start and finish dates, latest start and finish dates
 
 TaskJuggler can define container task. Tasks belonging to another task or grouped in a gray box.
 
-
+Project is shown in a cartouche with à legend including:
+- creation date
+- project's start date
+- project's end date
+- project's name
 
 Installation:
 -------------
@@ -61,3 +66,8 @@ TODO:
 etc....
 
 
+Author:
+-------
+
+Philippe Midol-Monnet
+philippe@midol-monnet.org

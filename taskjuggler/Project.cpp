@@ -163,7 +163,11 @@ Project::pass2()
 		qWarning("Scheduling plan scenario...");
 	preparePlan();
 	if (!schedule("Plan"))
+	{
+		if (DEBUGPS(2))
+			qWarning("Scheduling errors in plan scenario.");
 		error = TRUE;
+	}
 	finishPlan();
 
 	if (hasActualValues)
@@ -172,7 +176,11 @@ Project::pass2()
 			qWarning("Scheduling actual scenario...");
 		prepareActual();
 		if (!schedule("Actual"))
+		{
+			if (DEBUGPS(2))
+				qWarning("Scheduling errors in actual scenario.");
 			error = TRUE;
+		}
 		finishActual();
 	}
 
@@ -314,17 +322,17 @@ Project::schedule(const QString& scenario)
 				}
 			day = start;
 		}
-		if (day >= end)
+		if (day > end)
 		{
 			if (DEBUGPS(2))
-				qDebug("Scheduler ran over end of project");
+				qWarning("Scheduler ran over end of project");
 			
 			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
 				if (t->setRunaway(day - timeDelta, scheduleGranularity))
 				{
 					if (DEBUGPS(5))
-						qDebug("Marking task %s as runaway",
-							   t->getId().latin1());
+						qWarning("Marking task %s as runaway",
+								 t->getId().latin1());
 					error = TRUE;
 				}
 			day = end - scheduleGranularity;
@@ -368,7 +376,11 @@ Project::checkSchedule(const QString& scenario)
 		if (t->getParent() == 0)
 			t->scheduleOk(errors, scenario);
 		if (errors >= 10)
+		{
+			qWarning(QString("Too many errors in %1 scenario. Giving up.")
+					 .arg(scenario.lower()));
 			break;
+		}
 	}
 
 	return errors == 0;

@@ -30,6 +30,7 @@ use PostScript::Simple;
 
 use Task;
 use TaskList;
+use Projet;
 
 use strict;
 
@@ -43,44 +44,54 @@ my $projetxml =
 
 #print Dumper($projetxml);
 
-my $bx;
-my $by;
+#my $bx;
+#my $by;
 
-# create global TaskList
-my $tasks = TaskList->new($projetxml);
+## create global TaskList
+#my $tasks = TaskList->new($projetxml);
+
+# create project
+print "Analysing $input_file\n";
+my $projet = Projet->new($projetxml);
 
 # Extract task from xml/perl struct
-$tasks->extract_list_task($projetxml);
+#$tasks->extract_list_task($projetxml);
+$projet->extract_list_task($projetxml);
 
-# add dependenvcies lists for all tasks
-$tasks->add_depends_by_ref($tasks);
+$projet->process_tasks;
 
-# place all task in  the grid;
-$tasks->put_in_grid($tasks);
-$tasks->put_in_line;
+## add dependencies lists for all tasks
+#$tasks->add_depends_by_ref($tasks);
+
+## place all task in  the grid;
+#$tasks->put_in_grid($tasks);
+#$tasks->put_in_line;
+#$tasks->set_lin(0);
 
 print "Creating $output_file\n";
 
-draw_net($tasks);
+$projet->draw($output_file);
 
-sub draw_net {
-    my $tasklist = shift;
+#draw_net($tasks);
 
-    # calculate bouding box
-    $bx =
-      ( $tasklist->get_max_col + 1 ) * Task->get_task_width() * Task->cell_coef;
-    $by = ( $tasklist->get_height ) * Task->get_task_height() * Task->cell_coef;
+#sub draw_net {
+#    my $tasklist = shift;
 
-    # create postscript file
-    my $p =
-      new PostScript::Simple( units => "cm", xsize => $bx, ysize => $by,
-        eps => 1 );
+#    # calculate bouding box
+#    $bx =
+#      ( $tasklist->get_max_col + 1 ) * Task->get_task_width() * Task->cell_coef;
+#    $by = ( $tasklist->get_height ) * Task->get_task_height() * Task->cell_coef;
 
-    $p->setfont( "Times-Roman", 9 );
+#    # create postscript file
+#    my $p =
+#      new PostScript::Simple( units => "cm", xsize => $bx, ysize => $by,
+#        eps => 1 );
 
-    $p->{pspages} .= " 0 $by u translate \n";
-    $tasklist->draw( $p, 0, -by );
+#    $p->setfont( "Times-Roman", 9 );
 
-    $p->output($output_file)
+#    $p->{pspages} .= " 0 $by u translate \n";
+#    $tasklist->draw( $p, 0, -by );
 
-}
+#    $p->output($output_file)
+
+#}

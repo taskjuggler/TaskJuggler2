@@ -285,6 +285,17 @@ sub draw {
         $x_pos + 2 * $x3, $y_pos + $task_height
     );
 
+
+    # draw progress bar (% complete)
+    $out_ps->setcolour("grey80");
+    $out_ps->box( $x_pos, 
+		  $y_pos + $y4, 
+		  $x_pos + $task_width * $self->{Task}->{complete} / 100.0,
+		  $y_pos + 2 * $y4
+		  ,1
+		);
+    $out_ps->setcolour("black");
+
     # write text
     # Task ID
     $out_ps->text(

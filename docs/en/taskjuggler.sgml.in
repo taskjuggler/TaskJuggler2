@@ -1,5 +1,7 @@
 <!DOCTYPE BOOK PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!ENTITY firstproject SYSTEM "firstproject.sgml">
 <!ENTITY reference SYSTEM "reference.sgml">
+<!ENTITY example SYSTEM "example.sgml">
 ]>
 <book>
 <bookinfo><title>The TaskJuggler Manual</title>
@@ -9,7 +11,7 @@
 <author>
 	<firstname>Marc</firstname><surname>R&uuml;hrschneck</surname>
 </author>
-<date>Version @VERSION@, Thu Feb 14 14:33:25 CET 2002</date>
+<date>Version @VERSION@</date>
 <copyright>
 	<year>2002</year>
 	<holder>Chris Schl&auml;ger</holder>
@@ -441,6 +443,9 @@ resource reports can now be turned on and off using the <link
 linkend="htmltaskreport_barlabels"> barlabels </link>
 attribute.</para></listitem>
 
+<listitem><para>The sequence of properties in the project file can now
+be used as sorting criteria as well. </para></listitem>
+
 </itemizedlist> </para>
 
 </sect2>
@@ -577,93 +582,7 @@ url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</par
 
 </sect1> 
 </chapter>
-<chapter><title>An Example</title>
-
-<para>The easiest way to give an overview of the functionality of
-TaskJuggler is with an example.</para>
-
-<sect1><title> Introducing the Example: Accounting Software</title>
-
-<para>Refer to <xref linkend="example"> for a printout of the
-example.</para>
-
-<para>In this project, we plan to create an accounting program. The project
-starts on January 16, 2002, and its end is planned for June 30, 2002. The
-project will consist of the following tasks:</para>
-
-<para><variablelist>
-<varlistentry><term>Specification</term>
-<listitem><para>The developers set up the specification for the
-software and documentation.</para></listitem>
-</varlistentry>
-<varlistentry><term>Software development</term>
-<listitem><para>This is the whole process of coding the software. It
-includes the following subtasks:</para>
-
-<para><variablelist>
-<varlistentry><term>Database coupling</term>
-<listitem><para>Connection procedures to the
-database.</para></listitem>
-</varlistentry>
-<varlistentry><term>Graphical user interface</term>
-<listitem><para>Creating the user interface.</para></listitem>
-</varlistentry>
-<varlistentry><term>Back-end functions</term>
-<listitem><para>Creating the calucation and computing routines for the
-data.</para></listitem>
-</varlistentry>
-</variablelist></para>
-
-<varlistentry><term>Software testing</term>
-<listitem><para>Testing the software. There are two stages of software
-testing:</para>
-
-<para><variablelist>
-<varlistentry><term>Alpha test</term>
-<listitem><para>Test the software in alpha stage.</para></listitem>
-</varlistentry>
-<varlistentry><term>Beta test</term>
-<listitem><para>Test the software in beta stage. The customer normally takes
-part in this beta test phase.</para></listitem>
-</varlistentry>
-</variablelist></para></listitem>
-
-<varlistentry><term>Manual</term>
-<listitem><para>Creating the printed user manual</para></listitem>
-</varlistentry>
-<varlistentry><term>Ship to customer</term>
-<listitem><para>This task includes all steps necessary to communicate
-to the customer. This is an important task, as it defines the basic milestones
-of the project. For example, we cannot start the project before the contract
-is signed. It is also important to check the planned date of shipping the
-software to the customer.</para>
-
-<para>This process consist of the following subtasks:</para>
-
-<para><variablelist>
-<varlistentry><term>Projectstart</term>
-<listitem><para>This milestone defines the start of the
-project.</para></listitem>
-</varlistentry>
-<varlistentry><term>Betaversion</term>
-
-<listitem><para>This marks the start of the beta test. Normally, the
-customer wants to see a beta version, so this is also a
-milestone.</para></listitem>
-
-</varlistentry>
-<varlistentry><term>Ship product to customer</term>
-
-<listitem><para>This is the date when the project has ended.  Software
-is in final stage, the manual is ready and printed, and everything is
-shipped to the customer.</para></listitem>
-
-</varlistentry>
-</variablelist></para>
-
-</varlistentry>
-</variablelist></para>
-</chapter>
+&firstproject;
 <chapter><title> The Basic Parts of a <filename>.tjp</filename> File</title>
 
 <para>This chapter gives an overview of the most important commands,
@@ -774,163 +693,7 @@ all kinds of income (see reference: <link linkend="account"> account
 </chapter>
 &reference;
 <chapter id="example"><title>The Example: Accounting Software</title>
-
-<para><screen>
-project fibu "Accounting Software" "1.0" 2002-01-16 2002-05-01 {
-now 2002-03-04
-}
-
-# The daily rate of all resources
-rate 310.0
-currency "EUR"
-
-# This is one way to form teams
-macro allocate_developers [
-allocate dev1
-allocate dev2 { load 0.5 }
-allocate dev3
-]
-
-resource dev "Developers" {
-resource dev1 "Paul Smith"
-resource dev2 "Larry Bono"
-resource dev3 "Klaus Mueller" { vacation 2002-02-01 - 2002-02-05 }
-}
-resource misc "The Others" {
-resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
-resource doc "Dim Sung"
-}
-
-account dev "Development" cost {}
-account doc "Dokumentation" cost {}
-account rev "Payments" revenue {}
-
-task AcSo "Accounting Software" {
-
-account dev
-
-task spec "Spezification" {
-effort 20d
-${allocate_developers}
-depends !deliveries.start
-}
-
-task software "Software Development" {
-
-priority 1000
-
-task database "Database coupling" {
-	effort 20d
-	depends !!spec
-	allocate dev1
-	allocate dev2
-}
-
-task gui "Graphical User Interface" {
-	effort 35d
-	actualeffort 40d
-	depends !database, !backend
-	allocate dev2
-	allocate dev3
-}
-
-task backend "Back-End Functions" {
-	effort 30d
-	complete 80 # This task is ahead of schedule.
-	depends !database, !!spec
-	allocate dev1
-	allocate dev2
-}
-
-}
-
-task test "Software testing" {
-
-task alpha "Alpha Test" {
-	effort 1w
-	depends !!software
-	allocate test
-	allocate dev2
-}
-
-task beta "Beta Test" {
-	effort 4w
-	depends !alpha
-	allocate test
-	allocate dev1
-}
-}
-
-task manual "Manual" {
-effort 10w
-depends !deliveries.start
-allocate doc
-allocate dev3
-account doc
-}
-
-task deliveries "Ship to customer" {
-
-account rev
-
-task start "Projectstart" {
-	milestone
-	start 2002-01-16
-	actualstart 2002-01-20
-	startcredit 30000.0
-}
-
-task beta "Betaversion" {
-	milestone
-	depends !!test.alpha
-	startcredit 10000.0
-}
-
-task done "Ship Product to customer" {
-	milestone
-# Uncomment this to trigger a warning that the project is late.
-#      maxend 2002-04-17
-	depends !!test.beta, !!manual
-	startcredit 20000.0
-}
-}
-}
-
-htmltaskreport "AcSo-Overview.html" {
-columns no, name, start, end, weekly, effort
-headline "Accounting Software Project"
-caption "This table shows the load for each task on a weekly basis.
-All values are man-days. Additionally the resources used for each
-task are listed."
-}
-
-htmltaskreport "AcSo-Tasks.html" {
-columns no, name, start, end, daily
-headline "Accounting Software Project"
-caption "This table shows the load of each day for all the tasks.
-Additionally the resources used for each task are listed. Since the
-project start was delayed, the actual schedule differs significantly
-from the original plan."
-hideresource 0
-showactual
-}
-
-htmlresourcereport "AcSo-Resources.html" {
-columns no, name, weekly, effort
-end 2002-04-30
-loadunit hours
-headline "Weekly working hours for the Accounting Software Project"
-}
-
-htmlaccountreport "AcSo-Accounting.html" {
-columns no, name, total, monthly
-headline "P and L for the Accounting Software Project"
-caption "The table shows the profit and loss analysis as well as the
-cashflow situation of the Accounting Software Project."
-accumulate
-showactual
-}
-</screen></para>
+&example;
 </chapter>
 <chapter><title>Questions and Answers</title>
 <para>Nothing here yet></para>
@@ -964,4 +727,3 @@ The Open Group in the US and other countries.</para>
 <para>TaskJuggler is a trademark of Chris Schl&auml;ger.</para>
 </chapter>
 </book>
-

@@ -2,8 +2,8 @@ EXTRA_DIST = taskjuggler/*.html
 
 docprefix = $(DESTDIR)$(prefix)/share/doc/packages/taskjuggler/manual
 
-SGMLSOURCES = taskjuggler.sgml reference.sgml
-CLEANFILES = *.log *.aux *.tex taskjuggler.sgml *.ps *.dvi
+SGMLSOURCES = taskjuggler.sgml firstproject.sgml reference.sgml example.sgml
+CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.sgml example.sgml
 
 install-data-local:
 	$(mkinstalldirs) $(docprefix)
@@ -13,12 +13,18 @@ install-data-local:
 uninstall-local:
 	-rm -f $(docprefix)
 
+example.sgml : ../../Examples/FirstProject/AccountingSoftware.tjp
+	rm -f example.sgml
+	echo "<para><screen>" > example.sgml
+	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' ../../Examples/FirstProject/AccountingSoftware.tjp | expand -t 2 >> example.sgml
+	echo "</screen></para>" >> example.sgml
+
 taskjuggler/book1.html: $(SGMLSOURCES)
 	db2html taskjuggler.sgml
+	-rm -rf taskjuggler.junk
 
 taskjuggler.ps: $(SGMLSOURCES)
 	db2ps taskjuggler.sgml
-	-rm -rf taskjuggler.junk
 
 all: taskjuggler/book1.html taskjuggler.ps
 

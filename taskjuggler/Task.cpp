@@ -1608,9 +1608,16 @@ Task::scheduleOk(int& errors, QString scenario)
 {
 	/* It is of little use to report errors of container tasks, if any of
 	 * their sub tasks has errors. */
+	int currErrors = errors;
 	for (Task* t = subFirst(); t; t = subNext())
-		if (t->scheduleOk(errors, scenario))
-			return FALSE;
+		t->scheduleOk(errors, scenario);
+	if (errors > currErrors)
+	{
+		if (DEBUGPS(2))
+			qWarning(QString("Scheduling errors in sub tasks of %1.")
+					 .arg(id));
+		return FALSE;
+	}
 	
 	/* Runaway errors have already been reported. Since the data of this task
 	 * is very likely completely bogus, we just return FALSE. */
