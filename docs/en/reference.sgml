@@ -566,6 +566,28 @@ generate several different reports with one run of TaskJuggler.</para>
 
 <para>Optional attributes:</para>
 
+<sect2 id="htmltaskreport_barlabels"><title>barlabels
+&lt;mode&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>mode:</member><member>Can be any of the following
+values:</member>
+</simplelist></para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>empty</computeroutput></member>
+<member>Do not show any values on calendar bars.</member>
+
+<member><computeroutput>load</computeroutput></member>
+<member>Show task or resource load on calendar bars.</member>
+
+</simplelist></para>
+
+<para> The default setting is to print load values on the bars.
+</para>
+
+</sect2>
 <sect2 id="htmltaskreport_caption"><title>caption &lt;text&gt;</title>
 
 <para><simplelist type=horiz columns=2>

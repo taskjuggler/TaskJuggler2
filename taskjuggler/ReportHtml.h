@@ -35,6 +35,8 @@ public:
 			   const QString& df, int dl);
 	virtual ~ReportHtml() { }
 
+	enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
+
 	void generatePlanTask(Task* t, Resource* r);
 	void generateActualTask(Task* t, Resource* r);
 
@@ -91,6 +93,8 @@ public:
 
 	void flagList(CoreAttributes* c1, CoreAttributes* c2);
 
+	void setBarLabels(BarLabelText blt) { barLabels = blt; }
+
 	void registerUrl(const QString& key, const QString& url = "")
 	{
 		urls[key] = url;
@@ -133,6 +137,8 @@ protected:
 	uint colCompleted;
 	uint colCompletedLight;
 	uint colToday;
+
+	BarLabelText barLabels;
 
 	QString rawHead;
 	QString rawTail;

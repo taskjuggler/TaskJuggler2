@@ -436,6 +436,11 @@ moved from the contrib directory to the main directory. The tool
 <computeroutput> xml2png </computeroutput> has been
 removed.</para></listitem>
 
+<listitem><para>The load numbers on the bars of the HTML task and
+resource reports can now be turned on and off using the <link
+linkend="htmltaskreport_barlabels"> barlabels </link>
+attribute.</para></listitem>
+
 </itemizedlist> </para>
 
 </sect2>

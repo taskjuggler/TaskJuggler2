@@ -2695,6 +2695,24 @@ ProjectFile::readHTMLReport(const QString& reportType)
 				}
 				report->setTimeFormat(token);
 			}
+			else if (token == KW("barlabels"))
+			{
+				if (nextToken(token) != ID)
+				{
+					fatalError("Bar label mode expected");
+					return FALSE;
+				}
+				if (token == KW("empty"))
+					report->setBarLabels(ReportHtml::BLT_EMPTY);
+				else if (token == KW("load"))
+					report->setBarLabels(ReportHtml::BLT_LOAD);
+				else
+				{
+					fatalError(QString("Unknown bar label mode '%1'")
+							   .arg(token));
+					return FALSE;
+				}
+			}
 			else
 			{
 				fatalError("Illegal attribute");

@@ -1,0 +1,7 @@
+project simple "Simple Project" "$Id" 2000-01-01 2000-01-04
+
+htmltaskreport "BarLabelMode-2.html" {
+	columns name, daily, weekly, monthly
+	barlabels foo
+}
+

@@ -312,6 +312,8 @@ ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e,
 	colCompletedLight = 0xa1ff9a;
 	colToday = 0xa387ff;
 
+	barLabels = BLT_LOAD;
+
 	registerUrl(KW("dayheader"));
 	registerUrl(KW("monthheader"));
 	registerUrl(KW("resourcename"));
@@ -1738,7 +1740,7 @@ ReportHtml::htmlFilter(const QString& s)
 void
 ReportHtml::reportLoad(double load, const QString& bgCol, bool bold)
 {
-	if (load > 0.0)
+	if (load > 0.0 && barLabels != BLT_EMPTY)
 	{
 		s << "<td class=\""
 		  << bgCol << "\">";
