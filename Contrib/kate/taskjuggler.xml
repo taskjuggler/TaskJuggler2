@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="TaskJuggler" version="1.1" kateversion="2.1" section="Scripts" extensions="*.tjp;*.tji" mimetype="">
+<language name="TaskJuggler" version="1.2" kateversion="2.1" section="Scripts" extensions="*.tjp;*.tji;*.tjsp" mimetype="">
 <highlighting>
     <list name="keywords">
         <item> account </item>
@@ -158,6 +158,7 @@
         <item> rollupresource </item>
         <item> rolluptask </item>
         <item> sat </item>
+        <item> scenarios </item>
         <item> schedule </item>
         <item> scheduling </item>
         <item> select </item>
@@ -193,6 +194,7 @@
         <item> tue </item>
         <item> url </item>
         <item> vacation </item>
+        <item> version </item>
         <item> w </item>
         <item> wed </item>
         <item> weekheader </item>
@@ -234,8 +236,11 @@
 	<keyword attribute="Data Types" String="types" context="#stay"/>
 	
 	<!-- region (brace) folding -->
-	<DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace1" />
-        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace1" />
+	<DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace2" />
+        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace2" />
+	
+	<DetectChar attribute="Symbol" context="#stay" char="[" beginRegion="Brace1" />
+        <DetectChar attribute="Symbol" context="#stay" char="]" endRegion="Brace1" />
 	
 	<!-- number hilighting -->
 	<Float attribute="Float" context="#stay">
@@ -260,7 +265,7 @@
         <Detect2Chars attribute="Comment" context="Comment2" char="/" char1="*"/>
       </context>
       
-      <context attribute="String" lineEndContext="#pop" name="String">
+      <context attribute="String" lineEndContext="#stay" name="String">
         <DetectChar attribute="String" context="#pop" char="&quot;"/>
       </context>
       <context attribute="Comment" lineEndContext="#pop" name="Comment1">
