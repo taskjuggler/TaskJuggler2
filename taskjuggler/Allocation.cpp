@@ -26,11 +26,10 @@
   /-- DTD --/
 */
 
-Allocation::Allocation(Resource *r) :
+Allocation::Allocation() :
     load(0), lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
-    candidates.append(r);
     selectionMode = order;
     persistent = mandatory = FALSE;
 }

@@ -13,7 +13,8 @@
 #include "ParserNode.h"
 #include "ParserElement.h"
 
-ParserNode::ParserNode(ParserElement* pEl)
+ParserNode::ParserNode(ParserElement* pEl) :
+    parentElement(pEl)
 {
     elements.setAutoDelete(TRUE);
     if (pEl)

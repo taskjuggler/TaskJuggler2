@@ -22,7 +22,7 @@ class Resource;
 class Allocation
 {
 public:
-    Allocation(Resource* r);
+    Allocation();
     Allocation(const Allocation& a);
 
     ~Allocation() { }
@@ -73,9 +73,6 @@ public:
     }
     
 private:
-    /// Don't use this.
-    Allocation();
-
     /// The maximum daily usage of the resource in percent.
     int load;
 

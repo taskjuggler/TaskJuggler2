@@ -2546,7 +2546,9 @@ ProjectFile::readAllocate(Task* t)
         errorMessage(i18n("Resource ID expected"));
         return FALSE;
     }
-    Allocation* a = new Allocation(r);
+    Allocation* a = new Allocation();
+    a->addCandidate(r);
+
     QString token;
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)

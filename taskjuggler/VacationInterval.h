@@ -29,7 +29,11 @@ public:
         : Interval(i), name(n) { }
     virtual ~VacationInterval() { }
 
+    void setStart(time_t s) { start = s; }
+    void setEnd(time_t e) { end = e; }
+    void setName(const QString& n) { name = n; }
     const QString& getName() const { return name; }
+    
 
 private:
     QString name;

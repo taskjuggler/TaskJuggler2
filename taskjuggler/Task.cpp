@@ -1503,7 +1503,8 @@ Task::preScheduleOk()
 {
     for (int sc = 0; sc < project->getMaxScenarios(); sc++)
     {
-        if (scenarios[sc].effort > 0.0 && allocations.count() == 0)
+        if (scenarios[sc].effort > 0.0 && allocations.count() == 0 &&
+            !scenarios[sc].scheduled)
         {
             errorMessage(i18n
                          ("No allocations specified for effort based task '%1' "
@@ -1650,7 +1651,7 @@ Task::preScheduleOk()
                   scenarios[sc].end != 0 && scheduling == ASAP) ||
                  (scenarios[sc].start != 0 && scheduling == ALAP &&
                   hasEndDependency(sc) && scenarios[sc].end == 0)) &&
-                durationSpec != 0)
+                durationSpec != 0 && !scenarios[sc].scheduled)
             {
                 errorMessage(i18n("Task '%1' has a start, an end and a "
                                   "duration specification for '%2' scenario.")
@@ -2634,7 +2635,8 @@ void Task::allocationFromXML( const QDomElement& alloElem  )
     Allocation *allocation = 0L;
     if( r )
     {
-        allocation = new Allocation( r );
+        allocation = new Allocation();
+        allocation->addCandidate(r);
     }
 
     if( allocation )

@@ -36,19 +36,19 @@ comments -->
 <!ATTLIST now
   humanReadable CDATA #IMPLIED>
 
-<!ELEMENT extend (text*, reference*)>
+<!ELEMENT extend (textAttribute*, referenceAttribute*)>
 <!ATTLIST extend
   property CDATA #REQUIRED>
 
-<!ELEMENT text EMPTY>
-<!ATTLIST text
+<!ELEMENT textAttribute EMPTY>
+<!ATTLIST textAttribute
   id CDATA #REQUIRED
   name CDATA #REQUIRED
   inherit (0|1) "0"
 >
 
-<!ELEMENT reference (#PCDATA)>
-<!ATTLIST reference
+<!ELEMENT referenceAttribute (#PCDATA)>
+<!ATTLIST referenceAttribute
   id CDATA #REQUIRED
   name CDATA #REQUIRED
   inherit (0|1) "0"
@@ -105,7 +105,7 @@ comments -->
 
 <!ELEMENT resourceList (resource*)>
 
-<!ELEMENT resource (flags*, vacationList?, workingHours, shiftSelection*,
+<!ELEMENT resource (flag*, vacationList?, workingHours, shiftSelection*,
                     resourceScenario, resource*)>
 <!ATTLIST resource
   id CDATA #REQUIRED
@@ -135,7 +135,7 @@ comments -->
 
 <!ELEMENT task (depends*, precedes*, customAttribute*, flag*, task*,
                 taskScenario*, note?, statusNote?,reference?, 
-                shiftSelection*)>
+                shiftSelection*, allocate*)>
 <!ATTLIST task
   id CDATA #REQUIRED
   name CDATA #REQUIRED
@@ -155,9 +155,16 @@ comments -->
 
 <!ELEMENT statusNote (#PCDATA)>
 
-<!ELEMENT reference (#PCDATA>)
+<!ELEMENT reference (#PCDATA)>
 <!ATTLIST reference
   url CDATA #REQUIRED
+>
+
+<!ELEMENT allocate (candidate+)>
+
+<!ELEMENT candidate EMPTY>
+<!ATTLIST candidate
+  resourceId CDATA #REQUIRED
 >
 
 <!ELEMENT taskScenario (start?, end?, maxEnd?, maxStart?, minEnd?,

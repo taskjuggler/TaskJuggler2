@@ -4,7 +4,7 @@ taskjuggler_SOURCES =  main.cpp
 noinst_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp RealFormat.cpp \
-ParserNode.cpp ParserElement.cpp \
+ParserTreeContext.cpp ParserNode.cpp ParserElement.cpp \
 TjMessageHandler.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
 Report.cpp ReportXML.cpp \

@@ -13,9 +13,14 @@
 #ifndef _ParserTreeContext_h_
 #define _ParserTreeContext_h_
 
+class CoreAttributes;
+class Scenario;
+class Shift;
 class Task;
 class Resource;
 class TaskScenario;
+class Allocation;
+class VacationInterval;
 
 class ParserTreeContext
 {
@@ -23,19 +28,32 @@ public:
     ParserTreeContext() { }
     ~ParserTreeContext() { }
 
-    void setParentTask(Task* t) { u.parentTask = 0; }
-    Task* getParentTask() { return u.parentTask; }
+    void setCoreAttributes(CoreAttributes* c) { ca = c; }
+    CoreAttributes* getCoreAttributes() const { return ca; }
 
-    void setTaskScenario(TaskScenario* ts) { u.taskScenario = 0; }
-    TaskScenario* getTaskScenario() { return u.taskScenario; }
-    
+    void setScenario(Scenario* s) { ca = (CoreAttributes*) s; }
+    Scenario* getScenario();
+
+    void setShift(Shift* s) { ca = (CoreAttributes*) s; }
+    Shift* getShift();
+
+    void setTask(Task* t) { ca = (CoreAttributes*) t; }
+    Task* getTask();
+
+    void setScenarioIndex(int i) { scenarioIndex = i; }
+    int getScenarioIndex() const { return scenarioIndex; }
+
+    void setAllocation(Allocation* a) { allocation = a; }
+    Allocation* getAllocation() const { return allocation; }
+
+    void setVacationInterval(VacationInterval* v) { vacationInterval = v; }
+    VacationInterval* getVacationInterval() const { return vacationInterval; }
+
 private:
-    union
-    {
-        Task* parentTask;
-        Resource* parentResource;
-        TaskScenario* taskScenario;
-    } u;
+    CoreAttributes* ca;
+    int scenarioIndex;
+    Allocation* allocation;
+    VacationInterval* vacationInterval;
 } ;
 
 #endif

@@ -33,6 +33,8 @@ public:
 
     ParserFunctionPtr getFunc() const { return func; }
 
+    const QString& getTag() const { return tag; }
+
 private:
     ParserElement();    // Don't use!
 

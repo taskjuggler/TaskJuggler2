@@ -23,8 +23,12 @@
 #include "ParserTreeContext.h"
 #include "Project.h"
 #include "Utility.h"
+#include "Scenario.h"
+#include "Shift.h"
 #include "Task.h"
 #include "TaskScenario.h"
+#include "Allocation.h"
+#include "VacationInterval.h"
 
 ParserNode* XMLFile::parserRootNode = 0;
 
@@ -32,7 +36,7 @@ XMLFile::XMLFile(Project* p) :
     project(p)
 {
     if (!parserRootNode)
-        createNodeTree();
+        createParseTree();
 
     doc = 0;
 }
@@ -43,8 +47,11 @@ XMLFile::~XMLFile()
 }
 
 void
-XMLFile::createNodeTree()
+XMLFile::createParseTree()
 {
+    /* Build the tree that describes how we expect the DOM tree to look like.
+     * Each node of the tree can have an arbitrary number of elements. Each
+     * element may then again have a node, when it has sub-elements. */
     parserRootNode = new ParserNode();
     ParserElement* pe = 
         new ParserElement("taskjuggler", &XMLFile::doTaskJuggler,
@@ -61,18 +68,40 @@ XMLFile::createNodeTree()
             new ParserElement("currencyFormat", &XMLFile::doCurrencyFormat,
                               projectNode);
             new ParserElement("workingHours", 0, projectNode);
-            new ParserElement("scenario", 0, projectNode);
+            pe = new ParserElement("scenario", &XMLFile::doScenario,
+                                   projectNode);
+            ParserNode* scenarioNode = new ParserNode(pe);
+            {
+                scenarioNode->add(pe, "scenario");
+            }
         }
 
         pe = new ParserElement("vacationList", 0, taskjugglerNode);
         ParserNode* vacationListNode = new ParserNode(pe);
         {
-            pe = new ParserElement("vacation", 0, vacationListNode);
+            pe = new ParserElement("vacation", &XMLFile::doVacation,
+                                   vacationListNode);
             ParserNode* vacationNode = new ParserNode(pe);
-
-            vacationNode->add(pe, "vacation");  // recursive link
+            {
+                new ParserElement("start", &XMLFile::doVacationStart,
+                                  vacationNode);
+                new ParserElement("end", &XMLFile::doVacationEnd,
+                                  vacationNode);
+            }
         }
 
+        pe = new ParserElement("shiftList", 0, taskjugglerNode);
+        ParserNode* shiftListNode = new ParserNode(pe);
+        {
+            pe = new ParserElement("shift", &XMLFile::doShift,
+                                   shiftListNode);
+            ParserNode* shiftNode = new ParserNode(pe);
+            {
+                shiftNode->add(pe, "shift");    // recursive link
+                new ParserElement("workingHours", 0, shiftListNode);
+            }
+        }
+        
         pe = new ParserElement("taskList", 0, taskjugglerNode);
         ParserNode* taskListNode = new ParserNode(pe);
         {
@@ -81,21 +110,32 @@ XMLFile::createNodeTree()
 
             taskNode->add(pe, "task");   // recursive link
             pe = new ParserElement("taskScenario", &XMLFile::doTaskScenario,
-                                   taskListNode);
+                                   taskNode);
             ParserNode* taskScenarioNode = new ParserNode(pe);
-
-            new ParserElement("start", &XMLFile::doTaskScenarioStart,
-                              taskScenarioNode);
-            new ParserElement("end", &XMLFile::doTaskScenarioEnd,
-                              taskScenarioNode);
-            new ParserElement("maxEnd", &XMLFile::doTaskScenarioMaxEnd,
-                              taskScenarioNode);
-            new ParserElement("maxStart", &XMLFile::doTaskScenarioMaxStart,
-                              taskScenarioNode);
-            new ParserElement("minEnd", &XMLFile::doTaskScenarioMinEnd,
-                              taskScenarioNode);
-            new ParserElement("minStart", &XMLFile::doTaskScenarioMinStart,
-                              taskScenarioNode);
+            {
+                new ParserElement("customScenario", 0, taskScenarioNode);
+                new ParserElement("start", &XMLFile::doTaskScenarioStart,
+                                  taskScenarioNode);
+                new ParserElement("end", &XMLFile::doTaskScenarioEnd,
+                                  taskScenarioNode);
+                new ParserElement("maxEnd", &XMLFile::doTaskScenarioMaxEnd,
+                                  taskScenarioNode);
+                new ParserElement("maxStart", &XMLFile::doTaskScenarioMaxStart,
+                                  taskScenarioNode);
+                new ParserElement("minEnd", &XMLFile::doTaskScenarioMinEnd,
+                                  taskScenarioNode);
+                new ParserElement("minStart", &XMLFile::doTaskScenarioMinStart,
+                                  taskScenarioNode);
+                
+            }
+            pe = new ParserElement("allocate", &XMLFile::doAllocate,
+                                   taskNode);
+            ParserNode* allocateNode = new ParserNode(pe);
+            {
+                new ParserElement("candidate", &XMLFile::doCandidate,
+                                  allocateNode);
+            }
+            pe = new ParserElement("flag", &XMLFile::doFlag, taskNode);
         }
 
         pe = new ParserElement("resourceList", 0, taskjugglerNode);
@@ -156,7 +196,7 @@ XMLFile::parse()
     QDomNode n = doc->firstChild();
 
     ParserTreeContext ptc;
-    ptc.setParentTask(0);
+    ptc.setTask(0);
 
     return parseNode(parserRootNode, n, ptc);
 }
@@ -174,16 +214,24 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
             if (!pEl)
             {
                 qWarning(i18n("Unsupported XML element '%1' in node '%2' "
-                              "of '%2'")
-                         .arg(el.tagName()).arg(n.nodeName()).arg(masterFile));
-    //            return FALSE;
+                              "of '%2'. Parser is at node %3")
+                         .arg(el.tagName()).arg(n.nodeName()).arg(masterFile)
+                         .arg(pn->getParentElement()->getTag()));
             }
             else
             {
+                /* Create a copy of the current ptc. The node function may
+                 * modify this copy to pass contextual information to the
+                 * elements of this node. */
                 ParserTreeContext ptcCopy = ptc;
+                /* If a node function has been specified, call this function
+                 * and pass it the ptc. */
                 if (pEl->getFunc())
                     if (!((*this).*(pEl->getFunc()))(n, ptcCopy))
                         return FALSE;
+                /* If sub-elements of this node have been defined in the
+                 * parse tree, call this function again to process the
+                 * sub-elements. */
                 if (pEl->getNode())
                     if (!parseNode(pEl->getNode(), n.firstChild(), ptcCopy))
                         return FALSE;
@@ -249,8 +297,65 @@ XMLFile::doProjectNow(QDomNode& n, ParserTreeContext&)
 }
 
 bool
+XMLFile::doScenario(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+
+    /* The project has a default scenario called plan. The XML always brings
+     * it's own scenario definition. So we have to clear the default. */
+    if (!ptc.getScenario())
+        delete project->getScenario(0);
+    Scenario* scenario = new Scenario(project, el.attribute("id"), 
+                                      el.attribute("name"), ptc.getScenario());
+    ptc.setScenario(scenario);
+
+    return TRUE;
+}
+
+bool
 XMLFile::doCurrencyFormat(QDomNode&, ParserTreeContext&)
 {
+    return TRUE;
+}
+
+bool
+XMLFile::doVacation(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    VacationInterval* vi = new VacationInterval();
+    vi->setName(el.attribute("name"));
+    ptc.setVacationInterval(vi);
+    return TRUE;
+}
+
+bool
+XMLFile::doVacationStart(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    
+    ptc.getVacationInterval()->setStart(el.text().toLong());
+
+    return TRUE;
+}
+
+bool
+XMLFile::doVacationEnd(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+
+    ptc.getVacationInterval()->setEnd(el.text().toLong());
+
+    return TRUE;
+}
+
+bool
+XMLFile::doShift(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    Shift* shift = new Shift(project, el.attribute("id"),
+                             el.attribute("name"), ptc.getShift());
+    ptc.setShift(shift);
+
     return TRUE;
 }
 
@@ -259,7 +364,8 @@ XMLFile::doTask(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
     Task* t = new Task(project, el.attribute("id"), el.attribute("name"),
-                       ptc.getParentTask(), "", 0);
+                       ptc.getTask(), "", 0);
+    ptc.setTask(t);
     t->setProjectId(el.attribute("projectId"));
     t->setMilestone(el.attribute("milestone").toInt());
     t->setScheduling(el.attribute("asapScheduling").toInt() ?
@@ -274,48 +380,96 @@ XMLFile::doTask(QDomNode& n, ParserTreeContext& ptc)
 bool
 XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
 {
+    QDomElement el = n.toElement();
+    int sc = project->getScenarioIndex(el.attribute("scenarioId")) - 1;
+    ptc.setScenarioIndex(sc);
+    Task* t = ptc.getTask();
+    t->setEffort(sc, el.attribute("effort", "0.0").toDouble());
+    t->setDuration(sc, el.attribute("duration", "0.0").toDouble());
+    t->setLength(sc, el.attribute("length", "0.0").toDouble());
+    t->setScheduled(sc, el.attribute("scheduled", "0").toInt());
+    t->setComplete(sc, el.attribute("complete", "-1").toInt()); 
+    
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioStart(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTaskScenario()->setStart(n.toElement().text().toLong());
+    qDebug("Setting start of %s to %s", ptc.getTask()->getId().latin1(),
+           time2ISO(n.toElement().text().toLong()).latin1());
+    ptc.getTask()->setStart(ptc.getScenarioIndex(),
+                            n.toElement().text().toLong());
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioEnd(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTaskScenario()->setEnd(n.toElement().text().toLong());
+    ptc.getTask()->setEnd(ptc.getScenarioIndex(),
+                          n.toElement().text().toLong());
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioMaxEnd(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTaskScenario()->setMaxEnd(n.toElement().text().toLong());
+    ptc.getTask()->setMaxEnd(ptc.getScenarioIndex(),
+                             n.toElement().text().toLong());
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioMinEnd(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTaskScenario()->setMinEnd(n.toElement().text().toLong());
+    ptc.getTask()->setMinEnd(ptc.getScenarioIndex(),
+                             n.toElement().text().toLong());
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioMaxStart(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTaskScenario()->setMaxStart(n.toElement().text().toLong());
+    ptc.getTask()->setMaxStart(ptc.getScenarioIndex(),
+                               n.toElement().text().toLong());
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioMinStart(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTaskScenario()->setMinStart(n.toElement().text().toLong());
+    ptc.getTask()->setMinStart(ptc.getScenarioIndex(),
+                               n.toElement().text().toLong());
+    return TRUE;
+}
+
+bool
+XMLFile::doAllocate(QDomNode&, ParserTreeContext& ptc)
+{
+    Allocation* a = new Allocation();
+    ptc.getTask()->addAllocation(a);
+    ptc.setAllocation(a);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doCandidate(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    ptc.getAllocation()->addCandidate
+        (project->getResource(el.attribute("resourceId")));
+
+    return TRUE;
+}
+
+bool
+XMLFile::doFlag(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+
+    ptc.getCoreAttributes()->addFlag(el.text());
+
     return TRUE;
 }
 

@@ -27,6 +27,7 @@
 #include "Resource.h"
 #include "Booking.h"
 #include "BookingList.h"
+#include "Allocation.h"
 #include "XMLReport.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
@@ -202,10 +203,10 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
         switch (it.current()->getType())
         {
             case CAT_Text:
-                exElType = "text";
+                exElType = "textAttribute";
                 break;
             case CAT_Reference:
-                exElType = "reference";
+                exElType = "referenceAttribute";
                 break;
             default:
                 qFatal("XMLReport::generateCustomAttributeDeclaration: "
@@ -551,11 +552,15 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                         genDoubleAttr(&scEl, "effort", task->getEffort(*it));
                     break;
                 case TA_LENGTH:
-                    if (task->getLength(*it) != 0)
+                    if (task->getLength(*it) != 0 &&
+                        (task->getStart(*it) == 0 ||
+                         task->getEnd(*it) == 0))
                         genDoubleAttr(&scEl, "length", task->getLength(*it));
                     break;
                 case TA_DURATION:
-                    if (task->getDuration(*it) != 0)
+                    if (task->getDuration(*it) != 0 &&
+                        (task->getStart(*it) == 0 ||
+                         task->getEnd(*it) == 0))
                         genDoubleAttr(&scEl, "duration",
                                     task->getDuration(*it));
                     break;
@@ -591,7 +596,9 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
     genLongAttr(&el, "milestone", task->isMilestone() ? 1 : 0);
     genLongAttr(&el, "asapScheduling",
                 task->getScheduling() == Task::ASAP ? 1 : 0);
-    
+
+    generateAllocate(&el, task);
+
     return TRUE;
 }
 
@@ -650,6 +657,27 @@ XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
                    ca->getType());
     }
 
+    return TRUE;
+}
+
+bool
+XMLReport::generateAllocate(QDomElement* parentEl, const Task* t)
+{
+    for (QPtrListIterator<Allocation> ai = t->getAllocationIterator();
+         *ai; ++ai)
+    {
+        QDomElement el = doc->createElement("allocate");
+        parentEl->appendChild(el);
+    
+        for (QPtrListIterator<Resource> ri = (*ai)->getCandidatesIterator();
+             ri != 0; ++ri)
+        {
+            QDomElement aEl = doc->createElement("candidate");
+            el.appendChild(aEl);
+            genTextAttr(&aEl, "resourceId", (*ri)->getId());
+        }
+    }
+    
     return TRUE;
 }
 

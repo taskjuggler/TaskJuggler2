@@ -30,7 +30,10 @@ public:
 
     const ParserElement* getElement(const QString& key) const;
 
+    ParserElement* getParentElement() const { return parentElement; }
+
 private:
+    ParserElement* parentElement;
     QDict<const ParserElement> elements;
 } ;
 

@@ -62,7 +62,7 @@ public:
 private:
     XMLFile() {};   // don't use
 
-    void createNodeTree();
+    void createParseTree();
 
     bool parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc);
 
@@ -72,6 +72,11 @@ private:
     bool doProjectEnd(QDomNode& n, ParserTreeContext& n);
     bool doProjectNow(QDomNode& n, ParserTreeContext& n);
     bool doCurrencyFormat(QDomNode& n, ParserTreeContext& n);
+    bool doScenario(QDomNode& n, ParserTreeContext& n);
+    bool doVacation(QDomNode& n, ParserTreeContext& n);
+    bool doVacationStart(QDomNode& n, ParserTreeContext& n);
+    bool doVacationEnd(QDomNode& n, ParserTreeContext& n);
+    bool doShift(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenario(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenarioStart(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenarioEnd(QDomNode& n, ParserTreeContext& n);
@@ -79,7 +84,9 @@ private:
     bool doTaskScenarioMinEnd(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenarioMaxStart(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenarioMinStart(QDomNode& n, ParserTreeContext& n);
-
+    bool doAllocate(QDomNode& n, ParserTreeContext& n);
+    bool doCandidate(QDomNode& n, ParserTreeContext& n);
+    bool doFlag(QDomNode& n, ParserTreeContext& n);
     bool doTask(QDomNode& n, ParserTreeContext& n);
 
     QString masterFile;

@@ -137,7 +137,7 @@ public:
         return *this;
     }
 
-private:
+protected:
     /// The start of the time interval.
     time_t start;
     /// The end of the time interval. This value is part of the interval.

@@ -65,7 +65,8 @@ private:
     bool generateCustomAttributeValue(QDomElement* parentEl,
                                       const QString& id,
                                       const CoreAttributes* property);
-    
+    bool generateAllocate(QDomElement* el, const Task* t);
+
     void genTextAttr(QDomElement* el, const QString& name, const QString& text);
     void genDoubleAttr(QDomElement* el, const QString& name, double val);
     void genLongAttr(QDomElement* el, const QString& name, long val);
