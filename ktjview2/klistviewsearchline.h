@@ -94,7 +94,7 @@ public slots:
     /**
      * Make the search case sensitive or case insensitive.
      *
-     * @see caseSenstive()
+     * @see caseSensitive()
      */
     void setCaseSensitive(bool cs);
 
@@ -148,7 +148,7 @@ protected slots:
      * activated.  The most recent search is activated when this timer runs out
      * if another key has not yet been pressed.
      *
-     * This method makes @param search the most recent search and starts the
+     * This method makes @p search the most recent search and starts the
      * timer.
      *
      * Together with activateSearch() this makes it such that searches are not

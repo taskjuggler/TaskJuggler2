@@ -64,7 +64,7 @@ public:
     };
 
     /**
-     * Identify the data to work on
+     * Identify the data to work on (task/resource)
      */
     enum FilterType { FT_TASK = 0, FT_RESOURCE };
 
@@ -73,6 +73,10 @@ public:
      * @param name name of the filter
      */
     Filter( const QString & name, FilterType type );
+
+    /**
+     * DTOR
+     */
     ~Filter();
 
     /**
@@ -99,9 +103,15 @@ public:
     void setFop( FilterOp fop )
         { m_fop = fop; }
 
+    /**
+     * @return the type of the filter (task/resource)
+     */
     FilterType type() const
         { return m_type; }
 
+    /**
+     * Set the @p type of the filter (task/resource)
+     */
     void setType( FilterType type )
         { m_type = type; }
 

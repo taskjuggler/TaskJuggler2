@@ -115,4 +115,3 @@ Filter * FilterManager::filter( const QString & name ) const
 {
     return m_filterList.find( name );
 }
-
