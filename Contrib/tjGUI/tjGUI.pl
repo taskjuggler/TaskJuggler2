@@ -244,13 +244,13 @@ sub _gantt {
                                             -scrollregion/  => ['0', '0', $x, $y])->pack( -expand => 'yes', -fill => 'both');
 
     if (! defined $b_Print ) {
-        $b_Print = $f_head->Button( -text       => 'print as PS',
+        $b_Print = $f_head->Button( -text       => 'save as PS',
                                     -relief     => 'groove',
                                     -command    => sub { &_print($c) }
                                     )->pack( -side => 'left' );
     }
     if (! defined $b_Poster ) {
-        $b_Poster = $f_head->Button(    -text       => 'make PS poster',
+        $b_Poster = $f_head->Button(    -text       => 'save as PS-poster',
                                         -relief     => 'groove',
                                         -command    => sub { &_poster($c) }
                                         )->pack( -side => 'left' );
