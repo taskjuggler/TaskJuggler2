@@ -1254,8 +1254,8 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
    QDomElement tempElem;
 
    QString idStr = getId();
-   if( !absId )
-      idStr = idStr.section( '.', -1 );
+/*   if( !absId )
+      idStr = idStr.section( '.', -1 ); */
       
    taskElem.setAttribute( "Id", idStr );
 
