@@ -28,4 +28,18 @@
       <default>false</default>
     </entry>
   </group>
+  <group name="ResUsage">
+    <entry name="FreeTimeColor" type="Color">
+      <label>Background color for free time.</label>
+      <default>#33cc66</default>
+    </entry>
+    <entry name="VacationTimeColor" type="Color">
+      <label>Background color for vacations and sicktime.</label>
+      <default>#e6e64c</default>
+    </entry>
+    <entry name="HolidayTimeColor" type="Color">
+      <label>Background color for holidays and weekends.</label>
+      <default>#ffff99</default>
+    </entry>
+  </group>
 </kcfg>

@@ -21,6 +21,7 @@
 #include "ktjview2.h"
 #include "settings.h"
 #include "gantt.h"
+#include "resUsageCfg.h"
 
 #include <qdragobject.h>
 #include <qpainter.h>
@@ -343,6 +344,7 @@ void ktjview2::optionsPreferences()
     KConfigDialog *dialog = new KConfigDialog( this, "settings", Settings::self() );
     //dialog->addPage(new General(0, "General"), i18n("General"), "package_settings");
     dialog->addPage( new Gantt(0, "Gantt"), i18n("Gantt"), "gantt" );
+    dialog->addPage( new ResUsageCfg(0, "ResUsageCfg"), i18n("Resource Usage"), "resources" );
     connect(dialog, SIGNAL(settingsChanged()), m_view, SLOT(loadSettings()));
     dialog->show();
 }

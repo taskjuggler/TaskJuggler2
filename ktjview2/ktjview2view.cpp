@@ -709,6 +709,7 @@ void ktjview2View::setupGantt()
 
     m_ganttView->setWeekendBackgroundColor( Settings::weekendColor() );
 
+    // setup bg hatching
     if ( Settings::bgLines() )
         m_ganttView->setHorBackgroundLines();
     else
@@ -743,6 +744,7 @@ void ktjview2View::setupGantt()
 void ktjview2View::loadSettings()
 {
     setupGantt();
+    m_resUsageView->updateContents();
     // TODO setup other (future) config options
 }
 
@@ -1074,6 +1076,7 @@ void ktjview2View::collapseAll( KListView * view )
 
 void ktjview2View::parseResUsage()
 {
+    m_resUsageView->setProject( m_project );
     m_resUsageView->setStartDate( time_t2Q( m_project->getStart() ) );
     m_resUsageView->setEndDate( time_t2Q( m_project->getEnd() ) );
     m_resUsageView->assignResources( m_project->getResourceList() );

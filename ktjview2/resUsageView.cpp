@@ -21,6 +21,7 @@
 
 // local includes
 #include "resUsageView.h"
+#include "settings.h"
 
 // TJ includes
 #include "Utility.h"
@@ -43,7 +44,7 @@
 #include <time.h>
 
 ResUsageView::ResUsageView( QWidget * parent, const char * name )
-    : QTable( parent, name )
+    : QTable( parent, name ), m_proj( 0 )
 {
     clear();
     setReadOnly( true );
@@ -73,10 +74,45 @@ void ResUsageView::resizeData( int len )
 
 void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, bool selected, const QColorGroup & cg )
 {
+    if ( m_resList.isEmpty() || !m_proj )
+        return;
+
+    Resource * res = resourceForRow( row );
+    if ( !res )
+        return;
+
+    //kdDebug() << "Painting cell, resource: " << res << endl;
+
+    Interval ival = intervalForCol( col );
+    if ( ival.isNull() )
+        return;
+
+    //kdDebug() << "Painting cell, interval: (" << ival.getStart()
+    //          << ", " << ival.getEnd() << ")" << endl;
+
+    double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
+    //kdDebug() << "Painting cell, load: " << load << endl;
+
+    //double aload = res->getAvailableWorkLoad( 0, ival );
+    //kdDebug() << "Painting cell, available workload: " << aload << endl;
+
     QRect cRect = cellRect( row, col );
     p->setClipRect( cRect, QPainter::CoordPainter );
-    // TODO set colors
     QTable::paintCell( p, row, col, cr, selected, cg );
+
+    if ( load > 0 )             // allocated cell
+        p->fillRect( cRect, Qt::lightGray );
+    else
+        p->fillRect( cRect, Settings::freeTimeColor() ); // free cell
+
+    if ( isVacationInterval( res, ival ) ) // vacations, sicktime
+        p->fillRect( cRect, Settings::vacationTimeColor() );
+
+#if 0                           // FIXME, always true :(
+    if ( m_proj && !m_proj->isWorkingTime( ival ) ) // holidays and weekends
+        p->fillRect( cRect, Settings::holidayTimeColor() );
+#endif
+
     p->drawText( cRect, Qt::AlignCenter, text( row, col ) );
     p->setClipping( false );
 }
@@ -104,6 +140,7 @@ void ResUsageView::assignResources( ResourceList reslist )
 void ResUsageView::clear()
 {
     m_start = m_end = QDateTime();
+    m_proj = 0;
     setNumCols( 0 );
     setNumRows( 0 );
     m_resList.clear();
@@ -263,7 +300,7 @@ void ResUsageView::slotCopy()
 
 QString ResUsageView::text( int row, int col ) const
 {
-    if ( m_resList.isEmpty() )
+    if ( m_resList.isEmpty() || !m_proj )
         return QString::null;
 
     Resource * res = resourceForRow( row );
@@ -278,19 +315,39 @@ QString ResUsageView::text( int row, int col ) const
 
     //kdDebug() << "Painting cell, interval: " << ival << endl;
 
-    double aload = res->getAvailableWorkLoad( 0, ival );
-
-    //kdDebug() << "Painting cell, available workload: " << aload << endl;
-
     double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
 
     //kdDebug() << "Painting cell, load: " << load << endl;
 
+    double aload = res->getAvailableWorkLoad( 0, ival );
+
+    //kdDebug() << "Painting cell, available workload: " << aload << endl;
+
     const QString text = QString( "%1 / %2" )
-                         .arg( KGlobal::locale()->formatNumber( aload, 2 ) )
-                         .arg( KGlobal::locale()->formatNumber( load, 2 ) );
+                         .arg( KGlobal::locale()->formatNumber( load, 2 ) )
+                         .arg( KGlobal::locale()->formatNumber( aload, 2 ) );
 
     return text;
+}
+
+bool ResUsageView::isVacationInterval( const Resource * res, const Interval & ival ) const
+{
+    QPtrListIterator<Interval> vacIt = res->getVacationListIterator();
+
+    Interval * vacation;
+    while ( ( vacation = vacIt.current() ) != 0 )
+    {
+        ++vacIt;
+        if ( ival.contains( *vacation ) )
+            return true;
+    }
+
+    return false;
+}
+
+void ResUsageView::setProject( Project * proj )
+{
+    m_proj = proj;
 }
 
 #include "resUsageView.moc"

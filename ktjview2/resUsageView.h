@@ -41,6 +41,7 @@ public:
     virtual ~ResUsageView();
 
     void assignResources( ResourceList reslist );
+    void setProject( Project * proj );
     void clear();
 
     Scale scale() const;
@@ -107,9 +108,16 @@ private:
      */
     QString formatDate( time_t date, QString format ) const;
 
+    /**
+     * @return true if Resource @p res has some vacation during Interval @p ival
+     */
+    bool isVacationInterval( const Resource * res, const Interval & ival ) const;
+
     ResourceList resList() const
         { return m_resList; }
 
+    /// our project
+    Project * m_proj;
     /// list of resources
     ResourceList m_resList;
     /// list of row labels <res ID, res name>
