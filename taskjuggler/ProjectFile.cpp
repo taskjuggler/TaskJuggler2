@@ -2410,6 +2410,25 @@ ProjectFile::readExportReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpResource(et);
 		}
+		else if (token == KW("taskattributes"))
+		{
+			for ( ; ; )
+			{
+				QString ta;
+				if (nextToken(ta) != ID ||
+					!report->addTaskAttribute(ta))
+				{
+					fatalError("task attribute expected");
+					return FALSE;
+				}
+
+				if ((tt = nextToken(token)) != COMMA)
+				{
+					returnToken(tt, token);
+					break;
+				}
+			}
+		}
 		else
 		{
 			fatalError("Illegal attribute");

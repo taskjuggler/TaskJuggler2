@@ -138,6 +138,9 @@ used when calling TaskJuggler from CGI scripts.
 
 <item>Fixed sorting by ID for all HTML reports.
 
+<item>Added support for <ref name="taskattributes"
+id="export_taskattributes">.
+
 </itemize>
 
 <sect>Installation
@@ -578,14 +581,27 @@ expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 Do not show subtasks of tasks with flags meeting the described
 logical expression.
 
+<label id="export_taskattributes">
+<tag/taskattributes &lt;attributeID&gt;[, &lt;attributeID&gt; ... ]/
+
+attributeID: The list of attribute names specifies which task
+attributes should be listed in the report in addition to the ones
+exported by default. The following values are supported. They
+correspond to the respective attributes of a <ref name="task"
+id="task">.
+
+<tt/complete/, <tt/depends/, <tt/flags/, <tt/maxend/, <tt/maxstart/,
+<tt/minend/, <tt/minstart/, <tt/note/, <tt/priority/, <tt/responsible/
+
 </descrip>
 
 The export report looks like a regular taskjuggler file but contains
 fixed start and end dates for all tasks. The tasks only have start and
 end times, their description and their project id listed. No other
-attributes are exported.
+attributes are exported unless they are requested using the <ref
+name="taskattributes" id="export_taskattributes"> attribute.
 
-If requested the resource usage for the tasks is reported as well. But
+If specified the resource usage for the tasks is reported as well. But
 only those allocations are listed that belong to tasks listed in the
 same export report.
 

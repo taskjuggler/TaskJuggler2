@@ -1,9 +1,13 @@
 ../../../taskjuggler/taskjuggler project_a.tjp || exit 1
 ../../../taskjuggler/taskjuggler project_b1.tjp || exit 1
 ../../../taskjuggler/taskjuggler project_b2.tjp || exit 1
+../../../taskjuggler/taskjuggler project_b3.tjp || exit 1
 
 cmp project_a.html project_b.html || exit 1
 cmp project_a_res.html project_b_res.html || exit 1
+cmp project_b2_export.tjsp project_b2_export.tjsp || exit 1
+cmp project_b.html project_b3.html
+cmp project_b_res.html project_b3_res.html || exit 1
 
-rm *.html project_b1_export.tjsp
+rm *.html project_b*_export.tjsp
 

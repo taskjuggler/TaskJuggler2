@@ -2,34 +2,23 @@ project test "Test" "$Id" 2000-01-01 2000-03-10
 
 include "workforce.tjsp"
 
-include "project_b1_export.tjsp"
+include "project_b2_export.tjsp"
 
-
-task t2 "Task2" {
-	depends t1
-	effort 10d
-	allocate r2
-}
-
-task t4 "Task4" {
-	depends t3
-	duration 26d
-}
-
-htmltaskreport "project_b.html" {
+htmltaskreport "project_b3.html" {
 	columns name, start, end, daily
 	sorttasks nameup
 	hideresource 0
 }
 
-htmlresourcereport "project_b_res.html" {
+htmlresourcereport "project_b3_res.html" {
 	columns name, daily
 	hidetask 0
 	sorttasks nameup
 }
 
-export "project_b2_export.tjsp" {
+export "project_b3_export.tjsp" {
   hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
 }
+

@@ -85,11 +85,21 @@ CoreAttributesList::compareItems(QCollection::Item i1, QCollection::Item i2)
 }
 
 void
-CoreAttributes::getFullName(QString& fullName)
+CoreAttributes::getFullName(QString& fullName) const
 {
 	fullName = "";
-	for (CoreAttributes* c = this; c != 0; c = c->parent)
+	for (const CoreAttributes* c = this; c != 0; c = c->parent)
 		fullName = c->name + "." + fullName;
 	// Remove trailing dot.
 	fullName.remove(fullName.length() - 1, 1);
+}
+
+void
+CoreAttributes::getFullID(QString& fullID) const
+{
+	fullID = "";
+	for (const CoreAttributes* c = this; c != 0; c = c->parent)
+		fullID = c->id + "." + fullID;
+	// Remove trailing dot.
+	fullID.remove(fullID.length() - 1, 1);
 }

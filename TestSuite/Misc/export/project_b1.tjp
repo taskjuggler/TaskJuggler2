@@ -2,16 +2,22 @@ project test "Test" "$Id" 2000-01-01 2000-02-31
 
 include "workforce.tjsp"
 
+flags f1, f3, f5
+
 task t1 "Task1" {
 	start 2000-01-01
 	effort 10d
 	allocate r1
+	note "This is Task #1"
+	flags f1
 }
 
 task t3 "Task3" {
 	start 2000-01-01
 	length 13d
 	allocate r3
+	flags f3, f5
+	complete 50
 }
 
 task t5 "Task5" {
@@ -19,9 +25,13 @@ task t5 "Task5" {
 	priority 1000
 	length 5d
 	allocate r2
+	responsible r1
+	note "This is Task #5"
 }
 
 export "project_b1_export.tjsp" {
   hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
 }
 

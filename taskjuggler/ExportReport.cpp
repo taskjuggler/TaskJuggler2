@@ -11,14 +11,35 @@
  */
 
 #include <qfile.h>
+#include <qmap.h>
 
 #include "Project.h"
 #include "ExportReport.h"
 #include "ExpressionTree.h"
 
+#define KW(a) a
+
+static QMap<QString, int> TaskAttributeDict;
+typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,
+	TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
+	TA_DEPENDS };
+
 ExportReport::ExportReport(Project* p, const QString& f) :
 	Report(p, f, p->getStart(), p->getEnd())
 {
+	if (TaskAttributeDict.empty())
+	{
+		TaskAttributeDict[KW("complete")] = TA_COMPLETE;
+		TaskAttributeDict[KW("depends")] = TA_DEPENDS;
+		TaskAttributeDict[KW("flags")] = TA_FLAGS;
+		TaskAttributeDict[KW("maxend")] = TA_MAXEND;
+		TaskAttributeDict[KW("maxstart")] = TA_MAXSTART;
+		TaskAttributeDict[KW("minend")] = TA_MINEND;
+		TaskAttributeDict[KW("minstart")] = TA_MINSTART;
+		TaskAttributeDict[KW("note")] = TA_NOTE;
+		TaskAttributeDict[KW("priority")] = TA_PRIORITY;
+		TaskAttributeDict[KW("responsible")] = TA_RESPONSIBLE;
+	}
 	// show all tasks
 	hideTask = new ExpressionTree(new Operation(0));
 	// hide all resources
@@ -43,6 +64,7 @@ ExportReport::generate()
 	sortResourceList(filteredResourceList);
 
 	generateTaskList(filteredTaskList, filteredResourceList);
+	generateTaskAttributeList(filteredTaskList);
 	generateResourceList(filteredTaskList, filteredResourceList);
 	
 	f.close();
@@ -82,14 +104,135 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 }
 
 bool
+ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
+{
+	if (taskAttributes.isEmpty())
+		return TRUE;
+
+	if (taskAttributes.contains("flags"))
+	{
+		FlagList allFlags;
+		for (Task* t = filteredTaskList.first(); t != 0;
+			 t = filteredTaskList.next())
+		{
+			QStringList fl = t->getFlagList();
+			for (QStringList::Iterator jt = fl.begin();
+				 jt != fl.end(); ++jt)
+			{
+				allFlags.append(*jt);
+			}
+
+		}
+		s << "flags ";
+		for (QStringList::Iterator it = allFlags.begin();
+			 it != allFlags.end(); ++it)
+		{
+			if (it != allFlags.begin())
+				s << ", ";
+			s << *it;
+		}
+		s << endl;
+	}
+
+	for (Task* t = filteredTaskList.first(); t != 0;
+		 t = filteredTaskList.next())
+	{
+		s << "supplement task " << t->getId() << " {" << endl;
+		for (QStringList::Iterator it = taskAttributes.begin(); 
+			 it != taskAttributes.end(); ++it)
+		{
+			switch (TaskAttributeDict[*it])
+			{
+				case TA_FLAGS:
+					{
+						if (t->getFlagList().empty())
+							break;
+						s << "  flags ";
+						QStringList fl = t->getFlagList();
+						bool first = TRUE;
+						for (QStringList::Iterator jt = fl.begin();
+							 jt != fl.end(); ++jt)
+						{
+							if (!first)
+								s << ", ";
+							else
+								first = FALSE;
+							s << *jt;
+						}
+						s << endl;
+						break;
+					}
+				case TA_NOTE:
+					if (t->getNote() != "")
+						s << "  note \"" << t->getNote() << "\"" << endl;
+					break;
+				case TA_MINSTART:
+					if (t->getMinStart() != 0)
+						s << "  minstart " << time2tjp(t->getMinStart()) 
+							<< endl;
+					break;
+				case TA_MAXSTART:
+					if (t->getMaxStart() != 0)
+						s << "  maxstart " << time2tjp(t->getMaxStart()) 
+							<< endl;
+					break;
+				case TA_MINEND:
+					if (t->getMinEnd() != 0)
+						s << "  minend " << time2tjp(t->getMinEnd()) << endl;
+					break;
+				case TA_MAXEND:
+					if (t->getMaxEnd() != 0)
+						s << "  maxend " << time2tjp(t->getMaxEnd()) << endl;
+					break;
+				case TA_COMPLETE:
+					if (t->getComplete() >= 0.0)
+						s << "  complete " << (int) t->getComplete() << endl;
+					break;
+				case TA_RESPONSIBLE:
+					if (t->getResponsible())
+						s << "  responsible " << t->getResponsible()->getId()
+						   	<< endl;
+					break;
+				case TA_DEPENDS:
+					if (t->firstPrevious())
+					{
+						s << "  depends ";
+						bool first = TRUE;
+						for (Task* tp = t->firstPrevious(); tp != 0;
+							 tp = t->nextPrevious())
+						{
+							if (!first)
+								s << ", ";
+							else
+								first = FALSE;
+							QString absID;
+							tp->getFullID(absID);
+							s << absID;
+						}
+						s << endl;
+					}
+					break;
+				default:
+					return FALSE;
+			}
+		}
+		s << "}" << endl;
+	}
+
+	return TRUE;
+}
+
+bool
 ExportReport::generateResourceList(TaskList& filteredTaskList,
 								   ResourceList& filteredResourceList)
 {
 	for (Resource* r = filteredResourceList.first(); r != 0;
 		 r = filteredResourceList.next())
 	{
-		s << "supplement resource " << r->getId() << " {" << endl;
 		BookingList bl = r->getPlanJobs();
+		if (bl.isEmpty())
+			continue;
+		s << "supplement resource " << r->getId() << " {" << endl;
 		bl.setAutoDelete(TRUE);
 		for (Booking* b = bl.first(); b != 0; b = bl.next())
 		{
@@ -116,6 +259,21 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 		s << "}" << endl;
 	}
 
+	return TRUE;
+}
+
+bool
+ExportReport::addTaskAttribute(const QString& ta)
+{
+	/* Make sure the 'ta' is a valid attribute name and that we don't
+	 * insert it twice into the list. Trying to insert it twice it not an
+	 * error though. */
+	if (TaskAttributeDict.find(ta) == TaskAttributeDict.end())
+		return FALSE;
+
+	if (taskAttributes.findIndex(ta) >= 0)
+		return TRUE;
+	taskAttributes.append(ta);
 	return TRUE;
 }
 

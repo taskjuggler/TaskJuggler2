@@ -12,6 +12,7 @@
 #ifndef _ExportReport_h_
 #define _ExportReport_h_
 
+#include <qstring.h>
 #include <Report.h>
 
 class Project;
@@ -24,10 +25,16 @@ public:
 
 	bool generate();
 	bool generateTaskList(TaskList& ftl, ResourceList& frl);
+	bool generateTaskAttributeList(TaskList& ftl);
 	bool generateResourceList(TaskList& ftl, ResourceList& frl);
 
+	bool addTaskAttribute(const QString& ta);
+	QStringList getTaskAttributes() const { return taskAttributes; }
+	
 private:
 	ExportReport() { }
+
+	QStringList taskAttributes;
 };
 
 #endif
