@@ -17,6 +17,9 @@
 #include "ProjectFile.h"
 #include "Project.h"
 #include "Token.h"
+#include "kotrus.h"
+
+extern Kotrus *kotrus;
 
 #define READ_DATE(a, b) \
 (token == a && !hasSubTasks) \
@@ -599,6 +602,27 @@ ProjectFile::parse()
 				if (!readHTMLResourceReport())
 					return FALSE;
 				break;
+			}
+			else if( token == "kotrusMode" )
+			{
+			   if( kotrus )
+			   {
+			      if( nextToken(token) != STRING )
+			      {
+				 kotrus->setKotrusMode( "NoKotrus" );
+			      }
+			      else
+			      {
+				 if( token == "DB" || token == "XML" || token == "NoKotrus" )
+				    kotrus->setKotrusMode( token );
+				 else
+				 {
+				    fatalError( "Unknown kotrus-mode");
+				    return( false );
+				 }
+			      }
+			   }
+			   break;
 			}
 			// break missing on purpose!
 		default:
