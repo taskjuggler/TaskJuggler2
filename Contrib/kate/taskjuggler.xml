@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="TaskJuggler" version="1.22" kateversion="2.3" section="Scripts" extensions="*.tjp;*.tji;*.tjsp" mimetype="">
+<language name="TaskJuggler" version="1.21" kateversion="2.1" section="Scripts" extensions="*.tjp;*.tji" mimetype="">
 <highlighting>
     <list name="keywords">
         <item> account </item>
@@ -11,41 +11,35 @@
 	<item> scenario </item>
     </list>
     <list name="builtinfuncs">
+        <item> accountid </item>
+        <item> accountreport </item>
         <item> accumulate </item>
-        <item> actualbooking </item>
-        <item> actualduration </item>
-        <item> actualeffort </item>
-        <item> actualend </item>
-        <item> actualenddown </item>
-        <item> actualendup </item>
-        <item> actuallength </item>
-        <item> actualscheduled </item>
-        <item> actualstart </item>
-        <item> actualstartdown </item>
-        <item> actualstartup </item>
-        <item> alap </item>
         <item> allocate </item>
+        <item> allowredefinitions </item>
         <item> alternative </item>
-        <item> asap </item>
         <item> barlabels </item>
+        <item> booking </item>
         <item> caption </item>
+        <item> celltext </item>
+        <item> cellurl </item>
         <item> columns </item>
         <item> complete </item>
-        <item> containstask </item>
+        <item> completed </item>
         <item> copyright </item>
         <item> cost </item>
-        <item> costs </item>
         <item> credit </item>
+        <item> criticalness </item>
+        <item> csvaccountreport </item>
+        <item> csvresourcereport </item>
+        <item> csvtaskreport </item>
         <item> currency </item>
         <item> currencydigits </item>
-        <item> d </item>
-        <item> daily </item>
+        <item> currencyformat </item>
+        <item> dailymax </item>
         <item> dailyworkinghours </item>
-        <item> day </item>
-        <item> dayheader </item>
-        <item> days </item>
         <item> db </item>
         <item> depends </item>
+        <item> disabled </item>
         <item> duration </item>
         <item> efficiency </item>
         <item> effort </item>
@@ -54,122 +48,94 @@
         <item> endbuffer </item>
         <item> endbufferstart </item>
         <item> endcredit </item>
-        <item> enddown </item>
-        <item> endup </item>
+        <item> endsAfter </item>
+        <item> endsBefore </item>
         <item> export </item>
         <item> extend </item>
+        <item> finished </item>
         <item> flags </item>
         <item> follows </item>
-        <item> fri </item>
-        <item> fullnamedown </item>
-        <item> fullnameup </item>
-        <item> h </item>
+        <item> freeload </item>
+        <item> gapduration </item>
+        <item> gaplength </item>
         <item> headline </item>
         <item> hideaccount </item>
-        <item> hideplan </item>
+        <item> hidecelltext </item>
+        <item> hidecellurl </item>
         <item> hideresource </item>
         <item> hidetask </item>
-        <item> hours </item>
+        <item> hierarchindex </item>
+        <item> hierarchno </item>
         <item> htmlaccountreport </item>
         <item> htmlresourcereport </item>
+        <item> htmlstatusreport </item>
         <item> htmltaskreport </item>
         <item> htmlweeklycalendar </item>
         <item> id </item>
-        <item> iddown </item>
-        <item> idup </item>
         <item> include </item>
         <item> index </item>
-        <item> indexdown </item>
-        <item> indexup </item>
-	<item> inherit </item>	
-        <item> isaccount </item>
-        <item> isactualallocated </item>
-        <item> ismilestone </item>
-        <item> isplanallocated </item>
-        <item> isresource </item>
-        <item> issubtaskof </item>
-        <item> istask </item>
+        <item> inherit </item>
+        <item> inprogress </item>
+        <item> journalentry </item>
         <item> kotrusid </item>
-        <item> kotrusiddown </item>
-        <item> kotrusidup </item>
         <item> kotrusmode </item>
+        <item> label </item>
         <item> length </item>
+        <item> limits </item>
         <item> load </item>
         <item> loadunit </item>
-        <item> longauto </item>
-        <item> limits </item>
-        <item> m </item>
         <item> macro </item>
+        <item> mandatory </item>
         <item> maxeffort </item>
-        <item> maxeffortdown </item>
-        <item> maxeffortup </item>
         <item> maxend </item>
-        <item> maxloaded </item>
         <item> maxstart </item>
         <item> milestone </item>
-        <item> min </item>
         <item> mineffort </item>
-        <item> mineffortdown </item>
-        <item> mineffortup </item>
         <item> minend </item>
-        <item> minloaded </item>
         <item> minstart </item>
-        <item> minutes </item>
-        <item> mon </item>
-        <item> month </item>
-        <item> monthheader </item>
-        <item> monthly </item>
-        <item> months </item>
+        <item> monthlymax </item>
         <item> name </item>
-        <item> namedown </item>
-        <item> nameup </item>
         <item> no </item>
         <item> nokotrus </item>
         <item> note </item>
+        <item> notimestamp </item>
+        <item> notstarted </item>
         <item> now </item>
-        <item> off </item>
+        <item> numberformat </item>
+        <item> ontime </item>
+        <item> optimize </item>
         <item> order </item>
+        <item> pathcriticalness </item>
         <item> persistent </item>
-        <item> planbooking </item>
-        <item> planenddown </item>
-        <item> planendup </item>
-        <item> planscheduled </item>
-        <item> planstartdown </item>
-        <item> planstartup </item>
         <item> precedes </item>
         <item> priority </item>
-        <item> prioritydown </item>
-        <item> priorityup </item>
+        <item> profit </item>
         <item> projectid </item>
-        <item> random </item>
+        <item> projectids </item>
+        <item> projection </item>
         <item> rate </item>
-        <item> ratedown </item>
-        <item> rateup </item>
         <item> rawhead </item>
         <item> rawstylesheet </item>
         <item> rawtail </item>
+        <item> reference </item>
         <item> resourceid </item>
-        <item> resourcename </item>
+        <item> resourcereport </item>
         <item> resources </item>
         <item> responsibilities </item>
         <item> responsible </item>
-        <item> responsibledown </item>
-        <item> responsibleup </item>
         <item> revenue </item>
         <item> rollupaccount </item>
         <item> rollupresource </item>
         <item> rolluptask </item>
-        <item> sat </item>
+        <item> scenario </item>
         <item> scenarios </item>
         <item> schedule </item>
+        <item> scheduled </item>
         <item> scheduling </item>
         <item> select </item>
+        <item> separator </item>
         <item> seqno </item>
-        <item> sequencedown </item>
-        <item> sequenceup </item>
-        <item> shortauto </item>
         <item> shorttimeformat </item>
-        <item> showactual </item>
         <item> showprojectids </item>
         <item> sortaccounts </item>
         <item> sortresources </item>
@@ -178,57 +144,137 @@
         <item> startbuffer </item>
         <item> startbufferend </item>
         <item> startcredit </item>
-        <item> startdown </item>
-        <item> startup </item>
-        <item> sun </item>
+        <item> startsAfter </item>
+        <item> startsBefore </item>
+        <item> status </item>
+        <item> statusnote </item>
+        <item> subtitle </item>
+        <item> subtitleurl </item>
         <item> supplement </item>
+        <item> table </item>
         <item> taskattributes </item>
         <item> taskid </item>
-        <item> taskname </item>
         <item> taskprefix </item>
+        <item> taskreport </item>
         <item> taskroot </item>
-        <item> thu </item>
+        <item> text </item>
         <item> timeformat </item>
         <item> timezone </item>
         <item> timingresolution </item>
+        <item> title </item>
+        <item> titleurl </item>
         <item> total </item>
         <item> tree </item>
-        <item> tue </item>
+        <item> treeLevel </item>
         <item> url </item>
+        <item> utilization </item>
         <item> vacation </item>
         <item> version </item>
-        <item> w </item>
-        <item> wed </item>
-        <item> weekheader </item>
-        <item> weekly </item>
-        <item> weeks </item>
+        <item> weeklymax </item>
         <item> weekstartsmonday </item>
         <item> weekstartssunday </item>
         <item> workinghours </item>
         <item> xml </item>
         <item> xmlreport </item>
-        <item> y </item>
-        <item> year </item>
-        <item> yearheader </item>
         <item> yearlyworkingdays </item>
-        <item> years </item>
     </list>
     <list name="types">
-        <item>nil</item>
-        <item>true</item>
-        <item>false</item>
-        <item>String</item>
-        <item>Integer</item>
-        <item>Real</item>
-        <item>Logical</item>
-        <item>Character</item>
-        <item>Date</item>
-        <item>Concept</item>
-        <item>Element</item>
-        <item>Attribute</item>
-        <item>Series</item>
-        <item>TypedSeries</item>
-        <item>Map</item>
+        <item> alap </item>
+        <item> all </item>
+        <item> asap </item>
+        <item> completeddown </item>
+        <item> completedup </item>
+        <item> containstask </item>
+        <item> criticalnessdown </item>
+        <item> criticalnessup </item>
+        <item> d </item>
+        <item> daily </item>
+        <item> day </item>
+        <item> days </item>
+        <item> enddown </item>
+        <item> endup </item>
+        <item> fri </item>
+        <item> fullnamedown </item>
+        <item> fullnameup </item>
+        <item> h </item>
+        <item> hours </item>
+        <item> iddown </item>
+        <item> idup </item>
+        <item> indexdown </item>
+        <item> indexup </item>
+        <item> inprogressearly </item>
+        <item> inprogresslate </item>
+        <item> isAccount </item>
+        <item> isactualallocated </item>
+        <item> isAllocated </item>
+        <item> isAllocatedToProject </item>
+        <item> isAnAccount </item>
+        <item> isAResource </item>
+        <item> isatask </item>
+        <item> isATask </item>
+        <item> isChildOf </item>
+        <item> isDutyOf </item>
+        <item> isLeaf </item>
+        <item> isMilestone </item>
+        <item> isParentOf </item>
+        <item> isplanallocated </item>
+        <item> isResource </item>
+        <item> issubtaskof </item>
+        <item> isTask </item>
+        <item> isTaskOfProject </item>
+        <item> isTaskStatus </item>
+        <item> kotrusiddown </item>
+        <item> kotrusidup </item>
+        <item> longauto </item>
+        <item> m </item>
+        <item> maxeffortdown </item>
+        <item> maxeffortup </item>
+        <item> maxloaded </item>
+        <item> min </item>
+        <item> minallocated </item>
+        <item> mineffortdown </item>
+        <item> mineffortup </item>
+        <item> minloaded </item>
+        <item> minutes </item>
+        <item> mon </item>
+        <item> month </item>
+        <item> monthly </item>
+        <item> months </item>
+        <item> namedown </item>
+        <item> nameup </item>
+        <item> off </item>
+        <item> pathcriticalnessdown </item>
+        <item> pathcriticalnessup </item>
+        <item> prioritydown </item>
+        <item> priorityup </item>
+        <item> quarter </item>
+        <item> quarterly </item>
+        <item> random </item>
+        <item> ratedown </item>
+        <item> rateup </item>
+        <item> responsibledown </item>
+        <item> responsibleup </item>
+        <item> sat </item>
+        <item> sequencedown </item>
+        <item> sequenceup </item>
+        <item> shortauto </item>
+        <item> startdown </item>
+        <item> startup </item>
+        <item> statusdown </item>
+        <item> statusup </item>
+        <item> sun </item>
+        <item> thu </item>
+        <item> tue </item>
+        <item> undefined </item>
+        <item> w </item>
+        <item> wed </item>
+        <item> week </item>
+        <item> weekly </item>
+        <item> weeks </item>
+        <item> y </item>
+        <item> year </item>
+        <item> yearly </item>
+        <item> years </item>
     </list>
     <contexts>
      <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
