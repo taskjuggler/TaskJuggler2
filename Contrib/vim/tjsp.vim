@@ -70,6 +70,7 @@ syn keyword tjspkeyword d
 syn keyword tjspkeyword daily
 syn keyword tjspkeyword day
 syn keyword tjspkeyword dayheader
+syn keyword tjspkeyword db
 syn keyword tjspkeyword depends
 syn keyword tjspkeyword duration
 syn keyword tjspkeyword efficiency
@@ -83,6 +84,7 @@ syn keyword tjspkeyword endup
 syn keyword tjspkeyword export
 syn keyword tjspkeyword flags
 syn keyword tjspkeyword follows
+syn keyword tjspkeyword fri
 syn keyword tjspkeyword fullnamedown
 syn keyword tjspkeyword fullnameup
 syn keyword tjspkeyword h
@@ -120,6 +122,7 @@ syn keyword tjspkeyword mineffortdown
 syn keyword tjspkeyword mineffortup
 syn keyword tjspkeyword minend
 syn keyword tjspkeyword minstart
+syn keyword tjspkeyword mon
 syn keyword tjspkeyword month
 syn keyword tjspkeyword monthheader
 syn keyword tjspkeyword monthly
@@ -172,14 +175,17 @@ syn keyword tjspkeyword startbufferend
 syn keyword tjspkeyword startcredit
 syn keyword tjspkeyword startdown
 syn keyword tjspkeyword startup
+syn keyword tjspkeyword sun
 syn keyword tjspkeyword supplement
 syn keyword tjspkeyword task
 syn keyword tjspkeyword taskattributes
 syn keyword tjspkeyword taskid
 syn keyword tjspkeyword taskname
+syn keyword tjspkeyword thu
 syn keyword tjspkeyword timingresolution
 syn keyword tjspkeyword total
 syn keyword tjspkeyword tree
+syn keyword tjspkeyword tue
 syn keyword tjspkeyword url
 syn keyword tjspkeyword vacation
 syn keyword tjspkeyword w
