@@ -1092,4 +1092,9 @@ void ktjview2View::slotRUFind()
     m_resUsageView->find();
 }
 
+void ktjview2View::slotResDisplay( int display )
+{
+    m_resUsageView->setDisplayData( display );
+}
+
 #include "ktjview2view.moc"

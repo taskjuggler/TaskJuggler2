@@ -160,6 +160,12 @@ public slots:
     void slotResScale( int scale );
 
     /**
+     * Select what data to display in the resource usage view
+     * @see ResUsageView::DisplayData
+     */
+    void slotResDisplay( int display );
+
+    /**
      * Invoke the Find dialog for the RU view
      */
     void slotRUFind();

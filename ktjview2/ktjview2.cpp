@@ -188,13 +188,21 @@ void ktjview2::setupActions()
 #endif
 
     // Resource usage menu
-    m_resScaleAction = new KSelectAction( i18n( "&Scale" ), 0, actionCollection(), "res_scale" );
+    m_resScaleAction = new KSelectAction( i18n( "&Scale" ), 0, actionCollection(), "ru_scale" );
     items.clear();
     items << i18n( "&Days" ) << i18n( "&Weeks" ) << i18n( "&Months" ) << i18n( "&Quarters" );
     m_resScaleAction->setItems( items );
     m_resScaleAction->setCurrentItem( 0 ); // TODO make configurable
     connect( m_resScaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotResScale( int ) ) );
+
+    m_ruDisplayAction = new KSelectAction( i18n( "&Display" ), 0, actionCollection(), "ru_display" );
+    items.clear();
+    items << i18n( "Load and &total load" ) << i18n( "&Load" ) << i18n( "&Available load" );
+    m_ruDisplayAction->setItems( items );
+    m_ruDisplayAction->setCurrentItem( 0 );
+    connect( m_ruDisplayAction, SIGNAL( activated( int ) ),
+             m_view, SLOT( slotResDisplay( int ) ) );
 
     m_ruFindAction = new KAction( i18n( "&Find..." ), "find", KStdAccel::find(),
                                   m_view, SLOT( slotRUFind() ), actionCollection(), "ru_find" );
@@ -347,7 +355,7 @@ void ktjview2::optionsPreferences()
     KConfigDialog *dialog = new KConfigDialog( this, "settings", Settings::self() );
     //dialog->addPage(new General(0, "General"), i18n("General"), "package_settings");
     dialog->addPage( new Gantt(0, "Gantt"), i18n("Gantt"), "gantt" );
-    dialog->addPage( new ResUsageCfg(0, "ResUsageCfg"), i18n("Resource Usage"), "resources" );
+    dialog->addPage( new ResUsageCfg(0, "ResUsageCfg"), i18n("Resource Usage"), "resourceusage" );
     connect(dialog, SIGNAL(settingsChanged()), m_view, SLOT(loadSettings()));
     dialog->show();
 }
@@ -494,6 +502,7 @@ void ktjview2::enableResUsageActions( bool enable )
 {
     m_resScaleAction->setEnabled( enable );
     m_ruFindAction->setEnabled( enable );
+    m_ruDisplayAction->setEnabled( enable );
 }
 
 void ktjview2::expandAll()

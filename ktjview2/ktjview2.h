@@ -216,6 +216,7 @@ private:
     // resource usage stuff
     KSelectAction * m_resScaleAction;
     KAction * m_ruFindAction;
+    KSelectAction * m_ruDisplayAction;
 
     // sidebar actions
     KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks, * m_sidebarResUsage;

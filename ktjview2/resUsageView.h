@@ -31,12 +31,25 @@
 #include "ResourceList.h"
 #include "Interval.h"
 
-class ruFindDlg;
+#include "ruFindDialog.h"
 
 /**
  * Time scale for the horizontal line
  */
 enum Scale { SC_DAY = 0, SC_WEEK, SC_MONTH, SC_QUARTER };
+
+/**
+ * Specify which information to draw in a cell
+ */
+enum DisplayData
+{
+    /// resource load / total load (where total == load + free)
+    DIS_LOAD_AND_TOTAL = 0,
+    /// resource load
+    DIS_LOAD,
+    /// available resource workload
+    DIS_FREE
+};
 
 /**
  * This widget based on QTable displays resource loads in time.
@@ -103,6 +116,19 @@ public:
      * Set the end date of the view
      */
     void setEndDate( const QDateTime & date );
+
+    /**
+     * @return the type of data to display
+     * @see DisplayData
+     */
+    DisplayData displayData() const
+        { return m_display; }
+
+    /**
+     * Set the type of data to display
+     * @see DisplayData
+     */
+    void setDisplayData( int data );
 
     /**
      * Invoke the Find dialog
@@ -206,6 +232,8 @@ private:
     QStringList m_rowLabels;
     /// current time scale
     Scale m_scale;
+    /// display params
+    DisplayData m_display;
     /// project start, project end
     QDateTime m_start, m_end;
 

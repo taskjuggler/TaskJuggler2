@@ -22,7 +22,6 @@
 // local includes
 #include "resUsageView.h"
 #include "settings.h"
-#include "ruFindDialog.h"
 
 // TJ includes
 #include "Utility.h"
@@ -45,7 +44,7 @@
 #include <time.h>
 
 ResUsageView::ResUsageView( QWidget * parent, const char * name )
-    : QTable( parent, name ), m_proj( 0 ), m_findDia( 0 )
+    : QTable( parent, name ), m_proj( 0 ), m_display( DIS_LOAD_AND_TOTAL ), m_findDia( 0 )
 {
     clear();
     setReadOnly( true );
@@ -92,7 +91,7 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     //kdDebug() << "Painting cell, interval: (" << ival.getStart()
     //          << ", " << ival.getEnd() << ")" << endl;
 
-    double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
+    double load = res->getLoad( 0, ival );
     //kdDebug() << "Painting cell, load: " << load << endl;
 
     //double aload = res->getAvailableWorkLoad( 0, ival );
@@ -105,7 +104,7 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     QTable::paintCell( p, row, col, cr, selected, cg );
 
     if ( load > 0 )             // allocated cell
-        p->fillRect( cRect, Qt::lightGray );
+        p->fillRect( cRect, Qt::lightGray ); // TODO make color configurable
     else
         p->fillRect( cRect, Settings::freeTimeColor() ); // free cell
 
@@ -195,32 +194,39 @@ Interval ResUsageView::intervalForCol( int col ) const
 {
     // get the start point, get the start of the next point (Utility.h) and calc the delta
 
-    QDateTime intervalStart = m_start;
-    time_t intervalEnd = intervalStart.toTime_t();
+    time_t intervalStart = m_start.toTime_t();
+    time_t intervalEnd = intervalStart;
+    QDateTime tmp;
     switch ( m_scale )
     {
     case SC_DAY:
-        intervalStart = intervalStart.addDays( col );
-        intervalEnd = sameTimeNextDay( intervalStart.toTime_t() );
+        tmp = m_start.addDays( col );
+        intervalEnd = sameTimeNextDay( tmp.toTime_t() );
         break;
     case SC_WEEK:
-        intervalStart = intervalStart.addDays( col * 7 );
-        intervalEnd = sameTimeNextWeek( intervalStart.toTime_t() );
+        intervalStart = beginOfWeek( intervalStart, true );
+        tmp.setTime_t( intervalStart );
+        tmp = tmp.addDays( col * 7 );
+        intervalEnd = sameTimeNextWeek( tmp.toTime_t() );
         break;
     case SC_MONTH:
-        intervalStart = intervalStart.addMonths( col );
-        intervalEnd = sameTimeNextMonth( intervalStart.toTime_t() );
+        intervalStart = beginOfMonth( intervalStart );
+        tmp.setTime_t( intervalStart );
+        tmp = tmp.addMonths( col );
+        intervalEnd = sameTimeNextMonth( tmp.toTime_t() );
         break;
     case SC_QUARTER:
-        intervalStart = intervalStart.addMonths( col * 3 );
-        intervalEnd = sameTimeNextQuarter( intervalStart.toTime_t() );
+        intervalStart = beginOfQuarter( intervalStart );
+        tmp.setTime_t( intervalStart );
+        tmp = tmp.addMonths( col * 3 );
+        intervalEnd = sameTimeNextQuarter( tmp.toTime_t() );
         break;
     default:
         kdWarning() << "Invalid scale in ResUsageView::intervalForCol" << endl;
         break;
     }
 
-    return Interval( intervalStart.toTime_t(), intervalEnd );
+    return Interval( tmp.toTime_t(), intervalEnd );
 }
 
 Resource * ResUsageView::resourceForRow( int row ) const
@@ -249,7 +255,7 @@ void ResUsageView::updateColumns()
 
 QStringList ResUsageView::getColumnLabels() const
 {
-    QString format;
+    QString format;             // corresponds with strftime(3)
 
     switch ( m_scale )
     {
@@ -320,25 +326,45 @@ QString ResUsageView::text( int row, int col ) const
     if ( !res )
         return QString::null;
 
-    //kdDebug() << "Painting cell, resource: " << res << endl;
+    //kdDebug() << "Getting text, resource: " << res->getName() << endl;
 
     Interval ival = intervalForCol( col );
     if ( ival.isNull() )
         return QString::null;
 
-    //kdDebug() << "Painting cell, interval: " << ival << endl;
+    //kdDebug() << "Getting text, interval: (" << ival.getStart()
+    //          << ", " << ival.getEnd() << ")" << endl;
 
-    double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
+    double daily = res->getProject()->getDailyWorkingHours(); // TODO cache this value
 
-    //kdDebug() << "Painting cell, load: " << load << endl;
+    //kdDebug() << "Getting text, daily/days: " << daily << endl;
 
-    double aload = res->getAvailableWorkLoad( 0, ival );
+    double load = res->getLoad( 0, ival ) * daily;
 
-    //kdDebug() << "Painting cell, available workload: " << aload << endl;
+    double aload = res->getAvailableWorkLoad( 0, ival ) * daily;
 
-    const QString text = QString( "%1 / %2" )
-                         .arg( KGlobal::locale()->formatNumber( load, 2 ) )
-                         .arg( KGlobal::locale()->formatNumber( aload, 2 ) );
+    double total = load + aload;
+
+    //kdDebug() << "Getting text, load/aload/total: " << load << " / " << aload << " / " << total << endl;
+
+    QString text;
+    switch ( m_display )
+    {
+    case DIS_LOAD_AND_TOTAL:
+        text = QString( "%1 / %2" )
+               .arg( KGlobal::locale()->formatNumber( load, 1 ) )
+               .arg( KGlobal::locale()->formatNumber( total, 1 ) );
+        break;
+    case DIS_LOAD:
+        text = QString( "%1" ).arg( KGlobal::locale()->formatNumber( load, 1 ) );
+        break;
+    case DIS_FREE:
+        text = QString( "%1" ).arg( KGlobal::locale()->formatNumber( aload, 1 ) );
+        break;
+    default:
+        kdWarning() << "Unsupported display type in ResUsageView::text" << endl;
+        break;
+    }
 
     return text;
 }
@@ -415,6 +441,12 @@ void ResUsageView::slotFoundMatch( int match )
     {
         selectRow( match );
     }
+}
+
+void ResUsageView::setDisplayData( int data )
+{
+    m_display = static_cast<DisplayData>( data );
+    repaintContents( true );
 }
 
 #include "resUsageView.moc"
