@@ -200,6 +200,9 @@ private:
      */
     void parseGantt( TaskListIterator it, int sc = 0 );
 
+    /**
+     * @return a comma separated list of resources responsible for @p task
+     */
     QString formatAllocations( Task* task );
 
     /**

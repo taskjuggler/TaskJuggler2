@@ -51,6 +51,7 @@
 #include "ktjview2view.h"
 #include "timedialog.h"
 #include "TaskItem.h"
+#include "ResourceItem.h"
 #include "settings.h"
 #include "filterDialog.h"
 
@@ -314,7 +315,7 @@ void ktjview2View::parseProjectInfo()
     text += i18n( "Project end: %1<br>" ).arg( time_t2QS( m_project->getEnd() ) );
 
     // TJ current date
-    text += i18n( "XML report generated: %1<br>" ).arg( time_t2QS( m_project->getNow() ) );
+    text += i18n( "Report date: %1<br>" ).arg( time_t2QS( m_project->getNow() ) );
 
     text += "<hr>";
 
@@ -487,30 +488,58 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
         if ( res->isGroup() && ( res->getParent() == 0 ) ) // toplevel group item
         {
             //kdDebug() << "Case1: " << id << endl;
-            KListViewItem * item = new KListViewItem( m_resListView, id, name, rate, eff, minEffort,
-                                                      dailyMax, weeklyMax, monthlyMax );
+            ResourceItem * item = new ResourceItem( m_resListView, id );
+            item->setText( 1, name );
+            item->setText( 2, rate );
+            item->setText( 3, eff );
+            item->setText( 4, minEffort );
+            item->setText( 5, dailyMax );
+            item->setText( 6, weeklyMax );
+            item->setText( 7, monthlyMax );
             item->setOpen( true );
+
             parseResources( res->getSubListIterator(), item );
         }
         else if ( res->isGroup() && ( res->getParent() != 0 ) && parentItem ) // group item, non-toplevel
         {
             //kdDebug() << "Case2: " << id << endl;
-            KListViewItem * item = new KListViewItem( parentItem, id, name, rate, eff, minEffort,
-                                                      dailyMax, weeklyMax, monthlyMax );
+            ResourceItem * item = new ResourceItem( parentItem, id );
+            item->setText( 1, name );
+            item->setText( 2, rate );
+            item->setText( 3, eff );
+            item->setText( 4, minEffort );
+            item->setText( 5, dailyMax );
+            item->setText( 6, weeklyMax );
+            item->setText( 7, monthlyMax );
             item->setOpen( true );
+
             parseResources( res->getSubListIterator(), item );
         }
         else if ( parentItem )                   // leaf item
         {
             //kdDebug() << "Case3: " << id << endl;
-            ( void ) new KListViewItem( parentItem, id, name, rate, eff, minEffort,
-                                        dailyMax, weeklyMax, monthlyMax );
+            ResourceItem * item = new ResourceItem( parentItem, id );
+            item->setText( 1, name );
+            item->setText( 2, rate );
+            item->setText( 3, eff );
+            item->setText( 4, minEffort );
+            item->setText( 5, dailyMax );
+            item->setText( 6, weeklyMax );
+            item->setText( 7, monthlyMax );
+            item->setOpen( true );
         }
         else if ( ( res->getParent() == 0 ) || ( parentItem == 0 ) ) // standalone item
         {
             //kdDebug() << "Case4: " << id << endl;
-            ( void ) new KListViewItem( m_resListView, id, name, rate, eff, minEffort,
-                                        dailyMax, weeklyMax, monthlyMax );
+            ResourceItem * item = new ResourceItem( m_resListView, id );
+            item->setText( 1, name );
+            item->setText( 2, rate );
+            item->setText( 3, eff );
+            item->setText( 4, minEffort );
+            item->setText( 5, dailyMax );
+            item->setText( 6, weeklyMax );
+            item->setText( 7, monthlyMax );
+            item->setOpen( true );
         }
         else
         {
