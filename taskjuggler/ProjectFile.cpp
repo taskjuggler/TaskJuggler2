@@ -2722,7 +2722,25 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	}
 	else
 		returnToken(tt, token);
-	
+
+	if (report->getEnd() < report->getStart())
+	{	
+		fatalError(QString("End date must be later than start date"));
+		return FALSE;
+	}
+	if (proj->getStart() > report->getStart() ||
+		report->getStart() > proj->getEnd())
+	{
+		fatalError(QString("Start date must be within the project time "
+						   "frame"));
+		return FALSE;
+	}
+	if (proj->getStart() > report->getEnd() ||
+		report->getEnd() > proj->getEnd())
+	{
+		fatalError(QString("End date must be within the project time frame"));
+		return FALSE;
+	}
 	if (reportType == KW("htmltaskreport"))
 		proj->addHTMLTaskReport((HTMLTaskReport*) report);
 	else if (reportType == KW("htmlresourcereport"))
