@@ -402,6 +402,7 @@ TaskJugglerView::closeProject()
     messageListView->clear();
     messageCounter = 0;
     slotSetTitle( i18n( "No Project" ) );
+    changeStatusBar( QString::null ); // clear the status bar
 }
 
 void
@@ -534,10 +535,10 @@ TaskJugglerView::loadProject(const KURL& url)
     messageCounter = 0;
     if (!pf->parse())
         errors = TRUE;
-    emit signalChangeStatusbar(i18n("Checking project..."));
+    changeStatusBar(i18n("Checking project..."));
     if (!errors && !project->pass2(FALSE))
         errors = TRUE;
-    emit signalChangeStatusbar(i18n("Scheduling..."));
+    changeStatusBar(i18n("Scheduling..."));
     if (!errors && !project->scheduleAllScenarios())
         errors = TRUE;
 
@@ -572,7 +573,7 @@ TaskJugglerView::loadProject(const KURL& url)
         vl.append(int(h * 0.85));
         vl.append(int(h * 0.15));
         editorSplitter->setSizes(vl);
-        emit signalChangeStatusbar(i18n("The project contains problems!"));
+        changeStatusBar(i18n("The project contains problems!"));
         showEditor();
         messageListClicked(messageListView->firstChild());
     }
@@ -581,8 +582,8 @@ TaskJugglerView::loadProject(const KURL& url)
         vl.append(int(h));
         vl.append(int(0));
         editorSplitter->setSizes(vl);
-        emit signalChangeStatusbar(i18n("The project has been scheduled "
-                                        "without problems!"));
+        changeStatusBar(i18n("The project has been scheduled "
+                             "without problems!"));
         // Load the main file into the editor.
         fileManager->showInEditor(fileName);
         if (showReportAfterLoad)
@@ -888,8 +889,7 @@ TaskJugglerView::reportListClicked(QListViewItem* lvi)
         vl.append(int(h * 0.15));
         editorSplitter->setSizes(vl);
 
-        emit signalChangeStatusbar
-            (i18n("The project contains problems!"));
+        changeStatusBar(i18n("The project contains problems!"));
         messageListClicked(messageListView->firstChild());
     }
     else
