@@ -135,6 +135,7 @@ syn keyword tjspkeyword kotrusid
 syn keyword tjspkeyword kotrusiddown
 syn keyword tjspkeyword kotrusidup
 syn keyword tjspkeyword kotrusmode
+syn keyword tjspkeyword label
 syn keyword tjspkeyword length
 syn keyword tjspkeyword load
 syn keyword tjspkeyword loadunit
@@ -187,6 +188,7 @@ syn keyword tjspkeyword precedes
 syn keyword tjspkeyword priority
 syn keyword tjspkeyword prioritydown
 syn keyword tjspkeyword priorityup
+syn keyword tjspkeyword profit
 syn keyword tjspkeyword project
 syn keyword tjspkeyword projectid
 syn keyword tjspkeyword quarter
@@ -199,6 +201,7 @@ syn keyword tjspkeyword rateup
 syn keyword tjspkeyword rawhead
 syn keyword tjspkeyword rawstylesheet
 syn keyword tjspkeyword rawtail
+syn keyword tjspkeyword reference
 syn keyword tjspkeyword resource
 syn keyword tjspkeyword resourceid
 syn keyword tjspkeyword resourcename
