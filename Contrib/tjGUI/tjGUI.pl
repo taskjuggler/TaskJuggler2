@@ -57,6 +57,7 @@ my %res_load;
 #-- global vars
 my %hlist_entrys; #-- $hlist_entrys{taskID} = entry_ref
 my $b_Print;
+my $b_Poster;
 
 #-- bunt
 my $top = MainWindow->new();
@@ -121,7 +122,9 @@ my $top = MainWindow->new();
 
 _pars_xml();
 
-my $bigPSfilename = $project{'Id'}.'.ps';
+my $bigPSfilename       = $project{'Id'}.'.ps';
+my $posterPSfilename    = $project{'Id'}.'_poster.ps';
+my $poster_bin          = '/usr/bin/poster';
 
 $project{'h_start'} =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
 my $project_start   = $project{'h_start'};
@@ -159,7 +162,44 @@ MainLoop;
 sub _print {
     my $c = shift;
     if ( $bigPSfilename ) {
-        $c->postscript( -file => $bigPSfilename, -colormode => 'color', -height => $page_y, -width => $page_x);
+        my ($bx1, $by1, $bx2, $by2) = $c->bbox('all');
+        $c->postscript( -file       => $bigPSfilename,
+                        -colormode  => 'color',
+                        -x          => 0,
+                        -y          => 0,
+                        -height     => $by2,
+                        -width      => $bx2,
+                        -pagex      => 0,
+                        -pagey      => 0,
+                        -pageanchor => 'sw'
+                        );
+    }
+
+    $status_line->configure( -fg => 'black', -text => "$bigPSfilename create done" );
+}
+
+sub _poster {
+    my $c = shift;
+
+
+    if ( $posterPSfilename ) {
+        if (-f $poster_bin ) {
+            if (! -f $bigPSfilename) { _print($c) }
+            my $format;
+            open(IN, "<$bigPSfilename") || $status_line->configure( -fg => 'black', -text => "can't read $bigPSfilename\n");
+                while(<IN>) {
+                    next unless /BoundingBox:/;
+                    $_ =~ s/.*BoundingBox:\s+.+\s+.+\s+(\d+)\s+(\d+)/$1\*$2p/;
+                    chomp;
+                    $format = "$1*$2";
+                }
+            close(IN);
+            print "$poster_bin -i$format -mA4 -p$format $bigPSfilename > $posterPSfilename\n";
+            `$poster_bin -i$format -mA4 -p$format $bigPSfilename > $posterPSfilename\n`;
+            $status_line->configure( -fg => 'black', -text => "poster: $posterPSfilename create done" );
+        } else {
+            $status_line->configure( -fg => 'red', -text => "Oops, $poster_bin not found  !" );
+        }
     }
 }
 
@@ -181,6 +221,12 @@ sub _gantt {
                                     -command    => sub { &_print($c) }
                                     )->pack( -side => 'left' );
     }
+#--    if (! defined $b_Poster ) {
+#--        $b_Poster = $f_head->Button(    -text       => 'make PS poster',
+#--                                        -relief     => 'groove',
+#--                                        -command    => sub { &_poster($c) }
+#--                                        )->pack( -side => 'left' );
+#--    }
 
     _draw_grid($c);
     _draw_task($c);
@@ -499,6 +545,11 @@ sub _display_task_data {
     if (defined $b_Print) {
         $b_Print->destroy;
         $b_Print = undef;
+    }
+
+    if (defined $b_Poster) {
+        $b_Poster->destroy;
+        $b_Poster = undef;
     }
 
     foreach ($work_area_frame->children) { $_->destroy }
