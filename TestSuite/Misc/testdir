@@ -6,18 +6,15 @@ dirs=`find * -type d -maxdepth 0`
 
 for d in $dirs ; do
   if [ $d != "CVS" ] ; then
-    echo "Testing in $d"
     cd $d
-    if [ -x ./testdir ] ; then
-      ./testdir
-    else
-      ../testdir
-    fi
+    ./runtest
     errors=$(( $errors + $? ))
+    if [ $? -ne 0 ] ; then
+      echo "Test $d failed"
+    fi
     cd ..
   fi
 done
 
-echo $errors test failed!
 exit $errors
 

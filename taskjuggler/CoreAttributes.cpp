@@ -75,9 +75,9 @@ CoreAttributesList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	case IdDown:
 		return c1->getId() - c2->getId();
 	case NameUp:
-		return c2->getName().compare(c1->getName());
-	case NameDown:
 		return c1->getName().compare(c2->getName());
+	case NameDown:
+		return c2->getName().compare(c1->getName());
 	default:
 		qFatal("Please implement sorting for mode %d in sub class!", sorting);
 	}

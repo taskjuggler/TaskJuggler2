@@ -1,0 +1,16 @@
+../../../taskjuggler/taskjuggler project_a.tjp
+../../../taskjuggler/taskjuggler project_b1.tjp
+../../../taskjuggler/taskjuggler project_b2.tjp
+
+cmp project_a.html project_b.html
+if [ $? -ne 0 ] ; then
+  exit 1
+fi
+
+cmp project_a_res.html project_b_res.html
+if [ $? -ne 0 ] ; then
+  exit 1
+fi
+
+rm *.html project_b1_export.tjsp
+

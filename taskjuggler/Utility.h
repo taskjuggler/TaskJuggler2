@@ -20,6 +20,8 @@
 #define ONEDAY (60 * 60 * 24)
 #define ONEHOUR (60 * 60)
 
+const char* timezone2tz(const char* tzone);
+
 const char* monthAndYear(time_t d);
 
 int daysLeftInMonth(time_t d);
@@ -82,6 +84,8 @@ int year(time_t d);
 int dayOfWeek(time_t d);
 
 QString time2ISO(time_t t);
+
+QString time2tjp(time_t t);
 
 QString time2time(time_t t);
 

@@ -79,7 +79,8 @@ public:
 	TokenType nextToken(QString& token);
 	void returnToken(TokenType t, const QString& buf)
 	{
-		openFiles.last()->returnToken(t, buf);
+		if (!openFiles.isEmpty())
+			openFiles.last()->returnToken(t, buf);
 	}
 
 	const QString& getFile() { return openFiles.last()->getFile(); }
@@ -102,9 +103,10 @@ private:
 	bool readResourceSupplement();
 	bool readResourceBody(Resource* r);
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
-					  QString* = 0, bool* isResourceVacation = 0);
+					  QString* = 0);
 	bool readAccount(Account* parent);
 	bool readShift(Shift* parent);
+	Booking* readBooking();
 	bool readCredit(Account* a);
 	bool readAllocate(Task* t);
 	bool readPlanTimeFrame(Task* t, double& d);

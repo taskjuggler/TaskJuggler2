@@ -1,0 +1,27 @@
+project test "Test" "$Id" 2000-01-01 2000-02-31
+
+include "workforce.tjsp"
+
+task t1 "Task1" {
+	start 2000-01-01
+	effort 10d
+	allocate r1
+}
+
+task t3 "Task3" {
+	start 2000-01-01
+	length 13d
+	allocate r3
+}
+
+task t5 "Task5" {
+	depends t1
+	priority 1000
+	length 5d
+	allocate r2
+}
+
+export "project_b1_export.tjsp" {
+  hideresource 0
+}
+

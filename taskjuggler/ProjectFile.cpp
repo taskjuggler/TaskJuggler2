@@ -241,7 +241,7 @@ FileInfo::nextToken(QString& token)
 				token += c;
 			if (c == '-')
 			{
-				// this must be a ISO date yyyy-mm-dd[[-hh:mm]-TZ]
+				// this must be a ISO date yyyy-mm-dd[[-hh:mm:[ss]]-TZ]
 				getDateFragment(token, c);
 				if (c != '-')
 				{
@@ -258,6 +258,8 @@ FileInfo::nextToken(QString& token)
 						return EndOfFile;
 					}
 					getDateFragment(token, c);
+					if (c == ':')
+						getDateFragment(token, c);
 				}
 				int i = 0;
 				if (c == '-')
@@ -559,14 +561,9 @@ ProjectFile::parse()
 			else if (token == KW("vacation"))
 			{
 				time_t from, to;
-				bool isResourceVacation;
 				QString name;
-				if (!readVacation(from, to, TRUE, &name,
-								  &isResourceVacation))
+				if (!readVacation(from, to, TRUE, &name))
 					return FALSE;
-				if (isResourceVacation)
-					proj->getResource(name)->addVacation(
-						new Interval(from, to));
 				proj->addVacation(name, from, to);
 				break;
 			}
@@ -715,7 +712,7 @@ ProjectFile::parse()
 
 					if ((tt = nextToken(token)) != COMMA)
 					{
-						openFiles.last()->returnToken(tt, token);
+						returnToken(tt, token);
 						break;
 					}
 				}
@@ -790,7 +787,7 @@ ProjectFile::parse()
 
 					if ((tt = nextToken(token)) != COMMA)
 					{
-						openFiles.last()->returnToken(tt, token);
+						returnToken(tt, token);
 						break;
 					}
 				}
@@ -872,6 +869,9 @@ ProjectFile::parse()
 TokenType
 ProjectFile::nextToken(QString& buf)
 {
+	if (openFiles.isEmpty())
+		return EndOfFile;
+
 	TokenType tt;
 	while ((tt = openFiles.last()->nextToken(buf)) == EndOfFile)
 	{
@@ -1159,7 +1159,7 @@ ProjectFile::readTaskBody(Task* task)
 					task->setScheduling(Task::ASAP);
 					if ((tt = nextToken(token)) != COMMA)
 					{
-						openFiles.last()->returnToken(tt, token);
+						returnToken(tt, token);
 						break;
 					}
 				}
@@ -1179,7 +1179,7 @@ ProjectFile::readTaskBody(Task* task)
 					task->setScheduling(Task::ALAP);
 					if ((tt = nextToken(token)) != COMMA)
 					{
-						openFiles.last()->returnToken(tt, token);
+						returnToken(tt, token);
 						break;
 					}
 				}
@@ -1210,7 +1210,7 @@ ProjectFile::readTaskBody(Task* task)
 					task->addFlag(flag);
 					if ((tt = nextToken(token)) != COMMA)
 					{
-						openFiles.last()->returnToken(tt, token);
+						returnToken(tt, token);
 						break;
 					}
 				}
@@ -1293,31 +1293,12 @@ ProjectFile::readTaskBody(Task* task)
 
 bool
 ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
-						  QString* n, bool* isResourceVacation)
+						  QString* n)
 {
 	TokenType tt;
 	if (readName)
 	{
-		/* If we find a string then we expect a global vacation
-		 * definition. If we find an ID then this is an out-of-scope
-		 * vacation definition for the resource with this particular
-		 * ID. */
-		*isResourceVacation = FALSE;
-		if ((tt = nextToken(*n)) == STRING)
-			;	// We don't have to do anything
-#if 0
-		else if (tt == ID)
-		{
-			if (!proj->getResource(*n))
-		   	{
-			   	fatalError(QString().sprintf(
-					"Resource %s is undefined", n->latin1()));
-				return FALSE;
-		   	}
-			*isResourceVacation = TRUE;
-		}
-#endif
-		else
+		if ((tt = nextToken(*n)) != STRING)
 		{
 			fatalError("String expected");
 			return FALSE;
@@ -1333,7 +1314,7 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
 	if ((tt = nextToken(token)) != MINUS)
 	{
 		// vacation e. g. 2001-11-28
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 		from = date2time(start);
 		to = sameTimeNextDay(date2time(start)) - 1;
 	}
@@ -1392,7 +1373,7 @@ ProjectFile::readResource(Resource* parent)
 			return FALSE;
 	}
 	else
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 
 	proj->addResource(r);
 
@@ -1519,6 +1500,28 @@ ProjectFile::readResourceBody(Resource* r)
 				return FALSE;
 			}
 		}
+		else if (token == KW("planbooking"))
+		{
+			Booking* b;
+			if ((b = readBooking()) == 0)
+				return FALSE;
+			if (!r->addPlanBooking(b))
+			{
+				fatalError("Resource is already booked during this period");
+				return FALSE;
+			}
+		}
+		else if (token == KW("actualbooking"))
+		{
+			Booking* b;
+			if ((b = readBooking()) == 0)
+				return FALSE;
+			if (!r->addActualBooking(b))
+			{
+				fatalError("Resource is already booked during this period");
+				return FALSE;
+			}
+		}
 		else if (token == KW("flags"))
 		{
 			for ( ; ; )
@@ -1532,7 +1535,7 @@ ProjectFile::readResourceBody(Resource* r)
 				r->addFlag(flag);
 				if ((tt = nextToken(token)) != COMMA)
 				{
-					openFiles.last()->returnToken(tt, token);
+					returnToken(tt, token);
 					break;
 				}
 			}
@@ -1619,11 +1622,62 @@ ProjectFile::readShift(Shift* parent)
 		}
 	}
 	else
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 
 	proj->addShift(s);
 
 	return TRUE;
+}
+
+Booking*
+ProjectFile::readBooking()
+{
+	QString token;
+
+	if (nextToken(token) != DATE)
+	{
+		fatalError("Start date expected");
+		return 0;
+	}
+	time_t start = date2time(token);
+	if (start < proj->getStart() || start >= proj->getEnd())
+	{
+		fatalError("Start date must be within the project timeframe");
+		return 0;
+	}
+	
+	if (nextToken(token) != DATE)
+	{
+		fatalError("End date expected");
+		return 0;
+	}
+	time_t end = date2time(token);
+	if (end <= proj->getStart() || end > proj->getEnd())
+	{
+		fatalError("End date must be within the project timeframe");
+		return 0;
+	}
+	if (start >= end)
+	{
+		fatalError("End date must be after start date");
+		return 0;
+	}
+
+	QString pid;
+	if (nextToken(pid) != ID || !proj->isValidId(pid))
+	{
+		fatalError("Known project ID expected");
+		return 0;
+	}
+	Task* task;
+	TokenType tt;
+	if (((tt = nextToken(token)) != ID && tt != RELATIVE_ID) ||
+		(task = proj->getTask(token)) == 0)
+	{
+		fatalError("Task ID expected");
+		return 0;
+	}
+	return new Booking(Interval(start, end), task, "", pid);
 }
 
 bool
@@ -1719,7 +1773,7 @@ ProjectFile::readAccount(Account* parent)
 		}
 	}
 	else
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 
 	proj->addAccount(a);
 
@@ -1810,12 +1864,12 @@ ProjectFile::readAllocate(Task* t)
 					}
 					a->addAlternative(r);
 				} while ((tt = nextToken(token)) == COMMA);
-				openFiles.last()->returnToken(tt, token);
+				returnToken(tt, token);
 			}
 		}
 	}
 	else
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 	t->addAllocation(a);
 
 	return TRUE;
@@ -2031,7 +2085,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	TokenType tt;
 	if ((tt = nextToken(token)) != LCBRACE)
 	{
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 		return TRUE;
 	}
 
@@ -2058,7 +2112,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 				report->addColumn(col);
 				if ((tt = nextToken(token)) != COMMA)
 				{
-					openFiles.last()->returnToken(tt, token);
+					returnToken(tt, token);
 					break;
 				}
 			}
@@ -2181,7 +2235,7 @@ ProjectFile::readHTMLAccountReport()
 	TokenType tt;
 	if ((tt = nextToken(token)) != LCBRACE)
 	{
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 		return TRUE;
 	}
 
@@ -2208,7 +2262,7 @@ ProjectFile::readHTMLAccountReport()
 				report->addColumn(col);
 				if ((tt = nextToken(token)) != COMMA)
 				{
-					openFiles.last()->returnToken(tt, token);
+					returnToken(tt, token);
 					break;
 				}
 			}
@@ -2310,7 +2364,7 @@ ProjectFile::readExportReport()
 	TokenType tt;
 	if ((tt = nextToken(token)) != LCBRACE)
 	{
-		openFiles.last()->returnToken(tt, token);
+		returnToken(tt, token);
 		return TRUE;
 	}
 
@@ -2339,6 +2393,22 @@ ProjectFile::readExportReport()
 				return FALSE;
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpTask(et);
+		}
+		else if (token == KW("hideresource"))
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setHideResource(et);
+		}
+		else if (token == KW("rollupresource"))
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setRollUpResource(et);
 		}
 		else
 		{
@@ -2549,26 +2619,42 @@ ProjectFile::readSorting(Report* report, int which)
 time_t
 ProjectFile::date2time(const QString& date)
 {
-	int y, m, d, hour, min;
+	int y, m, d, hour, min, sec;
 	char tZone[16] = "";
-	if (sscanf(date, "%d-%d-%d-%d:%d-%s", &y, &m, &d, &hour, &min, tZone) == 6)
-		;
-	else if (sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min) == 5)
-		tZone[0] = '\0';
-	else if (sscanf(date, "%d-%d-%d", &y, &m, &d) == 3)
-	{			
-		tZone[0] = '\0';
-		hour = min = 0;
-	}
-
 	char savedTZ[16] = "";
-	if (strcmp(tZone, "") != 0)
+	if (sscanf(date, "%d-%d-%d-%d:%d:%d-%s",
+			   &y, &m, &d, &hour, &min, &sec, tZone) == 7 ||
+		(sec = 0) ||	// set sec to 0
+		sscanf(date, "%d-%d-%d-%d:%d-%s",
+			   &y, &m, &d, &hour, &min, tZone) == 6)
 	{
 		if (getenv("TZ"))
 			strcpy(getenv("TZ"), savedTZ);
-		setenv("TZ", tZone, 1);
+		const char* tz;
+		if ((tz = timezone2tz(tZone)) == 0)
+			fatalError(QString("Illegal timezone %s").arg(tZone));
+		else
+			setenv("TZ", tz, 1);
 	}
-	
+	else if (sscanf(date, "%d-%d-%d-%d:%d:%d",
+				   	&y, &m, &d, &hour, &min, &sec) == 6)
+		tZone[0] = '\0';
+	else if (sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min) == 5)
+	{
+		sec = 0;
+		tZone[0] = '\0';
+	}
+	else if (sscanf(date, "%d-%d-%d", &y, &m, &d) == 3)
+	{
+		tZone[0] = '\0';
+		hour = min = sec = 0;
+	}
+	else
+	{
+		qFatal("Illegal date: %s", date.latin1());
+		return 0;
+	}
+
 	if (y < 1970)
 	{
 		fatalError("Year must be larger than 1969");
@@ -2585,7 +2671,7 @@ ProjectFile::date2time(const QString& date)
 		d = 1;
 	}
 
-	struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
+	struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	time_t localTime = mktime(&t);
 
 	if (strcmp(savedTZ, "") != 0) 

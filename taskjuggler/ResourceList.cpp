@@ -143,7 +143,7 @@ Resource::~Resource()
 	if (planScoreboard)
 	{
 		for (uint i = 0; i < sbSize; i++)
-			if (planScoreboard[i] > (Booking*) 3)
+			if (planScoreboard[i] > (SbBooking*) 3)
 			{
 				uint j;
 				for (j = i + 1; j < sbSize &&
@@ -157,7 +157,7 @@ Resource::~Resource()
 	if (actualScoreboard)
 	{
 		for (uint i = 0; i < sbSize; i++)
-			if (actualScoreboard[i] > (Booking*) 3)
+			if (actualScoreboard[i] > (SbBooking*) 3)
 			{
 				uint j;
 				for (j = i + 1; j < sbSize &&
@@ -175,11 +175,11 @@ Resource::~Resource()
 void
 Resource::initScoreboard()
 {
-	scoreboard = new (Booking*)[sbSize];
+	scoreboard = new (SbBooking*)[sbSize];
 
 	// First mark all scoreboard slots as unavailable.
 	for (uint i = 0; i < sbSize; i++)
-		scoreboard[i] = (Booking*) 1;
+		scoreboard[i] = (SbBooking*) 1;
 
 	// Then change all worktime slots to 0 (available) again.
 	for (time_t day = project->getStart(); day < project->getEnd();
@@ -210,7 +210,7 @@ Resource::initScoreboard()
 			for (time_t date = interval.getStart();
 				 date < interval.getEnd() && date < project->getEnd();
 				 date += project->getScheduleGranularity())
-				scoreboard[sbIndex(date)] = (Booking*) 0;
+				scoreboard[sbIndex(date)] = (SbBooking*) 0;
 		}
 	}
 
@@ -220,7 +220,7 @@ Resource::initScoreboard()
 			 date < i->getEnd() &&
 				 project->getStart() <= date && date < project->getEnd();
 			 date += project->getScheduleGranularity())
-			scoreboard[sbIndex(date)] = (Booking*) 2;
+			scoreboard[sbIndex(date)] = (SbBooking*) 2;
 
 	// Mark all global vacation slots as such (2)
 	for (Interval* i = project->getVacationListFirst(); i != 0;
@@ -230,7 +230,7 @@ Resource::initScoreboard()
 			 date < i->getEnd() &&
 				 project->getStart() <= date && date < project->getEnd();
 			 date += project->getScheduleGranularity())
-			scoreboard[sbIndex(date)] = (Booking*) 2;
+			scoreboard[sbIndex(date)] = (SbBooking*) 2;
 	}
 }
 
@@ -241,10 +241,25 @@ Resource::sbIndex(time_t date) const
 	uint sbIdx = (date - project->getStart()) /
 		project->getScheduleGranularity();
 	if (sbIdx < 0 || sbIdx >= sbSize)
-		qFatal("Date %s out of range (Resource %s, Index %d)",
+		qFatal("Date %s is outside of the defined project timeframe "
+			   "(Resource %s, Index %d)",
 			   time2ISO(date).latin1(),
 			   id.latin1(), sbIdx);
 	return sbIdx;
+}
+
+time_t
+Resource::index2start(uint idx) const
+{
+	return project->getStart() + idx *
+		project->getScheduleGranularity();
+}
+
+time_t
+Resource::index2end(uint idx) const
+{
+	return project->getStart() + (idx + 1) *
+		project->getScheduleGranularity() - 1;
 }
 
 void
@@ -308,8 +323,8 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 	
 	for (uint i = sbStart; i < sbEnd; i++)
    	{
-		Booking* b = scoreboard[i];
-		if (b < (Booking*) 4)
+		SbBooking* b = scoreboard[i];
+		if (b < (SbBooking*) 4)
 			continue;
 
 		bookedTime += duration;
@@ -322,35 +337,97 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 		<= (loadFactor / 100.0);
 }
 
-void
+bool
 Resource::book(Booking* nb)
 {
-	uint index = sbIndex(nb->getStart());
+	uint idx = sbIndex(nb->getStart());
 
-	Booking* b;
+	return bookSlot(idx, nb);
+}
+
+bool
+Resource::bookSlot(uint idx, SbBooking* nb)
+{
+	// Test if the time slot is still available.
+	if (scoreboard[idx] != 0)
+		return FALSE;
+	
+	SbBooking* b;
 	// Try to merge the booking with the booking in the previous slot.
-	if (index > 0 && (b = scoreboard[index - 1]) > (Booking*) 3 &&
+	if (idx > 0 && (b = scoreboard[idx - 1]) > (SbBooking*) 3 &&
 		b->getTask() == nb->getTask() &&
 		b->getProjectId() == nb->getProjectId())
 	{
-		if (!b->getInterval().append(nb->getInterval()))
-			qFatal("Cannot append time slot");
-		scoreboard[index] = b;
+		scoreboard[idx] = b;
 		delete nb;
-		return;
+		return TRUE;
 	}
 	// Try to merge the booking with the booking in the following slot.
-	if (index < sbSize - 1 && (b = scoreboard[index + 1]) > (Booking*) 3 &&
+	if (idx < sbSize - 1 && (b = scoreboard[idx + 1]) > (SbBooking*) 3 &&
 		b->getTask() == nb->getTask() &&
 		b->getProjectId() == nb->getProjectId())
 	{
-		if (!b->getInterval().prepend(nb->getInterval()))
-			qFatal("Cannot prepend time slot");
-		scoreboard[index] = b;
+		scoreboard[idx] = b;
 		delete nb;
-		return;
+		return TRUE;
 	}
-	scoreboard[index] = nb;
+	scoreboard[idx] = nb;
+	return TRUE;
+}
+
+bool
+Resource::bookInterval(Booking* nb)
+{
+	uint sIdx = sbIndex(nb->getStart());
+	uint eIdx = sbIndex(nb->getEnd());
+
+	for (uint i = sIdx; i <= eIdx; i++)
+		if (scoreboard[i])
+		{
+			qWarning("Resource %s is already booked at %s",
+					 id.latin1(), time2ISO(index2start(i)).latin1());
+			return FALSE;
+		}
+	for (uint i = sIdx; i <= eIdx; i++)
+		bookSlot(i, new SbBooking(*nb));
+
+	return TRUE;
+}
+
+bool
+Resource::addPlanBooking(Booking* nb)
+{
+	SbBooking** tmp = scoreboard;
+	
+	if (planScoreboard)
+		scoreboard = planScoreboard;
+	else
+		initScoreboard();
+	bool retVal = bookInterval(nb);
+	// Cross register booking with task.
+	if (retVal && nb->getTask())
+		nb->getTask()->addPlanBookedResource(this);
+	planScoreboard = scoreboard;
+	scoreboard = tmp;
+	return retVal;
+}
+
+bool
+Resource::addActualBooking(Booking* nb)
+{
+	SbBooking** tmp = scoreboard;
+	
+	if (actualScoreboard)
+		scoreboard = actualScoreboard;
+	else
+		initScoreboard();
+	bool retVal = bookInterval(nb);
+	// Cross register booking with task.
+	if (retVal && nb->getTask())
+		nb->getTask()->addActualBookedResource(this);
+	actualScoreboard = scoreboard;
+	scoreboard = tmp;
+	return retVal;
 }
 
 double
@@ -369,8 +446,8 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 	for (uint i = sbIndex(iv.getStart());
 		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
-		Booking* b = planScoreboard[i];
-		if (b < (Booking*) 4)
+		SbBooking* b = planScoreboard[i];
+		if (b < (SbBooking*) 4)
 			continue;
 		if (task == 0 || task == b->getTask())
 			bookedTime += project->getScheduleGranularity();
@@ -392,15 +469,16 @@ Resource::getActualLoad(const Interval& period, Task* task)
 	for (Resource* r = subFirst(); r != 0; r = subNext())
 		subLoad += r->getActualLoad(iv, task);
 
-	for (uint i = sbIndex(iv.getStart());
-		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
-	{
-		Booking* b = actualScoreboard[i];
-		if (b < (Booking*) 4)
-			continue;
-		if (task == 0 || task == b->getTask())
-			bookedTime += project->getScheduleGranularity();
-	}
+	if (actualScoreboard)
+		for (uint i = sbIndex(iv.getStart());
+			 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+		{
+			SbBooking* b = actualScoreboard[i];
+			if (b < (SbBooking*) 4)
+				continue;
+			if (task == 0 || task == b->getTask())
+				bookedTime += project->getScheduleGranularity();
+		}
 
 	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
 }
@@ -430,8 +508,8 @@ Resource::getPlanPIDs(const Interval& period, Task* task, QStringList& pids)
 	for (uint i = sbIndex(iv.getStart());
 		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
-		Booking* b = planScoreboard[i];
-		if (b < (Booking*) 4)
+		SbBooking* b = planScoreboard[i];
+		if (b < (SbBooking*) 4)
 			continue;
 		if ((task == 0 || task == b->getTask()) &&
 			pids.findIndex(b->getProjectId()) == -1)
@@ -464,18 +542,19 @@ Resource::getActualPIDs(const Interval& period, Task* task, QStringList& pids)
 	for (Resource* r = subFirst(); r != 0; r = subNext())
 		r->getActualPIDs(iv, task, pids);
 
-	for (uint i = sbIndex(iv.getStart());
-		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
-	{
-		Booking* b = actualScoreboard[i];
-		if (b < (Booking*) 4)
-			continue;
-		if ((task == 0 || task == b->getTask()) &&
-			pids.findIndex(b->getProjectId()) == -1)
+	if (actualScoreboard)
+		for (uint i = sbIndex(iv.getStart());
+			 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 		{
-			pids.append(b->getProjectId());
+			SbBooking* b = actualScoreboard[i];
+			if (b < (SbBooking*) 4)
+				continue;
+			if ((task == 0 || task == b->getTask()) &&
+				pids.findIndex(b->getProjectId()) == -1)
+			{
+				pids.append(b->getProjectId());
+			}
 		}
-	}
 }
 
 QString
@@ -521,15 +600,26 @@ BookingList
 Resource::getPlanJobs()
 {
 	BookingList bl;
-
-	Booking* b = 0;
-	for (uint i = 0; i < sbSize; i++)
-		if (planScoreboard[i] > (Booking*) 3 && planScoreboard[i] != b)
-		{
-			bl.append(planScoreboard[i]);
-			b = planScoreboard[i];
-		}
-
+	if (planScoreboard)
+	{
+		SbBooking* b = 0;
+		uint startIdx = 0;
+		for (uint i = 0; i < sbSize; i++)
+			if (planScoreboard[i] != b)
+			{
+				if (b)
+					bl.append(new Booking(Interval(index2start(startIdx),
+												   index2end(i - 1)),
+										  planScoreboard[startIdx]));
+				if (planScoreboard[i] > (SbBooking*) 3)
+				{
+					b = planScoreboard[i];
+					startIdx = i;
+				}
+				else
+					b = 0;
+			}
+	}
 	return bl;
 }
 
@@ -537,14 +627,26 @@ BookingList
 Resource::getActualJobs()
 {
 	BookingList bl;
-
-	Booking* b = 0;
-	for (uint i = 0; i < sbSize; i++)
-		if (actualScoreboard[i] > (Booking*) 3 && actualScoreboard[i] != b)
-		{
-			bl.append(actualScoreboard[i]);
-			b = actualScoreboard[i];
-		}
+	if (actualScoreboard)
+	{
+		SbBooking* b = 0;
+		uint startIdx = 0;
+		for (uint i = 0; i < sbSize; i++)
+			if (actualScoreboard[i] != b)
+			{
+				if (b)
+					bl.append(new Booking(Interval(index2start(startIdx),
+												   index2end(i - 1)),
+										  actualScoreboard[startIdx]));
+				if (actualScoreboard[i] > (SbBooking*) 3)
+				{
+					b = actualScoreboard[i];
+					startIdx = i;
+				}
+				else
+					b = 0;
+			}
+	}
 
 	return bl;
 }
@@ -552,7 +654,10 @@ Resource::getActualJobs()
 void
 Resource::preparePlan()
 {
-	initScoreboard();
+	if (planScoreboard)
+		scoreboard = planScoreboard;
+	else
+		initScoreboard();
 }
 
 void
@@ -564,7 +669,10 @@ Resource::finishPlan()
 void
 Resource::prepareActual()
 {
-	initScoreboard();
+	if (actualScoreboard)
+		scoreboard = actualScoreboard;
+	else
+		initScoreboard();
 }
 
 void

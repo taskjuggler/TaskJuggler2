@@ -23,6 +23,8 @@ public:
 	virtual ~ExportReport() { }
 
 	bool generate();
+	bool generateTaskList(TaskList& ftl, ResourceList& frl);
+	bool generateResourceList(TaskList& ftl, ResourceList& frl);
 
 private:
 	ExportReport() { }

@@ -1,6 +1,6 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 
-SUBDIRS = taskjuggler docs
+SUBDIRS = taskjuggler docs TestSuite
 
 EXTRA_DIST = taskjuggler.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO taskjuggler.lsm 
 

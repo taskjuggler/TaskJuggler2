@@ -13,6 +13,33 @@
 #include <stdio.h>
 #include "Utility.h"
 
+#include <qdict.h>
+
+static QDict<const char> TZDict;
+static bool TZDictReady = FALSE;
+
+const char*
+timezone2tz(const char* tzone)
+{
+	if (!TZDictReady)
+	{
+		TZDict.insert("PST", "GMP8:00");
+		TZDict.insert("PDT", "GMT7:00");
+		TZDict.insert("MST", "GMT7:00");
+		TZDict.insert("MDT", "GMT6:00");
+		TZDict.insert("CST", "GMT6:00");
+		TZDict.insert("CDT", "GMT5:00");
+		TZDict.insert("EST", "GMT5:00");
+		TZDict.insert("EDT", "GMT4:00");
+		TZDict.insert("CET", "GMT-1:00");
+		TZDict.insert("CEST", "GMT-2:00");
+
+		TZDictReady = TRUE;
+	}
+
+	return TZDict[tzone];
+}
+
 const char*
 monthAndYear(time_t t)
 {
@@ -253,6 +280,15 @@ QString time2ISO(time_t t)
 	static char buf[128];
 
 	strftime(buf, 127, "%Y-%m-%d %H:%M %Z", tms);
+	return buf;
+}
+
+QString time2tjp(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[128];
+
+	strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%Z", tms);
 	return buf;
 }
 

@@ -1152,6 +1152,7 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 
 	bool first = TRUE;
 	BookingList planJobs = r->getPlanJobs();
+	planJobs.setAutoDelete(TRUE);
 	for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
 	{
 		if (t == b->getTask())
@@ -1177,6 +1178,7 @@ ReportHtml::actualSchedule(Resource* r, Task* t)
 
 	bool first = TRUE;
 	BookingList actualJobs = r->getActualJobs();
+	actualJobs.setAutoDelete(TRUE);
 	for (Booking* b = actualJobs.first(); b != 0; b = actualJobs.next())
 	{
 		if (t == b->getTask())

@@ -40,45 +40,90 @@ ExportReport::generate()
 	}
 	s.setDevice(&f);
 	
-	TaskList filteredList;
-	filterTaskList(filteredList, 0);
-	sortTaskList(filteredList);
+	TaskList filteredTaskList;
+	filterTaskList(filteredTaskList, 0);
+	sortTaskList(filteredTaskList);
 
-	for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
+	ResourceList filteredResourceList;
+	filterResourceList(filteredResourceList, 0);
+	sortResourceList(filteredResourceList);
+
+	generateTaskList(filteredTaskList, filteredResourceList);
+	generateResourceList(filteredTaskList, filteredResourceList);
+	
+	f.close();
+	return TRUE;
+}
+
+bool
+ExportReport::generateTaskList(TaskList& filteredTaskList,
+							   ResourceList& filteredResourceList)
+{
+	for (Task* t = filteredTaskList.first(); t != 0;
+		 t = filteredTaskList.next())
 	{
-		QString start = time2ISO(t->getPlanStart());
-		for (uint i = 0; i < start.length(); i++)
-			if (start[i] == ' ')
-				start[i] = '-';
-		QString end = time2ISO(t->getPlanEnd());
-		for (uint i = 0; i < end.length(); i++)
-			if (end[i] == ' ')
-				end[i] = '-';
+		QString start = time2tjp(t->getPlanStart());
+		QString end = time2tjp(t->getPlanEnd());
 
 		s << "task " << t->getId() << " \"" << t->getName() << "\""
 			<< " { start " << start
-		   	<< " end " << end;
+			<< " end " << end;
 		if (showActual)
 		{
-			QString start = time2ISO(t->getActualStart());
-			for (uint i = 0; i < start.length(); i++)
-				if (start[i] == ' ')
-					start[i] = '-';
-			QString end = time2ISO(t->getActualEnd());
-			for (uint i = 0; i < end.length(); i++)
-				if (end[i] == ' ')
-					end[i] = '-';
+			QString start = time2tjp(t->getActualStart());
+			QString end = time2tjp(t->getActualEnd());
 			s << "actualStart " << start
 				<< " actualEnd " << end;
 		}
-		
+
+		if (!filteredResourceList.isEmpty())
+			s << " projectid " << t->getProjectId() << " ";
 		if (t->isMilestone())
 			s << "milestone ";
 		
 		s << " }" << endl;
 	}
 
-	f.close();
+	return TRUE;
+}
+
+bool
+ExportReport::generateResourceList(TaskList& filteredTaskList,
+								   ResourceList& filteredResourceList)
+{
+	for (Resource* r = filteredResourceList.first(); r != 0;
+		 r = filteredResourceList.next())
+	{
+		s << "supplement resource " << r->getId() << " {" << endl;
+		BookingList bl = r->getPlanJobs();
+		bl.setAutoDelete(TRUE);
+		for (Booking* b = bl.first(); b != 0; b = bl.next())
+		{
+			if (filteredTaskList.getTask(b->getTask()->getId()))
+			{
+				QString start = time2tjp(b->getStart());
+				QString end = time2tjp(b->getEnd());
+				s << "  planbooking " << start << " " << end 
+					<< " " << b->getProjectId()
+					<< " " << b->getTask()->getId() << endl;
+			}
+		}
+		bl = r->getActualJobs();
+		bl.setAutoDelete(TRUE);
+		for (Booking* b = bl.first(); b != 0; b = bl.next())
+		{
+			if (filteredTaskList.getTask(b->getTask()->getId()))
+			{
+				QString start = time2tjp(b->getStart());
+				QString end = time2tjp(b->getEnd());
+				s << "  actualbooking " << start << " " << end 
+					<< " " << b->getProjectId()
+					<< " " << b->getTask()->getId() << endl;
+			}
+		}
+		s << "}" << endl;
+	}
+
 	return TRUE;
 }
 

@@ -208,6 +208,11 @@ public:
 
 	double getPlanLoad(const Interval& period, Resource* resource = 0);
 
+	void addPlanBookedResource(Resource* r)
+	{
+		if (planBookedResources.find(r) == -1)
+			planBookedResources.inSort(r);
+	}
 	bool isPlanBookedResource(Resource* r)
 	{
 		return planBookedResources.find(r) != -1;
@@ -252,6 +257,11 @@ public:
 	bool isActualActive(const Interval& period) const;
 
 	double getActualLoad(const Interval& period, Resource* r = 0);
+	void addActualBookedResource(Resource* r)
+	{
+		if (actualBookedResources.find(r) == -1)
+			actualBookedResources.inSort(r);
+	}
 	bool isActualBookedResource(Resource* r)
 	{
 		return actualBookedResources.find(r) != -1;
@@ -336,7 +346,6 @@ private:
 		if (bookedResources.find(r) == -1)
 			bookedResources.inSort(r);
 	}
-
 	time_t earliestStart();
 	time_t latestEnd();
 	void fatalError(const QString& msg) const;

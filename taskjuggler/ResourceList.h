@@ -25,20 +25,15 @@
 
 class Project;
 class Task;
+class Resource;
 
-class Booking
+class SbBooking
 {
 public:
-	Booking(const Interval& iv, Task* t, QString a = "",
-			QString i = "")
-		: interval(iv), task(t), account(a), projectId(i) { }
-	~Booking() { }
-
-	time_t getStart() const { return interval.getStart(); }
-	time_t getEnd() const { return interval.getEnd(); }
-	time_t getDuration() const { return interval.getDuration(); }
-	Interval& getInterval() { return interval; }
-
+	SbBooking(Task* t, QString a = "", QString i = "")
+		: task(t), account(a), projectId(i) { }
+	~SbBooking() { }
+	
 	Task* getTask() const { return task; }
 
 	void setAccount(const QString a) { account = a; }
@@ -46,6 +41,30 @@ public:
 
 	void setProjectId(const QString i) { projectId = i; }
 	const QString& getProjectId() const { return projectId; }
+
+private:
+	// A pointer to the task that caused the booking
+	Task* task;
+	// String identifying the KoTrus account the effort is credited to.
+	QString account;
+	// The Project ID
+	QString projectId;
+};
+
+class Booking : public SbBooking
+{
+public:
+	Booking(const Interval& iv, Task* t, QString a = "",
+			QString i = "")
+		: SbBooking(t, a, i), interval(iv) { }
+	Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
+			interval(iv) { }
+	~Booking() { }
+
+	time_t getStart() const { return interval.getStart(); }
+	time_t getEnd() const { return interval.getEnd(); }
+	time_t getDuration() const { return interval.getDuration(); }
+	Interval& getInterval() { return interval; }
 
 	void setLockTS( const QString& ts ) { lockTS = ts; }
 	const QString& getLockTS() const { return lockTS; }
@@ -56,21 +75,11 @@ public:
 private:
 	// The booked time period.
 	Interval interval;
-	// A pointer to the task that caused the booking
-	Task* task;
-	// String identifying the KoTrus account the effort is credited to.
-	QString account;
-	// The Project ID
-	QString projectId;
-   
 	// The database lock timestamp
 	QString lockTS;
 
 	// the lockers ID
 	QString lockerId;
-
-	// A list of flags that can be used to select a sub-set of tasks.
-	FlagList flagList;
 } ;
 
 class BookingList : public QPtrList<Booking>
@@ -150,7 +159,12 @@ public:
 
 	bool isAvailable(time_t day, time_t duration, int loadFactor, Task* t);
 
-	void book(Booking* b);
+	bool book(Booking* b);
+
+	bool bookSlot(uint idx, SbBooking* nb);
+	bool bookInterval(Booking* b);
+	bool addPlanBooking(Booking* b);
+	bool addActualBooking(Booking* b);
 
 	double getPlanLoad(const Interval& i, Task* task = 0);
 
@@ -199,6 +213,9 @@ private:
 	void initScoreboard();
 	uint sbIndex(time_t date) const;
 
+	time_t index2start(uint idx) const;
+	time_t index2end(uint idx) const;
+
 	/// Pointer used by subResourceFirst() and subResourceNext().
 	Resource* currentSR;
 
@@ -238,14 +255,14 @@ private:
 	 * For each time slot (of length scheduling granularity) we store a
 	 * pointer to a booking, a '1' if slot is off-hours, a '2' if slot is
 	 * during a vacation or 0 if resource is available. */
-	Booking** scoreboard;
+	SbBooking** scoreboard;
 	/// The number of time slots in the project.
 	uint sbSize;
 
 	/// Scoring of planned usages of the resource.
-	Booking** planScoreboard;
+	SbBooking** planScoreboard;
 	/// Scoring of actual usages of the resource.
-	Booking** actualScoreboard;
+	SbBooking** actualScoreboard;
 } ;
 
 #endif

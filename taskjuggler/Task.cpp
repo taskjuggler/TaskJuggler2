@@ -1197,6 +1197,7 @@ Task::preparePlan()
 	lastSlot = 0;
 	schedulingDone = FALSE;
 	bookedResources.clear();
+	bookedResources = planBookedResources;
 
 	if (actualStart == 0.0)
 		actualStart = planStart;
@@ -1233,6 +1234,7 @@ Task::prepareActual()
 	lastSlot = 0;
 	schedulingDone = FALSE;
 	bookedResources.clear();
+	bookedResources = actualBookedResources;
 }
 
 void

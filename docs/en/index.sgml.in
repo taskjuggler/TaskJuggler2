@@ -102,12 +102,19 @@ contain functions as well. Currently there is support for 'istask',
 
 <item>Property reference is now sorted in alphabetical order.
 
-<item>Added missing 'export' report to documentation.
+<item>Added missing 'export' report to documentation. Export reports
+can now contain the scheduled tasks as well as the resource
+allocations.
+
+<item>New keywords 'planbooking' and 'actualbooking' to enter fixed
+bookings of resources in the resource declaration.
 
 <item>Added new example project to illustrate the use of export in big
 projects that are split into sub projects.
 
 <item>HTML comment in HTML report files is now using correct syntax.
+
+<item>Partial fix for correct timezone handling.
 
 </itemize>
 <p>
@@ -354,8 +361,11 @@ beginning and is used in relative IDs. A '!' means one level up.
 string may include line breaks.
 
 <label id="date"><tag/DATE/A DATE is an ISO-compliant date in the
-format YYYY-MM-DD[-hh:mm]. Hour, minute,
-and second are optional. If not specified, the values are set to 0.
+format YYYY-MM-DD[-hh:mm[:ss]][-TIMEZONE]. Hour, minutes,
+seconds and the TIMEZONE are optional. If not specified, the values
+are set to 0. The local timezone is used if no other is specified. If
+the timezone is not known taskjuggler will fall back to UTC. See
+the source code (taskjuggler/Utility.cpp) for details. 
 
 <label id="time"><tag/TIME/A time in the format HH:MM.
 
@@ -463,11 +473,23 @@ filename: <ref id="string" name="STRING">
 Optional attributes:
 
 <descrip>
+<tag/hideresource &lt;expression&gt;/
+expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
+
+Report only resources that do not have flags meeting the described logical
+expression.
+
 <tag/hidetask &lt;expression&gt;/
 expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
-List only tasks that do not have flags meeting the described logical
+Report only tasks that do not have flags meeting the described logical
 expression.
+
+<tag/rollupresource &lt;expression&gt;/
+expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
+
+Do not show subresources of resources with flags meeting the described
+logical expression.
 
 <tag/rolluptask &lt;expression&gt;/
 expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
@@ -480,6 +502,10 @@ logical expression.
 The export report looks like a regular taskjuggler file but contains
 fixed start and end dates for all tasks. The tasks only have start and
 end times and their flags. No other attributes are exported.
+
+If requested the resource usage for the tasks is reported as well. But
+only those allocations are listed that belong to tasks listed in the
+same export report.
 
 The export report can be used to share certain tasks or milestones
 with other projects.
