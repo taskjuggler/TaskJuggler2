@@ -24,21 +24,24 @@ package tjTask;
 
     use strict;
     use warnings;
-    use Class::MethodMaker
-        new_hash_init   => 'new',
-        get_set         => [ qw(Index ProjectID complete Priority Type Id Name ParentTask
-                                startBuffer endBuffer
-                                minStart maxStart
-                                minEnd maxEnd
-                                actualStart actualEnd
-                                planStart planEnd
-                                h_minStart h_minEnd
-                                h_maxStart h_maxEnd
-                                h_actualStart h_actualEnd
-                                h_planStart h_planEnd
-                                x1 y1 x2 y2
-                                label label_x label_y ) ],
-        struct          => [ qw(Followers Previous Allocations bookedResources) ];
+    # You need MethodMaker 2.02 or later!
+    use Class::MethodMaker 
+    [ 
+     new => 'new',
+     scalar => [ qw(Index ProjectID complete Priority Type Id Name ParentTask
+                    startBuffer endBuffer
+                    minStart maxStart
+                    minEnd maxEnd
+                    actualStart actualEnd
+                    planStart planEnd
+                    h_minStart h_minEnd
+                    h_maxStart h_maxEnd
+                    h_actualStart h_actualEnd
+                    h_planStart h_planEnd
+                    x1 y1 x2 y2
+                    label label_x label_y ) ],
+     array => [ qw(Followers Previous Allocations bookedResources) ]
+    ];
 
 use XML::Parser;
 use PostScript::Simple;
@@ -393,10 +396,10 @@ sub _draw_res {
             my ($x2, $y2) = _trans_coord($_x2, $_y2);
             #-- balken
             $p->setcolour(222,222,222);
-            $p->box($x1, $y1, $x2, $y2, 1);
+            $p->box({filled => 1}, $x1, $y1, $x2, $y2);
             #-- rahmen drum
             $p->setcolour(0,0,0);
-            $p->box($x1, $y1, $x2, $y2, 0);
+            $p->box({filled => 0}, $x1, $y1, $x2, $y2);
             #-- linie dazwischen
             my $l_y = $y2+($task_space/2)-($task_height/2);
             $p->line($page_border+5, $l_y, $page_x-($page_border*2), $l_y );
@@ -458,35 +461,35 @@ sub _draw_task {
             if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
                 if ( $persent < 100 ) {
                     $p->setcolour(255,0,0);
-                    $p->box($x1, $y1, $x2, $y2, 1);
+                    $p->box({filled => 1}, $x1, $y1, $x2, $y2);
                 }
             } else {
                 $p->setcolour(255,255,255);
-                $p->box($x1, $y1, $x2, $y2, 1);
+                $p->box({filled => 1}, $x1, $y1, $x2, $y2);
             }
             #-- buffer balken pinseln
             if ( $task->startBuffer ) {
                 my $buf = $task->startBuffer;
                 my ($buf_length, $d) = _trans_coord($_x1 + (($task_length/100*$buf) * $day_x), 0);
                 $p->setcolour(222,222,222);
-                $p->box($x1, $y1, $buf_length, $y2, 1);
+                $p->box({filled => 1}, $x1, $y1, $buf_length, $y2);
             }
             if ( $task->endBuffer ) {
                 my $buf = $task->endBuffer;
                 my ($buf_length, $d) = _trans_coord($_x2 - (($task_length/100*$buf) * $day_x), 0);
                 $p->setcolour(222,222,222);
-                $p->box($buf_length, $y1, $x2, $y2, 1);
+                $p->box({filled => 1}, $buf_length, $y1, $x2, $y2);
             }
             #-- länge von % feritg balken
             my ($per_length, $d) = _trans_coord($_x1 + (($task_length/100*$persent) * $day_x), 0);
             #-- % done balken pinseln
             if ($persent > 0) {
                 $p->setcolour(0,255,0);
-                $p->box($x1, $y1, $per_length, $y2, 1);
+                $p->box({filled => 1}, $x1, $y1, $per_length, $y2);
             }
             #-- rahmen um den task
             $p->setcolour(0,0,0);
-            $p->box($x1, $y1, $x2, $y2, 0);
+            $p->box({filled => 0}, $x1, $y1, $x2, $y2);
             #-- text
             $task->label($name);
             $task->label_x($x1+1);
@@ -494,7 +497,7 @@ sub _draw_task {
         }
         if ( $task->Type eq 'Container' ) {
             $p->setcolour(0,0,0);
-            $p->box($x1-1, $y1, $x2+1, $y2+($task_height/1.2), 1);
+            $p->box({filled => 1}, $x1-1, $y1, $x2+1, $y2+($task_height/1.2));
             #-- pfeil vorn
             $p->polygon(
                 $x1+1, $y2+($task_height/1.2),
@@ -585,7 +588,7 @@ sub _draw_grid {
         my $h_month_week = 3;
         my ($_x, $_y)   = ($i*$day_x, $day_x*$h_month_week);
         my ($x, $y)     = _trans_coord($_x, $_y);
-        $p->box($x, $y, $x+$day_x, $page_border, 1);
+        $p->box({filled => 1}, $x, $y, $x+$day_x, $page_border);
         #-- die linien haben unterschiedliche höhe
         #-- is es ein wochen-anfang
         if ( $act_dow == 1 ) {
