@@ -32,7 +32,6 @@
 #include "ktjview2view.h"
 
 class QLabel;
-class KToggleAction;
 class KURL;
 class KListViewSearchLine;
 
@@ -125,7 +124,15 @@ private slots:
     void changeStatusbar( const QString& text );
     void changeCaption( const QString& text );
 
+    /**
+     * Update toolbars' visibility based on component selection
+     */
     void slotUpdateToolbars( int item );
+
+    /**
+     * Apply preselected filters on the task list
+     */
+    void slotFilterFor();
 
 private:
     void setupActions();
@@ -136,6 +143,7 @@ private:
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
     KToggleAction * m_calendarAction;
+    KSelectAction * m_filterForAction;
 
     // search line
     QLabel * m_searchLabel;

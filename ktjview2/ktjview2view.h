@@ -143,6 +143,11 @@ public slots:
      */
     void filter();
 
+    /**
+     * Apply preselected filters on the task list.
+     */
+    void slotFilterFor( int id );
+
 signals:
     /**
      * Use this signal to change the content of the statusbar

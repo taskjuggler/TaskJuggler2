@@ -827,4 +827,9 @@ void ktjview2View::slotJumpToTask()
     }
 }
 
+void ktjview2View::slotFilterFor( int id )
+{
+
+}
+
 #include "ktjview2view.moc"

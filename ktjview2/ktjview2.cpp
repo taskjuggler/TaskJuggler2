@@ -47,7 +47,6 @@
 #include <kedittoolbar.h>
 #include <kstdaccel.h>
 #include <kaction.h>
-#include <kactionclasses.h>
 #include <kstdaction.h>
 #include <kconfigdialog.h>
 
@@ -114,6 +113,17 @@ void ktjview2::setupActions()
     KStdAction::find( m_view, SLOT( find() ), actionCollection());
     new KAction( i18n( "Filter..." ), "filter", KShortcut(),
                  m_view, SLOT( filter() ), actionCollection(), "filter" );
+
+    // Tasks menu
+    m_filterForAction = new KSelectAction( i18n( "&Filter for: All Tasks" ), "filter", KShortcut(),
+                                           this, SLOT( slotFilterFor() ), actionCollection(), "filter_for" );
+    QStringList filterItems = QStringList();
+    filterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
+                << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
+                << i18n( "Task Range..." ) << i18n( "Using Resource..." );
+
+    m_filterForAction->setItems( filterItems );
+    m_filterForAction->setCurrentItem( 0 ); // All Tasks by default
 
     // Gantt menu
     m_calendarAction = new KToggleAction( i18n( "Calendar mode" ), "month", KShortcut(),
@@ -308,6 +318,11 @@ void ktjview2::slotUpdateToolbars( int item )
 void ktjview2::setCalendarMode()
 {
     m_view->setCalendarMode( m_calendarAction->isChecked() );
+}
+
+void ktjview2::slotFilterFor()
+{
+    m_view->slotFilterFor( m_filterForAction->currentItem() );
 }
 
 #include "ktjview2.moc"
