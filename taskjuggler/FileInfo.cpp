@@ -469,12 +469,12 @@ FileInfo::readMacroCall()
         return FALSE;
     }
     id = prefix + id;
-    
+
     QString token;
     // Store all arguments in a newly created string list.
     QStringList* sl = new QStringList;
     sl->append(id);
-    while ((tt = nextToken(token)) == STRING)
+    while ((tt = nextToken(token)) == STRING || tt == ID)
         sl->append(token);
     if (tt != RBRACE)
     {
@@ -487,7 +487,8 @@ FileInfo::readMacroCall()
 
     // expand the macro
     pf->getMacros().setLocation(file, currLine);
-    QString macro = pf->getMacros().resolve(id);
+    QString macro = pf->getMacros().resolve();
+
     if (macro.isNull() && prefix.isEmpty())
         return FALSE;
 
@@ -583,10 +584,16 @@ FileInfo::errorMessage(const char* msg, ...)
         int line = 0;
         for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
         {
-            QStringList argList(*pf->getMacros().getArguments(i));
-            argList.pop_front();
-            stackDump += "\n  ${" + (*mli)->getName() + " \""
-                + argList.join("\" \"") + "\"}";
+            if (pf->getMacros().getArguments(i))
+            {
+                QStringList argList(*pf->getMacros().getArguments(i));
+                argList.pop_front();
+                stackDump += "\n  ${" + (*mli)->getName() + " \""
+                    + argList.join("\" \"") + "\"}";
+            }
+            else
+                stackDump += "\n  ${" + (*mli)->getName() + " ... }";
+
             file = (*mli)->getFile();
             line = (*mli)->getLine();
         }

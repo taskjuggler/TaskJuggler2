@@ -71,7 +71,7 @@ public:
         macros.clear();
         argStack.clear();
     }
-    QString resolve(const QString& name) const;
+    QString resolve();
     QString expand(const QString& text);
     Macro* getMacro(const QString& name) const { return macros[name]; }
 

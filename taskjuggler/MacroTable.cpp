@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <qregexp.h>
 
+#include "debug.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "MacroTable.h"
@@ -34,8 +35,29 @@ MacroTable::setMacro(Macro* macro)
 }
 
 QString
-MacroTable::resolve(const QString& nameWithPrefix) const
+MacroTable::resolve()
 {
+    QPtrListIterator<QStringList> pli(argStack);
+    pli.toLast();
+    QString nameWithPrefix = (*(*pli))[0];
+    if (DEBUGMA(10))
+    {
+        qDebug("MacroTable::resolve():");
+        for (int i = 1; *pli; --pli, ++i)
+        {
+            QStringList* sl = *pli;
+            if (sl)
+            {
+                qDebug(" Argument Stack Level %d", i);
+                QStringList::Iterator it = sl->begin();
+                for (int j = 1; it != sl->end(); ++it, ++j)
+                    qDebug("  %d: %s", j, (*it).latin1());
+            }
+            else
+                qDebug("Argument Stack Level %d empty", i);
+        }
+    }
+
     QString name = nameWithPrefix;
     bool emptyIsLegal = FALSE;
 
@@ -49,12 +71,15 @@ MacroTable::resolve(const QString& nameWithPrefix) const
         emptyIsLegal = TRUE;
     }
 
+    QString result;
     if (isdigit(name[0].latin1()))
     {
         /* If the first character of the name is a digit, we assume that it is
          * a number. It addresses the n-th argument of the macro call. */
         QPtrListIterator<QStringList> pli(argStack);
         pli.toLast();
+        /* The numerical arguments do not reference parameters of their own
+         * call but of the caller. So we have to pop the stack once. */
         --pli;
         QStringList* sl = *pli;
         uint idx = name.toInt();
@@ -62,6 +87,7 @@ MacroTable::resolve(const QString& nameWithPrefix) const
         {
             if (!emptyIsLegal)
                 errorMessage(i18n("Macro argument stack is empty."));
+            popArguments();
             return QString::null;
         }
         if (idx >= sl->count())
@@ -70,23 +96,56 @@ MacroTable::resolve(const QString& nameWithPrefix) const
                 errorMessage
                     (i18n("Index %1 for argument out of range [0 - %2]!")
                      .arg(idx).arg(sl->count()));
+            popArguments();
             return QString::null;
         }
-        return (*sl)[idx];
+        result = (*sl)[idx];
     }
     else
-        if (macros[name])
-            return macros[name]->getValue();
+        if (name == "if")
+        {
+            QPtrListIterator<QStringList> pli(argStack);
+            pli.toLast();
+            QStringList* sl = *pli;
+            if (!sl || sl->count() != 3)
+            {
+                errorMessage
+                    (i18n("'if' macro needs a condition and an argument"));
+                return QString::null;
+            }
+            if (!(*sl)[1].isEmpty() && (*sl)[1].toLong() != 0)
+                result = (*sl)[2];
+            else
+                return QString::null;
+        }
+        else if (name == "ifelse")
+        {
+        }
+        else if (name == "error")
+        {
+        }
+        else if (name == "warning")
+        {
+        }
+        else if (macros[name])
+            result = expand(macros[name]->getValue());
             
-    if (!emptyIsLegal)
+    if (result.isNull() && !emptyIsLegal)
         errorMessage
             (i18n("Usage of undefined macro '%1'").arg(name));
-    return QString::null;
+
+    if (DEBUGMA(5))
+        qDebug("Resolved as %s", result.latin1());
+
+    popArguments();
+    return result;
 }
 
 QString
 MacroTable::expand(const QString& text)
 {
+    if (DEBUGMA(5))
+        qDebug("MacroTable::expand(%s)", text.latin1());
     QString res;
     for (uint i = 0; i < text.length(); i++)
     {
@@ -97,44 +156,86 @@ MacroTable::expand(const QString& text)
                 res += '$';
                 continue;
             }
-            uint cb;
-            for (cb = i + 2; cb < text.length() && text[cb] != '}'; cb++)
-                ;
-            if (text[cb] != '}')
+            i += 2;
+            // Skip white spaces
+            while (i < text.length() && isspace(text[i]))
+                ++i;
+            if (i >= text.length())
             {
                 errorMessage
-                    (i18n("Unterminated macro call '%1'").arg(text));
+                    (i18n("Macro call cannot be empty"));
                 return res;
             }
-            QStringList* argList = 
-                new QStringList(QStringList::split
-                                (QRegExp("[ \t]+"),
-                                 text.mid(i + 2, cb - (i + 2))));
-            if (argList->count() < 1)
+
+            // Get macro call
+            QString macroCall;
+            while (i < text.length() && !isspace(text[i]) && text[i] != '}')
+                macroCall += text[i++];
+            if (i >= text.length())
             {
                 errorMessage
-                    (i18n("Macro call can't be empty."));
+                    (i18n("Unexpected end of macro call: %1").arg(text));
                 return res;
             }
-            for (uint j = 1; j < argList->count(); ++j)
+            QStringList* argumentList = new QStringList;
+            argumentList->append(macroCall);
+
+            // Skip white spaces
+            while (i < text.length() && isspace(text[i]))
+                ++i;
+            if (i >= text.length())
             {
-                if (!QRegExp("\".*\"").exactMatch((*argList)[j]))
+                errorMessage
+                    (i18n("Unexpected end of macro: %1").arg(text));
+                return res;
+            }
+
+            // Read optional macro arguments
+            while (i < text.length() && text[i] != '}')
+            {
+                // Check and remember argument delimiter
+                if (text[i] != '"' && text[i] != '\'')
                 {
                     errorMessage
-                        (i18n("Macro arguments must be enclosed by "
-                              "double quotes."));
+                        (i18n("Macro parameters must be enclosed with quotes "
+                              "or double quotes."));
                     return res;
                 }
+                QChar delim = text[i++];
+                QString arg;
+                while (i < text.length() && text[i] != delim)
+                    arg += text[i++];
+                if (i >= text.length())
+                {
+                    errorMessage
+                        (i18n("Unterminated macro argument: %1").arg(arg));
+                    return res;
+                }
+                // Skip right delimiter
+                i++;
+                arg = expand(arg);
+                argumentList->append(arg);
+                
+                // Skip white spaces
+                while (isspace(text[i]))
+                    ++i;
             }
-            pushArguments(argList);
-            // TODO: Add support for nested macro calls
-            res += resolve((*argList)[0]);
-            popArguments();
-            i = cb;
+            if (i >= text.length())
+            {
+                errorMessage
+                    (i18n("Macro calls must be terminated with a '}': %1")
+                     .arg(text));
+                return res;
+            }
+            
+            pushArguments(argumentList);
+            res += resolve();
         }
         else
             res += text[i];
     }
+    if (DEBUGMA(10))
+        qDebug("Expanded %s to %s", text.latin1(), res.latin1());
     return res;
 }
 
