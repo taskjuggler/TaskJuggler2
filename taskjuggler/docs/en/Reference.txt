@@ -14,15 +14,14 @@ ID: A string that may consist of the characters A-Z, a-z, 0-9 and _. It may
 not start with a number.
 
 GLOBAL_ID: A GLOBAL_ID may have the same characters as ID but
-additionally it may contain . and !. ! may only be used at the
-beginning and is used in relative IDs. A ! means one scope up.
+additionally it may contain '.' and '!'. '!' may only be used at the
+beginning and is used in relative IDs. A '!' means one scope up.
 
-STRING: A string may contain any characters and is enclosed in ". A
+STRING: A string may contain any characters and is enclosed in '"'. A
 string may include line breaks.
 
-DATE: A DATE is an ISO compliant date YYYY-MM-DD[-hh:mm]. Hour,
-minute and second are optional. If not specified the values are set to
-0.
+DATE: A DATE is an ISO compliant date YYYY-MM-DD[-hh:mm]. Hour, minute
+and second are optional. If not specified the values are set to 0.
 
 TIME: A time in the format HH:MM.
 
@@ -47,13 +46,14 @@ INTEGER: An integer number.
 REAL: A real number (e.g. 3.14).
 
 LOGICALEXPRESSION: This is a logical expression consting of logical
-operations and (&), or (|) and not (~) to operation on INTERGER values
+operations and '&', or '|' and not '~' to operation on INTERGER values
 or symbols. As symbols currently only flag names are supported. The
-expression is evaluated from left to right. Use braces to avoid
-ambigous operations. If flagFoo, flagFooBar and flagBar are declared
-flags, the following example is a correct expression:
+expression is evaluated from left to right. '~' has a higher
+precedance than other operators. Use braces to avoid ambigous
+operations. If flagFoo, flagFooBar and flagBar are declared flags, the
+following example is a correct expression:
 
-(flagFoo | flagFooBar) & !flagBar
+(flagFoo | flagFooBar) & ~flagBar
 
 SORTINGCRITERIA: See attribute description for allowed values.
 
@@ -96,7 +96,7 @@ id: ID
 name: STRING
 
 A task may have sub tasks. In case sub tasks are specified many of the
-other attributes are illegal.
+other attributes are illegal. See attributes for details.
 
 -------------------------------------------------------------------------------
 note <text>
@@ -213,13 +213,9 @@ Optional attributes:
 load <days>
 days: REAL
 
-Specifies how many days the resource can be used per day. A load of
-0.5 means that the resource will be used for half a working day.
-
-...............................................................................
-persistent
-
-If set the first available resource will be used for the whole task.
+Specifies how many days the resource can be used per day for this
+task. A load of 0.5 means that the resource will be used for at most
+half a working day for this task.
 
 ...............................................................................
 alternative <id>[,<id>]
@@ -228,6 +224,12 @@ id: ID
 Specifies IDs of alternative resources. One of the alternatives will
 be used in case the main resource is not available. If multiple
 resources are used they must be seperated by a comma.
+
+...............................................................................
+persistent
+
+If set the first available resource out of the specified resource and
+it's specified alternatives will be used for the whole task.
 
 ...............................................................................
 
@@ -259,8 +261,8 @@ id: GLOBAL_ID
 Specifies that the task cannot start before the task with the
 specified IDs have been finished. If multiple IDs are specified they
 must be seperated by a comma. ids must be either global or relative. A
-relative ID starts with a number of !. Each ! moves the scope to the
-parent task. Global IDs do not contain ! but have ID seperated by
+relative ID starts with a number of '!'. Each '!' moves the scope to the
+parent task. Global IDs do not contain '!' but have IDs seperated by
 dots.
 
     Example:
@@ -291,10 +293,7 @@ id: ID
 
 Attaches flags to the task. Flags can be used to hide the information
 about the task in the output. Flags must be declared before they can
-be used. Ref. 'flags'. Some predefined flags exist for tasks:
-
-closed: Hides all sub-tasks in all reports.
-hidden: Hides this task in all reports.
+be used. Ref. 'flags'.
 
 Flags are inherited by sub tasks from their parent tasks if they are
 declared before the sub task. Flags that are declared after the sub
@@ -477,7 +476,8 @@ value: INTEGER
 Specifies the number of working hours per day. This value is used to
 calculate the daily load from the number of booked hours. If
 workingHoursPerDay is set to 8 and a resource is used for 12 hours on
-a day, the daily load is 1.5.
+a day, the daily load is 1.5. Change this value with care since it
+affects a lot of internal calculations!
 
 ===============================================================================
 priority <value> value: INTEGER
@@ -576,17 +576,17 @@ filename: STRING
 Optional attributes:
 
 -------------------------------------------------------------------------------
-columns <id>[,<id>]
-id: STRING
+columns <colid>[,<colid>]
+colid: ID
 
 Specifies which columns should be included in the task report. The
-following values are available:
+following values for colid are available:
 
 no: The task index.
 
 id: The global ID of a task.
 
-task: The name of a task.
+name: The name of a task, resource or account.
 
 start: The start date of a task.
 
@@ -659,13 +659,17 @@ matches the hide expression.
 
 tree: Show nesting with indentation
 
-fullnameup: Last full name on top
-
-fullnamedown: First full name on top
-
 indexup: Last index on top
 
 indexdown: First index on top
+
+idup: Last ID on top
+
+iddown: First ID on top
+
+fullnameup: Last full name on top
+
+fullnamedown: First full name on top
 
 nameup: Last name on top
 
@@ -686,6 +690,22 @@ prioritydown: Highest priority on top
 responsibleup: Last name of responsible on top
 
 responsibledown: First name of responsible on top
+
+mineffortup: Smallest minimal effort on top
+
+mineffortdown: Largest minimal effort on top
+
+maxeffortup: Smallerst maximum effort on top
+
+maxeffortdown: Largest maximum effort on top
+
+rateup: Smallest rate on top
+
+ratedown: Largest rate on top
+
+kotrusidup: Last kotrusid on top
+
+kotrusiddown: First kotrusid on top
 
 -------------------------------------------------------------------------------
 showActual
@@ -739,6 +759,29 @@ htmlaccountreport <filename>
 filename: STRING
 
 Optional attributes:
+
+-------------------------------------------------------------------------------
+columns <colid>[,<colid>]
+colid: ID
+
+Specifies which columns should be included in the task report. The
+following values for colid are available:
+
+no: The task index.
+
+id: The global ID of a task.
+
+name: The name of a task, resource or account.
+
+total: Total accumulated values.
+
+daily: A day-by-day calendar view of the accounts.
+
+weekly: A week-by-week calendar view of the accounts.
+
+monthly: A month-by-month calendar view of the accounts.
+
+quaterly: A quarter-by-quarter calender view of the accounts.
 
 -------------------------------------------------------------------------------
 start <day>

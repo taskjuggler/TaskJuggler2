@@ -46,10 +46,8 @@ int main(int argc, char *argv[])
 			return (-1);
 		pf->parse();
 	}
-	qDebug("Scheduling...");
 	if (!p.pass2())
 		return (1);
-	qDebug("Generating reports...");
 	p.generateReports();
 
 	return (0);

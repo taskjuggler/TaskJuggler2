@@ -41,6 +41,8 @@ public:
 	virtual ~Report();
 
 	void setShowActual(bool s) { showActual = s; }
+	bool getShowActual() const { return showActual; }
+
 	void setHidePlan(bool s) { hidePlan = s; }
 	void setShowPIDs(bool s) { showPIDs = s; }
 

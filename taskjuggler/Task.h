@@ -260,7 +260,7 @@ public:
    
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
-	bool schedule(time_t reqStart, time_t duration);
+	bool schedule(time_t& reqStart, time_t duration);
 	bool isScheduled() const { return schedulingDone; }
 	void setScheduled() { schedulingDone = TRUE; }
 	bool needsEarlierTimeSlot(time_t date);
@@ -302,6 +302,11 @@ public:
 
 	void prepareActual();
 	void finishActual();
+	bool hasActualValues() const
+	{
+		return actualStart != 0 || actualEnd != 0 || actualLength != 0 ||
+			actualDuration != 0 || actualEffort != 0;
+	}
 
 	QDomElement xmlElement( QDomDocument& doc );
 

@@ -187,6 +187,8 @@ private:
 	void getPlanPIDs(const Interval& period, Task* task, QStringList& pids);
 	void getActualPIDs(const Interval& period, Task* task, QStringList& pids);
 
+	long sbIndex(time_t date) const;
+
 	/// Pointer used by subResourceFirst() and subResourceNext().
 	Resource* currentSR;
 
@@ -221,6 +223,8 @@ private:
 
 	/// A list of all scheduled uses of the resource.
 	BookingList jobs;
+
+	Booking** scoreboard;
 } ;
 
 #endif

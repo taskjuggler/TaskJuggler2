@@ -91,6 +91,7 @@ public:
 	{
 		return resourceList.getResource(id);
 	}
+	uint resourceCount() const { return resourceList.count(); }
 
 	void addAccount(Account* a)
 	{
@@ -156,6 +157,7 @@ public:
 	AccountList getAccountList() { return accountList; }
 
 	void generateReports();
+	bool needsActualDataForReports();
 	void removeActiveTask(Task* t);
 	void addActiveTask(Task* t);
    

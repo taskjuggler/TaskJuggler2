@@ -114,6 +114,19 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 		}
 		efficiency = 1.0;
 	}
+
+	long sbSize = (p->getEnd() - p->getStart()) /
+		p->getScheduleGranularity() + 1;
+	scoreboard = new (Booking*)[sbSize];
+}
+
+long
+Resource::sbIndex(time_t date) const
+{
+	if (date < project->getStart() || date > project->getEnd())
+		qFatal("Date out of range");
+	// Convert date to corresponding scoreboard index.
+	return (date - project->getStart()) / project->getScheduleGranularity();
 }
 
 void
@@ -158,6 +171,10 @@ bool
 Resource::isAvailable(time_t date, time_t duration, Interval& interval,
 					  int loadFactor, Task* t)
 {
+	// Check if the interval is booked already.
+	if (scoreboard[sbIndex(date)])
+		return FALSE;
+
 	// Check that the resource is not closed or on vacation
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
 		if (i->overlaps(Interval(date, date + duration - 1)))
@@ -179,22 +196,17 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval,
 		{
 			time_t bookedTime = duration;
 			time_t bookedTimeTask = duration;
-			Interval day = Interval(midnight(date),
-									sameTimeNextDay(midnight(date)) - 1);
-			for (Booking* b = jobs.last();
-				 b != 0 && b->getStart() >= day.getStart(); b = jobs.prev())
+
+			for (long i = sbIndex(midnight(date));
+				 i < sbIndex(sameTimeNextDay(midnight(date)) - 1); i++)
 			{
-				// Check if the interval is booked already.
-				if (b->getInterval().overlaps(
-					Interval(date, date + duration - 1)))
-					return FALSE;
-				// Accumulate total load for the current day.
-				if (day.contains(b->getInterval()))
-				{
-					bookedTime += b->getDuration();
-					if (b->getTask() == t)
-						bookedTimeTask += b->getDuration();
-				}
+				Booking* b = scoreboard[i];
+				if (b == 0)
+					continue;
+
+				bookedTime += duration;
+				if (b->getTask() == t)
+					bookedTimeTask += duration;
 			}
 			return project->convertToDailyLoad(bookedTime) <= maxEffort &&
 				project->convertToDailyLoad(bookedTimeTask)
@@ -207,22 +219,30 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval,
 void
 Resource::book(Booking* nb)
 {
-	// Try first to append the booking 
-	for (Booking* b = jobs.last();
-		 b != 0 && b->getEnd() + 1 >= nb->getStart();
-		 b = jobs.prev())
+	long index = sbIndex(nb->getStart());
+
+	Booking* b;
+	if (index > 0 && (b = scoreboard[index - 1]) != 0 &&
+		b->getTask() == nb->getTask() &&
+		b->getProjectId() == nb->getProjectId())
 	{
-		if (b->getTask() == nb->getTask() &&
-			b->getProjectId() == nb->getProjectId() &&
-			(b->getInterval().append(nb->getInterval()) ||
-			 b->getInterval().prepend(nb->getInterval())))
-		{
-			// booking appended
-			delete nb;
-			return;
-		}
+		if (!b->getInterval().append(nb->getInterval()))
+			qFatal("Cannot append time slot");
+		scoreboard[index] = b;
+		delete nb;
+		return;
 	}
-	jobs.inSort(nb);
+	if ((b = scoreboard[index + 1]) != 0 && b->getTask() == nb->getTask() &&
+		b->getProjectId() == nb->getProjectId())
+	{
+		if (!b->getInterval().prepend(nb->getInterval()))
+			qFatal("Cannot prepend time slot");
+		scoreboard[index] = b;
+		delete nb;
+		return;
+	}
+	scoreboard[index] = nb;
+	jobs.append(nb);
 }
 
 double
@@ -380,6 +400,8 @@ void
 Resource::preparePlan()
 {
 	jobs.clear();
+	for (long i = 0; i < sbSize; i++)
+		scoreboard[i] = (Booking*) 0;
 }
 
 void
@@ -389,12 +411,15 @@ Resource::finishPlan()
 	// Make deep copy of jobs to planJobs.
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
 		planJobs.append(new Booking(*b));
+	planJobs.sort();
 }
 
 void
 Resource::prepareActual()
 {
 	jobs.clear();
+	for (long i = 0; i < sbSize; i++)
+		scoreboard[i] = (Booking*) 0;
 }
 
 void
@@ -404,6 +429,7 @@ Resource::finishActual()
 	// Make deep copy of jobs to actualJobs.
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
 		actualJobs.append(new Booking(*b));
+	actualJobs.sort();
 }
 
 ResourceList::ResourceList()

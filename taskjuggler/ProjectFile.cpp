@@ -578,9 +578,15 @@ ProjectFile::parse()
 				ulong resolution;
 				if (!readTimeValue(resolution))
 					return FALSE;
+				if (proj->resourceCount() > 0)
+				{
+					fatalError("The timing resolution cannot be changed after "
+							   "resources have been declared.");
+					return FALSE;
+				}
 				if (resolution < 60 * 5)
 				{
-					fatalError("scheduleGranularity must be at least 5 min");
+					fatalError("timing resolution must be at least 5 min");
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);

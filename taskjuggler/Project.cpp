@@ -95,20 +95,30 @@ Project::pass2()
 			error = TRUE;
 	}
 
+	bool hasActualValues = FALSE;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+	{
 		if (!t->preScheduleOk())
 			error = TRUE;
+		if (t->hasActualValues())
+			hasActualValues = TRUE;
+	}
 
 	if (error)
 		return FALSE;
 
+	qWarning("Scheduling plan scenario...");
 	preparePlan();
 	schedule();
 	finishPlan();
 
-	prepareActual();
-	schedule();
-	finishActual();
+	if (hasActualValues)
+	{
+		qWarning("Scheduling actual scenario...");
+		prepareActual();
+		schedule();
+		finishActual();
+	}
 
 	return TRUE;
 }
@@ -254,6 +264,8 @@ Project::checkSchedule()
 void
 Project::generateReports()
 {
+	qWarning("Generating reports...");
+
 	// Generate task reports
 	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
 		 h = htmlTaskReports.next())
@@ -270,6 +282,31 @@ Project::generateReports()
 
 	if( xmlreport )
 	   xmlreport->generate();
+}
+
+bool
+Project::needsActualDataForReports()
+{
+	bool needsActual = FALSE;
+
+	// Generate task reports
+	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
+		 h = htmlTaskReports.next())
+		if (h->getShowActual())
+			needsActual = TRUE;
+	// Generate resource reports
+	for (HTMLResourceReport* h = htmlResourceReports.first(); h != 0;
+		 h = htmlResourceReports.next())
+		if (h->getShowActual())
+			needsActual = TRUE;
+
+	// Generate account reports
+	for (HTMLAccountReport* h = htmlAccountReports.first(); h != 0;
+		 h = htmlAccountReports.next())
+		if (h->getShowActual())
+			needsActual = TRUE;
+
+	return needsActual;
 }
 
 void

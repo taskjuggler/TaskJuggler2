@@ -108,7 +108,7 @@ Task::fatalError(const QString& msg) const
 }
 
 bool
-Task::schedule(time_t date, time_t slotDuration)
+Task::schedule(time_t& date, time_t slotDuration)
 {
 	// Task is already scheduled.
 	if (schedulingDone)
@@ -236,12 +236,24 @@ Task::schedule(time_t date, time_t slotDuration)
 		{
 			if (scheduling == ASAP)
 			{
-				end = date + slotDuration - 1;
+				if (doneEffort > 0.0)
+				{
+					end = tentativeEnd;
+					date = end - slotDuration + 1;
+				}
+				else
+					end = date + slotDuration - 1;
 				propagateEnd();
 			}
 			else
 			{
-				start = date;
+				if (doneEffort > 0.0)
+				{
+					start = tentativeStart;
+					date = start;
+				}
+				else
+					start = date;
 				propagateStart();
 			}
 			project->removeActiveTask(this);
@@ -311,13 +323,13 @@ Task::scheduleContainer()
 {
 	Task* t;
 	bool changeMade = FALSE;
-	if (start != earliestStart())
+	if (start != earliestStart() && earliestStart() != 0)
 	{
 		start = earliestStart();
 		propagateStart();
 		changeMade = TRUE;
 	}
-	if (end != latestEnd())
+	if (end != latestEnd() && latestEnd() != 0)
 	{
 		end = latestEnd();
 		propagateEnd();
@@ -371,6 +383,9 @@ Task::scheduleContainer()
 void
 Task::propagateStart(bool safeMode)
 {
+	if (start == 0)
+		return;
+
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end == 0 && t->scheduling == ALAP &&
 			t->latestEnd() != 0)
@@ -382,15 +397,18 @@ Task::propagateStart(bool safeMode)
 		}
 
 	/* Propagate start time to sub tasks which have only an implicit
-	 * dependancy on the parent task. */
+	 * dependancy on the parent task. Do not touch container tasks. */
 	for (Task* t = subFirst(); t != 0; t = subNext())
-		if (t->start == 0 && t->previous.isEmpty() && t->scheduling == ASAP)
+	{
+		if (t->start == 0 && t->previous.isEmpty() &&
+			t->sub.isEmpty() && t->scheduling == ASAP)
 		{
 			t->start = start;
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 			t->propagateStart(safeMode);
 		}
+	}
 
 	if (safeMode && parent)
 		getParent()->scheduleContainer();
@@ -399,6 +417,9 @@ Task::propagateStart(bool safeMode)
 void
 Task::propagateEnd(bool safeMode)
 {
+	if (end == 0)
+		return;
+
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (t->start == 0 && t->scheduling == ASAP &&
 			t->earliestStart() != 0)
@@ -408,18 +429,17 @@ Task::propagateEnd(bool safeMode)
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 		}
-
 	/* Propagate end time to sub tasks which have only an implicit
-	 * dependancy on the parent task. */
+	 * dependancy on the parent task. Do not touch container tasks. */
 	for (Task* t = subFirst(); t != 0; t = subNext())
-		if (t->end == 0 && t->followers.isEmpty() && t->scheduling == ALAP)
+		if (t->end == 0 && t->followers.isEmpty() &&
+			t->sub.isEmpty() && t->scheduling == ALAP)
 		{
 			t->end = end;
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 			t->propagateEnd(safeMode);
 		}
-
 
 	if (safeMode && parent)
 		getParent()->scheduleContainer();
@@ -470,7 +490,6 @@ Task::bookResources(time_t date, time_t slotDuration)
 				}
 		}
 	}
-
 	return allocFound;
 }
 
