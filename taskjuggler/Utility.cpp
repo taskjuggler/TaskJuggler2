@@ -180,21 +180,40 @@ dayOfMonth(time_t t)
 int
 weekOfYear(time_t t)
 {
-	time_t boy = beginOfYear(t);
-	struct tm* tms = localtime(&boy);
-	int i;
-	for (i = 0; tms->tm_wday != 0; boy = sameTimeNextDay(boy))
-		tms = localtime(&boy);
-	// If t is in last year's week, we have to do it again for last year.
-	if (boy > t)
+	/* The  ISO  8601:1988 week number of the current year as a decimal
+	 * number, range 1 to 53, where  week  1 is  the first week that has at
+	 * least 4 days in the current year, and with Monday as the first day
+	 * of the week. This is also compliant with DIN 1355. */
+	uint week = 0;
+	uint weekday1Jan = dayOfWeek(beginOfYear(t), TRUE);
+	struct tm* tms = localtime(&t);
+	int days = tms->tm_yday;
+
+	if (weekday1Jan > 3)
+		days = days - (7 - weekday1Jan);
+	else 
+		days = days + weekday1Jan;
+
+	if (days < 0)
+		if ((weekday1Jan == 4) ||
+		   	(dayOfWeek(beginOfYear(beginOfYear(t) - 1), TRUE) == 3))
+			week = 53;
+		else 
+			week = 52;
+	else 
+		week = days / 7 + 1;
+
+	if ((days > 360) && (week > 52)) 
 	{
-		boy = beginOfYear(sameTimeLastYear(t));
-		tms = localtime(&boy);
-		for (i = 0; tms->tm_wday != 0; boy = sameTimeNextDay(boy))
-			tms = localtime(&boy);
+		if (weekday1Jan == 3)
+			week = 53;
+		else if (dayOfWeek(sameTimeNextYear(beginOfYear(t)), TRUE) == 4)
+			week = 53;
+		else
+		   	week = 1;
 	}
-	tms = localtime(&t);
-	return (tms->tm_yday - i) / 7 + 1;
+
+	return week;
 }
 
 int 
@@ -205,10 +224,13 @@ monthOfYear(time_t t)
 }
 
 int
-dayOfWeek(time_t t)
+dayOfWeek(time_t t, bool beginOnMonday)
 {
 	struct tm* tms = localtime(&t);
-	return tms->tm_wday;
+	if (beginOnMonday)
+		return tms->tm_wday ? tms->tm_wday - 1 : 6;
+	else
+		return tms->tm_wday;
 }
 
 QString
@@ -238,10 +260,10 @@ midnight(time_t t)
 }
 
 time_t
-beginOfWeek(time_t t)
+beginOfWeek(time_t t, bool beginOnMonday)
 {
 	struct tm* tms;
-	for (tms = localtime(&t) ; tms->tm_wday != 0;
+	for (tms = localtime(&t) ; tms->tm_wday != (beginOnMonday ? 1 : 0);
 		 t = sameTimeYesterday(t), tms = localtime(&t))
 		;
 	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;

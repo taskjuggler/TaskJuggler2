@@ -42,7 +42,7 @@ bool isWeekend(time_t d);
 
 time_t midnight(time_t t);
 
-time_t beginOfWeek(time_t t);
+time_t beginOfWeek(time_t t, bool beginOnMonday = FALSE);
 
 time_t beginOfMonth(time_t t);
 
@@ -85,7 +85,7 @@ int monthOfYear(time_t d);
 
 int year(time_t d);
 
-int dayOfWeek(time_t d);
+int dayOfWeek(time_t d, bool beginOnMonday = FALSE);
 
 QString dayOfWeekName(time_t d);
 

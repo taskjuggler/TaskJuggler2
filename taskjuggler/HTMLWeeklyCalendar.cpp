@@ -75,14 +75,18 @@ HTMLWeeklyCalendar::generate()
 bool
 HTMLWeeklyCalendar::generateCalendar(TaskList& filteredList)
 {
-	for (time_t week = beginOfWeek(start);
-		 week <= sameTimeNextWeek(beginOfWeek(end)); )
+	for (time_t week = beginOfWeek(start, TRUE);
+		 week <= sameTimeNextWeek(beginOfWeek(end, TRUE)); )
 	{
 		time_t wd = week;
 		s << "<tr>";
+		s << "<td width=\"5.5%\" class=\"headersmall\" "
+			"style=\"font-size:110%\">"
+			<< "Week " << QString().sprintf("%d", weekOfYear(wd))
+		   	<< "</td>" << endl;
 		for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
 		{
-			s << "<td width=\"14.2%\" class=\"";
+			s << "<td width=\"13.5%\" class=\"";
 			s << (isSameDay(project->getNow(), wd) ? "today" :
 				  isWeekend(wd) ? "weekend" : "headersmall");
 			s << "\">"
@@ -101,10 +105,11 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredList)
 				<< "</table></td>" << endl;
 		}
 		s << "</tr><tr>" << endl;
+		s << "<td width=\"5.5%\" class=\"default\">&nbsp;</td>" << endl;
 		wd = week;
 		for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
 		{
-			s << "<td width=\"14.2%\" class=\"default\" "
+			s << "<td width=\"13.5%\" class=\"default\" "
 				 "style=\"vertical-align:top\">";
 			bool first = TRUE;
 			for (Task* t = filteredList.first(); t; t = filteredList.next())
