@@ -1237,6 +1237,8 @@ ReportHtml::generateDepends(Task* t, bool light)
 	{
 		if (!first)
 			s << ", ";
+		else
+			first = FALSE;
 		s << QString().sprintf("%d", d->getIndex());
 	}
 	s << "</span</td>" << endl;
