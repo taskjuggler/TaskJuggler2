@@ -985,6 +985,12 @@ TaskJugglerView::keywordHelp()
     if (mw->bigTab->currentPageIndex() == 0 && fileManager->isProjectLoaded())
     {
         QString keyword = fileManager->getWordUnderCursor();
+
+        // In case there is no word under the cursor, show the help for the
+        // global scope. This is a good entry point to find other keywords.
+        if (keyword.isEmpty())
+            keyword = "global_scope";
+
         kapp->invokeHelp(QString("PROPERTY_") + keyword);
     }
 }

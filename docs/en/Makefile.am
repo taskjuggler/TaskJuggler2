@@ -3,7 +3,7 @@ docprefix = /usr/share/doc/packages/taskjuggler/
 kdeprefix = $(prefix)/share/doc/HTML/en/taskjuggler/
 
 SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml Example.xml SyntaxReference.xml GenPropertyReference.xml index.docbook
-CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml
+CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml taskjuggler.junk db2html.* taskjuggler.log CATALOG.local *.dsl
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(kdeprefix)
@@ -47,21 +47,16 @@ taskjuggler/book1.html: $(SGMLSOURCES)
 	  mkdir -p taskjuggler ; \
 	  db2html --xencoding utf-8 taskjuggler.xml ;\
 	  cp index.html taskjuggler/index.html ; \
-	  rm -rf taskjuggler.junk ;\
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
 	  db2ps --xencoding utf-8 taskjuggler.xml ;\
-	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
-	    CATALOG.local *.dsl ; \
 	fi
 
 taskjuggler.pdf: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
 	  db2ps --pdf --xencoding utf-8 taskjuggler.xml ;\
-	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
-	    CATALOG.local *.dsl ; \
 	fi
 
 tarball: 

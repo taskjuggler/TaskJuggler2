@@ -2,8 +2,8 @@ TASKJUGGLER=../../taskjuggler/taskjuggler
 TJX2GANTT=../../tjx2gantt/tjx2gantt
 TARGETNAME=ShiftSchedule
 
-EXTRA_DIST = *.html *.tjp *.tjx *.eps
-CLEANFILES = *.html *.tjx *.eps
+EXTRA_DIST = *.html *.tjp *.tjx
+CLEANFILES = *.html *.tjx
 
 docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/$(TARGETNAME)
 
