@@ -1,4 +1,5 @@
-/* For details about TaskJuggler see http://www.taskjuggler.org
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
  */
 project prj "Milestone Test" "$Id" 2003-01-01-00:00:00-GMT 2003-01-30-23:59:59-GMT {
   timezone "GMT"
@@ -9,121 +10,37 @@ project prj "Milestone Test" "$Id" 2003-01-01-00:00:00-GMT 2003-01-30-23:59:59-G
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
+    workinghours sun off
+    workinghours mon 9:00 - 12:00, 13:00 - 18:00
+    workinghours tue 9:00 - 12:00, 13:00 - 18:00
+    workinghours wed 9:00 - 12:00, 13:00 - 18:00
+    workinghours thu 9:00 - 12:00, 13:00 - 18:00
+    workinghours fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat off
 }
 resource tux1 "Tux1" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux10 "Tux10" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux11 "Tux11" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux12 "Tux12" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux2 "Tux2" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux3 "Tux3" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux4 "Tux4" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux5 "Tux5" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux6 "Tux6" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux7 "Tux7" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux8 "Tux8" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource tux9 "Tux9" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 task t1 "|->" {
   projectid prj
@@ -218,30 +135,44 @@ task t2 "<-|" {
   plan:scheduled
 }
 supplement task t1 {
+  priority 500
 }
 supplement task m8 {
+  priority 500
 }
 supplement task m10_asap {
+  priority 500
 }
 supplement task m1 {
+  priority 500
 }
 supplement task m2 {
+  priority 500
 }
 supplement task m3 {
+  priority 500
 }
 supplement task m4 {
+  priority 500
 }
 supplement task m5 {
+  priority 500
 }
 supplement task m7 {
+  priority 500
 }
 supplement task m9 {
+  priority 500
 }
 supplement task m11 {
+  priority 500
 }
 supplement task m6 {
+  priority 500
 }
 supplement task m10_alap {
+  priority 500
 }
 supplement task t2 {
+  priority 500
 }

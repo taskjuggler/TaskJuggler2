@@ -38,15 +38,18 @@ private:
 
     bool generateProjectProperty();
     bool generateCustomAttributeDeclaration(const QString& propertyName,
-        QDictIterator<CustomAttributeDefinition> it);
+        QDictIterator<const CustomAttributeDefinition> it);
     bool generateShiftList();
-    bool generateWorkingHours(const QPtrList<const Interval>* const* wh);
+    bool generateShift(const Shift*, int indent);
+    bool generateWorkingHours(const QPtrList<const Interval>* const* wh,
+                              const QPtrList<const Interval>* const* ref,
+                              int indent);
     bool generateResourceList(ResourceList& frl, TaskList& ftl);
-    bool generateResource(ResourceList& frl, Resource* r, int ident);
+    bool generateResource(ResourceList& frl, const Resource* r, int ident);
     bool generateTaskList(TaskList& ftl, ResourceList& frl);
-    bool generateTask(TaskList& ftl, Task* task, int indent);
+    bool generateTask(TaskList& ftl, const Task* task, int indent);
     bool generateTaskAttributeList(TaskList& ftl);
-    bool generateTaskSupplement(TaskList& ftl, Task* task, int indent);
+    bool generateTaskSupplement(TaskList& ftl, const Task* task, int indent);
     bool generateResourceAttributesList(TaskList& ftl, ResourceList& frl);
     
     QStringList taskAttributes;

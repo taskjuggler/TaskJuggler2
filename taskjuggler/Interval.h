@@ -85,6 +85,15 @@ public:
         else
             return 0;   // interval overlap
     }
+    bool operator==(const Interval& i) const
+    {
+        return start == i.start && end == i.end;
+    }
+    bool operator!=(const Interval& i) const
+    {
+        return start != i.start || end != i.end;
+    } 
+
     time_t getStart() const { return start; }
     void setStart(time_t s) { start = s; }
 

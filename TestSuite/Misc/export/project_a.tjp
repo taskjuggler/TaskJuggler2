@@ -50,8 +50,7 @@ task t5 "Task5" {
 
 export "project_a_sub.tji" {
 	taskroot t4
-	taskattributes flags, note, minstart, maxstart, minend, maxend,
-	complete, responsible, depends, UserText, UserRef
+	taskattributes all 
 	hideresource 0
 }
 

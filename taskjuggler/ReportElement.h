@@ -220,7 +220,8 @@ public:
 protected:
     ReportElement() { }
 
-    void addCustomAttributeColumns(const QDict<CustomAttributeDefinition> cad);
+    void addCustomAttributeColumns
+        (const QDict<const CustomAttributeDefinition>& cad);
 
     QTextStream& s() const;
     void errorMessage(const char* msg, ... );

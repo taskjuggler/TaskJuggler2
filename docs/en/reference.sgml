@@ -411,6 +411,15 @@ task</link>.</para>
 	<computeroutput>priority</computeroutput>,
 	<computeroutput>responsible</computeroutput></para>
 
+<para>By specifying the ID of a <link
+linkend="project_extend">user-defined</link> attribute, these can be
+included as well.</para>
+
+<para>A special case the is <computeroutput>all</computeroutput>
+keyword. If this is part of the list, all supported task attributes
+will be included in the report.	This includes all user-defined
+task attributes.</para>
+
 </sect2>
 
 </sect1>

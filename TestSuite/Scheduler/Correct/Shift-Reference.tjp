@@ -1,6 +1,7 @@
-/* For details about TaskJuggler see http://www.taskjuggler.org
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project test "Test" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
+project test "Test" "1.0" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
@@ -9,40 +10,27 @@ project test "Test" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
+    workinghours sun off
+    workinghours mon 9:00 - 12:00, 13:00 - 18:00
+    workinghours tue 9:00 - 12:00, 13:00 - 18:00
+    workinghours wed 9:00 - 12:00, 13:00 - 18:00
+    workinghours thu 9:00 - 12:00, 13:00 - 18:00
+    workinghours fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat off
 }
 shift s1 "Shift1" {
-  workinghours sun off
-  workinghours mon 10:00 - 12:00, 13:00 - 15:00
-  workinghours tue 9:00 - 17:00
-  workinghours wed off
-  workinghours thu off
-  workinghours fri off
-  workinghours sat off
-}
-shift s2 "Shift2" {
-  workinghours sun off
-  workinghours mon 10:00 - 12:00, 13:00 - 15:00
-  workinghours tue 9:00 - 17:00
-  workinghours wed 10:00 - 14:00
-  workinghours thu 10:00 - 18:00
-  workinghours fri 9:00 - 13:00
-  workinghours sat off
+    workinghours mon 10:00 - 12:00, 13:00 - 15:00
+    workinghours tue 9:00 - 17:00
+    workinghours wed off
+    workinghours thu off
+    workinghours fri off
+  shift s2 "Shift2" {
+      workinghours wed 10:00 - 14:00
+      workinghours thu 10:00 - 18:00
+      workinghours fri 9:00 - 13:00
+  }
 }
 resource r1 "Resource1" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
   shift s1 2000-01-01-00:00:00-GMT - 2000-01-04-00:00:00-GMT
   shift s2 2000-01-05-00:00:00-GMT - 2000-01-20-00:00:00-GMT
 }
@@ -53,6 +41,7 @@ task t1 "Task1" {
   plan:scheduled
 }
 supplement task t1 {
+  priority 500
 }
 supplement resource r1 {
   plan:booking 2000-01-03-10:00:00-+0000 2000-01-03-12:00:00-+0000 t1

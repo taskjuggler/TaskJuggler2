@@ -1,4 +1,4 @@
-project test "Task Duration" "$Id$" 2003-06-20-0:00-GMT 2003-07-30-0:00-GMT {
+project test "Task Duration" "1.0" 2003-06-20-0:00-GMT 2003-07-30-0:00-GMT {
 	timezone "GMT"
 }
 
@@ -204,8 +204,7 @@ htmltaskreport "TaskDuration-1.html" {
 export "TaskDuration-1-Export.tjp" {
 	hidetask 0
 	hideresource 0
-	taskattributes flags, note, minstart, maxstart, minend, maxend,
-	complete, responsible, depends
+	taskattributes all
 	notimestamp
 }
 

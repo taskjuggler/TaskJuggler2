@@ -530,6 +530,10 @@ tasks.</para></listitem>
 <listitem><para>The <link linkend="export">export report</link>
 can now be a main project file as well.</para></listitem>
 
+<listitem><para>A new keyword for taskattributes of export reports has
+been introduced. The keyword <computeroutput>all</computeroutput>
+causes all supported task attributes to be exported.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

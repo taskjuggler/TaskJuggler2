@@ -198,6 +198,13 @@ task fini "Fini" {
 	maxend 2002-09-12-14:00:00 */
 }
 
+export "Philippe-Export.tjp" {
+	hidetask 0
+	hideresource 0
+	taskattributes all
+	notimestamp
+}
+
 htmltaskreport "Philippe.html" {
   columns id, name, start, end, daily
 	scenarios plan, actual

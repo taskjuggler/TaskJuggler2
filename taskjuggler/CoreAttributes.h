@@ -88,11 +88,12 @@ public:
 
     void addCustomAttribute(const QString& id, CustomAttribute* ca);
     const CustomAttribute* getCustomAttribute(const QString& id) const;
-    QDict<CustomAttribute> getCustomAttributeDict() const
+    const QDict<const CustomAttribute>& getCustomAttributeDict() const
     {
-        return customAttributes;
+        return (const QDict<const CustomAttribute>&) customAttributes;
     }
-    void inheritCustomAttributes(const QDict<CustomAttributeDefinition>& dict);
+    void inheritCustomAttributes
+        (const QDict<const CustomAttributeDefinition>& dict);
 
 protected:
     /// A pointer to access information that are global to the project.

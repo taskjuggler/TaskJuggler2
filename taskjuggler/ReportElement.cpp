@@ -893,9 +893,9 @@ ReportElement::stripTaskRoot(QString taskId) const
 
 void
 ReportElement::addCustomAttributeColumns
-    (const QDict<CustomAttributeDefinition> cad)
+    (const QDict<const CustomAttributeDefinition>& cad)
 {
-    for (QDictIterator<CustomAttributeDefinition> it(cad); *it; ++it)
+    for (QDictIterator<const CustomAttributeDefinition> it(cad); *it; ++it)
     {
         TableColumnFormat* tcf;
         tcf = new TableColumnFormat(it.currentKey(), this, (*it)->getName());
@@ -956,19 +956,19 @@ ReportElement::setMacros(TableLineInfo* tli)
     mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : "", 
                           defFileName, defFileLine));
     
-    QPtrList< QDict<CustomAttributeDefinition> > dictList;
+    QPtrList< QDict<const CustomAttributeDefinition> > dictList;
     dictList.setAutoDelete(TRUE);
-    dictList.append(new QDict<CustomAttributeDefinition>
+    dictList.append(new QDict<const CustomAttributeDefinition>
                     (report->getProject()->getTaskAttributeDict()));
-    dictList.append(new QDict<CustomAttributeDefinition>
+    dictList.append(new QDict<const CustomAttributeDefinition>
                     (report->getProject()->getResourceAttributeDict()));
-    dictList.append(new QDict<CustomAttributeDefinition>
+    dictList.append(new QDict<const CustomAttributeDefinition>
                     (report->getProject()->getAccountAttributeDict()));
 
-    for (QPtrListIterator< QDict<CustomAttributeDefinition> > dli(dictList);
-         *dli; ++dli)
+    for (QPtrListIterator< QDict<const CustomAttributeDefinition> > 
+         dli(dictList); *dli; ++dli)
     {
-        QDictIterator<CustomAttributeDefinition> cadi(**dli);
+        QDictIterator<const CustomAttributeDefinition> cadi(**dli);
         for ( ; cadi.current(); ++cadi)
         {
             const CustomAttribute* custAttr;

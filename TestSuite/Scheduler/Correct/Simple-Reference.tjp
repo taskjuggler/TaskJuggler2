@@ -1,4 +1,5 @@
-/* For details about TaskJuggler see http://www.taskjuggler.org
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
  */
 project simple "Simple Project" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
   timezone "GMT"
@@ -9,22 +10,15 @@ project simple "Simple Project" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:5
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
+    workinghours sun off
+    workinghours mon 9:00 - 12:00, 13:00 - 18:00
+    workinghours tue 9:00 - 12:00, 13:00 - 18:00
+    workinghours wed 9:00 - 12:00, 13:00 - 18:00
+    workinghours thu 9:00 - 12:00, 13:00 - 18:00
+    workinghours fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat off
 }
 resource tux "Tux" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 task t1 "Task1" {
   projectid simple
@@ -67,22 +61,27 @@ task t7 "Task7" {
   }
 }
 supplement task t1 {
+  priority 500
 }
 supplement task t2 {
+  priority 500
 }
 supplement task t4 {
   supplement task t5 {
     supplement task t6 {
     }
   }
+  priority 500
 }
 supplement task t3 {
+  priority 500
 }
 supplement task t7 {
   supplement task t8 {
     supplement task t9 {
     }
   }
+  priority 500
 }
 supplement resource tux {
   plan:booking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3

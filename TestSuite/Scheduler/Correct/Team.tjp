@@ -1,4 +1,4 @@
-project simple "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+project simple "Simple Project" "1.0" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
 	timezone "GMT"
 }
 
@@ -78,8 +78,7 @@ task t3 "Task3" {
 export "Team-Export.tjp" {
 	hidetask 0
 	hideresource 0
-	taskattributes flags, note, minstart, maxstart, minend, maxend,
-	complete, responsible, depends
+	taskattributes all
 	notimestamp
 }
 

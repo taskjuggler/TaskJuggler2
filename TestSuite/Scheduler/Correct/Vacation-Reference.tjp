@@ -1,4 +1,5 @@
-/* For details about TaskJuggler see http://www.taskjuggler.org
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
  */
 project test "Test" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
   timezone "GMT"
@@ -9,49 +10,21 @@ project test "Test" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
+    workinghours sun off
+    workinghours mon 9:00 - 12:00, 13:00 - 18:00
+    workinghours tue 9:00 - 12:00, 13:00 - 18:00
+    workinghours wed 9:00 - 12:00, 13:00 - 18:00
+    workinghours thu 9:00 - 12:00, 13:00 - 18:00
+    workinghours fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat off
 }
 resource r3 "Resource3" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource team "Team" {
   resource r1 "Resource1" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
   }
   resource r2 "Resource2" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
   }
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 task t4 "Task4" {
   projectid test
@@ -78,20 +51,24 @@ task t3 "Task3" {
   plan:scheduled
 }
 supplement task t4 {
-  plan:minend 2000-01-26-23:59:59-+0000
   plan:maxend 2000-01-26-23:59:59-+0000
+  plan:minend 2000-01-26-23:59:59-+0000
+  priority 500
 }
 supplement task t1 {
-  plan:minend 2000-01-26-17:59:59-+0000
   plan:maxend 2000-01-26-17:59:59-+0000
+  plan:minend 2000-01-26-17:59:59-+0000
+  priority 500
 }
 supplement task t2 {
-  plan:minend 2000-01-26-17:59:59-+0000
   plan:maxend 2000-01-26-17:59:59-+0000
+  plan:minend 2000-01-26-17:59:59-+0000
+  priority 500
 }
 supplement task t3 {
-  plan:minend 2000-01-26-17:59:59-+0000
   plan:maxend 2000-01-26-17:59:59-+0000
+  plan:minend 2000-01-26-17:59:59-+0000
+  priority 500
 }
 supplement resource r3 {
   plan:booking 2000-01-04-09:00:00-+0000 2000-01-04-12:00:00-+0000 t3

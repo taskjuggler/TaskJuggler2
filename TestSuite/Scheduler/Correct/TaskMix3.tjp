@@ -204,8 +204,7 @@ htmltaskreport "TaskMix3.html" {
 export "TaskMix3-Export.tjp" {
 	hidetask 0
 	hideresource 0
-	taskattributes flags, note, minstart, maxstart, minend, maxend,
-	complete, responsible, depends
+	taskattributes all
 	notimestamp
 }
 

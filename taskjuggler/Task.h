@@ -124,16 +124,16 @@ public:
     {
         return TaskListIterator(previous);
     }
-    bool hasPrevious() { return !previous.isEmpty(); }
+    bool hasPrevious() const { return !previous.isEmpty(); }
 
     TaskListIterator getFollowersIterator() const
     {
         return TaskListIterator(followers);
     }
-    bool hasFollowers() { return !followers.isEmpty(); }
+    bool hasFollowers() const { return !followers.isEmpty(); }
 
-    bool hasPrevious(Task* t) { return previous.find(t) != -1; }
-    bool hasFollower(Task* t) { return followers.find(t) != -1; }
+    bool hasPrevious(Task* t) { return previous.findRef(t) != -1; }
+    bool hasFollower(Task* t) { return followers.findRef(t) != -1; }
 
     // The following group of functions operates only on scenario variables.
     void setStart(int sc, time_t s) { scenarios[sc].start = s; }

@@ -63,8 +63,7 @@ htmltaskreport "Vacation.html" {
 export "Vacation-Export.tjp" {
 	hidetask 0
 	hideresource 0
-	taskattributes flags, note, minstart, maxstart, minend, maxend,
-	complete, responsible, depends
+	taskattributes all
 	notimestamp
 }
 

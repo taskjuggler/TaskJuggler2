@@ -1,4 +1,5 @@
-/* For details about TaskJuggler see http://www.taskjuggler.org
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
  */
 project simple "Simple Project" "$Id" 2002-06-01-00:00:00-GMT 2002-07-30-23:59:59-GMT {
   timezone "GMT"
@@ -9,80 +10,46 @@ project simple "Simple Project" "$Id" 2002-06-01-00:00:00-GMT 2002-07-30-23:59:5
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
+    workinghours sun off
+    workinghours mon 9:00 - 12:00, 13:00 - 18:00
+    workinghours tue 9:00 - 12:00, 13:00 - 18:00
+    workinghours wed 9:00 - 12:00, 13:00 - 18:00
+    workinghours thu 9:00 - 12:00, 13:00 - 18:00
+    workinghours fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat off
 }
 shift phonesupport "Telephone support" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00
-  workinghours tue 9:00 - 12:00
-  workinghours wed off
-  workinghours thu 14:00 - 17:00
-  workinghours fri 9:00 - 12:00
-  workinghours sat off
+    workinghours mon 9:00 - 12:00
+    workinghours tue 9:00 - 12:00
+    workinghours wed off
+    workinghours thu 14:00 - 17:00
+    workinghours fri 9:00 - 12:00
 }
 shift early "Early Shift" {
-  workinghours sun off
-  workinghours mon 7:00 - 12:00, 12:30 - 15:30
-  workinghours tue 7:00 - 12:00, 12:30 - 15:30
-  workinghours wed 7:00 - 12:00, 12:30 - 15:30
-  workinghours thu 7:00 - 12:00, 12:30 - 15:30
-  workinghours fri 7:00 - 12:00, 12:30 - 15:30
-  workinghours sat off
+    workinghours mon 7:00 - 12:00, 12:30 - 15:30
+    workinghours tue 7:00 - 12:00, 12:30 - 15:30
+    workinghours wed 7:00 - 12:00, 12:30 - 15:30
+    workinghours thu 7:00 - 12:00, 12:30 - 15:30
+    workinghours fri 7:00 - 12:00, 12:30 - 15:30
 }
 shift late "Late Shift" {
-  workinghours sun off
-  workinghours mon 11:00 - 14:00, 14:30 - 19:30
-  workinghours tue 11:00 - 14:00, 14:30 - 19:30
-  workinghours wed 11:00 - 14:00, 14:30 - 19:30
-  workinghours thu 11:00 - 14:00, 14:30 - 19:30
-  workinghours fri 11:00 - 14:00, 14:30 - 19:30
-  workinghours sat off
+    workinghours mon 11:00 - 14:00, 14:30 - 19:30
+    workinghours tue 11:00 - 14:00, 14:30 - 19:30
+    workinghours wed 11:00 - 14:00, 14:30 - 19:30
+    workinghours thu 11:00 - 14:00, 14:30 - 19:30
+    workinghours fri 11:00 - 14:00, 14:30 - 19:30
 }
 resource s1 "Joe Supporter" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
   shift late 2002-06-14-00:00:00-GMT - 2002-07-02-00:00:00-GMT
   shift early 2002-07-03-00:00:00-GMT - 2002-07-15-00:00:00-GMT
 }
 resource s2 "Jim Supporter" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 resource s3 "Sally Supporter" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
   shift early 2002-06-03-00:00:00-GMT - 2002-07-02-00:00:00-GMT
   shift late 2002-07-05-00:00:00-GMT - 2002-07-15-00:00:00-GMT
 }
 resource s4 "Karen Supporter" {
-  workinghours sun off
-  workinghours mon 9:00 - 12:00, 13:00 - 18:00
-  workinghours tue 9:00 - 12:00, 13:00 - 18:00
-  workinghours wed 9:00 - 12:00, 13:00 - 18:00
-  workinghours thu 9:00 - 12:00, 13:00 - 18:00
-  workinghours fri 9:00 - 12:00, 13:00 - 18:00
-  workinghours sat off
 }
 task start "Start of plan" {
   projectid simple
@@ -112,18 +79,22 @@ task t3 "Network Support" {
   plan:scheduled
 }
 supplement task start {
+  priority 500
 }
 supplement task t2 {
-  plan:minend 2002-07-23-09:29:00-+0000
   plan:maxend 2002-07-23-09:30:00-+0000
+  plan:minend 2002-07-23-09:29:00-+0000
+  priority 600
 }
 supplement task t1 {
-  plan:minend 2002-07-26-11:59:00-+0000
   plan:maxend 2002-07-26-12:00:00-+0000
+  plan:minend 2002-07-26-11:59:00-+0000
+  priority 500
 }
 supplement task t3 {
-  plan:minend 2002-07-30-16:29:00-+0000
   plan:maxend 2002-07-30-16:30:00-+0000
+  plan:minend 2002-07-30-16:29:00-+0000
+  priority 700
 }
 supplement resource s1 {
   plan:booking 2002-06-03-09:00:00-+0000 2002-06-03-12:00:00-+0000 t1

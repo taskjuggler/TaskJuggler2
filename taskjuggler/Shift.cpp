@@ -53,6 +53,12 @@ Shift::~Shift()
     project->deleteShift(this);
 }
 
+ShiftListIterator
+Shift::getSubListIterator() const
+{
+    return ShiftListIterator(sub);
+}
+
 bool 
 Shift::isVacationDay(time_t day) const
 {

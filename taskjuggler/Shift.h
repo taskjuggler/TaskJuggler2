@@ -19,6 +19,7 @@
 #include "CoreAttributes.h"
 
 class Interval;
+class ShiftListIterator;
 
 /**
  * @short Stores all shift related information.
@@ -34,6 +35,8 @@ public:
 
     Shift* getParent() const { return (Shift*) parent; }
 
+    ShiftListIterator getSubListIterator() const;
+    
     void setWorkingHours(int day, QPtrList<Interval>* l)
     {
         delete workingHours[day];

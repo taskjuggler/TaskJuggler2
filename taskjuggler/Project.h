@@ -411,8 +411,11 @@ public:
      * Returns a read-only pointer to the dictionary that holds the pointers
      * to user-defined attributes of Tasks.
      */
-    const QDict<CustomAttributeDefinition>
-        getTaskAttributeDict() const { return taskAttributes; }
+    const QDict<const CustomAttributeDefinition>&
+        getTaskAttributeDict() const 
+    { 
+        return (const QDict<const CustomAttributeDefinition>&) taskAttributes; 
+    }
 
     /**
      * This function is for library internal use only. Creating a Resource
@@ -469,8 +472,12 @@ public:
      * Returns a read-only pointer to the dictionary that holds the pointers
      * to user-defined attributes of Resources.
      */
-    const QDict<CustomAttributeDefinition>
-        getResourceAttributeDict() const { return resourceAttributes; }
+    const QDict<const CustomAttributeDefinition>&
+        getResourceAttributeDict() const 
+    { 
+        return (const QDict<const CustomAttributeDefinition>&) 
+            resourceAttributes; 
+    }
 
     /**
      * This function is for library internal use only. Creating an Account 
@@ -527,8 +534,12 @@ public:
      * Returns a read-only pointer to the dictionary that holds the pointers
      * to user-defined attributes of Accounts.
      */
-    const QDict<CustomAttributeDefinition>
-        getAccountAttributeDict() const { return resourceAttributes; }
+    const QDict<const CustomAttributeDefinition>&
+        getAccountAttributeDict() const 
+    { 
+        return (const QDict<const CustomAttributeDefinition>&)
+            resourceAttributes; 
+    }
 
     /**
      * This function is for library internal use only. Creating a Shift 
