@@ -1,13 +1,17 @@
 #! /bin/sh
 
 set errors=0
+export TASKJUGGLER=../../taskjuggler/taskjuggler
+if test ! -x $TASKJUGGLER ; then
+  export TASKJUGGLER=taskjuggler
+fi
 
 function do_testing
 {
   f=$1
   op=$2
   echo "Running test $f" >> log
-  ../../taskjuggler/taskjuggler $f 2>> log
+  $TASKJUGGLER $f 2>> log
   if [ $? $op 0 ]; then
     errors=$(( $errors + 1 ))
     echo "Test $f failed!"

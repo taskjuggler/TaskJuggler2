@@ -2710,7 +2710,7 @@ AC_CANONICAL_SYSTEM
 AC_ARG_PROGRAM
 AM_INIT_AUTOMAKE($1, $2)
 AM_DISABLE_LIBRARIES
-AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
+AC_PREFIX_DEFAULT(/usr/local)
 AC_CHECK_COMPILERS
 KDE_PROG_LIBTOOL
 AM_KDE_WITH_NLS
@@ -4262,7 +4262,7 @@ AC_DEFUN(KDE_SET_PREFIX,
 [
   unset CDPATH
   dnl make $KDEDIR the default for the installation
-  AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
+  AC_PREFIX_DEFAULT(/usr/local)
 
   if test "x$prefix" = "xNONE"; then
     prefix=$ac_default_prefix
