@@ -32,6 +32,8 @@ Project::Project()
 	minEffort = 0.0;
 	maxEffort = 1.0;
 	rate = 0.0;
+	currency = "";
+	currencyDigits = 3;
 	xmlreport = 0L;
 }
 

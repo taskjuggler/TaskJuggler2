@@ -110,6 +110,12 @@ public:
 	void setRate(double r) { rate = r; }
 	double getRate() const { return rate; }
 
+	void setCurrency(const QString& s) { currency = s; }
+	const QString& getCurrency() const { return currency; }
+
+	void setCurrencyDigits(int d) { currencyDigits = d; }
+	int getCurrencyDigits() const { return currencyDigits; }
+
 	void setDailyWorkingHours(double h) { dailyWorkingHours = h; }
 	double getDailyWorkingHours() const { return dailyWorkingHours; }
 
@@ -155,40 +161,52 @@ public:
 private:
 	bool checkSchedule();
 
+	/// The start date of the project
 	time_t start;
+	/// The end date of the project
 	time_t end;
+	/// The current date used in reports.
 	time_t now;
 
-	// The name of the Project
+	/// The name of the Project
 	QString name;
-	// The revision of the project description.
+	/// The revision of the project description.
 	QString version;
-	// Some legal words to please the boss.
+	/// Some legal words to please the boss.
 	QString copyright;
 
-	/* The default priority that will be inherited by all tasks. Sub tasks
+	/**
+	 * The default priority that will be inherited by all tasks. Sub tasks
 	 * will inherit the priority of its parent task. */
 	int priority;
 
-	// Default values for Resource variables
+	/// Default values for Resource variables
 	double minEffort;
 	double maxEffort;
 	double rate;
 
-	// Number of working hours of a generic working day.
+	/// The currency of used for all money values.
+	QString currency;
+	/// The number of fraction digits of all money values.
+	int currencyDigits;
+
+	/// Number of working hours of a generic working day.
 	double dailyWorkingHours;
 
-	/* The granularity of the scheduler in seconds. No intervals shorter
-	 * than this time will be scheduled. */
+	/**
+	 * The granularity of the scheduler in seconds. No intervals
+	 * shorter than this time will be scheduled. */
 	ulong scheduleGranularity;
 
-	/* To avoid difficult to find typos in flag names all flags must
+	/**
+	 * To avoid difficult to find typos in flag names all flags must
 	 * be registered before they can be used. This variable contains
 	 * the list of all registered flags. It is legal to declare a flag
 	 * twice, so we can merge projects to a larger project. */
 	QStringList allowedFlags;
 
-	/* Each project has a unique ID but can have multiple other IDs as
+	/**
+	 * Each project has a unique ID but can have multiple other IDs as
      * well. This happens usually when small projects are merged to a
      * create a big project. Each task can be assigned to a different
      * project ID but all IDs must be declared before they can be

@@ -30,7 +30,12 @@ public:
 						FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
 						StartUp, StartDown, EndUp, EndDown,
 						PrioUp, PrioDown,
-						ResponsibleUp, ResponsibleDown };
+						ResponsibleUp, ResponsibleDown,
+						MinEffortUp, MinEffortDown,
+						MaxEffortUp, MaxEffortDown,
+						RateUp, RateDown,
+						KotrusIdUp, KotrusIdDown
+	};
 
 	void setSorting(SortCriteria s);
 	void createIndex();

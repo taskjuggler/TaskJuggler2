@@ -261,13 +261,13 @@ Resource::getActualLoad(const Interval& period, Task* task)
 }
 
 double
-Resource::getPlanCosts(const Interval& period, Task* task)
+Resource::getPlanCredits(const Interval& period, Task* task)
 {
 	return getPlanLoad(period, task) * rate;
 }
 
 double
-Resource::getActualCosts(const Interval& period, Task* task)
+Resource::getActualCredits(const Interval& period, Task* task)
 {
 	return getActualLoad(period, task) * rate;
 }
@@ -405,7 +405,34 @@ ResourceList::ResourceList()
 int
 ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
-	return CoreAttributesList::compareItems(i1, i2);
+	Resource* r1 = static_cast<Resource*>(i1);
+	Resource* r2 = static_cast<Resource*>(i2);
+
+	switch (sorting)
+	{
+	case MinEffortUp:
+		return r1->minEffort == r2->minEffort ? 0 :
+			r1->minEffort < r2->minEffort ? 1 : -1;
+	case MinEffortDown:
+		return r1->minEffort == r2->minEffort ? 0 :
+			r1->minEffort < r2->minEffort ? -1 : 1;
+	case MaxEffortUp:
+		return r1->maxEffort == r2->maxEffort ? 0 :
+			r1->maxEffort < r2->maxEffort ? 1 : -1;
+	case MaxEffortDown:
+		return r1->maxEffort == r2->maxEffort ? 0 :
+			r1->maxEffort < r2->maxEffort ? -1 : 1;
+	case RateUp:
+		return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? 1 : -1;
+	case RateDown:
+		return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? -1 : 1;
+	case KotrusIdUp:
+		return r2->kotrusId.compare(r1->kotrusId);
+	case KotrusIdDown:
+		return r1->kotrusId.compare(r2->kotrusId);
+	default:
+		return CoreAttributesList::compareItems(i1, i2);
+	}
 }
 
 Resource*

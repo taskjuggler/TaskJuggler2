@@ -33,10 +33,10 @@ Account::getPlanVolume(const Interval& period)
 	TaskList tl = project->getTaskList();
 
 	double volume = 0.0;
-	// Add plan costs for all tasks that should be credited to this account.
+	// Add plan credits for all tasks that should be credited to this account.
 	for (Task* t = tl.first(); t != 0; t = tl.next())
 		if (t->getAccount() == this)
-			volume += t->getPlanCosts(period, 0, FALSE);
+			volume += t->getPlanCredits(period, 0, FALSE);
 	// Add all transactions that are registered within the period.
 	for (Transaction* t = transactions.first(); t != 0;
 		 t = transactions.next())
@@ -52,10 +52,11 @@ Account::getActualVolume(const Interval& period)
 	TaskList tl = project->getTaskList();
 
 	double volume = 0.0;
-	// Add actual costs for all tasks that should be credited to this account.
+	/* Add actual credits for all tasks that should be credited to this
+	 * account. */
 	for (Task* t = tl.first(); t != 0; t = tl.next())
 		if (t->getAccount() == this)
-			volume += t->getActualCosts(period, 0, FALSE);
+			volume += t->getActualCredits(period, 0, FALSE);
 	// Add all transactions that are registered within the period.
 	for (Transaction* t = transactions.first(); t != 0;
 		 t = transactions.next())

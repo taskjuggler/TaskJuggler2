@@ -553,6 +553,26 @@ ProjectFile::parse()
 				proj->setRate(token.toDouble());
 				break;
 			}
+			else if (token == "currency")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				proj->setCurrency(token);
+				break;
+			}
+			else if (token == "currencydigits")
+			{
+				if (nextToken(token) != INTEGER)
+				{
+					fatalError("Integer value expected");
+					return FALSE;
+				}
+				proj->setCurrencyDigits(token.toInt());
+				break;
+			}
 			else if (token == "timingresolution")
 			{
 				ulong resolution;
@@ -1081,6 +1101,26 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 				task->setAccount(proj->getAccount(account));
+				break;
+			}
+			else if (token == "startcredit")
+			{
+				if (nextToken(token) != REAL)
+				{
+					fatalError("Real value expected");
+					return FALSE;
+				}
+				task->setStartCredit(token.toDouble());
+				break;
+			}
+			else if (token == "endcredit")
+			{
+				if (nextToken(token) != REAL)
+				{
+					fatalError("Real value expected");
+					return FALSE;
+				}
+				task->setEndCredit(token.toDouble());
 				break;
 			}
 			else if (token == "projectid")
@@ -1892,6 +1932,24 @@ ProjectFile::readHTMLAccountReport()
 			}
 			report->setEnd(date2time(token));
 		}
+		else if (token == "headline")
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String exptected");
+				return FALSE;
+			}
+			report->setHeadline(token);
+		}
+		else if (token == "caption")
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String exptected");
+				return FALSE;
+			}
+			report->setCaption(token);
+		}
 		else if (token == "hideplan")
 		{
 			report->setHidePlan(TRUE);
@@ -2040,6 +2098,22 @@ ProjectFile::readSorting(Report* report, int which)
 		sorting = CoreAttributesList::ResponsibleUp;
 	else if (token == "responsibledown")
 		sorting = CoreAttributesList::ResponsibleDown;
+	else if (token == "mineffortup")
+		sorting = CoreAttributesList::MinEffortUp;
+	else if (token == "mineffortdown")
+		sorting = CoreAttributesList::MinEffortDown;
+	else if (token == "maxeffortup")
+		sorting = CoreAttributesList::MaxEffortUp;
+	else if (token == "maxeffortdown")
+		sorting = CoreAttributesList::MaxEffortDown;
+	else if (token == "rateup")
+		sorting = CoreAttributesList::RateUp;
+	else if (token == "ratedown")
+		sorting = CoreAttributesList::RateDown;
+	else if (token == "kotrusidup")
+		sorting = CoreAttributesList::KotrusIdUp;
+	else if (token == "kotrusiddown")
+		sorting = CoreAttributesList::KotrusIdDown;
 	else
 	{
 		fatalError("Sorting criteria expected");

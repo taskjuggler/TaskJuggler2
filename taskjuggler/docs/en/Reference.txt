@@ -330,6 +330,20 @@ This attribute is inherited by sub tasks if specified prior to the
 definition of the sub task.
 
 -------------------------------------------------------------------------------
+startcredit <amount>
+amount: REAL
+
+Specifies an amount that is credited to the account specified by the
+'account' property at the moment the tasks starts.
+
+-------------------------------------------------------------------------------
+endcredit <amount>
+amount: REAL
+
+Specifies an amount that is credited to the account specified by the
+'account' property at the moment the tasks ends.
+
+-------------------------------------------------------------------------------
 Tasks may be nested and some attributes are inherited by the sub tasks.
 
 ===============================================================================
@@ -496,16 +510,16 @@ be used for all subsequent resource declarations unless specified
 otherwise.
 
 ===============================================================================
-currencyprefix <prefix> 
-prefix: STRING
+currency <text>
+text: STRING
 
-The prefix for money values in reports.
+The currency for money values in reports.
 
 ===============================================================================
-currencypostfix <postfix> 
-postfix: STRING
+currencydigits <number> 
+number: INTEGER
 
-The postfix for money values in reports.
+The number of fraction digits.
 
 ===============================================================================
 include <filename> 

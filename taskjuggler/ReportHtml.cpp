@@ -104,6 +104,14 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			generateFollows(t, r != 0);
 		else if (*it == "schedule")
 			emptyPlan(r != 0);
+		else if (*it == "mineffort")
+			emptyPlan(r != 0);
+		else if (*it == "maxeffort")
+			emptyPlan(r != 0);
+		else if (*it == "rate")
+			emptyPlan(r != 0);
+		else if (*it == "kotrusid")
+			emptyPlan(r != 0);
 		else if (*it == "note")
 		{
 			s << "<td class=\""
@@ -117,8 +125,8 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		}
 		else if (*it == "costs")
 			textOneRow(
-				QString().sprintf("%5.3f",
-								  t->getPlanCosts(Interval(start, end), r)),
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  t->getPlanCredits(Interval(start, end), r)),
 				r != 0,
 				"right");
 		else if (*it == "priority")
@@ -185,8 +193,9 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			actualResources(t, r != 0);
 		else if (*it == "costs")
 			textOneRow(
-				QString().sprintf("%5.3f",
-								  t->getActualCosts(Interval(start, end), r)),
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  t->getActualCredits(Interval(start, end),
+													  r)),
 				r != 0,
 				"right");
 		if (*it == "daily")
@@ -255,12 +264,24 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 			else
 				planSchedule(r, t);
 		}
+		else if (*it == "mineffort")
+			textTwoRows(QString().sprintf("%.2f", r->getMinEffort()), t != 0,
+						"right");
+		else if (*it == "maxeffort")
+			textTwoRows(QString().sprintf("%.2f", r->getMaxEffort()), t != 0,
+						"right");
+		else if (*it == "rate")
+			textTwoRows(QString().sprintf("%.*f", project->getCurrencyDigits(),
+										  r->getRate()), t != 0,
+						"right");
+		else if (*it == "kotrusid")
+			textTwoRows(r->getKotrusId(), t != 0, "left");
 		else if (*it == "note")
 			emptyPlan(t != 0);
 		else if (*it == "costs")
 			textOneRow(
-				QString().sprintf("%5.3f",
-								  r->getPlanCosts(Interval(start, end), t)),
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  r->getPlanCredits(Interval(start, end), t)),
 				t != 0,
 				"right");
 		else if (*it == "priority")
@@ -301,8 +322,9 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 		}
 		else if (*it == "costs")
 			textOneRow(
-				QString().sprintf("%5.3f",
-								  r->getActualCosts(Interval(start, end), t)),
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  r->getActualCredits(Interval(start, end),
+													  t)),
 				t != 0,
 				"right");
 		else if (*it == "daily")
@@ -420,10 +442,28 @@ ReportHtml::generateTableHeader()
 			s << "<td class=\"headerbig\" rowspan=\"2\">Followers</td>";
 		else if (*it == "schedule")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Schedule</td>";
+		else if (*it == "mineffort")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Effort</td>";
+		else if (*it == "maxeffort")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Effort</td>";
+		else if (*it == "rate")
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">Rate";
+			if (!project->getCurrency().isEmpty())
+				s << " " << htmlFilter(project->getCurrency());
+			s << "</td>";
+		}
+		else if (*it == "kotrusid")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Kotrus ID</td>";
 		else if (*it == "note")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Note</td>";
 		else if (*it == "costs")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Costs</td>";
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">Costs";
+			if (!project->getCurrency().isEmpty())
+				s << " " << htmlFilter(project->getCurrency());
+			s << "</td>";
+		}
 		else if (*it == "priority")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
 		else if (*it == "daily")

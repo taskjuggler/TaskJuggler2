@@ -80,7 +80,7 @@ public:
 	}
 	void setResourceSorting(CoreAttributesList::SortCriteria sc)
 	{
-		taskSortCriteria = sc;
+		resourceSortCriteria = sc;
 	}
 	void setAccountSorting(CoreAttributesList::SortCriteria sc)
 	{

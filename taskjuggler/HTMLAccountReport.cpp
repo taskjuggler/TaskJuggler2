@@ -13,6 +13,7 @@
 #include <qfile.h>
 
 #include "HTMLAccountReport.h"
+#include "Project.h"
 #include "Account.h"
 #include "Interval.h"
 #include "Utility.h"
@@ -119,7 +120,8 @@ HTMLAccountReport::generatePlanAccount(Account* a)
 		{
 			double value = a->getPlanVolume(Interval(start, end));
 			planTotals["total"] += value;
-			textOneRow(QString().sprintf("%1.3f", value), FALSE, "right");
+			textOneRow(QString().sprintf("%.*f", project->getCurrencyDigits(),
+										 value), FALSE, "right");
 		}
 		else if (*it == "daily")
 			dailyAccountPlan(a, "default");
@@ -161,7 +163,8 @@ HTMLAccountReport::generateActualAccount(Account* a)
 		{
 			double value = a->getActualVolume(Interval(start, end));
 			actualTotals["total"] += value;
-			textOneRow(QString().sprintf("%1.3f", value), FALSE, "right");
+			textOneRow(QString().sprintf("%.*f", project->getCurrencyDigits(),
+										 value), FALSE, "right");
 		}
 		else if (*it == "daily")
 			dailyAccountActual(a, "default");
@@ -188,7 +191,12 @@ HTMLAccountReport::generateTableHeader()
 		else if (*it == "name")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Name</td>";
 		else if (*it == "total")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Total</td>";
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">Total";
+			if (!project->getCurrency().isEmpty())
+				s << " " << htmlFilter(project->getCurrency());
+			s << "</td>";
+		}
 		else if (*it == "daily")
 			htmlDayHeaderMonths();
 		else if (*it == "weekly")
@@ -247,7 +255,8 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 				s << "<td class=\"" << style
 				  << "\" style=\"text-align:right\">"
 				  << "<b>"
-				  << QString().sprintf("%1.3f", planTotals["total"])
+				  << QString().sprintf("%.*f", project->getCurrencyDigits(),
+									   planTotals["total"])
 				  << "</b></td>";
 			else if (*it == "daily")
 				dailyAccountPlan(0, style);
@@ -286,7 +295,8 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 				s << "<td class=\"" << style
 				  << "\" style=\"text-align:right\">"
 				  << "<b>"
-				  << QString().sprintf("%1.3f", actualTotals["total"])
+				  << QString().sprintf("%.*f", project->getCurrencyDigits(),
+									   actualTotals["total"])
 				  << "</b></td>";
 			else if (*it == "daily")
 				dailyAccountActual(0, style);
@@ -520,7 +530,7 @@ HTMLAccountReport::reportValue(double value, const QString& bgCol, bool bold)
 	  << bgCol << "\" style=\"text-align:right\">";
 	if (bold)
 		s << "<b>";
-	s << QString().sprintf("%1.3f", value);
+	s << QString().sprintf("%.*f", project->getCurrencyDigits(), value);
 //		scaleTime(value, FALSE);
 	if (bold)
 		s << "</b>";

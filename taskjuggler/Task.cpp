@@ -60,6 +60,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	complete = -1;
 	note = "";
 	account = 0;
+	startCredit = endCredit = 0.0;
 	lastSlot = 0;
 	schedulingDone = FALSE;
 	responsible = 0;
@@ -530,46 +531,57 @@ Task::getActualLoad(const Interval& period, Resource* resource)
 }
 
 double
-Task::getPlanCosts(const Interval& period, Resource* resource, bool recursive)
+Task::getPlanCredits(const Interval& period, Resource* resource,
+					 bool recursive)
 {
-	double costs = 0.0;
+	double credits = 0.0;
 
 	if (recursive && subFirst())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
-			costs += t->getPlanCosts(period, resource, recursive);
+			credits += t->getPlanCredits(period, resource, recursive);
 	}
 
 	if (resource)
-		costs += resource->getPlanCosts(period, this);
+		credits += resource->getPlanCredits(period, this);
 	else
 		for (Resource* r = planBookedResources.first(); r != 0;
 			 r = planBookedResources.next())
-			costs += r->getPlanCosts(period, this);
+			credits += r->getPlanCredits(period, this);
 
-	return costs;
+	if (period.contains(planStart))
+		credits += startCredit;
+	if (period.contains(planEnd))
+		credits += endCredit;
+
+	return credits;
 }
 
 double
-Task::getActualCosts(const Interval& period, Resource* resource,
-					 bool recursive)
+Task::getActualCredits(const Interval& period, Resource* resource,
+					   bool recursive)
 {
-	double costs = 0.0;
+	double credits = 0.0;
 
 	if (recursive && subFirst())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
-			costs += t->getActualCosts(period, resource, recursive);
+			credits += t->getActualCredits(period, resource, recursive);
 	}
 
 	if (resource)
-		costs += resource->getActualCosts(period, this);
+		credits += resource->getActualCredits(period, this);
 	else
 		for (Resource* r = actualBookedResources.first(); r != 0;
 			 r = actualBookedResources.next())
-			costs += r->getActualCosts(period, this);
+			credits += r->getActualCredits(period, this);
 
-	return costs;
+	if (period.contains(actualStart))
+		credits += startCredit;
+	if (period.contains(actualEnd))
+		credits += endCredit;
+
+	return credits;
 }
 
 bool

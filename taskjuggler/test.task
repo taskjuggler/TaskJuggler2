@@ -5,9 +5,11 @@ project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 projectid secondId
 
 now 2002-01-16
-copyright "(c) 2001 SuSE GmbH - This is SuSE CONFIDENTIAL information"
+copyright "(c) 2001, 2002 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
 rate 0.479
+currencydigits 3
+currency "KEUR"
 
 kotrusmode "nokotrus"
 
@@ -15,10 +17,10 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmltaskreport "test1.html" {
-  columns no, name, start, end
+  columns no, name, start, end, duration, costs
   start 2001-09-01
   end 2002-04-01
-  showactual
+#  showactual
   hideresource 1
   hidetask 0
 #  rollupresource team
@@ -33,12 +35,13 @@ htmltaskreport "test1.html" {
 #}
 
 htmlresourcereport "test-res.html" {
-  columns no, name, weekly
+  columns no, name, mineffort, maxeffort, rate, kotrusid
   start 2001-09-01
   end 2002-04-01
   hidetask 1
   hideresource 0
-  showactual
+  sortresources maxeffortdown
+#  showactual
 #  showprojectids
 }
 
@@ -138,14 +141,18 @@ account budget "R&D Budget" revenue {
 mineffort 0.6
 resource ro "Ruediger Oertel" {
   kotrusid "ro@suse.de"
+  mineffort 0.3
+  maxeffort 1.2
   vacation 2001-12-18
   vacation 2001-12-10 - 2001-12-14
 }
 resource kukuk "Thorsten Kukuk" {
 #  workinghours MON 08:00-12:00, 13:00-16:00
+  maxeffort 1.1
 }
 
 resource overhead "Administration" {
+  mineffort 0.1
   resource cs "Chris Schlaeger"
   resource mem "Muhamed Memovic"
 }
@@ -182,13 +189,14 @@ task yast "YaST2 development"{
   depends !sl80start
   responsible kkaempf
   account devel
+  startcredit 15.0
 }
 
 task pack "SL 8.0 package updates" {
   length 55d
   allocate packagers
-  allocate kukuk { load 50 }
-  allocate ro { load 50 }
+  allocate kukuk { load 0.5 }
+  allocate ro { load 0.5 }
   depends !sl80start
   account base
 }
@@ -196,8 +204,8 @@ task pack "SL 8.0 package updates" {
 task dist "SL 8.0 distribution modifications" {
   length 55d
   allocate dist
-  allocate kukuk { load 50 }
-  allocate ro { load 50 }
+  allocate kukuk { load 0.5 }
+  allocate ro { load 0.5 }
   depends !sl80start
   account base
 }

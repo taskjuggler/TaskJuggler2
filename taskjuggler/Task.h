@@ -195,8 +195,8 @@ public:
 	}
 	double getPlanCalcDuration() const;
 
-	double getPlanCosts(const Interval& period, Resource* resource = 0,
-						bool recursive = TRUE);
+	double getPlanCredits(const Interval& period, Resource* resource = 0,
+						  bool recursive = TRUE);
 
 	bool isPlanActive(const Interval& period) const;
 
@@ -240,8 +240,8 @@ public:
 	}
 	double getActualCalcDuration() const;
 
-	double getActualCosts(const Interval& period, Resource* resource = 0,
-						  bool recursive = TRUE);
+	double getActualCredits(const Interval& period, Resource* resource = 0,
+							bool recursive = TRUE);
 
 	bool isActualActive(const Interval& period) const;
 
@@ -281,6 +281,12 @@ public:
 
 	void setAccount(Account* a) { account = a; }
 	Account* getAccount() const { return account; }
+
+	void setStartCredit(double c) { startCredit = c; }
+	double getStartCredit() const { return startCredit; }
+
+	void setEndCredit(double c) { endCredit = c; }
+	double getEndCredit() const { return endCredit; }
 
 	void getSubTaskList(TaskList& tl);
 
@@ -387,8 +393,13 @@ private:
 	/// List of resource allocations requested by the task
 	QPtrList<Allocation> allocations;
 
-	/// Account where the costs of the task are credited to.
+	/// Account where the credits of the task are credited to.
 	Account* account;
+
+	/// Amount that is credited to the account at the start date.
+	double startCredit;
+	/// Amount that is credited to the account at the end date.
+	double endCredit;
 
 	/* The following group of variables store plan values. Their
 	 * values are copied to the runtime equivalents (without the

@@ -103,6 +103,8 @@ protected:
 
 class Resource : public CoreAttributes
 {
+	friend int ResourceList::compareItems(QCollection::Item i1,
+										  QCollection::Item i2);
 public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource() { }
@@ -145,9 +147,9 @@ public:
 
 	double getActualLoad(const Interval& i, Task* task = 0);
 
-	double getPlanCosts(const Interval& i, Task* task = 0);
+	double getPlanCredits(const Interval& i, Task* task = 0);
 
-	double getActualCosts(const Interval& i, Task* task = 0);
+	double getActualCredits(const Interval& i, Task* task = 0);
 
 	QString getPlanProjectIDs(const Interval& i, Task* task = 0);
 	QString getActualProjectIDs(const Interval& i, Task* task = 0);

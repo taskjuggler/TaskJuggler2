@@ -302,8 +302,8 @@ Report::scaleTime(double t, bool verboseUnit)
 	QStringList variations;
 	QValueList<double> factors;
 	const char* shortUnit[] = { "d", "h", "w", "m", "y" };
-	const char* unit[] = { "Day", "Hour", "Week", "Month", "Year" };
-	const char* units[] = { "Days", "Hours", "Weeks", "Months", "Years"};
+	const char* unit[] = { "day", "hour", "week", "month", "year" };
+	const char* units[] = { "days", "hours", "weeks", "months", "years"};
 	double max[] = { 0, 48, 8, 24, 0 };
 
 	factors.append(1);
