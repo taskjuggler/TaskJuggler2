@@ -1311,6 +1311,30 @@ Task::implicitXRef()
                 }
             }
     }
+
+    if (!isMilestone() && isLeaf())
+    {
+        /* Automatic milestone marker. As a convenience we convert tasks that
+         * only have a start or end criteria as a milestone. This is handy
+         * when in the early stage of a project draft, when you just want to
+         * specify the project outline and fill in subtasks and details
+         * later. */
+        bool hasStartSpec = FALSE;
+        bool hasEndSpec = FALSE;
+        bool hasDurationSpec = FALSE;
+        for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+        {
+            if (scenarios[sc].specifiedStart != 0 || !depends.isEmpty())
+                hasStartSpec = TRUE;
+            if (scenarios[sc].specifiedEnd != 0 || !precedes.isEmpty())
+                hasEndSpec = TRUE;
+            if (scenarios[sc].duration != 0 || scenarios[sc].length != 0 ||
+                scenarios[sc].effort != 0)
+                hasDurationSpec = TRUE;
+        }
+        if  (!hasDurationSpec && (hasStartSpec ^ hasEndSpec))
+            milestone = TRUE;
+    }
 }
 
 void

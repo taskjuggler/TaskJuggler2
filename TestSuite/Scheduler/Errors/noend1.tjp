@@ -2,5 +2,7 @@ project test "test" "$Id" 2000-01-01 2000-01-31
 
 task t "Task" {
   start 2000-01-01
+	end 2000-01-02
+	milestone
 }
 

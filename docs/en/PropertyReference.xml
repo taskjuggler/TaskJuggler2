@@ -1427,7 +1427,10 @@ duration. You may not specify a <link
 linkend="PROPERTY_duration">duration</link>, <link
 linkend="PROPERTY_length">length</link>, <link
 linkend="PROPERTY_effort">effort</link> or subtasks for a milestone
-task.</para></descr> </property>
+task.</para>
+<para>A task that only has a start or an end specification and no
+duration specification or sub tasks, will be recognized as milestone
+automatically.</descr> </property>
  <property name="note" id="note" inheritable="No">
   <descr><para>Attach a note to the task. This is usually a more
 detailed specification of what the task is about.</para></descr>
