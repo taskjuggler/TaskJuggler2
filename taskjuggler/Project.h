@@ -63,7 +63,7 @@ public:
      * project ID. So, you have to add at least one ID before you add any
      * tasks.
      */
-    bool addId(const QString& i);
+    bool addId(const QString& i, bool changeCurrentId = TRUE);
 
     /**
      * Returns the first (default) ID of the project.
@@ -78,7 +78,7 @@ public:
      */
     QString getCurrentId() const
     {
-        return projectIDs.isEmpty() ? QString::null : projectIDs.last();
+        return currentId;
     }
     /**
      * Returns a list of all registered project IDs.
@@ -822,6 +822,8 @@ private:
      * project ID but all IDs must be declared before they can be
      * used. */
     QStringList projectIDs;
+
+    QString currentId;
 
     bool allocationErrors;
 

@@ -66,6 +66,7 @@ resource rl6 "R6" {
 }
 resource rl7 "R7" {
 }
+projectids test
 task d "Duration Tasks" {
   projectid test
   task t0 "180 min" {

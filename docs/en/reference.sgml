@@ -2921,7 +2921,22 @@ linkend="project_dailyworkinghours">dailyworkinghours</link>.</para>
 then the new active project ID and all subsequent top-level task will
 inherit this ID.</para>
 
-<para>See also: <link linkend="task_projectid">projectid</link></para>
+<para>See also: <link linkend="task_projectid">projectid</link> and
+<link linkend="projectids">projectids</link>.</para>
+
+</sect1>
+<sect1 id="projectids"><title>projectid &lt;id&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>id:</member><member><link linkend="id">ID</link></member>
+</simplelist></para>
+
+<para>This property declares a list of project IDs to the project.
+Multiple declaration of the same project ID is legal. A project ID
+must be declared, before it can be assigend to a task.</para>
+
+<para>See also: <link linkend="task_projectid">projectid</link> and
+<link linkend="projectid">projectid</link>.</para>
 
 </sect1>
 <sect1 id="rate"><title>rate &lt;money&gt;</title>

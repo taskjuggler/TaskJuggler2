@@ -395,6 +395,27 @@ ProjectFile::parse()
                 }
                 break;
             }
+            else if (token == KW("projectids"))
+            {
+                for ( ; ; )
+                {
+                    QString id;
+                    if (nextToken(id) != ID)
+                    {
+                        errorMessage(i18n("Project ID expected"));
+                        return FALSE;
+                    }
+
+                    proj->addId(id, FALSE);
+
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+                break;
+            }
             else if (token == "xmltaskreport")
             {
                 errorMessage

@@ -584,4 +584,16 @@ allocated 8 hours per day.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2><title>Version 1.9.2-unstable (some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>The property <link
+linkend="projectids">projectids</link> has been added. It is used in
+export reports to declare all the project IDs that are used in the
+report.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

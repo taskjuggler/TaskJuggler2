@@ -20,6 +20,7 @@ project simple "Simple Project" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:5
 }
 resource tux "Tux" {
 }
+projectids simple
 task t1 "Task1" {
   projectid simple
   plan:start 2000-01-01-00:00:00-+0000

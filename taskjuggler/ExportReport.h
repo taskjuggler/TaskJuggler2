@@ -44,6 +44,7 @@ private:
     bool generateWorkingHours(const QPtrList<const Interval>* const* wh,
                               const QPtrList<const Interval>* const* ref,
                               int indent);
+    bool generateProjectIds(const TaskList& tasks);
     bool generateResourceList(ResourceList& frl, TaskList& ftl);
     bool generateResource(ResourceList& frl, const Resource* r, int ident);
     bool generateTaskList(TaskList& ftl, ResourceList& frl);

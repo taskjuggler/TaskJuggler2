@@ -30,6 +30,7 @@ resource tuxies2 "3 Tux Individiuals" {
   resource tux4 "Tux4" {
   }
 }
+projectids simple
 task t1 "Task1" {
   projectid simple
   task s1 "sub1" {

@@ -104,7 +104,10 @@ ExportReport::generate()
         if (!generateResourceList(filteredResourceList, filteredTaskList))
             return FALSE;
     }
-    
+
+    if (!generateProjectIds(filteredTaskList))
+        return FALSE;
+
     if (!generateTaskList(filteredTaskList, filteredResourceList))
         return FALSE;
     if (!generateTaskAttributeList(filteredTaskList))
@@ -307,6 +310,30 @@ ExportReport::generateWorkingHours(const QPtrList<const Interval>* const* wh,
         }
         s << endl;
     }
+
+    return TRUE;
+}
+
+bool
+ExportReport::generateProjectIds(const TaskList& tasks)
+{
+    QStringList pids;
+
+    for (TaskListIterator tli(tasks); *tli; ++tli)
+        if (pids.contains((*tli)->getProjectId()) == 0)
+            pids.append((*tli)->getProjectId());
+
+    s << "projectids ";
+    bool first = TRUE;
+    for (QStringList::iterator it = pids.begin(); it != pids.end(); ++it)
+    {
+        if (first)
+            first = FALSE;
+        else
+            s << ", ";
+        s << *it;
+    }
+    s << endl;
 
     return TRUE;
 }

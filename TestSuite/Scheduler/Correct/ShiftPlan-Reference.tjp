@@ -51,6 +51,7 @@ resource s3 "Sally Supporter" {
 }
 resource s4 "Karen Supporter" {
 }
+projectids simple
 task start "Start of plan" {
   projectid simple
   plan:start 2002-06-01-00:00:00-+0000

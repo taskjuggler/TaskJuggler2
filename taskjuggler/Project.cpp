@@ -55,6 +55,8 @@ Project::Project()
 
     allowRedefinitions = FALSE;
 
+    currentId = QString::null;
+
     new Scenario(this, "plan", "Plan", 0);
     scenarioList.createIndex(TRUE);
     scenarioList.createIndex(FALSE);
@@ -220,12 +222,16 @@ Project::getScenarioIndex(const QString& id) const
 }
 
 bool
-Project::addId(const QString& id)
+Project::addId(const QString& id, bool changeCurrentId)
 {
     if (projectIDs.findIndex(id) != -1)
         return FALSE;
     else
         projectIDs.append(id);
+
+    if (changeCurrentId)
+        currentId = id;
+    
     return TRUE;
 }
 
