@@ -6,6 +6,7 @@ noinst_LTLIBRARIES = libtaskjuggler.la
 libtaskjuggler_la_SOURCES = Utility.cpp RealFormat.cpp \
 ParserTreeContext.cpp ParserNode.cpp ParserElement.cpp \
 TjMessageHandler.cpp \
+DecisionNode.cpp OptimizerRun.cpp Optimizer.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
 Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \

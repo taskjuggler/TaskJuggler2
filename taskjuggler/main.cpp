@@ -22,6 +22,10 @@
 #include "debug.h"
 #include "Project.h"
 #include "ProjectFile.h"
+#include "ScenarioList.h"
+#include "Scenario.h"
+#include "Optimizer.h"
+#include "OptimizerRun.h"
 #include "XMLFile.h"
 #include "kotrus.h"
 
@@ -79,6 +83,40 @@ usage(QApplication& a)
         "To report bugs please follow the instructions in the manual\n"
         "and send the information to the taskjuggler developer mailing\n"
         "list at taskjuggler-devel@suse.de\n"));
+}
+
+bool
+scheduleAllScenarios(Project* p)
+{
+    bool schedulingOk = TRUE;
+    for (ScenarioListIterator sci(p->getScenarioIterator()); *sci; ++sci)
+    {
+        if ((*sci)->getEnabled())
+        {
+            if (DEBUGPS(1))
+                qDebug(i18n("Scheduling scenario '%1' ...")
+                       .arg((*sci)->getId()));
+            Optimizer optimizer;
+            do
+            {
+                OptimizerRun* run = optimizer.startNewRun();
+                
+                if (!p->scheduleScenario(*sci))
+                {
+                    schedulingOk = FALSE;
+                    run->terminate(0.0);
+                }
+                else
+                    run->terminate(1.0);
+
+                optimizer.finishRun(run);
+            } while (!optimizer.optimumFound()); 
+        }
+    }
+    
+    p->completeBuffersAndIndices();
+    
+    return schedulingOk;
 }
 
 int main(int argc, char *argv[])
@@ -227,7 +265,7 @@ int main(int argc, char *argv[])
 
     if (!(checkOnlySyntax || generateMakeDepList))
     {
-        schedulingErrors = p.getAllocationErrors() || !p.scheduleAllScenarios();
+        schedulingErrors = p.getAllocationErrors() || !scheduleAllScenarios(&p);
         if (updateKotrusDB)
             if (parseErrors || logicalErrors || schedulingErrors)
                 qWarning("Due to errors the Kotrus DB will NOT be "

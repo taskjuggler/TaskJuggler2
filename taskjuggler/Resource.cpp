@@ -285,6 +285,13 @@ Resource::index2end(uint idx) const
         project->getScheduleGranularity() - 1;
 }
 
+/**
+ * \retval 0 { resource is available }
+ * \retval 1 { resource is on vacation }
+ * \retval 2 { resource is generally overloaded }
+ * \retval 3 { resource is overloaded for this task }
+ * \retval 4 { resource is allocated to other task }
+ */
 int
 Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
 {

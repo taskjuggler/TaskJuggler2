@@ -125,6 +125,13 @@ public:
      * @param id the ID of the scenario.
      */
     int getScenarioIndex(const QString& id) const;
+    /**
+     * Returns an interator for the list of defined scenarios.
+     */
+    ScenarioListIterator getScenarioIterator() const
+    {
+        return ScenarioListIterator(scenarioList);
+    }
 
     /**
      * Set the name of the project. The project name is mainly used for the
@@ -730,10 +737,8 @@ public:
      */
     bool pass2(bool noDepCheck);
 
-    /**
-     * Schedule all tasks for all scenarios. @return In case any errors were
-     * detected FALSE is returned.
-     */
+    bool scheduleScenario(Scenario* sc);
+    void completeBuffersAndIndices();
     bool scheduleAllScenarios();
     void generateReports() const;
 

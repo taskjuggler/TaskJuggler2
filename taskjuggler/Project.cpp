@@ -28,6 +28,7 @@
 #include "Resource.h"
 #include "Utility.h"
 #include "VacationInterval.h"
+#include "OptimizerRun.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
@@ -488,6 +489,48 @@ Project::pass2(bool noDepCheck)
 }
 
 bool
+Project::scheduleScenario(Scenario* sc)
+{
+    bool error = FALSE;
+
+    int scId = sc->getSequenceNo() - 1;
+    prepareScenario(scId);
+    if (!schedule(scId))
+    {
+        if (DEBUGPS(2))
+            qDebug(i18n("Scheduling errors in scenario '%1'.")
+                   .arg(sc->getId()));
+        error = TRUE;
+    }
+    finishScenario(scId);
+
+    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+    {
+        if (!(*rli)->bookingsOk(scId))
+        {
+            error = TRUE;
+            break;
+        }
+    }
+
+    return !error;  
+}
+
+void
+Project::completeBuffersAndIndices()
+{
+    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+        (*tli)->computeBuffers();
+
+    /* Create indices for all lists according to their default sorting
+     * criteria. */
+    taskList.createIndex();
+    resourceList.createIndex();
+    accountList.createIndex();
+    shiftList.createIndex();
+}
+
+bool
 Project::scheduleAllScenarios()
 {
     bool error = FALSE;
@@ -497,9 +540,10 @@ Project::scheduleAllScenarios()
         if ((*sli)->getEnabled())
         {
             if (DEBUGPS(1))
-                qDebug(i18n("Scheduling scenario '%1' ...").arg((*sli)->getId()));
+                qDebug(i18n("Scheduling scenario '%1' ...")
+                       .arg((*sli)->getId()));
             prepareScenario((*sli)->getSequenceNo() - 1);
-            if (!schedule(0))
+            if (!schedule((*sli)->getSequenceNo() - 1))
             {
                 if (DEBUGPS(2))
                     qDebug(i18n("Scheduling errors in scenario '%1'.")
@@ -510,26 +554,19 @@ Project::scheduleAllScenarios()
 
             for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
             {
-                if (!(*rli)->bookingsOk((*sli)->getSequenceNo() - 1))
-                {
-                    error = TRUE;
-                    break;
-                }
+                if
+                    (!(*rli)->bookingsOk((*sli)->getSequenceNo() - 1))
+                    {
+                        error = TRUE;
+                        break;
+                    }
             }
         }
     }
 
-    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        (*tli)->computeBuffers();
+    completeBuffersAndIndices();
 
-    /* Create indices for all lists according to their default sorting
-     * criteria. */
-    taskList.createIndex();
-    resourceList.createIndex();
-    accountList.createIndex();
-    shiftList.createIndex();
-
-    return !error;  
+    return !error;
 }
 
 void
