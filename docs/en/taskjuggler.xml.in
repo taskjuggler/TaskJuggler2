@@ -201,11 +201,23 @@ additional stylesheets and utilities.</para></listitem>
 url="http://www.suse.de/~ke/docbook-toys">DocBook-Toys</ulink> from
 Karl Eichwalder.</para></listitem>
 
+<listitem><para>OpenJade &mdash; The <ulink
+url="http://openjade.sourceforge.net/">OpenJade</ulink>
+system.</para></listitem>
+
 <listitem><para>JadeTeX &mdash; If you want to build the Postscript
 version of the documentation you need the <ulink
 url="ftp://ftp.dante.de/tex-archive/macros/jadetex">JadeTeX</ulink>
 macro package for <ulink
 url="http://www.tug.org/teTeX">teTeX</ulink>.</para></listitem>
+
+<listitem><para>XSLT Processor &mdash; like xsltproc from the <ulink
+url="http://xmlsoft.org/XSLT/">libxslt</ulink>
+package.</para></listitem>
+
+<listitem><para>dvips &mdash; This is usually part of your TeX system
+like <ulink
+url="http://www.tug.org/teTeX">te_latex</ulink>.</para></listitem>
 
 </itemizedlist></para>
 
