@@ -24,10 +24,11 @@
 #include "klistviewsearchline.h"
 
 #include <qdragobject.h>
-#include <kprinter.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
+#include <qlabel.h>
 
+#include <kprinter.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -79,6 +80,8 @@ ktjview2::ktjview2()
              this,   SLOT(changeCaption(const QString&)) );
     connect( m_view, SIGNAL( signalUpdateToolbars( int ) ),
              this, SLOT( slotUpdateToolbars( int ) ) );
+
+    slotUpdateToolbars( 1 );    // init the toolbars visibility
 }
 
 ktjview2::~ktjview2()
@@ -131,9 +134,12 @@ void ktjview2::setupActions()
     connect( m_scaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotScale( int ) ) );
 
-    // Filter widget action
+    // Filter toolbar
+    m_searchLabel = new QLabel( i18n( "&Filter:" ), this, "search_label" );
     m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
-    new KWidgetAction( m_searchLine, i18n( "Filter:" ), KShortcut(), 0, 0, actionCollection(), "filter_widget" );
+    m_searchLabel->setBuddy( m_searchLine );
+    ( void ) new KWidgetAction( m_searchLabel, i18n( "Filter label" ), KShortcut(), 0, 0, actionCollection(), "filter_label" );
+    ( void ) new KWidgetAction( m_searchLine, i18n( "Filter lineedit" ), KShortcut(), 0, 0, actionCollection(), "filter_lineedit" );
 
 #if 0
     // Resource menu

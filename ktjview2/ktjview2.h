@@ -31,6 +31,7 @@
 
 #include "ktjview2view.h"
 
+class QLabel;
 class KToggleAction;
 class KURL;
 class KListViewSearchLine;
@@ -126,6 +127,7 @@ private:
     // actions
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
+    QLabel * m_searchLabel;
     KListViewSearchLine * m_searchLine;
 };
 
