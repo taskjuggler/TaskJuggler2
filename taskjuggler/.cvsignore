@@ -7,3 +7,7 @@ taskjuggler
 *.gif
 *.html
 taskjuggler.dtd
+*.o
+*.lo
+*.a
+*.la
