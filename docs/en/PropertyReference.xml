@@ -683,7 +683,9 @@ purposes. First you can use it as a crude way to model a team. A team
 of 5 people should have an efficiency of 5.0. Keep in mind that you
 cannot track the member of the team individually if you use this
 feature. The other use is to model performance variations between your
-resources.</para></descr>
+resources.</para>
+<para>All resources that do not contribute effort to the task, should
+have an efficiency of 0.0.<para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
   </attributes>

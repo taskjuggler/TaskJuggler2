@@ -1,0 +1,39 @@
+project passive "Passive Resource" "1.0" 2004-11-21 2004-12-31
+
+resource arch1 "Architect 1"
+resource arch2 "Architect 2"
+resource room "Meeting room" {
+  workinghours mon 8:00 - 12:00, 13:00 - 15:00
+	workinghours tue 8:00 - 12:00, 13:00 - 15:00
+	workinghours wed off
+  workinghours thu 8:00 - 12:00, 13:00 - 15:00
+	workinghours fri 8:00 - 12:00
+	workinghours sat off
+	workinghours sun off
+	
+	efficiency 0.0 # Resource does not contribute effort
+}
+
+task spec "Make Spec" {
+	start 2004-11-21
+	effort 20d
+	allocate arch1, arch2
+	allocate room { mandatory }
+  minend 2004-12-21-12:00
+  maxend 2004-12-21-12:00	
+}
+
+htmltaskreport "PassiveResource.html" {
+	columns no, name, start, end, effort, daily
+	loadunit hours
+	hideresource 0
+	notimestamp
+}
+
+export "PassiveResource-Export.tjp" {
+	hidetask 0
+	hideresource 0
+	taskattributes all
+	notimestamp
+}
+

@@ -73,7 +73,7 @@ public:
     {
         return QPtrListIterator<Interval>(vacations);
     }
-    
+
     bool hasVacationDay(time_t day) const;
 
     bool isOnShift(const Interval& slot) const;
@@ -99,7 +99,7 @@ public:
     /***
      * Check if the slot with the specified duration is booked already.
      * @ret 0 slot is available, 1 vacation/off duty, 2 resource overloaded,
-     * 3 task overloaded, 4 booked for other task, 
+     * 3 task overloaded, 4 booked for other task,
      */
     int isAvailable(time_t day, const UsageLimits* limits, const Task* t);
 
@@ -111,7 +111,7 @@ public:
 
     double getCurrentLoad(const Interval& i, const Task* task = 0) const;
 
-    double getLoad(int sc, const Interval& i, 
+    double getLoad(int sc, const Interval& i,
                    AccountType acctType = AllAccounts,
                    const Task* task = 0) const;
 
@@ -120,7 +120,7 @@ public:
     double getCredits(int sc, const Interval& i, AccountType acctType,
                       const Task* task = 0) const;
 
-    QString getProjectIDs(int sc, const Interval& i, const Task* task = 0) 
+    QString getProjectIDs(int sc, const Interval& i, const Task* task = 0)
         const;
 
     bool isAllocated(int sc, const Interval& i,
@@ -149,17 +149,17 @@ public:
     bool bookingsOk(int sc);
 
     void resetAllocationProbability(int sc) { allocationProbability[sc] = 0; }
-    void addAllocationProbability(int sc, double ap) 
-    { 
-        allocationProbability[sc] += ap; 
+    void addAllocationProbability(int sc, double ap)
+    {
+        allocationProbability[sc] += ap;
     }
-    double getAllocationProbability(int sc) const 
-    { 
-        return allocationProbability[sc]; 
+    double getAllocationProbability(int sc) const
+    {
+        return allocationProbability[sc];
     }
-    
+
 private:
-    void getPIDs(int sc, const Interval& period, const Task* task, 
+    void getPIDs(int sc, const Interval& period, const Task* task,
                  QStringList& pids) const;
 
     void initScoreboard();
@@ -180,7 +180,7 @@ private:
 
     /// Usage limits of the resource.
     UsageLimits* limits;
-    
+
     /**
      * The efficiency of the resource. A team of five should have an
      * efficiency of 5.0 */
