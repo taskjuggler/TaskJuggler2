@@ -42,7 +42,6 @@ class QWidgetStack;
 class QTextBrowser;
 class KListView;
 class KListViewItem;
-class KPrinter;
 class TaskList;
 class TaskItem;
 class QPopupMenu;
@@ -96,11 +95,6 @@ public:
      * Open a project from a given @p url
      */
     bool openURL( const KURL& url );
-
-    /**
-     * Invokes the print dialog and prints the view
-     */
-    void print( KPrinter * printer );
 
     /**
      * @return the listview that displays the tasks

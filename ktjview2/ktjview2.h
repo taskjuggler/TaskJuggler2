@@ -109,11 +109,6 @@ private slots:
     void fileSave();
 
     /**
-     * Tell the view to print
-     */
-    void filePrint();
-
-    /**
      * Toggle the gantt view calendar mode status
      */
     void setCalendarMode();

@@ -47,7 +47,6 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kio/netaccess.h>
-#include <kprinter.h>
 #include <klistview.h>
 #include <kapplication.h>
 #include <kmainwindow.h>
@@ -211,49 +210,6 @@ ktjview2View::~ktjview2View()
     m_taskView->saveLayout( kapp->config(), "TaskListView Columns" );
     delete m_project;
     delete m_ganttPopupMenu;
-}
-
-void ktjview2View::print( KPrinter * printer )
-{
-    // print the Gantt chart
-    // set orientation to landscape
-    printer->setOrientation( KPrinter::Landscape );
-
-    // now we have a printer to print on
-    QPainter p( printer );
-    // get the paper metrics
-    QPaintDeviceMetrics m = QPaintDeviceMetrics( printer );
-    float dx, dy;
-    // get the size of the desired output for scaling.
-    // here we want to print all: ListView, TimeLine, and Legend
-    // for this purpose, we call drawContents() with a 0 pointer as painter
-    QSize size = m_ganttView->drawContents( 0 ); // TODO customize parts
-
-    // at the top, we want to print current time/date
-    QString date = i18n( "Printing Time: %1" ).arg( KGlobal::locale()->formatDateTime( QDateTime::currentDateTime() ) );
-    int hei = p.boundingRect(0,0, 5, 5, Qt::AlignLeft, date ).height();
-    p.drawText( 0, 0, date );
-
-    // compute the scale
-    dx = (float) m.width()  / (float)size.width();
-    dy  = (float)(m.height() - ( 2 * hei )) / (float)size.height();
-    float scale;
-    // scale to fit the width or height of the paper
-    if ( dx < dy )
-        scale = dx;
-    else
-        scale = dy;
-    // set the scale
-    p.scale( scale, scale );    // TODO make it possible to disable the scaling, cut the printout into pieces instead
-    // now printing with y offset:  2 hei
-    p.translate( 0, 2*hei );
-    m_ganttView->drawContents( &p ); // TODO customize parts
-    // the drawContents() has the side effect, that the painter translation is
-    // after drawContents() set to the bottom of the painted stuff
-    // for instance a
-    // p.drawText(0, 0, "printend");
-    // would be painted directly below the paintout of drawContents()
-    p.end();
 }
 
 QString ktjview2View::projectURL() const

@@ -31,7 +31,6 @@
 #include <qclipboard.h>
 #include <qfile.h>
 
-#include <kprinter.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -138,7 +137,6 @@ void ktjview2::setupActions()
     m_recentAction = KStdAction::openRecent( this, SLOT( load( const KURL& ) ), actionCollection() );
     m_recentAction->loadEntries( kapp->config() );
 
-    //KStdAction::print( this, SLOT( filePrint() ), actionCollection() );
     KStdAction::quit( this, SLOT( close() ), actionCollection() );
 
     KStdAction::keyBindings( this, SLOT( optionsConfigureKeys() ), actionCollection() );
@@ -396,22 +394,6 @@ void ktjview2::fileSave()
         KMessageBox::error( this, i18n( "Saving project '%1' failed." ).arg( url ) );
 
     updateCaption();
-}
-
-void ktjview2::filePrint()
-{
-    KPrinter * printer = new KPrinter();
-
-    // do some printer initialization
-    printer->setFullPage( true );
-
-    // initialize the printer using the print dialog
-    if ( printer->setup( this ) )
-    {
-        m_view->print( printer );
-    }
-
-    delete printer;
 }
 
 void ktjview2::optionsConfigureKeys()
