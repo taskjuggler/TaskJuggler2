@@ -23,6 +23,13 @@
 <para>
 This document describes TaskJuggler version @VERSION@
 </para>
+
+<para>The TaskJuggler manual consists of two parts. The first part
+contains general usage information and a tutorial. The tutorial is
+highly recommended for all first-time TaskJuggler users. It is a very
+good introduction to many TaskJuggler concepts and features. The
+second part is the language reference.</para>
+
 </preface>
 
 <chapter><title>Introduction</title>
@@ -35,13 +42,15 @@ is the tool for you.</para>
 
 <para>Instead of clicking yourself painfully through hundreds of
 dialog boxes you specify your TaskJuggler project in a simple text
-format.  You specify all your tasks with their dependencies and
+format.  You write down all your tasks with their dependencies and
 other properties using your favorit text editor. The information is
-sent through TaskJuggler and you will get all sorts of reports in HTML
-or XML format. The HTML files can be viewed and printed with any web
-browser that supports Cascading Style Sheets. The XML files are used
-by the Gantt- and PERT chart generators and the KDE Konqueror
-plug-in.</para>
+then sent through the TaskJuggler program and you will get all sorts
+of reports in HTML or XML format. The HTML files can be viewed and
+printed with any web browser that supports Cascading Style Sheets.
+JavaScript support is recommended. The XML files are used by the
+Gantt- and PERT chart generators and the <ulink
+url="http://www.kde.org">KDE</ulink> <ulink
+url="http://konqueror.kde.org">Konqueror</ulink> plug-in.</para>
 
 <para>TaskJuggler does not only honor the task interdependencies but
 also takes resource constrains and prioritization into account. Using
@@ -88,8 +97,7 @@ support.</para></listitem>
 
 <listitem><para>Gantt and PERT chart generators.</para></listitem>
 
-<listitem><para>Support for plan and actual scenario
-comparisons.</para></listitem>
+<listitem><para>Support for multiple project scenarios.</para></listitem>
 
 <listitem><para>Project tracking support.</para></listitem>
 
@@ -120,8 +128,8 @@ themselves, we have created two forums for users to help each other.
 </para>
 
 <para>The TaskJuggler user mailing list is hosted by <ulink
-url="http://www.suse.de/en">SuSE</ulink>. You can subscribe at <ulink
-url="http://www.suse.de/en/support/mailinglists">
+url="http://www.suse.de/en">SuSE</ulink>. You can subscribe and
+unsubscribe at <ulink url="http://www.suse.de/en/support/mailinglists">
 http://www.suse.de/en/support/mailinglists/</ulink>.</para>
 
 <para>The other forum is an IRC channel at <ulink
@@ -150,8 +158,8 @@ binary packages from their distributor. Some distributions even have
 TaskJuggler included like the <ulink
 url="http://www.suse.de/en">SuSE</ulink> distribution.</para>
 
-<para>This version of TaskJuggler was built and tested on SuSE Linux 8.1 on
-various hardware platforms.</para>
+<para>This version of TaskJuggler was built and tested on SuSE Linux
+8.2 and 9.0 on various hardware platforms.</para>
 
 <sect2><title>The command line tool taskjuggler</title>
 
@@ -159,9 +167,9 @@ various hardware platforms.</para>
 
 <para><itemizedlist mark='opencircle'>
 
-<listitem><para>qt3 &mdash; The <ulink
+<listitem><para>qt3.1 &mdash; The <ulink
 url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
-version 3.0 or higher</para></listitem>
+version 3.1 or higher</para></listitem>
 
 <listitem><para> GNU Compiler Collection &mdash; We are currently
 using GCC 3.2 to develop TaskJuggler. Since we try to write the code
@@ -281,9 +289,14 @@ you out.</para>
 The main project should be placed in a file with the
 <computeroutput>.tjp</computeroutput> extension. This main project may
 contain several sub-projects. Such sub-projects should be placed in
-files with the <computeroutput>.tjsp</computeroutput> extension. These
+files with the <computeroutput>.tji</computeroutput> extension. These
 sub-projects are included in the main project during compile
 time.</para>
+
+<para>When TaskJuggler is used with other tools the project
+description or the reports may also be in XML format. The recommended
+extension for such files is
+<computeroutput>.tjx</computeroutput>.</para>
 
 </sect1> 
 <sect1><title> General Usage</title>
@@ -304,7 +317,7 @@ files you have to ask TaskJuggler to process it.</para>
 conditions and generate the reports that were requested with the <link
 linkend="htmltaskreport">htmltaskreport</link>, <link
 linkend="htmlresourcereport">htmlresourcereport</link> or other report
-attributes in the input file.</para>
+properties in the input file.</para>
 
 </sect1> 
 <sect1><title> The Command Line Options</title>
@@ -322,6 +335,16 @@ description.</member>
 
 <member>-s</member><member>Stop TaskJuggler run after syntax check.
 This option is for testing and debugging purposes only.</member>
+
+<member>-M</member><member>Output fragment of a Makefile that lists
+the dependencies of the passed TaskJuggler files.</member>
+
+<member>--makefile &lt;file&gt;</member><member>Similar to '-M' but write
+the dependency information into the specified file.</member>
+
+<member>--maxerrors N</member><member>Specifies the number of errors
+after which TaskJuggler stops checking the input files. If N is 0
+all errors are displayed.</member>
 
 <member>--nodepcheck</member>
 <member>Do not check for dependency loops. The loop detector uses an
@@ -417,9 +440,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</para>
 
 <para>Linux is a registered trademark of Linus Torvalds.</para>
 
+<para>KDE is a trademark of KDE e. V.</para>
+
+<para>TaskJuggler is a trademark of Chris Schl&auml;ger.</para>
+
 <para>UNIX is a registered trademark and The Open Group is a trademark of
 The Open Group in the US and other countries.</para>
 
-<para>TaskJuggler is a trademark of Chris Schl&auml;ger.</para>
 </chapter>
 </book>

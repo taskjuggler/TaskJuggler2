@@ -584,7 +584,7 @@ allocated 8 hours per day.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Version 1.9.2-unstable (some day)</title>
+<sect2><title>Version 1.9.2-unstable (2003-09-05)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -615,6 +615,10 @@ respect to task end times have been fixed.</para></listitem>
 
 <listitem><para>TaskJuggler can now create 'make' compatible
 dependency information.</para></listitem>
+
+<listitem><para>The number of errors after which TaskJuggler stops
+processing is now configurable via a command line
+option.</para></listitem>
 
 </itemizedlist></para>
 

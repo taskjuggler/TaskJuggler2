@@ -16,9 +16,15 @@ linkend="reference">.</para>
 <link linkend="project">project</link> property.</para>
 
 <para><screen>
-project acso "Accounting Software" "$Id" 2002-01-16 2002-04-26 {
-  now 2002-03-04
-  currency "EUR"
+project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
+	now 2002-03-04
+  timeformat "%Y-%m-%d"
+	currency "EUR"
+										        
+	scenario plan "Plan" {
+		scenario delayed
+		"Delayed"
+	}
 }
 </screen></para>
 
@@ -37,7 +43,28 @@ TaskJuggler. We pick a day during the above specified project period.
 So we always get the same results of a TaskJuggler run, no matter when
 we process our first project. The <link
 linkend="project_currency">currency</link> attribute specifies the
-currency.</para>
+unit of currency values.</para>
+
+<para>Since each country seems to have it's own way of specifying
+dates, the format is configurable. Use the <link
+linkend="project_timeformat">timeformat</link> attribute to specify the
+default format. This is the format used for reports. It's not the
+format that you use in TaskJuggler project files. This format is fixed
+and must be Year-Month-Day-Hours:Minutes:Seconds-Timezone. From Hours
+onwards, the values are optional and default to 0.</para>
+
+<para>In this tutorial we would like to compare two scenarios of the
+project. The first scenario is the one that we have planned. The
+second scenario is how it really happended. The two scenarios have the
+same task structure, but the start and end dates of the task may vary.
+In reality we assume that the project got delayed, so we call the
+second scenario "Delayed". The <link
+linkend="project_scenario">scenario property</link> is used to specify
+the scenarios. The delayed scenario is nested into the plan scenario.
+This tells TaskJuggler to use all values from the plan scenario also
+for the delayed scenario unless the delay scenario has it's own
+values. We'll see further down, how to specify values for a
+scenario.</para>
 
 </sect1>
 <sect1><title>Global Attributes</title>
@@ -75,7 +102,7 @@ macro allocate_developers [
 
 <para>To use the macro you simply have to write <computeroutput>
 ${allocate_developers} </computeroutput> and TaskJuggler will replace
-the <computeroutput> ${allocate_developers} </computeroutput> with the
+the term <computeroutput>${allocate_developers}</computeroutput> with the
 pattern. We will use the macro further down in the example and then
 explain the meaning of the pattern.</para>
 
@@ -92,17 +119,17 @@ report to exactly those details that you want to have included.</para>
 flags team
 
 resource dev "Developers" {
-  resource dev1 "Paul Smith" { rate 330.0 }
-  resource dev2 "Sébastien Bono"
-  resource dev3 "Klaus Müller" { vacation 2002-02-01 - 2002-02-05 }
+	resource dev1 "Paul Smith" { rate 330.0 }
+	resource dev2 "Sébastien Bono"
+	resource dev3 "Klaus Müller" { vacation 2002-02-01 - 2002-02-05 }
 
-  flags team
+	flags team
 }
 resource misc "The Others" {
-  resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
-  resource doc "Dim Sung" { rate 280.0 }
+	resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
+	resource doc "Dim Sung" { rate 280.0 }
 
-  flags team
+	flags team
 }
 </screen></para>
 
@@ -178,6 +205,9 @@ fixed attributes, an ID, a name and a type. The type can either be
 amount of all cost accounts from the total amount from all revenue
 accounts. </para>
 
+<para>Accounts can also be nested. Nested accounts may not have a type
+specified. They inherit the type of the top-level account.</para>
+
 </sect1>
 <sect1><title>Specifying the Tasks</title>
 
@@ -196,7 +226,7 @@ task AcSo "Accounting Software" {
 }
 </screen></para>
 
-<para>Just like resources, tasks are declared by using the <link
+<para>Similar to resources, tasks are declared by using the <link
 linkend="task">task</link> keyword followed by an ID and a name
 string. All TaskJuggler properties have their own namespaces. This
 means, that it is quite OK to have a resource and a task with the same
