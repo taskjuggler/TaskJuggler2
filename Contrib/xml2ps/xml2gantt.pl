@@ -85,6 +85,7 @@ my $project_start   = $project{'h_start'};
 my ($p_start_year,
     $p_start_month,
     $p_start_day)   = split(/-/, $project_start);
+    ($p_start_year, $p_start_month, $p_start_day) = Add_Delta_Days($p_start_year, $p_start_month, $p_start_day, -5);
 $project{'h_end'}   =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
 my $project_end     = $project{'h_end'};
 my ($p_end_year,
@@ -108,7 +109,7 @@ my $out_file      = $project{'Id'}.'.eps';
 my $out_file_p    = $project{'Id'}.'_poster.eps';
 my $res_count     = scalar (keys %rmap);
 my $res_height    = (($task_height + $task_space) * $res_count);
-$res_height = 0; # erst mal apschalten
+#$res_height = 0; # erst mal apschalten
 #-- calc page size
 my $page_x    = ($page_border * 2) + ($project_days * $day_x);
 my $page_y    = ($page_border * 2) +
@@ -273,7 +274,7 @@ sub _make_postscript_file {
       _draw_header($p, $project_name);
       _draw_grid($p);
       _draw_task($p, $page_x, $page_y);
-#      _draw_res($p);
+      _draw_res($p);
       _draw_depends($p);
       _draw_label($p);
 
@@ -386,20 +387,24 @@ sub _draw_res {
                                             $end_year, $end_month, $end_day);
             #-- balken koordinaten
             my $_x1 = $start_delta * $day_x;
-            my $_y1 = $last_Y_task + ( ($task_height + $task_space) * $c ) - $page_border;
+            my $_y1 = $last_Y_task + ( ($task_height + $task_space) * $c ) + ($header_height/2);
             my ($x1, $y1) = _trans_coord($_x1, $_y1);
             my $_x2 = $_x1 + ($task_length * $day_x);
             my $_y2 = $_y1 + $task_height;
             my ($x2, $y2) = _trans_coord($_x2, $_y2);
+            #-- balken
             $p->setcolour(222,222,222);
             $p->box($x1, $y1, $x2, $y2, 1);
+            #-- rahmen drum
             $p->setcolour(0,0,0);
             $p->box($x1, $y1, $x2, $y2, 0);
-            if ($task_length >= 2 && $a == 0) {
-                $p->setfont("Helvetica", 8);
-                $p->text($x1+1, $y1-($task_height/1.5), "$res");
-            }
-            #-- in die mitte die load reinschreiben
+            #-- linie dazwischen
+            my $l_y = $y2+($task_space/2)-($task_height/2);
+            $p->line($page_border+5, $l_y, $page_x-($page_border*2), $l_y );
+            #-- res-name
+            $p->setfont("Helvetica", 8);
+            $p->text($page_border+5, $y1-($task_height/1.5), "$res");
+            #-- load reinschreiben
             if ($task_length >= 2) {
                 $p->text($x2-6, $y1-($task_height/1.5), "$load");
             }
@@ -443,7 +448,7 @@ sub _draw_task {
         my $_y2 = $_y1 + $task_height;
         my ($x2, $y2) = _trans_coord($_x2, $_y2);
         #-- letzte y-koordinate mweken um nachher noch die res-balken zu malen
-        $last_Y_task =  $y2 if ($y2 > $last_Y_task);
+        $last_Y_task =  $_y2 if ($_y2 > $last_Y_task);
         #-- die koordinaten für anfang und ende des tasks merken, da fangen die
         #-- depend-lines an oder da gehen sie halt hin, hoffentlich ;)
         $task->x1($x1); $task->y1($y1-($task_height/2));
@@ -537,7 +542,7 @@ sub _draw_grid {
         $f_start_day)   = split(/-/, $first_task_start);
     my $first_delta = Delta_Days($p_start_year, $p_start_month, $p_start_day,
                                  $f_start_year, $f_start_month, $f_start_day);
-    if ( $first_delta  > 7 ) {
+    if ( $first_delta  > 13 ) { # 13 weil ich 5 tage vorher das zeichnen anfange, und 7+5 is nu ma 13
         my ($l_end_year, $l_end_month, $l_end_day) = Add_Delta_Days($f_start_year, $f_start_month, $f_start_day, -7);
         print "\n\tproject-start  : $project_start\n\tfirst task-start: $first_task_start\n\tdelta is $first_delta days\n\tplease use $l_end_year-$l_end_month-$l_end_day as start of project for nice graph drawing ;)))\n";
     }
