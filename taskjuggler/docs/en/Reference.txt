@@ -17,7 +17,7 @@ beginning and is used in relative IDs. A ! means one scope up.
 STRING: A string may contain any characters and is enclosed in ". A
 string may include line breaks.
 
-DATE: A DATE is an ISO compliant date YYYY-MM-DD[-hh[:mm[:ss]]]. Hour,
+DATE: A DATE is an ISO compliant date YYYY-MM-DD[-hh:mm]. Hour,
 minute and second are optional. If not specified the values are set to
 0.
 
@@ -155,6 +155,14 @@ Specifies the time the task occupies the resources. This is working
 time, not calender time. 7d means 7 working days and not one week.
 
 -------------------------------------------------------------------------------
+duration <number> <unit>
+number: REAL
+unit: UNIT
+
+Specifies the time the task occupies the resources. This is calender
+time, not working time. 7d means one week.
+
+-------------------------------------------------------------------------------
 effort <number> <unit>
 number: REAL
 unit: UNIT
@@ -181,6 +189,11 @@ days: REAL
 
 Specifies how many days the resource can be used per day. A load of
 0.5 means that the resource will be used for half a working day.
+
+...............................................................................
+persistent
+
+If set the first available resource will be used for the whole task.
 
 ...............................................................................
 alternative <id>[,<id>]
@@ -396,7 +409,7 @@ include <filename>
 filename: STRING
 
 Includes the specified filename as if its contense would be written
-instead of the include propoperty.
+instead of the include property.
 
 ===============================================================================
 macro <id> [ body ]
@@ -428,7 +441,9 @@ timingResolution <value> <unit>
 value: INTERGER
 unit: UNIT
 
-Sets the minimum timing resolution. The smaller the value, the longer the schedulings process needs. The default is 1 hour.
+Sets the minimum timing resolution. The smaller the value, the longer
+the schedulings process needs. The default is 1 hour. The smallest
+value is 5 min.
 
 ===============================================================================
 htmlTaskReport <filename>

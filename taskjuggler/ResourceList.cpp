@@ -21,20 +21,20 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	project(p), id(i), name(n), minEffort(mie), maxEffort(mae), rate(r)
 {
 	// Monday
-	workingHours[1].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[1].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	workingHours[1].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[1].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Tuesday
-	workingHours[2].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[2].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	workingHours[2].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[2].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Wednesday
-	workingHours[3].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[3].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	workingHours[3].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[3].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Thursday
-	workingHours[4].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[4].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	workingHours[4].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[4].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Friday
-	workingHours[5].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[5].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	workingHours[5].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[5].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 }
 
 bool

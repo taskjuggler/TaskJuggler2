@@ -50,6 +50,8 @@ public:
 	void fatalError(const QString& msg) const;
 
 private:
+	bool getDateFragment(QString& token, int& c);
+
 	ProjectFile* pf;
 	QString file;
 	FILE* f;
@@ -87,8 +89,8 @@ private:
 	bool readVacation();
 	bool readAccount();
 	bool readAllocate(Task* t);
-	bool readLength(Task* t);
-	bool readEffort(Task* t);
+	bool readTimeFrame(Task* t, double& d);
+	bool readTimeValue(ulong& value);
 	bool readPriority(int& priority);
 	time_t date2time(const QString& date);
 

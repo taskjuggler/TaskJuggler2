@@ -2,88 +2,19 @@
 
 project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 
+timingResolution 30 min
+
 htmlTaskReport "test.html" {
-  columns  no, name, start, end, minStart, daily
-  start 2001-10-01
-  end 2002-04-01
+  columns  no, name, start, end, daily
+  start 2001-09-28
+  end 2001-11-03
 }
 
 htmlResourceReport "resource.html" 2001-11-28 2002-03-06
 
-macro version [SL 8.0]
-
-macro deadline [
-  task dl "SL 8.0 x86 deadline for ${1} (1800 CET)" {
-    depends !work
-    flags deadline
-  }
-]
-
-macro build [
-  task build "SL 8.0 x86 build ${1}" {
-    effort 2d
-    allocate ro { alternative kukuk }
-    depends !dl
-  }
-]
-
-macro burn [
-  task done "Burn SL 8.0 ${1}" {
-    effort 1d
-    allocate mem
-    depends !build
-    flags media
-  }
-]
-
-macro preview [
-task pre${1} "SL 8.0 preview ${1}" {
-
-  task work "SL 8.0 x86 make bootable system" {
-    effort 15d
-    allocate yast
-    allocate dist
-    allocate packagers
-    depends ${2}
-  }
-
-  ${deadline "preview ${1}"}
-  ${build "preview ${1}"}
-  ${burn "preview ${1}"}
-}
-]
-
-macro beta [
-task beta${1} "${version} beta${1}" {
-
-  task work "SL 8.0 finish all coding work" {
-    effort 15d
-    allocate yast
-    allocate dist
-    allocate packagers
-    depends !!${2}.work
-  }
-
-  ${deadline "beta ${1}"}
-  ${build "beta ${1}"}
-
-  task ship "SL 8.0 x86 ship beta ${1} to external testers" {
-    effort 2d
-    allocate mem
-    depends !build
-  }
-
-  task test "SL 8.0 x86 test beta ${1}" {
-    effort 2d
-    allocate bg
-    depends !build
-  }
-}
-]
-
 flags deadline, media
 
-vacation "Xmas" 2001-12-21 - 2002-01-04
+vacation "Xmas" 2001-10-04 - 2001-10-10
 
 account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
 
@@ -99,33 +30,25 @@ resource yast "YaST2 Team"
 task sl80 "SuSE Linux 8.0" {
 
 task sl80start "Start of 8.0 development" {
-  start 2001-09-28
+  start 2001-09-28-15:00
 }
 
 task yast "YaST2 development"{
-  effort 56d
+  effort 14d
   allocate yast
   depends !sl80start
 }
 
 task pack "SL 8.0 package updates" {
-  effort 56d
+  length 14d
   allocate packagers
   depends !sl80start
 }
 
 task dist "SL 8.0 distribution modifications" {
-  effort 56d
+  duration 14d
   allocate dist
   depends !sl80start
 }
 
-${preview "1" "!!yast, !!pack, !!dist"}
-${preview "2" "!!pre1.work"}
-${preview "3" "!!pre2.work"}
-${preview "4" "!!pre3.work"}
-${beta "1" "pre4"}
-${beta "2" "beta1"}
-${beta "3" "beta2"}
-${beta "4" "beta3"}
 }

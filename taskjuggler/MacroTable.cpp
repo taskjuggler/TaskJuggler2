@@ -27,14 +27,20 @@ MacroTable::addMacro(Macro* macro)
 QString
 MacroTable::expand(const QString& name)
 {
+	fflush(stdout);
 	if (isdigit(name[0].latin1()))
 	{
 		QStringList* sl = argStack.last();
 		uint idx = name.toInt();
-		if ((sl == 0) || (idx <= 0) || (sl->count() <= idx - 1))
+		if (sl == 0)
 		{
-			fprintf(stderr, "Index %d for argument out of range [1 - %d]!\n",
-					idx, sl->count());
+			qWarning("Macro argument stack is empty.");
+			return QString::null;
+		}
+		if ((idx <= 0) || (sl->count() <= idx - 1))
+		{
+			qWarning("Index %d for argument out of range [1 - %d]!\n",
+					 idx, sl->count());
 			return QString::null;
 		}
 		return (*sl)[idx - 1];

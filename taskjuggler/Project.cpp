@@ -27,7 +27,9 @@
 Project::Project()
 {
 	taskList.setAutoDelete(TRUE);
-	priority = 50;
+	priority = 500;
+	dailyWorkingHours = 8.0;
+	scheduleGranularity = ONEHOUR;
 	start = 0;
 	end = 0;
 	minEffort = 0.0;
@@ -76,7 +78,6 @@ Project::pass2()
 	sortedTasks.setSorting(TaskList::PrioDown);
 	sortedTasks.sort();
 
-	const time_t scheduleGranularity = ONEHOUR;
 	for (int day = start; day < end; day += scheduleGranularity)
 	{
 		bool done;
@@ -435,7 +436,7 @@ Project::htmlDayHeader(FILE* f, time_t s, time_t e)
 {
 	const int oneDay = 60 * 60 * 24;
 
-	for (time_t day = s; day < e; day += oneDay)
+	for (time_t day = midnight(s); day < e; day += oneDay)
 	{
 		int dom = dayOfMonth(day);
 		fprintf(f, "<td bgcolor=\"%s\"><font size=\"-2\">"
@@ -450,11 +451,12 @@ Project::htmlMonthHeader(FILE* f, time_t s, time_t e)
 {
 	const int oneDay = 60 * 60 * 24;
 
-	for (time_t day = s; day < e; day += oneDay * daysLeftInMonth(day))
+	for (time_t day = midnight(s); day < e;
+		 day += oneDay * daysLeftInMonth(day))
 	{
 		int left = daysLeftInMonth(day);
-		if (left > (e - day) / oneDay)
-			left = (e - day) / oneDay;
+		if (left > (e - day) / oneDay + 1)
+			left = (e - day) / oneDay + 1;
 		fprintf(f, "<td bgcolor=\""COL_HEADER"\" colspan=\"%d\" "
 				"align=\"center\"><font size=\"+2\"><b>%s</b></font></td>",
 				left, monthAndYear(day));

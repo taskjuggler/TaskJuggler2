@@ -21,11 +21,13 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 {
 	start = end = 0;
 	actualStart = actualEnd = 0;
-	length = 0;
+	length = 0.0;
 	effort = 0.0;
+	duration = 0.0;
 	complete = -1;
 	note = "";
 	account = 0;
+	lastSlot = 0;
 	if (p)
 	{
 		// Set attributes that are inherited from parent task.
@@ -56,11 +58,14 @@ Task::fatalError(const QString& msg) const
 }
 
 bool
-Task::schedule(time_t date, time_t duration)
+Task::schedule(time_t date, time_t slotDuration)
 {
-	// Task is already scheduled.
-	if (start != 0 && end != 0)
+	// Task is already scheduled or we are on vacation.
+	if ((start != 0 && end != 0) || (date <= lastSlot))
 		return TRUE;
+
+	// Make sure that we schedule this task only one for each time slot.
+	lastSlot = date;
 
 	/* Check whether this task is a container tasks (task with sub-tasks).
 	 * Container tasks are scheduled when all sub tasks have been
@@ -82,7 +87,9 @@ Task::schedule(time_t date, time_t duration)
 		else if (earliestStart() > 0)
 		{
 			start = earliestStart();
-			done = 0.0;
+			doneEffort = 0.0;
+			doneDuration = 0.0;
+			doneLength = 0.0;
 			costs = 0.0;
 			workStarted = FALSE;
 			tentativeEnd = date;
@@ -91,24 +98,42 @@ Task::schedule(time_t date, time_t duration)
 			return TRUE;	// Task cannot be scheduled yet.
 	}
 
-	if (length > 0)
+	/* Do not schedule anything before the start date lies within
+	 * the current time slot. */
+	if (date < start)
+		return TRUE;
+
+	if (length > 0.0 || duration > 0.0)
 	{
-		/* The task has a specified length in working days. We determine
-		 * the end date by adding the specified number of working days to
-		 * the start date. */
-		int i = 0;
-		const int oneDay = 60 * 60 * 24;
-		int day;
-		for (day = start; i < length; day += oneDay)
-			if (isWorkingDay(day))
-				++i;
-		end = day;
+		/* Length specifies the number of working days (as daily load)
+		 * and duration specifies the number of calender days (as
+		 * daily load). */
+		if (allocations.count() > 0 && !project->isVacation(date))
+			bookResources(date, slotDuration);
+
+		doneDuration += (double) slotDuration / ONEDAY;
+		if (!(isWeekend(date) || project->isVacation(date)))
+		{
+			doneLength += (double) slotDuration / ONEDAY;
+			/* Move the start date to make sure that there is
+			 * some work going on on the start date. */
+			if (!workStarted)
+			{
+				start = date;
+				workStarted = TRUE;
+			}
+		}
+
+		if ((length > 0.0 && doneLength >= length) ||
+			(duration > 0.0 && doneDuration >= duration))
+		{
+			end = tentativeEnd;
+			return FALSE;
+		}
 	}
-	else if (effort > 0)
+	else if (effort > 0.0)
 	{
-		/* Do not schedule anything before the start date lies within
-		 * the interval. */
-		if (date + duration <= start || project->isVacation(date))
+		if (project->isVacation(date))
 			return TRUE;
 		/* The effort of the task has been specified. We have to look
 		 * how much the resources can contribute over the following
@@ -119,13 +144,8 @@ Task::schedule(time_t date, time_t duration)
 			fatalError("No allocations specified for effort based task");
 			return TRUE;
 		}
-		if (!bookResources(date, duration))
-//						fprintf(stderr,
-//							"No resource available for task '%s' on %s\n",
-//							id.latin1(),
-//							time2ISO(date).latin1())
-				;
-		if (done >= effort)
+		bookResources(date, slotDuration);
+		if (doneEffort >= effort)
 		{
 			end = tentativeEnd;
 			return FALSE;
@@ -133,7 +153,6 @@ Task::schedule(time_t date, time_t duration)
 	}
 	else
 	{
-		printf("%s %s\n", id.latin1(), time2ISO(start).latin1());
 		// Task is a milestone.
 		end = start;
 		return FALSE;
@@ -180,23 +199,19 @@ Task::scheduleContainer()
 }
 
 bool
-Task::bookResources(time_t date, time_t duration)
+Task::bookResources(time_t date, time_t slotDuration)
 {
 	bool allocFound = FALSE;
 
 	for (Allocation* a = allocations.first(); a != 0;
 		 a = allocations.next())
 	{
-		if (bookResource(a->getResource(), date, duration))
+		if (bookResource(a->getResource(), date, slotDuration))
 			allocFound = TRUE;
 		else
 		{
-//			fprintf(stderr,
-//					"Resource %s cannot be used for task '%s' on %s.\n",
-//					a->getResource()->getId().latin1(),
-//					id.latin1(), time2ISO(date).latin1());
 			for (Resource* r = a->first(); r != 0; r = a->next())
-				if (bookResource(r, date, duration))
+				if (bookResource(r, date, slotDuration))
 				{
 					allocFound = TRUE;
 					break;
@@ -208,11 +223,11 @@ Task::bookResources(time_t date, time_t duration)
 }
 
 bool
-Task::bookResource(Resource* r, time_t date, time_t duration)
+Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 {
 	Interval interval;
 
-	if (r->isAvailable(date, duration, interval))
+	if (r->isAvailable(date, slotDuration, interval))
 	{
 		double intervalLoad = project->convertToDailyLoad(
 			interval.getDuration());
@@ -230,7 +245,7 @@ Task::bookResource(Resource* r, time_t date, time_t duration)
 		}
 
 		tentativeEnd = interval.getEnd();
-		done += intervalLoad;
+		doneEffort += intervalLoad;
 		//costs += r->getRate() * intervalLoad;
 
 		return TRUE;
@@ -250,14 +265,7 @@ Task::earliestStart()
 	time_t date = 0;
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->getEnd() > date)
-			date = t->getEnd() + 1;
-
-	/* If the task duration is enforced by length (and not effort) a task
-	 * starts the next working day after the previous tasks have been
-	 * finished. With effort based scheduling we can schedule multiple
-	 * tasks per date. */
-	if (date > 0 && length > 0)
-		date = nextWorkingDay(date);
+			date = t->getEnd() + (t->getStart() == t->getEnd() ? 0 : 1);
 
 	return date;
 }

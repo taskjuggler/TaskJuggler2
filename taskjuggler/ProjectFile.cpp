@@ -110,6 +110,25 @@ FileInfo::ungetC(int c)
 	ungetBuf.append(c);
 }
 
+bool
+FileInfo::getDateFragment(QString& token, int& c)
+{
+	token += c;
+	c = getC();
+	// c must be a digit
+	if (!isdigit(c))
+	{
+		fatalError("Corrupted date");
+		return FALSE;
+	}
+	token += c;
+	// read other digits
+	while ((c = getC()) != EOF && isdigit(c))
+		token += c;
+
+	return TRUE;
+}
+
 TokenType
 FileInfo::nextToken(QString& token)
 {
@@ -182,36 +201,24 @@ FileInfo::nextToken(QString& token)
 				token += c;
 			if (c == '-')
 			{
-				// this must be a ISO date yyyy-mm-dd
-				token += c;
-				c = getC();
-				// c must be a digit
-				if (!isdigit(c))
-				{
-					fatalError("Corrupted date");
-					return EndOfFile;
-				}
-				token += c;
-				// read rest of month
-				while ((c = getC()) != EOF && isdigit(c))
-					token += c;
+				// this must be a ISO date yyyy-mm-dd[-hh:mm]
+				getDateFragment(token, c);
 				if (c != '-')
 				{
 					fatalError("Corrupted date");
 					return EndOfFile;
 				}
-				token += c;
-				c = getC();
-				// c must be a digit
-				if (!isdigit(c))
+				getDateFragment(token, c);
+				if (c == '-')
 				{
-					fatalError("Corrupted date");
-					return EndOfFile;
+					getDateFragment(token, c);
+					if (c != ':')
+					{
+						fatalError("Corrupted date");
+						return EndOfFile;
+					}
+					getDateFragment(token, c);
 				}
-				token += c;
-				// read rest of day
-				while ((c = getC()) != EOF && isdigit(c))
-					token += c;
 				ungetC(c);
 				return DATE;
 			}
@@ -436,12 +443,26 @@ ProjectFile::parse()
 				break;
 			}
 			else if (token == "rate")
-			{				if (nextToken(token) != REAL)
+			{
+				if (nextToken(token) != REAL)
 				{
 					fatalError("Real value exptected");
 					return FALSE;
 				}
 				proj->setRate(token.toDouble());
+				break;
+			}
+			else if (token == "timingResolution")
+			{
+				ulong resolution;
+				if (!readTimeValue(resolution))
+					return FALSE;
+				if (resolution < 60 * 5)
+				{
+					fatalError("scheduleGranularity must be at least 5 min");
+					return FALSE;
+				}
+				proj->setScheduleGranularity(resolution);
 				break;
 			}
 			else if (token == "include")
@@ -728,14 +749,26 @@ ProjectFile::readTask(Task* parent)
 			else if READ_DATE("actualEnd", setActualEnd)
 			else if (token == "length" && !hasSubTasks)
 			{
-				if (!readLength(task))
+				double d;
+				if (!readTimeFrame(task, d))
 					return FALSE;
+				task->setLength(d);
 				cantBeParent = TRUE;
 			}
 			else if (token == "effort" && !hasSubTasks)
 			{
-				if (!readEffort(task))
+				double d;
+				if (!readTimeFrame(task, d))
 					return FALSE;
+				task->setEffort(d);
+				cantBeParent = TRUE;
+			}
+			else if (token == "duration" && !hasSubTasks)
+			{
+				double d;
+				if (!readTimeFrame(task, d))
+					return FALSE;
+				task->setDuration(d);
 				cantBeParent = TRUE;
 			}
 			else if (token == "complete" && !hasSubTasks)
@@ -1065,6 +1098,10 @@ ProjectFile::readAllocate(Task* t)
 				}
 				a->setLoad(token.toInt());
 			}
+			else if (token == "persistent")
+			{
+				a->setPersistent(TRUE);
+			}
 			else if (token == "alternative")
 			{
 				do
@@ -1090,54 +1127,12 @@ ProjectFile::readAllocate(Task* t)
 }
 
 bool
-ProjectFile::readLength(Task* task)
+ProjectFile::readTimeValue(ulong& value)
 {
-	if (task->getEffort() > 0.0)
+	QString val;
+	if (nextToken(val) != INTEGER)
 	{
-		fatalError("You can specify either a length or an effort.");
-		return FALSE;
-	}
-	QString len;
-	if (nextToken(len) != INTEGER)
-	{
-		fatalError("Integer expected");
-		return FALSE;
-	}
-	QString unit;
-	if (nextToken(unit) != ID)
-	{
-		fatalError("Unit expected");
-		return FALSE;
-	}
-	if (unit == "d")
-		task->setLength(len.toInt());
-	else if (unit == "w")
-		task->setLength(len.toInt() * 5);
-	else if (unit == "m")
-		task->setLength(len.toInt() * 20);
-	else
-	{
-		fatalError("Unit expected");
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-bool
-ProjectFile::readEffort(Task* task)
-{
-	if (task->getLength() > 0)
-	{
-		fatalError("You can specify either a length or an effort.");
-		return FALSE;
-	}
-	QString effort;
-	TokenType tt;
-	if ((tt = nextToken(effort)) != INTEGER &&
-		tt != REAL)
-	{
-		fatalError("Real number expected");
+		fatalError("Integer value expected");
 		return FALSE;
 	}
 	QString unit;
@@ -1147,17 +1142,61 @@ ProjectFile::readEffort(Task* task)
 		return FALSE;
 	}
 	if (unit == "min")
-		task->setEffort(effort.toDouble() / (8 * 60));
+		value = val.toULong() * 60;
 	else if (unit == "h")
-		task->setEffort(effort.toDouble() / 8);
+		value = val.toULong() * (60 * 60);
 	else if (unit == "d")
-		task->setEffort(effort.toDouble());
+		value = val.toULong() * (60 * 60 * 24);
 	else if (unit == "w")
-		task->setEffort(effort.toDouble() * 5);
+		value = val.toULong() * (60 * 60 * 24 * 7);
 	else if (unit == "m")
-		task->setEffort(effort.toDouble() * 20);
+		value = val.toULong() * (60 * 60 * 24 * 30);
 	else if (unit == "y")
-		task->setEffort(effort.toDouble() * 240);
+		value = val.toULong() * (60 * 60 * 24 * 356);
+	else
+	{
+		fatalError("Unit expected");
+		return FALSE;
+	}
+	return TRUE;
+}
+
+bool
+ProjectFile::readTimeFrame(Task* task, double& value)
+{
+	if (task->getEffort() > 0.0 ||
+		task->getLength() > 0.0 ||
+		task->getDuration() > 0.0)
+	{
+		fatalError(
+			"You can specify either a length, a duration or an effort.");
+		return FALSE;
+	}
+	QString val;
+	TokenType tt;
+	if ((tt = nextToken(val)) != REAL && tt != INTEGER)
+	{
+		fatalError("Real value expected");
+		return FALSE;
+	}
+	QString unit;
+	if (nextToken(unit) != ID)
+	{
+		fatalError("Unit expected");
+		return FALSE;
+	}
+	if (unit == "min")
+		value = val.toDouble() / (8 * 60);
+	else if (unit == "h")
+		value = val.toDouble() / 8;
+	else if (unit == "d")
+		value = val.toDouble();
+	else if (unit == "w")
+		value = val.toDouble() * 5;
+	else if (unit == "m")
+		value = val.toDouble() * 20;
+	else if (unit == "y")
+		value = val.toDouble() * 240;
 	else
 	{
 		fatalError("Unit expected");
@@ -1178,9 +1217,9 @@ ProjectFile::readPriority(int& priority)
 		return FALSE;
 	}
 	priority = token.toInt();
-	if (priority < 1 || priority > 100)
+	if (priority < 1 || priority > 1000)
 	{
-		fatalError("Priority value must be between 1 and 100");
+		fatalError("Priority value must be between 1 and 1000");
 		return FALSE;
 	}
 	return TRUE;
@@ -1189,8 +1228,15 @@ ProjectFile::readPriority(int& priority)
 time_t
 ProjectFile::date2time(const QString& date)
 {
-	int y, m, d;
-	sscanf(date, "%d-%d-%d", &y, &m, &d);
+	int y, m, d, hour, min;
+	if (date.find(':') == -1)
+	{
+		sscanf(date, "%d-%d-%d", &y, &m, &d);
+		hour = min = 0;
+	}
+	else
+		sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min);
+
 	if (y < 1970)
 	{
 		fatalError("Year must be larger than 1969");
@@ -1207,6 +1253,6 @@ ProjectFile::date2time(const QString& date)
 		d = 1;
 	}
 
-	struct tm t = { 0, 0, 0, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
+	struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	return mktime(&t);
 }

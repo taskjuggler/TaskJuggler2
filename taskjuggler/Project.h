@@ -91,6 +91,12 @@ public:
 	void setRate(double r) { rate = r; }
 	double getRate() const { return rate; }
 
+	void setDailyWorkingHours(double h) { dailyWorkingHours = h; }
+	double getDailyWorkingHours() const { return dailyWorkingHours; }
+
+	void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
+	ulong getScheduleGranularity() const { return scheduleGranularity; }
+
 	void setHtmlTaskReport(const QString& f) { htmlTaskReport = f; }
 	void addHtmlTaskReportColumn(const QString& c)
 	{
@@ -115,7 +121,7 @@ public:
 
 	double convertToDailyLoad(long secs)
 	{
-		return ((double) secs / (8 * ONEHOUR));
+		return ((double) secs / (dailyWorkingHours * ONEHOUR));
 	}
 	
 private:
@@ -143,6 +149,13 @@ private:
 	double minEffort;
 	double maxEffort;
 	double rate;
+
+	// Number of working hours of a generic working day.
+	double dailyWorkingHours;
+
+	/* The granularity of the scheduler in seconds. No intervals shorter
+	 * than this time will be scheduled. */
+	ulong scheduleGranularity;
 
 	/* To be able to detect flag conflicts between multiple parts of a project
 	 * all flags must be registered before they can be used. This variable

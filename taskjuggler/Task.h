@@ -33,6 +33,7 @@ public:
 	{
 		alternatives.setAutoDelete(TRUE);
 		load = 100;
+		persistent = FALSE;
 	}
 	~Allocation() { }
 
@@ -40,6 +41,9 @@ public:
 
 	void setLoad(int l) { load = l; }
 	int getLoad() const { return load; }
+
+	void setPersistent(bool p) { persistent = p; }
+	bool getPersistent() const { return persistent; }
 
 	void addAlternative(Resource* r) { alternatives.append(r); }
 	Resource* first() { return alternatives.first(); }
@@ -50,7 +54,15 @@ private:
 	Allocation();
 
 	Resource* resource;
+	// The maximum daily usage of the resource.
 	int load;
+
+	/* True if the allocation should be persistent over the whole task.
+	 * If set the first selection will not be changed even if there is an
+	 * available alternative. */
+	bool persistent;
+
+	// List of alternative resources.
 	QList<Resource> alternatives;
 } ;
 
@@ -108,10 +120,13 @@ public:
 	}
 
 	void setLength(int days) { length = days; }
-	int getLength() const { return length; }
+	double getLength() const { return length; }
 
 	void setEffort(double e) { effort = e; }
 	double getEffort() const { return effort; }
+
+	void setDuration(double d) { duration = d; }
+	double getDuration() const { return duration; }
 
 	void setComplete(int c) { complete = c; }
 	double getComplete() const { return complete; }
@@ -218,17 +233,23 @@ private:
 	// Day when it really ended
 	time_t actualEnd;
 	// Length in working days
-	int length;
+	double length;
 	// Effort (in man days) needed to complete the task
 	double effort;
+	// Duration in calender days
+	double duration;
+
 	// Percentage of completion of the task
 	int complete;
 
-	// The following 4 variables are used during scheduling.
+	// The following block of variables are used during scheduling.
 	double costs;
-	double done;
+	double doneEffort;
+	double doneLength;
+	double doneDuration;
 	bool workStarted;
 	time_t tentativeEnd;
+	time_t lastSlot;
 
 	// Account where the costs of the task are credited to.
 	Account* account;
