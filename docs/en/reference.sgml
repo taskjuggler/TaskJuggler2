@@ -2149,7 +2149,10 @@ linkend="date">DATE</link></member>
 <para>Limits the allocation activity during the specified intervals to the
 working hours of the shift specified with
 <computeroutput>ID</computeroutput>. Multiple shifts intervals can be specified
-but shift intervals may not overlap.</para>
+but shift intervals may not overlap. If shifts are specified for an
+allocation no allocations will be made outside of the intervals for
+which a shift has been assigned. So you need to take care that for all
+periods that you want an allocation a shift has been specified.</para>
 
 </sect3>
 <sect3 id="task_allocate_persistent"><title>persistent</title>
