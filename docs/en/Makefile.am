@@ -49,18 +49,18 @@ index.cache.bz2 : index.docbook GenPropertyReference.xml Example.xml
 taskjuggler/book1.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
 	  mkdir -p taskjuggler ; \
-	  db2html --xencoding utf-8 taskjuggler.xml ;\
+	  db2html taskjuggler.xml ;\
 	  cp index.html taskjuggler/index.html ; \
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
-	  db2ps --xencoding utf-8 taskjuggler.xml ;\
+	  db2ps taskjuggler.xml ;\
 	fi
 
 taskjuggler.pdf: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
-	  db2ps --pdf --xencoding utf-8 taskjuggler.xml ;\
+	  db2pdf taskjuggler.xml ;\
 	fi
 
 tarball: 

@@ -763,4 +763,14 @@ directory where you started the program.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2><title>Some Version (Some Day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed build problems in the doc directory on Debian
+Unstable and FC3.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>
