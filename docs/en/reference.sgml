@@ -1,4 +1,4 @@
-<chapter><title>Language Reference</para><para><anchor id="reference"></title>
+<chapter><title>Language Reference<anchor id="reference"></title>
 <sect1 id="comments"><title>Comments</title>
 
 <para>There are two ways to annotate a project file with comments. All text
