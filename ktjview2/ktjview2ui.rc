@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="38">
+<kpartgui name="ktjview2" version="39">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -71,6 +71,7 @@
   <Action name="zoom_out"/>
   <Action name="fit_to_page"/>
   <Action name="timeframe"/>
+  <Action name="ps_gantt"/>
 </ToolBar>
 
 <ToolBar name="filterToolBar" noMerge="1"><text>Quick Search Toolbar</text>
