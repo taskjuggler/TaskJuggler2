@@ -213,6 +213,13 @@ name="select"> function for alternative resource allocations.
 <item>All load values in HTML reports can now be scaled by specifying
 a <ref id="htmltaskreport_loadunit" name="loadunit">.
 
+<item>Improved readability of scheduler error messages.
+
+<item>Added Perl/Tk tool to view GANTT charts.
+
+<item>Added new example project to the Examples directory to
+illustrate how to create shift schedules with TaskJuggler.
+
 </itemize>
 
 <sect>Installation
