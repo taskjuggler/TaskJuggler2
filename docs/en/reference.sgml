@@ -3372,7 +3372,10 @@ last policy counts.</para>
 </simplelist></para>
 
 <para>Specifies the time the task occupies the resources. This is calender
-time, not working time. 7d means one week.</para>
+time, not working time. 7d means one week. If resources are specified
+they are allocated when available. Availability of resources has no
+impact on the duration of the task. It will always be the specified
+duration.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para>
 
@@ -3392,7 +3395,10 @@ linkend="unit">UNIT</link></member>
 </simplelist></para>
 
 <para>Specifies the effort needed to complete the task. An effort of 4d can
-be done with 2 full-time resources in 2 days.</para>
+be done with 2 full-time resources in 2 days. The task will not finish
+before the resources have contributed the specified effort. So the
+duration of the task will depend on the availability of the resources.
+</para>
 
 <para>WARNING: In almost all real world projects effort is not the product
 of time and resources. This is only true if the task can be
@@ -3487,7 +3493,12 @@ are not inherited.</para>
 time, not calender time. 7d means 7 working days, not one week.
 Whether a day is considered a working day or not depends on the
 defined <link linkend="project_workinghours">working hours</link> and global
-<link linkend="vacation">vacations</link>.</para>
+<link linkend="vacation">vacations</link>. A task with a length
+specification may have resource allocations. Resources are allocated
+when they are available. The availability has no impact on the
+duration of the task. A day where none of the specified resources is
+available is still considered a working day, if there is no global
+vacation of or global working time defined.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para>
 
