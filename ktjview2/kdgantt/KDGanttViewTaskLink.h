@@ -4,7 +4,7 @@
 */
 
 /****************************************************************************
- ** Copyright (C)  2002-2004 Klarälvdalens Datakonsult AB.  All rights reserved.
+ ** Copyright (C)  2002-2004 Klarï¿½vdalens Datakonsult AB.  All rights reserved.
  **
  ** This file is part of the KDGantt library.
  **
@@ -90,8 +90,11 @@ private:
     friend class KDGanttViewTaskLinkGroup;
     friend class KDTimeTableWidget;
     QPtrList<KDGanttViewItem> fromList,toList;
-    QPtrList<KDCanvasLine>* horLineList;
-    QPtrList<KDCanvasLine>* verLineList;
+    QPtrList<KDCanvasLine>* horLine1List;
+    QPtrList<KDCanvasLine>* verLine1List;
+    QPtrList<KDCanvasLine>* horLine2List;
+    QPtrList<KDCanvasLine>* verLine2List;
+    QPtrList<KDCanvasLine>* horLine3List;
     QPtrList<KDCanvasPolygon>* topList;
     KDGanttViewTaskLinkGroup* myGroup;
     bool isvisible,ishighlighted;

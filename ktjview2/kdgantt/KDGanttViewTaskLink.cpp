@@ -3,7 +3,7 @@
    KDGantt - a multi-platform charting engine
 */
 /****************************************************************************
- ** Copyright (C)  2002-2004 Klarälvdalens Datakonsult AB.  All rights reserved.
+ ** Copyright (C)  2002-2004 Klarï¿½vdalens Datakonsult AB.  All rights reserved.
  **
  ** This file is part of the KDGantt library.
  **
@@ -139,39 +139,59 @@ KDGanttViewTaskLink::~KDGanttViewTaskLink( )
 {
   setGroup(0);
   myTimeTable->myTaskLinkList.remove(this);
-  delete horLineList;
-  delete verLineList;
+  delete horLine1List;
+  delete verLine1List;
+  delete horLine2List;
+  delete verLine2List;
+  delete horLine3List;
   delete topList;
 }
 
 
 void KDGanttViewTaskLink::initTaskLink()
 {
-  horLineList = new QPtrList<KDCanvasLine>;
-  verLineList = new QPtrList<KDCanvasLine>;
+  horLine1List = new QPtrList<KDCanvasLine>;
+  verLine1List = new QPtrList<KDCanvasLine>;
+  horLine2List = new QPtrList<KDCanvasLine>;
+  verLine2List = new QPtrList<KDCanvasLine>;
+  horLine3List = new QPtrList<KDCanvasLine>;
   topList = new QPtrList<KDCanvasPolygon>;
-  horLineList->setAutoDelete( true );
-  verLineList->setAutoDelete( true );
+  horLine1List->setAutoDelete( true );
+  verLine1List->setAutoDelete( true );
+  horLine2List->setAutoDelete( true );
+  verLine2List->setAutoDelete( true );
+  horLine3List->setAutoDelete( true );
   topList->setAutoDelete( true );
   myTimeTable = fromList.getFirst()->myGanttView->myTimeTable;
-  KDCanvasLine* horLine,*verLine;
+  KDCanvasLine* horLine1,*verLine1;
+  KDCanvasLine* horLine2,*verLine2;
+  KDCanvasLine* horLine3;
   KDCanvasPolygon* top;
   unsigned int i, j;
   for ( i = 0;i < fromList.count();++i) {
     for ( j = 0;j < toList.count();++j) {
-      horLine = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
-      verLine = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
+      horLine1 = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
+      verLine1 = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
+      horLine2 = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
+      verLine2 = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
+      horLine3 = new KDCanvasLine(myTimeTable,this,Type_is_KDGanttTaskLink);
       top = new KDCanvasPolygon(myTimeTable,this,Type_is_KDGanttTaskLink);
       QPointArray arr = QPointArray(3);
-      arr.setPoint(0,-4,-5);
-      arr.setPoint(1,4,-5);
+      arr.setPoint(0,-5,4);
+      arr.setPoint(1,-5,-4);
       arr.setPoint(2,0,0);
       top->setPoints(arr);
-      horLineList->append(horLine);
-      verLineList->append(verLine);
+      horLine1List->append(horLine1);
+      verLine1List->append(verLine1);
+      horLine2List->append(horLine2);
+      verLine2List->append(verLine2);
+      horLine3List->append(horLine3);
       topList->append(top);
-      horLine->setZ(1);
-      verLine->setZ(1);
+      horLine1->setZ(1);
+      verLine1->setZ(1);
+      horLine2->setZ(1);
+      verLine2->setZ(1);
+      horLine3->setZ(1);
       top->setZ(1);
     }
   }
@@ -217,8 +237,11 @@ void KDGanttViewTaskLink::showMe( bool visible )
         p.setColor(myColor);
     }
     QPoint start, end;
-    QPtrListIterator<KDCanvasLine> horIt(*horLineList);
-    QPtrListIterator<KDCanvasLine> verIt(*verLineList);
+    QPtrListIterator<KDCanvasLine> horIt1(*horLine1List);
+    QPtrListIterator<KDCanvasLine> verIt1(*verLine1List);
+    QPtrListIterator<KDCanvasLine> horIt2(*horLine2List);
+    QPtrListIterator<KDCanvasLine> verIt2(*verLine2List);
+    QPtrListIterator<KDCanvasLine> horIt3(*horLine3List);
     QPtrListIterator<KDCanvasPolygon> topIt(*topList);
     QPtrListIterator<KDGanttViewItem> fromIt(fromList);
     QPtrListIterator<KDGanttViewItem> toIt(toList);
@@ -226,37 +249,61 @@ void KDGanttViewTaskLink::showMe( bool visible )
         toIt.toFirst();
         for ( ; toIt.current(); ++toIt ) {
             if (!isvisible || ! (*fromIt)->isVisibleInGanttView || !(*toIt)->isVisibleInGanttView || !myTimeTable->taskLinksVisible) {
-                (*horIt)->hide();
-                (*verIt)->hide();
+                (*horIt1)->hide();
+                (*verIt1)->hide();
+                (*horIt2)->hide();
+                (*verIt2)->hide();
+                (*horIt3)->hide();
                 (*topIt)->hide();
-                ++horIt;
-                ++verIt;
+                ++horIt1;
+                ++verIt1;
+                ++horIt2;
+                ++verIt2;
+                ++horIt3;
                 ++topIt;
             } else {
-                (*horIt)->setPen(p);
-                (*verIt)->setPen(p);
+                (*horIt1)->setPen(p);
+                (*verIt1)->setPen(p);
+                (*horIt2)->setPen(p);
+                (*verIt2)->setPen(p);
+                (*horIt3)->setPen(p);
                 (*topIt)->setBrush(b);
                 end = (*toIt)->getTaskLinkEndCoord();
                 start = (*fromIt)->getTaskLinkStartCoord(end);
-                (*horIt)->setPoints(start.x(),start.y(),end.x()+wid,start.y());
-                (*verIt)->setPoints(end.x()+wid/2,start.y(),end.x()+wid/2,end.y()-2);
-                (*topIt)->move(end.x()+wid/2,end.y());
-                (*horIt)->show();
-                (*verIt)->show();
+                (*horIt1)->setPoints(start.x(),start.y(),start.x()+4,start.y());
+                (*verIt1)->setPoints(start.x()+4,start.y(),start.x()+4,start.y()+4+(end.y()-start.y())/2);
+                (*horIt2)->setPoints(start.x()+4,start.y()+4+(end.y()-start.y())/2,end.x()-12,start.y()+4+(end.y()-start.y())/2);
+                (*verIt2)->setPoints(end.x()-12,start.y()+4+(end.y()-start.y())/2,end.x()-12,end.y()+7);
+                (*horIt3)->setPoints(end.x()-12,end.y()+7,end.x()-2,end.y()+7);
+                (*topIt)->move(end.x()-2,end.y()+7);
+                (*horIt1)->show();
+                (*verIt1)->show();
+                (*horIt2)->show();
+                (*verIt2)->show();
+                (*horIt3)->show();
                 (*topIt)->show();
-                ++horIt;
-                ++verIt;
+                ++horIt1;
+                ++verIt1;
+                ++horIt2;
+                ++verIt2;
+                ++horIt3;
                 ++topIt;
 
             }
         }
     }
-    while ( horIt.current() ) {
-        (*horIt)->hide();
-        (*verIt)->hide();
+    while ( horIt1.current() ) {
+        (*horIt1)->hide();
+        (*verIt1)->hide();
+        (*horIt2)->hide();
+        (*verIt2)->hide();
+        (*horIt3)->hide();
         (*topIt)->hide();
-        ++horIt;
-        ++verIt;
+        ++horIt1;
+        ++verIt1;
+        ++horIt2;
+        ++verIt2;
+        ++horIt3;
         ++topIt;
     }
 }
