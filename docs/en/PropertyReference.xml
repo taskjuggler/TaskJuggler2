@@ -787,6 +787,11 @@ project IDs of the included tasks must be declared first with the
    <attr name="filename" type="STRING"/>
   </attributes>
   <optattributes>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
    <optattr>taskattributes</optattr>
    <optattr>taskroot</optattr>
   </optattributes>
