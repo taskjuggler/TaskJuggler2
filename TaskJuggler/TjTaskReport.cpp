@@ -268,24 +268,44 @@ TjTaskReport::drawTask(Task* const t, int y)
     else if (t->isContainer())
     {
         // A black bar with jag at both ends.
-        QPointArray a(9);
         int start = time2x(t->getStart(scenario));
         int end = time2x(t->getEnd(scenario));
-        int top = y + 4;
-        int bottom = y + itemHeight - 7;
-        int halfbottom = y + itemHeight / 2 - 1;
+        int centerY = y + (itemHeight / 2);
         int jagWidth = 4;
+        int top = centerY - 3;
+        int halfbottom = centerY + 3;
+        int bottom = halfbottom + jagWidth + 1;
+
+        // Black bar
+        QPointArray a(4);
         a.setPoint(0, start - jagWidth, top);
         a.setPoint(1, start - jagWidth, halfbottom);
-        a.setPoint(2, start, bottom);
-        a.setPoint(3, start + jagWidth, halfbottom);
-        a.setPoint(4, end - jagWidth, halfbottom);
-        a.setPoint(5, end, bottom);
-        a.setPoint(6, end + jagWidth, halfbottom);
-        a.setPoint(7, end + jagWidth, top);
-        a.setPoint(8, start - jagWidth, top);
-
+        a.setPoint(2, end + jagWidth + 1, halfbottom);
+        a.setPoint(3, end + jagWidth + 1, top);
         QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
+        polygon->setPoints(a);
+        polygon->setPen(Qt::black);
+        polygon->setBrush(Qt::black);
+        polygon->setZ(TJRL_TASKS);
+        polygon->show();
+
+        // Left jag
+        a.resize(3);
+        a.setPoint(0, start - jagWidth, halfbottom);
+        a.setPoint(1, start, bottom);
+        a.setPoint(2, start + jagWidth + 1, halfbottom);
+        polygon = new QCanvasPolygon(ganttChart);
+        polygon->setPoints(a);
+        polygon->setPen(Qt::black);
+        polygon->setBrush(Qt::black);
+        polygon->setZ(TJRL_TASKS);
+        polygon->show();
+
+        // Right jag
+        a.setPoint(0, end - jagWidth, halfbottom);
+        a.setPoint(1, end, bottom);
+        a.setPoint(2, end + jagWidth + 1, halfbottom);
+        polygon = new QCanvasPolygon(ganttChart);
         polygon->setPoints(a);
         polygon->setPen(Qt::black);
         polygon->setBrush(Qt::black);
@@ -294,11 +314,12 @@ TjTaskReport::drawTask(Task* const t, int y)
     }
     else
     {
+        int start = time2x(t->getStart(scenario));
+        int end = time2x(t->getEnd(scenario));
+
         // A blue box with some fancy interior.
         QCanvasRectangle* rect =
-            new QCanvasRectangle(time2x(t->getStart(scenario)), y + 4,
-                                 time2x(t->getEnd(scenario)) -
-                                 time2x(t->getStart(scenario)),
+            new QCanvasRectangle(start, y + 4, end - start + 1,
                                  itemHeight - 8, ganttChart);
 
         rect->setPen(QPen(QColor("#4C5EFF")));
@@ -317,11 +338,10 @@ TjTaskReport::drawTask(Task* const t, int y)
                 reportDef->getProject()->getNow() < t->getEnd(scenario))
             {
                 barWidth = time2x(reportDef->getProject()->getNow()) -
-                    time2x(t->getStart(scenario));
+                    start;
             }
             else
-                barWidth = (int) ((time2x(t->getEnd(scenario)) -
-                                   time2x(t->getStart(scenario))) *
+                barWidth = (int) ((end - start) *
                                   (t->getCompletionDegree(scenario) / 100.0));
 
             rect = new QCanvasRectangle
