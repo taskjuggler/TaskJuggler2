@@ -60,6 +60,7 @@
 #include <ktexteditor/undointerface.h>
 #include <ktexteditor/selectioninterface.h>
 #include <ktexteditor/markinterface.h>
+#include <ktexteditor/viewstatusmsginterface.h>
 
 // local includes
 #include "kdgantt/KDGanttViewEventItem.h"
@@ -194,7 +195,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_widgetStack->addWidget( m_editorView );
     connect( m_editorView->doc(), SIGNAL( setWindowCaption( const QString & ) ),
              this, SIGNAL( signalChangeCaption( const QString & ) ) );
-    connect( m_editorView->doc(), SIGNAL( setStatusBarText( const QString & ) ),
+    connect( m_editorView->doc(), SIGNAL( viewStatusMsg( const QString & ) ),
              this, SIGNAL( signalChangeStatusbar( const QString & ) ) );
 
     // gantt popup menu
