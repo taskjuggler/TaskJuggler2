@@ -20,19 +20,18 @@
 class KTVConnector: public QCanvasPolygon
 {
 public:
-   KTVConnector( QCanvas *,
-		 const QPoint& from = QPoint(),
-		 const QPoint& to   = QPoint() );
+    KTVConnector( QCanvas *,
+                  const QPoint& from = QPoint(),
+                  const QPoint& to   = QPoint() );
 
-   void setConnectPoints( const QPoint&, const QPoint& );
+    void setConnectPoints( const QPoint&, const QPoint& );
 
-   QPoint startPoint() const;
-   QPoint endPoint() const;
-   
-   ~KTVConnector() {}
+    QPoint startPoint() const;
+    QPoint endPoint() const;
+
 private:
-   static const int m_wingX = 4;
-   static const int m_wingY = 8;
+    static const int m_wingX = 4;
+    static const int m_wingY = 8;
 };
 
 
@@ -42,8 +41,8 @@ private:
 class KTVConnectorList: public QPtrDict<KTVConnector> // store connectors with Tasks as keys.
 {
 public:
-   KTVConnectorList() {}
-   ~KTVConnectorList() {}
+    KTVConnectorList() {}
+    // ~KTVConnectorList() {}
 };
 
 typedef QPtrDictIterator<KTVConnector> KTVConnectorListIterator;
