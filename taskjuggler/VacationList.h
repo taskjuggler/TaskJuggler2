@@ -18,24 +18,24 @@
 #include <qlist.h>
 #include <qstring.h>
 
-class Interval
+#include "Interval.h"
+
+class VacationInterval : public Interval
 {
 public:
-	Interval() { start = 0; end = 0; }
-	Interval(const QString& n, time_t s, time_t e)
-		: name(n), start(s), end(e) { }
-	virtual ~Interval() { }
+	VacationInterval() { }
+
+	VacationInterval(const QString& n, time_t s, time_t e)
+		: Interval(s, e), name(n) { }
+	virtual ~VacationInterval() { }
 
 	const QString& getName() const { return name; }
-	time_t getStart() const { return start; }
-	time_t getEnd() const { return end; }
 
+private:
 	QString name;
-	time_t start;
-	time_t end;
 } ;
 
-class VacationList : protected QList<Interval>
+class VacationList : protected QList<VacationInterval>
 {
 public:
 	VacationList() { setAutoDelete(TRUE); }
@@ -43,9 +43,9 @@ public:
 
 	void add(const QString& name, time_t start, time_t end)
 	{
-		inSort(new Interval(name, start, end));
+		inSort(new VacationInterval(name, start, end));
 	}
-	bool isVacationDay(time_t day);
+	bool isVacation(time_t date);
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);

@@ -55,7 +55,10 @@ class Account
 {
 public:
 	Account(const QString& i, const QString& n)
-		: id(i), name(n), openingBalance(0.0) { }
+		: id(i), name(n), openingBalance(0.0)
+	{
+		kotrusId = "";
+	}
 	~Account() { };
 
 	const QString& getId() const { return id; }

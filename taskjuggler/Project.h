@@ -61,8 +61,8 @@ public:
 	void addVacation(const QString& n, time_t s, time_t e)
 	{
 		vacationList.add(n, s, e);
-	};
-	bool isVacationDay(time_t d) { return vacationList.isVacationDay(d); }
+	}
+	bool isVacation(time_t d) { return vacationList.isVacation(d); }
 
 	void addResource(Resource* r)
 	{
@@ -111,6 +111,11 @@ public:
 	bool isAllowedFlag(const QString& flag)
 	{
 		return allowedFlags.contains(flag) > 0;
+	}
+
+	double convertToDailyLoad(long secs)
+	{
+		return ((double) secs / (8 * ONEHOUR));
 	}
 	
 private:

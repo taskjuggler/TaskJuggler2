@@ -905,7 +905,7 @@ ProjectFile::readResource()
 		return FALSE;
 	}
 
-	Resource* r = new Resource(id, name, proj->getMinEffort(),
+	Resource* r = new Resource(proj, id, name, proj->getMinEffort(),
 							   proj->getMaxEffort(), proj->getRate());
 	TokenType tt;
 	QString token;
@@ -1207,6 +1207,6 @@ ProjectFile::date2time(const QString& date)
 		d = 1;
 	}
 
-	struct tm t = { 0, 0, 0, d, m - 1, y - 1900, 0, 0, 0 };
+	struct tm t = { 0, 0, 0, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	return mktime(&t);
 }

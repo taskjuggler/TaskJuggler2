@@ -142,9 +142,17 @@ public:
 
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
-	bool schedule(time_t reqStart);
+	bool schedule(time_t reqStart, time_t duration);
 	bool isScheduled();
 	bool scheduleOK();
+
+	bool isMilestone() const { return start != 0 && start == end; }
+	bool isActiveToday(time_t date) const
+	{
+		Interval day(midnight(date), midnight(date) + ONEDAY - 1);
+		Interval work(start, end);
+		return day.overlap(work);
+	}
 
 	void setAccount(Account* a) { account = a; }
 
@@ -164,7 +172,8 @@ public:
 
 private:
 	bool scheduleContainer();
-	bool bookResources(time_t day, double& costs);
+	bool bookResource(Resource* r, time_t day, time_t duration);
+	bool bookResources(time_t day, time_t duration);
 	bool isWorkingDay(time_t day) const;
 	time_t nextWorkingDay(time_t day) const;
 	time_t earliestStart();
@@ -215,10 +224,11 @@ private:
 	// Percentage of completion of the task
 	int complete;
 
-	// The following 3 variables are used during scheduling.
+	// The following 4 variables are used during scheduling.
 	double costs;
 	double done;
 	bool workStarted;
+	time_t tentativeEnd;
 
 	// Account where the costs of the task are credited to.
 	Account* account;

@@ -16,47 +16,94 @@
 #include "Task.h"
 #include "Project.h"
 
-double
-Resource::isAvailable(time_t date)
+Resource::Resource(Project* p, const QString& i, const QString& n,
+				   double mie, double mae, double r) :
+	project(p), id(i), name(n), minEffort(mie), maxEffort(mae), rate(r)
 {
-	double bookedEffort = 0.0;
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-		if (date == b->getDate())
-			bookedEffort += b->getEffort();
-	return (maxEffort - bookedEffort);
+	// Monday
+	workingHours[1].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[1].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	// Tuesday
+	workingHours[2].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[2].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	// Wednesday
+	workingHours[3].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[3].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	// Thursday
+	workingHours[4].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[4].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
+	// Friday
+	workingHours[5].append(new Interval(8 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[5].append(new Interval(13 * ONEHOUR, 17 * ONEHOUR));
 }
 
 bool
-Resource::book(Booking* b)
+Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 {
-	jobs.append(b);
-	return TRUE;
+	// Make sure that we don't overload the resource.
+	time_t bookedTime = duration;
+	Interval day = Interval(midnight(date), midnight(date) + ONEDAY - 1);
+	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		if (day.contains(b->getInterval()))
+			bookedTime += b->getDuration();
+	if (project->convertToDailyLoad(bookedTime) > maxEffort)
+		return FALSE;
+
+	// Iterate through all the work time intervals for the week day.
+	const int dow = dayOfWeek(date);
+	for (Interval* i = workingHours[dow].first(); i != 0;
+		 i = workingHours[dow].next())
+	{
+		interval = Interval(midnight(date), midnight(date));
+		interval.add(*i);
+		/* If there is an overlap between working time and the requested
+		 * interval we exclude the time starting with the first busy
+		 * interval in that working time. */
+		if (interval.overlap(Interval(date, date + duration - 1)))
+		{
+			for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+				if (!interval.exclude(b->getInterval()))
+					return FALSE;
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 
-double
-Resource::getLoadOnDay(time_t date)
+bool
+Resource::book(Booking* nb)
 {
-	double load = 0.0;
-
+	// Try first to append the booking 
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-		if (date == b->getDate())
-			load += b->getEffort();
-	return load;
+		if (b->getTask() == nb->getTask() &&
+			b->getProjectId() == nb->getProjectId() &&
+			b->getInterval().append(nb->getInterval()))
+		{
+			// booking appended
+			delete nb;
+			return TRUE;
+		}
+	jobs.append(nb);
+	return TRUE;
 }
 
 double
 Resource::getLoadOnDay(time_t date, Task* task)
 {
-	double load = 0.0;
+	time_t bookedTime = 0;
 
+	const Interval day(midnight(date), midnight(date) + ONEDAY - 1);
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-		if (date == b->getDate() && task == b->getTask())
-			load += b->getEffort();
-	return load;
+	{
+		if (day.contains(b->getInterval()) &&
+			(task == 0 || task == b->getTask()))
+			bookedTime += b->getDuration();
+	}
+	return project->convertToDailyLoad(bookedTime);
 }
 
 bool
-Resource::isBusyWith(Task* task)
+Resource::isAssignedTo(Task* task)
 {
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
 		if (task == b->getTask())
@@ -76,21 +123,13 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 Resource*
 ResourceList::getResource(const QString& id)
 {
-	Resource key(id, "");
+	Resource key(0, id, "");
 	return at(find(&key));
 }
 
 void
 Resource::printText()
 {
-	printf("ID: %s\n", id.latin1());
-	printf("Name: %s\n", name.latin1());
-	printf("MinEffort: %3.2f  MaxEffort: %3.2f  Rate: %7.2f\n",
-		   minEffort, maxEffort, rate);
-	for (Booking* j = jobs.first(); j != 0; j = jobs.next())
-		printf("%s %5.2f %s\n", time2ISO(j->getDate()).latin1(),
-			   j->getEffort(),
-			   j->getTask()->getId().latin1());
 }
 
 void

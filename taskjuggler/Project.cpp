@@ -21,7 +21,8 @@
 #define COL_DEFAULT "#fffadd"
 #define COL_WEEKEND "#ffec80"
 #define COL_BOOKED "#ffc0a3"
-#define COL_HEADER "a5c2ff"
+#define COL_HEADER "#a5c2ff"
+#define COL_MILESTONE "#ff2a2a"
 
 Project::Project()
 {
@@ -75,14 +76,15 @@ Project::pass2()
 	sortedTasks.setSorting(TaskList::PrioDown);
 	sortedTasks.sort();
 
-	for (int day = start; day < end; day += 60 * 60 * 24)
+	const time_t scheduleGranularity = ONEHOUR;
+	for (int day = start; day < end; day += scheduleGranularity)
 	{
 		bool done;
 		do
 		{
 			done = TRUE;
 			for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
-				if (!t->schedule(day))
+				if (!t->schedule(day, scheduleGranularity))
 					done = FALSE;
 		} while (!done);
 	}
@@ -314,9 +316,11 @@ Project::reportHTMLTaskList()
 				{
 					double load = t->getLoadOnDay(day);
 					QString bgCol = COL_DEFAULT;
-					if (isWeekend(day))
+					if (t->isMilestone() && t->isActiveToday(day))
+						bgCol = COL_MILESTONE;
+					else if (isWeekend(day))
 						bgCol = COL_WEEKEND;
-					else if (load > 0.0)
+					else if (t->isActiveToday(day))
 						bgCol = COL_BOOKED;
 					if (load > 0.0)
 						fprintf(f,
@@ -399,7 +403,7 @@ Project::reportHTMLResourceList()
 		fprintf(f, "</tr>\n");
 
 		for (Task* t = taskList.first(); t != 0; t = taskList.next())
-			if (r->isBusyWith(t))
+			if (r->isAssignedTo(t))
 			{
 				fprintf(f, "<tr>");
 				fprintf(f, "<td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<font size=\"-1\">%s</font></td>",

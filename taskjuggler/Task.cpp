@@ -56,7 +56,7 @@ Task::fatalError(const QString& msg) const
 }
 
 bool
-Task::schedule(time_t day)
+Task::schedule(time_t date, time_t duration)
 {
 	// Task is already scheduled.
 	if (start != 0 && end != 0)
@@ -79,14 +79,15 @@ Task::schedule(time_t day)
 		{
 			start = project->getStart();
 		}
-		else
+		else if (earliestStart() > 0)
 		{
 			start = earliestStart();
+			done = 0.0;
+			costs = 0.0;
+			workStarted = FALSE;
+			tentativeEnd = date;
 		}
-		done = 0.0;
-		costs = 0.0;
-		workStarted = FALSE;
-		if (start == 0)
+		else
 			return TRUE;	// Task cannot be scheduled yet.
 	}
 
@@ -105,6 +106,10 @@ Task::schedule(time_t day)
 	}
 	else if (effort > 0)
 	{
+		/* Do not schedule anything before the start date lies within
+		 * the interval. */
+		if (date + duration <= start || project->isVacation(date))
+			return TRUE;
 		/* The effort of the task has been specified. We have to look
 		 * how much the resources can contribute over the following
 		 * workings days until we have reached the specified
@@ -114,28 +119,21 @@ Task::schedule(time_t day)
 			fatalError("No allocations specified for effort based task");
 			return TRUE;
 		}
-		double dailyCosts = 0.0;
-		if (isWorkingDay(day))
-		{
-			if (!bookResources(day, dailyCosts))
+		if (!bookResources(date, duration))
 //						fprintf(stderr,
 //							"No resource available for task '%s' on %s\n",
 //							id.latin1(),
-//							time2ISO(day).latin1())
+//							time2ISO(date).latin1())
 				;
-		}
-		/* If an account has been specified load account with the
-		 * accumulated costs of this day. */
-		if (account)
-			account->book(new Transaction(day, -costs, this));
 		if (done >= effort)
 		{
-			end = day;
+			end = tentativeEnd;
 			return FALSE;
 		}
 	}
 	else
 	{
+		printf("%s %s\n", id.latin1(), time2ISO(start).latin1());
 		// Task is a milestone.
 		end = start;
 		return FALSE;
@@ -153,91 +151,91 @@ Task::scheduleContainer()
 	// Check that this is really a container task
 	if ((t = subTasks.first()) && (t != 0))
 	{
-		if (t->getStart() > 0)
-			nstart = t->getStart();
-		if (t->getEnd() > 0)
-			nend = t->getEnd();
+		/* Make sure that all sub tasks have been scheduled. If not we
+		 * can't yet schedule this task. */
+		if (t->getStart() == 0 || t->getEnd() == 0)
+			return TRUE;
+		nstart = t->getStart();
+		nend = t->getEnd();
 	}
 	else
 		return TRUE;
 
 	for (t = subTasks.next() ; t != 0; t = subTasks.next())
 	{
-		if (t->getStart() < start)
+		/* Make sure that all sub tasks have been scheduled. If not we
+		 * can't yet schedule this task. */
+		if (t->getStart() == 0 || t->getEnd() == 0)
+			return TRUE;
+
+		if (t->getStart() < nstart)
 			nstart = t->getStart();
-		if (t->getEnd() > end)
+		if (t->getEnd() > nend)
 			nend = t->getEnd();
 	}
 
-	/* Make sure that all sub tasks have been scheduled. If not we can't
-	 * yet schedule this task. */
-	if (nstart > 0 && nend > 0)
-	{
-		start = nstart;
-		end = nend;
-		return FALSE;
-	}
-
-	return TRUE;
+	start = nstart;
+	end = nend;
+	return FALSE;
 }
 
 bool
-Task::bookResources(time_t day, double& dailyCosts)
+Task::bookResources(time_t date, time_t duration)
 {
 	bool allocFound = FALSE;
 
 	for (Allocation* a = allocations.first(); a != 0;
 		 a = allocations.next())
 	{
-		/* Move the start date to make sure that there is
-		 * some work going on on the start date. */
-		if (!workStarted)
-			start = day;
-		double remaining;
-		if ((remaining = a->getResource()->isAvailable(day)) > 0.0)
-		{
-			if (remaining > (a->getLoad() / 100.0))
-				remaining = a->getLoad() / 100.0;
-			if (remaining > (effort - done))
-				remaining = effort - done;
-			if (a->getResource()->book(new Booking(
-				day, this, remaining)))
-			{
-				addBookedResource(a->getResource());
-				done += remaining;
-				dailyCosts += a->getResource()->getRate() * remaining;
-			}
+		if (bookResource(a->getResource(), date, duration))
 			allocFound = TRUE;
-		}
 		else
 		{
 //			fprintf(stderr,
 //					"Resource %s cannot be used for task '%s' on %s.\n",
 //					a->getResource()->getId().latin1(),
-//					id.latin1(), time2ISO(day).latin1());
+//					id.latin1(), time2ISO(date).latin1());
 			for (Resource* r = a->first(); r != 0; r = a->next())
-				if ((remaining = r->isAvailable(day)) > 0.0)
+				if (bookResource(r, date, duration))
 				{
-					if (remaining > (a->getLoad() / 100.0))
-						remaining = a->getLoad() / 100.0;
-					if (remaining > (effort - done))
-						remaining = effort - done;
-					if (r->book(new Booking(
-						day, this, remaining)))
-					{
-						addBookedResource(a->getResource());
-						done += remaining;
-						dailyCosts += r->getRate() * remaining;
-					}
 					allocFound = TRUE;
 					break;
 				}
 		}
 	}
-	if (allocFound)
-		workStarted = TRUE;
 
 	return allocFound;
+}
+
+bool
+Task::bookResource(Resource* r, time_t date, time_t duration)
+{
+	Interval interval;
+
+	if (r->isAvailable(date, duration, interval))
+	{
+		double intervalLoad = project->convertToDailyLoad(
+			interval.getDuration());
+		r->book(new Booking(interval, this,
+							account ? account->getKotrusId() : QString(""),
+							project->getId()));
+		addBookedResource(r);
+
+		/* Move the start date to make sure that there is
+		 * some work going on on the start date. */
+		if (!workStarted)
+		{
+			start = date;
+			workStarted = TRUE;
+		}
+
+		tentativeEnd = interval.getEnd();
+		done += intervalLoad;
+		//costs += r->getRate() * intervalLoad;
+
+		return TRUE;
+	}
+	return FALSE;
 }
 
 bool
@@ -249,29 +247,29 @@ Task::isScheduled()
 time_t
 Task::earliestStart()
 {
-	time_t day = 0;
+	time_t date = 0;
 	for (Task* t = previous.first(); t != 0; t = previous.next())
-		if (t->getEnd() > day)
-			day = t->getEnd();
+		if (t->getEnd() > date)
+			date = t->getEnd() + 1;
 
 	/* If the task duration is enforced by length (and not effort) a task
 	 * starts the next working day after the previous tasks have been
 	 * finished. With effort based scheduling we can schedule multiple
-	 * tasks per day. */
-	if (day > 0 && length > 0)
-		day = nextWorkingDay(day);
+	 * tasks per date. */
+	if (date > 0 && length > 0)
+		date = nextWorkingDay(date);
 
-	return day;
+	return date;
 }
 
 double
-Task::getLoadOnDay(time_t day)
+Task::getLoadOnDay(time_t date)
 {
 	double load = 0.0;
 	for (Resource* r = bookedResources.first(); r != 0;
 		 r = bookedResources.next())
 	{
-		load += r->getLoadOnDay(day, this);
+		load += r->getLoadOnDay(date, this);
 	}
 	return load;
 }
@@ -340,7 +338,7 @@ Task::isWorkingDay(time_t d) const
 	if (tms->tm_wday < 1 || tms->tm_wday > 5)
 		return FALSE;
 
-	return !project->isVacationDay(d);
+	return !project->isVacation(d);
 }
 
 time_t

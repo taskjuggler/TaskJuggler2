@@ -18,23 +18,23 @@ VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)
 	Interval* i1 = static_cast<Interval*>(it1);
 	Interval* i2 = static_cast<Interval*>(it2);
 
-	if (i1->start == i2->start)
+	if (i1->getStart() == i2->getStart())
 	{
-		if (i1->end == i2->end)
+		if (i1->getEnd() == i2->getEnd())
 			return 0;
 		else
-			return i1->end - i2->end;
+			return i1->getEnd() - i2->getEnd();
 	}
 	else
-		return i1->start - i2->start;
+		return i1->getStart() - i2->getStart();
 }
 
 bool
-VacationList::isVacationDay(time_t day)
+VacationList::isVacation(time_t date)
 {
-	Interval* i;
-	for (i = first(); i != 0 && day <= i->getEnd(); i = next())
-		if (i->getStart() <= day && day <= i->getEnd())
+	VacationInterval* i;
+	for (i = first(); i != 0 && date <= i->getEnd(); i = next())
+		if (i->contains(date))
 			return TRUE;
 
 	return FALSE;

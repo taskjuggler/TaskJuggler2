@@ -3,7 +3,7 @@
 project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 
 htmlTaskReport "test.html" {
-  columns  no, name, start, end, daily
+  columns  no, name, start, end, minStart, daily
   start 2001-10-01
   end 2002-04-01
 }
@@ -87,7 +87,7 @@ vacation "Xmas" 2001-12-21 - 2002-01-04
 
 account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
 
-resource ro "Ruediger Oertel" # Dies ist ein Kommentar
+resource ro "Ruediger Oertel"
 resource kukuk "Thorsten Kukuk"
 resource cs "Chris Schlaeger"
 resource mem "Muhamed Memovic"

@@ -17,6 +17,8 @@
 #include <qstring.h>
 
 #define MAXTIME 0x7FFFFFFF
+#define ONEDAY (60 * 60 * 24)
+#define ONEHOUR (60 * 60)
 
 const char* monthAndYear(time_t d);
 
@@ -25,6 +27,10 @@ int daysLeftInMonth(time_t d);
 bool isWeekend(time_t d);
 
 int dayOfMonth(time_t d);
+
+int dayOfWeek(time_t d);
+
+time_t midnight(time_t t);
 
 QString time2ISO(time_t t);
 

@@ -48,12 +48,27 @@ dayOfMonth(time_t t)
 	return tms->tm_mday;
 }
 
+int
+dayOfWeek(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_wday;
+}
+
+time_t
+midnight(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
+	return mktime(tms);
+}
+
 QString time2ISO(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	static QString s;
-	s.sprintf("%04d-%02d-%02d", 1900 + tms->tm_year, 1 + tms->tm_mon,
-			  tms->tm_mday);
+	s.sprintf("%04d-%02d-%02d %02d:%02d", 1900 + tms->tm_year, 1 + tms->tm_mon,
+			  tms->tm_mday, tms->tm_hour, tms->tm_min);
 	return s;
 }
 

@@ -21,12 +21,23 @@ DATE: A DATE is an ISO compliant date YYYY-MM-DD[-hh[:mm[:ss]]]. Hour,
 minute and second are optional. If not specified the values are set to
 0.
 
+TIME: A time in the format HH:MM.
+
 UNIT: May be
 h for hours,
 d for days,
 w for weeks,
 m for months,
 y for years.
+
+WEEKDAY: May be
+Mon for Monday
+Tue for Tuesday
+Wed for Wednesday
+Thu for Thursday
+Fri for Friday
+Sat for Saturday
+Sun for Sunday
 
 INTEGER: An integer number.
 
@@ -299,6 +310,15 @@ Specifies a vacation for a resource. The to value is NOT included in
 the vacation.
 
 -------------------------------------------------------------------------------
+hours <weekday> <from>-<to>[,<from>-<to>]
+weekday: WEEKDAY
+from: TIME
+to: TIME
+
+Sets the working hours to the specified intervals. If no hours are
+specified for a day, the global definitions are used.
+
+-------------------------------------------------------------------------------
 
 ===============================================================================
 vacation name <start> [- <end>]
@@ -311,8 +331,26 @@ of the vacation. So 2001-12-24 - 2001-12-25 specifies one day of
 vacation, not two days.
 
 ===============================================================================
-priority <value>
+hours <weekday> <from>-<to>[,<from>-<to>]
+weekday: WEEKDAY
+from: TIME
+to: TIME
+
+Sets the working hours to the specified intervals. The values are used
+as default values for all resources defined afterwards. The default
+values are 08:00-12:00 and 13:00-17:00 from Mon - Fri.
+
+===============================================================================
+workingHoursPerDay <value>
 value: INTEGER
+
+Specifies the number of working hours per day. This value is used to
+calculate the daily load from the number of booked hours. If
+workingHoursPerDay is set to 8 and a resource is used for 12 hours on
+a day, the daily load is 1.5.
+
+===============================================================================
+priority <value> value: INTEGER
 
 The default scheduling priority for tasks. The value must be between 1
 and 1000 and is inherited by all tasks if no other priority is
@@ -384,6 +422,13 @@ id: ID
 
 Declares the specified flags. Flags can be assigned to tasks to be
 used as filters during report generation.
+
+===============================================================================
+timingResolution <value> <unit>
+value: INTERGER
+unit: UNIT
+
+Sets the minimum timing resolution. The smaller the value, the longer the schedulings process needs. The default is 1 hour.
 
 ===============================================================================
 htmlTaskReport <filename>

@@ -17,6 +17,7 @@
 #include <qlist.h>
 #include <qstring.h>
 
+#include "Interval.h"
 #include "VacationList.h"
 
 class Project;
@@ -25,12 +26,17 @@ class Task;
 class Booking
 {
 public:
-	Booking(time_t d, Task* t, double e) : date(d), task(t), effort(e) { }
+	Booking(const Interval& iv, Task* t, QString a = "",
+			QString i = "")
+		: interval(iv), task(t), account(a), projectId(i) { }
 	~Booking() { }
 
-	time_t getDate() const { return date; }
+	time_t getStart() const { return interval.getStart(); }
+	time_t getEnd() const { return interval.getEnd(); }
+	time_t getDuration() const { return interval.getDuration(); }
+	Interval& getInterval() { return interval; }
+
 	Task* getTask() const { return task; }
-	double getEffort() const { return effort; }
 
 	void setAccount(const QString a) { account = a; }
 	const QString& getAccount() const { return account; }
@@ -39,12 +45,10 @@ public:
 	const QString& getProjectId() const { return projectId; }
 
 private:
-	// The day of the booking
-	time_t date;
+	// The booked time period.
+	Interval interval;
 	// A pointer to the task that caused the booking
 	Task* task;
-	// The effort (in man days) the resource is used that day.
-	double effort;
 	// String identifying the KoTrus account the effort is credited to.
 	QString account;
 	// The Project ID
@@ -54,9 +58,8 @@ private:
 class Resource
 {
 public:
-	Resource(const QString& i, const QString& n, double mie = 0.0,
-			 double mae = 1.0, double r = 0.0) :
-		id(i), name(n), minEffort(mie), maxEffort(mae), rate(r) { }
+	Resource(Project* p, const QString& i, const QString& n, double mie = 0.0,
+			 double mae = 1.0, double r = 0.0);
 	virtual ~Resource() { }
 
 	const QString& getId() const { return id; }
@@ -71,19 +74,20 @@ public:
 	void setRate(double r) { rate = r; }
 	double getRate() const { return rate; }
 
-	double isAvailable(time_t date);
+	bool isAvailable(time_t day, time_t duration, Interval& i);
 	bool book(Booking* b);
 
-	double getLoadOnDay(time_t date);
-	double getLoadOnDay(time_t date, Task* task);
+	double getLoadOnDay(time_t date, Task* task = 0);
 
-	bool isBusyWith(Task* t);
+	bool isAssignedTo(Task* t);
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
 	void printText();
 
 private:
+	Project* project;
+
 	// The ID of the resource. Must be unique in the project.
 	QString id;
 	// The resource name. E. g. real name or room number.
@@ -99,6 +103,7 @@ private:
 	// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;
 
+	QList<Interval> workingHours[7];
 	// List of all intervals the resource is not available.
 	VacationList vacationList;
 	// A list of all uses of the resource.
