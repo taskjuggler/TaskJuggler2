@@ -25,7 +25,7 @@ class Interval;
 
 class Transaction
 {
-	friend TransactionList;
+	friend class TransactionList;
 public:
 	Transaction(time_t d, double a, const QString& descr)
 		: date(d), amount(a), description(descr) { }

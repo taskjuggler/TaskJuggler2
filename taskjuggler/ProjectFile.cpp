@@ -374,7 +374,7 @@ FileInfo::nextToken(QString& token)
 			case '|':
 				return OR;
 			default:
-				fatalError(QString("Illegal character '") + c + "'");
+				fatalError(QString("Illegal character '%s'").arg(c));
 				return EndOfFile;
 			}
 		}
