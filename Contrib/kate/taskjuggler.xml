@@ -57,6 +57,7 @@
         <item> enddown </item>
         <item> endup </item>
         <item> export </item>
+        <item> extend </item>
         <item> flags </item>
         <item> follows </item>
         <item> fri </item>
@@ -80,6 +81,7 @@
         <item> index </item>
         <item> indexdown </item>
         <item> indexup </item>
+	<item> inherit </item>	
         <item> isaccount </item>
         <item> isactualallocated </item>
         <item> ismilestone </item>
