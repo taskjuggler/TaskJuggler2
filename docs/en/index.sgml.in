@@ -23,15 +23,15 @@ TaskJuggler is the tool for you.
 
 Instead of clicking yourself painfully through hundreds of dialog
 boxes you specify your TaskJuggler project in a simple text format.
-You simply list all your tasks and their dependencies. The information
-is sent through TaskJuggler and you will get all sorts of reports in
-HTML or XML format.
+You simply list all your tasks and their dependencies and other
+properties. The information is sent through TaskJuggler and you will
+get all sorts of reports in HTML or XML format.
 
 TaskJuggler does not only honor the task interdependencies but also
-takes resource constrains into account. Using TaskJuggler's powerful
-filtering and reporting algorithms you can create task lists, resource
-usage tables, status reports, project calendars and project accounting
-statements.
+takes resource constrains and prioritization into account. Using
+TaskJuggler's powerful filtering and reporting algorithms you can
+create task lists, resource usage tables, status reports, project
+calendars and project accounting statements.
 
 <p>
 <sect1>Features and Highlights
@@ -49,11 +49,13 @@ conflict solver.
 <item>Resource may have running costs.
 <item>Support for simple profit/loss analysis.
 <item>HTML and XML report generation.
+<item>GANTT and PERT chart generators.
 <item>Support for plan and actual scenario comparisons.
 <item>Project tracking support.
 <item>Groupware support by using a revision control system such as CVS
 or RCS on the project description files.
 <item>Support for central resource allocation database.
+<item>Support for cascaded and nested projects.
 </itemize>
 
 <sect1>TaskJuggler on the Web
@@ -194,7 +196,7 @@ might be some air left in a certain task.
 
 </itemize>
 
-<sect2>Version 1.3 (some day)
+<sect2>Version 1.3 (2002-07-30)
 <p>
 <itemize>
 
@@ -205,6 +207,11 @@ and logical language. Since the TaskJuggler user base is still
 comparatively small, we decided to break compatibility now rather than
 later. The changes are fairly minor, so they won't affect many users.
 Please see further down for more details.
+
+<item>Added Perl/Tk tool to view GANTT charts and other project
+information.
+
+<item>Added Pert-chart generator from Philippe Midol-Monnet.
 
 <item>Added support for shifts in <ref id="task_shift" name="tasks">
 and task <ref id="task_allocate_shift" name="allocations">.
@@ -234,8 +241,6 @@ name="select"> function for alternative resource allocations.
 a <ref id="htmltaskreport_loadunit" name="loadunit">.
 
 <item>Improved readability of scheduler error messages.
-
-<item>Added Perl/Tk tool to view GANTT charts.
 
 <item>Added new example project to the Examples directory to
 illustrate how to create shift schedules with TaskJuggler.

@@ -32,7 +32,7 @@ fi
 dnl AC_SUBST(LIBICAL)
 AC_SUBST(KDE_LIBS)
 
-AM_INIT_AUTOMAKE(taskjuggler, 1.2+cvs)
+AM_INIT_AUTOMAKE(taskjuggler, 1.3)
 
 dnl AC_OUTPUT(docs/en/index.sgml)
 

@@ -1,9 +1,14 @@
+- Export only subtasks of a certain tasks as if it was the root task.
 - Implement 'mandatory' attribute for task allocations.
-- Fix timezone handling.
 - Allocation selection by skill set.
+- Improve scheduler performance.
+- Improve report generation performance.
+- Support different timezone in reports.
 - Make project file reader unicode aware.
 - i18n messages.
 - Add more test cases to the test suite.
 - Explain more features with examples in the documentation.
-- read XML files just as *.tjp files
+- Convert documentation from sgml to DocBook to have it more
+  structured.
+- Read XML files just as *.tjp files.
 
