@@ -80,7 +80,7 @@ ktjview2View::ktjview2View( QWidget *parent )
                                       i18n( "Info" ), this, SLOT( slotKoolBar( int, int ) ) );
     ganttPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "gantt", KIcon::Desktop ),
                                        i18n( "Gantt" ), this, SLOT( slotKoolBar( int, int ) ) );
-    resPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "identity", KIcon::Desktop ),
+    resPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "resources", KIcon::Desktop ),
                                      i18n( "Resources" ), this, SLOT( slotKoolBar( int, int ) ) );
     tasksPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "tasks", KIcon::Desktop ),
                                        i18n( "Tasks" ), this, SLOT( slotKoolBar( int, int ) ) );
@@ -145,6 +145,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_taskView->addColumn( i18n( "Effort" ) );
     m_taskView->setShowSortIndicator( true );
     m_taskView->hideColumn( 0 ); // hide the ID column
+    m_taskView->setSortColumn( 2 ); // sort by start date by default
     m_taskView->setAllColumnsShowFocus( true );
     m_widgetStack->addWidget( m_taskView );
 

@@ -1041,8 +1041,8 @@ void KDGanttView::zoomToFit()
 /*!
   Zooms so that at least the selected time period is visible after the zoom.
 
-  \param start the new font of the widget
-  \param end the new font of the widget
+  \param start the start date
+  \param end the end date
 
   \sa setZoomFactor()
   \sa zoomFactor()

@@ -181,11 +181,7 @@ void ktjview2::dropEvent( QDropEvent *event )
     // see if we can decode a URI.. if not, just ignore it
     if ( KURLDrag::decode( event, urls ) && !urls.isEmpty() )
     {
-        // okay, we have a URI.. process it
-        const KURL &url = urls.first();
-
-        // load in the file
-        load( url );
+        load( urls.first() );
     }
 }
 
