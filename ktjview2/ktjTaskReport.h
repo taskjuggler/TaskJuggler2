@@ -18,6 +18,8 @@ public:
     virtual QString name() const;
     virtual QString description() const;
     virtual QicsDataModelDefault * generate();
+    virtual QicsDataModelColumn rowHeader() const;
+    virtual QicsDataModelRow columnHeader() const;
 
 private:
     /**
@@ -34,6 +36,9 @@ private:
      * Generate secondary resource row for @p task
      */
     void generateRow( const Task * task, const Resource * res, int columns );
+
+    /// row header
+    QicsDataModelColumn m_rowHeader;
 };
 
 #endif

@@ -36,19 +36,20 @@ QicsDataModelDefault * KTJTaskReport::generate()
 {
     kdDebug() << k_funcinfo << "Generating TaskReport" << endl;
 
+    // clear the data first
+    m_rowHeader.clear();
     clear();
 
-    bool old_emit = m_model->emitSignals();
-    m_model->setEmitSignals( false );
-
-    QicsDataModelRow headerRow = generateHeader(); // generate the column header
+    QicsDataModelRow headerRow = generateHeader(); // get the number of columns
     int columns = headerRow.count();
     m_model->addColumns( columns );
-    m_model->setRowItems( 0, headerRow );
-    //kdDebug() << k_funcinfo << "Added " << columns << " columns" << endl;
+    kdDebug() << k_funcinfo << QString( "Model contains %1 columns" ).arg( columns ) << endl;
 
     TaskListIterator tasks = m_proj->getTaskListIterator();
     Task * task = 0;
+
+    bool old_emit = m_model->emitSignals(); // block the signals while adding rows
+    m_model->setEmitSignals( false );
 
     while ( ( task = static_cast<Task *>( tasks.current() ) ) != 0 )
     {
@@ -95,18 +96,16 @@ QicsDataModelRow KTJTaskReport::generateHeader() const
     //kdDebug() << "generateHeader: m_scale: " << m_scale << " , delta: " << delta <<
     //    " , start: " << m_start << ", end: " << m_end << endl;
 
-    m_model->addRows( 1 );
-    QicsDataModelRow headerRow;
-    headerRow.append( new QicsDataString("") ); // 0,0 stays empty
+    QicsDataModelRow columnHeader;
 
     while ( tmp <= tmpEnd )
     {
         //kdDebug() << k_funcinfo << "Adding date column: " << formatDate( tmp, format ) << endl;
-        headerRow.append( new QicsDataString( formatDate( tmp, format ) ) );
+        columnHeader.append( new QicsDataString( formatDate( tmp, format ) ) );
         tmp += delta;
     }
 
-    return headerRow;
+    return columnHeader;
 }
 
 void KTJTaskReport::generateRow( const Task * task, int columns )
@@ -117,12 +116,12 @@ void KTJTaskReport::generateRow( const Task * task, int columns )
 
     kdDebug() << k_funcinfo << "Generating primary row for task: " << task->getName() << endl;
 
-    m_model->setItem( row, 0, task->getName() ); // row header contains task name
+    m_rowHeader.append( new QicsDataString( task->getName() ) );
 
     double daily = m_proj->getDailyWorkingHours();
-    for ( int i = 1; i < columns; i++ ) // data in columns
+    for ( int i = 0; i < columns; i++ ) // data in columns
     {
-        Interval ival = intervalForCol( i - 1 );
+        Interval ival = intervalForCol( i );
         double load = task->getLoad( 0, ival ) * daily;
         //kdDebug() << k_funcinfo << "Appending task load: " << load << endl;
         m_model->setItem( row, i, load );
@@ -145,13 +144,24 @@ void KTJTaskReport::generateRow( const Task * task, const Resource * res, int co
     kdDebug() << k_funcinfo << "Generating secondary row for task: " << task->getName()
               << ", and resource: " << res->getName() << endl;
 
-    m_model->setItem( row, 0, res->getName() ); // row header contains res name
+    m_rowHeader.append( new QicsDataString( res->getName() ) );
 
-    for ( int i = 1; i < columns; i++ ) // data in columns
+    double daily = m_proj->getDailyWorkingHours();
+    for ( int i = 0; i < columns; i++ ) // data in columns
     {
-        Interval ival = intervalForCol( i - 1 );
-        double load = task->getLoad( 0, ival, res ) * m_proj->getDailyWorkingHours();
+        Interval ival = intervalForCol( i );
+        double load = task->getLoad( 0, ival, res ) * daily;
         //kdDebug() << k_funcinfo << "Appending resource load: " << load << endl;
         m_model->setItem( row, i, load );
     }
+}
+
+QicsDataModelColumn KTJTaskReport::rowHeader() const
+{
+    return m_rowHeader;
+}
+
+QicsDataModelRow KTJTaskReport::columnHeader() const
+{
+    return generateHeader();
 }

@@ -18,7 +18,7 @@ KTJReport::KTJReport( Project * proj )
     m_start = KtjUtils::time_t2Q( m_proj->getStart() );
     m_end = KtjUtils::time_t2Q( m_proj->getEnd() );
 
-    setDisplayData( DIS_LOAD );
+    setDisplayData( DIS_LOAD ); // TODO unused now
     setScale( SC_DAY );
 }
 

@@ -9,20 +9,21 @@ ReportView::ReportView( QWidget *parent, const char *name )
     : QicsTable( 0, parent, name )
 {
     setReadOnly( true );
-    init();
-}
-
-void ReportView::init()
-{
-    rowHeaderRef().setNumColumns( 1 );
-    columnHeaderRef().setNumRows( 1 );
-    setRowHeaderUsesModel( true );
-    setColumnHeaderUsesModel( true );
 }
 
 void ReportView::clear()
 {
     clearSelectionList();
+}
+
+void ReportView::setRowHeader( QicsDataModelColumn & header )
+{
+    rowHeaderRef().columnRef(0).setDataValues( header );
+}
+
+void ReportView::setColumnHeader( QicsDataModelRow & header )
+{
+    columnHeaderRef().rowRef(0).setDataValues( header );
 }
 
 #include "reportView.moc"

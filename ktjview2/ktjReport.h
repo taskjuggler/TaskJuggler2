@@ -94,6 +94,16 @@ public:
     virtual QicsDataModelDefault * generate() = 0;
 
     /**
+     * @return the row header, you must call generate() first
+     */
+    virtual QicsDataModelColumn rowHeader() const = 0;
+
+    /**
+     * @return the column header, you must call generate() first
+     */
+    virtual QicsDataModelRow columnHeader() const = 0;
+
+    /**
      * @return short unique name of the report (with i18n)
      */
     virtual QString name() const = 0;

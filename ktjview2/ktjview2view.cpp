@@ -1282,10 +1282,23 @@ void ktjview2View::slotTaskCoverage()
 
     if ( !m_taskReport )
         m_taskReport = new KTJTaskReport( m_project );
-
+    kdDebug() << k_funcinfo << "Clearing the report" << endl;
     m_reportView->clear();
-    m_reportView->setDataModel( m_taskReport->generate() );
-    m_reportView->init();
+    kdDebug() << k_funcinfo << "Generating data model" << endl;
+    QicsDataModelDefault * model = m_taskReport->generate();
+    kdDebug() << k_funcinfo << QString( "Model is %1x%2" )
+        .arg( model->numRows() ).arg( model->numColumns() ) << endl;
+    m_reportView->setDataModel( model ); // FIXME freezes on third(!) invokation
+    kdDebug() << k_funcinfo << "Setting row header" << endl;
+    QicsDataModelColumn rowHeader = m_taskReport->rowHeader();
+    kdDebug() << k_funcinfo << QString( "Row header has %1 rows" ).arg( rowHeader.count() )
+              << endl;
+    m_reportView->setRowHeader( rowHeader );
+    kdDebug() << k_funcinfo << "Setting column header" << endl;
+    QicsDataModelRow colHeader = m_taskReport->columnHeader();
+    kdDebug() << k_funcinfo << QString( "Col header has %1 columns" ).arg( colHeader.count() )
+              << endl;
+    m_reportView->setColumnHeader( colHeader );
     //m_reportView->setTopTitleWidget( m_taskReport->description() ); // TODO
 }
 
