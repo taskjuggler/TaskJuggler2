@@ -116,7 +116,7 @@ QBrush KDTimeTableWidget::noInformationBrush() const
 
 void KDTimeTableWidget::removeItemFromTasklinks( KDGanttViewItem* item)
 {
-    QPtrListIterator<KDGanttViewTaskLink> it((myTaskLinkList));
+    QPtrListIterator<KDGanttViewTaskLink> it(myTaskLinkList);
     for ( ; it.current(); ++it ) {
         it.current()->removeItemFromList( item );
     }
@@ -555,7 +555,7 @@ void KDTimeTableWidget::computeShowNoInformation()
 void KDTimeTableWidget::computeTaskLinks()
 {
     //compute and show tasklinks
-    QPtrListIterator<KDGanttViewTaskLink> it((myTaskLinkList));
+    QPtrListIterator<KDGanttViewTaskLink> it(myTaskLinkList);
     for ( ; it.current(); ++it ) {
         if (it.current()->isVisible())
             it.current()->showMe(true);
