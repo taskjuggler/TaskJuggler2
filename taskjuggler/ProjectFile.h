@@ -75,6 +75,7 @@ public:
 	bool open(const QString& file);
 	bool close();
 	bool parse();
+	void setDebugLevel(int l) { debugLevel = l; }
 	TokenType nextToken(QString& token);
 	void returnToken(TokenType t, const QString& buf)
 	{
@@ -123,6 +124,7 @@ private:
 	QList<FileInfo> openFiles;
 	QStringList includedFiles;
 	MacroTable macros;
+	int debugLevel;
 };
 
 #endif

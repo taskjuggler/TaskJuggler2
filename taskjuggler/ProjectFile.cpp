@@ -137,7 +137,7 @@ FileInfo::getDateFragment(QString& token, int& c)
 QString
 FileInfo::getPath() const
 {
-	if (file.find('/'))
+	if (file.find('/') >= 0)
 		return file.left(file.findRev('/') + 1);
 	else
 		return "";
@@ -463,6 +463,8 @@ ProjectFile::open(const QString& file)
 		}
 		else
 			absFileName = openFiles.last()->getPath() + absFileName;
+		if (debugLevel > 2)
+			qWarning("Expanded filename to %s", absFileName.latin1());
 	}
 	int end = 0;
 	while (absFileName.find("/../", end) >= 0)
@@ -480,7 +482,12 @@ ProjectFile::open(const QString& file)
 
 	// Make sure that we include each file only once.
 	if (includedFiles.findIndex(absFileName) != -1)
+	{
+		if (debugLevel > 2)
+			qWarning("Ignoring already read file %s",
+					 absFileName.latin1());
 		return TRUE;
+	}
 		
 	FileInfo* fi = new FileInfo(this, absFileName);
 
@@ -489,6 +496,9 @@ ProjectFile::open(const QString& file)
 		qFatal("Cannot open '%s'", absFileName.latin1());
 		return FALSE;
 	}
+
+	if (debugLevel > 2)
+		qWarning("Reading %s", absFileName.latin1());
 
 	openFiles.append(fi);
 	includedFiles.append(absFileName);

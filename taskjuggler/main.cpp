@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 	for ( ; i < argc; i++)
 	{
 		ProjectFile* pf = new ProjectFile(&p);
+		pf->setDebugLevel(debugLevel);
 		if (!pf->open(a.argv()[i]))
 			return (-1);
 		parseErrors = !pf->parse();
