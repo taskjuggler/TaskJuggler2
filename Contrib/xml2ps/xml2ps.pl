@@ -396,8 +396,10 @@ sub _draw_task {
         $p->setcolour(0,0,0);
         my ($x, $y) = _trans_coord($_x1, $_y1+($task_height/2));
         $p->circle($x, $y, 1, 1);
-        $p->setfont("Helvetica", 8);
-        $p->text($x1+2, $y1-($task_height/2), $name);
+        $p->setfont("Helvetica", 6);
+        my $am = sprintf('%02d', $start_month);
+        my $ad = sprintf('%02d', $start_day);
+        $p->text($x1+2, $y1-($task_height/2), "$name ($am-$ad)");
     }
   }
 }
