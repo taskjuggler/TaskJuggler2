@@ -860,7 +860,8 @@ ProjectFile::parse()
 			}
 			
 			else if (token == KW("htmltaskreport") ||
-					 token == KW("htmlresourcereport"))
+					 token == KW("htmlresourcereport") ||
+					 token == KW("htmlweeklycalendar"))
 			{
 				if (!readHTMLReport(token))
 					return FALSE;
@@ -2461,6 +2462,9 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	else if (reportType == KW("htmlresourcereport"))
 		report = new HTMLResourceReport(proj, token, proj->getStart(),
 										proj->getEnd(), getFile(), getLine());
+	else if (reportType == KW("htmlweeklycalendar"))
+		report = new HTMLWeeklyCalendar(proj, token, proj->getStart(),
+										proj->getEnd(), getFile(), getLine());
 	else
 	{
 		qFatal("readHTMLReport: bad report type");
@@ -2468,177 +2472,178 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	}
 		
 	TokenType tt;
-	if ((tt = nextToken(token)) != LCBRACE)
+	if ((tt = nextToken(token)) == LCBRACE)
 	{
-		returnToken(tt, token);
-		return TRUE;
-	}
-
-	for ( ; ; )
-	{
-		if ((tt = nextToken(token)) == RCBRACE)
-			break;
-		else if (tt != ID)
+		for ( ; ; )
 		{
-			fatalError("Attribute ID or '}' expected");
-			return FALSE;
-		}
-		if (token == KW("columns"))
-		{
-			report->clearColumns();
-			for ( ; ; )
+			if ((tt = nextToken(token)) == RCBRACE)
+				break;
+			else if (tt != ID)
 			{
-				QString col;
-				if ((tt = nextToken(col)) != ID)
+				fatalError("Attribute ID or '}' expected");
+				return FALSE;
+			}
+			if (token == KW("columns"))
+			{
+				report->clearColumns();
+				for ( ; ; )
 				{
-					fatalError("Column ID expected");
+					QString col;
+					if ((tt = nextToken(col)) != ID)
+					{
+						fatalError("Column ID expected");
+						return FALSE;
+					}
+					report->addReportColumn(col);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						returnToken(tt, token);
+						break;
+					}
+				}
+			}
+			else if (token == KW("start"))
+			{
+				if (nextToken(token) != DATE)
+				{
+					fatalError("Date expected");
 					return FALSE;
 				}
-				report->addReportColumn(col);
-				if ((tt = nextToken(token)) != COMMA)
+				report->setStart(date2time(token));
+			}
+			else if (token == KW("end"))
+			{
+				if (nextToken(token) != DATE)
 				{
-					returnToken(tt, token);
-					break;
+					fatalError("Date expected");
+					return FALSE;
+				}
+				report->setEnd(date2time(token));
+			}
+			else if (token == KW("headline"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String exptected");
+					return FALSE;
+				}
+				report->setHeadline(token);
+			}
+			else if (token == KW("caption"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String exptected");
+					return FALSE;
+				}
+				report->setCaption(token);
+			}
+			else if (token == KW("rawhead"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				report->setRawHead(token);
+			}
+			else if (token == KW("rawtail"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				report->setRawTail(token);
+			}
+			else if (token == KW("rawstylesheet"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				report->setRawStyleSheet(token);
+			}
+			else if (token == KW("showactual"))
+			{
+				report->setShowActual(TRUE);
+			}
+			else if (token == KW("showprojectids"))
+			{
+				report->setShowPIDs(TRUE);
+			}
+			else if (token == KW("hidetask"))
+			{
+				Operation* op;
+				if ((op = readLogicalExpression()) == 0)
+					return FALSE;
+				ExpressionTree* et = new ExpressionTree(op);
+				report->setHideTask(et);
+			}
+			else if (token == KW("rolluptask"))
+			{
+				Operation* op;
+				if ((op = readLogicalExpression()) == 0)
+					return FALSE;
+				ExpressionTree* et = new ExpressionTree(op);
+				report->setRollUpTask(et);
+			}
+			else if (token == KW("sorttasks"))
+			{
+				if (!readSorting(report, 0))
+					return FALSE;
+			}
+			else if (token == KW("hideresource"))
+			{
+				Operation* op;
+				if ((op = readLogicalExpression()) == 0)
+					return FALSE;
+				ExpressionTree* et = new ExpressionTree(op);
+				report->setHideResource(et);
+			}
+			else if (token == KW("rollupresource"))
+			{
+				Operation* op;
+				if ((op = readLogicalExpression()) == 0)
+					return FALSE;
+				ExpressionTree* et = new ExpressionTree(op);
+				report->setRollUpResource(et);
+			}
+			else if (token == KW("sortresources"))
+			{
+				if (!readSorting(report, 1))
+					return FALSE;
+			}
+			else if (token == KW("url"))
+			{
+				if (!readHtmlUrl(report))
+					return FALSE;
+			}
+			else if (token == KW("loadunit"))
+			{
+				if (nextToken(token) != ID || !report->setLoadUnit(token))
+				{
+					fatalError("Illegal load unit");
+					return FALSE;
 				}
 			}
-		}
-		else if (token == KW("start"))
-		{
-			if (nextToken(token) != DATE)
+			else
 			{
-				fatalError("Date expected");
+				fatalError("Illegal attribute");
 				return FALSE;
 			}
-			report->setStart(date2time(token));
-		}
-		else if (token == KW("end"))
-		{
-			if (nextToken(token) != DATE)
-			{
-				fatalError("Date expected");
-				return FALSE;
-			}
-			report->setEnd(date2time(token));
-		}
-		else if (token == KW("headline"))
-		{
-			if (nextToken(token) != STRING)
-			{
-				fatalError("String exptected");
-				return FALSE;
-			}
-			report->setHeadline(token);
-		}
-		else if (token == KW("caption"))
-		{
-			if (nextToken(token) != STRING)
-			{
-				fatalError("String exptected");
-				return FALSE;
-			}
-			report->setCaption(token);
-		}
-		else if (token == KW("rawhead"))
-		{
-			if (nextToken(token) != STRING)
-			{
-				fatalError("String expected");
-				return FALSE;
-			}
-			report->setRawHead(token);
-		}
-		else if (token == KW("rawtail"))
-		{
-			if (nextToken(token) != STRING)
-			{
-				fatalError("String expected");
-				return FALSE;
-			}
-			report->setRawTail(token);
-		}
-		else if (token == KW("rawstylesheet"))
-		{
-			if (nextToken(token) != STRING)
-			{
-				fatalError("String expected");
-				return FALSE;
-			}
-			report->setRawStyleSheet(token);
-		}
-		else if (token == KW("showactual"))
-		{
-			report->setShowActual(TRUE);
-		}
-		else if (token == KW("showprojectids"))
-		{
-			report->setShowPIDs(TRUE);
-		}
-		else if (token == KW("hidetask"))
-		{
-			Operation* op;
-			if ((op = readLogicalExpression()) == 0)
-				return FALSE;
-			ExpressionTree* et = new ExpressionTree(op);
-			report->setHideTask(et);
-		}
-		else if (token == KW("rolluptask"))
-		{
-			Operation* op;
-			if ((op = readLogicalExpression()) == 0)
-				return FALSE;
-			ExpressionTree* et = new ExpressionTree(op);
-			report->setRollUpTask(et);
-		}
-		else if (token == KW("sorttasks"))
-		{
-			if (!readSorting(report, 0))
-				return FALSE;
-		}
-		else if (token == KW("hideresource"))
-		{
-			Operation* op;
-			if ((op = readLogicalExpression()) == 0)
-				return FALSE;
-			ExpressionTree* et = new ExpressionTree(op);
-			report->setHideResource(et);
-		}
-		else if (token == KW("rollupresource"))
-		{
-			Operation* op;
-			if ((op = readLogicalExpression()) == 0)
-				return FALSE;
-			ExpressionTree* et = new ExpressionTree(op);
-			report->setRollUpResource(et);
-		}
-		else if (token == KW("sortresources"))
-		{
-			if (!readSorting(report, 1))
-				return FALSE;
-		}
-		else if (token == KW("url"))
-		{
-			if (!readHtmlUrl(report))
-				return FALSE;
-		}
-		else if (token == KW("loadunit"))
-		{
-			if (nextToken(token) != ID || !report->setLoadUnit(token))
-			{
-				fatalError("Illegal load unit");
-				return FALSE;
-			}
-		}
-		else
-		{
-			fatalError("Illegal attribute");
-			return FALSE;
 		}
 	}
-
+	else
+		returnToken(tt, token);
+	
 	if (reportType == KW("htmltaskreport"))
 		proj->addHTMLTaskReport((HTMLTaskReport*) report);
-	else
+	else if (reportType == KW("htmlresourcereport"))
 		proj->addHTMLResourceReport((HTMLResourceReport*) report);
+	else
+		proj->addHTMLWeeklyCalendar((HTMLWeeklyCalendar*) report);
 
 	return TRUE;
 }

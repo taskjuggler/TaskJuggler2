@@ -87,6 +87,8 @@ int year(time_t d);
 
 int dayOfWeek(time_t d);
 
+QString dayOfWeekName(time_t d);
+
 QString time2ISO(time_t t);
 
 QString time2tjp(time_t t);

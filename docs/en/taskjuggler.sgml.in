@@ -47,28 +47,50 @@ calendars and project accounting statements.</para>
 
 <para>
 <itemizedlist mark='opencircle'>
+
 <listitem><para>Automatic scheduling of interdependent tasks with resource
 conflict solver.</para>
+
 <listitem><para>Powerful project description syntax with macro
 support.</para>
+
 <listitem><para>Flexible working hours and vacation handling.</para>
+
 <listitem><para>Support for shifts.</para>
+
 <listitem><para>Multiple time zone support.</para>
+
 <listitem><para>Flexible resource grouping.</para>
+
 <listitem><para>Project accounting support.</para>
+
 <listitem><para>Task may have initial costs, finishing costs.</para>
+
 <listitem><para>Resource may have running costs.</para>
+
 <listitem><para>Support for simple profit/loss analysis.</para>
+
 <listitem><para>HTML and XML report generation.</para>
+
 <listitem><para>GANTT and PERT chart generators.</para>
+
 <listitem><para>Support for plan and actual scenario
 comparisons.</para>
+
 <listitem><para>Project tracking support.</para>
-<listitem><para>Groupware support by using a revision control system such as CVS
-or RCS on the project description files.</para>
+
+<listitem><para>Groupware support by using a revision control system
+such as CVS or RCS on the project description files.</para>
+
 <listitem><para>Support for central resource allocation
 database.</para>
+
 <listitem><para>Support for cascaded and nested projects.</para>
+
+<listitem><para>Import and export of sub-projects.</para>
+
+<listitem><para>Unicode support.</para>
+
 </itemizedlist>
 </para>
 
@@ -302,7 +324,7 @@ operate properly when TZ environment variable is set.</para>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>Only export references to tasks which are exported in
-ExportReports as well.</para>
+the same report.</para>
 
 <listitem><para>Allow supplements of tasks within task definitions.</para>
 
@@ -338,6 +360,17 @@ added at arbitrary points in the task tree.</para></listitem>
 linkend="export_taskroot">taskroot</link> has been added to <link
 linkend="export">export</link>. This allows to export sub tasks of a
 tasks to be exported as root-level tasks.</para></listitem>
+
+<listitem><para>The project file reader has been made fully Unicode
+aware. It is now possible to use non-ASCII characters in text strings
+and comments.</para></listitem>
+
+<listitem><para>Two new functions have been added for use in <link
+linkend="logicalexpression">logical expressions</link>.
+<computeroutput>isplanallocated</computeroutput> and
+<computeroutput>isactualallocated</computeroutput> can be used to show
+only resources that have been allocated to a certain project in a
+given time frame.</para></listitem>
 
 </itemizedlist> </para>
 

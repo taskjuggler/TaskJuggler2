@@ -211,6 +211,16 @@ dayOfWeek(time_t t)
 	return tms->tm_wday;
 }
 
+QString
+dayOfWeekName(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[64];
+
+	strftime(buf, 63, "%A", tms);
+	return buf;
+}
+
 int
 year(time_t t)
 {

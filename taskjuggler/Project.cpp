@@ -358,6 +358,12 @@ Project::generateReports()
 		 r = htmlAccountReports.next())
 		r->generate();
 
+	// Generate calendar reports
+	for (HTMLWeeklyCalendar* r = htmlWeeklyCalendars.first(); r != 0;
+		 r = htmlWeeklyCalendars.next())
+		r->generate();
+
+	// Generate export files
 	for (ExportReport* e = exportReports.first(); e != 0;
 		 e = exportReports.next())
 		e->generate();

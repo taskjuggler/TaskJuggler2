@@ -26,6 +26,7 @@
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
+#include "HTMLWeeklyCalendar.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
 #ifdef HAVE_ICAL
@@ -211,6 +212,11 @@ public:
 		htmlAccountReports.append(a);
 	}
 
+	void addHTMLWeeklyCalendar(HTMLWeeklyCalendar* r)
+	{
+		htmlWeeklyCalendars.append(r);
+	}
+
 	void addExportReport(ExportReport* e)
 	{
 		exportReports.append(e);
@@ -339,6 +345,7 @@ private:
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;
 	QList<HTMLAccountReport> htmlAccountReports;
+	QList<HTMLWeeklyCalendar> htmlWeeklyCalendars;
 	QList<ExportReport> exportReports;
 
 	static int debugLevel;
