@@ -480,6 +480,10 @@ controls which scenarios should be shown.</para></listitem>
 <computeroutput>hierarchno</computeroutput> and
 <computeroutput>hierarchindex</computeroutput>.</para></listitem>
 
+<listitem><para>Serveral new query functions and operators for <link
+linkend="logicalexpression">logical expressions</link> have been
+added.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

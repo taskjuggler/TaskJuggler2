@@ -18,6 +18,7 @@
 class ExpressionTreeFunction;
 class ExpressionTree;
 class Operation;
+class CoreAttributes;
 
 typedef long (ExpressionTreeFunction::*ExpressionTreeFunctionLongPtr)
     (const ExpressionTree*, Operation* const ops[]) const;
@@ -41,24 +42,32 @@ public:
 
     long longCall(const ExpressionTree* et, Operation* const ops[]) const;
 
+    long isParentOf(const ExpressionTree* et, Operation* const ops[]) const;
+    long isChildOf(const ExpressionTree* et, Operation* const ops[]) const;
+    long isLeaf(const ExpressionTree* et, Operation* const ops[]) const;
+    long treeLevel(const ExpressionTree* et, Operation* const ops[]) const;
     long isAccount(const ExpressionTree* et, Operation* const ops[]) const;
     long isResource(const ExpressionTree* et, Operation* const ops[]) const;
     long isMilestone(const ExpressionTree* et, Operation* const ops[]) const;
-    long containsTask(const ExpressionTree* et, Operation* const ops[]) const;
     long isTask(const ExpressionTree* et, Operation* const ops[]) const;
-    long isTaskStatus(const ExpressionTree* et, Operation* const ops[]) const;
     long isSubTaskOf(const ExpressionTree* et, Operation* const ops[]) const;
     long startsBefore(const ExpressionTree* et, Operation* const ops[]) const;
     long startsAfter(const ExpressionTree* et, Operation* const ops[]) const;
     long endsBefore(const ExpressionTree* et, Operation* const ops[]) const;
     long endsAfter(const ExpressionTree* et, Operation* const ops[]) const;
-    
+   
+    /* Deprecated functions */ 
+    long isTaskStatus(const ExpressionTree* et, Operation* const ops[]) const;
+    long containsTask(const ExpressionTree* et, Operation* const ops[]) const;
     long isPlanAllocated(const ExpressionTree* et, Operation* const ops[])
         const;
     long isActualAllocated(const ExpressionTree* et, Operation* const ops[])
         const;
 
 private:
+    const CoreAttributes* findCoreAttributes(const CoreAttributes* ca,
+                                             const QString& id) const;
+
     QString name;
     ExpressionTreeFunctionLongPtr longFunc;
     int args;

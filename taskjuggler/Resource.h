@@ -101,7 +101,8 @@ public:
     QString getProjectIDs(int sc, const Interval& i, const Task* task = 0) 
         const;
 
-    bool isAllocated(int sc, const Interval& i, const QString& prjId) const;
+    bool isAllocated(int sc, const Interval& i,
+                     const QString& prjId = QString::null) const;
 
     BookingList getJobs(int sc) const;
 

@@ -483,7 +483,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
-        if (b->getTask()->getProjectId() == prjId)
+        if (prjId.isNull() || b->getTask()->getProjectId() == prjId)
             return TRUE;
     }
     return FALSE;

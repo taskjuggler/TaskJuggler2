@@ -182,14 +182,17 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     
     tcf = new TableColumnFormat(this, i18n("Responsibilities"));
     tcf->genResourceLine1 = &ReportElement::genCellResponsibilities;
+    tcf->fontFactor = 80;
     columnFormat.insert(KW("responsibilities"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Dependencies"));
     tcf->genTaskLine1 = &ReportElement::genCellDepends;
+    tcf->fontFactor = 80;
     columnFormat.insert(KW("depends"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Followers"));
     tcf->genTaskLine1 = &ReportElement::genCellFollows;
+    tcf->fontFactor = 80;
     columnFormat.insert(KW("follows"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Schedule"));

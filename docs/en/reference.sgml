@@ -44,7 +44,9 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 <sect2 id="logicalexpression"><title>LOGICALEXPRESSION</title>
 
 <para>This is a logical expression consisting of logical operations,
-	such as '&' for and, '|' for or, and '&tilde;' for not, to operate
+	such as '&' for and, '|' for or, '&tilde;' for not, '&gt;' for
+	greater than, '&lt;' for less than, '=' for equal, '&gt;=' for
+	greater than or equal and '&lt;=' for less than or equal to operate
 	on INTEGER values or symbols. As symbols flag names and certain
 	functions are supported.  The expression is evaluated from left to
 	right. '&tilde;' has a higher precedence than other operators. Use
@@ -60,9 +62,15 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 
 <variablelist>
 
-<varlistentry><term>containstask(<link linkend="id">ID</link>)</term>
-<listitem><para>true if the task has task ID as sub
-task.</para></listitem>
+<varlistentry><term>ischildof(<link linkend="id">ID</link>)</term>
+<listitem><para>true if the property has ID as sub.</para></listitem>
+
+<varlistentry><term>isparentof(<link linkend="id">ID</link>)</term>
+<listitem><para>true if the property has ID as enclosing property.
+</para></listitem>
+
+<varlistentry><term>isleaf(<link linkend="id">ID</link>)</term>
+<listitem><para>true if the property has no sub properties.</para></listitem>
 
 </varlistentry>
 <varlistentry><term>endsafter(<link linkend="id">ID</link>, <link

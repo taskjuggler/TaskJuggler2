@@ -18,6 +18,7 @@
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
+#include "Account.h"
 #include "debug.h"
 
 #define KW(a) (a)
@@ -46,6 +47,62 @@ ExpressionTreeFunction::longCall(const ExpressionTree* et,
     return ((*this).*(longFunc))(et, ops);
 }
 
+const CoreAttributes*
+ExpressionTreeFunction::findCoreAttributes(const CoreAttributes* ca,
+                                           const QString& id) const
+{
+    const CoreAttributes* p;
+    
+    if (strcmp(ca->getType(), "task") == 0)
+        p = ca->getProject()->getTask(id);
+    else if (strcmp(ca->getType(), "resource") == 0)
+        p = ca->getProject()->getResource(id);
+    else if (strcmp(ca->getType(), "account") == 0)
+        p = ca->getProject()->getAccount(id);
+    else
+        return 0;
+
+    return p;
+}
+
+long
+ExpressionTreeFunction::isChildOf(const ExpressionTree* et,
+                                  Operation* const ops[]) const
+{
+    const CoreAttributes* p;
+    if ((p = findCoreAttributes(et->getCoreAttributes(),
+                                ops[0]->evalAsString(et))) == 0)
+        return 0;
+
+    return p->isDescendentOf(et->getCoreAttributes());
+}
+
+long
+ExpressionTreeFunction::isParentOf(const ExpressionTree* et,
+                                   Operation* const ops[]) const
+{
+    const CoreAttributes* p;
+    if ((p = findCoreAttributes(et->getCoreAttributes(),
+                                ops[0]->evalAsString(et))) == 0)
+        return 0;
+
+    return p->isParentOf(et->getCoreAttributes());
+}
+
+long
+ExpressionTreeFunction::isLeaf(const ExpressionTree* et, 
+                               Operation* const []) const
+{
+    return et->getCoreAttributes()->isLeaf();
+}
+
+long
+ExpressionTreeFunction::treeLevel(const ExpressionTree* et,
+                                  Operation* const []) const
+{
+    return et->getCoreAttributes()->treeLevel() + 1;
+}
+
 long
 ExpressionTreeFunction::isTask(const ExpressionTree* et, 
                                Operation* const ops[]) const
@@ -62,37 +119,8 @@ ExpressionTreeFunction::isTask(const ExpressionTree* et,
 }
 
 long
-ExpressionTreeFunction::isSubTaskOf(const ExpressionTree* et,
-                                    Operation* const ops[])
-const
-{
-    if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
-        return 0;
-    Task* p;
-    if ((p = et->getCoreAttributes()->getProject()->getTask
-         (ops[0]->evalAsString(et))) == 0)
-        return 0;
-    return p->isSubTask((Task*) et->getCoreAttributes());
-}
-
-long
-ExpressionTreeFunction::containsTask(const ExpressionTree* et,
-                                     Operation* const ops[])
-const
-{
-    if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
-        return 0;
-    Task* st;
-    if ((st = et->getCoreAttributes()->getProject()->getTask
-         (ops[0]->evalAsString(et))) == 0)
-        return 0;
-    return ((Task*) et->getCoreAttributes())->isSubTask(st);
-}
-
-long
 ExpressionTreeFunction::isMilestone(const ExpressionTree* et,
-                                    Operation* const[])
-const
+                                    Operation* const[]) const
 {
     if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
         return 0;
@@ -101,8 +129,7 @@ const
 
 long
 ExpressionTreeFunction::isResource(const ExpressionTree* et,
-                                   Operation* const ops[])
-const
+                                   Operation* const ops[]) const
 {
     return strcmp(et->getCoreAttributes()->getType(), "Resource") == 0 &&
         et->getCoreAttributes()->getId() == ops[0]->evalAsString(et);
@@ -197,6 +224,32 @@ ExpressionTreeFunction::endsAfter(const ExpressionTree* et,
 
     return ((Task*) et->getCoreAttributes())->getEnd(scenario) >
         ops[1]->evalAsTime(et);
+}
+
+long
+ExpressionTreeFunction::isSubTaskOf(const ExpressionTree* et,
+                                    Operation* const ops[]) const
+{
+    if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
+        return 0;
+    Task* p;
+    if ((p = et->getCoreAttributes()->getProject()->getTask
+         (ops[0]->evalAsString(et))) == 0)
+        return 0;
+    return p->isSubTask((Task*) et->getCoreAttributes());
+}
+
+long
+ExpressionTreeFunction::containsTask(const ExpressionTree* et,
+                                     Operation* const ops[]) const
+{
+    if (strcmp(et->getCoreAttributes()->getType(), "Task") != 0)
+        return 0;
+    Task* st;
+    if ((st = et->getCoreAttributes()->getProject()->getTask
+         (ops[0]->evalAsString(et))) == 0)
+        return 0;
+    return ((Task*) et->getCoreAttributes())->isSubTask(st);
 }
 
 long

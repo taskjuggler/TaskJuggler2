@@ -58,6 +58,16 @@ Operation::evalAsInt(const ExpressionTree* et) const
         return ops[0]->evalAsInt(et) && ops[1]->evalAsInt(et);
     case Or:
         return ops[0]->evalAsInt(et) || ops[1]->evalAsInt(et);
+    case Greater:
+        return ops[0]->evalAsInt(et) > ops[1]->evalAsInt(et);
+    case Smaller:
+        return ops[0]->evalAsInt(et) < ops[1]->evalAsInt(et);
+    case Equal:
+        return ops[0]->evalAsInt(et) == ops[1]->evalAsInt(et);
+    case GreaterOrEqual:
+        return ops[0]->evalAsInt(et) >= ops[1]->evalAsInt(et);
+    case SmallerOrEqual:
+        return ops[0]->evalAsInt(et) <= ops[1]->evalAsInt(et);
     default:
         qFatal("Operation::evalAsInt: "
                "Unknown opType %d (name: %s)", opt, name.ascii());

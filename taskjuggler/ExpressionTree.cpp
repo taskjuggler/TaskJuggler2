@@ -34,12 +34,6 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
             (KW("istask"), &ExpressionTreeFunction::isTask, 1);
         functions.insert(etf->getName(), etf);
         etf = new ExpressionTreeFunction
-            (KW("issubtaskof"), &ExpressionTreeFunction::isSubTaskOf, 1);
-        functions.insert(etf->getName(), etf);
-        etf = new ExpressionTreeFunction
-            (KW("containstask"), &ExpressionTreeFunction::containsTask, 1);
-        functions.insert(etf->getName(), etf);
-        etf = new ExpressionTreeFunction
             (KW("ismilestone"), &ExpressionTreeFunction::isMilestone, 0);
         functions.insert(etf->getName(), etf);
         etf = new ExpressionTreeFunction
@@ -63,6 +57,18 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
         etf = new ExpressionTreeFunction
             (KW("endsafter"), &ExpressionTreeFunction::endsAfter, 2);
         functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isparentof"), &ExpressionTreeFunction::isParentOf, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("ischildof"), &ExpressionTreeFunction::isChildOf, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isleaf"), &ExpressionTreeFunction::isLeaf, 0);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("treelevel"), &ExpressionTreeFunction::treeLevel, 0);
+        functions.insert(etf->getName(), etf);
 
         /* The following functions are for legacy support only. Their
          * use is discouraged since they will disappear some day.
@@ -74,6 +80,12 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
         etf = new ExpressionTreeFunction
             (KW("isactualallocated"),
              &ExpressionTreeFunction::isActualAllocated, 3);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("issubtaskof"), &ExpressionTreeFunction::isSubTaskOf, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("containstask"), &ExpressionTreeFunction::containsTask, 1);
         functions.insert(etf->getName(), etf);
     }
 }

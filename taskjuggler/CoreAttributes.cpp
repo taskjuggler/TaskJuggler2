@@ -83,7 +83,7 @@ CoreAttributes::getFullId() const
 }
 
 bool
-CoreAttributes::hasSameAncestor(CoreAttributes* c) const
+CoreAttributes::hasSameAncestor(const CoreAttributes* c) const
 {
     if (c == 0)
         return FALSE;
@@ -98,7 +98,7 @@ CoreAttributes::hasSameAncestor(CoreAttributes* c) const
 }
 
 bool
-CoreAttributes::isDescendentOf(CoreAttributes* c) const
+CoreAttributes::isDescendentOf(const CoreAttributes* c) const
 {
     if (c == 0)
         return FALSE;
@@ -106,5 +106,17 @@ CoreAttributes::isDescendentOf(CoreAttributes* c) const
     for (CoreAttributes const* p = this; p; p = p->parent)
         if (p == c)
             return TRUE;
+
     return FALSE;
 }
+
+bool
+CoreAttributes::isParentOf(const CoreAttributes* c) const
+{
+    for (CoreAttributes const* p = c; p; p = p->parent)
+        if (p == this)
+            return TRUE;
+
+    return FALSE;
+}
+

@@ -11,6 +11,7 @@
  */
 
 #include "HTMLWeeklyCalendarElement.h"
+#include "tjlib-internal.h"
 #include "Project.h"
 #include "Report.h"
 #include "ExpressionTree.h"
@@ -65,26 +66,41 @@ HTMLWeeklyCalendarElement::generate()
     filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
     sortResourceList(filteredResourceList);
     maxDepthResourceList = filteredResourceList.maxDepth();
-    
+
     bool weekStartsMonday = report->getProject()->getWeekStartsMonday();
     s() << "<table align=\"center\" cellpadding=\"1\">" << endl;
+    
+    s() << " <thead>" << endl
+        << "   <tr style=\"background-color:"
+        << colors.getColorName("header")
+        << "; text-align:center\">" << endl;
+    time_t wd = beginOfWeek(start, weekStartsMonday);
+    for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
+    {
+        s() << "   <th width=\"14.2%\" style=\"font-size:110%; ";
+        if (isWeekend(wd))
+            s() << "background-color:"
+                << colors.getColor("header").dark(130).name();
+        s() << "\">"
+            << htmlFilter(dayOfWeekName(wd)) << "</th>" << endl;
+    }
+    s() << "  </tr>" << endl
+        << " </thead>" << endl
+        << " </tbody>" << endl;
+    
     for (time_t week = beginOfWeek(start, weekStartsMonday);
-         week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)); )
+         week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)) - 1; )
     {
         time_t wd = week;
         /* Generate table row that contains the day of the month, the month
-         * and the year. The row starts with a cell that shows the week number
-         * of the first day of the week. */
+         * and the year. The first column of the row also has the number of
+         * the week. */
         s() << "  <tr style=\"background-color:"
             << colors.getColorName("header")
             << "; text-align:center\">" << endl;
-        s() << "   <td width=\"5.5%\" style=\"font-size:110%\">"
-            << "Week " << QString().sprintf("%d",
-                                            weekOfYear(wd, weekStartsMonday))
-            << "</td>" << endl;
         for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
         {
-            s() << "   <td width=\"13.5%\"";
+            s() << "   <td width=\"14.2%\"";
             if (isSameDay(report->getProject()->getNow(), wd))
                s() << " style=\"background-color:"
                   << colors.getColorName("today") << "\"";
@@ -95,14 +111,18 @@ HTMLWeeklyCalendarElement::generate()
                 << "   <table width=\"100%\">"
                 << endl
                 << "    <tr>" << endl
-                << "     <td width=\"25%\" rowspan=\"2\" "
-                   "style=\"font-size:280%; text-align:center\">"
+                << "     <td width=\"30%\" rowspan=\"2\" "
+                   "style=\"font-size:200%; text-align:center\">"
                 << QString().sprintf("%d", dayOfMonth(wd)) << "</td>" << endl
-                << "     <td width=\"75%\" style=\"font-size:90%\">" 
-                << htmlFilter(dayOfWeekName(wd)) << "</td>" << endl
-                << "    </tr>"
+                << "     <td width=\"70%\" style=\"font-size:60%\">";
+            if (day == 0)
+                s() << htmlFilter(i18n("Week")) << " " 
+                   << QString("%1").arg(weekOfYear(wd, weekStartsMonday));
+            else
+                s() << "&nbsp;"; 
+            s() << "    </tr>"
                 << "    <tr>"
-                << "     <td style=\"font-size:100%\">" 
+                << "     <td style=\"font-size:90%\">" 
                 << monthAndYear(wd) << "</td>"
                 << "    </tr>"
                 << "   </table></td>" << endl;
@@ -114,7 +134,6 @@ HTMLWeeklyCalendarElement::generate()
             // Generate a row with lists the tasks for each day.
             s() << "  <tr style=\"background-color:"
                 << colors.getColorName("default") << "\">" << endl
-                << "    <td width=\"5.5%\">&nbsp;</td>" 
                 << endl;
             wd = week;
             for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
@@ -125,7 +144,7 @@ HTMLWeeklyCalendarElement::generate()
                 time_t savedEnd = end;
                 start = wd;
                 end = sameTimeNextDay(wd);
-                s() << "   <td width=\"13.5%\" style=\"vertical-align:top\">"
+                s() << "   <td width=\"14.2%\" style=\"vertical-align:top\">"
                     << endl;
                 bool first = TRUE;
                 int no = 1;
@@ -163,7 +182,6 @@ HTMLWeeklyCalendarElement::generate()
             // Generate a table row which lists the resources for each day. 
             s() << "  <tr style=\"background-color:"
                 << colors.getColorName("default") << "\">" << endl
-                << "    <td width=\"5.5%\">&nbsp;</td>" 
                 << endl;
             wd = week;
             for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
@@ -211,7 +229,7 @@ HTMLWeeklyCalendarElement::generate()
         week = wd;  
     }
 
-    s() << "</table>" << endl;
+    s() << " </tbody>" << endl << "</table>" << endl;
 
     generateFooter();
 }

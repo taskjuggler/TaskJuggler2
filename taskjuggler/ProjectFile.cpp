@@ -49,27 +49,6 @@
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
 
-#define READ_DATE(a, b, c) \
-(token == a) \
-{ \
-    if ((tt = nextToken(token)) == DATE) \
-    { \
-        time_t val = date2time(token) - c; \
-        if (val < proj->getStart() || \
-            val > proj->getEnd()) \
-        { \
-            errorMessage(i18n("Date is outside of project time frame")); \
-            return FALSE; \
-        } \
-        task->b; \
-    } \
-    else \
-    { \
-        errorMessage(i18n("Date expected")); \
-        return FALSE; \
-    } \
-}
-
 ProjectFile::ProjectFile(Project* p)
 {
     proj = p;
@@ -1016,10 +995,34 @@ ProjectFile::readTaskBody(Task* task)
                 task->setEnd(Task::Actual, val);
                 task->setScheduling(Task::ALAP);
             }
-            else if READ_DATE(KW("minstart"), setMinStart(val), 0)
-            else if READ_DATE(KW("maxstart"), setMaxStart(val), 0)
-            else if READ_DATE(KW("minend"), setMinEnd(val), 0)
-            else if READ_DATE(KW("maxend"), setMaxEnd(val), 0)
+            else if (token == KW("minstart"))
+            {
+                time_t val;
+                if (!readDate(val, 0))
+                    return FALSE;
+                task->setMinStart(val);
+            }
+            else if (token == KW("maxstart"))
+            {
+                time_t val;
+                if (!readDate(val, 0))
+                    return FALSE;
+                task->setMaxStart(val);
+            }
+            else if (token == KW("minend"))
+            {
+                time_t val;
+                if (!readDate(val, 0))
+                    return FALSE;
+                task->setMinEnd(val);
+            }
+            else if (token == KW("maxend"))
+            {
+                time_t val;
+                if (!readDate(val, 0))
+                    return FALSE;
+                task->setMaxEnd(val);
+            }
             else if (token == KW("length"))
             {
                 double d;
@@ -1376,9 +1379,9 @@ ProjectFile::readDate(time_t& val, time_t correction)
     {
         errorMessage(i18n("Date %1 is outside of project time frame "
                           "(%2 - %3")
-                     .arg(time2ISO(val))
-                     .arg(time2ISO(proj->getStart()))
-                     .arg(time2ISO(proj->getEnd())));
+                     .arg(time2tjp(val))
+                     .arg(time2tjp(proj->getStart()))
+                     .arg(time2tjp(proj->getEnd())));
         return FALSE;
     }
     return TRUE;
@@ -3073,27 +3076,47 @@ ProjectFile::readLogicalExpression(int precedence)
     QString token;
     TokenType tt;
 
-    if ((tt = nextToken(token)) == ID || tt == ABSOLUTE_ID)
+    tt = nextToken(token);
+    if (DEBUGEX(5))
+        qDebug("readLogicalExpression(%d): %s", precedence, token.latin1());
+    if (tt == ID || tt == ABSOLUTE_ID)
     {
-        if (proj->isAllowedFlag(token) ||
-            proj->getTask(token) ||
-            proj->getResource(token) ||
-            proj->getAccount(token) ||
-            (proj->getScenarioIndex(token) > 0) ||
-            proj->isValidId(token))
+        QString lookAhead;
+        if ((tt = nextToken(lookAhead)) == LBRACE)
         {
-            op = new Operation(Operation::Id, token);
-        }
-        else if (ExpressionTree::isFunction(token))
-        {
-            if ((op = readFunctionCall(token)) == 0)
+            if (ExpressionTree::isFunction(token))
+            {
+                if ((op = readFunctionCall(token)) == 0)
+                {
+                    if (DEBUGEX(5))
+                        qDebug("exit after function call");
+                    return 0;
+                }
+            }
+            else
+            {
+                errorMessage(i18n("Function '%1' is not defined").arg(token));
                 return 0;
+            }                
         }
         else
         {
-            errorMessage(i18n("Flag, function or ID '%1' is unknown.").
-                         arg(token));
-            return 0;
+            returnToken(tt, lookAhead);
+            if (proj->isAllowedFlag(token) ||
+                proj->getTask(token) ||
+                proj->getResource(token) ||
+                proj->getAccount(token) ||
+                (proj->getScenarioIndex(token) > 0) ||
+                proj->isValidId(token))
+            {
+                op = new Operation(Operation::Id, token);
+            }
+            else
+            {
+                errorMessage(i18n("Flag or ID '%1' is unknown.").
+                             arg(token));
+                return 0;
+            }
         }
     }
     else if (tt == STRING)
@@ -3119,6 +3142,8 @@ ProjectFile::readLogicalExpression(int precedence)
     {
         if ((op = readLogicalExpression(1)) == 0)
         {
+            if (DEBUGEX(5))
+                qDebug("exit after NOT");
             return 0;
         }
         op = new Operation(op, Operation::Not);
@@ -3127,6 +3152,8 @@ ProjectFile::readLogicalExpression(int precedence)
     {
         if ((op = readLogicalExpression()) == 0)
         {
+            if (DEBUGEX(5))
+                qDebug("exit after ()");
             return 0;
         }
         if ((tt = nextToken(token)) != RBRACE)
@@ -3143,11 +3170,10 @@ ProjectFile::readLogicalExpression(int precedence)
     
     if (precedence < 1)
     {
-        if ((tt = nextToken(token)) != AND && tt != OR)
-        {
-            returnToken(tt, token);
-        }
-        else if (tt == AND)
+        tt = nextToken(token);
+        if (DEBUGEX(5))
+            qDebug("Second operator %s", token.latin1());
+        if (tt == AND)
         {
             Operation* op2 = readLogicalExpression();
             op = new Operation(op, Operation::And, op2);
@@ -3157,8 +3183,37 @@ ProjectFile::readLogicalExpression(int precedence)
             Operation* op2 = readLogicalExpression();
             op = new Operation(op, Operation::Or, op2);
         }
-    }
+        else if (tt == GREATER)
+        {
+            Operation* op2 = readLogicalExpression();
+            op = new Operation(op, Operation::Greater, op2);
+        }
+        else if (tt == SMALLER)
+        {
+            Operation* op2 = readLogicalExpression();
+            op = new Operation(op, Operation::Smaller, op2);
+        }
+        else if (tt == EQUAL)
+        {
+            Operation* op2 = readLogicalExpression();
+            op = new Operation(op, Operation::Equal, op2);
+        }
+        else if (tt == GREATEROREQUAL)
+        {
+            Operation* op2 = readLogicalExpression();
+            op = new Operation(op, Operation::GreaterOrEqual, op2);
+        }
+        else if (tt == SMALLEROREQUAL)
+        {
+            Operation* op2 = readLogicalExpression();
+            op = new Operation(op, Operation::SmallerOrEqual, op2);
+        }
+        else
+            returnToken(tt, token);
+     }
 
+    if (DEBUGEX(5))
+        qDebug("exit default");
     return op;
 }
 
@@ -3168,14 +3223,11 @@ ProjectFile::readFunctionCall(const QString& name)
     QString token;
     TokenType tt;
     
-    if ((tt = nextToken(token)) != LBRACE)
-    {
-        errorMessage(i18n("'(' expected"));
-        return 0;
-    }
     QPtrList<Operation> args;
     for (int i = 0; i < ExpressionTree::arguments(name); i++)
     {
+        if (DEBUGEX(5))
+            qDebug("Reading function '%s' arg %d", name.latin1(), i);
         Operation* op;
         if ((op = readLogicalExpression()) == 0)
             return 0;
@@ -3198,6 +3250,8 @@ ProjectFile::readFunctionCall(const QString& name)
     int i = 0;
     for (QPtrListIterator<Operation> oli(args); *oli != 0; ++oli)
         argsArr[i++] = *oli;
+    if (DEBUGEX(5))
+        qDebug("function '%s' done", name.latin1());
     return new Operation(name, argsArr, args.count());
 }
 

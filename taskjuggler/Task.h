@@ -314,6 +314,9 @@ private:
     bool hasStartDependency(int sc);
     bool hasEndDependency(int sc);
 
+    bool hasStartDependency();
+    bool hasEndDependency();
+
     bool dependsOnABrother(const Task* p) const;
     bool precedesABrother(const Task* p) const;
 

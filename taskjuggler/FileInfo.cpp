@@ -310,11 +310,8 @@ FileInfo::nextToken(QString& token)
             // single quoted string
             while ((c = getC()).unicode() != EOFile && c != '\'')
             {
-                if ((c == '\n')
-		    && macroStack.isEmpty())
-		{
+                if ((c == '\n') && macroStack.isEmpty())
                     currLine++;
-		}
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -329,11 +326,8 @@ FileInfo::nextToken(QString& token)
             // double quoted string
             while ((c = getC()).unicode() != EOFile && c != '"')
             {
-                if ((c == '\n')
-		    && macroStack.isEmpty())
-		{
+                if ((c == '\n') && macroStack.isEmpty())
                     currLine++;
-		}
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -387,6 +381,28 @@ FileInfo::nextToken(QString& token)
                 return AND;
             case '|':
                 return OR;
+            case '>':
+            {
+                if ((c = getC()) == '=')
+                {
+                    token += c;
+                    return GREATEROREQUAL;
+                }
+                ungetC(c);
+                return GREATER;
+            }
+            case '<':
+            {
+                if ((c = getC()) == '=')
+                {
+                    token += c;
+                    return SMALLEROREQUAL;
+                }
+                ungetC(c);
+                return SMALLER;
+            }
+            case '=':
+                return EQUAL;
             default:
                 errorMessage(i18n("Illegal character '%1'").arg(c));
                 return INVALID;

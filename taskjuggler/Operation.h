@@ -27,7 +27,8 @@ class Operation
 {
 public:
     enum opType { Const = 1, Variable, Function, Id, Date, String, 
-        Not, And, Or };
+        Not, And, Or, 
+        Greater, Smaller, Equal, GreaterOrEqual, SmallerOrEqual };
 
     Operation(long v) : opt(Const), value(v), opsCount(0) { }
     Operation(opType ot, const QString& n) : opt(ot), name(n), opsCount(0) { }

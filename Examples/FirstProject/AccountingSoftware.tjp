@@ -170,20 +170,19 @@ task AcSo "Accounting Software" {
 # code to be embedded into all the HTML reports.
 macro navbar [
 rawhead
-	'<table align="center" border="2" cellpadding="10">
+	'<table align="center" border="2" cellpadding="10"
+	  style="background-color:#f3ebae; font-size:105%">
 	<tr>
-	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
-		<a href="Tasks-Overview.html">Tasks Overview</a></td>
-	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
-		<a href="Tasks-Details.html">Tasks Details</a></td>
-	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
-		<a href="Staff-Overview.html">Staff Overview</a></td>
-	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
-		<a href="Staff-Details.html">Staff Details</a></td>
-	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
-		<a href="Accounting.html">Accounting</a></td>
-	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
-		<a href="acso.eps">GANTT Chart (Postscript)</a></td>
+	  <td><a href="Tasks-Overview.html">Tasks Overview</a></td>
+	  <td><a href="Staff-Overview.html">Staff Overview</a></td>
+	  <td><a href="Accounting.html">Accounting</a></td>
+		<td><a href="Calendar.html">Calendar</a></td>
+	</tr>
+	  <td><a href="Tasks-Details.html">Tasks Details</a></td>
+	  <td><a href="Staff-Details.html">Staff Details</a></td>
+		<td><a href="Status-Report.html">Status Report</a></td>
+	  <td><a href="acso.eps">GANTT Chart (Postscript)</a></td>
+	<tr>
 	</tr>
   </table>
   <br>'
@@ -274,6 +273,17 @@ htmlaccountreport "Accounting.html" {
 	# per account.
 	accumulate
  	scenarios plan, actual 
+}
+
+htmlweeklycalendar "Calendar.html" {
+	${navbar}
+	headline "Ongoing Tasks - March 2002"
+	start 2002-03-01
+	end 2002-04-01
+}
+
+htmlstatusreport "Status-Report.html" {
+	${navbar}
 }
 
 # Finally we generate an XML report that contains all info about the

@@ -386,7 +386,7 @@ Task::scheduleContainer(bool safeMode)
         if ((*tli)->start == 0 || (*tli)->end == 0)
             return TRUE;
         nstart = (*tli)->start;
-        nend = (*tli)->end;
+        nend = (*tli)->end + ((*tli)->milestone ? 1 : 0);
     }
     else
         return TRUE;
@@ -400,8 +400,8 @@ Task::scheduleContainer(bool safeMode)
 
         if ((*tli)->start < nstart)
             nstart = (*tli)->start;
-        if ((*tli)->end > nend)
-            nend = (*tli)->end;
+        if ((*tli)->end + ((*tli)->milestone ? 1 : 0) > nend)
+            nend = (*tli)->end + ((*tli)->milestone ? 1 : 0);
     }
 
     if (start == 0 || (!depends.isEmpty() && start < nstart))
@@ -463,8 +463,7 @@ Task::propagateStart(bool notUpwards)
      * dependancy on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
     {
-        if ((*tli)->start == 0 && (*tli)->previous.isEmpty() &&
-            (*tli)->sub.isEmpty() && (*tli)->scheduling == ASAP)
+        if (!(*tli)->hasStartDependency())
         {
             (*tli)->start = start;
             if (DEBUGTS(11))
@@ -476,7 +475,11 @@ Task::propagateStart(bool notUpwards)
     }
 
     if (notUpwards && parent)
+    {
+        if (DEBUGTS(11))
+            qDebug("Scheduling parent of %s", id.latin1());
         getParent()->scheduleContainer(TRUE);
+    }
 }
 
 void
@@ -519,8 +522,7 @@ Task::propagateEnd(bool notUpwards)
     /* Propagate end time to sub tasks which have only an implicit
      * dependancy on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
-        if ((*tli)->end == 0 && (*tli)->followers.isEmpty() &&
-            (*tli)->sub.isEmpty() && (*tli)->scheduling == ALAP)
+        if (!(*tli)->hasEndDependency())
         {
             (*tli)->end = end;
             if (DEBUGTS(11))
@@ -531,7 +533,11 @@ Task::propagateEnd(bool notUpwards)
         }
 
     if (notUpwards && parent)
+    {
+        if (DEBUGTS(11))
+            qDebug("Scheduling parent of %s", id.latin1());
         getParent()->scheduleContainer(TRUE);
+    }
 }
 
 void
@@ -1349,6 +1355,36 @@ Task::hasEndDependency(int sc)
     for (Task* p = getParent(); p; p = p->getParent())
         if (p->scenarios[sc].end != 0)
             return TRUE;
+    return FALSE;
+}
+
+bool
+Task::hasStartDependency()
+{
+    /* Check whether the task or any of it's sub tasks has a start 
+     * dependency. */
+    if (start != 0 || !previous.isEmpty() || scheduling == ALAP)
+        return TRUE;
+    
+    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+        if ((*tli)->hasStartDependency())
+            return TRUE;
+
+    return FALSE;
+}
+
+bool
+Task::hasEndDependency()
+{
+    /* Check whether the task or any of it's sub tasks has an end 
+     * dependency. */
+    if (end != 0 || !followers.isEmpty() || scheduling == ASAP)
+        return TRUE;
+    
+    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+        if ((*tli)->hasStartDependency())
+            return TRUE;
+
     return FALSE;
 }
 

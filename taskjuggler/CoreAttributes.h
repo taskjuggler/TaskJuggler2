@@ -76,8 +76,10 @@ public:
     bool hasFlag(const QString& flag) { return flags.hasFlag(flag); }
     FlagList getFlagList() const { return flags; }
 
-    bool hasSameAncestor(CoreAttributes* c) const;
-    bool isDescendentOf(CoreAttributes* c) const;
+    bool hasSameAncestor(const CoreAttributes* c) const;
+    bool isDescendentOf(const CoreAttributes* c) const;
+    bool isParentOf(const CoreAttributes* c) const;
+
     bool isRoot() const { return parent == 0; }
     bool isLeaf() const { return sub.isEmpty(); }
 
