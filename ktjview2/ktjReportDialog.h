@@ -77,6 +77,11 @@ public:
      */
     KtjReport::Scale scale() const;
 
+    /**
+     * @return the current scale as a text
+     */
+    QString scaleString() const;
+
 private:
     /// base widget
     ReportSelectionWidget * m_base;

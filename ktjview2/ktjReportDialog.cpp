@@ -72,4 +72,9 @@ KtjReport::Scale KtjReportDialog::scale() const
     return static_cast<KtjReport::Scale>( m_base->cbScale->currentItem() );
 }
 
+QString KtjReportDialog::scaleString() const
+{
+    return m_base->cbScale->currentText();
+}
+
 #include "ktjReportDialog.moc"

@@ -1293,6 +1293,10 @@ void ktjview2View::slotTaskCoverage()
         report->setScale( dlg.scale() );
         report->generate();
         delete report;
+        emit signalChangeStatusbar( i18n( "Generated 'Task Coverage' report, from %1 to %2, scale '%3'." )
+                                    .arg( KGlobal::locale()->formatDateTime( dlg.startDate() ) )
+                                    .arg( KGlobal::locale()->formatDateTime( dlg.endDate() ) )
+                                    .arg( dlg.scaleString() ) );
         emit setQuickSearchView( m_reportView );
     }
 }
