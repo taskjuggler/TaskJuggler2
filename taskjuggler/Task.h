@@ -34,6 +34,7 @@ public:
 		alternatives.setAutoDelete(TRUE);
 		load = 100;
 		persistent = FALSE;
+		lockedResource = 0;
 	}
 	~Allocation() { }
 
@@ -43,7 +44,10 @@ public:
 	int getLoad() const { return load; }
 
 	void setPersistent(bool p) { persistent = p; }
-	bool getPersistent() const { return persistent; }
+	bool isPersistent() const { return persistent; }
+
+	void setLockedResource(Resource* r) { lockedResource = r; }
+	Resource* getLockedResource() const { return lockedResource; }
 
 	void addAlternative(Resource* r) { alternatives.append(r); }
 	Resource* first() { return alternatives.first(); }
@@ -61,6 +65,8 @@ private:
 	 * If set the first selection will not be changed even if there is an
 	 * available alternative. */
 	bool persistent;
+
+	Resource* lockedResource;
 
 	// List of alternative resources.
 	QList<Resource> alternatives;
@@ -86,11 +92,9 @@ public:
 
 	void setStart(time_t s) { start = s; }
 	const time_t getStart() const { return start; }
-	const QString getStartISO() const { return time2ISO(start); }
 
 	void setEnd(time_t s) { end = s; }
 	const time_t getEnd() const { return end; }
-	const QString getEndISO() const { return time2ISO(end); }
 
 	void setMinStart(time_t s) { minStart = s; }
 	time_t getMinStart() const { return minStart; }
@@ -152,6 +156,8 @@ public:
 	Resource* firstBookedResource() { return bookedResources.first(); }
 	Resource* nextBookedResource() { return bookedResources.next(); }
 
+	double getPlanCosts();
+
 	Task* getParent() const { return parent; }
 	void addSubTask(Task* t) { subTasks.append(t); }
 
@@ -159,13 +165,18 @@ public:
 	QString resolveId(QString relId);
 	bool schedule(time_t reqStart, time_t duration);
 	bool isScheduled();
+	bool isDayCompleted(time_t date) const;
 	bool scheduleOK();
 
 	bool isMilestone() const { return start != 0 && start == end; }
 	bool isActiveToday(time_t date) const
 	{
-		Interval day(midnight(date), midnight(date) + ONEDAY - 1);
-		Interval work(start, end);
+		Interval day(midnight(date), sameTimeNextDay(midnight(date)) - 1);
+		Interval work;
+		if (isMilestone())
+			work = Interval(midnight(start), midnight(start) + 1);
+		else
+			work = Interval(start, end);
 		return day.overlap(work);
 	}
 
@@ -189,8 +200,6 @@ private:
 	bool scheduleContainer();
 	bool bookResource(Resource* r, time_t day, time_t duration);
 	bool bookResources(time_t day, time_t duration);
-	bool isWorkingDay(time_t day) const;
-	time_t nextWorkingDay(time_t day) const;
 	time_t earliestStart();
 	void fatalError(const QString& msg) const;
 
@@ -243,7 +252,7 @@ private:
 	int complete;
 
 	// The following block of variables are used during scheduling.
-	double costs;
+	double planCosts;
 	double doneEffort;
 	double doneLength;
 	double doneDuration;

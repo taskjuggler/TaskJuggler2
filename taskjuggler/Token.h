@@ -22,7 +22,7 @@ typedef enum
 	INVALID = 0, EndOfStatement, EndOfFile, MacroBody,
 	ID, RELATIVE_ID,
 	RBRACKET, LBRACKET, COMMA, MINUS,
-	DATE, INTEGER, REAL, STRING
+	DATE, HOUR, INTEGER, REAL, STRING
 } TokenType;
 
 class Token

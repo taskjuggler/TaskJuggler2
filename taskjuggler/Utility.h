@@ -24,13 +24,26 @@ const char* monthAndYear(time_t d);
 
 int daysLeftInMonth(time_t d);
 
+int daysBetween(time_t t1, time_t t2);
+
 bool isWeekend(time_t d);
+
+time_t midnight(time_t t);
+
+time_t beginOfMonth(time_t t);
+
+time_t sameTimeNextDay(time_t t);
+
+time_t sameTimeNextMonth(time_t t);
+
+inline bool isSameDay(time_t d1, time_t d2)
+{
+	return midnight(d1) == midnight(d2);
+}
 
 int dayOfMonth(time_t d);
 
 int dayOfWeek(time_t d);
-
-time_t midnight(time_t t);
 
 QString time2ISO(time_t t);
 

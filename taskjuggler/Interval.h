@@ -52,6 +52,11 @@ public:
 			end = i.end;
 		return TRUE;
 	}
+	bool overlaps(const Interval& i)
+	{
+		return ((start <= i.start && i.start < end) ||
+				(i.start <= start && start < i.end));
+	}
 	bool exclude(const Interval& i)
 	{	
 		/* Sets the interval to the first non-overlapping segment of

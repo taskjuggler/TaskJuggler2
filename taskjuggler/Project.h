@@ -22,6 +22,8 @@
 #include "ResourceList.h"
 #include "VacationList.h"
 #include "Account.h"
+#include "HTMLTaskReport.h"
+#include "HTMLResourceReport.h"
 
 class Project
 {
@@ -32,13 +34,8 @@ public:
 	bool addTask(Task* t);
 	bool pass2();
 
-	void printText();
-
-	bool reportHTMLTaskList();
 	bool reportHTMLHeader(FILE* f);
 	bool reportHTMLFooter(FILE* f);
-
-	bool reportHTMLResourceList();
 
 	void setId(const QString& i) { id = i; }
 	const QString& getId() const { return id; }
@@ -49,6 +46,9 @@ public:
 	void setVersion(const QString& v) { version = v; }
 	const QString& getVersion() const { return version; }
 
+	void setCopyright(const QString& c) { copyright = c; }
+	const QString& getCopyright() const { return copyright; }
+
 	void setPriority(int p) { priority = p; }
 	int getPriority() const { return priority; }
 
@@ -58,6 +58,9 @@ public:
 	void setEnd(time_t e) { end = e; }
 	time_t getEnd() const { return end; }
 
+	void setNow(time_t n) { now = n; }
+	time_t getNow() const { return now; }
+	
 	void addVacation(const QString& n, time_t s, time_t e)
 	{
 		vacationList.add(n, s, e);
@@ -97,17 +100,12 @@ public:
 	void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
 	ulong getScheduleGranularity() const { return scheduleGranularity; }
 
-	void setHtmlTaskReport(const QString& f) { htmlTaskReport = f; }
-	void addHtmlTaskReportColumn(const QString& c)
-	{
-		htmlTaskReportColumns.append(c);
-	}
-	void setHtmlTaskReportStart(time_t s) { htmlTaskReportStart = s; }
-	void setHtmlTaskReportEnd(time_t e) { htmlTaskReportEnd = e; }
+	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
 
-	void setHtmlResourceReport(const QString& f) { htmlResourceReport = f; }
-	void setHtmlResourceReportStart(time_t t) { htmlResourceReportStart = t; }
-	void setHtmlResourceReportEnd(time_t t) { htmlResourceReportEnd = t; }
+	void addHTMLResourceReport(HTMLResourceReport* r)
+	{
+		htmlResourceReports.append(r);
+	}
 
 	void addAllowedFlag(QString flag)
 	{
@@ -123,16 +121,21 @@ public:
 	{
 		return ((double) secs / (dailyWorkingHours * ONEHOUR));
 	}
-	
+
+	Task* taskListFirst() { return taskList.first(); }
+	Task* taskListNext() { return taskList.next(); }
+	Resource* resourceListFirst() { return resourceList.first(); }
+	Resource* resourceListNext() { return resourceList.next(); }
+
+	void generateReports();
+
 private:
 	bool checkSchedule();
-	void htmlDayHeader(FILE* f, time_t s, time_t e);
-	void htmlMonthHeader(FILE* f, time_t s, time_t e);
-	QString htmlFilter(const QString& s);
 
 	int unscheduledTasks();
 	time_t start;
 	time_t end;
+	time_t now;
 
 	// A unique (with respect to the resource database) project id
 	QString id;
@@ -140,6 +143,8 @@ private:
 	QString name;
 	// The revision of the project description.
 	QString version;
+	// Some legal words to please the boss.
+	QString copyright;
 
 	/* The default priority that will be inherited by all tasks. Sub tasks
 	 * will inherit the priority of its parent task. */
@@ -168,14 +173,8 @@ private:
 	VacationList vacationList;
 	AccountList accountList;
 
-	QString htmlTaskReport;
-	QStringList htmlTaskReportColumns;
-	time_t htmlTaskReportStart;
-	time_t htmlTaskReportEnd;
-
-	QString htmlResourceReport;
-    time_t htmlResourceReportStart;
-	time_t htmlResourceReportEnd;
+	QList<HTMLTaskReport> htmlTaskReports;
+	QList<HTMLResourceReport> htmlResourceReports;
 } ;
 
 #endif

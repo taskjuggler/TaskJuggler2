@@ -59,7 +59,7 @@ class Resource
 {
 public:
 	Resource(Project* p, const QString& i, const QString& n, double mie = 0.0,
-			 double mae = 1.0, double r = 0.0);
+			 double mae = 1.0, double rate = 0.0);
 	virtual ~Resource() { }
 
 	const QString& getId() const { return id; }
@@ -71,11 +71,18 @@ public:
 	void setMaxEffort(double e) { maxEffort = e; }
 	double getMaxEffort() const { return maxEffort; }
 
+	void setEfficiency(double e) { efficiency = e; }
+	double getEfficiency() const { return efficiency; }
+
 	void setRate(double r) { rate = r; }
 	double getRate() const { return rate; }
 
+	void addVacation(Interval* i) { vacations.append(i); }
+	bool hasVacationDay(time_t day);
+
 	bool isAvailable(time_t day, time_t duration, Interval& i);
-	bool book(Booking* b);
+
+	void book(Booking* b);
 
 	double getLoadOnDay(time_t date, Task* task = 0);
 
@@ -97,15 +104,22 @@ private:
 	double minEffort;
 	// The maximum effort (in man days) the resource should be used per day.
 	double maxEffort;
+	/* The efficiency of the resource. A team of five should have 
+	 * an efficiency of 5.0 */
+	double efficiency;
+
 	// The daily costs of this resource.
 	double rate;
 
 	// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;
 
+	// The list of working or opening hours for the resource.
 	QList<Interval> workingHours[7];
+
 	// List of all intervals the resource is not available.
-	VacationList vacationList;
+	QList<Interval> vacations;
+
 	// A list of all uses of the resource.
 	QList<Booking> jobs;
 } ;

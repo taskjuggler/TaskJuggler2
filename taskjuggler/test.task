@@ -2,53 +2,232 @@
 
 project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 
-timingResolution 30 min
+now 2002-01-05
+copyright "(c) 2001 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
-htmlTaskReport "test.html" {
+rate 0.479
+
+htmlTaskReport "test1.html" {
   columns  no, name, start, end, daily
   start 2001-09-28
-  end 2001-11-03
+  end 2002-03-08
 }
 
-htmlResourceReport "resource.html" 2001-11-28 2002-03-06
+#htmlTaskReport "test2.html" {
+#  columns  no, name, start, end, depends
+#  start 2001-09-28
+#  end 2002-03-08
+#}
+
+#htmlResourceReport "test-res.html" {
+#  columns resource, daily
+#  start 2001-11-28
+#  end 2002-03-06
+#}
+
+macro version [SL 8.0]
+
+macro work [
+  task work "${1}" {
+    length ${3}
+    allocate yast
+    allocate dist
+    allocate packagers
+    allocate ro
+    allocate kukuk
+    depends ${2}
+  }
+]
+
+macro deadline [
+  task dl "SL 8.0 x86 deadline for ${1} (1800 CET)" {
+    flags deadline
+    depends !work, ${2}
+  }
+]
+
+macro build [
+  task build "SL 8.0 x86 build ${1}" {
+    effort ${2}
+    allocate ro { persistent alternative kukuk }
+    priority 600
+    depends !dl
+  }
+]
+
+macro burn [
+  task done "Burn SL 8.0 ${1}" {
+    flags media
+    effort 1d
+    allocate mem
+    depends !build
+  }
+]
+
+macro ship [
+  task ship "Ship ${1} to external testers" {
+    effort 2d
+    allocate mem
+    depends !build
+  }
+]
+
+macro test [
+  task test "SL 8.0 x86 test ${1}" {
+    effort 2d
+    allocate bg
+    depends !build
+  }
+]
+
+macro preview [
+task pre${1} "SL 8.0 preview ${1}" {
+
+  ${work "Make bootable system" "${2}" "5d" }
+  ${deadline "preview ${1}"}
+  ${build "preview ${1}" "2d"}
+  ${burn "preview ${1}"}
+}
+]
+
+macro beta [
+task beta${1} "${version} beta${1}" {
+
+  ${work "beta ${1}" "${2}" "5d"}
+  ${deadline "beta ${1}"}
+  ${build "beta ${1}" "2d"}
+  ${ship "beta ${1}"}
+  ${test "beta ${1}"}
+}
+]
 
 flags deadline, media
 
-vacation "Xmas" 2001-10-04 - 2001-10-10
+vacation "Xmas" 2001-12-21 - 2002-01-05
 
 account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
 
-resource ro "Ruediger Oertel"
+minEffort 0.6
+resource ro "Ruediger Oertel" {
+  kotrusId "ro@suse.de"
+  vacation 2001-12-18
+  vacation 2001-12-10 - 2001-12-14
+}
 resource kukuk "Thorsten Kukuk"
 resource cs "Chris Schlaeger"
 resource mem "Muhamed Memovic"
 resource bg "Berthold Gunreben"
-resource packagers "Package Maintainers"
-resource dist "Dist Team"
-resource yast "YaST2 Team"
+resource packagers "Package Maintainers" {  efficiency 18.0 }
+resource dist "Dist Team" { efficiency 9.0 }
+resource yast "YaST2 Team" { efficiency 12.0 }
 
 task sl80 "SuSE Linux 8.0" {
 
 task sl80start "Start of 8.0 development" {
-  start 2001-09-28-15:00
+  start 2001-09-28
 }
 
 task yast "YaST2 development"{
-  effort 14d
+  length 55d
   allocate yast
   depends !sl80start
 }
 
 task pack "SL 8.0 package updates" {
-  length 14d
+  length 55d
   allocate packagers
+  allocate kukuk { load 50 }
+  allocate ro { load 50 }
   depends !sl80start
 }
 
 task dist "SL 8.0 distribution modifications" {
-  duration 14d
+  length 55d
   allocate dist
+  allocate kukuk { load 50 }
+  allocate ro { load 50 }
   depends !sl80start
 }
 
+task pre1 "SL 8.0 preview1" {
+
+  ${work "Make system bootable" "!!yast, !!pack, !!dist" "5d" }
+  ${deadline "preview1" "!!dist"}
+  ${build "preview1" "2d"}
+  ${burn "preview1"}
+  ${test "preview1"}
 }
+
+task pre2 "SL 8.0 preview2" {
+
+  ${work "Make system fairly usable" "!!pre1.work" "5d" }
+  ${deadline "preview2" "!!pre1.test"}
+  ${build "preview2" "2d"}
+  ${burn "preview2"}
+  ${test "preview2"}
+}
+
+task pre3 "SL 8.0 preview3" {
+
+  ${work "Make system usable" "!!pre2.work" "5d" }
+  ${deadline "preview3" "!!pre2.test" }
+  ${build "preview3" "2d"}
+  ${burn "preview3"}
+  ${test "preview3"}
+}
+
+task pre4 "SL 8.0 preview2" {
+
+  ${work "Make system almost feature complete" "!!pre3.work" "5d" }
+  ${deadline "preview4" "!!pre3.test"}
+  ${build "preview4" "2d"}
+  ${burn "preview4"}
+  ${test "preview4"}
+}
+
+task beta1 "${version} beta1" {
+  ${work "Fix critical bugs for beta1" "!!pre4.work" "5d"}
+  ${deadline "beta1" "!!pre4.test" }
+  ${build "beta1" "2d"}
+  ${ship "beta1"}
+  ${test "beta1"}
+}
+
+task beta2 "${version} beta2" {
+  ${work "Fix critical bugs for beta2" "!!beta1.work" "5d"}
+  ${deadline "beta2" "!!beta1.test" }
+  ${build "beta2" "2d"}
+  ${test "beta2"}
+}
+
+task beta3 "${version} beta3" {
+  ${work "Fix critical bugs for beta3" "!!beta2.work" "5d"}
+  ${deadline "beta3" "!!beta2.test"}
+  ${build "beta3" "2d"}
+  ${ship "beta3"}
+  ${test "beta3"}
+}
+
+task beta4 "${version} beta4" {
+  ${work "Fix critical bugs for beta4" "!!beta3.work" "3d"}
+  ${deadline "beta4" "!!beta3.test" }
+  ${build "beta4" "2d"}
+  ${test "beta4"}
+}
+
+task beta5 "${version} beta5" {
+  ${work "Fix major bugs for beta5" "!!beta4.work" "3d"}
+  ${deadline "beta5" "!!beta4.test" }
+  ${build "beta5" "1d"}
+  ${test "beta5"}
+}
+
+task rc1 "${version} RC1" {
+  ${work "RC1" "!!beta5.build" "2d"}
+  ${deadline "RC1" "!!beta5.test" }
+  ${build "RC1" "1d"}
+  ${test "RC1"}
+}
+
+}
+

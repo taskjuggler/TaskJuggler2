@@ -73,6 +73,10 @@ public:
 	bool close();
 	bool parse();
 	TokenType nextToken(QString& token);
+	void returnToken(TokenType t, const QString& buf)
+	{
+		openFiles.last()->returnToken(t, buf);
+	}
 
 	const QString& getFile() { return openFiles.last()->getFile(); }
 	int getLine() { return openFiles.last()->getLine(); }
@@ -86,12 +90,16 @@ private:
 
 	bool readTask(Task* parent);
 	bool readResource();
-	bool readVacation();
+	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
+					  QString* = 0);
 	bool readAccount();
 	bool readAllocate(Task* t);
 	bool readTimeFrame(Task* t, double& d);
 	bool readTimeValue(ulong& value);
+	bool readWorkingHours(int& dayOfWeek);
 	bool readPriority(int& priority);
+	bool readHTMLTaskReport();
+	bool readHTMLResourceReport();
 	time_t date2time(const QString& date);
 
 	QString masterFile;

@@ -10,6 +10,7 @@
  * $Id$
  */
 
+#include <stdio.h>
 #include "Utility.h"
 
 const char*
@@ -34,11 +35,21 @@ daysLeftInMonth(time_t t)
 	int left = 0;
 	struct tm* tms = localtime(&t);
 	for (int m = tms->tm_mon; tms->tm_mon == m;
-		 t += 60 * 60 * 24, localtime(&t))
+		 t = sameTimeNextDay(t), localtime(&t))
 	{
 		left++;
 	}
 	return left;
+}
+
+int
+daysBetween(time_t t1, time_t t2)
+{
+	int days = 0;
+	// TODO: Very slow!!!
+	for (time_t t = t1; t < t2; t = sameTimeNextDay(t))
+		days++;
+	return days;
 }
 
 int 
@@ -52,6 +63,7 @@ int
 dayOfWeek(time_t t)
 {
 	struct tm* tms = localtime(&t);
+	tms->tm_isdst = -1;
 	return tms->tm_wday;
 }
 
@@ -60,6 +72,35 @@ midnight(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+beginOfMonth(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mday = 1;
+	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+sameTimeNextDay(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mday++;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+sameTimeNextMonth(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mon++;
+	tms->tm_isdst = -1;
 	return mktime(tms);
 }
 

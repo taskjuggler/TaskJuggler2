@@ -28,6 +28,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	note = "";
 	account = 0;
 	lastSlot = 0;
+	planCosts = 0.0;
 	if (p)
 	{
 		// Set attributes that are inherited from parent task.
@@ -54,7 +55,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 void
 Task::fatalError(const QString& msg) const
 {
-	fprintf(stderr, "%s:%d:%s\n", file.latin1(), line, msg.latin1());
+	qWarning("%s:%d:%s\n", file.latin1(), line, msg.latin1());
 }
 
 bool
@@ -79,18 +80,15 @@ Task::schedule(time_t date, time_t slotDuration)
 		 * project start time if the tasks has no previous tasks, or the
 		 * start time is determined by the end date of the last previous
 		 * task. */
-		if (previous.count() == 0 ||
-			(earliestStart() > 0 && earliestStart() <= project->getStart()))
-		{
+		if (previous.count() == 0)
 			start = project->getStart();
-		}
 		else if (earliestStart() > 0)
 		{
 			start = earliestStart();
 			doneEffort = 0.0;
 			doneDuration = 0.0;
 			doneLength = 0.0;
-			costs = 0.0;
+			planCosts = 0.0;
 			workStarted = FALSE;
 			tentativeEnd = date;
 		}
@@ -168,7 +166,7 @@ Task::scheduleContainer()
 	time_t nend = 0;
 
 	// Check that this is really a container task
-	if ((t = subTasks.first()) && (t != 0))
+	if ((t = subTasks.first()))
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
@@ -206,14 +204,24 @@ Task::bookResources(time_t date, time_t slotDuration)
 	for (Allocation* a = allocations.first(); a != 0;
 		 a = allocations.next())
 	{
-		if (bookResource(a->getResource(), date, slotDuration))
+		if (a->isPersistent() && a->getLockedResource())
+		{	
+			bookResource(a->getLockedResource(), date, slotDuration);
+		}
+		else if (bookResource(a->getResource(), date, slotDuration))
+		{
 			allocFound = TRUE;
+			if (a->isPersistent())
+				a->setLockedResource(a->getResource());
+		}
 		else
 		{
 			for (Resource* r = a->first(); r != 0; r = a->next())
 				if (bookResource(r, date, slotDuration))
 				{
 					allocFound = TRUE;
+					if (a->isPersistent())
+						a->setLockedResource(r);
 					break;
 				}
 		}
@@ -245,8 +253,8 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 		}
 
 		tentativeEnd = interval.getEnd();
-		doneEffort += intervalLoad;
-		//costs += r->getRate() * intervalLoad;
+		doneEffort += intervalLoad * r->getEfficiency();
+		planCosts += r->getRate() * intervalLoad * r->getEfficiency();
 
 		return TRUE;
 	}
@@ -259,13 +267,36 @@ Task::isScheduled()
 	return ((start != 0 && end != 0) || !subTasks.isEmpty());
 }
 
+
+bool
+Task::isDayCompleted(time_t date) const
+{
+	// If task is not scheduled for this day, the day can not be completed.
+	if ((date < midnight(start)) || (sameTimeNextDay(midnight(end)) <= date))
+		return FALSE;
+
+	if (complete != -1)
+	{
+		// some completion degree was specified.
+		return ((complete / 100.0) * (end - start) + start) > midnight(date);
+	}
+	
+
+	return (project->getNow() > sameTimeNextDay(midnight(date)));
+}
+
 time_t
 Task::earliestStart()
 {
 	time_t date = 0;
 	for (Task* t = previous.first(); t != 0; t = previous.next())
+	{
+		// All previous tasks must have an end date set.
+		if (t->getEnd() == 0)
+			return 0;
 		if (t->getEnd() > date)
 			date = t->getEnd() + (t->getStart() == t->getEnd() ? 0 : 1);
+	}
 
 	return date;
 }
@@ -274,12 +305,35 @@ double
 Task::getLoadOnDay(time_t date)
 {
 	double load = 0.0;
+
+	if (subTasks.first())
+	{
+		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+			load += t->getLoadOnDay(date);
+		return load;
+	}
+
 	for (Resource* r = bookedResources.first(); r != 0;
 		 r = bookedResources.next())
 	{
 		load += r->getLoadOnDay(date, this);
 	}
 	return load;
+}
+
+double
+Task::getPlanCosts()
+{
+	double costs = 0.0;
+
+	if (subTasks.first())
+	{
+		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+			costs += t->getPlanCosts();
+		return costs;
+	}
+
+	return planCosts;
 }
 
 bool
@@ -336,26 +390,6 @@ Task::resolveId(QString relId)
 		return t->id + "." + relId.right(relId.length() - i);
 	else
 		return relId.right(relId.length() - i);
-}
-
-bool
-Task::isWorkingDay(time_t d) const
-{
-	struct tm* tms = localtime(&d);
-	// Saturday and Sunday are days off.
-	if (tms->tm_wday < 1 || tms->tm_wday > 5)
-		return FALSE;
-
-	return !project->isVacation(d);
-}
-
-time_t
-Task::nextWorkingDay(time_t d) const
-{
-	d += 60 * 60 * 24;
-	while (!isWorkingDay(d))
-		d += 60 * 60 * 24;
-	return d;
 }
 
 bool
@@ -421,7 +455,7 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		else
 			return (t2->getPriority() - t1->getPriority());
 	default:
-		fprintf(stderr, "Unknown sorting criteria!\n");
+		qWarning("Unknown sorting criteria!\n");
 		return 0;
 	}		
 }

@@ -410,8 +410,11 @@ ProjectFile::parse()
 			}
 			else if (token == "vacation")
 			{
-				if (!readVacation())
+				time_t from, to;
+				QString name;
+				if (!readVacation(from, to, TRUE, &name))
 					return FALSE;
+				proj->addVacation(name, from, to);
 				break;
 			}
 			else if (token == "priority")
@@ -420,6 +423,16 @@ ProjectFile::parse()
 				if (!readPriority(priority))
 					return FALSE;
 				proj->setPriority(priority);
+				break;
+			}
+			else if (token == "now")
+			{
+				if (nextToken(token) != DATE)
+				{
+					fatalError("Date expected");
+					return FALSE;
+				}
+				proj->setNow(date2time(token));
 				break;
 			}
 			else if (token == "minEffort")
@@ -463,6 +476,16 @@ ProjectFile::parse()
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);
+				break;
+			}
+			else if (token == "copyright")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				proj->setCopyright(token);
 				break;
 			}
 			else if (token == "include")
@@ -556,7 +579,7 @@ ProjectFile::parse()
 					return FALSE;
 				}
 				end = date2time(token);
-				if (end < start)
+				if (end <= start)
 				{
 					fatalError("End date must be larger then start date");
 					return FALSE;
@@ -567,88 +590,14 @@ ProjectFile::parse()
 			}
 			else if (token == "htmlTaskReport")
 			{
-				if (nextToken(token) != STRING)
-				{
-					fatalError("File name expected");
+				if (!readHTMLTaskReport())
 					return FALSE;
-				}
-				proj->setHtmlTaskReport(token);
-				if (nextToken(token) == LBRACKET)
-				{
-					for ( ; ; )
-					{
-						if ((tt = nextToken(token)) == RBRACKET)
-							break;
-						else if (tt != ID)
-						{
-							fatalError("Attribute ID or '}' expected");
-							return FALSE;
-						}
-						if (token == "columns")
-						{
-							for ( ; ; )
-							{
-								QString col;
-								if ((tt = nextToken(col)) != ID)
-								{
-									fatalError("Column ID expected");
-									return FALSE;
-								}
-								proj->addHtmlTaskReportColumn(col);
-								if ((tt = nextToken(token)) != COMMA)
-								{
-									openFiles.last()->returnToken(tt, token);
-									break;
-								}
-							}
-						}
-						else if (token == "start")
-						{
-							if (nextToken(token) != DATE)
-							{
-								fatalError("Date expected");
-								return FALSE;
-							}
-							proj->setHtmlTaskReportStart(date2time(token));
-						}
-						else if (token == "end")
-						{
-							if (nextToken(token) != DATE)
-							{
-								fatalError("Date expected");
-								return FALSE;
-							}
-							proj->setHtmlTaskReportEnd(date2time(token));
-						}
-						else
-						{
-							fatalError("Illegal attribute");
-							return FALSE;
-						}
-					}
-				}
 				break;
 			}
 			else if (token == "htmlResourceReport")
 			{
-				if (nextToken(token) != STRING)
-				{
-					fatalError("File name expected");
+				if (!readHTMLResourceReport())
 					return FALSE;
-				}
-				proj->setHtmlResourceReport(token);
-				if (nextToken(token) != DATE)
-				{
-					fatalError("Start date expected");
-					return FALSE;
-				}
-				proj->setHtmlResourceReportStart(date2time(token));
-				if (nextToken(token) != DATE)
-				{
-					fatalError("End date expected");
-					return FALSE;
-				}
-				proj->setHtmlResourceReportEnd(date2time(token));
 				break;
 			}
 			// break missing on purpose!
@@ -815,6 +764,11 @@ ProjectFile::readTask(Task* parent)
 			}
 			else if (token == "flags")
 			{
+				if (hasSubTasks)
+				{
+					fatalError("Flags must be declared before the first sub tasks");
+					return FALSE;
+				}
 				for ( ; ; )
 				{
 					QString flag;
@@ -878,14 +832,16 @@ ProjectFile::readTask(Task* parent)
 }
 
 bool
-ProjectFile::readVacation()
+ProjectFile::readVacation(time_t& from, time_t& to, bool readName, QString* n)
 {
 	TokenType tt;
-	QString name;
-	if ((tt = nextToken(name)) != STRING)
+	if (readName)
 	{
-		fatalError("String expected");
-		return FALSE;
+		if ((tt = nextToken(*n)) != STRING)
+		{
+			fatalError("String expected");
+			return FALSE;
+		}
 	}
 	QString start;
 	if ((tt = nextToken(start)) != DATE)
@@ -898,8 +854,8 @@ ProjectFile::readVacation()
 	{
 		// vacation 2001-11-28
 		openFiles.last()->returnToken(tt, token);
-		proj->addVacation(name, date2time(start),
-						  date2time(start) + (60 * 60 * 24 - 1));
+		from = date2time(start);
+		to = sameTimeNextDay(date2time(start)) - 1;
 	}
 	else
 	{
@@ -910,13 +866,13 @@ ProjectFile::readVacation()
 			fatalError("Date expected");
 			return FALSE;
 		}
-		if (date2time(start) >= date2time(end))
+		from = date2time(start);
+		if (date2time(start) > date2time(end))
 		{
 			fatalError("Vacation must start before end");
 			return FALSE;
 		}
-		proj->addVacation(name, date2time(start),
-						  date2time(end) + (60 * 60 * 24 - 1));
+		to = date2time(end) - 1;
 	}
 	return TRUE;
 }
@@ -970,6 +926,15 @@ ProjectFile::readResource()
 				}
 				r->setMaxEffort(token.toDouble());
 			}
+			else if (token == "efficiency")
+			{
+				if (nextToken(token) != REAL)
+				{
+					fatalError("Read value expected");
+					return FALSE;
+				}
+				r->setEfficiency(token.toDouble());
+			}
 			else if (token == "rate")
 			{
 				if (nextToken(token) != REAL)
@@ -987,6 +952,19 @@ ProjectFile::readResource()
 					return FALSE;
 				}
 				r->setKotrusId(token);
+			}
+			else if (token == "vacation")
+			{
+				time_t from, to;
+				if (!readVacation(from, to))
+					return FALSE;
+				r->addVacation(new Interval(from, to));
+			}
+			else if (token == "workingHours")
+			{
+				int dow;
+				if (!readWorkingHours(dow))
+					return FALSE;
 			}
 			else
 			{
@@ -1207,6 +1185,54 @@ ProjectFile::readTimeFrame(Task* task, double& value)
 }
 
 bool
+ProjectFile::readWorkingHours(int& dayOfWeek)
+{
+	QString day;
+	if (nextToken(day) != ID)
+	{
+		fatalError("Weekday expected");
+		return FALSE;
+	}
+	const char* days[] = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+	for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+		if (days[dayOfWeek] == day)
+			break;
+	if (dayOfWeek == 7)
+	{
+		fatalError("Weekday expected");
+		return FALSE;
+	}
+	for ( ; ; )
+	{
+		QString start;
+		if (nextToken(start) != HOUR)
+		{
+			fatalError("Start time as HH:MM expected");
+			return FALSE;
+		}
+		QString token;
+		if (nextToken(token) != MINUS)
+		{
+			fatalError("'-' expected");
+			return FALSE;
+		}
+		QString end;
+		if (nextToken(end) != HOUR)
+		{
+			fatalError("End time as HH:MM expected");
+			return FALSE;
+		}
+		TokenType tt;
+		if ((tt = nextToken(token)) != COMMA)
+		{
+			returnToken(tt, token);
+			break;
+		}
+	}
+	return TRUE;
+}
+
+bool
 ProjectFile::readPriority(int& priority)
 {
 	QString token;
@@ -1222,6 +1248,156 @@ ProjectFile::readPriority(int& priority)
 		fatalError("Priority value must be between 1 and 1000");
 		return FALSE;
 	}
+	return TRUE;
+}
+
+bool
+ProjectFile::readHTMLTaskReport()
+{
+	QString token;
+	if (nextToken(token) != STRING)
+	{
+		fatalError("File name expected");
+		return FALSE;
+	}
+	HTMLTaskReport* report = new HTMLTaskReport(proj, token, proj->getStart(),
+												proj->getEnd());
+	TokenType tt;
+	if (nextToken(token) != LBRACKET)
+	{
+		openFiles.last()->returnToken(tt, token);
+		return TRUE;
+	}
+
+	for ( ; ; )
+	{
+		if ((tt = nextToken(token)) == RBRACKET)
+			break;
+		else if (tt != ID)
+		{
+			fatalError("Attribute ID or '}' expected");
+			return FALSE;
+		}
+		if (token == "columns")
+		{
+			for ( ; ; )
+			{
+				QString col;
+				if ((tt = nextToken(col)) != ID)
+				{
+					fatalError("Column ID expected");
+					return FALSE;
+				}
+				report->addColumn(col);
+				if ((tt = nextToken(token)) != COMMA)
+				{
+					openFiles.last()->returnToken(tt, token);
+					break;
+				}
+			}
+		}
+		else if (token == "start")
+		{
+			if (nextToken(token) != DATE)
+			{
+				fatalError("Date expected");
+				return FALSE;
+			}
+			report->setStart(date2time(token));
+		}
+		else if (token == "end")
+		{
+			if (nextToken(token) != DATE)
+			{
+				fatalError("Date expected");
+				return FALSE;
+			}
+			report->setEnd(date2time(token));
+		}
+		else
+		{
+			fatalError("Illegal attribute");
+			return FALSE;
+		}
+	}
+	proj->addHTMLTaskReport(report);
+	return TRUE;
+}
+
+bool
+ProjectFile::readHTMLResourceReport()
+{
+	QString token;
+
+	if (nextToken(token) != STRING)
+	{
+		fatalError("File name expected");
+		return FALSE;
+	}
+
+	HTMLResourceReport* report = new HTMLResourceReport(
+		proj, token, proj->getStart(), proj->getEnd());
+
+	TokenType tt;
+	if (nextToken(token) != LBRACKET)
+	{
+		openFiles.last()->returnToken(tt, token);
+		return TRUE;
+	}
+
+	for ( ; ; )
+	{
+		if ((tt = nextToken(token)) == RBRACKET)
+			break;
+		else if (tt != ID)
+		{
+			fatalError("Attribute ID or '}' expected");
+			return FALSE;
+		}
+		if (token == "columns")
+		{
+			report->clearColumns();
+			for ( ; ; )
+			{
+				QString col;
+				if ((tt = nextToken(col)) != ID)
+				{
+					fatalError("Column ID expected");
+					return FALSE;
+				}
+				report->addColumn(col);
+				if ((tt = nextToken(token)) != COMMA)
+				{
+					openFiles.last()->returnToken(tt, token);
+					break;
+				}
+			}
+		}
+		else if (token == "start")
+		{
+			if (nextToken(token) != DATE)
+			{
+				fatalError("Date expected");
+				return FALSE;
+			}
+			report->setStart(date2time(token));
+		}
+		else if (token == "end")
+		{
+			if (nextToken(token) != DATE)
+			{
+				fatalError("Date expected");
+				return FALSE;
+			}
+			report->setEnd(date2time(token));
+		}
+		else
+		{
+			fatalError("Illegal attribute");
+			return FALSE;
+		}
+	}
+	proj->addHTMLResourceReport(report);
 	return TRUE;
 }
 

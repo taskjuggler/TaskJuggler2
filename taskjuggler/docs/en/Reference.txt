@@ -4,8 +4,11 @@ Specification of the TaskJuggler input format
 Version: "$Id$"
 
 A project file contains a list of property declarations. Each property
-may have fixed and optional attributes. Attributes may be of the
-following types:
+may have fixed and optional attributes. It is recommended to use the
+extension ".tjp" for TaskJuggler project files and to use the
+extension ".tjsp" for sub project (include) files.
+
+Attributes may be of the following types:
 
 ID: A string that may consist of the characters A-Z, a-z, 0-9 and _. It may
 not start with a number.
@@ -303,6 +306,13 @@ scheduled to be used more than this value. A value of 1.0 means a
 whole working day. 0.5 means half a working day.
 
 -------------------------------------------------------------------------------
+efficiency <value>
+value: REAL
+
+The efficiency of the resource. This can be used to describe a team as
+a resource. A team of five should have an efficiency of 5.0.
+
+-------------------------------------------------------------------------------
 rate <value>
 value: REAL
 
@@ -502,7 +512,8 @@ conflicts with 'show'.
 
 -------------------------------------------------------------------------------
 Generates a report of all tasks (excluding hidden and filtered) in
-HTML format.
+HTML format. Multiple declarations of htmlTaskReport can be made to
+generate several different reports with one run of TaskJuggler.
 
 ===============================================================================
 htmlResourceReport <filename>

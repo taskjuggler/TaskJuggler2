@@ -17,9 +17,11 @@
 #include "Project.h"
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
-				   double mie, double mae, double r) :
-	project(p), id(i), name(n), minEffort(mie), maxEffort(mae), rate(r)
+				   double mie, double mae, double r)
+	: project(p), id(i), name(n), minEffort(mie), maxEffort(mae), rate(r)
 {
+	vacations.setAutoDelete(TRUE);
+
 	// Monday
 	workingHours[1].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
 	workingHours[1].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
@@ -35,17 +37,29 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	// Friday
 	workingHours[5].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
 	workingHours[5].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+
+	efficiency = 1.0;
 }
 
 bool
 Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 {
-	// Make sure that we don't overload the resource.
+	// Check that the resource is not closed or on vacation
+	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
+		if (i->overlaps(Interval(date, date + duration)))
+			return FALSE;
+
+	// Make sure that we don't overload or dubble-book the resource.
 	time_t bookedTime = duration;
-	Interval day = Interval(midnight(date), midnight(date) + ONEDAY - 1);
+	Interval day = Interval(midnight(date),
+							sameTimeNextDay(midnight(date)) - 1);
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+	{
+		if (b->getInterval().overlaps(Interval(date, date + duration)))
+			return FALSE;
 		if (day.contains(b->getInterval()))
 			bookedTime += b->getDuration();
+	}
 	if (project->convertToDailyLoad(bookedTime) > maxEffort)
 		return FALSE;
 
@@ -70,7 +84,7 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 	return FALSE;
 }
 
-bool
+void
 Resource::book(Booking* nb)
 {
 	// Try first to append the booking 
@@ -81,10 +95,9 @@ Resource::book(Booking* nb)
 		{
 			// booking appended
 			delete nb;
-			return TRUE;
+			return;
 		}
 	jobs.append(nb);
-	return TRUE;
 }
 
 double
@@ -92,14 +105,15 @@ Resource::getLoadOnDay(time_t date, Task* task)
 {
 	time_t bookedTime = 0;
 
-	const Interval day(midnight(date), midnight(date) + ONEDAY - 1);
+	const Interval day(midnight(date),
+					   sameTimeNextDay(midnight(date)) - 1);
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
 	{
 		if (day.contains(b->getInterval()) &&
 			(task == 0 || task == b->getTask()))
 			bookedTime += b->getDuration();
 	}
-	return project->convertToDailyLoad(bookedTime);
+	return project->convertToDailyLoad(bookedTime) * efficiency;
 }
 
 bool
@@ -108,6 +122,19 @@ Resource::isAssignedTo(Task* task)
 	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
 		if (task == b->getTask())
 			return TRUE;
+	return FALSE;
+}
+
+bool
+Resource::hasVacationDay(time_t day)
+{
+	Interval fullDay(midnight(day),
+					 sameTimeNextDay(midnight(day)) - 1);
+
+	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
+		if (i->overlaps(fullDay))
+			return TRUE;
+
 	return FALSE;
 }
 
