@@ -39,6 +39,7 @@ Project::Project()
 	minEffort = 0.0;
 	maxEffort = 1.0;
 	rate = 0.0;
+	xmlreport = 0L;
 	/* The 'closed' flag may be used for container classes to hide all
 	 * sub tasks. */
 	addAllowedFlag("closed");
@@ -130,4 +131,6 @@ Project::generateReports()
 	for (HTMLResourceReport* r = htmlResourceReports.first(); r != 0;
 		 r = htmlResourceReports.next())
 		r->generate();
+
+	xmlreport->generate();
 }
