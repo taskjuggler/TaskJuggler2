@@ -34,6 +34,10 @@ The simplest way to compile this package is:
      Running `configure' takes a while.  While running, it prints some
      messages telling which features it is checking for.
 
+     In case you do not find a configure script in the directory, you 
+     need to execute make -f Makefile.cvs before in order to create the
+     configure script.
+
   2. Type `make' to compile the package.
 
   3. Type `make install' to install the programs and any data files and
