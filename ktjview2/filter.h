@@ -238,5 +238,4 @@ private:
     FilterList m_filterList;
 };
 
-
 #endif

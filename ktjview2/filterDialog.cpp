@@ -56,6 +56,7 @@ FilterDialog::FilterDialog( FilterType type, QWidget * parent, const char * name
                  << i18n( "matches reqexp" ) << i18n( "doesn't match regexp" )
                  << i18n( "greater than" ) << i18n( "less than or equal" )
                  << i18n( "less than" ) << i18n( "greater than or equal" );
+    // TODO perhaps move this list to the filter class
 
     m_manager = new FilterManager( locate( "appdata", "filters.xml" ) );
 
@@ -97,7 +98,7 @@ void FilterDialog::slotMore()
     // fill the row with list of conditions
     QComboTableItem * item = new QComboTableItem( m_base->tbConditions, m_conditions );
     m_base->tbConditions->setItem( m_base->tbConditions->numRows() - 1, 1, item );
-    m_base->tbConditions->adjustColumn( 1 );
+    //m_base->tbConditions->adjustColumn( 1 );
 }
 
 void FilterDialog::slotFewer()
@@ -120,8 +121,6 @@ void FilterDialog::slotNewFilter()
     {
         name.append( "_" + kapp->randomString( 3 ) );
     }
-
-    // TODO save the current filter
 
     m_base->lbFilters->insertItem( name, 0 );
     m_base->lbFilters->setCurrentItem( 0 );
@@ -148,13 +147,20 @@ void FilterDialog::slotRenameFilter()
     {
         QString oldName = m_base->lbFilters->currentText();
         QString newName = KInputDialog::getText( i18n( "Filter name" ), i18n( "Enter the new filter name:" ), oldName );
+
+        // check if the filter exists
         if ( filterExists( newName ) )
         {
             KMessageBox::sorry( this, i18n( "Filter with name '%1' already exists. Please try again." ).arg( oldName ) );
             slotRenameFilter();
         }
+
+        // rename it
         if ( !newName.isEmpty() && ( newName != oldName ) )
-            m_base->lbFilters->changeItem( newName, currItem ); // TODO rename the current filter
+        {
+            m_base->lbFilters->changeItem( newName, currItem );
+            saveEntry( newName );
+        }
     }
 }
 
@@ -214,7 +220,36 @@ void FilterDialog::saveEntry( const QString & name )
 
 void FilterDialog::loadEntry( const QString & name )
 {
-    // TODO implement
+    Filter * filter = m_manager->filter( name );
+    if ( filter )
+    {
+        // filter op
+        if ( filter->fop() == FOP_AND )
+            m_base->rbAnd->setChecked( true );
+        else
+            m_base->rbOr->setChecked( true );
+
+        slotClear();            // clear the conditions
+
+        // fill the conditions
+        QValueVector<FilterCondition> conds = filter->conditions();
+        int numRows = conds.count();
+
+        QTable * table = m_base->tbConditions;
+
+        for ( int i = 0; i < numRows; i++ )
+        {
+            slotMore();         // insert an empty row
+
+            FilterCondition cond = conds[i];
+            table->setText( i, 0, cond.prop );
+
+            QComboTableItem * combo = static_cast<QComboTableItem *>( table->item( i, 1 ) );
+            combo->setCurrentItem( cond.expr );
+
+            table->setText( i, 2, cond.val );
+        }
+    }
 }
 
 #include "filterDialog.moc"
