@@ -8,6 +8,9 @@
 #
 # Copyright (c) 2001, 2002 by Remo Behn <ray@suse.de>
 #
+# Contributors:
+#       Tobias Ellermeyer <tobi@micram.de>
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of version 2 of the GNU General Public License as
 # published by the Free Software Foundation.
@@ -123,7 +126,7 @@ my $page_y    = ($page_border * 2) +
 _make_postscript_file($page_x, $page_y);
 _make_poster();
 
-#use Data::Dumper;
+use Data::Dumper;
 #print Data::Dumper->Dump([\%project], ['project']);
 #print Data::Dumper->Dump([\@all_tasks], ['all_tasks']);
 #print Data::Dumper->Dump([\%res_load], ['res_load']);
@@ -189,7 +192,8 @@ sub start {
             Allocations     => [],
             bookedResources => []
         );
-        push @all_tasks, $t;
+        @{$t->Previous} = [];
+	push @all_tasks, $t;
     }
     if ( $elm_fifo[$#elm_fifo-1] eq 'Task' ) {
         $t->h_minStart("$_[1]")     if ( $element eq 'minStart' );
@@ -207,13 +211,13 @@ sub start {
     if ( $elm_fifo[$#elm_fifo] eq 'Allocation' ) {
         $res_load{$_[1]}{$t->Id} = [ $t->h_planStart, $t->h_planEnd ];
         $w = $_[1];
-        push @{$t->Allocations}, "$_[1]";
+        $t->Allocations_push("$_[1]");
     }
     $t->Id($_[1]) if ( $element eq 'Task' );
 }
 
 sub text {
-    my ($ex, $string) = @_;
+    my ($ex, $string,$len) = @_;
     return if $string =~ /^\s*$/;
     if ( $elm_fifo[$#elm_fifo-1] eq 'Project' ) {
         $project{'Name'}        = $string if ( $elm_fifo[$#elm_fifo] eq 'Name' );
@@ -241,11 +245,11 @@ sub text {
         $t->startBuffer("$string")  if ( $elm_fifo[$#elm_fifo] eq 'startBufferSize' );
         $t->endBuffer("$string")    if ( $elm_fifo[$#elm_fifo] eq 'EndBufferSize' );
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
-        push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
-        push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
-        if ( $elm_fifo[$#elm_fifo] eq 'Resource' ) {
-            push @{$t->bookedResources}, "$string";
-            $rmap{$r} = $string;
+        $t->Previous_push("$string")         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
+	$t->Followers_push("$string")        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
+	if ( $elm_fifo[$#elm_fifo] eq 'Resource' ) {
+            $t->bookedResources_push("$string");
+	    $rmap{$r} = $string;
         }
     }
     if ( $elm_fifo[$#elm_fifo] eq 'Load' ) {
@@ -288,11 +292,17 @@ sub _draw_depends {
     my $p = shift;
     foreach my $task (@all_tasks) {
         $p->setcolour(0,0,255);
-        foreach my $t (@{$task->Previous}) {
-            #-- die ende koordinaten vom task holen, von dem ich abhänge
+	foreach my $t (@{$task->Previous}) {
+	    #-- die ende koordinaten vom task holen, von dem ich abhänge
             if ($t) {
-                my ($x1, $y1) = __get_start_cood($t);
-                #  ---|
+                
+		my ($x1, $y1) = __get_start_cood($t);
+                my ($backstep) = -$task_height*2;
+		#if( ($task->x1-$x1) > 3.0 )
+		#  {
+		#  $backstep = $task_height/2;
+		#  }
+		#  ---|
                 #     |+++
                 #  ---|
                 $p->line($x1, $y1, $x1+($task_height/2), $y1);
@@ -307,7 +317,7 @@ sub _draw_depends {
                 #  ---|  |
                 #        |
                 #     +++|
-                $p->line($x1+($task_height/2), $y1-($task_height/1.5), $x1-($task_height*2), $y1-($task_height/1.5));
+                $p->line($x1+($task_height/2), $y1-($task_height/1.5), $x1+$backstep, $y1-($task_height/1.5));
                 #  ---|
                 #     |---
                 #  ---|  |
@@ -316,7 +326,7 @@ sub _draw_depends {
                 #   +
                 #   +
                 #   +
-                $p->line($x1-($task_height*2), $y1-($task_height/1.5), $x1-($task_height*2), $task->y1);
+                $p->line($x1+$backstep, $y1-($task_height/1.5), $x1+$backstep, $task->y1);
                 #  ---|
                 #     |---
                 #  ---|  |
@@ -325,7 +335,7 @@ sub _draw_depends {
                 #   |
                 #   |
                 #   |+++++++++++++++++
-                $p->line($x1-($task_height*2), $task->y1, $task->x1, $task->y1 );
+                $p->line($x1+$backstep, $task->y1, $task->x1, $task->y1 );
                 #  ---|
                 #     |---
                 #  ---|  |
@@ -396,10 +406,10 @@ sub _draw_res {
             my ($x2, $y2) = _trans_coord($_x2, $_y2);
             #-- balken
             $p->setcolour(222,222,222);
-            $p->box({filled => 1}, $x1, $y1, $x2, $y2);
+            $p->box( $x1, $y1, $x2, $y2,{filled => 1} );
             #-- rahmen drum
             $p->setcolour(0,0,0);
-            $p->box({filled => 0}, $x1, $y1, $x2, $y2);
+            $p->box( $x1, $y1, $x2, $y2);
             #-- linie dazwischen
             my $l_y = $y2+($task_space/2)-($task_height/2);
             $p->line($page_border+5, $l_y, $page_x-($page_border*2), $l_y );
@@ -407,9 +417,9 @@ sub _draw_res {
             $p->setfont("Helvetica", 8);
             $p->text($page_border+5, $y1-($task_height/1.5), "$res");
             #-- load reinschreiben
-            if ($task_length >= 2) {
-                $p->text($x2-6, $y1-($task_height/1.5), "$load");
-            }
+            #if ($task_length >= 2) {
+            #    $p->text($x2-6, $y1-($task_height/1.5), "$load");
+            #}
             $a++;
         }
         $c++;
@@ -461,35 +471,43 @@ sub _draw_task {
             if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
                 if ( $persent < 100 ) {
                     $p->setcolour(255,0,0);
-                    $p->box({filled => 1}, $x1, $y1, $x2, $y2);
+                    $p->box( $x1, $y1, $x2, $y2,{filled => 1} );
                 }
             } else {
-                $p->setcolour(255,255,255);
-                $p->box({filled => 1}, $x1, $y1, $x2, $y2);
-            }
+		$p->setcolour(255,255,100);
+                $p->box( $x1, $y1, $x2, $y2,{filled => 1} );
+                if( Delta_Days($today_year, $today_month, $today_day, $start_year, $start_month, $start_day) <0 ){
+	     	   $p->setcolour(255,0,0);
+                   my $task_unfin = Delta_Days( $start_year, $start_month, $start_day, $today_year, $today_month, $today_day);
+		   my $_x3 = $_x1+$task_unfin*$day_x;
+		   my $_y3 = $_y2;
+		   my ($x3, $y3) = _trans_coord($_x3, $_y3);
+		   $p->box( $x1, $y1, $x3, $y3,{filled => 1} );
+		   }
+	    }
             #-- buffer balken pinseln
             if ( $task->startBuffer ) {
                 my $buf = $task->startBuffer;
                 my ($buf_length, $d) = _trans_coord($_x1 + (($task_length/100*$buf) * $day_x), 0);
                 $p->setcolour(222,222,222);
-                $p->box({filled => 1}, $x1, $y1, $buf_length, $y2);
+                $p->box( $x1, $y1, $buf_length, $y2,{filled => 1} );
             }
             if ( $task->endBuffer ) {
                 my $buf = $task->endBuffer;
                 my ($buf_length, $d) = _trans_coord($_x2 - (($task_length/100*$buf) * $day_x), 0);
                 $p->setcolour(222,222,222);
-                $p->box({filled => 1}, $buf_length, $y1, $x2, $y2);
+                $p->box( $buf_length, $y1, $x2, $y2,{filled => 1} );
             }
             #-- länge von % feritg balken
             my ($per_length, $d) = _trans_coord($_x1 + (($task_length/100*$persent) * $day_x), 0);
             #-- % done balken pinseln
             if ($persent > 0) {
                 $p->setcolour(0,255,0);
-                $p->box({filled => 1}, $x1, $y1, $per_length, $y2);
+                $p->box( $x1, $y1, $per_length, $y2,{filled => 1} );
             }
             #-- rahmen um den task
             $p->setcolour(0,0,0);
-            $p->box({filled => 0}, $x1, $y1, $x2, $y2);
+            $p->box( $x1, $y1, $x2, $y2);
             #-- text
             $task->label($name);
             $task->label_x($x1+1);
@@ -497,7 +515,7 @@ sub _draw_task {
         }
         if ( $task->Type eq 'Container' ) {
             $p->setcolour(0,0,0);
-            $p->box({filled => 1}, $x1-1, $y1, $x2+1, $y2+($task_height/1.2));
+            $p->box( $x1-1, $y1, $x2+1, $y2+($task_height/1.2),{filled => 1});
             #-- pfeil vorn
             $p->polygon(
                 $x1+1, $y2+($task_height/1.2),
@@ -588,7 +606,7 @@ sub _draw_grid {
         my $h_month_week = 3;
         my ($_x, $_y)   = ($i*$day_x, $day_x*$h_month_week);
         my ($x, $y)     = _trans_coord($_x, $_y);
-        $p->box({filled => 1}, $x, $y, $x+$day_x, $page_border);
+        $p->box(  $x, $y, $x+$day_x, $page_border,{filled => 1});
         #-- die linien haben unterschiedliche höhe
         #-- is es ein wochen-anfang
         if ( $act_dow == 1 ) {
