@@ -1,3 +1,4 @@
+# translation of da.po to dansk
 # translation of ktjview2.po to dansk
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
@@ -5,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: ktjview2\n"
+"Project-Id-Version: da\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-02-09 14:42+0100\n"
-"PO-Revision-Date: 2005-01-19 23:28+0100\n"
+"PO-Revision-Date: 2005-03-03 13:22+0100\n"
 "Last-Translator: Rune Rønde Laursen <runerl@skjoldhoej.dk>\n"
 "Language-Team: dansk <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -130,10 +131,8 @@ msgid "Name"
 msgstr "Navn"
 
 #: ktjview2.cpp:115
-msgid ""
-"The file '%1' can not be found; it was probably removed from the system."
-msgstr ""
-"Filen '%1' kan ikke findes. Den er sandsynligvis blevet fjernet fra systemet."
+msgid "The file '%1' can not be found; it was probably removed from the system."
+msgstr "Filen '%1' kan ikke findes. Den er sandsynligvis blevet fjernet fra systemet."
 
 #: ktjview2.cpp:156
 msgid "&Filter..."
@@ -349,7 +348,7 @@ msgstr "&Byg projekt igen"
 
 #: ktjview2.cpp:263
 msgid "Explain Keyword"
-msgstr ""
+msgstr "Forklar nøgleord"
 
 #: ktjview2.cpp:267
 msgid "Info"
@@ -496,10 +495,8 @@ msgid "Allocations"
 msgstr "Tildelinger"
 
 #: ktjview2view.cpp:190
-msgid ""
-"<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
-msgstr ""
-"<h1>Intet projekt indlæst</h1><p>Vælg 'Fil -> Åbn...' for at vælge en.</p>"
+msgid "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
+msgstr "<h1>Intet projekt indlæst</h1><p>Vælg 'Fil -> Åbn...' for at vælge en.</p>"
 
 #: ktjview2view.cpp:211
 msgid "Jump to task details"
@@ -514,8 +511,7 @@ msgid "Opening XML project"
 msgstr "Åbner XML-projekt"
 
 #: ktjview2view.cpp:280 ktjview2view.cpp:309
-msgid ""
-"Taskjuggler failed to open the project file. Please check your permissions."
+msgid "Taskjuggler failed to open the project file. Please check your permissions."
 msgstr "Taskjuggler kunne ikke åbne projektfilen. Tjek filrettighederne."
 
 #: ktjview2view.cpp:286
@@ -742,6 +738,8 @@ msgid ""
 "This is probably because you haven't defined the <tt>xmlreport</tt> to be "
 "generated in the project definition file."
 msgstr ""
+"XML-rapport er ikke blevet oprettet. PostScript Gantt-diagram bliver ikke vist.\n"
+"Dette skyldes sandsynligvis at du i projekt-definitionsfilen ikke har angivet at <tt>xmlreport</tt> skal oprettes."
 
 #: main.cpp:31
 msgid "A KDE frontend to TaskJuggler"
@@ -756,9 +754,8 @@ msgid "TaskJuggler IDE"
 msgstr "TaskJuggler integreret udviklingsmiljø"
 
 #: main.cpp:44
-#, fuzzy
 msgid "Author and maintainer"
-msgstr "Forfatter og vedligeholder "
+msgstr "Forfatter og vedligeholder"
 
 #: quickSearchWidget.cpp:45
 msgid "Clear the search"
@@ -1043,7 +1040,7 @@ msgstr "Værk&tøjer"
 #: rc.cpp:179
 #, no-c-format
 msgid "&Help"
-msgstr ""
+msgstr "&Hjælp"
 
 #: rc.cpp:182
 #, no-c-format
@@ -1336,11 +1333,3 @@ msgstr "Klip punkt"
 msgid "Tasklink"
 msgstr "Opgavelink"
 
-#~ msgid "&Calendar mode"
-#~ msgstr "&Kalendertilstand"
-
-#~ msgid ""
-#~ "XML report could not have been generated; PostScript Gantt chart won't be "
-#~ "shown."
-#~ msgstr ""
-#~ "XML rapport kunne ikke genereres. PostScript Gantt-diagram vises ikke."
