@@ -106,17 +106,16 @@ int main(int argc, char *argv[])
 
 	p.readKotrus();
 
-	if (!p.pass2())
-		return (1);
+	bool schedulingErrors = !p.pass2();
 
 	if (updateKotrusDB)
-		if (parseErrors)
-			qWarning("Due to parse errors the Kotrus DB will NOT be "
+		if (parseErrors || schedulingErrors)
+			qWarning("Due to errors the Kotrus DB will NOT be "
 					 "updated.");
 		else
 			p.updateKotrus();
 
 	p.generateReports();
 
-	return (parseErrors ? -1 : 0);
+	return (parseErrors || schedulingErrors ? -1 : 0);
 }
