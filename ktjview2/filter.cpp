@@ -25,10 +25,11 @@
 
 #include "filter.h"
 
-Filter::Filter( const QString & name )
+Filter::Filter( const QString & name, FilterType type )
 {
     m_name = name;
     m_fop = FOP_AND;
+    m_type = type;
 }
 
 Filter::~Filter()

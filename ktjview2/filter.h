@@ -64,10 +64,15 @@ public:
     };
 
     /**
+     * Identify the data to work on
+     */
+    enum FilterType { FT_TASK = 0, FT_RESOURCE };
+
+    /**
      * CTOR
      * @param name name of the filter
      */
-    Filter( const QString & name );
+    Filter( const QString & name, FilterType type );
     ~Filter();
 
     /**
@@ -93,6 +98,12 @@ public:
      */
     void setFop( FilterOp fop )
         { m_fop = fop; }
+
+    FilterType type() const
+        { return m_type; }
+
+    void setType( FilterType type )
+        { m_type = type; }
 
     /**
      * @return the filter conditions (criteria)
@@ -121,6 +132,7 @@ public:
 private:
     QString m_name;
     FilterOp m_fop;
+    FilterType m_type;
     QValueVector<FilterCondition> m_conditions;
 };
 

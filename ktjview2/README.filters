@@ -1,0 +1,19 @@
+The task or resource filters are stored in an XML file, example:
+
+<filters>
+    <filter name="example filter" type="0|1"> <!-- see filter.h:enum FilterType -->
+	<fop>0|1</fop> <!-- filter operator, filter.h:enum FilterOp-->
+	<conditions>
+	    <condition>
+		<property>taskName</property> <!-- task/resource property -->
+		<expression>0</expression> <!-- see filter.h:enum FilterExp -->
+		<value>blah</value>
+	    </condition>
+	    <condition>
+		<property>responsible</property>
+		<expression>2</expression>
+		<value>John Doe</value>
+	    </condition>
+	</conditions>
+    </filter>
+</filters>
