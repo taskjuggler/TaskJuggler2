@@ -32,10 +32,10 @@ int TaskItem::compare( QListViewItem * i, int col, bool ascending ) const
     {
         return static_cast<TaskItem *>( i )->endDate().secsTo( m_end );
     }
-    else if ( col == 4 || col == 5 ) // duration, priority (int)
+    else if ( col == 4 || col == 5 || col == 9 ) // duration, priority, effort
     {
-        int a = text( col ).toInt();
-        int b = i->text( col ).toInt();
+        double a = KGlobal::locale()->readNumber( text( col ) );
+        double b = KGlobal::locale()->readNumber( i->text( col ) );
         if ( a < b )
             return -1;
         else if ( a > b )
@@ -51,18 +51,6 @@ int TaskItem::compare( QListViewItem * i, int col, bool ascending ) const
         y.truncate( y.length() - 1 );
         double a = KGlobal::locale()->readNumber( x );
         double b = KGlobal::locale()->readNumber( y );
-
-        if ( a < b )
-            return -1;
-        else if ( a > b )
-            return 1;
-        else
-            return 0;
-    }
-    else if ( col == 9 )        // effort (double)
-    {
-        double a = KGlobal::locale()->readNumber( text( col ) );
-        double b = KGlobal::locale()->readNumber( i->text( col ) );
 
         if ( a < b )
             return -1;
