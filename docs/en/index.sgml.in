@@ -141,6 +141,11 @@ used when calling TaskJuggler from CGI scripts.
 <item>Added support for <ref name="taskattributes"
 id="export_taskattributes">.
 
+<item>XML Output changes: Basically the XML output is more simple to parse,
+some values were added and corrected. 
+
+<item>Added a first simple TaskJuggler XML-output viewer for KDE. 
+
 </itemize>
 
 <sect>Installation
