@@ -213,7 +213,7 @@ void ktjview2::setupActions()
     m_sidebarTasks->setExclusiveGroup( "sidebar" );
     connect( m_sidebarTasks, SIGNAL( activated() ), this, SLOT( slotSidebarTasks() ) );
 
-    m_sidebarResUsage = new KRadioAction( i18n( "Resource usage" ), "resources",
+    m_sidebarResUsage = new KRadioAction( i18n( "Usage" ), "resourceusage",
                                           KShortcut(), actionCollection(), "sidebar_res_usage" );
     m_sidebarResUsage->setExclusiveGroup( "sidebar" );
     connect( m_sidebarResUsage, SIGNAL( activated() ), this, SLOT( slotSidebarResUsage() ) );

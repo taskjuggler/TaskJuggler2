@@ -47,8 +47,8 @@
   <Action name="sidebar_info"/>
   <Action name="sidebar_gantt"/>
   <Action name="sidebar_resources"/>
-  <Action name="sidebar_tasks"/>
   <Action name="sidebar_res_usage"/>
+  <Action name="sidebar_tasks"/>
 </ToolBar>
 
 <ToolBar name="ganttToolBar" noMerge="1"><text>Gantt Toolbar</text>
