@@ -20,8 +20,8 @@
 Report::Report(Project* p, const QString& f, time_t s, time_t e) :
 		project(p), fileName(f), start(s), end(e)
 {
-	taskSortCriteria = TaskList::TaskTree;
-	resourceSortCriteria = ResourceList::ResourceTree;
+	taskSortCriteria = CoreAttributesList::TreeMode;
+	resourceSortCriteria = CoreAttributesList::TreeMode;
 	hideTask = 0;
 	rollUpTask = 0;
 	hideResource = 0;
@@ -45,7 +45,7 @@ Report::isTaskHidden(Task* t)
 		return FALSE;
 
 	hideTask->clearSymbolTable();
-	QStringList flags = *t;
+	QStringList flags = t->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		hideTask->registerSymbol(*it, 1);
 	return hideTask->eval() != 0;
@@ -58,7 +58,7 @@ Report::isResourceHidden(Resource* r)
 		return FALSE;
 
 	hideResource->clearSymbolTable();
-	QStringList flags = *r;
+	QStringList flags = r->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		hideResource->registerSymbol(*it, 1);
 	return hideResource->eval() != 0;
@@ -71,7 +71,7 @@ Report::isTaskRolledUp(Task* t)
 		return FALSE;
 
 	rollUpTask->clearSymbolTable();
-	QStringList flags = *t;
+	QStringList flags = t->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		rollUpTask->registerSymbol(*it, 1);
 	return rollUpTask->eval() != 0;
@@ -84,7 +84,7 @@ Report::isResourceRolledUp(Resource* r)
 		return FALSE;
 
 	rollUpResource->clearSymbolTable();
-	QStringList flags = *r;
+	QStringList flags = r->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
 		rollUpResource->registerSymbol(*it, 1);
 	return rollUpResource->eval() != 0;
@@ -153,17 +153,19 @@ Report::sortTaskList(TaskList& filteredList)
 {
 	/* In tasktree sorting mode we need to make sure that we don't hide
 	 * parents of shown tasks. */
-	if (taskSortCriteria == TaskList::TaskTree)
+	TaskList list = filteredList;
+	if (taskSortCriteria == CoreAttributesList::TreeMode)
 	{
-		filteredList.setSorting(TaskList::Pointer);
+		filteredList.setSorting(CoreAttributesList::Pointer);
 		for (Task* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{
 			for (Task* p = t->getParent(); p != 0; p = p->getParent())
-				if (filteredList.contains(p) == 0)
-					filteredList.append(p);
+				if (list.contains(p) == 0)
+					list.append(p);
 		}
 	}
+	filteredList = list;
 
 	filteredList.setSorting(taskSortCriteria);
 	filteredList.sort();
@@ -205,17 +207,19 @@ Report::sortResourceList(ResourceList& filteredList)
 {
 	/* In resourcetree sorting mode we need to make sure that we don't
 	 * hide parents of shown resources. */
-	if (resourceSortCriteria == ResourceList::ResourceTree)
+	ResourceList list = filteredList;
+	if (resourceSortCriteria == CoreAttributesList::TreeMode)
 	{
 		filteredList.setSorting(ResourceList::Pointer);
 		for (Resource* r = filteredList.first(); r != 0;
 			 r = filteredList.next())
 		{
 			for (Resource* p = r->getParent(); p != 0; p = p->getParent())
-				if (filteredList.contains(p) == 0)
-					filteredList.append(p);
+				if (list.contains(p) == 0)
+					list.append(p);
 		}
 	}
+	filteredList = list;
 
 	filteredList.setSorting(resourceSortCriteria);
 	filteredList.sort();

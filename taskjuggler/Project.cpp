@@ -119,7 +119,7 @@ Project::schedule()
 	bool error = FALSE;
 
 	TaskList sortedTasks(taskList);
-	sortedTasks.setSorting(TaskList::PrioDown);
+	sortedTasks.setSorting(CoreAttributesList::PrioDown);
 	sortedTasks.sort();
 
 	time_t timeDelta = scheduleGranularity;

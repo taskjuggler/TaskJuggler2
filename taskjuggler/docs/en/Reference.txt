@@ -104,15 +104,26 @@ text: STRING
 
 A longer description of the task.
 
+-------------------------------------------------------------------------------
 start <date>
 date: DATE
 
 The planned start date for the task. In case no start date is given,
 the task must depend on other tasks. If no dependency is given the
-project start date is used.
+project start date is used. Setting a start date will switch the
+scheduling policy to ASAP.
 
 -------------------------------------------------------------------------------
-minStart <date>
+end <date>
+date: DATE
+
+The planned end date for the task. In case no end date is given, the
+task must depend on other tasks. If no dependency is given the project
+start date is used. Setting and end date will switch the scheduling
+policy to ALAP.
+
+-------------------------------------------------------------------------------
+minstart <date>
 date: DATE
 
 The earliest wanted start date for the task. In case this date can't
@@ -121,7 +132,7 @@ be met the task is marked in the task list.
 This attribute is inherited by sub tasks.
 
 -------------------------------------------------------------------------------
-maxStart <date>
+maxstart <date>
 date: DATE
 
 The latest wanted start date for the task. In case this date can't be
@@ -130,14 +141,14 @@ met the task is marked in the task list.
 This attribute is inherited by sub tasks.
 
 -------------------------------------------------------------------------------
-actualStart <date>
+actualstart <date>
 date: DATE
 
 The actual start date of the task. This can be specified to do
 plan/actual comparisons.
 
 -------------------------------------------------------------------------------
-minEnd <date>
+minend <date>
 date: DATE
 
 The earliest wanted end date for the task. In case this date can't be
@@ -146,7 +157,7 @@ met the task is marked in the task list.
 This attribute is inherited by sub tasks.
 
 -------------------------------------------------------------------------------
-maxEnd <date>
+maxend <date>
 date: DATE
 
 The latest wanted end date for the task. In case this date can't be
@@ -155,7 +166,7 @@ met the task is marked in the task list.
 This attribute is inherited by sub tasks.
 
 -------------------------------------------------------------------------------
-actualEnd <date>
+actualend <date>
 date: DATE
 
 The actual end date of the task. This can be specified to do
@@ -290,13 +301,23 @@ declared before the sub task. Flags that are declared after the sub
 tasks are NOT inherited.
 
 -------------------------------------------------------------------------------
+responsible <id>
+id: ID
+
+The id of the resource that is responsible for this task.
+
+This attribute is inherited by sub tasks if specified prior to the
+definition of the sub task.
+
+-------------------------------------------------------------------------------
 priority <value>
 value: INTEGER
 
 Specifies a priority between 1 and 1000. A task with higher priority
 is more likely to get the requested resources.
 
-This attribute is inherited by sub tasks.
+This attribute is inherited by sub tasks if specified prior to the
+definition of the sub task.
 
 -------------------------------------------------------------------------------
 account <id>
@@ -304,6 +325,9 @@ id: ID
 
 Specifies the account that all costs associated with this task will be
 credited to.
+
+This attribute is inherited by sub tasks if specified prior to the
+definition of the sub task.
 
 -------------------------------------------------------------------------------
 Tasks may be nested and some attributes are inherited by the sub tasks.
@@ -314,6 +338,13 @@ id: ID
 name: STRING
 
 Optional attributes:
+
+-------------------------------------------------------------------------------
+account <id> <name>
+
+Accounts may be nested. An account that has sub accounts may not have
+a balance or a kotrusid.
+
 -------------------------------------------------------------------------------
 balance <amount>
 amount: REAL
@@ -321,7 +352,7 @@ amount: REAL
 The initial balance of the account.
 
 -------------------------------------------------------------------------------
-kotrusId <id>
+kotrusid <id>
 id: STRING
 
 The KoTrus ID of the account (Kostentraeger).
@@ -336,15 +367,24 @@ id: ID
 name: STRING
 
 Optional attributes:
+
 -------------------------------------------------------------------------------
-minEffort <value>
+resource <id> <name>
+
+Resources may be nested to create groups. A nested resource inherits
+the attributes of the parent resource. But only those attributs are
+inherited that have been specified prior to the declaration of the
+nested resource.
+
+-------------------------------------------------------------------------------
+mineffort <value>
 value: REAL
 
 The daily minimum effort for a resource. Resources that are
 used less than this value will be marked in the report.
 
 -------------------------------------------------------------------------------
-maxEffort <value>
+maxeffort <value>
 value: REAL
 
 The daily maximum effort for a resource. Resources will not be
@@ -365,7 +405,7 @@ value: REAL
 The daily costs of the resource.
 
 -------------------------------------------------------------------------------
-kotrusId <id>
+kotrusid <id>
 id: STRING
 
 The KoTrus ID of the resource (email address).
@@ -410,7 +450,7 @@ as default values for all resources defined afterwards. The default
 values are 08:00-12:00 and 13:00-17:00 from Mon - Fri.
 
 ===============================================================================
-workingHoursPerDay <value>
+workinghoursperday <value>
 value: INTEGER
 
 Specifies the number of working hours per day. This value is used to
@@ -426,7 +466,7 @@ and 1000 and is inherited by all tasks if no other priority is
 specified.
 
 ===============================================================================
-minEffort <value> value: REAL
+mineffort <value> value: REAL
 
 The default daily minimum effort for a resource. Resources that are
 used less than this value will be marked in the report. This value
@@ -434,7 +474,7 @@ will be used for all subsequent resource declarations unless specified
 otherwise.
 
 ===============================================================================
-maxEffort <value> value: REAL
+maxeffort <value> value: REAL
 
 The default daily maximum effort for a resource. Resources will not be
 scheduled more than this value. This value will be used for all
@@ -449,13 +489,13 @@ be used for all subsequent resource declarations unless specified
 otherwise.
 
 ===============================================================================
-currencyPrefix <prefix> 
+currencyprefix <prefix> 
 prefix: STRING
 
 The prefix for money values in reports.
 
 ===============================================================================
-currencyPostfix <postfix> 
+currencypostfix <postfix> 
 postfix: STRING
 
 The postfix for money values in reports.
@@ -493,7 +533,7 @@ Declares the specified flags. Flags can be assigned to tasks to be
 used as filters during report generation.
 
 ===============================================================================
-timingResolution <value> <unit>
+timingresolution <value> <unit>
 value: INTERGER
 unit: UNIT
 
@@ -502,7 +542,7 @@ the schedulings process needs. The default is 1 hour. The smallest
 value is 5 min.
 
 ===============================================================================
-htmlTaskReport <filename>
+htmltaskreport <filename>
 filename: STRING
 
 Optional attributes:
@@ -516,25 +556,21 @@ following values are available:
 
 no: The task index.
 
-id: The global ID of the task.
+id: The global ID of a task.
 
-task: The name of the task.
+task: The name of a task.
 
-start: The planned start date.
+start: The start date of a task.
 
-end: The planned end date.
+end: The end date of a task.
 
-minStart: The earliest wanted start date.
+minstart: The earliest wanted start date.
 
-maxStart: The latest wanted start date.
+maxstart: The latest wanted start date.
 
-aStart: The actual start date.
+minend: The earliest wanted end date.
 
-minEnd: The earliest wanted end date.
-
-maxEnd: The latest wanted end date.
-
-aEnd: The actual end date.
+maxend: The latest wanted end date.
 
 priority: The scheduling priority.
 
@@ -543,6 +579,11 @@ resources: The names of the used resources.
 depends: The task index of the tasks that this task depends on.
 
 follows: The task index of the tasks that depend on this task.
+
+responsible: The name of the resource responsible for a task.
+
+responsibilies: A list of all tasks indicies that a resource is
+responsible for.
 
 note: The description of the task.
 
@@ -576,6 +617,20 @@ indented and grouped together. If this sorting is used parent tasks
 are shown when sub tasks are not hidden even if the parent task
 matches the hide expression.
 
+tree: Show nesting with indentation
+
+fullnameup: Last full name on top
+
+fullnamedown: First full name on top
+
+indexup: Last index on top
+
+indexdown: First index on top
+
+nameup: Last name on top
+
+namedown: First name on top
+
 startup: Latest start date on top
 
 startdown: Earliest start date on top
@@ -588,57 +643,15 @@ priorityup: Lowest priority on top
 
 prioritydown: Highest priority on top
 
+responsibleup: Last name of responsible on top
+
+responsibledown: First name of responsible on top
+
 -------------------------------------------------------------------------------
 showActual
 
 If used not only the plan values are listed in the table, but also the
 actual values. The actual values are put underneath the plan values.
-
--------------------------------------------------------------------------------
-hide <expression>
-expression: LOGICALEXPRESSION
-
-List only tasks that don't have flags that meet the described logical
-expression.
-
--------------------------------------------------------------------------------
-Generates a report of all tasks (excluding hidden and filtered) in
-HTML format. Multiple declarations of htmlTaskReport can be made to
-generate several different reports with one run of TaskJuggler.
-
-===============================================================================
-htmlResourceReport <filename>
-filename: STRING
-
-Optional attributes:
-
--------------------------------------------------------------------------------
-columns <id>[,<id>]
-id: STRING
-
-Specifies which columns should be included in the task report. The
-following values are available:
-
-resource: The name of the resource or the task.
-
-start: The start date of the task.
-
-end: The end date of the task.
-
-workdays: The number of workdays the resource is allocated during the
-inteval specified by the optional attributes start and end.
-
--------------------------------------------------------------------------------
-start <day>
-day: DATE
-
-The start date for the calender view and the calculated values.
-
--------------------------------------------------------------------------------
-end <day>
-day: DATE
-
-The end date for the calender view end the calculated values.
 
 -------------------------------------------------------------------------------
 hidetask <expression>
@@ -648,17 +661,41 @@ List only tasks that don't have flags that meet the described logical
 expression.
 
 -------------------------------------------------------------------------------
-sorttasks <criteria>
-criteria: SORTINGCRITERIA
+rolluptask <expression>
+expression: LOGICALEXPRESSION
 
-Ref. htmlTaskReport.
+Don't show sub tasks of tasks that have flags that meet the described
+logical expression.
 
 -------------------------------------------------------------------------------
-Generates a report of all resources (excluding hidden and filtered) in
-HTML format.
+hideresource <expression>
+expression: LOGICALEXPRESSION
+
+List only resources that don't have flags that meet the described logical
+expression.
+
+-------------------------------------------------------------------------------
+rollupresource <expression>
+expression: LOGICALEXPRESSION
+
+Don't show sub resources of resources that have flags that meet the
+described logical expression.
+
+-------------------------------------------------------------------------------
+Generates a report of all tasks (excluding hidden and filtered) in
+HTML format. Multiple declarations of htmlTaskReport can be made to
+generate several different reports with one run of TaskJuggler.
 
 ===============================================================================
-htmlAccountReport <filename>
+htmlresourcereport <filename>
+filename: STRING
+
+Optional attributes:
+
+Ref. htmltaskresport
+
+===============================================================================
+htmlaccountreport <filename>
 filename: STRING
 
 Optional attributes:
@@ -699,3 +736,5 @@ sets the kotrus mode. Valid values are
  - 'NoKotrus' for no KoTrus connection
  - 'XML' for to read from an XML-File (not yet supported)
  - 'DB' to read from database which must be configured in your taskjugglerrc
+
+===============================================================================

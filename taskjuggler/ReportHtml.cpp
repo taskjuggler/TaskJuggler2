@@ -89,6 +89,11 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		}
 		else if (*it == "resources")
 			planResources(t, r != 0);
+		else if (*it == "responsible")
+			textTwoRows(htmlFilter(t->getResponsible()->getName()), r != 0,
+						"left");
+		else if (*it == "responsibilities")
+			emptyPlan(r != 0);
 		else if (*it == "depends")
 			generateDepends(t, r != 0);
 		else if (*it == "follows")
@@ -229,6 +234,10 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 		}
 		else if (*it == "resources")
 			emptyPlan(t != 0);
+		else if (*it == "responsible")
+			emptyPlan(t != 0);
+		else if (*it == "responsibilities")
+			generateResponsibilities(r, t != 0);
 		else if (*it == "depends")
 			emptyPlan(t != 0);
 		else if (*it == "follows")
@@ -388,6 +397,10 @@ ReportHtml::generateTableHeader()
 			s << "<td class=\"headerbig\" rowspan=\"2\">Effort</td>";
 		else if (*it == "resources")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Resources</td>";
+		else if (*it == "responsible")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Responsible</td>";
+		else if (*it == "responsibilities")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Responsibilities</td>";
 		else if (*it == "depends")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Dependencies</td>";
 		else if (*it == "follows")
@@ -823,14 +836,14 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 {
 	QString spaces = "";
 	int fontSize = big ? 2 : -1;
-	if (resourceSortCriteria == ResourceList::ResourceTree)
+	if (resourceSortCriteria == CoreAttributesList::TreeMode)
 		for (Resource* rp = r ; rp != 0; --fontSize)
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 			rp = rp->getParent();
 		}
 
-	if (taskSortCriteria == TaskList::TaskTree)
+	if (taskSortCriteria == CoreAttributesList::TreeMode)
 	{
 		Task* tp = t->getParent();
 		for ( ; tp != 0; --fontSize)
@@ -861,14 +874,14 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 {
 	QString spaces = "";
 	int fontSize = big ? 2 : -1;
-	if (taskSortCriteria == TaskList::TaskTree)
+	if (taskSortCriteria == CoreAttributesList::TreeMode)
 		for (Task* tp = t; tp != 0; --fontSize)
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 			tp = tp->getParent();
 		}
 
-	if (resourceSortCriteria == ResourceList::ResourceTree)
+	if (resourceSortCriteria == CoreAttributesList::TreeMode)
 	{
 		Resource* rp = r->getParent();
 		for ( ; rp != 0; --fontSize)
@@ -972,6 +985,30 @@ ReportHtml::generateFollows(Task* t, bool light)
 			s << ", ";
 		s << QString().sprintf("%d", d->getIndex());
 		first = FALSE;
+	}
+	s << "</font></td>" << endl;
+}
+
+void
+ReportHtml::generateResponsibilities(Resource*r, bool light)
+{
+	s << "<td class=\""
+	  << (light ? "defaultlight" : "default")
+	  << "\" rowspan=\""
+	  << (showActual ? "2" : "1")
+	  << "\" style=\"text-align:left\">"
+		"<font size=\"-2\">";
+	bool first = TRUE;
+	TaskList tl = project->getTaskList();
+	for (Task* t = tl.first(); t != 0; t = tl.next())
+	{
+		if (t->getResponsible() == r)
+		{
+			if (!first)
+				s << ", ";
+			s << QString().sprintf("%d", t->getIndex());
+			first = FALSE;
+		}
 	}
 	s << "</font></td>" << endl;
 }

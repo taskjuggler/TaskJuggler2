@@ -45,6 +45,7 @@ public:
 
 	void generateDepends(Task* t, bool light);
 	void generateFollows(Task* t, bool light);
+	void generateResponsibilities(Resource* r, bool light);
 	void htmlDayHeaderDays();
 	void htmlDayHeaderMonths();
 	void htmlWeekHeaderWeeks();

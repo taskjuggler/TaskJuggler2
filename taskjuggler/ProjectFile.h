@@ -93,7 +93,7 @@ private:
 	bool readResource(Resource* parent);
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
 					  QString* = 0);
-	bool readAccount();
+	bool readAccount(Account* parent);
 	bool readAllocate(Task* t);
 	bool readPlanTimeFrame(Task* t, double& d);
 	bool readTimeValue(ulong& value);
@@ -102,7 +102,7 @@ private:
 	bool readHTMLReport(const QString& reportType);
 	bool readXMLTaskReport();
 	Operation* readLogicalExpression();
-	bool readTaskSorting(Report* report);
+	bool readSorting(Report* report, bool task);
 	time_t date2time(const QString& date);
 	time_t hhmm2time(const QString& hhmm);
 

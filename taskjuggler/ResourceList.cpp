@@ -31,7 +31,7 @@ BookingList::compareItems(QCollection::Item i1, QCollection::Item i2)
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
 				   Resource* pr)
-	: project(p), id(i), name(n), parent(pr)
+	: CoreAttributes(p, i, n, pr)
 {
 	vacations.setAutoDelete(TRUE);
 	jobs.setAutoDelete(TRUE);
@@ -41,11 +41,11 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	if (pr)
 	{
 		// Inherit flags from parent resource.
-		for (QStringList::Iterator it = ((FlagList*) pr)->begin();
-			 it != ((FlagList*) pr)->end(); ++it)
+		for (QStringList::Iterator it = pr->flags.begin();
+			 it != pr->flags.end(); ++it)
 			addFlag(*it);
 
-		pr->subResources.append(this);
+		pr->sub.append(this);
 
 		// Inherit start values from parent resource.
 		for (int i = 0; i < 7; i++)
@@ -119,7 +119,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 void
 Resource::getSubResourceList(ResourceList& rl)
 {
-	for (Resource* r = subResources.first(); r != 0; r = subResources.next())
+	for (Resource* r = subFirst(); r != 0; r = subNext())
 	{
 		rl.append(r);
 		r->getSubResourceList(rl);
@@ -129,13 +129,13 @@ Resource::getSubResourceList(ResourceList& rl)
 Resource*
 Resource::subResourcesFirst()
 {
-	if (subResources.isEmpty())
+	if (sub.isEmpty())
 	{
 		currentSR = 0;
 		return this;
 	}
 
-	currentSR = subResources.first();
+	currentSR = subFirst();
 	return currentSR->subResourcesFirst();
 }
 
@@ -147,7 +147,7 @@ Resource::subResourcesNext()
 	Resource* tmp = currentSR->subResourcesNext();
 	if (tmp == 0)
 	{
-		if ((currentSR = subResources.next()) == 0)
+		if ((currentSR = subNext()) == 0)
 			return 0;
 		return currentSR->subResourcesFirst();
 	}
@@ -222,8 +222,7 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 	time_t bookedTime = 0;
 
 	double subLoad = 0.0;
-	for (Resource* r = subResources.first(); r != 0;
-		 r = subResources.next())
+	for (Resource* r = subFirst(); r != 0; r = subNext())
 		subLoad += r->getPlanLoad(period, task);
 
 	for (Booking* b = planJobs.first();
@@ -245,8 +244,7 @@ Resource::getActualLoad(const Interval& period, Task* task)
 	time_t bookedTime = 0;
 
 	double subLoad = 0.0;
-	for (Resource* r = subResources.first(); r != 0;
-		 r = subResources.next())
+	for (Resource* r = subFirst(); r != 0; r = subNext())
 		subLoad += r->getActualLoad(period, task);
 
 	for (Booking* b = actualJobs.first();
@@ -338,62 +336,18 @@ ResourceList::ResourceList()
 	sorting = Pointer;
 }
 
-void
-ResourceList::createIndex()
-{
-	SortCriteria savedSorting = sorting;
-	sorting = ResourceTree;
-	sort();
-	int i = 1;
-	for (Resource* r = first(); r != 0; r = next(), ++i)
-		r->setIndex(i);
-	sorting = savedSorting;
-	sort();
-}
-
 int
 ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
-	Resource* r1 = static_cast<Resource*>(i1);
-	Resource* r2 = static_cast<Resource*>(i2);
-
-	switch (sorting)
-	{
-	case Pointer:
-		return r1->getId().compare(r2->getId());
-	case ResourceTree:
-	{
-		QString key1;
-		r1->getFullName(key1);
-		QString key2;
-		r2->getFullName(key2);
-		if (key1 == key2)
-			return 0;
-		else if (key1 < key2)
-			return -1;
-		return 1;
-	}
-	default:
-		qFatal("Unknown sorting criteria!\n");
-		return 0;
-	}
+	return CoreAttributesList::compareItems(i1, i2);
 }
 
 Resource*
 ResourceList::getResource(const QString& id)
 {
-	Resource key(0, id, "", 0);
-	return at(find(&key));
-}
-
-void
-Resource::printText()
-{
-}
-
-void
-ResourceList::printText()
-{
 	for (Resource* r = first(); r != 0; r = next())
-		r->printText();
+		if (r->getId() == id)
+			return r;
+
+	return 0;
 }

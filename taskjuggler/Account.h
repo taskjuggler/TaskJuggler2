@@ -17,6 +17,8 @@
 #include <qlist.h>
 #include <time.h>
 
+#include "CoreAttributes.h"
+
 class Task;
 class TransactionList;
 
@@ -51,11 +53,11 @@ protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
-class Account
+class Account : public CoreAttributes
 {
 public:
-	Account(const QString& i, const QString& n)
-		: id(i), name(n), openingBalance(0.0)
+	Account(Project* p, const QString& i, const QString& n, Account* pr)
+		: CoreAttributes(p, i, n, pr), openingBalance(0.0)
 	{
 		kotrusId = "";
 	}
@@ -87,7 +89,7 @@ private:
 	QList<Transaction> transactions;
 } ;
 
-class AccountList : public QList<Account>
+class AccountList : public CoreAttributesList
 {
 public:
 	AccountList() { }
@@ -99,8 +101,8 @@ public:
 	}
 	Account* getAccount(const QString& id)
 	{
-		Account key(id, "");
-		return at(find(&key));
+		Account key(0, id, "", 0);
+		return (Account*) at(find(&key));
 	}
 	
 protected:

@@ -51,8 +51,7 @@
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		   const QString f, int l)
-	: project(proj), id(id_), name(n),
-	  parent(p), file(f), line(l)
+	: CoreAttributes(proj, id_, n, p), file(f), line(l)
 {
 	allocations.setAutoDelete(TRUE);
 
@@ -61,12 +60,13 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	note = "";
 	account = 0;
 	lastSlot = 0;
+	responsible = 0;
 
 	if (p)
 	{
 		// Inherit flags from parent task.
-		for (QStringList::Iterator it = ((FlagList*) p)->begin();
-			 it != ((FlagList*) p)->end(); ++it)
+		for (QStringList::Iterator it = p->flags.begin();
+			 it != p->flags.end(); ++it)
 			addFlag(*it);
 
 		// Set attributes that are inherited from parent task.
@@ -75,6 +75,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		maxStart = p->maxStart;
 		minEnd = p->minEnd;
 		maxEnd = p->maxEnd;
+		responsible = p->responsible;
 	}
 	else
 	{
@@ -110,7 +111,7 @@ Task::schedule(time_t date, time_t slotDuration)
 	/* Check whether this task is a container tasks (task with sub-tasks).
 	 * Container tasks are scheduled when all sub tasks have been
 	 * scheduled. */
-	if (!subTasks.isEmpty())
+	if (!sub.isEmpty())
 		return scheduleContainer();
 
 	if (scheduling == Task::ASAP)
@@ -268,7 +269,7 @@ Task::scheduleContainer()
 	time_t nend = 0;
 
 	// Check that this is really a container task
-	if ((t = subTasks.first()))
+	if ((t = subFirst()))
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
@@ -280,7 +281,7 @@ Task::scheduleContainer()
 	else
 		return TRUE;
 
-	for (t = subTasks.next() ; t != 0; t = subTasks.next())
+	for (t = subNext() ; t != 0; t = subNext())
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
@@ -380,7 +381,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 bool
 Task::isScheduled()
 {
-	return ((start != 0 && end != 0) || !subTasks.isEmpty());
+	return ((start != 0 && end != 0) || !sub.isEmpty());
 }
 
 bool
@@ -456,9 +457,9 @@ Task::getPlanLoad(const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
-	if (subTasks.first())
+	if (subFirst())
 	{
-		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+		for (Task* t = subFirst(); t != 0; t = subNext())
 			load += t->getPlanLoad(period, resource);
 	}
 
@@ -487,9 +488,9 @@ Task::getActualLoad(const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
-	if (subTasks.first())
+	if (subFirst())
 	{
-		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+		for (Task* t = subFirst(); t != 0; t = subNext())
 			load += t->getActualLoad(period, resource);
 	}
 	
@@ -508,9 +509,9 @@ Task::getPlanCosts(const Interval& period, Resource* resource)
 {
 	double costs = 0.0;
 
-	if (subTasks.first())
+	if (subFirst())
 	{
-		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+		for (Task* t = subFirst(); t != 0; t = subNext())
 			costs += t->getPlanCosts(period, resource);
 	}
 
@@ -529,9 +530,9 @@ Task::getActualCosts(const Interval& period, Resource* resource)
 {
 	double costs = 0.0;
 
-	if (subTasks.first())
+	if (subFirst())
 	{
-		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+		for (Task* t = subFirst(); t != 0; t = subNext())
 			costs += t->getActualCosts(period, resource);
 	}
 
@@ -619,7 +620,7 @@ Task::resolveId(QString relId)
 			fatalError(QString("Illegal relative ID '") + relId + "'");
 			return relId;
 		}
-		t = t->parent;
+		t = t->getParent();
 	}
 	if (t)
 		return t->id + "." + relId.right(relId.length() - i);
@@ -630,7 +631,7 @@ Task::resolveId(QString relId)
 bool
 Task::scheduleOK()
 {
-	if (!subTasks.isEmpty())
+	if (!sub.isEmpty())
 		return TRUE;
 
 	if (start == 0)
@@ -688,7 +689,7 @@ Task::isActualActive(const Interval& period) const
 void
 Task::getSubTaskList(TaskList& tl)
 {
-	for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+	for (Task* t = subFirst(); t != 0; t = subNext())
 	{
 		tl.append(t);
 		t->getSubTaskList(tl);
@@ -701,14 +702,14 @@ Task::treeSortKey(QString& key)
 	if (!parent)
 		return;
 	int i = 1;
-	for (Task* t = parent->subTasks.first(); t != 0;
-		 t = parent->subTasks.next(), i++)
+	for (Task* t = getParent()->subFirst(); t != 0;
+		 t = getParent()->subNext(), i++)
 		if (t == this)
 		{
 			key = QString().sprintf("%04d", i) + key;
 			break;
 		}
-	parent->treeSortKey(key);
+	getParent()->treeSortKey(key);
 }
 
 void
@@ -768,7 +769,7 @@ Task::finishActual()
 	actualBookedResources = bookedResources;
 }
 
-QDomElement Task::xmlElement( QDomDocument& doc ) const
+QDomElement Task::xmlElement( QDomDocument& doc )
 {
    QDomElement elem = doc.createElement( "Task" );
    QDomText t;
@@ -787,8 +788,7 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
    /* Now start the subtasks */
    int cnt = 0;
    QDomElement subtElem = doc.createElement( "SubTasks" );
-   TaskList tl ( subTasks );
-   for (Task* t = tl.first(); t != 0; t = tl.next())
+   for (Task* t = subFirst(); t != 0; t = subNext())
    {
       if( t != this )
       {
@@ -884,28 +884,6 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
    return( elem );
 }
 
-TaskList::TaskList()
-{
-	sorting = Pointer;
-}
-
-TaskList::~TaskList()
-{
-}
-
-void
-TaskList::createIndex()
-{
-	SortCriteria savedSorting = sorting;
-	sorting = TaskTree;
-	sort();
-	int i = 1;
-	for (Task* t = first(); t != 0; t = next(), ++i)
-		t->setIndex(i);
-	sorting = savedSorting;
-	sort();
-}
-
 int
 TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
@@ -914,9 +892,7 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 
 	switch (sorting)
 	{
-	case Pointer:
-		return t1 == t2 ? 0 : t1 < t2 ? -1 : 1;
-	case TaskTree:
+	case TreeMode:
 	{
 		QString key1;
 		t1->treeSortKey(key1);
@@ -957,12 +933,23 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 			return 0; // TODO: Use duration as next criteria
 		else
 			return (t2->priority - t1->priority);
-	case IndexUp:
-		return t2->index - t1->index;
-	case IndexDown:
-		return t1->index - t2->index;
+	case ResponsibleUp:
+	{
+		QString fn1;
+		t1->responsible->getFullName(fn1);
+		QString fn2;
+		t2->responsible->getFullName(fn2);
+		return - fn1.compare(fn2);
+	}
+	case ResponsibleDown:
+	{
+		QString fn1;
+		t1->responsible->getFullName(fn1);
+		QString fn2;
+		t2->responsible->getFullName(fn2);
+		return fn1.compare(fn2);
+	}
 	default:
-		qFatal("Unknown sorting criteria!\n");
-		return 0;
+		return CoreAttributesList::compareItems(i1, i2);
 	}		
 }

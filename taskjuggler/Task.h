@@ -22,7 +22,7 @@
 
 #include "ResourceList.h"
 #include "Utility.h"
-#include "FlagList.h"
+#include "CoreAttributes.h"
 
 class Project;
 class Resource;
@@ -89,30 +89,24 @@ private:
 	QList<Resource> alternatives;
 } ;
 
-class TaskList : public QPtrList<Task>
+class TaskList : public virtual CoreAttributesList
 {
 public:
-	TaskList();
-	virtual ~TaskList();
+	TaskList() { }
+	virtual ~TaskList() { }
 
-	enum SortCriteria { Pointer, TaskTree, StartUp, StartDown, EndUp, EndDown,
-						PrioUp, PrioDown, IndexUp, IndexDown };
-
-	void setSorting(SortCriteria s) { sorting = s; }
-	void createIndex();
+	Task* first() { return (Task*) CoreAttributesList::first(); }
+	Task* next() { return (Task*) CoreAttributesList::next(); }
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-
-private:
-	SortCriteria sorting;
 } ;
 
 typedef QPtrListIterator<TaskList> TaskListIterator;
 
 
 
-class Task : public FlagList
+class Task : public CoreAttributes
 {
 	friend int TaskList::compareItems(QCollection::Item i1,
 									  QCollection::Item i2);
@@ -124,13 +118,7 @@ public:
 
 	enum SchedulingInfo { ASAP, ALAP };
 
-	const QString& getId() const { return id; }
-
-	void setIndex(uint idx) { index = idx; }
-	uint getIndex() const { return index; }
-
-	void setName(const QString& n) { name = n; }
-	const QString& getName() const { return name; }
+	Task* getParent() { return (Task*) parent; }
 
 	void setNote(const QString& d) { note = d; }
 	const QString& getNote() const { return note; }
@@ -155,6 +143,9 @@ public:
 
 	void setComplete(int c) { complete = c; }
 	double getComplete() const { return complete; }
+
+	void setResponsible(Resource* r) { responsible = r; }
+	Resource* getResponsible() const { return responsible; }
 
 	void addDependency(const QString& id) { dependsIds.append(id); }
 	void addPreceeds(const QString& id) { preceedsIds.append(id); }
@@ -260,10 +251,7 @@ public:
 		return actualBookedResources;
 	}
 
-	Task* getParent() const { return parent; }
-	void addSubTask(Task* t) { subTasks.append(t); }
-	TaskList getSubTaskList()  const { return subTasks; }
-	bool isContainer() const { return !subTasks.isEmpty(); }
+	bool isContainer() const { return !sub.isEmpty(); }
    
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
@@ -295,10 +283,12 @@ public:
 	void prepareActual();
 	void finishActual();
 
-	QDomElement xmlElement( QDomDocument& doc ) const;
+	QDomElement xmlElement( QDomDocument& doc );
 
 private:
 	bool scheduleContainer();
+	Task* subFirst() { return (Task*) sub.first(); }
+	Task* subNext() { return (Task*) sub.next(); }
 	bool bookResource(Resource* r, time_t day, time_t duration);
 	bool bookResources(time_t day, time_t duration);
 	void addBookedResource(Resource* r)
@@ -311,27 +301,9 @@ private:
 	time_t latestEnd();
 	void fatalError(const QString& msg) const;
 
-	/// A pointer to access information that are global to the project.
-	Project* project;
-
-	/// The task Id. Must be unique in a project.
-	QString id;
-
-	/// A unique integer number.
-	uint index;
-
-	/// The task name. A short description of the task.
-	QString name;
-
 	/// A longer description of the task.
 	QString note;
 	
-	/// Pointer to parent task. If there is no parent the pointer is 0.
-	Task* parent;
-
-	/// List of sub tasks. 
-	TaskList subTasks;
-
 	/**
 	 * List of tasks Ids that need to be completed before this task
 	 * can start. */
@@ -390,6 +362,9 @@ private:
 
 	/// Percentage of completion of the task
 	int complete;
+
+	/// ID of responsible resource.
+	Resource* responsible;
 
 	/// List of resource allocations requested by the task
 	QPtrList<Allocation> allocations;

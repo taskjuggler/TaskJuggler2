@@ -449,7 +449,7 @@ ProjectFile::parse()
 			}
 			if (token == "account")
 			{
-				if (!readAccount())
+				if (!readAccount(0))
 					return FALSE;
 				break;
 			}
@@ -486,7 +486,7 @@ ProjectFile::parse()
 				proj->setNow(date2time(token));
 				break;
 			}
-			else if (token == "minEffort")
+			else if (token == "mineffort")
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -496,7 +496,7 @@ ProjectFile::parse()
 				proj->setMinEffort(token.toDouble());
 				break;
 			}
-			else if (token == "maxEffort")
+			else if (token == "maxeffort")
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -516,7 +516,7 @@ ProjectFile::parse()
 				proj->setRate(token.toDouble());
 				break;
 			}
-			else if (token == "timingResolution")
+			else if (token == "timingresolution")
 			{
 				ulong resolution;
 				if (!readTimeValue(resolution))
@@ -641,7 +641,7 @@ ProjectFile::parse()
 				proj->setEnd(end);
 				break;
 			}
-			else if (token == "xmlTaskReport" )
+			else if (token == "xmltaskreport" )
 			{
 			   if( !readXMLTaskReport())
 			      return FALSE;
@@ -654,7 +654,7 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
-			else if( token == "kotrusMode" )
+			else if( token == "kotrusmode" )
 			{
 			   if( kotrus )
 			   {
@@ -664,7 +664,7 @@ ProjectFile::parse()
 			      }
 			      else
 			      {
-				 if( token == "DB" || token == "XML" || token == "NoKotrus" )
+				 if( token == "db" || token == "xml" || token == "nokotrus" )
 				    kotrus->setKotrusMode( token );
 				 else
 				 {
@@ -737,7 +737,7 @@ ProjectFile::readTask(Task* parent)
 
 	proj->addTask(task);
 	if (parent)
-		parent->addSubTask(task);
+		parent->addSub(task);
 
 	for (bool done = false ; !done; )
 	{
@@ -765,12 +765,12 @@ ProjectFile::readTask(Task* parent)
 				}
 			}
 			else if READ_DATE("start", setPlanStart)
-			else if READ_DATE("minStart", setMinStart)
-			else if READ_DATE("maxStart", setMaxStart)
-			else if READ_DATE("minEnd", setMinEnd)
-			else if READ_DATE("maxEnd", setMaxEnd)
-			else if READ_DATE("actualStart", setActualStart)
-			else if READ_DATE("actualEnd", setActualEnd)
+			else if READ_DATE("minstart", setMinStart)
+			else if READ_DATE("maxstart", setMaxStart)
+			else if READ_DATE("minend", setMinEnd)
+			else if READ_DATE("maxend", setMaxEnd)
+			else if READ_DATE("actualstart", setActualStart)
+			else if READ_DATE("actualsnd", setActualEnd)
 			else if (token == "length" && !hasSubTasks)
 			{
 				double d;
@@ -810,6 +810,17 @@ ProjectFile::readTask(Task* parent)
 				}
 				cantBeParent = TRUE;
 				task->setComplete(complete);
+			}
+			else if (token == "responsible")
+			{
+				Resource* r;
+				if (nextToken(token) != ID ||
+					(r = proj->getResource(token)) == 0)
+				{
+					fatalError("Resource ID expected");
+					return FALSE;
+				}
+				task->setResponsible(r);
 			}
 			else if (token == "allocate" && !hasSubTasks)
 			{
@@ -862,9 +873,9 @@ ProjectFile::readTask(Task* parent)
 			else if (token == "scheduling")
 			{
 				nextToken(token);
-				if (token == "ASAP")
+				if (token == "asap")
 					task->setScheduling(Task::ASAP);
-				else if (token == "ALAP")
+				else if (token == "alap")
 					task->setScheduling(Task::ALAP);
 				else
 				{
@@ -1018,7 +1029,7 @@ ProjectFile::readResource(Resource* parent)
 				if (!readResource(r))
 					return FALSE;
 			}
-			else if (token == "minEffort")
+			else if (token == "mineffort")
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1027,7 +1038,7 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setMinEffort(token.toDouble());
 			}
-			else if (token == "maxEffort")
+			else if (token == "maxeffort")
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1054,7 +1065,7 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setRate(token.toDouble());
 			}
-			else if (token == "kotrusId")
+			else if (token == "kotrusid")
 			{
 				if (nextToken(token) != STRING)
 				{
@@ -1070,7 +1081,7 @@ ProjectFile::readResource(Resource* parent)
 					return FALSE;
 				r->addVacation(new Interval(from, to));
 			}
-			else if (token == "workingHours")
+			else if (token == "workinghours")
 			{
 				int dow;
 				QPtrList<Interval>* l = new QPtrList<Interval>();
@@ -1113,7 +1124,7 @@ ProjectFile::readResource(Resource* parent)
 }
 
 bool
-ProjectFile::readAccount()
+ProjectFile::readAccount(Account* parent)
 {
 	// Syntax: 'account id "name" { ... }
 	QString id;
@@ -1129,11 +1140,16 @@ ProjectFile::readAccount()
 		return FALSE;
 	}
 
-	Account* a = new Account(id, name);
+	Account* a = new Account(proj, id, name, parent);
+	if (parent)
+		parent->addSub(a);
+
 	TokenType tt;
 	QString token;
 	if ((tt = nextToken(token)) == LCBRACE)
 	{
+		bool hasSubAccounts = FALSE;
+		bool cantBeParent = FALSE;
 		// read optional attributes
 		while ((tt = nextToken(token)) != RCBRACE)
 		{
@@ -1142,7 +1158,13 @@ ProjectFile::readAccount()
 				fatalError(QString("Unknown attribute '") + token + "'");
 				return FALSE;
 			}
-			if (token == "balance")
+			if (token == "account" && !cantBeParent)
+			{
+				if (!readAccount(a))
+					return FALSE;
+				hasSubAccounts = TRUE;
+			}
+			else if (token == "balance" && !hasSubAccounts)
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1150,8 +1172,9 @@ ProjectFile::readAccount()
 					return FALSE;
 				}
 				a->setOpeningBalance(token.toDouble());
+				cantBeParent = TRUE;
 			}
-			else if (token == "kotrusId")
+			else if (token == "kotrusid" && !hasSubAccounts)
 			{
 				if (nextToken(token) != STRING)
 				{
@@ -1159,6 +1182,12 @@ ProjectFile::readAccount()
 					return FALSE;
 				}
 				a->setKotrusId(token);
+				cantBeParent = TRUE;
+			}
+			else
+			{
+				fatalError("Illegal attribute");
+				return FALSE;
 			}
 		}
 	}
@@ -1493,6 +1522,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpTask(et);
 		}
+		else if (token == "sorttasks")
+		{
+			if (!readSorting(report, TRUE))
+				return FALSE;
+		}
 		else if (token == "hideresource")
 		{
 			Operation* op;
@@ -1509,9 +1543,9 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpResource(et);
 		}
-		else if (token == "sorttasks")
+		else if (token == "sortresources")
 		{
-			if (!readTaskSorting(report))
+			if (!readSorting(report, FALSE))
 				return FALSE;
 		}
 		else
@@ -1592,30 +1626,52 @@ ProjectFile::readLogicalExpression()
 }
 
 bool
-ProjectFile::readTaskSorting(Report* report)
+ProjectFile::readSorting(Report* report, bool task)
 {
 	QString token;
 
 	nextToken(token);
-	if (token == "tasktree")
-		report->setTaskSorting(TaskList::TaskTree);
+	CoreAttributesList::SortCriteria sorting;
+	if (token == "tree")
+		sorting = CoreAttributesList::TreeMode;
+	else if (token == "indexup")
+		sorting = CoreAttributesList::IndexUp;
+	else if (token == "indexdown")
+		sorting = CoreAttributesList::IndexDown;
+	else if (token == "fullnameup")
+		sorting = CoreAttributesList::FullNameUp;
+	else if (token == "fullnamedown")
+		sorting = CoreAttributesList::FullNameDown;
+	else if (token == "nameup")
+		sorting = CoreAttributesList::NameUp;
+	else if (token == "namedown")
+		sorting = CoreAttributesList::NameDown;
 	else if (token == "startup")
-		report->setTaskSorting(TaskList::StartUp);
+		sorting = CoreAttributesList::StartUp;
 	else if (token == "startdown")
-		report->setTaskSorting(TaskList::StartDown);
+		sorting = CoreAttributesList::StartDown;
 	else if (token == "endup")
-		report->setTaskSorting(TaskList::EndUp);
+		sorting = CoreAttributesList::EndUp;
 	else if (token == "enddown")
-		report->setTaskSorting(TaskList::EndDown);
+		sorting = CoreAttributesList::EndDown;
 	else if (token == "priorityup")
-		report->setTaskSorting(TaskList::PrioUp);
+		sorting = CoreAttributesList::PrioUp;
 	else if (token == "prioritydown")
-		report->setTaskSorting(TaskList::PrioDown);
+		sorting = CoreAttributesList::PrioDown;
+	else if (token == "responsibleup")
+		sorting = CoreAttributesList::ResponsibleUp;
+	else if (token == "responsibledown")
+		sorting = CoreAttributesList::ResponsibleDown;
 	else
 	{
 		fatalError("Sorting criteria expected");
 		return FALSE;
 	}
+
+	if (task)
+		report->setTaskSorting(sorting);
+	else
+		report->setResourceSorting(sorting);
 
 	return TRUE;
 }

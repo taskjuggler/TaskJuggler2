@@ -20,7 +20,7 @@
 
 #include "Interval.h"
 #include "VacationList.h"
-#include "FlagList.h"
+#include "CoreAttributes.h"
 
 class Project;
 class Task;
@@ -86,52 +86,30 @@ typedef QPtrListIterator<Booking> BookingListIterator;
 
 class Resource;
 
-class ResourceList : public QPtrList<Resource>
+class ResourceList : public CoreAttributesList
 {
 public:
 	ResourceList();
 	~ResourceList() { }
 
-	enum SortCriteria { Pointer, Index, ResourceTree };
+	Resource* first() { return (Resource*) CoreAttributesList::first(); }
+	Resource* next() { return (Resource*) CoreAttributesList::next(); }
 
 	Resource* getResource(const QString& id);
 
-	void setSorting(SortCriteria sc) { sorting = sc; }
-
-	void createIndex();
-
-	void printText();
-
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-
-private:
-	SortCriteria sorting;
 } ;
 
-class Resource : public FlagList
+class Resource : public CoreAttributes
 {
 public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource() { }
 
-	const QString& getId() const { return id; }
+	Resource* getParent() const { return (Resource*) parent; }
 
-	void setIndex(uint idx) { index = idx; }
-	uint getIndex() const { return index; }
-
-	const QString& getName() const { return name; }
-	void getFullName(QString& fullName)
-	{
-		fullName = "";
-		for (Resource* r = this; r != 0; r = r->parent)
-			fullName = r->name + "." + fullName;
-		fullName.remove(fullName.length() - 1, 1);
-	}
-
-	Resource* getParent() const { return parent; }
-
-	bool isGroup() const { return !subResources.isEmpty(); }
+	bool isGroup() const { return !sub.isEmpty(); }
 	void getSubResourceList(ResourceList& rl);
 
 	Resource* subResourcesFirst();
@@ -174,8 +152,6 @@ public:
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
-	void printText();
-
 	bool dbLoadBookings(const QString& kotrusID, const QString& skipProjectID);
 
         QDomElement xmlIDElement( QDomDocument& doc ) const
@@ -199,27 +175,8 @@ public:
 	void finishActual();
 
 private:
-	/// The ID of the resource. Must be unique in the project.
-	Project* project;
-
-	/// The ID of the resource. Must be unique in the project.
-	QString id;
-
-	/// A unique integer ID.
-	uint index;
-
-	/// The resource name. E. g. real name or room number.
-	QString name;
-
-	/**
-	 * A resource can have sub-resources. This can be used to model teams.
-	 * The resources that form the team can be used individually as well.
-	 * This cannot be done if teams are modelled by setting an increased
-	 * efficiency. */
-	Resource* parent;
-
-	/// List of resources that form this resource.
-	ResourceList subResources;
+	Resource* subFirst() { return (Resource*) sub.first(); }
+	Resource* subNext() { return (Resource*) sub.next(); }
 
 	/// Pointer used by subResourceFirst() and subResourceNext().
 	Resource* currentSR;

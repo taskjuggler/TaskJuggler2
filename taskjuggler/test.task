@@ -7,7 +7,7 @@ copyright "(c) 2001 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
 rate 0.479
 
-kotrusMode "NoKotrus"
+kotrusmode "nokotrus"
 
 flags type1, type2, type3
 flags deadline, media, beta, preview, team
@@ -19,6 +19,7 @@ htmltaskreport "test1.html" {
   showactual
   hideresource 1
   hidetask 0
+  sorttasks nameup
 #  rollupresource team
 #  hidetask media | deadline | type1
 #  rolluptask beta | preview
@@ -34,7 +35,7 @@ htmlresourcereport "test-res.html" {
   columns no, name, weekly
   start 2001-09-01
   end 2002-04-01
-  hidetask 1
+  hidetask 0
   hideresource 0
 #  showactual
 }
@@ -107,16 +108,20 @@ task beta${1} "${version} beta${1}" {
 
 vacation "Xmas" 2001-12-21 - 2002-01-05
 
-account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
+account acc1 "Work" {
+  account sub "Sub" {
+    kotrusid "SuSE Linux" balance 1000.0
+  }
+}
 
-minEffort 0.6
+mineffort 0.6
 resource ro "Ruediger Oertel" {
-  kotrusId "ro@suse.de"
+  kotrusid "ro@suse.de"
   vacation 2001-12-18
   vacation 2001-12-10 - 2001-12-14
 }
 resource kukuk "Thorsten Kukuk" {
-#  workingHours MON 08:00-12:00, 13:00-16:00
+#  workinghours MON 08:00-12:00, 13:00-16:00
 }
 
 resource overhead "Administration" {
@@ -137,18 +142,20 @@ resource dist "Dist Team" {
   flags team
 }
 resource yast "YaST2 Team" { flags team efficiency 12.0 }
+resource kkaempf "Klaus Kaempf"
 
 task sl80 "SuSE Linux 8.0" {
-
+  responsible cs
 task sl80start "Start of 8.0 development" {
   start 2001-09-28
-  actualStart 2001-10-03
+  actualstart 2001-10-03
 }
 
 task yast "YaST2 development"{
   length 55d
   allocate yast
   depends !sl80start
+  responsible kkaempf
 }
 
 task pack "SL 8.0 package updates" {
@@ -171,7 +178,7 @@ task alap "ALAP Task" {
   preceeds !pre1
   length 20d
   allocate cs
-  scheduling ASAP
+  scheduling alap
 }
 
 task asap "ASAP after ALAP" {
