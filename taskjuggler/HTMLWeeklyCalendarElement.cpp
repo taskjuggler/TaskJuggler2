@@ -23,6 +23,7 @@
 #include "Utility.h"
 #include "Interval.h"
 #include "TableColumnInfo.h"
+#include "TableLineInfo.h"
 
 HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r, 
                                                      const QString& df,
@@ -131,7 +132,11 @@ HTMLWeeklyCalendarElement::generate()
                                 "style=\"font-size:150%\">" << endl;
                             first = FALSE;
                         }
-                        generateFirstTask(scenarios[0], *tli, 0, no);
+                        TableLineInfo tli1;
+                        tli1.bgCol = colors.getColor("default");
+                        tli1.ca1 = tli1.task = *tli;
+                        tli1.idxNo = no;
+                        generateLine(&tli1, 2);
                     }
                 }
                 if (!first)
@@ -177,7 +182,11 @@ HTMLWeeklyCalendarElement::generate()
                                 "style=\"font-size:150%\">" << endl;
                             first = FALSE;
                         }
-                        generateFirstResource(scenarios[0], *rli, 0, no);
+                        TableLineInfo tli2;
+                        tli2.bgCol = colors.getColor("default");
+                        tli2.ca1 = tli2.resource = *rli;
+                        tli2.idxNo = no;
+                        generateLine(&tli2, 4);
                     }
                 }
                 if (!first)

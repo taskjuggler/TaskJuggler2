@@ -198,6 +198,8 @@ htmltaskreport "Tasks-Overview.html" {
 	# The report should be a table that contains several columns. The
 	# task and their information form the rows of the table.
   columns no, name, start, end, weekly, effort
+	# Don't show load values.
+	barlabels empty
 	# Set a title for the report
 	headline "Accounting Software Project"
 	# And a short description what this report is about.
@@ -212,6 +214,8 @@ htmltaskreport "Tasks-Details.html" {
 	${navbar}
 	# Now we use a daily calendar.
   columns no, name, start, end, scenario, daily
+	# Show plan and actual scenario values.
+	scenarios plan, actual
 	headline "Accounting Software Project"
 	caption "This table shows the load of each day for all the tasks.
 	Additionally the resources used for each task are listed. Since the
@@ -219,8 +223,6 @@ htmltaskreport "Tasks-Details.html" {
 	from the original plan."
 	# Don't hide any resources, that is show them all.
   hideresource 0
-	# And show the actual scenario values as well.
-	scenarios plan, actual
 }
 
 # The previous report listed the resources per task. Now we generate a
@@ -240,7 +242,6 @@ htmlresourcereport "Staff-Overview.html" {
 htmlresourcereport "Staff-Details.html" {
 	${navbar}
   columns name, daily, effort
-  scenarios plan, actual	
 	hidetask 0
 	# The teams are virtual resources that we don't want to see. Since
 	# we have assigned a flag to those virtual resource, we can just

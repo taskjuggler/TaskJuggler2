@@ -17,6 +17,7 @@
 #include "Resource.h"
 #include "Utility.h"
 #include "HTMLReportElement.h"
+#include "HTMLTaskReportElement.h"
 #include "TableColumnInfo.h"
 #include "tjlib-internal.h"
 
@@ -37,7 +38,7 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     setHideResource(new ExpressionTree(new Operation(1)));
 
     for (int i = 0; i < tablesCount; ++i)
-        tables[i] = new HTMLReportElement(this, df, dl);
+        tables[i] = new HTMLTaskReportElement(this, df, dl);
 
     /* Create table that contains the tasks that should be finished, but
      * aren't. */
@@ -164,61 +165,13 @@ HTMLStatusReport::generate()
 
     for (int i = 0; i < tablesCount; ++i)
     {
-        generateTable(tables[i]);
+        tables[i]->generate();
         s << "<br>" << endl;
     }
 
     generateFooter();
 
     f.close();
-    return TRUE;
-}
-
-bool
-HTMLStatusReport::generateTable(HTMLReportElement* tab)
-{
-    tab->generateHeader();
-    
-    tab->generateTableHeader();
-
-    s << " <tbody>" << endl;
-
-    TaskList filteredTaskList;
-    tab->filterTaskList(filteredTaskList, 0, tab->getHideTask(), 
-                        tab->getRollUpTask());
-    tab->sortTaskList(filteredTaskList);
-    maxDepthTaskList = filteredTaskList.maxDepth();
-
-    ResourceList filteredResourceList;
-    tab->filterResourceList(filteredResourceList, 0, tab->getHideResource(),
-                            tab->getRollUpResource());
-    maxDepthResourceList = filteredResourceList.maxDepth();
-    
-    int tNo = 1;
-    for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
-    {
-        tab->generateFirstTask(tab->getScenario(0), *tli, 0, tNo);
-        for (uint sc = 1; sc < tab->getScenarioCount(); ++sc)
-            tab->generateNextTask(tab->getScenario(sc), *tli, 0);
-
-        tab->filterResourceList(filteredResourceList, *tli, 
-                                tab->getHideResource(),
-                                tab->getRollUpResource());
-        tab->sortResourceList(filteredResourceList);
-        int rNo = 1;
-        for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
-             ++rli, ++rNo)
-        {
-            tab->generateFirstResource(tab->getScenario(0), *rli, *tli, rNo);
-            for (uint sc = 1; sc < tab->getScenarioCount(); ++sc)
-                tab->generateNextResource(tab->getScenario(sc), *rli, *tli);
-        }
-    }
-    s << " </tbody>" << endl;
-    s << "</table>" << endl;
-
-    tab->generateFooter();
-
     return TRUE;
 }
 

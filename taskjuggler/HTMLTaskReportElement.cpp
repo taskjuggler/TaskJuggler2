@@ -12,11 +12,14 @@
 
 #include "HTMLTaskReportElement.h"
 #include "TableColumnInfo.h"
+#include "TableLineInfo.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "Report.h"
 #include "Project.h"
+#include "Task.h"
 #include "TaskList.h"
+#include "Resource.h"
 #include "ResourceList.h"
 #include "CoreAttributes.h"
 
@@ -67,9 +70,17 @@ HTMLTaskReportElement::generate()
     int tNo = 1;
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
     {
-        generateFirstTask(scenarios[0], *tli, 0, tNo);
-        for (uint sc = 1; sc < scenarios.count(); ++sc)
-            generateNextTask(scenarios[sc], *tli, 0);
+        TableLineInfo tli1;
+        tli1.ca1 = *tli;
+        tli1.task = *tli;
+        for (uint sc = 0; sc < scenarios.count(); ++sc)
+        {
+            tli1.row = sc;
+            tli1.sc = scenarios[sc];
+            tli1.idxNo = tNo;
+            tli1.bgCol = colors.getColor("default").dark(100 + sc * 10);
+            generateLine(&tli1, sc == 0 ? 2 : 3);
+        }
 
         filterResourceList(filteredResourceList, *tli, 
                            getHideResource(), getRollUpResource());
@@ -78,9 +89,18 @@ HTMLTaskReportElement::generate()
         for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
              ++rli, ++rNo)
         {
-            generateFirstResource(scenarios[0], *rli, *tli, rNo);
-            for (uint sc = 1; sc < scenarios.count(); ++sc)
-                generateNextResource(scenarios[sc], *rli, *tli);
+            TableLineInfo tli2;
+            tli2.ca1 = tli2.resource = *rli;
+            tli2.ca2 = tli2.task = *tli;
+            for (uint sc = 0; sc < scenarios.count(); ++sc)
+            {
+                tli2.row = sc;
+                tli2.sc = scenarios[sc];
+                tli2.idxNo = rNo;
+                tli2.bgCol = colors.getColor("default").light(120).
+                    dark(100 + sc * 10);
+                generateLine(&tli2, sc == 0 ? 4 : 5);
+            }
         }
     }
     s() << " </tbody>" << endl;

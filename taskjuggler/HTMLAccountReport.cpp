@@ -35,7 +35,6 @@ HTMLAccountReport::generate()
     if (!open())
         return FALSE;
 
-    qDebug("HTMLAccountReport");
     generateHeader();
     tab->generate();
     generateFooter();

@@ -48,18 +48,21 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellSequenceNo;
     tcf->genResourceLine1 = &ReportElement::genCellSequenceNo;
     tcf->genAccountLine1 = &ReportElement::genCellSequenceNo;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("seqno"), tcf);
 
     tcf = new TableColumnFormat(this, i18n("No."));
     tcf->genTaskLine1 = &ReportElement::genCellNo;
     tcf->genResourceLine1 = &ReportElement::genCellNo;
     tcf->genAccountLine1 = &ReportElement::genCellNo;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("no"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Index"));
     tcf->genTaskLine1 = &ReportElement::genCellIndex;
     tcf->genResourceLine1 = &ReportElement::genCellIndex;
     tcf->genAccountLine1 = &ReportElement::genCellIndex;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("index"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Id"));
@@ -72,6 +75,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellName;
     tcf->genResourceLine1 = &ReportElement::genCellName;
     tcf->genAccountLine1 = &ReportElement::genCellName;
+    tcf->genSummaryLine1 = &ReportElement::genCellName;
     columnFormat.insert(KW("name"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Start"));
@@ -113,16 +117,19 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(this, i18n("Start Buf."));
     tcf->genTaskLine1 = &ReportElement::genCellStartBuffer;
     tcf->genTaskLine2 = &ReportElement::genCellStartBuffer;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("startbuffer"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("End Buf."));
     tcf->genTaskLine1 = &ReportElement::genCellEndBuffer;
     tcf->genTaskLine2 = &ReportElement::genCellEndBuffer;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("endbuffer"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Duration"));
     tcf->genTaskLine1 = &ReportElement::genCellDuration;
     tcf->genTaskLine2 = &ReportElement::genCellDuration;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("duration"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Effort"));
@@ -130,6 +137,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellEffort;
     tcf->genResourceLine1 = &ReportElement::genCellEffort;
     tcf->genResourceLine2 = &ReportElement::genCellEffort;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("effort"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Project ID"));
@@ -139,6 +147,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(this, i18n("Resources"));
     tcf->genTaskLine1 = &ReportElement::genCellResources;
     tcf->genTaskLine2 = &ReportElement::genCellResources;
+    tcf->fontFactor = 80;
     columnFormat.insert(KW("resources"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Responsible"));
@@ -164,10 +173,12 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     
     tcf = new TableColumnFormat(this, i18n("Min. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMinEffort;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("mineffort"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Max. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMaxEffort;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("maxeffort"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Flags"));
@@ -178,11 +189,13 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(this, i18n("Completed"));
     tcf->genTaskLine1 = &ReportElement::genCellCompleted;
     tcf->genTaskLine2 = &ReportElement::genCellCompleted;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("completed"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Status"));
     tcf->genTaskLine1 = &ReportElement::genCellStatus;
     tcf->genTaskLine2 = &ReportElement::genCellStatus;
+    tcf->hAlign = "center";
     columnFormat.insert(KW("status"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Kotrus ID"));
@@ -191,14 +204,17 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     
     tcf = new TableColumnFormat(this, i18n("Note"));
     tcf->genTaskLine1 = &ReportElement::genCellNote;
+    tcf->fontFactor = 80;
     columnFormat.insert(KW("note"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Status Note"));
     tcf->genTaskLine1 = &ReportElement::genCellStatusNote;
+    tcf->fontFactor = 80;
     columnFormat.insert(KW("statusnote"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Priority"));
     tcf->genTaskLine1 = &ReportElement::genCellPriority;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("priority"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Reference"));
@@ -220,6 +236,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(this, i18n("Rate"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genResourceLine1 = &ReportElement::genCellRate;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("rate"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Cost"));
@@ -228,6 +245,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellCost;
     tcf->genResourceLine1 = &ReportElement::genCellCost;
     tcf->genResourceLine2 = &ReportElement::genCellCost;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("cost"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Revenue"));
@@ -236,6 +254,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellRevenue;
     tcf->genResourceLine1 = &ReportElement::genCellRevenue;
     tcf->genResourceLine2 = &ReportElement::genCellRevenue;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("revenue"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Profit"));
@@ -244,6 +263,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellProfit;
     tcf->genResourceLine1 = &ReportElement::genCellProfit;
     tcf->genResourceLine2 = &ReportElement::genCellProfit;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("profit"), tcf);
    
     tcf = new TableColumnFormat(this, i18n("Total"));

@@ -30,5 +30,7 @@ TableColumnFormat::TableColumnFormat(ReportElement* e, const QString& t) :
 
     genSummaryLine1 = &ReportElement::genCellEmpty;
     genSummaryLine2 = 0;
+
+    fontFactor = 100;
 }
 

@@ -45,154 +45,6 @@ HTMLReportElement::HTMLReportElement(Report* r, const QString& df, int dl) :
 }
 
 void
-HTMLReportElement::generateFirstTask(int sc, const Task* t, const Resource* r, 
-                                     uint no)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" 
-        << colors.getColor("default").light(r ? 120 : 100).name() 
-        << "\">" << endl;
-   
-    TableLineInfo tli(t, r, t, r, 0, no, sc);
-
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        if (columnFormat[(*it)->getName()] &&
-            columnFormat[(*it)->getName()]->genTaskLine1)
-        {
-            TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-            (*this.*(columnFormat[(*it)->getName()]->genTaskLine1))
-                (&tci);
-        }
-        else
-            qFatal("generateFirstTask: Unknown Column %s",
-                   ((*it)->getName()).latin1());
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
-HTMLReportElement::generateNextTask(int sc, const Task* t, const Resource* r)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" 
-        << colors.getColor("default").light(r ? 120 : 100).name() 
-        << "\">" << endl;
-    
-    TableLineInfo tli(t, r, t, r, 0, 0, sc);
-
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        if (columnFormat[(*it)->getName()] &&
-            columnFormat[(*it)->getName()]->genTaskLine2)
-        {
-            TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-            (*this.*(columnFormat[(*it)->getName()]->genTaskLine2))
-                (&tci);
-        }
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
-HTMLReportElement::generateFirstResource(int sc, const Resource* r, 
-                                         const Task* t, uint no)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" 
-        << colors.getColor("default").light(t ? 120 : 100).name() 
-        << "\">" << endl;
-
-    TableLineInfo tli(r, t, t, r, 0, no, sc);
-    
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        if (columnFormat[(*it)->getName()] &&
-            columnFormat[(*it)->getName()]->genResourceLine1)
-        {
-            TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-            (*this.*(columnFormat[(*it)->getName()]->genResourceLine1))
-                (&tci);
-        }
-        else
-            qFatal("generateFirstResource: Unknown Column %s",
-                   ((*it)->getName()).latin1());
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
-HTMLReportElement::generateNextResource(int sc, const Resource* r, 
-                                        const Task* t)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" 
-        << colors.getColor("default").light(t ? 120 : 100).name() 
-        << "\">" << endl;
-
-    TableLineInfo tli(r, t, t, r, 0, 0, sc);
-    
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        if (columnFormat[(*it)->getName()] &&
-            columnFormat[(*it)->getName()]->genResourceLine2)
-        {
-            TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-            (*this.*(columnFormat[(*it)->getName()]->genResourceLine2))
-                (&tci);
-        }
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
-HTMLReportElement::generateFirstAccount(int sc, const Account* a, uint no)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" << colors.getColorName("default") 
-        << "\">" << endl;
-
-    TableLineInfo tli(a, 0, 0, 0, a, no, sc);
-
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        if (columnFormat[(*it)->getName()] &&
-            columnFormat[(*it)->getName()]->genAccountLine1)
-        {
-            TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-            (*this.*(columnFormat[(*it)->getName()]->genAccountLine1))
-                (&tci);
-        }
-        else
-            qFatal("generateFirstAccount: Unknown Column %s",
-                   ((*it)->getName()).latin1());
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
-HTMLReportElement::generateNextAccount(int sc, const Account* a)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" << colors.getColorName("default") 
-        << "\">" << endl;
-
-    TableLineInfo tli(a, 0, 0, 0, a, 0, sc);
-    
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        if (columnFormat[(*it)->getName()] &&
-            columnFormat[(*it)->getName()]->genAccountLine2)
-        {
-            TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-            (*this.*(columnFormat[(*it)->getName()]->genAccountLine2))
-                (&tci);
-        }
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
 HTMLReportElement::generateHeader()
 {
     if (!rawHead.isEmpty())
@@ -264,50 +116,58 @@ HTMLReportElement::generateTableHeader()
 }
 
 void
-HTMLReportElement::generateSummaryFirst(int sc, const QString& name, 
-                                        const QString& bgCol)
+HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
 {
     s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" << bgCol << "; "
-        << "font-weight:bold\"" << ">" << endl;
-    
-    TableLineInfo tli(0, 0, 0, 0, 0, 0, sc);
+        << " style=\"background-color:" << tli->bgCol.name() << "; ";
+    if (tli->boldText)    
+        s() << "font-weight:bold; ";
+    if (tli->fontFactor != 100)
+        s() << "font-size:" << QString("%1").arg(tli->fontFactor) << "%; ";
+    s() << "\">" << endl;
     
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
-        TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
-        if ((*it)->getName() == "name")
-            genCell(name, &tci, TRUE); 
-        else if (columnFormat[(*it)->getName()])
-        {
-            if (columnFormat[(*it)->getName()]->genSummaryLine1)
-            {
-                (*this.*(columnFormat[(*it)->getName()]->genSummaryLine1))
-                    (&tci);
-            }
-        }
-    }
-    s() << "  </tr>" << endl;
-}
-
-void
-HTMLReportElement::generateSummaryNext(int sc, const QString& bgCol)
-{
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" << bgCol << "; "
-        << "font-weight:bold\"" << ">" << endl;
-
-    TableLineInfo tli(0, 0, 0, 0, 0, 0, sc);
-    
-    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
-    {
-        TableCellInfo tci(columnFormat[(*it)->getName()], &tli, *it);
+        TableCellInfo tci(columnFormat[(*it)->getName()], tli, *it);
         if (columnFormat[(*it)->getName()])
         {
-            if (columnFormat[(*it)->getName()]->genSummaryLine2)
+            GenCellPtr gcf;
+            switch (funcSel)
             {
-                (*this.*(columnFormat[(*it)->getName()]->genSummaryLine2))
-                    (&tci);
+                case 0:
+                    gcf = columnFormat[(*it)->getName()]->genHeadLine1;
+                    break;
+                case 1:
+                    gcf = columnFormat[(*it)->getName()]->genHeadLine2;
+                    break;
+                case 2:
+                    gcf = columnFormat[(*it)->getName()]->genTaskLine1;
+                    break;
+                case 3:
+                    gcf = columnFormat[(*it)->getName()]->genTaskLine2;
+                    break;
+                case 4:
+                    gcf = columnFormat[(*it)->getName()]->genResourceLine1;
+                    break;
+                case 5:
+                    gcf = columnFormat[(*it)->getName()]->genResourceLine2;
+                    break;
+                case 6:
+                    gcf = columnFormat[(*it)->getName()]->genAccountLine1;
+                    break;
+                case 7:
+                    gcf = columnFormat[(*it)->getName()]->genAccountLine2;
+                    break;
+                case 8:
+                    gcf = columnFormat[(*it)->getName()]->genSummaryLine1;
+                    break;
+                case 9:
+                    gcf = columnFormat[(*it)->getName()]->genSummaryLine2;
+                    break;
+            }
+            if (gcf)
+            {
+                (*this.*(gcf))(&tci);
             }
         }
     }
@@ -317,80 +177,124 @@ HTMLReportElement::generateSummaryNext(int sc, const QString& bgCol)
 void
 HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
 {
+    if (!multi)
+        tci->setFontFactor(90);
+
     s() << "   <td";
-    if (multi && scenarios.count() > 1)
-        s() << " rowspan=\"" << QString("%1").arg(scenarios.count()) << "\"";
-    if (!tci->tcf->hAlign.isEmpty())
+    if (tci->getRows() != 1 || (multi && scenarios.count() > 1))
+        s() << " rowspan=\"" << QString("%1")
+            .arg(tci->getRows() != 1 ?
+                 tci->getRows() : scenarios.count()) << "\"";
+    if (tci->getColumns() != 1)
+        s() << " colspam=\"" << QString("%1").arg(tci->getColumns()) << "\"";
+    if (!tci->tcf->hAlign.isEmpty() || 
+        !tci->getHAlign().isEmpty() ||
+        tci->getLeftPadding() > 0 ||
+        tci->getRightPadding() > 0 ||
+        tci->getBgColor().isValid() ||
+        tci->getFontFactor() != 100 ||
+        tci->getBoldText() ||
+        tci->tcf->fontFactor != 100)
     {
         s() << " style=\"";
-        if (!tci->tcf->hAlign.isEmpty())
+        if (tci->getBgColor().isValid())
+            s() << "background-color:" << tci->getBgColor().name() << "; ";
+        if (!tci->getHAlign().isEmpty())
+            s() << "text-align:" << tci->getHAlign() << "; ";
+        else if (!tci->tcf->hAlign.isEmpty())
             s() << "text-align:" << tci->tcf->hAlign << "; ";
+        if (tci->getLeftPadding() > 0)
+            s() << "padding-left:" <<
+                QString("%1").arg(tci->getLeftPadding()) << "; ";
+        if (tci->getRightPadding() > 0)
+            s() << "padding-right:" <<
+                QString("%1").arg(tci->getRightPadding()) << "; ";
+        if (tci->getBoldText())
+            s() << "font-weight:bold; ";
+        if (tci->getFontFactor() != 100 || tci->tcf->fontFactor != 100)
+            s() << "font-size:" 
+                << QString("%1").arg(tci->getFontFactor() *
+                                     tci->tcf->fontFactor / 100)
+                << "%; ";
         s() << "\"";
     }
     s() << ">" << text << "</td>" << endl;
 }
 
 void
-HTMLReportElement::textOneRow(const QString& text, bool light, 
-                              const QString& align)
+HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
+                                  const Interval& period)
 {
-    s() << "   <td class=\""
-      << (light ? "defaultlight" : "default") << "\"";
-    if (!align.isEmpty())
-        s() << " style=\"text-align:" << align << "; white-space:nowrap\"";
-    s() << ">" << text << "</td>" << endl;
-}
-
-void
-HTMLReportElement::textMultiRows(const QString& text, bool light, 
-                                 const QString& align)
-{
-    s() << "   <td class=\""
-        << (light ? "defaultlight" : "default")
-        << "\" rowspan=\""
-        << QString("%1").arg(scenarios.count()) << "\"";
-    if (!align.isEmpty())
-        s() << " style=\"text-align:" << align << "; white-space:nowrap\"";
-    s() << ">" << text << "</td>" << endl;
-}
-
-void
-HTMLReportElement::reportLoad(double load, const QString& bgCol, bool bold,
-                       bool milestone)
-{
-    if ((load > 0.0 || milestone) && barLabels != BLT_EMPTY)
+    QString text;
+    if (tci->tli->task->isActive(tci->tli->sc, period))
     {
-        s() << "   <td class=\""
-          << bgCol << "\">";
-        if (bold)
-            s() << "<b>";
-        if (milestone)
-            s() << "*";
+        if (tci->tli->task->isContainer())
+        {
+            QString pre, post;
+            if (period.contains(tci->tli->task->getStart(tci->tli->sc)))
+                pre = "v=";
+            if (period.contains(tci->tli->task->getEnd(tci->tli->sc)))
+                post += "=v";
+            if (load > 0.0 && barLabels != BLT_EMPTY)
+                text += scaledLoad(load);
+            else if (pre.isEmpty() && post.isEmpty())
+                text += "==";
+            text = pre + text + post;
+            tci->setBoldText(true);
+        }
         else
-            s() << scaledLoad(load);
-        if (bold)
-            s() << "</b>";
-        s() << "</td>" << endl;
+        {
+            if (tci->tli->task->isMilestone())
+            {
+                text += "&lt;&gt;";
+                tci->setBoldText(true);
+            }
+            else
+            {
+                QString pre, post;
+                if (period.contains(tci->tli->task->
+                                    getStart(tci->tli->sc)))
+                    pre = "[=";
+                if (period.contains(tci->tli->task->
+                                    getEnd(tci->tli->sc)))
+                    post += "=]";
+                if (load > 0.0 && barLabels != BLT_EMPTY)
+                    text += scaledLoad(load);
+                else if (pre.isEmpty() && post.isEmpty())
+                    text += "==";
+                text = pre + text + post;
+            }
+        }
+        tci->setHAlign("center");
     }
     else
-        s() << "   <td class=\""
-          << bgCol << "\">&nbsp;</td>" << endl;
+        text = "&nbsp;";
+    genCell(text, tci, FALSE);
 }
 
+void
+HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
+                                      const Interval&)
+{
+    QString text;
+    if (load > 0.0)
+    {
+        if (barLabels != BLT_EMPTY)
+            text += scaledLoad(load);
+        if (tci->tli->resource->hasSubs())
+            tci->setBoldText(true);
+    }
+    else
+        text = "&nbsp;";
+    genCell(text, tci, FALSE);
+}
 
 void
-HTMLReportElement::reportValue(double value, const QString& bgCol, bool bold)
+HTMLReportElement::reportCurrency(double value, TableCellInfo* tci)
 {
-    s() << "   <td class=\""
-      << bgCol << "\" style=\"text-align:right\">";
-    if (bold)
-        s() << "<b>";
-    s() << QString().sprintf("%.*f", 
-                           report->getProject()->getCurrencyDigits(), value);
-//      scaleTime(value, FALSE);
-    if (bold)
-        s() << "</b>";
-    s() << "</td>" << endl;
+    genCell(QString().sprintf("%.*f", 
+                              report->getProject()->getCurrencyDigits(),
+                              value), tci, FALSE);
 }
 
 void
@@ -421,34 +325,30 @@ HTMLReportElement::generateUrl(const QString& key, const QString& txt)
 }
 
 void
-HTMLReportElement::generateRightIndented(TableLineInfo* tli,
-                                         const QString str)
+HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString str)
 {
-    int topIndent = 0, subIndent = 0;
-    if (strcmp(tli->ca1->getType(), "Task") == 0)
+    int topIndent = 0, subIndent = 0, maxDepth = 0;
+    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
     {
         if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
-            subIndent = tli->ca2 == 0 ? 8 : 5;
+            subIndent = tci->tli->ca2 == 0 ? 8 : 5;
         if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-            topIndent = (tli->ca2 != 0 ? 0 : 5) * maxDepthResourceList;
+            topIndent = (tci->tli->ca2 != 0 ? 0 : 5) * maxDepthResourceList;
+        maxDepth = maxDepthTaskList;
     }
-    else if (strcmp(tli->ca1->getType(), "Resource") == 0)
+    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
     {
         if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-            subIndent = tli->ca2 == 0 ? 8 : 5;
+            subIndent = tci->tli->ca2 == 0 ? 8 : 5;
         if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
-            topIndent = (tli->ca2 != 0 ? 0 : 5) * maxDepthTaskList;
+            topIndent = (tci->tli->ca2 != 0 ? 0 : 5) * maxDepthTaskList;
+        maxDepth = maxDepthResourceList;
     }
-    
-    s() << "   <td class=\"default" << (tli->ca2 == 0 ? "" : "light")
-        << "\" style=\"text-align:right; white-space:nowrap;"
-        << " padding-right:" 
-        << QString("%1").arg(2 + topIndent +
-                             (maxDepthTaskList - 1 - tli->ca1->treeLevel()) * 
-                             subIndent)
-        << "\">"
-        << str
-        << "</td>" << endl;
+
+    tci->setRightPadding(2 + topIndent + 
+                         (maxDepth - 1 - tci->tli->ca1->treeLevel()) * 
+                         subIndent);
+    genCell(str, tci, FALSE);
 }
 
 void
@@ -461,7 +361,8 @@ HTMLReportElement::genHeadDefault(TableCellInfo* tci)
 void
 HTMLReportElement::genHeadCurrency(TableCellInfo* tci)
 {
-    s() << "   <td class=\"headerbig\" rowspan=\"2\">"
+
+    s() << "   <td rowspan=\"2\">"
         << htmlFilter(i18n(tci->tcf->getTitle()));
     if (!report->getProject()->getCurrency().isEmpty())
         s() << " " << htmlFilter(report->getProject()->getCurrency());
@@ -478,7 +379,7 @@ HTMLReportElement::genHeadDaily1(TableCellInfo*)
         int left = daysLeftInMonth(day);
         if (left > daysBetween(day, end))
             left = daysBetween(day, end);
-        s() << "   <td class=\"headerbig\" colspan=\""
+        s() << "   <td colspan=\""
             << QString().sprintf("%d", left) << "\">"; 
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
@@ -502,10 +403,14 @@ HTMLReportElement::genHeadDaily2(TableCellInfo*)
     for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
     {
         int dom = dayOfMonth(day);
-        s() << "   <td class=\"" <<
-            (isSameDay(report->getProject()->getNow(), day) ?
-             "today" : isWeekend(day) ? "weekend" : "headersmall")
-          << "\"><span style=\"font-size:0.8em\">&nbsp;";
+        s() << "   <td style=\"";
+        QColor bgCol = colors.getColor("header");
+        if (isWeekend(day))
+            bgCol = bgCol.dark(130);
+        if (isSameDay(report->getProject()->getNow(), day))
+            bgCol = colors.getColor("today");
+        s() << "background-color:" << bgCol.name() << "; "
+            << "font-size:80%; text-align:center\">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
                               defFileName, defFileLine));
@@ -518,7 +423,7 @@ HTMLReportElement::genHeadDaily2(TableCellInfo*)
         if (dom < 10)
             s() << "&nbsp;";
         s() << generateUrl(KW("dayheader"), QString().sprintf("%d", dom));
-        s() << "</span></td>" << endl;
+        s() << "</td>" << endl;
     }
 }
 
@@ -537,7 +442,7 @@ HTMLReportElement::genHeadWeekly1(TableCellInfo*)
              wi = sameTimeNextWeek(wi))
             left++;
              
-        s() << "   <td class=\"headerbig\" colspan=\""
+        s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\">";
         mt.clear();
         mt.addMacro(new Macro(KW("month"),
@@ -567,10 +472,14 @@ HTMLReportElement::genHeadWeekly2(TableCellInfo*)
          week = sameTimeNextWeek(week))
     {
         int woy = weekOfYear(week, wsm);
-        s() << "   <td class=\"" <<
-            (isSameWeek(report->getProject()->getNow(), week, wsm) ?
-             "today" : "headersmall")
-          << "\"><span style=\"font-size:0.8em\">&nbsp;";
+        s() << "   <td style=\"";
+        QColor bgCol;
+        if (isSameWeek(report->getProject()->getNow(), week, wsm))
+            bgCol = colors.getColor("today");
+        else
+            bgCol = colors.getColor("header");
+        s() << "background-color:" << bgCol.name() << "; "
+            << "font-size:80%; text-align:center\">";
         if (woy < 10)
             s() << "&nbsp;";
         mt.clear();
@@ -584,7 +493,7 @@ HTMLReportElement::genHeadWeekly2(TableCellInfo*)
                               QString().sprintf("%04d", year(woy)),
                               defFileName, defFileLine));
         s() << generateUrl(KW("weekheader"), QString().sprintf("%d", woy));
-        s() << "</span></td>" << endl;
+        s() << "</td>" << endl;
     }
 }
 
@@ -598,7 +507,7 @@ HTMLReportElement::genHeadMonthly1(TableCellInfo*)
         int left = monthLeftInYear(year);
         if (left > monthsBetween(year, end))
             left = monthsBetween(year, end);
-        s() << "   <td class=\"headerbig\" colspan=\""
+        s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
@@ -624,10 +533,16 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo*)
          month = sameTimeNextMonth(month))
     {
         int moy = monthOfYear(month);
-        s() << "   <td class=\"" <<
-            (isSameMonth(report->getProject()->getNow(), month) ?
-             "today" : "headersmall")
-          << "\"><span style=\"font-size:0.8em\">&nbsp;";
+        s() << "   <td style=\"";
+        QColor bgCol;
+        if (isSameMonth(report->getProject()->getNow(), month))
+            bgCol = colors.getColor("today");
+        else
+            bgCol = colors.getColor("header");
+        s() << "background-color:" << bgCol.name() << "; "
+            << "font-size:80%; text-align:center\">";
+        if (month < 10)
+            s() << "&nbsp;";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(moy)),
@@ -639,7 +554,7 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo*)
                               QString().sprintf("%04d", year(moy)),
                               defFileName, defFileLine));
         s() << generateUrl(KW("monthheader"), shortMonthName(moy - 1));
-        s() << "</span></td>" << endl;
+        s() << "</td>" << endl;
     }
 }
 
@@ -653,7 +568,7 @@ HTMLReportElement::genHeadQuarterly1(TableCellInfo*)
         int left = quartersLeftInYear(year);
         if (left > quartersBetween(year, end))
             left = quartersBetween(year, end);
-        s() << "   <td class=\"headerbig\" colspan=\""
+        s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
@@ -688,10 +603,14 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
          quarter = sameTimeNextQuarter(quarter))
     {
         int qoy = quarterOfYear(quarter);
-        s() << "   <td class=\"" <<
-            (isSameQuarter(report->getProject()->getNow(), quarter) ?
-             "today" : "headersmall")
-          << "\"><span style=\"font-size:0.8em\">&nbsp;";
+        s() << "   <td style=\"";
+        QColor bgCol;
+        if (isSameQuarter(report->getProject()->getNow(), quarter))
+            bgCol = colors.getColor("today");
+        else
+            bgCol = colors.getColor("header");
+        s() << "background-color:" << bgCol.name() << "; "
+            << "font-size:80%; text-align:center\">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(qoy)),
@@ -706,7 +625,7 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
                               QString().sprintf("%04d", year(qoy)),
                               defFileName, defFileLine));
         s() << generateUrl(KW("quarterheader"), i18n(qnames[qoy - 1]));
-        s() << "</span></td>" << endl;
+        s() << "</td>" << endl;
     }
 }
 
@@ -717,7 +636,7 @@ HTMLReportElement::genHeadYear(TableCellInfo*)
     for (time_t year = beginOfYear(start); year < end;
          year = sameTimeNextYear(year))
     {
-        s() << "   <td class=\"headerbig\" rowspan=\"2\">";
+        s() << "   <td rowspan=\"2\">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(year)),
@@ -751,7 +670,7 @@ HTMLReportElement::genCellSequenceNo(TableCellInfo* tci)
 void
 HTMLReportElement::genCellNo(TableCellInfo* tci)
 {
-    genCell(tci->tli->ca2 == 0 ? QString().sprintf("%d.", tci->tli->no) :
+    genCell(tci->tli->ca2 == 0 ? QString().sprintf("%d.", tci->tli->idxNo) :
             QString("&nbsp;"), tci, TRUE);
 }
 
@@ -766,8 +685,7 @@ HTMLReportElement::genCellIndex(TableCellInfo* tci)
 void
 HTMLReportElement::genCellId(TableCellInfo* tci)
 {
-    textMultiRows(htmlFilter(tci->tli->ca1->getId()), tci->tli->ca2 != 0, 
-                  "left");
+    genCell(htmlFilter(tci->tli->ca1->getId()), tci, TRUE); 
 }
 
 void
@@ -783,91 +701,84 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
              cp = cp->getParent())
             lPadding++;
 
-    mt.clear();
-    if (tci->tli->task)
-        mt.addMacro(new Macro(KW("taskid"), tci->tli->task->getId(), 
-                              defFileName, defFileLine));
-    if (tci->tli->resource)
-        mt.addMacro(new Macro(KW("resourceid"), tci->tli->resource->getId(),
-                              defFileName, defFileLine));
-    if (tci->tli->account)
-        mt.addMacro(new Macro(KW("accountid"), tci->tli->account->getId(),
-                              defFileName, defFileLine));
-
-    if ((strcmp(tci->tli->ca1->getType(), "Resource") == 0 &&
-         resourceSortCriteria[0] == CoreAttributesList::TreeMode) ||
-        (strcmp(tci->tli->ca1->getType(), "Task") == 0 &&
-         taskSortCriteria[0] == CoreAttributesList::TreeMode) ||
-        (strcmp(tci->tli->ca1->getType(), "Account") == 0 &&
-         accountSortCriteria[0] == CoreAttributesList::TreeMode))
+    QString text;
+    if (tci->tli->specialName.isNull())
     {
-        lPadding += tci->tli->ca1->treeLevel();
-        fontSize = fontSize + 5 * (maxDepthTaskList - 1 - 
-                                   tci->tli->ca1->treeLevel()); 
-        s() << "   <td class=\""
-          << (tci->tli->ca2 == 0 ? "task" : "tasklight") << "\" rowspan=\""
-          << QString("%1").arg(scenarios.count())
-          << "\" style=\"white-space:nowrap;"
-          << " padding-left: " 
-          << QString("%1").arg(2 + lPadding * 15) << ";\">"
-          << "<span style=\"font-size:" 
-          << QString().sprintf("%d", fontSize) << "%\">";
+        mt.clear();
+        if (tci->tli->task)
+            mt.addMacro(new Macro(KW("taskid"), tci->tli->task->getId(), 
+                                  defFileName, defFileLine));
+        if (tci->tli->resource)
+            mt.addMacro(new Macro(KW("resourceid"), tci->tli->resource->getId(),
+                                  defFileName, defFileLine));
+        if (tci->tli->account)
+            mt.addMacro(new Macro(KW("accountid"), tci->tli->account->getId(),
+                                  defFileName, defFileLine));
+
+        if ((strcmp(tci->tli->ca1->getType(), "Resource") == 0 &&
+             resourceSortCriteria[0] == CoreAttributesList::TreeMode) ||
+            (strcmp(tci->tli->ca1->getType(), "Task") == 0 &&
+             taskSortCriteria[0] == CoreAttributesList::TreeMode) ||
+            (strcmp(tci->tli->ca1->getType(), "Account") == 0 &&
+             accountSortCriteria[0] == CoreAttributesList::TreeMode))
+        {
+            lPadding += tci->tli->ca1->treeLevel();
+            tci->setFontFactor(fontSize + 5 * (maxDepthTaskList - 1 - 
+                                               tci->tli->ca1->treeLevel()));
+        }
+        tci->setLeftPadding(2 + lPadding * 15); 
+        if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
+        {
+            if (tci->tli->ca2 == 0)
+                text += "<a name=\"task_" + tci->tli->ca1->getId() + "\"></a>";
+            text += generateUrl(KW("taskname"), tci->tli->ca1->getName());
+        }
+        else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
+        {
+            if (tci->tli->ca2 == 0)
+                text += "<a name=\"resource_" + tci->tli->ca1->getFullId() 
+                    + "\"></a>";
+            text += generateUrl(KW("resourcename"), tci->tli->ca1->getName());
+        }
+        else if (strcmp(tci->tli->ca1->getType(), "Account") == 0)
+        {
+            if (tci->tli->ca2 == 0)
+                text += "<a name=\"account_" + tci->tli->ca1->getId() 
+                    + "\"></a>";
+            text += generateUrl(KW("accountname"), tci->tli->ca1->getName());
+        }
     }
     else
-    {
-        s() << "   <td class=\""
-          << (tci->tli->ca2 == 0 ? "task" : "tasklight") << "\" rowspan=\""
-          << QString("%1").arg(scenarios.count())
-          << "\" style=\"white-space:nowrap;"
-          << " padding-left: " 
-          << QString("%1").arg(2 + lPadding * 15)
-          << ";\"><span>";
-    }
-    if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
-    {
-        if (tci->tli->ca2 == 0)
-            s() << "<a name=\"task_" << tci->tli->ca1->getId() << "\"></a>";
-        s() << generateUrl(KW("taskname"), tci->tli->ca1->getName());
-    }
-    else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
-    {
-        if (tci->tli->ca2 == 0)
-            s() << "<a name=\"resource_" << tci->tli->ca1->getFullId() 
-                << "\"></a>";
-        s() << generateUrl(KW("resourcename"), tci->tli->ca1->getName());
-    }
-    else if (strcmp(tci->tli->ca1->getType(), "Account") == 0)
-    {
-        if (tci->tli->ca2 == 0)
-            s() << "<a name=\"account_" << tci->tli->ca1->getId() << "\"></a>";
-        s() << generateUrl(KW("accountname"), tci->tli->ca1->getName());
-    }
-    s() << "</span></td>" << endl;
+        text = tci->tli->specialName;
+    genCell(text, tci, TRUE);
 }
 
-#define GCSE(a) \
-void \
-HTMLReportElement::genCell##a(TableCellInfo* tci) \
-{ \
-    s() << "   <td class=\"" \
-        << (tci->tli->task->is##a##Ok(tci->tli->sc) ? \
-            (tci->tli->resource == 0 ? "default" : "defaultlight") : \
-            "milestone") \
-        << "\" style=\"text-align:left white-space:nowrap\">" \
-        << time2user(tci->tli->task->get##a(tci->tli->sc), timeFormat) \
-        << "</td>" << endl; \
+void
+HTMLReportElement::genCellStart(TableCellInfo* tci)
+{
+    if (!tci->tli->task->isStartOk(tci->tli->sc))
+        tci->setBgColor(colors.getColor("error"));
+    genCell(time2user(tci->tli->task->getStart(tci->tli->sc), timeFormat),
+            tci, FALSE);
 }
 
-GCSE(Start)
-GCSE(End)
-    
+void
+HTMLReportElement::genCellEnd(TableCellInfo* tci)
+{
+    if (!tci->tli->task->isEndOk(tci->tli->sc))
+        tci->setBgColor(colors.getColor("error"));
+    genCell(time2user(tci->tli->task->getEnd(tci->tli->sc) +
+                      (tci->tli->task->isMilestone() ? 1 : 0), timeFormat),
+            tci, FALSE);
+}
+
 #define GCMMSE(a) \
 void \
 HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
-    textMultiRows(tci->tli->task->get##a() == 0 ? "&nbsp;" : \
-                  time2user(tci->tli->task->get##a(), timeFormat), \
-                  tci->tli->resource != 0, "&nbsp;"); \
+    genCell(tci->tli->task->get##a() == 0 ? "&nbsp;" : \
+            time2user(tci->tli->task->get##a(), timeFormat), \
+            tci, TRUE); \
 }
 
 GCMMSE(MinStart)
@@ -879,9 +790,9 @@ GCMMSE(MaxEnd)
 void \
 HTMLReportElement::genCell##a##Buffer(TableCellInfo* tci) \
 { \
-    textOneRow(QString().sprintf \
-               ("%3.0f", tci->tli->task->get##a##Buffer(tci->tli->sc)), \
-               tci->tli->resource != 0, "right"); \
+    genCell(QString().sprintf \
+            ("%3.0f", tci->tli->task->get##a##Buffer(tci->tli->sc)), \
+            tci, FALSE); \
 }
 
 GCSEBUFFER(Start)
@@ -890,27 +801,22 @@ GCSEBUFFER(End)
 void
 HTMLReportElement::genCellStartBufferEnd(TableCellInfo* tci)
 {
-    textOneRow(time2user(tci->tli->task->getStartBufferEnd
-                         (tci->tli->sc), timeFormat), tci->tli->resource != 0, 
-               "left");
+    genCell(time2user(tci->tli->task->getStartBufferEnd
+                         (tci->tli->sc), timeFormat), tci, FALSE);
 }
 
 void
 HTMLReportElement::genCellEndBufferStart(TableCellInfo* tci)
 {
-    textOneRow(time2user(tci->tli->task->getStartBufferEnd
-                         (tci->tli->sc) + 1, timeFormat), 
-               tci->tli->resource != 0, "left");
+    genCell(time2user(tci->tli->task->getStartBufferEnd
+                      (tci->tli->sc) + 1, timeFormat), tci, FALSE); 
 }
 
 void
 HTMLReportElement::genCellDuration(TableCellInfo* tci)
 {
-    s() << "   <td class=\""
-        << (tci->tli->resource == 0 ? "default" : "defaultlight")
-        << "\" style=\"text-align:right white-space:nowrap\">"
-        << scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc))
-        << "</td>" << endl;
+    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc)), tci,
+                       FALSE);
 }
 
 void
@@ -920,72 +826,60 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
     if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
     {
         val = tci->tli->task->getLoad(tci->tli->sc, Interval(start, end),
-                                 tci->tli->resource);
+                                      tci->tli->resource);
     }
     else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
     {
         val = tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end), 
-                                     AllAccounts, tci->tli->task);
+                                          AllAccounts, tci->tli->task);
     }
     
-    generateRightIndented(tci->tli, scaledLoad(val));
+    generateRightIndented(tci, scaledLoad(val));
 }
 
 void
 HTMLReportElement::genCellProjectId(TableCellInfo* tci)
 {
-    textMultiRows(tci->tli->task->getProjectId() + " (" +
-                  report->getProject()->getIdIndex(tci->tli->task->
-                                                   getProjectId()) + ")",
-                  tci->tli->ca2 != 0, "left");
+    genCell(tci->tli->task->getProjectId() + " (" +
+            report->getProject()->getIdIndex(tci->tli->task->
+                                             getProjectId()) + ")", tci,
+            TRUE);
 }
 
 void
 HTMLReportElement::genCellResources(TableCellInfo* tci)
 {
-    s() << "   <td class=\""
-      << (tci->tli->ca2 != 0 ? "defaultlight" : "default")
-      << "\" style=\"text-align:left\">"
-      << "<span style=\"font-size:100%\">";
-    bool first = TRUE;
+    QString text;
     for (ResourceListIterator rli(tci->tli->task->
                                   getBookedResourcesIterator(tci->tli->sc));
         *rli != 0; ++rli)
     {
-        if (!first)
-            s() << ", ";
+        if (!text.isEmpty())
+            text += ", ";
                     
-        s() << htmlFilter((*rli)->getName());
-        first = FALSE;
+        text += htmlFilter((*rli)->getName());
     }
-    s() << "</span></td>" << endl;
+    genCell(text, tci, FALSE);
 }
 
 void
 HTMLReportElement::genCellResponsible(TableCellInfo* tci)
 {
     if (tci->tli->task->getResponsible())
-        textMultiRows(htmlFilter(tci->tli->task->getResponsible()->getName()),
-                      tci->tli->ca2 != 0, "left");
+        genCell(htmlFilter(tci->tli->task->getResponsible()->getName()),
+                tci, TRUE);
     else
-        textMultiRows("&nbsp", tci->tli->ca2 != 0, "left");
+        genCell("&nbsp", tci, TRUE);
 }
 
 #define GCNOTE(a, b) \
 void \
 HTMLReportElement::genCell##a##Note(TableCellInfo* tci) \
 { \
-    s() << "   <td class=\"" \
-        << (tci->tli->ca2 == 0 ? "default" : "defaultlight") \
-        << "\" rowspan=\"" \
-        << QString("%1").arg(scenarios.count()) \
-        << "\" style=\"text-align:left\">" \
-        << "<span style=\"font-size:100%\">"; \
     if (tci->tli->task->get##a##Note(b).isEmpty()) \
-        s() << "&nbsp;"; \
+        genCell("&nbsp;", tci, TRUE); \
     else \
-        s() << htmlFilter(tci->tli->task->get##a##Note(b)); \
-    s() << "</span></td>" << endl; \
+        genCell(htmlFilter(tci->tli->task->get##a##Note(b)), tci, TRUE); \
 }
 
 GCNOTE(, )
@@ -1006,8 +900,8 @@ HTMLReportElement::genCellCost(TableCellInfo* tci)
                                         Cost, tci->tli->task);
     }
     generateRightIndented
-        (tci->tli, QString().sprintf("%.*f", report->getProject()->
-                                     getCurrencyDigits(), val)); 
+        (tci, QString().sprintf("%.*f", report->getProject()->
+                                getCurrencyDigits(), val)); 
 }
 
 void
@@ -1025,8 +919,8 @@ HTMLReportElement::genCellRevenue(TableCellInfo* tci)
                                         Revenue, tci->tli->task);
     }
     generateRightIndented
-        (tci->tli, QString().sprintf("%.*f", report->getProject()->
-                                     getCurrencyDigits(), val)); }
+        (tci, QString().sprintf("%.*f", report->getProject()->
+                                getCurrencyDigits(), val)); }
 
 void
 HTMLReportElement::genCellProfit(TableCellInfo* tci)
@@ -1046,7 +940,7 @@ HTMLReportElement::genCellProfit(TableCellInfo* tci)
             tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                       Cost, tci->tli->task);
     }
-    generateRightIndented(tci->tli, 
+    generateRightIndented(tci, 
                           QString().sprintf("%.*f", report->getProject()->
                                             getCurrencyDigits(), val)); 
 }
@@ -1054,8 +948,8 @@ HTMLReportElement::genCellProfit(TableCellInfo* tci)
 void
 HTMLReportElement::genCellPriority(TableCellInfo* tci)
 {
-    textMultiRows(QString().sprintf("%d", tci->tli->task->getPriority()),
-                  tci->tli->ca2 != 0, "right");
+    genCell(QString().sprintf("%d", tci->tli->task->getPriority()),
+            tci, TRUE);
 }
 
 void
@@ -1072,7 +966,7 @@ HTMLReportElement::genCellFlags(TableCellInfo* tci)
     }
     if (flagStr.isEmpty())
         flagStr = "&nbsp";
-    textMultiRows(flagStr, tci->tli->ca2 != 0, "left");
+    genCell(flagStr, tci, TRUE);
 }
 
 void
@@ -1081,18 +975,17 @@ HTMLReportElement::genCellCompleted(TableCellInfo* tci)
     if (tci->tli->task->getCompletionDegree(tci->tli->sc) ==
         tci->tli->task->getCalcedCompletionDegree(tci->tli->sc))
     {
-        textOneRow(QString("%1%").arg((int) tci->tli->task->
-                                      getCompletionDegree(tci->tli->sc)),
-                   tci->tli->ca2 != 0, "right");
+        genCell(QString("%1%").arg((int) tci->tli->task->
+                                   getCompletionDegree(tci->tli->sc)),
+                tci, FALSE);
     }
     else
     {
-        textOneRow
-            (QString("%1% (%2%)")
-             .arg((int) tci->tli->task->getCompletionDegree(tci->tli->sc))
-             .arg((int) tci->tli->task->
-                  getCalcedCompletionDegree(tci->tli->sc)),
-             tci->tli->ca2 != 0, "right");
+        genCell(QString("%1% (%2%)")
+                .arg((int) tci->tli->task->getCompletionDegree(tci->tli->sc))
+                .arg((int) tci->tli->task->
+                     getCalcedCompletionDegree(tci->tli->sc)),
+                tci, FALSE);
     }
 }
 
@@ -1124,30 +1017,24 @@ HTMLReportElement::genCellStatus(TableCellInfo* tci)
         text = i18n("Unknown status");
         break;
     }
-    textOneRow(text, tci->tli->ca2 != 0, "center");
+    genCell(text, tci, FALSE);
 }
 
 void
 HTMLReportElement::genCellReference(TableCellInfo* tci)
 {
-    s() << "   <td class=\""
-        << (tci->tli->ca2 == 0 ? "default" : "defaultlight")
-        << "\" rowspan=\""
-        << QString("%1").arg(scenarios.count())
-        << "\" style=\"text-align:left\">"
-        << "<span style=\"font-size:100%\">";
     if (tci->tli->task->getReference().isEmpty())
-        s() << "&nbsp;";
+        genCell("&nbsp;", tci, TRUE);
     else
     {
-        s() << "<a href=\"" << tci->tli->task->getReference() << "\">";
+        QString text ="<a href=\"" + tci->tli->task->getReference() + "\">";
         if (tci->tli->task->getReferenceLabel().isEmpty())
-            s() << htmlFilter(tci->tli->task->getReference());
+            text += htmlFilter(tci->tli->task->getReference());
         else
-            s() << htmlFilter(tci->tli->task->getReferenceLabel());
-        s() << "<a>";
+            text += htmlFilter(tci->tli->task->getReferenceLabel());
+        text += "<a>";
+        genCell(text, tci, TRUE);
     }
-    s() << "</span></td>" << endl;
 }
 
 void
@@ -1161,28 +1048,95 @@ HTMLReportElement::genCellScenario(TableCellInfo* tci)
 void \
 HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
-    s() << "   <td class=\"" \
-      << (tci->tli->ca2 != 0 ? "defaultlight" : "default") \
-      << "\" rowspan=\"" \
-      << QString("%1").arg(scenarios.count()) \
-      << "\" style=\"text-align:left\"><span style=\"font-size:100%\">"; \
-    bool first = TRUE; \
+    QString text; \
     for (TaskListIterator it(tci->tli->task->get##b##Iterator()); *it != 0; \
          ++it) \
     { \
-        if (!first) \
-            s() << ", "; \
-        else \
-            first = FALSE; \
-        s() << (*it)->getId(); \
+        if (!text.isEmpty()) \
+            text += ", "; \
+        text += (*it)->getId(); \
     } \
-    if (first) \
-        s() << "&nbsp;"; \
-    s() << "</span</td>" << endl; \
+    if (text.isEmpty()) \
+        text = "&nbsp;"; \
+    genCell(text, tci, TRUE); \
 }
 
 GCDEPFOL(Depends, Previous)
 GCDEPFOL(Follows, Followers)
+
+QColor
+HTMLReportElement::selectTaskBgColor(TableCellInfo* tci, const Interval& period,
+                                 bool daily)
+{
+    QColor bgCol;
+    if (tci->tli->task->isActive(tci->tli->sc, period))
+    { 
+        if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd() - 1))
+        {
+            if (tci->tli->ca2 == 0)
+                bgCol = colors.getColor("completed");
+            else
+                bgCol = colors.getColor("completed").light(130);
+        }
+        else 
+        {
+            if (tci->tli->ca2 == 0 && 
+                !tci->tli->task->isBuffer(tci->tli->sc, period)) 
+            {
+                bgCol = colors.getColor("booked");
+            }
+            else
+            {
+                bgCol = colors.getColor("booked").light(130);
+            }
+        } 
+    }
+    else if (period.contains(report->getProject()->getNow()))
+    {
+        bgCol = colors.getColor("today");
+    }
+    else if (daily && (isWeekend(period.getStart()) ||
+                       report->getProject()->isVacation(period.getStart())))
+    {
+            bgCol = colors.getColor("vacation");
+    }
+
+    return bgCol;
+}
+
+QColor
+HTMLReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
+                                         const Interval& period, bool daily)
+{
+    QColor bgCol;
+    if (load > tci->tli->resource->getMinEffort() * 
+            tci->tli->resource->getEfficiency())
+    {
+        if (tci->tli->ca2 == 0)
+        {
+            bgCol = colors.getColor("booked");
+        }
+        else
+        {
+            if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd() - 1))
+                bgCol = colors.getColor("completed").light(130);
+            else
+                bgCol = colors.getColor("booked").light(130);
+        }
+    }
+    else if (period.contains(report->getProject()->getNow()))
+    {
+        bgCol = colors.getColor("today");
+    }
+    else if (daily && (isWeekend(period.getStart()) ||
+                       report->getProject()->isVacation(period.getStart()) ||
+                       tci->tli->resource->hasVacationDay(period.getStart())))
+    {
+            bgCol = colors.getColor("vacation");
+    }
+
+    return bgCol;
+}
 
 void
 HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
@@ -1190,34 +1144,11 @@ HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
     for (time_t day = midnight(start); day < end;
          day = sameTimeNextDay(day))
     {
-        double load = tci->tli->task->getLoad(tci->tli->sc, 
-                                              Interval(day).firstDay(),
-                                         tci->tli->resource);
-        QString bgCol = 
-            tci->tli->task->isActive(tci->tli->sc, Interval(day).firstDay()) ? 
-            (tci->tli->task->isCompleted(tci->tli->sc,
-                                    sameTimeNextDay(day) - 1) ?
-             (tci->tli->ca2 == 0 ? "completed" : "completedlight") :
-             tci->tli->task->isMilestone() ? "milestone" :
-             (tci->tli->ca2 == 0 && !tci->tli->task->isBuffer(tci->tli->sc, 
-                                                    Interval(day).firstDay())
-              ? "booked" : "bookedlight")) :
-            isSameDay(report->getProject()->getNow(), day) ? "today" :
-            isWeekend(day) ? "weekend" :
-            report->getProject()->isVacation(day) ? "vacation" :
-            (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        if (showPIDs)
-        {
-            QString pids = tci->tli->resource->
-                getProjectIDs(tci->tli->sc, Interval(day).firstDay(), 
-                              tci->tli->task);
-            reportPIDs(pids, bgCol, !tci->tli->resource->isGroup());
-        }
-        else
-            reportLoad(load, bgCol, !tci->tli->task->isContainer(),
-                       tci->tli->task->isActive(tci->tli->sc, 
-                                                Interval(day).firstDay()) &&
-                       tci->tli->task->isMilestone());
+        Interval period = Interval(day).firstDay();
+        tci->setBgColor(selectTaskBgColor(tci, period, TRUE));
+        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+                                              tci->tli->resource);
+        reportTaskLoad(load, tci, period);
     }
 }
 
@@ -1227,23 +1158,11 @@ HTMLReportElement::genCellDailyResource(TableCellInfo* tci)
     for (time_t day = midnight(start); day < end;
          day = sameTimeNextDay(day))
     {
-        double load = tci->tli->resource->getLoad(tci->tli->sc, 
-                                                  Interval(day).firstDay(),
-                                             AllAccounts, tci->tli->task);
-        QString bgCol = 
-            load > tci->tli->resource->getMinEffort() * 
-            tci->tli->resource->getEfficiency() ?
-            (tci->tli->ca2 == 0 ? "booked" :
-             (tci->tli->task->isCompleted(tci->tli->sc, 
-                                     sameTimeNextDay(day) - 1) ?
-              "completedlight" : "bookedlight")) :
-            isSameDay(report->getProject()->getNow(), day) ? "today" :
-            isWeekend(day) ? "weekend" :
-            report->getProject()->isVacation(day) || 
-            tci->tli->resource->hasVacationDay(day) ?
-            "vacation" :
-            (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->resource->isGroup());
+        Interval period = Interval(day).firstDay();
+        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
+                                                  AllAccounts, tci->tli->task);
+        tci->setBgColor(selectResourceBgColor(tci, load, period, TRUE));
+        reportResourceLoad(load, tci, period);
     }
 }
 
@@ -1253,12 +1172,11 @@ HTMLReportElement::genCellDailyAccount(TableCellInfo* tci)
     for (time_t day = midnight(start); day < end;
          day = sameTimeNextDay(day))
     {
-        QString style("default");
         double volume = tci->tli->account->getVolume(tci->tli->sc, 
                                                      Interval(day).firstDay());
         if (tci->tli->account->isLeaf())
             tci->tci->addToSum(tci->tli->sc, time2ISO(day), volume);
-        reportValue(volume, style, FALSE);
+        reportCurrency(volume, tci);
     }
 }
 
@@ -1269,28 +1187,11 @@ HTMLReportElement::genCellWeeklyTask(TableCellInfo* tci)
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
-        double load = tci->tli->task->getLoad(tci->tli->sc, Interval(week).
-                                         firstWeek(weekStartsMonday),
-                                         tci->tli->resource);
-        QString bgCol = 
-            tci->tli->task->isActive(tci->tli->sc, 
-                                Interval(week).firstWeek(weekStartsMonday)) ?
-            (tci->tli->task->isCompleted(tci->tli->sc, 
-                                         sameTimeNextWeek(week) - 1) ?
-             (tci->tli->ca2 == 0 ? "completed" : "completedlight") :
-             tci->tli->task->isMilestone() ? "milestone" :
-             (tci->tli->ca2 == 0 && 
-              !tci->tli->task->isBuffer(tci->tli->sc, Interval(week).
-                                   firstWeek(weekStartsMonday))
-              ? "booked" : "bookedlight")) :
-            isSameWeek(report->getProject()->getNow(), week, 
-                       weekStartsMonday) ?
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->task->isContainer(), 
-                   tci->tli->task->isActive(tci->tli->sc, 
-                                       Interval(week).
-                                       firstWeek(weekStartsMonday)) && 
-                   tci->tli->task->isMilestone());
+        Interval period = Interval(week).firstWeek(weekStartsMonday);
+        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
+        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+                                              tci->tli->resource);
+        reportTaskLoad(load, tci, period);
     }
 }
 
@@ -1301,36 +1202,27 @@ HTMLReportElement::genCellWeeklyResource(TableCellInfo* tci)
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
-        double load = 
-            tci->tli->resource->getLoad(tci->tli->sc, 
-                                   Interval(week).firstWeek(weekStartsMonday),
-                                   AllAccounts, tci->tli->task);
-        QString bgCol =
-            load > tci->tli->resource->getMinEffort() * 
-            tci->tli->resource->getEfficiency() ?
-            (tci->tli->ca2 == 0 ? "booked" :
-             (tci->tli->task->isCompleted(tci->tli->sc, 
-                                          sameTimeNextWeek(week) - 1) ?
-              "completedlight" : "bookedlight")) :
-            isSameWeek(report->getProject()->getNow(), week, 
-                       weekStartsMonday) ?
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        if (showPIDs)
-        {
-            QString pids = tci->tli->resource->
-                getProjectIDs(tci->tli->sc, 
-                              Interval(week).firstWeek(weekStartsMonday), 
-                              tci->tli->task);
-            reportPIDs(pids, bgCol, !tci->tli->resource->isGroup());
-        }
-        else
-            reportLoad(load, bgCol, !tci->tli->resource->isGroup());
+        Interval period = Interval(week).firstWeek(weekStartsMonday);
+        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
+                                                  AllAccounts, tci->tli->task);
+        tci->setBgColor(selectResourceBgColor(tci, load, period, FALSE));
+        reportResourceLoad(load, tci, period);
     }
 }
 
 void
-HTMLReportElement::genCellWeeklyAccount(TableCellInfo*)
+HTMLReportElement::genCellWeeklyAccount(TableCellInfo* tci)
 {
+    bool weekStartsMonday = report->getWeekStartsMonday();
+    for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
+         week = sameTimeNextWeek(week))
+    {
+        double volume = tci->tli->account->
+            getVolume(tci->tli->sc, Interval(week).firstWeek(weekStartsMonday));
+        if (tci->tli->account->isLeaf())
+            tci->tci->addToSum(tci->tli->sc, time2ISO(week), volume);
+        reportCurrency(volume, tci);
+    }
 }
 
 void
@@ -1339,26 +1231,11 @@ HTMLReportElement::genCellMonthlyTask(TableCellInfo* tci)
     for (time_t month = beginOfMonth(start); month < end;
          month = sameTimeNextMonth(month))
     {
-        double load = tci->tli->task->getLoad(tci->tli->sc, 
-                                              Interval(month).firstMonth(),
-                                         tci->tli->resource);
-        QString bgCol = 
-            tci->tli->task->isActive(tci->tli->sc, 
-                                Interval(month).firstMonth()) ?
-            (tci->tli->task->isCompleted(tci->tli->sc, 
-                                    sameTimeNextMonth(month) - 1) ?
-             (tci->tli->ca2 == 0 ? "completed" : "completedlight"):
-             tci->tli->task->isMilestone() ? "milestone" :
-             (tci->tli->ca2 == 0 &&
-              !tci->tli->task->isBuffer(tci->tli->sc, 
-                                   Interval(month).firstMonth())
-              ? "booked" : "bookedlight")) :
-            isSameMonth(report->getProject()->getNow(), month) ? 
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->task->isContainer(), 
-                   tci->tli->task->isActive(tci->tli->sc, 
-                                            Interval(month).firstMonth()) && 
-                   tci->tli->task->isMilestone());
+        Interval period = Interval(month).firstMonth();
+        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
+        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+                                              tci->tli->resource);
+        reportTaskLoad(load, tci, period);
     }
 }
 
@@ -1368,19 +1245,11 @@ HTMLReportElement::genCellMonthlyResource(TableCellInfo* tci)
     for (time_t month = beginOfMonth(start); month < end;
          month = sameTimeNextMonth(month))
     {
-        double load = tci->tli->resource->
-            getLoad(tci->tli->sc, Interval(month).firstMonth(),
-                    AllAccounts, tci->tli->task);
-        QString bgCol =
-            load > tci->tli->resource->getMinEffort() * 
-            tci->tli->resource->getEfficiency() ?
-            (tci->tli->ca2 == 0 ? "booked" :
-             (tci->tli->task->isCompleted(tci->tli->sc, 
-                                          sameTimeNextMonth(month) - 1) ?
-              "completedlight" : "bookedlight")) :
-            isSameMonth(report->getProject()->getNow(), month) ? 
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->resource->isGroup());
+        Interval period = Interval(month).firstMonth();
+        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
+                                                  AllAccounts, tci->tli->task);
+        tci->setBgColor(selectResourceBgColor(tci, load, period, FALSE));
+        reportResourceLoad(load, tci, period);
     }
 }
 
@@ -1390,12 +1259,11 @@ HTMLReportElement::genCellMonthlyAccount(TableCellInfo* tci)
     for (time_t month = beginOfMonth(start); month < end;
          month = sameTimeNextMonth(month))
     {
-        QString style("default");
         double volume = tci->tli->account->
             getVolume(tci->tli->sc, Interval(month).firstDay());
         if (tci->tli->account->isLeaf())
             tci->tci->addToSum(tci->tli->sc, time2ISO(month), volume);
-        reportValue(volume, style, FALSE);
+        reportCurrency(volume, tci);
     }
 }
 
@@ -1405,26 +1273,11 @@ HTMLReportElement::genCellQuarterlyTask(TableCellInfo* tci)
     for (time_t quarter = beginOfQuarter(start); quarter < end;
          quarter = sameTimeNextQuarter(quarter))
     {
-        double load = tci->tli->task->getLoad(tci->tli->sc, 
-                                         Interval(quarter).firstQuarter(),
-                                         tci->tli->resource);
-        QString bgCol = 
-            tci->tli->task->isActive(tci->tli->sc, 
-                                Interval(quarter).firstQuarter()) ?
-            (tci->tli->task->isCompleted(tci->tli->sc, 
-                                    sameTimeNextQuarter(quarter) - 1) ?
-             (tci->tli->ca2 == 0 ? "completed" : "completedlight"):
-             tci->tli->task->isMilestone() ? "milestone" :
-             (tci->tli->ca2 == 0 &&
-              !tci->tli->task->isBuffer(tci->tli->sc, 
-                                   Interval(quarter).firstQuarter())
-              ? "booked" : "bookedlight")) :
-            isSameQuarter(report->getProject()->getNow(), quarter) ? 
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->task->isContainer(), 
-                   tci->tli->task->isActive(tci->tli->sc, 
-                                       Interval(quarter).firstQuarter()) && 
-                   tci->tli->task->isMilestone());
+        Interval period = Interval(quarter).firstQuarter();
+        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
+        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+                                              tci->tli->resource);
+        reportTaskLoad(load, tci, period);
     }
 }
 
@@ -1434,19 +1287,11 @@ HTMLReportElement::genCellQuarterlyResource(TableCellInfo* tci)
     for (time_t quarter = beginOfQuarter(start); quarter < end;
          quarter = sameTimeNextQuarter(quarter))
     {
-        double load = tci->tli->resource->
-            getLoad(tci->tli->sc, Interval(quarter).firstQuarter(),
-                    AllAccounts, tci->tli->task);
-        QString bgCol =
-            load > tci->tli->resource->getMinEffort() * 
-            tci->tli->resource->getEfficiency() ?
-            (tci->tli->ca2 == 0 ? "booked" :
-             (tci->tli->task->isCompleted(tci->tli->sc, 
-                                     sameTimeNextQuarter(quarter) - 1) ?
-              "completedlight" : "bookedlight")) :
-            isSameQuarter(report->getProject()->getNow(), quarter) ? 
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->resource->isGroup());
+        Interval period = Interval(quarter).firstQuarter();
+        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
+                                                  AllAccounts, tci->tli->task);
+        tci->setBgColor(selectResourceBgColor(tci, load, period, FALSE));
+        reportResourceLoad(load, tci, period);
     }
 }
 
@@ -1461,26 +1306,11 @@ HTMLReportElement::genCellYearlyTask(TableCellInfo* tci)
     for (time_t year = beginOfYear(start); year < end;
          year = sameTimeNextYear(year))
     {
-        double load = tci->tli->task->getLoad(tci->tli->sc, 
-                                              Interval(year).firstYear(),
-                                         tci->tli->resource);
-        QString bgCol = 
-            tci->tli->task->isActive(tci->tli->sc, 
-                                Interval(year).firstYear()) ?
-            (tci->tli->task->isCompleted(tci->tli->sc, 
-                                         sameTimeNextYear(year) - 1) ?
-             (tci->tli->ca2 == 0 ? "completed" : "completedlight"):
-             tci->tli->task->isMilestone() ? "milestone" :
-             (tci->tli->ca2 == 0 &&
-              !tci->tli->task->isBuffer(tci->tli->sc, 
-                                   Interval(year).firstYear())
-              ? "booked" : "bookedlight")) :
-            isSameYear(report->getProject()->getNow(), year) ? 
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->task->isContainer(), 
-                   tci->tli->task->isActive(tci->tli->sc, 
-                                            Interval(year).firstYear()) && 
-                   tci->tli->task->isMilestone());
+        Interval period = Interval(year).firstYear();
+        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
+        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+                                              tci->tli->resource);
+        reportTaskLoad(load, tci, period);
     }
 }
 
@@ -1490,19 +1320,11 @@ HTMLReportElement::genCellYearlyResource(TableCellInfo* tci)
     for (time_t year = beginOfYear(start); year < end;
          year = sameTimeNextYear(year))
     {
-        double load = tci->tli->resource->
-            getLoad(tci->tli->sc, Interval(year).firstYear(),
-                    AllAccounts, tci->tli->task);
-        QString bgCol =
-            load > tci->tli->resource->getMinEffort() * 
-            tci->tli->resource->getEfficiency() ?
-            (tci->tli->ca2 == 0 ? "booked" :
-             (tci->tli->task->isCompleted(tci->tli->sc, 
-                                          sameTimeNextYear(year) - 1) ?
-              "completedlight" : "bookedlight")) :
-            isSameYear(report->getProject()->getNow(), year) ? 
-            "today" : (tci->tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tci->tli->resource->isGroup());
+        Interval period = Interval(year).firstYear();
+        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
+                                                  AllAccounts, tci->tli->task);
+        tci->setBgColor(selectResourceBgColor(tci, load, period, FALSE));
+        reportResourceLoad(load, tci, period);
     }
 }
 
@@ -1594,8 +1416,8 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
 void \
 HTMLReportElement::genCell##a##Effort(TableCellInfo* tci) \
 { \
-    textMultiRows(QString().sprintf("%.2f", tci->tli->resource->get##a##Effort()), \
-                  tci->tli->ca2 != 0, "right"); \
+    genCell(QString().sprintf("%.2f", tci->tli->resource->get##a##Effort()), \
+            tci, TRUE); \
 }
 
 GCEFFORT(Min)
@@ -1604,16 +1426,15 @@ GCEFFORT(Max)
 void
 HTMLReportElement::genCellRate(TableCellInfo* tci)
 {
-    textMultiRows(QString()
-                  .sprintf("%.*f", report->getProject()->getCurrencyDigits(),
-                           tci->tli->resource->getRate()),
-                  tci->tli->ca2 != 0, "right");
+    genCell(QString().sprintf("%.*f", report->getProject()->getCurrencyDigits(),
+                              tci->tli->resource->getRate()),
+            tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellKotrusId(TableCellInfo* tci)
 {
-    textMultiRows(tci->tli->resource->getKotrusId(), tci->tli->ca2 != 0, "left");
+    genCell(tci->tli->resource->getKotrusId(), tci, TRUE);
 }
 
 void

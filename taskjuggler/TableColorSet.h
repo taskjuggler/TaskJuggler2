@@ -22,7 +22,7 @@ public:
     {
         colors["header"] = QColor(0xa5c2ff);
         colors["default"] = QColor(0xf3ebae);
-        colors["weekend"] = QColor(0xffec80);
+        colors["error"] = QColor(0xff0000);
         colors["today"] = QColor(0xa387ff);
         colors["vacation"] = QColor(0xfffc60);
         colors["available"] = QColor(0xa4ff8d);

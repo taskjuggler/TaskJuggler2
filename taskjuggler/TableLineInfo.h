@@ -23,22 +23,33 @@ class TableLineInfo
     friend class ReportElement;
 
 public:
-    TableLineInfo(const CoreAttributes* c1, const CoreAttributes* c2, 
-                  const Task* t, const Resource* r, const Account* a,
-                  uint n, int s) :
-        ca1(c1), ca2(c2), task(t), resource(r), account(a), no(n), sc(s) { }
+    TableLineInfo()
+    {
+        row = 0;
+        sc = 0;
+        ca1 = ca2 = 0;
+        task = 0;
+        resource = 0;
+        account = 0;
+        idxNo = 0;
+        boldText = FALSE;
+        fontFactor = 100;
+    }
     ~TableLineInfo() { }
 
-    const CoreAttributes* const ca1;
-    const CoreAttributes* const ca2;
-    const Task* const task;
-    const Resource* const resource;
-    const Account* const account;
-    const uint no;
-    const int sc;
+    int row;
+    int sc;
+    const CoreAttributes* ca1;
+    const CoreAttributes* ca2;
+    const Task* task;
+    const Resource* resource;
+    const Account* account;
+    uint idxNo;
 
-private:
-    TableLineInfo() { }
+    QColor bgCol;
+    bool boldText;
+    int fontFactor;
+    QString specialName;
 } ;
 
 #endif

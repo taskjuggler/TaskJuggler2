@@ -12,6 +12,7 @@
 
 #include "HTMLAccountReportElement.h"
 #include "TableColumnInfo.h"
+#include "TableLineInfo.h"
 #include "tjlib-internal.h"
 #include "Project.h"
 #include "Report.h"
@@ -46,21 +47,36 @@ HTMLAccountReportElement::generate()
     filterAccountList(filteredList, AllAccounts, hideAccount, rollUpAccount);
     maxDepthAccountList = filteredList.maxDepth();
     
+    /* Generate table of cost accounts. */
     filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
     sortAccountList(filteredList);
 
+    TableLineInfo tli;
     int aNo = 1;
     for (AccountListIterator ali(filteredList); *ali != 0; ++ali, ++aNo)
     {
-        generateFirstAccount(scenarios[0], *ali, aNo);
-        for (uint sc = 1; sc < scenarios.count(); ++sc)
-            generateNextAccount(sc, *ali);
+        tli.ca1 = tli.account = *ali;
+        for (uint sc = 0; sc < scenarios.count(); ++sc)
+        {
+            tli.row = sc;
+            tli.idxNo = aNo;
+            tli.sc = scenarios[sc];
+            tli.bgCol = colors.getColor("default").dark(100 + sc * 10);
+            generateLine(&tli, sc == 0 ? 6 : 7);
+        }
     }
-    
-    generateSummaryFirst(scenarios[0], i18n("Subtotal Cost"), 
-                         colors.getColorName("header"));
-    for (uint sc = 1; sc < scenarios.count(); ++sc)
-        generateSummaryNext(sc, colors.getColorName("header"));
+  
+    /* Generate summary line for cost accounts. */
+    tli.boldText = TRUE; 
+    tli.specialName = i18n("Total Costs");
+    for (uint sc = 0; sc < scenarios.count(); ++sc)
+    {
+        tli.row = sc;
+        tli.idxNo = 0;
+        tli.sc = scenarios[sc];
+        tli.bgCol = colors.getColor("header").dark(100 + sc * 10);
+        generateLine(&tli, sc == 0 ? 8 : 9);
+    }
     
     for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
     {
@@ -68,20 +84,36 @@ HTMLAccountReportElement::generate()
         (*ci)->clearSum();
     }
 
+    /* Generate table of revenue accounts. */
     filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount);
     sortAccountList(filteredList);
 
+    tli.boldText = FALSE;
+    tli.specialName = QString::null;
     for (AccountListIterator ali(filteredList); *ali != 0; ++ali, ++aNo)
     {
-        generateFirstAccount(scenarios[0], *ali, aNo);
-        for (uint sc = 1; sc < scenarios.count(); ++sc)
-            generateNextAccount(sc, *ali);
+        tli.ca1 = tli.account = *ali;
+        for (uint sc = 0; sc < scenarios.count(); ++sc)
+        {
+            tli.row = sc;
+            tli.idxNo = aNo;
+            tli.sc = scenarios[sc];
+            tli.bgCol = colors.getColor("default").dark(100 + sc * 10);
+            generateLine(&tli, sc == 0 ? 6 : 7);
+        }
     }
     
-    generateSummaryFirst(scenarios[0], i18n("Subtotal Revenue"), 
-                         colors.getColorName("header"));
-    for (uint sc = 1; sc < scenarios.count(); ++sc)
-        generateSummaryNext(sc, colors.getColorName("header"));
+    /* Generate summary line for revenue accounts. */
+    tli.boldText = TRUE;
+    tli.specialName = i18n("Total Revenues");
+    for (uint sc = 0; sc < scenarios.count(); ++sc)
+    {
+        tli.row = sc;
+        tli.idxNo = 0;
+        tli.sc = scenarios[sc];
+        tli.bgCol = colors.getColor("header").dark(100 + sc * 10);
+        generateLine(&tli, sc == 0 ? 8 : 9);
+    }
 
     for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
     {
@@ -89,10 +121,16 @@ HTMLAccountReportElement::generate()
         (*ci)->recallMemory();
     }
 
-    generateSummaryFirst(scenarios[0], i18n("Total"), 
-                         colors.getColorName("default"));
-    for (uint sc = 1; sc < scenarios.count(); ++sc)
-        generateSummaryNext(sc, colors.getColorName("default"));
+    /* Generate total summary line. */    
+    tli.specialName = i18n("Total");
+    for (uint sc = 0; sc < scenarios.count(); ++sc)
+    {
+        tli.row = sc;
+        tli.idxNo = 0;
+        tli.sc = scenarios[sc];
+        tli.bgCol = colors.getColor("default").dark(100 + sc * 10); 
+        generateLine(&tli, sc == 0 ? 8 : 9);
+    }
    
     s() << "</tbody>" << endl;    
     s() << "</table>" << endl;

@@ -37,8 +37,6 @@ public:
 private:
     HTMLStatusReport() { }  // don't call this directly
 
-    bool generateTable(HTMLReportElement* tab);
-
     static const int tablesCount = 4;
     HTMLReportElement* tables[tablesCount];
 } ;

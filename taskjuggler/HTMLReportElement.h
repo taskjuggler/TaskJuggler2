@@ -25,6 +25,7 @@ class Report;
 class ExpressionTree;
 class TableLineInfo;
 class TableCellInfo;
+class Interval;
 
 /**
  * @short Models the basic component of an HTML report.
@@ -38,36 +39,30 @@ public:
 
     enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
 
+    virtual void generate() = 0;
+
     void generateTableHeader();
 
     void generateHeader();
     void generateFooter();
 
-    void generateFirstTask(int sc, const Task* t, const Resource* r, uint no);
-    void generateNextTask(int sc, const Task* t, const Resource* r);
-
-    void generateFirstResource(int sc, const Resource* r, const Task* t, 
-                               uint no);
-    void generateNextResource(int sc, const Resource* r, const Task* t);
-
-    void generateFirstAccount(int sc, const Account* a, uint no);
-    void generateNextAccount(int sc, const Account* a);
-
-    void generateSummaryFirst(int sc, const QString& name, 
-                              const QString& style);
-    void generateSummaryNext(int sc, const QString& style);
+    void generateLine(TableLineInfo* tli, int funcSel);
 
     void genCell(const QString& text, TableCellInfo* tli, bool multi);
 
-    void textOneRow(const QString& text, bool light, const QString& align);
-    void textMultiRows(const QString& text, bool light, const QString& align);
-
     void reportPIDs(const QString& pids, const QString bgCol, bool bold);
 
-    void reportLoad(double load, const QString& bgcol, bool bold,
-                    bool milestone = FALSE);
+    QColor selectTaskBgColor(TableCellInfo* tci, const Interval& period,
+                             bool daily);
+    QColor selectResourceBgColor(TableCellInfo* tci, double load,
+                                 const Interval& period, bool daily);
 
-    void reportValue(double value, const QString& bgCol, bool bold);
+    void reportTaskLoad(double load, TableCellInfo* tci,
+                        const Interval& period);
+    void reportResourceLoad(double load, TableCellInfo* tci,
+                            const Interval& period);
+
+    void reportCurrency(double value, TableCellInfo* tci);
 
     void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
@@ -160,7 +155,7 @@ protected:
     HTMLReportElement() { }
 
     QString generateUrl(const QString& key, const QString& txt);
-    void generateRightIndented(TableLineInfo* tli, const QString str);
+    void generateRightIndented(TableCellInfo* tci, const QString str);
 
     MacroTable mt;
 

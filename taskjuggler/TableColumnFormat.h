@@ -46,6 +46,7 @@ public:
     GenCellPtr genSummaryLine2;
 
     QString hAlign;
+    int fontFactor;
 
 protected:
     TableColumnFormat() { }
