@@ -412,7 +412,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			  << "\" rowspan=\""
 			  << (showActual ? "2" : "1")
 			  << "\" style=\"text-align:left\">"
-			  << "<span style=\"font-size:0.8em\">";
+			  << "<span style=\"font-size:100%\">";
 			if (t->getNote().isEmpty())
 				s << "&nbsp;";
 			else

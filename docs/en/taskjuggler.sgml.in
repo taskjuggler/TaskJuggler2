@@ -379,6 +379,17 @@ weekly reports.</para></listitem>
 <listitem><para>Support for a <computeroutput>flags</computeroutput>
 columns added to HTML reports.</para></listitem>
 
+<listitem><para>Sub tasks do now inherit the dependencies of their
+container tasks. Specifying dependencies after sub tasks is now
+illegal since they are only used for checking, but not for
+scheduling.</para></listitem>
+
+<listitem><para>The logic checker for task attributes has been
+completely rewritten. Since it probably catches some more errors, you
+might have to fix your project now. Such cases would have resulted in
+wrong results anyhow. Lots of test cases have been added to the test
+suite to check the checker.</para></listitem>
+
 </itemizedlist> </para>
 
 </sect2>

@@ -1,0 +1,12 @@
+project simple "Simple Project" "$Id" 2000-01-01 2000-01-06
+
+task t1 "Task1" {
+  start 2000-01-01
+  length 1d
+}
+
+task t2 "Task2" {
+  duration 1d
+	depends
+}
+

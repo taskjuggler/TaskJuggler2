@@ -1,0 +1,111 @@
+project simple "Simple Project" "$Id" 2003-01-01-0:00-GMT 2003-01-31-0:00-GMT {
+	timezone "GMT"
+}
+
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+resource tux3 "Tux3"
+resource tux4 "Tux4"
+resource tux5 "Tux5"
+resource tux6 "Tux6"
+resource tux7 "Tux7"
+resource tux8 "Tux8"
+resource tux9 "Tux9"
+resource tux10 "Tux10"
+
+task t1 "|->" {
+  start 2003-01-06
+  length 5d
+}
+
+task m1 "Milestone1" {
+	depends !t1
+	milestone
+}
+
+task t2 "<-|" {
+	end 2003-01-27
+	scheduling alap
+  length 5d
+}
+
+task m2 "Milestone2" {
+	preceeds !t2
+	milestone
+}
+
+task t3 "M1->" {
+	depends !m1
+	effort 5d
+	allocate tux1
+}
+
+task t4 "<-M2" {
+	preceeds !m2
+	effort 5d
+	allocate tux2
+}
+
+task t5 "M1->M2" {
+	preceeds !m2
+	depends !m1
+	allocate tux3
+}
+
+task t6 "M1<-M2" {
+	depends !m1
+	preceeds !m2
+	allocate tux4
+}	
+
+task t7 "|->M1" {
+  start 2003-01-06
+	preceeds !m1
+	allocate tux5
+}
+
+task t8 "M2<-|" {
+	end 2003-01-27
+	depends !m2
+	allocate tux6
+}
+
+task t9 "|->|" {
+	start 2003-01-06
+	end 2003-01-27
+	allocate tux7
+}
+
+task t10 "|<-|" {
+	start 2003-01-06
+	end 2003-01-27
+	scheduling alap
+	allocate tux8
+}
+
+task t11 "M1|->|" {
+	start 2003-01-13
+	end 2003-01-27
+	depends !m1
+	allocate tux9
+}
+
+task t12 "|<-|M2" {
+	start 2003-01-06
+	end 2003-01-17-18:00
+	preceeds !m2
+	scheduling alap
+	allocate tux10
+}
+
+htmltaskreport "TaskMix.html" {
+	columns name, start, end, daily
+}
+
+export "TaskMix-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+

@@ -1,0 +1,245 @@
+project prj "TaskMix2 Project" "$Id" 2003-01-01-0:00-GMT 2003-01-31-0:00-GMT {
+	timezone "GMT"
+}
+
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+resource tux3 "Tux3"
+resource tux4 "Tux4"
+resource tux5 "Tux5"
+resource tux6 "Tux6"
+resource tux7 "Tux7"
+resource tux8 "Tux8"
+resource tux9 "Tux9"
+resource tux10 "Tux10"
+resource tux11 "Tux11"
+resource tux12 "Tux12"
+
+task t1 "|->" {
+  start 2003-01-06
+  length 5d
+}
+
+task m1 "Milestone1" {
+	depends !t1
+	milestone
+}
+
+task t2 "<-|" {
+	end 2003-01-27
+	scheduling alap
+  length 5d
+}
+
+task m2 "Milestone2" {
+	preceeds !t2
+	milestone
+}
+
+task c1 "| x-> -" {
+	start 2003-01-13
+	effort 5d
+	allocate tux1
+}
+
+task c2 "| x-> -D" {
+	start 2003-01-13
+	effort 5d
+	allocate tux2
+	preceeds !m2
+	scheduling asap
+}
+
+task c3 "| --> |" {
+	start 2003-01-13
+	end 2003-01-18
+}
+
+task c4 "| --> -D" {
+	start 2003-01-13
+	preceeds !m2
+	scheduling asap
+}
+
+task c5 "| --> |D" {
+	start 2003-01-13
+	preceeds !m2
+	end 2003-01-18
+	scheduling asap
+}
+
+task c6 "| <-- |" {
+	start 2003-01-13
+	end 2003-01-18
+	scheduling alap
+}
+
+task c7 "| <-- -D" {
+	start 2003-01-13
+	preceeds !m2
+	scheduling alap
+}
+
+task c8 "| <-- |D" {
+	start 2003-01-13
+	preceeds !m2
+	end 2003-01-18
+	scheduling alap
+}
+
+task c9 "|D x-> -" {
+	start 2003-01-13
+	depends !m1
+	effort 5d
+	allocate tux3
+}
+
+task c10 "|D x-> -D" {
+	start 2003-01-13
+	depends !m1
+	preceeds !m2
+	scheduling asap
+	effort 5d
+	allocate tux4
+}
+
+task c11 "|D --> |" {
+	start 2003-01-13
+	depends !m1
+	end 2003-01-18
+	scheduling asap
+}
+
+task c12 "|D --> -D" {
+	start 2003-01-13
+	depends !m1
+	preceeds !m2
+	scheduling asap
+}
+
+task c13 "|D --> |D" {
+	start 2003-01-13
+	depends !m1
+	preceeds !m2
+	end 2003-01-18
+	scheduling asap
+}
+
+task c14 "|D <-- |" {
+	start 2003-01-13
+	depends !m1
+	end 2003-01-18
+	scheduling alap
+}
+
+task c15 "|D <-- -D" {
+	start 2003-01-13
+	depends !m1
+	preceeds !m2
+	end 2003-01-18
+	scheduling alap
+}
+
+task c16 "- <-x |" {
+	end 2003-01-18
+	effort 5d
+	allocate tux5
+	scheduling alap
+}
+
+task c17 "- <-x -D" {
+	effort 5d
+	allocate tux6
+	preceeds !m2
+}
+
+task c18 "- <-x |D" {
+	end 2003-01-18
+	effort 5d
+	allocate tux7
+	preceeds !m2
+}
+
+task c19 "-D x-> -" {
+	depends !m1
+	effort 5d
+	allocate tux8
+}
+
+task c20 "-D x-> -D" {
+	depends !m1
+	effort 5d
+	allocate tux9
+	preceeds !m2
+	scheduling asap
+}
+
+task c21 "-D --> |" {
+	depends !m1
+	end 2003-01-18
+}
+
+task c22 "-D --> -D" {
+	depends !m1
+	preceeds !m2
+	scheduling asap
+}
+
+task c23 "-D --> |D" {
+	depends !m1
+	end 2003-01-18
+	preceeds !m2
+	scheduling asap
+}
+
+task c24 "-D <-x |" {
+	depends !m1
+	effort 5d
+	allocate tux10
+	end 2003-01-18
+	scheduling alap
+}
+
+task c25 "-D <-x -D" {
+	depends !m1
+	effort 5d
+	allocate tux11
+	preceeds !m2
+}
+
+task c26 "-D <-x |D" {
+	depends !m1
+	effort 5d
+	allocate tux12
+	end 2003-01-18
+	preceeds !m2
+}
+
+task c28 "-D <-- |" {
+	depends !m1
+	end 2003-01-18
+	scheduling alap
+}
+
+task c29 "-D <-- -D" {
+	depends !m1
+	preceeds !m2
+}
+
+task c30 "-D <-- |D" {
+	depends !m1
+	end 2003-01-18
+	preceeds !m2
+}
+
+htmltaskreport "TaskMix2.html" {
+	columns id, name, start, end, daily
+}
+
+export "TaskMix2-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+

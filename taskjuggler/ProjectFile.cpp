@@ -1445,6 +1445,12 @@ ProjectFile::readTaskBody(Task* task)
 			}
 			else if (token == KW("depends"))
 			{
+				if (!task->getSubList().isEmpty())
+				{
+					fatalError("Dependencies of container tasks must be "
+							   "specified prior to any sub tasks.");
+					return FALSE;
+				}
 				for ( ; ; )
 				{
 					QString id;
@@ -1456,7 +1462,7 @@ ProjectFile::readTaskBody(Task* task)
 					}
 					if (tt == ABSOLUTE_ID)
 						id = getTaskPrefix() + id;
-					task->addDependency(id);
+					task->addDepends(id);
 					task->setScheduling(Task::ASAP);
 					if ((tt = nextToken(token)) != COMMA)
 					{
@@ -1467,6 +1473,12 @@ ProjectFile::readTaskBody(Task* task)
 			}
 			else if (token == KW("preceeds"))
 			{
+				if (!task->getSubList().isEmpty())
+				{
+					fatalError("Dependencies of container tasks must be "
+							   "specified prior to any sub tasks.");
+					return FALSE;
+				}
 				for ( ; ; )
 				{
 					QString id;

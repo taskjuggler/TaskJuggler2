@@ -124,8 +124,8 @@ public:
 	void setResponsible(Resource* r) { responsible = r; }
 	Resource* getResponsible() const { return responsible; }
 
-	void addDependency(const QString& id) { dependsIds.append(id); }
-	void addPreceeds(const QString& id) { preceedsIds.append(id); }
+	bool addDepends(const QString& id);
+	bool addPreceeds(const QString& id);
 
 	bool addShift(const Interval& i, Shift* s)
 	{
@@ -141,6 +141,9 @@ public:
 
 	Task* firstFollower() { return followers.first(); }
 	Task* nextFollower() { return followers.next(); }
+
+	bool hasPrevious(Task* t) { return previous.find(t) != -1; }
+	bool hasFollower(Task* t) { return followers.find(t) != -1; }
 
 	/* The following group of functions operates exclusively on 'plan'
 	 * variables. */
@@ -343,6 +346,10 @@ private:
 	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
 	time_t earliestStart();
 	time_t latestEnd();
+	bool hasPlanStartDependency();
+	bool hasPlanEndDependency();
+	bool hasActualStartDependency();
+	bool hasActualEndDependency();
 	void fatalError(const char* msg, ...) const;
 
 	/// A longer description of the task.

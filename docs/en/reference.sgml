@@ -1140,7 +1140,7 @@ accounts.</para>
 
 <para>All tasks in the included file are added as sub-tasks of the
 task specified by <computeroutput>taskprefix</computeroutput>.</para>
-
+</sect2>
 </sect1>
 <sect1 id="kotrusmode"><title>kotrusmode &lt;mode&gt;</title>
 

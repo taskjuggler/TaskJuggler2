@@ -1,0 +1,118 @@
+project prj "Milestone Test" "$Id" 2003-01-01-0:00-GMT 2003-01-31-0:00-GMT {
+	timezone "GMT"
+}
+
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+resource tux3 "Tux3"
+resource tux4 "Tux4"
+resource tux5 "Tux5"
+resource tux6 "Tux6"
+resource tux7 "Tux7"
+resource tux8 "Tux8"
+resource tux9 "Tux9"
+resource tux10 "Tux10"
+resource tux11 "Tux11"
+resource tux12 "Tux12"
+
+task t1 "|->" {
+  start 2003-01-06
+  length 5d
+}
+
+task t2 "<-|" {
+	end 2003-01-27
+	scheduling alap
+  length 5d
+}
+
+/*
+|  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
+|  M |   err2   |D M |   err2   - M |   ok     -D M |   ok
+|  M -D  ok     |D M -D  ok     - M -D  ok     -D M -D  ok
+|  M |D  err2   |D M |D  err2   - M |D  ok     -D M |D  ok
+*/
+
+task m1 "|  M -" {
+	start 2003-01-13
+  milestone
+}
+
+task m2 "|  M -D" {
+	start 2003-01-13
+	preceeds !t2
+	milestone
+}
+
+task m3 "|D M -" {
+	start 2003-01-13
+	depends !t1
+	milestone
+}
+
+task m4 "|D M -D" {
+	start 2003-01-13
+	depends !t1
+	preceeds !t2
+	milestone
+}
+
+task m5 "- M |" {
+	end 2003-01-18
+	milestone
+}
+
+task m6 "- M -D" {
+  preceeds !t2
+	milestone
+}
+
+task m7 "- M |D" {
+	end 2003-01-18
+	preceeds !t2
+	milestone
+}
+
+task m8 "-D M -" {
+	depends !t1
+	milestone
+}
+
+task m9 "-D M |" {
+	depends !t1
+	end 2003-01-18
+	milestone
+}
+
+task m10_asap "-D M -D (ASAP)" {
+	depends !t1
+	preceeds !t2
+	scheduling asap
+	milestone
+}
+
+task m10_alap "-D M -D (ALAP)" {
+	depends !t1
+	preceeds !t2
+	scheduling alap
+	milestone
+}
+
+task m11 "-D M |D" {
+	depends !t1
+	preceeds !t2
+	end 2003-01-18
+	milestone
+}
+
+htmltaskreport "Milestone.html" {
+	columns id, name, start, end, daily
+}
+
+export "Milestone-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+

@@ -136,6 +136,25 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		maxEnd = p->maxEnd;
 		responsible = p->responsible;
 		account = p->account;
+		scheduling = p->scheduling;
+
+		// Inherit depends from parent. Relative IDs need to get another '!'.
+		dependsIds = p->dependsIds;
+		for (QStringList::Iterator it = dependsIds.begin();
+			 it != dependsIds.end(); ++it)
+		{
+			if ((*it)[0] == '!')
+				*it = '!' + *it;
+		}
+		
+		// Inherit preceeds from parent. Relative IDs need to get another '!'.
+		preceedsIds = p->preceedsIds;
+		for (QStringList::Iterator it = preceedsIds.begin();
+			 it != preceedsIds.end(); ++it)
+		{
+			if ((*it)[0] == '!')
+				*it = '!' + *it;
+		}
 	}
 	else
 	{
@@ -154,6 +173,20 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 
 	start = end = 0;
 	duration = length = effort = 0.0;
+}
+
+bool
+Task::addDepends(const QString& rid)
+{
+   	dependsIds.append(rid);
+	return TRUE;
+}
+
+bool
+Task::addPreceeds(const QString& rid)
+{
+   	preceedsIds.append(rid);
+	return TRUE;
 }
 
 void
@@ -623,7 +656,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 			doneEffort += intervalLoad * (*rit).getEfficiency();
 
 			if (debugLevel > 6)
-				qDebug("Booked resource %s (Effort: %f)",
+				qDebug(" Booked resource %s (Effort: %f)",
 					   (*rit).getId().latin1(), doneEffort);
 			booked = TRUE;
 		}
@@ -921,9 +954,10 @@ Task::xRef(QDict<Task>& hash)
 		}
 		else if (depends.find(t) != -1)
 		{
-			fatalError(QString("No need to specify dependency '") + absId +
-							   "' twice.");
-			error = TRUE;
+			fatalError(QString("No need to specify dependency %1 multiple "
+							   "times.").arg(absId));
+			// Make it a warning only for the time beeing.
+			// error = TRUE; 
 		}
 		else
 		{
@@ -993,13 +1027,72 @@ Task::resolveId(QString relId)
 }
 
 bool
+Task::hasPlanStartDependency()
+{
+	/* Checks whether the task has a start specification for the plan
+	 * scenario. This can be a fixed start time or a dependency on another
+	 * task's end or an implicit dependency on the fixed start time of a
+	 * parent task. */
+	if (planStart != 0 || !depends.isEmpty())
+		return TRUE;
+	for (Task* p = getParent(); p; p = p->getParent())
+		if (p->planStart != 0)
+			return TRUE;
+	return FALSE;
+}
+
+bool
+Task::hasPlanEndDependency()
+{
+	/* Checks whether the task has an end specification for the plan
+	 * scenario. This can be a fixed end time or a dependency on another
+	 * task's start or an implicit dependency on the fixed end time of a
+	 * parent task. */
+	if (planEnd != 0 || !preceeds.isEmpty())
+		return TRUE;
+	for (Task* p = getParent(); p; p = p->getParent())
+		if (p->planEnd != 0)
+			return TRUE;
+	return FALSE;
+}
+
+bool
+Task::hasActualStartDependency()
+{
+	/* Checks whether the task has a start specification for the actual
+	 * scenario. This can be a fixed plan or actual start time or a dependency
+	 * on another task's end or an implicit dependency on the fixed plan or
+	 * actual start time of a parent task. */
+	if (planStart != 0 || actualStart != 0 || !depends.isEmpty())
+		return TRUE;
+	for (Task* p = getParent(); p; p = p->getParent())
+		if (p->planStart != 0 || p->actualStart != 0)
+			return TRUE;
+	return FALSE;
+}
+
+bool
+Task::hasActualEndDependency()
+{
+	/* Checks whether the task has an end specification for the actual
+	 * scenario. This can be a fixed plan or actual end time or a dependency
+	 * on another task's start or an implicit dependency on the fixed plan or
+	 * actual end time of a parent task. */
+	if (planEnd != 0 || actualEnd != 0 || !preceeds.isEmpty())
+		return TRUE;
+	for (Task* p = getParent(); p; p = p->getParent())
+		if (p->planEnd != 0 || p->actualEnd != 0)
+			return TRUE;
+	return FALSE;
+}
+
+bool
 Task::preScheduleOk()
 {
 	if ((planEffort > 0 || actualEffort > 0) && allocations.count() == 0)
 	{
-		fatalError(QString().sprintf(
-			"No allocations specified for effort based task %s",
-			id.latin1()));
+		fatalError(QString(
+			"No allocations specified for effort based task %1").arg(1));
 		return FALSE;
 	}
 
@@ -1011,112 +1104,249 @@ Task::preScheduleOk()
 	}
 
 	// Check plan values.
-	int durationSpec = 0;
+	int planDurationSpec = 0;
 	if (planEffort > 0.0)
-		durationSpec++;
+		planDurationSpec++;
 	if (planLength > 0.0)
-		durationSpec++;
+		planDurationSpec++;
 	if (planDuration > 0.0)
-		durationSpec++;
-
-	int limitSpec = 0;
-	if (planStart != 0 || !depends.isEmpty())
-		limitSpec++;
-	if (planEnd != 0 || !preceeds.isEmpty())
-		limitSpec++;
-
-	if (durationSpec > 1)
+		planDurationSpec++;
+	if (planDurationSpec > 1)
 	{
-		fatalError(QString().sprintf("In task %s:", id.latin1()) +
-			"You can specify either a length, a duration or an effort.");
+		fatalError(QString("Task %1 may only have one duration "
+						   "criteria.").arg(id));
 		return FALSE;
 	}
-	else if (durationSpec == 1)
-	{
-		if (milestone)
-		{
-			fatalError(QString().sprintf("In task %s:", id.latin1()) +
-					   "You cannot specify a duration criteria for a "
-					   "milestone.");
-			return FALSE;
-		}
-		if (limitSpec == 2)
-		{
-			fatalError(QString().sprintf("In task %s:", id.latin1()) +
-					   "You cannot specify a duration criteria together with "
-					   "a start and end criteria.");
-			return FALSE;
-		}
-	}
-	else if (limitSpec != 2 &&
-			 !(limitSpec == 1 && milestone) &&
-			 !(limitSpec <= 1 && !sub.isEmpty()))
-	{
-		fatalError(QString().sprintf("In task %s:", id.latin1()) +
-				   "If you do not specify a plan duration criteria "
-				   "you have to specify a start and end criteria.");
-		return FALSE;
-	}
-
-	// Check actual values
-	durationSpec = 0;
+	int actualDurationSpec = 0;
 	if (actualEffort > 0.0 || planEffort > 0.0)
-		durationSpec++;
+		actualDurationSpec++;
 	if (actualLength > 0.0 || planLength > 0.0)
-		durationSpec++;
+		actualDurationSpec++;
 	if (actualDuration > 0.0 || planDuration > 0.0)
-		durationSpec++;
+		actualDurationSpec++;
 
-	limitSpec = 0;
-	if (planStart != 0 || actualStart != 0 || !depends.isEmpty())
-		limitSpec++;
-	if (planEnd != 0 || actualEnd != 0 || !preceeds.isEmpty())
-		limitSpec++;
 
-	if (durationSpec > 1)
-	{
-		fatalError(QString().sprintf("In task %s:", id.latin1()) +
-			"You can specify either an actual length, duration or effort.");
-		return FALSE;
-	}
-	else if (durationSpec == 1)
-	{
-		if (milestone)
-		{
-			fatalError(QString().sprintf("In task %s:", id.latin1()) +
-					   "You cannot specify an actual duration criteria for a "
-					   "milestone.");
-			return FALSE;
-		}
-		if (limitSpec == 2)
-		{
-			fatalError(QString().sprintf("In task %s:", id.latin1()) +
-					   "You cannot specify an actual duration criteria "
-					   "together with a start and end criteria.");
-			return FALSE;
-		}
-	}
-	else if (limitSpec != 2 &&
-			 !(limitSpec == 1 && milestone) &&
-			 !(limitSpec <= 1 && !sub.isEmpty()))
-	{
-		fatalError(QString().sprintf("In task %s:", id.latin1()) +
-				   "If you do not specify an actual duration criteria you "
-				   "have to specify a start and end criteria.");
-		return FALSE;
-	}
-
+	/*
+	|: fixed start or end date
+	-: no fixed start or end date
+	M: Milestone
+	D: start or end dependency
+    x->: ASAP task with duration criteria
+    <-x: ALAP task with duration criteria
+	-->: ASAP task without duration criteria
+	<--: ALAP task without duration criteria
+	*/
 	if (!sub.isEmpty())
 	{
-		if (durationSpec > 0)
+		if (planDurationSpec != 0)
 		{
-			fatalError("A container tasks may never have a duration criteria");
+			fatalError(QString("Container task %1 may not have a plan duration "
+							   "criteria").arg(id));
 			return FALSE;
 		}
-		if (!allocations.isEmpty())
+		if (actualDurationSpec != 0)
 		{
-			fatalError("A container tasks may never have resource "
-					   "allocations");
+			fatalError(QString("Container task %1 may not have an actual "
+							   "duration criteria").arg(id));
+			return FALSE;
+		}
+	}
+	else if (milestone)
+	{
+		if (planDurationSpec != 0)
+		{
+			fatalError(QString("Milestone %1 may not have a plan duration "
+							   "criteria").arg(id));
+			return FALSE;
+		}
+		if (actualDurationSpec != 0)
+		{
+			fatalError(QString("Milestone %1 may not have an actual duration "
+							   "criteria").arg(id));
+			return FALSE;
+		}
+		/*
+		|  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
+		|  M |   err2   |D M |   err2   - M |   ok     -D M |   ok
+		|  M -D  ok     |D M -D  ok     - M -D  ok     -D M -D  ok
+		|  M |D  err2   |D M |D  err2   - M |D  ok     -D M |D  ok
+		*/
+		/* err1: no start and end
+		- M -
+		*/
+		if (!hasPlanStartDependency() && !hasPlanEndDependency())
+		{
+			fatalError(QString("Milestone %1 must have a plan start or end "
+							   "specification.").arg(id));
+			return FALSE;
+		}
+		if (!hasActualStartDependency() && !hasActualEndDependency())
+		{
+			fatalError(QString("Milestone %1 must have an actual start or end "
+							   "specification.").arg(id));
+			return FALSE;
+		}
+		/* err2: different start and end
+		|  M |
+		|  M |D
+		|D M |
+		|D M |D
+		*/
+		if (planStart != 0 && planEnd != 0 && planStart != planEnd)
+		{
+			fatalError(QString("Milestone %1 may not have both a plan start "
+							   "and a plan end specification that do not "
+							   "match.").arg(id));
+			return FALSE;
+		}
+		if ((actualStart != 0 && actualEnd != 0 && actualStart != actualEnd) ||
+			(actualStart == 0 && planStart != 0 && actualEnd != 0 &&
+			 planStart != actualEnd) ||
+			(actualStart != 0 && actualEnd == 0 && planEnd != 0 &&
+			 actualStart != planEnd))
+		{
+			fatalError(QString("Milestone %1 may not have both an actual start "
+							   "and actual end specification.").arg(id));
+			return FALSE;
+		}
+		/* If either start of end of a milestone are specified as fixed date
+		 * we set the scheduling mode, so that the fixed date it always taken,
+		 * no matter what other dependencies are. */
+		if ((planStart != 0 || actualStart != 0) && planEnd == 0)
+			scheduling = ASAP;
+		if (planStart == 0 && (planEnd != 0 || actualEnd != 0))
+			scheduling = ALAP;
+	}
+	else
+	{
+		/*
+		Error table for non-container, non-milestone tasks:
+		
+		| x-> -   ok      |D x-> -   ok      - x-> -   err3    -D x-> -   ok
+		| x-> |   err1    |D x-> |   err1    - x-> |   err3    -D x-> |   err1
+		| x-> -D  ok      |D x-> -D  ok      - x-> -D  err3    -D x-> -D  ok
+		| x-> |D  err1    |D x-> |D  err1    - x-> |D  err3    -D x-> |D  err1
+		| --> -   err2    |D --> -   err2    - --> -   err3    -D --> -   err2
+		| --> |   ok      |D --> |   ok      - --> |   err3    -D --> |   ok
+		| --> -D  ok      |D --> -D  ok      - --> -D  err3    -D --> -D  ok
+		| --> |D  ok      |D --> |D  ok      - --> |D  err3    -D --> |D  ok
+		| <-x -   err4    |D <-x -   err4    - <-x -   err4    -D <-x -   err4
+		| <-x |   err1    |D <-x |   err1    - <-x |   ok      -D <-x |   ok
+		| <-x -D  err1    |D <-x -D  err1    - <-x -D  ok      -D <-x -D  ok
+		| <-x |D  err1    |D <-x |D  err1    - <-x |D  ok      -D <-x |D  ok
+		| <-- -   err4    |D <-- -   err4    - <-- -   err4    -D <-- -   err4
+		| <-- |   ok      |D <-- |   ok      - <-- |   err2    -D <-- |   ok
+		| <-- -D  ok      |D <-- -D  ok      - <-- -D  err2    -D <-- -D  ok
+		| <-- |D  ok      |D <-- |D  ok      - <-- |D  err2    -D <-- |D  ok
+		*/
+		/*
+		err1: Overspecified (12 cases)
+		|  x-> |
+		|  <-x |
+		|  x-> |D
+		|  <-x |D
+		|D x-> |
+		|D <-x |
+		|D <-x |D
+		|D x-> |D
+		-D x-> |
+		-D x-> |D
+		|D <-x -D
+		|  <-x -D
+		*/
+		if (((planStart != 0 && planEnd != 0) ||
+			 (hasPlanStartDependency() && planStart == 0 &&
+			  planEnd != 0 && scheduling == ASAP) ||
+			 (planStart != 0 && scheduling == ALAP &&
+			  hasPlanEndDependency() && planEnd == 0)) &&
+		   	planDurationSpec != 0)
+		{
+			fatalError(QString("Task %1 has a plan start, a plan end and a "
+							   "plan duration specification.").arg(id));
+			return FALSE;
+		}	
+		if (((actualStart != 0 && actualEnd != 0) ||
+			 (hasActualStartDependency() &&
+			  planStart == 0 && actualStart == 0 &&
+			  (planEnd != 0 || actualEnd != 0) && scheduling == ASAP) ||
+			 ((planStart != 0 || actualStart != 0) && scheduling == ALAP &&
+			  hasActualEndDependency() && 
+			  planEnd == 0 && actualEnd == 0)) &&
+		   	actualDurationSpec != 0)
+		{
+			fatalError(QString("Task %1 has an actual start, an actual end "
+							   "and an actual duration specification.")
+					   .arg(id));
+			return FALSE;
+		}	
+		/*
+		err2: Underspecified (6 cases)
+		|  --> -
+		|D --> -
+		-D --> -
+		-  <-- |
+		-  <-- |D
+		-  <-- -D
+		*/
+		if ((hasPlanStartDependency() ^ hasPlanEndDependency()) &&
+		   	planDurationSpec == 0)
+		{
+			fatalError(QString("Task %1 has only a plan start or end "
+							   "specification but no plan duration.").arg(id));
+			return FALSE;
+		}
+		if ((hasActualStartDependency() ^ hasActualEndDependency()) &&
+		   	actualDurationSpec == 0)
+		{
+			fatalError(QString("Task %1 has only an actual start or end "
+							   "specification but no actual duration.")
+					   .arg(id));
+			return FALSE;
+		}
+		/*
+		err3: ASAP + Duration must have fixed start (8 cases)
+		-  x-> -
+		-  x-> |
+		-  x-> -D
+		-  x-> |D
+		-  --> -
+		-  --> |
+		-  --> -D
+		-  --> |D
+		*/
+		if (!hasPlanStartDependency() && scheduling == ASAP)
+		{
+			fatalError(QString("Task %1 needs a plan start specification to "
+							   "be scheduled in ASAP mode.").arg(id));
+			return FALSE;
+		}
+		if (!hasActualStartDependency() && scheduling == ASAP)
+		{
+			fatalError(QString("Task %1 needs an actual start specification "
+							   "to be scheduled in ASAP mode.").arg(id));
+			return FALSE;
+		}
+		/*
+		err4: ALAP + Duration must have fixed end (8 cases)
+		-  <-x -
+		|  <-x -
+		|D <-x -
+		-D <-x -
+		-  <-- -
+		|  <-- -
+		-D <-- -
+		|D <-- -
+		*/
+		if (!hasPlanEndDependency() && scheduling == ALAP)
+		{
+			fatalError(QString("Task %1 needs a plan end specification to "
+							   "be scheduled in ALAP mode.").arg(id));
+			return FALSE;
+		}
+		if (!hasPlanEndDependency() && scheduling == ALAP)
+		{
+			fatalError(QString("Task %1 needs an actual end specification to "
+							   "be scheduled in ALAP mode.").arg(id));
 			return FALSE;
 		}
 	}
@@ -1275,23 +1505,13 @@ Task::isActive()
 bool
 Task::isPlanActive(const Interval& period) const
 {
-	Interval work;
-	if (isMilestone())
-		work = Interval(planStart, planStart + 1);
-	else
-		work = Interval(planStart, planEnd);
-	return period.overlaps(work);
+	return period.overlaps(Interval(planStart, planEnd));
 }
 
 bool
 Task::isActualActive(const Interval& period) const
 {
-	Interval work;
-	if (isMilestone())
-		work = Interval(actualStart, actualStart + 1);
-	else
-		work = Interval(actualStart, actualEnd);
-	return period.overlaps(work);
+	return period.overlaps(Interval(actualStart, actualEnd));
 }
 
 void
@@ -1409,7 +1629,8 @@ Task::computeBuffers()
 		double l;
 		if (startBuffer > 0.0)
 		{
-			for (l = 0.0; planStartBufferEnd < planEnd; planStartBufferEnd += sg)
+			for (l = 0.0; planStartBufferEnd < planEnd;
+				 planStartBufferEnd += sg)
 			{
 				if (project->isWorkingDay(planStartBufferEnd))
 					l += (double) sg / ONEDAY;
@@ -1450,7 +1671,8 @@ Task::computeBuffers()
 		double e;
 		if (startBuffer > 0.0)
 		{
-			for (e = 0.0; planStartBufferEnd < planEnd; planStartBufferEnd += sg)
+			for (e = 0.0; planStartBufferEnd < planEnd; 
+				 planStartBufferEnd += sg)
 			{
 				e += getPlanLoad(Interval(planStartBufferEnd,
 										  planStartBufferEnd + sg));
@@ -1880,7 +2102,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       }
       else if( elemTagName == "Previous" )
       {
-	 addDependency( elem.text() );
+	 addDepends( elem.text() );
       }
       else if( elemTagName == "Follower" )
       {

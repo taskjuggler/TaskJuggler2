@@ -55,8 +55,8 @@ public:
 	bool overlaps(const Interval& i) const
 	{
 		return (start <= end && i.start <= i.end &&
-				((start <= i.start && i.start < end) ||
-				 (i.start <= start && start < i.end)));
+				((start <= i.start && i.start <= end) ||
+				 (i.start <= start && start <= i.end)));
 	}
 	bool prepend(const Interval& i)
 	{

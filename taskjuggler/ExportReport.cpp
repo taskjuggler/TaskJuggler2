@@ -50,6 +50,7 @@ ExportReport::ExportReport(Project* p, const QString& f,
 	taskSortCriteria[1] = CoreAttributesList::PlanStartUp;
 	taskSortCriteria[2] = CoreAttributesList::PlanEndUp;
 	resourceSortCriteria[0] = CoreAttributesList::TreeMode;
+	resourceSortCriteria[1] = CoreAttributesList::IdUp;
 }
 
 bool
@@ -85,22 +86,64 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 		QString end = time2rfc(t->getPlanEnd());
 
 		s << "task " << stripTaskRoot(t->getId()) 
-			<< " \"" << t->getName() << "\""
-			<< " { start " << start
-			<< " end " << end;
+			<< " \"" << t->getName() << "\"" << " {" << endl 
+			<< "  start " << start << endl
+			<< "  end " << end << endl;
 		if (showActual)
 		{
 			QString start = time2rfc(t->getActualStart());
 			QString end = time2rfc(t->getActualEnd());
-			s << "actualStart " << start
-				<< " actualEnd " << end;
+			s << "  actualStart " << start << endl
+				<< "  actualEnd " << end << endl;
 		}
 
-		s << " projectid " << t->getProjectId() << " ";
+		s << "  projectid " << t->getProjectId() << endl;
 		if (t->isMilestone())
-			s << " milestone ";
+			s << "  milestone " << endl;
 		
-		s << " }" << endl;
+		for (QStringList::Iterator it = taskAttributes.begin(); 
+			 it != taskAttributes.end(); ++it)
+		{
+			switch (TaskAttributeDict[*it])
+			{
+				case TA_DEPENDS:
+					if (t->firstPrevious())
+					{
+						bool first = TRUE;
+						for (Task* tp = t->firstPrevious(); tp != 0;
+							 tp = t->nextPrevious())
+						{
+							/* Save current list item since findRef() modifies
+							 * it. Remember, we are still iterating the list.
+							 */
+							CoreAttributes* curr = filteredTaskList.current();
+							if (filteredTaskList.findRef(tp) > -1 &&
+								!(t->getParent() != 0 &&
+								  t->getParent()->hasPrevious(tp)))
+							{
+								if (first)
+								{
+									s << "  depends ";
+									first = FALSE;
+								}
+								else
+									s << ", ";
+								s << stripTaskRoot(tp->getId());
+							}
+							/* Restore current list item to continue
+							 * iteration. */
+							filteredTaskList.findRef(curr);
+						}
+						if (!first)
+							s << endl;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		
+		s << "}" << endl;
 	}
 
 	return TRUE;
@@ -201,33 +244,7 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 						   	<< endl;
 					break;
 				case TA_DEPENDS:
-					if (t->firstPrevious())
-					{
-						bool first = TRUE;
-						for (Task* tp = t->firstPrevious(); tp != 0;
-							 tp = t->nextPrevious())
-						{
-							/* Save current list item since finds modifies it.
-							 * Remember, we are still iterating the list. */
-							CoreAttributes* curr = filteredTaskList.current();
-							if (filteredTaskList.findRef(tp) > -1)
-							{
-								if (first)
-								{
-									s << "  depends ";
-									first = FALSE;
-								}
-								else
-									s << ", ";
-								s << stripTaskRoot(tp->getId());
-							}
-							/* Restore current list item to continue
-							 * iteration. */
-							filteredTaskList.findRef(curr);
-						}
-						if (!first)
-							s << endl;
-					}
+					// handled in generateTaskList
 					break;
 				default:
 					return FALSE;

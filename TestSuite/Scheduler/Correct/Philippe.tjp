@@ -9,8 +9,13 @@ resource Ekow "Exxx Byyyy" {
  vacation 2002-08-10 - 2002-08-26
 }
 
+task start "Start" {
+	milestone
+  start 2002-07-15
+}
+
 task amelioration "Amelioration" {
-start 2002-07-15
+	depends !start
         task gesttable "Module de gestion des tables" {
                 effort 3d
                 allocate Ekow {
@@ -73,8 +78,8 @@ start 2002-07-15
 }
 
 task ctm "Mise sous Control-M" {
-start 2002-07-15
-        task jobsup "Job superviseur" {
+  depends !start      
+	task jobsup "Job superviseur" {
                 effort 4d
                 allocate pmm {
                     alternative Ekow

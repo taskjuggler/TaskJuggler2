@@ -1,0 +1,84 @@
+project simple "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+	timezone "GMT"
+}
+
+resource tuxies1 "8 Tux in a Team" { efficiency 8.0 }
+resource tuxies2 "3 Tux Individiuals" {
+  resource tux1 "Tux1" { }
+	resource tux2 "Tux2" { }
+	resource tux3 "Tux3" { }	
+  resource tux4 "Tux4" { }
+}
+
+macro allocate_tuxies2 [
+  allocate tux1 {
+	alternative tux2, tux3, tux4 }
+]
+	
+task t1 "Task1" {
+  start 2000-01-01
+	task s1 "sub1" {
+		effort 5d
+		${allocate_tuxies2}
+	}
+	task s2 "sub2" {
+		effort 5d
+		${allocate_tuxies2}
+	}
+	task s3 "sub3" {
+		effort 5d
+		${allocate_tuxies2}
+	}
+	task s4 "sub4" {
+		effort 5d
+		${allocate_tuxies2}
+	}
+}
+
+task t2 "Task2" {
+	depends t1
+	task s1 "sub1" {
+		effort 5d
+		allocate tuxies2 { load 0.25 }
+		minend 2000-01-14-17:59
+		maxend 2000-01-14-18:00
+	}
+	task s2 "sub2" {
+		effort 5d
+		allocate tuxies2 { load 0.25 }
+		minend 2000-01-14-15:59
+		maxend 2000-01-14-16:00
+	}
+	task s3 "sub3" {
+		effort 5d
+		allocate tuxies2 { load 0.25 }
+		minend 2000-01-14-13:59
+		maxend 2000-01-14-14:00
+	}
+	task s4 "sub4" {
+		effort 5d
+		allocate tuxies2 { load 0.25 }
+		minend 2000-01-14-10:59
+		maxend 2000-01-14-11:00
+	}
+}
+
+task t3 "Task3" {
+  depends t2
+  effort 5d
+  allocate tuxies1 { load 1.0 }
+	minend 2000-01-21-09:59
+	maxend 2000-01-21-10:00
+}
+
+export "Team-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+
+htmltaskreport "Team.html" {
+	columns name, start, end, daily
+}
+

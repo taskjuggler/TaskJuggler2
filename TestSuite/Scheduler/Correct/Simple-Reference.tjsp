@@ -1,6 +1,20 @@
-task t1 "Task1" { start 2000-01-01-00:00:00-+0000 end 2000-01-03-23:59:59-+0000 projectid simple  }
-task t2 "Task2" { start 2000-01-04-00:00:00-+0000 end 2000-01-04-23:59:59-+0000 projectid simple  }
-task t3 "Task3" { start 2000-01-05-09:00:00-+0000 end 2000-01-05-17:59:59-+0000 projectid simple  }
+task t1 "Task1" {
+  start 2000-01-01-00:00:00-+0000
+  end 2000-01-03-23:59:59-+0000
+  projectid simple
+}
+task t2 "Task2" {
+  start 2000-01-04-00:00:00-+0000
+  end 2000-01-04-23:59:59-+0000
+  projectid simple
+  depends t1
+}
+task t3 "Task3" {
+  start 2000-01-05-09:00:00-+0000
+  end 2000-01-05-17:59:59-+0000
+  projectid simple
+  depends t2
+}
 supplement task t1 {
   minstart 2000-01-01-00:00:00-+0000
   maxstart 2000-01-31-00:00:00-+0000
@@ -12,14 +26,12 @@ supplement task t2 {
   maxstart 2000-01-31-00:00:00-+0000
   minend 2000-01-01-00:00:00-+0000
   maxend 2000-01-31-00:00:00-+0000
-  depends t1
 }
 supplement task t3 {
   minstart 2000-01-01-00:00:00-+0000
   maxstart 2000-01-31-00:00:00-+0000
   minend 2000-01-01-00:00:00-+0000
   maxend 2000-01-31-00:00:00-+0000
-  depends t2
 }
 supplement resource tux {
   planbooking 2000-01-05-09:00:00-+0000 2000-01-05-11:59:59-+0000 t3

@@ -132,7 +132,7 @@ Resource::~Resource()
 			{
 				uint j;
 				for (j = i + 1; j < sbSize &&
-						 actualScoreboard[i] == actualScoreboard[j]; j++)
+					 actualScoreboard[i] == actualScoreboard[j]; j++)
 					;
 				delete actualScoreboard[i];
 				i = j - 1;
@@ -255,7 +255,7 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 	if (scoreboard[sbIdx])
 	{
 		if (debugLevel > 6)
-			qDebug("Resource %s is busy (%ld)", id.latin1(), (long)
+			qDebug("  Resource %s is busy (%ld)", id.latin1(), (long)
 				   scoreboard[sbIdx]);
 		return FALSE;
 	}
@@ -284,18 +284,25 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 			bookedTimeTask += duration;
 	}
 
-	double resourceLoad = project->convertToDailyLoad(bookedTime);
-	double taskLoad = project->convertToDailyLoad(bookedTimeTask);
+	double resourceLoad = project->convertToDailyLoad(bookedTime) * efficiency;
+	double taskLoad = project->convertToDailyLoad(bookedTimeTask) * efficiency;
+	if (debugLevel > 7)
+	{
+		qDebug("  Resource %s: RLoad: %f(%f), TLoad: %f(%f)",
+			   id.latin1(), resourceLoad, maxEffort, taskLoad, loadFactor /
+			   100.0);
+	}
 	if (debugLevel > 6)
 	{
 		if (resourceLoad > maxEffort)
 		{
-			qDebug("Resource %s overloaded (%f)", id.latin1(), resourceLoad);
+			qDebug("  Resource %s overloaded (%f)", id.latin1(), resourceLoad);
 			return FALSE;
 		}
 		if (taskLoad > (loadFactor / 100.0))
 		{
-			qDebug("Task overloaded (%f)", loadFactor / 100.0);
+			qDebug("  %s overloaded for task %s (%f)", id.latin1(),
+				   t->getId().latin1(), loadFactor / 100.0);
 			return FALSE;
 		}
 	}
@@ -520,7 +527,8 @@ bool
 Resource::isPlanAllocated(const Interval& period, const QString& prjId)
 {
 	Interval iv(period);
-	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())) ||
+		!planScoreboard)
 		return FALSE;
 
 	/* If resource is a group, check members first. */
@@ -568,7 +576,8 @@ void
 Resource::getPlanPIDs(const Interval& period, Task* task, QStringList& pids)
 {
 	Interval iv(period);
-	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())) ||
+		!planScoreboard)
 		return;
 
 	for (Resource* r = subFirst(); r != 0; r = subNext())
@@ -605,25 +614,25 @@ void
 Resource::getActualPIDs(const Interval& period, Task* task, QStringList& pids)
 {
 	Interval iv(period);
-	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())) ||
+		!actualScoreboard)
 		return;
 
 	for (Resource* r = subFirst(); r != 0; r = subNext())
 		r->getActualPIDs(iv, task, pids);
 
-	if (actualScoreboard)
-		for (uint i = sbIndex(iv.getStart());
-			 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+	for (uint i = sbIndex(iv.getStart());
+		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+	{
+		SbBooking* b = actualScoreboard[i];
+		if (b < (SbBooking*) 4)
+			continue;
+		if ((task == 0 || task == b->getTask()) &&
+			pids.findIndex(b->getProjectId()) == -1)
 		{
-			SbBooking* b = actualScoreboard[i];
-			if (b < (SbBooking*) 4)
-				continue;
-			if ((task == 0 || task == b->getTask()) &&
-				pids.findIndex(b->getProjectId()) == -1)
-			{
-				pids.append(b->getProjectId());
-			}
+			pids.append(b->getProjectId());
 		}
+	}
 }
 
 QString

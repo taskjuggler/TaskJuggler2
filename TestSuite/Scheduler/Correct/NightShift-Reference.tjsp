@@ -1,6 +1,18 @@
-task t1 "Task1" { start 2002-01-01-22:00:00-+0100 end 2002-01-25-21:59:59-+0100 projectid test  }
-task t2 "Task2" { start 2002-03-09-22:00:00-+0100 end 2002-04-03-08:59:59-+0200 projectid test  }
-task t3 "task3" { start 2002-10-24-22:00:00-+0200 end 2002-11-17-20:59:59-+0100 projectid test  }
+task t1 "Task1" {
+  start 2002-01-01-22:00:00-+0100
+  end 2002-01-25-21:59:59-+0100
+  projectid test
+}
+task t2 "Task2" {
+  start 2002-03-09-22:00:00-+0100
+  end 2002-04-03-08:59:59-+0200
+  projectid test
+}
+task t3 "task3" {
+  start 2002-10-24-22:00:00-+0200
+  end 2002-11-17-20:59:59-+0100
+  projectid test
+}
 supplement task t1 {
   minstart 2002-01-01-00:00:00-+0100
   maxstart 2002-12-01-00:00:00-+0100
