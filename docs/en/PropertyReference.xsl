@@ -1,4 +1,8 @@
 <?xml version="1.0"?>
+<!-- 
+  Stylesheet to convert the property reference in raw XML code to a
+  nice DocBook version. (c) 2003 Chris Schlaeger <cs@suse.de>
+-->
 <xsl:stylesheet version="1.0"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
@@ -31,16 +35,48 @@
   <xsl:apply-templates select="descr"/>
   <xsl:apply-templates select="attributes" mode="body"/>
   <xsl:apply-templates select="optattributes"/>
-  <xsl:apply-templates select="contexts"/>
+  <row>
+   <entry>Context</entry>
+   <entry spanname="sp1">
+    <xsl:variable name="prop" select="@id"/>
+    <!-- Search all properties and list those who have the current
+         property listed as optional attribute. -->
+    <xsl:for-each select="/properties/*">
+     <xsl:variable name="cntx" select="@id"/>
+     <xsl:for-each select="optattributes/*">
+      <xsl:if test=".=$prop">
+       <xsl:choose>
+        <xsl:when test="$prop=$cntx">
+         <varname><xsl:value-of select="$cntx"/></varname>
+        </xsl:when>
+        <xsl:otherwise>
+         <link linkend="PROPERTY_{$cntx}"><xsl:value-of
+          select="/properties/property[@id = $cntx]/@name"/></link>
+        </xsl:otherwise>
+       </xsl:choose>
+       <xsl:if test="1">, </xsl:if> 
+      </xsl:if>
+     </xsl:for-each>
+    </xsl:for-each>
+   </entry>
+  </row>
+  <row>
+   <entry>Inheritable</entry>
+   <entry>
+    <xsl:value-of select="../@inheritable"/>
+   </entry>
+   <entry>Scenario Spec.</entry>
+   <entry>
+    <xsl:value-of select="../@scenario"/>
+   </entry>
+  </row>
   <xsl:apply-templates select="seealso"/>
   </tbody>
   </tgroup>
   </informaltable>
   </para>
-  <xsl:copy-of select="freestyle/*"/>
-  <para><screen>
-   <xsl:value-of select="example"/>
-  </screen></para>
+  <xsl:apply-templates select="freestyle"/>
+  <xsl:apply-templates select="example"/>
   </sect1>
  </xsl:template>
 
@@ -105,39 +141,6 @@
   <xsl:if test="position() != last()">, </xsl:if>
  </xsl:template>
 
- <xsl:template match="contexts">
-  <row>
-   <entry>Context</entry>
-   <entry spanname="sp1"><xsl:apply-templates select="context"/></entry>
-  </row>
-  <row>
-   <entry>Inheritable</entry>
-   <entry>
-    <xsl:value-of select="../@inheritable"/>
-   </entry>
-   <entry>Scenario Spec.</entry>
-   <entry>
-    <xsl:value-of select="../@scenario"/>
-   </entry>
-  </row>
- </xsl:template>
-
- <xsl:template match="context">
-  <xsl:choose>
-   <xsl:when test=". = 'Global Scope'">
-     <xsl:value-of select="."/>
-   </xsl:when>
-   <xsl:when test=".=../../@name">
-    <varname><xsl:value-of select="."/></varname>
-   </xsl:when>
-   <xsl:otherwise>
-    <link linkend="PROPERTY_{.}"><xsl:value-of
-     select="../../../property[@id = current()]/@name"/></link>
-   </xsl:otherwise>
-  </xsl:choose>
-  <xsl:if test="position() != last()">, </xsl:if>
- </xsl:template>
-
  <xsl:template match="seealso">
   <row>
    <entry>See also</entry>
@@ -156,6 +159,16 @@
    </xsl:otherwise>
   </xsl:choose>
   <xsl:if test="position() != last()">, </xsl:if>
+ </xsl:template>
+
+ <xsl:template match="freestyle">
+  <xsl:copy-of select="*"/>
+ </xsl:template>
+
+ <xsl:template match="example">
+  <para><screen>
+   <xsl:value-of select="."/>
+  </screen></para>
  </xsl:template>
 
 </xsl:stylesheet>

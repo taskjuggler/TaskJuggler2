@@ -6,7 +6,7 @@
  %DocBookDTD; -->
  <!ELEMENT properties (property*)>
 
- <!ELEMENT property (descr, attributes?, optattributes?, contexts,
+ <!ELEMENT property (descr, attributes?, optattributes?,
                      seealso?, freestyle?, example? )>
  <!ATTLIST property
    name CDATA #REQUIRED
@@ -27,9 +27,6 @@
 
  <!ELEMENT optattributes (optattr*)>
  <!ELEMENT optattr (#PCDATA)>
-
- <!ELEMENT contexts (context)*>
- <!ELEMENT context (#PCDATA)>
 
  <!ELEMENT seealso (also*)>
  <!ELEMENT also (#PCDATA)>
@@ -59,6 +56,36 @@
 ]>
 
 <properties>
+ <property name="Global Scope" id="global_scope">
+ <optattributes>
+   <optattr>account</optattr>
+   <optattr>copyright</optattr>
+   <optattr>csvaccountreport</optattr>
+   <optattr>csvresourcereport</optattr>
+   <optattr>csvtaskreport</optattr>
+   <optattr>export</optattr>
+   <optattr>flags_declare</optattr>
+   <optattr>htmlaccountreport</optattr>
+   <optattr>htmlresourcereport</optattr>
+   <optattr>htmlstatusreport</optattr>
+   <optattr>htmltaskreport</optattr>
+   <optattr>htmlweeklycalendar</optattr>
+   <optattr>include</optattr>
+   <optattr>macro</optattr>
+   <optattr>maxeffort</optattr>
+   <optattr>priority</optattr>
+   <optattr>projectid</optattr>
+   <optattr>projectids</optattr>
+   <optattr>project</optattr>
+   <optattr>rate</optattr>
+   <optattr>resource</optattr>
+   <optattr>shift</optattr>
+   <optattr>supplement</optattr>
+   <optattr>task</optattr>
+   <optattr>vacation_global</optattr>
+   <optattr>xmlreport</optattr>
+  </optattributes>
+ </property>
  <property name="account" id="account">
   <descr><para>Declares an account. Accounts can be used to calculate costs
 of tasks or the whole project. Account declaration may be nested, but
@@ -77,10 +104,6 @@ type.</para></descr>
   <optattributes>
    <optattr>account</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>account</context>
-  </contexts>
   <seealso>
    <also>htmlaccountreport</also>
   </seealso>
@@ -91,9 +114,6 @@ to the specified account.</para></descr>
   <attributes>
    <attr name="accountid" type="ID"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>account</also>
   </seealso>
@@ -101,10 +121,6 @@ to the specified account.</para></descr>
  <property name="accumulate" id="accumulate" inheritable="No">
   <descr><para>If this attribute is specified the values in the calendar
 columns are accumulated over the reported interval.</para></descr>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>htmlaccountreport</context>
-  </contexts>
  </property>
  <property name="allowredefinition" id="allowredefinition" inheritable="No">
   <descr><para>If this attribute is specified, redefinitions of task,
@@ -118,9 +134,6 @@ in most other cases a real user error.</para>
 <para>In case attributes of the same property must be specified in two
 different locations the <link linkend="PROPERTY_supplement">supplement</link>
 construct is the recommended way to do this.</para></descr>
-  <contexts>
-   <context>project</context>
-  </contexts>
  </property>
  <property name="allocate" id="allocate" inheritable="No">
   <descr><para>Specify which resources should be allocated to the
@@ -136,9 +149,6 @@ task.</para></descr>
    <optattr>select</optattr>
    <optattr>shift_selection</optattr>
   </optattributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>effort</also>
   </seealso>
@@ -148,9 +158,6 @@ task.</para></descr>
   <attributes>
    <attr name="resource" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>allocate</context>
-  </contexts>
   <seealso>
    <also>select</also>
   </seealso>
@@ -163,11 +170,6 @@ HTML calendar columns. The default is to show load values.</para></descr>
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>columns</also>
    <also>showprojectids</also>
@@ -194,9 +196,6 @@ HTML calendar columns. The default is to show load values.</para></descr>
   <optattributes>
    <optattr>sloppy</optattr>
   </optattributes>
-  <contexts>
-   <context>resource</context>
-  </contexts>
   <seealso>
    <also>projection</also>
   </seealso>
@@ -206,14 +205,9 @@ HTML calendar columns. The default is to show load values.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-   <context>htmlweeklycalendar</context>
-  </contexts>
   <seealso>
    <also>headline</also>
+   <also>copyright</also>
   </seealso>
  </property>
  <property name="columns" id="columns" inheritable="No">
@@ -224,14 +218,6 @@ report.</para></descr>
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>csvresourcereport</context>
-   <context>csvtaskreport</context>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
    
@@ -411,9 +397,18 @@ different color.</para>
   <attributes>
    <attr name="percent" type="INTEGER"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
+ </property>
+ <property name="copyright" id="copyright" inheritable="Yes">
+  <descr><para>Adds a copyright notice to all subsequently defined
+reports. This notice may contain any text. The notice is added at the
+bottom of the report.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>headline</also>
+   <also>caption</also>
+  </seealso>
  </property>
  <property name="credit" id="credit">
   <descr><para>Credits the specified amount to the account at the
@@ -424,9 +419,6 @@ the reason for the transaction.</para></descr>
    <attr name="description" type="STRING"/>
    <attr name="amount" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>account</context>
-  </contexts>
  </property>
  <property name="csvaccountreport" id="csvaccountreport">
   <descr><para>The report lists all specified account values as a comma
@@ -444,9 +436,6 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>sortaccounts</optattr>
    <optattr>start_report</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>htmlaccountreport</also>
   </seealso>
@@ -467,9 +456,6 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>sortresources</optattr>
    <optattr>start_report</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>htmlresourcereport</also>
   </seealso>
@@ -490,9 +476,6 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>htmltaskreport</also>
   </seealso>
@@ -502,9 +485,6 @@ Suites like OpenOffice.org or KOffice.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>currencyformat</also>
   </seealso>
@@ -525,9 +505,6 @@ should be shown at a maximum.</para></descr>
    <attr name="fractionseparator" type="STRING"/>
    <attr name="fractiondigits" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>currency</also>
   </seealso>
@@ -543,9 +520,6 @@ linkend="PROPERTY_workinghours">workinghours</link>.</para></descr>
   <attributes>
    <attr name="hours" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>yearlyworkingdays</also>
   </seealso>
@@ -564,9 +538,6 @@ last policy counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>precedes</also>
   </seealso>
@@ -574,9 +545,6 @@ last policy counts.</para></descr>
  </property>
  <property name="disabled" id="disabled" inheritable="No">
   <descr><para>Disables the scenario for scheduling.</para></descr>
-  <contexts>
-   <context>scenario</context>
-  </contexts>
  </property>
  <property name="duration" id="duration" inheritable="No">
   <descr><para>Specifies the time the task occupies the resources.
@@ -590,9 +558,6 @@ It will always be the specified duration.</para>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>effort</also>
    <also>length</also>
@@ -608,10 +573,6 @@ resources.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>resource</context>
-  </contexts>
   <seealso>
    <also>load</also>
   </seealso>
@@ -634,9 +595,6 @@ used.</para></descr>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>duration</also>
    <also>length</also>
@@ -648,14 +606,6 @@ tasks that start before this end date are listed.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>csvresourcereport</context>
-   <context>csvtaskreport</context>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>start_report</also>
   </seealso>
@@ -665,9 +615,6 @@ tasks that start before this end date are listed.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>start_task</also>
    <also>maxend</also>
@@ -685,9 +632,6 @@ end of the task.</para></descr>
 the task.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>duration</also>
    <also>effort</also>
@@ -702,9 +646,6 @@ at the moment the tasks ends.</para></descr>
   <attributes>
    <attr name="amount" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>startcredit</also>
   </seealso>
@@ -737,9 +678,6 @@ project IDs of the included tasks must be declared first with the
    <optattr>taskattributes</optattr>
    <optattr>taskroot</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>include</also>
   </seealso>
@@ -759,9 +697,6 @@ property.</para></descr>
 resource</varname> or <varname> account</varname></para>
    </attr>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <freestyle>
    <para>&lt;type&gt; &lt;id&gt; &lt;name&gt;</para>
 
@@ -791,11 +726,6 @@ expressions to filter properties from the reports.</para></descr>
   <attributes>
    <attr name="flag" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>account</context>
-   <context>resource</context>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>flags_declare</also>
   </seealso>
@@ -805,9 +735,6 @@ expressions to filter properties from the reports.</para></descr>
   <attributes>
    <attr name="flag" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>flags</also>
   </seealso>
@@ -817,15 +744,9 @@ expressions to filter properties from the reports.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-   <context>htmlstatusreport</context>
-   <context>htmlweeklycalendar</context>
-  </contexts>
   <seealso>
    <also>caption</also>
+   <also>copyright</also>
   </seealso>
  </property>
  <property name="hideaccount" id="hideaccount" inheritable="No">
@@ -836,19 +757,12 @@ account.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>htmlaccountreport</context>
-  </contexts>
  </property>
  <property name="hidecelltext" id="hidecelltext" inheritable="No">
   <descr><para>If the expression is true, the cell will be empty.</para></descr>
   <attributes>
    <attr name="expression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>columns</context>
-  </contexts>
   <seealso>
    <also>hidecellurl</also>
   </seealso>
@@ -859,9 +773,6 @@ contense.</para></descr>
   <attributes>
    <attr name="expression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>columns</context>
-  </contexts>
   <seealso>
    <also>hidecelltext</also>
   </seealso>
@@ -874,11 +785,6 @@ resource.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>csvresourcereport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
  </property>
  <property name="hidetask" id="hidetask" inheritable="No">
   <descr><para>Do not show tasks that match the specified logical
@@ -888,11 +794,6 @@ task.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>csvtaskreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
  </property>
  <property name="htmlaccountreport" id="htmlaccountreport" inheritable="No">
   <descr><para></para></descr>
@@ -900,9 +801,6 @@ task.</para></descr>
   </attributes>
   <optattributes>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>csvaccountreport</also>
    <also>htmlresourcereport</also>
@@ -915,9 +813,6 @@ task.</para></descr>
   </attributes>
   <optattributes>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>csvresourcereport</also>
    <also>htmlaccountreport</also>
@@ -944,9 +839,6 @@ tasks. The default reporting interval is 1 week.</para></descr>
    <optattr>timeformat</optattr>
    <optattr>shorttimeformat</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>htmlaccountreport</also>
    <also>htmlresourcereport</also>
@@ -960,9 +852,6 @@ tasks. The default reporting interval is 1 week.</para></descr>
   </attributes>
   <optattributes>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>csvtaskreport</also>
    <also>htmlaccountreport</also>
@@ -997,9 +886,6 @@ tasks. The default reporting interval is 1 week.</para></descr>
    <optattr>shorttimeformat</optattr>
    <optattr>barlabels</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>htmlaccountreport</also>
    <also>htmlresourcereport</also>
@@ -1023,10 +909,6 @@ is defined within the included file.</para></descr>
   <optattributes>
    <optattr>taskprefix</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>export</also>
   </seealso>
@@ -1037,18 +919,12 @@ special reserved keyword.</para></descr>
   <attributes>
     <attr name="id" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>account</context>
-  </contexts>
  </property>
  <property name="label" id="label" inheritable="No">
   <descr><para>Specifies the text for the URL in HTML reports.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>reference</context>
-  </contexts>
  </property>
  <property name="length" id="length" inheritable="No" scenario="Yes">
   <descr><para>Specifies the time the task occupies the resources.
@@ -1067,9 +943,6 @@ no global vacation of or global working time defined.</para>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>duration</also>
    <also>effort</also>
@@ -1085,9 +958,6 @@ hours have been specified for the particular day.</para></descr>
   <attributes>
    <attr name="factor" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>allocate</context>
-  </contexts>
   <seealso>
    <also>workinghours</also>
    <also>vacation_global</also>
@@ -1101,12 +971,6 @@ report.</para></descr>
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>csvresourcereport</context>
-   <context>csvtaskreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>dailyworkinghours</also>
    <also>yearlyworkingdays</also>
@@ -1149,9 +1013,6 @@ using the specified ID.</para></descr>
   <attributes>
    <attr name="id" type="ID"/>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <freestyle>
 <para>The body is not optional. It must be enclosed in [ ].
 Macros can be declared like this:</para>
@@ -1188,9 +1049,6 @@ This macro call ${?foo} will expand to nothing if foo is undefined.
   <descr><para>Makes a resource allocation mandatory. In this case the
 other resource allocations of the task will only be made when the
 mandatory resources are available as well.</para></descr>
-  <contexts>
-   <context>allocate</context>
-  </contexts>
  </property>
  <property name="maxeffort" id="maxeffort" inheritable="No">
   <descr><para>The daily maximum effort for a resource. Resources will not be
@@ -1199,9 +1057,6 @@ working day. 0.5 means half a working day.</para></descr>
   <attributes>
    <attr name="workingdays" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>resource</context>
-  </contexts>
   <seealso>
    <also>dailyworkinghours</also>
    <also>workinghours</also>
@@ -1215,9 +1070,6 @@ the specified value, then an error is reported.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>maxstart</also>
    <also>minend</also>
@@ -1233,9 +1085,6 @@ the specified value, then an error is reported.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>maxend</also>
    <also>minend</also>
@@ -1250,9 +1099,6 @@ the specified value, then an error is reported.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>maxend</also>
    <also>maxstart</also>
@@ -1268,9 +1114,6 @@ the specified value, then an error is reported.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>maxend</also>
    <also>maxstart</also>
@@ -1283,9 +1126,6 @@ duration. You may not specify a <link
 linkend="PROPERTY_duration">duration</link>, <link
 linkend="PROPERTY_length">length</link> or <link
 linkend="PROPERTY_effort">effort</link> for a milestone task.</para></descr>
-  <contexts>
-   <context>task</context>
-  </contexts>
  </property>
  <property name="note" id="note" inheritable="No">
   <descr><para>Attach a note to the task. This is usually a more
@@ -1293,9 +1133,6 @@ detail specification of what the task is about.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>statusnote</also>
   </seealso>
@@ -1306,9 +1143,6 @@ as current date. If no value is specified, the current value of the
 system clock is used.</para></descr> <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
  </property>
  <property name="numberformat" id="numberformat" inheritable="Yes">
   <descr><para>These values specify the default format used for all
@@ -1326,18 +1160,12 @@ should be shown at a maximum.</para></descr>
    <attr name="fractionseparator" type="STRING"/>
    <attr name="fractiondigits" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
  </property>
  <property name="persistent" id="persistent" inheritable="No">
   <descr><para>Specifies that the resource is used for the whole task.
 This is usefull when several alternative resources have been
 specified. Normaly the selected resource can change after each
 timeslot.</para></descr>
-  <contexts>
-   <context>allocate</context>
-  </contexts>
   <seealso>
    <also>alternative</also>
   </seealso>
@@ -1351,9 +1179,6 @@ the definition of the subtask.</para></descr>
   <attributes>
    <attr name="value" type="INTEGER"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
  </property>
  <property name="precedes" id="precedes" inheritable="No">
   <descr><para>Specifies that the tasks with the specified IDs cannot
@@ -1369,9 +1194,6 @@ within a task, the last policy counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>depends</also>
   </seealso>
@@ -1423,9 +1245,6 @@ number from a revision control system.</para>
    <optattr>workinghours</optattr>
    <optattr>yearlyworkingdays</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
  </property>
  <property name="projectid" id="projectid" inheritable="Yes">
   <descr><para>At global scope it declares a new project id and
@@ -1436,10 +1255,6 @@ particularly helpful if the project is merged from several sub
 projects that each have their own ID.</para></descr> <attributes>
 <attr name="id" type="ID"/>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>project</also>
    <also>projectids</also>
@@ -1450,9 +1265,6 @@ projects that each have their own ID.</para></descr> <attributes>
   <attributes>
    <attr name="projectid" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>project</also>
    <also>projectid</also>
@@ -1463,9 +1275,6 @@ projects that each have their own ID.</para></descr> <attributes>
 will be scheduled taking the manual bookings into account. The
 tasks will be extended after the last manual bookings until the
 specified effort, length or duration has been reached.</para></descr>
-  <contexts>
-   <context>scenario</context>
-  </contexts>
   <seealso>
    <also>booking</also>
   </seealso>
@@ -1477,9 +1286,6 @@ the resource.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>resource</context>
-  </contexts>
   <seealso>
    <also>account</also>
    <also>task</also>
@@ -1491,11 +1297,6 @@ inserted at the top of the report.</para></descr>
   <attributes>
    <attr name="html" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmlaccountreport</context>
-  </contexts>
   <seealso>
    <also>rawstylesheet</also>
    <also>rawtail</also>
@@ -1506,11 +1307,6 @@ inserted at the top of the report.</para></descr>
   <attributes>
    <attr name="stylesheet" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
  </property>
  <property name="rawtail" id="rawtail" inheritable="No">
   <descr><para>Specifies a section of raw HTML code that will be
@@ -1518,11 +1314,6 @@ inserted at the bottom of the report.</para></descr>
   <attributes>
    <attr name="html" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>rawhead</also>
    <also>rawstylesheet</also>
@@ -1539,9 +1330,6 @@ than one reference, you can create your own URL placeholders.</para></descr>
   <optattributes>
    <optattr>label</optattr>
   </optattributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>extend</also>
   </seealso>
@@ -1563,10 +1351,6 @@ than one reference, you can create your own URL placeholders.</para></descr>
    <optattr>vacation_resource</optattr>
    <optattr>workinghours</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>resource</context>
-  </contexts>
   <seealso>
    <also>task</also>
   </seealso>
@@ -1576,9 +1360,6 @@ than one reference, you can create your own URL placeholders.</para></descr>
   <attributes>
    <attr name="resource" type="ID"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>resource</also>
   </seealso>
@@ -1589,10 +1370,6 @@ specified logical expression.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>htmlaccountreport</context>
-  </contexts>
   <seealso>
    <also>rollupresource</also>
    <also>rolluptask</also>
@@ -1604,10 +1381,6 @@ specified logical expression.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>csvresourcereport</context>
-   <context>htmlresourcereport</context>
-  </contexts>
   <seealso>
    <also>rollupaccount</also>
    <also>rolluptask</also>
@@ -1619,10 +1392,6 @@ specified logical expression.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
-  <contexts>
-   <context>csvtaskreport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>rollupaccount</also>
    <also>rollupresource</also>
@@ -1642,10 +1411,6 @@ scenario.</para></descr>
    <optattr>projection</optattr>
    <optattr>scenario</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>scenario</context>
-  </contexts>
   <seealso>
    <also>scenarios</also>
   </seealso>
@@ -1658,14 +1423,6 @@ report.</para></descr>
     <para>The ID of the scenario.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>csvresourcereport</context>
-   <context>csvtaskreport</context>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>scenario</also>
   </seealso>
@@ -1674,9 +1431,6 @@ report.</para></descr>
 scenario="Yes">
   <descr><para>This is mostly for internal use. It specifies that the
 task can be ignored for scheduling in the scenario.</para></descr>
-  <contexts>
-   <context>task</context>
-  </contexts>
  </property>
  <property name="scheduling" id="scheduling" inheritable="Yes">
   <descr><para>Specifies the scheduling policy for the task. A task
@@ -1688,9 +1442,6 @@ end to start (As Late As Possible, ALAP).</para></descr>
 <varname>ASAP</varname>.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
  </property>
  <property name="select" id="select" inheritable="No">
   <descr><para>The select functions controls which resource is picked
@@ -1702,9 +1453,6 @@ becomes unavailable.</para></descr>
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>allocate</context>
-  </contexts>
   <seealso>
    <also>persistent</also>
   </seealso>
@@ -1744,9 +1492,6 @@ assignments. 3: Period may overlap with off-duty hours, vacation or
 other task assignments. These are silently skipped.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>booking</context>
-  </contexts>
  </property>
  <property name="shift" id="shift" inheritable="No">
   <descr><para>When several resource have the same working hours,
@@ -1761,10 +1506,6 @@ intervals.</para></descr>
    <optattr>shift</optattr>
    <optattr>workinghours</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>shift</context>
-  </contexts>
   <seealso>
    <also>shift_selection</also>
   </seealso>
@@ -1782,10 +1523,6 @@ defined, but shift intervals may not overlap.</para></descr>
 whole project time frame.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>resource</context>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>shift</also>
   </seealso>
@@ -1797,9 +1534,6 @@ normal just the hour and minutes.</para></descr>
   <attributes>
    <attr name="format" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>timeformat</also>
   </seealso>
@@ -1807,11 +1541,6 @@ normal just the hour and minutes.</para></descr>
  <property name="showprojectids" id="showprojectids" inheritable="No">
   <descr><para>Specifies that calendar columns in reports should
 contain the project ID after the load value.</para></descr>
-  <contexts>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-   <context>htmlweeklycalendar</context>
-  </contexts>
   <seealso>
    <also>barlabels</also>
    <also>columns</also>
@@ -1825,10 +1554,6 @@ within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>htmlaccountreport</context>
-  </contexts>
  </property>
  <property name="sortresources" id="sortresources" inheritable="No">
   <descr><para>Determines how the resources are sorted in the report. Up to 3
@@ -1838,11 +1563,6 @@ within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
   </attributes>
-  <contexts>
-   <context>csvresourcereport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
  </property>
  <property name="sorttasks" id="sorttasks" inheritable="No">
   <descr><para>Determines how the tasks are sorted in the report. Up to 3
@@ -1852,11 +1572,6 @@ within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
   </attributes>
-  <contexts>
-   <context>csvtaskreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
  </property>
  <property name="start" id="start_report" inheritable="No">
   <descr><para>Specifies the start date of the report. In task reports only
@@ -1864,14 +1579,6 @@ tasks that end after this end date are listed.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>csvresourcereport</context>
-   <context>csvtaskreport</context>
-   <context>htmlaccountreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-  </contexts>
   <seealso>
    <also>end_report</also>
   </seealso>
@@ -1882,9 +1589,6 @@ scenario="Yes">
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>end_task</also>
    <also>maxstart</also>
@@ -1902,9 +1606,6 @@ begining of the task.</para></descr>
 the task.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>duration</also>
    <also>effort</also>
@@ -1919,9 +1620,6 @@ property at the moment the tasks starts.</para></descr>
   <attributes>
    <attr name="amount" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>endcredit</also>
   </seealso>
@@ -1933,9 +1631,6 @@ task.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>note</also>
   </seealso>
@@ -1956,9 +1651,6 @@ was generated by some other tool.</para></descr>
 <varname>task</varname>.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>resource</also>
    <also>task</also>
@@ -2006,10 +1698,6 @@ what task.</para></descr>
    <optattr>supplement</optattr>
    <optattr>task</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-   <context>task</context>
-  </contexts>
   <seealso>
    <also>resource</also>
   </seealso>
@@ -2038,9 +1726,6 @@ attributes.</para></descr>
   <attributes>
    <attr name="attribute" type="ID" list="1"/>
   </attributes>
-  <contexts>
-   <context>export</context>
-  </contexts>
  </property>
  <property name="taskprefix" id="taskprefix" inheritable="No">
   <descr><para>All tasks in the included file are added as sub-tasks of the
@@ -2048,9 +1733,6 @@ task specified by <varname>taskprefix</varname>.</para></descr>
   <attributes>
    <attr name="prefix" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>include</context>
-  </contexts>
   <seealso>
    <also>task</also>
   </seealso>
@@ -2065,9 +1747,6 @@ become top-level tasks in the exported file.</para></descr>
     <para>ID of a task that specifies the new root level</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>export</context>
-  </contexts>
  </property>
  <property name="timezone" id="timezone" inheritable="No">
   <descr><para>Sets the default timezone of the project. All times
@@ -2082,9 +1761,6 @@ defaults are assumed.</para></descr>
   <attributes>
    <attr name="zone" type="STRING"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
  </property>
  <property name="timeformat" id="timeformat" inheritable="Yes">
   <descr><para>Determines how time specifications in reports look like.</para></descr>
@@ -2093,15 +1769,6 @@ defaults are assumed.</para></descr>
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
-  <contexts>
-   <context>csvaccountreport</context>
-   <context>csvresourcereport</context>
-   <context>csvtaskreport</context>
-   <context>htmlresourcereport</context>
-   <context>htmltaskreport</context>
-   <context>htmltaskreport</context>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>shorttimeformat</also>
   </seealso>
@@ -2290,9 +1957,6 @@ resolution.</para></descr>
    <attr name="value" type="INTEGER"/>
    <attr name="unit" type="UNIT"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
  </property>
  <property name="vacation" id="vacation_global" inheritable="Yes">
   <descr><para>Specify a global vacation day. This vacation is
@@ -2301,9 +1965,6 @@ respected by all resources that are defined hereafter.</para></descr>
    <attr name="name" type="STRING"/>
    <attr name="interval" type="DATEINTERVAL"/>
   </attributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
   <seealso>
    <also>vacation_resource</also>
   </seealso>
@@ -2313,9 +1974,6 @@ respected by all resources that are defined hereafter.</para></descr>
   <attributes>
    <attr name="interval" type="DATEINTERVAL"/>
   </attributes>
-  <contexts>
-   <context>resource</context>
-  </contexts>
   <seealso>
    <also>vacation_global</also>
   </seealso>
@@ -2326,16 +1984,10 @@ Currently version 2 is highly recomended.</para></descr>
   <attributes>
    <attr name="number" type="INTEGER"/>
   </attributes>
-  <contexts>
-   <context>xmlreport</context>
-  </contexts>
  </property>
  <property name="weekstartsmonday" id="weekstartsmonday" inheritable="No">
   <descr><para>Specify that you want to base all week calculation on
 weeks starting on Monday. This is common in many European countries.</para></descr>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>weekstartssunday</also>
   </seealso>
@@ -2344,9 +1996,6 @@ weeks starting on Monday. This is common in many European countries.</para></des
   <descr><para>Specify that you want to base all week calculation on
 weeks starting on Sunday. This is common in the United States of
 America.</para></descr>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>weekstartsmonday</also>
   </seealso>
@@ -2357,11 +2006,6 @@ America.</para></descr>
    <attr name="weekday" type="WEEKDAY"/>
    <attr name="interval" type="TIMEINTERVAL" list="1"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-   <context>resource</context>
-   <context>shift</context>
-  </contexts>
   <seealso>
    <also>dailyworkinghours</also>
    <also>yearlyworkingdays</also>
@@ -2378,9 +2022,6 @@ should be generated.</para></descr>
   <optattributes>
    <optattr>version</optattr>
   </optattributes>
-  <contexts>
-   <context>Global Scope</context>
-  </contexts>
  </property>
  <property name="yearlyworkingdays" id="yearlyworkingdays" inheritable="No">
   <descr><para>Specifies the number of average working days per year.
@@ -2390,9 +2031,6 @@ working months and working years into each other.</para></descr>
   <attributes>
    <attr name="days" type="REAL"/>
   </attributes>
-  <contexts>
-   <context>project</context>
-  </contexts>
   <seealso>
    <also>dailyworkinghours</also>
    <also>loadunit</also>
@@ -2409,9 +2047,6 @@ working months and working years into each other.</para></descr>
   <optattributes>
    <optattr></optattr>
   </optattributes>
-  <contexts>
-   <context></context>
-  </contexts>
   <seealso>
    <also></also>
   </seealso>
