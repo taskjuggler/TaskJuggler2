@@ -34,6 +34,7 @@
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
+#include "Journal.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
 #include "Report.h"
@@ -1007,6 +1008,8 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
             richTextDisplay->setCaption
                 (QString("Note for Task %1 (%2) - TaskJuggler")
                  .arg(t->getName()).arg(t->getId()));
+            richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
+
             richTextDisplay->textDisplay->setText(t->getNote());
             richTextDisplay->show();
         }
@@ -1067,8 +1070,28 @@ TjReport::showTaskDetails(const Task* task)
 {
     RichTextDisplay* richTextDisplay = new RichTextDisplay(topLevelWidget());
     richTextDisplay->setCaption
-        (QString("Details of Task %1 (%2) - TaskJuggler")
+        (i18n("Details of Task %1 (%2) - TaskJuggler")
          .arg(task->getName()).arg(task->getId()));
+    richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
+
+    QString text;
+    if (task->isMilestone())
+    {
+        text += i18n("<b>Date:</b> %1<br/>")
+            .arg(time2tjp(task->getStart(scenario)));
+    }
+    else
+        text += i18n("<b>Start:</b> %1<br/>"
+                     "<b>End:</b> %2<br/>")
+            .arg(time2tjp(task->getStart(scenario)))
+            .arg(time2tjp(task->getEnd(scenario) + 1));
+
+    if (!task->getNote().isEmpty())
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        text += i18n("<b>Note:</b> %1<br/>").arg(task->getNote());
+    }
 
     QString predecessors;
     for (TaskListIterator tli(task->getPreviousIterator()); *tli; ++tli)
@@ -1086,17 +1109,24 @@ TjReport::showTaskDetails(const Task* task)
         successors += (*tli)->getName() + " (" + (*tli)->getId() + ")";
     }
 
-    richTextDisplay->textDisplay->setText
-        (i18n("<b>Start:</b> %1<br/>"
-              "<b>End:</b> %2<br/>"
-              "<hr/><b>Note:</b> %3<br/><hr/>"
-              "<b>Predecessors:</b> %4<br/>"
-              "<b>Successors:</b> %5")
-         .arg(time2tjp(task->getStart(scenario)))
-         .arg(time2tjp(task->getEnd(scenario)))
-         .arg(task->getNote())
-         .arg(predecessors)
-         .arg(successors));
+    if (!predecessors.isEmpty() || !successors.isEmpty())
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        if (!predecessors.isEmpty())
+            text += i18n("<b>Predecessors:</b> %1<br/>").arg(predecessors);
+        if (!successors.isEmpty())
+            text += i18n("<b>Successors:</b> %1<br/>").arg(successors);
+    }
+
+    if (task->hasJournal())
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        text += generateJournal(task->getJournalIterator());
+    }
+
+    richTextDisplay->textDisplay->setText(text);
     richTextDisplay->show();
 }
 
@@ -1107,8 +1137,18 @@ TjReport::showResourceDetails(const Resource* resource)
     richTextDisplay->setCaption
         (QString("Details of Resource %1 (%2) - TaskJuggler")
          .arg(resource->getName()).arg(resource->getFullId()));
+    richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
-    richTextDisplay->textDisplay->setText (i18n("Nothing here yet."));
+    QString text;
+
+    if (resource->hasJournal())
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        text += generateJournal(resource->getJournalIterator());
+    }
+
+    richTextDisplay->textDisplay->setText(text);
     richTextDisplay->show();
 }
 
@@ -1313,6 +1353,19 @@ TjReport::stepIntervalName(time_t ref) const
             kdFatal() << "Unknown stepUnit";
     }
     return name;
+}
+
+QString
+TjReport::generateJournal(JournalIterator jit) const
+{
+    QString text;
+
+    for ( ; *jit; ++jit)
+        text += "<b><i>" + time2user((*jit)->getDate(),
+                                  reportDef->getTimeFormat()) +
+            "</i></b><br/>" + (*jit)->getText() + "<br/>";
+
+    return text;
 }
 
 #include "TjReport.moc"

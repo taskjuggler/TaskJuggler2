@@ -34,6 +34,7 @@ class Task;
 class Resource;
 class QtReportElement;
 class Interval;
+class JournalIterator;
 
 class TjReport : public QWidget
 {
@@ -124,6 +125,8 @@ protected:
 
     Interval stepInterval(time_t ref) const;
     QString stepIntervalName(time_t ref) const;
+
+    QString generateJournal(JournalIterator jit) const;
 
     time_t stepLength() const;
     void setBestStepUnit();
