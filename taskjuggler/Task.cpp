@@ -199,11 +199,6 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         qDebug("Trying to schedule %s at %s",
                id.latin1(), time2tjp(date).latin1());
 
-    if (id == "TEAMS.ADM.sl93.burn93_Beta1")
-        DebugCtrl.setDebugLevel(25);
-    else
-        DebugCtrl.setDebugLevel(0);
-
     if (scheduling == Task::ASAP)
     {
         if (start == 0 ||
