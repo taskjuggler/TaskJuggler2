@@ -122,6 +122,7 @@ public:
 	{
 		return taskList.getTask(id);
 	}
+	uint taskCount() const { return taskList.count(); }
 
 	void addResource(Resource* r)
 	{
@@ -141,6 +142,7 @@ public:
 	{
 		return accountList.getAccount(id);
 	}
+	uint accountCount() const { return accountList.count(); }
 
 	void addShift(Shift* s)
 	{
@@ -150,6 +152,7 @@ public:
 	{
 		return shiftList.getShift(id);
 	}
+	uint shiftCount() const { return shiftList.count(); }
 
 	void setMinEffort(double m) { minEffort = m; }
 	double getMinEffort() const { return minEffort; }
@@ -168,6 +171,19 @@ public:
 
 	void setDailyWorkingHours(double h) { dailyWorkingHours = h; }
 	double getDailyWorkingHours() const { return dailyWorkingHours; }
+
+	double getWeeklyWorkingDays() const
+   	{
+	   	return yearlyWorkingDays / 52.14285714; 
+	}
+
+	double getMonthlyWorkingDays() const 
+	{ 
+		return yearlyWorkingDays / 12; 
+	}
+
+	void setYearlyWorkingDays(double d) { yearlyWorkingDays = d; }
+	double getYearlyWorkingDays() const { return yearlyWorkingDays; }
 
 	void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
 	ulong getScheduleGranularity() const { return scheduleGranularity; }
@@ -269,8 +285,15 @@ private:
 	/// The number of fraction digits of all money values.
 	int currencyDigits;
 
-	/// Number of working hours of a generic working day.
+	/* The average number of working hours per day. This factor is used
+	 * when converting hours in working days. It should match the workingHours
+	 * closely. */
 	double dailyWorkingHours;
+
+	/* The average number of working days per year. This factor is used when
+	 * converting working days into years. It should match the defined working
+	 * hours and vacation days. */
+	double yearlyWorkingDays;
 
 	/* The list of standard working or opening hours. These values will be
 	 * inherited by the resources. */

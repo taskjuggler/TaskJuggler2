@@ -94,17 +94,17 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right white-space:nowrap\">";
-			scaleTime(t->getPlanCalcDuration());
-			s << "</td>" << endl;
+			  << "\" style=\"text-align:right white-space:nowrap\">"
+			  << scaledLoad(t->getPlanCalcDuration())
+			  << "</td>" << endl;
 		}
 		else if (*it == KW("effort"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right white-space:nowrap\">";
-			scaleTime(t->getPlanLoad(Interval(start, end), r));
-			s << "</td>" << endl;
+			  << "\" style=\"text-align:right white-space:nowrap\">"
+			  << scaledLoad(t->getPlanLoad(Interval(start, end), r))
+			  << "</td>" << endl;
 		}
 		else if (*it == KW("projectid"))
 			textTwoRows(t->getProjectId() + " (" +
@@ -198,17 +198,17 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right white-space:nowrap\">";
-			scaleTime(t->getActualCalcDuration());
-			s << "</td>" << endl;
+			  << "\" style=\"text-align:right white-space:nowrap\">"
+			  << scaledLoad(t->getActualCalcDuration())
+			  << "</td>" << endl;
 		}
 		else if (*it == KW("effort"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right white-space:nowrap\">";
-			scaleTime(t->getActualLoad(Interval(start, end), r));
-			s << "</td>" << endl;
+			  << "\" style=\"text-align:right white-space:nowrap\">"
+			  << scaledLoad(t->getActualLoad(Interval(start, end), r))
+			  << "</td>" << endl;
 		}
 		else if (*it == KW("resources"))
 			actualResources(t, r != 0);
@@ -269,9 +269,9 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 		{
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right white-space:nowrap\">";
-			scaleTime(r->getPlanLoad(Interval(start, end), t));
-			s << "</td>" << endl;
+			  << "\" style=\"text-align:right white-space:nowrap\">"
+			  << scaledLoad(r->getPlanLoad(Interval(start, end), t))
+			  << "</td>" << endl;
 		}
 		else if (*it == KW("projectid"))
 			emptyPlan(t != 0);
@@ -333,9 +333,9 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 		{
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right white-space:nowrap\">";
-			scaleTime(r->getActualLoad(Interval(start, end), t));
-			s << "</td>" << endl;
+			  << "\" style=\"text-align:right white-space:nowrap\">"
+			  << scaledLoad(r->getActualLoad(Interval(start, end), t))
+			  << "</td>" << endl;
 		}
 		else if (*it == KW("schedule"))
 		{
@@ -1386,8 +1386,7 @@ ReportHtml::reportLoad(double load, const QString& bgCol, bool bold)
 		  << bgCol << "\">";
 		if (bold)
 			s << "<b>";
-		s << QString().sprintf("%3.1f", load);
-//		scaleTime(load, FALSE);
+		s << scaledLoad(load);
 		if (bold)
 			s << "</b>";
 		s << "</td>" << endl;

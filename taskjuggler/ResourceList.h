@@ -144,6 +144,8 @@ public:
 	void addVacation(Interval* i) { vacations.append(i); }
 	bool hasVacationDay(time_t day);
 
+	bool isOnShift(const Interval& slot);
+
 	void setWorkingHours(int day, QPtrList<Interval>* l)
 	{
 		if (day < 0 || day > 6)

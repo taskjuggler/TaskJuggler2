@@ -63,7 +63,7 @@ public:
 
 	bool isVacationDay(time_t day)
 	{
-		workingHours[dayOfWeek(day)]->isEmpty();
+		return workingHours[dayOfWeek(day)]->isEmpty();
 	}
 
 private:

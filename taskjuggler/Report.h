@@ -92,6 +92,11 @@ public:
 		accountSortCriteria = sc;
 	}
 
+	enum LoadUnit { minutes, hours, days, weeks, months, years, shortAuto,
+		longAuto };
+
+	bool setLoadUnit(const QString& u);
+
 protected:
 	Report() { }
 
@@ -106,7 +111,7 @@ protected:
 	void filterAccountList(AccountList& filteredList, Account::AccountType at);
 	void sortAccountList(AccountList& filteredList);
 
-	void scaleTime(double t, bool verboseUnit = TRUE);
+	QString scaledLoad(double t);
 
 	void warningMsg(const char* msg, ... );
 
@@ -136,6 +141,8 @@ protected:
 	ExpressionTree* rollUpTask;
 	ExpressionTree* rollUpResource;
 	ExpressionTree* rollUpAccount;
+
+	LoadUnit loadUnit;
 
 	bool hidePlan;
 	bool showActual;

@@ -152,8 +152,11 @@ Resource::initScoreboard()
 
 	// Then change all worktime slots to 0 (available) again.
 	for (time_t day = project->getStart(); day < project->getEnd();
-		 day = sameTimeNextDay(day))
+		 day += project->getScheduleGranularity())
 	{
+		if (isOnShift(day))
+			scoreboard[sbIndex(day)] = (SbBooking*) 0;
+#if 0
 		const int dow = dayOfWeek(day);
 		QPtrList<Interval>* wHours = 0;
 		for (ShiftSelection* sl = shifts.first(); sl != 0;
@@ -181,6 +184,7 @@ Resource::initScoreboard()
 				 date += project->getScheduleGranularity())
 				scoreboard[sbIndex(date)] = (SbBooking*) 0;
 		}
+#endif
 	}
 
 	// Then mark all resource specific vacation slots as such (2).
@@ -593,6 +597,23 @@ Resource::hasVacationDay(time_t day)
 
 	if (workingHours[dayOfWeek(day)]->isEmpty())
 		return TRUE;
+
+	return FALSE;
+}
+
+bool
+Resource::isOnShift(const Interval& slot)
+{
+	for (ShiftSelection* sl = shifts.first(); sl != 0; sl = shifts.next())
+		if (sl->getPeriod().contains(slot))
+			return sl->getShift()->isOnShift(slot);
+
+	int dow = dayOfWeek(slot.getStart());
+	for (Interval* i = workingHours[dow]->first(); i != 0;
+		 i = workingHours[dow]->next())
+		if (i->contains(Interval(secondsOfDay(slot.getStart()),
+								 secondsOfDay(slot.getEnd()))))
+			return TRUE;
 
 	return FALSE;
 }

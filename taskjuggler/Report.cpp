@@ -18,6 +18,8 @@
 #include "Utility.h"
 #include "ExpressionTree.h"
 
+#define KW(a) a
+
 Report::Report(Project* p, const QString& f, time_t s, time_t e,
 			   const QString& df, int dl) :
 		project(p), fileName(f), start(s), end(e), defFileName(df),
@@ -37,6 +39,8 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 	hidePlan = FALSE;
 	showActual = FALSE;
 	showPIDs = FALSE;
+
+	loadUnit = days;
 }
 
 Report::~Report()
@@ -164,6 +168,31 @@ Report::setRollUpAccount(ExpressionTree* et)
 {
 	delete rollUpAccount;
 	rollUpAccount = et;
+}
+
+bool
+Report::setLoadUnit(const QString& u)
+{
+	if (u == KW("minutes"))
+		loadUnit = minutes;
+	else if (u == KW("hours"))
+		loadUnit = hours;
+	else if (u == KW("days"))
+		loadUnit = days;
+	else if (u == KW("weeks"))
+		loadUnit = weeks;
+	else if (u == KW("months"))
+		loadUnit = months;
+	else if (u == KW("years"))
+		loadUnit = years;
+	else if (u == KW("shortauto"))
+		loadUnit = shortAuto;
+	else if (u == KW("longauto"))
+		loadUnit = longAuto;
+	else
+		return FALSE;
+
+	return TRUE;
 }
 
 void
@@ -323,61 +352,95 @@ Report::sortAccountList(AccountList& filteredList)
 	filteredList.sort();
 }
 
-void
-Report::scaleTime(double t, bool verboseUnit)
+QString
+Report::scaledLoad(double t)
 {
-	double dwh = project->getDailyWorkingHours();
 	QStringList variations;
 	QValueList<double> factors;
-	const char* shortUnit[] = { "d", "h", "w", "m", "y" };
-	const char* unit[] = { "day", "hour", "week", "month", "year" };
-	const char* units[] = { "days", "hours", "weeks", "months", "years"};
-	double max[] = { 0, 48, 8, 24, 0 };
+	const char* shortUnit[] = { "d", "min", "h", "w", "m", "y" };
+	const char* unit[] = { "day", "minute", "hour", "week", "month", "year" };
+	const char* units[] = { "days", "minutes", "hours", "weeks", "months", 
+		"years"};
+	double max[] = { 0, 60, 48, 8, 24, 0 };
 
 	factors.append(1);
-	factors.append(dwh);
-	factors.append(1.0 / 7);
-	factors.append(1.0 / 30);
-	factors.append(1.0 / 365);
+	factors.append(project->getDailyWorkingHours() * 60);
+	factors.append(project->getDailyWorkingHours());
+	factors.append(1.0 / project->getWeeklyWorkingDays());
+	factors.append(1.0 / project->getMonthlyWorkingDays());
+	factors.append(1.0 / project->getYearlyWorkingDays());
 
-	for (QValueList<double>::Iterator it = factors.begin();
-		 it != factors.end(); ++it)
+	QString str;
+	
+	if (loadUnit == shortAuto || loadUnit == longAuto)
 	{
-		QString str;
-		str.sprintf("%.1f", t * *it);
+		for (QValueList<double>::Iterator it = factors.begin();
+			 it != factors.end(); ++it)
+		{
+			str.sprintf("%.1f", t * *it);
+			// If str ends with ".0" remove ".0".
+			if (str[str.length() - 1] == '0')
+				str = str.left(str.length() - 2);
+			int idx = factors.findIndex(*it);
+			if ((*it != 1.0 && str == "0") ||
+				(max[idx] != 0 && max[idx] < (t * *it)))
+				variations.append("");
+			else
+				variations.append(str);
+		}
+
+		uint shortest = 0;
+		for (QStringList::Iterator it = variations.begin();
+			 it != variations.end();
+			 ++it)
+		{
+			if ((*it).length() > 0 &&
+				(*it).length() - ((*it).find('.') < 0 ? 0 : 1) <
+				variations[shortest].length() -
+				(variations[shortest].find('.') < 0 ? 0 : 1))
+			{
+				shortest = variations.findIndex(*it);
+			}
+		}
+		str = variations[shortest];
+		if (loadUnit == longAuto)
+		{
+			if (variations[shortest] == "1")
+				str += QString(" ") + unit[shortest];
+			else
+				str += QString(" ") + units[shortest];
+		}
+		else
+			str += shortUnit[shortest];
+	}
+	else
+	{
+		switch (loadUnit)
+		{
+			case days:
+				str.sprintf("%.1f", t * factors[0]);
+				break;
+			case minutes:
+				str.sprintf("%.1f", t * factors[1]);
+				break;
+			case hours:
+				str.sprintf("%.1f", t * factors[2]);
+				break;
+			case weeks:
+				str.sprintf("%.1f", t * factors[3]);
+				break;
+			case months:
+				str.sprintf("%.1f", t * factors[4]);
+				break;
+			case years:
+				str.sprintf("%.1f", t * factors[5]);
+				break;
+		}
 		// If str ends with ".0" remove ".0".
 		if (str[str.length() - 1] == '0')
 			str = str.left(str.length() - 2);
-		int idx = factors.findIndex(*it);
-		if ((*it != 1.0 && str == "0") ||
-			(max[idx] != 0 && max[idx] < (t * *it)))
-			variations.append("");
-		else
-			variations.append(str);
 	}
-
-	uint shortest = 0;
-	for (QStringList::Iterator it = variations.begin(); it != variations.end();
-		 ++it)
-	{
-		if ((*it).length() > 0 &&
-			(*it).length() - ((*it).find('.') < 0 ? 0 : 1) <
-			variations[shortest].length() -
-			(variations[shortest].find('.') < 0 ? 0 : 1))
-		{
-			shortest = variations.findIndex(*it);
-		}
-	}
-	s << variations[shortest];
-	if (verboseUnit)
-	{
-		if (variations[shortest] == "1")
-			s << " " << unit[shortest];
-		else
-			s << " " << units[shortest];
-	}
-	else
-		s << shortUnit[shortest];
+	return str;
 }
 
 void

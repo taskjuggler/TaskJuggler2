@@ -31,7 +31,11 @@ Project::Project()
 	activeAsap.setSorting(CoreAttributesList::PrioDown);
 	activeAlap.setSorting(CoreAttributesList::PrioDown);
 	priority = 500;
+	/* The following settings are country and culture dependent. Those
+	 * defaults are probably true for many Western countries, but have to be
+	 * changed in project files. */
 	dailyWorkingHours = 8.0;
+	yearlyWorkingDays = 252;
 	scheduleGranularity = ONEHOUR;
 	start = 0;
 	end = 0;

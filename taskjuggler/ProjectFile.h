@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include <qstring.h>
 #include <qvaluelist.h>
@@ -51,7 +52,7 @@ public:
 
 	bool readMacroCall();
 
-	void fatalError(const QString& msg);
+	void fatalError(const char* msg, ...);
 
 private:
 	bool getDateFragment(QString& token, int& c);
@@ -99,13 +100,14 @@ public:
 
 	bool moreFiles() { return !openFiles.isEmpty(); }
 
-	void fatalError(const QString& msg);
+	void fatalError(const char* msg, ...);
 
 	MacroTable& getMacros() { return macros; }
 
 private:
 	ProjectFile() {};	// don't use
 
+	bool readProject();
 	bool readInclude();
 	bool readTask(Task* parent);
 	bool readTaskSupplement();
@@ -121,7 +123,7 @@ private:
 	Booking* readBooking();
 	bool readCredit(Account* a);
 	bool readAllocate(Task* t);
-	bool readPlanTimeFrame(Task* t, double& d, bool workingDays);
+	bool readPlanTimeFrame(double& d, bool workingDays);
 	bool readTimeValue(ulong& value);
 	bool readPercent(double& value);
 	bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
@@ -138,7 +140,7 @@ private:
 	Operation* readFunctionCall(const QString& name);
 	bool readSorting(Report* report, int which);
 	time_t date2time(const QString& date);
-	time_t hhmm2time(const QString& hhmm);
+	int hhmm2time(const QString& hhmm);
 
 	QString masterFile;
 	Project* proj;

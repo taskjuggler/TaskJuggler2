@@ -57,7 +57,7 @@ ShiftList::getShift(const QString& id)
 bool
 ShiftSelection::isVacationDay(time_t day)
 {
-	return period.contains(day);
+	return period.contains(day) && shift->isVacationDay(day);
 }
 
 Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
