@@ -18,8 +18,9 @@
 
 TaskScenario::TaskScenario()
 {
-    start = 0;
-    end = 0;
+    start = specifiedStart = 0;
+    end = specifiedEnd = 0;
+    specifiedScheduled = FALSE;
     startBuffer = -1.0;
     endBuffer = -1.0;
     startBufferEnd = 0;

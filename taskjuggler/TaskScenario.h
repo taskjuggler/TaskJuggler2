@@ -62,7 +62,13 @@ private:
 
     /// Index of the scenario
     int index;
+   
+    /// Time the user has specified as a start time.
+    time_t specifiedStart;
     
+    /// Time the user has specified as an end time.
+    time_t specifiedEnd;
+
     /// Time when the task starts 
     time_t start;
 
@@ -124,9 +130,18 @@ private:
     /// A longer description of the task status.
     QString statusNote;
 
+    /**
+     * TRUE if the user has specified the task for the scenario as already
+     * fully scheduled.
+     */
+    bool specifiedScheduled;
+
     /// TRUE if the task has been completely scheduled.
     bool scheduled;
-    
+
+    /// List of specified booked resources.
+    ResourceList specifiedBookedResources;
+
     /// List of booked resources.
     ResourceList bookedResources;
 } ;

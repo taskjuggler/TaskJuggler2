@@ -49,6 +49,7 @@ class QDomDocument;
 class Allocation;
 class Interval;
 class UsageLimits;
+class OptimizerRun;
 
 /**
  * This class stores all task related information and provides methods to
@@ -144,9 +145,17 @@ public:
     bool hasFollower(Task* t) { return followers.findRef(t) != -1; }
 
     // The following group of functions operates only on scenario variables.
+    void setSpecifiedStart(int sc, time_t s)
+    {
+        scenarios[sc].specifiedStart = s;
+    }
     void setStart(int sc, time_t s) { scenarios[sc].start = s; }
     const time_t getStart(int sc) const { return scenarios[sc].start; }
 
+    void setSpecifiedEnd(int sc, time_t s)
+    {
+        scenarios[sc].specifiedEnd = s;
+    }
     void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
     const time_t getEnd(int sc) const { return scenarios[sc].end; }
 
@@ -256,6 +265,10 @@ public:
     {
         return scenarios[sc].bookedResources;
     }
+    void setSpecifiedScheduled(int sc, bool ps)
+    {
+        scenarios[sc].specifiedScheduled = ps;
+    }
     void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
     bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
 
@@ -274,9 +287,10 @@ public:
 
     bool xRef(QDict<Task>& hash);
     void implicitXRef();
+    void saveSpecifiedBookedResources();
     QString resolveId(QString relId);
 
-    bool preScheduleOk();
+    bool preScheduleOk(int sc);
     bool scheduleOk(int sc, int& errors) const;
     void initLoopDetector()
     {
@@ -286,7 +300,7 @@ public:
     bool loopDetector();
     void computeBuffers();
     time_t nextSlot(time_t slotDuration) const;
-    void schedule(time_t& reqStart, time_t duration);
+    void schedule(OptimizerRun* run, time_t& reqStart, time_t duration);
     void propagateStart(bool safeMode = TRUE);
     void propagateEnd(bool safeMode = TRUE);
     void propagateInitialValues();
@@ -314,7 +328,7 @@ private:
     Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
                       const UsageLimits* limits, int& availability);
-    void bookResources(time_t day, time_t duration);
+    void bookResources(OptimizerRun* run, time_t day, time_t duration);
     void addBookedResource(Resource* r)
     {
         if (bookedResources.findRef((CoreAttributes*) r) == -1)

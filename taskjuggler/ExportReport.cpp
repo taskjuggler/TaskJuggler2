@@ -232,7 +232,7 @@ ExportReport::generateScenario(const Scenario* scenario, int indent)
     if (!scenario->getEnabled())
         s << QString().fill(' ', indent) << "disabled" << endl;
     if (scenario->getProjectionMode())
-        s << QString().fill(' ', indent) << "projectionMode" << endl;
+        s << QString().fill(' ', indent) << "projection" << endl;
 
     for (ScenarioListIterator sci(scenario->getSubListIterator());
          *sci != 0; ++sci)

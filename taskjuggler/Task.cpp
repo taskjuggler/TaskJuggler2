@@ -27,6 +27,7 @@
 #include "Scenario.h"
 #include "CustomAttributeDefinition.h"
 #include "UsageLimits.h"
+#include "OptimizerRun.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& f, int l)
@@ -171,7 +172,7 @@ Task::errorMessage(const char* msg, ...) const
 }
 
 void
-Task::schedule(time_t& date, time_t slotDuration)
+Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
 {
     // Has the task been scheduled already or is it a container?
     if (schedulingDone || !sub->isEmpty())
@@ -230,7 +231,7 @@ Task::schedule(time_t& date, time_t slotDuration)
         /* Length specifies the number of working days (as daily load)
          * and duration specifies the number of calender days. */
         if (!allocations.isEmpty())
-            bookResources(date, slotDuration);
+            bookResources(run, date, slotDuration);
 
         doneDuration += ((double) slotDuration) / ONEDAY;
         if (project->isWorkingTime(Interval(date, date + slotDuration - 1)))
@@ -272,7 +273,7 @@ Task::schedule(time_t& date, time_t slotDuration)
          * how much the resources can contribute over the following
          * workings days until we have reached the specified
          * effort. */
-        bookResources(date, slotDuration);
+        bookResources(run, date, slotDuration);
         // Check whether we are done with this task.
         if (qRound(doneEffort * 2048) >= qRound(effort * 2048))
         {
@@ -309,7 +310,7 @@ Task::schedule(time_t& date, time_t slotDuration)
     {
         // Task with start and end date but no duration criteria.
         if (!allocations.isEmpty() && !project->isVacation(date))
-            bookResources(date, slotDuration);
+            bookResources(run, date, slotDuration);
 
         if ((scheduling == ASAP && (date + slotDuration) >= end) ||
             (scheduling == ALAP && date <= start))
@@ -528,7 +529,7 @@ Task::isRunaway() const
 }
 
 void
-Task::bookResources(time_t date, time_t slotDuration)
+Task::bookResources(OptimizerRun* run, time_t date, time_t slotDuration)
 {
     /* If the time slot overlaps with a specified shift interval, the
      * time slot must also be within the specified working hours of that
@@ -643,11 +644,14 @@ Task::bookResources(time_t date, time_t slotDuration)
         else
         {
             QPtrList<Resource> cl = createCandidateList(date, *ali);
+            
             bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
-                if (bookResource((*rli), date, slotDuration,
+                if (run->checkArc((*rli)->getId()) &&
+                    bookResource((*rli), date, slotDuration,
                                  (*ali)->getLimits(), maxAvailability))
                 {
+                    run->followArc((*rli)->getId());
                     (*ali)->setLockedResource(*rli);
                     found = TRUE;
                     break;
@@ -1064,47 +1068,63 @@ Task::implicitXRef()
 
         if (milestone)
         {
-            if (scenarios[sc].start != 0 && scenarios[sc].end == 0)
-                scenarios[sc].end = scenarios[sc].start - 1;
-            if (scenarios[sc].end != 0 && scenarios[sc].start == 0)
-                scenarios[sc].start = scenarios[sc].end + 1;
+            if (scenarios[sc].specifiedStart != 0 &&
+                scenarios[sc].specifiedEnd == 0)
+                scenarios[sc].specifiedEnd = scenarios[sc].specifiedStart - 1;
+            if (scenarios[sc].specifiedEnd != 0 &&
+                scenarios[sc].specifiedStart == 0)
+                scenarios[sc].specifiedStart = scenarios[sc].specifiedEnd + 1;
         }
         bool hasDurationSpec = scenarios[sc].duration != 0 ||
             scenarios[sc].length != 0 ||
             scenarios[sc].effort != 0;
         
-        if (scenarios[sc].start == 0 && depends.isEmpty() &&
+        if (scenarios[sc].specifiedStart == 0 && depends.isEmpty() &&
             !(hasDurationSpec && scheduling == ALAP))
             for (Task* tp = getParent(); tp; tp = tp->getParent())
             {
-                if (tp->scenarios[sc].start != 0)
+                if (tp->scenarios[sc].specifiedStart != 0)
                 {
                     if (DEBUGPF(11))
                         qDebug("Setting start of task '%s' in scenario %s to "
                                "%s", id.latin1(), 
                                project->getScenarioId(sc).latin1(),
-                               time2ISO(tp->scenarios[sc].start).latin1());
-                    scenarios[sc].start = tp->scenarios[sc].start;
+                               time2ISO(tp->scenarios[sc].specifiedStart)
+                               .latin1());
+                    scenarios[sc].specifiedStart =
+                        tp->scenarios[sc].specifiedStart;
                     break;
                 }
             }
         /* And the same for end values */
-        if (scenarios[sc].end == 0 && precedes.isEmpty() &&
+        if (scenarios[sc].specifiedEnd == 0 && precedes.isEmpty() &&
             !(hasDurationSpec && scheduling == ASAP))
             for (Task* tp = getParent(); tp; tp = tp->getParent())
             {
-                if (tp->scenarios[sc].end != 0)
+                if (tp->scenarios[sc].specifiedEnd != 0)
                 {
                     if (DEBUGPF(11))
                         qDebug("Setting end of task '%s' in scenario %s to %s",
                                id.latin1(), 
                                project->getScenarioId(sc).latin1(),
-                               time2ISO(tp->scenarios[sc].end).latin1());
-                    scenarios[sc].end = tp->scenarios[sc].end;
+                               time2ISO(tp->scenarios[sc].specifiedEnd)
+                               .latin1());
+                    scenarios[sc].specifiedEnd = tp->scenarios[sc].specifiedEnd;
                     break;
                 }
             }
     }
+}
+
+void
+Task::saveSpecifiedBookedResources()
+{
+    /* The project file readers use the same resource booking mechanism as the
+     * scheduler. So we need to save the up to now booked resources as
+     * specified resources. */
+    for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+        scenarios[sc].specifiedBookedResources =
+            scenarios[sc].bookedResources;
 }
 
 bool
@@ -1430,10 +1450,10 @@ Task::hasStartDependency(int sc)
      * scenario. This can be a fixed start time or a dependency on another
      * task's end or an implicit dependency on the fixed start time of a
      * parent task. */
-    if (scenarios[sc].start != 0 || !depends.isEmpty())
+    if (scenarios[sc].specifiedStart != 0 || !depends.isEmpty())
         return TRUE;
     for (Task* p = getParent(); p; p = p->getParent())
-        if (p->scenarios[sc].start != 0)
+        if (p->scenarios[sc].specifiedStart != 0)
             return TRUE;
     return FALSE;
 }
@@ -1445,10 +1465,10 @@ Task::hasEndDependency(int sc)
      * scenario. This can be a fixed end time or a dependency on another
      * task's start or an implicit dependency on the fixed end time of a
      * parent task. */
-    if (scenarios[sc].end != 0 || !precedes.isEmpty())
+    if (scenarios[sc].specifiedEnd != 0 || !precedes.isEmpty())
         return TRUE;
     for (Task* p = getParent(); p; p = p->getParent())
-        if (p->scenarios[sc].end != 0)
+        if (p->scenarios[sc].specifiedEnd != 0)
             return TRUE;
     return FALSE;
 }
@@ -1484,259 +1504,259 @@ Task::hasEndDependency()
 }
 
 bool
-Task::preScheduleOk()
+Task::preScheduleOk(int sc)
 {
-    for (int sc = 0; sc < project->getMaxScenarios(); sc++)
+    if (scenarios[sc].specifiedScheduled && !sub->isEmpty() &&
+        (scenarios[sc].specifiedStart == 0 ||
+         scenarios[sc].specifiedEnd == 0))
     {
-        if (scenarios[sc].scheduled && !sub->isEmpty() &&
-            (scenarios[sc].start == 0 || scenarios[sc].end == 0))
+        errorMessage(i18n
+                     ("Task '%1' is marked as scheduled but does not have "
+                      "a fixed start and end date.").arg(id));
+        return FALSE;
+    }
+                      
+    if (scenarios[sc].effort > 0.0 && allocations.count() == 0 &&
+        !scenarios[sc].specifiedScheduled)
+    {
+        errorMessage(i18n
+                     ("No allocations specified for effort based task '%1' "
+                      "in '%2' scenario")
+                     .arg(id).arg(project->getScenarioId(sc)));
+        return FALSE;
+    }
+  
+    if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
+    {
+        errorMessage(i18n
+                     ("Start and end buffers may not overlap in '%2' "
+                      "scenario. So their sum must be smaller then 100%.")
+                     .arg(project->getScenarioId(sc)));
+        return FALSE;
+    }
+  
+    // Check plan values.
+    int durationSpec = 0;
+    if (scenarios[sc].effort > 0.0)
+        durationSpec++;
+    if (scenarios[sc].length > 0.0)
+        durationSpec++;
+    if (scenarios[sc].duration > 0.0)
+        durationSpec++;
+    if (durationSpec > 1)
+    {
+        errorMessage(i18n("Task '%1' may only have one duration "
+                          "criteria in '%2' scenario.").arg(id)
+                     .arg(project->getScenarioId(sc)));
+        return FALSE;
+    }
+  
+    /*
+    |: fixed start or end date
+    -: no fixed start or end date
+    M: Milestone
+    D: start or end dependency
+    x->: ASAP task with duration criteria
+    <-x: ALAP task with duration criteria
+    -->: ASAP task without duration criteria
+    <--: ALAP task without duration criteria
+     */
+    if (!sub->isEmpty())
+    {
+        if (durationSpec != 0)
         {
             errorMessage(i18n
-                         ("Task '%1' is marked as scheduled but does not have "
-                          "a fixed start and end date.").arg(id));
-            return FALSE;
-        }
-                          
-        if (scenarios[sc].effort > 0.0 && allocations.count() == 0 &&
-            !scenarios[sc].scheduled)
-        {
-            errorMessage(i18n
-                         ("No allocations specified for effort based task '%1' "
-                          "in '%2' scenario")
-                         .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
-        }
-
-        if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
-        {
-            errorMessage(i18n
-                         ("Start and end buffers may not overlap in '%2' "
-                          "scenario. So their sum must be smaller then 100%.")
+                         ("Container task '%1' may not have a duration "
+                          "criteria in '%2' scenario").arg(id)
                          .arg(project->getScenarioId(sc)));
             return FALSE;
         }
-
-        // Check plan values.
-        int durationSpec = 0;
-        if (scenarios[sc].effort > 0.0)
-            durationSpec++;
-        if (scenarios[sc].length > 0.0)
-            durationSpec++;
-        if (scenarios[sc].duration > 0.0)
-            durationSpec++;
-        if (durationSpec > 1)
-        {
-            errorMessage(i18n("Task '%1' may only have one duration "
-                              "criteria in '%2' scenario.").arg(id)
-                         .arg(project->getScenarioId(sc)));
-            return FALSE;
-        }
-
-        /*
-        |: fixed start or end date
-        -: no fixed start or end date
-        M: Milestone
-        D: start or end dependency
-        x->: ASAP task with duration criteria
-        <-x: ALAP task with duration criteria
-        -->: ASAP task without duration criteria
-        <--: ALAP task without duration criteria
-         */
-        if (!sub->isEmpty())
-        {
-            if (durationSpec != 0)
-            {
-                errorMessage(i18n
-                             ("Container task '%1' may not have a duration "
-                              "criteria in '%2' scenario").arg(id)
-                             .arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-            if (milestone)
-            {
-                errorMessage(i18n
-                             ("The container task '%1' may not be a "
-                              "milestone.").arg(id));
-                return FALSE;
-            }
-        }
-        else if (milestone)
-        {
-            if (durationSpec != 0)
-            {
-                errorMessage(i18n
-                             ("Milestone '%1' may not have a plan duration "
-                              "criteria in '%2' scenario").arg(id)
-                             .arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-            /*
-            |  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
-            |  M |   err2   |D M |   err2   - M |   ok     -D M |   ok
-            |  M -D  ok     |D M -D  ok     - M -D  ok     -D M -D  ok
-            |  M |D  err2   |D M |D  err2   - M |D  ok     -D M |D  ok
-             */
-            /* err1: no start and end
-            - M -
-             */
-            if (!hasStartDependency(sc) && !hasEndDependency(sc))
-            {
-                errorMessage(i18n("Milestone '%1' must have a start or end "
-                                  "specification in '%2' scenario.")
-                             .arg(id).arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-            /* err2: different start and end
-            |  M |
-            |  M |D
-            |D M |
-            |D M |D
-             */
-            if (scenarios[sc].start != 0 && scenarios[sc].end != 0 &&
-                scenarios[sc].start != scenarios[sc].end + 1)
-            {
-                errorMessage(i18n
-                             ("Milestone '%1' may not have both a start "
-                              "and an end specification that do not "
-                              "match in the '%2' scenario.").arg(id)
-                             .arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-        }
-        else
-        {
-            /*
-            Error table for non-container, non-milestone tasks:
-
-            | x-> -   ok     |D x-> -   ok     - x-> -   err3   -D x-> -   ok
-            | x-> |   err1   |D x-> |   err1   - x-> |   err3   -D x-> |   err1
-            | x-> -D  ok     |D x-> -D  ok     - x-> -D  err3   -D x-> -D  ok
-            | x-> |D  err1   |D x-> |D  err1   - x-> |D  err3   -D x-> |D  err1
-            | --> -   err2   |D --> -   err2   - --> -   err3   -D --> -   err2
-            | --> |   ok     |D --> |   ok     - --> |   err3   -D --> |   ok
-            | --> -D  ok     |D --> -D  ok     - --> -D  err3   -D --> -D  ok
-            | --> |D  ok     |D --> |D  ok     - --> |D  err3   -D --> |D  ok
-            | <-x -   err4   |D <-x -   err4   - <-x -   err4   -D <-x -   err4
-            | <-x |   err1   |D <-x |   err1   - <-x |   ok     -D <-x |   ok
-            | <-x -D  err1   |D <-x -D  err1   - <-x -D  ok     -D <-x -D  ok
-            | <-x |D  err1   |D <-x |D  err1   - <-x |D  ok     -D <-x |D  ok
-            | <-- -   err4   |D <-- -   err4   - <-- -   err4   -D <-- -   err4
-            | <-- |   ok     |D <-- |   ok     - <-- |   err2   -D <-- |   ok
-            | <-- -D  ok     |D <-- -D  ok     - <-- -D  err2   -D <-- -D  ok
-            | <-- |D  ok     |D <-- |D  ok     - <-- |D  err2   -D <-- |D  ok
-             */
-            /*
-            err1: Overspecified (12 cases)
-            |  x-> |
-            |  <-x |
-            |  x-> |D
-            |  <-x |D
-            |D x-> |
-            |D <-x |
-            |D <-x |D
-            |D x-> |D
-            -D x-> |
-            -D x-> |D
-            |D <-x -D
-            |  <-x -D
-             */
-            if (((scenarios[sc].start != 0 && scenarios[sc].end != 0) ||
-                 (hasStartDependency(sc) && scenarios[sc].start == 0 &&
-                  scenarios[sc].end != 0 && scheduling == ASAP) ||
-                 (scenarios[sc].start != 0 && scheduling == ALAP &&
-                  hasEndDependency(sc) && scenarios[sc].end == 0)) &&
-                durationSpec != 0 && !scenarios[sc].scheduled)
-            {
-                errorMessage(i18n("Task '%1' has a start, an end and a "
-                                  "duration specification for '%2' scenario.")
-                             .arg(id).arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-            /*
-            err2: Underspecified (6 cases)
-            |  --> -
-            |D --> -
-            -D --> -
-            -  <-- |
-            -  <-- |D
-            -  <-- -D
-             */
-            if ((hasStartDependency(sc) ^ hasEndDependency(sc)) &&
-                durationSpec == 0)
-            {
-                errorMessage(i18n
-                             ("Task '%1' has only a start or end specification "
-                              "but no plan duration for the '%2' scenario.")
-                             .arg(id).arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-            /*
-            err3: ASAP + Duration must have fixed start (8 cases)
-            -  x-> -
-            -  x-> |
-            -  x-> -D
-            -  x-> |D
-            -  --> -
-            -  --> |
-            -  --> -D
-            -  --> |D
-             */
-            if (!hasStartDependency(sc) && scheduling == ASAP)
-            {
-                errorMessage(i18n
-                             ("Task '%1' needs a start specification to be "
-                              "scheduled in ASAP mode in the '%2' scenario.")
-                             .arg(id).arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-            /*
-            err4: ALAP + Duration must have fixed end (8 cases)
-            -  <-x -
-            |  <-x -
-            |D <-x -
-            -D <-x -
-            -  <-- -
-            |  <-- -
-            -D <-- -
-            |D <-- -
-             */
-            if (!hasEndDependency(sc) && scheduling == ALAP)
-            {
-                errorMessage(i18n
-                             ("Task '%1' needs an end specification to be "
-                              "scheduled in ALAP mode in the '%2' scenario.")
-                             .arg(id).arg(project->getScenarioId(sc)));
-                return FALSE;
-            }
-        }
-
-        if (!account &&
-            (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
+        if (milestone)
         {
             errorMessage(i18n
-                         ("Task '%1' has a specified start- or endcredit "
-                          "but no account assigned in scenario '%2'.")
-                         .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
-        }
-
-        if (!scenarios[sc].bookedResources.isEmpty() && scheduling == ALAP &&
-            !scenarios[sc].scheduled)
-        {
-            errorMessage
-                (i18n("Error in task '%1' (scenario '%2'). "
-                      "An ALAP task can only have bookings if it has been "
-                      "completely scheduled. The 'scheduled' attribute must be "
-                      "present. Keep in mind that certain attributes such as "
-                      "'precedes' or 'end' implicitly set the scheduling mode "
-                      "to ALAP. Put 'scheduling asap' at the end of the task "
-                      "definition to avoid the problem.")
-                 .arg(id).arg(project->getScenarioId(sc)));
+                         ("The container task '%1' may not be a "
+                          "milestone.").arg(id));
             return FALSE;
         }
     }
+    else if (milestone)
+    {
+        if (durationSpec != 0)
+        {
+            errorMessage(i18n
+                         ("Milestone '%1' may not have a plan duration "
+                          "criteria in '%2' scenario").arg(id)
+                         .arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+        /*
+        |  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
+        |  M |   err2   |D M |   err2   - M |   ok     -D M |   ok
+        |  M -D  ok     |D M -D  ok     - M -D  ok     -D M -D  ok
+        |  M |D  err2   |D M |D  err2   - M |D  ok     -D M |D  ok
+         */
+        /* err1: no start and end
+        - M -
+         */
+        if (!hasStartDependency(sc) && !hasEndDependency(sc))
+        {
+            errorMessage(i18n("Milestone '%1' must have a start or end "
+                              "specification in '%2' scenario.")
+                         .arg(id).arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+        /* err2: different start and end
+        |  M |
+        |  M |D
+        |D M |
+        |D M |D
+         */
+        if (scenarios[sc].specifiedStart != 0 &&
+            scenarios[sc].specifiedEnd != 0 &&
+            scenarios[sc].specifiedStart != scenarios[sc].specifiedEnd + 1)
+        {
+            errorMessage(i18n
+                         ("Milestone '%1' may not have both a start "
+                          "and an end specification that do not "
+                          "match in the '%2' scenario.").arg(id)
+                         .arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+    }
+    else
+    {
+        /*
+        Error table for non-container, non-milestone tasks:
+  
+        | x-> -   ok     |D x-> -   ok     - x-> -   err3   -D x-> -   ok
+        | x-> |   err1   |D x-> |   err1   - x-> |   err3   -D x-> |   err1
+        | x-> -D  ok     |D x-> -D  ok     - x-> -D  err3   -D x-> -D  ok
+        | x-> |D  err1   |D x-> |D  err1   - x-> |D  err3   -D x-> |D  err1
+        | --> -   err2   |D --> -   err2   - --> -   err3   -D --> -   err2
+        | --> |   ok     |D --> |   ok     - --> |   err3   -D --> |   ok
+        | --> -D  ok     |D --> -D  ok     - --> -D  err3   -D --> -D  ok
+        | --> |D  ok     |D --> |D  ok     - --> |D  err3   -D --> |D  ok
+        | <-x -   err4   |D <-x -   err4   - <-x -   err4   -D <-x -   err4
+        | <-x |   err1   |D <-x |   err1   - <-x |   ok     -D <-x |   ok
+        | <-x -D  err1   |D <-x -D  err1   - <-x -D  ok     -D <-x -D  ok
+        | <-x |D  err1   |D <-x |D  err1   - <-x |D  ok     -D <-x |D  ok
+        | <-- -   err4   |D <-- -   err4   - <-- -   err4   -D <-- -   err4
+        | <-- |   ok     |D <-- |   ok     - <-- |   err2   -D <-- |   ok
+        | <-- -D  ok     |D <-- -D  ok     - <-- -D  err2   -D <-- -D  ok
+        | <-- |D  ok     |D <-- |D  ok     - <-- |D  err2   -D <-- |D  ok
+         */
+        /*
+        err1: Overspecified (12 cases)
+        |  x-> |
+        |  <-x |
+        |  x-> |D
+        |  <-x |D
+        |D x-> |
+        |D <-x |
+        |D <-x |D
+        |D x-> |D
+        -D x-> |
+        -D x-> |D
+        |D <-x -D
+        |  <-x -D
+         */
+        if (((scenarios[sc].specifiedStart != 0 &&
+              scenarios[sc].specifiedEnd != 0) ||
+             (hasStartDependency(sc) && scenarios[sc].specifiedStart == 0 &&
+              scenarios[sc].specifiedEnd != 0 && scheduling == ASAP) ||
+             (scenarios[sc].specifiedStart != 0 && scheduling == ALAP &&
+              hasEndDependency(sc) && scenarios[sc].specifiedEnd == 0)) &&
+            durationSpec != 0 && !scenarios[sc].specifiedScheduled)
+        {
+            errorMessage(i18n("Task '%1' has a start, an end and a "
+                              "duration specification for '%2' scenario.")
+                         .arg(id).arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+        /*
+        err2: Underspecified (6 cases)
+        |  --> -
+        |D --> -
+        -D --> -
+        -  <-- |
+        -  <-- |D
+        -  <-- -D
+         */
+        if ((hasStartDependency(sc) ^ hasEndDependency(sc)) &&
+            durationSpec == 0)
+        {
+            errorMessage(i18n
+                         ("Task '%1' has only a start or end specification "
+                          "but no plan duration for the '%2' scenario.")
+                         .arg(id).arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+        /*
+        err3: ASAP + Duration must have fixed start (8 cases)
+        -  x-> -
+        -  x-> |
+        -  x-> -D
+        -  x-> |D
+        -  --> -
+        -  --> |
+        -  --> -D
+        -  --> |D
+         */
+        if (!hasStartDependency(sc) && scheduling == ASAP)
+        {
+            errorMessage(i18n
+                         ("Task '%1' needs a start specification to be "
+                          "scheduled in ASAP mode in the '%2' scenario.")
+                         .arg(id).arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+        /*
+        err4: ALAP + Duration must have fixed end (8 cases)
+        -  <-x -
+        |  <-x -
+        |D <-x -
+        -D <-x -
+        -  <-- -
+        |  <-- -
+        -D <-- -
+        |D <-- -
+         */
+        if (!hasEndDependency(sc) && scheduling == ALAP)
+        {
+            errorMessage(i18n
+                         ("Task '%1' needs an end specification to be "
+                          "scheduled in ALAP mode in the '%2' scenario.")
+                         .arg(id).arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
+  }
 
-    return TRUE;
+  if (!account &&
+      (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
+  {
+      errorMessage(i18n
+                   ("Task '%1' has a specified start- or endcredit "
+                    "but no account assigned in scenario '%2'.")
+                   .arg(id).arg(project->getScenarioId(sc)));
+      return FALSE;
+  }
+
+  if (!scenarios[sc].bookedResources.isEmpty() && scheduling == ALAP &&
+      !scenarios[sc].specifiedScheduled)
+  {
+      errorMessage
+          (i18n("Error in task '%1' (scenario '%2'). "
+                "An ALAP task can only have bookings if it has been "
+                "completely scheduled. The 'scheduled' attribute must be "
+                "present. Keep in mind that certain attributes such as "
+                "'precedes' or 'end' implicitly set the scheduling mode "
+                "to ALAP. Put 'scheduling asap' at the end of the task "
+                "definition to avoid the problem.")
+           .arg(id).arg(project->getScenarioId(sc)));
+      return FALSE;
+  }
+    
+  return TRUE;
 }
 
 bool
@@ -1982,10 +2002,10 @@ Task::overlayScenario(int base, int sc)
 {
     /* Copy all values that the scenario sc does not provide, but that are
      * provided by the base scenario to the scenario sc. */
-    if (scenarios[sc].start == 0.0)
-        scenarios[sc].start = scenarios[base].start;
-    if (scenarios[sc].end == 0.0)
-        scenarios[sc].end = scenarios[base].end;
+    if (scenarios[sc].specifiedStart == 0.0)
+        scenarios[sc].specifiedStart = scenarios[base].specifiedStart;
+    if (scenarios[sc].specifiedEnd == 0.0)
+        scenarios[sc].specifiedEnd = scenarios[base].specifiedEnd;
     if (scenarios[sc].minStart == 0.0)
         scenarios[sc].minStart = scenarios[base].minStart;
     if (scenarios[sc].maxStart == 0.0)
@@ -2025,8 +2045,9 @@ Task::hasExtraValues(int sc) const
 void
 Task::prepareScenario(int sc)
 {
-    start = scenarios[sc].start;
-    end = scenarios[sc].end;
+    start = scenarios[sc].start = scenarios[sc].specifiedStart;
+    end = scenarios[sc].end = scenarios[sc].specifiedEnd;
+    schedulingDone = scenarios[sc].scheduled = scenarios[sc].specifiedScheduled;
 
     duration = scenarios[sc].duration;
     length = scenarios[sc].length;
@@ -2037,10 +2058,9 @@ Task::prepareScenario(int sc)
     doneLength = 0.0;
     tentativeStart = tentativeEnd = 0;
     workStarted = FALSE;
-    schedulingDone = scenarios[sc].scheduled;
     runAway = FALSE;
     bookedResources.clear();
-    bookedResources = scenarios[sc].bookedResources;
+    bookedResources = scenarios[sc].specifiedBookedResources;
 
     /* The user could have made manual bookings already. The effort of these
      * bookings needs to be calculated so that the scheduler only schedules

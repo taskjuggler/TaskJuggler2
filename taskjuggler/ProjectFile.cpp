@@ -920,6 +920,16 @@ ProjectFile::readScenario(Scenario* parent)
             {
                 scenario->setProjectionMode(TRUE);
             }
+            else if (token == KW("optimize"))
+            {
+                scenario->setOptimize(TRUE);
+            }
+            else
+            {
+                errorMessage(i18n("Unknown scenario attribute '%1'")
+                             .arg(token));
+                return FALSE;
+            }
         }
     }
     else
@@ -1346,7 +1356,7 @@ ProjectFile::readTaskBody(Task* task)
                               "scenario actual \"Actual\" }"));
                     return FALSE;
                 }
-                task->setStart(actualIdx, val);
+                task->setSpecifiedStart(actualIdx, val);
                 task->setScheduling(Task::ASAP);
             }
             else if (token == "actualend")
@@ -1368,7 +1378,7 @@ ProjectFile::readTaskBody(Task* task)
                               "scenario actual \"Actual\" }"));
                     return FALSE;
                 }
-                task->setEnd(actualIdx, val);
+                task->setSpecifiedEnd(actualIdx, val);
                 task->setScheduling(Task::ALAP);
             }
             else if (token == "actuallength")
@@ -1446,7 +1456,7 @@ ProjectFile::readTaskBody(Task* task)
                         (i18n("ERROR: There is no 'plan' scenario."));
                     return FALSE;
                 }
-                task->setScheduled(planIdx, TRUE);
+                task->setSpecifiedScheduled(planIdx, TRUE);
             }
             else if (token == "actualscheduled")
             {
@@ -1464,7 +1474,7 @@ ProjectFile::readTaskBody(Task* task)
                               "scenario actual \"Actual\" }"));
                     return FALSE;
                 }
-                task->setScheduled(actualIdx, TRUE);
+                task->setSpecifiedScheduled(actualIdx, TRUE);
             }
             else if (token == KW("responsible"))
             {
@@ -1695,7 +1705,7 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         time_t val;
         if (!readDate(val, 0))
             return -1;
-        task->setStart(sc, val);
+        task->setSpecifiedStart(sc, val);
         task->setScheduling(Task::ASAP);
     }
     else if (attribute == KW("end"))
@@ -1703,7 +1713,7 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         time_t val;
         if (!readDate(val, 1))
             return -1;
-        task->setEnd(sc, val);
+        task->setSpecifiedEnd(sc, val);
         task->setScheduling(Task::ALAP);
     }
     else if (attribute == KW("minstart"))
@@ -1735,7 +1745,7 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         task->setMaxEnd(sc, val);
     }
     else if (attribute == KW("scheduled"))
-        task->setScheduled(sc, TRUE);
+        task->setSpecifiedScheduled(sc, TRUE);
     else if (attribute == KW("startbuffer"))
     {
         double value;

@@ -18,7 +18,7 @@ project test "Sloppy Bookings" "1.0" 2003-08-07-00:00:00-GMT 2003-09-30-23:59:59
     workinghours fri 9:00 - 12:00, 13:00 - 18:00
     workinghours sat off
   scenario plan "Plan" {
-    projectionMode
+    projection
   }
 }
 resource r1 "Resource 1" {

@@ -745,16 +745,16 @@ XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
 bool
 XMLFile::doTaskScenarioStart(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTask()->setStart(ptc.getScenarioIndex(),
-                            n.toElement().text().toLong());
+    ptc.getTask()->setSpecifiedStart(ptc.getScenarioIndex(),
+                                     n.toElement().text().toLong());
     return TRUE;
 }
 
 bool
 XMLFile::doTaskScenarioEnd(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTask()->setEnd(ptc.getScenarioIndex(),
-                          n.toElement().text().toLong() - 1);
+    ptc.getTask()->setSpecifiedEnd(ptc.getScenarioIndex(),
+                                   n.toElement().text().toLong() - 1);
     return TRUE;
 }
 

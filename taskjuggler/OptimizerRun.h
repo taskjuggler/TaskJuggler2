@@ -13,6 +13,8 @@
 #ifndef _OptimizerRun_h_
 #define _OptimizerRun_h_
 
+#include <qstring.h>
+
 class Optimizer;
 class DecisionNode;
 
@@ -23,6 +25,10 @@ public:
     ~OptimizerRun();
 
     void terminate(double rating);
+
+    bool checkArc(const QString& tag);
+
+    bool followArc(const QString& tag);
 
 private:
     const Optimizer* optimizer;

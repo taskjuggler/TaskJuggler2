@@ -13,22 +13,50 @@
 #include "OptimizerRun.h"
 #include "Optimizer.h"
 #include "DecisionNode.h"
+#include "debug.h"
 
 OptimizerRun::OptimizerRun(Optimizer* o) : optimizer(o)
 {
-    currentNode = 0;
+    currentNode = optimizer->getDecisionTreeRoot();
 }
 
 OptimizerRun::~OptimizerRun()
 {
 }
 
+bool
+OptimizerRun::checkArc(const QString& tag)
+{
+    if (DEBUGOP(10))
+        qDebug("Checking arg %s of node %s", tag.latin1(),
+               currentNode->getTag().latin1());
+
+    return currentNode->checkArc(tag);
+}
+
+bool
+OptimizerRun::followArc(const QString& tag)
+{
+    if (DEBUGOP(5))
+        qDebug("Following arg %s of node %s", tag.latin1(),
+               currentNode->getTag().latin1());
+
+    DecisionNode* dn = currentNode->followArc(tag);
+    if (dn)
+    {
+        currentNode = dn;
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 void 
 OptimizerRun::terminate(double rating)
 {
-    if (!currentNode)
-        return;
-
     currentNode->terminateBranch(rating, optimizer->getMinimize());
+
+    if (DEBUGOP(5))
+        qDebug("Run was rated %f", rating);
 }
 

@@ -28,6 +28,7 @@
 #include "Resource.h"
 #include "Utility.h"
 #include "VacationInterval.h"
+#include "Optimizer.h"
 #include "OptimizerRun.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
@@ -455,9 +456,18 @@ Project::pass2(bool noDepCheck)
         if (!(*tli)->xRef(idHash))
             error = TRUE;
     }
-    // Set dates according to implicit dependencies
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+    {
+        // Set dates according to implicit dependencies
         (*tli)->implicitXRef();
+        
+        // Save so far booked resources as specified resources
+        (*tli)->saveSpecifiedBookedResources();
+    }
+
+    // Save a copy of all manually booked resources.
+    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+        (*rli)->saveSpecifiedBookings();
 
     /* Now we can copy the missing values from the plan scenario to the other
      * scenarios. */
@@ -469,9 +479,10 @@ Project::pass2(bool noDepCheck)
     }
 
     // Now check that all tasks have sufficient data to be scheduled.
-    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        if (!(*tli)->preScheduleOk())
-            error = TRUE;
+    for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
+        for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+            if (!(*tli)->preScheduleOk((*sci)->getSequenceNo() - 1))
+                error = TRUE;
 
     if (!noDepCheck)
     {
@@ -489,24 +500,25 @@ Project::pass2(bool noDepCheck)
 }
 
 bool
-Project::scheduleScenario(Scenario* sc)
+Project::scheduleScenario(OptimizerRun* run, Scenario* sc)
 {
     bool error = FALSE;
 
-    int scId = sc->getSequenceNo() - 1;
-    prepareScenario(scId);
-    if (!schedule(scId))
+    int scIdx = sc->getSequenceNo() - 1;
+    prepareScenario(scIdx);
+    
+    if (!schedule(run, scIdx))
     {
         if (DEBUGPS(2))
             qDebug(i18n("Scheduling errors in scenario '%1'.")
                    .arg(sc->getId()));
         error = TRUE;
     }
-    finishScenario(scId);
+    finishScenario(scIdx);
 
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
     {
-        if (!(*rli)->bookingsOk(scId))
+        if (!(*rli)->bookingsOk(scIdx))
         {
             error = TRUE;
             break;
@@ -533,40 +545,78 @@ Project::completeBuffersAndIndices()
 bool
 Project::scheduleAllScenarios()
 {
-    bool error = FALSE;
-
-    for (ScenarioListIterator sli(scenarioList); *sli; ++sli)
+    bool schedulingOk = TRUE;
+    for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
     {
-        if ((*sli)->getEnabled())
+        if ((*sci)->getEnabled())
         {
             if (DEBUGPS(1))
                 qDebug(i18n("Scheduling scenario '%1' ...")
-                       .arg((*sli)->getId()));
-            prepareScenario((*sli)->getSequenceNo() - 1);
-            if (!schedule((*sli)->getSequenceNo() - 1))
-            {
-                if (DEBUGPS(2))
-                    qDebug(i18n("Scheduling errors in scenario '%1'.")
-                           .arg((*sli)->getId()));
-                error = TRUE;
-            }
-            finishScenario((*sli)->getSequenceNo() - 1);
+                       .arg((*sci)->getId()));
 
-            for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+            Optimizer optimizer;
+            int runCounter = 0;
+            int bestRun = 0;
+            double bestRating = 0;
+            if((*sci)->getOptimize())
             {
-                if
-                    (!(*rli)->bookingsOk((*sli)->getSequenceNo() - 1))
+                int runCounter = 0;
+                int bestRun = 0;
+                double bestRating = 0;
+                do
+                {
+                    OptimizerRun* run = optimizer.startNewRun();
+                    runCounter++;
+                    if (DEBUGOP(2))
+                        qDebug("Optimizer run %d", runCounter);
+
+                    if (!scheduleScenario(run, *sci))
                     {
-                        error = TRUE;
-                        break;
+                        run->terminate(0.0);
+                        if (DEBUGOP(2))
+                            qDebug("Run aborted. No valid result found.");
                     }
+                    else
+                    {
+                        double rating = rateProjectByTime
+                            ((*sci)->getSequenceNo() - 1);
+                        if ((optimizer.getMinimize() && 
+                             (bestRating == 0.0 || rating < bestRating)) ||
+                            (!optimizer.getMinimize() && rating > bestRating))
+                        {
+                            bestRun = runCounter;
+                            bestRating = rating;
+
+                        }
+                        run->terminate(rating);
+                        if (DEBUGOP(2))
+                            qDebug("Finished run with rating %f", rating);
+                    }
+                    optimizer.finishRun(run);
+                } while (!optimizer.optimumFound()); 
+                if (DEBUGOP(2))
+                    qDebug("Best run was run %d with a rating of %f", bestRun,
+                           bestRating);
+            } 
+
+            /* It's probably easier to re-run the best run again instead of
+             * adding support to all classes so we can save the results of the
+             * best run. The optimizer is written in a way that he will only
+             * run the best result one it has been found. */
+            if (!(*sci)->getOptimize() || bestRun > 0)
+            {
+                OptimizerRun* run = optimizer.startNewRun();
+                if (!scheduleScenario(run, *sci))
+                    schedulingOk = FALSE;
             }
+            else
+                schedulingOk = FALSE;
         }
     }
-
+    
     completeBuffersAndIndices();
-
-    return !error;
+    
+    return schedulingOk;
 }
 
 void
@@ -601,7 +651,7 @@ Project::finishScenario(int sc)
 }
 
 bool
-Project::schedule(int sc)
+Project::schedule(OptimizerRun* run, int sc)
 {
     bool error = FALSE;
 
@@ -637,7 +687,7 @@ Project::schedule(int sc)
                     continue;
                 }
             }
-            (*tli)->schedule(slot, scheduleGranularity);
+            (*tli)->schedule(run, slot, scheduleGranularity);
             done = FALSE;
         }
     } while (!done);
@@ -683,6 +733,24 @@ Project::checkSchedule(int sc) const
     }
 
     return errors == 0;
+}
+
+double
+Project::rateProjectByTime(int sc) const
+{
+    time_t firstStart = end;
+    time_t lastEnd = start;
+
+    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+        if (!(*tli)->getParent())
+        {
+            if ((*tli)->getStart(sc) < firstStart)
+                firstStart = (*tli)->getStart(sc);
+            if ((*tli)->getEnd(sc) > lastEnd)
+                lastEnd = (*tli)->getEnd(sc);
+        }
+
+    return (lastEnd - firstStart) / scheduleGranularity;
 }
 
 void

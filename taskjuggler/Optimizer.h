@@ -23,9 +23,11 @@ public:
     Optimizer();
     ~Optimizer();
 
+    DecisionNode* getDecisionTreeRoot() const { return decisionTree; }
+
     bool getMinimize() const { return minimize; }
 
-    bool optimumFound() const { return TRUE; }
+    bool optimumFound() const;
 
     OptimizerRun* startNewRun();
     void finishRun(OptimizerRun* run);

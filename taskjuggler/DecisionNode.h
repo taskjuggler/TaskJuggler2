@@ -22,7 +22,13 @@ public:
     DecisionNode(DecisionNode* p, const QString& t);
     ~DecisionNode();
 
-    bool followArc(const QString& t);
+    const QString& getTag() const { return tag; }
+
+    bool getCompleted() const { return completed; }
+
+    bool checkArc(const QString& t);
+
+    DecisionNode* followArc(const QString& t);
 
     void terminateBranch(double r, bool minimize);
 

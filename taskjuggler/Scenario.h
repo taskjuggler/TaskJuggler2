@@ -38,9 +38,13 @@ public:
     void setProjectionMode(bool p) { projectionMode = p; }
     bool getProjectionMode() const  { return projectionMode; }
 
+    void setOptimize(bool o) { optimize = o; }
+    bool getOptimize() const { return optimize; }
+
 private:
     bool enabled;
     bool projectionMode;
+    bool optimize;
 } ;
 
 #endif

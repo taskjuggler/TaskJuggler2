@@ -139,6 +139,8 @@ public:
 
     QDomElement xmlIDElement( QDomDocument& doc ) const;
 
+    void copyBookings(int sc, SbBooking*** srd, SbBooking*** dst);
+    void saveSpecifiedBookings();
     void prepareScenario(int sc);
     void finishScenario(int sc);
 
@@ -160,9 +162,6 @@ private:
 
     time_t index2start(uint idx) const;
     time_t index2end(uint idx) const;
-
-    /// Pointer used by subResourceFirst() and subResourceNext().
-    Resource* currentSR;
 
     /// The minimum effort (in man days) the resource should be used per day.
     double minEffort;
@@ -204,6 +203,7 @@ private:
     /// The number of time slots in the project.
     uint sbSize;
 
+    SbBooking*** specifiedBookings;
     SbBooking*** scoreboards;
 } ;
 

@@ -21,6 +21,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
     p->addScenario(this);
     enabled = TRUE;
     projectionMode = FALSE;
+    optimize = FALSE;
 }
 
 Scenario::~Scenario()

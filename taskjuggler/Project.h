@@ -36,6 +36,7 @@ class Kotrus;
 class CustomAttributeDefinition;
 class VacationInterval;
 class UsageLimits;
+class OptimizerRun;
 
 /**
  * The Project class is the root of the data tree of the application.
@@ -737,7 +738,7 @@ public:
      */
     bool pass2(bool noDepCheck);
 
-    bool scheduleScenario(Scenario* sc);
+    bool scheduleScenario(OptimizerRun* run, Scenario* sc);
     void completeBuffersAndIndices();
     bool scheduleAllScenarios();
     void generateReports() const;
@@ -747,9 +748,11 @@ private:
     void prepareScenario(int sc);
     void finishScenario(int sc);
     
-    bool schedule(int sc);
+    bool schedule(OptimizerRun* run, int sc);
 
     bool checkSchedule(int sc) const;
+
+    double rateProjectByTime(int sc) const;
 
     /// The start date of the project
     time_t start;
@@ -801,8 +804,15 @@ private:
     /// Default values for Resource variables (TODO: should be obsoleted!)
     double minEffort;
 
+    /**
+     * The default resource usage limits.
+     */
     UsageLimits* resourceLimits;
 
+    /**
+     * The default daily cost of a resource. The value is inherited to all
+     * resources but can be overridden.
+     */
     double rate;
 
     /* The average number of working hours per day. This factor is used
@@ -853,6 +863,15 @@ private:
     AccountList accountList;
     ShiftList shiftList;
 
+    /**
+     * The following lists contain a deep copy of their unscheduled
+     * counterpart. They will be used to initialize the working lists before
+     * an optimizer run.
+     */
+    TaskList originalTaskList;
+    ResourceList originalResourceList;
+    AccountList originalAccountList;
+    
     QDict<CustomAttributeDefinition> taskAttributes;
     QDict<CustomAttributeDefinition> resourceAttributes;
 

@@ -13,17 +13,25 @@
 #include "Optimizer.h"
 #include "DecisionNode.h"
 #include "OptimizerRun.h"
+#include "debug.h"
 
 Optimizer::Optimizer()
 {
     runs.setAutoDelete(TRUE);
-    decisionTree = 0;
+    decisionTree = new DecisionNode(0, "*Root*");
     minimize = TRUE;
 }
 
 Optimizer::~Optimizer()
 {
     delete decisionTree;
+}
+
+bool
+Optimizer::optimumFound() const 
+{
+    return decisionTree->getCompleted();
+//    return TRUE;
 }
 
 OptimizerRun*

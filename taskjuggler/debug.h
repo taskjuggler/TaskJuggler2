@@ -22,6 +22,7 @@
 #define DEBUGRS(l) ((DEBUGMODE & 8) && DEBUGLEVEL >= l) // Resource Scheduler
 #define DEBUGEX(l) ((DEBUGMODE & 16) && DEBUGLEVEL >= l) // Expression Tree Ev.
 #define DEBUGMA(l) ((DEBUGMODE & 32) && DEBUGLEVEL >= l) // Macro Expander
+#define DEBUGOP(l) ((DEBUGMODE & 64) && DEBUGLEVEL >= l) // Optimizer
 
 class DebugController
 {

@@ -55,8 +55,12 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
         p->getScheduleGranularity() + 1;
 
     scoreboards = new SbBooking**[p->getMaxScenarios()];
+    specifiedBookings = new SbBooking**[p->getMaxScenarios()];
     for (int sc = 0; sc < p->getMaxScenarios(); sc++)
+    {
         scoreboards[sc] = 0;
+        specifiedBookings[sc] = 0;
+    }
 
     if (!DayStartIndex)
     {
@@ -124,6 +128,7 @@ Resource::~Resource()
         delete workingHours[i];
 
     for (int sc = 0; sc < project->getMaxScenarios(); sc++)
+    {
         if (scoreboards[sc])
         {
             for (uint i = 0; i < sbSize; i++)
@@ -139,6 +144,24 @@ Resource::~Resource()
             delete [] scoreboards[sc];
             scoreboards[sc] = 0;
         }
+        if (specifiedBookings[sc])
+        {
+            for (uint i = 0; i < sbSize; i++)
+                if (specifiedBookings[sc][i] > (SbBooking*) 3)
+                {
+                    uint j;
+                    for (j = i + 1; j < sbSize &&
+                         specifiedBookings[sc][i] == specifiedBookings[sc][j];
+                         j++)
+                        ;
+                    delete specifiedBookings[sc][i];
+                    i = j - 1;
+                }
+            delete [] specifiedBookings[sc];
+            specifiedBookings[sc] = 0;
+        }
+    }
+    delete [] specifiedBookings;
     delete [] scoreboards;
 
     delete limits;
@@ -873,8 +896,65 @@ Resource::getEndOfLastSlot(int sc, const Task* task)
 }
 
 void
+Resource::copyBookings(int sc, SbBooking*** src, SbBooking*** dst)
+{
+    /* This function copies a set of bookings the specified scenario. If the
+     * destination set already contains bookings it is cleared first.
+     */
+    if (dst[sc])
+        for (uint i = 0; i < sbSize; i++)
+            if (dst[sc][i] > (SbBooking*) 3)
+            {
+                /* Small pointers are fake bookings. We can safely ignore
+                 * them. Identical pointers in successiv slots must only be
+                 * deleted once. */
+                uint j;
+                for (j = i + 1; j < sbSize &&
+                     dst[sc][i] == dst[sc][j]; j++)
+                    ;
+                delete dst[sc][i];
+                i = j - 1;
+            }
+
+    // Now copy the source set to the destination.
+    if (src[sc])
+    {
+        if (!dst[sc])
+            dst[sc] = new SbBooking*[sbSize];
+        for (uint i = 0; i < sbSize; i++)
+            if (src[sc][i] > (SbBooking*) 3)
+            {
+                /* Small pointers can just be copied. Identical successiv
+                 * pointers need to be allocated once and can then be assigned
+                 * to all destination slots. */
+                dst[sc][i] = new SbBooking(src[sc][i]);
+                uint j;
+                for (j = i + 1; j < sbSize &&
+                     src[sc][i] == src[sc][j]; j++)
+                    dst[sc][j] = dst[sc][i];
+                i = j - 1;
+            }
+            else
+                dst[sc][i] = src[sc][i];
+    }
+    else
+    {
+        delete [] dst[sc];
+        dst[sc] = 0;
+    }
+}
+
+void
+Resource::saveSpecifiedBookings()
+{
+    for (int sc = 0; sc < project->getMaxScenarios(); sc++)
+        copyBookings(sc, scoreboards, specifiedBookings);
+}
+
+void
 Resource::prepareScenario(int sc)
 {
+    copyBookings(sc, specifiedBookings, scoreboards);
     scoreboard = scoreboards[sc];
 }
 
