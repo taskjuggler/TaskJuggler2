@@ -15,6 +15,8 @@
 
 #include "TjReport.h"
 
+class QPoint;
+class CoreAttributes;
 class QtResourceReportElement;
 
 class TjResourceReport : public TjReport
@@ -24,8 +26,13 @@ public:
                      const QString& n = QString::null);
     virtual ~TjResourceReport();
 
+
+protected:
     virtual bool generateList();
     virtual bool generateChart(bool autoFit);
+
+    virtual QString generateStatusBarText(const QPoint& pos,
+                                          const CoreAttributes* ca) const;
 
 private:
     bool generateChartLoadBars();

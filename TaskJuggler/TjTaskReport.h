@@ -15,6 +15,8 @@
 
 #include "TjReport.h"
 
+class QPoint;
+class CoreAttributes;
 class QListViewItem;
 class QtTaskReportElement;
 
@@ -25,10 +27,14 @@ public:
                  const QString& n = QString::null);
     virtual ~TjTaskReport();
 
-private:
+protected:
     virtual bool generateList();
     virtual bool generateChart(bool autoFit);
 
+    virtual QString generateStatusBarText(const QPoint& pos,
+                                          const CoreAttributes* ca) const;
+
+private:
     void generateGanttTasks();
     void drawTask(Task* const t, int y);
     void drawDependencies(Task* const t1, QListViewItem* t1lvi);

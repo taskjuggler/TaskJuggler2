@@ -199,6 +199,11 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         qDebug("Trying to schedule %s at %s",
                id.latin1(), time2tjp(date).latin1());
 
+    if (id == "TEAMS.ADM.sl93.burn93_Beta1")
+        DebugCtrl.setDebugLevel(25);
+    else
+        DebugCtrl.setDebugLevel(0);
+
     if (scheduling == Task::ASAP)
     {
         if (start == 0 ||
@@ -783,6 +788,8 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
     switch (a->getSelectionMode())
     {
         case Allocation::order:
+            if (DEBUGTS(25))
+                qDebug("order");
             while (candidates.getFirst())
             {
                 cl.append(candidates.getFirst());
@@ -791,6 +798,8 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
             break;
         case Allocation::minAllocationProbability:
         {
+            if (DEBUGTS(25))
+                qDebug("minAllocationProbability");
             /* This is another heuristic to optimize scheduling results. The
              * idea is to pick the resource that is most likely to be used
              * least during this project (because of the specified
@@ -819,6 +828,8 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
         }
         case Allocation::minLoaded:
         {
+            if (DEBUGTS(25))
+                qDebug("minLoad");
             while (!candidates.isEmpty())
             {
                 double minLoad = 0;
@@ -851,6 +862,8 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
         }
         case Allocation::maxLoaded:
         {
+            if (DEBUGTS(25))
+                qDebug("maxLoad");
             while (!candidates.isEmpty())
             {
                 double maxLoad = 0;
@@ -883,6 +896,8 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
         }
         case Allocation::random:
         {
+            if (DEBUGTS(25))
+                qDebug("random");
             while (candidates.getFirst())
             {
                 cl.append(candidates.at(rand() % candidates.count()));

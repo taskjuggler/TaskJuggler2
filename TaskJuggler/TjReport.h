@@ -24,20 +24,22 @@
 #include "ResourceList.h"
 
 class QSplitter;
-class KListView;
-class Report;
 class QCanvas;
 class QCanvasView;
+class QTimer;
+class KListView;
+class Report;
 class Task;
 class Resource;
 class QtReportElement;
+class Interval;
 
 class TjReport : public QWidget
 {
     Q_OBJECT
 public:
     TjReport(QWidget* p, Report* const rDef, const QString& n = QString::null);
-    virtual ~TjReport() { }
+    virtual ~TjReport();
 
     virtual bool generateReport();
 
@@ -49,22 +51,29 @@ public:
     void generateResourceListLine(const QtReportElement* reportElement,
                                   const Resource* r, QListViewItem* lvi,
                                   const Task* t = 0);
+
+signals:
+    void signalChangeStatusBar(const QString& text);
+
 public slots:
     void zoomIn();
     void zoomOut();
+    virtual void show();
+    virtual void hide();
 
 private slots:
     void regenerateChart();
     void collapsReportItem(QListViewItem* lvi);
     void expandReportItem(QListViewItem* lvi);
     void syncVSliders(int, int);
+    void updateStatusBar();
 
 protected:
     enum StepUnits { day = 0, week, month, quarter, year };
     TjReport() : reportDef(0) { }
 
-    int time2x(time_t t);
-    time_t x2time(int x);
+    int time2x(time_t t) const;
+    time_t x2time(int x) const;
 
     virtual bool generateList() = 0;
     virtual bool generateChart(bool autoFit) = 0;
@@ -92,10 +101,18 @@ protected:
     void generateDependencies(Task* const t, QListViewItem* lvi);
     void generateListHeader(const QString& firstHeader, QtReportElement* tab);
     void generateTaskResources(Task* const t);
+
+    virtual QString generateStatusBarText(const QPoint& pos,
+                                          const CoreAttributes* ca) const = 0;
+
     QString indent(const QString& input, const QListViewItem* lvi,
                    bool right);
     int treeLevel(const QListViewItem* lvi) const;
 
+    Interval stepInterval(time_t ref) const;
+    QString stepIntervalName(time_t ref) const;
+
+    time_t stepLength() const;
     void setBestStepUnit();
 
     Report* const reportDef;
@@ -126,6 +143,11 @@ protected:
      * t:mytask.subtask is a task and r:team.nick is a resource.
      */
     QDict<QListViewItem> ca2lviDict;
+
+    /* And the same in the other direction. We use the hex-ed address of the
+     * LVI as key. */
+    QDict<CoreAttributes> lvi2caDict;
+
     /**
      * This is the maximum indentation of the list view. It only takes visible
      * items into account. Visible means not hidden by closed parents.
@@ -141,6 +163,8 @@ protected:
     time_t endTime;
 
     bool loadingProject;
+
+    QTimer* statusBarUpdateTimer;
 
     TaskList taskList;
     ResourceList resourceList;

@@ -44,6 +44,8 @@ TjResourceReport::generateList()
     // Remove all items and columns from list view.
     listView->clear();
     ca2lviDict.clear();
+    lvi2caDict.clear();
+
     while (listView->columns())
         listView->removeColumn(0);
     maxDepth = 0;
@@ -89,6 +91,8 @@ TjResourceReport::generateList()
         // Store the new LVI into the dictionary and check if we have reached
         // a new tree level maximum.
         ca2lviDict.insert(QString("r:") + (*rli)->getFullId(), newLvi);
+        lvi2caDict.insert(QString().sprintf("%p", newLvi), *rli);
+
         if (treeLevel(newLvi) > maxDepth)
             maxDepth = treeLevel(newLvi);
 
@@ -159,6 +163,8 @@ TjResourceReport::generateList()
                 // Insert the task in the LVI lookup dictionary.
                 ca2lviDict.insert(QString("t:") + (*rli)->getFullId() +
                                   ":" + (*tli)->getId(), lvi);
+                lvi2caDict.insert(QString().sprintf("%p", lvi), *tli);
+
                 // Adjust the maxDepth setting if new treelevel maximum has
                 // been found.
                 if (treeLevel(lvi) > maxDepth)
@@ -210,6 +216,35 @@ TjResourceReport::generateChart(bool autoFit)
 
     setCursor(KCursor::arrowCursor());
     return TRUE;
+}
+
+QString
+TjResourceReport::generateStatusBarText(const QPoint& pos,
+                                        const CoreAttributes* ca) const
+{
+    QPoint chartPos = ganttChartView->viewportToContents(pos);
+    time_t refTime = x2time(chartPos.x());
+    Interval iv = stepInterval(refTime);
+    QString ivName = stepIntervalName(refTime);
+
+    QString text;
+    if (ca->getType() == CA_Task)
+    {
+    }
+    else
+    {
+        const Resource* r = dynamic_cast<const Resource*>(ca);
+        double load = r->getLoad(scenario, iv, AllAccounts);
+        double freeLoad = r->getAvailableWorkLoad(scenario, iv);
+        text = i18n("%1 %2: Load=%3 Free=%4").arg(r->getName())
+            .arg(ivName)
+            .arg(reportElement->scaledLoad
+                 (load, reportDef->getNumberFormat()))
+            .arg(reportElement->scaledLoad
+                 (freeLoad, reportDef->getNumberFormat()));
+    }
+
+    return text;
 }
 
 bool

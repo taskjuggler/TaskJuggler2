@@ -26,6 +26,7 @@
 #include <kiconloader.h>
 #include <kapp.h>
 #include <kcursor.h>
+#include <kglobal.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -99,12 +100,19 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     vl->addWidget(ganttChartView);
     hl->addWidget(splitter);
 
+    statusBarUpdateTimer = 0;
+
     connect(listView, SIGNAL(expanded(QListViewItem*)),
             this, SLOT(expandReportItem(QListViewItem*)));
     connect(listView, SIGNAL(collapsed(QListViewItem*)),
             this, SLOT(collapsReportItem(QListViewItem*)));
     connect(ganttChartView, SIGNAL(contentsMoving(int, int)),
             this, SLOT(syncVSliders(int, int)));
+}
+
+TjReport::~TjReport()
+{
+    delete statusBarUpdateTimer;
 }
 
 bool
@@ -129,6 +137,12 @@ TjReport::generateReport()
     connect(delayTimer, SIGNAL(timeout()),
             this, SLOT(regenerateChart()));
     delayTimer->start(200, TRUE);
+
+    delete statusBarUpdateTimer;
+    statusBarUpdateTimer = new QTimer(this);
+    connect(statusBarUpdateTimer, SIGNAL(timeout()),
+            this, SLOT(updateStatusBar()));
+    statusBarUpdateTimer->start(500, FALSE);
 
     return TRUE;
 }
@@ -186,14 +200,15 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         }
         else if ((*ci)->getName() == "duration")
             cellText = reportElement->scaledLoad
-                (t->getCalcDuration(scenario), tcf);
+                (t->getCalcDuration(scenario), tcf->realFormat);
         else if ((*ci)->getName() == "effort")
         {
             double val = 0.0;
             val = t->getLoad(scenario, Interval(t->getStart(scenario),
                                                 t->getEnd(scenario)), r);
-            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
+            cellText = indent
+                (reportElement->scaledLoad (val, tcf->realFormat),
+                 lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
         else if ((*ci)->getName() == "end")
             cellText = time2user((t->isMilestone() ? 1 : 0) +
@@ -313,8 +328,9 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                 val = r->getAvailableWorkLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
-                cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                                  tcf->getHAlign() == TableColumnFormat::right);
+                cellText = indent
+                    (reportElement->scaledLoad(val, tcf->realFormat), lvi,
+                     tcf->getHAlign() == TableColumnFormat::right);
             }
         }
         else if ((*ci)->getName() == "effort")
@@ -327,8 +343,9 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
             else
                 val = r->getLoad(scenario, Interval(reportElement->getStart(),
                                                     reportElement->getEnd()));
-            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
-                              tcf->getHAlign() == TableColumnFormat::right);
+            cellText = indent
+                (reportElement->scaledLoad(val, tcf->realFormat), lvi,
+                 tcf->getHAlign() == TableColumnFormat::right);
         }
         else if ((*ci)->getName() == "utilization")
         {
@@ -825,14 +842,14 @@ TjReport::generateGanttBackground()
 }
 
 int
-TjReport::time2x(time_t t)
+TjReport::time2x(time_t t) const
 {
     return (int) ((t - startTime) *
                   (((float) pixelPerYear) / (60 * 60 * 24 * 365)));
 }
 
 time_t
-TjReport::x2time(int x)
+TjReport::x2time(int x) const
 {
     return (time_t) (startTime + ((float) x * 60 * 60 * 24 * 365) /
                      pixelPerYear);
@@ -884,6 +901,25 @@ TjReport::syncVSliders(int x, int y)
 }
 
 void
+TjReport::updateStatusBar()
+{
+    QString text;
+    QPoint pos = ganttChartView->mapFromGlobal(QCursor::pos());
+    if (pos.x() < 0 || pos.y() < 0 ||
+        pos.x() > ganttChartView->width() ||
+        pos.y() > ganttChartView->height())
+        return;
+
+    QListViewItem* lvi = listView->itemAt(QPoint(50, pos.y()));
+    if (!lvi)
+        return;
+
+    CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
+
+    emit signalChangeStatusBar(this->generateStatusBarText(pos, ca));
+}
+
+void
 TjReport::zoomIn()
 {
     if (currentZoomStep >= sizeof(zoomSteps) / sizeof(int) - 1)
@@ -917,6 +953,24 @@ TjReport::zoomOut()
 
     ganttHeaderView->setContentsPos(time2x(x), 0);
     ganttChartView->setContentsPos(time2x(x), y);
+}
+
+void
+TjReport::show()
+{
+    QWidget::show();
+
+    if (statusBarUpdateTimer)
+        statusBarUpdateTimer->start(500, FALSE);
+}
+
+void
+TjReport::hide()
+{
+    if (statusBarUpdateTimer)
+        statusBarUpdateTimer->stop();
+
+    QWidget::hide();
 }
 
 void
@@ -964,5 +1018,70 @@ TjReport::treeLevel(const QListViewItem* lvi) const
             kdFatal() << "Tree level explosion";
     }
     return level;
+}
+
+Interval
+TjReport::stepInterval(time_t ref) const
+{
+    Interval iv;
+    switch (stepUnit)
+    {
+        case day:
+            iv.setStart(midnight(ref));
+            iv.setEnd(sameTimeNextDay(iv.getStart()));
+            break;
+        case week:
+            iv.setStart(beginOfWeek
+                        (ref, reportDef->getProject()->getWeekStartsMonday()));
+            iv.setEnd(sameTimeNextWeek(iv.getStart()));
+            break;
+        case month:
+            iv.setStart(beginOfMonth(ref));
+            iv.setEnd(sameTimeNextMonth(iv.getStart()));
+            break;
+        case quarter:
+            iv.setStart(beginOfQuarter(ref));
+            iv.setEnd(sameTimeNextQuarter(iv.getStart()));
+            break;
+        case year:
+            iv.setStart(beginOfYear(ref));
+            iv.setEnd(sameTimeNextYear(iv.getStart()));
+            break;
+        default:
+            kdFatal() << "Unknown stepUnit";
+    }
+    return iv;
+}
+
+QString
+TjReport::stepIntervalName(time_t ref) const
+{
+    QString name;
+    switch (stepUnit)
+    {
+        case day:
+            name = time2user(midnight(ref), KGlobal::locale()->dateFormat());
+            break;
+        case week:
+        {
+            bool wsm = reportDef->getProject()->getWeekStartsMonday();
+            name = i18n("Week %1, %2").arg(weekOfYear(ref, wsm))
+                .arg(::year(ref));
+            break;
+        }
+        case month:
+            name = QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(ref)))
+                .arg(::year(ref));
+            break;
+        case quarter:
+            name = QString("Q%1 %2").arg(quarterOfYear(ref)).arg(::year(ref));
+            break;
+        case year:
+            name = QString().sprintf("%d", ::year(ref));
+            break;
+        default:
+            kdFatal() << "Unknown stepUnit";
+    }
+    return name;
 }
 

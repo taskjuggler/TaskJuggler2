@@ -123,6 +123,9 @@ ReportManager::showReport(QListViewItem* lvi)
             return FALSE;
         }
 
+        connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
+                this, SLOT(changeStatusBar(const QString&)));
+
         reportStack->addWidget(tjr);
         mr->setReport(tjr);
 
@@ -155,6 +158,12 @@ ReportManager::closeCurrentReport()
         reports.removeRef(mri);
         updateReportBrowser();
     }
+}
+
+void
+ReportManager::changeStatusBar(const QString& text)
+{
+    emit signalChangeStatusBar(text);
 }
 
 void

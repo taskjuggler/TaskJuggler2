@@ -133,6 +133,8 @@ public:
     void setTimeFormat(const QString& tf) { timeFormat = tf; }
     void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
 
+    const RealFormat& getNumberFormat() const { return numberFormat; }
+
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
 
@@ -160,7 +162,7 @@ public:
     const TableColumnFormat* getColumnFormat(const QString& key) const;
 
     void setMacros(TableLineInfo* tli);
-    QString scaledLoad(double t, const TableColumnFormat* tcf) const;
+    QString scaledLoad(double t, const RealFormat& realFormat) const;
 
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;

@@ -365,7 +365,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
             if (period.contains(tci->tli->task->getEnd(tci->tli->sc)))
                 post += "=v";
             if (load > 0.0 && barLabels != BLT_EMPTY)
-                text = scaledLoad(load, tci->tcf);
+                text = scaledLoad(load, tci->tcf->realFormat);
             else if (pre.isEmpty() && post.isEmpty())
                 text = "==";
             else if (!pre.isEmpty() && !post.isEmpty())
@@ -398,7 +398,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
                     post = "]";
                 }
                 if (load > 0.0 && barLabels != BLT_EMPTY)
-                    text = scaledLoad(load, tci->tcf);
+                    text = scaledLoad(load, tci->tcf->realFormat);
                 else if (pre.isEmpty() && post.isEmpty())
                     text = "==";
                 else if (pre == "[")
@@ -426,7 +426,7 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
     if (load > 0.0)
     {
         if (barLabels != BLT_EMPTY)
-            text += scaledLoad(load, tci->tcf);
+            text += scaledLoad(load, tci->tcf->realFormat);
         if (tci->tli->resource->hasSubs())
             tci->setBoldText(true);
         tci->setHAlign("center");
@@ -1053,7 +1053,8 @@ HTMLReportElement::genCellEndBufferStart(TableCellInfo* tci)
 void
 HTMLReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci->tcf),
+    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc),
+                       tci->tcf->realFormat),
             tci, FALSE);
 }
 
@@ -1072,7 +1073,7 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
                                           AllAccounts, tci->tli->task);
     }
 
-    generateRightIndented(tci, scaledLoad(val, tci->tcf));
+    generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
 }
 
 void
@@ -1085,7 +1086,7 @@ HTMLReportElement::genCellFreeLoad(TableCellInfo* tci)
             (tci->tli->sc, Interval(start, end));
     }
 
-    generateRightIndented(tci, scaledLoad(val, tci->tcf));
+    generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
 }
 
 void
@@ -1111,7 +1112,7 @@ HTMLReportElement::genCellCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
         (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc),
-                         tci->tcf));
+                         tci->tcf->realFormat));
 }
 
 void
@@ -1119,7 +1120,7 @@ HTMLReportElement::genCellPathCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
         (tci, scaledLoad(tci->tli->task->getPathCriticalness(tci->tli->sc),
-                         tci->tcf));
+                         tci->tcf->realFormat));
 }
 
 void

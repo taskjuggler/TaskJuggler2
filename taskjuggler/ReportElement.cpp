@@ -899,7 +899,7 @@ ReportElement::sortAccountList(AccountList& filteredList)
 }
 
 QString
-ReportElement::scaledLoad(double t, const TableColumnFormat* tcf) const
+ReportElement::scaledLoad(double t, const RealFormat& realFormat) const
 {
     QStringList variations;
     QValueList<double> factors;
@@ -923,7 +923,7 @@ ReportElement::scaledLoad(double t, const TableColumnFormat* tcf) const
         for (QValueList<double>::Iterator it = factors.begin();
              it != factors.end(); ++it)
         {
-            str = tcf->realFormat.format(t * *it, FALSE);
+            str = realFormat.format(t * *it, FALSE);
             int idx = factors.findIndex(*it);
             if ((*it != 1.0 && str == "0") ||
                 (max[idx] != 0 && max[idx] < (t * *it)))
@@ -959,22 +959,22 @@ ReportElement::scaledLoad(double t, const TableColumnFormat* tcf) const
         switch (loadUnit)
         {
             case days:
-                str = tcf->realFormat.format(t * factors[0], FALSE);
+                str = realFormat.format(t * factors[0], FALSE);
                 break;
             case minutes:
-                str = tcf->realFormat.format(t * factors[1], FALSE);
+                str = realFormat.format(t * factors[1], FALSE);
                 break;
             case hours:
-                str = tcf->realFormat.format(t * factors[2], FALSE);
+                str = realFormat.format(t * factors[2], FALSE);
                 break;
             case weeks:
-                str = tcf->realFormat.format(t * factors[3], FALSE);
+                str = realFormat.format(t * factors[3], FALSE);
                 break;
             case months:
-                str = tcf->realFormat.format(t * factors[4], FALSE);
+                str = realFormat.format(t * factors[4], FALSE);
                 break;
             case years:
-                str = tcf->realFormat.format(t * factors[5], FALSE);
+                str = realFormat.format(t * factors[5], FALSE);
                 break;
             case shortAuto:
             case longAuto:

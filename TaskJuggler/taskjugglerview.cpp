@@ -150,6 +150,9 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     connect(messageListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(messageListClicked(QListViewItem*)));
 
+    connect(reportManager, SIGNAL(signalChangeStatusBar(const QString&)),
+            this, SLOT(changeStatusBar(const QString&)));
+
     connect(loadDelayTimer, SIGNAL(timeout()),
             this, SLOT(loadAfterTimerTimeout()));
 
@@ -620,6 +623,12 @@ TaskJugglerView::zoomOut()
         return;
 
     reportManager->zoomOut();
+}
+
+void
+TaskJugglerView::changeStatusBar(const QString& text)
+{
+    emit signalChangeStatusbar(text);
 }
 
 void

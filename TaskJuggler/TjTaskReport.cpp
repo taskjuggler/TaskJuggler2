@@ -44,6 +44,8 @@ TjTaskReport::generateList()
     // Remove all items and columns from list view.
     listView->clear();
     ca2lviDict.clear();
+    lvi2caDict.clear();
+
     while (listView->columns())
         listView->removeColumn(0);
     maxDepth = 0;
@@ -90,6 +92,8 @@ TjTaskReport::generateList()
             newLvi = new KListViewItem(listView, (*tli)->getName());
 
         ca2lviDict.insert(QString("t:") + (*tli)->getId(), newLvi);
+        lvi2caDict.insert(QString().sprintf("%p", newLvi), *tli);
+
         if (treeLevel(newLvi) > maxDepth)
             maxDepth = treeLevel(newLvi);
 
@@ -127,6 +131,7 @@ TjTaskReport::generateList()
                                loadIcon("tj_resource", KIcon::Small));
                 ca2lviDict.insert(QString("r:") + (*tli)->getId() +
                                   ":" + (*rli)->getFullId(), lvi);
+                lvi2caDict.insert(QString().sprintf("%p", lvi), *rli);
                 if (treeLevel(lvi) > maxDepth)
                     maxDepth = treeLevel(lvi);
             }
@@ -170,6 +175,13 @@ TjTaskReport::generateChart(bool autoFit)
 
     setCursor(KCursor::arrowCursor());
     return TRUE;
+}
+
+QString
+TjTaskReport::generateStatusBarText(const QPoint& pos,
+                                    const CoreAttributes* ca) const
+{
+    return ca->getFullId();
 }
 
 void

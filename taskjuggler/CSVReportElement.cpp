@@ -174,7 +174,7 @@ CSVReportElement::reportTaskLoad(double load, TableCellInfo* tci,
 {
     QString text;
     if (tci->tli->task->isActive(tci->tli->sc, period))
-        text = scaledLoad(load, tci->tcf);
+        text = scaledLoad(load, tci->tcf->realFormat);
     genCell(text, tci, FALSE);
 }
 
@@ -184,7 +184,7 @@ CSVReportElement::reportResourceLoad(double load, TableCellInfo* tci,
 {
     QString text;
     if (load > 0.0)
-        text += scaledLoad(load, tci->tcf);
+        text += scaledLoad(load, tci->tcf->realFormat);
     genCell(text, tci, FALSE);
 }
 
@@ -622,7 +622,8 @@ CSVReportElement::genCellEndBufferStart(TableCellInfo* tci)
 void
 CSVReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci->tcf),
+    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc),
+                       tci->tcf->realFormat),
             tci, FALSE);
 }
 
@@ -641,7 +642,7 @@ CSVReportElement::genCellEffort(TableCellInfo* tci)
                                           AllAccounts, tci->tli->task);
     }
 
-    generateRightIndented(tci, scaledLoad(val, tci->tcf));
+    generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
 }
 
 void
@@ -654,7 +655,7 @@ CSVReportElement::genCellFreeLoad(TableCellInfo* tci)
             (tci->tli->sc, Interval(start, end));
     }
 
-    generateRightIndented(tci, scaledLoad(val, tci->tcf));
+    generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
 }
 
 void
@@ -680,7 +681,7 @@ CSVReportElement::genCellCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
         (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc),
-                         tci->tcf));
+                         tci->tcf->realFormat));
 }
 
 void
@@ -688,7 +689,7 @@ CSVReportElement::genCellPathCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
         (tci, scaledLoad(tci->tli->task->getPathCriticalness(tci->tli->sc),
-                         tci->tcf));
+                         tci->tcf->realFormat));
 }
 
 void

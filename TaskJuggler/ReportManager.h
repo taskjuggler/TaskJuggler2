@@ -49,10 +49,14 @@ public:
 
     void clear();
 
+signals:
+    void signalChangeStatusBar(const QString& text);
+
 public slots:
     void zoomIn();
     void zoomOut();
     void closeCurrentReport();
+    void changeStatusBar(const QString& text);
 
 private:
     ReportManager() { }

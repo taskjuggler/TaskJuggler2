@@ -106,6 +106,7 @@ public slots:
     void setFocusToReport();
     void zoomIn();
     void zoomOut();
+    void changeStatusBar(const QString& text);
 
 signals:
     /**
