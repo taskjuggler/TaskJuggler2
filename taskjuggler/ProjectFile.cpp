@@ -4357,6 +4357,22 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 }
                 tci->setCellURL(token);
             }
+            else if (token == KW("hidecelltext"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return 0;
+                ExpressionTree* et = new ExpressionTree(op);
+                tci->setHideCellText(et);
+            }
+            else if (token == KW("hidecellurl"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return 0;
+                ExpressionTree* et = new ExpressionTree(op);
+                tci->setHideCellURL(et);
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute"));

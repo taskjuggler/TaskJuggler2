@@ -148,17 +148,22 @@ CSVReportElement::generateLine(TableLineInfo* tli, int funcSel)
 
 void
 CSVReportElement::genCell(const QString& text, TableCellInfo* tci, 
-                           bool, bool filterText)
+                          bool, bool filterText)
 {
-    QString cellText = filterText ? filter(text) : text;
-    if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
+    QString cellText;
+    if (tci->tli->ca1 == 0 ||
+        !isHidden(tci->tli->ca1, tci->tci->getHideCellText()))
     {
-        QStringList* sl = new QStringList();
-        sl->append(text);
-        mt.pushArguments(sl);
-        cellText = mt.expand(tci->tci->getCellText());
-        QString cellURL = mt.expand(tci->tci->getCellURL());
-        mt.popArguments();
+        cellText = filterText ? filter(text) : text;
+        if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
+        {
+            QStringList* sl = new QStringList();
+            sl->append(text);
+            mt.pushArguments(sl);
+            cellText = mt.expand(tci->tci->getCellText());
+            QString cellURL = mt.expand(tci->tci->getCellURL());
+            mt.popArguments();
+        }
     }
     s() << "\"" << cellText << "\"";
 }

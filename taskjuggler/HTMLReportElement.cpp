@@ -295,16 +295,22 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         }
         puts("\"");
     }
-    QString cellText = filter ? htmlFilter(text) : text;
-    if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
+    QString cellText;
+    if (tci->tli->ca1 == 0 ||
+        !isHidden(tci->tli->ca1, tci->tci->getHideCellText()))
     {
-        QStringList* sl = new QStringList();
-        sl->append(text);
-        mt.pushArguments(sl);
-        cellText = mt.expand(tci->tci->getCellText());
-        mt.popArguments();
+        cellText = filter ? htmlFilter(text) : text;
+        if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
+        {
+            QStringList* sl = new QStringList();
+            sl->append(text);
+            mt.pushArguments(sl);
+            cellText = mt.expand(tci->tci->getCellText());
+            mt.popArguments();
+        }
     }
-    if (!tci->tci->getCellURL().isEmpty())
+    if (!tci->tci->getCellURL().isEmpty() && (tci->tli->ca1 == 0 ||
+        !isHidden(tci->tli->ca1, tci->tci->getHideCellURL())))
     {
         QStringList* sl = new QStringList();
         sl->append(text);

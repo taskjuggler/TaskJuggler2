@@ -641,6 +641,15 @@ the macro is undefined.</para></listitem>
 <listitem><para>Microsoft and MacOS text files are now read in
 correctly.</para></listitem>
 
+<listitem><para>Report cells can be left empty and URLs can be
+ommitted controlled by a logical expression. This is controlled by
+<link linkend="htmltaskreport_columns_hidecelltext">hidecelltext</link>
+and <link
+linkend="htmltaskreport_columns_hidecellurl">hidecellurl</link>.</para></listitem>
+
+<listitem><para>New functions isATask, isAResource and isAnAccount can
+now be used in logical expressions.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -38,6 +38,13 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
         functions.insert(etf->getName(), etf);
         
         etf = new ExpressionTreeFunction
+            (KW("isatask"), &ExpressionTreeFunction::isATask, 0);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isATask"), &ExpressionTreeFunction::isATask, 0);
+        
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
             ("ismilestone", &ExpressionTreeFunction::isMilestone, 0);
         functions.insert(etf->getName(), etf);
         etf = new ExpressionTreeFunction
@@ -60,10 +67,24 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
         functions.insert(etf->getName(), etf);
         
         etf = new ExpressionTreeFunction
+            ("isaresource", &ExpressionTreeFunction::isAResource, 0);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isAResource"), &ExpressionTreeFunction::isAResource, 0);
+        functions.insert(etf->getName(), etf);
+        
+        etf = new ExpressionTreeFunction
             ("isaccount", &ExpressionTreeFunction::isAccount, 1);
         functions.insert(etf->getName(), etf);
         etf = new ExpressionTreeFunction
             (KW("isAccount"), &ExpressionTreeFunction::isAccount, 1);
+        functions.insert(etf->getName(), etf);
+        
+        etf = new ExpressionTreeFunction
+            ("isanaccount", &ExpressionTreeFunction::isAnAccount, 0);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isAnAccount"), &ExpressionTreeFunction::isAnAccount, 0);
         functions.insert(etf->getName(), etf);
         
         etf = new ExpressionTreeFunction

@@ -16,6 +16,7 @@
 #include <qmap.h>
 
 class QString;
+class ExpressionTree;
 
 /**
  * @short A column of a report.
@@ -26,6 +27,7 @@ class TableColumnInfo
 public:
     TableColumnInfo(uint sc, const QString& n) : name(n)
     {
+        hideCellText = hideCellURL = 0;
         sum = memory = 0;
         maxScenarios = sc;
         clearSum();
@@ -57,6 +59,12 @@ public:
     void setCellURL(const QString& t) { cellURL = t; }
     const QString& getCellURL() const { return cellURL; }
 
+    void setHideCellText(ExpressionTree* et) { hideCellText = et; }
+    ExpressionTree* getHideCellText() const { return hideCellText; }
+
+    void setHideCellURL(ExpressionTree* et) { hideCellURL = et; }
+    ExpressionTree* getHideCellURL() const { return hideCellURL; }
+
     void clearSum();
     void clearMemory();
     void addToSum(uint sc, const QString& key, double val);
@@ -75,7 +83,9 @@ protected:
     QString subTitleURL;
     QString cellText;
     QString cellURL;
-    
+    ExpressionTree* hideCellText;
+    ExpressionTree* hideCellURL;
+
     QMap<QString, double>* sum;
     QMap<QString, double>* memory;
 

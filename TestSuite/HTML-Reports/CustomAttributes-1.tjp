@@ -31,13 +31,16 @@ task t1 "Task 1" {
 }
 
 task t2 "Task 2" {
-	depends !t1
-	milestone
 	MyText "Hello, world!"
+
+	task t4 "Task 4" {
+		milestone
+		depends !!t1
+	}
 }
 
 htmltaskreport "." {
-	columns no { celltext "Hallo" }, 
+	columns no { celltext "Hallo" hidecelltext ~isLeaf() }, 
 	        name { celltext "[$${MyText}] $${0}" }, 
 					MyText, MyTLink, MyTText, MyRLink
 	hideresource 0

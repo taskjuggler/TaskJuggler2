@@ -49,9 +49,12 @@ public:
     long isLeaf(const ExpressionTree* et, Operation* const ops[]) const;
     long treeLevel(const ExpressionTree* et, Operation* const ops[]) const;
     long isAccount(const ExpressionTree* et, Operation* const ops[]) const;
+    long isAnAccount(const ExpressionTree* et, Operation* const ops[]) const;
     long isResource(const ExpressionTree* et, Operation* const ops[]) const;
+    long isAResource(const ExpressionTree* et, Operation* const ops[]) const;
     long isMilestone(const ExpressionTree* et, Operation* const ops[]) const;
     long isTask(const ExpressionTree* et, Operation* const ops[]) const;
+    long isATask(const ExpressionTree* et, Operation* const ops[]) const;
     long isSubTaskOf(const ExpressionTree* et, Operation* const ops[]) const;
     long isTaskOfProject(const ExpressionTree* et, Operation* const ops[])
         const;

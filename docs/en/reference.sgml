@@ -87,10 +87,15 @@ specified date</para></listitem>
 specified date</para></listitem>
 
 </varlistentry>
+<varlistentry><term>isAnAccount()</term>
+
+<listitem><para>true if the property is an account</para></listitem>
+
+</varlistentry>
 <varlistentry><term>isAccount(<link linkend="id">ID</link>)</term>
 
 <listitem><para>true if the account has the listed
-ID.</para></listitem>
+ID</para></listitem>
 
 </varlistentry>
 <varlistentry><term>isAllocated(<link linkend="id">ID</link>,
@@ -119,10 +124,21 @@ the scenario with the specified ID.
 <listitem><para>true if the task is a milestone.</para></listitem>
 
 </varlistentry>
+<varlistentry><term>isAResource()</term>
+
+<listitem><para>true if the property is a resource
+ID.</para></listitem>
+
+</varlistentry>
 <varlistentry><term>isResource(<link linkend="id">ID</link>)</term>
 
 <listitem><para>true if the resource has the listed
 ID.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>isATask()</term>
+
+<listitem><para>true if the property is a task.</para></listitem>
 
 </varlistentry>
 <varlistentry><term>isTask(<link linkend="id">ID</link>)</term>
@@ -1727,6 +1743,29 @@ following macros are supported:</para>
 
 <para>If the text is not empty a hyperlink is attached to the cell
 contense that points to the URL specified here.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_hidecelltext"><title>hidecelltext
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></>
+</simplelist></para>
+
+<para>If the expression is true, the cell will be left empty.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_hidecellurl"><title>hidecellurl
+&lt;expression&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>expression:</><member><link
+linkend="logicalexpression">LOGICALEXPRESSION</link></>
+</simplelist></para>
+
+<para>If the expression is true, no URL will be attached to the cell
+contense.</para>
 
 </sect3>
 <sect3 id="htmltaskreport_columns_subtitle"><title>subtitle &lt;text&gt;</title>

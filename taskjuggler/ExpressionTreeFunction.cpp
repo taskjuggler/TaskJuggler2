@@ -102,6 +102,13 @@ long
 ExpressionTreeFunction::isLeaf(const ExpressionTree* et, 
                                Operation* const []) const
 {
+    if (DEBUGEX(15))
+    {
+        qDebug("isLeaf() called for (%d) %s => %d",
+               et->getCoreAttributes()->getType(),
+               et->getCoreAttributes()->getId().latin1(),
+               et->getCoreAttributes()->isLeaf());
+    }
     return et->getCoreAttributes()->isLeaf();
 }
 
@@ -116,15 +123,15 @@ long
 ExpressionTreeFunction::isTask(const ExpressionTree* et, 
                                Operation* const ops[]) const
 {
-    if (DEBUGEX(15))
-    {
-        qDebug("isTask(%s) called for (%d) %s",
-               ops[0]->debugString().latin1(),
-               et->getCoreAttributes()->getType(),
-               et->getCoreAttributes()->getId().latin1());
-    }
     return et->getCoreAttributes()->getType() == CA_Task &&
         et->getCoreAttributes()->getId() == ops[0]->evalAsString(et);
+}
+
+long
+ExpressionTreeFunction::isATask(const ExpressionTree* et, 
+                                Operation* const []) const
+{
+    return et->getCoreAttributes()->getType() == CA_Task;
 }
 
 long
@@ -145,11 +152,25 @@ ExpressionTreeFunction::isResource(const ExpressionTree* et,
 }
 
 long
+ExpressionTreeFunction::isAResource(const ExpressionTree* et,
+                                    Operation* const []) const
+{
+    return et->getCoreAttributes()->getType() == CA_Resource;
+}
+
+long
 ExpressionTreeFunction::isAccount(const ExpressionTree* et,
                                   Operation* const ops[]) const
 {
     return et->getCoreAttributes()->getType() == CA_Account &&
         et->getCoreAttributes()->getId() == ops[0]->evalAsString(et);
+}
+
+long
+ExpressionTreeFunction::isAnAccount(const ExpressionTree* et,
+                                    Operation* const []) const
+{
+    return et->getCoreAttributes()->getType() == CA_Account;
 }
 
 long
