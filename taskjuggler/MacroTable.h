@@ -73,6 +73,7 @@ public:
     }
     QString resolve();
     QString expand(const QString& text);
+    QString expandReportVariable(QString text);
     Macro* getMacro(const QString& name) const { return macros[name]; }
 
     void setLocation(const QString& df, int dl)

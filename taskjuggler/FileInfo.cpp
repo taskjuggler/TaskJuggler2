@@ -123,12 +123,19 @@ FileInfo::getC(bool expandMacros)
                 readEnvironment();
                 goto BEGIN;
             }
-            else
+            else if (d == '$')
             {
+                QChar e;
+                if ((e = getC(FALSE)) == '{')
+                {
+                    // Convert "$${" into "%{"
+                    c = '%';
+                }
                 // $$ escapes $, so discard 2nd $
-                if (d != '$')
-                    ungetC(d);
+                ungetC(e);
             }
+            else    
+                ungetC(d);
         }
     }
 
@@ -369,6 +376,7 @@ FileInfo::nextToken(QString& token)
         }
         else if (c == '[')
         {
+            token = "";
             int nesting = 0;
             while ((c = getC(FALSE)).unicode() != EOFile &&
                    (c != ']' || nesting > 0))
@@ -403,6 +411,8 @@ FileInfo::nextToken(QString& token)
                 return RBRACKET;
             case ',':
                 return COMMA;
+            case '%':
+                return PERCENT;
             case '~':
                 return TILDE;
             case ':':

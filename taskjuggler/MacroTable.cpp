@@ -15,6 +15,7 @@
 #include <qregexp.h>
 
 #include "debug.h"
+#include "config.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "MacroTable.h"
@@ -123,12 +124,44 @@ MacroTable::resolve()
         }
         else if (name == "error")
         {
+            QPtrListIterator<QStringList> pli(argStack);
+            pli.toLast();
+            QStringList* sl = *pli;
+            if (!sl || sl->count() != 2)
+            {
+                errorMessage
+                    (i18n("'error' macro needs one string argument"));
+                return QString::null;
+            }
+            qWarning("%s", (*sl)[1].latin1());
+            return QString::null; 
         }
         else if (name == "warning")
         {
+            QPtrListIterator<QStringList> pli(argStack);
+            pli.toLast();
+            QStringList* sl = *pli;
+            if (!sl || sl->count() != 2)
+            {
+                errorMessage
+                    (i18n("'warning' macro needs one string argument"));
+                return QString::null;
+            }
+            qWarning("%s", (*sl)[1].latin1());
+        }
+        else if (name == "version")
+        {
+            int maj, min, pl;
+            sscanf(VERSION, "%d.%d.%d", &maj, &min, &pl);
+            QString res; res.sprintf("%2d%02d%02d", maj, min, pl);
+            return res;
         }
         else if (macros[name])
+        {
             result = expand(macros[name]->getValue());
+            if (DEBUGMA(15))
+                qDebug("Found %s as [%s]", name.latin1(), result.latin1());
+        }
             
     if (result.isNull() && !emptyIsLegal)
         errorMessage
@@ -237,6 +270,20 @@ MacroTable::expand(const QString& text)
     if (DEBUGMA(10))
         qDebug("Expanded %s to %s", text.latin1(), res.latin1());
     return res;
+}
+
+QString
+MacroTable::expandReportVariable(QString text)
+{
+    /* We resuse the MacroTable functions for report variables for the time
+     * being. So we have to replace "%{" with "${" so report variables look
+     * like normal macro calls. */
+    uint len = text.length();
+    for (int i = 0; i < len; i++)
+        if (text[i] == '%' && i + 1 < len && text[i + 1] == '{')
+            text[i] = '$';
+
+    return expand(text);
 }
 
 void

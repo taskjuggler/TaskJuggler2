@@ -1,5 +1,5 @@
 /*
- * Report.cpp - TaskJuggler
+ * HTMLReportElement.cpp - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
@@ -305,7 +305,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
             QStringList* sl = new QStringList();
             sl->append(text);
             mt.pushArguments(sl);
-            cellText = mt.expand(tci->tci->getCellText());
+            cellText = mt.expandReportVariable(tci->tci->getCellText());
             mt.popArguments();
         }
     }
@@ -315,9 +315,10 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         QStringList* sl = new QStringList();
         sl->append(text);
         mt.pushArguments(sl);
-        QString cellURL = mt.expand(tci->tci->getCellURL());
+        QString cellURL = mt.expandReportVariable(tci->tci->getCellURL());
+        qDebug("Celltext: %s", cellText.latin1());
         cellText = QString("<a href=\"") + cellURL
-            + "\">" + htmlFilter(cellText) + "</a>";
+            + "\">" + cellText + "</a>";
         mt.popArguments();
     }
     if (cellText.isEmpty())
@@ -447,11 +448,11 @@ HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
     mt.pushArguments(sl);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
-        cellText = mt.expand(tci->tci->getTitle());
+        cellText = mt.expandReportVariable(tci->tci->getTitle());
     else
         cellText = str;
     cellText = htmlFilter(cellText);
-    QString cellURL = mt.expand(tci->tci->getTitleURL());
+    QString cellURL = mt.expandReportVariable(tci->tci->getTitleURL());
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
@@ -468,11 +469,11 @@ HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
     mt.pushArguments(sl);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
-        cellText = mt.expand(tci->tci->getTitle());
+        cellText = mt.expandReportVariable(tci->tci->getTitle());
     else
         cellText = str;
     cellText = htmlFilter(cellText);
-    QString cellURL = mt.expand(tci->tci->getSubTitleURL());
+    QString cellURL = mt.expandReportVariable(tci->tci->getSubTitleURL());
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";

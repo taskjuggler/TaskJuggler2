@@ -160,8 +160,8 @@ CSVReportElement::genCell(const QString& text, TableCellInfo* tci,
             QStringList* sl = new QStringList();
             sl->append(text);
             mt.pushArguments(sl);
-            cellText = mt.expand(tci->tci->getCellText());
-            QString cellURL = mt.expand(tci->tci->getCellURL());
+            cellText = mt.expandReportVariable(tci->tci->getCellText());
+            QString cellURL = mt.expandReportVariable(tci->tci->getCellURL());
             mt.popArguments();
         }
     }
@@ -203,9 +203,9 @@ CSVReportElement::generateTitle(TableCellInfo* tci, const QString& str)
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
     {
-        cellText = mt.expand(tci->tci->getTitle());
+        cellText = mt.expandReportVariable(tci->tci->getTitle());
         if (!tci->tci->getSubTitle().isEmpty())
-            cellText += " " + mt.expand(tci->tci->getSubTitle());
+            cellText += " " + mt.expandReportVariable(tci->tci->getSubTitle());
     }
     else
         cellText = str;
