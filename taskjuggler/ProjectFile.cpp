@@ -455,15 +455,24 @@ ProjectFile::open(const QString& file)
 			char buf[1024];
 			if (getcwd(buf, 1023) != 0)
 				absFileName = QString(buf) + "/" + absFileName;
+			else
+				qFatal("ProjectFile::open(): getcwd failed");
 		}
 		else
 			absFileName = openFiles.last()->getPath() + absFileName;
 	}
-	while (absFileName.find("/../") >= 0)
+	int end = 0;
+	while (absFileName.find("/../", end) >= 0)
 	{
-		int end = absFileName.find("/../");
+		end = absFileName.find("/../");
 		int start = absFileName.findRev('/', end - 1);
-		absFileName.replace(start, end + strlen("/../") - start, "/");
+		if (start < 0)
+			start = 0;
+		else
+			start++;	// move after '/'
+		if (start < end && absFileName.mid(start, end - start) != "..")
+			absFileName.remove(start, end + strlen("/../") - start);
+		end += strlen("/..");
 	}
 
 	// Make sure that we include each file only once.

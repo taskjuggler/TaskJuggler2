@@ -4,6 +4,8 @@ project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
 
 projectid secondId
 
+include "../../test.tjsp"
+
 now 2002-01-16
 copyright "(c) 2001, 2002 SuSE GmbH - This is SuSE CONFIDENTIAL information"
 
