@@ -1,0 +1,15 @@
+Documentation
+
+
+The documentation can be generated from a sgml source.  Type make to
+create html documentation. Calling make in this directory also patches
+the source index.sgml.in to index.sgml.
+
+Enter sgml2latex index.sgml to get latex documents. 
+smgl2* can generate other documentation formats.
+
+- IMPORTANT -
+  Always edit index.sgml.in, not index.sgml !
+
+
+Klaas Freitag <freitag@suse.de>
