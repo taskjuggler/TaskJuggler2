@@ -24,8 +24,11 @@
 
 #include <qwidget.h>
 #include <qdom.h>
+#include <qlistview.h>
+#include <qdatetime.h>
 
 #include <kurl.h>
+#include <klistview.h>
 
 #include "ktjview2iface.h"
 
@@ -37,13 +40,11 @@ class KDGanttViewItem;
 class KoKoolBar;
 class QWidgetStack;
 class QTextBrowser;
-class QListView;
 class KListView;
-class QListViewItem;
 class KListViewItem;
-class QDateTime;
 class KPrinter;
 class TaskList;
+class TaskItem;
 
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
@@ -161,16 +162,12 @@ private:
      * @param sc Index of the scenario
      */
     void parseTasks( int sc = 0 );
-    /**
-     * Parse an individual <task> element
-     */
-    void parseTask( const QDomElement & taskElem, KDGanttViewItem * parent = 0 );
 
     /**
      * Parse the task list and build the gantt chart
      * @param sc Index of the scenario
      */
-    void parseGantt( TaskList tlist, int sc = 0 );
+    void parseGantt( TaskListIterator it, int sc = 0 );
 
     /**
      * Parse the resources list and fill the list view

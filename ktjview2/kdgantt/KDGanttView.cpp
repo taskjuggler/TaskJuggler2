@@ -3922,9 +3922,9 @@ KDGanttViewItem* KDGanttView::getItemByName( const QString& name ) const
 {
     KDGanttViewItem* temp =  firstChild(),* ret;
     while (temp != 0) {
-      if ( (ret = temp->getChildByName( name ) ) )
-	return ret;
-      temp = temp->nextSibling();
+        if ( (ret = temp->getChildByName( name ) ) )
+            return ret;
+        temp = temp->nextSibling();
     }
     return 0;
 }

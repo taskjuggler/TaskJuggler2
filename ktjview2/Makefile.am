@@ -16,14 +16,14 @@ ktjview2_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
 
 # which sources should be compiled for ktjview2
-ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp \
+ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp \
 	ktjview2iface.skel koKoolBar.cc timedialog.cpp \
 	settings.kcfgc gantt.ui
 
 kde_kcfg_DATA = ktjview2.kcfg
 
 # these are the headers for your project
-noinst_HEADERS = ktjview2.h ktjview2view.h koKoolBar.h timedialog.h
+noinst_HEADERS = ktjview2.h ktjview2view.h koKoolBar.h TaskItem.h timedialog.h
 
 # client stuff
 ktjview2_client_LDFLAGS = $(KDE_RPATH) $(all_libraries)

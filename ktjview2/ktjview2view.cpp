@@ -25,8 +25,6 @@
 #include <qwidgetstack.h>
 #include <qcolor.h>
 #include <qtextbrowser.h>
-#include <qlistview.h>
-#include <qdatetime.h>
 #include <qpaintdevicemetrics.h>
 #include <qdialog.h>
 #include <qdir.h>
@@ -53,6 +51,7 @@
 #include "kdgantt/KDGanttViewTaskLink.h"
 #include "ktjview2view.h"
 #include "timedialog.h"
+#include "TaskItem.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -134,7 +133,6 @@ ktjview2View::ktjview2View(QWidget *parent)
     m_taskView->addColumn( i18n( "Duration" ) );
     m_taskView->addColumn( i18n( "Priority" ) );
     m_taskView->addColumn( i18n( "Completion" ) );
-    //m_taskView->addColumn( i18n( "Cost" ) );
     m_taskView->addColumn( i18n( "Status" ) );
     m_taskView->addColumn( i18n( "Responsible" ) );
     m_taskView->addColumn( i18n( "Effort" ) );
@@ -252,7 +250,7 @@ void ktjview2View::openURL( const KURL& url )
     parseProjectInfo();
     parseResources( m_project.getResourceListIterator() );
     parseTasks();
-    parseGantt( m_project.getTaskList() );
+    parseGantt( m_project.getTaskListIterator() );
     //parseLinks( m_dom.documentElement().namedItem( "taskList" ).toElement(), m_ganttView );
 
     m_ganttView->setUpdateEnabled( true );
@@ -287,7 +285,7 @@ void ktjview2View::parseProjectInfo()
 
     // project start
     m_ganttView->setHorizonStart( time_t2Q( m_project.getStart()) );
-    text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project.getEnd() ) );
+    text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project.getStart() ) );
 
     // end date
     m_ganttView->setHorizonEnd( time_t2Q( m_project.getEnd() ) );
@@ -307,41 +305,46 @@ void ktjview2View::parseTasks( int sc )
     while ( ( task = dynamic_cast<Task *>( it.current() ) ) != 0 )
     {
         ++it;
-        KListViewItem * item = new KListViewItem( m_taskView, task->getId(), task->getName(),
-                                                  time_t2QS( task->getStart( sc ) ),
-                                                  time_t2QS( task->getEnd( sc ) ),
-                                                  QString::number( task->getDuration( sc ) ),
-                                                  QString::number( task->getPriority() ),
-                                                  i18n( "%1%" ).arg( KGlobal::locale()->formatNumber( task->getCompletionDegree( sc ), 2 ) ),
-                                                  status2Str( task->getStatus( sc ) ) );
+
+        TaskItem * item = new TaskItem( m_taskView, task->getId(), time_t2Q( task->getStart( sc ) ), time_t2Q( task->getEnd( sc ) ) );
+        item->setText( 1, task->getName() );
+        item->setText( 2, KGlobal::locale()->formatDateTime( item->startDate() ) );
+        item->setText( 3, KGlobal::locale()->formatDateTime( item->endDate() ) );
+        item->setText( 4, KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 0 ) );
+        item->setText( 5, QString::number( task->getPriority() ) );
+        item->setText( 6, QString( "%1%" ).arg( KGlobal::locale()->formatNumber( task->getCompletionDegree( sc ), 2 ) ) );
+        item->setText( 7, status2Str( task->getStatus( sc ) ) );
+
         Resource * resp = task->getResponsible();
         if ( resp )
-            item->setText( 9, resp->getName() );
+            item->setText( 8, resp->getName() );
 
-        item->setText( 10, KGlobal::locale()->formatNumber( task->getEffort( sc ) ) );
+        item->setText( 9, KGlobal::locale()->formatNumber( task->getEffort( sc ) ) );
         // TODO add allocation info
     }
 }
 
-void ktjview2View::parseGantt( TaskList tlist, int sc )
+void ktjview2View::parseGantt( TaskListIterator it, int sc )
 {
-    TaskListIterator it = TaskListIterator( tlist );
     Task * task;
 
-    while ( ( task = dynamic_cast<Task *>( it.current() ) ) != 0 )
+    while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
     {
         ++it;
 
         QString id = task->getId();
+
         if ( m_ganttView->getItemByName( id ) ) // seen this task, go on
-            continue;
+            continue;           // FIXME speed this up
+
+        kdDebug() << "Parsing gantt item: " << id << endl;
 
         QString taskName = task->getName();
         QDateTime start = time_t2Q( task->getStart( sc ) );
         QDateTime end = time_t2Q( task->getEnd( sc ) );
         int prio = task->getPriority();
 
-        QString tooltip;
+        QString toolTip;
 
         bool hasParent = ( task->getParent() != 0 );
         bool isContainer = task->isContainer();
@@ -349,84 +352,104 @@ void ktjview2View::parseGantt( TaskList tlist, int sc )
 
         if ( !hasParent && isContainer ) // toplevel container task
         {
+            KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( m_ganttView, taskName, id );
+            item->setStartTime( start );
+            item->setEndTime( end );
+            toolTip = i18n( "Task group: %1\nStart: %2\nEnd: %3" )
+                      .arg( taskName )
+                      .arg( KGlobal::locale()->formatDateTime( start ) )
+                      .arg( KGlobal::locale()->formatDateTime( end ) ) ;
+            item->setTooltipText( toolTip );
 
+            parseGantt( task->getSubListIterator() ); // recurse
         }
         else if ( hasParent && isContainer ) // non-toplevel container task
         {
+            KDGanttViewItem * parentItem = m_ganttView->getItemByName( task->getParent()->getId() );
 
+            KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( parentItem, taskName, id );
+            item->setStartTime( start );
+            item->setEndTime( end );
+            toolTip = i18n( "Task group: %1\nStart: %2\nEnd: %3" )
+                      .arg( taskName )
+                      .arg( KGlobal::locale()->formatDateTime( start ) )
+                      .arg( KGlobal::locale()->formatDateTime( end ) ) ;
+            item->setTooltipText( toolTip );
+
+            parseGantt( task->getSubListIterator() ); // recurse
         }
         else if ( !hasParent && !isContainer ) // standalone task
         {
+            if ( isMilestone )
+            {
+                KDGanttViewEventItem * item = new KDGanttViewEventItem( m_ganttView, taskName, id );
+                item->setStartTime( start );
+            }
+            else
+            {
+                KDGanttViewTaskItem * item = new KDGanttViewTaskItem( m_ganttView, taskName, id );
+                item->setStartTime( start );
+                item->setEndTime( end );
+            }
         }
+#if 0                           // FIXME crashes here
         else if ( hasParent )   // terminal (leaf) task
         {
+            kdDebug() << "Parent ID: " << task->getParent()->getId() << endl;
+
+            KDGanttViewItem * parentItem = m_ganttView->getItemByName( task->getParent()->getId() );
+
+            if ( !parentItem )
+                continue;
+
+            if ( isMilestone )  // milestone
+            {
+                KDGanttViewEventItem * item = new KDGanttViewEventItem( parentItem, taskName, id );
+                item->setStartTime( start );
+
+                toolTip = i18n( "Milestone: %1\nDate: %2" )
+                          .arg( taskName )
+                          .arg( KGlobal::locale()->formatDateTime( start ) );
+                item->setTooltipText( toolTip );
+            }
+            else                // task
+            {
+                KDGanttViewTaskItem * item = new KDGanttViewTaskItem( parentItem, taskName, id );
+                item->setStartTime( start );
+                item->setEndTime( end );
+
+                toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3" )
+                          .arg( taskName )
+                          .arg( KGlobal::locale()->formatDateTime( start ) )
+                          .arg( KGlobal::locale()->formatDateTime( end ) ) ;
+                item->setTooltipText( toolTip );
+            }
         }
+#endif
         else
         {
             kdWarning() << "Unsupported task type with ID: " << id << endl;
-            return;             // uhoh, something bad happened
+            continue;             // uhoh, something bad happened
         }
+
+        kdDebug() << "Done parsing gantt item: " << id << endl;
     }
-}
-
-void ktjview2View::parseTask( const QDomElement & taskElem, KDGanttViewItem * parent )
-{
-#if 0
-    kdDebug() << "Parsing task: " << taskElem.attribute( "id" ) << endl;
-
-    bool isMilestone = ( taskElem.attribute( "milestone", "0" ).toInt() == 1 );
-
-    QDomElement scenario = taskElem.namedItem( "taskScenario" ).toElement();
-
-    QString taskName = taskElem.attribute( "name" );
-    QDateTime start = time_t2Q( scenario.namedItem( "start" ).toElement().text().toUInt() );
-    QDateTime end = time_t2Q( scenario.namedItem( "end" ).toElement().text().toUInt() );
-
-    QString toolTip;
-
-    if ( isMilestone )
-    {
-        KDGanttViewEventItem * event = new KDGanttViewEventItem( parent, taskName,
-                                                                 taskElem.attribute( "id" ) );
-        event->setPriority( taskElem.attribute( "priority" ).toInt() );
-        event->setStartTime( start );
-        event->setText( taskName );
-        toolTip = i18n( "Milestone: %1\nDate: %2" )
-                  .arg( taskName )
-                  .arg( KGlobal::locale()->formatDateTime( start ) );
-        event->setTooltipText( toolTip );
-    }
-    else
-    {
-        KDGanttViewTaskItem * task = new KDGanttViewTaskItem( parent, taskName,
-                                                              taskElem.attribute( "id" ) );
-        task->setPriority( taskElem.attribute( "priority" ).toInt() );
-        task->setStartTime( start );
-        task->setEndTime( end );
-        task->setText( taskName );
-        toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3" )
-                  .arg( taskName )
-                  .arg( KGlobal::locale()->formatDateTime( start ) )
-                  .arg( KGlobal::locale()->formatDateTime( end ) ) ;
-        task->setTooltipText( toolTip );
-    }
-#endif
 }
 
 void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * parentItem )
 {
     Resource * res;
 
-    while ( ( res = dynamic_cast<Resource *>( it.current() ) ) != 0 )
+    while ( ( res = static_cast<Resource *>( it.current() ) ) != 0 )
     {
         ++it;
 
         QString id = res->getId(); // ID of the resource
 
         if ( m_resListView->findItem( id, 0 ) ) // been there, seen that, go on :)
-            continue;
+            continue;           // FIXME speed this up
 
-        QString rate = KGlobal::locale()->formatNumber( res->getRate() );
+        QString rate = KGlobal::locale()->formatMoney( res->getRate(), m_project.getCurrency() );
 
         if ( res->isGroup() && ( res->getParent() == 0 ) ) // toplevel group item
         {
@@ -453,7 +476,7 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
         else
         {
             kdWarning() << "Unsupported resource type with ID: " << id << endl;
-            return;             // uhoh, something bad happened
+            continue;             // uhoh, something bad happened
         }
     }
 }
