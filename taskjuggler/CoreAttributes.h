@@ -16,12 +16,13 @@
 #include <qstring.h>
 #include <qdict.h>
 
-#include "CoreAttributesList.h"
 #include "FlagList.h"
 #include "CustomAttribute.h"
 
 class Project;
 class CoreAttributes;
+class CoreAttributesList;
+class CoreAttributesListIterator;
 class CustomAttributeDefinition;
 
 /**
@@ -32,13 +33,7 @@ class CoreAttributes
 {
 public:
     CoreAttributes(Project* p, const QString& i, const QString& n,
-                   CoreAttributes* parent_) :
-        project(p), id(i), name(n), parent(parent_)
-    {
-        index = -1;
-        if (parent_)
-            parent_->sub.append(this);
-    }
+                   CoreAttributes* parent_);
     virtual ~CoreAttributes();
 
     virtual CAType getType() const { return CA_Undefined; }
@@ -68,12 +63,10 @@ public:
 
     uint treeLevel() const;
 
-    CoreAttributesList getSubList() const { return sub; }
-    CoreAttributesListIterator getSubListIterator() const 
-    { 
-        return CoreAttributesListIterator(sub);
-    }
-    bool hasSubs() const { return !sub.isEmpty(); }
+    CoreAttributesList getSubList() const;
+    CoreAttributesListIterator getSubListIterator() const; 
+    
+    bool hasSubs() const;
     void addFlag(QString flag) { flags.addFlag(flag); }
     void clearFlag(const QString& flag) { flags.clearFlag(flag); }
     bool hasFlag(const QString& flag) { return flags.hasFlag(flag); }
@@ -84,7 +77,7 @@ public:
     bool isParentOf(const CoreAttributes* c) const;
 
     bool isRoot() const { return parent == 0; }
-    bool isLeaf() const { return sub.isEmpty(); }
+    bool isLeaf() const;
 
     void addCustomAttribute(const QString& id, CustomAttribute* ca);
     const CustomAttribute* getCustomAttribute(const QString& id) const;
@@ -133,7 +126,7 @@ protected:
     CoreAttributes* parent;
 
     /// List of child attributes. 
-    CoreAttributesList sub;
+    CoreAttributesList* sub;
 
     /// List of flags set for this attribute.
     FlagList flags;

@@ -70,7 +70,7 @@ Shift::inheritValues()
 ShiftListIterator
 Shift::getSubListIterator() const
 {
-    return ShiftListIterator(sub);
+    return ShiftListIterator(*sub);
 }
 
 bool

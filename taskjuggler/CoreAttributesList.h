@@ -14,8 +14,9 @@
 
 #include <qptrlist.h>
 
+#include "CoreAttributes.h"
+
 class QString;
-class CoreAttributes;
 
 /**
  * @short The class stores a list of CoreAttributes.

@@ -48,12 +48,12 @@ public:
 
     ResourceListIterator getSubListIterator() const
     {
-        return ResourceListIterator(sub);
+        return ResourceListIterator(*sub);
     }
 
     void inheritValues();
 
-    bool isGroup() const { return !sub.isEmpty(); }
+    bool isGroup() const { return !sub->isEmpty(); }
 
     void setMinEffort(double e) { minEffort = e; }
     double getMinEffort() const { return minEffort; }

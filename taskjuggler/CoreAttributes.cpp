@@ -11,16 +11,29 @@
  */
 
 #include "CoreAttributes.h"
+#include "CoreAttributesList.h"
 #include "CustomAttributeDefinition.h"
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
 
+CoreAttributes::CoreAttributes(Project* p, const QString& i,
+                               const QString& n,
+                               CoreAttributes* parent_) :
+        project(p), id(i), name(n), parent(parent_)
+{
+    index = -1;
+    sub = new CoreAttributesList();
+    if (parent_)
+        parent_->sub->append(this);
+}
+
 CoreAttributes::~CoreAttributes()
 {
-    while (!sub.isEmpty())
-        delete sub.getFirst();
+    while (!sub->isEmpty())
+        delete sub->getFirst();
     if (parent)
-        parent->sub.removeRef(this);
+        parent->sub->removeRef(this);
+    delete sub;
 }
 
 uint
@@ -32,12 +45,30 @@ CoreAttributes::treeLevel() const
     return tl;
 }
 
+CoreAttributesList
+CoreAttributes::getSubList() const
+{
+   return *sub;
+}
+
+CoreAttributesListIterator
+CoreAttributes::getSubListIterator() const
+{
+    return CoreAttributesListIterator(*sub);
+}
+
+bool
+CoreAttributes::hasSubs() const
+{ 
+    return !sub->isEmpty(); 
+}
+
 void
 CoreAttributes::setHierarchNo(uint no)
 {
     hierarchNo = no;
     uint hNo = 1;
-    for (CoreAttributesListIterator it(sub); *it; ++it)
+    for (CoreAttributesListIterator it(*sub); *it; ++it)
         (*it)->setHierarchNo(hNo++);
 }
 
@@ -52,7 +83,8 @@ CoreAttributes::getHierarchNo() const
             text = "." + text;
         text = QString("%1").arg(ca->hierarchNo) + text;
         ca = ca->getParent();
-    } while (ca);
+    }
+    while (ca);
     return text;
 }
 
@@ -73,7 +105,7 @@ CoreAttributes::setHierarchIndex(uint no)
 
     /* Find the highest hierarchIndex of all childs of this CAs parent. */
     uint max = 0;
-    for (CoreAttributesListIterator it(parent->sub); *it; ++it)
+    for (CoreAttributesListIterator it(*parent->sub); *it; ++it)
         if ((*it)->hierarchIndex > max)
             max = (*it)->hierarchIndex;
 
@@ -92,7 +124,8 @@ CoreAttributes::getHierarchIndex() const
             text = "." + text;
         text = QString("%1").arg(ca->hierarchIndex) + text;
         ca = ca->getParent();
-    } while (ca);
+    }
+    while (ca);
     return text;
 }
 
@@ -120,7 +153,7 @@ CoreAttributes::hasSameAncestor(const CoreAttributes* c) const
 {
     if (c == 0)
         return FALSE;
-    
+
     CoreAttributes const* p1;
     for (p1 = this; p1->parent; p1 = p1->parent)
         ;
@@ -148,12 +181,18 @@ CoreAttributes::isParentOf(const CoreAttributes* c) const
 {
     if (!c)
         return FALSE;
-    
+
     for (CoreAttributes const* p = c->parent; p; p = p->parent)
         if (p == this)
             return TRUE;
 
     return FALSE;
+}
+
+bool
+CoreAttributes::isLeaf() const 
+{ 
+    return sub->isEmpty(); 
 }
 
 void
@@ -170,29 +209,29 @@ CoreAttributes::getCustomAttribute(const QString& id) const
 
 void
 CoreAttributes::inheritCustomAttributes
-(const QDict<const CustomAttributeDefinition>& dict) 
+(const QDict<const CustomAttributeDefinition>& dict)
 {
     QDictIterator<const CustomAttributeDefinition> cadi(dict);
     for ( ; cadi.current(); ++cadi)
     {
         const CustomAttribute* custAttr;
         if (cadi.current()->getInherit() &&
-            (custAttr = parent->getCustomAttribute(cadi.currentKey())))
+                (custAttr = parent->getCustomAttribute(cadi.currentKey())))
         {
             switch (custAttr->getType())
             {
-                case CAT_Text:
-                    addCustomAttribute(cadi.currentKey(), new TextAttribute
-                                       (*((TextAttribute*) custAttr)));
-                    break;
-                case CAT_Reference:
-                    addCustomAttribute(cadi.currentKey(), new ReferenceAttribute
-                                       (*((ReferenceAttribute*) custAttr)));
-                    break;
-                default:
-                    qFatal("CoreAttributes::inheritCustomAttributes: "
-                           "Unknown CAT %d", custAttr->getType());
-                    break;
+            case CAT_Text:
+                addCustomAttribute(cadi.currentKey(), new TextAttribute
+                                   (*((TextAttribute*) custAttr)));
+                break;
+            case CAT_Reference:
+                addCustomAttribute(cadi.currentKey(), new ReferenceAttribute
+                                   (*((ReferenceAttribute*) custAttr)));
+                break;
+            default:
+                qFatal("CoreAttributes::inheritCustomAttributes: "
+                       "Unknown CAT %d", custAttr->getType());
+                break;
             }
         }
     }

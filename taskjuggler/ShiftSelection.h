@@ -14,7 +14,8 @@
 
 #include <time.h>
 
-#include "ShiftSelectionList.h"
+class ShiftSelectionList;
+
 #include "Shift.h"
 #include "Interval.h"
 
@@ -24,8 +25,7 @@
  */
 class ShiftSelection
 {
-    friend int ShiftSelectionList::compareItems(QCollection::Item i1, 
-                                                QCollection::Item i2);
+    friend class ShiftSelectionList;
 
 public:
     ShiftSelection(const Interval& p, Shift* s) :

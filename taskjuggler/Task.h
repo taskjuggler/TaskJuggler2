@@ -74,7 +74,7 @@ public:
 
     TaskListIterator getSubListIterator() const
     {
-        return TaskListIterator(sub);
+        return TaskListIterator(*sub);
     }
 
     enum SchedulingInfo { ASAP, ALAP };
@@ -270,7 +270,7 @@ public:
 
     bool hasExtraValues(int sc) const;
 
-    bool isContainer() const { return !sub.isEmpty(); }
+    bool isContainer() const { return !sub->isEmpty(); }
 
     bool xRef(QDict<Task>& hash);
     void implicitXRef();
@@ -310,8 +310,8 @@ private:
     bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                        caller);
     bool scheduleContainer(bool safeMode);
-    Task* subFirst() { return (Task*) sub.first(); }
-    Task* subNext() { return (Task*) sub.next(); }
+    Task* subFirst() { return (Task*) sub->first(); }
+    Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
                       const UsageLimits* limits, int& availability);
     void bookResources(time_t day, time_t duration);

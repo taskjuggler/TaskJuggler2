@@ -42,7 +42,7 @@ public:
 
     AccountListIterator getSubListIterator() const
     {
-        return AccountListIterator(sub);
+        return AccountListIterator(*sub);
     }
 
     void inheritValues();
@@ -54,7 +54,7 @@ public:
     AccountType getAcctType() const { return acctType; }
 
     void credit(Transaction* t);
-    bool isGroup() const { return !sub.isEmpty(); }
+    bool isGroup() const { return !sub->isEmpty(); }
 
     double getBalance(int sc, time_t d) const;
     double getVolume(int sc, const Interval& period) const;

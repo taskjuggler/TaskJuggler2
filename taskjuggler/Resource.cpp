@@ -583,7 +583,7 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
 {
     long bookings = 0;
 
-    for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+    for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
         bookings += (*rli)->getCurrentLoadSub(startIdx, endIdx, task);
 
     if (!scoreboard)
@@ -620,7 +620,7 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
 {
     long bookings = 0;
 
-    for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+    for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
         bookings += (*rli)->getLoadSub(sc, startIdx, endIdx, acctType, task);
 
     // If the scoreboard has not been initialized there is no load.
@@ -660,9 +660,9 @@ Resource::getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const
 {
     long availSlots = 0;
 
-    if (!sub.isEmpty())
+    if (!sub->isEmpty())
     {
-        for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+        for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
             availSlots += (*rli)->getAvailableWorkLoadSub(sc, startIdx, endIdx);
     }
     else
@@ -703,7 +703,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
     }
 
     /* If resource is a group, check members first. */
-    for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+    for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
         if ((*rli)->isAllocated(sc, iv, prjId))
             return TRUE;
 
@@ -729,7 +729,7 @@ Resource::getPIDs(int sc, const Interval& period, const Task* task,
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
         return;
 
-    for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+    for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
         (*rli)->getPIDs(sc, iv, task, pids);
 
     if (!scoreboards[sc])

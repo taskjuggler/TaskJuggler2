@@ -18,8 +18,9 @@
 #include <qptrlist.h>
 #include <qstring.h>
 
+#include "VacationInterval.h"
+
 class Interval;
-class VacationInterval;
 
 /**
  * @short A list of vacations.

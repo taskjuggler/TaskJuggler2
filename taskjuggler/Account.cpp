@@ -53,7 +53,7 @@ Account::getVolume(int sc, const Interval& period) const
             volume += (*tli)->getAmount();
     
     // Add volume of all sub-accounts.
-    for (AccountListIterator ali(sub); *ali != 0; ++ali)
+    for (AccountListIterator ali(*sub); *ali != 0; ++ali)
         volume += (*ali)->getVolume(sc, period);
 
     return volume;

@@ -12,6 +12,7 @@
 
 #include "CoreAttributesTreeIterator.h"
 #include "CoreAttributes.h"
+#include "CoreAttributesList.h"
 
 CoreAttributesTreeIterator::CoreAttributesTreeIterator(CoreAttributes* r,
                                                        IterationMode m)

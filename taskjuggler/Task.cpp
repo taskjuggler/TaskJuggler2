@@ -174,7 +174,7 @@ void
 Task::schedule(time_t& date, time_t slotDuration)
 {
     // Has the task been scheduled already or is it a container?
-    if (schedulingDone || !sub.isEmpty())
+    if (schedulingDone || !sub->isEmpty())
         return;
 
     if (DEBUGTS(15))
@@ -331,7 +331,7 @@ Task::scheduleContainer(bool safeMode)
     time_t nstart = 0;
     time_t nend = 0;
 
-    TaskListIterator tli(sub);
+    TaskListIterator tli(*sub);
     // Check that this is really a container task
     if (*tli != 0)
     {
@@ -414,7 +414,7 @@ Task::propagateStart(bool notUpwards)
 
     /* Propagate start time to sub tasks which have only an implicit
      * dependancy on the parent task. Do not touch container tasks. */
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
     {
         if (!(*tli)->hasStartDependency() && !(*tli)->schedulingDone)
         {
@@ -475,7 +475,7 @@ Task::propagateEnd(bool notUpwards)
         }
     /* Propagate end time to sub tasks which have only an implicit
      * dependancy on the parent task. Do not touch container tasks. */
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if (!(*tli)->hasEndDependency() && !(*tli)->schedulingDone)
         {
             (*tli)->end = end;
@@ -503,7 +503,7 @@ Task::propagateInitialValues()
         propagateEnd(TRUE);
     
     // Check if the some data of sub tasks can already be propagated.
-    if (!sub.isEmpty())
+    if (!sub->isEmpty())
         scheduleContainer(TRUE);
 }
 
@@ -520,7 +520,7 @@ Task::isRunaway() const
     /* If a container task has runaway sub tasts, it is very likely that they
      * are the culprits. So we don't report such a container task as runaway.
      */
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->isRunaway())
             return FALSE;
 
@@ -936,7 +936,7 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
         
     double load = 0.0;
 
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         load += (*tli)->getLoad(sc, period, resource);
 
     if (resource)
@@ -955,9 +955,9 @@ Task::getCredits(int sc, const Interval& period, AccountType acctType,
 {
     double credits = 0.0;
 
-    if (recursive && !sub.isEmpty())
+    if (recursive && !sub->isEmpty())
     {
-        for (TaskListIterator tli(sub); *tli != 0; ++tli)
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
             credits += (*tli)->getCredits(sc, period, acctType, resource,
                                           recursive);
     }
@@ -1053,7 +1053,7 @@ Task::xRef(QDict<Task>& hash)
 void
 Task::implicitXRef()
 {
-    if (!sub.isEmpty())
+    if (!sub->isEmpty())
         return;
 
     for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
@@ -1182,7 +1182,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         if (caller == LoopDetectorInfo::fromPrev ||
             caller == LoopDetectorInfo::fromParent)
             /* If we were not called from a sub task we check all sub tasks.*/
-            for (TaskListIterator tli(sub); *tli != 0; ++tli)
+            for (TaskListIterator tli(*sub); *tli != 0; ++tli)
             {
                 /* If the task depends on a brother we ignore the arc to the
                  * child since the brother provides an equivalent arc. This
@@ -1208,7 +1208,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         -->| o---->
            +--------
         */
-        if (scheduling == ASAP && sub.isEmpty())
+        if (scheduling == ASAP && sub->isEmpty())
         {
             /* Leaf task are followed in their scheduling direction. So we
              * move from the task start to the task end. */
@@ -1293,7 +1293,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         if (caller == LoopDetectorInfo::fromSucc ||
             caller == LoopDetectorInfo::fromParent)
             /* If we were not called from a sub task we check all sub tasks.*/
-            for (TaskListIterator tli(sub); *tli != 0; ++tli)
+            for (TaskListIterator tli(*sub); *tli != 0; ++tli)
             {
                 /* If the task precedes a brother we ignore the arc to the
                  * child since the brother provides an equivalent arc. This
@@ -1318,7 +1318,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
          <----o |<--
         --------+
         */
-        if (scheduling == ALAP && sub.isEmpty())
+        if (scheduling == ALAP && sub->isEmpty())
         {
             /* Leaf task are followed in their scheduling direction. So we
              * move from the task end to the task start. */
@@ -1461,7 +1461,7 @@ Task::hasStartDependency()
     if (start != 0 || !previous.isEmpty() || scheduling == ALAP)
         return TRUE;
     
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->hasStartDependency())
             return TRUE;
 
@@ -1476,7 +1476,7 @@ Task::hasEndDependency()
     if (end != 0 || !followers.isEmpty() || scheduling == ASAP)
         return TRUE;
     
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->hasStartDependency())
             return TRUE;
 
@@ -1488,7 +1488,7 @@ Task::preScheduleOk()
 {
     for (int sc = 0; sc < project->getMaxScenarios(); sc++)
     {
-        if (scenarios[sc].scheduled && !sub.isEmpty() &&
+        if (scenarios[sc].scheduled && !sub->isEmpty() &&
             (scenarios[sc].start == 0 || scenarios[sc].end == 0))
         {
             errorMessage(i18n
@@ -1542,7 +1542,7 @@ Task::preScheduleOk()
         -->: ASAP task without duration criteria
         <--: ALAP task without duration criteria
          */
-        if (!sub.isEmpty())
+        if (!sub->isEmpty())
         {
             if (durationSpec != 0)
             {
@@ -1747,7 +1747,7 @@ Task::scheduleOk(int sc, int& errors) const
     /* It is of little use to report errors of container tasks, if any of
      * their sub tasks has errors. */
     int currErrors = errors;
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         (*tli)->scheduleOk(sc, errors);
     if (errors > currErrors)
     {
@@ -1856,10 +1856,10 @@ Task::scheduleOk(int sc, int& errors) const
         errors++;
         return FALSE;
     }
-    if (!sub.isEmpty())
+    if (!sub->isEmpty())
     {
         // All sub task must fit into their parent task.
-        for (TaskListIterator tli(sub); *tli != 0; ++tli)
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         {
             if (start > (*tli)->start)
             {
@@ -1933,7 +1933,7 @@ Task::scheduleOk(int sc, int& errors) const
 time_t
 Task::nextSlot(time_t slotDuration) const
 {
-    if (schedulingDone || !sub.isEmpty())
+    if (schedulingDone || !sub->isEmpty())
         return 0;
 
     if (scheduling == ASAP && start != 0)
@@ -1970,7 +1970,7 @@ Task::isActive(int sc, const Interval& period) const
 bool
 Task::isSubTask(Task* tsk) const
 {
-    for (TaskListIterator tli(sub); *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if (*tli == tsk || (*tli)->isSubTask(tsk))
             return TRUE;
 

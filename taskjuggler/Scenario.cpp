@@ -31,6 +31,6 @@ Scenario::~Scenario()
 ScenarioListIterator 
 Scenario::getSubListIterator() const
 {
-    return ScenarioListIterator(sub);
+    return ScenarioListIterator(*sub);
 }
 

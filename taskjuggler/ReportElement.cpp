@@ -428,6 +428,24 @@ ReportElement::getSupportedColumnList() const
     return l;
 }
 
+void
+ReportElement::addColumn(const TableColumnInfo* c)
+{ 
+    columns.append(c);
+}
+
+const TableColumnInfo* 
+ReportElement::columnsAt(uint idx) 
+{ 
+    return columns.at(idx);
+}
+
+void
+ReportElement::clearColumns()
+{ 
+    columns.clear();
+}
+
 bool 
 ReportElement::setTaskSorting(int sc, int level)
 {

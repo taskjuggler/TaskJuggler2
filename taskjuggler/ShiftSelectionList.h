@@ -16,7 +16,8 @@
 
 #include <qptrlist.h>
 
-class ShiftSelection;
+#include "ShiftSelection.h"
+
 class Interval;
 
 /**
@@ -27,7 +28,7 @@ class ShiftSelectionList : public QPtrList<ShiftSelection>
 {
 public:
     ShiftSelectionList() { }
-    virtual ~ShiftSelectionList() { }
+    virtual ~ShiftSelectionList() { } 
 
     bool insert(ShiftSelection* s);
 

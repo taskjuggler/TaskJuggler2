@@ -26,6 +26,7 @@
 #include "MacroTable.h"
 #include "RealFormat.h"
 #include "TableColumnFormat.h"
+#include "TableColumnInfo.h"
 #include "Report.h"
 
 class QStringList;
@@ -40,7 +41,6 @@ class Resource;
 class ResourceList;
 class Account;
 class AccountList;
-class TableColumnInfo;
 class TableCellInfo;
 class TableLineInfo;
 class CustomAttributeDefinition;
@@ -79,9 +79,9 @@ public:
 
     bool isSupportedColumn(const QString& id) const;
     QStringList getSupportedColumnList() const;
-    void addColumn(const TableColumnInfo* c) { columns.append(c); }
-    const TableColumnInfo* columnsAt(uint idx) { return columns.at(idx); }
-    void clearColumns() { columns.clear(); }
+    void addColumn(const TableColumnInfo* c);
+    const TableColumnInfo* columnsAt(uint idx);
+    void clearColumns();
     void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
     void setStart(time_t s) { start = s; }
