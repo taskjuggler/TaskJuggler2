@@ -220,7 +220,8 @@ TjResourceReport::generateChart(bool autoFit)
 
 QString
 TjResourceReport::generateStatusBarText(const QPoint& pos,
-                                        const CoreAttributes* ca) const
+                                        const CoreAttributes* ca,
+                                        const CoreAttributes* parent) const
 {
     QPoint chartPos = ganttChartView->viewportToContents(pos);
     time_t refTime = x2time(chartPos.x());
@@ -230,13 +231,26 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
     QString text;
     if (ca->getType() == CA_Task)
     {
+        const Task* t = dynamic_cast<const Task*>(ca);
+        const Resource* r = dynamic_cast<const Resource*>(parent);
+        double load = r->getLoad(scenario, iv, AllAccounts, t);
+        text = i18n("%1(%2) - %3:  Load=%4  Task %5(%6)")
+            .arg(r->getName())
+            .arg(r->getFullId())
+            .arg(ivName)
+            .arg(reportElement->scaledLoad
+                 (load, reportDef->getNumberFormat()))
+            .arg(t->getName())
+            .arg(t->getFullId());
     }
     else
     {
         const Resource* r = dynamic_cast<const Resource*>(ca);
         double load = r->getLoad(scenario, iv, AllAccounts);
         double freeLoad = r->getAvailableWorkLoad(scenario, iv);
-        text = i18n("%1 %2: Load=%3 Free=%4").arg(r->getName())
+        text = i18n("%1(%2) - %3:  Load=%4  Free=%5")
+            .arg(r->getName())
+            .arg(r->getFullId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
                  (load, reportDef->getNumberFormat()))

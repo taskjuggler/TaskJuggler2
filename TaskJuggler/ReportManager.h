@@ -70,6 +70,7 @@ private:
     KListViewItem* htmlReports;
     KListViewItem* csvReports;
     KListViewItem* xmlReports;
+    KListViewItem* exportReports;
 
     QPtrList<ManagedReportInfo> reports;
 

@@ -68,6 +68,7 @@ ReportManager::updateReportBrowser()
     htmlReports = new KListViewItem(browser, i18n("HTML Reports"));
     csvReports = new KListViewItem(browser, i18n("CSV Reports"));
     xmlReports = new KListViewItem(browser, i18n("XML Reports"));
+    exportReports = new KListViewItem(browser, i18n("Export Reports"));
 
     int i = 0;
     for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri, ++i)
@@ -82,6 +83,8 @@ ReportManager::updateReportBrowser()
             parent = csvReports;
         else if (strncmp(r->getType(), "XML", 3) == 0)
             parent = xmlReports;
+        else if (strncmp(r->getType(), "Export", 6) == 0)
+            parent = exportReports;
         else
             kdError() << "ReportManager::updateReportBrowser(): "
                 << "Unsupported report type " << r->getType() << endl;

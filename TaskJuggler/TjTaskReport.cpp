@@ -45,6 +45,7 @@ TjTaskReport::generateList()
     listView->clear();
     ca2lviDict.clear();
     lvi2caDict.clear();
+    lvi2ParentCaDict.clear();
 
     while (listView->columns())
         listView->removeColumn(0);
@@ -132,6 +133,7 @@ TjTaskReport::generateList()
                 ca2lviDict.insert(QString("r:") + (*tli)->getId() +
                                   ":" + (*rli)->getFullId(), lvi);
                 lvi2caDict.insert(QString().sprintf("%p", lvi), *rli);
+                lvi2ParentCaDict.insert(QString().sprintf("%p", lvi), *tli);
                 if (treeLevel(lvi) > maxDepth)
                     maxDepth = treeLevel(lvi);
             }
@@ -179,9 +181,42 @@ TjTaskReport::generateChart(bool autoFit)
 
 QString
 TjTaskReport::generateStatusBarText(const QPoint& pos,
-                                    const CoreAttributes* ca) const
+                                    const CoreAttributes* ca,
+                                    const CoreAttributes* parent) const
 {
-    return ca->getFullId();
+    QPoint chartPos = ganttChartView->viewportToContents(pos);
+    time_t refTime = x2time(chartPos.x());
+    Interval iv = stepInterval(refTime);
+    QString ivName = stepIntervalName(refTime);
+
+    QString text;
+    if (ca->getType() == CA_Task)
+    {
+        const Task* t = dynamic_cast<const Task*>(ca);
+        double load = t->getLoad(scenario, iv);
+        text = i18n("%1(%2) - %3:  Load=%4")
+            .arg(t->getName())
+            .arg(t->getFullId())
+            .arg(ivName)
+            .arg(reportElement->scaledLoad
+                 (load, reportDef->getNumberFormat()));
+    }
+    else
+    {
+        const Resource* r = dynamic_cast<const Resource*>(ca);
+        const Task* t = dynamic_cast<const Task*>(parent);
+        double load = r->getLoad(scenario, iv, AllAccounts, t);
+        text = i18n("%1(%2) - %3:  Load=%4  %5(%6)")
+            .arg(r->getName())
+            .arg(r->getId())
+            .arg(ivName)
+            .arg(reportElement->scaledLoad
+                 (load, reportDef->getNumberFormat()))
+            .arg(t->getName())
+            .arg(t->getFullId());
+    }
+
+    return text;
 }
 
 void

@@ -915,8 +915,9 @@ TjReport::updateStatusBar()
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
+    CoreAttributes* parent = lvi2ParentCaDict[QString().sprintf("%p", lvi)];
 
-    emit signalChangeStatusBar(this->generateStatusBarText(pos, ca));
+    emit signalChangeStatusBar(this->generateStatusBarText(pos, ca, parent));
 }
 
 void
@@ -1028,24 +1029,24 @@ TjReport::stepInterval(time_t ref) const
     {
         case day:
             iv.setStart(midnight(ref));
-            iv.setEnd(sameTimeNextDay(iv.getStart()));
+            iv.setEnd(sameTimeNextDay(iv.getStart()) - 1);
             break;
         case week:
             iv.setStart(beginOfWeek
                         (ref, reportDef->getProject()->getWeekStartsMonday()));
-            iv.setEnd(sameTimeNextWeek(iv.getStart()));
+            iv.setEnd(sameTimeNextWeek(iv.getStart()) - 1);
             break;
         case month:
             iv.setStart(beginOfMonth(ref));
-            iv.setEnd(sameTimeNextMonth(iv.getStart()));
+            iv.setEnd(sameTimeNextMonth(iv.getStart()) - 1);
             break;
         case quarter:
             iv.setStart(beginOfQuarter(ref));
-            iv.setEnd(sameTimeNextQuarter(iv.getStart()));
+            iv.setEnd(sameTimeNextQuarter(iv.getStart()) - 1);
             break;
         case year:
             iv.setStart(beginOfYear(ref));
-            iv.setEnd(sameTimeNextYear(iv.getStart()));
+            iv.setEnd(sameTimeNextYear(iv.getStart()) - 1);
             break;
         default:
             kdFatal() << "Unknown stepUnit";

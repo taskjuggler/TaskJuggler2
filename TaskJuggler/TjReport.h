@@ -103,7 +103,9 @@ protected:
     void generateTaskResources(Task* const t);
 
     virtual QString generateStatusBarText(const QPoint& pos,
-                                          const CoreAttributes* ca) const = 0;
+                                          const CoreAttributes* ca,
+                                          const CoreAttributes* parent)
+        const = 0;
 
     QString indent(const QString& input, const QListViewItem* lvi,
                    bool right);
@@ -147,6 +149,10 @@ protected:
     /* And the same in the other direction. We use the hex-ed address of the
      * LVI as key. */
     QDict<CoreAttributes> lvi2caDict;
+
+    /* For nested lists we need to be able to map the lvi to the parent
+     * CoreAttributes. */
+    QDict<CoreAttributes> lvi2ParentCaDict;
 
     /**
      * This is the maximum indentation of the list view. It only takes visible

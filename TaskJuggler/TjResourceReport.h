@@ -32,7 +32,8 @@ protected:
     virtual bool generateChart(bool autoFit);
 
     virtual QString generateStatusBarText(const QPoint& pos,
-                                          const CoreAttributes* ca) const;
+                                          const CoreAttributes* ca,
+                                          const CoreAttributes* parent) const;
 
 private:
     bool generateChartLoadBars();
