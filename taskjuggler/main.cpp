@@ -16,6 +16,11 @@
 
 #include "Project.h"
 #include "ProjectFile.h"
+#include "kotrus.h"
+
+
+/* ugly: */
+Kotrus *kotrus;
 
 void 
 usage(QApplication& a)
@@ -32,6 +37,8 @@ int main(int argc, char *argv[])
 		usage(a);
 
 	Project p;
+	kotrus = new Kotrus();
+	
 	ProjectFile* pf = new ProjectFile(&p);
 	if (!pf->open(a.argv()[1]))
 		return (-1);
