@@ -6,7 +6,6 @@ ParserTreeContext.cpp ParserNode.cpp ParserElement.cpp \
 TjMessageHandler.cpp \
 DecisionNode.cpp OptimizerRun.cpp Optimizer.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
-Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \
 BookingList.cpp TransactionList.cpp \
 TaskScenario.cpp VacationList.cpp \
@@ -18,8 +17,11 @@ Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp \
 MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
 XMLFile.cpp \
+ReportElement.cpp Report.cpp ReportXML.cpp \
+QtReportElement.cpp QtReport.cpp QtTaskReport.cpp \
+QtTaskReportElement.cpp \
 HTMLPrimitives.cpp TableColumnFormat.cpp TableColumnInfo.cpp \
-ReportElement.cpp HTMLReport.cpp HTMLReportElement.cpp \
+HTMLReport.cpp HTMLReportElement.cpp \
 HTMLTaskReport.cpp HTMLTaskReportElement.cpp \
 HTMLResourceReport.cpp HTMLResourceReportElement.cpp \
 HTMLWeeklyCalendar.cpp HTMLWeeklyCalendarElement.cpp \
@@ -45,7 +47,6 @@ taskjuggler_LDADD = libtaskjuggler.la
 # set the include path for X, qt and KDE
 INCLUDES = $(ICAL_INCLUDES) $(all_includes)
 
-# this is to enable Qt behavior of am_edit
 KDE_OPTIONS = qtonly
 
 messages: 

@@ -18,8 +18,10 @@
 
 CoreAttributes::CoreAttributes(Project* p, const QString& i,
                                const QString& n,
-                               CoreAttributes* parent_) :
-        project(p), id(i), name(n), parent(parent_)
+                               CoreAttributes* parent_, const QString& df,
+                               uint dl) :
+        project(p), id(i), name(n), parent(parent_), definitionFile(df),
+        definitionLine(dl)
 {
     customAttributes.setAutoDelete(TRUE);
     index = -1;
@@ -60,8 +62,8 @@ CoreAttributes::getSubListIterator() const
 
 bool
 CoreAttributes::hasSubs() const
-{ 
-    return !sub->isEmpty(); 
+{
+    return !sub->isEmpty();
 }
 
 void
@@ -191,9 +193,9 @@ CoreAttributes::isParentOf(const CoreAttributes* c) const
 }
 
 bool
-CoreAttributes::isLeaf() const 
-{ 
-    return sub->isEmpty(); 
+CoreAttributes::isLeaf() const
+{
+    return sub->isEmpty();
 }
 
 void

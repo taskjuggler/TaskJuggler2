@@ -150,6 +150,7 @@ private:
     bool readPercent(double& value);
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
     bool readPriority(int& priority);
+    bool readReport(const QString& reportType);
     bool readHTMLReport(const QString& reportType);
     bool readHTMLStatusReport();
     bool readCSVReport(const QString& reportType);

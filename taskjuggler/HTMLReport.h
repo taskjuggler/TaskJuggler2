@@ -34,6 +34,8 @@ public:
     HTMLReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLReport() { }
 
+    virtual const char* getType() const { return "HTMLReport"; }
+
     void generateHeader();
     void generateFooter();
 

@@ -33,13 +33,17 @@ class CoreAttributes
 {
 public:
     CoreAttributes(Project* p, const QString& i, const QString& n,
-                   CoreAttributes* parent_);
+                   CoreAttributes* parent_, const QString& df = QString::null,
+                   uint dl = 0);
     virtual ~CoreAttributes();
 
     virtual CAType getType() const { return CA_Undefined; }
 
     const QString& getId() const { return id; }
     QString getFullId() const;
+
+    const QString& getDefinitionFile() const { return definitionFile; }
+    uint getDefinitionLine() const { return definitionLine; }
 
     void setIndex(int idx) { index = idx; }
     int getIndex() const { return index; }
@@ -95,6 +99,20 @@ protected:
     /// An ID that must be unique within the attribute class.
     QString id;
 
+    /// A short description of the attribute.
+    QString name;
+
+    /// Pointer to parent. If there is no parent the pointer is 0.
+    CoreAttributes* parent;
+
+    /* Name of the tjp file that caused the creation of this CoreAttribute. It
+     * may be empty if it was not created from a .tjp file. */
+    const QString definitionFile;
+
+    /* Line in the .tjp file that caused the createtion of  this Core
+     * Attribute. It may be 0 if it was not created from a .tjp file. */
+    uint definitionLine;
+
     /**
      * The index of the attribute declaration within the project files. Each
      * attribute lists has it's own indices.
@@ -118,12 +136,6 @@ protected:
      * attribute list has it's own indices.
      */
     uint hierarchIndex;
-
-    /// A short description of the attribute.
-    QString name;
-
-    /// Pointer to parent. If there is no parent the pointer is 0.
-    CoreAttributes* parent;
 
     /// List of child attributes.
     CoreAttributesList* sub;

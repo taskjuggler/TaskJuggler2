@@ -30,8 +30,8 @@
 #include "OptimizerRun.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
-           const QString& f, int l)
-    : CoreAttributes(proj, id_, n, p), file(f), line(l)
+           const QString& df, int dl)
+    : CoreAttributes(proj, id_, n, p, df, dl)
 {
     allocations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
@@ -185,7 +185,7 @@ Task::errorMessage(const char* msg, ...) const
     vsnprintf(buf, sizeof(buf), msg, ap);
     va_end(ap);
 
-    TJMH.errorMessage(buf, file, line);
+    TJMH.errorMessage(buf, definitionFile, definitionLine);
 }
 
 void
@@ -1077,7 +1077,7 @@ Task::xRef(QDict<Task>& hash)
 {
     bool error = FALSE;
 
-    if (DEBUGPF(2))
+    if (DEBUGPF(5))
         qDebug("Creating cross references for task %s ...", id.latin1());
 
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)

@@ -408,16 +408,6 @@ private:
      * project. */
     QString projectId;
 
-    /**
-     * Name of the file where this task has been defined. This is used
-     * for error reports. */
-    QString file;
-
-    /**
-     * Line in the file where the task definition starts. This is used
-     * for error reports. */
-    int line;
-
     /// True if the task is a milestone.
     bool milestone;
 

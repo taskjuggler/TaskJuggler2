@@ -13,8 +13,6 @@
 #include <config.h>
 #include <stdio.h>
 
-#include <qtextstream.h>
-
 #include "Report.h"
 #include "Interval.h"
 #include "TjMessageHandler.h"

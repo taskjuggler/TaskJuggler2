@@ -20,7 +20,7 @@ class TaskList;
 class HTMLReportElement;
 
 /**
- * @short A class that generates HTML status reports. 
+ * @short A class that generates HTML status reports.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class HTMLStatusReport : public HTMLReport
@@ -28,6 +28,8 @@ class HTMLStatusReport : public HTMLReport
 public:
     HTMLStatusReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLStatusReport();
+
+    virtual const char* getType() const { return "HTMLStatusReport"; }
 
     void setTable(int tabIdx, HTMLReportElement* tab);
     HTMLReportElement* getTable(int tabIdx) const;

@@ -1,5 +1,5 @@
 /*
- * CSVReport.h - TaskJuggler
+ * QtReport.h - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
  *
@@ -10,32 +10,36 @@
  * $Id$
  */
 
-#ifndef _CSVReport_h_
-#define _CSVReport_h_
+#ifndef _QtReport_h_
+#define _QtReport_h_
 
-#include "CSVPrimitives.h"
+#include <stdio.h>
+#include <time.h>
+
+#include <qstring.h>
+
 #include "Report.h"
 
 class Project;
 class ExpressionTree;
 
 /**
- * @short Stores all information about an CSV report.
+ * @short Stores all information about a Qt report.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class CSVReport : public Report, public CSVPrimitives
+class QtReport : public Report
 {
 public:
-    CSVReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~CSVReport() { }
+    QtReport(Project* p, const QString& f, const QString& df, int dl);
+    virtual ~QtReport() { }
 
-    virtual const char* getType() const { return "CSVReport"; }
+    virtual const char* getType() const { return "QtReport"; }
 
     void generateHeader();
     void generateFooter();
 
 protected:
-    CSVReport() { }
+    QtReport() { }
 } ;
 
 #endif

@@ -28,6 +28,8 @@ public:
     CSVAccountReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~CSVAccountReport();
 
+    virtual const char* getType() { return "CSVAccountReport"; }
+
     bool generate();
     CSVAccountReportElement* getTable() { return tab; }
 

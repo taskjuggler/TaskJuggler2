@@ -39,7 +39,8 @@ class Resource : public CoreAttributes
     friend int ResourceList::compareItemsLevel(Resource* r1, Resource* r2,
                                                int level);
 public:
-    Resource(Project* p, const QString& i, const QString& n, Resource* p);
+    Resource(Project* p, const QString& i, const QString& n, Resource* p,
+             const QString& df = QString::null, uint dl = 0);
     virtual ~Resource();
 
     virtual CAType getType() const { return CA_Resource; }

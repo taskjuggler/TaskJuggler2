@@ -28,6 +28,8 @@ public:
     HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLResourceReport() { }
 
+    virtual const char* getType() { return "HTMLResourceReport"; }
+
     bool generate();
     HTMLResourceReportElement* getTable() { return tab; }
 

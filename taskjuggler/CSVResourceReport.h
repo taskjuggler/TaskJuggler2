@@ -28,6 +28,8 @@ public:
     CSVResourceReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~CSVResourceReport() { }
 
+    virtual const char* getType() const { return "CSVResourceReport"; }
+
     bool generate();
     CSVResourceReportElement* getTable() { return tab; }
 

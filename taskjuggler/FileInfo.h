@@ -100,6 +100,13 @@ private:
      */
     TokenType tokenTypeBuf;
     QString tokenBuf;
+    /**
+     * In case of a returned token, we also have to save the current line
+     * buffer and the current line number, in case an error has occured before
+     * the pushed back token.
+     */
+    QString oldLineBuf;
+    int oldLine;
 
     /**
      * Task trees of include files can not only be added at global scope but

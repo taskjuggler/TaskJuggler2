@@ -17,7 +17,8 @@
 #include "CustomAttributeDefinition.h"
 
 Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
-                 AccountType at) : CoreAttributes(p, i, n, pr), acctType(at)
+                 AccountType at, const QString& df, uint dl) :
+    CoreAttributes(p, i, n, pr, df, dl), acctType(at)
 {
     p->addAccount(this);
     kotrusId = "";
@@ -51,7 +52,7 @@ Account::getVolume(int sc, const Interval& period) const
     for (TransactionListIterator tli(transactions); *tli != 0; ++tli)
         if (period.contains((*tli)->getDate()))
             volume += (*tli)->getAmount();
-    
+
     // Add volume of all sub-accounts.
     for (AccountListIterator ali(*sub); *ali != 0; ++ali)
         volume += (*ali)->getVolume(sc, period);
@@ -65,7 +66,7 @@ Account::getBalance(int /*sc*/, time_t /* date */) const
     return 0.0;
 }
 
-void 
+void
 Account::credit(Transaction* t)
 {
     transactions.inSort(t);

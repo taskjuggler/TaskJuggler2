@@ -28,6 +28,8 @@ public:
     HTMLTaskReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLTaskReport();
 
+    virtual const char* getType() { return "HTMLTaskReport"; }
+
     bool generate();
     HTMLTaskReportElement* getTable() { return tab; }
 

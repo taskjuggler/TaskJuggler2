@@ -28,6 +28,8 @@ public:
     HTMLAccountReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLAccountReport();
 
+    virtual const char* getType() const { return "HTMLAccountReport"; }
+
     bool generate();
     HTMLAccountReportElement* getTable() { return tab; }
 

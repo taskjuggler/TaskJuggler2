@@ -33,7 +33,7 @@ class Account : public CoreAttributes
 {
 public:
     Account(Project* p, const QString& i, const QString& n, Account* pr,
-            AccountType at);
+            AccountType at, const QString& df = QString::null, uint dl = 0);
     virtual ~Account();
 
     virtual CAType getType() const { return CA_Account; }

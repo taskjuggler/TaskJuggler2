@@ -43,6 +43,14 @@
 #include "HTMLWeeklyCalendarElement.h"
 #include "HTMLStatusReport.h"
 #include "HTMLReportElement.h"
+#include "QtReport.h"
+#include "QtReportElement.h"
+#include "QtTaskReport.h"
+#include "QtTaskReportElement.h"
+//#include "QtResourceReport.h"
+//#include "QtResourceReportElement.h"
+//#include "QtAccountReport.h"
+//#include "QtAccountReportElement.h"
 #include "CSVTaskReport.h"
 #include "CSVTaskReportElement.h"
 #include "CSVResourceReport.h"
@@ -116,6 +124,10 @@ ProjectFile::open(const QString& file, const QString& parentPath,
         return FALSE;
     }
 
+    // Register source file
+    proj->addSourceFile(absFileName);
+    proj->setProgressInfo(i18n("Parsing %1...").arg(absFileName));
+
     if (DEBUGPF(2))
         qDebug("Reading %s", absFileName.latin1());
 
@@ -136,6 +148,14 @@ ProjectFile::close()
     if (DEBUGPF(2))
         qDebug("Finished file %s", fi->getFile().latin1());
     openFiles.removeLast();
+
+    if (openFiles.isEmpty())
+    {
+        proj->setProgressInfo(i18n("Parsing completed"));
+    }
+    else
+        proj->setProgressInfo(i18n("Parsing %1...")
+                              .arg(openFiles.getLast()->getFile()));
 
     return error;
 }
@@ -478,6 +498,14 @@ ProjectFile::parse()
                if (!readHTMLReport(token))
                    return FALSE;
                break;
+            }
+            else if (token == KW("taskreport") ||
+                     token == KW("resourcereport") ||
+                     token == KW("accountreport"))
+            {
+                if (!readReport(token))
+                    return FALSE;
+                break;
             }
             else if (token == KW("htmlstatusreport"))
             {
@@ -1116,6 +1144,9 @@ ProjectFile::readTask(Task* parent)
     TokenType tt;
     QString token;
 
+    QString definitionFile = getFile();
+    uint definitionLine = getLine();
+
     QString id;
     if ((tt = nextToken(id)) != ID &&
         (tt != ABSOLUTE_ID) && (tt != RELATIVE_ID))
@@ -1235,7 +1266,8 @@ ProjectFile::readTask(Task* parent)
     }
     else
     {
-        task = new Task(proj, id, name, parent, getFile(), getLine());
+        task = new Task(proj, id, name, parent, definitionFile,
+                        definitionLine);
         task->inheritValues();
     }
 
@@ -2017,6 +2049,9 @@ ProjectFile::readPercent(double& value)
 bool
 ProjectFile::readResource(Resource* parent)
 {
+    QString definitionFile = getFile();
+    uint definitionLine = getLine();
+
     // Syntax: 'resource id "name" { ... }
     QString id;
     if (nextToken(id) != ID)
@@ -2054,7 +2089,8 @@ ProjectFile::readResource(Resource* parent)
     }
     else
     {
-        r = new Resource(proj, id, name, parent);
+        r = new Resource(proj, id, name, parent, definitionFile,
+                         definitionLine);
         r->inheritValues();
     }
 
@@ -2290,6 +2326,9 @@ ProjectFile::readResourceScenarioAttribute(const QString attribute,
 bool
 ProjectFile::readShift(Shift* parent)
 {
+    QString definitionFile = getFile();
+    uint definitionLine = getLine();
+
     // Syntax: 'shift id "name" { ... }
     QString id;
     if (nextToken(id) != ID)
@@ -2311,7 +2350,8 @@ ProjectFile::readShift(Shift* parent)
         return FALSE;
     }
 
-    Shift* s = new Shift(proj, id, name, parent);
+    Shift* s = new Shift(proj, id, name, parent, definitionFile,
+                         definitionLine);
     s->inheritValues();
 
     TokenType tt;
@@ -2463,6 +2503,9 @@ ProjectFile::readBooking(int& sloppy)
 bool
 ProjectFile::readAccount(Account* parent)
 {
+    QString definitionFile = getFile();
+    uint definitionLine = getLine();
+
     // Syntax: 'account id "name" { ... }
     QString id;
     if (nextToken(id) != ID)
@@ -2524,7 +2567,8 @@ ProjectFile::readAccount(Account* parent)
     }
     else
     {
-        a = new Account(proj, id, name, parent, acctType);
+        a = new Account(proj, id, name, parent, acctType, definitionFile,
+                        definitionLine);
         a->inheritValues();
     }
 
@@ -3158,6 +3202,252 @@ ProjectFile::checkReportInterval(HTMLReport* report)
         errorMessage(i18n("End date must be within the project time frame"));
         return FALSE;
     }
+
+    return TRUE;
+}
+
+bool
+ProjectFile::readReport(const QString& reportType)
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("Report name expected"));
+        return FALSE;
+    }
+
+    Report* report = 0;
+    ReportElement* tab;
+    if (reportType == KW("taskreport"))
+    {
+        report = new QtTaskReport(proj, token, getFile(), getLine());
+        tab = ((QtTaskReport*) report)->getTable();
+    }
+/*    else if (reportType == KW("resourcereport"))
+    {
+        report = new QtReport(proj, token, getFile(), getLine());
+        tab = ((QtReportElement*) report)->getTable();
+    }
+    else if (reportType == KW("accountreport"))
+    {
+        report = new QtReport(proj, token, getFile(), getLine());
+        tab = ((QtReportElement*) report)->getTable();
+    }*/
+    else
+    {
+        qFatal("readReport: bad report type");
+        return FALSE;   // Just to please the compiler.
+    }
+
+    TokenType tt;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+            if (token == KW("columns"))
+            {
+                tab->clearColumns();
+                for ( ; ; )
+                {
+                    TableColumnInfo* tci;
+                    if ((tci = readColumn(proj->getMaxScenarios(),
+                                          tab)) == 0)
+                        return FALSE;
+                    tab->addColumn(tci);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("scenario"))
+            {
+                QString scId;
+                if ((tt = nextToken(scId)) != ID)
+                {
+                    errorMessage(i18n("Scenario ID expected"));
+                    return FALSE;
+                }
+                int scIdx;
+                if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                {
+                    errorMessage(i18n("Unknown scenario '%1'")
+                                 .arg(scId));
+                    return FALSE;
+                }
+                if (proj->getScenario(scIdx - 1)->getEnabled())
+                    tab->addScenario(proj->getScenarioIndex(scId) - 1);
+                break;
+            }
+            else if (token == KW("start"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                tab->setStart(date2time(token));
+            }
+            else if (token == KW("end"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                tab->setEnd(date2time(token) - 1);
+            }
+            else if (token == KW("headline"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                tab->setHeadline(token);
+            }
+            else if (token == KW("caption"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String exptected"));
+                    return FALSE;
+                }
+                tab->setCaption(token);
+            }
+            else if (token == KW("showprojectids"))
+            {
+                tab->setShowPIDs(TRUE);
+            }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                tab->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                tab->setRollUpTask(et);
+            }
+            else if (token == KW("sorttasks"))
+            {
+                if (!readSorting(tab, 0))
+                    return FALSE;
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                tab->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                tab->setRollUpResource(et);
+            }
+            else if (token == KW("sortresources"))
+            {
+                if (!readSorting(tab, 1))
+                    return FALSE;
+            }
+            else if (token == KW("hideaccount"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                tab->setHideAccount(et);
+            }
+            else if (token == KW("rollupaccount"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                tab->setRollUpAccount(et);
+            }
+            else if (token == KW("sortaccounts"))
+            {
+                if (!readSorting(tab, 2))
+                    return FALSE;
+            }
+            else if (token == KW("loadunit"))
+            {
+                if (nextToken(token) != ID || !tab->setLoadUnit(token))
+                {
+                    errorMessage(i18n("Illegal load unit"));
+                    return FALSE;
+                }
+            }
+            else if (token == KW("timeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                tab->setTimeFormat(token);
+            }
+            else if (token == KW("shorttimeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                tab->setShortTimeFormat(token);
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    if (!checkReportInterval(tab))
+        return FALSE;
+
+    proj->addReport(report);
 
     return TRUE;
 }

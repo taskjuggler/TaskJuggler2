@@ -15,6 +15,7 @@
 
 #include <time.h>
 
+#include <qobject.h>
 #include <qptrlist.h>
 #include <qstringlist.h>
 #include <qdict.h>
@@ -26,6 +27,7 @@
 #include "ResourceList.h"
 #include "AccountList.h"
 #include "RealFormat.h"
+#include "QtReport.h"
 
 class QStringList;
 class QDomElement;
@@ -50,11 +52,17 @@ class UsageLimits;
  * @short The root class of all project related information.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class Project
+class Project : public QObject
 {
+    Q_OBJECT
 public:
     Project();
     ~Project();
+
+    void addSourceFile(const QString& f);
+    QStringList getSourceFiles() const;
+    // Called to emit a signal with the currently processed file.
+    void setProgressInfo(const QString& i);
 
     /**
      * Projects have at least one ID, but can have multiple IDs. This usually
@@ -702,6 +710,8 @@ public:
     {
         reports.append(r);
     }
+    Report* getReport(uint idx) const;
+    QPtrListIterator<Report> getReportListIterator() const;
 
     bool loadFromXML( const QString& file );
     void parseDomElem( QDomElement& parentElem );
@@ -723,9 +733,9 @@ public:
     }
 
     const QStringList getAllowedFlags() const
-        {
-            return allowedFlags;
-        }
+    {
+        return allowedFlags;
+    }
 
     /**
      * Converts working seconds to working days.
@@ -758,6 +768,9 @@ public:
 
     bool generateXMLReport() const;
 
+signals:
+    void updateProgressInfo(const QString& i);
+
 private:
     void overlayScenario(int base, int sc);
     void prepareScenario(int sc);
@@ -766,8 +779,6 @@ private:
     bool schedule(int sc);
 
     bool checkSchedule(int sc) const;
-
-    double rateProjectByTime(int sc) const;
 
     /// The start date of the project
     time_t start;
@@ -900,6 +911,8 @@ private:
 #endif
 
     QPtrList<Report> reports;
+    QPtrList<QtReport> interactiveReports;
+    QStringList sourceFiles;
 } ;
 
 #endif

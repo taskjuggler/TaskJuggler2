@@ -459,6 +459,12 @@ ReportElement::clearColumns()
     columns.clear();
 }
 
+QPtrListIterator<TableColumnInfo>
+ReportElement::getColumnsIterator() const
+{
+    return QPtrListIterator<TableColumnInfo>(columns);
+}
+
 bool
 ReportElement::setTaskSorting(int sc, int level)
 {

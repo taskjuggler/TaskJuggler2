@@ -28,6 +28,8 @@ public:
     CSVTaskReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~CSVTaskReport();
 
+    virtual const char* getType() const { return "CSVTaskReport"; }
+
     bool generate();
     CSVTaskReportElement* getTable() { return tab; }
 

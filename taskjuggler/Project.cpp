@@ -182,6 +182,25 @@ Project::~Project()
 }
 
 void
+Project::addSourceFile(const QString& f)
+{
+    if (sourceFiles.find(f) == sourceFiles.end())
+        sourceFiles.append(f);
+}
+
+QStringList
+Project::getSourceFiles() const
+{
+    return sourceFiles;
+}
+
+void
+Project::setProgressInfo(const QString& i)
+{
+    emit updateProgressInfo(i);
+}
+
+void
 Project::setTimeZone(const QString& tz)
 {
     setTimezone(tz);
@@ -495,6 +514,7 @@ Project::pass2(bool noDepCheck)
     }
 
     // Now check that all tasks have sufficient data to be scheduled.
+    setProgressInfo(i18n("Checking scheduling data..."));
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if (!(*tli)->preScheduleOk((*sci)->getSequenceNo() - 1))
@@ -502,6 +522,7 @@ Project::pass2(bool noDepCheck)
 
     if (!noDepCheck)
     {
+        setProgressInfo(i18n("Searching for dependency loops..."));
         if (DEBUGPS(1))
             qDebug("Searching for dependency loops ...");
         // Check all tasks for dependency loops.
@@ -519,6 +540,8 @@ bool
 Project::scheduleScenario(Scenario* sc)
 {
     bool error = FALSE;
+
+    setProgressInfo(i18n("Scheduling scenario %1...").arg(sc->getId()));
 
     int scIdx = sc->getSequenceNo() - 1;
     prepareScenario(scIdx);
@@ -648,6 +671,7 @@ Project::schedule(int sc)
     sortedTasks.sort();
 
     bool done;
+    int updateMsgTimer = 0;
     do
     {
         done = TRUE;
@@ -659,6 +683,13 @@ Project::schedule(int sc)
                 slot = (*tli)->nextSlot(scheduleGranularity);
                 if (slot == 0)
                     continue;
+                if (++updateMsgTimer > 2000)
+                {
+                    updateMsgTimer = 0;
+                    setProgressInfo
+                        (i18n("Scheduling scenario %1 at %1")
+                         .arg(getScenarioId(sc)).arg(time2tjp(slot)));
+                }
                 if (DEBUGPS(5))
                     qDebug("Task '%s' requests slot %s",
                            (*tli)->getId().latin1(), time2ISO(slot).latin1());
@@ -722,22 +753,19 @@ Project::checkSchedule(int sc) const
     return errors == 0;
 }
 
-double
-Project::rateProjectByTime(int sc) const
+Report*
+Project::getReport(uint idx) const
 {
-    time_t firstStart = end;
-    time_t lastEnd = start;
+    QPtrListIterator<Report> it(reports);
+    for (uint i = 0; *it && i < idx; ++it, ++i)
+        ;
+    return *it;
+}
 
-    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        if (!(*tli)->getParent())
-        {
-            if ((*tli)->getStart(sc) < firstStart)
-                firstStart = (*tli)->getStart(sc);
-            if ((*tli)->getEnd(sc) > lastEnd)
-                lastEnd = (*tli)->getEnd(sc);
-        }
-
-    return (lastEnd - firstStart) / scheduleGranularity;
+QPtrListIterator<Report>
+Project::getReportListIterator() const
+{
+    return QPtrListIterator<Report>(reports);
 }
 
 void
@@ -746,11 +774,15 @@ Project::generateReports() const
     // Generate reports
     for (QPtrListIterator<Report> ri(reports); *ri != 0; ++ri)
     {
-        if (DEBUGPS(1))
-            qDebug(i18n("Generating report '%1' ...")
-                   .arg((*ri)->getFileName()));
+        // We generate all but Qt*Reports. Those are for the GUI version.
+        if (strncmp((*ri)->getType(), "Qt", 2) != 0)
+        {
+            if (DEBUGPS(1))
+                qDebug(i18n("Generating report '%1' ...")
+                       .arg((*ri)->getFileName()));
 
-        (*ri)->generate();
+            (*ri)->generate();
+        }
     }
 
     generateXMLReport();

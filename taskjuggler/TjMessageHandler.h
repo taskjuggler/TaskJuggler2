@@ -37,6 +37,8 @@ public:
     void fatalMessage(const QString& msg, const QString& file = QString::null,
                       int line = -1);
 
+    void setConsoleMode(bool cm) { consoleMode = cm; }
+
 signals:
     void printWarning(const QString& msg, const QString& file, int line);
     void printError(const QString& msg, const QString& file, int line);

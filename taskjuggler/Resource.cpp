@@ -43,8 +43,8 @@ static uint* WeekEndIndex = 0;
 static uint* MonthEndIndex = 0;
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
-                   Resource* pr)
-    : CoreAttributes(p, i, n, pr)
+                   Resource* pr, const QString& df, uint dl)
+    : CoreAttributes(p, i, n, pr, df, dl)
 {
     vacations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
@@ -67,7 +67,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     allocationProbability = new double[p->getMaxScenarios()];
     for (int i = 0; i < p->getMaxScenarios(); ++i)
         allocationProbability[i] = 0;
-    
+
     if (!DayStartIndex)
     {
         DayStartIndex = new uint[sbSize];
@@ -84,11 +84,11 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
             if (ts == midnight(ts))
                 dayStart = i;
             DayStartIndex[i] = dayStart;
-            
+
             if (ts == beginOfWeek(ts, weekStartsMonday))
                 weekStart = i;
             WeekStartIndex[i] = weekStart;
-            
+
             if (ts == beginOfMonth(ts))
                 monthStart = i;
             MonthStartIndex[i] = monthStart;
@@ -108,18 +108,18 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
             DayEndIndex[i] = dayEnd;
             if (ts - midnight(ts) < (int) p->getScheduleGranularity())
                 dayEnd = i > 0 ? i - 1 : 0;
-            
+
             WeekEndIndex[i] = weekEnd;
             if (ts - beginOfWeek(ts, weekStartsMonday) <
                 (int) p->getScheduleGranularity())
                 weekEnd = i > 0 ? i - 1 : 0;
-            
+
             MonthEndIndex[i] = monthEnd;
             if (ts - beginOfMonth(ts) < (int) p->getScheduleGranularity())
                 monthEnd = i > 0 ? i - 1 : 0;
         }
     }
-    
+
     for (int i = 0; i < 7; i++)
     {
         workingHours[i] = new QPtrList<Interval>();
@@ -225,7 +225,7 @@ Resource::inheritValues()
             delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
             workingHours[i]->setAutoDelete(TRUE);
-            for (QPtrListIterator<Interval> 
+            for (QPtrListIterator<Interval>
                  ivi(project->getWorkingHoursIterator(i));
                  *ivi != 0; ++ivi)
                 workingHours[i]->append(new Interval(**ivi));
@@ -419,7 +419,7 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
         // Now check that the resource is not overloaded on this month.
         uint bookedSlots = 1;
         uint bookedTaskSlots = 1;
-        
+
         for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
@@ -466,7 +466,7 @@ Resource::bookSlot(uint idx, SbBooking* nb)
     // Test if the time slot is still available.
     if (scoreboard[idx] != 0)
         return FALSE;
-    
+
     SbBooking* b;
     // Try to merge the booking with the booking in the previous slot.
     if (idx > 0 && (b = scoreboard[idx - 1]) > (SbBooking*) 3 &&
@@ -495,12 +495,12 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy)
     uint eIdx = sbIndex(nb->getEnd());
 
     bool conflict = FALSE;
-    
+
     for (uint i = sIdx; i <= eIdx; i++)
         if (scoreboard[i])
         {
             uint j;
-            for (j = i + 1 ; j <= eIdx && 
+            for (j = i + 1 ; j <= eIdx &&
                  scoreboard[i] == scoreboard[j]; j++)
                 ;
             if (scoreboard[i] == (SbBooking*) 1)
@@ -556,7 +556,7 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy)
             conflict = TRUE;
             i = j;
         }
-    
+
     if (conflict)
         return FALSE;
 
@@ -570,7 +570,7 @@ bool
 Resource::addBooking(int sc, Booking* nb, int sloppy)
 {
     SbBooking** tmp = scoreboard;
-    
+
     if (scoreboards[sc])
         scoreboard = scoreboards[sc];
     else
@@ -597,10 +597,10 @@ Resource::addShift(ShiftSelection* s)
     return shifts.insert(s);
 }
 
-void 
+void
 Resource::addVacation(Interval* i)
 {
-    vacations.append(i); 
+    vacations.append(i);
 }
 
 double
@@ -663,15 +663,15 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
     // If the scoreboard has not been initialized there is no load.
     if (!scoreboards[sc])
         return bookings;
-    
+
     for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
     {
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
-        if ((task == 0 || 
-            (task != 0 && task == b->getTask()) && 
-             (acctType == AllAccounts || 
+        if ((task == 0 ||
+            (task != 0 && task == b->getTask()) &&
+             (acctType == AllAccounts ||
               b->getTask()->getAccount()->getAcctType() == acctType)))
             bookings++;
     }
@@ -688,7 +688,7 @@ Resource::getAvailableWorkLoad(int sc, const Interval& period) const
 
     return efficiency * project->convertToDailyLoad
         (getAvailableWorkLoadSub(sc, sbIndex(iv.getStart()),
-                                 sbIndex(iv.getEnd())) * 
+                                 sbIndex(iv.getEnd())) *
          project->getScheduleGranularity());
 }
 
@@ -710,7 +710,7 @@ Resource::getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const
          * being, we fake a value and hope that it doesn't hurt. */
         if (!scoreboard || !scoreboards[sc])
             return availSlots + (endIdx - startIdx);
-    
+
         for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
             if (scoreboards[sc][i] == 0)
                 availSlots++;
@@ -790,7 +790,7 @@ Resource::isAllocated(int sc, const Interval& period, const Task* task) const
 }
 
 void
-Resource::getPIDs(int sc, const Interval& period, const Task* task, 
+Resource::getPIDs(int sc, const Interval& period, const Task* task,
                   QStringList& pids) const
 {
     Interval iv(period);
@@ -835,7 +835,7 @@ Resource::dbLoadBookings(const QString& kotrusID,
     /* retrieve all bookings _not_ belonging to this project */
     BookingList blist = project->getKotrus()->loadBookings
         (kotrusID, skipProjectIDs);
-    return TRUE;   
+    return TRUE;
 }
 
 bool
@@ -1007,14 +1007,14 @@ Resource::bookingsOk(int sc)
 {
     if (scoreboards[sc] == 0)
         return TRUE;
-   
+
     if (hasSubs())
     {
        TJMH.errorMessage
           (i18n("Group resource '%1' may not have bookings") .arg(id));
        return FALSE;
     }
-    
+
     for (uint i = 0; i < sbSize; ++i)
         if (scoreboards[sc][i] >= ((SbBooking*) 4))
         {
@@ -1043,7 +1043,7 @@ QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 {
    QDomElement elem = ReportXML::createXMLElem( doc, "Resource", getName());
    elem.setAttribute( "Id", getId() );
-   
+
    return( elem );
 }
 

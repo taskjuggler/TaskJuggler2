@@ -24,6 +24,8 @@ public:
     HTMLWeeklyCalendar(Project* p, const QString& f, const QString& df, int dl);
     virtual ~HTMLWeeklyCalendar();
 
+    virtual const char* getType() const { return "HTMLWeeklyCalendar"; }
+
     bool generate();
     HTMLWeeklyCalendarElement* getTable() { return tab; }
 

@@ -46,7 +46,7 @@ class TableLineInfo;
 class CustomAttributeDefinition;
 
 /**
- * @short A class that forms the basic element of a report. 
+ * @short A class that forms the basic element of a report.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class ReportElement
@@ -82,11 +82,12 @@ public:
     void addColumn(const TableColumnInfo* c);
     const TableColumnInfo* columnsAt(uint idx);
     void clearColumns();
+    QPtrListIterator<TableColumnInfo> getColumnsIterator() const;
     void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
     void setStart(time_t s) { start = s; }
     time_t getStart() const { return start; }
-    
+
     void setEnd(time_t e) { end = e; }
     time_t getEnd() const { return end; }
 
@@ -219,24 +220,24 @@ public:
     virtual void genCellKotrusId(TableCellInfo*) = 0;
     virtual void genCellTotal(TableCellInfo*) = 0;
     virtual void genCellSummary(TableCellInfo*) = 0;
-    
+
 protected:
     ReportElement() { }
 
     void addCustomAttributeColumns
         (const QDict<const CustomAttributeDefinition>& cad);
 
+    void errorMessage(const char* msg, ... );
+
     QTextStream& s() const;
     void puts(const QString& str) { report->puts(str); }
-
-    void errorMessage(const char* msg, ... );
 
     /**
      * This utility function removes the path that matches the taskRoot
      * variable from the passed taskId.
      */
     QString stripTaskRoot(QString taskId) const;
-    
+
     QString scaledLoad(double t, TableCellInfo* tci) const;
     void reportValue(double value, const QString& bgcol, bool bold);
 
@@ -256,14 +257,14 @@ protected:
     QString shortTimeFormat;
     RealFormat numberFormat;
     RealFormat currencyFormat;
-    
+
     /* We store the location of the report definition in case we need it
      * for error reporting. */
     QString defFileName;
     int defFileLine;
-    
+
     TableColorSet colors;
-    
+
     QString headline;
     QString caption;
 
@@ -278,16 +279,16 @@ protected:
     ExpressionTree* rollUpResource;
     ExpressionTree* rollUpAccount;
 
-    /* A report can be limited to the sub-tasks of a certain task. The 
+    /* A report can be limited to the sub-tasks of a certain task. The
      * taskRoot specifies this task. If set it always ends with a '.'. */
     QString taskRoot;
-    
+
     LoadUnit loadUnit;
 
     bool showPIDs;
 
     bool accumulate;
-    
+
     /* The maximum depth of the tree that we have to report in tree-sorting
      * mode. */
     uint maxDepthTaskList;

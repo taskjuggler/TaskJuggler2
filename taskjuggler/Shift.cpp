@@ -14,8 +14,9 @@
 #include "Interval.h"
 #include "Project.h"
 
-Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
-    CoreAttributes(prj, i, n, p)
+Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p,
+             const QString& df, uint dl) :
+    CoreAttributes(prj, i, n, p, df, dl)
 {
     prj->addShift(this);
 
@@ -86,7 +87,7 @@ Shift::isOnShift(const Interval& iv) const
     return FALSE;
 }
 
-bool 
+bool
 Shift::isVacationDay(time_t day) const
 {
     return workingHours[dayOfWeek(day, FALSE)]->isEmpty();

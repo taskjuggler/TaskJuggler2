@@ -44,8 +44,8 @@ FileInfo::open()
     if (DEBUGLEVEL > 0)
         qWarning(i18n("Processing file \'%1\'").arg(file));
 
-    lineBuf = QString::null;
-    currLine = 1;
+    lineBuf = oldLineBuf = QString::null;
+    currLine = oldLine = 1;
     return TRUE;
 }
 
@@ -101,6 +101,7 @@ FileInfo::getC(bool expandMacros)
             goto BEGIN;
         }
     }
+    oldLineBuf = lineBuf;
     lineBuf += c;
 
     if (expandMacros)
@@ -111,6 +112,7 @@ FileInfo::getC(bool expandMacros)
             if ((d = getC(FALSE)) == '{')
             {
                 // remove ${ from lineBuf;
+                oldLineBuf = lineBuf;
                 lineBuf = lineBuf.left(lineBuf.length() - 2);
                 readMacroCall();
                 goto BEGIN;
@@ -118,6 +120,7 @@ FileInfo::getC(bool expandMacros)
             else if (d == '(')
             {
                 // remove $( from lineBuf;
+                oldLineBuf = lineBuf;
                 lineBuf = lineBuf.left(lineBuf.length() - 2);
                 readEnvironment();
                 goto BEGIN;
@@ -144,6 +147,7 @@ FileInfo::getC(bool expandMacros)
 void
 FileInfo::ungetC(QChar c)
 {
+    oldLineBuf = lineBuf;
     lineBuf = lineBuf.left(lineBuf.length() - 1);
     ungetBuf.append(c);
 }
@@ -210,7 +214,10 @@ FileInfo::nextToken(QString& token)
                     while ((c = getC(FALSE)) != '*')
                     {
                         if (c == '\n')
+                        {
+                            oldLine = currLine;
                             currLine++;
+                        }
                         else if (c.unicode() == EOFile)
                         {
                             errorMessage(i18n("Unterminated comment"));
@@ -235,7 +242,11 @@ FileInfo::nextToken(QString& token)
         case '\n':
             // Increase line counter only when not replaying a macro.
             if (macroStack.isEmpty())
+            {
+                oldLine = currLine;
                 currLine++;
+            }
+            oldLineBuf = lineBuf;
             lineBuf = "";
             break;
         default:
@@ -347,7 +358,10 @@ FileInfo::nextToken(QString& token)
             while ((c = getC()).unicode() != EOFile && c != '\'')
             {
                 if ((c == '\n') && macroStack.isEmpty())
+                {
+                    oldLine = currLine;
                     currLine++;
+                }
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -363,7 +377,10 @@ FileInfo::nextToken(QString& token)
             while ((c = getC()).unicode() != EOFile && c != '"')
             {
                 if ((c == '\n') && macroStack.isEmpty())
+                {
+                    oldLine = currLine;
                     currLine++;
+                }
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -385,7 +402,10 @@ FileInfo::nextToken(QString& token)
                 else if (c == ']')
                     nesting--;
                 if (c == '\n')
+                {
+                    oldLine = currLine;
                     currLine++;			// macroStack.isEmpty ??
+                }
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -582,8 +602,16 @@ FileInfo::errorMessage(const char* msg, ...)
     va_end(ap);
 
     if (macroStack.isEmpty())
-        TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(lineBuf)),
-                          file, currLine);
+    {
+        if (tokenTypeBuf == INVALID)
+            TJMH.errorMessage(QString("%1\n%2").arg(buf)
+                              .arg(cleanupLine(lineBuf)),
+                              file, currLine);
+        else
+            TJMH.errorMessage(QString("%1\n%2").arg(buf)
+                              .arg(cleanupLine(oldLineBuf)),
+                              file, oldLine);
+    }
     else
     {
         QString stackDump;

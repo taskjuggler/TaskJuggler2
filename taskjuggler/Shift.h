@@ -28,7 +28,8 @@ class ShiftListIterator;
 class Shift : public CoreAttributes
 {
 public:
-    Shift(Project* prj, const QString& i, const QString& n, Shift* p);
+    Shift(Project* prj, const QString& i, const QString& n, Shift* p,
+          const QString& df = QString::null, uint dl = 0);
     virtual ~Shift();
 
     virtual CAType getType() const { return CA_Shift; }
@@ -60,8 +61,8 @@ public:
 
 private:
     Shift() { }     // Don't use this.
-    
-    QPtrList<Interval>* workingHours[7];    
+
+    QPtrList<Interval>* workingHours[7];
 };
 
 #endif
