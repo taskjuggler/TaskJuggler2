@@ -356,6 +356,10 @@ has been found and fixed. The bug lead to wrong load values for all
 nested resources. The bug was introduced between versions 1.2 and 1.3.
 </para></listitem>
 
+<listitem><para>If some container tasks could not be scheduled due to
+problems with a sub task no error message was generated. This has been
+fixed now.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
