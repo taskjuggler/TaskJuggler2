@@ -3,18 +3,19 @@
 #include "ktvtasktable.h"
 
 
-KTVTaskTableItem::KTVTaskTableItem( KTVTaskTable *parent )
+KTVTaskTableItem::KTVTaskTableItem( KTVTaskTable *parent, int height )
    :KListViewItem( parent ),
     m_task(0)
 {
-   
+   setHeight(height);
 }
 
-KTVTaskTableItem::KTVTaskTableItem( KTVTaskTableItem *parent, Task *t )
+KTVTaskTableItem::KTVTaskTableItem( KTVTaskTableItem *parent, Task *t, int height )
    :KListViewItem( parent ),
     m_task(t)
 {
    // qDebug("Creating item for task " + t->getId() );
+   setHeight(height);
 }
 
 #define  COMPARE(_me,_oth) ( _me==_oth? 0 : (_me<_oth?-1:1))

@@ -22,18 +22,35 @@
 #define COL_PLAN_END_TIME 8
 
 class QPixmap;
+class KTVTaskCanvas;
+class QListViewItem;
 
 class KTVTaskTable: public KListView
 {
+   friend KTVTaskCanvas;
     Q_OBJECT
 public:
     KTVTaskTable( QWidget *parent, const char *name = 0 );
     virtual ~KTVTaskTable(){}
 
    void showProject( Project * );
+   void setItemHeight(int h);
+
+ protected slots:
+
+ void slExpanded( QListViewItem* );
+   void slCollapsed( QListViewItem* );
+signals:
+   void itemHeightChanged(int);
+   void newTaskAdded( Task*, KTVTaskTableItem* );
+   void moveItems( int y, int dy);  // move items on canvas from int y by dy
+   void showTaskByItem( KTVTaskTableItem* );
+   void hideTaskByItem( KTVTaskTableItem* );
+   void needUpdate();
 private:
    void addTask( KTVTaskTableItem *parent, Task *t );
    QString beautyTimeSpan( time_t tStart, time_t tEnd ) const;
+   int     m_itemHeight;
    
    KTVTaskTableItem *m_root;
 

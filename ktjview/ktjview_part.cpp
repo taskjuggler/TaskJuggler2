@@ -6,17 +6,20 @@
 #include <kfiledialog.h>
 #include <kparts/genericfactory.h>
 #include <kdebug.h>
+#include <qsplitter.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qmultilineedit.h>
 
 #include "ktvtasktable.h"
+#include "ktjgantt.h"
+#include "ktvtaskcanvasview.h"
 
 typedef KParts::GenericFactory<KTjviewPart> KTjviewPartFactory;
 K_EXPORT_COMPONENT_FACTORY( libktjviewpart, KTjviewPartFactory );
 
-KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *widgetName,
+KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
 			  QObject *parent, const char *name,
 			  const QStringList & /*args*/ )
     : KParts::ReadOnlyPart(parent, name)
@@ -25,8 +28,7 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *widgetName,
     setInstance( KTjviewPartFactory::instance() );
 
     // this should be your custom internal widget
-    m_widget = new KTVTaskTable( parentWidget, widgetName );
-
+    m_widget = new KTJGantt( parentWidget, "GANTT" );
     // notify the part that this is our internal widget
     setWidget(m_widget);
 

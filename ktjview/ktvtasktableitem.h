@@ -11,8 +11,8 @@ class KTVTaskTable;
 class KTVTaskTableItem: public KListViewItem
 {
 public:
-    KTVTaskTableItem( KTVTaskTable *parent );
-    KTVTaskTableItem( KTVTaskTableItem *parent, Task* );
+    KTVTaskTableItem( KTVTaskTable *parent, int height=20 );
+    KTVTaskTableItem( KTVTaskTableItem *parent, Task*, int height=20 );
    int compare( QListViewItem *i, int col, bool ascending ) const;
 
    Task *getTask() { return m_task; }

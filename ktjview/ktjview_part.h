@@ -4,9 +4,10 @@
 #include <kparts/part.h>
 
 class QWidget;
+class QCanvasView;
 class QPainter;
 class KURL;
-class KTVTaskTable;
+class KTJGantt;
 class KAboutData;
 
 /**
@@ -47,7 +48,7 @@ protected slots:
 
 
 private:
-    KTVTaskTable *m_widget;
+   KTJGantt *m_widget;
 };
 
 #endif // KTJVIEWPART_H
