@@ -95,7 +95,7 @@ int pr_RU = 0;
 #endif
 
 ktjview2View::ktjview2View( QWidget *parent )
-    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 ), m_taskReport( 0 )
+    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
 {
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
@@ -197,7 +197,6 @@ ktjview2View::~ktjview2View()
 {
     delete m_project;
     delete m_ganttPopupMenu;
-    delete m_taskReport;
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -1275,11 +1274,14 @@ QString ktjview2View::projectName() const
 void ktjview2View::slotTaskCoverage()
 {
     if ( !m_project )
+    {
+        KMessageBox::error( this, i18n( "To generate a report you must first open a project." ) );
         return;
+    }
 
-    if ( !m_taskReport )
-        m_taskReport = new KtjTaskReport( m_project, m_reportView );
-    m_taskReport->generate();
+    KtjTaskReport * report = new KtjTaskReport( m_project, m_reportView );
+    report->generate();
+    delete report;
     emit setQuickSearchView( m_reportView );
 }
 

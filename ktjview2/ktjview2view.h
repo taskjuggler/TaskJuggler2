@@ -402,7 +402,6 @@ private:
 
     /// report view component
     KtjReportView * m_reportView;
-    KtjTaskReport * m_taskReport;
     /// editor view
     EditorView * m_editorView;
 
