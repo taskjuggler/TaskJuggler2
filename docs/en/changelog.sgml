@@ -333,7 +333,7 @@ be used as sorting criteria as well. </para></listitem>
 </itemizedlist> </para>
 
 </sect2>
-<sect2><title>Next Version (Some Day)</title>
+<sect2><title>1.4.1 (Some Day)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -371,6 +371,9 @@ for this purpose.</para></listitem>
 <listitem><para><link
 linkend="htmltaskreport_columns">htmlaccountreport</link> now supports
 quarterly and yearly calendar columns.</para></listitem>
+
+<listitem><para>Fixed XML reports so that milestones end dates are
+same as start dates.</para></listitem>
 
 </itemizedlist></para>
 

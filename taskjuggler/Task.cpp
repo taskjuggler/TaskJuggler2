@@ -1016,7 +1016,7 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 {
 	if (DEBUGPF(10))
 		qDebug("%sloopDetection at %s (%s)",
-			   QString().fill(' ', list.count()).latin1(), id.latin1(),
+			   QString().fill(' ', list.count() + 1).latin1(), id.latin1(),
 			   atEnd ? "End" : "Start");
 
 	LoopDetectorInfo thisTask(this, atEnd);
@@ -1171,7 +1171,7 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 		}
 	}
 
-	if (DEBUGPF(10))
+	if (DEBUGPF(5))
 		qDebug("%sNo loops found in %s (%s)",
 				 QString().fill(' ', list.count()).latin1(),	
 				 id.latin1(), atEnd ? "End" : "Start");
@@ -1912,12 +1912,18 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
    taskElem.appendChild( tempElem );
    
-   tempElem = ReportXML::createXMLElem( doc, "actualStart", QString::number( scenarios[1].start ));
-   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[1].start ));
+   tempElem = ReportXML::createXMLElem( doc, "actualStart", 
+										QString::number(scenarios[1].start +
+														(milestone ? 1 : 0)));
+   tempElem.setAttribute( "humanReadable",
+						  time2ISO(scenarios[1].start + (milestone ? 1 : 0)));
    taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "actualEnd", QString::number( scenarios[1].end ));
-   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[1].end ));
+   tempElem = ReportXML::createXMLElem( doc, "actualEnd", 
+										QString::number(scenarios[1].end +
+														(milestone ? 1 : 0)));
+   tempElem.setAttribute( "humanReadable",
+						  time2ISO(scenarios[1].end + (milestone ? 1 : 0)));
    taskElem.appendChild( tempElem );
    
    tempElem = ReportXML::createXMLElem( doc, "planStart", QString::number( scenarios[0].start ));
