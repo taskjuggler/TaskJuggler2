@@ -1,7 +1,8 @@
 /*
- * Report.cpp - TaskJuggler
+ * ReportICal.cpp - TaskJuggler
  *
  * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ *                             Klaas Freitag <freitag@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -9,6 +10,9 @@
  *
  * $Id$
  */
+
+#include <config.h>
+
 #ifdef HAVE_KDE
 #include <qfile.h>
 #include <config.h>
@@ -20,7 +24,7 @@
 
 
 ReportICal::ReportICal(Project* p, const QString& f, time_t s, time_t e) :
-   Report(p, f, s, e )
+   Report(p, f, s, e, QString(), 0 )
 {
    
 }
@@ -30,7 +34,7 @@ void ReportICal::generate()
    KCal::CalendarLocal cal;
    qDebug( "Generate ical output to "+  fileName );
 
-   cal.setEmail( "Klaas@suse.de");
+   cal.setEmail( "");
 
    TaskList filteredList;
    filterTaskList(filteredList, 0);
@@ -38,17 +42,19 @@ void ReportICal::generate()
   
    TaskList taskList = filteredList; // project->getTaskList();
    Task *task = taskList.first();
-   while( (task = taskList.next()) != 0 )
+   
+   while( task )
    {
       if( task->isContainer() && task->getParent() == 0 )
+      {
 	 addATask( task, &cal );
+      }
+      task = taskList.next();
    }
-
-   qDebug( "saving ical to "+  fileName );
 
    KCal::ICalFormat *format = new KCal::ICalFormat( &cal );
    cal.save( fileName, format );
-   qDebug( "saving ical OK" );
+   qDebug( "saving ical to file " + fileName + " OK" );
 }
 
 
@@ -72,7 +78,7 @@ KCal::Todo* ReportICal::addATask( Task *task, KCal::CalendarLocal *cal )
 	 
 	 if( subTask && subTask != task )
 	 {
-	    qDebug("Adding subtask " + subTask->getName());
+	    // qDebug("Adding subtask " + subTask->getName());
 	    KCal::Todo *subTodo = addATask( subTask, cal );
 	    subTodo->setRelatedTo( todo );
 	    // qDebug("Added subtask OK" );
