@@ -1,4 +1,7 @@
-project passive "Passive Resource" "1.0" 2004-11-21 2004-12-31
+project passive "Passive Resource" "1.0" 2004-11-21-0:00-GMT 2004-12-31-0:00-GMT {
+	timezone "GMT"
+	now 2004-12-01
+}
 
 resource arch1 "Architect 1"
 resource arch2 "Architect 2"
