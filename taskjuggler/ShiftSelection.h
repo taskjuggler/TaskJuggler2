@@ -28,16 +28,23 @@ class ShiftSelection
                                                 QCollection::Item i2);
 
 public:
-    ShiftSelection(const Interval& p, Shift* s) : period(p), shift(s) { }
-    ~ShiftSelection() { }
+    ShiftSelection(const Interval& p, Shift* s) :
+        period(new Interval(p)), shift(s) { }
+    ShiftSelection(Interval* p, Shift* s) : period(p), shift(s) { }
+    ~ShiftSelection()
+    {
+        delete period;
+    }
 
-    const Interval& getPeriod() const { return period; }
+    const Interval& getPeriod() const { return *period; }
     Shift* getShift() const { return shift; }
 
     bool isVacationDay(time_t day) const;
 
 private:
-    Interval period;
+    ShiftSelection() { period = 0; }
+
+    Interval* period;
     Shift* shift;
 };
 

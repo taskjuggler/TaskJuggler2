@@ -25,13 +25,15 @@ typedef bool (XMLFile::*ParserFunctionPtr)(QDomNode&, ParserTreeContext&);
 class ParserElement
 {
 public:
-    ParserElement(const QString t, ParserFunctionPtr f, ParserNode* n);
+    ParserElement(const QString t, ParserFunctionPtr preF, ParserNode* n,
+                  ParserFunctionPtr postF = 0);
     ~ParserElement();
    
     void setNode(ParserNode* n) { node = n; }
     const ParserNode* getNode() const { return node; }
 
-    ParserFunctionPtr getFunc() const { return func; }
+    ParserFunctionPtr getPreFunc() const { return preFunc; }
+    ParserFunctionPtr getPostFunc() const { return postFunc; }
 
     const QString& getTag() const { return tag; }
 
@@ -39,8 +41,13 @@ private:
     ParserElement();    // Don't use!
 
     QString tag;
-    ParserFunctionPtr func;
+    /* Pointer to a function that is called before the elements of the node
+     * are processed. */
+    ParserFunctionPtr preFunc;
     ParserNode* node;
+    /* Pointer to a function that is called after the elements of the node
+     * have been processed. */
+    ParserFunctionPtr postFunc;
 } ;
 
 #endif

@@ -19,6 +19,12 @@ VacationList::add(const QString& name, const Interval& i)
     inSort(new VacationInterval(name, i));
 }
 
+void
+VacationList::add(VacationInterval* vi)
+{
+    inSort(vi);
+}
+
 int
 VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)
 {

@@ -13,14 +13,19 @@
 #ifndef _ParserTreeContext_h_
 #define _ParserTreeContext_h_
 
+#include <qptrlist.h>
+#include <qstring.h>
+
 class CoreAttributes;
 class Scenario;
 class Shift;
+class Resource;
 class Task;
 class Resource;
 class TaskScenario;
 class Allocation;
 class VacationInterval;
+class Interval;
 
 class ParserTreeContext
 {
@@ -32,13 +37,16 @@ public:
     CoreAttributes* getCoreAttributes() const { return ca; }
 
     void setScenario(Scenario* s) { ca = (CoreAttributes*) s; }
-    Scenario* getScenario();
+    Scenario* getScenario() const;
 
     void setShift(Shift* s) { ca = (CoreAttributes*) s; }
-    Shift* getShift();
+    Shift* getShift() const;
+
+    void setResource(Resource* r) { ca = (CoreAttributes*) r; }
+    Resource* getResource() const;
 
     void setTask(Task* t) { ca = (CoreAttributes*) t; }
-    Task* getTask();
+    Task* getTask() const;
 
     void setScenarioIndex(int i) { scenarioIndex = i; }
     int getScenarioIndex() const { return scenarioIndex; }
@@ -46,14 +54,28 @@ public:
     void setAllocation(Allocation* a) { allocation = a; }
     Allocation* getAllocation() const { return allocation; }
 
-    void setVacationInterval(VacationInterval* v) { vacationInterval = v; }
-    VacationInterval* getVacationInterval() const { return vacationInterval; }
+    void setWorkingHours(QPtrList<Interval>* whs) { workingHours = whs; }
+    QPtrList<Interval>* getWorkingHours() const { return workingHours; }
+
+    void setInterval(Interval* iv) { interval = iv; }
+    Interval* getInterval() const { return interval; }
+
+    void setVacationInterval(VacationInterval* v)
+    {
+        interval = (Interval*) v;
+    }
+    VacationInterval* getVacationInterval() const;
+
+    void setExtendProperty(const QString& ep) { extendProperty = ep; }
+    const QString& getExtendProporty() const { return extendProperty; }
 
 private:
     CoreAttributes* ca;
     int scenarioIndex;
     Allocation* allocation;
-    VacationInterval* vacationInterval;
+    Interval* interval;
+    QPtrList<Interval>* workingHours;
+    QString extendProperty;
 } ;
 
 #endif

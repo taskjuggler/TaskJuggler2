@@ -217,7 +217,8 @@ protected:
     ExpressionTree* rollUpAccount;
 
     /* A report can be limited to the sub-tasks of a certain task. The 
-     * taskRoot specifies this task. If set it always ends with a '.'. */
+     * taskRoot specifies this task. If set it always ends with a '.' if it's
+     * not empty. */
     QString taskRoot;
     
     LoadUnit loadUnit;

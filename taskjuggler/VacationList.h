@@ -32,6 +32,7 @@ public:
     virtual ~VacationList() {}
 
     void add(const QString& name, const Interval& i);
+    void add(VacationInterval* vi);
     bool isVacation(time_t date) const;
 
 protected:

@@ -7,7 +7,7 @@
 comments -->
 
 <!ELEMENT taskjuggler (project, vacationList?, shiftList?,
-                       resourceList?, taskList)>
+                       resourceList?, taskList, bookingList?)>
 
 <!ELEMENT project (start, end, extend*, now?, currencyFormat,
                    workingHours, scenario?)>
@@ -36,21 +36,15 @@ comments -->
 <!ATTLIST now
   humanReadable CDATA #IMPLIED>
 
-<!ELEMENT extend (textAttribute*, referenceAttribute*)>
+<!ELEMENT extend (extendAttribute*)>
 <!ATTLIST extend
   property CDATA #REQUIRED>
 
-<!ELEMENT textAttribute EMPTY>
-<!ATTLIST textAttribute
+<!ELEMENT extendAttribute EMPTY>
+<!ATTLIST extendAttribute
   id CDATA #REQUIRED
   name CDATA #REQUIRED
-  inherit (0|1) "0"
->
-
-<!ELEMENT referenceAttribute (#PCDATA)>
-<!ATTLIST referenceAttribute
-  id CDATA #REQUIRED
-  name CDATA #REQUIRED
+  type (text|reference) #REQUIRED
   inherit (0|1) "0"
 >
 
@@ -63,14 +57,14 @@ comments -->
   fracDigits CDATA #REQUIRED
 >
 
-<!ELEMENT workingHours (sun?, mon?, tue?, wed?, thu?, fri?, sat?)>
-<!ELEMENT sun (timeInterval+)>
-<!ELEMENT mon (timeInterval+)>
-<!ELEMENT tue (timeInterval+)>
-<!ELEMENT wed (timeInterval+)>
-<!ELEMENT thu (timeInterval+)>
-<!ELEMENT fri (timeInterval+)>
-<!ELEMENT sat (timeInterval+)>
+<!ELEMENT workingHours (weekdayWorkingHours*)>
+
+<!-- 0 means Sunday, 1 Monday, ... -->
+<!ELEMENT weekdayWorkingHours (timeInterval+)>
+<!ATTLIST weekdayWorkingHours
+  weekday (0|1|2|3|4|5|6) #REQUIRED
+>
+
 <!ELEMENT timeInterval (start, end)>
 
 <!ELEMENT scenario (scenario*)>
@@ -106,20 +100,10 @@ comments -->
 <!ELEMENT resourceList (resource*)>
 
 <!ELEMENT resource (flag*, vacationList?, workingHours, shiftSelection*,
-                    resourceScenario, resource*)>
+                    resource*)>
 <!ATTLIST resource
   id CDATA #REQUIRED
   name CDATA #REQUIRED
->
-
-<!ELEMENT resourceScenario (booking*)>
-<!ATTLIST resourceScenario
-  scenarioId CDATA #REQUIRED
->
-
-<!ELEMENT booking (start, end)>
-<!ATTLIST booking
-  taskId CDATA #REQUIRED
 >
 
 <!ELEMENT accountList (account*)>
@@ -208,5 +192,18 @@ comments -->
   text CDATA #IMPLIED
   url CDATA #IMPLIED
   label CDATA #IMPLIED
+>
+
+<!ELEMENT bookingList (resourceBooking*)>
+
+<!ELEMENT resourceBooking (booking*)>
+<!ATTLIST resourceBooking
+  resourceId CDATA #REQUIRED
+  scenarioId CDATA #REQUIRED
+>
+
+<!ELEMENT booking (start, end)>
+<!ATTLIST booking
+  taskId CDATA #REQUIRED
 >
 

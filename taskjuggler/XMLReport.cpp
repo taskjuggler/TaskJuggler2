@@ -119,10 +119,11 @@ XMLReport::generate()
         return FALSE;
     if (!generateResourceList(&tjEl, filteredResourceList, filteredTaskList))
         return FALSE;
-
     if (!generateTaskList(&tjEl, filteredTaskList, filteredResourceList))
         return FALSE;
-   
+    if (!generateBookingList(&tjEl, filteredTaskList, filteredResourceList))
+       return FALSE;
+
     s << doc->toString();
 
     f.close();
@@ -203,20 +204,21 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
         switch (it.current()->getType())
         {
             case CAT_Text:
-                exElType = "textAttribute";
+                exElType = "text";
                 break;
             case CAT_Reference:
-                exElType = "referenceAttribute";
+                exElType = "reference";
                 break;
             default:
                 qFatal("XMLReport::generateCustomAttributeDeclaration: "
                        "Unknown CAT %d", it.current()->getType());
                 return FALSE;
         }
-        QDomElement exEl = doc->createElement(exElType);
+        QDomElement exEl = doc->createElement("extendAttribute");
         el.appendChild(exEl);
         genTextAttr(&exEl, "id", it.currentKey());
         genTextAttr(&exEl, "name", it.current()->getName());
+        genTextAttr(&exEl, "type", exElType);
     }
 
     return TRUE;
@@ -306,17 +308,13 @@ XMLReport::generateWorkingHours(QDomElement* parentEl,
     QDomElement el = doc->createElement("workingHours");
     parentEl->appendChild(el);
     
-    static const char* days[] = 
-    {
-        "sun", "mon", "tue", "wed", "thu", "fri", "sat" 
-    };
-
     for (int i = 0; i < 7; ++i)
     {
         if (wh[i]->isEmpty())
             continue;
 
-        QDomElement dayEl = doc->createElement(days[i]);
+        QDomElement dayEl = doc->createElement("weekdayWorkingHours");
+        genTextAttr(&dayEl, "weekday", QString().sprintf("%d", i));
         el.appendChild(dayEl);
         QPtrListIterator<const Interval> it(*wh[i]);
         for ( ; *it; ++it)
@@ -396,32 +394,6 @@ XMLReport::generateResource(QDomElement* parentEl,
         genDateElement(&sSel, "end", (*sli)->getPeriod().getEnd() + 1);
     }
 
-    for (QValueListIterator<int> sit = scenarios.begin(); 
-         sit != scenarios.end(); ++sit)
-    {
-        QDomElement scEl = doc->createElement("resourceScenario");
-        el.appendChild(scEl);
-        genTextAttr(&scEl, "scenarioId", project->getScenarioId(*sit)); 
-        
-        BookingList bl = resource->getJobs(*sit);
-        bl.setAutoDelete(TRUE);
-        if (bl.isEmpty())
-            continue;
-
-        for (BookingListIterator bli(bl); *bli != 0; ++bli)
-        {
-            if (filteredTaskList.findRef((*bli)->getTask()) >= 0)
-            {
-                QDomElement bEl = doc->createElement("booking");
-                scEl.appendChild(bEl);
-                
-                genDateElement(&bEl, "start", (*bli)->getStart());
-                genDateElement(&bEl, "end", (*bli)->getEnd() + 1);
-                genTextAttr(&bEl, "taskId",  
-                            stripTaskRoot((*bli)->getTask()->getId())); 
-            }
-        }
-    }
     return TRUE;
 }
 
@@ -449,9 +421,9 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
     parentEl->appendChild(el);
     
     QString taskId = task->getId();
-    if (task->getParent())
+    if (!taskRoot.isEmpty())
         taskId = taskId.right(taskId.length() - 1 -
-                              task->getParent()->getId().length());
+                              taskRoot.length());
     genTextAttr(&el, "id", taskId);
     genTextAttr(&el, "name", task->getName());
     genTextAttr(&el, "projectId", task->getProjectId()); 
@@ -678,6 +650,47 @@ XMLReport::generateAllocate(QDomElement* parentEl, const Task* t)
         }
     }
     
+    return TRUE;
+}
+
+bool
+XMLReport::generateBookingList(QDomElement* parentEl,
+                               TaskList& filteredTaskList,
+                               ResourceList& filteredResourceList)
+{
+    QDomElement el = doc->createElement("bookingList");
+    parentEl->appendChild(el);
+
+    for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
+    {
+        for (QValueListIterator<int> sit = scenarios.begin(); 
+             sit != scenarios.end(); ++sit)
+        {
+            QDomElement scEl = doc->createElement("resourceBooking");
+            el.appendChild(scEl);
+            genTextAttr(&scEl, "resourceId", (*rli)->getId());
+            genTextAttr(&scEl, "scenarioId", project->getScenarioId(*sit)); 
+
+            BookingList bl = (*rli)->getJobs(*sit);
+            bl.setAutoDelete(TRUE);
+            if (bl.isEmpty())
+                continue;
+
+            for (BookingListIterator bli(bl); *bli != 0; ++bli)
+            {
+                if (filteredTaskList.findRef((*bli)->getTask()) >= 0)
+                {
+                    QDomElement bEl = doc->createElement("booking");
+                    scEl.appendChild(bEl);
+
+                    genDateElement(&bEl, "start", (*bli)->getStart());
+                    genDateElement(&bEl, "end", (*bli)->getEnd() + 1);
+                    genTextAttr(&bEl, "taskId",  
+                                stripTaskRoot((*bli)->getTask()->getId())); 
+                }
+            }
+        }
+    }
     return TRUE;
 }
 

@@ -85,6 +85,7 @@ public:
     }
 
     bool addShift(const Interval& i, Shift* s);
+    bool addShift(ShiftSelection* s);
 
     const ShiftSelectionList* getShiftList() const
     {

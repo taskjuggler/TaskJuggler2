@@ -430,6 +430,12 @@ Resource::addShift(const Interval& i, Shift* s)
     return shifts.insert(new ShiftSelection(i, s));
 }
 
+bool
+Resource::addShift(ShiftSelection* s)
+{
+    return shifts.insert(s);
+}
+
 void 
 Resource::addVacation(Interval* i)
 {

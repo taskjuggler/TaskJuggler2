@@ -34,6 +34,7 @@ class ReportXML;
 class Report;
 class Kotrus;
 class CustomAttributeDefinition;
+class VacationInterval;
 
 /**
  * The Project class is the root of the data tree of the application.
@@ -329,6 +330,10 @@ public:
     void addVacation(const QString& n, const Interval& i)
     {
         vacationList.add(n, i);
+    }
+    void addVacation(VacationInterval* vi)
+    {
+        vacationList.add(vi);
     }
     /**
      * Returns TRUE if the passed moment falls within any of the vacation

@@ -19,7 +19,7 @@ ShiftSelectionList::compareItems(QCollection::Item i1, QCollection::Item i2)
     ShiftSelection* s1 = static_cast<ShiftSelection*>(i1);
     ShiftSelection* s2 = static_cast<ShiftSelection*>(i2);
 
-    return s1->period.compare(s2->period);
+    return s1->period->compare(*s2->period);
 }
 
 bool

@@ -17,14 +17,13 @@
 #include "Interval.h"
 
 /**
- * @short An interval with a name.
+ * @short A time interval with a name.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class VacationInterval : public Interval
 {
 public:
     VacationInterval() { }
-
     VacationInterval(const QString& n, const Interval& i)
         : Interval(i), name(n) { }
     virtual ~VacationInterval() { }

@@ -67,6 +67,8 @@ private:
                                       const CoreAttributes* property);
     bool generateAllocate(QDomElement* el, const Task* t);
 
+    bool generateBookingList(QDomElement* parentEl, TaskList& ftl,
+                             ResourceList& frl);
     void genTextAttr(QDomElement* el, const QString& name, const QString& text);
     void genDoubleAttr(QDomElement* el, const QString& name, double val);
     void genLongAttr(QDomElement* el, const QString& name, long val);

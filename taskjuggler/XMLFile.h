@@ -17,6 +17,8 @@
 
 #include <qstring.h>
 
+#include "ParserElement.h"
+
 class Project;
 class QDomDocument;
 class QDomNode;
@@ -63,6 +65,13 @@ private:
     XMLFile() {};   // don't use
 
     void createParseTree();
+    void createSubTreeTimeInterval(const QString& id, ParserFunctionPtr preFunc,
+                                   ParserNode* parentNode,
+                                   ParserFunctionPtr postFunc = 0);
+    void createSubTreeWorkingHours(ParserFunctionPtr func, 
+                                   ParserElement* parentEl);
+    void createSubTreeVacationList(ParserFunctionPtr func,
+                                   ParserNode* parentNode);
 
     bool parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc);
 
@@ -73,10 +82,25 @@ private:
     bool doProjectNow(QDomNode& n, ParserTreeContext& n);
     bool doCurrencyFormat(QDomNode& n, ParserTreeContext& n);
     bool doScenario(QDomNode& n, ParserTreeContext& n);
-    bool doVacation(QDomNode& n, ParserTreeContext& n);
+    bool doExtend(QDomNode& n, ParserTreeContext& n);
+    bool doExtendAttribute(QDomNode& n, ParserTreeContext& n);
+    bool doProjectWeekdayWorkingHours(QDomNode& n, ParserTreeContext& n);
+    bool doShiftWeekdayWorkingHours(QDomNode& n, ParserTreeContext& n);
+    bool doResourceWeekdayWorkingHours(QDomNode& n, ParserTreeContext& n);
+    bool doTimeInterval(QDomNode& n, ParserTreeContext& n);
+    bool doTimeIntervalStart(QDomNode& n, ParserTreeContext& n);
+    bool doTimeIntervalEnd(QDomNode& n, ParserTreeContext& n);
+    bool doProjectVacation(QDomNode& n, ParserTreeContext& n);
+    bool doResourceVacation(QDomNode& n, ParserTreeContext& n);
     bool doVacationStart(QDomNode& n, ParserTreeContext& n);
     bool doVacationEnd(QDomNode& n, ParserTreeContext& n);
+    bool doShiftList(QDomNode& n, ParserTreeContext& n);
     bool doShift(QDomNode& n, ParserTreeContext& n);
+    bool doResourceList(QDomNode& n, ParserTreeContext& n);
+    bool doResource(QDomNode& n, ParserTreeContext& n);
+    bool doShiftSelection(QDomNode& n, ParserTreeContext& n);
+    bool doTaskList(QDomNode& n, ParserTreeContext& n);
+    bool doTask(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenario(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenarioStart(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenarioEnd(QDomNode& n, ParserTreeContext& n);
@@ -86,8 +110,12 @@ private:
     bool doTaskScenarioMinStart(QDomNode& n, ParserTreeContext& n);
     bool doAllocate(QDomNode& n, ParserTreeContext& n);
     bool doCandidate(QDomNode& n, ParserTreeContext& n);
+    bool doDepends(QDomNode& n, ParserTreeContext& n);
+    bool doPrecedes(QDomNode& n, ParserTreeContext& n);
     bool doFlag(QDomNode& n, ParserTreeContext& n);
-    bool doTask(QDomNode& n, ParserTreeContext& n);
+    bool doResourceBooking(QDomNode& n, ParserTreeContext& n);
+    bool doBooking(QDomNode& n, ParserTreeContext& n);
+    bool doBookingPost(QDomNode& n, ParserTreeContext& n);
 
     QString masterFile;
     Project* project;

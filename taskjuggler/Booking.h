@@ -25,15 +25,16 @@ class Booking : public SbBooking
 {
 public:
     Booking(const Interval& iv, Task* t)
-        : SbBooking(t), interval(iv) { }
+        : SbBooking(t), interval(new Interval(iv)) { }
+    Booking(Interval* iv, Task* t) : SbBooking(t), interval(iv) { }
     Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
-            interval(iv) { }
-    ~Booking() { }
+            interval(new Interval(iv)) { }
+    ~Booking() { delete interval; }
 
-    time_t getStart() const { return interval.getStart(); }
-    time_t getEnd() const { return interval.getEnd(); }
-    time_t getDuration() const { return interval.getDuration(); }
-    Interval& getInterval() { return interval; }
+    time_t getStart() const { return interval->getStart(); }
+    time_t getEnd() const { return interval->getEnd(); }
+    time_t getDuration() const { return interval->getDuration(); }
+    Interval& getInterval() { return *interval; }
 
     void setLockTS( const QString& ts ) { lockTS = ts; }
     const QString& getLockTS() const { return lockTS; }
@@ -43,7 +44,7 @@ public:
 
 private:
     /// The booked time period.
-    Interval interval;
+    Interval* interval;
     /// The database lock timestamp
     QString lockTS;
 

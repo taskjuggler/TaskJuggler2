@@ -25,10 +25,13 @@
 #include "Utility.h"
 #include "Scenario.h"
 #include "Shift.h"
+#include "Resource.h"
 #include "Task.h"
 #include "TaskScenario.h"
 #include "Allocation.h"
 #include "VacationInterval.h"
+#include "Booking.h"
+#include "CustomAttributeDefinition.h"
 
 ParserNode* XMLFile::parserRootNode = 0;
 
@@ -64,10 +67,18 @@ XMLFile::createParseTree()
             new ParserElement("start", &XMLFile::doProjectStart, projectNode);
             new ParserElement("end", &XMLFile::doProjectEnd, projectNode);
             new ParserElement("now", &XMLFile::doProjectNow, projectNode);
-            new ParserElement("extend", 0, projectNode);
+            pe = new ParserElement("extend", &XMLFile::doExtend, projectNode);
+            ParserNode* extendNode = new ParserNode(pe);
+            {
+                new ParserElement("extendAttribute",
+                                  &XMLFile::doExtendAttribute,
+                                  extendNode);
+            }
             new ParserElement("currencyFormat", &XMLFile::doCurrencyFormat,
                               projectNode);
-            new ParserElement("workingHours", 0, projectNode);
+            pe = new ParserElement("workingHours", 0, projectNode);
+            createSubTreeWorkingHours(&XMLFile::doProjectWeekdayWorkingHours,
+                                      pe);
             pe = new ParserElement("scenario", &XMLFile::doScenario,
                                    projectNode);
             ParserNode* scenarioNode = new ParserNode(pe);
@@ -76,21 +87,11 @@ XMLFile::createParseTree()
             }
         }
 
-        pe = new ParserElement("vacationList", 0, taskjugglerNode);
-        ParserNode* vacationListNode = new ParserNode(pe);
-        {
-            pe = new ParserElement("vacation", &XMLFile::doVacation,
-                                   vacationListNode);
-            ParserNode* vacationNode = new ParserNode(pe);
-            {
-                new ParserElement("start", &XMLFile::doVacationStart,
-                                  vacationNode);
-                new ParserElement("end", &XMLFile::doVacationEnd,
-                                  vacationNode);
-            }
-        }
+        createSubTreeVacationList(&XMLFile::doProjectVacation,
+                                  taskjugglerNode);
 
-        pe = new ParserElement("shiftList", 0, taskjugglerNode);
+        pe = new ParserElement("shiftList", &XMLFile::doShiftList,
+                               taskjugglerNode);
         ParserNode* shiftListNode = new ParserNode(pe);
         {
             pe = new ParserElement("shift", &XMLFile::doShift,
@@ -98,11 +99,35 @@ XMLFile::createParseTree()
             ParserNode* shiftNode = new ParserNode(pe);
             {
                 shiftNode->add(pe, "shift");    // recursive link
-                new ParserElement("workingHours", 0, shiftListNode);
+                pe = new ParserElement("workingHours", 0, shiftNode);
+                createSubTreeWorkingHours
+                    (&XMLFile::doShiftWeekdayWorkingHours, pe);
             }
         }
         
-        pe = new ParserElement("taskList", 0, taskjugglerNode);
+        pe = new ParserElement("resourceList", &XMLFile::doResourceList,
+                               taskjugglerNode);
+        ParserNode* resourceListNode = new ParserNode(pe);
+        {
+            pe = new ParserElement("resource", &XMLFile::doResource,
+                                   resourceListNode);
+            ParserNode* resourceNode = new ParserNode(pe);
+            {
+                resourceNode->add(pe, "resource");  // recursive link
+                pe = new ParserElement("flag", &XMLFile::doFlag, resourceNode);
+                pe = new ParserElement("workingHours", 0, resourceNode);
+                createSubTreeWorkingHours
+                    (&XMLFile::doResourceWeekdayWorkingHours, pe);
+                createSubTreeVacationList(&XMLFile::doResourceVacation,
+                                          resourceNode);
+                createSubTreeTimeInterval("shiftSelection",
+                                          &XMLFile::doShiftSelection,
+                                          resourceNode);
+            }
+        }
+        
+        pe = new ParserElement("taskList", &XMLFile::doTaskList,
+                               taskjugglerNode);
         ParserNode* taskListNode = new ParserNode(pe);
         {
             pe = new ParserElement("task", &XMLFile::doTask, taskListNode);
@@ -135,17 +160,68 @@ XMLFile::createParseTree()
                 new ParserElement("candidate", &XMLFile::doCandidate,
                                   allocateNode);
             }
-            pe = new ParserElement("flag", &XMLFile::doFlag, taskNode);
+            new ParserElement("flag", &XMLFile::doFlag, taskNode);
+            new ParserElement("depends", &XMLFile::doDepends, taskNode);
+            new ParserElement("precedes", &XMLFile::doPrecedes, taskNode);
         }
 
-        pe = new ParserElement("resourceList", 0, taskjugglerNode);
-        ParserNode* resourceListNode = new ParserNode(pe);
+        pe = new ParserElement("bookingList", 0, taskjugglerNode);
+        ParserNode* bookingListNode = new ParserNode(pe);
         {
-            pe = new ParserElement("resource", 0, resourceListNode);
-            ParserNode* resourceNode = new ParserNode(pe);
-
-            resourceNode->add(pe, "resource");  // recursive link
+            pe = new ParserElement("resourceBooking", 
+                                   &XMLFile::doResourceBooking,
+                                   bookingListNode);
+            ParserNode* resourceBookingNode = new ParserNode(pe);
+            {
+                createSubTreeTimeInterval("booking", &XMLFile::doBooking,
+                                          resourceBookingNode,
+                                          &XMLFile::doBookingPost);
+            }
         }
+    }
+}
+
+void
+XMLFile::createSubTreeTimeInterval(const QString& id,
+                                   ParserFunctionPtr preFunc,
+                                   ParserNode* parentNode,
+                                   ParserFunctionPtr postFunc)
+{
+    ParserElement* pe = new ParserElement(id, preFunc, parentNode, postFunc);
+    ParserNode* timeIntervalNode = new ParserNode(pe);
+    {
+        new ParserElement("start", &XMLFile::doTimeIntervalStart,
+                          timeIntervalNode);
+        new ParserElement("end", &XMLFile::doTimeIntervalEnd,
+                          timeIntervalNode);
+    }
+}
+
+void
+XMLFile::createSubTreeWorkingHours(ParserFunctionPtr func,
+                                   ParserElement* parentEl)
+{
+    ParserNode* workingHoursNode = new ParserNode(parentEl);
+    {
+        ParserElement* pe =
+            new ParserElement("weekdayWorkingHours", func, workingHoursNode);
+        ParserNode* weekdayWorkingHoursNode = new ParserNode(pe);
+        {
+            createSubTreeTimeInterval("timeInterval",
+                                   &XMLFile::doTimeInterval,
+                                   weekdayWorkingHoursNode);
+        }
+    }
+}
+
+void
+XMLFile::createSubTreeVacationList(ParserFunctionPtr func,
+                                   ParserNode* parentNode)
+{
+    ParserElement* pe = new ParserElement("vacationList", 0, parentNode);
+    ParserNode* vacationListNode = new ParserNode(pe);
+    {
+        createSubTreeTimeInterval("vacation", func, vacationListNode);
     }
 }
 
@@ -184,8 +260,8 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
         qWarning(i18n("Syntax error in XML file '%1'.").arg(file));
         return FALSE;
     }
-    fclose(fh);
     delete f;
+    fclose(fh);
     
     return TRUE;
 }
@@ -206,7 +282,6 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
 {
     while (!n.isNull())
     {
-        qDebug("Traversing node %s", n.nodeName().latin1());
         QDomElement el = n.toElement();
         if (!el.isNull())
         {
@@ -224,10 +299,10 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
                  * modify this copy to pass contextual information to the
                  * elements of this node. */
                 ParserTreeContext ptcCopy = ptc;
-                /* If a node function has been specified, call this function
+                /* If a node pre function has been specified, call this function
                  * and pass it the ptc. */
-                if (pEl->getFunc())
-                    if (!((*this).*(pEl->getFunc()))(n, ptcCopy))
+                if (pEl->getPreFunc())
+                    if (!((*this).*(pEl->getPreFunc()))(n, ptcCopy))
                         return FALSE;
                 /* If sub-elements of this node have been defined in the
                  * parse tree, call this function again to process the
@@ -235,9 +310,13 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
                 if (pEl->getNode())
                     if (!parseNode(pEl->getNode(), n.firstChild(), ptcCopy))
                         return FALSE;
+                /* If a node post function has been specified, call this 
+                 * function and pass it the ptc. */
+                if (pEl->getPostFunc())
+                    if (!((*this).*(pEl->getPostFunc()))(n, ptcCopy))
+                        return FALSE;
             }
         }
-        qDebug("Node %s done.", n.nodeName().latin1());
         n = n.nextSibling();
     }
 
@@ -271,6 +350,11 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext&)
         (el.attribute("weekStartMonday", "1").toInt());
     project->setTimeFormat(el.attribute("timeFormat", "%Y-%m-%d %H:%M"));
     project->setShortTimeFormat(el.attribute("shortTimeFormat", "%H:%M"));
+
+    /* Delete all default working hours since not all days have to be present
+     * in the working hour specificiation. A missing day is a day off. */
+    for (int i = 0; i < 7; ++i)
+        project->setWorkingHours(i, new QPtrList<Interval>);
     
     return TRUE;
 }
@@ -285,7 +369,7 @@ XMLFile::doProjectStart(QDomNode& n, ParserTreeContext&)
 bool
 XMLFile::doProjectEnd(QDomNode& n, ParserTreeContext&)
 {
-    project->setEnd(n.toElement().text().toLong());
+    project->setEnd(n.toElement().text().toLong() - 1);
     return TRUE;
 }
 
@@ -313,38 +397,133 @@ XMLFile::doScenario(QDomNode& n, ParserTreeContext& ptc)
 }
 
 bool
-XMLFile::doCurrencyFormat(QDomNode&, ParserTreeContext&)
+XMLFile::doCurrencyFormat(QDomNode& n, ParserTreeContext&)
 {
+    QDomElement el = n.toElement();
+
+    project->setCurrencyFormat
+        (RealFormat(el.attribute("signPrefix"), el.attribute("signSuffix"),
+                    el.attribute("thousandSep"), el.attribute("fractionSep"),
+                    el.attribute("fracDigits").toInt()));    
     return TRUE;
 }
 
 bool
-XMLFile::doVacation(QDomNode& n, ParserTreeContext& ptc)
+XMLFile::doExtend(QDomNode& n, ParserTreeContext& ptc)
+{
+    ptc.setExtendProperty(n.toElement().attribute("property"));
+    return TRUE;
+}
+
+bool
+XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    QString type = el.attribute("type");
+    CustomAttributeType cat = CAT_Undefined;
+    if (type == "text")
+        cat = CAT_Text;
+    else if (type == "reference")
+        cat = CAT_Reference;
+    CustomAttributeDefinition* ca =
+        new CustomAttributeDefinition(el.attribute("name"), cat);
+    ca->setInherit(el.attribute("inherit").toInt());
+    if (ptc.getExtendProporty() == "task")
+        project->addTaskAttribute(el.attribute("id"), ca); 
+    else if (ptc.getExtendProporty() == "resource")
+        project->addResourceAttribute(el.attribute("id"), ca);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doProjectWeekdayWorkingHours(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+
+    QPtrList<Interval>* wi = new QPtrList<Interval>;
+    wi->setAutoDelete(TRUE);
+    ptc.setWorkingHours(wi);
+    project->setWorkingHours(el.attribute("weekday").toInt(), wi);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doShiftWeekdayWorkingHours(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+
+    QPtrList<Interval>* wi = new QPtrList<Interval>;
+    wi->setAutoDelete(TRUE);
+    ptc.setWorkingHours(wi);
+    ptc.getShift()->setWorkingHours(el.attribute("weekday").toInt(), wi);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doResourceWeekdayWorkingHours(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+
+    QPtrList<Interval>* wi = new QPtrList<Interval>;
+    wi->setAutoDelete(TRUE);
+    ptc.setWorkingHours(wi);
+    ptc.getResource()->setWorkingHours(el.attribute("weekday").toInt(), wi);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doTimeInterval(QDomNode&, ParserTreeContext& ptc)
+{
+    Interval* iv = new Interval();
+    ptc.getWorkingHours()->append(iv);
+    ptc.setInterval(iv);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doTimeIntervalStart(QDomNode& n, ParserTreeContext& ptc)
+{
+    ptc.getInterval()->setStart(n.toElement().text().toLong());
+    return TRUE;
+}
+
+bool
+XMLFile::doTimeIntervalEnd(QDomNode& n, ParserTreeContext& ptc)
+{
+    ptc.getInterval()->setEnd(n.toElement().text().toLong() - 1);
+    return TRUE;
+}
+
+bool
+XMLFile::doProjectVacation(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
     VacationInterval* vi = new VacationInterval();
     vi->setName(el.attribute("name"));
     ptc.setVacationInterval(vi);
+    project->addVacation(vi);
     return TRUE;
 }
 
 bool
-XMLFile::doVacationStart(QDomNode& n, ParserTreeContext& ptc)
+XMLFile::doResourceVacation(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
-    
-    ptc.getVacationInterval()->setStart(el.text().toLong());
-
+    Interval* vi = new Interval();
+    ptc.setInterval(vi);
+    ptc.getResource()->addVacation(vi);
     return TRUE;
 }
 
 bool
-XMLFile::doVacationEnd(QDomNode& n, ParserTreeContext& ptc)
+XMLFile::doShiftList(QDomNode&, ParserTreeContext& ptc)
 {
-    QDomElement el = n.toElement();
-
-    ptc.getVacationInterval()->setEnd(el.text().toLong());
-
+    ptc.setShift(0);
     return TRUE;
 }
 
@@ -356,6 +535,55 @@ XMLFile::doShift(QDomNode& n, ParserTreeContext& ptc)
                              el.attribute("name"), ptc.getShift());
     ptc.setShift(shift);
 
+    /* Delete all default working hours since not all days have to be present
+     * in the working hour specificiation. A missing day is a day off. */
+    for (int i = 0; i < 7; ++i)
+        shift->setWorkingHours(i, new QPtrList<Interval>);
+    
+    return TRUE;
+}
+
+bool
+XMLFile::doResourceList(QDomNode&, ParserTreeContext& ptc)
+{
+    ptc.setResource(0);
+    return TRUE;
+}
+
+bool
+XMLFile::doResource(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    Resource* r = new Resource(project, el.attribute("id"),
+                               el.attribute("name"), ptc.getResource());
+    
+    /* Delete all default working hours since not all days have to be present
+     * in the working hour specificiation. A missing day is a day off. */
+    for (int i = 0; i < 7; ++i)
+        r->setWorkingHours(i, new QPtrList<Interval>);
+
+    ptc.setResource(r);
+    
+    return TRUE;
+}
+
+bool
+XMLFile::doShiftSelection(QDomNode& n, ParserTreeContext& ptc)
+{
+    Interval* iv = new Interval();
+    ptc.setInterval(iv);
+    ShiftSelection* ss = 
+        new ShiftSelection
+        (iv, project->getShift(n.toElement().attribute("shiftId")));
+    ptc.getResource()->addShift(ss);
+
+    return TRUE;
+}
+
+bool
+XMLFile::doTaskList(QDomNode&, ParserTreeContext& ptc)
+{
+    ptc.setTask(0);
     return TRUE;
 }
 
@@ -396,8 +624,6 @@ XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
 bool
 XMLFile::doTaskScenarioStart(QDomNode& n, ParserTreeContext& ptc)
 {
-    qDebug("Setting start of %s to %s", ptc.getTask()->getId().latin1(),
-           time2ISO(n.toElement().text().toLong()).latin1());
     ptc.getTask()->setStart(ptc.getScenarioIndex(),
                             n.toElement().text().toLong());
     return TRUE;
@@ -407,7 +633,7 @@ bool
 XMLFile::doTaskScenarioEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setEnd(ptc.getScenarioIndex(),
-                          n.toElement().text().toLong());
+                          n.toElement().text().toLong() - 1);
     return TRUE;
 }
 
@@ -472,4 +698,47 @@ XMLFile::doFlag(QDomNode& n, ParserTreeContext& ptc)
 
     return TRUE;
 }
+
+bool
+XMLFile::doDepends(QDomNode& n, ParserTreeContext& ptc)
+{
+    ptc.getTask()->addDepends(n.toElement().text());
+    return TRUE;
+}
+
+bool
+XMLFile::doPrecedes(QDomNode& n, ParserTreeContext& ptc)
+{
+    ptc.getTask()->addPrecedes(n.toElement().text());
+    return TRUE;
+}
+
+bool
+XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    Resource* resource = project->getResource(el.attribute("resourceId"));
+    ptc.setResource(resource);
+    int sc = project->getScenarioIndex (el.attribute("scenarioId")) - 1;
+    ptc.setScenarioIndex(sc);
+    return TRUE;
+}
+
+bool
+XMLFile::doBooking(QDomNode&, ParserTreeContext& ptc)
+{
+    Interval* iv = new Interval();
+    ptc.setInterval(iv);
+    return TRUE;
+}
+
+bool
+XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
+{
+    Task* t = project->getTask(n.toElement().attribute("taskId"));
+    ptc.getResource()->addBooking(ptc.getScenarioIndex(),
+                                  new Booking(ptc.getInterval(), t));
+    return TRUE;
+}
+
 
