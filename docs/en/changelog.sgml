@@ -368,6 +368,10 @@ tasks with only milestones get properly scheduled.
 explicitly specified and do no longer inherit project start/end times
 for this purpose.</para></listitem>
 
+<listitem><para><link
+linkend="htmltaskreport_columns">htmlaccountreport</link> now supports
+quarterly and yearly calendar columns.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

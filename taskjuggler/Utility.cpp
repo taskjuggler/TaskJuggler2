@@ -138,6 +138,19 @@ monthLeftInYear(time_t t)
 }
 
 int
+quartersLeftInYear(time_t t)
+{
+	int left = 0;
+	struct tm* tms = localtime(&t);
+	for (int m = tms->tm_year; tms->tm_year == m;
+		 t = sameTimeNextQuarter(t), localtime(&t))
+	{
+		left++;
+	}
+	return left;
+}
+
+int
 daysBetween(time_t t1, time_t t2)
 {
 	int days = 0;
@@ -165,6 +178,16 @@ monthsBetween(time_t t1, time_t t2)
 	for (time_t t = t1; t < t2; t = sameTimeNextMonth(t))
 		months++;
 	return months;
+}
+
+int
+quartersBetween(time_t t1, time_t t2)
+{
+	int quarters = 0;
+	// TODO: Very slow!!!
+	for (time_t t = t1; t < t2; t = sameTimeNextQuarter(t))
+		quarters++;
+	return quarters;
 }
 
 int
@@ -255,6 +278,13 @@ monthOfYear(time_t t)
 }
 
 int
+quarterOfYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_mon / 3 + 1;
+}
+
+int
 dayOfWeek(time_t t, bool beginOnMonday)
 {
 	struct tm* tms = localtime(&t);
@@ -341,6 +371,17 @@ beginOfMonth(time_t t)
 }
 
 time_t
+beginOfQuarter(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mon = (tms->tm_mon / 3) * 3;
+	tms->tm_mday = 1;
+	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
 beginOfYear(time_t t)
 {
 	struct tm* tms = localtime(&t);
@@ -402,6 +443,15 @@ sameTimeNextMonth(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	tms->tm_mon++;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+sameTimeNextQuarter(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mon += 3;
 	tms->tm_isdst = -1;
 	return mktime(tms);
 }

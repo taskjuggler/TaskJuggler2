@@ -114,6 +114,20 @@ public:
 		return *this;
 	}
 
+	const Interval& firstQuarter()
+	{
+		start = beginOfQuarter(start);
+		end = sameTimeNextQuarter(start) - 1;
+		return *this;
+	}
+
+	const Interval& firstYear()
+	{
+		start = beginOfYear(start);
+		end = sameTimeNextYear(start) - 1;
+		return *this;
+	}
+
 private:
 	/// The start of the time interval.
 	time_t start;

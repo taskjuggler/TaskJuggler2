@@ -62,6 +62,9 @@ public:
 	void htmlWeeklyHeaderMonths();
 	void htmlMonthlyHeaderMonths(bool highlightNow = TRUE);
 	void htmlMonthlyHeaderYears();
+	void htmlQuarterlyHeaderQuarters(bool highlightNow = TRUE);
+	void htmlQuarterlyHeaderYears();
+	void htmlYearHeader();
 
 	void emptyPlan(bool light);
 	void emptyActual(bool light);

@@ -465,6 +465,10 @@ accounts</>
 <member><computeroutput>quaterly</computeroutput></>
 <member>A quarter-by-quarter calender view of the
 accounts</>
+
+<member><computeroutput>yearly</computeroutput></>
+<member>A year-by-year calender view of the accounts</>
+
 </simplelist></para>
 
 </sect2>

@@ -1176,6 +1176,103 @@ ReportHtml::htmlMonthlyHeaderYears()
 }
 
 void
+ReportHtml::htmlQuarterlyHeaderQuarters(bool highlightNow)
+{
+	// Generates 2nd header line of quarterly calendar view.
+	static const char* qnames[] =
+   	{
+		I18N_NOOP("1st Quarter"), I18N_NOOP("2nd Quarter"),
+		I18N_NOOP("3rd Quarter"), I18N_NOOP("4th Quarter")
+   	};
+
+	for (time_t quarter = beginOfQuarter(start); quarter < end;
+		 quarter = sameTimeNextQuarter(quarter))
+	{
+		int qoy = quarterOfYear(quarter);
+		s << "<td class=\"" <<
+			(highlightNow && isSameQuarter(project->getNow(), quarter) ?
+			 "today" : "headersmall")
+		  << "\"><span style=\"font-size:0.8em\">&nbsp;";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(qoy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(qoy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("quarter"),
+							  QString().sprintf("%d", quarterOfYear(qoy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", year(qoy)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("quarterheader"), i18n(qnames[qoy - 1]));
+		s << "</span></td>";
+	}
+}
+
+void
+ReportHtml::htmlQuarterlyHeaderYears()
+{
+	// Generates 1st header line of quarterly calendar view.
+	if (!hidePlan && showActual)
+		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+
+	for (time_t year = midnight(start); year < end;
+		 year = beginOfYear(sameTimeNextYear(year)))
+	{
+		int left = quartersLeftInYear(year);
+		if (left > quartersBetween(year, end))
+			left = quartersBetween(year, end);
+		s << "<td class=\"headerbig\" colspan=\""
+		  << QString().sprintf("%d", left) << "\">";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("quarter"),
+							  QString().sprintf("%d", quarterOfYear(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", ::year(year)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("yearheader"),
+						 QString().sprintf("%d", ::year(year)));
+		s << "</td>" << endl;
+	}
+}
+
+void
+ReportHtml::htmlYearHeader()
+{
+	// Generates 1st header line of monthly calendar view.
+	if (!hidePlan && showActual)
+		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+
+	for (time_t year = beginOfYear(start); year < end;
+		 year = sameTimeNextYear(year))
+	{
+		s << "<td class=\"headerbig\" rowspan=\"2\">";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", ::year(year)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("yearheader"),
+						 QString().sprintf("%d", ::year(year)));
+		s << "</td>" << endl;
+	}
+}
+
+void
 ReportHtml::emptyPlan(bool light)
 {
 	s << "<td class=\""

@@ -54,7 +54,7 @@ HTMLAccountReport::generate()
 		if (showActual)
 			generateActualAccount(*ali);
 	}
-	generateTotals(i18n("Subtotal Costs"), "headersmall");
+	generateTotals(i18n("Subtotal Cost"), "headersmall");
 	planTotalsCosts = planTotals;
 	actualTotalsCosts = actualTotals;
 	planTotals.clear();
@@ -126,6 +126,10 @@ HTMLAccountReport::generatePlanAccount(Account* a)
 			weeklyAccountPlan(a, "default");
 		else if (*it == KW("monthly"))
 			monthlyAccountPlan(a, "default");
+		else if (*it == KW("quarterly"))
+			quarterlyAccountPlan(a, "default");
+		else if (*it == KW("yearly"))
+			yearlyAccountPlan(a, "default");
 		else
 			qFatal("generatePlanAccount: Unknown Column %s",
 				   (*it).latin1());
@@ -169,6 +173,10 @@ HTMLAccountReport::generateActualAccount(Account* a)
 			weeklyAccountActual(a, "default");
 		else if (*it == KW("monthly"))
 			monthlyAccountActual(a, "default");
+		else if (*it == KW("quarterly"))
+			quarterlyAccountActual(a, "default");
+		else if (*it == KW("yearly"))
+			yearlyAccountActual(a, "default");
 	}
 	s << "</tr>" << endl;
 }
@@ -211,6 +219,10 @@ HTMLAccountReport::generateTableHeader()
 			htmlWeeklyHeaderMonths();
 		else if (*it == KW("monthly"))
 			htmlMonthlyHeaderYears();
+		else if (*it == KW("quarterly"))
+			htmlQuarterlyHeaderYears();
+		else if (*it == KW("yearly"))
+			htmlYearHeader();
 		else
 		{
 			TJMH.errorMessage
@@ -232,6 +244,8 @@ HTMLAccountReport::generateTableHeader()
 			htmlWeeklyHeaderWeeks(FALSE);
 		else if (*it == KW("monthly"))
 			htmlMonthlyHeaderMonths(FALSE);
+		else if (*it == KW("quarterly"))
+			htmlQuarterlyHeaderQuarters(FALSE);
 	}
 	s << "</tr>\n" << endl;
 
@@ -273,6 +287,10 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 				weeklyAccountPlan(0, style);
 			else if (*it == KW("monthly"))
 				monthlyAccountPlan(0, style);
+			else if (*it == KW("quarterly"))
+				quarterlyAccountPlan(0, style);
+			else if (*it == KW("yearly"))
+				yearlyAccountPlan(0, style);
 		}
 		s << "</tr>" << endl;
 	}
@@ -313,6 +331,8 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 				weeklyAccountActual(0, style);
 			else if (*it == KW("monthly"))
 				monthlyAccountActual(0, style);
+			else if (*it == KW("yearly"))
+				yearlyAccountActual(0, style);
 		}
 		s << "</tr>\n" << endl;
 	}
@@ -499,6 +519,132 @@ HTMLAccountReport::monthlyAccountActual(Account* a, const QString& style)
 		}
 		else
 			reportValue(actualTotals[time2ISO(month)], style, TRUE);
+	}
+}
+
+void
+HTMLAccountReport::quarterlyAccountPlan(Account* a, const QString& style)
+{
+	if (hidePlan)
+		return;
+
+	if (showActual)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << i18n("Plan");
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
+	for (time_t quarter = beginOfQuarter(start); quarter < end;
+		 quarter = sameTimeNextQuarter(quarter))
+	{
+		if (a)
+		{
+			double volume = a->getVolume(Task::Plan, 
+				accumulate ?
+				Interval(start, sameTimeNextQuarter(quarter) - 1) :
+				Interval(quarter).firstQuarter());
+			planTotals[time2ISO(quarter)] += volume;
+			reportValue(volume, style, FALSE);
+		}
+		else
+			reportValue(planTotals[time2ISO(quarter)], style, TRUE);
+	}
+}
+
+void
+HTMLAccountReport::quarterlyAccountActual(Account* a, const QString& style)
+{
+	if (!hidePlan)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << i18n("Actual");
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
+	for (time_t quarter = beginOfQuarter(start); quarter < end;
+		 quarter = sameTimeNextQuarter(quarter))
+	{
+		if (a)
+		{
+			double volume = a->getVolume(Task::Actual,
+				accumulate ?
+				Interval(start, sameTimeNextQuarter(quarter) - 1) :
+				Interval(quarter).firstQuarter());
+			actualTotals[time2ISO(quarter)] += volume;
+			reportValue(volume, style, FALSE);
+		}
+		else
+			reportValue(actualTotals[time2ISO(quarter)], style, TRUE);
+	}
+}
+
+void
+HTMLAccountReport::yearlyAccountPlan(Account* a, const QString& style)
+{
+	if (hidePlan)
+		return;
+
+	if (showActual)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << i18n("Plan");
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
+	for (time_t year = beginOfYear(start); year < end;
+		 year = sameTimeNextYear(year))
+	{
+		if (a)
+		{
+			double volume = a->getVolume(Task::Plan, 
+				accumulate ?
+				Interval(start, sameTimeNextYear(year) - 1) :
+				Interval(year).firstYear());
+			planTotals[time2ISO(year)] += volume;
+			reportValue(volume, style, FALSE);
+		}
+		else
+			reportValue(planTotals[time2ISO(year)], style, TRUE);
+	}
+}
+
+void
+HTMLAccountReport::yearlyAccountActual(Account* a, const QString& style)
+{
+	if (!hidePlan)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << i18n("Actual");
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
+	for (time_t year = beginOfYear(start); year < end;
+		 year = sameTimeNextYear(year))
+	{
+		if (a)
+		{
+			double volume = a->getVolume(Task::Actual,
+				accumulate ?
+				Interval(start, sameTimeNextYear(year) - 1) :
+				Interval(year).firstYear());
+			actualTotals[time2ISO(year)] += volume;
+			reportValue(volume, style, FALSE);
+		}
+		else
+			reportValue(actualTotals[time2ISO(year)], style, TRUE);
 	}
 }
 

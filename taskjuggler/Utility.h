@@ -32,11 +32,15 @@ int weeksLeftInMonth(time_t d);
 
 int monthLeftInYear(time_t d);
 
+int quartersLeftInYear(time_t d);
+
 int daysBetween(time_t t1, time_t t2);
 
 int weeksBetween(time_t t1, time_t t2);
 
 int monthsBetween(time_t t1, time_t t2);
+
+int quartersBetween(time_t t1, time_t t2);
 
 bool isWeekend(time_t d);
 
@@ -45,6 +49,8 @@ time_t midnight(time_t t);
 time_t beginOfWeek(time_t t, bool beginOnMonday);
 
 time_t beginOfMonth(time_t t);
+
+time_t beginOfQuarter(time_t t);
 
 time_t beginOfYear(time_t t);
 
@@ -55,6 +61,8 @@ time_t sameTimeYesterday(time_t t);
 time_t sameTimeNextWeek(time_t t);
 
 time_t sameTimeLastWeek(time_t t);
+
+time_t sameTimeNextQuarter(time_t t);
 
 time_t sameTimeNextMonth(time_t t);
 
@@ -77,6 +85,11 @@ inline bool isSameMonth(time_t d1, time_t d2)
 	return beginOfMonth(d1) == beginOfMonth(d2);
 }
 
+inline bool isSameQuarter(time_t d1, time_t d2)
+{
+	return beginOfQuarter(d1) == beginOfQuarter(d2);
+}
+
 int secondsOfDay(time_t d);
 
 int dayOfMonth(time_t d);
@@ -88,6 +101,8 @@ int weekOfYear(time_t d, bool beginOnMonday);
 int monthOfWeek(time_t d, bool beginOnMonday);
 
 int monthOfYear(time_t d);
+
+int quarterOfYear(time_t d);
 
 int year(time_t d);
 

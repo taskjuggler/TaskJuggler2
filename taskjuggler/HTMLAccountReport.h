@@ -48,6 +48,12 @@ public:
 	void monthlyAccountPlan(Account* a, const QString& style);
 	void monthlyAccountActual(Account* a, const QString& style);
 
+	void quarterlyAccountPlan(Account* a, const QString& style);
+	void quarterlyAccountActual(Account* a, const QString& style);
+
+	void yearlyAccountPlan(Account* a, const QString& style);
+	void yearlyAccountActual(Account* a, const QString& style);
+
 	void reportValue(double value, const QString& bgcol, bool bold);
 
 private:

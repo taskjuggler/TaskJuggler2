@@ -861,7 +861,7 @@ Task::getCredits(int sc, const Interval& period, const Resource* resource,
 
 	if (period.contains(scenarios[sc].start))
 		credits += scenarios[sc].startCredit;
-	if (period.contains(scenarios[sc].end))
+	if (period.contains(scenarios[sc].end + (milestone ? 1 : 0)))
 		credits += scenarios[sc].endCredit;
 
 	return credits;
