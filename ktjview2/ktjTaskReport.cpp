@@ -20,7 +20,7 @@ QString KTJTaskReport::description() const
     return i18n( "Task report combined with allocated resources." );
 }
 
-QicsDataModel KTJTaskReport::generate() const
+QicsDataModel KTJTaskReport::generate()
 {
     clear();
 

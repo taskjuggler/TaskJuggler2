@@ -4,9 +4,18 @@
 #include "Project.h"
 #include "qicstable/QicsDataModelDefault.h"
 
+
+/**
+ * Base class for custom reports.
+ * @author Lukas Tinkl <lukas.tinkl@suse.cz>
+ */
 class KTJReport
 {
 public:
+    /**
+     * CTOR
+     * @param proj TJ Project to work on
+     */
     KTJReport( Project * proj );
     virtual ~KTJReport();
 
@@ -79,7 +88,7 @@ public:
      * Abstract method to generate the report,
      * implementers need to clear the data model first
      */
-    virtual QicsDataModel generate() const = 0;
+    virtual QicsDataModel generate() = 0;
 
     /**
      * @return short unique name of the report
