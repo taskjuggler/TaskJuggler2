@@ -70,15 +70,22 @@ void ReportXML::generate()
 
    /* Create the Project xml representation */
    QDomElement proj = doc.createElement( "Project" );
-   proj.setAttribute( "Name", project->getName());
    // FIXME: All projectIDs need to be saved here.
    proj.setAttribute( "Id", project->getCurrentId());
-   proj.setAttribute( "Version", project->getVersion());
-   proj.setAttribute( "Copyright", project->getCopyright());
-   proj.setAttribute( "Priority", project->getPriority());
 
+   proj.appendChild( ReportXML::createXMLElem( doc, "Name", project->getName()));
+   QString hStr = project->getVersion();
+   if( !hStr.isEmpty() )
+      proj.appendChild( ReportXML::createXMLElem( doc, "Version", hStr ));
+
+   hStr = project->getCopyright();
+   if( !hStr.isEmpty() )
+      proj.appendChild( ReportXML::createXMLElem( doc, "Copyright", hStr ));
+   
+   proj.appendChild( ReportXML::createXMLElem( doc, "Priority",
+					       QString::number(project->getPriority())));
+   
    QDomElement tempElem;
-
    tempElem = ReportXML::createXMLElem( doc, "start",
 					QString::number(project->getStart()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getStart()));
