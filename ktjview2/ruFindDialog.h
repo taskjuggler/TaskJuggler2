@@ -87,7 +87,7 @@ private:
 
     /// our data to search in
     QStringList m_data;
-    /// the result list of column numbers
+    /// the result list of row numbers
     QValueList<int> m_result;
     /// distinguish find/find next
     bool m_firstRun;
