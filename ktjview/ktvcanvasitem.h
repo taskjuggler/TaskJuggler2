@@ -27,49 +27,51 @@ class QFont;
 class KTVCanvasItemBase: public QObject
 {
 public:
-   KTVCanvasItemBase( );
-   virtual void  setTask( Task *t ){ m_task = t; }
-   Task* getTask()         { return m_task; }
+    KTVCanvasItemBase();
+    virtual ~KTVCanvasItemBase();
 
-   void setFont( const QFont& f)
-      { if( m_cText ) m_cText->setFont( f ); }
+    virtual void  setTask( Task *t ){ m_task = t; }
+    Task* getTask()         { return m_task; }
 
-   virtual int  y(){ return 0; }
-   virtual int  x(){ return 0; }
 
-   virtual void setSize( int, int );
-   virtual void move( double, double ){}
-   virtual void moveBy( int, int );
-   virtual void show(){}
-   virtual void hide();
-   virtual bool contains( QCanvasItem* ){ return false; }
-   virtual int  height( ) { return m_height; }
-   virtual QRect rect()  { return QRect();  }
-   virtual bool isVisible() { return false; };
+    virtual int  y(){ return 0; }
+    virtual int  x(){ return 0; }
 
-   void addConnectIn( KTVConnector*, Task* );
-   void addConnectOut( KTVConnector*, Task* );
-   KTVConnector* connectorIn( Task* );
-   KTVConnector* connectorOut( Task* );
+    virtual void setSize( int, int );
+    virtual void move( double, double ){}
+    virtual void moveBy( int, int );
+    virtual void show(){}
+    virtual void hide();
+    virtual bool contains( QCanvasItem* ){ return false; }
+    virtual int  height( ) { return m_height; }
+    virtual QRect rect()  { return QRect();  }
+    virtual bool isVisible() { return false; };
 
-   virtual QPoint getConnectorIn() const {return QPoint(); }
-   virtual QPoint getConnectorOut() const {return QPoint(); }
+    static void setFont( const QFont& f){ smFont=f; };
 
-   virtual void moveInConnectors ( double, double );
-   virtual void moveOutConnectors( double, double );
-   virtual void moveConnectors   ( double, double );
+    void addConnectIn( KTVConnector*, Task* );
+    void addConnectOut( KTVConnector*, Task* );
+    KTVConnector* connectorIn( Task* );
+    KTVConnector* connectorOut( Task* );
 
-   virtual void moveInConnectorsBy ( int, int );
-   virtual void moveOutConnectorsBy( int, int );
-   virtual void moveConnectorsBy   ( int, int );
+    virtual QPoint getConnectorIn() const {return QPoint(); }
+    virtual QPoint getConnectorOut() const {return QPoint(); }
 
-   int               m_height;
+    virtual void moveInConnectors ( double, double );
+    virtual void moveOutConnectors( double, double );
+    virtual void moveConnectors   ( double, double );
+
+    virtual void moveInConnectorsBy ( int, int );
+    virtual void moveOutConnectorsBy( int, int );
+    virtual void moveConnectorsBy   ( int, int );
+
+    int               m_height;
 protected:
-   Task             *m_task;
-   QCanvasText      *m_cText;
-   /* Connectorlists */
-   KTVConnectorList  m_conIn;
-   KTVConnectorList  m_conOut;
+    Task             *m_task;
+    /* Connectorlists */
+    KTVConnectorList  m_conIn;
+    KTVConnectorList  m_conOut;
+    static QFont smFont;
 };
 
 /*
@@ -79,7 +81,6 @@ class CanvasItemList: public QPtrList<KTVCanvasItemBase>
 {
 public:
    CanvasItemList() {}
-   ~CanvasItemList() {}
 };
 
 typedef QPtrListIterator<KTVCanvasItemBase> CanvasItemListIterator;
@@ -90,25 +91,32 @@ typedef QPtrListIterator<KTVCanvasItemBase> CanvasItemListIterator;
 class KTVCanvasItemTask: public KTVCanvasItemBase
 {
 public:
-   KTVCanvasItemTask( QCanvas* );
+    KTVCanvasItemTask( QCanvas* );
+    ~KTVCanvasItemTask();
 
-   void setSize( int, int );
-   void move(double, double );
-   void moveBy( int, int );
-   void hide();
-   void show();
-   bool contains( QCanvasItem* );
+    void setSize( int, int );
+    void move(double, double );
+    void moveBy( int, int );
+    void hide();
+    void show();
+    bool contains( QCanvasItem* );
 
-   void setTask( Task* );
-   QRect rect() { return cRect->rect(); }
+    void setTask( Task* );
+    QRect rect() { return cRect->rect(); }
 
-   int y();
-   int x();
-   bool isVisible() { return cRect->isVisible();};
-   QPoint getConnectorIn() const;
-   QPoint getConnectorOut() const;
+    int y();
+    int x();
+    bool isVisible() { return cRect->isVisible();};
+    QPoint getConnectorIn() const;
+    QPoint getConnectorOut() const;
+
+    static void setFont( const QFont& f);
+
 private:
-   QCanvasRectangle *cRect;
+    QCanvasRectangle *cRect;
+    QCanvasText      *m_cText;
+
+    int m_TaskTextXOffset;
 };
 
 /*
@@ -117,25 +125,25 @@ private:
 class KTVCanvasItemMilestone: public KTVCanvasItemBase
 {
 public:
-   KTVCanvasItemMilestone( QCanvas* );
+    KTVCanvasItemMilestone( QCanvas* );
+    ~KTVCanvasItemMilestone();
+    void setSize( int, int );
+    void move(double, double );
+    void moveBy( int, int );
+    void hide();
+    void show();
+    bool contains( QCanvasItem* );
+    int y();
+    int x();
+    bool isVisible() { return cPoly->isVisible();};
 
-   void setSize( int, int );
-   void move(double, double );
-   void moveBy( int, int );
-   void hide();
-   void show();
-   bool contains( QCanvasItem* );
-   int y();
-   int x();
-   bool isVisible() { return cPoly->isVisible();};
+    QPoint getConnectorOut() const;
+    QPoint getConnectorIn() const;
 
-   QPoint getConnectorOut() const;
-   QPoint getConnectorIn() const;
-
-   QRect rect() { return cPoly->boundingRect(); }
+    QRect rect() { return cPoly->boundingRect(); }
 
 private:
-   QCanvasPolygon *cPoly;
+    QCanvasPolygon *cPoly;
 
 };
 
@@ -145,24 +153,24 @@ private:
 class  KTVCanvasItemContainer: public KTVCanvasItemBase
 {
 public:
-   KTVCanvasItemContainer( QCanvas* );
+    KTVCanvasItemContainer( QCanvas* );
+    ~KTVCanvasItemContainer();
+    void setSize( int, int );
+    void move(double, double );
+    void moveBy( int, int );
+    void hide();
+    void show();
+    bool contains( QCanvasItem* );
+    int y();
+    int x();
+    QRect rect() { return cPoly->boundingRect(); }
+    bool isVisible() { return cPoly->isVisible();};
 
-   void setSize( int, int );
-   void move(double, double );
-   void moveBy( int, int );
-   void hide();
-   void show();
-   bool contains( QCanvasItem* );
-   int y();
-   int x();
-   QRect rect() { return cPoly->boundingRect(); }
-   bool isVisible() { return cPoly->isVisible();};
-
-   QPoint getConnectorIn() const;
-   QPoint getConnectorOut() const;
+    QPoint getConnectorIn() const;
+    QPoint getConnectorOut() const;
 
 private:
-   QCanvasPolygon    *cPoly;
+    QCanvasPolygon    *cPoly;
 };
 
 #endif
