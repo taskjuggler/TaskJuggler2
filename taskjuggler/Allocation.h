@@ -1,7 +1,7 @@
 /*
  * Allocation.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -43,7 +43,7 @@ public:
     void addCandidate(Resource* r) { candidates.append(r); }
     QPtrListIterator<Resource> getCandidatesIterator() const
     {
-        return QPtrListIterator<Resource>(candidates);
+        return QPtrListIterator<Resource> (candidates);
     }
     QPtrList<Resource> getCandidates() const { return candidates; }
 
@@ -57,7 +57,7 @@ public:
         return shifts.isOnShift(i);
     }
 
-    enum SelectionModeType 
+    enum SelectionModeType
     {
         order, minAllocationProbability, minLoaded, maxLoaded, random
     };

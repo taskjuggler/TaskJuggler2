@@ -26,13 +26,15 @@ public:
     ExportReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~ExportReport() { }
 
+    virtual const char* getType() const { return "ExportReport"; }
+
     bool generate();
 
     bool addTaskAttribute(const QString& ta);
     QStringList getTaskAttributes() const { return taskAttributes; }
 
     void setMasterFile(bool mf) { masterFile = mf; }
-   
+
 private:
     ExportReport() { }
 
@@ -59,7 +61,7 @@ private:
     bool generateCustomAttributeValue(const QString& id,
                                       const CoreAttributes* property,
                                       int indent);
-   
+
     QStringList taskAttributes;
 
     // True if the file should be a standalone project (*.tjp file).

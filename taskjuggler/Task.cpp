@@ -1,7 +1,7 @@
 /*
  * Task.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -594,7 +594,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             {
                 int availability;
                 if ((availability = (*ali)->getLockedResource()->
-                     isAvailable(date, (*ali)->getLimits(), this)) > 0)
+                     isAvailable(date)) > 0)
                 {
                     allMandatoriesAvailables = FALSE;
                     if (availability >= 4 && !(*ali)->getConflictStart())
@@ -618,8 +618,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                     bool allAvailable = TRUE;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
                         if ((availability =
-                             (*rti)->isAvailable(date, (*ali)->getLimits(),
-                                                 this)) > 0)
+                             (*rti)->isAvailable(date)) > 0)
                         {
                             allAvailable = FALSE;
                             if (availability >= maxAvailability)
@@ -652,6 +651,53 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                        time2tjp(date).latin1());
             continue;
         }
+
+        /* Now check the limits set for this allocation. */
+        const UsageLimits* limits = (*ali)->getLimits();
+        if (limits)
+        {
+            QPtrList<Resource> resources = (*ali)->getCandidates();
+            if (limits->getDailyMax() > 0)
+            {
+                uint timeSlots = 0;
+                for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
+                    timeSlots += (*rli)->getCurrentDaySlots(date, this);
+                if (timeSlots > limits->getDailyMax())
+                {
+                    if (DEBUGRS(6))
+                        qDebug("  Allocation overloaded today for task %s",
+                               id.latin1());
+                    continue;
+                }
+            }
+            if (limits->getWeeklyMax() > 0)
+            {
+                uint timeSlots = 0;
+                for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
+                    timeSlots += (*rli)->getCurrentWeekSlots(date, this);
+                if (timeSlots > limits->getWeeklyMax())
+                {
+                    if (DEBUGRS(6))
+                        qDebug("  Allocation overloaded this week for task %s",
+                               id.latin1());
+                    continue;
+                }
+            }
+            if (limits->getMonthlyMax() > 0)
+            {
+                uint timeSlots = 0;
+                for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
+                    timeSlots += (*rli)->getCurrentMonthSlots(date, this);
+                if (timeSlots > limits->getMonthlyMax())
+                {
+                    if (DEBUGRS(6))
+                        qDebug("  Allocation overloaded this month for task %s",
+                               id.latin1());
+                    continue;
+                }
+            }
+        }
+
         /* If the allocation has be marked persistent and a resource
          * has already been picked, try to book this resource again. If the
          * resource is not available there will be no booking for this
@@ -660,7 +706,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
         if ((*ali)->isPersistent() && (*ali)->getLockedResource())
         {
             if (!bookResource((*ali)->getLockedResource(), date, slotDuration,
-                         (*ali)->getLimits(), maxAvailability))
+                              maxAvailability))
             {
                 if (maxAvailability >= 4 && !(*ali)->getConflictStart())
                     (*ali)->setConflictStart(date);
@@ -684,7 +730,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                 if (bookResource((*rli), date, slotDuration,
-                                 (*ali)->getLimits(), maxAvailability))
+                                 maxAvailability))
                 {
                     (*ali)->setLockedResource(*rli);
                     found = TRUE;
@@ -721,7 +767,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
 
 bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
-                   const UsageLimits* limits, int& maxAvailability)
+                   int& maxAvailability)
 {
     bool booked = FALSE;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
@@ -730,7 +776,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
     {
         int availability;
         if ((availability =
-             (*rti)->isAvailable(date, limits, this)) == 0)
+             (*rti)->isAvailable(date)) == 0)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));

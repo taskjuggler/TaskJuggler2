@@ -105,7 +105,7 @@ public:
      * @ret 0 slot is available, 1 vacation/off duty, 2 resource overloaded,
      * 3 task overloaded, 4 booked for other task,
      */
-    int isAvailable(time_t day, const UsageLimits* limits, const Task* t);
+    int isAvailable(time_t day);
 
     bool book(Booking* b);
 
@@ -114,6 +114,10 @@ public:
     bool addBooking(int sc, Booking* b, int sloppy = 0);
 
     double getCurrentLoad(const Interval& i, const Task* task = 0) const;
+
+    uint getCurrentDaySlots(time_t date, const Task* t);
+    uint getCurrentWeekSlots(time_t date, const Task* t);
+    uint getCurrentMonthSlots(time_t date, const Task* t);
 
     double getLoad(int sc, const Interval& i,
                    AccountType acctType = AllAccounts,
@@ -172,6 +176,8 @@ private:
                  QStringList& pids) const;
 
     void initScoreboard();
+    void initFakeScoreboard();
+
     long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
 
     long getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
@@ -241,6 +247,8 @@ private:
      * the resource has been allocated for multiple tasks.
      */
     double* allocationProbability;
+
+    static SbBooking** FakeScoreboard;
 } ;
 
 #endif

@@ -42,19 +42,30 @@ static uint* DayEndIndex = 0;
 static uint* WeekEndIndex = 0;
 static uint* MonthEndIndex = 0;
 
+/* To save memory when using large resource lists that are only scarcely used
+ * for the project, we only initialize the resource scoreboard when the
+ * resource is actually allocated. Since such unused resources can still be
+ * used in reports, we use this faked scoreboard. It reflects the global
+ * working hours and global vacations. So the reported values for unused
+ * resources are not 100% correct. */
+SbBooking** Resource::FakeScoreboard = 0;
+
 Resource::Resource(Project* p, const QString& i, const QString& n,
                    Resource* pr, const QString& df, uint dl)
     : CoreAttributes(p, i, n, pr, df, dl)
 {
+    sbSize = (p->getEnd() + 1 - p->getStart()) /
+        p->getScheduleGranularity() + 1;
+
+    if (!FakeScoreboard)
+        initFakeScoreboard();
+
     vacations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
 
     p->addResource(this);
 
     limits = 0;
-
-    sbSize = (p->getEnd() + 1 - p->getStart()) /
-        p->getScheduleGranularity() + 1;
 
     scenarios = new ResourceScenario[p->getMaxScenarios()];
     scoreboards = new SbBooking**[p->getMaxScenarios()];
@@ -174,6 +185,12 @@ Resource::~Resource()
     delete [] scenarios;
 
     delete limits;
+
+    if (FakeScoreboard)
+    {
+        delete [] FakeScoreboard;
+        FakeScoreboard = 0;
+    }
 
     project->deleteResource(this);
 }
@@ -300,11 +317,57 @@ Resource::initScoreboard()
     for (VacationListIterator ivi(project->getVacationListIterator());
          *ivi != 0; ++ivi)
     {
-        for (time_t date = (*ivi)->getStart();
-             date < (*ivi)->getEnd() &&
-                 project->getStart() <= date && date < project->getEnd() + 1;
-             date += project->getScheduleGranularity())
-            scoreboard[sbIndex(date)] = (SbBooking*) 2;
+        if ((*ivi)->getStart() > project->getEnd() ||
+            (*ivi)->getEnd() < project->getStart())
+            continue;
+        uint startIdx = sbIndex((*ivi)->getStart() >= project->getStart() ?
+                                (*ivi)->getStart() : project->getStart());
+        uint endIdx = sbIndex((*ivi)->getEnd() >= project->getStart() ?
+                              (*ivi)->getEnd() : project->getEnd());
+        for (uint idx = startIdx; idx <= endIdx; ++idx)
+            scoreboard[idx] = (SbBooking*) 2;
+    }
+}
+
+void
+Resource::initFakeScoreboard()
+{
+    FakeScoreboard = new SbBooking*[sbSize];
+
+    // First mark all FakeScoreboard slots as unavailable (1).
+    for (uint i = 0; i < sbSize; i++)
+        FakeScoreboard[i] = (SbBooking*) 1;
+
+    // Then change all worktime slots to 0 (available) again.
+    for (time_t day = project->getStart(); day < project->getEnd() + 1;
+         day += project->getScheduleGranularity())
+    {
+        int dow = dayOfWeek(day, FALSE);
+        for (QPtrListIterator<Interval>
+             ivi(project->getWorkingHoursIterator(dow)); *ivi != 0; ++ivi)
+            if ((*ivi)->contains
+                (Interval(secondsOfDay(day),
+                          secondsOfDay(day + project->getScheduleGranularity()
+                                       - 1))))
+            {
+                FakeScoreboard[sbIndex(day)] = (SbBooking*) 0;
+                break;
+            }
+    }
+
+    // Mark all global vacation slots as such (2)
+    for (VacationListIterator ivi(project->getVacationListIterator());
+         *ivi != 0; ++ivi)
+    {
+        if ((*ivi)->getStart() > project->getEnd() ||
+            (*ivi)->getEnd() < project->getStart())
+            continue;
+        uint startIdx = sbIndex((*ivi)->getStart() >= project->getStart() ?
+                                (*ivi)->getStart() : project->getStart());
+        uint endIdx = sbIndex((*ivi)->getEnd() >= project->getStart() ?
+                              (*ivi)->getEnd() : project->getEnd());
+        for (uint idx = startIdx; idx <= endIdx; ++idx)
+            FakeScoreboard[idx] = (SbBooking*) 2;
     }
 }
 
@@ -342,7 +405,7 @@ Resource::index2end(uint idx) const
  * \retval 4 { resource is allocated to other task }
  */
 int
-Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
+Resource::isAvailable(time_t date)
 {
     /* The scoreboard of a resource is only generated on demand, so that large
      * resource lists that are only scarcely used for the project do not slow
@@ -357,11 +420,11 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
         {
             QString reason;
             if (scoreboard[sbIdx] == ((SbBooking*) 1))
-                reason = "vacation";
+                reason = "off-hour";
             else if (scoreboard[sbIdx] == ((SbBooking*) 2))
-                reason = "overloaded";
+                reason = "vacation";
             else if (scoreboard[sbIdx] == ((SbBooking*) 3))
-                reason = "overloaded for " + t->getId();
+                reason = "UNDEFINED";
             else
                 reason = "allocated to " +
                     scoreboard[sbIdx]->getTask()->getId();
@@ -371,15 +434,13 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
         return scoreboard[sbIdx] < ((SbBooking*) 4) ? 1 : 4;
     }
 
-    if (!limits && !aLimits)
+    if (!limits)
         return 0;
 
-    if ((limits && limits->getDailyMax() > 0) ||
-        (aLimits && aLimits->getDailyMax() > 0))
+    if ((limits && limits->getDailyMax() > 0))
     {
         // Now check that the resource is not overloaded on this day.
         uint bookedSlots = 1;
-        uint bookedTaskSlots = 1;
 
         for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
         {
@@ -388,33 +449,21 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
                 continue;
 
             bookedSlots++;
-            if (b->getTask() == t)
-                bookedTaskSlots++;
         }
 
         if (limits && limits->getDailyMax() > 0 &&
-            bookedSlots * efficiency > limits->getDailyMax())
+            bookedSlots > limits->getDailyMax())
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded today (%d)", id.latin1(),
                        bookedSlots);
             return 2;
         }
-        if (aLimits && aLimits->getDailyMax() > 0 &&
-            bookedTaskSlots * efficiency > aLimits->getDailyMax())
-        {
-            if (DEBUGRS(6))
-                qDebug("  Resource %s overloaded today for task %s",
-                       id.latin1(), t->getId().latin1());
-            return 3;
-        }
     }
-    if ((limits && limits->getWeeklyMax() > 0) ||
-        (aLimits && aLimits->getWeeklyMax() > 0))
+    if ((limits && limits->getWeeklyMax() > 0))
     {
         // Now check that the resource is not overloaded on this week.
         uint bookedSlots = 1;
-        uint bookedTaskSlots = 1;
 
         for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
         {
@@ -423,33 +472,21 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
                 continue;
 
             bookedSlots++;
-            if (b->getTask() == t)
-                bookedTaskSlots++;
         }
 
         if (limits && limits->getWeeklyMax() > 0 &&
-            bookedSlots * efficiency > limits->getWeeklyMax())
+            bookedSlots > limits->getWeeklyMax())
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this week (%d)", id.latin1(),
                        bookedSlots);
             return 2;
         }
-        if (aLimits && aLimits->getWeeklyMax() > 0 &&
-            bookedTaskSlots * efficiency > aLimits->getWeeklyMax())
-        {
-            if (DEBUGRS(6))
-                qDebug("  Resource %s overloaded this week for task %s",
-                       id.latin1(), t->getId().latin1());
-            return 3;
-        }
     }
-    if ((limits && limits->getMonthlyMax() > 0) ||
-        (aLimits && aLimits->getMonthlyMax() > 0))
+    if ((limits && limits->getMonthlyMax() > 0))
     {
         // Now check that the resource is not overloaded on this month.
         uint bookedSlots = 1;
-        uint bookedTaskSlots = 1;
 
         for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
         {
@@ -458,25 +495,15 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
                 continue;
 
             bookedSlots++;
-            if (b->getTask() == t)
-                bookedTaskSlots++;
         }
 
         if (limits && limits->getMonthlyMax() > 0 &&
-            bookedSlots * efficiency > limits->getMonthlyMax())
+            bookedSlots > limits->getMonthlyMax())
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this month (%d)", id.latin1(),
                        bookedSlots);
             return 2;
-        }
-        if (aLimits && aLimits->getMonthlyMax() > 0 &&
-            bookedTaskSlots * efficiency > aLimits->getMonthlyMax())
-        {
-            if (DEBUGRS(6))
-                qDebug("  Resource %s overloaded this month for task %s",
-                       id.latin1(), t->getId().latin1());
-            return 3;
         }
     }
 
@@ -669,6 +696,140 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
     return bookings;
 }
 
+uint
+Resource::getCurrentDaySlots(time_t date, const Task* t)
+{
+    /* Return the number of slots this resource is allocated to in the current
+     * scenario. If a task is given, only the slots allocated to this task
+     * will be counted. */
+
+    if (hasSubs())
+    {
+        uint timeSlots = 0;
+        for (ResourceListIterator rli(getSubListIterator()); *rli; ++rli)
+            timeSlots += (*rli)->getCurrentDaySlots(date, t);
+        return timeSlots;
+    }
+
+    if (!scoreboard)
+        return 0;
+
+    uint sbIdx = sbIndex(date);
+
+    // Now check that the resource is not overloaded on this day.
+    uint bookedSlots = 0;
+    uint bookedTaskSlots = 0;
+
+    for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
+    {
+        SbBooking* b = scoreboard[i];
+        if (b < (SbBooking*) 4)
+            continue;
+
+        bookedSlots++;
+        if (b->getTask() == t)
+            bookedTaskSlots++;
+    }
+    // If the current slot is still available we count this as booked as well.
+    if (scoreboard[sbIdx] < ((SbBooking*) 4))
+    {
+        bookedSlots++;
+        bookedTaskSlots++;
+    }
+
+    return t ? bookedTaskSlots : bookedSlots;
+}
+
+uint
+Resource::getCurrentWeekSlots(time_t date, const Task* t)
+{
+    /* Return the number of slots this resource is allocated to in the current
+     * scenario. If a task is given, only the slots allocated to this task
+     * will be counted. */
+
+    if (hasSubs())
+    {
+        uint timeSlots = 0;
+        for (ResourceListIterator rli(getSubListIterator()); *rli; ++rli)
+            timeSlots += (*rli)->getCurrentWeekSlots(date, t);
+        return timeSlots;
+    }
+
+    if (!scoreboard)
+        return 0;
+
+    uint sbIdx = sbIndex(date);
+
+    // Now check that the resource is not overloaded on this day.
+    uint bookedSlots = 0;
+    uint bookedTaskSlots = 0;
+
+    for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
+    {
+        SbBooking* b = scoreboard[i];
+        if (b < (SbBooking*) 4)
+            continue;
+
+        bookedSlots++;
+        if (b->getTask() == t)
+            bookedTaskSlots++;
+    }
+
+    // If the current slot is still available we count this as booked as well.
+    if (scoreboard[sbIdx] < ((SbBooking*) 4))
+    {
+        bookedSlots++;
+        bookedTaskSlots++;
+    }
+
+    return t ? bookedTaskSlots : bookedSlots;
+}
+
+uint
+Resource::getCurrentMonthSlots(time_t date, const Task* t)
+{
+    /* Return the number of slots this resource is allocated to in the current
+     * scenario. If a task is given, only the slots allocated to this task
+     * will be counted. */
+
+    if (hasSubs())
+    {
+        uint timeSlots = 0;
+        for (ResourceListIterator rli(getSubListIterator()); *rli; ++rli)
+            timeSlots += (*rli)->getCurrentMonthSlots(date, t);
+        return timeSlots;
+    }
+
+    if (!scoreboard)
+        return 0;
+
+    uint sbIdx = sbIndex(date);
+
+    // Now check that the resource is not overloaded on this day.
+    uint bookedSlots = 0;
+    uint bookedTaskSlots = 0;
+
+    for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
+    {
+        SbBooking* b = scoreboard[i];
+        if (b < (SbBooking*) 4)
+            continue;
+
+        bookedSlots++;
+        if (b->getTask() == t)
+            bookedTaskSlots++;
+    }
+
+    // If the current slot is still available we count this as booked as well.
+    if (scoreboard[sbIdx] < ((SbBooking*) 4))
+    {
+        bookedSlots++;
+        bookedTaskSlots++;
+    }
+
+    return t ? bookedTaskSlots : bookedSlots;
+}
+
 double
 Resource::getLoad(int sc, const Interval& period, AccountType acctType,
                   const Task* task) const
@@ -761,16 +922,20 @@ Resource::getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const
     }
     else
     {
-        /* Since we can't initialize the scoreboards anymore, we have to
-         * return a fake value. If we can ensure that the scoreboard is
-         * initialized, we can always compute the real value. For the time
-         * being, we fake a value and hope that it doesn't hurt. */
+        /* If the resource hasn't been allocated, we have no scoreboard. Due
+         * to the const nature of this function we cannot generate it anymore.
+         * So we use the FakeScoreboard to get at least a reasonable estimate
+         * for the available time. */
         if (!scoreboard || !scoreboards[sc])
-            return availSlots + (endIdx - startIdx);
-
-        for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
-            if (scoreboards[sc][i] == 0)
-                availSlots++;
+        {
+            for (uint i = startIdx; i <= endIdx; i++)
+                if (FakeScoreboard[i] == 0)
+                    availSlots++;
+        }
+        else
+            for (uint i = startIdx; i <= endIdx; i++)
+                if (scoreboards[sc][i] == 0)
+                    availSlots++;
     }
 
     return availSlots;

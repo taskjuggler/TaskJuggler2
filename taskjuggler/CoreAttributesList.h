@@ -20,7 +20,7 @@ class QString;
 
 /**
  * @short The class stores a list of CoreAttributes.
- * @see CoreAttributes 
+ * @see CoreAttributes
  * @author Chris Schlaeger <cs@suse.de>
  */
 class CoreAttributesList : public QPtrList<CoreAttributes>
@@ -42,7 +42,7 @@ public:
     enum SortCriteria {
         SequenceUp = 0, SequenceDown,
         TreeMode, NameUp, NameDown, FullNameUp,
-        FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
+        FullNameDown, IdUp, IdDown, IndexUp, IndexDown,
         StatusUp, StatusDown, CompletedUp, CompletedDown,
         PrioUp, PrioDown,
         ResponsibleUp, ResponsibleDown,
@@ -65,7 +65,7 @@ public:
 
     virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
                                   int level);
-    
+
 protected:
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 

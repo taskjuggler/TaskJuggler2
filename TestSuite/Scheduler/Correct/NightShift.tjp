@@ -127,11 +127,20 @@ task t2 "Task2" {
 # DST to ST switch
 task t3 "task3" {
 	start 2002-10-24-22:00
-	effort 60d
+	effort 20d
 	# needs extended load for switch day
-	allocate r3 { alternative r1, r2 load 1.2 }
-	minend 2002-11-17-20:59:59
-	maxend 2002-11-17-21:00:00
+	allocate r3 { alternative r1, r2 limits { dailymax 10h } }
+	minend 2002-11-17-2:00:00
+	maxend 2002-11-17-2:00:00
+}
+
+taskreport "Tasks" {
+  columns start, end, effort, duration
+  hideresource 0
+}
+
+resourcereport "Resources" {
+  hidetask 0
 }
 
 htmltaskreport "NightShift.html" {
