@@ -232,7 +232,7 @@ htmltaskreport "Tasks-Overview.html" {
 	# task and their information form the rows of the table.
   columns hierarchindex, name, duration, effort { title "Work"},
 	        start, end, weekly
-	timeformat "%a %Y-%M-%d"
+	timeformat "%a %Y-%m-%d"
   loadunit shortauto	
 	# Don't show load values.
 	barlabels empty

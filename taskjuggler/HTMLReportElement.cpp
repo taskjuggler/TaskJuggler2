@@ -1331,35 +1331,36 @@ HTMLReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
 }
 
 void
-HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
+HTMLReportElement::genCellTaskFunc(TableCellInfo* tci, bool daily,
+                                   time_t (*beginOfT)(time_t),
+                                   time_t (*sameTimeNextT)(time_t))
 {
-    for (time_t day = midnight(start); day < end;
-         day = sameTimeNextDay(day))
+    for (time_t t = (*beginOfT)(start); t < end; t = (*sameTimeNextT)(t))
     {
-        Interval period = Interval(day).firstDay();
+        Interval period = Interval(t, sameTimeNextT(t) - 1);
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
-        QColor bgCol = selectTaskBgColor(tci, load, period, TRUE);
+        QColor bgCol = selectTaskBgColor(tci, load, period, daily);
 
         int runLength = 1;
         if (!tci->tli->task->isActive(tci->tli->sc, period))
         {
-            time_t lastEndDay = day;
-            for (time_t endDay = sameTimeNextDay(day); endDay < end;
-                 endDay = sameTimeNextDay(endDay))
+            time_t lastEndT = t;
+            for (time_t endT = sameTimeNextT(t); endT < end;
+                 endT = sameTimeNextT(endT))
             {
-                Interval periodProbe = Interval(endDay).firstDay();
+                Interval periodProbe = Interval(endT, sameTimeNextT(endT) - 1);
                 double loadProbe = tci->tli->task->getLoad(tci->tli->sc,
                                                            periodProbe, 
                                                            tci->tli->resource);
                 QColor bgColProbe = selectTaskBgColor(tci, loadProbe,
-                                                      periodProbe, TRUE);
+                                                      periodProbe, daily);
                 if (load != loadProbe || bgCol != bgColProbe)
                     break;
-                lastEndDay = endDay;
+                lastEndT = endT;
                 runLength++;
             }
-            day = lastEndDay;
+            t = lastEndT;
         }
         tci->setColumns(runLength);
         tci->setBgColor(bgCol);
@@ -1369,42 +1370,55 @@ HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
 }
 
 void
-HTMLReportElement::genCellDailyResource(TableCellInfo* tci)
+HTMLReportElement::genCellResourceFunc(TableCellInfo* tci, bool daily,
+                                   time_t (*beginOfT)(time_t),
+                                   time_t (*sameTimeNextT)(time_t))
 {
-    for (time_t day = midnight(start); day < end;
-         day = sameTimeNextDay(day))
+    for (time_t t = beginOfT(start); t < end; t = sameTimeNextT(t))
     {
-        Interval period = Interval(day).firstDay();
+        Interval period = Interval(t, sameTimeNextT(t) - 1);
         double load = tci->tli->resource->getLoad(tci->tli->sc, period,
                                                   AllAccounts, tci->tli->task);
-        QColor bgCol = selectResourceBgColor(tci, load, period, TRUE); 
+        QColor bgCol = selectResourceBgColor(tci, load, period, daily); 
 
         int runLength = 1;
         if (load == 0.0)
         {
-            time_t lastEndDay = day;
-            for (time_t endDay = sameTimeNextDay(day); endDay < end;
-                 endDay = sameTimeNextDay(endDay))
+            time_t lastEndT = t;
+            for (time_t endT = sameTimeNextT(t); endT < end;
+                 endT = sameTimeNextT(endT))
             {
-                Interval periodProbe = Interval(endDay).firstDay();
+                Interval periodProbe = Interval(endT, sameTimeNextT(endT) - 1);
                 double loadProbe = 
                     tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
                                                 AllAccounts, tci->tli->task);
                 QColor bgColProbe = selectResourceBgColor(tci, loadProbe,
-                                                          periodProbe, TRUE);
+                                                          periodProbe, daily);
 
                 if (load != loadProbe || bgCol != bgColProbe)
                     break;
-                lastEndDay = endDay;
+                lastEndT = endT;
                 runLength++;
             }
-            day = lastEndDay;
+            t = lastEndT;
         }
         tci->setColumns(runLength);
         tci->setBgColor(bgCol);
         
         reportResourceLoad(load, tci, period);
     }
+}
+
+void
+HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
+{
+    genCellTaskFunc(tci, TRUE, midnight, sameTimeNextDay);
+}
+
+void
+HTMLReportElement::genCellDailyResource(TableCellInfo* tci)
+{
+    genCellResourceFunc(tci, TRUE, midnight, sameTimeNextDay);
 }
 
 void
@@ -1523,78 +1537,13 @@ HTMLReportElement::genCellWeeklyAccount(TableCellInfo* tci)
 void
 HTMLReportElement::genCellMonthlyTask(TableCellInfo* tci)
 {
-    for (time_t month = beginOfMonth(start); month < end;
-         month = sameTimeNextMonth(month))
-    {
-        Interval period = Interval(month).firstMonth();
-        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
-                                              tci->tli->resource);
-        QColor bgCol = selectTaskBgColor(tci, load, period, FALSE);
-
-        int runLength = 1;
-        if (!tci->tli->task->isActive(tci->tli->sc, period))
-        {
-            time_t lastEndMonth = month;
-            for (time_t endMonth = sameTimeNextMonth(month); endMonth < end;
-                 endMonth = sameTimeNextMonth(endMonth))
-            {
-                Interval periodProbe = Interval(endMonth).firstMonth();
-                double loadProbe = 
-                    tci->tli->task->getLoad(tci->tli->sc, periodProbe, 
-                                            tci->tli->resource);
-                QColor bgColProbe = selectTaskBgColor(tci, loadProbe,
-                                                      periodProbe, FALSE);
-                if (load != loadProbe || bgCol != bgColProbe)
-                    break;
-                runLength++;
-                lastEndMonth = endMonth;
-            }
-            month = lastEndMonth;
-            
-        }
-        tci->setColumns(runLength);
-        tci->setBgColor(bgCol);
-        
-        reportTaskLoad(load, tci, period);
-    }
+    genCellTaskFunc(tci, FALSE, beginOfMonth, sameTimeNextMonth);
 }
 
 void
 HTMLReportElement::genCellMonthlyResource(TableCellInfo* tci)
 {
-    for (time_t month = beginOfMonth(start); month < end;
-         month = sameTimeNextMonth(month))
-    {
-        Interval period = Interval(month).firstMonth();
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
-        QColor bgCol = selectResourceBgColor(tci, load, period, FALSE);
-        
-        int runLength = 1;
-        if (load == 0.0)
-        {
-            time_t lastEndMonth = month;
-            for (time_t endMonth = sameTimeNextMonth(month); endMonth < end;
-                 endMonth = sameTimeNextMonth(endMonth))
-            {
-                Interval periodProbe = Interval(endMonth).firstMonth();
-                double loadProbe = 
-                    tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
-                                                AllAccounts, tci->tli->task);
-                QColor bgColProbe = selectResourceBgColor(tci, loadProbe, 
-                                                          periodProbe, FALSE);
-                if (load != loadProbe || bgCol != bgColProbe)
-                    break;
-                runLength++;
-                lastEndMonth = endMonth;
-            }
-            month = lastEndMonth;
-        }
-        tci->setColumns(runLength);
-        tci->setBgColor(bgCol);
-        
-        reportResourceLoad(load, tci, period);
-    }
+    genCellResourceFunc(tci, FALSE, beginOfMonth, sameTimeNextMonth);   
 }
 
 void
@@ -1617,29 +1566,13 @@ HTMLReportElement::genCellMonthlyAccount(TableCellInfo* tci)
 void
 HTMLReportElement::genCellQuarterlyTask(TableCellInfo* tci)
 {
-    for (time_t quarter = beginOfQuarter(start); quarter < end;
-         quarter = sameTimeNextQuarter(quarter))
-    {
-        Interval period = Interval(quarter).firstQuarter();
-        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
-                                              tci->tli->resource);
-        tci->setBgColor(selectTaskBgColor(tci, load, period, FALSE));
-        reportTaskLoad(load, tci, period);
-    }
+    genCellTaskFunc(tci, FALSE, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
 HTMLReportElement::genCellQuarterlyResource(TableCellInfo* tci)
 {
-    for (time_t quarter = beginOfQuarter(start); quarter < end;
-         quarter = sameTimeNextQuarter(quarter))
-    {
-        Interval period = Interval(quarter).firstQuarter();
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
-        tci->setBgColor(selectResourceBgColor(tci, load, period, FALSE));
-        reportResourceLoad(load, tci, period);
-    }
+    genCellResourceFunc(tci, FALSE, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
@@ -1661,29 +1594,13 @@ HTMLReportElement::genCellQuarterlyAccount(TableCellInfo* tci)
 void
 HTMLReportElement::genCellYearlyTask(TableCellInfo* tci)
 {
-    for (time_t year = beginOfYear(start); year < end;
-         year = sameTimeNextYear(year))
-    {
-        Interval period = Interval(year).firstYear();
-        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
-                                              tci->tli->resource);
-        tci->setBgColor(selectTaskBgColor(tci, load, period, FALSE));
-        reportTaskLoad(load, tci, period);
-    }
+    genCellTaskFunc(tci, FALSE, beginOfYear, sameTimeNextYear);
 }
 
 void
 HTMLReportElement::genCellYearlyResource(TableCellInfo* tci)
 {
-    for (time_t year = beginOfYear(start); year < end;
-         year = sameTimeNextYear(year))
-    {
-        Interval period = Interval(year).firstYear();
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
-        tci->setBgColor(selectResourceBgColor(tci, load, period, FALSE));
-        reportResourceLoad(load, tci, period);
-    }
+    genCellResourceFunc(tci, FALSE, beginOfYear, sameTimeNextYear);
 }
 
 void

@@ -534,6 +534,21 @@ can now be a main project file as well.</para></listitem>
 been introduced. The keyword <computeroutput>all</computeroutput>
 causes all supported task attributes to be exported.</para></listitem>
 
+<listitem><para>The broken milestone symbol in HTML calendars has been
+fixed.</para></listitem>
+
+<listitem><para>HTML Calendars have now a navigation aid. Moving a
+mouse over a cell will show the date and task/resource id in the
+browser status bar.</para></listitem>
+
+<listitem><para>Background cells in HTML calendars are now merged.
+This makes taskjuggler report generation faster and reduces the size
+of HTML report files.</para></listitem>
+
+<listitem><para>HTML reports now have a black grid to separate the
+cells. This enhances readability both on the screen and on printouts.
+</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
