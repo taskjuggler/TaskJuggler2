@@ -13,11 +13,13 @@
 #include <config.h>
 #include <stdio.h>
 
+#include "Report.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
+#include "Task.h"
 #include "Resource.h"
-#include "Report.h"
+#include "Account.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
 
@@ -352,7 +354,7 @@ Report::sortResourceList(ResourceList& filteredList)
 }
 
 void
-Report::filterAccountList(AccountList& filteredList, Account::AccountType at)
+Report::filterAccountList(AccountList& filteredList, AccountType at)
 {
 	/* Create a new list that contains only those accounts that were not
 	 * hidden. */

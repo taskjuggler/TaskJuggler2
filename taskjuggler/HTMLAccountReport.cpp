@@ -44,7 +44,7 @@ HTMLAccountReport::generate()
 		return FALSE;
 
 	AccountList filteredList;
-	filterAccountList(filteredList, Account::Cost);
+	filterAccountList(filteredList, Cost);
 	sortAccountList(filteredList);
 
 	for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
@@ -60,7 +60,7 @@ HTMLAccountReport::generate()
 	planTotals.clear();
 	actualTotals.clear();
 
-	filterAccountList(filteredList, Account::Revenue);
+	filterAccountList(filteredList, Revenue);
 	sortAccountList(filteredList);
 
 	for (AccountListIterator ali(filteredList); *ali != 0; ++ali)

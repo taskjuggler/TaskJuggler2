@@ -14,15 +14,14 @@
 #define _Project_h_
 
 #include <time.h>
-#include <stdio.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 
-#include "ShiftList.h"
 #include "TaskList.h"
+#include "ShiftList.h"
 #include "ResourceList.h"
-#include "VacationList.h"
 #include "AccountList.h"
+#include "VacationList.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
@@ -45,7 +44,6 @@ class Kotrus;
  * anymore the applications needs to make a copy of the project before calling
  * the scheduler. For that purpose Project and all related sub-classes provide
  * a copy constructor.
- * been tested.
  *
  * @short The root class of all project related infromation.
  * @author Chris Schlaeger <cs@suse.de>
@@ -226,6 +224,55 @@ public:
 	int calcWorkingDays(const Interval& iv) const;
 
 	/**
+	 * The daily working hours value is used to convert working hours into
+	 * working days. It should be an avarage value of the specified
+	 * workingHours for each week day. With this function you can set the
+	 * value for the project.
+	 */
+	void setDailyWorkingHours(double h) { dailyWorkingHours = h; }
+	/**
+	 * Returns the specified daily working hours.
+	 */
+	double getDailyWorkingHours() const { return dailyWorkingHours; }
+
+	/**
+	 * The weekly working days value is used to convert working days into
+	 * working weeks. It should match the number of working days specified
+	 * with the workingHours. The value is derived from the yearlyWorkingDays
+	 * setting. This function returns the value.
+	 */
+	double getWeeklyWorkingDays() const
+   	{
+	   	return yearlyWorkingDays / 52.14285714; 
+	}
+
+	/**
+	 * The monthly working days value is used to convert working days into
+	 * working month. It should reflect the workingHours settings and the
+	 * vacation settings. The value is derived from the yearlyWorkingDays
+	 * setting. This function returns the value.
+	 */
+	double getMonthlyWorkingDays() const 
+	{ 
+		return yearlyWorkingDays / 12; 
+	}
+
+	/**
+	 * The yearly working days value is used to convert working days into
+	 * working years. The value should reflect the workingHours settings and
+	 * the vacation settings. This function sets the value which also affects
+	 * the monthly working days and the weekly working days.
+	 */
+	void setYearlyWorkingDays(double d) { yearlyWorkingDays = d; }
+	/**
+	 * Returns the specified number of working days per year.
+	 */
+	double getYearlyWorkingDays() const { return yearlyWorkingDays; }
+
+	void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
+	ulong getScheduleGranularity() const { return scheduleGranularity; }
+
+	/**
 	 * Add a vacation interval to the vacation list. These global vacations
 	 * are meant for events like Christmas, Eastern or corporate hollidays.
 	 * A day that overlaps any of the intervals in the list is considered to
@@ -259,41 +306,133 @@ public:
 		return vacationList.next();
 	}
 
-	void addTask(Task* t)
-	{
-		taskList.append(t);
-	}
+	/**
+	 * This function is for library internal use only. Creating a Task object
+	 * with the project as parameter will automatically add it to the Task
+	 * list of the project.
+	 */
+	void addTask(Task* t);
+	/**
+	 * Returns a pointer to the Task with the specified ID. The ID must be an
+	 * absolute ID of the form "foo.bar". If no Task with the ID exists 0 is
+	 * returned.
+	 */
 	Task* getTask(const QString& id) const
 	{
 		return taskList.getTask(id);
 	}
+	/**
+	 * Returns the number of tasks of the project.
+	 */
 	uint taskCount() const { return taskList.count(); }
+	/**
+	 * Returns a copy of the Task list of the project.
+	 */
+	TaskList getTaskList() const { return taskList; }
+	/**
+	 * Returns an iterator that can be used to traverse the Task list. The
+	 * Task list is a flat list of all tasks.
+	 */
+	TaskListIterator getTaskListIterator() const
+	{
+		return TaskListIterator(taskList);
+	}
 
+	/**
+	 * This function is for library internal use only. Creating a Resource
+	 * object with the project as parameter will automatically add it to the
+	 * resource list of the project.
+	 */
 	void addResource(Resource* r);
-	
+	/**
+	 * Returns a pointer to the Resource with the specified ID. The ID must
+	 * not be an absolute ID since the Resource list has a flat namespace. If
+	 * no Resource with the ID exists 0 is returned.
+	 */
 	Resource* getResource(const QString& id) const
 	{
 		return resourceList.getResource(id);
 	}
+	/**
+	 * Returns the number of resources in the Resource list.
+	 */
 	uint resourceCount() const { return resourceList.count(); }
-
-	void addAccount(Account* a)
+	/**
+	 * Returns a copy of the Resource list.
+	 */
+	ResourceList getResourceList() const { return resourceList; }
+	/**
+	 * Returns an iterator that can be used to traverse the Resource list. The
+	 * Resource list is a flat list of all resources.
+	 */
+	ResourceListIterator getResourceListIterator() const
 	{
-		accountList.append(a);
+		return ResourceListIterator(resourceList);
 	}
+	
+	/**
+	 * This function is for library internal use only. Creating an Account 
+	 * object with the project as parameter will automatically add it to the
+	 * Account list of the project.
+	 */
+	void addAccount(Account* a);
+	/**
+	 * Returns a pointer to the Account with the specified ID. The ID may
+	 * not be an absolute ID since the account list has a flat namespace. If
+	 * no Account with the ID exists 0 is returned.
+	 */
 	Account* getAccount(const QString& id) const
 	{
 		return accountList.getAccount(id);
 	}
+	/**
+	 * Returns the number of accounts in the Account list.
+	 */
 	uint accountCount() const { return accountList.count(); }
+	/**
+	 * Returns a copy of the Account list.
+	 */
+	AccountList getAccountList() const { return accountList; }
+	/**
+	 * Returns an iterator that can be used to traverse the Account list. The
+	 * Account list is a flat list of all accounts.
+	 */
+	AccountListIterator getAccountListIterator() const
+	{
+		return AccountListIterator(accountList);
+	}
 
+	/**
+	 * This function is for library internal use only. Creating a Shift 
+	 * object with the project as parameter will automatically add it to the
+	 * Shift list of the project.
+	 */
 	void addShift(Shift* s);
-	
+	/**
+	 * Returns a pointer to the Shift with the specified ID. The ID may
+	 * not be an absolute ID since the Shift list has a flat namespace. If
+	 * no Shift with the ID exists 0 is returned.
+	 */
 	Shift* getShift(const QString& id) const
 	{
 		return shiftList.getShift(id);
 	}
+	/**
+	 * Returns the number of shifts in the shift list.
+	 */
 	uint shiftCount() const { return shiftList.count(); }
+	/**
+	 * Returns a copy of the Shift list.
+	 */
+	ShiftList getShiftList() const { return shiftList; }
+	/**
+	 * Returns an iterator that can be used to traverse the Shift list. The
+	 * Shift list is a flat list of all accounts.
+	 */
+	ShiftListIterator getShiftListIterator() const
+	{
+		return ShiftListIterator(accountList);
+	}
 
 	void setMinEffort(double m) { minEffort = m; }
 	double getMinEffort() const { return minEffort; }
@@ -310,35 +449,7 @@ public:
 	void setCurrencyDigits(int d) { currencyDigits = d; }
 	int getCurrencyDigits() const { return currencyDigits; }
 
-	void setDailyWorkingHours(double h) { dailyWorkingHours = h; }
-	double getDailyWorkingHours() const { return dailyWorkingHours; }
-
-	double getWeeklyWorkingDays() const
-   	{
-	   	return yearlyWorkingDays / 52.14285714; 
-	}
-
-	double getMonthlyWorkingDays() const 
-	{ 
-		return yearlyWorkingDays / 12; 
-	}
-
-	void setYearlyWorkingDays(double d) { yearlyWorkingDays = d; }
-	double getYearlyWorkingDays() const { return yearlyWorkingDays; }
-
-	void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
-	ulong getScheduleGranularity() const { return scheduleGranularity; }
-
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
-
-	bool loadFromXML( const QString& file );
-	void parseDomElem( QDomElement& parentElem );
-
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-	void addICalReport( ReportICal *ic ) { icalReport = ic; }
-#endif
-#endif
 
 	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
 
@@ -361,6 +472,15 @@ public:
 	{
 		exportReports.append(e);
 	}
+
+	bool loadFromXML( const QString& file );
+	void parseDomElem( QDomElement& parentElem );
+
+#ifdef HAVE_ICAL
+#ifdef HAVE_KDE
+	void addICalReport( ReportICal *ic ) { icalReport = ic; }
+#endif
+#endif
 
 	void addAllowedFlag(QString flag)
 	{
@@ -389,23 +509,6 @@ public:
 	void setTimeFormat(const QString& tf) { timeFormat = tf; }
 	const QString& getTimeFormat() const { return timeFormat; }
 
-	TaskList getTaskList() const { return taskList; }
-	TaskListIterator getTaskListIterator() const
-	{
-		return TaskListIterator(taskList);
-	}
-	ResourceList getResourceList() const { return resourceList; }
-	ResourceListIterator getResourceListIterator() const
-	{
-		return ResourceListIterator(resourceList);
-	}
-	
-	AccountList getAccountList() const { return accountList; }
-	AccountListIterator getAccountListIterator() const
-	{
-		return AccountListIterator(accountList);
-	}
-
 	/**
 	 * Generate cross references between all data structures and run a
 	 * consistency check. This function must be called after the project data
@@ -420,7 +523,6 @@ public:
 	 */
 	bool scheduleAllScenarios();
 	void generateReports() const;
-	bool needsActualDataForReports() const;
 
 private:
 	void overlayScenario(int sc);
@@ -511,11 +613,12 @@ private:
 	QStringList scenarioNames;
 	bool hasExtraValues;	// TODO: Fix this for multiple scenarios
 
-	ShiftList shiftList;
+	VacationList vacationList;
+	
 	TaskList taskList;
 	ResourceList resourceList;
-	VacationList vacationList;
 	AccountList accountList;
+	ShiftList shiftList;
 
 	Kotrus* kotrus;
 

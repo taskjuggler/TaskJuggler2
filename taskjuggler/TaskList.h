@@ -12,8 +12,9 @@
 #ifndef _TaskList_h_
 #define _TaskList_h_
 
-#include "CoreAttributes.h"
+#include "CoreAttributesList.h"
 
+class QString;
 class Task;
 
 /**

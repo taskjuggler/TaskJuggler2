@@ -80,17 +80,16 @@
    /-- DTD --/
 */
  
-#include <stdio.h>
 #include <stdlib.h>
 
-#include <qapplication.h>
-
+#include "Task.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "debug.h"
-#include "Task.h"
 #include "Resource.h"
+#include "Account.h"
 #include "Project.h"
+#include "ResourceTreeIterator.h"
 #include "Allocation.h"
 #include "Booking.h"
 

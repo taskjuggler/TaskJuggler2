@@ -15,18 +15,6 @@
 #include "Task.h"
 #include "Project.h"
 
-int
-TransactionList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-	Transaction* t1 = static_cast<Transaction*>(i1);
-	Transaction* t2 = static_cast<Transaction*>(i2);
-
-	if (t1->date == t2->date)
-		return 0;
-	else
-		return t2->date - t1->date;
-}
-
 Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
 				 AccountType at) : CoreAttributes(p, i, n, pr), acctType(at)
 {

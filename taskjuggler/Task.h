@@ -28,11 +28,9 @@
 #include "TaskList.h"
 #include "TaskScenario.h"
 #include "ResourceList.h"
-//#include "Utility.h"
 #include "CoreAttributes.h"
 #include "ShiftSelectionList.h"
 #include "LoopDetectorInfo.h"
-//#include "Interval.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE

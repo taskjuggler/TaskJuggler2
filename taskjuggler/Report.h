@@ -13,28 +13,23 @@
 #ifndef _Report_h_
 #define _Report_h_
 
-#include <stdio.h>
 #include <time.h>
-#include <stdarg.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qcolor.h>
 #include <qfile.h>
-#include <qtextstream.h>
 
-#include <Account.h>
+#include "taskjuggler.h"
+#include "CoreAttributesList.h"
 
 class Project;
+class CoreAttributes;
 class Task;
 class Resource;
-class Account;
 class TaskList;
 class ResourceList;
 class AccountList;
 class ExpressionTree;
-
-#include "CoreAttributes.h"
 
 /**
  * @short The base class for all report generating classes.
@@ -104,7 +99,7 @@ public:
 		const;
 	void sortResourceList(ResourceList& filteredList);
 
-	void filterAccountList(AccountList& filteredList, Account::AccountType at);
+	void filterAccountList(AccountList& filteredList, AccountType at);
 	void sortAccountList(AccountList& filteredList);
 
 	QString scaledLoad(double t) const;

@@ -12,8 +12,9 @@
 #ifndef _AccountList_h_
 #define _AccountList_h_
 
-#include "CoreAttributes.h"
+#include "CoreAttributesList.h"
 
+class QString;
 class Account;
 
 /**

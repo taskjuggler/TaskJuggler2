@@ -23,6 +23,8 @@
 
 class Interval;
 
+#include "taskjuggler.h"
+
 /**
  * @short Stores all account related information.
  * @author Chris Schlaeger <cs@suse.de>
@@ -30,8 +32,6 @@ class Interval;
 class Account : public CoreAttributes
 {
 public:
-	enum AccountType { Cost, Revenue };
-
 	Account(Project* p, const QString& i, const QString& n, Account* pr,
 			AccountType at);
 	virtual ~Account() { };

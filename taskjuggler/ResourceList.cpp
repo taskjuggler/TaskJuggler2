@@ -109,6 +109,3 @@ ResourceList::getResource(const QString& id) const
 	return 0;
 }
 
-ResourceTreeIterator::ResourceTreeIterator(Resource* r) :
-	CoreAttributesTreeIterator(r) { }
-

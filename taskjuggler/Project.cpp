@@ -10,18 +10,18 @@
  * $Id$
  */
 
-
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <qdom.h>
 #include <qdict.h>
 
+#include "Project.h"
 #include "debug.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "Project.h"
 #include "Shift.h"
+#include "Account.h"
 #include "Resource.h"
 #include "Utility.h"
 #include "kotrus.h"
@@ -33,6 +33,7 @@ Project::Project()
 	taskList.setAutoDelete(TRUE);
 	resourceList.setAutoDelete(TRUE);
 	accountList.setAutoDelete(TRUE);
+	shiftList.setAutoDelete(TRUE);
 
 	vacationList.setAutoDelete(TRUE);
 	
@@ -135,6 +136,12 @@ Project::getIdIndex(const QString& i) const
 	return idxStr;
 }
 
+void 
+Project::addTask(Task* t)
+{
+	taskList.append(t);
+}
+
 void
 Project::addShift(Shift* s)
 {
@@ -145,6 +152,12 @@ void
 Project::addResource(Resource* r)
 {
 	resourceList.append(r);
+}
+
+void 
+Project::addAccount(Account* a)
+{
+	accountList.append(a);
 }
 
 int
@@ -403,30 +416,6 @@ Project::generateReports() const
 
 }
 
-bool
-Project::needsActualDataForReports() const
-{
-	bool needsActual = FALSE;
-
-	// Generate task reports
-	for (QPtrListIterator<HTMLTaskReport> ri(htmlTaskReports); *ri != 0; ++ri)
-		if ((*ri)->getShowActual())
-			needsActual = TRUE;
-	// Generate resource reports
-	for (QPtrListIterator<HTMLResourceReport> ri(htmlResourceReports);
-		 *ri != 0; ++ri)
-		if ((*ri)->getShowActual())
-			needsActual = TRUE;
-
-	// Generate account reports
-	for (QPtrListIterator<HTMLAccountReport> ri(htmlAccountReports);
-		 *ri != 0; ++ri)
-		if ((*ri)->getShowActual())
-			needsActual = TRUE;
-
-	return needsActual;
-}
-
 void
 Project::setKotrus(Kotrus* k)
 {
@@ -494,7 +483,6 @@ void Project::parseDomElem( QDomElement& parentElem )
 	 Task *t = new Task( this, tId, QString(), 0, QString(), 0 );
 
 	 t->loadFromXML( elem, this  );
-	 addTask( t );
       }
       else if( tagName == "Name" )
       {
@@ -503,7 +491,7 @@ void Project::parseDomElem( QDomElement& parentElem )
       else if( tagName == "Project" )
       {
 	 QString prjId = elem.attribute("Id");
-	 addId( prjId );  // FIXME ! There can be more than one project ids!
+	 addId( prjId );  // FIXME ! There can be more than one project id!
 
 	 prjId = elem.attribute("WeekStart");
 	 setWeekStartsMonday( prjId == "Mon" );

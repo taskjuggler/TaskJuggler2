@@ -22,6 +22,7 @@
 #include "ProjectFile.h"
 #include "Project.h"
 #include "Resource.h"
+#include "Account.h"
 #include "Token.h"
 #include "ExpressionTree.h"
 #include "Allocation.h"
@@ -1636,7 +1637,7 @@ ProjectFile::readAccount(Account* parent)
 		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
-	Account::AccountType acctType;
+	AccountType acctType;
 	if (parent == 0)
 	{
 		/* Only accounts with no parent can have a type specifier. All
@@ -1648,7 +1649,7 @@ ProjectFile::readAccount(Account* parent)
 			errorMessage(i18n("Account type 'cost' or 'revenue' expected"));
 			return FALSE;
 		}
-		acctType = at == KW("cost") ? Account::Cost : Account::Revenue;
+		acctType = at == KW("cost") ? Cost : Revenue;
 	}
 	else
 		acctType = parent->getAcctType();

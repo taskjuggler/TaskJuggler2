@@ -13,7 +13,7 @@
 #ifndef _ResourceList_h_
 #define _ResourceList_h_
 
-#include "CoreAttributes.h"
+#include "CoreAttributesList.h"
 
 class QString;
 class Resource;
@@ -49,19 +49,6 @@ public:
 		CoreAttributesListIterator(l) { }
 	~ResourceListIterator() { }
 	Resource* operator*() { return (Resource*) get(); }
-} ;
-
-class ResourceTreeIterator : public virtual CoreAttributesTreeIterator
-{
-public:
-	ResourceTreeIterator(Resource* r); 
-	virtual ~ResourceTreeIterator() { }
-
-	Resource* operator*() { return (Resource*) current; }
-	Resource* operator++() 
-	{
-	   	return (Resource*) CoreAttributesTreeIterator::operator++();
-	}
 } ;
 
 #endif

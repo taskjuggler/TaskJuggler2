@@ -12,8 +12,13 @@
 #ifndef _TransactionList_h_
 #define _TransactionList_h_
 
+#include <time.h>
+
+#include <qstring.h>
+#include <qptrlist.h>
+
 /**
- * @short Stores all transaction related infromation.
+ * @short Stores all transaction related information.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class Transaction

@@ -13,13 +13,14 @@
 #ifndef _ShiftList_h_
 #define _ShiftList_h_
 
-#include "CoreAttributes.h"
+#include "CoreAttributesList.h"
 
+class QString;
 class Shift;
 class Project;
 
 /**
- * @short Stores a list of shifts.
+ * @short Stores a list of Shifts.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class ShiftList : public CoreAttributesList
@@ -29,7 +30,6 @@ public:
 	{
 		sorting[0] = TreeMode;
 		sorting[1] = SequenceUp;
-		sorting[2] = SequenceUp;
 	}
 	virtual ~ShiftList() { }
 
