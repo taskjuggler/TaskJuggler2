@@ -49,7 +49,7 @@ public:
 	void setHidePlan(bool s) { hidePlan = s; }
 	void setShowPIDs(bool s) { showPIDs = s; }
 
-	void addColumn(const QString& c) { columns.append(c); }
+	void addReportColumn(const QString& c) { columns.append(c); }
 	const QString& columnsAt(uint idx) { return columns[idx]; }
 	void clearColumns() { columns.clear(); }
 
@@ -97,7 +97,6 @@ public:
 
 	bool setLoadUnit(const QString& u);
 
-protected:
 	Report() { }
 
 	bool open();
@@ -112,7 +111,7 @@ protected:
 	void sortAccountList(AccountList& filteredList);
 
 	QString scaledLoad(double t);
-
+protected:
 	void warningMsg(const char* msg, ... );
 
 	Project* project;

@@ -2398,7 +2398,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 					fatalError("Column ID expected");
 					return FALSE;
 				}
-				report->addColumn(col);
+				report->addReportColumn(col);
 				if ((tt = nextToken(token)) != COMMA)
 				{
 					returnToken(tt, token);
@@ -2588,7 +2588,7 @@ ProjectFile::readHTMLAccountReport()
 					fatalError("Column ID expected");
 					return FALSE;
 				}
-				report->addColumn(col);
+				report->addReportColumn(col);
 				if ((tt = nextToken(token)) != COMMA)
 				{
 					returnToken(tt, token);

@@ -277,7 +277,8 @@ private:
 	int priority;
 
 	/// Default values for Resource variables
-	double minEffort;
+
+   double minEffort;
 	double maxEffort;
 	double rate;
 
