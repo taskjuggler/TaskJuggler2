@@ -623,7 +623,7 @@ option.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Version 1.9.3 (some day)</title>
+<sect2><title>Version 2.0.0 (2003-11-24)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -648,6 +648,9 @@ linkend="PROPERTY_hidecellurl">hidecellurl</link>.</para></listitem>
 
 <listitem><para>New functions isATask, isAResource and isAnAccount can
 now be used in logical expressions.</para></listitem>
+
+<listitem><para>XML version 2 files are now compressed with
+zlib.</para></listitem>
 
 </itemizedlist></para>
 
