@@ -61,13 +61,13 @@ AUTOMAKE_STRING=`$AUTOMAKE --version | head -1`
 case $AUTOMAKE_STRING in
   automake*1.5d* )
     echo "*** YOU'RE USING $AUTOMAKE_STRING."
-    echo "*** KDE requires automake 1.5"
+    echo "*** TaskJuggler requires automake 1.5 or above"
     exit 1
     ;;
-  automake*1.5* | automake*1.5-* | automake*1.6.* ) : ;;
+  automake*1.5* | automake*1.5-* | automake*1.6.* | automake*1.7.* ) : ;;
   "" )
     echo "*** AUTOMAKE NOT FOUND!."
-    echo "*** KDE requires automake 1.5"
+    echo "*** TaskJuggler requires automake 1.5 or above"
     exit 1
     ;;
   unsermake* ) :
@@ -76,7 +76,7 @@ case $AUTOMAKE_STRING in
     ;;
   * )
     echo "*** YOU'RE USING $AUTOMAKE_STRING."
-    echo "*** KDE requires automake 1.5"
+    echo "*** TaskJuggler requires automake 1.5 or above"
     exit 1
     ;;
 esac
