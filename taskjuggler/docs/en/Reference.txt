@@ -225,6 +225,23 @@ one resource can be specified for a task. All resources must be
 declared before they can be used. Ref. 'resource'.
 
 -------------------------------------------------------------------------------
+scheduling <policy>
+policy: ID
+
+This specifies the scheduling policy for the task. Possible values are:
+
+ASAP: As soon as possible. The task is scheduled to happen as early as
+possible.
+
+ALAP: As late as possible. The task is scheduled to happen as late as
+possible.
+
+The scheduling policy is automatically changed if the 'depends' or
+'preceeds' attributes are used. If multiple attributes that affect the
+scheduling policy are used, that last attribute determines the
+effective policy.
+
+-------------------------------------------------------------------------------
 depends <id>[,<id>]
 id: GLOBAL_ID
 
@@ -241,6 +258,21 @@ dots.
       task foo3 { depends !foo2 }
     }
     task bar { depends foo1.foo2 }
+
+By using the 'depends' attribute the scheduling policy is
+automatically set to ASAP. If 'depends' and 'preceeds' are used the
+last policy counts.
+
+-------------------------------------------------------------------------------
+preceeds <id>[,<id>] id: GLOBAL_ID
+
+Specifies that this tasks preceeds the tasks with the specified
+IDs. If multiple tasks are specified they must be seperated by a
+comma. The format is equivalent to the 'depends' attribute.
+
+By using the 'preceeds' attribute the scheduling policy is
+automatically set to ALAP. If 'depends' and 'preceeds' are used the
+last policy counts.
 
 -------------------------------------------------------------------------------
 flags <id>[,<id>]
@@ -483,22 +515,42 @@ Specifies which columns should be included in the task report. The
 following values are available:
 
 no: The task index.
+
 taskId: The global ID of the task.
+
 task: The name of the task.
+
 start: The planned start date.
+
 end: The planned end date.
+
 minStart: The earliest wanted start date.
+
 maxStart: The latest wanted start date.
+
 aStart: The actual start date.
+
 minEnd: The earliest wanted end date.
+
 maxEnd: The latest wanted end date.
+
 aEnd: The actual end date.
+
 priority: The scheduling priority.
+
 resources: The names of the used resources.
+
 depends: The task index of the tasks that this task depends on.
+
 follows: The task index of the tasks that depend on this task.
+
 note: The description of the task.
-daily: A calender view of the tasks.
+
+daily: A day-by-day calendar view of the tasks.
+
+weekly: A week-by-week calendar view of the tasks.
+
+monthly: A month-by-month calendar view of the tasks.
 
 -------------------------------------------------------------------------------
 start <day>
@@ -513,7 +565,7 @@ day: DATE
 The end date for the calender view.
 
 -------------------------------------------------------------------------------
-sort <criteria>
+sorttasks <criteria>
 criteria: SORTINGCRITERIA
 
 The sorting criteria specifies how the tasks in the generated report
@@ -561,23 +613,45 @@ filename: STRING
 Optional attributes:
 
 -------------------------------------------------------------------------------
+columns <id>[,<id>]
+id: STRING
+
+Specifies which columns should be included in the task report. The
+following values are available:
+
+resource: The name of the resource or the task.
+
+start: The start date of the task.
+
+end: The end date of the task.
+
+workdays: The number of workdays the resource is allocated during the
+inteval specified by the optional attributes start and end.
+
+-------------------------------------------------------------------------------
 start <day>
 day: DATE
 
-The start date for the calender view.
+The start date for the calender view and the calculated values.
 
 -------------------------------------------------------------------------------
 end <day>
 day: DATE
 
-The end date for the calender view.
+The end date for the calender view end the calculated values.
 
 -------------------------------------------------------------------------------
-hide <expression>
+hidetask <expression>
 expression: LOGICALEXPRESSION
 
 List only tasks that don't have flags that meet the described logical
 expression.
+
+-------------------------------------------------------------------------------
+sorttasks <criteria>
+criteria: SORTINGCRITERIA
+
+Ref. htmlTaskReport.
 
 -------------------------------------------------------------------------------
 Generates a report of all resources (excluding hidden and filtered) in

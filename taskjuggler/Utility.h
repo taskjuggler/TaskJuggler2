@@ -83,5 +83,11 @@ int dayOfWeek(time_t d);
 
 QString time2ISO(time_t t);
 
+QString time2time(time_t t);
+
+QString time2date(time_t t);
+
+time_t addTimeToDate(time_t day, time_t t);
+
 #endif
 

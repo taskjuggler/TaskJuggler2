@@ -25,7 +25,7 @@
 class Project;
 class Task;
 
-class Booking : public FlagList
+class Booking
 {
 public:
 	Booking(const Interval& iv, Task* t, QString a = "",
@@ -84,15 +84,43 @@ protected:
 
 typedef QPtrListIterator<Booking> BookingListIterator;
 
+class Resource;
+
+class ResourceList : public QPtrList<Resource>
+{
+public:
+	ResourceList();
+	~ResourceList() { }
+
+	enum SortCriteria { Pointer, ResourceTree, WorkTime };
+
+	Resource* getResource(const QString& id);
+
+	void setSorting(SortCriteria sc) { sorting = sc; }
+
+	void printText();
+
+protected:
+	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+
+private:
+	SortCriteria sorting;
+} ;
+
 class Resource : public FlagList
 {
 public:
-	Resource(Project* p, const QString& i, const QString& n, double mie = 0.0,
-			 double mae = 1.0, double rate = 0.0);
+	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource() { }
 
 	const QString& getId() const { return id; }
 	const QString& getName() const { return name; }
+
+	Resource* getParent() const { return parent; }
+
+	bool isGroup() const { return !subResources.isEmpty(); }
+	Resource* subResourcesFirst();
+	Resource* subResourcesNext();
 
 	void setMinEffort(double e) { minEffort = e; }
 	double getMinEffort() const { return minEffort; }
@@ -143,52 +171,54 @@ public:
 	   return( elem );
         }
 
-   
+	Booking* jobsFirst() { return jobs.first(); }
+	Booking* jobsNext() { return jobs.next(); }
+
 private:
-	// The ID of the resource. Must be unique in the project.
+	/// The ID of the resource. Must be unique in the project.
 	Project* project;
 
-	// The ID of the resource. Must be unique in the project.
+	/// The ID of the resource. Must be unique in the project.
 	QString id;
-	// The resource name. E. g. real name or room number.
+	/// The resource name. E. g. real name or room number.
 	QString name;
 
-	// The minimum effort (in man days) the resource should be used per day.
+	/**
+	 * A resource can have sub-resources. This can be used to model teams.
+	 * The resources that form the team can be used individually as well.
+	 * This cannot be done if teams are modelled by setting an increased
+	 * efficiency. */
+	Resource* parent;
+
+	/// List of resources that form this resource.
+	ResourceList subResources;
+
+	/// Pointer used by subResourceFirst() and subResourceNext().
+	Resource* currentSR;
+
+	/// The minimum effort (in man days) the resource should be used per day.
 	double minEffort;
-	// The maximum effort (in man days) the resource should be used per day.
+	/// The maximum effort (in man days) the resource should be used per day.
 	double maxEffort;
-	/* The efficiency of the resource. A team of five should have 
-	 * an efficiency of 5.0 */
+	/**
+	 * The efficiency of the resource. A team of five should have an
+	 * efficiency of 5.0 */
 	double efficiency;
 
-	// The daily costs of this resource.
+	/// The daily costs of this resource.
 	double rate;
 
-	// KoTrus ID, ID by which the resource is known to KoTrus.
+	/// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;
 
-	// The list of working or opening hours for the resource.
+	/// The list of working or opening hours for the resource.
 	QList<Interval>* workingHours[7];
 
-	// List of all intervals the resource is not available.
+	/// List of all intervals the resource is not available.
 	QList<Interval> vacations;
 
-	// A list of all uses of the resource.
+	/// A list of all uses of the resource.
 	BookingList jobs;
-} ;
-
-class ResourceList : public QPtrList<Resource>
-{
-public:
-	ResourceList() { setAutoDelete(TRUE); }
-	~ResourceList() { }
-
-	Resource* getResource(const QString& id);
-
-	void printText();
-
-protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 #endif

@@ -13,7 +13,7 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmlTaskReport "test1.html" {
-  columns  no, name, start, end, weekly
+  columns  no, name, start, end, daily
   start 2001-09-20
   end 2002-04-01
 #  hidetask media | deadline | type1
@@ -27,10 +27,10 @@ htmlTaskReport "test1.html" {
 #}
 
 htmlResourceReport "test-res.html" {
-  columns resource, start, end, workdays
+  columns resource, weekly
   sorttasks startdown
-  start 2002-01-1
-  end 2002-03-01
+  start 2001-09-20
+  end 2002-03-10
 }
 
 macro version [SL 8.0]
@@ -110,14 +110,25 @@ resource ro "Ruediger Oertel" {
   vacation 2001-12-10 - 2001-12-14
 }
 resource kukuk "Thorsten Kukuk" {
-#  workingHours MON 08:00-12:00, 13:00-16:00
+  workingHours MON 08:00-12:00, 13:00-16:00
 }
 
-resource cs "Chris Schlaeger"
-resource mem "Muhamed Memovic"
+resource overhead "Administration" {
+  resource cs "Chris Schlaeger"
+  resource mem "Muhamed Memovic"
+}
 resource bg "Berthold Gunreben"
 resource packagers "Package Maintainers" {  flags team efficiency 18.0 }
-resource dist "Dist Team" { flags team efficiency 9.0 }
+resource dist "Dist Team" {
+  workingHours MON 08:00-12:00, 13:00-16:00
+
+  resource snwint "Steffen Winterfeld"
+  resource werner "Werner Fink"
+  resource draht "Roman Drahtmueller"
+  resource mls "Michael Schroeder"
+  resource adrian "Adrian Schroeter"
+  resource sndirsch "Stefan Dirsch"
+}
 resource yast "YaST2 Team" { flags team efficiency 12.0 }
 
 task sl80 "SuSE Linux 8.0" {
@@ -146,6 +157,19 @@ task dist "SL 8.0 distribution modifications" {
   allocate kukuk { load 50 }
   allocate ro { load 50 }
   depends !sl80start
+}
+
+task alap "ALAP Task" {
+  preceeds !pre1
+  length 20d
+  allocate cs
+  scheduling ASAP
+}
+
+task asap "ASAP after ALAP" {
+  depends !alap
+  effort 19d
+  allocate cs
 }
 
 task pre1 "SL 8.0 preview1" {

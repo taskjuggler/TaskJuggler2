@@ -90,7 +90,7 @@ private:
 	ProjectFile() {};	// don't use
 
 	bool readTask(Task* parent);
-	bool readResource();
+	bool readResource(Resource* parent);
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
 					  QString* = 0);
 	bool readAccount();

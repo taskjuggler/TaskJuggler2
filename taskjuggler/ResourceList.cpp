@@ -30,51 +30,119 @@ BookingList::compareItems(QCollection::Item i1, QCollection::Item i2)
 }
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
-				   double mie, double mae, double r)
-	: project(p), id(i), name(n), minEffort(mie), maxEffort(mae), rate(r)
+				   Resource* pr)
+	: project(p), id(i), name(n), parent(pr)
 {
 	vacations.setAutoDelete(TRUE);
+	subResources.setAutoDelete(FALSE);
 
-	// Sunday
-	workingHours[0] = new QPtrList<Interval>();
+	if (pr)
+	{
+		pr->subResources.append(this);
 
-	// Monday
-	workingHours[1] = new QPtrList<Interval>();
-	workingHours[1]->setAutoDelete(TRUE);
-	workingHours[1]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[1]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-	// Tuesday
-	workingHours[2] = new QPtrList<Interval>();
-	workingHours[2]->setAutoDelete(TRUE);
-	workingHours[2]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[2]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-	// Wednesday
-	workingHours[3] = new QPtrList<Interval>();
-	workingHours[3]->setAutoDelete(TRUE);
-	workingHours[3]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[3]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-	// Thursday
-	workingHours[4] = new QPtrList<Interval>();
-	workingHours[4]->setAutoDelete(TRUE);
-	workingHours[4]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[4]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-	// Friday
-	workingHours[5] = new QPtrList<Interval>();
-	workingHours[5]->setAutoDelete(TRUE);
-	workingHours[5]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[5]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+		// Inherit start values from parent resource.
+		for (int i = 0; i < 7; i++)
+		{
+			workingHours[i] = new QPtrList<Interval>();
+			workingHours[i]->setAutoDelete(TRUE);
+			for (Interval* iv = pr->workingHours[i]->first(); iv != 0;
+				 iv = pr->workingHours[i]->next())
+				workingHours[i]->append(new Interval(*iv));
+		}
 
-	// Saturday
-	workingHours[6] = new QPtrList<Interval>();
+		for (Interval* iv = pr->vacations.first(); iv != 0;
+			 iv = pr->vacations.next())
+			vacations.append(new Interval(*iv));
 
-	efficiency = 1.0;
+		minEffort = pr->minEffort;
+		maxEffort = pr->maxEffort;
+		rate = pr->rate;
+		efficiency = pr->efficiency;
+	}
+	else
+	{
+		// Sunday
+		workingHours[0] = new QPtrList<Interval>();
+
+		// Monday
+		workingHours[1] = new QPtrList<Interval>();
+		workingHours[1]->setAutoDelete(TRUE);
+		workingHours[1]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+		workingHours[1]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+		// Tuesday
+		workingHours[2] = new QPtrList<Interval>();
+		workingHours[2]->setAutoDelete(TRUE);
+		workingHours[2]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+		workingHours[2]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+		// Wednesday
+		workingHours[3] = new QPtrList<Interval>();
+		workingHours[3]->setAutoDelete(TRUE);
+		workingHours[3]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+		workingHours[3]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+		// Thursday
+		workingHours[4] = new QPtrList<Interval>();
+		workingHours[4]->setAutoDelete(TRUE);
+		workingHours[4]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+		workingHours[4]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+		// Friday
+		workingHours[5] = new QPtrList<Interval>();
+		workingHours[5]->setAutoDelete(TRUE);
+		workingHours[5]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+		workingHours[5]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+
+		// Saturday
+		workingHours[6] = new QPtrList<Interval>();
+
+		if (p)
+		{
+			minEffort = p->getMinEffort();
+			maxEffort = p->getMaxEffort();
+			rate = project->getRate();
+		}
+		else
+		{
+			minEffort = 0.0;
+			maxEffort = 1.0;
+			rate = 0.0;
+		}
+		efficiency = 1.0;
+	}
 }
+
+Resource*
+Resource::subResourcesFirst()
+{
+	if (subResources.isEmpty())
+	{
+		currentSR = 0;
+		return this;
+	}
+
+	currentSR = subResources.first();
+	return currentSR->subResourcesFirst();
+}
+
+Resource*
+Resource::subResourcesNext()
+{
+	if (currentSR == 0)
+		return 0;
+	Resource* tmp = currentSR->subResourcesNext();
+	if (tmp == 0)
+	{
+		if ((currentSR = subResources.next()) == 0)
+			return 0;
+		return currentSR->subResourcesFirst();
+	}
+	return tmp;
+}
+
 bool
 Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 {
 	// Check that the resource is not closed or on vacation
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
-		if (i->overlaps(Interval(date, date + duration)))
+		if (i->overlaps(Interval(date, date + duration - 1)))
 			return FALSE;
 
 	// Iterate through all the work time intervals for the week day.
@@ -82,12 +150,14 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 	for (Interval* i = workingHours[dow]->first(); i != 0;
 		 i = workingHours[dow]->next())
 	{
-		interval = Interval(midnight(date), midnight(date));
-		interval.add(*i);
+		/* Construct an Interval that describes the working hours for
+		 * the current day using time_t. */
+		interval = Interval(addTimeToDate(date, (*i).getStart()),
+							addTimeToDate(date, (*i).getEnd()));
 		/* If there is an overlap between working time and the requested
 		 * interval we exclude the time starting with the first busy
 		 * interval in that working time. */
-		if (interval.overlap(Interval(date, date + duration)))
+		if (interval.overlap(Interval(date, date + duration - 1)))
 		{
 			time_t bookedTime = duration;
 			Interval day = Interval(midnight(date),
@@ -96,7 +166,8 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 				 b != 0 && b->getStart() >= day.getStart(); b = jobs.prev())
 			{
 				// Check if the interval is booked already.
-				if (b->getInterval().overlaps(Interval(date, date + duration)))
+				if (b->getInterval().overlaps(
+					Interval(date, date + duration - 1)))
 					return FALSE;
 				// Accumulate total load for the current day.
 				if (day.contains(b->getInterval()))
@@ -177,11 +248,6 @@ Resource::dbLoadBookings( const QString& kotrusID, const QString& skipProjectID 
    return( result );
 }
 
-
-
-/* ******************************************************************************** */
-
-
 bool
 Resource::hasVacationDay(time_t day)
 {
@@ -198,6 +264,11 @@ Resource::hasVacationDay(time_t day)
 	return FALSE;
 }
 
+ResourceList::ResourceList()
+{
+	setAutoDelete(TRUE);
+	sorting = Pointer;
+}
 
 int
 ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
@@ -205,13 +276,27 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	Resource* r1 = static_cast<Resource*>(i1);
 	Resource* r2 = static_cast<Resource*>(i2);
 
-	return r1->getId().compare(r2->getId());
+	switch (sorting)
+	{
+	case Pointer:
+		return r1->getId().compare(r2->getId());
+	case ResourceTree:
+		return 0;	// TODO: Compare full resource names
+	case WorkTime:
+//		double wt1 = r1->getLoad(Interval(start, end));
+//		double wt2 = r2->getLoad(Interval(start, end));
+//		return wt1 == wt2 ? 0 : wt1 < wt2 ? -1 : 1;
+		return 0;	// TODO: Haven't found an elegant way to do this yet.
+	default:
+		qFatal("Unknown sorting criteria!\n");
+		return 0;
+	}
 }
 
 Resource*
 ResourceList::getResource(const QString& id)
 {
-	Resource key(0, id, "");
+	Resource key(0, id, "", 0);
 	return at(find(&key));
 }
 

@@ -119,6 +119,8 @@ public:
 		 const QString f, int l);
 	~Task() { }
 
+	enum SchedulingInfo { ASAP, ALAP };
+
 	const QString& getId() const { return id; }
 
 	void setName(const QString& n) { name = n; }
@@ -183,11 +185,15 @@ public:
 	void setComplete(int c) { complete = c; }
 	double getComplete() const { return complete; }
 
-	void addDependency(const QString& id) { depends.append(id); }
+	void addDependency(const QString& id) { dependsIds.append(id); }
+	void addPreceeds(const QString& id) { preceedsIds.append(id); }
+
+	void setScheduling(SchedulingInfo si) { scheduling = si; }
+	SchedulingInfo getScheduling() const { return scheduling; }
+
 	Task* firstPrevious() { return previous.first(); }
 	Task* nextPrevious() { return previous.next(); }
 
-	void addFollower(Task* t) { followers.append(t); }
 	Task* firstFollower() { return followers.first(); }
 	Task* nextFollower() { return followers.next(); }
 
@@ -217,6 +223,7 @@ public:
 	QString resolveId(QString relId);
 	bool schedule(time_t reqStart, time_t duration);
 	bool isScheduled();
+	bool needsEarlierTimeSlot(time_t date);
 
 	/**
 	 * @returns TRUE if the work planned for a day has been completed.
@@ -249,6 +256,7 @@ private:
 	bool bookResources(time_t day, time_t duration);
 
 	time_t earliestStart();
+	time_t latestEnd();
 	void fatalError(const QString& msg) const;
 
 	Project* project;
@@ -306,16 +314,27 @@ private:
 	double doneDuration;
 	bool workStarted;
 	time_t tentativeEnd;
+	time_t tentativeStart;
 	time_t lastSlot;
 
 	// Account where the costs of the task are credited to.
 	Account* account;
 
-	// List of tasks Ids that need to be completed before this task can start
-	QStringList depends;
-	// Same as previous but pointers to tasks that are resolved in pass2
+	SchedulingInfo scheduling;
+
+	/// List of tasks Ids that need to be completed before this task can start
+	QStringList dependsIds;
+	/// A list of task pointers created from dependsIds in xRef.
+	TaskList depends;
+
+	/// List of tasks Ids that have to follow when this task is completed
+	QStringList preceedsIds;
+	/// A list of task pointers created from preceedsIds in xRef.
+	TaskList preceeds;
+
+	/// A list of all tasks that preceed this task.
 	TaskList previous;
-	// List of tasks that depend on this task
+	/// A list of all tasks that follow this task.
 	TaskList followers;
 	// List of resource allocations requested by the task
 	QPtrList<Allocation> allocations;

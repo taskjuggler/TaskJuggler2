@@ -455,7 +455,7 @@ ProjectFile::parse()
 			}
 			else if (token == "resource")
 			{
-				if (!readResource())
+				if (!readResource(0))
 					return FALSE;
 				break;
 			}
@@ -835,11 +835,46 @@ ProjectFile::readTask(Task* parent)
 						return FALSE;
 					}
 					task->addDependency(id);
+					task->setScheduling(Task::ASAP);
 					if ((tt = nextToken(token)) != COMMA)
 					{
 						openFiles.last()->returnToken(tt, token);
 						break;
 					}
+				}
+			}
+			else if (token == "preceeds" && !hasSubTasks)
+			{
+				cantBeParent = TRUE;
+				for ( ; ; )
+				{
+					QString id;
+					if ((tt = nextToken(id)) != ID &&
+						tt != RELATIVE_ID)
+					{
+						fatalError("Task ID expected");
+						return FALSE;
+					}
+					task->addPreceeds(id);
+					task->setScheduling(Task::ALAP);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
+					}
+				}
+			}
+			else if (token == "scheduling")
+			{
+				nextToken(token);
+				if (token == "ASAP")
+					task->setScheduling(Task::ASAP);
+				else if (token == "ALAP")
+					task->setScheduling(Task::ALAP);
+				else
+				{
+					fatalError("Unknown scheduling policy");
+					return FALSE;
 				}
 			}
 			else if (token == "flags")
@@ -953,7 +988,7 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName, QString* n)
 }
 
 bool
-ProjectFile::readResource()
+ProjectFile::readResource(Resource* parent)
 {
 	// Syntax: 'resource id "name" { ... }
 	QString id;
@@ -969,8 +1004,8 @@ ProjectFile::readResource()
 		return FALSE;
 	}
 
-	Resource* r = new Resource(proj, id, name, proj->getMinEffort(),
-							   proj->getMaxEffort(), proj->getRate());
+	Resource* r = new Resource(proj, id, name, parent);
+
 	TokenType tt;
 	QString token;
 	if ((tt = nextToken(token)) == LCBRACE)
@@ -983,7 +1018,12 @@ ProjectFile::readResource()
 				fatalError(QString("Unknown attribute '") + token + "'");
 				return FALSE;
 			}
-			if (token == "minEffort")
+			if (token == "resource")
+			{
+				if (!readResource(r))
+					return FALSE;
+			}
+			else if (token == "minEffort")
 			{
 				if (nextToken(token) != REAL)
 				{

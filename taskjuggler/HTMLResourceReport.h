@@ -34,6 +34,8 @@ private:
 
 	bool generateTableHeader();
 
+	void schedulePlan(Resource* r, Task* t);
+
 	void dailyResourcePlan(Resource* r);
 	void dailyTaskPlan(Resource* r, Task* t);
 	void weeklyResourcePlan(Resource* r);

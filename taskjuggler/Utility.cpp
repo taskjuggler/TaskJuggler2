@@ -255,3 +255,35 @@ QString time2ISO(time_t t)
 	strftime(buf, 127, "%Y-%m-%d %H:%M %Z", tms);
 	return buf;
 }
+
+QString time2time(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[128];
+
+	strftime(buf, 127, "%H:%M %Z", tms);
+	return buf;
+}
+
+QString time2date(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[128];
+
+	strftime(buf, 127, "%Y-%m-%d", tms);
+	return buf;
+}
+
+time_t
+addTimeToDate(time_t day, time_t hour)
+{
+	day = midnight(day);
+	struct tm* tms = localtime(&day);
+
+	tms->tm_hour = hour / (60 * 60);
+	tms->tm_min = (hour / 60) % 60;
+	tms->tm_sec = hour % 60;
+
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}

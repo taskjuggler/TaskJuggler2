@@ -59,6 +59,8 @@ HTMLResourceReport::generate()
 				  << QString().sprintf(
 					  "%1.1f", r->getLoad(Interval(start, end)))
 				  << "</b></td>";
+			else if (*it == "schedule")
+				s << "<td class=\"available\" nowrap>&nbsp;</td>";
 			else if (*it == "daily")
 				dailyResourcePlan(r);
 			else if (*it == "weekly")
@@ -116,6 +118,8 @@ HTMLResourceReport::generate()
 					  << QString().sprintf(
 						  "%1.1f", r->getLoad(Interval(start, end), t))
 					  << "</td>";
+				else if (*it == "schedule")
+					schedulePlan(r, t);
 				else if (*it == "daily")
 					dailyTaskPlan(r, t);
 				else if (*it == "weekly")
@@ -150,6 +154,8 @@ HTMLResourceReport::generateTableHeader()
 			s << "<td class=\"headerbig\" rowspan=\"2\">End</td>";
 		else if (*it == "workdays")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Work Days</td>";
+		else if (*it == "schedule")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Schedule</td>";
 		else if (*it == "daily")
 			htmlDayHeaderMonths();
 		else if (*it == "weekly")
@@ -179,6 +185,28 @@ HTMLResourceReport::generateTableHeader()
 	s << "</tr>" << endl;
 
 	return TRUE;
+}
+
+void
+HTMLResourceReport::schedulePlan(Resource* r, Task* t)
+{
+	s << "<td class=\"default\" style=\"text-align:left\">";
+
+	bool first = TRUE;
+	for (Booking* b = r->jobsFirst(); b != 0; b = r->jobsNext())
+	{
+		if (t == b->getTask())
+		{
+			if (!first)
+				s << ", ";
+			else
+				first = FALSE;
+			s << time2ISO(b->getStart()) << " - "
+			  << time2ISO(b->getEnd()) << endl;
+		}
+	}
+
+	s << "</td>" << endl;
 }
 
 void

@@ -69,10 +69,13 @@ Project::pass2()
 	}
 
 	TaskList sortedTasks(taskList);
+	sortedTasks.setAutoDelete(FALSE);
 	sortedTasks.setSorting(TaskList::PrioDown);
 	sortedTasks.sort();
 
-	for (int day = start; day < end; day += scheduleGranularity)
+	time_t timeDelta = scheduleGranularity;
+	bool forward = TRUE;
+	for (int day = start; day >= start && day < end; day += timeDelta)
 	{
 		bool done;
 		do
@@ -80,14 +83,32 @@ Project::pass2()
 			done = TRUE;
 			for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
 				if (!t->schedule(day, scheduleGranularity))
+				{
 					done = FALSE;
+					break;	// Start with top priority tasks again.
+				}
 		} while (!done);
+
+		/* If we have at least one ALAP task that has an end date but no
+		 * start date then we move backwards in time. Otherwise we more
+		 * forward in time. */
+		timeDelta = scheduleGranularity;
+		for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
+			if (t->needsEarlierTimeSlot(day + scheduleGranularity))
+			{
+				timeDelta = -scheduleGranularity;
+				break;
+			}
+		if ((timeDelta < 0 && forward) || (timeDelta > 0 && !forward))
+		{
+			qDebug("Going %s at %s", timeDelta < 0 ? "backwards" : "foward",
+				   time2ISO(day).latin1());
+			forward = !forward;
+		}
 	}
 
 	if (unscheduledTasks() > 0)
-	{
-		qWarning("Can't schedule some tasks. Giving up!");
-	}
+		error = TRUE;
 	else
 		checkSchedule();
 
@@ -100,7 +121,10 @@ Project::unscheduledTasks()
 	int cntr = 0;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		if (!t->isScheduled())
+		{
+			qWarning("Task %s cannot be scheduled", t->getId().latin1());
 			cntr++;
+		}
 
 	return cntr;
 }

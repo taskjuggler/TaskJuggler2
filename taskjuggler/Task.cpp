@@ -55,6 +55,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	  parent(p), file(f), line(l)
 {
 	start = end = 0;
+	scheduling = ASAP;
 	actualStart = actualEnd = 0;
 	length = 0.0;
 	effort = 0.0;
@@ -91,12 +92,9 @@ Task::fatalError(const QString& msg) const
 bool
 Task::schedule(time_t date, time_t slotDuration)
 {
-	// Task is already scheduled or we are on vacation.
-	if ((start != 0 && end != 0) || (date <= lastSlot))
+	// Task is already scheduled.
+	if (start != 0 && end != 0)
 		return TRUE;
-
-	// Make sure that we schedule this task only one for each time slot.
-	lastSlot = date;
 
 	/* Check whether this task is a container tasks (task with sub-tasks).
 	 * Container tasks are scheduled when all sub tasks have been
@@ -104,38 +102,88 @@ Task::schedule(time_t date, time_t slotDuration)
 	if (!subTasks.isEmpty())
 		return scheduleContainer();
 
-	if (start == 0)
+	if (scheduling == Task::ASAP)
 	{
-		/* No start time has been specified. The start time is either the
-		 * project start time if the tasks has no previous tasks, or the
-		 * start time is determined by the end date of the last previous
-		 * task. */
-		if (previous.count() == 0)
-			start = project->getStart();
-		else if (earliestStart() > 0)
+		bool startChanged = FALSE;
+		if (start == 0)
 		{
-			start = earliestStart();
-			doneEffort = 0.0;
-			doneDuration = 0.0;
-			doneLength = 0.0;
-			planCosts = 0.0;
-			workStarted = FALSE;
-			tentativeEnd = date;
+			/* No start time has been specified. The start time is
+			 * either the project start time if the tasks has no
+			 * previous tasks, or the start time is determined by the
+			 * end date of the last previous task. */
+			if (depends.count() == 0)
+			{
+				start = project->getStart();
+				startChanged = TRUE;
+				lastSlot = start - 1;
+			}
+			else if (earliestStart() > 0)
+			{
+				start = earliestStart();
+				startChanged = TRUE;
+				lastSlot = start - 1;
+				doneEffort = 0.0;
+				doneDuration = 0.0;
+				doneLength = 0.0;
+				planCosts = 0.0;
+				workStarted = FALSE;
+				tentativeStart = date;
+			}
+			else
+				return TRUE;	// Task cannot be scheduled yet.
 		}
-		else
-			return TRUE;	// Task cannot be scheduled yet.
-	}
+		else if (lastSlot == 0)
+			lastSlot = start - 1;
+		/* Do not schedule anything if the time slot is not directly
+		 * following the time slot that was previously scheduled. */
+		if (date != lastSlot + 1)
+			return !startChanged;
+		lastSlot = date + slotDuration - 1;
 
-	/* Do not schedule anything before the start date lies within
-	 * the current time slot. */
-	if (date < start)
-		return TRUE;
+	}
+	else if (scheduling == Task::ALAP)
+	{
+		bool endChanged = FALSE;
+		if (end == 0)
+		{
+			/* No end time has been specified. The end time is either
+			 * the project end time if the tasks has no following
+			 * tasks, or the end time is determined by the start date
+			 * of the earliest following task. */
+			if (preceeds.count() == 0)
+			{
+				end = project->getEnd();
+				endChanged = TRUE;
+				lastSlot = end + 1;
+			}
+			else if (latestEnd() > 0)
+			{
+				end = latestEnd();
+				endChanged = TRUE;
+				lastSlot = end + 1;
+				doneEffort = 0.0;
+				doneDuration = 0.0;
+				doneLength = 0.0;
+				planCosts = 0.0;
+				workStarted = FALSE;
+				tentativeEnd = date + slotDuration - 1;
+			}
+			else
+				return TRUE;	// Task cannot be scheduled yet.
+		}
+		else if (lastSlot == 0)
+			lastSlot = end + 1;
+		/* Do not schedule anything if the currently time slot is not
+		 * directly preceeding the previously scheduled time slot. */
+		if (date + slotDuration != lastSlot)
+			return !endChanged;
+		lastSlot = date;
+	}
 
 	if (length > 0.0 || duration > 0.0)
 	{
 		/* Length specifies the number of working days (as daily load)
-		 * and duration specifies the number of calender days (as
-		 * daily load). */
+		 * and duration specifies the number of calender days. */
 		if (!allocations.isEmpty() && !project->isVacation(date))
 			bookResources(date, slotDuration);
 
@@ -147,7 +195,12 @@ Task::schedule(time_t date, time_t slotDuration)
 			 * some work going on on the start date. */
 			if (!workStarted && allocations.isEmpty())
 			{
-				start = date;
+				if (scheduling == ASAP)
+					start = date;
+				else if (scheduling == ALAP)
+					end = date + slotDuration - 1;
+				else
+					qFatal("Unknown scheduling mode");
 				workStarted = TRUE;
 			}
 		}
@@ -155,7 +208,10 @@ Task::schedule(time_t date, time_t slotDuration)
 		if ((length > 0.0 && doneLength >= length) ||
 			(duration > 0.0 && doneDuration >= duration))
 		{
-			end = tentativeEnd;
+			if (scheduling == ASAP)
+				end = tentativeEnd;
+			else
+				start = tentativeStart;
 			return FALSE;
 		}
 	}
@@ -175,7 +231,10 @@ Task::schedule(time_t date, time_t slotDuration)
 		bookResources(date, slotDuration);
 		if (doneEffort >= effort)
 		{
-			end = tentativeEnd;
+			if (scheduling == ASAP)
+				end = tentativeEnd;
+			else
+				start = tentativeStart;
 			return FALSE;
 		}
 	}
@@ -231,7 +290,8 @@ Task::bookResources(time_t date, time_t slotDuration)
 {
 	bool allocFound = FALSE;
 
-	for (Allocation* a = allocations.first(); a != 0;
+	for (Allocation* a = allocations.first();
+		 a != 0 && (effort == 0.0 || doneEffort < effort);
 		 a = allocations.next())
 	{
 		if (a->isPersistent() && a->getLockedResource())
@@ -265,36 +325,59 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 {
 	Interval interval;
 
-	if (r->isAvailable(date, slotDuration, interval))
+	bool booked = FALSE;
+	for (Resource* rit = r->subResourcesFirst(); rit != 0;
+		 rit = r->subResourcesNext())
 	{
-		double intervalLoad = project->convertToDailyLoad(
-			interval.getDuration());
-		r->book(new Booking(interval, this,
-							account ? account->getKotrusId() : QString(""),
-							project->getId()));
-		addBookedResource(r);
-
-		/* Move the start date to make sure that there is
-		 * some work going on on the start date. */
-		if (!workStarted)
+		if ((*rit).isAvailable(date, slotDuration, interval))
 		{
-			start = date;
-			workStarted = TRUE;
+			double intervalLoad = project->convertToDailyLoad(
+				interval.getDuration());
+			(*rit).book(new Booking(interval, this,
+								account ? account->getKotrusId() : QString(""),
+								project->getId()));
+			addBookedResource(rit);
+
+			/* Move the start date to make sure that there is
+			 * some work going on on the start date. */
+			if (!workStarted)
+			{
+				if (scheduling == ASAP)
+					start = date;
+				else if (scheduling == ALAP)
+					end = date + slotDuration - 1;
+				else
+					qFatal("Unknown scheduling mode");
+				workStarted = TRUE;
+			}
+
+			tentativeStart = interval.getStart();
+			tentativeEnd = interval.getEnd();
+			doneEffort += intervalLoad * (*rit).getEfficiency();
+			planCosts += (*rit).getRate() * intervalLoad *
+				(*rit).getEfficiency();
+
+			booked = TRUE;
 		}
-
-		tentativeEnd = interval.getEnd();
-		doneEffort += intervalLoad * r->getEfficiency();
-		planCosts += r->getRate() * intervalLoad * r->getEfficiency();
-
-		return TRUE;
 	}
-	return FALSE;
+	return booked;
 }
 
 bool
 Task::isScheduled()
 {
 	return ((start != 0 && end != 0) || !subTasks.isEmpty());
+}
+
+bool
+Task::needsEarlierTimeSlot(time_t date)
+{
+	if (scheduling == ALAP && end != 0 && start == 0 && date > lastSlot)
+		return TRUE;
+	if (scheduling == ASAP && start != 0 && end == 0 && date > lastSlot + 1)
+		return TRUE;
+
+	return FALSE;
 }
 
 bool
@@ -318,13 +401,30 @@ time_t
 Task::earliestStart()
 {
 	time_t date = 0;
-	for (Task* t = previous.first(); t != 0; t = previous.next())
+	for (Task* t = depends.first(); t != 0; t = depends.next())
 	{
-		// All previous tasks must have an end date set.
+		// All tasks this task depends on must have an end date set.
 		if (t->getEnd() == 0)
 			return 0;
+		// Milestones are assumed to have duration 0.
 		if (t->getEnd() > date)
 			date = t->getEnd() + (t->getStart() == t->getEnd() ? 0 : 1);
+	}
+
+	return date;
+}
+
+time_t
+Task::latestEnd()
+{
+	time_t date = 0;
+	for (Task* t = preceeds.first(); t != 0; t = preceeds.next())
+	{
+		// All tasks this task preceeds must have an start date set.
+		if (t->getStart() == 0)
+			return 0;
+		if (date == 0 || t->getStart() < date)
+			date = t->getStart() - 1;
 	}
 
 	return date;
@@ -398,7 +498,8 @@ Task::xRef(QDict<Task>& hash)
 {
 	bool error = FALSE;
 
-	for (QStringList::Iterator it = depends.begin(); it != depends.end(); ++it)
+	for (QStringList::Iterator it = dependsIds.begin();
+		 it != dependsIds.end(); ++it)
 	{
 		QString absId = resolveId(*it);
 		Task* t;
@@ -407,7 +508,7 @@ Task::xRef(QDict<Task>& hash)
 			fatalError(QString("Unknown dependency '") + absId + "'");
 			error = TRUE;
 		}
-		else if (previous.find(t) != -1)
+		else if (depends.find(t) != -1)
 		{
 			fatalError(QString("No need to specify dependency '") + absId +
 							   "' twice.");
@@ -415,8 +516,33 @@ Task::xRef(QDict<Task>& hash)
 		}
 		else
 		{
+			depends.append(t);
 			previous.append(t);
-			t->addFollower(this);
+			t->followers.append(this);
+		}
+	}
+
+	for (QStringList::Iterator it = preceedsIds.begin();
+		 it != preceedsIds.end(); ++it)
+	{
+		QString absId = resolveId(*it);
+		Task* t;
+		if ((t = hash.find(absId)) == 0)
+		{
+			fatalError(QString("Unknown dependency '") + absId + "'");
+			error = TRUE;
+		}
+		else if (preceeds.find(t) != -1)
+		{
+			fatalError(QString("No need to specify dependency '") + absId +
+							   "' twice.");
+			error = TRUE;
+		}
+		else
+		{
+			preceeds.append(t);
+			followers.append(t);
+			t->previous.append(this);
 		}
 	}
 
@@ -581,11 +707,11 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
       elem.appendChild( subtElem );
 
    /* Tasks (by id) on which this task depends */
-   if( depends.count() > 0 )
+   if( dependsIds.count() > 0 )
    {
       QDomElement deps = doc.createElement( "Depends" );
       
-      for (QValueListConstIterator<QString> it1= depends.begin(); it1 != depends.end(); ++it1)
+      for (QValueListConstIterator<QString> it1= dependsIds.begin(); it1 != dependsIds.end(); ++it1)
       {
 	 deps.appendChild( ReportXML::createXMLElem( doc, "TaskID", *it1 ));
       }
@@ -725,7 +851,7 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		else
 			return (t2->getPriority() - t1->getPriority());
 	default:
-		qWarning("Unknown sorting criteria!\n");
+		qFatal("Unknown sorting criteria!\n");
 		return 0;
 	}		
 }
