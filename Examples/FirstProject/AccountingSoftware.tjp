@@ -39,8 +39,8 @@ flags team
 
 resource dev "Developers" {
   resource dev1 "Paul Smith" { rate 330.0 }
-  resource dev2 "Sébastien Bono"
-  resource dev3 "Klaus Müller" { vacation 2002-02-01 - 2002-02-05 }
+  resource dev2 "SÃ©bastien Bono"
+  resource dev3 "Klaus MÃ¼ller" { vacation 2002-02-01 - 2002-02-05 }
 
 	flags team
 }
@@ -344,6 +344,5 @@ htmlaccountreport "Accounting.html" {
 # scheduled project. This will be used by tjx2gantt to create a nice
 # Gantt chart of our project.
 xmlreport "AccountingSoftware.tjx" {
-	#version 2
+	version 2
 }
-
