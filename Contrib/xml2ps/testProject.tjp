@@ -66,6 +66,11 @@ task testProject "testProject for xml2gantt" {
             length 14d
             ${__worker}
         }
+        task done "mailestone" {
+            length 3d
+            allocate worker_3
+            depends !dev_21
+        }
         depends !beta1
     }
 
@@ -73,7 +78,7 @@ task testProject "testProject for xml2gantt" {
         start 2002-08-12
         end   2002-08-12
         milestone
-        depends !docuIN, !beta1, !devel
+        depends !devel
     }
 }
 

@@ -211,8 +211,8 @@ sub text {
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
         if ( $elm_fifo[$#elm_fifo] eq 'Depend' ) {
-            $string =~ s/!//g;
-            $string =~ s/.*\.(.*)$/$1/g;
+            #$string =~ s/!//g;
+            #$string =~ s/.*\.(.*)$/$1/g;
             push @{$t->Depends}, "$string";
         }
         push @{$t->bookedResources}, "$string"  if ( $elm_fifo[$#elm_fifo] eq 'Resource' );
@@ -256,6 +256,7 @@ sub _draw_depends {
             my $i = __get_Index_from_Task($t);
             #-- die ende koordinaten vom task holen, von dem ich abhänge
             my ($x1, $y1) = __get_start_cood($i) if $i;
+            #print "+++$i: $x1, $y1+++\n";
             #  ---|
             #     |+++
             #  ---|
@@ -394,6 +395,28 @@ sub _draw_task {
             #-- rahmen um den task
             $p->setcolour(0,0,0);
             $p->box($x1, $y1, $x2, $y2, 0);
+            #-- text
+            $task->label($name);
+            $task->label_x($x1+1);
+            $task->label_y($y1-($task_height/1.5));
+        }
+        if ( $task->Type eq 'Container' ) {
+            $p->setcolour(0,0,0);
+            $p->box($x1-1, $y1, $x2+1, $y2+($task_height/1.2), 1);
+            #-- pfeil vorn
+            $p->polygon(
+                $x1+1, $y2+($task_height/1.2),
+                $x1-1, $y2+($task_height/1.2),
+                $x1, $y2+($task_height/2),
+                $x1+1, $y2+($task_height/1.2),
+                $x1+1, $y2+($task_height/1.2), 1);
+            #-- pfeil hinten
+            $p->polygon(
+                $x2+1, $y2+($task_height/1.2),
+                $x2-1, $y2+($task_height/1.2),
+                $x2, $y2+($task_height/2),
+                $x2+1, $y2+($task_height/1.2),
+                $x2+1, $y2+($task_height/1.2), 1);
             #-- text
             $task->label($name);
             $task->label_x($x1+1);
