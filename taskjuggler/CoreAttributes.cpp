@@ -66,6 +66,10 @@ CoreAttributesList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		return c2->getIndex() - c1->getIndex();
 	case IndexDown:
 		return c1->getIndex() - c2->getIndex();
+	case IdUp:
+		return c2->getId() - c1->getId();
+	case IdDown:
+		return c1->getId() - c2->getId();
 	case NameUp:
 		return c2->getName().compare(c1->getName());
 	case NameDown:

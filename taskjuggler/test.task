@@ -19,7 +19,6 @@ htmltaskreport "test1.html" {
   showactual
   hideresource 1
   hidetask 0
-  sorttasks nameup
 #  rollupresource team
 #  hidetask media | deadline | type1
 #  rolluptask beta | preview
@@ -58,6 +57,7 @@ macro deadline [
   task dl "SL 8.0 x86 deadline for ${1}" {
     flags deadline
     depends !work, ${2}
+    milestone
   }
 ]
 
@@ -149,6 +149,7 @@ task sl80 "SuSE Linux 8.0" {
 task sl80start "Start of 8.0 development" {
   start 2001-09-28
   actualstart 2001-10-03
+  milestone
 }
 
 task yast "YaST2 development"{

@@ -27,7 +27,7 @@ public:
 	virtual ~CoreAttributesList();
 
 	enum SortCriteria { Pointer, TreeMode, NameUp, NameDown, FullNameUp,
-						FullNameDown, IndexUp, IndexDown, 
+						FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
 						StartUp, StartDown, EndUp, EndDown,
 						PrioUp, PrioDown,
 						ResponsibleUp, ResponsibleDown };

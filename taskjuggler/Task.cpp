@@ -56,10 +56,12 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	allocations.setAutoDelete(TRUE);
 
 	scheduling = ASAP;
+	milestone = FALSE;
 	complete = -1;
 	note = "";
 	account = 0;
 	lastSlot = 0;
+	schedulingDone = FALSE;
 	responsible = 0;
 
 	if (p)
@@ -105,7 +107,7 @@ bool
 Task::schedule(time_t date, time_t slotDuration)
 {
 	// Task is already scheduled.
-	if (start != 0 && end != 0)
+	if (schedulingDone)
 		return TRUE;
 
 	/* Check whether this task is a container tasks (task with sub-tasks).
@@ -131,14 +133,9 @@ Task::schedule(time_t date, time_t slotDuration)
 				return TRUE;	// Task cannot be scheduled yet.
 
 			startChanged = TRUE;
-			lastSlot = start - 1;
-			doneEffort = 0.0;
-			doneDuration = 0.0;
-			doneLength = 0.0;
-			workStarted = FALSE;
-			tentativeEnd = date + slotDuration - 1;
+			lastSlot = 0;
 		}
-		else if (lastSlot == 0)
+		if (lastSlot == 0)
 		{
 			lastSlot = start - 1;
 			doneEffort = 0.0;
@@ -171,14 +168,9 @@ Task::schedule(time_t date, time_t slotDuration)
 				return TRUE;	// Task cannot be scheduled yet.
 
 			endChanged = TRUE;
-			lastSlot = end + 1;
-			doneEffort = 0.0;
-			doneDuration = 0.0;
-			doneLength = 0.0;
-			workStarted = FALSE;
-			tentativeStart = date;
+			lastSlot = 0;
 		}
-		else if (lastSlot == 0)
+		if (lastSlot == 0)
 		{
 			lastSlot = end + 1;
 			doneEffort = 0.0;
@@ -219,6 +211,7 @@ Task::schedule(time_t date, time_t slotDuration)
 			}
 		}
 
+		// Check whether we are done with this task.
 		if ((length > 0.0 && doneLength >= length) ||
 			(duration > 0.0 && doneDuration >= duration))
 		{
@@ -226,6 +219,7 @@ Task::schedule(time_t date, time_t slotDuration)
 				end = tentativeEnd;
 			else
 				start = tentativeStart;
+			schedulingDone = TRUE;
 			return FALSE;
 		}
 	}
@@ -243,21 +237,38 @@ Task::schedule(time_t date, time_t slotDuration)
 			return TRUE;
 		}
 		bookResources(date, slotDuration);
+		// Check whether we are done with this task.
 		if (doneEffort >= effort)
 		{
 			if (scheduling == ASAP)
 				end = tentativeEnd;
 			else
 				start = tentativeStart;
+			schedulingDone = TRUE;
 			return FALSE;
 		}
 	}
-	else
+	else if (milestone)
 	{
 		// Task is a milestone.
-		end = start;
+		if (scheduling == ASAP)
+			end = start;
+		else
+			start = end;
+		schedulingDone = TRUE;
 		return FALSE;
 	}
+	else if (start != 0 && end != 0)
+	{
+		// Task with start and end date but no duration criteria.
+		if (!allocations.isEmpty() && !project->isVacation(date))
+			bookResources(date, slotDuration);
+
+		if ((scheduling == ASAP && (date + slotDuration) >= end) ||
+			(scheduling == ALAP && date <= start))
+			schedulingDone = TRUE;
+	}
+
 	return TRUE;
 }
 
@@ -296,6 +307,8 @@ Task::scheduleContainer()
 
 	start = nstart;
 	end = nend;
+	schedulingDone = TRUE;
+
 	return FALSE;
 }
 
@@ -599,7 +612,7 @@ Task::xRef(QDict<Task>& hash)
 		}
 	}
 
-	return error;
+	return !error;
 }
 
 QString
@@ -629,7 +642,103 @@ Task::resolveId(QString relId)
 }
 
 bool
-Task::scheduleOK()
+Task::preScheduleOk()
+{
+	// Check plan values.
+	int durationSpec = 0;
+	if (planEffort > 0.0)
+		durationSpec++;
+	if (planLength > 0.0)
+		durationSpec++;
+	if (planDuration > 0.0)
+		durationSpec++;
+
+	int limitSpec = 0;
+	if (planStart != 0 || !depends.isEmpty())
+		limitSpec++;
+	if (planEnd != 0 || !preceeds.isEmpty())
+		limitSpec++;
+
+	if (durationSpec > 1)
+	{
+		fatalError(
+			"You can specify either a length, a duration or an effort.");
+		return FALSE;
+	}
+	else if (durationSpec == 1)
+	{
+		if (milestone)
+		{
+			fatalError("You cannot specify a duration criteria for a "
+					   "milestone.");
+			return FALSE;
+		}
+		if (limitSpec == 2)
+		{
+			fatalError("You cannot specify a duration criteria together with\n"
+					   "a start and end criteria.");
+			return FALSE;
+		}
+	}
+	else if (limitSpec != 2 &&
+			 !(limitSpec == 1 && milestone) &&
+			 !(limitSpec == 0 && !sub.isEmpty()))
+	{
+		fatalError("If you do not specify a duration criteria you have\n"
+				   "to specify a start and end criteria.");
+		return FALSE;
+	}
+
+	// Check actual values
+	durationSpec = 0;
+	if (actualEffort > 0.0 || planEffort > 0.0)
+		durationSpec++;
+	if (actualLength > 0.0 || planLength > 0.0)
+		durationSpec++;
+	if (actualDuration > 0.0 || planDuration > 0.0)
+		durationSpec++;
+
+	limitSpec = 0;
+	if (planStart != 0 || actualStart != 0 || !depends.isEmpty())
+		limitSpec++;
+	if (planEnd != 0 || actualEnd != 0 || !preceeds.isEmpty())
+		limitSpec++;
+
+	if (durationSpec > 1)
+	{
+		fatalError(
+			"You can specify either an actual length, duration or effort.");
+		return FALSE;
+	}
+	else if (durationSpec == 1)
+	{
+		if (milestone)
+		{
+			fatalError("You cannot specify an actual duration criteria for a "
+					   "milestone.");
+			return FALSE;
+		}
+		if (limitSpec == 2)
+		{
+			fatalError("You cannot specify an actual duration criteria\n"
+					   "together with a start and end criteria.");
+			return FALSE;
+		}
+	}
+	else if (limitSpec != 2 &&
+			 !(limitSpec == 1 && milestone) &&
+			 !(limitSpec == 0 && !sub.isEmpty()))
+	{
+		fatalError("If you do not specify an actual duration criteria you\n"
+				   "have to specify a start and end criteria.");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+bool
+Task::scheduleOk()
 {
 	if (!sub.isEmpty())
 		return TRUE;
@@ -721,6 +830,7 @@ Task::preparePlan()
 	length = planLength;
 	effort = planEffort;
 	lastSlot = 0;
+	schedulingDone = FALSE;
 	bookedResources.clear();
 
 	if (actualStart == 0.0)
@@ -755,6 +865,7 @@ Task::prepareActual()
 	length = actualLength;
 	effort = actualEffort;
 	lastSlot = 0;
+	schedulingDone = FALSE;
 	bookedResources.clear();
 }
 

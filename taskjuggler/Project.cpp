@@ -64,17 +64,24 @@ Project::pass2()
 			error = TRUE;
 	}
 
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		if (!t->preScheduleOk())
+			error = TRUE;
+
+	if (error)
+		return FALSE;
+
 	preparePlan();
 	if (!schedule())
-		error = TRUE;
+		return FALSE;
 	finishPlan();
 
 	prepareActual();
 	if (!schedule())
-		error = TRUE;
+		return FALSE;
 	finishActual();
 
-	return error;
+	return TRUE;
 }
 
 void
@@ -154,7 +161,7 @@ Project::schedule()
 	else
 		checkSchedule();
 
-	return error;
+	return !error;
 }
 
 int
@@ -175,7 +182,7 @@ bool
 Project::checkSchedule()
 {
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		if (!t->scheduleOK())
+		if (!t->scheduleOk())
 			return FALSE;
 
 	return TRUE;

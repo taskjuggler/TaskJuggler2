@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 	if (!pf->open(a.argv()[1]))
 		return (-1);
 	pf->parse();
-	p.pass2();
+	if (!p.pass2())
+		return (1);
 
 	p.generateReports();
 

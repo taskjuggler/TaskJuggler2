@@ -268,8 +268,10 @@ public:
 	 * @param date specifies the day that should be checked.
 	 */
 	bool isCompleted(time_t date) const;
-	bool scheduleOK();
+	bool scheduleOk();
+	bool preScheduleOk();
 
+	void setMilestone() { milestone = TRUE; }
 	bool isMilestone() const { return start != 0 && start == end; }
 	void setAccount(Account* a) { account = a; }
 
@@ -339,6 +341,9 @@ private:
 	 * Line in the file where the task definition starts. This is used
 	 * for error reports. */
 	int line;
+
+	/// True if the task is a milestone.
+	bool milestone;
 
 	/**
 	 * The priority is used during scheduling. The higher the priority
@@ -474,6 +479,9 @@ private:
 	 * allocation, so we can make sure the next slot is exactly adjacent
 	 * the the previous one. */
 	time_t lastSlot;
+
+	/// This variable is set to true when the task has been scheduled.
+	bool schedulingDone;
 
 	/// A list of all the resources booked for this task.
 	QPtrList<Resource> bookedResources;

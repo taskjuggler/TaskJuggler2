@@ -764,7 +764,13 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 			}
+			else if (token == "milestone" && !hasSubTasks)
+			{
+				task->setMilestone();
+				cantBeParent = TRUE;
+			}
 			else if READ_DATE("start", setPlanStart)
+			else if READ_DATE("end", setPlanEnd)
 			else if READ_DATE("minstart", setMinStart)
 			else if READ_DATE("maxstart", setMaxStart)
 			else if READ_DATE("minend", setMinEnd)
@@ -1302,14 +1308,6 @@ ProjectFile::readTimeValue(ulong& value)
 bool
 ProjectFile::readPlanTimeFrame(Task* task, double& value)
 {
-	if (task->getPlanEffort() > 0.0 ||
-		task->getPlanLength() > 0.0 ||
-		task->getPlanDuration() > 0.0)
-	{
-		fatalError(
-			"You can specify either a length, a duration or an effort.");
-		return FALSE;
-	}
 	QString val;
 	TokenType tt;
 	if ((tt = nextToken(val)) != REAL && tt != INTEGER)
@@ -1638,6 +1636,10 @@ ProjectFile::readSorting(Report* report, bool task)
 		sorting = CoreAttributesList::IndexUp;
 	else if (token == "indexdown")
 		sorting = CoreAttributesList::IndexDown;
+	else if (token == "idup")
+		sorting = CoreAttributesList::IdUp;
+	else if (token == "iddown")
+		sorting = CoreAttributesList::IdDown;
 	else if (token == "fullnameup")
 		sorting = CoreAttributesList::FullNameUp;
 	else if (token == "fullnamedown")
