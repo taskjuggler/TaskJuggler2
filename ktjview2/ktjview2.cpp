@@ -113,7 +113,7 @@ void ktjview2::setupActions()
     m_recentAction->loadEntries( kapp->config() );
 
     KStdAction::print(this, SLOT(filePrint()), actionCollection());
-    KStdAction::quit(kapp, SLOT(quit()), actionCollection());
+    KStdAction::quit(this, SLOT(close()), actionCollection());
 
     KStdAction::keyBindings( this, SLOT(optionsConfigureKeys()), actionCollection() );
     KStdAction::configureToolbars( this, SLOT(optionsConfigureToolbars()), actionCollection() );
