@@ -927,35 +927,39 @@ ReportHtml::htmlWeeklyHeaderWeeks(bool highlightNow)
 void
 ReportHtml::htmlWeeklyHeaderMonths()
 {
+	static const char* mnames[] =
+   	{
+	   	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+   	};
 	// Generates the 1st header line for weekly calendar views.
 	if (!hidePlan && showActual)
 		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 
 	for (time_t week = beginOfWeek(start); week < end; )
 	{
-		int left = weeksLeftInMonth(week);
-		if (left > weeksBetween(week, end))
-			left = weeksBetween(week, end);
+		int currMonth = monthOfWeek(week);
+		int left;
+		time_t wi = sameTimeNextWeek(week);
+		for (left = 1 ; wi < end && monthOfWeek(wi) == currMonth;
+			 wi = sameTimeNextWeek(wi))
+			left++;
+			 
 		s << "<td class=\"headerbig\" colspan=\""
 		  << QString().sprintf("%d", left) << "\">";
 		mt.clear();
-		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
-														   dayOfMonth(week)),
-							  defFileName, defFileLine));
 		mt.addMacro(new Macro(KW("month"),
-							  QString().sprintf("%02d", monthOfYear(week)),
+							  QString().sprintf("%02d", monthOfWeek(week)),
 							  defFileName, defFileLine));
 		mt.addMacro(new Macro(KW("year"),
-							  QString().sprintf("%04d", year(week)),
+							  QString().sprintf("%04d", yearOfWeek(week)),
 							  defFileName, defFileLine));
-		s << generateUrl(KW("monthheader"), monthAndYear(week));
+		s << generateUrl(KW("monthheader"), 
+						 QString().sprintf("%s %d",
+										   mnames[monthOfWeek(week) - 1],
+										   yearOfWeek(week)));
 		s << "</td>" << endl;
-
-		time_t newWeek = beginOfWeek(beginOfMonth(sameTimeNextMonth(week)));
-		if (isSameMonth(newWeek, week))
-			week = sameTimeNextWeek(newWeek);
-		else
-			week = newWeek;
+		week = wi;
 	}
 }
 

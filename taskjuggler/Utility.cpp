@@ -178,14 +178,14 @@ dayOfMonth(time_t t)
 }
 
 int
-weekOfYear(time_t t)
+weekOfYear(time_t t, bool beginOnMonday)
 {
 	/* The  ISO  8601:1988 week number of the current year as a decimal
 	 * number, range 1 to 53, where  week  1 is  the first week that has at
 	 * least 4 days in the current year, and with Monday as the first day
 	 * of the week. This is also compliant with DIN 1355. */
 	uint week = 0;
-	uint weekday1Jan = dayOfWeek(beginOfYear(t), TRUE);
+	uint weekday1Jan = dayOfWeek(beginOfYear(t), beginOnMonday);
 	struct tm* tms = localtime(&t);
 	int days = tms->tm_yday;
 
@@ -196,7 +196,7 @@ weekOfYear(time_t t)
 
 	if (days < 0)
 		if ((weekday1Jan == 4) ||
-		   	(dayOfWeek(beginOfYear(beginOfYear(t) - 1), TRUE) == 3))
+		   	(dayOfWeek(beginOfYear(beginOfYear(t) - 1), beginOnMonday) == 3))
 			week = 53;
 		else 
 			week = 52;
@@ -207,13 +207,40 @@ weekOfYear(time_t t)
 	{
 		if (weekday1Jan == 3)
 			week = 53;
-		else if (dayOfWeek(sameTimeNextYear(beginOfYear(t)), TRUE) == 4)
+		else if (dayOfWeek(sameTimeNextYear(beginOfYear(t)),
+						   beginOnMonday) == 4)
 			week = 53;
 		else
 		   	week = 1;
 	}
 
 	return week;
+}
+
+int
+monthOfWeek(time_t t, bool beginOnMonday)
+{
+	struct tm* tms = localtime(&t);
+	int tm_mon = tms->tm_mon;
+	int tm_mday = tms->tm_mday;
+	int lastDayOfMonth = dayOfMonth(beginOfMonth(sameTimeNextMonth(t)) - 1);
+	if (tm_mday < 4)
+	{
+		if (dayOfWeek(t, beginOnMonday) - tm_mday >= 3)
+			if (tm_mon == 0)
+				return 12;
+			else
+				return tm_mon;
+	}
+	else if (tm_mday > lastDayOfMonth - 4)
+	{
+		if (tm_mday - dayOfWeek(t) > lastDayOfMonth - 4)
+			if (tm_mon == 11)
+				return 1;
+			else
+				return tm_mon + 2;
+	}
+	return tm_mon + 1;
 }
 
 int 
@@ -244,10 +271,38 @@ dayOfWeekName(time_t t)
 }
 
 int
+dayOfYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_yday + 1;
+}
+
+
+int
 year(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	return tms->tm_year + 1900;
+}
+
+int
+yearOfWeek(time_t t, bool beginOnMonday)
+{
+	struct tm* tms = localtime(&t);
+	int tm_year = tms->tm_year;
+
+	int lastDayOfYear = dayOfYear(beginOfYear(sameTimeNextYear(t)) - 1);
+	if (dayOfYear(t) < 4)
+	{
+		if (dayOfWeek(t, beginOnMonday) - dayOfYear(t) >= 3)
+			return 1900 + tm_year - 1;
+	}
+	else if (dayOfYear(t) > lastDayOfYear - 4)
+	{
+		if (dayOfYear(t) - dayOfWeek(t, beginOnMonday) > lastDayOfYear - 4)
+			return 1900 + tm_year + 1;
+	}
+	return 1900 + tm_year;
 }
 
 time_t

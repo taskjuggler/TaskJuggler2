@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	bool showHelp = FALSE;
 	bool showCopyright = FALSE;
 	bool terminateProgram = FALSE;
-	
+
 	int i;
 	for (i = 1 ; i < a.argc() && a.argv()[i][0] == '-'; i++)
 		if (strcmp(a.argv()[i], "--help") == 0)

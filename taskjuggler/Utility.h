@@ -79,11 +79,17 @@ int secondsOfDay(time_t d);
 
 int dayOfMonth(time_t d);
 
-int weekOfYear(time_t d);
+int dayOfYear(time_t d);
+
+int weekOfYear(time_t d, bool beginOnMonday = FALSE);
+
+int monthOfWeek(time_t d, bool beginOnMonday = FALSE);
 
 int monthOfYear(time_t d);
 
 int year(time_t d);
+
+int yearOfWeek(time_t d, bool beginOnMonday = FALSE);
 
 int dayOfWeek(time_t d, bool beginOnMonday = FALSE);
 
