@@ -98,7 +98,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
                 << "</tr>"
                 << "<tr>"
                 <<   "<td style=\"font-size:100%\">" 
-                <<   monthAndYear(wd) << "</td>"
+                << monthAndYear(wd) << "</td>"
                 << "</tr>"
                 << "</table></td>" << endl;
         }

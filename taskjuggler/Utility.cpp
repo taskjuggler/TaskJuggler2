@@ -172,13 +172,25 @@ getUtilityError()
     return UtilityError;
 }
 
-const char*
+QString
 monthAndYear(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char s[32];
     strftime(s, sizeof(s), "%b %Y", tms);
-    return s;
+    return QString::fromLocal8Bit(s);
+}
+
+QString
+shortMonthName(int mon)
+{
+    struct tm tms;
+    tms.tm_mday = 1;
+    tms.tm_mon = mon;
+    tms.tm_year = 2000;
+    static char s[32];
+    strftime(s, sizeof(s), "%b", &tms);
+    return QString::fromLocal8Bit(s);
 }
 
 bool
@@ -395,7 +407,7 @@ dayOfWeekName(time_t t)
     static char buf[64];
 
     strftime(buf, 63, "%A", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
 int
@@ -598,67 +610,74 @@ sameTimeLastYear(time_t t)
     return mktime(&tmc);
 }
 
-QString time2ISO(time_t t)
+QString 
+time2ISO(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, "%Y-%m-%d %H:%M %Z", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
-QString time2tjp(time_t t)
+QString 
+time2tjp(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%Z", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
-QString time2rfc(time_t t)
+QString 
+time2rfc(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%z", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
-QString time2user(time_t t, const QString& timeFormat)
+QString 
+time2user(time_t t, const QString& timeFormat)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, timeFormat, tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
-QString time2time(time_t t)
+QString 
+time2time(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, "%H:%M %Z", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
-QString time2date(time_t t)
+QString 
+time2date(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, "%Y-%m-%d", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
-QString time2weekday(time_t t)
+QString 
+time2weekday(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
     strftime(buf, 127, "%A", tms);
-    return buf;
+    return QString::fromLocal8Bit(buf);
 }
 
 time_t

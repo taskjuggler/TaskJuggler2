@@ -1944,7 +1944,7 @@ credited. The type of the account specifies whether the money
 associated with this task is considered cost or revenue. The task can
 contribute to the account either with the resource usage fees or with
 <link linkend="task_startcredit">start-</link> or <link
-likend="task_endcredit">endcredit</link>. If no account has been
+linkend="task_endcredit">endcredit</link>. If no account has been
 specified for the task, it will generate neither cost nor revenue.</para>
 
 <para>This attribute is inherited by subtasks if specified prior to the

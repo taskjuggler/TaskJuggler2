@@ -1,6 +1,7 @@
 # The HTML reports include localized strings, so we must ensure that
 # we use the same LOCALE as the reference files have used.
 export LANG=en_US
+export LC_ALL=en_US
 export LC_COLLATE=POSIX 
 
 errors=0

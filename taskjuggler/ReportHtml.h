@@ -93,7 +93,8 @@ public:
 
     void scenarioResources(int sc, const Task* t, bool light);
 
-    void reportLoad(double load, const QString& bgcol, bool bold);
+    void reportLoad(double load, const QString& bgcol, bool bold,
+                    bool milestone = FALSE);
     void reportPIDs(const QString& pids, const QString bgCol, bool bold);
 
     void generateSchedule(int sc, const Resource* r, const Task* t);

@@ -882,13 +882,6 @@ ReportHtml::htmlWeeklyHeaderWeeks(bool highlightNow)
 void
 ReportHtml::htmlWeeklyHeaderMonths()
 {
-    static const char* mnames[] =
-    {
-        I18N_NOOP("Jan"), I18N_NOOP("Feb"), I18N_NOOP("Mar"),
-        I18N_NOOP("Apr"), I18N_NOOP("May"), I18N_NOOP("Jun"),
-        I18N_NOOP("Jul"), I18N_NOOP("Aug"), I18N_NOOP("Sep"), 
-        I18N_NOOP("Oct"), I18N_NOOP("Nov"), I18N_NOOP("Dec")
-    };
     // Generates the 1st header line for weekly calendar views.
     if (!hidePlan && showActual)
         s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
@@ -916,8 +909,7 @@ ReportHtml::htmlWeeklyHeaderMonths()
                               defFileName, defFileLine));
         s << generateUrl(KW("monthheader"), 
                          QString("%1 %2").
-                         arg(i18n(mnames[monthOfWeek(week, weekStartsMonday) -
-                                  1])).
+                         arg(shortMonthName(monthOfWeek(week, weekStartsMonday) - 1)).
                          arg(yearOfWeek(week, weekStartsMonday)));
         s << "</td>" << endl;
         week = wi;
@@ -928,14 +920,6 @@ void
 ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 {
     // Generates 2nd header line of monthly calendar view.
-    static const char* mnames[] =
-    {
-        I18N_NOOP("Jan"), I18N_NOOP("Feb"), I18N_NOOP("Mar"),
-        I18N_NOOP("Apr"), I18N_NOOP("May"), I18N_NOOP("Jun"),
-        I18N_NOOP("Jul"), I18N_NOOP("Aug"), I18N_NOOP("Sep"), 
-        I18N_NOOP("Oct"), I18N_NOOP("Nov"), I18N_NOOP("Dec")
-    };
-
     for (time_t month = beginOfMonth(start); month < end;
          month = sameTimeNextMonth(month))
     {
@@ -954,7 +938,7 @@ ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(moy)),
                               defFileName, defFileLine));
-        s << generateUrl(KW("monthheader"), i18n(mnames[moy - 1]));
+        s << generateUrl(KW("monthheader"), shortMonthName(moy - 1));
         s << "</span></td>";
     }
 }
@@ -1207,7 +1191,9 @@ ReportHtml::dailyTaskPlan(const Task* t, const Resource* r)
             reportPIDs(pids, bgCol, !r->isGroup());
         }
         else
-        reportLoad(load, bgCol, !t->isContainer());
+            reportLoad(load, bgCol, !t->isContainer(), 
+                       t->isActive(Task::Plan, Interval(day).firstDay()) &&
+                       t->isMilestone());
     }
 }
 
@@ -1239,7 +1225,9 @@ ReportHtml::dailyTaskActual(const Task* t, const Resource* r)
             reportPIDs(pids, bgCol, !r->isGroup());
         }
         else
-            reportLoad(load, bgCol, !t->isContainer());
+            reportLoad(load, bgCol, !t->isContainer(),
+                       t->isActive(Task::Actual, Interval(day).firstDay()) &&
+                       t->isMilestone());
     }
 }
 
@@ -1322,15 +1310,16 @@ ReportHtml::weeklyTaskPlan(const Task* t, const Resource* r)
         double load = t->getLoad(Task::Plan, Interval(week).
                                  firstWeek(weekStartsMonday), r);
         QString bgCol = 
-            t->isActive(Task::Plan, 
-                        Interval(week).firstWeek(weekStartsMonday)) ?
+            t->isActive(Task::Plan, Interval(week).firstWeek(weekStartsMonday)) ?
             (t->isMilestone() ? "milestone" :
              (r == 0 && !t->isBuffer(Task::Plan, Interval(week).
                                      firstWeek(weekStartsMonday))
               ? "booked" : "bookedlight")) :
             isSameWeek(project->getNow(), week, weekStartsMonday) ? "today" :
             (r == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !t->isContainer());
+        reportLoad(load, bgCol, !t->isContainer(), 
+                   t->isActive(Task::Plan, Interval(week).firstWeek(weekStartsMonday)) &&
+                   t->isMilestone());
     }
 }
 
@@ -1356,7 +1345,9 @@ ReportHtml::weeklyTaskActual(const Task* t, const Resource* r)
               ? "booked" : "bookedlight")) :
             isSameWeek(project->getNow(), week, weekStartsMonday) ? "today" :
             (r == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !t->isContainer());
+        reportLoad(load, bgCol, !t->isContainer(), 
+                   t->isActive(Task::Actual, Interval(week).firstWeek(weekStartsMonday)) && 
+                   t->isMilestone());
     }
 }
 
@@ -1425,7 +1416,9 @@ ReportHtml::monthlyTaskPlan(const Task* t, const Resource* r)
               ? "booked" : "bookedlight")) :
             isSameMonth(project->getNow(), month) ? "today" :
             (r == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !t->isContainer());
+        reportLoad(load, bgCol, !t->isContainer(), 
+                   t->isActive(Task::Plan, Interval(month).firstMonth()) &&
+                   t->isMilestone());
     }
 }
 
@@ -1449,7 +1442,9 @@ ReportHtml::monthlyTaskActual(const Task* t, const Resource* r)
               ? "booked" : "bookedlight")) :
             isSameMonth(project->getNow(), month) ? "today" :
             (r == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !t->isContainer());
+        reportLoad(load, bgCol, !t->isContainer(), 
+                   t->isActive(Task::Actual, Interval(month).firstMonth()) && 
+                   t->isMilestone());
     }
 }
 
@@ -1727,15 +1722,19 @@ ReportHtml::generateTaskStatus(TaskStatus status, bool light)
 }
 
 void
-ReportHtml::reportLoad(double load, const QString& bgCol, bool bold)
+ReportHtml::reportLoad(double load, const QString& bgCol, bool bold,
+                       bool milestone)
 {
-    if (load > 0.0 && barLabels != BLT_EMPTY)
+    if ((load > 0.0 || milestone) && barLabels != BLT_EMPTY)
     {
         s << "<td class=\""
           << bgCol << "\">";
         if (bold)
             s << "<b>";
-        s << scaledLoad(load);
+        if (milestone)
+            s << "*";
+        else
+            s << scaledLoad(load);
         if (bold)
             s << "</b>";
         s << "</td>" << endl;

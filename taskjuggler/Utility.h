@@ -30,7 +30,9 @@ const QString& getUtilityError();
 
 const char* timezone2tz(const char* tzone);
 
-const char* monthAndYear(time_t d);
+QString monthAndYear(time_t d);
+
+QString shortMonthName(int mon);
 
 int daysLeftInMonth(time_t d);
 
