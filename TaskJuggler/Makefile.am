@@ -5,7 +5,7 @@
 bin_PROGRAMS = TaskJuggler TaskJuggler_client
 
 # set the include path for X, qt and KDE
-INCLUDES = -I /home/cs/src/taskjuggler/src/taskjuggler $(all_includes)
+INCLUDES = -I ../taskjuggler $(all_includes)
 
 # the library search path. 
 TaskJuggler_LDFLAGS = $(KDE_RPATH) $(all_libraries)
@@ -16,6 +16,7 @@ TaskJuggler_LDADD = -lktexteditor -ltaskjuggler $(LIB_KFILE) $(LIB_KDEPRINT)
 # which sources should be compiled for taskjuggler
 TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \
+	ReportManager.cpp ManagedReportInfo.cpp \
 	taskjuggleriface.skel MainWidget.ui
 
 # these are the headers for your project
