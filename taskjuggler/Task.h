@@ -24,9 +24,11 @@
 #include "Utility.h"
 #include "CoreAttributes.h"
 
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 #include <libkcal/todo.h>
 #include <libkcal/calendarlocal.h>
+#endif
 #endif
 
 class Project;
@@ -278,10 +280,11 @@ public:
 
 	static void setDebugLevel(int l) { debugLevel = l; }
 
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
    void toTodo( KCal::Todo *, KCal::CalendarLocal * );
 #endif
-
+#endif
    void loadFromXML( QDomElement& parent, Project *project );
    
 private:
