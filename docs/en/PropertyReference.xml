@@ -302,6 +302,10 @@ file processing, the report macros must be prefixed with an additional
    <member><varname>duration</varname></member>
    <member>The duration of the task</member>
    
+   <member><varname>efficiency</varname></member>
+   <member>The efficiency of the resource. It's a measurement of how
+   much the resource can contribute to the workload of tasks.</member>
+   
    <member><varname>effort</varname></member>
    <member>The effort put into the task</member>
    

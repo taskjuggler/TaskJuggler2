@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
  <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
@@ -9,17 +9,33 @@
 ]>
 <book>
 <bookinfo><title>The TaskJuggler Manual</title>
+<authorgroup>
 <author>
 	<firstname>Chris</firstname><surname>Schl&auml;ger</surname>
 </author>
 <author>
 	<firstname>Marc</firstname><surname>R&uuml;hrschneck</surname>
 </author>
-<date>Version @VERSION@</date>
+</authorgroup>
 <copyright>
 	<year>2001, 2002, 2003, 2004</year>
 	<holder>Chris Schl&auml;ger</holder>
 </copyright>
+<date>Version @VERSION@</date>
+<releaseinfo>@VERSION@</releaseinfo>
+<abstract>
+<para>
+This document describes TaskJuggler version @VERSION@
+</para>
+</abstract>
+
+<keywordset>
+<keyword>TaskJuggler</keyword>
+<keyword>Project Management</keyword>
+<keyword>Gantt Chart</keyword>
+<keyword>Task</keyword>
+<keyword>Resources</keyword>
+</keywordset>
 </bookinfo>
 
 <preface><title>About this document</title>

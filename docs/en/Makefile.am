@@ -1,11 +1,15 @@
-EXTRA_DIST = taskjuggler/*.html
+EXTRA_DIST = taskjuggler/*.html 
+docprefix = /usr/share/doc/packages/taskjuggler/
+kdeprefix = $(prefix)/share/doc/HTML/en/taskjuggler/
 
-docprefix = $(prefix)/share/doc/packages/taskjuggler/manual
-
-SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml Example.xml SyntaxReference.xml GenPropertyReference.xml
+SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml Example.xml SyntaxReference.xml GenPropertyReference.xml index.docbook
 CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml
 
 install-data-local:
+	$(mkinstalldirs) -m 755 $(DESTDIR)$(kdeprefix)
+	$(INSTALL_DATA) $(srcdir)/index.docbook $(DESTDIR)$(kdeprefix)
+	$(INSTALL_DATA) $(srcdir)/index.cache.bz2 $(DESTDIR)$(kdeprefix)
+	$(INSTALL_DATA) $(srcdir)/*.xml $(DESTDIR)$(kdeprefix)
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)
 	@if test "${HTMLMANUAL}" != "no" ; then \
 	  $(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(DESTDIR)$(docprefix);\
@@ -15,6 +19,7 @@ install-data-local:
 	fi
 
 uninstall-local:
+	-rm -f $(DESTDIR)$(kdeprefix)
 	-rm -f $(DESTDIR)$(docprefix)
 
 Example.xml : ../../Examples/FirstProject/AccountingSoftware.tjp
@@ -25,7 +30,17 @@ Example.xml : ../../Examples/FirstProject/AccountingSoftware.tjp
 
 GenPropertyReference.xml: PropertyReference.xml PropertyReference.xsl
 	xsltproc PropertyReference.xml PropertyReference.xsl -o \
+	  GenPropertyReference.pre.xml
+	sed "s/<?xml version=\"1.0\"?>//" GenPropertyReference.pre.xml > \
 	  GenPropertyReference.xml
+	rm GenPropertyReference.pre.xml  
+
+index.docbook : taskjuggler.xml
+	cp taskjuggler.xml index.docbook
+	patch index.docbook < kde-doc.patch
+
+index.cache.bz2 : index.docbook GenPropertyReference.xml
+	meinproc --check --cache index.cache.bz2 ./index.docbook
 
 taskjuggler/book1.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
@@ -60,8 +75,12 @@ tarball:
 	  echo $$doctarball " created" ; \
 	fi
 
-all-local: taskjuggler/book1.html taskjuggler.ps taskjuggler.pdf
+all-local: index.cache.bz2 taskjuggler/book1.html taskjuggler.ps taskjuggler.pdf
 
 check-local:
 	xmllint ${SGMLSOURCES}
+
+clean-local:
+	rm -rf taskjuggler index.cache.bz2 index.docbook \
+	taskjuggler.out taskjuggler.pdf
 
