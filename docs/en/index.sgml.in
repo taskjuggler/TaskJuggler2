@@ -16,9 +16,10 @@ This document describes TaskJuggler version TJVER
 <sect1>About TaskJuggler
 <p>
 
-TaskJuggler is a project management tool for Linux and Unix operating
-systems. Whether you want to plan your college's shifts for the next
-month or want to build a skyscraper - TaskJuggler is the tool for you.
+TaskJuggler is a project management tool for Linux and UNIX
+system-based operating systems. Whether you want to plan your
+college's shifts for the next month or want to build a skyscraper -
+TaskJuggler is the tool for you.
 
 Instead of clicking yourself painfully through hundreds of dialog
 boxes you specify your TaskJuggler project in a simple text format.
@@ -1733,7 +1734,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 Linux is a registered trademark of Linus Torvalds.
 
-Unix is a registered trademark of The Open Group.
+UNIX is a registered trademark and The Open Group is a trademark of
+The Open Group in the US and other countries.
 
 TaskJuggler is a trademark of Chris Schlaeger.
 
