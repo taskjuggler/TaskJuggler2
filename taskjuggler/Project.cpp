@@ -61,7 +61,7 @@ Project::Project()
 	 * defaults are probably true for many Western countries, but have to be
 	 * changed in project files. */
 	dailyWorkingHours = 8.0;
-	yearlyWorkingDays = 252;
+	yearlyWorkingDays = 260.714;
 	scheduleGranularity = ONEHOUR;
 	weekStartsMonday = TRUE;
 	timeFormat = "%Y-%m-%d %H:%M";

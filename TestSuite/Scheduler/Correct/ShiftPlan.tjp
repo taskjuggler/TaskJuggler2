@@ -68,8 +68,8 @@ task t2 "Printer Support" {
   effort 2m
 	priority 600
 	allocate s2 { alternative s1, s3 select minloaded }
-	minend 2002-07-19-14:29
-	maxend 2002-07-19-14:30
+	minend 2002-07-23-9:29
+	maxend 2002-07-23-9:30
 }
 
 task t3 "Network Support" {
@@ -77,12 +77,12 @@ task t3 "Network Support" {
   effort 7w
 	priority 700
 	allocate s4 { alternative s1, s3, s2 select minloaded shift late }
-	minend 2002-07-29-11:29
-	maxend 2002-07-29-11:30
+	minend 2002-07-30-16:29
+	maxend 2002-07-30-16:30
 }
 
 htmltaskreport "ShiftPlan.html" {
-	columns name, start, end, daily
+	columns name, start, end, effort, daily
 	hideresource 0
 }
 

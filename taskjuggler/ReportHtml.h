@@ -23,6 +23,7 @@
 #include <qmap.h>
 
 #include "Report.h"
+#include "HTMLPrimitives.h"
 #include "MacroTable.h"
 #include "taskjuggler.h"
 
@@ -33,7 +34,7 @@ class ExpressionTree;
  * @short Stores all information about an HTML report.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class ReportHtml : public Report
+class ReportHtml : public Report, public HTMLPrimitives
 {
 public:
 	ReportHtml(Project* p, const QString& f, time_t s, time_t e,
@@ -125,7 +126,6 @@ public:
 		rawStyleSheet = styleSheet;
 	}
 	
-	QString htmlFilter(const QString& s) const;
 
 protected:
 	ReportHtml() { }

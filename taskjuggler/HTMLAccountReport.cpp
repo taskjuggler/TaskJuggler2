@@ -103,7 +103,7 @@ HTMLAccountReport::generate()
 void
 HTMLAccountReport::generatePlanAccount(Account* a)
 {
-	s << "<tr valign=\"middle\">";
+	s << "<tr valign=\"middle\">" << endl; 
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -274,7 +274,7 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 				s << "<td class=\"" << style << "\" rowspan=\""
 				  << (!hidePlan && showActual ? "2" : "1")
 				  << "\" nowrap><b>" << label << "</b></td>";
-		else if (*it == KW("total"))
+			else if (*it == KW("total"))
 				s << "<td class=\"" << style
 				  << "\" style=\"text-align:right\">"
 				  << "<b>"
@@ -346,7 +346,7 @@ HTMLAccountReport::dailyAccountPlan(Account* a, const QString& style)
 
 	if (showActual)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Plan");
@@ -373,7 +373,7 @@ HTMLAccountReport::dailyAccountActual(Account* a, const QString& style)
 {
 	if (!hidePlan)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Actual");
@@ -404,7 +404,7 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 
 	if (showActual)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Plan");
@@ -434,7 +434,7 @@ HTMLAccountReport::weeklyAccountActual(Account* a, const QString& style)
 {
 	if (!hidePlan)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Actual");
@@ -467,7 +467,7 @@ HTMLAccountReport::monthlyAccountPlan(Account* a, const QString& style)
 
 	if (showActual)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Plan");
@@ -497,7 +497,7 @@ HTMLAccountReport::monthlyAccountActual(Account* a, const QString& style)
 {
 	if (!hidePlan)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Actual");
@@ -530,7 +530,7 @@ HTMLAccountReport::quarterlyAccountPlan(Account* a, const QString& style)
 
 	if (showActual)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Plan");
@@ -560,7 +560,7 @@ HTMLAccountReport::quarterlyAccountActual(Account* a, const QString& style)
 {
 	if (!hidePlan)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Actual");
@@ -593,7 +593,7 @@ HTMLAccountReport::yearlyAccountPlan(Account* a, const QString& style)
 
 	if (showActual)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Plan");
@@ -623,7 +623,7 @@ HTMLAccountReport::yearlyAccountActual(Account* a, const QString& style)
 {
 	if (!hidePlan)
 	{
-		s << "<td class=\"headersmall\">";
+		s << "<td class=\"headersmall\" style=\"text-align:right\">";
 		if (!a)
 			s << "<b>";
 		s << i18n("Actual");

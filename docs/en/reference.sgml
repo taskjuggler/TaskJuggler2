@@ -65,32 +65,40 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 task.</para></listitem>
 
 </varlistentry>
-<varlistentry><term>ismilestone()</term>
+<varlistentry><term>endsafter(<link linkend="id">ID</link>, <link
+																 linkend="date">DATE</link>)</term>
 
-<listitem><para>true if the task is a milestone.</para></listitem>
-
-</varlistentry>
-<varlistentry><term>issubtask(<link linkend="id">ID</link>)</term>
-
-<listitem><para>true if the task is a sub task of task
-ID.</para></listitem>
+<listitem><para>true if the task ends in scenario ID after the
+specified date</para></listitem>
 
 </varlistentry>
-<varlistentry><term>istask(<link linkend="id">ID</link>)</term>
+<varlistentry><term>endsafter(<link linkend="id">ID</link>, <link
+																 linkend="date">DATE</link>)</term>
 
-<listitem><para>true if the tasks has the listed ID.</para></listitem>
-
-</varlistentry>
-<varlistentry><term>isresource(<link linkend="id">ID</link>)</term>
-
-<listitem><para>true if the resource has the listed
-ID.</para></listitem>
+<listitem><para>true if the task ends in scenario ID after the
+specified date</para></listitem>
 
 </varlistentry>
 <varlistentry><term>isaccount(<link linkend="id">ID</link>)</term>
 
 <listitem><para>true if the account has the listed
 ID.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>isactuallallocated(<link linkend="id">ID</link>,
+																			 <link linkend="date">DATE</link>,
+																			 <link
+																			 linkend="date">DATE</link>)</term>
+
+<listitem><para>true if the resource has been
+allocated to the project ID in the specified time interval in the
+actual scenario
+</para></listitem>
+
+</varlistentry>
+<varlistentry><term>ismilestone()</term>
+
+<listitem><para>true if the task is a milestone.</para></listitem>
 
 </varlistentry>
 <varlistentry><term>isplanallocated(<link linkend="id">ID</link>,
@@ -104,15 +112,47 @@ scenario
 </para></listitem>
 
 </varlistentry>
-<varlistentry><term>isactuallallocated(<link linkend="id">ID</link>,
-																			 <link linkend="date">DATE</link>,
-																			 <link
-																			 linkend="date">DATE</link>)</term>
+<varlistentry><term>isresource(<link linkend="id">ID</link>)</term>
 
-<listitem><para>true if the resource has been
-allocated to the project ID in the specified time interval in the
-actual scenario
-</para></listitem>
+<listitem><para>true if the resource has the listed
+ID.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>issubtaskof(<link linkend="id">ID</link>)</term>
+
+<listitem><para>true if the task is a sub task of task
+ID.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>istask(<link linkend="id">ID</link>)</term>
+
+<listitem><para>true if the task has the listed ID.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>istaskstatus(<link linkend="id">ID</link>,
+																 STATUS)</term>
+<listitem><para>true if the task has in scenario ID the specified
+status. STATUS can be any of
+<computeroutput>notstarted</computeroutput>,
+	<computeroutput>inprogresslate</computeroutput>,
+	<computeroutput>inprogress</computeroutput>,
+	<computeroutput>ontime</computeroutput>,
+	<computeroutput>inprogressearly</computeroutput>,
+	<computeroutput>finished</computeroutput>.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>startsafter(<link linkend="id">ID</link>, <link
+																 linkend="date">DATE</link>)</term>
+
+<listitem><para>true if the task starts in scenario ID after the
+specified date</para></listitem>
+
+</varlistentry>
+<varlistentry><term>startsbefore(<link linkend="id">ID</link>, <link
+																 linkend="date">DATE</link>)</term>
+
+<listitem><para>true if the task starts in scenario ID before the
+specified date</para></listitem>
 
 </varlistentry>
 </variablelist>
@@ -170,7 +210,7 @@ breaks.</para>
 <member><computeroutput>wed</computeroutput></member>
 <member>for Wednesday</member>
 <member><computeroutput>thu</computeroutput></member>
-<member>for Thursday<member>
+<member>for Thursday</member>
 <member><computeroutput>fri</computeroutput></member>
 <member>for Friday</member>
 <member><computeroutput>sat</computeroutput></member>

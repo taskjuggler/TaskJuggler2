@@ -265,7 +265,7 @@ public:
 	 */
 	double getWeeklyWorkingDays() const
    	{
-	   	return yearlyWorkingDays / 52.14285714; 
+	   	return yearlyWorkingDays / 52.1429; 
 	}
 
 	/**

@@ -1910,7 +1910,7 @@ ProjectFile::readPlanTimeFrame(double& value, bool workingDays)
 			(workingDays ? proj->getWeeklyWorkingDays() : 7);
 	else if (unit == KW("m"))
 		value = val.toDouble() * 
-			(workingDays ? proj->getMonthlyWorkingDays() : 30.416);
+			(workingDays ? proj->getMonthlyWorkingDays() : 30.4167);
 	else if (unit == KW("y"))
 		value = val.toDouble() * 
 			(workingDays ? proj->getYearlyWorkingDays() : 365);

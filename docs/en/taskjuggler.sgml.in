@@ -14,7 +14,7 @@
 </author>
 <date>Version @VERSION@</date>
 <copyright>
-	<year>2002</year>
+	<year>2001, 2002, 2003</year>
 	<holder>Chris Schl&auml;ger</holder>
 </copyright>
 </bookinfo>
@@ -269,7 +269,7 @@ warning is issued. In case a mandatory dependency is not found, an
 error is displayed and the configuration program stops. If you have
 problems, please report them to the TaskJuggler mailing
 list at <ulink url="mailto:taskjuggler@suse.com">
-taskjuggler@suse.de</ulink> in English. Maybe someone there can help
+taskjuggler@suse.com</ulink> in English. Maybe someone there can help
 you out.</para>
 
 </sect1>
@@ -396,7 +396,7 @@ url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</par
 </chapter>
 <chapter><title>Copyright</title>
 
-<para>TaskJuggler Copyright 2001, 2002 Chris Schlaeger
+<para>TaskJuggler Copyright 2001, 2002, 2003 Chris Schlaeger
 &lt;cs@suse.de&gt;</para>
 
 <para>This program is free software. You can redistribute it and modify it

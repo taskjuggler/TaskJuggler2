@@ -1197,7 +1197,7 @@ HTMLReportElement::textOneRow(const QString& text, bool light, const QString& al
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default") << "\"";
 	if (!align.isEmpty())
-		s << " style=\"text-align:" << align << " white-space:nowrap\"";
+		s << " style=\"text-align:" << align << "; white-space:nowrap\"";
 	s << ">" << text << "</td>";
 }
 

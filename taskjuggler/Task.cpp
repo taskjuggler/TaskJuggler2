@@ -2019,28 +2019,39 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 	 
    if( !note.isEmpty())
       taskElem.appendChild( ReportXML::createXMLElem( doc, "Note", getNote()));
-   
-   tempElem = ReportXML::createXMLElem( doc, "minStart", QString::number( minStart ));
-   tempElem.setAttribute( "humanReadable", time2ISO( minStart ));
-   taskElem.appendChild( tempElem );
-   
-   tempElem = ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart ));
-   tempElem.setAttribute( "humanReadable", time2ISO( maxStart ));
-   taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd ));
-   tempElem.setAttribute( "humanReadable", time2ISO( minEnd ));
-   taskElem.appendChild( tempElem );
+    if (minStart != 0)
+    {   
+        tempElem = ReportXML::createXMLElem( doc, "minStart", QString::number( minStart ));
+        tempElem.setAttribute( "humanReadable", time2ISO( minStart ));
+        taskElem.appendChild( tempElem );
+    }
+   
+    if (maxStart != 0)
+    {
+        tempElem = ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart ));
+        tempElem.setAttribute( "humanReadable", time2ISO( maxStart ));
+        taskElem.appendChild( tempElem );
+    }
 
-   tempElem = ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd ));
-   tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
-   taskElem.appendChild( tempElem );
+    if (minEnd != 0)
+    {
+        tempElem = ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd ));
+        tempElem.setAttribute( "humanReadable", time2ISO( minEnd ));
+        taskElem.appendChild( tempElem );
+    }
+
+    if (maxEnd != 0)
+    {
+        tempElem = ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd ));
+        tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
+        taskElem.appendChild( tempElem );
+    }
    
    tempElem = ReportXML::createXMLElem( doc, "actualStart", 
-										QString::number(scenarios[1].start +
-														(milestone ? 1 : 0)));
+										QString::number(scenarios[1].start));
    tempElem.setAttribute( "humanReadable",
-						  time2ISO(scenarios[1].start + (milestone ? 1 : 0)));
+						  time2ISO(scenarios[1].start));
    taskElem.appendChild( tempElem );
 
    tempElem = ReportXML::createXMLElem( doc, "actualEnd", 
@@ -2054,8 +2065,11 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].start ));
    taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "planEnd", QString::number( scenarios[0].end ));
-   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].end ));
+   tempElem = ReportXML::createXMLElem( doc, "planEnd", 
+                                        QString::number(scenarios[0].end +
+                                                        (milestone ? 1 : 0)));
+   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].end +
+                                                     (milestone ? 1 : 0)));
    taskElem.appendChild( tempElem );
 
    /* Start- and Endbuffer */

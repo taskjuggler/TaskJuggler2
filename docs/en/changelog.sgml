@@ -333,14 +333,20 @@ be used as sorting criteria as well. </para></listitem>
 </itemizedlist> </para>
 
 </sect2>
-<sect2><title>1.4.1 (Some Day)</title>
+<sect2><title>Version 1.4.1 (2003-02-XX)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>Another redo of the loop detector. Now checking tasks
-not only forward, but also backwards. No enough specified task
+not only forward, but also backwards. Insufficiently specified task
 boundaries are no longer detected, since they are flagged with missing
 start/end messages after the scheduler run.</para></listitem>
+
+<listitem><para>The dependency loop detector can now be skipped with
+the --nodepcheck command line option.</para></listitem>
+
+<listitem><para>The dependency loop detector runs now significantly
+faster for larger projects.</para></listitem>
 
 <listitem><para>Broken HTML table when
 <computeroutput>schedule</computeroutput> was used with
@@ -350,6 +356,13 @@ start/end messages after the scheduler run.</para></listitem>
 linkend="htmltaskreport_columns">column</link> with the completion
 degree and the completion status. The rows can also be sorted by these
 new columns.</para></listitem>
+
+<listitem><para>The HTML and XML reports are now UTF8 encoded. This should
+eliminate problems with languages that require non-latin1 character
+sets.</para></listitem>
+
+<listitem><para>Currency values in HTML reports are now always right
+aligned.</para></listitem>
 
 <listitem><para>A bug in the handling of nested Resources and Shifts
 has been found and fixed. The bug lead to wrong load values for all
@@ -372,18 +385,8 @@ for this purpose.</para></listitem>
 linkend="htmltaskreport_columns">htmlaccountreport</link> now supports
 quarterly and yearly calendar columns.</para></listitem>
 
-<listitem><para>Fixed XML reports so that milestones end dates are
+<listitem><para>Fixed XML reports so that milestone end dates are
 same as start dates.</para></listitem>
-
-<listitem><para>The dependency loop detector can now be skipped with
-the --nodepcheck command line option.</para></listitem>
-
-<listitem><para>The dependency loop detector runs now significantly
-faster for larger projects.</para></listitem>
-
-<listitem><para>The HTML and XML reports are now UTF8 encoded. This should
-eliminate problems with non-latin1 character set
-languages.</para></listitem>
 
 </itemizedlist></para>
 
