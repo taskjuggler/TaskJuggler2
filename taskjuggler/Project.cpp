@@ -38,7 +38,10 @@ Project::Project()
 	htmlAccountReports.setAutoDelete(TRUE);
 	htmlWeeklyCalendars.setAutoDelete(TRUE);
 	exportReports.setAutoDelete(TRUE);
-	
+
+	scenarioNames.append("Plan");
+	scenarioNames.append("Actual");
+
 	xmlreport = 0;
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -97,6 +100,12 @@ Project::~Project()
 #endif
 }
 
+const QString&
+Project::getScenarioName(int sc)
+{
+	return scenarioNames[sc];
+}
+
 bool
 Project::addId(const QString& id)
 {
@@ -153,14 +162,22 @@ Project::pass2(bool checkOnlySyntax)
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->implicitXRef();
 
-	bool hasActualValues = FALSE;
+	// Find out what scenarios need to be scheduled.
+	// TODO: No multiple scenario support yet.
+	bool hasExtraValues = FALSE;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-	{
+		if (!hasExtraValues && t->hasExtraValues(Task::Actual))
+			hasExtraValues = TRUE;
+
+	/* Now we can copy the missing values from the plan scenario to the	other
+	 * scenarios. */
+	for (int sc = 1; sc < getMaxScenarios(); sc++)
+		overlayScenario(sc);
+
+	// Now check that all tasks have sufficient data to be scheduled.
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		if (!t->preScheduleOk())
 			error = TRUE;
-		if (!hasActualValues && t->hasActualValues())
-			hasActualValues = TRUE;
-	}
 
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		if (t->loopDetector())
@@ -174,27 +191,27 @@ Project::pass2(bool checkOnlySyntax)
 
 	if (DEBUGPS(1))
 		qWarning("Scheduling plan scenario...");
-	preparePlan();
+	prepareScenario(Task::Plan);
 	if (!schedule("Plan"))
 	{
 		if (DEBUGPS(2))
 			qWarning("Scheduling errors in plan scenario.");
 		error = TRUE;
 	}
-	finishPlan();
+	finishScenario(Task::Plan);
 
-	if (hasActualValues)
+	if (hasExtraValues)
 	{
 		if (DEBUGPS(1))
 			qWarning("Scheduling actual scenario...");
-		prepareActual();
+		prepareScenario(Task::Actual);
 		if (!schedule("Actual"))
 		{
 			if (DEBUGPS(2))
 				qWarning("Scheduling errors in actual scenario.");
 			error = TRUE;
 		}
-		finishActual();
+		finishScenario(Task::Actual);
 	}
 
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
@@ -211,43 +228,30 @@ Project::pass2(bool checkOnlySyntax)
 }
 
 void
-Project::preparePlan()
+Project::overlayScenario(int sc)
 {
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->preparePlan();
+		t->overlayScenario(sc);
+}
+
+void
+Project::prepareScenario(int sc)
+{
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->prepareScenario(sc);
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->propagateInitialValues();
 	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->preparePlan();
+		r->prepareScenario(sc);
 }
 
 void
-Project::finishPlan()
+Project::finishScenario(int sc)
 {
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->finishPlan();
+		t->finishScenario(sc);
 	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->finishPlan();
-}
-
-void
-Project::prepareActual()
-{
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->prepareActual();
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->propagateInitialValues();
-	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->prepareActual();
-}
-
-void
-Project::finishActual()
-{
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->finishActual();
-	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->finishActual();
+		r->finishScenario(sc);
 }
 
 bool

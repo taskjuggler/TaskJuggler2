@@ -28,7 +28,7 @@ TransactionList::compareItems(QCollection::Item i1, QCollection::Item i2)
 }
 
 double
-Account::getPlanVolume(const Interval& period)
+Account::getVolume(int sc, const Interval& period)
 {
 	TaskList tl = project->getTaskList();
 
@@ -36,7 +36,7 @@ Account::getPlanVolume(const Interval& period)
 	// Add plan credits for all tasks that should be credited to this account.
 	for (Task* t = tl.first(); t != 0; t = tl.next())
 		if (t->getAccount() == this)
-			volume += t->getPlanCredits(period, 0, FALSE);
+			volume += t->getCredits(sc, period, 0, FALSE);
 	// Add all transactions that are registered within the period.
 	for (Transaction* t = transactions.first(); t != 0;
 		 t = transactions.next())
@@ -47,33 +47,7 @@ Account::getPlanVolume(const Interval& period)
 }
 
 double
-Account::getActualVolume(const Interval& period)
-{
-	TaskList tl = project->getTaskList();
-
-	double volume = 0.0;
-	/* Add actual credits for all tasks that should be credited to this
-	 * account. */
-	for (Task* t = tl.first(); t != 0; t = tl.next())
-		if (t->getAccount() == this)
-			volume += t->getActualCredits(period, 0, FALSE);
-	// Add all transactions that are registered within the period.
-	for (Transaction* t = transactions.first(); t != 0;
-		 t = transactions.next())
-		if (period.contains(t->getDate()))
-			volume += t->getAmount();
-
-	return volume;
-}
-
-double
-Account::getPlanBalance(time_t /* date */)
-{
-	return 0.0;
-}
-
-double
-Account::getActualBalance(time_t /* date */)
+Account::getBalance(int /*sc*/, time_t /* date */)
 {
 	return 0.0;
 }

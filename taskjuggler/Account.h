@@ -113,10 +113,8 @@ public:
 
 	bool isGroup() const { return !sub.isEmpty(); }
 
-	double getPlanBalance(time_t d);
-	double getActualBalance(time_t d);
-	double getPlanVolume(const Interval& period);
-	double getActualVolume(const Interval& period);
+	double getBalance(int sc, time_t d);
+	double getVolume(int sc, const Interval& period);
 
 private:
 	Account() { };	// don't use this

@@ -170,30 +170,23 @@ public:
 
 	bool bookSlot(uint idx, SbBooking* nb);
 	bool bookInterval(Booking* b);
-	bool addPlanBooking(Booking* b);
-	bool addActualBooking(Booking* b);
+	bool addBooking(int sc, Booking* b);
 
 	double getCurrentLoad(const Interval& i, Task* task = 0);
 
 	long getCurrentLoadSub(uint startIdx, uint endIdx, Task* task);
 
-	double getPlanLoad(const Interval& i, Task* task = 0);
+	double getLoad(int sc, const Interval& i, Task* task = 0);
 
-	long getPlanLoadSub(uint startIdx, uint endIdx, Task* task);
+	long getLoadSub(int sc, uint startIdx, uint endIdx, Task* task);
 
-	double getActualLoad(const Interval& i, Task* task = 0);
+	double getCredits(int sc, const Interval& i, Task* task = 0);
 
-	long getActualLoadSub(uint startIdx, uint endIdx, Task* task);
+	QString getProjectIDs(int sc, const Interval& i, Task* task = 0);
 
-	double getPlanCredits(const Interval& i, Task* task = 0);
+	bool isAllocated(int sc, const Interval& i, const QString& prjId);
 
-	double getActualCredits(const Interval& i, Task* task = 0);
-
-	QString getPlanProjectIDs(const Interval& i, Task* task = 0);
-	QString getActualProjectIDs(const Interval& i, Task* task = 0);
-
-	bool isPlanAllocated(const Interval& i, const QString& prjId);
-	bool isActualAllocated(const Interval& i, const QString& prjId);
+	BookingList getJobs(int sc);
 
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
@@ -203,14 +196,8 @@ public:
 
 	QDomElement xmlIDElement( QDomDocument& doc ) const;
 
-	BookingList getPlanJobs();
-	BookingList getActualJobs();
-
-	void preparePlan();
-	void finishPlan();
-
-	void prepareActual();
-	void finishActual();
+	void prepareScenario(int sc);
+	void finishScenario(int sc);
 
 	static void setDebugLevel(int l) { debugLevel = l; }
 	static void setDebugMode(int m) { debugMode = m; }
@@ -219,8 +206,7 @@ private:
 	Resource* subFirst() { return (Resource*) sub.first(); }
 	Resource* subNext() { return (Resource*) sub.next(); }
 
-	void getPlanPIDs(const Interval& period, Task* task, QStringList& pids);
-	void getActualPIDs(const Interval& period, Task* task, QStringList& pids);
+	void getPIDs(int sc, const Interval& period, Task* task, QStringList& pids);
 
 	void initScoreboard();
 	uint sbIndex(time_t date) const;
@@ -274,10 +260,7 @@ private:
 	/// The number of time slots in the project.
 	uint sbSize;
 
-	/// Scoring of planned usages of the resource.
-	SbBooking** planScoreboard;
-	/// Scoring of actual usages of the resource.
-	SbBooking** actualScoreboard;
+	SbBooking** scoreboards[2];
 } ;
 
 #endif

@@ -78,9 +78,9 @@ void KTVTaskCanvasView::addTask(Task *t )
    }
    else
 
-   dt.setTime_t( t->getPlanStart() );
+   dt.setTime_t( t->getStart(Task::Plan) );
 
-   dt.setTime_t( t->getPlanEnd() );
+   dt.setTime_t( t->getEnd(Task::Plan) );
 
    TaskList subTasks;
    subTasks.clear();

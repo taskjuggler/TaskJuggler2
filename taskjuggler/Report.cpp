@@ -270,11 +270,12 @@ Report::filterTaskList(TaskList& filteredList, Resource* r)
 	{
 		Interval iv(start, end);
 		if (!isHidden(t, hideTask) &&
-			iv.overlaps(Interval(t->getPlanStart(),
-								 t->isMilestone() ? t->getPlanStart() :
-								 t->getPlanEnd())) &&
-			(r == 0 || r->getPlanLoad(Interval(start, end), t) > 0.0 ||
-			 (showActual && r->getActualLoad(Interval(start, end), t) > 0.0)))
+			iv.overlaps(Interval(t->getStart(Task::Plan),
+								 t->isMilestone() ? t->getStart(Task::Plan) :
+								 t->getEnd(Task::Plan))) &&
+			(r == 0 || r->getLoad(Task::Plan, Interval(start, end), t) > 0.0 ||
+			 (showActual && r->getLoad(Task::Actual, 
+									   Interval(start, end), t) > 0.0)))
 		{
 			filteredList.append(t);
 		}
@@ -333,8 +334,9 @@ Report::filterResourceList(ResourceList& filteredList, Task* t)
 		 r = resourceList.next())
 	{
 		if (!isHidden(r, hideResource) &&
-			(t == 0 || r->getPlanLoad(Interval(start, end), t) > 0.0 ||
-			 (showActual && r->getActualLoad(Interval(start, end), t) > 0.0)))
+			(t == 0 || r->getLoad(Task::Plan, Interval(start, end), t) > 0.0 ||
+			 (showActual && r->getLoad(Task::Actual, 
+									   Interval(start, end), t) > 0.0)))
 		{
 			filteredList.append(r);
 		}

@@ -58,8 +58,8 @@ QString TaskTip::beautyTask( Task *t ) const
       QString h;
 
       ret = i18n( "Task <B>" ) + t->getName() + "</B><BR>";
-      ret += QString("<TABLE cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getPlanStart() ));
-      ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR></TABLE>").arg(time2ISO( t->getPlanEnd() ));
+      ret += QString("<TABLE cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(Task::Plan) ));
+      ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR></TABLE>").arg(time2ISO(t->getEnd(Task::Plan) ));
    }
    return ret;
 }

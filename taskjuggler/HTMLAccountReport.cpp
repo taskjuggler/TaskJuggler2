@@ -112,7 +112,7 @@ HTMLAccountReport::generatePlanAccount(Account* a)
 			accountName(a);
 		else if (*it == KW("total"))
 		{
-			double value = a->getPlanVolume(Interval(start, end));
+			double value = a->getVolume(Task::Plan, Interval(start, end));
 			planTotals["total"] += value;
 			textOneRow(QString().sprintf("%.*f", project->getCurrencyDigits(),
 										 value), FALSE, "right");
@@ -155,7 +155,7 @@ HTMLAccountReport::generateActualAccount(Account* a)
 		}
 		else if (*it == KW("total"))
 		{
-			double value = a->getActualVolume(Interval(start, end));
+			double value = a->getVolume(Task::Actual, Interval(start, end));
 			actualTotals["total"] += value;
 			textOneRow(QString().sprintf("%.*f", project->getCurrencyDigits(),
 										 value), FALSE, "right");
@@ -324,7 +324,7 @@ HTMLAccountReport::dailyAccountPlan(Account* a, const QString& style)
 	{
 		if (a)
 		{
-			double volume = a->getPlanVolume(Interval(day).firstDay());
+			double volume = a->getVolume(Task::Plan, Interval(day).firstDay());
 			planTotals[time2ISO(day)] += volume;
 			reportValue(volume, style, FALSE);
 		}
@@ -351,7 +351,8 @@ HTMLAccountReport::dailyAccountActual(Account* a, const QString& style)
 	{
 		if (a)
 		{
-			double volume = a->getActualVolume(Interval(day).firstDay());
+			double volume = a->getVolume(Task::Actual, 
+										 Interval(day).firstDay());
 			actualTotals[time2ISO(day)] += volume;
 			reportValue(volume, "style", FALSE);
 		}
@@ -381,7 +382,7 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 	{
 		if (a)
 		{
-			double volume = a->getPlanVolume(
+			double volume = a->getVolume(Task::Plan,
 				accumulate ? 
 				Interval(start, sameTimeNextWeek(week) - 1) :
 				Interval(week).firstWeek(weekStartsMonday));
@@ -411,7 +412,7 @@ HTMLAccountReport::weeklyAccountActual(Account* a, const QString& style)
 	{
 		if (a)
 		{
-			double volume = a->getActualVolume(
+			double volume = a->getVolume(Task::Actual,
 				accumulate ?
 				Interval(start, sameTimeNextWeek(week) - 1) :
 				Interval(week).firstWeek(weekStartsMonday));
@@ -444,7 +445,7 @@ HTMLAccountReport::monthlyAccountPlan(Account* a, const QString& style)
 	{
 		if (a)
 		{
-			double volume = a->getPlanVolume(
+			double volume = a->getVolume(Task::Plan, 
 				accumulate ?
 				Interval(start, sameTimeNextMonth(month) - 1) :
 				Interval(month).firstMonth());
@@ -474,7 +475,7 @@ HTMLAccountReport::monthlyAccountActual(Account* a, const QString& style)
 	{
 		if (a)
 		{
-			double volume = a->getActualVolume(
+			double volume = a->getVolume(Task::Actual,
 				accumulate ?
 				Interval(start, sameTimeNextMonth(month) - 1) :
 				Interval(month).firstMonth());

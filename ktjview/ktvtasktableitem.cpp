@@ -31,10 +31,10 @@ int KTVTaskTableItem::compare( QListViewItem *i, int col, bool ascending ) const
    if( mTask && iTask )
    {
 
-      time_t itStart = iTask->getPlanStart();
-      time_t itEnd = iTask->getPlanEnd();
-      time_t mtStart = mTask->getPlanStart();
-      time_t mtEnd = mTask->getPlanEnd();
+      time_t itStart = iTask->getStart(Task::Plan);
+      time_t itEnd = iTask->getEnd(Task::Plan);
+      time_t mtStart = mTask->getStart(Task::Plan);
+      time_t mtEnd = mTask->getEnd(Task::Plan);
       time_t me,other;
       me = other = 0;
       
@@ -65,8 +65,8 @@ int KTVTaskTableItem::compare( QListViewItem *i, int col, bool ascending ) const
 	    r = COMPARE( me, other );
 	    break;
 	 case COL_COMPLETE:
-	    me = mTask->getComplete();
-	    other = iTask->getComplete();
+	    me = mTask->getComplete(Task::Plan);
+	    other = iTask->getComplete(Task::Plan);
 
 	    r = COMPARE( me, other );
 	    break;

@@ -133,17 +133,18 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
       ktv->setPixmap( COL_NAME, m_taskPix );
 
    ktv->setText( COL_ID, t->getId() );
-   ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getPlanEnd(), t->getPlanStart() ));
+   ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getEnd(Task::Plan),
+											   t->getStart(Task::Plan) ));
    ktv->setText( COL_PRIORITY, QString::number( t->getPriority() ));
 
-   double cmplt = t->getComplete();
+   double cmplt = t->getComplete(Task::Plan);
    ktv->setText( COL_COMPLETE, cmplt == -1 ? i18n("iP"):  i18n("%1%").arg(cmplt));
 
-   dt.setTime_t( t->getPlanStart() );
+   dt.setTime_t( t->getStart(Task::Plan) );
    ktv->setText( COL_PLAN_START_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
    ktv->setText( COL_PLAN_START_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
 
-   dt.setTime_t( t->getPlanEnd() );
+   dt.setTime_t( t->getEnd(Task::Plan) );
    ktv->setText( COL_PLAN_END_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
    ktv->setText( COL_PLAN_END_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
 

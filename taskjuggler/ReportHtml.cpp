@@ -12,14 +12,13 @@
 
 #include <config.h>
 
+#include "taskjuggler.h"
 #include "Project.h"
 #include "Report.h"
 #include "Utility.h"
 #include "MacroTable.h"
 
 #define KW(a) a
-
-#define TJURL "http://www.suse.de/~freitag/taskjuggler"
 
 /* The following encoding table was copied from the Qt library sources since
  * this information is not available over the public API. */
@@ -344,17 +343,17 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 			taskName(t, r, r == 0);
 		else if (*it == KW("start"))
 			s << "<td class=\""
-			  << (t->isPlanStartOk() ?
+			  << (t->isStartOk(Task::Plan) ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left white-space:nowrap\">"
-			  << time2user(t->getPlanStart(), timeFormat)
+			  << time2user(t->getStart(Task::Plan), timeFormat)
 			  << "</td>" << endl;
 		else if (*it == KW("end"))
 			s << "<td class=\""
-			  << (t->isPlanEndOk() ?
+			  << (t->isEndOk(Task::Plan) ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left white-space:nowrap\">"
-			  << time2user(t->getPlanEnd() + 1, timeFormat)
+			  << time2user(t->getEnd(Task::Plan) + 1, timeFormat)
 			  << "</td>" << endl;
 		else if (*it == KW("minstart"))
 			textTwoRows(time2user(t->getMinStart(), timeFormat), r != 0, "");
@@ -366,23 +365,25 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 		else if (*it == KW("maxend"))
 			textTwoRows(time2user(t->getMaxEnd(), timeFormat), r != 0, "");
 		else if (*it == KW("startbuffer"))
-			textTwoRows(QString().sprintf("%3.0f", t->getStartBuffer()),
-						r != 0, "right");
+			textTwoRows(QString().sprintf
+						("%3.0f", t->getStartBuffer(Task::Plan)), r != 0, 
+						"right");
 		else if (*it == KW("endbuffer"))
-			textTwoRows(QString().sprintf("%3.0f", t->getEndBuffer()),
-						r != 0, "right");
+			textTwoRows(QString().sprintf
+						("%3.0f", t->getEndBuffer(Task::Plan)), r != 0, 
+						"right");
 		else if (*it == KW("startbufferend"))
-			textOneRow(time2user(t->getPlanStartBufferEnd() + 1, timeFormat),
-					   r != 0, "left");
+			textOneRow(time2user(t->getStartBufferEnd(Task::Plan) + 1,
+								 timeFormat), r != 0, "left");
 		else if (*it == KW("endbufferstart"))
-			textOneRow(time2user(t->getPlanEndBufferStart(), timeFormat),
+			textOneRow(time2user(t->getEndBufferStart(Task::Plan), timeFormat),
 					   r != 0, "left");
 		else if (*it == KW("duration"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(t->getPlanCalcDuration())
+			  << scaledLoad(t->getCalcDuration(Task::Plan))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("effort"))
@@ -390,7 +391,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(t->getPlanLoad(Interval(start, end), r))
+			  << scaledLoad(t->getLoad(Task::Plan, Interval(start, end), r))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("projectid"))
@@ -438,7 +439,8 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
-								  t->getPlanCredits(Interval(start, end), r)),
+								  t->getCredits(Task::Plan,
+												Interval(start, end), r)),
 				r != 0,
 				"right");
 		else if (*it == KW("priority"))
@@ -470,33 +472,33 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 		if (*it == KW("start"))
 		{
 			s << "<td class=\""
-			  << (t->isActualStartOk() ?
+			  << (t->isStartOk(Task::Actual) ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left white-space:nowrap\">"
-			  << time2user(t->getActualStart(), timeFormat)
+			  << time2user(t->getStart(Task::Actual), timeFormat)
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("end"))
 		{
 			s << "<td class=\""
-			  << (t->isActualEndOk() ?
+			  << (t->isEndOk(Task::Actual) ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"white-space:nowrap\">"
-			  << time2user(t->getActualEnd() + 1, timeFormat)
+			  << time2user(t->getEnd(Task::Actual) + 1, timeFormat)
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("startbufferend"))
-			textOneRow(time2user(t->getActualStartBufferEnd() + 1, timeFormat),
-					   r != 0, "left");
+			textOneRow(time2user(t->getStartBufferEnd(Task::Actual) + 1, 
+								 timeFormat), r != 0, "left");
 		else if (*it == KW("endbufferstart"))
-			textOneRow(time2user(t->getActualEndBufferStart(), timeFormat),
-					   r != 0, "left");
+			textOneRow(time2user(t->getEndBufferStart(Task::Actual), 
+								 timeFormat), r != 0, "left");
 		else if (*it == KW("duration"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(t->getActualCalcDuration())
+			  << scaledLoad(t->getCalcDuration(Task::Actual))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("effort"))
@@ -504,7 +506,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(t->getActualLoad(Interval(start, end), r))
+			  << scaledLoad(t->getLoad(Task::Actual, Interval(start, end), r))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("resources"))
@@ -512,8 +514,8 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 		else if (*it == "costs")
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
-								  t->getActualCredits(Interval(start, end),
-													  r)),
+								  t->getCredits(Task::Actual,
+												Interval(start, end), r)),
 				r != 0,
 				"right");
 		if (*it == KW("daily"))
@@ -573,7 +575,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(r->getPlanLoad(Interval(start, end), t))
+			  << scaledLoad(r->getLoad(Task::Plan, Interval(start, end), t))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("projectid"))
@@ -607,7 +609,8 @@ ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
-								  r->getPlanCredits(Interval(start, end), t)),
+								  r->getCredits(Task::Plan,
+											   	Interval(start, end), t)),
 				t != 0,
 				"right");
 		else if (*it == KW("priority"))
@@ -639,7 +642,7 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(r->getActualLoad(Interval(start, end), t))
+			  << scaledLoad(r->getLoad(Task::Actual, Interval(start, end), t))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("schedule"))
@@ -650,8 +653,8 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
-								  r->getActualCredits(Interval(start, end),
-													  t)),
+								  r->getCredits(Task::Actual,
+												Interval(start, end), t)),
 				t != 0,
 				"right");
 		else if (*it == KW("daily"))
@@ -1113,7 +1116,7 @@ ReportHtml::dailyResourcePlan(Resource* r, Task* t)
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
-		double load = r->getPlanLoad(Interval(day).firstDay(), t);
+		double load = r->getLoad(Task::Plan, Interval(day).firstDay(), t);
 		QString bgCol = 
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" : "bookedlight") :
@@ -1135,11 +1138,11 @@ ReportHtml::dailyResourceActual(Resource* r, Task* t)
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
-		double load = r->getActualLoad(Interval(day).firstDay(), t);
+		double load = r->getLoad(Task::Actual, Interval(day).firstDay(), t);
 		QString bgCol = 
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
-			 (t->isCompleted(sameTimeNextDay(day) - 1) ?
+			 (t->isCompleted(Task::Plan, sameTimeNextDay(day) - 1) ?
 			  "completedlight" : "bookedlight")) :
 			isSameDay(project->getNow(), day) ? "today" :
 			isWeekend(day) ? "weekend" :
@@ -1162,11 +1165,11 @@ ReportHtml::dailyTaskPlan(Task* t, Resource* r)
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
-		double load = t->getPlanLoad(Interval(day).firstDay(), r);
+		double load = t->getLoad(Task::Plan, Interval(day).firstDay(), r);
 		QString bgCol = 
-			t->isPlanActive(Interval(day).firstDay()) ?
+			t->isActive(Task::Plan, Interval(day).firstDay()) ?
 			(t->isMilestone() ? "milestone" :
-			 (r == 0 && !t->isPlanBuffer(Interval(day).firstDay()) ?
+			 (r == 0 && !t->isBuffer(Task::Plan, Interval(day).firstDay()) ?
 			  "booked" : "bookedlight")) :
 			isSameDay(project->getNow(), day) ? "today" :
 			isWeekend(day) ? "weekend" :
@@ -1174,7 +1177,8 @@ ReportHtml::dailyTaskPlan(Task* t, Resource* r)
 			(r == 0 ? "default" : "defaultlight");
 		if (showPIDs)
 		{
-			QString pids = r->getPlanProjectIDs(Interval(day).firstDay(), t);
+			QString pids = r->getProjectIDs(Task::Plan,
+										   	Interval(day).firstDay(), t);
 			reportPIDs(pids, bgCol, !r->isGroup());
 		}
 		else
@@ -1191,13 +1195,13 @@ ReportHtml::dailyTaskActual(Task* t, Resource* r)
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
-		double load = t->getActualLoad(Interval(day).firstDay(), r);
+		double load = t->getLoad(Task::Actual, Interval(day).firstDay(), r);
 		QString bgCol = 
-			t->isActualActive(Interval(day).firstDay()) ? 
-			(t->isCompleted(sameTimeNextDay(day) - 1) ?
+			t->isActive(Task::Actual, Interval(day).firstDay()) ? 
+			(t->isCompleted(Task::Plan, sameTimeNextDay(day) - 1) ?
 			 (r == 0 ? "completed" : "completedlight") :
 			 t->isMilestone() ? "milestone" :
-			 (r == 0 && !t->isActualBuffer(Interval(day).firstDay())
+			 (r == 0 && !t->isBuffer(Task::Actual, Interval(day).firstDay())
 			  ? "booked" : "bookedlight")) :
 			isSameDay(project->getNow(), day) ? "today" :
 			isWeekend(day) ? "weekend" :
@@ -1205,7 +1209,8 @@ ReportHtml::dailyTaskActual(Task* t, Resource* r)
 			(r == 0 ? "default" : "defaultlight");
 		if (showPIDs)
 		{
-			QString pids = r->getActualProjectIDs(Interval(day).firstDay(), t);
+			QString pids = r->getProjectIDs(Task::Actual,
+											Interval(day).firstDay(), t);
 			reportPIDs(pids, bgCol, !r->isGroup());
 		}
 		else
@@ -1226,7 +1231,8 @@ ReportHtml::weeklyResourcePlan(Resource* r, Task* t)
 		 week = sameTimeNextWeek(week))
 	{
 		double load =
-		   	r->getPlanLoad(Interval(week).firstWeek(weekStartsMonday), t);
+		   	r->getLoad(Task::Plan, 
+					   Interval(week).firstWeek(weekStartsMonday), t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" : "bookedlight") :
@@ -1235,8 +1241,8 @@ ReportHtml::weeklyResourcePlan(Resource* r, Task* t)
 		if (showPIDs)
 		{
 			QString pids =
-			   	r->getPlanProjectIDs(Interval(week).
-									 firstWeek(weekStartsMonday), t);
+			   	r->getProjectIDs(Task::Plan, Interval(week).
+								 firstWeek(weekStartsMonday), t);
 			reportPIDs(pids, bgCol, !r->isGroup());
 		}
 		else
@@ -1254,19 +1260,19 @@ ReportHtml::weeklyResourceActual(Resource* r, Task* t)
 		 week = sameTimeNextWeek(week))
 	{
 		double load = 
-			r->getActualLoad(Interval(week).firstWeek(weekStartsMonday), t);
+			r->getLoad(Task::Actual, 
+					   Interval(week).firstWeek(weekStartsMonday), t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
-			 (t->isCompleted(sameTimeNextWeek(week) - 1) ?
+			 (t->isCompleted(Task::Plan, sameTimeNextWeek(week) - 1) ?
 			  "completedlight" : "bookedlight")) :
 			isSameWeek(project->getNow(), week, weekStartsMonday) ? "today" :
 			(t == 0 ? "default" : "defaultlight");
 		if (showPIDs)
 		{
-			QString pids = r->getActualProjectIDs(Interval(week).
-												  firstWeek(weekStartsMonday),
-												  t);
+			QString pids = r->getProjectIDs(Task::Actual, Interval(week).
+											firstWeek(weekStartsMonday), t);
 			reportPIDs(pids, bgCol, !r->isGroup());
 		}
 		else
@@ -1286,13 +1292,14 @@ ReportHtml::weeklyTaskPlan(Task* t, Resource* r)
 	for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
 		 week = sameTimeNextWeek(week))
 	{
-		double load = t->getPlanLoad(Interval(week).
-									 firstWeek(weekStartsMonday), r);
+		double load = t->getLoad(Task::Plan, Interval(week).
+								 firstWeek(weekStartsMonday), r);
 		QString bgCol = 
-			t->isPlanActive(Interval(week).firstWeek(weekStartsMonday)) ?
+			t->isActive(Task::Plan, 
+						Interval(week).firstWeek(weekStartsMonday)) ?
 			(t->isMilestone() ? "milestone" :
-			 (r == 0 && !t->isPlanBuffer(Interval(week).
-										 firstWeek(weekStartsMonday))
+			 (r == 0 && !t->isBuffer(Task::Plan, Interval(week).
+									 firstWeek(weekStartsMonday))
 			  ? "booked" : "bookedlight")) :
 			isSameWeek(project->getNow(), week, weekStartsMonday) ? "today" :
 			(r == 0 ? "default" : "defaultlight");
@@ -1309,14 +1316,15 @@ ReportHtml::weeklyTaskActual(Task* t, Resource* r)
 	for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
 		 week = sameTimeNextWeek(week))
 	{
-		double load = t->getActualLoad(Interval(week).
-									   firstWeek(weekStartsMonday), r);
+		double load = t->getLoad(Task::Actual, Interval(week).
+								 firstWeek(weekStartsMonday), r);
 		QString bgCol = 
-			t->isActualActive(Interval(week).firstWeek(weekStartsMonday)) ?
-			(t->isCompleted(sameTimeNextWeek(week) - 1) ?
+			t->isActive(Task::Actual,
+						Interval(week).firstWeek(weekStartsMonday)) ?
+			(t->isCompleted(Task::Plan, sameTimeNextWeek(week) - 1) ?
 			 (r == 0 ? "completed" : "completedlight") :
 			 t->isMilestone() ? "milestone" :
-			 (r == 0 && !t->isActualBuffer(Interval(week).
+			 (r == 0 && !t->isBuffer(Task::Actual, Interval(week).
 										   firstWeek(weekStartsMonday))
 			  ? "booked" : "bookedlight")) :
 			isSameWeek(project->getNow(), week, weekStartsMonday) ? "today" :
@@ -1337,7 +1345,7 @@ ReportHtml::monthlyResourcePlan(Resource* r, Task* t)
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
-		double load = r->getPlanLoad(Interval(month).firstMonth(), t);
+		double load = r->getLoad(Task::Plan, Interval(month).firstMonth(), t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" : "bookedlight") :
@@ -1356,11 +1364,11 @@ ReportHtml::monthlyResourceActual(Resource* r, Task* t)
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
-		double load = r->getActualLoad(Interval(month).firstMonth(), t);
+		double load = r->getLoad(Task::Actual, Interval(month).firstMonth(), t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
-			 (t->isCompleted(sameTimeNextMonth(month) - 1) ?
+			 (t->isCompleted(Task::Plan, sameTimeNextMonth(month) - 1) ?
 			  "completedlight" : "bookedlight")) :
 			isSameMonth(project->getNow(), month) ? "today" :
 			(t == 0 ? "default" : "defaultlight");
@@ -1380,11 +1388,11 @@ ReportHtml::monthlyTaskPlan(Task* t, Resource* r)
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
-		double load = t->getPlanLoad(Interval(month).firstMonth(), r);
+		double load = t->getLoad(Task::Plan, Interval(month).firstMonth(), r);
 		QString bgCol = 
-			t->isPlanActive(Interval(month).firstMonth()) ?
+			t->isActive(Task::Plan, Interval(month).firstMonth()) ?
 			(t->isMilestone() ? "milestone" :
-			 (r == 0 && !t->isPlanBuffer(Interval(month).firstMonth())
+			 (r == 0 && !t->isBuffer(Task::Plan, Interval(month).firstMonth())
 			  ? "booked" : "bookedlight")) :
 			isSameMonth(project->getNow(), month) ? "today" :
 			(r == 0 ? "default" : "defaultlight");
@@ -1401,13 +1409,14 @@ ReportHtml::monthlyTaskActual(Task* t, Resource* r)
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
-		double load = t->getActualLoad(Interval(month).firstMonth(), r);
+		double load = t->getLoad(Task::Actual, Interval(month).firstMonth(), r);
 		QString bgCol = 
-			t->isActualActive(Interval(month).firstMonth()) ?
-			(t->isCompleted(sameTimeNextMonth(month) - 1) ?
+			t->isActive(Task::Actual, Interval(month).firstMonth()) ?
+			(t->isCompleted(Task::Plan, sameTimeNextMonth(month) - 1) ?
 			 (r == 0 ? "completed" : "completedlight"):
 			 t->isMilestone() ? "milestone" :
-			 (r == 0 && !t->isActualBuffer(Interval(month).firstMonth())
+			 (r == 0 && !t->isBuffer(Task::Actual, 
+									 Interval(month).firstMonth())
 			  ? "booked" : "bookedlight")) :
 			isSameMonth(project->getNow(), month) ? "today" :
 			(r == 0 ? "default" : "defaultlight");
@@ -1507,7 +1516,7 @@ ReportHtml::planResources(Task* t, bool light)
 	  << "\" style=\"text-align:left\">"
 	  << "<span style=\"font-size:100%\">";
 	bool first = TRUE;
-	QPtrList<Resource> planResources = t->getPlanBookedResources();
+	QPtrList<Resource> planResources = t->getBookedResources(Task::Plan);
 	for (Resource* r = planResources.first(); r != 0;
 		 r = planResources.next())
 	{
@@ -1528,7 +1537,7 @@ ReportHtml::actualResources(Task* t, bool light)
 	  << "\" style=\"text-align:left\">"
 	  << "<span style=\"font-size:100%\">";
 	bool first = TRUE;
-	QPtrList<Resource> actualResources = t->getActualBookedResources();
+	QPtrList<Resource> actualResources = t->getBookedResources(Task::Actual);
 	for (Resource* r = actualResources.first(); r != 0;
 		 r = actualResources.next())
 	{
@@ -1616,7 +1625,7 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 
 	if (r)
 	{
-		BookingList planJobs = r->getPlanJobs();
+		BookingList planJobs = r->getJobs(Task::Plan);
 		planJobs.setAutoDelete(TRUE);
 		time_t prevTime = 0;
 		Interval reportPeriod(start, end);
@@ -1669,7 +1678,7 @@ ReportHtml::actualSchedule(Resource* r, Task* t)
 
 	if (r)
 	{
-		BookingList actualJobs = r->getActualJobs();
+		BookingList actualJobs = r->getJobs(Task::Actual);
 		actualJobs.setAutoDelete(TRUE);
 		time_t prevTime = 0;
 		Interval reportPeriod(start, end);

@@ -16,6 +16,7 @@
 #include <qapplication.h>
 #include <qglobal.h>
 
+#include "taskjuggler.h"
 #include "Project.h"
 #include "ProjectFile.h"
 #include "kotrus.h"
@@ -28,8 +29,9 @@ copyright()
 			 "                         Klaas Freitag <freitag@suse.de>\n\n"
 			 "This program is free software; you can redistribute it and/or\n"
 			 "modify it under the terms of version 2 of the GNU General\n"
-			 "Public License as published by the Free Software Foundation.\n",
-			 VERSION);
+			 "Public License as published by the Free Software Foundation.\n\n"
+			 "For more information about TaskJuggler see \n%s\n",
+			 VERSION, TJURL);
 }
 
 void 

@@ -140,8 +140,9 @@ Operation::evalFunction(ExpressionTree* et)
 		if (strcmp(et->getCoreAttributes()->getType(), "Resource") != 0)
 			qFatal("Operation::evalFunction: isplanallocated called for "
 				   "non-resource");
-		return ((Resource*) et->getCoreAttributes())->isPlanAllocated
-			(Interval(ops.at(1)->evalAsTime(et), ops.at(2)->evalAsTime(et)), 
+		return ((Resource*) et->getCoreAttributes())->isAllocated
+			(Task::Plan, Interval(ops.at(1)->evalAsTime(et), 
+								  ops.at(2)->evalAsTime(et)), 
 			 ops.at(0)->evalAsString(et));
 	}
 	else if (name == "isactualallocated")
@@ -149,8 +150,9 @@ Operation::evalFunction(ExpressionTree* et)
 		if (strcmp(et->getCoreAttributes()->getType(), "Resource") != 0)
 			qFatal("Operation::evalFunction: isactualallocated called for "
 				   "non-resource");
-		return ((Resource*) et->getCoreAttributes())->isActualAllocated
-			(Interval(ops.at(1)->evalAsTime(et), ops.at(2)->evalAsTime(et)), 
+		return ((Resource*) et->getCoreAttributes())->isAllocated
+			(Task::Actual, Interval(ops.at(1)->evalAsTime(et), 
+									ops.at(2)->evalAsTime(et)), 
 			 ops.at(0)->evalAsString(et));
 	}
 	else

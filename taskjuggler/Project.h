@@ -44,10 +44,13 @@ public:
 
 	bool pass2(bool checkOnlySyntax);
 
-	void preparePlan();
-	void finishPlan();
-	void prepareActual();
-	void finishActual();
+	int getMaxScenarios() { return scenarioNames.count(); }
+	const QString& getScenarioName(int sc);
+
+	void overlayScenario(int sc);
+	void prepareScenario(int sc);
+	void finishScenario(int sc);
+	
 	bool schedule(const QString& scenario);
 
 	void setName(const QString& n) { name = n; }
@@ -347,6 +350,8 @@ private:
      * project ID but all IDs must be declared before they can be
      * used. */
 	QStringList projectIDs;
+
+	QStringList scenarioNames;
 
 	ShiftList shiftList;
 	TaskList taskList;

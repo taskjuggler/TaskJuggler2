@@ -437,7 +437,7 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
    {
       /* paint */
       KTVCanvasItemBase *cItem = taskToCanvasItem( t );
-      int x = timeToX( t->getPlanStart() );
+      int x = timeToX( t->getStart(Task::Plan) );
       if( ! cItem )
       {
           // qDebug(" ***** creating new !" );
@@ -466,7 +466,7 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
       }
 
       /* set the items with */
-      int w = timeToX( t->getPlanEnd() )-x;
+      int w = timeToX( t->getEnd(Task::Plan) )-x;
       cItem->setSize( w, cItem->height() );
 
       bool itemConnects = false; /* local flag if item connects to others with a line */

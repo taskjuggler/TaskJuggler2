@@ -13,6 +13,8 @@
 #ifndef _Task_h_
 #define _Task_h_
 
+#include <config.h>
+
 #include <stdarg.h>
 
 #include <qlist.h>
@@ -21,7 +23,8 @@
 #include <qstringlist.h>
 #include <qdom.h>
 #include <time.h>
-#include "config.h"
+
+#include "TaskScenario.h"
 #include "ResourceList.h"
 #include "Utility.h"
 #include "CoreAttributes.h"
@@ -87,6 +90,8 @@ public:
 
 	enum SchedulingInfo { ASAP, ALAP };
 
+	enum Scenario { Plan = 0, Actual };
+
 	Task* getParent() { return (Task*) parent; }
 
 	void setProjectId(const QString& i) { projectId = i; }
@@ -113,17 +118,14 @@ public:
 	void setMaxEnd(time_t e) { maxEnd = e; }
 	time_t getMaxEnd() const { return maxEnd; }
 
-	void setComplete(int c) { complete = c; }
-	double getComplete() const { return complete; }
-
-	void setStartBuffer(double p) { startBuffer = p; }
-	double getStartBuffer() const { return startBuffer; }
-	
-	void setEndBuffer(double p) { endBuffer = p; }
-	double getEndBuffer() const { return endBuffer; }
-
 	void setResponsible(Resource* r) { responsible = r; }
 	Resource* getResponsible() const { return responsible; }
+
+	void setMilestone() { milestone = TRUE; }
+	bool isMilestone() const { return milestone; }
+
+	void setAccount(Account* a) { account = a; }
+	Account* getAccount() const { return account; }
 
 	bool addDepends(const QString& id);
 	bool addPrecedes(const QString& id);
@@ -146,132 +148,101 @@ public:
 	bool hasPrevious(Task* t) { return previous.find(t) != -1; }
 	bool hasFollower(Task* t) { return followers.find(t) != -1; }
 
-	/* The following group of functions operates exclusively on 'plan'
-	 * variables. */
-	void setPlanStart(time_t s) { planStart = s; }
-	const time_t getPlanStart() const { return planStart; }
+	// The following group of functions operates only on scenario variables.
+	void setStart(int sc, time_t s) { scenarios[sc].start = s; }
+	const time_t getStart(int sc) const { return scenarios[sc].start; }
 
-	void setPlanEnd(time_t s) { planEnd = s; }
-	const time_t getPlanEnd() const { return planEnd; }
+	void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
+	const time_t getEnd(int sc) const { return scenarios[sc].end; }
 
-	time_t getPlanStartBufferEnd() const { return planStartBufferEnd; }
-	time_t getPlanEndBufferStart() const { return planEndBufferStart; }
-
-	void setPlanLength(double days) { planLength = days; }
-	double getPlanLength() const { return planLength; }
-
-	void setPlanEffort(double e) { planEffort = e; }
-	double getPlanEffort() const { return planEffort; }
-
-	void setPlanDuration(double d) { planDuration = d; }
-	double getPlanDuration() const { return planDuration; }
-
-	bool isPlanStartOk()
+	time_t getStartBufferEnd(int sc) const 
 	{
-		return (minStart <= planStart && planStart <= maxStart);
+	   	return scenarios[sc].startBufferEnd; 
 	}
-	bool isPlanEndOk()
-	{
-		return (minEnd <= planEnd + (milestone ? 1 : 0) &&
-				planEnd + (milestone ? 1 : 0) <= maxEnd);
+	time_t getEndBufferStart(int sc) const 
+	{ 
+		return scenarios[sc].endBufferStart; 
 	}
 
-	bool isPlanBuffer(const Interval& iv) const
+	void setLength(int sc, double days) { scenarios[sc].length = days; }
+	double getLength(int sc) const { return scenarios[sc].length; }
+
+	void setEffort(int sc, double e) { scenarios[sc].effort = e; }
+	double getEffort(int sc) const { return scenarios[sc].effort; }
+
+	void setDuration(int sc, double d) { scenarios[sc].duration = d; }
+	double getPlanDuration(int sc) const { return scenarios[sc].duration; }
+
+	bool isStartOk(int sc)
 	{
-		return iv.overlaps(Interval(planStart, planStartBufferEnd)) ||
-			iv.overlaps(Interval(planEndBufferStart, planEnd));
+		return (minStart <= scenarios[sc].start && 
+				scenarios[sc].start <= maxStart);
 	}
-	
-	double getPlanCalcEffort()
+	bool isEndOk(int sc)
 	{
-		return getPlanLoad(Interval(planStart, planEnd));
-	}
-	double getPlanCalcDuration() const;
-
-	double getPlanCredits(const Interval& period, Resource* resource = 0,
-						  bool recursive = TRUE);
-
-	bool isPlanActive(const Interval& period) const;
-
-	double getPlanLoad(const Interval& period, Resource* resource = 0);
-
-	void addPlanBookedResource(Resource* r)
-	{
-		if (planBookedResources.find(r) == -1)
-			planBookedResources.inSort(r);
-	}
-	bool isPlanBookedResource(Resource* r)
-	{
-		return planBookedResources.find(r) != -1;
-	}
-	QPtrList<Resource> getPlanBookedResources() { return planBookedResources; }
-	void setPlanScheduled(bool ps) { planScheduled = ps; }
-	bool getPlanScheduled() const { return planScheduled; }
-
-	/* The following group of functions operates exclusively on 'actual'
-	 * variables. */
-	void setActualStart(time_t s) { actualStart = s; }
-	time_t getActualStart() const { return actualStart; }
-
-	void setActualEnd(time_t e) { actualEnd = e; }
-	time_t getActualEnd() const { return actualEnd; }
-
-	time_t getActualStartBufferEnd() const { return actualStartBufferEnd; }
-	time_t getActualEndBufferStart() const { return actualEndBufferStart; }
-
-	void setActualLength(double days) { actualLength = days; }
-	double getActualLength() const { return actualLength; }
-
-	void setActualEffort(double e) { actualEffort = e; }
-	double getActualEffort() const { return actualEffort; }
-
-	void setActualDuration(double d) { actualDuration = d; }
-	double getActualDuration() const { return actualDuration; }
-
-	bool isActualStartOk()
-	{
-		return minStart <= actualStart && actualStart <= maxStart;
-	}
-	bool isActualEndOk()
-	{
-		return (minEnd <= actualEnd + (milestone ? 1 : 0) &&
-				actualEnd + (milestone ? 1 : 0) <= maxEnd);
+		return (minEnd <= scenarios[sc].end + (milestone ? 1 : 0) &&
+				scenarios[sc].end + (milestone ? 1 : 0) <= maxEnd);
 	}
 
-	bool isActualBuffer(const Interval& iv) const
+	bool isBuffer(int sc, const Interval& iv) const
 	{
-		return iv.overlaps(Interval(actualStart, actualStartBufferEnd)) ||
-			iv.overlaps(Interval(actualEndBufferStart, actualEnd));
+		return iv.overlaps(Interval(scenarios[sc].start,
+								   	scenarios[sc].startBufferEnd)) ||
+			iv.overlaps(Interval(scenarios[sc].endBufferStart, 
+								 scenarios[sc].end));
 	}
 	
-	double getActualCalcEffort()
-	{
-		return getActualLoad(Interval(actualStart, actualEnd));
-	}
-	double getActualCalcDuration() const;
+	void setComplete(int sc, int c) { scenarios[sc].complete = c; }
+	double getComplete(int sc) const { return scenarios[sc].complete; }
 
-	double getActualCredits(const Interval& period, Resource* resource = 0,
-							bool recursive = TRUE);
+	void setStartBuffer(int sc, double p) { scenarios[sc].startBuffer = p; }
+	double getStartBuffer(int sc) const { return scenarios[sc].startBuffer; }
+	
+	void setEndBuffer(int sc, double p) { scenarios[sc]. endBuffer = p; }
+	double getEndBuffer(int sc) const { return scenarios[sc].endBuffer; }
 
-	bool isActualActive(const Interval& period) const;
+	void setStartCredit(int sc, double c) { scenarios[sc].startCredit = c; }
+	double getStartCredit(int sc) const { return scenarios[sc].startCredit; }
 
-	double getActualLoad(const Interval& period, Resource* r = 0);
-	void addActualBookedResource(Resource* r)
-	{
-		if (actualBookedResources.find(r) == -1)
-			actualBookedResources.inSort(r);
-	}
-	bool isActualBookedResource(Resource* r)
-	{
-		return actualBookedResources.find(r) != -1;
-	}
+	void setEndCredit(int sc, double c) { scenarios[sc].endCredit = c; }
+	double getEndCredit(int sc) const { return scenarios[sc].endCredit; }
 
-	QPtrList<Resource> getActualBookedResources()
+	double getCalcEffort(int sc)
 	{
-		return actualBookedResources;
+		return getLoad(sc, Interval(scenarios[sc].start, scenarios[sc].end));
 	}
-	void setActualScheduled(bool as) { actualScheduled = as; }
-	bool getActualScheduled() const { return actualScheduled; }
+	double getCalcDuration(int sc) const;
+
+	double getCredits(int sc, const Interval& period, 
+					  Resource* resource = 0, bool recursive = TRUE);
+
+	bool isActive(int sc, const Interval& period) const;
+	bool isCompleted(int sc, time_t date) const;
+	double getCompleteAtTime(int sc, time_t) const;
+
+	double getLoad(int sc, const Interval& period, Resource* resource = 0);
+
+	void addBookedResource(int sc, Resource* r)
+	{
+		if (scenarios[sc].bookedResources.find(r) == -1)
+			scenarios[sc].bookedResources.inSort(r);
+	}
+	bool isBookedResource(int sc, Resource* r)
+	{
+		return scenarios[sc].bookedResources.find(r) != -1;
+	}
+	QPtrList<Resource> getBookedResources(int sc) 
+	{
+		return scenarios[sc].bookedResources; 
+	}
+	void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
+	bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
+
+	void overlayScenario(int sc);
+	void prepareScenario(int sc);
+	void finishScenario(int sc);
+
+	bool hasExtraValues(int sc) const;
 
 	bool isContainer() const { return !sub.isEmpty(); }
    
@@ -294,8 +265,6 @@ public:
 	 *
 	 * @param date specifies the day that should be checked.
 	 */
-	bool isCompleted(time_t date) const;
-	double getCompleteAtTime(time_t) const;
 	bool scheduleOk(int& errors, QString scenario);
 	bool preScheduleOk();
 	bool loopDetector();
@@ -304,34 +273,11 @@ public:
 	bool isActive();
 	time_t nextSlot(time_t slotDuration);
 
-	void setMilestone() { milestone = TRUE; }
-	bool isMilestone() const { return milestone; }
-
-	void setAccount(Account* a) { account = a; }
-	Account* getAccount() const { return account; }
-
-	void setStartCredit(double c) { startCredit = c; }
-	double getStartCredit() const { return startCredit; }
-
-	void setEndCredit(double c) { endCredit = c; }
-	double getEndCredit() const { return endCredit; }
-
 	void getSubTaskList(TaskList& tl);
 
 	bool isSubTask(Task* t);
 
 	void fatalError(const char* msg, ...) const;
-
-	void preparePlan();
-	void finishPlan();
-
-	void prepareActual();
-	void finishActual();
-	bool hasActualValues() const
-	{
-		return actualStart != 0 || actualEnd != 0 || actualLength != 0 ||
-			actualDuration != 0 || actualEffort != 0 || complete != -1;
-	}
 
 	QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
@@ -360,10 +306,9 @@ private:
 	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
 	time_t earliestStart();
 	time_t latestEnd();
-	bool hasPlanStartDependency();
-	bool hasPlanEndDependency();
-	bool hasActualStartDependency();
-	bool hasActualEndDependency();
+
+	bool hasStartDependency(int sc);
+	bool hasEndDependency(int sc);
 
 	/// A longer description of the task.
 	QString note;
@@ -433,19 +378,6 @@ private:
 	/// The scheduling policy of the task.
 	SchedulingInfo scheduling;
 
-	/// Percentage of completion of the task
-	int complete;
-
-	/* Specifies how many percent the task start can be delayed but still
-	 * finish in time if all goes well. This value is for documentation
-	 * purposes only. It is not used for task scheduling. */
-	double startBuffer;
-
-	/* Specifies how many percent the task can be finished earlier if
-	 * all goes well. This value is for documentation purposes only. It is
-	 * not used for task scheduling. */
-	double endBuffer;
-	
 	/// ID of responsible resource.
 	Resource* responsible;
 
@@ -458,73 +390,7 @@ private:
 	/// Account where the credits of the task are credited to.
 	Account* account;
 
-	/// Amount that is credited to the account at the start date.
-	double startCredit;
-	/// Amount that is credited to the account at the end date.
-	double endCredit;
-
-	/* The following group of variables store plan values. Their
-	 * values are copied to the runtime equivalents (without the
-	 * 'plan' prefix) before the 'plan' scheduling is done. */
-
-	/// Time when the task is planned to start.
-	time_t planStart;
-
-	/// Time when the task is planned to finish.
-	time_t planEnd;
-
-	/// Time when the start buffer is planned to end.
-	time_t planStartBufferEnd;
-	
-	/// Time when the end buffer is planned to start.
-	time_t planEndBufferStart;
-	
-	/// The planned duration of the task (in calendar days).
-	double planDuration;
-
-	/// The planned length of the task (in working days).
-	double planLength;
-
-	/// The planned effort of the task (in resource-days).
-	double planEffort;
-
-	/// List of booked resources for the 'plan' scenario.
-	QPtrList<Resource> planBookedResources;
-
-	/* The following group of variables store actual values. Their
-	 * values are copied to the runtime equivalents (without the
-	 * 'actual' prefix) before the 'actual' scheduling is done. */
-
-	/// Time when it really started
-	time_t actualStart;
-
-	/// Time when it really ended
-	time_t actualEnd;
-
-	/// Time when the start buffer actually ends.
-	time_t actualStartBufferEnd;
-
-	/// Time when the end buffer actually starts.
-	time_t actualEndBufferStart;
-	
-	/// The actual duration of the task (in calendar days).
-	double actualDuration;
-
-	/// The actual length of the task (in working days).
-	double actualLength;
-
-	/// The actual Effort of the task (in resource-days).
-	double actualEffort;
-
-	/// List of booked resources for the 'actual' scenario.
-	QPtrList<Resource> actualBookedResources;
-
-	/// TRUE if the task has been completely scheduled for the plan scenario.
-	bool planScheduled;
-
-	/** TRUE if the task has been completely scheduled for the actual
-	 * scenario. */
-  	bool actualScheduled;
+	TaskScenario scenarios[2];
 	
 	/* The following group of variables store values generated during a
 	 * scheduler run. They might be initialized by other values and/or

@@ -41,7 +41,7 @@
 			fatalError("Date is outside of project time frame"); \
 			return FALSE; \
 		} \
-		task->b(val); \
+		task->b; \
 	} \
 	else \
 	{ \
@@ -1378,60 +1378,60 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				task->setMilestone();
 			}
-			else if READ_DATE(KW("start"), setPlanStart, 0)
-			else if READ_DATE(KW("end"), setPlanEnd, 1)
-			else if READ_DATE(KW("minstart"), setMinStart, 0)
-			else if READ_DATE(KW("maxstart"), setMaxStart, 0)
-			else if READ_DATE(KW("minend"), setMinEnd, 0)
-			else if READ_DATE(KW("maxend"), setMaxEnd, 0)
-			else if READ_DATE(KW("actualstart"), setActualStart, 0)
-			else if READ_DATE(KW("actualend"), setActualEnd, 1)
+			else if READ_DATE(KW("start"), setStart(Task::Plan, val), 0)
+			else if READ_DATE(KW("end"), setEnd(Task::Plan, val), 1)
+			else if READ_DATE(KW("minstart"), setMinStart(val), 0)
+			else if READ_DATE(KW("maxstart"), setMaxStart(val), 0)
+			else if READ_DATE(KW("minend"), setMinEnd(val), 0)
+			else if READ_DATE(KW("maxend"), setMaxEnd(val), 0)
+			else if READ_DATE(KW("actualstart"), setStart(Task::Actual, val), 0)
+			else if READ_DATE(KW("actualend"), setEnd(Task::Actual, val), 1)
 			else if (token == KW("length"))
 			{
 				double d;
 				if (!readPlanTimeFrame(d, TRUE))
 					return FALSE;
-				task->setPlanLength(d);
+				task->setLength(Task::Plan, d);
 			}
 			else if (token == KW("effort"))
 			{
 				double d;
 				if (!readPlanTimeFrame(d, TRUE))
 					return FALSE;
-				task->setPlanEffort(d);
+				task->setEffort(Task::Plan, d);
 			}
 			else if (token == KW("duration"))
 			{
 				double d;
 				if (!readPlanTimeFrame(d, FALSE))
 					return FALSE;
-				task->setPlanDuration(d);
+				task->setDuration(Task::Plan, d);
 			}
 			else if (token == KW("actuallength"))
 			{
 				double d;
 				if (!readPlanTimeFrame(d, TRUE))
 					return FALSE;
-				task->setActualLength(d);
+				task->setLength(Task::Actual, d);
 			}
 			else if (token == KW("actualeffort"))
 			{
 				double d;
 				if (!readPlanTimeFrame(d, TRUE))
 					return FALSE;
-				task->setActualEffort(d);
+				task->setEffort(Task::Actual, d);
 			}
 			else if (token == KW("actualduration"))
 			{
 				double d;
 				if (!readPlanTimeFrame(d, FALSE))
 					return FALSE;
-				task->setActualDuration(d);
+				task->setDuration(Task::Actual, d);
 			}
 			else if (token == KW("planscheduled"))
-				task->setPlanScheduled(TRUE);
+				task->setScheduled(Task::Plan, TRUE);
 			else if (token == KW("actualscheduled"))
-				task->setActualScheduled(TRUE);
+				task->setScheduled(Task::Actual, TRUE);
 			else if (token == KW("complete"))
 			{
 				if (nextToken(token) != INTEGER)
@@ -1445,21 +1445,21 @@ ProjectFile::readTaskBody(Task* task)
 					fatalError("Value of complete must be between 0 and 100");
 					return FALSE;
 				}
-				task->setComplete(complete);
+				task->setComplete(Task::Plan, complete);
 			}
 			else if (token == KW("startbuffer"))
 			{
 				double value;
 				if (!readPercent(value))
 					return FALSE;
-				task->setStartBuffer(value);
+				task->setStartBuffer(Task::Plan, value);
 			}
 			else if (token == KW("endbuffer"))
 			{
 				double value;
 				if (!readPercent(value))
 					return FALSE;
-				task->setEndBuffer(value);
+				task->setEndBuffer(Task::Plan, value);
 			}
 			else if (token == KW("responsible"))
 			{
@@ -1603,7 +1603,7 @@ ProjectFile::readTaskBody(Task* task)
 					fatalError("Real value expected");
 					return FALSE;
 				}
-				task->setStartCredit(token.toDouble());
+				task->setStartCredit(Task::Plan, token.toDouble());
 			}
 			else if (token == KW("endcredit"))
 			{
@@ -1612,7 +1612,7 @@ ProjectFile::readTaskBody(Task* task)
 					fatalError("Real value expected");
 					return FALSE;
 				}
-				task->setEndCredit(token.toDouble());
+				task->setEndCredit(Task::Plan, token.toDouble());
 			}
 			else if (token == KW("projectid"))
 			{
@@ -1887,7 +1887,7 @@ ProjectFile::readResourceBody(Resource* r)
 			Booking* b;
 			if ((b = readBooking()) == 0)
 				return FALSE;
-			if (!r->addPlanBooking(b))
+			if (!r->addBooking(Task::Plan, b))
 			{
 				fatalError("Resource is already booked during this period");
 				return FALSE;
@@ -1898,7 +1898,7 @@ ProjectFile::readResourceBody(Resource* r)
 			Booking* b;
 			if ((b = readBooking()) == 0)
 				return FALSE;
-			if (!r->addActualBooking(b))
+			if (!r->addBooking(Task::Actual, b))
 			{
 				fatalError("Resource is already booked during this period");
 				return FALSE;

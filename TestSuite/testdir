@@ -34,6 +34,11 @@ function do_testing
     fi
   fi
   if [ -f $referenceFile ] ; then
+    # Remove the comment at the top of the file that contains the
+    # version number.
+    mv -f $exportFile $exportFile.bak
+    sed "1,4d" $exportFile.bak > $exportFile
+    rm -f $exportFile.bak
     cmp $exportFile $referenceFile 2>> ../log
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))

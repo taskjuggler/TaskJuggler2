@@ -120,7 +120,8 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 				for (Task* t = filteredTaskList.first(); t;
 					 t = filteredTaskList.next())
 				{
-					if (t->isPlanActive(Interval(wd, sameTimeNextDay(wd))))
+					if (t->isActive(Task::Plan,
+									Interval(wd, sameTimeNextDay(wd))))
 					{
 						if (first)
 						{
@@ -161,7 +162,8 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 				for (Resource* r = filteredResourceList.first(); r;
 					 r = filteredResourceList.next())
 				{
-					if (r->getPlanLoad(Interval(wd, sameTimeNextDay(wd))) > 0.0)
+					if (r->getLoad(Task::Plan,
+								   Interval(wd, sameTimeNextDay(wd))) > 0.0)
 					{
 						if (first)
 						{

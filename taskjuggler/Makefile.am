@@ -4,7 +4,8 @@ taskjuggler_SOURCES =  main.cpp
 noinst_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp ExpressionTree.cpp Report.cpp ReportXML.cpp \
-CoreAttributes.cpp ShiftList.cpp ResourceList.cpp Task.cpp VacationList.cpp \
+CoreAttributes.cpp ShiftList.cpp ResourceList.cpp Task.cpp \
+TaskScenario.cpp VacationList.cpp \
 Account.cpp Allocation.cpp MacroTable.cpp ProjectFile.cpp \
 HTMLTaskReport.cpp HTMLResourceReport.cpp HTMLAccountReport.cpp \
 HTMLWeeklyCalendar.cpp ReportHtml.cpp ExportReport.cpp \

@@ -108,7 +108,7 @@ AC_SUBST(PSMANUAL)
 
 AC_SUBST(KDE_LIBS)
 
-AM_INIT_AUTOMAKE(taskjuggler, 1.4)
+AM_INIT_AUTOMAKE(taskjuggler, 1.4+cvs)
 
 AC_OUTPUT(docs/en/taskjuggler.sgml)
 

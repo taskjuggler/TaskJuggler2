@@ -109,19 +109,19 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 
 	scheduling = ASAP;
 	milestone = FALSE;
-	complete = -1;
-	startBuffer = 0.0;
-	endBuffer = 0.0;
 	account = 0;
-	startCredit = endCredit = 0.0;
 	lastSlot = 0;
 	doneEffort = 0.0;
 	doneDuration = 0.0;
 	doneLength = 0.0;
 	schedulingDone = FALSE;
-	planScheduled = actualScheduled = FALSE;
 	responsible = 0;
 
+	scenarios[0].startBuffer = 0.0;
+	scenarios[0].endBuffer = 0.0;
+	scenarios[0].startCredit = 0.0;
+	scenarios[0].endCredit = 0.0;
+	
 	if (p)
 	{
 		// Inherit flags from parent task.
@@ -166,12 +166,6 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		minStart = minEnd = proj->getStart();
 		maxStart = maxEnd = proj->getEnd();
 	}
-
-	planStart = planEnd = 0;
-	planDuration = planLength = planEffort = 0.0;
-
-	actualStart = actualEnd = 0;
-	actualDuration = actualLength = actualEffort = 0.0;
 
 	start = end = 0;
 	duration = length = effort = 0.0;
@@ -351,7 +345,6 @@ Task::schedule(time_t& date, time_t slotDuration)
 			start = end + 1;
 			propagateStart();
 		}
-		schedulingDone = TRUE;
 		return;
 	}
 	else if (start != 0 && end != 0)
@@ -432,12 +425,22 @@ Task::propagateStart(bool safeMode)
 		qWarning("PS1: Setting start of %s to %s",
 				 id.latin1(), time2tjp(start).latin1());
 
+	/* If one end of a milestone is fixed, then the other end can be set as
+	 * well. */
+	if (milestone && end == 0)
+	{
+		end = start - 1;
+		schedulingDone = TRUE;
+		propagateEnd(safeMode);
+	}
+
 	/* Set start date to all previous that have no start date yet, but are
 	 * ALAP task or have no duration. */
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end == 0 && t->latestEnd() != 0 &&
 			(t->scheduling == ALAP || 
-			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0)))
+			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0 &&
+			  !t->milestone)))
 		{
 			t->end = t->latestEnd();
 			if (DEBUGTS(11))
@@ -477,12 +480,22 @@ Task::propagateEnd(bool safeMode)
 		qWarning("PE1: Setting end of %s to %s",
 				 id.latin1(), time2tjp(end).latin1());
 
+	/* If one end of a milestone is fixed, then the other end can be set as
+	 * well. */
+	if (milestone && start == 0)
+	{
+		start = end + 1;
+		schedulingDone = TRUE;
+		propagateStart(safeMode);
+	}
+
 	/* Set start date to all followers that have no start date yet, but are
 	 * ASAP task or have no duration. */
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (t->start == 0 && t->earliestStart() != 0 && 
 			(t->scheduling == ASAP ||
-			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0)))
+			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0 &&
+			  !t->milestone)))
 		{
 			t->start = t->earliestStart();
 			if (DEBUGTS(11))
@@ -732,13 +745,14 @@ Task::createCandidateList(time_t date, Allocation* a)
 }
 
 bool
-Task::isCompleted(time_t date) const
+Task::isCompleted(int sc, time_t date) const
 {
-	if (complete != -1)
+	if (scenarios[sc].complete != -1)
 	{
 		// some completion degree was specified.
-		return ((complete / 100.0) *
-				(actualEnd - actualStart) + actualStart) > date;
+		return ((scenarios[sc].complete / 100.0) *
+				(scenarios[sc].end - scenarios[sc].start) 
+				+ scenarios[sc].start) > date;
 	}
 	
 
@@ -782,9 +796,9 @@ Task::latestEnd()
 }
 
 double
-Task::getPlanCalcDuration() const
+Task::getCalcDuration(int sc) const
 {
-	time_t delta = planEnd - planStart;
+	time_t delta = scenarios[sc].end - scenarios[sc].start;
 	if (delta < ONEDAY)
 		return (project->convertToDailyLoad(delta));
 	else
@@ -792,107 +806,49 @@ Task::getPlanCalcDuration() const
 }
 
 double
-Task::getPlanLoad(const Interval& period, Resource* resource)
+Task::getLoad(int sc, const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
 	if (subFirst())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
-			load += t->getPlanLoad(period, resource);
+			load += t->getLoad(sc, period, resource);
 	}
 
 	if (resource)
-		load += resource->getPlanLoad(period, this);
+		load += resource->getLoad(sc, period, this);
 	else
-		for (Resource* r = planBookedResources.first(); r != 0;
-			 r = planBookedResources.next())
-			load += r->getPlanLoad(period, this);
+		for (Resource* r = scenarios[sc].bookedResources.first(); r != 0;
+			 r = scenarios[sc].bookedResources.next())
+			load += r->getLoad(sc, period, this);
 
 	return load;
 }
 
 double
-Task::getActualCalcDuration() const
-{
-	time_t delta = actualEnd - actualStart;
-	if (delta < ONEDAY)
-		return (project->convertToDailyLoad(delta));
-	else
-		return (double) delta / ONEDAY;
-}
-
-double
-Task::getActualLoad(const Interval& period, Resource* resource)
-{
-	double load = 0.0;
-
-	if (subFirst())
-	{
-		for (Task* t = subFirst(); t != 0; t = subNext())
-			load += t->getActualLoad(period, resource);
-	}
-	
-	if (resource)
-		load += resource->getActualLoad(period, this);
-	else
-		for (Resource* r = actualBookedResources.first(); r != 0;
-			 r = actualBookedResources.next())
-			load += r->getActualLoad(period, this);
-
-	return load;
-}
-
-double
-Task::getPlanCredits(const Interval& period, Resource* resource,
-					 bool recursive)
+Task::getCredits(int sc, const Interval& period, Resource* resource,
+				 bool recursive)
 {
 	double credits = 0.0;
 
 	if (recursive && subFirst())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
-			credits += t->getPlanCredits(period, resource, recursive);
+			credits += t->getCredits(sc, period, resource, recursive);
 	}
 
 	if (resource)
-		credits += resource->getPlanCredits(period, this);
+		credits += resource->getCredits(sc, period, this);
 	else
-		for (Resource* r = planBookedResources.first(); r != 0;
-			 r = planBookedResources.next())
-			credits += r->getPlanCredits(period, this);
+		for (Resource* r = scenarios[sc].bookedResources.first(); r != 0;
+			 r = scenarios[sc].bookedResources.next())
+			credits += r->getCredits(sc, period, this);
 
-	if (period.contains(planStart))
-		credits += startCredit;
-	if (period.contains(planEnd))
-		credits += endCredit;
-
-	return credits;
-}
-
-double
-Task::getActualCredits(const Interval& period, Resource* resource,
-					   bool recursive)
-{
-	double credits = 0.0;
-
-	if (recursive && subFirst())
-	{
-		for (Task* t = subFirst(); t != 0; t = subNext())
-			credits += t->getActualCredits(period, resource, recursive);
-	}
-
-	if (resource)
-		credits += resource->getActualCredits(period, this);
-	else
-		for (Resource* r = actualBookedResources.first(); r != 0;
-			 r = actualBookedResources.next())
-			credits += r->getActualCredits(period, this);
-
-	if (period.contains(actualStart))
-		credits += startCredit;
-	if (period.contains(actualEnd))
-		credits += endCredit;
+	if (period.contains(scenarios[sc].start))
+		credits += scenarios[sc].startCredit;
+	if (period.contains(scenarios[sc].end))
+		credits += scenarios[sc].endCredit;
 
 	return credits;
 }
@@ -972,50 +928,51 @@ Task::implicitXRef()
 	if (!sub.isEmpty() || milestone)
 		return;
 
-	bool planDurationSpec = planDuration > 1 || planLength > 0 ||
-		planEffort > 0;
-	bool actualDurationSpec = actualDuration > 0 || actualLength > 0 ||
-		actualEffort > 0 || planDurationSpec;
+	bool planDurationSpec = scenarios[0].duration > 1 ||
+	   	scenarios[0].length > 0 || scenarios[0].effort > 0;
+	bool actualDurationSpec = scenarios[1].duration > 0 ||
+	   	scenarios[1].length > 0 || scenarios[1].effort > 0 || planDurationSpec;
 
-	if ((planStart == 0 || actualStart == 0) && depends.isEmpty())
+	if ((scenarios[0].start == 0 || scenarios[1].start == 0) &&
+	   	depends.isEmpty())
 		for (Task* tp = getParent(); tp; tp = tp->getParent())
 		{
-			if (tp->planStart != 0 && planStart == 0 &&
+			if (tp->scenarios[0].start != 0 && scenarios[0].start == 0 &&
 				(scheduling == ASAP || !planDurationSpec))
 			{
 				if (DEBUGPF(11))
 					qDebug("Setting plan start of %s to %s", id.latin1(),
-						   time2ISO(tp->planStart).latin1());
-				planStart = tp->planStart;
+						   time2ISO(tp->scenarios[0].start).latin1());
+				scenarios[0].start = tp->scenarios[0].start;
 			}
-			if (tp->actualStart != 0 && actualStart == 0 &&
+			if (tp->scenarios[1].start != 0 && scenarios[1].start == 0 &&
 				(scheduling == ASAP || !actualDurationSpec))
 			{
 				if (DEBUGPF(11))
 					qDebug("Setting actual start of %s to %s", id.latin1(),
-						   time2ISO(tp->actualStart).latin1());
-				actualStart = tp->actualStart;
+						   time2ISO(tp->scenarios[1].start).latin1());
+				scenarios[1].start = tp->scenarios[1].start;
 			}
 		}
 	/* And the same for end values */
-	if ((planEnd == 0 || actualEnd == 0) && precedes.isEmpty())
+	if ((scenarios[0].end == 0 || scenarios[1].end == 0) && precedes.isEmpty())
 		for (Task* tp = getParent(); tp; tp = tp->getParent())
 		{
-			if (tp->planEnd != 0 && planEnd == 0 &&
+			if (tp->scenarios[0].end != 0 && scenarios[0].end == 0 &&
 				(scheduling == ALAP || !planDurationSpec))
 			{
 				if (DEBUGPF(11))
 					qDebug("Setting plan end of %s to %s", id.latin1(),
-						   time2ISO(tp->planEnd).latin1());
-				planEnd = tp->planEnd;
+						   time2ISO(tp->scenarios[0].end).latin1());
+				scenarios[0].end = tp->scenarios[0].end;
 			}
-			if (tp->actualEnd != 0 && actualEnd == 0 &&
+			if (tp->scenarios[1].end != 0 && scenarios[1].end == 0 &&
 				(scheduling == ALAP || !actualDurationSpec))
 			{
 				if (DEBUGPF(11))
 					qDebug("Setting actual end of %s to %s", id.latin1(),
-						   time2ISO(tp->actualEnd).latin1());
-				actualEnd = tp->actualEnd;
+						   time2ISO(tp->scenarios[1].end).latin1());
+				scenarios[1].end = tp->scenarios[1].end;
 			}
 		}
 }
@@ -1240,35 +1197,35 @@ Task::resolveId(QString relId)
 }
 
 bool
-Task::hasPlanStartDependency()
+Task::hasStartDependency(int sc)
 {
-	/* Checks whether the task has a start specification for the plan
+	/* Checks whether the task has a start specification for the 
 	 * scenario. This can be a fixed start time or a dependency on another
 	 * task's end or an implicit dependency on the fixed start time of a
 	 * parent task. */
-	if (planStart != 0 || !depends.isEmpty())
+	if (scenarios[sc].start != 0 || !depends.isEmpty())
 		return TRUE;
 	for (Task* p = getParent(); p; p = p->getParent())
-		if (p->planStart != 0)
+		if (p->scenarios[sc].start != 0)
 			return TRUE;
 	return FALSE;
 }
 
 bool
-Task::hasPlanEndDependency()
+Task::hasEndDependency(int sc)
 {
-	/* Checks whether the task has an end specification for the plan
+	/* Checks whether the task has an end specification for the 
 	 * scenario. This can be a fixed end time or a dependency on another
 	 * task's start or an implicit dependency on the fixed end time of a
 	 * parent task. */
-	if (planEnd != 0 || !precedes.isEmpty())
+	if (scenarios[sc].end != 0 || !precedes.isEmpty())
 		return TRUE;
 	for (Task* p = getParent(); p; p = p->getParent())
-		if (p->planEnd != 0)
+		if (p->scenarios[sc].end != 0)
 			return TRUE;
 	return FALSE;
 }
-
+#if 0
 bool
 Task::hasActualStartDependency()
 {
@@ -1276,10 +1233,11 @@ Task::hasActualStartDependency()
 	 * scenario. This can be a fixed plan or actual start time or a dependency
 	 * on another task's end or an implicit dependency on the fixed plan or
 	 * actual start time of a parent task. */
-	if (planStart != 0 || actualStart != 0 || !depends.isEmpty())
+	if (scenarios[0].start != 0 || scenarios[1].start != 0 ||
+	   	!depends.isEmpty())
 		return TRUE;
 	for (Task* p = getParent(); p; p = p->getParent())
-		if (p->planStart != 0 || p->actualStart != 0)
+		if (p->scenarios[0].start != 0 || p->scenarios[1].start != 0)
 			return TRUE;
 	return FALSE;
 }
@@ -1291,282 +1249,227 @@ Task::hasActualEndDependency()
 	 * scenario. This can be a fixed plan or actual end time or a dependency
 	 * on another task's start or an implicit dependency on the fixed plan or
 	 * actual end time of a parent task. */
-	if (planEnd != 0 || actualEnd != 0 || !precedes.isEmpty())
+	if (scenarios[0].end != 0 || scenarios[1].end != 0 || !precedes.isEmpty())
 		return TRUE;
 	for (Task* p = getParent(); p; p = p->getParent())
-		if (p->planEnd != 0 || p->actualEnd != 0)
+		if (p->scenarios[0].end != 0 || p->scenarios[1].end != 0)
 			return TRUE;
 	return FALSE;
 }
+#endif
 
 bool
 Task::preScheduleOk()
 {
-	if ((planEffort > 0 || actualEffort > 0) && allocations.count() == 0)
+	for (int sc = 0; sc < project->getMaxScenarios(); sc++)
 	{
-		fatalError(QString(
-			"No allocations specified for effort based task %1").arg(1));
-		return FALSE;
-	}
+		if (scenarios[sc].effort > 0 && allocations.count() == 0)
+		{
+			fatalError(QString
+					   ("No allocations specified for effort based task %1 "
+						"in %2 scenario")
+					   .arg(1).arg(project->getScenarioName(sc)));
+			return FALSE;
+		}
 
-	if (startBuffer + endBuffer >= 100.0)
-	{
-		fatalError("Start and end buffers may not overlap. So their sum must "
-				   "be smaller then 100%.");
-		return FALSE;
-	}
+		if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
+		{
+			fatalError(QString
+				("Start and end buffers may not overlap in %2 scenario. "
+				 "So their sum must be smaller then 100%.")
+				.arg(project->getScenarioName(sc)));
+			return FALSE;
+		}
 
-	// Check plan values.
-	int planDurationSpec = 0;
-	if (planEffort > 0.0)
-		planDurationSpec++;
-	if (planLength > 0.0)
-		planDurationSpec++;
-	if (planDuration > 0.0)
-		planDurationSpec++;
-	if (planDurationSpec > 1)
-	{
-		fatalError(QString("Task %1 may only have one duration "
-						   "criteria.").arg(id));
-		return FALSE;
-	}
-	int actualDurationSpec = 0;
-	if (actualEffort > 0.0 || planEffort > 0.0)
-		actualDurationSpec++;
-	if (actualLength > 0.0 || planLength > 0.0)
-		actualDurationSpec++;
-	if (actualDuration > 0.0 || planDuration > 0.0)
-		actualDurationSpec++;
+		// Check plan values.
+		int durationSpec = 0;
+		if (scenarios[sc].effort > 0.0)
+			durationSpec++;
+		if (scenarios[sc].length > 0.0)
+			durationSpec++;
+		if (scenarios[sc].duration > 0.0)
+			durationSpec++;
+		if (durationSpec > 1)
+		{
+			fatalError(QString("Task %1 may only have one duration "
+							   "criteria in %2 scenario.").arg(id)
+					   .arg(project->getScenarioName(sc)));
+			return FALSE;
+		}
 
+		/*
+		|: fixed start or end date
+		-: no fixed start or end date
+		M: Milestone
+		D: start or end dependency
+		x->: ASAP task with duration criteria
+		<-x: ALAP task with duration criteria
+		-->: ASAP task without duration criteria
+		<--: ALAP task without duration criteria
+		 */
+		if (!sub.isEmpty())
+		{
+			if (durationSpec != 0)
+			{
+				fatalError(QString
+						   ("Container task %1 may not have a plan duration "
+							"criteria in %2 scenario").arg(id)
+						   .arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
+		}
+		else if (milestone)
+		{
+			if (durationSpec != 0)
+			{
+				fatalError(QString
+						   ("Milestone %1 may not have a plan duration "
+							"criteria in %2 scenario").arg(id)
+						   .arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
+			/*
+			|  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
+			|  M |   err2   |D M |   err2   - M |   ok     -D M |   ok
+			|  M -D  ok     |D M -D  ok     - M -D  ok     -D M -D  ok
+			|  M |D  err2   |D M |D  err2   - M |D  ok     -D M |D  ok
+			 */
+			/* err1: no start and end
+			- M -
+			 */
+			if (!hasStartDependency(sc) && !hasEndDependency(sc))
+			{
+				fatalError(QString("Milestone %1 must have a start or end "
+								   "specification in %2 scenario.")
+						   .arg(id).arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
+			/* err2: different start and end
+			|  M |
+			|  M |D
+			|D M |
+			|D M |D
+			 */
+			if (scenarios[sc].start != 0 && scenarios[sc].end != 0 && 
+				scenarios[sc].start != scenarios[sc].end + 1)
+			{
+				fatalError(QString
+						   ("Milestone %1 may not have both a start "
+							"and an end specification that do not "
+							"match in %2 scenario.").arg(id)
+						   .arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
+		}
+		else
+		{
+			/*
+			Error table for non-container, non-milestone tasks:
 
-	/*
-	|: fixed start or end date
-	-: no fixed start or end date
-	M: Milestone
-	D: start or end dependency
-    x->: ASAP task with duration criteria
-    <-x: ALAP task with duration criteria
-	-->: ASAP task without duration criteria
-	<--: ALAP task without duration criteria
-	*/
-	if (!sub.isEmpty())
-	{
-		if (planDurationSpec != 0)
-		{
-			fatalError(QString("Container task %1 may not have a plan duration "
-							   "criteria").arg(id));
-			return FALSE;
-		}
-		if (actualDurationSpec != 0)
-		{
-			fatalError(QString("Container task %1 may not have an actual "
-							   "duration criteria").arg(id));
-			return FALSE;
-		}
-	}
-	else if (milestone)
-	{
-		if (planDurationSpec != 0)
-		{
-			fatalError(QString("Milestone %1 may not have a plan duration "
-							   "criteria").arg(id));
-			return FALSE;
-		}
-		if (actualDurationSpec != 0)
-		{
-			fatalError(QString("Milestone %1 may not have an actual duration "
-							   "criteria").arg(id));
-			return FALSE;
-		}
-		/*
-		|  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
-		|  M |   err2   |D M |   err2   - M |   ok     -D M |   ok
-		|  M -D  ok     |D M -D  ok     - M -D  ok     -D M -D  ok
-		|  M |D  err2   |D M |D  err2   - M |D  ok     -D M |D  ok
-		*/
-		/* err1: no start and end
-		- M -
-		*/
-		if (!hasPlanStartDependency() && !hasPlanEndDependency())
-		{
-			fatalError(QString("Milestone %1 must have a plan start or end "
-							   "specification.").arg(id));
-			return FALSE;
-		}
-		if (!hasActualStartDependency() && !hasActualEndDependency())
-		{
-			fatalError(QString("Milestone %1 must have an actual start or end "
-							   "specification.").arg(id));
-			return FALSE;
-		}
-		/* err2: different start and end
-		|  M |
-		|  M |D
-		|D M |
-		|D M |D
-		*/
-		if (planStart != 0 && planEnd != 0 && planStart != planEnd + 1)
-		{
-			fatalError(QString("Milestone %1 may not have both a plan start "
-							   "and a plan end specification that do not "
-							   "match.").arg(id));
-			return FALSE;
-		}
-		if ((actualStart != 0 && actualEnd != 0 &&
-			 actualStart != actualEnd + 1) ||
-			(actualStart == 0 && planStart != 0 && actualEnd != 0 &&
-			 planStart != actualEnd + 1) ||
-			(actualStart != 0 && actualEnd == 0 && planEnd != 0 &&
-			 actualStart != planEnd + 1))
-		{
-			fatalError(QString("Milestone %1 may not have both an actual start "
-							   "and actual end specification.").arg(id));
-			return FALSE;
-		}
-		/* If either start of end of a milestone are specified as fixed date
-		 * we set the scheduling mode, so that the fixed date it always taken,
-		 * no matter what other dependencies are. */
-		if ((planStart != 0 || actualStart != 0) && planEnd == 0)
-			scheduling = ASAP;
-		if (planStart == 0 && (planEnd != 0 || actualEnd != 0))
-			scheduling = ALAP;
-	}
-	else
-	{
-		/*
-		Error table for non-container, non-milestone tasks:
-		
-		| x-> -   ok      |D x-> -   ok      - x-> -   err3    -D x-> -   ok
-		| x-> |   err1    |D x-> |   err1    - x-> |   err3    -D x-> |   err1
-		| x-> -D  ok      |D x-> -D  ok      - x-> -D  err3    -D x-> -D  ok
-		| x-> |D  err1    |D x-> |D  err1    - x-> |D  err3    -D x-> |D  err1
-		| --> -   err2    |D --> -   err2    - --> -   err3    -D --> -   err2
-		| --> |   ok      |D --> |   ok      - --> |   err3    -D --> |   ok
-		| --> -D  ok      |D --> -D  ok      - --> -D  err3    -D --> -D  ok
-		| --> |D  ok      |D --> |D  ok      - --> |D  err3    -D --> |D  ok
-		| <-x -   err4    |D <-x -   err4    - <-x -   err4    -D <-x -   err4
-		| <-x |   err1    |D <-x |   err1    - <-x |   ok      -D <-x |   ok
-		| <-x -D  err1    |D <-x -D  err1    - <-x -D  ok      -D <-x -D  ok
-		| <-x |D  err1    |D <-x |D  err1    - <-x |D  ok      -D <-x |D  ok
-		| <-- -   err4    |D <-- -   err4    - <-- -   err4    -D <-- -   err4
-		| <-- |   ok      |D <-- |   ok      - <-- |   err2    -D <-- |   ok
-		| <-- -D  ok      |D <-- -D  ok      - <-- -D  err2    -D <-- -D  ok
-		| <-- |D  ok      |D <-- |D  ok      - <-- |D  err2    -D <-- |D  ok
-		*/
-		/*
-		err1: Overspecified (12 cases)
-		|  x-> |
-		|  <-x |
-		|  x-> |D
-		|  <-x |D
-		|D x-> |
-		|D <-x |
-		|D <-x |D
-		|D x-> |D
-		-D x-> |
-		-D x-> |D
-		|D <-x -D
-		|  <-x -D
-		*/
-		if (((planStart != 0 && planEnd != 0) ||
-			 (hasPlanStartDependency() && planStart == 0 &&
-			  planEnd != 0 && scheduling == ASAP) ||
-			 (planStart != 0 && scheduling == ALAP &&
-			  hasPlanEndDependency() && planEnd == 0)) &&
-		   	planDurationSpec != 0)
-		{
-			fatalError(QString("Task %1 has a plan start, a plan end and a "
-							   "plan duration specification.").arg(id));
-			return FALSE;
-		}	
-		if (((actualStart != 0 && actualEnd != 0) ||
-			 (hasActualStartDependency() &&
-			  planStart == 0 && actualStart == 0 &&
-			  (planEnd != 0 || actualEnd != 0) && scheduling == ASAP) ||
-			 ((planStart != 0 || actualStart != 0) && scheduling == ALAP &&
-			  hasActualEndDependency() && 
-			  planEnd == 0 && actualEnd == 0)) &&
-		   	actualDurationSpec != 0)
-		{
-			fatalError(QString("Task %1 has an actual start, an actual end "
-							   "and an actual duration specification.")
-					   .arg(id));
-			return FALSE;
-		}	
-		/*
-		err2: Underspecified (6 cases)
-		|  --> -
-		|D --> -
-		-D --> -
-		-  <-- |
-		-  <-- |D
-		-  <-- -D
-		*/
-		if ((hasPlanStartDependency() ^ hasPlanEndDependency()) &&
-		   	planDurationSpec == 0)
-		{
-			fatalError(QString("Task %1 has only a plan start or end "
-							   "specification but no plan duration.").arg(id));
-			return FALSE;
-		}
-		if ((hasActualStartDependency() ^ hasActualEndDependency()) &&
-		   	actualDurationSpec == 0)
-		{
-			fatalError(QString("Task %1 has only an actual start or end "
-							   "specification but no actual duration.")
-					   .arg(id));
-			return FALSE;
-		}
-		/*
-		err3: ASAP + Duration must have fixed start (8 cases)
-		-  x-> -
-		-  x-> |
-		-  x-> -D
-		-  x-> |D
-		-  --> -
-		-  --> |
-		-  --> -D
-		-  --> |D
-		*/
-		if (!hasPlanStartDependency() && scheduling == ASAP)
-		{
-			fatalError(QString("Task %1 needs a plan start specification to "
-							   "be scheduled in ASAP mode.").arg(id));
-			return FALSE;
-		}
-		if (!hasActualStartDependency() && scheduling == ASAP)
-		{
-			fatalError(QString("Task %1 needs an actual start specification "
-							   "to be scheduled in ASAP mode.").arg(id));
-			return FALSE;
-		}
-		/*
-		err4: ALAP + Duration must have fixed end (8 cases)
-		-  <-x -
-		|  <-x -
-		|D <-x -
-		-D <-x -
-		-  <-- -
-		|  <-- -
-		-D <-- -
-		|D <-- -
-		*/
-		if (!hasPlanEndDependency() && scheduling == ALAP)
-		{
-			fatalError(QString("Task %1 needs a plan end specification to "
-							   "be scheduled in ALAP mode.").arg(id));
-			return FALSE;
-		}
-		if (!hasPlanEndDependency() && scheduling == ALAP)
-		{
-			fatalError(QString("Task %1 needs an actual end specification to "
-							   "be scheduled in ALAP mode.").arg(id));
-			return FALSE;
+			| x-> -   ok     |D x-> -   ok     - x-> -   err3   -D x-> -   ok
+			| x-> |   err1   |D x-> |   err1   - x-> |   err3   -D x-> |   err1
+			| x-> -D  ok     |D x-> -D  ok     - x-> -D  err3   -D x-> -D  ok
+			| x-> |D  err1   |D x-> |D  err1   - x-> |D  err3   -D x-> |D  err1
+			| --> -   err2   |D --> -   err2   - --> -   err3   -D --> -   err2
+			| --> |   ok     |D --> |   ok     - --> |   err3   -D --> |   ok
+			| --> -D  ok     |D --> -D  ok     - --> -D  err3   -D --> -D  ok
+			| --> |D  ok     |D --> |D  ok     - --> |D  err3   -D --> |D  ok
+			| <-x -   err4   |D <-x -   err4   - <-x -   err4   -D <-x -   err4
+			| <-x |   err1   |D <-x |   err1   - <-x |   ok     -D <-x |   ok
+			| <-x -D  err1   |D <-x -D  err1   - <-x -D  ok     -D <-x -D  ok
+			| <-x |D  err1   |D <-x |D  err1   - <-x |D  ok     -D <-x |D  ok
+			| <-- -   err4   |D <-- -   err4   - <-- -   err4   -D <-- -   err4
+			| <-- |   ok     |D <-- |   ok     - <-- |   err2   -D <-- |   ok
+			| <-- -D  ok     |D <-- -D  ok     - <-- -D  err2   -D <-- -D  ok
+			| <-- |D  ok     |D <-- |D  ok     - <-- |D  err2   -D <-- |D  ok
+			 */
+			/*
+			err1: Overspecified (12 cases)
+			|  x-> |
+			|  <-x |
+			|  x-> |D
+			|  <-x |D
+			|D x-> |
+			|D <-x |
+			|D <-x |D
+			|D x-> |D
+			-D x-> |
+			-D x-> |D
+			|D <-x -D
+			|  <-x -D
+			 */
+			if (((scenarios[sc].start != 0 && scenarios[sc].end != 0) ||
+				 (hasStartDependency(sc) && scenarios[sc].start == 0 &&
+				  scenarios[sc].end != 0 && scheduling == ASAP) ||
+				 (scenarios[sc].start != 0 && scheduling == ALAP &&
+				  hasEndDependency(sc) && scenarios[sc].end == 0)) &&
+				durationSpec != 0)
+			{
+				fatalError(QString("Task %1 has a start, an end and a "
+								   "duration specification for %2 scenario.")
+						   .arg(id).arg(project->getScenarioName(sc)));
+				return FALSE;
+			}	
+			/*
+			err2: Underspecified (6 cases)
+			|  --> -
+			|D --> -
+			-D --> -
+			-  <-- |
+			-  <-- |D
+			-  <-- -D
+			 */
+			if ((hasStartDependency(sc) ^ hasEndDependency(sc)) &&
+				durationSpec == 0)
+			{
+				fatalError(QString
+						   ("Task %1 has only a start or end specification "
+							"but no plan duration for the %2 scenario.")
+						   .arg(id).arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
+			/*
+			err3: ASAP + Duration must have fixed start (8 cases)
+			-  x-> -
+			-  x-> |
+			-  x-> -D
+			-  x-> |D
+			-  --> -
+			-  --> |
+			-  --> -D
+			-  --> |D
+			 */
+			if (!hasStartDependency(sc) && scheduling == ASAP)
+			{
+				fatalError(QString
+						   ("Task %1 needs a start specification to be "
+							"scheduled in ASAP mode in the %2 scenario.")
+						   .arg(id).arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
+			/*
+			err4: ALAP + Duration must have fixed end (8 cases)
+			-  <-x -
+			|  <-x -
+			|D <-x -
+			-D <-x -
+			-  <-- -
+			|  <-- -
+			-D <-- -
+			|D <-- -
+			 */
+			if (!hasEndDependency(sc) && scheduling == ALAP)
+			{
+				fatalError(QString
+						   ("Task %1 needs an end specification to be "
+							"scheduled in ALAP mode in the %2 scenario.")
+						   .arg(id).arg(project->getScenarioName(sc)));
+				return FALSE;
+			}
 		}
 	}
-
 	double intervalLoad =
-	   	project->convertToDailyLoad(project->getScheduleGranularity());
+		project->convertToDailyLoad(project->getScheduleGranularity());
 
 	for (Allocation* a = allocations.first(); a != 0; a = allocations.next())
 	{
@@ -1756,7 +1659,7 @@ Task::nextSlot(time_t slotDuration)
 
 	if (scheduling == ASAP && start != 0)
 	{
-		if (effort == 0 && length == 0 && duration == 0 && !milestone &&
+		if (effort == 0.0 && length == 0.0 && duration == 0.0 && !milestone &&
 		   	end == 0)
 			return 0;
 
@@ -1766,7 +1669,7 @@ Task::nextSlot(time_t slotDuration)
 	}
 	if (scheduling == ALAP && end != 0)
 	{
-		if (effort == 0 && length == 0 && duration == 0 && !milestone &&
+		if (effort == 0.0 && length == 0.0 && duration == 0.0 && !milestone &&
 			start == 0)
 			return 0;
 		if (lastSlot == 0)
@@ -1778,17 +1681,11 @@ Task::nextSlot(time_t slotDuration)
 }
 
 bool
-Task::isPlanActive(const Interval& period) const
+Task::isActive(int sc, const Interval& period) const
 {
-	return period.overlaps(Interval(planStart,
-									milestone ? planStart : planEnd));
-}
-
-bool
-Task::isActualActive(const Interval& period) const
-{
-	return period.overlaps(Interval(actualStart,
-									milestone ? actualStart : actualEnd));
+	return period.overlaps(Interval(scenarios[sc].start,
+									milestone ? scenarios[sc].start :
+									scenarios[sc].end));
 }
 
 void
@@ -1812,191 +1709,158 @@ Task::isSubTask(Task* tsk)
 }
 
 void
-Task::preparePlan()
+Task::overlayScenario(int sc)
 {
-	start = planStart;
-	end = planEnd;
+	/* Scenario 0 is always the baseline. If another scenario does not provide
+	 * a certain value, the value from the plan scenario is copied over. */
+	if (scenarios[sc].start == 0.0)
+		scenarios[sc].start = scenarios[0].start;
+	if (scenarios[sc].end == 0.0)
+		scenarios[sc].end = scenarios[0].end;
+	if (scenarios[sc].duration == 0.0)
+		scenarios[sc].duration =  scenarios[0].duration;
+	if (scenarios[sc].length == 0.0)
+		scenarios[sc].length = scenarios[0].length;
+	if (scenarios[sc].effort == 0.0)
+		scenarios[sc].effort = scenarios[0].effort;
+	if (scenarios[sc].startBuffer < 0.0)
+		scenarios[sc].startBuffer = scenarios[0].startBuffer;
+	if (scenarios[sc].endBuffer < 0.0)
+		scenarios[sc].endBuffer = scenarios[0].endBuffer;
+	if (scenarios[sc].startCredit < 0.0)
+		scenarios[sc].startCredit = scenarios[0].startCredit;
+	if (scenarios[sc].endCredit < 0.0)
+		scenarios[sc].endCredit = scenarios[0].endCredit;
+	if (scenarios[sc].complete == -1)
+		scenarios[sc].complete = scenarios[0].complete;
+}
 
-	duration = planDuration;
-	length = planLength;
-	effort = planEffort;
+bool
+Task::hasExtraValues(int sc) const
+{
+	return scenarios[sc].start != 0 || scenarios[sc].end != 0 ||
+		scenarios[sc].length != 0 || scenarios[sc].duration != 0 ||
+		scenarios[sc].effort != 0 || scenarios[sc].complete != -1 ||
+		scenarios[sc].startBuffer >= 0.0 || scenarios[sc].endBuffer >= 0.0 ||
+		scenarios[sc].startCredit >= 0.0 || scenarios[sc].endCredit >= 0.0;
+}
+
+void
+Task::prepareScenario(int sc)
+{
+	start = scenarios[sc].start;
+	end = scenarios[sc].end;
+
+	duration = scenarios[sc].duration;
+	length = scenarios[sc].length;
+	effort = scenarios[sc].effort;
 	lastSlot = 0;
-	schedulingDone = planScheduled;
+	schedulingDone = scenarios[sc].scheduled;
 	runAway = FALSE;
 	bookedResources.clear();
-	bookedResources = planBookedResources;
-
-	if (actualStart == 0.0)
-		actualStart = planStart;
-	if (actualEnd == 0.0)
-		actualEnd = planEnd;
-	if (actualDuration == 0.0)
-		actualDuration =  planDuration;
-	if (actualLength == 0.0)
-		actualLength = planLength;
-	if (actualEffort == 0.0)
-		actualEffort = planEffort;
+	bookedResources = scenarios[sc].bookedResources;
 }
 
 void
-Task::finishPlan()
+Task::finishScenario(int sc)
 {
-	planStart = start;
-	planEnd = end;
-	planDuration = doneDuration;
-	planLength = doneLength;
-	planEffort = doneEffort;
-	planBookedResources = bookedResources;
-	planScheduled = schedulingDone;
-}
-
-void
-Task::prepareActual()
-{
-	start = actualStart;
-	end = actualEnd;
-
-	duration = actualDuration;
-	length = actualLength;
-	effort = actualEffort;
-	lastSlot = 0;
-	schedulingDone = actualScheduled;
-	runAway = FALSE;
-	bookedResources.clear();
-	bookedResources = actualBookedResources;
-}
-
-void
-Task::finishActual()
-{
-	actualStart = start;
-	actualEnd = end;
-	actualDuration = doneDuration;
-	actualLength = doneLength;
-	actualEffort = doneEffort;
-	actualBookedResources = bookedResources;
-	actualScheduled = schedulingDone;
+	scenarios[sc].start = start;
+	scenarios[sc].end = end;
+	scenarios[sc].duration = doneDuration;
+	scenarios[sc].length = doneLength;
+	scenarios[sc].effort = doneEffort;
+	scenarios[sc].bookedResources = bookedResources;
+	scenarios[sc].scheduled = schedulingDone;
 }
 
 void
 Task::computeBuffers()
 {
-	planStartBufferEnd = planStart - 1;
-	planEndBufferStart = planEnd + 1;
-	actualStartBufferEnd = actualStart - 1;
-	actualEndBufferStart = actualEnd + 1;
-
 	int sg = project->getScheduleGranularity();
+	for (int sc = 0; sc < project->getMaxScenarios(); sc++)
+	{
+		scenarios[sc].startBufferEnd = scenarios[sc].start - 1;
+		scenarios[sc].endBufferStart = scenarios[sc].end + 1;
+
 	
-	if (duration > 0.0)
-	{
-		if (startBuffer > 0.0)
+		if (duration > 0.0)
 		{
-			planStartBufferEnd = planStart +
-				(time_t) ((planEnd - planStart) * startBuffer / 100.0);
-			actualStartBufferEnd = actualStart +
-				(time_t) ((actualEnd - actualStart) * startBuffer / 100.0);
+			if (scenarios[sc].startBuffer > 0.0)
+				scenarios[sc].startBufferEnd = scenarios[sc].start +
+					(time_t) ((scenarios[sc].end - scenarios[sc].start) * 
+							  scenarios[sc].startBuffer / 100.0);
+			if (scenarios[sc].endBuffer > 0.0)
+				scenarios[sc].endBufferStart = scenarios[sc].end -
+					(time_t) ((scenarios[sc].end - scenarios[sc].start) * 
+							  scenarios[sc].endBuffer / 100.0);
 		}
-		if (endBuffer > 0.0)
+		else if (length > 0.0)
 		{
-			planEndBufferStart = planEnd -
-				(time_t) ((planEnd - planStart) * endBuffer / 100.0);
-			actualEndBufferStart = actualEnd -
-				(time_t) ((actualEnd - actualStart) * endBuffer / 100.0);
-		}
-	}
-	else if (length > 0.0)
-	{
-		double l;
-		if (startBuffer > 0.0)
-		{
-			for (l = 0.0; planStartBufferEnd < planEnd;
-				 planStartBufferEnd += sg)
+			double l;
+			if (scenarios[sc].startBuffer > 0.0)
 			{
-				if (project->isWorkingDay(planStartBufferEnd))
+				for (l = 0.0; scenarios[sc].startBufferEnd < scenarios[sc].end;
+					 scenarios[sc].startBufferEnd += sg)
+				{
+					if (project->isWorkingDay(scenarios[sc].startBufferEnd))
 					l += (double) sg / ONEDAY;
-				if (l >= planLength * startBuffer / 100.0)
-					break;
+					if (l >= scenarios[sc].length *
+					   	scenarios[sc].startBuffer / 100.0)
+						break;
+				}
 			}
-			for (l = 0.0; actualStartBufferEnd < actualEnd;
-				 actualStartBufferEnd += sg)
+			if (scenarios[sc].endBuffer > 0.0)
 			{
-				if (project->isWorkingDay(actualStartBufferEnd))
-					l += (double) sg / ONEDAY;
-				if (l >= actualLength * startBuffer / 100.0)
-					break;
-			}
-		}
-		if (endBuffer > 0.0)
-		{
-			for (l = 0.0; planEndBufferStart > planStart;
-				 planEndBufferStart -= sg)
-			{
-				if (project->isWorkingDay(planEndBufferStart))
-					l += (double) sg / ONEDAY;
-				if (l >= planLength * endBuffer / 100.0)
-					break;
-			}
-			for (l = 0.0; actualEndBufferStart > actualStart;
-				 actualEndBufferStart -= sg)
-			{
-				if (project->isWorkingDay(actualEndBufferStart))
-					l += (double) sg / ONEDAY;
-				if (l >= actualLength * endBuffer / 100.0)
-					break;
+				for (l = 0.0; scenarios[sc].endBufferStart > 
+					 scenarios[sc].start; scenarios[sc].endBufferStart -= sg)
+				{
+					if (project->isWorkingDay(scenarios[sc].endBufferStart))
+						l += (double) sg / ONEDAY;
+					if (l >= scenarios[sc].length * 
+						scenarios[sc].endBuffer / 100.0)
+						break;
+				}
 			}
 		}
-	}
-	else if (effort > 0.0)
-	{
-		double e;
-		if (startBuffer > 0.0)
+		else if (effort > 0.0)
 		{
-			for (e = 0.0; planStartBufferEnd < planEnd; 
-				 planStartBufferEnd += sg)
+			double e;
+			if (scenarios[sc].startBuffer > 0.0)
 			{
-				e += getPlanLoad(Interval(planStartBufferEnd,
-										  planStartBufferEnd + sg));
-				if (e >= planEffort * startBuffer / 100.0)
-					break;
+				for (e = 0.0; scenarios[sc].startBufferEnd < scenarios[sc].end; 
+					 scenarios[sc].startBufferEnd += sg)
+				{
+					e += getLoad(sc, 
+								 Interval(scenarios[sc].startBufferEnd,
+										  scenarios[sc].startBufferEnd + sg));
+					if (e >= scenarios[sc].effort * 
+						scenarios[sc].startBuffer / 100.0)
+						break;
+				}
 			}
-			for (e = 0.0; actualStartBufferEnd < actualEnd; 
-				 actualStartBufferEnd += sg)
+			if (scenarios[sc].endBuffer > 0.0)
 			{
-				e += getActualLoad(Interval(actualStartBufferEnd,
-											actualStartBufferEnd + sg));
-				if (e >= actualEffort * startBuffer / 100.0)
-					break;
-			}
-		}
-		if (endBuffer > 0.0)
-		{
-			for (e = 0.0; planEndBufferStart > planStart;
-				 planEndBufferStart -= sg)
-			{
-				e += getPlanLoad(Interval(planEndBufferStart - sg,
-										  planEndBufferStart));
-				if (e >= planEffort * endBuffer / 100.0)
-					break;
-			}
-			for (e = 0.0; actualEndBufferStart > actualStart;
-				 actualEndBufferStart -= sg)
-			{
-				e += getActualLoad(Interval(actualEndBufferStart - sg,
-											actualEndBufferStart));
-				if (e >= actualEffort * endBuffer / 100.0)
-					break;
+				for (e = 0.0; scenarios[sc].endBufferStart > 
+					 scenarios[sc].start; scenarios[sc].endBufferStart -= sg)
+				{
+					e += getLoad(sc, 
+								 Interval(scenarios[sc].endBufferStart - sg,
+										  scenarios[sc].endBufferStart));
+					if (e >= scenarios[sc].effort * 
+						scenarios[sc].endBuffer / 100.0)
+						break;
+				}
 			}
 		}
 	}
 }
 
-double Task::getCompleteAtTime(time_t timeSpot) const
+double Task::getCompleteAtTime(int sc, time_t timeSpot) const
 {
-   if( complete != -1 ) return( complete );
+   if( scenarios[sc].complete != -1 ) return( scenarios[sc].complete );
 
-   time_t start = getPlanStart();
-   time_t end = getPlanEnd();
+   time_t start = getStart(sc);
+   time_t end = getEnd(sc);
 
    if( timeSpot > end ) return 100.0;
    if( timeSpot < start ) return 0.0;
@@ -2025,7 +1889,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( ReportXML::createXMLElem( doc, "ProjectID", projectId ));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number(getPriority())));
 
-   double cmplt = getCompleteAtTime( getProject()->getNow());
+   double cmplt = getCompleteAtTime( Task::Plan, getProject()->getNow());
    taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(cmplt, 'f', 1) ));
 
    QString tType = "Milestone";
@@ -2062,55 +1926,63 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
    taskElem.appendChild( tempElem );
    
-   tempElem = ReportXML::createXMLElem( doc, "actualStart", QString::number( actualStart ));
-   tempElem.setAttribute( "humanReadable", time2ISO( actualStart ));
+   tempElem = ReportXML::createXMLElem( doc, "actualStart", QString::number( scenarios[1].start ));
+   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[1].start ));
    taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "actualEnd", QString::number( actualEnd ));
-   tempElem.setAttribute( "humanReadable", time2ISO( actualEnd ));
+   tempElem = ReportXML::createXMLElem( doc, "actualEnd", QString::number( scenarios[1].end ));
+   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[1].end ));
    taskElem.appendChild( tempElem );
    
-   tempElem = ReportXML::createXMLElem( doc, "planStart", QString::number( planStart ));
-   tempElem.setAttribute( "humanReadable", time2ISO( planStart ));
+   tempElem = ReportXML::createXMLElem( doc, "planStart", QString::number( scenarios[0].start ));
+   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].start ));
    taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "planEnd", QString::number( planEnd ));
-   tempElem.setAttribute( "humanReadable", time2ISO( planEnd ));
+   tempElem = ReportXML::createXMLElem( doc, "planEnd", QString::number( scenarios[0].end ));
+   tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].end ));
    taskElem.appendChild( tempElem );
 
    /* Start- and Endbuffer */
-   if( getStartBuffer() > 0.01 )
+   if( getStartBuffer(Task::Plan) > 0.01 )
    {
       /* startbuffer exists */
-      tempElem = ReportXML::createXMLElem( doc, "startBufferSize", QString::number( getStartBuffer()));
+      tempElem = ReportXML::createXMLElem( doc, "startBufferSize",
+										   QString::number(
+														   getStartBuffer(Task::Plan)));
       taskElem.appendChild( tempElem );
 
       tempElem = ReportXML::createXMLElem( doc, "ActualStartBufferEnd",
-					   QString::number( getActualStartBufferEnd()));
-      tempElem.setAttribute( "humanReadable", time2ISO(getActualStartBufferEnd()));
+					   QString::number( getStartBufferEnd(Task::Actual)));
+      tempElem.setAttribute( "humanReadable",
+							 time2ISO(getStartBufferEnd(Task::Actual)));
       taskElem.appendChild( tempElem );
 
       tempElem = ReportXML::createXMLElem( doc, "PlanStartBufferEnd",
-					   QString::number( getPlanStartBufferEnd()));
-      tempElem.setAttribute( "humanReadable", time2ISO(getPlanStartBufferEnd()));
+					   QString::number( getStartBufferEnd(Task::Plan)));
+      tempElem.setAttribute( "humanReadable",
+							 time2ISO(getStartBufferEnd(Task::Plan)));
       taskElem.appendChild( tempElem );
       
    }
 
-   if( getEndBuffer() > 0.01 )
+   if( getEndBuffer(Task::Plan) > 0.01 )
    {
       /* startbuffer exists */
-      tempElem = ReportXML::createXMLElem( doc, "EndBufferSize", QString::number( getEndBuffer()));
+      tempElem = ReportXML::createXMLElem( doc, "EndBufferSize",
+										   QString::number(
+														   getEndBuffer(Task::Plan)));
       taskElem.appendChild( tempElem );
 
       tempElem = ReportXML::createXMLElem( doc, "ActualEndBufferStart",
-					   QString::number( getActualEndBufferStart()));
-      tempElem.setAttribute( "humanReadable", time2ISO(getActualEndBufferStart()));
+					   QString::number( getEndBufferStart(Task::Actual)));
+      tempElem.setAttribute( "humanReadable",
+							 time2ISO(getEndBufferStart(Task::Actual)));
       taskElem.appendChild( tempElem );
 
       tempElem = ReportXML::createXMLElem( doc, "PlanEndBufferStart",
-					   QString::number( getPlanEndBufferStart()));
-      tempElem.setAttribute( "humanReadable", time2ISO(getPlanStartBufferEnd()));
+					   QString::number( getEndBufferStart(Task::Plan)));
+      tempElem.setAttribute( "humanReadable",
+							 time2ISO(getStartBufferEnd(Task::Plan)));
       taskElem.appendChild( tempElem );
    }
 
@@ -2237,29 +2109,29 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 			return t1->getSequenceNo() == t2->getSequenceNo() ? 0 :
 				t1->getSequenceNo() < t2->getSequenceNo() ? -1 : 1;
 	case PlanStartUp:
-		return t1->planStart == t2->planStart ? 0 :
-			t1->planStart < t2->planStart ? -1 : 1;
+		return t1->scenarios[0].start == t2->scenarios[0].start ? 0 :
+			t1->scenarios[0].start < t2->scenarios[0].start ? -1 : 1;
 	case PlanStartDown:
-		return t1->planStart == t2->planStart ? 0 :
-			t1->planStart > t2->planStart ? -1 : 1;
+		return t1->scenarios[0].start == t2->scenarios[0].start ? 0 :
+			t1->scenarios[0].start > t2->scenarios[0].start ? -1 : 1;
 	case ActualStartUp:
-		return t1->actualStart == t2->actualStart ? 0 :
-			t1->actualStart < t2->actualStart ? -1 : 1;
+		return t1->scenarios[1].start == t2->scenarios[1].start ? 0 :
+			t1->scenarios[1].start < t2->scenarios[1].start ? -1 : 1;
 	case ActualStartDown:
-		return t1->actualStart == t2->actualStart ? 0 :
-			t1->actualStart > t2->actualStart ? -1 : 1;
+		return t1->scenarios[1].start == t2->scenarios[1].start ? 0 :
+			t1->scenarios[1].start > t2->scenarios[1].start ? -1 : 1;
 	case PlanEndUp:
-		return t1->planEnd == t2->planEnd ? 0 :
-			t1->planEnd < t2->planEnd ? -1 : 1;
+		return t1->scenarios[0].end == t2->scenarios[0].end ? 0 :
+			t1->scenarios[0].end < t2->scenarios[0].end ? -1 : 1;
 	case PlanEndDown:
-		return t1->planEnd == t2->planEnd ? 0 :
-			t1->planEnd > t2->planEnd ? -1 : 1;
+		return t1->scenarios[0].end == t2->scenarios[0].end ? 0 :
+			t1->scenarios[0].end > t2->scenarios[0].end ? -1 : 1;
 	case ActualEndUp:
-		return t1->actualEnd == t2->actualEnd ? 0 :
-			t1->actualEnd < t2->actualEnd ? -1 : 1;
+		return t1->scenarios[1].end == t2->scenarios[1].end ? 0 :
+			t1->scenarios[1].end < t2->scenarios[1].end ? -1 : 1;
 	case ActualEndDown:
-		return t1->actualEnd == t2->actualEnd ? 0 :
-			t1->actualEnd > t2->actualEnd ? -1 : 1;
+		return t1->scenarios[1].end == t2->scenarios[1].end ? 0 :
+			t1->scenarios[1].end > t2->scenarios[1].end ? -1 : 1;
 	case PrioUp:
 		if (t1->priority == t2->priority)
 			return 0;
@@ -2393,7 +2265,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "Priority" )
         setPriority( elem.text().toInt() );
       else if( elemTagName == "complete" )
-	 setComplete( elem.text().toInt() );
+	 setComplete(Task::Plan, elem.text().toInt() );
 
       /* time-stuff: */
       else if( elemTagName == "minStart" )
@@ -2405,13 +2277,13 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "maxEnd" )
 	 setMaxEnd( elem.text().toLong() );
       else if( elemTagName == "actualStart" )
-	 setActualStart( elem.text().toLong() );
+	 setStart(Task::Actual, elem.text().toLong() );
       else if( elemTagName == "actualEnd" )
-	 setActualEnd( elem.text().toLong() );
+	 setEnd(Task::Actual, elem.text().toLong() );
       else if( elemTagName == "planStart" )
-	 setPlanStart( elem.text().toLong() );
+	 setStart(Task::Plan, elem.text().toLong() );
       else if( elemTagName == "planEnd" )
-	 setPlanEnd( elem.text().toLong() );
+	 setEnd(Task::Plan, elem.text().toLong() );
    }
 }
 
