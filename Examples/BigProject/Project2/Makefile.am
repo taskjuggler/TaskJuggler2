@@ -15,8 +15,8 @@ install-data-local:
 uninstall-local:
 	-rm -f $(DESTDIR)$(docprefix)
 
-$(TARGETNAME).tjsp : $(TARGETNAME).tjp
+$(TARGETNAME).tji : $(TARGETNAME).tjp
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
-all-local: $(TARGETNAME).tjsp
+all-local: $(TARGETNAME).tji
 
