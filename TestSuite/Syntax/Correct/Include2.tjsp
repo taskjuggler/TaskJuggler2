@@ -1,0 +1,4 @@
+task foo "Foo" {
+  start 2000-01-01
+  length 1d
+}
