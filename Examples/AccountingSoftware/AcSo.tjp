@@ -1,6 +1,6 @@
-project fibu "Accounting Software" "1.0" 2002-01-16 2002-06-30
-
-now 2002-02-17
+project fibu "Accounting Software" "1.0" 2002-01-16 2002-05-01 {
+  now 2002-03-04
+}
 
 # The daily rate of all resources
 rate 310.0
@@ -58,7 +58,7 @@ task AcSo "Accounting Software" {
 
     task backend "Back-End Functions" {
       effort 30d
-      complete 100
+      complete 80 # This task is ahead of schedule.
       depends !database, !!spec
       allocate dev1
       allocate dev2
@@ -118,21 +118,37 @@ task AcSo "Accounting Software" {
   }
 }
 
+htmltaskreport "AcSo-Overview.html" {
+  columns no, name, start, end, weekly, effort
+	headline "Accounting Software Project"
+	caption "This table shows the load for each task on a weekly basis.
+	All values are man-days. Additionally the resources used for each
+	task are listed."
+}
+
 htmltaskreport "AcSo-Tasks.html" {
   columns no, name, start, end, daily
 	headline "Accounting Software Project"
 	caption "This table shows the load of each day for all the tasks.
-	Additionally the resources used for each task are listed."
+	Additionally the resources used for each task are listed. Since the
+	project start was delayed, the actual schedule differs significantly
+	from the original plan."
   hideresource 0
   showactual
 }
 
 htmlresourcereport "AcSo-Resources.html" {
-  columns no, name, weekly
+  columns no, name, weekly, effort
+	end 2002-04-30
+	loadunit hours
+	headline "Weekly working hours for the Accounting Software Project"
 }
 
 htmlaccountreport "AcSo-Accounting.html" {
   columns no, name, total, monthly
+	headline "P&L for the Accounting Software Project"
+	caption "The table shows the profit and loss analysis as well as the
+	cashflow situation of the Accounting Software Project."
   accumulate
   showactual
 }
