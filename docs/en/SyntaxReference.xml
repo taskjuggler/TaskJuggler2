@@ -184,6 +184,11 @@ specified date</para></listitem>
 specified ID.</para></listitem>
 
 </varlistentry>
+<varlistentry><term>treeLevel()</term>
+
+<listitem><para>Nesting level of the property.</para></listitem>
+
+</varlistentry>
 </variablelist>
 </para>
 </sect2>
