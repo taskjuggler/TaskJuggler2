@@ -1265,7 +1265,7 @@ sub tag_IDLFILES ()
             if ($allidls !~ /$source\_kidl/) {
                 
                 $use_ng = ($MakefileData =~ /\n$source\_DCOPIDLNG\s*=\s*(\S+)\n/);
-                $dcopidl =  $use_ng ? "\$(DCOPIDLNG)" : "\$(DCOPIDL)";
+                $dcopidl =  $use_ng ? "KDECONFIG=\"\$(KDECONFIG)\" \$(DCOPIDLNG)" : "\$(DCOPIDL)";
 
                 $dep_lines .= "$source.kidl: $sourcedir$source.h \$(DCOP_DEPENDENCIES)\n";
                 $dep_lines .= "\t$dcopidl $sourcedir$source.h > $source.kidl || ( rm -f $source.kidl ; false )\n";
@@ -1368,14 +1368,16 @@ sub tag_UIFILES ()
                     my ($mangled_source) = $source;
                     $mangled_source =~ s/[^A-Za-z0-9]/_/g;  # get rid of garbage
                     $dep_lines .= "\t\$(UIC) -tr \${UIC_TR} -i $source.h $sourcedir$source.ui > $source.$cxxsuffix.temp ; ret=\$\$?; \\\n";
-                    $dep_lines .= "\t\$(PERL) -pe \"s,\${UIC_TR}( \\\"\\\" ),QString::null,g\" $source.$cxxsuffix.temp | \$(PERL) -pe \"s,\${UIC_TR}( \\\"\\\"\\, \\\"\\\" ),QString::null,g\" | \$(PERL) -pe \"s,image([0-9][0-9]*)_data,img\\\$\$1_" . $mangled_source . ",g\" >> $source.$cxxsuffix ;\\\n";
+                    $dep_lines .= "\t\$(PERL) -pe \"s,\${UIC_TR}( \\\"\\\" ),QString::null,g\" $source.$cxxsuffix.temp | \$(PERL) -pe \"s,\${UIC_TR}( \\\"\\\"\\, \\\"\\\" ),QString::null,g\" | \$(PERL) -pe \"s,image([0-9][0-9]*)_data,img\\\$\$1_" . $mangled_source . ",g\" | \$(PERL) -pe \"s,: QWizard\\(,: KWizard(,g\" >> $source.$cxxsuffix ;\\\n";
 		    $dep_lines .= "\trm -f $source.$cxxsuffix.temp ;\\\n";
                 } else {
                     $dep_lines .= "\t\$(UIC) -i $source.h $sourcedir$source.ui > $source.$cxxsuffix; ret=\$\$?; \\\n";
                 }
 		$dep_lines .= "\tif test \"\$\$ret\" = 0; then echo '#include \"$source.moc\"' >> $source.$cxxsuffix; else rm -f $source.$cxxsuffix ; exit \$\$ret ; fi\n\n";
                 $dep_lines .= "$source.h: $sourcedir$source.ui\n";
-                $dep_lines .= "\t\$(UIC) -o $source.h $sourcedir$source.ui\n\n";
+                $dep_lines .= "\trm -rf $source.h;\n";
+                $dep_lines .= "\t\$(UIC) $sourcedir$source.ui | \$(PERL) -pi -e \"s,public QWizard,public KWizard,g; s,#include <qwizard.h>,#include <kwizard.h>,g\" >> $source.h ;\n";
+
                 $dep_lines .= "$source.moc: $source.h\n";
                 $dep_lines .= "\t\$(MOC) $source.h -o $source.moc\n";
 
