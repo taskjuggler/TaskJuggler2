@@ -40,18 +40,21 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     for (int i = 0; i < tablesCount; ++i)
         tables[i] = new HTMLTaskReportElement(this, df, dl);
 
+    QString scenarioName = project->getScenarioId(0);
     /* Create table that contains the tasks that should be finished, but
      * aren't. */
     tables[0]->setStart(project->getStart());
     tables[0]->setEnd(project->getEnd());
     Operation* op;
+    /* hidetask ~(istaskstatus(plan, inprogresslate) &
+                  endsbefore(plan, ${now})) */
     op = new Operation
         (new Operation("istaskstatus", 
-                       new Operation(Operation::String, "plan", 0),
+                       new Operation(Operation::String, scenarioName, 0),
                        new Operation(Operation::String, "inprogresslate", 0)),
          Operation::And,
          new Operation("endsbefore",
-                       new Operation(Operation::String, "plan", 0),
+                       new Operation(Operation::String, scenarioName, 0),
                        new Operation(Operation::Date, project->getNow())));
     op = new Operation(op, Operation::Not);
     tables[0]->setHideTask(new ExpressionTree(op));
@@ -70,18 +73,21 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     // Ongoing tasks
     tables[1]->setStart(project->getStart());
     tables[1]->setEnd(project->getEnd());
+    /* hidetask ~((istaskstatus(plan, inprogresslate) |
+                  (istaskstatus(plan, inprogress))) &
+                  endsafter(plan, ${now})) */
     op = new Operation
         (new Operation
          (new Operation("istaskstatus", 
-                        new Operation(Operation::String, "plan", 0),
+                        new Operation(Operation::String, scenarioName, 0),
                         new Operation(Operation::String, "inprogresslate", 0)),
           Operation::Or,
           (new Operation("istaskstatus", 
-                         new Operation(Operation::String, "plan", 0),
+                         new Operation(Operation::String, scenarioName, 0),
                          new Operation(Operation::String, "inprogress", 0)))),
          Operation::And,
          new Operation("endsafter",
-                       new Operation(Operation::String, "plan", 0),
+                       new Operation(Operation::String, scenarioName, 0),
                        new Operation(Operation::Date, project->getNow())));
     op = new Operation(op, Operation::Not);
     tables[1]->setHideTask(new ExpressionTree(op));
@@ -95,8 +101,9 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[1]->addColumn(new TableColumnInfo(sc, "statusnote"));
 
     // Completed tasks
+    /* hidetask ~istaskstatus(plan, finished) */
     op = new Operation("istaskstatus", 
-                       new Operation(Operation::String, "plan", 0),
+                       new Operation(Operation::String, scenarioName, 0),
                        new Operation(Operation::String, "finished", 0));
     op = new Operation(op, Operation::Not);
     tables[2]->setHideTask(new ExpressionTree(op));
@@ -113,13 +120,14 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
         reportEnd = project->getEnd();
     tables[3]->setStart(project->getNow());
     tables[3]->setEnd(project->getEnd());
+    /* hidetask ~(startsafter(plan, ${now}) & startsbefore(${reportend})) */
     op = new Operation
         (new Operation("startsafter", 
-                       new Operation(Operation::String, "plan", 0),
+                       new Operation(Operation::String, scenarioName, 0),
                        new Operation(Operation::Date, project->getNow())),
          Operation::And,
          new Operation("startsbefore",
-                       new Operation(Operation::String, "plan", 0),
+                       new Operation(Operation::String, scenarioName, 0),
                        new Operation(Operation::Date, reportEnd))); 
     op = new Operation(op, Operation::Not);
     tables[3]->setHideTask(new ExpressionTree(op));
