@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-20 14:24+0200\n"
+"POT-Creation-Date: 2004-08-25 01:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -253,62 +253,66 @@ msgid "Query resource..."
 msgstr ""
 
 #: ktjview2.cpp:193
-msgid "Days"
+msgid "&Days"
 msgstr ""
 
 #: ktjview2.cpp:193
-msgid "Weeks"
+msgid "&Weeks"
 msgstr ""
 
 #: ktjview2.cpp:193
-msgid "Months"
+msgid "&Months"
 msgstr ""
 
 #: ktjview2.cpp:193
-msgid "Quarters"
+msgid "&Quarters"
 msgstr ""
 
-#: ktjview2.cpp:200
+#: ktjview2.cpp:199
+msgid "&Find..."
+msgstr ""
+
+#: ktjview2.cpp:203
 msgid "Info"
 msgstr ""
 
-#: ktjview2.cpp:204 ktjview2.cpp:346
+#: ktjview2.cpp:207 ktjview2.cpp:349
 msgid "Gantt"
 msgstr ""
 
-#: ktjview2.cpp:208 selectDialog.cpp:46
+#: ktjview2.cpp:211 selectDialog.cpp:46
 msgid "Resources"
 msgstr ""
 
-#: ktjview2.cpp:212 selectDialog.cpp:39
+#: ktjview2.cpp:215 selectDialog.cpp:39
 msgid "Tasks"
 msgstr ""
 
-#: ktjview2.cpp:216
-msgid "Resource usage"
+#: ktjview2.cpp:219
+msgid "Usage"
 msgstr ""
 
-#: ktjview2.cpp:298
+#: ktjview2.cpp:301
 msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr ""
 
-#: ktjview2.cpp:299
+#: ktjview2.cpp:302
 msgid "to open ..."
 msgstr ""
 
-#: ktjview2.cpp:347
+#: ktjview2.cpp:350
 msgid "Resource Usage"
 msgstr ""
 
-#: ktjview2.cpp:448 ktjview2.cpp:462
+#: ktjview2.cpp:451 ktjview2.cpp:465
 msgid "&Filter for: %1"
 msgstr ""
 
-#: ktjview2.cpp:450
+#: ktjview2.cpp:453
 msgid "Task list filtered for '%1'"
 msgstr ""
 
-#: ktjview2.cpp:464
+#: ktjview2.cpp:467
 msgid "Resource list filtered for '%1'"
 msgstr ""
 
@@ -771,92 +775,127 @@ msgstr ""
 msgid "&Free time:"
 msgstr ""
 
-#: rc.cpp:128
+#: rc.cpp:128 ruFindDialog.cpp:38
 #, no-c-format
-msgid "Background color for week days."
+msgid "Resource Usage Search"
 msgstr ""
 
-#: rc.cpp:130
+#: rc.cpp:130 ruFindDialog.cpp:44
 #, no-c-format
-msgid "Background color for weekend days."
+msgid "Resource"
 msgstr ""
 
-#: rc.cpp:132
+#: rc.cpp:132 ruFindDialog.cpp:52
 #, no-c-format
-msgid "Color for task items."
+msgid "&Name:"
 msgstr ""
 
-#: rc.cpp:134
+#: rc.cpp:134 ruFindDialog.cpp:55
 #, no-c-format
-msgid "Color task group items."
+msgid "C&ase sensitive"
 msgstr ""
 
-#: rc.cpp:136
+#: rc.cpp:136 ruFindDialog.cpp:61
 #, no-c-format
-msgid "Color for milestone items."
+msgid "&Regular expression"
 msgstr ""
 
-#: rc.cpp:138
+#: rc.cpp:138 ruFindDialog.cpp:39
 #, no-c-format
-msgid "Show alternate horizontal lines."
+msgid "&Find"
 msgstr ""
 
 #: rc.cpp:140
 #, no-c-format
-msgid "Background color for free time."
+msgid "&Close"
 msgstr ""
 
 #: rc.cpp:142
 #, no-c-format
-msgid "Background color for vacations and sicktime."
+msgid "Background color for week days."
 msgstr ""
 
 #: rc.cpp:144
 #, no-c-format
-msgid "Background color for holidays and weekends."
+msgid "Background color for weekend days."
 msgstr ""
 
 #: rc.cpp:146
 #, no-c-format
-msgid "&Edit"
+msgid "Color for task items."
 msgstr ""
 
 #: rc.cpp:148
 #, no-c-format
-msgid "&Gantt"
+msgid "Color task group items."
 msgstr ""
 
 #: rc.cpp:150
 #, no-c-format
-msgid "&Resources"
+msgid "Color for milestone items."
 msgstr ""
 
 #: rc.cpp:152
 #, no-c-format
-msgid "&Outline"
+msgid "Show alternate horizontal lines."
 msgstr ""
 
 #: rc.cpp:154
 #, no-c-format
-msgid "&Tasks"
+msgid "Background color for free time."
 msgstr ""
 
 #: rc.cpp:156
 #, no-c-format
-msgid "Resource &Usage"
+msgid "Background color for vacations and sicktime."
 msgstr ""
 
 #: rc.cpp:158
 #, no-c-format
-msgid "Sidebar"
+msgid "Background color for holidays and weekends."
 msgstr ""
 
 #: rc.cpp:160
 #, no-c-format
-msgid "Gantt Toolbar"
+msgid "&Edit"
 msgstr ""
 
 #: rc.cpp:162
+#, no-c-format
+msgid "&Gantt"
+msgstr ""
+
+#: rc.cpp:164
+#, no-c-format
+msgid "&Resources"
+msgstr ""
+
+#: rc.cpp:166
+#, no-c-format
+msgid "&Outline"
+msgstr ""
+
+#: rc.cpp:168
+#, no-c-format
+msgid "&Tasks"
+msgstr ""
+
+#: rc.cpp:170
+#, no-c-format
+msgid "Resource &Usage"
+msgstr ""
+
+#: rc.cpp:172
+#, no-c-format
+msgid "Sidebar"
+msgstr ""
+
+#: rc.cpp:174
+#, no-c-format
+msgid "Gantt Toolbar"
+msgstr ""
+
+#: rc.cpp:176
 #, no-c-format
 msgid "Quick Search Toolbar"
 msgstr ""
@@ -869,8 +908,16 @@ msgstr ""
 msgid "Check"
 msgstr ""
 
-#: resUsageView.cpp:290
+#: resUsageView.cpp:301
 msgid "&Copy"
+msgstr ""
+
+#: resUsageView.cpp:405
+msgid "No matching resource found."
+msgstr ""
+
+#: resUsageView.cpp:410
+msgid "No more matching resources found."
 msgstr ""
 
 #: selectDialog.cpp:42
