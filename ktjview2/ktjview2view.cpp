@@ -57,6 +57,7 @@
 #include "ResourceItem.h"
 #include "settings.h"
 #include "filterDialog.h"
+#include "selectDialog.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -829,6 +830,7 @@ void ktjview2View::slotJumpToTask()
 bool ktjview2View::filterFor( int id )
 {
     QDateTime start, end;
+    QStringList resultList;
     if ( id == 2 )              // date range dialog
     {
         TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
@@ -838,6 +840,13 @@ bool ktjview2View::filterFor( int id )
         start = dlg.getStartDate();
         end = dlg.getEndDate();
     }
+    else if ( id == 6 )         // resource selection dialog
+    {
+        SelectDialog dlg( m_project->getResourceListIterator(), true, this );
+        if ( dlg.exec() != QDialog::Accepted )
+            return false;
+        resultList = dlg.resultList();
+    }
 
 
     QListViewItemIterator it( m_taskView );
@@ -846,10 +855,14 @@ bool ktjview2View::filterFor( int id )
 
     while ( it.current() )
     {
-        showIt = true;
+        showIt = false;
 
         Task * task = m_project->getTask( static_cast<TaskItem *>( *it )->id() );
 
+        if ( id == 0 )
+        {
+            showIt = true;
+        }
         if ( id == 1 )     // Completed tasks
         {
             showIt = ( task->getStatus(0) == Finished );
@@ -871,11 +884,12 @@ bool ktjview2View::filterFor( int id )
         {
             showIt = ( task->isContainer() );
         }
-        else if ( id == 6 )     // Task range
+        else if ( id == 6 )     // Using resource
         {
-        }
-        else if ( id == 7 )     // Using resource
-        {
+            for ( QStringList::ConstIterator it = resultList.begin(); it != resultList.end(); ++it )
+            {
+                showIt = showIt || task->isDutyOf( 0, m_project->getResource( ( *it ) ) );
+            }
         }
 
         ( *it )->setVisible( showIt );

@@ -121,7 +121,7 @@ void ktjview2::setupActions()
                                            this, SLOT( slotFilterFor() ), actionCollection(), "filter_for" );
     m_filterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
                   << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
-                  << i18n( "Task Range..." ) << i18n( "Using Resource..." );
+                  << i18n( "Using Resource..." );
 
     m_filterForAction->setItems( m_filterItems );
     m_filterForAction->setCurrentItem( 0 ); // All Tasks by default
