@@ -1,0 +1,35 @@
+project project2 "Second sub project" "1.0" 2002-01-16 2002-06-30
+
+include "../Common/Resources.tjsp"
+/* This project depends on tasks from project1. So we include a file
+ * that contains the fully scheduled tasks from project1 so we can
+ * reference these tasks. */
+include "../Project1/Project1-Interface.tjsp"
+
+flags interface
+
+task project2 "Second Project" {
+	task task1 "Task 1" {
+		length 12d
+		start 2002-01-16
+		allocate jim
+	}
+	task task2 "Task 2" {
+		depends !task1, project1.task2
+		flags interface
+		effort 17d
+		allocate jim
+	  allocate greg
+	}
+	task task3 "Task 3" {
+    depends !task2
+		allocate jim
+		effort 15d
+	}
+}
+
+htmltaskreport "Project2.html" {
+	columns no, name, start, end, weekly
+	hideresource 0
+}
+

@@ -1,0 +1,12 @@
+resource all "All employees" {
+  vacation 2002-02-04
+ 	resource group1 "Group 1"{
+		vacation 2002-03-11 - 2002-03-17
+    resource joe "Joe Foo"
+		resource diana "Diana Bar"
+  }
+  resource group2 "Group 2" {
+		resource jim "Jim Foobar"
+		resource greg "Greg User"
+	}
+}

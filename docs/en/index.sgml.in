@@ -104,6 +104,9 @@ contain functions as well. Currently there is support for 'istask',
 
 <item>Added missing 'export' report to documentation.
 
+<item>Added new example project to illustrate the use of export in big
+projects that are split into sub projects.
+
 </itemize>
 <p>
 

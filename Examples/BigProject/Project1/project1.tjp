@@ -1,0 +1,36 @@
+project project1 "First sub project" "1.0" 2002-01-16 2002-06-30
+
+include "../Common/Resources.tjsp"
+
+flags interface
+
+task project1 "First Project" {
+	task task1 "Task 1" {
+		length 20d
+		start 2002-01-16
+	}
+	task task2 "Task 2" {
+		depends !task1
+		/* This task produces something that is used in project2. So we
+		 * need to export this task (with fixed start and end dates) to
+		 * another file that can be included by project2. */
+		flags interface
+		effort 30d
+		allocate joe
+	  allocate diana
+	}
+	task task3 "Task 3" {
+    depends !task2
+		allocate joe
+		effort 10d
+	}
+}
+
+# Create the export file.
+export "Project1-Interface.tjsp" {
+	hidetask ~interface
+}
+
+htmltaskreport "Project1.html" {
+}
+

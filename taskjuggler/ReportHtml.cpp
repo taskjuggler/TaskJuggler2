@@ -39,6 +39,8 @@ void
 ReportHtml::generatePlanTask(Task* t, Resource* r)
 {
 	s << "<tr valign=\"center\">";
+	if (r == 0)
+		s << "<a name=\"task_" << t->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -151,6 +153,8 @@ void
 ReportHtml::generateActualTask(Task* t, Resource* r)
 {
 	s << "<tr bgcolor=\"" << colAvailable << "\">" << endl;
+	if (r == 0)
+		s << "<a name=\"task_" << t->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin();
 		 it != columns.end();
 		 ++it )
@@ -214,6 +218,8 @@ void
 ReportHtml::generatePlanResource(Resource* r, Task* t)
 {
 	s << "<tr valign=\"center\">";
+	if (r == 0)
+		s << "<a name=\"task_" << t->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -305,6 +311,8 @@ void
 ReportHtml::generateActualResource(Resource* r, Task* t)
 {
 	s << "<tr valign=\"center\">";
+	if (t == 0)
+		s << "<a name=\"resource_" << r->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
