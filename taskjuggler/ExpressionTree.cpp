@@ -70,7 +70,7 @@ Operation::evalFunction(ExpressionTree* et)
 	if (name == "istask")
 	{
 		return strcmp(et->getCoreAttributes()->getType(), "Task") == 0
-			&& et->getCoreAttributes()->getFullId() ==
+			&& et->getCoreAttributes()->getId() ==
 			ops.at(0)->evalAsString(et);
 	}
 	else if (name == "issubtaskof")

@@ -97,10 +97,8 @@ CoreAttributes::getFullName(QString& fullName) const
 QString
 CoreAttributes::getFullId() const
 {
-	QString fullID = "";
-	for (const CoreAttributes* c = this; c != 0; c = c->parent)
+	QString fullID = id;
+	for (const CoreAttributes* c = parent; c != 0; c = c->parent)
 		fullID = c->id + "." + fullID;
-	// Remove trailing dot.
-	fullID.remove(fullID.length() - 1, 1);
 	return fullID;
 }
