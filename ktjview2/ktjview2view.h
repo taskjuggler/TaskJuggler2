@@ -47,6 +47,8 @@ class TaskItem;
 class QProgressDialog;
 class QPopupMenu;
 
+enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS };
+
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
  * non-toolbar, and non-statusbar (e.g., non frame) GUI code should go
@@ -161,6 +163,8 @@ signals:
      * Use this signal to change the content of the caption
      */
     void signalChangeCaption( const QString& text );
+
+    void signalSwitchView( int type );
 
 private slots:
     /**

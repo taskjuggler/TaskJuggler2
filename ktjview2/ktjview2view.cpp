@@ -30,7 +30,6 @@
 #include <qdir.h>
 #include <qprogressdialog.h>
 #include <qpopupmenu.h>
-#include <qmainwindow.h>
 
 // KDE includes
 #include <kurl.h>
@@ -53,6 +52,7 @@
 #include "kdgantt/KDGanttViewTaskItem.h"
 #include "kdgantt/KDGanttViewTaskLink.h"
 #include "ktjview2view.h"
+#include "ktjview2.h"
 #include "timedialog.h"
 #include "TaskItem.h"
 #include "ResourceItem.h"
@@ -790,7 +790,7 @@ void ktjview2View::slotJumpToTask()
         QListViewItem * item = m_taskView->findItem( sel->name(), 0 );
         if ( item )
         {
-            activateView( 3 );  // FIXME update toolbars!!!
+            emit signalSwitchView( ID_VIEW_TASKS );
             item->setVisible( true ); // might be hidden thru a filter
             m_taskView->setSelected( static_cast<QListViewItem *>( item ), true );
             m_taskView->ensureItemVisible( item );

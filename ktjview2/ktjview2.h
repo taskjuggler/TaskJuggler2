@@ -134,6 +134,8 @@ private slots:
     void slotSidebarResources();
     void slotSidebarTasks();
 
+    void slotSwitchView( int type );
+
 private:
     void setupActions();
     void setupSidebar();

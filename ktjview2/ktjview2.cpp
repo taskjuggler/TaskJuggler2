@@ -79,6 +79,8 @@ ktjview2::ktjview2()
              this,   SLOT(changeCaption(const QString&)) );
 
     m_activeFilter = 0;
+
+    slotSwitchView( ID_VIEW_INFO );
 }
 
 ktjview2::~ktjview2()
@@ -176,6 +178,8 @@ void ktjview2::setupActions()
     m_sidebarTasks = new KRadioAction( i18n( "Tasks" ), "tasks", KShortcut(), actionCollection(), "sidebar_tasks" );
     m_sidebarTasks->setExclusiveGroup( "sidebar" );
     connect( m_sidebarTasks, SIGNAL( activated() ), this, SLOT( slotSidebarTasks() ) );
+
+    connect( m_view, SIGNAL( signalSwitchView( int ) ), this, SLOT( slotSwitchView( int ) ) );
 
     setStandardToolBarMenuEnabled( true );
     createStandardStatusBarAction();
@@ -327,14 +331,14 @@ void ktjview2::slotSidebarInfo()
 {
     toolBar( "filterToolBar" )->hide();
     toolBar( "ganttToolBar" )->hide();
-    m_view->activateView( 0 );
+    m_view->activateView( ID_VIEW_INFO );
 }
 
 void ktjview2::slotSidebarGantt()
 {
     toolBar( "filterToolBar" )->hide();
     toolBar( "ganttToolBar" )->show();
-    m_view->activateView( 1 );
+    m_view->activateView( ID_VIEW_GANTT );
 }
 
 void ktjview2::slotSidebarResources()
@@ -342,7 +346,7 @@ void ktjview2::slotSidebarResources()
     m_searchLine->setListView( m_view->resListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
-    m_view->activateView( 2 );
+    m_view->activateView( ID_VIEW_RESOURCES );
 }
 
 void ktjview2::slotSidebarTasks()
@@ -350,7 +354,19 @@ void ktjview2::slotSidebarTasks()
     m_searchLine->setListView( m_view->taskListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
-    m_view->activateView( 3 );
+    m_view->activateView( ID_VIEW_TASKS );
+}
+
+void ktjview2::slotSwitchView( int type )
+{
+    if ( type == ID_VIEW_INFO )
+        m_sidebarInfo->activate();
+    else if ( type == ID_VIEW_GANTT )
+        m_sidebarGantt->activate();
+    else if ( type == ID_VIEW_RESOURCES )
+        m_sidebarResources->activate();
+    else if ( type == ID_VIEW_TASKS )
+        m_sidebarTasks->activate();
 }
 
 void ktjview2::setCalendarMode()
