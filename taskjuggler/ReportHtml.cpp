@@ -79,7 +79,7 @@ ReportHtml::reportHTMLFooter()
 }
 
 void
-ReportHtml::htmlDayHeader()
+ReportHtml::htmlDayHeaderDays()
 {
 	for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
 	{
@@ -99,7 +99,7 @@ ReportHtml::htmlDayHeader()
 }
 
 void
-ReportHtml::htmlMonthHeader()
+ReportHtml::htmlDayHeaderMonths()
 {
 	for (time_t day = midnight(start); day < end;
 		 day = beginOfMonth(sameTimeNextMonth(day)))
@@ -112,6 +112,38 @@ ReportHtml::htmlMonthHeader()
 		s << left
 		  << "\">";
 		s << monthAndYear(day) << "</td>" << endl;
+	}
+}
+
+void
+ReportHtml::htmlMonthHeaderMonths()
+{
+	for (time_t day = beginOfMonth(start); day < end;
+		 day = sameTimeNextMonth(day))
+	{
+		int moy = monthOfYear(day);
+		s << "<td class=\"" <<
+			(isSameMonth(project->getNow(), day) ? "today" :
+			 "headersmall")
+		  << "\"><font size=\"-2\">&nbsp;";
+		if (moy < 10)
+			s << "&nbsp;";
+		s << QString().sprintf("%d", moy) << "&nbsp;</font></td>";
+	}
+}
+
+void
+ReportHtml::htmlMonthHeaderYears()
+{
+	for (time_t day = midnight(start); day < end;
+		 day = beginOfYear(sameTimeNextYear(day)))
+	{
+		int left = monthLeftInYear(day);
+		if (left > monthsBetween(day, end) + 1)
+			left = monthsBetween(day, end) + 1;
+		s << "<td class=\"headerbig\" colspan=\""
+		  << QString().sprintf("%d", left) << "\">"
+		  << QString().sprintf("%d", year(day)) << "</td>" << endl;
 	}
 }
 

@@ -72,10 +72,6 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		maxStart = p->maxStart;
 		minEnd = p->minEnd;
 		maxEnd = p->maxEnd;
-		/* If parent task has attribute closed, all sub tasks will be
-		 * hidden. */
-		if (p->hasFlag("closed"))
-			addFlag("hidden");
 	}
 	else
 	{
@@ -355,6 +351,14 @@ Task::getLoadOnDay(time_t date)
 }
 
 double
+Task::getLoadOnMonth(time_t date)
+{
+	Interval month(beginOfMonth(date),
+				   sameTimeNextMonth(beginOfMonth(date)) - 1);
+	return getLoad(month);
+}
+
+double
 Task::getLoad(const Interval& period)
 {
 	double load = 0.0;
@@ -479,6 +483,31 @@ Task::scheduleOK()
 		}
 
 	return TRUE;
+}
+
+bool
+Task::isActiveToday(time_t date) const
+{
+	Interval day(midnight(date), sameTimeNextDay(midnight(date)) - 1);
+	Interval work;
+	if (isMilestone())
+		work = Interval(start, start + 1);
+	else
+		work = Interval(start, end);
+	return day.overlap(work);
+}
+
+bool
+Task::isActiveThisMonth(time_t date) const
+{
+	Interval month(beginOfMonth(date),
+				   sameTimeNextMonth(beginOfMonth(date)) - 1);
+	Interval work;
+	if (isMilestone())
+		work = Interval(start, start + 1);
+	else
+		work = Interval(start, end);
+	return month.overlap(work);
 }
 
 void

@@ -40,11 +40,6 @@ Project::Project()
 	maxEffort = 1.0;
 	rate = 0.0;
 	xmlreport = 0L;
-	/* The 'closed' flag may be used for container classes to hide all
-	 * sub tasks. */
-	addAllowedFlag("closed");
-	// The 'hidden' flag may be used to hide the task in all reports.
-	addAllowedFlag("hidden");
 }
 
 bool

@@ -43,6 +43,19 @@ daysLeftInMonth(time_t t)
 }
 
 int
+monthLeftInYear(time_t t)
+{
+	int left = 0;
+	struct tm* tms = localtime(&t);
+	for (int m = tms->tm_year; tms->tm_year == m;
+		 t = sameTimeNextMonth(t), localtime(&t))
+	{
+		left++;
+	}
+	return left;
+}
+
+int
 daysBetween(time_t t1, time_t t2)
 {
 	int days = 0;
@@ -52,6 +65,16 @@ daysBetween(time_t t1, time_t t2)
 	return days;
 }
 
+int
+monthsBetween(time_t t1, time_t t2)
+{
+	int months = 0;
+	// TODO: Very slow!!!
+	for (time_t t = t1; t < t2; t = sameTimeNextMonth(t))
+		months++;
+	return months;
+}
+
 int 
 dayOfMonth(time_t t)
 {
@@ -59,12 +82,25 @@ dayOfMonth(time_t t)
 	return tms->tm_mday;
 }
 
+int 
+monthOfYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_mon + 1;
+}
+
 int
 dayOfWeek(time_t t)
 {
 	struct tm* tms = localtime(&t);
-	tms->tm_isdst = -1;
 	return tms->tm_wday;
+}
+
+int
+year(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_year + 1900;
 }
 
 time_t
@@ -87,6 +123,17 @@ beginOfMonth(time_t t)
 }
 
 time_t
+beginOfYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_mon = 0;
+	tms->tm_mday = 1;
+	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
 sameTimeNextDay(time_t t)
 {
 	struct tm* tms = localtime(&t);
@@ -100,6 +147,15 @@ sameTimeNextMonth(time_t t)
 {
 	struct tm* tms = localtime(&t);
 	tms->tm_mon++;
+	tms->tm_isdst = -1;
+	return mktime(tms);
+}
+
+time_t
+sameTimeNextYear(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	tms->tm_year++;
 	tms->tm_isdst = -1;
 	return mktime(tms);
 }

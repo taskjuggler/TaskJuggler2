@@ -79,7 +79,7 @@ HTMLResourceReport::generate()
 		if (*it == "resource")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Resource/Task</td>";
 		else if (*it == "daily")
-			htmlMonthHeader(); 
+			htmlDayHeaderMonths(); 
 		else
 		{
 			qWarning("Unknown column ID");
@@ -94,7 +94,7 @@ HTMLResourceReport::generate()
 		 ++it )
 	{
 		if (*it == "daily")
-			htmlDayHeader();
+			htmlDayHeaderDays();
 	}
 	s << "</tr>" << endl;
 

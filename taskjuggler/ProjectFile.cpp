@@ -849,7 +849,7 @@ ProjectFile::readTask(Task* parent)
 					QString flag;
 					if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
 					{
-						fatalError("flag unknown");
+						fatalError("Flag unknown");
 						return FALSE;
 					}
 					task->addFlag(flag);

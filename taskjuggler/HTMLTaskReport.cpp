@@ -61,6 +61,20 @@ HTMLTaskReport::generate()
 		for (Task* l = toHide.first(); l != 0; l = toHide.next())
 			filteredList.remove(l);
 	}
+	/* In tasktree sorting mode we need to make sure that we don't hide
+	 * parents of shown tasks. */
+	if (sortCriteria == TaskList::TaskTree)
+	{
+		filteredList.setSorting(TaskList::Pointer);
+		for (Task* t = filteredList.first(); t != 0;
+			 t = filteredList.next())
+		{
+			for (Task* p = t->getParent(); p != 0; p = p->getParent())
+				if (filteredList.contains(p) == 0)
+					filteredList.append(p);
+		}
+	}
+
 	filteredList.setSorting(sortCriteria);
 	filteredList.sort();
 
@@ -102,10 +116,17 @@ HTMLTaskReport::generate()
 			s << "<td class=\"headerbig\" rowspan=\"2\">Note</td>";
 		else if (*it == "costs")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Costs</td>";
+		else if (*it == "priority")
+			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
 		else if (*it == "daily")
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
-			htmlMonthHeader();
+			htmlDayHeaderMonths();
+		}
+		else if (*it == "monthly")
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+			htmlMonthHeaderYears();
 		}
 		else
 		{
@@ -120,7 +141,9 @@ HTMLTaskReport::generate()
 		 ++it )
 	{
 		if (*it == "daily")
-			htmlDayHeader();
+			htmlDayHeaderDays();
+		else if (*it == "monthly")
+			htmlMonthHeaderMonths();
 	}
 	s << "</tr>\n" << endl;
 
@@ -262,9 +285,17 @@ HTMLTaskReport::generate()
 			}
 			else if (*it == "costs")
 			{
-				s << "<td class=\"default\""
+				s << "<td class=\"default\" rowspan=\""
+				  << (showActual ? "2" : "1")
 				  << " style=\"text-align:right\">"
 				  << QString().sprintf("%5.3f", t->getPlanCosts())
+				  << "</td>" << endl;
+			}
+			else if (*it == "priority")
+			{
+				s << "<td class=\"default\""
+				  << " style=\"text-align:right\">"
+				  << QString().sprintf("%d", t->getPriority())
 				  << "</td>" << endl;
 			}
 			else if (*it == "daily")
@@ -290,7 +321,30 @@ HTMLTaskReport::generate()
 						  << "</td>" << endl;
 					else
 						s << "<td class=\""
-						  << bgCol << "\"></td>" << endl;
+						  << bgCol << "\">&nbsp;</td>" << endl;
+				}
+			}
+			else if (*it == "monthly")
+			{
+				s << "<td class=\"headersmall\">Plan</td>" << endl;
+				for (time_t day = beginOfMonth(start); day < end;
+					 day = sameTimeNextMonth(day))
+				{
+					double load = t->getLoadOnMonth(day);
+					QString bgCol = 
+						(t->isMilestone() && t->isActiveThisMonth(day) ?
+						 "milestone" :
+						 (t->isActiveThisMonth(day)) ? "booked" :
+						 isSameMonth(project->getNow(), day) ? "today" :
+						 "default");
+					if (load > 0.0)
+						s << "<td class=\""
+						  << bgCol << "\">"
+						  << QString().sprintf("%4.1f", load)
+						  << "</td>" << endl;
+					else
+						s << "<td class=\""
+						  << bgCol << "\">&nbsp;</td>" << endl;
 				}
 			}
 		}
@@ -342,7 +396,7 @@ HTMLTaskReport::generate()
 							 project->isVacation(day) ? "vacation" :
 							 "default");
 						s << "<td class=\""
-						  << bgCol << "\"></td>";
+						  << bgCol << "\">&nbsp;</td>";
 					}
 				}
 			}

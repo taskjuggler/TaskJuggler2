@@ -196,6 +196,7 @@ public:
 	Allocation* nextAllocation() { return allocations.next(); }
 
 	double getLoadOnDay(time_t day);
+	double getLoadOnMonth(time_t month);
 	double getLoad(const Interval& period);
 
 	void addBookedResource(Resource* r)
@@ -216,20 +217,22 @@ public:
 	QString resolveId(QString relId);
 	bool schedule(time_t reqStart, time_t duration);
 	bool isScheduled();
+
+	/**
+	 * @returns TRUE if the work planned for a day has been completed.
+	 * This is either specified by the 'complete' attribute or if no
+	 * complete attribute is specified, the day is completed if it has
+	 * passed.
+	 * @param date specifies the day that should be checked.
+	 */
 	bool isDayCompleted(time_t date) const;
 	bool scheduleOK();
 
 	bool isMilestone() const { return start != 0 && start == end; }
-	bool isActiveToday(time_t date) const
-	{
-		Interval day(midnight(date), sameTimeNextDay(midnight(date)) - 1);
-		Interval work;
-		if (isMilestone())
-			work = Interval(midnight(start), midnight(start) + 1);
-		else
-			work = Interval(start, end);
-		return day.overlap(work);
-	}
+	bool isActiveToday(time_t date) const;
+
+	bool isActiveThisMonth(time_t date) const;
+
 	void setAccount(Account* a) { account = a; }
 
 	void getSubTaskList(TaskList& tl);

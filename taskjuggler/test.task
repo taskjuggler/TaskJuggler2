@@ -13,11 +13,10 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmlTaskReport "test1.html" {
-  columns  no, name, start, end, daily
-#  start 2001-12-20
-  end 2002-02-01
-  sort tasktree
-#  hidetask media | deadline
+  columns  no, name, start, end, priority, monthly
+  start 2001-09-20
+  end 2003-02-01
+  hidetask media | deadline | type1
 #  rolluptask beta | preview
 }
 
@@ -36,7 +35,6 @@ htmlResourceReport "test-res.html" {
 macro version [SL 8.0]
 
 macro work [
-  flags type1
   task work "${1}" {
     length ${3}
     allocate yast
@@ -87,16 +85,6 @@ macro test [
     allocate bg
     depends !build
   }
-]
-
-macro preview [
-task pre${1} "SL 8.0 preview ${1}" {
-  flags preview
-  ${work "Make bootable system" "${2}" "5d" }
-  ${deadline "preview ${1}"}
-  ${build "preview ${1}" "2d"}
-  ${burn "preview ${1}"}
-}
 ]
 
 macro beta [
@@ -167,6 +155,7 @@ task pre1 "SL 8.0 preview1" {
   ${build "preview1" "2d"}
   ${burn "preview1"}
   ${test "preview1"}
+  flags type1
 }
 
 task pre2 "SL 8.0 preview2" {

@@ -179,7 +179,7 @@ private:
 	VacationList vacationList;
 	AccountList accountList;
 
-   ReportXML *xmlreport;
+	ReportXML *xmlreport;
    
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;
