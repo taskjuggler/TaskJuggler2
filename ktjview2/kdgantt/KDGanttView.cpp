@@ -320,7 +320,7 @@ QSize KDGanttView::sizeHint()
   bool block = myTimeTable->blockUpdating();
   myTimeTable->setBlockUpdating( false );
   myTimeTable->updateMyContent();
-  qApp->processEvents();
+  //qApp->processEvents();
   int hintHeight = myTimeHeader->height();
   int legendHeight = 0;
   if ( showLegendButton() )
@@ -4608,6 +4608,10 @@ void  KDGanttView::notifyEditdialog( KDGanttViewItem * item)
 }
 
 
+void KDGanttView::sort()
+{
+    myListView->sort();
+}
 /*!
   \fn void KDGanttView::timeIntervalSelected( const QDateTime& start,  const QDateTime&  end);
 

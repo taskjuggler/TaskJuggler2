@@ -352,7 +352,7 @@ private:
      * @param it iterator over the list of resources
      * @param parentItem the parent item in the list view to append this item to
      */
-    void parseResources( ResourceListIterator it, KListViewItem * parentItem = 0 );
+    void parseResources( ResourceListIterator it );
 
     /**
      * Parses relations between tasks (dependencies)

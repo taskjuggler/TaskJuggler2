@@ -2594,8 +2594,7 @@ QSize KDLegendWidget::legendSize()
 
 QSize KDLegendWidget::legendSizeHint()
 {
-
-    qApp->processEvents();
+    //qApp->processEvents();
     return QSize( myLegend->sizeHint().width(), myLegend->sizeHint().height()+scroll->horizontalScrollBar()->height());
 }
 
@@ -2662,7 +2661,7 @@ KDListView::KDListView(QWidget* parent, KDGanttView* gantView):QListView (parent
     setAllColumnsShowFocus( true );
     addColumn( i18n( "Task Name" ) );
     addColumn( "hack" );
-    setSortColumn( 1 );           // HACK for correct time-aware sorting
+    setSorting( 1 );           // HACK for correct time-aware sorting
     //setVScrollBarMode (QScrollView::AlwaysOn );
     setHScrollBarMode (QScrollView::Auto );
     setDefaultRenameAction(QListView::Reject);
@@ -3036,7 +3035,7 @@ void KDGanttCanvasView::resizeEvent ( QResizeEvent * e )
 void KDGanttCanvasView::setMyContentsHeight( int hei )
 {
     mySignalSender->closingBlocked = true;
-    qApp->processEvents();
+    //qApp->processEvents();
     mySignalSender->closingBlocked = false;
     //qDebug("setMyContentsHeight %d %d ", hei,  myMyContentsHeight);
     if ( hei > 0 )

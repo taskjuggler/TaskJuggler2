@@ -19,7 +19,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-//#define PROFILE               // profiling enabled if defined
+#define PROFILE               // profiling enabled if defined
 
 // Qt includes
 #include <qpainter.h>
@@ -31,6 +31,7 @@
 #include <qdialog.h>
 #include <qdir.h>
 #include <qpopupmenu.h>
+#include <qptrlist.h>
 
 // KDE includes
 #include <kurl.h>
@@ -388,6 +389,7 @@ bool ktjview2View::openURL( const KURL& url )
 
         progressDlg.setLabel( i18n( "Building the Gantt chart" ) );
         parseGantt( m_project->getTaskListIterator() );
+        m_ganttView->sort();
 
         progressDlg.setLabel( i18n( "Building the Gantt chart links" ) );
         parseLinks( m_project->getTaskListIterator() );
@@ -511,9 +513,6 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
         const QString id = task->getId();
 
-        if ( KDGanttViewItem::find( id ) ) // seen this task, go on
-            continue;
-
         //kdDebug() << "Parsing gantt item: " << id << endl;
 
         const QString taskName = task->getName();
@@ -524,9 +523,14 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
         QString toolTip;
 
-        bool isRoot = task->isRoot();
-        bool isContainer = task->isContainer();
-        bool isLeaf = task->isLeaf();
+        const bool isRoot = task->isRoot();
+        const bool isContainer = task->isContainer();
+        const bool isLeaf = task->isLeaf();
+        const bool hasPrev = task->hasPrevious();
+
+        KDGanttViewItem * prevItem = 0;
+        if ( hasPrev )
+            prevItem = KDGanttViewItem::find( static_cast<Task *>( task->getPreviousIterator().toLast() )->getId() );
 
         if ( isRoot ) // toplevel container task
         {
@@ -539,14 +543,17 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
             item->setTooltipText( toolTip );
             item->setText( taskName + " " +i18n( "(%1 d)" ).arg( duration ) ) ;
-
-            parseGantt( task->getSubListIterator() ); // recurse
         }
         else if ( isContainer ) // non-toplevel container task
         {
             KDGanttViewItem * parentItem = KDGanttViewItem::find( task->getParent()->getId() );
 
-            KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( parentItem, taskName, id );
+            KDGanttViewSummaryItem * item;
+            if ( prevItem )
+                item = new KDGanttViewSummaryItem( parentItem, prevItem, taskName, id );
+            else
+                item = new KDGanttViewSummaryItem( parentItem, taskName, id );
+
             item->setStartTime( start );
             item->setEndTime( end );
             toolTip = i18n( "<em>Task group: %1</em><br>Start: %2<br>End: %3" )
@@ -555,8 +562,6 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
             item->setTooltipText( toolTip );
             item->setText( taskName + " " +i18n( "(%1 d)" ).arg( duration ) );
-
-            parseGantt( task->getSubListIterator() ); // recurse
         }
         else if ( isLeaf )   // terminal (leaf) task
         {
@@ -566,7 +571,12 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
             if ( task->isMilestone() )  // milestone
             {
-                KDGanttViewEventItem * item = new KDGanttViewEventItem( parentItem, taskName, id );
+                KDGanttViewEventItem * item;
+                if ( prevItem )
+                    item = new KDGanttViewEventItem( parentItem, prevItem, taskName, id );
+                else
+                    item = new KDGanttViewEventItem( parentItem, taskName, id );
+
                 item->setStartTime( start );
 
                 toolTip = i18n( "<em>Milestone: %1</em><br>Date: %2" )
@@ -577,7 +587,12 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
             }
             else                // task
             {
-                KDGanttViewTaskItem * item = new KDGanttViewTaskItem( parentItem, taskName, id );
+                KDGanttViewTaskItem * item;
+                if ( prevItem )
+                    item = new KDGanttViewTaskItem( parentItem, prevItem, taskName, id );
+                else
+                    item = new KDGanttViewTaskItem( parentItem, taskName, id );
+
                 item->setStartTime( start );
                 item->setEndTime( end );
 
@@ -609,7 +624,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 #endif
 }
 
-void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * parentItem )
+void ktjview2View::parseResources( ResourceListIterator it )
 {
 #ifdef PROFILE
     PROFILE_METHOD_BEGIN( pr_RES );
@@ -622,9 +637,6 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
         ++it;
 
         const QString id = res->getId();
-
-        if ( m_resListView->findItem( id, 0 ) ) // been there, seen that, go on :)
-            continue;           // FIXME speed this up
 
         const QString rate = KGlobal::locale()->formatMoney( res->getRate(), m_project->getCurrency() );
         const QString name = res->getName();
@@ -642,67 +654,31 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
             monthlyMax = QString::number( limits->getMonthlyMax() );
         }
 
-        if ( res->isGroup() && ( res->getParent() == 0 ) ) // toplevel group item
-        {
-            //kdDebug() << "Case1: " << id << endl;
-            ResourceItem * item = new ResourceItem( m_resListView, id );
-            item->setText( 1, name );
-            item->setText( 2, rate );
-            item->setText( 3, eff );
-            item->setText( 4, minEffort );
-            item->setText( 5, dailyMax );
-            item->setText( 6, weeklyMax );
-            item->setText( 7, monthlyMax );
-            item->setOpen( true );
+        const bool isRoot = res->isRoot();
+        const bool isGroup = res->isGroup();
+        const bool isLeaf = res->isLeaf();
 
-            parseResources( res->getSubListIterator(), item );
-        }
-        else if ( res->isGroup() && ( res->getParent() != 0 ) && parentItem ) // group item, non-toplevel
+        ResourceItem * item;
+        if ( isRoot )
+            item = new ResourceItem( m_resListView, id );
+        else if ( isGroup || isLeaf )
         {
-            //kdDebug() << "Case2: " << id << endl;
-            ResourceItem * item = new ResourceItem( parentItem, id );
-            item->setText( 1, name );
-            item->setText( 2, rate );
-            item->setText( 3, eff );
-            item->setText( 4, minEffort );
-            item->setText( 5, dailyMax );
-            item->setText( 6, weeklyMax );
-            item->setText( 7, monthlyMax );
-            item->setOpen( true );
-
-            parseResources( res->getSubListIterator(), item );
-        }
-        else if ( parentItem )                   // leaf item
-        {
-            //kdDebug() << "Case3: " << id << endl;
-            ResourceItem * item = new ResourceItem( parentItem, id );
-            item->setText( 1, name );
-            item->setText( 2, rate );
-            item->setText( 3, eff );
-            item->setText( 4, minEffort );
-            item->setText( 5, dailyMax );
-            item->setText( 6, weeklyMax );
-            item->setText( 7, monthlyMax );
-            item->setOpen( true );
-        }
-        else if ( ( res->getParent() == 0 ) || ( parentItem == 0 ) ) // standalone item
-        {
-            //kdDebug() << "Case4: " << id << endl;
-            ResourceItem * item = new ResourceItem( m_resListView, id );
-            item->setText( 1, name );
-            item->setText( 2, rate );
-            item->setText( 3, eff );
-            item->setText( 4, minEffort );
-            item->setText( 5, dailyMax );
-            item->setText( 6, weeklyMax );
-            item->setText( 7, monthlyMax );
-            item->setOpen( true );
+            KListViewItem * parentItem = static_cast<KListViewItem *>( m_resListView->findItem( res->getParent()->getId(), 0 ) );
+            item = new ResourceItem( parentItem, id );
         }
         else
         {
-            kdWarning() << "Unsupported resource type with ID: " << id << endl;
-            continue;             // uhoh, something bad happened
+            kdWarning() << "Unexpected resource type with ID: " << id << endl;
+            continue;
         }
+        item->setText( 1, name );
+        item->setText( 2, rate );
+        item->setText( 3, eff );
+        item->setText( 4, minEffort );
+        item->setText( 5, dailyMax );
+        item->setText( 6, weeklyMax );
+        item->setText( 7, monthlyMax );
+        item->setOpen( true );
     }
 
 #ifdef PROFILE

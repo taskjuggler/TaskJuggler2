@@ -339,6 +339,7 @@ public:
 public slots:
     void editItem( KDGanttViewItem* );
     void zoomToSelection( const QDateTime& start,  const QDateTime&  end);
+    void sort();
 
 signals:
     void timeIntervallSelected( const QDateTime& start,  const QDateTime&  end);
