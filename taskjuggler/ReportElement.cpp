@@ -665,10 +665,7 @@ const
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
-                if (r->isAllocated(*it,
-                                   Interval((*tli)->getStart(*it),
-                                            (*tli)->getEnd(*it)),
-                                   *tli) > 0.0)
+                if ((*tli)->isBookedResource(*it, r))
                 {
                     resourceLoadedInAnyScenario = TRUE;
                     break;
@@ -687,8 +684,10 @@ const
                 taskOverlapsInAnyScenario = TRUE;
                 break;
             }
-        if (!isHidden(*tli, hideExp) && taskOverlapsInAnyScenario &&
-            (r == 0 || resourceLoadedInAnyScenario))
+
+        if (taskOverlapsInAnyScenario &&
+            (r == 0 || resourceLoadedInAnyScenario) &&
+            !isHidden(*tli, hideExp))
         {
             filteredList.append(tli);
         }
@@ -711,6 +710,9 @@ const
         }
     }
     filteredList = list;
+
+    if (!rollUpExp)
+        return TRUE;
 
     /* Now we have to remove all sub tasks of rolled-up tasks
      * from the filtered list */
@@ -784,6 +786,9 @@ const
     }
     filteredList = list;
 
+    if (!rollUpExp)
+        return TRUE;
+
     /* Now we have to remove all sub resources of resource in the
      * roll-up list from the filtered list */
     for (ResourceListIterator rli(report->getProject()->
@@ -843,6 +848,9 @@ const
         }
     }
     filteredList = list;
+
+    if (!rollUpExp)
+        return TRUE;
 
     /* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */

@@ -253,7 +253,7 @@ public:
         if (scenarios[sc].bookedResources.findRef((CoreAttributes*) r) == -1)
             scenarios[sc].bookedResources.inSort((CoreAttributes*) r);
     }
-    bool isBookedResource(int sc, Resource* r)
+    bool isBookedResource(int sc, const Resource* r) const
     {
         return scenarios[sc].bookedResources.find((CoreAttributes*) r) != -1;
     }
