@@ -149,6 +149,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_resListView->setSortColumn( 1 ); // sort by name by default
     m_resListView->setAllColumnsShowFocus( true );
     m_resListView->setRootIsDecorated( true );
+    m_resListView->restoreLayout( kapp->config(), "ResListView Columns" );
     m_widgetStack->addWidget( m_resListView );
 
     // task list view
@@ -167,6 +168,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_taskView->setShowSortIndicator( true );
     m_taskView->setSortColumn( 2 ); // sort by start date by default
     m_taskView->setAllColumnsShowFocus( true );
+    m_taskView->restoreLayout( kapp->config(), "TaskListView Columns" );
     m_widgetStack->addWidget( m_taskView );
 
     m_textBrowser->setText( i18n( "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>" ) );
@@ -197,6 +199,8 @@ ktjview2View::ktjview2View( QWidget *parent )
 
 ktjview2View::~ktjview2View()
 {
+    m_resListView->saveLayout( kapp->config(), "ResListView Columns" );
+    m_taskView->saveLayout( kapp->config(), "TaskListView Columns" );
     delete m_project;
     delete m_ganttPopupMenu;
 }
