@@ -14,7 +14,7 @@
 KTJReport::KTJReport( Project * proj )
     : m_proj( proj )
 {
-    m_model = new QicsDataModelDefault( 0, 0 );
+    m_model = new QicsDataModelDefault(); // empty model
     m_start = KtjUtils::time_t2Q( m_proj->getStart() );
     m_end = KtjUtils::time_t2Q( m_proj->getEnd() );
 

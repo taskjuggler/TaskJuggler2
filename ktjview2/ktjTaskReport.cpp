@@ -38,6 +38,9 @@ QicsDataModelDefault * KTJTaskReport::generate()
 
     clear();
 
+    bool old_emit = m_model->emitSignals();
+    m_model->setEmitSignals( false );
+
     QicsDataModelRow headerRow = generateHeader(); // generate the column header
     int columns = headerRow.count();
     m_model->addColumns( columns );
@@ -56,6 +59,8 @@ QicsDataModelDefault * KTJTaskReport::generate()
 
         generateRow( task, columns );    // generate main rows
     }
+
+    m_model->setEmitSignals( old_emit );
 
     return m_model;
 }

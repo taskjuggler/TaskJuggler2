@@ -1282,9 +1282,10 @@ void ktjview2View::slotTaskCoverage()
 
     if ( !m_taskReport )
         m_taskReport = new KTJTaskReport( m_project );
+
+    m_reportView->clear();
     m_reportView->setDataModel( m_taskReport->generate() );
-    m_reportView->setRowHeaderUsesModel( true );
-    m_reportView->setColumnHeaderUsesModel( true );
+    m_reportView->init();
     //m_reportView->setTopTitleWidget( m_taskReport->description() ); // TODO
 }
 

@@ -5,7 +5,8 @@
 
 /**
  * Report containing Tasks as primary rows
- * and allocated Resources as secondary rows.
+ * and allocated Resources as secondary rows;
+ * also called "Task Coverage" report".
  *
  * @author Lukas Tinkl <lukas.tinkl@suse.cz>
  */
