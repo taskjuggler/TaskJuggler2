@@ -1,7 +1,7 @@
 /*
  * CoreAttributes.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -66,6 +66,18 @@ protected:
 } ;
 
 /**
+ * @short Iterator for CoreAttributesList objects.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
+class CoreAttributesListIterator : public QPtrListIterator<CoreAttributes>
+{
+public:
+	CoreAttributesListIterator(const CoreAttributesList& l) :
+		QPtrListIterator<CoreAttributes>(l) { }
+	~CoreAttributesListIterator() { }
+} ;
+
+/**
  * @short This class is the base class for all attribute classes.
  * @author Chris Schlaeger <cs@suse.de>
  */
@@ -81,7 +93,7 @@ public:
    	}
 	virtual ~CoreAttributes() { }
 
-	virtual const char* getType() { return "CoreAttributes"; }
+	virtual const char* getType() const { return "CoreAttributes"; }
 
 	const QString& getId() const { return id; }
 	QString getFullId() const;
@@ -102,7 +114,8 @@ public:
 
 	uint treeLevel() const;
 
-	virtual CoreAttributesList getSubList()  const { return sub; }
+	// TODO: Find a better way to achive this.
+	virtual CoreAttributesList getSubList() const { return sub; }
 
 	void addFlag(QString flag) { flags.addFlag(flag); }
 	void clearFlag(const QString& flag) { flags.clearFlag(flag); }
@@ -150,7 +163,7 @@ template<class TL, class T> int compareTreeItemsT(TL* list, T* c1, T* c2)
 	if (c1 == c2)
 		return 0;
 
-	QList<T> cl1, cl2;
+	QPtrList<T> cl1, cl2;
 	int res1 = 0;
 	for ( ; c1 || c2; )
 	{
@@ -169,17 +182,18 @@ template<class TL, class T> int compareTreeItemsT(TL* list, T* c1, T* c2)
 		else
 			res1 = 1;
 	}
-	
-	for (c1 = cl1.first(), c2 = cl2.first(); c1 && c2; c1 = cl1.next(), c2 =
-		 cl2.next())
+
+	QPtrListIterator<T> cal1(cl1);
+	QPtrListIterator<T> cal2(cl2); 
+	for ( ; *cal1 != 0 && *cal2 != 0; ++cal1, ++cal2)
 	{
 		int res;
 		for (int j = 1; j < CoreAttributesList::maxSortingLevel; ++j)
 		{
-			if ((res = list->compareItemsLevel(c1, c2, j)) != 0)
+			if ((res = list->compareItemsLevel(*cal1, *cal2, j)) != 0)
 				return res;
 		}
-		if ((res = c1->getSequenceNo() - c2->getSequenceNo()) != 0)
+		if ((res = (*cal1)->getSequenceNo() - (*cal2)->getSequenceNo()) != 0)
 			return res < 0 ? -1 : 1;
 	}
 	return res1;

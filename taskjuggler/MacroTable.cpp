@@ -1,7 +1,7 @@
 /*
  * MacroTable.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -12,6 +12,9 @@
 
 #include <ctype.h>
 #include <stdio.h>
+
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "MacroTable.h"
 
 bool
@@ -24,22 +27,25 @@ MacroTable::addMacro(Macro* macro)
 }
 
 QString
-MacroTable::resolve(const QString& name)
+MacroTable::resolve(const QString& name) const
 {
-	fflush(stdout);
 	if (isdigit(name[0].latin1()))
 	{
-		QStringList* sl = argStack.at(argStack.count() - 2);
+		QPtrListIterator<QStringList> pli(argStack);
+		pli.toLast();
+		--pli;
+		QStringList* sl = *pli;
 		uint idx = name.toInt();
 		if (sl == 0)
 		{
-			warningMsg("Macro argument stack is empty.");
+			errorMessage(i18n("Macro argument stack is empty."));
 			return QString::null;
 		}
 		if ((idx <= 0) || (sl->count() <= idx - 1))
 		{
-			warningMsg("Index %d for argument out of range [1 - %d]!\n",
-					   idx, sl->count());
+			errorMessage
+				(i18n("Index %1 for argument out of range [1 - %2]!")
+				 .arg(idx).arg(sl->count()));
 			return QString::null;
 		}
 		return (*sl)[idx - 1];
@@ -48,13 +54,14 @@ MacroTable::resolve(const QString& name)
 		if (macros[name])
 			return macros[name]->getValue();
 
-	warningMsg("Usage of undefined macro '%s'", name.latin1());
+	errorMessage
+		(i18n("Usage of undefined macro '%1'").arg(name));
 
 	return QString::null;
 }
 
 QString
-MacroTable::expand(const QString& text)
+MacroTable::expand(const QString& text) const
 {
 	QString res;
 	for (uint i = 0; i < text.length(); i++)
@@ -71,7 +78,8 @@ MacroTable::expand(const QString& text)
 				;
 			if (text[cb] != '}')
 			{
-				warningMsg("Unterminated macro call '%s'", text.latin1());
+				errorMessage
+					(i18n("Unterminated macro call '%1'").arg(text));
 				return res;
 			}
 			res += expand(resolve(text.mid(i + 2, cb - (i + 2))));
@@ -84,14 +92,15 @@ MacroTable::expand(const QString& text)
 }
 
 void
-MacroTable::warningMsg(const char* msg, ... )
+MacroTable::errorMessage(const char* msg, ... ) const
 {
 	va_list ap;
 	va_start(ap, msg);
 	char buf[1024];
 	vsnprintf(buf, 1024, msg, ap);
 	va_end(ap);
-	qWarning("%s:%d:%s", defFileName.latin1(), defFileLine, buf);
+
+	TJMH.errorMessage(buf, defFileName, defFileLine);
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * ProjectFile.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -17,12 +17,15 @@
 #include <qregexp.h>
 
 #include "debug.h"
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "ProjectFile.h"
 #include "Project.h"
+#include "Resource.h"
 #include "Token.h"
 #include "ExpressionTree.h"
 #include "Allocation.h"
-
+#include "Booking.h"
 #include "kotrus.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
@@ -37,14 +40,14 @@
 		if (val < proj->getStart() || \
 			val > proj->getEnd()) \
 		{ \
-			fatalError("Date is outside of project time frame"); \
+			errorMessage(i18n("Date is outside of project time frame")); \
 			return FALSE; \
 		} \
 		task->b; \
 	} \
 	else \
 	{ \
-		fatalError("Date expected"); \
+		errorMessage(i18n("Date expected")); \
 		return FALSE; \
 	} \
 }
@@ -62,12 +65,12 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 {
 	QString absFileName = file;
 	if (DEBUGPF(10))
-		qWarning("Requesting to open file %s", file.latin1());
+		qDebug("Requesting to open file %s", file.latin1());
 	if (absFileName[0] != '/')
 		absFileName = parentPath + absFileName;
 	
 	if (DEBUGPF(10))
-		qWarning("File name before compression: %s", absFileName.latin1());
+		qDebug("File name before compression: %s", absFileName.latin1());
 	int end = 0;
 	while ((end = absFileName.find("/../", end)) >= 0)
 	{
@@ -81,13 +84,13 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 		end = start - 1;
 	}
 	if (DEBUGPF(10))
-		qWarning("File name after compression: %s", absFileName.latin1());
+		qDebug("File name after compression: %s", absFileName.latin1());
 
 	// Make sure that we include each file only once.
 	if (includedFiles.findIndex(absFileName) != -1)
 	{
 		if (DEBUGPF(2))
-			qWarning("Ignoring already read file %s",
+			qDebug("Ignoring already read file %s",
 					 absFileName.latin1());
 		return TRUE;
 	}
@@ -101,7 +104,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 	}
 
 	if (DEBUGPF(2))
-		qWarning("Reading %s", absFileName.latin1());
+		qDebug("Reading %s", absFileName.latin1());
 
 	openFiles.append(fi);
 	includedFiles.append(absFileName);
@@ -118,7 +121,7 @@ ProjectFile::close()
 	if (!fi->close())
 		error = TRUE;
 	if (DEBUGPF(2))
-		qWarning("Finished file %s", fi->getFile().latin1());
+		qDebug("Finished file %s", fi->getFile().latin1());
 	openFiles.removeLast();
 
 	return error;
@@ -167,7 +170,7 @@ ProjectFile::parse()
 				QString name;
 				if (!readVacation(from, to, TRUE, &name))
 					return FALSE;
-				proj->addVacation(name, from, to);
+				proj->addVacation(name, Interval(from, to));
 				break;
 			}
 			else if (token == KW("priority"))
@@ -180,12 +183,13 @@ ProjectFile::parse()
 			}
 			else if (token == "now")
 			{
-				fatalError("'now' is no longer a property. It's now an "
-						   "optional project attribute. Please fix your "
-						   "project file.");
+				errorMessage
+					(i18n("'now' is no longer a property. It's now an "
+						  "optional project attribute. Please fix your "
+						  "project file."));
 				if (nextToken(token) != DATE)
 				{
-					fatalError("Date expected");
+					errorMessage(i18n("Date expected"));
 					return FALSE;
 				}
 				proj->setNow(date2time(token));
@@ -195,7 +199,7 @@ ProjectFile::parse()
 			{
 				if (nextToken(token) != REAL)
 				{
-					fatalError("Real value exptected");
+					errorMessage(i18n("Real value exptected"));
 					return FALSE;
 				}
 				proj->setMinEffort(token.toDouble());
@@ -205,7 +209,7 @@ ProjectFile::parse()
 			{
 				if (nextToken(token) != REAL)
 				{
-					fatalError("Real value exptected");
+					errorMessage(i18n("Real value exptected"));
 					return FALSE;
 				}
 				proj->setMaxEffort(token.toDouble());
@@ -215,7 +219,7 @@ ProjectFile::parse()
 			{
 				if (nextToken(token) != REAL)
 				{
-					fatalError("Real value exptected");
+					errorMessage(i18n("Real value exptected"));
 					return FALSE;
 				}
 				proj->setRate(token.toDouble());
@@ -225,7 +229,7 @@ ProjectFile::parse()
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				proj->setCurrency(token);
@@ -235,7 +239,7 @@ ProjectFile::parse()
 			{
 				if (nextToken(token) != INTEGER)
 				{
-					fatalError("Integer value expected");
+					errorMessage(i18n("Integer value expected"));
 					return FALSE;
 				}
 				proj->setCurrencyDigits(token.toInt());
@@ -243,21 +247,23 @@ ProjectFile::parse()
 			}
 			else if (token == "timingresolution")
 			{
-				fatalError("'timingresolution' is no longer a property. It's "
-						   "now an optional project attribute. Please fix "
-						   "your project file.");
+				errorMessage
+					(i18n("'timingresolution' is no longer a property. It's "
+						  "now an optional project attribute. Please fix "
+						  "your project file."));
 				ulong resolution;
 				if (!readTimeValue(resolution))
 					return FALSE;
 				if (proj->resourceCount() > 0)
 				{
-					fatalError("The timing resolution cannot be changed after "
-							   "resources have been declared.");
+					errorMessage
+						(i18n("The timing resolution cannot be changed after "
+							  "resources have been declared."));
 					return FALSE;
 				}
 				if (resolution < 60 * 5)
 				{
-					fatalError("timing resolution must be at least 5 min");
+					errorMessage(i18n("timing resolution must be at least 5 min"));
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);
@@ -277,7 +283,7 @@ ProjectFile::parse()
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				proj->setCopyright(token);
@@ -294,20 +300,20 @@ ProjectFile::parse()
 				QString id;
 				if (nextToken(id) != ID)
 				{
-					fatalError("Macro ID expected");
+					errorMessage(i18n("Macro ID expected"));
 					return FALSE;
 				}
 				QString file = openFiles.last()->getFile();
 				uint line = openFiles.last()->getLine();
 				if (nextToken(token) != MacroBody)
 				{
-					fatalError("Macro body expected");
+					errorMessage(i18n("Macro body expected"));
 					return FALSE;
 				}
 				Macro* macro = new Macro(id, token, file, line);
 				if (!macros.addMacro(macro))
 				{
-					fatalError("Macro has been defined already");
+					errorMessage(i18n("Macro has been defined already"));
 					delete macro;
 					return FALSE;
 				}
@@ -320,7 +326,7 @@ ProjectFile::parse()
 					QString flag;
 					if (nextToken(flag) != ID)
 					{
-						fatalError("flag ID expected");
+						errorMessage(i18n("flag ID expected"));
 						return FALSE;
 					}
 
@@ -350,14 +356,15 @@ ProjectFile::parse()
 					QString id;
 					if (nextToken(id) != ID)
 					{
-						fatalError("Project ID expected");
+						errorMessage(i18n("Project ID expected"));
 						return FALSE;
 					}
 
 					if (!proj->addId(id))
 					{
-						fatalError("Project ID %s has already been registered",
-								   id.latin1());
+						errorMessage
+							(i18n("Project ID %1 has already been registered")
+							 .arg(id));
 						return FALSE;
 					}
 
@@ -371,8 +378,9 @@ ProjectFile::parse()
 			}
 			else if (token == "xmltaskreport")
 			{
-				fatalError("The keyword 'xmltaskreport' is deprecated. Please "
-						   "use the keyword 'xmlreport' instead.");
+				errorMessage
+					(i18n("The keyword 'xmltaskreport' is deprecated. Please "
+						  "use the keyword 'xmlreport' instead."));
 				if(!readXMLReport())
 					return FALSE;
 				break;
@@ -389,12 +397,12 @@ ProjectFile::parse()
 #ifdef HAVE_KDE
 			   if( !readICalTaskReport())
 #else
-			      fatalError( "TaskJuggler was built without KDE support -> no ICal support!" );
+			      errorMessage(i18n( "TaskJuggler was built without KDE support -> no ICal support!" ));
 #endif
 			      return FALSE;
 			   break;
 #else
-			   fatalError( "TaskJuggler was built without ICal-Support, sorry." );
+			   errorMessage(i18n( "TaskJuggler was built without ICal-Support, sorry." ));
 			   break;
 #endif
 			}
@@ -425,7 +433,7 @@ ProjectFile::parse()
 					(token != KW("db") && token != KW("xml") &&
 					 token != KW("nokotrus")))
 				{
-					fatalError("Unknown kotrus mode");
+					errorMessage(i18n("Unknown kotrus mode"));
 					return FALSE;
 				}
 				if (token != KW("nokotrus"))
@@ -441,7 +449,7 @@ ProjectFile::parse()
 				if (nextToken(token) != ID ||
 				   	(token != KW("task") && (token != KW("resource"))))
 				{
-					fatalError("'task' or 'resource' expected");
+					errorMessage(i18n("'task' or 'resource' expected"));
 					return FALSE;
 				}
 				if ((token == "task" && !readTaskSupplement("")) ||
@@ -451,7 +459,7 @@ ProjectFile::parse()
 			}	
 			// break missing on purpose!
 		default:
-			fatalError("Syntax Error at '%s'!", token.latin1());
+			errorMessage(i18n("Syntax Error at '%1'!").arg(token));
 			return FALSE;
 		}
 	}
@@ -467,50 +475,52 @@ ProjectFile::readProject()
 	if (proj->accountCount() > 0 || proj->resourceCount() > 0 ||
 		proj->shiftCount() > 0 || proj->taskCount() > 0)
 	{
-		fatalError("The project properties must be defined prior to any "
-				   "account, shift, task or resource.");
+		errorMessage
+			(i18n("The project properties must be defined prior to any "
+				  "account, shift, task or resource."));
 		return FALSE;
 	}
 	
 	if (nextToken(token) != ID)
 	{
-		fatalError("Project ID expected");
+		errorMessage(i18n("Project ID expected"));
 		return FALSE;
 	}
 	if (!proj->addId(token))
 	{
-		fatalError("Project ID %s has already been registered",
-					token.latin1());
+		errorMessage
+			(i18n("Project ID %1 has already been registered")
+			 .arg(token));
 		return FALSE;
 	}
 	if (nextToken(token) != STRING)
 	{
-		fatalError("Project name expected");
+		errorMessage(i18n("Project name expected"));
 		return FALSE;
 	}
 	proj->setName(token);
 	if (nextToken(token) != STRING)
 	{
-		fatalError("Version string expected");
+		errorMessage(i18n("Version string expected"));
 		return FALSE;
 	}
 	proj->setVersion(token);
 	time_t start, end;
 	if (nextToken(token) != DATE)
 	{
-		fatalError("Start date expected");
+		errorMessage(i18n("Start date expected"));
 		return FALSE;
 	}
 	start = date2time(token);
 	if (nextToken(token) != DATE)
 	{
-		fatalError("End date expected");
+		errorMessage(i18n("End date expected"));
 		return FALSE;
 	}
 	end = date2time(token);
 	if (end <= start)
 	{
-		fatalError("End date must be larger then start date");
+		errorMessage(i18n("End date must be larger then start date"));
 		return FALSE;
 	}
 	proj->setStart(start);
@@ -523,7 +533,7 @@ ProjectFile::readProject()
 		{
 			if ((tt = nextToken(token)) != ID && tt != RCBRACE)
 			{
-				fatalError("Attribute ID expected");
+				errorMessage(i18n("Attribute ID expected"));
 				return FALSE;
 			}
 			if (tt == RCBRACE)
@@ -532,7 +542,7 @@ ProjectFile::readProject()
 			{
 				if ((tt = nextToken(token)) != REAL && tt != INTEGER)
 				{
-					fatalError("Real number expected");
+					errorMessage(i18n("Real number expected"));
 					return FALSE;
 				}
 				proj->setDailyWorkingHours(token.toDouble());
@@ -541,7 +551,7 @@ ProjectFile::readProject()
 			{
 				if ((tt = nextToken(token)) != REAL && tt != INTEGER)
 				{
-					fatalError("Real number expected");
+					errorMessage(i18n("Real number expected"));
 					return FALSE;
 				}
 				proj->setYearlyWorkingDays(token.toDouble());
@@ -550,7 +560,7 @@ ProjectFile::readProject()
 			{
 				if (nextToken(token) != DATE)
 				{
-					fatalError("Date expected");
+					errorMessage(i18n("Date expected"));
 					return FALSE;
 				}
 				proj->setNow(date2time(token));
@@ -562,7 +572,7 @@ ProjectFile::readProject()
 					return FALSE;
 				if (resolution < 60 * 5)
 				{
-					fatalError("timing resolution must be at least 5 min");
+					errorMessage(i18n("timing resolution must be at least 5 min"));
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);
@@ -571,7 +581,7 @@ ProjectFile::readProject()
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("Timezone name expected");
+					errorMessage(i18n("Timezone name expected"));
 					return FALSE;
 				}
 				if (setenv("TZ", token, 1) < 0)
@@ -582,7 +592,7 @@ ProjectFile::readProject()
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("Time format string expected");
+					errorMessage(i18n("Time format string expected"));
 					return FALSE;
 				}
 				proj->setTimeFormat(token);
@@ -591,7 +601,7 @@ ProjectFile::readProject()
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("Time format string expected");
+					errorMessage(i18n("Time format string expected"));
 					return FALSE;
 				}
 				proj->setShortTimeFormat(token);
@@ -606,7 +616,7 @@ ProjectFile::readProject()
 			}
 			else
 			{
-				fatalError("Unknown attribute %s", token.latin1());
+				errorMessage(i18n("Unknown attribute %1").arg(token));
 				return FALSE;
 			}
 		}
@@ -644,15 +654,16 @@ ProjectFile::getTaskPrefix()
 }
 
 void
-ProjectFile::fatalError(const char* msg, ...)
+ProjectFile::errorMessage(const char* msg, ...)
 {
 	va_list ap;
 	va_start(ap, msg);
  	
 	if (openFiles.isEmpty())
-		qWarning("Unexpected end of file found. Probably a missing '}'.");
+		TJMH.errorMessage
+			(i18n("Unexpected end of file found. Probably a missing '}'."));
 	else
-		openFiles.last()->fatalErrorVA(msg, ap);
+		openFiles.last()->errorMessageVA(msg, ap);
 	va_end(ap);
 }
 
@@ -663,7 +674,7 @@ ProjectFile::readInclude()
 
 	if (nextToken(fileName) != STRING)
 	{
-		fatalError("File name expected");
+		errorMessage(i18n("File name expected"));
 		return FALSE;
 	}
 	QString token;
@@ -683,19 +694,20 @@ ProjectFile::readInclude()
 			{
 				if (nextToken(token) != ID || tt == ABSOLUTE_ID)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				if (!proj->getTask(getTaskPrefix() + token))
 				{
-					fatalError("Task prefix must be a known task");
+					errorMessage(i18n("Task prefix must be a known task"));
 					return FALSE;
 				}
 				taskPrefix = getTaskPrefix() + token + ".";
 			}
 			else
 			{
-				fatalError("Invalid optional attribute \'%s\'", token.latin1());
+				errorMessage(i18n("Invalid optional attribute \'%1\'")
+							 .arg(token));
 				return FALSE;
 			}
 		}
@@ -719,7 +731,7 @@ ProjectFile::readTask(Task* parent)
 	if ((tt = nextToken(id)) != ID &&
 		(tt != ABSOLUTE_ID) && (tt != RELATIVE_ID))
 	{
-		fatalError("ID expected");
+		errorMessage(i18n("ID expected"));
 		return FALSE;
 	}
 
@@ -736,7 +748,8 @@ ProjectFile::readTask(Task* parent)
 					parent = parent->getParent();
 				else
 				{
-					fatalError("Invalid relative task ID '%s'", id.latin1());
+					errorMessage(i18n("Invalid relative task ID '%1'")
+								 .arg(id));
 					return FALSE;
 				}
 				id = id.right(id.length() - 1);
@@ -761,7 +774,7 @@ ProjectFile::readTask(Task* parent)
 					}
 				if (!found)
 				{
-					fatalError("Task '%s' unknown", tn.latin1());
+					errorMessage(i18n("Task '%1' unknown").arg(tn));
 					return FALSE;
 				}
 			}
@@ -772,7 +785,8 @@ ProjectFile::readTask(Task* parent)
 		QString path = getTaskPrefix() + id.left(id.findRev('.', -1));
 		if ((parent = proj->getTask(path)) == 0)
 		{
-			fatalError("Task '%s' has not been defined", path.latin1());
+			errorMessage(i18n("Task '%1' has not been defined")
+						 .arg(path));
 			return FALSE;
 		}
 		id = id.right(id.length() - id.findRev('.', -1) - 1);
@@ -781,13 +795,13 @@ ProjectFile::readTask(Task* parent)
 	QString name;
 	if ((tt = nextToken(name)) != STRING)
 	{
-		fatalError("String expected");
+		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
 
 	if ((tt = nextToken(token)) != LCBRACE)
 	{
-		fatalError("{ expected");
+		errorMessage(i18n("{ expected"));
 		return FALSE;
 	}
 
@@ -815,7 +829,8 @@ ProjectFile::readTask(Task* parent)
 	for (Task* t = tl.first(); t != 0; t = tl.next())
 		if (t->getId() == id)
 		{
-			fatalError("Task %s has already been declared", id.latin1());
+			errorMessage(i18n("Task %1 has already been declared")
+						 .arg(id));
 			return FALSE;
 		}
 
@@ -828,7 +843,7 @@ ProjectFile::readTask(Task* parent)
 	
 	if (task->getName().isEmpty())
 	{
-		fatalError("No name specified for task '%s'!", id.latin1());
+		errorMessage(i18n("No name specified for task '%1'").arg(id));
 		return FALSE;
 	}
 
@@ -855,13 +870,13 @@ ProjectFile::readTaskSupplement(QString prefix)
 		((task = proj->getTask(prefix.isEmpty() ?
 							   token : prefix + token)) == 0))
 	{
-		fatalError("Task '%s' has not been defined yet",
-				   (prefix.isEmpty() ? token : prefix + token).latin1());
+		errorMessage(i18n("Task '%1' has not been defined yet")
+			.arg(prefix.isEmpty() ? token : prefix + token));
 		return FALSE;
 	}
 	if (nextToken(token) != LCBRACE)
 	{
-		fatalError("'}' expected");
+		errorMessage(i18n("'}' expected"));
 		return FALSE;
 	}
 	return readTaskBody(task);
@@ -889,7 +904,7 @@ ProjectFile::readTaskBody(Task* task)
 					task->setNote(token);
 				else
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 			}
@@ -955,13 +970,13 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				if (nextToken(token) != INTEGER)
 				{
-					fatalError("Integer value expected");
+					errorMessage(i18n("Integer value expected"));
 					return FALSE;
 				}
 				int complete = token.toInt();
 				if (complete < 0 || complete > 100)
 				{
-					fatalError("Value of complete must be between 0 and 100");
+					errorMessage(i18n("Value of complete must be between 0 and 100"));
 					return FALSE;
 				}
 				task->setComplete(Task::Plan, complete);
@@ -986,7 +1001,7 @@ ProjectFile::readTaskBody(Task* task)
 				if (nextToken(token) != ID ||
 					(r = proj->getResource(token)) == 0)
 				{
-					fatalError("Resource ID expected");
+					errorMessage(i18n("Resource ID expected"));
 					return FALSE;
 				}
 				task->setResponsible(r);
@@ -1001,7 +1016,7 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				if (!task->addShift(Interval(from, to), s))
 				{
-					fatalError("Shift intervals may not overlap");
+					errorMessage(i18n("Shift intervals may not overlap"));
 					return FALSE;
 				}
 			}
@@ -1012,10 +1027,11 @@ ProjectFile::readTaskBody(Task* task)
 			}
 			else if (token == KW("depends"))
 			{
-				if (!task->getSubList().isEmpty())
+				if (task->isContainer())
 				{
-					fatalError("Dependencies of container tasks must be "
-							   "specified prior to any sub tasks.");
+					errorMessage
+						(i18n("Dependencies of container tasks must be "
+							  "specified prior to any sub tasks."));
 					return FALSE;
 				}
 				for ( ; ; )
@@ -1024,7 +1040,7 @@ ProjectFile::readTaskBody(Task* task)
 					if ((tt = nextToken(id)) != ID &&
 						tt != RELATIVE_ID && tt != ABSOLUTE_ID)
 					{
-						fatalError("Task ID expected");
+						errorMessage(i18n("Task ID expected"));
 						return FALSE;
 					}
 					if (tt == ABSOLUTE_ID)
@@ -1040,10 +1056,11 @@ ProjectFile::readTaskBody(Task* task)
 			}
 			else if (token == KW("precedes") || token == "preceeds")
 			{
-				if (!task->getSubList().isEmpty())
+				if (task->isContainer())
 				{
-					fatalError("Dependencies of container tasks must be "
-							   "specified prior to any sub tasks.");
+					errorMessage
+						(i18n("Dependencies of container tasks must be "
+							  "specified prior to any sub tasks."));
 					return FALSE;
 				}
 				for ( ; ; )
@@ -1052,7 +1069,7 @@ ProjectFile::readTaskBody(Task* task)
 					if ((tt = nextToken(id)) != ID &&
 						tt != RELATIVE_ID && tt != ABSOLUTE_ID)
 					{
-						fatalError("Task ID expected");
+						errorMessage(i18n("Task ID expected"));
 						return FALSE;
 					}
 					if (tt == ABSOLUTE_ID)
@@ -1075,7 +1092,7 @@ ProjectFile::readTaskBody(Task* task)
 					task->setScheduling(Task::ALAP);
 				else
 				{
-					fatalError("Unknown scheduling policy");
+					errorMessage(i18n("Unknown scheduling policy"));
 					return FALSE;
 				}
 			}
@@ -1086,7 +1103,7 @@ ProjectFile::readTaskBody(Task* task)
 					QString flag;
 					if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
 					{
-						fatalError("Flag unknown");
+						errorMessage(i18n("Flag unknown"));
 						return FALSE;
 					}
 					task->addFlag(flag);
@@ -1110,7 +1127,7 @@ ProjectFile::readTaskBody(Task* task)
 				if (nextToken(account) != ID ||
 					proj->getAccount(account) == 0)
 				{
-					fatalError("Account ID expected");
+					errorMessage(i18n("Account ID expected"));
 					return FALSE;
 				}
 				task->setAccount(proj->getAccount(account));
@@ -1119,7 +1136,7 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				if (nextToken(token) != REAL)
 				{
-					fatalError("Real value expected");
+					errorMessage(i18n("Real value expected"));
 					return FALSE;
 				}
 				task->setStartCredit(Task::Plan, token.toDouble());
@@ -1128,7 +1145,7 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				if (nextToken(token) != REAL)
 				{
-					fatalError("Real value expected");
+					errorMessage(i18n("Real value expected"));
 					return FALSE;
 				}
 				task->setEndCredit(Task::Plan, token.toDouble());
@@ -1138,7 +1155,7 @@ ProjectFile::readTaskBody(Task* task)
 				if (nextToken(token) != ID ||
 					!proj->isValidId(token))
 				{
-					fatalError("Project ID expected");
+					errorMessage(i18n("Project ID expected"));
 					return FALSE;
 				}
 				task->setProjectId(token);
@@ -1147,7 +1164,7 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				if (nextToken(token) != ID || (token != KW("task")))
 				{
-					fatalError("'task' expected");
+					errorMessage(i18n("'task' expected"));
 					return FALSE;
 				}
 				if ((token == "task" && 
@@ -1157,16 +1174,17 @@ ProjectFile::readTaskBody(Task* task)
 			}	
 			else if (token == "include")
 			{
-				fatalError("The 'include' attribute is no longer supported "
-						   "within tasks since it caused ambiguoties between "
-						   "flag declaration and flag attributes. Please use "
-						   "the 'taskprefix' attribute of 'include' ouside "
-						   "of tasks instead.");
+				errorMessage
+					(i18n("The 'include' attribute is no longer supported "
+						  "within tasks since it caused ambiguoties between "
+						  "flag declaration and flag attributes. Please use "
+						  "the 'taskprefix' attribute of 'include' ouside "
+						  "of tasks instead."));
 				return FALSE;
 			}
 			else
 			{
-				fatalError("Illegal task attribute '%s'", token.latin1());
+				errorMessage(i18n("Illegal task attribute '%1'").arg(token));
 				return FALSE;
 			}
 			break;
@@ -1174,7 +1192,7 @@ ProjectFile::readTaskBody(Task* task)
 			done = true;
 			break;
 		default:
-			fatalError("Syntax Error at '%s'", token.latin1());
+			errorMessage(i18n("Syntax Error at '%1'").arg(token));
 			return FALSE;
 		}
 	}
@@ -1191,14 +1209,14 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
 	{
 		if ((tt = nextToken(*n)) != STRING)
 		{
-			fatalError("String expected");
+			errorMessage(i18n("String expected"));
 			return FALSE;
 		}
 	}
 	QString start;
 	if ((tt = nextToken(start)) != DATE)
 	{
-		fatalError("Date expected");
+		errorMessage(i18n("Date expected"));
 		return FALSE;
 	}
 	QString token;
@@ -1215,13 +1233,13 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
 		QString end;
 		if ((tt = nextToken(end)) != DATE)
 		{
-			fatalError("Date expected");
+			errorMessage(i18n("Date expected"));
 			return FALSE;
 		}
 		from = date2time(start);
 		if (date2time(start) > date2time(end))
 		{
-			fatalError("Vacation must start before end");
+			errorMessage(i18n("Vacation must start before end"));
 			return FALSE;
 		}
 		to = date2time(end) - 1;
@@ -1237,13 +1255,13 @@ ProjectFile::readPercent(double& value)
 	
 	if ((tt = nextToken(token)) != INTEGER && tt != REAL)
 	{
-		fatalError("Number expected");
+		errorMessage(i18n("Number expected"));
 		return FALSE;
 	}
 	value = token.toDouble();
 	if (value < 0.0 || value > 100.0)
 	{
-		fatalError("Value must be between 0 and 100");
+		errorMessage(i18n("Value must be between 0 and 100"));
 		return FALSE;
 	}
 	return TRUE;
@@ -1256,19 +1274,20 @@ ProjectFile::readResource(Resource* parent)
 	QString id;
 	if (nextToken(id) != ID)
 	{
-		fatalError("ID expected");
+		errorMessage(i18n("ID expected"));
 		return FALSE;
 	}
 	QString name;
 	if (nextToken(name) != STRING)
 	{
-		fatalError("String expected");
+		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
 
 	if (proj->getResource(id))
 	{
-		fatalError("Resource %s has already been defined", id.latin1());
+		errorMessage(i18n("Resource %1 has already been defined")
+					 .arg(id));
 		return FALSE;
 	}
 
@@ -1297,12 +1316,12 @@ ProjectFile::readResourceSupplement()
 	Resource* r;
 	if (nextToken(token) != ID || (r = proj->getResource(token)) == 0)
 	{
-		fatalError("Already defined resource ID expected");
+		errorMessage(i18n("Already defined resource ID expected"));
 		return FALSE;
 	}
 	if (nextToken(token) != LCBRACE)
 	{
-		fatalError("'{' expected");
+		errorMessage(i18n("'{' expected"));
 		return FALSE;
 	}
 	return readResourceBody(r);
@@ -1318,7 +1337,7 @@ ProjectFile::readResourceBody(Resource* r)
 	{
 		if (tt != ID)
 		{
-			fatalError("Unknown attribute '%s'", token.latin1());
+			errorMessage(i18n("Unknown attribute '%1'").arg(token));
 			return FALSE;
 		}
 		if (token == KW("resource"))
@@ -1330,7 +1349,7 @@ ProjectFile::readResourceBody(Resource* r)
 		{
 			if (nextToken(token) != REAL)
 			{
-				fatalError("Real value exptected");
+				errorMessage(i18n("Real value exptected"));
 				return FALSE;
 			}
 			r->setMinEffort(token.toDouble());
@@ -1339,7 +1358,7 @@ ProjectFile::readResourceBody(Resource* r)
 		{
 			if (nextToken(token) != REAL)
 			{
-				fatalError("Real value exptected");
+				errorMessage(i18n("Real value exptected"));
 				return FALSE;
 			}
 			r->setMaxEffort(token.toDouble());
@@ -1348,7 +1367,7 @@ ProjectFile::readResourceBody(Resource* r)
 		{
 			if (nextToken(token) != REAL)
 			{
-				fatalError("Read value expected");
+				errorMessage(i18n("Read value expected"));
 				return FALSE;
 			}
 			r->setEfficiency(token.toDouble());
@@ -1357,7 +1376,7 @@ ProjectFile::readResourceBody(Resource* r)
 		{
 			if (nextToken(token) != REAL)
 			{
-				fatalError("Real value exptected");
+				errorMessage(i18n("Real value exptected"));
 				return FALSE;
 			}
 			r->setRate(token.toDouble());
@@ -1366,7 +1385,7 @@ ProjectFile::readResourceBody(Resource* r)
 		{
 			if (nextToken(token) != STRING)
 			{
-				fatalError("String expected");
+				errorMessage(i18n("String expected"));
 				return FALSE;
 			}
 			r->setKotrusId(token);
@@ -1397,7 +1416,7 @@ ProjectFile::readResourceBody(Resource* r)
 				return FALSE;
 			if (!r->addShift(Interval(from, to), s))
 			{
-				fatalError("Shift interval overlaps with other");
+				errorMessage(i18n("Shift interval overlaps with other"));
 				return FALSE;
 			}
 		}
@@ -1408,7 +1427,7 @@ ProjectFile::readResourceBody(Resource* r)
 				return FALSE;
 			if (!r->addBooking(Task::Plan, b))
 			{
-				fatalError("Resource is already booked during this period");
+				errorMessage(i18n("Resource is already booked during this period"));
 				return FALSE;
 			}
 		}
@@ -1419,7 +1438,7 @@ ProjectFile::readResourceBody(Resource* r)
 				return FALSE;
 			if (!r->addBooking(Task::Actual, b))
 			{
-				fatalError("Resource is already booked during this period");
+				errorMessage(i18n("Resource is already booked during this period"));
 				return FALSE;
 			}
 		}
@@ -1430,7 +1449,7 @@ ProjectFile::readResourceBody(Resource* r)
 				QString flag;
 				if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
 				{
-					fatalError("flag unknown");
+					errorMessage(i18n("flag unknown"));
 					return FALSE;
 				}
 				r->addFlag(flag);
@@ -1449,7 +1468,7 @@ ProjectFile::readResourceBody(Resource* r)
 		}
 		else
 		{
-			fatalError("Unknown attribute '%s'", token.latin1());
+			errorMessage(i18n("Unknown attribute '%1'").arg(token));
 			return FALSE;
 		}
 	}
@@ -1464,19 +1483,20 @@ ProjectFile::readShift(Shift* parent)
 	QString id;
 	if (nextToken(id) != ID)
 	{
-		fatalError("ID expected");
+		errorMessage(i18n("ID expected"));
 		return FALSE;
 	}
 	QString name;
 	if (nextToken(name) != STRING)
 	{
-		fatalError("String expected");
+		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
 
 	if (proj->getShift(id))
 	{
-		fatalError("Shift %s has already been defined", id.latin1());
+		errorMessage(i18n("Shift %1 has already been defined")
+					 .arg(id));
 		return FALSE;
 	}
 
@@ -1492,7 +1512,7 @@ ProjectFile::readShift(Shift* parent)
 		{
 			if (tt != ID)
 			{
-				fatalError("Unknown attribute '%s'", token.latin1());
+				errorMessage(i18n("Unknown attribute '%1'").arg(token));
 				return FALSE;
 			}
 			if (token == KW("shift"))
@@ -1517,7 +1537,7 @@ ProjectFile::readShift(Shift* parent)
 			}
 			else
 			{
-				fatalError("Unknown attribute '%s'", token.latin1());
+				errorMessage(i18n("Unknown attribute '%1'").arg(token));
 				return FALSE;
 			}
 		}
@@ -1535,13 +1555,13 @@ ProjectFile::readShiftSelection(time_t& from, time_t& to)
 	QString id;
 	if (nextToken(id) != ID)
 	{
-		fatalError("Shift ID expected");
+		errorMessage(i18n("Shift ID expected"));
 		return 0;
 	}
 	Shift* s = 0;
 	if ((s = proj->getShift(id)) == 0)
 	{
-		fatalError("Unknown shift");
+		errorMessage(i18n("Unknown shift"));
 		return 0;
 	}
 	QString token;
@@ -1563,30 +1583,30 @@ ProjectFile::readBooking()
 
 	if (nextToken(token) != DATE)
 	{
-		fatalError("Start date expected");
+		errorMessage(i18n("Start date expected"));
 		return 0;
 	}
 	time_t start = date2time(token);
 	if (start < proj->getStart() || start >= proj->getEnd())
 	{
-		fatalError("Start date must be within the project timeframe");
+		errorMessage(i18n("Start date must be within the project timeframe"));
 		return 0;
 	}
 	
 	if (nextToken(token) != DATE)
 	{
-		fatalError("End date expected");
+		errorMessage(i18n("End date expected"));
 		return 0;
 	}
 	time_t end = date2time(token) - 1;
 	if (end <= proj->getStart() || end > proj->getEnd())
 	{
-		fatalError("End date must be within the project timeframe");
+		errorMessage(i18n("End date must be within the project timeframe"));
 		return 0;
 	}
 	if (start >= end)
 	{
-		fatalError("End date must be after start date");
+		errorMessage(i18n("End date must be after start date"));
 		return 0;
 	}
 
@@ -1595,7 +1615,7 @@ ProjectFile::readBooking()
 	if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
 		(task = proj->getTask(getTaskPrefix() + token)) == 0)
 	{
-		fatalError("Task ID expected");
+		errorMessage(i18n("Task ID expected"));
 		return 0;
 	}
 	return new Booking(Interval(start, end), task, "", task->getProjectId());
@@ -1608,20 +1628,21 @@ ProjectFile::readAccount(Account* parent)
 	QString id;
 	if (nextToken(id) != ID)
 	{
-		fatalError("ID expected");
+		errorMessage(i18n("ID expected"));
 		return FALSE;
 	}
 
 	if (proj->getAccount(id))
 	{
-		fatalError("Account %s has already been defined", id.latin1());
+		errorMessage(i18n("Account %1 has already been defined")
+					 .arg(id));
 		return FALSE;
 	}
 
 	QString name;
 	if (nextToken(name) != STRING)
 	{
-		fatalError("String expected");
+		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
 	Account::AccountType acctType;
@@ -1633,7 +1654,7 @@ ProjectFile::readAccount(Account* parent)
 		if (nextToken(at) != ID && (at != KW("cost") ||
 								   	at != KW("revenue")))
 		{
-			fatalError("Account type 'cost' or 'revenue' expected");
+			errorMessage(i18n("Account type 'cost' or 'revenue' expected"));
 			return FALSE;
 		}
 		acctType = at == KW("cost") ? Account::Cost : Account::Revenue;
@@ -1654,7 +1675,8 @@ ProjectFile::readAccount(Account* parent)
 		{
 			if (tt != ID)
 			{
-				fatalError("Unknown attribute '%s'", token.latin1());
+				errorMessage(i18n("Unknown attribute '%1'")
+							 .arg(token));
 				return FALSE;
 			}
 			if (token == KW("account") && !cantBeParent)
@@ -1672,7 +1694,7 @@ ProjectFile::readAccount(Account* parent)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				a->setKotrusId(token);
@@ -1685,7 +1707,7 @@ ProjectFile::readAccount(Account* parent)
 			}
 			else
 			{
-				fatalError("Illegal attribute");
+				errorMessage(i18n("Illegal attribute"));
 				return FALSE;
 			}
 		}
@@ -1705,7 +1727,7 @@ ProjectFile::readCredit(Account* a)
 
 	if (nextToken(token) != DATE)
 	{
-		fatalError("Date expected");
+		errorMessage(i18n("Date expected"));
 		return FALSE;
 	}
 	time_t date = date2time(token);
@@ -1713,13 +1735,13 @@ ProjectFile::readCredit(Account* a)
 	QString description;
 	if (nextToken(description) != STRING)
 	{
-		fatalError("String expected");
+		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
 
 	if (nextToken(token) != REAL)
 	{
-		fatalError("Real value expected");
+		errorMessage(i18n("Real value expected"));
 		return FALSE;
 	}
 	Transaction* t = new Transaction(date, token.toDouble(), description);
@@ -1735,7 +1757,7 @@ ProjectFile::readAllocate(Task* t)
 	Resource* r;
 	if (nextToken(id) != ID || (r = proj->getResource(id)) == 0)
 	{
-		fatalError("Resource ID expected");
+		errorMessage(i18n("Resource ID expected"));
 		return FALSE;
 	}
 	Allocation* a = new Allocation(r);
@@ -1747,20 +1769,21 @@ ProjectFile::readAllocate(Task* t)
 		{
 			if (tt != ID)
 			{
-				fatalError("Unknown attribute '%s'", token.latin1());
+				errorMessage(i18n("Unknown attribute '%1'")
+							 .arg(token));
 				return FALSE;
 			}
 			if (token == KW("load"))
 			{
 				if (nextToken(token) != REAL)
 				{
-					fatalError("Real value expected");
+					errorMessage(i18n("Real value expected"));
 					return FALSE;
 				}
 				double load = token.toDouble();
 				if (load < 0.01)
 				{
-					fatalError("Value must be at least 0.01");
+					errorMessage(i18n("Value must be at least 0.01"));
 					return FALSE;
 				}
 				a->setLoad((int) (100 * load));
@@ -1774,7 +1797,7 @@ ProjectFile::readAllocate(Task* t)
 					return FALSE;
 				if (!a->addShift(Interval(from, to), s))
 				{
-					fatalError("Shift intervals may not overlap");
+					errorMessage(i18n("Shift intervals may not overlap"));
 					return FALSE;
 				}
 			}
@@ -1790,7 +1813,7 @@ ProjectFile::readAllocate(Task* t)
 					if ((tt = nextToken(token)) != ID ||
 						(r = proj->getResource(token)) == 0)
 					{
-						fatalError("Resource ID expected");
+						errorMessage(i18n("Resource ID expected"));
 						return FALSE;
 					}
 					a->addCandidate(r);
@@ -1801,13 +1824,14 @@ ProjectFile::readAllocate(Task* t)
 			{
 				if (nextToken(token) != ID || !a->setSelectionMode(token))
 				{
-					fatalError("Invalid selction mode");
+					errorMessage(i18n("Invalid selction mode"));
 					return FALSE;
 				}
 			}
 			else
 			{
-				fatalError("Unknown attribute '%s'", token.latin1());
+				errorMessage(i18n("Unknown attribute '%1'")
+							 .arg(token));
 				return FALSE;
 			}
 		}
@@ -1825,13 +1849,13 @@ ProjectFile::readTimeValue(ulong& value)
 	QString val;
 	if (nextToken(val) != INTEGER)
 	{
-		fatalError("Integer value expected");
+		errorMessage(i18n("Integer value expected"));
 		return FALSE;
 	}
 	QString unit;
 	if (nextToken(unit) != ID)
 	{
-		fatalError("Unit expected");
+		errorMessage(i18n("Unit expected"));
 		return FALSE;
 	}
 	if (unit == KW("min"))
@@ -1848,7 +1872,7 @@ ProjectFile::readTimeValue(ulong& value)
 		value = val.toULong() * (60 * 60 * 24 * 356);
 	else
 	{
-		fatalError("Unit expected");
+		errorMessage(i18n("Unit expected"));
 		return FALSE;
 	}
 	return TRUE;
@@ -1861,13 +1885,13 @@ ProjectFile::readPlanTimeFrame(double& value, bool workingDays)
 	TokenType tt;
 	if ((tt = nextToken(val)) != REAL && tt != INTEGER)
 	{
-		fatalError("Real value expected");
+		errorMessage(i18n("Real value expected"));
 		return FALSE;
 	}
 	QString unit;
 	if (nextToken(unit) != ID)
 	{
-		fatalError("Unit expected");
+		errorMessage(i18n("Unit expected"));
 		return FALSE;
 	}
 	if (unit == KW("min"))
@@ -1887,7 +1911,7 @@ ProjectFile::readPlanTimeFrame(double& value, bool workingDays)
 			(workingDays ? proj->getYearlyWorkingDays() : 365);
 	else
 	{
-		fatalError("Unit expected");
+		errorMessage(i18n("Unit expected"));
 		return FALSE;
 	}
 
@@ -1901,7 +1925,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 	QString day;
 	if (nextToken(day) != ID)
 	{
-		fatalError("Weekday expected");
+		errorMessage(i18n("Weekday expected"));
 		return FALSE;
 	}
 	const char* days[] = { KW("sun"), KW("mon"), KW("tue"), KW("wed"),
@@ -1911,7 +1935,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 			break;
 	if (dayOfWeek == 7)
 	{
-		fatalError("Weekday expected");
+		errorMessage(i18n("Weekday expected"));
 		return FALSE;
 	}
 
@@ -1927,19 +1951,19 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 		QString start;
 		if (nextToken(start) != HOUR)
 		{
-			fatalError("Start time as HH:MM expected");
+			errorMessage(i18n("Start time as HH:MM expected"));
 			return FALSE;
 		}
 		QString token;
 		if (nextToken(token) != MINUS)
 		{
-			fatalError("'-' expected");
+			errorMessage(i18n("'-' expected"));
 			return FALSE;
 		}
 		QString end;
 		if (nextToken(end) != HOUR)
 		{
-			fatalError("End time as HH:MM expected");
+			errorMessage(i18n("End time as HH:MM expected"));
 			return FALSE;
 		}
 		time_t st, et;
@@ -1949,14 +1973,14 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 			return FALSE;
 		if (et <= st)
 		{
-			fatalError("End time must be larger than start time");
+			errorMessage(i18n("End time must be larger than start time"));
 			return FALSE;
 		}
 		Interval* iv = new Interval(st, et - 1); 
 		for (Interval* i = l->first(); i != 0; i = l->next())
 			if (iv->overlaps(*i))
 			{
-				fatalError("Working hour intervals may not overlap");
+				errorMessage(i18n("Working hour intervals may not overlap"));
 				return FALSE;
 			}
 		l->append(iv);
@@ -1977,13 +2001,13 @@ ProjectFile::readPriority(int& priority)
 
 	if (nextToken(token) != INTEGER)
 	{
-		fatalError("Integer value expected");
+		errorMessage(i18n("Integer value expected"));
 		return FALSE;
 	}
 	priority = token.toInt();
 	if (priority < 1 || priority > 1000)
 	{
-		fatalError("Priority value must be between 1 and 1000");
+		errorMessage(i18n("Priority value must be between 1 and 1000"));
 		return FALSE;
 	}
 	return TRUE;
@@ -1997,7 +2021,7 @@ ProjectFile::readICalTaskReport()
    QString token;
    if (nextToken(token) != STRING)
    {
-      fatalError("File name expected");
+      errorMessage(i18n("File name expected"));
       return FALSE;
    }
    ReportICal *rep = new ReportICal( proj, token, proj->getStart(), proj->getEnd());
@@ -2014,7 +2038,7 @@ ProjectFile::readXMLReport()
    QString token;
    if (nextToken(token) != STRING)
    {
-      fatalError("File name expected");
+      errorMessage(i18n("File name expected"));
       return FALSE;
    }
    ReportXML *rep = new ReportXML(proj, token, proj->getStart(),
@@ -2029,20 +2053,20 @@ ProjectFile::checkReportInterval(ReportHtml* report)
 {
 	if (report->getEnd() < report->getStart())
 	{	
-		fatalError(QString("End date must be later than start date"));
+		errorMessage(i18n("End date must be later than start date"));
 		return FALSE;
 	}
 	if (proj->getStart() > report->getStart() ||
 		report->getStart() > proj->getEnd())
 	{
-		fatalError(QString("Start date must be within the project time "
-						   "frame"));
+		errorMessage(i18n("Start date must be within the project time "
+						  "frame"));
 		return FALSE;
 	}
 	if (proj->getStart() > report->getEnd() ||
 		report->getEnd() > proj->getEnd())
 	{
-		fatalError(QString("End date must be within the project time frame"));
+		errorMessage(i18n("End date must be within the project time frame"));
 		return FALSE;
 	}
 
@@ -2055,7 +2079,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	QString token;
 	if (nextToken(token) != STRING)
 	{
-		fatalError("File name expected");
+		errorMessage(i18n("File name expected"));
 		return FALSE;
 	}
 	
@@ -2084,7 +2108,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 				break;
 			else if (tt != ID)
 			{
-				fatalError("Attribute ID or '}' expected");
+				errorMessage(i18n("Attribute ID or '}' expected"));
 				return FALSE;
 			}
 			if (token == KW("columns"))
@@ -2095,7 +2119,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 					QString col;
 					if ((tt = nextToken(col)) != ID)
 					{
-						fatalError("Column ID expected");
+						errorMessage(i18n("Column ID expected"));
 						return FALSE;
 					}
 					report->addReportColumn(col);
@@ -2110,7 +2134,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != DATE)
 				{
-					fatalError("Date expected");
+					errorMessage(i18n("Date expected"));
 					return FALSE;
 				}
 				report->setStart(date2time(token));
@@ -2119,7 +2143,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != DATE)
 				{
-					fatalError("Date expected");
+					errorMessage(i18n("Date expected"));
 					return FALSE;
 				}
 				report->setEnd(date2time(token) - 1);
@@ -2128,7 +2152,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String exptected");
+					errorMessage(i18n("String exptected"));
 					return FALSE;
 				}
 				report->setHeadline(token);
@@ -2137,7 +2161,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String exptected");
+					errorMessage(i18n("String exptected"));
 					return FALSE;
 				}
 				report->setCaption(token);
@@ -2146,7 +2170,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				report->setRawHead(token);
@@ -2155,7 +2179,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				report->setRawTail(token);
@@ -2164,7 +2188,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("String expected");
+					errorMessage(i18n("String expected"));
 					return FALSE;
 				}
 				report->setRawStyleSheet(token);
@@ -2228,7 +2252,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != ID || !report->setLoadUnit(token))
 				{
-					fatalError("Illegal load unit");
+					errorMessage(i18n("Illegal load unit"));
 					return FALSE;
 				}
 			}
@@ -2236,7 +2260,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("Time format string expected");
+					errorMessage(i18n("Time format string expected"));
 					return FALSE;
 				}
 				report->setTimeFormat(token);
@@ -2245,7 +2269,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != STRING)
 				{
-					fatalError("Time format string expected");
+					errorMessage(i18n("Time format string expected"));
 					return FALSE;
 				}
 				report->setShortTimeFormat(token);
@@ -2254,7 +2278,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			{
 				if (nextToken(token) != ID)
 				{
-					fatalError("Bar label mode expected");
+					errorMessage(i18n("Bar label mode expected"));
 					return FALSE;
 				}
 				if (token == KW("empty"))
@@ -2263,14 +2287,14 @@ ProjectFile::readHTMLReport(const QString& reportType)
 					report->setBarLabels(ReportHtml::BLT_LOAD);
 				else
 				{
-					fatalError(QString("Unknown bar label mode '%1'")
-							   .arg(token));
+					errorMessage(i18n("Unknown bar label mode '%1'")
+								 .arg(token));
 					return FALSE;
 				}
 			}
 			else
 			{
-				fatalError("Illegal attribute");
+				errorMessage(i18n("Illegal attribute"));
 				return FALSE;
 			}
 		}
@@ -2297,7 +2321,7 @@ ProjectFile::readHTMLAccountReport()
 	QString token;
 	if (nextToken(token) != STRING)
 	{
-		fatalError("File name expected");
+		errorMessage(i18n("File name expected"));
 		return FALSE;
 	}
 	
@@ -2318,7 +2342,7 @@ ProjectFile::readHTMLAccountReport()
 			break;
 		else if (tt != ID)
 		{
-			fatalError("Attribute ID or '}' expected");
+			errorMessage(i18n("Attribute ID or '}' expected"));
 			return FALSE;
 		}
 		if (token == KW("columns"))
@@ -2329,7 +2353,7 @@ ProjectFile::readHTMLAccountReport()
 				QString col;
 				if ((tt = nextToken(col)) != ID)
 				{
-					fatalError("Column ID expected");
+					errorMessage(i18n("Column ID expected"));
 					return FALSE;
 				}
 				report->addReportColumn(col);
@@ -2344,7 +2368,7 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != DATE)
 			{
-				fatalError("Date expected");
+				errorMessage(i18n("Date expected"));
 				return FALSE;
 			}
 			report->setStart(date2time(token));
@@ -2353,7 +2377,7 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != DATE)
 			{
-				fatalError("Date expected");
+				errorMessage(i18n("Date expected"));
 				return FALSE;
 			}
 			report->setEnd(date2time(token) - 1);
@@ -2362,7 +2386,7 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != STRING)
 			{
-				fatalError("String exptected");
+				errorMessage(i18n("String exptected"));
 				return FALSE;
 			}
 			report->setHeadline(token);
@@ -2371,7 +2395,7 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != STRING)
 			{
-				fatalError("String exptected");
+				errorMessage(i18n("String exptected"));
 				return FALSE;
 			}
 			report->setCaption(token);
@@ -2413,7 +2437,7 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != STRING)
 			{
-				fatalError("String expected");
+				errorMessage(i18n("String expected"));
 				return FALSE;
 			}
 			report->setRawHead(token);
@@ -2422,7 +2446,7 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != STRING)
 			{
-				fatalError("String expected");
+				errorMessage(i18n("String expected"));
 				return FALSE;
 			}
 			report->setRawTail(token);
@@ -2431,14 +2455,14 @@ ProjectFile::readHTMLAccountReport()
 		{
 			if (nextToken(token) != STRING)
 			{
-				fatalError("String expected");
+				errorMessage(i18n("String expected"));
 				return FALSE;
 			}
 			report->setRawStyleSheet(token);
 		}
 		else
 		{
-			fatalError("Illegal attribute");
+			errorMessage(i18n("Illegal attribute"));
 			return FALSE;
 		}
 	}
@@ -2457,7 +2481,7 @@ ProjectFile::readExportReport()
 	QString token;
 	if (nextToken(token) != STRING)
 	{
-		fatalError("File name expected");
+		errorMessage(i18n("File name expected"));
 		return FALSE;
 	}
 	
@@ -2477,7 +2501,7 @@ ProjectFile::readExportReport()
 			break;
 		else if (tt != ID)
 		{
-			fatalError("Attribute ID or '}' expected");
+			errorMessage(i18n("Attribute ID or '}' expected"));
 			return FALSE;
 		}
 		
@@ -2520,14 +2544,14 @@ ProjectFile::readExportReport()
 			{
 				if (!proj->getTask(token))
 				{
-					fatalError("taskroot must be a known task");
+					errorMessage(i18n("taskroot must be a known task"));
 					return FALSE;
 				}
 				report->setTaskRoot(token + ".");
 			}
 			else
 			{
-				fatalError("Task ID expected");
+				errorMessage(i18n("Task ID expected"));
 				return FALSE;
 			}
 		}
@@ -2539,7 +2563,7 @@ ProjectFile::readExportReport()
 				if (nextToken(ta) != ID ||
 					!report->addTaskAttribute(ta))
 				{
-					fatalError("task attribute expected");
+					errorMessage(i18n("task attribute expected"));
 					return FALSE;
 				}
 
@@ -2556,7 +2580,7 @@ ProjectFile::readExportReport()
 		}
 		else
 		{
-			fatalError("Illegal attribute");
+			errorMessage(i18n("Illegal attribute"));
 			return FALSE;
 		}
 	}
@@ -2574,17 +2598,17 @@ ProjectFile::readHtmlUrl(ReportHtml* report)
 
 	if (nextToken(key) != ID)
 	{
-		fatalError("URL ID expected");
+		errorMessage(i18n("URL ID expected"));
 		return FALSE;
 	}
 	if (nextToken(url) != STRING)
 	{
-		fatalError("String expected");
+		errorMessage(i18n("String expected"));
 		return FALSE;
 	}
 	if (!report->setUrl(key, url))
 	{
-		fatalError("Unknown URL ID");
+		errorMessage(i18n("Unknown URL ID"));
 		return FALSE;
 	}
 	return TRUE;
@@ -2614,7 +2638,8 @@ ProjectFile::readLogicalExpression(int precedence)
 		}
 		else
 		{
-			fatalError("Flag, function or ID '%s' is unknown.", token.latin1());
+			errorMessage(i18n("Flag, function or ID '%1' is unknown.").
+						 arg(token));
 			return 0;
 		}
 	}
@@ -2623,7 +2648,7 @@ ProjectFile::readLogicalExpression(int precedence)
 		time_t date;
 		if ((date = date2time(token)) == 0)
 		{
-			fatalError("%s", getUtilityError().latin1());
+			errorMessage("%s", getUtilityError().latin1());
 			return 0;
 		}
 		else
@@ -2649,13 +2674,13 @@ ProjectFile::readLogicalExpression(int precedence)
 		}
 		if ((tt = nextToken(token)) != RBRACE)
 		{
-			fatalError("')' expected");
+			errorMessage(i18n("')' expected"));
 			return 0;
 		}
 	}
 	else
 	{
-		fatalError("Logical expression expected");
+		errorMessage(i18n("Logical expression expected"));
 		return 0;
 	}
 	
@@ -2688,7 +2713,7 @@ ProjectFile::readFunctionCall(const QString& name)
 	
 	if ((tt = nextToken(token)) != LBRACE)
 	{
-		fatalError("'(' expected");
+		errorMessage(i18n("'(' expected"));
 		return 0;
 	}
 	QPtrList<Operation> args;
@@ -2701,13 +2726,13 @@ ProjectFile::readFunctionCall(const QString& name)
 		if ((i < ExpressionTree::arguments(name) - 1) &&
 			nextToken(token) != COMMA)
 		{
-			fatalError("Comma expected");
+			errorMessage(i18n("Comma expected"));
 			return 0;
 		}
 	}
 	if ((tt = nextToken(token)) != RBRACE)
 	{
-		fatalError("')' expected");
+		errorMessage(i18n("')' expected"));
 		return 0;
 	}
 	return new Operation(name, args);
@@ -2796,7 +2821,7 @@ ProjectFile::readSorting(Report* report, int which)
 			sorting = CoreAttributesList::KotrusIdDown;
 		else
 		{
-			fatalError("Sorting criteria expected");
+			errorMessage(i18n("Sorting criteria expected"));
 			return FALSE;
 		}
 
@@ -2818,8 +2843,9 @@ ProjectFile::readSorting(Report* report, int which)
 		}
 		if (!ok)
 		{
-			fatalError("This sorting criteria is not supported for the list "
-					   "or it is used at the wrong position.");
+			errorMessage
+				(i18n("This sorting criteria is not supported for the list "
+					  "or it is used at the wrong position."));
 			return FALSE;
 		}
 		tt = nextToken(token);
@@ -2835,7 +2861,7 @@ ProjectFile::date2time(const QString& date)
 {
 	time_t res;
 	if ((res = ::date2time(date)) == 0)
-		fatalError(getUtilityError());
+		errorMessage(i18n(getUtilityError()));
 	return res;
 }
 
@@ -2845,18 +2871,18 @@ ProjectFile::hhmm2time(const QString& hhmm)
 	int hour = hhmm.left(hhmm.find(':')).toInt();
 	if (hour > 24)
 	{
-		fatalError("Hour must be in the range of 0 - 24");
+		errorMessage(i18n("Hour must be in the range of 0 - 24"));
 		return -1;
 	}
 	int min = hhmm.mid(hhmm.find(':') + 1).toInt();
 	if (min > 59)
 	{
-		fatalError("Minutes must be in the range of 0 - 59");
+		errorMessage(i18n("Minutes must be in the range of 0 - 59"));
 		return -1;
 	}
 	if (hour == 24 && min != 0)
 	{
-		fatalError("Maximum time is 24:00");
+		errorMessage(i18n("Maximum time is 24:00"));
 		return -1;
 	}
 	return hour * 60 * 60 + min * 60;

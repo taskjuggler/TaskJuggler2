@@ -1,7 +1,7 @@
 /*
  * FileInfo.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -12,6 +12,8 @@
 
 #include <ctype.h>
 
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "FileInfo.h"
 #include "ProjectFile.h"
 
@@ -118,7 +120,7 @@ FileInfo::getDateFragment(QString& token, QChar& c)
 	// c must be a digit
 	if (!c.isDigit())
 	{
-		fatalError("Corrupted date");
+		errorMessage(i18n("Corrupted date"));
 		return FALSE;
 	}
 	token += c;
@@ -175,7 +177,7 @@ FileInfo::nextToken(QString& token)
 							currLine++;
 						else if (c.unicode() == EOFile)
 						{
-							fatalError("Unterminated comment");
+							errorMessage(i18n("Unterminated comment"));
 							return EndOfFile;
 						}
 					}
@@ -213,7 +215,7 @@ FileInfo::nextToken(QString& token)
 		QChar c = getC();
 		if (c.unicode() == EOFile)
 		{
-			fatalError("Unexpected end of file");
+			errorMessage(i18n("Unexpected end of file"));
 			return EndOfFile;
 		}
 		else if (isalpha(c) || (c == '_') || (c == '!'))
@@ -245,7 +247,7 @@ FileInfo::nextToken(QString& token)
 				getDateFragment(token, c);
 				if (c != '-')
 				{
-					fatalError("Corrupted date");
+					errorMessage(i18n("Corrupted date"));
 					return EndOfFile;
 				}
 				getDateFragment(token, c);
@@ -254,7 +256,7 @@ FileInfo::nextToken(QString& token)
 					getDateFragment(token, c);
 					if (c != ':')
 					{
-						fatalError("Corrupted date");
+						errorMessage(i18n("Corrupted date"));
 						return EndOfFile;
 					}
 					getDateFragment(token, c);
@@ -294,7 +296,7 @@ FileInfo::nextToken(QString& token)
 						token += c;
 					else
 					{
-						fatalError("2 digits minutes expected");
+						errorMessage(i18n("2 digits minutes expected"));
 						return EndOfFile;
 					}
 				}
@@ -317,7 +319,7 @@ FileInfo::nextToken(QString& token)
 			}
 			if (c.unicode() == EOFile)
 			{
-				fatalError("Non terminated string");
+				errorMessage(i18n("Non terminated string"));
 				return EndOfFile;
 			}
 			return STRING;
@@ -333,7 +335,7 @@ FileInfo::nextToken(QString& token)
 			}
 			if (c.unicode() == EOFile)
 			{
-				fatalError("Non terminated string");
+				errorMessage(i18n("Non terminated string"));
 				return EndOfFile;
 			}
 			return STRING;
@@ -354,7 +356,7 @@ FileInfo::nextToken(QString& token)
 			}
 			if (c.unicode() == EOFile)
 			{
-				fatalError("Non terminated macro definition");
+				errorMessage(i18n("Non terminated macro definition"));
 				return EndOfFile;
 			}
 			return MacroBody;
@@ -383,8 +385,7 @@ FileInfo::nextToken(QString& token)
 			case '|':
 				return OR;
 			default:
-				fatalError("Illegal character '%c' (Unicode %d)", c.latin1(),
-						   c.unicode());
+				errorMessage(i18n("Illegal character '%1'").arg(c));
 				return INVALID;
 			}
 		}
@@ -398,7 +399,7 @@ FileInfo::readMacroCall()
 	TokenType tt;
 	if ((tt = nextToken(id)) != ID && tt != INTEGER)
 	{
-		fatalError("Macro ID expected");
+		errorMessage(i18n("Macro ID expected"));
 		return FALSE;
 	}
 	QString token;
@@ -408,7 +409,7 @@ FileInfo::readMacroCall()
 		sl->append(token);
 	if (tt != RCBRACE)
 	{
-		fatalError("'}' expected");
+		errorMessage(i18n("'}' expected"));
 		return FALSE;
 	}
 
@@ -420,7 +421,7 @@ FileInfo::readMacroCall()
 	QString macro = pf->getMacros().resolve(id);
 	if (macro.isNull())
 	{
-		fatalError(QString("Unknown macro ") + id);
+		errorMessage(i18n(QString("Unknown macro ") + id));
 		return FALSE;
 	}
 
@@ -448,7 +449,7 @@ FileInfo::returnToken(TokenType tt, const QString& buf)
 }
 
 void
-FileInfo::fatalError(const char* msg, ...)
+FileInfo::errorMessage(const char* msg, ...)
 {
 	va_list ap;
 	char buf[1024];
@@ -457,39 +458,22 @@ FileInfo::fatalError(const char* msg, ...)
 	va_end(ap);
 	
 	if (macroStack.isEmpty())
-	{
-		qWarning("%s:%d:%s", file.latin1(), currLine, buf);
-		qWarning("%s", lineBuf.latin1());
-	}
+		TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(lineBuf),
+						  file, currLine); 
 	else
-	{
-		qWarning("Error in expanded macro");
-		qWarning("%s:%d: %s",
-				 macroStack.last()->getFile().latin1(),
-				 macroStack.last()->getLine(), buf);
-		qWarning("%s", lineBuf.latin1());
-	}
+		TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2").
+						  arg(buf).arg(lineBuf),
+						  macroStack.last()->getFile(),
+						  macroStack.last()->getLine());
 }
 
 void
-FileInfo::fatalErrorVA(const char* msg, va_list ap)
+FileInfo::errorMessageVA(const char* msg, va_list ap)
 {
 	char buf[1024];
 	vsnprintf(buf, 1024, msg, ap);
 	
-	if (macroStack.isEmpty())
-	{
-		qWarning("%s:%d:%s", file.latin1(), currLine, buf);
-		qWarning("%s", lineBuf.latin1());
-	}
-	else
-	{
-		qWarning("Error in expanded macro");
-		qWarning("%s:%d: %s",
-				 macroStack.last()->getFile().latin1(),
-				 macroStack.last()->getLine(), buf);
-		qWarning("%s", lineBuf.latin1());
-	}
+	errorMessage("%s", buf);
 }
 
 

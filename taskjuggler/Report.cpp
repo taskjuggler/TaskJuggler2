@@ -1,7 +1,7 @@
 /*
  * Report.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -13,7 +13,10 @@
 #include <config.h>
 #include <stdio.h>
 
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "Project.h"
+#include "Resource.h"
 #include "Report.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
@@ -71,7 +74,7 @@ Report::open()
 	{
 		if (!f.open(IO_WriteOnly, stdout))
 		{
-			qWarning("Cannout open stdout");
+			TJMH.errorMessage(i18n("Cannout open stdout"));
 			return FALSE;
 		}
 	}
@@ -80,8 +83,9 @@ Report::open()
 		f.setName(fileName);
 		if (!f.open(IO_WriteOnly))
 		{
-			qWarning("Cannot open report file %s!\n",
-					 fileName.latin1());
+			TJMH.errorMessage
+				(i18n("Cannot open report file %1!\n")
+				 .arg(fileName.latin1()));
 			return FALSE;
 		}
 	}
@@ -330,29 +334,28 @@ Report::filterResourceList(ResourceList& filteredList, Task* t)
 	/* Create a new list that contains only those resources that were
 	 * not hidden. */
 	ResourceList resourceList = project->getResourceList();
-	for (Resource* r = resourceList.first(); r != 0;
-		 r = resourceList.next())
+	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
 	{
-		if (!isHidden(r, hideResource) &&
-			(t == 0 || r->getLoad(Task::Plan, Interval(start, end), t) > 0.0 ||
-			 (showActual && r->getLoad(Task::Actual, 
+		if (!isHidden(*rli, hideResource) &&
+			(t == 0 || 
+			 (*rli)->getLoad(Task::Plan, Interval(start, end), t) > 0.0 ||
+			 (showActual && (*rli)->getLoad(Task::Actual, 
 									   Interval(start, end), t) > 0.0)))
 		{
-			filteredList.append(r);
+			filteredList.append(*rli);
 		}
 	}
 
 	/* Now we have to remove all sub resources of resource in the
      * roll-up list from the filtered list */
-	for (Resource* r = resourceList.first(); r != 0;
-		 r = resourceList.next())
+	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
 	{
 		ResourceList toHide;
-		if (isResourceRolledUp(r))
-			r->getSubResourceList(toHide);
+		if (isResourceRolledUp(*rli))
+			(*rli)->getSubResourceList(toHide);
 
-		for (Resource* l = toHide.first(); l != 0; l = toHide.next())
-			filteredList.remove(l);
+		for (ResourceListIterator thi(toHide); *thi != 0; ++thi)
+			filteredList.remove(*thi);
 	}
 }
 
@@ -366,10 +369,9 @@ Report::sortResourceList(ResourceList& filteredList)
 	{
 		// Set sorting criteria so sequence no since list.contains() needs it.
 		filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
-		for (Resource* r = filteredList.first(); r != 0;
-			 r = filteredList.next())
+		for (ResourceListIterator rli(filteredList); *rli != 0; ++rli)
 		{
-			for (Resource* p = r->getParent(); p != 0; p = p->getParent())
+			for (Resource* p = (*rli)->getParent(); p != 0; p = p->getParent())
 				if (list.contains(p) == 0)
 					list.append(p);
 		}
@@ -531,14 +533,15 @@ Report::scaledLoad(double t)
 }
 
 void
-Report::warningMsg(const char* msg, ... )
+Report::errorMessage(const char* msg, ... )
 {
 	va_list ap;
 	va_start(ap, msg);
 	char buf[1024];
 	vsnprintf(buf, 1024, msg, ap);
 	va_end(ap);
-	qWarning("%s:%d:%s", defFileName.latin1(), defFileLine, buf);
+		
+	TJMH.errorMessage(buf, defFileName, defFileLine);
 }
 
 QString

@@ -1,7 +1,7 @@
 /*
  * HTMLResourceReport.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -50,23 +50,24 @@ HTMLResourceReport::generate()
 	filterResourceList(filteredResourceList);
 	sortResourceList(filteredResourceList);
 
-	for (Resource* r = filteredResourceList.first(); r != 0;
-		 r = filteredResourceList.next())
+	int rNo = 1;
+	for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
+		 ++rli, ++rNo)
 	{
-		generatePlanResource(r, 0, filteredResourceList.at() + 1);
+		generatePlanResource(*rli, 0, rNo);
 		if (showActual)
-			generateActualResource(r, 0);
+			generateActualResource(*rli, 0);
 
 		TaskList filteredTaskList;
-		filterTaskList(filteredTaskList, r);
+		filterTaskList(filteredTaskList, *rli);
 		sortTaskList(filteredTaskList);
 
-		for (Task* t = filteredTaskList.first(); t != 0;
-			 t = filteredTaskList.next())
+		int tNo = 1;
+		for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
 		{
-			generatePlanTask(t, r, filteredTaskList.at() + 1);
+			generatePlanTask(*tli, *rli, tNo);
 			if (showActual)
-				generateActualTask(t, r);
+				generateActualTask(*tli, *rli);
 		}
 	}
 	reportHTMLFooter();

@@ -1,7 +1,7 @@
 /*
  * Account.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -18,6 +18,7 @@
 #include <time.h>
 
 #include "CoreAttributes.h"
+#include "AccountList.h"
 
 class Task;
 class TransactionList;
@@ -53,7 +54,7 @@ private:
  * @short A list of transactions.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class TransactionList : public QList<Transaction>
+class TransactionList : public QPtrList<Transaction>
 {
 public:
 	TransactionList() { }
@@ -62,34 +63,16 @@ protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
-class Account;
-
 /**
- * @short A list of accounts.
+ * @short Iterator for TransactionList objects.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class AccountList : public CoreAttributesList
+class TransactionListIterator : public QPtrListIterator<Transaction>
 {
 public:
-	AccountList() 
-	{ 
-	   	sorting[0] = CoreAttributesList::TreeMode;
-		sorting[1] = CoreAttributesList::IdUp;
-	}
-	~AccountList() { }
-
-	Account* first() { return (Account*) CoreAttributesList::first(); }
-	Account* next() { return (Account*) CoreAttributesList::next(); }
-
-	inline void addAccount(Account* a);
-	inline Account* getAccount(const QString& id);
-
-	static bool isSupportedSortingCriteria(int sc);
-	
-	virtual int compareItemsLevel(Account* a1, Account* a2, int level);
-
-protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+	TransactionListIterator(const TransactionList& t) :
+		QPtrListIterator<Transaction>(t) {}
+	~TransactionListIterator() { }
 } ;
 
 /**
@@ -109,11 +92,12 @@ public:
 	}
 	virtual ~Account() { };
 
-	virtual const char* getType() { return "Account"; }
+	virtual const char* getType() const { return "Account"; }
 
-	Account* getParent() { return (Account*) parent; }
+	Account* getParent() const { return (Account*) parent; }
 
-	virtual AccountList getSubList() { return (AccountList&) sub; }
+	// Find better way to achive this.
+	virtual AccountList& getSubList() { return (AccountList&) sub; }
 
 	void setKotrusId(const QString& k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
@@ -128,13 +112,13 @@ public:
 
 	bool isGroup() const { return !sub.isEmpty(); }
 
-	double getBalance(int sc, time_t d);
-	double getVolume(int sc, const Interval& period);
+	double getBalance(int sc, time_t d) const;
+	double getVolume(int sc, const Interval& period) const;
 
 private:
 	Account() { };	// don't use this
 	QString kotrusId;
-	QList<Transaction> transactions;
+	TransactionList transactions;
 	AccountType acctType;
 } ;
 
@@ -145,11 +129,11 @@ AccountList::addAccount(Account* a)
 }
 
 Account*
-AccountList::getAccount(const QString& id)
+AccountList::getAccount(const QString& id) const
 {
-	for (Account* a = first(); a != 0; a = next())
-		if (a->getId() == id)
-			return a;
+	for (AccountListIterator ali(*this); *ali != 0; ++ali)
+		if ((*ali)->getId() == id)
+			return *ali;
 	return 0;
 }
 

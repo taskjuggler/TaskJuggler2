@@ -15,6 +15,7 @@
 #include <qfile.h>
 
 #include "Project.h"
+#include "Resource.h"
 #include "HTMLWeeklyCalendar.h"
 #include "ExpressionTree.h"
 #include "Utility.h"
@@ -117,11 +118,12 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 				s << "<td width=\"13.5%\" class=\"default\" "
 					"style=\"vertical-align:top\">";
 				bool first = TRUE;
-				for (Task* t = filteredTaskList.first(); t;
-					 t = filteredTaskList.next())
+				int no = 1;
+				for (TaskListIterator tli(filteredTaskList); *tli != 0;
+					 ++tli, ++no)
 				{
-					if (t->isActive(Task::Plan,
-									Interval(wd, sameTimeNextDay(wd))))
+					if ((*tli)->isActive(Task::Plan,
+										 Interval(wd, sameTimeNextDay(wd))))
 					{
 						if (first)
 						{
@@ -129,7 +131,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 								"style=\"font-size:150%\">" << endl;
 							first = FALSE;
 						}
-						generatePlanTask(t, 0, filteredTaskList.at() + 1);
+						generatePlanTask(*tli, 0, no);
 					}
 				}
 				if (!first)
@@ -159,11 +161,13 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 				s << "<td width=\"13.5%\" class=\"default\" "
 					"style=\"vertical-align:top\">";
 				bool first = TRUE;
-				for (Resource* r = filteredResourceList.first(); r;
-					 r = filteredResourceList.next())
+				int no = 1;
+				for (ResourceListIterator rli(filteredResourceList); 
+					 *rli != 0; ++rli, ++no) 
 				{
-					if (r->getLoad(Task::Plan,
-								   Interval(wd, sameTimeNextDay(wd))) > 0.0)
+					if ((*rli)->getLoad(Task::Plan,
+										Interval(wd, 
+												 sameTimeNextDay(wd))) > 0.0)
 					{
 						if (first)
 						{
@@ -171,8 +175,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 								"style=\"font-size:150%\">" << endl;
 							first = FALSE;
 						}
-						generatePlanResource(r, 0,
-											 filteredResourceList.at() + 1);
+						generatePlanResource(*rli, 0, no);
 					}
 				}
 				if (!first)

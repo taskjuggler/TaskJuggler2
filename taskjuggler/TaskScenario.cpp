@@ -10,6 +10,7 @@
  * $Id$
  */
 
+#include "Resource.h"
 #include "TaskScenario.h"
 #include "Task.h"
 #include "Project.h"

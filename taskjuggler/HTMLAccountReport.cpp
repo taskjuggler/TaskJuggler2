@@ -1,7 +1,7 @@
 /*
  * HTMLAccountReport.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -12,6 +12,8 @@
 
 #include <qfile.h>
 
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "HTMLAccountReport.h"
 #include "Project.h"
 #include "Account.h"
@@ -52,7 +54,7 @@ HTMLAccountReport::generate()
 		if (showActual)
 			generateActualAccount(a);
 	}
-	generateTotals("Subtotal Costs", "headersmall");
+	generateTotals(i18n("Subtotal Costs"), "headersmall");
 	planTotalsCosts = planTotals;
 	actualTotalsCosts = actualTotals;
 	planTotals.clear();
@@ -68,7 +70,7 @@ HTMLAccountReport::generate()
 		if (showActual)
 			generateActualAccount(a);
 	}
-	generateTotals("Subtotal Revenue", "headersmall");
+	generateTotals(i18n("Subtotal Revenue"), "headersmall");
 	planTotalsRevenue = planTotals;
 	actualTotalsRevenue = actualTotals;
 
@@ -89,7 +91,7 @@ HTMLAccountReport::generate()
 	{
 		*it = *rc - *tc;
 	}
-	generateTotals("Total", "default");
+	generateTotals(i18n("Total"), "default");
 		
 	reportHTMLFooter();
 
@@ -178,15 +180,25 @@ HTMLAccountReport::generateTableHeader()
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == KW("no"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
+		if (*it == KW("seqno"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">" 
+				<< i18n("Seq. No.") << "</td>";
+		else if (*it == KW("no"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("No.") << "</td>";
+		else if (*it == KW("index"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Index No.") << "</td>";
 		else if (*it == KW("id"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">ID</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("ID") << "</td>";
 		else if (*it == KW("name"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Name</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Name") << "</td>";
 		else if (*it == KW("total"))
 		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">Total";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Total");
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
@@ -199,8 +211,9 @@ HTMLAccountReport::generateTableHeader()
 			htmlMonthlyHeaderYears();
 		else
 		{
-			qWarning("Unknown Column '%s' for HTML Account Report\n",
-					(*it).latin1());
+			TJMH.errorMessage
+				(i18n("Unknown Column '%1' for HTML Account Report")
+				 .arg(*it));
 			return FALSE;
 		}
 	}
@@ -314,7 +327,7 @@ HTMLAccountReport::dailyAccountPlan(Account* a, const QString& style)
 		s << "<td class=\"headersmall\">";
 		if (!a)
 			s << "<b>";
-		s << "Plan";
+		s << i18n("Plan");
 		if (!a)
 			s << "</b>";
 		s << "</td>" << endl;
@@ -341,7 +354,7 @@ HTMLAccountReport::dailyAccountActual(Account* a, const QString& style)
 		s << "<td class=\"headersmall\">";
 		if (!a)
 			s << "<b>";
-		s << "Actual";
+		s << i18n("Actual");
 		if (!a)
 			s << "</b>";
 		s << "</td>" << endl;
@@ -372,7 +385,7 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 		s << "<td class=\"headersmall\">";
 		if (!a)
 			s << "<b>";
-		s << "Plan";
+		s << i18n("Plan");
 		if (!a)
 			s << "</b>";
 		s << "</td>" << endl;
@@ -402,7 +415,7 @@ HTMLAccountReport::weeklyAccountActual(Account* a, const QString& style)
 		s << "<td class=\"headersmall\">";
 		if (!a)
 			s << "<b>";
-		s << "Actual";
+		s << i18n("Actual");
 		if (!a)
 			s << "</b>";
 		s << "</td>" << endl;
@@ -435,7 +448,7 @@ HTMLAccountReport::monthlyAccountPlan(Account* a, const QString& style)
 		s << "<td class=\"headersmall\">";
 		if (!a)
 			s << "<b>";
-		s << "Plan";
+		s << i18n("Plan");
 		if (!a)
 			s << "</b>";
 		s << "</td>" << endl;
@@ -465,7 +478,7 @@ HTMLAccountReport::monthlyAccountActual(Account* a, const QString& style)
 		s << "<td class=\"headersmall\">";
 		if (!a)
 			s << "<b>";
-		s << "Actual";
+		s << i18n("Actual");
 		if (!a)
 			s << "</b>";
 		s << "</td>" << endl;

@@ -1,7 +1,7 @@
 /*
  * MacroTable.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -65,8 +65,8 @@ public:
 		macros.clear();
 		argStack.clear();
 	}
-	QString resolve(const QString& name);
-	QString expand(const QString& text);
+	QString resolve(const QString& name) const;
+	QString expand(const QString& text) const;
 	Macro* getMacro(const QString& name) const { return macros[name]; }
 
 	void setLocation(const QString& df, int dl)
@@ -76,7 +76,7 @@ public:
 	}
 
 private:
-	void warningMsg(const char* txt, ... );
+	void errorMessage(const char* txt, ... ) const;
 
 	/* We store a file name and a line number in case we need this for
 	 * error reports or warnings. */

@@ -1,7 +1,7 @@
 /*
  * Account.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -28,26 +28,25 @@ TransactionList::compareItems(QCollection::Item i1, QCollection::Item i2)
 }
 
 double
-Account::getVolume(int sc, const Interval& period)
+Account::getVolume(int sc, const Interval& period) const
 {
 	TaskList tl = project->getTaskList();
 
 	double volume = 0.0;
 	// Add plan credits for all tasks that should be credited to this account.
-	for (Task* t = tl.first(); t != 0; t = tl.next())
-		if (t->getAccount() == this)
-			volume += t->getCredits(sc, period, 0, FALSE);
+	for (TaskListIterator tli(tl); *tli != 0; ++tli)
+		if ((*tli)->getAccount() == this)
+			volume += (*tli)->getCredits(sc, period, 0, FALSE);
 	// Add all transactions that are registered within the period.
-	for (Transaction* t = transactions.first(); t != 0;
-		 t = transactions.next())
-		if (period.contains(t->getDate()))
-			volume += t->getAmount();
+	for (TransactionListIterator tli(transactions); *tli != 0; ++tli)
+		if (period.contains((*tli)->getDate()))
+			volume += (*tli)->getAmount();
 
 	return volume;
 }
 
 double
-Account::getBalance(int /*sc*/, time_t /* date */)
+Account::getBalance(int /*sc*/, time_t /* date */) const
 {
 	return 0.0;
 }

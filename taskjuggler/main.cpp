@@ -1,7 +1,7 @@
 /*
  * main.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -16,18 +16,21 @@
 #include <qapplication.h>
 #include <qglobal.h>
 
+#include "TjMessageHandler.h"
 #include "taskjuggler.h"
 #include "debug.h"
 #include "Project.h"
 #include "ProjectFile.h"
 #include "kotrus.h"
 
+TjMessageHandler TJMH(TRUE);
+
 void
 copyright()
 {
 	qWarning("TaskJuggler v%s - A Project Management Software\n"
-			 "Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de> and\n"
-			 "                         Klaas Freitag <freitag@suse.de>\n\n"
+			 "Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>\n"
+			 "and Klaas Freitag <freitag@suse.de>\n\n"
 			 "This program is free software; you can redistribute it and/or\n"
 			 "modify it under the terms of version 2 of the GNU General\n"
 			 "Public License as published by the Free Software Foundation.\n\n"

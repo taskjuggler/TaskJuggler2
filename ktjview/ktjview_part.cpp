@@ -16,6 +16,11 @@
 #include "ktjgantt.h"
 #include "ktvtaskcanvasview.h"
 
+#include "TjMessageHandler.h"
+
+/* Handler for TaskJuggler error messages. */
+TjMessageHandler TJMH(TRUE);
+
 typedef KParts::GenericFactory<KTjviewPart> KTjviewPartFactory;
 K_EXPORT_COMPONENT_FACTORY( libktjviewpart, KTjviewPartFactory );
 

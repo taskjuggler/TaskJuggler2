@@ -13,10 +13,14 @@
 #ifndef _TaskScenario_h_
 #define _TaskScenario_h_
 
-#include "ResourceList.h"
+#include <time.h>
+
+#include <qptrlist.h>
+
 #include "taskjuggler.h"
 
 class Task;
+class Resource;
 
 class TaskScenario
 {

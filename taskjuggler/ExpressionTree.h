@@ -1,7 +1,7 @@
 /*
  * ExpressionTree.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -75,7 +75,7 @@ public:
 		ca = c;
 		return expression->evalAsInt(this);
    	}
-	long resolve(const QString& symbol);
+	long resolve(const QString& symbol) const;
 
 	void registerSymbol(const QString& symbol, long value)
 	{
@@ -83,7 +83,7 @@ public:
 	}
 	void clearSymbolTable() { symbolTable.clear(); }
 
-	CoreAttributes* getCoreAttributes() { return ca; }
+	CoreAttributes* getCoreAttributes() const { return ca; }
 
 	static bool isFunction(const QString& name);
 

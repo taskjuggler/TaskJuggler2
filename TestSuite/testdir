@@ -19,8 +19,7 @@ function do_testing
   $TASKJUGGLER $TJARGS $f 2>> ../log
   if [ $? $op 0 ] ; then
     errors=$(( $errors + 1 ))
-    echo "Test $f failed!"
-    echo "Test $f failed!" >> ../log
+    echo "Test $f failed!" | tee -a ../log
   fi
   checkscript=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.sh/g`
   referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
@@ -29,8 +28,7 @@ function do_testing
     sh $checkscript 2>> ../log
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
-      echo "Test $f failed (check script)!"
-      echo "Test $f failed (check script)!" >> ../log
+      echo "Test $f failed (check script)!" | tee -a ../log
     fi
   fi
   if [ -f $referenceFile ] ; then
@@ -42,8 +40,7 @@ function do_testing
     cmp $exportFile $referenceFile 2>> ../log
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
-      echo "Test $f failed (Reference file differs)!"
-      echo "Test $f failed (Reference file differs)!" >> ../log
+      echo "Test $f failed (Reference file differs)!" | tee -a ../log
     else
       rm $exportFile
     fi

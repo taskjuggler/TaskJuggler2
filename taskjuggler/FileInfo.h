@@ -1,7 +1,7 @@
 /*
  * FileInfo.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -47,10 +47,10 @@ public:
 
 	bool readMacroCall();
 
-	const QString& getTaskPrefix() { return taskPrefix; }
+	const QString& getTaskPrefix() const { return taskPrefix; }
 
-	void fatalErrorVA(const char* msg, va_list ap);
-	void fatalError(const char* msg, ...);
+	void errorMessageVA(const char* msg, va_list ap);
+	void errorMessage(const char* msg, ...);
 
 private:
 	bool getDateFragment(QString& token, QChar& c);

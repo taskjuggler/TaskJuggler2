@@ -1,7 +1,7 @@
 /*
  * task.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -83,17 +83,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <qapplication.h>
+
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "debug.h"
 #include "Task.h"
+#include "Resource.h"
 #include "Project.h"
 #include "Allocation.h"
+#include "Booking.h"
 
 Task*
 TaskList::getTask(const QString& id)
 {
-	for (Task* t = first(); t != 0; t = next())
-		if (t->getId() == id)
-			return t;
+	for (TaskListIterator tli(*this); *tli != 0; ++tli)
+		if ((*tli)->getId() == id)
+			return *tli;
 
 	return 0;
 }
@@ -189,8 +195,14 @@ Task::addPrecedes(const QString& rid)
 	return TRUE;
 }
 
+bool
+Task::addShift(const Interval& i, Shift* s)
+{
+	return shifts.insert(new ShiftSelection(i, s));
+}
+
 void
-Task::fatalError(const char* msg, ...) const
+Task::errorMessage(const char* msg, ...) const
 {
 	va_list ap;
 	va_start(ap, msg);
@@ -198,7 +210,7 @@ Task::fatalError(const char* msg, ...) const
 	vsnprintf(buf, 1024, msg, ap);
 	va_end(ap);
 	
-	qWarning("%s:%d:%s\n", file.latin1(), line, buf);
+	TJMH.errorMessage(buf, file, line);
 }
 
 void
@@ -209,8 +221,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 		return;
 
 	if (DEBUGTS(15))
-		qWarning("Trying to schedule %s at %s",
-				 id.latin1(), time2tjp(date).latin1());
+		qDebug("Trying to schedule %s at %s",
+			   id.latin1(), time2tjp(date).latin1());
 
 	if (scheduling == Task::ASAP)
 	{
@@ -225,9 +237,9 @@ Task::schedule(time_t& date, time_t slotDuration)
 			workStarted = FALSE;
 			tentativeEnd = date + slotDuration - 1;
 			if (DEBUGTS(5))
-				qWarning("Scheduling of %s starts at %s (%s)",
-						 id.latin1(), time2tjp(lastSlot).latin1(),
-						 time2tjp(date).latin1());
+				qDebug("Scheduling of %s starts at %s (%s)",
+					   id.latin1(), time2tjp(lastSlot).latin1(),
+					   time2tjp(date).latin1());
 		}
 		/* Do not schedule anything if the time slot is not directly
 		 * following the time slot that was previously scheduled. */
@@ -248,9 +260,9 @@ Task::schedule(time_t& date, time_t slotDuration)
 			workStarted = FALSE;
 			tentativeStart = date;
 			if (DEBUGTS(5))
-				qWarning("Scheduling of ALAP task %s starts at %s (%s)",
-						 id.latin1(), time2tjp(lastSlot).latin1(),
-						 time2tjp(date).latin1());
+				qDebug("Scheduling of ALAP task %s starts at %s (%s)",
+					   id.latin1(), time2tjp(lastSlot).latin1(),
+					   time2tjp(date).latin1());
 		}
 		/* Do not schedule anything if the current time slot is not
 		 * directly preceeding the previously scheduled time slot. */
@@ -261,8 +273,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 	}
 
 	if (DEBUGTS(10))
-		qWarning("Scheduling %s at %s",
-				 id.latin1(), time2tjp(date).latin1());
+		qDebug("Scheduling %s at %s",
+			   id.latin1(), time2tjp(date).latin1());
 
 	if ((duration > 0.0) || (length > 0.0))
 	{
@@ -276,9 +288,9 @@ Task::schedule(time_t& date, time_t slotDuration)
 			doneLength += ((double) slotDuration) / ONEDAY;
 
 		if (DEBUGTS(10))
-			qWarning("Length: %f/%f   Duration: %f/%f",
-					 doneLength, length,
-					 doneDuration, duration);
+			qDebug("Length: %f/%f   Duration: %f/%f",
+				   doneLength, length,
+				   doneDuration, duration);
 		// Check whether we are done with this task.
 		if ((length > 0.0 && doneLength >= length * 0.999999) ||
 			(duration > 0.0 && doneDuration >= duration * 0.999999))
@@ -423,8 +435,8 @@ Task::propagateStart(bool safeMode)
 		return;
 
 	if (DEBUGTS(11))
-		qWarning("PS1: Setting start of %s to %s",
-				 id.latin1(), time2tjp(start).latin1());
+		qDebug("PS1: Setting start of %s to %s",
+			   id.latin1(), time2tjp(start).latin1());
 
 	/* If one end of a milestone is fixed, then the other end can be set as
 	 * well. */
@@ -437,33 +449,33 @@ Task::propagateStart(bool safeMode)
 
 	/* Set start date to all previous that have no start date yet, but are
 	 * ALAP task or have no duration. */
-	for (Task* t = previous.first(); t != 0; t = previous.next())
-		if (t->end == 0 && t->latestEnd() != 0 &&
-			(t->scheduling == ALAP || 
-			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0 &&
-			  !t->milestone)))
+	for (TaskListIterator tli(previous); *tli != 0; ++tli)
+		if ((*tli)->end == 0 && (*tli)->latestEnd() != 0 &&
+			((*tli)->scheduling == ALAP || 
+			 ((*tli)->effort == 0.0 && (*tli)->length == 0.0 && 
+			  (*tli)->duration == 0.0 && !(*tli)->milestone)))
 		{
-			t->end = t->latestEnd();
+			(*tli)->end = (*tli)->latestEnd();
 			if (DEBUGTS(11))
-				qWarning("PS2: Setting end of %s to %s",
-						 t->id.latin1(), time2tjp(t->end).latin1());
+				qDebug("PS2: Setting end of %s to %s",
+					   (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
 			/* Recursively propagate the end date */
-			t->propagateEnd(safeMode);
+			(*tli)->propagateEnd(safeMode);
 		}
 
 	/* Propagate start time to sub tasks which have only an implicit
 	 * dependancy on the parent task. Do not touch container tasks. */
-	for (Task* t = subFirst(); t != 0; t = subNext())
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
 	{
-		if (t->start == 0 && t->previous.isEmpty() &&
-			t->sub.isEmpty() && t->scheduling == ASAP)
+		if ((*tli)->start == 0 && (*tli)->previous.isEmpty() &&
+			(*tli)->sub.isEmpty() && (*tli)->scheduling == ASAP)
 		{
-			t->start = start;
+			(*tli)->start = start;
 			if (DEBUGTS(11))
-				qWarning("PS3: Setting start of %s to %s",
-						 t->id.latin1(), time2tjp(t->start).latin1());	 
+				qDebug("PS3: Setting start of %s to %s",
+					   (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());	 
 			/* Recursively propagate the start date */
-			t->propagateStart(safeMode);
+			(*tli)->propagateStart(safeMode);
 		}
 	}
 
@@ -478,8 +490,8 @@ Task::propagateEnd(bool safeMode)
 		return;
 
 	if (DEBUGTS(11))
-		qWarning("PE1: Setting end of %s to %s",
-				 id.latin1(), time2tjp(end).latin1());
+		qDebug("PE1: Setting end of %s to %s",
+			   id.latin1(), time2tjp(end).latin1());
 
 	/* If one end of a milestone is fixed, then the other end can be set as
 	 * well. */
@@ -492,31 +504,31 @@ Task::propagateEnd(bool safeMode)
 
 	/* Set start date to all followers that have no start date yet, but are
 	 * ASAP task or have no duration. */
-	for (Task* t = followers.first(); t != 0; t = followers.next())
-		if (t->start == 0 && t->earliestStart() != 0 && 
-			(t->scheduling == ASAP ||
-			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0 &&
-			  !t->milestone)))
+	for (TaskListIterator tli(followers); *tli != 0; ++tli)
+		if ((*tli)->start == 0 && (*tli)->earliestStart() != 0 && 
+			((*tli)->scheduling == ASAP ||
+			 ((*tli)->effort == 0.0 && (*tli)->length == 0.0 && 
+			  (*tli)->duration == 0.0 && !(*tli)->milestone)))
 		{
-			t->start = t->earliestStart();
+			(*tli)->start = (*tli)->earliestStart();
 			if (DEBUGTS(11))
-				qWarning("PE2: Setting start of %s to %s",
-						 t->id.latin1(), time2tjp(t->start).latin1());
+				qDebug("PE2: Setting start of %s to %s",
+					   (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
 			/* Recursively propagate the start date */
-			t->propagateStart(safeMode);
+			(*tli)->propagateStart(safeMode);
 		}
 	/* Propagate end time to sub tasks which have only an implicit
 	 * dependancy on the parent task. Do not touch container tasks. */
-	for (Task* t = subFirst(); t != 0; t = subNext())
-		if (t->end == 0 && t->followers.isEmpty() &&
-			t->sub.isEmpty() && t->scheduling == ALAP)
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
+		if ((*tli)->end == 0 && (*tli)->followers.isEmpty() &&
+			(*tli)->sub.isEmpty() && (*tli)->scheduling == ALAP)
 		{
-			t->end = end;
+			(*tli)->end = end;
 			if (DEBUGTS(11))
-				qWarning("PE3: Setting end of %s to %s",
-						 t->id.latin1(), time2tjp(t->end).latin1());
+				qDebug("PE3: Setting end of %s to %s",
+					   (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
 			/* Recursively propagate the end date */
-			t->propagateEnd(safeMode);
+			(*tli)->propagateEnd(safeMode);
 		}
 
 	if (safeMode && parent)
@@ -543,13 +555,13 @@ Task::setRunaway()
 }
 
 bool
-Task::isRunaway()
+Task::isRunaway() const
 {
 	/* If a container task has runaway sub tasts, it is very likely that they
 	 * are the culprits. So we don't report such a container task as runaway.
 	 */
-	for (Task* t = subFirst(); t; t = subNext())
-		if (t->isRunaway())
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
+		if ((*tli)->isRunaway())
 			return FALSE;
 	
 	return runAway;
@@ -570,7 +582,7 @@ Task::bookResources(time_t date, time_t slotDuration)
 				   time2tjp(date).latin1());
 		return FALSE;
 	}		
-		
+	
 	for (Allocation* a = allocations.first();
 		 a != 0 && (effort == 0.0 || doneEffort < effort);
 		 a = allocations.next())
@@ -761,16 +773,16 @@ Task::isCompleted(int sc, time_t date) const
 }
 
 time_t
-Task::earliestStart()
+Task::earliestStart() const
 {
 	time_t date = 0;
-	for (Task* t = depends.first(); t != 0; t = depends.next())
+	for (TaskListIterator tli(depends); *tli != 0; ++tli)
 	{
 		// All tasks this task depends on must have an end date set.
-		if (t->end == 0)
+		if ((*tli)->end == 0)
 			return 0;
-		if (t->end > date)
-			date = t->end;
+		if ((*tli)->end > date)
+			date = (*tli)->end;
 	}
 	if (date == 0)
 		return 0;
@@ -779,16 +791,16 @@ Task::earliestStart()
 }
 
 time_t
-Task::latestEnd()
+Task::latestEnd() const
 {
 	time_t date = 0;
-	for (Task* t = precedes.first(); t != 0; t = precedes.next())
+	for (TaskListIterator tli(precedes); *tli != 0; ++tli)
 	{
 		// All tasks this task preceeds must have a start date set.
-		if (t->start == 0)
+		if ((*tli)->start == 0)
 			return 0;
-		if (date == 0 || t->start < date)
-			date = t->start;
+		if (date == 0 || (*tli)->start < date)
+			date = (*tli)->start;
 	}
 	if (date == 0)
 		return 0;
@@ -811,11 +823,8 @@ Task::getLoad(int sc, const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
-	if (!sub.isEmpty())
-	{
-		for (Task* t = subFirst(); t != 0; t = subNext())
-			load += t->getLoad(sc, period, resource);
-	}
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
+		load += (*tli)->getLoad(sc, period, resource);
 
 	if (resource)
 		load += resource->getLoad(sc, period, this);
@@ -833,10 +842,10 @@ Task::getCredits(int sc, const Interval& period, Resource* resource,
 {
 	double credits = 0.0;
 
-	if (recursive && subFirst())
+	if (recursive && !sub.isEmpty())
 	{
-		for (Task* t = subFirst(); t != 0; t = subNext())
-			credits += t->getCredits(sc, period, resource, recursive);
+		for (TaskListIterator tli(sub); *tli != 0; ++tli)
+			credits += (*tli)->getCredits(sc, period, resource, recursive);
 	}
 
 	if (resource)
@@ -869,13 +878,13 @@ Task::xRef(QDict<Task>& hash)
 		Task* t;
 		if ((t = hash.find(absId)) == 0)
 		{
-			fatalError(QString("Unknown dependency '") + absId + "'");
+			errorMessage(i18n("Unknown dependency '%1'").arg(absId));
 			error = TRUE;
 		}
 		else if (depends.find(t) != -1)
 		{
-			fatalError(QString("No need to specify dependency %1 multiple "
-							   "times.").arg(absId));
+			errorMessage(i18n("No need to specify dependency %1 multiple "
+							  "times.").arg(absId));
 			// Make it a warning only for the time beeing.
 			// error = TRUE; 
 		}
@@ -897,14 +906,15 @@ Task::xRef(QDict<Task>& hash)
 		Task* t;
 		if ((t = hash.find(absId)) == 0)
 		{
-			fatalError(QString("Unknown dependency '") + absId + "'");
+			errorMessage(i18n("Unknown dependency '%1'").arg(absId));
 			error = TRUE;
 		}
 		else if (precedes.find(t) != -1)
 		{
-			fatalError(QString("No need to specify dependency '") + absId +
-							   "' twice.");
-			error = TRUE;
+			errorMessage(i18n("No need to specify dependency '%1'")
+						 .arg(absId));
+			// Make it a warning only for the time beeing.
+			// error = TRUE; 
 		}
 		else
 		{
@@ -930,12 +940,12 @@ Task::implicitXRef()
 		return;
 
 	bool planDurationSpec = scenarios[0].duration > 1 ||
-	   	scenarios[0].length > 0 || scenarios[0].effort > 0;
+		scenarios[0].length > 0 || scenarios[0].effort > 0;
 	bool actualDurationSpec = scenarios[1].duration > 0 ||
-	   	scenarios[1].length > 0 || scenarios[1].effort > 0 || planDurationSpec;
+		scenarios[1].length > 0 || scenarios[1].effort > 0 || planDurationSpec;
 
 	if ((scenarios[0].start == 0 || scenarios[1].start == 0) &&
-	   	depends.isEmpty())
+		depends.isEmpty())
 		for (Task* tp = getParent(); tp; tp = tp->getParent())
 		{
 			if (tp->scenarios[0].start != 0 && scenarios[0].start == 0 &&
@@ -986,7 +996,7 @@ Task::loopDetector()
 	if (parent)
 		return FALSE;
 	if (DEBUGPF(2))
-		qWarning("Running loop detector for task %s", id.latin1());
+		qDebug("Running loop detector for task %s", id.latin1());
 	// Check ASAP tasks
 	if (loopDetection(LDIList(), FALSE, LoopDetectorInfo::fromParent))
 		return TRUE;
@@ -1001,12 +1011,12 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 					caller)
 {
 	if (DEBUGPF(10))
-		qWarning("%sloopDetection at %s (%s)",
-				 QString().fill(' ', list.count()).latin1(), id.latin1(),
-				 atEnd ? "End" : "Start");
-	
+		qDebug("%sloopDetection at %s (%s)",
+			   QString().fill(' ', list.count()).latin1(), id.latin1(),
+			   atEnd ? "End" : "Start");
+
 	LoopDetectorInfo thisTask(this, atEnd);
-	
+
 	/* If we find the current task (with same position) in the list, we have
 	 * detected a loop. */
 	LDIList::iterator it;
@@ -1020,14 +1030,14 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 				.arg((*it).getAtEnd() ? "End" : "Start");
 			/*
 			(*it).getTask()->fatalError("%s (%s) is part of loop",
-										(*it).getTask()->getId().latin1(),
-										(*it).getAtEnd() ?
-									   	"End" : "Start");
-										*/
+			(*it).getTask()->getId().latin1(),
+			(*it).getAtEnd() ?
+			"End" : "Start");
+			 */
 		}
 		loopChain += QString("%1 (%2)").arg(id)
 			.arg(atEnd ? "End" : "Start");
-		fatalError("Dependency loop detected: %s", loopChain.latin1());
+		errorMessage(i18n("Dependency loop detected: %1").arg(loopChain));
 		return TRUE;
 	}
 	list.append(thisTask);
@@ -1043,31 +1053,29 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 	 * relationship. */
 	if (!atEnd)
 	{
-		CoreAttributesList subCopy = sub;
 		if (caller == LoopDetectorInfo::fromPrev ||
 			caller == LoopDetectorInfo::fromParent)
 			/* If we were not called from a sub task we check all sub tasks.*/
-			for (Task* t = (Task*) subCopy.first(); t;
-				 t = (Task*) subCopy.next())
+			for (TaskListIterator tli(sub); *tli != 0; ++tli)
 			{
 				if (DEBUGPF(15))
-					qWarning("%sChecking sub task %s of %s",
-							 QString().fill(' ', list.count()).latin1(),
-							 t->getId().latin1(),
-							 id.latin1());
-				if (t->loopDetection(list, FALSE,
+					qDebug("%sChecking sub task %s of %s",
+						   QString().fill(' ', list.count()).latin1(),
+						   (*tli)->getId().latin1(),
+						   id.latin1());
+				if ((*tli)->loopDetection(list, FALSE,
 									 LoopDetectorInfo::fromParent))
 					return TRUE;
 			}
-		
+
 		if (scheduling == ASAP && sub.isEmpty())
 		{
 			/* Leaf task are followed in their scheduling direction. So we
 			 * move from the task start to the task end. */
 			if (DEBUGPF(15))
-				qWarning("%sChecking end of task %s",
-						 QString().fill(' ', list.count()).latin1(),
-						 id.latin1());
+				qDebug("%sChecking end of task %s",
+					   QString().fill(' ', list.count()).latin1(),
+					   id.latin1());
 			if (loopDetection(list, TRUE, LoopDetectorInfo::fromOtherEnd))
 				return TRUE;
 		}
@@ -1078,56 +1086,52 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 			if (parent)
 			{
 				if (DEBUGPF(15))
-					qWarning("%sChecking parent task of %s",
-							 QString().fill(' ', list.count()).latin1(),	
-							 id.latin1());		
+					qDebug("%sChecking parent task of %s",
+						   QString().fill(' ', list.count()).latin1(),	
+						   id.latin1());		
 				if (getParent()->loopDetection(list, FALSE,
 											   LoopDetectorInfo::fromSub))
 					return TRUE;
 			}
-			
+
 			/* Now check all previous tasks that had explicit precedes on this
 			 * task. */
-			CoreAttributesList previousCopy = previous;
-			for (Task* t = (Task*) previousCopy.first(); t;
-				 t = (Task*) previousCopy.next())
-				if (t->precedes.find(this) != -1)
+			for (TaskListIterator tli(previous); *tli != 0; ++tli)
+				if ((*tli)->precedes.find(this) != -1)
 				{
 					if (DEBUGPF(15))
-						qWarning("%sChecking previous %s of task %s",
-								 QString().fill(' ', list.count()).latin1(),
-								 t->getId().latin1(), id.latin1());
-					if(t->loopDetection(list, TRUE, LoopDetectorInfo::fromSucc))
+						qDebug("%sChecking previous %s of task %s",
+							   QString().fill(' ', list.count()).latin1(),
+							   (*tli)->getId().latin1(), id.latin1());
+					if((*tli)->loopDetection(list, TRUE, LoopDetectorInfo::fromSucc))
 						return TRUE;
 				}
 		}
 	}
 	else
 	{
-		CoreAttributesList subCopy = sub;
 		if (caller == LoopDetectorInfo::fromSucc ||
 			caller == LoopDetectorInfo::fromParent)
 			/* If we were not called from a sub task we check all sub tasks.*/
-			for (Task* t = (Task*) subCopy.first(); t;
-				 t = (Task*) subCopy.next())
+			for (TaskListIterator tli(sub); *tli != 0; ++tli)
 			{
 				if (DEBUGPF(15))
-					qWarning("%sChecking sub task %s of %s",
-							 QString().fill(' ', list.count()).latin1(),	
-							 t->getId().latin1(), id.latin1());
-				if (t->loopDetection(list, TRUE,
+					qDebug("%sChecking sub task %s of %s",
+						   QString().fill(' ', list.count()).latin1(),	
+						   (*tli)->getId().latin1(), id.latin1());
+				if ((*tli)->loopDetection(list, TRUE,
 									 LoopDetectorInfo::fromParent))
 					return TRUE;
 			}
-		
+
 		if (scheduling == ALAP && sub.isEmpty())
 		{
 			/* Leaf task are followed in their scheduling direction. So we
 			 * move from the task end to the task start. */
 			if (DEBUGPF(15))
-				qWarning("%sChecking start of task %s",
-						 QString().fill(' ', list.count()).latin1(),	
-						 id.latin1());
+				qDebug("%sChecking start of task %s",
+					   QString().fill(' ', list.count()).latin1(),	
+					   id.latin1());
 			if (loopDetection(list, FALSE, LoopDetectorInfo::fromOtherEnd))
 				return TRUE;
 		}
@@ -1138,9 +1142,9 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 			if (parent)
 			{
 				if (DEBUGPF(15))
-					qWarning("%sChecking parent task of %s",
-							 QString().fill(' ', list.count()).latin1(),	
-							 id.latin1());		
+					qDebug("%sChecking parent task of %s",
+						   QString().fill(' ', list.count()).latin1(),	
+						   id.latin1());		
 				if (getParent()->loopDetection(list, TRUE,
 											   LoopDetectorInfo::fromSub))
 					return TRUE;
@@ -1148,24 +1152,22 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 
 			/* Now check all following tasks that have explicit depends on this
 			 * task. */
-			CoreAttributesList followersCopy = followers;
-			for (Task* t = (Task*) followersCopy.first(); t;
-				 t = (Task*) followersCopy.next())
-				if (t->depends.find(this) != -1)
+			for (TaskListIterator tli(followers); *tli != 0; ++tli)
+				if ((*tli)->depends.find(this) != -1)
 				{
 					if (DEBUGPF(15))
-						qWarning("%sChecking follower %s of task %s",
-								 QString().fill(' ', list.count()).latin1(),	
-								 t->getId().latin1(), id.latin1());
-					if (t->loopDetection(list, FALSE,
-										 LoopDetectorInfo::fromPrev))
+						qDebug("%sChecking follower %s of task %s",
+							   QString().fill(' ', list.count()).latin1(),	
+							   (*tli)->getId().latin1(), id.latin1());
+					if ((*tli)->loopDetection(list, FALSE,
+											  LoopDetectorInfo::fromPrev))
 						return TRUE;
 				}
 		}
 	}
 
 	if (DEBUGPF(10))
-		qWarning("%sNo loops found in %s (%s)",
+		qDebug("%sNo loops found in %s (%s)",
 				 QString().fill(' ', list.count()).latin1(),	
 				 id.latin1(), atEnd ? "End" : "Start");
 	return FALSE;
@@ -1186,7 +1188,7 @@ Task::resolveId(QString relId)
 	{
 		if (t == 0)
 		{
-			fatalError(QString("Illegal relative ID '") + relId + "'");
+			errorMessage(i18n("Illegal relative ID '%1'").arg(relId));
 			return relId;
 		}
 		t = t->getParent();
@@ -1234,20 +1236,20 @@ Task::preScheduleOk()
 	{
 		if (scenarios[sc].effort > 0.0 && allocations.count() == 0)
 		{
-			fatalError(QString
-					   ("No allocations specified for effort based task %1 "
-						"in %2 scenario")
-					   .arg(1).arg(project->getScenarioName(sc)));
+			errorMessage(i18n
+						 ("No allocations specified for effort based task %1 "
+						  "in %2 scenario")
+						 .arg(1).arg(project->getScenarioName(sc)));
 			qDebug(QString().sprintf("%f\n", scenarios[sc].effort));
 			return FALSE;
 		}
 
 		if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
 		{
-			fatalError(QString
-				("Start and end buffers may not overlap in %2 scenario. "
-				 "So their sum must be smaller then 100%.")
-				.arg(project->getScenarioName(sc)));
+			errorMessage(i18n
+						 ("Start and end buffers may not overlap in %2 scenario. "
+						  "So their sum must be smaller then 100%.")
+						 .arg(project->getScenarioName(sc)));
 			return FALSE;
 		}
 
@@ -1261,30 +1263,30 @@ Task::preScheduleOk()
 			durationSpec++;
 		if (durationSpec > 1)
 		{
-			fatalError(QString("Task %1 may only have one duration "
-							   "criteria in %2 scenario.").arg(id)
-					   .arg(project->getScenarioName(sc)));
+			errorMessage(i18n("Task %1 may only have one duration "
+							  "criteria in %2 scenario.").arg(id)
+						 .arg(project->getScenarioName(sc)));
 			return FALSE;
 		}
 
 		/*
 		|: fixed start or end date
 		-: no fixed start or end date
-		M: Milestone
-		D: start or end dependency
-		x->: ASAP task with duration criteria
-		<-x: ALAP task with duration criteria
-		-->: ASAP task without duration criteria
-		<--: ALAP task without duration criteria
+M: Milestone
+D: start or end dependency
+x->: ASAP task with duration criteria
+<-x: ALAP task with duration criteria
+-->: ASAP task without duration criteria
+<--: ALAP task without duration criteria
 		 */
 		if (!sub.isEmpty())
 		{
 			if (durationSpec != 0)
 			{
-				fatalError(QString
-						   ("Container task %1 may not have a plan duration "
-							"criteria in %2 scenario").arg(id)
-						   .arg(project->getScenarioName(sc)));
+				errorMessage(i18n
+							 ("Container task %1 may not have a plan duration "
+							  "criteria in %2 scenario").arg(id)
+							 .arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 		}
@@ -1292,10 +1294,10 @@ Task::preScheduleOk()
 		{
 			if (durationSpec != 0)
 			{
-				fatalError(QString
-						   ("Milestone %1 may not have a plan duration "
-							"criteria in %2 scenario").arg(id)
-						   .arg(project->getScenarioName(sc)));
+				errorMessage(i18n
+							 ("Milestone %1 may not have a plan duration "
+							  "criteria in %2 scenario").arg(id)
+							 .arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 			/*
@@ -1309,9 +1311,9 @@ Task::preScheduleOk()
 			 */
 			if (!hasStartDependency(sc) && !hasEndDependency(sc))
 			{
-				fatalError(QString("Milestone %1 must have a start or end "
-								   "specification in %2 scenario.")
-						   .arg(id).arg(project->getScenarioName(sc)));
+				errorMessage(i18n("Milestone %1 must have a start or end "
+								  "specification in %2 scenario.")
+							 .arg(id).arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 			/* err2: different start and end
@@ -1323,11 +1325,11 @@ Task::preScheduleOk()
 			if (scenarios[sc].start != 0 && scenarios[sc].end != 0 && 
 				scenarios[sc].start != scenarios[sc].end + 1)
 			{
-				fatalError(QString
-						   ("Milestone %1 may not have both a start "
-							"and an end specification that do not "
-							"match in %2 scenario.").arg(id)
-						   .arg(project->getScenarioName(sc)));
+				errorMessage(i18n
+							 ("Milestone %1 may not have both a start "
+							  "and an end specification that do not "
+							  "match in %2 scenario.").arg(id)
+							 .arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 		}
@@ -1375,9 +1377,9 @@ Task::preScheduleOk()
 				  hasEndDependency(sc) && scenarios[sc].end == 0)) &&
 				durationSpec != 0)
 			{
-				fatalError(QString("Task %1 has a start, an end and a "
-								   "duration specification for %2 scenario.")
-						   .arg(id).arg(project->getScenarioName(sc)));
+				errorMessage(i18n("Task %1 has a start, an end and a "
+								  "duration specification for %2 scenario.")
+							 .arg(id).arg(project->getScenarioName(sc)));
 				return FALSE;
 			}	
 			/*
@@ -1392,10 +1394,10 @@ Task::preScheduleOk()
 			if ((hasStartDependency(sc) ^ hasEndDependency(sc)) &&
 				durationSpec == 0)
 			{
-				fatalError(QString
-						   ("Task %1 has only a start or end specification "
-							"but no plan duration for the %2 scenario.")
-						   .arg(id).arg(project->getScenarioName(sc)));
+				errorMessage(i18n
+							 ("Task %1 has only a start or end specification "
+							  "but no plan duration for the %2 scenario.")
+							 .arg(id).arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 			/*
@@ -1411,10 +1413,10 @@ Task::preScheduleOk()
 			 */
 			if (!hasStartDependency(sc) && scheduling == ASAP)
 			{
-				fatalError(QString
-						   ("Task %1 needs a start specification to be "
-							"scheduled in ASAP mode in the %2 scenario.")
-						   .arg(id).arg(project->getScenarioName(sc)));
+				errorMessage(i18n
+							 ("Task %1 needs a start specification to be "
+							  "scheduled in ASAP mode in the %2 scenario.")
+							 .arg(id).arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 			/*
@@ -1430,10 +1432,10 @@ Task::preScheduleOk()
 			 */
 			if (!hasEndDependency(sc) && scheduling == ALAP)
 			{
-				fatalError(QString
-						   ("Task %1 needs an end specification to be "
-							"scheduled in ALAP mode in the %2 scenario.")
-						   .arg(id).arg(project->getScenarioName(sc)));
+				errorMessage(i18n
+							 ("Task %1 needs an end specification to be "
+							  "scheduled in ALAP mode in the %2 scenario.")
+							 .arg(id).arg(project->getScenarioName(sc)));
 				return FALSE;
 			}
 		}
@@ -1445,7 +1447,7 @@ Task::preScheduleOk()
 	{
 		if (a->getLoad() < intervalLoad * 100.0)
 		{
-			qWarning("Warning: Load is smaller than scheduling granularity "
+			qDebug("Warning: Load is smaller than scheduling granularity "
 					 "(Task: %s, Resource: %s). Minimal load is %.2f.",
 					 id.latin1(), a->first()->getId().latin1(),
 					 intervalLoad + 0.005);
@@ -1457,61 +1459,61 @@ Task::preScheduleOk()
 }
 
 bool
-Task::scheduleOk(int& errors, QString scenario)
+Task::scheduleOk(int& errors, QString scenario) const
 {
 	/* It is of little use to report errors of container tasks, if any of
 	 * their sub tasks has errors. */
 	int currErrors = errors;
-	for (Task* t = subFirst(); t; t = subNext())
-		t->scheduleOk(errors, scenario);
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
+		(*tli)->scheduleOk(errors, scenario);
 	if (errors > currErrors)
 	{
 		if (DEBUGPS(2))
-			qWarning(QString("Scheduling errors in sub tasks of %1.")
-					 .arg(id));
+			qDebug(QString("Scheduling errors in sub tasks of %1.")
+				   .arg(id));
 		return FALSE;
 	}
-	
+
 	/* Runaway errors have already been reported. Since the data of this task
 	 * is very likely completely bogus, we just return FALSE. */
 	if (runAway)
 		return FALSE;
-	
+
 	/* If any of the dependant tasks is a runAway, we can safely surpress all
 	 * other error messages. */
-	for (Task* t = depends.first(); t; t = depends.next())
-		if (t->runAway)
+	for (TaskListIterator tli(depends); *tli != 0; ++tli)
+		if ((*tli)->runAway)
 			return FALSE;
-	for (Task* t = precedes.first(); t; t = precedes.next())
-		if (t->runAway)
+	for (TaskListIterator tli(precedes); *tli != 0; ++tli)
+		if ((*tli)->runAway)
 			return FALSE;
 
 	if (start == 0)
 	{
 		// Only report this for leaf tasks.
 		if (DEBUGPS(1) || sub.isEmpty())
-			fatalError(QString("Task '%1' has no %2 start time.")
-					   .arg(id).arg(scenario.lower()));
+			errorMessage(i18n("Task '%1' has no %2 start time.")
+						 .arg(id).arg(scenario.lower()));
 		errors++;
 		return FALSE;
 	}
 	if (start < minStart)
 	{
-		fatalError(QString("%1 start time of task %2 is too early\n"
-						   "Date is:  %3\n"
-						   "Limit is: %4")
-				   .arg(scenario).arg(id).arg(time2tjp(start))
-				   .arg(time2tjp(minStart)));
+		errorMessage(i18n("%1 start time of task %2 is too early\n"
+						  "Date is:  %3\n"
+						  "Limit is: %4")
+					 .arg(scenario).arg(id).arg(time2tjp(start))
+					 .arg(time2tjp(minStart)));
 		errors++;
 		return FALSE;
 	}
 	if (maxStart < start)
 	{
-		fatalError(QString("%1 start time of task %2 is too late\n"
-						   "Date is:  %3\n"
-						   "Limit is: %4")
-				   .arg(scenario).arg(id)
-				   .arg(time2tjp(start)).arg(time2tjp(maxStart)));
+		errorMessage(i18n("%1 start time of task %2 is too late\n"
+						  "Date is:  %3\n"
+						  "Limit is: %4")
+					 .arg(scenario).arg(id)
+					 .arg(time2tjp(start)).arg(time2tjp(maxStart)));
 		errors++;
 		return FALSE;
 	}
@@ -1519,54 +1521,54 @@ Task::scheduleOk(int& errors, QString scenario)
 	{
 		// Only report this for leaf tasks.
 		if (DEBUGPS(1) || sub.isEmpty())
-			fatalError(QString("Task '%1' has no %2 end time.")
-					   .arg(id).arg(scenario.lower()));
+			errorMessage(i18n("Task '%1' has no %2 end time.")
+						 .arg(id).arg(scenario.lower()));
 		return FALSE;
 	}
 	if (end + (milestone ? 1 : 0) < minEnd)
 	{
-		fatalError(QString("%1 end time of task %2 is too early\n"
-						   "Date is:  %3\n"
-						   "Limit is: %4")
-				   .arg(scenario).arg(id)
-				   .arg(time2tjp(end + (milestone ? 1 : 0)))
-				   .arg(time2tjp(minEnd)));
+		errorMessage(i18n("%1 end time of task %2 is too early\n"
+						  "Date is:  %3\n"
+						  "Limit is: %4")
+					 .arg(scenario).arg(id)
+					 .arg(time2tjp(end + (milestone ? 1 : 0)))
+					 .arg(time2tjp(minEnd)));
 		errors++;
 		return FALSE;
 	}
 	if (maxEnd < end + (milestone ? 1 : 0))
 	{
-		fatalError(QString("%1 end time of task %2 is too late\n"
-						   "Date is:  %2\n"
-						   "Limit is: %3")
-				   .arg(scenario).arg(id)
-				   .arg(time2tjp(end + (milestone ? 1 : 0)))
-				   .arg(time2tjp(maxEnd)));
+		errorMessage(i18n("%1 end time of task %2 is too late\n"
+						  "Date is:  %2\n"
+						  "Limit is: %3")
+					 .arg(scenario).arg(id)
+					 .arg(time2tjp(end + (milestone ? 1 : 0)))
+					 .arg(time2tjp(maxEnd)));
 		errors++;
 		return FALSE;
 	}
 	if (!sub.isEmpty())
 	{
 		// All sub task must fit into their parent task.
-		for (Task* t = subFirst(); t != 0; t = subNext())
+		for (TaskListIterator tli(sub); *tli != 0; ++tli)
 		{
-			if (start > t->start)
+			if (start > (*tli)->start)
 			{
-				if (!t->runAway)
+				if (!(*tli)->runAway)
 				{
-					fatalError(QString("Task %1 has ealier %2 start than "
-									   "parent")
-							   .arg(id).arg(scenario.lower()));
+					errorMessage(i18n("Task %1 has ealier %2 start than "
+									  "parent")
+								 .arg(id).arg(scenario.lower()));
 					errors++;
 				}
 				return FALSE;
 			}
-			if (end < t->end)
+			if (end < (*tli)->end)
 			{
-				if (!t->runAway)
+				if (!(*tli)->runAway)
 				{
-					fatalError(QString("Task %1 has later %2 end than parent")
-							   .arg(id).arg(scenario.lower()));
+					errorMessage(i18n("Task %1 has later %2 end than parent")
+								 .arg(id).arg(scenario.lower()));
 					errors++;
 				}
 				return FALSE;
@@ -1575,36 +1577,36 @@ Task::scheduleOk(int& errors, QString scenario)
 	}
 
 	// Check if all previous tasks end before start of this task.
-	for (Task* t = previous.first(); t != 0; t = previous.next())
-		if (t->end > start && !t->runAway)
+	for (TaskListIterator tli(previous); *tli != 0; ++tli)
+		if ((*tli)->end > start && !(*tli)->runAway)
 		{
-			fatalError(QString("Impossible dependency:\n"
-							   "Task %1 ends at %2 but needs to preceed\n"
-							   "task %3 which has a %4 start time of %5")
-					   .arg(t->id).arg(time2tjp(t->end).latin1())
-					   .arg(id).arg(scenario.lower()).arg(time2tjp(start)));
+			errorMessage(i18n("Impossible dependency:\n"
+							  "Task %1 ends at %2 but needs to preceed\n"
+							  "task %3 which has a %4 start time of %5")
+						 .arg((*tli)->id).arg(time2tjp((*tli)->end).latin1())
+						 .arg(id).arg(scenario.lower()).arg(time2tjp(start)));
 			errors++;
 			return FALSE;
 		}
 	// Check if all following task start after this tasks end.
-	for (Task* t = followers.first(); t != 0; t = followers.next())
-		if (end > t->start && !t->runAway)
+	for (TaskListIterator tli(followers); *tli != 0; ++tli)
+		if (end > (*tli)->start && !(*tli)->runAway)
 		{
-			fatalError(QString("Impossible dependency:\n"
-							   "Task %1 starts at %2 but needs to follow\n"
-							   "task %3 which has a %4 end time of %5")
-					   .arg(t->id).arg(time2tjp(t->start))
-					   .arg(id).arg(scenario.lower()).arg(time2tjp(end)));
+			errorMessage(i18n("Impossible dependency:\n"
+							  "Task %1 starts at %2 but needs to follow\n"
+							  "task %3 which has a %4 end time of %5")
+						 .arg((*tli)->id).arg(time2tjp((*tli)->start))
+						 .arg(id).arg(scenario.lower()).arg(time2tjp(end)));
 			errors++;
 			return FALSE;
 		}
 
 	if (!schedulingDone)
 	{
-		fatalError(QString("Task %1 has not been marked completed.\n"
-						   "It is scheduled to last from %2 to %3.\n"
-						   "This might be a bug in the TaskJuggler scheduler.")
-				   .arg(id).arg(time2tjp(start)).arg(time2tjp(end)));
+		errorMessage(i18n("Task %1 has not been marked completed.\n"
+						  "It is scheduled to last from %2 to %3.\n"
+						  "This might be a bug in the TaskJuggler scheduler.")
+					 .arg(id).arg(time2tjp(start)).arg(time2tjp(end)));
 		errors++;
 		return FALSE;
 	}
@@ -1613,7 +1615,7 @@ Task::scheduleOk(int& errors, QString scenario)
 }
 
 time_t
-Task::nextSlot(time_t slotDuration)
+Task::nextSlot(time_t slotDuration) const
 {
 	if (schedulingDone || !sub.isEmpty())
 		return 0;
@@ -1650,20 +1652,20 @@ Task::isActive(int sc, const Interval& period) const
 }
 
 void
-Task::getSubTaskList(TaskList& tl)
+Task::getSubTaskList(TaskList& tl) const
 {
-	for (Task* t = subFirst(); t != 0; t = subNext())
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
 	{
-		tl.append(t);
-		t->getSubTaskList(tl);
+		tl.append(*tli);
+		(*tli)->getSubTaskList(tl);
 	}
 }
 
 bool
-Task::isSubTask(Task* tsk)
+Task::isSubTask(Task* tsk) const
 {
-	for (Task* t = subFirst(); t != 0; t = subNext())
-		if (t == tsk || t->isSubTask(tsk))
+	for (TaskListIterator tli(sub); *tli != 0; ++tli)
+		if (*tli == tsk || (*tli)->isSubTask(tsk))
 			return TRUE;
 
 	return FALSE;

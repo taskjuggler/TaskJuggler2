@@ -1,7 +1,7 @@
 /*
  * Project.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -18,7 +18,11 @@
 #include <qdict.h>
 
 #include "debug.h"
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "Project.h"
+#include "Shift.h"
+#include "Resource.h"
 #include "Utility.h"
 #include "kotrus.h"
 
@@ -131,6 +135,18 @@ Project::getIdIndex(const QString& i) const
 	return idxStr;
 }
 
+void
+Project::addShift(Shift* s)
+{
+	shiftList.append(s);
+}
+
+void 
+Project::addResource(Resource* r)
+{
+	resourceList.append(r);
+}
+
 int
 Project::calcWorkingDays(const Interval& iv)
 {
@@ -160,24 +176,24 @@ Project::pass2()
 	srand((int) start);
 	
 	// Create hash to map task IDs to pointers.
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
 	{
-		idHash.insert(t->getId(), t);
+		idHash.insert((*tli)->getId(), *tli);
 	}
 	// Create cross links from dependency lists.
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
 	{
-		if (!t->xRef(idHash))
+		if (!(*tli)->xRef(idHash))
 			error = TRUE;
 	}
 	// Set dates according to implicit dependencies
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->implicitXRef();
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		(*tli)->implicitXRef();
 
 	// Find out what scenarios need to be scheduled.
 	// TODO: No multiple scenario support yet.
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		if (!hasExtraValues && t->hasExtraValues(Task::Actual))
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		if (!hasExtraValues && (*tli)->hasExtraValues(Task::Actual))
 			hasExtraValues = TRUE;
 
 	/* Now we can copy the missing values from the plan scenario to the	other
@@ -186,13 +202,13 @@ Project::pass2()
 		overlayScenario(sc);
 
 	// Now check that all tasks have sufficient data to be scheduled.
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		if (!t->preScheduleOk())
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		if (!(*tli)->preScheduleOk())
 			error = TRUE;
 
 	// Check all tasks for dependency loops.
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		if (t->loopDetector())
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		if ((*tli)->loopDetector())
 			return FALSE;
 
 	return !error;
@@ -204,12 +220,12 @@ Project::scheduleAllScenarios()
 	bool error = FALSE;
 
 	if (DEBUGPS(1))
-		qWarning("Scheduling plan scenario...");
+		qDebug("Scheduling plan scenario...");
 	prepareScenario(Task::Plan);
 	if (!schedule("Plan"))
 	{
 		if (DEBUGPS(2))
-			qWarning("Scheduling errors in plan scenario.");
+			qDebug("Scheduling errors in plan scenario.");
 		error = TRUE;
 	}
 	finishScenario(Task::Plan);
@@ -217,12 +233,12 @@ Project::scheduleAllScenarios()
 	if (hasExtraValues)
 	{
 		if (DEBUGPS(1))
-			qWarning("Scheduling actual scenario...");
+			qDebug("Scheduling actual scenario...");
 		prepareScenario(Task::Actual);
 		if (!schedule("Actual"))
 		{
 			if (DEBUGPS(2))
-				qWarning("Scheduling errors in actual scenario.");
+				qDebug("Scheduling errors in actual scenario.");
 			error = TRUE;
 		}
 		finishScenario(Task::Actual);
@@ -255,15 +271,15 @@ Project::prepareScenario(int sc)
 		t->prepareScenario(sc);
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->propagateInitialValues();
-	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->prepareScenario(sc);
+	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+		(*rli)->prepareScenario(sc);
 }
 
 void
 Project::finishScenario(int sc)
 {
-	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->finishScenario(sc);
+	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+		(*rli)->finishScenario(sc);
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->finishScenario(sc);
 }
@@ -291,7 +307,7 @@ Project::schedule(const QString& scenario)
 				if (slot == 0)
 					continue;
 				if (DEBUGPS(5))
-					qWarning("Task %s requests slot %s", t->getId().latin1(),
+					qDebug("Task %s requests slot %s", t->getId().latin1(),
 							 time2ISO(slot).latin1());
 				if (slot < start || slot > end)
 				{
@@ -311,13 +327,13 @@ Project::schedule(const QString& scenario)
 		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
 			if (t->isRunaway())
 				if (t->getScheduling() == Task::ASAP)
-					t->fatalError(QString(
-						"End of task %1 does not fit into the project time "
-						"frame.").arg(t->getId()));
+					t->errorMessage
+						(i18n("End of task %1 does not fit into the project "
+							  "time frame.").arg(t->getId()));
 				else
-					t->fatalError(QString(
-						"Start of task %1 does not fit into the project time "
-						"frame.").arg(t->getId()));
+					t->errorMessage
+						(i18n("Start of task %1 does not fit into the "
+							  "project time frame.").arg(t->getId()));
 
 	if (!checkSchedule(scenario))
 		error = TRUE;
@@ -337,8 +353,9 @@ Project::checkSchedule(const QString& scenario)
 			t->scheduleOk(errors, scenario);
 		if (errors >= 10)
 		{
-			qWarning(QString("Too many errors in %1 scenario. Giving up.")
-					 .arg(scenario.lower()));
+			TJMH.errorMessage
+				(i18n("Too many errors in %1 scenario. Giving up.")
+				 .arg(scenario.lower()));
 			break;
 		}
 	}
@@ -350,7 +367,7 @@ void
 Project::generateReports()
 {
 	if (DEBUGPS(1))
-		qWarning("Generating reports...");
+		qDebug("Generating reports...");
 
 	// Generate task reports
 	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
@@ -426,9 +443,9 @@ Project::readKotrus()
 {
 	if (!kotrus)
 		return TRUE;
-		
-	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
-		r->dbLoadBookings(r->getKotrusId(), 0);
+	
+	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)	
+		(*rli)->dbLoadBookings((*rli)->getKotrusId(), 0);
 
 	return TRUE;
 }

@@ -1,7 +1,7 @@
 /*
  * VacationList.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -30,11 +30,10 @@ VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)
 }
 
 bool
-VacationList::isVacation(time_t date)
+VacationList::isVacation(time_t date) const
 {
-	VacationInterval* i;
-	for (i = first(); i != 0 && date <= i->getEnd(); i = next())
-		if (i->contains(date))
+	for (VacationListIterator vli(*this); *vli != 0; ++vli)
+		if ((*vli)->contains(date))
 			return TRUE;
 
 	return FALSE;

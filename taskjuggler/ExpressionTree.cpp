@@ -1,7 +1,7 @@
 /*
  * ExpressionTree.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -14,6 +14,7 @@
 #include "CoreAttributes.h"
 #include "Project.h"
 #include "Task.h"
+#include "Resource.h"
 #include "Utility.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
@@ -185,7 +186,7 @@ ExpressionTree::ExpressionTree(Operation* op) : expression(op)
 }
 
 long
-ExpressionTree::resolve(const QString& symbol)
+ExpressionTree::resolve(const QString& symbol) const
 {
 	return symbolTable[symbol] != 0 ? *(symbolTable[symbol]) : 0;
 }

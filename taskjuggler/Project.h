@@ -1,7 +1,7 @@
 /*
  * Project.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -19,10 +19,10 @@
 #include <qlist.h>
 
 #include "ShiftList.h"
-#include "Task.h"
+#include "TaskList.h"
 #include "ResourceList.h"
 #include "VacationList.h"
-#include "Account.h"
+#include "AccountList.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
@@ -37,8 +37,14 @@
 class Kotrus;
 
 /**
- * The Project class is the root of the data tree of the application. In
- * principle an application could handle multiple projects, but this has never
+ * The Project class is the root of the data tree of the application.
+ * Applications can use multiple Project objects. This is e. g. needed when
+ * the application needs to preserve the state prior to a scheduler run. The
+ * scheduler calculates the data in place, adding the calculated values to the
+ * existing data structures. Since the original data cannot be identified
+ * anymore the applications needs to make a copy of the project before calling
+ * the scheduler. For that purpose Project and all related sub-classes provide
+ * a copy constructor.
  * been tested.
  *
  * @short The root class of all project related infromation.
@@ -51,18 +57,40 @@ public:
 	~Project();
 
 	/**
-	 * Generate cross references between all data structures and run a
-	 * consistency check. This function must be called after the project data
-	 * tree has been contructed. 
-	 * @return Only if all tests were successful TRUE is returned.
+	 * Projects have at least one ID, but can have multiple IDs. This usually
+	 * happens when projects are composed of serveral sub-projects. Each sub
+	 * projects brings its own unique ID. Each ID must be registered with the
+	 * project by calling addId(). The most recently added ID is also the
+	 * current ID. All subsequently added tasks are associtated with this
+	 * project ID. So, you have to add at least one ID before you add any
+	 * tasks.
 	 */
-	bool pass2();
-
+	bool addId(const QString& i);
 	/**
-	 * Schedule all tasks for all scenarios. @return In case any errors were
-	 * detected FALSE is returned.
+	 * Returns the current project ID. If the project ID list is empty
+	 * QString::null is returned.
 	 */
-	bool scheduleAllScenarios();
+	QString getCurrentId() const
+	{
+		return projectIDs.isEmpty() ? QString::null : projectIDs.last();
+	}
+	/**
+	 * Returns a list of all registered project IDs.
+	 */
+	QStringList getProjectIdList() const { return projectIDs; }
+	/**
+	 * Returns TRUE if the passed ID is a registered project ID.
+	 */
+	bool isValidId(const QString& i) const
+	{
+		return projectIDs.findIndex(i) != -1;
+	}
+	/**
+	 * Returns a string ID of the index of the passed ID in the project ID.
+	 * The first ID in the list is returned as "A", the second as "B". The
+	 * 27th is "AA" and so on.
+	 */
+	QString getIdIndex(const QString& i) const;
 	
 	/**
 	 * Returns the number of supported scenarios.
@@ -75,7 +103,7 @@ public:
 	const QString& getScenarioName(int sc);
 
 	/**
-	 * Set the name of the project. The project name is maily used for the
+	 * Set the name of the project. The project name is mainly used for the
 	 * reports.
 	 */
 	void setName(const QString& n) { name = n; }
@@ -133,30 +161,38 @@ public:
 	 */
 	time_t getEnd() const { return end; }
 
+	/**
+	 * Set the date that TaskJuggler uses as current date for all
+	 * computations. This mainly affects status reporting and the computation
+	 * of the completion degree of tasks. */
 	void setNow(time_t n) { now = n; }
+	/**
+	 * Get the date that TaskJuggler uses as current date.
+	 */
 	time_t getNow() const { return now; }
 
+	/**
+	 * Specifies whether TaskJuggler uses Sunday or Monday as first day of the
+	 * week. Besides the calendar views this mainly affects the numbering of
+	 * weeks. ISO 8601:1988 requires the week to start on Monday as most
+	 * European countries use, but other Countries like the US use Sunday as
+	 * first day of the week.
+	 */
 	void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
+	/**
+	 * Get the setting for the first day of the week.
+	 * @return TRUE of weeks should start on Monday.
+	 */
 	bool getWeekStartsMonday() const { return weekStartsMonday; }
 
-	bool addId(const QString& i);
-	QString getCurrentId() const
-	{
-		return projectIDs.isEmpty() ? QString() : projectIDs.last();
-	}
-	QStringList getProjectIdList() const { return projectIDs; }
-	bool isValidId(const QString& i) const
-	{
-		return projectIDs.findIndex(i) != -1;
-	}
-	QString getIdIndex(const QString& i) const;
-
-	void addVacation(const QString& n, time_t s, time_t e)
-	{
-		vacationList.add(n, s, e);
-	}
-	bool isVacation(time_t d) { return vacationList.isVacation(d); }
-
+	/**
+	 * Set the working hours of the specified weekday.
+	 * @param day The day of the week. Independently of the weekStartsMonday
+	 * setting TaskJuggler uses 0 for Sunday, 1 for Monday and so on.
+	 * @param l The list of working intervals. The interval use seconds since
+	 * midnight. As with all TaskJuggler intervals, the specified end value is
+	 * not part of the interval. The interval ends one seconds earlier.
+	 */
 	void setWorkingHours(int day, QPtrList<Interval>* l)
 	{
 		if (day < 0 || day > 6)
@@ -164,24 +200,59 @@ public:
 		delete workingHours[day];
 		workingHours[day] = l;
 	}
+	/**
+	 * Returns the list of working intervals for the specified weekday.
+	 * @param day Day of the week. 0 for Sunday, 1 for Monday and so on.
+	 */
 	QPtrList<Interval>* getWorkingHours(int day)
 	{
 		if (day < 0 || day > 6)
 			qFatal("day out of range");
 		return workingHours[day];
 	}
+	/**
+	 * If there is a working interval defined for this weekday and the
+	 * day is not registered as a vacation day then it is a workday. 
+	 */
 	bool isWorkingDay(time_t d)
 	{
-		/* If there is a working interval defined for this weekday and the
-		 * day is not registered as a vacation day then it is a workday. */
 		return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || isVacation(d));
 	}
+	/**
+	 * Returns the number of working days that overlap with the specified
+	 * interval.
+	 */
 	int calcWorkingDays(const Interval& iv);
-	
+
+	/**
+	 * Add a vacation interval to the vacation list. These global vacations
+	 * are meant for events like Christmas, Eastern or corporate hollidays.
+	 * A day that overlaps any of the intervals in the list is considered to
+	 * not be a working day. Vacation intervals may not overlap.
+	 * @param n Name of the vacation.
+	 * @param i The time interval the vacation lasts.
+	 */	 
+	void addVacation(const QString& n, const Interval& i)
+	{
+		vacationList.add(n, i);
+	}
+	/**
+	 * Returns TRUE if the passed moment falls within any of the vacation
+	 * intervals.
+	 */
+	bool isVacation(time_t d) { return vacationList.isVacation(d); }
+	/**
+	 * Returns the first interval in the vacation list. It also sets the
+	 * current list item to the first item.
+	 */
 	Interval* getVacationListFirst()
 	{
 		return vacationList.first(); 
 	}
+	/**
+	 * Returns the interval after the current one and sets the current to the
+	 * next in the list.
+	 */
 	Interval* getVacationListNext()
 	{
 		return vacationList.next();
@@ -197,10 +268,8 @@ public:
 	}
 	uint taskCount() const { return taskList.count(); }
 
-	void addResource(Resource* r)
-	{
-		resourceList.append(r);
-	}
+	void addResource(Resource* r);
+	
 	Resource* getResource(const QString& id)
 	{
 		return resourceList.getResource(id);
@@ -217,10 +286,8 @@ public:
 	}
 	uint accountCount() const { return accountList.count(); }
 
-	void addShift(Shift* s)
-	{
-		shiftList.append(s);
-	}
+	void addShift(Shift* s);
+	
 	Shift* getShift(const QString& id)
 	{
 		return shiftList.getShift(id);
@@ -263,8 +330,8 @@ public:
 
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
 
-   bool loadFromXML( const QString& file );
-   void parseDomElem( QDomElement& parentElem );
+	bool loadFromXML( const QString& file );
+	void parseDomElem( QDomElement& parentElem );
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -304,7 +371,7 @@ public:
 		return allowedFlags.contains(flag) > 0;
 	}
 
-	double convertToDailyLoad(long secs)
+	double convertToDailyLoad(long secs) const
 	{
 		return ((double) secs / (dailyWorkingHours * ONEHOUR));
 	}
@@ -325,6 +392,19 @@ public:
 	ResourceList getResourceList() { return resourceList; }
 	AccountList getAccountList() { return accountList; }
 
+	/**
+	 * Generate cross references between all data structures and run a
+	 * consistency check. This function must be called after the project data
+	 * tree has been contructed. 
+	 * @return Only if all tests were successful TRUE is returned.
+	 */
+	bool pass2();
+
+	/**
+	 * Schedule all tasks for all scenarios. @return In case any errors were
+	 * detected FALSE is returned.
+	 */
+	bool scheduleAllScenarios();
 	void generateReports();
 	bool needsActualDataForReports();
 
@@ -341,7 +421,7 @@ private:
 	time_t start;
 	/// The end date of the project
 	time_t end;
-	/// The current date used in reports.
+	/// The current date used in status calculations and reports.
 	time_t now;
 
 	/// True if week based calculations use Monday as first day of week.
@@ -354,7 +434,15 @@ private:
 	/// Some legal words to please the boss.
 	QString copyright;
 
+	/**
+	 * A format string in strftime(3) format that specifies the default time
+	 * format for all time values TaskJuggler generates.
+	 */
 	QString timeFormat;
+	/**
+	 * A format string in strftime(3) format that specifies the time format
+	 * for all daytime values (e. g. HH:MM).
+	 */
 	QString shortTimeFormat;
 
 	/**
@@ -363,7 +451,6 @@ private:
 	int priority;
 
 	/// Default values for Resource variables
-
 	double minEffort;
 	double maxEffort;
 	double rate;
@@ -385,7 +472,7 @@ private:
 
 	/* The list of standard working or opening hours. These values will be
 	 * inherited by the resources. */
-	QList<Interval>* workingHours[7];
+	QPtrList<Interval>* workingHours[7];
 	
 	/**
 	 * The granularity of the scheduler in seconds. No intervals
@@ -425,11 +512,11 @@ private:
 #endif
 #endif
    
-	QList<HTMLTaskReport> htmlTaskReports;
-	QList<HTMLResourceReport> htmlResourceReports;
-	QList<HTMLAccountReport> htmlAccountReports;
-	QList<HTMLWeeklyCalendar> htmlWeeklyCalendars;
-	QList<ExportReport> exportReports;
+	QPtrList<HTMLTaskReport> htmlTaskReports;
+	QPtrList<HTMLResourceReport> htmlResourceReports;
+	QPtrList<HTMLAccountReport> htmlAccountReports;
+	QPtrList<HTMLWeeklyCalendar> htmlWeeklyCalendars;
+	QPtrList<ExportReport> exportReports;
 } ;
 
 #endif

@@ -1,7 +1,7 @@
 /*
  * kotrus.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *                       Klaas Freitag <freitag@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <qdir.h>
 
 #include "ResourceList.h"
+#include "BookingList.h"
 #include "Task.h"
 #include "Project.h"
 #include "kotrus.h"

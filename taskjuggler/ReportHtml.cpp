@@ -1,7 +1,7 @@
 /*
  * Report.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -12,9 +12,14 @@
 
 #include <config.h>
 
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 #include "taskjuggler.h"
 #include "Project.h"
+#include "Resource.h"
 #include "Report.h"
+#include "Booking.h"
+#include "BookingList.h"
 #include "Utility.h"
 #include "MacroTable.h"
 
@@ -765,83 +770,117 @@ ReportHtml::generateTableHeader()
 		 ++it )
 	{
 		if (*it == KW("seqno"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Seq. No.</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">" 
+				<< i18n("Seq. No.") << "</td>";
 		else if (*it == KW("no"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("No.") << "</td>";
 		else if (*it == KW("index"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Index No.</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Index No.") << "</td>";
 		else if (*it == KW("id"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">ID</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("ID") << "</td>";
 		else if (*it == KW("name"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Name</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Name") << "</td>";
 		else if (*it == KW("start"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Start</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Start") << "</td>";
 		else if (*it == KW("end"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">End</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("End") << "</td>";
 		else if (*it == KW("minstart"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Start</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Min. Start") << "</td>";
 		else if (*it == KW("maxstart"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Start</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Max. Start") << "</td>";
 		else if (*it == KW("minend"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Min. End</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Min. End") << "</td>";
 		else if (*it == KW("maxend"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Max. End</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Max. End") << "</td>";
 		else if (*it == KW("startbufferend"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Start Buf. End</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Start Buf. End") << "</td>";
 		else if (*it == KW("endbufferstart"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">End Buf. Start</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("End Buf. Start") << "</td>";
 		else if (*it == KW("startbuffer"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Start Buf.</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Start Buf.") << "</td>";
 		else if (*it == KW("endbuffer"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">End Buf.</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("End Buf.") << "</td>";
 		else if (*it == KW("duration"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Duration</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Duration") << "</td>";
 		else if (*it == KW("effort"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Effort</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Effort") << "</td>";
 		else if (*it == KW("projectid"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Project ID</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Project ID") << "</td>";
 		else if (*it == KW("resources"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Resources</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Resources") << "</td>";
 		else if (*it == KW("responsible"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Responsible</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Responsible") << "</td>";
 		else if (*it == KW("responsibilities"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Responsibilities</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Responsibilities") << "</td>";
 		else if (*it == KW("depends"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Dependencies</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Dependencies") << "</td>";
 		else if (*it == KW("follows"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Followers</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Followers") << "</td>";
 		else if (*it == KW("schedule"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Schedule</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Schedule") << "</td>";
 		else if (*it == KW("mineffort"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Effort</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Min. Effort") << "</td>";
 		else if (*it == KW("maxeffort"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Effort</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Max. Effort") << "</td>";
 		else if (*it == KW("flags"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Flags</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Flags") << "</td>";
 		else if (*it == KW("completed"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Completed</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Completed") << "</td>";
 		else if (*it == KW("status"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Status</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Status") << "</td>";
 		else if (*it == KW("rate"))
 		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">Rate";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Rate");
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
 		}
 		else if (*it == KW("kotrusid"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Kotrus ID</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Kotrus ID") << "</td>";
 		else if (*it == KW("note"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Note</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Note") << "</td>";
 		else if (*it == KW("costs"))
 		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">Costs";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Costs");
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
 		}
 		else if (*it == KW("priority"))
-			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Priority") << "</td>";
 		else if (*it == KW("daily"))
 			htmlDailyHeaderMonths();
 		else if (*it == KW("weekly"))
@@ -850,8 +889,9 @@ ReportHtml::generateTableHeader()
 			htmlMonthlyHeaderYears();
 		else
 		{
-			qWarning("Unknown Column '%s' for HTML Task Report\n",
-					(*it).latin1());
+			TJMH.errorMessage
+				(i18n("Unknown Column '%1' for HTML Task Report")
+				 .arg(*it));
 			return FALSE;
 		}
 	}
@@ -978,8 +1018,10 @@ ReportHtml::htmlWeeklyHeaderMonths()
 {
 	static const char* mnames[] =
    	{
-	   	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+	   	I18N_NOOP("Jan"), I18N_NOOP("Feb"), I18N_NOOP("Mar"),
+		I18N_NOOP("Apr"), I18N_NOOP("May"), I18N_NOOP("Jun"),
+		I18N_NOOP("Jul"), I18N_NOOP("Aug"), I18N_NOOP("Sep"), 
+		I18N_NOOP("Oct"), I18N_NOOP("Nov"), I18N_NOOP("Dec")
    	};
 	// Generates the 1st header line for weekly calendar views.
 	if (!hidePlan && showActual)
@@ -1008,7 +1050,8 @@ ReportHtml::htmlWeeklyHeaderMonths()
 							  defFileName, defFileLine));
 		s << generateUrl(KW("monthheader"), 
 						 QString("%1 %2").
-						 arg(mnames[monthOfWeek(week, weekStartsMonday) - 1]).
+						 arg(i18n(mnames[monthOfWeek(week, weekStartsMonday) -
+								  1])).
 						 arg(yearOfWeek(week, weekStartsMonday)));
 		s << "</td>" << endl;
 		week = wi;
@@ -1021,8 +1064,10 @@ ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 	// Generates 2nd header line of monthly calendar view.
 	static const char* mnames[] =
    	{
-	   	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+	   	I18N_NOOP("Jan"), I18N_NOOP("Feb"), I18N_NOOP("Mar"),
+		I18N_NOOP("Apr"), I18N_NOOP("May"), I18N_NOOP("Jun"),
+		I18N_NOOP("Jul"), I18N_NOOP("Aug"), I18N_NOOP("Sep"), 
+		I18N_NOOP("Oct"), I18N_NOOP("Nov"), I18N_NOOP("Dec")
    	};
 
 	for (time_t month = beginOfMonth(start); month < end;
@@ -1043,7 +1088,7 @@ ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 		mt.addMacro(new Macro(KW("year"),
 							  QString().sprintf("%04d", year(moy)),
 							  defFileName, defFileLine));
-		s << generateUrl(KW("monthheader"), mnames[moy - 1]);
+		s << generateUrl(KW("monthheader"), i18n(mnames[moy - 1]));
 		s << "</span></td>";
 	}
 }

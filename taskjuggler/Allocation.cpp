@@ -1,7 +1,7 @@
 /*
  * Allocation.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -12,7 +12,7 @@
 
 #include "qdom.h"
 
-#include "ResourceList.h"
+#include "Resource.h"
 #include "Allocation.h"
 #include "ReportXML.h"
 

@@ -17,6 +17,9 @@
 
 #include "taskjuggler.h"
 #include "Project.h"
+#include "Resource.h"
+#include "Booking.h"
+#include "BookingList.h"
 #include "ExportReport.h"
 #include "ExpressionTree.h"
 
@@ -276,15 +279,14 @@ bool
 ExportReport::generateResourceList(TaskList& filteredTaskList,
 								   ResourceList& filteredResourceList)
 {
-	for (Resource* r = filteredResourceList.first(); r != 0;
-		 r = filteredResourceList.next())
+	for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
 	{
 		bool first = TRUE;
 		for (int sc = Task::Plan; sc <= Task::Actual; sc++)
 		{
 			if (sc == Task::Actual && !showActual)
 				continue;
-			BookingList bl = r->getJobs(sc);
+			BookingList bl = (*rli)->getJobs(sc);
 			bl.setAutoDelete(TRUE);
 			if (bl.isEmpty())
 				continue;
@@ -294,7 +296,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 				{
 					if (first)
 					{
-						s << "supplement resource " << r->getId() 
+						s << "supplement resource " << (*rli)->getId() 
 							<< " {" << endl;
 						first = FALSE;
 					}

@@ -1,7 +1,7 @@
 /*
  * Utility.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -13,9 +13,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Utility.h"
-
 #include <qdict.h>
+
+#include "TjMessageHandler.h"
+#include "tjlib-internal.h"
+#include "Utility.h"
 
 static QDict<const char> TZDict;
 static bool TZDictReady = FALSE;
@@ -182,7 +184,7 @@ dayOfMonth(time_t t)
 int
 weekOfYear(time_t t, bool beginOnMonday)
 {
-	/* The  ISO  8601:1988 week number of the current year as a decimal
+	/* The  ISO 8601:1988 week number of the current year as a decimal
 	 * number, range 1 to 53, where  week  1 is  the first week that has at
 	 * least 4 days in the current year, and with Monday as the first day
 	 * of the week. This is also compliant with DIN 1355. */
@@ -505,7 +507,7 @@ date2time(const QString& date)
 			strcpy(savedTZ, tz);
 		}
 		if ((tz = timezone2tz(tZone)) == 0)
-			UtilityError.sprintf("Illegal timezone %s", tZone);
+			UtilityError = i18n("Illegal timezone %1").arg(tZone);
 		else
 		{
 			if (setenv("TZ", tz, 1) < 0)
@@ -534,17 +536,17 @@ date2time(const QString& date)
 
 	if (y < 1970)
 	{
-		UtilityError = "Year must be larger than 1969";
+		UtilityError = i18n("Year must be larger than 1969");
 		return 0;
 	}
 	if (m < 1 || m > 12)
 	{
-		UtilityError = "Month must be between 1 and 12";
+		UtilityError = i18n("Month must be between 1 and 12");
 		return 0;
 	}
 	if (d < 1 || d > 31)
 	{
-		UtilityError = "Day must be between 1 and 31";
+		UtilityError = i18n("Day must be between 1 and 31");
 		return 0;
 	}
 

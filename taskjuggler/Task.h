@@ -1,7 +1,7 @@
 /*
  * task.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -26,12 +26,14 @@
 
 #include "taskjuggler.h"
 #include "debug.h"
+#include "TaskList.h"
 #include "TaskScenario.h"
 #include "ResourceList.h"
 #include "Utility.h"
 #include "CoreAttributes.h"
-#include "ShiftList.h"
+#include "ShiftSelectionList.h"
 #include "LoopDetectorInfo.h"
+#include "Interval.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -43,44 +45,11 @@
 class Project;
 class Resource;
 class Account;
+class Shift;
 class TaskList;
 class QDomElement;
 class QDomDocument;
-class Task;
 class Allocation;
-
-/**
- * @short The class stores a list of tasks.
- * @see Task 
- * @author Chris Schlaeger <cs@suse.de>
- */
-class TaskList : public virtual CoreAttributesList
-{
-public:
-	TaskList()
-   	{
-	   	sorting[0] = CoreAttributesList::TreeMode;
-		sorting[1] = CoreAttributesList::StartUp;
-		sorting[2] = CoreAttributesList::EndUp;
-	}
-	virtual ~TaskList() { }
-
-	Task* first() { return (Task*) CoreAttributesList::first(); }
-	Task* last()  { return (Task*) CoreAttributesList::last(); }
-	Task* prev()  { return (Task*) CoreAttributesList::prev(); }
-	Task* next()  { return (Task*) CoreAttributesList::next(); }
-
-	Task* getTask(const QString& id);
-
-	static bool isSupportedSortingCriteria(int sc);
-	
-	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
-
-protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-} ;
-
-typedef QPtrListIterator<TaskList> TaskListIterator;
 
 /**
  * This class stores all task related information and provides methods to
@@ -100,7 +69,7 @@ public:
 		 const QString& f, int l);
 	virtual ~Task() { }
 
-	virtual const char* getType() { return "Task"; }
+	virtual const char* getType() const { return "Task"; }
 
 	enum SchedulingInfo { ASAP, ALAP };
 
@@ -144,10 +113,7 @@ public:
 	bool addDepends(const QString& id);
 	bool addPrecedes(const QString& id);
 
-	bool addShift(const Interval& i, Shift* s)
-	{
-		return shifts.insert(new ShiftSelection(i, s));
-	}
+	bool addShift(const Interval& i, Shift* s);
 
 	void addAllocation(Allocation* a) { allocations.append(a); }
 	Allocation* firstAllocation() { return allocations.first(); }
@@ -271,16 +237,16 @@ public:
 	QString resolveId(QString relId);
 
 	bool preScheduleOk();
-	bool scheduleOk(int& errors, QString scenario);
+	bool scheduleOk(int& errors, QString scenario) const;
 	bool loopDetector();
 	void computeBuffers();
-	time_t nextSlot(time_t slotDuration);
+	time_t nextSlot(time_t slotDuration) const;
 	void schedule(time_t& reqStart, time_t duration);
 	void propagateStart(bool safeMode = TRUE);
 	void propagateEnd(bool safeMode = TRUE);
 	void propagateInitialValues();
 	void setRunaway();
-	bool isRunaway();
+	bool isRunaway() const;
 
 	/**
 	 * @returns TRUE if the work planned for a day has been completed.
@@ -291,11 +257,11 @@ public:
 	 * @param date specifies the day that should be checked.
 	 */
 
-	void getSubTaskList(TaskList& tl);
+	void getSubTaskList(TaskList& tl) const;
 
-	bool isSubTask(Task* t);
+	bool isSubTask(Task* t) const;
 
-	void fatalError(const char* msg, ...) const;
+	void errorMessage(const char* msg, ...) const;
 
 	QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
@@ -320,8 +286,8 @@ private:
 			bookedResources.inSort(r);
 	}
 	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
-	time_t earliestStart();
-	time_t latestEnd();
+	time_t earliestStart() const;
+	time_t latestEnd() const;
 
 	bool hasStartDependency(int sc);
 	bool hasEndDependency(int sc);
