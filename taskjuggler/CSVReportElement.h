@@ -110,6 +110,9 @@ public:
     virtual void genCellTotal(TableCellInfo* tli);
 
     virtual void genCellSummary(TableCellInfo* tli);
+        
+    void setFieldSeparator(const QString fs) { fieldSeparator = fs; }
+
 protected:
     CSVReportElement() { }
 
@@ -147,6 +150,8 @@ protected:
     void genCellResourceFunc(TableCellInfo* tci, bool daily,
                              time_t (*beginOfT)(time_t),
                              time_t (*sameTimeNextT)(time_t));
+
+    QString fieldSeparator;
 } ;
 
 #endif

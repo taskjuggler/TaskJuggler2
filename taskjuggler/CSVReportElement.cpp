@@ -37,6 +37,7 @@
 CSVReportElement::CSVReportElement(Report* r, const QString& df, int dl) :
    ReportElement(r, df, dl)
 {
+    fieldSeparator = ",";
 }
 
 void
@@ -56,7 +57,7 @@ CSVReportElement::generateTableHeader()
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
         if (!first)
-            s() << "\t";
+            s() << fieldSeparator;
         else
             first = FALSE;
         
@@ -97,7 +98,7 @@ CSVReportElement::generateLine(TableLineInfo* tli, int funcSel)
         if (columnFormat[(*it)->getName()])
         {
             if (!first)
-                s() << "\t";
+                s() << fieldSeparator;
             else
                 first = FALSE;
 
@@ -159,7 +160,7 @@ CSVReportElement::genCell(const QString& text, TableCellInfo* tci,
         QString cellURL = mt.expand(tci->tci->getCellURL());
         mt.popArguments();
     }
-    s() << cellText;
+    s() << "\"" << cellText << "\"";
 }
 
 void
@@ -281,7 +282,7 @@ CSVReportElement::generateTitle(TableCellInfo* tci, const QString& str)
     cellText = filter(cellText);
     mt.popArguments();
 
-    s() << cellText;
+    s() << "\"" << cellText << "\"";
 }
 
 void
@@ -292,28 +293,23 @@ CSVReportElement::generateSubTitle(TableCellInfo*, const QString&)
 void
 CSVReportElement::generateRightIndented(TableCellInfo* tci, const QString& str)
 {
-    int topIndent = 0, subIndent = 0, maxDepth = 0;
+    int topIndent = 0, maxDepth = 0;
     if (tci->tli->ca1->getType() == CA_Task)
     {
-        if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
-            subIndent = tci->tli->ca2 == 0 ? 8 : 5;
         if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-            topIndent = (tci->tli->ca2 != 0 ? 0 : 5) * maxDepthResourceList;
+            topIndent = (tci->tli->ca2 != 0 ? 0 : 1) * maxDepthResourceList;
         maxDepth = maxDepthTaskList;
     }
     else if (tci->tli->ca1->getType() == CA_Resource)
     {
-        if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-            subIndent = tci->tli->ca2 == 0 ? 8 : 5;
         if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
-            topIndent = (tci->tli->ca2 != 0 ? 0 : 5) * maxDepthTaskList;
+            topIndent = (tci->tli->ca2 != 0 ? 0 : 1) * maxDepthTaskList;
         maxDepth = maxDepthResourceList;
     }
 
-    tci->setRightPadding(2 + topIndent + 
-                         (maxDepth - 1 - tci->tli->ca1->treeLevel()) * 
-                         subIndent);
-    genCell(str, tci, FALSE);
+    genCell(str + QString().fill(' ', topIndent + (maxDepth - 1 -
+                                                   tci->tli->ca1->treeLevel())),
+            tci, FALSE);
 }
 
 void
@@ -655,7 +651,6 @@ void
 CSVReportElement::genCellName(TableCellInfo* tci)
 {
     int lPadding = 0;
-    int fontSize = tci->tli->ca2 == 0 ? 100 : 90; 
     if ((tci->tli->ca2 && (tci->tli->ca2->getType() == CA_Resource &&
           resourceSortCriteria[0] == CoreAttributesList::TreeMode)) ||
         (tci->tli->ca2 && tci->tli->ca2->getType() == CA_Task &&
@@ -685,11 +680,8 @@ CSVReportElement::genCellName(TableCellInfo* tci)
              accountSortCriteria[0] == CoreAttributesList::TreeMode))
         {
             lPadding += tci->tli->ca1->treeLevel();
-            tci->setFontFactor(fontSize + 5 * (maxDepthTaskList - 1 - 
-                                               tci->tli->ca1->treeLevel()));
         }
-        tci->setLeftPadding(2 + lPadding * 15);
-        text = tci->tli->ca1->getName(); 
+        text = QString().fill(' ', lPadding) + tci->tli->ca1->getName(); 
     }
     else
         text = tci->tli->specialName;

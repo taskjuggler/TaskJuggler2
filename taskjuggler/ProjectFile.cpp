@@ -3141,6 +3141,11 @@ ProjectFile::readCSVReport(const QString& reportType)
         report = new CSVTaskReport(proj, token, getFile(), getLine());
         tab = ((CSVTaskReport*) report)->getTable();
     }
+    else if (reportType == KW("csvresourcereport"))
+    {
+        report = new CSVTaskReport(proj, token, getFile(), getLine());
+        tab = ((CSVTaskReport*) report)->getTable();
+    }
     else
     {
         qFatal("readCSVReport: bad report type");
@@ -3347,6 +3352,15 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 report->setTimeStamp(FALSE);
             }
+            else if (token == KW("separator"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                tab->setFieldSeparator(token);
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
@@ -3362,6 +3376,8 @@ ProjectFile::readCSVReport(const QString& reportType)
     
     if (reportType == KW("csvtaskreport"))
         proj->addCSVTaskReport((CSVTaskReport*) report);
+    else if (reportType == KW("csvresourcereport"))
+        proj->addCSVResourceReport((CSVResourceReport*) report);
 
     return TRUE;
 }

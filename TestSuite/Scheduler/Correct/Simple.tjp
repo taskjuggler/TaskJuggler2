@@ -49,5 +49,6 @@ export "Simple-Export.tjp" {
 }
 
 csvtaskreport "Simple.csv" {
+	separator "|"
 }
 

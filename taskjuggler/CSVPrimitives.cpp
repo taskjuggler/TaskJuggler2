@@ -21,7 +21,15 @@
 QString
 CSVPrimitives::filter(const QString& s) const
 {
-    return s;
+    QString out;
+    for (uint i = 0; i < s.length(); i++)
+    {
+        if (s[i] == '"')
+            out += "\"";
+        out += s[i];
+    }
+
+    return out;
 }
 
 

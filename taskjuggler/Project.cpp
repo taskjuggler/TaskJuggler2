@@ -34,6 +34,7 @@
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLStatusReport.h"
 #include "CSVTaskReport.h"
+#include "CSVResourceReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
 #include "kotrus.h"
@@ -53,6 +54,9 @@ Project::Project()
     htmlResourceReports.setAutoDelete(TRUE);
     htmlAccountReports.setAutoDelete(TRUE);
     htmlWeeklyCalendars.setAutoDelete(TRUE);
+    htmlStatusReports.setAutoDelete(TRUE);
+    csvTaskReports.setAutoDelete(TRUE);
+    csvResourceReports.setAutoDelete(TRUE);
     exportReports.setAutoDelete(TRUE);
 
     new Scenario(this, "plan", "Plan", 0);
