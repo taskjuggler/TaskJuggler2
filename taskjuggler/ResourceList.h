@@ -170,9 +170,15 @@ public:
 
 	double getCurrentLoad(const Interval& i, Task* task = 0);
 
+	long getCurrentLoadSub(uint startIdx, uint endIdx, Task* task);
+
 	double getPlanLoad(const Interval& i, Task* task = 0);
 
+	long getPlanLoadSub(uint startIdx, uint endIdx, Task* task);
+
 	double getActualLoad(const Interval& i, Task* task = 0);
+
+	long getActualLoadSub(uint startIdx, uint endIdx, Task* task);
 
 	double getPlanCredits(const Interval& i, Task* task = 0);
 

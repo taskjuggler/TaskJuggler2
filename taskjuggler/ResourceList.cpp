@@ -403,14 +403,20 @@ Resource::getCurrentLoad(const Interval& period, Task* task)
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
 
+	return efficiency * project->convertToDailyLoad
+		(getCurrentLoadSub(sbIndex(iv.getStart()), sbIndex(iv.getEnd()), task) *
+		 project->getScheduleGranularity());
+}
+
+long
+Resource::getCurrentLoadSub(uint startIdx, uint endIdx, Task* task)
+{
 	long bookings = 0;
 
-	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
-		subLoad += r->getCurrentLoad(iv, task);
+		bookings += r->getCurrentLoadSub(startIdx, endIdx, task);
 
-	for (uint i = sbIndex(iv.getStart());
-		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+	for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
 	{
 		SbBooking* b = scoreboard[i];
 		if (b < (SbBooking*) 4)
@@ -419,8 +425,7 @@ Resource::getCurrentLoad(const Interval& period, Task* task)
 			bookings++;
 	}
 
-	return subLoad + efficiency * project->convertToDailyLoad
-		(bookings * project->getScheduleGranularity());
+	return bookings;
 }
 
 double
@@ -430,14 +435,20 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
 
+	return efficiency * project->convertToDailyLoad
+		(getPlanLoadSub(sbIndex(iv.getStart()), sbIndex(iv.getEnd()), task) *
+		 project->getScheduleGranularity());
+}
+
+long
+Resource::getPlanLoadSub(uint startIdx, uint endIdx, Task* task)
+{
 	long bookings = 0;
 
-	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
-		subLoad += r->getPlanLoad(iv, task);
+		bookings += r->getPlanLoadSub(startIdx, endIdx, task);
 
-	for (uint i = sbIndex(iv.getStart());
-		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+	for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
 	{
 		SbBooking* b = planScoreboard[i];
 		if (b < (SbBooking*) 4)
@@ -446,8 +457,7 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 			bookings++;
 	}
 
-	return subLoad + efficiency * project->convertToDailyLoad
-		(bookings * project->getScheduleGranularity());
+	return bookings;
 }
 
 double
@@ -457,15 +467,21 @@ Resource::getActualLoad(const Interval& period, Task* task)
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
 
+	return efficiency * project->convertToDailyLoad
+		(getActualLoadSub(sbIndex(iv.getStart()), sbIndex(iv.getEnd()),
+						  task) * project->getScheduleGranularity());
+}
+
+long
+Resource::getActualLoadSub(uint startIdx, uint endIdx, Task* task)
+{
 	long bookings = 0;
 
-	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
-		subLoad += r->getActualLoad(iv, task);
+		bookings += r->getActualLoadSub(startIdx, endIdx, task);
 
 	if (actualScoreboard)
-		for (uint i = sbIndex(iv.getStart());
-			 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+		for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
 		{
 			SbBooking* b = actualScoreboard[i];
 			if (b < (SbBooking*) 4)
@@ -474,8 +490,7 @@ Resource::getActualLoad(const Interval& period, Task* task)
 				bookings++;
 		}
 
-	return subLoad + efficiency * project->convertToDailyLoad
-		(bookings * project->getScheduleGranularity());
+	return bookings;
 }
 
 double
