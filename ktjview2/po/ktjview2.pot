@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-15 19:34+0200\n"
+"POT-Creation-Date: 2004-08-10 11:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,71 +16,71 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: filter.cpp:59 filterDialog.cpp:50
+#: filter.cpp:69 filterDialog.cpp:54
 msgid "contains"
 msgstr ""
 
-#: filter.cpp:62 filterDialog.cpp:50
+#: filter.cpp:72 filterDialog.cpp:54
 msgid "doesn't contain"
 msgstr ""
 
-#: filter.cpp:65 filterDialog.cpp:51
+#: filter.cpp:75 filterDialog.cpp:55
 msgid "equals"
 msgstr ""
 
-#: filter.cpp:68 filterDialog.cpp:51
+#: filter.cpp:78 filterDialog.cpp:55
 msgid "doesn't equal"
 msgstr ""
 
-#: filter.cpp:71
+#: filter.cpp:81
 msgid "matches regexp"
 msgstr ""
 
-#: filter.cpp:74 filterDialog.cpp:52
+#: filter.cpp:84 filterDialog.cpp:56
 msgid "doesn't match regexp"
 msgstr ""
 
-#: filter.cpp:77 filterDialog.cpp:53
+#: filter.cpp:87 filterDialog.cpp:57
 msgid "greater than"
 msgstr ""
 
-#: filter.cpp:80 filterDialog.cpp:53
+#: filter.cpp:90 filterDialog.cpp:57
 msgid "less than or equal"
 msgstr ""
 
-#: filter.cpp:83 filterDialog.cpp:54
+#: filter.cpp:93 filterDialog.cpp:58
 msgid "less than"
 msgstr ""
 
-#: filter.cpp:86 filterDialog.cpp:54
+#: filter.cpp:96 filterDialog.cpp:58
 msgid "greater than or equal"
 msgstr ""
 
-#: filterDialog.cpp:48
+#: filterDialog.cpp:51
 msgid "Filter"
 msgstr ""
 
-#: filterDialog.cpp:52
+#: filterDialog.cpp:56
 msgid "matches reqexp"
 msgstr ""
 
-#: filterDialog.cpp:103
+#: filterDialog.cpp:119
 msgid "new filter"
 msgstr ""
 
-#: filterDialog.cpp:117
+#: filterDialog.cpp:134
 msgid "Do you want to remove the filter '%1'?"
 msgstr ""
 
-#: filterDialog.cpp:131
+#: filterDialog.cpp:149
 msgid "Filter name"
 msgstr ""
 
-#: filterDialog.cpp:131
+#: filterDialog.cpp:149
 msgid "Enter the new filter name:"
 msgstr ""
 
-#: filterDialog.cpp:134
+#: filterDialog.cpp:154
 msgid "Filter with name '%1' already exists. Please try again."
 msgstr ""
 
@@ -92,131 +92,199 @@ msgstr ""
 msgid "All Columns"
 msgstr ""
 
-#: ktjview2.cpp:118
+#: ktjview2.cpp:117
 msgid "Filter..."
 msgstr ""
 
-#: ktjview2.cpp:123
+#: ktjview2.cpp:122
 msgid "&Filter for: All Tasks"
 msgstr ""
 
-#: ktjview2.cpp:125
+#: ktjview2.cpp:124
 msgid "All Tasks"
 msgstr ""
 
-#: ktjview2.cpp:125
+#: ktjview2.cpp:124
 msgid "Completed Tasks"
 msgstr ""
 
-#: ktjview2.cpp:125
+#: ktjview2.cpp:124
 msgid "Date Range..."
 msgstr ""
 
-#: ktjview2.cpp:126
+#: ktjview2.cpp:125
 msgid "Incomplete Tasks"
 msgstr ""
 
-#: ktjview2.cpp:126
+#: ktjview2.cpp:125
 msgid "Milestones"
 msgstr ""
 
-#: ktjview2.cpp:126
+#: ktjview2.cpp:125
 msgid "Summary Tasks"
 msgstr ""
 
-#: ktjview2.cpp:127
+#: ktjview2.cpp:126
 msgid "Using Resource..."
 msgstr ""
 
-#: ktjview2.cpp:133
+#: ktjview2.cpp:126 ktjview2.cpp:172
+msgid "Having Flag..."
+msgstr ""
+
+#: ktjview2.cpp:132
 msgid "Calendar mode"
 msgstr ""
 
-#: ktjview2.cpp:136
+#: ktjview2.cpp:135
 msgid "Zoom &in"
 msgstr ""
 
-#: ktjview2.cpp:138
+#: ktjview2.cpp:137
 msgid "Zoom &out"
 msgstr ""
 
-#: ktjview2.cpp:140
+#: ktjview2.cpp:139
 msgid "&Fit to page"
 msgstr ""
 
-#: ktjview2.cpp:142
+#: ktjview2.cpp:141
 msgid "Set &timeframe"
 msgstr ""
 
-#: ktjview2.cpp:145
+#: ktjview2.cpp:144
 msgid "Scale"
 msgstr ""
 
-#: ktjview2.cpp:147
+#: ktjview2.cpp:146
 msgid "Minute"
 msgstr ""
 
-#: ktjview2.cpp:147
+#: ktjview2.cpp:146
 msgid "Hour"
 msgstr ""
 
-#: ktjview2.cpp:147
+#: ktjview2.cpp:146
 msgid "Day"
 msgstr ""
 
-#: ktjview2.cpp:148
+#: ktjview2.cpp:147
 msgid "Week"
 msgstr ""
 
-#: ktjview2.cpp:148
+#: ktjview2.cpp:147
 msgid "Month"
 msgstr ""
 
-#: ktjview2.cpp:148
+#: ktjview2.cpp:147
 msgid "Auto"
 msgstr ""
 
+#: ktjview2.cpp:156
+msgid "&Collapse All"
+msgstr ""
+
+#: ktjview2.cpp:157
+msgid "Show Level &1"
+msgstr ""
+
 #: ktjview2.cpp:158
-msgid "Quick search"
+msgid "Show Level &2"
+msgstr ""
+
+#: ktjview2.cpp:159
+msgid "Show Level &3"
+msgstr ""
+
+#: ktjview2.cpp:160
+msgid "Show Level &4"
+msgstr ""
+
+#: ktjview2.cpp:161
+msgid "Show Level &5"
+msgstr ""
+
+#: ktjview2.cpp:162
+msgid "Show Level &6"
 msgstr ""
 
 #: ktjview2.cpp:163
+msgid "Show Level &7"
+msgstr ""
+
+#: ktjview2.cpp:164
+msgid "Show Level &8"
+msgstr ""
+
+#: ktjview2.cpp:165
+msgid "Show Level &9"
+msgstr ""
+
+#: ktjview2.cpp:166
+msgid "&Expand All"
+msgstr ""
+
+#: ktjview2.cpp:169
+msgid "&Filter for: All Resources"
+msgstr ""
+
+#: ktjview2.cpp:171
+msgid "All Resources"
+msgstr ""
+
+#: ktjview2.cpp:171
+msgid "Resources On Vacation..."
+msgstr ""
+
+#: ktjview2.cpp:171
+msgid "Resources On Shift..."
+msgstr ""
+
+#: ktjview2.cpp:172
+msgid "Allocated Resources..."
+msgstr ""
+
+#: ktjview2.cpp:180
+msgid "Quick search"
+msgstr ""
+
+#: ktjview2.cpp:185
 msgid "Query resource..."
 msgstr ""
 
-#: ktjview2.cpp:168
+#: ktjview2.cpp:190
 msgid "Info"
 msgstr ""
 
-#: ktjview2.cpp:172 ktjview2.cpp:309
+#: ktjview2.cpp:194 ktjview2.cpp:331
 msgid "Gantt"
 msgstr ""
 
-#: ktjview2.cpp:176 selectDialog.cpp:46
+#: ktjview2.cpp:198 selectDialog.cpp:46
 msgid "Resources"
 msgstr ""
 
-#: ktjview2.cpp:180 selectDialog.cpp:39
+#: ktjview2.cpp:202 selectDialog.cpp:39
 msgid "Tasks"
 msgstr ""
 
-#: ktjview2.cpp:261
+#: ktjview2.cpp:283
 msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr ""
 
-#: ktjview2.cpp:262
+#: ktjview2.cpp:284
 msgid "to open ..."
 msgstr ""
 
-#: ktjview2.cpp:389
+#: ktjview2.cpp:415 ktjview2.cpp:428
 msgid "&Filter for: %1"
 msgstr ""
 
-#: ktjview2view.cpp:115 ktjview2view.cpp:131 selectDialog.cpp:78
+#: ktjview2view.cpp:115 ktjview2view.cpp:131 selectDialog.cpp:96
 msgid "ID"
 msgstr ""
 
-#: ktjview2view.cpp:116 ktjview2view.cpp:132 selectDialog.cpp:79
+#: ktjview2view.cpp:116 ktjview2view.cpp:132 selectDialog.cpp:97
 msgid "Name"
 msgstr ""
 
@@ -427,7 +495,19 @@ msgstr ""
 msgid "Milestone"
 msgstr ""
 
-#: ktjview2view.cpp:829
+#: ktjview2view.cpp:795
+msgid "Task Link"
+msgstr ""
+
+#: ktjview2view.cpp:795
+msgid "From: "
+msgstr ""
+
+#: ktjview2view.cpp:807
+msgid "To: "
+msgstr ""
+
+#: ktjview2view.cpp:859 ktjview2view.cpp:958
 msgid "Date Range"
 msgstr ""
 
@@ -435,219 +515,283 @@ msgstr ""
 msgid "&Search:"
 msgstr ""
 
-#: rc.cpp:1 rc.cpp:22 rc.cpp:35
+#: rc.cpp:2 rc.cpp:41 rc.cpp:62
+#, no-c-format
 msgid "Form1"
 msgstr ""
 
-#: rc.cpp:2
+#: rc.cpp:4
+#, no-c-format
 msgid "Available filters"
 msgstr ""
 
-#: rc.cpp:4
+#: rc.cpp:7
+#, no-c-format
 msgid "Ctrl+T, Ctrl+T"
 msgstr ""
 
-#: rc.cpp:5
+#: rc.cpp:9
+#, no-c-format
 msgid "Add a new filter"
 msgstr ""
 
-#: rc.cpp:7
+#: rc.cpp:12
+#, no-c-format
 msgid "Remove the selected filter"
 msgstr ""
 
-#: rc.cpp:9
+#: rc.cpp:15
+#, no-c-format
 msgid "Rename the selected filter"
 msgstr ""
 
-#: rc.cpp:10
+#: rc.cpp:17
+#, no-c-format
 msgid "Filter criteria"
 msgstr ""
 
-#: rc.cpp:11
+#: rc.cpp:19
+#, no-c-format
 msgid "Matches all of the following"
 msgstr ""
 
-#: rc.cpp:12
+#: rc.cpp:21
+#, no-c-format
 msgid "&More"
 msgstr ""
 
-#: rc.cpp:13
+#: rc.cpp:23
+#, no-c-format
 msgid "Alt+M"
 msgstr ""
 
-#: rc.cpp:14
+#: rc.cpp:25
+#, no-c-format
 msgid "&Fewer"
 msgstr ""
 
-#: rc.cpp:15
+#: rc.cpp:27
+#, no-c-format
 msgid "Alt+F"
 msgstr ""
 
-#: rc.cpp:16
+#: rc.cpp:29
+#, no-c-format
 msgid "Cl&ear"
 msgstr ""
 
-#: rc.cpp:17
+#: rc.cpp:31
+#, no-c-format
 msgid "Alt+E"
 msgstr ""
 
-#: rc.cpp:18
+#: rc.cpp:33
+#, no-c-format
 msgid "Matches any of the following"
 msgstr ""
 
-#: rc.cpp:19
+#: rc.cpp:35
+#, no-c-format
 msgid "Property"
 msgstr ""
 
-#: rc.cpp:20
+#: rc.cpp:37
+#, no-c-format
 msgid "Expression"
 msgstr ""
 
-#: rc.cpp:21
+#: rc.cpp:39
+#, no-c-format
 msgid "Value"
 msgstr ""
 
-#: rc.cpp:23
+#: rc.cpp:43
+#, no-c-format
 msgid "Week&day background color:"
 msgstr ""
 
-#: rc.cpp:24
+#: rc.cpp:45
+#, no-c-format
 msgid "&Weekend background color:"
 msgstr ""
 
-#: rc.cpp:25
+#: rc.cpp:47
+#, no-c-format
 msgid "Task &group color:"
 msgstr ""
 
-#: rc.cpp:26
+#: rc.cpp:49
+#, no-c-format
 msgid "&Task color:"
 msgstr ""
 
-#: rc.cpp:27
+#: rc.cpp:51
+#, no-c-format
 msgid "&Milestone color:"
 msgstr ""
 
-#: rc.cpp:28
+#: rc.cpp:53
+#, no-c-format
 msgid "Use &alternate background for horizontal lines"
 msgstr ""
 
-#: rc.cpp:29
+#: rc.cpp:55
+#, no-c-format
 msgid "Alt+A"
 msgstr ""
 
-#: rc.cpp:36
+#: rc.cpp:64
+#, no-c-format
 msgid "&Check for:"
 msgstr ""
 
-#: rc.cpp:37
+#: rc.cpp:66
+#, no-c-format
 msgid "availability"
 msgstr ""
 
-#: rc.cpp:38
+#: rc.cpp:68
+#, no-c-format
 msgid "allocations"
 msgstr ""
 
-#: rc.cpp:39
+#: rc.cpp:70
+#, no-c-format
 msgid "load"
 msgstr ""
 
-#: rc.cpp:40
+#: rc.cpp:72
+#, no-c-format
 msgid "available workload"
 msgstr ""
 
-#: rc.cpp:41
+#: rc.cpp:74
+#, no-c-format
 msgid "current load"
 msgstr ""
 
-#: rc.cpp:42
+#: rc.cpp:76
+#, no-c-format
 msgid "credits"
 msgstr ""
 
-#: rc.cpp:43
+#: rc.cpp:78
+#, no-c-format
 msgid "vacations"
 msgstr ""
 
-#: rc.cpp:44
+#: rc.cpp:80
+#, no-c-format
 msgid "Result:"
 msgstr ""
 
-#: rc.cpp:46
+#: rc.cpp:83
+#, no-c-format
 msgid "Task:"
 msgstr ""
 
-#: rc.cpp:47
+#: rc.cpp:85
+#, no-c-format
 msgid "Date:"
 msgstr ""
 
-#: rc.cpp:48
+#: rc.cpp:87
+#, no-c-format
 msgid "Scenario:"
 msgstr ""
 
-#: rc.cpp:49 rc.cpp:52 rc.cpp:55 rc.cpp:57 rc.cpp:59
+#: rc.cpp:89 rc.cpp:95 rc.cpp:101 rc.cpp:105 rc.cpp:109
+#, no-c-format
 msgid "From:"
 msgstr ""
 
-#: rc.cpp:50 rc.cpp:51 rc.cpp:54 rc.cpp:56 rc.cpp:58
+#: rc.cpp:91 rc.cpp:93 rc.cpp:99 rc.cpp:103 rc.cpp:107
+#, no-c-format
 msgid "To:"
 msgstr ""
 
-#: rc.cpp:53 rc.cpp:60
+#: rc.cpp:97 rc.cpp:111
+#, no-c-format
 msgid "Account type:"
 msgstr ""
 
-#: rc.cpp:61
+#: rc.cpp:113
+#, no-c-format
 msgid "Vacation day:"
 msgstr ""
 
-#: rc.cpp:62
+#: rc.cpp:115
+#, no-c-format
 msgid "of &resource:"
 msgstr ""
 
-#: rc.cpp:63
+#: rc.cpp:117
+#, no-c-format
 msgid "Background color for week days."
 msgstr ""
 
-#: rc.cpp:64
+#: rc.cpp:119
+#, no-c-format
 msgid "Background color for weekend days."
 msgstr ""
 
-#: rc.cpp:65
+#: rc.cpp:121
+#, no-c-format
 msgid "Color for task items."
 msgstr ""
 
-#: rc.cpp:66
+#: rc.cpp:123
+#, no-c-format
 msgid "Color task group items."
 msgstr ""
 
-#: rc.cpp:67
+#: rc.cpp:125
+#, no-c-format
 msgid "Color for milestone items."
 msgstr ""
 
-#: rc.cpp:68
+#: rc.cpp:127
+#, no-c-format
 msgid "Show alternate horizontal lines."
 msgstr ""
 
-#: rc.cpp:69
+#: rc.cpp:129
+#, no-c-format
 msgid "&Edit"
 msgstr ""
 
-#: rc.cpp:70
+#: rc.cpp:131
+#, no-c-format
 msgid "&Gantt"
 msgstr ""
 
-#: rc.cpp:71
+#: rc.cpp:133
+#, no-c-format
+msgid "&Resources"
+msgstr ""
+
+#: rc.cpp:135
+#, no-c-format
+msgid "&Outline"
+msgstr ""
+
+#: rc.cpp:137
+#, no-c-format
 msgid "&Tasks"
 msgstr ""
 
-#: rc.cpp:72
+#: rc.cpp:139
+#, no-c-format
 msgid "Sidebar"
 msgstr ""
 
-#: rc.cpp:73
+#: rc.cpp:141
+#, no-c-format
 msgid "Gantt Toolbar"
 msgstr ""
 
-#: rc.cpp:74
+#: rc.cpp:143
+#, no-c-format
 msgid "Quick Search Toolbar"
 msgstr ""
 
@@ -667,20 +811,40 @@ msgstr ""
 msgid "Select resources:"
 msgstr ""
 
-#: selectDialog.cpp:75
+#: selectDialog.cpp:67
+msgid "Flags"
+msgstr ""
+
+#: selectDialog.cpp:70
+msgid "Select flags:"
+msgstr ""
+
+#: selectDialog.cpp:72
+msgid "Flag"
+msgstr ""
+
+#: selectDialog.cpp:93
 msgid "Select:"
 msgstr ""
 
-#: timedialog.cpp:26
+#: timedialog.cpp:25
 msgid "Setup Time Frame"
 msgstr ""
 
-#: timedialog.cpp:33
+#: timedialog.cpp:31
 msgid "Start Time: "
 msgstr ""
 
-#: timedialog.cpp:37
+#: timedialog.cpp:35
 msgid "End Time: "
+msgstr ""
+
+#: timedialog.cpp:40
+msgid "Select Date"
+msgstr ""
+
+#: timedialog.cpp:46
+msgid "Select date: "
 msgstr ""
 
 #: kdgantt/KDGanttSemiSizingControl.cpp:255
@@ -713,6 +877,6 @@ msgstr ""
 msgid "No item Found"
 msgstr ""
 
-#: kdgantt/KDGanttViewTaskLink.cpp:179 kdgantt/KDGanttViewTaskLink.cpp:180
+#: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
 msgid "Tasklink"
 msgstr ""
