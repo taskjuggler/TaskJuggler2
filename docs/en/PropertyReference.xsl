@@ -130,7 +130,7 @@
 
  <xsl:template match="optattr">
   <xsl:choose>
-   <xsl:when test=".=../../@name">
+   <xsl:when test=".=../../@id">
     <varname><xsl:value-of select="."/></varname>
    </xsl:when>
    <xsl:otherwise>
@@ -150,7 +150,7 @@
 
  <xsl:template match="also">
   <xsl:choose>
-   <xsl:when test=".=../../@name">
+   <xsl:when test=".=../../@id">
     <varname><xsl:value-of select="."/></varname>
    </xsl:when>
    <xsl:otherwise>
