@@ -22,6 +22,7 @@
 // local includes
 #include "resUsageView.h"
 #include "settings.h"
+#include "ktjUtils.h"
 
 // TJ includes
 #include "Utility.h"
@@ -108,7 +109,7 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     else
         p->fillRect( cRect, Settings::freeTimeColor() ); // free cell
 
-    if ( isVacationInterval( res, ival ) ) // vacations, sicktime
+    if ( KtjUtils::isVacationInterval( res, ival ) ) // vacations, sicktime
         p->fillRect( cRect, Settings::vacationTimeColor() );
 
     if ( m_proj && ( getWorkingDays( ival ) == 0 ) ) // holidays and weekends
@@ -379,40 +380,9 @@ QString ResUsageView::text( int row, int col ) const
     return text;
 }
 
-bool ResUsageView::isVacationInterval( const Resource * res, const Interval & ival ) const
-{
-    QPtrListIterator<Interval> vacIt = res->getVacationListIterator();
-
-    //kdDebug() << "Checking vacations of resource: " << res->getName() << endl;
-
-    Interval * vacation;
-    while ( ( vacation = vacIt.current() ) != 0 )
-    {
-        ++vacIt;
-        if ( ival.contains( *vacation ) )
-        {
-            //kdDebug() << "Found vacation from: " << vacation->getStart() << " to: " << vacation->getEnd() << endl;
-            return true;
-        }
-    }
-
-    return false;
-}
-
 void ResUsageView::setProject( Project * proj )
 {
     m_proj = proj;
-}
-
-int ResUsageView::getWorkingDays( const Interval & ival ) const
-{
-    int workingDays = 0;
-
-    for ( time_t s = midnight( ival.getStart() ); s < ival.getEnd(); s = sameTimeNextDay( s ) )
-        if ( m_proj->isWorkingDay( s ) )
-            workingDays++;
-
-    return workingDays;
 }
 
 void ResUsageView::find()
@@ -457,6 +427,17 @@ void ResUsageView::setDisplayData( int data )
 {
     m_display = static_cast<DisplayData>( data );
     repaintContents( true );
+}
+
+int ResUsageView::getWorkingDays( const Interval & ival ) const
+{
+    int workingDays = 0;
+
+    for ( time_t s = midnight( ival.getStart() ); s < ival.getEnd(); s = sameTimeNextDay( s ) )
+        if ( m_proj->isWorkingDay( s ) )
+            workingDays++;
+
+    return workingDays;
 }
 
 #include "resUsageView.moc"

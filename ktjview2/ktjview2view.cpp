@@ -68,6 +68,7 @@
 #include "selectDialog.h"
 #include "resUsageView.h"
 #include "editorView.h"
+#include "ktjUtils.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -444,15 +445,15 @@ void ktjview2View::parseProjectInfo()
     text += i18n( "Currency: %1<br>" ).arg( m_project->getCurrency() );
 
     // project start
-    m_ganttView->setHorizonStart( time_t2Q( m_project->getStart() ) );
-    text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project->getStart() ) );
+    m_ganttView->setHorizonStart( KtjUtils::time_t2Q( m_project->getStart() ) );
+    text += i18n( "Project start: %1<br>" ).arg( KtjUtils::time_t2QS( m_project->getStart() ) );
 
     // end date
-    m_ganttView->setHorizonEnd( time_t2Q( m_project->getEnd() ) );
-    text += i18n( "Project end: %1<br>" ).arg( time_t2QS( m_project->getEnd() ) );
+    m_ganttView->setHorizonEnd( KtjUtils::time_t2Q( m_project->getEnd() ) );
+    text += i18n( "Project end: %1<br>" ).arg( KtjUtils::time_t2QS( m_project->getEnd() ) );
 
     // TJ current date
-    text += i18n( "Report date: %1<br>" ).arg( time_t2QS( m_project->getNow() ) );
+    text += i18n( "Report date: %1<br>" ).arg( KtjUtils::time_t2QS( m_project->getNow() ) );
 
     text += "<hr>";
 
@@ -477,7 +478,8 @@ void ktjview2View::parseTasks( TaskListIterator it, int sc )
     {
         ++it;
 
-        TaskItem * item = new TaskItem( m_taskView, task->getId(), time_t2Q( task->getStart( sc ) ), time_t2Q( task->getEnd( sc ) ) );
+        TaskItem * item = new TaskItem( m_taskView, task->getId(), KtjUtils::time_t2Q( task->getStart( sc ) ),
+                                        KtjUtils::time_t2Q( task->getEnd( sc ) ) );
         item->setText( 1, task->getName() );
         item->setText( 2, KGlobal::locale()->formatDateTime( item->startDate() ) );
         item->setText( 3, KGlobal::locale()->formatDateTime( item->endDate() ) );
@@ -516,8 +518,8 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         //kdDebug() << "Parsing gantt item: " << id << endl;
 
         const QString taskName = task->getName();
-        QDateTime start = time_t2Q( task->getStart( sc ) );
-        QDateTime end = time_t2Q( task->getEnd( sc ) );
+        QDateTime start = KtjUtils::time_t2Q( task->getStart( sc ) );
+        QDateTime end = KtjUtils::time_t2Q( task->getEnd( sc ) );
         const QString duration = KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 1 );
         //int prio = task->getPriority();
 
@@ -869,19 +871,6 @@ void ktjview2View::loadSettings()
     // TODO setup other (future) config options
 }
 
-QDateTime ktjview2View::time_t2Q( time_t secs ) const
-{
-    QDateTime result;
-    result.setTime_t( secs );
-    return result;
-}
-
-QString ktjview2View::time_t2QS( time_t secs ) const
-{
-    return KGlobal::locale()->formatDateTime( time_t2Q( secs ) );
-}
-
-
 void ktjview2View::filter()
 {
     FilterDialog * dlg = new FilterDialog( FT_TASK, this, "filter_dlg" ); // FIXME
@@ -983,7 +972,7 @@ bool ktjview2View::filterForTasks( int id )
 
     if ( id == 2 )              // date range dialog
     {
-        TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
+        TimeDialog dlg( this, KtjUtils::time_t2Q( m_project->getStart() ), KtjUtils::time_t2Q( m_project->getEnd() ) );
         dlg.setCaption( i18n( "Date Range" ) );
         if ( dlg.exec() != QDialog::Accepted )
             return false;
@@ -1082,7 +1071,7 @@ bool ktjview2View::filterForResources( int id )
     }
     else if ( id == 2 || id == 3 || id == 4 )              // date range dialog
     {
-        TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
+        TimeDialog dlg( this, KtjUtils::time_t2Q( m_project->getStart() ), KtjUtils::time_t2Q( m_project->getEnd() ) );
         dlg.setCaption( i18n( "Date Range" ) );
         if ( dlg.exec() != QDialog::Accepted )
             return false;
@@ -1207,8 +1196,8 @@ void ktjview2View::parseResUsage()
 #endif
 
     m_resUsageView->setProject( m_project );
-    m_resUsageView->setStartDate( time_t2Q( m_project->getStart() ) );
-    m_resUsageView->setEndDate( time_t2Q( m_project->getEnd() ) );
+    m_resUsageView->setStartDate( KtjUtils::time_t2Q( m_project->getStart() ) );
+    m_resUsageView->setEndDate( KtjUtils::time_t2Q( m_project->getEnd() ) );
     m_resUsageView->assignResources( m_project->getResourceList() );
 
 #ifdef PROFILE

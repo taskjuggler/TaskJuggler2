@@ -209,11 +209,6 @@ private:
     QString formatDate( time_t date, QString format ) const;
 
     /**
-     * @return true if Resource @p res has some vacation during Interval @p ival
-     */
-    bool isVacationInterval( const Resource * res, const Interval & ival ) const;
-
-    /**
      * @return the number of working days falling within the interval @p ival
      */
     int getWorkingDays( const Interval & ival ) const;

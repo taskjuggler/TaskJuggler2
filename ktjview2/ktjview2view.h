@@ -361,20 +361,6 @@ private:
     void parseLinks( TaskListIterator it );
 
     /**
-     * Converts a time_t representation into QDateTime
-     *
-     * @param secs number of seconds since 1970-01-01, UTC
-     */
-    QDateTime time_t2Q( time_t secs ) const;
-
-    /**
-     * Converts a time_t representation to human readable, locale aware string
-     *
-     * @param secs number of seconds since 1970-01-01, UTC
-     */
-    QString time_t2QS( time_t secs ) const;
-
-    /**
      * Internal URL of the project, invalid if no project loaded
      */
     KURL m_projectURL;
