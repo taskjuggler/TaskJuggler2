@@ -1,5 +1,4 @@
 TASKJUGGLER=../../taskjuggler/taskjuggler
-TJX2GANTT=../../tjx2gantt/tjx2gantt
 TARGETNAME=AccountingSoftware
 
 EXTRA_DIST = *.html *.tjp *.tjx *.eps
@@ -21,7 +20,7 @@ $(TARGETNAME).tjx : $(TARGETNAME).tjp $(TASKJUGGLER)
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
 acso.eps : $(TARGETNAME).tjx
-	@if test "${TJX2GANT}" != "no" ; then \
+	@if test "$(TJX2GANTT)" != "no" ; then \
 	  $(TJX2GANTT) $(TARGETNAME).tjx ;\
 	fi
 
