@@ -13,9 +13,13 @@
 #ifndef _Token_h_
 #define _Token_h_
 
+#include <stdio.h>
+
+#define EOM (EOF - 1)
+
 typedef enum
 {
-	INVALID = 0, EndOfStatement, EndOfFile,
+	INVALID = 0, EndOfStatement, EndOfFile, MacroBody,
 	ID, RELATIVE_ID,
 	RBRACKET, LBRACKET, COMMA, MINUS,
 	DATE, INTEGER, REAL, STRING

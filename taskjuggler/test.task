@@ -2,17 +2,94 @@
 
 start 2001-09-28 # The start Date.
 
+macro version [SL 8.0]
+
+macro deadline [
+  task dl "SL 8.0 x86 deadline for ${1} (1800 CET)" {
+    depends !work
+    flags deadline
+  }
+]
+
+macro build [
+  task build "SL 8.0 x86 build ${1}" {
+    effort 2md
+    allocate ro { alternative kukuk }
+    depends !work
+  }
+]
+
+macro burn [
+  task done "Burn SL 8.0 ${1}" {
+    effort 1md
+    allocate mem
+    depends !build
+    flags media
+  }
+]
+
+macro preview [
+task pre${1} "SL 8.0 preview ${1}" {
+
+  task work "SL 8.0 x86 make bootable system" {
+    effort 15md
+    allocate yast
+    allocate dist
+    allocate packagers
+    depends ${2}
+  }
+
+  ${deadline "preview ${1}"}
+  ${build "preview ${1}"}
+  ${burn "preview ${1}"}
+}
+]
+
+macro beta [
+task beta${1} "${version} beta${1}" {
+
+  task work "SL 8.0 finish all coding work" {
+    effort 15md
+    allocate yast
+    allocate dist
+    allocate packagers
+    depends !!${2}.work
+  }
+
+  ${deadline "beta ${1}"}
+  ${build "beta ${1}"}
+
+  task ship "SL 8.0 x86 ship beta ${1} to external testers" {
+    effort 2md
+    allocate mem
+    depends !build
+  }
+
+  task test "SL 8.0 x86 test beta ${1}" {
+    effort 2md
+    allocate bg
+    depends !build
+  }
+}
+]
+
 flags deadline, media
 
 vacation "Xmas" 2002-12-21 - 2003-01-04
 
 htmlTaskReport "test.html" no, task, start, end, depends, resources
-htmlResourceReport "resource.html" 2001-09-28 2001-12-12
-
-include "resource.task"
+htmlResourceReport "resource.html" 2001-11-28 2002-03-06
 
 account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
 
+resource ro "Ruediger Oertel"
+resource kukuk "Thorsten Kukuk"
+resource cs "Chris Schlaeger"
+resource mem "Muhamed Memovic"
+resource bg "Berthold Gunreben"
+resource packagers "Package Maintainers"
+resource dist "Dist Team"
+resource yast "YaST2 Team"
 
 task sl80 "SuSE Linux 8.0" {
 
@@ -21,141 +98,29 @@ task sl80start "Start of 8.0 development" {
 }
 
 task yast "YaST2 development"{
-  length 56d
+  effort 56md
+  allocate yast
   depends !sl80start
 }
 
 task pack "SL 8.0 package updates" {
-  length 56d
+  effort 56md
+  allocate packagers
   depends !sl80start
 }
 
 task dist "SL 8.0 distribution modifications" {
-  length 56d
+  effort 56md
+  allocate dist
   depends !sl80start
 }
 
-
-task pre1 "SL 8.0 preview 1" {
-
-  task boot "SL 8.0 x86 make bootable system" {
-    length 5d
-    depends !!yast, !!pack, !!dist
-  }
-
-  task dl "SL 8.0 x86 deadline for preview 1 (1800 CET)" {
-    depends !boot
-    flags deadline
-  }
-
-  task build "SL 8.0 x86 build preview 1" {
-    length 2d
-    depends !boot
-  }
-
-  task done "SL 8.0 preview 1" {
-    depends !build
-    flags media
-  }
-}
-
-task pre2 "SL 8.0 preview2" {
-
-  task usable "SL 8.0 x86 make fairly usable system" {
-    length 5d
-    depends !!pre1.boot
-  }
-
-  task dl "SL 8.0 x86 deadline for preview 2 (1800 CET)" {
-    depends !usable
-    flags deadline
-  }
-
-  task build "SL 8.0 x86 build preview 2" {
-    length 2d
-    depends !usable
-  }
-
-  task done "SL 8.0 x86 preview 2" {
-    depends !build
-    flags media
-  }
-}
-
-task pre3 "SL 8.0 preview3" {
-
-  task usable "SL 8.0 x86 make usable system" {
-    length 5d
-    depends !!pre2.usable
-  }
-
-  task dl "SL 8.0 x86 deadline for preview 3 (1800 CET)" {
-    depends !usable
-    flags deadline
-  }
-
-  task build "SL 8.0 x86 build preview 3" {
-    length 2d
-    depends !usable
-  }
-
-  task done "SL 8.0 x86 preview 3" {
-    depends !build
-    flags media
-  }
-}
-
-
-task pre4 "SL 8.0 x86 preview 4" {
-
-  task work "SL 8.0 finish all major features" {
-    length 5d
-    depends !!pre3.usable
-  }
-
-  task dl "SL 8.0 x86 deadline for preview 4 (1800 CET)" {
-    depends !work
-    flags deadline
-  }
-
-  task build "SL 8.0 x86 build preview 4" {
-    length 2d
-    depends !work
-  }
-
-  task done "SL 8.0 x86 preview 4" {
-    depends !build
-    flags media
-  }
-}
-
-task beta1 "SL 8.0 beta1" {
-
-  task work "SL 8.0 finish all coding work" {
-    length 5d
-    depends !!pre4.work
-  }
-
-  task dl "SL 8.0 x86 deadline for beta 1 (1800 CET)" {
-    depends !work
-    flags deadline
-  }
-
-  task build "SL 8.0 x86 build beta 1" {
-    length 2d
-    depends !work
-  }
-
-  task ship "SL 8.0 x86 ship beta 1 to external testers" {
-    length 2d
-    depends !build
-    maxStart 2002-02-06
-  }
-
-  task test "SL 8.0 x86 test beta 1" {
-    length 2d
-    depends !build
-  }
-}
-
+${preview "1" "!!yast, !!pack, !!dist"}
+${preview "2" "!!pre1.work"}
+${preview "3" "!!pre2.work"}
+${preview "4" "!!pre3.work"}
+${beta "1" "pre4"}
+${beta "2" "beta1"}
+${beta "3" "beta2"}
+${beta "4" "beta2"}
 }

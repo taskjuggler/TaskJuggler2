@@ -1,0 +1,10 @@
+
+all: 
+	@echo "This Makefile is only for the CVS repository"
+	@echo "This will be deleted before making the distribution"
+	@echo ""
+	automake
+	autoconf
+	@echo "Now type ./configure to create the Makefiles."
+
+.SILENT:

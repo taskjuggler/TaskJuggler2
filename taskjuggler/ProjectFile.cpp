@@ -31,7 +31,8 @@
 	cantBeParent = TRUE; \
 }
 
-FileInfo::FileInfo(const QString& file_)
+FileInfo::FileInfo(ProjectFile* p, const QString& file_)
+	: pf(p)
 {
 	tokenTypeBuf = INVALID;
 	file = file_;
@@ -43,6 +44,8 @@ FileInfo::open()
 	if ((f = fopen(file, "r")) == 0)
 		return FALSE;
 
+	lineBuf = "";
+	macroLevel = 0;
 	currLine = 1;
 	return TRUE;
 }
@@ -54,6 +57,57 @@ FileInfo::close()
 		return FALSE;
 
 	return TRUE;
+}
+
+int
+FileInfo::getC(bool expandMacros)
+{
+ BEGIN:
+	int c;
+	if (ungetBuf.isEmpty())
+	{
+		c = getc(f);
+	}
+	else
+	{
+		c = ungetBuf.last();
+		ungetBuf.remove(ungetBuf.fromLast());
+		if (c == EOM)
+		{
+			macroLevel--;
+			pf->getMacros().popArguments();
+			goto BEGIN;
+		}
+	}
+	lineBuf += c;
+
+	if (expandMacros)
+	{
+		if (c == '$')
+		{
+			int d;
+			if ((d = getC()) == '{')
+			{
+				// remove $ from lineBuf;
+				lineBuf = lineBuf.left(lineBuf.length() - 1);
+				readMacroCall();
+				goto BEGIN;
+			}
+			else
+				ungetC(d);
+		}
+	}
+
+	return c;
+}
+
+void
+FileInfo::ungetC(int c)
+{
+	if (c == EOF - 1)
+		macroLevel++;
+	lineBuf = lineBuf.left(lineBuf.length() - 1);
+	ungetBuf.append(c);
 }
 
 TokenType
@@ -81,13 +135,15 @@ FileInfo::nextToken(QString& token)
 		case '\t':
 			break;
 		case '#':	// Comments start with '#' and reach towards end of line
-			while ((c = getC()) != '\n' && c != EOF)
+			while ((c = getC(FALSE)) != '\n' && c != EOF)
 				;
 			if (c == EOF)
 				return EndOfFile;
 			// break missing on purpose
 		case '\n':
-			currLine++;
+			// Increase line counter only when not replaying a macro.
+			if (macroLevel > 0)
+				currLine++;
 			lineBuf = "";
 			break;
 		default:
@@ -178,15 +234,32 @@ FileInfo::nextToken(QString& token)
 		{
 			// quoted string
 			while ((c = getC()) != EOF && c != '"')
-			{
 				token += c;
-			}
 			if (c == EOF)
 			{
 				fatalError("Non terminated string");
 				return EndOfFile;
 			}
 			return STRING;
+		}
+		else if (c == '[')
+		{
+			int nesting = 0;
+			while ((c = getC(FALSE)) != EOF && (c != ']' || nesting > 0))
+			{
+				if (c == '[')
+					nesting++;
+				else if (c == ']')
+					nesting--;
+
+				token += c;
+			}
+			if (c == EOF)
+			{
+				fatalError("Non terminated macro definition");
+				return EndOfFile;
+			}
+			return MacroBody;
 		}
 		else
 		{
@@ -206,6 +279,38 @@ FileInfo::nextToken(QString& token)
 			}
 		}
 	}
+}
+
+bool
+FileInfo::readMacroCall()
+{
+	QString id;
+	TokenType tt;
+	if ((tt = nextToken(id)) != ID && tt != INTEGER)
+	{
+		fatalError("Macro ID expected");
+		return FALSE;
+	}
+	QString token;
+	// Store all arguments in a newly created string list.
+	QStringList* sl = new QStringList;
+	while ((tt = nextToken(token)) == STRING)
+		sl->append(token);
+	if (tt != RBRACKET)
+	{
+		fatalError("'}' expected");
+		return FALSE;
+	}
+	QString macro = pf->getMacros().expand(id);
+
+	// push string list to global argument stack
+	pf->getMacros().pushArguments(sl);
+	// mark end of macro
+	ungetC(EOM);
+	// push expanded macro reverse into ungetC buffer.
+	for (int i = macro.length() - 1; i >= 0; --i)
+		ungetC(macro[i].latin1());
+	return TRUE;
 }
 
 void
@@ -236,7 +341,7 @@ ProjectFile::ProjectFile(Project* p)
 bool
 ProjectFile::open(const QString& file)
 {
-	FileInfo* fi = new FileInfo(file);
+	FileInfo* fi = new FileInfo(this, file);
 
 	if (!fi->open())
 	{
@@ -368,6 +473,28 @@ ProjectFile::parse()
 				}
 				if (!open(token))
 					return FALSE;
+				break;
+			}
+			else if (token == "macro")
+			{
+				QString id;
+				if (nextToken(id) != ID)
+				{
+					fatalError("Macro ID expected");
+					return FALSE;
+				}
+				if (nextToken(token) != MacroBody)
+				{
+					fatalError("Macro body expected");
+					return FALSE;
+				}
+				Macro* macro = new Macro(id, token);
+				if (!macros.addMacro(macro))
+				{
+					fatalError("Macro has been defined already");
+					delete macro;
+					return FALSE;
+				}
 				break;
 			}
 			else if (token == "flags")

@@ -102,9 +102,10 @@ Task::schedule(time_t reqStart)
 	}
 	else if (effort > 0)
 	{
-		/* The effort of the task has been specified. We have look how much
-		 * the resources can contribute over the following workings days
-		 * until we have reached the specified effort. */
+		/* The effort of the task has been specified. We have to look
+		 * how much the resources can contribute over the following
+		 * workings days until we have reached the specified
+		 * effort. */
 		if (allocations.count() == 0)
 		{
 			fatalError("No allocations specified for effort based task");

@@ -17,32 +17,27 @@
 #include <time.h>
 
 #include <qstring.h>
+#include <qvaluelist.h>
 
 #include "Project.h"
 #include "Token.h"
+#include "MacroTable.h"
 
+class ProjectFile;
 class Project;
 
 class FileInfo
 {
 public:
-	FileInfo(const QString& file);
+	FileInfo(ProjectFile* p, const QString& file);
 	~FileInfo() { }
 
 	bool open();
 	bool close();
 
-	int getC()
-	{
-		int c = getc(f);
-		lineBuf += c;
-		return c;
-	}
-	void ungetC(int c)
-	{
-		lineBuf = lineBuf.left(lineBuf.length() - 1);
-		ungetc(c, f);
-	}
+	int getC(bool expandMacros = TRUE);
+	void ungetC(int c);
+	void expandMarco(QString& c);
 
 	const QString& getFile() const { return file; }
 	int getLine() const { return currLine; }
@@ -50,13 +45,18 @@ public:
 	TokenType nextToken(QString& buf);
 	void returnToken(TokenType t, const QString& buf);
 
+	bool readMacroCall();
+
 	void fatalError(const QString& msg) const;
 
 private:
+	ProjectFile* pf;
 	QString file;
 	FILE* f;
 	int currLine;
+	int macroLevel;
 	QString lineBuf;
+	QValueList<int> ungetBuf;
 	TokenType tokenTypeBuf;
 	QString tokenBuf;
 };
@@ -77,6 +77,8 @@ public:
 
 	void fatalError(const QString& msg);
 
+	MacroTable& getMacros() { return macros; }
+
 private:
 	ProjectFile() {};	// don't use
 
@@ -93,6 +95,7 @@ private:
 	QString masterFile;
 	Project* proj;
 	QList<FileInfo> openFiles;
+	MacroTable macros;
 };
 
 #endif

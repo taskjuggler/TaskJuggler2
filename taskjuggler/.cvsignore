@@ -1,7 +1,8 @@
-.cvsignore
 Makefile
+Makefile.in
+taskjuggler
 .deps
 .libs
 *.task
-taskjuggler
+*.gif
 *.html

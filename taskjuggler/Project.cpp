@@ -208,8 +208,11 @@ Project::reportHTMLTaskList()
 				bool first = TRUE;
 				for (Resource* r = t->firstBookedResource(); r != 0;
 					 r = t->nextBookedResource())
+				{
 					fprintf(f, "%s%s,", first ? "" : ", ",
 							r->getName().latin1());
+					first = FALSE;
+				}
 				fprintf(f, "</font></td>\n");
 			}
 			else if (*it == "depends")

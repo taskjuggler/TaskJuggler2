@@ -1,4 +1,5 @@
 Makefile
+Makefile.in
 config.status
 configure
 libtool
