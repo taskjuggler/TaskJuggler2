@@ -131,7 +131,12 @@ private slots:
     /**
      * Apply preselected filters on the task list
      */
-    void slotFilterFor();
+    void slotFilterForTasks();
+
+    /**
+     * Apply preselected filters on the resource list
+     */
+    void slotFilterForResources();
 
     void slotSidebarInfo();
     void slotSidebarGantt();
@@ -176,6 +181,8 @@ private:
      */
     void enableTasksActions( bool enable );
 
+    void enableResourceActions( bool enable );
+
     ktjview2View *m_view;
 
     // actions
@@ -183,10 +190,15 @@ private:
     KSelectAction * m_scaleAction;
     KToggleAction * m_calendarAction;
 
-    // filter stuff
-    KSelectAction * m_filterForAction;
-    QStringList m_filterItems;
-    int m_activeFilter;
+    // task filter stuff
+    KSelectAction * m_filterForTasksAction;
+    QStringList m_taskFilterItems;
+    int m_activeTaskFilter;
+
+    // resource filter stuff
+    KSelectAction * m_filterForResourcesAction;
+    QStringList m_resourceFilterItems;
+    int m_activeResourceFilter;
 
     // search line
     QuickSearchWidget * m_quickSearch;

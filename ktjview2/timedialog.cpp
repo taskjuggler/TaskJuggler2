@@ -22,9 +22,7 @@
 
 
 TimeDialog::TimeDialog( QWidget *parentWidget, const QDateTime & start, const QDateTime & end )
-    : KDialogBase( parentWidget, "TimeDialog", true,
-                   i18n("Setup Time Frame"),
-                   Ok|Cancel, Ok )
+    : KDialogBase( parentWidget, "TimeDialog", true, i18n("Setup Time Frame"), Ok|Cancel, Ok )
 {
     QVBox *vb = makeVBoxMainWidget();
 
@@ -36,6 +34,17 @@ TimeDialog::TimeDialog( QWidget *parentWidget, const QDateTime & start, const QD
     hb = new QHBox( vb );
     (void) new QLabel( i18n("End Time: "), hb );
     m_dateEnd = new KDateTimeWidget( end, hb );
+}
+
+DateDialog::DateDialog( QWidget *parentWidget, const QDate & date )
+    : KDialogBase( parentWidget, "DateDialog", true, i18n("Select Date"), Ok|Cancel, Ok )
+{
+    QVBox *vb = makeVBoxMainWidget();
+
+    QHBox *hb = new QHBox( vb );
+
+    (void) new QLabel( i18n("Select date: "), hb );
+    m_date = new KDateWidget( date, hb );
 }
 
 #include "timedialog.moc"

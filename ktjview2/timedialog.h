@@ -15,14 +15,16 @@
 
 #include <kdialogbase.h>
 #include <kdatetimewidget.h>
+#include <kdatewidget.h>
+
+class QDateTime;
+class QDate;
 
 /**
  *
  * @short TaskJuggler Gantt Viewer time dialog
  * @author Klaas Freitag <freitag@suse.de>
  */
-class QDateTime;
-
 class TimeDialog : public KDialogBase
 {
     Q_OBJECT
@@ -46,6 +48,21 @@ public:
 private:
     KDateTimeWidget *m_dateStart;
     KDateTimeWidget *m_dateEnd;
+};
+
+class DateDialog: public KDialogBase
+{
+    Q_OBJECT
+public:
+    /**
+     * Default constructor
+     */
+    DateDialog( QWidget *parentWidget, const QDate & date );
+
+    QDate getDate() const
+        { return m_date->date(); }
+private:
+    KDateWidget *m_date;
 };
 
 #endif

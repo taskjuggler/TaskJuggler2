@@ -76,7 +76,8 @@ ktjview2::ktjview2()
     connect( m_view, SIGNAL(signalChangeCaption(const QString&)),
              this,   SLOT(setCaption(const QString&)) );
 
-    m_activeFilter = 0;
+    m_activeTaskFilter = 0;
+    m_activeResourceFilter = 0;
 
     slotSwitchView( ID_VIEW_INFO );
 }
@@ -118,14 +119,14 @@ void ktjview2::setupActions()
 #endif
 
     // Tasks menu
-    m_filterForAction = new KSelectAction( i18n( "&Filter for: All Tasks" ), "filter", KShortcut(),
-                                           this, SLOT( slotFilterFor() ), actionCollection(), "filter_for" );
-    m_filterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
-                  << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
-                  << i18n( "Using Resource..." );
+    m_filterForTasksAction = new KSelectAction( i18n( "&Filter for: All Tasks" ), "filter", KShortcut(),
+                                                this, SLOT( slotFilterForTasks() ), actionCollection(), "filter_for_tasks" );
+    m_taskFilterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
+                      << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
+                      << i18n( "Using Resource..." );
 
-    m_filterForAction->setItems( m_filterItems );
-    m_filterForAction->setCurrentItem( 0 ); // All Tasks by default
+    m_filterForTasksAction->setItems( m_taskFilterItems );
+    m_filterForTasksAction->setCurrentItem( 0 ); // All Tasks by default
 
     // Gantt menu
     m_calendarAction = new KToggleAction( i18n( "Calendar mode" ), "today", KShortcut(),
@@ -163,6 +164,16 @@ void ktjview2::setupActions()
     new KAction( i18n( "Show Level &8" ), 0, KShortcut(), this, SLOT( outline8() ), actionCollection(), "outline_8" );
     new KAction( i18n( "Show Level &9" ), 0, KShortcut(), this, SLOT( outline9() ), actionCollection(), "outline_9" );
     new KAction( i18n( "&Expand All" ), 0, KShortcut(), this, SLOT( expandAll() ), actionCollection(), "expand_all" );
+
+
+    m_filterForResourcesAction = new KSelectAction( i18n( "&Filter for: All Resources" ), "filter", KShortcut(),
+                                                    this, SLOT( slotFilterForResources() ), actionCollection(), "filter_for_resources" );
+    m_resourceFilterItems << i18n( "All Resources" ) << i18n( "Resources On Vacation..." ) << i18n( "Resources On Shift..." )
+                          << i18n( "Allocated Resources..." );
+
+    m_filterForResourcesAction->setItems( m_resourceFilterItems );
+    m_filterForResourcesAction->setCurrentItem( 0 ); // All Resources by default
+
 
     // Filter toolbar
     m_quickSearch = new QuickSearchWidget( this );
@@ -340,6 +351,7 @@ void ktjview2::slotSidebarInfo()
     toolBar( "ganttToolBar" )->hide();
     enableGanttActions( false );
     enableTasksActions( false );
+    enableResourceActions( false );
     m_view->activateView( ID_VIEW_INFO );
 }
 
@@ -349,6 +361,7 @@ void ktjview2::slotSidebarGantt()
     toolBar( "ganttToolBar" )->show();
     enableGanttActions( true );
     enableTasksActions( false );
+    enableResourceActions( false );
     m_view->activateView( ID_VIEW_GANTT );
 }
 
@@ -360,6 +373,7 @@ void ktjview2::slotSidebarResources()
     toolBar( "ganttToolBar" )->hide();
     enableGanttActions( false );
     enableTasksActions( false );
+    enableResourceActions( true );
     m_view->activateView( ID_VIEW_RESOURCES );
 }
 
@@ -371,6 +385,7 @@ void ktjview2::slotSidebarTasks()
     toolBar( "ganttToolBar" )->hide();
     enableGanttActions( false );
     enableTasksActions( true );
+    enableResourceActions( false );
     m_view->activateView( ID_VIEW_TASKS );
 }
 
@@ -391,32 +406,50 @@ void ktjview2::setCalendarMode()
     m_view->setCalendarMode( m_calendarAction->isChecked() );
 }
 
-void ktjview2::slotFilterFor()
+void ktjview2::slotFilterForTasks()
 {
-    int id = m_filterForAction->currentItem();
+    int id = m_filterForTasksAction->currentItem();
 
-    if ( m_view->filterFor( id ) )
+    if ( m_view->filterForTasks( id ) )
     {
-        m_filterForAction->setText( i18n( "&Filter for: %1" ).arg( m_filterItems[id] ) );
-        m_activeFilter = id;
+        m_filterForTasksAction->setText( i18n( "&Filter for: %1" ).arg( m_taskFilterItems[id] ) );
+        m_activeTaskFilter = id;
     }
     else
-        m_filterForAction->setCurrentItem( m_activeFilter );
+        m_filterForTasksAction->setCurrentItem( m_activeTaskFilter );
+}
+
+void ktjview2::slotFilterForResources()
+{
+    int id = m_filterForResourcesAction->currentItem();
+
+    if ( m_view->filterForResources( id ) )
+    {
+        m_filterForResourcesAction->setText( i18n( "&Filter for: %1" ).arg( m_resourceFilterItems[id] ) );
+        m_activeResourceFilter = id;
+    }
+    else
+        m_filterForResourcesAction->setCurrentItem( m_activeResourceFilter );
 }
 
 void ktjview2::enableGanttActions( bool enable )
 {
     m_scaleAction->setEnabled( enable );
     m_calendarAction->setEnabled( enable );
-    actionCollection()->action( "zoom_in" )->setEnabled( enable );
-    actionCollection()->action( "zoom_out" )->setEnabled( enable );
-    actionCollection()->action( "fit_to_page" )->setEnabled( enable );
-    actionCollection()->action( "timeframe" )->setEnabled( enable );
+    action( "zoom_in" )->setEnabled( enable );
+    action( "zoom_out" )->setEnabled( enable );
+    action( "fit_to_page" )->setEnabled( enable );
+    action( "timeframe" )->setEnabled( enable );
 }
 
 void ktjview2::enableTasksActions( bool enable )
 {
-    m_filterForAction->setEnabled( enable );
+    m_filterForTasksAction->setEnabled( enable );
+}
+
+void ktjview2::enableResourceActions( bool enable )
+{
+    m_filterForResourcesAction->setEnabled( enable );
 }
 
 void ktjview2::expandAll()

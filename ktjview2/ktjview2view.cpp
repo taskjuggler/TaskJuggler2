@@ -819,10 +819,11 @@ void ktjview2View::slotJumpToTask()
     }
 }
 
-bool ktjview2View::filterFor( int id )
+bool ktjview2View::filterForTasks( int id )
 {
     QDateTime start, end;
     QStringList resultList;
+
     if ( id == 2 )              // date range dialog
     {
         TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
@@ -840,7 +841,6 @@ bool ktjview2View::filterFor( int id )
         resultList = dlg.resultList();
     }
 
-
     QListViewItemIterator it( m_taskView );
 
     bool showIt;
@@ -850,6 +850,9 @@ bool ktjview2View::filterFor( int id )
         showIt = false;
 
         Task * task = m_project->getTask( static_cast<TaskItem *>( *it )->id() );
+
+        if ( !task )
+            return false;       // better bail out
 
         if ( id == 0 )          // All tasks
         {
@@ -882,6 +885,62 @@ bool ktjview2View::filterFor( int id )
             {
                 showIt = showIt || task->isDutyOf( 0, m_project->getResource( ( *it ) ) );
             }
+        }
+
+        ( *it )->setVisible( showIt );
+        ++it;
+    }
+
+    return true;
+}
+
+bool ktjview2View::filterForResources( int id )
+{
+    time_t start, end;
+    time_t vacation;
+
+    if ( id == 1 )              // on vacation
+    {
+        DateDialog dlg( this, QDate::currentDate() );
+        if ( dlg.exec() != QDialog::Accepted )
+            return false;
+        vacation = QDateTime( dlg.getDate() ).toTime_t();
+    }
+    else if ( id == 2 || id == 3 )              // date range dialog
+    {
+        TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
+        dlg.setCaption( i18n( "Date Range" ) );
+        if ( dlg.exec() != QDialog::Accepted )
+            return false;
+        start = dlg.getStartDate().toTime_t();
+        end = dlg.getEndDate().toTime_t();
+    }
+
+    bool showIt;
+
+    QListViewItemIterator it( m_resListView );
+
+    while ( it.current() )
+    {
+        showIt = false;
+
+        Resource * res = m_project->getResource( static_cast<ResourceItem *>( *it )->id() );
+
+        if ( id == 0 )          // all
+        {
+            showIt = true;
+        }
+        else if ( id == 1 )     // on vacation
+        {
+            showIt = ( res->hasVacationDay( vacation ) );
+        }
+        else if ( id == 2 )     // on shift
+        {
+            showIt = ( res->isOnShift( Interval( start, end ) ) );
+        }
+        else if ( id == 3 )     // allocated
+        {
+            showIt = ( res->isAllocated( 0, Interval( start, end ) ) ); // FIXME scenario
         }
 
         ( *it )->setVisible( showIt );

@@ -109,7 +109,14 @@ public:
      *
      * @return whether the filter was actually applied
      */
-    bool filterFor( int id );
+    bool filterForTasks( int id );
+
+    /**
+     * Apply preselected filter (@p id) on the resource list.
+     *
+     * @return whether the filter was actually applied
+     */
+    bool filterForResources( int id );
 
     /**
      * Raise the stacked view widget with @p id

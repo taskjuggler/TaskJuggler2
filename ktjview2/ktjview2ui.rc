@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="26">
+<kpartgui name="ktjview2" version="27">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -33,9 +33,10 @@
         <Separator/>
         <Action name="expand_all"/>
     </Menu>
+    <Action name="filter_for_resources"/>
   </Menu>
   <Menu name="tasks"><text>&amp;Tasks</text>
-    <Action name="filter_for"/>
+    <Action name="filter_for_tasks"/>
   </Menu>
 </MenuBar>
 

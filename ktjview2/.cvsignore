@@ -5,9 +5,10 @@ Makefile.in
 *.lo
 ktjview2
 ktjview2_client
-settings.cc
+settings.cpp
 settings.h
 gantt.cpp
 gantt.h
 filterWidget.cpp
 filterWidget.h
+*.kidl
