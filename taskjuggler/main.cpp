@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
 	char cwd[1024];
 	if (getcwd(cwd, 1023) == 0)
-		qFatal("main(): getcwd failed");
+		qFatal("main(): getcwd() failed");
 	if (debugLevel >= 1)
 		qWarning("Reading input files...");
 	for ( ; i < argc; i++)

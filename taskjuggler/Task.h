@@ -292,7 +292,7 @@ public:
 	 */
 	bool isCompleted(time_t date) const;
 	double getCompleteAtTime(time_t) const;
-	bool scheduleOk();
+	bool scheduleOk(int& errors);
 	bool preScheduleOk();
 	bool loopDetector();
 	bool loopDetection(LDIList list, bool atEnd, bool fromSub);

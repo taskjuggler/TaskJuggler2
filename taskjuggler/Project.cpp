@@ -371,8 +371,10 @@ Project::checkSchedule()
 	int errors = 0;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 	{
-		if (!t->scheduleOk())
-			errors++;
+		/* Only check top-level tasks, since they recursively check their sub
+		 * tasks. */
+		if (t->getParent() == 0)
+			t->scheduleOk(errors);
 		if (errors >= 10)
 			break;
 	}

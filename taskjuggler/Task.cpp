@@ -457,12 +457,13 @@ Task::scheduleContainer(bool safeMode)
 			nend = t->end;
 	}
 
-	if (start == 0)
+	if (start == 0 || (!depends.isEmpty() && start < nstart))
 	{
 		start = nstart;
 		propagateStart(safeMode);
 	}
-	if (end == 0)
+
+	if (end == 0 || (!preceeds.isEmpty() && nend < end))
 	{
 		end = nend;
 		propagateEnd(safeMode);
@@ -1597,13 +1598,21 @@ Task::preScheduleOk()
 }
 
 bool
-Task::scheduleOk()
+Task::scheduleOk(int& errors)
 {
+	/* It is of little use to report errors of container tasks, if any of
+	 * their sub tasks has errors. */
+	for (Task* t = subFirst(); t; t = subNext())
+		if (t->scheduleOk(errors))
+			return FALSE;
+	
+	/* Runaway errors have already been reported. Since the data of this task
+	 * is very likely completely bogus, we just return FALSE. */
 	if (runAway)
 		return FALSE;
 	
-	/* If any of the tasks is a runAway, we can safely surpress all other
-	 * error messages. */
+	/* If any of the dependant tasks is a runAway, we can safely surpress all
+	 * other error messages. */
 	for (Task* t = depends.first(); t; t = depends.next())
 		if (t->runAway)
 			return FALSE;
@@ -1611,31 +1620,10 @@ Task::scheduleOk()
 		if (t->runAway)
 			return FALSE;
 
-	if (!sub.isEmpty())
-	{
-		// All sub task must fit into their parent task.
-		for (Task* t = subFirst(); t != 0; t = subNext())
-		{
-			if (start > t->start)
-			{
-				if (!t->runAway)
-					fatalError("Task %s starts ealier than parent",
-							   t->id.latin1());
-				return FALSE;
-			}
-			if (end < t->end)
-			{
-				if (!t->runAway)
-					fatalError("Task %s ends later than parent",
-							   t->id.latin1());
-				return FALSE;
-			}
-		}
-	}
-
 	if (start == 0)
 	{
 		fatalError("Task '%s' has no start time.", id.latin1());
+		errors++;
 		return FALSE;
 	}
 	if (minStart != 0 && start < minStart)
@@ -1646,6 +1634,7 @@ Task::scheduleOk()
 				   id.latin1(),
 				   time2tjp(start).latin1(),
 				   time2tjp(minStart).latin1());
+		errors++;
 		return FALSE;
 	}
 	if (maxStart != 0 && start > maxStart)
@@ -1656,12 +1645,14 @@ Task::scheduleOk()
 				   id.latin1(),
 				   time2tjp(start).latin1(),
 				   time2tjp(maxStart).latin1());
+		errors++;
 		return FALSE;
 	}
 	if (start < project->getStart() || start > project->getEnd())
 	{
 		fatalError("Start time %s of task %s is outside of project period",
 			time2tjp(start).latin1(), id.latin1());
+		errors++;
 		return FALSE;
 	}
 	if (end == 0)
@@ -1677,6 +1668,7 @@ Task::scheduleOk()
 				   id.latin1(),
 				   time2tjp(end).latin1(),
 				   time2tjp(minEnd).latin1());
+		errors++;
 		return FALSE;
 	}
 	if (maxEnd != 0 && end > maxEnd)
@@ -1687,14 +1679,44 @@ Task::scheduleOk()
 				   id.latin1(),
 				   time2tjp(end).latin1(),
 				   time2tjp(maxEnd).latin1());
+		errors++;
 		return FALSE;
 	}
 	if (end < project->getStart() || end > project->getEnd())
 	{
 		fatalError("End time %s of task %s is outside of project period",
 			time2tjp(end).latin1(), id.latin1());
+		errors++;
 		return FALSE;
 	}
+	if (!sub.isEmpty())
+	{
+		// All sub task must fit into their parent task.
+		for (Task* t = subFirst(); t != 0; t = subNext())
+		{
+			if (start > t->start)
+			{
+				if (!t->runAway)
+				{
+					fatalError("Task %s starts ealier than parent",
+							   t->id.latin1());
+					errors++;
+				}
+				return FALSE;
+			}
+			if (end < t->end)
+			{
+				if (!t->runAway)
+				{
+					fatalError("Task %s ends later than parent",
+							   t->id.latin1());
+					errors++;
+				}
+				return FALSE;
+			}
+		}
+	}
+
 	// Check if all previous tasks end before start of this task.
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end > start && !t->runAway)
@@ -1704,6 +1726,7 @@ Task::scheduleOk()
 					   "task %s which starts at %s",
 					   t->id.latin1(), time2tjp(t->end).latin1(),
 					   id.latin1(), time2tjp(start).latin1());
+			errors++;
 			return FALSE;
 		}
 	// Check if all following task start after this tasks end.
@@ -1715,6 +1738,7 @@ Task::scheduleOk()
 					   "task %s which ends at %s",
 					   t->id.latin1(), time2tjp(t->start).latin1(),
 					   id.latin1(), time2tjp(end).latin1());
+			errors++;
 			return FALSE;
 		}
 
@@ -1725,6 +1749,7 @@ Task::scheduleOk()
 				   "This might be a bug in the TaskJuggler scheduler.",
 				   id.latin1(), time2tjp(start).latin1(),
 				   time2tjp(end).latin1());
+		errors++;
 		return FALSE;
 	}
 	
