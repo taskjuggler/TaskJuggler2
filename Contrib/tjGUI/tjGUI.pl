@@ -87,6 +87,7 @@ my %hlist_entrys;   #-- $hlist_entrys{taskID} = entry_ref
 my $b_Print;
 my $b_Poster;
 my $par;            #-- der xml-parser
+my $file = $ARGV[0] || '';
 
 #-- bunt
 my $top = MainWindow->new();
@@ -116,7 +117,7 @@ my $top = MainWindow->new();
                                         )->pack( -side => 'left');
 
     #-- working bereich
-    my ($f_top, $task_list, $work_area_frame);
+    my ($f_top, $f_bottom, $task_list, $work_area_frame, $status_line);
     sub _w_area {
         $f_top = $top->Frame(   -relief => 'sunken',
                                 -border => 1 )->pack(   -padx   => 3,
@@ -148,17 +149,15 @@ my $top = MainWindow->new();
             $startUpTextFrame->Label( -text => 'This program is free software; you can redistribute it and/or modify' )->pack();
             $startUpTextFrame->Label( -text => 'it under the terms of version 2 of the GNU General Public License as' )->pack( -padx => 5 );
             $startUpTextFrame->Label( -text => 'published by the Free Software Foundation.' )->pack();
+        #-- statusline
+        $f_bottom = $top->Frame(    -relief => 'flat',
+                                    -border => 1 )->pack(   -padx   => 3,
+                                                            -pady   => 0,
+                                                            -fill   => 'x');
+            $status_line = $f_bottom->Label( -text => 'have a nice day ...')->pack( -side => 'left', -padx => 3);
     }
 
     _w_area();
-
-    #-- statusline
-    my $f_bottom = $top->Frame( -relief => 'flat',
-                                -border => 1 )->pack(   -padx   => 3,
-                                                        -pady   => 0,
-                                                        -fill   => 'x');
-        my $status_line = $f_bottom->Label( -text => 'have a nice day ...'
-                                            )->pack( -side => 'left', -padx => 3);
 
 _pars_xml();
 
@@ -241,6 +240,7 @@ sub _reload {
     $b_Print->destroy   if ($b_Print);
     $b_Poster->destroy  if ($b_Poster);
     $f_top->destroy;
+    $f_bottom->destroy;
     $t = undef;
     $w = undef;
     $r = undef;
@@ -938,25 +938,34 @@ sub _fill_hlist {
 sub _pars_xml {
     unless ($par) {
          $par = new XML::Parser(ErrorContext => 1,
-                                  Handlers     => { Start   => \&start,
-                                                    End     => \&end,
-                                                    Char    => \&text,
-                                                    Final   => \&final });
-    }
-    if ( $ARGV[0] ) {
-        if ( -r $ARGV[0] ) {
-            print "parse xml file: $ARGV[0] ... ";
-                $par->parsefile($ARGV[0]);
-            print "done\n";
-        } else {
-            print "can't read $ARGV[0]\n";
-            exit 128;
-        }
-    } else {
-        print "no inputfile...\n\n\tUsage: $0 <project.xml>\n\n";
-        exit 255;
+                                Handlers     => { Start   => \&start,
+                                                  End     => \&end,
+                                                  Char    => \&text,
+                                                  Final   => \&final });
     }
 
+    if ( $file ) {
+        $par->parsefile($file);
+    } else {
+        my @types = (["XML files", [qw/.xml .XML/]],
+                     ["All files", '*']);
+        #use Tk::FileSelect;
+        #my $FSref = $top->FileSelect();
+        #$file = $FSref->Show;
+        require Tk::FBox;
+        Tk::FBox->import('as_default');
+        my $fw = $top->MainWindow;
+        delete $fw->{'tk_getOpenFile'};
+        delete $fw->{'tk_getSaveFile'};
+        $file = $fw->getOpenFile(-filetypes => \@types);
+
+        if ( $file and $file ne '' ) {
+            $par->parsefile($file);
+        } else {
+            print "no inputfile selected ...\n";
+            exit 255;
+        }
+    }
 }
 
 sub start {
