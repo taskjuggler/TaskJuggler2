@@ -238,40 +238,35 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
       if( ! cItem )
       {
           // qDebug(" ***** creating new !" );
-	 if( t->isMilestone() )
-	 {
-	    cItem = new KTVCanvasItemMilestone( this );
-	 }
-	 else if( t->isContainer() )
-	 {
-	    cItem = new KTVCanvasItemContainer( this );
-	 }
-	 else
-	 {
-	    cItem = new KTVCanvasItemTask( this );
-	 }
-	 Q_ASSERT(cItem );
-	 cItem->setFont( m_itemFont );
-	 cItem->setTask(t);
-	 /* a dict which makes the items easily accessible by knowing the task
-	  * it is needed to find out if a canvas item already exits. */
-	 m_canvasItems.insert( t, cItem );
+	  if( t->isMilestone() )
+	  {
+	      cItem = new KTVCanvasItemMilestone( this );
+	  }
+	  else if( t->isContainer() )
+	  {
+	      cItem = new KTVCanvasItemContainer( this );
+	  }
+	  else
+	  {
+	      cItem = new KTVCanvasItemTask( this );
+	  }
+	  Q_ASSERT(cItem );
+	  cItem->setFont( m_itemFont );
+	  cItem->setTask(t);
+	  /* a dict which makes the items easily accessible by knowing the task
+	   * it is needed to find out if a canvas item already exits. */
+	  m_canvasItems.insert( t, cItem );
 
-	 /* A list of all items */
-	 m_canvasItemList.append( cItem );
+	  /* A list of all items */
+	  m_canvasItemList.append( cItem );
+
+	  /* set the items width */
+	  int w = m_header->timeToX( t->getEnd(0 /* Task::Plan */ ) )-x;
+	  cItem->setSize( w, cItem->height() );
+
       }
-
-      /* set the items with */
-      int w = m_header->timeToX( t->getEnd(0 /* Task::Plan */ ) )-x;
-      cItem->setSize( w, cItem->height() );
-
       int itHeight = m_taskTable->itemHeight();
       ypos += (itHeight-cItem->height())/2;  /* center item */
-
-      bool itemConnects = false; /* local flag if item connects to others with a line */
-      itemConnects = !( t->isContainer() );
-      itemConnects = true;
-      // qDebug("---###  showing task at %d, %d!", x, yPos);
 
       /* yPos contains the bottom-position, from that we subtract the height
        * of the row and add the offset.
@@ -282,7 +277,7 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
       cItem->show();
 
       /* check for connections to other tasks, showing dependencies. */
-	  for (TaskListIterator pi(t->getPreviousIterator()); *pi != 0; ++pi)
+      for (TaskListIterator pi(t->getPreviousIterator()); *pi != 0; ++pi)
       {
 	 /* tp is a previous task. Connection starts at tps endpoint and goes to
 	  * this (ts) start point */
@@ -366,6 +361,7 @@ void KTVTaskCanvas::slShowMarker( int y )
 
 void KTVTaskCanvas::slShowDebugMarker( int y )
 {
+    return;
    m_dbgMark->move( 0, y );
    if( !m_dbgMark->visible() ) m_dbgMark->show();
    update();

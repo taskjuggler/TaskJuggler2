@@ -223,6 +223,12 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
            // {
            //    setOpen( child, false );
            // }
+
+	   // Call recursivly to close all children
+	   if( child->childCount() )
+	       slCollapsed( child );
+	   
+	   // Note: The next signal is not connected internally.
            emit hideTaskByItem( static_cast<KTVTaskTableItem*>(child) );
            m_canvasView->getCanvas()->slHideTask(static_cast<KTVTaskTableItem*>(child));
            child = child->nextSibling();
@@ -233,8 +239,6 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
        slUpdateCanvas();
    }
 }
-
-
 
 void KTVTaskTable::slExpanded( QListViewItem* it)
 {
@@ -254,6 +258,9 @@ void KTVTaskTable::slExpanded( QListViewItem* it)
         {
             m_canvasView->getCanvas()->slShowTask(static_cast<KTVTaskTableItem*>(child));
 
+	    if( child->childCount() && child->isOpen() )
+		slExpanded( child );
+	    
             /* No longer connected to internal reasons, but maybe extern */
             emit showTaskByItem( static_cast<KTVTaskTableItem*>(child) );
 
