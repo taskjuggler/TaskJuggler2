@@ -40,6 +40,15 @@ public:
 
 	bool reportHTMLResourceList();
 
+	void setId(const QString& i) { id = i; }
+	const QString& getId() const { return id; }
+
+	void setName(const QString& n) { name = n; }
+	const QString& getName() const { return name; }
+
+	void setVersion(const QString& v) { version = v; }
+	const QString& getVersion() const { return version; }
+
 	void setPriority(int p) { priority = p; }
 	int getPriority() const { return priority; }
 
@@ -48,15 +57,6 @@ public:
 
 	void setEnd(time_t e) { end = e; }
 	time_t getEnd() const { return end; }
-
-	void setId(const QString& i) { id = i; }
-	const QString& getId() const { return id; }
-
-	void setName(const QString& n) { name = n; }
-	const QString& getName() const { return name; }
-
-	void setManager(const QString& m) { manager = m; }
-	const QString& getManager() const { return manager; }
 
 	void addVacation(const QString& n, time_t s, time_t e)
 	{
@@ -96,6 +96,8 @@ public:
 	{
 		htmlTaskReportColumns.append(c);
 	}
+	void setHtmlTaskReportStart(time_t s) { htmlTaskReportStart = s; }
+	void setHtmlTaskReportEnd(time_t e) { htmlTaskReportEnd = e; }
 
 	void setHtmlResourceReport(const QString& f) { htmlResourceReport = f; }
 	void setHtmlResourceReportStart(time_t t) { htmlResourceReportStart = t; }
@@ -113,15 +115,20 @@ public:
 	
 private:
 	bool checkSchedule();
+	void htmlDayHeader(FILE* f, time_t s, time_t e);
+	void htmlMonthHeader(FILE* f, time_t s, time_t e);
 	QString htmlFilter(const QString& s);
 
 	int unscheduledTasks();
 	time_t start;
 	time_t end;
 
+	// A unique (with respect to the resource database) project id
 	QString id;
+	// The name of the Project
 	QString name;
-	QString manager;
+	// The revision of the project description.
+	QString version;
 
 	/* The default priority that will be inherited by all tasks. Sub tasks
 	 * will inherit the priority of its parent task. */
@@ -145,6 +152,8 @@ private:
 
 	QString htmlTaskReport;
 	QStringList htmlTaskReportColumns;
+	time_t htmlTaskReportStart;
+	time_t htmlTaskReportEnd;
 
 	QString htmlResourceReport;
     time_t htmlResourceReportStart;

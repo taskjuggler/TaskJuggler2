@@ -395,26 +395,6 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
-			else if (token == "start")
-			{
-				if ((tt = nextToken(token)) != DATE)
-				{
-					fatalError("Date expected");
-					return FALSE;
-				}
-				proj->setStart(date2time(token));
-				break;
-			}
-			else if (token == "end")
-			{
-				if ((tt = nextToken(token)) != DATE)
-				{
-					fatalError("Date expected");
-					return FALSE;
-				}
-				proj->setEnd(date2time(token));
-				break;
-			}
 			else if (token == "resource")
 			{
 				if (!readResource())
@@ -522,6 +502,48 @@ ProjectFile::parse()
 				}
 				break;
 			}
+			else if (token == "project")
+			{
+				if (nextToken(token) != ID)
+				{
+					fatalError("Project ID expected");
+					return FALSE;
+				}
+				proj->setId(token);
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Project name expected");
+					return FALSE;
+				}
+				proj->setName(token);
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Version string expected");
+					return FALSE;
+				}
+				proj->setVersion(token);
+				time_t start, end;
+				if (nextToken(token) != DATE)
+				{
+					fatalError("Start date expected");
+					return FALSE;
+				}
+				start = date2time(token);
+				if (nextToken(token) != DATE)
+				{
+					fatalError("End date expected");
+					return FALSE;
+				}
+				end = date2time(token);
+				if (end < start)
+				{
+					fatalError("End date must be larger then start date");
+					return FALSE;
+				}
+				proj->setStart(start);
+				proj->setEnd(end);
+				break;
+			}
 			else if (token == "htmlTaskReport")
 			{
 				if (nextToken(token) != STRING)
@@ -530,19 +552,58 @@ ProjectFile::parse()
 					return FALSE;
 				}
 				proj->setHtmlTaskReport(token);
-				for ( ; ; )
+				if (nextToken(token) == LBRACKET)
 				{
-					QString col;
-					if ((tt = nextToken(col)) != ID)
+					for ( ; ; )
 					{
-						fatalError("Column ID expected");
-						return FALSE;
-					}
-					proj->addHtmlTaskReportColumn(col);
-					if ((tt = nextToken(token)) != COMMA)
-					{
-						openFiles.last()->returnToken(tt, token);
-						break;
+						if ((tt = nextToken(token)) == RBRACKET)
+							break;
+						else if (tt != ID)
+						{
+							fatalError("Attribute ID or '}' expected");
+							return FALSE;
+						}
+						if (token == "columns")
+						{
+							for ( ; ; )
+							{
+								QString col;
+								if ((tt = nextToken(col)) != ID)
+								{
+									fatalError("Column ID expected");
+									return FALSE;
+								}
+								proj->addHtmlTaskReportColumn(col);
+								if ((tt = nextToken(token)) != COMMA)
+								{
+									openFiles.last()->returnToken(tt, token);
+									break;
+								}
+							}
+						}
+						else if (token == "start")
+						{
+							if (nextToken(token) != DATE)
+							{
+								fatalError("Date expected");
+								return FALSE;
+							}
+							proj->setHtmlTaskReportStart(date2time(token));
+						}
+						else if (token == "end")
+						{
+							if (nextToken(token) != DATE)
+							{
+								fatalError("Date expected");
+								return FALSE;
+							}
+							proj->setHtmlTaskReportEnd(date2time(token));
+						}
+						else
+						{
+							fatalError("Illegal attribute");
+							return FALSE;
+						}
 					}
 				}
 				break;
@@ -596,6 +657,12 @@ ProjectFile::readTask(Task* parent)
 {
 	TokenType tt;
 	QString token;
+
+	if (proj->getStart() == 0)
+	{
+		fatalError("Project start date must be specified first");
+		return FALSE;
+	}
 
 	QString id;
 	if ((tt = nextToken(id)) != ID)
@@ -1079,12 +1146,18 @@ ProjectFile::readEffort(Task* task)
 		fatalError("Unit expected");
 		return FALSE;
 	}
-	if (unit == "md")
+	if (unit == "min")
+		task->setEffort(effort.toDouble() / (8 * 60));
+	else if (unit == "h")
+		task->setEffort(effort.toDouble() / 8);
+	else if (unit == "d")
 		task->setEffort(effort.toDouble());
-	else if (unit == "mw")
+	else if (unit == "w")
 		task->setEffort(effort.toDouble() * 5);
-	else if (unit == "mm")
+	else if (unit == "m")
 		task->setEffort(effort.toDouble() * 20);
+	else if (unit == "y")
+		task->setEffort(effort.toDouble() * 240);
 	else
 	{
 		fatalError("Unit expected");

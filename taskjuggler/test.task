@@ -1,6 +1,14 @@
 # This is a test file for TaskJuggler
 
-start 2001-09-28 # The start Date.
+project sl80 "SuSE Linux 8.0" "$Id$" 2001-09-28 2002-04-01
+
+htmlTaskReport "test.html" {
+  columns  no, name, start, end, daily
+  start 2001-10-01
+  end 2002-04-01
+}
+
+htmlResourceReport "resource.html" 2001-11-28 2002-03-06
 
 macro version [SL 8.0]
 
@@ -13,15 +21,15 @@ macro deadline [
 
 macro build [
   task build "SL 8.0 x86 build ${1}" {
-    effort 2md
+    effort 2d
     allocate ro { alternative kukuk }
-    depends !work
+    depends !dl
   }
 ]
 
 macro burn [
   task done "Burn SL 8.0 ${1}" {
-    effort 1md
+    effort 1d
     allocate mem
     depends !build
     flags media
@@ -32,7 +40,7 @@ macro preview [
 task pre${1} "SL 8.0 preview ${1}" {
 
   task work "SL 8.0 x86 make bootable system" {
-    effort 15md
+    effort 15d
     allocate yast
     allocate dist
     allocate packagers
@@ -49,7 +57,7 @@ macro beta [
 task beta${1} "${version} beta${1}" {
 
   task work "SL 8.0 finish all coding work" {
-    effort 15md
+    effort 15d
     allocate yast
     allocate dist
     allocate packagers
@@ -60,13 +68,13 @@ task beta${1} "${version} beta${1}" {
   ${build "beta ${1}"}
 
   task ship "SL 8.0 x86 ship beta ${1} to external testers" {
-    effort 2md
+    effort 2d
     allocate mem
     depends !build
   }
 
   task test "SL 8.0 x86 test beta ${1}" {
-    effort 2md
+    effort 2d
     allocate bg
     depends !build
   }
@@ -75,14 +83,11 @@ task beta${1} "${version} beta${1}" {
 
 flags deadline, media
 
-vacation "Xmas" 2002-12-21 - 2003-01-04
-
-htmlTaskReport "test.html" no, task, start, end, depends, resources
-htmlResourceReport "resource.html" 2001-11-28 2002-03-06
+vacation "Xmas" 2001-12-21 - 2002-01-04
 
 account acc1 "Work" { kotrusId "SuSE Linux" balance 1000.0 }
 
-resource ro "Ruediger Oertel"
+resource ro "Ruediger Oertel" # Dies ist ein Kommentar
 resource kukuk "Thorsten Kukuk"
 resource cs "Chris Schlaeger"
 resource mem "Muhamed Memovic"
@@ -98,19 +103,19 @@ task sl80start "Start of 8.0 development" {
 }
 
 task yast "YaST2 development"{
-  effort 56md
+  effort 56d
   allocate yast
   depends !sl80start
 }
 
 task pack "SL 8.0 package updates" {
-  effort 56md
+  effort 56d
   allocate packagers
   depends !sl80start
 }
 
 task dist "SL 8.0 distribution modifications" {
-  effort 56md
+  effort 56d
   allocate dist
   depends !sl80start
 }
@@ -122,5 +127,5 @@ ${preview "4" "!!pre3.work"}
 ${beta "1" "pre4"}
 ${beta "2" "beta1"}
 ${beta "3" "beta2"}
-${beta "4" "beta2"}
+${beta "4" "beta3"}
 }

@@ -56,7 +56,7 @@ Task::fatalError(const QString& msg) const
 }
 
 bool
-Task::schedule(time_t reqStart)
+Task::schedule(time_t day)
 {
 	// Task is already scheduled.
 	if (start != 0 && end != 0)
@@ -75,16 +75,19 @@ Task::schedule(time_t reqStart)
 		 * start time is determined by the end date of the last previous
 		 * task. */
 		if (previous.count() == 0 ||
-			(earliestStart() > 0 && earliestStart() <= reqStart))
+			(earliestStart() > 0 && earliestStart() <= project->getStart()))
 		{
-			start = reqStart;
+			start = project->getStart();
 		}
 		else
 		{
 			start = earliestStart();
 		}
+		done = 0.0;
+		costs = 0.0;
+		workStarted = FALSE;
 		if (start == 0)
-			return FALSE;	// Task cannot be scheduled yet.
+			return TRUE;	// Task cannot be scheduled yet.
 	}
 
 	if (length > 0)
@@ -109,42 +112,33 @@ Task::schedule(time_t reqStart)
 		if (allocations.count() == 0)
 		{
 			fatalError("No allocations specified for effort based task");
-			return FALSE;
+			return TRUE;
 		}
-		double done = 0.0;
-		const int oneDay = 60 * 60 * 24;
-		int day;
-		bool workStarted = FALSE;
-		day = start;
-		for ( ; ; )
+		double dailyCosts = 0.0;
+		if (isWorkingDay(day))
 		{
-			double costs = 0.0;
-			if (isWorkingDay(day))
-			{
-				if (!bookResources(day, workStarted, done, costs))
-//					fprintf(stderr,
+			if (!bookResources(day, dailyCosts))
+//						fprintf(stderr,
 //							"No resource available for task '%s' on %s\n",
 //							id.latin1(),
 //							time2ISO(day).latin1())
-					;
-			}
-			/* If an account has been specified load account with the
-			 * accumulated costs of this day. */
-			if (account)
-				account->book(new Transaction(day, -costs, this));
-			if (done < effort)
-				day += oneDay;
-			else
-			{
-				end = day;
-				break;
-			}
+				;
+		}
+		/* If an account has been specified load account with the
+		 * accumulated costs of this day. */
+		if (account)
+			account->book(new Transaction(day, -costs, this));
+		if (done >= effort)
+		{
+			end = day;
+			return FALSE;
 		}
 	}
 	else
 	{
 		// Task is a milestone.
 		end = start;
+		return FALSE;
 	}
 	return TRUE;
 }
@@ -156,6 +150,7 @@ Task::scheduleContainer()
 	time_t nstart = 0;
 	time_t nend = 0;
 
+	// Check that this is really a container task
 	if ((t = subTasks.first()) && (t != 0))
 	{
 		if (t->getStart() > 0)
@@ -180,14 +175,14 @@ Task::scheduleContainer()
 	{
 		start = nstart;
 		end = nend;
-		return TRUE;
+		return FALSE;
 	}
 
-	return FALSE;
+	return TRUE;
 }
 
 bool
-Task::bookResources(time_t day, bool& workStarted, double& done, double& costs)
+Task::bookResources(time_t day, double& dailyCosts)
 {
 	bool allocFound = FALSE;
 
@@ -210,7 +205,7 @@ Task::bookResources(time_t day, bool& workStarted, double& done, double& costs)
 			{
 				addBookedResource(a->getResource());
 				done += remaining;
-				costs += a->getResource()->getRate() * remaining;
+				dailyCosts += a->getResource()->getRate() * remaining;
 			}
 			allocFound = TRUE;
 		}
@@ -232,7 +227,7 @@ Task::bookResources(time_t day, bool& workStarted, double& done, double& costs)
 					{
 						addBookedResource(a->getResource());
 						done += remaining;
-						costs += r->getRate() * remaining;
+						dailyCosts += r->getRate() * remaining;
 					}
 					allocFound = TRUE;
 					break;
@@ -267,6 +262,18 @@ Task::earliestStart()
 		day = nextWorkingDay(day);
 
 	return day;
+}
+
+double
+Task::getLoadOnDay(time_t day)
+{
+	double load = 0.0;
+	for (Resource* r = bookedResources.first(); r != 0;
+		 r = bookedResources.next())
+	{
+		load += r->getLoadOnDay(day, this);
+	}
+	return load;
 }
 
 bool

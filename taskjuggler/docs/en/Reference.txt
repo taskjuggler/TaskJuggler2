@@ -1,0 +1,517 @@
+Specification of the TaskJuggler input format
+=============================================
+
+Version: "$Id$"
+
+A project file contains a list of property declarations. Each property
+may have fixed and optional attributes. Attributes may be of the
+following types:
+
+ID: A string that may consist of the characters A-Z, a-z, 0-9 and _. It may
+not start with a number.
+
+GLOBAL_ID: A GLOBAL_ID may have the same characters as ID but
+additionally it may contain . and !. ! may only be used at the
+beginning and is used in relative IDs. A ! means one scope up.
+
+STRING: A string may contain any characters and is enclosed in ". A
+string may include line breaks.
+
+DATE: A DATE is an ISO compliant date YYYY-MM-DD[-hh[:mm[:ss]]]. Hour,
+minute and second are optional. If not specified the values are set to
+0.
+
+UNIT: May be
+h for hours,
+d for days,
+w for weeks,
+m for months,
+y for years.
+
+INTEGER: An integer number.
+
+REAL: A real number (e.g. 3.14).
+
+Optional attributes of a property must be enclosed by {}.
+
+===============================================================================
+===============================================================================
+
+This is a list of all properties:
+
+===============================================================================
+project <id> <name> <version> <start> <end>
+id: ID 
+name: STRING 
+version: STRING 
+start: DATE 
+end: DATE
+
+Optional attributes: none
+
+The project property is mandatory and should be the first property in
+a project file. <id> is a ID used to register resource allocations in
+a global database. <name> is the name of the project. <version> is the
+version of the project file. Typically this is the CVS id. <start> and
+<end> define the timeframe of the project. The end may be well after
+the end of the last task but must be specified to terminate the
+scheduling process.
+
+===============================================================================
+task <id> <name>
+id: ID
+name: STRING
+
+Optional attributes:
+
+-------------------------------------------------------------------------------
+task <id> <name>
+id: ID
+name: STRING
+
+A task may have sub tasks. In case sub tasks are specified many of the
+other attributes are illegal.
+
+-------------------------------------------------------------------------------
+note <text>
+text: STRING
+
+A longer description of the task.
+
+start <date>
+date: DATE
+
+The planned start date for the task. In case no start date is given,
+the task must depend on other tasks. If no dependency is given the
+project start date is used.
+
+-------------------------------------------------------------------------------
+minStart <date>
+date: DATE
+
+The earliest wanted start date for the task. In case this date can't
+be met the task is marked in the task list.
+
+This attribute is inherited by sub tasks.
+
+-------------------------------------------------------------------------------
+maxStart <date>
+date: DATE
+
+The latest wanted start date for the task. In case this date can't be
+met the task is marked in the task list.
+
+This attribute is inherited by sub tasks.
+
+-------------------------------------------------------------------------------
+actualStart <date>
+date: DATE
+
+The actual start date of the task. This can be specified to do
+plan/actual comparisons.
+
+-------------------------------------------------------------------------------
+minEnd <date>
+date: DATE
+
+The earliest wanted end date for the task. In case this date can't be
+met the task is marked in the task list.
+
+This attribute is inherited by sub tasks.
+
+-------------------------------------------------------------------------------
+maxEnd <date>
+date: DATE
+
+The latest wanted end date for the task. In case this date can't be
+met the task is marked in the task list.
+
+This attribute is inherited by sub tasks.
+
+-------------------------------------------------------------------------------
+actualEnd <date>
+date: DATE
+
+The actual end date of the task. This can be specified to do
+plan/actual comparisons.
+
+-------------------------------------------------------------------------------
+length <number> <unit>
+number: REAL
+unit: UNIT
+
+Specifies the time the task occupies the resources. This is working
+time, not calender time. 7d means 7 working days and not one week.
+
+-------------------------------------------------------------------------------
+effort <number> <unit>
+number: REAL
+unit: UNIT
+
+Specifies the effort needed to complete the task. An effort of 4d can
+be done with 2 full-time resources in 2 days.
+
+-------------------------------------------------------------------------------
+complete <percent>
+percent: INTEGER
+
+Specifies how many percent the task is already completed. This can be
+usefull for project tracking.
+
+-------------------------------------------------------------------------------
+allocate <id>
+id: ID
+
+Optional attributes:
+
+...............................................................................
+load <days>
+days: REAL
+
+Specifies how many days the resource can be used per day. A load of
+0.5 means that the resource will be used for half a working day.
+
+...............................................................................
+alternative <id>[,<id>]
+id: ID
+
+Specifies IDs of alternative resources. One of the alternatives will
+be used in case the main resource is not available. If multiple
+resources are used they must be seperated by a comma.
+
+...............................................................................
+
+Specifies a resource that can be used to fullfill the task. More than
+one resource can be specified for a task. All resources must be
+declared before they can be used. Ref. 'resource'.
+
+-------------------------------------------------------------------------------
+depends <id>[,<id>]
+id: GLOBAL_ID
+
+Specifies that the task cannot start before the task with the
+specified IDs have been finished. If multiple IDs are specified they
+must be seperated by a comma. ids must be either global or relative. A
+relative ID starts with a number of !. Each ! moves the scope to the
+parent task. Global IDs do not contain ! but have ID seperated by
+dots.
+
+    Example:
+    task foo1 {
+      task foo2 { start 2002-12-04 }
+      task foo3 { depends !foo2 }
+    }
+    task bar { depends foo1.foo2 }
+
+-------------------------------------------------------------------------------
+flags <id>[,<id>]
+id: ID
+
+Attaches flags to the task. Flags can be used to hide the information
+about the task in the output. Flags must be declared before they can
+be used. Ref. 'flags'. Some predefined flags exist for tasks:
+
+closed: Hides all sub-tasks in all reports.
+hidden: Hides this task in all reports.
+
+Flags are inherited by sub tasks from their parent tasks.
+
+-------------------------------------------------------------------------------
+priority <value>
+value: INTEGER
+
+Specifies a priority between 1 and 1000. A task with higher priority
+is more likely to get the requested resources.
+
+This attribute is inherited by sub tasks.
+
+-------------------------------------------------------------------------------
+account <id>
+id: ID
+
+Specifies the account that all costs associated with this task will be
+credited to.
+
+-------------------------------------------------------------------------------
+Tasks may be nested and some attributes are inherited by the sub tasks.
+
+===============================================================================
+account <id> <name>
+id: ID
+name: STRING
+
+Optional attributes:
+-------------------------------------------------------------------------------
+balance <amount>
+amount: REAL
+
+The initial balance of the account.
+
+-------------------------------------------------------------------------------
+kotrusId <id>
+id: STRING
+
+The KoTrus ID of the account (Kostentraeger).
+
+-------------------------------------------------------------------------------
+Declares an account. Accounts can be used to calculate costs of tasks
+or the whole project.
+
+===============================================================================
+resource <id> <name>
+id: ID
+name: STRING
+
+Optional attributes:
+-------------------------------------------------------------------------------
+minEffort <value>
+value: REAL
+
+The daily minimum effort for a resource. Resources that are
+used less than this value will be marked in the report.
+
+-------------------------------------------------------------------------------
+maxEffort <value>
+value: REAL
+
+The daily maximum effort for a resource. Resources will not be
+scheduled to be used more than this value. A value of 1.0 means a
+whole working day. 0.5 means half a working day.
+
+-------------------------------------------------------------------------------
+rate <value>
+value: REAL
+
+The daily costs of the resource.
+
+-------------------------------------------------------------------------------
+kotrusId <id>
+id: STRING
+
+The KoTrus ID of the resource (email address).
+
+-------------------------------------------------------------------------------
+vacation <from> [- <to>]
+from: DATE
+to: DATE
+
+Specifies a vacation for a resource. The to value is NOT included in
+the vacation.
+
+-------------------------------------------------------------------------------
+
+===============================================================================
+vacation name <start> [- <end>]
+name: STRING
+start: DATE
+end: DATE
+
+Defines a vacation period for all resources. The end value is NOT part
+of the vacation. So 2001-12-24 - 2001-12-25 specifies one day of
+vacation, not two days.
+
+===============================================================================
+priority <value>
+value: INTEGER
+
+The default scheduling priority for tasks. The value must be between 1
+and 1000 and is inherited by all tasks if no other priority is
+specified.
+
+===============================================================================
+minEffort <value> value: REAL
+
+The default daily minimum effort for a resource. Resources that are
+used less than this value will be marked in the report. This value
+will be used for all subsequent resource declarations unless specified
+otherwise.
+
+===============================================================================
+maxEffort <value> value: REAL
+
+The default daily maximum effort for a resource. Resources will not be
+scheduled more than this value. This value will be used for all
+subsequent resource declarations unless specified otherwise.
+
+===============================================================================
+rate <money>
+money: REAL
+
+The default daily rate for using a resource full-time. This value will
+be used for all subsequent resource declarations unless specified
+otherwise.
+
+===============================================================================
+currencyPrefix <prefix> 
+prefix: STRING
+
+The prefix for money values in reports.
+
+===============================================================================
+currencyPostfix <postfix> 
+postfix: STRING
+
+The postfix for money values in reports.
+
+===============================================================================
+include <filename> 
+filename: STRING
+
+Includes the specified filename as if its contense would be written
+instead of the include propoperty.
+
+===============================================================================
+macro <id> [ body ]
+id: ID
+
+The body is not optional it must be enclosed in [ ]. Macros can be
+declared like this:
+
+macro foo [ This text ]
+
+If later ${foo} is found in the project file it is expanded to ' This
+text '. Macros may have arguments. Arguments are special macros with
+numbers as names. The number specifies the index of the argument.
+
+macro foo [ This ${1} text ]
+
+will expend to ' This stupid text ] if called as ${foo
+"stupid"}. Macros may call other macros.
+
+===============================================================================
+flags <id>[,<id>]
+id: ID
+
+Declares the specified flags. Flags can be assigned to tasks to be
+used as filters during report generation.
+
+===============================================================================
+htmlTaskReport <filename>
+filename: STRING
+
+Optional attributes:
+
+-------------------------------------------------------------------------------
+columns <id>[,<id>]
+id: STRING
+
+Specifies which columns should be included in the task report. The
+following values are available:
+
+no: The task index.
+taskId: The global ID of the task.
+task: The name of the task.
+start: The planned start date.
+end: The planned end date.
+minStart: The earliest wanted start date.
+maxStart: The latest wanted start date.
+aStart: The actual start date.
+minEnd: The earliest wanted end date.
+maxEnd: The latest wanted end date.
+aEnd: The actual end date.
+resources: The names of the used resources.
+depends: The task index of the tasks that this task depends on.
+follows: The task index of the tasks that depend on this task.
+note: The description of the task.
+daily: A calender view of the tasks.
+
+-------------------------------------------------------------------------------
+start <day>
+day: DATE
+
+The start date for the calender view.
+
+-------------------------------------------------------------------------------
+end <day>
+day: DATE
+
+The end date for the calender view.
+
+-------------------------------------------------------------------------------
+show <flag>[,flag]
+flag: ID
+
+List only tasks that have the listed flags. This attribute conflicts
+with 'hide'.
+
+-------------------------------------------------------------------------------
+hide <flag>[,flag]
+
+List only tasks that don't have the listed flags. This attribute
+conflicts with 'show'.
+
+-------------------------------------------------------------------------------
+Generates a report of all tasks (excluding hidden and filtered) in
+HTML format.
+
+===============================================================================
+htmlResourceReport <filename>
+filename: STRING
+
+Optional attributes:
+
+-------------------------------------------------------------------------------
+start <day>
+day: DATE
+
+The start date for the calender view.
+
+-------------------------------------------------------------------------------
+end <day>
+day: DATE
+
+The end date for the calender view.
+
+-------------------------------------------------------------------------------
+show <flag>[,flag]
+flag: ID
+
+List only resources that have the listed flags. This attribute conflicts
+with 'hide'.
+
+-------------------------------------------------------------------------------
+hide <flag>[,flag]
+
+List only resources that don't have the listed flags. This attribute
+conflicts with 'show'.
+
+-------------------------------------------------------------------------------
+Generates a report of all resources (excluding hidden and filtered) in
+HTML format.
+
+===============================================================================
+htmlAccountReport <filename>
+filename: STRING
+
+Optional attributes:
+
+-------------------------------------------------------------------------------
+start <day>
+day: DATE
+
+The start date for the calender view.
+
+-------------------------------------------------------------------------------
+end <day>
+day: DATE
+
+The end date for the calender view.
+
+-------------------------------------------------------------------------------
+show <flag>[,flag]
+flag: ID
+
+List only accounts that have the listed flags. This attribute
+conflicts with 'hide'.
+
+-------------------------------------------------------------------------------
+hide <flag>[,flag]
+
+List only accounts that don't have the listed flags. This attribute
+conflicts with 'show'.
+
+-------------------------------------------------------------------------------
+
+===============================================================================
+
+

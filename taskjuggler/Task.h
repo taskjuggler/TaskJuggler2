@@ -128,6 +128,7 @@ public:
 	Allocation* firstAllocation() { return allocations.first(); }
 	Allocation* nextAllocation() { return allocations.next(); }
 
+	double getLoadOnDay(time_t day);
 	void addBookedResource(Resource* r)
 	{
 		if (bookedResources.find(r) == -1)
@@ -163,8 +164,7 @@ public:
 
 private:
 	bool scheduleContainer();
-	bool bookResources(time_t day, bool& workStarted,
-					   double& done, double& costs);
+	bool bookResources(time_t day, double& costs);
 	bool isWorkingDay(time_t day) const;
 	time_t nextWorkingDay(time_t day) const;
 	time_t earliestStart();
@@ -214,6 +214,11 @@ private:
 	double effort;
 	// Percentage of completion of the task
 	int complete;
+
+	// The following 3 variables are used during scheduling.
+	double costs;
+	double done;
+	bool workStarted;
 
 	// Account where the costs of the task are credited to.
 	Account* account;
