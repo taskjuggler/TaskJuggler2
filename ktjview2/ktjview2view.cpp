@@ -115,6 +115,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     connect( m_ganttView, SIGNAL( rescaling( KDGanttView::Scale ) ),
              this, SLOT( slotScaleChanged( KDGanttView::Scale ) ) );
     m_widgetStack->addWidget( m_ganttView );
+    m_ganttView->show();
 
     // resources list view
     m_resListView = new KListView( this, "resources_view" );
@@ -623,7 +624,6 @@ void ktjview2View::ensureItemVisible( KDGanttViewItem * item )
     {
         //kdDebug() << "Centering on item: " << item->name() << endl;
         m_ganttView->ensureVisible( item );
-        m_ganttView->center( item );
         m_ganttView->centerTimeline( item->startTime() );
     }
 }
