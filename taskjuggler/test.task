@@ -21,8 +21,8 @@ htmltaskreport "test1.html" {
   start 2001-09-01
   end 2002-04-01
 #  showactual
-  hideresource 1
-  hidetask 0
+#  hideresource 1
+  hidetask (((~type1) & ~(type2 | type3)))
 #  rollupresource team
 #  hidetask media | deadline | type1
 #  rolluptask beta | preview
@@ -34,23 +34,23 @@ htmltaskreport "test1.html" {
 #  end 2002-03-08
 #}
 
-htmlresourcereport "test-res.html" {
-  columns no, name, mineffort, maxeffort, rate, kotrusid
-  start 2001-09-01
-  end 2002-04-01
-  hidetask 1
-  hideresource 0
-  sortresources maxeffortdown
+#htmlresourcereport "test-res.html" {
+#  columns no, name, mineffort, maxeffort, rate, kotrusid
+#  start 2001-09-01
+#  end 2002-04-01
+#  hidetask 1
+#  hideresource 0
+#  sortresources maxeffortdown
 #  showactual
 #  showprojectids
-}
+#}
 
-htmlaccountreport "test-account.html" {
-  columns no, name, total, weekly
-  accumulate
+#htmlaccountreport "test-account.html" {
+#  columns no, name, total, weekly
+#  accumulate
 #  showactual
 #  hideplan
-}
+#}
 
 macro version [SL 8.0]
 
@@ -215,6 +215,7 @@ task alap "ALAP Task" {
   length 20d
   allocate cs
   scheduling alap
+  flags type2
 }
 
 task asap "ASAP after ALAP" {
@@ -222,6 +223,7 @@ task asap "ASAP after ALAP" {
   depends !alap
   effort 19d
   allocate cs
+  flags type1
 }
 
 task pre1 "SL 8.0 preview1" {
@@ -232,7 +234,6 @@ task pre1 "SL 8.0 preview1" {
   ${build "preview1" "2d"}
   ${burn "preview1"}
   ${test "preview1"}
-  flags type1
 }
 
 task pre2 "SL 8.0 preview2" {

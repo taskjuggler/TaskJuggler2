@@ -2001,36 +2001,18 @@ ProjectFile::readLogicalExpression(int precedence)
 	QString token;
 	TokenType tt;
 
-	if ((tt = nextToken(token)) == ID || tt == INTEGER)
+	if ((tt = nextToken(token)) == ID)
 	{
-		if (tt == ID)
+		if (!proj->isAllowedFlag(token))
 		{
-			if (!proj->isAllowedFlag(token))
-			{
-				fatalError(QString("Flag ") + token + " is unknown.");
-				return 0;
-			}
-			op = new Operation(token);
+			fatalError(QString("Flag ") + token + " is unknown.");
+			return 0;
 		}
-		else
-			op = new Operation(token.toLong());
-		if (precedence == 0)
-		{
-			if ((tt = nextToken(token)) != AND && tt != OR)
-			{
-				returnToken(tt, token);
-			}
-			else if (tt == AND)
-			{
-				Operation* op2 = readLogicalExpression();
-				op = new Operation(op, Operation::And, op2);
-			}
-			else if (tt == OR)
-			{
-				Operation* op2 = readLogicalExpression();
-				op = new Operation(op, Operation::Or, op2);
-			}
-		}
+		op = new Operation(token);
+	}
+	else if (tt == INTEGER)
+	{
+		op = new Operation(token.toLong());
 	}
 	else if (tt == TILDE)
 	{
@@ -2058,6 +2040,24 @@ ProjectFile::readLogicalExpression(int precedence)
 		return 0;
 	}
 	
+	if (precedence < 1)
+	{
+		if ((tt = nextToken(token)) != AND && tt != OR)
+		{
+			returnToken(tt, token);
+		}
+		else if (tt == AND)
+		{
+			Operation* op2 = readLogicalExpression();
+			op = new Operation(op, Operation::And, op2);
+		}
+		else if (tt == OR)
+		{
+			Operation* op2 = readLogicalExpression();
+			op = new Operation(op, Operation::Or, op2);
+		}
+	}
+
 	return op;
 }
 
