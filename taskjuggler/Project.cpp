@@ -46,7 +46,8 @@ Project::Project()
 
 	Scenario* plan = new Scenario(this, "plan", "Plan", 0);
 	new Scenario(this, "actual", "Actual", plan);
-	scenarioList.createIndex();
+	scenarioList.createIndex(TRUE);
+	scenarioList.createIndex(FALSE);
 
 	xmlreport = 0;
 #ifdef HAVE_ICAL

@@ -9,6 +9,9 @@
  *
  * $Id$
  */
+
+#include <assert.h>
+
 #include "Resource.h"
 #include "Project.h"
 #include "ShiftSelection.h"
@@ -167,14 +170,12 @@ Resource::initScoreboard()
 uint
 Resource::sbIndex(time_t date) const
 {
+	assert(date >= project->getStart());
+	assert(date <= project->getEnd());
 	// Convert date to corresponding scoreboard index.
 	uint sbIdx = (date - project->getStart()) /
 		project->getScheduleGranularity();
-	if (sbIdx >= sbSize)
-		qFatal("Date %s is outside of the defined project timeframe "
-			   "(Resource %s, Index %d)",
-			   time2ISO(date).latin1(),
-			   id.latin1(), sbIdx);
+	assert(sbIdx < sbSize);
 	return sbIdx;
 }
 
@@ -206,18 +207,31 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
 		return FALSE;
 	}
 
+	// Now check that the resource is not overloaded on this day.
 	time_t bookedTime = duration;
 	time_t bookedTimeTask = duration;
 
-	if (MidnightIndex[sbIdx] == -1)
-		MidnightIndex[sbIdx] = sbIndex(midnight(date));
-	uint sbStart = MidnightIndex[sbIdx];
+	uint sbStart;
+	if (midnight(date) <= project->getStart())
+		sbStart = 0;
+	else
+	{
+		if (MidnightIndex[sbIdx] == -1)
+			MidnightIndex[sbIdx] = sbIndex(midnight(date));
+		sbStart = MidnightIndex[sbIdx];
+	}
 
-	uint sbIdxEnd = sbStart +
-	   	(uint) ((ONEDAY / project->getScheduleGranularity()) * 1.5);	
-	if (MidnightIndex[sbIdxEnd] == -1)
-		MidnightIndex[sbIdxEnd] = sbIndex(sameTimeNextDay(midnight(date)));
-	uint sbEnd = MidnightIndex[sbIdxEnd] - 1;
+	uint sbEnd;
+	if (sameTimeNextDay(midnight(date)) >= project->getEnd())
+		sbEnd = sbSize - 1;
+	else
+	{
+		uint sbIdxEnd = sbStart +
+			(uint) ((ONEDAY / project->getScheduleGranularity()) * 1.5);	
+		if (MidnightIndex[sbIdxEnd] == -1)
+			MidnightIndex[sbIdxEnd] = sbIndex(sameTimeNextDay(midnight(date)));
+		sbEnd = MidnightIndex[sbIdxEnd] - 1;
+	}
 	
 	for (uint i = sbStart; i < sbEnd; i++)
    	{
