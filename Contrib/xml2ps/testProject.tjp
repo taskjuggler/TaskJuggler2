@@ -85,9 +85,3 @@ task testProject "testProject for xml2gantt" {
 #-- export xml-file
 xmltaskreport "testProject.xml"
 
-#-- export html-file
-#htmltaskreport "testProject.html" {
-#  columns no, name, resources, daily
-#  headline "testProject for xml2gantt"
-#}
-

@@ -247,58 +247,58 @@ sub _draw_depends {
     foreach my $task (@all_tasks) {
         $p->setcolour(0,0,255);
         foreach my $t (@{$task->Previous}) {
-            my $i = __get_Index_from_Task($t);
             #-- die ende koordinaten vom task holen, von dem ich abhänge
-            my ($x1, $y1) = __get_start_cood($i) if $i;
-            #print "+++$i: $x1, $y1+++\n";
-            #  ---|
-            #     |+++
-            #  ---|
-            $p->line($x1, $y1, $x1+($task_height/2), $y1);
-            #  ---|
-            #     |---
-            #  ---|  +
-            #        +
-            #        +
-            $p->line($x1+($task_height/2), $y1, $x1+($task_height/2), $y1-($task_height/1.5));
-            #  ---|
-            #     |---
-            #  ---|  |
-            #        |
-            #     +++|
-            $p->line($x1+($task_height/2), $y1-($task_height/1.5), $x1-($task_height/2), $y1-($task_height/1.5));
-            #  ---|
-            #     |---
-            #  ---|  |
-            #        |
-            #   -----|
-            #   +
-            #   +
-            #   +
-            $p->line($x1-($task_height/2), $y1-($task_height/1.5), $x1-($task_height/2), $task->y1);
-            #  ---|
-            #     |---
-            #  ---|  |
-            #        |
-            #   -----|
-            #   |
-            #   |
-            #   |+++++++++++++++++
-            $p->line($x1-($task_height/2), $task->y1, $task->x1, $task->y1 );
-            #  ---|
-            #     |---
-            #  ---|  |
-            #        |
-            #   -----|
-            #   |
-            #   |
-            #   |----------------->
-            #                    -^- auf deutsch == pfeil zeichnen ;)
-            $p->polygon($task->x1-2, $task->y1-1,
-                        $task->x1,$task->y1,
-                        $task->x1,$task->y1,
-                        $task->x1-2, $task->y1+1,
-                        $task->x1-2, $task->y1-1,   1);
+            if ($t) {
+                my ($x1, $y1) = __get_start_cood($t);
+                #  ---|
+                #     |+++
+                #  ---|
+                $p->line($x1, $y1, $x1+($task_height/2), $y1);
+                #  ---|
+                #     |---
+                #  ---|  +
+                #        +
+                #        +
+                $p->line($x1+($task_height/2), $y1, $x1+($task_height/2), $y1-($task_height/1.5));
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #     +++|
+                $p->line($x1+($task_height/2), $y1-($task_height/1.5), $x1-($task_height/2), $y1-($task_height/1.5));
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #   -----|
+                #   +
+                #   +
+                #   +
+                $p->line($x1-($task_height/2), $y1-($task_height/1.5), $x1-($task_height/2), $task->y1);
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #   -----|
+                #   |
+                #   |
+                #   |+++++++++++++++++
+                $p->line($x1-($task_height/2), $task->y1, $task->x1, $task->y1 );
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #   -----|
+                #   |
+                #   |
+                #   |----------------->
+                #                    -^- auf deutsch == pfeil zeichnen ;)
+                $p->polygon($task->x1-2, $task->y1-1,
+                            $task->x1,$task->y1,
+                            $task->x1,$task->y1,
+                            $task->x1-2, $task->y1+1,
+                            $task->x1-2, $task->y1-1,   1);
+            }
         }
     }
 }
@@ -308,15 +308,7 @@ sub __get_start_cood {
     my $id = shift;
     my ($x, $y);
     foreach my $t (@all_tasks) {
-        return ($t->x2, $t->y2) if ( $t->Index eq $id );
-    }
-}
-
-#-- sucht zu einem tasknamen den index raus und gibt ihn zurück
-sub __get_Index_from_Task {
-    my $name = shift;
-    foreach my $t (@all_tasks) {
-        return $t->Index if ( $t->Id eq $name );
+        return ($t->x2, $t->y2) if ( $t->Id eq $id );
     }
 }
 
