@@ -52,11 +52,28 @@ use Date::Calc qw(  Today
 
 #-- main package -------------------------------------------------------------
 #-- xml parsen und datenstrukturen zusammenrühren
-my $t;
+my $t;  # act task
+my $w;  # act resource (worker)
+my $r;      # act res_name mapping
+my %rmap;   # act res_name mapping
 my %project;
 my @all_tasks;
 my @elm_fifo;
 my @task_fifo;
+my %res_load;
+#-- res_load = {
+#--     worker1 => {
+#--         task1 => [start, end, load],
+#--         task2 => [start, end, load],
+#--         task3 => [start, end, load]
+#--     },
+#--     worker2 => {
+#--         task1 => [start, end, load],
+#--         task3 => [start, end, load]
+#--     }
+#--     ...
+#-- }
+my $last_Y_task = 0;
 
 _pars_xml();
 
@@ -89,9 +106,14 @@ my $header_height = 10;
 my $poster        = '/usr/bin/poster';
 my $out_file      = $project{'Id'}.'.eps';
 my $out_file_p    = $project{'Id'}.'_poster.eps';
+my $res_count     = scalar (keys %rmap);
+my $res_height    = (($task_height + $task_space) * $res_count);
+$res_height = 0; # erst mal apschalten
 #-- calc page size
 my $page_x    = ($page_border * 2) + ($project_days * $day_x);
-my $page_y    = ($page_border * 2) + $header_height*3 + (($task_height + $task_space) * $task_count);
+my $page_y    = ($page_border * 2) +
+                $header_height * 3 +
+                (($task_height + $task_space) * $task_count) + $res_height;
 
 _make_postscript_file($page_x, $page_y);
 _make_poster();
@@ -99,6 +121,9 @@ _make_poster();
 #use Data::Dumper;
 #print Data::Dumper->Dump([\%project], ['project']);
 #print Data::Dumper->Dump([\@all_tasks], ['all_tasks']);
+#print Data::Dumper->Dump([\%res_load], ['res_load']);
+#print Data::Dumper->Dump([\%rmap], ['rmap']);
+
 
 #----------------------------------------------------------------------------------------------------------------
 #---------------- make poster ------------------------------
@@ -175,7 +200,14 @@ sub start {
         $t->h_actualEnd("$_[1]")    if ( $element eq 'actualEnd' );
         $t->h_planStart("$_[1]")    if ( $element eq 'planStart' );
         $t->h_planEnd("$_[1]")      if ( $element eq 'planEnd' );
-        push @{$t->Allocations}, "$_[1]"    if ( $elm_fifo[$#elm_fifo] eq 'Allocation' );
+        if ($element eq 'Resource') {
+            $r = $_[1];
+        }
+    }
+    if ( $elm_fifo[$#elm_fifo] eq 'Allocation' ) {
+        $res_load{$_[1]}{$t->Id} = [ $t->h_planStart, $t->h_planEnd ];
+        $w = $_[1];
+        push @{$t->Allocations}, "$_[1]";
     }
     $t->Id($_[1]) if ( $element eq 'Task' );
 }
@@ -209,7 +241,13 @@ sub text {
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
-        push @{$t->bookedResources}, "$string"  if ( $elm_fifo[$#elm_fifo] eq 'Resource' );
+        if ( $elm_fifo[$#elm_fifo] eq 'Resource' ) {
+            push @{$t->bookedResources}, "$string";
+            $rmap{$r} = $string;
+        }
+    }
+    if ( $elm_fifo[$#elm_fifo] eq 'Load' ) {
+        push @{$res_load{$w}{$t->Id}}, $string;
     }
 }
 
@@ -235,6 +273,7 @@ sub _make_postscript_file {
       _draw_header($p, $project_name);
       _draw_grid($p);
       _draw_task($p, $page_x, $page_y);
+#      _draw_res($p);
       _draw_depends($p);
       _draw_label($p);
 
@@ -265,7 +304,7 @@ sub _draw_depends {
                 #  ---|  |
                 #        |
                 #     +++|
-                $p->line($x1+($task_height/2), $y1-($task_height/1.5), $x1-($task_height/2), $y1-($task_height/1.5));
+                $p->line($x1+($task_height/2), $y1-($task_height/1.5), $x1-($task_height*2), $y1-($task_height/1.5));
                 #  ---|
                 #     |---
                 #  ---|  |
@@ -274,7 +313,7 @@ sub _draw_depends {
                 #   +
                 #   +
                 #   +
-                $p->line($x1-($task_height/2), $y1-($task_height/1.5), $x1-($task_height/2), $task->y1);
+                $p->line($x1-($task_height*2), $y1-($task_height/1.5), $x1-($task_height*2), $task->y1);
                 #  ---|
                 #     |---
                 #  ---|  |
@@ -283,7 +322,7 @@ sub _draw_depends {
                 #   |
                 #   |
                 #   |+++++++++++++++++
-                $p->line($x1-($task_height/2), $task->y1, $task->x1, $task->y1 );
+                $p->line($x1-($task_height*2), $task->y1, $task->x1, $task->y1 );
                 #  ---|
                 #     |---
                 #  ---|  |
@@ -324,6 +363,53 @@ sub _draw_label {
     }
 }
 
+#-- die res malen
+sub _draw_res {
+    my $p = shift;
+    my $c = 0;
+    my $a = 0;
+    foreach my $i (sort keys %res_load) {
+        foreach my $ii (keys %{$res_load{$i}}) {
+            my $res = $rmap{$i};
+            my $taskID = $ii;
+            my ($start, $end, $load) = @{$res_load{$i}{$ii}};
+                $start =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+                $end =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+            #-- wieviele tage vom anfang her fängt der task an
+            my ($start_year, $start_month, $start_day)  = split(/-/, $start);
+            my ($end_year, $end_month, $end_day)        = split(/-/, $end);
+               ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
+            my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
+                                            $start_year, $start_month, $start_day);
+            #-- länge des tasks in tagen
+            my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
+                                            $end_year, $end_month, $end_day);
+            #-- balken koordinaten
+            my $_x1 = $start_delta * $day_x;
+            my $_y1 = $last_Y_task + ( ($task_height + $task_space) * $c ) - $page_border;
+            my ($x1, $y1) = _trans_coord($_x1, $_y1);
+            my $_x2 = $_x1 + ($task_length * $day_x);
+            my $_y2 = $_y1 + $task_height;
+            my ($x2, $y2) = _trans_coord($_x2, $_y2);
+            $p->setcolour(222,222,222);
+            $p->box($x1, $y1, $x2, $y2, 1);
+            $p->setcolour(0,0,0);
+            $p->box($x1, $y1, $x2, $y2, 0);
+            if ($task_length >= 2 && $a == 0) {
+                $p->setfont("Helvetica", 8);
+                $p->text($x1+1, $y1-($task_height/1.5), "$res");
+            }
+            #-- in die mitte die load reinschreiben
+            if ($task_length >= 2) {
+                $p->text($x2-6, $y1-($task_height/1.5), "$load");
+            }
+            $a++;
+        }
+        $c++;
+        $a = 0;
+    }
+}
+
 #-- die tasks malen
 sub _draw_task {
     my ($p, $page_x, $page_y) = @_;
@@ -356,6 +442,8 @@ sub _draw_task {
         my $_x2 = $_x1 + ($task_length * $day_x);
         my $_y2 = $_y1 + $task_height;
         my ($x2, $y2) = _trans_coord($_x2, $_y2);
+        #-- letzte y-koordinate mweken um nachher noch die res-balken zu malen
+        $last_Y_task =  $y2 if ($y2 > $last_Y_task);
         #-- die koordinaten für anfang und ende des tasks merken, da fangen die
         #-- depend-lines an oder da gehen sie halt hin, hoffentlich ;)
         $task->x1($x1); $task->y1($y1-($task_height/2));
