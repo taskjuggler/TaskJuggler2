@@ -18,7 +18,6 @@
  <!ATTLIST Project
        Id           CDATA #REQUIRED
        WeekStart    CDATA #IMPLIED>
- <!ELEMENT Name         (#PCDATA)>
  <!ELEMENT Version      (#PCDATA)>
  <!ELEMENT Priority     (#PCDATA)>
  <!ELEMENT start        (#PCDATA)>
@@ -75,7 +74,7 @@ void ReportXML::generate()
    // FIXME: All projectIDs need to be saved here.
    proj.setAttribute( "Id", project->getCurrentId());
    proj.setAttribute( "WeekStart", project->getWeekStartsMonday() ? "Mon" : "Sun" );
-   
+
    proj.appendChild( ReportXML::createXMLElem( doc, "Name", project->getName()));
    QString hStr = project->getVersion();
    if( !hStr.isEmpty() )
@@ -84,17 +83,17 @@ void ReportXML::generate()
    hStr = project->getCopyright();
    if( !hStr.isEmpty() )
       proj.appendChild( ReportXML::createXMLElem( doc, "Copyright", hStr ));
-   
+
    proj.appendChild( ReportXML::createXMLElem( doc, "Priority",
                            QString::number(project->getPriority())));
-   
+
    QDomElement tempElem;
    tempElem = ReportXML::createXMLElem( doc, "start",
                     QString::number(project->getStart()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getStart()));
-   
+
    proj.appendChild( tempElem );
-   
+
    tempElem = ReportXML::createXMLElem( doc, "end",
                     QString::number(project->getEnd()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getEnd()));
@@ -104,7 +103,7 @@ void ReportXML::generate()
                     QString::number(project->getNow()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getNow()));
    proj.appendChild( tempElem );
-   
+
    doc.appendChild( proj );
 
    /* retrieve Tasklist from the project ... */
@@ -123,7 +122,7 @@ void ReportXML::generate()
             *  since tasks do their subtasks recursive */
             if( (*tli)->isContainer() && (*tli)->getParent() == 0 )
                  proj.appendChild( (*tli)->xmlElement( doc ));
-        }   
+        }
    }
    QString xml = doc.toString();
 
@@ -138,6 +137,6 @@ void ReportXML::generate()
       }
    }
    // qDebug( "XML: %s", xml.latin1() );
-   
+
 }
 

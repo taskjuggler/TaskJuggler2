@@ -13,14 +13,9 @@
 /* -- DTD --
  <!-- Task element, child of projects and for subtasks -->
  <!ELEMENT Task     (Index, Name, ProjectID, Priority, complete,
-                     Type, ParentTask*, Note*,
-                     minStart, maxStart, minEnd, maxEnd, actualStart,
-                     actualEnd, planStart, planEnd, Reference*,
-                     ReferenceLabel*, startBufferSize*, ActualStartBufferEnd*,
-                     PlanStartBufferEnd*, endBufferSize*,
-                     ActualEndBufferStart*, PlanEndBufferStart*, Resource*,
-                     SubTasks*, Previous*, Follower*, Allocations*,
-                     bookedResources* )>
+                     Type, ParentTask*, actualStart, actualEnd, planStart, planEnd,
+                     SubTasks*, Previous*, Follower*, Allocation*,
+                     Resource* )>
  <!ATTLIST Task         Id CDATA #REQUIRED>
  <!ELEMENT Index        (#PCDATA)>
  <!ELEMENT Name         (#PCDATA)>
@@ -45,7 +40,10 @@
  <!ELEMENT PlanStartBufferEnd   (#PCDATA)>
  <!ELEMENT endBufferSize        (#PCDATA)>
  <!ELEMENT ActualEndBufferStart (#PCDATA)>
- <!ELEMENT PlanEndBufferStart    (#PCDATA)>
+ <!ELEMENT PlanEndBufferStart   (#PCDATA)>
+ <!ELEMENT Resource             (#PCDATA)>
+ <!ATTLIST Resource
+           Id            CDATA #REQUIRED>
  <!ELEMENT SubTasks     (Task+)>
  <!ELEMENT Previous     (#PCDATA)>
  <!ELEMENT Follower     (#PCDATA)>
@@ -78,7 +76,7 @@
            humanReadable CDATA #REQUIRED>
    /-- DTD --/
 */
- 
+
 #include <stdlib.h>
 
 #include "Task.h"
@@ -122,7 +120,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
     scenarios[0].endBuffer = 0.0;
     scenarios[0].startCredit = 0.0;
     scenarios[0].endCredit = 0.0;
-    
+
     if (p)
     {
         // Inherit flags from parent task.
@@ -135,7 +133,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
         priority = p->priority;
         minStart = p->minStart;
         maxStart = p->maxEnd;
-        minEnd = p->minStart; 
+        minEnd = p->minStart;
         maxEnd = p->maxEnd;
         responsible = p->responsible;
         account = p->account;
@@ -149,7 +147,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
             if ((*it)[0] == '!')
                 *it = '!' + *it;
         }
-        
+
         // Inherit precedes from parent. Relative IDs need to get another '!'.
         precedesIds = p->precedesIds;
         for (QStringList::Iterator it = precedesIds.begin();
@@ -206,7 +204,7 @@ Task::errorMessage(const char* msg, ...) const
     char buf[1024];
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
-    
+
     TJMH.errorMessage(buf, file, line);
 }
 
@@ -451,8 +449,8 @@ Task::propagateStart(bool notUpwards)
      * ALAP task or have no duration. */
     for (TaskListIterator tli(previous); *tli != 0; ++tli)
         if ((*tli)->end == 0 && (*tli)->latestEnd() != 0 &&
-            ((*tli)->scheduling == ALAP || 
-             ((*tli)->effort == 0.0 && (*tli)->length == 0.0 && 
+            ((*tli)->scheduling == ALAP ||
+             ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
             (*tli)->end = (*tli)->latestEnd();
@@ -473,7 +471,7 @@ Task::propagateStart(bool notUpwards)
             (*tli)->start = start;
             if (DEBUGTS(11))
                 qDebug("PS3: Setting start of %s to %s",
-                       (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());   
+                       (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
             /* Recursively propagate the start date */
             (*tli)->propagateStart(TRUE);
         }
@@ -508,9 +506,9 @@ Task::propagateEnd(bool notUpwards)
     /* Set start date to all followers that have no start date yet, but are
      * ASAP task or have no duration. */
     for (TaskListIterator tli(followers); *tli != 0; ++tli)
-        if ((*tli)->start == 0 && (*tli)->earliestStart() != 0 && 
+        if ((*tli)->start == 0 && (*tli)->earliestStart() != 0 &&
             ((*tli)->scheduling == ASAP ||
-             ((*tli)->effort == 0.0 && (*tli)->length == 0.0 && 
+             ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
             (*tli)->start = (*tli)->earliestStart();
@@ -566,7 +564,7 @@ Task::isRunaway() const
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
         if ((*tli)->isRunaway())
             return FALSE;
-    
+
     return runAway;
 }
 
@@ -584,11 +582,11 @@ Task::bookResources(time_t date, time_t slotDuration)
             qDebug("Task %s is not active at %s", id.latin1(),
                    time2tjp(date).latin1());
         return FALSE;
-    }       
+    }
 
-    for (QPtrListIterator<Allocation> ali(allocations); 
+    for (QPtrListIterator<Allocation> ali(allocations);
          *ali != 0 && (effort == 0.0 || doneEffort < effort);
-         ++ali) 
+         ++ali)
     {
         /* If a shift has been defined for a resource for this task, there
          * must be a shift interval defined for this day and the time must
@@ -633,7 +631,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
     {
         if ((*rti)->isAvailable(date, slotDuration, loadFactor, this))
         {
-            (*rti)->book(new Booking(Interval(date, date + slotDuration - 1), 
+            (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));
             addBookedResource(*rti);
 
@@ -672,7 +670,7 @@ Task::createCandidateList(time_t date, Allocation* a)
      * first available resource is picked later on. */
     QPtrList<Resource> candidates = a->getCandidates();
     QPtrList<Resource> cl;
-    
+
     /* We try to minimize resource changes for consecutives time slots. So
      * the resource used for the previous time slot is put to the 1st position
      * of the list. */
@@ -699,7 +697,7 @@ Task::createCandidateList(time_t date, Allocation* a)
             {
                 double minLoad = 0;
                 Resource* minLoaded = 0;
-                for (QPtrListIterator<Resource> rli(candidates); 
+                for (QPtrListIterator<Resource> rli(candidates);
                      *rli != 0; ++rli)
                 {
                     double load =
@@ -723,7 +721,7 @@ Task::createCandidateList(time_t date, Allocation* a)
             {
                 double maxLoad = 0;
                 Resource* maxLoaded = 0;
-                for (QPtrListIterator<Resource> rli(candidates); 
+                for (QPtrListIterator<Resource> rli(candidates);
                      *rli != 0; ++rli)
                 {
                     double load =
@@ -764,20 +762,20 @@ Task::isCompleted(int sc, time_t date) const
     {
         // some completion degree has been specified.
         return ((scenarios[sc].complete / 100.0) *
-                (scenarios[sc].end - scenarios[sc].start) 
+                (scenarios[sc].end - scenarios[sc].start)
                 + scenarios[sc].start) > date;
     }
-    
+
 
     return (project->getNow() > date);
 }
 
-bool 
+bool
 Task::isBuffer(int sc, const Interval& iv) const
 {
     return iv.overlaps(Interval(scenarios[sc].start,
                                 scenarios[sc].startBufferEnd)) ||
-        iv.overlaps(Interval(scenarios[sc].endBufferStart, 
+        iv.overlaps(Interval(scenarios[sc].endBufferStart,
                              scenarios[sc].end));
 }
 
@@ -817,7 +815,7 @@ Task::latestEnd() const
     return date - 1;
 }
 
-double 
+double
 Task::getCalcEffort(int sc) const
 {
     return getLoad(sc, Interval(scenarios[sc].start, scenarios[sc].end));
@@ -844,7 +842,7 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
     if (resource)
         load += resource->getLoad(sc, period, AllAccounts, this);
     else
-        for (ResourceListIterator rli(scenarios[sc].bookedResources); 
+        for (ResourceListIterator rli(scenarios[sc].bookedResources);
              *rli != 0; ++rli)
             load += (*rli)->getLoad(sc, period, AllAccounts, this);
 
@@ -860,7 +858,7 @@ Task::getCredits(int sc, const Interval& period, AccountType acctType,
     if (recursive && !sub.isEmpty())
     {
         for (TaskListIterator tli(sub); *tli != 0; ++tli)
-            credits += (*tli)->getCredits(sc, period, acctType, resource, 
+            credits += (*tli)->getCredits(sc, period, acctType, resource,
                                           recursive);
     }
 
@@ -890,7 +888,7 @@ Task::xRef(QDict<Task>& hash)
 
     if (DEBUGPF(2))
         qDebug("Creating cross references for task %s ...", id.latin1());
-    
+
     for (QStringList::Iterator it = dependsIds.begin();
          it != dependsIds.end(); ++it)
     {
@@ -906,7 +904,7 @@ Task::xRef(QDict<Task>& hash)
             errorMessage(i18n("No need to specify dependency %1 multiple "
                               "times.").arg(absId));
             // Make it a warning only for the time beeing.
-            // error = TRUE; 
+            // error = TRUE;
         }
         else
         {
@@ -935,7 +933,7 @@ Task::xRef(QDict<Task>& hash)
             errorMessage(i18n("No need to specify dependency '%1'")
                          .arg(absId));
             // Make it a warning only for the time beeing.
-            // error = TRUE; 
+            // error = TRUE;
         }
         else
         {
@@ -1037,7 +1035,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         qDebug("%sloopDetection at %s (%s)",
                QString().fill(' ', list.count() + 1).latin1(), id.latin1(),
                atEnd ? "End" : "Start");
-    
+
     /* If we find the current task (with same position) in the list, we have
      * detected a loop. */
     LoopDetectorInfo* thisTask = new LoopDetectorInfo(this, atEnd);
@@ -1060,7 +1058,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         return TRUE;
     }
     list.append(thisTask);
-    
+
     /* Now we have to traverse the graph in the direction of the specified
      * dependencies. 'precedes' and 'depends' specify dependencies in the
      * opposite direction of the flow of the tasks. So we have to make sure
@@ -1081,7 +1079,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
            +--- | --
                 |
                 V
-        */   
+        */
         if (caller == LoopDetectorInfo::fromPrev ||
             caller == LoopDetectorInfo::fromParent)
             /* If we were not called from a sub task we check all sub tasks.*/
@@ -1123,7 +1121,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 return TRUE;
         }
         if (caller == LoopDetectorInfo::fromSub ||
-            caller == LoopDetectorInfo::fromOtherEnd || 
+            caller == LoopDetectorInfo::fromOtherEnd ||
             (caller == LoopDetectorInfo::fromPrev && scheduling == ALAP))
         {
             /*
@@ -1145,8 +1143,8 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 {
                     if (DEBUGPF(15))
                         qDebug("%sChecking parent task of %s",
-                               QString().fill(' ', list.count()).latin1(),  
-                               id.latin1());        
+                               QString().fill(' ', list.count()).latin1(),
+                               id.latin1());
                     if (getParent()->loopDetection(list, FALSE,
                                                    LoopDetectorInfo::fromSub))
                         return TRUE;
@@ -1173,7 +1171,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                         qDebug("%sChecking previous %s of task %s",
                                QString().fill(' ', list.count()).latin1(),
                                (*tli)->getId().latin1(), id.latin1());
-                    if((*tli)->loopDetection(list, TRUE, 
+                    if((*tli)->loopDetection(list, TRUE,
                                              LoopDetectorInfo::fromSucc))
                         return TRUE;
                 }
@@ -1192,7 +1190,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         -- | ---+
            |
            v
-        */  
+        */
         if (caller == LoopDetectorInfo::fromSucc ||
             caller == LoopDetectorInfo::fromParent)
             /* If we were not called from a sub task we check all sub tasks.*/
@@ -1206,7 +1204,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 {
                     if (DEBUGPF(15))
                         qDebug("%sChecking sub task %s of %s",
-                               QString().fill(' ', list.count()).latin1(),  
+                               QString().fill(' ', list.count()).latin1(),
                                (*tli)->getId().latin1(), id.latin1());
                     if ((*tli)->loopDetection(list, TRUE,
                                               LoopDetectorInfo::fromParent))
@@ -1220,14 +1218,14 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         --------+
          <----o |<--
         --------+
-        */  
+        */
         if (scheduling == ALAP && sub.isEmpty())
         {
             /* Leaf task are followed in their scheduling direction. So we
              * move from the task end to the task start. */
             if (DEBUGPF(15))
                 qDebug("%sChecking start of task %s",
-                       QString().fill(' ', list.count()).latin1(),  
+                       QString().fill(' ', list.count()).latin1(),
                        id.latin1());
             if (loopDetection(list, FALSE, LoopDetectorInfo::fromOtherEnd))
                 return TRUE;
@@ -1244,7 +1242,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
             --------+
                   ^
                   |
-            */  
+            */
             if (parent)
             {
                 /* If the task precedes a brother we ignore the arc to the
@@ -1255,8 +1253,8 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 {
                     if (DEBUGPF(15))
                         qDebug("%sChecking parent task of %s",
-                               QString().fill(' ', list.count()).latin1(),  
-                               id.latin1());        
+                               QString().fill(' ', list.count()).latin1(),
+                               id.latin1());
                     if (getParent()->loopDetection(list, TRUE,
                                                    LoopDetectorInfo::fromSub))
                         return TRUE;
@@ -1264,13 +1262,13 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
             }
 
             /*
-                  +---> 
+                  +--->
             ----- | +
               --> o |<--
             --------+
                   ^
                   |
-            */  
+            */
             /* Now check all following tasks that have explicit depends on this
              * task. */
             for (TaskListIterator tli(successors); *tli != 0; ++tli)
@@ -1281,7 +1279,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 {
                     if (DEBUGPF(15))
                         qDebug("%sChecking follower %s of task %s",
-                               QString().fill(' ', list.count()).latin1(),  
+                               QString().fill(' ', list.count()).latin1(),
                                (*tli)->getId().latin1(), id.latin1());
                     if ((*tli)->loopDetection(list, FALSE,
                                               LoopDetectorInfo::fromPrev))
@@ -1295,7 +1293,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
 
     if (DEBUGPF(5))
         qDebug("%sNo loops found in %s (%s)",
-                 QString().fill(' ', list.count()).latin1(),    
+                 QString().fill(' ', list.count()).latin1(),
                  id.latin1(), atEnd ? "End" : "Start");
     return FALSE;
 }
@@ -1329,7 +1327,7 @@ Task::resolveId(QString relId)
 bool
 Task::hasStartDependency(int sc)
 {
-    /* Checks whether the task has a start specification for the 
+    /* Checks whether the task has a start specification for the
      * scenario. This can be a fixed start time or a dependency on another
      * task's end or an implicit dependency on the fixed start time of a
      * parent task. */
@@ -1344,7 +1342,7 @@ Task::hasStartDependency(int sc)
 bool
 Task::hasEndDependency(int sc)
 {
-    /* Checks whether the task has an end specification for the 
+    /* Checks whether the task has an end specification for the
      * scenario. This can be a fixed end time or a dependency on another
      * task's start or an implicit dependency on the fixed end time of a
      * parent task. */
@@ -1449,7 +1447,7 @@ Task::preScheduleOk()
             |D M |
             |D M |D
              */
-            if (scenarios[sc].start != 0 && scenarios[sc].end != 0 && 
+            if (scenarios[sc].start != 0 && scenarios[sc].end != 0 &&
                 scenarios[sc].start != scenarios[sc].end + 1)
             {
                 errorMessage(i18n
@@ -1508,7 +1506,7 @@ Task::preScheduleOk()
                                   "duration specification for %2 scenario.")
                              .arg(id).arg(project->getScenarioId(sc)));
                 return FALSE;
-            }   
+            }
             /*
             err2: Underspecified (6 cases)
             |  --> -
@@ -1566,7 +1564,7 @@ Task::preScheduleOk()
                 return FALSE;
             }
         }
-        
+
         if (!account &&
             (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
         {
@@ -1674,7 +1672,7 @@ Task::scheduleOk(int& errors, QString scenario) const
         errors++;
         return FALSE;
     }
-    if (end + (milestone ? 1 : 0) < project->getStart() || 
+    if (end + (milestone ? 1 : 0) < project->getStart() ||
         end + (milestone ? 1 : 0) > project->getEnd())
     {
         errorMessage(i18n("End time of task %1 is outside of the "
@@ -1770,7 +1768,7 @@ Task::scheduleOk(int& errors, QString scenario) const
         errors++;
         return FALSE;
     }
-    
+
     return TRUE;
 }
 
@@ -1894,16 +1892,16 @@ Task::computeBuffers()
         scenarios[sc].startBufferEnd = scenarios[sc].start - 1;
         scenarios[sc].endBufferStart = scenarios[sc].end + 1;
 
-    
+
         if (duration > 0.0)
         {
             if (scenarios[sc].startBuffer > 0.0)
                 scenarios[sc].startBufferEnd = scenarios[sc].start +
-                    (time_t) ((scenarios[sc].end - scenarios[sc].start) * 
+                    (time_t) ((scenarios[sc].end - scenarios[sc].start) *
                               scenarios[sc].startBuffer / 100.0);
             if (scenarios[sc].endBuffer > 0.0)
                 scenarios[sc].endBufferStart = scenarios[sc].end -
-                    (time_t) ((scenarios[sc].end - scenarios[sc].start) * 
+                    (time_t) ((scenarios[sc].end - scenarios[sc].start) *
                               scenarios[sc].endBuffer / 100.0);
         }
         else if (length > 0.0)
@@ -1923,12 +1921,12 @@ Task::computeBuffers()
             }
             if (scenarios[sc].endBuffer > 0.0)
             {
-                for (l = 0.0; scenarios[sc].endBufferStart > 
+                for (l = 0.0; scenarios[sc].endBufferStart >
                      scenarios[sc].start; scenarios[sc].endBufferStart -= sg)
                 {
                     if (project->isWorkingDay(scenarios[sc].endBufferStart))
                         l += (double) sg / ONEDAY;
-                    if (l >= scenarios[sc].length * 
+                    if (l >= scenarios[sc].length *
                         scenarios[sc].endBuffer / 100.0)
                         break;
                 }
@@ -1939,26 +1937,26 @@ Task::computeBuffers()
             double e;
             if (scenarios[sc].startBuffer > 0.0)
             {
-                for (e = 0.0; scenarios[sc].startBufferEnd < scenarios[sc].end; 
+                for (e = 0.0; scenarios[sc].startBufferEnd < scenarios[sc].end;
                      scenarios[sc].startBufferEnd += sg)
                 {
-                    e += getLoad(sc, 
+                    e += getLoad(sc,
                                  Interval(scenarios[sc].startBufferEnd,
                                           scenarios[sc].startBufferEnd + sg));
-                    if (e >= scenarios[sc].effort * 
+                    if (e >= scenarios[sc].effort *
                         scenarios[sc].startBuffer / 100.0)
                         break;
                 }
             }
             if (scenarios[sc].endBuffer > 0.0)
             {
-                for (e = 0.0; scenarios[sc].endBufferStart > 
+                for (e = 0.0; scenarios[sc].endBufferStart >
                      scenarios[sc].start; scenarios[sc].endBufferStart -= sg)
                 {
-                    e += getLoad(sc, 
+                    e += getLoad(sc,
                                  Interval(scenarios[sc].endBufferStart - sg,
                                           scenarios[sc].endBufferStart));
-                    if (e >= scenarios[sc].effort * 
+                    if (e >= scenarios[sc].effort *
                         scenarios[sc].endBuffer / 100.0)
                         break;
                 }
@@ -2014,7 +2012,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    QString idStr = getId();
 /*   if( !absId )
       idStr = idStr.section( '.', -1 ); */
-      
+
    taskElem.setAttribute( "Id", idStr );
 
    QDomText t;
@@ -2033,14 +2031,14 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
      tType = "Container";
       else
      tType = "Task";
-      
+
    }
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Type", tType  ));
 
    CoreAttributes *parent = getParent();
    if( parent )
       taskElem.appendChild( ReportXML::ReportXML::createXMLElem( doc, "ParentTask", parent->getId()));
-     
+
    if( !note.isEmpty())
       taskElem.appendChild( ReportXML::createXMLElem( doc, "Note", getNote()));
    if(!ref.isEmpty())
@@ -2051,12 +2049,12 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
                                                      refLabel));
 
     if (minStart != 0)
-    {   
+    {
         tempElem = ReportXML::createXMLElem( doc, "minStart", QString::number( minStart ));
         tempElem.setAttribute( "humanReadable", time2ISO( minStart ));
         taskElem.appendChild( tempElem );
     }
-   
+
     if (maxStart != 0)
     {
         tempElem = ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart ));
@@ -2077,25 +2075,25 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
         tempElem.setAttribute( "humanReadable", time2ISO( maxEnd ));
         taskElem.appendChild( tempElem );
     }
-   
-   tempElem = ReportXML::createXMLElem( doc, "actualStart", 
+
+   tempElem = ReportXML::createXMLElem( doc, "actualStart",
                                         QString::number(scenarios[1].start));
    tempElem.setAttribute( "humanReadable",
                           time2ISO(scenarios[1].start));
    taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "actualEnd", 
+   tempElem = ReportXML::createXMLElem( doc, "actualEnd",
                                         QString::number(scenarios[1].end +
                                                         (milestone ? 1 : 0)));
    tempElem.setAttribute( "humanReadable",
                           time2ISO(scenarios[1].end + (milestone ? 1 : 0)));
    taskElem.appendChild( tempElem );
-   
+
    tempElem = ReportXML::createXMLElem( doc, "planStart", QString::number( scenarios[0].start ));
    tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].start ));
    taskElem.appendChild( tempElem );
 
-   tempElem = ReportXML::createXMLElem( doc, "planEnd", 
+   tempElem = ReportXML::createXMLElem( doc, "planEnd",
                                         QString::number(scenarios[0].end +
                                                         (milestone ? 1 : 0)));
    tempElem.setAttribute( "humanReadable", time2ISO( scenarios[0].end +
@@ -2107,7 +2105,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    {
        /* startbuffer exists */
        tempElem = ReportXML::createXMLElem
-           (doc, "startBufferSize", 
+           (doc, "startBufferSize",
             QString::number(getStartBuffer(Task::Plan)));
        taskElem.appendChild( tempElem );
 
@@ -2134,7 +2132,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
        taskElem.appendChild(tempElem);
 
        tempElem = ReportXML::createXMLElem
-           (doc, "PlanEndBufferStart", 
+           (doc, "PlanEndBufferStart",
             QString::number(getEndBufferStart(Task::Plan)));
        tempElem.setAttribute("humanReadable",
                              time2ISO(getEndBufferStart(Task::Plan)));
@@ -2150,8 +2148,8 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 
    /* Responsible persons */
    if( getResponsible() )
-      taskElem.appendChild( getResponsible()->xmlIDElement( doc ));      
-   
+      taskElem.appendChild( getResponsible()->xmlIDElement( doc ));
+
    /* Now start the subtasks */
    int cnt = 0;
    QDomElement subTaskElem = doc.createElement( "SubTasks" );
@@ -2171,7 +2169,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    if( previous.count() > 0 )
    {
       for (TaskListIterator tli(previous); *tli != 0; ++tli)
-      { 
+      {
      if( *tli != this )
      {
         taskElem.appendChild( ReportXML::createXMLElem( doc, "Previous",
@@ -2179,12 +2177,12 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
      }
       }
    }
-   
+
    /* list of tasks by id which follow */
    if( followers.count() > 0 )
    {
       for (TaskListIterator tli(followers); *tli != 0; ++tli)
-      { 
+      {
      if( *tli != this )
      {
         taskElem.appendChild( ReportXML::createXMLElem( doc, "Follower",
@@ -2206,8 +2204,8 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
     *       </Allocation>
     *  </Resource>
     *
-    *  But we do not ;-) to have full flexibility. 
-    *  
+    *  But we do not ;-) to have full flexibility.
+    *
     */
    /* Allocations */
    if( allocations.count() > 0 )
@@ -2221,7 +2219,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 
    /* booked Ressources */
    if( bookedResources.count() > 0 )
-   {    
+   {
        for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
       {
      taskElem.appendChild( (*rli)->xmlIDElement( doc ));
@@ -2240,12 +2238,12 @@ void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
    QDateTime dt;
 
    // todo->setReadOnly( true );
-   
+
    /* Start-Time of the task */
    dt.setTime_t( getPlanStart() );
    todo->setDtStart( dt );
    todo->setHasDueDate( true );
-   
+
    /* Due-Time of the todo -> plan End  */
    dt.setTime_t( getPlanEnd());
    todo->setDtDue( dt );
@@ -2261,14 +2259,14 @@ void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
    QPtrList<Resource> resList;
    resList = getPlanBookedResources();
    QStringList strList;
-   
+
    Resource *res = 0;
    for (ResourceListIterator rli(resList); *rli != 0; ++rli)
    {
       strList.append( (*rli)->getName());
    }
    todo->setResources(strList);
-   
+
 }
 
 #endif /* HAVE_KDE */
@@ -2288,7 +2286,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
         setName( elem.text());
       }
       else if( elemTagName == "SubTasks" )
-      {                       
+      {
      QDomElement subTaskElem = elem.firstChild().toElement();
      for( ; !subTaskElem.isNull(); subTaskElem = subTaskElem.nextSibling().toElement() )
      {
