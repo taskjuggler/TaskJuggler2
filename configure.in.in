@@ -118,13 +118,18 @@ AC_CHECK_PROG(POSTER, poster, poster, no)
 if test "$DATECALC" = no -o "$XMLPARSER" = no -o \
         "$CLASSMETHODMAKER" = no -o "$POSTSCRIPTSIMPLE" = no -o \
         "$POSTER" = no ; then
-  AC_MSG_WARN(tjx2gantt GANTT chart generator will not work)
+  AC_MSG_WARN([tjx2gantt GANTT chart generator will not work])
   TJX2GANTT="no"
 fi
 AC_SUBST(TJX2GANTT)
 
-AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, no)
 dnl Check for the stuff needed to create the HTML manual
+AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, no)
+dnl meinproc is usualy part of kdelibs
+AC_CHECK_PROG(MEINPROC, meinproc, meinproc, no)
+if test "$MEINPROC" = no ; then
+  AC_MSG_WARN([KDE online help will not be generated])
+fi  
 AC_CHECK_PROG(DB2HTML, db2html, db2html, no)
 if test "$XSLTPROC" = no -o "$DB2HTML" = no ; then
   AC_MSG_WARN([HTML manual will not be generated])

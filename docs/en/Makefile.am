@@ -8,7 +8,9 @@ CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.x
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(kdeprefix)
 	$(INSTALL_DATA) $(srcdir)/index.docbook $(DESTDIR)$(kdeprefix)
-	$(INSTALL_DATA) $(srcdir)/index.cache.bz2 $(DESTDIR)$(kdeprefix)
+	@if test "${MEINPROC}" != "no" ; then \
+	  $(INSTALL_DATA) $(srcdir)/index.cache.bz2 $(DESTDIR)$(kdeprefix); \
+	fi  
 	$(INSTALL_DATA) $(srcdir)/*.xml $(DESTDIR)$(kdeprefix)
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)
 	@if test "${HTMLMANUAL}" != "no" ; then \
@@ -40,7 +42,9 @@ index.docbook : taskjuggler.xml
 	patch index.docbook < kde-doc.patch
 
 index.cache.bz2 : index.docbook GenPropertyReference.xml Example.xml
-	meinproc --check --cache index.cache.bz2 ./index.docbook
+	@if test "${MEINPROC}" != "no" ; then \
+	  $(MEINPROC) --check --cache index.cache.bz2 ./index.docbook; \
+	fi  
 
 taskjuggler/book1.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
