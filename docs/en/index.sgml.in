@@ -243,6 +243,9 @@ illustrate how to create shift schedules with TaskJuggler.
 <item>Fixed scheduler for working hours around midnight. This bug
 affected shifts as well as general working hours.
 
+<item>Extended timezone support. TaskJuggler will now operate properly
+when TZ environment variable is set.
+
 </itemize>
 
 <sect>Installation
@@ -518,9 +521,12 @@ started with '/*' and ended with '*/'.
 <label id="date"><tag/DATE/A DATE is an ISO-compliant date in the
 format YYYY-MM-DD[-hh:mm[:ss]][-TIMEZONE]. Hour, minutes,
 seconds and the TIMEZONE are optional. If not specified, the values
-are set to 0. The local timezone is used if no other is specified. If
-the timezone is not known taskjuggler will fall back to UTC. See
-the source code (taskjuggler/Utility.cpp) for details. 
+are set to 0. The local timezone or the default <ref
+id="project_timezone" name="timezone"> is used if no other is specified. If
+the timezone is not known taskjuggler will fall back to UTC (GMT). The
+value of TIMEZONE can either be a timezone name or since this can be
+ambiguous, the offset to GMT as +HHMM or -HHMM.
+See the source code (taskjuggler/Utility.cpp) for details. 
 
 <label id="global_id"><tag/GLOBAL_ID/A GLOBAL_ID may have the same
 characters as ID, but additionally may contain '.' and '!'. '!' may
@@ -1259,6 +1265,20 @@ sometime: <ref id="date" name="DATE">
 
 Use the specified day and time for computation of the project status
 instead of the current moment.
+
+<label id="project_timezone">
+<tag/timezone &lt;value&gt;/
+value:STRING
+
+Sets the default timezone of the project. All times that have no
+timezones spezified will be assumed to be in this timezone. The value
+must be a string just like those used for the TZ environment variable.
+Most Linux systems have a commandline utitity called <tt/tzselect/ to
+lookup possible values.
+
+The project start and end time are not affected by this setting. You
+have to explicitly state the timezone for those dates or the system
+defaults are assumed.
 
 <label id="project_timingresolution">
 <tag/timingresolution &lt;value&gt; &lt;unit&gt;/

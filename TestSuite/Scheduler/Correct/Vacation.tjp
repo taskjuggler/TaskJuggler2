@@ -1,4 +1,6 @@
-project test "Test" "$Id" 2000-01-01 2000-01-31
+project test "Test" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+	timezone "GMT"
+}
 
 vacation "Monday off" 2000-01-03
 vacation "Wednesday off" 2000-01-05
@@ -56,4 +58,12 @@ task t4 "Task4" {
 htmltaskreport "Vacation.html" {
 	columns no, name, start, end, daily
 }
+
+export "Vacation-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+
 

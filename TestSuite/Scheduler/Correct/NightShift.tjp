@@ -1,4 +1,6 @@
-project test "Test" "$Id" 2002-01-01 2002-11-31
+project test "Test" "$Id" 2002-01-01-0:00-CET 2002-11-31-0:00-CET {
+	timezone "Europe/Berlin"
+}
 
 workinghours mon 8:00 - 12:00, 13:00-17:00
 workinghours tue 8:00 - 12:00, 13:00-17:00
@@ -141,5 +143,12 @@ htmlresourcereport "NightShiftTimes.html" {
 	columns name, schedule
 	start 2002-01-01
 	end 2002-01-30
+}
+
+export "NightShift-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
 }
 

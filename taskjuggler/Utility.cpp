@@ -23,7 +23,34 @@ timezone2tz(const char* tzone)
 {
 	if (!TZDictReady)
 	{
-		TZDict.insert("PST", "GMP8:00");
+		// Let's start with generic timezones
+		TZDict.insert("+1200", "GMT-12:00");
+		TZDict.insert("+1100", "GMT-11:00");
+		TZDict.insert("+1000", "GMT-10:00");
+		TZDict.insert("+0900", "GMT-9:00");
+		TZDict.insert("+0800", "GMT-8:00");
+		TZDict.insert("+0700", "GMT-7:00");
+		TZDict.insert("+0600", "GMT-6:00");
+		TZDict.insert("+0500", "GMT-5:00");
+		TZDict.insert("+0400", "GMT-4:00");
+		TZDict.insert("+0300", "GMT-3:00");
+		TZDict.insert("+0200", "GMT-2:00");
+		TZDict.insert("+0100", "GMT-1:00");
+		TZDict.insert("+0000", "GMT-0:00");
+		TZDict.insert("-0100", "GMT+1:00");
+		TZDict.insert("-0200", "GMT+2:00");
+		TZDict.insert("-0300", "GMT+3:00");
+		TZDict.insert("-0400", "GMT+4:00");
+		TZDict.insert("-0500", "GMT+5:00");
+		TZDict.insert("-0600", "GMT+6:00");
+		TZDict.insert("-0700", "GMT+7:00");
+		TZDict.insert("-0800", "GMT+8:00");
+		TZDict.insert("-0900", "GMT+9:00");
+		TZDict.insert("-1000", "GMT+10:00");
+		TZDict.insert("-1100", "GMT+11:00");
+		TZDict.insert("-1200", "GMT+12:00");
+		// Now some conveniance timezones. There will be more in the future.
+		TZDict.insert("PST", "GMT8:00");
 		TZDict.insert("PDT", "GMT7:00");
 		TZDict.insert("MST", "GMT7:00");
 		TZDict.insert("MDT", "GMT6:00");
@@ -31,6 +58,7 @@ timezone2tz(const char* tzone)
 		TZDict.insert("CDT", "GMT5:00");
 		TZDict.insert("EST", "GMT5:00");
 		TZDict.insert("EDT", "GMT4:00");
+		TZDict.insert("GMT", "GMT");
 		TZDict.insert("CET", "GMT-1:00");
 		TZDict.insert("CEST", "GMT-2:00");
 
@@ -296,6 +324,15 @@ QString time2tjp(time_t t)
 	static char buf[128];
 
 	strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%Z", tms);
+	return buf;
+}
+
+QString time2rfc(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[128];
+
+	strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%z", tms);
 	return buf;
 }
 

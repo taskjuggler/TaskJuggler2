@@ -1,0 +1,22 @@
+#! /bin/sh
+
+export TASKJUGGLER=../../taskjuggler/taskjuggler
+if test ! -x $TASKJUGGLER ; then
+  export TASKJUGGLER=taskjuggler
+else
+  export TASKJUGGLER=../$TASKJUGGLER
+fi
+
+cd Scheduler/Correct
+for f in *.tjp ; do
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
+  exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjsp/g`
+  $TASKJUGGLER $f
+  if [ -f $exportFile ] ; then
+    mv -f $exportFile $referenceFile
+    echo $referenceFile created
+  fi
+  rm -f *.html
+done
+cd ../..
+

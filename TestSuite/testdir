@@ -4,24 +4,37 @@ errors=0
 export TASKJUGGLER=../../taskjuggler/taskjuggler
 if test ! -x $TASKJUGGLER ; then
   export TASKJUGGLER=taskjuggler
+else
+  export TASKJUGGLER=../$TASKJUGGLER
 fi
 
 function do_testing
 {
   f=$1
   op=$2
-  echo "Running test $f" >> log
-  $TASKJUGGLER $f 2>> log
+  echo "Running test $f" >> ../log
+  $TASKJUGGLER $f 2>> ../log
   if [ $? $op 0 ] ; then
     errors=$(( $errors + 1 ))
     echo "Test $f failed!"
   fi
   checkscript=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.sh/g`
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
+  exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjsp/g`
   if [ -x $checkscript ] ; then
-    sh $checkscript
+    sh $checkscript 2>> ../log
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
-      echo "Text $f failed (check script)!"
+      echo "Test $f failed (check script)!"
+    fi
+  fi
+  if [ -f $referenceFile ] ; then
+    cmp $exportFile $referenceFile 2>> ../log
+    if [ $? -ne 0 ] ; then
+      errors=$(( $errors + 1 ))
+      echo "Test $f failed (Reference file differs)!"
+    else
+      rm $exportFile
     fi
   fi
 }
@@ -32,13 +45,17 @@ touch log
 touch .timeStamp
 sleep 1
 
-for f in Correct/*.tjp ; do
+cd Correct
+echo "*** Running tests in Correct..." >> ../log
+for f in *.tjp ; do
   do_testing $f -ne
 done
- 
-for f in Errors/*.tjp ; do
+cd ../Errors
+echo "*** Running tests in Errors..." >> ../log
+for f in *.tjp ; do
   do_testing $f -eq
 done
+cd ..
 
 # remove all HTML files that are newer than the .timeStamp file
 if [ $errors -eq 0 ] ; then

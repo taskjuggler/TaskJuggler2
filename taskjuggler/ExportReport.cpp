@@ -79,16 +79,16 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 	for (Task* t = filteredTaskList.first(); t != 0;
 		 t = filteredTaskList.next())
 	{
-		QString start = time2tjp(t->getPlanStart());
-		QString end = time2tjp(t->getPlanEnd());
+		QString start = time2rfc(t->getPlanStart());
+		QString end = time2rfc(t->getPlanEnd());
 
 		s << "task " << t->getId() << " \"" << t->getName() << "\""
 			<< " { start " << start
 			<< " end " << end;
 		if (showActual)
 		{
-			QString start = time2tjp(t->getActualStart());
-			QString end = time2tjp(t->getActualEnd());
+			QString start = time2rfc(t->getActualStart());
+			QString end = time2rfc(t->getActualEnd());
 			s << "actualStart " << start
 				<< " actualEnd " << end;
 		}
@@ -124,15 +124,18 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 			}
 
 		}
-		s << "flags ";
-		for (QStringList::Iterator it = allFlags.begin();
-			 it != allFlags.end(); ++it)
+		if (allFlags.begin() != allFlags.end())
 		{
-			if (it != allFlags.begin())
-				s << ", ";
-			s << *it;
+			s << "flags ";
+			for (QStringList::Iterator it = allFlags.begin();
+				 it != allFlags.end(); ++it)
+			{
+				if (it != allFlags.begin())
+					s << ", ";
+				s << *it;
+			}
+			s << endl;
 		}
-		s << endl;
 	}
 
 	for (Task* t = filteredTaskList.first(); t != 0;
@@ -169,21 +172,21 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 					break;
 				case TA_MINSTART:
 					if (t->getMinStart() != 0)
-						s << "  minstart " << time2tjp(t->getMinStart()) 
+						s << "  minstart " << time2rfc(t->getMinStart()) 
 							<< endl;
 					break;
 				case TA_MAXSTART:
 					if (t->getMaxStart() != 0)
-						s << "  maxstart " << time2tjp(t->getMaxStart()) 
+						s << "  maxstart " << time2rfc(t->getMaxStart()) 
 							<< endl;
 					break;
 				case TA_MINEND:
 					if (t->getMinEnd() != 0)
-						s << "  minend " << time2tjp(t->getMinEnd()) << endl;
+						s << "  minend " << time2rfc(t->getMinEnd()) << endl;
 					break;
 				case TA_MAXEND:
 					if (t->getMaxEnd() != 0)
-						s << "  maxend " << time2tjp(t->getMaxEnd()) << endl;
+						s << "  maxend " << time2rfc(t->getMaxEnd()) << endl;
 					break;
 				case TA_COMPLETE:
 					if (t->getComplete() >= 0.0)
@@ -237,8 +240,8 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 		{
 			if (filteredTaskList.getTask(b->getTask()->getId()))
 			{
-				QString start = time2tjp(b->getStart());
-				QString end = time2tjp(b->getEnd());
+				QString start = time2rfc(b->getStart());
+				QString end = time2rfc(b->getEnd());
 				s << "  planbooking " << start << " " << end 
 					<< " " << b->getTask()->getId() << endl;
 			}
@@ -249,8 +252,8 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 		{
 			if (filteredTaskList.getTask(b->getTask()->getId()))
 			{
-				QString start = time2tjp(b->getStart());
-				QString end = time2tjp(b->getEnd());
+				QString start = time2rfc(b->getStart());
+				QString end = time2rfc(b->getEnd());
 				s << "  actualbooking " << start << " " << end 
 					<< " " << b->getTask()->getId() << endl;
 			}

@@ -276,8 +276,12 @@ FileInfo::nextToken(QString& token)
 				int i = 0;
 				if (c == '-')
 				{
+					/* Timezone can either be a name (ref.
+					 * Utility::timezone2tz) or GMT[+-]hh:mm */
 					token += c;
-					while ((c = getC()) != EOF && isalnum(c) && i++ < 12)
+					while ((c = getC()) != EOF &&
+						   (isalnum(c) || c == '+' || c == '-' || c == ':')
+						   && i++ < 9)
 						token += c;
 				}
 				ungetC(c);
@@ -1010,6 +1014,17 @@ ProjectFile::readProject()
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);
+			}
+			else if (token == KW("timezone"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Timezone name expected");
+					return FALSE;
+				}
+				if (setenv("TZ", token, 1) < 0)
+					qFatal("Ran out of space in environment section while "
+						   "setting timezone.");
 			}
 			else
 			{
@@ -2963,21 +2978,29 @@ time_t
 ProjectFile::date2time(const QString& date)
 {
 	int y, m, d, hour, min, sec;
-	char tZone[16] = "";
-	char savedTZ[16] = "";
+	char tZone[64] = "";
+	char* savedTZ = 0;
+	bool restoreTZ = FALSE;
 	if (sscanf(date, "%d-%d-%d-%d:%d:%d-%s",
 			   &y, &m, &d, &hour, &min, &sec, tZone) == 7 ||
 		(sec = 0) ||	// set sec to 0
 		sscanf(date, "%d-%d-%d-%d:%d-%s",
 			   &y, &m, &d, &hour, &min, tZone) == 6)
 	{
-		if (getenv("TZ"))
-			strcpy(getenv("TZ"), savedTZ);
 		const char* tz;
+		if ((tz = getenv("TZ")) != 0)
+		{
+			savedTZ = new char[strlen(tz) + 1];
+			strcpy(savedTZ, tz);
+		}
 		if ((tz = timezone2tz(tZone)) == 0)
 			fatalError("Illegal timezone %s", tZone);
 		else
-			setenv("TZ", tz, 1);
+		{
+			if (setenv("TZ", tz, 1) < 0)
+				qFatal("Ran out of space in environment section.");
+			restoreTZ = TRUE;
+		}
 	}
 	else if (sscanf(date, "%d-%d-%d-%d:%d:%d",
 				   	&y, &m, &d, &hour, &min, &sec) == 6)
@@ -3017,11 +3040,18 @@ ProjectFile::date2time(const QString& date)
 	struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	time_t localTime = mktime(&t);
 
-	if (strcmp(savedTZ, "") != 0) 
-		setenv("TZ", savedTZ, 1);
-	else
-		unsetenv("TZ");
-
+	if (restoreTZ)
+	{
+		if (savedTZ)
+		{
+			if (setenv("TZ", savedTZ, 1) < 0)
+				qFatal("Ran out of space in environment section.");
+			delete [] savedTZ;
+		}
+		else
+			unsetenv("TZ");
+	}
+	
 	return localTime;
 }
 

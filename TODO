@@ -1,5 +1,6 @@
 - Implement 'mandatory' attribute for task allocations.
 - Fix timezone handling.
+- Allocation selection by skill set.
 - Make project file reader unicode aware.
 - i18n messages.
 - Add more test cases to the test suite.

@@ -89,6 +89,8 @@ QString time2ISO(time_t t);
 
 QString time2tjp(time_t t);
 
+QString time2rfc(time_t t);
+
 QString time2time(time_t t);
 
 QString time2date(time_t t);

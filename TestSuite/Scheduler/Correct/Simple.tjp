@@ -1,4 +1,6 @@
-project simple "Simple Project" "$Id" 2000-01-01 2000-01-31
+project simple "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+	timezone "GMT"
+}
 
 resource tux "Tux"
 
@@ -17,3 +19,11 @@ task t3 "Task3" {
   effort 1d
   allocate tux
 }
+
+export "Simple-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+

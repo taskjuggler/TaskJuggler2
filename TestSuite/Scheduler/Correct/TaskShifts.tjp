@@ -1,4 +1,6 @@
-project test "Test" "$Id" 2000-01-01 2000-02-31
+project test "Test" "$Id" 2000-01-01-0:00-GMT 2000-02-31-0:00-GMT {
+	timezone "GMT"
+}
 
 workinghours mon 8:00 - 12:00, 13:00-17:00
 workinghours tue 8:00 - 12:00, 13:00-17:00
@@ -46,4 +48,12 @@ task t2 "Task2" {
 htmltaskreport "TaskShifts.html" {
   columns no, name, start, end, daily
 }
+
+export "TaskShifts-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
+
 

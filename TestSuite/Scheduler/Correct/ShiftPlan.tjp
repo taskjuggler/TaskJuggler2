@@ -1,5 +1,6 @@
-project simple "Simple Project" "$Id" 2002-06-01 2002-07-31 {
+project simple "Simple Project" "$Id" 2002-06-01-0:00-GMT 2002-07-31-0:00-GMT {
 	timingresolution 30min
+	timezone "GMT"
 }
 
 shift phonesupport "Telephone support" {
@@ -65,8 +66,8 @@ task t2 "Printer Support" {
 	depends !start
   effort 2m
 	allocate s2 { alternative s1, s3 select minloaded }
-	minend 2002-07-19-16:59
-	maxend 2002-07-19-17:00
+	minend 2002-07-19-14:29
+	maxend 2002-07-19-14:30
 }
 
 task t3 "Network Support" {
@@ -92,3 +93,9 @@ htmlresourcereport "ShiftTimes.html" {
 	end 2002-06-30
 }
 
+export "ShiftPlan-Export.tjsp" {
+	hidetask 0
+	hideresource 0
+	taskattributes flags, note, minstart, maxstart, minend, maxend,
+	complete, responsible, depends
+}
