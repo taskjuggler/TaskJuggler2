@@ -160,6 +160,18 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
 
+    tcf = new TableColumnFormat(KW("freeload"), this, i18n("Free Load"));
+    tcf->genResourceLine1 = &ReportElement::genCellFreeLoad;
+    tcf->genResourceLine2 = &ReportElement::genCellFreeLoad;
+    tcf->hAlign = TableColumnFormat::right;
+    tcf->realFormat = numberFormat;
+
+    tcf = new TableColumnFormat(KW("utilization"), this, i18n("Utilization"));
+    tcf->genResourceLine1 = &ReportElement::genCellUtilization;
+    tcf->genResourceLine2 = &ReportElement::genCellUtilization;
+    tcf->hAlign = TableColumnFormat::right;
+    tcf->realFormat = numberFormat;
+
     tcf = new TableColumnFormat(KW("criticalness"), this, i18n("Criticalness"));
     tcf->genTaskLine1 = &ReportElement::genCellCriticalness;
     tcf->genTaskLine2 = &ReportElement::genCellCriticalness;

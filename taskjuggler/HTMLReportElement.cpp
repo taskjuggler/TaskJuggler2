@@ -1,7 +1,7 @@
 /*
  * HTMLReportElement.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -1073,6 +1073,37 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
     }
 
     generateRightIndented(tci, scaledLoad(val, tci->tcf));
+}
+
+void
+HTMLReportElement::genCellFreeLoad(TableCellInfo* tci)
+{
+    double val = 0.0;
+    if (tci->tli->ca1->getType() == CA_Resource)
+    {
+        val = tci->tli->resource->getAvailableWorkLoad
+            (tci->tli->sc, Interval(start, end));
+    }
+
+    generateRightIndented(tci, scaledLoad(val, tci->tcf));
+}
+
+void
+HTMLReportElement::genCellUtilization(TableCellInfo* tci)
+{
+    double val = 0.0;
+    if (tci->tli->ca1->getType() == CA_Resource)
+    {
+        double load =
+            tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end));
+        double availableLoad =
+            tci->tli->resource->getAvailableWorkLoad
+            (tci->tli->sc, Interval(start, end));
+
+        val = 100.0 / (1.0 + availableLoad / load);
+    }
+
+    generateRightIndented(tci, QString().sprintf("%.1f%%", val));
 }
 
 void

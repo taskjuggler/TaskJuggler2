@@ -1,7 +1,7 @@
 /*
  * HTMLReportElement.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -49,8 +49,8 @@ public:
     virtual void genHeadQuarterly1(TableCellInfo* tcf);
     virtual void genHeadQuarterly2(TableCellInfo* tcf);
     virtual void genHeadYear(TableCellInfo* tcf);
-   
-    virtual void genCellEmpty(TableCellInfo*); 
+
+    virtual void genCellEmpty(TableCellInfo*);
     virtual void genCellSequenceNo(TableCellInfo* tli);
     virtual void genCellNo(TableCellInfo* tli);
     virtual void genCellHierarchNo(TableCellInfo* tli);
@@ -70,6 +70,8 @@ public:
     virtual void genCellEndBufferStart(TableCellInfo* tli);
     virtual void genCellDuration(TableCellInfo* tli);
     virtual void genCellEffort(TableCellInfo* tli);
+    virtual void genCellFreeLoad(TableCellInfo* tli);
+    virtual void genCellUtilization(TableCellInfo* tli);
     virtual void genCellCriticalness(TableCellInfo* tli);
     virtual void genCellPathCriticalness(TableCellInfo* tli);
     virtual void genCellProjectId(TableCellInfo* tli);
@@ -127,9 +129,9 @@ protected:
                  bool filter = TRUE);
 
     void generateTitle(TableCellInfo* tci, const QString& str);
-    
+
     void generateSubTitle(TableCellInfo* tci, const QString& str);
-    
+
     void generateRightIndented(TableCellInfo* tci, const QString& str);
 
     QColor selectTaskBgColor(TableCellInfo* tci, double load,

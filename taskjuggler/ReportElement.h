@@ -194,6 +194,8 @@ public:
     virtual void genCellEndBufferStart(TableCellInfo*) = 0;
     virtual void genCellDuration(TableCellInfo*) = 0;
     virtual void genCellEffort(TableCellInfo*) = 0;
+    virtual void genCellFreeLoad(TableCellInfo*) = 0;
+    virtual void genCellUtilization(TableCellInfo*) = 0;
     virtual void genCellCriticalness(TableCellInfo*) = 0;
     virtual void genCellPathCriticalness(TableCellInfo*) = 0;
     virtual void genCellProjectId(TableCellInfo*) = 0;

@@ -320,6 +320,9 @@ file processing, the report macros must be prefixed with an additional
    <member><varname>follows</varname></member>
    <member>The task index of the tasks that depend on this task</member>
    
+   <member><varname>freeload</varname></member>
+   <member>The workload of the resource that has not been allocated.</member>
+   
    <member><varname>hierarchindex</varname></member>
    <member>The hierarchical index of a task. The index is calculated from the
    hierachical structure of the list as well as the start and end dates.
@@ -442,6 +445,10 @@ file processing, the report macros must be prefixed with an additional
    
    <member><varname>total</varname></member>
    <member>Total accumulated values</member>
+   
+   <member><varname>utilization</varname></member>
+   <member>The ratio between the allocated work load of the resource
+   and it's overall available work load.</member>
    
    <member><varname>weekly</varname></member>
    <member>A week-by-week calendar view of the tasks</member>

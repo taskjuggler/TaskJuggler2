@@ -717,6 +717,10 @@ linkend="PROPERTY_gaplength">gaplength</link>).</para></listitem>
 <listitem><para>Fixed a memory leak during XML report
 generation.</para></listitem>
 
+<listitem><para>The speed of report generation has been significantly
+improved. This is especially true for reports that make use of filter
+functions.</para></listitem>
+
 <listitem><para>Added <computeroutput>status</computeroutput> and
 <computeroutput>statusNote</computeroutput> to XML
 reports.</para></listitem>
