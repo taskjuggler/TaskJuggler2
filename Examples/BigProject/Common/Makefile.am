@@ -5,5 +5,5 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/Resources.tjsp $(DESTDIR)$(docprefix)
 
 uninstall-local:
-	-rm -f $(docprefix)
+	-rm -f $(DESTDIR)$(docprefix)
  

@@ -13,10 +13,10 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/*.tjp $(DESTDIR)$(docprefix)
 
 uninstall-local:
-	-rm -f $(docprefix)
+	-rm -f $(DESTDIR)$(docprefix)
 
 $(TARGETNAME).tjx : $(TARGETNAME).tjp $(TASKJUGGLER)
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
-all: $(TARGETNAME).tjx
+all-local: $(TARGETNAME).tjx
 

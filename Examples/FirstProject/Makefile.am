@@ -27,5 +27,5 @@ acso.eps : $(TARGETNAME).tjx
 	  $(TJX2GANTTPL) $(TARGETNAME).tjx ;\
 	fi
 
-all: $(TARGETNAME).tjx acso.eps
+all-local: $(TARGETNAME).tjx acso.eps
 

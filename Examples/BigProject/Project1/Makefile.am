@@ -19,5 +19,5 @@ uninstall-local:
 $(TARGETNAME).tjsp : $(TARGETNAME).tjp
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
-all: $(TARGETNAME).tjsp
+all-local: $(TARGETNAME).tjsp
 

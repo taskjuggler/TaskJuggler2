@@ -52,8 +52,8 @@ tarball:
 	  echo $$doctarball " created" ; \
 	fi
 
-all: taskjuggler/book1.html taskjuggler.ps
+all-local: taskjuggler/book1.html taskjuggler.ps
 
-check:
+check-local:
 	xmllint ${SGMLSOURCES}
 

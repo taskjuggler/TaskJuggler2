@@ -50,8 +50,6 @@ libtaskjuggler_la_LDFLAGS = $(all_libraries)
 # this is to enable Qt behavoir of am_edit
 KDE_OPTIONS = qtonly
 
-all-am:
-
 messages: 
 	$(XGETTEXT) -ki18n -kI18N_NOOP -d taskjuggler `find . -name "*.cpp"`
 
