@@ -171,7 +171,7 @@ public:
 	void setPlanEnd(time_t s) { planEnd = s; }
 	const time_t getPlanEnd() const { return planEnd; }
 
-	void setPlanLength(int days) { planLength = days; }
+	void setPlanLength(double days) { planLength = days; }
 	double getPlanLength() const { return planLength; }
 
 	void setPlanEffort(double e) { planEffort = e; }
@@ -216,7 +216,7 @@ public:
 	void setActualEnd(time_t e) { actualEnd = e; }
 	time_t getActualEnd() const { return actualEnd; }
 
-	void setActualLength(int days) { actualLength = days; }
+	void setActualLength(double days) { actualLength = days; }
 	double getActualLength() const { return actualLength; }
 
 	void setActualEffort(double e) { actualEffort = e; }

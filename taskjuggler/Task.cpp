@@ -799,28 +799,78 @@ Task::scheduleOk()
 	if (start == 0)
 	{
 		fatalError(QString("Task '") + id + "' has no start time.");
-		return false;
+		return FALSE;
+	}
+	if (minStart != 0 && start < minStart)
+	{
+		fatalError(QString().sprintf(
+			"Start time %s of task %s is earlier than requested minimum %s",
+			time2ISO(start).latin1(), id.latin1(),
+			time2ISO(minStart).latin1()));
+		return FALSE;
+	}
+	if (minStart != 0 && start > maxStart)
+	{
+		fatalError(QString().sprintf(
+			"Start time %s of task %s is later than requested maximum %s",
+			time2ISO(start).latin1(), id.latin1(),
+			time2ISO(maxStart).latin1()));
+		return FALSE;
+	}
+	if (start < project->getStart() || start > project->getEnd())
+	{
+		fatalError(QString().sprintf(
+			"Start time %s of task %s is outside of project period",
+			time2ISO(start).latin1(), id.latin1()));
+		return FALSE;
 	}
 	if (end == 0)
 	{
 		fatalError(QString("Task '") + id + "' has no end time.");
-		return false;
+		return FALSE;
+	}
+	if (minEnd != 0 && end < minEnd)
+	{
+		fatalError(QString().sprintf(
+			"End time %s of task %s is earlier than requested minimum %s",
+			time2ISO(end).latin1(), id.latin1(), time2ISO(minEnd).latin1()));
+		return FALSE;
+	}
+	if (maxEnd != 0 && end > maxEnd)
+	{
+		fatalError(QString().sprintf(
+			"End time %s of task %s is later than requested maximum %s",
+			time2ISO(end).latin1(), id.latin1(), time2ISO(maxEnd).latin1()));
+		return FALSE;
+	}
+	if (end < project->getStart() || end > project->getEnd())
+	{
+		fatalError(QString().sprintf(
+			"End time %s of task %s is outside of project period",
+			time2ISO(end).latin1(), id.latin1()));
+		return FALSE;
 	}
 	// Check if all previous tasks end before start of this task.
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end > start)
 		{
-			fatalError(QString("Task '") + id + "' cannot follow task '" +
-					   t->id + "'.");
-			return false;
+			fatalError(QString().sprintf(
+				"Task %s ends at %s but needs to preceed task %s "
+				"which starts at %s",
+				t->id.latin1(), time2ISO(t->end).latin1(),
+				id.latin1(), time2ISO(start).latin1()));
+			return FALSE;
 		}
 	// Check if all following task start after this tasks end.
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (end > t->start)
 		{
-			fatalError(QString("Task '") + id + "' cannot preceed task '" +
-					   t->id + "'.");
-			return false;
+			fatalError(QString().sprintf(
+				"Task %s starts at %s but needs to follow task %s "
+				"which ends at %s",
+				t->id.latin1(), time2ISO(t->start).latin1(),
+				id.latin1(), time2ISO(end).latin1()));
+			return FALSE;
 		}
 
 	return TRUE;

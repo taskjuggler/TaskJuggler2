@@ -430,7 +430,11 @@ ProjectFile::open(const QString& file)
 			absFileName = openFiles.last()->getPath() + absFileName;
 	}
 	while (absFileName.find("/../") >= 0)
-		absFileName.replace(QRegExp("/[^/]+/../"), "/");
+	{
+		int end = absFileName.find("/../");
+		int start = absFileName.findRev('/', end - 1);
+		absFileName.replace(start, end + strlen("/../") - start, "/");
+	}
 
 	// Make sure that we include each file only once.
 	if (includedFiles.findIndex(absFileName) != -1)

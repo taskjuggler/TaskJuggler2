@@ -183,10 +183,9 @@ Project::schedule()
 			}
 	}
 
-//	if (unscheduledTasks() > 0)
-//		error = TRUE;
-//	else
-		checkSchedule();
+	if (unscheduledTasks() > 0)
+		error = TRUE;
+	checkSchedule();
 
 	return !error;
 }
@@ -208,11 +207,19 @@ Project::unscheduledTasks()
 bool
 Project::checkSchedule()
 {
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+	TaskList tl = taskList;
+	tl.setSorting(CoreAttributesList::StartDown);
+	tl.sort();
+	int errors = 0;
+	for (Task* t = tl.first(); t != 0; t = tl.next())
+	{
 		if (!t->scheduleOk())
-			return FALSE;
+			return errors++;
+		if (errors > 10)
+			break;
+	}
 
-	return TRUE;
+	return errors == 0;
 }
 
 void
