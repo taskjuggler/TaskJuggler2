@@ -17,7 +17,7 @@
 #include "Resource.h"
 #include "Utility.h"
 #include "HTMLReportElement.h"
-#include "TableColumn.h"
+#include "TableColumnInfo.h"
 #include "tjlib-internal.h"
 
 HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f, 
@@ -57,13 +57,14 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[0]->setHeadline
         (i18n("Tasks that should have been finished already"));
     tables[0]->clearColumns();
-    tables[0]->addColumn(new TableColumn("name"));
-    tables[0]->addColumn(new TableColumn("duration"));
-    tables[0]->addColumn(new TableColumn("end"));
-    tables[0]->addColumn(new TableColumn("completed"));
-    tables[0]->addColumn(new TableColumn("resources"));
-    tables[0]->addColumn(new TableColumn("follows"));
-    tables[0]->addColumn(new TableColumn("statusnote"));
+    uint sc = p->getMaxScenarios();
+    tables[0]->addColumn(new TableColumnInfo(sc, "name"));
+    tables[0]->addColumn(new TableColumnInfo(sc, "duration"));
+    tables[0]->addColumn(new TableColumnInfo(sc, "end"));
+    tables[0]->addColumn(new TableColumnInfo(sc, "completed"));
+    tables[0]->addColumn(new TableColumnInfo(sc, "resources"));
+    tables[0]->addColumn(new TableColumnInfo(sc, "follows"));
+    tables[0]->addColumn(new TableColumnInfo(sc, "statusnote"));
 
     // Ongoing tasks
     tables[1]->setStart(project->getStart());
@@ -85,12 +86,12 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[1]->setHideTask(new ExpressionTree(op));
     tables[1]->setHeadline(i18n("Work in progress"));
     tables[1]->clearColumns();
-    tables[1]->addColumn(new TableColumn("name"));
-    tables[1]->addColumn(new TableColumn("duration"));
-    tables[1]->addColumn(new TableColumn("end"));
-    tables[1]->addColumn(new TableColumn("completed"));
-    tables[1]->addColumn(new TableColumn("resources"));
-    tables[1]->addColumn(new TableColumn("statusnote"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "name"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "duration"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "end"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "completed"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "resources"));
+    tables[1]->addColumn(new TableColumnInfo(sc, "statusnote"));
 
     // Completed tasks
     op = new Operation("istaskstatus", 
@@ -100,10 +101,10 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[2]->setHideTask(new ExpressionTree(op));
     tables[2]->setHeadline(i18n("Tasks that have been completed"));
     tables[2]->clearColumns();
-    tables[2]->addColumn(new TableColumn("name"));
-    tables[2]->addColumn(new TableColumn("start"));
-    tables[2]->addColumn(new TableColumn("end"));
-    tables[2]->addColumn(new TableColumn("note"));
+    tables[2]->addColumn(new TableColumnInfo(sc, "name"));
+    tables[2]->addColumn(new TableColumnInfo(sc, "start"));
+    tables[2]->addColumn(new TableColumnInfo(sc, "end"));
+    tables[2]->addColumn(new TableColumnInfo(sc, "note"));
 
     // Upcoming tasks
     time_t reportEnd = end + (end - start);
@@ -123,11 +124,11 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[3]->setHideTask(new ExpressionTree(op));
     tables[3]->setHeadline(i18n("Upcoming new tasks"));
     tables[3]->clearColumns();
-    tables[3]->addColumn(new TableColumn("name"));
-    tables[3]->addColumn(new TableColumn("start"));
-    tables[3]->addColumn(new TableColumn("duration"));
-    tables[3]->addColumn(new TableColumn("resources"));
-    tables[3]->addColumn(new TableColumn("note"));
+    tables[3]->addColumn(new TableColumnInfo(sc, "name"));
+    tables[3]->addColumn(new TableColumnInfo(sc, "start"));
+    tables[3]->addColumn(new TableColumnInfo(sc, "duration"));
+    tables[3]->addColumn(new TableColumnInfo(sc, "resources"));
+    tables[3]->addColumn(new TableColumnInfo(sc, "note"));
 }
 
 HTMLStatusReport::~HTMLStatusReport()
@@ -196,9 +197,9 @@ HTMLStatusReport::generateTable(HTMLReportElement* tab)
     int tNo = 1;
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
     {
-        tab->generateFirstTask(*tli, 0, tNo);
+        tab->generateFirstTask(tab->getScenario(0), *tli, 0, tNo);
         for (uint sc = 1; sc < tab->getScenarioCount(); ++sc)
-            tab->generateNextTask(sc, *tli, 0);
+            tab->generateNextTask(tab->getScenario(sc), *tli, 0);
 
         tab->filterResourceList(filteredResourceList, *tli, 
                                 tab->getHideResource(),
@@ -208,9 +209,9 @@ HTMLStatusReport::generateTable(HTMLReportElement* tab)
         for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
              ++rli, ++rNo)
         {
-            tab->generateFirstResource(*rli, *tli, rNo);
+            tab->generateFirstResource(tab->getScenario(0), *rli, *tli, rNo);
             for (uint sc = 1; sc < tab->getScenarioCount(); ++sc)
-                tab->generateNextResource(sc, *rli, *tli);
+                tab->generateNextResource(tab->getScenario(sc), *rli, *tli);
         }
     }
     s << " </tbody>" << endl;

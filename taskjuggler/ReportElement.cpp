@@ -17,8 +17,8 @@
 
 #include "ReportElement.h"
 #include "Interval.h"
-#include "TableColumn.h"
 #include "TableColumnFormat.h"
+#include "TableColumnInfo.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
@@ -39,10 +39,6 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
 {
     columns.setAutoDelete(TRUE);
     columnFormat.setAutoDelete(TRUE);
-
-    columnTotals = 0;
-    columnTotalsCosts = 0;
-    columnTotalsRevenue = 0;
 
     maxDepthTaskList = 1;
     maxDepthResourceList = 1;
@@ -212,6 +208,13 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(this, i18n("Scenario"));
     tcf->genTaskLine1 = &ReportElement::genCellScenario;
     tcf->genTaskLine2 = &ReportElement::genCellScenario;
+    tcf->genResourceLine1 = &ReportElement::genCellScenario;
+    tcf->genResourceLine2 = &ReportElement::genCellScenario;
+    tcf->genAccountLine1 = &ReportElement::genCellScenario;
+    tcf->genAccountLine2 = &ReportElement::genCellScenario;
+    tcf->genSummaryLine1 = &ReportElement::genCellScenario;
+    tcf->genSummaryLine2 = &ReportElement::genCellScenario;
+    tcf->hAlign = "left";
     columnFormat.insert(KW("scenario"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Rate"));
@@ -247,7 +250,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genAccountLine1 = &ReportElement::genCellTotal;
     tcf->genAccountLine2 = &ReportElement::genCellTotal;
-    tcf->genSummaryLine = &ReportElement::genCellSummary;
+    tcf->genSummaryLine1 = &ReportElement::genCellSummary;
+    tcf->genSummaryLine2 = &ReportElement::genCellSummary;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("total"), tcf);
 
     tcf = new TableColumnFormat(this, "");
@@ -259,6 +264,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellDailyResource;
     tcf->genAccountLine1 = &ReportElement::genCellDailyAccount;
     tcf->genAccountLine2 = &ReportElement::genCellDailyAccount;
+    tcf->genSummaryLine1 = &ReportElement::genCellSummary;
+    tcf->genSummaryLine2 = &ReportElement::genCellSummary;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("daily"), tcf);
     
     tcf = new TableColumnFormat(this, "");
@@ -270,6 +278,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellWeeklyResource;
     tcf->genAccountLine1 = &ReportElement::genCellWeeklyAccount;
     tcf->genAccountLine2 = &ReportElement::genCellWeeklyAccount;
+    tcf->genSummaryLine1 = &ReportElement::genCellSummary;
+    tcf->genSummaryLine2 = &ReportElement::genCellSummary;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("weekly"), tcf);
     
     tcf = new TableColumnFormat(this, "");
@@ -281,6 +292,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellMonthlyResource;
     tcf->genAccountLine1 = &ReportElement::genCellMonthlyAccount;
     tcf->genAccountLine2 = &ReportElement::genCellMonthlyAccount;
+    tcf->genSummaryLine1 = &ReportElement::genCellSummary;
+    tcf->genSummaryLine2 = &ReportElement::genCellSummary;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("monthly"), tcf);
    
     tcf = new TableColumnFormat(this, "");
@@ -292,6 +306,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellQuarterlyResource;
     tcf->genAccountLine1 = &ReportElement::genCellQuarterlyAccount;
     tcf->genAccountLine2 = &ReportElement::genCellQuarterlyAccount;
+    tcf->genSummaryLine1 = &ReportElement::genCellSummary;
+    tcf->genSummaryLine2 = &ReportElement::genCellSummary;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("quarterly"), tcf);
    
     tcf = new TableColumnFormat(this, "");
@@ -302,6 +319,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellYearlyResource;
     tcf->genAccountLine1 = &ReportElement::genCellYearlyAccount;
     tcf->genAccountLine2 = &ReportElement::genCellYearlyAccount;
+    tcf->genSummaryLine1 = &ReportElement::genCellSummary;
+    tcf->genSummaryLine2 = &ReportElement::genCellSummary;
+    tcf->hAlign = "right";
     columnFormat.insert(KW("yearly"), tcf);
    
     scenarios.append(0);

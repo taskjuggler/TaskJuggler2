@@ -94,7 +94,7 @@ public:
     /**
      * Returns the number of supported scenarios.
      */
-    int getMaxScenarios() { return scenarioList.count(); }
+    int getMaxScenarios() const { return scenarioList.count(); }
     /**
      * Returns a pointer to the scenario.
      * @param sc Index of the scenario in the project scenario list.

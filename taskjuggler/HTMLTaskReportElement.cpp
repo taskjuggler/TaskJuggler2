@@ -11,10 +11,11 @@
  */
 
 #include "HTMLTaskReportElement.h"
-#include "TableColumn.h"
+#include "TableColumnInfo.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "Report.h"
+#include "Project.h"
 #include "TaskList.h"
 #include "ResourceList.h"
 #include "CoreAttributes.h"
@@ -23,10 +24,11 @@ HTMLTaskReportElement::HTMLTaskReportElement(Report* r, const QString& df,
                                              int dl) :
     HTMLReportElement(r, df, dl)
 {
-    columns.append(new TableColumn("no"));
-    columns.append(new TableColumn("name"));
-    columns.append(new TableColumn("start"));
-    columns.append(new TableColumn("end"));
+    int sc = r->getProject()->getMaxScenarios();
+    columns.append(new TableColumnInfo(sc, "no"));
+    columns.append(new TableColumnInfo(sc, "name"));
+    columns.append(new TableColumnInfo(sc, "start"));
+    columns.append(new TableColumnInfo(sc, "end"));
 
     // show all tasks
     setHideTask(new ExpressionTree(new Operation(0)));
@@ -65,7 +67,7 @@ HTMLTaskReportElement::generate()
     int tNo = 1;
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
     {
-        generateFirstTask(*tli, 0, tNo);
+        generateFirstTask(scenarios[0], *tli, 0, tNo);
         for (uint sc = 1; sc < scenarios.count(); ++sc)
             generateNextTask(scenarios[sc], *tli, 0);
 
@@ -76,7 +78,7 @@ HTMLTaskReportElement::generate()
         for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
              ++rli, ++rNo)
         {
-            generateFirstResource(*rli, *tli, rNo);
+            generateFirstResource(scenarios[0], *rli, *tli, rNo);
             for (uint sc = 1; sc < scenarios.count(); ++sc)
                 generateNextResource(scenarios[sc], *rli, *tli);
         }

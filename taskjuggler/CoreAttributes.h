@@ -72,6 +72,7 @@ public:
 
     bool hasSameAncestor(CoreAttributes* c) const;
     bool isDescendentOf(CoreAttributes* c) const;
+    bool isLeaf() const { return sub.isEmpty(); }
 
 protected:
     /// A pointer to access information that are global to the project.

@@ -15,14 +15,10 @@
 
 #include <qstring.h>
 
-#include "TableColumnFormat.h"
-
 class ReportElement;
-class TableColumnFormat;
-class TableLineInfo;
+class TableCellInfo;
 
-typedef void (ReportElement::*GenHeadPtr) (TableColumnFormat*);
-typedef void (ReportElement::*GenCellPtr) (TableLineInfo*);
+typedef void (ReportElement::*GenCellPtr) (TableCellInfo*);
 
 /**
  * @short Stores the format information of a table column.
@@ -36,8 +32,8 @@ public:
 
     const QString& getTitle() const { return title; }
 
-    GenHeadPtr genHeadLine1;
-    GenHeadPtr genHeadLine2;
+    GenCellPtr genHeadLine1;
+    GenCellPtr genHeadLine2;
 
     GenCellPtr genTaskLine1;
     GenCellPtr genTaskLine2;
@@ -46,7 +42,11 @@ public:
     GenCellPtr genAccountLine1;
     GenCellPtr genAccountLine2;
 
-    GenCellPtr genSummaryLine;
+    GenCellPtr genSummaryLine1;
+    GenCellPtr genSummaryLine2;
+
+    QString hAlign;
+
 protected:
     TableColumnFormat() { }
     

@@ -22,14 +22,15 @@
 #include "ResourceList.h"
 #include "Utility.h"
 #include "Interval.h"
-#include "TableColumn.h"
+#include "TableColumnInfo.h"
 
 HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r, 
                                                      const QString& df,
                                                      int dl) :
     HTMLReportElement(r, df, dl)
 {
-    columns.append(new TableColumn("name"));
+    uint sc = r->getProject()->getMaxScenarios();
+    columns.append(new TableColumnInfo(sc, "name"));
 
     // show all tasks
     setHideTask(new ExpressionTree(new Operation(0)));
@@ -130,7 +131,7 @@ HTMLWeeklyCalendarElement::generate()
                                 "style=\"font-size:150%\">" << endl;
                             first = FALSE;
                         }
-                        generateFirstTask(*tli, 0, no);
+                        generateFirstTask(scenarios[0], *tli, 0, no);
                     }
                 }
                 if (!first)
@@ -176,7 +177,7 @@ HTMLWeeklyCalendarElement::generate()
                                 "style=\"font-size:150%\">" << endl;
                             first = FALSE;
                         }
-                        generateFirstResource(*rli, 0, no);
+                        generateFirstResource(scenarios[0], *rli, 0, no);
                     }
                 }
                 if (!first)

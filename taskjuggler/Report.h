@@ -46,6 +46,7 @@ public:
     QTextStream& stream() { return s; }
 
     const Project* getProject() const { return project; }
+    const QString& getFileName() const { return fileName; }
 
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
     bool getWeekStartsMonday() { return weekStartsMonday; }

@@ -5,12 +5,13 @@
  * TaskJuggler. Please see the TaskJuggler manual for a more detailed
  * description of the various syntax elements.
  */
-project acso "Accounting Software" "$Id" 2002-01-16 2002-04-26 {
+project acso "Accounting Software" "$Id$" 2002-01-16 2002-04-26 {
   # Pick a day during the project that will be reported as 'today' in
 	# the project reports. If not specified the current day will be
 	# used, but this will likely be ouside of the project range, so it
 	# can't be seen in the reports.
  	now 2002-03-04
+	timeformat "%Y-%m-%d"
 }
 
 # The daily default rate of all resources. This can be overriden for each
@@ -210,7 +211,7 @@ htmltaskreport "Tasks-Overview.html" {
 htmltaskreport "Tasks-Details.html" {
 	${navbar}
 	# Now we use a daily calendar.
-  columns no, name, start, end, daily
+  columns no, name, start, end, scenario, daily
 	headline "Accounting Software Project"
 	caption "This table shows the load of each day for all the tasks.
 	Additionally the resources used for each task are listed. Since the
@@ -227,7 +228,7 @@ htmltaskreport "Tasks-Details.html" {
 htmlresourcereport "Staff-Overview.html" {
 	${navbar}
 	# Add a column with the total effort per task.
-  columns no, name, weekly, effort
+  columns no, name, scenario, weekly, effort
   scenarios plan, actual	
 	# Since we want to see the load values as hours per week, we switch
 	# the unit loads are reported in to hours.
@@ -256,14 +257,16 @@ htmlresourcereport "Staff-Details.html" {
 # project is calculated is generated. The company won't get rich with
 # this project. Due to the slip, it actually needs some money from the
 # bank to pay the salaries.
-htmlaccountreport "Accounting.html" { ${navbar}
+htmlaccountreport "Accounting.html" { 
+	${navbar}
 	# Besides the number of the account and the name we have a column
 	# with the total values (at the end of the project) and the values
 	# for each month of the project.
-	columns no, name, total, monthly headline "P&L for the Accounting
-	Software Project" caption "The table shows the profit and loss
-	analysis as well as the cashflow situation of the Accounting
-	Software Project."
+	columns no, name, scenario, total, monthly 
+	headline "P&L for the Accounting Software Project" 
+	caption "The table shows the profit and loss
+	         analysis as well as the cashflow situation of the Accounting
+           Software Project."
 	# Since this is a cashflow calculation we show accumulated values
 	# per account.
 	accumulate

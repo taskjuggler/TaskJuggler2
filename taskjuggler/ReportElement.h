@@ -22,13 +22,13 @@
 
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
+#include "TableColorSet.h"
 
 class Project;
 class CoreAttributes;
 class ExpressionTree;
 class Report;
 class Scenario;
-class TableColumn;
 class Task;
 class TaskList;
 class Resource;
@@ -36,7 +36,8 @@ class ResourceList;
 class Account;
 class AccountList;
 class TableColumnFormat;
-class TableLineInfo;
+class TableColumnInfo;
+class TableCellInfo;
 
 /**
  * @short A class that forms the basic element of a report. 
@@ -52,13 +53,14 @@ public:
 
     void addScenario(int sc) { scenarios.append(sc); }
     void clearScenarios() { scenarios.clear(); }
-    uint getScenarioCount() { return scenarios.count(); }
+    uint getScenarioCount() const { return scenarios.count(); }
+    int getScenario(int sc) const { return scenarios[sc]; }
 
     void setHeadline(const QString& hl) { headline = hl; }
     void setCaption(const QString& c) { caption = c; }
 
-    void addColumn(const TableColumn* c) { columns.append(c); }
-    const TableColumn* columnsAt(uint idx) { return columns.at(idx); }
+    void addColumn(const TableColumnInfo* c) { columns.append(c); }
+    const TableColumnInfo* columnsAt(uint idx) { return columns.at(idx); }
     void clearColumns() { columns.clear(); }
 
     void setStart(time_t s) { start = s; }
@@ -118,75 +120,75 @@ public:
                            rollUpExp) const;
     void sortAccountList(AccountList& filteredList);
 
-    virtual void genHeadDefault(TableColumnFormat*) = 0;
-    virtual void genHeadCurrency(TableColumnFormat*) = 0;
-    virtual void genHeadDaily1(TableColumnFormat*) = 0;
-    virtual void genHeadDaily2(TableColumnFormat*) = 0;
-    virtual void genHeadWeekly1(TableColumnFormat*) = 0;
-    virtual void genHeadWeekly2(TableColumnFormat*) = 0;
-    virtual void genHeadMonthly1(TableColumnFormat*) = 0;
-    virtual void genHeadMonthly2(TableColumnFormat*) = 0;
-    virtual void genHeadQuarterly1(TableColumnFormat*) = 0;
-    virtual void genHeadQuarterly2(TableColumnFormat*) = 0;
-    virtual void genHeadYear(TableColumnFormat*) = 0;
+    virtual void genHeadDefault(TableCellInfo*) = 0;
+    virtual void genHeadCurrency(TableCellInfo*) = 0;
+    virtual void genHeadDaily1(TableCellInfo*) = 0;
+    virtual void genHeadDaily2(TableCellInfo*) = 0;
+    virtual void genHeadWeekly1(TableCellInfo*) = 0;
+    virtual void genHeadWeekly2(TableCellInfo*) = 0;
+    virtual void genHeadMonthly1(TableCellInfo*) = 0;
+    virtual void genHeadMonthly2(TableCellInfo*) = 0;
+    virtual void genHeadQuarterly1(TableCellInfo*) = 0;
+    virtual void genHeadQuarterly2(TableCellInfo*) = 0;
+    virtual void genHeadYear(TableCellInfo*) = 0;
 
-    virtual void genCellEmpty(TableLineInfo*) = 0;
-    virtual void genCellSequenceNo(TableLineInfo*) = 0;
-    virtual void genCellNo(TableLineInfo*) = 0;
-    virtual void genCellIndex(TableLineInfo*) = 0;
-    virtual void genCellId(TableLineInfo*) = 0;
-    virtual void genCellName(TableLineInfo*) = 0;
-    virtual void genCellStart(TableLineInfo*) = 0;
-    virtual void genCellEnd(TableLineInfo*) = 0;
-    virtual void genCellMinStart(TableLineInfo*) = 0;
-    virtual void genCellMaxStart(TableLineInfo*) = 0;
-    virtual void genCellMinEnd(TableLineInfo*) = 0;
-    virtual void genCellMaxEnd(TableLineInfo*) = 0;
-    virtual void genCellStartBuffer(TableLineInfo*) = 0;
-    virtual void genCellEndBuffer(TableLineInfo*) = 0;
-    virtual void genCellStartBufferEnd(TableLineInfo*) = 0;
-    virtual void genCellEndBufferStart(TableLineInfo*) = 0;
-    virtual void genCellDuration(TableLineInfo*) = 0;
-    virtual void genCellEffort(TableLineInfo*) = 0;
-    virtual void genCellProjectId(TableLineInfo*) = 0;
-    virtual void genCellResources(TableLineInfo*) = 0;
-    virtual void genCellResponsible(TableLineInfo*) = 0;
-    virtual void genCellNote(TableLineInfo*) = 0;
-    virtual void genCellStatusNote(TableLineInfo*) = 0;
-    virtual void genCellCost(TableLineInfo*) = 0;
-    virtual void genCellRevenue(TableLineInfo*) = 0;
-    virtual void genCellProfit(TableLineInfo*) = 0;
-    virtual void genCellPriority(TableLineInfo*) = 0;
-    virtual void genCellFlags(TableLineInfo*) = 0;
-    virtual void genCellCompleted(TableLineInfo*) = 0;
-    virtual void genCellStatus(TableLineInfo*) = 0;
-    virtual void genCellReference(TableLineInfo*) = 0;
-    virtual void genCellScenario(TableLineInfo*) = 0;
-    virtual void genCellDepends(TableLineInfo*) = 0;
-    virtual void genCellFollows(TableLineInfo*) = 0;
-    virtual void genCellDailyTask(TableLineInfo*) = 0;
-    virtual void genCellDailyResource(TableLineInfo*) = 0;
-    virtual void genCellDailyAccount(TableLineInfo*) = 0;
-    virtual void genCellWeeklyTask(TableLineInfo*) = 0;
-    virtual void genCellWeeklyResource(TableLineInfo*) = 0;
-    virtual void genCellWeeklyAccount(TableLineInfo*) = 0;
-    virtual void genCellMonthlyTask(TableLineInfo*) = 0;
-    virtual void genCellMonthlyResource(TableLineInfo*) = 0;
-    virtual void genCellMonthlyAccount(TableLineInfo*) = 0;
-    virtual void genCellQuarterlyTask(TableLineInfo*) = 0;
-    virtual void genCellQuarterlyResource(TableLineInfo*) = 0;
-    virtual void genCellQuarterlyAccount(TableLineInfo*) = 0;
-    virtual void genCellYearlyTask(TableLineInfo*) = 0;
-    virtual void genCellYearlyResource(TableLineInfo*) = 0;
-    virtual void genCellYearlyAccount(TableLineInfo*) = 0;
-    virtual void genCellResponsibilities(TableLineInfo*) = 0;
-    virtual void genCellSchedule(TableLineInfo*) = 0;
-    virtual void genCellMinEffort(TableLineInfo*) = 0;
-    virtual void genCellMaxEffort(TableLineInfo*) = 0;
-    virtual void genCellRate(TableLineInfo*) = 0;
-    virtual void genCellKotrusId(TableLineInfo*) = 0;
-    virtual void genCellTotal(TableLineInfo*) = 0;
-    virtual void genCellSummary(TableLineInfo*) = 0;
+    virtual void genCellEmpty(TableCellInfo*) = 0;
+    virtual void genCellSequenceNo(TableCellInfo*) = 0;
+    virtual void genCellNo(TableCellInfo*) = 0;
+    virtual void genCellIndex(TableCellInfo*) = 0;
+    virtual void genCellId(TableCellInfo*) = 0;
+    virtual void genCellName(TableCellInfo*) = 0;
+    virtual void genCellStart(TableCellInfo*) = 0;
+    virtual void genCellEnd(TableCellInfo*) = 0;
+    virtual void genCellMinStart(TableCellInfo*) = 0;
+    virtual void genCellMaxStart(TableCellInfo*) = 0;
+    virtual void genCellMinEnd(TableCellInfo*) = 0;
+    virtual void genCellMaxEnd(TableCellInfo*) = 0;
+    virtual void genCellStartBuffer(TableCellInfo*) = 0;
+    virtual void genCellEndBuffer(TableCellInfo*) = 0;
+    virtual void genCellStartBufferEnd(TableCellInfo*) = 0;
+    virtual void genCellEndBufferStart(TableCellInfo*) = 0;
+    virtual void genCellDuration(TableCellInfo*) = 0;
+    virtual void genCellEffort(TableCellInfo*) = 0;
+    virtual void genCellProjectId(TableCellInfo*) = 0;
+    virtual void genCellResources(TableCellInfo*) = 0;
+    virtual void genCellResponsible(TableCellInfo*) = 0;
+    virtual void genCellNote(TableCellInfo*) = 0;
+    virtual void genCellStatusNote(TableCellInfo*) = 0;
+    virtual void genCellCost(TableCellInfo*) = 0;
+    virtual void genCellRevenue(TableCellInfo*) = 0;
+    virtual void genCellProfit(TableCellInfo*) = 0;
+    virtual void genCellPriority(TableCellInfo*) = 0;
+    virtual void genCellFlags(TableCellInfo*) = 0;
+    virtual void genCellCompleted(TableCellInfo*) = 0;
+    virtual void genCellStatus(TableCellInfo*) = 0;
+    virtual void genCellReference(TableCellInfo*) = 0;
+    virtual void genCellScenario(TableCellInfo*) = 0;
+    virtual void genCellDepends(TableCellInfo*) = 0;
+    virtual void genCellFollows(TableCellInfo*) = 0;
+    virtual void genCellDailyTask(TableCellInfo*) = 0;
+    virtual void genCellDailyResource(TableCellInfo*) = 0;
+    virtual void genCellDailyAccount(TableCellInfo*) = 0;
+    virtual void genCellWeeklyTask(TableCellInfo*) = 0;
+    virtual void genCellWeeklyResource(TableCellInfo*) = 0;
+    virtual void genCellWeeklyAccount(TableCellInfo*) = 0;
+    virtual void genCellMonthlyTask(TableCellInfo*) = 0;
+    virtual void genCellMonthlyResource(TableCellInfo*) = 0;
+    virtual void genCellMonthlyAccount(TableCellInfo*) = 0;
+    virtual void genCellQuarterlyTask(TableCellInfo*) = 0;
+    virtual void genCellQuarterlyResource(TableCellInfo*) = 0;
+    virtual void genCellQuarterlyAccount(TableCellInfo*) = 0;
+    virtual void genCellYearlyTask(TableCellInfo*) = 0;
+    virtual void genCellYearlyResource(TableCellInfo*) = 0;
+    virtual void genCellYearlyAccount(TableCellInfo*) = 0;
+    virtual void genCellResponsibilities(TableCellInfo*) = 0;
+    virtual void genCellSchedule(TableCellInfo*) = 0;
+    virtual void genCellMinEffort(TableCellInfo*) = 0;
+    virtual void genCellMaxEffort(TableCellInfo*) = 0;
+    virtual void genCellRate(TableCellInfo*) = 0;
+    virtual void genCellKotrusId(TableCellInfo*) = 0;
+    virtual void genCellTotal(TableCellInfo*) = 0;
+    virtual void genCellSummary(TableCellInfo*) = 0;
     
 protected:
     ReportElement() { }
@@ -205,7 +207,7 @@ protected:
 
     Report* report;
     QValueList<int> scenarios;
-    QPtrList<TableColumn> columns;
+    QPtrList<TableColumnInfo> columns;
     QDict<TableColumnFormat> columnFormat;
     time_t start;
     time_t end;
@@ -217,6 +219,8 @@ protected:
      * for error reporting. */
     QString defFileName;
     int defFileLine;
+    
+    TableColorSet colors;
     
     QString headline;
     QString caption;
@@ -249,10 +253,6 @@ protected:
     uint maxDepthTaskList;
     uint maxDepthResourceList;
     uint maxDepthAccountList;
-    
-    QMap<QString, double>* columnTotals;
-    QMap<QString, double>* columnTotalsCosts;
-    QMap<QString, double>* columnTotalsRevenue;
 } ;
 
 #endif

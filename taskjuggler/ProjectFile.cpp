@@ -43,7 +43,7 @@
 #include "HTMLReportElement.h"
 #include "HTMLTaskReport.h"
 #include "ExportReport.h"
-#include "TableColumn.h"
+#include "TableColumnInfo.h"
 #include "ReportXML.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
@@ -2277,7 +2277,8 @@ ProjectFile::readHTMLReport(const QString& reportType)
                         errorMessage(i18n("Column ID expected"));
                         return FALSE;
                     }
-                    tab->addColumn(new TableColumn(col));
+                    tab->addColumn(new TableColumnInfo(proj->getMaxScenarios(),
+                                                       col));
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);
@@ -2753,7 +2754,8 @@ ProjectFile::readReportElement(ReportElement* el)
                         errorMessage(i18n("Column ID expected"));
                         return FALSE;
                     }
-                    el->addColumn(new TableColumn(col));
+                    el->addColumn(new TableColumnInfo(proj->getMaxScenarios(),
+                                                      col));
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);

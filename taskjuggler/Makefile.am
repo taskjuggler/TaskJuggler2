@@ -15,7 +15,7 @@ ScenarioList.cpp Scenario.cpp \
 TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
-HTMLPrimitives.cpp TableColumnFormat.cpp \
+HTMLPrimitives.cpp TableColumnFormat.cpp TableColumnInfo.cpp \
 ReportElement.cpp HTMLReport.cpp HTMLReportElement.cpp \
 HTMLTaskReport.cpp HTMLTaskReportElement.cpp \
 HTMLResourceReport.cpp HTMLResourceReportElement.cpp \

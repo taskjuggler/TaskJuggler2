@@ -24,6 +24,7 @@ class Project;
 class Report;
 class ExpressionTree;
 class TableLineInfo;
+class TableCellInfo;
 
 /**
  * @short Models the basic component of an HTML report.
@@ -42,19 +43,21 @@ public:
     void generateHeader();
     void generateFooter();
 
-    void generateFirstTask(const Task* t, const Resource* r, uint no);
+    void generateFirstTask(int sc, const Task* t, const Resource* r, uint no);
     void generateNextTask(int sc, const Task* t, const Resource* r);
 
-    void generateFirstResource(const Resource* r, const Task* t, uint no);
+    void generateFirstResource(int sc, const Resource* r, const Task* t, 
+                               uint no);
     void generateNextResource(int sc, const Resource* r, const Task* t);
 
-    void generateFirstAccount(const Account* a, uint no);
+    void generateFirstAccount(int sc, const Account* a, uint no);
     void generateNextAccount(int sc, const Account* a);
 
-    void generateSummary(const QString& name, const QString& style);
+    void generateSummaryFirst(int sc, const QString& name, 
+                              const QString& style);
+    void generateSummaryNext(int sc, const QString& style);
 
-    void singleRowCell(const QString& text, TableLineInfo* tli);
-    void multiRowCell(const QString& text, TableLineInfo* tli);
+    void genCell(const QString& text, TableCellInfo* tli, bool multi);
 
     void textOneRow(const QString& text, bool light, const QString& align);
     void textMultiRows(const QString& text, bool light, const QString& align);
@@ -82,76 +85,76 @@ public:
         rawTail = tail;
     }
 
-    virtual void genHeadDefault(TableColumnFormat* tcf);
-    virtual void genHeadCurrency(TableColumnFormat* tcf);
-    virtual void genHeadDaily1(TableColumnFormat* tcf);
-    virtual void genHeadDaily2(TableColumnFormat* tcf);
-    virtual void genHeadWeekly1(TableColumnFormat* tcf);
-    virtual void genHeadWeekly2(TableColumnFormat* tcf);
-    virtual void genHeadMonthly1(TableColumnFormat* tcf);
-    virtual void genHeadMonthly2(TableColumnFormat* tcf);
-    virtual void genHeadQuarterly1(TableColumnFormat* tcf);
-    virtual void genHeadQuarterly2(TableColumnFormat* tcf);
-    virtual void genHeadYear(TableColumnFormat* tcf);
+    virtual void genHeadDefault(TableCellInfo* tcf);
+    virtual void genHeadCurrency(TableCellInfo* tcf);
+    virtual void genHeadDaily1(TableCellInfo* tcf);
+    virtual void genHeadDaily2(TableCellInfo* tcf);
+    virtual void genHeadWeekly1(TableCellInfo* tcf);
+    virtual void genHeadWeekly2(TableCellInfo* tcf);
+    virtual void genHeadMonthly1(TableCellInfo* tcf);
+    virtual void genHeadMonthly2(TableCellInfo* tcf);
+    virtual void genHeadQuarterly1(TableCellInfo* tcf);
+    virtual void genHeadQuarterly2(TableCellInfo* tcf);
+    virtual void genHeadYear(TableCellInfo* tcf);
    
-    virtual void genCellEmpty(TableLineInfo*); 
-    virtual void genCellSequenceNo(TableLineInfo* tli);
-    virtual void genCellNo(TableLineInfo* tli);
-    virtual void genCellIndex(TableLineInfo* tli);
-    virtual void genCellId(TableLineInfo* tli);
-    virtual void genCellName(TableLineInfo* tli);
-    virtual void genCellStart(TableLineInfo* tli);
-    virtual void genCellEnd(TableLineInfo* tli);
-    virtual void genCellMinStart(TableLineInfo* tli);
-    virtual void genCellMaxStart(TableLineInfo* tli);
-    virtual void genCellMinEnd(TableLineInfo* tli);
-    virtual void genCellMaxEnd(TableLineInfo* tli);
-    virtual void genCellStartBuffer(TableLineInfo* tli);
-    virtual void genCellEndBuffer(TableLineInfo* tli);
-    virtual void genCellStartBufferEnd(TableLineInfo* tli);
-    virtual void genCellEndBufferStart(TableLineInfo* tli);
-    virtual void genCellDuration(TableLineInfo* tli);
-    virtual void genCellEffort(TableLineInfo* tli);
-    virtual void genCellProjectId(TableLineInfo* tli);
-    virtual void genCellResources(TableLineInfo* tli);
-    virtual void genCellResponsible(TableLineInfo* tli);
-    virtual void genCellNote(TableLineInfo* tli);
-    virtual void genCellStatusNote(TableLineInfo* tli);
-    virtual void genCellCost(TableLineInfo* tli);
-    virtual void genCellRevenue(TableLineInfo* tli);
-    virtual void genCellProfit(TableLineInfo* tli);
-    virtual void genCellPriority(TableLineInfo* tli);
-    virtual void genCellFlags(TableLineInfo* tli);
-    virtual void genCellCompleted(TableLineInfo* tli);
-    virtual void genCellStatus(TableLineInfo* tli);
-    virtual void genCellReference(TableLineInfo* tli);
-    virtual void genCellScenario(TableLineInfo* tli);
-    virtual void genCellDepends(TableLineInfo* tli);
-    virtual void genCellFollows(TableLineInfo* tli);
-    virtual void genCellDailyTask(TableLineInfo* tli);
-    virtual void genCellDailyResource(TableLineInfo* tli);
-    virtual void genCellDailyAccount(TableLineInfo* tli);
-    virtual void genCellWeeklyTask(TableLineInfo* tli);
-    virtual void genCellWeeklyResource(TableLineInfo* tli);
-    virtual void genCellWeeklyAccount(TableLineInfo* tli);
-    virtual void genCellMonthlyTask(TableLineInfo* tli);
-    virtual void genCellMonthlyResource(TableLineInfo* tli);
-    virtual void genCellMonthlyAccount(TableLineInfo* tli);
-    virtual void genCellQuarterlyTask(TableLineInfo* tli);
-    virtual void genCellQuarterlyResource(TableLineInfo* tli);
-    virtual void genCellQuarterlyAccount(TableLineInfo* tli);
-    virtual void genCellYearlyTask(TableLineInfo* tli);
-    virtual void genCellYearlyResource(TableLineInfo* tli);
-    virtual void genCellYearlyAccount(TableLineInfo* tli);
-    virtual void genCellResponsibilities(TableLineInfo* tli);
-    virtual void genCellSchedule(TableLineInfo* tli);
-    virtual void genCellMinEffort(TableLineInfo* tli);
-    virtual void genCellMaxEffort(TableLineInfo* tli);
-    virtual void genCellRate(TableLineInfo* tli);
-    virtual void genCellKotrusId(TableLineInfo* tli);
-    virtual void genCellTotal(TableLineInfo* tli);
+    virtual void genCellEmpty(TableCellInfo*); 
+    virtual void genCellSequenceNo(TableCellInfo* tli);
+    virtual void genCellNo(TableCellInfo* tli);
+    virtual void genCellIndex(TableCellInfo* tli);
+    virtual void genCellId(TableCellInfo* tli);
+    virtual void genCellName(TableCellInfo* tli);
+    virtual void genCellStart(TableCellInfo* tli);
+    virtual void genCellEnd(TableCellInfo* tli);
+    virtual void genCellMinStart(TableCellInfo* tli);
+    virtual void genCellMaxStart(TableCellInfo* tli);
+    virtual void genCellMinEnd(TableCellInfo* tli);
+    virtual void genCellMaxEnd(TableCellInfo* tli);
+    virtual void genCellStartBuffer(TableCellInfo* tli);
+    virtual void genCellEndBuffer(TableCellInfo* tli);
+    virtual void genCellStartBufferEnd(TableCellInfo* tli);
+    virtual void genCellEndBufferStart(TableCellInfo* tli);
+    virtual void genCellDuration(TableCellInfo* tli);
+    virtual void genCellEffort(TableCellInfo* tli);
+    virtual void genCellProjectId(TableCellInfo* tli);
+    virtual void genCellResources(TableCellInfo* tli);
+    virtual void genCellResponsible(TableCellInfo* tli);
+    virtual void genCellNote(TableCellInfo* tli);
+    virtual void genCellStatusNote(TableCellInfo* tli);
+    virtual void genCellCost(TableCellInfo* tli);
+    virtual void genCellRevenue(TableCellInfo* tli);
+    virtual void genCellProfit(TableCellInfo* tli);
+    virtual void genCellPriority(TableCellInfo* tli);
+    virtual void genCellFlags(TableCellInfo* tli);
+    virtual void genCellCompleted(TableCellInfo* tli);
+    virtual void genCellStatus(TableCellInfo* tli);
+    virtual void genCellReference(TableCellInfo* tli);
+    virtual void genCellScenario(TableCellInfo* tli);
+    virtual void genCellDepends(TableCellInfo* tli);
+    virtual void genCellFollows(TableCellInfo* tli);
+    virtual void genCellDailyTask(TableCellInfo* tli);
+    virtual void genCellDailyResource(TableCellInfo* tli);
+    virtual void genCellDailyAccount(TableCellInfo* tli);
+    virtual void genCellWeeklyTask(TableCellInfo* tli);
+    virtual void genCellWeeklyResource(TableCellInfo* tli);
+    virtual void genCellWeeklyAccount(TableCellInfo* tli);
+    virtual void genCellMonthlyTask(TableCellInfo* tli);
+    virtual void genCellMonthlyResource(TableCellInfo* tli);
+    virtual void genCellMonthlyAccount(TableCellInfo* tli);
+    virtual void genCellQuarterlyTask(TableCellInfo* tli);
+    virtual void genCellQuarterlyResource(TableCellInfo* tli);
+    virtual void genCellQuarterlyAccount(TableCellInfo* tli);
+    virtual void genCellYearlyTask(TableCellInfo* tli);
+    virtual void genCellYearlyResource(TableCellInfo* tli);
+    virtual void genCellYearlyAccount(TableCellInfo* tli);
+    virtual void genCellResponsibilities(TableCellInfo* tli);
+    virtual void genCellSchedule(TableCellInfo* tli);
+    virtual void genCellMinEffort(TableCellInfo* tli);
+    virtual void genCellMaxEffort(TableCellInfo* tli);
+    virtual void genCellRate(TableCellInfo* tli);
+    virtual void genCellKotrusId(TableCellInfo* tli);
+    virtual void genCellTotal(TableCellInfo* tli);
 
-    virtual void genCellSummary(TableLineInfo* tli);
+    virtual void genCellSummary(TableCellInfo* tli);
 
 protected:
     HTMLReportElement() { }

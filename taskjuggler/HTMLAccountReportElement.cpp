@@ -11,38 +11,33 @@
  */
 
 #include "HTMLAccountReportElement.h"
-#include "TableColumn.h"
+#include "TableColumnInfo.h"
 #include "tjlib-internal.h"
+#include "Project.h"
+#include "Report.h"
 #include "Account.h"
 #include "AccountList.h"
 
-/*
-#include "TjMessageHandler.h"
-#include "HTMLAccountReport.h"
-#include "Project.h"
-#include "Task.h"
-#include "Account.h"
-#include "Interval.h"
-#include "Utility.h"
-*/
 HTMLAccountReportElement::HTMLAccountReportElement(Report* r,
                                                    const QString& df,
                                                    int dl) :
     HTMLReportElement(r, df, dl)
 {
-    columns.append(new TableColumn("no"));
-    columns.append(new TableColumn("name"));
-    columns.append(new TableColumn("total"));
+    uint sc = r->getProject()->getMaxScenarios();
+    columns.append(new TableColumnInfo(sc, "no"));
+    columns.append(new TableColumnInfo(sc, "name"));
+    columns.append(new TableColumnInfo(sc, "total"));
 }
 
 HTMLAccountReportElement::~HTMLAccountReportElement()
 {
 }
 
-#include "Project.h"
 void
 HTMLAccountReportElement::generate()
 {
+    generateHeader();
+    
     generateTableHeader();
 
     s() << "<tbody>" << endl;
@@ -54,51 +49,51 @@ HTMLAccountReportElement::generate()
     filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
     sortAccountList(filteredList);
 
-    columnTotalsCosts = new QMap<QString, double>[scenarios.count()];
-    columnTotalsRevenue = new QMap<QString, double>[scenarios.count()];
-    columnTotals = columnTotalsCosts;
-    
     int aNo = 1;
     for (AccountListIterator ali(filteredList); *ali != 0; ++ali, ++aNo)
     {
-        generateFirstAccount(*ali, aNo);
+        generateFirstAccount(scenarios[0], *ali, aNo);
         for (uint sc = 1; sc < scenarios.count(); ++sc)
             generateNextAccount(sc, *ali);
     }
-    generateSummary(i18n("Subtotal Cost"), "headersmall");
+    
+    generateSummaryFirst(scenarios[0], i18n("Subtotal Cost"), 
+                         colors.getColorName("header"));
+    for (uint sc = 1; sc < scenarios.count(); ++sc)
+        generateSummaryNext(sc, colors.getColorName("header"));
+    
+    for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
+    {
+        (*ci)->addSumToMemory(TRUE);
+        (*ci)->clearSum();
+    }
 
     filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount);
     sortAccountList(filteredList);
 
-    columnTotals = columnTotalsRevenue;
     for (AccountListIterator ali(filteredList); *ali != 0; ++ali, ++aNo)
     {
-        generateFirstAccount(*ali, aNo);
+        generateFirstAccount(scenarios[0], *ali, aNo);
         for (uint sc = 1; sc < scenarios.count(); ++sc)
             generateNextAccount(sc, *ali);
     }
-    generateSummary(i18n("Subtotal Revenue"), "headersmall");
-    columnTotals = new QMap<QString, double>[scenarios.count()];
-    for (uint sc = 0; sc < scenarios.count(); ++sc)
-    {
-        QMap<QString, double>::Iterator ctc;
-        QMap<QString, double>::Iterator ctr;
-        for (ctc = columnTotalsCosts[sc].begin(),
-             ctr = columnTotalsRevenue[sc].begin();
-             ctc != columnTotalsCosts[sc].end(); ++ctc, ++ctr)
-        {
-            columnTotals[sc][ctc.key()] = *ctr - *ctc;
-        }
-    }
-    generateSummary(i18n("Total"), "default");
-   
-    delete [] columnTotalsCosts;
-    columnTotalsCosts = 0;
-    delete [] columnTotalsRevenue;
-    columnTotalsRevenue = 0;
-    delete [] columnTotals;
-    columnTotals = 0;
+    
+    generateSummaryFirst(scenarios[0], i18n("Subtotal Revenue"), 
+                         colors.getColorName("header"));
+    for (uint sc = 1; sc < scenarios.count(); ++sc)
+        generateSummaryNext(sc, colors.getColorName("header"));
 
+    for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
+    {
+        (*ci)->addSumToMemory(FALSE);
+        (*ci)->recallMemory();
+    }
+
+    generateSummaryFirst(scenarios[0], i18n("Total"), 
+                         colors.getColorName("default"));
+    for (uint sc = 1; sc < scenarios.count(); ++sc)
+        generateSummaryNext(sc, colors.getColorName("default"));
+   
     s() << "</tbody>" << endl;    
     s() << "</table>" << endl;
 }
