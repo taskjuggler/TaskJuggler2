@@ -6,13 +6,13 @@
  <Priority>500</Priority>
  <start humanReadable="2002-04-15 00:00 CEST" >1018821600</start>
  <end humanReadable="2002-10-01 00:00 CEST" >1033423200</end>
- <now humanReadable="2002-06-19 09:29 CEST" >1024471776</now>
+ <now humanReadable="2002-06-18 09:03 CEST" >1024383833</now>
  <Task Id="testProject" >
   <Index>1</Index>
   <Name>testProject for xml2gantt</Name>
   <ProjectID>testProject</ProjectID>
   <Priority>500</Priority>
-  <complete>36.1</complete>
+  <complete>35.3</complete>
   <Type>Container</Type>
   <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
   <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
@@ -47,7 +47,7 @@
     <Name>Development</Name>
     <ProjectID>testProject</ProjectID>
     <Priority>500</Priority>
-    <complete>84.2</complete>
+    <complete>82.5</complete>
     <Type>Container</Type>
     <ParentTask>testProject</ParentTask>
     <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
@@ -229,6 +229,7 @@
     </SubTasks>
     <Previous>testProject.start</Previous>
     <Follower>testProject.beta1</Follower>
+    <Follower>testProject.done</Follower>
    </Task>
    <Task Id="testProject.beta1" >
     <Index>9</Index>
@@ -247,10 +248,164 @@
     <planStart humanReadable="2002-06-28 16:00 CEST" >1025272800</planStart>
     <planEnd humanReadable="2002-06-28 16:00 CEST" >1025272800</planEnd>
     <Previous>testProject.devel</Previous>
+    <Follower>testProject.docuIN</Follower>
+   </Task>
+   <Task Id="testProject.docuIN" >
+    <Index>10</Index>
+    <Name>make input for Documentation-Team</Name>
+    <ProjectID>testProject</ProjectID>
+    <Priority>500</Priority>
+    <complete>0.0</complete>
+    <Type>Container</Type>
+    <ParentTask>testProject</ParentTask>
+    <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+    <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+    <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+    <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+    <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+    <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
+    <planStart humanReadable="2002-06-28 16:00 CEST" >1025272800</planStart>
+    <planEnd humanReadable="2002-07-23 10:59 CEST" >1027414799</planEnd>
+    <SubTasks>
+     <Task Id="testProject.docuIN.dev_21" >
+      <Index>11</Index>
+      <Name>2te with name dev_21</Name>
+      <ProjectID>testProject</ProjectID>
+      <Priority>500</Priority>
+      <complete>0.0</complete>
+      <Type>Task</Type>
+      <ParentTask>testProject.docuIN</ParentTask>
+      <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+      <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+      <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+      <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+      <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+      <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
+      <planStart humanReadable="2002-07-01 09:00 CEST" >1025506800</planStart>
+      <planEnd humanReadable="2002-07-18 15:59 CEST" >1027000799</planEnd>
+      <Follower>testProject.docuIN.done</Follower>
+      <Allocation ResourceID="worker_1" >
+       <Load>100</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Allocation ResourceID="worker_2" >
+       <Load>75</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Allocation ResourceID="worker_3" >
+       <Load>84</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Resource Id="worker_3" >Foo Bar</Resource>
+      <Resource Id="worker_2" >Bar Baz</Resource>
+      <Resource Id="worker_1" >Alfred Qwertz</Resource>
+     </Task>
+     <Task Id="testProject.docuIN.done" >
+      <Index>12</Index>
+      <Name>doing</Name>
+      <ProjectID>testProject</ProjectID>
+      <Priority>500</Priority>
+      <complete>0.0</complete>
+      <Type>Task</Type>
+      <ParentTask>testProject.docuIN</ParentTask>
+      <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+      <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+      <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+      <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+      <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+      <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
+      <planStart humanReadable="2002-07-19 09:00 CEST" >1027062000</planStart>
+      <planEnd humanReadable="2002-07-23 10:59 CEST" >1027414799</planEnd>
+      <Previous>testProject.docuIN.dev_21</Previous>
+      <Allocation ResourceID="worker_3" >
+       <Load>100</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Resource Id="worker_3" >Foo Bar</Resource>
+     </Task>
+    </SubTasks>
+    <Previous>testProject.beta1</Previous>
+    <Follower>testProject.makeDocu</Follower>
+   </Task>
+   <Task Id="testProject.makeDocu" >
+    <Index>13</Index>
+    <Name>write the documentation</Name>
+    <ProjectID>testProject</ProjectID>
+    <Priority>500</Priority>
+    <complete>0.0</complete>
+    <Type>Container</Type>
+    <ParentTask>testProject</ParentTask>
+    <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+    <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+    <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+    <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+    <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+    <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
+    <planStart humanReadable="2002-07-23 11:00 CEST" >1027414800</planStart>
+    <planEnd humanReadable="2002-08-19 10:59 CEST" >1029747599</planEnd>
+    <SubTasks>
+     <Task Id="testProject.makeDocu.doing" >
+      <Index>14</Index>
+      <Name>write manuscript</Name>
+      <ProjectID>testProject</ProjectID>
+      <Priority>500</Priority>
+      <complete>0.0</complete>
+      <Type>Task</Type>
+      <ParentTask>testProject.makeDocu</ParentTask>
+      <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+      <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+      <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+      <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+      <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+      <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
+      <planStart humanReadable="2002-07-23 11:00 CEST" >1027414800</planStart>
+      <planEnd humanReadable="2002-08-08 10:59 CEST" >1028797199</planEnd>
+      <Follower>testProject.makeDocu.trans_en</Follower>
+      <Allocation ResourceID="worker_1" >
+       <Load>100</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Allocation ResourceID="worker_2" >
+       <Load>75</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Allocation ResourceID="worker_3" >
+       <Load>84</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Resource Id="worker_3" >Foo Bar</Resource>
+      <Resource Id="worker_2" >Bar Baz</Resource>
+      <Resource Id="worker_1" >Alfred Qwertz</Resource>
+     </Task>
+     <Task Id="testProject.makeDocu.trans_en" >
+      <Index>15</Index>
+      <Name>translate to en</Name>
+      <ProjectID>testProject</ProjectID>
+      <Priority>500</Priority>
+      <complete>0.0</complete>
+      <Type>Task</Type>
+      <ParentTask>testProject.makeDocu</ParentTask>
+      <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+      <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+      <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+      <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+      <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+      <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
+      <planStart humanReadable="2002-08-09 09:00 CEST" >1028876400</planStart>
+      <planEnd humanReadable="2002-08-19 10:59 CEST" >1029747599</planEnd>
+      <Previous>testProject.makeDocu.doing</Previous>
+      <Allocation ResourceID="worker_3" >
+       <Load>100</Load>
+       <Persistent>No</Persistent>
+      </Allocation>
+      <Resource Id="worker_3" >Foo Bar</Resource>
+     </Task>
+    </SubTasks>
+    <Previous>testProject.docuIN</Previous>
     <Follower>testProject.done</Follower>
    </Task>
    <Task Id="testProject.done" >
-    <Index>10</Index>
+    <Index>16</Index>
     <Name>Lunch of Product</Name>
     <ProjectID>testProject</ProjectID>
     <Priority>500</Priority>
@@ -265,7 +420,8 @@
     <actualEnd humanReadable="2002-09-15 00:00 CEST" >1032040800</actualEnd>
     <planStart humanReadable="2002-09-15 00:00 CEST" >1032040800</planStart>
     <planEnd humanReadable="2002-09-15 00:00 CEST" >1032040800</planEnd>
-    <Previous>testProject.beta1</Previous>
+    <Previous>testProject.devel</Previous>
+    <Previous>testProject.makeDocu</Previous>
    </Task>
   </SubTasks>
  </Task>

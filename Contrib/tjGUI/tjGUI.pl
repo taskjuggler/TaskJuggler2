@@ -167,12 +167,108 @@ sub _gantt {
     _draw_grid($c);
     _draw_task($c);
     _draw_res($c);
+    _draw_depends($c);
+    _draw_label($c);
+}
+
+sub _draw_label {
+    my $c = shift;
+    foreach my $task (@all_tasks) {
+        $c->createText($task->label_x, $task->label_y, -text => $task->label, -anchor => 'w');
+    }
+}
+
+sub _draw_depends {
+    my $c = shift;
+    foreach my $task (@all_tasks) {
+        foreach my $t (@{$task->Previous}) {
+            #-- die ende koordinaten vom task holen, von dem ich abhänge
+            if ($t) {
+                #-- meine start-coords
+                my ($x1, $y1) = ($task->x1, $task->y1);
+                #-- ende-coords vom vorgänger
+                my ($x2, $y2) = __get_start_cood($t);
+                #-- was is vorgänger ?
+                my $p_type = __get_prev_type($t);
+                #  ---|
+                #     |+++ ende vorgänger
+                #  ---|
+                if ( $p_type eq 'Milestone' ) {
+                    $c->createLine( $x2+($day_x-$day_x/4), $y2-($task_height/2), $x2+$day_x, $y2-($task_height/2), -fill => 'blue' );
+                } else  {
+                    $c->createLine( $x2, $y2-($task_height/2), $x2+$day_x, $y2-($task_height/2), -fill => 'blue' );
+                }
+                #  ---|
+                #     |---
+                #  ---|  +
+                #        +
+                #        +
+                $c->createLine( $x2+$day_x, $y2-($task_height/2), $x2+$day_x, $y2+($task_space/2), -fill => 'blue' );
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #  ++++++|
+                $c->createLine( $x2+$day_x, $y2+($task_space/2), $x2-($day_x*1.5), $y2+($task_space/2), -fill => 'blue' );
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #   -----|
+                #   +
+                #   +
+                #   +
+                $c->createLine( $x2-($day_x*1.5), $y2+($task_space/2), $x2-($day_x*1.5), $y1+($task_height/2), -fill => 'blue' );
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #   -----|
+                #   |
+                #   |
+                #   |+++++++++++++++++
+                $c->createLine( $x2-($day_x*1.5), $y1+($task_height/2), $x1, $y1+($task_height/2), -fill => 'blue' );
+                #  ---|
+                #     |---
+                #  ---|  |
+                #        |
+                #   -----|
+                #   |
+                #   |
+                #   |----------------->
+                #                    -^- auf deutsch == pfeil zeichnen ;)
+                my ($px, $py) = ($x1, $y1+($task_height/2));
+                if ( $task->Type eq 'Milestone' ) { $px = $px+($task_height/3) }
+                $c->createPolygon(
+                            $px, $py,
+                            $px-($day_x/4), $py+($task_height/2),
+                            $px-($day_x/4), $py-($task_height/2),
+                            $px, $py,
+                            -outline => 'blue', -fill => 'blue');
+            }
+        }
+    }
+}
+
+sub __get_start_cood {
+    my $id = shift;
+    my ($x, $y);
+    foreach my $t (@all_tasks) {
+        return ($t->x2, $t->y2) if ( $t->Id eq $id );
+    }
+}
+
+sub __get_prev_type {
+    my $id = shift;
+    foreach my $t (@all_tasks) {
+        return $t->Type if ( $t->Id eq $id );
+    }
 }
 
 sub _draw_res {
     my $c = shift;
-    my $b = 0;
     my $a = 0;
+    my $b = 0;
     foreach my $i (sort keys %res_load) {
         foreach my $ii (keys %{$res_load{$i}}) {
             my $res = $rmap{$i};
@@ -190,8 +286,8 @@ sub _draw_res {
             my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
                                             $end_year, $end_month, $end_day);
             #-- balken koordinaten
-            my $x1 = $start_delta * $day_x + $page_border;
-            my $y1 = $last_Y_task + ( ($task_height + $task_space) * $b );
+            my $x1 = ($start_delta * $day_x) + $page_border;
+            my $y1 = $last_Y_task + ( ($task_height + $task_space) * $b ) + $task_height;
             my $x2 = $x1 + ($task_length * $day_x);
             my $y2 = $y1 + $task_height;
             #-- balken
@@ -245,8 +341,8 @@ sub _draw_task {
         $last_Y_task =  $y2 if ($y2 > $last_Y_task);
         #-- die koordinaten für anfang und ende des tasks merken, da fangen die
         #-- depend-lines an oder da gehen sie halt hin, hoffentlich ;)
-        $task->x1($x1); $task->y1($y1-($task_height/2));
-        $task->x2($x2); $task->y2($y2+($task_height/2));
+        $task->x1($x1); $task->y1($y1);
+        $task->x2($x2); $task->y2($y2);
         if ( $task->Type eq 'Task' ) {
             #-- den task pinseln
             #-- wenn das ende vor heute liegt und der task nicht 100% fertig hat, dann rot
@@ -276,18 +372,18 @@ sub _draw_task {
             $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'black');
             #-- text
             $task->label($name);
-            $task->label_x($x1+1);
-            $task->label_y($y1-($task_height/1.5));
+            $task->label_x($x1+$day_x);
+            $task->label_y($y1+($task_height/2));
         }
         if ( $task->Type eq 'Milestone' ) {
-            my ($x, $y) = ($x1, $y1+($task_height/2));
+            my ($x, $y) = ($x1+($day_x/2), $y1+($task_height/2));
             $c->createOval($x-($task_height/3), $y-($task_height/3), $x+($task_height/3), $y+($task_height/3), -outline => 'black', -fill => 'black');
             #-- text
             my $am = sprintf('%02d', $start_month);
             my $ad = sprintf('%02d', $start_day);
             $task->label("$name ($am-$ad)");
-            $task->label_x($x1+2);
-            $task->label_y($y1-($task_height/2));
+            $task->label_x($x1+($day_x*1.5));
+            $task->label_y($y1+($task_height/2));
         }
         if ( $task->Type eq 'Container' ) {
             $c->createRectangle($x1-($day_x/4), $y1, $x2+($day_x/4), $y2-($task_height/2), -outline => 'black', -fill => 'black');
@@ -307,8 +403,8 @@ sub _draw_task {
                 -outline => 'black', -fill => 'black');
             #-- text
             $task->label($name);
-            $task->label_x($x1+1);
-            $task->label_y($y1-($task_height/1.5));
+            $task->label_x($x1+$day_x);
+            $task->label_y($y1+($task_height/2)+$task_space);
         }
     }
 }
