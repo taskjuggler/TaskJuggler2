@@ -38,10 +38,11 @@ QicsDataModelDefault * KTJTaskReport::generate()
 
     clear();
 
-    int columns = generateHeader(); // generate the column header
-
+    QicsDataModelRow headerRow = generateHeader(); // generate the column header
+    int columns = headerRow.count();
     m_model->addColumns( columns );
-    kdDebug() << k_funcinfo << "Added " << columns << " columns" << endl;
+    m_model->setRowItems( 0, headerRow );
+    //kdDebug() << k_funcinfo << "Added " << columns << " columns" << endl;
 
     TaskListIterator tasks = m_proj->getTaskListIterator();
     Task * task = 0;
@@ -59,7 +60,7 @@ QicsDataModelDefault * KTJTaskReport::generate()
     return m_model;
 }
 
-int KTJTaskReport::generateHeader()
+QicsDataModelRow KTJTaskReport::generateHeader() const
 {
     QString format;             // corresponds with strftime(3)
 
@@ -83,45 +84,44 @@ int KTJTaskReport::generateHeader()
     }
 
     time_t delta = intervalForCol( 0 ).getDuration();
-    QicsDataModelRow result;
     time_t tmp = m_start.toTime_t();
     time_t tmpEnd = m_end.toTime_t();
 
     //kdDebug() << "generateHeader: m_scale: " << m_scale << " , delta: " << delta <<
-    //" , start: " << tmp << ", end: " << tmpEnd << endl;
+    //    " , start: " << m_start << ", end: " << m_end << endl;
+
+    m_model->addRows( 1 );
+    QicsDataModelRow headerRow;
+    headerRow.append( new QicsDataString("") ); // 0,0 stays empty
 
     while ( tmp <= tmpEnd )
     {
-        result.append( new QicsDataString( formatDate( tmp, format ) ) );
+        //kdDebug() << k_funcinfo << "Adding date column: " << formatDate( tmp, format ) << endl;
+        headerRow.append( new QicsDataString( formatDate( tmp, format ) ) );
         tmp += delta;
     }
 
-    m_model->addRows( 1 );
-    m_model->setRowItems( 0, result );
-
-    return result.count();
+    return headerRow;
 }
 
 void KTJTaskReport::generateRow( const Task * task, int columns )
 {
     // generate the task row
-    QicsDataModelRow taskRow( columns );
+    m_model->addRows( 1 );
+    int row = m_model->lastRow();
 
     kdDebug() << k_funcinfo << "Generating primary row for task: " << task->getName() << endl;
 
-    taskRow.append( new QicsDataString( task->getName() ) ); // row header
+    m_model->setItem( row, 0, task->getName() ); // row header contains task name
 
     double daily = m_proj->getDailyWorkingHours();
-    for ( int i = 0; i < columns; i++ ) // data in columns
+    for ( int i = 1; i < columns; i++ ) // data in columns
     {
-        Interval ival = intervalForCol( i );
+        Interval ival = intervalForCol( i - 1 );
         double load = task->getLoad( 0, ival ) * daily;
         //kdDebug() << k_funcinfo << "Appending task load: " << load << endl;
-        taskRow.append( new QicsDataDouble( load ) );
+        m_model->setItem( row, i, load );
     }
-
-    m_model->addRows( 1 );
-    m_model->setRowItems( m_model->lastRow(), taskRow );
 
     kdDebug() << k_funcinfo << QString( "Model now contains %1 rows" ).arg( m_model->numRows() ) << endl;
 
@@ -134,19 +134,19 @@ void KTJTaskReport::generateRow( const Task * task, int columns )
 
 void KTJTaskReport::generateRow( const Task * task, const Resource * res, int columns )
 {
-    QicsDataModelRow resRow( columns );
+    m_model->addRows( 1 );
+    int row = m_model->lastRow();
 
     kdDebug() << k_funcinfo << "Generating secondary row for task: " << task->getName()
               << ", and resource: " << res->getName() << endl;
 
-    for ( int i = 0; i < columns; i++ ) // data in columns
+    m_model->setItem( row, 0, res->getName() ); // row header contains res name
+
+    for ( int i = 1; i < columns; i++ ) // data in columns
     {
-        Interval ival = intervalForCol( i );
+        Interval ival = intervalForCol( i - 1 );
         double load = task->getLoad( 0, ival, res ) * m_proj->getDailyWorkingHours();
         //kdDebug() << k_funcinfo << "Appending resource load: " << load << endl;
-        resRow.append( new QicsDataDouble( load ) );
+        m_model->setItem( row, i, load );
     }
-
-    m_model->addRows( 1 );
-    m_model->setRowItems( m_model->lastRow(), resRow );
 }

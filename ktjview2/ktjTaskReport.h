@@ -21,9 +21,8 @@ public:
 private:
     /**
      * Generate column header
-     * @return number of columns
      */
-    int generateHeader();
+    QicsDataModelRow generateHeader() const;
 
     /**
      * Generate main @p task row

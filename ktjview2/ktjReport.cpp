@@ -109,7 +109,7 @@ Interval KTJReport::intervalForCol( int col ) const
         intervalEnd = sameTimeNextQuarter( tmp.toTime_t() );
         break;
     default:
-        kdWarning() << "Invalid scale in ResUsageView::intervalForCol" << endl;
+        kdWarning() << "Invalid scale in KTJReport::intervalForCol" << endl;
         break;
     }
 

@@ -123,7 +123,7 @@ protected:
     Scale m_scale;
     /// display params
     DisplayData m_display;
-    /// project start, project end
+    /// report start, report end
     QDateTime m_start, m_end;
 };
 
