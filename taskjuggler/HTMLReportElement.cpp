@@ -31,6 +31,7 @@
 #include "ReferenceAttribute.h"
 #include "TextAttribute.h"
 #include "HTMLReport.h"
+#include "UsageLimits.h"
 
 #define KW(a) a
 
@@ -1747,7 +1748,15 @@ HTMLReportElement::genCell##a##Effort(TableCellInfo* tci) \
 }
 
 GCEFFORT(Min)
-GCEFFORT(Max)
+
+void
+HTMLReportElement::genCellMaxEffort(TableCellInfo* tci)
+{
+    genCell(tci->tcf->realFormat.format
+            (tci->tli->resource->getLimits() ?
+             tci->tli->resource->getLimits()->getDailyMax() : 0, FALSE),
+            tci, TRUE);
+}
 
 void
 HTMLReportElement::genCellRate(TableCellInfo* tci)

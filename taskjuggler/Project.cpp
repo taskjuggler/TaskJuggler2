@@ -38,6 +38,7 @@
 #include "CSVAccountReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
+#include "UsageLimits.h"
 #include "kotrus.h"
 #include "CustomAttributeDefinition.h"
 
@@ -86,7 +87,7 @@ Project::Project()
     now = time(0);
     
     minEffort = 0.0;
-    maxEffort = 0.0;
+    resourceLimits = 0;
     rate = 0.0;
     currencyDigits = 3;
     kotrus = 0;
@@ -267,6 +268,14 @@ void
 Project::deleteScenario(Scenario* s)
 {
     scenarioList.removeRef(s);
+}
+
+void
+Project::setResourceLimits(UsageLimits* l)
+{ 
+    if (resourceLimits)
+        delete resourceLimits;
+    resourceLimits = l; 
 }
 
 void 

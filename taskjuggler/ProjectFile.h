@@ -37,6 +37,7 @@ class HTMLReport;
 class ReportElement;
 class RealFormat;
 class TableColumnInfo;
+class UsageLimits;
 
 /**
  * @short File Parser for project files.
@@ -139,6 +140,7 @@ private:
     Booking* readBooking(int& sloppy);
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
+    UsageLimits* readLimits();
     bool readTimeFrame(double& d, bool workingDays);
     bool readDate(time_t& val, time_t correction);
     bool readRealFormat(RealFormat* format);

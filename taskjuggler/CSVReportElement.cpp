@@ -31,6 +31,7 @@
 #include "ReferenceAttribute.h"
 #include "TextAttribute.h"
 #include "CSVReport.h"
+#include "UsageLimits.h"
 
 #define KW(a) a
 
@@ -1207,7 +1208,15 @@ CSVReportElement::genCell##a##Effort(TableCellInfo* tci) \
 }
 
 GCEFFORT(Min)
-GCEFFORT(Max)
+
+void
+CSVReportElement::genCellMaxEffort(TableCellInfo* tci)
+{
+    genCell(tci->tcf->realFormat.format
+            (tci->tli->resource->getLimits() ?
+             tci->tli->resource->getLimits()->getDailyMax() : 0, FALSE),
+            tci, TRUE);
+}
 
 void
 CSVReportElement::genCellRate(TableCellInfo* tci)

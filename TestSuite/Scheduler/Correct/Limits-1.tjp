@@ -1,0 +1,28 @@
+project limits1 "Limits1" "$Id" 2004-03-01-0:00-GMT 2004-05-01-0:00-GMT
+{
+	timezone "GMT"
+	now 2004-03-01
+}
+
+resource r1 "R1" { 
+	limits { daily 2h weekly 6h monthly 14h }
+}
+
+task t1 "Task 1" {
+	start 2004-03-01
+	duration 60d
+	allocate r1
+}
+
+htmltaskreport "Limits-1.html" {
+	columns id, name, effort, daily
+}
+
+export "Limits-1-Export.tjp" {
+	hidetask 0
+	hideresource 0
+	taskattributes all
+	notimestamp
+}
+
+

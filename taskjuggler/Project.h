@@ -35,6 +35,7 @@ class Report;
 class Kotrus;
 class CustomAttributeDefinition;
 class VacationInterval;
+class UsageLimits;
 
 /**
  * The Project class is the root of the data tree of the application.
@@ -596,17 +597,18 @@ public:
     double getMinEffort() const { return minEffort; }
 
     /**
-     * Set the maximum daily effort for resources. This is the default value
+     * Set the maximum efforts for resources. This is the default value
      * inherited by all resources created subsequent to this function call.  A
-     * resource is never loaded more each day than the maximum effort value
-     * specified for the resource.
+     * resource is never loaded more each day, week, month etc. than the
+     * maximum effort value specified for the resource.
      */
-    void setMaxEffort(double m) { maxEffort = m; }
-    /**
-     * Returns the default maximum daily effort value.
-     */
-    double getMaxEffort() const { return maxEffort; }
+    void setResourceLimits(UsageLimits* l);
 
+    /**
+     * Returns the default effort limits for resources.
+     */
+    const UsageLimits* getResourceLimits() const { return resourceLimits; }
+    
     /**
      * Set the default daily cost rate for resources. This value is inherited
      * by all resources created subsequent to this function call.
@@ -791,9 +793,11 @@ private:
      * will inherit the priority of its parent task. */
     int priority;
 
-    /// Default values for Resource variables
+    /// Default values for Resource variables (TODO: should be obsoleted!)
     double minEffort;
-    double maxEffort;
+
+    UsageLimits* resourceLimits;
+
     double rate;
 
     /* The average number of working hours per day. This factor is used

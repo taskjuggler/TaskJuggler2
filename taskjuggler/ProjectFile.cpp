@@ -56,6 +56,7 @@
 #include "ReferenceAttribute.h"
 #include "TextAttribute.h"
 #include "CustomAttributeDefinition.h"
+#include "UsageLimits.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
@@ -224,7 +225,20 @@ ProjectFile::parse()
                     errorMessage(i18n("Real value exptected"));
                     return FALSE;
                 }
-                proj->setMaxEffort(token.toDouble());
+                UsageLimits* limits = new UsageLimits;
+                limits->setDailyMax
+                    ((uint) ((token.toDouble() *
+                              proj->getDailyWorkingHours() * 3600) /
+                             proj->getScheduleGranularity()));
+                proj->setResourceLimits(limits);
+                break;
+            }
+            else if (token == KW("limits"))
+            {
+                UsageLimits* limits;
+                if ((limits = readLimits()) == 0)
+                    return FALSE;
+                proj->setResourceLimits(limits);
                 break;
             }
             else if (token == KW("rate"))
@@ -2111,7 +2125,19 @@ ProjectFile::readResourceBody(Resource* r)
                 errorMessage(i18n("Real value exptected"));
                 return FALSE;
             }
-            r->setMaxEffort(token.toDouble());
+            UsageLimits* limits = new UsageLimits;
+            limits->setDailyMax
+                ((uint) ((token.toDouble() *
+                          proj->getDailyWorkingHours() * 3600) /
+                         proj->getScheduleGranularity()));
+            r->setLimits(limits);
+        }
+        else if (token == KW("limits"))
+        {
+            UsageLimits* limits;
+            if ((limits = readLimits()) == 0)
+                return FALSE;
+            r->setLimits(limits);
         }
         else if (token == KW("efficiency"))
         {
@@ -2656,6 +2682,59 @@ ProjectFile::readAllocate(Task* t)
     t->addAllocation(a);
     
     return TRUE;
+}
+
+UsageLimits*
+ProjectFile::readLimits()
+{
+    UsageLimits* limits = new UsageLimits;
+
+    QString token;
+    if (nextToken(token) != LBRACE)
+    {
+        errorMessage(i18n("'{' expected"));
+        delete limits;
+        return 0;
+    }
+    TokenType tt;
+    while ((tt = nextToken(token)) == ID)
+    {
+        double val; 
+        if (!readTimeFrame(val, TRUE))
+        {
+            delete limits;
+            return 0;
+        }
+        uint uval = (uint) ((val * proj->getDailyWorkingHours() * 3600) /
+                            proj->getScheduleGranularity());
+        if (uval == 0)
+        {
+            errorMessage(i18n("Value must be larger than scheduling "
+                              "granularity"));
+            delete limits;
+            return 0;
+        }
+        if (token == KW("daily"))
+            limits->setDailyMax(uval);
+        else if (token == KW("weekly"))
+            limits->setWeeklyMax(uval);
+        else if (token == KW("monthly"))
+            limits->setMonthlyMax(uval);
+        else
+        {
+            errorMessage(i18n("Unknown limit type '%1'").arg(token));
+            delete limits;
+            return 0;
+        }
+    }
+    if (tt != RBRACE)
+    {
+        errorMessage(i18n("'}' expected"));
+        delete limits;
+        return 0;
+    }
+    
+    return limits;
 }
 
 bool

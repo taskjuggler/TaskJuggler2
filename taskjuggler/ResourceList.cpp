@@ -20,6 +20,7 @@
 #include "Resource.h"
 #include "Project.h"
 #include "kotrus.h"
+#include "UsageLimits.h"
 
 ResourceList::ResourceList()
 {
@@ -81,11 +82,11 @@ ResourceList::compareItemsLevel(Resource* r1, Resource* r2, int level)
         return r1->minEffort == r2->minEffort ? 0 :
             r1->minEffort < r2->minEffort ? -1 : 1;
     case MaxEffortUp:
-        return r1->maxEffort == r2->maxEffort ? 0 :
-            r1->maxEffort < r2->maxEffort ? 1 : -1;
+        return r1->limits->getDailyMax() == r2->limits->getDailyMax() ? 0 :
+            r1->limits->getDailyMax() < r2->limits->getDailyMax() ? 1 : -1;
     case MaxEffortDown:
-        return r1->maxEffort == r2->maxEffort ? 0 :
-            r1->maxEffort < r2->maxEffort ? -1 : 1;
+        return r1->limits->getDailyMax() == r2->limits->getDailyMax() ? 0 :
+            r1->limits->getDailyMax() < r2->limits->getDailyMax() ? -1 : 1;
     case RateUp:
         return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? 1 : -1;
     case RateDown:

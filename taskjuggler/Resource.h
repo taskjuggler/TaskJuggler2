@@ -28,6 +28,7 @@ class BookingList;
 class Interval;
 class QDomDocument;
 class QDomElement;
+class UsageLimits;
 
 /**
  * @short Stores all information about a resource.
@@ -57,8 +58,9 @@ public:
     void setMinEffort(double e) { minEffort = e; }
     double getMinEffort() const { return minEffort; }
 
-    void setMaxEffort(double e) { maxEffort = e; }
-    double getMaxEffort() const { return maxEffort; }
+    void setLimits(UsageLimits* l);
+
+    const UsageLimits* getLimits() const { return limits; }
 
     void setEfficiency(double e) { efficiency = e; }
     double getEfficiency() const { return efficiency; }
@@ -166,9 +168,9 @@ private:
     /// The minimum effort (in man days) the resource should be used per day.
     double minEffort;
 
-    /// The maximum effort (in man days) the resource should be used per day.
-    double maxEffort;
-
+    /// Usage limits of the resource.
+    UsageLimits* limits;
+    
     /**
      * The efficiency of the resource. A team of five should have an
      * efficiency of 5.0 */

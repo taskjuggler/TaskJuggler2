@@ -22,6 +22,7 @@
 #include "SbBooking.h"
 #include "Account.h"
 #include "Task.h"
+#include "UsageLimits.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "kotrus.h"
@@ -31,10 +32,15 @@
 
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
- * division. We therefor use a buffer that stores the index of the
- * first slot of a day for each slot.
+ * division. We therefor use buffers that stores the index of the
+ * first/last slot of a day/week/month for each slot.
  */
-static int* MidnightIndex = 0;
+static uint* DayStartIndex = 0;
+static uint* WeekStartIndex = 0;
+static uint* MonthStartIndex = 0;
+static uint* DayEndIndex = 0;
+static uint* WeekEndIndex = 0;
+static uint* MonthEndIndex = 0;
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
                    Resource* pr)
@@ -52,20 +58,58 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     for (int sc = 0; sc < p->getMaxScenarios(); sc++)
         scoreboards[sc] = 0;
 
-    if (!MidnightIndex)
+    if (!DayStartIndex)
     {
-        /*
-         * Since we need to take daylight saving time switches into account
-         * we have to add more than 24 hours to get to the next day. The
-         * buffer must be big enough so we don't create overflows.
-         */
-        uint midnightIndexSize = sbSize + 
-            (ONEDAY * 2) / p->getScheduleGranularity();
-        MidnightIndex = new int[midnightIndexSize];
-        for (uint i = 0; i < midnightIndexSize; i++)
-            MidnightIndex[i] = -1;
+        DayStartIndex = new uint[sbSize];
+        WeekStartIndex = new uint[sbSize];
+        MonthStartIndex = new uint[sbSize];
+        long i = 0;
+        uint dayStart = 0;
+        uint weekStart = 0;
+        uint monthStart = 0;
+        bool weekStartsMonday = project->getWeekStartsMonday();
+        for (time_t ts = p->getStart(); i < (long) sbSize; ts +=
+             p->getScheduleGranularity(), i++)
+        {
+            if (ts == midnight(ts))
+                dayStart = i;
+            DayStartIndex[i] = dayStart;
+            
+            if (ts == beginOfWeek(ts, weekStartsMonday))
+                weekStart = i;
+            WeekStartIndex[i] = weekStart;
+            
+            if (ts == beginOfMonth(ts))
+                monthStart = i;
+            MonthStartIndex[i] = monthStart;
+        }
+
+        DayEndIndex = new uint[sbSize];
+        WeekEndIndex = new uint[sbSize];
+        MonthEndIndex = new uint[sbSize];
+        i = sbSize - 1;
+        uint dayEnd = i;
+        uint weekEnd = i;
+        uint monthEnd = i;
+        // WTF does p->getEnd not return the 1st sec after the time frame!!!
+        for (time_t ts = p->getEnd() + 1; i >= 0;
+             ts -= p->getScheduleGranularity(), i--)
+        {
+            DayEndIndex[i] = dayEnd;
+            if (ts - midnight(ts) < (int) p->getScheduleGranularity())
+                dayEnd = i > 0 ? i - 1 : 0;
+            
+            WeekEndIndex[i] = weekEnd;
+            if (ts - beginOfWeek(ts, weekStartsMonday) <
+                (int) p->getScheduleGranularity())
+                weekEnd = i > 0 ? i - 1 : 0;
+            
+            MonthEndIndex[i] = monthEnd;
+            if (ts - beginOfMonth(ts) < (int) p->getScheduleGranularity())
+                monthEnd = i > 0 ? i - 1 : 0;
+        }
     }
-        
+    
     for (int i = 0; i < 7; i++)
     {
         workingHours[i] = new QPtrList<Interval>();
@@ -97,8 +141,6 @@ Resource::~Resource()
         }
     delete [] scoreboards;
     
-    delete [] MidnightIndex;
-    MidnightIndex = 0;
     project->deleteResource(this);
 }
 
@@ -131,7 +173,12 @@ Resource::inheritValues()
             vacations.append(new Interval(**vli));
 
         minEffort = pr->minEffort;
-        maxEffort = pr->maxEffort;
+
+        if (pr->limits)
+            limits = new UsageLimits(*pr->limits);
+        else
+            limits = 0;
+
         rate = pr->rate;
         efficiency = pr->efficiency;
 
@@ -153,10 +200,23 @@ Resource::inheritValues()
         }
 
         minEffort = project->getMinEffort();
-        maxEffort = project->getMaxEffort();
+
+        if (project->getResourceLimits())
+            limits = new UsageLimits(*project->getResourceLimits());
+        else
+            limits = 0;
+
         rate = project->getRate();
         efficiency = 1.0;
     }
+}
+
+void
+Resource::setLimits(UsageLimits* l)
+{
+    if (limits)
+        delete limits;
+    limits = l;
 }
 
 void
@@ -227,9 +287,9 @@ int
 Resource::isAvailable(time_t date, time_t duration, int loadFactor,
                       const Task* t)
 {
-    /* The scoreboard of a resource is only generated on demand, so we large
+    /* The scoreboard of a resource is only generated on demand, so that large
      * resource lists that are only scarcely used for the project do not slow
-     * it down too much. */
+     * TJ down too much. */
     if (!scoreboard)
         initScoreboard();
     // Check if the interval is booked or blocked already.
@@ -242,67 +302,94 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
         return scoreboard[sbIdx] < ((SbBooking*) 4) ? 1 : 4;
     }
 
-    if (maxEffort == 0.0 && loadFactor == 0)
-        return 0;
+    if ((limits && limits->getDailyMax() > 0) || loadFactor > 0.0)
+    {
+        // Now check that the resource is not overloaded on this day.
+        time_t bookedTimeTask = duration;
+        uint bookedSlots = 1;
 
-    // Now check that the resource is not overloaded on this day.
-    time_t bookedTime = duration;
-    time_t bookedTimeTask = duration;
+        for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
+        {
+            SbBooking* b = scoreboard[i];
+            if (b < (SbBooking*) 4)
+                continue;
 
-    uint sbStart;
-    if (midnight(date) <= project->getStart())
-        sbStart = 0;
-    else
+            bookedSlots++;
+            if (b->getTask() == t)
+                bookedTimeTask += duration;
+        }
+
+        double taskLoad = project->convertToDailyLoad(bookedTimeTask) *
+            efficiency;
+        if (limits && limits->getDailyMax() > 0 &&
+            bookedSlots > limits->getDailyMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded today (%d)", id.latin1(),
+                       bookedSlots);
+            return 2;
+        }
+        if (loadFactor > 0 && taskLoad > (loadFactor / 100.0))
+        {
+            if (DEBUGRS(6))
+                qDebug("  %s overloaded for task %s (%f)", id.latin1(),
+                       t->getId().latin1(), loadFactor / 100.0);
+            return 3;
+        }
+    }
+    if ((limits && limits->getWeeklyMax() > 0) /* || ... */)
     {
-        if (MidnightIndex[sbIdx] == -1)
-            MidnightIndex[sbIdx] = sbIndex(midnight(date));
-        sbStart = MidnightIndex[sbIdx];
+        // Now check that the resource is not overloaded on this week.
+        uint bookedSlots = 1;
+        uint bookedTaskSlots = 1;
+
+        for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
+        {
+            SbBooking* b = scoreboard[i];
+            if (b < (SbBooking*) 4)
+                continue;
+
+            bookedSlots++;
+            if (b->getTask() == t)
+                bookedTaskSlots++;
+        }
+
+        if (limits && limits->getWeeklyMax() > 0 &&
+            bookedSlots > limits->getWeeklyMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded this week (%d)", id.latin1(),
+                       bookedSlots);
+            return 2;
+        }
+    }
+    if ((limits && limits->getMonthlyMax() > 0) /* || ... */)
+    {
+        // Now check that the resource is not overloaded on this week.
+        uint bookedSlots = 1;
+        uint bookedTaskSlots = 1;
+        
+        for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
+        {
+            SbBooking* b = scoreboard[i];
+            if (b < (SbBooking*) 4)
+                continue;
+
+            bookedSlots++;
+            if (b->getTask() == t)
+                bookedTaskSlots++;
+        }
+
+        if (limits && limits->getMonthlyMax() > 0 &&
+            bookedSlots > limits->getMonthlyMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded this month (%d)", id.latin1(),
+                       bookedSlots);
+            return 2;
+        }
     }
 
-    uint sbEnd;
-    if (sameTimeNextDay(midnight(date)) >= project->getEnd())
-        sbEnd = sbSize - 1;
-    else
-    {
-        uint sbIdxEnd = sbStart +
-            (uint) ((ONEDAY / project->getScheduleGranularity()) * 1.5);    
-        if (MidnightIndex[sbIdxEnd] == -1)
-            MidnightIndex[sbIdxEnd] = sbIndex(sameTimeNextDay(midnight(date)));
-        sbEnd = MidnightIndex[sbIdxEnd] - 1;
-    }
-    
-    for (uint i = sbStart; i < sbEnd; i++)
-    {
-        SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
-            continue;
-
-        bookedTime += duration;
-        if (b->getTask() == t)
-            bookedTimeTask += duration;
-    }
-
-    double resourceLoad = project->convertToDailyLoad(bookedTime) * efficiency;
-    double taskLoad = project->convertToDailyLoad(bookedTimeTask) * efficiency;
-    if (DEBUGRS(7))
-    {
-        qDebug("  Resource %s: RLoad: %f(%f), TLoad: %f(%f)",
-               id.latin1(), resourceLoad, maxEffort, taskLoad, loadFactor /
-               100.0);
-    }
-    if (maxEffort > 0.0 && resourceLoad > maxEffort)
-    {
-        if (DEBUGRS(6))
-            qDebug("  Resource %s overloaded (%f)", id.latin1(), resourceLoad);
-        return 2;
-    }
-    if (loadFactor > 0 && taskLoad > (loadFactor / 100.0))
-    {
-        if (DEBUGRS(6))
-            qDebug("  %s overloaded for task %s (%f)", id.latin1(),
-                   t->getId().latin1(), loadFactor / 100.0);
-        return 3;
-    }
     return 0;
 }
 

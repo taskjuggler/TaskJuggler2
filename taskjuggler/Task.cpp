@@ -10,73 +10,6 @@
  * $Id$
  */
 
-/* -- DTD --
- <!-- Task element, child of projects and for subtasks -->
- <!ELEMENT Task     (Index, Name, ProjectID, Priority, complete,
-                     Type, ParentTask*, actualStart, actualEnd, planStart, planEnd,
-                     SubTasks*, Previous*, Follower*, Allocation*,
-                     Resource* )>
- <!ATTLIST Task         Id CDATA #REQUIRED>
- <!ELEMENT Index        (#PCDATA)>
- <!ELEMENT Name         (#PCDATA)>
- <!ELEMENT ProjectID    (#PCDATA)>
- <!ELEMENT Priority     (#PCDATA)>
- <!ELEMENT complete     (#PCDATA)>
- <!ELEMENT Type         (#PCDATA)>
- <!ELEMENT ParentTask   (#PCDATA)>
- <!ELEMENT Note         (#PCDATA)>
- <!ELEMENT Reference    (#PCDATA)>
- <!ELEMENT ReferenceLabel (#PCDATA)>
- <!ELEMENT minStart     (#PCDATA)>
- <!ELEMENT maxStart     (#PCDATA)>
- <!ELEMENT minEnd       (#PCDATA)>
- <!ELEMENT maxEnd       (#PCDATA)>
- <!ELEMENT actualStart  (#PCDATA)>
- <!ELEMENT actualEnd    (#PCDATA)>
- <!ELEMENT planStart    (#PCDATA)>
- <!ELEMENT planEnd      (#PCDATA)>
- <!ELEMENT startBufferSize (#PCDATA)>
- <!ELEMENT ActualStartBufferEnd (#PCDATA)>
- <!ELEMENT PlanStartBufferEnd   (#PCDATA)>
- <!ELEMENT endBufferSize        (#PCDATA)>
- <!ELEMENT ActualEndBufferStart (#PCDATA)>
- <!ELEMENT PlanEndBufferStart   (#PCDATA)>
- <!ELEMENT Resource             (#PCDATA)>
- <!ATTLIST Resource
-           Id            CDATA #REQUIRED>
- <!ELEMENT SubTasks     (Task+)>
- <!ELEMENT Previous     (#PCDATA)>
- <!ELEMENT Follower     (#PCDATA)>
- <!ELEMENT bookedResources (ResourceID+)>
-
- <!-- Date values contain human readable date -->
- <!ATTLIST minStart
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST maxStart
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST minEnd
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST maxEnd
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST actualStart
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST actualEnd
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST planStart
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST planEnd
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST ActualStartBufferEnd
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST PlanStartBufferEnd
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST ActualEndBufferStart
-           humanReadable CDATA #REQUIRED>
- <!ATTLIST PlanEndBufferStart
-           humanReadable CDATA #REQUIRED>
-   /-- DTD --/
-*/
-
 #include <stdlib.h>
 #include <math.h>
 
@@ -93,6 +26,7 @@
 #include "ReportXML.h"
 #include "Scenario.h"
 #include "CustomAttributeDefinition.h"
+#include "UsageLimits.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& f, int l)
@@ -832,10 +766,18 @@ Task::createCandidateList(time_t date, Allocation* a)
                 for (QPtrListIterator<Resource> rli(candidates);
                      *rli != 0; ++rli)
                 {
+                    /* We calculate the load as a relative value to the daily
+                     * max load. This way part time people will reach their
+                     * max as slowly as the full timers. */
                     double load =
                         (*rli)->getCurrentLoad(Interval(project->getStart(),
                                                         date), 0) /
-                        (*rli)->getMaxEffort();
+                        (((*rli)->getLimits() &&
+                          (*rli)->getLimits()->getDailyMax() > 0) ?
+                         project->convertToDailyLoad
+                         ((*rli)->getLimits()->getDailyMax() *
+                          project->getScheduleGranularity()) : 1.0);
+
                     if (minLoaded == 0 || load < minLoad)
                     {
                         minLoad = load;
@@ -856,10 +798,18 @@ Task::createCandidateList(time_t date, Allocation* a)
                 for (QPtrListIterator<Resource> rli(candidates);
                      *rli != 0; ++rli)
                 {
+                    /* We calculate the load as a relative value to the daily
+                     * max load. This way part time people will reach their
+                     * max as fast as the full timers. */
                     double load =
                         (*rli)->getCurrentLoad(Interval(project->getStart(),
                                                         date), 0) /
-                        (*rli)->getMaxEffort();
+                        (((*rli)->getLimits() &&
+                          (*rli)->getLimits()->getDailyMax() > 0) ?
+                         project->convertToDailyLoad
+                         ((*rli)->getLimits()->getDailyMax() *
+                          project->getScheduleGranularity()) : 1.0);
+
                     if (maxLoaded == 0 || load > maxLoad)
                     {
                         maxLoad = load;
