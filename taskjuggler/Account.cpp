@@ -89,11 +89,11 @@ AccountList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	case TreeMode:
 	{
 		QString fn1;
-		c1->getFullName(fn1);
+		// c1->getFullName(fn1);
 		fn1 = (c1->getType() == Account::Cost ? QString("0") : QString("1"))
 			+ fn1;
 		QString fn2;
-		c2->getFullName(fn2);
+		// c2->getFullName(fn2);
 		fn2 = (c2->getType() == Account::Cost ? QString("0") : QString("1"))
 			+ fn2;
 		return fn1.compare(fn2);
