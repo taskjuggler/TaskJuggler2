@@ -137,6 +137,7 @@ void ktjview2::setupActions()
     // Filter toolbar
     m_searchLabel = new QLabel( i18n( "&Filter:" ), this, "search_label" );
     m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
+
     m_searchLabel->setBuddy( m_searchLine );
     ( void ) new KWidgetAction( m_searchLabel, i18n( "Filter label" ), KShortcut(), 0, 0, actionCollection(), "filter_label" );
     ( void ) new KWidgetAction( m_searchLine, i18n( "Filter lineedit" ), KShortcut(), 0, 0, actionCollection(), "filter_lineedit" );

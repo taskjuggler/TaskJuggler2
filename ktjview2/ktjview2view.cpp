@@ -487,6 +487,7 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
             //kdDebug() << "Case1: " << id << endl;
             KListViewItem * item = new KListViewItem( m_resListView, id, name, rate, eff, minEffort,
                                                       dailyMax, weeklyMax, monthlyMax );
+            item->setOpen( true );
             parseResources( res->getSubListIterator(), item );
         }
         else if ( res->isGroup() && ( res->getParent() != 0 ) && parentItem ) // group item, non-toplevel
@@ -494,6 +495,7 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
             //kdDebug() << "Case2: " << id << endl;
             KListViewItem * item = new KListViewItem( parentItem, id, name, rate, eff, minEffort,
                                                       dailyMax, weeklyMax, monthlyMax );
+            item->setOpen( true );
             parseResources( res->getSubListIterator(), item );
         }
         else if ( parentItem )                   // leaf item
