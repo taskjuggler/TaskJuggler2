@@ -17,6 +17,7 @@
 
 #include "taskjuggler.h"
 #include "Project.h"
+#include "Scenario.h"
 #include "Shift.h"
 #include "ShiftSelection.h"
 #include "Task.h"
@@ -166,7 +167,21 @@ ExportReport::generateProjectProperty()
         s << "  weekstartssunday" << endl;
 
     generateWorkingHours(project->getWorkingHours(), 0, 2);
+
+    /* We need to make sure that the parent scenarios of all scenarios in the
+     * scenario list are in the list as well. */
+    QValueList<int> scL;
+    QValueListIterator<int> sci;
+    for (sci = scenarios.begin(); sci != scenarios.end(); ++sci)
+        for (Scenario* scp = project->getScenario(*sci);
+             scp != 0; scp = scp->getParent())
+            if (scL.contains(scp->getIndex() - 1) == 0)
+                scL.append(scp->getIndex() - 1);
+    scenarios = scL;
+    qHeapSort(scenarios);
     
+    generateScenario(project->getScenario(0), 2);
+
     s << "}" << endl;
 
     return TRUE;
@@ -199,6 +214,32 @@ ExportReport::generateCustomAttributeDeclaration(const QString& propertyName,
             << " \"" << it.current()->getName() << "\" " << endl;
     }
     s << "  }" << endl;
+
+    return TRUE;
+}
+
+bool
+ExportReport::generateScenario(const Scenario* scenario, int indent)
+{
+    /* Only include the scenario definition if it was in the list of requested
+     * scenarios. */
+    if (scenarios.contains(scenario->getIndex() - 1) == 0)
+        return TRUE;
+
+    s << QString().fill(' ', indent) << "scenario " << scenario->getId()
+        << " \"" << scenario->getName() << "\" {" << endl;
+    indent += 2;
+    if (!scenario->getEnabled())
+        s << QString().fill(' ', indent) << "disabled" << endl;
+    if (scenario->getProjectionMode())
+        s << QString().fill(' ', indent) << "projectionMode" << endl;
+
+    for (ScenarioListIterator sci(scenario->getSubListIterator());
+         *sci != 0; ++sci)
+        if (!generateScenario(*sci, indent))
+            return FALSE;
+    
+    s << QString().fill(' ', indent - 2) << "}" << endl;
 
     return TRUE;
 }
@@ -590,31 +631,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
         if (!TaskAttributeDict.contains(*it))
         {
             if (task->getCustomAttribute(*it))
-            {
-                s << QString().fill(' ', indent + 2) << *it << " ";
-                const CustomAttribute* ca = 
-                    task->getCustomAttribute(*it);
-                switch (ca->getType())
-                {
-                    case CAT_Text:
-                        s << "\"" << ((const TextAttribute*) ca)->getText()
-                            << "\"" << endl;
-                        break;
-                    case CAT_Reference:
-                        {
-                            const ReferenceAttribute* a = 
-                                (const ReferenceAttribute*) ca;
-                            s << "\"" << a->getUrl() << "\" { label \"" 
-                                << a->getUrl() << "\" }" << endl;
-                            break;
-                        }
-                    default:
-                        qFatal("ExportReport::"
-                               "generateTaskAttributeList: "
-                               "Unknown CAT %d", 
-                               ca->getType());
-                }
-            }
+                generateCustomAttributeValue(*it, task, indent);
             continue;
         }
         switch (TaskAttributeDict[*it])
@@ -798,6 +815,38 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
 
     return TRUE;
 }
+
+bool
+ExportReport::generateCustomAttributeValue(const QString& id,
+                                           const CoreAttributes* property,
+                                           int indent)
+{
+    s << QString().fill(' ', indent + 2) << id << " ";
+    const CustomAttribute* ca = property->getCustomAttribute(id);
+    switch (ca->getType())
+    {
+        case CAT_Text:
+            s << "\"" << ((const TextAttribute*) ca)->getText()
+                << "\"" << endl;
+            break;
+        case CAT_Reference:
+            {
+                const ReferenceAttribute* a = 
+                    (const ReferenceAttribute*) ca;
+                s << "\"" << a->getUrl() << "\" { label \"" 
+                    << a->getLabel() << "\" }" << endl;
+                break;
+            }
+        default:
+            qFatal("ExportReport::"
+                   "generateTaskAttributeList: "
+                   "Unknown CAT %d", 
+                   ca->getType());
+    }
+
+    return TRUE;
+}
+
 
 bool
 ExportReport::addTaskAttribute(const QString& ta)

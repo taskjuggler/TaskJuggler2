@@ -17,6 +17,8 @@ project test "Test" "$Id" 2000-01-01-00:00:00-GMT 2000-03-01-23:59:59-GMT {
     workinghours thu 8:00 - 12:00, 13:00 - 17:00
     workinghours fri 8:00 - 12:00, 13:00 - 17:00
     workinghours sat off
+  scenario plan "Plan" {
+  }
 }
 shift s1 "Shift1" {
     workinghours tue off

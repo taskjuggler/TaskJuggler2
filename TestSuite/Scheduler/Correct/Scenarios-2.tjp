@@ -1,6 +1,16 @@
 project sc "Multiple Scenarios" "1.0" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
 	timezone "GMT"
-	scenario plan "Plan" {
+	scenario s1 "Scenario 1" {
+		scenario s2 "Scenario 2" {
+			scenario s3 "Scenario 3"
+			scenario s4 "Scenario 4"
+		}
+		scenario s5 "Scenario 5" {
+			scenario s6 "Scenario 6" {
+				scenario s7 "Scenario 7"
+			}
+		}
+		scenario s8 "Scenario 8"
 	}
 }
 
@@ -14,11 +24,13 @@ task t1 "Task1" {
 task t2 "Task2" {
   depends t1
   duration 1d
+	s2:duration 2d
 }
 
 task t3 "Task3" {
   depends t2
   effort 1d
+	s5:effort 2d
   allocate tux
 }
 
@@ -28,6 +40,7 @@ task t4 "Task4" {
 	task t5 "Task5" {
 		task t6 "Task6" {
 			length 5d
+			s7:length 5d
 		}
 	}
 }
@@ -38,15 +51,17 @@ task t7 "Task7" {
 	task t8 "Task8" {
 		task t9 "Task8" {
 			length 5d
+			s4:length 4d
 			scheduling alap
 		}
 	}
 }
 
-export "Scenarios-1-Export.tjp" {
+export "Scenarios-2-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes all
 	notimestamp
+	scenarios s2, s4, s5, s7
 }
 

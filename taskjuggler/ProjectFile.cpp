@@ -3655,6 +3655,33 @@ ProjectFile::readExportReport()
                     }
                 }
             }
+            else if (token == KW("scenarios"))
+            {
+                report->clearScenarios();
+                for ( ; ; )
+                {
+                    QString scId;
+                    if ((tt = nextToken(scId)) != ID)
+                    {
+                        errorMessage(i18n("Scenario ID expected"));
+                        return FALSE;
+                    }
+                    int scIdx;
+                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                    {
+                        errorMessage(i18n("Unknown scenario %1")
+                                     .arg(scId));
+                        return FALSE;
+                    }
+                    if (proj->getScenario(scIdx - 1)->getEnabled())
+                        report->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
             else if (token == KW("notimestamp"))
             {
                 report->setTimeStamp(FALSE);

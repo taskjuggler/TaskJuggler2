@@ -45,6 +45,8 @@ private:
     bool generateCustomAttributeDeclaration(QDomElement* parentEl,
              const QString& propertyName,
              QDictIterator<const CustomAttributeDefinition> it);
+    bool generateScenario(QDomElement* parentEl, Scenario* scenario);
+
     bool generateShiftList(QDomNode* parentNode);
     bool generateShift(QDomElement* parentEl, const Shift*);
     bool generateWorkingHours(QDomElement* el,
@@ -59,7 +61,10 @@ private:
     bool generateDepList(QDomElement* el, TaskList& filteredTaskList,
                          const Task* task, TaskListIterator depIt,
                          const char* tag); 
-
+    bool generateCustomAttributeValue(QDomElement* parentEl,
+                                      const QString& id,
+                                      const CoreAttributes* property);
+    
     void genTextAttr(QDomElement* el, const QString& name, const QString& text);
     void genDoubleAttr(QDomElement* el, const QString& name, double val);
     void genLongAttr(QDomElement* el, const QString& name, long val);

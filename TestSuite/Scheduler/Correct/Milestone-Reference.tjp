@@ -17,6 +17,8 @@ project prj "Milestone Test" "$Id" 2003-01-01-00:00:00-GMT 2003-01-30-23:59:59-G
     workinghours thu 9:00 - 12:00, 13:00 - 18:00
     workinghours fri 9:00 - 12:00, 13:00 - 18:00
     workinghours sat off
+  scenario plan "Plan" {
+  }
 }
 resource tux1 "Tux1" {
 }

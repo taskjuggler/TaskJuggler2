@@ -53,6 +53,11 @@ public:
     const Project* getProject() const { return project; }
     const QString& getFileName() const { return fileName; }
 
+    void addScenario(int sc) { scenarios.append(sc); }
+    void clearScenarios() { scenarios.clear(); }
+    uint getScenarioCount() const { return scenarios.count(); }
+    int getScenario(int sc) const { return scenarios[sc]; }
+
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
     bool getWeekStartsMonday() { return weekStartsMonday; }
 

@@ -1,37 +1,35 @@
 <!-- DTD for TaskJuggler 2.0 XML Files -->
 <!-- (c) 2003 Chris Schlaeger <cs@suse.de> -->
-<!-- This file is licensed under the GNU FDL Version 1.0 -->
+<!-- This file is licensed under the GNU GPL Version 2.0 -->
 
-<!ELEMENT taskjuggler (project, shiftList?, resourceList?, taskList)>
+<!ELEMENT taskjuggler (project, shiftList, vacation*, resourceList, taskList)>
 
 <!ELEMENT project (start, end, extend*, now?, currencyFormat,
-                   workingHours)>
+                   workingHours, scenario?)>
 <!ATTLIST project 
   id CDATA #REQUIRED
   name CDATA #REQUIRED
   version CDATA #REQUIRED
   timezone CDATA #REQUIRED
-  timingResolution CDATA #REQUIRED
-  dailyWorkingHours CDATA #REQUIRED
-  yearlyWorkingDays CDATA #REQUIRED
-  weekStartMonday CDATA #REQUIRED
-  timeFormat CDATA #REQUIRED
-  shortTimeFormat CDATA #REQUIRED>
+  timingResolution CDATA "3600"
+  dailyWorkingHours CDATA "8"
+  yearlyWorkingDays CDATA "260.714"
+  weekStartMonday (0|1) "1"
+  timeFormat CDATA "%Y-%m-%d %H:%M"
+  shortTimeFormat CDATA "%H:%M"
+>
 
-<!ELEMENT start EMPTY>
+<!ELEMENT start (#PCDATA)>
 <!ATTLIST start
-  humanReadable CDATA #IMPLIED
-  time CDATA #REQUIRED>
+  humanReadable CDATA #IMPLIED>
 
-<!ELEMENT end EMPTY>
+<!ELEMENT end (#PCDATA)>
 <!ATTLIST end
-  humanReadable CDATA #IMPLIED
-  time CDATA #REQUIRED>
+  humanReadable CDATA #IMPLIED>
 
-<!ELEMENT now EMPTY>
+<!ELEMENT now (#PCDATA)>
 <!ATTLIST now
-  humanReadable CDATA #IMPLIED
-  time CDATA #REQUIRED>
+  humanReadable CDATA #IMPLIED>
 
 <!ELEMENT extend (text*, reference*)>
 <!ATTLIST extend
@@ -40,69 +38,96 @@
 <!ELEMENT text EMPTY>
 <!ATTLIST text
   id CDATA #REQUIRED
-  name CDATA #REQUIRED>
+  name CDATA #REQUIRED
+  inherit (0|1) "0"
+>
 
 <!ELEMENT reference (#PCDATA)>
 <!ATTLIST reference
   id CDATA #REQUIRED
-  name CDATA #REQUIRED>
+  name CDATA #REQUIRED
+  inherit (0|1) "0"
+>
 
-<!ELEMENT currencyFormat (#PCDATA)>
+<!ELEMENT currencyFormat EMPTY>
 <!ATTLIST currencyFormat
   signPrefix CDATA #REQUIRED
   signSuffix CDATA #REQUIRED
   thousandSep CDATA #REQUIRED
   fractionSep CDATA #REQUIRED
-  fracDigits CDATA #REQUIRED>
+  fracDigits CDATA #REQUIRED
+>
 
-<!ELEMENT workingHours (sun, mon, tue, wed, thu, fri, sat)>
-<!ELEMENT sun (timeInterval*)>
-<!ELEMENT mon (timeInterval*)>
-<!ELEMENT tue (timeInterval*)>
-<!ELEMENT wed (timeInterval*)>
-<!ELEMENT thu (timeInterval*)>
-<!ELEMENT fri (timeInterval*)>
-<!ELEMENT sat (timeInterval*)>
+<!ELEMENT workingHours (sun?, mon?, tue?, wed?, thu?, fri?, sat?)>
+<!ELEMENT sun (timeInterval+)>
+<!ELEMENT mon (timeInterval+)>
+<!ELEMENT tue (timeInterval+)>
+<!ELEMENT wed (timeInterval+)>
+<!ELEMENT thu (timeInterval+)>
+<!ELEMENT fri (timeInterval+)>
+<!ELEMENT sat (timeInterval+)>
 <!ELEMENT timeInterval (start, end)>
- 
+
+<!ELEMENT scenario (scenario*)>
+<!ATTLIST scenario
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED
+  disabled (0|1) "0"
+  projectionMode (0|1) "0"
+>
+
 <!ELEMENT flag (#PCDATA)>
  
 <!ELEMENT vacation (start, end)>
 <!ATTLIST vacation
-  name CDATA #IMPLIED>
-
-<!ELEMENT resourceList (resource*)>
+  name CDATA #IMPLIED
+>
 
 <!ELEMENT shiftSelection (start, end)>
 <!ATTLIST shiftSelection
-  shiftId CDATA #REQUIRED>
+  shiftId CDATA #REQUIRED
+>
 
 <!ELEMENT shiftList (shift*)>
 
 <!ELEMENT shift (workingHours, shift*)>
 <!ATTLIST shift
   id CDATA #REQUIRED
-  name CDATA #REQUIRED>
+  name CDATA #REQUIRED
+>
+
+<!ELEMENT resourceList (resource*)>
 
 <!ELEMENT resource (flags*, workingHours, shiftSelection*, vacation*,
                     resourceScenario, resource*)>
 <!ATTLIST resource
   id CDATA #REQUIRED
-  name CDATA #REQUIRED>
+  name CDATA #REQUIRED
+>
 
 <!ELEMENT resourceScenario (booking*)>
 <!ATTLIST resourceScenario
-  id CDATA #REQUIRED>
+  scenarioId CDATA #REQUIRED
+>
 
 <!ELEMENT booking (start, end)>
 <!ATTLIST booking
-  taskId CDATA #REQUIRED>
+  taskId CDATA #REQUIRED
+>
 
 <!ELEMENT accountList (account*)>
 
+<!ELEMENT account (account*)>
+<!ATTLIST account
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED
+  type (cost|revenue) #IMPLIED
+>
+
 <!ELEMENT taskList (task+)>
 
-<!ELEMENT task (depends*, precedes*, flag*, task*, taskScenario*)>
+<!ELEMENT task (depends*, precedes*, customAttribute*, flag*, task*,
+                taskScenario*)>
 <!ATTLIST task
   id CDATA #REQUIRED
   name CDATA #REQUIRED
@@ -113,14 +138,45 @@
   responsible CDATA #IMPLIED
 >
 
-<!ELEMENT taskScenario (start?, end?)>
+<!ELEMENT depends (#PCDATA)>
+<!ELEMENT precedes (#PCDATA)>
+
+<!ELEMENT taskScenario (start?, end?, maxEnd?, maxStart?, minEnd?,
+                        minStart?)>
 <!ATTLIST taskScenario
   scenarioId CDATA #REQUIRED
   effort CDATA #IMPLIED
   duration CDATA #IMPLIED
   length CDATA #IMPLIED
-  scheduled (0|1) #REQUIRED>
+  scheduled (0|1) "0"
+  complete CDATA #IMPLIED
+>
 
-<!ELEMENT depends (#PCDATA)>
-<!ELEMENT precedes (#PCDATA)>
+<!ELEMENT minStart (#PCDATA)>
+<!ATTLIST minStart
+  humanReadable CDATA #IMPLIED
+>
+
+<!ELEMENT maxStart (#PCDATA)>
+<!ATTLIST maxStart
+  humanReadable CDATA #IMPLIED
+>
+
+<!ELEMENT minEnd (#PCDATA)>
+<!ATTLIST minEnd
+  humanReadable CDATA #IMPLIED
+>
+
+<!ELEMENT maxEnd (#PCDATA)>
+<!ATTLIST maxEnd
+  humanReadable CDATA #IMPLIED
+>
+
+<!ELEMENT customAttribute EMPTY>
+<!ATTLIST customAttribute
+  id CDATA #REQUIRED
+  text CDATA #IMPLIED
+  url CDATA #IMPLIED
+  label CDATA #IMPLIED
+>
 

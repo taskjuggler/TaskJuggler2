@@ -17,6 +17,8 @@ project test "Task Duration" "1.0" 2003-06-20-00:00:00-GMT 2003-07-29-23:59:59-G
     workinghours thu 9:00 - 12:00, 13:00 - 18:00
     workinghours fri 9:00 - 12:00, 13:00 - 18:00
     workinghours sat off
+  scenario plan "Plan" {
+  }
 }
 resource rd0 "R0" {
 }

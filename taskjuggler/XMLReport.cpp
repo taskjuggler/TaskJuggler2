@@ -18,6 +18,7 @@
 
 #include "taskjuggler.h"
 #include "Project.h"
+#include "Scenario.h"
 #include "Shift.h"
 #include "ShiftSelection.h"
 #include "Task.h"
@@ -170,7 +171,9 @@ XMLReport::generateProjectProperty(QDomNode* n)
                    project->getWeekStartsMonday() ? 1 : 0);
 
     generateWorkingHours(&el, project->getWorkingHours());
-    
+   
+    generateScenario(&el, project->getScenario(0));
+
     return TRUE;
 }
 
@@ -206,6 +209,25 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
         genTextAttr(&exEl, "id", it.currentKey());
         genTextAttr(&exEl, "name", it.current()->getName());
     }
+
+    return TRUE;
+}
+
+bool
+XMLReport::generateScenario(QDomElement* parentEl, Scenario* scenario)
+{
+    QDomElement el = doc->createElement("scenario");
+    parentEl->appendChild(el);
+
+    genTextAttr(&el, "id", scenario->getId());
+    genTextAttr(&el, "name", scenario->getName());
+    genTextAttr(&el, "disabled", scenario->getEnabled() ? "0" : "1");
+    genTextAttr(&el, "projectionMode",
+                scenario->getProjectionMode() ? "1" : "0");
+
+    for (ScenarioListIterator sci(scenario->getSubListIterator());
+         *sci != 0; ++sci)
+        generateScenario(&el, *sci); 
 
     return TRUE;
 }
@@ -258,6 +280,9 @@ XMLReport::generateWorkingHours(QDomElement* parentEl,
 
     for (int i = 0; i < 7; ++i)
     {
+        if (wh[i]->isEmpty())
+            continue;
+
         QDomElement dayEl = doc->createElement(days[i]);
         el.appendChild(dayEl);
         QPtrListIterator<const Interval> it(*wh[i]);
@@ -328,7 +353,7 @@ XMLReport::generateResource(QDomElement* parentEl,
     {
         QDomElement scEl = doc->createElement("resourceScenario");
         el.appendChild(scEl);
-        genTextAttr(&scEl, "id", project->getScenarioId(*sit)); 
+        genTextAttr(&scEl, "scenarioId", project->getScenarioId(*sit)); 
         
         BookingList bl = resource->getJobs(*sit);
         bl.setAutoDelete(TRUE);
@@ -388,34 +413,8 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
     {
         if (!TaskAttributeDict.contains(*it))
         {
-#if 0
             if (task->getCustomAttribute(*it))
-            {
-                s << QString().fill(' ', indent + 2) << *it << " ";
-                const CustomAttribute* ca = 
-                    task->getCustomAttribute(*it);
-                switch (ca->getType())
-                {
-                    case CAT_Text:
-                        s << "\"" << ((const TextAttribute*) ca)->getText()
-                            << "\"" << endl;
-                        break;
-                    case CAT_Reference:
-                        {
-                            const ReferenceAttribute* a = 
-                                (const ReferenceAttribute*) ca;
-                            s << "\"" << a->getUrl() << "\" { label \"" 
-                                << a->getUrl() << "\" }" << endl;
-                            break;
-                        }
-                    default:
-                        qFatal("XMLReport::"
-                               "generateTaskAttributeList: "
-                               "Unknown CAT %d", 
-                               ca->getType());
-                }
-            }
-#endif
+                generateCustomAttributeValue(&el, *it, task);
             continue;
         }
         switch (TaskAttributeDict[*it])
@@ -574,6 +573,40 @@ XMLReport::generateDepList(QDomElement* parentEl, TaskList& filteredTaskList,
 }
 
 bool
+XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
+                                        const QString& id,
+                                        const CoreAttributes* property)
+{
+    QDomElement el = doc->createElement("customAttribute");
+    parentEl->appendChild(el);
+
+    genTextAttr(&el, "id", id);
+    
+    const CustomAttribute* ca = property->getCustomAttribute(id);
+    switch (ca->getType())
+    {
+        case CAT_Text:
+            genTextAttr(&el, "text", ((const TextAttribute*) ca)->getText());
+            break;
+        case CAT_Reference:
+        {
+            const ReferenceAttribute* a = 
+                (const ReferenceAttribute*) ca;
+            genTextAttr(&el, "url", a->getUrl());
+            genTextAttr(&el, "label", a->getLabel());
+            break;
+        }
+        default:
+            qFatal("XMLReport::"
+                   "generateCustomAttributeValue: "
+                   "Unknown CA Type %d", 
+                   ca->getType());
+    }
+
+    return TRUE;
+}
+
+bool
 XMLReport::addTaskAttribute(const QString& ta)
 {
     if (ta == KW("all"))
@@ -646,12 +679,11 @@ XMLReport::genDateElement(QDomElement* parentEl, const QString& name,
                           time_t val)
 {
    QDomElement el = doc->createElement(name);
+   parentEl->appendChild(el);
+   QDomText tEl = doc->createTextNode(QString::number(val));
+   el.appendChild(tEl);
    
-   QDomAttr at = doc->createAttribute("time");
-   at.setValue(QString::number(val));
-   el.setAttributeNode(at);
-   
-   at = doc->createAttribute("humanReadable");
+   QDomAttr at = doc->createAttribute("humanReadable");
    at.setValue(time2user(val, timeFormat));
    el.setAttributeNode(at);
 
@@ -663,12 +695,11 @@ XMLReport::genTimeElement(QDomElement* parentEl, const QString& name,
                           time_t val)
 {
    QDomElement el = doc->createElement(name);
+   parentEl->appendChild(el);
+   QDomText tEl = doc->createTextNode(QString::number(val));
+   el.appendChild(tEl);
    
-   QDomAttr at = doc->createAttribute("time");
-   at.setValue(QString::number(val));
-   el.setAttributeNode(at);
-   
-   at = doc->createAttribute("humanReadable");
+   QDomAttr at = doc->createAttribute("humanReadable");
    at.setValue(time2user(val, shortTimeFormat));
    el.setAttributeNode(at);
 

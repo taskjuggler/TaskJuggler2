@@ -38,7 +38,8 @@ private:
 
     bool generateProjectProperty();
     bool generateCustomAttributeDeclaration(const QString& propertyName,
-        QDictIterator<const CustomAttributeDefinition> it);
+             QDictIterator<const CustomAttributeDefinition> it);
+    bool generateScenario(const Scenario* scenario, int indent);
     bool generateShiftList();
     bool generateShift(const Shift*, int indent);
     bool generateWorkingHours(const QPtrList<const Interval>* const* wh,
@@ -54,6 +55,9 @@ private:
     bool generateDepList(TaskList& filteredTaskList, const Task* task,
                          TaskListIterator depIt, const char* tag, int indent); 
     bool generateResourceAttributesList(TaskList& ftl, ResourceList& frl);
+    bool generateCustomAttributeValue(const QString& id,
+                                      const CoreAttributes* property,
+                                      int indent);
     
     QStringList taskAttributes;
 

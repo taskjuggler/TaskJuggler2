@@ -192,7 +192,7 @@ private:
     /// The number of time slots in the project.
     uint sbSize;
 
-    SbBooking** scoreboards[2];
+    SbBooking*** scoreboards;
 } ;
 
 #endif

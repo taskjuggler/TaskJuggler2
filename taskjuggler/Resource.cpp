@@ -95,7 +95,8 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 
     sbSize = (p->getEnd() + 1 - p->getStart()) /
         p->getScheduleGranularity() + 1;
-    
+
+    scoreboards = new SbBooking**[p->getMaxScenarios()];
     for (int sc = 0; sc < p->getMaxScenarios(); sc++)
         scoreboards[sc] = 0;
 
@@ -136,6 +137,7 @@ Resource::~Resource()
             delete [] scoreboards[sc];
             scoreboards[sc] = 0;
         }
+    delete [] scoreboards;
     
     delete [] MidnightIndex;
     MidnightIndex = 0;
