@@ -209,23 +209,28 @@ void ktjview2::setupActions()
 
     // Sidebar
     m_sidebarInfo = new KRadioAction( i18n( "Info" ), "projectinfo", KShortcut(), actionCollection(), "sidebar_info" );
+    m_sidebarInfo->setToolTip( i18n( "Project Info" ) );
     m_sidebarInfo->setExclusiveGroup( "sidebar" );
     connect( m_sidebarInfo, SIGNAL( activated() ), this, SLOT( slotSidebarInfo() ) );
 
     m_sidebarGantt = new KRadioAction( i18n( "Gantt" ), "gantt", KShortcut(), actionCollection(), "sidebar_gantt" );
+    m_sidebarGantt->setToolTip( i18n( "Gantt Chart" ) );
     m_sidebarGantt->setExclusiveGroup( "sidebar" );
     connect( m_sidebarGantt, SIGNAL( activated() ), this, SLOT( slotSidebarGantt() ) );
 
     m_sidebarResources = new KRadioAction( i18n( "Resources" ), "resources", KShortcut(), actionCollection(), "sidebar_resources" );
+    m_sidebarResources->setToolTip( i18n( "Resource List" ) );
     m_sidebarResources->setExclusiveGroup( "sidebar" );
     connect( m_sidebarResources, SIGNAL( activated() ), this, SLOT( slotSidebarResources() ) );
 
     m_sidebarTasks = new KRadioAction( i18n( "Tasks" ), "tasks", KShortcut(), actionCollection(), "sidebar_tasks" );
+    m_sidebarTasks->setToolTip( i18n( "Task List" ) );
     m_sidebarTasks->setExclusiveGroup( "sidebar" );
     connect( m_sidebarTasks, SIGNAL( activated() ), this, SLOT( slotSidebarTasks() ) );
 
     m_sidebarResUsage = new KRadioAction( i18n( "Usage" ), "resourceusage",
                                           KShortcut(), actionCollection(), "sidebar_res_usage" );
+    m_sidebarResUsage->setToolTip( i18n( "Resource Usage" ) );
     m_sidebarResUsage->setExclusiveGroup( "sidebar" );
     connect( m_sidebarResUsage, SIGNAL( activated() ), this, SLOT( slotSidebarResUsage() ) );
 
