@@ -42,7 +42,7 @@ bool isWeekend(time_t d);
 
 time_t midnight(time_t t);
 
-time_t beginOfWeek(time_t t, bool beginOnMonday = FALSE);
+time_t beginOfWeek(time_t t, bool beginOnMonday);
 
 time_t beginOfMonth(time_t t);
 
@@ -65,9 +65,9 @@ inline bool isSameDay(time_t d1, time_t d2)
 	return midnight(d1) == midnight(d2);
 }
 
-inline bool isSameWeek(time_t d1, time_t d2)
+inline bool isSameWeek(time_t d1, time_t d2, bool beginOnMonday)
 {
-	return beginOfWeek(d1) == beginOfWeek(d2);
+	return beginOfWeek(d1, beginOnMonday) == beginOfWeek(d2, beginOnMonday);
 }
 
 inline bool isSameMonth(time_t d1, time_t d2)
@@ -81,17 +81,17 @@ int dayOfMonth(time_t d);
 
 int dayOfYear(time_t d);
 
-int weekOfYear(time_t d, bool beginOnMonday = FALSE);
+int weekOfYear(time_t d, bool beginOnMonday);
 
-int monthOfWeek(time_t d, bool beginOnMonday = FALSE);
+int monthOfWeek(time_t d, bool beginOnMonday);
 
 int monthOfYear(time_t d);
 
 int year(time_t d);
 
-int yearOfWeek(time_t d, bool beginOnMonday = FALSE);
+int yearOfWeek(time_t d, bool beginOnMonday);
 
-int dayOfWeek(time_t d, bool beginOnMonday = FALSE);
+int dayOfWeek(time_t d, bool beginOnMonday);
 
 QString dayOfWeekName(time_t d);
 

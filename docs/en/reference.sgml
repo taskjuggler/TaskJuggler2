@@ -1113,6 +1113,18 @@ digits.</para>
 
 </sect2>
 </sect1>
+<sect1 id="htmlweeklycalendar"><title>htmlweeklycalendar
+&lt;filename&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>filename:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Optional attributes:</para>
+
+<para>See <link linkend="htmltaskreport">htmltaskresport</link></para>
+
+</sect1>
 <sect1 id="icalreport"><title>icalreport &lt;filename&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -1300,6 +1312,22 @@ linkend="integer">INTERGER</link></member>
 <para>Sets the minimum timing resolution. The smaller the value, the longer
 the schedulings process lasts and the more memory the application
 needs. The default is 1 hour. The smallest value is 5 min.</para>
+
+</sect2>
+<sect2 id="project_weekstartsmonday"><title>weekstartsmonday</title>
+
+<para>Set the beginning of the week to Monday. This is important for
+the numbering of the weeks. TaskJuggler uses the ISO8601 compliant
+definition. The 1st week of the year is the week that contains January
+4. ISO8601 defines Monday as the first day of the week. This can be
+changed by specifying <link linkend="project_weekstartssunday">
+weekstartssunday </link>. <para>
+
+</sect2>
+<sect2 id="project_weekstartssunday"><title>weekstartssunday</title>
+
+<para>Set the beginning of the week to Sunday. See also <link
+linkend="project_weekstartsmonday"> weekstartsmonday </link>.<para>
 
 </sect2>
 <sect2 id="project_yearlyworkingdays"><title>yearlyworkingdays

@@ -134,7 +134,7 @@ ShiftList::compareItemsLevel(Shift* s1, Shift *s2,
 bool
 Shift::isOnShift(const Interval& iv)
 {
-	int dow = dayOfWeek(iv.getStart());
+	int dow = dayOfWeek(iv.getStart(), FALSE);
 	for (Interval* wh = workingHours[dow]->first(); wh != 0;
 		 wh = workingHours[dow]->next())
 	{

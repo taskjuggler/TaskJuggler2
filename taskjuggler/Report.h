@@ -43,6 +43,8 @@ public:
 		   const QString& df, int dl);
 	virtual ~Report();
 
+	void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
+
 	void setShowActual(bool s) { showActual = s; }
 	bool getShowActual() const { return showActual; }
 
@@ -115,6 +117,7 @@ protected:
 	QString stripTaskRoot(QString taskId) const;
 	
 	Project* project;
+	bool weekStartsMonday;
 	QString fileName;
 	QStringList columns;
 	time_t start;
@@ -149,6 +152,11 @@ protected:
 	
 	LoadUnit loadUnit;
 
+	/* The maximum of the tree that we have to report in tree-sorting mode. */
+	uint maxDepthTaskList;
+	uint maxDepthResourceList;
+	uint maxDepthAccountList;
+	
 	bool hidePlan;
 	bool showActual;
 	bool showPIDs;

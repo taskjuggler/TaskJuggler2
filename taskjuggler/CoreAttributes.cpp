@@ -46,6 +46,16 @@ CoreAttributesList::createIndex(bool initial)
 	}
 }
 
+uint
+CoreAttributesList::maxDepth()
+{
+	uint md = 0;
+	for (CoreAttributes* c = first(); c != 0; c = next())
+		if (c->treeLevel() + 1 > md)
+			md = c->treeLevel() + 1;
+	return md;
+}
+
 bool
 CoreAttributesList::isSupportedSortingCriteria
 	(CoreAttributesList::SortCriteria sc)
@@ -119,7 +129,7 @@ CoreAttributesList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 	default:
 		qFatal("CoreAttributesList:compareItemsLevel: "
 			   "Please implement sorting for mode (%d/%d) in sub class!",
-			   sorting, level);
+			   sorting[level], level);
 	}
 	return 0;
 }
@@ -135,6 +145,15 @@ CoreAttributesList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		if ((res = compareItemsLevel(c1, c2, i)) != 0)
 			return res;
 	return res;
+}
+
+uint
+CoreAttributes::treeLevel() const
+{
+	uint tl = 0;
+	for (CoreAttributes* c = parent; c; c = c->parent)
+		tl++;
+	return tl;
 }
 
 void

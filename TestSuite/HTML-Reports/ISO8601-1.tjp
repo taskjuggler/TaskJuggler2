@@ -1,0 +1,21 @@
+project prj "ISO8601 Test 1" "1.0" 2005-12-04-00:00-GMT
+2006-01-29-00:00-GMT {
+	weekstartssunday
+	timezone "GMT" 
+}
+
+task t1 "Task1" {
+	start 2005-12-11
+	end 2005-12-31-23:00
+}
+
+task t2 "Task1" {
+	start 2006-01-01
+	end 2006-01-21-23:00
+}
+
+htmltaskreport "." {
+	columns weekly
+	headline "Task bars may not overlap"
+}
+

@@ -1,0 +1,17 @@
+errors=0
+
+for f in *.tjp ; do
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.html/g`
+  htmlFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.html/g`
+  ../../../taskjuggler/taskjuggler/taskjuggler $f | \
+  fgrep -v TaskJuggler > $htmlFile || exit 1
+  cmp $htmlFile $referenceFile
+  if test $? -ne 0 ; then
+    errors=$(($errors + 1))
+  else
+    rm $htmlFile
+  fi
+done
+
+exit $errors
+

@@ -25,7 +25,7 @@ This document describes TaskJuggler version @VERSION@
 <chapter><title>Introduction</title>
 <sect1><title>About TaskJuggler</title>
 
-<para>TaskJuggler is a project management tool for Linux and UNIX
+<para>TaskJuggler is a project planing tool for Linux and UNIX
 system-based operating systems. Whether you want to plan your colleges
 shifts for the next month or want to build a skyscraper - TaskJuggler
 is the tool for you.</para>
@@ -34,13 +34,22 @@ is the tool for you.</para>
 dialog boxes you specify your TaskJuggler project in a simple text
 format.  You simply list all your tasks with their dependencies and
 other properties. The information is sent through TaskJuggler and you
-will get all sorts of reports in HTML or XML format.</para>
+will get all sorts of reports in HTML or XML format. The HTML files
+can be viewed and printed with any web browser that supports Cascading
+Style Sheets. The XML files are used by the Gantt- and PERT chart
+generators and the KDE Konqueror pluging.</para>
 
 <para>TaskJuggler does not only honor the task interdependencies but
 also takes resource constrains and prioritization into account. Using
 TaskJuggler's powerful filtering and reporting algorithms you can
 create task lists, resource usage tables, status reports, project
 calendars and project accounting statements.</para>
+
+<para>Since TaskJuggler is not contrained by the performance requirements
+of real-time editing it can offer a much broader set of features not
+found in any of the GUI based project planing tools. The the project
+description language is easy to learn and supports you very
+effectively during your planing process.</para> 
 
 </sect1>
 <sect1><title>Features and Highlights</title>
@@ -159,10 +168,10 @@ resource definition itself. </para>
 <listitem><para>Extended expression parser to work on string type
 values as well.</para>
 
-<listitem><para><xref linkend="logicalexpression"/> for hidetask,
-rolluptask etc. can now contain functions as well. Currently there is
-support for 'istask', 'isresource', 'isaccount', 'issubtaskof',
-'contains', 'ismilestone'.</para>
+<listitem><para><link linkend="logicalexpression"> logicalexpression
+</link> for hidetask, rolluptask etc. can now contain functions as
+well. Currently there is support for 'istask', 'isresource',
+'isaccount', 'issubtaskof', 'contains', 'ismilestone'.</para>
 
 <listitem><para>Moved the docs directory from TaskJuggler subdir to
 topdir.</para>
@@ -170,23 +179,24 @@ topdir.</para>
 <listitem><para>Added feature list and change-log to the
 documentation.</para>
 
-<listitem><para><xref linkend="property_reference"/> is now sorted in
+<listitem><para><xref linkend="property_reference"> is now sorted in
 alphabetical order.</para>
 
-<listitem><para>Added lots of missing attributes to <xref
-linkend="htmlaccountreport"/>.</para>
+<listitem><para>Added lots of missing attributes to <link
+linkend="htmlaccountreport"> htmlaccountreport </link>.</para>
 
-<listitem><para>Added missing <xref linkend="export"/> report to
-documentation. Export reports can now contain the scheduled tasks as
-well as the resource allocations.</para>
+<listitem><para>Added missing <link linkend="export"> export </link>
+report to documentation. Export reports can now contain the scheduled
+tasks as well as the resource allocations.</para>
 
 <listitem><para>New keywords
 <computeroutput>planbooking</computeroutput> and
 <computeroutput>actualbooking</computeroutput> to enter fixed bookings
-of <xref linkend="resource"/> in the resource declaration.</para>
+of <link linkend="resource">resources</link> in the resource
+declaration.</para>
 
-<listitem><para>Added new example project to illustrate the use of export in big
-projects that are split into sub projects.</para>
+<listitem><para>Added new example project to illustrate the use of
+export in big projects that are split into sub projects.</para>
 
 <listitem><para>HTML comment in HTML report files is now using correct
 syntax.</para>
@@ -210,8 +220,9 @@ used when calling TaskJuggler from CGI scripts.</para>
 <listitem><para>Fixed bug in vacation handling. Vacations that started before
 the project were silently ignored.</para>
 
-<listitem><para>Added support for <xref
-linkend="export_taskattributes"/>.</para>
+<listitem><para>Added support for <link
+linkend="export_taskattributes"> taskattributes </link>
+.</para>
 
 <listitem><para>XML Output changes: Basically the XML output is more
 simple to parse, some values were added and corrected.</para>
@@ -231,13 +242,13 @@ missing libical.</para>
 TaskJuggler now creates pure HTML 4.0 code.</para>
 
 <listitem><para>Added support for insertion of raw HTML code into
-reports. This can be achived with <xref
-linkend="htmltaskreport_rawhead"/> and <xref
-linkend="htmltaskreport_rawtail"/>.</para>
+reports. This can be achived with <link
+linkend="htmltaskreport_rawhead"> rawhead </link> and <link
+linkend="htmltaskreport_rawtail"> rawtail </link>.</para>
 
 <listitem><para>Added support for user defined style sheets in HTML
-reports by using the <xref linkend="htmltaskreport_rawstylesheet"/>
-attribute.</para>
+reports by using the <link linkend="htmltaskreport_rawstylesheet">
+rawstylesheet </link> attribute.</para>
 
 <listitem><para>Strings can now be enclosed in either single or double
 quotes. A single quoted string may contain double quotes and vice
@@ -247,9 +258,10 @@ versa.</para>
 This also determines if a day is considered a working day or
 not.</para>
 
-<listitem><para>With <xref linkend="task_startbuffer"/> and <xref
-linkend="task_endbuffer"/> you can now specify that there might be some air
-left in a certain task.</para>
+<listitem><para>With <link linkend="task_startbuffer"> startbuffer
+</link> and <link linkend="task_endbuffer"> endbuffer </link> you can
+now specify that there might be some air left in a certain
+task.</para>
 
 <listitem><para>Remo's GANTT chart generators have been included in the
 <filename>Contrib</filename> directory.</para>
@@ -274,9 +286,10 @@ project information.</para>
 <listitem><para>Added Pert-chart generator from Philippe
 Midol-Monnet.</para>
 
-<listitem><para>Added support for shifts in <xref
-linkend="task_shift"/>
-and task <xref linkend="task_allocate_shift"/>.</para>
+<listitem><para>Added support for shifts in <link
+linkend="task_shift"> shift </link>
+and task <link linkend="task_allocate_shift"> allocate shift
+</link>.</para>
 
 <listitem><para>Fixed vim syntax highlighting. Some keywords were missing.</para>
 
@@ -294,7 +307,8 @@ the next major release.</para>
 
 <listitem><para><link
 linkend="project_dailyworkinghours">dailyworkinghours</link>
-and <xref linkend="project_yearlyworkingdays"/> have
+and <link linkend="project_yearlyworkingdays"> yearlyworkingdays
+</link> have
 been implemented to allow the user for better control over the
 conversion from working days to working hours.</para>
 
@@ -333,7 +347,7 @@ nicer and more structured manual. A printable version is available as
 well now.</para></listitem>
 
 <listitem><para>Fixed HTML code for bookedlight cells. Those were
-redered without background on some browsers.</para></listitem>
+rendered without background on some browsers.</para></listitem>
 
 <listitem><para>Added support for multi-level sorting in reports.
 <link linkend="htmltaskreport_sorttasks">sorttasks</link> and <link
@@ -353,8 +367,9 @@ fixed. <computeroutput>startup</computeroutput>,
 
 <listitem><para>The optional attribute <link
 linkend="include_taskprefix">taskprefix</link> has been added to <link
-linkend="include">include</link>. This allows exported projects to be
-added at arbitrary points in the task tree.</para></listitem>
+linkend="include">include</link>. This allows other projects to be
+added at arbitrary points in the task tree as sub
+projects.</para></listitem>
 
 <listitem><para>Include statements within tasks are no longer
 supported. They caused in ambiguous interpretation of
@@ -378,25 +393,33 @@ given time frame.</para></listitem>
 
 <listitem><para>Made week of year calculation ISO 8601:1988 and DIN
 1355 compliant. This also affects the month and year correlation in
-weekly reports.</para></listitem>
+weekly reports. You can use the optional project attributes <link
+linkend="project_weekstartssunday"> weekstartssunday </link> and <link
+linkend="project_weekstartsmonday"> weekstartsmonday </link> to
+specify wheter you like to start you week on Sunday or
+Monday.</para></listitem>
 
 <listitem><para>Support for a <computeroutput>flags</computeroutput>
 columns added to HTML reports.</para></listitem>
 
 <listitem><para>Sub tasks do now inherit the dependencies of their
 container tasks. Specifying dependencies after sub tasks is now
-illegal since they are only used for checking, but not for
+illegal since they would be only used for checking, but not for
 scheduling.</para></listitem>
 
 <listitem><para>The logic checker for task attributes has been
 completely rewritten. Since it probably catches some more errors, you
 might have to fix your project now. Such cases would have resulted in
 wrong results anyhow. Lots of test cases have been added to the test
-suite to check the checker.</para></listitem>
+suite to validate the checker.</para></listitem>
 
 <listitem><para>The error reporting has been drastically improved. The
 messages should be more precise now and errors that are triggered by
-other errors should be not so promiment anymore.</para></listitem>
+other errors should be not be so promiment anymore.</para></listitem>
+
+<listitem><para>A new report type has been added. <link
+linkend="htmlweeklycalendar"> htmlweeklyreport </link> can be used to
+generate weekly calendars.</para></listitem>
 
 </itemizedlist> </para>
 
@@ -541,7 +564,7 @@ TaskJuggler is with an example.</para>
 
 <sect1><title> Introducing the Example: Accounting Software</title>
 
-<para>Refer to section <xref linkend="example"> for a printout of the
+<para>Refer to <xref linkend="example"> for a printout of the
 example.</para>
 
 <para>In this project, we plan to create an accounting program. The project
@@ -636,14 +659,14 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-06-30
 project. These things include:</para>
 
 <para><simplelist type=horiz columns=2>
-<member><computeroutput>acso</computeroutput></>
-<member>The project ID, unique within the scope of the project</>
-<member><computeroutput>"Accounting Software"</computeroutput></>
-<member>The short description of the project</>
-<member><computeroutput>1.0</computeroutput></>
-<member>The version of the schedule</>
-<member><computeroutput>2002-01-16 2002-6-30</computeroutput></>
-<member>Begin and end dates of the project</>
+<member><computeroutput>acso</computeroutput></member>
+<member>The project ID, unique within the scope of the project</member>
+<member><computeroutput>"Accounting Software"</computeroutput></member>
+<member>The short description of the project</member>
+<member><computeroutput>1.0</computeroutput></member>
+<member>The version of the schedule</member>
+<member><computeroutput>2002-01-16 2002-6-30</computeroutput></member>
+<member>Begin and end dates of the project</member>
 </simplelist></para>
 
 <para>Refer to the <link linkend="project">project</link> command in the
@@ -659,10 +682,10 @@ resource dev "Developers" { ... }
 later.</para>
 
 <para><simplelist type=horiz columns=2>
-<member><computeroutput>dev</computeroutput></>
-<member>The resource ID, unique within the TaskJuggler project</>
-<member><computeroutput>"Developers"</computeroutput></>
-<member>The real name of the resource</>
+<member><computeroutput>dev</computeroutput></member>
+<member>The resource ID, unique within the TaskJuggler project</member>
+<member><computeroutput>"Developers"</computeroutput></member>
+<member>The real name of the resource</member>
 </simplelist</para>
 
 <para>In the example, the resource consists of the three developers
@@ -725,7 +748,8 @@ account dev "Development" cost {}
 <para>This creates an account <computeroutput>dev</computeroutput> as a
 <computeroutput>cost</computeroutput> account. There is also a account
 type <computeroutput>revenue</computeroutput>, which is used to cover
-all kinds of income (see reference: <xref linkend="account">).</para>
+all kinds of income (see reference: <link linkend="account"> account
+										 </link>).</para>
 
 </chapter>
 &reference;

@@ -1,0 +1,8 @@
+macro AllColumns [	
+  columns costs, depends, duration, effort, end, endbuffer,
+	endbufferstart, flags, follows, id, kotrusid, maxeffort, maxend,
+	maxstart, mineffort, minend, minstart, name, no, note, priority,
+	projectid, rate, resources, responsibilities, responsible, start,
+	startbuffer, startbufferend, daily, weekly, monthly
+]
+

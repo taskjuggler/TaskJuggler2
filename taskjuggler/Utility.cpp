@@ -234,7 +234,7 @@ monthOfWeek(time_t t, bool beginOnMonday)
 	}
 	else if (tm_mday > lastDayOfMonth - 4)
 	{
-		if (tm_mday - dayOfWeek(t) > lastDayOfMonth - 4)
+		if (tm_mday - dayOfWeek(t, beginOnMonday) > lastDayOfMonth - 4)
 			if (tm_mon == 11)
 				return 1;
 			else

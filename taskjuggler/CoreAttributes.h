@@ -46,6 +46,7 @@ public:
 	static const int maxSortingLevel = 3;
 	void setSorting(SortCriteria s, int level);
 	void createIndex(bool initial = FALSE);
+	uint maxDepth();
 
 	static bool isSupportedSortingCriteria
 		(CoreAttributesList::SortCriteria sc);
@@ -85,6 +86,8 @@ public:
 	void getFullName(QString& fullName) const;
 
 	CoreAttributes* getParent() const { return parent; }
+
+	uint treeLevel() const;
 
 	void addSub(CoreAttributes* c) { sub.append(c); }
 	virtual CoreAttributesList getSubList()  const { return sub; }

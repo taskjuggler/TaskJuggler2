@@ -376,7 +376,7 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 			s << "</b>";
 		s << "</td>" << endl;
 	}
-	for (time_t week = beginOfWeek(start); week < end;
+	for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
 		 week = sameTimeNextWeek(week))
 	{
 		if (a)
@@ -384,7 +384,7 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 			double volume = a->getPlanVolume(
 				accumulate ? 
 				Interval(start, sameTimeNextWeek(week) - 1) :
-				Interval(week).firstWeek());
+				Interval(week).firstWeek(weekStartsMonday));
 			planTotals[time2ISO(week)] += volume;
 			reportValue(volume, style, FALSE);
 		}
@@ -406,7 +406,7 @@ HTMLAccountReport::weeklyAccountActual(Account* a, const QString& style)
 			s << "</b>";
 		s << "</td>" << endl;
 	}
-	for (time_t week = beginOfWeek(start); week < end;
+	for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
 		 week = sameTimeNextWeek(week))
 	{
 		if (a)
@@ -414,7 +414,7 @@ HTMLAccountReport::weeklyAccountActual(Account* a, const QString& style)
 			double volume = a->getActualVolume(
 				accumulate ?
 				Interval(start, sameTimeNextWeek(week) - 1) :
-				Interval(week).firstWeek());
+				Interval(week).firstWeek(weekStartsMonday));
 			actualTotals[time2ISO(week)] += volume;
 			reportValue(volume, style, FALSE);
 		}
@@ -494,12 +494,9 @@ HTMLAccountReport::accountName(Account* a)
 
 	if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
-		Account* ap = a->getParent();
-		for ( ; ap != 0; --fontSize)
-		{
+		for (uint i = 0; i < a->treeLevel(); i++)
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-			ap = ap->getParent();
-		}
+		fontSize = (int) (140 * (1.0 - a->treeLevel() / maxDepthResourceList));
 		s << "<td class=\"default\" style=\"text-align:left\" rowspan=\""
 		  << (!hidePlan && showActual ? "2" : "1") << "\" nowrap>"
 		  << spaces

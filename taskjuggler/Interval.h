@@ -100,9 +100,9 @@ public:
 		return *this;
 	}
 
-	const Interval& firstWeek()
+	const Interval& firstWeek(bool weekStartsMonday)
 	{
-		start = beginOfWeek(start);
+		start = beginOfWeek(start, weekStartsMonday);
 		end = sameTimeNextWeek(start) - 1;
 		return *this;
 	}

@@ -32,6 +32,8 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 		accountSortCriteria[i] = CoreAttributesList::Sequence;
 	}
 
+	weekStartsMonday = p->getWeekStartsMonday();
+
 	hideTask = 0;
 	rollUpTask = 0;
 	hideResource = 0;
@@ -44,6 +46,10 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 	showPIDs = FALSE;
 
 	loadUnit = days;
+
+	maxDepthTaskList = 1;
+	maxDepthResourceList = 1;
+	maxDepthAccountList = 1;
 }
 
 Report::~Report()
@@ -57,7 +63,7 @@ Report::~Report()
 bool
 Report::open()
 {
-	if (fileName == "--")
+	if (fileName == "--" || fileName == ".")
 	{
 		if (!f.open(IO_WriteOnly, stdout))
 		{
@@ -307,6 +313,8 @@ Report::sortTaskList(TaskList& filteredList)
 	for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
 		filteredList.setSorting(taskSortCriteria[i], i);
 	filteredList.sort();
+
+	maxDepthTaskList = filteredList.maxDepth();
 }
 
 void
@@ -363,6 +371,8 @@ Report::sortResourceList(ResourceList& filteredList)
 	for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
 		filteredList.setSorting(resourceSortCriteria[i], i);
 	filteredList.sort();
+	
+	maxDepthResourceList = filteredList.maxDepth();
 }
 
 void
@@ -414,6 +424,8 @@ Report::sortAccountList(AccountList& filteredList)
 	for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
 		filteredList.setSorting(accountSortCriteria[i], i);
 	filteredList.sort();
+	
+	maxDepthAccountList = filteredList.maxDepth();
 }
 
 QString

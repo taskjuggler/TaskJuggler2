@@ -42,6 +42,7 @@ Project::Project()
 	start = 0;
 	end = 0;
 	now = time(0);
+	weekStartsMonday = FALSE;
 	copyright = "";
 	minEffort = 0.0;
 	maxEffort = 1.0;
@@ -162,7 +163,7 @@ Project::pass2()
 	{
 		if (!t->preScheduleOk())
 			error = TRUE;
-		if (t->hasActualValues())
+		if (!hasActualValues && t->hasActualValues())
 			hasActualValues = TRUE;
 	}
 

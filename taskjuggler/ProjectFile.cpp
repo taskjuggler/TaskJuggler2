@@ -1050,6 +1050,14 @@ ProjectFile::readProject()
 					qFatal("Ran out of space in environment section while "
 						   "setting timezone.");
 			}
+			else if (token == KW("weekstartsmonday"))
+			{
+				proj->setWeekStartsMonday(TRUE);
+			}
+			else if (token == KW("weekstartssunday"))
+			{
+				proj->setWeekStartsMonday(FALSE);
+			}
 			else
 			{
 				fatalError("Unknown attribute %s", token.latin1());

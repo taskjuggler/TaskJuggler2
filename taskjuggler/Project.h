@@ -71,7 +71,10 @@ public:
 
 	void setNow(time_t n) { now = n; }
 	time_t getNow() const { return now; }
-	
+
+	void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
+	bool getWeekStartsMonday() const { return weekStartsMonday; }
+
 	bool addId(const QString& i);
 	QString getCurrentId() const
 	{
@@ -107,7 +110,7 @@ public:
 	{
 		/* If there is a working interval defined for this weekday and the
 		 * day is not registered as a vacation day then it is a workday. */
-		return !(workingHours[dayOfWeek(d)]->isEmpty() || isVacation(d));
+		return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || isVacation(d));
 	}
 	
 	Interval* getVacationListFirst()
@@ -275,6 +278,8 @@ private:
 	time_t end;
 	/// The current date used in reports.
 	time_t now;
+
+	bool weekStartsMonday;
 
 	/// The name of the Project
 	QString name;

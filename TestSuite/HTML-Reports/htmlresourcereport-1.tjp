@@ -1,0 +1,74 @@
+project prj "htmltaskreport test" "1.0" 2003-01-01-0:00-GMT
+2003-04-01-00:00-GMT {
+	timezone "GMT"
+}
+
+flags flag1, flag2, flag3, flag4
+
+include "html-test-macros.tjsp"
+
+resource tuxies "Tux Team" {
+	flags flag2
+	resource tux1 "tux 1" {
+		rate 300.0
+		flags flag3
+		kotrusid "tux1"
+	}
+
+	resource tux2 "tux 2" {
+		rate 500.0
+		kotrusid "tux der 2."
+	}
+
+	resource tux4 "tux 4" {
+		flags flag3
+		rate 250.0
+		resource tux5 "tux 5" {
+			resource tux6 "tux 6" {
+				resource tux7 "tux 7" {
+					flags flag4
+				}
+			}
+		}
+	}
+}
+resource tux3 "Tux 3" {
+	rate 400.0
+}
+
+task t1 "Task 1" {
+	flags flag1
+	start 2003-01-01
+	task t2 "Task 2" {
+		effort 30d
+		allocate tux1
+		responsible tux2
+		flags flag2, flag3
+		note "This is Task2"
+		priority 10
+	}
+	task t3 "Task 3" {
+		effort 30d
+		allocate tux2
+		allocate tux7
+		responsible tux3
+		startbuffer 15
+		endbuffer 15
+		flags flag4
+		priority 900
+		note "This is a sub-task of Task1"
+	}
+	task t4 "Task 4" {
+		effort 30d
+		allocate tux3
+		depends !t2, !t3
+		startbuffer 10
+		endbuffer 10
+		responsible tux1
+	}
+}
+
+htmlresourcereport "." {
+	${AllColumns}
+	hidetask 0
+}

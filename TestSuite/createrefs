@@ -20,3 +20,13 @@ for f in *.tjp ; do
 done
 cd ../..
 
+cd HTML-Reports
+for f in *.tjp ; do
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.html/g`
+  ../../../taskjuggler/taskjuggler/taskjuggler $f | \
+  fgrep -v TaskJuggler > $referenceFile || exit 1
+  echo $referenceFile created
+done
+
+cd ..
+

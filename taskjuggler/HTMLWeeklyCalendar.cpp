@@ -95,7 +95,8 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 		s << "<tr>";
 		s << "<td width=\"5.5%\" class=\"headersmall\" "
 			"style=\"font-size:110%\">"
-			<< "Week " << QString().sprintf("%d", weekOfYear(wd))
+			<< "Week " << QString().sprintf("%d",
+										   	weekOfYear(wd, weekStartsMonday))
 		   	<< "</td>" << endl;
 		for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
 		{

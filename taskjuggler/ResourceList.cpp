@@ -672,7 +672,7 @@ Resource::hasVacationDay(time_t day)
 	if (shifts.isVacationDay(day))
 		return TRUE;
 
-	if (workingHours[dayOfWeek(day)]->isEmpty())
+	if (workingHours[dayOfWeek(day, FALSE)]->isEmpty())
 		return TRUE;
 
 	return FALSE;
@@ -685,7 +685,7 @@ Resource::isOnShift(const Interval& slot)
 		if (sl->getPeriod().contains(slot))
 			return sl->getShift()->isOnShift(slot);
 
-	int dow = dayOfWeek(slot.getStart());
+	int dow = dayOfWeek(slot.getStart(), FALSE);
 	for (Interval* i = workingHours[dow]->first(); i != 0;
 		 i = workingHours[dow]->next())
 		if (i->contains(Interval(secondsOfDay(slot.getStart()),
