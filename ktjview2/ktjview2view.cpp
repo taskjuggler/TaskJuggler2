@@ -119,7 +119,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_ganttView->setShowTaskLinks( true );
     m_ganttView->setShowHeaderPopupMenu( true ); //### TODO implement thru KActions
     m_ganttView->setShowLegendButton( false ); // ### TODO legend?
-    //m_ganttView->setShowTimeTablePopupMenu( true );
+    m_ganttView->setShowTimeTablePopupMenu( true );
     m_ganttView->setWeekendDays( 6, 7 );
     connect( m_ganttView, SIGNAL( gvItemDoubleClicked( KDGanttViewItem * ) ),
              this, SLOT( ensureItemVisible( KDGanttViewItem * ) ) );
@@ -457,7 +457,6 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
-//#if 0
         else if ( isLeaf )   // terminal (leaf) task
         {
             //kdDebug() << "Parent ID: " << task->getParent()->getId() << endl;
@@ -490,7 +489,6 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                 item->setText( taskName  + " " +i18n( "(%1 d)" ).arg( duration ) );
             }
         }
-//#endif
         else
         {
             kdWarning() << "Unsupported task type with ID: " << id << endl;
@@ -741,6 +739,15 @@ void ktjview2View::setupGantt()
         m_ganttView->setHorBackgroundLines();
     else
         m_ganttView->setHorBackgroundLines( 0 );
+
+    m_ganttView->setDefaultColor( KDGanttViewItem::Task, Settings::taskColor() );
+    m_ganttView->setDefaultColor( KDGanttViewItem::Summary, Settings::groupColor() );
+    m_ganttView->setDefaultColor( KDGanttViewItem::Event, Settings::milestoneColor() );
+
+    m_ganttView->setColors( KDGanttViewItem::Task, Settings::taskColor(), Settings::taskColor(), Settings::taskColor() );
+    m_ganttView->setColors( KDGanttViewItem::Summary, Settings::groupColor(), Settings::groupColor(), Settings::groupColor() );
+    m_ganttView->setColors( KDGanttViewItem::Event, Settings::milestoneColor(), Settings::milestoneColor(), Settings::milestoneColor() );
+
     m_ganttView->update();      // repaint the widget (necessary)
 }
 

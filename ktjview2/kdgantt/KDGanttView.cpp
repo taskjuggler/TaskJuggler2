@@ -1369,7 +1369,7 @@ bool KDGanttView::shapes( KDGanttViewItem::Type type,
   \param end the color to use for the end of the item
   \param overwriteExisting if true, overwrites existing color settings
   on invididual items
-  \sa colors(), setDefaultColors(), defaultColors()
+  \sa colors(), setDefaultColor(), defaultColor()
 */
 void KDGanttView::setColors( KDGanttViewItem::Type type,
                              const QColor& start, const QColor& middle,
