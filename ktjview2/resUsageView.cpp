@@ -126,7 +126,15 @@ void ResUsageView::assignResources( ResourceList reslist )
     Resource *res;
     for ( res = static_cast<Resource *>( reslist.first() ); res; res = static_cast<Resource *>( reslist.next() ) )
     {
-        m_rowLabels.append( res->getName() );
+        QString header = res->getName();
+        uint level = res->treeLevel();
+        if ( level > 0 )
+        {
+            QString pad;
+            pad.fill( ' ', level );
+            header.prepend( pad );
+        }
+        m_rowLabels.append( header );
     }
 
     // insert rows
