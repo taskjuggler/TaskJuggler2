@@ -1,6 +1,6 @@
 project test "Test" "$Id" 2000-01-01 2000-02-31
 
-include "workforce.tjsp"
+include "workforce.tji"
 
 flags f1, f3, f5
 
@@ -29,7 +29,7 @@ task t5 "Task5" {
 	note "This is Task #5"
 }
 
-export "project_b1_export.tjsp" {
+export "project_b1_export.tji" {
   hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends

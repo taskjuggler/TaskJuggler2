@@ -279,7 +279,7 @@ public:
 
     bool isSubTask(Task* t) const;
 
-    void errorMessage(const char* msg, ...) const;
+    void errorMessage(const char*, ...) const;
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 

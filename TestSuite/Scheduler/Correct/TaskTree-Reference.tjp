@@ -1,0 +1,53 @@
+/* For details about TaskJuggler see http://www.taskjuggler.org
+ */
+project simple "Simple Project" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
+  timezone "GMT"
+  dailyworkinghours 8
+  yearlyworkingdays 260.714
+  timingresolution 60min
+  timeformat "%Y-%m-%d %H:%M"
+  shorttimeformat "%H:%M"
+  currencyformat "(" ")" "," "." 0
+  weekstartsmonday
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+task t1 "Task1" {
+  projectid simple
+  plan:start 2000-01-01-00:00:00-+0000
+  plan:end 2000-01-14-18:00:00-+0000
+  plan:scheduled
+}
+task t2 "Task2" {
+  projectid simple
+  plan:start 2000-01-10-09:00:00-+0000
+  plan:end 2000-01-14-18:00:00-+0000
+  plan:scheduled
+}
+task m1 "Milestone1" {
+  projectid simple
+  depends t1, t2
+  plan:start 2000-01-14-18:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task t3 "Task3" {
+  projectid simple
+  depends m1
+  plan:start 2000-01-14-18:00:00-+0000
+  plan:end 2000-01-21-18:00:00-+0000
+  plan:scheduled
+}
+supplement task t1 {
+}
+supplement task t2 {
+}
+supplement task m1 {
+}
+supplement task t3 {
+}

@@ -30,17 +30,29 @@ public:
 
     bool addTaskAttribute(const QString& ta);
     QStringList getTaskAttributes() const { return taskAttributes; }
+
+    void setMasterFile(bool mf) { masterFile = mf; }
     
 private:
     ExportReport() { }
 
+    bool generateProjectProperty();
     bool generateCustomAttributeDeclaration(const QString& propertyName,
         QDictIterator<CustomAttributeDefinition> it);
+    bool generateShiftList();
+    bool generateWorkingHours(const QPtrList<const Interval>* const* wh);
+    bool generateResourceList(ResourceList& frl, TaskList& ftl);
+    bool generateResource(ResourceList& frl, Resource* r, int ident);
     bool generateTaskList(TaskList& ftl, ResourceList& frl);
+    bool generateTask(TaskList& ftl, Task* task, int indent);
     bool generateTaskAttributeList(TaskList& ftl);
-    bool generateResourceList(TaskList& ftl, ResourceList& frl);
+    bool generateTaskSupplement(TaskList& ftl, Task* task, int indent);
+    bool generateResourceAttributesList(TaskList& ftl, ResourceList& frl);
     
     QStringList taskAttributes;
+
+    // True if the file should be a standalone project (*.tjp file). 
+    bool masterFile;
 };
 
 #endif

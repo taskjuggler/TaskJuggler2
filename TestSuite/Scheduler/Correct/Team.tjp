@@ -75,7 +75,7 @@ task t3 "Task3" {
 	maxend 2000-01-21-10:00
 }
 
-export "Team-Export.tjsp" {
+export "Team-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

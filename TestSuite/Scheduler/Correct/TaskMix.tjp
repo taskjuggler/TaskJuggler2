@@ -104,7 +104,7 @@ htmltaskreport "TaskMix.html" {
 	notimestamp
 }
 
-export "TaskMix-Export.tjsp" {
+export "TaskMix-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

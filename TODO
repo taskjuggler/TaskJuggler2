@@ -1,11 +1,11 @@
 For 1.9.1:
+- Save Export reports in nested Remo-style.
 - Remove old color support
-- Complete new color support
-- Color support for tasks and resources
 - Save user-defined attributes to XML.
 - Remove KDE stuff from automake/autoconf for default build.
 - Replace isplanallocated() and isactualallocated() with scenario
   specific function.
+- 1.x -> 2.x migration guide chapter.
 
 For 2.0:
 - Finish multi scenario support
@@ -24,4 +24,5 @@ After 2.0:
 - Calculate earliest start and latest end.
 - Add support for risk documentation.
 - Cleanup taskjuggler library API, so it can be used by other apps.
+- Color support for tasks and resources
 

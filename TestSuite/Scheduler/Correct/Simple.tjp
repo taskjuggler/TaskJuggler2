@@ -41,7 +41,7 @@ task t7 "Task7" {
 	}
 }
 
-export "Simple-Export.tjsp" {
+export "Simple-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

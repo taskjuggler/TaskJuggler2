@@ -5,9 +5,9 @@
 
 cmp project_a.html project_b.html || exit 1
 cmp project_a_res.html project_b_res.html || exit 1
-cmp project_b2_export.tjsp project_b2_export.tjsp || exit 1
+cmp project_b2_export.tji project_b2_export.tji || exit 1
 cmp project_b.html project_b3.html || exit 1
 cmp project_b_res.html project_b3_res.html || exit 1
 
-rm *.html project_b*_export.tjsp
+rm *.html project_*.tji
 

@@ -1,0 +1,247 @@
+/* For details about TaskJuggler see http://www.taskjuggler.org
+ */
+project prj "Milestone Test" "$Id" 2003-01-01-00:00:00-GMT 2003-01-30-23:59:59-GMT {
+  timezone "GMT"
+  dailyworkinghours 8
+  yearlyworkingdays 260.714
+  timingresolution 60min
+  timeformat "%Y-%m-%d %H:%M:%S %Z"
+  shorttimeformat "%H:%M"
+  currencyformat "(" ")" "," "." 0
+  weekstartsmonday
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux1 "Tux1" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux10 "Tux10" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux11 "Tux11" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux12 "Tux12" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux2 "Tux2" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux3 "Tux3" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux4 "Tux4" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux5 "Tux5" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux6 "Tux6" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux7 "Tux7" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux8 "Tux8" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux9 "Tux9" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+task t1 "|->" {
+  projectid prj
+  plan:start 2003-01-06-00:00:00-+0000
+  plan:end 2003-01-10-18:00:00-+0000
+  plan:scheduled
+}
+task m8 "-D M -" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-10-18:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m10_asap "-D M -D (ASAP)" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-10-18:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m1 "|  M -" {
+  projectid prj
+  plan:start 2003-01-13-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m2 "|  M -D" {
+  projectid prj
+  plan:start 2003-01-13-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m3 "|D M -" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-13-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m4 "|D M -D" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-13-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m5 "- M |" {
+  projectid prj
+  plan:start 2003-01-18-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m7 "- M |D" {
+  projectid prj
+  plan:start 2003-01-18-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m9 "-D M |" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-18-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m11 "-D M |D" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-18-00:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m6 "- M -D" {
+  projectid prj
+  plan:start 2003-01-20-09:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task m10_alap "-D M -D (ALAP)" {
+  projectid prj
+  depends t1
+  plan:start 2003-01-20-09:00:00-+0000
+  plan:scheduled
+  milestone 
+}
+task t2 "<-|" {
+  projectid prj
+  depends m2, m4, m6, m7, m10_asap, m10_alap, m11
+  plan:start 2003-01-20-09:00:00-+0000
+  plan:end 2003-01-27-00:00:00-+0000
+  plan:scheduled
+}
+supplement task t1 {
+}
+supplement task m8 {
+}
+supplement task m10_asap {
+}
+supplement task m1 {
+}
+supplement task m2 {
+}
+supplement task m3 {
+}
+supplement task m4 {
+}
+supplement task m5 {
+}
+supplement task m7 {
+}
+supplement task m9 {
+}
+supplement task m11 {
+}
+supplement task m6 {
+}
+supplement task m10_alap {
+}
+supplement task t2 {
+}

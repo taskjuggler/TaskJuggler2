@@ -38,7 +38,7 @@ htmltaskreport "Mandatory-1.html" {
 	hideresource 0
 }
 
-export "Mandatory-1-Export.tjsp" {
+export "Mandatory-1-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

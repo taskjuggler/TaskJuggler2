@@ -146,7 +146,7 @@ htmlweeklycalendar "NightShiftTimes.html" {
 	notimestamp
 }
 
-export "NightShift-Export.tjsp" {
+export "NightShift-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

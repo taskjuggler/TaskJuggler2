@@ -1,257 +1,352 @@
-/* For details about TaskJuggler see 
- * http://www.taskjuggler.org
+/* For details about TaskJuggler see http://www.taskjuggler.org
  */
+project prj "TaskMix2 Project" "$Id" 2003-01-01-00:00:00-GMT 2003-01-30-23:59:59-GMT {
+  timezone "GMT"
+  dailyworkinghours 8
+  yearlyworkingdays 260.714
+  timingresolution 60min
+  timeformat "%Y-%m-%d %H:%M"
+  shorttimeformat "%H:%M"
+  currencyformat "(" ")" "," "." 0
+  weekstartsmonday
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux1 "Tux1" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux10 "Tux10" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux11 "Tux11" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux12 "Tux12" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux2 "Tux2" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux3 "Tux3" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux4 "Tux4" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux5 "Tux5" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux6 "Tux6" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux7 "Tux7" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux8 "Tux8" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux9 "Tux9" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
 task container3 "Container3" {
   projectid prj
-}
-task container3.c21 "-D --> |" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container3.c28 "-D <-- |" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container3.c11 "|D --> |" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container3.c14 "|D <-- |" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container3.c9 "|D x-> -" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container3.c19 "-D x-> -" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container3.c24 "-D <-x |" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
+  task c9 "|D x-> -" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c11 "|D --> |" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c14 "|D <-- |" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c19 "-D x-> -" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c21 "-D --> |" {
+    plan:start 2003-01-11-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c24 "-D <-x |" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c28 "-D <-- |" {
+    plan:start 2003-01-11-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
 }
 task container4 "Container4" {
   projectid prj
-}
-task container4.c23 "-D --> |D" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c30 "-D <-- |D" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c22 "-D --> -D" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c29 "-D <-- -D" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c13 "|D --> |D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c15 "|D <-- -D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c12 "|D --> -D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c10 "|D x-> -D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c20 "-D x-> -D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c25 "-D <-x -D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container4.c26 "-D <-x |D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
+  task c10 "|D x-> -D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c12 "|D --> -D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-19-23:59:00-+0000
+    plan:scheduled
+  }
+  task c13 "|D --> |D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c15 "|D <-- -D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c20 "-D x-> -D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c22 "-D --> -D" {
+    plan:start 2003-01-11-00:00:00-+0000
+    plan:end 2003-01-19-23:59:00-+0000
+    plan:scheduled
+  }
+  task c23 "-D --> |D" {
+    plan:start 2003-01-11-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c25 "-D <-x -D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c26 "-D <-x |D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c29 "-D <-- -D" {
+    plan:start 2003-01-11-00:00:00-+0000
+    plan:end 2003-01-19-23:59:00-+0000
+    plan:scheduled
+  }
+  task c30 "-D <-- |D" {
+    plan:start 2003-01-11-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
 }
 task container1 "Container1" {
   projectid prj
-}
-task container1.c3 "| --> |" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container1.c6 "| <-- |" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container1.c1 "| x-> -" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container1.c16 "- <-x |" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
+  task c1 "| x-> -" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c3 "| --> |" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c6 "| <-- |" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c16 "- <-x |" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
 }
 task container2 "Container2" {
   projectid prj
-}
-task container2.c5 "| --> |D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container2.c8 "| <-- |D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container2.c4 "| --> -D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  scheduled
-  projectid prj
-}
-task container2.c7 "| <-- -D" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  scheduled
-  projectid prj
-}
-task container2.c2 "| x-> -D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container2.c17 "- <-x -D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
-}
-task container2.c18 "- <-x |D" {
-  start 2003-01-13-09:00:00-+0000
-  end 2003-01-17-18:00:00-+0000
-  scheduled
-  projectid prj
+  task c2 "| x-> -D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c4 "| --> -D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-19-23:59:00-+0000
+    plan:scheduled
+  }
+  task c5 "| --> |D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c7 "| <-- -D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-19-23:59:00-+0000
+    plan:scheduled
+  }
+  task c8 "| <-- |D" {
+    plan:start 2003-01-13-00:00:00-+0000
+    plan:end 2003-01-18-00:00:00-+0000
+    plan:scheduled
+  }
+  task c17 "- <-x -D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
+  task c18 "- <-x |D" {
+    plan:start 2003-01-13-09:00:00-+0000
+    plan:end 2003-01-17-18:00:00-+0000
+    plan:scheduled
+  }
 }
 supplement task container3 {
-}
-supplement task container3.c21 {
-}
-supplement task container3.c28 {
-}
-supplement task container3.c11 {
-}
-supplement task container3.c14 {
-}
-supplement task container3.c9 {
-}
-supplement task container3.c19 {
-}
-supplement task container3.c24 {
+  supplement task c9 {
+  }
+  supplement task c11 {
+  }
+  supplement task c14 {
+  }
+  supplement task c19 {
+  }
+  supplement task c21 {
+  }
+  supplement task c24 {
+  }
+  supplement task c28 {
+  }
 }
 supplement task container4 {
-}
-supplement task container4.c23 {
-}
-supplement task container4.c30 {
-}
-supplement task container4.c22 {
-}
-supplement task container4.c29 {
-}
-supplement task container4.c13 {
-}
-supplement task container4.c15 {
-}
-supplement task container4.c12 {
-}
-supplement task container4.c10 {
-}
-supplement task container4.c20 {
-}
-supplement task container4.c25 {
-}
-supplement task container4.c26 {
+  supplement task c10 {
+  }
+  supplement task c12 {
+  }
+  supplement task c13 {
+  }
+  supplement task c15 {
+  }
+  supplement task c20 {
+  }
+  supplement task c22 {
+  }
+  supplement task c23 {
+  }
+  supplement task c25 {
+  }
+  supplement task c26 {
+  }
+  supplement task c29 {
+  }
+  supplement task c30 {
+  }
 }
 supplement task container1 {
-}
-supplement task container1.c3 {
-}
-supplement task container1.c6 {
-}
-supplement task container1.c1 {
-}
-supplement task container1.c16 {
+  supplement task c1 {
+  }
+  supplement task c3 {
+  }
+  supplement task c6 {
+  }
+  supplement task c16 {
+  }
 }
 supplement task container2 {
-}
-supplement task container2.c5 {
-}
-supplement task container2.c8 {
-}
-supplement task container2.c4 {
-}
-supplement task container2.c7 {
-}
-supplement task container2.c2 {
-}
-supplement task container2.c17 {
-}
-supplement task container2.c18 {
+  supplement task c2 {
+  }
+  supplement task c4 {
+  }
+  supplement task c5 {
+  }
+  supplement task c7 {
+  }
+  supplement task c8 {
+  }
+  supplement task c17 {
+  }
+  supplement task c18 {
+  }
 }
 supplement resource tux1 {
   plan:booking 2003-01-13-09:00:00-+0000 2003-01-13-12:00:00-+0000 container1.c1

@@ -1,0 +1,90 @@
+/* For details about TaskJuggler see http://www.taskjuggler.org
+ */
+project simple "Simple Project" "$Id" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
+  timezone "GMT"
+  dailyworkinghours 8
+  yearlyworkingdays 260.714
+  timingresolution 60min
+  timeformat "%Y-%m-%d %H:%M"
+  shorttimeformat "%H:%M"
+  currencyformat "(" ")" "," "." 0
+  weekstartsmonday
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+resource tux "Tux" {
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+}
+task t1 "Task1" {
+  projectid simple
+  plan:start 2000-01-01-00:00:00-+0000
+  plan:end 2000-01-03-18:00:00-+0000
+  plan:scheduled
+}
+task t2 "Task2" {
+  projectid simple
+  depends t1
+  plan:start 2000-01-03-18:00:00-+0000
+  plan:end 2000-01-04-18:00:00-+0000
+  plan:scheduled
+}
+task t4 "Task4" {
+  projectid simple
+  task t5 "Task5" {
+    task t6 "Task6" {
+      plan:start 2000-01-05-00:00:00-+0000
+      plan:end 2000-01-11-18:00:00-+0000
+      plan:scheduled
+    }
+  }
+}
+task t3 "Task3" {
+  projectid simple
+  depends t2
+  plan:start 2000-01-05-09:00:00-+0000
+  plan:end 2000-01-05-18:00:00-+0000
+  plan:scheduled
+}
+task t7 "Task7" {
+  projectid simple
+  task t8 "Task8" {
+    task t9 "Task8" {
+      plan:start 2000-01-10-09:00:00-+0000
+      plan:end 2000-01-15-00:00:00-+0000
+      plan:scheduled
+    }
+  }
+}
+supplement task t1 {
+}
+supplement task t2 {
+}
+supplement task t4 {
+  supplement task t5 {
+    supplement task t6 {
+    }
+  }
+}
+supplement task t3 {
+}
+supplement task t7 {
+  supplement task t8 {
+    supplement task t9 {
+    }
+  }
+}
+supplement resource tux {
+  plan:booking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3
+  plan:booking 2000-01-05-13:00:00-+0000 2000-01-05-18:00:00-+0000 t3
+}

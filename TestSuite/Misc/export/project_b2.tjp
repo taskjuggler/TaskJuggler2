@@ -5,9 +5,9 @@ project test "Test" "$Id" 2000-01-01 2000-03-10 {
 	}
 }
 
-include "workforce.tjsp"
+include "workforce.tji"
 
-include "project_b1_export.tjsp"
+include "project_b1_export.tji"
 
 
 task t2 "Task2" {
@@ -19,7 +19,7 @@ task t2 "Task2" {
 task t4 "Task4" {
 }
 
-include "project_a_sub.tjsp" { taskprefix t4 }
+include "project_a_sub.tji" { taskprefix t4 }
 
 htmltaskreport "project_b.html" {
 	columns name, start, end, daily
@@ -35,7 +35,7 @@ htmlresourcereport "project_b_res.html" {
 	notimestamp
 }
 
-export "project_b2_export.tjsp" {
+export "project_b2_export.tji" {
   hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends

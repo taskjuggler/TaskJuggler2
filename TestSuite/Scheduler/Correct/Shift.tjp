@@ -33,7 +33,7 @@ htmltaskreport "Shift.html" {
 	notimestamp
 }
 
-export "Shift-Export.tjsp" {
+export "Shift-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

@@ -486,6 +486,14 @@ ProjectFile::readProject()
 {
     QString token;
 
+    if (!proj->getProjectIdList().isEmpty())
+    {
+        errorMessage
+            (i18n("Illegal redefinition of project property. It can only "
+                  "be defined once."));
+        return FALSE;
+    }
+
     if (proj->accountCount() > 0 || proj->resourceCount() > 0 ||
         proj->shiftCount() > 0 || proj->taskCount() > 0)
     {
@@ -608,7 +616,7 @@ ProjectFile::readProject()
                     errorMessage(i18n("Timezone name expected"));
                     return FALSE;
                 }
-                setTimezone(token);
+                proj->setTimeZone(token);
             }
             else if (token == KW("timeformat"))
             {
@@ -1603,6 +1611,7 @@ ProjectFile::readDate(time_t& val, time_t correction)
 bool
 ProjectFile::readRealFormat(RealFormat* format)
 {
+    // E.g. "(" ")" "," "." 3
     QString token;
     if (nextToken(token) != STRING)
     {
@@ -2980,10 +2989,22 @@ ProjectFile::readExportReport()
         errorMessage(i18n("File name expected"));
         return FALSE;
     }
-    
+
+    if (token.right(4) != ".tjp" && token.right(4) != ".tji" &&
+        token.right(5) != ".tjsp")
+    {
+        errorMessage(i18n("Illegal extension for export file name. "
+                          "Please use '.tjp' for standalone projects and "
+                          "'.tji' for sub projects."));
+        return FALSE;
+    }
+
     ExportReport* report;
     report = new ExportReport(proj, token, getFile(), getLine());
-        
+    
+    if (token.right(4) == ".tjp")
+        report->setMasterFile(TRUE);
+
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
     {

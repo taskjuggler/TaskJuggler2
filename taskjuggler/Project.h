@@ -69,6 +69,14 @@ public:
      * tasks.
      */
     bool addId(const QString& i);
+
+    /**
+     * Returns the first (default) ID of the project.
+     */
+    QString getId() const
+    { 
+        return projectIDs.isEmpty() ? QString::null : projectIDs.first();
+    }
     /**
      * Returns the current project ID. If the project ID list is empty
      * QString::null is returned.
@@ -218,6 +226,13 @@ public:
             qFatal("day out of range");
         delete workingHours[day];
         workingHours[day] = l;
+    }
+    /**
+     * Returns a constant list of working intervals for all week days.
+     */
+    const QPtrList<const Interval>* const * getWorkingHours() const
+    {
+        return (const QPtrList<const Interval>* const*) workingHours;
     }
     /**
      * Returns the list of working intervals for the specified weekday.
@@ -550,7 +565,7 @@ public:
      */
     ShiftListIterator getShiftListIterator() const
     {
-        return ShiftListIterator(accountList);
+        return ShiftListIterator(shiftList);
     }
 
     /**
@@ -603,23 +618,32 @@ public:
      */
     void setCurrencyDigits(uint d) { currencyFormat.setFracDigits(d); }
 
-    /*
+    /**
      * Sets the default number format for load and other values.
      */
     void setNumberFormat(const RealFormat& rf) { numberFormat = rf; }
-    /*
+    /**
      * Returns the current default number format.
      */
     const RealFormat& getNumberFormat() const { return numberFormat; }
 
-    /*
+    /**
      * Sets the default currency format.
      */
     void setCurrencyFormat(const RealFormat& rf) { currencyFormat = rf; }
-    /*
+    /**
      * Returns the default currency format.
      */
     const RealFormat& getCurrencyFormat() const { return currencyFormat; }
+
+    /**
+     * Set the default time zone for the project.
+     */
+    void setTimeZone(const QString& tz);
+    /**
+     * Returns the default time zone of the project;
+     */
+    const QString& getTimeZone() const { return timeZone; }
 
     /**
      * Sets the format used for timestamps in reports. It will be used as
@@ -739,7 +763,9 @@ private:
     QString version;
     /// Some legal words to please the boss.
     QString copyright;
-
+    
+    /// The default timezone of the project.
+    QString timeZone;
     /**
      * A format string in strftime(3) format that specifies the default time
      * format for all time values TaskJuggler generates.

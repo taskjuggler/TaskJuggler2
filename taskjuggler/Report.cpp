@@ -93,7 +93,7 @@ Report::open()
         if (!f.open(IO_WriteOnly))
         {
             TJMH.errorMessage
-                (i18n("Cannot open report file %1!\n")
+                (QString(i18n("Cannot open report file %1!\n"))
                  .arg(fileName.latin1()));
             return FALSE;
         }

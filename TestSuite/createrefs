@@ -4,21 +4,20 @@
 export LANG=en_US
 export LC_COLLATE=POSIX 
 
-export TASKJUGGLER=../../taskjuggler/taskjuggler
-if test ! -x $TASKJUGGLER ; then
-  export TASKJUGGLER=taskjuggler
-else
-  export TASKJUGGLER=../$TASKJUGGLER
-fi
-
 cd Scheduler/Correct
+/bin/rm -f *-Export.tjp *-Reference.tjp
 for f in *.tjp ; do
-  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
-  exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjsp/g`
-  $TASKJUGGLER $f
+  echo Processing $f...
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjp/g`
+  exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjp/g`
+  ../../../taskjuggler/taskjuggler $f
   if [ -f $exportFile ] ; then
+    ../../../taskjuggler/taskjuggler $exportFile
+    if [ $? -ne 0 ] ; then
+      echo "Taskjuggler failed to process export file"
+      exit 1
+    fi
     mv -f $exportFile $referenceFile
-#    sed "1,4d" $exportFile > $referenceFile
     echo $referenceFile created
   fi
   rm -f *.html
@@ -28,7 +27,7 @@ cd ../..
 cd HTML-Reports
 for f in *.tjp ; do
   referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.html/g`
-  ../../../taskjuggler/taskjuggler/taskjuggler $f | \
+  ../../taskjuggler/taskjuggler $f | \
   fgrep -v TaskJuggler > $referenceFile || exit 1
   echo $referenceFile created
 done

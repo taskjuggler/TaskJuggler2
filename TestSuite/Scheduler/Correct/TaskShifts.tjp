@@ -50,7 +50,7 @@ htmltaskreport "TaskShifts.html" {
 	notimestamp
 }
 
-export "TaskShifts-Export.tjsp" {
+export "TaskShifts-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

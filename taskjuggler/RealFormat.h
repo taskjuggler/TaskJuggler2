@@ -30,10 +30,19 @@ public:
     ~RealFormat() { }
 
     void setSignPrefix(const QString& sp) { signPrefix = sp; }
+    const QString& getSignPrefix() const { return signPrefix; }
+    
     void setSignSuffix(const QString& ss) { signSuffix = ss; }
+    const QString& getSignSuffix() const { return signSuffix; }
+    
     void setThousandSep(const QString& ts) { thousandSep = ts; }
+    const QString& getThousandSep() const { return thousandSep; }
+    
     void setFractionSep(const QString& fs) { fractionSep = fs; }
+    const QString& getFractionSep() const { return fractionSep; }
+    
     void setFracDigits(uint fd) { fracDigits = fd; }
+    uint getFracDigits() const { return fracDigits; }
     
     QString format(double val, bool showZeroFract = TRUE) const;
 

@@ -151,7 +151,7 @@ protected:
     Report() { }
 
     void errorMessage(const char* msg, ... );
-
+    
     /**
      * This utility function removes the path that matches the taskRoot
      * variable from the passed taskId.

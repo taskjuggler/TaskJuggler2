@@ -17,6 +17,8 @@
 
 #include "taskjuggler.h"
 #include "Project.h"
+#include "Shift.h"
+#include "ShiftSelection.h"
 #include "Task.h"
 #include "Resource.h"
 #include "Booking.h"
@@ -62,6 +64,11 @@ ExportReport::ExportReport(Project* p, const QString& f,
     taskSortCriteria[2] = CoreAttributesList::EndUp;
     resourceSortCriteria[0] = CoreAttributesList::TreeMode;
     resourceSortCriteria[1] = CoreAttributesList::IdUp;
+    
+    // All export reports default to just showing the first scenario.   
+    scenarios.append(0);
+
+    masterFile = FALSE;
 }
 
 bool
@@ -75,17 +82,8 @@ ExportReport::generate()
             << endl
             << " * at " << time2ISO(time(0)) << "." << endl
             << " */" << endl;
-    s << "/* For details about TaskJuggler see " << endl
-      << " * " << TJURL << endl
+    s << "/* For details about TaskJuggler see " << TJURL << endl
       << " */" << endl;
-/*
-    generateCustomAttributeDeclaration("task", 
-                                       project->getTaskAttributeDict());
-    generateCustomAttributeDeclaration("resource",
-                                       project->getResourceAttributeDict());
-    generateCustomAttributeDeclaration("account",
-                                       project->getAccountAttributeDict());
-*/
 
     TaskList filteredTaskList;
     filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
@@ -95,11 +93,77 @@ ExportReport::generate()
     filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
     sortResourceList(filteredResourceList);
 
-    generateTaskList(filteredTaskList, filteredResourceList);
-    generateTaskAttributeList(filteredTaskList);
-    generateResourceList(filteredTaskList, filteredResourceList);
+    if (masterFile)
+    {
+        if (!generateProjectProperty())
+            return FALSE;
+        if (!generateShiftList())
+            return FALSE;
+        if (!generateResourceList(filteredResourceList, filteredTaskList))
+            return FALSE;
+    }
+    
+    if (!generateTaskList(filteredTaskList, filteredResourceList))
+        return FALSE;
+    if (!generateTaskAttributeList(filteredTaskList))
+        return FALSE;
+
+    if (!generateResourceAttributesList(filteredTaskList, 
+                                        filteredResourceList))
+        return FALSE;
     
     f.close();
+    return TRUE;
+}
+
+bool
+ExportReport::generateProjectProperty()
+{
+    s << "project " << project->getId() << " \"" << project->getName()
+        << "\" \"" << project->getVersion() << "\" "
+        << time2tjp(getStart()) << " "
+        << time2tjp(getEnd()) << " {" << endl;
+    
+    if (!generateCustomAttributeDeclaration
+        ("task", project->getTaskAttributeDict()))
+        return FALSE;
+    if (!generateCustomAttributeDeclaration
+        ("resource", project->getResourceAttributeDict()))
+        return FALSE;
+    if (!generateCustomAttributeDeclaration
+        ("account", project->getAccountAttributeDict()))
+        return FALSE;
+
+    if (!project->getTimeZone().isEmpty())
+        s << "  timezone \"" << project->getTimeZone() << "\"" << endl;
+    s << "  dailyworkinghours " << project->getDailyWorkingHours() << endl;
+    s << "  yearlyworkingdays " << project->getYearlyWorkingDays() << endl;
+    s << "  timingresolution " 
+        << QString().sprintf("%ld", project->getScheduleGranularity() / 60) 
+        << "min" << endl;
+    if (timeStamp)
+        s << "  now " << time2tjp(project->getNow()) << endl;
+    s << "  timeformat \"" << project->getTimeFormat() << "\"" << endl;
+    s << "  shorttimeformat \"" << project->getShortTimeFormat() << "\""
+        << endl;
+
+    RealFormat rf = project->getCurrencyFormat();
+    s << "  currencyformat \"" << rf.getSignPrefix() << "\" \""
+        << rf.getSignSuffix() << "\" \""
+        << rf.getThousandSep() << "\" \""
+        << rf.getFractionSep() << "\" "
+        << rf.getFracDigits() << endl;
+    if (!project->getCurrency().isEmpty())
+        s << "  currency " << project->getCurrency() << endl;
+    if (project->getWeekStartsMonday())
+        s << "  weekstartsmonday" << endl;
+    else
+        s << "  weekstartssunday" << endl;
+
+    generateWorkingHours(project->getWorkingHours());
+    
+    s << "}" << endl;
+
     return TRUE;
 }
 
@@ -135,101 +199,227 @@ ExportReport::generateCustomAttributeDeclaration(const QString& propertyName,
 }
 
 bool
+ExportReport::generateShiftList()
+{
+    for (ShiftListIterator sli(project->getShiftListIterator()); 
+         *sli != 0; ++sli)
+    {
+        s << "shift " << (*sli)->getId() << " \"" << (*sli)->getName() 
+            << "\" {" << endl;
+
+        generateWorkingHours((*sli)->getWorkingHours()); 
+        
+        s << "}" << endl;
+    }
+    
+    return TRUE;
+}
+
+bool
+ExportReport::generateWorkingHours(const QPtrList<const Interval>* const* wh)
+{
+    static const char* days[] = 
+    {
+        "sun", "mon", "tue", "wed", "thu", "fri", "sat" 
+    };
+
+    for (int i = 0; i < 7; ++i)
+    {
+        bool first = TRUE;    
+        s << "  workinghours " << days[i] << " ";
+        QPtrListIterator<const Interval> it(*wh[i]);
+        if (*it == 0)
+        {
+            s << "off";
+        }
+        else
+        {
+            for ( ; *it; ++it)
+            {
+                if (!first)
+                    s << ", ";
+                else
+                    first = FALSE;
+
+                s << QString().sprintf("%ld:%02ld", 
+                                       (*it)->getStart() / (60 * 60),
+                                       ((*it)->getStart() % (60 * 60)) / 60)
+                    << " - "
+                    << QString().sprintf("%ld:%02ld", 
+                                       ((*it)->getEnd() + 1) / (60 * 60),
+                                       (((*it)->getEnd() + 1) % (60 * 60))
+                                       / 60);
+            }
+        }
+        s << endl;
+    }
+
+    return TRUE;
+}
+
+bool
+ExportReport::generateResourceList(ResourceList& filteredResourceList,
+                                   TaskList&)
+{
+    for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
+        if ((*rli)->getParent() == 0) 
+            if (!generateResource(filteredResourceList, *rli, 0))
+                return FALSE;
+
+    return TRUE;
+}
+
+bool
+ExportReport::generateResource(ResourceList& filteredResourceList,
+                               Resource* resource, int indent)
+{
+    s << QString().fill(' ', indent) << "resource " << resource->getId()
+        << " \"" << resource->getName() << "\"" << " {" << endl;
+
+    for (ResourceListIterator srli(resource->getSubListIterator()); 
+         *srli != 0; ++srli)
+    {
+        if (filteredResourceList.findRef(*srli) >= 0)
+        {
+            if (!generateResource(filteredResourceList, *srli, indent + 2))
+                return FALSE;
+        }
+    }
+
+    generateWorkingHours(resource->getWorkingHours());
+
+    for (ShiftSelectionListIterator sli(*resource->getShiftList()); *sli; ++sli)
+    {
+        s << "  shift " << (*sli)->getShift()->getId() << " "
+            << time2tjp((*sli)->getPeriod().getStart()) << " - "
+            << time2tjp((*sli)->getPeriod().getEnd() + 1) << endl;
+    }
+
+    s << QString().fill(' ', indent) << "}" << endl;
+
+    return TRUE;
+}
+
+bool
 ExportReport::generateTaskList(TaskList& filteredTaskList,
                                ResourceList&)
 {
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli)
+        if ((*tli)->getParent() == 0 || 
+            (*tli)->getParent()->getId() + "." == taskRoot)
+            if (!generateTask(filteredTaskList, *tli, 0))
+                return FALSE;
+
+    return TRUE;
+}
+
+bool
+ExportReport::generateTask(TaskList& filteredTaskList, Task* task, int indent)
+{
+    QString taskId = task->getId();
+    if (task->getParent())
+        taskId = taskId.right(taskId.length() - 1 -
+                              task->getParent()->getId().length());
+    s << QString().fill(' ', indent) << "task " << taskId 
+        << " \"" << task->getName() << "\"" << " {" << endl; 
+    
+    /* Generate inheritable attributes prior to the sub tasks, so we don't
+     * have to have to generate them for the sub tasks as well. */
+    if (task->getParent() == 0 || 
+        task->getParent()->getId() + '.' == taskRoot ||
+        task->getParent()->getProjectId() != task->getProjectId())
     {
-        QString start = time2rfc((*tli)->getStart(Task::Plan));
-        QString end = time2rfc((*tli)->getEnd(Task::Plan) + 1);
-
-        s << "task " << stripTaskRoot((*tli)->getId()) 
-            << " \"" << (*tli)->getName() << "\"" << " {" << endl; 
-        /* If a container task has sub tasks that are exported as well, we do
-         * not export start/end date for those container tasks. */
-        bool taskHasNoSubTasks = TRUE;
-        for (TaskListIterator stli((*tli)->getSubListIterator()); 
-             *stli != 0; ++stli)
-        {
-            if (filteredTaskList.findRef(*stli) >= 0)
-            {
-                taskHasNoSubTasks = FALSE;
-                break;
-            }
-        }
-        if (taskHasNoSubTasks)
-        {
-            s << "  start " << start << endl
-                << "  end " << end << endl;
-            if ((*tli)->getScheduled(Task::Plan))
-                s << "  scheduled" << endl;
-            for (QValueListIterator<int> it = scenarios.begin(); 
-                 it != scenarios.end(); ++it)
-            {
-                start = time2rfc((*tli)->getStart(1));
-                end = time2rfc((*tli)->getEnd(Task::Actual) + 1);
-                s << "  " << project->getScenarioId(*it) << ":"
-                    << "start " << start << endl
-                    << "  " << project->getScenarioName(*it) << ":"
-                    << "end " << end << endl;
-                if ((*tli)->getScheduled(Task::Actual))
-                    s << "  " << project->getScenarioName(*it) << ":"
-                        << "scheduled" << endl;
-            }
-        }
-
-        s << "  projectid " << (*tli)->getProjectId() << endl;
-        if ((*tli)->isMilestone())
-            s << "  milestone " << endl;
-        
-        for (QStringList::Iterator it = taskAttributes.begin(); 
-             it != taskAttributes.end(); ++it)
-        {
-            if (!TaskAttributeDict.contains(*it))
-                continue;
-            switch (TaskAttributeDict[*it])
-            {
-                case TA_DEPENDS:
-                    if ((*tli)->hasPrevious())
-                    {
-                        bool first = TRUE;
-                        for (TaskListIterator
-                             pli((*tli)->getPreviousIterator()); *pli != 0;
-                             ++pli)
-                        {
-                            /* Save current list item since findRef() modifies
-                             * it. Remember, we are still iterating the list.
-                             */
-                            CoreAttributes* curr = filteredTaskList.current();
-                            if (filteredTaskList.findRef(*pli) > -1 &&
-                                !((*tli)->getParent() != 0 &&
-                                  (*tli)->getParent()->hasPrevious(*pli)))
-                            {
-                                if (first)
-                                {
-                                    s << "  depends ";
-                                    first = FALSE;
-                                }
-                                else
-                                    s << ", ";
-                                s << stripTaskRoot((*pli)->getId());
-                            }
-                            /* Restore current list item to continue
-                             * iteration. */
-                            filteredTaskList.findRef(curr);
-                        }
-                        if (!first)
-                            s << endl;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        
-        s << "}" << endl;
+        s << QString().fill(' ', indent + 2) << "projectid " 
+            << task->getProjectId() << endl;
     }
 
+    for (QStringList::Iterator it = taskAttributes.begin(); 
+         it != taskAttributes.end(); ++it)
+    {
+        if (!TaskAttributeDict.contains(*it))
+            continue;
+        switch (TaskAttributeDict[*it])
+        {
+            case TA_DEPENDS:
+                if (task->hasPrevious())
+                {
+                    bool first = TRUE;
+                    for (TaskListIterator
+                         pli(task->getPreviousIterator()); *pli != 0;
+                         ++pli)
+                    {
+                        /* Save current list item since findRef() modifies
+                         * it. Remember, we are still iterating the list.
+                         */
+                        CoreAttributes* curr = filteredTaskList.current();
+                        if (filteredTaskList.findRef(*pli) > -1 &&
+                            !(task->getParent() != 0 &&
+                              task->getParent()->hasPrevious(*pli)))
+                        {
+                            if (first)
+                            {
+                                s << QString().fill(' ', indent + 2) 
+                                    << "depends ";
+                                first = FALSE;
+                            }
+                            else
+                                s << ", ";
+                            s << stripTaskRoot((*pli)->getId());
+                        }
+                        /* Restore current list item to continue
+                         * iteration. */
+                        filteredTaskList.findRef(curr);
+                    }
+                    if (!first)
+                        s << endl;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /* If a container task has sub tasks that are exported as well, we do
+     * not export start/end date for those container tasks. */
+    bool taskHasNoSubTasks = TRUE;
+    for (TaskListIterator stli(task->getSubListIterator()); 
+         *stli != 0; ++stli)
+    {
+        if (filteredTaskList.findRef(*stli) >= 0)
+        {
+            taskHasNoSubTasks = FALSE;
+            if (!generateTask(filteredTaskList, *stli, indent + 2))
+                return FALSE;
+        }
+    }
+    if (taskHasNoSubTasks)
+    {
+        for (QValueListIterator<int> it = scenarios.begin(); 
+             it != scenarios.end(); ++it)
+        {
+            QString start = time2rfc(task->getStart(*it));
+            QString end = time2rfc(task->getEnd(*it) + 1);
+            s << QString().fill(' ', indent + 2) << 
+                project->getScenarioId(*it) << ":"
+                << "start " << start << endl;
+            if (!task->isMilestone())
+            {
+                s << QString().fill(' ', indent + 2) 
+                    << project->getScenarioId(*it) << ":"
+                    << "end " << end << endl;
+            }
+            if (task->getScheduled(*it))
+                s << QString().fill(' ', indent + 2) 
+                    << project->getScenarioId(*it) << ":"
+                    << "scheduled" << endl;
+        }
+    }
+
+    if (task->isMilestone())
+        s << QString().fill(' ', indent + 2) << "milestone " << endl;
+
+    s << QString().fill(' ', indent) << "}" << endl;
+    
     return TRUE;
 }
 
@@ -268,167 +458,212 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
     }
 
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli)
-    {
-        s << "supplement task " << stripTaskRoot((*tli)->getId()) << " {" 
-            << endl;
-        for (QStringList::Iterator it = taskAttributes.begin(); 
-             it != taskAttributes.end(); ++it)
-        {
-            if (!TaskAttributeDict.contains(*it))
-            {
-                if ((*tli)->getCustomAttribute(*it))
-                {
-                    s << "  " << *it << " ";
-                    const CustomAttribute* ca = 
-                        (*tli)->getCustomAttribute(*it);
-                    switch (ca->getType())
-                    {
-                        case CAT_Text:
-                            s << "\"" << ((const TextAttribute*) ca)->getText()
-                                << "\"" << endl;
-                            break;
-                        case CAT_Reference:
-                            {
-                                const ReferenceAttribute* a = 
-                                    (const ReferenceAttribute*) ca;
-                                s << "\"" << a->getUrl() << "\" { label \"" 
-                                    << a->getUrl() << "\" }" << endl;
-                                break;
-                            }
-                        default:
-                            qFatal("ExportReport::"
-                                   "generateTaskAttributeList: "
-                                   "Unknown CAT %d", 
-                                   ca->getType());
-                    }
-                }
-                continue;
-            }
-            switch (TaskAttributeDict[*it])
-            {
-                case TA_FLAGS:
-                    {
-                        if ((*tli)->getFlagList().empty())
-                            break;
-                        s << "  flags ";
-                        QStringList fl = (*tli)->getFlagList();
-                        bool first = TRUE;
-                        for (QStringList::Iterator jt = fl.begin();
-                             jt != fl.end(); ++jt)
-                        {
-                            if (!first)
-                                s << ", ";
-                            else
-                                first = FALSE;
-                            s << *jt;
-                        }
-                        s << endl;
-                        break;
-                    }
-                case TA_NOTE:
-                    if ((*tli)->getNote() != "")
-                        s << "  note \"" << (*tli)->getNote() << "\"" << endl;
-                    break;
-                case TA_MINSTART:
-                {
-                    for (QValueListIterator<int> it = scenarios.begin(); 
-                         it != scenarios.end(); ++it)
-                    {
-                        if ((*tli)->getMinStart(*it) != 0)
-                            s << "  " << project->getScenarioId(*it) << ":"
-                                << "minstart " 
-                                << time2rfc((*tli)->getMinStart(*it)) 
-                                << endl;
-                    }
-                    break;
-                }
-                case TA_MAXSTART:
-                {
-                    for (QValueListIterator<int> it = scenarios.begin(); 
-                         it != scenarios.end(); ++it)
-                    {
-                        if ((*tli)->getMaxStart(*it) != 0)
-                            s << "  " << project->getScenarioId(*it) << ":"
-                                << "maxstart " 
-                                << time2rfc((*tli)->getMaxStart(*it)) 
-                                << endl;
-                    }
-                    break;
-                }
-                case TA_MINEND:
-                {
-                    for (QValueListIterator<int> it = scenarios.begin(); 
-                         it != scenarios.end(); ++it)
-                    {
-                        if ((*tli)->getMinEnd(*it) != 0)
-                            s << "  " << project->getScenarioId(*it) << ":"
-                                << "minend " 
-                                << time2rfc((*tli)->getMinEnd(*it))
-                                << endl;
-                    }
-                    break;
-                }
-                case TA_MAXEND:
-                {
-                    for (QValueListIterator<int> it = scenarios.begin(); 
-                         it != scenarios.end(); ++it)
-                    {
-                        if ((*tli)->getMaxEnd(*it) != 0)
-                            s << "  " << project->getScenarioId(*it) << ":"
-                                << "maxend " 
-                                << time2rfc((*tli)->getMaxEnd(*it))
-                                << endl;
-                    }
-                    break;
-                }
-                case TA_COMPLETE:
-                {
-                    for (QValueListIterator<int> it = scenarios.begin(); 
-                         it != scenarios.end(); ++it)
-                    {
-                        if ((*tli)->getComplete(*it) >= 0.0)
-                            s << "  " << project->getScenarioId(*it) << ":"
-                                << "complete " 
-                                << (int) (*tli)->getComplete(Task::Plan) 
-                                << endl;
-                    }
-                    break;
-                }
-                case TA_RESPONSIBLE:
-                    if ((*tli)->getResponsible())
-                        s << "  responsible " 
-                            << (*tli)->getResponsible()->getId() << endl;
-                    break;
-                case TA_DEPENDS:
-                    // handled in generateTaskList
-                    break;
-                default:
-                    return FALSE;
-            }
-        }
-
-        s << "}" << endl;
-    }
+        if ((*tli)->getParent() == 0 || 
+            (*tli)->getParent()->getId() + "." == taskRoot)
+            if (!generateTaskSupplement(filteredTaskList, *tli, 0))
+                return FALSE;
 
     return TRUE;
 }
 
 bool
-ExportReport::generateResourceList(TaskList& filteredTaskList,
-                                   ResourceList& filteredResourceList)
+ExportReport::generateTaskSupplement(TaskList& filteredTaskList, Task* task,
+                                     int indent)
+{
+    QString taskId = task->getId();
+    if (task->getParent())
+        taskId = taskId.right(taskId.length() - 1 -
+                              task->getParent()->getId().length());
+    s << QString().fill(' ', indent) << "supplement task " << taskId 
+        << " {" << endl;
+    
+    for (TaskListIterator stli(task->getSubListIterator()); 
+         *stli != 0; ++stli)
+    {
+        if (filteredTaskList.findRef(*stli) >= 0)
+        {
+            if (!generateTaskSupplement(filteredTaskList, *stli, indent + 2))
+                return FALSE;
+        }
+    }
+
+    for (QStringList::Iterator it = taskAttributes.begin(); 
+         it != taskAttributes.end(); ++it)
+    {
+        if (!TaskAttributeDict.contains(*it))
+        {
+            if (task->getCustomAttribute(*it))
+            {
+                s << QString().fill(' ', indent + 2) << *it << " ";
+                const CustomAttribute* ca = 
+                    task->getCustomAttribute(*it);
+                switch (ca->getType())
+                {
+                    case CAT_Text:
+                        s << "\"" << ((const TextAttribute*) ca)->getText()
+                            << "\"" << endl;
+                        break;
+                    case CAT_Reference:
+                        {
+                            const ReferenceAttribute* a = 
+                                (const ReferenceAttribute*) ca;
+                            s << "\"" << a->getUrl() << "\" { label \"" 
+                                << a->getUrl() << "\" }" << endl;
+                            break;
+                        }
+                    default:
+                        qFatal("ExportReport::"
+                               "generateTaskAttributeList: "
+                               "Unknown CAT %d", 
+                               ca->getType());
+                }
+            }
+            continue;
+        }
+        switch (TaskAttributeDict[*it])
+        {
+            case TA_FLAGS:
+                {
+                    if (task->getFlagList().empty())
+                        break;
+                    
+                    s << QString().fill(' ', indent + 2) << "flags ";
+                    QStringList fl = task->getFlagList();
+                    bool first = TRUE;
+                    for (QStringList::Iterator jt = fl.begin();
+                         jt != fl.end(); ++jt)
+                    {
+                        if (!first)
+                            s << ", ";
+                        else
+                            first = FALSE;
+                        s << *jt;
+                    }
+                    s << endl;
+                    break;
+                }
+            case TA_NOTE:
+                if (task->getNote() != "")
+                {
+                    s << QString().fill(' ', indent + 2) 
+                        << "note \"" << task->getNote() << "\"" << endl;
+                }
+                break;
+            case TA_MINSTART:
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if (task->getMinStart(*it) != 0)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                                << project->getScenarioId(*it) << ":"
+                                << "minstart " 
+                                << time2rfc(task->getMinStart(*it)) 
+                                << endl;
+                        }
+                    }
+                    break;
+                }
+            case TA_MAXSTART:
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if (task->getMaxStart(*it) != 0)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                                << project->getScenarioId(*it) << ":"
+                                << "maxstart " 
+                                << time2rfc(task->getMaxStart(*it)) 
+                                << endl;
+                        }
+                    }
+                    break;
+                }
+            case TA_MINEND:
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if (task->getMinEnd(*it) != 0)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                                << project->getScenarioId(*it) << ":"
+                                << "minend " 
+                                << time2rfc(task->getMinEnd(*it))
+                                << endl;
+                        }
+                    }
+                    break;
+                }
+            case TA_MAXEND:
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if (task->getMaxEnd(*it) != 0)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                                << project->getScenarioId(*it) << ":"
+                                << "maxend " 
+                                << time2rfc(task->getMaxEnd(*it))
+                                << endl;
+                        }
+                    }
+                    break;
+                }
+            case TA_COMPLETE:
+                {
+                    for (QValueListIterator<int> it = scenarios.begin(); 
+                         it != scenarios.end(); ++it)
+                    {
+                        if (task->getComplete(*it) >= 0.0)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                                << project->getScenarioId(*it) << ":"
+                                << "complete " 
+                                << (int) task->getComplete(Task::Plan) 
+                                << endl;
+                        }
+                    }
+                    break;
+                }
+            case TA_RESPONSIBLE:
+                if (task->getResponsible())
+                {
+                    s << QString().fill(' ', indent + 2) << "responsible " 
+                        << task->getResponsible()->getId() << endl;
+                }
+                break;
+            case TA_DEPENDS:
+                // handled in generateTaskList
+                break;
+            default:
+                return FALSE;
+        }
+    }
+
+    s << QString().fill(' ', indent) << "}" << endl;
+
+    return TRUE;
+}
+
+bool
+ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
+                                             ResourceList& filteredResourceList)
 {
     for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
     {
         bool first = TRUE;
-        for (int sc = Task::Plan; sc <= Task::Actual; sc++)
+        for (QValueListIterator<int> sit = scenarios.begin(); 
+             sit != scenarios.end(); ++sit)
         {
-            // TODO: Fix scenario handling
-            if (sc == Task::Actual)
-                continue;
-            BookingList bl = (*rli)->getJobs(sc);
+            BookingList bl = (*rli)->getJobs(*sit);
             bl.setAutoDelete(TRUE);
             if (bl.isEmpty())
                 continue;
+            
             for (BookingListIterator bli(bl); *bli != 0; ++bli)
             {
                 if (filteredTaskList.findRef((*bli)->getTask()) >= 0)
@@ -441,7 +676,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
                     }
                     QString start = time2rfc((*bli)->getStart());
                     QString end = time2rfc((*bli)->getEnd() + 1);
-                    s << "  " << project->getScenarioId(sc) << ":booking ";
+                    s << "  " << project->getScenarioId(*sit) << ":booking ";
                     s << start << " " << end 
                         << " " << stripTaskRoot((*bli)->getTask()->getId()) 
                         << endl;

@@ -72,13 +72,20 @@ public:
 
     void setWorkingHours(int day, QPtrList<Interval>* l)
     {
-        if (day < 0 || day > 6)
-            qFatal("day out of range");
         delete workingHours[day];
         workingHours[day] = l;
     }
+    const QPtrList<const Interval>* const* getWorkingHours() const
+    {
+        return (const QPtrList<const Interval>* const*) workingHours;
+    }
 
     bool addShift(const Interval& i, Shift* s);
+
+    const ShiftSelectionList* getShiftList() const
+    {
+        return &shifts;
+    }
 
     bool isAvailable(time_t day, time_t duration, int loadFactor,
                      const Task* t);

@@ -201,7 +201,7 @@ htmltaskreport "TaskDuration-1.html" {
 	notimestamp
 }
 
-export "TaskDuration-Export.tjsp" {
+export "TaskDuration-1-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,

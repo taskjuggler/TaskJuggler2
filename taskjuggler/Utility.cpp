@@ -711,7 +711,7 @@ date2time(const QString& date)
             strcpy(savedTZ, tz);
         }
         if ((tz = timezone2tz(tZone)) == 0)
-            UtilityError = i18n("Illegal timezone %1").arg(tZone);
+            UtilityError = QString(i18n("Illegal timezone %1")).arg(tZone);
         else
         {
             if (setenv("TZ", tz, 1) < 0)

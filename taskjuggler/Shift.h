@@ -36,17 +36,17 @@ public:
 
     void setWorkingHours(int day, QPtrList<Interval>* l)
     {
-        if (day < 0 || day > 6)
-            qFatal("day out of range");
         delete workingHours[day];
         workingHours[day] = l;
     }
 
     QPtrList<Interval>* getWorkingHours(int day) const
     {
-        if (day < 0 || day > 6)
-            qFatal("day out of range");
         return workingHours[day];
+    }
+    const QPtrList<const Interval>* const * getWorkingHours() const
+    {
+        return (const QPtrList<const Interval>* const*) workingHours;
     }
 
     bool isOnShift(const Interval& iv) const;

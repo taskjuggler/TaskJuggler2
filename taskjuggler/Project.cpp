@@ -127,6 +127,13 @@ Project::~Project()
     exitUtility();
 }
 
+void
+Project::setTimeZone(const QString& tz)
+{
+    setTimezone(tz);
+    timeZone = tz;
+}
+
 Scenario*
 Project::getScenario(int sc) const
 {

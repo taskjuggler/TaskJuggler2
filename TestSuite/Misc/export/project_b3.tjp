@@ -1,8 +1,8 @@
 project test "Test" "$Id" 2000-01-01 2000-03-10
 
-include "workforce.tjsp"
+include "workforce.tji"
 
-include "project_b2_export.tjsp"
+include "project_b2_export.tji"
 
 htmltaskreport "project_b3.html" {
 	columns name, start, end, daily
@@ -18,7 +18,7 @@ htmlresourcereport "project_b3_res.html" {
 	notimestamp
 }
 
-export "project_b3_export.tjsp" {
+export "project_b3_export.tji" {
   hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends

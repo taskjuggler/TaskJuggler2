@@ -23,8 +23,8 @@ function do_testing
     echo "Test $f failed!" | tee -a ../log
   fi
   checkscript=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.sh/g`
-  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
-  exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjsp/g`
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjp/g`
+  exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjp/g`
   if [ -x $checkscript ] ; then
     ./$checkscript 2>&1 >> ../log 
     if [ $? -ne 0 ] ; then
@@ -33,11 +33,6 @@ function do_testing
     fi
   fi
   if [ -f $referenceFile ] ; then
-    # Remove the comment at the top of the file that contains the
-    # version number.
-#    mv -f $exportFile $exportFile.bak
-#    sed "1,4d" $exportFile.bak > $exportFile
-    rm -f $exportFile.bak
     cmp $exportFile $referenceFile 2>> ../log
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))

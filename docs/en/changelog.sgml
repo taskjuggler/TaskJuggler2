@@ -523,4 +523,14 @@ tasks.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2><title>Version 1.9.1-unstable (some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>The <link linkend="export">export report</link>
+can now be a main project file as well.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

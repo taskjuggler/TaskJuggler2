@@ -60,7 +60,7 @@ htmltaskreport "Vacation.html" {
   notimestamp
 }
 
-export "Vacation-Export.tjsp" {
+export "Vacation-Export.tjp" {
 	hidetask 0
 	hideresource 0
 	taskattributes flags, note, minstart, maxstart, minend, maxend,
