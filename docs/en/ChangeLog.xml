@@ -696,6 +696,12 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
+<listitem><para>TaskJuggler now has a nice face. Beside the
+commandlime application <computeroutput>taskjuggler</computeroutput>,
+you can now use <computeroutput>TaskJuggler</computeroutput> or
+<computeroutput>ktjview2</computeroutput> as a graphical user
+interface to enter and schedule your projects.</para></listitem>
+
 <listitem><para>New optimizer that achieves much better resource
 selection resulting in shorter overall project times.</para></listitem>
 
@@ -710,9 +716,6 @@ specification. It is possible to specify the gap in calendar time
 (<link linkend="PROPERTY_gapduration">gapduration</link>) or working
 time (<link
 linkend="PROPERTY_gaplength">gaplength</link>).</para></listitem>
-
-<listitem><para>The KDE viewer has been completely rewritten. Version
-2 is much more sophisticated than the old viewer.</para></listitem>
 
 <listitem><para>Fixed a memory leak during XML report
 generation.</para></listitem>
@@ -733,6 +736,18 @@ Mainly the sorting criterias were missing.</para></listitem>
 
 <listitem><para>Fixed scheduling of nested task that had an external
 dependency and an inherited start/end date.</para></listitem>
+
+<listitem><para>Limits of resource allocations with multiple
+alternatives are now correctly handled. The limits were applied to
+each individual resource instead of to the whole
+allocation.</para></listitem>
+
+<listitem><para>The task priority is now always properly respected.
+Due to a bug in the scheduling algorithm a heavy mixture of ALAP and
+ASAP tasks with various levels of priorities, ALAP tasks were treated
+more favorable then they should have been treated. This fix can
+drastically reduce the scheduling speed when you have a heavy mixture
+of ALAP and ASAP tasks with variing priorities.</para></listitem>
 
 <listitem><para>The error checking and reporting of logical
 expressions has been drastically improved.</para></listitem>
