@@ -43,7 +43,7 @@ public:
 
     virtual void resize(int, int);
 public slots:
-    void slNewTask( Task *t, KTVTaskTableItem *it ){ m_tasks.insert( it, t ); }
+    void slNewTask( Task *, KTVTaskTableItem * );
     void slShowTask( KTVTaskTableItem* );
     void slShowTask( Task*, int );
 

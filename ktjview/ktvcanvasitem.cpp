@@ -162,7 +162,7 @@ KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
    :KTVCanvasItemBase()
 {
    cRect = new QCanvasRectangle(c);
-   m_height = 12;
+   m_height = 16;
    cRect->setBrush( QColor(0xDB, 0xE8, 0x4F));
 
    /* Text */

@@ -70,6 +70,9 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    m_taskPix      = loader->loadIcon( PIX_TASK     , KIcon::Small );
    m_containerPix = loader->loadIcon( PIX_CONTAINER, KIcon::Small );
 
+   setMargin(0);
+   setLineWidth(0);
+   setItemMargin(8);
    createRoot();
 }
 
@@ -146,18 +149,18 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
       ktv->setPixmap( COL_NAME, m_taskPix );
 
    ktv->setText( COL_ID, t->getId() );
-   ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getEnd(Task::Plan),
-                                               t->getStart(Task::Plan) ));
+   ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getEnd(0),
+					       t->getStart(0) ));
    ktv->setText( COL_PRIORITY, QString::number( t->getPriority() ));
 
-   double cmplt = t->getComplete(Task::Plan);
+   double cmplt = t->getComplete(0);
    ktv->setText( COL_COMPLETE, cmplt == -1 ? i18n("iP"):  i18n("%1%").arg(cmplt));
 
-   dt.setTime_t( t->getStart(Task::Plan) );
+   dt.setTime_t( t->getStart(0) );
    ktv->setText( COL_PLAN_START_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
    ktv->setText( COL_PLAN_START_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
-
-   dt.setTime_t( t->getEnd(Task::Plan) );
+   
+   dt.setTime_t( t->getEnd(0) );
    ktv->setText( COL_PLAN_END_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
    ktv->setText( COL_PLAN_END_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
 
@@ -211,7 +214,7 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
 
    if( childCnt > 0 )
    {
-       qDebug("---- ### expanded, childs: %d !", childCnt );
+       qDebug("---- ### collapsed, childs: %d !", childCnt );
        QListViewItem* child = it->firstChild();
 
        while( child )
@@ -267,7 +270,7 @@ void KTVTaskTable::slSelectionChanged( QListViewItem *it )
 
    int y = it->itemPos();
 
-   emit moveMarker( y- it->height() );
+   emit moveMarker( y- m_root->height() );
 
 }
 
@@ -306,13 +309,21 @@ void KTVTaskTable::slScrollTo( int, int y )
 
 int KTVTaskTable::headerHeight()
 {
-    int m = header()->height() + m_root->height()+2*itemMargin()-1;
+    int m = header()->height() + m_root->height(); // +2*itemMargin()-1;
     return( m );
 }
 
 
+int KTVTaskTable::rootItemHeight()
+{
+    if( m_root )
+	return m_root->height();
+
+    return 0;
+}
+
 void KTVTaskTable::clear()
 {
-    m_root = 0;
     QListView::clear();
+    m_root = 0;
 }

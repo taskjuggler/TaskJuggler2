@@ -127,8 +127,8 @@ void KTjviewPart::slReload()
 {
     slChangeStatusBar( i18n("Reverting file"));
 
-    delete m_project;
     m_gantt->clear();
+    delete m_project;
     openFile();
 
 }

@@ -24,6 +24,7 @@ public:
    KTVReport(Project* p, const QString& f, time_t s, time_t e);
    virtual ~KTVReport() { }
 
+    bool generate() { return true; };
 } ;
 
 #endif

@@ -91,8 +91,13 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
 
 void KTJGantt::clear()
 {
+    // removes all entries from the listview and sets the root to 0
     m_table->clear();
+
+    // 
     m_canvas->clear();
+    // todo header
+    // m_header
 }
 
 void KTJGantt::showProject( Project *p )

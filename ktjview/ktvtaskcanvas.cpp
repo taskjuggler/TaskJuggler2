@@ -54,14 +54,14 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, KTVHeader *h, 
    m_dbgMark = new QCanvasLine( this );
    m_dbgMark->setPoints( 1, 0, 15, 0 );
 
-   QBrush wBrush( QColor(222,222,222), Dense4Pattern);
-   m_canvasMarker->setBrush( wBrush ); // QBrush(gray, Dense4Pattern ));
+   QColor markerCol = m_taskTable->colorGroup().highlight();
+   m_canvasMarker->setBrush( m_taskTable->colorGroup().brush( QColorGroup::Highlight ));
 
    m_canvasMarker->setZ(-0.1);
    setDoubleBuffering( true ); // false );
-   resize( 400, 300);
+   // resize( 400, 300);
 
-
+   m_tasks.setAutoDelete(true);
 
    /* TODO: make visible again and synchronise with table in the same way the
     * table synchronises with this one.
@@ -173,6 +173,9 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
 	 (*it)->moveBy(0, dy);
       }
    }
+
+   if( m_canvasMarker && m_canvasMarker->y() >= y )
+       m_canvasMarker->moveBy( 0, dy );
 }
 
 
@@ -191,6 +194,11 @@ KTVCanvasItemBase* KTVTaskCanvas::tableItemToCanvasItem( const KTVTaskTableItem*
    return( taskToCanvasItem( t ));
 }
 
+void KTVTaskCanvas::slNewTask( Task *t, KTVTaskTableItem *it )
+{
+    m_tasks.insert( it, t );
+}
+
 
 void KTVTaskCanvas::slHideTask( KTVTaskTableItem *tabItem )
 {
@@ -204,9 +212,8 @@ void KTVTaskCanvas::slHideTask( KTVTaskTableItem *tabItem )
 void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 {
     if( !tabItem ) return;
-    int itHeight = m_taskTable->itemHeight();
-    int yPos = tabItem->itemPos()  /* returns y position in table */
-               - itHeight;              /* one line back */
+    int yPos = tabItem->itemPos()-
+	m_taskTable->rootItemHeight();  /* returns y position in table */
 
 
     Task *t = static_cast<Task*>(m_tasks[ (void*) tabItem ]);
@@ -225,7 +232,8 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
 
       /* paint */
       KTVCanvasItemBase *cItem = taskToCanvasItem( t );
-      int x = m_header->timeToX( t->getStart(Task::Plan) );
+      int x = m_header->timeToX( t->getStart(0)); // Task::Plan) );
+
       if( ! cItem )
       {
           // qDebug(" ***** creating new !" );
@@ -253,10 +261,11 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
       }
 
       /* set the items with */
-      int w = m_header->timeToX( t->getEnd(Task::Plan) )-x;
+      int w = m_header->timeToX( t->getEnd(0 /* Task::Plan */ ) )-x;
       cItem->setSize( w, cItem->height() );
 
-      ypos += (cItem->height()/2);  /* center item */
+      int itHeight = m_taskTable->itemHeight();
+      ypos += (itHeight-cItem->height())/2;  /* center item */
 
       bool itemConnects = false; /* local flag if item connects to others with a line */
       itemConnects = !( t->isContainer() );
@@ -338,14 +347,14 @@ void KTVTaskCanvas::connectTasks( Task *fromTask, Task* actTask,
 void KTVTaskCanvas::slShowMarker( int y )
 {
    qDebug( "Showing marker at %d",y );
-   if( y > 0 && m_canvasMarker->y() != y )
+   if( y >= 0 && m_canvasMarker->y() != y )
    {
       qDebug( "Marker size is %dx%d", m_canvasMarker->width(), m_canvasMarker->height());
       /* move and show the thing */
       m_canvasMarker->move(1, y );
       m_canvasMarker->show();
    }
-   else if( y == 0 )
+   else if( y < 0 )
    {
       /* hide it */
       m_canvasMarker->hide();
@@ -392,9 +401,10 @@ KTVCanvasItemBase* KTVTaskCanvas::qCanvasItemToItemBase( QCanvasItem* qItem )
 void KTVTaskCanvas::clear()
 {
     qDebug("Clearing all!");
+    // QCanvas::clear();
     
-    m_canvasItems.clear();
-    m_canvasItemList.clear();
+    m_canvasItems.clear();  // removes the memory of the canvas items.
+    m_canvasItemList.clear(); // removes the pointer to the items
     m_tasks.clear();
     resize(0,0);
 }

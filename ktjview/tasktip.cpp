@@ -59,8 +59,8 @@ QString TaskTip::beautyTask( Task *t ) const
       QString h;
 
       ret = i18n( "Task <B>" ) + t->getName() + "</B><BR>";
-      ret += QString("<TABLE width=\"280\" cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(Task::Plan) ));
-      ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR>").arg(time2ISO(t->getEnd(Task::Plan) ));
+      ret += QString("<table width=\"280\" cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(0) /* Task::Plan */ ) );
+   ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR>").arg(time2ISO(t->getEnd( 0 /* Task::Plan */) ));
 
       for (QPtrListIterator<Allocation> tli( t->getAllocationIterator() );
            *tli != 0; ++tli)

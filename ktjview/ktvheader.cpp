@@ -207,24 +207,23 @@ void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int 
             p->setPen( blackPen );
             p->drawLine( dayX, topOffset(Month), dayX, topOffset(Week));
 
-            QString mStr = monthAndYear( trun - ONEDAY /* need _last_ month */ );
+	    QString mStr = monthAndYear( trun + ONEDAY /* need _last_ month */ );
             if( firstMon )
             {
+		QString prevStr = monthAndYear( trun - ONEDAY /* need _last_ month */ );
                 firstMon = false;
                 QFontMetrics fm( m_headerFont );
-                if( dayX-2 > fm.width(mStr))  // only if fitting in
+                if( dayX-2 > fm.width(prevStr))  // only if fitting in
                     p->drawText( 1, topOffset(Month)+1,
                                  dayX-2, topOffset(Week)-topOffset(Month)-2,
                                  Qt::AlignCenter,
-                                 mStr );
+                                 prevStr );
             }
-            else
-            {
-                p->drawText( dayX+1, topOffset(Month)+1,
-                             m_dayWidth*daysLeftInMonth(trun)-2, topOffset(Week)-topOffset(Month)-2,
-                             Qt::AlignCenter,
-                             mStr );
-            }
+
+	    p->drawText( dayX+1, topOffset(Month)+1,
+			 m_dayWidth*daysLeftInMonth(trun)-2, topOffset(Week)-topOffset(Month)-2,
+			 Qt::AlignCenter,
+			 mStr );
         }
 
         trun = sameTimeNextDay(trun);

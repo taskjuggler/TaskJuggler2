@@ -60,7 +60,7 @@ void KTVTaskCanvasView::showProject( Project *p )
 
    /* resize Contents */
    int w = m_header->overallWidth();
-   int h = m_table->itemHeight() * p->taskCount();
+   int h = m_table->itemHeight() * (p->taskCount());
    qDebug("Resizing canvas to %dx%d", w, h );
    m_canvas->resize( w, h );
 }

@@ -49,6 +49,7 @@ public:
     void setItemHeight(int h);
     void setCanvasView( KTVTaskCanvasView* );
     int itemHeight(){ return m_itemHeight; };
+    
     /**
      * @returns the height of the header of the canvas view. Since
      * it is equal to the height of the header of this table plus the
@@ -56,6 +57,12 @@ public:
      */
     int headerHeight();
 
+    /**
+     * @returns the height of the root item, which can (or is always?)
+     * different from the height of the other items
+     */
+    int rootItemHeight();
+    
 public slots:
     void resizeContents( int, int );
     void clear();
