@@ -62,11 +62,11 @@ task testProject "testProject for xml2gantt" {
     }
 
     task docuIN "make input for Documentation-Team" {
-        task dev_21 "2te mal dev_21" {
+        task dev_21 "2te with name dev_21" {
             length 14d
             ${__worker}
         }
-        task done "mailestone" {
+        task done "doing" {
             length 3d
             allocate worker_3
             depends !dev_21

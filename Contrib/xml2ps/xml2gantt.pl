@@ -303,7 +303,7 @@ sub _draw_depends {
     }
 }
 
-#-- holt die endekoordinaten von einem task anhand des Index
+#-- holt die ende-koordinaten von einem task anhand der Id
 sub __get_start_cood {
     my $id = shift;
     my ($x, $y);
