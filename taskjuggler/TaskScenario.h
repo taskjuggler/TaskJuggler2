@@ -14,6 +14,9 @@
 #define _TaskScenario_h_
 
 #include "ResourceList.h"
+#include "taskjuggler.h"
+
+class Task;
 
 class TaskScenario
 {
@@ -23,7 +26,15 @@ public:
 	TaskScenario();
 	~TaskScenario() { }
 	
+	void calcCompletionDegree(time_t now);
+
 private:
+	/// Pointer to the corresponding task.
+	Task* task;
+
+	/// Index of the scenario
+	int index;
+	
 	/// Time when the task starts 
 	time_t start;
 
@@ -64,9 +75,15 @@ private:
 	/// Amount that is credited to the account at the end date.
 	double endCredit;
 
-	/// Percentage of completion of the task
+	/// User specified percentage of completion of the task
 	int complete;
 
+	/// Calculated completion degree
+	double completionDegree;
+
+	/// Status that the task is in (according to 'now' date)
+	TaskStatus status;
+	
 	/// TRUE if the task has been completely scheduled.
 	bool scheduled;
 } ;

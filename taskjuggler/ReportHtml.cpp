@@ -448,6 +448,12 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 						"right");
 		else if (*it == KW("flags"))
 			flagList(t, r);
+		else if (*it == KW("completed"))
+			textOneRow(QString("%1%")
+					   .arg((int) t->getCompletionDegree(Task::Plan)),
+					   r != 0, "right");
+		else if (*it == KW("status"))
+			generateTaskStatus(t->getStatus(Task::Plan), r != 0);
 		else if (*it == KW("daily"))
 			dailyTaskPlan(t, r);
 		else if (*it == KW("weekly"))
@@ -517,7 +523,13 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 								  t->getCredits(Task::Actual,
 												Interval(start, end), r)),
 				r != 0, "right");
-		if (*it == KW("daily"))
+		else if (*it == KW("completed"))
+			textOneRow(QString("%1%")
+					   .arg((int) t->getCompletionDegree(Task::Actual)),
+					   r != 0, "right");
+		else if (*it == KW("status"))
+			generateTaskStatus(t->getStatus(Task::Actual), r != 0);
+		else if (*it == KW("daily"))
 			dailyTaskActual(t, r);
 		else if (*it == KW("weekly"))
 			weeklyTaskActual(t, r);
@@ -615,6 +627,10 @@ ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 			emptyPlan(t != 0);
 		else if (*it == KW("flags"))
 			flagList(r, t);
+		else if (*it == KW("completed"))
+			emptyPlan(t != 0);
+		else if (*it == KW("status"))
+			emptyPlan(t != 0);
 		else if (*it == KW("daily"))
 			dailyResourcePlan(r, t);
 		else if (*it == KW("weekly"))
@@ -802,6 +818,10 @@ ReportHtml::generateTableHeader()
 			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Effort</td>";
 		else if (*it == KW("flags"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Flags</td>";
+		else if (*it == KW("completed"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">Completed</td>";
+		else if (*it == KW("status"))
+			s << "<td class=\"headerbig\" rowspan=\"2\">Status</td>";
 		else if (*it == KW("rate"))
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">Rate";
@@ -1679,6 +1699,37 @@ ReportHtml::flagList(CoreAttributes* c1, CoreAttributes* c2)
 	if (flagStr.isEmpty())
 		flagStr = "&nbsp";
 	textTwoRows(flagStr, c2 != 0, "left");
+}
+
+void
+ReportHtml::generateTaskStatus(TaskStatus status, bool light)
+{
+	QString text;
+	switch (status)
+	{
+	case NotStarted:
+		text = "Not yet started";
+		break;
+	case InProgressLate:
+		text = "Behind schedule";
+		break;
+	case InProgress:
+		text = "Work in progress";
+		break;
+	case OnTime:
+		text = "On schedule";
+		break;
+	case InProgressEarly:
+		text = "Ahead of schedule";
+		break;
+	case Finished:
+		text = "Finished";
+		break;
+	default:
+		text = "Unknown status";
+		break;
+	}
+	textOneRow(text, light, "center");
 }
 
 QString

@@ -24,6 +24,8 @@
 #include <qdom.h>
 #include <time.h>
 
+#include "taskjuggler.h"
+#include "debug.h"
 #include "TaskScenario.h"
 #include "ResourceList.h"
 #include "Utility.h"
@@ -47,14 +49,19 @@ class QDomDocument;
 class Task;
 class Allocation;
 
+/**
+ * @short The class stores a list of tasks.
+ * @see Task 
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class TaskList : public virtual CoreAttributesList
 {
 public:
 	TaskList()
    	{
 	   	sorting[0] = CoreAttributesList::TreeMode;
-		sorting[1] = CoreAttributesList::PlanStartUp;
-		sorting[2] = CoreAttributesList::PlanEndUp;
+		sorting[1] = CoreAttributesList::StartUp;
+		sorting[2] = CoreAttributesList::EndUp;
 	}
 	virtual ~TaskList() { }
 
@@ -65,8 +72,7 @@ public:
 
 	Task* getTask(const QString& id);
 
-	static bool isSupportedSortingCriteria
-		(CoreAttributesList::SortCriteria sc);
+	static bool isSupportedSortingCriteria(int sc);
 	
 	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
 
@@ -76,7 +82,15 @@ protected:
 
 typedef QPtrListIterator<TaskList> TaskListIterator;
 
-
+/**
+ * This class stores all task related information and provides methods to
+ * manipulte them. It provides fundamental functions like the scheduler.
+ *
+ * @short The class that holds all task related information.
+ * @see Resource 
+ * @see CoreAttributes
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Task : public CoreAttributes
 {
 	friend int TaskList::compareItemsLevel(Task*, Task*, int);
@@ -217,8 +231,14 @@ public:
 					  Resource* resource = 0, bool recursive = TRUE);
 
 	bool isActive(int sc, const Interval& period) const;
+	TaskStatus getStatus(int sc) const { return scenarios[sc].status; }
 	bool isCompleted(int sc, time_t date) const;
-	double getCompleteAtTime(int sc, time_t) const;
+	void calcCompletionDegree(int sc); 
+	double getCompletionDegree(int sc) const;
+	TaskStatus getCompletionStatus(int sc) const
+	{
+		return scenarios[sc].status;
+	}
 
 	double getLoad(int sc, const Interval& period, Resource* resource = 0);
 
@@ -256,7 +276,6 @@ public:
 	void computeBuffers();
 	time_t nextSlot(time_t slotDuration);
 	void schedule(time_t& reqStart, time_t duration);
-//	bool isScheduled() const { return schedulingDone; }
 	void propagateStart(bool safeMode = TRUE);
 	void propagateEnd(bool safeMode = TRUE);
 	void propagateInitialValues();
@@ -280,9 +299,6 @@ public:
 
 	QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
-	static void setDebugLevel(int l) { debugLevel = l; }
-	static void setDebugMode(int m) { debugMode = m; }
-
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
    void toTodo( KCal::Todo *, KCal::CalendarLocal * );
@@ -291,9 +307,6 @@ public:
    void loadFromXML( QDomElement& parent, Project *project );
    
 private:
-	bool hasYoungerBrother();
-	bool hasOlderBrother();
-
 	bool loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 					   caller);
 	bool scheduleContainer(bool safeMode);
@@ -393,7 +406,7 @@ private:
 	/// Account where the credits of the task are credited to.
 	Account* account;
 
-	TaskScenario scenarios[2];
+	TaskScenario* scenarios;
 	
 	/* The following group of variables store values generated during a
 	 * scheduler run. They might be initialized by other values and/or
@@ -463,9 +476,6 @@ private:
 
 	/// A list of all the resources booked for this task.
 	QPtrList<Resource> bookedResources;
-
-	static int debugLevel;
-	static int debugMode;
 } ;
 
 #endif

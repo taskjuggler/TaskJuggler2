@@ -616,6 +616,13 @@ following values for colid are available:</para>
 
 <para><simplelist type=horiz columns=2>
 
+<member><computeroutput>completed</computeroutput></member>
+<member>The percentage the task has been completed already. This is
+either the value specified by <link
+linkend="task_complete">complete</link> or a value computed according
+to the current date (or the date specified by <link
+linkend="project_now">now</link>) and the length, duration or effort.</member>
+
 <member><computeroutput>costs</computeroutput></member>
 <member>The costs of the task</member>
 
@@ -724,6 +731,13 @@ by 1. </member>
 
 <member><computeroutput>startbufferend</computeroutput></member>
 <member>The end time of the start buffer</member>
+
+<member><computeroutput>status</computeroutput></member>
+<member>The current status of the task. This is derived from the
+current date or the date specified by <link
+linkend="project_now">now</link> and the degree of completion. The
+degree of completion is either computed or has been specified by <link
+linkend="task_complete">complete</link>.</member>
 
 <member><computeroutput>weekly</computeroutput></member>
 <member>A week-by-week calendar view of the tasks</member>
@@ -1005,6 +1019,18 @@ only be used as the first criteria.</member>
 
 <member><computeroutput>actualenddown</computeroutput></member>
 <member>Latest actual end date on top</member>
+
+<member><computeroutput>completedup</computeroutput></member>
+<member>Least completed task first</member>
+
+<member><computeroutput>completeddown</computeroutput></member>
+<member>Most completed task first</member>
+
+<member><computeroutput>statusup</computeroutput></member>
+<member>Earliest status first</member>
+
+<member><computeroutput>statusdown</computeroutput></member>
+<member>Latest status first</member>
 
 <member><computeroutput>priorityup</computeroutput></member>
 <member>Lowest priority on top</member>

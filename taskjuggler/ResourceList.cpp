@@ -18,9 +18,6 @@
 #include "Project.h"
 #include "kotrus.h"
 
-int Resource::debugLevel = 0;
-int Resource::debugMode = -1;
-
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
  * division. We therefor use a buffer that stores the index of the
@@ -640,7 +637,7 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 }
 
 bool
-ResourceList::isSupportedSortingCriteria(CoreAttributesList::SortCriteria sc)
+ResourceList::isSupportedSortingCriteria(int sc)
 {
 	switch (sc)
 	{

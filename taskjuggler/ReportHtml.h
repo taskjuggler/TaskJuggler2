@@ -24,10 +24,15 @@
 
 #include "Report.h"
 #include "MacroTable.h"
+#include "taskjuggler.h"
 
 class Project;
 class ExpressionTree;
 
+/**
+ * @short Stores all information about an HTML report.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class ReportHtml : public Report
 {
 public:
@@ -91,6 +96,8 @@ public:
 	void generateSchedule(int sc, Resource* r, Task* t);
 
 	void flagList(CoreAttributes* c1, CoreAttributes* c2);
+
+	void generateTaskStatus(TaskStatus status, bool light);
 
 	void setBarLabels(BarLabelText blt) { barLabels = blt; }
 

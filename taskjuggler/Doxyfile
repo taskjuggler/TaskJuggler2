@@ -948,3 +948,19 @@ BIN_ABSPATH            =
 # the documentation for these projects as well.
 
 EXT_DOC_PATHS          = 
+PROJECT_NAME           = "taskjuggler Library"
+INPUT                  = .
+IMAGE_PATH             = ../docs/api
+OUTPUT_DIRECTORY       = ../apidocs
+HTML_OUTPUT            = taskjuggler/html
+LATEX_OUTPUT           = taskjuggler/latex
+RTF_OUTPUT             = taskjuggler/rtf
+MAN_OUTPUT             = taskjuggler/man
+GENERATE_HTML          = yes
+GENERATE_MAN          = yes
+GENERATE_LATEX          = yes
+TAGFILES = \
+=/usr/share/doc/packages/qt3/html
+GENERATE_TAGFILE       = ../apidocs/taskjuggler/taskjuggler.tag
+IGNORE_PREFIX          = K
+HAVE_DOT = NO

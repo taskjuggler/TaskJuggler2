@@ -18,6 +18,10 @@
 
 class Account;
 
+/**
+ * @short Stores all information about an HTML account report.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class HTMLAccountReport : public ReportHtml
 {
 public:

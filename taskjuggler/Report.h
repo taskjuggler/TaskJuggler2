@@ -36,6 +36,10 @@ class ExpressionTree;
 
 #include "CoreAttributes.h"
 
+/**
+ * @short The base class for all report generating classes.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Report
 {
 public:
@@ -81,9 +85,9 @@ public:
 
 	void setRollUpAccount(ExpressionTree* et);
 
-	bool setTaskSorting(CoreAttributesList::SortCriteria sc, int level);
-	bool setResourceSorting(CoreAttributesList::SortCriteria sc, int level);
-	bool setAccountSorting(CoreAttributesList::SortCriteria sc, int level);
+	bool setTaskSorting(int sc, int level);
+	bool setResourceSorting(int sc, int level);
+	bool setAccountSorting(int sc, int level);
 
 	void setTaskRoot(const QString& root) { taskRoot = root; }
 	const QString& getTaskRoot() const { return taskRoot; }
@@ -137,12 +141,9 @@ protected:
 	QString headline;
 	QString caption;
 
-	CoreAttributesList::SortCriteria
-		taskSortCriteria[CoreAttributesList::maxSortingLevel];
-	CoreAttributesList::SortCriteria
-		resourceSortCriteria[CoreAttributesList::maxSortingLevel];
-	CoreAttributesList::SortCriteria
-		accountSortCriteria[CoreAttributesList::maxSortingLevel];
+	int taskSortCriteria[CoreAttributesList::maxSortingLevel];
+	int resourceSortCriteria[CoreAttributesList::maxSortingLevel];
+	int accountSortCriteria[CoreAttributesList::maxSortingLevel];
 
 	QFile f;
 	QTextStream s;

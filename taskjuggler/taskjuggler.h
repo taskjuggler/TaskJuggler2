@@ -10,5 +10,16 @@
  * $Id$
  */
 
+#ifndef _taskjuggler_h_
+#define _taskjuggler_h_
+
 #define TJURL "http://www.suse.de/~freitag/taskjuggler"
+
+typedef enum TaskStatus 
+{ 
+	Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime, 
+	InProgressEarly, Finished
+};
+
+#endif
 

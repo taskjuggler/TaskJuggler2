@@ -17,6 +17,7 @@
 #include <qglobal.h>
 
 #include "taskjuggler.h"
+#include "debug.h"
 #include "Project.h"
 #include "ProjectFile.h"
 #include "kotrus.h"
@@ -113,9 +114,8 @@ int main(int argc, char *argv[])
 	if (terminateProgram)
 		exit(1);
 
-	Project p;
-	p.setDebugLevel(debugLevel);
-	p.setDebugMode(debugMode);
+	DebugCtrl.setDebugLevel(debugLevel);	
+	DebugCtrl.setDebugMode(debugMode);
 
 	bool parseErrors = FALSE;
 
@@ -124,11 +124,10 @@ int main(int argc, char *argv[])
 		qFatal("main(): getcwd() failed");
 	if (debugLevel >= 1)
 		qWarning("Reading input files...");
+	Project p;
 	for ( ; i < argc; i++)
 	{
 		ProjectFile* pf = new ProjectFile(&p);
-		pf->setDebugLevel(debugLevel);
-		pf->setDebugMode(debugMode);
 		if (!pf->open(a.argv()[i], QString(cwd) + "/", ""))
 			return (-1);
 		parseErrors = !pf->parse();
@@ -137,12 +136,14 @@ int main(int argc, char *argv[])
 
 	p.readKotrus();
 
-	bool schedulingErrors = !p.pass2(checkOnlySyntax);
+	bool logicalErrors = !p.pass2();
+	bool schedulingErrors = FALSE;
 
 	if (!checkOnlySyntax)
 	{
+		schedulingErrors = !p.scheduleAllScenarios();
 		if (updateKotrusDB)
-			if (parseErrors || schedulingErrors)
+			if (parseErrors || logicalErrors || schedulingErrors)
 				qWarning("Due to errors the Kotrus DB will NOT be "
 						 "updated.");
 			else
@@ -151,5 +152,5 @@ int main(int argc, char *argv[])
 		p.generateReports();
 	}
 
-	return (parseErrors || schedulingErrors ? -1 : 0);
+	return (parseErrors || logicalErrors || schedulingErrors ? -1 : 0);
 }

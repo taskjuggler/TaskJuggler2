@@ -53,7 +53,7 @@ Account::getBalance(int /*sc*/, time_t /* date */)
 }
 
 bool
-AccountList::isSupportedSortingCriteria(CoreAttributesList::SortCriteria sc)
+AccountList::isSupportedSortingCriteria(int sc)
 {
 	switch (sc)
 	{

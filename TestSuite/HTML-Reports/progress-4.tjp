@@ -1,0 +1,86 @@
+project prj "htmltaskreport test" "1.0" 2003-01-01-0:00-GMT 2003-04-01-00:00-GMT {
+	timezone "GMT"
+  timeformat "%Y-%m-%d %H:%M:%S %Z"	
+	now 2003-01-15
+}
+
+resource tux1 "Tux 1" {
+	rate 300.0
+	kotrusid "tux1"
+}
+
+resource tux2 "Tux 2" {
+	rate 500.0
+	kotrusid "tux der 2."
+}
+
+resource tux3 "Tux 3" {
+	rate 400.0
+}
+
+task t0 "Task 0" {
+	start 2003-01-01
+	task s1 "Sub 1" {
+		length 2d
+	}
+}
+
+task t1 "Task 1" {
+	start 2003-01-01
+	task t2 "Task 2" {
+		effort 30d
+		allocate tux1
+		complete 10
+	}
+	task t3 "Task 3" {
+		length 30d
+		complete 10
+	}
+	task t4 "Task 4" {
+		duration 30d
+		complete 10
+	}
+}
+
+task t2 "Task 2" {
+	start 2003-01-01
+	task t2 "Task 2" {
+		effort 30d
+		allocate tux2
+		complete 90
+	}
+	task t3 "Task 3" {
+		length 30d
+		complete 90
+	}
+	task t4 "Task 4" {
+		duration 30d
+		complete 90
+	}
+}
+
+task t3 "Task 3" {
+	start 2003-01-01
+	task t2 "Task 2" {
+		effort 30d
+		allocate tux3
+	}
+	task t3 "Task 3" {
+		length 30d
+	}
+	task t4 "Task 4" {
+		duration 30d
+	}
+}
+
+task t5 "Task 5" {
+	start 2003-01-16
+	task t6 "Task 6" {
+		length 2d
+	}
+}
+
+htmltaskreport "." {
+	columns index, name, start, end, completed, status
+	sorttasks plancompletedup 
+}

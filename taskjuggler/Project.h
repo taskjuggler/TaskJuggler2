@@ -36,39 +36,101 @@
 #endif
 class Kotrus;
 
+/**
+ * The Project class is the root of the data tree of the application. In
+ * principle an application could handle multiple projects, but this has never
+ * been tested.
+ *
+ * @short The root class of all project related infromation.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Project
 {
 public:
 	Project();
 	~Project();
 
-	bool pass2(bool checkOnlySyntax);
+	/**
+	 * Generate cross references between all data structures and run a
+	 * consistency check. This function must be called after the project data
+	 * tree has been contructed. 
+	 * @return Only if all tests were successful TRUE is returned.
+	 */
+	bool pass2();
 
+	/**
+	 * Schedule all tasks for all scenarios. @return In case any errors were
+	 * detected FALSE is returned.
+	 */
+	bool scheduleAllScenarios();
+	
+	/**
+	 * Returns the number of supported scenarios.
+	 */
 	int getMaxScenarios() { return scenarioNames.count(); }
+	/**
+	 * Returns the name of a scenario.
+	 * @param sc Specifies the scenario.
+	 */
 	const QString& getScenarioName(int sc);
 
-	void overlayScenario(int sc);
-	void prepareScenario(int sc);
-	void finishScenario(int sc);
-	
-	bool schedule(const QString& scenario);
-
+	/**
+	 * Set the name of the project. The project name is maily used for the
+	 * reports.
+	 */
 	void setName(const QString& n) { name = n; }
+	/**
+	 * Returns the name of the project.
+	 */
 	const QString& getName() const { return name; }
 
+	/**
+	 * Set the version number of the project. This version is maily used for
+	 * reports.
+	 */
 	void setVersion(const QString& v) { version = v; }
+	/**
+	 * Returns the version number of the project.
+	 */
 	const QString& getVersion() const { return version; }
 
+	/**
+	 * Set the copyright information. This is a default text used for all
+	 * reports.
+	 */
 	void setCopyright(const QString& c) { copyright = c; }
+	/**
+	 * Returns the copyright information of the project.
+	 */
 	const QString& getCopyright() const { return copyright; }
-
+	
+	/**
+	 * Set the default priority for all top-level tasks. Normally this value
+	 * is 500.
+	 */
 	void setPriority(int p) { priority = p; }
+	/**
+	 * Returns the default priority for all top-level tasks.
+	 */
 	int getPriority() const { return priority; }
 
+	/**
+	 * Set the start time of the project.
+	 */
 	void setStart(time_t s) { start = s; }
+	/**
+	 * Get the start time of the project.
+	 */
 	time_t getStart() const { return start; }
 
+	/**
+	 * Set the end time of the project. The specified second is still
+	 * considered as within the project time frame.
+	 */
 	void setEnd(time_t e) { end = e; }
+	/**
+	 * Get the end time of the project.
+	 */
 	time_t getEnd() const { return end; }
 
 	void setNow(time_t n) { now = n; }
@@ -114,6 +176,7 @@ public:
 		 * day is not registered as a vacation day then it is a workday. */
 		return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || isVacation(d));
 	}
+	int calcWorkingDays(const Interval& iv);
 	
 	Interval* getVacationListFirst()
 	{
@@ -265,20 +328,13 @@ public:
 	void generateReports();
 	bool needsActualDataForReports();
 
-	static void setDebugLevel(int l)
-   	{
-	   	debugLevel = l;
-		Task::setDebugLevel(l);
-		Resource::setDebugLevel(l);
-	}
-	static void setDebugMode(int m)
-	{
-		debugMode = m;
-		Task::setDebugMode(m);
-		Resource::setDebugMode(m);
-	}
-
 private:
+	void overlayScenario(int sc);
+	void prepareScenario(int sc);
+	void finishScenario(int sc);
+	
+	bool schedule(const QString& scenario);
+
 	bool checkSchedule(const QString& scenario);
 
 	/// The start date of the project
@@ -352,6 +408,7 @@ private:
 	QStringList projectIDs;
 
 	QStringList scenarioNames;
+	bool hasExtraValues;	// TODO: Fix this for multiple scenarios
 
 	ShiftList shiftList;
 	TaskList taskList;
@@ -373,9 +430,6 @@ private:
 	QList<HTMLAccountReport> htmlAccountReports;
 	QList<HTMLWeeklyCalendar> htmlWeeklyCalendars;
 	QList<ExportReport> exportReports;
-
-	static int debugLevel;
-	static int debugMode;
 } ;
 
 #endif

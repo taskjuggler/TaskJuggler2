@@ -10,8 +10,41 @@
  * $Id$
  */
 
-#define DEBUGPF(l) ((debugMode & 1) && debugLevel >= l)	// Project File Reader
-#define DEBUGPS(l) ((debugMode & 2) && debugLevel >= l)	// Project Scheduler
-#define DEBUGTS(l) ((debugMode & 4) && debugLevel >= l)	// Task Scheduler
-#define DEBUGRS(l) ((debugMode & 8) && debugLevel >= l)	// Resource Scheduler
+#ifndef _debug_h_
+#define _debug_h_
+
+#define DEBUGMODE DebugCtrl.getDebugMode()
+#define DEBUGLEVEL DebugCtrl.getDebugLevel()
+
+#define DEBUGPF(l) ((DEBUGMODE & 1) && DEBUGLEVEL >= l)	// Project File Reader
+#define DEBUGPS(l) ((DEBUGMODE & 2) && DEBUGLEVEL >= l)	// Project Scheduler
+#define DEBUGTS(l) ((DEBUGMODE & 4) && DEBUGLEVEL >= l)	// Task Scheduler
+#define DEBUGRS(l) ((DEBUGMODE & 8) && DEBUGLEVEL >= l)	// Resource Scheduler
+
+class DebugController
+{
+public:
+	DebugController() : debugLevel(0), debugMode(-1) { }
+	~DebugController() { }
+	
+	void setDebugLevel(int l)
+   	{
+	   	debugLevel = l;
+	}
+	int getDebugLevel() const { return debugLevel; }
+	
+	void setDebugMode(int m)
+	{
+		debugMode = m;
+	}
+	int getDebugMode() const { return debugMode; }
+
+protected:
+	int debugLevel;
+	int debugMode;
+} ;
+
+extern DebugController DebugCtrl;
+
+#endif
 

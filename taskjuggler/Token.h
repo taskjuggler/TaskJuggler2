@@ -15,6 +15,8 @@
 
 #include <stdio.h>
 
+#include <qstring.h>
+
 #define EOFile 0xFFFF
 #define EOMacro 0xFFFE
 

@@ -31,8 +31,8 @@ HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
 	hideResource = new ExpressionTree(new Operation(0));
 
 	taskSortCriteria[0] = CoreAttributesList::TreeMode;
-	taskSortCriteria[1] = CoreAttributesList::PlanStartUp;
-	taskSortCriteria[2] = CoreAttributesList::PlanEndUp;
+	taskSortCriteria[1] = CoreAttributesList::StartUp;
+	taskSortCriteria[2] = CoreAttributesList::EndUp;
 	resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 }
 

@@ -20,6 +20,11 @@
 class Project;
 class CoreAttributes;
 
+/**
+ * @short The class stores a list of CoreAttributes.
+ * @see CoreAttributes 
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class CoreAttributesList : public QPtrList<CoreAttributes>
 {
 public:
@@ -31,27 +36,25 @@ public:
 	virtual ~CoreAttributesList();
 
 	enum SortCriteria {
-	   	SequenceUp, SequenceDown,
+	   	SequenceUp = 0, SequenceDown,
 		TreeMode, NameUp, NameDown, FullNameUp,
 		FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
-		PlanStartUp, PlanStartDown, PlanEndUp, PlanEndDown,
-		ActualStartUp, ActualStartDown,
-		ActualEndUp, ActualEndDown,
+		StatusUp, StatusDown, CompletedUp, CompletedDown,
 		PrioUp, PrioDown,
 		ResponsibleUp, ResponsibleDown,
 		MinEffortUp, MinEffortDown,
 		MaxEffortUp, MaxEffortDown,
 		RateUp, RateDown,
-		KotrusIdUp, KotrusIdDown
+		KotrusIdUp, KotrusIdDown,
+		StartUp, StartDown, EndUp, EndDown
 	};
 
 	static const int maxSortingLevel = 3;
-	void setSorting(SortCriteria s, int level);
+	void setSorting(int s, int level);
 	void createIndex(bool initial = FALSE);
 	uint maxDepth();
 
-	static bool isSupportedSortingCriteria
-		(CoreAttributesList::SortCriteria sc);
+	static bool isSupportedSortingCriteria(int sc);
 
 	virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 								  int level);
@@ -59,9 +62,13 @@ public:
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 
-	SortCriteria sorting[maxSortingLevel];
+	int sorting[maxSortingLevel];
 } ;
 
+/**
+ * @short This class is the base class for all attribute classes.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class CoreAttributes
 {
 public:

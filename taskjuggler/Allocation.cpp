@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include "qdom.h"
+
 #include "ResourceList.h"
 #include "Allocation.h"
 #include "ReportXML.h"

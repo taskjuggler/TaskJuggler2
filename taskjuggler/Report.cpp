@@ -90,12 +90,12 @@ Report::open()
 }
 
 bool 
-Report::setTaskSorting(CoreAttributesList::SortCriteria sc, int level)
+Report::setTaskSorting(int sc, int level)
 {
 	if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
 	{
 		if ((sc == CoreAttributesList::TreeMode && level > 0) ||
-			!TaskList::isSupportedSortingCriteria(sc))
+			!TaskList::isSupportedSortingCriteria(sc & 0xFFFF))
 			return FALSE;
 		taskSortCriteria[level] = sc;
 	}
@@ -105,12 +105,12 @@ Report::setTaskSorting(CoreAttributesList::SortCriteria sc, int level)
 }
 
 bool 
-Report::setResourceSorting(CoreAttributesList::SortCriteria sc, int level)
+Report::setResourceSorting(int sc, int level)
 {
 	if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
 	{
 		if ((sc == CoreAttributesList::TreeMode && level > 0) ||
-			!ResourceList::isSupportedSortingCriteria(sc))
+			!ResourceList::isSupportedSortingCriteria(sc & 0xFFFF))
 			return FALSE;
 		resourceSortCriteria[level] = sc;
 	}
@@ -120,12 +120,12 @@ Report::setResourceSorting(CoreAttributesList::SortCriteria sc, int level)
 }
 
 bool 
-Report::setAccountSorting(CoreAttributesList::SortCriteria sc, int level)
+Report::setAccountSorting(int sc, int level)
 {
 	if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
 	{
 		if ((sc == CoreAttributesList::TreeMode && level > 0) ||
-			!AccountList::isSupportedSortingCriteria(sc))
+			!AccountList::isSupportedSortingCriteria(sc & 0xFFFF))
 			return FALSE;
 		accountSortCriteria[level] = sc;
 	}

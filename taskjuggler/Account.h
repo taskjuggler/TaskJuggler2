@@ -23,6 +23,10 @@ class Task;
 class TransactionList;
 class Interval;
 
+/**
+ * @short Stores all transaction related infromation.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Transaction
 {
 	friend class TransactionList;
@@ -45,6 +49,10 @@ private:
 	QString description;
 } ;
 
+/**
+ * @short A list of transactions.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class TransactionList : public QList<Transaction>
 {
 public:
@@ -56,6 +64,10 @@ protected:
 
 class Account;
 
+/**
+ * @short A list of accounts.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class AccountList : public CoreAttributesList
 {
 public:
@@ -72,8 +84,7 @@ public:
 	inline void addAccount(Account* a);
 	inline Account* getAccount(const QString& id);
 
-	static bool isSupportedSortingCriteria
-		(CoreAttributesList::SortCriteria sc);
+	static bool isSupportedSortingCriteria(int sc);
 	
 	virtual int compareItemsLevel(Account* a1, Account* a2, int level);
 
@@ -81,6 +92,10 @@ protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
+/**
+ * @short Stores all account related information.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Account : public CoreAttributes
 {
 public:

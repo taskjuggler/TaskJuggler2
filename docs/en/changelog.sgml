@@ -346,6 +346,11 @@ start/end messages after the scheduler run.</para></listitem>
 <computeroutput>schedule</computeroutput> was used with
 <computeroutput>showactual</computeroutput> fixed.</para></listitem>
 
+<listitem><para>HTML reports can now show a <link
+linkend="htmltaskreport_columns">column</link> with the completion
+degree and the completion status. The rows can also be sorted by these
+new columns.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -1,8 +1,8 @@
 macro AllColumns [	
-  columns costs, depends, duration, effort, end, endbuffer,
+  columns completed, costs, depends, duration, effort, end, endbuffer,
 	endbufferstart, flags, follows, id, index, kotrusid, maxeffort, maxend,
 	maxstart, mineffort, minend, minstart, name, no, note, priority,
 	projectid, rate, resources, responsibilities, responsible, schedule,
-	seqno, start, startbuffer, startbufferend, daily, weekly, monthly
+	seqno, start, startbuffer, startbufferend, status, daily, weekly, monthly
 ]
 

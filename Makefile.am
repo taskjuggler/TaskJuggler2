@@ -30,3 +30,6 @@ dist-hook:
 	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
 
 SUBDIRS=$(COMPILE_FIRST) $(TOPSUBDIRS)
+
+include admin/Doxyfile.am
+

@@ -88,9 +88,6 @@
 #include "Project.h"
 #include "Allocation.h"
 
-int Task::debugLevel = 0;
-int Task::debugMode = -1;
-
 Task*
 TaskList::getTask(const QString& id)
 {
@@ -116,6 +113,13 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	doneLength = 0.0;
 	schedulingDone = FALSE;
 	responsible = 0;
+
+	scenarios = new TaskScenario[proj->getMaxScenarios()];
+	for (int i = 0; i < proj->getMaxScenarios(); i++)
+	{
+		scenarios[i].task = this;
+		scenarios[i].index = i;
+	}
 
 	scenarios[0].startBuffer = 0.0;
 	scenarios[0].endBuffer = 0.0;
@@ -746,7 +750,7 @@ Task::isCompleted(int sc, time_t date) const
 {
 	if (scenarios[sc].complete != -1)
 	{
-		// some completion degree was specified.
+		// some completion degree has been specified.
 		return ((scenarios[sc].complete / 100.0) *
 				(scenarios[sc].end - scenarios[sc].start) 
 				+ scenarios[sc].start) > date;
@@ -807,7 +811,7 @@ Task::getLoad(int sc, const Interval& period, Resource* resource)
 {
 	double load = 0.0;
 
-	if (subFirst())
+	if (!sub.isEmpty())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
 			load += t->getLoad(sc, period, resource);
@@ -974,38 +978,6 @@ Task::implicitXRef()
 		}
 }
 
-bool
-Task::hasYoungerBrother()
-{
-	bool previousHasSameParent = FALSE;
-	int previousIndex = previous.at();
-	for (Task* p = previous.first(); 
-		 p && !previousHasSameParent;
-		 p = previous.next())
-	{
-		if (parent == p->parent)
-			previousHasSameParent = TRUE;
-	}
-	previous.at(previousIndex);
-	return previousHasSameParent;
-}
-
-bool
-Task::hasOlderBrother()
-{
-	bool followerHasSameParent = FALSE;
-	int followersIndex = followers.at();
-	for (Task* f = followers.first(); 
-		 f && !followerHasSameParent;
-		 f = followers.next())
-	{
-		if (parent == f->parent)
-			followerHasSameParent = TRUE;
-	}
-
-	followers.at(followersIndex);
-	return followerHasSameParent;
-}
 bool
 Task::loopDetector()
 {
@@ -1260,12 +1232,13 @@ Task::preScheduleOk()
 {
 	for (int sc = 0; sc < project->getMaxScenarios(); sc++)
 	{
-		if (scenarios[sc].effort > 0 && allocations.count() == 0)
+		if (scenarios[sc].effort > 0.0 && allocations.count() == 0)
 		{
 			fatalError(QString
 					   ("No allocations specified for effort based task %1 "
 						"in %2 scenario")
 					   .arg(1).arg(project->getScenarioName(sc)));
+			qDebug(QString().sprintf("%f\n", scenarios[sc].effort));
 			return FALSE;
 		}
 
@@ -1754,11 +1727,10 @@ Task::finishScenario(int sc)
 {
 	scenarios[sc].start = start;
 	scenarios[sc].end = end;
-	scenarios[sc].duration = doneDuration;
-	scenarios[sc].length = doneLength;
-	scenarios[sc].effort = doneEffort;
 	scenarios[sc].bookedResources = bookedResources;
 	scenarios[sc].scheduled = schedulingDone;
+
+	calcCompletionDegree(sc);
 }
 
 void
@@ -1843,20 +1815,19 @@ Task::computeBuffers()
 	}
 }
 
-double Task::getCompleteAtTime(int sc, time_t timeSpot) const
+void
+Task::calcCompletionDegree(int sc)
 {
-   if( scenarios[sc].complete != -1 ) return( scenarios[sc].complete );
+	scenarios[sc].calcCompletionDegree(project->getNow());
+}
 
-   time_t start = getStart(sc);
-   time_t end = getEnd(sc);
+double
+Task::getCompletionDegree(int sc) const
+{
+	if(scenarios[sc].complete != -1)
+		return(scenarios[sc].complete);
 
-   if( timeSpot > end ) return 100.0;
-   if( timeSpot < start ) return 0.0;
-   
-   time_t interval = end - start;
-   time_t done = timeSpot - start;
-
-   return 100./interval*done;
+	return scenarios[sc].completionDegree;
 }
 
 
@@ -1877,7 +1848,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( ReportXML::createXMLElem( doc, "ProjectID", projectId ));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number(getPriority())));
 
-   double cmplt = getCompleteAtTime( Task::Plan, getProject()->getNow());
+   double cmplt = getCompletionDegree( Task::Plan);
    taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(cmplt, 'f', 1) ));
 
    QString tType = "Milestone";
@@ -2059,19 +2030,19 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 }
 
 bool
-TaskList::isSupportedSortingCriteria(CoreAttributesList::SortCriteria sc)
+TaskList::isSupportedSortingCriteria(int sc)
 {
-	switch (sc)
+	switch (sc & 0xFFFF)
 	{
 	case TreeMode:
-	case PlanStartUp:
-	case PlanStartDown:
-	case ActualStartUp:
-	case ActualStartDown:
-	case PlanEndUp:
-	case PlanEndDown:
-	case ActualEndUp:
-	case ActualEndDown:
+	case StartUp:
+	case StartDown:
+	case EndUp:
+	case EndDown:
+	case StatusUp:
+	case StatusDown:
+	case CompletedUp:
+	case CompletedDown:
 	case PrioUp:
 	case PrioDown:
 	case ResponsibleUp:
@@ -2088,7 +2059,8 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 	if (level < 0 || level >= maxSortingLevel)
 		return -1;
 
-	switch (sorting[level])
+	int sc = sorting[level] >> 16;
+	switch (sorting[level] & 0xFFFF)
 	{
 	case TreeMode:
 		if (level == 0)
@@ -2096,30 +2068,30 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 		else
 			return t1->getSequenceNo() == t2->getSequenceNo() ? 0 :
 				t1->getSequenceNo() < t2->getSequenceNo() ? -1 : 1;
-	case PlanStartUp:
-		return t1->scenarios[0].start == t2->scenarios[0].start ? 0 :
-			t1->scenarios[0].start < t2->scenarios[0].start ? -1 : 1;
-	case PlanStartDown:
-		return t1->scenarios[0].start == t2->scenarios[0].start ? 0 :
-			t1->scenarios[0].start > t2->scenarios[0].start ? -1 : 1;
-	case ActualStartUp:
-		return t1->scenarios[1].start == t2->scenarios[1].start ? 0 :
-			t1->scenarios[1].start < t2->scenarios[1].start ? -1 : 1;
-	case ActualStartDown:
-		return t1->scenarios[1].start == t2->scenarios[1].start ? 0 :
-			t1->scenarios[1].start > t2->scenarios[1].start ? -1 : 1;
-	case PlanEndUp:
-		return t1->scenarios[0].end == t2->scenarios[0].end ? 0 :
-			t1->scenarios[0].end < t2->scenarios[0].end ? -1 : 1;
-	case PlanEndDown:
-		return t1->scenarios[0].end == t2->scenarios[0].end ? 0 :
-			t1->scenarios[0].end > t2->scenarios[0].end ? -1 : 1;
-	case ActualEndUp:
-		return t1->scenarios[1].end == t2->scenarios[1].end ? 0 :
-			t1->scenarios[1].end < t2->scenarios[1].end ? -1 : 1;
-	case ActualEndDown:
-		return t1->scenarios[1].end == t2->scenarios[1].end ? 0 :
-			t1->scenarios[1].end > t2->scenarios[1].end ? -1 : 1;
+	case StartUp:
+		return t1->scenarios[sc].start == t2->scenarios[sc].start ? 0 :
+			t1->scenarios[sc].start < t2->scenarios[sc].start ? -1 : 1;
+	case StartDown:
+		return t1->scenarios[sc].start == t2->scenarios[sc].start ? 0 :
+			t1->scenarios[sc].start > t2->scenarios[sc].start ? -1 : 1;
+	case EndUp:
+		return t1->scenarios[sc].end == t2->scenarios[sc].end ? 0 :
+			t1->scenarios[sc].end < t2->scenarios[sc].end ? -1 : 1;
+	case EndDown:
+		return t1->scenarios[sc].end == t2->scenarios[sc].end ? 0 :
+			t1->scenarios[sc].end > t2->scenarios[sc].end ? -1 : 1;
+	case StatusUp:
+		return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
+			t1->scenarios[sc].status < t2->scenarios[sc].status ? -1 : 1;
+	case StatusDown:
+		return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
+			t1->scenarios[sc].status > t2->scenarios[sc].status ? -1 : 1;
+	case CompletedUp:
+		return t1->getCompletionDegree(sc) == t2->getCompletionDegree(sc) ? 0 :
+			t1->getCompletionDegree(sc) < t2->getCompletionDegree(sc) ? -1 : 1;
+	case CompletedDown:
+		return t1->getCompletionDegree(sc) == t2->getCompletionDegree(sc) ? 0 :
+			t1->getCompletionDegree(sc) > t2->getCompletionDegree(sc) ? -1 : 1;
 	case PrioUp:
 		if (t1->priority == t2->priority)
 			return 0;

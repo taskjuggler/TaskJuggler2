@@ -112,3 +112,5 @@ AM_INIT_AUTOMAKE(taskjuggler, 1.4+cvs)
 
 AC_OUTPUT(docs/en/taskjuggler.sgml)
 
+KDE_INIT_DOXYGEN([The TaskJuggler API Reference], [Version $VERSION])
+

@@ -21,6 +21,10 @@
 class Shift;
 class Project;
 
+/**
+ * @short Stores a list of shifts.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class ShiftList : public CoreAttributesList
 {
 public:
@@ -43,6 +47,10 @@ protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
+/**
+ * @short Stores all shift related information.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Shift : public CoreAttributes
 {
 public:
@@ -83,6 +91,10 @@ private:
 
 class ShiftSelection;
 
+/**
+ * @short Holds a list of shift selections.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class ShiftSelectionList : public QPtrList<ShiftSelection>
 {
 public:
@@ -99,6 +111,10 @@ private:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
 
+/**
+ * @short Stores shift selection related information.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class ShiftSelection
 {
 	friend int ShiftSelectionList::compareItems(QCollection::Item i1, 

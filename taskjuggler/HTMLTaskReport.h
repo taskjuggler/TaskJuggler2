@@ -18,6 +18,10 @@
 
 class Project;
 
+/**
+ * @short Stores all information about an HTML task report.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class HTMLTaskReport : public ReportHtml
 {
 public:

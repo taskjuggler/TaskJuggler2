@@ -1,0 +1,27 @@
+/**
+ * @mainpage The TaskJuggler API Reference
+ *
+ * This section contains the KDE online class reference for the current
+ * development version of KDE. You can also download (???&nbsp;MB)
+ * the complete API documentation.  Additionally, you can subscribe or
+ * read the mailing lists for any additions and/or modifications to the API.
+ *
+ * - <a href="taskjuggler/html/index.html"><b>TaskJuggler</b></a>
+ *   (<a href="kdecore/html/classes.html">classes</a>)\n
+ *   <i>Core KDE classes that are not related to the user interface.</i>
+ * - <a href="kutils/html/index.html"><b>kutils</b></a>
+ *   (<a href="kutils/html/classes.html">classes</a>)\n
+ *   <i>High-level utils, like search/replace support.</i>
+ *
+ * More information about the KDE architecture in form of tutorials, HOWTOs,
+ * and FAQs can be found at
+ * the <a href="http://developer.kde.org">KDE Developer's corner</a>.
+ */
+
+/**
+ * @page search Search the API documentation
+ *
+ * <br>Under construction.
+ *
+ */
+

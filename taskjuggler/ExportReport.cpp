@@ -52,8 +52,8 @@ ExportReport::ExportReport(Project* p, const QString& f,
 	showActual = FALSE;
 
 	taskSortCriteria[0] = CoreAttributesList::TreeMode;
-	taskSortCriteria[1] = CoreAttributesList::PlanStartUp;
-	taskSortCriteria[2] = CoreAttributesList::PlanEndUp;
+	taskSortCriteria[1] = CoreAttributesList::StartUp;
+	taskSortCriteria[2] = CoreAttributesList::EndUp;
 	resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 	resourceSortCriteria[1] = CoreAttributesList::IdUp;
 }
@@ -104,8 +104,8 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 		{
 			start = time2rfc(t->getStart(Task::Actual));
 			end = time2rfc(t->getEnd(Task::Actual) + 1);
-			s << "  actualStart " << start << endl
-				<< "  actualEnd " << end << endl;
+			s << "  actualstart " << start << endl
+				<< "  actualend " << end << endl;
 			if (t->getScheduled(Task::Actual))
 				s << "  actualscheduled" << endl;
 		}

@@ -15,6 +15,10 @@
 
 #include <Report.h>
 
+/**
+ * @short Stores all information about an HTML resource report.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class HTMLResourceReport : public ReportHtml
 {
 public:

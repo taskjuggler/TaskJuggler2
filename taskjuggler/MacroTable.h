@@ -18,7 +18,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
-#include <qvaluelist.h>
+#include <qptrlist.h>
 
 class Macro
 {

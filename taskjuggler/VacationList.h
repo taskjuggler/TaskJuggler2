@@ -20,6 +20,10 @@
 
 #include "Interval.h"
 
+/**
+ * @short An interval with a name.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class VacationInterval : public Interval
 {
 public:
@@ -35,6 +39,10 @@ private:
 	QString name;
 } ;
 
+/**
+ * @short A list of vacations.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class VacationList : public QList<VacationInterval>
 {
 public:

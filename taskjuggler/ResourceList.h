@@ -15,8 +15,6 @@
 
 #include <time.h>
 #include <qptrlist.h>
-#include <qstring.h>
-#include <qdom.h>
 
 #include "Interval.h"
 #include "VacationList.h"
@@ -27,6 +25,10 @@ class Project;
 class Task;
 class Resource;
 
+/**
+ * @short Booking information for a time slot of the resource.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class SbBooking
 {
 public:
@@ -43,14 +45,18 @@ public:
 	const QString& getProjectId() const { return projectId; }
 
 private:
-	// A pointer to the task that caused the booking
+	/// A pointer to the task that caused the booking
 	Task* task;
-	// String identifying the KoTrus account the effort is credited to.
+	/// String identifying the KoTrus account the effort is credited to.
 	QString account;
-	// The Project ID
+	/// The Project ID
 	QString projectId;
 };
 
+/**
+ * @short Booking information for an interval of the resource.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Booking : public SbBooking
 {
 public:
@@ -73,15 +79,19 @@ public:
 	const QString& getLockerId() const { return lockerId; }
 
 private:
-	// The booked time period.
+	/// The booked time period.
 	Interval interval;
-	// The database lock timestamp
+	/// The database lock timestamp
 	QString lockTS;
 
-	// the lockers ID
+	/// the lockers ID
 	QString lockerId;
 } ;
 
+/**
+ * @short A list of bookings.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class BookingList : public QPtrList<Booking>
 {
 public:
@@ -96,6 +106,10 @@ typedef QPtrListIterator<Booking> BookingListIterator;
 
 class Resource;
 
+/**
+ * @short A list of resources.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class ResourceList : public CoreAttributesList
 {
 public:
@@ -107,8 +121,7 @@ public:
 
 	Resource* getResource(const QString& id);
 
-	static bool isSupportedSortingCriteria
-		(CoreAttributesList::SortCriteria sc);
+	static bool isSupportedSortingCriteria(int sc);
 	
 	virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
 
@@ -116,6 +129,13 @@ protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
+class QDomDocument;
+class QDomElement;
+
+/**
+ * @short Stores all information about a resource.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
 class Resource : public CoreAttributes
 {
 	friend int ResourceList::compareItemsLevel(Resource* r1, Resource* r2,
@@ -199,9 +219,6 @@ public:
 	void prepareScenario(int sc);
 	void finishScenario(int sc);
 
-	static void setDebugLevel(int l) { debugLevel = l; }
-	static void setDebugMode(int m) { debugMode = m; }
-
 private:
 	Resource* subFirst() { return (Resource*) sub.first(); }
 	Resource* subNext() { return (Resource*) sub.next(); }
@@ -230,9 +247,6 @@ private:
 
 	/// The daily costs of this resource.
 	double rate;
-
-	static int debugLevel;
-	static int debugMode;
 
 	/// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;

@@ -22,8 +22,7 @@
 #include "Utility.h"
 #include "kotrus.h"
 
-int Project::debugLevel = 0;
-int Project::debugMode = -1;
+DebugController DebugCtrl;
 
 Project::Project()
 {
@@ -132,8 +131,21 @@ Project::getIdIndex(const QString& i) const
 	return idxStr;
 }
 
+int
+Project::calcWorkingDays(const Interval& iv)
+{
+	int workingDays = 0;
+
+	for (time_t s = midnight(iv.getStart()); s <= iv.getEnd(); 
+		 s = sameTimeNextDay(s))
+		if (isWorkingDay(s))
+			workingDays++;
+
+	return workingDays;
+}
+
 bool
-Project::pass2(bool checkOnlySyntax)
+Project::pass2()
 {
 	QDict<Task> idHash;
 	bool error = FALSE;
@@ -164,7 +176,6 @@ Project::pass2(bool checkOnlySyntax)
 
 	// Find out what scenarios need to be scheduled.
 	// TODO: No multiple scenario support yet.
-	bool hasExtraValues = FALSE;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		if (!hasExtraValues && t->hasExtraValues(Task::Actual))
 			hasExtraValues = TRUE;
@@ -179,15 +190,18 @@ Project::pass2(bool checkOnlySyntax)
 		if (!t->preScheduleOk())
 			error = TRUE;
 
+	// Check all tasks for dependency loops.
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		if (t->loopDetector())
 			return FALSE;
 
-	if (error)
-		return FALSE;
+	return !error;
+}
 
-	if (checkOnlySyntax)
-		return TRUE;
+bool
+Project::scheduleAllScenarios()
+{
+	bool error = FALSE;
 
 	if (DEBUGPS(1))
 		qWarning("Scheduling plan scenario...");
@@ -223,8 +237,8 @@ Project::pass2(bool checkOnlySyntax)
 	resourceList.createIndex();
 	accountList.createIndex();
 	shiftList.createIndex();
-	
-	return !error;
+
+	return !error;	
 }
 
 void
@@ -248,10 +262,10 @@ Project::prepareScenario(int sc)
 void
 Project::finishScenario(int sc)
 {
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->finishScenario(sc);
 	for (Resource* r = resourceList.first(); r != 0; r = resourceList.next())
 		r->finishScenario(sc);
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->finishScenario(sc);
 }
 
 bool
@@ -444,7 +458,8 @@ Project::loadFromXML( const QString& inpFile )
    {
       qDebug("Empty !" );
    }
-   pass2(FALSE);
+   pass2();
+   scheduleAllScenarios();
    return true;
 }
 

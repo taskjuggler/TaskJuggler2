@@ -17,7 +17,7 @@ CoreAttributesList::~CoreAttributesList()
 }
 
 void
-CoreAttributesList::setSorting(SortCriteria s, int level)
+CoreAttributesList::setSorting(int s, int level)
 {
 	if (level >=0 && level < maxSortingLevel)
 		sorting[level] = s;
@@ -57,8 +57,7 @@ CoreAttributesList::maxDepth()
 }
 
 bool
-CoreAttributesList::isSupportedSortingCriteria
-	(CoreAttributesList::SortCriteria sc)
+CoreAttributesList::isSupportedSortingCriteria(int sc)
 {
 	switch (sc)
 	{
