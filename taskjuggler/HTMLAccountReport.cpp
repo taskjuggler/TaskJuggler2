@@ -18,6 +18,8 @@
 #include "Interval.h"
 #include "Utility.h"
 
+#define KW(a) a
+
 HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f, time_t s,
 							   time_t e) :
 	ReportHtml(p, f, s, e)
@@ -110,24 +112,24 @@ HTMLAccountReport::generatePlanAccount(Account* a)
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "no")
+		if (*it == KW("no"))
 			textTwoRows(QString().sprintf("%d.", a->getIndex()), FALSE, "");
-		else if (*it == "id")
+		else if (*it == KW("id"))
 			textTwoRows(htmlFilter(a->getId()), FALSE, "left");
-		else if (*it == "name")
+		else if (*it == KW("name"))
 			accountName(a);
-		else if (*it == "total")
+		else if (*it == KW("total"))
 		{
 			double value = a->getPlanVolume(Interval(start, end));
 			planTotals["total"] += value;
 			textOneRow(QString().sprintf("%.*f", project->getCurrencyDigits(),
 										 value), FALSE, "right");
 		}
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			dailyAccountPlan(a, "default");
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			weeklyAccountPlan(a, "default");
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			monthlyAccountPlan(a, "default");
 		else
 			qFatal("generatePlanAccount: Unknown Column %s",
@@ -144,33 +146,33 @@ HTMLAccountReport::generateActualAccount(Account* a)
 		 it != columns.end();
 		 ++it )
 	{
-		if (*it == "no")
+		if (*it == KW("no"))
 		{
 			if (hidePlan)
 				textOneRow(QString().sprintf("%d.", a->getIndex()), FALSE, "");
 		}
-		else if (*it == "id")
+		else if (*it == KW("id"))
 		{
 			if (hidePlan)
 				textOneRow(htmlFilter(a->getId()), FALSE, "left");
 		}
-		else if (*it == "name")
+		else if (*it == KW("name"))
 		{
 			if (hidePlan)
 				accountName(a);
 		}
-		else if (*it == "total")
+		else if (*it == KW("total"))
 		{
 			double value = a->getActualVolume(Interval(start, end));
 			actualTotals["total"] += value;
 			textOneRow(QString().sprintf("%.*f", project->getCurrencyDigits(),
 										 value), FALSE, "right");
 		}
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			dailyAccountActual(a, "default");
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			weeklyAccountActual(a, "default");
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			monthlyAccountActual(a, "default");
 	}
 	s << "</tr>" << endl;
@@ -184,24 +186,24 @@ HTMLAccountReport::generateTableHeader()
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "no")
+		if (*it == KW("no"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
-		else if (*it == "id")
+		else if (*it == KW("id"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">ID</td>";
-		else if (*it == "name")
+		else if (*it == KW("name"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Name</td>";
-		else if (*it == "total")
+		else if (*it == KW("total"))
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">Total";
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
 		}
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			htmlDayHeaderMonths();
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			htmlWeekHeaderMonths();
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			htmlMonthHeaderYears();
 		else
 		{
@@ -217,11 +219,11 @@ HTMLAccountReport::generateTableHeader()
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "daily")
+		if (*it == KW("daily"))
 			htmlDayHeaderDays(FALSE);
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			htmlWeekHeaderWeeks(FALSE);
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			htmlMonthHeaderMonths(FALSE);
 	}
 	s << "</tr>\n" << endl;
@@ -239,30 +241,30 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 		for (QStringList::Iterator it = columns.begin(); it != columns.end();
 			 ++it )
 		{
-			if (*it == "no")
+			if (*it == KW("no"))
 				s << "<td class=\"" << style << "\" rowspan=\""
 				  << (!hidePlan && showActual ? "2" : "1")
 				  << "\">&nbsp;</td>";
-			else if (*it == "id")
+			else if (*it == KW("id"))
 				s << "<td class=\"" << style << "\" rowspan=\""
 				  << (!hidePlan && showActual ? "2" : "1")
 				  << "\">&nbsp;</td>";
-			else if (*it == "name")
+			else if (*it == KW("name"))
 				s << "<td class=\"" << style << "\" rowspan=\""
 				  << (!hidePlan && showActual ? "2" : "1")
 				  << "\" nowrap><b>" << label << "</b></td>";
-		else if (*it == "total")
+		else if (*it == KW("total"))
 				s << "<td class=\"" << style
 				  << "\" style=\"text-align:right\">"
 				  << "<b>"
 				  << QString().sprintf("%.*f", project->getCurrencyDigits(),
 									   planTotals["total"])
 				  << "</b></td>";
-			else if (*it == "daily")
+			else if (*it == KW("daily"))
 				dailyAccountPlan(0, style);
-			else if (*it == "weekly")
+			else if (*it == KW("weekly"))
 				weeklyAccountPlan(0, style);
-			else if (*it == "monthly")
+			else if (*it == KW("monthly"))
 				monthlyAccountPlan(0, style);
 		}
 		s << "</tr>" << endl;
@@ -275,34 +277,34 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 		for (QStringList::Iterator it = columns.begin(); it != columns.end();
 			 ++it )
 		{
-			if (*it == "no")
+			if (*it == KW("no"))
 			{
 				if (hidePlan)
 					s << "<td class=\"" << style << "\">&nbsp;</td>";
 			}
-			else if (*it == "id")
+			else if (*it == KW("id"))
 			{
 				if (hidePlan)
 					s << "<td class=\"" << style << "\">&nbsp;</td>";
 			}
-			else if (*it == "name")
+			else if (*it == KW("name"))
 			{
 				if (hidePlan)
 					s << "<td class=\"" << style << "\" nowrap><b>"
 					  << label << "</b></td>";
 			}
-			else if (*it == "total")
+			else if (*it == KW("total"))
 				s << "<td class=\"" << style
 				  << "\" style=\"text-align:right\">"
 				  << "<b>"
 				  << QString().sprintf("%.*f", project->getCurrencyDigits(),
 									   actualTotals["total"])
 				  << "</b></td>";
-			else if (*it == "daily")
+			else if (*it == KW("daily"))
 				dailyAccountActual(0, style);
-			else if (*it == "weekly")
+			else if (*it == KW("weekly"))
 				weeklyAccountActual(0, style);
-			else if (*it == "monthly")
+			else if (*it == KW("monthly"))
 				monthlyAccountActual(0, style);
 		}
 		s << "</tr>\n" << endl;

@@ -16,6 +16,8 @@
 #include "Report.h"
 #include "Utility.h"
 
+#define KW(a) a
+
 ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e) :
    Report(p, f, s, e)
 {
@@ -40,36 +42,36 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "no")
+		if (*it == KW("no"))
 			textTwoRows((r == 0 ? QString().sprintf("%d.", t->getIndex()) :
 						 QString("")), r != 0, "");
-		else if (*it == "id")
+		else if (*it == KW("id"))
 			textTwoRows(htmlFilter(t->getId()), r != 0, "left");
-		else if (*it == "name")
+		else if (*it == KW("name"))
 			taskName(t, r, r == 0);
-		else if (*it == "start")
+		else if (*it == KW("start"))
 			s << "<td class=\""
 			  << (t->isPlanStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" style=\"text-align:left\" nowrap>"
 			  << time2ISO(t->getPlanStart())
 			  << "</td>" << endl;
-		else if (*it == "end")
+		else if (*it == KW("end"))
 			s << "<td class=\""
 			  << (t->isPlanEndOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
 			  << "\" nowrap>"
 			  << time2ISO(t->getPlanEnd())
 			  << "</td>" << endl;
-		else if (*it == "minstart")
+		else if (*it == KW("minstart"))
 			textTwoRows(time2ISO(t->getMinStart()), r != 0, "");
-		else if (*it == "maxstart")
+		else if (*it == KW("maxstart"))
 			textTwoRows(time2ISO(t->getMaxStart()), r != 0, "");
-		else if (*it == "minend")
+		else if (*it == KW("minend"))
 			textTwoRows(time2ISO(t->getMinEnd()), r != 0, "");
-		else if (*it == "maxend")
+		else if (*it == KW("maxend"))
 			textTwoRows(time2ISO(t->getMaxEnd()), r != 0, "");
-		else if (*it == "duration")
+		else if (*it == KW("duration"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
@@ -78,7 +80,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			scaleTime(t->getPlanCalcDuration());
 			s << "</td>" << endl;
 		}
-		else if (*it == "effort")
+		else if (*it == KW("effort"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
@@ -87,32 +89,32 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			scaleTime(t->getPlanLoad(Interval(start, end), r));
 			s << "</td>" << endl;
 		}
-		else if (*it == "projectid")
+		else if (*it == KW("projectid"))
 			textTwoRows(t->getProjectId() + " (" +
 						project->getIdIndex(t->getProjectId()) + ")", r != 0,
 						"left");
-		else if (*it == "resources")
+		else if (*it == KW("resources"))
 			planResources(t, r != 0);
-		else if (*it == "responsible")
+		else if (*it == KW("responsible"))
 			textTwoRows(htmlFilter(t->getResponsible()->getName()), r != 0,
 						"left");
-		else if (*it == "responsibilities")
+		else if (*it == KW("responsibilities"))
 			emptyPlan(r != 0);
-		else if (*it == "depends")
+		else if (*it == KW("depends"))
 			generateDepends(t, r != 0);
-		else if (*it == "follows")
+		else if (*it == KW("follows"))
 			generateFollows(t, r != 0);
-		else if (*it == "schedule")
+		else if (*it == KW("schedule"))
 			emptyPlan(r != 0);
-		else if (*it == "mineffort")
+		else if (*it == KW("mineffort"))
 			emptyPlan(r != 0);
-		else if (*it == "maxeffort")
+		else if (*it == KW("maxeffort"))
 			emptyPlan(r != 0);
-		else if (*it == "rate")
+		else if (*it == KW("rate"))
 			emptyPlan(r != 0);
-		else if (*it == "kotrusid")
+		else if (*it == KW("kotrusid"))
 			emptyPlan(r != 0);
-		else if (*it == "note")
+		else if (*it == KW("note"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
@@ -123,20 +125,20 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			s << htmlFilter(t->getNote());
 			s << "</font></td>" << endl;
 		}
-		else if (*it == "costs")
+		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  t->getPlanCredits(Interval(start, end), r)),
 				r != 0,
 				"right");
-		else if (*it == "priority")
+		else if (*it == KW("priority"))
 			textTwoRows(QString().sprintf("%d", t->getPriority()), r != 0,
 						"right");
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			dailyTaskPlan(t, r);
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			weeklyTaskPlan(t, r);
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			monthlyTaskPlan(t, r);
 		else
 			qFatal("generatePlanTask: Unknown Column %s",
@@ -153,7 +155,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 		 it != columns.end();
 		 ++it )
 	{
-		if (*it == "start")
+		if (*it == KW("start"))
 		{
 			s << "<td class=\""
 			  << (t->isActualStartOk() ?
@@ -162,7 +164,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			  << time2ISO(t->getActualStart())
 			  << "</td>" << endl;
 		}
-		else if (*it == "end")
+		else if (*it == KW("end"))
 		{
 			s << "<td class=\""
 			  << (t->isActualEndOk() ?
@@ -171,7 +173,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			  << time2ISO(t->getActualEnd())
 			  << "</td>" << endl;
 		}
-		else if (*it == "duration")
+		else if (*it == KW("duration"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
@@ -180,7 +182,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			scaleTime(t->getActualCalcDuration());
 			s << "</td>" << endl;
 		}
-		else if (*it == "effort")
+		else if (*it == KW("effort"))
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
@@ -189,7 +191,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			scaleTime(t->getActualLoad(Interval(start, end), r));
 			s << "</td>" << endl;
 		}
-		else if (*it == "resources")
+		else if (*it == KW("resources"))
 			actualResources(t, r != 0);
 		else if (*it == "costs")
 			textOneRow(
@@ -198,11 +200,11 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 													  r)),
 				r != 0,
 				"right");
-		if (*it == "daily")
+		if (*it == KW("daily"))
 			dailyTaskActual(t, r);
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			weeklyTaskActual(t, r);
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			monthlyTaskActual(t, r);
 	}
 	s << "</tr>" << endl;
@@ -215,28 +217,28 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "no")
+		if (*it == KW("no"))
 			textTwoRows((t == 0 ? QString().sprintf("%d.", r->getIndex()) :
 						 QString("")), t != 0, "");
-		else if (*it == "id")
+		else if (*it == KW("id"))
 			textTwoRows(htmlFilter(r->getId()), t != 0, "left");
-		else if (*it == "name")
+		else if (*it == KW("name"))
 			resourceName(r, t, FALSE);
-		else if (*it == "start")
+		else if (*it == KW("start"))
 			emptyPlan(t != 0);
-		else if (*it == "end")
+		else if (*it == KW("end"))
 			emptyPlan(t != 0);
-		else if (*it == "minstart")
+		else if (*it == KW("minstart"))
 			emptyPlan(t != 0);
-		else if (*it == "maxstart")
+		else if (*it == KW("maxstart"))
 			emptyPlan(t != 0);
-		else if (*it == "minend")
+		else if (*it == KW("minend"))
 			emptyPlan(t != 0);
-		else if (*it == "maxend")
+		else if (*it == KW("maxend"))
 			emptyPlan(t != 0);
-		else if (*it == "duration")
+		else if (*it == KW("duration"))
 			emptyPlan(t != 0);
-		else if (*it == "effort")
+		else if (*it == KW("effort"))
 		{
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
@@ -245,52 +247,52 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 			scaleTime(r->getPlanLoad(Interval(start, end), t));
 			s << "</td>" << endl;
 		}
-		else if (*it == "projectid")
+		else if (*it == KW("projectid"))
 			emptyPlan(t != 0);
-		else if (*it == "resources")
+		else if (*it == KW("resources"))
 			emptyPlan(t != 0);
-		else if (*it == "responsible")
+		else if (*it == KW("responsible"))
 			emptyPlan(t != 0);
-		else if (*it == "responsibilities")
+		else if (*it == KW("responsibilities"))
 			generateResponsibilities(r, t != 0);
-		else if (*it == "depends")
+		else if (*it == KW("depends"))
 			emptyPlan(t != 0);
-		else if (*it == "follows")
+		else if (*it == KW("follows"))
 			emptyPlan(t != 0);
-		else if (*it == "schedule")
+		else if (*it == KW("schedule"))
 		{
 			if (t == 0)
 				emptyPlan(FALSE);
 			else
 				planSchedule(r, t);
 		}
-		else if (*it == "mineffort")
+		else if (*it == KW("mineffort"))
 			textTwoRows(QString().sprintf("%.2f", r->getMinEffort()), t != 0,
 						"right");
-		else if (*it == "maxeffort")
+		else if (*it == KW("maxeffort"))
 			textTwoRows(QString().sprintf("%.2f", r->getMaxEffort()), t != 0,
 						"right");
-		else if (*it == "rate")
+		else if (*it == KW("rate"))
 			textTwoRows(QString().sprintf("%.*f", project->getCurrencyDigits(),
 										  r->getRate()), t != 0,
 						"right");
-		else if (*it == "kotrusid")
+		else if (*it == KW("kotrusid"))
 			textTwoRows(r->getKotrusId(), t != 0, "left");
-		else if (*it == "note")
+		else if (*it == KW("note"))
 			emptyPlan(t != 0);
-		else if (*it == "costs")
+		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getPlanCredits(Interval(start, end), t)),
 				t != 0,
 				"right");
-		else if (*it == "priority")
+		else if (*it == KW("priority"))
 			emptyPlan(t != 0);
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			dailyResourcePlan(r, t);
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			weeklyResourcePlan(r, t);
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			monthlyResourcePlan(r, t);
 		else
 			qFatal("generatePlanResource: Unknown Column %s",
@@ -306,7 +308,7 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "effort")
+		if (*it == KW("effort"))
 		{
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
@@ -315,23 +317,23 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 			scaleTime(r->getActualLoad(Interval(start, end), t));
 			s << "</td>" << endl;
 		}
-		else if (*it == "schedule")
+		else if (*it == KW("schedule"))
 		{
 			if (t != 0)
 				actualSchedule(r, t);
 		}
-		else if (*it == "costs")
+		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getActualCredits(Interval(start, end),
 													  t)),
 				t != 0,
 				"right");
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			dailyResourceActual(r, t);
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			weeklyResourceActual(r, t);
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			monthlyResourceActual(r, t);
 	}
 	s << "</tr>" << endl;
@@ -406,71 +408,71 @@ ReportHtml::generateTableHeader()
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "no")
+		if (*it == KW("no"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">No.</td>";
-		else if (*it == "id")
+		else if (*it == KW("id"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">ID</td>";
-		else if (*it == "name")
+		else if (*it == KW("name"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Name</td>";
-		else if (*it == "start")
+		else if (*it == KW("start"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Start</td>";
-		else if (*it == "end")
+		else if (*it == KW("end"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">End</td>";
-		else if (*it == "minstart")
+		else if (*it == KW("minstart"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Start</td>";
-		else if (*it == "maxstart")
+		else if (*it == KW("maxstart"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Start</td>";
-		else if (*it == "minend")
+		else if (*it == KW("minend"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Min. End</td>";
-		else if (*it == "maxend")
+		else if (*it == KW("maxend"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Max. End</td>";
-		else if (*it == "duration")
+		else if (*it == KW("duration"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Duration</td>";
-		else if (*it == "effort")
+		else if (*it == KW("effort"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Effort</td>";
-		else if (*it == "projectid")
+		else if (*it == KW("projectid"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Project ID</td>";
-		else if (*it == "resources")
+		else if (*it == KW("resources"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Resources</td>";
-		else if (*it == "responsible")
+		else if (*it == KW("responsible"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Responsible</td>";
-		else if (*it == "responsibilities")
+		else if (*it == KW("responsibilities"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Responsibilities</td>";
-		else if (*it == "depends")
+		else if (*it == KW("depends"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Dependencies</td>";
-		else if (*it == "follows")
+		else if (*it == KW("follows"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Followers</td>";
-		else if (*it == "schedule")
+		else if (*it == KW("schedule"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Schedule</td>";
-		else if (*it == "mineffort")
+		else if (*it == KW("mineffort"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Min. Effort</td>";
-		else if (*it == "maxeffort")
+		else if (*it == KW("maxeffort"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Max. Effort</td>";
-		else if (*it == "rate")
+		else if (*it == KW("rate"))
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">Rate";
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
 		}
-		else if (*it == "kotrusid")
+		else if (*it == KW("kotrusid"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Kotrus ID</td>";
-		else if (*it == "note")
+		else if (*it == KW("note"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Note</td>";
-		else if (*it == "costs")
+		else if (*it == KW("costs"))
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">Costs";
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
 		}
-		else if (*it == "priority")
+		else if (*it == KW("priority"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
-		else if (*it == "daily")
+		else if (*it == KW("daily"))
 			htmlDayHeaderMonths();
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			htmlWeekHeaderMonths();
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			htmlMonthHeaderYears();
 		else
 		{
@@ -486,11 +488,11 @@ ReportHtml::generateTableHeader()
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
-		if (*it == "daily")
+		if (*it == KW("daily"))
 			htmlDayHeaderDays();
-		else if (*it == "weekly")
+		else if (*it == KW("weekly"))
 			htmlWeekHeaderWeeks();
-		else if (*it == "monthly")
+		else if (*it == KW("monthly"))
 			htmlMonthHeaderMonths();
 	}
 	s << "</tr>\n" << endl;
