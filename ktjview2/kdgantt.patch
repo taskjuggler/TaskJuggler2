@@ -1,0 +1,159 @@
+? kdgantt.patch
+? semantic.cache
+Index: KDGanttView.cpp
+===================================================================
+RCS file: /home/kde/kdepim/kdgantt/KDGanttView.cpp,v
+retrieving revision 1.5
+diff -u -r1.5 KDGanttView.cpp
+--- KDGanttView.cpp	24 Oct 2003 14:26:38 -0000	1.5
++++ KDGanttView.cpp	29 May 2004 08:50:34 -0000
+@@ -96,7 +96,7 @@
+     spacerRight = new QWidget(  rightWidget );
+     myTimeHeaderScroll = new QScrollView ( rightWidget );
+     myTimeHeaderScroll->setHScrollBarMode( QScrollView::AlwaysOff );
+-    myTimeHeaderScroll->setVScrollBarMode( QScrollView::AlwaysOn );
++    myTimeHeaderScroll->setVScrollBarMode( QScrollView::Auto );
+ 
+     //myTimeHeader = new KDTimeHeaderWidget (rightWidget,this);
+     myTimeHeader = new KDTimeHeaderWidget (myTimeHeaderScroll->viewport(),this);
+@@ -3561,3 +3559,8 @@
+   myTimeTable->setBlockUpdating( block );
+   myTimeTable->updateMyContent();
+ }
++
++void KDGanttView::sort()
++{
++    myListView->sort();
++}
+Index: KDGanttView.h
+===================================================================
+RCS file: /home/kde/kdepim/kdgantt/KDGanttView.h,v
+retrieving revision 1.2
+diff -u -r1.2 KDGanttView.h
+--- KDGanttView.h	24 Oct 2003 14:26:38 -0000	1.2
++++ KDGanttView.h	29 May 2004 08:50:34 -0000
+@@ -86,10 +86,10 @@
+     Q_PROPERTY( double zoomFactor READ zoomFactor )
+     Q_PROPERTY( bool showHeaderPopupMenu READ showHeaderPopupMenu
+                 WRITE setShowHeaderPopupMenu )
+-        Q_PROPERTY( bool headerVisible READ headerVisible
+-                    WRITE setHeaderVisible )
+-        Q_PROPERTY( bool showLegendButton READ showLegendButton
+-                    WRITE setShowLegendButton )
++    Q_PROPERTY( bool headerVisible READ headerVisible
++                WRITE setHeaderVisible )
++    Q_PROPERTY( bool showLegendButton READ showLegendButton
++                WRITE setShowLegendButton )
+ 
+     Q_ENUMS( Scale )
+     Q_ENUMS( YearFormat )
+@@ -108,7 +108,8 @@
+ 
+     void setRepaintMode( RepaintMode mode );
+     void setUpdateEnabled( bool enable);
+-    bool getUpdateEnabled( )const;
++    bool getUpdateEnabled( ) const;
++    void sort();
+ 
+     void setShowLegend( bool show );
+     bool showLegend() const;
+Index: KDGanttViewItem.cpp
+===================================================================
+RCS file: /home/kde/kdepim/kdgantt/KDGanttViewItem.cpp,v
+retrieving revision 1.2
+diff -u -r1.2 KDGanttViewItem.cpp
+--- KDGanttViewItem.cpp	27 Feb 2003 15:03:33 -0000	1.2
++++ KDGanttViewItem.cpp	29 May 2004 08:50:35 -0000
+@@ -40,6 +40,7 @@
+ #include "itemAttributeDialog.h"
+ 
+ #include "KDXMLTools.h"
++#include "KDGanttViewItem.h"
+ 
+ 
+ /*!
+@@ -1961,7 +1962,7 @@
+ 
+ KDGanttViewItem* KDGanttViewItem::getChildByName( const QString& name )
+ {
+-  if ( listViewText() == name )
++  if ( _name == name )
+     return this;
+   KDGanttViewItem* temp =  firstChild(),* ret;
+   while (temp != 0) {
+@@ -2011,3 +2012,20 @@
+     showItem( true );
+   return hei;
+ }
++
++int KDGanttViewItem::compare( QListViewItem * i, int col, bool ascending ) const
++{
++    if ( col == 1 )
++    {
++        QDateTime aStart = startTime();
++        QDateTime bStart = dynamic_cast<KDGanttViewItem *>( i )->startTime();
++
++        if ( aStart < bStart )
++            return -1;
++        else if ( aStart > bStart )
++            return 1;
++        else return 0;
++    }
++    else
++        return KDGanttViewItem::compare( i, col, ascending );
++}
+Index: KDGanttViewItem.h
+===================================================================
+RCS file: /home/kde/kdepim/kdgantt/KDGanttViewItem.h,v
+retrieving revision 1.1
+diff -u -r1.1 KDGanttViewItem.h
+--- KDGanttViewItem.h	28 Nov 2002 14:56:55 -0000	1.1
++++ KDGanttViewItem.h	29 May 2004 08:50:35 -0000
+@@ -90,6 +90,8 @@
+     int _priority;
+     static QDict<KDGanttViewItem> sItemDict;
+ 
++    //@reimp
++    virtual int compare( QListViewItem * i, int col, bool ascending ) const;
+ public:
+     virtual ~KDGanttViewItem();
+ 
+Index: KDGanttViewSubwidgets.cpp
+===================================================================
+RCS file: /home/kde/kdepim/kdgantt/KDGanttViewSubwidgets.cpp,v
+retrieving revision 1.4
+diff -u -r1.4 KDGanttViewSubwidgets.cpp
+--- KDGanttViewSubwidgets.cpp	2 Nov 2003 13:26:11 -0000	1.4
++++ KDGanttViewSubwidgets.cpp	29 May 2004 08:50:36 -0000
+@@ -2255,7 +2255,7 @@
+ void KDLegendWidget::clearLegend ( )
+ {
+     if ( myLegend ) delete myLegend;
+-    myLegend = new QGroupBox( 1, Qt::Horizontal, "Legend:", scroll->viewport() );
++    myLegend = new QGroupBox( 1, Qt::Horizontal, i18n( "Legend:" ), scroll->viewport() );
+     myLegend->setBackgroundColor( Qt::white );
+     myLegend->setFont( font() );
+     scroll->addChild(  myLegend );
+@@ -2296,9 +2296,10 @@
+     setRootIsDecorated( true );
+     setAllColumnsShowFocus( true );
+     addColumn( i18n( "Task Name" ) );
+-    setSorting( -1 );
++    addColumn( "hack" );
++    setSortColumn( 1 );           // HACK for correct time-aware sorting
+     setVScrollBarMode (QScrollView::AlwaysOff );
+-    setHScrollBarMode (QScrollView::AlwaysOn );
++    setHScrollBarMode (QScrollView::Auto );
+     setColumnWidthMode ( 0,Maximum  );
+     _calendarMode = false;
+     // QObject::connect(this, SIGNAL (  pressed ( QListViewItem * )) , this, SLOT( dragItem( QListViewItem *))) ;
+@@ -2315,8 +2316,7 @@
+   KDGanttViewItem* item = ( KDGanttViewItem* ) itemAt( p );
+   if ( item )
+     return item->whatsThisText();
+-  return "No item Found";
+-
++  return i18n( "No item found" );
+ }
+ 
+ void  KDListView::setCalendarMode( bool mode )
