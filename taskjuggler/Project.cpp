@@ -467,6 +467,7 @@ Project::loadFromXML( const QString& inpFile )
    {
       qDebug("Empty !" );
    }
+   pass2();
    return true;
 }
 
