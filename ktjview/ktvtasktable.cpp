@@ -94,9 +94,10 @@ void KTVTaskTable::showProject( Project *p )
    qDebug( "Y-Pos of root: %d, height is %d", m_root->itemPos(), m_root->height() );
 
    KTVReport rep( p, QString("dummy"), p->getStart(), p->getEnd() );
-   TaskList filteredList;
-   // filteredList.setSorting( CoreAttributesList::TreeMode );
-   rep.filterTaskList(filteredList, 0);
+
+   /* Tasklist from Project and Sorting */
+   TaskList filteredList = p->getTaskList();
+   
    rep.sortTaskList(filteredList);
 
    for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
