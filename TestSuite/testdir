@@ -29,6 +29,9 @@ function do_testing
 rm -f log
 touch log
 
+touch .timeStamp
+sleep 1
+
 for f in Correct/*.tjp ; do
   do_testing $f -ne
 done
@@ -36,6 +39,10 @@ done
 for f in Errors/*.tjp ; do
   do_testing $f -eq
 done
+
+# remove all HTML files that are newer than the .timeStamp file
+find . -name "*.html" -newer .timeStamp | xargs /bin/rm -f
+/bin/rm -f .timeStamp
  
 exit $errors
 
