@@ -46,7 +46,12 @@ class Allocation;
 class TaskList : public virtual CoreAttributesList
 {
 public:
-	TaskList() { }
+	TaskList()
+   	{
+	   	sorting[0] = CoreAttributesList::TreeMode;
+		sorting[1] = CoreAttributesList::PlanStartUp;
+		sorting[2] = CoreAttributesList::PlanEndUp;
+	}
 	virtual ~TaskList() { }
 
 	Task* first() { return (Task*) CoreAttributesList::first(); }
@@ -56,7 +61,11 @@ public:
 
 	Task* getTask(const QString& id);
 
+	static bool isSupportedSortingCriteria
+		(CoreAttributesList::SortCriteria sc);
+	
 	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
+
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;

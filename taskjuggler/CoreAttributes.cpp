@@ -46,6 +46,27 @@ CoreAttributesList::createIndex(bool initial)
 	}
 }
 
+bool
+CoreAttributesList::isSupportedSortingCriteria
+	(CoreAttributesList::SortCriteria sc)
+{
+	switch (sc)
+	{
+	case Sequence:
+	case TreeMode:
+	case FullNameDown:
+	case FullNameUp:
+	case IndexUp:
+	case IndexDown:
+	case IdUp:
+	case NameUp:
+	case NameDown:
+		return TRUE;
+	default:
+		return FALSE;
+	}		
+}
+
 int
 CoreAttributesList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 									  int level)

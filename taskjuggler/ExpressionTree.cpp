@@ -14,6 +14,10 @@
 #include "CoreAttributes.h"
 #include "Project.h"
 #include "Task.h"
+#include "Utility.h"
+
+// Dummy marco to mark all keywords of taskjuggler syntax
+#define KW(a) a
 
 QDict<int> ExpressionTree::funcArgc;
 
@@ -25,13 +29,12 @@ Operation::evalAsInt(ExpressionTree* et)
 	case Const:
 		return value;
 	case Variable:
+	case Id:
 		return et->resolve(name);
 	case Function:
 		return evalFunction(et);
-	case TaskId:
-	case ResourceId:
-	case AccountId:
-		return 0;
+	case Date:
+		return value;
 	case Not:
 		return !ops.at(0)->evalAsInt(et);
 	case And:
@@ -39,7 +42,28 @@ Operation::evalAsInt(ExpressionTree* et)
 	case Or:
 		return ops.at(0)->evalAsInt(et) || ops.at(1)->evalAsInt(et);
 	default:
-		qFatal("Unknown opType %d (name: %s)", opt, name.ascii());
+		qFatal("Operation::evalAsInt: "
+			   "Unknown opType %d (name: %s)", opt, name.ascii());
+		return 0;
+	}
+}
+
+time_t
+Operation::evalAsTime(ExpressionTree* et)
+{
+	switch(opt)
+	{
+	case Const:
+	case Date:
+		return value;
+	case Variable:
+	case Id:
+		return et->resolve(name);
+	case Function:
+		return evalFunction(et);
+	default:
+		qFatal("Operation::evalAsTime: "
+			   "Unknown opType %d (name: %s)", opt, name.ascii());
 		return 0;
 	}
 }
@@ -49,18 +73,18 @@ Operation::evalAsString(ExpressionTree* et)
 {
 	switch(opt)
 	{
-		case Const:
-			return QString("%1").arg(value);
-		case Variable:
-			return QString("%1").arg(et->resolve(name));
-		case Function:
-			return evalFunctionAsString(et);
-		case TaskId:
-		case ResourceId:
-		case AccountId:
-			return name;
-		default:
-			return QString("%1").arg(ops.at(0)->evalAsInt(et));
+	case Const:
+		return QString("%1").arg(value);
+	case Function:
+		return evalFunctionAsString(et);
+	case Date:
+		return time2date(value);
+	case Id:
+		return name;
+	default:
+		qFatal("Operation::evalAsString: "
+			   "Unknown opType %d (name: %s)", opt, name.ascii());
+		return QString::null;
 	}
 }
 
@@ -111,6 +135,24 @@ Operation::evalFunction(ExpressionTree* et)
 			&& et->getCoreAttributes()->getId() ==
 			ops.at(0)->evalAsString(et);
 	}
+	else if (name == "isplanallocated")
+	{
+		if (strcmp(et->getCoreAttributes()->getType(), "Resource") != 0)
+			qFatal("Operation::evalFunction: isplanallocated called for "
+				   "non-resource");
+		return ((Resource*) et->getCoreAttributes())->isPlanAllocated
+			(Interval(ops.at(1)->evalAsTime(et), ops.at(2)->evalAsTime(et)), 
+			 ops.at(0)->evalAsString(et));
+	}
+	else if (name == "isactualallocated")
+	{
+		if (strcmp(et->getCoreAttributes()->getType(), "Resource") != 0)
+			qFatal("Operation::evalFunction: isactualallocated called for "
+				   "non-resource");
+		return ((Resource*) et->getCoreAttributes())->isActualAllocated
+			(Interval(ops.at(1)->evalAsTime(et), ops.at(2)->evalAsTime(et)), 
+			 ops.at(0)->evalAsString(et));
+	}
 	else
 		qFatal("Unknown function %s", name.data());	
 
@@ -129,12 +171,14 @@ ExpressionTree::ExpressionTree(Operation* op) : expression(op)
 	symbolTable.setAutoDelete(TRUE);
 	if (funcArgc.isEmpty())
 	{
-		funcArgc.insert("istask", new int(1));
-		funcArgc.insert("issubtaskof", new int(1));
-		funcArgc.insert("containstask", new int(1));
-		funcArgc.insert("ismilestone", new int(0));
-		funcArgc.insert("isresource", new int(1));
-		funcArgc.insert("isaccount", new int(1));
+		funcArgc.insert(KW("istask"), new int(1));
+		funcArgc.insert(KW("issubtaskof"), new int(1));
+		funcArgc.insert(KW("containstask"), new int(1));
+		funcArgc.insert(KW("ismilestone"), new int(0));
+		funcArgc.insert(KW("isresource"), new int(1));
+		funcArgc.insert(KW("isaccount"), new int(1));
+		funcArgc.insert(KW("isplanallocated"), new int(3));
+		funcArgc.insert(KW("isactualallocated"), new int(3));
 	}
 }
 

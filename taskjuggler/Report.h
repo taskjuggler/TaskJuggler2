@@ -79,21 +79,9 @@ public:
 
 	void setRollUpAccount(ExpressionTree* et);
 
-	void setTaskSorting(CoreAttributesList::SortCriteria sc, int level)
-	{
-		if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
-			taskSortCriteria[level] = sc;
-	}
-	void setResourceSorting(CoreAttributesList::SortCriteria sc, int level)
-	{
-		if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
-			resourceSortCriteria[level] = sc;
-	}
-	void setAccountSorting(CoreAttributesList::SortCriteria sc, int level)
-	{
-		if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
-			accountSortCriteria[level] = sc;
-	}
+	bool setTaskSorting(CoreAttributesList::SortCriteria sc, int level);
+	bool setResourceSorting(CoreAttributesList::SortCriteria sc, int level);
+	bool setAccountSorting(CoreAttributesList::SortCriteria sc, int level);
 
 	enum LoadUnit { minutes, hours, days, weeks, months, years, shortAuto,
 		longAuto };
@@ -127,7 +115,6 @@ protected:
 	QString defFileName;
 	int defFileLine;
 	
-
 	QString headline;
 	QString caption;
 

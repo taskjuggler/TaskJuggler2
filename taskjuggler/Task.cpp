@@ -1695,6 +1695,30 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    return( taskElem );
 }
 
+bool
+TaskList::isSupportedSortingCriteria(CoreAttributesList::SortCriteria sc)
+{
+	switch (sc)
+	{
+	case TreeMode:
+	case PlanStartUp:
+	case PlanStartDown:
+	case ActualStartUp:
+	case ActualStartDown:
+	case PlanEndUp:
+	case PlanEndDown:
+	case ActualEndUp:
+	case ActualEndDown:
+	case PrioUp:
+	case PrioDown:
+	case ResponsibleUp:
+	case ResponsibleDown:
+		return TRUE;
+	default:
+		return CoreAttributesList::isSupportedSortingCriteria(sc);
+	}		
+}
+
 int
 TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 {

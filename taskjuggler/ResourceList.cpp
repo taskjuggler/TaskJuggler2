@@ -512,6 +512,54 @@ Resource::getActualCredits(const Interval& period, Task* task)
 	return getActualLoad(period, task) * rate;
 }
 
+bool
+Resource::isPlanAllocated(const Interval& period, const QString& prjId)
+{
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return FALSE;
+
+	/* If resource is a group, check members first. */
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		if (r->isPlanAllocated(iv, prjId))
+			return TRUE;
+
+	for (uint i = sbIndex(iv.getStart());
+		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+	{
+		SbBooking* b = planScoreboard[i];
+		if (b < (SbBooking*) 4)
+			continue;
+		if (b->getProjectId() == prjId)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+bool
+Resource::isActualAllocated(const Interval& period, const QString& prjId)
+{
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return FALSE;
+
+	/* If resource is a group, check members first. */
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		if (r->isActualAllocated(iv, prjId))
+			return TRUE;
+
+	for (uint i = sbIndex(iv.getStart());
+		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+	{
+		SbBooking* b = actualScoreboard[i];
+		if (b < (SbBooking*) 4)
+			continue;
+		if (b->getProjectId() == prjId)
+			return TRUE;
+	}
+	return FALSE;
+}
+
 void
 Resource::getPlanPIDs(const Interval& period, Task* task, QStringList& pids)
 {
@@ -731,6 +779,8 @@ QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 
 ResourceList::ResourceList()
 {
+	sorting[0] = CoreAttributesList::TreeMode;
+	sorting[1] = CoreAttributesList::IdUp;
 }
 
 int
@@ -744,6 +794,26 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		if ((res = compareItemsLevel(r1, r2, i)) != 0)
 			return res;
 	return res;
+}
+
+bool
+ResourceList::isSupportedSortingCriteria(CoreAttributesList::SortCriteria sc)
+{
+	switch (sc)
+	{
+	case TreeMode:
+	case MinEffortUp:
+	case MinEffortDown:
+	case MaxEffortUp:
+	case MaxEffortDown:
+	case RateUp:
+	case RateDown:
+	case KotrusIdUp:
+	case KotrusIdDown:
+		return TRUE;
+	default:
+		return CoreAttributesList::isSupportedSortingCriteria(sc);
+	}		
 }
 
 int

@@ -78,6 +78,18 @@ Account::getActualBalance(time_t /* date */)
 	return 0.0;
 }
 
+bool
+AccountList::isSupportedSortingCriteria(CoreAttributesList::SortCriteria sc)
+{
+	switch (sc)
+	{
+	case TreeMode:
+		return TRUE;
+	default:
+		return CoreAttributesList::isSupportedSortingCriteria(sc);
+	}		
+}
+
 int
 AccountList::compareItemsLevel(Account* a1, Account* a2, int level)
 {
@@ -88,15 +100,19 @@ AccountList::compareItemsLevel(Account* a1, Account* a2, int level)
 	{
 	case TreeMode:
 	{
-		QString fn1;
-		// c1->getFullName(fn1);
-		fn1 = (a1->getType() == Account::Cost ? QString("0") : QString("1"))
-			+ fn1;
-		QString fn2;
-		// c2->getFullName(fn2);
-		fn2 = (a2->getType() == Account::Cost ? QString("0") : QString("1"))
-			+ fn2;
-		return fn1.compare(fn2);
+		/* Since we like to show all cost accounts first, we have add a
+		 * bit of extra code to the usual tree sort handling. */
+		if (a1->getType() == Account::Cost &&
+			a2->getType() != Account::Cost)
+			return -1;
+		if (a1->getType() != Account::Cost &&
+			a2->getType() == Account::Cost)
+			return 1;
+		if (level == 0)
+			return compareTreeItemsT(this, a1, a2);
+		else
+			return a1->getSequenceNo() == a2->getSequenceNo() ? 0 :
+				a1->getSequenceNo() < a2->getSequenceNo() ? -1 : 1;
 	}
 	default:
 		return CoreAttributesList::compareItemsLevel(a1, a2, level);

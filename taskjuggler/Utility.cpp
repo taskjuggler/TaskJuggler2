@@ -11,12 +11,16 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "Utility.h"
 
 #include <qdict.h>
 
 static QDict<const char> TZDict;
 static bool TZDictReady = FALSE;
+
+static QString UtilityError;
 
 const char*
 timezone2tz(const char* tzone)
@@ -66,6 +70,12 @@ timezone2tz(const char* tzone)
 	}
 
 	return TZDict[tzone];
+}
+
+const QString&
+getUtilityError()
+{
+	return UtilityError;
 }
 
 const char*
@@ -377,34 +387,85 @@ addTimeToDate(time_t day, time_t hour)
 	return mktime(tms);
 }
 
-
-time_t dateToTime( const QString& date)
+time_t
+date2time(const QString& date)
 {
-        int y, m, d, hour, min;
-        if (date.find(':') == -1)
-        {
-                sscanf(date, "%d-%d-%d", &y, &m, &d);
-                hour = min = 0;
-        }
-        else
-                sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min);
+	int y, m, d, hour, min, sec;
+	char tZone[64] = "";
+	char* savedTZ = 0;
+	bool restoreTZ = FALSE;
+	if (sscanf(date, "%d-%d-%d-%d:%d:%d-%s",
+			   &y, &m, &d, &hour, &min, &sec, tZone) == 7 ||
+		(sec = 0) ||	// set sec to 0
+		sscanf(date, "%d-%d-%d-%d:%d-%s",
+			   &y, &m, &d, &hour, &min, tZone) == 6)
+	{
+		const char* tz;
+		if ((tz = getenv("TZ")) != 0)
+		{
+			savedTZ = new char[strlen(tz) + 1];
+			strcpy(savedTZ, tz);
+		}
+		if ((tz = timezone2tz(tZone)) == 0)
+			UtilityError.sprintf("Illegal timezone %s", tZone);
+		else
+		{
+			if (setenv("TZ", tz, 1) < 0)
+				qFatal("date2time: Ran out of space in environment section.");
+			restoreTZ = TRUE;
+		}
+	}
+	else if (sscanf(date, "%d-%d-%d-%d:%d:%d",
+				   	&y, &m, &d, &hour, &min, &sec) == 6)
+		tZone[0] = '\0';
+	else if (sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min) == 5)
+	{
+		sec = 0;
+		tZone[0] = '\0';
+	}
+	else if (sscanf(date, "%d-%d-%d", &y, &m, &d) == 3)
+	{
+		tZone[0] = '\0';
+		hour = min = sec = 0;
+	}
+	else
+	{
+		qFatal("Illegal date: %s", date.latin1());
+		return 0;
+	}
 
-        if (y < 1970)
-        {
-                y = 1970;
-        }
-        if (m < 1 || m > 12)
-        {
-                m = 1;
-        }
-        if (d < 1 || d > 31)
-        {
-                d = 1;
-        }
+	if (y < 1970)
+	{
+		UtilityError = "Year must be larger than 1969";
+		return 0;
+	}
+	if (m < 1 || m > 12)
+	{
+		UtilityError = "Month must be between 1 and 12";
+		return 0;
+	}
+	if (d < 1 || d > 31)
+	{
+		UtilityError = "Day must be between 1 and 31";
+		return 0;
+	}
 
-        struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
-        time_t localTime = mktime(&t);
+	struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
+	time_t localTime = mktime(&t);
 
-        return localTime;
+	if (restoreTZ)
+	{
+		if (savedTZ)
+		{
+			if (setenv("TZ", savedTZ, 1) < 0)
+				qFatal("date2time: Ran out of space in environment section.");
+			delete [] savedTZ;
+		}
+		else
+			unsetenv("TZ");
+	}
+	
+	return localTime;
 }
+
 

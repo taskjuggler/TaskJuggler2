@@ -59,7 +59,11 @@ class Account;
 class AccountList : public CoreAttributesList
 {
 public:
-	AccountList() { }
+	AccountList() 
+	{ 
+	   	sorting[0] = CoreAttributesList::TreeMode;
+		sorting[1] = CoreAttributesList::IdUp;
+	}
 	~AccountList() { }
 
 	Account* first() { return (Account*) CoreAttributesList::first(); }
@@ -68,9 +72,13 @@ public:
 	inline void addAccount(Account* a);
 	inline Account* getAccount(const QString& id);
 
+	static bool isSupportedSortingCriteria
+		(CoreAttributesList::SortCriteria sc);
+	
+	virtual int compareItemsLevel(Account* a1, Account* a2, int level);
+
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-	virtual int compareItemsLevel(Account* a1, Account* a2, int level);
 } ;
 
 class Account : public CoreAttributes

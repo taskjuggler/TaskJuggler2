@@ -47,6 +47,9 @@ public:
 	void setSorting(SortCriteria s, int level);
 	void createIndex(bool initial = FALSE);
 
+	static bool isSupportedSortingCriteria
+		(CoreAttributesList::SortCriteria sc);
+
 	virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 								  int level);
 	

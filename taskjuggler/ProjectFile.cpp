@@ -1260,18 +1260,27 @@ ProjectFile::readTask(Task* parent)
 }
 
 bool
-ProjectFile::readTaskSupplement(const QString& prefix)
+ProjectFile::readTaskSupplement(QString prefix)
 {
 	QString token;
 	TokenType tt;
 	Task* task;
 
+	/* When supplement is used within a task declaration, the prefix is the id
+	 * of the parent task. If it's empty, then we need to use the prefix for
+	 * the current file. The parent task id has no trailing dot, so we have to
+	 * append it. */
+	if (prefix.isEmpty())
+		prefix = getTaskPrefix();
+	else
+		prefix += ".";
+	
 	if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
 		((task = proj->getTask(prefix == "" ?
-							   token : prefix + "." + token)) == 0))
+							   token : prefix + token)) == 0))
 	{
 		fatalError("Task '%s' has not been defined yet",
-				   (prefix == "" ? token : prefix + "." + token).latin1());
+				   (prefix == "" ? token : prefix + token).latin1());
 		return FALSE;
 	}
 	if (nextToken(token) != LCBRACE)
@@ -1427,11 +1436,13 @@ ProjectFile::readTaskBody(Task* task)
 				{
 					QString id;
 					if ((tt = nextToken(id)) != ID &&
-						tt != RELATIVE_ID)
+						tt != RELATIVE_ID && tt != ABSOLUTE_ID)
 					{
 						fatalError("Task ID expected");
 						return FALSE;
 					}
+					if (tt == ABSOLUTE_ID)
+						id = getTaskPrefix() + id;
 					task->addDependency(id);
 					task->setScheduling(Task::ASAP);
 					if ((tt = nextToken(token)) != COMMA)
@@ -1447,11 +1458,13 @@ ProjectFile::readTaskBody(Task* task)
 				{
 					QString id;
 					if ((tt = nextToken(id)) != ID &&
-						tt != RELATIVE_ID)
+						tt != RELATIVE_ID && tt != ABSOLUTE_ID)
 					{
 						fatalError("Task ID expected");
 						return FALSE;
 					}
+					if (tt == ABSOLUTE_ID)
+						id = getTaskPrefix() + id;
 					task->addPreceeds(id);
 					task->setScheduling(Task::ALAP);
 					if ((tt = nextToken(token)) != COMMA)
@@ -2874,14 +2887,14 @@ ProjectFile::readLogicalExpression(int precedence)
 
 	if ((tt = nextToken(token)) == ID || tt == ABSOLUTE_ID)
 	{
-		if (proj->isAllowedFlag(token))
-			op = new Operation(token);
-		else if (proj->getTask(token))
-			op = new Operation(Operation::TaskId, token);
-		else if (proj->getResource(token))
-			op = new Operation(Operation::ResourceId, token);
-		else if (proj->getAccount(token))
-			op = new Operation(Operation::AccountId, token);
+		if (proj->isAllowedFlag(token) ||
+			proj->getTask(token) ||
+			proj->getResource(token) ||
+			proj->getAccount(token) ||
+			proj->isValidId(token))
+		{
+			op = new Operation(Operation::Id, token);
+		}
 		else if (ExpressionTree::isFunction(token))
 		{
 			if ((op = readFunctionCall(token)) == 0)
@@ -2889,9 +2902,17 @@ ProjectFile::readLogicalExpression(int precedence)
 		}
 		else
 		{
-			fatalError("Flag or function '%s' is unknown.", token.latin1());
+			fatalError("Flag, function or ID '%s' is unknown.", token.latin1());
 			return 0;
 		}
+	}
+	else if (tt == DATE)
+	{
+		time_t date;
+		if ((date = date2time(token)) == 0)
+			fatalError("%s", getUtilityError().latin1());
+		else
+			op = new Operation(Operation::Date, date);
 	}
 	else if (tt == INTEGER)
 	{
@@ -3052,20 +3073,27 @@ ProjectFile::readSorting(Report* report, int which)
 			return FALSE;
 		}
 
+		bool ok = TRUE;
 		switch (which)
 		{
 			case 0:
-				report->setTaskSorting(sorting, i);
+				ok = report->setTaskSorting(sorting, i);
 				break;
 			case 1:
-				report->setResourceSorting(sorting, i);
+				ok = report->setResourceSorting(sorting, i);
 				break;
 			case 2:
-				report->setAccountSorting(sorting, i);
+				ok = report->setAccountSorting(sorting, i);
 				break;
 			default:
 				qFatal("readSorting: Unknown sorting attribute");
 				return FALSE;
+		}
+		if (!ok)
+		{
+			fatalError("This sorting criteria is not supported for the list "
+					   "or it is used at the wrong position.");
+			return FALSE;
 		}
 		tt = nextToken(token);
 	} while (++i < CoreAttributesList::maxSortingLevel && tt == COMMA);
@@ -3078,82 +3106,10 @@ ProjectFile::readSorting(Report* report, int which)
 time_t
 ProjectFile::date2time(const QString& date)
 {
-	int y, m, d, hour, min, sec;
-	char tZone[64] = "";
-	char* savedTZ = 0;
-	bool restoreTZ = FALSE;
-	if (sscanf(date, "%d-%d-%d-%d:%d:%d-%s",
-			   &y, &m, &d, &hour, &min, &sec, tZone) == 7 ||
-		(sec = 0) ||	// set sec to 0
-		sscanf(date, "%d-%d-%d-%d:%d-%s",
-			   &y, &m, &d, &hour, &min, tZone) == 6)
-	{
-		const char* tz;
-		if ((tz = getenv("TZ")) != 0)
-		{
-			savedTZ = new char[strlen(tz) + 1];
-			strcpy(savedTZ, tz);
-		}
-		if ((tz = timezone2tz(tZone)) == 0)
-			fatalError("Illegal timezone %s", tZone);
-		else
-		{
-			if (setenv("TZ", tz, 1) < 0)
-				qFatal("Ran out of space in environment section.");
-			restoreTZ = TRUE;
-		}
-	}
-	else if (sscanf(date, "%d-%d-%d-%d:%d:%d",
-				   	&y, &m, &d, &hour, &min, &sec) == 6)
-		tZone[0] = '\0';
-	else if (sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min) == 5)
-	{
-		sec = 0;
-		tZone[0] = '\0';
-	}
-	else if (sscanf(date, "%d-%d-%d", &y, &m, &d) == 3)
-	{
-		tZone[0] = '\0';
-		hour = min = sec = 0;
-	}
-	else
-	{
-		qFatal("Illegal date: %s", date.latin1());
-		return 0;
-	}
-
-	if (y < 1970)
-	{
-		fatalError("Year must be larger than 1969");
-		y = 1970;
-	}
-	if (m < 1 || m > 12)
-	{
-		fatalError("Month must be between 1 and 12");
-		m = 1;
-	}
-	if (d < 1 || d > 31)
-	{
-		fatalError("Day must be between 1 and 31");
-		d = 1;
-	}
-
-	struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
-	time_t localTime = mktime(&t);
-
-	if (restoreTZ)
-	{
-		if (savedTZ)
-		{
-			if (setenv("TZ", savedTZ, 1) < 0)
-				qFatal("Ran out of space in environment section.");
-			delete [] savedTZ;
-		}
-		else
-			unsetenv("TZ");
-	}
-	
-	return localTime;
+	time_t res;
+	if ((res = ::date2time(date)) == 0)
+		fatalError(getUtilityError());
+	return res;
 }
 
 int

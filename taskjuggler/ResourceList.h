@@ -107,6 +107,9 @@ public:
 
 	Resource* getResource(const QString& id);
 
+	static bool isSupportedSortingCriteria
+		(CoreAttributesList::SortCriteria sc);
+	
 	virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
 
 protected:
@@ -188,6 +191,9 @@ public:
 
 	QString getPlanProjectIDs(const Interval& i, Task* task = 0);
 	QString getActualProjectIDs(const Interval& i, Task* task = 0);
+
+	bool isPlanAllocated(const Interval& i, const QString& prjId);
+	bool isActualAllocated(const Interval& i, const QString& prjId);
 
 	void setKotrusId(const QString k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }

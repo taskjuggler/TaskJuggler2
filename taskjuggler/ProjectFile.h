@@ -154,7 +154,7 @@ private:
 	bool readProject();
 	bool readInclude();
 	bool readTask(Task* parent);
-	bool readTaskSupplement(const QString& prefix);
+	bool readTaskSupplement(QString prefix);
 	bool readTaskBody(Task* task);
 	bool readResource(Resource* parent);
 	bool readResourceSupplement();

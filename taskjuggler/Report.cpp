@@ -79,6 +79,51 @@ Report::open()
 	return TRUE;
 }
 
+bool 
+Report::setTaskSorting(CoreAttributesList::SortCriteria sc, int level)
+{
+	if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
+	{
+		if ((sc == CoreAttributesList::TreeMode && level > 0) ||
+			!TaskList::isSupportedSortingCriteria(sc))
+			return FALSE;
+		taskSortCriteria[level] = sc;
+	}
+	else
+		return FALSE;
+	return TRUE;
+}
+
+bool 
+Report::setResourceSorting(CoreAttributesList::SortCriteria sc, int level)
+{
+	if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
+	{
+		if ((sc == CoreAttributesList::TreeMode && level > 0) ||
+			!ResourceList::isSupportedSortingCriteria(sc))
+			return FALSE;
+		resourceSortCriteria[level] = sc;
+	}
+	else
+		return FALSE;
+	return TRUE;
+}
+
+bool 
+Report::setAccountSorting(CoreAttributesList::SortCriteria sc, int level)
+{
+	if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
+	{
+		if ((sc == CoreAttributesList::TreeMode && level > 0) ||
+			!AccountList::isSupportedSortingCriteria(sc))
+			return FALSE;
+		accountSortCriteria[level] = sc;
+	}
+	else
+		return FALSE;
+	return TRUE;
+}
+
 bool
 Report::isHidden(CoreAttributes* c, ExpressionTree* et)
 {

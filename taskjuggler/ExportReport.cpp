@@ -252,7 +252,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 		bl.setAutoDelete(TRUE);
 		for (Booking* b = bl.first(); b != 0; b = bl.next())
 		{
-			if (filteredTaskList.getTask(b->getTask()->getId()))
+			if (filteredTaskList.findRef(b->getTask()) >= 0)
 			{
 				QString start = time2rfc(b->getStart());
 				QString end = time2rfc(b->getEnd());
@@ -264,7 +264,7 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 		bl.setAutoDelete(TRUE);
 		for (Booking* b = bl.first(); b != 0; b = bl.next())
 		{
-			if (filteredTaskList.getTask(b->getTask()->getId()))
+			if (filteredTaskList.findRef(b->getTask()) >= 0)
 			{
 				QString start = time2rfc(b->getStart());
 				QString end = time2rfc(b->getEnd());

@@ -13,6 +13,8 @@
 #ifndef _ExpressionTree_h_
 #define _ExpressionTree_h_
 
+#include <time.h>
+
 #include <qstring.h>
 #include <qdict.h>
 #include <qptrlist.h>
@@ -23,11 +25,13 @@ class ExpressionTree;
 class Operation
 {
 public:
-	enum opType { Const = 1, Variable, Function, TaskId, ResourceId,
-		AccountId, Not, And, Or };
+	enum opType { Const = 1, Variable, Function, Id, Date, Not, And, Or };
 
 	Operation(long v) : opt(Const), value(v) { }
 	Operation(opType ot, const QString& n) : opt(ot), name(n) { }
+	Operation(opType ot, long v) : opt(ot), value(v) { }
+	Operation(opType ot, const QString& n, long v) :
+	   	opt(ot), value(v), name(n) { }
 	Operation(const QString& v) : opt(Variable), name(v) { }
 	Operation(Operation* o1, opType o, Operation* o2 = 0)
 		: opt(o)
@@ -45,6 +49,7 @@ public:
 	~Operation() { }
 
 	long evalAsInt(ExpressionTree* et);
+	time_t evalAsTime(ExpressionTree* et);
 	QString evalAsString(ExpressionTree* et);
 
 private:
