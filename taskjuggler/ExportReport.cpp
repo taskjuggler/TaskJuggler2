@@ -206,11 +206,20 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 						for (Task* tp = t->firstPrevious(); tp != 0;
 							 tp = t->nextPrevious())
 						{
-							if (!first)
-								s << ", ";
-							else
-								first = FALSE;
-							s << tp->getId();
+							/* Save current list item since finds modifies it.
+							 * Remember, we are still iterating the list. */
+							CoreAttributes* curr = filteredTaskList.current();
+							if (filteredTaskList.findRef(tp) > -1)
+							{
+								if (!first)
+									s << ", ";
+								else
+									first = FALSE;
+								s << tp->getId();
+							}
+							/* Restore current list item to continue
+							 * iteration. */
+							filteredTaskList.findRef(curr);
 						}
 						s << endl;
 					}
