@@ -309,8 +309,6 @@ bool ktjview2View::openURL( const KURL& url )
     progressDlg.progressBar()->setProgress( 5 );
     progressDlg.setLabel( i18n( "Building the views" ) );
 
-    m_ganttView->setUpdateEnabled( false );
-
     clearAllViews();
 
     parseProjectInfo();
@@ -320,7 +318,6 @@ bool ktjview2View::openURL( const KURL& url )
     parseLinks( m_project->getTaskListIterator() );
     parseResUsage();
 
-    m_ganttView->setUpdateEnabled( true );
     m_ganttView->setTimelineToStart();
 
     m_editorView->loadDocument( url );
@@ -786,9 +783,8 @@ void ktjview2View::clearAllViews()
     m_ganttView->setUpdateEnabled( false );
     m_ganttView->taskLinks().clear();
     m_ganttView->clear();
-    //m_ganttView->setUpdateEnabled( true );
+    m_ganttView->setUpdateEnabled( true );
 #endif
-
     m_resListView->clear();
 
     m_taskView->clear();

@@ -66,7 +66,7 @@ bool EditorView::loadDocument( const KURL & url )
     kdDebug() << "Opening URL " << url << endl;
 
     doc()->setReadWrite( true );
-    return doc()->openURL( url );
+    return doc()->openURL( url ); // also calls closeURL()
 }
 
 void EditorView::closeDocument()
