@@ -368,7 +368,7 @@ FileInfo::nextToken(QString& token)
 		}
 		else
 		{
-			token += c;
+			token += QChar(c);
 			switch (c)
 			{
 			case '{':
@@ -457,10 +457,31 @@ void
 FileInfo::fatalError(const char* msg, ...)
 {
 	va_list ap;
-	va_start(ap, msg);
 	char buf[1024];
+	va_start(ap, msg);
 	vsnprintf(buf, 1024, msg, ap);
 	va_end(ap);
+	
+	if (macroStack.isEmpty())
+	{
+		qWarning("%s:%d:%s", file.latin1(), currLine, buf);
+		qWarning("%s", lineBuf.latin1());
+	}
+	else
+	{
+		qWarning("Error in expanded macro");
+		qWarning("%s:%d: %s",
+				 macroStack.last()->getFile().latin1(),
+				 macroStack.last()->getLine(), buf);
+		qWarning("%s", lineBuf.latin1());
+	}
+}
+
+void
+FileInfo::fatalErrorVA(const char* msg, va_list ap)
+{
+	char buf[1024];
+	vsnprintf(buf, 1024, msg, ap);
 	
 	if (macroStack.isEmpty())
 	{
@@ -1029,7 +1050,7 @@ ProjectFile::fatalError(const char* msg, ...)
 	if (openFiles.isEmpty())
 		qWarning("Unexpected end of file found. Probably a missing '}'.");
 	else
-		openFiles.last()->fatalError(msg, ap);
+		openFiles.last()->fatalErrorVA(msg, ap);
 	va_end(ap);
 }
 
@@ -1389,7 +1410,6 @@ ProjectFile::readTaskBody(Task* task)
 				if (!readPriority(priority))
 					return FALSE;
 				task->setPriority(priority);
-				break;
 			}
 			else if (token == KW("account"))
 			{
@@ -1401,7 +1421,6 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				}
 				task->setAccount(proj->getAccount(account));
-				break;
 			}
 			else if (token == KW("startcredit"))
 			{
@@ -1411,7 +1430,6 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				}
 				task->setStartCredit(token.toDouble());
-				break;
 			}
 			else if (token == KW("endcredit"))
 			{
@@ -1421,7 +1439,6 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				}
 				task->setEndCredit(token.toDouble());
-				break;
 			}
 			else if (token == KW("projectid"))
 			{
@@ -1432,13 +1449,11 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				}
 				task->setProjectId(token);
-				break;
 			}
 			else if (token == KW("include"))
 			{
 				if (!readInclude())
 					return FALSE;
-				break;
 			}
 			else
 			{
@@ -3014,15 +3029,20 @@ int
 ProjectFile::hhmm2time(const QString& hhmm)
 {
 	int hour = hhmm.left(hhmm.find(':')).toInt();
-	if (hour > 23)
+	if (hour > 24)
 	{
-		fatalError("Hour must be in the range of 0 - 23");
+		fatalError("Hour must be in the range of 0 - 24");
 		return -1;
 	}
 	int min = hhmm.mid(hhmm.find(':') + 1).toInt();
 	if (min > 59)
 	{
 		fatalError("Minutes must be in the range of 0 - 59");
+		return -1;
+	}
+	if (hour == 24 && min != 0)
+	{
+		fatalError("Maximum time is 24:00");
 		return -1;
 	}
 	return hour * 60 * 60 + min * 60;

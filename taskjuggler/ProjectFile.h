@@ -52,6 +52,7 @@ public:
 
 	bool readMacroCall();
 
+	void fatalErrorVA(const char* msg, va_list ap);
 	void fatalError(const char* msg, ...);
 
 private:
