@@ -954,8 +954,11 @@ void
 ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 {
 	// Generates 2nd header line of monthly calendar view.
-	static char* mnames[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-							  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+	static const char* mnames[] =
+   	{
+	   	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+   	};
 
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))

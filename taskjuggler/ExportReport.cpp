@@ -76,7 +76,7 @@ ExportReport::generate()
 
 bool
 ExportReport::generateTaskList(TaskList& filteredTaskList,
-							   ResourceList& filteredResourceList)
+							   ResourceList&)
 {
 	for (Task* t = filteredTaskList.first(); t != 0;
 		 t = filteredTaskList.next())

@@ -2945,7 +2945,10 @@ ProjectFile::readLogicalExpression(int precedence)
 	{
 		time_t date;
 		if ((date = date2time(token)) == 0)
+		{
 			fatalError("%s", getUtilityError().latin1());
+			return 0;
+		}
 		else
 			op = new Operation(Operation::Date, date);
 	}

@@ -499,6 +499,9 @@ Report::scaledLoad(double t)
 			case years:
 				str.sprintf("%.1f", t * factors[5]);
 				break;
+			case shortAuto:
+			case longAuto:
+				break;	// handled above switch statement already
 		}
 		// If str ends with ".0" remove ".0".
 		if (str[str.length() - 1] == '0')

@@ -191,9 +191,9 @@ BookingList Kotrus::loadBookings( const QString& kotrusID,
    return( blist );
 }
 
-BookingList Kotrus::loadBookingsXML( const QString& kotrusID,
-				     const QStringList& skipProjectIDs,
-				     int user )
+BookingList Kotrus::loadBookingsXML( const QString& /*kotrusID*/,
+				     const QStringList& /*skipProjectIDs*/,
+				     int /*user*/ )
 {
    BookingList blist;
    /* TODO */
@@ -375,16 +375,16 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
    return( cnt_bookings );
 }
 
-int Kotrus::saveBookingsXML( const QString& kotrusID,  /* the user id */
-			  const QString& projectID, 
-			  const BookingList& blist,
-			  int   lockedFor )
+int Kotrus::saveBookingsXML( const QString& /*kotrusID*/,  /* the user id */
+			  const QString& /*projectID*/, 
+			  const BookingList& /*blist*/,
+			  int   /*lockedFor*/ )
 {
    /* TODO */
    return( 0 );
 }
 
-int Kotrus::getKotrusAccountId( const QString& acc )
+int Kotrus::getKotrusAccountId( const QString& /*acc*/ )
 {
    return(0);
 }

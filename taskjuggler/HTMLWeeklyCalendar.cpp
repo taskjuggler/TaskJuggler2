@@ -126,6 +126,8 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredList)
 		}
 		s << "</tr>";
 		week = wd;	
-	}	
+	}
+
+	return TRUE;
 }
 

@@ -187,7 +187,7 @@ Resource::sbIndex(time_t date) const
 	// Convert date to corresponding scoreboard index.
 	uint sbIdx = (date - project->getStart()) /
 		project->getScheduleGranularity();
-	if (sbIdx < 0 || sbIdx >= sbSize)
+	if (sbIdx >= sbSize)
 		qFatal("Date %s is outside of the defined project timeframe "
 			   "(Resource %s, Index %d)",
 			   time2ISO(date).latin1(),
@@ -255,7 +255,7 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 	if (scoreboard[sbIdx])
 	{
 		if (debugLevel > 6)
-			qDebug("Resource %s is busy (%d)", id.latin1(), (int)
+			qDebug("Resource %s is busy (%ld)", id.latin1(), (long)
 				   scoreboard[sbIdx]);
 		return FALSE;
 	}
