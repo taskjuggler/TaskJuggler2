@@ -225,13 +225,10 @@ FileInfo::nextToken(QString& token)
 				   (isalnum(c) || (c == '_') || (c == '.') || (c == '!')))
 				token += c;
 			ungetC(c);
+			if (token[0] == '!')
+				return RELATIVE_ID;
 			if (token.contains('.'))
-			{
-				if (token[0] == '!')
-					return RELATIVE_ID;
-				else
-					return ABSOLUTE_ID;
-			}
+				return ABSOLUTE_ID;
 			else
 				return ID;
 		}

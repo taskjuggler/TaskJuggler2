@@ -1051,7 +1051,7 @@ ProjectFile::readTaskBody(Task* task)
 						errorMessage(i18n("Task ID expected"));
 						return FALSE;
 					}
-					if (tt == ABSOLUTE_ID)
+					if (tt == ABSOLUTE_ID || tt == ID)
 						id = getTaskPrefix() + id;
 					task->addDepends(id);
 					task->setScheduling(Task::ASAP);
@@ -1080,7 +1080,7 @@ ProjectFile::readTaskBody(Task* task)
 						errorMessage(i18n("Task ID expected"));
 						return FALSE;
 					}
-					if (tt == ABSOLUTE_ID)
+					if (tt == ABSOLUTE_ID || tt == ID)
 						id = getTaskPrefix() + id;
 					task->addPrecedes(id);
 					task->setScheduling(Task::ALAP);
