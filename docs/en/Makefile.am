@@ -42,6 +42,13 @@ taskjuggler.ps: $(SGMLSOURCES)
 	    CATALOG.local *.dsl ; \
 	fi
 
+taskjuggler.pdf: $(SGMLSOURCES)
+	@if test "${PSMANUAL}" != "no" ; then \
+	  db2ps --pdf --xencoding utf-8 taskjuggler.xml ;\
+	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
+	    CATALOG.local *.dsl ; \
+	fi
+
 tarball: 
 	@if test -d taskjuggler ; then \
 	  rm -f $$doctarball ; \
@@ -53,7 +60,7 @@ tarball:
 	  echo $$doctarball " created" ; \
 	fi
 
-all-local: taskjuggler/book1.html taskjuggler.ps
+all-local: taskjuggler/book1.html taskjuggler.ps taskjuggler.pdf
 
 check-local:
 	xmllint ${SGMLSOURCES}
