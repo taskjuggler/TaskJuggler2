@@ -8,4 +8,7 @@ taskjuggler.sgml
 *.ps
 taskjuggler
 taskjuggler.junk
-
+CATALOG.local
+suse-html.dsl
+suse-print.dsl
+taskjuggler.out
