@@ -69,6 +69,8 @@
 #include "resUsageView.h"
 #include "editorView.h"
 #include "ktjUtils.h"
+#include "ktjReportView.h"
+#include "ktjTaskReport.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -93,7 +95,7 @@ int pr_RU = 0;
 #endif
 
 ktjview2View::ktjview2View( QWidget *parent )
-    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
+    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 ), m_taskReport( 0 )
 {
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
@@ -173,7 +175,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_widgetStack->addWidget( m_resUsageView );
 
     // report view
-    m_reportView = new KListView( this, "report_view" );
+    m_reportView = new KtjReportView( this, "report_view" );
     m_widgetStack->addWidget( m_reportView );
 
     // editor view
@@ -195,6 +197,7 @@ ktjview2View::~ktjview2View()
 {
     delete m_project;
     delete m_ganttPopupMenu;
+    delete m_taskReport;
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -1274,6 +1277,9 @@ void ktjview2View::slotTaskCoverage()
     if ( !m_project )
         return;
 
+    if ( !m_taskReport )
+        m_taskReport = new KtjTaskReport( m_project, m_reportView );
+    m_taskReport->generate();
 }
 
 #include "ktjview2view.moc"

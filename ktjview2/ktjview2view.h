@@ -48,6 +48,8 @@ class TaskItem;
 class QPopupMenu;
 class ResUsageView;
 class EditorView;
+class KtjReportView;
+class KtjTaskReport;
 
 enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS,
        ID_VIEW_RES_USAGE, ID_VIEW_REPORTS, ID_VIEW_EDITOR };
@@ -388,7 +390,8 @@ private:
     ResUsageView * m_resUsageView;
 
     /// report view component
-    KListView * m_reportView;
+    KtjReportView * m_reportView;
+    KtjTaskReport * m_taskReport;
     /// editor view
     EditorView * m_editorView;
 

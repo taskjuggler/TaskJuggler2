@@ -194,7 +194,6 @@ void ResUsageView::setEndDate( const QDateTime & date )
 Interval ResUsageView::intervalForCol( int col ) const
 {
     // get the start point, get the start of the next point (Utility.h) and calc the delta
-
     time_t intervalStart = m_start.toTime_t();
     time_t intervalEnd = intervalStart;
     QDateTime tmp;
