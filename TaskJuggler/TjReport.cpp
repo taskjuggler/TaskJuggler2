@@ -41,6 +41,7 @@
 #include "ExpressionTree.h"
 #include "Report.h"
 #include "TableColumnFormat.h"
+#include "TextAttribute.h"
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
 #include "QtResourceReport.h"
@@ -325,6 +326,30 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         else if ((*ci)->getName() == "statusnote")
         {
         }
+        else
+        {
+            // Handle custom attributes
+            const CustomAttribute* custAttr =
+                t->getCustomAttribute((*ci)->getName());
+            if (custAttr)
+            {
+                switch (custAttr->getType())
+                {
+                    case CAT_Text:
+                        cellText =
+                            dynamic_cast<const TextAttribute*>(custAttr)->
+                            getText();
+                        break;
+                    case CAT_Reference:
+                        // TODO: not yet implemented
+                        break;
+                    default:
+                        kdError() << "Unknown attribute type "
+                            << custAttr << endl;
+                }
+            }
+        }
+
 
         lvi->setText(column, cellText);
         if (!icon.isNull())
