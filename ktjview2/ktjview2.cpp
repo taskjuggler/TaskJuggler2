@@ -80,7 +80,8 @@ ktjview2::ktjview2()
 
     m_activeFilter = 0;
 
-    slotSwitchView( ID_VIEW_INFO );
+    //slotSwitchView( ID_VIEW_INFO );
+    slotSidebarInfo();
 }
 
 ktjview2::~ktjview2()
@@ -330,6 +331,7 @@ void ktjview2::slotSidebarInfo()
 {
     toolBar( "filterToolBar" )->hide();
     toolBar( "ganttToolBar" )->hide();
+    m_filterForAction->setEnabled( false );
     m_view->activateView( ID_VIEW_INFO );
 }
 
@@ -337,6 +339,7 @@ void ktjview2::slotSidebarGantt()
 {
     toolBar( "filterToolBar" )->hide();
     toolBar( "ganttToolBar" )->show();
+    m_filterForAction->setEnabled( false );
     m_view->activateView( ID_VIEW_GANTT );
 }
 
@@ -345,6 +348,7 @@ void ktjview2::slotSidebarResources()
     m_searchLine->setListView( m_view->resListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
+    m_filterForAction->setEnabled( false );
     m_view->activateView( ID_VIEW_RESOURCES );
 }
 
@@ -353,6 +357,7 @@ void ktjview2::slotSidebarTasks()
     m_searchLine->setListView( m_view->taskListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
+    m_filterForAction->setEnabled( true );
     m_view->activateView( ID_VIEW_TASKS );
 }
 
