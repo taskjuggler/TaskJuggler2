@@ -114,7 +114,7 @@ void ktjview2::setupActions()
     // View menu
 #if 0
     KStdAction::find( m_view, SLOT( find() ), actionCollection()); // TODO
-    new KAction( i18n( "Filter..." ), "filter", KShortcut(),
+    new KAction( i18n( "&Filter..." ), "filter", KShortcut(),
                  m_view, SLOT( filter() ), actionCollection(), "filter" );
 #endif
 
@@ -129,7 +129,7 @@ void ktjview2::setupActions()
     m_filterForTasksAction->setCurrentItem( 0 ); // All Tasks by default
 
     // Gantt menu
-    m_calendarAction = new KToggleAction( i18n( "Calendar mode" ), "today", KShortcut(),
+    m_calendarAction = new KToggleAction( i18n( "&Calendar mode" ), "today", KShortcut(),
                                           this, SLOT( setCalendarMode() ),
                                           actionCollection(), "calendar_mode" );
     new KAction( i18n( "Zoom &in" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
@@ -141,7 +141,7 @@ void ktjview2::setupActions()
     new KAction( i18n( "Set &timeframe" ), "clock", KShortcut(),
                  m_view, SLOT( slotZoomTimeframe() ), actionCollection(), "timeframe" );
 
-    m_scaleAction = new KSelectAction( i18n( "Scale" ), 0, actionCollection(), "scale" );
+    m_scaleAction = new KSelectAction( i18n( "&Scale" ), 0, actionCollection(), "scale" );
     QStringList items = QStringList();
     items << i18n( "Minute" ) << i18n( "Hour" ) << i18n( "Day" ) <<
         i18n( "Week" ) << i18n( "Month" ) << i18n( "Auto" );
@@ -186,6 +186,15 @@ void ktjview2::setupActions()
                  m_view, SLOT( queryResource() ), actionCollection(), "query_resource" );
 #endif
 
+    // Resource usage menu
+    m_resScaleAction = new KSelectAction( i18n( "&Scale" ), 0, actionCollection(), "res_scale" );
+    items.clear();
+    items << i18n( "Days" ) << i18n( "Weeks" ) << i18n( "Months" ) << i18n( "Quarters" );
+    m_resScaleAction->setItems( items );
+    m_resScaleAction->setCurrentItem( 0 ); // TODO make configurable
+    connect( m_resScaleAction, SIGNAL( activated( int ) ),
+             m_view, SLOT( slotResScale( int ) ) );
+
     // Sidebar
     m_sidebarInfo = new KRadioAction( i18n( "Info" ), "projectinfo", KShortcut(), actionCollection(), "sidebar_info" );
     m_sidebarInfo->setExclusiveGroup( "sidebar" );
@@ -202,6 +211,11 @@ void ktjview2::setupActions()
     m_sidebarTasks = new KRadioAction( i18n( "Tasks" ), "tasks", KShortcut(), actionCollection(), "sidebar_tasks" );
     m_sidebarTasks->setExclusiveGroup( "sidebar" );
     connect( m_sidebarTasks, SIGNAL( activated() ), this, SLOT( slotSidebarTasks() ) );
+
+    m_sidebarResUsage = new KRadioAction( i18n( "Resource usage" ), "resources",
+                                          KShortcut(), actionCollection(), "sidebar_res_usage" );
+    m_sidebarResUsage->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarResUsage, SIGNAL( activated() ), this, SLOT( slotSidebarResUsage() ) );
 
     connect( m_view, SIGNAL( signalSwitchView( int ) ), this, SLOT( slotSwitchView( int ) ) );
 
@@ -352,6 +366,7 @@ void ktjview2::slotSidebarInfo()
     enableGanttActions( false );
     enableTasksActions( false );
     enableResourceActions( false );
+    enableResUsageActions( false );
     m_view->activateView( ID_VIEW_INFO );
 }
 
@@ -362,6 +377,7 @@ void ktjview2::slotSidebarGantt()
     enableGanttActions( true );
     enableTasksActions( false );
     enableResourceActions( false );
+    enableResUsageActions( false );
     m_view->activateView( ID_VIEW_GANTT );
 }
 
@@ -374,6 +390,7 @@ void ktjview2::slotSidebarResources()
     enableGanttActions( false );
     enableTasksActions( false );
     enableResourceActions( true );
+    enableResUsageActions( false );
     m_view->activateView( ID_VIEW_RESOURCES );
 }
 
@@ -386,7 +403,19 @@ void ktjview2::slotSidebarTasks()
     enableGanttActions( false );
     enableTasksActions( true );
     enableResourceActions( false );
+    enableResUsageActions( false );
     m_view->activateView( ID_VIEW_TASKS );
+}
+
+void ktjview2::slotSidebarResUsage()
+{
+    toolBar( "filterToolBar" )->hide();
+    toolBar( "ganttToolBar" )->hide();
+    enableGanttActions( false );
+    enableTasksActions( false );
+    enableResourceActions( false );
+    enableResUsageActions( true );
+    m_view->activateView( ID_VIEW_RES_USAGE );
 }
 
 void ktjview2::slotSwitchView( int type )
@@ -399,6 +428,8 @@ void ktjview2::slotSwitchView( int type )
         m_sidebarResources->activate();
     else if ( type == ID_VIEW_TASKS )
         m_sidebarTasks->activate();
+    else if ( type == ID_VIEW_RES_USAGE )
+        m_sidebarResUsage->activate();
 }
 
 void ktjview2::setCalendarMode()
@@ -452,6 +483,11 @@ void ktjview2::enableTasksActions( bool enable )
 void ktjview2::enableResourceActions( bool enable )
 {
     m_filterForResourcesAction->setEnabled( enable );
+}
+
+void ktjview2::enableResUsageActions( bool enable )
+{
+    m_resScaleAction->setEnabled( enable );
 }
 
 void ktjview2::expandAll()

@@ -18,7 +18,8 @@ ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/
 # which sources should be compiled for ktjview2
 ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp ResourceItem.cpp \
 	ktjview2iface.skel timedialog.cpp settings.kcfgc gantt.ui \
-	filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp
+	filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp \
+	resUsageView.cpp
 
 kde_kcfg_DATA = ktjview2.kcfg
 

@@ -1,8 +1,11 @@
+// -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
+
 #ifndef _RESUSAGE_VIEW_H_
 #define _RESUSAGE_VIEW_H_
 
 #include <qtable.h>
 #include <qdatetime.h>
+#include <qstringlist.h>
 
 #include "Resource.h"
 #include "Project.h"
@@ -15,17 +18,14 @@ class ResUsageView: public QTable
 {
     Q_OBJECT
 public:
-    ResUsageView( const QDateTime & start, const QDateTime & end, QWidget * parent = 0, const char * name = 0 );
+    ResUsageView( QWidget * parent = 0, const char * name = 0 );
     virtual ~ResUsageView();
 
     void assignResources( ResourceList reslist );
     void clear();
 
-    // @reimp
-    virtual void paintCell( QPainter * p, int row, int col, const QRect & cr, bool selected, const QColorGroup & cg );
-
     Scale scale() const;
-    void setScale( Scale sc );
+    void setScale( int sc );
 
     QDateTime startDate() const;
     void setStartDate( const QDateTime & date );
@@ -34,6 +34,9 @@ public:
     void setEndDate( const QDateTime & date );
 
 protected:
+    // @reimp
+    virtual void paintCell( QPainter * p, int row, int col, const QRect & cr, bool selected, const QColorGroup & cg );
+
      // @reimp, noop
     virtual void resizeData( int len );
 
@@ -57,15 +60,24 @@ private:
     Interval intervalForCol( int col ) const;
 
     /**
+     * @return Resource which corresponds to @p row
+     */
+    Resource * resourceForRow( int row );
+
+    /**
      * @return list of column labels, depending on the current scale
      */
     QStringList getColumnLabels() const;
 
+    /**
+     * @return formatted @p date according to @p format and the current scale
+     * (uses strftime)
+     */
     QString formatDate( const QDateTime & date, const char * format ) const;
 
     /// list of resources
     ResourceList m_resList;
-    /// list of row labels (resource names)
+    /// list of row labels <res ID, res name>
     QStringList m_rowLabels;
     // current time scale
     Scale m_scale;

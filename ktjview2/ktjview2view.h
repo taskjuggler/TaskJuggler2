@@ -46,8 +46,9 @@ class KPrinter;
 class TaskList;
 class TaskItem;
 class QPopupMenu;
+class ResUsageView;
 
-enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS };
+enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS, ID_VIEW_RES_USAGE };
 
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
@@ -145,11 +146,18 @@ public slots:
     void zoomFit();
 
     /**
-     * Select a scale for the gantt view.
+     * Select a scale for the gantt view
      * @param scale the requested scale
      * @see KDGanttView::Scale
      */
     void slotScale( int scale );
+
+    /**
+     * Select a scale for the resource usage view
+     * @param scale the requested scale
+     * @see ResUsageView::Scale
+     */
+    void slotResScale( int scale );
 
     /**
      * Zooms so that at least the selected time period is visible after the zoom.
@@ -261,6 +269,8 @@ private:
      */
     void parseGantt( TaskListIterator it, int sc = 0 );
 
+    void parseResUsage();
+
     /**
      * @return a comma separated list of resources responsible for @p task
      */
@@ -319,6 +329,8 @@ private:
     KListView * m_resListView;
     /// task (flat) view
     KListView * m_taskView;
+    /// resource usage view
+    ResUsageView * m_resUsageView;
 
     /// gantt listview item popup menu
     QPopupMenu * m_ganttPopupMenu;

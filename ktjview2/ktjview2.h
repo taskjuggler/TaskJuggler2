@@ -142,6 +142,7 @@ private slots:
     void slotSidebarGantt();
     void slotSidebarResources();
     void slotSidebarTasks();
+    void slotSidebarResUsage();
 
     /**
      * Activate the sidebar actions, switch the view
@@ -183,6 +184,8 @@ private:
 
     void enableResourceActions( bool enable );
 
+    void enableResUsageActions( bool enable );
+
     ktjview2View *m_view;
 
     // actions
@@ -203,8 +206,11 @@ private:
     // search line
     QuickSearchWidget * m_quickSearch;
 
+    // resource usage stuff
+    KSelectAction * m_resScaleAction;
+
     // sidebar actions
-    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks;
+    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks, * m_sidebarResUsage;
 };
 
 #endif // _KTJVIEW2_H_

@@ -58,6 +58,7 @@
 #include "settings.h"
 #include "filterDialog.h"
 #include "selectDialog.h"
+#include "resUsageView.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -146,6 +147,10 @@ ktjview2View::ktjview2View( QWidget *parent )
 
     m_textBrowser->setText( i18n( "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>" ) );
     m_widgetStack->raiseWidget( m_textBrowser );
+
+    // resource usage view
+    m_resUsageView = new ResUsageView( this, "res_usage_view" );
+    m_widgetStack->addWidget( m_resUsageView );
 
     // gantt popup menu
     m_ganttPopupMenu = new QPopupMenu( this, "gantt_popup" );
@@ -304,6 +309,7 @@ bool ktjview2View::openURL( const KURL& url )
     parseTasks( m_project->getTaskListIterator() );
     parseGantt( m_project->getTaskListIterator() );
     parseLinks( m_project->getTaskListIterator() );
+    parseResUsage();
 
     m_ganttView->setUpdateEnabled( true );
     m_ganttView->setTimelineToStart();
@@ -773,6 +779,8 @@ void ktjview2View::clearAllViews()
     m_resListView->clear();
 
     m_taskView->clear();
+
+    m_resUsageView->clear();
 }
 
 QString ktjview2View::formatAllocations( Task* task ) const
@@ -1021,6 +1029,8 @@ void ktjview2View::activateView( int id )
         m_widgetStack->raiseWidget( m_resListView );
     else if ( id == ID_VIEW_TASKS )
         m_widgetStack->raiseWidget( m_taskView );
+    else if ( id == ID_VIEW_RES_USAGE )
+        m_widgetStack->raiseWidget( m_resUsageView );
 }
 
 void ktjview2View::recreateProject()
@@ -1060,6 +1070,18 @@ void ktjview2View::collapseAll( KListView * view )
 
         ++it;
     }
+}
+
+void ktjview2View::parseResUsage()
+{
+    m_resUsageView->setStartDate( time_t2Q( m_project->getStart() ) );
+    m_resUsageView->setEndDate( time_t2Q( m_project->getEnd() ) );
+    m_resUsageView->assignResources( m_project->getResourceList() );
+}
+
+void ktjview2View::slotResScale( int scale )
+{
+    m_resUsageView->setScale( scale );
 }
 
 #include "ktjview2view.moc"
