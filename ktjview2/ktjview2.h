@@ -217,6 +217,9 @@ private:
      */
     void enableResUsageActions( bool enable );
 
+    /**
+     * Enable/disable Editor actions depending on param @p enable
+     */
     void enableEditorActions( bool enable );
 
     /// pointer to the main view

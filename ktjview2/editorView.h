@@ -30,7 +30,7 @@ class QVBoxLayout;
 
 /**
  * Widget for editing the source code of the project
- * (uses the KTextEditor interface).
+ * (uses the KTextEditor interfaces).
  * @short Editor widget
  * @author Lukas Tinkl <lukas.tinkl@suse.cz>
  */

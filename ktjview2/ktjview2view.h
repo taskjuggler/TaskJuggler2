@@ -133,8 +133,14 @@ public:
     void activateView( int id );
 
 public slots:
+    /**
+     * Undo the last operation (Editor slot)
+     */
     void slotUndo();
 
+    /**
+     * Redo the last operation (Editor slot)
+     */
     void slotRedo();
 
     /**
