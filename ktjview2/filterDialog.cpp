@@ -54,6 +54,7 @@ FilterDialog::FilterDialog( QWidget * parent, const char * name )
                  << i18n( "less than" ) << i18n( "greater than or equal" );
 
     m_base = new FilterWidget( this, name );
+    m_base->tbConditions->setFocusStyle( QTable::FollowStyle );
     setMainWidget( m_base );
 
     connect( ( QWidget * ) m_base->btnMore, SIGNAL( clicked() ), this, SLOT( slotMore() ) );
@@ -66,7 +67,7 @@ FilterDialog::FilterDialog( QWidget * parent, const char * name )
     connect( ( QWidget * ) m_base->lbFilters, SIGNAL( currentChanged( QListBoxItem * ) ),
              this, SLOT( slotFilterChanged( QListBoxItem * ) ) );
 
-    m_base->tbConditions->horizontalHeader()->setStretchEnabled( true, 1 ); // stretch the Expr column
+    m_base->tbConditions->setColumnStretchable( true, 1 ); // stretch the Expr column
 }
 
 FilterDialog::~FilterDialog()
@@ -83,15 +84,11 @@ void FilterDialog::slotMore()
     QComboTableItem * item = new QComboTableItem( m_base->tbConditions, m_conditions );
     m_base->tbConditions->setItem( m_base->tbConditions->numRows() - 1, 1, item );
     m_base->tbConditions->adjustColumn( 1 );
-
-    m_base->tbConditions->update();
 }
 
 void FilterDialog::slotFewer()
 {
     m_base->tbConditions->removeRow( m_base->tbConditions->numRows() - 1 ); // remove the last row
-
-    m_base->tbConditions->update();
 }
 
 void FilterDialog::slotClear()
