@@ -23,7 +23,7 @@ INCLUDES= $(all_includes)
 taskjuggler_METASOURCES = AUTO
 
 # the library search path. 
-taskjuggler_LDFLAGS = $(all_libraries) $(LIB_KDEUI) $(LIB_KDECORE)
+taskjuggler_LDFLAGS = $(all_libraries) $(LIB_KDEUI) $(LIB_KDECORE) $(LIBICAL)
 
 # them while "make clean", use CLEANFILES
 DISTCLEANFILES = $(taskjuggler_METASOURCES)
