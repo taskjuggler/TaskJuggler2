@@ -23,6 +23,7 @@
 #include "ktvtaskcanvas.h"
 
 class KTVTaskTable;
+class KTVHeader;
 class KTVTaskCanvasItem;
 class QPoint;
 
@@ -30,8 +31,10 @@ class KTVTaskCanvasView: public QCanvasView
 {
     Q_OBJECT
 public:
-    KTVTaskCanvasView( QWidget *parent, KTVTaskTable *tab=0, const char *name = 0 );
+    KTVTaskCanvasView( QWidget *parent, KTVTaskTable *tab, KTVHeader *h, const char *name = 0 );
     virtual ~KTVTaskCanvasView(){ }
+
+    /* returns the width the canvas was resized to calculated from start- and end date */
     void showProject( Project * );
 
 
@@ -42,8 +45,6 @@ public:
      * @returns a task item or zero.
      */
     KTVCanvasItemBase* taskItemAt( const QPoint& );
-
-    void finalise( Project *p );
 
     /**
      * @return the time that is currently in center of the viewport.
@@ -67,15 +68,16 @@ public slots:
     void zoomOut();
     void zoomOriginal();
     void slScrollTo(int, int);
-
+    void clear();
 
 private:
     void addTask( Task *t );
     Project *m_pro;
 
     KTVTaskCanvas *m_canvas;
+    KTVTaskTable  *m_table;
+    KTVHeader     *m_header;
     double         m_scaleFactor;
-
 };
 
 

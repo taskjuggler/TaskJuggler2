@@ -10,7 +10,7 @@ INCLUDES = $(all_includes) $(ICAL_INCLUDES) -I../taskjuggler
 # these are the headers for your project
 noinst_HEADERS = ktjview.h ktjview_part.h ktvtasktable.h ktvtasktableitem.h \
 	ktvtaskcanvas.h ktjgantt.h ktvcanvasitem.h \
-	ktvreport.h tasktip.h
+	ktvreport.h tasktip.h ktvheader.h timedialog.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
@@ -49,7 +49,8 @@ kde_module_LTLIBRARIES = libktjviewpart.la
 # the Part's source, library search path, and link libraries
 libktjviewpart_la_SOURCES = ktjview_part.cpp ktvtasktable.cpp ktvtasktableitem.cpp \
 	ktvtaskcanvas.cpp ktvtaskcanvasview.cpp ktjgantt.cpp \
-	ktvcanvasitem.cpp ktvreport.cpp ktvconnector.cpp tasktip.cpp
+	ktvcanvasitem.cpp ktvreport.cpp ktvconnector.cpp tasktip.cpp \
+	ktvheader.cpp timedialog.cpp
 
 libktjviewpart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) 
 libktjviewpart_la_LIBADD  = $(LIB_KPARTS) $(LIB_KFILE)  ../taskjuggler/libtaskjuggler.la

@@ -27,7 +27,7 @@ int KTVTaskTableItem::compare( QListViewItem *i, int col, bool ascending ) const
    int r = 1;
 
    // qDebug( "SORTING" );
-   
+
    if( mTask && iTask )
    {
 
@@ -37,8 +37,8 @@ int KTVTaskTableItem::compare( QListViewItem *i, int col, bool ascending ) const
       time_t mtEnd = mTask->getEnd(Task::Plan);
       time_t me,other;
       me = other = 0;
-      
-   
+
+
       switch( col )
       {
 	 case COL_PLAN_LEN:

@@ -18,7 +18,8 @@
 #include "ktvtaskcanvasview.h"
 #include "Utility.h"
 #include "Task.h"
-
+#include "Allocation.h"
+#include "Resource.h"
 
 void TaskTip::maybeTip( const QPoint& pos )
 {
@@ -58,8 +59,17 @@ QString TaskTip::beautyTask( Task *t ) const
       QString h;
 
       ret = i18n( "Task <B>" ) + t->getName() + "</B><BR>";
-      ret += QString("<TABLE cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(Task::Plan) ));
-      ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR></TABLE>").arg(time2ISO(t->getEnd(Task::Plan) ));
+      ret += QString("<TABLE width=\"280\" cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getStart(Task::Plan) ));
+      ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR>").arg(time2ISO(t->getEnd(Task::Plan) ));
+
+      for (QPtrListIterator<Allocation> tli( t->getAllocationIterator() );
+           *tli != 0; ++tli)
+      {
+          Resource *r = (*tli)->getLockedResource();
+          if( r )
+              ret += QString("<tr><td>Working:</td><td>") + r->getName() + QString(" (%1%)").arg((*tli)->getLoad()) + "</td></tr>";
+      }
+      ret += "</TABLE>";
    }
    return ret;
 }

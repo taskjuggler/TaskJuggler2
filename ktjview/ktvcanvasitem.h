@@ -43,7 +43,7 @@ public:
    virtual void show(){}
    virtual void hide();
    virtual bool contains( QCanvasItem* ){ return false; }
-   virtual int  height( ) const { return m_height; }
+   virtual int  height( ) { return m_height; }
    virtual QRect rect()  { return QRect();  }
    virtual bool isVisible() { return false; };
 
@@ -62,7 +62,7 @@ public:
    virtual void moveInConnectorsBy ( int, int );
    virtual void moveOutConnectorsBy( int, int );
    virtual void moveConnectorsBy   ( int, int );
-   
+
    int               m_height;
 protected:
    Task             *m_task;
@@ -105,7 +105,6 @@ public:
    int y();
    int x();
    bool isVisible() { return cRect->isVisible();};
-
    QPoint getConnectorIn() const;
    QPoint getConnectorOut() const;
 private:

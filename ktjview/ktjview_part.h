@@ -50,20 +50,22 @@ public:
 public slots:
 
     void slReload();
-    
+
 protected:
     /**
      * This must be implemented by each part
      */
     virtual bool openFile();
-    
+
 
 protected slots:
     void fileOpen();
    void slChangeStatusBar( const QString& );
 
 private:
-   KTJGantt *m_gantt;
+    void setupActions();
+
+    KTJGantt *m_gantt;
     Project *m_project;
 };
 

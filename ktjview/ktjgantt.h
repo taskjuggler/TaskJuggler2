@@ -22,7 +22,10 @@ class KTVTaskTable;
 class KTVTaskCanvasView;
 class KAboutData;
 class Project;
-
+class KTVHeader;
+class KDateWidget;
+class QDate;
+class TimeDialog;
 
 /**
  *
@@ -30,7 +33,6 @@ class Project;
  * @author Klaas Freitag <freitag@kde.org>
  * @version 0.1
  */
-class KActionCollection;
 
 class KTJGantt : public QSplitter
 {
@@ -49,20 +51,36 @@ public:
 
     void showProject( Project * );
 
+    void setInterval( time_t start, time_t end );
+
 public slots:
     void slZoomIn();
     void slZoomOut();
     void slZoomOriginal();
+    void slTimeFrame();
+    /**
+     *  Start and End of the interval that is displayed
+     */
+    void slSetWeekStartsMonday( bool t );
 
 protected slots:
     virtual void slCanvasClicked( time_t );
+    void slTimeFromDialog();
 
 signals:
     void statusBarChange( const QString& );
 
 private:
     KTVTaskCanvasView *m_canvas;
-    KTVTaskTable *m_table;
+    KTVHeader         *m_header;
+    KTVTaskTable      *m_table;
+
+    bool                m_weekStartMon;
+
+    time_t              m_start;
+    time_t              m_end;
+
+    TimeDialog          *m_timeDialog;
 };
 
 #endif // KTJVIEWPART_H

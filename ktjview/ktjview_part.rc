@@ -12,6 +12,7 @@
   <Action name="zoomIn"/>
   <Action name="zoomOut"/>
   <Action name="zoomOriginal"/>
+  <Action name="timeFrame"/>
   <Action name="reload"/>
   <Separator/>
 </ToolBar>

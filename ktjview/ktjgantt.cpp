@@ -16,51 +16,52 @@
 
 #include "ktvtasktable.h"
 #include "ktvtaskcanvasview.h"
+#include "ktvheader.h"
+#include "timedialog.h"
+#include <qvbox.h>
 
 
 KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
     : QSplitter( parentWidget ),
+      m_canvas(0L),
+      m_header(0L),
       m_table(0L),
-      m_canvas(0L)
+      m_weekStartMon( true ),
+      m_timeDialog(0L)
 {
-    
-}
+    m_table  = new KTVTaskTable( this, "TABLE");
+    QVBox *vbox = new QVBox( this );
+    vbox->setFrameStyle( QFrame::NoFrame );
+    vbox->setMargin(0);
+    vbox->setSpacing(0);
 
-void KTJGantt::showProject( Project *p )
-{
-    // we need an instance
-    if( m_table )
-    {
-	delete m_table;
-    }
+    vbox->setLineWidth(0);
+    vbox->setBackgroundColor( QColor(red));
+    m_header = new KTVHeader( vbox, "HEADER");
+    m_header->setFrameStyle( QFrame::NoFrame );
+    m_header->setMargin(0);
+    // m_header->setSpacing(0);
 
-    if( m_canvas )
-    {
-	delete m_canvas;
-    }
-    
-    m_table = new KTVTaskTable( this, "TABLE");
-    m_canvas = new KTVTaskCanvasView( this, m_table, "CANVAS");
+    m_canvas = new KTVTaskCanvasView( vbox, m_table, m_header, "CANVAS");
+    m_canvas->setFrameStyle( QFrame::NoFrame );
+    m_canvas->setMargin(0);
+
+    m_header->slSetHeight( m_table->headerHeight());
+
     m_table->setCanvasView( m_canvas );
 
     /* synchron y scroll */
     connect( m_canvas, SIGNAL(scrolledBy(int,int)),
-	     m_table,    SLOT(scrollBy( int, int ) ));
+	     m_table,    SLOT(slScrollTo( int, int ) ));
 
-    connect( m_table, SIGNAL(itemHeightChanged(int)),
-	     m_canvas->canvas(), SLOT  (slSetRowHeight(int) ));
-
-    connect( m_table, SIGNAL(heightChanged(int)),
-	     m_canvas->canvas(), SLOT  (slHeightChanged(int) ));
+    connect( m_canvas, SIGNAL(scrolledBy(int,int)),
+             m_header, SLOT( scrollBy(int,int)));
 
     connect( m_table, SIGNAL(newTaskAdded(Task *, KTVTaskTableItem *)),
 	     m_canvas->canvas(), SLOT(slNewTask(Task *, KTVTaskTableItem *) ));
 
     connect( m_table, SIGNAL(moveMarker(int)),
     	     m_canvas->canvas(), SLOT(slShowMarker(int)) );
-
-    connect( m_table, SIGNAL( topOffsetChanged( int )),
-	     m_canvas->canvas(), SLOT( slSetTopOffset( int )));
 
     connect( m_canvas, SIGNAL(canvasClicked(time_t)),
              this, SLOT(slCanvasClicked( time_t )));
@@ -69,19 +70,32 @@ void KTJGantt::showProject( Project *p )
     setSizes( sizes );
 
     setResizeMode( m_table, QSplitter::KeepSize );
-    setResizeMode( m_canvas, QSplitter::Stretch );
+    setResizeMode( vbox,  QSplitter::Stretch );
     // notify the part that this is our internal widget
+    m_table->show();
+    vbox->show();
 
+}
+
+void KTJGantt::showProject( Project *p )
+{
     /* Prepare the draw operation */
+    m_table->clear();
+    m_canvas->clear();
+
+    setInterval( p->getStart(), p->getEnd());
     m_canvas->showProject( p );
     /* the table creates all tasks in both the table and the canvas */
     m_table->showProject( p );
     /* finalise the canvas */
-    m_canvas->finalise( p );
-
-    m_table->show();
-    m_canvas->show();
     update();
+}
+
+void KTJGantt::setInterval( time_t start, time_t end )
+{
+    m_start = start;
+    m_end = end;
+    m_header->setInterval( start, end );
 }
 
 void KTJGantt::slZoomIn()
@@ -100,6 +114,27 @@ void KTJGantt::slZoomOriginal()
    m_canvas->zoomOriginal();
 }
 
+void KTJGantt::slTimeFrame()
+{
+    qDebug("Changing Time Frame" );
+
+    m_timeDialog = new TimeDialog( this, m_start, m_end );
+    connect( m_timeDialog, SIGNAL( applyClicked()), this, SLOT( slTimeFromDialog() ) );
+    m_timeDialog->exec();
+
+}
+
+void KTJGantt::slTimeFromDialog()
+{
+    if( m_timeDialog )
+    {
+        QDate dFrom = m_timeDialog->getStartDate();
+        QDate dTo   = m_timeDialog->getEndDate();
+
+
+    }
+}
+
 void KTJGantt::slCanvasClicked( time_t t)
 {
     emit statusBarChange( time2ISO( t ));
@@ -109,4 +144,8 @@ KTJGantt::~KTJGantt()
 {
 }
 
+void KTJGantt::slSetWeekStartsMonday(bool t)
+{
+    m_weekStartMon = t;
+}
 #include "ktjgantt.moc"

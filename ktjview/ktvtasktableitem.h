@@ -28,7 +28,7 @@ public:
 
    Task *getTask() { return m_task; }
 
-
+    void setup() {} // required to reimplement here to make setHeight working!
 private:
    int compareNumeric( long other, long me );
    int compareTimes( time_t other, time_t me );

@@ -13,6 +13,7 @@
 #include "ktvtaskcanvas.h"
 #include "ktvtaskcanvasview.h"
 #include "ktvcanvasitem.h"
+#include "ktvheader.h"
 #include "Project.h"
 #include "Task.h"
 #include "Utility.h"
@@ -20,22 +21,23 @@
 #include <qevent.h>
 
 
-KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const char *name )
+KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, KTVHeader *h, const char *name )
    :QCanvasView( parent, name ),
     m_canvas(0),
+    m_table(tab),
+    m_header(h),
     m_scaleFactor(1.0)
 {
-    m_canvas = new KTVTaskCanvas( parent, tab, name );
-   setCanvas( m_canvas );
-   (void) new TaskTip( this );
+    m_canvas = new KTVTaskCanvas( parent, tab, h, name );
+    setCanvas( m_canvas );
+    (void) new TaskTip( this );
 
-   connect( this, SIGNAL( contentsMoving( int, int )),
-	    this, SLOT( slScrollTo( int, int )));
+    connect( this, SIGNAL( contentsMoving( int, int )),
+             this, SLOT( slScrollTo( int, int )));
 
-   setResizePolicy( QScrollView::Default);
-   setVScrollBarMode( QScrollView::AlwaysOn );
+    setResizePolicy( QScrollView::Default);
+    setVScrollBarMode( QScrollView::AlwaysOn );
 
-   // m_canvas->resize( 400, 300);
 }
 
 
@@ -44,18 +46,11 @@ void KTVTaskCanvasView::showProject( Project *p )
    qDebug( " ++++++ Starting to show +++++++" );
    m_pro = p;
 
-   QString pName = p->getName();
-
-   /* resize the canvas */
-   m_canvas->slSetDayWidthStandard();
-   m_canvas->setInterval( p->getStart(), p->getEnd() );
-
-   m_canvas->slSetWeekStartsMonday( p->getWeekStartsMonday() );
-}
-
-void KTVTaskCanvasView::finalise( Project* )
-{
-   m_canvas->drawCalendar();
+   /* resize Contents */
+   int w = m_header->overallWidth();
+   int h = m_table->itemHeight() * p->taskCount();
+   qDebug("Resizing canvas to %dx%d", w, h );
+   m_canvas->resize( w, h );
 }
 
 
@@ -65,7 +60,7 @@ void KTVTaskCanvasView::addTask(Task *t )
 
    QString idx = QString::number(t->getIndex());
    QString name = t->getName();
-   qDebug( "Adding task: " + t->getId());
+   // qDebug( "Adding task: " + t->getId());
    QDateTime dt;
 
    if( t->isContainer() )
@@ -77,9 +72,11 @@ void KTVTaskCanvasView::addTask(Task *t )
 
    }
    else
+   {
+
+   }
 
    dt.setTime_t( t->getStart(Task::Plan) );
-
    dt.setTime_t( t->getEnd(Task::Plan) );
 
    TaskList subTasks;
@@ -124,7 +121,7 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 time_t KTVTaskCanvasView::getCenterTime()
 {
     int x = contentsX() + contentsWidth()/2;
-    time_t t = m_canvas->timeFromX( x );
+    time_t t = m_header->timeFromX( x );
 
     qDebug("getCenterTime: %s", (const char*) time2ISO(t) );
     return( t );
@@ -137,7 +134,7 @@ time_t KTVTaskCanvasView::getCenterTime()
  */
 void KTVTaskCanvasView::xScrollToTime( int p, time_t ti )
 {
-    int timeX = m_canvas->timeToX( ti );
+    int timeX = m_header->timeToX( ti );
 
     if( p > 0 && p <= 100 )
     {
@@ -149,19 +146,22 @@ void KTVTaskCanvasView::xScrollToTime( int p, time_t ti )
 
 void KTVTaskCanvasView::zoomIn()
 {
-    int w = m_canvas->getDayWidth();
+    int w = m_header->dayWidth();
     time_t centerTime = getCenterTime();
     qDebug("getCenterTime1: %s", (const char*) time2ISO(centerTime) );
-    m_canvas->slSetDayWidth( int(1.2 * w));
+
+    w = ( (w+5 < 60) ? w+5 : 60);
+    m_header->slSetDayWidth( w );
     xScrollToTime( 50, centerTime );
     update();
 }
 
 void KTVTaskCanvasView::zoomOut()
 {
-    int w = m_canvas->getDayWidth();
+    int w = m_header->dayWidth();
     time_t centerTime = getCenterTime();
-    m_canvas->slSetDayWidth( int(0.8 * w));
+    w = ((w-5) > 10 ? w-5 : 10);
+    m_header->slSetDayWidth( w );
     xScrollToTime( 50, centerTime );
     update();
 
@@ -170,26 +170,34 @@ void KTVTaskCanvasView::zoomOut()
 void KTVTaskCanvasView::zoomOriginal()
 {
     time_t centerTime = getCenterTime();
-    m_canvas->slSetDayWidthStandard();
+    // m_canvas->slSetDayWidthStandard();
     xScrollToTime( 50, centerTime );
     update();
 }
 
+void KTVTaskCanvasView::clear()
+{
+    if( m_canvas )
+    {
+        m_canvas->clear();
+        m_canvas->resize(0,0);
+    }
+}
 
 /*
  * This slot is automating the scrolling synchronisation between the listview
  * and the canvas. To this slot the signal contentsMove of the list is connected,
  * which scrolls automagically.
  */
-void KTVTaskCanvasView::slScrollTo( int, int y)
+void KTVTaskCanvasView::slScrollTo( int x, int y)
 {
    // qDebug( "Scrolling!");
-   emit scrolledBy( 0, y - contentsY() );
+   emit scrolledBy( x-contentsX(), y - contentsY() );
 }
 
 
 void KTVTaskCanvasView::contentsMousePressEvent ( QMouseEvent *e )
 {
    qDebug( "Mouse-Move at %d %d", e->pos().x(), e->pos().y());
-   emit canvasClicked( m_canvas->timeFromX( e->pos().x()));
+   emit canvasClicked( m_header->timeFromX( e->pos().x()));
 }

@@ -10,7 +10,7 @@
 #include <kparts/genericfactory.h>
 #include <kdebug.h>
 #include <qsplitter.h>
-
+#include <kdatewidget.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qmultilineedit.h>
@@ -20,6 +20,7 @@
 #include "ktvtaskcanvasview.h"
 
 #include "TjMessageHandler.h"
+#include <kshortcut.h>
 
 /* Handler for TaskJuggler error messages. */
 TjMessageHandler TJMH(TRUE);
@@ -39,11 +40,19 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
     m_gantt = new KTJGantt( parentWidget, "GANTT" );
     connect( m_gantt, SIGNAL( statusBarChange( const QString& )),
 	     this, SLOT(  slChangeStatusBar( const QString& )));
-    
+
     // notify the part that this is our internal widget
     setWidget(m_gantt);
 
     // create our actions
+    setupActions();
+    // set our XML-UI resource file
+    setXMLFile("ktjview_part.rc");
+
+}
+
+void KTjviewPart::setupActions()
+{
     KStdAction::open(this, SLOT(fileOpen()), actionCollection());
     (void) new KAction( i18n("&Reload"), "reload",
 			KShortcut( "Ctrl+R" ), this,
@@ -61,10 +70,13 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
 		       m_gantt, SLOT(slZoomO riginal()),
 		       actionCollection(), "zoomOriginal" );
 
-    // set our XML-UI resource file
-    setXMLFile("ktjview_part.rc");
+    (void) new KAction(i18n("Timeframe"), "history", CTRL+Key_T,
+		       m_gantt, SLOT(slTimeFrame()),
+		       actionCollection(), "timeFrame" );
+
 
 }
+
 
 KTjviewPart::~KTjviewPart()
 {
@@ -103,10 +115,10 @@ bool KTjviewPart::openFile()
 void KTjviewPart::slReload()
 {
     slChangeStatusBar( i18n("Reverting file"));
-    
+
     delete m_project;
     openFile();
-    
+
 }
 
 
@@ -127,5 +139,6 @@ void KTjviewPart::fileOpen()
     if (file_name.isEmpty() == false)
         openURL(file_name);
 }
+
 
 #include "ktjview_part.moc"

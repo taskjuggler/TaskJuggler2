@@ -38,56 +38,60 @@ class QListViewItem;
 
 class KTVTaskTable: public KListView
 {
-   friend class KTVTaskCanvas;
-   friend class KTVTaskCanvasView;
+    friend class KTVTaskCanvas;
+    friend class KTVTaskCanvasView;
     Q_OBJECT
 public:
     KTVTaskTable( QWidget *parent, const char *name = 0 );
     virtual ~KTVTaskTable(){}
 
-   void showProject( Project * );
-   void setItemHeight(int h);
-   void setCanvasView( KTVTaskCanvasView* );
-   
-   
+    void showProject( Project * );
+    void setItemHeight(int h);
+    void setCanvasView( KTVTaskCanvasView* );
+    int itemHeight(){ return m_itemHeight; };
+    /**
+     * @returns the height of the header of the canvas view. Since
+     * it is equal to the height of the header of this table plus the
+     * height of the first item, it is an method here.
+     */
+    int headerHeight();
+
 public slots:
-   void resizeContents( int, int );
-   
+    void resizeContents( int, int );
+    void clear();
+
 protected:
-   virtual void wheelEvent( QWheelEvent * ) {};
+    virtual void wheelEvent( QWheelEvent * ) {};
+    void createRoot();
 
 protected slots:
-   void slUpdateCanvas();
-   void slExpanded( QListViewItem* );
-   void slCollapsed( QListViewItem* );
-   void slSelectionChanged( QListViewItem* );
-   void slScrollTo( int, int );
-   
+    void slUpdateCanvas();
+    void slExpanded( QListViewItem* );
+    void slCollapsed( QListViewItem* );
+    void slSelectionChanged( QListViewItem* );
+    void slScrollTo( int, int );
+
 signals:
-   void itemHeightChanged(int);
-   void topOffsetChanged(int);
-   void newTaskAdded( Task*, KTVTaskTableItem* );
-   void moveItems( int y, int dy);  // move items on canvas from int y by dy
-   void showTaskByItem( KTVTaskTableItem* );
-   void hideTaskByItem( KTVTaskTableItem* );
-   void needUpdate();
-   void moveMarker(int);
-   void heightChanged( int );
-   void scrolledBy( int, int );
+    void newTaskAdded( Task*, KTVTaskTableItem* );
+    void moveItems( int y, int dy);  // move items on canvas from int y by dy
+    void showTaskByItem( KTVTaskTableItem* );
+    void hideTaskByItem( KTVTaskTableItem* );
+    void needUpdate();
+    void moveMarker(int);
 
 private:
-   void addTask( KTVTaskTableItem *parent, Task *t );
-   QString beautyTimeSpan( time_t tStart, time_t tEnd ) const;
-   int     m_itemHeight;
+    void addTask( KTVTaskTableItem *parent, Task *t );
+    QString beautyTimeSpan( time_t tStart, time_t tEnd ) const;
+    int     m_itemHeight;
 
-   KTVTaskTableItem *m_root;
+    KTVTaskTableItem *m_root;
 
-   KTVTaskCanvasView *m_canvasView;
-   
-   QPixmap m_milestonePix;
-   QPixmap m_taskPix;
-   QPixmap m_containerPix;
-   QPixmap m_menPix;
+    KTVTaskCanvasView *m_canvasView;
+
+    QPixmap m_milestonePix;
+    QPixmap m_taskPix;
+    QPixmap m_containerPix;
+    QPixmap m_menPix;
 };
 
 
