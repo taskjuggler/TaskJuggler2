@@ -332,7 +332,8 @@ void ktjview2::slotSidebarInfo()
 {
     toolBar( "filterToolBar" )->hide();
     toolBar( "ganttToolBar" )->hide();
-    m_filterForAction->setEnabled( false );
+    enableGanttActions( false );
+    enableTasksActions( false );
     m_view->activateView( ID_VIEW_INFO );
 }
 
@@ -340,7 +341,8 @@ void ktjview2::slotSidebarGantt()
 {
     toolBar( "filterToolBar" )->hide();
     toolBar( "ganttToolBar" )->show();
-    m_filterForAction->setEnabled( false );
+    enableGanttActions( true );
+    enableTasksActions( false );
     m_view->activateView( ID_VIEW_GANTT );
 }
 
@@ -349,7 +351,8 @@ void ktjview2::slotSidebarResources()
     m_searchLine->setListView( m_view->resListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
-    m_filterForAction->setEnabled( false );
+    enableGanttActions( false );
+    enableTasksActions( false );
     m_view->activateView( ID_VIEW_RESOURCES );
 }
 
@@ -358,7 +361,8 @@ void ktjview2::slotSidebarTasks()
     m_searchLine->setListView( m_view->taskListView() );
     toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
-    m_filterForAction->setEnabled( true );
+    enableGanttActions( false );
+    enableTasksActions( true );
     m_view->activateView( ID_VIEW_TASKS );
 }
 
@@ -390,6 +394,21 @@ void ktjview2::slotFilterFor()
     }
     else
         m_filterForAction->setCurrentItem( m_activeFilter );
+}
+
+void ktjview2::enableGanttActions( bool enable )
+{
+    m_scaleAction->setEnabled( enable );
+    m_calendarAction->setEnabled( enable );
+    actionCollection()->action( "zoom_in" )->setEnabled( enable );
+    actionCollection()->action( "zoom_out" )->setEnabled( enable );
+    actionCollection()->action( "fit_to_page" )->setEnabled( enable );
+    actionCollection()->action( "timeframe" )->setEnabled( enable );
+}
+
+void ktjview2::enableTasksActions( bool enable )
+{
+    m_filterForAction->setEnabled( enable );
 }
 
 #include "ktjview2.moc"

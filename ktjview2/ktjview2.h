@@ -149,10 +149,21 @@ private:
      * Create actions
      */
     void setupActions();
+
     /**
      * Setup the sidebar attributes
      */
     void setupSidebar();
+
+    /**
+     * Enable/disable Gantt actions depending on param @p enable
+     */
+    void enableGanttActions( bool enable );
+
+    /**
+     * Enable/disable Tasks actions depending on param @p enable
+     */
+    void enableTasksActions( bool enable );
 
     ktjview2View *m_view;
 

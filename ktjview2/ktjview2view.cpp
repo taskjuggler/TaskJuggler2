@@ -74,8 +74,6 @@
 ktjview2View::ktjview2View( QWidget *parent )
     : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
 {
-    //recreateProject();
-
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
 
