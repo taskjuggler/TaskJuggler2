@@ -545,6 +545,14 @@ void Project::parseDomElem( QDomElement& parentElem )
       {
 	 setName( elem.text() );
       }
+      else if( tagName == "Project" )
+      {
+	 QString prjId = elem.attribute("Id");
+	 addId( prjId );  // FIXME ! There can be more than one project ids!
+
+	 prjId = elem.attribute("WeekStart");
+	 setWeekStartsMonday( prjId == "Mon" );
+      }
       else if( tagName == "Version" )
 	 setVersion( elem.text() );
       else if( tagName == "Priority" )

@@ -16,7 +16,8 @@
  <!-- The head of all: Project -->
  <!ELEMENT Project      (Name, Version, Priority, start, end, now, Task+)>
  <!ATTLIST Project
-	   Id           CDATA #REQUIRED>
+	   Id           CDATA #REQUIRED
+	   WeekStart    CDATA #IMPLIED>
  <!ELEMENT Name         (#PCDATA)>
  <!ELEMENT Version      (#PCDATA)>
  <!ELEMENT Priority     (#PCDATA)>
@@ -73,7 +74,8 @@ void ReportXML::generate()
    QDomElement proj = doc.createElement( "Project" );
    // FIXME: All projectIDs need to be saved here.
    proj.setAttribute( "Id", project->getCurrentId());
-
+   proj.setAttribute( "WeekStart", project->getWeekStartsMonday() ? "Mon" : "Sun" );
+   
    proj.appendChild( ReportXML::createXMLElem( doc, "Name", project->getName()));
    QString hStr = project->getVersion();
    if( !hStr.isEmpty() )
