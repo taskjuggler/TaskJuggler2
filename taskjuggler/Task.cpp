@@ -37,6 +37,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
     allocations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
     depends.setAutoDelete(TRUE);
+    precedes.setAutoDelete(TRUE);
 
     proj->addTask(this);
 
@@ -1369,6 +1370,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
         }
         loopChain += QString("%1 (%2)").arg(id)
             .arg(atEnd ? "End" : "Start");
+        delete thisTask;
         errorMessage(i18n("Dependency loop detected: %1").arg(loopChain));
         return TRUE;
     }

@@ -1,7 +1,7 @@
 /*
  * LoopDetectorInfo.h - TaskJuggler
  *
- * Copyright (c) 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -17,7 +17,7 @@ class LoopDetectorInfo;
 
 /**
  * This class stores information about a waypoint the dependency loop
- * detector passes when looking for loops. 
+ * detector passes when looking for loops.
  *
  * @short Utility class for the dependency loop detector.
  * @author Chris Schlaeger <cs@suse.de>
@@ -55,7 +55,7 @@ private:
 /**
  * This class stores the waypoints the dependency loop detector passes when
  * looking for loops. Since it is very performance critical we use a
- * handrolled list class instead of a Qt class. 
+ * handrolled list class instead of a Qt class.
  *
  * @short Waypoint list of the dependency loop detector.
  * @author Chris Schlaeger <cs@suse.de>
@@ -63,10 +63,10 @@ private:
 class LDIList
 {
 public:
-    LDIList() 
+    LDIList()
     {
         root = leaf = 0;
-        items = 0;   
+        items = 0;
     }
     virtual ~LDIList()
     {
@@ -79,7 +79,7 @@ public:
     LoopDetectorInfo* first() const { return root; }
     LoopDetectorInfo* last() const { return leaf; }
     long count() const { return items; }
-    
+
     void append(LoopDetectorInfo* p)
     {
         if (root == 0)
@@ -90,7 +90,7 @@ public:
         else
         {
             leaf->nextLDI = p;
-            leaf->nextLDI->prevLDI = leaf;
+            p->prevLDI = leaf;
             leaf = leaf->nextLDI;
         }
         leaf->nextLDI = 0;

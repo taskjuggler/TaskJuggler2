@@ -688,7 +688,6 @@ Project::schedule(int sc)
     // we create a task list that only contains leaf tasks.
     TaskList sortedTasks;
     int leafTasks = 0;
-    Task::SchedulingInfo si = Task::ASAP;
     for (TaskListIterator tli(fullSortedTasks); *tli != 0; ++tli)
         if (!(*tli)->hasSubs())
         {
