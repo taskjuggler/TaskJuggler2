@@ -308,6 +308,8 @@ XMLFile::parse()
 bool
 XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
 {
+    bool ret = true;
+    
     while (!n.isNull())
     {
         QDomElement el = n.toElement();
@@ -316,10 +318,8 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
             const ParserElement* pEl = pn->getElement(el.tagName());
             if (!pEl)
             {
-                qWarning(i18n("Unsupported XML element '%1' in node '%2' "
-                              "of '%2'. Parser is at node %3")
-                         .arg(el.tagName()).arg(n.nodeName()).arg(masterFile)
-                         .arg(pn->getParentElement()->getTag()));
+		qWarning(i18n("unsupported XML element"));
+		ret = false;
             }
             else
             {
@@ -348,7 +348,7 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
         n = n.nextSibling();
     }
 
-    return TRUE;
+    return ret;
 }
 
 bool
