@@ -35,21 +35,37 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 {
 	vacations.setAutoDelete(TRUE);
 
+	// Sunday
+	workingHours[0] = new QPtrList<Interval>();
+
 	// Monday
-	workingHours[1].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[1].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	workingHours[1] = new QPtrList<Interval>();
+	workingHours[1]->setAutoDelete(TRUE);
+	workingHours[1]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[1]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Tuesday
-	workingHours[2].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[2].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	workingHours[2] = new QPtrList<Interval>();
+	workingHours[2]->setAutoDelete(TRUE);
+	workingHours[2]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[2]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Wednesday
-	workingHours[3].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[3].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	workingHours[3] = new QPtrList<Interval>();
+	workingHours[3]->setAutoDelete(TRUE);
+	workingHours[3]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[3]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Thursday
-	workingHours[4].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[4].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	workingHours[4] = new QPtrList<Interval>();
+	workingHours[4]->setAutoDelete(TRUE);
+	workingHours[4]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[4]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
 	// Friday
-	workingHours[5].append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-	workingHours[5].append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	workingHours[5] = new QPtrList<Interval>();
+	workingHours[5]->setAutoDelete(TRUE);
+	workingHours[5]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[5]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+
+	// Saturday
+	workingHours[6] = new QPtrList<Interval>();
 
 	efficiency = 1.0;
 }
@@ -63,8 +79,8 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 
 	// Iterate through all the work time intervals for the week day.
 	const int dow = dayOfWeek(date);
-	for (Interval* i = workingHours[dow].first(); i != 0;
-		 i = workingHours[dow].next())
+	for (Interval* i = workingHours[dow]->first(); i != 0;
+		 i = workingHours[dow]->next())
 	{
 		interval = Interval(midnight(date), midnight(date));
 		interval.add(*i);
@@ -130,6 +146,24 @@ Resource::getLoadOnDay(time_t date, Task* task)
 	return project->convertToDailyLoad(bookedTime) * efficiency;
 }
 
+double
+Resource::getLoad(const Interval& i, Task* task)
+{
+	ulong workingDays = 0;
+	double load = 0.0;
+	for (time_t day = midnight(i.getStart());
+		 day < sameTimeNextDay(midnight(i.getEnd()));
+		 day = sameTimeNextDay(day))
+	{
+		if (!(project->isVacation(day) || hasVacationDay(day)))
+		{
+			workingDays++;
+			load += getLoadOnDay(day, task);
+		}
+	}
+	return load;
+}
+
 bool
 Resource::isAssignedTo(Task* task)
 {
@@ -164,6 +198,9 @@ Resource::hasVacationDay(time_t day)
 {
 	Interval fullDay(midnight(day),
 					 sameTimeNextDay(midnight(day)) - 1);
+
+	if (workingHours[dayOfWeek(day)]->isEmpty())
+		return TRUE;
 
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
 		if (i->overlaps(fullDay))

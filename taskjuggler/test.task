@@ -10,13 +10,14 @@ rate 0.479
 kotrusMode "NoKotrus"
 
 flags type1, type2, type3
-flags deadline, media
+flags deadline, media, beta, preview, team
 
 htmlTaskReport "test1.html" {
-  columns  no, name, start, depends, resources
-  start 2001-09-28
-  end 2001-11-01
-  hide media | deadline
+  columns  no, name, start, end, daily
+#  start 2001-12-20
+  end 2002-02-01
+#  hidetask media | deadline
+#  rolluptask beta | preview
 }
 
 #htmlTaskReport "test2.html" {
@@ -25,13 +26,11 @@ htmlTaskReport "test1.html" {
 #  end 2002-03-08
 #}
 
-#htmlResourceReport "test-res.html" {
-#  columns resource, daily
-#  start 2001-11-28
-#  end 2002-03-06
-#}
-
-xmlTaskReport "task.xml"
+htmlResourceReport "test-res.html" {
+  columns resource, daily
+  start 2002-01-01
+  end 2002-02-02
+}
 
 macro version [SL 8.0]
 
@@ -49,7 +48,7 @@ macro work [
 ]
 
 macro deadline [
-  task dl "SL 8.0 x86 deadline for ${1} (1800 CET)" {
+  task dl "SL 8.0 x86 deadline for ${1}" {
     flags deadline
     depends !work, ${2}
   }
@@ -91,7 +90,7 @@ macro test [
 
 macro preview [
 task pre${1} "SL 8.0 preview ${1}" {
-
+  flags preview
   ${work "Make bootable system" "${2}" "5d" }
   ${deadline "preview ${1}"}
   ${build "preview ${1}" "2d"}
@@ -121,15 +120,15 @@ resource ro "Ruediger Oertel" {
   vacation 2001-12-10 - 2001-12-14
 }
 resource kukuk "Thorsten Kukuk" {
-  workingHours MON 08:00-12:00, 12:30-17:00
+#  workingHours MON 08:00-12:00, 13:00-16:00
 }
 
 resource cs "Chris Schlaeger"
 resource mem "Muhamed Memovic"
 resource bg "Berthold Gunreben"
-resource packagers "Package Maintainers" {  efficiency 18.0 }
-resource dist "Dist Team" { efficiency 9.0 }
-resource yast "YaST2 Team" { efficiency 12.0 }
+resource packagers "Package Maintainers" {  flags team efficiency 18.0 }
+resource dist "Dist Team" { flags team efficiency 9.0 }
+resource yast "YaST2 Team" { flags team efficiency 12.0 }
 
 task sl80 "SuSE Linux 8.0" {
 
@@ -161,6 +160,7 @@ task dist "SL 8.0 distribution modifications" {
 
 task pre1 "SL 8.0 preview1" {
 
+  flags preview
   ${work "Make system bootable" "!!yast, !!pack, !!dist" "5d" }
   ${deadline "preview1" "!!dist"}
   ${build "preview1" "2d"}
@@ -170,6 +170,7 @@ task pre1 "SL 8.0 preview1" {
 
 task pre2 "SL 8.0 preview2" {
 
+  flags preview
   ${work "Make system fairly usable" "!!pre1.work" "5d" }
   ${deadline "preview2" "!!pre1.test"}
   ${build "preview2" "2d"}
@@ -179,6 +180,7 @@ task pre2 "SL 8.0 preview2" {
 
 task pre3 "SL 8.0 preview3" {
 
+  flags preview
   ${work "Make system usable" "!!pre2.work" "5d" }
   ${deadline "preview3" "!!pre2.test" }
   ${build "preview3" "2d"}
@@ -188,6 +190,7 @@ task pre3 "SL 8.0 preview3" {
 
 task pre4 "SL 8.0 preview2" {
 
+  flags preview
   ${work "Make system almost feature complete" "!!pre3.work" "5d" }
   ${deadline "preview4" "!!pre3.test"}
   ${build "preview4" "2d"}
@@ -196,6 +199,7 @@ task pre4 "SL 8.0 preview2" {
 }
 
 task beta1 "${version} beta1" {
+  flags beta
   ${work "Fix critical bugs for beta1" "!!pre4.work" "5d"}
   ${deadline "beta1" "!!pre4.test" }
   ${build "beta1" "2d"}
@@ -204,6 +208,7 @@ task beta1 "${version} beta1" {
 }
 
 task beta2 "${version} beta2" {
+  flags beta
   ${work "Fix critical bugs for beta2" "!!beta1.work" "5d"}
   ${deadline "beta2" "!!beta1.test" }
   ${build "beta2" "2d"}
@@ -211,6 +216,7 @@ task beta2 "${version} beta2" {
 }
 
 task beta3 "${version} beta3" {
+  flags beta
   ${work "Fix critical bugs for beta3" "!!beta2.work" "5d"}
   ${deadline "beta3" "!!beta2.test"}
   ${build "beta3" "2d"}
@@ -219,6 +225,7 @@ task beta3 "${version} beta3" {
 }
 
 task beta4 "${version} beta4" {
+  flags beta
   ${work "Fix critical bugs for beta4" "!!beta3.work" "3d"}
   ${deadline "beta4" "!!beta3.test" }
   ${build "beta4" "2d"}
@@ -226,6 +233,7 @@ task beta4 "${version} beta4" {
 }
 
 task beta5 "${version} beta5" {
+  flags beta
   ${work "Fix major bugs for beta5" "!!beta4.work" "3d"}
   ${deadline "beta5" "!!beta4.test" }
   ${build "beta5" "1d"}

@@ -45,7 +45,7 @@ int dayOfMonth(time_t d);
 
 int dayOfWeek(time_t d);
 
-QString time2ISO(time_t t);
+const char* time2ISO(time_t t);
 
 #endif
 

@@ -21,16 +21,24 @@ class HTMLTaskReport : public ReportHtml
 {
 public:
 	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e) :
-		ReportHtml(p, f, s, e) { showActual = FALSE; }
-	~HTMLTaskReport() { }
+		ReportHtml(p, f, s, e)
+	{
+		showActual = FALSE;
+		rollUpTask = 0;
+	}
+	~HTMLTaskReport();
 
 	bool generate();
 
 	void setShowActual(bool s) { showActual = s; }
 
+	void setRollUpTask(ExpressionTree* et) { rollUpTask = et; }
+	bool isTaskRolledUp(Task* t);
+
 private:
 	bool showActual;
 	HTMLTaskReport() { }
+	ExpressionTree* rollUpTask;
 } ;
 
 #endif

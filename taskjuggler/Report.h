@@ -28,7 +28,7 @@ class Report
 {
 public:
 	Report(Project* p, const QString& f, time_t s, time_t e);
-	virtual ~Report() { }
+	virtual ~Report();
 
 	void addColumn(const QString& c) { columns.append(c); }
 	const QString& columnsAt(uint idx) { return columns[idx]; }
@@ -40,9 +40,11 @@ public:
 	void setEnd(time_t e) { end = e; }
 	time_t getEnd() const { return end; }
 
-	void setHide(ExpressionTree* et) { hide = et; }
-	bool isHidden(Task* t);
+	void setHideTask(ExpressionTree* et) { hideTask = et; }
+	bool isTaskHidden(Task* t);
 
+	void setHideResource(ExpressionTree* et) { hideTask = et; }
+	bool isResourceHidden(Resource* t);
 
 protected:
 	Report() { }
@@ -54,8 +56,8 @@ protected:
 	time_t end;
 
 	QTextStream s;
-   ExpressionTree* hide;
-
+	ExpressionTree* hideTask;
+	ExpressionTree* hideResource;
 } ;
 
 #endif

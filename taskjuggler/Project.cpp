@@ -132,5 +132,5 @@ Project::generateReports()
 		 r = htmlResourceReports.next())
 		r->generate();
 
-	xmlreport->generate();
+//	xmlreport->generate();
 }

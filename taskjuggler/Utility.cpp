@@ -104,12 +104,11 @@ sameTimeNextMonth(time_t t)
 	return mktime(tms);
 }
 
-QString time2ISO(time_t t)
+const char* time2ISO(time_t t)
 {
 	struct tm* tms = localtime(&t);
-	static QString s;
-	s.sprintf("%04d-%02d-%02d %02d:%02d", 1900 + tms->tm_year, 1 + tms->tm_mon,
-			  tms->tm_mday, tms->tm_hour, tms->tm_min);
-	return s;
-}
+	static char buf[128];
 
+	strftime(buf, 127, "%Y-%m-%d %H:%M %Z", tms);
+	return buf;
+}

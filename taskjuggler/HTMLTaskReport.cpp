@@ -14,10 +14,54 @@
 
 #include "Project.h"
 #include "HTMLTaskReport.h"
+#include "ExpressionTree.h"
+
+HTMLTaskReport::~HTMLTaskReport()
+{
+	delete rollUpTask;
+}
+
+bool
+HTMLTaskReport::isTaskRolledUp(Task* t)
+{
+	if (!rollUpTask)
+		return FALSE;
+
+	rollUpTask->clearSymbolTable();
+	QStringList flags = *t;
+	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
+		rollUpTask->registerSymbol(*it, 1);
+	return rollUpTask->eval() != 0;
+}
 
 bool
 HTMLTaskReport::generate()
 {
+	/* Created a new list that contains only those tasks that were not
+	 * hidden. */
+	TaskList filteredList;
+	for (Task* t = project->taskListFirst(); t != 0;
+		 t = project->taskListNext())
+	{
+		Interval iv(start, end);
+		if (!isTaskHidden(t) &&
+			iv.overlaps(Interval(t->getStart(), t->getEnd())))
+			filteredList.append(t);
+	}
+
+	/* Now we have to remove all sub tasks of task in the roll-up list
+     * from the filtered list */
+	for (Task* t = project->taskListFirst(); t != 0;
+		 t = project->taskListNext())
+	{
+		TaskList toHide;
+		if (isTaskRolledUp(t))
+			t->getSubTaskList(toHide);
+
+		for (Task* l = toHide.first(); l != 0; l = toHide.next())
+			filteredList.remove(l);
+	}
+
 	QFile f(fileName);
 	if (!f.open(IO_WriteOnly))
 	{
@@ -78,21 +122,18 @@ HTMLTaskReport::generate()
 	}
 	s << "</tr>\n" << endl;
 
+	// Create a task->index no. dictionary.
 	int i = 1;
 	QDict<int> idxDict;
 	idxDict.setAutoDelete(TRUE);
-	for (Task* t = project->taskListFirst(); t != 0;
-		 t = project->taskListNext(), ++i)
-		if (!isHidden(t))
-			idxDict.insert(t->getId(), new int(i));
+	for (Task* t = filteredList.first(); t != 0;
+		 t = filteredList.next(), ++i)
+		idxDict.insert(t->getId(), new int(i));
 
 	i = 1;
-	for (Task* t = project->taskListFirst(); t != 0;
-		 t = project->taskListNext(), ++i)
+	for (Task* t = filteredList.first(); t != 0;
+		 t = filteredList.next(), ++i)
 	{
-		if (isHidden(t))
-			continue;
-
 		s << "<tr valign=\"center\">";
 		for (QStringList::Iterator it = columns.begin(); it != columns.end();
 			 ++it )

@@ -101,6 +101,9 @@ HTMLResourceReport::generate()
 	for (Resource* r = project->resourceListFirst(); r != 0;
 		 r = project->resourceListNext())
 	{
+		if (isResourceHidden(r))
+			continue;
+
 		// Resource line
 		s << "<tr>";
 		for (QStringList::Iterator it = columns.begin();
@@ -120,7 +123,8 @@ HTMLResourceReport::generate()
 		// Task lines for each resource
 		for (Task* t = project->taskListFirst(); t != 0;
 			 t = project->taskListNext())
-			if (r->isAssignedTo(t))
+			if (r->isAssignedTo(t) && !isTaskHidden(t) &&
+				r->getLoad(Interval(start, end), t) > 0.0)
 			{
 				s << "<tr>";
 				for (QStringList::Iterator it = columns.begin();

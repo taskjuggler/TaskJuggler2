@@ -36,7 +36,8 @@
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		   const QString f, int l)
-	: project(proj), id(id_), name(n), parent(p), file(f), line(l)
+	: FlagList(p ? *p : FlagList()), project(proj), id(id_), name(n),
+	  parent(p), file(f), line(l)
 {
 	start = end = 0;
 	actualStart = actualEnd = 0;
@@ -56,7 +57,6 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		maxStart = p->maxStart;
 		minEnd = p->minEnd;
 		maxEnd = p->maxEnd;
-		flags = p->flags;
 		/* If parent task has attribute closed, all sub tasks will be
 		 * hidden. */
 		if (p->hasFlag("closed"))
@@ -125,7 +125,7 @@ Task::schedule(time_t date, time_t slotDuration)
 		/* Length specifies the number of working days (as daily load)
 		 * and duration specifies the number of calender days (as
 		 * daily load). */
-		if (allocations.count() > 0 && !project->isVacation(date))
+		if (!allocations.isEmpty() && !project->isVacation(date))
 			bookResources(date, slotDuration);
 
 		doneDuration += (double) slotDuration / ONEDAY;
@@ -134,7 +134,7 @@ Task::schedule(time_t date, time_t slotDuration)
 			doneLength += (double) slotDuration / ONEDAY;
 			/* Move the start date to make sure that there is
 			 * some work going on on the start date. */
-			if (!workStarted)
+			if (!workStarted && allocations.isEmpty())
 			{
 				start = date;
 				workStarted = TRUE;
@@ -286,7 +286,6 @@ Task::isScheduled()
 	return ((start != 0 && end != 0) || !subTasks.isEmpty());
 }
 
-
 bool
 Task::isDayCompleted(time_t date) const
 {
@@ -336,6 +335,26 @@ Task::getLoadOnDay(time_t date)
 		 r = bookedResources.next())
 	{
 		load += r->getLoadOnDay(date, this);
+	}
+	return load;
+}
+
+double
+Task::getLoad(const Interval& period)
+{
+	double load = 0.0;
+
+	if (subTasks.first())
+	{
+		for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+			load += t->getLoad(period);
+		return load;
+	}
+
+	for (Resource* r = bookedResources.first(); r != 0;
+		 r = bookedResources.next())
+	{
+		load += r->getLoad(period, this);
 	}
 	return load;
 }
@@ -447,6 +466,16 @@ Task::scheduleOK()
 	return TRUE;
 }
 
+void
+Task::getSubTaskList(TaskList& tl)
+{
+	for (Task* t = subTasks.first(); t != 0; t = subTasks.next())
+	{
+		tl.append(t);
+		t->getSubTaskList(tl);
+	}
+}
+
 QDomElement Task::createXMLElem( QDomDocument& doc, const QString& name, const QString& val ) const
 {
    QDomElement elem = doc.createElement( name );
@@ -515,10 +544,9 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
    return( elem );
 }
 
-
-
 TaskList::TaskList()
 {
+	sorting = Pointer;
 }
 
 TaskList::~TaskList()
@@ -533,6 +561,33 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 
 	switch (sorting)
 	{
+	case Pointer:
+		return t1 == t2 ? 0 : t1 < t2 ? -1 : 1;
+	case TaskUp:
+	{
+		QString t1Path = t1->getId().findRev('.') == -1 ? t1->getId() :
+			t1->getId().left(t1->getId().findRev('.'));
+		QString t2Path = t2->getId().findRev('.') == -1 ? t2->getId() :
+			t2->getId().left(t2->getId().findRev('.'));
+		if (t1Path == t2Path)
+		{
+			if (t1->getStart() == t2->getStart())
+			{
+				if (t1->getEnd() == t2->getEnd())
+				{
+					return t1->getId() == t2->getId() ? 0 :
+						t1->getId() < t2->getId() ? -1 : 1;
+				}
+				else
+					return t1->getEnd() < t2->getEnd() ? -1 : 1;
+			}
+			else
+				return t1->getStart() < t2->getStart() ? -1 : 1;
+		}
+		else
+			return t1Path < t2Path ? -1 : 1;
+		break;
+	}
 	case PrioUp:
 		if (t1->getPriority() == t2->getPriority())
 			return 0; // TODO: Use duration as next criteria

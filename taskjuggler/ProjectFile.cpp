@@ -365,7 +365,7 @@ FileInfo::returnToken(TokenType tt, const QString& buf)
 {
 	if (tokenTypeBuf != INVALID)
 	{
-		cerr << "Internal Error: Token buffer overflow!" << endl;
+		qFatal("Internal Error: Token buffer overflow!");
 		return;
 	}
 	tokenTypeBuf = tt;
@@ -377,8 +377,8 @@ FileInfo::fatalError(const QString& msg)
 {
 	if (macroStack.isEmpty())
 	{
-		cerr << file << ":" << currLine << ":" << msg << endl;
-		cerr << lineBuf << endl;
+		qWarning("%s:%d:%s", file.latin1(), currLine, msg.latin1());
+		qWarning("%s", lineBuf.latin1());
 	}
 	else
 	{
@@ -403,7 +403,7 @@ ProjectFile::open(const QString& file)
 
 	if (!fi->open())
 	{
-		cerr << "Cannot open " << file << "!" << endl;
+		qFatal("Cannot open '%s'", file.latin1());
 		return FALSE;
 	}
 
@@ -927,14 +927,14 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName, QString* n)
 	QString token;
 	if ((tt = nextToken(token)) != MINUS)
 	{
-		// vacation 2001-11-28
+		// vacation e. g. 2001-11-28
 		openFiles.last()->returnToken(tt, token);
 		from = date2time(start);
 		to = sameTimeNextDay(date2time(start)) - 1;
 	}
 	else
 	{
-		// vacation 2001-11-28 - 2001-11-30
+		// vacation e. g. 2001-11-28 - 2001-11-30
 		QString end;
 		if ((tt = nextToken(end)) != DATE)
 		{
@@ -1038,11 +1038,29 @@ ProjectFile::readResource()
 			else if (token == "workingHours")
 			{
 				int dow;
-				QPtrList<Interval> l;
+				QPtrList<Interval>* l = new QPtrList<Interval>();
 				if (!readWorkingHours(dow, l))
 					return FALSE;
 				
 				r->setWorkingHours(dow, l);
+			}
+			else if (token == "flags")
+			{
+				for ( ; ; )
+				{
+					QString flag;
+					if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
+					{
+						fatalError("flag unknown");
+						return FALSE;
+					}
+					r->addFlag(flag);
+					if ((tt = nextToken(token)) != COMMA)
+					{
+						openFiles.last()->returnToken(tt, token);
+						break;
+					}
+				}
 			}
 			else
 			{
@@ -1263,8 +1281,9 @@ ProjectFile::readTimeFrame(Task* task, double& value)
 }
 
 bool
-ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval> l)
+ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 {
+	l->setAutoDelete(TRUE);
 	QString day;
 	if (nextToken(day) != ID)
 	{
@@ -1300,7 +1319,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval> l)
 			fatalError("End time as HH:MM expected");
 			return FALSE;
 		}
-		l.append(new Interval(hhmm2time(start), hhmm2time(end)));
+		l->append(new Interval(hhmm2time(start), hhmm2time(end)));
 		TokenType tt;
 		if ((tt = nextToken(token)) != COMMA)
 		{
@@ -1413,13 +1432,21 @@ ProjectFile::readHTMLTaskReport()
 		{
 			report->setShowActual(TRUE);
 		}
-		else if (token == "hide")
+		else if (token == "hidetask")
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
 				return FALSE;
 			ExpressionTree* et = new ExpressionTree(op);
-			report->setHide(et);
+			report->setHideTask(et);
+		}
+		else if (token == "rolluptask")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setRollUpTask(et);
 		}
 		else
 		{
@@ -1498,6 +1525,14 @@ ProjectFile::readHTMLResourceReport()
 			}
 			report->setEnd(date2time(token));
 		}
+		else if (token == "hidetask")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setHideTask(et);
+		}
 		else
 		{
 			fatalError("Illegal attribute");
@@ -1563,7 +1598,6 @@ ProjectFile::readLogicalExpression()
 	}
 	else
 	{
-		printf("tt: %d\n", tt);
 		fatalError("Logical expression expected");
 		return 0;
 	}
@@ -1600,7 +1634,15 @@ ProjectFile::date2time(const QString& date)
 	}
 
 	struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
-	return mktime(&t);
+	time_t localTime = mktime(&t);
+#ifndef UTCTIME
+	return localTime;
+#else
+	// The code is needed after we switch internal time handling to UTC.
+	struct tm* tms = localtime(&localTime);
+	time_t gmTime = localTime + timezone + (tms->tm_isdst == 1 ? -3600 : 0);
+	return gmTime;
+#endif
 }
 
 time_t

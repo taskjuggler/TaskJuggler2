@@ -20,17 +20,40 @@
 Report::Report(Project* p, const QString& f, time_t s, time_t e) :
 		project(p), fileName(f), start(s), end(e)
 {
+	hideTask = 0;
+	hideResource = 0;
+}
+
+Report::~Report()
+{
+	delete hideTask;
+	delete hideResource;
 }
 
 bool
-Report::isHidden(Task* t)
+Report::isTaskHidden(Task* t)
 {
-	hide->clearSymbolTable();
-	QStringList flags = t->getFlags();
+	if (!hideTask)
+		return FALSE;
+
+	hideTask->clearSymbolTable();
+	QStringList flags = *t;
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
-		hide->registerSymbol(*it, 1);
-	return hide->eval() != 0;
+		hideTask->registerSymbol(*it, 1);
+	return hideTask->eval() != 0;
 }
 
+bool
+Report::isResourceHidden(Resource* r)
+{
+	if (!hideResource)
+		return FALSE;
+
+	hideResource->clearSymbolTable();
+	QStringList flags = *r;
+	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
+		hideResource->registerSymbol(*it, 1);
+	return hideResource->eval() != 0;
+}
 
 

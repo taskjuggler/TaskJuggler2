@@ -19,11 +19,12 @@
 
 #include "Interval.h"
 #include "VacationList.h"
+#include "FlagList.h"
 
 class Project;
 class Task;
 
-class Booking
+class Booking : public FlagList
 {
 public:
 	Booking(const Interval& iv, Task* t, QString a = "",
@@ -49,7 +50,7 @@ public:
 
 	void setLockerId( const QString& id ) { lockerId = id; }
 	const QString& getLockerId() const { return lockerId; }
-   
+
 private:
 	// The booked time period.
 	Interval interval;
@@ -65,6 +66,9 @@ private:
 
 	// the lockers ID
 	QString lockerId;
+
+	// A list of flags that can be used to select a sub-set of tasks.
+	FlagList flagList;
 } ;
 
 class BookingList : public QPtrList<Booking>
@@ -79,7 +83,7 @@ protected:
 
 typedef QPtrListIterator<Booking> BookingListIterator;
 
-class Resource
+class Resource : public FlagList
 {
 public:
 	Resource(Project* p, const QString& i, const QString& n, double mie = 0.0,
@@ -104,10 +108,11 @@ public:
 	void addVacation(Interval* i) { vacations.append(i); }
 	bool hasVacationDay(time_t day);
 
-	void setWorkingHours(int day, const QPtrList<Interval>& l)
+	void setWorkingHours(int day, QPtrList<Interval>* l)
 	{
-		if (day < 0 || day > 7)
+		if (day < 0 || day > 6)
 			qFatal("day out of range");
+		delete workingHours[day];
 		workingHours[day] = l;
 	}
 	bool isAvailable(time_t day, time_t duration, Interval& i);
@@ -115,6 +120,8 @@ public:
 	void book(Booking* b);
 
 	double getLoadOnDay(time_t date, Task* task = 0);
+
+	double getLoad(const Interval& i, Task* task = 0);
 
 	bool isAssignedTo(Task* t);
 	void setKotrusId(const QString k) { kotrusId = k; }
@@ -148,7 +155,7 @@ private:
 	QString kotrusId;
 
 	// The list of working or opening hours for the resource.
-	QList<Interval> workingHours[7];
+	QList<Interval>* workingHours[7];
 
 	// List of all intervals the resource is not available.
 	QList<Interval> vacations;

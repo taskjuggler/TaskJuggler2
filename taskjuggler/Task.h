@@ -22,14 +22,15 @@
 
 #include "ResourceList.h"
 #include "Utility.h"
+#include "FlagList.h"
 
 class Project;
 class Resource;
 class Account;
-
+class TaskList;
 class QDomElement;
 class QDomDocument;
-
+class Task;
 
 class Allocation
 {
@@ -58,11 +59,11 @@ public:
 	Resource* first() { return alternatives.first(); }
 	Resource* next() { return alternatives.next(); }
 
-   QDomElement xmlElement( QDomDocument& doc ) const
-      {
-	 QDomElement elem = doc.createElement( "Allocation" );
-	 return elem;
-      };
+	QDomElement xmlElement( QDomDocument& doc ) const
+	{
+		QDomElement elem = doc.createElement( "Allocation" );
+		return elem;
+	};
 
 private:
 	// Don't use this.
@@ -83,16 +84,13 @@ private:
 	QList<Resource> alternatives;
 } ;
 
-
-class Task;
-
 class TaskList : public QPtrList<Task>
 {
 public:
 	TaskList();
 	virtual ~TaskList();
 
-	enum SortCriteria { PrioUp, PrioDown };
+	enum SortCriteria { Pointer, TaskUp, PrioUp, PrioDown };
 
 	void setSorting(SortCriteria s) { sorting = s; }
 
@@ -103,9 +101,7 @@ private:
 	SortCriteria sorting;
 } ;
 
-
-
-class Task
+class Task : public FlagList
 {
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,
@@ -189,6 +185,8 @@ public:
 	Allocation* nextAllocation() { return allocations.next(); }
 
 	double getLoadOnDay(time_t day);
+	double getLoad(const Interval& period);
+
 	void addBookedResource(Resource* r)
 	{
 		if (bookedResources.find(r) == -1)
@@ -201,7 +199,7 @@ public:
 
 	Task* getParent() const { return parent; }
 	void addSubTask(Task* t) { subTasks.append(t); }
-   TaskList getSubTaskList()  const { return subTasks; }
+	TaskList getSubTaskList()  const { return subTasks; }
    
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
@@ -221,32 +219,20 @@ public:
 			work = Interval(start, end);
 		return day.overlap(work);
 	}
-
 	void setAccount(Account* a) { account = a; }
 
-	void addFlag(QString flag)
-	{
-		if (!hasFlag(flag))
-			flags.append(flag);
-	}
-	void clearFlag(const QString& flag)
-	{
-		flags.remove(flag);
-	}
-	bool hasFlag(const QString& flag)
-	{
-		return flags.contains(flag) > 0;
-	}
-	const QStringList& getFlags() { return flags; }
+	void getSubTaskList(TaskList& tl);
 
-   QDomElement xmlElement( QDomDocument& doc ) const;
+	QDomElement xmlElement( QDomDocument& doc ) const;
+
 private:
 	bool scheduleContainer();
 	bool bookResource(Resource* r, time_t day, time_t duration);
 	bool bookResources(time_t day, time_t duration);
 
-   QDomElement createXMLElem( QDomDocument& doc, const QString& name, const QString& val ) const;
-   time_t earliestStart();
+	QDomElement createXMLElem(QDomDocument& doc, const QString& name,
+							  const QString& val) const;
+	time_t earliestStart();
 	void fatalError(const QString& msg) const;
 
 	Project* project;
@@ -309,9 +295,6 @@ private:
 	// Account where the costs of the task are credited to.
 	Account* account;
 
-	// A list of flags that can be used to select a sub-set of tasks.
-	QStringList flags;
-
 	// List of tasks Ids that need to be completed before this task can start
 	QStringList depends;
 	// Same as previous but pointers to tasks that are resolved in pass2
@@ -323,6 +306,5 @@ private:
 	// List of booked resources
 	QList<Resource> bookedResources;
 } ;
-
 
 #endif

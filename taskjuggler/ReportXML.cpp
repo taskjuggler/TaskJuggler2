@@ -43,3 +43,4 @@ void ReportXML::generate()
    // qDebug( "XML: %s", xml.latin1() );
    
 }
+
