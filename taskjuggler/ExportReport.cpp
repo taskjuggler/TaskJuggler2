@@ -31,14 +31,8 @@ ExportReport::ExportReport(Project* p, const QString& f) :
 bool
 ExportReport::generate()
 {
-	QFile f(fileName);
-	if (!f.open(IO_WriteOnly))
-	{
-		qWarning("Cannot open export file %s!\n",
-				 fileName.latin1());
+	if (!open())
 		return FALSE;
-	}
-	s.setDevice(&f);
 	
 	TaskList filteredTaskList;
 	filterTaskList(filteredTaskList, 0);

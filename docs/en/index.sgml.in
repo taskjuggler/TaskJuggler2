@@ -81,7 +81,7 @@ name="http://www.suse.de/~freitag/taskjuggler">.
 
 </itemize>
 
-<sect2>Version 1.1
+<sect2>Version 1.1 (2002-05-27)
 <p>
 <itemize>
 
@@ -1728,4 +1728,13 @@ along with this program. If not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 <p>
+
+<sect>Trademarks<p>
+
+Linux is a registered trademark of Linus Torvalds.
+
+Unix is a registered trademark of The Open Group.
+
+TaskJuggler is a trademark of Chris Schlaeger.
+
 </article>
