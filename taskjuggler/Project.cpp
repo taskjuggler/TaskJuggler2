@@ -500,14 +500,14 @@ Project::pass2(bool noDepCheck)
 }
 
 bool
-Project::scheduleScenario(OptimizerRun* run, Scenario* sc)
+Project::scheduleScenario(Scenario* sc)
 {
     bool error = FALSE;
 
     int scIdx = sc->getSequenceNo() - 1;
     prepareScenario(scIdx);
     
-    if (!schedule(run, scIdx))
+    if (!schedule(scIdx))
     {
         if (DEBUGPS(2))
             qDebug(i18n("Scheduling errors in scenario '%1'.")
@@ -547,69 +547,15 @@ Project::scheduleAllScenarios()
 {
     bool schedulingOk = TRUE;
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
-    {
         if ((*sci)->getEnabled())
         {
             if (DEBUGPS(1))
                 qDebug(i18n("Scheduling scenario '%1' ...")
                        .arg((*sci)->getId()));
 
-            Optimizer optimizer;
-            int runCounter = 0;
-            int bestRun = 0;
-            double bestRating = 0;
-            if((*sci)->getOptimize())
-            {
-                do
-                {
-                    OptimizerRun* run = optimizer.startNewRun();
-                    runCounter++;
-                    if (DEBUGOP(2))
-                        qDebug("Optimizer run %d", runCounter);
-
-                    if (!scheduleScenario(run, *sci))
-                    {
-                        run->terminate(0.0);
-                        if (DEBUGOP(2))
-                            qDebug("Run aborted. No valid result found.");
-                    }
-                    else
-                    {
-                        double rating = rateProjectByTime
-                            ((*sci)->getSequenceNo() - 1);
-                        if ((optimizer.getMinimize() && 
-                             (bestRating == 0.0 || rating < bestRating)) ||
-                            (!optimizer.getMinimize() && rating > bestRating))
-                        {
-                            bestRun = runCounter;
-                            bestRating = rating;
-
-                        }
-                        run->terminate(rating);
-                        if (DEBUGOP(2))
-                            qDebug("Finished run with rating %f", rating);
-                    }
-                    optimizer.finishRun(run);
-                } while (!optimizer.optimumFound()); 
-                if (DEBUGOP(2))
-                    qDebug("Best run was run %d with a rating of %f", bestRun,
-                           bestRating);
-            } 
-
-            /* It's probably easier to re-run the best run again instead of
-             * adding support to all classes so we can save the results of the
-             * best run. The optimizer is written in a way that he will only
-             * run the best result once it has been found. */
-            if (!(*sci)->getOptimize() || bestRun > 0)
-            {
-                OptimizerRun* run = optimizer.startNewRun();
-                if (!scheduleScenario(run, *sci))
-                    schedulingOk = FALSE;
-            }
-            else
+            if (!scheduleScenario(*sci))
                 schedulingOk = FALSE;
         }
-    }
     
     completeBuffersAndIndices();
     
@@ -632,11 +578,20 @@ Project::prepareScenario(int sc)
 {
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->prepareScenario(sc);
+    
+    /* First we compute the criticalness of the individual task without their
+     * dependency context. */
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-    {
         (*tli)->computeCriticalness(sc);
+
+    /* Then we compute the path criticalness that represents the criticalness
+     * of a task taking their dependency context into account. */
+    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+        (*tli)->computePathCriticalness(sc);
+    
+    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->propagateInitialValues();
-    }
+    
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->prepareScenario(sc);
     if (DEBUGTS(4))
@@ -649,8 +604,9 @@ Project::prepareScenario(int sc)
         qDebug("Criticalnesses of the tasks with respect to resource "
                "availability:");
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-            qDebug("Task %s: %f", (*tli)->getId().latin1(),
-                   (*tli)->getCriticalness(sc));
+            qDebug("Task %s: %-5.1f %-5.1f", (*tli)->getId().latin1(),
+                   (*tli)->getCriticalness(sc),
+                   (*tli)->getPathCriticalness(sc));
     }
 }
 
@@ -664,14 +620,14 @@ Project::finishScenario(int sc)
 }
 
 bool
-Project::schedule(OptimizerRun* run, int sc)
+Project::schedule(int sc)
 {
     bool error = FALSE;
 
     TaskList sortedTasks(taskList);
     sortedTasks.setSorting(CoreAttributesList::PrioDown, 0);
 //    sortedTasks.setSorting(CoreAttributesList::SequenceUp, 1);
-    sortedTasks.setSorting(CoreAttributesList::CriticalnessDown, 1);
+    sortedTasks.setSorting(CoreAttributesList::PathCriticalnessDown, 1);
     sortedTasks.setSorting(CoreAttributesList::SequenceUp, 2);
     sortedTasks.sort();
 
@@ -702,7 +658,7 @@ Project::schedule(OptimizerRun* run, int sc)
                     continue;
                 }
             }
-            (*tli)->schedule(run, slot, scheduleGranularity);
+            (*tli)->schedule(sc, slot, scheduleGranularity);
             done = FALSE;
         }
     } while (!done);

@@ -31,7 +31,7 @@ Allocation::Allocation() :
     lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
-    selectionMode = order;
+    selectionMode = minAllocationProbability;
     limits = 0;
     persistent = mandatory = FALSE;
 }
@@ -77,6 +77,8 @@ Allocation::setSelectionMode(const QString& smt)
 {
     if (smt == KW("order"))
         selectionMode = order;
+    else if (smt == KW("minallocated"))
+        selectionMode = minAllocationProbability;
     else if (smt == KW("minloaded"))
         selectionMode = minLoaded;
     else if (smt == KW("maxloaded"))

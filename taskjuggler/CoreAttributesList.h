@@ -51,7 +51,8 @@ public:
         RateUp, RateDown,
         KotrusIdUp, KotrusIdDown,
         StartUp, StartDown, EndUp, EndDown,
-        CriticalnessUp, CriticalnessDown
+        CriticalnessUp, CriticalnessDown,
+        PathCriticalnessUp, PathCriticalnessDown
     };
 
     static const int maxSortingLevel = 3;

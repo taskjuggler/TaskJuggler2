@@ -172,7 +172,7 @@ Task::errorMessage(const char* msg, ...) const
 }
 
 void
-Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
+Task::schedule(int sc, time_t& date, time_t slotDuration)
 {
     // Has the task been scheduled already or is it a container?
     if (schedulingDone || !sub->isEmpty())
@@ -235,7 +235,7 @@ Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
         /* Length specifies the number of working days (as daily load)
          * and duration specifies the number of calender days. */
         if (!allocations.isEmpty())
-            bookResources(run, date, slotDuration);
+            bookResources(sc, date, slotDuration);
 
         doneDuration += ((double) slotDuration) / ONEDAY;
         if (project->isWorkingTime(Interval(date, date + slotDuration - 1)))
@@ -277,7 +277,7 @@ Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
          * how much the resources can contribute over the following
          * workings days until we have reached the specified
          * effort. */
-        bookResources(run, date, slotDuration);
+        bookResources(sc, date, slotDuration);
         // Check whether we are done with this task.
         if (qRound(doneEffort * 2048) >= qRound(effort * 2048))
         {
@@ -314,7 +314,7 @@ Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
     {
         // Task with start and end date but no duration criteria.
         if (!allocations.isEmpty() && !project->isVacation(date))
-            bookResources(run, date, slotDuration);
+            bookResources(sc, date, slotDuration);
 
         if ((scheduling == ASAP && (date + slotDuration) >= end) ||
             (scheduling == ALAP && date <= start))
@@ -533,7 +533,7 @@ Task::isRunaway() const
 }
 
 void
-Task::bookResources(OptimizerRun* /*run*/, time_t date, time_t slotDuration)
+Task::bookResources(int sc, time_t date, time_t slotDuration)
 {
     /* If the time slot overlaps with a specified shift interval, the
      * time slot must also be within the specified working hours of that
@@ -647,7 +647,7 @@ Task::bookResources(OptimizerRun* /*run*/, time_t date, time_t slotDuration)
         }       
         else
         {
-            QPtrList<Resource> cl = createCandidateList(date, *ali);
+            QPtrList<Resource> cl = createCandidateList(sc, date, *ali);
             
             bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
@@ -733,7 +733,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 }
 
 QPtrList<Resource>
-Task::createCandidateList(time_t date, Allocation* a)
+Task::createCandidateList(int sc, time_t date, Allocation* a)
 {
     /* This function generates a list of resources that could be allocated to
      * the task. The order of the list is determined by the specified
@@ -762,6 +762,34 @@ Task::createCandidateList(time_t date, Allocation* a)
                 candidates.remove(candidates.getFirst());
             }
             break;
+        case Allocation::minAllocationProbability:
+        {
+            /* This is another heuristic to optimize scheduling results. The
+             * idea is to pick the resource that is most likely to be used
+             * least during this project (because of the specified
+             * allocations) and try to use it first. Unfortunately this
+             * algorithm can make things worse in certain plan setups. */
+            while (!candidates.isEmpty())
+            {
+                /* Find canidate with smallest allocationProbability and
+                 * append it to the candidate list. */
+                double minProbability = 0;
+                Resource* minProbResource = 0;
+                for (QPtrListIterator<Resource> rli(candidates);
+                     *rli != 0; ++rli)
+                {
+                    double probability = (*rli)->getAllocationProbability(sc);
+                    if (minProbability == 0 || probability < minProbability)
+                    {
+                        minProbability = probability;
+                        minProbResource = *rli;
+                    }
+                }
+                cl.append(minProbResource);
+                candidates.remove(minProbResource);
+            }
+            break;
+        }
         case Allocation::minLoaded:
         {
             while (!candidates.isEmpty())
@@ -2161,7 +2189,7 @@ Task::computeCriticalness(int sc)
             for (QPtrListIterator<Resource> rli = 
                  (*ali)->getCandidatesIterator(); *rli; ++rli)
             {
-                /* If the candidate is a resource group we use the averadge
+                /* If the candidate is a resource group we use the average
                  * allocation probablility of all the resources of the group.
                  */
                 int resources = 0;
@@ -2176,15 +2204,70 @@ Task::computeCriticalness(int sc)
             }
             overallAllocationProbability += smallestAllocationProbablity;
         }
-        scenarios[sc].criticalness = ((scenarios[sc].effort *
-            overallAllocationProbability) / allocations.count()) * 1.1 *
-            (1 + previous.count() + followers.count());
+        scenarios[sc].criticalness = (scenarios[sc].effort *
+            overallAllocationProbability) / allocations.count();
     }
     else
         scenarios[sc].criticalness = 0;
         
 }
 
+void
+Task::computePathCriticalness(int sc)
+{
+    /*
+     * The path criticalness is a measure for the overall criticalness of the
+     * task taking the dependencies into account. The fact that a task is part
+     * of a chain of effort-based task raises all the task in the chain to a
+     * higher criticalness level than the individual tasks. In fact, the path
+     * criticalness of this chain is equal to the sum of the individual
+     * criticalnesses of the tasks.
+     */
+    if (effort > 0.0)
+        /* Since both the forward and backward functions include the
+         * criticalness of this function we have to subtract it again. */ 
+        scenarios[sc].pathCriticalness = computeBackwardCriticalness(sc) -
+            scenarios[sc].criticalness + computeForwardCriticalness(sc);
+    else
+        scenarios[sc].criticalness = 0.0;
+}
+
+double
+Task::computeBackwardCriticalness(int sc)
+{
+    double maxCriticalness = 0.0;
+
+    double criticalness;
+    for (TaskListIterator tli(previous); *tli; ++tli)
+        if ((criticalness = (*tli)->computeBackwardCriticalness(sc)) >
+            maxCriticalness)
+            maxCriticalness = criticalness;
+    if (parent &&
+        (criticalness = ((Task*) parent)->computeBackwardCriticalness(sc) >
+         maxCriticalness))
+        maxCriticalness = criticalness;
+
+    return scenarios[sc].criticalness + maxCriticalness;
+}
+
+double
+Task::computeForwardCriticalness(int sc)
+{
+    double maxCriticalness = 0.0;
+
+    double criticalness;
+    for (TaskListIterator tli(followers); *tli; ++tli)
+        if ((criticalness = (*tli)->computeForwardCriticalness(sc)) >
+            maxCriticalness)
+            maxCriticalness = criticalness;
+    if (parent &&
+        (criticalness = ((Task*) parent)->computeForwardCriticalness(sc) >
+         maxCriticalness))
+        maxCriticalness = criticalness;
+
+    return scenarios[sc].criticalness + maxCriticalness;
+}
+        
 void
 Task::finishScenario(int sc)
 {

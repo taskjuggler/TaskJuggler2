@@ -1061,6 +1061,21 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellCriticalness(TableCellInfo* tci)
+{
+    generateRightIndented
+        (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc), tci));
+}
+
+void
+HTMLReportElement::genCellPathCriticalness(TableCellInfo* tci)
+{
+    generateRightIndented
+        (tci, scaledLoad(tci->tli->task->getPathCriticalness(tci->tli->sc),
+                         tci));
+}
+
+void
 HTMLReportElement::genCellProjectId(TableCellInfo* tci)
 {
     genCell(tci->tli->task->getProjectId() + " (" +

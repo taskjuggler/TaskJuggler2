@@ -57,7 +57,10 @@ public:
         return shifts.isOnShift(i);
     }
 
-    enum SelectionModeType { order, minLoaded, maxLoaded, random };
+    enum SelectionModeType 
+    {
+        order, minAllocationProbability, minLoaded, maxLoaded, random
+    };
     void setSelectionMode(SelectionModeType smt) { selectionMode = smt; }
     bool setSelectionMode(const QString& smt);
     SelectionModeType getSelectionMode() const { return selectionMode; }

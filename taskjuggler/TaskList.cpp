@@ -132,6 +132,16 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
             t2->scenarios[sc].criticalness ? 0 :
             t1->scenarios[sc].criticalness > 
             t2->scenarios[sc].criticalness ? -1 : 1;
+    case PathCriticalnessUp:
+        return t1->scenarios[sc].pathCriticalness == 
+            t2->scenarios[sc].pathCriticalness ? 0 :
+            t1->scenarios[sc].pathCriticalness < 
+            t2->scenarios[sc].pathCriticalness ? -1 : 1;
+    case PathCriticalnessDown:
+        return t1->scenarios[sc].pathCriticalness == 
+            t2->scenarios[sc].pathCriticalness ? 0 :
+            t1->scenarios[sc].pathCriticalness > 
+            t2->scenarios[sc].pathCriticalness ? -1 : 1;
     default:
         return CoreAttributesList::compareItemsLevel(t1, t2, level);
     }       

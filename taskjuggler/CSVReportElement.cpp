@@ -645,6 +645,21 @@ CSVReportElement::genCellEffort(TableCellInfo* tci)
 }
 
 void
+CSVReportElement::genCellCriticalness(TableCellInfo* tci)
+{
+    generateRightIndented
+        (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc), tci));
+}
+
+void
+CSVReportElement::genCellPathCriticalness(TableCellInfo* tci)
+{
+    generateRightIndented
+        (tci, scaledLoad(tci->tli->task->getPathCriticalness(tci->tli->sc),
+                         tci));
+}
+
+void
 CSVReportElement::genCellProjectId(TableCellInfo* tci)
 {
     genCell(tci->tli->task->getProjectId() + " (" +

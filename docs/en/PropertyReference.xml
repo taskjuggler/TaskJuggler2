@@ -283,6 +283,14 @@ file processing, the report macros must be prefixed with an additional
    <member><varname>cost</varname></member>
    <member>The accumulated costs of the task and its sub tasks</member>
    
+   <member><varname>criticalness</varname></member>
+   <member>The criticalness of the task. It is a measure for the
+   probability that an effort task gets the requested resources
+   early.</member>
+   
+   <member><varname>cost</varname></member>
+   <member>The accumulated costs of the task and its sub tasks</member>
+   
    <member><varname>daily</varname></member>
    <member>A day-by-day calendar view of the tasks</member>
    
@@ -361,6 +369,12 @@ file processing, the report macros must be prefixed with an additional
    
    <member><varname>note</varname></member>
    <member>The description of the task</member>
+   
+   <member><varname>pathcriticalness</varname></member>
+   <member>The overall criticalness of the task. It is a measure for the
+   probability that an effort task gets scheduled as early as
+   possible. The tasks of the most critical path have the highest path
+   criticalness.</member>
    
    <member><varname>priority</varname></member>
    <member>The scheduling priority</member>
@@ -1663,6 +1677,11 @@ becomes unavailable.</para></descr>
    <member>Pick the available resource that has been used the least so
    far.</member>
    
+   <member><varname>minallocated</varname></member>
+   <member>Pick the resource that has the smallest allocation factor.
+   The allocation factor is calculated from the various allocations of
+   the resource across the tasks. This is the default setting.</member>
+   
    <member><varname>order</varname></member>
    <member>Pick the first available resource from the list.</member>
    
@@ -1750,7 +1769,21 @@ criteria can be specified. If one criteria is not sufficient to sort a
 group of accounts, the next criteria will be used to sort the accounts
 within this group.</para></descr>
   <attributes>
-   <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
+   <attr name="criteria" type="SORTINGCRITERIA" list="1">
+    <para>Possible values are 
+fullnamedown,
+fullnameup,
+iddown,
+idup,
+indexdown,
+indexup,
+namedown,
+nameup,
+sequencedown,
+sequenceup,
+tree
+   </para>
+  </attr>
   </attributes>
  </property>
  <property name="sortresources" id="sortresources" inheritable="No">
@@ -1759,7 +1792,27 @@ criteria can be specified. If one criteria is not sufficient to sort a
 group of accounts, the next criteria will be used to sort the accounts
 within this group.</para></descr>
   <attributes>
-   <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
+   <attr name="criteria" type="SORTINGCRITERIA" list="1">
+    <para>Possible values are 
+fullnamedown,
+fullnameup,
+iddown,
+idup,
+indexdown,
+indexup,
+maxeffortdown,
+maxeffortup,
+mineffortdown,
+mineffortup,
+namedown,
+nameup,
+ratedown,
+rateup,
+sequencedown,
+sequenceup,
+tree
+   </para>
+  </attr>
   </attributes>
  </property>
  <property name="sorttasks" id="sorttasks" inheritable="No">
@@ -1768,7 +1821,37 @@ criteria can be specified. If one criteria is not sufficient to sort a
 group of accounts, the next criteria will be used to sort the accounts
 within this group.</para></descr>
   <attributes>
-   <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
+   <attr name="criteria" type="SORTINGCRITERIA" list="1">
+    <para>Possible values are 
+completeddown,
+completedup,
+criticalnessdown,
+criticalnessup,
+enddown,
+endup,
+fullnamedown,
+fullnameup,
+iddown,
+idup,
+indexdown,
+indexup,
+namedown,
+nameup,
+pathcriticalnessdown,
+pathcriticalnessup,
+prioritydown,
+priorityup,
+responsibledown,
+responsibleup,
+sequencedown,
+sequenceup,
+startdown, 
+startup,
+statusdown,
+statusup,
+tree
+   </para>
+  </attr>
   </attributes>
  </property>
  <property name="start" id="start_report" inheritable="No">

@@ -36,7 +36,6 @@ class Kotrus;
 class CustomAttributeDefinition;
 class VacationInterval;
 class UsageLimits;
-class OptimizerRun;
 
 /**
  * The Project class is the root of the data tree of the application.
@@ -746,7 +745,7 @@ public:
      */
     bool pass2(bool noDepCheck);
 
-    bool scheduleScenario(OptimizerRun* run, Scenario* sc);
+    bool scheduleScenario(Scenario* sc);
     void completeBuffersAndIndices();
     bool scheduleAllScenarios();
     void generateReports() const;
@@ -756,7 +755,7 @@ private:
     void prepareScenario(int sc);
     void finishScenario(int sc);
 
-    bool schedule(OptimizerRun* run, int sc);
+    bool schedule(int sc);
 
     bool checkSchedule(int sc) const;
 

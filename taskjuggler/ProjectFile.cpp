@@ -4579,6 +4579,7 @@ ProjectFile::readSortingMode(int& sorting)
     TokenType tt;
     if ((tt = nextToken(laToken)) == COLON)
     {
+        /* Scenario specific task properties */
         int scenarioIdx = proj->getScenarioIndex(token);
         if (scenarioIdx <= 0)
         {
@@ -4604,6 +4605,14 @@ ProjectFile::readSortingMode(int& sorting)
             sorting = CoreAttributesList::CompletedUp;
         else if (token == KW("completeddown"))
             sorting = CoreAttributesList::CompletedDown;
+        else if (token == KW("criticalnessup"))
+            sorting = CoreAttributesList::CriticalnessUp;
+        else if (token == KW("criticalnessdown"))
+            sorting = CoreAttributesList::CriticalnessDown;
+        else if (token == KW("pathcriticalnessup"))
+            sorting = CoreAttributesList::PathCriticalnessUp;
+        else if (token == KW("pathcriticalnessdown"))
+            sorting = CoreAttributesList::PathCriticalnessDown;
         else
         {
             errorMessage(i18n("Sorting criteria expected"));

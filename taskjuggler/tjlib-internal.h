@@ -13,8 +13,8 @@
 #define _tjlib_internal_h_
 
 // TODO: For proper internationalization we have to fix this.
-#define i18n(a) QString(a) 
-#define I18N_NOOP(a) (a)
+#define I18N_NOOP(x) (x)
+#define i18n(x) QString(x)
 
 #endif
 

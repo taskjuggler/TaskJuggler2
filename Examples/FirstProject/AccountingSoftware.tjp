@@ -262,8 +262,8 @@ htmltaskreport "Tasks-Details.html" {
 	${navbar}
 	# Now we use a daily calendar.
   columns no, name, start, end, scenario, daily
-	start 2002-03-01
-	end 2002-04-01
+	#start 2002-03-01
+	#end 2002-04-01
 	# Show plan and delayed scenario values.
 	scenarios plan, delayed 
 	headline "Accounting Software Project - March 2002"

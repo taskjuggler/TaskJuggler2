@@ -49,7 +49,6 @@ class QDomDocument;
 class Allocation;
 class Interval;
 class UsageLimits;
-class OptimizerRun;
 
 /**
  * This class stores all task related information and provides methods to
@@ -281,7 +280,13 @@ public:
     void prepareScenario(int sc);
     void finishScenario(int sc);
     void computeCriticalness(int sc);
-    double getCriticalness(int sc) { return scenarios[sc].criticalness; }
+    double getCriticalness(int sc) const { return scenarios[sc].criticalness; }
+
+    void computePathCriticalness(int sc);
+    double getPathCriticalness(int sc) const
+    {
+        return scenarios[sc].pathCriticalness;
+    }
 
     bool hasExtraValues(int sc) const;
 
@@ -302,7 +307,7 @@ public:
     bool loopDetector();
     void computeBuffers();
     time_t nextSlot(time_t slotDuration) const;
-    void schedule(OptimizerRun* run, time_t& reqStart, time_t duration);
+    void schedule(int sc, time_t& reqStart, time_t duration);
     void propagateStart(bool safeMode = TRUE);
     void propagateEnd(bool safeMode = TRUE);
     void propagateInitialValues();
@@ -330,13 +335,13 @@ private:
     Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
                       const UsageLimits* limits, int& availability);
-    void bookResources(OptimizerRun* run, time_t day, time_t duration);
+    void bookResources(int sc, time_t day, time_t duration);
     void addBookedResource(Resource* r)
     {
         if (bookedResources.findRef((CoreAttributes*) r) == -1)
             bookedResources.inSort((CoreAttributes*) r);
     }
-    QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
+    QPtrList<Resource> createCandidateList(int sc, time_t date, Allocation* a);
     time_t earliestStart() const;
     time_t latestEnd() const;
 
@@ -349,6 +354,9 @@ private:
     bool dependsOnABrother(const Task* p) const;
     bool precedesABrother(const Task* p) const;
 
+    double computeBackwardCriticalness(int sc);
+    double computeForwardCriticalness(int sc);
+    
     /// A longer description of the task.
     QString note;
 

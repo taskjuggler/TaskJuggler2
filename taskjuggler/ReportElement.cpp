@@ -160,6 +160,19 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
     
+    tcf = new TableColumnFormat(KW("criticalness"), this, i18n("Criticalness"));
+    tcf->genTaskLine1 = &ReportElement::genCellCriticalness;
+    tcf->genTaskLine2 = &ReportElement::genCellCriticalness;
+    tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
+    
+    tcf = new TableColumnFormat(KW("pathcriticalness"), this,
+                                i18n("Path Criticalness"));
+    tcf->genTaskLine1 = &ReportElement::genCellPathCriticalness;
+    tcf->genTaskLine2 = &ReportElement::genCellPathCriticalness;
+    tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
+    
     tcf = new TableColumnFormat(KW("projectid"), this, i18n("Project ID"));
     tcf->genTaskLine1 = &ReportElement::genCellProjectId;
     
