@@ -21,12 +21,10 @@
 #include "ktjview2.h"
 #include "settings.h"
 #include "gantt.h"
-//#include "klistviewsearchline.h"
 
 #include <qdragobject.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
-//#include <qlabel.h>
 
 #include <kprinter.h>
 #include <kglobal.h>
@@ -152,6 +150,19 @@ void ktjview2::setupActions()
              m_view, SLOT( slotScale( int ) ) );
     connect( m_view, SIGNAL( signalScaleChanged( int ) ),
              m_scaleAction, SLOT( setCurrentItem( int ) ) );
+
+    // Resources menu
+    new KAction( i18n( "&Collapse All" ), 0, KShortcut(), this, SLOT( collapseAll() ), actionCollection(), "collapse_all" );
+    new KAction( i18n( "Show Level &1" ), 0, KShortcut(), this, SLOT( outline1() ), actionCollection(), "outline_1" );
+    new KAction( i18n( "Show Level &2" ), 0, KShortcut(), this, SLOT( outline2() ), actionCollection(), "outline_2" );
+    new KAction( i18n( "Show Level &3" ), 0, KShortcut(), this, SLOT( outline3() ), actionCollection(), "outline_3" );
+    new KAction( i18n( "Show Level &4" ), 0, KShortcut(), this, SLOT( outline4() ), actionCollection(), "outline_4" );
+    new KAction( i18n( "Show Level &5" ), 0, KShortcut(), this, SLOT( outline5() ), actionCollection(), "outline_5" );
+    new KAction( i18n( "Show Level &6" ), 0, KShortcut(), this, SLOT( outline6() ), actionCollection(), "outline_6" );
+    new KAction( i18n( "Show Level &7" ), 0, KShortcut(), this, SLOT( outline7() ), actionCollection(), "outline_7" );
+    new KAction( i18n( "Show Level &8" ), 0, KShortcut(), this, SLOT( outline8() ), actionCollection(), "outline_8" );
+    new KAction( i18n( "Show Level &9" ), 0, KShortcut(), this, SLOT( outline9() ), actionCollection(), "outline_9" );
+    new KAction( i18n( "&Expand All" ), 0, KShortcut(), this, SLOT( expandAll() ), actionCollection(), "expand_all" );
 
     // Filter toolbar
     m_quickSearch = new QuickSearchWidget( this );
@@ -406,6 +417,61 @@ void ktjview2::enableGanttActions( bool enable )
 void ktjview2::enableTasksActions( bool enable )
 {
     m_filterForAction->setEnabled( enable );
+}
+
+void ktjview2::expandAll()
+{
+    m_view->expandToLevel( m_view->resListView() );
+}
+
+void ktjview2::outline1()
+{
+    m_view->expandToLevel( m_view->resListView(), 0 );
+}
+
+void ktjview2::outline2()
+{
+    m_view->expandToLevel( m_view->resListView(), 1 );
+}
+
+void ktjview2::outline3()
+{
+    m_view->expandToLevel( m_view->resListView(), 2 );
+}
+
+void ktjview2::outline4()
+{
+    m_view->expandToLevel( m_view->resListView(), 3 );
+}
+
+void ktjview2::outline5()
+{
+    m_view->expandToLevel( m_view->resListView(), 4 );
+}
+
+void ktjview2::outline6()
+{
+    m_view->expandToLevel( m_view->resListView(), 5 );
+}
+
+void ktjview2::outline7()
+{
+    m_view->expandToLevel( m_view->resListView(), 6 );
+}
+
+void ktjview2::outline8()
+{
+    m_view->expandToLevel( m_view->resListView(), 7 );
+}
+
+void ktjview2::outline9()
+{
+    m_view->expandToLevel( m_view->resListView(), 8 );
+}
+
+void ktjview2::collapseAll()
+{
+    m_view->collapseAll( m_view->resListView() );
 }
 
 #include "ktjview2.moc"

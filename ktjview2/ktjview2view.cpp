@@ -915,4 +915,31 @@ void ktjview2View::slotScaleChanged( KDGanttView::Scale scale )
     emit signalScaleChanged( static_cast<int>( scale ) );
 }
 
+void ktjview2View::expandToLevel( KListView * view, int level )
+{
+    QListViewItemIterator it( view, QListViewItemIterator::Visible );
+
+    while ( it.current() )
+    {
+        if ( (*it)->depth() <= level )
+            (*it)->setOpen( true );
+        else
+            (*it)->setOpen( false );
+
+        ++it;
+    }
+}
+
+void ktjview2View::collapseAll( KListView * view )
+{
+    QListViewItemIterator it( view, QListViewItemIterator::Visible );
+
+    while ( it.current() )
+    {
+        ( *it )->setOpen( false );
+
+        ++it;
+    }
+}
+
 #include "ktjview2view.moc"

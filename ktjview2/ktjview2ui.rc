@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="25">
+<kpartgui name="ktjview2" version="26">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -16,6 +16,23 @@
     <Action name="scale"/>
     <Separator/>
     <Action name="timeframe"/>
+  </Menu>
+  <Menu name="resource"><text>&amp;Resources</text>
+    <Menu name="show_outline"><text>&amp;Outline</text>
+        <Action name="collapse_all"/>
+        <Separator/>
+        <Action name="outline_1"/>
+        <Action name="outline_2"/>
+        <Action name="outline_3"/>
+        <Action name="outline_4"/>
+        <Action name="outline_5"/>
+        <Action name="outline_6"/>
+        <Action name="outline_7"/>
+        <Action name="outline_8"/>
+        <Action name="outline_9"/>
+        <Separator/>
+        <Action name="expand_all"/>
+    </Menu>
   </Menu>
   <Menu name="tasks"><text>&amp;Tasks</text>
     <Action name="filter_for"/>

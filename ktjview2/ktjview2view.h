@@ -162,6 +162,17 @@ public slots:
      */
     void filter();
 
+    /**
+     * Expand (open) the listview (@p view) items up to @p level
+     * (99 expands all)
+     */
+    void expandToLevel( KListView * view, int level = 99 );
+
+    /**
+     * Collapse (close) all the listview items
+     */
+    void collapseAll( KListView * view );
+
 signals:
     /**
      * Use this signal to change the content of the statusbar

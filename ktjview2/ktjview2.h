@@ -143,6 +143,18 @@ private slots:
      */
     void slotSwitchView( int type );
 
+    void expandAll();
+    void outline1();
+    void outline2();
+    void outline3();
+    void outline4();
+    void outline5();
+    void outline6();
+    void outline7();
+    void outline8();
+    void outline9();
+    void collapseAll();
+
 private:
     /**
      * Create actions
