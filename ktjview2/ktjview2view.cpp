@@ -306,7 +306,7 @@ void ktjview2View::parseProjectInfo()
     text += i18n( "Currency: %1<br>" ).arg( m_project->getCurrency() );
 
     // project start
-    m_ganttView->setHorizonStart( time_t2Q( m_project->getStart()) );
+    m_ganttView->setHorizonStart( time_t2Q( m_project->getStart() ) );
     text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project->getStart() ) );
 
     // end date
@@ -588,7 +588,7 @@ void ktjview2View::slotScale( int scale )
 
 void ktjview2View::slotZoomTimeframe()
 {
-    TimeDialog * dlg = new TimeDialog( this, m_ganttView->horizonStart(), m_ganttView->horizonEnd() );
+    TimeDialog * dlg = new TimeDialog( this, m_ganttView->horizonStart(), m_ganttView->horizonEnd() ); // TODO create the dialog at startup to preserve the previous values
     if ( dlg->exec() == QDialog::Accepted )
     {
         m_ganttView->zoomToSelection( dlg->getStartDate(), dlg->getEndDate() );
