@@ -14,7 +14,7 @@
 #define _ResourceList_h_
 
 #include <time.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 
 #include "Interval.h"
@@ -44,6 +44,12 @@ public:
 	void setProjectId(const QString i) { projectId = i; }
 	const QString& getProjectId() const { return projectId; }
 
+   void setLockTS( const QString& ts ) { lockTS = ts; }
+   const QString& getLockTS() const { return lockTS; }
+
+   void setLockerId( const QString& id ) { lockerId = id; }
+   const QString& getLockerId() const { return lockerId; }
+   
 private:
 	// The booked time period.
 	Interval interval;
@@ -53,7 +59,24 @@ private:
 	QString account;
 	// The Project ID
 	QString projectId;
+   
+   // The database lock timestamp
+   QString lockTS;
+
+   // the lockers ID
+   QString lockerId;
 } ;
+
+class BookingList: public QPtrList<Booking>
+{
+public:
+   BookingList() { setAutoDelete(TRUE); }
+   ~BookingList() {}
+};
+
+typedef  QPtrListIterator<Booking> BookingListIterator;
+
+
 
 class Resource
 {
@@ -92,7 +115,12 @@ public:
 
 	void printText();
 
+   
+   bool dbLoadBookings( const QString& kotrusID, const QString& skipProjectID );
+
 private:
+
+   // The ID of the resource. Must be unique in the project.
 	Project* project;
 
 	// The ID of the resource. Must be unique in the project.
@@ -121,10 +149,10 @@ private:
 	QList<Interval> vacations;
 
 	// A list of all uses of the resource.
-	QList<Booking> jobs;
+	BookingList jobs;
 } ;
 
-class ResourceList : public QList<Resource>
+class ResourceList : public QPtrList<Resource>
 {
 public:
 	ResourceList() { setAutoDelete(TRUE); }
