@@ -63,11 +63,11 @@
   <row>
    <entry>Inheritable</entry>
    <entry>
-    <xsl:value-of select="../@inheritable"/>
+    <xsl:value-of select="@inheritable"/>
    </entry>
    <entry>Scenario Spec.</entry>
    <entry>
-    <xsl:value-of select="../@scenario"/>
+    <xsl:value-of select="@scenario"/>
    </entry>
   </row>
   <xsl:apply-templates select="seealso"/>

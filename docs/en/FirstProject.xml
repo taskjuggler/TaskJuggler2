@@ -118,17 +118,17 @@ report to exactly those details that you want to have included.</para>
 flags team
 
 resource dev "Developers" {
-	resource dev1 "Paul Smith" { rate 330.0 }
-	resource dev2 "Sébastien Bono"
-	resource dev3 "Klaus Müller" { vacation 2002-02-01 - 2002-02-05 }
+  resource dev1 "Paul Smith" { rate 330.0 }
+  resource dev2 "Sebastien Bono"
+  resource dev3 "Klaus Mueller" { vacation 2002-02-01 - 2002-02-05 }
 
-	flags team
+  flags team
 }
 resource misc "The Others" {
-	resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
-	resource doc "Dim Sung" { rate 280.0 }
+  resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
+  resource doc "Dim Sung" { rate 280.0 }
 
-	flags team
+  flags team
 }
 </screen></para>
 

@@ -56,7 +56,11 @@
 ]>
 
 <properties>
- <property name="Global Scope" id="global_scope">
+ <property name="The TJP File" id="global_scope">
+ <descr><para>All TaskJuggler project files should start with the
+project property and must contain at least one task definition. To
+visualize the results of the scheduling process, at least one of the
+reports should be specified.</para></descr>
  <optattributes>
    <optattr>account</optattr>
    <optattr>copyright</optattr>
@@ -89,13 +93,15 @@
  <property name="account" id="account">
   <descr><para>Declares an account. Accounts can be used to calculate costs
 of tasks or the whole project. Account declaration may be nested, but
-only the top level accounts may have a type attribute specified. All
-An account that has sub-accounts may not have a <link
+only the top level accounts may have a type attribute specified. An
+account that has sub-accounts may not have a <link
 linkend="PROPERTY_credit">credit</link> or a <link
-linkend="PROPERTY_kotrusid">kotrusid</link>.  sub-accounts inherit this
-type.</para></descr>
+linkend="PROPERTY_kotrusid">kotrusid</link>.  sub-accounts inherit
+this type.</para></descr>
   <attributes>
-   <attr name="id" type="ID"/>
+   <attr name="id" type="ID">
+    <para>Each account must have a unique ID.</para>
+   </attr> 
    <attr name="name" type="STRING"/>
    <attr name="type" type="ID" optional="1">
     <para>The type may be <varname>cost</varname> or
@@ -103,8 +109,11 @@ type.</para></descr>
   </attributes>
   <optattributes>
    <optattr>account</optattr>
+   <optattr>credit</optattr>
+   <optattr>kotrusid</optattr>
   </optattributes>
   <seealso>
+   <also>csvaccountreport</also>
    <also>htmlaccountreport</also>
   </seealso>
  </property>
@@ -135,7 +144,7 @@ in most other cases a real user error.</para>
 different locations the <link linkend="PROPERTY_supplement">supplement</link>
 construct is the recommended way to do this.</para></descr>
  </property>
- <property name="allocate" id="allocate" inheritable="No">
+ <property name="allocate" id="allocate" inheritable="Yes">
   <descr><para>Specify which resources should be allocated to the
 task.</para></descr>
   <attributes>
@@ -186,7 +195,7 @@ HTML calendar columns. The default is to show load values.</para></descr>
    </simplelist></para>
   </freestyle>
  </property>
- <property name="booking" id="booking" inheritable="No">
+ <property name="booking" id="booking" inheritable="No" scenario="Yes">
   <descr><para></para></descr>
   <attributes>
    <attr name="start" type="DATE"/>
@@ -210,14 +219,53 @@ HTML calendar columns. The default is to show load values.</para></descr>
    <also>copyright</also>
   </seealso>
  </property>
+ <property name="celltext" id="celltext" inheritable="No">
+  <descr><para>Specifies an alternative text that is used for all
+cells of the column. Usually such a text contains a runtime macro,
+otherwise all cells of the column will have the same fixed value.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>cellurl</also>
+  </seealso>
+ </property>
+ <property name="cellurl" id="cellurl" inheritable="No">
+  <descr><para>Specifies an URL that is attached to the cell contense
+of the cells of the column in HTML reports.</para></descr>
+  <attributes>
+   <attr name="url" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>celltext</also>
+  </seealso>
+ </property>
  <property name="columns" id="columns" inheritable="No">
   <descr><para>Specifies which columns shell be included in a
-report.</para></descr>
+report.</para>
+
+<para>All columns support macro expansion. Contrary to the normal
+macro expansion, these macros are expanded during the report
+generation. So the value of the macro is being changed after each
+table cell or table line. Consequently only build in macros can be
+used. To protect the macro calls agains expansion during the initial
+file processing, the report macros must be prefixed with an additional
+<varname>$</varname>.</para></descr>
   <attributes>
    <attr name="columnid" type="ID" list="1">
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
+  <optattributes>
+   <optattr>celltext</optattr>
+   <optattr>cellurl</optattr>
+   <optattr>hidecelltext</optattr>
+   <optattr>hidecellurl</optattr>
+   <optattr>subtitle</optattr>
+   <optattr>subtitleurl</optattr>
+   <optattr>title</optattr>
+   <optattr>titleurl</optattr>
+  </optattributes>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
    
@@ -384,6 +432,38 @@ report.</para></descr>
    <member>A year-by-year calendar view of the tasks</member>
    
    </simplelist></para>
+<para>The following macros are supported for normal table cells:</para>
+
+<para><simplelist type="horiz" columns="2">
+<member><varname>$${0}</varname></member>
+<member>This is the original value of the table cell. This macro is
+useful if the user would like to extend the cell text with a fixed
+string.</member>
+
+<member><varname>$${accountid}</varname></member>
+<member>The ID of the account.</member>
+
+<member><varname>$${resourceid}</varname></member>
+<member>The ID of the resource.</member>
+
+<member><varname>$${taskid}</varname></member> <member>the
+id of the task.</member>
+
+</simplelist></para>
+
+<para>Additionally the original contense of other cells of the same
+report line can be accessed by the column ID. The following columns
+are supported:</para>
+
+<para><varname>index, no, hierachindex, hierachno, id,
+name</varname></para>
+
+<para>For the title or sub title of the calendar columns
+(<varname>daily, weekly, monthly, quarterly, yearly</varname>) the
+following macros are supported:</para>
+
+<para><varname>$${day}, $${month}, $${week}, $${quarter},
+$${year}</varname>.</para>
   </freestyle>
  </property>
  <property name="complete" id="complete" inheritable="No"
@@ -395,10 +475,12 @@ different color.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para></descr>
   <attributes>
-   <attr name="percent" type="INTEGER"/>
+   <attr name="percent" type="INTEGER">
+    <para>The value must be between 0 and 100.</para>
+   </attr>
   </attributes>
  </property>
- <property name="copyright" id="copyright" inheritable="Yes">
+ <property name="copyright" id="copyright" inheritable="No">
   <descr><para>Adds a copyright notice to all subsequently defined
 reports. This notice may contain any text. The notice is added at the
 bottom of the report.</para></descr>
@@ -489,7 +571,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <also>currencyformat</also>
   </seealso>
  </property>
- <property name="currencyformat" id="currencyformat" inheritable="No">
+ <property name="currencyformat" id="currencyformat" inheritable="Yes">
   <descr><para>These values specify the default format used for all
 currency values. The <varname>negativeprefix</varname> and
 <varname>negativesuffix</varname> strings enclose negative currency
@@ -539,6 +621,7 @@ last policy counts.</para></descr>
    <attr name="task" type="ID" list="1"/>
   </attributes>
   <seealso>
+   <also>complete</also>
    <also>precedes</also>
   </seealso>
   <example>&example_depends;</example>
@@ -796,10 +879,26 @@ task.</para></descr>
   </attributes>
  </property>
  <property name="htmlaccountreport" id="htmlaccountreport" inheritable="No">
-  <descr><para></para></descr>
+  <descr><para>The report lists all specified account values as a HTML
+page.</para></descr>
   <attributes>
   </attributes>
   <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>caption</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>hideaccount</optattr>
+   <optattr>rawhead</optattr>
+   <optattr>rawstylesheet</optattr>
+   <optattr>rawtail</optattr>
+   <optattr>rollupaccount</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>sortaccounts</optattr>
+   <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
    <also>csvaccountreport</also>
@@ -808,10 +907,33 @@ task.</para></descr>
   </seealso>
  </property>
  <property name="htmlresourcereport" id="htmlresourcereport" inheritable="No">
-  <descr><para></para></descr>
+  <descr><para>The report lists all resources and their respective
+values as a HTML page. The tasks that the resources are allocated to
+can be listed as well.</para></descr>
   <attributes>
   </attributes>
   <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>barlabels</optattr>
+   <optattr>caption</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>rawhead</optattr>
+   <optattr>rawstylesheet</optattr>
+   <optattr>rawtail</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
    <also>csvresourcereport</also>
@@ -847,10 +969,33 @@ tasks. The default reporting interval is 1 week.</para></descr>
   </seealso>
  </property>
  <property name="htmltaskreport" id="htmltaskreport" inheritable="No">
-  <descr><para></para></descr>
+  <descr><para>The report lists all tasks and their respective values
+as a HTML page. The resources that are allocated to the tasks can be
+listed as well.</para></descr>
   <attributes>
   </attributes>
   <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>barlabels</optattr>
+   <optattr>caption</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>rawhead</optattr>
+   <optattr>rawstylesheet</optattr>
+   <optattr>rawtail</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
    <also>csvtaskreport</also>
@@ -864,27 +1009,27 @@ tasks. The default reporting interval is 1 week.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>barlabels</optattr>
+   <optattr>caption</optattr>
    <optattr>columns</optattr>
-   <optattr>scenarios</optattr>
-   <optattr>start_report</optattr>
    <optattr>end_report</optattr>
    <optattr>headline</optattr>
-   <optattr>caption</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
-   <optattr>showprojectids</optattr>
-   <optattr>accumulate</optattr>
-   <optattr>hidetask</optattr>
-   <optattr>rolluptask</optattr>
-   <optattr>sorttasks</optattr>
-   <optattr>hideresource</optattr>
    <optattr>rollupresource</optattr>
-   <optattr>sortresources</optattr>
-   <optattr>loadunit</optattr>
-   <optattr>timeformat</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
    <optattr>shorttimeformat</optattr>
-   <optattr>barlabels</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
    <also>htmlaccountreport</also>
@@ -1124,12 +1269,12 @@ the specified value, then an error is reported.</para></descr>
   <descr><para>Turns the task into a special task that has no
 duration. You may not specify a <link
 linkend="PROPERTY_duration">duration</link>, <link
-linkend="PROPERTY_length">length</link> or <link
-linkend="PROPERTY_effort">effort</link> for a milestone task.</para></descr>
- </property>
+linkend="PROPERTY_length">length</link>, <link
+linkend="PROPERTY_effort">effort</link> or subtasks for a milestone
+task.</para></descr> </property>
  <property name="note" id="note" inheritable="No">
   <descr><para>Attach a note to the task. This is usually a more
-detail specification of what the task is about.</para></descr>
+detailed specification of what the task is about.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
@@ -1195,6 +1340,7 @@ within a task, the last policy counts.</para></descr>
    <attr name="task" type="ID" list="1"/>
   </attributes>
   <seealso>
+   <also>complete</also>
    <also>depends</also>
   </seealso>
   <example>&example_precedes;</example>
@@ -1260,7 +1406,7 @@ projects that each have their own ID.</para></descr> <attributes>
    <also>projectids</also>
   </seealso>
  </property>
- <property name="projectids" id="projectids" inheritable="Yes">
+ <property name="projectids" id="projectids" inheritable="No">
   <descr><para>Declares a list of project IDs.</para></descr>
   <attributes>
    <attr name="projectid" type="ID" list="1"/>
@@ -1335,14 +1481,13 @@ than one reference, you can create your own URL placeholders.</para></descr>
   </seealso>
  </property>
  <property name="resource" id="resource" inheritable="No">
-  <descr><para></para></descr>
-  <attributes>
-   <attr name="id" type="ID"/>
-   <attr name="name" type="STRING"/>
-  </attributes>
+  <descr><para>Task use resources to fullfill the specified
+efforts.</para></descr> <attributes> <attr name="id" type="ID"/> <attr
+name="name" type="STRING"/> </attributes>
   <optattributes>
    <optattr>booking</optattr>
    <optattr>efficiency</optattr>
+   <optattr>flags</optattr>
    <optattr>kotrusid</optattr>
    <optattr>maxeffort</optattr>
    <optattr>rate</optattr>
@@ -1519,8 +1664,10 @@ defined, but shift intervals may not overlap.</para></descr>
     <para>The ID of the selected shift.</para>
    </attr>
    <attr name="dateinterval" type="DATEINTERVAL" optional="1">
-    <para>If the interval is omitted, the shift is assigned for the
-whole project time frame.</para>
+    <para>If an interval is specified, no allocations will be made
+outside the shift intervals unless other shifts have been selected for
+other time intervals. If the interval is omitted, the shift is
+assigned for the whole project time frame.</para>
    </attr>
   </attributes>
   <seealso>
@@ -1635,6 +1782,25 @@ task.</para></descr>
    <also>note</also>
   </seealso>
  </property>
+ <property name="subtitle" id="subtitle" inheritable="No">
+  <descr><para>Specifies an alternative subtitle for a report
+column.</para></descr> <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>subtitleurl</also>
+  </seealso>
+ </property>
+ <property name="subtitleurl" id="subtitleurl" inheritable="No">
+  <descr><para>Specifies an URL that is attached to the column subtitle
+of HTML reports.</para></descr>
+  <attributes>
+   <attr name="url" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>subtitle</also>
+  </seealso>
+ </property>
  <property name="supplement" id="supplement" inheritable="No">
   <descr><para>The supplement keyword provides a mechanism to add more
 attributes to already defined tasks or resources. The additional
@@ -1665,7 +1831,7 @@ what task.</para></descr>
    <attr name="name" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>account</optattr>
+   <optattr>account_task</optattr>
    <optattr>allocate</optattr>
    <optattr>complete</optattr>
    <optattr>depends</optattr>
@@ -1674,7 +1840,6 @@ what task.</para></descr>
    <optattr>endbuffer</optattr>
    <optattr>endcredit</optattr>
    <optattr>end_task</optattr>
-   <optattr>flags</optattr>
    <optattr>flags</optattr>
    <optattr>length</optattr>
    <optattr>maxend</optattr>
@@ -1958,6 +2123,25 @@ resolution.</para></descr>
    <attr name="unit" type="UNIT"/>
   </attributes>
  </property>
+ <property name="title" id="title" inheritable="No">
+  <descr><para>Specifies an alternative title for a report
+column.</para></descr> <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>titleurl</also>
+  </seealso>
+ </property>
+ <property name="titleurl" id="titleurl" inheritable="No">
+  <descr><para>Specifies an URL that is attached to the column title
+of HTML reports.</para></descr>
+  <attributes>
+   <attr name="url" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>title</also>
+  </seealso>
+ </property>
  <property name="vacation" id="vacation_global" inheritable="Yes">
   <descr><para>Specify a global vacation day. This vacation is
 respected by all resources that are defined hereafter.</para></descr>
@@ -2000,8 +2184,9 @@ America.</para></descr>
    <also>weekstartsmonday</also>
   </seealso>
  </property>
- <property name="workinghours" id="workinghours" inheritable="No">
-  <descr><para></para></descr>
+ <property name="workinghours" id="workinghours" inheritable="Yes">
+  <descr><para>The working hours specification limits the availability
+of resources to certain time slots of week days.</para></descr>
   <attributes>
    <attr name="weekday" type="WEEKDAY"/>
    <attr name="interval" type="TIMEINTERVAL" list="1"/>

@@ -37,7 +37,7 @@ taskjuggler/book1.html: $(SGMLSOURCES)
 
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
-	  db2ps taskjuggler.xml ;\
+	  db2ps --xencoding utf-8 taskjuggler.xml ;\
 	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
 	    CATALOG.local *.dsl ; \
 	fi
