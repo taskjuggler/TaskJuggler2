@@ -10,3 +10,4 @@ taskjuggler.dtd
 *.lo
 *.a
 *.la
+*.moc
