@@ -279,11 +279,10 @@ Report::sortTaskList(TaskList& filteredList)
 	{
 		// Set sorting criteria so sequence no since list.contains() needs it.
 		filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
-		for (Task* t = filteredList.first(); t != 0;
-			 t = filteredList.next())
+		for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
 		{
 			// Do not add the taskRoot task or any of it's parents.
-			for (Task* p = t->getParent();
+			for (Task* p = (*tli)->getParent();
 				 p != 0 && (p->getId() + "." != taskRoot);
 				 p = p->getParent())
 				if (list.contains(p) == 0)

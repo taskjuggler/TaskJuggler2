@@ -17,6 +17,8 @@
 Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
 	CoreAttributes(prj, i, n, p)
 {
+	prj->addShift(this);
+
 	if (p)
 	{
 		// Inherit start values from parent resource.

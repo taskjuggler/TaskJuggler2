@@ -32,11 +32,6 @@ public:
 	}
 	virtual ~TaskList() { }
 
-	Task* first() { return (Task*) CoreAttributesList::first(); }
-	Task* last()  { return (Task*) CoreAttributesList::last(); }
-	Task* prev()  { return (Task*) CoreAttributesList::prev(); }
-	Task* next()  { return (Task*) CoreAttributesList::next(); }
-
 	Task* getTask(const QString& id) const;
 
 	static bool isSupportedSortingCriteria(int sc);
@@ -57,7 +52,7 @@ class TaskListIterator : public virtual CoreAttributesListIterator
 public:
 	TaskListIterator(const CoreAttributesList& l) :
 		CoreAttributesListIterator(l) { }
-	~TaskListIterator() { }
+	virtual ~TaskListIterator() { }
 	Task* operator*() { return (Task*) get(); }
 } ;
 

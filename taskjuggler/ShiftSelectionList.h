@@ -48,7 +48,7 @@ class ShiftSelectionListIterator : public QPtrListIterator<ShiftSelection>
 public:
 	ShiftSelectionListIterator(const ShiftSelectionList& s) :
 		QPtrListIterator<ShiftSelection>(s) { }
-	~ShiftSelectionListIterator() { }
+	virtual ~ShiftSelectionListIterator() { }
 } ;
 
 #endif

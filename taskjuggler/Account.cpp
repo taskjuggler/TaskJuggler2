@@ -27,16 +27,22 @@ TransactionList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		return t2->date - t1->date;
 }
 
+Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
+				 AccountType at) : CoreAttributes(p, i, n, pr), acctType(at)
+{
+	p->addAccount(this);
+	kotrusId = "";
+}
+
 double
 Account::getVolume(int sc, const Interval& period) const
 {
-	TaskList tl = project->getTaskList();
-
 	double volume = 0.0;
 	// Add plan credits for all tasks that should be credited to this account.
-	for (TaskListIterator tli(tl); *tli != 0; ++tli)
+	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
 		if ((*tli)->getAccount() == this)
 			volume += (*tli)->getCredits(sc, period, 0, FALSE);
+
 	// Add all transactions that are registered within the period.
 	for (TransactionListIterator tli(transactions); *tli != 0; ++tli)
 		if (period.contains((*tli)->getDate()))

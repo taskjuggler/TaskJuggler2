@@ -100,6 +100,8 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 {
 	allocations.setAutoDelete(TRUE);
 
+	proj->addTask(this);
+
 	scheduling = ASAP;
 	milestone = FALSE;
 	account = 0;
@@ -832,9 +834,9 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 	if (resource)
 		load += resource->getLoad(sc, period, this);
 	else
-		for (Resource* r = scenarios[sc].bookedResources.first(); r != 0;
-			 r = scenarios[sc].bookedResources.next())
-			load += r->getLoad(sc, period, this);
+		for (ResourceListIterator rli(scenarios[sc].bookedResources); 
+			 *rli != 0; ++rli)
+			load += (*rli)->getLoad(sc, period, this);
 
 	return load;
 }
@@ -854,9 +856,9 @@ Task::getCredits(int sc, const Interval& period, const Resource* resource,
 	if (resource)
 		credits += resource->getCredits(sc, period, this);
 	else
-		for (Resource* r = scenarios[sc].bookedResources.first(); r != 0;
-			 r = scenarios[sc].bookedResources.next())
-			credits += r->getCredits(sc, period, this);
+		for (ResourceListIterator rli(scenarios[sc].bookedResources);
+			 *rli != 0; ++rli)
+			credits += (*rli)->getCredits(sc, period, this);
 
 	if (period.contains(scenarios[sc].start))
 		credits += scenarios[sc].startCredit;
@@ -1962,12 +1964,12 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    /* list of tasks by id which are previous */
    if( previous.count() > 0 )
    {
-      TaskList tl( previous );
-      for (Task* t = tl.first(); t != 0; t = tl.next())
+	  for (TaskListIterator tli(previous); *tli != 0; ++tli)
       {	
-	 if( t != this )
+	 if( *tli != this )
 	 {
-	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Previous", t->getId()));
+	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Previous",
+														(*tli)->getId()));
 	 }
       }
    }
@@ -1975,12 +1977,12 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    /* list of tasks by id which follow */
    if( followers.count() > 0 )
    {
-      TaskList tl( followers );
-      for (Task* t = tl.first(); t != 0; t = tl.next())
+	  for (TaskListIterator tli(followers); *tli != 0; ++tli)
       {	
-	 if( t != this )
+	 if( *tli != this )
 	 {
-	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Follower", t->getId()));
+	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Follower",
+														(*tli)->getId()));
 	 }
       }
    }
@@ -2014,10 +2016,9 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    /* booked Ressources */
    if( bookedResources.count() > 0 )
    {	
-      QPtrList<Resource> br(bookedResources);
-      for (Resource* r = br.first(); r != 0; r = br.next())
+	   for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
       {
-	 taskElem.appendChild( r->xmlIDElement( doc ));
+	 taskElem.appendChild( (*rli)->xmlIDElement( doc ));
       }
    }
 

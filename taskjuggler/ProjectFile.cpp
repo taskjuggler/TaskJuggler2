@@ -832,8 +832,6 @@ ProjectFile::readTask(Task* parent)
 
 	Task* task = new Task(proj, id, name, parent, getFile(), getLine());
 
-	proj->addTask(task);
-
 	if (!readTaskBody(task))
 		return FALSE;
 	
@@ -1289,8 +1287,6 @@ ProjectFile::readResource(Resource* parent)
 
 	Resource* r = new Resource(proj, id, name, parent);
 
-	proj->addResource(r);
-
 	TokenType tt;
 	QString token;
 	if ((tt = nextToken(token)) == LCBRACE)
@@ -1497,7 +1493,6 @@ ProjectFile::readShift(Shift* parent)
 	}
 
 	Shift* s = new Shift(proj, id, name, parent);
-	proj->addShift(s);
 
 	TokenType tt;
 	QString token;
@@ -1710,8 +1705,6 @@ ProjectFile::readAccount(Account* parent)
 	}
 	else
 		returnToken(tt, token);
-
-	proj->addAccount(a);
 
 	return TRUE;
 }

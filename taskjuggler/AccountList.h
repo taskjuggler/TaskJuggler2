@@ -30,7 +30,6 @@ public:
 	}
 	~AccountList() { }
 
-	void addAccount(Account* a);
 	Account* getAccount(const QString& id) const;
 
 	static bool isSupportedSortingCriteria(int sc);
@@ -51,7 +50,7 @@ class AccountListIterator : public virtual CoreAttributesListIterator
 public:
 	AccountListIterator(const CoreAttributesList& l) :
 		CoreAttributesListIterator(l) { }
-	~AccountListIterator() { }
+	virtual ~AccountListIterator() { }
 	Account* operator*() { return (Account*) get(); }
 } ;
 

@@ -33,11 +33,7 @@ public:
 	enum AccountType { Cost, Revenue };
 
 	Account(Project* p, const QString& i, const QString& n, Account* pr,
-			AccountType at)
-		: CoreAttributes(p, i, n, pr), acctType(at)
-	{
-		kotrusId = "";
-	}
+			AccountType at);
 	virtual ~Account() { };
 
 	virtual const char* getType() const { return "Account"; }

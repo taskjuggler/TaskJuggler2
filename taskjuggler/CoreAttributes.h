@@ -80,7 +80,7 @@ class CoreAttributesListIterator : public QPtrListIterator<CoreAttributes>
 public:
 	CoreAttributesListIterator(const CoreAttributesList& l) :
 		QPtrListIterator<CoreAttributes>(l) { }
-	~CoreAttributesListIterator() { }
+	virtual ~CoreAttributesListIterator() { }
 } ;
 
 class CoreAttributesTreeIterator

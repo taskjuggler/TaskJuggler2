@@ -31,6 +31,8 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 {
 	vacations.setAutoDelete(TRUE);
 
+	p->addResource(this);
+
 	if (pr)
 	{
 		// Inherit flags from parent resource.

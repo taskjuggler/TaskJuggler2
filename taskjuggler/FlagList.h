@@ -19,7 +19,7 @@ class FlagList : public QStringList
 {
 public:
 	FlagList() { }
-	~FlagList() { }
+	virtual ~FlagList() { }
 
 	void addFlag(QString flag)
 	{

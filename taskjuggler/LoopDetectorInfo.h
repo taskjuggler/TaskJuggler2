@@ -39,7 +39,7 @@ class LDIList : public virtual QValueList<LoopDetectorInfo>
 {
 public:
 	LDIList() { }
-	~LDIList() { }
+	virtual ~LDIList() { }
 } ;
 
 #endif

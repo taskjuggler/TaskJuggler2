@@ -24,7 +24,7 @@ class BookingList : public QPtrList<Booking>
 {
 public:
 	BookingList() { }
-	~BookingList() { }
+	virtual ~BookingList() { }
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
@@ -39,7 +39,7 @@ class BookingListIterator : public QPtrListIterator<Booking>
 public:
 	BookingListIterator(const BookingList& l) :
 		QPtrListIterator<Booking>(l) { }
-	~BookingListIterator() { }
+	virtual ~BookingListIterator() { }
 } ;
 
 #endif

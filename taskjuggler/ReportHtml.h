@@ -87,8 +87,7 @@ public:
 	void taskName(const Task* t, const Resource* r, bool big);
 	void resourceName(const Resource* t, const Task* t, bool big);
 
- 	void planResources(const Task* t, bool light);
-	void actualResources(const Task* t, bool light);
+ 	void scenarioResources(int sc, const Task* t, bool light);
 
 	void reportLoad(double load, const QString& bgcol, bool bold);
 	void reportPIDs(const QString& pids, const QString bgCol, bool bold);

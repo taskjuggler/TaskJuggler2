@@ -28,7 +28,7 @@ class TjMessageHandler : public QObject
 	Q_OBJECT
 public:
 	TjMessageHandler(bool cm) : consoleMode(cm) { }
-	~TjMessageHandler() { }
+	virtual ~TjMessageHandler() { }
 
 	void warningMessage(const QString& msg, const QString& file = QString::null,
 				   int linei = -1);

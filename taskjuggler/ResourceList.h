@@ -26,7 +26,7 @@ class ResourceList : public CoreAttributesList
 {
 public:
 	ResourceList();
-	~ResourceList() { }
+	virtual ~ResourceList() { }
 
 	Resource* getResource(const QString& id) const;
 
@@ -55,7 +55,7 @@ class ResourceTreeIterator : public virtual CoreAttributesTreeIterator
 {
 public:
 	ResourceTreeIterator(Resource* r); 
-	~ResourceTreeIterator() { }
+	virtual ~ResourceTreeIterator() { }
 
 	Resource* operator*() { return (Resource*) current; }
 	Resource* operator++() 

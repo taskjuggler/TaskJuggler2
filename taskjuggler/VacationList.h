@@ -47,7 +47,7 @@ class VacationList : public QPtrList<VacationInterval>
 {
 public:
 	VacationList() { setAutoDelete(TRUE); }
-	~VacationList() {}
+	virtual ~VacationList() {}
 
 	void add(const QString& name, const Interval& i)
 	{
@@ -68,7 +68,7 @@ class VacationListIterator : public QPtrListIterator<VacationInterval>
 public:
 	VacationListIterator(const VacationList& l) :
 		QPtrListIterator<VacationInterval>(l) { }
-	~VacationListIterator() { }
+	virtual ~VacationListIterator() { }
 } ;
 
 #endif

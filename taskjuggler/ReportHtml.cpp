@@ -404,7 +404,7 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 						project->getIdIndex(t->getProjectId()) + ")", r != 0,
 						"left");
 		else if (*it == KW("resources"))
-			planResources(t, r != 0);
+			scenarioResources(Task::Plan, t, r != 0);
 		else if (*it == KW("responsible"))
 			if (t->getResponsible())
 				textTwoRows(htmlFilter(t->getResponsible()->getName()), r != 0,
@@ -521,7 +521,7 @@ ReportHtml::generateActualTask(const Task* t, const Resource* r)
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("resources"))
-			actualResources(t, r != 0);
+			scenarioResources(Task::Actual, t, r != 0);
 		else if (*it == "costs")
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
@@ -1569,42 +1569,20 @@ ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
 }
 
 void
-ReportHtml::planResources(const Task* t, bool light)
+ReportHtml::scenarioResources(int sc, const Task* t, bool light)
 {
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
 	  << "\" style=\"text-align:left\">"
 	  << "<span style=\"font-size:100%\">";
 	bool first = TRUE;
-	QPtrList<Resource> planResources = t->getBookedResources(Task::Plan);
-	for (Resource* r = planResources.first(); r != 0;
-		 r = planResources.next())
+	for (ResourceListIterator rli(t->getBookedResourcesIterator(sc));
+		*rli != 0; ++rli)
 	{
 		if (!first)
 			s << ", ";
 					
-		s << htmlFilter(r->getName());
-		first = FALSE;
-	}
-	s << "</span></td>" << endl;
-}
-
-void
-ReportHtml::actualResources(const Task* t, bool light)
-{
-	s << "<td class=\""
-	  << (light ? "defaultlight" : "default")
-	  << "\" style=\"text-align:left\">"
-	  << "<span style=\"font-size:100%\">";
-	bool first = TRUE;
-	QPtrList<Resource> actualResources = t->getBookedResources(Task::Actual);
-	for (Resource* r = actualResources.first(); r != 0;
-		 r = actualResources.next())
-	{
-		if (!first)
-			s << ", ";
-					
-		s << htmlFilter(r->getName());
+		s << htmlFilter((*rli)->getName());
 		first = FALSE;
 	}
 	s << "</span></td>" << endl;
@@ -1660,14 +1638,14 @@ ReportHtml::generateResponsibilities(const Resource*r, bool light)
 	  << "\" style=\"text-align:left\">"
 		"<span style=\"font-size:100%\">";
 	bool first = TRUE;
-	TaskList tl = project->getTaskList();
-	for (Task* t = tl.first(); t != 0; t = tl.next())
+	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0;
+		 ++tli)
 	{
-		if (t->getResponsible() == r)
+		if ((*tli)->getResponsible() == r)
 		{
 			if (!first)
 				s << ", ";
-			s << t->getId();
+			s << (*tli)->getId();
 			first = FALSE;
 		}
 	}

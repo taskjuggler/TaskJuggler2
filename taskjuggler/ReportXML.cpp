@@ -113,16 +113,16 @@ void ReportXML::generate()
    sortTaskList( taskList );
 
    /* do a loop over all tasks */
-   Task *task = taskList.first();
-   if( task )
+   TaskListIterator tli(taskList);
+   if (*tli != 0)
    {
-		proj.appendChild( task->xmlElement( doc ));
-   	    while( (task = taskList.next()) != 0 )
+		proj.appendChild( (*tli)->xmlElement( doc ));
+   	    for(++tli ; *tli != 0; ++tli)
 		{
            /* only tasks which have child-tasks and no parent,
             *  since tasks do their subtasks recursive */
-            if( task->isContainer() && task->getParent() == 0 )
-	             proj.appendChild( task->xmlElement( doc ));
+            if( (*tli)->isContainer() && (*tli)->getParent() == 0 )
+	             proj.appendChild( (*tli)->xmlElement( doc ));
         }	
    }
    QString xml = doc.toString();

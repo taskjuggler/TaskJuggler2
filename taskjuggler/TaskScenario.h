@@ -18,6 +18,7 @@
 #include <qptrlist.h>
 
 #include "taskjuggler.h"
+#include "ResourceList.h"
 
 class Task;
 class Resource;
@@ -71,7 +72,7 @@ private:
 	double effort;
 
 	/// List of booked resources.
-	QPtrList<Resource> bookedResources;
+	ResourceList bookedResources;
 
 	/// Amount that is credited to the account at the start date.
 	double startCredit;

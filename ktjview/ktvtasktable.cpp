@@ -99,11 +99,11 @@ void KTVTaskTable::showProject( Project *p )
    rep.filterTaskList(filteredList, 0);
    rep.sortTaskList(filteredList);
 
-   for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
+   for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
    {
-      if( (t->getParent() == 0) && t->isContainer() )
+      if( ((*tli)->getParent() == 0) && (*tli)->isContainer() )
       {
-	 addTask( static_cast<KTVTaskTableItem*>(m_root), t );
+	 addTask( static_cast<KTVTaskTableItem*>(m_root), *tli );
       }
    }
 

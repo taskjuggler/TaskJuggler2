@@ -31,10 +31,7 @@ public:
 		sorting[1] = SequenceUp;
 		sorting[2] = SequenceUp;
 	}
-	~ShiftList() { }
-
-	Shift* first() { return (Shift*) CoreAttributesList::first(); }
-	Shift* next() { return (Shift*) CoreAttributesList::next(); }
+	virtual ~ShiftList() { }
 
 	Shift* getShift(const QString& id) const;
 
@@ -54,7 +51,7 @@ class ShiftListIterator : public virtual CoreAttributesListIterator
 public:
 	ShiftListIterator(const CoreAttributesList& l) :
 		CoreAttributesListIterator(l) { }
-	~ShiftListIterator() { }
+	virtual ~ShiftListIterator() { }
 	Shift* operator*() { return (Shift*) get(); }
 } ;
 

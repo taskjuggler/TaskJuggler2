@@ -214,14 +214,18 @@ public:
 
 	void addBookedResource(int sc, Resource* r)
 	{
-		if (scenarios[sc].bookedResources.find(r) == -1)
-			scenarios[sc].bookedResources.inSort(r);
+		if (scenarios[sc].bookedResources.find((CoreAttributes*) r) == -1)
+			scenarios[sc].bookedResources.inSort((CoreAttributes*) r);
 	}
 	bool isBookedResource(int sc, Resource* r)
 	{
-		return scenarios[sc].bookedResources.find(r) != -1;
+		return scenarios[sc].bookedResources.find((CoreAttributes*) r) != -1;
 	}
-	QPtrList<Resource> getBookedResources(int sc) const
+	ResourceListIterator getBookedResourcesIterator(int sc) const
+	{
+		return ResourceListIterator(scenarios[sc].bookedResources);
+	}
+	ResourceList getBookedResources(int sc) const
 	{
 		return scenarios[sc].bookedResources; 
 	}
@@ -275,8 +279,8 @@ private:
 	bool bookResources(time_t day, time_t duration);
 	void addBookedResource(Resource* r)
 	{
-		if (bookedResources.find(r) == -1)
-			bookedResources.inSort(r);
+		if (bookedResources.find((CoreAttributes*) r) == -1)
+			bookedResources.inSort((CoreAttributes*) r);
 	}
 	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
 	time_t earliestStart() const;
@@ -434,7 +438,7 @@ private:
 	bool runAway;
 
 	/// A list of all the resources booked for this task.
-	QPtrList<Resource> bookedResources;
+	ResourceList bookedResources;
 } ;
 
 #endif
