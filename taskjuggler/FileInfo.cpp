@@ -458,10 +458,18 @@ FileInfo::errorMessage(const char* msg, ...)
 		TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(lineBuf),
 						  file, currLine); 
 	else
-		TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2").
-						  arg(buf).arg(lineBuf),
+    {
+        QString stackDump;
+        int i = 0;
+        for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
+            stackDump += "\n  ${" + (*mli)->getName() + " \""
+                + pf->getMacros().getArguments(i)->join("\" \"") + "\"}";
+		TJMH.errorMessage(i18n("Error in expanded macro\n%1"
+                               "\nThis is the macro call stack:%2").
+						  arg(buf).arg(stackDump),
 						  macroStack.last()->getFile(),
 						  macroStack.last()->getLine());
+    }
 }
 
 void

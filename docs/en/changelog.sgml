@@ -410,6 +410,10 @@ values are now exported in XML report.</para></listitem>
 linkend="task_start">start</link> or <link
 linkend="task_end">end</link> date is specified.</para></listitem>
 
+<listitem><para>Better error reporting for syntax errors in macros.
+The call stack with full arguments is included in the error message
+now.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

@@ -60,6 +60,10 @@ public:
 	{
 		argStack.removeLast();
 	}
+    const QStringList* getArguments(int i)
+    {
+        return argStack.at(i);
+    }
 	void clear()
 	{
 		macros.clear();
