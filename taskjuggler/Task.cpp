@@ -83,11 +83,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "debug.h"
 #include "Task.h"
 #include "Project.h"
 #include "Allocation.h"
 
 int Task::debugLevel = 0;
+int Task::debugMode = -1;
 
 Task*
 TaskList::getTask(const QString& id)
@@ -281,7 +283,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 			doneLength = 0.0;
 			workStarted = FALSE;
 			tentativeEnd = date + slotDuration - 1;
-			if (debugLevel > 2)
+			if (DEBUGTS(5))
 				qWarning("Scheduling of %s starts at %s (%s)",
 						 id.latin1(), time2tjp(lastSlot).latin1(),
 						 time2tjp(date).latin1());
@@ -302,7 +304,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 			doneLength = 0.0;
 			workStarted = FALSE;
 			tentativeStart = date;
-			if (debugLevel > 2)
+			if (DEBUGTS(5))
 				qWarning("Scheduling of ALAP task %s starts at %s (%s)",
 						 id.latin1(), time2tjp(lastSlot).latin1(),
 						 time2tjp(date).latin1());
@@ -315,7 +317,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 		lastSlot = date;
 	}
 
-	if (debugLevel > 3)
+	if (DEBUGTS(10))
 		qWarning("Scheduling %s at %s",
 				 id.latin1(), time2tjp(date).latin1());
 
@@ -330,7 +332,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 		if (project->isWorkingDay(date))
 			doneLength += ((double) slotDuration) / ONEDAY;
 
-		if (debugLevel > 4)
+		if (DEBUGTS(10))
 			qWarning("Length: %f/%f   Duration: %f/%f",
 					 doneLength, length,
 					 doneDuration, duration);
@@ -477,7 +479,7 @@ Task::propagateStart(bool safeMode)
 	if (start == 0)
 		return;
 
-	if (debugLevel > 1)
+	if (DEBUGTS(11))
 		qWarning("PS1: Setting start of %s to %s",
 				 id.latin1(), time2tjp(start).latin1());
 
@@ -486,7 +488,7 @@ Task::propagateStart(bool safeMode)
 			t->latestEnd() != 0)
 		{
 			t->end = t->latestEnd();
-			if (debugLevel > 1)
+			if (DEBUGTS(11))
 				qWarning("PS2: Setting end of %s to %s",
 						 t->id.latin1(), time2tjp(t->end).latin1());
 			t->propagateEnd(safeMode);
@@ -502,7 +504,7 @@ Task::propagateStart(bool safeMode)
 			t->sub.isEmpty() && t->scheduling == ASAP)
 		{
 			t->start = start;
-			if (debugLevel > 1)
+			if (DEBUGTS(11))
 				qWarning("PS3: Setting start of %s to %s",
 						 t->id.latin1(), time2tjp(t->start).latin1());	 
 			if (safeMode && t->isActive())
@@ -521,7 +523,7 @@ Task::propagateEnd(bool safeMode)
 	if (end == 0)
 		return;
 
-	if (debugLevel > 1)
+	if (DEBUGTS(11))
 		qWarning("PE1: Setting end of %s to %s",
 				 id.latin1(), time2tjp(end).latin1());
 
@@ -530,7 +532,7 @@ Task::propagateEnd(bool safeMode)
 			t->earliestStart() != 0)
 		{
 			t->start = t->earliestStart();
-			if (debugLevel > 1)
+			if (DEBUGTS(11))
 				qWarning("PE2: Setting start of %s to %s",
 						 t->id.latin1(), time2tjp(t->start).latin1());
 			t->propagateStart(safeMode);
@@ -544,7 +546,7 @@ Task::propagateEnd(bool safeMode)
 			t->sub.isEmpty() && t->scheduling == ALAP)
 		{
 			t->end = end;
-			if (debugLevel > 1)
+			if (DEBUGTS(11))
 				qWarning("PE3: Setting end of %s to %s",
 						 t->id.latin1(), time2tjp(t->end).latin1());
 			if (safeMode && t->isActive())
@@ -574,7 +576,7 @@ Task::setRunaway(time_t date, int slotDuration)
 	/* Only mark tasks that have been scheduled in the last timeslot */
 	if (scheduling == ASAP)
 	{	
-		if (debugLevel > 4)
+		if (DEBUGTS(10))
 			qDebug("Task %s: lastSlot: %s, date + slotDuration - 1: %s",
 				   id.latin1(),
 				   time2ISO(lastSlot).latin1(),
@@ -584,7 +586,7 @@ Task::setRunaway(time_t date, int slotDuration)
 	}
 	else
 	{
-		if (debugLevel > 4)
+		if (DEBUGTS(10))
 			qDebug("Task %s: lastSlot: %s, date: %s", id.latin1(),
 				   time2ISO(lastSlot).latin1(),
 				   time2ISO(date).latin1());
@@ -625,7 +627,7 @@ Task::bookResources(time_t date, time_t slotDuration)
 	 * shift interval. */
 	if (!shifts.isOnShift(Interval(date, date + slotDuration - 1)))
 	{
-		if (debugLevel > 6)
+		if (DEBUGRS(15))
 			qDebug("Task %s is not active at %s", id.latin1(),
 				   time2tjp(date).latin1());
 		return FALSE;
@@ -640,7 +642,7 @@ Task::bookResources(time_t date, time_t slotDuration)
 		 * lie within the working hours of that shift. */
 		if (!a->isOnShift(Interval(date, date + slotDuration - 1)))
 		{
-			if (debugLevel > 6)
+			if (DEBUGRS(15))
 				qDebug("Allocation not on shift at %s",
 					   time2tjp(date).latin1());
 			continue;
@@ -702,7 +704,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 			tentativeEnd = date + slotDuration - 1;
 			doneEffort += intervalLoad * (*rit).getEfficiency();
 
-			if (debugLevel > 6)
+			if (DEBUGTS(6))
 				qDebug(" Booked resource %s (Effort: %f)",
 					   (*rit).getId().latin1(), doneEffort);
 			booked = TRUE;
@@ -986,8 +988,8 @@ Task::xRef(QDict<Task>& hash)
 {
 	bool error = FALSE;
 
-	if (debugLevel > 3)
-		qDebug("Creating cross references for task %s", id.latin1());
+	if (DEBUGPF(2))
+		qDebug("Creating cross references for task %s ...", id.latin1());
 	
 	for (QStringList::Iterator it = dependsIds.begin();
 		 it != dependsIds.end(); ++it)
@@ -1011,7 +1013,7 @@ Task::xRef(QDict<Task>& hash)
 			depends.append(t);
 			previous.append(t);
 			t->followers.append(this);
-			if (debugLevel > 3)
+			if (DEBUGPF(11))
 				qDebug("Registering follower %s with task %s",
 					   id.latin1(), t->getId().latin1());
 		}
@@ -1038,13 +1040,191 @@ Task::xRef(QDict<Task>& hash)
 			preceeds.append(t);
 			followers.append(t);
 			t->previous.append(this);
-			if (debugLevel > 3)
+			if (DEBUGPF(11))
 				qDebug("Registering predecessor %s with task %s",
 					   id.latin1(), t->getId().latin1());
 		}
 	}
 
 	return !error;
+}
+
+void
+Task::implicitXRef()
+{
+	/* Propagate implicit dependencies. If a task has no specified start or
+	 * end date and no start or end dependencies, we check if a parent task
+	 * has an explicit start or end date which can be used. */
+	if (!sub.isEmpty() || milestone)
+		return;
+
+	bool planDurationSpec = planDuration > 1 || planLength > 0 ||
+		planEffort > 0;
+	bool actualDurationSpec = actualDuration > 0 || actualLength > 0 ||
+		actualEffort > 0 || planDurationSpec;
+
+	if ((planStart == 0 || actualStart == 0) && depends.isEmpty())
+		for (Task* tp = getParent(); tp; tp = tp->getParent())
+		{
+			if (tp->planStart != 0 && planStart == 0 &&
+				(scheduling == ASAP || !planDurationSpec))
+			{
+				if (DEBUGPF(11))
+					qDebug("Setting plan start of %s to %s", id.latin1(),
+						   time2ISO(tp->planStart).latin1());
+				planStart = tp->planStart;
+			}
+			if (tp->actualStart != 0 && actualStart == 0 &&
+				(scheduling == ASAP || !actualDurationSpec))
+			{
+				if (DEBUGPF(11))
+					qDebug("Setting actual start of %s to %s", id.latin1(),
+						   time2ISO(tp->actualStart).latin1());
+				actualStart = tp->actualStart;
+			}
+		}
+	/* And the same for end values */
+	if ((planEnd == 0 || actualEnd == 0) && preceeds.isEmpty())
+		for (Task* tp = getParent(); tp; tp = tp->getParent())
+		{
+			if (tp->planEnd != 0 && planEnd == 0 &&
+				(scheduling == ALAP || !planDurationSpec))
+			{
+				if (DEBUGPF(11))
+					qDebug("Setting plan end of %s to %s", id.latin1(),
+						   time2ISO(tp->planEnd).latin1());
+				planEnd = tp->planEnd;
+			}
+			if (tp->actualEnd != 0 && actualEnd == 0 &&
+				(scheduling == ALAP || !actualDurationSpec))
+			{
+				if (DEBUGPF(11))
+					qDebug("Setting actual end of %s to %s", id.latin1(),
+						   time2ISO(tp->actualEnd).latin1());
+				actualEnd = tp->actualEnd;
+			}
+		}
+}
+
+bool
+Task::loopDetector()
+{
+	/* Only check top-level tasks. All other tasks will be checked then as
+	 * well. */
+	if (parent)
+		return FALSE;
+	if (DEBUGPF(2))
+		qWarning("Running loop detector for task %s", id.latin1());
+	return loopDetection(LDIList(), FALSE, FALSE);
+}
+
+bool
+Task::loopDetection(LDIList list, bool atEnd, bool fromSub)
+{
+	if (DEBUGPF(10))
+		qWarning("loopDetection at %s (%s)", id.latin1(), atEnd ? "End" :
+				 "Start");
+	
+	LoopDetectorInfo thisTask(this, atEnd);
+	
+	/* If we find the current task (with same position) in the list, we have
+	 * detected a loop. */
+	if (list.find(thisTask) != list.end())
+	{
+		fatalError("Loop detected at task %s (%s)!", id.latin1(), atEnd ?
+				   "End" : "Start");
+		LDIList::iterator it;
+		for (it = list.begin(); it != list.end() && (*it).getTask() != this;
+			 ++it)
+		{
+			(*it).getTask()->fatalError("%s (%s) is part of loop",
+										(*it).getTask()->getId().latin1(),
+										(*it).getAtEnd() ? "End" : "Start");
+		}
+		return TRUE;
+	}
+	list.prepend(thisTask);
+
+	/* Now we have to traverse the graph in the direction of the specified
+	 * dependencies. 'preceeds' and 'depends' specify dependencies in the
+	 * opposite direction of the flow of the tasks. So we have to make sure
+	 * that we do not follow the arcs in the direction that preceeds and
+	 * depends points us. Parent/Child relationships also specify a
+	 * dependency. The scheduling mode of the child determines the direction
+	 * of the flow. With help of the 'fromSub' parameter we make sure that we
+	 * only visit childs if we were referred to the task by a non-parent-child
+	 * relationship. */
+	if (!atEnd)
+	{
+		CoreAttributesList subCopy = sub;
+		if (!fromSub)
+			for (Task* t = (Task*) subCopy.first(); t;
+				 t = (Task*) subCopy.next())
+			{
+				if (DEBUGPF(10))
+					qWarning("Checking sub task %s of %s", t->getId().latin1(),
+							 id.latin1());
+				if (t->loopDetection(list, FALSE, FALSE))
+					return TRUE;
+			}
+		
+		if (parent && scheduling == ASAP)
+		{
+			if (DEBUGPF(10))
+				qWarning("Checking parent task of %s", id.latin1());		
+			if (getParent()->loopDetection(list, TRUE, TRUE))
+				return TRUE;
+		}
+		
+	}
+	else
+	{
+		CoreAttributesList subCopy = sub;
+		if (!fromSub)
+			for (Task* t = (Task*) subCopy.first(); t;
+				 t = (Task*) subCopy.next())
+			{
+				if (DEBUGPF(10))
+					qWarning("Checking sub task %s of %s", t->getId().latin1(),
+							 id.latin1());
+				if (t->loopDetection(list, TRUE, FALSE))
+					return TRUE;
+			}
+		
+		if (parent && scheduling == ALAP)
+		{
+			if (DEBUGPF(10))
+				qWarning("Checking parent task of %s", id.latin1());		
+		   	if (getParent()->loopDetection(list, FALSE, TRUE))
+				return TRUE;
+		}
+	}
+	CoreAttributesList previousCopy = previous;
+	for (Task* t = (Task*) previousCopy.first(); t;
+		 t = (Task*) previousCopy.next())
+		if (depends.find(t) == -1)
+		{
+			if (DEBUGPF(10))
+				qWarning("Checking previous %s of task %s",
+						 t->getId().latin1(), id.latin1());
+			if(t->loopDetection(list, TRUE, FALSE))
+				return TRUE;
+		}
+	CoreAttributesList followersCopy = followers;
+	for (Task* t = (Task*) followersCopy.first(); t;
+		 t = (Task*) followersCopy.next())
+		if (preceeds.find(t) == -1)
+		{
+			if (DEBUGPF(10))
+				qWarning("Checking follower %s of task %s",
+						 t->getId().latin1(), id.latin1());
+			if (t->loopDetection(list, FALSE, FALSE))
+				return TRUE;
+		}
+
+	if (DEBUGPF(10))
+		qWarning("No loops found in %s", id.latin1());
+	return FALSE;
 }
 
 QString

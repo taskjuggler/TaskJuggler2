@@ -1,0 +1,19 @@
+project prj "Loop Detector Test" "$Id" 2000-01-01 2000-01-04
+
+task t1 "Task1" {
+	start 2000-01-01
+	
+	task t2 "Task2" {
+		length 1d
+	}
+
+	task t3 "Task3" {
+		length 1d
+		depends !t2
+	}
+
+	task t4 "Task4" {
+		length 1d
+		depends !t3, !!t1
+	}
+}

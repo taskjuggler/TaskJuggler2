@@ -12,12 +12,14 @@
 
 #include <stdio.h>
 
+#include "debug.h"
 #include "ResourceList.h"
 #include "Task.h"
 #include "Project.h"
 #include "kotrus.h"
 
 int Resource::debugLevel = 0;
+int Resource::debugMode = -1;
 
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
@@ -254,7 +256,7 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 	uint sbIdx = sbIndex(date);
 	if (scoreboard[sbIdx])
 	{
-		if (debugLevel > 6)
+		if (DEBUGRS(6))
 			qDebug("  Resource %s is busy (%ld)", id.latin1(), (long)
 				   scoreboard[sbIdx]);
 		return FALSE;
@@ -286,13 +288,13 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 
 	double resourceLoad = project->convertToDailyLoad(bookedTime) * efficiency;
 	double taskLoad = project->convertToDailyLoad(bookedTimeTask) * efficiency;
-	if (debugLevel > 7)
+	if (DEBUGRS(7))
 	{
 		qDebug("  Resource %s: RLoad: %f(%f), TLoad: %f(%f)",
 			   id.latin1(), resourceLoad, maxEffort, taskLoad, loadFactor /
 			   100.0);
 	}
-	if (debugLevel > 6)
+	if (DEBUGRS(6))
 	{
 		if (resourceLoad > maxEffort)
 		{

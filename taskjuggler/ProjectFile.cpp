@@ -17,6 +17,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 
+#include "debug.h"
 #include "ProjectFile.h"
 #include "Project.h"
 #include "Token.h"
@@ -47,6 +48,9 @@
 		return FALSE; \
 	} \
 }
+
+int ProjectFile::debugLevel = 0;
+int ProjectFile::debugMode = -1;
 
 FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp)
 	: pf(p), taskPrefix(tp)
@@ -537,12 +541,12 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 				  const QString& taskPrefix)
 {
 	QString absFileName = file;
-	if (debugLevel > 2)
+	if (DEBUGPF(10))
 		qWarning("Requesting to open file %s", file.latin1());
 	if (absFileName[0] != '/')
 		absFileName = parentPath + absFileName;
 	
-	if (debugLevel > 2)
+	if (DEBUGPF(10))
 		qWarning("File name before compression: %s", absFileName.latin1());
 	int end = 0;
 	while ((end = absFileName.find("/../", end)) >= 0)
@@ -556,21 +560,18 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 			absFileName.remove(start, end + strlen("/../") - start);
 		end = start - 1;
 	}
-	if (debugLevel > 2)
+	if (DEBUGPF(10))
 		qWarning("File name after compression: %s", absFileName.latin1());
 
 	// Make sure that we include each file only once.
 	if (includedFiles.findIndex(absFileName) != -1)
 	{
-		if (debugLevel > 2)
+		if (DEBUGPF(2))
 			qWarning("Ignoring already read file %s",
 					 absFileName.latin1());
 		return TRUE;
 	}
 		
-	if (debugLevel > 2)
-		qWarning("Reading %s", absFileName.latin1());
-
 	FileInfo* fi = new FileInfo(this, absFileName, taskPrefix);
 
 	if (!fi->open())
@@ -578,6 +579,9 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 		qFatal("Cannot open '%s'", absFileName.latin1());
 		return FALSE;
 	}
+
+	if (DEBUGPF(2))
+		qWarning("Reading %s", absFileName.latin1());
 
 	openFiles.append(fi);
 	includedFiles.append(absFileName);
@@ -593,7 +597,7 @@ ProjectFile::close()
 
 	if (!fi->close())
 		error = TRUE;
-	if (debugLevel > 2)
+	if (DEBUGPF(2))
 		qWarning("Finished file %s", fi->getFile().latin1());
 	openFiles.removeLast();
 

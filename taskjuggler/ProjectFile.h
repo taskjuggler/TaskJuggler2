@@ -124,6 +124,8 @@ public:
 	bool close();
 	bool parse();
 	void setDebugLevel(int l) { debugLevel = l; }
+	void setDebugMode(int m) { debugMode = m; }
+	
 	TokenType nextToken(QString& token);
 	void returnToken(TokenType t, const QString& buf)
 	{
@@ -195,7 +197,8 @@ private:
 	QList<FileInfo> openFiles;
 	QStringList includedFiles;
 	MacroTable macros;
-	int debugLevel;
+	static int debugLevel;
+	static int debugMode;
 };
 
 #endif

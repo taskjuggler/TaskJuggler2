@@ -26,6 +26,7 @@
 #include "Utility.h"
 #include "CoreAttributes.h"
 #include "ShiftList.h"
+#include "LoopDetectorInfo.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -269,6 +270,7 @@ public:
 	bool isContainer() const { return !sub.isEmpty(); }
    
 	bool xRef(QDict<Task>& hash);
+	void implicitXRef();
 	QString resolveId(QString relId);
 	bool schedule(time_t& reqStart, time_t duration);
 	bool isScheduled() const { return schedulingDone; }
@@ -292,6 +294,8 @@ public:
 	double getCompleteAtTime(time_t) const;
 	bool scheduleOk();
 	bool preScheduleOk();
+	bool loopDetector();
+	bool loopDetection(LDIList list, bool atEnd, bool fromSub);
 	void computeBuffers();
 	bool isActive();
 
@@ -327,6 +331,7 @@ public:
 	QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
 	static void setDebugLevel(int l) { debugLevel = l; }
+	static void setDebugMode(int m) { debugMode = m; }
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -579,6 +584,7 @@ private:
 	QPtrList<Resource> bookedResources;
 
 	static int debugLevel;
+	static int debugMode;
 } ;
 
 #endif

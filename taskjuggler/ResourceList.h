@@ -213,6 +213,7 @@ public:
 	void finishActual();
 
 	static void setDebugLevel(int l) { debugLevel = l; }
+	static void setDebugMode(int m) { debugMode = m; }
 
 private:
 	Resource* subFirst() { return (Resource*) sub.first(); }
@@ -245,6 +246,7 @@ private:
 	double rate;
 
 	static int debugLevel;
+	static int debugMode;
 
 	/// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;

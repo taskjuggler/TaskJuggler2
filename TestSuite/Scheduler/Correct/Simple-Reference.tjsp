@@ -9,11 +9,41 @@ task t2 "Task2" {
   projectid simple
   depends t1
 }
+task t4 "Task4" {
+  start 2000-01-05-00:00:00-+0000
+  end 2000-01-11-23:59:59-+0000
+  projectid simple
+}
+task t4.t5 "Task5" {
+  start 2000-01-05-00:00:00-+0000
+  end 2000-01-11-23:59:59-+0000
+  projectid simple
+}
+task t4.t5.t6 "Task6" {
+  start 2000-01-05-00:00:00-+0000
+  end 2000-01-11-23:59:59-+0000
+  projectid simple
+}
 task t3 "Task3" {
   start 2000-01-05-09:00:00-+0000
   end 2000-01-05-17:59:59-+0000
   projectid simple
   depends t2
+}
+task t7 "Task7" {
+  start 2000-01-10-00:00:00-+0000
+  end 2000-01-15-00:00:00-+0000
+  projectid simple
+}
+task t7.t8 "Task8" {
+  start 2000-01-10-00:00:00-+0000
+  end 2000-01-15-00:00:00-+0000
+  projectid simple
+}
+task t7.t8.t9 "Task8" {
+  start 2000-01-10-00:00:00-+0000
+  end 2000-01-15-00:00:00-+0000
+  projectid simple
 }
 supplement task t1 {
   minstart 2000-01-01-00:00:00-+0000
@@ -27,7 +57,43 @@ supplement task t2 {
   minend 2000-01-01-00:00:00-+0000
   maxend 2000-01-31-00:00:00-+0000
 }
+supplement task t4 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t4.t5 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t4.t5.t6 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
 supplement task t3 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t7 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t7.t8 {
+  minstart 2000-01-01-00:00:00-+0000
+  maxstart 2000-01-31-00:00:00-+0000
+  minend 2000-01-01-00:00:00-+0000
+  maxend 2000-01-31-00:00:00-+0000
+}
+supplement task t7.t8.t9 {
   minstart 2000-01-01-00:00:00-+0000
   maxstart 2000-01-31-00:00:00-+0000
   minend 2000-01-01-00:00:00-+0000

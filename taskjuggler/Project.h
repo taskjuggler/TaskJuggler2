@@ -258,6 +258,12 @@ public:
 		Task::setDebugLevel(l);
 		Resource::setDebugLevel(l);
 	}
+	static void setDebugMode(int m)
+	{
+		debugMode = m;
+		Task::setDebugMode(m);
+		Resource::setDebugMode(m);
+	}
 
 private:
 	bool checkSchedule();
@@ -349,7 +355,7 @@ private:
 	QList<ExportReport> exportReports;
 
 	static int debugLevel;
-
+	static int debugMode;
 	/**
 	 * The task lists for active ASAP and ALAP tasks are only used
 	 * during the scheduling process.

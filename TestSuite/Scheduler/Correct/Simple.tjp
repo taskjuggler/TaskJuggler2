@@ -20,6 +20,27 @@ task t3 "Task3" {
   allocate tux
 }
 
+task t4 "Task4" {
+	start 2000-01-05
+
+	task t5 "Task5" {
+		task t6 "Task6" {
+			length 5d
+		}
+	}
+}
+
+task t7 "Task7" {
+	end 2000-01-15
+	
+	task t8 "Task8" {
+		task t9 "Task8" {
+			length 5d
+			scheduling alap
+		}
+	}
+}
+
 export "Simple-Export.tjsp" {
 	hidetask 0
 	hideresource 0

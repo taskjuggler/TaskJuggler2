@@ -17,11 +17,13 @@
 #include <qdom.h>
 #include <qdict.h>
 
+#include "debug.h"
 #include "Project.h"
 #include "Utility.h"
 #include "kotrus.h"
 
 int Project::debugLevel = 0;
+int Project::debugMode = -1;
 
 Project::Project()
 {
@@ -145,13 +147,15 @@ Project::pass2()
 	{
 		idHash.insert(t->getId(), t);
 	}
-
 	// Create cross links from dependency lists.
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 	{
 		if (!t->xRef(idHash))
 			error = TRUE;
 	}
+	// Set dates according to implicit dependencies
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->implicitXRef();
 
 	bool hasActualValues = FALSE;
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
@@ -162,10 +166,14 @@ Project::pass2()
 			hasActualValues = TRUE;
 	}
 
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		if (t->loopDetector())
+			return FALSE;
+
 	if (error)
 		return FALSE;
 
-	if (debugLevel > 0)
+	if (DEBUGPS(1))
 		qWarning("Scheduling plan scenario...");
 	preparePlan();
 	if (!schedule())
@@ -174,7 +182,7 @@ Project::pass2()
 
 	if (hasActualValues)
 	{
-		if (debugLevel > 0)
+		if (DEBUGPS(1))
 			qWarning("Scheduling actual scenario...");
 		prepareActual();
 		if (!schedule())
@@ -254,11 +262,13 @@ Project::schedule()
 	updateActiveTaskList(sortedTasks);
 	for (day = start; !(activeAsap.isEmpty() && activeAlap.isEmpty()); )
 	{
-		if (debugLevel > 5)
-			qDebug("Scheduling slot %s", time2ISO(day).latin1());
+		if (DEBUGPS(10))
+			qWarning("Scheduling slot %s", time2ISO(day).latin1());
 		timeDelta = scheduleGranularity;
 		do
 		{
+			if (DEBUGPS(10))
+				qWarning("%d active ALAP tasks", activeAlap.count());
 			done = TRUE;
 			for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
 			{
@@ -269,8 +279,8 @@ Project::schedule()
 				}
 				if (t->needsEarlierTimeSlot(day + scheduleGranularity))
 				{
-					if (debugLevel > 5)
-						qDebug("Scheduling backwards now");
+					if (DEBUGPS(5))
+						qWarning("Scheduling backwards now");
 					timeDelta = -scheduleGranularity;
 				}
 			}
@@ -280,6 +290,8 @@ Project::schedule()
 		{
 			do
 			{
+				if (DEBUGPS(10))
+					qWarning("%d active ASAP tasks", activeAsap.count());
 				done = TRUE;
 				for (Task* t = activeAsap.first(); t != 0;
 					 t = activeAsap.next())
@@ -297,13 +309,13 @@ Project::schedule()
 		/* Runaway detection */
 		if (day < start)
 		{
-			if (debugLevel > 2)
-				qDebug("Scheduler ran over start of project");
+			if (DEBUGPS(2))
+				qWarning("Scheduler ran over start of project");
 			
 			for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
 				if (t->setRunaway(day - timeDelta, scheduleGranularity))
 				{
-					if (debugLevel > 2)
+					if (DEBUGPS(5))
 						qDebug("Marking task %s as runaway",
 							   t->getId().latin1());
 					error = TRUE;
@@ -312,13 +324,13 @@ Project::schedule()
 		}
 		if (day >= end)
 		{
-			if (debugLevel > 2)
+			if (DEBUGPS(2))
 				qDebug("Scheduler ran over end of project");
 			
 			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
 				if (t->setRunaway(day - timeDelta, scheduleGranularity))
 				{
-					if (debugLevel > 2)
+					if (DEBUGPS(5))
 						qDebug("Marking task %s as runaway",
 							   t->getId().latin1());
 					error = TRUE;
@@ -379,7 +391,7 @@ Project::setKotrus(Kotrus* k)
 void
 Project::generateReports()
 {
-	if (debugLevel > 0)
+	if (DEBUGPS(1))
 		qWarning("Generating reports...");
 
 	// Generate task reports
@@ -448,7 +460,7 @@ Project::removeActiveTask(Task* t)
 {
 	t->setScheduled();
 
-	if (debugLevel > 2)
+	if (DEBUGPS(5))
 		qWarning("Deactivating %s", t->getId().latin1());
 
 	if (t->getScheduling() == Task::ASAP)
@@ -464,7 +476,7 @@ Project::addActiveTask(Task* t)
 	{
 		if (activeAsap.findRef(t) == -1)
 		{
-			if (debugLevel > 2)
+			if (DEBUGPS(5))
 				qWarning("Activating %s", t->getId().latin1());
 			activeAsap.inSort(t);
 		}
@@ -473,7 +485,7 @@ Project::addActiveTask(Task* t)
 	{
 		if (activeAlap.findRef(t) == -1)
 		{
-			if (debugLevel > 2)
+			if (DEBUGPS(5))
 				qWarning("Activating %s", t->getId().latin1());	
 			activeAlap.inSort(t);
 		}

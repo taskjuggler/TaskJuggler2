@@ -36,13 +36,17 @@ void
 usage(QApplication& a)
 {
 	qWarning("Usage: %s [options] <filename1> [<filename2> ...]", a.argv()[0]);
-	qWarning("   --help               - print this message\n"
-			 "   --version            - print the version and copyright info\n"
-			 "   -v                   - same as '--version'\n"
-			 "   --debug N            - print debug output, N must be between\n"
-			 "                          0 and 4, the higher N the more output\n"	         "                          is printed\n"
-			 "   --updatedb           - update the Kotrus database with the\n"
-			 "                          new resource usage information\n");
+	qWarning(
+		"   --help               - print this message\n"
+		"   --version            - print the version and copyright info\n"
+		"   -v                   - same as '--version'\n"
+		"   --debug N            - print debug output, N must be between\n"
+		"                          0 and 4, the higher N the more output\n"
+		"                          is printed\n"
+		"   --dbmode N           - activate debug mode only for certain\n"
+		"                          parts of the code\n"
+		"   --updatedb           - update the Kotrus database with the\n"
+		"                          new resource usage information\n");
 	qWarning("To report bugs please follow the instructions in the manual\n"
 			 "and send the information to the taskjuggler developer mailing\n"
 			 "list at taskjuggler-devel@suse.de\n");
@@ -53,6 +57,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv, false);
 
 	int debugLevel = 0;
+	int debugMode = -1;
 	bool updateKotrusDB = FALSE;
 
 	bool showHelp = FALSE;
@@ -66,8 +71,20 @@ int main(int argc, char *argv[])
 		else if (strcmp(a.argv()[i], "--debug") == 0)
 		{
 			if (i + 1 >= a.argc())
+			{
+				qWarning("--debug needs numerical argument");
 				showCopyright = showHelp = terminateProgram = 1;
+			}
 			debugLevel = QString(a.argv()[++i]).toInt();
+		}
+		else if (strcmp(a.argv()[i], "--dbmode") == 0)
+		{
+			if (i + 1 >= a.argc())
+			{
+				qWarning("--dbmode needs numerical argument");
+				showCopyright = showHelp = terminateProgram = 1;
+			}
+			debugMode = QString(a.argv()[++i]).toInt();
 		}
 		else if (strcmp(a.argv()[i], "--version") == 0 ||
 				 strcmp(a.argv()[i], "-v") == 0)
@@ -93,16 +110,20 @@ int main(int argc, char *argv[])
 
 	Project p;
 	p.setDebugLevel(debugLevel);
+	p.setDebugMode(debugMode);
 
 	bool parseErrors = FALSE;
 
 	char cwd[1024];
 	if (getcwd(cwd, 1023) == 0)
 		qFatal("main(): getcwd failed");
+	if (debugLevel >= 1)
+		qWarning("Reading input files...");
 	for ( ; i < argc; i++)
 	{
 		ProjectFile* pf = new ProjectFile(&p);
 		pf->setDebugLevel(debugLevel);
+		pf->setDebugMode(debugMode);
 		if (!pf->open(a.argv()[i], QString(cwd) + "/", ""))
 			return (-1);
 		parseErrors = !pf->parse();
