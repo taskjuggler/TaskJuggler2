@@ -30,7 +30,8 @@ public:
 private:
 	HTMLWeeklyCalendar() { }	// don't call this directly
 
-	bool generateCalendar(TaskList& filteredList);
+	bool generateCalendar(TaskList& filteredTaskList,
+						  ResourceList& filteredResourceList);
 } ;
 
 #endif

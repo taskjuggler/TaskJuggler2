@@ -140,6 +140,21 @@ htmlresourcereport "ResourceUsage-Jun.html" {
 	loadunit hours
 }
 
+macro shiftschedule [
+htmlweeklycalendar "Calendar-${1}.html" {
+	headline "Schedule for ${1}"
+	columns schedule
+	hidetask 1
+	hideresource ~isresource(${1})
+}
+]
+
+${shiftschedule "joe"}
+${shiftschedule "khaled"}
+${shiftschedule "sally"}
+${shiftschedule "anders"}
+${shiftschedule "paul"}
+
 /*
  * Now we want a detailed schedule with exact start and end times for
  * a whole week. To save some typing we define a macro fro this and

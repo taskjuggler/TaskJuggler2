@@ -1570,30 +1570,40 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 	  << (t == 0 ? "default" : "defaultlight") 
 	  << "\" style=\"text-align:left\">";
 
-	BookingList planJobs = r->getPlanJobs();
-	planJobs.setAutoDelete(TRUE);
-	time_t prevTime = 0;
-	for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
+	if (r)
 	{
-		if ((t == 0 || t == b->getTask()) && 
-			Interval(start, end).overlaps(Interval(b->getStart(),
-												   b->getEnd())))
+		BookingList planJobs = r->getPlanJobs();
+		planJobs.setAutoDelete(TRUE);
+		time_t prevTime = 0;
+		for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
 		{
-			if (!isSameDay(prevTime, b->getStart()))
+			if ((t == 0 || t == b->getTask()) && 
+				Interval(start, end).overlaps(Interval(b->getStart(),
+													   b->getEnd())))
 			{
-				s << "<p><span style=\"font-size:160%\">"
-					<< time2weekday(b->getStart()) << ", "
-					<< time2date(b->getStart()) << "</span><p>" << endl;
+				/* If the reporting interval is not more than a day, we
+				 * do not print the day since this information is most
+				 * likely given by the context of the report. */
+				if (!isSameDay(prevTime, b->getStart()) &&
+					!isSameDay(start, end - 1))
+				{
+					s << "<p><span style=\"font-size:160%\">"
+						<< time2weekday(b->getStart()) << ", "
+						<< time2date(b->getStart()) << "</span><p>" << endl;
+				}
+				if (!isSameDay(start, end - 1))
+					s << "&nbsp;&nbsp;&nbsp;";
+				s << time2time(b->getStart()) << " - "
+					<< time2time(b->getEnd());
+				if (t == 0)
+					s << " " << htmlFilter(b->getTask()->getName());
+				s << "<br>" << endl;
+				prevTime = b->getStart();
 			}
-			s << "&nbsp;&nbsp;&nbsp;"
-				<< time2time(b->getStart()) << " - "
-				<< time2time(b->getEnd());
-			if (t == 0)
-				s << " " << htmlFilter(b->getTask()->getName());
-			s << "<br>" << endl;
-			prevTime = b->getStart();
 		}
 	}
+	else
+		s << "&nbsp;";
 
 	s << "</td>" << endl;
 }
@@ -1605,21 +1615,40 @@ ReportHtml::actualSchedule(Resource* r, Task* t)
 	  << (t == 0 ? "default" : "defaultlight") 
 	  << "\" style=\"text-align:left\">";
 
-	bool first = TRUE;
-	BookingList actualJobs = r->getActualJobs();
-	actualJobs.setAutoDelete(TRUE);
-	for (Booking* b = actualJobs.first(); b != 0; b = actualJobs.next())
+	if (r)
 	{
-		if (t == b->getTask())
+		BookingList actualJobs = r->getActualJobs();
+		actualJobs.setAutoDelete(TRUE);
+		time_t prevTime = 0;
+		for (Booking* b = actualJobs.first(); b != 0; b = actualJobs.next())
 		{
-			if (!first)
-				s << ", ";
-			else
-				first = FALSE;
-			s << time2ISO(b->getStart()) << " - "
-			  << time2ISO(b->getEnd()) << endl;
+			if ((t == 0 || t == b->getTask()) && 
+				Interval(start, end).overlaps(Interval(b->getStart(),
+													   b->getEnd())))
+			{
+				/* If the reporting interval is not more than a day, we
+				 * do not print the day since this information is most
+				 * likely given by the context of the report. */
+				if (!isSameDay(prevTime, b->getStart()) &&
+					!isSameDay(start, end - 1))
+				{
+					s << "<p><span style=\"font-size:160%\">"
+						<< time2weekday(b->getStart()) << ", "
+						<< time2date(b->getStart()) << "</span><p>" << endl;
+				}
+				if (!isSameDay(start, end - 1))
+					s << "&nbsp;&nbsp;&nbsp;";
+				s << time2time(b->getStart()) << " - "
+					<< time2time(b->getEnd());
+				if (t == 0)
+					s << " " << htmlFilter(b->getTask()->getName());
+				s << "<br>" << endl;
+				prevTime = b->getStart();
+			}
 		}
 	}
+	else
+		s << "&nbsp;";
 
 	s << "</td>" << endl;
 }

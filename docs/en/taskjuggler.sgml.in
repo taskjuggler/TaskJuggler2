@@ -372,6 +372,9 @@ linkend="logicalexpression">logical expressions</link>.
 only resources that have been allocated to a certain project in a
 given time frame.</para></listitem>
 
+<listitem><para>Made week of year calculation ISO 8601:1988 and DIN
+1355 compliant.</para></listitem>
+
 </itemizedlist> </para>
 
 </sect2>
