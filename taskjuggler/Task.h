@@ -240,8 +240,6 @@ private:
 	bool bookResource(Resource* r, time_t day, time_t duration);
 	bool bookResources(time_t day, time_t duration);
 
-	QDomElement createXMLElem(QDomDocument& doc, const QString& name,
-							  const QString& val) const;
 	time_t earliestStart();
 	void fatalError(const QString& msg) const;
 

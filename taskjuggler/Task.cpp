@@ -11,7 +11,7 @@
  */
 
 /* -- DTD --
- <!ELEMENT TaskJugglerTasks  (Task+)>
+ <!-- Task element, child of projects and for subtasks -->
  <!ELEMENT Task		(TaskName, Priority, start, end, minStart, maxStart,
                          minEnd, maxEnd, actualStart, actualEnd,
 			 SubTasks*, Depends*, Previous*, Followers*,
@@ -491,33 +491,22 @@ Task::getSubTaskList(TaskList& tl)
 	}
 }
 
-QDomElement Task::createXMLElem( QDomDocument& doc, const QString& name, const QString& val ) const
-{
-   QDomElement elem = doc.createElement( name );
-   QDomText t=doc.createTextNode( val );
-
-   elem.appendChild( t );
-
-   return( elem );
-}
-
 
 QDomElement Task::xmlElement( QDomDocument& doc ) const
 {
    QDomElement elem = doc.createElement( "Task" );
-
    QDomText t;
    
-   elem.appendChild( createXMLElem( doc, "TaskName", getName()));
-   elem.appendChild( createXMLElem( doc, "Priority", QString::number( priority )));
-   elem.appendChild( createXMLElem( doc, "start", QString::number( start )));
-   elem.appendChild( createXMLElem( doc, "end", QString::number( end )));
-   elem.appendChild( createXMLElem( doc, "minStart", QString::number( minStart )));
-   elem.appendChild( createXMLElem( doc, "maxStart", QString::number( maxStart )));
-   elem.appendChild( createXMLElem( doc, "minEnd", QString::number( maxStart )));
-   elem.appendChild( createXMLElem( doc, "maxEnd", QString::number( maxStart )));
-   elem.appendChild( createXMLElem( doc, "actualStart", QString::number( maxStart )));
-   elem.appendChild( createXMLElem( doc, "actualEnd", QString::number( maxStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "TaskName", getName()));
+   elem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number( priority )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "start", QString::number( start )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "end", QString::number( end )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "minStart", QString::number( minStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "minEnd", QString::number( maxStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "actualStart", QString::number( maxStart )));
+   elem.appendChild( ReportXML::createXMLElem( doc, "actualEnd", QString::number( maxStart )));
 
    /* Now start the subtasks */
    int cnt = 0;
@@ -542,7 +531,7 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
       
       for (QValueListConstIterator<QString> it1= depends.begin(); it1 != depends.end(); ++it1)
       {
-	 deps.appendChild( createXMLElem( doc, "TaskID", *it1 ));
+	 deps.appendChild( ReportXML::createXMLElem( doc, "TaskID", *it1 ));
       }
       elem.appendChild( deps );
    }
@@ -557,7 +546,7 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
       {	
 	 if( t != this )
 	 {
-	    prevs.appendChild( createXMLElem( doc, "TaskID", t->getId()));
+	    prevs.appendChild( ReportXML::createXMLElem( doc, "TaskID", t->getId()));
 	 }
       }
       elem.appendChild( prevs );
@@ -573,7 +562,7 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
       {	
 	 if( t != this )
 	 {
-	    foll.appendChild( createXMLElem( doc, "TaskID", t->getId()));
+	    foll.appendChild( ReportXML::createXMLElem( doc, "TaskID", t->getId()));
 	 }
       }
 

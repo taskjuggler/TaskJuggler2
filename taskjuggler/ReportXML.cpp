@@ -9,6 +9,24 @@
  *
  * $Id$
  */
+
+
+/* -- DTD --
+
+ <!-- The head of all: Project -->
+ <!ELEMENT Project      (start, end, now, Task+)>
+ <!ATTLIST Project
+           Name         CDATA #REQUIRED
+	   Id           CDATA #REQUIRED
+	   Version      CDATA #REQUIRED
+	   Copyright    CDATA #REQUIRED>
+ <!ELEMENT start        (#PCDATA)>
+ <!ELEMENT end          (#PCDATA)>
+ <!ELEMENT now          (#PCDATA)>
+   /-- DTD --/
+*/
+
+
 #include <qfile.h>
 #include <config.h>
 
@@ -23,18 +41,44 @@ ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e) :
 }
 
 
+QDomElement ReportXML::createXMLElem( QDomDocument& doc, const QString& name, const QString& val )
+{
+   QDomElement elem = doc.createElement( name );
+   QDomText t=doc.createTextNode( val );
+
+   elem.appendChild( t );
+
+   return( elem );
+}
+
+
+
 void ReportXML::generate()
 {
    if( ! project ) return;
-   QDomDocument doc( "TaskJugglerTasks" );
-   QDomElement root = doc.createElement( "TaskJugglerTasks" );
-   doc.appendChild( root );
+   QDomDocument doc( "Project" );
 
+   /* Create the Project xml representation */
+   QDomElement proj = doc.createElement( "Project" );
+   proj.setAttribute( "Name", project->getName());
+   proj.setAttribute( "Id", project->getId());
+   proj.setAttribute( "Version", project->getVersion());
+   proj.setAttribute( "Copyright", project->getCopyright());
+
+   proj.appendChild( ReportXML::createXMLElem( doc, "start",
+					       QString::number(project->getStart())));
+   proj.appendChild( ReportXML::createXMLElem( doc, "end",
+   					       QString::number(project->getEnd())));
+   proj.appendChild( ReportXML::createXMLElem( doc, "now",
+   					       QString::number(project->getNow())));
+
+   doc.appendChild( proj );
+   
    Task *task = project->taskListFirst();
-   root.appendChild( task->xmlElement( doc ));
+   proj.appendChild( task->xmlElement( doc ));
    while( (task = project->taskListNext()) != 0 )
    {
-      root.appendChild( task->xmlElement( doc ));
+      proj.appendChild( task->xmlElement( doc ));
    }	
 
    QString xml = doc.toString();
