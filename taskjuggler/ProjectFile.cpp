@@ -1663,12 +1663,6 @@ ProjectFile::readBooking()
 		return 0;
 	}
 
-	QString pid;
-	if (nextToken(pid) != ID || !proj->isValidId(pid))
-	{
-		fatalError("Known project ID expected");
-		return 0;
-	}
 	Task* task;
 	TokenType tt;
 	if (((tt = nextToken(token)) != ID && tt != RELATIVE_ID) ||
@@ -1677,7 +1671,7 @@ ProjectFile::readBooking()
 		fatalError("Task ID expected");
 		return 0;
 	}
-	return new Booking(Interval(start, end), task, "", pid);
+	return new Booking(Interval(start, end), task, "", task->getProjectId());
 }
 
 bool

@@ -104,7 +104,6 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 				QString start = time2tjp(b->getStart());
 				QString end = time2tjp(b->getEnd());
 				s << "  planbooking " << start << " " << end 
-					<< " " << b->getProjectId()
 					<< " " << b->getTask()->getId() << endl;
 			}
 		}
@@ -117,7 +116,6 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 				QString start = time2tjp(b->getStart());
 				QString end = time2tjp(b->getEnd());
 				s << "  actualbooking " << start << " " << end 
-					<< " " << b->getProjectId()
 					<< " " << b->getTask()->getId() << endl;
 			}
 		}

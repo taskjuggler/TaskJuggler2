@@ -99,6 +99,18 @@ Operation::evalFunction(ExpressionTree* et)
 			return 0;
 		return ((Task*) et->getCoreAttributes())->isMilestone();
 	}
+	else if (name == "isresource")
+	{
+		return strcmp(et->getCoreAttributes()->getType(), "Resource") == 0
+			&& et->getCoreAttributes()->getId() ==
+			ops.at(0)->evalAsString(et);
+	}
+	else if (name == "isaccount")
+	{
+		return strcmp(et->getCoreAttributes()->getType(), "Account") == 0
+			&& et->getCoreAttributes()->getId() ==
+			ops.at(0)->evalAsString(et);
+	}
 	else
 		qFatal("Unknown function %s", name.data());	
 
@@ -121,6 +133,8 @@ ExpressionTree::ExpressionTree(Operation* op) : expression(op)
 		funcArgc.insert("issubtaskof", new int(1));
 		funcArgc.insert("containstask", new int(1));
 		funcArgc.insert("ismilestone", new int(0));
+		funcArgc.insert("isresource", new int(1));
+		funcArgc.insert("isaccount", new int(1));
 	}
 }
 
