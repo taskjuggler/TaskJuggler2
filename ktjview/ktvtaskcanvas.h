@@ -28,6 +28,7 @@ class QCanvasRectangle;
 class KTVTaskTableItem;
 class KTVCanvasItemBase;
 class KTVTaskTable;
+class QFont;
 
 class KTVTaskCanvas: public QCanvas
 {
@@ -42,8 +43,8 @@ public:
    void setTable( KTVTaskTable *tab );
    const CanvasItemList& getCanvasItemsList() const { return m_canvasItemList; }
    int getDayWidth() { return m_dayWidth; }
+   virtual void  drawCalendar();
 
-    enum headerReso{ Day, Week, Month}; /* smallest reso of the header */
 public slots:
    void slSetRowHeight(int);
    void slNewTask( Task *t, KTVTaskTableItem *it ){ m_tasks.insert( it, t ); }
@@ -64,16 +65,12 @@ public slots:
    void slSetDayWidthStandard();
 
 protected:
-    enum topOffsetPart { Complete, Upper, Lower };
+   enum topOffsetPart { Month, Week, Day, All };
     time_t            timeFromX( int x );
     int                 timeToX( time_t );
     int             midnightToX( time_t );
-    virtual int       topOffset( topOffsetPart part = Complete );
-
-    virtual void    drawDayHead( QFont &f, time_t time, int x, QPainter &p );
-    virtual void   drawWeekHead( const QFont &f, time_t time, int x, QPainter &p );
-    virtual void  drawMonthHead( const QFont &f, time_t time, int x, QPainter &p );
-
+    virtual int       topOffset( topOffsetPart part = Day );
+    virtual int       getHeaderLineHeight( topOffsetPart = Day );
 
    void connectTasks( Task *fromTask, Task* toTask,
 		      KTVCanvasItemBase *fromItem =0L,
@@ -96,11 +93,10 @@ private:
    CanvasItemList    m_canvasItemList;
    QCanvasLine      *m_dbgMark;
    QCanvasRectangle *m_canvasMarker;
-
+   QFont             m_headerFont;
    int    m_rowHeight;
-
-    int   m_monthStartX;
-    int   m_weekStartX;
+   int    m_monthStartX;
+   int    m_weekStartX;
 };
 
 

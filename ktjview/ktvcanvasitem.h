@@ -150,6 +150,10 @@ public:
    int x();
    QRect rect() { return cPoly->boundingRect(); }
    bool isVisible() { return cPoly->isVisible();};
+
+   QPoint getConnectorIn() const;
+   QPoint getConnectorOut() const;
+
 private:
    QCanvasPolygon    *cPoly;
 };

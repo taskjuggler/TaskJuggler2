@@ -70,8 +70,13 @@ void KTJGantt::showProject( Project *p )
     setResizeMode( m_canvas, QSplitter::Stretch );
     // notify the part that this is our internal widget
 
+    /* Prepare the draw operation */
     m_canvas->showProject( p );
+    /* the table creates all tasks in both the table and the canvas */
     m_table->showProject( p );
+    /* finalise the canvas */
+    m_canvas->finalise( p );
+    
     m_table->show();
     m_canvas->show(); 
     update();

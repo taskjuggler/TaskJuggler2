@@ -352,12 +352,29 @@ KTVCanvasItemContainer::KTVCanvasItemContainer( QCanvas *c )
 
 void KTVCanvasItemContainer::setSize( int w, int h  )
 {
-   QPointArray p(10);
+   QPointArray p(8);
 
    w = w < h ? h : w;
    
    if( !cPoly ) return;
 
+   p.setPoint(0, 0, 0);
+   p.setPoint(1, 0, h);
+   p.setPoint(2, h/2, h/2 );
+   p.setPoint(3, h/2, h/2-2);
+   
+   p.setPoint(4, w-h/2, h/2-2);
+   p.setPoint(5, w-h/2, h/2);
+   p.setPoint(6, w, h );
+   p.setPoint(7, w, 0 );
+#if 0
+   /* This is like
+    *  +-----~-----+
+    *  |+----~----+|
+    *  ||         ||
+    *  \/         \/
+    * Do not forget to enhance the point-array to 10 !
+    */  
    p.setPoint( 0, 0, 0 );
    p.setPoint( 1, 0, h/2 );
    p.setPoint( 2, h/2, h );
@@ -369,7 +386,8 @@ void KTVCanvasItemContainer::setSize( int w, int h  )
    p.setPoint( 7, w-h/2, h );
    p.setPoint( 8, w, h/2 );
    p.setPoint( 9, w, 0 );
-
+#endif
+   
    cPoly->setPoints( p );
 }
 
@@ -416,3 +434,32 @@ int KTVCanvasItemContainer::x()
 
    return ( int(cPoly->x()));
 }
+
+QPoint KTVCanvasItemContainer::getConnectorIn() const
+{
+   QPoint p;
+   
+   if( cPoly )
+   {
+      QRect r = cPoly->boundingRect();
+      
+      p.setX( r.x());
+      p.setY( r.y());
+   }
+   return p;
+}
+
+QPoint KTVCanvasItemContainer::getConnectorOut() const
+{
+   QPoint p;
+   
+   if( cPoly )
+   {
+      QRect r = cPoly->boundingRect();
+      
+      p.setX( r.right());
+      p.setY( r.y()+( r.height()));
+   }
+   return p;
+}
+

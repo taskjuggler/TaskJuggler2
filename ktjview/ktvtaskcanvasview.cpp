@@ -44,6 +44,12 @@ void KTVTaskCanvasView::showProject( Project *p )
 
 }
 
+void KTVTaskCanvasView::finalise( Project* )
+{
+   m_canvas->drawCalendar();
+}
+
+
 void KTVTaskCanvasView::addTask(Task *t )
 {
    if( ! t ) return;

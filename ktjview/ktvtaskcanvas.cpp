@@ -50,6 +50,11 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *na
    m_end = 0;
    setDoubleBuffering( true ); // false );
    resize( 400, 300);
+
+   m_headerFont.setFamily( "Helvetica [Cronyx]" );
+   m_headerFont.setPointSize(8);
+   
+
    /* TODO: make visible again and synchronise with table in the same way the
     * table synchronises with this one.
     */
@@ -102,10 +107,12 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
    update();
 }
 
+
+
 void KTVTaskCanvas::setInterval( time_t start, time_t end )
 {
-   m_start = midnight( start-ONEDAY );
-   m_end = midnight( end );
+   m_start = midnight( start );
+   m_end = midnight( end+ONEDAY );
    m_days = 1 + daysBetween( m_start, m_end );
    qDebug( "Setting interval from %ld -> %ld", m_start, m_end );
 
@@ -115,6 +122,104 @@ void KTVTaskCanvas::setInterval( time_t start, time_t end )
    qDebug("Resizing to %dx%d =%d days", w, h, m_days );
    resize( w, h ); // TODO: amount of tasks
    m_canvasMarker->setSize( w, m_canvasMarker->height() );
+}
+
+void KTVTaskCanvas::drawCalendar()
+{
+   /* Draw month, week and day-header */
+   time_t trun = m_start;
+   QBrush weekEndBrush( QColor(246,242,222), Dense4Pattern);
+   QPen p1 ( QColor(222,222,222), 0 );
+
+   int dayH = 1+getHeaderLineHeight(Day);
+   int yDays = topOffset(Day);
+   qDebug( "Y-Value for Days: %d", yDays );
+   for( int i = 0; i < m_days; i++ )
+   {
+      int dayX= timeToX(trun);
+      int day = dayOfMonth(trun);
+      
+      QCanvasRectangle *re = new QCanvasRectangle( this );
+      re->setPen( p1 );
+      re->setSize( 1+m_dayWidth, dayH );
+      re->setBrush( weekEndBrush );
+      re->move( dayX, yDays );
+      re->setZ(1.0);
+      re->show();
+      
+      QCanvasText *text = new QCanvasText( QString::number(day), this );
+      text->setTextFlags( Qt::AlignCenter );
+      text->move( dayX + m_dayWidth/2, yDays + getHeaderLineHeight(Day)/2 );
+      text->setZ( 2.0 );
+      text->show();
+
+      trun = sameTimeNextDay(trun);
+   }
+
+   /* Draw weeks */
+   int weeks = weeksBetween( m_start, m_end );
+   dayH = 1+getHeaderLineHeight( Week );
+   yDays = topOffset(Week);
+   qDebug( "Y-Value for Weeks: %d", yDays );
+   
+   trun = m_start;
+   for( int w = 0; w < weeks; w++ )
+   {
+      int weekX = timeToX( beginOfWeek(trun));
+      
+      QCanvasRectangle *re = new QCanvasRectangle( this );
+      re->setPen( p1 );
+      re->setSize( 1+7*m_dayWidth, dayH );
+      re->setBrush( weekEndBrush );
+      re->move( weekX, yDays );
+      re->setZ(1.0);
+      re->show();
+      
+      QCanvasText *text = new QCanvasText( i18n("Week %1").arg(weekOfYear(trun)), this );
+      text->setTextFlags( Qt::AlignCenter );
+      text->move( weekX + (7*m_dayWidth)/2, yDays + getHeaderLineHeight(Week)/2 );
+      text->setZ( 2.0 );
+      text->show();
+
+      trun = sameTimeNextWeek(trun);
+      
+   }
+
+   /* Draw months */
+   int months = monthsBetween( m_start, m_end );
+   dayH = 1+getHeaderLineHeight( Month );
+   yDays = topOffset(Month);
+   qDebug( "Y-Value for Months: %d", yDays );
+   
+   trun = m_start;
+   for( int w = 0; w < months; w++ )
+   {
+      time_t mBegin = beginOfMonth( trun );
+      int monthX = timeToX( mBegin );
+      int cntDays = daysLeftInMonth( mBegin );
+      // qDebug("Showing up month %d, %d days long", w, cntDays );
+      
+      QCanvasRectangle *re = new QCanvasRectangle( this );
+      re->setPen( p1 );
+      qDebug( "showing month at %d, %d", 1+cntDays * m_dayWidth, dayH );
+      re->setSize( 1+cntDays * m_dayWidth, dayH );
+      re->setBrush( weekEndBrush );
+      re->move( monthX, yDays );
+      re->setZ(1.0);
+      re->show();
+      
+      QCanvasText *text = new QCanvasText( QString(monthAndYear(trun)), this );
+      text->setTextFlags( Qt::AlignCenter );
+      text->move( monthX + (cntDays*m_dayWidth)/2, yDays + getHeaderLineHeight(Month)/2 );
+      text->setZ( 2.0 );
+      text->show();
+
+      trun = sameTimeNextMonth(trun);
+      
+   }
+   
+   setAllChanged();
+   update();
 }
 
 time_t KTVTaskCanvas::timeFromX( int x )
@@ -140,83 +245,57 @@ int KTVTaskCanvas::timeToX( time_t t )
    return int( p* double(t-m_start));
 }
 
+
+int KTVTaskCanvas::getHeaderLineHeight( topOffsetPart p )
+{
+   QFontMetrics fm( m_headerFont );
+   int lineHeight = fm.height()+2;
+   int re=0;
+   // qDebug( "TopOffset: %d and lineHeight: %d", m_topOffset, lineHeight );
+   switch( p )
+   {
+      case Month:
+	 re = m_topOffset-(2*lineHeight);
+	 break;
+      case Week:
+      case Day:
+	 re = lineHeight;
+	 break;
+      case All:
+	 re = m_topOffset;
+	 break;
+      default: /* is Day */
+	 re = lineHeight;
+   }
+   // qDebug( "returning value %d for p %d", re, int(p) );
+
+   return re;
+}
+
 int  KTVTaskCanvas::topOffset( topOffsetPart part )
 {
-
-    int upper = m_topOffset - m_rowHeight;
-    int lower = m_rowHeight;
-
-    switch( part )
-    {
-    case Upper:
-        return upper;
-        break;
-    case Lower:
-        return lower;
-        break;
-    default:
-        return m_topOffset;
-    }
+   int re = 0;
+   
+   switch( part )
+   {
+      case Month:
+	 re = 0;
+	 break;
+      case All:
+	 re = m_topOffset;
+	 break;
+      case Week:
+	 // re = 1+getHeaderLineHeight( Month );
+	 re = getHeaderLineHeight(All)- getHeaderLineHeight( Day )
+	    - getHeaderLineHeight( Week );
+	 break;
+      case Day:
+	 re = getHeaderLineHeight(All)- getHeaderLineHeight( Day );
+	 break;
+   }
+   return re;
 }
 
-
-
-void KTVTaskCanvas::drawMonthHead( const QFont &f, time_t time, int x, QPainter &p )
-{
-    if( dayOfMonth( time ) == 1 )
-    {
-        int third = topOffset()/3;
-
-        QLabel l(0);
-        l.setFont(f);
-        l.setFrameStyle( QFrame::Panel | QFrame::Sunken );
-
-        /* draw from 0 to x the fragment of the month before this coming month */
-        time_t t1 = beginOfMonth( time );
-        l.setText( QString( monthAndYear( t1-100 )));
-
-        int width = x - m_monthStartX;
-
-        l.resize( width, third );
-        QPixmap pix( width, third );
-        p.drawPixmap( m_monthStartX, 0, pix.grabWidget( &l ));
-        m_monthStartX = timeToX( t1 );
-    }
-}
-
-void KTVTaskCanvas::drawWeekHead( const QFont &f, time_t time, int x , QPainter &p )
-{
-    if( dayOfWeek( time ) != 0 ) return;
-    int third = topOffset() / 3;
-
-    QLabel l(0);
-    l.setFont(f);
-    l.setText( QString::number( weekOfYear( time )));
-    l.resize( 7*m_dayWidth, third );
-    l.setFrameStyle( QFrame::Panel | QFrame::Sunken );
-
-    QPixmap pix( 7*m_dayWidth, third );
-    p.drawPixmap( x, third, pix.grabWidget( &l ));
-}
-
-void KTVTaskCanvas::drawDayHead( QFont &f, time_t time, int x, QPainter &p )
-{
-   QLabel l(0);
-   int third = topOffset() / 3;
-
-   l.setFont(f);
-   l.setText( QString::number( dayOfMonth(time) ) );
-   l.resize( m_dayWidth, third );
-   l.setAlignment( Qt::AlignCenter );
-   l.setFrameStyle( QFrame::Panel | QFrame::Sunken );
-
-   QPixmap pix( m_dayWidth, topOffset() );
-   p.drawPixmap( x, 2*third, pix.grabWidget( &l ));
-
-   QPen p1 ( black, 0 );
-   p.setPen( p1 );
-   p.drawLine( x, topOffset()-1, width(), topOffset()-1);
-}
 
 
 void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
@@ -231,13 +310,12 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
     */
    QBrush weekEndBrush( QColor(246,242,222));
    QBrush weekDayBrush( gray );
-   QFont headerFont( "Helvetica [Cronyx]", 8 );
    // qDebug( "Clip %d %d - %d x %d is %s",
    //	   clip.x(), clip.y(), clip.width(), clip.height(),
    // 	   painter.hasClipping()? "on": "off");
 
    int x = 0;
-   int y = clip.top() > topOffset() ? clip.top(): topOffset();
+   int y = clip.top() > getHeaderLineHeight(All) ? clip.top(): getHeaderLineHeight(All);
 
    /* wind to start of the clipping area */
    while ( x < clip.left() )
@@ -246,38 +324,36 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    x -= m_dayWidth;
 
    /* draw the head */
-   headerReso reso = Day;
-   if( reso == Day )
+   m_monthStartX = x;   /* used in the drawHead-functions */
+   m_weekStartX  = x;
+
+   while ( x <= clip.right() )
    {
-       m_monthStartX = x;   /* used in the drawHead-functions */
-       m_weekStartX  = x;
+	  
+      time_t time = timeFromX(x);
+      // drawDayHead  ( time, x, painter );
+      // drawWeekHead ( time, x, painter );
+      // drawMonthHead( time, x, painter );
 
-       while ( x <= clip.right() )
-       {
-           time_t time = timeFromX(x);
-           drawDayHead  ( headerFont, time, x, painter );
-           drawWeekHead ( headerFont, time, x, painter );
-           drawMonthHead( headerFont, time, x, painter );
-
-           if( isWeekend( time ) )
-           {
-               /* Colorize Weekend */
-               painter.setPen( NoPen );
-               painter.setBrush( weekEndBrush);
-               painter.drawRect( x, y,
-                                 m_dayWidth, clip.height()+2);
-           }
-           else
-           {
-               painter.setBrush( weekDayBrush );
-           }
-           QPen p1 ( QColor(222,222,222), 0 );
-           painter.setPen( p1 );
-           painter.drawLine( x, y , x, y+clip.height()+2);
-           /* Do drawing */
-           x += m_dayWidth;
-       }
+      if( isWeekend( time ) )
+      {
+	 /* Colorize Weekend */
+	 painter.setPen( NoPen );
+	 painter.setBrush( weekEndBrush);
+	 painter.drawRect( x, y,
+			   m_dayWidth, clip.height()+2);
+      }
+      else
+      {
+	 painter.setBrush( weekDayBrush );
+      }
+      QPen p1 ( QColor(222,222,222), 0 );
+      painter.setPen( p1 );
+      painter.drawLine( x, y , x, y+clip.height()+2);
+      /* Do drawing */
+      x += m_dayWidth;
    }
+
    painter.setBrush( origBrush );
    setChanged( clip );
    painter.setClipping( false );
@@ -302,7 +378,7 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
    // Move all items residing on a higher y position than y by dy.
    qDebug( "Moving canvas items from %d by %d", y, dy );
 
-   int startHere = y+topOffset()-m_rowHeight;
+   int startHere = y+getHeaderLineHeight(All)-m_rowHeight;
    slShowDebugMarker( startHere );
 
    const CanvasItemList ktvItems = getCanvasItemsList();
@@ -369,7 +445,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 	 {
 	    cItem = new KTVCanvasItemTask( this );
 	 }
-	 cItem->setFont( QFont( "Helvetica", 8 ));
+	 cItem->setFont( m_headerFont );
 	 cItem->setTask(t);
 	 // cItem->setZ(1.0);
 	 Q_ASSERT(cItem );
@@ -386,7 +462,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 
       bool itemConnects = false; /* local flag if item connects to others with a line */
       itemConnects = !( t->isContainer() );
-
+      itemConnects = true;
       // qDebug("---###  showing task at %d, %d!", x, yPos);
 
       /* yPos contains the bottom-position, from that we subtract the height
@@ -394,7 +470,8 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
        */
 
       /* This moves the item to the position where it should be */
-      cItem->move( x, yPos + topOffset() - m_rowHeight + (m_rowHeight-cItem->height())/2  );
+      cItem->move( x, yPos + getHeaderLineHeight(All) - m_rowHeight
+		   + (m_rowHeight-cItem->height())/2  );
       cItem->show();
 
       /* check for connections  */

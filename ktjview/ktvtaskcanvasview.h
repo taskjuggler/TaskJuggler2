@@ -42,6 +42,8 @@ public:
     */
    KTVCanvasItemBase* taskItemAt( const QPoint& );
 
+   void finalise( Project *p );
+   
 public slots:
    void zoomIn();
    void zoomOut();
