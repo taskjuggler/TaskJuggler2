@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004 by Lukas Tinkl                                     *
- *   lukas@kde.org                                                         *
+ *   lukas.tinkl@suse.cz                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -28,7 +28,7 @@
 static const char description[] =
     I18N_NOOP("A KDE frontend for TaskJuggler.");
 
-static const char version[] = "0.3";
+static const char version[] = "0.4";
 
 static KCmdLineOptions options[] =
 {
