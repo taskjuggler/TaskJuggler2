@@ -114,6 +114,8 @@ public:
                    AccountType acctType = AllAccounts,
                    const Task* task = 0) const;
 
+    double getAvailableWorkLoad(int sc, const Interval& period) const;
+
     double getCredits(int sc, const Interval& i, AccountType acctType,
                       const Task* task = 0) const;
 
@@ -150,6 +152,8 @@ private:
 
     long getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
                     const Task* task) const;
+
+    long getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const;
 
     uint sbIndex(time_t date) const;
 

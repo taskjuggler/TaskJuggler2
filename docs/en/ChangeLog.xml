@@ -677,6 +677,10 @@ linkend="PROPERTY_rolluptask">rolluptask</link> has been added. Also
 <link linkend="PROPERTY_scenarios">scenario filtering</link> was
 implemented for XML reports.</para></listitem>
 
+<listitem><para>Weekly, monthly, quarterly and yearly HTML reports now
+have resource vacations as well. If the vacation fills the complete
+report cell term, the cell has a yellow background.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -534,6 +534,46 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
 }
 
 double
+Resource::getAvailableWorkLoad(int sc, const Interval& period) const
+{
+    Interval iv(period);
+    if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+        return 0.0;
+
+    return efficiency * project->convertToDailyLoad
+        (getAvailableWorkLoadSub(sc, sbIndex(iv.getStart()),
+                                 sbIndex(iv.getEnd())) * 
+         project->getScheduleGranularity());
+}
+
+long
+Resource::getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const
+{
+    long availSlots = 0;
+
+    if (!sub.isEmpty())
+    {
+        for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+            availSlots += (*rli)->getAvailableWorkLoadSub(sc, startIdx, endIdx);
+    }
+    else
+    {
+        /* Since we can't initialize the scoreboards anymore, we have to
+         * return a fake value. If we can ensure that the scoreboard is
+         * initialized, we can always compute the real value. For the time
+         * being, we fake a value and hope that it doesn't hurt. */
+        if (!scoreboard || !scoreboards[sc])
+            return availSlots + (endIdx - startIdx);
+    
+        for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
+            if (scoreboards[sc][i] == 0)
+                availSlots++;
+    }
+
+    return availSlots;
+}
+
+double
 Resource::getCredits(int sc, const Interval& period, AccountType acctType,
                      const Task* task) const
 {

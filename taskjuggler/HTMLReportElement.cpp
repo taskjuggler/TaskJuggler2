@@ -1362,7 +1362,7 @@ HTMLReportElement::selectTaskBgColor(TableCellInfo* tci, double load,
 
 QColor
 HTMLReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
-                                         const Interval& period, bool daily)
+                                         const Interval& period, bool)
 {
     QColor bgCol;
     if (load > tci->tli->resource->getMinEffort() * 
@@ -1384,9 +1384,9 @@ HTMLReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
     {
         bgCol = colors.getColor("today");
     }
-    else if (daily && (isWeekend(period.getStart()) ||
-                       report->getProject()->isVacation(period.getStart()) ||
-                       tci->tli->resource->hasVacationDay(period.getStart())))
+    else if (tci->tli->resource->getLoad(tci->tli->sc, period) == 0.0 && 
+             tci->tli->resource->getAvailableWorkLoad(tci->tli->sc, period) ==
+             0.0)
     {
             bgCol = colors.getColor("vacation");
     }

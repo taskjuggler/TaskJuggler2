@@ -46,7 +46,7 @@ resource dev "Developers" {
 }
 resource misc "The Others" {
   resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
-  resource doc "Dim Sung" { rate 280.0 }
+  resource doc "Dim Sung" { rate 280.0 vacation 2002-03-11 - 2002-03-16 }
 
 	flags team
 }
