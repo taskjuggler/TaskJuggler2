@@ -183,7 +183,7 @@ public:
     }
     bool isEndOk(int sc) const
     {
-        return scenarios[sc].isEndOk(milestone);
+        return scenarios[sc].isEndOk();
     }
 
     bool isBuffer(int sc, const Interval& iv) const;

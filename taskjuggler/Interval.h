@@ -24,6 +24,7 @@ public:
     Interval(time_t s, time_t e) : start(s), end(e) { }
     Interval(time_t s) : start(s), end(s) { }
     Interval() { start = 0; end = 0; }
+    Interval(const Interval& iv) : start(iv.start), end(iv.end) { }
     virtual ~Interval() { }
 
     bool isNull() const { return !(start < end); }

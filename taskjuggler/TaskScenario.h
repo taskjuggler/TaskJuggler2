@@ -43,7 +43,7 @@ public:
         return !((minStart > 0 && minStart > start) ||
                  (maxStart > 0 && start > maxStart));
     }
-    bool isEndOk(bool milestone) const
+    bool isEndOk() const
     {
         return !((minEnd > 0 && (end < minEnd)) ||
                  (maxEnd > 0 && (end > maxEnd)));

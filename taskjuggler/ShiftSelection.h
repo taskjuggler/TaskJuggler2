@@ -31,6 +31,7 @@ public:
     ShiftSelection(const Interval& p, Shift* s) :
         period(new Interval(p)), shift(s) { }
     ShiftSelection(Interval* p, Shift* s) : period(p), shift(s) { }
+    ShiftSelection(const ShiftSelection& sl);
     ~ShiftSelection()
     {
         delete period;
