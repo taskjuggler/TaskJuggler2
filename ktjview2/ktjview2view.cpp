@@ -145,6 +145,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_taskView->addColumn( i18n( "Status" ) );
     m_taskView->addColumn( i18n( "Responsible" ) );
     m_taskView->addColumn( i18n( "Effort" ) );
+    m_taskView->addColumn( i18n( "Allocations" ) );
     m_taskView->setShowSortIndicator( true );
     m_taskView->hideColumn( 0 ); // hide the ID column
     m_taskView->setSortColumn( 2 ); // sort by start date by default
@@ -196,7 +197,7 @@ void ktjview2View::print( KPrinter * printer )
     else
         scale = dy;
     // set the scale
-    p.scale( scale, scale );
+    p.scale( scale, scale );    // TODO make it possible to disable the scaling, cut the printout into pieces instead
     // now printing with y offset:  2 hei
     p.translate( 0, 2*hei );
     m_ganttView->drawContents( &p ); // TODO customize parts
@@ -345,7 +346,7 @@ void ktjview2View::parseTasks( int sc )
             item->setText( 8, resp->getName() );
 
         item->setText( 9, KGlobal::locale()->formatNumber( task->getEffort( sc ) ) );
-        // TODO add allocation info
+        item->setText( 10, formatAllocations( task ) );
     }
 }
 
