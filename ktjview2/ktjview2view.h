@@ -250,7 +250,7 @@ private:
     /**
      * Parse the task list of the project and fill the list view
      * @param it iterator over the list of tasks
-     * @param sc Index of the scenario
+     * @param sc index of the scenario
      */
     void parseTasks( TaskListIterator it, int sc = 0 );
 
@@ -264,7 +264,14 @@ private:
     /**
      * @return a comma separated list of resources responsible for @p task
      */
-    QString formatAllocations( Task* task );
+    QString formatAllocations( Task* task ) const;
+
+    /**
+     * @return a tooltip text for a tasklink (separated by commas)
+     * @param from list of link start points
+     * @param to list of link end points
+     */
+    QString formatLinks( const QPtrList<KDGanttViewItem> & from, const QPtrList<KDGanttViewItem> & to ) const;
 
     /**
      * Parse the resources list and fill the list view

@@ -602,7 +602,7 @@ void ktjview2View::parseLinks( TaskListIterator it )
         toList.append( KDGanttViewItem::find( toId ) );
 
         KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromList, toList );
-        //taskLink->setTooltipText( fromName  + " -> " + toName );
+        taskLink->setTooltipText( formatLinks( fromList, toList ) );
     }
 }
 
@@ -765,19 +765,19 @@ void ktjview2View::filter()
 
 void ktjview2View::clearAllViews()
 {
-#if 0                           // FIXME: crashes when loading a second project
+//#if 0                           // FIXME: crashes when loading a second project
     m_ganttView->setUpdateEnabled( false );
     m_ganttView->taskLinks().clear();
     m_ganttView->clear();
     m_ganttView->setUpdateEnabled( true );
-#endif
+//#endif
 
     m_resListView->clear();
 
     m_taskView->clear();
 }
 
-QString ktjview2View::formatAllocations( Task* task )
+QString ktjview2View::formatAllocations( Task* task ) const
 {
     QStringList result;
 
@@ -788,6 +788,35 @@ QString ktjview2View::formatAllocations( Task* task )
     }
 
     return result.join( ", " );
+}
+
+QString ktjview2View::formatLinks( const QPtrList<KDGanttViewItem> & from, const QPtrList<KDGanttViewItem> & to ) const
+{
+    QString result = i18n( "Task Link" ) + "\n" + i18n( "From: " );
+
+    QPtrListIterator<KDGanttViewItem> fromIt( from );
+    KDGanttViewItem * item;
+    QStringList fromLinks;
+    while ( ( item = fromIt.current() ) != 0 )
+    {
+        ++fromIt;
+        fromLinks.append( item->text() );
+    }
+    result += fromLinks.join( ", " );
+
+    result += "\n" + i18n( "To: " );
+
+    QPtrListIterator<KDGanttViewItem> toIt( to );
+    item = 0;
+    QStringList toLinks;
+    while ( ( item = toIt.current() ) != 0 )
+    {
+        ++toIt;
+        toLinks.append( item->text() );
+    }
+    result += toLinks.join( ", " );
+
+    return result;
 }
 
 void ktjview2View::setCalendarMode( bool flag )
