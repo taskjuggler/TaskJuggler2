@@ -602,6 +602,10 @@ hours, vacation or other task assignments. This is controlled by the
 effort was partially specified with booking attributes. The effort is
 no longer allocated ontop of the bookings.</para></listitem>
 
+<listitem><para>You can now reference environment variables by
+writing <literal>$(VAR)</literal> as a means to pass runtime
+values to taskjuggler.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

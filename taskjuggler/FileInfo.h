@@ -46,6 +46,7 @@ public:
     void returnToken(TokenType t, const QString& buf);
 
     bool readMacroCall();
+    bool readEnvironment();
 
     const QString& getTaskPrefix() const { return taskPrefix; }
 

@@ -11,6 +11,7 @@
  */
 
 #include <ctype.h>
+#include <stdlib.h>
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
@@ -97,7 +98,14 @@ FileInfo::getC(bool expandMacros)
                 readMacroCall();
                 goto BEGIN;
             }
-            else
+            else if (d == '(')
+	    {
+                // remove $( from lineBuf;
+                lineBuf = lineBuf.left(lineBuf.length() - 2);
+                readEnvironment();
+                goto BEGIN;
+	    }
+	    else
             {
                 // $$ escapes $, so discard 2nd $
                 if (d != '$')
@@ -467,6 +475,42 @@ FileInfo::readMacroCall()
     // push expanded macro reverse into ungetC buffer.
     for (int i = macro.length() - 1; i >= 0; --i)
         ungetBuf.append(macro[i].latin1());
+    return TRUE;
+}
+
+bool
+FileInfo::readEnvironment()
+{
+    QString id;
+
+    if (nextToken(id) != ID)
+    {
+        errorMessage(i18n("Environment name expected"));
+        return FALSE;
+    }
+
+    QString token;
+    if (nextToken(token) != RBRACKET)
+    {
+        errorMessage(i18n("')' expected"));
+        return FALSE;
+    }
+
+    char *value = getenv (id.ascii());
+
+    if (value != 0)
+    {
+	id = value;
+    }
+    else
+    {
+	id = "";
+    }
+
+    // push expanded macro reverse into ungetC buffer.
+    for (int i = id.length() - 1; i >= 0; --i)
+	ungetBuf.append(id[i].latin1());
+
     return TRUE;
 }
 
