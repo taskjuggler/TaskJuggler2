@@ -26,7 +26,7 @@ function do_testing
   referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjsp/g`
   exportFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjsp/g`
   if [ -x $checkscript ] ; then
-    $checkscript 2>&1 >> ../log 
+    ./$checkscript 2>&1 >> ../log 
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
       echo "Test $f failed (check script)!" | tee -a ../log
