@@ -34,11 +34,9 @@ public:
    virtual ~ReportXML() { }
 
    void generate();
+   
 protected:
    ReportXML() { }
-
-
-   
 } ;
 
 #endif

@@ -9,7 +9,7 @@
  *
  * $Id$
  */
-
+#include <qfile.h>
 #include <config.h>
 
 #include "Project.h"
@@ -26,9 +26,8 @@ ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e) :
 void ReportXML::generate()
 {
    if( ! project ) return;
-   
-   QDomDocument doc( "TaskjugglerTasks" );
-   QDomElement root = doc.createElement( "TaskJuggerTasks" );
+   QDomDocument doc( "TaskJugglerTasks" );
+   QDomElement root = doc.createElement( "TaskJugglerTasks" );
    doc.appendChild( root );
 
    Task *task = project->taskListFirst();
@@ -40,6 +39,15 @@ void ReportXML::generate()
 
    QString xml = doc.toString();
 
+   if( ! fileName.isEmpty())
+   {
+      QFile fi( fileName );
+      if ( fi.open(IO_WriteOnly) ) {    // file opened successfully
+        QTextStream t( &fi );        // use a text stream
+	t << xml;
+	fi.close();
+      }
+   }
    // qDebug( "XML: %s", xml.latin1() );
    
 }
