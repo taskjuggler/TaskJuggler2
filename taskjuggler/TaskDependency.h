@@ -34,6 +34,7 @@ public:
     {
         gapDuration = new long[maxScenarios];
         gapLength = new long[maxScenarios];
+        taskRef = 0;
         for (int sc = 0; sc < maxScenarios; ++sc)
             gapDuration[sc] = gapLength[sc] = 0;
     }
