@@ -30,7 +30,7 @@ METASOURCES = AUTO
 
 messages:
 	extractrc *.ui *.kcfg *.rc > rc.cpp
-	xgettext -ki18n *.cpp kdgantt/*.cpp -o $(top_srcdir)/ktjview2/po/ktjview2.pot
+	xgettext -ki18n -kI18N_NOOP *.cpp kdgantt/*.cpp -o $(top_srcdir)/ktjview2/po/ktjview2.pot
 	-rm -f rc.cpp
 
 KDE_ICON = ktjview2

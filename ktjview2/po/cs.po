@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-03 16:55+0100\n"
+"POT-Creation-Date: 2004-11-03 19:49+0100\n"
 "PO-Revision-Date: 2004-11-03 19:18+0100\n"
 "Last-Translator: Lukáš Tinkl <lukas@kde.org>\n"
 "Language-Team:  <cs@li.org>\n"
@@ -133,7 +133,8 @@ msgid "Name"
 msgstr "Jméno"
 
 #: ktjview2.cpp:115
-msgid "The file '%1' can not be found; it was probably removed from the system."
+msgid ""
+"The file '%1' can not be found; it was probably removed from the system."
 msgstr "Nelze najít soubor '%1', pravděpodobně byl odstraněn ze systému."
 
 #: ktjview2.cpp:156
@@ -497,10 +498,11 @@ msgid "Allocations"
 msgstr "Přiřazení"
 
 #: ktjview2view.cpp:182
-msgid "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
+msgid ""
+"<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
 msgstr ""
-"<h1>Žádný projekt není načten</h1><p>Zvolte 'Soubor -> Otevřít...' "
-"a nějaký zvolte.</p>"
+"<h1>Žádný projekt není načten</h1><p>Zvolte 'Soubor -> Otevřít...' a nějaký "
+"zvolte.</p>"
 
 #: ktjview2view.cpp:203
 msgid "Jump to task details"
@@ -515,10 +517,10 @@ msgid "Opening XML project"
 msgstr "Otevírání XML projektu"
 
 #: ktjview2view.cpp:272 ktjview2view.cpp:301
-msgid "Taskjuggler failed to open the project file. Please check your permissions."
+msgid ""
+"Taskjuggler failed to open the project file. Please check your permissions."
 msgstr ""
-"Nelze otevřít soubor s projektem. Zkontrolujte svá přístupová "
-"práva k němu."
+"Nelze otevřít soubor s projektem. Zkontrolujte svá přístupová práva k němu."
 
 #: ktjview2view.cpp:278
 msgid "Parsing XML project"
@@ -530,7 +532,8 @@ msgid ""
 "syntax error.\n"
 "You should edit the project and try to fix it."
 msgstr ""
-"Nelze analyzovat soubor s projektem, pravděpodobně je v něm syntaktická chyba.\n"
+"Nelze analyzovat soubor s projektem, pravděpodobně je v něm syntaktická "
+"chyba.\n"
 "Měli byste soubor upravit a pokusit se ji odstranit."
 
 #: ktjview2view.cpp:296
@@ -635,8 +638,8 @@ msgid ""
 "<em>Task: %1</em><br>Start: %2<br>End: %3<br>Completion: %4%<br>Allocations: "
 "%5"
 msgstr ""
-"<em>Úkol: %1</em><br>Počátek: %2<br>Konec: %3<br> "
-"Dokončení: %4%<br>Přiřazení: %5"
+"<em>Úkol: %1</em><br>Počátek: %2<br>Konec: %3<br> Dokončení: %4%"
+"<br>Přiřazení: %5"
 
 #: ktjview2view.cpp:762
 msgid "Not yet started"
@@ -741,6 +744,22 @@ msgid ""
 "XML report could not have been generated; PostScript Gantt chart won't be "
 "shown."
 msgstr "Nelze vygenerovat XML report, Gantt graf nebude zobrazen."
+
+#: main.cpp:31
+msgid "A KDE frontend to TaskJuggler"
+msgstr "KDE prostředí pro TaskJuggler"
+
+#: main.cpp:35
+msgid "Document to open."
+msgstr "Dokument k otevření."
+
+#: main.cpp:41
+msgid "TaskJuggler IDE"
+msgstr "TaskJuggler IDE"
+
+#: main.cpp:44
+msgid "Author and maintainer "
+msgstr "Autor a správce"
 
 #: quickSearchWidget.cpp:45
 msgid "Clear the search"
@@ -953,8 +972,8 @@ msgid "Color for task items."
 msgstr "Barva pro úkoly."
 
 #: rc.cpp:95
-#, no-c-format
-msgid "Color task group items."
+#, fuzzy, no-c-format
+msgid "Color for task group items."
 msgstr "Barva pro skupiny úkolů."
 
 #: rc.cpp:97
@@ -1312,4 +1331,3 @@ msgstr "Vyjmout položku"
 #: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
 msgid "Tasklink"
 msgstr "Propojení úkolů"
-

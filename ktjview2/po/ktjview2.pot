@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-03 16:55+0100\n"
+"POT-Creation-Date: 2004-11-03 19:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -730,6 +730,22 @@ msgid ""
 "shown."
 msgstr ""
 
+#: main.cpp:31
+msgid "A KDE frontend to TaskJuggler"
+msgstr ""
+
+#: main.cpp:35
+msgid "Document to open."
+msgstr ""
+
+#: main.cpp:41
+msgid "TaskJuggler IDE"
+msgstr ""
+
+#: main.cpp:44
+msgid "Author and maintainer "
+msgstr ""
+
 #: quickSearchWidget.cpp:45
 msgid "Clear the search"
 msgstr ""
@@ -942,7 +958,7 @@ msgstr ""
 
 #: rc.cpp:95
 #, no-c-format
-msgid "Color task group items."
+msgid "Color for task group items."
 msgstr ""
 
 #: rc.cpp:97
