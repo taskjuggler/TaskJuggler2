@@ -65,9 +65,9 @@ public:
      */
     QString currentURL();
 
-    virtual void newProject(const KURL& url);
+    virtual void newProject();
 
-    virtual void newInclude(const KURL& url);
+    virtual void newInclude();
 
     /**
      * Random 'set' function accessed by DCOP
@@ -77,7 +77,7 @@ public:
     /**
      * Random 'set' function
      */
-    virtual void openURL(const KURL& url);
+    virtual void openURL(KURL url);
 
     virtual void save();
 
@@ -94,6 +94,13 @@ public:
     void saveProperties(KConfig* config);
 
 public slots:
+    void undo();
+    void redo();
+    void cut();
+    void copy();
+    void paste();
+    void selectAll();
+
     void schedule();
     void nextProblem();
     void previousProblem();
@@ -140,10 +147,15 @@ private slots:
 private:
     bool loadProject(const KURL& url);
 
+    void closeProject();
+
     void setLoadingProject(bool lp);
 
     void addMessage(const QString& msg, const QString& file, int line,
                     bool error);
+
+    void TaskJugglerView::showEditor();
+    void TaskJugglerView::showReport();
 
     Project* project;
     MainWidget* mw;
@@ -157,6 +169,7 @@ private:
     int messageCounter;
     QTimer* loadDelayTimer;
     KURL urlToLoad;
+    bool showReportAfterLoad;
     bool loadingProject;
 };
 

@@ -10,7 +10,6 @@
  * $Id$
  */
 
-
 #include "taskjugglerview.h"
 
 #include <qpainter.h>
@@ -28,6 +27,7 @@
 #include <qwidgetstack.h>
 #include <qprogressbar.h>
 #include <qtimer.h>
+#include <qmessagebox.h>
 
 #include <kdebug.h>
 #include <kmainwindow.h>
@@ -36,6 +36,8 @@
 #include <ktrader.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
+#include <kfiledialog.h>
+#include <kstandarddirs.h>
 #include <krun.h>
 #include <klistview.h>
 #include <klocale.h>
@@ -45,6 +47,7 @@
 #include <kiconloader.h>
 
 #include "TjMessageHandler.h"
+#include "taskjuggler.h"
 #include "MainWidget.h"
 #include "Project.h"
 #include "ProjectFile.h"
@@ -107,7 +110,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     editorSplitter->setSizes(vl);
     l->addWidget(editorSplitter);
 
-    fileManager = new FileManager(editorStack, mw->fileListView);
+    fileManager = new FileManager(dynamic_cast<KMainWindow*>(parent),
+                                  editorStack, mw->fileListView);
     reportManager = new ReportManager(mw->reportStack, mw->reportListView);
 
     connect(&TJMH, SIGNAL(printWarning(const QString&, const QString&, int)),
@@ -193,15 +197,77 @@ TaskJugglerView::currentURL()
 }
 
 void
-TaskJugglerView::newProject(const KURL& url)
+TaskJugglerView::newProject()
 {
-    kdDebug() << "New Project: " << url << endl;
+    if (!fileManager->getMasterFile().isEmpty())
+    {
+        int but = QMessageBox::question
+            (this, i18n("Create a new Project"),
+             i18n("You must close the current project before you can \n"
+                  "create a new project. Do you really want to do this?"),
+             QMessageBox::Yes, QMessageBox::No | QMessageBox::Default);
+
+        if (but == QMessageBox::No)
+            return;
+    }
+    KURL fileURL = KFileDialog::getSaveURL
+        (i18n("Pick a name for the new project file"), "*.tjp",
+         this, "New Project File");
+    if (fileURL.isEmpty() || !fileURL.isValid())
+    {
+        QMessageBox::critical(this, i18n("Error while creating new Project"),
+                              i18n("The specified file URL is not valid!"),
+                              QMessageBox::Ok | QMessageBox::Default,
+                              QMessageBox::NoButton);
+        return;
+    }
+
+    QString templateProject = KGlobal::dirs()->findResource
+        ("data", "taskjuggler/ProjectTemplate.tjp");
+    if (templateProject.isEmpty())
+    {
+        QMessageBox::critical
+            (this, i18n("Error while creating new Project"),
+             i18n("Could not find ProjectTemplate.tjp!"),
+             QMessageBox::Ok | QMessageBox::Default,
+             QMessageBox::NoButton);
+        return;
+    }
+
+    // Make sure we don't lose any changes.
+    fileManager->saveAllFiles();
+
+    /* When we switch to a new project, we clear all lists and reports.
+     * Loading and processing may take some time, so it looks odd to still see
+     * all the old data after the load had been initiated.  So cleanup all
+     * project specific data structures. */
+    closeProject();
+
+    showReportAfterLoad = FALSE;
+    loadProject(KURL(templateProject));
+    saveAs(fileURL);
 }
 
 void
-TaskJugglerView::newInclude(const KURL& url)
+TaskJugglerView::newInclude()
 {
-    kdDebug() << "New include file: " << url << endl;
+    if (fileManager->getMasterFile().isEmpty())
+    {
+        QMessageBox::warning
+            (this, i18n("New Include File"),
+             i18n("You need to load or create a project before \n"
+                  "you can create a new include file."),
+             QMessageBox::Yes | QMessageBox::Default, QMessageBox::NoButton);
+        return;
+    }
+
+    KURL file_url = KFileDialog::getSaveURL
+        (i18n("Pick a name for the new include file"), "*.tji",
+         this, "New Include File");
+    if (!file_url.isEmpty() && file_url.isValid())
+    {
+    kdDebug() << "New include file"<< endl;
+    }
 }
 
 void
@@ -211,16 +277,44 @@ TaskJugglerView::openURL(QString url)
 }
 
 void
-TaskJugglerView::openURL(const KURL& url)
+TaskJugglerView::openURL(KURL url)
 {
+    /* If the URL matches the currently loaded project do nothing. */
+    if (!fileManager->getMasterFile().isEmpty() &&
+        fileManager->getMasterFile() == url)
+        return;
+
+    if (!fileManager->getMasterFile().isEmpty())
+    {
+        // Make sure the user really wants to load a new project.
+        int but = QMessageBox::question
+            (this, i18n("Load a new Project"),
+             i18n("You must close the current project before you can load\n"
+                  "a new project. All files of the current project will \n"
+                  "be saved automatically. Do you really want to do this?"),
+             QMessageBox::Yes, QMessageBox::No | QMessageBox::Default);
+
+        if (but == QMessageBox::No)
+            return;
+    }
+
+    // If the URL hasn't been specified yet, ask the user for it.
+    if (url.isEmpty())
+    {
+        url = KFileDialog::getOpenURL(QString::null, QString::null, this,
+                                      i18n("Open a new Project"));
+        if (url.isEmpty())
+            return;
+    }
+
+    // Make sure we don't lose any changes.
+    fileManager->saveAllFiles();
+
     /* When we switch to a new project, we clear all lists and reports.
      * Loading and processing may take some time, so it looks odd to still see
-     * all the old data after the load had been initiated. */
-    if (fileManager->getMasterFile() != url)
-    {
-        fileManager->clear();
-        reportManager->clear();
-    }
+     * all the old data after the load had been initiated.  So cleanup all
+     * project specific data structures. */
+    closeProject();
 
     /* This function can be triggered before the app->exec() has been called.
      * So the GUI won't show up before all files are loaded and scheduled.
@@ -228,6 +322,7 @@ TaskJugglerView::openURL(const KURL& url)
      * called. */
     loadDelayTimer->start(200, TRUE);
     urlToLoad = url;
+    showReportAfterLoad = TRUE;
 }
 
 void
@@ -247,6 +342,8 @@ void
 TaskJugglerView::saveAs(const KURL& url)
 {
     fileManager->saveCurrentFileAs(url);
+    // Update window caption.
+    showEditor();
 }
 
 void
@@ -254,14 +351,57 @@ TaskJugglerView::close()
 {
     fileManager->closeCurrentFile();
     if (fileManager->getMasterFile().path().isEmpty())
-    {
-        mw->taskListView->clear();
-        mw->resourceListView->clear();
-        mw->accountListView->clear();
-        mw->reportListView->clear();
-        messageListView->clear();
-        messageCounter = 0;
-    }
+        closeProject();
+}
+
+void
+TaskJugglerView::closeProject()
+{
+    fileManager->clear();
+    reportManager->clear();
+    mw->taskListView->clear();
+    mw->resourceListView->clear();
+    mw->accountListView->clear();
+    mw->reportListView->clear();
+    mw->fileListView->clear();
+    messageListView->clear();
+    messageCounter = 0;
+}
+
+void
+TaskJugglerView::undo()
+{
+    fileManager->undo();
+}
+
+void
+TaskJugglerView::redo()
+{
+    fileManager->redo();
+}
+
+void
+TaskJugglerView::cut()
+{
+    fileManager->cut();
+}
+
+void
+TaskJugglerView::copy()
+{
+    fileManager->copy();
+}
+
+void
+TaskJugglerView::paste()
+{
+    fileManager->paste();
+}
+
+void
+TaskJugglerView::selectAll()
+{
+    fileManager->selectAll();
 }
 
 void
@@ -271,20 +411,20 @@ TaskJugglerView::schedule()
         return;
 
     fileManager->saveAllFiles();
+    showReportAfterLoad = TRUE;
     loadProject(fileManager->getMasterFile());
 }
 
 void
 TaskJugglerView::nextProblem()
 {
-    QListViewItem* oldLvi = messageListView->currentItem();
-    if (!oldLvi)
+    QListViewItem* lvi = messageListView->currentItem();
+    if (!lvi)
         return;
-    QListViewItem* lvi;
     // Not all items have a file name, skip those.
     do
     {
-        lvi = oldLvi->itemBelow();
+        lvi = lvi->itemBelow();
     } while (lvi && lvi->text(2).isEmpty());
     if (!lvi)
         return;
@@ -295,14 +435,13 @@ TaskJugglerView::nextProblem()
 void
 TaskJugglerView::previousProblem()
 {
-    QListViewItem* oldLvi = messageListView->currentItem();
-    if (!oldLvi)
+    QListViewItem* lvi = messageListView->currentItem();
+    if (!lvi)
         return;
-    QListViewItem* lvi;
     // Not all items have a file name, skip those.
     do
     {
-        lvi = oldLvi->itemAbove();
+        lvi = lvi->itemAbove();
     } while (lvi && lvi->text(2).isEmpty());
     if (!lvi)
         return;
@@ -342,6 +481,12 @@ TaskJugglerView::loadProject(const KURL& url)
     setCursor(KCursor::waitCursor());
     if (!pf->open(fileName, "", "", TRUE))
     {
+        QMessageBox::critical(this, i18n("Error loading Project"),
+                              i18n("Cannot open file %1!")
+                              .arg(url.prettyURL()),
+                              QMessageBox::Ok | QMessageBox::Default,
+                              QMessageBox::NoButton);
+        setCursor(KCursor::arrowCursor());
         setLoadingProject(FALSE);
         return FALSE;
     }
@@ -473,6 +618,7 @@ TaskJugglerView::loadProject(const KURL& url)
         vl.append(int(h * 0.15));
         editorSplitter->setSizes(vl);
         emit signalChangeStatusbar(i18n("The project contains problems!"));
+        showEditor();
         messageListClicked(messageListView->firstChild());
     }
     else
@@ -484,17 +630,25 @@ TaskJugglerView::loadProject(const KURL& url)
                                         "without problems!"));
         // Load the main file into the editor.
         fileManager->showInEditor(fileName);
-        QListViewItem* firstReport =
-            reportManager->getFirstInteractiveReportItem();
-        if (firstReport)
+        if (showReportAfterLoad)
         {
-            // Open the report list.
-            mw->listViews->setCurrentItem(mw->reportsPage);
-            // Simulate a click on the first interactive report to open the
-            // report view and show the first report.
-            mw->reportListView->setSelected(firstReport, TRUE);
-            reportListClicked(firstReport);
+            QListViewItem* firstReport =
+                reportManager->getFirstInteractiveReportItem();
+            if (firstReport)
+            {
+                // Open the report list.
+                mw->listViews->setCurrentItem(mw->reportsPage);
+                // Simulate a click on the first interactive report to open the
+                // report view and show the first report.
+                mw->reportListView->setSelected(firstReport, TRUE);
+                showReport();
+                reportListClicked(firstReport);
+            }
+            else
+                showEditor();
         }
+        else
+            showEditor();
     }
 
     return TRUE;
@@ -518,6 +672,13 @@ void
 TaskJugglerView::addMessage(const QString& msg, const QString& file,
                             int line, bool error)
 {
+    /* The message list view has 5 columns:
+     * Column 0: Decoration
+     * Column 1: Message
+     * Column 2: File name (empty for additional lines)
+     * Column 3: Line number (emty for additional lines)
+     * Column 4: Counter (Hidden)
+     */
     ++messageCounter;
     QString text = msg;
     QListViewItem* parent = 0;
@@ -657,17 +818,64 @@ TaskJugglerView::focusListViews(int idx)
 void
 TaskJugglerView::focusBigTab(QWidget*)
 {
+    QString windowCaption;
+    if (project)
+        windowCaption = project->getName() + " - ";
+
     switch (mw->bigTab->currentPageIndex())
     {
         case 0:
-            if (fileManager)
-                fileManager->setFocusToEditor();
+            // The editor has become visible
+            if (fileManager->getCurrentFile())
+                windowCaption +=
+                    fileManager->getCurrentFile()->getUniqueName();
+            fileManager->enableEditorActions(TRUE);
+            fileManager->setFocusToEditor();
+
             break;
+
         case 1:
-            if (reportManager)
-                reportManager->setFocusToReport();
+            // The report page has become visible
+            fileManager->enableEditorActions(FALSE);
+
+            if (reportManager->getCurrentReport())
+                windowCaption +=
+                    reportManager->getCurrentReport()->getName();
+            reportManager->setFocusToReport();
+
             break;
     }
+    (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
+}
+
+void
+TaskJugglerView::showEditor()
+{
+    QString windowCaption;
+    if (project)
+        windowCaption = project->getName() + " - ";
+
+    if (fileManager && fileManager->getCurrentFile())
+        windowCaption += fileManager->getCurrentFile()->getUniqueName();
+
+    (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
+
+    mw->bigTab->showPage(mw->editorTab);
+}
+
+void
+TaskJugglerView::showReport()
+{
+    QString windowCaption;
+    if (project)
+        windowCaption = project->getName() + " - ";
+
+    if (reportManager && reportManager->getCurrentReport())
+        windowCaption += reportManager->getCurrentReport()->getName();
+
+    (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
+
+    mw->bigTab->showPage(mw->reportTab);
 }
 
 void
@@ -677,7 +885,7 @@ TaskJugglerView::taskListClicked(QListViewItem* lvi)
     {
         fileManager->showInEditor(KURL(lvi->text(2)),
                                   lvi->text(3).toUInt() - 1, 0);
-        mw->bigTab->showPage(mw->editorTab);
+        showEditor();
     }
 }
 
@@ -688,7 +896,7 @@ TaskJugglerView::resourceListClicked(QListViewItem* lvi)
     {
         fileManager->showInEditor(KURL(lvi->text(2)),
                                   lvi->text(3).toUInt() - 1, 0);
-        mw->bigTab->showPage(mw->editorTab);
+        showEditor();
     }
 }
 
@@ -699,7 +907,7 @@ TaskJugglerView::accountListClicked(QListViewItem* lvi)
     {
         fileManager->showInEditor(KURL(lvi->text(2)),
                                   lvi->text(3).toUInt() - 1, 0);
-        mw->bigTab->showPage(mw->editorTab);
+        showEditor();
     }
 }
 
@@ -724,13 +932,17 @@ TaskJugglerView::reportListClicked(QListViewItem* lvi)
         messageListClicked(messageListView->firstChild());
     }
     else
-        mw->bigTab->showPage(mw->reportTab);
+        showReport();
 }
 
 void
-TaskJugglerView::fileListClicked(QListViewItem*)
+TaskJugglerView::fileListClicked(QListViewItem* lvi)
 {
+    if (!lvi)
+        return;
+
     fileManager->showInEditor(fileManager->getCurrentFileURL());
+    showEditor();
 }
 
 void

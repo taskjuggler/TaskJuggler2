@@ -211,6 +211,11 @@ FileInfo::nextToken(QString& token)
             {
                 do
                 {
+                    if (c == '\n')
+                    {
+                        oldLine = currLine;
+                        currLine++;
+                    }
                     while ((c = getC(FALSE)) != '*')
                     {
                         if (c == '\n')

@@ -124,7 +124,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 
     if (!fi->open())
     {
-        qFatal("Cannot open '%s'", absFileName.latin1());
+        errorMessage(i18n("Cannot read file '%1'").arg(absFileName));
         return FALSE;
     }
 

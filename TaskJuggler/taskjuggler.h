@@ -55,6 +55,7 @@ public slots:
      * Use this method to load whatever file/URL you have
      */
     void load(const KURL& url);
+    void changeCaption(const QString& text);
 
 protected:
     /**
@@ -96,7 +97,6 @@ private slots:
     void newToolbarConfig();
 
     void changeStatusbar(const QString& text);
-    void changeCaption(const QString& text);
     void addRecentURL(const KURL& text);
 
 private:

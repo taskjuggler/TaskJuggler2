@@ -20,6 +20,8 @@
 
 class QWidgetStack;
 class QStringList;
+
+class KMainWindow;
 class KListView;
 class KURL;
 
@@ -27,7 +29,7 @@ class FileManager : public QObject
 {
     Q_OBJECT
 public:
-    FileManager(QWidgetStack* v, KListView* b);
+    FileManager(KMainWindow* m, QWidgetStack* v, KListView* b);
     virtual ~FileManager() { }
 
     void updateFileList(const QStringList& fl, const KURL& mf);
@@ -48,6 +50,13 @@ public:
     void saveAllFiles();
     void clear();
 
+    void undo();
+    void redo();
+    void cut();
+    void copy();
+    void paste();
+    void selectAll();
+
 public slots:
     void showInEditor(const KURL& url);
     void showInEditor(const KURL& url, int line, int col);
@@ -56,8 +65,15 @@ public slots:
     void closeCurrentFile();
     void setCursorPosition(int line, int col);
 
+    void enableEditorActions(bool enable);
+    void enableClipboardActions(bool enable = TRUE);
+    void enableUndoActions(bool enable = TRUE);
+
+
 private:
     FileManager() { }
+
+    KMainWindow* mainWindow;
 
     QString findCommonPath();
     void updateFileBrowser();

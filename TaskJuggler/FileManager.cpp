@@ -12,24 +12,32 @@
 
 #include <qwidgetstack.h>
 #include <qstring.h>
+#include <qapplication.h>
+#include <qclipboard.h>
 
+#include <kmainwindow.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kglobal.h>
 #include <kiconloader.h>
+#include <kstdaction.h>
+#include <kaction.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/editinterface.h>
+#include <ktexteditor/selectioninterface.h>
+#include <ktexteditor/clipboardinterface.h>
+#include <ktexteditor/undointerface.h>
 
 #include <kdebug.h>
 
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
 
-FileManager::FileManager(QWidgetStack* v, KListView* b) :
-    viewStack(v), browser(b)
+FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b) :
+    mainWindow(m), viewStack(v), browser(b)
 {
     files.setAutoDelete(TRUE);
     masterFile = 0;
@@ -257,8 +265,17 @@ FileManager::showInEditor(const KURL& url)
                 document->setReadWrite(TRUE);
                 document->setModified(FALSE);
 
+                // Signal to update the file-modified status
                 connect(document, SIGNAL(textChanged()),
                         *mfi, SLOT(setModified()));
+
+                // Signal to en- or disable clipboard actions
+                connect(document, SIGNAL(selectionChanged()),
+                         this, SLOT(enableClipboardActions()));
+
+                // Signal to en- or disable undo actions
+                connect(document, SIGNAL(undoChanged()),
+                         this, SLOT(enableUndoActions()));
             }
             viewStack->raiseWidget((*mfi)->getEditor());
 
@@ -352,6 +369,100 @@ FileManager::clear()
 {
     masterFile = 0;
     files.clear();
+}
+
+void
+FileManager::undo()
+{
+    if (getCurrentFile())
+        KTextEditor::undoInterface(getCurrentFile()->getEditor()->
+                                   document())->undo();
+}
+
+void
+FileManager::redo()
+{
+    if (getCurrentFile())
+        KTextEditor::undoInterface(getCurrentFile()->getEditor()->
+                                   document())->redo();
+}
+
+void
+FileManager::cut()
+{
+    if (getCurrentFile())
+        KTextEditor::clipboardInterface(getCurrentFile()->getEditor())->cut();
+}
+
+void
+FileManager::copy()
+{
+    if (getCurrentFile())
+        KTextEditor::clipboardInterface(getCurrentFile()->getEditor())->copy();
+}
+
+void
+FileManager::paste()
+{
+    if (getCurrentFile())
+        KTextEditor::clipboardInterface(getCurrentFile()->getEditor())->paste();
+}
+
+void
+FileManager::selectAll()
+{
+    if (getCurrentFile())
+        KTextEditor::selectionInterface(getCurrentFile()->getEditor()->
+                                        document())->selectAll();
+}
+
+void
+FileManager::enableEditorActions(bool enable)
+{
+    mainWindow->action(KStdAction::name(KStdAction::Save))->setEnabled(enable);
+    mainWindow->action(KStdAction::name(KStdAction::SelectAll))->
+        setEnabled(enable);
+
+    enableClipboardActions(enable);
+    enableUndoActions(enable);
+}
+
+void
+FileManager::enableClipboardActions(bool enable)
+{
+    bool hasSelection = FALSE;
+    if (getCurrentFile())
+        hasSelection = KTextEditor::selectionInterface
+            (getCurrentFile()->getEditor()->document())->hasSelection();
+    bool isClipEmpty = QApplication::clipboard()->
+        text(QClipboard::Clipboard).isEmpty();
+
+    mainWindow->action(KStdAction::name(KStdAction::Cut))->
+        setEnabled(enable && hasSelection );
+    mainWindow->action(KStdAction::name(KStdAction::Copy))->
+        setEnabled(enable && hasSelection);
+    mainWindow->action( KStdAction::name(KStdAction::Paste))->
+        setEnabled( enable && !isClipEmpty);
+}
+
+void
+FileManager::enableUndoActions(bool enable)
+{
+    bool undoEnable = FALSE;
+    if (getCurrentFile())
+        undoEnable = (KTextEditor::undoInterface
+                      (getCurrentFile()->getEditor()->document())->
+                      undoCount() > 0 );
+    bool redoEnable = FALSE;
+    if (getCurrentFile())
+        redoEnable = (KTextEditor::undoInterface
+                      (getCurrentFile()->getEditor()->document())->
+                      redoCount() > 0 );
+
+    mainWindow->action(KStdAction::name(KStdAction::Undo))->
+        setEnabled(enable && undoEnable);
+    mainWindow->action(KStdAction::name(KStdAction::Redo))->
+        setEnabled(enable && redoEnable);
 }
 
 void

@@ -31,6 +31,8 @@ public:
 
     const KURL& getFileURL() const { return fileURL; }
 
+    const QString getUniqueName() const;
+
     bool isModified() { return modified; }
 
     void save();

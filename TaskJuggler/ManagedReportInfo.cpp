@@ -12,6 +12,8 @@
 
 #include "ManagedReportInfo.h"
 
+#include "Report.h"
+
 #include "TjReport.h"
 
 ManagedReportInfo::ManagedReportInfo(ReportManager* rm, Report* r) :
@@ -25,6 +27,15 @@ ManagedReportInfo::ManagedReportInfo(ReportManager* rm, Report* r) :
 ManagedReportInfo::~ManagedReportInfo()
 {
     delete report;
+}
+
+const QString&
+ManagedReportInfo::getName() const
+{
+    if (report)
+        return projectReport->getFileName();
+
+    return QString::null;
 }
 
 void

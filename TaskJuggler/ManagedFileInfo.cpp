@@ -33,6 +33,14 @@ ManagedFileInfo::~ManagedFileInfo()
         delete editor->document();
 }
 
+const QString
+ManagedFileInfo::getUniqueName() const
+{
+    /* Return the file name that we use in the file browser. It may contain
+     * path fragments to make it unique. */
+    return browserEntry->text(0);
+}
+
 void
 ManagedFileInfo::setModified()
 {

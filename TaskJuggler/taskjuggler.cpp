@@ -26,9 +26,9 @@
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <kkeydialog.h>
+#include <kfiledialog.h>
 #include <kaccel.h>
 #include <kio/netaccess.h>
-#include <kfiledialog.h>
 #include <kconfig.h>
 #include <kurl.h>
 #include <kurldrag.h>
@@ -85,6 +85,7 @@ void TaskJuggler::load(const KURL& url)
 
 void TaskJuggler::setupActions()
 {
+    // "File" menu
     KStdAction::openNew(this, SLOT(fileNew()), actionCollection());
     new KAction(i18n("New &Include File" ), "file_temporary", KShortcut(),
                 this, SLOT(fileNewInclude()),
@@ -100,18 +101,16 @@ void TaskJuggler::setupActions()
     m_recentAction = KStdAction::openRecent(this, SLOT( load(const KURL&)),
                                             actionCollection());
 
-    m_toolbarAction = KStdAction::showToolbar(this, SLOT(optionsShowToolbar()),
-                                              actionCollection());
-    m_statusbarAction = KStdAction::showStatusbar
-        (this, SLOT(optionsShowStatusbar()), actionCollection());
 
-    KStdAction::keyBindings(this, SLOT(optionsConfigureKeys()),
-                            actionCollection());
-    KStdAction::configureToolbars(this, SLOT(optionsConfigureToolbars()),
-                                  actionCollection());
-    KStdAction::preferences(this, SLOT(optionsPreferences()),
-                            actionCollection());
+    // "Edit" menu
+    KStdAction::undo(m_view, SLOT(undo()), actionCollection());
+    KStdAction::redo(m_view, SLOT(redo()), actionCollection());
+    KStdAction::cut(m_view, SLOT(cut()), actionCollection());
+    KStdAction::copy(m_view, SLOT(copy()), actionCollection());
+    KStdAction::paste(m_view, SLOT(paste()), actionCollection());
+    KStdAction::selectAll(m_view, SLOT(selectAll()), actionCollection());
 
+    // "Goto" menu
     new KAction(i18n("Tas&ks" ), "tj_task_group", KShortcut(KKey("ALT+k")),
                 m_view, SLOT(setFocusToTaskList()),
                 actionCollection(), "tasks");
@@ -136,6 +135,7 @@ void TaskJuggler::setupActions()
                 m_view, SLOT(setFocusToReport()),
                 actionCollection(), "report");
 
+    // "Tools" menu
     new KAction(i18n("&Schedule" ), "tj_schedule", KShortcut(KKey("F9")),
                 m_view, SLOT(schedule()),
                 actionCollection(), "schedule");
@@ -155,6 +155,20 @@ void TaskJuggler::setupActions()
                 m_view, SLOT(zoomOut()),
                 actionCollection(), "zoom_out");
 
+    // "Settings" menu
+    m_toolbarAction = KStdAction::showToolbar(this, SLOT(optionsShowToolbar()),
+                                              actionCollection());
+    m_statusbarAction = KStdAction::showStatusbar
+        (this, SLOT(optionsShowStatusbar()), actionCollection());
+
+    KStdAction::keyBindings(this, SLOT(optionsConfigureKeys()),
+                            actionCollection());
+    KStdAction::configureToolbars(this, SLOT(optionsConfigureToolbars()),
+                                  actionCollection());
+    KStdAction::preferences(this, SLOT(optionsPreferences()),
+                            actionCollection());
+
+    // "Help" menu
     new KAction(i18n("Explain Keyword" ), "tj_keyword_help",
                 KShortcut(KKey("F2")),
                 m_view, SLOT(keywordHelp()),
@@ -224,34 +238,19 @@ TaskJuggler::queryExit()
 void
 TaskJuggler::fileNew()
 {
-    KURL file_url = KFileDialog::getSaveURL();
-    if (!file_url.isEmpty() && file_url.isValid())
-    {
-        m_view->newProject(file_url);
-    }
+    m_view->newProject();
 }
 
 void
 TaskJuggler::fileNewInclude()
 {
-    KURL file_url = KFileDialog::getSaveURL();
-    if (!file_url.isEmpty() && file_url.isValid())
-    {
-        m_view->newInclude(file_url);
-    }
+    m_view->newInclude();
 }
 
 void
 TaskJuggler::fileOpen()
 {
-/*
-    // this brings up the generic open dialog
-    KURL url = KURLRequesterDlg::getURL(QString::null, this, i18n("Open Location") );
-*/
-    // standard filedialog
-    KURL url = KFileDialog::getOpenURL(QString::null, QString::null, this, i18n("Open Location"));
-    if (!url.isEmpty())
-        m_view->openURL(url);
+    m_view->openURL(KURL());
 }
 
 void
@@ -263,7 +262,9 @@ TaskJuggler::fileSave()
 void TaskJuggler::fileSaveAs()
 {
     // this slot is called whenever the File->Save As menu is selected,
-    KURL file_url = KFileDialog::getSaveURL();
+    KURL file_url = KFileDialog::getSaveURL
+        (i18n("Pick an alternative name for the current file"),
+         "*.tjp, *.tji");
     if (!file_url.isEmpty() && file_url.isValid())
     {
         m_view->saveAs(file_url);

@@ -28,6 +28,8 @@ public:
 
     Report* const getProjectReport() const { return projectReport; }
 
+    const QString& getName() const;
+
     void setBrowserEntry(KListViewItem* lvi) { browserEntry = lvi; }
     KListViewItem* getBrowserEntry() const { return browserEntry; }
 
