@@ -1533,7 +1533,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
 
    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
    {
-      qDebug(  "**Task -elemType: " + elem.tagName() );
+      // qDebug(  "**Task -elemType: " + elem.tagName() );
       QString elemTagName = elem.tagName();
 
       if( elemTagName == "Name" )
@@ -1569,7 +1569,8 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "Priority" )
         setPriority( elem.text().toInt() );
       else if( elemTagName == "complete" )
-        setComplete( elem.text().toInt() );
+	 setComplete( elem.text().toDouble() );
+
       /* time-stuff: */
       else if( elemTagName == "minStart" )
 	 setMinStart( elem.text().toLong());

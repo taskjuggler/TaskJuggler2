@@ -25,6 +25,7 @@ if test "$cv_option_kdesupport" = yes ;then
    dnl LIBICAL="-lical -lkcal"
 else
    AC_MSG_RESULT(no)
+   DO_NOT_COMPILE="ktjview"
 fi
 
 dnl AC_SUBST(LIBICAL)

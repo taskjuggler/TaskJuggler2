@@ -1,6 +1,9 @@
-####### kdevelop will overwrite this part!!! (begin)##########
-
-SUBDIRS = taskjuggler docs TestSuite
+# Makefile.am for TaskJuggler
+# Chris Schlaeger <cs@suse.de>
+# Klaas Freitag <freitag@suse.de>
+# Stephan Kulow <coolo@kde.org>
+#
+COMPILE_FIRST = taskjuggler
 
 EXTRA_DIST = taskjuggler.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO taskjuggler.lsm 
 
@@ -25,3 +28,5 @@ package-messages:
 dist-hook:
 	cd $(top_distdir) && perl admin/am_edit -padmin
 	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
+
+SUBDIRS=$(COMPILE_FIRST) $(TOPSUBDIRS)
