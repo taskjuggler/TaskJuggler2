@@ -1,0 +1,23 @@
+# The csv reports include localized strings, so we must ensure that
+# we use the same LOCALE as the reference files have used.
+export LANG=en_US
+export LC_ALL=en_US
+export LC_COLLATE=POSIX 
+
+errors=0
+
+for f in *.tjp ; do
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.csv/g`
+  csvFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.csv/g`
+  ../../taskjuggler/taskjuggler $f | \
+  fgrep -v TaskJuggler > $csvFile
+  cmp $csvFile $referenceFile
+  if test $? -ne 0 ; then
+    errors=$(($errors + 1))
+  else
+    rm $csvFile
+  fi
+done
+
+exit $errors
+

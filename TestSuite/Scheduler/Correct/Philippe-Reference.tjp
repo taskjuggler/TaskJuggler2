@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project arc "Passage  sous Control-M" "1.0" 2002-07-14-22:00:00-GMT 2002-10-29-22:59:59-GMT {
+project arc "Passage  sous Control-M" "1.0" 2002-07-15-00:00:00-GMT 2002-10-30-23:59:59-GMT {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
