@@ -484,6 +484,10 @@ controls which scenarios should be shown.</para></listitem>
 linkend="logicalexpression">logical expressions</link> have been
 added.</para></listitem>
 
+<listitem><para>Container tasks in export reports no longer have fixed
+start and end date if they have their sub tasks exported as
+well.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

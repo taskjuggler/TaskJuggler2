@@ -1,7 +1,4 @@
 task container3 "Container3" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  planscheduled
   projectid prj
 }
 task container3.c21 "-D --> |" {
@@ -47,9 +44,6 @@ task container3.c24 "-D <-x |" {
   projectid prj
 }
 task container4 "Container4" {
-  start 2003-01-11-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  planscheduled
   projectid prj
 }
 task container4.c23 "-D --> |D" {
@@ -119,9 +113,6 @@ task container4.c26 "-D <-x |D" {
   projectid prj
 }
 task container1 "Container1" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-18-00:00:00-+0000
-  planscheduled
   projectid prj
 }
 task container1.c3 "| --> |" {
@@ -149,9 +140,6 @@ task container1.c16 "- <-x |" {
   projectid prj
 }
 task container2 "Container2" {
-  start 2003-01-13-00:00:00-+0000
-  end 2003-01-19-23:59:00-+0000
-  planscheduled
   projectid prj
 }
 task container2.c5 "| --> |D" {

@@ -140,20 +140,35 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
         QString end = time2rfc((*tli)->getEnd(Task::Plan) + 1);
 
         s << "task " << stripTaskRoot((*tli)->getId()) 
-            << " \"" << (*tli)->getName() << "\"" << " {" << endl 
-            << "  start " << start << endl
-            << "  end " << end << endl;
-        if ((*tli)->getScheduled(Task::Plan))
-            s << "  planscheduled" << endl;
-        // TODO: Fix scenario handling
-        if (scenarios.count() > 1)
+            << " \"" << (*tli)->getName() << "\"" << " {" << endl; 
+        /* If a container task has sub tasks that are exported as well, we do
+         * not export start/end date for those container tasks. */
+        bool taskHasNoSubTasks = TRUE;
+        for (TaskListIterator stli((*tli)->getSubListIterator()); 
+             *stli != 0; ++stli)
         {
-            start = time2rfc((*tli)->getStart(1));
-            end = time2rfc((*tli)->getEnd(Task::Actual) + 1);
-            s << "  actualstart " << start << endl
-                << "  actualend " << end << endl;
-            if ((*tli)->getScheduled(Task::Actual))
-                s << "  actualscheduled" << endl;
+            if (filteredTaskList.findRef(*stli) >= 0)
+            {
+                taskHasNoSubTasks = FALSE;
+                break;
+            }
+        }
+        if (taskHasNoSubTasks)
+        {
+            s << "  start " << start << endl
+                << "  end " << end << endl;
+            if ((*tli)->getScheduled(Task::Plan))
+                s << "  planscheduled" << endl;
+            // TODO: Fix scenario handling
+            if (scenarios.count() > 1)
+            {
+                start = time2rfc((*tli)->getStart(1));
+                end = time2rfc((*tli)->getEnd(Task::Actual) + 1);
+                s << "  actualstart " << start << endl
+                    << "  actualend " << end << endl;
+                if ((*tli)->getScheduled(Task::Actual))
+                    s << "  actualscheduled" << endl;
+            }
         }
 
         s << "  projectid " << (*tli)->getProjectId() << endl;

@@ -1,7 +1,4 @@
 task t1 "Task1" {
-  start 2000-01-01-00:00:00-+0000
-  end 2000-01-07-18:00:00-+0000
-  planscheduled
   projectid simple
 }
 task t1.s1 "sub1" {
@@ -29,9 +26,6 @@ task t1.s4 "sub4" {
   projectid simple
 }
 task t2 "Task2" {
-  start 2000-01-10-09:00:00-+0000
-  end 2000-01-14-18:00:00-+0000
-  planscheduled
   projectid simple
   depends t1
 }

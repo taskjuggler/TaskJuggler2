@@ -815,9 +815,9 @@ ProjectFile::readInclude()
         {
             if (tt == ID && token == KW("taskprefix"))
             {
-                if (nextToken(token) != ID || tt == ABSOLUTE_ID)
+                if ((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID)
                 {
-                    errorMessage(i18n("String expected"));
+                    errorMessage(i18n("Task ID expected"));
                     return FALSE;
                 }
                 if (!proj->getTask(getTaskPrefix() + token))
