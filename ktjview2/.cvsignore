@@ -7,7 +7,7 @@ ktjview2
 ktjview2_client
 settings.cc
 settings.h
-gantt.cc
+gantt.cpp
 gantt.h
 filterWidget.cpp
 filterWidget.h
