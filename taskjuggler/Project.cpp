@@ -114,6 +114,12 @@ Project::~Project()
     exitUtility();
 }
 
+Scenario*
+Project::getScenario(int sc)
+{
+    return scenarioList.at(sc);
+}
+
 const QString&
 Project::getScenarioName(int sc)
 {

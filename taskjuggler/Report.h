@@ -42,9 +42,12 @@ public:
            const QString& df, int dl);
     virtual ~Report();
 
+    QTextStream& stream() { return s; }
+
     const Project* getProject() const { return project; }
 
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
+    bool getWeekStartsMonday() { return weekStartsMonday; }
 
     void setShowActual(bool s) { showActual = s; }
     bool getShowActual() const { return showActual; }
@@ -156,7 +159,8 @@ protected:
     
     LoadUnit loadUnit;
 
-    /* The maximum of the tree that we have to report in tree-sorting mode. */
+    /* The maximum depth of the tree that we have to report in tree-sorting
+     * mode. */
     uint maxDepthTaskList;
     uint maxDepthResourceList;
     uint maxDepthAccountList;

@@ -97,6 +97,11 @@ public:
      */
     int getMaxScenarios() { return scenarioList.count(); }
     /**
+     * Returns a pointer to the scenario.
+     * @param sc Index of the scenario in the project scenario list.
+     */
+    Scenario* getScenario(int sc);
+    /**
      * Returns the id of a scenario.
      * @param sc Specifies the scenario.
      */

@@ -10,8 +10,8 @@
  * $Id$
  */
 
-#ifndef _Report_Html_h_
-#define _Report_Html_h_
+#ifndef _HTMLReportElement_h_
+#define _HTMLReportElement_h_
 
 #include <stdio.h>
 #include <time.h>
@@ -22,30 +22,35 @@
 #include <qtextstream.h>
 #include <qmap.h>
 
-#include "Report.h"
+#include "ReportElement.h"
+#include "HTMLPrimitives.h"
 #include "MacroTable.h"
 #include "taskjuggler.h"
 
 class Project;
+class Report;
 class ExpressionTree;
 
 /**
- * @short Stores all information about an HTML report element.
+ * @short Stores all information about an HTML report.
  * @author Chris Schlaeger <cs@suse.de>
  */
-class HTMLReportElement
+class HTMLReportElement : public ReportElement, public HTMLPrimitives
 {
 public:
-    HTMLReportElement() { }
+    HTMLReportElement(Project* p, Report* r, const QString& df, int dl);
     virtual ~HTMLReportElement() { }
 
     enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
 
-    void generateTask1stRow(const Task* t, const Resource* r, uint no);
-    void generateTaskNthRow(const Task* t, const Resource* r);
+    void generatePlanTask(const Task* t, const Resource* r, uint no);
+    void generateActualTask(const Task* t, const Resource* r);
 
-    void generateResource1stRow(const Resource* r, const Task* t, uint no);
-    void generateResourceNthRow(const Resource* r, const Task* t);
+    void generatePlanResource(const Resource* r, const Task* t, uint no);
+    void generateActualResource(const Resource* r, const Task* t);
+
+    void reportHTMLHeader();
+    void reportHTMLFooter();
 
     bool generateTableHeader();
 
@@ -58,34 +63,44 @@ public:
     void htmlWeeklyHeaderMonths();
     void htmlMonthlyHeaderMonths(bool highlightNow = TRUE);
     void htmlMonthlyHeaderYears();
+    void htmlQuarterlyHeaderQuarters(bool highlightNow = TRUE);
+    void htmlQuarterlyHeaderYears();
+    void htmlYearHeader();
 
-    void empty1stRow(bool light);
-    void emptyNthRow(bool light);
+    void emptyPlan(bool light);
+    void emptyActual(bool light);
 
     void textOneRow(const QString& text, bool light, const QString& align);
-    void textMultiRows(const QString& text, bool light, const QString& align);
+    void textTwoRows(const QString& text, bool light, const QString& align);
 
-    void dailyResource1stRow(const Resource* r, const Task* t);
-    void dailyResourceNthRow(const Resource* r, const Task* t);
-    void dailyTask1stRow(const Task* t, const Resource* r);
-    void dailyTaskNthRow(const Task* t, const Resource* r);
+    void dailyResourcePlan(const Resource* r, const Task* t);
+    void dailyResourceActual(const Resource* r, const Task* t);
+    void dailyTaskPlan(const Task* t, const Resource* r);
+    void dailyTaskActual(const Task* t, const Resource* r);
 
-    void weeklyResource1stRow(const Resource* r, const Task* t);
-    void weeklyResourceNthRow(const Resource* r, const Task* t);
-    void weeklyTask1stRow(const Task* t, const Resource* r);
-    void weeklyTaskNthRow(const Task* t, const Resource* r);
+    void weeklyResourcePlan(const Resource* r, const Task* t);
+    void weeklyResourceActual(const Resource* r, const Task* t);
+    void weeklyTaskPlan(const Task* t, const Resource* r);
+    void weeklyTaskActual(const Task* t, const Resource* r);
 
-    void monthlyResource1stRow(const Resource* r, const Task* t);
-    void monthlyResourceNthRow(const Resource* r, const Task* t);
-    void monthlyTask1stRow(const Task* t, const Resource* r);
-    void monthlyTaskNthRow(const Task* t, const Resource* r);
+    void monthlyResourcePlan(const Resource* r, const Task* t);
+    void monthlyResourceActual(const Resource* r, const Task* t);
+    void monthlyTaskPlan(const Task* t, const Resource* r);
+    void monthlyTaskActual(const Task* t, const Resource* r);
 
     void taskName(const Task* t, const Resource* r, bool big);
     void resourceName(const Resource* t, const Task* t, bool big);
 
+    void taskCostRev(const Task* t, const Resource* r, double val);
+    void resourceCostRev(const Task* t, const Resource* r, double val);
+
+    void taskLoadValue(const Task* t, const Resource* r, double val);
+    void resourceLoadValue(const Task* t, const Resource* r, double val);
+    
     void scenarioResources(int sc, const Task* t, bool light);
 
-    void reportLoad(double load, const QString& bgcol, bool bold);
+    void reportLoad(double load, const QString& bgcol, bool bold,
+                    bool milestone = FALSE);
     void reportPIDs(const QString& pids, const QString bgCol, bool bold);
 
     void generateSchedule(int sc, const Resource* r, const Task* t);
@@ -103,13 +118,47 @@ public:
     bool setUrl(const QString& key, const QString& url);
     const QString* getUrl(const QString& key) const;
 
+    void setRawHead(const QString& head)
+    {
+        rawHead = head;
+    }
+
+    void setRawTail(const QString& tail)
+    {
+        rawTail = tail;
+    }
+
+    void setRawStyleSheet(const QString& styleSheet)
+    {
+        rawStyleSheet = styleSheet;
+    }
+    
+
 protected:
     HTMLReportElement() { }
 
-    QString htmlFilter(const QString& s) const;
     QString generateUrl(const QString& key, const QString& txt);
 
     MacroTable mt;
+
+    uint colDefault;
+    uint colDefaultLight;
+    uint colWeekend;
+    uint colVacation;
+    uint colAvailable;
+    uint colBooked;
+    uint colBookedLight;
+    uint colHeader;
+    uint colMilestone;
+    uint colCompleted;
+    uint colCompletedLight;
+    uint colToday;
+
+    BarLabelText barLabels;
+
+    QString rawHead;
+    QString rawTail;
+    QString rawStyleSheet;
 
     QMap<QString, QString> urls;
 } ;
