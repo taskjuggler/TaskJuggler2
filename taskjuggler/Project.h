@@ -69,7 +69,9 @@ public:
 
 	void addResource(Resource* r)
 	{
+	   r->dbLoadBookings( r->getKotrusId(), 0 );
 		resourceList.append(r);
+		
 	}
 	Resource* getResource(const QString& id)
 	{
