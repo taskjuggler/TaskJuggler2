@@ -772,7 +772,10 @@ ProjectFile::nextToken(QString& buf)
 void
 ProjectFile::fatalError(const QString& msg)
 {
-	openFiles.last()->fatalError(msg);
+	if (openFiles.isEmpty())
+		qWarning("Unexpected end of file found. Probably a missing '}'.");
+	else
+		openFiles.last()->fatalError(msg);
 }
 
 bool
@@ -1108,6 +1111,7 @@ ProjectFile::readTask(Task* parent)
 			done = true;
 			break;
 		default:
+			qDebug("%s", token.latin1());
 			fatalError(QString("Syntax Error at '") + token + "'");
 			return FALSE;
 		}
