@@ -42,12 +42,11 @@ QuickSearchWidget::QuickSearchWidget( QWidget * parent, const char * name )
 
     m_clearButton = new KToolBarButton( QApplication::reverseLayout() ? "clear_left" : "locationbar_erase",
                                         0, this );
-
+    QToolTip::add( m_clearButton, i18n( "Clear the search" ) );
     connect( m_clearButton, SIGNAL( clicked() ), this, SLOT( reset() ) );
     lay->add( m_clearButton );
 
     m_searchLabel = new QLabel( i18n( "Search &for:" ), this, "kde toolbar widget" );
-    QToolTip::add( m_searchLabel, i18n( "Clear the search" ) );
     lay->add( m_searchLabel );
 
     m_searchLine = new KListViewSearchLine( this, 0, "search_line" );

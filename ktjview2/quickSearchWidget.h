@@ -45,16 +45,16 @@ public:
     QuickSearchWidget( QWidget * parent, const char * name = 0 );
     ~QuickSearchWidget() { };
 
-    /**
-     * Tell the internal listview to operate on @p view
-     */
-    void setListView( KListView * view );
-
 public slots:
     /**
      * Clear the contents of the search lineedit
      */
     void reset();
+
+    /**
+     * Tell the internal listview to operate on @p view
+     */
+    void setListView( KListView * view );
 
 private slots:
     /**

@@ -23,6 +23,7 @@
 #include "gantt.h"
 #include "resUsageCfg.h"
 #include "editorView.h"
+#include "ktjReportView.h"
 
 #include <qdragobject.h>
 #include <qpainter.h>
@@ -220,6 +221,9 @@ void ktjview2::setupActions()
     m_quickSearch = new QuickSearchWidget( this );
     ( void ) new KWidgetAction( m_quickSearch, i18n( "Quick search" ), KShortcut(), 0, 0,
                                 actionCollection(), "quick_search" );
+
+    connect( m_view, SIGNAL( setQuickSearchView( KListView * ) ),
+             m_quickSearch, SLOT( setListView( KListView * ) ) );
 
 #if 0
     // Resource menu
@@ -525,7 +529,9 @@ void ktjview2::slotSidebarResUsage()
 
 void ktjview2::slotSidebarReports()
 {
-    toolBar( "filterToolBar" )->hide();
+    m_quickSearch->reset();
+    m_quickSearch->setListView( static_cast<KListView *>( m_view->reportView() ) );
+    toolBar( "filterToolBar" )->show();
     toolBar( "ganttToolBar" )->hide();
     enableGanttActions( false );
     enableTasksActions( false );

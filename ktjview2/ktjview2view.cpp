@@ -1280,6 +1280,7 @@ void ktjview2View::slotTaskCoverage()
     if ( !m_taskReport )
         m_taskReport = new KtjTaskReport( m_project, m_reportView );
     m_taskReport->generate();
+    emit setQuickSearchView( m_reportView );
 }
 
 #include "ktjview2view.moc"

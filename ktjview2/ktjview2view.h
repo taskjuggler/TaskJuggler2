@@ -121,6 +121,12 @@ public:
         { return m_editorView; }
 
     /**
+     * @return the Report View component
+     */
+    KtjReportView * reportView() const
+        { return m_reportView; }
+
+    /**
      * @return the name of the current project or QString::null if no project opened
      */
     QString projectName() const;
@@ -279,6 +285,11 @@ signals:
      * Emitted when the Gantt component changes the scale
      */
     void signalScaleChanged( int );
+
+    /**
+     * Emitted when we need to update the quick search component, e.g. after generating a report
+     */
+    void setQuickSearchView( KListView * );
 
 private slots:
     /**
