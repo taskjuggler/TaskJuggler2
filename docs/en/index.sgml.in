@@ -182,7 +182,7 @@ might be some air left in a certain task.
 
 </itemize>
 
-<sect2>Next Release (some day)
+<sect2>Version 1.3 (some day)
 <p>
 <itemize>
 
@@ -195,6 +195,20 @@ and task <ref id="task_allocate_shift" name="allocations">.
 Fixed.
 
 <item>Fixed handling of week, month and year duration specifications.
+
+<item><ref id="project_now" name="now"> and <ref
+id="project_timingresolution" name="timingresolution"> are no longer
+properties. They are now optional attributes of <ref id="project"
+name="project">. They currently still work as properties as well but a
+warning is issued and they will be removed in the next major release.
+
+<item><ref id="project_dailyworkinghours" name="dailyworkinghours">
+and <ref id="project_yearlyworkingdays" name="yearlyworkingdays"> have
+been implemented to allow the user for better control over the
+conversion from working days to working hours.
+
+<item>Added support for a <ref id="task_allocate_select"
+name="select"> function for alternative resource allocations.
 
 </itemize>
 
@@ -828,15 +842,21 @@ Specifies which columns should be included in the task report. The
 following values for colid are available:
 
 <descrip>
+<tag/costs/The costs of the task
 <tag/daily/A day-by-day calendar view of the tasks
 <tag/depends/The task index of the tasks on which this task depends
+<tag/duration/The duration of the task
+<tag/effort/The effort put into the task
 <tag/end/The end date of a task
 <tag/endbuffer/The percentage of the endbuffer
 <tag/endbufferstart/The start time of the end buffer
 <tag/follows/The task index of the tasks that depend on this task
 <tag/id/The global <ref id="id" name="ID"> of a task
+<tag/kotrusid/The KotrRUs ID of the resource
+<tag/maxeffort/The maximum daily load wanted for the resource
 <tag/maxend/The latest desired end date
 <tag/maxstart/The latest desired start date
+<tag/mineffort/The minimum daily load wanted for the resource
 <tag/minend/The earliest desired end date
 <tag/minstart/The earliest desired start date
 <tag/monthly/A month-by-month calendar view of the tasks
@@ -844,6 +864,8 @@ following values for colid are available:
 <tag/no/The task index
 <tag/note/The description of the task
 <tag/priority/The scheduling priority
+<tag/projectid/The project id of the task
+<tag/rate/The daily rate of the resource
 <tag/resources/The names of the used resources
 <tag/responsibilies/A list of all tasks indicies for which a resource is responsible 
 <tag/responsible/The name of the resource responsible for a task
@@ -1137,15 +1159,6 @@ will be used for all subsequent resource declarations unless specified
 otherwise.
 
 
-<label id="now">
-<sect1>now &lt;sometime&gt;
-<p>
-sometime: <ref id="date" name="DATE">
-
-Use the specified day and time for computation of the project status
-instead of the current moment.
-
-
 <sect1>priority &lt;value&gt;<label id="priority">
 <p>
 value: <ref id="integer" name="INTEGER">
@@ -1168,7 +1181,51 @@ start: <ref id="date" name="DATE">
 
 end: <ref id="date" name="DATE">
 
-Optional attributes: none
+Optional attributes:
+
+<descrip>
+
+<label id="project_now">
+<tag/now &lt;sometime&gt;/
+sometime: <ref id="date" name="DATE">
+
+Use the specified day and time for computation of the project status
+instead of the current moment.
+
+<label id="project_timingresolution">
+<tag/timingresolution &lt;value&gt; &lt;unit&gt;/
+value: INTERGER
+
+unit: <ref id="unit" name="UNIT">
+
+Sets the minimum timing resolution. The smaller the value, the longer
+the schedulings process lasts and the more memory the application
+needs. The default is 1 hour. The smallest value is 5 min.
+
+<label id="project_dailyworkinghours">
+<tag/dailyworkinghours &lt;value&gt;/
+value: REAL
+
+Set the average number of working hours per day. This is used as the
+base to convert working hours into working days. This affects for
+example the <ref id="task_length" name="length"> task attribute. The
+default value is 8 hours and should work for most Western countries.
+The value you specifiy should match the settings you specified for
+<ref id="workinghours" name="workinghours">.
+
+<label id="project_yearlyworkingdays">
+<tag/yearlyworkingdays &lt;value&gt;/
+value: REAL
+
+Set the average number of working days per year. This is used as the
+base to convert working days into working months or working years.
+This affects for example the <ref id="task_length" name="length"> task
+attribute. The default value is 252 days and should work for most
+Western countries. The value you specify should match the settings you
+specified for <ref id="workinghours" name="workinghours"> and <ref
+id="vacation" name="vacation">.
+
+</descrip>
 
 The project property is mandatory and should be the first property in
 a project file. &lt;id&gt; is the default project <ref id="id"
@@ -1435,6 +1492,7 @@ id: <ref id="id" name="ID">
 
 <bf/Optional attributes:/
 <descrip>
+<label id="task_allocate_alternative">
 <tag/alternative &lt;id&gt;&lsqb,&lt;id&gt;&rsqb;/
 id: <ref id="id" name="ID">
 
@@ -1443,12 +1501,31 @@ name="resources" id="resource">. One of the alternatives will be used
 if the main resource is not available.  If multiple resources are
 used, they must be separated by commas.
 
+<label id="task_allocate_load">
 <tag/load &lt;days&gt;/
 days: <ref id="real" name="REAL">
 
 Specifies how many days the <ref name="resource" id="resource"> can be
 used per day for this task. A load of 0.5 means that the resource will
 be used for at most half a working day for this task.
+
+<label id="task_allocate_select">
+<tag/select &lt;criteria&gt;/
+criteria: Determines the selection criteria. The following criterias
+are supported:
+
+<descrip>
+<tag/maxloaded/Pick the available resource that has been used the most
+so far.
+<tag/minloaded/Pick the available resource that has been used the
+least so far.
+<tag/order/Pick the first available resource from the list.
+<tag/random/Pick a random resource from the list.
+</descrip>
+
+The select functions controls which resource is picked from an
+allocation and it's alternatives. The selection is re-evaluated each
+time the resource used in the previous time slot becomes unavailable.
 
 <label id="task_allocate_shift">
 <tag/shift &lt;id&gt; [&lt;from&gt; [- &lt;to&gt;]]/
@@ -1809,18 +1886,6 @@ other attributes are illegal. See attributes for details.
 </descrip>
 
 Tasks may be nested and some attributes are inherited by the subtasks.
-
-
-<label id="timinigresolution">
-<sect1>timingresolution &lt;value&gt; &lt;unit&gt;<label id="timingresolution">
-<p>
-value: INTERGER
-
-unit: <ref id="unit" name="UNIT">
-
-Sets the minimum timing resolution. The smaller the value, the longer
-the schedulings process requires. The default is 1 hour. The smallest
-value is 5 min.
 
 
 <label id="vacation">
