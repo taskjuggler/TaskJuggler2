@@ -1,0 +1,29 @@
+#MIN_CONFIG
+
+AC_MSG_CHECKING(for KDE support)
+AC_CACHE_VAL(cv_option_kdesupport, [ cv_option_kdesupport=no ])
+AC_ARG_WITH(kde-support,
+        [  --with-kde-support[={yes|no}] Integrate KDE support [default=no]],
+        [
+                case "${withval}" in
+                        yes|no) cv_option_kdesupport=$withval;;
+                        *)  AC_MSG_ERROR(bad value ${withval} for --with-kde-support) ;;
+                esac
+        ])
+
+LIBICAL=""
+if test "$cv_option_kdesupport" = yes ;then
+    echo "KDE-Support Jippie !"
+    AC_DEFINE(HAVE_KDE,1,[Define if you have KDE])
+    KDE_CHECK_THREADING
+    AC_PATH_KDE    
+
+    # FIXME: Proper installation for ical lib, for a workaround add link options
+    #        for your system here.
+    LIBICAL="-lical -lkcal"
+fi
+AC_SUBST(LIBICAL)
+AC_MSG_RESULT($cv_option_kdesupport)
+
+AM_INIT_AUTOMAKE(taskjuggler, 0.9.4)
+
