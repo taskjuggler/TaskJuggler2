@@ -214,13 +214,24 @@ Resource::initScoreboard()
 		}
 	}
 
-	// Then mark all vacation slots as such (2).
+	// Then mark all resource specific vacation slots as such (2).
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
 		for (time_t date = i->getStart();
 			 date < i->getEnd() &&
 				 project->getStart() <= date && date < project->getEnd();
 			 date += project->getScheduleGranularity())
 			scoreboard[sbIndex(date)] = (Booking*) 2;
+
+	// Mark all global vacation slots as such (2)
+	for (Interval* i = project->getVacationListFirst(); i != 0;
+		 i = project->getVacationListNext())
+	{
+		for (time_t date = i->getStart();
+			 date < i->getEnd() &&
+				 project->getStart() <= date && date < project->getEnd();
+			 date += project->getScheduleGranularity())
+			scoreboard[sbIndex(date)] = (Booking*) 2;
+	}
 }
 
 uint

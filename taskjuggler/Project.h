@@ -87,6 +87,15 @@ public:
 	}
 	bool isVacation(time_t d) { return vacationList.isVacation(d); }
 
+	Interval* getVacationListFirst()
+	{
+		return vacationList.first(); 
+	}
+	Interval* getVacationListNext()
+	{
+		return vacationList.next();
+	}
+
 	void addResource(Resource* r)
 	{
 		resourceList.append(r);

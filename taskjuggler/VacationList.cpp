@@ -23,10 +23,10 @@ VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)
 		if (i1->getEnd() == i2->getEnd())
 			return 0;
 		else
-			return i1->getEnd() - i2->getEnd();
+			return i2->getEnd() - i1->getEnd();
 	}
 	else
-		return i1->getStart() - i2->getStart();
+		return i2->getStart() - i1->getStart();
 }
 
 bool

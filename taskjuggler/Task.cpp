@@ -265,7 +265,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 	{
 		/* Length specifies the number of working days (as daily load)
 		 * and duration specifies the number of calender days. */
-		if (!allocations.isEmpty() && !project->isVacation(date))
+		if (!allocations.isEmpty())
 			bookResources(date, slotDuration);
 
 		doneDuration += ((double) slotDuration) / ONEDAY;
@@ -312,8 +312,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 		 * how much the resources can contribute over the following
 		 * workings days until we have reached the specified
 		 * effort. */
-		if (project->isVacation(date))
-			return TRUE;
+//		if (project->isVacation(date))
+//			return TRUE;
 		bookResources(date, slotDuration);
 		// Check whether we are done with this task.
 		if (doneEffort >= effort)

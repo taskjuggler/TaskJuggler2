@@ -35,7 +35,7 @@ private:
 	QString name;
 } ;
 
-class VacationList : protected QList<VacationInterval>
+class VacationList : public QList<VacationInterval>
 {
 public:
 	VacationList() { setAutoDelete(TRUE); }
