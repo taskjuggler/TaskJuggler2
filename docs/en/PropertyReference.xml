@@ -36,7 +36,7 @@
  <!ELEMENT freestyle (para*)>
  <!ELEMENT example (#PCDATA)>
 
- <!ELEMENT para (#PCDATA|varname|link|simplelist)*>
+ <!ELEMENT para (#PCDATA|varname|link|simplelist|screen)*>
  <!ELEMENT varname (#PCDATA)*>
  <!ELEMENT link (#PCDATA)>
  <!ATTLIST link
@@ -48,6 +48,7 @@
    columns CDATA #REQUIRED
  >
  <!ELEMENT member (#PCDATA|para|varname|link)*>
+ <!ELEMENT screen (#PCDATA)>
  
   <!ENTITY example_depends SYSTEM
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
@@ -179,9 +180,6 @@ report.</para></descr>
     <para>See table below for possible values.</para>
    </attr>
   </attributes>
-  <optattributes>
-   <optattr></optattr>
-  </optattributes>
   <contexts>
    <context>csvaccountreport</context>
    <context>csvresourcereport</context>
@@ -532,6 +530,41 @@ at the moment the tasks ends.</para></descr>
    <also>startcredit</also>
   </seealso>
  </property>
+ <property name="export" id="export" inheritable="No">
+  <descr><para>The export report looks like a regular taskjuggler file
+but contains fixed start and end dates for all tasks. The tasks only
+have start and end times, their description and their project id
+listed. No other attributes are exported unless they are requested
+using the <link
+linkend="PROPERTY_taskattributes">taskattributes</link> attribute. The
+contense also depends on the extension of the file name. If the file
+name ends with <varname>.tjp</varname> a complete project with header,
+resource and shift definitions is generated. In case it ends with
+<varname>.tji</varname> only the tasks and resource allocations are
+exported.</para>
+
+<para>If specified the resource usage for the tasks is reported as
+well. But only those allocations are listed that belong to tasks
+listed in the same export report.</para>
+
+<para>The export report can be used to share certain tasks or
+milestones with other projects. When an export report is included the
+project IDs of the included tasks must be declared first with the
+<link linkend="PROPERTY_projectid">project id property</link>.</para></descr>
+  <attributes>
+   <attr name="filename" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>taskattributes</optattr>
+   <optattr>taskroot</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>include</also>
+  </seealso>
+ </property>
  <property name="extend" id="extend" inheritable="No">
   <descr><para>Often it is desireable to collect more information in
 the project file than is necessary for task scheduling and resource
@@ -550,9 +583,6 @@ resource</varname> or <varname> account</varname></para>
   <contexts>
    <context>project</context>
   </contexts>
-  <seealso>
-   <also></also>
-  </seealso>
   <freestyle>
    <para>&lt;type&gt; &lt;id&gt; &lt;name&gt;</para>
 
@@ -616,6 +646,31 @@ account.</para></descr>
    <context>htmlaccountreport</context>
   </contexts>
  </property>
+ <property name="hidecelltext" id="hidecelltext" inheritable="No">
+  <descr><para>If the expression is true, the cell will be empty.</para></descr>
+  <attributes>
+   <attr name="expression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>columns</context>
+  </contexts>
+  <seealso>
+   <also>hidecellurl</also>
+  </seealso>
+ </property>
+ <property name="hidecellurl" id="hidecellurl" inheritable="No">
+  <descr><para>If the expression is true, no URL will be attached to the cell
+contense.</para></descr>
+  <attributes>
+   <attr name="expression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>columns</context>
+  </contexts>
+  <seealso>
+   <also>hidecelltext</also>
+  </seealso>
+ </property>
  <property name="hideresource" id="hideresource" inheritable="No">
   <descr><para>Do not show resources that match the specified logical
 expression. If the report is sorted in tree mode (default) then
@@ -654,7 +709,9 @@ task.</para></descr>
    <context>Global Scope</context>
   </contexts>
   <seealso>
-   <also></also>
+   <also>csvaccountreport</also>
+   <also>htmlresourcereport</also>
+   <also>htmltaskreport</also>
   </seealso>
  </property>
  <property name="htmlresourcereport" id="htmlresourcereport" inheritable="No">
@@ -667,7 +724,9 @@ task.</para></descr>
    <context>Global Scope</context>
   </contexts>
   <seealso>
-   <also></also>
+   <also>csvresourcereport</also>
+   <also>htmlaccountreport</also>
+   <also>htmltaskreport</also>
   </seealso>
  </property>
  <property name="htmltaskreport" id="htmltaskreport" inheritable="No">
@@ -680,7 +739,9 @@ task.</para></descr>
    <context>Global Scope</context>
   </contexts>
   <seealso>
-   <also></also>
+   <also>csvtaskreport</also>
+   <also>htmlaccountreport</also>
+   <also>htmlresourcereport</also>
   </seealso>
  </property>
  <property name="include" id="include" inheritable="No">
@@ -703,6 +764,9 @@ is defined within the included file.</para></descr>
    <context>Global Scope</context>
    <context>project</context>
   </contexts>
+  <seealso>
+   <also>export</also>
+  </seealso>
  </property>
  <property name="kotrusid" id="kotrusid" inheritable="Yes">
   <descr><para>The KoTrus ID of the account (cost object). This is a
@@ -765,6 +829,97 @@ hours have been specified for the particular day.</para></descr>
    <also>workinghours</also>
    <also>vacation_global</also>
   </seealso>
+ </property>
+ <property name="loadunit" id="loadunit" inheritable="No">
+  <descr><para>Specifies the unit in which loads are reported in a
+report.</para></descr>
+  <attributes>
+   <attr name="unit" type="ID">
+    <para>See table below for possible values.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>csvresourcereport</context>
+   <context>csvtaskreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>dailyworkinghours</also>
+   <also>yearlyworkingdays</also>
+  </seealso>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+
+   <member><varname>days</varname></member>
+   <member>Show load in man or resource-days.</member>
+   
+   <member><varname>hours</varname></member>
+   <member>Show load in man resource-hours.</member>
+   
+   <member><varname>longauto</varname></member>
+   <member>Show load in the most appropriate unit and show long
+   unit name.</member>
+   
+   <member><varname>minutes</varname></member>
+   <member>Show load in man or resource-minutes.</member>
+   
+   <member><varname>months</varname></member>
+   <member>Show load in man or resource-months.</member>
+   
+   <member><varname>shortauto</varname></member>
+   <member>Show load in the most appropriate unit and show short
+   unit name.</member>
+   
+   <member><varname>weeks</varname></member>
+   <member>Show load in man or resource-weeks.</member>
+   
+   <member><varname>years</varname></member>
+   <member>Show load in man or resource-years.</member>
+   
+   </simplelist></para>
+  </freestyle>
+ </property>
+ <property name="macro" id="macro" inheritable="No">
+  <descr><para>Defines a text fragment that can later be inserted by
+using the specified ID.</para></descr>
+  <attributes>
+   <attr name="id" type="ID"/>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <freestyle>
+<para>The body is not optional. It must be enclosed in [ ].
+Macros can be declared like this:</para>
+
+<para><screen>
+macro FOO [ This text ];
+</screen></para>
+
+<para>If later ${FOO} is found in the project file, it is expanded to ' This
+text '. Macros may have arguments. Arguments are special macros with
+numbers as names. The number specifies the index of the
+argument.</para>
+
+<para><screen>
+macro FOO [ This ${1} text ]
+</screen></para>
+
+<para>will expand to ' This stupid text ' if called as ${FOO
+"stupid"}. Macros may call other macros.</para>
+
+<para>Macro <link linkend="id">ID</link>s should have at least one uppercase
+letter as all lowercase letter<link linkend="id">ID</link>s may be
+used in a later version for built-in macros like 'if', 'expr' or
+'for'. Macro names can be prefixed by a questionmark. In this case the
+macro will expand to nothing if the macro is not defined. Otherwise
+the undefined macro would be flagged with an error message.</para>
+
+<para><screen>
+This macro call ${?foo} will expand to nothing if foo is undefined.
+</screen></para>
+  </freestyle>
  </property>
  <property name="mandatory" id="mandatory" inheritable="No">
   <descr><para>Makes a resource allocation mandatory. In this case the
@@ -1009,6 +1164,37 @@ number from a revision control system.</para>
    <context>Global Scope</context>
   </contexts>
  </property>
+ <property name="projectid" id="projectid" inheritable="Yes">
+  <descr><para>At global scope it declares a new project id and
+activates it. All subsequent task definitions will inherit this
+ID. If used within a task it simply assigns this project ID to the
+task. The tasks of a project can have different IDs. This is
+particularly helpful if the project is merged from several sub
+projects that each have their own ID.</para></descr> <attributes>
+<attr name="id" type="ID"/>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>project</also>
+   <also>projectids</also>
+  </seealso>
+ </property>
+ <property name="projectids" id="projectids" inheritable="Yes">
+  <descr><para>Declares a list of project IDs.</para></descr>
+  <attributes>
+   <attr name="projectid" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>project</also>
+   <also>projectid</also>
+  </seealso>
+ </property>
  <property name="projection" id="projection" inheritable="No">
   <descr><para>Enables the projection mode for the scenario. All tasks
 will be scheduled taking the manual bookings into account. The
@@ -1019,6 +1205,21 @@ specified effort, length or duration has been reached.</para></descr>
   </contexts>
   <seealso>
    <also>booking</also>
+  </seealso>
+ </property>
+ <property name="rate" id="rate" inheritable="Yes">
+  <descr><para>Specifies the daily costs of the resource. The amount
+are credited to the account specified with the task that makes use of
+the resource.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>resource</context>
+  </contexts>
+  <seealso>
+   <also>account</also>
+   <also>task</also>
   </seealso>
  </property>
  <property name="rawstylesheet" id="rawstylesheet" inheritable="No">
@@ -1063,7 +1264,7 @@ than one reference, you can create your own URL placeholders.</para></descr>
    <optattr>maxeffort</optattr>
    <optattr>rate</optattr>
    <optattr>resource</optattr>
-   <optattr>shift</optattr>
+   <optattr>shift_selection</optattr>
    <optattr>vacation_resource</optattr>
    <optattr>workinghours</optattr>
   </optattributes>
@@ -1232,6 +1433,68 @@ becomes unavailable.</para></descr>
    </simplelist></para>
   </freestyle>
  </property>
+ <property name="sloppy" id="sloppy" inheritable="No">
+  <descr><para>Controls how strict TaskJuggler checks booking
+intervals for conflicts with vacation and other bookings. In case the
+error is surpressed the booking will not overwrite the existing
+bookings. It will avoid the already assigned intervals during booking.
+</para></descr>
+  <attributes>
+   <attr name="value" type="INTEGER">
+    <para>Number between 0 and 3. 0 (default): period may not contain
+any off-duty hours, vacation or other task assignments. 1: period may
+contain off-duty hours, but not vacation or other task assignments. 2:
+period may contain off-duty hours and vacation, but no other task
+assignments. 3: Period may overlap with off-duty hours, vacation or
+other task assignments. These are silently skipped.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>booking</context>
+  </contexts>
+ </property>
+ <property name="shift" id="shift" inheritable="No">
+  <descr><para>When several resource have the same working hours,
+these working hours should be defined as shifts. Each shift must have
+a unique ID. Resources can be assigned to shifts for certain
+intervals.</para></descr>
+  <attributes>
+   <attr name="id" type="ID"/>
+   <attr name="name" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>shift</optattr>
+   <optattr>workinghours</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>shift</context>
+  </contexts>
+  <seealso>
+   <also>shift_selection</also>
+  </seealso>
+ </property>
+ <property name="shift" id="shift_selection" inheritable="No">
+  <descr><para>Limites the resource working time or work on a task to
+a defined shift during the specified interval. Multiple shifts can be
+defined, but shift intervals may not overlap.</para></descr>
+  <attributes>
+   <attr name="shiftid" type="ID">
+    <para>The ID of the selected shift.</para>
+   </attr>
+   <attr name="dateinterval" type="DATEINTERVAL" optional="1">
+    <para>If the interval is omitted, the shift is assigned for the
+whole project time frame.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>resource</context>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>shift</also>
+  </seealso>
+ </property>
  <property name="shorttimeformat" id="shorttimeformat"
 inheritable="Yes">
   <descr><para>Specifies time format for time short specifications. This is
@@ -1369,6 +1632,30 @@ task.</para></descr>
    <also>note</also>
   </seealso>
  </property>
+ <property name="supplement" id="supplement" inheritable="No">
+  <descr><para>The supplement keyword provides a mechanism to add more
+attributes to already defined tasks or resources. The additional
+attributes must obey the same rules as in regular task or resource
+definitions and must be enclosed by curly braces.</para>
+
+<para>This construct is primarily meant for situations where the
+information about a task or resource is split over several files. E.
+g. the vacation dates for the resources may be in a separate file that
+was generated by some other tool.</para></descr>
+  <attributes>
+   <attr name="type" type="ID">
+    <para>Possible values are <varname>resource</varname> or
+<varname>task</varname>.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>resource</also>
+   <also>task</also>
+  </seealso>
+ </property>
  <property name="task" id="task" inheritable="No">
   <descr><para>Tasks are the central elements of a project plan. Use
 a task to specify which resource should be allocated for how long to
@@ -1403,7 +1690,7 @@ what task.</para></descr>
    <optattr>responsible</optattr>
    <optattr>scheduled</optattr>
    <optattr>scheduling</optattr>
-   <optattr>shift</optattr>
+   <optattr>shift_selection</optattr>
    <optattr>startbuffer</optattr>
    <optattr>startcredit</optattr>
    <optattr>start_task</optattr>
@@ -1419,6 +1706,34 @@ what task.</para></descr>
    <also>resource</also>
   </seealso>
  </property>
+ <property name="taskattributes" id="taskattributes" inheritable="No">
+  <descr><para>The list of attribute names specifies which task
+attributes should be listed in the report in addition to the ones
+exported by default. The following values are supported. They
+correspond to the respective attributes of a <link linkend="task">
+task</link>.</para>
+
+<para><varname>complete</varname>, <varname>depends</varname>,
+<varname>flags</varname>, <varname>maxend</varname>,
+<varname>maxstart</varname>, <varname>minend</varname>,
+<varname>minstart</varname>, <varname>note</varname>,
+<varname>priority</varname>, <varname>responsible</varname></para>
+
+<para>By specifying the ID of a <link
+linkend="PROPERTY_extend">user-defined</link> attribute, these can be
+included as well.</para>
+
+<para>A special case the is <varname>all</varname> keyword. If this is
+part of the list, all supported task attributes will be included in
+the report.	This includes all user-defined task
+attributes.</para></descr>
+  <attributes>
+   <attr name="attribute" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>export</context>
+  </contexts>
+ </property>
  <property name="taskprefix" id="taskprefix" inheritable="No">
   <descr><para>All tasks in the included file are added as sub-tasks of the
 task specified by <varname>taskprefix</varname>.</para></descr>
@@ -1431,6 +1746,20 @@ task specified by <varname>taskprefix</varname>.</para></descr>
   <seealso>
    <also>task</also>
   </seealso>
+ </property>
+ <property name="taskroot" id="taskroot" inheritable="No">
+  <descr><para>Only tasks below the specified root-level tasks are
+exported.  The exported tasks will have the id of the root-level task
+stripped from their ID, so that the sub-tasks of the root-level task
+become top-level tasks in the exported file.</para></descr>
+  <attributes>
+   <attr name="root" type="ID">
+    <para>ID of a task that specifies the new root level</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>export</context>
+  </contexts>
  </property>
  <property name="timezone" id="timezone" inheritable="No">
   <descr><para>Sets the default timezone of the project. All times

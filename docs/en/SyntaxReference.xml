@@ -23,6 +23,12 @@ since this can be ambiguous, the offset to GMT as
 (<filename>taskjuggler/Utility.cpp</filename>) for details.</para>
 
 </sect2>
+<sect2 id="TYPE_DATEINTERVAL"><title>DATEINTERVAL</title>
+
+<para>A date interval consists of a start and end DATE. The end date
+is optional. If it is missing a 24 hour interval is assumed. The start
+and end date must be seperated by a dash character.</para>
+</sect2>
 <sect2 id="TYPE_GLOBAL_ID"><title>GLOBAL_ID</title>
 
 <para>A GLOBAL_ID may have the same characters as ID, but additionally may
@@ -202,6 +208,12 @@ breaks.</para>
 <sect2 id="TYPE_TIME"><title>TIME</title>
 
 <para>A time in the format HH:MM.</para>
+
+</sect2>
+<sect2 id="TYPE_TIMEINTERVAL"><title>TIME</title>
+
+<para>A time interval consists of a start and end TIME. The start and
+end time must be separated by a dash character.</para>
 
 </sect2>
 <sect2 id="TYPE_UNIT"><title>UNIT</title>

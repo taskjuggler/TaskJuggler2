@@ -1,6 +1,6 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN" 
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
- <!ENTITY changelog SYSTEM "changelog.sgml">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!--  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" -->
+ <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
  <!ENTITY firstproject SYSTEM "firstproject.sgml">
  <!ENTITY reference SYSTEM "reference.sgml">
  <!ENTITY SyntaxReference SYSTEM "SyntaxReference.xml">
@@ -141,7 +141,7 @@ url="http://www.freenode.net">FreeNode.net</ulink>. The
 channel is called #taskjuggler.</para>
 
 </sect1>
-<!-- &changelog; -->
+&ChangeLog;
 </chapter>
 <chapter><title>Installation</title>
 <sect1><title>Obtaining TaskJuggler </title>
