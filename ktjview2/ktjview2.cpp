@@ -112,10 +112,6 @@ void ktjview2::setupActions()
     new KAction( i18n( "Set &timeframe" ), "timespan", KShortcut(),
                  m_view, SLOT( slotZoomTimeframe() ), actionCollection(), "timeframe" );
 
-    // Resource menu
-    new KAction( i18n( "Query resource..." ), 0, KShortcut(),
-                 m_view, SLOT( queryResource() ), actionCollection(), "query_resource" );
-
     m_scaleAction = new KSelectAction( i18n( "Scale" ), 0, actionCollection(), "scale" );
     QStringList items = QStringList();
     items << i18n( "Minute" ) << i18n( "Hour" ) << i18n( "Day" ) <<
@@ -125,9 +121,11 @@ void ktjview2::setupActions()
     connect( m_scaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotScale( int ) ) );
 
+#if 0
     // Resource menu
-    new KAction( i18n( "&Query resource..." ), 0, KShortcut(),
+    new KAction( i18n( "Query resource..." ), 0, KShortcut(),
                  m_view, SLOT( queryResource() ), actionCollection(), "query_resource" );
+#endif
 
     setStandardToolBarMenuEnabled( true );
     createStandardStatusBarAction();

@@ -128,7 +128,7 @@ public slots:
     /**
      * Show a dialog with options to query info about a resource.
      */
-    void queryResource();
+    //void queryResource();
 
 signals:
     /**
@@ -201,14 +201,14 @@ private:
      *
      * @param secs number of seconds since 1970-01-01, UTC
      */
-    QDateTime time_t2Q( time_t secs );
+    QDateTime time_t2Q( time_t secs ) const;
 
     /**
      * Converts a time_t representation to human readable, locale aware string
      *
      * @param secs number of seconds since 1970-01-01, UTC
      */
-    QString time_t2QS( time_t secs );
+    QString time_t2QS( time_t secs ) const;
 
     /**
      * Internal URL of the project, invalid if no project loaded
@@ -216,7 +216,7 @@ private:
     KURL m_projectURL;
 
     /// our project, @see Project
-    Project m_project;
+    Project * m_project;
 
     int mainGroup;
     /// IDs for the sidebar buttons

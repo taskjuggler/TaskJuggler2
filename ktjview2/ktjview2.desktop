@@ -1,9 +1,10 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=TaskJuggler viewer
+Name=Taskjuggler viewer
 Exec=ktjview2 %i %m -caption "%c"
 Icon=ktjview2
 Type=Application
 DocPath=ktjview2/ktjview2.html
-Comment=A TaskJuggler XML report viewer for KDE
+Comment=A Taskjuggler GUI for KDE
+GenericName=Taskjuggler GUI
 Terminal=0

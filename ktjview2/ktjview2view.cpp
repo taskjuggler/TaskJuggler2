@@ -1,4 +1,4 @@
-// -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
+ // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
 /***************************************************************************
  *   Copyright (C) 2004 by Lukas Tinkl                                     *
  *   lukas.tinkl@suse.cz                                                   *
@@ -53,6 +53,7 @@
 #include "timedialog.h"
 #include "TaskItem.h"
 #include "settings.h"
+//#include "resourceQueryDialog.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -67,8 +68,10 @@
 #include "Allocation.h"
 
 ktjview2View::ktjview2View( QWidget *parent )
-    : DCOPObject( "ktjview2Iface" ), QWidget( parent )
+    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
 {
+    m_project = new Project();
+
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
 
@@ -154,11 +157,13 @@ ktjview2View::ktjview2View( QWidget *parent )
 
     loadSettings();             // load the config-dialog related settings
 
-    // ### setup popup menus
+    // ### TODO setup popup menus
 }
 
 ktjview2View::~ktjview2View()
 {
+    delete m_project;
+    m_project = 0;
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -226,7 +231,7 @@ void ktjview2View::openURL( const KURL& url )
 
     if ( tmpFile.endsWith( ".tjx" ) ) // XML file
     {
-        XMLFile* xf = new XMLFile( &m_project );
+        XMLFile* xf = new XMLFile( m_project );
         if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete xf;
@@ -237,7 +242,7 @@ void ktjview2View::openURL( const KURL& url )
     }
     else if ( tmpFile.endsWith( ".tjp" ) ) // source file
     {
-        ProjectFile* pf = new ProjectFile( &m_project );
+        ProjectFile* pf = new ProjectFile( m_project );
         if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete pf;
@@ -252,18 +257,18 @@ void ktjview2View::openURL( const KURL& url )
         return;
     }
 
-    m_project.pass2( false );
-    m_project.scheduleAllScenarios();
-    m_project.generateReports();
+    m_project->pass2( false );
+    m_project->scheduleAllScenarios();
+    m_project->generateReports();
 
     KIO::NetAccess::removeTempFile( tmpFile );
 
     m_ganttView->setUpdateEnabled( false );
     parseProjectInfo();
-    parseResources( m_project.getResourceListIterator() );
+    parseResources( m_project->getResourceListIterator() );
     parseTasks();
-    parseGantt( m_project.getTaskListIterator() );
-    parseLinks( m_project.getTaskListIterator() );
+    parseGantt( m_project->getTaskListIterator() );
+    parseLinks( m_project->getTaskListIterator() );
 
     m_ganttView->setUpdateEnabled( true );
     m_ganttView->setTimelineToStart();
@@ -291,27 +296,27 @@ void ktjview2View::parseProjectInfo()
     QString text;
 
     // general info
-    text += QString( "<h1>%1 (%2)</h1>" ).arg( m_project.getName() ).arg( m_project.getId() );
-    text += i18n( "Version: %1<br>" ).arg( m_project.getVersion() );
-    text += i18n( "Currency: %1<br>" ).arg( m_project.getCurrency() );
+    text += QString( "<h1>%1 (%2)</h1>" ).arg( m_project->getName() ).arg( m_project->getId() );
+    text += i18n( "Version: %1<br>" ).arg( m_project->getVersion() );
+    text += i18n( "Currency: %1<br>" ).arg( m_project->getCurrency() );
 
     // project start
-    m_ganttView->setHorizonStart( time_t2Q( m_project.getStart()) );
-    text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project.getStart() ) );
+    m_ganttView->setHorizonStart( time_t2Q( m_project->getStart()) );
+    text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project->getStart() ) );
 
     // end date
-    m_ganttView->setHorizonEnd( time_t2Q( m_project.getEnd() ) );
-    text += i18n( "Project end: %1<br>" ).arg( time_t2QS( m_project.getEnd() ) );
+    m_ganttView->setHorizonEnd( time_t2Q( m_project->getEnd() ) );
+    text += i18n( "Project end: %1<br>" ).arg( time_t2QS( m_project->getEnd() ) );
 
     // TJ current date
-    text += i18n( "XML report generated: %1<br>" ).arg( time_t2QS( m_project.getNow() ) );
+    text += i18n( "XML report generated: %1<br>" ).arg( time_t2QS( m_project->getNow() ) );
 
     m_textBrowser->setText( text );
 }
 
 void ktjview2View::parseTasks( int sc )
 {
-    TaskListIterator it = m_project.getTaskListIterator();
+    TaskListIterator it = m_project->getTaskListIterator();
     Task * task;
 
     while ( ( task = dynamic_cast<Task *>( it.current() ) ) != 0 )
@@ -448,7 +453,7 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
         if ( m_resListView->findItem( id, 0 ) ) // been there, seen that, go on :)
             continue;           // FIXME speed this up
 
-        const QString rate = KGlobal::locale()->formatMoney( res->getRate(), m_project.getCurrency() );
+        const QString rate = KGlobal::locale()->formatMoney( res->getRate(), m_project->getCurrency() );
         const QString name = res->getName();
         const QString eff = KGlobal::locale()->formatNumber( res->getEfficiency() );
         const QString minEffort = KGlobal::locale()->formatNumber( res->getMinEffort() );
@@ -533,18 +538,6 @@ void ktjview2View::parseLinks( TaskListIterator it )
     }
 }
 
-QDateTime ktjview2View::time_t2Q( time_t secs )
-{
-    QDateTime result;
-    result.setTime_t( secs );
-    return result;
-}
-
-QString ktjview2View::time_t2QS( time_t secs )
-{
-    return KGlobal::locale()->formatDateTime( time_t2Q( secs ) );
-}
-
 void ktjview2View::ensureItemVisible( KDGanttViewItem * item )
 {
     if ( item )
@@ -615,10 +608,26 @@ QString ktjview2View::status2Str( int ts ) const
     }
 }
 
+#if 0
 void ktjview2View::queryResource()
 {
     //TODO res->isAvailable, isAllocated, getCredits, getLoad/getAvailableWorkload/getCurrentLoad, hasVacationDay
+
+    QListViewItem * curResItem = m_resListView->currentItem();
+
+    Resource * res;
+
+    if ( curResItem )
+        res = m_project->getResource( curResItem->text( 0 ) );
+    else
+        res = 0;
+
+    ResourceQueryDialog * dlg = new ResourceQueryDialog( m_project, res, this );
+    dlg->exec();
+    delete dlg;
+    dlg = 0;
 }
+#endif
 
 void ktjview2View::setupGantt()
 {
@@ -639,5 +648,18 @@ void ktjview2View::loadSettings()
     setupGantt();
     // setup other (future) config options
 }
+
+QDateTime ktjview2View::time_t2Q( time_t secs ) const
+{
+    QDateTime result;
+    result.setTime_t( secs );
+    return result;
+}
+
+QString ktjview2View::time_t2QS( time_t secs ) const
+{
+    return KGlobal::locale()->formatDateTime( time_t2Q( secs ) );
+}
+
 
 #include "ktjview2view.moc"
