@@ -391,4 +391,21 @@ same as start dates.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2><title>Some Version (Some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Indentation for tree structure in HTML reports is now
+done with cell margins. This should no longer look bad if the label
+gets wrapped by the browser.</para></listitem>
+
+<listitem><para>HTML tables now use explicit head and body sections.
+This should repeat the table header when printing HTML reports from
+some browsers.</para></listitem>
+
+<listitem><para>Fixed segfault in XML report generation. Only plan
+values are now exported in XML report.</para></listitem>
+
+</itemizedlist></para>
+</sect2>
 </sect1>

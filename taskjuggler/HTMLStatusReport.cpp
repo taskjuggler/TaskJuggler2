@@ -246,7 +246,9 @@ HTMLStatusReport::generateTable(TaskList& filteredTaskList,
 								ResourceList& filteredResourceList)
 {
 	generateTableHeader();
-	
+
+    s << "<tbody>" << endl;
+
 	int tNo = 1;
 	for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, ++tNo)
 	{
@@ -263,6 +265,7 @@ HTMLStatusReport::generateTable(TaskList& filteredTaskList,
 				generateActualResource(*rli, *tli);
 		}
 	}
+    s << "</tbody>" << endl;
 	s << "</table>" << endl;
 
 	return TRUE;

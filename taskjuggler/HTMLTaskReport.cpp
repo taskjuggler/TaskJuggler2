@@ -49,6 +49,8 @@ HTMLTaskReport::generate()
 	if (!generateTableHeader())
 		return FALSE;
 
+    s << "<tbody>" << endl;
+    
 	TaskList filteredList;
 	filterTaskList(filteredList, 0, hideTask, rollUpTask);
 	sortTaskList(filteredList);
@@ -74,6 +76,7 @@ HTMLTaskReport::generate()
 				generateActualResource(*rli, *tli);
 		}
 	}
+    s << "</tbody>" << endl;
 	s << "</table>" << endl;
 	reportHTMLFooter();
 

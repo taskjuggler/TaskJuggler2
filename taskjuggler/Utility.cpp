@@ -113,7 +113,6 @@ void exitUtility()
         return;
 
     for (long i = 0; i < LTHASHTABSIZE; ++i)
-    {
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
@@ -121,7 +120,7 @@ void exitUtility()
             delete htep;
             htep = tmp;
         }
-    }
+    
     delete [] LtHashTab;
     LtHashTab = 0;
 }

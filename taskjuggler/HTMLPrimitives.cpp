@@ -99,7 +99,6 @@ static const Entity entitylist [] =
     { "amp", 38 },
     { "and", 0x22a5 },
     { "ang", 0x2220 },
-    { "apos", 0x0027 },
     { "aring", 0x00e5 },
     { "asymp", 0x2248 },
     { "atilde", 0x00e3 },

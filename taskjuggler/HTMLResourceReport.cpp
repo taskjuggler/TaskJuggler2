@@ -47,6 +47,8 @@ HTMLResourceReport::generate()
 	if (!generateTableHeader())
 		return FALSE;
 
+    s << "<tbody>" << endl;
+    
 	ResourceList filteredResourceList;
 	filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
 	sortResourceList(filteredResourceList);
@@ -71,6 +73,7 @@ HTMLResourceReport::generate()
 				generateActualTask(*tli, *rli);
 		}
 	}
+    s << "</tbody>" << endl;
 	s << "</table>" << endl;
 	reportHTMLFooter();
 

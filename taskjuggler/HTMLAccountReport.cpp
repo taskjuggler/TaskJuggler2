@@ -43,6 +43,8 @@ HTMLAccountReport::generate()
 	if (!generateTableHeader())
 		return FALSE;
 
+    s << "<tbody>" << endl;
+
 	AccountList filteredList;
 	filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
 	sortAccountList(filteredList);
@@ -92,7 +94,8 @@ HTMLAccountReport::generate()
 		*it = *rc - *tc;
 	}
 	generateTotals(i18n("Total"), "default");
-		
+	
+    s << "</tbody>" << endl;    
 	s << "</table>" << endl;
 	reportHTMLFooter();
 
@@ -651,17 +654,18 @@ HTMLAccountReport::yearlyAccountActual(Account* a, const QString& style)
 void
 HTMLAccountReport::accountName(Account* a)
 {
-	QString spaces;
+    int lPadding = 0;
 	int fontSize = 0;
 
 	if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		for (uint i = 0; i < a->treeLevel(); i++)
-			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+            lPadding++;
 		fontSize = (int) (140 * (1.0 - a->treeLevel() / maxDepthResourceList));
-		s << "<td class=\"default\" style=\"text-align:left\" rowspan=\""
+		s << "<td class=\"default\" style=\"text-align:left; "
+          << "padding-left: " << QString("%1").arg(lPadding * 15) << "px;\" "
+          << "\"rowspan=\" "
 		  << (!hidePlan && showActual ? "2" : "1") << "\" nowrap>"
-		  << spaces
 		  << "<font size=\""
 		  << (fontSize < 0 ? '-' : '+') 
 		  << (fontSize < 0 ? -fontSize : fontSize) << "\">"
@@ -671,8 +675,9 @@ HTMLAccountReport::accountName(Account* a)
 	else
 		s << "<td class=\"default\" rowspan=\""
 		  << (!hidePlan && showActual ? "2" : "1")
-		  << "\" style=\"text-align:left\" nowrap>"
-		  << spaces << htmlFilter(a->getName())
+		  << "\" style=\"text-align:left; "
+          << "padding-left: " << QString("%1").arg(lPadding * 15) << "px;\" "
+          << "nowrap>" << htmlFilter(a->getName())
 		  << "</td>" << endl;
 }
 

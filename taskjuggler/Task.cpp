@@ -2079,47 +2079,49 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( tempElem );
 
    /* Start- and Endbuffer */
-   if( getStartBuffer(Task::Plan) > 0.01 )
+   if(getStartBuffer(Task::Plan) > 0.01)
    {
-      /* startbuffer exists */
-      tempElem = ReportXML::createXMLElem( doc, "startBufferSize",
-										   QString::number(
-														   getStartBuffer(Task::Plan)));
-      taskElem.appendChild( tempElem );
+       /* startbuffer exists */
+       tempElem = ReportXML::createXMLElem
+           (doc, "startBufferSize", 
+            QString::number(getStartBuffer(Task::Plan)));
+       taskElem.appendChild( tempElem );
 
-      tempElem = ReportXML::createXMLElem( doc, "ActualStartBufferEnd",
-					   QString::number( getStartBufferEnd(Task::Actual)));
-      tempElem.setAttribute( "humanReadable",
-							 time2ISO(getStartBufferEnd(Task::Actual)));
-      taskElem.appendChild( tempElem );
+       tempElem = ReportXML::createXMLElem
+           (doc, "PlanStartBufferEnd",
+            QString::number(getStartBufferEnd(Task::Plan)));
+       tempElem.setAttribute("humanReadable",
+                             time2ISO(getStartBufferEnd(Task::Plan)));
+       taskElem.appendChild(tempElem);
 
-      tempElem = ReportXML::createXMLElem( doc, "PlanStartBufferEnd",
-					   QString::number( getStartBufferEnd(Task::Plan)));
-      tempElem.setAttribute( "humanReadable",
-							 time2ISO(getStartBufferEnd(Task::Plan)));
-      taskElem.appendChild( tempElem );
-      
+       tempElem = ReportXML::createXMLElem
+           (doc, "PlanStartBufferEnd",
+            QString::number(getStartBufferEnd(Task::Plan)));
+       tempElem.setAttribute("humanReadable",
+                             time2ISO(getStartBufferEnd(Task::Plan)));
+       taskElem.appendChild(tempElem);
    }
 
-   if( getEndBuffer(Task::Plan) > 0.01 )
+   if(getEndBuffer(Task::Plan) > 0.01)
    {
-      /* startbuffer exists */
-      tempElem = ReportXML::createXMLElem( doc, "EndBufferSize",
-										   QString::number(
-														   getEndBuffer(Task::Plan)));
-      taskElem.appendChild( tempElem );
+       /* startbuffer exists */
+       tempElem = ReportXML::createXMLElem
+           (doc, "EndBufferSize", QString::number(getEndBuffer(Task::Plan)));
+       taskElem.appendChild(tempElem);
 
-      tempElem = ReportXML::createXMLElem( doc, "ActualEndBufferStart",
-					   QString::number( getEndBufferStart(Task::Actual)));
-      tempElem.setAttribute( "humanReadable",
-							 time2ISO(getEndBufferStart(Task::Actual)));
-      taskElem.appendChild( tempElem );
+       tempElem = ReportXML::createXMLElem
+           (doc, "PlanEndBufferStart", 
+            QString::number(getEndBufferStart(Task::Plan)));
+       tempElem.setAttribute("humanReadable",
+                             time2ISO(getEndBufferStart(Task::Plan)));
+       taskElem.appendChild(tempElem);
 
-      tempElem = ReportXML::createXMLElem( doc, "PlanEndBufferStart",
-					   QString::number( getEndBufferStart(Task::Plan)));
-      tempElem.setAttribute( "humanReadable",
-							 time2ISO(getStartBufferEnd(Task::Plan)));
-      taskElem.appendChild( tempElem );
+       tempElem = ReportXML::createXMLElem
+           (doc, "PlanEndBufferStart",
+            QString::number(getEndBufferStart(Task::Plan)));
+       tempElem.setAttribute("humanReadable",
+                             time2ISO(getStartBufferEnd(Task::Plan)));
+       taskElem.appendChild(tempElem);
    }
 
    /* Responsible persons */

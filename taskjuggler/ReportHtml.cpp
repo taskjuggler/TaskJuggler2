@@ -539,8 +539,9 @@ bool
 ReportHtml::generateTableHeader()
 {
 	// Header line 1
-	s << "<table align=\"center\" cellpadding=\"1\">\n" << endl;
-	s << "<tr>" << endl;
+	s << "<table align=\"center\" cellpadding=\"1\" "
+        << "style=\"padding-left:2px; padding-right:2px\">\n" << endl;
+	s << "<thead><tr>" << endl;
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -699,7 +700,7 @@ ReportHtml::generateTableHeader()
 	}
 	if (!td)
 		s << "<td>&nbsp;</td>";
-	s << "</tr>\n" << endl;
+	s << "</tr></thead>\n" << endl;
 
 	return TRUE;
 }
@@ -1362,11 +1363,11 @@ ReportHtml::monthlyTaskActual(const Task* t, const Resource* r)
 void
 ReportHtml::taskName(const Task* t, const Resource* r, bool big)
 {
-	QString spaces;
+    int lPadding = 0;
 	int fontSize = big ? 100 : 90; 
 	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
 		for (const Resource* rp = r ; rp != 0; rp = rp->getParent())
-			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+            lPadding++;
 
 	mt.clear();
 	mt.addMacro(new Macro(KW("taskid"), t->getId(), defFileName,
@@ -1375,12 +1376,12 @@ ReportHtml::taskName(const Task* t, const Resource* r, bool big)
 	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		for (uint i = 0; i < t->treeLevel(); i++)
-			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+            lPadding++;
 		fontSize = fontSize + 5 * (maxDepthTaskList - 1 - t->treeLevel()); 
 		s << "<td class=\""
 		  << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
-		  << spaces
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap;"
+          << " padding-left: " << QString("%1").arg(lPadding * 15) << "px;\">"
 		  << "<span style=\"font-size:" 
 		  << QString().sprintf("%d", fontSize) << "%\">";
 		if (r == 0)
@@ -1392,8 +1393,9 @@ ReportHtml::taskName(const Task* t, const Resource* r, bool big)
 	{
 		s << "<td class=\""
 		  << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
-		  << spaces;
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap;"
+          << " padding-left: " << QString("%1").arg(lPadding * 15)
+          << "px;\">";
 		if (r == 0)
 			s << "<a name=\"task_" << t->getFullId() << "\"></a>";
 		s << generateUrl(KW("taskname"), t->getName());
@@ -1404,11 +1406,11 @@ ReportHtml::taskName(const Task* t, const Resource* r, bool big)
 void
 ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
 {
-	QString spaces;
+    int lPadding = 0;
 	int fontSize = big ? 100 : 90;
 	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
 		for (const Task* tp = t; tp != 0; tp = tp->getParent())
-			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+            lPadding++;
 
 	mt.clear();
 	mt.addMacro(new Macro(KW("resourceid"), r->getId(), defFileName,
@@ -1417,12 +1419,12 @@ ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
 	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
 	{
 		for (uint i = 0; i < r->treeLevel(); i++)
-			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+            lPadding++;
 		fontSize = fontSize + 5 * (maxDepthResourceList - 1 - r->treeLevel());
 		s << "<td class=\""
 		  << (t == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
-		  << spaces
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap;"
+          << " padding-left: " << QString("%1").arg(lPadding * 15) << "px;\">"
 		  << "<span style=\"font-size:" 
 		  << QString().sprintf("%d", fontSize) << "%\">";
 		if (t == 0)
@@ -1434,8 +1436,9 @@ ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
 	{
 		s << "<td class=\""
 		  << (t == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
-		  << spaces;
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap;"
+          << " padding-left: " << QString("%1").arg(lPadding * 15)
+          << "px;\">";
 		if (t == 0)
 			s << "<a name=\"resource_" << r->getId() << "\"></a>";
 		s << generateUrl(KW("resourcename"), r->getName());
