@@ -7,13 +7,13 @@ SUBDIRS = kdgantt pixmaps
 bin_PROGRAMS = ktjview2 ktjview2_client
 
 # set the include path for X, qt and KDE
-INCLUDES = -I$(top_srcdir)/ktjview2/kdgantt $(all_includes)
+INCLUDES = -I$(top_srcdir)/ktjview2/kdgantt -I$(top_srcdir)/taskjuggler $(all_includes)
 
 # the library search path. 
 ktjview2_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(LIB_KIO) $(LIB_KDEPRINT)
+ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
 
 # which sources should be compiled for ktjview2
 ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp \
@@ -34,7 +34,7 @@ ktjview2_client_SOURCES = ktjview2_client.cpp
 METASOURCES = AUTO
 
 messages: rc.cpp
-	$(XGETTEXT) kdgantt/*.cpp -o $(podir)/ktjview2.pot
+	$(XGETTEXT) *.cpp *.cc kdgantt/*.cpp -o $(podir)/ktjview2.pot
 
 KDE_ICON = ktjview2
 

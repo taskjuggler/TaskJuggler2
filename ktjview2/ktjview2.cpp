@@ -188,7 +188,7 @@ void ktjview2::fileNew()
 
 void ktjview2::fileOpen()
 {
-    KURL url = KFileDialog::getOpenURL( ":projects", "*.tjx|" + i18n( "TaskJuggler XML report (*.tjx)" ),
+    KURL url = KFileDialog::getOpenURL( ":projects", "*.tjp *.tjx|" + i18n( "Taskjuggler files (*.tjp *.tjx)" ),
                                         this, i18n( "to open ...", "Open Project" ) );
     if ( !url.isEmpty() )
         load( url );

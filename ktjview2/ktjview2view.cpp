@@ -1,3 +1,4 @@
+// -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
 /***************************************************************************
  *   Copyright (C) 2004 by Lukas Tinkl                                     *
  *   lukas.tinkl@suse.cz                                                   *
@@ -18,6 +19,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+// Qt includes
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qwidgetstack.h>
@@ -27,7 +29,9 @@
 #include <qdatetime.h>
 #include <qpaintdevicemetrics.h>
 #include <qdialog.h>
+#include <qdir.h>
 
+// KDE includes
 #include <kurl.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -39,6 +43,7 @@
 #include <kfilterdev.h>
 #include <kprinter.h>
 
+// local includes
 #include "koKoolBar.h"
 #include "kdgantt/KDGanttView.h"
 #include "kdgantt/KDGanttViewEventItem.h"
@@ -47,6 +52,10 @@
 #include "kdgantt/KDGanttViewTaskLink.h"
 #include "ktjview2view.h"
 #include "timedialog.h"
+
+// TJ includes
+#include "XMLFile.h"
+#include "ProjectFile.h"
 
 
 ktjview2View::ktjview2View(QWidget *parent)
@@ -130,7 +139,6 @@ ktjview2View::ktjview2View(QWidget *parent)
 
 ktjview2View::~ktjview2View()
 {
-
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -181,12 +189,12 @@ KURL ktjview2View::currentURL() const
     return m_projectURL;
 }
 
-void ktjview2View::openURL(QString url)
+void ktjview2View::openURL( QString url )
 {
     openURL( KURL::fromPathOrURL( url ) );
 }
 
-void ktjview2View::openURL(const KURL& url)
+void ktjview2View::openURL( const KURL& url )
 {
     kdDebug() << "Loading project from URL: " << url << endl;
 
@@ -196,19 +204,44 @@ void ktjview2View::openURL(const KURL& url)
 
     kdDebug() << "Project is in temp file: " << tmpFile << endl;
 
-    // unpack the tarball
-    QIODevice * fd = KFilterDev::deviceForFile( tmpFile );
-    fd->open( IO_ReadOnly );
-    m_dom.setContent( fd );
-    fd->close();
-    delete fd;
+    if ( tmpFile.endsWith( ".tjx" ) ) // XML file
+    {
+        XMLFile* xf = new XMLFile( &m_project );
+        if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
+        {
+            delete xf;
+            return;
+        }
+        xf->parse();
+        delete xf;
+    }
+    else if ( tmpFile.endsWith( ".tjp" ) ) // source file
+    {
+        ProjectFile* pf = new ProjectFile( &m_project );
+        if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
+        {
+            delete pf;
+            return;
+        }
+        pf->parse();
+        delete pf;
+    }
+    else
+    {
+        KMessageBox::sorry( this, i18n( "This filetype is not supported." ) );
+        return;
+    }
+
+    m_project.scheduleAllScenarios();
+    m_project.generateReports();
+
     KIO::NetAccess::removeTempFile( tmpFile );
 
     m_ganttView->setUpdateEnabled( false );
-    parseProjectInfo( m_dom.documentElement().namedItem( "project" ), m_textBrowser );
-    parseResources( m_dom.documentElement().namedItem( "resourceList" ), m_resListView );
-    parseTasks( m_dom.documentElement().namedItem( "taskList" ) );
-    parseLinks( m_dom.documentElement().namedItem( "taskList" ).toElement(), m_ganttView );
+    parseProjectInfo();
+    //parseResources( m_dom.documentElement().namedItem( "resourceList" ), m_resListView );
+    //parseTasks( m_dom.documentElement().namedItem( "taskList" ) );
+    //parseLinks( m_dom.documentElement().namedItem( "taskList" ).toElement(), m_ganttView );
     m_ganttView->setUpdateEnabled( true );
     m_ganttView->setTimelineToStart();
 
@@ -230,41 +263,27 @@ void ktjview2View::slotKoolBar( int grp, int item )
         m_widgetStack->raiseWidget( m_taskView );
 }
 
-void ktjview2View::parseProjectInfo( QDomNode node, QTextBrowser * view )
+void ktjview2View::parseProjectInfo()
 {
-    QDomElement projElem = node.toElement();
     QString text;
 
-    if ( !node.isNull() )
-    {
-        text += QString( "<h1>%1</h1>" ).arg( projElem.attribute( "name" ) );
-        text += i18n( "Version: %1<br>" ).arg( projElem.attribute( "version" ) );
-        text += i18n( "Currency: %1<br>" ).arg( projElem.attribute( "currency" ) );
+    // general info
+    text += QString( "<h1>%1 (%2)</h1>" ).arg( m_project.getName() ).arg( m_project.getId() );
+    text += i18n( "Version: %1<br>" ).arg( m_project.getVersion() );
+    text += i18n( "Currency: %1<br>" ).arg( m_project.getCurrency() );
 
-        QDomElement startElem = projElem.namedItem( "start" ).toElement();
-        if ( !startElem.isNull() )
-        {
-            m_ganttView->setHorizonStart( time_t2Q( startElem.text().toUInt() ) );
-            text += i18n( "Project start: %1<br>" ).arg( time_t2QS( startElem.text().toUInt() ) );
-        }
+    // project start
+    m_ganttView->setHorizonStart( time_t2Q( m_project.getStart()) );
+    text += i18n( "Project start: %1<br>" ).arg( time_t2QS( m_project.getEnd() ) );
 
-        QDomElement endElem = projElem.namedItem( "end" ).toElement();
-        if ( !endElem.isNull() )
-        {
-            m_ganttView->setHorizonEnd( time_t2Q( endElem.text().toUInt() ) );
-            text += i18n( "Project end: %1<br>" ).arg( time_t2QS( endElem.text().toUInt() ) );
-        }
+    // end date
+    m_ganttView->setHorizonEnd( time_t2Q( m_project.getEnd() ) );
+    text += i18n( "Project end: %1<br>" ).arg( time_t2QS( m_project.getEnd() ) );
 
-        QDomElement nowElem = projElem.namedItem( "now" ).toElement();
-        if ( !nowElem.isNull() )
-        {
-            text += i18n( "XML report generated: %1<br>" ).arg( time_t2QS( nowElem.text().toUInt() ) );
-        }
-    }
-    else
-        text = i18n( "Failed loading project file: %1" ).arg( m_projectURL.prettyURL() );
+    // TJ current date
+    text += i18n( "XML report generated: %1<br>" ).arg( time_t2QS( m_project.getNow() ) );
 
-    view->setText( text );
+    m_textBrowser->setText( text );
 }
 
 void ktjview2View::parseTasks( QDomNode node, KDGanttViewItem * parent )

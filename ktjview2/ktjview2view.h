@@ -1,3 +1,4 @@
+// -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
 /***************************************************************************
  *   Copyright (C) 2004 by Lukas Tinkl                                     *
  *   lukas.tinkl@suse.cz                                                   *
@@ -27,6 +28,8 @@
 #include <kurl.h>
 
 #include "ktjview2iface.h"
+
+#include "Project.h"
 
 class QPainter;
 class KDGanttView;
@@ -141,7 +144,7 @@ private:
     /**
      * Parse <project>
      */
-    void parseProjectInfo( QDomNode node, QTextBrowser * view );
+    void parseProjectInfo();
 
     /**
      * Parse children of <taskList>
@@ -186,9 +189,9 @@ private:
     KURL m_projectURL;
 
     /**
-     * DOM tree of the project
+     * Our project
      */
-    QDomDocument m_dom;
+    Project m_project;
 
     int mainGroup;
     /// IDs for the sidebar buttons
