@@ -588,9 +588,9 @@ allocated 8 hours per day.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
-<listitem><para>Support for new XML format has been added. The olf
-format is still supported. TJ can read and write the new XML
-files.</para></listitem>
+<listitem><para>Support for new XML format has been added. The old
+format is still supported. TJ can read both old and new format XML
+files but will use the new XML format for output.</para></listitem>
 
 <listitem><para>The property <link
 linkend="projectids">projectids</link> has been added. It is used in
