@@ -30,7 +30,7 @@ class Project;
 class ExpressionTree;
 
 /**
- * @short Stores all information about an HTML report.
+ * @short Stores all information about an HTML report element.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class HTMLReportElement

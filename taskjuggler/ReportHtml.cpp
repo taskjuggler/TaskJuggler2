@@ -1511,7 +1511,7 @@ ReportHtml::taskName(const Task* t, const Resource* r, bool big)
           << " padding-left: " << QString("%1").arg(lPadding * 15)
           << "px;\">";
         if (r == 0)
-            s << "<a name=\"task_" << t->getFullId() << "\"></a>";
+            s << "<a name=\"task_" << t->getId() << "\"></a>";
         s << generateUrl(KW("taskname"), t->getName());
         s << "</td>" << endl;
     }
@@ -1542,7 +1542,7 @@ ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
           << "<span style=\"font-size:" 
           << QString().sprintf("%d", fontSize) << "%\">";
         if (t == 0)
-            s << "<a name=\"resource_" << r->getId() << "\"></a>";
+            s << "<a name=\"resource_" << r->getFullId() << "\"></a>";
         s << generateUrl(KW("resourcename"), r->getName());
         s << "</span></td>" << endl;
     }
@@ -1554,7 +1554,7 @@ ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
           << " padding-left: " << QString("%1").arg(lPadding * 15)
           << "px;\">";
         if (t == 0)
-            s << "<a name=\"resource_" << r->getId() << "\"></a>";
+            s << "<a name=\"resource_" << r->getFullId() << "\"></a>";
         s << generateUrl(KW("resourcename"), r->getName());
         s << "</td>" << endl;
     }

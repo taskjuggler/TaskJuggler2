@@ -431,4 +431,13 @@ task.</para></listitem>
 
 </itemizedlist></para>
 </sect2>
+<sect2><title>Some version (Some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para> Fixed the URLs for task and resource names in HTML reports.
+</para></listitem>
+
+</itemizedlist></para>
+</sect2>
 </sect1>
