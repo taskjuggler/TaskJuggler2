@@ -734,6 +734,9 @@ public:
     bool readKotrus();
     bool updateKotrus();
 
+    void setAllocationErrors(bool e) { allocationErrors = e; }
+    bool getAllocationErrors() const { return allocationErrors; }
+
     /**
      * Generate cross references between all data structures and run a
      * consistency check. This function must be called after the project data
@@ -843,6 +846,7 @@ private:
     QStringList projectIDs;
 
     bool hasExtraValues;    // TODO: Fix this for multiple scenarios
+    bool allocationErrors;
 
     VacationList vacationList;
 

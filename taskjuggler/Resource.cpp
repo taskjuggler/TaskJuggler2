@@ -324,23 +324,60 @@ Resource::bookSlot(uint idx, SbBooking* nb)
 }
 
 bool
-Resource::bookInterval(Booking* nb)
+Resource::bookInterval(Booking* nb, int sc)
 {
     uint sIdx = sbIndex(nb->getStart());
     uint eIdx = sbIndex(nb->getEnd());
 
+    bool conflict = FALSE;
+    
     for (uint i = sIdx; i <= eIdx; i++)
         if (scoreboard[i])
         {
-            TJMH.errorMessage
-                (i18n("Resource %1 is already booked for %2 at %3")
-                     .arg(id).arg(
-                     scoreboard[i] == (SbBooking*) 1 ? "Off Hour" :
-                     scoreboard[i] == (SbBooking*) 2 ? "Vacation" :
-                     scoreboard[i]->getTask()->getId().latin1())
-                     .arg(time2ISO(index2start(i))));
-            return FALSE;
+            uint j;
+            for (j = i + 1 ; j <= eIdx && 
+                 scoreboard[i] == scoreboard[j]; j++)
+                ;
+            if (scoreboard[i] == (SbBooking*) 1)
+            {
+                TJMH.errorMessage
+                    (i18n("Error in %1 scenario: "
+                          "%2 has no duty hours at %3 - %4 "
+                          "to be assigned to %5.")
+                     .arg(project->getScenarioId(sc))
+                     .arg(id).arg(time2ISO(index2start(i)))
+                     .arg(time2ISO(index2end(j  - 1)))
+                     .arg(nb->getTask()->getId().latin1()));
+            }
+            else if (scoreboard[i] == (SbBooking*) 2)
+            {
+                TJMH.errorMessage
+                    (i18n("Error in %1 scenario: "
+                          "%2 is on vacation at %3 - %4. "
+                          "It cannot be assigned to %5.")
+                     .arg(project->getScenarioId(sc))
+                     .arg(id).arg(time2ISO(index2start(i)))
+                     .arg(time2ISO(index2end(j - 1)))
+                     .arg(nb->getTask()->getId().latin1()));
+            }
+            else
+                TJMH.errorMessage
+                    (i18n("Error in %1 scenario: "
+                          "Allocation conflict for %2 at %3 - %4. "
+                          "Conflicting tasks are %5 and %6.")
+                     .arg(project->getScenarioId(sc))
+                     .arg(id).arg(time2ISO(index2start(i)))
+                     .arg(time2ISO(index2end(j - 1)))
+                     .arg(scoreboard[i]->getTask()->getId().latin1())
+                     .arg(nb->getTask()->getId().latin1()));
+
+            conflict = TRUE;
+            i = j;
         }
+    
+    if (conflict)
+        return FALSE;
+
     for (uint i = sIdx; i <= eIdx; i++)
         bookSlot(i, new SbBooking(*nb));
 
@@ -356,7 +393,7 @@ Resource::addBooking(int sc, Booking* nb)
         scoreboard = scoreboards[sc];
     else
         initScoreboard();
-    bool retVal = bookInterval(nb);
+    bool retVal = bookInterval(nb, sc);
     // Cross register booking with task.
     if (retVal && nb->getTask())
         nb->getTask()->addBookedResource(sc, this);

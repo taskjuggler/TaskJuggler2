@@ -51,6 +51,15 @@ public:
     void setFontFactor(int ff) { fontFactor = ff; }
     int getFontFactor() const { return fontFactor; }
 
+    void setStatusText(const QString& s) { statusText = s; }
+    const QString& getStatusText() const { return statusText; }
+
+    void setToolTipID(const QString& s) { toolTipID = s; }
+    const QString& getToolTipID() const { return toolTipID; }
+
+    void setToolTipText(const QString& s) { toolTipText = s; }
+    const QString& getToolTipText() const { return toolTipText; }
+
     TableColumnFormat* const tcf;
     TableLineInfo* const tli;
     TableColumnInfo* const tci;
@@ -64,6 +73,9 @@ private:
     QColor bgColor;
     bool boldText;
     int fontFactor;
+    QString statusText;
+    QString toolTipID;
+    QString toolTipText;
 } ;
 
 #endif

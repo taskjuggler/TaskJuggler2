@@ -209,6 +209,11 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
                  tci->getRows() : scenarios.count()) << "\"";
     if (tci->getColumns() != 1)
         s() << " colspam=\"" << QString("%1").arg(tci->getColumns()) << "\"";
+    if (!tci->getStatusText().isEmpty())
+    {
+        s() << " onmouseover=\"status='" << tci->getStatusText() 
+            << "';return true;\"";
+    }
     if (!tci->tcf->hAlign.isEmpty() || 
         !tci->getHAlign().isEmpty() ||
         tci->getLeftPadding() > 0 ||
@@ -258,7 +263,16 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         cellText = "&nbsp;";
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_cell\"";
-    s() << ">" << cellText << "</td>" << endl;
+    s() << ">";
+    if (!tci->getToolTipText().isEmpty())
+    {
+        s() << "<div id=\"" << tci->getToolTipID() 
+            << "\" class=\"tj_tooltip\" style=\"visibility:hidden\">"
+            << tci->getToolTipText()
+            << "</div>";
+    }
+
+    s() << cellText << "</td>" << endl;
 }
 
 void
@@ -318,13 +332,20 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
             }
         }
         tci->setHAlign("center");
+        tci->setStatusText(time2user(period.getStart(), "%Y-%m-%d / [") +
+                           tci->tli->task->getId() + "] " +
+                           htmlFilter(tci->tli->task->getName()));
+    }
+    else
+    {
+        tci->setStatusText("");
     }
     genCell(text, tci, FALSE);
 }
 
 void
 HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
-                                      const Interval&)
+                                      const Interval& period)
 {
     QString text;
     if (load > 0.0)
@@ -333,13 +354,25 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
             text += scaledLoad(load, tci);
         if (tci->tli->resource->hasSubs())
             tci->setBoldText(true);
+        tci->setHAlign("center");
+        tci->setStatusText(time2user(period.getStart(), "%Y-%m-%d / [") +
+                           tci->tli->resource->getId() + "] " +
+                           htmlFilter(tci->tli->resource->getName()));
+    }
+    else
+    {
+        tci->setStatusText("");
     }
     genCell(text, tci, FALSE);
 }
 
 void
-HTMLReportElement::reportCurrency(double value, TableCellInfo* tci)
+HTMLReportElement::reportCurrency(double value, TableCellInfo* tci, 
+                                  time_t iv_start)
 {
+    tci->setStatusText(time2user(iv_start, "%Y-%m-%d / [") +
+                       tci->tli->account->getId() + "] " +
+                       htmlFilter(tci->tli->account->getName()));
     genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
 }
 
@@ -1337,7 +1370,7 @@ HTMLReportElement::genCellDailyAccount(TableCellInfo* tci)
              tci->tli->account->isRoot()) ||
             (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(day), volume);
-        reportCurrency(volume, tci);
+        reportCurrency(volume, tci, day);
     }
 }
 
@@ -1384,7 +1417,7 @@ HTMLReportElement::genCellWeeklyAccount(TableCellInfo* tci)
              tci->tli->account->isRoot()) ||
             (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(week), volume);
-        reportCurrency(volume, tci);
+        reportCurrency(volume, tci, week);
     }
 }
 
@@ -1429,7 +1462,7 @@ HTMLReportElement::genCellMonthlyAccount(TableCellInfo* tci)
              tci->tli->account->isRoot()) ||
             (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(month), volume);
-        reportCurrency(volume, tci);
+        reportCurrency(volume, tci, month);
     }
 }
 
@@ -1473,7 +1506,7 @@ HTMLReportElement::genCellQuarterlyAccount(TableCellInfo* tci)
              tci->tli->account->isRoot()) ||
             (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(quarter), volume);
-        reportCurrency(volume, tci);
+        reportCurrency(volume, tci, quarter);
     }
 }
 
@@ -1517,7 +1550,7 @@ HTMLReportElement::genCellYearlyAccount(TableCellInfo* tci)
              tci->tli->account->isRoot()) ||
             (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(year), volume);
-        reportCurrency(volume, tci);
+        reportCurrency(volume, tci, year);
     }
 }
 

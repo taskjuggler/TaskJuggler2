@@ -36,6 +36,40 @@ HTMLReport::generateHeader()
       << "<title>Task Report</title>" << endl
       << "<meta http-equiv=\"Content-Type\" content=\"text/html; "
       << "charset=utf-8\">" << endl;
+#if 0
+    s << "<script type=\"text/javascript\">" << endl
+      << "  function tj_tooltip(el,flag)" << endl
+      << "  {" << endl
+      << "    elem = document.getElementById(el);" << endl
+      << "    if (flag) {" << endl
+      << "      elem.parentNode.parentNode.style.zIndex=1000;" << endl
+      << "      elem.parentNode.parentNode.style.borderRight="
+      << "'0px solid #000';" << endl
+      << "      elem.style.visibility='visible';" << endl
+      << "    }" << endl
+      << "    else {" << endl
+      << "      elem.parentNode.parentNode.style.zIndex=1;" << endl
+      << "      elem.parentNode.parentNode.style.border='none';" << endl
+      << "      elem.style.visibility='hidden' };" << endl
+      << "  }" << endl
+      << "</script>" << endl
+      << "<style type=\"text/css\">" << endl
+      << "<!--" << endl
+      << ".tj_tooltip" << endl
+      << "{" << endl
+      << "    background-color:#FFFFE1;" << endl
+      << "    border:1px solid black;" << endl
+      << "    font-size:80%;" << endl
+      << "    font-weight:normal;" << endl
+      << "    line-height:normal;" << endl
+      << "    text-align:left;" << endl
+      << "    position:absolute;" << endl
+      << "    z-index:100;" << endl
+      << "    padding:0.5em;" << endl
+      << "}" << endl
+      << "-->" << endl
+      << "</style>" << endl;
+#endif
     if (!rawStyleSheet.isEmpty())
         s << rawStyleSheet << endl;
     s << "</head>" << endl

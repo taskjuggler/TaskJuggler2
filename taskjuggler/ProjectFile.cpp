@@ -1933,11 +1933,7 @@ ProjectFile::readResourceScenarioAttribute(const QString attribute,
         if ((b = readBooking()) == 0)
             return FALSE;
         if (!resource->addBooking(sc, b))
-        {
-            errorMessage(i18n("Resource %1 cannot be allocated during this "
-                              "period").arg(resource->getId()));
-            return FALSE;
-        }
+            proj->setAllocationErrors(TRUE);
     }
     else if (enforce)
     {

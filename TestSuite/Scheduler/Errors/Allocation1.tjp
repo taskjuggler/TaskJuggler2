@@ -1,0 +1,20 @@
+project alloc "Allocation" "1.0" 2003-07-02 2003-08-01
+
+task dummy1 "Dummy" {
+	start 2003-07-02
+	end 2003-08-01
+}
+
+task dummy2 "Dummy" {
+	start 2003-07-02
+	end 2003-08-01
+}
+
+resource r "Res" {
+	plan:booking 2003-07-02-10:00 2003-07-02-12:00 dummy1
+	plan:booking 2003-07-02-13:00 2003-07-02-17:00 dummy1
+  plan:booking 2003-07-02-14:00	2003-07-02-16:00 dummy2
+	plan:booking 2003-07-02-15:00 2003-07-03-17:00 dummy2
+}
+
+

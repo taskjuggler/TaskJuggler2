@@ -139,7 +139,7 @@ protected:
     void reportResourceLoad(double load, TableCellInfo* tci,
                             const Interval& period);
 
-    void reportCurrency(double value, TableCellInfo* tci);
+    void reportCurrency(double value, TableCellInfo* tci, time_t iv_start);
 
 } ;
 

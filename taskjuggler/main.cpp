@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 
     if (!checkOnlySyntax)
     {
-        schedulingErrors = !p.scheduleAllScenarios();
+        schedulingErrors = p.getAllocationErrors() || !p.scheduleAllScenarios();
         if (updateKotrusDB)
             if (parseErrors || logicalErrors || schedulingErrors)
                 qWarning("Due to errors the Kotrus DB will NOT be "

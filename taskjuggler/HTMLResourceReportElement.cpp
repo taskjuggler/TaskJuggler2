@@ -82,6 +82,20 @@ HTMLResourceReportElement::generate()
             generateLine(&tli1, sc == 0 ? 4 : 5);
         }
 
+        /* We only want to show the nested task list for leaf resources. Leaf
+         * in this case means "task has no visible childs". */
+        bool hasVisibleChilds = FALSE;
+        for (ResourceListIterator cli((*rli)->getSubListIterator());
+             *cli; ++cli)
+             if (filteredResourceList.findRef(*cli) >= 0)
+             {
+                 hasVisibleChilds = TRUE;
+                 break;
+             }
+
+        if (hasVisibleChilds)
+            continue;
+
         filterTaskList(filteredTaskList, *rli, hideTask, rollUpResource);
         sortTaskList(filteredTaskList);
 
