@@ -1,8 +1,15 @@
 #include "ktjTaskReport.h"
+#include "qicstable/QicsDataItem.h"
 
 // TJ includes
 #include "Interval.h"
 #include "Utility.h"
+#include "Task.h"
+#include "Resource.h"
+
+// KDE includes
+#include <klocale.h>
+#include <kdebug.h>
 
 KTJTaskReport::KTJTaskReport( Project * proj )
     : KTJReport( proj )
@@ -20,7 +27,7 @@ QString KTJTaskReport::description() const
     return i18n( "Task report combined with allocated resources." );
 }
 
-QicsDataModel KTJTaskReport::generate()
+QicsDataModelDefault KTJTaskReport::generate()
 {
     clear();
 
@@ -31,12 +38,12 @@ QicsDataModel KTJTaskReport::generate()
 
     while ( ( task = static_cast<Task *>( tasks.current() ) ) != 0 )
     {
-        ++it;
+        ++tasks;
 
         if ( task->isContainer() ) // skip groups
             continue;
 
-        generateRow( task );    // generate main rows
+        generateRow( task, columns );    // generate main rows
     }
 
     return m_model;
@@ -75,7 +82,7 @@ int KTJTaskReport::generateHeader()
 
     while ( tmp <= tmpEnd )
     {
-        result.append( formatDate( tmp, format ) );
+        result.append( QicsDataString( formatDate( tmp, format ) ) );
         tmp += delta;
     }
 
@@ -90,14 +97,14 @@ void KTJTaskReport::generateRow( const Task * task, int columns )
     // generate the task row
     QicsDataModelRow taskRow( columns );
 
-    taskRow.append( task->getName() ); // row header
+    taskRow.append( QicsDataString( task->getName() ) ); // row header
 
     double daily = m_proj->getDailyWorkingHours();
     for ( int i = 0; i < columns; i++ ) // data in columns
     {
         Interval ival = intervalForCol( i );
         double load = task->getLoad( 0, ival ) * daily;
-        taskRow.append( load );
+        taskRow.append( QicsDataDouble( load ) );
     }
 
     m_model->addRows( 1 );

@@ -1,14 +1,22 @@
 #include "ktjReport.h"
+#include "ktjUtils.h"
 
 // TJ includes
 #include "Utility.h"
+
+// Qt includes
+#include <qstring.h>
+#include <qdatetime.h>
+
+// KDE includes
+#include <kdebug.h>
 
 KTJReport::KTJReport( Project * proj )
     : m_proj( proj )
 {
     m_model = new QicsDataModelDefault();
-    m_start = m_proj->getStartDate();
-    m_end = m_proj->getEndDate();
+    m_start = KtjUtils::time_t2Q( m_proj->getStart() );
+    m_end = KtjUtils::time_t2Q( m_proj->getEnd() );
 
     setScale( SC_DAY );
 }
@@ -18,7 +26,7 @@ KTJReport::~KTJReport()
     delete m_model;
 }
 
-Scale KTJReport::scale() const
+KTJReport::Scale KTJReport::scale() const
 {
     return m_scale;
 }
@@ -28,7 +36,7 @@ void KTJReport::setScale( int sc )
     m_scale = static_cast<Scale>( sc );
 }
 
-DisplayData KTJReport::displayData() const
+KTJReport::DisplayData KTJReport::displayData() const
 {
     return m_display;
 }

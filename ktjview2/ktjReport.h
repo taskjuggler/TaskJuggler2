@@ -2,8 +2,9 @@
 #define _KTJREPORT_H_
 
 #include "Project.h"
-#include "qicstable/QicsDataModelDefault.h"
+#include "Interval.h"
 
+#include "qicstable/QicsDataModelDefault.h"
 
 /**
  * Base class for custom reports.
@@ -90,7 +91,7 @@ public:
      * Abstract method to generate the report,
      * implementers need to clear the data model first
      */
-    virtual QicsDataModel generate() = 0;
+    virtual QicsDataModelDefault generate() = 0;
 
     /**
      * @return short unique name of the report (with i18n)

@@ -3,7 +3,6 @@
 
 #include "ktjReport.h"
 
-
 /**
  * Report containing Tasks as primary rows
  * and allocated Resources as secondary rows.
@@ -16,7 +15,7 @@ public:
     KTJTaskReport( Project * proj );
     virtual QString name() const;
     virtual QString description() const;
-    virtual QicsDataModel generate();
+    virtual QicsDataModelDefault generate();
 
 private:
     /**
