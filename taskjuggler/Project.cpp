@@ -347,13 +347,16 @@ Project::schedule(const QString& scenario)
 				if (DEBUGPS(5))
 					qDebug("Task %s requests slot %s", (*tli)->getId().latin1(),
 							 time2ISO(slot).latin1());
-				if (slot < start || slot > end)
+				if (slot < start || 
+					slot > (end - (time_t) scheduleGranularity + 1))
 				{
 					(*tli)->setRunaway();
 					if (DEBUGPS(5))
 						qDebug("Marking task %s as runaway",
 							   (*tli)->getId().latin1());
 					error = TRUE;
+					slot = 0;
+					continue;
 				}
 			}
 			(*tli)->schedule(slot, scheduleGranularity);
