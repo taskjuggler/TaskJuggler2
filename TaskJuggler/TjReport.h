@@ -72,7 +72,8 @@ private slots:
     void expandReportItem(QListViewItem* lvi);
     void listClicked(QListViewItem* lvi, const QPoint&, int column);
     void doPopupMenu(QListViewItem* lvi, const QPoint& pos, int);
-    void syncVSliders(int, int);
+    void syncVSlidersGantt2List(int, int);
+    void syncVSlidersList2Gantt(int, int);
     void updateStatusBar();
 
 protected:

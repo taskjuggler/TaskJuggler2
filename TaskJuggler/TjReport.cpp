@@ -121,7 +121,9 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
             SIGNAL(rightButtonPressed(QListViewItem*, const QPoint&, int)),
             this, SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));
     connect(ganttChartView, SIGNAL(contentsMoving(int, int)),
-            this, SLOT(syncVSliders(int, int)));
+            this, SLOT(syncVSlidersGantt2List(int, int)));
+    connect(listView, SIGNAL(contentsMoving(int, int)),
+            this, SLOT(syncVSlidersList2Gantt(int, int)));
 }
 
 TjReport::~TjReport()
@@ -977,7 +979,7 @@ TjReport::collapsReportItem(QListViewItem*)
 
     this->generateChart(FALSE);
 
-    syncVSliders(ganttChartView->contentsX(), listView->contentsY());
+    syncVSlidersGantt2List(ganttChartView->contentsX(), listView->contentsY());
 }
 
 void
@@ -987,7 +989,7 @@ TjReport::expandReportItem(QListViewItem*)
         return;
 
     this->generateChart(FALSE);
-    syncVSliders(ganttChartView->contentsX(), listView->contentsY());
+    syncVSlidersGantt2List(ganttChartView->contentsX(), listView->contentsY());
 }
 
 void
@@ -1156,10 +1158,34 @@ TjReport::showResourceDetails(const Resource* resource)
 }
 
 void
-TjReport::syncVSliders(int x, int y)
+TjReport::syncVSlidersGantt2List(int x, int y)
 {
     ganttHeaderView->setContentsPos(x, ganttHeaderView->contentsY());
-    listView->setContentsPos(listView->contentsX(), y);
+    if (y != listView->contentsY())
+    {
+        // To prevent endless loops we need to disconnect the contentsMoving
+        // signal temoraryly.
+        disconnect(listView, SIGNAL(contentsMoving(int, int)),
+                   this, SLOT(syncVSlidersList2Gantt(int, int)));
+        listView->setContentsPos(listView->contentsX(), y);
+        connect(listView, SIGNAL(contentsMoving(int, int)),
+                this, SLOT(syncVSlidersList2Gantt(int, int)));
+    }
+}
+
+void
+TjReport::syncVSlidersList2Gantt(int, int y)
+{
+    if (y != ganttChartView->contentsY())
+    {
+        // To prevent endless loops we need to disconnect the contentsMoving
+        // signal temoraryly.
+        disconnect(ganttChartView, SIGNAL(contentsMoving(int, int)),
+                   this, SLOT(syncVSlidersGantt2List(int, int)));
+        ganttChartView->setContentsPos(ganttChartView->contentsX(), y);
+        connect(ganttChartView, SIGNAL(contentsMoving(int, int)),
+                this, SLOT(syncVSlidersGantt2List(int, int)));
+    }
 }
 
 void
