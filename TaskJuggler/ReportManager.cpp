@@ -130,13 +130,14 @@ ReportManager::showReport(QListViewItem* lvi)
             if (!htmlReport->generate())
                 return FALSE;
             // show the HTML file in web browser
-            KURL reportUrl = KURL::fromPathOrURL( mr->getProjectReport()->getDefinitionFile() );
-            reportUrl.setFileName( mr->getProjectReport()->getFileName() );
+            KURL reportUrl =
+                KURL::fromPathOrURL(mr->getProjectReport()->
+                                    getDefinitionFile());
+            reportUrl.setFileName(mr->getProjectReport()->getFileName());
 
-            //kdDebug() << "HTML report file: " << reportUrl << endl;
-
-            changeStatusBar( i18n( "Displaying HTML report: '%1'" ).arg( mr->getProjectReport()->getFileName() ) );
-            KRun::runURL( reportUrl, "text/html" );
+            changeStatusBar(i18n("Displaying HTML report: '%1'")
+                            .arg(mr->getProjectReport()->getFileName()));
+            KRun::runURL(reportUrl, "text/html");
             return TRUE;
         }
         else

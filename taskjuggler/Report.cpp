@@ -89,12 +89,15 @@ Report::open()
     }
     else
     {
-        f.setName(fileName);
+        QString path;
+        if (defFileName[0] == '/')
+            path = defFileName.left(defFileName.findRev('/', -1) + 1);
+        f.setName(path + fileName);
         if (!f.open(IO_WriteOnly))
         {
             TJMH.errorMessage
                 (QString(i18n("Cannot open report file %1!\n"))
-                 .arg(fileName.latin1()));
+                 .arg((path + fileName).latin1()));
             return FALSE;
         }
     }

@@ -752,6 +752,10 @@ of ALAP and ASAP tasks with variing priorities.</para></listitem>
 <listitem><para>The error checking and reporting of logical
 expressions has been drastically improved.</para></listitem>
 
+<listitem><para>The reports are now generated relative to their
+definition file and no longer relative to the current working
+directory where you started the program.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
