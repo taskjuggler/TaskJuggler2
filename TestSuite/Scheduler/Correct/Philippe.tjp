@@ -1,0 +1,196 @@
+project arc "Passage  sous Control-M" "1.0" 2002-07-15 2002-09-30 {
+        now 2002-07-15
+}
+
+resource pmm "PMM" {
+ vacation 2002-08-15 - 2002-09-02
+}
+resource Ekow "Exxx Byyyy" {
+ vacation 2002-08-10 - 2002-08-26
+}
+
+task amelioration "Amelioration" {
+start 2002-07-15
+        task gesttable "Module de gestion des tables" {
+                effort 3d
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 100
+        }
+        task supuniv "Suppression du code Universe" {
+                effort 10h
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 100
+        }
+        task supdyn "Suppression du code Dynatext" {
+                effort 10h
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 100
+        }
+        task modpre "Modification de la preconversion" {
+                effort 8h
+                depends !supuniv, !gesttable, !supdyn
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 100
+        }
+        task nomrex "Creation du nom du REX" {
+                effort 6h
+                depends !gesttable
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 100
+        }
+        task errpre "Gestion des erreurs dans la preconversion" {
+                effort 7d
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 20
+        }
+        task errshell "Gestion des erreur dans les shells" {
+                effort 20h
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 100
+        }
+        task testmod "Test des modifications" {
+                effort 4d
+                depends !gesttable, !supuniv, !supdyn, !modpre, !nomrex, !errpre, !errshell
+                allocate Ekow {
+                    alternative pmm
+                }
+                complete 25
+        }
+}
+
+task ctm "Mise sous Control-M" {
+start 2002-07-15
+        task jobsup "Job superviseur" {
+                effort 4d
+                allocate pmm {
+                    alternative Ekow
+                }
+                complete 90
+        }
+        task modchaine "Module chaines" {
+                effort 4d
+                allocate pmm {
+                    alternative Ekow
+                }
+                complete 60
+        }
+        task defchaine "Definition des chaines" {
+                effort 10h
+                depends !modchaine
+                allocate pmm {
+                    alternative Ekow
+                }
+                complete 90
+        }
+        task lancechaine "Lanceur de chaines" {
+                effort 15h
+                depends !modchaine,!defchaine
+                allocate pmm {
+                    alternative Ekow
+                }
+                complete 40
+        }
+        task dlibm "Download de l IBM" {
+                effort 2d
+                allocate pmm {
+                    alternative Ekow
+                }
+                complete 50
+        }
+        task testchaine "Tests de l enchainement" {
+                effort 4d
+                depends !dlibm, !lancechaine, !defchaine, !modchaine, !jobsup
+                allocate pmm {
+                    alternative Ekow
+                }
+                complete 40
+        }
+}
+
+task validation "Validation des modifs" {
+
+        task netvar "Nettoyage des variable d env." {
+                effort 1d
+#                depends ctm.testchaine, amelioration.testmod
+                depends ctm, amelioration
+                allocate pmm {
+                    alternative Ekow
+                }
+        }                       
+        task integerr "Integration gestion err" {
+                effort 2d
+                depends ctm, amelioration
+                allocate pmm {
+                    alternative Ekow
+                }
+        }                       
+        task integctm "Integration Control-M" {
+                effort 4d
+                depends ctm, amelioration
+                allocate pmm {
+                    alternative Ekow
+                }
+        }                       
+        task planrec "Redaction plan de recette" {
+                effort 3d
+                depends !integctm, !integerr
+                allocate pmm {
+                    alternative Ekow
+                }
+        }                       
+        task val "Validation" {
+                effort 3d
+                depends !planrec
+                allocate pmm {
+                    alternative Ekow
+                }
+        }                       
+        task majdd "Mise a jour doc conception" {
+                effort 15h
+                depends !integctm, !integerr
+                allocate pmm {
+                    alternative Ekow
+                }
+                 complete 10
+       }
+        task docexp "Redaction doc exploitation" {
+                effort 3d
+                depends !integctm, !integerr, !majdd
+                allocate pmm {
+                    alternative Ekow
+                }
+        }
+        task docinst "Redaction doc installation" {
+                effort 3d
+                depends !integctm, !integerr, !majdd
+                allocate pmm {
+                    alternative Ekow
+                }
+        }
+}
+
+task fini "Fini" {
+	milestone
+	depends !validation, !ctm, !amelioration
+	minstart 2002-09-13-15:00
+	maxstart 2002-09-13-15:00
+}
+
+htmltaskreport "Philippe.html" {
+  columns id, name, start, end
+}
+
