@@ -667,8 +667,8 @@ linkend="task_complete">complete</link> or a value computed according
 to the current date (or the date specified by <link
 linkend="project_now">now</link>) and the length, duration or effort.</member>
 
-<member><computeroutput>costs</computeroutput></member>
-<member>The costs of the task</member>
+<member><computeroutput>cost</computeroutput></member>
+<member>The accumulated costs of the task and its sub tasks</member>
 
 <member><computeroutput>daily</computeroutput></member>
 <member>A day-by-day calendar view of the tasks</member>
@@ -743,6 +743,9 @@ every listed item by 1.</member>
 <member><computeroutput>priority</computeroutput></member>
 <member>The scheduling priority</member>
 
+<member><computeroutput>profit</computeroutput></member>
+<member>The accumulated profit of the task and its sub tasks</member>
+
 <member><computeroutput>projectid</computeroutput></member>
 <member>The project id of the task</member>
 
@@ -758,6 +761,9 @@ responsible </member>
 
 <member><computeroutput>responsible</computeroutput></member>
 <member>The name of the resource responsible for a task</member>
+
+<member><computeroutput>revenue</computeroutput></member>
+<member>The accumulated revenue of the task and its sub tasks</member>
 
 <member><computeroutput>seqno</computeroutput></member>
 <member>The task index in the order of finished declarations. Each
@@ -1934,7 +1940,12 @@ subtasks.</para>
 </simplelist></para>
 
 <para>Specifies the account to which all money associated with this task will be
-credited.</para>
+credited. The type of the account specifies whether the money
+associated with this task is considered cost or revenue. The task can
+contribute to the account either with the resource usage fees or with
+<link linkend="task_startcredit">start-</link> or <link
+likend="task_endcredit">endcredit</link>. If no account has been
+specified for the task, it will generate neither cost nor revenue.</para>
 
 <para>This attribute is inherited by subtasks if specified prior to the
 definition of the subtask.</para>

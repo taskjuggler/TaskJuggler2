@@ -1,0 +1,8 @@
+project test "Test" "1.0" 2003-01-01 2003-01-02
+
+task t1 "Task1" {
+	start 2003-01-01
+	milestone
+	endcredit 1.0
+}
+

@@ -23,6 +23,7 @@ resource tux3 "Tux 3" {
 }
 
 account c "Cost" cost
+account r "Revenue" revenue
 
 task t1 "Task 1" {
 	flags flag1
@@ -53,6 +54,18 @@ task t1 "Task 1" {
 		startbuffer 10
 		endbuffer 10
 		responsible tux1
+	}
+	task m1 "Milestone1" {
+		depends !t3
+		account r
+		startcredit 28000.0
+		milestone
+	}
+	task m2 "Milestone2" {
+		depends !t3
+		account r
+		endcredit 18500.0
+		milestone
 	}
 }
 

@@ -414,6 +414,11 @@ linkend="task_end">end</link> date is specified.</para></listitem>
 The call stack with full arguments is included in the error message
 now.</para></listitem>
 
+<listitem><para>The cost column in HTML <link
+linkend="task_columns">task<linkend> or resource reports now
+only contains cost. Support for a revenue and profit column has been
+added.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

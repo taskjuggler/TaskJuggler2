@@ -181,7 +181,7 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 				s << htmlFilter(t->getStatusNote(Task::Plan));
 			s << "</span></td>" << endl;
 		}
-		else if (*it == KW("costs"))
+		else if (*it == KW("cost") || *it == "costs")
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  t->getCredits(Task::Plan,
@@ -194,6 +194,17 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 								  t->getCredits(Task::Plan,
 												Interval(start, end),
                                                 Revenue, r)),
+				r != 0,
+				"right");
+		else if (*it == KW("profit"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  t->getCredits(Task::Plan,
+												Interval(start, end),
+                                                Revenue, r) -
+								  t->getCredits(Task::Plan,
+												Interval(start, end),
+                                                Cost, r)),
 				r != 0,
 				"right");
 		else if (*it == KW("priority"))
@@ -281,7 +292,7 @@ ReportHtml::generateActualTask(const Task* t, const Resource* r)
 		}
 		else if (*it == KW("resources"))
 			scenarioResources(Task::Actual, t, r != 0);
-		else if (*it == KW("costs"))
+		else if (*it == KW("cost") || *it == "costs")
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  t->getCredits(Task::Actual,
@@ -293,6 +304,16 @@ ReportHtml::generateActualTask(const Task* t, const Resource* r)
 								  t->getCredits(Task::Actual,
 												Interval(start, end), 
                                                 Revenue, r)),
+				r != 0, "right");
+		else if (*it == KW("profit"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  t->getCredits(Task::Actual,
+												Interval(start, end), 
+                                                Revenue, r) -
+								  t->getCredits(Task::Actual,
+												Interval(start, end), 
+                                                Cost, r)),
 				r != 0, "right");
 		else if (*it == KW("completed"))
 			if (t->getCompletionDegree(Task::Actual) ==
@@ -413,7 +434,7 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
 			textTwoRows(r->getKotrusId(), t != 0, "left");
 		else if (*it == KW("note"))
 			emptyPlan(t != 0);
-		else if (*it == KW("costs"))
+		else if (*it == KW("cost") || *it == "costs")
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Plan,
@@ -424,7 +445,17 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Plan,
 											   	Interval(start, end),
-                                               Revenue, t)),
+                                                Revenue, t)),
+				t != 0, "right");
+		else if (*it == KW("profit"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  r->getCredits(Task::Plan,
+											   	Interval(start, end),
+                                                Revenue, t) -
+								  r->getCredits(Task::Plan,
+											   	Interval(start, end),
+                                                Cost, t)),
 				t != 0, "right");
 		else if (*it == KW("priority"))
 			emptyPlan(t != 0);
@@ -465,21 +496,29 @@ ReportHtml::generateActualResource(const Resource* r, const Task* t)
 		}
 		else if (*it == KW("schedule"))
 			generateSchedule(Task::Actual, r, t);
-		else if (*it == KW("costs"))
+		else if (*it == KW("cost") || *it == "costs")
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Actual,
 												Interval(start, end), Cost, t)),
-				t != 0,
-				"right");
+				t != 0, "right");
 		else if (*it == KW("revenue"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Actual,
 												Interval(start, end), 
                                                 Revenue, t)),
-				t != 0,
-				"right");
+				t != 0, "right");
+		else if (*it == KW("profit"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  r->getCredits(Task::Actual,
+												Interval(start, end), 
+                                                Revenue, t) -
+								  r->getCredits(Task::Actual,
+												Interval(start, end), 
+                                                Cost, t)),
+				t != 0, "right");
 		else if (*it == KW("daily"))
 			dailyResourceActual(r, t);
 		else if (*it == KW("weekly"))
@@ -681,7 +720,7 @@ ReportHtml::generateTableHeader()
 		else if (*it == KW("statusnote"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">"
 				<< i18n("Status Note") << "</td>";
-		else if (*it == KW("costs"))
+		else if (*it == KW("cost") || *it == "costs")
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">"
 				<< i18n("Costs");
@@ -693,6 +732,14 @@ ReportHtml::generateTableHeader()
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">"
 				<< i18n("Revenue");
+			if (!project->getCurrency().isEmpty())
+				s << " " << htmlFilter(project->getCurrency());
+			s << "</td>";
+		}
+		else if (*it == KW("profit"))
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Profit");
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";

@@ -1567,12 +1567,21 @@ Task::preScheduleOk()
 				return FALSE;
 			}
 		}
+        
+        if (!account &&
+            (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
+        {
+            errorMessage(i18n
+                         ("Task %1 has a specified start- or endcredit "
+                          "but no account assigned.").arg(id));
+            return FALSE;
+        }
+
 	}
 	double intervalLoad =
 		project->convertToDailyLoad(project->getScheduleGranularity());
 
 	for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
-	{
 		if ((*ali)->getLoad() < intervalLoad * 100.0)
 		{
 			QPtrListIterator<Resource> rli((*ali)->getCandidatesIterator());
@@ -1585,7 +1594,6 @@ Task::preScheduleOk()
 												0.005)));
 			(*ali)->setLoad((int) (intervalLoad * 100.0));
 		}
-	}
 
 	return TRUE;
 }
