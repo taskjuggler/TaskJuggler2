@@ -1334,17 +1334,6 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
    if( cnt > 0 )
       taskElem.appendChild( subTaskElem);
 
-   /* Tasks (by id) on which this task depends */
-   if( dependsIds.count() > 0 )
-   {
-      for (QValueListConstIterator<QString> it1= dependsIds.begin(); it1 != dependsIds.end(); ++it1)
-      {
-	 QDomElement depElem = ReportXML::createXMLElem( doc, "Depend", *it1 );
-	 taskElem.appendChild( depElem );
-	 
-      }
-   }
-
    /* list of tasks by id which are previous */
    if( previous.count() > 0 )
    {
@@ -1353,7 +1342,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
       {	
 	 if( t != this )
 	 {
-	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Previous", t->getId()));
+	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Depend", t->getId()));
 	 }
       }
    }

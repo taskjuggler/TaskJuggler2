@@ -42,6 +42,9 @@ Project::Project()
 	currencyDigits = 3;
 	kotrus = 0;
 	xmlreport = 0;
+#ifdef HAVE_KDE
+	icalReport = 0;
+#endif
 }
 
 bool
