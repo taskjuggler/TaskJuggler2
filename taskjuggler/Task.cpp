@@ -310,9 +310,9 @@ Task::schedule(time_t& date, time_t slotDuration)
          * 2048 was chosen in the hope that a compiler is clever enough to
          * avoid a costly multiplication if possible. */
         if ((length > 0.0 && 
-             round(doneLength * 2048) >= round(length * 2048)) ||
+             qRound(doneLength * 2048) >= qRound(length * 2048)) ||
             (duration > 0.0 && 
-             round(doneDuration * 2048) >= round(duration * 2048)))
+             qRound(doneDuration * 2048) >= qRound(duration * 2048)))
         {
             if (scheduling == ASAP)
             {
@@ -336,7 +336,7 @@ Task::schedule(time_t& date, time_t slotDuration)
          * effort. */
         bookResources(date, slotDuration);
         // Check whether we are done with this task.
-        if (round(doneEffort * 2048) >= round(effort * 2048))
+        if (qRound(doneEffort * 2048) >= qRound(effort * 2048))
         {
             if (scheduling == ASAP)
             {
