@@ -52,7 +52,7 @@ void KtjTaskReport::generate()
     while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
     {
         ++it;
-        if ( task->isContainer() ) // skip groups
+        if ( task->isContainer() || task->isMilestone() ) // skip groups
             continue;
         generatePrimaryRow( m_view, task, cols );
     }
