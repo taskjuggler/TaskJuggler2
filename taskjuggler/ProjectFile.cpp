@@ -1197,12 +1197,12 @@ ProjectFile::readTaskBody(Task* task)
                 }
                 task->setProjectId(token);
             }
-            else if (token == KW("url"))
+            else if (token == KW("reference"))
             {
-                QString url, label;
-                if (!readURL(url, label))
+                QString ref, label;
+                if (!readReference(ref, label))
                     return FALSE;
-                task->setUrl(url, label);
+                task->setReference(ref, label);
             }
             else if (token == KW("supplement"))
             {
@@ -1317,21 +1317,21 @@ ProjectFile::readDate(time_t& val, time_t correction)
 }
 
 bool
-ProjectFile::readURL(QString& url, QString& label)
+ProjectFile::readReference(QString& ref, QString& label)
 {
 
-    if (nextToken(url) != STRING)
+    if (nextToken(ref) != STRING)
     {
         errorMessage(i18n("String expected"));
         return FALSE;
     }
-    label = url;
+    label = ref;
     
     TokenType tt;
     QString token;
-    if ((tt = nextToken(token)) == LBRACE)
+    if ((tt = nextToken(token)) == LCBRACE)
     {
-        while ((tt = nextToken(token)) != RBRACE)
+        while ((tt = nextToken(token)) != RCBRACE)
         {
             if (tt == ID && token == KW("label"))
             {

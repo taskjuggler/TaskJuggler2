@@ -391,7 +391,7 @@ same as start dates.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Some Version (Some day)</title>
+<sect2><title>Version 1.4.2 (2003-03-10)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -424,6 +424,10 @@ non-Latin1 languages as well.</para></listitem>
 
 <listitem><para>Milestones in HTML calendars are now visible in text
 browsers and printouts as well.</para></listitem>
+
+<listitem><para>New attribute <link
+linkend="task_reference">reference</link> added to
+task.</para></listitem>
 
 </itemizedlist></para>
 </sect2>

@@ -752,6 +752,9 @@ every listed item by 1.</member>
 <member><computeroutput>rate</computeroutput></member>
 <member>The daily rate of the resource</member>
 
+<member><computeroutput>reference</computeroutput></member>
+<member>A reference to a URL that contains further information.</member>
+
 <member><computeroutput>resources</computeroutput></member>
 <member>The names of the used resources</member>
 
@@ -2449,6 +2452,26 @@ statement will inherit the project ID.</para>
 
 <para>See also: <link linkend="projectid">projectid</link></para>
 
+</sect2>
+<sect2 id="task_reference"><title>reference &lt;url&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>url:</member><member><link linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>A URL that references a file with additional information.</para>
+
+<para>Optional attributes:</para>
+
+<sect3 id="task_reference_label"><title>label &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</member><member><link linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>A text that is displayed in reports instead of the URL.</para>
+
+</sect3>
 </sect2>
 <sect2 id="task_responsible"><title>responsible &lt;id&gt;</title>
 

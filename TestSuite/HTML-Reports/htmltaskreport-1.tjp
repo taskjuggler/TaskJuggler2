@@ -35,6 +35,7 @@ task t1 "Task 1" {
 		responsible tux2
 		flags flag2, flag3
 		note "This is Task2"
+		reference "http://www.taskjuggler.org" { label "taskjuggler.org" }
 		priority 10
 	}
 	task t3 "Task 3" {

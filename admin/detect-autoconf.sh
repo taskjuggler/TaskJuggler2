@@ -44,10 +44,10 @@ checkAutomakeAclocal ()
   if test -z "$UNSERMAKE"; then
     if test -x "`$WHICH automake-1.5`" ; then
       AUTOMAKE="`$WHICH automake-1.5`"
-      ACLOCAL="`$WHICH aclocal-1.5`"
+      ACLOCAL="`$WHICH aclocal`"
     elif test -x "`$WHICH automake-1.6`" ; then
       AUTOMAKE="`$WHICH automake-1.6`"
-      ACLOCAL="`$WHICH aclocal-1.6`"
+      ACLOCAL="`$WHICH aclocal`"
     fi
   else
      AUTOMAKE="$UNSERMAKE"

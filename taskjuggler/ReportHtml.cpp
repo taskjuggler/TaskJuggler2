@@ -229,6 +229,27 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
             }
         else if (*it == KW("status"))
             generateTaskStatus(t->getStatus(Task::Plan), r != 0);
+        else if (*it == KW("reference"))
+        {
+            s << "<td class=\""
+              << (r == 0 ? "default" : "defaultlight")
+              << "\" rowspan=\""
+              << (showActual ? "2" : "1")
+              << "\" style=\"text-align:left\">"
+              << "<span style=\"font-size:100%\">";
+            if (t->getReference().isEmpty())
+                s << "&nbsp;";
+            else
+            {
+                s << "<a href=\"" << t->getReference() << "\">";
+                if (t->getReferenceLabel().isEmpty())
+                    s << htmlFilter(t->getReference());
+                else
+                    s << htmlFilter(t->getReferenceLabel());
+                s << "<a>";
+            }
+            s << "</span></td>" << endl;
+        }
         else if (*it == KW("daily"))
             dailyTaskPlan(t, r);
         else if (*it == KW("weekly"))
@@ -464,6 +485,8 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
         else if (*it == KW("completed"))
             emptyPlan(t != 0);
         else if (*it == KW("status"))
+            emptyPlan(t != 0);
+        else if (*it == KW("reference"))
             emptyPlan(t != 0);
         else if (*it == KW("daily"))
             dailyResourcePlan(r, t);
@@ -747,6 +770,9 @@ ReportHtml::generateTableHeader()
         else if (*it == KW("priority"))
             s << "<td class=\"headerbig\" rowspan=\"2\">"
                 << i18n("Priority") << "</td>";
+        else if (*it == KW("reference"))
+            s << "<td class=\"headerbig\" rowspan=\"2\">"
+                << i18n("Ref.") << "</td>";
         else if (*it == KW("daily"))
             htmlDailyHeaderMonths();
         else if (*it == KW("weekly"))

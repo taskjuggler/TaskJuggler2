@@ -123,7 +123,7 @@ private:
     bool readAllocate(Task* t);
     bool readPlanTimeFrame(double& d, bool workingDays);
     bool readDate(time_t& val, time_t correction);
-    bool readURL(QString& url, QString& label);
+    bool readReference(QString& ref, QString& label);
     bool readTimeValue(ulong& value);
     bool readPercent(double& value);
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);

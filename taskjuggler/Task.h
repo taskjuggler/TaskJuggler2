@@ -86,13 +86,13 @@ public:
     void setNote(const QString& d) { note = d; }
     const QString& getNote() const { return note; }
 
-    void setUrl(const QString& u, const QString& l)
+    void setReference(const QString& r, const QString& l)
     {
-        url = u;
-        urlLabel = l;
+        ref = r;
+        refLabel = l;
     }
-    const QString& getURL() const { return url; }
-    const QString& getURLLabel() const { return urlLabel; }
+    const QString& getReference() const { return ref; }
+    const QString& getReferenceLabel() const { return refLabel; }
 
     void setScheduling(SchedulingInfo si) { scheduling = si; }
     SchedulingInfo getScheduling() const { return scheduling; }
@@ -321,10 +321,10 @@ private:
     QString note;
 
     /// A reference to an external document
-    QString url;
+    QString ref;
 
-    /// A label used instead of the url
-    QString urlLabel;
+    /// A label used instead of the reference 
+    QString refLabel;
 
     /**
      * List of tasks Ids that need to be completed before this task

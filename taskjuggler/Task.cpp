@@ -13,17 +13,14 @@
 /* -- DTD --
  <!-- Task element, child of projects and for subtasks -->
  <!ELEMENT Task     (Index, Name, ProjectID, Priority, complete,
-                         Type,
-                         ParentTask*, Note*,
-                         minStart, maxStart,
-                         minEnd, maxEnd,
-             actualStart, actualEnd,
-             planStart, planEnd,
-             startBufferSize*, ActualStartBufferEnd*, PlanStartBufferEnd*,
-             endBufferSize*, ActualEndBufferStart*, PlanEndBufferStart*,
-             Resource*,
-             SubTasks*, Previous*, Follower*,
-             Allocations*, bookedResources* )>
+                     Type, ParentTask*, Note*,
+                     minStart, maxStart, minEnd, maxEnd, actualStart,
+                     actualEnd, planStart, planEnd, Reference*,
+                     ReferenceLabel*, startBufferSize*, ActualStartBufferEnd*,
+                     PlanStartBufferEnd*, endBufferSize*,
+                     ActualEndBufferStart*, PlanEndBufferStart*, Resource*,
+                     SubTasks*, Previous*, Follower*, Allocations*,
+                     bookedResources* )>
  <!ATTLIST Task         Id CDATA #REQUIRED>
  <!ELEMENT Index        (#PCDATA)>
  <!ELEMENT Name         (#PCDATA)>
@@ -33,6 +30,8 @@
  <!ELEMENT Type         (#PCDATA)>
  <!ELEMENT ParentTask   (#PCDATA)>
  <!ELEMENT Note         (#PCDATA)>
+ <!ELEMENT Reference    (#PCDATA)>
+ <!ELEMENT ReferenceLabel (#PCDATA)>
  <!ELEMENT minStart     (#PCDATA)>
  <!ELEMENT maxStart     (#PCDATA)>
  <!ELEMENT minEnd       (#PCDATA)>
@@ -2044,6 +2043,12 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
      
    if( !note.isEmpty())
       taskElem.appendChild( ReportXML::createXMLElem( doc, "Note", getNote()));
+   if(!ref.isEmpty())
+       taskElem.appendChild(ReportXML::createXMLElem(doc, "Reference",
+                                                     ref));
+   if(!refLabel.isEmpty())
+       taskElem.appendChild(ReportXML::createXMLElem(doc, "ReferenceLabel",
+                                                     refLabel));
 
     if (minStart != 0)
     {   
