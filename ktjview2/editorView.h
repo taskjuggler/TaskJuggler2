@@ -4,7 +4,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 
-class QString;
+class KURL;
 class QVBoxLayout;
 
 /**
@@ -22,27 +22,52 @@ public:
      */
     EditorView( QWidget * parent = 0, const char * name = 0 );
 
-    /**
-     * Standard destructor
-     */
     ~EditorView();
 
     /**
-     * @return the path to the document being displayed
+     * @return the URL of the document being displayed
      */
-    QString documentPath() const;
+    KURL url() const;
 
     /**
-     * Load a document (project definition) from a file given by @p path
+     * Load a document (project definition) from @p url
      *
      * @return true on success
      */
-    bool loadDocument( const QString & path );
+    bool loadDocument( const KURL & url );
 
     /**
      * Close the current document, clear the view
      */
     void closeDocument();
+
+    /**
+     * @return KTextEditor::Document bound to #view()
+     */
+    KTextEditor::Document * doc() const
+        { return m_view->document(); }
+
+    /**
+     * @return KTextEditor::View bound to this component
+     */
+     KTextEditor::View * view() const
+        { return m_view; }
+
+signals:
+    /**
+     * Emitted when the text (source of the project) changes
+     */
+    void textChanged();
+
+    /**
+     * Emitted when the cursor changes its position
+     */
+    void cursorChanged();
+
+    /**
+     * Emitted when the selection changes
+     */
+    void selectionChanged();
 
 private:
     /**
@@ -52,10 +77,6 @@ private:
 
     /// text view
     KTextEditor::View * m_view;
-    /// text document
-    KTextEditor::Document * m_doc;
-    /// path to the project file
-    QString m_path;
     /// main layout
     QVBoxLayout * m_layout;
 };

@@ -25,6 +25,8 @@
 #include <config.h>
 #endif
 
+#include <qguardedptr.h>
+
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <kactionclasses.h>
@@ -53,7 +55,7 @@ public:
     /**
      * Default Destructor
      */
-    virtual ~ktjview2();
+    ~ktjview2();
 
 public slots:
     /**
@@ -143,6 +145,7 @@ private slots:
     void slotSidebarResources();
     void slotSidebarTasks();
     void slotSidebarResUsage();
+    void slotSidebarEditor();
 
     /**
      * Activate the sidebar actions, switch the view
@@ -192,8 +195,10 @@ private:
      */
     void enableResUsageActions( bool enable );
 
+    void enableEditorActions( bool enable );
+
     /// pointer to the main view
-    ktjview2View *m_view;
+    QGuardedPtr<ktjview2View> m_view;
 
     // actions
     KRecentFilesAction *m_recentAction;
@@ -219,7 +224,7 @@ private:
     KSelectAction * m_ruDisplayAction;
 
     // sidebar actions
-    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks, * m_sidebarResUsage;
+    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks, * m_sidebarResUsage, * m_sidebarEditor;
 };
 
 #endif // _KTJVIEW2_H_

@@ -59,6 +59,7 @@
 #include "filterDialog.h"
 #include "selectDialog.h"
 #include "resUsageView.h"
+#include "editorView.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -151,6 +152,10 @@ ktjview2View::ktjview2View( QWidget *parent )
     // resource usage view
     m_resUsageView = new ResUsageView( this, "res_usage_view" );
     m_widgetStack->addWidget( m_resUsageView );
+
+    // editor view
+    m_editorView = new EditorView( this, "editor_view" );
+    m_widgetStack->addWidget( m_editorView );
 
     // gantt popup menu
     m_ganttPopupMenu = new QPopupMenu( this, "gantt_popup" );
@@ -313,6 +318,8 @@ bool ktjview2View::openURL( const KURL& url )
 
     m_ganttView->setUpdateEnabled( true );
     m_ganttView->setTimelineToStart();
+
+    m_editorView->loadDocument( url );
 
     m_projectURL = url;
     signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
@@ -783,6 +790,8 @@ void ktjview2View::clearAllViews()
     m_taskView->clear();
 
     m_resUsageView->clear();
+
+    m_editorView->closeDocument();
 }
 
 QString ktjview2View::formatAllocations( Task* task ) const
@@ -1033,6 +1042,8 @@ void ktjview2View::activateView( int id )
         m_widgetStack->raiseWidget( m_taskView );
     else if ( id == ID_VIEW_RES_USAGE )
         m_widgetStack->raiseWidget( m_resUsageView );
+    else if ( id == ID_VIEW_EDITOR )
+        m_widgetStack->raiseWidget( m_editorView );
 }
 
 void ktjview2View::recreateProject()

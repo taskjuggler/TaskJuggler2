@@ -85,6 +85,7 @@ ktjview2::ktjview2()
 
 ktjview2::~ktjview2()
 {
+    delete m_view;
 }
 
 void ktjview2::load( const KURL& url )
@@ -233,6 +234,11 @@ void ktjview2::setupActions()
     m_sidebarResUsage->setToolTip( i18n( "Resource Usage" ) );
     m_sidebarResUsage->setExclusiveGroup( "sidebar" );
     connect( m_sidebarResUsage, SIGNAL( activated() ), this, SLOT( slotSidebarResUsage() ) );
+
+    m_sidebarEditor = new KRadioAction( i18n( "Editor" ), "edit", KShortcut(), actionCollection(), "sidebar_editor" );
+    m_sidebarEditor->setToolTip( i18n( "Project Source Editor" ) );
+    m_sidebarEditor->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarEditor, SIGNAL( activated() ), this, SLOT( slotSidebarEditor() ) );
 
     connect( m_view, SIGNAL( signalSwitchView( int ) ), this, SLOT( slotSwitchView( int ) ) );
 
@@ -436,6 +442,18 @@ void ktjview2::slotSidebarResUsage()
     m_view->activateView( ID_VIEW_RES_USAGE );
 }
 
+void ktjview2::slotSidebarEditor()
+{
+    toolBar( "filterToolBar" )->hide();
+    toolBar( "ganttToolBar" )->hide();
+    enableGanttActions( false );
+    enableTasksActions( false );
+    enableResourceActions( false );
+    enableResUsageActions( false );
+    enableEditorActions( true );
+    m_view->activateView( ID_VIEW_EDITOR );
+}
+
 void ktjview2::slotSwitchView( int type )
 {
     if ( type == ID_VIEW_INFO )
@@ -448,6 +466,8 @@ void ktjview2::slotSwitchView( int type )
         m_sidebarTasks->activate();
     else if ( type == ID_VIEW_RES_USAGE )
         m_sidebarResUsage->activate();
+    else if ( type == ID_VIEW_EDITOR )
+        m_sidebarEditor->activate();
 }
 
 void ktjview2::setCalendarMode()
@@ -508,6 +528,11 @@ void ktjview2::enableResUsageActions( bool enable )
     m_resScaleAction->setEnabled( enable );
     m_ruFindAction->setEnabled( enable );
     m_ruDisplayAction->setEnabled( enable );
+}
+
+void ktjview2::enableEditorActions( bool enable )
+{
+
 }
 
 void ktjview2::expandAll()

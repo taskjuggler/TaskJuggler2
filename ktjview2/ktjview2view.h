@@ -47,8 +47,10 @@ class TaskList;
 class TaskItem;
 class QPopupMenu;
 class ResUsageView;
+class EditorView;
 
-enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS, ID_VIEW_RES_USAGE };
+enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS,
+       ID_VIEW_RES_USAGE, ID_VIEW_EDITOR };
 
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
@@ -71,7 +73,7 @@ public:
 	/**
 	 * Destructor
 	 */
-    virtual ~ktjview2View();
+    ~ktjview2View();
 
     /**
      * @return URL of the currently open project
@@ -342,6 +344,8 @@ private:
     KListView * m_taskView;
     /// resource usage view
     ResUsageView * m_resUsageView;
+    /// editor view
+    EditorView * m_editorView;
 
     /// gantt listview item popup menu
     QPopupMenu * m_ganttPopupMenu;

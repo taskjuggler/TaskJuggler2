@@ -13,13 +13,13 @@ INCLUDES = -I$(top_srcdir)/ktjview2/kdgantt -I$(top_srcdir)/taskjuggler $(all_in
 ktjview2_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
+ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT) -lktexteditor
 
 # which sources should be compiled for ktjview2
 ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp ResourceItem.cpp \
 	ktjview2iface.skel timedialog.cpp settings.kcfgc gantt.ui \
 	filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp \
-	resUsageView.cpp resUsageCfg.ui ruFindDialog.cpp
+	resUsageView.cpp resUsageCfg.ui ruFindDialog.cpp editorView.cpp
 
 kde_kcfg_DATA = ktjview2.kcfg
 

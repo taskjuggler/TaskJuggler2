@@ -7,15 +7,16 @@
 #include <qfile.h>
 
 // KDE includes
-#include <klibloader.h>
-#include <ktrader.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kurl.h>
+#include <kdebug.h>
 
+#include <ktexteditor/editorchooser.h>
 #include <ktexteditor/editinterface.h>
 
 EditorView::EditorView( QWidget * parent, const char * name )
-    : QWidget( parent, name ), m_view( 0 ), m_doc( 0 )
+    : QWidget( parent, name ), m_view( 0 )
 {
     m_layout = new QVBoxLayout( this );
     init();
@@ -23,84 +24,55 @@ EditorView::EditorView( QWidget * parent, const char * name )
 
 EditorView::~EditorView()
 {
-    m_view = 0;
-    m_doc = 0;
+    delete m_view->document();
 }
 
-QString EditorView::documentPath() const
+KURL EditorView::url() const
 {
-    return m_path;
+    if ( doc() )
+        return doc()->url();
+    else
+        return KURL();
 }
 
 bool EditorView::init()
 {
-    KTrader::OfferList offers = KTrader::self()->query( "KTextEditor/Document" );
-    if( offers.isEmpty() )
+    KTextEditor::Document *document;
+    if ( !(document = KTextEditor::EditorChooser::createDocument( this, "KTextEditor::Document" ) ) )
     {
-        KMessageBox::error( this, i18n( "Cannot start a text editor component.\n"
-                                        "Please check your KDE installation." ) );
-        m_doc = 0;
-        m_view = 0;
+        KMessageBox::error( this, i18n( "A KDE text-editor component could not be found;\n"
+                                        "please check your KDE installation." ) );
         return false;
     }
 
-    KService::Ptr service = *offers.begin();
-    KLibFactory *factory = KLibLoader::self()->factory( service->library().latin1() );
-    if( !factory )
-    {
-        KMessageBox::error( this, i18n( "Cannot start a text editor component.\n"
-                                        "Please check your KDE installation." ) );
-        m_doc = 0;
-        m_view = 0;
-        return false;
-    }
+    m_view = document->createView( this, "text_view" );
+    doc()->setReadWrite( false );
+    doc()->setModified( false );
+    m_layout->addWidget( m_view, 1 );
+    m_view->show();
 
-    m_doc = static_cast<KTextEditor::Document *>( factory->create( this, 0, "KTextEditor::Document" ) );
-
-    if( !m_doc )
-    {
-        KMessageBox::error( this, i18n( "Cannot start a text editor component.\n"
-                                        "Please check your KDE installation." ) );
-        m_doc = 0;
-        m_view = 0;
-        return false;
-    }
-    m_view = m_doc->createView( this, 0 );
-    m_layout->addWidget( static_cast<QWidget *>( m_view ), 1 );
-    static_cast<QWidget *>( m_view )->show();
+    connect( doc(), SIGNAL( textChanged() ), this, SIGNAL( textChanged() ) );  // FIXME check this
+    connect( m_view, SIGNAL( cursorPositionChanged() ), this, SIGNAL( cursorChanged() ) );
+    connect( doc(), SIGNAL( selectionChanged() ), this, SIGNAL( selectionChanged() ) );
 
     return true;
 }
 
-bool EditorView::loadDocument( const QString & path )
+bool EditorView::loadDocument( const KURL & url )
 {
-    if ( !m_doc )
+    if ( !doc() )
         return false;
 
-    bool result = false;
+    kdDebug() << "Opening URL " << url << endl;
 
-    QFile file( path );
-    if ( file.open( IO_ReadOnly ) )
-    {
-        QTextStream stream( &file );
-        QString text = stream.read();
-
-        dynamic_cast<KTextEditor::EditInterface *>( m_doc )->setText( text );
-        m_doc->setReadWrite( false ); // TODO
-        m_doc->setModified( false );
-        result = true;
-    }
-    else
-        result = false;
-
-    file.close();
-    return result;
+    doc()->setReadWrite( true );
+    return doc()->openURL( url );
 }
 
 void EditorView::closeDocument()
 {
-    dynamic_cast<KTextEditor::EditInterface *>( m_doc )->clear();
-    m_path = QString();
+    doc()->closeURL();
+    doc()->setReadWrite( false );
 }
 
 #include "editorView.moc"
