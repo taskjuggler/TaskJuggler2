@@ -45,7 +45,7 @@ package tjTask;
                         Add_Delta_Days
                         Week_Number
                         Day_of_Week
-                        Day_of_Week_to_Text
+                        Day_of_Week_Abbreviation
                         Month_to_Text
                         Monday_of_Week);
 
@@ -428,11 +428,12 @@ sub _draw_grid {
         #-- welcher monat (name)
         my $act_month_name = Month_to_Text($act_month);
         #-- welcher tag (name)
-        my $act_day_name = Day_of_Week_to_Text($act_dow);
+        #my $act_day_name = Day_of_Week_to_Text($act_dow);
+        my $act_day_name = Day_of_Week_Abbreviation($act_dow);
         #-- farbe für die tage festlegen
         $p->setcolour('white');
         #-- ist es ein wochenende ?
-        if ( $act_day_name eq 'Saturday' || $act_day_name eq 'Sunday' ) {
+        if ( $act_day_name eq 'Sat' || $act_day_name eq 'Sun' ) {
             $p->setcolour(250,250,165); # sand
         }
         #-- heute wird auch anders angezeigt
@@ -474,6 +475,9 @@ sub _draw_grid {
                 $p->text($x+1, $y-($header_height/$h_month_week)+($header_height/4), $act_week);
             }
         }
+        #-- tage in den header schreiben
+        $p->setfont("Helvetica", 6);
+        $p->text($x+0.5, $page_y-$page_border-($header_height*3)+($task_height/1.5), sprintf('%02d', $act_day));
     }
 }
 
