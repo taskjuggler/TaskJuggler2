@@ -1,4 +1,6 @@
 #include <qdatetime.h>
+#include <qheader.h>
+
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -37,6 +39,9 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    connect( this, SIGNAL( collapsed( QListViewItem* )),
 	    this, SLOT( slCollapsed( QListViewItem* )));
 
+   connect( this, SIGNAL( selectionChanged(QListViewItem*)),
+	    this, SLOT(slSelectionChanged(QListViewItem*)));
+   
    /* load pixmaps */
    KIconLoader *loader = KGlobal::iconLoader();
    m_milestonePix = loader->loadIcon( PIX_MILESTONE, KIcon::Small );
@@ -68,7 +73,8 @@ void KTVTaskTable::showProject( Project *p )
    m_root->setText( COL_NAME, i18n("Project: %1").arg(pName) );
 
    setItemHeight( m_root->height() );
-   emit itemHeightChanged(m_root->height() );
+   emit topOffsetChanged( header()->height() + m_root->height() );
+   
    qDebug( "Y-Pos of root: %d, height is %d", m_root->itemPos(), m_root->height() );
    
    
@@ -189,6 +195,18 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
    emit needUpdate();
       
 }
+
+
+void KTVTaskTable::slSelectionChanged( QListViewItem *it )
+{
+   if( ! it ) return;
+   
+   int y = it->itemPos();
+
+   emit moveMarker( y- it->height() );
+   
+}
+
 
 void KTVTaskTable::slExpanded( QListViewItem* it)
 {

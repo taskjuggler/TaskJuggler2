@@ -4,6 +4,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <qbrush.h>
+#include <qpen.h>
 #include <qrect.h>
 #include <qpainter.h>
 #include <qlabel.h>
@@ -21,16 +22,27 @@
 KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *name )
    :QCanvas( parent, name ),
     m_dayHeight( 15 ),
-    m_topOffset( 25 ),
-    m_markerHeight( 0 ), /* shitty if not set */ 
-    m_markerOffset(0)
+    m_topOffset( 25 )
 {
    m_taskTable = tab;
    m_days = 0;
    m_dayWidth = 20;
    if( m_taskTable )
       m_dayHeight = m_taskTable->header()->height()-1;
-      
+
+
+   m_canvasMarker = new QCanvasRectangle( this  );
+   m_canvasMarker->hide();
+   m_canvasMarker->move(0,0);
+   m_canvasMarker->setPen( NoPen );
+
+   m_dbgMark = new QCanvasLine( this );
+   m_dbgMark->setPoints( 1, 0, 15, 0 );
+   
+   QBrush wBrush( QColor(222,222,222), Dense4Pattern);
+   m_canvasMarker->setBrush( wBrush ); // QBrush(gray, Dense4Pattern ));
+   
+   m_canvasMarker->setZ(-0.1);
    m_start = 0;
    m_end = 0;
    setDoubleBuffering( false );
@@ -38,11 +50,18 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *na
 }
 
 
+
+
 /* sets a pointer to the connected table. This class is friend of
  *  the table. */
 void KTVTaskCanvas::setTable( KTVTaskTable *tab )
 {
    m_taskTable = tab;
+}
+
+void KTVTaskCanvas::slSetTopOffset( int o )
+{
+   m_topOffset = o;
 }
 
 
@@ -58,6 +77,7 @@ void KTVTaskCanvas::setInterval( time_t start, time_t end )
 
    qDebug("Resizing to %dx%d =%d days", w, h, m_days );
    resize( w, h ); // TODO: amount of tasks
+   m_canvasMarker->setSize( w, m_canvasMarker->height() );
 }
 
 time_t KTVTaskCanvas::timeFromX( int x )
@@ -120,7 +140,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    // 	   painter.hasClipping()? "on": "off");
 
    int x = 0;
-   int y = clip.top() > topOffset() ? clip.top()-1: topOffset();
+   int y = clip.top() > topOffset() ? clip.top()-1: topOffset()-1;
 
    /* wind to start of the clipping area */
    while ( x < clip.left() ) 
@@ -158,10 +178,12 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
 void KTVTaskCanvas::slSetRowHeight(int h )
 {
    m_rowHeight = h;
-   m_markerHeight = (m_rowHeight*4) / 5;
-   m_markerOffset = topOffset() + (m_rowHeight-m_markerHeight)/2;
-   qDebug( "Setting row metrix: %d, %d and offset %d",
-	   m_rowHeight, m_markerHeight, m_markerOffset );
+   
+   qDebug( "Setting row height: %d", m_rowHeight );
+
+   int w = m_canvasMarker->width();
+   m_canvasMarker->setSize( w, m_rowHeight );
+
    // TODO: redraw();
 }
 
@@ -172,12 +194,14 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
    qDebug( "Moving canvas items from %d by %d", y, dy );
    QCanvasItemList items = allItems();
    QCanvasItemList::iterator it;
-   int yoff = topOffset();
+
+   int startHere = y+topOffset()-m_rowHeight;
+   slShowDebugMarker( startHere );
    
    for ( it = items.begin(); it != items.end(); ++it )
-      if( (*it)->y() > yoff+y )
+      if( (*it)->y() > startHere )
       {
-	 qDebug( "moving!" );
+	 // qDebug( "moving!" );
 	 (*it)->moveBy( 0, double(dy) );
       }
 }
@@ -222,14 +246,55 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 	    cItem = new KTVCanvasItemTask( this );
 	 }
 	 cItem->setTask(t);
+	 // cItem->setZ(1.0);
 	 Q_ASSERT(cItem );
+	 /* a dict which makes the items easily accessible by knowing the task
+	  * it is needed to find out if a canvas item already exits. */
 	 m_canvasItems.insert( t, cItem );
+	 
+	 /* A list of all items */
+	 m_canvasItemList.append( cItem );
+	 
 	 int w = timeToX( t->getPlanEnd() )-x;
-	 cItem->setSize( w, m_markerHeight );
+	 cItem->setSize( w, cItem->height() );
       }
       qDebug("---###  showing task at %d, %d!", x, yPos);
-      
-      cItem->move( x, yPos + m_markerOffset );
+
+      /* yPos contains the bottom-position, from that we subtract the height
+       * of the row and add the offset.
+       */
+      qDebug( "Returning height: %d", cItem->height() );
+      cItem->move( x, yPos + topOffset() - m_rowHeight + (m_rowHeight-cItem->height())/2  );
       cItem->show();
    }
+}
+
+
+/* called on selectionChanged of the listview */
+
+void KTVTaskCanvas::slShowMarker( int y )
+{
+   qDebug( "Showing marker at %d",y );
+   if( y > 0 && m_canvasMarker->y() != y )
+   {
+      qDebug( "Marker size is %dx%d", m_canvasMarker->width(), m_canvasMarker->height());
+      /* move and show the thing */
+      m_canvasMarker->move(1, y + m_topOffset);
+      m_canvasMarker->show();
+   }
+   else if( y == 0 )
+   {
+      /* hide it */
+      m_canvasMarker->hide();
+   }
+   update();
+}
+
+
+void KTVTaskCanvas::slShowDebugMarker( int y )
+{
+   m_dbgMark->move( 0, y );
+   if( !m_dbgMark->visible() ) m_dbgMark->show();
+   
+   qDebug( "Moving debug-mark to %d", y );
 }

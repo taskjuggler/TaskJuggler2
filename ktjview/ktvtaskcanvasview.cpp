@@ -95,20 +95,25 @@ void KTVTaskCanvasView::addTask(Task *t )
 void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* e )
 {
    QCanvasItemList l = canvas()->collisions(e->pos());
-   for (QCanvasItemList::Iterator it=l.begin(); it!=l.end(); ++it)
+
+   const CanvasItemList ktvItems = static_cast<KTVTaskCanvas*>(canvas())->getCanvasItemsList();
+
+   /* Take only the first of the collision list, that is the front most item */
+
+   CanvasItemListIterator it(ktvItems);
+   
+   for ( ; it.current(); ++it )
    {
-      if( (*it)->isVisible() )
+      if( (*it)->contains( l.first() ) )
       {
 	 /* find out to which ItemBase this CanvasItem belongs to */
-#if 0
-	 Task *t = (static_cast<KTVCanvasItemBase*>(*it))->getTask() ;
+	 Task *t = (*it)->getTask();
 
 	 if( t )
 	 {
 	    QString tname = t->getName();
 	    qDebug( "Setting on task %s", tname.latin1());
 	 }
-#endif
       }
    }
 }

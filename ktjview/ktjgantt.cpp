@@ -35,12 +35,18 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
     connect( m_table, SIGNAL(hideTaskByItem(KTVTaskTableItem*)),
     	     m_canvas->canvas(), SLOT(slHideTask(KTVTaskTableItem*)) );
 
+    connect( m_table, SIGNAL(moveMarker(int)),
+    	     m_canvas->canvas(), SLOT(slShowMarker(int)) );
+
     connect( m_table, SIGNAL( needUpdate() ),
     	     m_canvas->canvas(), SLOT(update()) );
 
     connect( m_table, SIGNAL( moveItems( int, int )),
 	     m_canvas->canvas(), SLOT( slMoveItems( int, int )));
     
+    connect( m_table, SIGNAL( topOffsetChanged( int )),
+	     m_canvas->canvas(), SLOT( slSetTopOffset( int )));
+
     QValueList<int> sizes;
     sizes.append( 200 );
     setSizes( sizes );

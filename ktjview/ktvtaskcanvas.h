@@ -13,7 +13,7 @@
 #include "ktvcanvasitem.h"
 
 class KTVTaskCanvasItem;
-
+class QCanvasRectangle;
 class KTVTaskTableItem;
 class KTVTaskTable;
 
@@ -28,13 +28,17 @@ public:
 
    void setInterval( time_t start, time_t end );
    void setTable( KTVTaskTable *tab );
-
- public slots:
+   const CanvasItemList& getCanvasItemsList() const { return m_canvasItemList; }
+   
+public slots:
    void slSetRowHeight(int);
    void slNewTask( Task *t, KTVTaskTableItem *it ){ m_tasks.insert( it, t ); }
    void slShowTask( KTVTaskTableItem* );
    void slHideTask( KTVTaskTableItem* );
    void slMoveItems( int, int );
+   void slShowMarker( int );
+   void slSetTopOffset( int );
+   void slShowDebugMarker( int );
    
 protected:
    
@@ -52,10 +56,12 @@ private:
    time_t m_start, m_end;
    QPtrDict<Task> m_tasks;    // Stores the Tasks for the TableItems
    QPtrDict<KTVCanvasItemBase> m_canvasItems;    // Stores Canvas-Items for the Tasks
+
+   CanvasItemList    m_canvasItemList;
+   QCanvasLine      *m_dbgMark;
+   QCanvasRectangle *m_canvasMarker;
    
    int    m_rowHeight;
-   int    m_markerHeight;
-   int    m_markerOffset;
 };
 
 

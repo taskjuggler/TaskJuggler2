@@ -7,6 +7,7 @@
 #include <Task.h>
 
 
+
 class KTVCanvasItemBase: public QObject
 {
 public:
@@ -18,11 +19,33 @@ public:
    virtual void move( double, double ){}
    virtual void moveBy( int, int ){}
    virtual void show(){}
-   virtual void hide(){};
-private:
-   Task *m_task;
+   virtual void hide(){}
+   virtual bool contains( QCanvasItem* ){ return false; }
+   virtual int  height( ) const { return m_height; }
+   
+   static void slSetRowHeight( int _h ) { m_rowHeight = _h; }
+   
+protected:
+   Task      *m_task;
+   int        m_height;
+   static int m_rowHeight;
 };
 
+/*
+ * List of Pointers to Canvas Items 
+ */
+class CanvasItemList: public QPtrList<KTVCanvasItemBase>
+{
+public:
+   CanvasItemList() {}
+   ~CanvasItemList() {}
+};
+
+typedef QPtrListIterator<KTVCanvasItemBase> CanvasItemListIterator;
+
+/*
+ * Task Item
+ */
 class KTVCanvasItemTask: public KTVCanvasItemBase
 {
 public:
@@ -33,6 +56,7 @@ public:
    void moveBy( int, int );
    void hide();
    void show();
+   bool contains( QCanvasItem* );
 private:
    QCanvasRectangle *cRect;
 };
@@ -47,8 +71,10 @@ public:
    void moveBy( int, int );
    void hide();
    void show();
+   bool contains( QCanvasItem* );
 private:
-   QCanvasEllipse *cCirc;
+   QCanvasPolygon *cPoly;
+   
 };
 
 class  KTVCanvasItemContainer: public KTVCanvasItemBase
@@ -61,8 +87,9 @@ public:
    void moveBy( int, int );
    void hide();
    void show();
+   bool contains( QCanvasItem* );
 private:
-   QCanvasLine    *cLine;
+   QCanvasPolygon    *cPoly;
 };
 #endif
 

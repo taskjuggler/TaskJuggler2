@@ -36,22 +36,27 @@ public:
    void showProject( Project * );
    void setItemHeight(int h);
 
- protected slots:
+protected slots:
 
- void slExpanded( QListViewItem* );
+   void slExpanded( QListViewItem* );
    void slCollapsed( QListViewItem* );
+   void slSelectionChanged( QListViewItem* );
+
 signals:
    void itemHeightChanged(int);
+   void topOffsetChanged(int);
    void newTaskAdded( Task*, KTVTaskTableItem* );
    void moveItems( int y, int dy);  // move items on canvas from int y by dy
    void showTaskByItem( KTVTaskTableItem* );
    void hideTaskByItem( KTVTaskTableItem* );
    void needUpdate();
+   void moveMarker(int);
+   
 private:
    void addTask( KTVTaskTableItem *parent, Task *t );
    QString beautyTimeSpan( time_t tStart, time_t tEnd ) const;
    int     m_itemHeight;
-   
+
    KTVTaskTableItem *m_root;
 
    QPixmap m_milestonePix;
