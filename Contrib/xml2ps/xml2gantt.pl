@@ -429,7 +429,7 @@ sub _draw_task {
         my $end     = $task->h_planEnd;
             $end =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
         my $persent = $task->complete;
-            $persent = 0 if $persent <= 0;
+            $persent = 100 if ($persent < 0);
         #-- wieviele tage vom anfang her fängt der task an
         my ($start_year, $start_month, $start_day)  = split(/-/, $start);
         my ($end_year, $end_month, $end_day)        = split(/-/, $end);
