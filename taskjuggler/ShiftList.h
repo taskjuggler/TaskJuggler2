@@ -61,6 +61,11 @@ public:
 
 	bool isOnShift(const Interval& iv);
 
+	bool isVacationDay(time_t day)
+	{
+		workingHours[dayOfWeek(day)]->isEmpty();
+	}
+
 private:
 	Shift() { }		// Don't use this.
 	
@@ -79,6 +84,8 @@ public:
 
 	bool isOnShift(const Interval& iv);
 
+	bool isVacationDay(time_t day);
+
 private:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
@@ -93,6 +100,8 @@ public:
 
 	const Interval& getPeriod() const { return period; }
 	Shift* getShift() const { return shift; }
+
+	bool isVacationDay(time_t day);
 
 private:
 	Interval period;

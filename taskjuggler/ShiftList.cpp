@@ -34,6 +34,16 @@ ShiftSelectionList::isOnShift(const Interval& iv)
 	return TRUE;
 }
 
+bool
+ShiftSelectionList::isVacationDay(time_t day)
+{
+	for (ShiftSelection*s = first();
+		 s != 0 && day <= s->getPeriod().getEnd(); s = next())
+		if (s->isVacationDay(day))
+			return TRUE;
+	return FALSE;
+}
+
 Shift*
 ShiftList::getShift(const QString& id)
 {
@@ -42,6 +52,12 @@ ShiftList::getShift(const QString& id)
 			return r;
 
 	return 0;
+}
+
+bool
+ShiftSelection::isVacationDay(time_t day)
+{
+	return period.contains(day);
 }
 
 Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
