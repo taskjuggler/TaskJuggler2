@@ -25,13 +25,19 @@ done
 cd ../..
 
 cd HTML-Reports
+
 for f in *.tjp ; do
   referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.html/g`
   ../../taskjuggler/taskjuggler $f | \
   fgrep -v TaskJuggler > $referenceFile || exit 1
-  validate $referenceFile
-  if [ $? -ne 0 ] ; then
-    exit 1
+
+  if which validate >/dev/null 2>&1 ; then
+    validate $referenceFile
+    if [ $? -ne 0 ] ; then
+      exit 1
+    fi
+  else
+      echo "Warn: validate not installed!"    
   fi
   echo $referenceFile created
 done
