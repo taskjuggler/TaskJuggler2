@@ -27,7 +27,7 @@ class ProjectFile;
 class FileInfo
 {
 public:
-    FileInfo(ProjectFile* p, const QString& file, const QString& tp);
+    FileInfo(ProjectFile* p, const QString& file_, const QString& tp);
     ~FileInfo() { }
 
     bool open();
@@ -62,7 +62,7 @@ private:
      * data.
      */
     ProjectFile* pf;
-    
+
     // The name of the file.
     QString file;
 
@@ -97,7 +97,7 @@ private:
      * Besides read in characters we can also push back a token. Contrary to
      * characters we can push back only 1 token. This is stored as type and
      * a string buffer.
-     */  
+     */
     TokenType tokenTypeBuf;
     QString tokenBuf;
 
