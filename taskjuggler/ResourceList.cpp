@@ -69,50 +69,19 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	}
 	else
 	{
-		// Sunday
-		workingHours[0] = new QPtrList<Interval>();
-
-		// Monday
-		workingHours[1] = new QPtrList<Interval>();
-		workingHours[1]->setAutoDelete(TRUE);
-		workingHours[1]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-		workingHours[1]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-		// Tuesday
-		workingHours[2] = new QPtrList<Interval>();
-		workingHours[2]->setAutoDelete(TRUE);
-		workingHours[2]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-		workingHours[2]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-		// Wednesday
-		workingHours[3] = new QPtrList<Interval>();
-		workingHours[3]->setAutoDelete(TRUE);
-		workingHours[3]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-		workingHours[3]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-		// Thursday
-		workingHours[4] = new QPtrList<Interval>();
-		workingHours[4]->setAutoDelete(TRUE);
-		workingHours[4]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-		workingHours[4]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-		// Friday
-		workingHours[5] = new QPtrList<Interval>();
-		workingHours[5]->setAutoDelete(TRUE);
-		workingHours[5]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
-		workingHours[5]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
-
-		// Saturday
-		workingHours[6] = new QPtrList<Interval>();
-
-		if (p)
+		// Inherit start values from project defaults.
+		for (int i = 0; i < 7; i++)
 		{
-			minEffort = p->getMinEffort();
-			maxEffort = p->getMaxEffort();
-			rate = project->getRate();
+			workingHours[i] = new QPtrList<Interval>();
+			workingHours[i]->setAutoDelete(TRUE);
+			for (const Interval* iv = p->getWorkingHours(i)->first(); iv != 0;
+				 iv = p->getWorkingHours(i)->next())
+				workingHours[i]->append(new Interval(*iv));
 		}
-		else
-		{
-			minEffort = 0.0;
-			maxEffort = 1.0;
-			rate = 0.0;
-		}
+
+		minEffort = p->getMinEffort();
+		maxEffort = p->getMaxEffort();
+		rate = project->getRate();
 		efficiency = 1.0;
 	}
 

@@ -1,0 +1,8 @@
+#! /bin/sh
+
+grep '.*KW(".*").*' ../../taskjuggler/*.cpp ../../taskjuggler/*.h |\
+sed 's%.*KW("\(.*\)").*%syn keyword tjspkeyword \1%g' | sort -u > \
+center
+
+cat head.vim center tail.vim > tjsp.vim
+

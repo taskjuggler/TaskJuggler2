@@ -89,6 +89,26 @@ public:
 	}
 	bool isVacation(time_t d) { return vacationList.isVacation(d); }
 
+	void setWorkingHours(int day, QPtrList<Interval>* l)
+	{
+		if (day < 0 || day > 6)
+			qFatal("day out of range");
+		delete workingHours[day];
+		workingHours[day] = l;
+	}
+	QPtrList<Interval>* getWorkingHours(int day)
+	{
+		if (day < 0 || day > 6)
+			qFatal("day out of range");
+		return workingHours[day];
+	}
+	bool isWorkingDay(time_t d)
+	{
+		/* If there is a working interval defined for this weekday and the
+		 * day is not registered as a vacation day then it is a workday. */
+		return !(workingHours[dayOfWeek(d)]->isEmpty() || isVacation(d));
+	}
+	
 	Interval* getVacationListFirst()
 	{
 		return vacationList.first(); 
@@ -252,6 +272,10 @@ private:
 	/// Number of working hours of a generic working day.
 	double dailyWorkingHours;
 
+	/* The list of standard working or opening hours. These values will be
+	 * inherited by the resources. */
+	QList<Interval>* workingHours[7];
+	
 	/**
 	 * The granularity of the scheduler in seconds. No intervals
 	 * shorter than this time will be scheduled. */
@@ -300,8 +324,6 @@ private:
 	 */
 	TaskList activeAsap;
 	TaskList activeAlap;
-
-   // Task *m_xmlParentTask;
 } ;
 
 #endif

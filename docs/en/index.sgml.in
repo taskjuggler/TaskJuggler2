@@ -165,6 +165,16 @@ attribute.
 <item>Strings can now be enclosed in either single or double quotes. A
 single quoted string may contain double quotes and vice versa.
 
+<item>Working hours can now be declared on project level. This also
+determines if a day is considered a working day or not.
+
+<item>With <ref id="task_startbuffer" name="startbuffer"> and <ref
+id="task_endbuffer" name="endbuffer"> you can now specify that there
+might be some air left in a certain task.
+
+<item>Remo's GANTT chart generators have been included in the
+<tt/Contrib/ directory.
+
 </itemize>
 
 <sect>Installation
@@ -782,25 +792,29 @@ Specifies which columns should be included in the task report. The
 following values for colid are available:
 
 <descrip>
-<tag/no/The task index
-<tag/id/The global <ref id="id" name="ID"> of a task
-<tag/name/The name of a task, resource, or account
-<tag/start/The start date of a task
+<tag/daily/A day-by-day calendar view of the tasks
+<tag/depends/The task index of the tasks on which this task depends
 <tag/end/The end date of a task
-<tag/minstart/The earliest desired start date
+<tag/endbuffer/The percentage of the endbuffer
+<tag/endbufferstart/The start time of the end buffer
+<tag/follows/The task index of the tasks that depend on this task
+<tag/id/The global <ref id="id" name="ID"> of a task
+<tag/maxend/The latest desired end date
 <tag/maxstart/The latest desired start date
 <tag/minend/The earliest desired end date
-<tag/maxend/The latest desired end date
+<tag/minstart/The earliest desired start date
+<tag/monthly/A month-by-month calendar view of the tasks
+<tag/name/The name of a task, resource, or account
+<tag/no/The task index
+<tag/note/The description of the task
 <tag/priority/The scheduling priority
 <tag/resources/The names of the used resources
-<tag/depends/The task index of the tasks on which this task depends
-<tag/follows/The task index of the tasks that depend on this task
-<tag/responsible/The name of the resource responsible for a task
 <tag/responsibilies/A list of all tasks indicies for which a resource is responsible 
-<tag/note/The description of the task
-<tag/daily/A day-by-day calendar view of the tasks
+<tag/responsible/The name of the resource responsible for a task
+<tag/start/The start date of a task
+<tag/startbuffer/The percentage of the start buffer
+<tag/startbufferend/The end time of the start buffer
 <tag/weekly/A week-by-week calendar view of the tasks
-<tag/monthly/A month-by-month calendar view of the tasks
 </descrip>
 
 <label id="htmltaskreport_end">
@@ -1472,6 +1486,20 @@ See also: <ref name="actualend" id="task_actualend">, <ref
 name="start" id="task_start">
 
 
+<label id="task_endbuffer">
+<tag/endbuffer &lt;percent&gt;/
+percent: <ref id="real" name="REAL"> or <ref id="integer"
+name="INTEGER">
+
+The end buffer specifies how many percent of the specified length,
+duration or effort may be shortened at the end. This value is soley
+for documentational purposes. It is not used for scheduling. You can
+specify <tt/startbuffer/ or <tt/endbuffer/ values to document, that
+you might have some extra time to squeeze out if needed.
+
+See also: <ref name="startbuffer" id="task_startbuffer">
+
+
 <label id="task_endcredit">
 <tag/endcredit &lt;amount&gt;/
 amount: <ref id="real" name="REAL">
@@ -1504,6 +1532,9 @@ unit: <ref id="unit" name="UNIT">
 
 Specifies the time the task occupies the resources. This is working
 time, not calender time. 7d means 7 working days, not one week.
+Whether a day is considered a working day or not depends on the
+defined <ref id="workinghours" name="working hours"> and global <ref
+id="vacation" name="vacations">.
 
 Tasks may not have subtasks if this attribute is used.
 
@@ -1645,6 +1676,21 @@ See also: <ref name="actualstart" id="task_actualstart">, <ref
 name="end" id="task_end">
 
 
+<label id="task_startbuffer">
+<tag/startbuffer &lt;percent&gt;/
+percent: <ref id="real" name="REAL"> or <ref id="integer"
+name="INTEGER">
+
+The start buffer specifies how many percent of the specified length,
+duration or effort may be shortened at the begining of the task. This
+value is soley for documentational purposes. It is not used for
+scheduling. You can specify <tt/startbuffer/ or <tt/endbuffer/ values
+to document, that you might have some extra time to squeeze out if
+needed.
+
+See also: <ref id="task_endbuffer" name="endbuffer">
+
+
 <label id="task_startcredit">
 <tag/startcredit &lt;amount&gt;/
 amount: <ref id="real" name="REAL">
@@ -1672,6 +1718,7 @@ other attributes are illegal. See attributes for details.
 Tasks may be nested and some attributes are inherited by the subtasks.
 
 
+<label id="timinigresolution">
 <sect1>timingresolution &lt;value&gt; &lt;unit&gt;<label id="timingresolution">
 <p>
 value: INTERGER
@@ -1683,6 +1730,7 @@ the schedulings process requires. The default is 1 hour. The smallest
 value is 5 min.
 
 
+<label id="vacation">
 <sect1>vacation name &lt;start&gt; &lsqb;- &lt;end&gt;&rsqb;<label id="vacationname">
 <p>
 name: <ref id="string" name="STRING">
@@ -1696,6 +1744,7 @@ of the vacation. So 2001-12-24 - 2001-12-25 specifies one day of
 vacation, not two days.
 
 
+<label id="workinghours">
 <sect1>workinghours &lt;weekday&gt; &lt;from&gt;-&lt;to&gt;&lsqb;,&lt;from&gt;-&lt;to&gt;&rsqb;<label id="hours">
 <p>
 weekday: <ref id="weekday" name="WEEKDAY">
@@ -1706,9 +1755,12 @@ to: <ref id="time" name="TIME">
 
 Sets the working hours to the specified intervals. The values are used
 as default values for all resources defined afterwards. The default
-values are 08:00-12:00 and 13:00-17:00 from Mon - Fri.
+values are 08:00-12:00 and 13:00-17:00 from Mon - Fri. A day that has
+no defined working hours is not considered a working day when
+determining the <ref name="length" id="task_length"> of a task.
 
 
+<label id="workinghoursperday">
 <sect1>workinghoursperday &lt;value&gt;<label id="workinghoursperday">
 <p>
 value: <ref id="integer" name="INTEGER">

@@ -44,7 +44,10 @@ syn match	tjsparg			contained "\${.*}"
 syn match	tjspoperator	contained "[=|&\*\+\<\>]"
 syn match	tjspcomment		"#.*"
 " TODO: Implement support for C-style comments
+
+syn keyword tjspkeyword account
 syn keyword tjspkeyword accumulate
+syn keyword tjspkeyword actualbooking
 syn keyword tjspkeyword actualduration
 syn keyword tjspkeyword actualeffort
 syn keyword tjspkeyword actualend
@@ -59,21 +62,30 @@ syn keyword tjspkeyword columns
 syn keyword tjspkeyword complete
 syn keyword tjspkeyword copyright
 syn keyword tjspkeyword cost
+syn keyword tjspkeyword costs
 syn keyword tjspkeyword credit
 syn keyword tjspkeyword currency
 syn keyword tjspkeyword currencydigits
+syn keyword tjspkeyword d
+syn keyword tjspkeyword daily
+syn keyword tjspkeyword day
+syn keyword tjspkeyword dayheader
 syn keyword tjspkeyword depends
 syn keyword tjspkeyword duration
 syn keyword tjspkeyword efficiency
 syn keyword tjspkeyword effort
 syn keyword tjspkeyword end
+syn keyword tjspkeyword endbuffer
+syn keyword tjspkeyword endbufferstart
 syn keyword tjspkeyword endcredit
 syn keyword tjspkeyword enddown
 syn keyword tjspkeyword endup
 syn keyword tjspkeyword export
 syn keyword tjspkeyword flags
+syn keyword tjspkeyword follows
 syn keyword tjspkeyword fullnamedown
 syn keyword tjspkeyword fullnameup
+syn keyword tjspkeyword h
 syn keyword tjspkeyword headline
 syn keyword tjspkeyword hideaccount
 syn keyword tjspkeyword hideplan
@@ -82,8 +94,10 @@ syn keyword tjspkeyword hidetask
 syn keyword tjspkeyword htmlaccountreport
 syn keyword tjspkeyword htmlresourcereport
 syn keyword tjspkeyword htmltaskreport
+syn keyword tjspkeyword id
 syn keyword tjspkeyword iddown
 syn keyword tjspkeyword idup
+syn keyword tjspkeyword include
 syn keyword tjspkeyword indexdown
 syn keyword tjspkeyword indexup
 syn keyword tjspkeyword kotrusid
@@ -92,6 +106,8 @@ syn keyword tjspkeyword kotrusidup
 syn keyword tjspkeyword kotrusmode
 syn keyword tjspkeyword length
 syn keyword tjspkeyword load
+syn keyword tjspkeyword m
+syn keyword tjspkeyword macro
 syn keyword tjspkeyword maxeffort
 syn keyword tjspkeyword maxeffortdown
 syn keyword tjspkeyword maxeffortup
@@ -104,21 +120,36 @@ syn keyword tjspkeyword mineffortdown
 syn keyword tjspkeyword mineffortup
 syn keyword tjspkeyword minend
 syn keyword tjspkeyword minstart
+syn keyword tjspkeyword month
+syn keyword tjspkeyword monthheader
+syn keyword tjspkeyword monthly
+syn keyword tjspkeyword name
 syn keyword tjspkeyword namedown
 syn keyword tjspkeyword nameup
+syn keyword tjspkeyword no
 syn keyword tjspkeyword nokotrus
 syn keyword tjspkeyword note
 syn keyword tjspkeyword now
 syn keyword tjspkeyword off
 syn keyword tjspkeyword persistent
+syn keyword tjspkeyword planbooking
 syn keyword tjspkeyword preceeds
 syn keyword tjspkeyword priority
 syn keyword tjspkeyword prioritydown
 syn keyword tjspkeyword priorityup
+syn keyword tjspkeyword project
 syn keyword tjspkeyword projectid
 syn keyword tjspkeyword rate
 syn keyword tjspkeyword ratedown
 syn keyword tjspkeyword rateup
+syn keyword tjspkeyword rawhead
+syn keyword tjspkeyword rawstylesheet
+syn keyword tjspkeyword rawtail
+syn keyword tjspkeyword resource
+syn keyword tjspkeyword resourceid
+syn keyword tjspkeyword resourcename
+syn keyword tjspkeyword resources
+syn keyword tjspkeyword responsibilities
 syn keyword tjspkeyword responsible
 syn keyword tjspkeyword responsibledown
 syn keyword tjspkeyword responsibleup
@@ -127,25 +158,40 @@ syn keyword tjspkeyword rollupaccount
 syn keyword tjspkeyword rollupresource
 syn keyword tjspkeyword rolluptask
 syn keyword tjspkeyword sat
+syn keyword tjspkeyword schedule
 syn keyword tjspkeyword scheduling
+syn keyword tjspkeyword shift
 syn keyword tjspkeyword showactual
 syn keyword tjspkeyword showprojectids
 syn keyword tjspkeyword sortaccounts
 syn keyword tjspkeyword sortresources
 syn keyword tjspkeyword sorttasks
 syn keyword tjspkeyword start
+syn keyword tjspkeyword startbuffer
+syn keyword tjspkeyword startbufferend
 syn keyword tjspkeyword startcredit
 syn keyword tjspkeyword startdown
 syn keyword tjspkeyword startup
 syn keyword tjspkeyword supplement
+syn keyword tjspkeyword task
+syn keyword tjspkeyword taskattributes
+syn keyword tjspkeyword taskid
+syn keyword tjspkeyword taskname
 syn keyword tjspkeyword timingresolution
+syn keyword tjspkeyword total
 syn keyword tjspkeyword tree
+syn keyword tjspkeyword url
 syn keyword tjspkeyword vacation
+syn keyword tjspkeyword w
 syn keyword tjspkeyword wed
+syn keyword tjspkeyword weekheader
+syn keyword tjspkeyword weekly
 syn keyword tjspkeyword workinghours
 syn keyword tjspkeyword xml
 syn keyword tjspkeyword xmltaskreport
-
+syn keyword tjspkeyword y
+syn keyword tjspkeyword year
+syn keyword tjspkeyword yearheader
 "syn keyword tjspmilestone 	contained	  milestone
 syn region  tjspstring	start=+"+ skip=+\\"+ end=+"+ contains=tjsparch 
 syn region  tjspstring	start=+`+ skip=+\\'+ end=+'+ contains=tjsparch 
@@ -188,3 +234,4 @@ endif
 let b:current_syntax = "tjsp"
 
 " vim: ts=4
+

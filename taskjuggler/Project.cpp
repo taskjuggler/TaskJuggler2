@@ -47,6 +47,42 @@ Project::Project()
 	icalReport = 0;
 #endif
 #endif
+	
+	/* Initialize working hours with default values that match the Monday -
+	 * Friday 9 - 5 pattern used by many western countries. */
+	// Sunday
+	workingHours[0] = new QPtrList<Interval>();
+	workingHours[0]->setAutoDelete(TRUE);
+
+	// Monday
+	workingHours[1] = new QPtrList<Interval>();
+	workingHours[1]->setAutoDelete(TRUE);
+	workingHours[1]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[1]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	// Tuesday
+	workingHours[2] = new QPtrList<Interval>();
+	workingHours[2]->setAutoDelete(TRUE);
+	workingHours[2]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[2]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	// Wednesday
+	workingHours[3] = new QPtrList<Interval>();
+	workingHours[3]->setAutoDelete(TRUE);
+	workingHours[3]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[3]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	// Thursday
+	workingHours[4] = new QPtrList<Interval>();
+	workingHours[4]->setAutoDelete(TRUE);
+	workingHours[4]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[4]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+	// Friday
+	workingHours[5] = new QPtrList<Interval>();
+	workingHours[5]->setAutoDelete(TRUE);
+	workingHours[5]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR));
+	workingHours[5]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR));
+
+	// Saturday
+	workingHours[6] = new QPtrList<Interval>();
+	workingHours[6]->setAutoDelete(TRUE);
 }
 
 bool
@@ -131,6 +167,9 @@ Project::pass2()
 		schedule();
 		finishActual();
 	}
+
+	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+		t->computeBuffers();
 
 	return TRUE;
 }

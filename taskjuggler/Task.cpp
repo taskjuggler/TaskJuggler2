@@ -101,6 +101,8 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	scheduling = ASAP;
 	milestone = FALSE;
 	complete = -1;
+	startBuffer = 0.0;
+	endBuffer = 0.0;
 	note = "";
 	account = 0;
 	startCredit = endCredit = 0.0;
@@ -279,7 +281,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 			bookResources(date, slotDuration);
 
 		doneDuration += ((double) slotDuration) / ONEDAY;
-		if (!(isWeekend(date) || project->isVacation(date)))
+		if (project->isWorkingDay(date))
 			doneLength += ((double) slotDuration) / ONEDAY;
 
 		if (debugLevel > 4)
@@ -322,8 +324,6 @@ Task::schedule(time_t& date, time_t slotDuration)
 		 * how much the resources can contribute over the following
 		 * workings days until we have reached the specified
 		 * effort. */
-//		if (project->isVacation(date))
-//			return TRUE;
 		bookResources(date, slotDuration);
 		// Check whether we are done with this task.
 		if (doneEffort >= effort)
@@ -870,6 +870,13 @@ Task::preScheduleOk()
 		return FALSE;
 	}
 
+	if (startBuffer + endBuffer >= 100.0)
+	{
+		fatalError("Start and end buffers may not overlap. So their sum must "
+				   "be smaller then 100%.");
+		return FALSE;
+	}
+
 	// Check plan values.
 	int durationSpec = 0;
 	if (planEffort > 0.0)
@@ -981,7 +988,8 @@ Task::preScheduleOk()
 		}
 	}
 
-	double intervalLoad = project->convertToDailyLoad(project->getScheduleGranularity());
+	double intervalLoad =
+	   	project->convertToDailyLoad(project->getScheduleGranularity());
 
 	for (Allocation* a = allocations.first(); a != 0; a = allocations.next())
 	{
@@ -989,7 +997,8 @@ Task::preScheduleOk()
 		{
 			qWarning("Warning: Load is smaller than scheduling granularity "
 					 "(Task: %s, Resource: %s). Minimal load is %.2f.",
-					 id.latin1(), a->getResource()->getId().latin1(), intervalLoad + 0.005);
+					 id.latin1(), a->getResource()->getId().latin1(),
+					 intervalLoad + 0.005);
 			a->setLoad((int) (intervalLoad * 100.0));
 		}
 	}
@@ -1248,6 +1257,117 @@ Task::finishActual()
 	actualBookedResources = bookedResources;
 }
 
+void
+Task::computeBuffers()
+{
+	planStartBufferEnd = planStart - 1;
+	planEndBufferStart = planEnd + 1;
+	actualStartBufferEnd = actualStart - 1;
+	actualEndBufferStart = actualEnd + 1;
+
+	int sg = project->getScheduleGranularity();
+	
+	if (duration > 0.0)
+	{
+		if (startBuffer > 0.0)
+		{
+			planStartBufferEnd = planStart +
+				(time_t) ((planEnd - planStart) * startBuffer / 100.0);
+			actualStartBufferEnd = actualStart +
+				(time_t) ((actualEnd - actualStart) * startBuffer / 100.0);
+		}
+		if (endBuffer > 0.0)
+		{
+			planEndBufferStart = planEnd -
+				(time_t) ((planEnd - planStart) * endBuffer / 100.0);
+			actualEndBufferStart = actualEnd -
+				(time_t) ((actualEnd - actualStart) * endBuffer / 100.0);
+		}
+	}
+	else if (length > 0.0)
+	{
+		double l;
+		if (startBuffer > 0.0)
+		{
+			for (l = 0.0; planStartBufferEnd < planEnd; planStartBufferEnd += sg)
+			{
+				if (project->isWorkingDay(planStartBufferEnd))
+					l += (double) sg / ONEDAY;
+				if (l >= planLength * startBuffer / 100.0)
+					break;
+			}
+			for (l = 0.0; actualStartBufferEnd < actualEnd;
+				 actualStartBufferEnd += sg)
+			{
+				if (project->isWorkingDay(actualStartBufferEnd))
+					l += (double) sg / ONEDAY;
+				if (l >= actualLength * startBuffer / 100.0)
+					break;
+			}
+		}
+		if (endBuffer > 0.0)
+		{
+			for (l = 0.0; planEndBufferStart > planStart;
+				 planEndBufferStart -= sg)
+			{
+				if (project->isWorkingDay(planEndBufferStart))
+					l += (double) sg / ONEDAY;
+				if (l >= planLength * endBuffer / 100.0)
+					break;
+			}
+			for (l = 0.0; actualEndBufferStart > actualStart;
+				 actualEndBufferStart -= sg)
+			{
+				if (project->isWorkingDay(actualEndBufferStart))
+					l += (double) sg / ONEDAY;
+				if (l >= actualLength * endBuffer / 100.0)
+					break;
+			}
+		}
+	}
+	else if (effort > 0.0)
+	{
+		double e;
+		if (startBuffer > 0.0)
+		{
+			for (e = 0.0; planStartBufferEnd < planEnd; planStartBufferEnd += sg)
+			{
+				e += getPlanLoad(Interval(planStartBufferEnd,
+										  planStartBufferEnd + sg));
+				if (e >= planEffort * startBuffer / 100.0)
+					break;
+			}
+			for (e = 0.0; actualStartBufferEnd < actualEnd; 
+				 actualStartBufferEnd += sg)
+			{
+				e += getActualLoad(Interval(actualStartBufferEnd,
+											actualStartBufferEnd + sg));
+				if (e >= actualEffort * startBuffer / 100.0)
+					break;
+			}
+		}
+		if (endBuffer > 0.0)
+		{
+			for (e = 0.0; planEndBufferStart > planStart;
+				 planEndBufferStart -= sg)
+			{
+				e += getPlanLoad(Interval(planEndBufferStart - sg,
+										  planEndBufferStart));
+				if (e >= planEffort * endBuffer / 100.0)
+					break;
+			}
+			for (e = 0.0; actualEndBufferStart > actualStart;
+				 actualEndBufferStart -= sg)
+			{
+				e += getActualLoad(Interval(actualEndBufferStart - sg,
+											actualEndBufferStart));
+				if (e >= actualEffort * endBuffer / 100.0)
+					break;
+			}
+		}
+	}
+}
+
 double Task::getCompleteAtTime(time_t timeSpot) const
 {
    if( complete != -1 ) return( complete );
@@ -1385,7 +1505,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
     *  a list of all Resources, again having the Resource Id as key. That could be put
     *  in a hirarchy like
     *  <Resource Id="dev2" >Larry Bono
-    *       <Gehalt>1000</Gehalt>
+    *       <Income>1000</Income>
     *       <Allocation>
     *          <Load>100</Load>
     *          <Persistent>Yes</Persistent>

@@ -683,6 +683,15 @@ ProjectFile::parse()
 				proj->setScheduleGranularity(resolution);
 				break;
 			}
+			else if (token == KW("workinghours"))
+			{
+				int dow;
+				QPtrList<Interval>* l = new QPtrList<Interval>();
+				if (!readWorkingHours(dow, l))
+					return FALSE;
+
+				proj->setWorkingHours(dow, l);
+			}
 			else if (token == KW("copyright"))
 			{
 				if (nextToken(token) != STRING)
@@ -1165,6 +1174,20 @@ ProjectFile::readTaskBody(Task* task)
 				}
 				task->setComplete(complete);
 			}
+			else if (token == KW("startbuffer"))
+			{
+				double value;
+				if (!readPercent(value))
+					return FALSE;
+				task->setStartBuffer(value);
+			}
+			else if (token == KW("endbuffer"))
+			{
+				double value;
+				if (!readPercent(value))
+					return FALSE;
+				task->setEndBuffer(value);
+			}
 			else if (token == KW("responsible"))
 			{
 				Resource* r;
@@ -1371,6 +1394,26 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
 			return FALSE;
 		}
 		to = date2time(end) - 1;
+	}
+	return TRUE;
+}
+
+bool
+ProjectFile::readPercent(double& value)
+{
+	QString token;
+	TokenType tt;
+	
+	if ((tt = nextToken(token)) != INTEGER && tt != REAL)
+	{
+		fatalError("Number expected");
+		return FALSE;
+	}
+	value = token.toDouble();
+	if (value < 0.0 || value > 100.0)
+	{
+		fatalError("Value must be between 0 and 100");
+		return FALSE;
 	}
 	return TRUE;
 }

@@ -122,6 +122,7 @@ private:
 	bool readAllocate(Task* t);
 	bool readPlanTimeFrame(Task* t, double& d);
 	bool readTimeValue(ulong& value);
+	bool readPercent(double& value);
 	bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
 	bool readPriority(int& priority);
 	bool readHTMLReport(const QString& reportType);

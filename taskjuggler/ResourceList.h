@@ -183,7 +183,7 @@ public:
 	bool dbLoadBookings(const QString& kotrusID,
 					   	const QStringList& skipProjectIDs);
 
-        QDomElement xmlIDElement( QDomDocument& doc ) const;
+	QDomElement xmlIDElement( QDomDocument& doc ) const;
 
 	BookingList getPlanJobs();
 	BookingList getActualJobs();

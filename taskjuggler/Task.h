@@ -101,8 +101,13 @@ public:
 
 	void setComplete(int c) { complete = c; }
 	double getComplete() const { return complete; }
-        double getCompleteAtTime( time_t ) const;
-   
+
+	void setStartBuffer(double p) { startBuffer = p; }
+	double getStartBuffer() const { return startBuffer; }
+	
+	void setEndBuffer(double p) { endBuffer = p; }
+	double getEndBuffer() const { return endBuffer; }
+
 	void setResponsible(Resource* r) { responsible = r; }
 	Resource* getResponsible() const { return responsible; }
 
@@ -127,6 +132,9 @@ public:
 	void setPlanEnd(time_t s) { planEnd = s; }
 	const time_t getPlanEnd() const { return planEnd; }
 
+	time_t getPlanStartBufferEnd() const { return planStartBufferEnd; }
+	time_t getPlanEndBufferStart() const { return planEndBufferStart; }
+
 	void setPlanLength(double days) { planLength = days; }
 	double getPlanLength() const { return planLength; }
 
@@ -145,6 +153,12 @@ public:
 		return planEnd >= minEnd && planEnd <= maxEnd;
 	}
 
+	bool isPlanBuffer(const Interval& iv) const
+	{
+		return iv.overlaps(Interval(planStart, planStartBufferEnd)) ||
+			iv.overlaps(Interval(planEndBufferStart, planEnd));
+	}
+	
 	double getPlanCalcEffort()
 	{
 		return getPlanLoad(Interval(planStart, planEnd));
@@ -177,6 +191,9 @@ public:
 	void setActualEnd(time_t e) { actualEnd = e; }
 	time_t getActualEnd() const { return actualEnd; }
 
+	time_t getActualStartBufferEnd() const { return actualStartBufferEnd; }
+	time_t getActualEndBufferStart() const { return actualEndBufferStart; }
+
 	void setActualLength(double days) { actualLength = days; }
 	double getActualLength() const { return actualLength; }
 
@@ -195,6 +212,12 @@ public:
 		return actualEnd >= minEnd && actualEnd <= maxEnd;
 	}
 
+	bool isActualBuffer(const Interval& iv) const
+	{
+		return iv.overlaps(Interval(actualStart, actualStartBufferEnd)) ||
+			iv.overlaps(Interval(actualEndBufferStart, actualEnd));
+	}
+	
 	double getActualCalcEffort()
 	{
 		return getActualLoad(Interval(actualStart, actualEnd));
@@ -243,8 +266,10 @@ public:
 	 * @param date specifies the day that should be checked.
 	 */
 	bool isCompleted(time_t date) const;
+	double getCompleteAtTime(time_t) const;
 	bool scheduleOk();
 	bool preScheduleOk();
+	void computeBuffers();
 	bool isActive();
 
 	void setMilestone() { milestone = TRUE; }
@@ -374,6 +399,16 @@ private:
 	/// Percentage of completion of the task
 	int complete;
 
+	/* Specifies how many percent the task start can be delayed but still
+	 * finish in time if all goes well. This value is for documentation
+	 * purposes only. It is not used for task scheduling. */
+	double startBuffer;
+
+	/* Specifies how many percent the task can be finished earlier if
+	 * all goes well. This value is for documentation purposes only. It is
+	 * not used for task scheduling. */
+	double endBuffer;
+	
 	/// ID of responsible resource.
 	Resource* responsible;
 
@@ -392,12 +427,18 @@ private:
 	 * values are copied to the runtime equivalents (without the
 	 * 'plan' prefix) before the 'plan' scheduling is done. */
 
-	/// Day when the task is planned to start.
+	/// Time when the task is planned to start.
 	time_t planStart;
 
-	/// Day when the task is planned to finish.
+	/// Time when the task is planned to finish.
 	time_t planEnd;
 
+	/// Time when the start buffer is planned to end.
+	time_t planStartBufferEnd;
+	
+	/// Time when the end buffer is planned to start.
+	time_t planEndBufferStart;
+	
 	/// The planned duration of the task (in calendar days).
 	double planDuration;
 
@@ -414,12 +455,18 @@ private:
 	 * values are copied to the runtime equivalents (without the
 	 * 'actual' prefix) before the 'actual' scheduling is done. */
 
-	/// Day when it really started
+	/// Time when it really started
 	time_t actualStart;
 
-	/// Day when it really ended
+	/// Time when it really ended
 	time_t actualEnd;
 
+	/// Time when the start buffer actually ends.
+	time_t actualStartBufferEnd;
+
+	/// Time when the end buffer actually starts.
+	time_t actualEndBufferStart;
+	
 	/// The actual duration of the task (in calendar days).
 	double actualDuration;
 
