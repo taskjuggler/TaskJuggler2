@@ -417,11 +417,13 @@ ReportHtml::reportHTMLHeader()
 		s << "<p>" << htmlFilter(caption) << "<p>" << endl;
 	if (!rawHead.isEmpty())
 		s << rawHead << endl;
+	s << "<center><table border=\"0\" cellpadding=\"1\">\n" << endl;
 }
 
 void
 ReportHtml::reportHTMLFooter()
 {
+	s << "</table></center>" << endl;
 	if (!rawTail.isEmpty())
 		s << rawTail << endl;
 

@@ -37,7 +37,6 @@ HTMLAccountReport::generate()
 	if (!open())
 		return FALSE;
 	reportHTMLHeader();
-	s << "<table border=\"0\" cellpadding=\"1\">\n" << endl;
 
 	if (!generateTableHeader())
 		return FALSE;
@@ -92,7 +91,6 @@ HTMLAccountReport::generate()
 	}
 	generateTotals("Total", "default");
 		
-	s << "</table>" << endl;
 	reportHTMLFooter();
 
 	f.close();

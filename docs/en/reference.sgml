@@ -671,7 +671,7 @@ linkend="string">STRING</link></member>
 top of the page and with a larger font.</para>
 
 </sect2>
-<sect2 id="htmltaskreport_hidesource"><title>hideresource
+<sect2 id="htmltaskreport_hideresource"><title>hideresource
 &lt;expression&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -822,8 +822,14 @@ actual values. The actual values are put underneath the plan
 values.</para>
 
 </sect2>
+<sect2 id="htmltaskreport_showprojectids"><title>showprojectids</title>
+
+<para>If used, the project id is shown after the load values in the
+calendar columns.<para>
+
+</sect2>
 <sect2 id="htmltaskreport_sorttasks"><title>sorttasks
-&lt;criteria&gt;</title>
+&lt;criteria&gt;[, &lt; cirteria&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>criteria:</member><member><link
@@ -831,54 +837,75 @@ linkend="sortingcriteria">SORTINGCRITERIA</link></member>
 </simplelist></para>
 
 <para>The sorting criteria specifies how the tasks in the generated report
-will be sorted. Possible values are:</para>
+will be sorted. If two items match a criteria they are sorted
+according to the next criteria. Up to three criteria are supported.
+Most sorting criterias come as pair of two, so the list can be sorted
+in ascending order (suffix -up) or descending order (suffix -down).
+Possible values are:</para>
 
 <para><simplelist type=horiz columns=2>
 
-<member><computeroutput>tasktree</computeroutput></member>
+<member><computeroutput>tree</computeroutput></member>
 <member>This is the default and creates a list with subtasks
 indented and grouped together. If this sorting is used, parent tasks
 are shown when subtasks are not hidden, even if the parent task
-matches the hide expression.</member>
+matches the hide expression. <computeroutput>tree</computeroutput> can
+only be used as the first criteria.</member>
 
 <member><computeroutput>tree</computeroutput></member>
 <member>Show nesting with indentation</member>
 
 <member><computeroutput>indexup</computeroutput></member>
-<member>Last index on top</member>
+<member>Lowest index on top</member>
 
 <member><computeroutput>indexdown</computeroutput></member>
-<member>First index on top</member>
+<member>Highest index on top</member>
 
 <member><computeroutput>idup</computeroutput></member>
-<member>Last <link linkend="id">ID</link> on top</member>
-
-<member><computeroutput>iddown</computeroutput></member>
 <member>First <link linkend="id">ID</link> on top</member>
 
-<member><computeroutput>fullnameup</computeroutput></member>
-<member>Last full name on top</member>
+<member><computeroutput>iddown</computeroutput></member>
+<member>Last <link linkend="id">ID</link> on top</member>
 
-<member><computeroutput>fullnamedown</computeroutput></member>
+<member><computeroutput>fullnameup</computeroutput></member>
 <member>First full name on top</member>
 
-<member><computeroutput>nameup</computeroutput></member>
-<member>Last name on top</member>
+<member><computeroutput>fullnamedown</computeroutput></member>
+<member>Last full name on top</member>
 
-<member><computeroutput>namedown</computeroutput></member>
+<member><computeroutput>nameup</computeroutput></member>
 <member>First name on top</member>
 
-<member><computeroutput>startup</computeroutput></member>
-<member>Latest start date on top</member>
+<member><computeroutput>namedown</computeroutput></member>
+<member>Last name on top</member>
 
-<member><computeroutput>startdown</computeroutput></member>
-<member>Earliest start date on top</member>
+<member><computeroutput>planstartup</computeroutput></member>
+<member>Earliest plan start date on top. This has replaced the bogus
+<computeroutput>startup</computeroutput></member>
 
-<member><computeroutput>endup</computeroutput></member>
-<member>Latest end date on top</member>
+<member><computeroutput>planstartdown</computeroutput></member>
+<member>Latest plan start date on top. This has replaced the bogus
+<computeroutput>startdown</computeroutput></member>
 
-<member><computeroutput>enddown</computeroutput></member>
-<member>Earliest end date on top</member>
+<member><computeroutput>planendup</computeroutput></member>
+<member>Earliest plan end date on top. This has replaced the bogus
+<computeroutput>endup</computeroutput></member>
+
+<member><computeroutput>planenddown</computeroutput></member>
+<member>Latest plan end date on top. This has replaced the bogus
+<computeroutput>enddown</computeroutput></member>
+
+<member><computeroutput>actualstartup</computeroutput></member>
+<member>Ealiest actual start date on top</member>
+
+<member><computeroutput>actualstartdown</computeroutput></member>
+<member>Latest actual start date on top</member>
+
+<member><computeroutput>actualendup</computeroutput></member>
+<member>Ealiest actual end date on top</member>
+
+<member><computeroutput>actualenddown</computeroutput></member>
+<member>Latest actual end date on top</member>
 
 <member><computeroutput>priorityup</computeroutput></member>
 <member>Lowest priority on top</member>
@@ -887,10 +914,64 @@ matches the hide expression.</member>
 <member>Highest priority on top</member>
 
 <member><computeroutput>responsibleup</computeroutput></member>
-<member>Last name of responsible on top</member>
+<member>First name of responsible on top</member>
 
 <member><computeroutput>responsibledown</computeroutput></member>
-<member>First name of responsible on top</member>
+<member>Last name of responsible on top</member>
+
+</simplelist></para>
+
+</sect2>
+<sect2 id="htmltaskreport_sortresources"><title>sortresources
+&lt;criteria&gt;[, &lt; cirteria&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>criteria:</member><member><link
+linkend="sortingcriteria">SORTINGCRITERIA</link></member>
+</simplelist></para>
+
+<para>The sorting criteria specifies how the resources in the
+generated report will be sorted. If two items match a criteria they
+are sorted according to the next criteria. Up to three criteria are
+supported.  Most sorting criterias come as pair of two, so the list
+can be sorted in ascending order (suffix -up) or descending order
+(suffix -down).  Possible values are:</para>
+
+<para><simplelist type=horiz columns=2>
+
+<member><computeroutput>tree</computeroutput></member>
+<member>This is the default and creates a list with subtasks
+indented and grouped together. If this sorting is used, parent tasks
+are shown when subtasks are not hidden, even if the parent task
+matches the hide expression. <computeroutput>tree</computeroutput> can
+only be used as the first criteria.</member>
+
+<member><computeroutput>tree</computeroutput></member>
+<member>Show nesting with indentation</member>
+
+<member><computeroutput>indexup</computeroutput></member>
+<member>Lowest index on top</member>
+
+<member><computeroutput>indexdown</computeroutput></member>
+<member>Highest index on top</member>
+
+<member><computeroutput>idup</computeroutput></member>
+<member>First <link linkend="id">ID</link> on top</member>
+
+<member><computeroutput>iddown</computeroutput></member>
+<member>Last <link linkend="id">ID</link> on top</member>
+
+<member><computeroutput>fullnameup</computeroutput></member>
+<member>First full name on top</member>
+
+<member><computeroutput>fullnamedown</computeroutput></member>
+<member>Last full name on top</member>
+
+<member><computeroutput>nameup</computeroutput></member>
+<member>First name on top</member>
+
+<member><computeroutput>namedown</computeroutput></member>
+<member>Last name on top</member>
 
 <member><computeroutput>mineffortup</computeroutput></member>
 <member>Smallest minimal effort on top</member>
@@ -911,10 +992,10 @@ matches the hide expression.</member>
 <member>Largest rate on top</member>
 
 <member><computeroutput>kotrusidup</computeroutput></member>
-<member>Last kotrusid on top</member>
+<member>First kotrusid on top</member>
 
 <member><computeroutput>kotrusiddown</computeroutput></member>
-<member>First kotrusid on top</member>
+<member>Last kotrusid on top</member>
 </simplelist></para>
 
 </sect2>
@@ -1014,6 +1095,13 @@ to korganiser.</para>
 instead of the include property. include commands can be used within
 global scope or between property declarations of tasks, resources, and
 accounts.</para>
+
+<para>Optional attributes:</para>
+
+<sect2 id="include_taskprefix"><title>taskprefix &lt;id&gt;</title>
+
+<para>All tasks in the included file are added as sub-tasks of the
+task specified by <computeroutput>taskprefix</computeroutput>.</para>
 
 </sect1>
 <sect1 id="kotrusmode"><title>kotrusmode &lt;mode&gt;</title>
@@ -1421,7 +1509,7 @@ vacation dates for the resources may be in a seperate file that was
 generated by some other tool.</para>
 
 </sect1>
-<sect1><title>task &lt;id&gt; &lt;name&gt;<anchor id="task"></title>
+<sect1 id="task"><title>task &lt;id&gt; &lt;name&gt;</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member><link linkend="id">ID</link></member>

@@ -42,7 +42,6 @@ HTMLResourceReport::generate()
 	if (!open())
 		return FALSE;
 	reportHTMLHeader();
-	s << "<table border=\"0\" cellpadding=\"1\">" << endl;
 
 	if (!generateTableHeader())
 		return FALSE;
@@ -70,7 +69,6 @@ HTMLResourceReport::generate()
 				generateActualTask(t, r);
 		}
 	}
-	s << "</table>";
 	reportHTMLFooter();
 
 	f.close();

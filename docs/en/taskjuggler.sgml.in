@@ -313,6 +313,27 @@ well now.</para></listitem>
 <listitem><para>Fixed HTML code for bookedlight cells. Those were
 redered without background on some browsers.</para></listitem>
 
+<listitem><para>Added support for multi-level sorting in reports.
+<link linkend="htmltaskreport_sorttasks">sorttasks</link> and <link
+linkend="htmltaskreport_sortresources">sortresources</link> now
+take multiple criteria.</para></listitem>
+
+<listitem><para>Several bugs in the sorting direction code have been
+fixed. <computeroutput>startup</computeroutput>,
+	<computeroutput>startdown</computeroutput>,
+	<computeroutput>endup</computeroutput> and
+	<computeroutput>enddown</computeroutput> have been replaced by 
+	<computeroutput>planstartup</computeroutput>,
+	<computeroutput>planstartdown</computeroutput>,
+	<computeroutput>planendup</computeroutput> and
+	<computeroutput>planenddown</computeroutput>.
+</para></listitem>
+
+<listitem><para>The optional attribute <link
+linkend="include_taskprefix">taskprefix</link> has been added to <link
+linkend="include">include</link>. This allows exported projects to be
+added at arbitrary points in the task tree.</listitem>
+
 </itemizedlist> </para>
 
 </sect2>

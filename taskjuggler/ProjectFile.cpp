@@ -1090,7 +1090,7 @@ ProjectFile::readInclude()
 	QString token;
 	TokenType tt;
 
-	QString taskPrefix = "";
+	QString taskPrefix = getTaskPrefix();
 	/* The nextToken() call may yield an EndOfFile and shift file scope to
 	 * parent file. So we have to save the path of the current file to pass it
 	 * later to open(). */
@@ -1107,12 +1107,12 @@ ProjectFile::readInclude()
 					fatalError("String expected");
 					return FALSE;
 				}
-				if (!proj->getTask(token))
+				if (!proj->getTask(getTaskPrefix() + token))
 				{
 					fatalError("Task prefix must be a known task");
 					return FALSE;
 				}
-				taskPrefix = token + ".";
+				taskPrefix = getTaskPrefix() + token + ".";
 			}
 			else
 			{

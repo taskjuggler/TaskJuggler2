@@ -349,8 +349,12 @@ Resource::bookInterval(Booking* nb)
 	for (uint i = sIdx; i <= eIdx; i++)
 		if (scoreboard[i])
 		{
-			qWarning("Resource %s is already booked at %s",
-					 id.latin1(), time2ISO(index2start(i)).latin1());
+			qWarning("Resource %s is already booked for %s at %s",
+					 id.latin1(),
+					 scoreboard[i] == (SbBooking*) 1 ? "Off Hour" :
+					 scoreboard[i] == (SbBooking*) 2 ? "Vacation" :
+					 scoreboard[i]->getTask()->getId().latin1(),
+					 time2ISO(index2start(i)).latin1());
 			return FALSE;
 		}
 	for (uint i = sIdx; i <= eIdx; i++)
