@@ -168,9 +168,6 @@ void ktjview2::setupActions()
     m_filterForTasksAction->setCurrentItem( 0 ); // All Tasks by default
 
     // Gantt menu
-    m_calendarAction = new KToggleAction( i18n( "&Calendar mode" ), "today", KShortcut(),
-                                          this, SLOT( setCalendarMode() ),
-                                          actionCollection(), "calendar_mode" );
     new KAction( i18n( "Zoom &in" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
                  m_view, SLOT( zoomIn() ), actionCollection(), "zoom_in" );
     new KAction( i18n( "Zoom &out" ), "viewmag-", KStdAccel::shortcut( KStdAccel::ZoomOut ),
@@ -560,11 +557,6 @@ void ktjview2::slotSwitchView( int type )
         m_sidebarEditor->activate();
 }
 
-void ktjview2::setCalendarMode()
-{
-    m_view->setCalendarMode( m_calendarAction->isChecked() );
-}
-
 void ktjview2::slotFilterForTasks()
 {
     int id = m_filterForTasksAction->currentItem();
@@ -596,7 +588,6 @@ void ktjview2::slotFilterForResources()
 void ktjview2::enableGanttActions( bool enable )
 {
     m_scaleAction->setEnabled( enable );
-    m_calendarAction->setEnabled( enable );
     m_psGanttAction->setEnabled( enable );
     action( "zoom_in" )->setEnabled( enable );
     action( "zoom_out" )->setEnabled( enable );

@@ -109,11 +109,6 @@ private slots:
     void fileSave();
 
     /**
-     * Toggle the gantt view calendar mode status
-     */
-    void setCalendarMode();
-
-    /**
      * Show the config keys dialog
      */
     void optionsConfigureKeys();
@@ -232,7 +227,6 @@ private:
     // actions
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
-    KToggleAction * m_calendarAction;
     KAction * m_psGanttAction;
 
     // task filter stuff

@@ -957,13 +957,6 @@ QString ktjview2View::formatLinks( const QPtrList<KDGanttViewItem> & from, const
     return result;
 }
 
-void ktjview2View::setCalendarMode( bool flag )
-{
-    m_ganttView->setCalendarMode( flag );
-    m_ganttView->setDisplaySubitemsAsGroup( flag );
-    m_ganttView->setShowTaskLinks( !flag );
-}
-
 void ktjview2View::popupGanttItemMenu( KDGanttViewItem * item, const QPoint & pos, int /*col*/ )
 {
     if ( item )

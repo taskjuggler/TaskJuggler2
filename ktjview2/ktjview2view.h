@@ -176,11 +176,6 @@ public slots:
     void slotSelectAll();
 
     /**
-     * Set the Gantt to calendar mode depending on @p flag
-     */
-    void setCalendarMode( bool flag );
-
-    /**
      * Zoom in by 10%
      */
     void zoomIn();

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="39">
+<kpartgui name="ktjview2" version="40">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -7,8 +7,6 @@
   </Menu>
 -->
   <Menu name="gantt"><text>&amp;Gantt</text>
-    <Action name="calendar_mode"/>
-    <Separator/>
     <Action name="zoom_in"/>
     <Action name="zoom_out"/>
     <Action name="fit_to_page"/>
