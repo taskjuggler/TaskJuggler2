@@ -326,14 +326,13 @@ sub _item_enter {
     my $c = shift;
     my ($dummy, $taskID) = $c->gettags('current');
     if ( $taskID ) {
+        use Tk::Table;
         my $t;
         foreach my $i (@all_tasks) {
             $t = $i if ( $i->Id eq $taskID );
         }
         my $top = new MainWindow( -title => 'detail view');
-            $top->geometry("750x600");
-            my $l = $top->Frame()->pack(-side => 'left');
-            my $v = $top->Frame()->pack(-side => 'left');
+#            $top->geometry("750x600");
             my ($y, $m, $d, $h, $mi, $s);
             if ( $t->planStart =~ /^\d+$/ ) {
                 ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->planStart);
@@ -368,71 +367,75 @@ sub _item_enter {
                 $t->actualEnd( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
             }
 
-            $l->Label( -text => 'short descr.:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->Name )->pack( -anchor => 'w' );
-            $l->Label( -text => 'note:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->Note )->pack( -anchor => 'w' );
-            $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-                $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+            my $tab = $top->Table(  -rows       => 2,
+                                    -columns    => 4,
+                                    -scrollbars => 'se',
+                                    -takefocus  => 1)->pack(    -expand => 'yes',
+                                                                -fill   => 'both');
 
-            $l->Label( -text => 'id:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->Id )->pack( -anchor => 'w' );
-            $l->Label( -text => 'type:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->Type )->pack( -anchor => 'w' );
-            $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-                $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+            $tab->put(0,0,'short descr.: ');
+                $tab->put(0,1, $top->Label( -text => $t->Name ));
+            $tab->put(1,0,'note: ');
+                $tab->put(1,1, $top->Label( -text => $t->Note ));
+            $tab->put(2,0,'');
+                $tab->put(2,1, $top->Label( -text => '-'x25 ));
 
-            $l->Label( -text => 'plan date:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->planStart." ---> ".$t->planEnd )->pack( -anchor => 'w' );
-            $l->Label( -text => 'min date:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->minStart." ---> ".$t->minEnd )->pack( -anchor => 'w' );
-            $l->Label( -text => 'max date:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->maxStart." ---> ".$t->maxEnd )->pack( -anchor => 'w' );
-            $l->Label( -text => 'actual date:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->actualStart." ---> ".$t->actualEnd )->pack( -anchor => 'w' );
-            $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-                $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+            $tab->put(3,0,'id: ');
+                $tab->put(3,1, $top->Label( -text => $t->Id ));
+            $tab->put(4,0,'type: ');
+                $tab->put(4,1, $top->Label( -text => $t->Type ));
+            $tab->put(5,0,'');
+                $tab->put(5,1, $top->Label( -text => '-'x25 ));
 
-            $l->Label( -text => 'start buffer:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->startBuffer." %" )->pack( -anchor => 'w' );
-            $l->Label( -text => 'end buffer:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->endBuffer." %" )->pack( -anchor => 'w' );
-            $l->Label( -text => 'complete:' )->pack( -anchor => 'w', -padx => 15  );
-                $v->Label( -text => $t->complete." %" )->pack( -anchor => 'w' );
+            $tab->put(6,0,'plan date: ');
+                $tab->put(6,1, $top->Label( -text => $t->planStart." ---> ".$t->planEnd ));
+            $tab->put(7,0,'min date: ');
+                $tab->put(7,1, $top->Label( -text => $t->minStart." ---> ".$t->minEnd ));
+            $tab->put(8,0,'max date: ');
+                $tab->put(8,1, $top->Label( -text => $t->maxStart." ---> ".$t->maxEnd ));
+            $tab->put(9,0,'actual date: ');
+                $tab->put(9,1, $top->Label( -text => $t->actualStart." ---> ".$t->actualEnd ));
+            $tab->put(10,0,'');
+                $tab->put(10,1, $top->Label( -text => '-'x25 ));
+
+            $tab->put(11,0,'start buffer: ');
+                $tab->put(11,1, $top->Label( -text => $t->startBuffer." %" ));
+            $tab->put(12,0,'end buffer: ');
+                $tab->put(12,1, $top->Label( -text => $t->endBuffer." %" ));
+            $tab->put(13,0,'complete: ');
+                $tab->put(13,1, $top->Label( -text => $t->complete." %" ));
+            $tab->put(14,0,'');
+                $tab->put(14,1, $top->Label( -text => '-'x25 ));
 
             my $all_c = 0;
+            my $tc = 13;
+            my $tc_last = 0;
             foreach my $all ( @{$t->Allocations} ) {
-                if ( $all_c == 0) {
-                    $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-                        $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-                    $l->Label( -text => 'allocations' )->pack( -anchor => 'w', -padx => 15 );
+                if ( $all_c == $tc_last ) {
+                    $tab->put($tc,0,'allocations');
                 }
-                $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
-                    $v->Label( -text => "$rmap{$all} ($all): ".$res_load{$all}{$t->Id}[2]." %" )->pack( -anchor => 'w' );
+                $tab->put($tc+$all_c ,1, $top->Label( -text => "$rmap{$all} ($all): ".$res_load{$all}{$t->Id}[2]." %" ) );
+                $tc_last = $tc+$all_c;
                 $all_c++;
             }
 
-            $all_c = 0;
+            $all_c = $tc_last;
             foreach my $all ( @{$t->Followers} ) {
-                if ( $all_c == 0) {
-                    $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-                        $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-                    $l->Label( -text => 'followers' )->pack( -anchor => 'w', -padx => 15 );
+                if ( $all_c == $tc_last) {
+                    $tab->put($tc_last,0,'followers');
                 }
-                $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
-                    $v->Label( -text => $all )->pack( -anchor => 'w' );
+                $tab->put($tc+$all_c ,1, $top->Label( -text => $all ) );
+                $tc_last = $tc+$all_c;
                 $all_c++;
             }
 
-            $all_c = 0;
+            $all_c = $tc_last;
             foreach my $all ( @{$t->Previous} ) {
-                if ( $all_c == 0) {
-                    $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-                        $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-                    $l->Label( -text => 'previous' )->pack( -anchor => 'w', -padx => 15 );
+                if ( $all_c == $tc_last) {
+                    $tab->put($tc_last,0,'previous');
                 }
-                $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
-                    $v->Label( -text => $all )->pack( -anchor => 'w' );
+                $tab->put($tc+$all_c ,1, $top->Label( -text => $all ) );
+                $tc_last = $tc+$all_c;
                 $all_c++;
             }
         }
