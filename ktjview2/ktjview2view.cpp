@@ -117,9 +117,9 @@ ktjview2View::ktjview2View( QWidget *parent )
     else
         m_ganttView->setHourFormat( KDGanttView::Hour_24 );
     m_ganttView->setShowTaskLinks( true );
-    m_ganttView->setShowHeaderPopupMenu( true ); //### TODO implement thru KActions
+    m_ganttView->setShowHeaderPopupMenu( true ); // ### TODO implement thru KActions
     m_ganttView->setShowLegendButton( false ); // ### TODO legend?
-    m_ganttView->setShowTimeTablePopupMenu( true );
+    //m_ganttView->setShowTimeTablePopupMenu( true );  // not useful, we can't add or manipulate items
     m_ganttView->setWeekendDays( 6, 7 );
     connect( m_ganttView, SIGNAL( gvItemDoubleClicked( KDGanttViewItem * ) ),
              this, SLOT( ensureItemVisible( KDGanttViewItem * ) ) );
