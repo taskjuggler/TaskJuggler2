@@ -33,7 +33,9 @@ dnl Perform program name transformation
 AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
-AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
+AM_INIT_AUTOMAKE(taskjuggler, [1.9.0+cvs])
+
+dnl AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
 dnl KDE_SET_PREFIX
 
@@ -145,8 +147,6 @@ else
   PSMANUAL="yes"
 fi
 AC_SUBST(PSMANUAL)
-
-AM_INIT_AUTOMAKE(taskjuggler, 1.4.2+cvs)
 
 AC_OUTPUT(docs/en/taskjuggler.sgml)
 
