@@ -302,11 +302,16 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         sl->append(text);
         mt.pushArguments(sl);
         cellText = mt.expand(tci->tci->getCellText());
+        mt.popArguments();
+    }
+    if (!tci->tci->getCellURL().isEmpty())
+    {
+        QStringList* sl = new QStringList();
+        sl->append(text);
+        mt.pushArguments(sl);
         QString cellURL = mt.expand(tci->tci->getCellURL());
-        if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + htmlFilter(cellText) + "</a>";
-
         mt.popArguments();
     }
     if (cellText.isEmpty())
