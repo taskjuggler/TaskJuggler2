@@ -11,9 +11,13 @@
  */
 
 /* -- DTD --
- <!ELEMENT Task		(Priority, start, end, minStart, maxStart,
+ <!ELEMENT TaskJugglerTasks  (Task+)>
+ <!ELEMENT Task		(TaskName, Priority, start, end, minStart, maxStart,
                          minEnd, maxEnd, actualStart, actualEnd,
-			 SubTasks*, Depends*, note)>
+			 SubTasks*, Depends*, Previous*, Followers*,
+			 Allocations*, bookedResources*, note*)>
+ <!ELEMENT TaskName     (#PCDATA)>
+ <!ELEMENT Priority     (#PCDATA)>
  <!ELEMENT start        (#PCDATA)>
  <!ELEMENT end          (#PCDATA)>
  <!ELEMENT minStart     (#PCDATA)>
@@ -23,9 +27,20 @@
  <!ELEMENT actualStart  (#PCDATA)>
  <!ELEMENT actualEnd    (#PCDATA)>
  <!ELEMENT SubTasks     (Task+)>
- <!ELEMENT Depends      (TaskID)>
+ <!ELEMENT Depends      (TaskID+)>
  <!ELEMENT TaskID       (#PCDATA)>
-
+ <!ELEMENT Previous     (TaskID+)>
+ <!ELEMENT Followers    (TaskID+)>
+ <!ELEMENT Allocations  (Allocation+)>
+ <!ELEMENT Allocation   EMPTY>
+ <!ELEMENT bookedResources (ResourceID+)>
+ <!ELEMENT ResourceID   (#PCDATA)>
+ <!ELEMENT note         (#PCDATA)>
+ <!ATTLIST ResourceID
+           Name CDATA #REQUIRED>
+ <!ATTLIST Allocation
+           load CDATA #REQUIRED
+	   ResourceID CDATA #REQUIRED>
    /-- DTD --/
 */
  
@@ -491,9 +506,9 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
 {
    QDomElement elem = doc.createElement( "Task" );
 
-   QDomText t = doc.createTextNode(name);
-   elem.appendChild( t );
-
+   QDomText t;
+   
+   elem.appendChild( createXMLElem( doc, "TaskName", getName()));
    elem.appendChild( createXMLElem( doc, "Priority", QString::number( priority )));
    elem.appendChild( createXMLElem( doc, "start", QString::number( start )));
    elem.appendChild( createXMLElem( doc, "end", QString::number( end )));
@@ -531,6 +546,66 @@ QDomElement Task::xmlElement( QDomDocument& doc ) const
       }
       elem.appendChild( deps );
    }
+
+   /* list of tasks by id which are previous */
+   if( previous.count() > 0 )
+   {
+      QDomElement prevs = doc.createElement( "Previous" );
+
+      TaskList tl( previous );
+      for (Task* t = tl.first(); t != 0; t = tl.next())
+      {	
+	 if( t != this )
+	 {
+	    prevs.appendChild( createXMLElem( doc, "TaskID", t->getId()));
+	 }
+      }
+      elem.appendChild( prevs );
+   }
+   
+   /* list of tasks by id which follow */
+   if( followers.count() > 0 )
+   {
+      QDomElement foll = doc.createElement( "Followers" );
+
+      TaskList tl( followers );
+      for (Task* t = tl.first(); t != 0; t = tl.next())
+      {	
+	 if( t != this )
+	 {
+	    foll.appendChild( createXMLElem( doc, "TaskID", t->getId()));
+	 }
+      }
+
+      elem.appendChild( foll );
+   }
+
+   /* Allocations */
+   if( allocations.count() > 0 )
+   {
+      QDomElement alloc = doc.createElement( "Allocations" );
+
+      QPtrList<Allocation> al(allocations);
+      for (Allocation* a = al.first(); a != 0; a = al.next())
+      {
+	 alloc.appendChild( a->xmlElement( doc ));
+      }
+      elem.appendChild( alloc );
+   }
+
+   /* booked Ressources */
+   if( bookedResources.count() > 0 )
+   {	
+      QDomElement bres = doc.createElement( "bookedResources" );
+
+      QPtrList<Resource> br(bookedResources);
+      for (Resource* r = br.first(); r != 0; r = br.next())
+      {
+	 bres.appendChild( r->xmlIDElement( doc ));
+      }
+      elem.appendChild( bres );
+   }
+
    
    /* Comment */
    if( ! note.isEmpty())

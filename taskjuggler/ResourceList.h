@@ -16,6 +16,7 @@
 #include <time.h>
 #include <qptrlist.h>
 #include <qstring.h>
+#include <qdom.h>
 
 #include "Interval.h"
 #include "VacationList.h"
@@ -131,6 +132,18 @@ public:
 
 	bool dbLoadBookings(const QString& kotrusID, const QString& skipProjectID);
 
+        QDomElement xmlIDElement( QDomDocument& doc ) const
+        {
+	   
+	   QDomElement elem = doc.createElement( "ResourceID" );
+	   QDomText t=doc.createTextNode( getId() );
+	   elem.appendChild( t );
+	   elem.setAttribute( "Name", getName() );
+
+	   return( elem );
+        }
+
+   
 private:
 	// The ID of the resource. Must be unique in the project.
 	Project* project;
