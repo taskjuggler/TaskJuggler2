@@ -80,6 +80,8 @@ ktjview2::ktjview2()
     connect( m_view, SIGNAL( signalUpdateToolbars( int ) ),
              this, SLOT( slotUpdateToolbars( int ) ) );
 
+    m_activeFilter = 0;
+
     slotUpdateToolbars( 1 );    // init the toolbars visibility
 }
 
@@ -117,12 +119,11 @@ void ktjview2::setupActions()
     // Tasks menu
     m_filterForAction = new KSelectAction( i18n( "&Filter for: All Tasks" ), "filter", KShortcut(),
                                            this, SLOT( slotFilterFor() ), actionCollection(), "filter_for" );
-    QStringList filterItems = QStringList();
-    filterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
-                << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
-                << i18n( "Task Range..." ) << i18n( "Using Resource..." );
+    m_filterItems << i18n( "All Tasks" ) << i18n( "Completed Tasks" ) << i18n( "Date Range..." )
+                  << i18n( "Incomplete Tasks" ) << i18n( "Milestones" ) << i18n( "Summary Tasks" )
+                  << i18n( "Task Range..." ) << i18n( "Using Resource..." );
 
-    m_filterForAction->setItems( filterItems );
+    m_filterForAction->setItems( m_filterItems );
     m_filterForAction->setCurrentItem( 0 ); // All Tasks by default
 
     // Gantt menu
@@ -322,7 +323,15 @@ void ktjview2::setCalendarMode()
 
 void ktjview2::slotFilterFor()
 {
-    m_view->slotFilterFor( m_filterForAction->currentItem() );
+    int id = m_filterForAction->currentItem();
+
+    if ( m_view->filterFor( id ) )
+    {
+        m_filterForAction->setText( i18n( "&Filter for: %1" ).arg( m_filterItems[id] ) );
+        m_activeFilter = id;
+    }
+    else
+        m_filterForAction->setCurrentItem( m_activeFilter );
 }
 
 #include "ktjview2.moc"

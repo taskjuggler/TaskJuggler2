@@ -670,12 +670,11 @@ void ktjview2View::slotScale( int scale )
 
 void ktjview2View::slotZoomTimeframe()
 {
-    TimeDialog * dlg = new TimeDialog( this, m_ganttView->horizonStart(), m_ganttView->horizonEnd() ); // TODO create the dialog at startup to preserve the previous values
-    if ( dlg->exec() == QDialog::Accepted )
+    TimeDialog dlg( this, m_ganttView->horizonStart(), m_ganttView->horizonEnd() ); // TODO create the dialog at startup to preserve the previous values
+    if ( dlg.exec() == QDialog::Accepted )
     {
-        m_ganttView->zoomToSelection( dlg->getStartDate(), dlg->getEndDate() );
+        m_ganttView->zoomToSelection( dlg.getStartDate(), dlg.getEndDate() );
     }
-    delete dlg;
 }
 
 QString ktjview2View::status2Str( int ts ) const
@@ -820,16 +819,70 @@ void ktjview2View::slotJumpToTask()
         if ( item )
         {
             slotKoolBar( mainGroup, tasksPage );
-            item->setVisible( true ); // might be hidden thru the filter
+            item->setVisible( true ); // might be hidden thru a filter
             m_taskView->setSelected( static_cast<QListViewItem *>( item ), true );
             m_taskView->ensureItemVisible( item );
         }
     }
 }
 
-void ktjview2View::slotFilterFor( int id )
+bool ktjview2View::filterFor( int id )
 {
+    QDateTime start, end;
+    if ( id == 2 )              // date range dialog
+    {
+        TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
+        dlg.setCaption( i18n( "Date Range" ) );
+        if ( dlg.exec() != QDialog::Accepted )
+            return false;
+        start = dlg.getStartDate();
+        end = dlg.getEndDate();
+    }
 
+
+    QListViewItemIterator it( m_taskView );
+
+    bool showIt;
+
+    while ( it.current() )
+    {
+        showIt = true;
+
+        Task * task = m_project->getTask( static_cast<TaskItem *>( *it )->id() );
+
+        if ( id == 1 )     // Completed tasks
+        {
+            showIt = ( task->getStatus(0) == Finished );
+        }
+        else if ( id == 2 )     // Date range
+        {
+            showIt = ( static_cast<TaskItem *>( *it )->startDate() >= start
+                       && static_cast<TaskItem *>( *it )->endDate() <= end );
+        }
+        else if ( id == 3 )     // Incomplete tasks
+        {
+            showIt = ( task->getStatus(0) != Finished );
+        }
+        else if ( id == 4 )     // Milestones
+        {
+            showIt = ( task->isMilestone() );
+        }
+        else if ( id == 5 )     // Summary (group) tasks
+        {
+            showIt = ( task->isContainer() );
+        }
+        else if ( id == 6 )     // Task range
+        {
+        }
+        else if ( id == 7 )     // Using resource
+        {
+        }
+
+        ( *it )->setVisible( showIt );
+        ++it;
+    }
+
+    return true;
 }
 
 #include "ktjview2view.moc"

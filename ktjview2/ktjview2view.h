@@ -97,6 +97,13 @@ public:
     KListView * resListView() const
         { return m_resListView; }
 
+    /**
+     * Apply preselected filter (@p id) on the task list.
+     *
+     * @return whether the filter was actually applied
+     */
+    bool filterFor( int id );
+
 public slots:
     /**
      * Set the Gantt to calendar mode depending on @p flag
@@ -142,11 +149,6 @@ public slots:
      * Display the filter selectiion dialog
      */
     void filter();
-
-    /**
-     * Apply preselected filters on the task list.
-     */
-    void slotFilterFor( int id );
 
 signals:
     /**

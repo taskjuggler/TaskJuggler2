@@ -143,7 +143,10 @@ private:
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
     KToggleAction * m_calendarAction;
+
     KSelectAction * m_filterForAction;
+    QStringList m_filterItems;
+    int m_activeFilter;
 
     // search line
     QLabel * m_searchLabel;
