@@ -48,6 +48,7 @@ class QDomElement;
 class QDomDocument;
 class Allocation;
 class Interval;
+class UsageLimits;
 
 /**
  * This class stores all task related information and provides methods to
@@ -312,7 +313,7 @@ private:
     Task* subFirst() { return (Task*) sub.first(); }
     Task* subNext() { return (Task*) sub.next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
-                      int loadFactor, int& availability);
+                      const UsageLimits* limits, int& availability);
     void bookResources(time_t day, time_t duration);
     void addBookedResource(Resource* r)
     {

@@ -140,7 +140,9 @@ Resource::~Resource()
             scoreboards[sc] = 0;
         }
     delete [] scoreboards;
-    
+
+    delete limits;
+
     project->deleteResource(this);
 }
 
@@ -284,8 +286,7 @@ Resource::index2end(uint idx) const
 }
 
 int
-Resource::isAvailable(time_t date, time_t duration, int loadFactor,
-                      const Task* t)
+Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
 {
     /* The scoreboard of a resource is only generated on demand, so that large
      * resource lists that are only scarcely used for the project do not slow
@@ -302,11 +303,15 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
         return scoreboard[sbIdx] < ((SbBooking*) 4) ? 1 : 4;
     }
 
-    if ((limits && limits->getDailyMax() > 0) || loadFactor > 0.0)
+    if (!limits && !aLimits)
+        return 0;
+
+    if ((limits && limits->getDailyMax() > 0) ||
+        (aLimits && aLimits->getDailyMax() > 0))
     {
         // Now check that the resource is not overloaded on this day.
-        time_t bookedTimeTask = duration;
         uint bookedSlots = 1;
+        uint bookedTaskSlots = 1;
 
         for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
         {
@@ -316,28 +321,28 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
 
             bookedSlots++;
             if (b->getTask() == t)
-                bookedTimeTask += duration;
+                bookedTaskSlots++;
         }
 
-        double taskLoad = project->convertToDailyLoad(bookedTimeTask) *
-            efficiency;
         if (limits && limits->getDailyMax() > 0 &&
-            bookedSlots > limits->getDailyMax())
+            bookedSlots * efficiency > limits->getDailyMax())
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded today (%d)", id.latin1(),
                        bookedSlots);
             return 2;
         }
-        if (loadFactor > 0 && taskLoad > (loadFactor / 100.0))
+        if (aLimits && aLimits->getDailyMax() > 0 &&
+            bookedTaskSlots * efficiency > aLimits->getDailyMax())
         {
             if (DEBUGRS(6))
-                qDebug("  %s overloaded for task %s (%f)", id.latin1(),
-                       t->getId().latin1(), loadFactor / 100.0);
+                qDebug("  Resource %s overloaded today for task %s",
+                       id.latin1(), t->getId().latin1());
             return 3;
         }
     }
-    if ((limits && limits->getWeeklyMax() > 0) /* || ... */)
+    if ((limits && limits->getWeeklyMax() > 0) ||
+        (aLimits && aLimits->getWeeklyMax() > 0))
     {
         // Now check that the resource is not overloaded on this week.
         uint bookedSlots = 1;
@@ -355,17 +360,26 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
         }
 
         if (limits && limits->getWeeklyMax() > 0 &&
-            bookedSlots > limits->getWeeklyMax())
+            bookedSlots * efficiency > limits->getWeeklyMax())
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this week (%d)", id.latin1(),
                        bookedSlots);
             return 2;
         }
+        if (aLimits && aLimits->getWeeklyMax() > 0 &&
+            bookedTaskSlots * efficiency > aLimits->getWeeklyMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded this week for task %s",
+                       id.latin1(), t->getId().latin1());
+            return 3;
+        }
     }
-    if ((limits && limits->getMonthlyMax() > 0) /* || ... */)
+    if ((limits && limits->getMonthlyMax() > 0) ||
+        (aLimits && aLimits->getMonthlyMax() > 0))
     {
-        // Now check that the resource is not overloaded on this week.
+        // Now check that the resource is not overloaded on this month.
         uint bookedSlots = 1;
         uint bookedTaskSlots = 1;
         
@@ -381,12 +395,20 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor,
         }
 
         if (limits && limits->getMonthlyMax() > 0 &&
-            bookedSlots > limits->getMonthlyMax())
+            bookedSlots * efficiency > limits->getMonthlyMax())
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this month (%d)", id.latin1(),
                        bookedSlots);
             return 2;
+        }
+        if (aLimits && aLimits->getMonthlyMax() > 0 &&
+            bookedTaskSlots * efficiency > aLimits->getMonthlyMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded this month for task %s",
+                       id.latin1(), t->getId().latin1());
+            return 3;
         }
     }
 

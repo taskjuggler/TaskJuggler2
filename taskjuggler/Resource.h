@@ -101,8 +101,7 @@ public:
      * @ret 0 slot is available, 1 vacation/off duty, 2 resource overloaded,
      * 3 task overloaded, 4 booked for other task, 
      */
-    int isAvailable(time_t day, time_t duration, int loadFactor,
-                     const Task* t);
+    int isAvailable(time_t day, const UsageLimits* limits, const Task* t);
 
     bool book(Booking* b);
 

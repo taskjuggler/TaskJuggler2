@@ -18,6 +18,7 @@
 #include "ShiftSelection.h"
 
 class Resource;
+class UsageLimits;
 
 class Allocation
 {
@@ -25,10 +26,10 @@ public:
     Allocation();
     Allocation(const Allocation& a);
 
-    ~Allocation() { }
+    ~Allocation();
 
-    void setLoad(int l) { load = l; }
-    int getLoad() const { return load; }
+    void setLimits(UsageLimits* l) { limits = l; }
+    const UsageLimits* getLimits() const { return limits; }
 
     void setPersistent(bool p) { persistent = p; }
     bool isPersistent() const { return persistent; }
@@ -73,9 +74,12 @@ public:
     }
     
 private:
-    /// The maximum daily usage of the resource in percent.
-    int load;
-
+    /**
+     * Limit values that regulate how many allocations can be made per
+     * day/week/month.
+     */
+    UsageLimits* limits;
+    
     /// The shifts that can limit the allocation to certain intervals.
     ShiftSelectionList shifts;
 

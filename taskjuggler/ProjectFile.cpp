@@ -2617,13 +2617,27 @@ ProjectFile::readAllocate(Task* t)
                     errorMessage(i18n("Real value expected"));
                     return FALSE;
                 }
-                double load = token.toDouble();
-                if (load < 0.01)
+                UsageLimits* limits = new UsageLimits;
+                limits->setDailyMax
+                    ((uint) ((token.toDouble() *
+                              proj->getDailyWorkingHours() * 3600) /
+                             proj->getScheduleGranularity()));
+                if (limits->getDailyMax() == 0)
                 {
-                    errorMessage(i18n("Value must be at least 0.01"));
+                    errorMessage(i18n("Value must be at least %f")
+                                 .arg(proj->convertToDailyLoad
+                                      (proj->getScheduleGranularity())));
+                    delete limits;
                     return FALSE;
                 }
-                a->setLoad((int) (100 * load));
+                a->setLimits(limits);
+            }
+            else if (token == KW("limits"))
+            {
+                UsageLimits* limits;
+                if ((limits = readLimits()) == 0)
+                    return FALSE;
+                a->setLimits(limits);
             }
             else if (token == KW("shift"))
             {

@@ -8,10 +8,18 @@ resource r1 "R1" {
 	limits { daily 2h weekly 6h monthly 14h }
 }
 
+resource r2 "R2"
+
 task t1 "Task 1" {
 	start 2004-03-01
 	duration 60d
 	allocate r1
+}
+
+task t2 "Task 2" {
+	start 2004-03-01
+	duration 60d
+	allocate r2 { limits { daily 2h weekly 6h monthly 14h } }
 }
 
 htmltaskreport "Limits-1.html" {

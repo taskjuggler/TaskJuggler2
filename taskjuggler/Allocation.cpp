@@ -15,6 +15,7 @@
 #include "Resource.h"
 #include "Allocation.h"
 #include "ReportXML.h"
+#include "UsageLimits.h"
 
 #define KW(a) a
 
@@ -27,18 +28,23 @@
 */
 
 Allocation::Allocation() :
-    load(0), lockedResource(0)
+    lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
     selectionMode = order;
+    limits = 0;
     persistent = mandatory = FALSE;
+}
+
+Allocation::~Allocation()
+{
+    delete limits;
 }
 
 Allocation::Allocation(const Allocation& a)
 {
     shifts.setAutoDelete(TRUE);
 
-    load = a.load;
     persistent = a.persistent;
     mandatory = a.mandatory;
     lockedResource = a.lockedResource;
@@ -47,14 +53,17 @@ Allocation::Allocation(const Allocation& a)
     for (QPtrListIterator<ShiftSelection> sli(a.shifts); *sli; ++sli)
         shifts.append(new ShiftSelection(**sli));
 
-    candidates = a.candidates;    
+    candidates = a.candidates; 
+    if (a.limits)
+        limits = new UsageLimits(*a.limits);
+    else
+        limits = 0;
 }
 
 /* Creation of the XML Reprsentation of the Allocation */
 QDomElement Allocation::xmlElement( QDomDocument& doc )
 {
    QDomElement elem = doc.createElement( "Allocation" );
-   elem.appendChild(ReportXML::createXMLElem( doc, "Load", QString::number(getLoad()) ));
    elem.appendChild(ReportXML::createXMLElem( doc, "Persistent", isPersistent() ? "Yes":"No" ));
    elem.setAttribute( "ResourceID", candidates.getFirst()->getId());
    

@@ -557,8 +557,7 @@ Task::bookResources(time_t date, time_t slotDuration)
             {
                 int availability;
                 if ((availability = (*ali)->getLockedResource()->
-                     isAvailable(date, slotDuration, (*ali)->getLoad(),
-                                 this)) > 0) 
+                     isAvailable(date, (*ali)->getLimits(), this)) > 0) 
                 {
                     allMandatoriesAvailables = FALSE;
                     if (availability >= 4 && !(*ali)->getConflictStart())
@@ -582,8 +581,8 @@ Task::bookResources(time_t date, time_t slotDuration)
                     bool allAvailable = TRUE;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
                         if ((availability = 
-                             (*rti)->isAvailable(date, slotDuration,
-                                                 (*ali)->getLoad(), this)) > 0)
+                             (*rti)->isAvailable(date, (*ali)->getLimits(),
+                                                 this)) > 0)
                         {
                             allAvailable = FALSE;
                             if (availability >= maxAvailability)
@@ -624,7 +623,7 @@ Task::bookResources(time_t date, time_t slotDuration)
         if ((*ali)->isPersistent() && (*ali)->getLockedResource())
         {
             if (!bookResource((*ali)->getLockedResource(), date, slotDuration,
-                         (*ali)->getLoad(), maxAvailability))
+                         (*ali)->getLimits(), maxAvailability))
             {
                 if (maxAvailability >= 4 && !(*ali)->getConflictStart())
                     (*ali)->setConflictStart(date);
@@ -647,7 +646,7 @@ Task::bookResources(time_t date, time_t slotDuration)
             bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                 if (bookResource((*rli), date, slotDuration,
-                                 (*ali)->getLoad(), maxAvailability))
+                                 (*ali)->getLimits(), maxAvailability))
                 {
                     (*ali)->setLockedResource(*rli);
                     found = TRUE;
@@ -684,7 +683,7 @@ Task::bookResources(time_t date, time_t slotDuration)
 
 bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
-                   int loadFactor, int& maxAvailability)
+                   const UsageLimits* limits, int& maxAvailability)
 {
     bool booked = FALSE;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
@@ -693,7 +692,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
     {
         int availability;
         if ((availability = 
-             (*rti)->isAvailable(date, slotDuration, loadFactor, this)) == 0)
+             (*rti)->isAvailable(date, limits, this)) == 0)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));
@@ -1736,23 +1735,6 @@ Task::preScheduleOk()
             return FALSE;
         }
     }
-    double intervalLoad =
-        project->convertToDailyLoad(project->getScheduleGranularity());
-
-    for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
-        if ((*ali)->getLoad() != 0 &&
-            (*ali)->getLoad() < intervalLoad * 100.0)
-        {
-            QPtrListIterator<Resource> rli((*ali)->getCandidatesIterator());
-            errorMessage(i18n
-                         ("Warning: Load is smaller than scheduling "
-                          "granularity (Task: '%1', Resource: '%2'). Minimal "
-                          "load is '%3'.")
-                         .arg(id).arg((*rli)->getId())
-                         .arg(QString().sprintf("%.2f", intervalLoad +
-                                                0.005)));
-            (*ali)->setLoad((int) (intervalLoad * 100.0));
-        }
 
     return TRUE;
 }
@@ -2645,7 +2627,12 @@ void Task::allocationFromXML( const QDomElement& alloElem  )
 
             if( tagName == "Load" )
             {
-                allocation->setLoad( subElem.text().toInt());
+                UsageLimits* limits = new UsageLimits;
+                limits->setDailyMax
+                    ((uint) ((subElem.text().toDouble() *
+                              project->getDailyWorkingHours() * 3600) /
+                             project->getScheduleGranularity()));
+                allocation->setLimits(limits);
             }
             else if( tagName == "Persistent" )
             {

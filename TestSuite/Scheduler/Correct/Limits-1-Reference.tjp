@@ -22,6 +22,8 @@ project limits1 "Limits1" "$Id" 2004-03-01-00:00:00-GMT 2004-04-30-23:59:59-GMT 
 }
 resource r1 "R1" {
 }
+resource r2 "R2" {
+}
 projectids limits1
 task t1 "Task 1" {
   projectid limits1
@@ -30,7 +32,17 @@ task t1 "Task 1" {
   plan:scheduled
   scheduling asap
 }
+task t2 "Task 2" {
+  projectid limits1
+  plan:start 2004-03-01-09:00:00-+0000
+  plan:end 2004-04-30-00:00:00-+0000
+  plan:scheduled
+  scheduling asap
+}
 supplement task t1 {
+  priority 500
+}
+supplement task t2 {
   priority 500
 }
 supplement resource r1 {
@@ -48,4 +60,20 @@ supplement resource r1 {
   plan:booking 2004-04-07-09:00:00-+0000 2004-04-07-11:00:00-+0000 t1
   plan:booking 2004-04-12-09:00:00-+0000 2004-04-12-11:00:00-+0000 t1
   plan:booking 2004-04-13-09:00:00-+0000 2004-04-13-11:00:00-+0000 t1
+}
+supplement resource r2 {
+  plan:booking 2004-03-01-09:00:00-+0000 2004-03-01-11:00:00-+0000 t2
+  plan:booking 2004-03-02-09:00:00-+0000 2004-03-02-11:00:00-+0000 t2
+  plan:booking 2004-03-03-09:00:00-+0000 2004-03-03-11:00:00-+0000 t2
+  plan:booking 2004-03-08-09:00:00-+0000 2004-03-08-11:00:00-+0000 t2
+  plan:booking 2004-03-09-09:00:00-+0000 2004-03-09-11:00:00-+0000 t2
+  plan:booking 2004-03-10-09:00:00-+0000 2004-03-10-11:00:00-+0000 t2
+  plan:booking 2004-03-15-09:00:00-+0000 2004-03-15-11:00:00-+0000 t2
+  plan:booking 2004-04-01-09:00:00-+0000 2004-04-01-11:00:00-+0000 t2
+  plan:booking 2004-04-02-09:00:00-+0000 2004-04-02-11:00:00-+0000 t2
+  plan:booking 2004-04-05-09:00:00-+0000 2004-04-05-11:00:00-+0000 t2
+  plan:booking 2004-04-06-09:00:00-+0000 2004-04-06-11:00:00-+0000 t2
+  plan:booking 2004-04-07-09:00:00-+0000 2004-04-07-11:00:00-+0000 t2
+  plan:booking 2004-04-12-09:00:00-+0000 2004-04-12-11:00:00-+0000 t2
+  plan:booking 2004-04-13-09:00:00-+0000 2004-04-13-11:00:00-+0000 t2
 }
