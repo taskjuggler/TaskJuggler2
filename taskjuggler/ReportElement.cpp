@@ -433,7 +433,10 @@ ReportElement::getUrl(const QString& key) const
 bool
 ReportElement::isSupportedColumn(const QString& id) const
 {
-    return columnFormat[id];
+    return columnFormat[id] || 
+        report->getProject()->getTaskAttribute(id) ||
+        report->getProject()->getResourceAttribute(id) || 
+        report->getProject()->getAccountAttribute(id);
 }
 
 QStringList

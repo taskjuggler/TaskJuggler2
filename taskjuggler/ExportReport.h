@@ -13,9 +13,12 @@
 #define _ExportReport_h_
 
 #include <qstring.h>
+#include <qdict.h>
+
 #include <Report.h>
 
 class Project;
+class CustomAttributeDefinition;
 
 class ExportReport : public Report
 {
@@ -24,9 +27,6 @@ public:
     virtual ~ExportReport() { }
 
     bool generate();
-    bool generateTaskList(TaskList& ftl, ResourceList& frl);
-    bool generateTaskAttributeList(TaskList& ftl);
-    bool generateResourceList(TaskList& ftl, ResourceList& frl);
 
     bool addTaskAttribute(const QString& ta);
     QStringList getTaskAttributes() const { return taskAttributes; }
@@ -34,6 +34,12 @@ public:
 private:
     ExportReport() { }
 
+    bool generateCustomAttributeDeclaration(const QString& propertyName,
+        QDictIterator<CustomAttributeDefinition> it);
+    bool generateTaskList(TaskList& ftl, ResourceList& frl);
+    bool generateTaskAttributeList(TaskList& ftl);
+    bool generateResourceList(TaskList& ftl, ResourceList& frl);
+    
     QStringList taskAttributes;
 };
 

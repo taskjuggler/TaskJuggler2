@@ -1,4 +1,9 @@
-project test "Test" "$Id" 2000-01-01 2000-03-10
+project test "Test" "$Id" 2000-01-01 2000-03-10 {
+	extend task {
+		text userText "User Text"
+		reference userRef "User Reference"
+	}
+}
 
 include "workforce.tjsp"
 

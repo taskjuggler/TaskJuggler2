@@ -1,3 +1,5 @@
+- Document user-defined attributes.
+- Save user-defined attributes to XML and export file.
 - Remove old color support
 - Complete new color support
 - Color support for tasks and resources
