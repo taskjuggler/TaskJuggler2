@@ -647,31 +647,37 @@ sub _display_task_data {
         $l->Label( -text => 'complete:' )->pack( -anchor => 'w', -padx => 15  );
             $v->Label( -text => $t->complete." %" )->pack( -anchor => 'w' );
 
-        $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-            $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-        $l->Label( -text => 'resources' )->pack( -anchor => 'w', -padx => 15 );
         my $all_c = 0;
-        foreach my $all ( @{$t->bookedResources} ) {
+        foreach my $all ( @{$t->Allocations} ) {
+            if ( $all_c == 0) {
+                $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                    $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+                $l->Label( -text => 'allocations' )->pack( -anchor => 'w', -padx => 15 );
+            }
             $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
-                $v->Label( -text => $all )->pack( -anchor => 'w' );
+                $v->Label( -text => "$rmap{$all} ($all): ".$res_load{$all}{$t->Id}[2]." %" )->pack( -anchor => 'w' );
             $all_c++;
         }
 
-        $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-            $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-        $l->Label( -text => 'followers' )->pack( -anchor => 'w', -padx => 15 );
         $all_c = 0;
         foreach my $all ( @{$t->Followers} ) {
+            if ( $all_c == 0) {
+                $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                    $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+                $l->Label( -text => 'followers' )->pack( -anchor => 'w', -padx => 15 );
+            }
             $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
                 $v->Label( -text => $all )->pack( -anchor => 'w' );
             $all_c++;
         }
 
-        $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
-            $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-        $l->Label( -text => 'previous' )->pack( -anchor => 'w', -padx => 15 );
         $all_c = 0;
         foreach my $all ( @{$t->Previous} ) {
+            if ( $all_c == 0) {
+                $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                    $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+                $l->Label( -text => 'previous' )->pack( -anchor => 'w', -padx => 15 );
+            }
             $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
                 $v->Label( -text => $all )->pack( -anchor => 'w' );
             $all_c++;
