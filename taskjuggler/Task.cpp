@@ -1230,6 +1230,7 @@ Task::xRef(QDict<Task>& hash)
             }
             else
             {
+                (*tdi)->setTaskRef(t);
                 if (t == this)
                 {
                     errorMessage(i18n("Task '%1' cannot precede self.")
@@ -1237,7 +1238,6 @@ Task::xRef(QDict<Task>& hash)
                     error = TRUE;
                     break;
                 }
-                (*tdi)->setTaskRef(t);
                 followers.append(t);
                 t->predecessors.append(this);
                 t->previous.append(this);
