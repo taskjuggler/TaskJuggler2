@@ -19,10 +19,6 @@
 #include "ProjectFile.h"
 #include "kotrus.h"
 
-
-/* ugly: */
-Kotrus *kotrus;
-
 void
 copyright()
 {
