@@ -208,6 +208,16 @@ This defines the task <tt/AcSo/. In this example, it represents the whole
 project to build the Accounting Software. A task may contain several sub tasks.
 
 Please refer to the <ref id="task" name="task"> command in the reference.
+
+<tag>htmltaskreport "tasks.html" name,start,end,resources,weekly</tag>
+
+This command creates a task based report in html and saves it as
+<tt/tasks.html/ to the current directory. The report will include the task
+name, start and end of the task and the necessary resources will also be
+listed. The reports resolution will be in weeks.
+
+Please refer to the <ref id="htmltaskreport" name="htmltaskreport"> command in
+the reference for details.
 </descrip>
 
 <sect> Other useful commands and environments
@@ -1074,21 +1084,6 @@ sets the kotrus mode. Valid values are
 <item>'DB' to read from database which must be configured in your .taskjugglerrc
 </itemize>
 
-
-
-
-
-
-
-
-
-
-
-
-
-Refer to the <htmlurl url="Reference.txt" name="Reference"> in ASCII
-format for a list of all valid commands and their properties.
-
 <sect>The Example: Accounting Software<label id="example">
 <p>
 
@@ -1211,6 +1206,8 @@ task AcSo "Accounting Software" {
     }
   }
 }
+
+htmltaskreport "tasks.html" name,start,end,resources,weekly
 </verb></tscreen>
 
 <sect>Questions and Answers<p>
