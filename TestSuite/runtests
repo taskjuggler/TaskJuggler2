@@ -1,0 +1,19 @@
+#! /bin/sh
+
+set errors=0
+
+dirs=`find * -type d -maxdepth 0`
+
+for d in $dirs ; do
+  if [ $d != "CVS" ] ; then
+    echo "Testing in $d"
+    cd $d
+    ../testdir
+    errors=$(( $errors + $? ))
+    cd ..
+  fi
+done
+
+echo $errors test failed!
+exit $errors
+

@@ -1,0 +1,19 @@
+project simple "Simple Project" "$Id" 2000-01-01 2000-01-31
+
+resource tux "Tux"
+
+task t1 "Task1" {
+  start 2000-01-01
+  length 1d
+}
+
+task t2 "Task2" {
+  depends t1
+  duration 1d
+}
+
+task t3 "Task3" {
+  depends t2
+  effort 1d
+  allocate tux
+}
