@@ -556,6 +556,7 @@ Task::propagateInitialValues()
         propagateStart(TRUE);
     if (end != 0)
         propagateEnd(TRUE);
+    
     // Check if the some data of sub tasks can already be propagated.
     if (!sub.isEmpty())
         scheduleContainer(TRUE);
@@ -1101,6 +1102,13 @@ Task::implicitXRef()
          * end date and no start or end dependencies, we check if a parent task
          * has an explicit start or end date which can be used. */
 
+        if (milestone)
+        {
+            if (scenarios[sc].start != 0 && scenarios[sc].end == 0)
+                scenarios[sc].end = scenarios[sc].start - 1;
+            if (scenarios[sc].end != 0 && scenarios[sc].start == 0)
+                scenarios[sc].start = scenarios[sc].end + 1;
+        }
         bool hasDurationSpec = scenarios[sc].duration != 0 ||
             scenarios[sc].length != 0 ||
             scenarios[sc].effort != 0;
