@@ -444,6 +444,11 @@ unit: <ref id="unit" name="UNIT">
 Specifies the effort needed to complete the task. An effort of 4d can
 be done with 2 full-time resources in 2 days.
 
+WARNING: In almost all real world projects effort is not the product
+of time and resources. This is only true if the task can be
+partitioned without adding any overhead. For more information about
+this read "Mythical Man-Month" by Frederick P. Brooks, Jr.
+
 Tasks may not have subtasks if this attribute is used.
 
 <tag/complete &lt;percent&gt;/
