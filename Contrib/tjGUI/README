@@ -24,7 +24,7 @@ required
 
 usage
 
-    tjGUI.pl export_from_taskjuggler.xml
+    tjGUI.pl export_from_taskjuggler.tjx
 
 
 

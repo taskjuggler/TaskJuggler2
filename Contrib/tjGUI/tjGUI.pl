@@ -947,7 +947,7 @@ sub _pars_xml {
     if ( $file ) {
         $par->parsefile($file);
     } else {
-        my @types = (["XML files", [qw/.xml .XML/]],
+        my @types = (["XML files", [qw/.tjx .TJX .xml .XML/]],
                      ["All files", '*']);
         #use Tk::FileSelect;
         #my $FSref = $top->FileSelect();
