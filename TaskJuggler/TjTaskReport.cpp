@@ -88,6 +88,7 @@ TjTaskReport::generateList()
      * lines. For some columns we need to know the maximum tree depth, so we
      * have to fill the table first with all entries before we can fill those
      * columns. */
+    int i = 0;
     for (TaskListIterator tli(reportDef->getProject()->
                               getTaskListIterator()); *tli; ++tli)
     {
@@ -145,6 +146,7 @@ TjTaskReport::generateList()
                     maxDepth = treeLevel(lvi);
             }
         }
+        newLvi->setText(1, QString().sprintf("%05d", i++));
     }
 
     // Now we know the maximum tree depth and can fill in the rest of the

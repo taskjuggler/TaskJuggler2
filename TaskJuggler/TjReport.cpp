@@ -192,7 +192,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                                const Resource* r)
 {
     // Skip the first colum. It contains the hardwired task name.
-    int column = 1;
+    int column = 2;
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
@@ -338,7 +338,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                                    const Task* t)
 {
     // Skip the first colum. It contains the hardwired resource name.
-    int column = 1;
+    int column = 2;
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
@@ -974,8 +974,14 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
 {
     // The first column is always the Task/Resource column
     listView->addColumn(firstHeader);
+    // The second column is the sort index. It is always hidden.
+    listView->addColumn("sortIndex");
+    listView->setColumnWidthMode(1, QListView::Manual);
+    listView->hideColumn(1);
+    listView->setSortOrder(Qt::Ascending);
+    listView->setSortColumn(1);
 
-    int col = 1;
+    int col = 2;
     for (QPtrListIterator<TableColumnInfo>
          ci = tab->getColumnsIterator(); *ci; ++ci, ++col)
     {
@@ -1010,8 +1016,9 @@ TjReport::expandReportItem(QListViewItem*)
 void
 TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
 {
-    // The first column is always the name and it's not in the TCI table.
-    if (!lvi || column == 0)
+    // The first column is always the name and the second column is the hidden
+    // sort index. Both are not in the TCI table.
+    if (!lvi || column <= 1)
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
@@ -1019,7 +1026,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
     {
         Task* t = dynamic_cast<Task*>(ca);
         const TableColumnInfo* tci =
-            this->getReportElement()->columnsAt(column - 1);
+            this->getReportElement()->columnsAt(column - 2);
         if (tci->getName() == "note" && !t->getNote().isEmpty())
         {
             // Open a new window that displays the note attached to the task.
