@@ -15,6 +15,7 @@
 
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qapplication.h>
 
 #include "ProjectFile.h"
 #include "debug.h"
@@ -79,7 +80,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
         qDebug("Requesting to open file %s", file.latin1());
     if (absFileName[0] != '/')
         absFileName = parentPath + absFileName;
-    
+
     if (DEBUGPF(10))
         qDebug("File name before compression: %s", absFileName.latin1());
     int end = 0;
@@ -105,7 +106,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
                      absFileName.latin1());
         return TRUE;
     }
-        
+
     FileInfo* fi = new FileInfo(this, absFileName, taskPrefix);
 
     if (!fi->open())
@@ -173,7 +174,7 @@ ProjectFile::parse()
             {
                 if (!readShift(0))
                     return FALSE;
-                break;  
+                break;
             }
             else if (token == KW("vacation"))
             {
@@ -467,7 +468,7 @@ ProjectFile::parse()
                break;
 #endif
             }
-           
+
             else if (token == KW("htmltaskreport") ||
                      token == KW("htmlresourcereport") ||
                      token == KW("htmlweeklycalendar") ||
@@ -536,12 +537,13 @@ ProjectFile::parse()
                     (token == "resource" && !readResourceSupplement()))
                     return FALSE;
                 break;
-            }   
+            }
             // break missing on purpose!
         default:
             errorMessage(i18n("Syntax Error at '%1'!").arg(token));
             return FALSE;
         }
+        qApp->processEvents();
     }
 
     return TRUE;
@@ -568,7 +570,7 @@ ProjectFile::readProject()
                   "account, shift, task or resource."));
         return FALSE;
     }
-    
+
     if (nextToken(token) != ID)
     {
         errorMessage(i18n("Project ID expected"));
@@ -716,7 +718,7 @@ ProjectFile::readProject()
                 if (!readRealFormat(&format))
                     return FALSE;
                 proj->setCurrencyFormat(format);
-            } 
+            }
             else if (token == KW("currency"))
             {
                 if (nextToken(token) != STRING)
@@ -770,7 +772,7 @@ ProjectFile::readProject()
     }
     else
         returnToken(tt, token);
-   
+
     return TRUE;
 }
 
@@ -798,7 +800,7 @@ ProjectFile::readExtend()
         QString attrType;
         if ((tt = nextToken(attrType)) == RBRACE)
             break;
-        else if (tt != ID || 
+        else if (tt != ID ||
                  (attrType != KW("reference") && attrType != KW("text")))
         {
             errorMessage(i18n("'%1' is not a known custom attribute type. "
@@ -831,7 +833,7 @@ ProjectFile::readExtend()
         else if (attrType == KW("text"))
             cat = CAT_Text;
         bool ok = FALSE;
-        CustomAttributeDefinition* ca = 
+        CustomAttributeDefinition* ca =
             new CustomAttributeDefinition(attrName, cat);
         if (property == "task")
             ok = proj->addTaskAttribute(attrID, ca);
@@ -844,7 +846,7 @@ ProjectFile::readExtend()
                 .arg(attrID).arg(property));
             return FALSE;
         }
-    
+
         if ((tt = nextToken(token)) != LBRACE)
         {
             returnToken(tt, token);
@@ -868,8 +870,8 @@ ProjectFile::readExtend()
             }
         }
     }
-   
-    return TRUE; 
+
+    return TRUE;
 }
 
 bool
@@ -933,8 +935,8 @@ ProjectFile::readScenario(Scenario* parent)
         }
     }
     else
-        returnToken(tt, token);        
-    
+        returnToken(tt, token);
+
     return TRUE;
 }
 
@@ -1004,7 +1006,7 @@ ProjectFile::errorMessage(const char* msg, ...)
 {
     va_list ap;
     va_start(ap, msg);
-    
+
     if (openFiles.isEmpty())
         TJMH.errorMessage
             (i18n("Unexpected end of file found. Probably a missing '}'."));
@@ -1039,7 +1041,7 @@ ProjectFile::readInclude()
      * parent file. So we have to save the path of the current file to pass it
      * later to open(). */
     QString parentPath = openFiles.last()->getPath();
-    
+
     if ((tt = nextToken(token)) == LBRACE)
     {
         while ((tt = nextToken(token)) != RBRACE)
@@ -1068,16 +1070,16 @@ ProjectFile::readInclude()
     }
     else
         returnToken(tt, token);
-    
+
     if (!open(fileName, parentPath, taskPrefix))
         return FALSE;
-    
+
     return TRUE;
 }
 
 bool
 ProjectFile::readCustomAttribute(CoreAttributes* property, const QString& id,
-                                 CustomAttributeType type) 
+                                 CustomAttributeType type)
 {
     if (type == CAT_Reference)
     {
@@ -1207,7 +1209,7 @@ ProjectFile::readTask(Task* parent)
             id = tp + "." + id;
         }
     }
-    
+
     Task* task;
     // We need to check that the task id has not been declared before.
     if ((task = proj->getTask(id)) != 0)
@@ -1238,7 +1240,7 @@ ProjectFile::readTask(Task* parent)
 
     if (!readTaskBody(task))
         return FALSE;
-    
+
     if (task->getName().isEmpty())
     {
         errorMessage(i18n("No name specified for task '%1'").arg(id));
@@ -1263,7 +1265,7 @@ ProjectFile::readTaskSupplement(QString prefix)
         prefix = getTaskPrefix();
     else
         prefix += ".";
-    
+
     if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
         ((task = proj->getTask(prefix.isEmpty() ?
                                token : prefix + token)) == 0))
@@ -1285,7 +1287,7 @@ ProjectFile::readTaskBody(Task* task)
 {
     QString token;
     TokenType tt;
-    
+
     for (bool done = false ; !done; )
     {
         QString next;
@@ -1641,11 +1643,11 @@ ProjectFile::readTaskBody(Task* task)
                     errorMessage(i18n("'task' expected"));
                     return FALSE;
                 }
-                if ((token == "task" && 
+                if ((token == "task" &&
                      !readTaskSupplement(task->getId())))
                     return FALSE;
                 break;
-            }   
+            }
             else if (token == "include")
             {
                 errorMessage
@@ -1873,13 +1875,13 @@ bool
 ProjectFile::readDate(time_t& val, time_t correction)
 {
     QString token;
-    
+
     if (nextToken(token) != DATE)
     {
         errorMessage(i18n("Date expected"));
         return FALSE;
     }
-    
+
     val = date2time(token) - correction;
     if (val + correction < proj->getStart() ||
         val > proj->getEnd())
@@ -1919,7 +1921,7 @@ ProjectFile::readRealFormat(RealFormat* format)
         return FALSE;
     }
     format->setThousandSep(token);
-    
+
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("String expected"));
@@ -1947,7 +1949,7 @@ ProjectFile::readReference(QString& ref, QString& label)
         return FALSE;
     }
     label = ref;
-    
+
     TokenType tt;
     QString token;
     if ((tt = nextToken(token)) == LBRACE)
@@ -1971,7 +1973,7 @@ ProjectFile::readReference(QString& ref, QString& label)
     }
     else
         returnToken(tt, token);
-    
+
     return TRUE;
 }
 
@@ -1980,7 +1982,7 @@ ProjectFile::readPercent(double& value)
 {
     QString token;
     TokenType tt;
-    
+
     if ((tt = nextToken(token)) != INTEGER && tt != REAL)
     {
         errorMessage(i18n("Number expected"));
@@ -2102,7 +2104,7 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else
             returnToken(nextTT, next);
-        
+
         if (proj->getResourceAttribute(token))
         {
             if (!readCustomAttribute(r, token,
@@ -2243,7 +2245,7 @@ ProjectFile::readResourceBody(Resource* r)
 }
 
 int
-ProjectFile::readResourceScenarioAttribute(const QString attribute, 
+ProjectFile::readResourceScenarioAttribute(const QString attribute,
                                            Resource* resource,
                                            int sc, bool enforce)
 {
@@ -2318,7 +2320,7 @@ ProjectFile::readShift(Shift* parent)
                 QPtrList<Interval>* l = new QPtrList<Interval>();
                 if (!readWorkingHours(dow, l))
                     return FALSE;
-                
+
                 s->setWorkingHours(dow, l);
             }
             else if (token == KW("include"))
@@ -2386,7 +2388,7 @@ ProjectFile::readBooking(int& sloppy)
         errorMessage(i18n("Start date must be within the project timeframe"));
         return 0;
     }
-    
+
     if (nextToken(token) != DATE)
     {
         errorMessage(i18n("End date expected"));
@@ -2426,7 +2428,7 @@ ProjectFile::readBooking(int& sloppy)
                     errorMessage(i18n("Number between 0 and 3 expected"));
                     return 0;
                 }
-                sloppy = token.toInt(); 
+                sloppy = token.toInt();
             }
             else
             {
@@ -2437,7 +2439,7 @@ ProjectFile::readBooking(int& sloppy)
     }
     else
         returnToken(tt, token);
-    
+
     return new Booking(Interval(start, end), task);
 }
 
@@ -2704,7 +2706,7 @@ ProjectFile::readAllocate(Task* t)
     else
         returnToken(tt, token);
     t->addAllocation(a);
-    
+
     return TRUE;
 }
 
@@ -2723,7 +2725,7 @@ ProjectFile::readLimits()
     TokenType tt;
     while ((tt = nextToken(token)) == ID)
     {
-        double val; 
+        double val;
         if (!readTimeFrame(val, TRUE))
         {
             delete limits;
@@ -2757,7 +2759,7 @@ ProjectFile::readLimits()
         delete limits;
         return 0;
     }
-    
+
     return limits;
 }
 
@@ -2818,21 +2820,21 @@ ProjectFile::readTimeFrame(double& value, bool workingDays)
         return FALSE;
     }
     if (unit == KW("min"))
-        value = val.toDouble() / 
+        value = val.toDouble() /
             (workingDays ? proj->getDailyWorkingHours() * 60 : 24 * 60);
     else if (unit == KW("h"))
-        value = val.toDouble() / 
+        value = val.toDouble() /
             (workingDays ? proj->getDailyWorkingHours() : 24);
     else if (unit == KW("d"))
         value = val.toDouble();
     else if (unit == KW("w"))
-        value = val.toDouble() * 
+        value = val.toDouble() *
             (workingDays ? proj->getWeeklyWorkingDays() : 7);
     else if (unit == KW("m"))
-        value = val.toDouble() * 
+        value = val.toDouble() *
             (workingDays ? proj->getMonthlyWorkingDays() : 30.4167);
     else if (unit == KW("y"))
-        value = val.toDouble() * 
+        value = val.toDouble() *
             (workingDays ? proj->getYearlyWorkingDays() : 365);
     else
     {
@@ -2901,7 +2903,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
             errorMessage(i18n("End time must be larger than start time"));
             return FALSE;
         }
-        Interval* iv = new Interval(st, et - 1); 
+        Interval* iv = new Interval(st, et - 1);
         for (QPtrListIterator<Interval> ili(*l); *ili != 0; ++ili)
             if (iv->overlaps(**ili))
             {
@@ -3062,7 +3064,7 @@ ProjectFile::readXMLReport()
     }
     else
         returnToken(tt, token);
-   
+
     if (version == 1)
     {
         delete report;
@@ -3081,7 +3083,7 @@ bool
 ProjectFile::checkReportInterval(ReportElement* tab)
 {
     if (tab->getEnd() < tab->getStart())
-    {   
+    {
         errorMessage(i18n("End date must be later than start date"));
         return FALSE;
     }
@@ -3106,7 +3108,7 @@ bool
 ProjectFile::checkReportInterval(HTMLReport* report)
 {
     if (report->getEnd() < report->getStart())
-    {   
+    {
         errorMessage(i18n("End date must be later than start date"));
         return FALSE;
     }
@@ -3136,7 +3138,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
         errorMessage(i18n("File name expected"));
         return FALSE;
     }
-    
+
     HTMLReport* report = 0;
     HTMLReportElement* tab = 0;
     if (reportType == KW("htmltaskreport"))
@@ -3164,7 +3166,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
         qFatal("readHTMLReport: bad report type");
         return FALSE;   // Just to please the compiler.
     }
-        
+
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
     {
@@ -3424,7 +3426,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 
     if (!checkReportInterval(tab))
         return FALSE;
-    
+
     proj->addReport(report);
 
     return TRUE;
@@ -3439,7 +3441,7 @@ ProjectFile::readHTMLStatusReport()
         errorMessage(i18n("File name expected"));
         return FALSE;
     }
-    
+
     HTMLStatusReport* report;
     report = new HTMLStatusReport(proj, token, getFile(), getLine());
 
@@ -3536,7 +3538,7 @@ ProjectFile::readCSVReport(const QString& reportType)
         errorMessage(i18n("File name expected"));
         return FALSE;
     }
-    
+
     CSVReport* report = 0;
     CSVReportElement* tab = 0;
     if (reportType == KW("csvtaskreport"))
@@ -3559,7 +3561,7 @@ ProjectFile::readCSVReport(const QString& reportType)
         qFatal("readCSVReport: bad report type");
         return FALSE;   // Just to please the compiler.
     }
-        
+
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
     {
@@ -3781,7 +3783,7 @@ ProjectFile::readCSVReport(const QString& reportType)
 
     if (!checkReportInterval(tab))
         return FALSE;
-    
+
     proj->addReport(report);
 
     return TRUE;
@@ -3808,7 +3810,7 @@ ProjectFile::readExportReport()
 
     ExportReport* report;
     report = new ExportReport(proj, token, getFile(), getLine());
-    
+
     if (token.right(4) == ".tjp")
         report->setMasterFile(TRUE);
 
@@ -4208,7 +4210,7 @@ ProjectFile::readLogicalExpression(int precedence)
             {
                 errorMessage(i18n("Function '%1' is not defined").arg(token));
                 return 0;
-            }                
+            }
         }
         else
         {
@@ -4278,7 +4280,7 @@ ProjectFile::readLogicalExpression(int precedence)
         errorMessage(i18n("Logical expression expected"));
         return 0;
     }
-    
+
     if (precedence < 1)
     {
         tt = nextToken(token);
@@ -4333,7 +4335,7 @@ ProjectFile::readFunctionCall(const QString& name)
 {
     QString token;
     TokenType tt;
-    
+
     QPtrList<Operation> args;
     for (int i = 0; i < ExpressionTree::arguments(name); i++)
     {
@@ -4571,7 +4573,7 @@ bool
 ProjectFile::readSortingMode(int& sorting)
 {
     QString token;
-    
+
     nextToken(token);
     QString laToken;
     TokenType tt;
@@ -4585,7 +4587,7 @@ ProjectFile::readSortingMode(int& sorting)
             return FALSE;
         }
         nextToken(token);
-        
+
         if (token == KW("startup"))
             sorting = CoreAttributesList::StartUp;
         else if (token == KW("startdown"))
@@ -4612,9 +4614,9 @@ ProjectFile::readSortingMode(int& sorting)
     else
     {
         returnToken(tt, laToken);
-       
+
         bool deprecatedWarning = FALSE;
-        
+
         if (token == KW("tree"))
             sorting = CoreAttributesList::TreeMode;
         else if (token == KW("sequenceup"))
@@ -4749,7 +4751,7 @@ ProjectFile::readSortingMode(int& sorting)
                       "sorting criteria has been deprecated. Please separate "
                       "them by a colon. E. g. 'plan:start', 'actual:end'"));
     }
-    
+
     return TRUE;
 }
 
