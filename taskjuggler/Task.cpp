@@ -534,11 +534,10 @@ Task::bookResources(time_t date, time_t slotDuration)
 {
 	bool allocFound = FALSE;
 
-	/* When shifts have been defined for a task, there must be a shift
-	 * interval defined for this day and the time must lie within the
-	 * working hours of that shift. */
-	if (shifts.count() > 0 &&
-		!shifts.isOnShift(Interval(date, date + slotDuration - 1)))
+	/* If the time slot overlaps with a specified shift interval, the
+	 * time slot must also be within the specified working hours of that
+	 * shift interval. */
+	if (!shifts.isOnShift(Interval(date, date + slotDuration - 1)))
 		return FALSE;
 		
 	for (Allocation* a = allocations.first();

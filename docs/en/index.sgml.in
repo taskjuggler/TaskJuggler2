@@ -191,6 +191,11 @@ and task <ref id="task_allocate_shift" name="allocations">.
 
 <item>Fixed vim syntax highlighting. Some keywords were missing.
 
+<item>Export report had syntax bug when milestones were present.
+Fixed.
+
+<item>Fixed handling of week, month and year duration specifications.
+
 </itemize>
 
 <sect>Installation
@@ -515,8 +520,14 @@ include line breaks.
 
 <label id="time"><tag/TIME/A time in the format HH:MM.
 
-<label id="unit"><tag/UNIT/May be h for hours, d for days, w for weeks, m for months, y for
-years.
+<label id="unit"><tag/UNIT/May be h for hours, d for days, w for
+weeks, m for months, y for years. Week, month and year specifications
+are only approximated values and are handled slightly different for
+length, effort and duration intervals. For length and effort only
+working days are counted. So a week is 5 working days, a month 20
+working days and a year 240 working days. For duration specifications
+calendar days are counted, so a week is 7 days, a month is 30 days and
+a year is 365 days long.
 
 <label id="weekday"><tag/WEEKDAY/May be
 <descrip>
@@ -1353,8 +1364,11 @@ id="resource_workinghours" name="resource">
 When several resource have the same working hours, these working hours
 should be defined as shifts. Each shift must have a unique <ref
 id="id" name="ID">. Resources can be assigned to shifts for certain
-intervals. Ref.  Resources.
+intervals. 
 
+See also: <ref id="resource_shift" name="resource">, <ref
+id="task_shift" name="task"> and <ref id="task_allocate_shift"
+name="allocate">
 
 <label id="supplement">
 <sect1>supplement &lt;task|resource&gt; &lt;ID&gt;
@@ -1444,8 +1458,9 @@ from: <ref id="date" name="DATE">
 
 to: <ref id="date" name="DATE">
 
-Limits the allocation activity to the shifts within the specified interval.
-Multiple shifts can be defined, but shift invervals may not overlap.
+Limits the allocation activity during the specified intervals to the
+working hours of the shift. Multiple shifts intervals can be specified
+but shift invervals may not overlap.
 
 <tag/persistent/
 
@@ -1737,8 +1752,9 @@ from: <ref id="date" name="DATE">
 
 to: <ref id="date" name="DATE">
 
-Limits the task activity to the shifts within the specified interval.
-Multiple shifts can be defined, but shift invervals may not overlap.
+Limits the task activity during the specified interval to the working
+hours of the specified shift. Multiple shifts can be defined, but
+shift invervals may not overlap.
 
 <label id="task_start">
 <tag/start &lt;date&gt;/

@@ -38,7 +38,7 @@ public:
 
 	bool isOnShift(const Interval& i)
 	{
-		return shifts.count() == 0 || shifts.isOnShift(i);
+		return shifts.isOnShift(i);
 	}
 
 	enum SelectionModeType { order, minLoaded, maxLoaded, random };

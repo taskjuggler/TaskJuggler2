@@ -24,11 +24,14 @@ ShiftSelectionList::compareItems(QCollection::Item i1, QCollection::Item i2)
 bool
 ShiftSelectionList::isOnShift(const Interval& iv)
 {
+	/* Check whether any of the defined shift intervals contains the interval
+	 * 'iv'. If not return TRUE. If it does, check whether the interval 'iv'
+	 * lies within the specified working hours. */
 	for (ShiftSelection* s = first();
 		 s != 0 && iv.getStart() <= s->getPeriod().getEnd(); s = next())
-		if (s->getPeriod().contains(iv) && s->getShift()->isOnShift(iv))
-			return TRUE;
-	return FALSE;
+		if (s->getPeriod().contains(iv))
+		   return s->getShift()->isOnShift(iv);
+	return TRUE;
 }
 
 Shift*

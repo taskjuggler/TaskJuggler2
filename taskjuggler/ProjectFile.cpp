@@ -1121,42 +1121,42 @@ ProjectFile::readTaskBody(Task* task)
 			else if (token == KW("length"))
 			{
 				double d;
-				if (!readPlanTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d, TRUE))
 					return FALSE;
 				task->setPlanLength(d);
 			}
 			else if (token == KW("effort"))
 			{
 				double d;
-				if (!readPlanTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d, TRUE))
 					return FALSE;
 				task->setPlanEffort(d);
 			}
 			else if (token == KW("duration"))
 			{
 				double d;
-				if (!readPlanTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d, FALSE))
 					return FALSE;
 				task->setPlanDuration(d);
 			}
 			else if (token == KW("actuallength"))
 			{
 				double d;
-				if (!readPlanTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d, TRUE))
 					return FALSE;
 				task->setActualLength(d);
 			}
 			else if (token == KW("actualeffort"))
 			{
 				double d;
-				if (!readPlanTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d, TRUE))
 					return FALSE;
 				task->setActualEffort(d);
 			}
 			else if (token == KW("actualduration"))
 			{
 				double d;
-				if (!readPlanTimeFrame(task, d))
+				if (!readPlanTimeFrame(task, d, FALSE))
 					return FALSE;
 				task->setActualDuration(d);
 			}
@@ -2045,7 +2045,8 @@ ProjectFile::readTimeValue(ulong& value)
 }
 
 bool
-ProjectFile::readPlanTimeFrame(Task* /* task */, double& value)
+ProjectFile::readPlanTimeFrame(Task* /* task */, double& value, bool
+							   workingDays)
 {
 	QString val;
 	TokenType tt;
@@ -2067,11 +2068,11 @@ ProjectFile::readPlanTimeFrame(Task* /* task */, double& value)
 	else if (unit == KW("d"))
 		value = val.toDouble();
 	else if (unit == KW("w"))
-		value = val.toDouble() * 5;
+		value = val.toDouble() * (workingDays ? 5 : 7);
 	else if (unit == KW("m"))
-		value = val.toDouble() * 20;
+		value = val.toDouble() * (workingDays ? 20 : 30);
 	else if (unit == KW("y"))
-		value = val.toDouble() * 240;
+		value = val.toDouble() * (workingDays ? 240 : 365);
 	else
 	{
 		fatalError("Unit expected");

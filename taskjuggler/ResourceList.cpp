@@ -582,12 +582,11 @@ Resource::dbLoadBookings(const QString& kotrusID,
 bool
 Resource::hasVacationDay(time_t day)
 {
-	Interval fullDay(midnight(day),
-					 sameTimeNextDay(midnight(day)) - 1);
-
 	if (workingHours[dayOfWeek(day)]->isEmpty())
 		return TRUE;
 
+	Interval fullDay(midnight(day),
+					 sameTimeNextDay(midnight(day)) - 1);
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
 		if (i->overlaps(fullDay))
 			return TRUE;
