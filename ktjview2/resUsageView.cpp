@@ -260,16 +260,16 @@ QStringList ResUsageView::getColumnLabels() const
     switch ( m_scale )
     {
     case SC_DAY:
-        format = "%x";
+        format = "%d/%m";
         break;
     case SC_WEEK:
-        format = "%V/%Y";
+        format = "%V/%y";
         break;
     case SC_MONTH:
-        format = "%b/%Y";
+        format = "%b/%y";
         break;
     case SC_QUARTER:
-        format = "Q%q/%Y";
+        format = "Q%q/%y";
         break;
     default:
         kdWarning() << "Invalid scale in ResUsageView::getColumnLabels" << endl;
@@ -354,15 +354,22 @@ QString ResUsageView::text( int row, int col ) const
     switch ( m_display )
     {
     case DIS_LOAD_AND_TOTAL:
-        text = QString( "%1 / %2" )
-               .arg( KGlobal::locale()->formatNumber( load, 1 ) )
-               .arg( KGlobal::locale()->formatNumber( total, 1 ) );
+        text = QString( "%1/%2" )
+               .arg( KGlobal::locale()->formatNumber( load, 0 ) )
+               .arg( KGlobal::locale()->formatNumber( total, 0 ) );
         break;
     case DIS_LOAD:
-        text = QString( "%1" ).arg( KGlobal::locale()->formatNumber( load, 1 ) );
+        if (load == 0)
+        {
+            text = QString(" ");
+        }
+        else
+        {
+            text = QString( "%1" ).arg( KGlobal::locale()->formatNumber( load, 0 ) );
+        }
         break;
     case DIS_FREE:
-        text = QString( "%1" ).arg( KGlobal::locale()->formatNumber( aload, 1 ) );
+        text = QString( "%1" ).arg( KGlobal::locale()->formatNumber( aload, 0 ) );
         break;
     default:
         kdWarning() << "Unsupported display type in ResUsageView::text" << endl;

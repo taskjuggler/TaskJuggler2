@@ -1,11 +1,11 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Taskjuggler IDE
+Name=TaskJuggler IDE
 Exec=ktjview2 %i %m -caption "%c"
 Icon=ktjview2
 Type=Application
 DocPath=ktjview2/ktjview2.html
-Comment=A Taskjuggler IDE for KDE
+Comment=A TaskJuggler IDE for KDE
 GenericName=Taskjuggler IDE
 Terminal=0
 MimeType=application/x-tjp;application/x-tjxml
