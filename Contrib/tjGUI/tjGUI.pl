@@ -274,9 +274,10 @@ sub _item_enter {
         foreach my $i (@all_tasks) {
             $t = $i if ( $i->Id eq $taskID );
         }
-        my $top = new MainWindow( -title => 'details view');
-        my $l = $top->Frame()->pack( -side => 'left', -fill => 'y' );
-        my $v = $top->Frame()->pack( -side => 'left', -fill => 'y' );
+        my $top = new MainWindow( -title => 'detail view');
+            $top->geometry("750x600");
+            my $l = $top->Frame()->pack(-side => 'left');
+            my $v = $top->Frame()->pack(-side => 'left');
             my ($y, $m, $d, $h, $mi, $s);
             if ( $t->planStart =~ /^\d+$/ ) {
                 ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->planStart);
