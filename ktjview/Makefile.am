@@ -33,10 +33,6 @@ ktjview_SOURCES = main.cpp ktjview.cpp
 ktjview_LDFLAGS = $(KDE_RPATH) $(all_libraries) 
 ktjview_LDADD   = $(LIB_KPARTS)
 
-# this is where the desktop file will go 
-# shelldesktopdir   = $(kde_appsdir)/Utilities
-# shelldesktop_DATA = ktjview.desktop
-
 # this is where the shell's XML-GUI resource file goes
 shellrcdir   = $(kde_datadir)/ktjview
 shellrc_DATA = ktjview_shell.rc
@@ -58,6 +54,11 @@ libktjviewpart_la_LIBADD  = $(LIB_KPARTS) $(LIB_KFILE)  ../taskjuggler/libtaskju
 # this is where the desktop file will go 
 partdesktopdir   = $(kde_servicesdir)
 partdesktop_DATA = ktjview.desktop
+
+# register the mimetype
+kdemimedir = $(kde_mimedir)/application
+kdemime_DATA = x-tjxml.desktop
+
 
 # this is where the part's XML-GUI resource file goes
 partrcdir   = $(kde_datadir)/ktjviewpart
