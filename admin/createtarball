@@ -51,6 +51,16 @@ if [ -n $wantdocs ] ; then
 	cp -r taskjuggler manual-$ver
 	chmod 755 manual-$ver
 	tar cjf $dir/$doctarball manual-$ver
+	
+	# check for postscript and pdf
+	if [ -e taskjuggler.ps ] ; then
+	    cp taskjuggler.ps $dir/manual-$ver.ps
+	fi
+
+	if [ -e taskjuggler.pdf ] ; then
+	    cp taskjuggler.pdf $dir/manual-$ver.pdf
+	fi
+
 	cd ..
     fi
     cd ../..
