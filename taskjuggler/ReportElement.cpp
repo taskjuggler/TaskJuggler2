@@ -634,8 +634,7 @@ const
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
-                if (r->getLoad(*it, Interval(start, end), AllAccounts, *tli) 
-                    > 0.0)
+                if (r->isAllocated(*it, Interval(start, end), *tli) > 0.0)
                 {
                     resourceLoadedInAnyScenario = TRUE;
                     break;
@@ -717,8 +716,7 @@ const
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
-                if ((*rli)->getLoad(*it, Interval(start, end), 
-                                    AllAccounts, t) > 0.0)
+                if ((*rli)->isAllocated(*it, Interval(start, end), t) > 0.0)
                 {
                     taskLoadedInAnyScenario = TRUE;
                     break;

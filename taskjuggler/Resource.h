@@ -126,6 +126,8 @@ public:
     bool isAllocated(int sc, const Interval& i,
                      const QString& prjId = QString::null) const;
 
+    bool isAllocated(int sc, const Interval& i, const Task* t) const;
+
     BookingList getJobs(int sc) const;
 
     time_t getStartOfFirstSlot(int sc, const Task* task);

@@ -1,5 +1,7 @@
 - Global cost function driven optimizer.
 - hasLoad() function
+- support for non-effort (passive) resources
+- support for renewable resources
 - Explain more features with examples in the documentation.
 - Generic HTML report.
 - Allocation selection by skill set.

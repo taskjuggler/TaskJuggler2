@@ -1,0 +1,75 @@
+project prj "tjxreport test" "1.0" 2003-01-01-0:00-GMT 2003-04-01-00:00-GMT {
+	timezone "GMT"
+  timeformat "%Y-%m-%d %H:%M:%S %Z"	
+	now 2003-02-01
+}
+
+flags flag1, flag2, flag3, flag4
+
+resource tux1 "Tux 1" {
+	rate 300.0
+	kotrusid "tux1"
+}
+
+resource tux2 "Tux 2" {
+	rate 500.0
+	kotrusid "tux der 2."
+}
+
+resource tux3 "Tux 3" {
+	rate 400.0
+}
+
+account c "Cost" cost
+account r "Revenue" revenue
+
+task t1 "Task 1" {
+	flags flag1
+	account c
+	start 2003-01-01
+	task t2 "Task 2" {
+		effort 30d
+		allocate tux1
+		responsible tux2
+		flags flag2, flag3
+		note "This is Task2"
+		reference "http://www.taskjuggler.org" { label "taskjuggler.org" }
+		priority 10
+	}
+	task t3 "Task 3" {
+		effort 30d
+		allocate tux2
+		responsible tux3
+		startbuffer 15
+		endbuffer 15
+		flags flag4
+		priority 900
+		note "This is a sub-task of Task1"
+	}
+	task t4 "Task 4" {
+		effort 30d
+		allocate tux3
+		depends !t2, !t3
+		startbuffer 10
+		endbuffer 10
+		responsible tux1
+	}
+	task m1 "Milestone1" {
+		depends !t3
+		account r
+		startcredit 28000.0
+		milestone
+	}
+	task m2 "Milestone2" {
+		depends !t3
+		account r
+		endcredit 18500.0
+		milestone
+	}
+}
+
+xmlreport "." {
+	hideresource 0
+	version 2
+	notimestamp
+}

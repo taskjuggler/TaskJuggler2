@@ -51,6 +51,8 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 
     p->addResource(this);
 
+    limits = 0;
+
     sbSize = (p->getEnd() + 1 - p->getStart()) /
         p->getScheduleGranularity() + 1;
 
@@ -756,6 +758,37 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
     return FALSE;
 }
 
+bool
+Resource::isAllocated(int sc, const Interval& period, const Task* task) const
+{
+    Interval iv(period);
+    if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+    {
+        qDebug("%s - %s", time2ISO(period.getStart()).latin1(),
+               time2ISO(period.getEnd()).latin1());
+
+        return FALSE;
+    }
+
+    /* If resource is a group, check members first. */
+    for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
+        if ((*rli)->isAllocated(sc, iv, task))
+            return TRUE;
+
+    if (!scoreboards[sc])
+        return FALSE;
+    for (uint i = sbIndex(iv.getStart());
+         i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
+    {
+        SbBooking* b = scoreboards[sc][i];
+        if (b < (SbBooking*) 4)
+            continue;
+        if (task == 0 || b->getTask() == task)
+            return TRUE;
+    }
+    return FALSE;
+}
+
 void
 Resource::getPIDs(int sc, const Interval& period, const Task* task, 
                   QStringList& pids) const
@@ -795,11 +828,11 @@ Resource::getProjectIDs(int sc, const Interval& period, const Task* task) const
     return pidStr;
 }
 
-/* retrieve all bookings _not_ belonging to this project */
 bool
 Resource::dbLoadBookings(const QString& kotrusID,
                          const QStringList& skipProjectIDs)
 {
+    /* retrieve all bookings _not_ belonging to this project */
     BookingList blist = project->getKotrus()->loadBookings
         (kotrusID, skipProjectIDs);
     return TRUE;   

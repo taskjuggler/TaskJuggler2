@@ -41,10 +41,23 @@
 
 static QMap<QString, int> TaskAttributeDict;
 typedef enum TADs {
-    TA_UNDEFINED = 0, TA_FLAGS, TA_NOTE, TA_PRIORITY, 
-    TA_EFFORT, TA_LENGTH, TA_DURATION, TA_MINSTART,
-    TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
-    TA_DEPENDS };
+    TA_UNDEFINED = 0,
+    TA_COMPLETE,
+    TA_DEPENDS,
+    TA_DURATION,
+    TA_EFFORT,
+    TA_FLAGS,
+    TA_LENGTH,
+    TA_MAXEND,
+    TA_MAXSTART,
+    TA_MINEND,
+    TA_MINSTART,
+    TA_NOTE,
+    TA_PRIORITY, 
+    TA_RESPONSIBLE,
+    TA_STATUS,
+    TA_STATUSNOTE
+};
 
 XMLReport::XMLReport(Project* p, const QString& f,
                            const QString& df, int dl) :
@@ -52,12 +65,12 @@ XMLReport::XMLReport(Project* p, const QString& f,
 {
     if (TaskAttributeDict.empty())
     {
-        TaskAttributeDict[KW("effort")] = TA_EFFORT;
-        TaskAttributeDict[KW("length")] = TA_LENGTH;
-        TaskAttributeDict[KW("duration")] = TA_DURATION;
         TaskAttributeDict[KW("complete")] = TA_COMPLETE;
         TaskAttributeDict[KW("depends")] = TA_DEPENDS;
+        TaskAttributeDict[KW("duration")] = TA_DURATION;
+        TaskAttributeDict[KW("effort")] = TA_EFFORT;
         TaskAttributeDict[KW("flags")] = TA_FLAGS;
+        TaskAttributeDict[KW("length")] = TA_LENGTH;
         TaskAttributeDict[KW("maxend")] = TA_MAXEND;
         TaskAttributeDict[KW("maxstart")] = TA_MAXSTART;
         TaskAttributeDict[KW("minend")] = TA_MINEND;
@@ -65,6 +78,8 @@ XMLReport::XMLReport(Project* p, const QString& f,
         TaskAttributeDict[KW("note")] = TA_NOTE;
         TaskAttributeDict[KW("priority")] = TA_PRIORITY;
         TaskAttributeDict[KW("responsible")] = TA_RESPONSIBLE;
+        TaskAttributeDict[KW("status")] = TA_STATUS;
+        TaskAttributeDict[KW("statusnote")] = TA_STATUSNOTE;
     }
     // show all tasks
     hideTask = new ExpressionTree(new Operation(0));
@@ -196,8 +211,7 @@ XMLReport::generateProjectProperty(QDomElement* n)
     genDoubleAttr(&el, "yearlyWorkingDays",
                      project->getYearlyWorkingDays());
     genLongAttr(&el, "timingResolution", project->getScheduleGranularity()); 
-    if (timeStamp)
-        genDateElement(&el, "now", project->getNow());
+    genDateElement(&el, "now", project->getNow());
     genTextAttr(&el, "timeFormat", project->getTimeFormat());
     genTextAttr(&el, "shortTimeFormat", project->getShortTimeFormat());
 
@@ -497,6 +511,8 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
             case TA_MINEND:
             case TA_MAXEND:
             case TA_COMPLETE:
+            case TA_STATUS:
+            case TA_STATUSNOTE:
                 // handled further down as scenario specific value.
                 break;
             case TA_RESPONSIBLE:
@@ -544,7 +560,7 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
         if (task->getEnd(*it) && !task->isMilestone())
             genDateElement(&scEl, "end", task->getEnd(*it) + 1);
         genLongAttr(&scEl, "scheduled", task->getScheduled(*it) ? 1 : 0);
-
+            
         for (QStringList::Iterator atIt = taskAttributes.begin(); 
              atIt != taskAttributes.end(); ++atIt)
         {
@@ -553,19 +569,18 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
             switch (TaskAttributeDict[*atIt])
             {
                 case TA_EFFORT:
-                    if (task->getEffort(*it) != 0)
+                    if (task->getEffort(*it) != 0 &&
+                        (task->getStart(*it) == 0 || task->getEnd(*it) == 0))
                         genDoubleAttr(&scEl, "effort", task->getEffort(*it));
                     break;
                 case TA_LENGTH:
                     if (task->getLength(*it) != 0 &&
-                        (task->getStart(*it) == 0 ||
-                         task->getEnd(*it) == 0))
+                        (task->getStart(*it) == 0 || task->getEnd(*it) == 0))
                         genDoubleAttr(&scEl, "length", task->getLength(*it));
                     break;
                 case TA_DURATION:
                     if (task->getDuration(*it) != 0 &&
-                        (task->getStart(*it) == 0 ||
-                         task->getEnd(*it) == 0))
+                        (task->getStart(*it) == 0 || task->getEnd(*it) == 0))
                         genDoubleAttr(&scEl, "duration",
                                     task->getDuration(*it));
                     break;
@@ -590,9 +605,16 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                                        task->getMaxEnd(*it) + 1);
                     break;
                 case TA_COMPLETE:
-                    if (task->getComplete(*it) >= 0.0)
-                        genDoubleAttr(&scEl, "complete",
-                                      task->getComplete(*it));
+                    genDoubleAttr(&scEl, "complete", task->getComplete(*it));
+                    break;
+                case TA_STATUS:
+                    if (task->getStatus(*it) > 0)
+                        genLongAttr(&scEl, "status", task->getStatus(*it));
+                    break;
+                case TA_STATUSNOTE:
+                    if (!task->getStatusNote(*it).isEmpty())
+                        genTextElement(&scEl, "statusNote",
+                                       task->getStatusNote(*it));
                     break;
             }
         }

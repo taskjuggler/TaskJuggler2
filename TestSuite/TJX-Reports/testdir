@@ -1,0 +1,55 @@
+# The tjx reports include localized strings, so we must ensure that
+# we use the same LOCALE as the reference files have used.
+export LANG=en_US
+export LC_ALL=en_US
+export LC_COLLATE=POSIX 
+
+errors=0
+
+for f in *.tjp ; do
+  olderrors=$errors
+
+  referenceFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Reference.tjx/g`
+  tjxFile=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export.tjx/g`
+  tjxFile2=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1-Export2.tjx/g`
+
+  # Process the test case file and check the return value
+  # TJ will generate an xmlreport that must match the reference file
+  ../../taskjuggler/taskjuggler $f > $tjxFile
+  if test $? -ne 0 ; then
+    errors=$(($errors + 1))
+  fi
+  cmp $tjxFile $referenceFile
+  if test $? -ne 0 ; then
+    errors=$(($errors + 1))
+  fi
+
+  # Process the output of the first run and generate another xml
+  # report. This must be identical to the first xmlreport
+  ../../taskjuggler/taskjuggler $tjxFile . <<EOF > $tjxFile2
+  xmlreport "." {
+    hideresource 0
+    version 2
+    notimestamp
+  }
+EOF
+  if test $? -ne 0 ; then
+    errors=$(($errors + 1))
+  fi
+  cmp $tjxFile $tjxFile2
+  if test $? -ne 0 ; then
+    zcat $tjxFile > $tjxFile.xml
+    zcat $tjxFile2 > $tjxFile2.xml
+    diff $tjxFile.xml $tjxFile2.xml | head -10
+    errors=$(($errors + 1))
+  fi
+
+  # In case there were no errors with this test case, then remove the
+  # output files again.
+  if test $olderrors -eq $errors ; then
+    rm $tjxFile $tjxFile2
+  fi
+done
+
+exit $errors
+

@@ -120,7 +120,7 @@ comments -->
 <!ELEMENT taskList (task+)>
 
 <!ELEMENT task (depends*, precedes*, customAttribute*, flag*, task*,
-                taskScenario*, note?, statusNote?,reference?, 
+                taskScenario*, note?, reference?, 
                 shiftSelection*, allocate*)>
 <!ATTLIST task
   id CDATA #REQUIRED
@@ -162,6 +162,15 @@ comments -->
   length CDATA #IMPLIED
   scheduled (0|1) "0"
   complete CDATA #IMPLIED
+  <!-- Possible status values:
+     1 Not started
+     2 In progress but late
+     3 In progress (only for enclosing tasks)
+     4 On time
+     5 In progress but ahead of schedule
+     6 Finished -->
+  status CDATA #IMPLIED
+  statusNote CDATA #IMPLIED
 >
 
 <!ELEMENT minStart (#PCDATA)>

@@ -737,7 +737,10 @@ XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
     t->setDuration(sc, el.attribute("duration", "0.0").toDouble());
     t->setLength(sc, el.attribute("length", "0.0").toDouble());
     t->setScheduled(sc, el.attribute("scheduled", "0").toInt());
-    t->setComplete(sc, el.attribute("complete", "-1").toInt()); 
+    t->setComplete(sc, el.attribute("complete", "-1").toDouble()); 
+    /* The scenario status will be ignored as it is computed after the file is
+     * read in. */
+    t->setStatusNote(sc, el.attribute("statusNote", ""));
 
     return TRUE;
 }

@@ -10,9 +10,6 @@
  * $Id$
  */
 
-/* The following encoding table was copied from the Qt library sources since
- * this information is not available over the public API. */
-
 #include <qcstring.h>
 #include <qmap.h>
 

@@ -280,7 +280,7 @@ htmltaskreport "Tasks-Details.html" {
 htmlresourcereport "Staff-Overview.html" {
 	${navbar}
 	# Add a column with the total effort per task.
-  columns no, name, scenario, weekly, effort
+  columns no, name { cellurl "http://www.tj.org" }, scenario, weekly, effort
   scenarios plan, delayed
 	# Since we want to see the load values as hours per week, we switch
 	# the unit that loads are reported in to hours.

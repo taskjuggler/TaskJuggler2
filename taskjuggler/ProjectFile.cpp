@@ -3055,6 +3055,10 @@ ProjectFile::readXMLReport()
                     }
                 }
             }
+            else if (token == KW("notimestamp"))
+            {
+                report->setTimeStamp(FALSE);
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute '%1'").arg(token));

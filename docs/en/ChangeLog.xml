@@ -705,6 +705,10 @@ selection resulting in shorter overall project times.</para></listitem>
 <listitem><para>Fixed a memory leak during XML report
 generation.</para></listitem>
 
+<listitem><para>Added <computeroutput>status</computeroutput> and
+<computeroutput>statusNote</computeroutput> to XML
+reports.</para></listitem>
+
 <listitem><para>Added critical path analyser. Each task is rated and
 the rating can be listed in the HTML and CSV report.</para></listitem>
 
