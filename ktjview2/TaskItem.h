@@ -40,7 +40,7 @@ public:
      * @param start Task's start date
      * @param end Task's end date
      */
-    TaskItem( KListView * parent, QString id, QDateTime start, QDateTime end ):
+    TaskItem( KListView * parent, const QString & id, QDateTime start, QDateTime end ):
         KListViewItem( parent, id )
         {
             m_id = id;
@@ -54,7 +54,7 @@ public:
      * @param start Task's start date
      * @param end Task's end date
      */
-    TaskItem( KListViewItem * parent, QString id, QDateTime start, QDateTime end ):
+    TaskItem( KListViewItem * parent, const QString & id, QDateTime start, QDateTime end ):
         KListViewItem( parent, id )
         {
             m_id = id;
