@@ -238,7 +238,7 @@ public slots:
     /**
      * Display the filter selection dialog
      */
-    void filter();
+    //void filter();
 
     /**
      * Expand (open) the listview (@p view) items up to @p level

@@ -19,7 +19,7 @@ ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/
 # which sources should be compiled for ktjview2
 ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp ResourceItem.cpp \
 	ktjview2iface.skel timedialog.cpp settings.kcfgc gantt.ui \
-	filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp \
+	klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp \
 	resUsageView.cpp resUsageCfg.ui ruFindDialog.cpp editorView.cpp ktjUtils.cpp \
 	ktjReportView.cpp ktjTaskReport.cpp ktjReport.cpp reportSelectionWidget.ui ktjReportDialog.cpp ktjResourceReport.cpp
 

@@ -853,6 +853,7 @@ void ktjview2View::loadSettings()
     // TODO setup other (future) config options
 }
 
+#if 0
 void ktjview2View::filter()
 {
     FilterDialog * dlg = new FilterDialog( FT_TASK, this, "filter_dlg" ); // FIXME
@@ -860,6 +861,7 @@ void ktjview2View::filter()
     delete dlg;
     dlg = 0;
 }
+#endif
 
 void ktjview2View::clearAllViews()
 {
