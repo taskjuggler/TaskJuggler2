@@ -8,12 +8,11 @@ Current features:
 - sorting
 - quick search bar for searching and filtering the listviews
 - resource usage view
+- project source editor
 
 
 Planned features:
 - storable filters
-- component for editing definition of the project
-
 
 For the complete list, see:
 http://w3d.suse.de/Members/joe/projects/taskjuggler/ScheduleViewer

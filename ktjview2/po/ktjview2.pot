@@ -8,13 +8,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-26 22:33+0200\n"
+"POT-Creation-Date: 2004-09-02 13:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: editorView.cpp:64
+msgid ""
+"A KDE text-editor component could not be found;\n"
+"please check your KDE installation."
+msgstr ""
 
 #: filter.cpp:69 filterDialog.cpp:54
 msgid "contains"
@@ -92,489 +98,505 @@ msgstr ""
 msgid "All Columns"
 msgstr ""
 
-#: ktjview2.cpp:118
+#: ktjview2.cpp:143
 msgid "&Filter..."
 msgstr ""
 
-#: ktjview2.cpp:123
+#: ktjview2.cpp:148
 msgid "&Filter for: All Tasks"
 msgstr ""
 
-#: ktjview2.cpp:125
+#: ktjview2.cpp:150
 msgid "All Tasks"
 msgstr ""
 
-#: ktjview2.cpp:125
+#: ktjview2.cpp:150
 msgid "Completed Tasks"
 msgstr ""
 
-#: ktjview2.cpp:125
+#: ktjview2.cpp:150
 msgid "Date Range..."
 msgstr ""
 
-#: ktjview2.cpp:126
+#: ktjview2.cpp:151
 msgid "Incomplete Tasks"
 msgstr ""
 
-#: ktjview2.cpp:126
+#: ktjview2.cpp:151
 msgid "Milestones"
 msgstr ""
 
-#: ktjview2.cpp:126
+#: ktjview2.cpp:151
 msgid "Summary Tasks"
 msgstr ""
 
-#: ktjview2.cpp:127
+#: ktjview2.cpp:152
 msgid "Using Resource..."
 msgstr ""
 
-#: ktjview2.cpp:127 ktjview2.cpp:173
+#: ktjview2.cpp:152 ktjview2.cpp:198
 msgid "Having Flag..."
 msgstr ""
 
-#: ktjview2.cpp:133
+#: ktjview2.cpp:158
 msgid "&Calendar mode"
 msgstr ""
 
-#: ktjview2.cpp:136
+#: ktjview2.cpp:161
 msgid "Zoom &in"
 msgstr ""
 
-#: ktjview2.cpp:138
+#: ktjview2.cpp:163
 msgid "Zoom &out"
 msgstr ""
 
-#: ktjview2.cpp:140
+#: ktjview2.cpp:165
 msgid "&Fit to page"
 msgstr ""
 
-#: ktjview2.cpp:142
+#: ktjview2.cpp:167
 msgid "Set &timeframe"
 msgstr ""
 
-#: ktjview2.cpp:145 ktjview2.cpp:191
+#: ktjview2.cpp:170 ktjview2.cpp:216
 msgid "&Scale"
 msgstr ""
 
-#: ktjview2.cpp:147 kdgantt/KDGanttViewSubwidgets.cpp:719
+#: ktjview2.cpp:172 kdgantt/KDGanttViewSubwidgets.cpp:719
 msgid "Minute"
 msgstr ""
 
-#: ktjview2.cpp:147 kdgantt/KDGanttViewSubwidgets.cpp:720
+#: ktjview2.cpp:172 kdgantt/KDGanttViewSubwidgets.cpp:720
 msgid "Hour"
 msgstr ""
 
-#: ktjview2.cpp:147 kdgantt/KDGanttViewSubwidgets.cpp:721
+#: ktjview2.cpp:172 kdgantt/KDGanttViewSubwidgets.cpp:721
 msgid "Day"
 msgstr ""
 
-#: ktjview2.cpp:148 kdgantt/KDGanttViewSubwidgets.cpp:722
+#: ktjview2.cpp:173 kdgantt/KDGanttViewSubwidgets.cpp:722
 msgid "Week"
 msgstr ""
 
-#: ktjview2.cpp:148 kdgantt/KDGanttViewSubwidgets.cpp:723
+#: ktjview2.cpp:173 kdgantt/KDGanttViewSubwidgets.cpp:723
 msgid "Month"
 msgstr ""
 
-#: ktjview2.cpp:148 kdgantt/KDGanttViewSubwidgets.cpp:724
+#: ktjview2.cpp:173 kdgantt/KDGanttViewSubwidgets.cpp:724
 msgid "Auto"
 msgstr ""
 
-#: ktjview2.cpp:157
+#: ktjview2.cpp:182
 msgid "&Collapse All"
 msgstr ""
 
-#: ktjview2.cpp:158
+#: ktjview2.cpp:183
 msgid "Show Level &1"
 msgstr ""
 
-#: ktjview2.cpp:159
+#: ktjview2.cpp:184
 msgid "Show Level &2"
 msgstr ""
 
-#: ktjview2.cpp:160
+#: ktjview2.cpp:185
 msgid "Show Level &3"
 msgstr ""
 
-#: ktjview2.cpp:161
+#: ktjview2.cpp:186
 msgid "Show Level &4"
 msgstr ""
 
-#: ktjview2.cpp:162
+#: ktjview2.cpp:187
 msgid "Show Level &5"
 msgstr ""
 
-#: ktjview2.cpp:163
+#: ktjview2.cpp:188
 msgid "Show Level &6"
 msgstr ""
 
-#: ktjview2.cpp:164
+#: ktjview2.cpp:189
 msgid "Show Level &7"
 msgstr ""
 
-#: ktjview2.cpp:165
+#: ktjview2.cpp:190
 msgid "Show Level &8"
 msgstr ""
 
-#: ktjview2.cpp:166
+#: ktjview2.cpp:191
 msgid "Show Level &9"
 msgstr ""
 
-#: ktjview2.cpp:167
+#: ktjview2.cpp:192
 msgid "&Expand All"
 msgstr ""
 
-#: ktjview2.cpp:170
+#: ktjview2.cpp:195
 msgid "&Filter for: All Resources"
 msgstr ""
 
-#: ktjview2.cpp:172
+#: ktjview2.cpp:197
 msgid "All Resources"
 msgstr ""
 
-#: ktjview2.cpp:172
+#: ktjview2.cpp:197
 msgid "Resources On Vacation..."
 msgstr ""
 
-#: ktjview2.cpp:172
+#: ktjview2.cpp:197
 msgid "Resources On Shift..."
 msgstr ""
 
-#: ktjview2.cpp:173
+#: ktjview2.cpp:198
 msgid "Allocated Resources..."
 msgstr ""
 
-#: ktjview2.cpp:181
+#: ktjview2.cpp:206
 msgid "Quick search"
 msgstr ""
 
-#: ktjview2.cpp:186
+#: ktjview2.cpp:211
 msgid "Query resource..."
 msgstr ""
 
-#: ktjview2.cpp:193
+#: ktjview2.cpp:218
 msgid "&Days"
 msgstr ""
 
-#: ktjview2.cpp:193
+#: ktjview2.cpp:218
 msgid "&Weeks"
 msgstr ""
 
-#: ktjview2.cpp:193
+#: ktjview2.cpp:218
 msgid "&Months"
 msgstr ""
 
-#: ktjview2.cpp:193
+#: ktjview2.cpp:218
 msgid "&Quarters"
 msgstr ""
 
-#: ktjview2.cpp:199
+#: ktjview2.cpp:224
 msgid "&Display"
 msgstr ""
 
-#: ktjview2.cpp:201
+#: ktjview2.cpp:226
 msgid "Load and &total load"
 msgstr ""
 
-#: ktjview2.cpp:201
+#: ktjview2.cpp:226
 msgid "&Load"
 msgstr ""
 
-#: ktjview2.cpp:201
+#: ktjview2.cpp:226
 msgid "&Available load"
 msgstr ""
 
-#: ktjview2.cpp:207
+#: ktjview2.cpp:232
 msgid "&Find..."
 msgstr ""
 
-#: ktjview2.cpp:211
+#: ktjview2.cpp:236
 msgid "Info"
 msgstr ""
 
-#: ktjview2.cpp:212
+#: ktjview2.cpp:237
 msgid "Project Info"
 msgstr ""
 
-#: ktjview2.cpp:216 ktjview2.cpp:362
+#: ktjview2.cpp:241 ktjview2.cpp:401
 msgid "Gantt"
 msgstr ""
 
-#: ktjview2.cpp:217
+#: ktjview2.cpp:242
 msgid "Gantt Chart"
 msgstr ""
 
-#: ktjview2.cpp:221 selectDialog.cpp:46
+#: ktjview2.cpp:246 selectDialog.cpp:46
 msgid "Resources"
 msgstr ""
 
-#: ktjview2.cpp:222
+#: ktjview2.cpp:247
 msgid "Resource List"
 msgstr ""
 
-#: ktjview2.cpp:226 selectDialog.cpp:39
+#: ktjview2.cpp:251 selectDialog.cpp:39
 msgid "Tasks"
 msgstr ""
 
-#: ktjview2.cpp:227
+#: ktjview2.cpp:252
 msgid "Task List"
 msgstr ""
 
-#: ktjview2.cpp:231
+#: ktjview2.cpp:256
 msgid "Usage"
 msgstr ""
 
-#: ktjview2.cpp:233 ktjview2.cpp:363
+#: ktjview2.cpp:258 ktjview2.cpp:402
 msgid "Resource Usage"
 msgstr ""
 
-#: ktjview2.cpp:314
+#: ktjview2.cpp:262
+msgid "Editor"
+msgstr ""
+
+#: ktjview2.cpp:263
+msgid "Project Source Editor"
+msgstr ""
+
+#: ktjview2.cpp:344
 msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr ""
 
-#: ktjview2.cpp:315
+#: ktjview2.cpp:345
 msgid "to open ..."
 msgstr ""
 
-#: ktjview2.cpp:464 ktjview2.cpp:478
+#: ktjview2.cpp:354
+msgid "Project '%1' successfully saved."
+msgstr ""
+
+#: ktjview2.cpp:356
+msgid "Saving project '%1' failed."
+msgstr ""
+
+#: ktjview2.cpp:527 ktjview2.cpp:541
 msgid "&Filter for: %1"
 msgstr ""
 
-#: ktjview2.cpp:466
+#: ktjview2.cpp:529
 msgid "Task list filtered for '%1'"
 msgstr ""
 
-#: ktjview2.cpp:480
+#: ktjview2.cpp:543
 msgid "Resource list filtered for '%1'"
 msgstr ""
 
-#: ktjview2view.cpp:116 ktjview2view.cpp:132 selectDialog.cpp:96
+#: ktjview2view.cpp:120 ktjview2view.cpp:136 selectDialog.cpp:96
 msgid "ID"
 msgstr ""
 
-#: ktjview2view.cpp:117 ktjview2view.cpp:133 selectDialog.cpp:97
+#: ktjview2view.cpp:121 ktjview2view.cpp:137 selectDialog.cpp:97
 msgid "Name"
 msgstr ""
 
-#: ktjview2view.cpp:118
+#: ktjview2view.cpp:122
 msgid "Rate"
 msgstr ""
 
-#: ktjview2view.cpp:119
+#: ktjview2view.cpp:123
 msgid "Efficiency"
 msgstr ""
 
-#: ktjview2view.cpp:120
+#: ktjview2view.cpp:124
 msgid "Min. Effort"
 msgstr ""
 
-#: ktjview2view.cpp:121
+#: ktjview2view.cpp:125
 msgid "Daily Max"
 msgstr ""
 
-#: ktjview2view.cpp:122
+#: ktjview2view.cpp:126
 msgid "Weekly Max"
 msgstr ""
 
-#: ktjview2view.cpp:123
+#: ktjview2view.cpp:127
 msgid "Monthly Max"
 msgstr ""
 
-#: ktjview2view.cpp:134
+#: ktjview2view.cpp:138
 msgid "Start"
 msgstr ""
 
-#: ktjview2view.cpp:135
+#: ktjview2view.cpp:139
 msgid "End"
 msgstr ""
 
-#: ktjview2view.cpp:136
+#: ktjview2view.cpp:140
 msgid "Duration"
 msgstr ""
 
-#: ktjview2view.cpp:137
+#: ktjview2view.cpp:141
 msgid "Priority"
 msgstr ""
 
-#: ktjview2view.cpp:138
+#: ktjview2view.cpp:142
 msgid "Completion"
 msgstr ""
 
-#: ktjview2view.cpp:139
+#: ktjview2view.cpp:143
 msgid "Status"
 msgstr ""
 
-#: ktjview2view.cpp:140
+#: ktjview2view.cpp:144
 msgid "Responsible"
 msgstr ""
 
-#: ktjview2view.cpp:141
+#: ktjview2view.cpp:145
 msgid "Effort"
 msgstr ""
 
-#: ktjview2view.cpp:142
+#: ktjview2view.cpp:146
 msgid "Allocations"
 msgstr ""
 
-#: ktjview2view.cpp:148
+#: ktjview2view.cpp:152
 msgid ""
 "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
 msgstr ""
 
-#: ktjview2view.cpp:157
+#: ktjview2view.cpp:169
 msgid "Jump to task details"
 msgstr ""
 
-#: ktjview2view.cpp:185 kdgantt/KDGanttView.cpp:868
+#: ktjview2view.cpp:197 kdgantt/KDGanttView.cpp:868
 msgid "Printing Time: %1"
 msgstr ""
 
-#: ktjview2view.cpp:225
+#: ktjview2view.cpp:241
 msgid "Loading project"
 msgstr ""
 
-#: ktjview2view.cpp:242
+#: ktjview2view.cpp:258
 msgid "Opening XML project"
 msgstr ""
 
-#: ktjview2view.cpp:249
+#: ktjview2view.cpp:265
 msgid "Parsing XML project"
 msgstr ""
 
-#: ktjview2view.cpp:258
+#: ktjview2view.cpp:274
 msgid "Opening TJP project"
 msgstr ""
 
-#: ktjview2view.cpp:266
+#: ktjview2view.cpp:282
 msgid "Parsing TJP project"
 msgstr ""
 
-#: ktjview2view.cpp:273
+#: ktjview2view.cpp:289
 msgid "This filetype is not supported."
 msgstr ""
 
-#: ktjview2view.cpp:281
+#: ktjview2view.cpp:297
 msgid "Generating cross references"
 msgstr ""
 
-#: ktjview2view.cpp:285
+#: ktjview2view.cpp:301
 msgid "Taskjugggler failed to generate cross references on data structures."
 msgstr ""
 
-#: ktjview2view.cpp:291
+#: ktjview2view.cpp:307
 msgid "Scheduling all scenarios"
 msgstr ""
 
-#: ktjview2view.cpp:295
+#: ktjview2view.cpp:311
 msgid "Taskjugggler failed to schedule the scenarios."
 msgstr ""
 
-#: ktjview2view.cpp:301
+#: ktjview2view.cpp:317
 msgid "Building the views"
 msgstr ""
 
-#: ktjview2view.cpp:318
+#: ktjview2view.cpp:333
 msgid "Successfully loaded project %1"
 msgstr ""
 
-#: ktjview2view.cpp:332
+#: ktjview2view.cpp:347
 msgid "Version: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:333
+#: ktjview2view.cpp:348
 msgid "Currency: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:337
+#: ktjview2view.cpp:352
 msgid "Project start: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:341
+#: ktjview2view.cpp:356
 msgid "Project end: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:344
+#: ktjview2view.cpp:359
 msgid "Report date: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:367
+#: ktjview2view.cpp:382
 #, c-format
 msgid "%1%"
 msgstr ""
 
-#: ktjview2view.cpp:411 ktjview2view.cpp:427
+#: ktjview2view.cpp:426 ktjview2view.cpp:442
 msgid "<em>Task group: %1</em><br>Start: %2<br>End: %3"
 msgstr ""
 
-#: ktjview2view.cpp:416 ktjview2view.cpp:432 ktjview2view.cpp:466
+#: ktjview2view.cpp:431 ktjview2view.cpp:447 ktjview2view.cpp:481
 msgid "(%1 d)"
 msgstr ""
 
-#: ktjview2view.cpp:447
+#: ktjview2view.cpp:462
 msgid "<em>Milestone: %1</em><br>Date: %2"
 msgstr ""
 
-#: ktjview2view.cpp:459
+#: ktjview2view.cpp:474
 msgid ""
 "<em>Task: %1</em><br>Start: %2<br>End: %3<br>Completion: %4%<br>Allocations: "
 "%5"
 msgstr ""
 
-#: ktjview2view.cpp:657
+#: ktjview2view.cpp:672
 msgid "Not started"
 msgstr ""
 
-#: ktjview2view.cpp:660
+#: ktjview2view.cpp:675
 msgid "In progress (late)"
 msgstr ""
 
-#: ktjview2view.cpp:663
+#: ktjview2view.cpp:678
 msgid "In progress"
 msgstr ""
 
-#: ktjview2view.cpp:666
+#: ktjview2view.cpp:681
 msgid "On time"
 msgstr ""
 
-#: ktjview2view.cpp:669
+#: ktjview2view.cpp:684
 msgid "In progress (early)"
 msgstr ""
 
-#: ktjview2view.cpp:672
+#: ktjview2view.cpp:687
 msgid "Finished"
 msgstr ""
 
-#: ktjview2view.cpp:676
+#: ktjview2view.cpp:691
 msgid "Undefined"
 msgstr ""
 
-#: ktjview2view.cpp:737 kdgantt/KDGanttViewSubwidgets.cpp:2972
-#: kdgantt/KDGanttViewSubwidgets.cpp:2980
-#: kdgantt/KDGanttViewSubwidgets.cpp:2989
+#: ktjview2view.cpp:752 kdgantt/KDGanttViewSubwidgets.cpp:2962
+#: kdgantt/KDGanttViewSubwidgets.cpp:2970
+#: kdgantt/KDGanttViewSubwidgets.cpp:2979
 msgid "Task"
 msgstr ""
 
-#: ktjview2view.cpp:738
+#: ktjview2view.cpp:753
 msgid "Task Group"
 msgstr ""
 
-#: ktjview2view.cpp:739
+#: ktjview2view.cpp:754
 msgid "Milestone"
 msgstr ""
 
-#: ktjview2view.cpp:803
+#: ktjview2view.cpp:817
 msgid "<em>Task Link</em>"
 msgstr ""
 
-#: ktjview2view.cpp:803
+#: ktjview2view.cpp:817
 msgid "From: "
 msgstr ""
 
-#: ktjview2view.cpp:815
+#: ktjview2view.cpp:829
 msgid "To: "
 msgstr ""
 
-#: ktjview2view.cpp:867 ktjview2view.cpp:966
+#: ktjview2view.cpp:881 ktjview2view.cpp:980
 msgid "Date Range"
 msgstr ""
 
@@ -677,14 +699,9 @@ msgstr ""
 msgid "Week&day background color:"
 msgstr ""
 
-#: rc.cpp:45
+#: rc.cpp:46
 #, no-c-format
 msgid "&Weekend background color:"
-msgstr ""
-
-#: rc.cpp:47
-#, no-c-format
-msgid "Task &group color:"
 msgstr ""
 
 #: rc.cpp:49
@@ -692,17 +709,22 @@ msgstr ""
 msgid "&Task color:"
 msgstr ""
 
-#: rc.cpp:51
+#: rc.cpp:53
+#, no-c-format
+msgid "Task &group color:"
+msgstr ""
+
+#: rc.cpp:56
 #, no-c-format
 msgid "&Milestone color:"
 msgstr ""
 
-#: rc.cpp:53
+#: rc.cpp:58
 #, no-c-format
 msgid "Use &alternate background for horizontal lines"
 msgstr ""
 
-#: rc.cpp:55
+#: rc.cpp:60
 #, no-c-format
 msgid "Alt+A"
 msgstr ""
@@ -794,17 +816,17 @@ msgstr ""
 
 #: rc.cpp:119
 #, no-c-format
-msgid "&Weekends and holidays:"
+msgid "&Free time:"
 msgstr ""
 
-#: rc.cpp:121
+#: rc.cpp:122
 #, no-c-format
 msgid "&Vacations and sicktime:"
 msgstr ""
 
-#: rc.cpp:123
+#: rc.cpp:125
 #, no-c-format
-msgid "&Free time:"
+msgid "&Weekends and holidays:"
 msgstr ""
 
 #: rc.cpp:128
@@ -905,15 +927,15 @@ msgstr ""
 msgid "Check"
 msgstr ""
 
-#: resUsageView.cpp:309
+#: resUsageView.cpp:312
 msgid "&Copy"
 msgstr ""
 
-#: resUsageView.cpp:433
+#: resUsageView.cpp:436
 msgid "No matching resource found."
 msgstr ""
 
-#: resUsageView.cpp:438
+#: resUsageView.cpp:441
 msgid "No more matching resources found."
 msgstr ""
 
@@ -1095,67 +1117,67 @@ msgstr ""
 msgid "Zoom  "
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2524
+#: kdgantt/KDGanttViewSubwidgets.cpp:2514
 msgid " Legend is hidden"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2543
+#: kdgantt/KDGanttViewSubwidgets.cpp:2533
 msgid "Legend: "
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2625
+#: kdgantt/KDGanttViewSubwidgets.cpp:2615
 msgid "Legend:"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2673
+#: kdgantt/KDGanttViewSubwidgets.cpp:2663
 msgid "Task Name"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2695
+#: kdgantt/KDGanttViewSubwidgets.cpp:2685
 msgid "No item Found"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2968
-#: kdgantt/KDGanttViewSubwidgets.cpp:2976
-#: kdgantt/KDGanttViewSubwidgets.cpp:2985
+#: kdgantt/KDGanttViewSubwidgets.cpp:2958
+#: kdgantt/KDGanttViewSubwidgets.cpp:2966
+#: kdgantt/KDGanttViewSubwidgets.cpp:2975
 msgid "Summary"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2970
-#: kdgantt/KDGanttViewSubwidgets.cpp:2978
-#: kdgantt/KDGanttViewSubwidgets.cpp:2987
+#: kdgantt/KDGanttViewSubwidgets.cpp:2960
+#: kdgantt/KDGanttViewSubwidgets.cpp:2968
+#: kdgantt/KDGanttViewSubwidgets.cpp:2977
 msgid "Event"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2975
+#: kdgantt/KDGanttViewSubwidgets.cpp:2965
 msgid "New Root"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2983
+#: kdgantt/KDGanttViewSubwidgets.cpp:2973
 msgid "New Child"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2991
+#: kdgantt/KDGanttViewSubwidgets.cpp:2981
 msgid "New After"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2993
+#: kdgantt/KDGanttViewSubwidgets.cpp:2983
 msgid "As Root"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2995
+#: kdgantt/KDGanttViewSubwidgets.cpp:2985
 msgid "As Child"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2997
+#: kdgantt/KDGanttViewSubwidgets.cpp:2987
 msgid "After"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2999
+#: kdgantt/KDGanttViewSubwidgets.cpp:2989
 msgid "Paste"
 msgstr ""
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:3000
+#: kdgantt/KDGanttViewSubwidgets.cpp:2990
 msgid "Cut Item"
 msgstr ""
 

@@ -69,6 +69,7 @@ bool EditorView::init()
     m_view = document->createView( this, "text_view" );
     doc()->setReadWrite( false );
     doc()->setModified( false );
+
     m_layout->addWidget( m_view, 1 );
     m_view->show();
 
