@@ -116,6 +116,9 @@ void ktjview2::setupActions()
                  m_view, SLOT( filter() ), actionCollection(), "filter" );
 
     // Gantt menu
+    m_calendarAction = new KToggleAction( i18n( "Calendar mode" ), "month", KShortcut(),
+                                          this, SLOT( setCalendarMode() ),
+                                          actionCollection(), "calendar_mode" );
     new KAction( i18n( "Zoom &in" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
                  m_view, SLOT( zoomIn() ), actionCollection(), "zoom_in" );
     new KAction( i18n( "Zoom &out" ), "viewmag-", KStdAccel::shortcut( KStdAccel::ZoomOut ),
@@ -300,6 +303,11 @@ void ktjview2::slotUpdateToolbars( int item )
         toolBar( "filterToolBar" )->show();
     else
         toolBar( "filterToolBar" )->hide();
+}
+
+void ktjview2::setCalendarMode()
+{
+    m_view->setCalendarMode( m_calendarAction->isChecked() );
 }
 
 #include "ktjview2.moc"

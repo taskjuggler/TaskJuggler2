@@ -28,6 +28,8 @@
 #include <qpaintdevicemetrics.h>
 #include <qdialog.h>
 #include <qdir.h>
+#include <qprogressdialog.h>
+#include <qpopupmenu.h>
 
 // KDE includes
 #include <kurl.h>
@@ -40,6 +42,7 @@
 #include <kio/netaccess.h>
 #include <kprinter.h>
 #include <klistview.h>
+#include <kapplication.h>
 
 // local includes
 #include "koKoolBar.h"
@@ -70,6 +73,11 @@
 ktjview2View::ktjview2View( QWidget *parent )
     : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
 {
+    m_progressDlg = new QProgressDialog( this, "progress_dialog", true );
+    m_progressDlg->setTotalSteps( 6 );
+    m_progressDlg->setAutoReset( true );
+    m_progressDlg->setCaption( i18n( "Loading project" ) );
+
     m_project = new Project();
 
     // setup our layout manager to automatically add our widgets
@@ -102,7 +110,6 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_ganttView->setEditorEnabled( false );
     m_ganttView->setEditable( false );
     m_ganttView->setScale( KDGanttView::Auto );
-    //m_ganttView->setCalendarMode( true );
     m_ganttView->setDisplaySubitemsAsGroup( false );
     bool use12Clock = KGlobal::locale()->use12Clock();
     if ( use12Clock )
@@ -114,8 +121,10 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_ganttView->setShowLegendButton( false ); // ### TODO legend?
     //m_ganttView->setShowTimeTablePopupMenu( true );
     m_ganttView->setWeekendDays( 6, 7 );
-    connect( m_ganttView, SIGNAL( itemDoubleClicked( KDGanttViewItem * ) ),
+    connect( m_ganttView, SIGNAL( gvItemDoubleClicked( KDGanttViewItem * ) ),
              this, SLOT( ensureItemVisible( KDGanttViewItem * ) ) );
+    connect( m_ganttView, SIGNAL( lvContextMenuRequested ( KDGanttViewItem *, const QPoint &, int ) ),
+             this, SLOT( popupGanttItemMenu( KDGanttViewItem *, const QPoint &, int ) ) );
     m_widgetStack->addWidget( m_ganttView );
 
     // resources list view
@@ -148,13 +157,16 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_taskView->addColumn( i18n( "Effort" ) );
     m_taskView->addColumn( i18n( "Allocations" ) );
     m_taskView->setShowSortIndicator( true );
-    m_taskView->hideColumn( 0 ); // hide the ID column
     m_taskView->setSortColumn( 2 ); // sort by start date by default
     m_taskView->setAllColumnsShowFocus( true );
     m_widgetStack->addWidget( m_taskView );
 
     m_textBrowser->setText( i18n( "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>" ) );
     m_widgetStack->raiseWidget( m_textBrowser );
+
+    // gantt popup menu
+    m_ganttPopupMenu = new QPopupMenu( this, "gantt_popup" );
+    m_ganttPopupMenu->insertItem( i18n( "Jump to task details" ), this, SLOT( slotJumpToTask() ) );
 
     loadSettings();             // load the config-dialog related settings
 
@@ -165,6 +177,9 @@ ktjview2View::~ktjview2View()
 {
     delete m_project;
     m_project = 0;
+
+    delete m_progressDlg;
+    delete m_ganttPopupMenu;
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -184,7 +199,7 @@ void ktjview2View::print( KPrinter * printer )
     QSize size = m_ganttView->drawContents( 0 ); // TODO customize parts
 
     // at the top, we want to print current time/date
-    QString date = i18n( "Printing Time: %1" ).arg( QDateTime::currentDateTime().toString() );
+    QString date = i18n( "Printing Time: %1" ).arg( KGlobal::locale()->formatDateTime( QDateTime::currentDateTime() ) );
     int hei = p.boundingRect(0,0, 5, 5, Qt::AlignLeft, date ).height();
     p.drawText( 0, 0, date );
 
@@ -222,49 +237,79 @@ void ktjview2View::openURL( QString url )
 
 void ktjview2View::openURL( const KURL& url )
 {
-    kdDebug() << "Loading project from URL: " << url << endl;
+    //kdDebug() << "Loading project from URL: " << url << endl;
 
     QString tmpFile;
     if ( !KIO::NetAccess::download( url, tmpFile, this ) )
         return;
 
-    kdDebug() << "Project is in temp file: " << tmpFile << endl;
+    //kdDebug() << "Project is in temp file: " << tmpFile << endl;
 
     if ( tmpFile.endsWith( ".tjx" ) ) // XML file
     {
         XMLFile* xf = new XMLFile( m_project );
+        m_progressDlg->setProgress( 1 );
+        m_progressDlg->setLabelText( i18n( "Opening XML project" ) );
         if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete xf;
             return;
         }
+        m_progressDlg->setProgress( 2 );
+        m_progressDlg->setLabelText( i18n( "Parsing XML project" ) );
+        //kdDebug() << "Parsing XML project" << endl;
         xf->parse();
         delete xf;
     }
     else if ( tmpFile.endsWith( ".tjp" ) || tmpFile.endsWith( ".tji" ) ) // source file
     {
         ProjectFile* pf = new ProjectFile( m_project );
+        m_progressDlg->setProgress( 1 );
+        m_progressDlg->setLabelText( i18n( "Opening TJP project" ) );
         if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete pf;
             return;
         }
+        //kdDebug() << "Parsing TJP project" << endl;
+        m_progressDlg->setProgress( 2 );
+        m_progressDlg->setLabelText( i18n( "Parsing TJP project" ) );
         pf->parse();
         delete pf;
     }
     else
     {
+        m_progressDlg->cancel();
         KMessageBox::sorry( this, i18n( "This filetype is not supported." ) );
         return;
     }
 
-    m_project->pass2( false );
-    m_project->scheduleAllScenarios();
+    clearAllViews();
+    KIO::NetAccess::removeTempFile( tmpFile );
+
+    //kdDebug() << "Generating cross references (pass2)" << endl;
+    m_progressDlg->setProgress( 3 );
+    m_progressDlg->setLabelText( i18n( "Generating cross references" ) );
+    if ( ! m_project->pass2( false ) )
+    {
+        m_progressDlg->cancel();
+        KMessageBox::error( this, i18n( "Taskjugggler failed to generate cross references on data structures." ) );
+        return;
+    }
+
+    //kdDebug() << "Scheduling all scenarios " << endl;
+    m_progressDlg->setProgress( 4 );
+    m_progressDlg->setLabelText( i18n( "Scheduling all scenarios" ) );
+    if ( ! m_project->scheduleAllScenarios() )
+    {
+        m_progressDlg->cancel();
+        KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
+        return;
+    }
     //m_project->generateReports(); // FIXME do we need that?
 
-    clearAllViews();
-
-    KIO::NetAccess::removeTempFile( tmpFile );
+    m_progressDlg->setProgress( 5 );
+    m_progressDlg->setLabelText( i18n( "Building the views" ) );
 
     m_ganttView->setUpdateEnabled( false );
     parseProjectInfo();
@@ -278,7 +323,9 @@ void ktjview2View::openURL( const KURL& url )
 
     m_projectURL = url;
     signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
-    signalChangeCaption( m_projectURL.fileName() );
+    signalChangeCaption( m_project->getName() );
+
+    m_progressDlg->setProgress( 6 );
 }
 
 void ktjview2View::slotKoolBar( int /*grp*/, int item )
@@ -348,6 +395,8 @@ void ktjview2View::parseTasks( int sc )
 
         item->setText( 9, KGlobal::locale()->formatNumber( task->getEffort( sc ) ) );
         item->setText( 10, formatAllocations( task ) );
+
+        kapp->processEvents();
     }
 }
 
@@ -364,7 +413,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         if ( KDGanttViewItem::find( id ) ) // seen this task, go on
             continue;
 
-        kdDebug() << "Parsing gantt item: " << id << endl;
+        //kdDebug() << "Parsing gantt item: " << id << endl;
 
         const QString taskName = task->getName();
         QDateTime start = time_t2Q( task->getStart( sc ) );
@@ -411,7 +460,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 //#if 0
         else if ( isLeaf )   // terminal (leaf) task
         {
-            kdDebug() << "Parent ID: " << task->getParent()->getId() << endl;
+            //kdDebug() << "Parent ID: " << task->getParent()->getId() << endl;
 
             KDGanttViewItem * parentItem = KDGanttViewItem::find( task->getParent()->getId() );
 
@@ -448,7 +497,9 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
             continue;             // uhoh, something bad happened
         }
 
-        kdDebug() << "Done parsing gantt item: " << id << endl;
+        //kdDebug() << "Done parsing gantt item: " << id << endl;
+
+        kapp->processEvents();
     }
 
     KDGanttViewItem * root = m_ganttView->firstChild(); // expand the root item
@@ -546,6 +597,8 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
             kdWarning() << "Unsupported resource type with ID: " << id << endl;
             continue;             // uhoh, something bad happened
         }
+
+        kapp->processEvents();
     }
 }
 
@@ -581,6 +634,8 @@ void ktjview2View::parseLinks( TaskListIterator it )
 
         KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromList, toList );
         //taskLink->setTooltipText( fromName  + " -> " + toName );
+
+        kapp->processEvents();
     }
 }
 
@@ -734,6 +789,35 @@ QString ktjview2View::formatAllocations( Task* task )
     }
 
     return result.join( ", " );
+}
+
+void ktjview2View::setCalendarMode( bool flag )
+{
+    m_ganttView->setCalendarMode( flag );
+    m_ganttView->setDisplaySubitemsAsGroup( flag );
+    m_ganttView->setShowTaskLinks( !flag );
+}
+
+void ktjview2View::popupGanttItemMenu( KDGanttViewItem * item, const QPoint & pos, int /*col*/ )
+{
+    if ( item )
+        m_ganttPopupMenu->popup( pos );
+}
+
+void ktjview2View::slotJumpToTask()
+{
+    KDGanttViewItem * sel = m_ganttView->selectedItem();
+    if ( sel )
+    {
+        QListViewItem * item = m_taskView->findItem( sel->name(), 0 );
+        if ( item )
+        {
+            slotKoolBar( mainGroup, tasksPage );
+            item->setVisible( true ); // might be hidden thru the filter
+            m_taskView->setSelected( static_cast<QListViewItem *>( item ), true );
+            m_taskView->ensureItemVisible( item );
+        }
+    }
 }
 
 #include "ktjview2view.moc"

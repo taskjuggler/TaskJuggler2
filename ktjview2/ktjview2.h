@@ -89,26 +89,34 @@ private slots:
      * Open a new blank window
      */
     void fileNew();
+
     /**
      * Open a file
      */
     void fileOpen();
+
     /**
      * Tell the view to print
      */
     void filePrint();
+
+    void setCalendarMode();
+
     /**
      *Show the config keys dialog
      */
     void optionsConfigureKeys();
+
     /**
      * Show the config toolbars dialog
      */
     void optionsConfigureToolbars();
+
     /**
      * Show the config dialog
      */
     void optionsPreferences();
+
     /**
      * Invoked when the toolbar config changes
      */
@@ -127,6 +135,9 @@ private:
     // actions
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
+    KToggleAction * m_calendarAction;
+
+    // search line
     QLabel * m_searchLabel;
     KListViewSearchLine * m_searchLine;
 };

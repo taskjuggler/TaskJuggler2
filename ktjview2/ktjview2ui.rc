@@ -1,10 +1,12 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="18">
+<kpartgui name="ktjview2" version="19">
 <MenuBar>
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="filter"/>
   </Menu>
   <Menu name="gantt"><text>&amp;Gantt</text>
+    <Action name="calendar_mode"/>
+    <Separator/>
     <Action name="zoom_in"/>
     <Action name="zoom_out"/>
     <Action name="fit_to_page"/>
@@ -16,6 +18,7 @@
 </MenuBar>
 
 <ToolBar name="ganttToolBar" noMerge="1"><text>Gantt Toolbar</text>
+  <Action name="calendar_mode"/>
   <Action name="zoom_in"/>
   <Action name="zoom_out"/>
   <Action name="fit_to_page"/>

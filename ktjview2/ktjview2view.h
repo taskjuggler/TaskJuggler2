@@ -45,6 +45,8 @@ class KListViewItem;
 class KPrinter;
 class TaskList;
 class TaskItem;
+class QProgressDialog;
+class QPopupMenu;
 
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
@@ -96,6 +98,11 @@ public:
         { return m_resListView; }
 
 public slots:
+    /**
+     * Set the Gantt to calendar mode depending on @p flag
+     */
+    void setCalendarMode( bool flag );
+
     /**
      * Zoom in by 10%
      */
@@ -153,7 +160,7 @@ signals:
      */
     void signalUpdateToolbars( int item );
 
-protected slots:
+private slots:
     /**
      * Switch between the items in the sidebar
      * @param grp ID of the group
@@ -161,11 +168,20 @@ protected slots:
      */
     void slotKoolBar( int grp, int item );
 
-private slots:
     /**
      * Centers the gantt chart on the selected @p item
      */
     void ensureItemVisible( KDGanttViewItem * item );
+
+    /**
+     * Popup a context menu over @p item, at global position @pos, column @p col
+     */
+    void popupGanttItemMenu( KDGanttViewItem * item, const QPoint & pos, int col );
+
+    /**
+     * Jump from the selected Gantt item into the detailed tasklist item
+     */
+    void slotJumpToTask();
 
 private:
     /**
@@ -257,6 +273,10 @@ private:
     KListView * m_resListView;
     /// task (flat) view
     KListView * m_taskView;
+
+    QProgressDialog * m_progressDlg;
+
+    QPopupMenu * m_ganttPopupMenu;
 };
 
 #endif // _KTJVIEW2VIEW_H_
