@@ -36,14 +36,8 @@ HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
 bool
 HTMLResourceReport::generate()
 {
-	QFile f(fileName);
-	if (!f.open(IO_WriteOnly))
-	{
-		qWarning("Cannot open report file %s!\n",
-				 fileName.latin1());
+	if (!open())
 		return FALSE;
-	}
-	s.setDevice(&f);
 	reportHTMLHeader();
 	s << "<table border=\"0\" cellpadding=\"1\">" << endl;
 

@@ -39,14 +39,8 @@ HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, time_t s,
 bool
 HTMLTaskReport::generate()
 {
-	QFile f(fileName);
-	if (!f.open(IO_WriteOnly))
-	{
-		qWarning("Cannot open report file %s!\n",
-				 fileName.latin1());
+	if (!open())
 		return FALSE;
-	}
-	s.setDevice(&f);
 	reportHTMLHeader();
 	s << "<table border=\"0\" cellpadding=\"1\">\n" << endl;
 

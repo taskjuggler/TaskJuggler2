@@ -19,6 +19,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qcolor.h>
+#include <qfile.h>
 #include <qtextstream.h>
 
 #include <Account.h>
@@ -92,6 +93,8 @@ public:
 protected:
 	Report() { }
 
+	bool open();
+
 	void filterTaskList(TaskList& filteredList, Resource* r);
 	void sortTaskList(TaskList& filteredList);
 
@@ -116,6 +119,7 @@ protected:
 	CoreAttributesList::SortCriteria resourceSortCriteria;
 	CoreAttributesList::SortCriteria accountSortCriteria;
 
+	QFile f;
 	QTextStream s;
 	ExpressionTree* hideTask;
 	ExpressionTree* hideResource;

@@ -49,8 +49,11 @@ FileInfo::FileInfo(ProjectFile* p, const QString& file_)
 bool
 FileInfo::open()
 {
-	if ((f = fopen(file, "r")) == 0)
-		return FALSE;
+	if (file.right(2) == "/.")
+		f = stdin;
+	else
+		if ((f = fopen(file, "r")) == 0)
+			return FALSE;
 
 	lineBuf = "";
 	currLine = 1;
@@ -60,6 +63,9 @@ FileInfo::open()
 bool
 FileInfo::close()
 {
+	if (f == stdin)
+		return TRUE;
+
 	if (fclose(f) == EOF)
 		return FALSE;
 

@@ -126,6 +126,9 @@ projects that are split into sub projects.
 
 <item>Partial fix for correct time zone handling.
 
+<item>Support for STDIN reading and STDOUT writing added. This can be
+used when calling TaskJuggler from CGI scripts.
+
 </itemize>
 
 <sect>Installation
@@ -208,6 +211,11 @@ conditions and generate the reports that were requested with the <ref
 id="htmltaskreport" name="htmltaskreport">, <ref
 id="htmlresourcereport" name="htmlresourcereport"> or other report
 attributes in the input file(s).
+
+Calling TaskJuggler with . as input filename will cause reading from
+stdin. To redirect output to stdout you can specify -- as filename
+for reports. This feature can for example be used to generate dynamic
+html pages from CGI scripts.
 
 <sect1> The Command Line Options
 <p>

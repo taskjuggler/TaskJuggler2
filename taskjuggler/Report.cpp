@@ -11,6 +11,7 @@
  */
 
 #include <config.h>
+#include <stdio.h>
 
 #include "Project.h"
 #include "Report.h"
@@ -42,6 +43,31 @@ Report::~Report()
 	delete rollUpTask;
 	delete hideResource;
 	delete rollUpResource;
+}
+
+bool
+Report::open()
+{
+	if (fileName == "--")
+	{
+		if (f.open(IO_WriteOnly, stdout))
+		{
+			qWarning("Cannout open stdout");
+			return FALSE;
+		}
+	}
+	else
+	{
+		f.setName(fileName);
+		if (!f.open(IO_WriteOnly))
+		{
+			qWarning("Cannot open report file %s!\n",
+					 fileName.latin1());
+			return FALSE;
+		}
+	}
+	s.setDevice(&f);
+	return TRUE;
 }
 
 bool
@@ -255,7 +281,7 @@ Report::filterAccountList(AccountList& filteredList, Account::AccountType at)
 	AccountList accountList = project->getAccountList();
 	for (Account* a = accountList.first(); a != 0; a = accountList.next())
 	{
-		if (!isHidden(a, hideAccount) && a->getType() == at)
+		if (!isHidden(a, hideAccount) && a->getAcctType() == at)
 			filteredList.append(a);
 	}
 
