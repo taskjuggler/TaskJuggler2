@@ -13,24 +13,23 @@
 class Allocation
 {
 public:
-   Allocation(Resource* r);
-   
-   ~Allocation() { }
-   
-   Resource* getResource() const { return resource; }
-   
-   void setLoad(int l) { load = l; }
-   int getLoad() const { return load; }
-   
-   void setPersistent(bool p) { persistent = p; }
-   bool isPersistent() const { return persistent; }
+	Allocation(Resource* r);
 
-   void setLockedResource(Resource* r) { lockedResource = r; }
-   Resource* getLockedResource() const { return lockedResource; }
+	~Allocation() { }
 
-   void addAlternative(Resource* r) { alternatives.append(r); }
-   Resource* first() { return alternatives.first(); }
-   Resource* next() { return alternatives.next(); }
+	void setLoad(int l) { load = l; }
+	int getLoad() const { return load; }
+
+	void setPersistent(bool p) { persistent = p; }
+	bool isPersistent() const { return persistent; }
+
+	void setLockedResource(Resource* r) { lockedResource = r; }
+	Resource* getLockedResource() const { return lockedResource; }
+
+	void addCandidate(Resource* r) { candidates.append(r); }
+	QPtrList<Resource> getCandidates() const { return candidates; }
+	Resource* first() { return candidates.first(); }
+	Resource* next() { return candidates.next(); }
 
 	bool addShift(const Interval& i, Shift* s)
 	{
@@ -42,19 +41,21 @@ public:
 		return shifts.count() == 0 || shifts.isOnShift(i);
 	}
 
-	QDomElement xmlElement( QDomDocument& doc ) const;
+	enum SelectionModeType { order, minLoaded, maxLoaded, random };
+	void setSelectionMode(SelectionModeType smt) { selectionMode = smt; }
+	bool setSelectionMode(const QString& smt);
+	SelectionModeType getSelectionMode() const { return selectionMode; }
+
+	QDomElement xmlElement(QDomDocument& doc);
 
 private:
    /// Don't use this.
    Allocation();
 
-   /// The primary allocated resource.
-   Resource* resource;
-   
    /// The maximum daily usage of the resource in percent.
    int load;
 
-   /// The shifts that limit the allocation to certain intervals.
+   /// The shifts that can limit the allocation to certain intervals.
    ShiftSelectionList shifts;
 
    /**
@@ -66,7 +67,11 @@ private:
    /// The persintent resource picked by the scheduler.
    Resource* lockedResource;
    
-   /// List of alternative resources.
-   QList<Resource> alternatives;
+   /// List of potential resources.
+   QPtrList<Resource> candidates;
+
+   /* The selection mode determines how the resource is selected from
+    * the candidate list. */
+   SelectionModeType selectionMode;
 } ;
 

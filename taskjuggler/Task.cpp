@@ -548,22 +548,60 @@ Task::bookResources(time_t date, time_t slotDuration)
 			bookResource(a->getLockedResource(), date, slotDuration,
 						 a->getLoad());
 		}
-		else if (bookResource(a->getResource(), date, slotDuration,
-							  a->getLoad()))
-		{
-			allocFound = TRUE;
-			if (a->isPersistent())
-				a->setLockedResource(a->getResource());
-		}
 		else
 		{
-			/* TODO: Try to free the main resource from a lower
-			 * priority task. */
-			for (Resource* r = a->first(); r != 0; r = a->next())
+			QPtrList<Resource> candidates = a->getCandidates();
+			QPtrList<Resource> cl;
+			switch (a->getSelectionMode())
+			{
+				case Allocation::order:
+					cl = candidates;
+					break;
+				case Allocation::minLoaded:
+				{
+					if (a->getLockedResource())
+					{
+						cl.append(a->getLockedResource());
+						candidates.remove(a->getLockedResource());
+						a->setLockedResource(0);
+					}
+					while (!candidates.isEmpty())
+					{
+						double minLoad = 0;
+						Resource* minLoaded = 0;
+						for (Resource* r = candidates.first(); r != 0;
+							 r = candidates.next())
+						{
+							double load =
+							   	r->getCurrentLoad(Interval(project->getStart(),
+														   date), 0);
+							if (minLoaded == 0 || load < minLoad)
+							{
+								minLoad = load;
+								minLoaded = r;
+							}
+						}
+						cl.append(minLoaded);
+						candidates.remove(minLoaded);
+					}
+					break;
+				}
+				case Allocation::maxLoaded:
+				{
+					break;
+				}
+				case Allocation::random:
+				{
+					break;
+				}
+				default:
+					qFatal("Illegal selection mode %d", a->getSelectionMode());
+			}
+			for (Resource* r = cl.first(); r != 0; r = cl.next())
 				if (bookResource(r, date, slotDuration, a->getLoad()))
 				{
 					allocFound = TRUE;
-					if (a->isPersistent())
+					//if (a->isPersistent())
 						a->setLockedResource(r);
 					break;
 				}
@@ -858,7 +896,7 @@ Task::resolveId(QString relId)
 	unsigned int i;
 	for (i = 0; i < relId.length() && relId.mid(i, 1) == "!"; ++i)
 	{
-		if (!t->parent)
+		if (t == 0)
 		{
 			fatalError(QString("Illegal relative ID '") + relId + "'");
 			return relId;
@@ -1009,7 +1047,7 @@ Task::preScheduleOk()
 		{
 			qWarning("Warning: Load is smaller than scheduling granularity "
 					 "(Task: %s, Resource: %s). Minimal load is %.2f.",
-					 id.latin1(), a->getResource()->getId().latin1(),
+					 id.latin1(), a->first()->getId().latin1(),
 					 intervalLoad + 0.005);
 			a->setLoad((int) (intervalLoad * 100.0));
 		}

@@ -401,13 +401,40 @@ Resource::addActualBooking(Booking* nb)
 }
 
 double
+Resource::getCurrentLoad(const Interval& period, Task* task)
+{
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return 0.0;
+
+	long bookings = 0;
+
+	double subLoad = 0.0;
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		subLoad += r->getCurrentLoad(iv, task);
+
+	for (uint i = sbIndex(iv.getStart());
+		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+	{
+		SbBooking* b = scoreboard[i];
+		if (b < (SbBooking*) 4)
+			continue;
+		if (task == 0 || task == b->getTask())
+			bookings++;
+	}
+
+	return subLoad + efficiency * project->convertToDailyLoad
+		(bookings * project->getScheduleGranularity());
+}
+
+double
 Resource::getPlanLoad(const Interval& period, Task* task)
 {
 	Interval iv(period);
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
 
-	time_t bookedTime = 0;
+	long bookings = 0;
 
 	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
@@ -420,10 +447,11 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 		if (b < (SbBooking*) 4)
 			continue;
 		if (task == 0 || task == b->getTask())
-			bookedTime += project->getScheduleGranularity();
+			bookings++;
 	}
 
-	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
+	return subLoad + efficiency * project->convertToDailyLoad
+		(bookings * project->getScheduleGranularity());
 }
 
 double
@@ -433,7 +461,7 @@ Resource::getActualLoad(const Interval& period, Task* task)
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
 
-	time_t bookedTime = 0;
+	long bookings = 0;
 
 	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
@@ -447,10 +475,11 @@ Resource::getActualLoad(const Interval& period, Task* task)
 			if (b < (SbBooking*) 4)
 				continue;
 			if (task == 0 || task == b->getTask())
-				bookedTime += project->getScheduleGranularity();
+				bookings++;
 		}
 
-	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
+	return subLoad + efficiency * project->convertToDailyLoad
+		(bookings * project->getScheduleGranularity());
 }
 
 double

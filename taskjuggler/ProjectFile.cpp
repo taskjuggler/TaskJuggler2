@@ -1983,9 +1983,22 @@ ProjectFile::readAllocate(Task* t)
 						fatalError("Resource ID expected");
 						return FALSE;
 					}
-					a->addAlternative(r);
+					a->addCandidate(r);
 				} while ((tt = nextToken(token)) == COMMA);
 				returnToken(tt, token);
+			}
+			else if (token == KW("select"))
+			{
+				if (nextToken(token) != ID || !a->setSelectionMode(token))
+				{
+					fatalError("Invalid selction mode");
+					return FALSE;
+				}
+			}
+			else
+			{
+				fatalError(QString("Unknown attribute '") + token + "'");
+				return FALSE;
 			}
 		}
 	}

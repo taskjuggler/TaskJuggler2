@@ -93,6 +93,8 @@ QString time2time(time_t t);
 
 QString time2date(time_t t);
 
+QString time2weekday(time_t t);
+
 time_t dateToTime( const QString& );
 
 time_t addTimeToDate(time_t day, time_t t);

@@ -14,6 +14,7 @@
 #include "Allocation.h"
 #include "ReportXML.h"
 
+#define KW(a) a
 
 /* -- DTD --
     <!ELEMENT Allocation (Load, Persistent)>
@@ -21,29 +22,42 @@
     <!ELEMENT Persistent (#PCDATA)>
     <!ATTLIST Allocation ResourceID CDATA #REQUIRED>
   /-- DTD --/
-
 */
 
 /* Constructor */
-Allocation::Allocation( Resource *r):	
-   resource(r),
-   load(100),
-   persistent( FALSE ),
-   lockedResource(0)
+Allocation::Allocation( Resource *r) :
+	load(100), persistent(FALSE), lockedResource(0)
 {
-
+	candidates.append(r);
+	selectionMode = order;
 }
 
-
 /* Creation of the XML Reprsentation of the Allocation */
-QDomElement Allocation::xmlElement( QDomDocument& doc ) const
+QDomElement Allocation::xmlElement( QDomDocument& doc )
 {
    QDomElement elem = doc.createElement( "Allocation" );
    elem.appendChild(ReportXML::createXMLElem( doc, "Load", QString::number(getLoad()) ));
    elem.appendChild(ReportXML::createXMLElem( doc, "Persistent", isPersistent() ? "Yes":"No" ));
-   elem.setAttribute( "ResourceID", resource->getId());
+   elem.setAttribute( "ResourceID", candidates.first()->getId());
    
-   /* Alternatives are missing TODO */
+   /* candidates are missing TODO */
    return elem;
 
 }
+
+bool
+Allocation::setSelectionMode(const QString& smt)
+{
+	if (smt == KW("order"))
+		selectionMode = order;
+	else if (smt == KW("minloaded"))
+		selectionMode = minLoaded;
+	else if (smt == KW("maxloaded"))
+		selectionMode = maxLoaded;
+	else if (smt == KW("random"))
+		selectionMode = random;
+	else
+		return FALSE;
+	return TRUE;
+}
+

@@ -317,6 +317,15 @@ QString time2date(time_t t)
 	return buf;
 }
 
+QString time2weekday(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	static char buf[128];
+
+	strftime(buf, 127, "%A", tms);
+	return buf;
+}
+
 time_t
 addTimeToDate(time_t day, time_t hour)
 {

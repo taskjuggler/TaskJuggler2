@@ -166,6 +166,8 @@ public:
 	bool addPlanBooking(Booking* b);
 	bool addActualBooking(Booking* b);
 
+	double getCurrentLoad(const Interval& i, Task* task = 0);
+
 	double getPlanLoad(const Interval& i, Task* task = 0);
 
 	double getActualLoad(const Interval& i, Task* task = 0);

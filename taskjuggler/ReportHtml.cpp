@@ -122,7 +122,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		else if (*it == KW("follows"))
 			generateFollows(t, r != 0);
 		else if (*it == KW("schedule"))
-			emptyPlan(r != 0);
+			planSchedule(r, t);
 		else if (*it == KW("mineffort"))
 			emptyPlan(r != 0);
 		else if (*it == KW("maxeffort"))
@@ -286,12 +286,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 		else if (*it == KW("follows"))
 			emptyPlan(t != 0);
 		else if (*it == KW("schedule"))
-		{
-			if (t == 0)
-				emptyPlan(FALSE);
-			else
 				planSchedule(r, t);
-		}
 		else if (*it == KW("mineffort"))
 			textTwoRows(QString().sprintf("%.2f", r->getMinEffort()), t != 0,
 						"right");
@@ -1299,16 +1294,27 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 	bool first = TRUE;
 	BookingList planJobs = r->getPlanJobs();
 	planJobs.setAutoDelete(TRUE);
+	time_t prevTime = 0;
 	for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
 	{
-		if (t == b->getTask())
+		if (t == b->getTask() && 
+			Interval(start, end).overlaps(Interval(b->getStart(),
+												   b->getEnd())))
 		{
+			if (!isSameDay(prevTime, b->getStart()))
+			{
+				s << "<p><span style=\"font-size:160%\">"
+					<< time2weekday(b->getStart()) << ", "
+					<< time2date(b->getStart()) << "</span><p>" << endl;
+				first = TRUE;
+			}
 			if (!first)
 				s << ", ";
 			else
 				first = FALSE;
-			s << time2ISO(b->getStart()) << " - "
-			  << time2ISO(b->getEnd()) << endl;
+			s << time2time(b->getStart()) << " - "
+			  << time2time(b->getEnd()) << endl;
+			prevTime = b->getStart();
 		}
 	}
 
