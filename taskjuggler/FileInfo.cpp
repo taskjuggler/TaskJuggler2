@@ -407,6 +407,8 @@ FileInfo::nextToken(QString& token)
                 return TILDE;
             case ':':
                 return COLON;
+            case '?':
+                return QUESTIONMARK;
             case '-':
                 return MINUS;
             case '&':
@@ -453,11 +455,20 @@ FileInfo::readMacroCall()
      * been removed) and copy it over the lineBuf again after we have read the
      * complete macro call. */
     QString lineBufCopy = lineBuf;
+    QString prefix;
+    if ((tt = nextToken(id)) == QUESTIONMARK)
+    {
+        prefix = "?";
+    }
+    else
+        returnToken(tt, id);
+    
     if ((tt = nextToken(id)) != ID && tt != INTEGER)
     {
         errorMessage(i18n("Macro ID expected"));
         return FALSE;
     }
+    id = prefix + id;
     
     QString token;
     // Store all arguments in a newly created string list.
@@ -477,11 +488,8 @@ FileInfo::readMacroCall()
     // expand the macro
     pf->getMacros().setLocation(file, currLine);
     QString macro = pf->getMacros().resolve(id);
-    if (macro.isNull())
-    {
-        errorMessage(i18n(QString("Unknown macro ") + id));
+    if (macro.isNull() && prefix.isEmpty())
         return FALSE;
-    }
 
     lineBuf = lineBufCopy;
 

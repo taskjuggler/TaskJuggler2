@@ -2389,7 +2389,13 @@ macro FOO [ This ${1} text ]
 <para>Macro <link linkend="id">ID</link>s should have at least one uppercase
 letter as all lowercase letter<link linkend="id">ID</link>s may be
 used in a later version for built-in macros like 'if', 'expr' or
-'for'.</para>
+'for'. Macro names can be prefixed by a questionmark. In this case the
+macro will expand to nothing if the macro is not defined. Otherwise
+the undefined macro would be flagged with an error message.</para>
+
+<para><screen>
+This macro call ${?foo} will expand to nothing if foo is undefined.
+</screen></para>
 
 </sect1>
 <sect1 id="maxeffort"><title>maxeffort &lt;value&gt;</title>

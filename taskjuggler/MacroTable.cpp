@@ -34,8 +34,21 @@ MacroTable::setMacro(Macro* macro)
 }
 
 QString
-MacroTable::resolve(const QString& name) const
+MacroTable::resolve(const QString& nameWithPrefix) const
 {
+    QString name = nameWithPrefix;
+    bool emptyIsLegal = FALSE;
+
+    if (name[0].latin1() == '?')
+    {
+        /* If the first character of the name is a question mark, the
+         * macro may be undefined. */
+        name = name.mid(1);
+        if (name.isEmpty())
+            errorMessage(i18n("'?' must be followed by a valid macro name!"));
+        emptyIsLegal = TRUE;
+    }
+
     if (isdigit(name[0].latin1()))
     {
         /* If the first character of the name is a digit, we assume that it is
@@ -47,14 +60,16 @@ MacroTable::resolve(const QString& name) const
         uint idx = name.toInt();
         if (sl == 0)
         {
-            errorMessage(i18n("Macro argument stack is empty."));
+            if (!emptyIsLegal)
+                errorMessage(i18n("Macro argument stack is empty."));
             return QString::null;
         }
         if (idx >= sl->count())
         {
-            errorMessage
-                (i18n("Index %1 for argument out of range [0 - %2]!")
-                 .arg(idx).arg(sl->count()));
+            if (!emptyIsLegal)
+                errorMessage
+                    (i18n("Index %1 for argument out of range [0 - %2]!")
+                     .arg(idx).arg(sl->count()));
             return QString::null;
         }
         return (*sl)[idx];
@@ -62,10 +77,10 @@ MacroTable::resolve(const QString& name) const
     else
         if (macros[name])
             return macros[name]->getValue();
-
-    errorMessage
-        (i18n("Usage of undefined macro '%1'").arg(name));
-
+            
+    if (!emptyIsLegal)
+        errorMessage
+            (i18n("Usage of undefined macro '%1'").arg(name));
     return QString::null;
 }
 
