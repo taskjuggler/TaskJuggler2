@@ -30,6 +30,7 @@
 #include "TableCellInfo.h"
 #include "ReferenceAttribute.h"
 #include "TextAttribute.h"
+#include "HTMLReport.h"
 
 #define KW(a) a
 
@@ -60,12 +61,17 @@ void
 HTMLReportElement::generateTableHeader()
 {
     // Header line 1
-    s() << "<table align=\"center\" cellpadding=\"2\">" << endl;
+    s() << "<table align=\"center\" cellpadding=\"2\"";
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_table\"";
+    s() << ">" << endl;
     s() << " <thead>" << endl 
         << "  <tr valign=\"middle\"" 
         << " style=\"background-color:" << colors.getColorName("header") << "; "
-        << "font-size:110%; font-weight:bold; text-align:center\"" 
-        << ">" << endl;
+        << "font-size:110%; font-weight:bold; text-align:center\"";
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_header_row\"";
+    s() << ">" << endl;
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
         if (columnFormat[(*it)->getName()])
@@ -92,7 +98,10 @@ HTMLReportElement::generateTableHeader()
 
     // Header line 2
     bool td = FALSE;
-    s() << "  <tr>" << endl;
+    s() << "  <tr";
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_header_row\"";
+    s() << ">" << endl;
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
         if (columnFormat[(*it)->getName()])
@@ -126,6 +135,8 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
            s() << "font-size:" << QString("%1").arg(tli->fontFactor) << "%; ";
        s() << "\"";
     }
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_row\"";
     s() << "\">" << endl;
     
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
@@ -231,6 +242,8 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
         cellText = mt.expand(tci->tci->getCellText());
         mt.popArguments();
     }
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_cell\"";
     s() << ">" << cellText << "</td>" << endl;
 }
 
@@ -249,9 +262,14 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
             if (period.contains(tci->tli->task->getEnd(tci->tli->sc)))
                 post += "=v";
             if (load > 0.0 && barLabels != BLT_EMPTY)
-                text += scaledLoad(load, tci);
+                text = scaledLoad(load, tci);
             else if (pre.isEmpty() && post.isEmpty())
-                text += "==";
+                text = "==";
+            else if (!pre.isEmpty() && !post.isEmpty())
+            {
+                pre = post = "v";
+                text = "=";
+            }
             text = pre + text + post;
             tci->setBoldText(true);
         }
@@ -270,11 +288,18 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
                     pre = "[=";
                 if (period.contains(tci->tli->task->
                                     getEnd(tci->tli->sc)))
-                    post += "=]";
+                    post = "=]";
+                if (!pre.isEmpty() && !post.isEmpty())
+                {
+                    pre = "[";
+                    post = "]";
+                }
                 if (load > 0.0 && barLabels != BLT_EMPTY)
-                    text += scaledLoad(load, tci);
+                    text = scaledLoad(load, tci);
                 else if (pre.isEmpty() && post.isEmpty())
-                    text += "==";
+                    text = "==";
+                else if (pre == "[")
+                   text = "="; 
                 text = pre + text + post;
             }
         }
@@ -351,7 +376,10 @@ HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString str)
 void
 HTMLReportElement::genHeadDefault(TableCellInfo* tci)
 {
-    s() << "   <td rowspan=\"2\">";
+    s() << "   <td rowspan=\"2\"";
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_header_cell\"";
+    s() << ">";
     if (!tci->tci->getTitle().isEmpty())
         s() << htmlFilter(tci->tci->getTitle());
     else
@@ -363,7 +391,10 @@ void
 HTMLReportElement::genHeadCurrency(TableCellInfo* tci)
 {
 
-    s() << "   <td rowspan=\"2\">";
+    s() << "   <td rowspan=\"2\"";
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_header_cell\"";
+    s() << ">";
     if (!tci->tci->getTitle().isEmpty())
         s() << htmlFilter(tci->tci->getTitle());
     else
@@ -387,7 +418,10 @@ HTMLReportElement::genHeadDaily1(TableCellInfo*)
         if (left > daysBetween(day, end))
             left = daysBetween(day, end);
         s() << "   <td colspan=\""
-            << QString().sprintf("%d", left) << "\">"; 
+            << QString().sprintf("%d", left) << "\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">"; 
         mt.clear();
         mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
@@ -425,7 +459,10 @@ HTMLReportElement::genHeadDaily2(TableCellInfo*)
         if (isSameDay(report->getProject()->getNow(), day))
             bgCol = colors.getColor("today");
         s() << "background-color:" << bgCol.name() << "; "
-            << "font-size:80%; text-align:center\">";
+            << "font-size:80%; text-align:center\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
                               defFileName, defFileLine));
@@ -466,7 +503,10 @@ HTMLReportElement::genHeadWeekly1(TableCellInfo*)
             left++;
              
         s() << "   <td colspan=\""
-          << QString().sprintf("%d", left) << "\">";
+          << QString().sprintf("%d", left) << "\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
@@ -513,7 +553,10 @@ HTMLReportElement::genHeadWeekly2(TableCellInfo*)
         else
             bgCol = colors.getColor("header");
         s() << "background-color:" << bgCol.name() << "; "
-            << "font-size:80%; text-align:center\">";
+            << "font-size:80%; text-align:center\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         if (woy < 10)
             s() << "&nbsp;";
         mt.clear();
@@ -549,7 +592,10 @@ HTMLReportElement::genHeadMonthly1(TableCellInfo*)
         if (left > monthsBetween(year, end))
             left = monthsBetween(year, end);
         s() << "   <td colspan=\""
-          << QString().sprintf("%d", left) << "\">";
+          << QString().sprintf("%d", left) << "\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
@@ -584,7 +630,10 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo*)
         else
             bgCol = colors.getColor("header");
         s() << "background-color:" << bgCol.name() << "; "
-            << "font-size:80%; text-align:center\">";
+            << "font-size:80%; text-align:center\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         if (month < 10)
             s() << "&nbsp;";
         mt.clear();
@@ -620,7 +669,10 @@ HTMLReportElement::genHeadQuarterly1(TableCellInfo*)
         if (left > quartersBetween(year, end))
             left = quartersBetween(year, end);
         s() << "   <td colspan=\""
-          << QString().sprintf("%d", left) << "\">";
+          << QString().sprintf("%d", left) << "\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
@@ -661,7 +713,10 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
         else
             bgCol = colors.getColor("header");
         s() << "background-color:" << bgCol.name() << "; "
-            << "font-size:80%; text-align:center\">";
+            << "font-size:80%; text-align:center\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(qoy)),
@@ -691,7 +746,10 @@ HTMLReportElement::genHeadYear(TableCellInfo*)
     for (time_t year = beginOfYear(start); year < end;
          year = sameTimeNextYear(year))
     {
-        s() << "   <td rowspan=\"2\">";
+        s() << "   <td rowspan=\"2\"";
+        if (((HTMLReport*) report)->hasStyleSheet())
+            s() << " class=\"tj_header_cell\"";
+        s() << ">";
         mt.clear();
         mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(year)),
@@ -982,17 +1040,15 @@ HTMLReportElement::genCellText(TableCellInfo* tci)
         genCell(htmlFilter(ta->getText()), tci, TRUE);
 }
 
-#define GCNOTE(a, b) \
-void \
-HTMLReportElement::genCell##a##Note(TableCellInfo* tci) \
-{ \
-    if (tci->tli->task->get##a##Note(b).isEmpty()) \
-        genCell("&nbsp;", tci, TRUE); \
-    else \
-        genCell(htmlFilter(tci->tli->task->get##a##Note(b)), tci, TRUE); \
+void
+HTMLReportElement::genCellStatusNote(TableCellInfo* tci)
+{
+    if (tci->tli->task->getStatusNote(tci->tli->sc).isEmpty())
+        genCell("&nbsp;", tci, TRUE);
+    else
+        genCell(htmlFilter(tci->tli->task->getStatusNote(tci->tli->sc)),
+                tci, TRUE);
 }
-
-GCNOTE(Status, tci->tli->sc)
 
 void
 HTMLReportElement::genCellCost(TableCellInfo* tci)

@@ -2588,8 +2588,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     errorMessage(i18n("String expected"));
                     return FALSE;
                 }
-                errorMessage("WARNING: 'rawstylesheet' is no longer supported. "
-                             "Please use 'rawhead' instead.");
+                report->setRawStyleSheet(token);
             }
             else if (token == KW("showprojectids"))
             {

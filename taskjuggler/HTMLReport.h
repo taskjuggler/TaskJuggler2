@@ -37,6 +37,12 @@ public:
     void generateHeader();
     void generateFooter();
 
+    void setRawStyleSheet(const QString& ss)
+    {
+        rawStyleSheet = ss;
+    }
+    bool hasStyleSheet() const { return !rawStyleSheet.isEmpty(); }
+
     void setRawHead(const QString& head)
     {
         rawHead = head;
@@ -50,6 +56,7 @@ public:
 protected:
     HTMLReport() { }
 
+    QString rawStyleSheet;
     QString rawHead;
     QString rawTail;
 } ;

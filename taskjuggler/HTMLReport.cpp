@@ -33,8 +33,10 @@ HTMLReport::generateHeader()
       << "<head>" << endl
       << "<title>Task Report</title>" << endl
       << "<meta http-equiv=\"Content-Type\" content=\"text/html; "
-      << "charset=utf-8\">" << endl
-      << "</head>" << endl
+      << "charset=utf-8\">" << endl;
+    if (!rawStyleSheet.isEmpty())
+        s << rawStyleSheet << endl;
+    s << "</head>" << endl
       << "<body>" << endl;
 
     if (!rawHead.isEmpty())
