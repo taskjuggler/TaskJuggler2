@@ -616,12 +616,16 @@ Task::bookResources(time_t date, time_t slotDuration)
             }
             if ((*ali)->isPersistent() && (*ali)->getLockedResource())
             {
-                if ((*ali)->getLockedResource()->
-                    isAvailable(date, slotDuration, (*ali)->getLoad(), this))
+                int availability;
+                if ((availability = (*ali)->getLockedResource()->
+                     isAvailable(date, slotDuration, (*ali)->getLoad(),
+                                 this)) > 0) 
                 {
                     allMandatoriesAvailables = FALSE;
                     break;
                 }
+                else if (availability >= 4 && !(*ali)->getConflictStart())
+                    (*ali)->setConflictStart(date);
             }
             else
             {
@@ -629,13 +633,20 @@ Task::bookResources(time_t date, time_t slotDuration)
                 QPtrList<Resource> candidates = (*ali)->getCandidates();
                 for (QPtrListIterator<Resource> rli(candidates); 
                      *rli && !found; ++rli)
+                {
+                    int availability;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
-                        if (!(*rti)->isAvailable(date, slotDuration,
-                                                 (*ali)->getLoad(), this))
+                        if ((availability = 
+                             (*rti)->isAvailable(date, slotDuration,
+                                                 (*ali)->getLoad(), this)) > 0)
                         {
                             found = TRUE;
                             break;
                         }
+                        else if (availability >= 4 &&
+                                 !(*ali)->getConflictStart())
+                            (*ali)->setConflictStart(date);
+                }
                 if (!found)
                 {
                     allMandatoriesAvailables = FALSE;
@@ -689,7 +700,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
     {
-        if (!(*rti)->isAvailable(date, slotDuration, loadFactor, this))
+        if ((*rti)->isAvailable(date, slotDuration, loadFactor, this) == 0)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));

@@ -33,7 +33,7 @@ dnl Perform program name transformation
 AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
-AM_INIT_AUTOMAKE(taskjuggler, [1.9.0+cvs])
+AM_INIT_AUTOMAKE(taskjuggler, [1.9.1-unstable])
 
 dnl AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 

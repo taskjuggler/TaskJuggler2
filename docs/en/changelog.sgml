@@ -527,7 +527,7 @@ tasks.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Version 1.9.1-unstable (some day)</title>
+<sect2><title>Version 1.9.1-unstable (2003-07-29)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -539,16 +539,6 @@ linkend="csvtaskreport">csvtaskreport</link>, <link
 linkend="csvresourcereport">csvresourcereport</link> and <link
 linkend="csvaccountreport">csvaccountreport</link>.</para></listitem>
 
-<listitem><para>The <link linkend="export">export report</link>
-can now be a main project file as well.</para></listitem>
-
-<listitem><para>A new keyword for taskattributes of export reports has
-been introduced. The keyword <computeroutput>all</computeroutput>
-causes all supported task attributes to be exported.</para></listitem>
-
-<listitem><para>The broken milestone symbol in HTML calendars has been
-fixed.</para></listitem>
-
 <listitem><para>HTML Calendars have now a navigation aid. Moving a
 mouse over a cell will show the date and task/resource id in the
 browser status bar.</para></listitem>
@@ -556,6 +546,18 @@ browser status bar.</para></listitem>
 <listitem><para>Background cells in HTML calendars are now merged.
 This makes taskjuggler report generation faster and reduces the size
 of HTML report files.</para></listitem>
+
+<listitem><para>The <link linkend="export">export report</link>
+can now be a main project file as well.</para></listitem>
+
+<listitem><para>A new keyword for taskattributes of export reports has
+been introduced. The keyword <computeroutput>all</computeroutput>
+causes all supported task attributes to be exported.</para></listitem>
+
+<listitem><para>Various speed improvements.</para></listitem>
+
+<listitem><para>The broken milestone symbol in HTML calendars has been
+fixed.</para></listitem>
 
 <listitem><para>HTML reports now have a black grid to separate the
 cells. This enhances readability both on the screen and on printouts.
