@@ -12,16 +12,20 @@
 
 /* -- DTD --
  <!-- Task element, child of projects and for subtasks -->
- <!ELEMENT Task		(Name, ProjectID, Priority, complete, Type,
+ <!ELEMENT Task		(Index, Name, ProjectID, Priority, complete,
+                         Type,
                          ParentTask*, Note*,
                          minStart, maxStart,
                          minEnd, maxEnd,
 			 actualStart, actualEnd,
 			 planStart, planEnd,
-			 SubTasks*, Depend*, Previous*, Follower*,
+			 startBufferSize*, ActualStartBufferEnd*, PlanStartBufferEnd*,
+			 endBufferSize*, ActualEndBufferStart*, PlanEndBufferStart*,
+			 Resource*,
+			 SubTasks*, Previous*, Follower*,
 			 Allocations*, bookedResources* )>
  <!ATTLIST Task         Id CDATA #REQUIRED>
- 
+ <!ELEMENT Index        (#PCDATA)>
  <!ELEMENT Name         (#PCDATA)>
  <!ELEMENT ProjectID    (#PCDATA)>
  <!ELEMENT Priority     (#PCDATA)>
@@ -37,23 +41,17 @@
  <!ELEMENT actualEnd    (#PCDATA)>
  <!ELEMENT planStart    (#PCDATA)>
  <!ELEMENT planEnd      (#PCDATA)>
+ <!ELEMENT startBufferSize (#PCDATA)>
+ <!ELEMENT ActualStartBufferEnd (#PCDATA)>
+ <!ELEMENT PlanStartBufferEnd   (#PCDATA)>
+ <!ELEMENT endBufferSize        (#PCDATA)>
+ <!ELEMENT ActualEndBufferStart (#PCDATA)>
+ <!ELEMENT PlanEndBufferStart    (#PCDATA)>
  <!ELEMENT SubTasks     (Task+)>
- <!ELEMENT Depend       (#PCDATA)>
- <!ELEMENT TaskID       (#PCDATA)>
  <!ELEMENT Previous     (#PCDATA)>
  <!ELEMENT Follower     (#PCDATA)>
- <!ELEMENT Allocation   (#PCDATA)>
- <!ELEMENT Allocation   EMPTY>
  <!ELEMENT bookedResources (ResourceID+)>
- <!ELEMENT ResourceID   (#PCDATA)>
- <!ELEMENT note         (#PCDATA)>
 
- <!ATTLIST ResourceID
-           Name CDATA #REQUIRED>
- <!ATTLIST Allocation
-           load CDATA #REQUIRED
-	   ResourceID CDATA #REQUIRED>
-	   
  <!-- Date values contain human readable date -->
  <!ATTLIST minStart
            humanReadable CDATA #REQUIRED>
@@ -70,6 +68,14 @@
  <!ATTLIST planStart
            humanReadable CDATA #REQUIRED>
  <!ATTLIST planEnd
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST ActualStartBufferEnd
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST PlanStartBufferEnd
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST ActualEndBufferStart
+           humanReadable CDATA #REQUIRED>
+ <!ATTLIST PlanEndBufferStart
            humanReadable CDATA #REQUIRED>
    /-- DTD --/
 */
@@ -1406,7 +1412,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(cmplt, 'f', 1) ));
 
    QString tType = "Milestone";
-   if( !milestone )
+   if( !isMilestone() )
    {
       if( isContainer() )
 	 tType = "Container";
@@ -1455,6 +1461,43 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    tempElem.setAttribute( "humanReadable", time2ISO( planEnd ));
    taskElem.appendChild( tempElem );
 
+   /* Start- and Endbuffer */
+   if( getStartBuffer() > 0.01 )
+   {
+      /* startbuffer exists */
+      tempElem = ReportXML::createXMLElem( doc, "startBufferSize", QString::number( getStartBuffer()));
+      taskElem.appendChild( tempElem );
+
+      tempElem = ReportXML::createXMLElem( doc, "ActualStartBufferEnd",
+					   QString::number( getActualStartBufferEnd()));
+      tempElem.setAttribute( "humanReadable", time2ISO(getActualStartBufferEnd()));
+      taskElem.appendChild( tempElem );
+
+      tempElem = ReportXML::createXMLElem( doc, "PlanStartBufferEnd",
+					   QString::number( getPlanStartBufferEnd()));
+      tempElem.setAttribute( "humanReadable", time2ISO(getPlanStartBufferEnd()));
+      taskElem.appendChild( tempElem );
+      
+   }
+
+   if( getEndBuffer() > 0.01 )
+   {
+      /* startbuffer exists */
+      tempElem = ReportXML::createXMLElem( doc, "EndBufferSize", QString::number( getEndBuffer()));
+      taskElem.appendChild( tempElem );
+
+      tempElem = ReportXML::createXMLElem( doc, "ActualEndBufferStart",
+					   QString::number( getActualEndBufferStart()));
+      tempElem.setAttribute( "humanReadable", time2ISO(getActualEndBufferStart()));
+      taskElem.appendChild( tempElem );
+
+      tempElem = ReportXML::createXMLElem( doc, "PlanEndBufferStart",
+					   QString::number( getPlanEndBufferStart()));
+      tempElem.setAttribute( "humanReadable", time2ISO(getPlanStartBufferEnd()));
+      taskElem.appendChild( tempElem );
+   }
+
+   /* Responsible persons */
    if( getResponsible() )
       taskElem.appendChild( getResponsible()->xmlIDElement( doc ));      
    
@@ -1533,15 +1576,6 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
       {
 	 taskElem.appendChild( r->xmlIDElement( doc ));
       }
-   }
-   
-   /* Comment */
-   if( ! note.isEmpty())
-   {
-      QDomElement e = doc.createElement( "note" );
-      taskElem.appendChild( e );
-      t = doc.createTextNode( note );
-      e.appendChild( t );
    }
 
    return( taskElem );
@@ -1664,7 +1698,6 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       }
       else if( elemTagName == "SubTasks" )
       {                       
-	 qDebug(  "## Subtasks found !");
 	 QDomElement subTaskElem = elem.firstChild().toElement();
 	 for( ; !subTaskElem.isNull(); subTaskElem = subTaskElem.nextSibling().toElement() )
 	 {
@@ -1672,12 +1705,17 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
 	    QString stId = subTaskElem.attribute("Id");
 	    qDebug( "Recursing to elem " + stId );
 	    Task *t = new Task( project, stId, QString(), this, QString(), 0 );
-	    
-	    addSub(t);
 	    t->loadFromXML( subTaskElem, project );
+	    addSub(t);
 	    project->addTask(t);
 	    qDebug( "Recursing to elem " + stId + " <FIN>");
 	 }
+      }
+      else if( elemTagName == "Type" )
+      {
+	 if( elem.text() == "Milestone" )
+	    setMilestone();
+	 /* Container and Task are detected automatically */
       }
       else if( elemTagName == "Previous" )
       {

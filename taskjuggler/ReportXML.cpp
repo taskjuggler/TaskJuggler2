@@ -14,13 +14,12 @@
 /* -- DTD --
 
  <!-- The head of all: Project -->
- <!ELEMENT Project      (start, end, now, Task+)>
+ <!ELEMENT Project      (Name, Version, Priority, start, end, now, Task+)>
  <!ATTLIST Project
-           Name         CDATA #REQUIRED
-	   Id           CDATA #REQUIRED
-	   Version      CDATA #REQUIRED
-	   Priority     CDATA #REQUIRED
-	   Copyright    CDATA #REQUIRED>
+	   Id           CDATA #REQUIRED>
+ <!ELEMENT Name         (#PCDATA)>
+ <!ELEMENT Version      (#PCDATA)>
+ <!ELEMENT Priority     (#PCDATA)>
  <!ELEMENT start        (#PCDATA)>
  <!ELEMENT end          (#PCDATA)>
  <!ELEMENT now          (#PCDATA)>
@@ -67,6 +66,8 @@ void ReportXML::generate()
 {
    if( ! project ) return;
    QDomDocument doc( "Project" );
+   doc.appendChild( doc.createProcessingInstruction(
+        "xml", "version=\"1.0\" encoding=\"iso-8859-1\""));
 
    /* Create the Project xml representation */
    QDomElement proj = doc.createElement( "Project" );

@@ -16,8 +16,10 @@
 
 
 /* -- DTD --
-    <!ELEMENT Allocation (#PCDATA)>
-    <!ATTLIST Allocation ResourceID, #REQUIRED>
+    <!ELEMENT Allocation (Load, Persistent)>
+    <!ELEMENT Load       (#PCDATA)>
+    <!ELEMENT Persistent (#PCDATA)>
+    <!ATTLIST Allocation ResourceID CDATA #REQUIRED>
   /-- DTD --/
 
 */
