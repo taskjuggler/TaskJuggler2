@@ -44,11 +44,11 @@ public:
 	void setProjectId(const QString i) { projectId = i; }
 	const QString& getProjectId() const { return projectId; }
 
-   void setLockTS( const QString& ts ) { lockTS = ts; }
-   const QString& getLockTS() const { return lockTS; }
+	void setLockTS( const QString& ts ) { lockTS = ts; }
+	const QString& getLockTS() const { return lockTS; }
 
-   void setLockerId( const QString& id ) { lockerId = id; }
-   const QString& getLockerId() const { return lockerId; }
+	void setLockerId( const QString& id ) { lockerId = id; }
+	const QString& getLockerId() const { return lockerId; }
    
 private:
 	// The booked time period.
@@ -60,23 +60,24 @@ private:
 	// The Project ID
 	QString projectId;
    
-   // The database lock timestamp
-   QString lockTS;
+	// The database lock timestamp
+	QString lockTS;
 
-   // the lockers ID
-   QString lockerId;
+	// the lockers ID
+	QString lockerId;
 } ;
 
-class BookingList: public QPtrList<Booking>
+class BookingList : public QPtrList<Booking>
 {
 public:
-   BookingList() { setAutoDelete(TRUE); }
-   ~BookingList() {}
+	BookingList() { setAutoDelete(TRUE); }
+	~BookingList() {}
+
+protected:
+	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
 
-typedef  QPtrListIterator<Booking> BookingListIterator;
-
-
+typedef QPtrListIterator<Booking> BookingListIterator;
 
 class Resource
 {
@@ -103,6 +104,12 @@ public:
 	void addVacation(Interval* i) { vacations.append(i); }
 	bool hasVacationDay(time_t day);
 
+	void setWorkingHours(int day, const QPtrList<Interval>& l)
+	{
+		if (day < 0 || day > 7)
+			qFatal("day out of range");
+		workingHours[day] = l;
+	}
 	bool isAvailable(time_t day, time_t duration, Interval& i);
 
 	void book(Booking* b);
@@ -115,12 +122,10 @@ public:
 
 	void printText();
 
-   
-   bool dbLoadBookings( const QString& kotrusID, const QString& skipProjectID );
+	bool dbLoadBookings(const QString& kotrusID, const QString& skipProjectID);
 
 private:
-
-   // The ID of the resource. Must be unique in the project.
+	// The ID of the resource. Must be unique in the project.
 	Project* project;
 
 	// The ID of the resource. Must be unique in the project.

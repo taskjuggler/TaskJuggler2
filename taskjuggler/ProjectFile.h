@@ -25,6 +25,7 @@
 
 class ProjectFile;
 class Project;
+class Operation;
 
 class FileInfo
 {
@@ -47,7 +48,7 @@ public:
 
 	bool readMacroCall();
 
-	void fatalError(const QString& msg) const;
+	void fatalError(const QString& msg);
 
 private:
 	bool getDateFragment(QString& token, int& c);
@@ -56,7 +57,7 @@ private:
 	QString file;
 	FILE* f;
 	int currLine;
-	int macroLevel;
+	QPtrList<Macro> macroStack;
 	QString lineBuf;
 	QValueList<int> ungetBuf;
 	TokenType tokenTypeBuf;
@@ -96,11 +97,13 @@ private:
 	bool readAllocate(Task* t);
 	bool readTimeFrame(Task* t, double& d);
 	bool readTimeValue(ulong& value);
-	bool readWorkingHours(int& dayOfWeek);
+	bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>);
 	bool readPriority(int& priority);
 	bool readHTMLTaskReport();
 	bool readHTMLResourceReport();
+	Operation* readLogicalExpression();
 	time_t date2time(const QString& date);
+	time_t hhmm2time(const QString& hhmm);
 
 	QString masterFile;
 	Project* proj;

@@ -17,10 +17,9 @@
 bool
 MacroTable::addMacro(Macro* macro)
 {
-	for (Macro* m = macros.first(); m != 0; m = macros.next())
-		if (m->getName() == macro->getName())
-			return FALSE;
-	macros.append(macro);
+	if (macros[macro->getName()])
+		return FALSE;
+	macros.insert(macro->getName(), macro);
 	return TRUE;
 }
 
@@ -30,7 +29,7 @@ MacroTable::expand(const QString& name)
 	fflush(stdout);
 	if (isdigit(name[0].latin1()))
 	{
-		QStringList* sl = argStack.last();
+		QStringList* sl = argStack.at(argStack.count() - 2);
 		uint idx = name.toInt();
 		if (sl == 0)
 		{
@@ -46,8 +45,7 @@ MacroTable::expand(const QString& name)
 		return (*sl)[idx - 1];
 	}
 	else
-		for (Macro* m = macros.first(); m != 0; m = macros.next())
-			if (m->getName() == name)
-				return m->getValue();
+		if (macros[name])
+			return macros[name]->getValue();
 	return QString::null;
 }

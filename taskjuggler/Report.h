@@ -22,7 +22,7 @@
 #include <qtextstream.h>
 
 class Project;
-
+class ExpressionTree;
 class Report
 {
 public:
@@ -38,6 +38,8 @@ public:
 	
 	void setEnd(time_t e) { end = e; }
 	time_t getEnd() const { return end; }
+
+	void setHide(ExpressionTree* et) { hide = et; }
 
 	void reportHTMLHeader();
 	void reportHTMLFooter();
@@ -66,6 +68,8 @@ protected:
 	uint colMilestone;
 	uint colCompleted;
 	uint colToday;
+
+	ExpressionTree* hide;
 } ;
 
 #endif

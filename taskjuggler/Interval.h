@@ -82,12 +82,21 @@ public:
 
 	bool append(const Interval& i)
 	{
-		if (end == i.start && end < i.end)
+		if (((end + 1) == i.start) && ((end + 1) < i.end))
 		{
 			end = i.end;
 			return TRUE;
 		}
 		return FALSE;
+	}
+	int compare(const Interval& i)
+	{
+		if (end < i.start)
+			return -1;	// interval is below i
+		else if (i.end < start)
+			return 1;	// interval above below i
+		else
+			return 0;	// interval overlap
 	}
 	time_t getStart() const { return start; }
 	time_t getEnd() const { return end; }

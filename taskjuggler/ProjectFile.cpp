@@ -17,6 +17,7 @@
 #include "ProjectFile.h"
 #include "Project.h"
 #include "Token.h"
+#include "ExpressionTree.h"
 #include "kotrus.h"
 
 extern Kotrus *kotrus;
@@ -48,7 +49,6 @@ FileInfo::open()
 		return FALSE;
 
 	lineBuf = "";
-	macroLevel = 0;
 	currLine = 1;
 	return TRUE;
 }
@@ -77,7 +77,7 @@ FileInfo::getC(bool expandMacros)
 		ungetBuf.remove(ungetBuf.fromLast());
 		if (c == EOM)
 		{
-			macroLevel--;
+			macroStack.removeLast();
 			pf->getMacros().popArguments();
 			goto BEGIN;
 		}
@@ -107,8 +107,6 @@ FileInfo::getC(bool expandMacros)
 void
 FileInfo::ungetC(int c)
 {
-	if (c == EOF - 1)
-		macroLevel++;
 	lineBuf = lineBuf.left(lineBuf.length() - 1);
 	ungetBuf.append(c);
 }
@@ -164,7 +162,7 @@ FileInfo::nextToken(QString& token)
 			// break missing on purpose
 		case '\n':
 			// Increase line counter only when not replaying a macro.
-			if (macroLevel > 0)
+			if (macroStack.isEmpty())
 				currLine++;
 			lineBuf = "";
 			break;
@@ -234,6 +232,22 @@ FileInfo::nextToken(QString& token)
 				ungetC(c);
 				return REAL;
 			}
+			else if (c == ':')
+			{
+				// must be a time (HH:MM)
+				token += c;
+				for (int i = 0; i < 2; i++)
+				{
+					if ((c = getC()) != EOF && isdigit(c))
+						token += c;
+					else
+					{
+						fatalError("2 digits minutes expected");
+						return EndOfFile;
+					}
+				}
+				return HOUR;
+			}
 			else
 			{
 				ungetC(c);
@@ -261,7 +275,8 @@ FileInfo::nextToken(QString& token)
 					nesting++;
 				else if (c == ']')
 					nesting--;
-
+				if (c == '\n')
+					currLine++;
 				token += c;
 			}
 			if (c == EOF)
@@ -280,8 +295,14 @@ FileInfo::nextToken(QString& token)
 				return RBRACKET;
 			else if (c == ',')
 				return COMMA;
+			else if (c == '!')
+				return BANG;
 			else if (c == '-')
 				return MINUS;
+			else if (c == '&')
+				return AND;
+			else if (c == '|')
+				return OR;
 			else
 			{
 				fatalError(QString("Illegal character '") + c + "'");
@@ -311,10 +332,21 @@ FileInfo::readMacroCall()
 		fatalError("'}' expected");
 		return FALSE;
 	}
-	QString macro = pf->getMacros().expand(id);
 
 	// push string list to global argument stack
 	pf->getMacros().pushArguments(sl);
+
+	// expand the macro
+	QString macro = pf->getMacros().expand(id);
+	if (macro.isNull())
+	{
+		fatalError(QString("Unknown macro ") + id);
+		return FALSE;
+	}
+
+	// Push pointer to macro on stack. Needed for error handling.
+	macroStack.append(pf->getMacros().getMacro(id));
+
 	// mark end of macro
 	ungetC(EOM);
 	// push expanded macro reverse into ungetC buffer.
@@ -336,10 +368,21 @@ FileInfo::returnToken(TokenType tt, const QString& buf)
 }
 
 void
-FileInfo::fatalError(const QString& msg) const
+FileInfo::fatalError(const QString& msg)
 {
-	cerr << file << ":" << currLine << ":" << msg << endl;
-	cerr << lineBuf << endl;
+	if (macroStack.isEmpty())
+	{
+		cerr << file << ":" << currLine << ":" << msg << endl;
+		cerr << lineBuf << endl;
+	}
+	else
+	{
+		qWarning("Error in expanded macro");
+		qWarning("%s:%d: %s",
+				 macroStack.last()->getFile().latin1(),
+				 macroStack.last()->getLine(), msg.latin1());
+		qWarning("%s", lineBuf.latin1());
+	}
 }
 
 ProjectFile::ProjectFile(Project* p)
@@ -510,12 +553,14 @@ ProjectFile::parse()
 					fatalError("Macro ID expected");
 					return FALSE;
 				}
+				QString file = openFiles.last()->getFile();
+				uint line = openFiles.last()->getLine();
 				if (nextToken(token) != MacroBody)
 				{
 					fatalError("Macro body expected");
 					return FALSE;
 				}
-				Macro* macro = new Macro(id, token);
+				Macro* macro = new Macro(id, token, file, line);
 				if (!macros.addMacro(macro))
 				{
 					fatalError("Macro has been defined already");
@@ -987,8 +1032,11 @@ ProjectFile::readResource()
 			else if (token == "workingHours")
 			{
 				int dow;
-				if (!readWorkingHours(dow))
+				QPtrList<Interval> l;
+				if (!readWorkingHours(dow, l))
 					return FALSE;
+				
+				r->setWorkingHours(dow, l);
 			}
 			else
 			{
@@ -1209,7 +1257,7 @@ ProjectFile::readTimeFrame(Task* task, double& value)
 }
 
 bool
-ProjectFile::readWorkingHours(int& dayOfWeek)
+ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval> l)
 {
 	QString day;
 	if (nextToken(day) != ID)
@@ -1246,6 +1294,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek)
 			fatalError("End time as HH:MM expected");
 			return FALSE;
 		}
+		l.append(new Interval(hhmm2time(start), hhmm2time(end)));
 		TokenType tt;
 		if ((tt = nextToken(token)) != COMMA)
 		{
@@ -1338,6 +1387,18 @@ ProjectFile::readHTMLTaskReport()
 			}
 			report->setEnd(date2time(token));
 		}
+		else if (token == "showActual")
+		{
+			report->setShowActual(TRUE);
+		}
+		else if (token == "hide")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setHide(et);
+		}
 		else
 		{
 			fatalError("Illegal attribute");
@@ -1425,6 +1486,54 @@ ProjectFile::readHTMLResourceReport()
 	return TRUE;
 }
 
+Operation*
+ProjectFile::readLogicalExpression()
+{
+	Operation* op;
+	QString token;
+	TokenType tt;
+	if ((tt = nextToken(token)) == ID)
+		op = new Operation(token);
+	else if (tt == INTEGER)
+		op = new Operation(token.toLong());
+	else if (tt == BANG)
+	{
+		op = readLogicalExpression();
+		if (!op)
+			return 0;
+		op = new Operation(op, Operation::Not);
+	}
+	else if (tt == LBRACKET)
+	{
+		if ((op = readLogicalExpression()) == 0)
+			return 0;
+	}
+	else
+	{
+		fatalError("Logical expression expected");
+		return 0;
+	}
+	
+	if ((tt = nextToken(token)) == RBRACKET)
+		return op;
+	else if (tt == AND)
+	{
+		Operation* op2 = readLogicalExpression();
+		op = new Operation(op, Operation::And, op2);
+	}
+	else if (tt == OR)
+	{
+		Operation* op2 = readLogicalExpression();
+		op = new Operation(op, Operation::Or, op2);
+	}
+	else
+	{
+		fatalError("Logical operand expected");
+		return 0;
+	}
+	return op;
+}
+
 time_t
 ProjectFile::date2time(const QString& date)
 {
@@ -1455,4 +1564,12 @@ ProjectFile::date2time(const QString& date)
 
 	struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	return mktime(&t);
+}
+
+time_t
+ProjectFile::hhmm2time(const QString& hhmm)
+{
+	int hour, min;
+	sscanf(hhmm, "%d:%d", &hour, &min);
+	return hour * 60 * 60 + min * 60;
 }

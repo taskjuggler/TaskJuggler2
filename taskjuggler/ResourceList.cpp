@@ -20,6 +20,14 @@
 
 extern Kotrus *kotrus;
 
+int
+BookingList::compareItems(QCollection::Item i1, QCollection::Item i2)
+{
+	Booking* b1 = static_cast<Booking*>(i1);
+	Booking* b2 = static_cast<Booking*>(i2);
+
+	return b1->getInterval().compare(b2->getInterval());
+}
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
 				   double mie, double mae, double r)
@@ -53,20 +61,6 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 		if (i->overlaps(Interval(date, date + duration)))
 			return FALSE;
 
-	// Make sure that we don't overload or dubble-book the resource.
-	time_t bookedTime = duration;
-	Interval day = Interval(midnight(date),
-							sameTimeNextDay(midnight(date)) - 1);
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-	{
-		if (b->getInterval().overlaps(Interval(date, date + duration)))
-			return FALSE;
-		if (day.contains(b->getInterval()))
-			bookedTime += b->getDuration();
-	}
-	if (project->convertToDailyLoad(bookedTime) > maxEffort)
-		return FALSE;
-
 	// Iterate through all the work time intervals for the week day.
 	const int dow = dayOfWeek(date);
 	for (Interval* i = workingHours[dow].first(); i != 0;
@@ -79,10 +73,20 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 		 * interval in that working time. */
 		if (interval.overlap(Interval(date, date + duration - 1)))
 		{
-			for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-				if (!interval.exclude(b->getInterval()))
+			time_t bookedTime = duration;
+			Interval day = Interval(midnight(date),
+									sameTimeNextDay(midnight(date)) - 1);
+			for (Booking* b = jobs.last();
+				 b != 0 && b->getStart() >= day.getStart(); b = jobs.prev())
+			{
+				// Check if the interval is booked already.
+				if (b->getInterval().overlaps(Interval(date, date + duration)))
 					return FALSE;
-			return TRUE;
+				// Accumulate total load for the current day.
+				if (day.contains(b->getInterval()))
+					bookedTime += b->getDuration();
+			}
+			return project->convertToDailyLoad(bookedTime) <= maxEffort;
 		}
 	}
 	return FALSE;
@@ -92,7 +96,10 @@ void
 Resource::book(Booking* nb)
 {
 	// Try first to append the booking 
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+	for (Booking* b = jobs.last();
+		 b != 0 && b->getEnd() + 1 >= nb->getStart();
+		 b = jobs.prev())
+	{
 		if (b->getTask() == nb->getTask() &&
 			b->getProjectId() == nb->getProjectId() &&
 			b->getInterval().append(nb->getInterval()))
@@ -101,7 +108,8 @@ Resource::book(Booking* nb)
 			delete nb;
 			return;
 		}
-	jobs.append(nb);
+	}
+	jobs.inSort(nb);
 }
 
 double
@@ -111,7 +119,9 @@ Resource::getLoadOnDay(time_t date, Task* task)
 
 	const Interval day(midnight(date),
 					   sameTimeNextDay(midnight(date)) - 1);
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+	for (Booking* b = jobs.first();
+		 b != 0 && b->getEnd() <= day.getEnd();
+		 b = jobs.next())
 	{
 		if (day.contains(b->getInterval()) &&
 			(task == 0 || task == b->getTask()))
@@ -136,11 +146,10 @@ bool
 Resource::dbLoadBookings( const QString& kotrusID, const QString& skipProjectID )
 {
    bool result = true;
-   
+
    if( ! kotrus ) return( false );
 
    BookingList blist = kotrus->loadBookings( kotrusID, skipProjectID );
-   
    
    return( result );
 }
@@ -191,5 +200,3 @@ ResourceList::printText()
 	for (Resource* r = first(); r != 0; r = next())
 		r->printText();
 }
-
-

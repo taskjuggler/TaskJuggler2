@@ -21,7 +21,7 @@ typedef enum
 {
 	INVALID = 0, EndOfStatement, EndOfFile, MacroBody,
 	ID, RELATIVE_ID,
-	RBRACKET, LBRACKET, COMMA, MINUS,
+	RBRACKET, LBRACKET, COMMA, BANG, MINUS, AND, OR,
 	DATE, HOUR, INTEGER, REAL, STRING
 } TokenType;
 

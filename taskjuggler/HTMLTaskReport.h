@@ -21,12 +21,15 @@ class HTMLTaskReport : public Report
 {
 public:
 	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e) :
-		Report(p, f, s, e) { }
+		Report(p, f, s, e) { showActual = FALSE; }
 	~HTMLTaskReport() { }
 
 	bool generate();
 
+	void setShowActual(bool s) { showActual = s; }
+
 private:
+	bool showActual;
 	HTMLTaskReport() { }
 } ;
 

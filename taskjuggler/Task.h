@@ -118,9 +118,17 @@ public:
 	{
 		return start >= minStart && start <= maxStart;
 	}
+	bool isActualStartOk()
+	{
+		return actualStart >= minStart && actualStart <= maxStart;
+	}
 	bool isEndOk()
 	{
 		return end >= minEnd && end <= maxEnd;
+	}
+	bool isActualEndOk()
+	{
+		return actualEnd >= minEnd && actualEnd <= maxEnd;
 	}
 
 	void setLength(int days) { length = days; }

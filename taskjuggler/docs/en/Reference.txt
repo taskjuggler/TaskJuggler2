@@ -498,6 +498,12 @@ day: DATE
 The end date for the calender view.
 
 -------------------------------------------------------------------------------
+showActual
+
+If used not only the plan values are listed in the table, but also the
+actual values. The actual values are put underneath the plan values.
+
+-------------------------------------------------------------------------------
 show <flag>[,flag]
 flag: ID
 

@@ -11,6 +11,7 @@ kotrusMode "NoKotrus"
 
 htmlTaskReport "test1.html" {
   columns  no, name, start, end, daily
+  showActual
   start 2001-09-28
   end 2002-03-08
 }
@@ -115,7 +116,10 @@ resource ro "Ruediger Oertel" {
   vacation 2001-12-18
   vacation 2001-12-10 - 2001-12-14
 }
-resource kukuk "Thorsten Kukuk"
+resource kukuk "Thorsten Kukuk" {
+  workingHours MON 08:00-12:00, 12:30-17:00
+}
+
 resource cs "Chris Schlaeger"
 resource mem "Muhamed Memovic"
 resource bg "Berthold Gunreben"

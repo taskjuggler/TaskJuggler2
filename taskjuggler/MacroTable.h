@@ -15,24 +15,28 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qdict.h>
 #include <qvaluelist.h>
 
 class Macro
 {
 public:
-	Macro(const QString& n, const QString& v)
-		: name(n), value(v) { }
+	Macro(const QString& n, const QString& v, const QString& f, uint l)
+		: name(n), value(v), file(f), line(l) { }
 	~Macro() { }
 
-	const QString& getName() { return name; }
-	const QString& getValue() { return value; }
+	const QString& getName() const { return name; }
+	const QString& getValue() const { return value; }
+	const QString& getFile() const { return file; }
+	const uint getLine() const { return line; }
 
 private:
 	Macro() { }	// don't use this
 
 	QString name;
 	QString value;
+	QString file;
+	uint line;
 } ;
 
 class MacroTable
@@ -55,10 +59,11 @@ public:
 		argStack.removeLast();
 	}
 	QString expand(const QString& name);
+	Macro* getMacro(const QString& name) const { return macros[name]; }
 
 private:
-	QList<Macro> macros;
-	QList<QStringList> argStack;
+	QDict<Macro> macros;
+	QPtrList<QStringList> argStack;
 } ;
 
 #endif
