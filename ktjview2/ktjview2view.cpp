@@ -157,8 +157,6 @@ ktjview2View::ktjview2View( QWidget *parent )
 ktjview2View::~ktjview2View()
 {
     delete m_project;
-    m_project = 0;
-
     delete m_ganttPopupMenu;
 }
 
@@ -360,7 +358,7 @@ void ktjview2View::parseTasks( TaskListIterator it, int sc )
         item->setText( 3, KGlobal::locale()->formatDateTime( item->endDate() ) );
         item->setText( 4, KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 0 ) );
         item->setText( 5, QString::number( task->getPriority() ) );
-        item->setText( 6, QString( "%1%" ).arg( KGlobal::locale()->formatNumber( task->getCompletionDegree( sc ), 2 ) ) );
+        item->setText( 6, i18n( "%1%" ).arg( KGlobal::locale()->formatNumber( task->getCompletionDegree( sc ), 2 ) ) );
         item->setText( 7, status2Str( task->getStatus( sc ) ) );
 
         Resource * resp = task->getResponsible();
@@ -390,7 +388,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         const QString taskName = task->getName();
         QDateTime start = time_t2Q( task->getStart( sc ) );
         QDateTime end = time_t2Q( task->getEnd( sc ) );
-        QString duration = KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 1 );
+        const QString duration = KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 1 );
         //int prio = task->getPriority();
 
         QString toolTip;
@@ -404,7 +402,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
             KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( m_ganttView, taskName, id );
             item->setStartTime( start );
             item->setEndTime( end );
-            toolTip = i18n( "Task group: %1\nStart: %2\nEnd: %3" )
+            toolTip = i18n( "<em>Task group: %1</em><br>Start: %2<br>End: %3" )
                       .arg( taskName )
                       .arg( KGlobal::locale()->formatDateTime( start ) )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
@@ -420,7 +418,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
             KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( parentItem, taskName, id );
             item->setStartTime( start );
             item->setEndTime( end );
-            toolTip = i18n( "Task group: %1\nStart: %2\nEnd: %3" )
+            toolTip = i18n( "<em>Task group: %1</em><br>Start: %2<br>End: %3" )
                       .arg( taskName )
                       .arg( KGlobal::locale()->formatDateTime( start ) )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
@@ -440,7 +438,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                 KDGanttViewEventItem * item = new KDGanttViewEventItem( parentItem, taskName, id );
                 item->setStartTime( start );
 
-                toolTip = i18n( "Milestone: %1\nDate: %2" )
+                toolTip = i18n( "<em>Milestone: %1</em><br>Date: %2" )
                           .arg( taskName )
                           .arg( KGlobal::locale()->formatDateTime( start ) );
                 item->setTooltipText( toolTip );
@@ -452,7 +450,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                 item->setStartTime( start );
                 item->setEndTime( end );
 
-                toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3\nCompletion: %4\nAllocations: %5" )
+                toolTip = i18n( "<em>Task: %1</em><br>Start: %2<br>End: %3<br>Completion: %4%<br>Allocations: %5" )
                           .arg( taskName )
                           .arg( KGlobal::locale()->formatDateTime( start ) )
                           .arg( KGlobal::locale()->formatDateTime( end ) )
@@ -638,7 +636,7 @@ void ktjview2View::slotScale( int scale )
 
 void ktjview2View::slotZoomTimeframe()
 {
-    TimeDialog dlg( this, m_ganttView->horizonStart(), m_ganttView->horizonEnd() ); // TODO create the dialog at startup to preserve the previous values
+    TimeDialog dlg( this, m_ganttView->horizonStart(), m_ganttView->horizonEnd() );
     if ( dlg.exec() == QDialog::Accepted )
     {
         m_ganttView->zoomToSelection( dlg.getStartDate(), dlg.getEndDate() );
@@ -739,7 +737,7 @@ void ktjview2View::setupGantt()
 void ktjview2View::loadSettings()
 {
     setupGantt();
-    // setup other (future) config options
+    // TODO setup other (future) config options
 }
 
 QDateTime ktjview2View::time_t2Q( time_t secs ) const
@@ -765,12 +763,12 @@ void ktjview2View::filter()
 
 void ktjview2View::clearAllViews()
 {
-//#if 0                           // FIXME: crashes when loading a second project
+#if 0                           // FIXME: crashes when loading a second project
     m_ganttView->setUpdateEnabled( false );
     m_ganttView->taskLinks().clear();
     m_ganttView->clear();
-    m_ganttView->setUpdateEnabled( true );
-//#endif
+    //m_ganttView->setUpdateEnabled( true );
+#endif
 
     m_resListView->clear();
 
@@ -781,9 +779,9 @@ QString ktjview2View::formatAllocations( Task* task ) const
 {
     QStringList result;
 
-    for ( ResourceListIterator tli(task->getBookedResourcesIterator(0)); *tli != 0; ++tli )
+    for ( ResourceListIterator tli( task->getBookedResourcesIterator( 0 ) ); *tli != 0; ++tli )
     {
-        Resource* res = (*tli);
+        Resource* res = ( *tli );
         result.append( res->getName() );
     }
 
@@ -792,7 +790,7 @@ QString ktjview2View::formatAllocations( Task* task ) const
 
 QString ktjview2View::formatLinks( const QPtrList<KDGanttViewItem> & from, const QPtrList<KDGanttViewItem> & to ) const
 {
-    QString result = i18n( "Task Link" ) + "\n" + i18n( "From: " );
+    QString result = i18n( "<em>Task Link</em>" ) + "<br>" + i18n( "From: " );
 
     QPtrListIterator<KDGanttViewItem> fromIt( from );
     KDGanttViewItem * item;
@@ -804,7 +802,7 @@ QString ktjview2View::formatLinks( const QPtrList<KDGanttViewItem> & from, const
     }
     result += fromLinks.join( ", " );
 
-    result += "\n" + i18n( "To: " );
+    result += "<br>" + i18n( "To: " );
 
     QPtrListIterator<KDGanttViewItem> toIt( to );
     item = 0;
@@ -978,6 +976,9 @@ bool ktjview2View::filterForResources( int id )
         showIt = false;
 
         Resource * res = m_project->getResource( static_cast<ResourceItem *>( *it )->id() );
+
+        if ( !res )
+            return false;
 
         if ( id == 0 )          // all
         {
