@@ -63,9 +63,9 @@ XMLFile::createParseTree()
      * structure of the tree built here very closely resembles the
      * taskjuggler.dtd. */
     parserRootNode = new ParserNode();
-    ParserElement* pe = 
+    ParserElement* pe =
         new ParserElement("taskjuggler", &XMLFile::doTaskJuggler,
-                          parserRootNode); 
+                          parserRootNode);
     ParserNode* taskjugglerNode = new ParserNode(pe);
     {
         // Project Element
@@ -114,7 +114,7 @@ XMLFile::createParseTree()
                     (&XMLFile::doShiftWeekdayWorkingHours, pe);
             }
         }
-        
+
         // resourceList element
         pe = new ParserElement("resourceList", &XMLFile::doResourceList,
                                taskjugglerNode);
@@ -151,7 +151,7 @@ XMLFile::createParseTree()
                 new ParserElement("flag", &XMLFile::doFlag, accountNode);
             }
         }
-        
+
         // taskList element
         pe = new ParserElement("taskList", &XMLFile::doTaskList,
                                taskjugglerNode);
@@ -178,7 +178,7 @@ XMLFile::createParseTree()
                                   taskScenarioNode);
                 new ParserElement("minStart", &XMLFile::doTaskScenarioMinStart,
                                   taskScenarioNode);
-                
+
             }
             pe = new ParserElement("allocate", &XMLFile::doAllocate,
                                    taskNode);
@@ -188,8 +188,20 @@ XMLFile::createParseTree()
                                   allocateNode);
             }
             new ParserElement("flag", &XMLFile::doFlag, taskNode);
-            new ParserElement("depends", &XMLFile::doDepends, taskNode);
-            new ParserElement("precedes", &XMLFile::doPrecedes, taskNode);
+            pe = new ParserElement("depends", &XMLFile::doDepends, taskNode);
+            ParserNode* dependencyGapScenarioNode = new ParserNode(pe);
+            {
+                new ParserElement("dependencyGapScenario",
+                                  &XMLFile::doDependencyGapScenario,
+                                  dependencyGapScenarioNode);
+            }
+            pe = new ParserElement("precedes", &XMLFile::doPrecedes, taskNode);
+            dependencyGapScenarioNode = new ParserNode(pe);
+            {
+                new ParserElement("dependencyGapScenario",
+                                  &XMLFile::doDependencyGapScenario,
+                                  dependencyGapScenarioNode);
+            }
             new ParserElement("note", &XMLFile::doNote, taskNode);
             createSubTreeCustomAttribute(taskNode);
         }
@@ -198,7 +210,7 @@ XMLFile::createParseTree()
         pe = new ParserElement("bookingList", 0, taskjugglerNode);
         ParserNode* bookingListNode = new ParserNode(pe);
         {
-            pe = new ParserElement("resourceBooking", 
+            pe = new ParserElement("resourceBooking",
                                    &XMLFile::doResourceBooking,
                                    bookingListNode);
             ParserNode* resourceBookingNode = new ParserNode(pe);
@@ -258,7 +270,7 @@ XMLFile::createSubTreeVacationList(ParserFunctionPtr func,
 void
 XMLFile::createSubTreeCustomAttribute(ParserNode* parentNode)
 {
-    ParserElement* pe = 
+    ParserElement* pe =
         new ParserElement("customAttribute", &XMLFile::doCustomAttribute,
                           parentNode);
     ParserNode* customAttributeNode = new ParserNode(pe);
@@ -277,7 +289,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
 {
     if (masterfile)
         masterFile = file;
-    
+
     gzFile zf;
     if (file == ".")
     {
@@ -296,7 +308,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
             return FALSE;
         }
     }
-    
+
     if (DEBUGLEVEL > 0)
         qWarning(i18n("Processing file \'%1\'").arg(file));
 
@@ -314,14 +326,14 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
                  .arg(file).arg(gzerror(zf, &zError)));
         return FALSE;
     }
-    
+
     doc = new QDomDocument(file);
     if (!doc->setContent(buf))
     {
         qWarning(i18n("Syntax error in XML file '%1'.").arg(file));
         return FALSE;
     }
-    
+
     return TRUE;
 }
 
@@ -340,7 +352,7 @@ bool
 XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
 {
     bool ret = TRUE;
-    
+
     while (!n.isNull())
     {
         QDomElement el = n.toElement();
@@ -369,7 +381,7 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
                 if (pEl->getNode())
                     if (!parseNode(pEl->getNode(), n.firstChild(), ptcCopy))
                         return FALSE;
-                /* If a node post function has been specified, call this 
+                /* If a node post function has been specified, call this
                  * function and pass it the ptc. */
                 if (pEl->getPostFunc())
                     if (!((*this).*(pEl->getPostFunc()))(n, ptcCopy))
@@ -398,7 +410,7 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext& ptc)
     project->setVersion(el.attribute("version"));
     if (el.hasAttribute("timezone") && !el.attribute("timezone").isEmpty())
         project->setTimeZone(el.attribute("timezone"));
-   
+
     // optional attributes
     project->setScheduleGranularity
         (el.attribute("timingResolution", "3600").toInt());
@@ -415,9 +427,9 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext& ptc)
      * in the working hour specificiation. A missing day is a day off. */
     for (int i = 0; i < 7; ++i)
         project->setWorkingHours(i, new QPtrList<Interval>);
-   
+
     ptc.setScenario(0);
-    
+
     return TRUE;
 }
 
@@ -451,7 +463,7 @@ XMLFile::doScenario(QDomNode& n, ParserTreeContext& ptc)
      * it's own scenario definition. So we have to clear the default. */
     if (!ptc.getScenario())
         delete project->getScenario(0);
-    Scenario* scenario = new Scenario(project, el.attribute("id"), 
+    Scenario* scenario = new Scenario(project, el.attribute("id"),
                                       el.attribute("name"), ptc.getScenario());
     ptc.setScenario(scenario);
 
@@ -466,7 +478,7 @@ XMLFile::doCurrencyFormat(QDomNode& n, ParserTreeContext&)
     project->setCurrencyFormat
         (RealFormat(el.attribute("signPrefix"), el.attribute("signSuffix"),
                     el.attribute("thousandSep"), el.attribute("fractionSep"),
-                    el.attribute("fracDigits").toInt()));    
+                    el.attribute("fracDigits").toInt()));
     return TRUE;
 }
 
@@ -497,7 +509,7 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
     }
     ca->setInherit(el.attribute("inherit").toInt());
     if (ptc.getExtendProperty() == "task")
-        project->addTaskAttribute(el.attribute("id"), ca); 
+        project->addTaskAttribute(el.attribute("id"), ca);
     else if (ptc.getExtendProperty() == "resource")
         project->addResourceAttribute(el.attribute("id"), ca);
 
@@ -609,7 +621,7 @@ bool
 XMLFile::doReferenceAttribute(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
-    ReferenceAttribute* ra = 
+    ReferenceAttribute* ra =
         new ReferenceAttribute(el.attribute("url"), el.attribute("label"));
     ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProperty(), ra);
     return TRUE;
@@ -634,7 +646,7 @@ XMLFile::doShift(QDomNode& n, ParserTreeContext& ptc)
      * in the working hour specificiation. A missing day is a day off. */
     for (int i = 0; i < 7; ++i)
         shift->setWorkingHours(i, new QPtrList<Interval>);
-    
+
     return TRUE;
 }
 
@@ -651,14 +663,14 @@ XMLFile::doResource(QDomNode& n, ParserTreeContext& ptc)
     QDomElement el = n.toElement();
     Resource* r = new Resource(project, el.attribute("id"),
                                el.attribute("name"), ptc.getResource());
-    
+
     /* Delete all default working hours since not all days have to be present
      * in the working hour specificiation. A missing day is a day off. */
     for (int i = 0; i < 7; ++i)
         r->setWorkingHours(i, new QPtrList<Interval>);
 
     ptc.setResource(r);
-    
+
     return TRUE;
 }
 
@@ -667,7 +679,7 @@ XMLFile::doShiftSelection(QDomNode& n, ParserTreeContext& ptc)
 {
     Interval* iv = new Interval();
     ptc.setInterval(iv);
-    ShiftSelection* ss = 
+    ShiftSelection* ss =
         new ShiftSelection
         (iv, project->getShift(n.toElement().attribute("shiftId")));
     ptc.getResource()->addShift(ss);
@@ -693,7 +705,7 @@ XMLFile::doAccount(QDomNode& n, ParserTreeContext& ptc)
                              el.attribute("type") == "cost" ?
                              Cost : Revenue);
     ptc.setAccount(a);
-    
+
     return TRUE;
 }
 
@@ -722,7 +734,7 @@ XMLFile::doTask(QDomNode& n, ParserTreeContext& ptc)
         t->setResponsible(project->getResource(el.attribute("responsible")));
     if (!el.attribute("account").isEmpty())
         t->setAccount(project->getAccount(el.attribute("account")));
-    
+
     return TRUE;
 }
 
@@ -737,7 +749,7 @@ XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
     t->setDuration(sc, el.attribute("duration", "0.0").toDouble());
     t->setLength(sc, el.attribute("length", "0.0").toDouble());
     t->setScheduled(sc, el.attribute("scheduled", "0").toInt());
-    t->setComplete(sc, el.attribute("complete", "-1").toDouble()); 
+    t->setComplete(sc, el.attribute("complete", "-1").toDouble());
     /* The scenario status will be ignored as it is computed after the file is
      * read in. */
     t->setStatusNote(sc, el.attribute("statusNote", ""));
@@ -826,14 +838,29 @@ XMLFile::doFlag(QDomNode& n, ParserTreeContext& ptc)
 bool
 XMLFile::doDepends(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTask()->addDepends(n.toElement().text());
+    ptc.setTaskDependency
+        (ptc.getTask()->addDepends(n.toElement().text()));
     return TRUE;
 }
 
 bool
 XMLFile::doPrecedes(QDomNode& n, ParserTreeContext& ptc)
 {
-    ptc.getTask()->addPrecedes(n.toElement().text());
+    ptc.setTaskDependency
+        (ptc.getTask()->addPrecedes(n.toElement().text()));
+    return TRUE;
+}
+
+bool
+XMLFile::doDependencyGapScenario(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    int sc = project->getScenarioIndex(el.attribute("scenarioId")) - 1;
+    ptc.getTaskDependency()->setGapDuration
+        (sc, el.attribute("gapDuration", "0").toLong());
+    ptc.getTaskDependency()->setGapLength
+        (sc, el.attribute("gapLength", "0").toLong());
+
     return TRUE;
 }
 
@@ -887,7 +914,7 @@ XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
     }
     ptc.getResource()->addBooking(ptc.getScenarioIndex(),
                                   new Booking(ptc.getInterval(), t));
-    
+
     return TRUE;
 }
 

@@ -44,7 +44,7 @@ public:
      * started.
      * @param file The file name of the file to start with.
      * @param parentPath The path of the file that included this file. This
-     * feature is for internal use only. It's not part of the public API. 
+     * feature is for internal use only. It's not part of the public API.
      * @param taskPrefix The ID prefix of the parent task. This is needed when
      * the tasks of the project file should be read as a sub-task of an
      * already existing task.
@@ -53,9 +53,9 @@ public:
      */
     bool readDOM(const QString& file, const QString& parentPath,
                  const QString& taskPrefix, bool masterfile = FALSE);
-   
+
     /**
-     * Calling the parse function will start the processing of the DOM tree 
+     * Calling the parse function will start the processing of the DOM tree
      * It will automatically read all include files as well. The
      * collected data is stored into the Project object.
      */
@@ -68,7 +68,7 @@ private:
     void createSubTreeTimeInterval(const QString& id, ParserFunctionPtr preFunc,
                                    ParserNode* parentNode,
                                    ParserFunctionPtr postFunc = 0);
-    void createSubTreeWorkingHours(ParserFunctionPtr func, 
+    void createSubTreeWorkingHours(ParserFunctionPtr func,
                                    ParserElement* parentEl);
     void createSubTreeVacationList(ParserFunctionPtr func,
                                    ParserNode* parentNode);
@@ -118,6 +118,7 @@ private:
     bool doCandidate(QDomNode& n, ParserTreeContext& n);
     bool doDepends(QDomNode& n, ParserTreeContext& n);
     bool doPrecedes(QDomNode& n, ParserTreeContext& n);
+    bool doDependencyGapScenario(QDomNode& n, ParserTreeContext& ptc);
     bool doNote(QDomNode& n, ParserTreeContext& n);
     bool doFlag(QDomNode& n, ParserTreeContext& n);
     bool doResourceBooking(QDomNode& n, ParserTreeContext& n);

@@ -387,6 +387,21 @@ Project::isWorkingDay(time_t d) const
 }
 
 bool
+Project::isWorkingTime(time_t d) const
+{
+    if (isVacation(d))
+        return FALSE;
+
+    int dow = dayOfWeek(d, FALSE);
+    for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
+    {
+        if ((*ili)->contains(secondsOfDay(d)))
+            return TRUE;
+    }
+    return FALSE;
+}
+
+bool
 Project::isWorkingTime(const Interval& iv) const
 {
     if (isVacation(iv.getStart()))
@@ -591,7 +606,7 @@ Project::prepareScenario(int sc)
         (*tli)->computePathCriticalness(sc);
 
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        (*tli)->propagateInitialValues();
+        (*tli)->propagateInitialValues(sc);
 
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->prepareScenario(sc);

@@ -32,7 +32,7 @@ public:
     QStringList getTaskAttributes() const { return taskAttributes; }
 
     void setMasterFile(bool mf) { masterFile = mf; }
-    
+   
 private:
     ExportReport() { }
 
@@ -53,15 +53,16 @@ private:
     bool generateTaskAttributeList(TaskList& ftl);
     bool generateTaskSupplement(TaskList& ftl, const Task* task, int indent);
     bool generateDepList(TaskList& filteredTaskList, const Task* task,
-                         TaskListIterator depIt, const char* tag, int indent); 
+                         QPtrListIterator<TaskDependency> depIt,
+                         const char* tag, int indent);
     bool generateResourceAttributesList(TaskList& ftl, ResourceList& frl);
     bool generateCustomAttributeValue(const QString& id,
                                       const CoreAttributes* property,
                                       int indent);
-    
+   
     QStringList taskAttributes;
 
-    // True if the file should be a standalone project (*.tjp file). 
+    // True if the file should be a standalone project (*.tjp file).
     bool masterFile;
 };
 

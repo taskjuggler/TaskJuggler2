@@ -27,6 +27,7 @@ class TaskScenario;
 class Allocation;
 class VacationInterval;
 class Interval;
+class TaskDependency;
 
 class ParserTreeContext
 {
@@ -61,6 +62,9 @@ public:
     void setWorkingHours(QPtrList<Interval>* whs) { workingHours = whs; }
     QPtrList<Interval>* getWorkingHours() const { return workingHours; }
 
+    void setTaskDependency(TaskDependency* td) { taskDependency = td; }
+    TaskDependency* getTaskDependency() const { return taskDependency; }
+
     void setInterval(Interval* iv) { interval = iv; }
     Interval* getInterval() const { return interval; }
 
@@ -77,6 +81,7 @@ private:
     CoreAttributes* ca;
     int scenarioIndex;
     Allocation* allocation;
+    TaskDependency* taskDependency;
     Interval* interval;
     QPtrList<Interval>* workingHours;
     QString extendProperty;

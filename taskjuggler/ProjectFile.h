@@ -38,6 +38,7 @@ class ReportElement;
 class RealFormat;
 class TableColumnInfo;
 class UsageLimits;
+class TaskDependency;
 
 /**
  * @short File Parser for project files.
@@ -58,7 +59,7 @@ public:
      * started.
      * @param file The file name of the file to start with.
      * @param parentPath The path of the file that included this file. This
-     * feature is for internal use only. It's not part of the public API. 
+     * feature is for internal use only. It's not part of the public API.
      * @param taskPrefix The ID prefix of the parent task. This is needed when
      * the tasks of the project file should be read as a sub-task of an
      * already existing task.
@@ -71,7 +72,7 @@ public:
      * Close the just read input file.
      */
     bool close();
-    
+
     /**
      * Calling the parse function will start the processing of the opened
      * project file. It will automatically read all include files as well. The
@@ -83,7 +84,7 @@ public:
      * The rest of the public methods are for use by FileInfo and are not part
      * of the library public interface.
      */
-    
+
     TokenType nextToken(QString& token);
     void returnToken(TokenType t, const QString& buf)
     {
@@ -94,13 +95,13 @@ public:
     {
         if (openFiles.isEmpty())
             return QString::null;
-        return openFiles.last()->getFile(); 
+        return openFiles.last()->getFile();
     }
     int getLine()
     {
         if (openFiles.isEmpty())
             return -1;
-        return openFiles.last()->getLine(); 
+        return openFiles.last()->getLine();
     }
 
     bool moreFiles() { return !openFiles.isEmpty(); }
@@ -120,7 +121,7 @@ private:
     bool readExtend();
     bool readScenario(Scenario* parent);
     bool readInclude();
-    bool readCustomAttribute(CoreAttributes* property, const QString& id, 
+    bool readCustomAttribute(CoreAttributes* property, const QString& id,
                              CustomAttributeType type);
     bool readTask(Task* parent);
     bool readTaskSupplement(QString prefix);
@@ -166,6 +167,7 @@ private:
     bool readSorting(ReportElement* el, int which);
     bool readSortingMode(int& sorting);
     TableColumnInfo* readColumn(uint maxScenarios, ReportElement* tab);
+    bool readTaskDepOptions(TaskDependency* td);
     time_t date2time(const QString& date);
     int hhmm2time(const QString& hhmm);
 

@@ -1,0 +1,124 @@
+project dg "Dependency Gaps" "$Id" 2004-12-19-00:00-GMT 2005-02-01-00:00-GMT {
+	timezone "GMT"
+	scenario sc1 "Scenario 1" {
+		scenario sc2 "scenario 2"
+	}
+}
+
+task m1 "Milestone 1" {
+	start 2004-12-19-11:00
+	sc2:start 2004-12-21-10:00
+	milestone
+}
+
+task m2 "Milestone 2" {
+	start 2004-12-21-12:00
+	sc2:start 2004-12-21-21:00
+	milestone
+}
+
+task t1 "5 days after m1" {
+	depends m1 { gapduration 5d }
+	milestone
+}
+
+task t2 "5 working days after m1" {
+	depends m1 { gaplength 5d }
+	milestone
+}
+
+task t3 "5 days after m2" {
+	depends m2 { gapduration 5d }
+	milestone
+}
+
+task t4 "5 working days after m2" {
+	depends m2 { gaplength 5d }
+	milestone
+}
+
+task t5 "3 days after m1, 3 working days after m1" {
+	depends m1 { gapduration 3d gaplength 3d }
+	milestone
+}
+
+task t6 "3 days after m1, 1 working days after m1" {
+	depends m1 { gapduration 3d gaplength 1d }
+	milestone
+}
+
+task t7 "3 days after m1, 3 days after m2" {
+	depends m1 { gapduration 3d}, m2 { gapduration 3d}
+	milestone
+}
+
+task t8 "3 working days after m1, 3 working days after m2" {
+	depends m1 { gaplength 3d }, m2 { gaplength 3d }
+	milestone
+}
+
+task m3 "Milestone 3" {
+	sc1:start 2005-01-14-12:00
+	sc2:start 2005-01-13-21:00		
+	milestone
+}
+
+task m4 "Milestone 4" {
+	start 2005-01-15-11:00
+	start 2005-01-15-0:00
+	milestone
+}
+
+task t11 "5 days before m3" {
+	precedes m3 { sc1:gapduration 5d sc2:gapduration 3d }
+	milestone
+}
+
+task t12 "5 working days before m3" {
+	precedes m3 { gaplength 5d }
+	milestone
+}
+
+task t13 "5 days before m4" {
+	precedes m4 { gapduration 5d }
+	milestone
+}
+
+task t14 "5 working days before m4" {
+	precedes m4 { gaplength 5d }
+	milestone
+}
+
+task t15 "3 days before m4, 3 working days before m4" {
+	precedes m4 { gapduration 3d gaplength 3d }
+	milestone
+}
+
+task t16 "3 days before m4, 1 working days before m4" {
+	precedes m4 { gapduration 3d gaplength 1d }
+	milestone
+}
+
+task t17 "3 days before m3, 3 days before m4" {
+	precedes m3 { gapduration 3d}, m4 { gapduration 3d}
+	milestone
+}
+
+task t18 "3 working days before m3, 3 working days before m4" {
+	precedes m3 { gaplength 3d }, m4 { gaplength 3d }
+	milestone
+}
+
+export "DependencyGaps-1-Export.tjp" {
+	hidetask 0
+	hideresource 0
+	taskattributes all
+	notimestamp
+	scenarios sc1, sc2
+}
+
+htmltaskreport "DependencyGaps-1.html" {
+	columns no, name, scenario, start, end, daily
+	scenarios sc1, sc2
+}
+

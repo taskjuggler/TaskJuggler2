@@ -55,13 +55,13 @@ task t1 "Task 1" {
 		responsible tux1
 	}
 	task m1 "Milestone1" {
-		depends !t3
+		depends !t3 { gapduration 1d }
 		account r
 		startcredit 28000.0
 		milestone
 	}
 	task m2 "Milestone2" {
-		depends !t3
+		depends !t3 { gaplength 2d }
 		account r
 		endcredit 18500.0
 		milestone

@@ -1537,9 +1537,15 @@ ProjectFile::readTaskBody(Task* task)
                     }
                     if (tt == ABSOLUTE_ID || tt == ID)
                         id = getTaskPrefix() + id;
-                    task->addDepends(id);
+                    TaskDependency* td = task->addDepends(id);
                     task->setScheduling(Task::ASAP);
-                    if ((tt = nextToken(token)) != COMMA)
+                    if ((tt = nextToken(token)) == LBRACE)
+                    {
+                        if (!readTaskDepOptions(td))
+                            return FALSE;
+                        tt = nextToken(token);
+                    }
+                    if (tt != COMMA)
                     {
                         returnToken(tt, token);
                         break;
@@ -1566,9 +1572,15 @@ ProjectFile::readTaskBody(Task* task)
                     }
                     if (tt == ABSOLUTE_ID || tt == ID)
                         id = getTaskPrefix() + id;
-                    task->addPrecedes(id);
+                    TaskDependency* td = task->addPrecedes(id);
                     task->setScheduling(Task::ALAP);
-                    if ((tt = nextToken(token)) != COMMA)
+                    if ((tt = nextToken(token)) == LBRACE)
+                    {
+                        if (!readTaskDepOptions(td))
+                            return FALSE;
+                        tt = nextToken(token);
+                    }
+                    if (tt != COMMA)
                     {
                         returnToken(tt, token);
                         break;
@@ -3005,7 +3017,7 @@ ProjectFile::readXMLReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3016,7 +3028,7 @@ ProjectFile::readXMLReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3027,7 +3039,7 @@ ProjectFile::readXMLReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3038,7 +3050,7 @@ ProjectFile::readXMLReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3318,7 +3330,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3329,7 +3341,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3345,7 +3357,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3356,7 +3368,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3372,7 +3384,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3383,7 +3395,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3694,7 +3706,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3705,7 +3717,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3721,7 +3733,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3732,7 +3744,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3748,7 +3760,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3759,7 +3771,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3888,7 +3900,7 @@ ProjectFile::readExportReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3899,7 +3911,7 @@ ProjectFile::readExportReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3910,7 +3922,7 @@ ProjectFile::readExportReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -3921,7 +3933,7 @@ ProjectFile::readExportReport()
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4144,7 +4156,7 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4155,7 +4167,7 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4171,7 +4183,7 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4182,7 +4194,7 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4611,7 +4623,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return 0;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4622,7 +4634,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
             {
                 Operation* op;
                 QString fileName = openFiles.last()->getFile();
-                int lineNo = openFiles.last()->getLine(); 
+                int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
                     return 0;
                 ExpressionTree* et = new ExpressionTree(op);
@@ -4832,6 +4844,71 @@ ProjectFile::readSortingMode(int& sorting)
                 (i18n("WARNING: Concatenating the scenario name and the "
                       "sorting criteria has been deprecated. Please separate "
                       "them by a colon. E. g. 'plan:start', 'actual:end'"));
+    }
+
+    return TRUE;
+}
+
+bool
+ProjectFile::readTaskDepOptions(TaskDependency* td)
+{
+    QString token;
+    TokenType tt;
+
+    for ( ; ; )
+    {
+        if ((tt = nextToken(token)) == RBRACE)
+            break;
+        else if (tt != ID)
+        {
+            errorMessage(i18n("Attribute ID or '}' expected"));
+            return FALSE;
+        }
+
+        int scenarioIdx = 0;
+        TokenType nextTT;
+        QString next;
+        if ((nextTT = nextToken(next)) == COLON)
+        {
+            if ((scenarioIdx = proj->getScenarioIndex(token) - 1) < 0)
+            {
+                errorMessage(i18n("Scenario ID expected. '%1' is not "
+                                  "a defined scenario.").arg(token));
+                return FALSE;
+            }
+            tt = nextToken(token);
+        }
+        else
+            returnToken(nextTT, next);
+
+        if (token == KW("gapduration"))
+        {
+            double d;
+            if (!readTimeFrame(d, FALSE))
+                return FALSE;
+            /* Set the duration and round it down to be a multiple of the
+             * schedule granularity. */
+            td->setGapDuration(scenarioIdx, (((long) (d * 60 * 60 * 24)) /
+                                proj->getScheduleGranularity()) *
+                               proj->getScheduleGranularity());
+        }
+        else if (token == KW("gaplength"))
+        {
+            double d;
+            if (!readTimeFrame(d, FALSE))
+                return FALSE;
+            /* Set the length and round it down to be a multiple of the
+             * schedule granularity. */
+            td->setGapLength(scenarioIdx, (((long) (d * 60 * 60 *
+                                       proj->getDailyWorkingHours())) /
+                              proj->getScheduleGranularity()) *
+                             proj->getScheduleGranularity());
+        }
+        else
+        {
+            errorMessage(i18n("Illegal dependency attribute"));
+            return FALSE;
+        }
     }
 
     return TRUE;

@@ -645,12 +645,19 @@ or relative. A relative ID starts with a number of '!'. Each '!' moves
 the scope to the parent task. Global IDs do
 not contain '!', but have IDs separated by dots.</para>
 
+<para>Each task ID can have optional attribues enclosed in
+braces.</para>
+
 <para>By using the 'depends' attribute, the scheduling policy is
 automatically set to <varname>asap</varname>. If 'depends' and
 'precedes' are used, the last policy counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
+  <optattributes>
+   <optattr>gapduration</optattr>
+   <optattr>gaplength</optattr>
+  </optattributes>
   <seealso>
    <also>complete</also>
    <also>precedes</also>
@@ -660,7 +667,8 @@ automatically set to <varname>asap</varname>. If 'depends' and
  <property name="disabled" id="disabled" inheritable="No">
   <descr><para>Disables the scenario for scheduling.</para></descr>
  </property>
- <property name="duration" id="duration" inheritable="No">
+ <property name="duration" id="duration" inheritable="No"
+ scenario="Yes">
   <descr><para>Specifies the time the task occupies the resources.
 This is calender time, not working time. 7d means one week. If
 resources are specified they are allocated when available.
@@ -858,6 +866,38 @@ expressions to filter properties from the reports.</para></descr>
   </attributes>
   <seealso>
    <also>flags</also>
+  </seealso>
+ </property>
+ <property name="gapduration" id="gapduration" inheritable="Yes"
+ scenario="Yes">
+  <descr><para>Specifies the mininum required gap between the end of a
+  preceding task and the start of this task, or the start of a
+  following task and the end of this task.  This is calender time, not
+  working time. 7d means one week.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>duration</also>
+   <also>gaplength</also>
+  </seealso>
+ </property>
+ <property name="gaplength" id="gaplength" inheritable="Yes" scenario="Yes">
+  <descr><para>Specifies the minimum required gap between the end of a
+  preceding task and the start of this task, or the start of a
+  following task and the end of this task. This is working time, not
+  calender time. 7d means 7 working days, not one week.  Whether a day
+  is considered a working day or not depends on the defined <link
+  linkend="PROPERTY_workinghours">working hours</link> and global
+  <link linkend="PROPERTY_vacation_global">vacations</link>.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>gapduration</also>
+   <also>length</also>
   </seealso>
  </property>
  <property name="headline" id="headline" inheritable="No">
@@ -1411,6 +1451,10 @@ counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
+  <optattributes>
+   <optattr>gapduration</optattr>
+   <optattr>gaplength</optattr>
+  </optattributes>
   <seealso>
    <also>complete</also>
    <also>depends</also>

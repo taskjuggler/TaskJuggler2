@@ -31,6 +31,7 @@
 #include "CoreAttributes.h"
 #include "ShiftSelectionList.h"
 #include "LoopDetectorInfo.h"
+#include "TaskDependency.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -110,15 +111,15 @@ public:
     void setAccount(Account* a) { account = a; }
     Account* getAccount() const { return account; }
 
-    bool addDepends(const QString& id);
-    TaskListIterator getDependsIterator() const
+    TaskDependency* addDepends(const QString& id);
+    QPtrListIterator<TaskDependency> getDependsIterator() const
     {
-        return TaskListIterator(depends);
+        return QPtrListIterator<TaskDependency>(depends);
     }
-    bool addPrecedes(const QString& id);
-    TaskListIterator getPrecedesIterator() const
+    TaskDependency* addPrecedes(const QString& id);
+    QPtrListIterator<TaskDependency> getPrecedesIterator() const
     {
-        return TaskListIterator(precedes);
+        return QPtrListIterator<TaskDependency>(precedes);
     }
     bool addShift(const Interval& i, Shift* s);
 
@@ -140,8 +141,8 @@ public:
     }
     bool hasFollowers() const { return !followers.isEmpty(); }
 
-    bool hasPrevious(Task* t) { return previous.findRef(t) != -1; }
-    bool hasFollower(Task* t) { return followers.findRef(t) != -1; }
+    bool hasPrevious(const Task* t) { return previous.findRef(t) != -1; }
+    bool hasFollower(const Task* t) { return followers.findRef(t) != -1; }
 
     // The following group of functions operates only on scenario variables.
     void setSpecifiedStart(int sc, time_t s)
@@ -200,9 +201,9 @@ public:
     bool isBuffer(int sc, const Interval& iv) const;
 
     void setComplete(int sc, double c) { scenarios[sc].reportedCompletion = c; }
-    double getComplete(int sc) const 
+    double getComplete(int sc) const
     {
-        return scenarios[sc].reportedCompletion; 
+        return scenarios[sc].reportedCompletion;
     }
 
     void setStatusNote(int sc, const QString& d)
@@ -308,9 +309,9 @@ public:
     void computeBuffers();
     time_t nextSlot(time_t slotDuration) const;
     void schedule(int sc, time_t& reqStart, time_t duration);
-    void propagateStart(bool safeMode = TRUE);
-    void propagateEnd(bool safeMode = TRUE);
-    void propagateInitialValues();
+    void propagateStart(int sc, bool safeMode = TRUE);
+    void propagateEnd(int sc, bool safeMode = TRUE);
+    void propagateInitialValues(int sc);
     void setRunaway();
     bool isRunaway() const;
 
@@ -330,7 +331,7 @@ public:
 private:
     bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                        caller);
-    bool scheduleContainer(bool safeMode);
+    bool scheduleContainer(int sc, bool safeMode);
     Task* subFirst() { return (Task*) sub->first(); }
     Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
@@ -342,8 +343,8 @@ private:
             bookedResources.inSort((CoreAttributes*) r);
     }
     QPtrList<Resource> createCandidateList(int sc, time_t date, Allocation* a);
-    time_t earliestStart() const;
-    time_t latestEnd() const;
+    time_t earliestStart(int sc) const;
+    time_t latestEnd(int sc) const;
 
     bool hasStartDependency(int sc);
     bool hasEndDependency(int sc);
@@ -356,7 +357,7 @@ private:
 
     double computeBackwardCriticalness(int sc);
     double computeForwardCriticalness(int sc);
-    
+
     /// A longer description of the task.
     QString note;
 
@@ -367,26 +368,23 @@ private:
     QString refLabel;
 
     /**
-     * List of tasks Ids that need to be completed before this task
-     * can start. */
-    QStringList dependsIds;
+     * The dependencies of the task are stored twice. depends and precedes
+     * store the information specified in the project file. For convenience we
+     * also store the backward dependency together with the specified
+     * dependencies in predecessors and successors.
+     */
+    QPtrList<TaskDependency> depends;
 
-    /// A list of task pointers created from dependsIds in xRef.
-    TaskList depends;
-
-    /// List of tasks Ids that have to follow when this task is completed.
-    QStringList precedesIds;
-
-    /// A list of task pointers created from preceedsIds in xRef.
-    TaskList precedes;
+    /// @see depends
+    QPtrList<TaskDependency> precedes;
 
     /**
-     * A list of tasks that have requested to precede this task.
+     * A list of tasks that must precede this task.
      */
     TaskList predecessors;
 
     /**
-     * A list of tasks that have requested to depend on this task.
+     * A list of tasks that must follow this task.
      */
     TaskList successors;
 

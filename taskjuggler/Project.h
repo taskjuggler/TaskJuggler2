@@ -264,6 +264,12 @@ public:
     bool isWorkingDay(time_t d) const;
 
     /**
+     * If date is contained in a vacation day or the date is outside
+     * of the defined working hours, FALSE is returned. Otherwise TRUE.
+     */
+    bool isWorkingTime(time_t d) const;
+
+    /**
      * If the interval overlaps with a vacation day or the interval is outside
      * of the defined working hours, FALSE is returned. Otherwise TRUE.
      */

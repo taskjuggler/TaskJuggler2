@@ -15,3 +15,8 @@ task bar "bar" {
 	length 2d
 }
 
+task bar1 "bar1" {
+	depends foo1 { gapduration 2d }, bar { gaplength 1d }
+	duration 2d
+}
+

@@ -37,7 +37,7 @@ public:
     QStringList getTaskAttributes() const { return taskAttributes; }
 
     void setMasterFile(bool mf) { masterFile = mf; }
-    
+
 private:
     XMLReport() { }
 
@@ -60,8 +60,9 @@ private:
                           ResourceList& frl);
     bool generateTask(QDomElement* parentEl, TaskList& ftl, const Task* task);
     bool generateDepList(QDomElement* el, TaskList& filteredTaskList,
-                         const Task* task, TaskListIterator depIt,
-                         const char* tag); 
+                         const Task* task,
+                         QPtrListIterator<TaskDependency> dl,
+                         const char* tag);
     bool generateCustomAttributeValue(QDomElement* parentEl,
                                       const QString& id,
                                       const CoreAttributes* property);
@@ -79,10 +80,10 @@ private:
     void genTimeElement(QDomElement* el, const QString& name, time_t val);
 
     QDomDocument* doc;
-    
+
     QStringList taskAttributes;
 
-    // True if the file should be a standalone project (*.tjp file). 
+    // True if the file should be a standalone project (*.tjp file).
     bool masterFile;
 };
 

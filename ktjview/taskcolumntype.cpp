@@ -2,6 +2,7 @@
 #include "Task.h"
 #include "taskcolumntype.h"
 #include "Resource.h"
+#include "TaskDependency.h"
 
 #include <qdatetime.h>
 #include <kglobal.h>
@@ -114,6 +115,23 @@ QString TaskColumnType::format( TaskListIterator it ) const
 	    ret += ", ";
 	}
 	ret += (*it)->getName();
+	first = false;
+    }
+    return ret;
+}
+
+QString TaskColumnType::format( QPtrListIterator<TaskDependency> it ) const
+{
+    QString ret="";
+
+    bool first=true;
+    for( ; *it !=0; ++it )
+    {
+	if( ! first )
+	{
+	    ret += ", ";
+	}
+	ret += (*it)->getTaskRef()->getName();
 	first = false;
     }
     return ret;

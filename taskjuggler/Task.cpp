@@ -35,6 +35,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 {
     allocations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
+    depends.setAutoDelete(TRUE);
 
     proj->addTask(this);
 
@@ -102,21 +103,35 @@ Task::inheritValues()
             scenarios[sc].maxEnd = p->scenarios[sc].maxEnd;
         }
         // Inherit depends from parent. Relative IDs need to get another '!'.
-        dependsIds = p->dependsIds;
-        for (QStringList::Iterator it = dependsIds.begin();
-             it != dependsIds.end(); ++it)
+        for (QPtrListIterator<TaskDependency> tdi(p->depends); tdi; ++tdi)
         {
-            if ((*it)[0] == '!')
-                *it = '!' + *it;
+            QString id = (*tdi)->getTaskRefId();
+            if (id[0] == '!')
+                id = '!' + id;
+            TaskDependency* td = new TaskDependency(id,
+                                                    project->getMaxScenarios());
+            for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+            {
+                td->setGapDuration(sc, (*tdi)->getGapDuration(sc));
+                td->setGapLength(sc, (*tdi)->getGapLength(sc));
+            }
+            depends.append(td);
         }
 
         // Inherit precedes from parent. Relative IDs need to get another '!'.
-        precedesIds = p->precedesIds;
-        for (QStringList::Iterator it = precedesIds.begin();
-             it != precedesIds.end(); ++it)
+        for (QPtrListIterator<TaskDependency> tdi(p->precedes); *tdi; ++tdi)
         {
-            if ((*it)[0] == '!')
-                *it = '!' + *it;
+            QString id = (*tdi)->getTaskRefId();
+            if (id[0] == '!')
+                id = '!' + id;
+            TaskDependency* td = new TaskDependency(id,
+                                                    project->getMaxScenarios());
+            for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+            {
+                td->setGapDuration(sc, (*tdi)->getGapDuration(sc));
+                td->setGapLength(sc, (*tdi)->getGapLength(sc));
+            }
+            depends.append(td);
         }
 
         // Inherit allocations from parent.
@@ -139,18 +154,20 @@ Task::inheritValues()
     }
 }
 
-bool
+TaskDependency*
 Task::addDepends(const QString& rid)
 {
-    dependsIds.append(rid);
-    return TRUE;
+    TaskDependency* td = new TaskDependency(rid, project->getMaxScenarios());
+    depends.append(td);
+    return td;
 }
 
-bool
+TaskDependency*
 Task::addPrecedes(const QString& rid)
 {
-    precedesIds.append(rid);
-    return TRUE;
+    TaskDependency* td = new TaskDependency(rid, project->getMaxScenarios());
+    precedes.append(td);
+    return td;
 }
 
 bool
@@ -187,7 +204,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         if (start == 0 ||
             (effort == 0.0 && length == 0.0 && duration == 0.0 && end == 0))
             return;
-        
+
         if (lastSlot == 0)
         {
             lastSlot = start - 1;
@@ -252,20 +269,20 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
          * result in worst case errors of smaller than a minute. The value
          * 2048 was chosen in the hope that a compiler is clever enough to
          * avoid a costly multiplication if possible. */
-        if ((length > 0.0 && 
+        if ((length > 0.0 &&
              qRound(doneLength * 2048) >= qRound(length * 2048)) ||
-            (duration > 0.0 && 
+            (duration > 0.0 &&
              qRound(doneDuration * 2048) >= qRound(duration * 2048)))
         {
             if (scheduling == ASAP)
             {
                 end = date + slotDuration - 1;
-                propagateEnd();
+                propagateEnd(sc);
             }
             else
             {
                 start = date;
-                propagateStart();
+                propagateStart(sc);
             }
             schedulingDone = TRUE;
             return;
@@ -284,12 +301,12 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             if (scheduling == ASAP)
             {
                 end = tentativeEnd;
-                propagateEnd();
+                propagateEnd(sc);
             }
             else
             {
                 start = tentativeStart;
-                propagateStart();
+                propagateStart(sc);
             }
             schedulingDone = TRUE;
             return;
@@ -301,12 +318,12 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         if (scheduling == ASAP)
         {
             end = start - 1;
-            propagateEnd();
+            propagateEnd(sc);
         }
         else
         {
             start = end + 1;
-            propagateStart();
+            propagateStart(sc);
         }
         return;
     }
@@ -328,7 +345,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
 }
 
 bool
-Task::scheduleContainer(bool safeMode)
+Task::scheduleContainer(int sc, bool safeMode)
 {
     if (schedulingDone)
         return TRUE;
@@ -364,13 +381,13 @@ Task::scheduleContainer(bool safeMode)
     if (start == 0 || (!depends.isEmpty() && start < nstart))
     {
         start = nstart;
-        propagateStart(safeMode);
+        propagateStart(sc, safeMode);
     }
 
     if (end == 0 || (!precedes.isEmpty() && nend < end))
     {
         end = nend;
-        propagateEnd(safeMode);
+        propagateEnd(sc, safeMode);
     }
 
     schedulingDone = TRUE;
@@ -379,7 +396,7 @@ Task::scheduleContainer(bool safeMode)
 }
 
 void
-Task::propagateStart(bool notUpwards)
+Task::propagateStart(int sc, bool notUpwards)
 {
     if (start == 0)
         return;
@@ -396,25 +413,25 @@ Task::propagateStart(bool notUpwards)
         if (end == 0)
         {
             end = start - 1;
-            propagateEnd(notUpwards);
+            propagateEnd(sc, notUpwards);
         }
     }
 
     /* Set start date to all previous that have no start date yet, but are
      * ALAP task or have no duration. */
     for (TaskListIterator tli(previous); *tli != 0; ++tli)
-        if ((*tli)->end == 0 && (*tli)->latestEnd() != 0 &&
+        if ((*tli)->end == 0 && (*tli)->latestEnd(sc) != 0 &&
             !(*tli)->schedulingDone &&
             ((*tli)->scheduling == ALAP ||
              ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
-            (*tli)->end = (*tli)->latestEnd();
+            (*tli)->end = (*tli)->latestEnd(sc);
             if (DEBUGTS(11))
                 qDebug("PS2: Setting end of %s to %s",
                        (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
             /* Recursively propagate the end date */
-            (*tli)->propagateEnd(notUpwards);
+            (*tli)->propagateEnd(sc, notUpwards);
         }
 
     /* Propagate start time to sub tasks which have only an implicit
@@ -428,7 +445,7 @@ Task::propagateStart(bool notUpwards)
                 qDebug("PS3: Setting start of %s to %s",
                        (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
             /* Recursively propagate the start date */
-            (*tli)->propagateStart(TRUE);
+            (*tli)->propagateStart(sc, TRUE);
         }
     }
 
@@ -436,12 +453,12 @@ Task::propagateStart(bool notUpwards)
     {
         if (DEBUGTS(11))
             qDebug("Scheduling parent of %s", id.latin1());
-        getParent()->scheduleContainer(TRUE);
+        getParent()->scheduleContainer(sc, TRUE);
     }
 }
 
 void
-Task::propagateEnd(bool notUpwards)
+Task::propagateEnd(int sc, bool notUpwards)
 {
     if (end == 0)
         return;
@@ -458,25 +475,25 @@ Task::propagateEnd(bool notUpwards)
         if (start == 0)
         {
             start = end + 1;
-            propagateStart(notUpwards);
+            propagateStart(sc, notUpwards);
         }
     }
 
     /* Set start date to all followers that have no start date yet, but are
      * ASAP task or have no duration. */
     for (TaskListIterator tli(followers); *tli != 0; ++tli)
-        if ((*tli)->start == 0 && (*tli)->earliestStart() != 0 &&
+        if ((*tli)->start == 0 && (*tli)->earliestStart(sc) != 0 &&
             !(*tli)->schedulingDone &&
             ((*tli)->scheduling == ASAP ||
              ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
-            (*tli)->start = (*tli)->earliestStart();
+            (*tli)->start = (*tli)->earliestStart(sc);
             if (DEBUGTS(11))
                 qDebug("PE2: Setting start of %s to %s",
                        (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
             /* Recursively propagate the start date */
-            (*tli)->propagateStart(notUpwards);
+            (*tli)->propagateStart(sc, notUpwards);
         }
     /* Propagate end time to sub tasks which have only an implicit
      * dependancy on the parent task. Do not touch container tasks. */
@@ -488,28 +505,28 @@ Task::propagateEnd(bool notUpwards)
                 qDebug("PE3: Setting end of %s to %s",
                        (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
             /* Recursively propagate the end date */
-            (*tli)->propagateEnd(TRUE);
+            (*tli)->propagateEnd(sc, TRUE);
         }
 
     if (notUpwards && parent)
     {
         if (DEBUGTS(11))
             qDebug("Scheduling parent of %s", id.latin1());
-        getParent()->scheduleContainer(TRUE);
+        getParent()->scheduleContainer(sc, TRUE);
     }
 }
 
 void
-Task::propagateInitialValues()
+Task::propagateInitialValues(int sc)
 {
     if (start != 0)
-        propagateStart(TRUE);
+        propagateStart(sc, TRUE);
     if (end != 0)
-        propagateEnd(TRUE);
-    
+        propagateEnd(sc, TRUE);
+
     // Check if the some data of sub tasks can already be propagated.
     if (!sub->isEmpty())
-        scheduleContainer(TRUE);
+        scheduleContainer(sc, TRUE);
 }
 
 void
@@ -562,7 +579,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             {
                 int availability;
                 if ((availability = (*ali)->getLockedResource()->
-                     isAvailable(date, (*ali)->getLimits(), this)) > 0) 
+                     isAvailable(date, (*ali)->getLimits(), this)) > 0)
                 {
                     allMandatoriesAvailables = FALSE;
                     if (availability >= 4 && !(*ali)->getConflictStart())
@@ -577,7 +594,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 bool found = FALSE;
                 int maxAvailability = 0;
                 QPtrList<Resource> candidates = (*ali)->getCandidates();
-                for (QPtrListIterator<Resource> rli(candidates); 
+                for (QPtrListIterator<Resource> rli(candidates);
                      *rli && !found; ++rli)
                 {
                     /* If a resource group is marked mandatory, all members
@@ -585,7 +602,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                     int availability;
                     bool allAvailable = TRUE;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
-                        if ((availability = 
+                        if ((availability =
                              (*rti)->isAvailable(date, (*ali)->getLimits(),
                                                  this)) > 0)
                         {
@@ -599,13 +616,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 if (!found)
                 {
                     if (maxAvailability >= 4 && !(*ali)->getConflictStart())
-                        (*ali)->setConflictStart(date); 
+                        (*ali)->setConflictStart(date);
                     allMandatoriesAvailables = FALSE;
                     break;
                 }
             }
         }
-        
+
     for (QPtrListIterator<Allocation> ali(allocations);
          *ali != 0 && allMandatoriesAvailables &&
          (effort == 0.0 || doneEffort < effort); ++ali)
@@ -644,11 +661,11 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                            time2ISO(date).latin1());
                 (*ali)->setConflictStart(0);
             }
-        }       
+        }
         else
         {
             QPtrList<Resource> cl = createCandidateList(sc, date, *ali);
-            
+
             bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                 if (bookResource((*rli), date, slotDuration,
@@ -680,7 +697,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                            id.latin1(),
                            time2ISO((*ali)->getConflictStart()).latin1(),
                            time2ISO(date).latin1());
-                }  
+                }
                 (*ali)->setConflictStart(0);
             }
         }
@@ -697,7 +714,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
     {
         int availability;
-        if ((availability = 
+        if ((availability =
              (*rti)->isAvailable(date, limits, this)) == 0)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
@@ -880,7 +897,7 @@ Task::isCompleted(int sc, time_t date) const
         {
             if (date < scenarios[sc].start)
                 return FALSE;
-            return qRound((scenarios[sc].effort * 
+            return qRound((scenarios[sc].effort *
                            (scenarios[sc].reportedCompletion / 100.0)) * 1000)
                 >= qRound(getLoad(sc, Interval(scenarios[sc].start, date), 0)
                          * 1000);
@@ -905,40 +922,71 @@ Task::isBuffer(int sc, const Interval& iv) const
 }
 
 time_t
-Task::earliestStart() const
+Task::earliestStart(int sc) const
 {
     time_t date = 0;
-    for (TaskListIterator tli(depends); *tli != 0; ++tli)
+    for (QPtrListIterator<TaskDependency> tdi(depends); *tdi != 0; ++tdi)
     {
         // All tasks this task depends on must have an end date set.
-        if ((*tli)->end == 0)
+        if ((*tdi)->getTaskRef()->end == 0)
             return 0;
-        if ((*tli)->end > date)
-            date = (*tli)->end;
+
+        /* Add the gapDuration and/or gapLength to the end of the dependent
+         * task. */
+        time_t potentialDate = (*tdi)->getTaskRef()->end + 1;
+        time_t dateAfterLengthGap;
+        long gapLength = (*tdi)->getGapLength(sc);
+        for (dateAfterLengthGap = potentialDate;
+             gapLength > 0 && dateAfterLengthGap < project->getEnd();
+             dateAfterLengthGap += project->getScheduleGranularity())
+            if (project->isWorkingTime(dateAfterLengthGap))
+                gapLength -= project->getScheduleGranularity();
+        if (dateAfterLengthGap > potentialDate + (*tdi)->getGapDuration(sc))
+            potentialDate = dateAfterLengthGap;
+        else
+            potentialDate += (*tdi)->getGapDuration(sc);
+        // Set 'date' to the latest end date plus gaps of all preceding tasks.
+        if (potentialDate > date)
+            date = potentialDate;
     }
     /* If any of the parent tasks has an explicit start date, the task must
      * start at or after this date. */
     for (Task* t = getParent(); t; t = t->getParent())
         if (t->start > date)
             return t->start;
-    
-    if (date == 0)
-        return 0;
-   
-    return date + 1;
+
+    return date;
 }
 
 time_t
-Task::latestEnd() const
+Task::latestEnd(int sc) const
 {
     time_t date = 0;
-    for (TaskListIterator tli(precedes); *tli != 0; ++tli)
+    for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
     {
         // All tasks this task precedes must have a start date set.
-        if ((*tli)->start == 0)
+        if ((*tdi)->getTaskRef()->start == 0)
             return 0;
-        if (date == 0 || (*tli)->start < date)
-            date = (*tli)->start;
+
+        /* Subtract the gapDuration and/or gapLength from the start of the
+         * following task. */
+        time_t potentialDate = (*tdi)->getTaskRef()->start - 1;
+        time_t dateBeforeLengthGap;
+        long gapLength = (*tdi)->getGapLength(sc);
+        for (dateBeforeLengthGap = potentialDate;
+             gapLength > 0 && dateBeforeLengthGap >= project->getStart();
+             dateBeforeLengthGap -= project->getScheduleGranularity())
+            if (project->isWorkingTime(dateBeforeLengthGap))
+                gapLength -= project->getScheduleGranularity();
+        if (dateBeforeLengthGap < potentialDate - (*tdi)->getGapDuration(sc))
+            potentialDate = dateBeforeLengthGap;
+        else
+            potentialDate -= (*tdi)->getGapDuration(sc);
+
+        /* Set 'date' to the earliest end date minus gaps of all following
+         * tasks. */
+        if (date == 0 || potentialDate < date)
+            date = potentialDate;
     }
     /* If any of the parent tasks has an explicit end date, the task must
      * end at or before this date. */
@@ -946,10 +994,7 @@ Task::latestEnd() const
         if (t->end != 0 && t->end < date)
             return t->end;
 
-    if (date == 0)
-        return 0;
-
-    return date - 1;
+    return date;
 }
 
 double
@@ -979,7 +1024,7 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 {
     if (milestone)
         return 0.0;
-        
+
     double load = 0.0;
 
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
@@ -1035,61 +1080,77 @@ Task::xRef(QDict<Task>& hash)
     if (DEBUGPF(2))
         qDebug("Creating cross references for task %s ...", id.latin1());
 
-    for (QStringList::Iterator it = dependsIds.begin();
-         it != dependsIds.end(); ++it)
+    for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
     {
-        QString absId = resolveId(*it);
+        QString absId = resolveId((*tdi)->getTaskRefId());
         Task* t;
         if ((t = hash.find(absId)) == 0)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
             error = TRUE;
         }
-        else if (depends.findRef(t) != -1)
-        {
-            errorMessage(i18n("No need to specify dependency %1 multiple "
-                              "times.").arg(absId));
-            // Make it a warning only for the time beeing.
-            // error = TRUE;
-        }
         else
         {
-            depends.append(t);
-            previous.append(t);
-            t->successors.append(this);
-            t->followers.append(this);
-            if (DEBUGPF(11))
-                qDebug("Registering follower %s with task %s",
-                       id.latin1(), t->getId().latin1());
+            for (QPtrListIterator<TaskDependency> tdi2(depends); *tdi2; ++tdi2)
+                if ((*tdi2)->getTaskRef() == t)
+                {
+                    errorMessage(i18n("No need to specify dependency %1 "
+                                      "multiple times.").arg(absId));
+                    error = TRUE;
+                    break;
+                }
+            if (error)
+            {
+                // Make it a warning only for the time beeing.
+                error = FALSE;
+            }
+            else
+            {
+                (*tdi)->setTaskRef(t);
+                previous.append(t);
+                t->successors.append(this);
+                t->followers.append(this);
+                if (DEBUGPF(11))
+                    qDebug("Registering follower %s with task %s",
+                           id.latin1(), t->getId().latin1());
+            }
         }
     }
 
-    for (QStringList::Iterator it = precedesIds.begin();
-         it != precedesIds.end(); ++it)
+    for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
     {
-        QString absId = resolveId(*it);
+        QString absId = resolveId((*tdi)->getTaskRefId());
         Task* t;
         if ((t = hash.find(absId)) == 0)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
             error = TRUE;
         }
-        else if (precedes.findRef(t) != -1)
-        {
-            errorMessage(i18n("No need to specify dependency '%1'")
-                         .arg(absId));
-            // Make it a warning only for the time beeing.
-            // error = TRUE;
-        }
         else
         {
-            precedes.append(t);
-            followers.append(t);
-            t->predecessors.append(this);
-            t->previous.append(this);
-            if (DEBUGPF(11))
-                qDebug("Registering predecessor %s with task %s",
-                       id.latin1(), t->getId().latin1());
+            for (QPtrListIterator<TaskDependency> tdi2(precedes); *tdi2; ++tdi2)
+                if ((*tdi2)->getTaskRef() == t)
+                {
+                    errorMessage(i18n("No need to specify dependency '%1'")
+                                 .arg(absId));
+                    error = TRUE;
+                    break;
+                }
+            if (error)
+            {
+                // Make it a warning only for the time beeing.
+                error = FALSE;
+            }
+            else
+            {
+                (*tdi)->setTaskRef(t);
+                followers.append(t);
+                t->predecessors.append(this);
+                t->previous.append(this);
+                if (DEBUGPF(11))
+                    qDebug("Registering predecessor %s with task %s",
+                           id.latin1(), t->getId().latin1());
+            }
         }
     }
 
@@ -1120,7 +1181,7 @@ Task::implicitXRef()
         bool hasDurationSpec = scenarios[sc].duration != 0 ||
             scenarios[sc].length != 0 ||
             scenarios[sc].effort != 0;
-        
+
         if (scenarios[sc].specifiedStart == 0 && depends.isEmpty() &&
             !(hasDurationSpec && scheduling == ALAP))
             for (Task* tp = getParent(); tp; tp = tp->getParent())
@@ -1129,7 +1190,7 @@ Task::implicitXRef()
                 {
                     if (DEBUGPF(11))
                         qDebug("Setting start of task '%s' in scenario %s to "
-                               "%s", id.latin1(), 
+                               "%s", id.latin1(),
                                project->getScenarioId(sc).latin1(),
                                time2ISO(tp->scenarios[sc].specifiedStart)
                                .latin1());
@@ -1147,7 +1208,7 @@ Task::implicitXRef()
                 {
                     if (DEBUGPF(11))
                         qDebug("Setting end of task '%s' in scenario %s to %s",
-                               id.latin1(), 
+                               id.latin1(),
                                project->getScenarioId(sc).latin1(),
                                time2ISO(tp->scenarios[sc].specifiedEnd)
                                .latin1());
@@ -1518,11 +1579,11 @@ Task::hasEndDependency(int sc)
 bool
 Task::hasStartDependency()
 {
-    /* Check whether the task or any of it's sub tasks has a start 
+    /* Check whether the task or any of it's sub tasks has a start
      * dependency. */
     if (start != 0 || !previous.isEmpty() || scheduling == ALAP)
         return TRUE;
-    
+
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->hasStartDependency())
             return TRUE;
@@ -1533,11 +1594,11 @@ Task::hasStartDependency()
 bool
 Task::hasEndDependency()
 {
-    /* Check whether the task or any of it's sub tasks has an end 
+    /* Check whether the task or any of it's sub tasks has an end
      * dependency. */
     if (end != 0 || !followers.isEmpty() || scheduling == ASAP)
         return TRUE;
-    
+
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->hasStartDependency())
             return TRUE;
@@ -1557,7 +1618,7 @@ Task::preScheduleOk(int sc)
                       "a fixed start and end date.").arg(id));
         return FALSE;
     }
-                      
+
     if (scenarios[sc].effort > 0.0 && allocations.count() == 0 &&
         !scenarios[sc].specifiedScheduled)
     {
@@ -1567,7 +1628,7 @@ Task::preScheduleOk(int sc)
                      .arg(id).arg(project->getScenarioId(sc)));
         return FALSE;
     }
-  
+
     if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
     {
         errorMessage(i18n
@@ -1576,7 +1637,7 @@ Task::preScheduleOk(int sc)
                      .arg(project->getScenarioId(sc)));
         return FALSE;
     }
-  
+
     // Check plan values.
     int durationSpec = 0;
     if (scenarios[sc].effort > 0.0)
@@ -1592,7 +1653,7 @@ Task::preScheduleOk(int sc)
                      .arg(project->getScenarioId(sc)));
         return FALSE;
     }
-  
+
     /*
     |: fixed start or end date
     -: no fixed start or end date
@@ -1669,7 +1730,7 @@ Task::preScheduleOk(int sc)
     {
         /*
         Error table for non-container, non-milestone tasks:
-  
+
         | x-> -   ok     |D x-> -   ok     - x-> -   err3   -D x-> -   ok
         | x-> |   err1   |D x-> |   err1   - x-> |   err3   -D x-> |   err1
         | x-> -D  ok     |D x-> -D  ok     - x-> -D  err3   -D x-> -D  ok
@@ -1797,7 +1858,7 @@ Task::preScheduleOk(int sc)
            .arg(id).arg(project->getScenarioId(sc)));
       return FALSE;
   }
-    
+
   return TRUE;
 }
 
@@ -1829,11 +1890,11 @@ Task::scheduleOk(int sc, int& errors) const
 
     /* If any of the dependant tasks is a runAway, we can safely surpress all
      * other error messages. */
-    for (TaskListIterator tli(depends); *tli != 0; ++tli)
-        if ((*tli)->runAway)
+    for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
+        if ((*tdi)->getTaskRef()->runAway)
             return FALSE;
-    for (TaskListIterator tli(precedes); *tli != 0; ++tli)
-        if ((*tli)->runAway)
+    for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
+        if ((*tdi)->getTaskRef()->runAway)
             return FALSE;
 
     if (start == 0)
@@ -2112,13 +2173,13 @@ Task::prepareScenario(int sc)
     time_t firstSlot = 0;
     for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
     {
-        doneEffort += (*rli)->getLoad(sc, 
+        doneEffort += (*rli)->getLoad(sc,
                                       Interval(project->getStart(),
                                                project->getEnd()),
                                       AllAccounts, this);
         if (doneEffort > 0.0)
         {
-            if (firstSlot == 0 || 
+            if (firstSlot == 0 ||
                 firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
             {
                 firstSlot = (*rli)->getStartOfFirstSlot(sc, this);
@@ -2198,7 +2259,7 @@ Task::computeCriticalness(int sc)
              * one with the smallest overall allocation probability will
              * be assigned to the task. */
             double smallestAllocationProbablity = 0;
-            for (QPtrListIterator<Resource> rli = 
+            for (QPtrListIterator<Resource> rli =
                  (*ali)->getCandidatesIterator(); *rli; ++rli)
             {
                 /* If the candidate is a resource group we use the average
@@ -2221,7 +2282,7 @@ Task::computeCriticalness(int sc)
     }
     else
         scenarios[sc].criticalness = 0;
-        
+
 }
 
 void
@@ -2237,7 +2298,7 @@ Task::computePathCriticalness(int sc)
      */
     if (effort > 0.0)
         /* Since both the forward and backward functions include the
-         * criticalness of this function we have to subtract it again. */ 
+         * criticalness of this function we have to subtract it again. */
         scenarios[sc].pathCriticalness = computeBackwardCriticalness(sc) -
             scenarios[sc].criticalness + computeForwardCriticalness(sc);
     else
@@ -2279,7 +2340,7 @@ Task::computeForwardCriticalness(int sc)
 
     return scenarios[sc].criticalness + maxCriticalness;
 }
-        
+
 void
 Task::finishScenario(int sc)
 {
@@ -2402,8 +2463,8 @@ Task::getCalcedCompletionDegree(int sc) const
 bool
 Task::dependsOnABrother(const Task* p) const
 {
-    for (TaskListIterator tli(depends); *tli != 0; ++tli)
-        if ((*tli)->parent == p)
+    for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
+        if ((*tdi)->getTaskRef()->parent == p)
             return TRUE;
     return FALSE;
 }
@@ -2411,8 +2472,8 @@ Task::dependsOnABrother(const Task* p) const
 bool
 Task::precedesABrother(const Task* p) const
 {
-    for (TaskListIterator tli(precedes); *tli != 0; ++tli)
-        if ((*tli)->parent == p)
+    for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
+        if ((*tdi)->getTaskRef()->parent == p)
             return TRUE;
     return FALSE;
 }
@@ -2465,7 +2526,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
     {
         tempElem = ReportXML::createXMLElem
             ( doc, "minStart", QString::number(scenarios[0].minStart));
-        tempElem.setAttribute( "humanReadable", 
+        tempElem.setAttribute( "humanReadable",
                                time2ISO(scenarios[0].minStart));
         taskElem.appendChild( tempElem );
     }
@@ -2474,7 +2535,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
     {
         tempElem = ReportXML::createXMLElem
             (doc, "maxStart", QString::number(scenarios[0].maxStart));
-        tempElem.setAttribute( "humanReadable", 
+        tempElem.setAttribute( "humanReadable",
                                time2ISO(scenarios[0].maxStart));
         taskElem.appendChild( tempElem );
     }
@@ -2483,7 +2544,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
     {
         tempElem = ReportXML::createXMLElem
             (doc, "minEnd", QString::number(scenarios[0].minEnd));
-        tempElem.setAttribute( "humanReadable", 
+        tempElem.setAttribute( "humanReadable",
                                time2ISO(scenarios[0].minEnd));
         taskElem.appendChild( tempElem );
     }
@@ -2492,7 +2553,7 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
     {
         tempElem = ReportXML::createXMLElem
             (doc, "maxEnd", QString::number(scenarios[0].maxEnd));
-        tempElem.setAttribute( "humanReadable", 
+        tempElem.setAttribute( "humanReadable",
                                time2ISO(scenarios[0].maxEnd));
         taskElem.appendChild( tempElem );
     }
@@ -2752,7 +2813,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "actualStart" )
       {
           if (project->getScenarioIndex("actual") > 0)
-              setStart(project->getScenarioIndex("actual"), 
+              setStart(project->getScenarioIndex("actual"),
                        elem.text().toLong());
       }
       else if( elemTagName == "actualEnd" )

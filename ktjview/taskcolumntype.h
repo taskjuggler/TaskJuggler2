@@ -15,6 +15,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qptrlist.h>
 
 #define COST     "Cost"
 #define COMPLETE "Completed"
@@ -64,6 +65,7 @@ private:
     QString format (int) const;
     QString format( double ) const;
     QString format( TaskListIterator it ) const;
+    QString format( QPtrListIterator<TaskDependency> it ) const;
     QString format( time_t t ) const;
     QString format( Resource *res ) const;
 

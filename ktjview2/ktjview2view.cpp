@@ -708,14 +708,14 @@ void ktjview2View::parseLinks( TaskListIterator it )
     {
         ++it;
 
-        TaskListIterator depIt = task->getDependsIterator();
+        QPtrListIterator<TaskDependency> depIt = task->getDependsIterator();
 
         if ( depIt.isEmpty() )
             continue;
 
-        Task * depTask;
+        const Task * depTask;
         QPtrList<KDGanttViewItem> fromList;
-        while ( ( depTask = static_cast<Task *>( depIt.current() ) ) != 0 )
+        while ( ( depTask = depIt.current()->getTaskRef() ) != 0 )
         {
             ++depIt;
 
