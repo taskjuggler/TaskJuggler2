@@ -20,6 +20,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
+#include <kurl.h>
+#include <krun.h>
 
 #include "Report.h"
 #include "ManagedReportInfo.h"
@@ -91,9 +93,8 @@ ReportManager::updateReportBrowser()
                 << "Unsupported report type " << r->getType() << endl;
 
         KListViewItem* item = new KListViewItem
-            (parent, r->getFileName(), QString().sprintf("%d", i),
-             r->getDefinitionFile(),
-             QString().sprintf("%d", r->getDefinitionLine()));
+            (parent, r->getFileName(), QString::number(i),
+             r->getDefinitionFile(), QString::number(r->getDefinitionLine()));
 
         // Save the pointer to the list view item for future references.
         (*mri)->setBrowserEntry(item);
@@ -120,6 +121,18 @@ ReportManager::showReport(QListViewItem* lvi)
         else if (strcmp(mr->getProjectReport()->getType(),
                         "QtResourceReport") == 0)
             tjr = new TjResourceReport(reportStack, mr->getProjectReport());
+        else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
+        {
+            // show the HTML file in web browser
+            KURL reportUrl = KURL::fromPathOrURL( mr->getProjectReport()->getDefinitionFile() );
+            reportUrl.setFileName( mr->getProjectReport()->getFileName() );
+
+            //kdDebug() << "HTML report file: " << reportUrl << endl;
+
+            changeStatusBar( i18n( "Displaying HTML report: '%1'" ).arg( mr->getProjectReport()->getFileName() ) );
+            KRun::runURL( reportUrl, "text/html" );
+            return TRUE;
+        }
         else
         {
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
