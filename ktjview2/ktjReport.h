@@ -8,6 +8,12 @@
 
 #include <qdatetime.h>
 
+/**
+ * @short Base class for reports
+ *
+ * This class serves as a base for all report related classes
+ * @author Lukas Tinkl <lukas.tinkl@suse.cz>
+ */
 class KtjReport
 {
 public:
@@ -29,6 +35,11 @@ public:
         DIS_FREE
     };
 
+    /**
+     * Constructor
+     * @param proj The project to work on
+     * @param view View (KListView based) where to display data
+     */
     KtjReport( Project * proj, KtjReportView * view );
 
     /**
@@ -80,7 +91,7 @@ public:
 
 protected:
     /**
-     * setup column headers, return their count
+     * Setup column headers, return their count
      */
     virtual int setupColumns() = 0;
 
