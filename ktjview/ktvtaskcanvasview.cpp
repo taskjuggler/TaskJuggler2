@@ -1,3 +1,15 @@
+/*
+ * $RCSfile$ - TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
+
 #include <qdatetime.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -54,47 +66,6 @@ void KTVTaskCanvasView::showProject( Project *p )
 }
 
 
-void KTVTaskCanvasView::addTask(Task *t )
-{
-   if( ! t ) return;
-
-   QString idx = QString::number(t->getIndex());
-   QString name = t->getName();
-   // qDebug( "Adding task: " + t->getId());
-   QDateTime dt;
-
-   if( t->isContainer() )
-   {
-
-   }
-   else if( t->isMilestone() )
-   {
-
-   }
-   else
-   {
-
-   }
-
-   dt.setTime_t( t->getStart(Task::Plan) );
-   dt.setTime_t( t->getEnd(Task::Plan) );
-
-   TaskList subTasks;
-   subTasks.clear();
-
-   qDebug( "START: Subpackages for "+ t->getId());
-   for (TaskListIterator tli(t->getSubListIterator()); *tli != 0; ++tli)
-   {
-      // qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
-      if( (*tli)->getParent() == t )
-	 addTask( *tli );
-      //qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
-   }
-   qDebug( "END: Subpackages for "+ t->getId());
-   qDebug( "Adding task: " + t->getId() + "<FIN>");
-
-}
-
 KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 {
    // qDebug( "On related widget: x=%d", p.x() );
@@ -120,10 +91,10 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
  */
 time_t KTVTaskCanvasView::getCenterTime()
 {
-    int x = contentsX() + contentsWidth()/2;
+    int x = contentsX() + visibleWidth()/2;
     time_t t = m_header->timeFromX( x );
 
-    qDebug("getCenterTime: %s", (const char*) time2ISO(t) );
+    qDebug("getCenterTime: %s of x=%d", (const char*) time2ISO(t), x );
     return( t );
 }
 
@@ -138,9 +109,11 @@ void KTVTaskCanvasView::xScrollToTime( int p, time_t ti )
 
     if( p > 0 && p <= 100 )
     {
-        timeX -= int(double(p/100.0)*contentsWidth());
+	int delta = int(double(p)/100.0 * double(visibleWidth()));
+	qDebug("Delta value ist %d at visible width %d", delta, visibleWidth() );
+        timeX += delta;
     }
-    qDebug( "Centering on %d %s", timeX, (const char*) time2ISO(timeX));
+    qDebug( "Centering on %d of %d", timeX, contentsWidth() );
     setContentsPos( timeX, contentsY() );
 }
 
@@ -150,7 +123,10 @@ void KTVTaskCanvasView::zoomIn()
     time_t centerTime = getCenterTime();
     qDebug("getCenterTime1: %s", (const char*) time2ISO(centerTime) );
 
-    w = ( (w+5 < 60) ? w+5 : 60);
+    if( w < 60 )
+	w += 5;
+    
+    qDebug("Setting daywidth %d", w );
     m_header->slSetDayWidth( w );
     xScrollToTime( 50, centerTime );
     update();
@@ -160,9 +136,14 @@ void KTVTaskCanvasView::zoomOut()
 {
     int w = m_header->dayWidth();
     time_t centerTime = getCenterTime();
-    w = ((w-5) > 10 ? w-5 : 10);
+
+    if( w > 14 )
+	w -= 5;
+
+    qDebug("Setting daywidth %d", w );
     m_header->slSetDayWidth( w );
-    xScrollToTime( 50, centerTime );
+    int perc = 50;
+    xScrollToTime( perc, centerTime );
     update();
 
 }
