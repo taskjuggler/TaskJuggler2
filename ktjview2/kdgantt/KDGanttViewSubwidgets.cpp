@@ -2521,7 +2521,7 @@ KDLegendWidget:: KDLegendWidget( QWidget* parent,
     scroll = new QScrollView( legendParent );
     setMaximizedWidget( scroll );
 
-    setMinimizedWidget( myLabel = new QLabel(" Legend is hidden",this)  );
+    setMinimizedWidget( myLabel = new QLabel(i18n( " Legend is hidden" ),this)  );
     setGeometry( 0, 0, 50, 50 );
     myLegend = 0;
     clearLegend();
@@ -2540,7 +2540,7 @@ void KDLegendWidget::setAsDockwindow( bool dockwin )
             dock->resize( 200, 100 );
             dock->setHorizontallyStretchable( true );
             dock->setVerticallyStretchable( true );
-            dock->setCaption(tr("Legend: ") );
+            dock->setCaption( i18n("Legend: ") );
             dock->setResizeEnabled (true );
             delete myLegend;
             myLegend = 0;

@@ -39,6 +39,8 @@
 #include <qbitmap.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
+
+#include <klocale.h>
 /*!
   \class KDGanttSemiSizingControl KDGanttSemiSizingControl.h
   This class provides exactly one child widget with a button for
@@ -65,7 +67,7 @@
 
 KDGanttSemiSizingControl::KDGanttSemiSizingControl( QWidget* parent,
                                           const char* name ) :
-    KDGanttSizingControl( parent, name ), _orient( Horizontal ), 
+    KDGanttSizingControl( parent, name ), _orient( Horizontal ),
     _arrowPos( Before ), _minimizedWidget(0), _maximizedWidget(0)
 {
     init();
@@ -87,7 +89,7 @@ KDGanttSemiSizingControl::KDGanttSemiSizingControl( QWidget* parent,
 KDGanttSemiSizingControl::KDGanttSemiSizingControl( Orientation orientation,
                                           QWidget* parent,
                                           const char* name ) :
-    KDGanttSizingControl( parent, name ), _orient( orientation ), 
+    KDGanttSizingControl( parent, name ), _orient( orientation ),
     _arrowPos( Before ), _minimizedWidget(0), _maximizedWidget(0)
 {
     init();
@@ -111,7 +113,7 @@ KDGanttSemiSizingControl::KDGanttSemiSizingControl( ArrowPosition arrowPosition,
                                           Orientation orientation,
                                           QWidget* parent,
                                           const char* name ) :
-    KDGanttSizingControl( parent, name ), _orient( orientation ), 
+    KDGanttSizingControl( parent, name ), _orient( orientation ),
     _arrowPos( arrowPosition ), _minimizedWidget(0), _maximizedWidget(0)
 {
     init();
@@ -250,10 +252,8 @@ void KDGanttSemiSizingControl::init()
     _but->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ) );
     connect( _but, SIGNAL( clicked() ), this, SLOT(changeState()) );
     _layout = 0;
-    QWhatsThis::add( _but, "Click on this button to show the \nlegend at the bottom of the widget");
-    QToolTip::add( _but, "Show / hide legend");
-
-
+    QWhatsThis::add( _but, i18n( "Click on this button to show the \nlegend at the bottom of the widget" ) );
+    QToolTip::add( _but, i18n( "Show / hide legend" ) );
 }
 
 void KDGanttSemiSizingControl::setup()

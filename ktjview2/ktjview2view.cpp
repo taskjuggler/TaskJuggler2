@@ -105,7 +105,7 @@ ktjview2View::ktjview2View( QWidget *parent )
         m_ganttView->setHourFormat( KDGanttView::Hour_24 );
     m_ganttView->setShowTaskLinks( true );
     m_ganttView->setShowHeaderPopupMenu( true ); // ### TODO implement thru KActions
-    m_ganttView->setShowLegendButton( false ); // ### TODO legend?
+    m_ganttView->setShowLegendButton( true );
     //m_ganttView->setShowTimeTablePopupMenu( true );  // not useful, we can't add or manipulate items
     m_ganttView->setWeekendDays( 6, 7 );
     connect( m_ganttView, SIGNAL( lvItemDoubleClicked( KDGanttViewItem * ) ),
@@ -709,16 +709,20 @@ void ktjview2View::queryResource()
 
 void ktjview2View::setupGantt()
 {
+    // setup bg colors
     for ( int i = 0; i < 7; i++ )
     {
         m_ganttView->setWeekdayBackgroundColor( Settings::weekdayColor(), i );
     }
+
     m_ganttView->setWeekendBackgroundColor( Settings::weekendColor() );
+
     if ( Settings::bgLines() )
         m_ganttView->setHorBackgroundLines();
     else
         m_ganttView->setHorBackgroundLines( 0 );
 
+    // setup item colors
     m_ganttView->setDefaultColor( KDGanttViewItem::Task, Settings::taskColor() );
     m_ganttView->setDefaultColor( KDGanttViewItem::Summary, Settings::groupColor() );
     m_ganttView->setDefaultColor( KDGanttViewItem::Event, Settings::milestoneColor() );
@@ -726,6 +730,20 @@ void ktjview2View::setupGantt()
     m_ganttView->setColors( KDGanttViewItem::Task, Settings::taskColor(), Settings::taskColor(), Settings::taskColor() );
     m_ganttView->setColors( KDGanttViewItem::Summary, Settings::groupColor(), Settings::groupColor(), Settings::groupColor() );
     m_ganttView->setColors( KDGanttViewItem::Event, Settings::milestoneColor(), Settings::milestoneColor(), Settings::milestoneColor() );
+
+    // setup legend
+    KDGanttViewItem::Shape taskShape;
+    m_ganttView->shapes( KDGanttViewItem::Task, taskShape, taskShape, taskShape );
+    KDGanttViewItem::Shape summaryShape;
+    m_ganttView->shapes( KDGanttViewItem::Summary, summaryShape, summaryShape, summaryShape );
+    KDGanttViewItem::Shape eventShape;
+    m_ganttView->shapes( KDGanttViewItem::Event, eventShape, eventShape, eventShape );
+
+    //m_ganttView->clearLegend();  //FIXME doesn't work :(
+
+    m_ganttView->addLegendItem( taskShape, Settings::taskColor(), i18n( "Task" ) );
+    m_ganttView->addLegendItem( summaryShape, Settings::groupColor(), i18n( "Task Group" ) );
+    m_ganttView->addLegendItem( eventShape, Settings::milestoneColor(), i18n( "Milestone" ) );
 
     m_ganttView->update();      // repaint the widget (necessary)
 }
