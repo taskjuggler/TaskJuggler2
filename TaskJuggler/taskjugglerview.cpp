@@ -401,6 +401,7 @@ TaskJugglerView::closeProject()
     mw->fileListView->clear();
     messageListView->clear();
     messageCounter = 0;
+    slotSetTitle( i18n( "No Project" ) );
 }
 
 void
