@@ -12,7 +12,9 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/*.html $(docprefix)
 	$(INSTALL_DATA) $(srcdir)/*.tjp $(docprefix)
 	$(INSTALL_DATA) $(srcdir)/*.tjx $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.eps $(docprefix)
+	@if test -f acso.eps ; then \
+	  $(INSTALL_DATA) $(srcdir)/*.eps $(docprefix) ; \
+	fi
 
 uninstall-local:
 	-rm -f $(docprefix)
