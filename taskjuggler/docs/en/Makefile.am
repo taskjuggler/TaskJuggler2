@@ -6,7 +6,7 @@ EXTRA_DIST = index.html index-1.html index-2.html index-3.html index-4.html inde
 docprefix = $(prefix)/share/doc/packages
 
 install-data-local:
-	$(mkinstalldirs) $(prefix)/doc/taskjuggler/
+	$(mkinstalldirs) $(docprefix)/taskjuggler/
 	$(INSTALL_DATA) $(srcdir)/Reference.txt $(docprefix)/taskjuggler/
 	$(INSTALL_DATA) $(srcdir)/index.html $(docprefix)/taskjuggler/index.html
 	$(INSTALL_DATA) $(srcdir)/index-1.html $(docprefix)/taskjuggler/index-1.html
