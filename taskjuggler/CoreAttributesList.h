@@ -84,5 +84,46 @@ public:
     virtual ~CoreAttributesListIterator() { }
 } ;
 
+template<class TL, class T> int compareTreeItemsT(TL* list, T* c1, T* c2)
+{
+    if (c1 == c2)
+        return 0;
+
+    QPtrList<T> cl1, cl2;
+    int res1 = 0;
+    for ( ; c1 || c2; )
+    {
+        if (c1)
+        {
+            cl1.prepend(c1);
+            c1 = c1->getParent();
+        }
+        else
+            res1 = -1;
+        if (c2)
+        {
+            cl2.prepend(c2);
+            c2 = c2->getParent();
+        }
+        else
+            res1 = 1;
+    }
+
+    QPtrListIterator<T> cal1(cl1);
+    QPtrListIterator<T> cal2(cl2);
+    for ( ; *cal1 != 0 && *cal2 != 0; ++cal1, ++cal2)
+    {
+        int res;
+        for (int j = 1; j < CoreAttributesList::maxSortingLevel; ++j)
+        {
+            if ((res = list->compareItemsLevel(*cal1, *cal2, j)) != 0)
+                return res;
+        }
+        if ((res = (*cal1)->getSequenceNo() - (*cal2)->getSequenceNo()) != 0)
+            return res < 0 ? -1 : 1;
+    }
+    return res1;
+}
+
 #endif
 
