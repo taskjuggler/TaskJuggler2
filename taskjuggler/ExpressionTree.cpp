@@ -45,6 +45,14 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
         functions.insert(etf->getName(), etf);
         
         etf = new ExpressionTreeFunction
+            ("istaskofproject", &ExpressionTreeFunction::isTaskOfProject, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isTaskOfProject"), 
+             &ExpressionTreeFunction::isTaskOfProject, 1);
+        functions.insert(etf->getName(), etf);
+        
+        etf = new ExpressionTreeFunction
             ("isresource", &ExpressionTreeFunction::isResource, 1);
         functions.insert(etf->getName(), etf);
         etf = new ExpressionTreeFunction

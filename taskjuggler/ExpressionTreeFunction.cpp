@@ -265,6 +265,16 @@ ExpressionTreeFunction::containsTask(const ExpressionTree* et,
 }
 
 long
+ExpressionTreeFunction::isTaskOfProject(const ExpressionTree* et,
+                                        Operation* const ops[]) const
+{
+    if (et->getCoreAttributes()->getType() != CA_Task)
+        return 0;
+    return ops[0]->evalAsString(et) ==
+        ((Task*) (et->getCoreAttributes()))->getProjectId();
+}
+
+long
 ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
                                     Operation* const ops[]) const
 {
@@ -335,7 +345,8 @@ ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
 {
     if (et->getCoreAttributes()->getType() != CA_Resource)
         qFatal(i18n("ExpressionTreeFunction::isplanallocated() called for "
-                    "non-resource"));
+                    "non-resource '%1'")
+               .arg(et->getCoreAttributes()->getId().latin1()));
     int scenarioId = et->getCoreAttributes()->getProject()->
         getScenarioIndex("plan") - 1;
     if (scenarioId < 0)

@@ -156,6 +156,12 @@ specified date</para></listitem>
 specified date</para></listitem>
 
 </varlistentry>
+<varlistentry><term>isTaskOfProject(<link linkend="id">ID</link>)</term>
+
+<listitem><para>true if the task is part of the project with the
+specified ID.</para></listitem>
+
+</varlistentry>
 </variablelist>
 </para>
 </sect2>

@@ -53,6 +53,8 @@ public:
     long isMilestone(const ExpressionTree* et, Operation* const ops[]) const;
     long isTask(const ExpressionTree* et, Operation* const ops[]) const;
     long isSubTaskOf(const ExpressionTree* et, Operation* const ops[]) const;
+    long isTaskOfProject(const ExpressionTree* et, Operation* const ops[])
+        const;
     long startsBefore(const ExpressionTree* et, Operation* const ops[]) const;
     long startsAfter(const ExpressionTree* et, Operation* const ops[]) const;
     long endsBefore(const ExpressionTree* et, Operation* const ops[]) const;
