@@ -16,11 +16,24 @@ shift s1 "Shift1" {
   }
 }
 
+shift s3 "Shift3" {
+	workinghours mon off
+	workinghours tue off
+	workinghours wed off
+	workinghours thu off
+	workinghours fri off
+	workinghours sat off
+	workinghours sun off
+}
+
 resource r1 "Resource1" {
   # This should result in iterating 0.5 1.0 0.5 loads each day
   shift s1 2000-01-01 - 2000-01-04
   shift s2 2000-01-05 - 2000-01-20
 }
+
+resource r2 "Resource2"
+resource r3 "Resource3"
 
 task t1 "Task1" {
   start 2000-01-01
@@ -28,8 +41,23 @@ task t1 "Task1" {
   allocate r1
 }
 
+task t2 "Task2" {
+	start 2000-01-01
+	duration 25d
+	allocate r2 {
+	 	shift s1 2000-01-01 - 2000-01-07
+		shift s2 2000-01-07 - 2000-01-11
+		shift s3 2000-01-11 - 2000-01-30
+	}
+	allocate r3 {
+		shift s3 2000-01-01 - 2000-01-11
+		shift s2 2000-01-11 - 2000-01-30
+	}	
+}
+
 htmltaskreport "Shift.html" {
   columns no, name, start, end, daily
+	hideresource 0
 	notimestamp
 }
 

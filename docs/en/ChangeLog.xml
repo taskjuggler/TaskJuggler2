@@ -655,4 +655,14 @@ zlib.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2><title>Version 2.0.1 (Some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed handling of resource allocations with multiple
+shift intervals.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

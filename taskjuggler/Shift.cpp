@@ -73,6 +73,19 @@ Shift::getSubListIterator() const
     return ShiftListIterator(sub);
 }
 
+bool
+Shift::isOnShift(const Interval& iv) const
+{
+    int dow = dayOfWeek(iv.getStart(), FALSE);
+    for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
+    {
+        if ((*ili)->contains(Interval(secondsOfDay(iv.getStart()),
+                                  secondsOfDay(iv.getEnd()))))
+            return TRUE;
+    }
+    return FALSE;
+}
+
 bool 
 Shift::isVacationDay(time_t day) const
 {

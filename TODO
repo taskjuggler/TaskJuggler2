@@ -1,12 +1,6 @@
-For 1.9.3:
-- Update AccountingSoftware example in manual.
-- 1.x -> 2.x migration guide chapter.
-
-For 2.0:
+- Allow overlapping vacations
+- hasLoad() function
 - Explain more features with examples in the documentation.
-- Valgrind the code.
-
-After 2.0:
 - Expand env. variables or parameters as macros.
 - Generic HTML report.
 - Allocation selection by skill set.

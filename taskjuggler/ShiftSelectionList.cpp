@@ -28,8 +28,7 @@ ShiftSelectionList::isOnShift(const Interval& iv) const
     /* Check whether any of the defined shift intervals contains the interval
      * 'iv'. If not return TRUE. If it does, check whether the interval 'iv'
      * lies within the specified working hours. */
-    for (ShiftSelectionListIterator ssli(*this); 
-         *ssli != 0 && iv.getStart() <= (*ssli)->getPeriod().getEnd(); ++ssli)
+    for (ShiftSelectionListIterator ssli(*this); *ssli != 0; ++ssli)
         if ((*ssli)->getPeriod().contains(iv))
            return (*ssli)->getShift()->isOnShift(iv);
     return TRUE;

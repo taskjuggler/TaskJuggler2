@@ -37,7 +37,7 @@ do_testing()
     if [ $? -ne 0 ] ; then
       errors=$(( $errors + 1 ))
       echo "Test $f failed (Reference file differs)!" | tee -a ../log
-      diff $referenceFile $exportFile | tee -a ../log
+      diff -u $referenceFile $exportFile | head -n 20 | tee -a ../log
     else
       rm $exportFile
     fi

@@ -205,6 +205,8 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
                 case 9:
                     gcf = columnFormat[(*it)->getName()]->genSummaryLine2;
                     break;
+                default:
+                    qFatal("Unknown function selector: %d", funcSel);
             }
             if (gcf)
             {
