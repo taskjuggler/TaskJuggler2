@@ -275,7 +275,7 @@ sub _make_postscript_file {
                                     ysize       => $page_y,
                                     colour      => 1,
                                     units       => "mm",
-                                    reencode    => "ISOLatin1Encoding");
+				    reencode    => "ISOLatin1Encoding");
 
       _draw_header($p, $project_name);
       _draw_grid($p);
@@ -370,8 +370,8 @@ sub _draw_label {
     $p->setcolour(0,0,0);
     foreach my $task (@all_tasks) {
         print "+";
-        $p->setfont("Helvetica", 8) if ( $task->Type eq 'Task' );
-        $p->setfont("Helvetica", 6) if ( $task->Type eq 'Milestone' );
+        $p->setfont("Helvetica-iso", 8) if ( $task->Type eq 'Task' );
+        $p->setfont("Helvetica-iso", 6) if ( $task->Type eq 'Milestone' );
         $p->text($task->label_x, $task->label_y, $task->label);
     }
 }
@@ -414,7 +414,7 @@ sub _draw_res {
             my $l_y = $y2+($task_space/2)-($task_height/2);
             $p->line($page_border+5, $l_y, $page_x-($page_border*2), $l_y );
             #-- res-name
-            $p->setfont("Helvetica", 8);
+            $p->setfont("Helvetica-iso", 8);
             $p->text($page_border+5, $y1-($task_height/1.5), "$res");
             #-- load reinschreiben
             #if ($task_length >= 2) {
@@ -539,7 +539,7 @@ sub _draw_task {
             $p->setcolour(0,0,0);
             my ($x, $y) = _trans_coord($_x1, $_y1+($task_height/2));
             $p->circle($x, $y, 1, 1);
-            $p->setfont("Helvetica", 6);
+            $p->setfont("Helvetica-iso", 6);
             my $am = sprintf('%02d', $start_month);
             my $ad = sprintf('%02d', $start_day);
             #-- text
@@ -622,23 +622,23 @@ sub _draw_grid {
         #-- wochen-nummer reinpinseln
         if ( $h_month_week == 2 ) {
             $p->setcolour(0,0,0);
-            $p->setfont("Times-Roman", 10);
+            $p->setfont("Times-Roman-iso", 10);
             $p->text($x+1, $y-($header_height/$h_month_week)+($header_height/4), $act_week);
         }
         #-- monats-namen reinpinseln
         if ( $h_month_week == 1 || $i == 0 ) {
             $p->setcolour(0,0,0);
-            $p->setfont("Times-Roman", 12);
+            $p->setfont("Times-Roman-iso", 12);
             $p->text($x+1, $y-($header_height/$h_month_week)+($header_height/1.5), "$act_month_name $act_year");
             #-- wenn der erste im monat ein wochenanfang ist, auch die wochen-nummer reinschreiben
             if ( $act_dow == 1 ) {
-                $p->setfont("Helvetica", 10);
+                $p->setfont("Helvetica-iso", 10);
                 $p->text($x+1, $y-($header_height/$h_month_week)+($header_height/4), $act_week);
             }
         }
         #-- tage in den header schreiben
         $p->setcolour(0,0,0);
-        $p->setfont("Helvetica", 6);
+        $p->setfont("Helvetica-iso", 6);
         $p->text($x+0.5, $page_y-$page_border-($header_height*3)+($task_height/1.5), sprintf('%02d', $act_day));
     }
 }
@@ -647,7 +647,7 @@ sub _draw_grid {
 sub _draw_header {
     my ($p, $str) = @_;
     $p->setcolour(0,0,0);
-    $p->setfont("Helvetica", 18);
+    $p->setfont("Helvetica-iso", 18);
     my ($x, $y) = _trans_coord(0,0);
     $p->text($x, $y+($header_height/2), $str);
     $p->setcolour(255,255,255);
