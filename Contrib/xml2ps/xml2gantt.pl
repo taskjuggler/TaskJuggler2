@@ -27,6 +27,7 @@ package tjTask;
     use Class::MethodMaker
         new_hash_init   => 'new',
         get_set         => [ qw(Index ProjectID complete Priority Type Id Name ParentTask
+                                startBuffer endBuffer
                                 minStart maxStart
                                 minEnd maxEnd
                                 actualStart actualEnd
@@ -266,10 +267,11 @@ sub final {
 sub _make_postscript_file {
     my ($page_x, $page_y) = @_;
     print "make postscript file: $out_file ...";
-    my $p = new PostScript::Simple( xsize   => $page_x,
-                                    ysize   => $page_y,
-                                    colour  => 1,
-                                    units   => "mm" );
+    my $p = new PostScript::Simple( xsize       => $page_x,
+                                    ysize       => $page_y,
+                                    colour      => 1,
+                                    units       => "mm",
+                                    reencode    => "ISOLatin1Encoding");
 
       _draw_header($p, $project_name);
       _draw_grid($p);
