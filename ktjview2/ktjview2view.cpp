@@ -28,7 +28,6 @@
 #include <qpaintdevicemetrics.h>
 #include <qdialog.h>
 #include <qdir.h>
-#include <qprogressdialog.h>
 #include <qpopupmenu.h>
 
 // KDE includes
@@ -44,6 +43,7 @@
 #include <klistview.h>
 #include <kapplication.h>
 #include <kmainwindow.h>
+#include <kprogress.h>
 
 // local includes
 #include "kdgantt/KDGanttViewEventItem.h"
@@ -74,12 +74,7 @@
 ktjview2View::ktjview2View( QWidget *parent )
     : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
 {
-    m_progressDlg = new QProgressDialog( this, "progress_dialog", true );
-    m_progressDlg->setTotalSteps( 6 );
-    m_progressDlg->setAutoReset( true );
-    m_progressDlg->setCaption( i18n( "Loading project" ) );
-
-    recreateProject();
+    //recreateProject();
 
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
@@ -159,8 +154,6 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_ganttPopupMenu->insertItem( i18n( "Jump to task details" ), this, SLOT( slotJumpToTask() ) );
 
     loadSettings();             // load the config-dialog related settings
-
-    // ### TODO setup popup menus
 }
 
 ktjview2View::~ktjview2View()
@@ -168,7 +161,6 @@ ktjview2View::~ktjview2View()
     delete m_project;
     m_project = 0;
 
-    delete m_progressDlg;
     delete m_ganttPopupMenu;
 }
 
@@ -229,6 +221,11 @@ bool ktjview2View::openURL( const KURL& url )
 {
     //kdDebug() << "Loading project from URL: " << url << endl;
 
+    KProgressDialog progressDlg( this, "progress_dialog", i18n( "Loading project" ), QString::null, true );
+    progressDlg.progressBar()->setTotalSteps( 6 );
+    progressDlg.setAutoReset( true );
+    progressDlg.setAllowCancel( false );
+
     QString tmpFile;
     if ( !KIO::NetAccess::download( url, tmpFile, this ) )
         return false;
@@ -240,15 +237,15 @@ bool ktjview2View::openURL( const KURL& url )
     if ( tmpFile.endsWith( ".tjx" ) ) // XML file
     {
         XMLFile* xf = new XMLFile( m_project );
-        m_progressDlg->setProgress( 1 );
-        m_progressDlg->setLabelText( i18n( "Opening XML project" ) );
+        progressDlg.progressBar()->setProgress( 1 );
+        progressDlg.setLabel( i18n( "Opening XML project" ) );
         if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete xf;
             return false;
         }
-        m_progressDlg->setProgress( 2 );
-        m_progressDlg->setLabelText( i18n( "Parsing XML project" ) );
+        progressDlg.progressBar()->setProgress( 2 );
+        progressDlg.setLabel( i18n( "Parsing XML project" ) );
         //kdDebug() << "Parsing XML project" << endl;
         xf->parse();
         delete xf;
@@ -256,22 +253,22 @@ bool ktjview2View::openURL( const KURL& url )
     else if ( tmpFile.endsWith( ".tjp" ) || tmpFile.endsWith( ".tji" ) ) // source file
     {
         ProjectFile* pf = new ProjectFile( m_project );
-        m_progressDlg->setProgress( 1 );
-        m_progressDlg->setLabelText( i18n( "Opening TJP project" ) );
+        progressDlg.progressBar()->setProgress( 1 );
+        progressDlg.setLabel( i18n( "Opening TJP project" ) );
         if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
         {
             delete pf;
             return false;
         }
         //kdDebug() << "Parsing TJP project" << endl;
-        m_progressDlg->setProgress( 2 );
-        m_progressDlg->setLabelText( i18n( "Parsing TJP project" ) );
+        progressDlg.progressBar()->setProgress( 2 );
+        progressDlg.setLabel( i18n( "Parsing TJP project" ) );
         pf->parse();
         delete pf;
     }
     else
     {
-        m_progressDlg->cancel();
+        progressDlg.cancel();
         KMessageBox::sorry( this, i18n( "This filetype is not supported." ) );
         return false;
     }
@@ -279,28 +276,28 @@ bool ktjview2View::openURL( const KURL& url )
     KIO::NetAccess::removeTempFile( tmpFile );
 
     //kdDebug() << "Generating cross references (pass2)" << endl;
-    m_progressDlg->setProgress( 3 );
-    m_progressDlg->setLabelText( i18n( "Generating cross references" ) );
+    progressDlg.progressBar()->setProgress( 3 );
+    progressDlg.setLabel( i18n( "Generating cross references" ) );
     if ( ! m_project->pass2( false ) )
     {
-        m_progressDlg->cancel();
+        progressDlg.cancel();
         KMessageBox::error( this, i18n( "Taskjugggler failed to generate cross references on data structures." ) );
         return false;
     }
 
     //kdDebug() << "Scheduling all scenarios " << endl;
-    m_progressDlg->setProgress( 4 );
-    m_progressDlg->setLabelText( i18n( "Scheduling all scenarios" ) );
+    progressDlg.progressBar()->setProgress( 4 );
+    progressDlg.setLabel( i18n( "Scheduling all scenarios" ) );
     if ( ! m_project->scheduleAllScenarios() )
     {
-        m_progressDlg->cancel();
+        progressDlg.cancel();
         KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
         return false;
     }
     //m_project->generateReports(); // FIXME do we need that?
 
-    m_progressDlg->setProgress( 5 );
-    m_progressDlg->setLabelText( i18n( "Building the views" ) );
+    progressDlg.progressBar()->setProgress( 5 );
+    progressDlg.setLabel( i18n( "Building the views" ) );
 
     m_ganttView->setUpdateEnabled( false );
 
@@ -319,7 +316,7 @@ bool ktjview2View::openURL( const KURL& url )
     signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
     signalChangeCaption( m_project->getName() );
 
-    m_progressDlg->setProgress( 6 );
+    progressDlg.progressBar()->setProgress( 6 );
 
     return true;
 }

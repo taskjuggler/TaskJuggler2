@@ -45,7 +45,6 @@ class KListViewItem;
 class KPrinter;
 class TaskList;
 class TaskItem;
-class QProgressDialog;
 class QPopupMenu;
 
 enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS };
@@ -290,9 +289,6 @@ private:
     KListView * m_resListView;
     /// task (flat) view
     KListView * m_taskView;
-
-    /// loading progress dialog
-    QProgressDialog * m_progressDlg;
 
     /// gantt listview item popup menu
     QPopupMenu * m_ganttPopupMenu;

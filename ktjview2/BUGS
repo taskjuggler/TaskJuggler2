@@ -6,5 +6,3 @@ upon next start
 
 #3 sometimes at the application exit, the Gantt component (with task links)
 crashes
-
-#4 the progress dialog can't really be cancelled :)
