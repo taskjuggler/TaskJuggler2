@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kiconloader.h>
 
 // TJ includes
 #include "TaskList.h"
@@ -52,7 +53,7 @@ void KtjTaskReport::generate()
     while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
     {
         ++it;
-        if ( task->isContainer() || task->isMilestone() ) // skip groups
+        if ( task->isContainer() || task->isMilestone() ) // skip groups and milestones
             continue;
         generatePrimaryRow( m_view, task, cols );
     }
@@ -65,6 +66,7 @@ void KtjTaskReport::generatePrimaryRow( KtjReportView * parent, Task * task, int
     TaskItem * item = new TaskItem( parent, task->getName(), // FIXME scenario
                                     KtjUtils::time_t2Q( task->getStart(0) ),
                                     KtjUtils::time_t2Q( task->getEnd(0) ) );
+    item->setPixmap( 0, UserIcon( "task" ) );
 
     double daily = m_proj->getDailyWorkingHours();
 
@@ -88,6 +90,7 @@ void KtjTaskReport::generateSecondaryRow( KListViewItem * parent, Task * task, R
     //          << " , resource: " << res->getName() << endl;
 
     ResourceItem * item = new ResourceItem( parent, res->getName() );
+    item->setPixmap( 0, UserIcon( "resource" ) );
 
     double daily = m_proj->getDailyWorkingHours();
 

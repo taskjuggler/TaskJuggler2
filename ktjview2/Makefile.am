@@ -1,9 +1,9 @@
 ## Makefile.am for ktjview2
 
-# this is the program that gets installed.  it's name is used for all
-# of the other Makefile.am variables
-SUBDIRS = kdgantt pixmaps
+SUBDIRS = kdgantt pixmaps pics
 
+# this is the program that gets installed. its name is used for all
+# of the other Makefile.am variables
 bin_PROGRAMS = ktjview2
 
 # set the include path for X, qt and KDE

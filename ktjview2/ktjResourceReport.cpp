@@ -34,6 +34,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kiconloader.h>
 
 KtjResourceReport::KtjResourceReport( Project * proj, KtjReportView * view )
     : KtjReport( proj, view )
@@ -108,6 +109,7 @@ int KtjResourceReport::setupColumns()
 void KtjResourceReport::generatePrimaryRow( KtjReportView * parent, Resource * res, int columns )
 {
     ResourceItem * item = new ResourceItem( parent, res->getName() );
+    item->setPixmap( 0, UserIcon( "resource" ) );
 
     double daily = m_proj->getDailyWorkingHours();
 
@@ -135,6 +137,7 @@ void KtjResourceReport::generateSecondaryRow( KListViewItem * parent, Resource *
     TaskItem * item = new TaskItem( parent, task->getName(), // FIXME scenario
                                     KtjUtils::time_t2Q( task->getStart(0) ),
                                     KtjUtils::time_t2Q( task->getEnd(0) ) );
+    item->setPixmap( 0, UserIcon( "task" ) );
 
     double daily = m_proj->getDailyWorkingHours();
 
