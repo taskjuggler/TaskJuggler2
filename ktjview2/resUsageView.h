@@ -161,6 +161,11 @@ private:
      */
     bool isVacationInterval( const Resource * res, const Interval & ival ) const;
 
+    /**
+     * @return the number of working days falling within the interval @p ival
+     */
+    int getWorkingDays( const Interval & ival ) const;
+
     ResourceList resList() const
         { return m_resList; }
 

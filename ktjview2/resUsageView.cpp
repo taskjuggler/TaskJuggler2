@@ -81,7 +81,7 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     if ( !res )
         return;
 
-    //kdDebug() << "Painting cell, resource: " << res << endl;
+    //kdDebug() << "Painting cell, resource: " << res->getName() << endl;
 
     Interval ival = intervalForCol( col );
     if ( ival.isNull() )
@@ -108,10 +108,10 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     if ( isVacationInterval( res, ival ) ) // vacations, sicktime
         p->fillRect( cRect, Settings::vacationTimeColor() );
 
-#if 0                           // FIXME, always true :(
-    if ( m_proj && !m_proj->isWorkingTime( ival ) ) // holidays and weekends
+    if ( m_proj && ( getWorkingDays( ival ) == 0 ) ) // holidays and weekends
         p->fillRect( cRect, Settings::holidayTimeColor() );
-#endif
+
+    // TODO perhaps would be better to draw a rectangle *around* for vacations and holidays
 
     p->drawText( cRect, Qt::AlignCenter, text( row, col ) );
     p->setClipping( false );
@@ -334,12 +334,17 @@ bool ResUsageView::isVacationInterval( const Resource * res, const Interval & iv
 {
     QPtrListIterator<Interval> vacIt = res->getVacationListIterator();
 
+    //kdDebug() << "Checking vacations of resource: " << res->getName() << endl;
+
     Interval * vacation;
     while ( ( vacation = vacIt.current() ) != 0 )
     {
         ++vacIt;
         if ( ival.contains( *vacation ) )
+        {
+            //kdDebug() << "Found vacation from: " << vacation->getStart() << " to: " << vacation->getEnd() << endl;
             return true;
+        }
     }
 
     return false;
@@ -348,6 +353,17 @@ bool ResUsageView::isVacationInterval( const Resource * res, const Interval & iv
 void ResUsageView::setProject( Project * proj )
 {
     m_proj = proj;
+}
+
+int ResUsageView::getWorkingDays( const Interval & ival ) const
+{
+    int workingDays = 0;
+
+    for (time_t s = midnight(ival.getStart()); s < ival.getEnd(); s = sameTimeNextDay(s))
+        if (m_proj->isWorkingDay(s))
+            workingDays++;
+
+    return workingDays;
 }
 
 #include "resUsageView.moc"
