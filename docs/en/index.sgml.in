@@ -210,6 +210,9 @@ conversion from working days to working hours.
 <item>Added support for a <ref id="task_allocate_select"
 name="select"> function for alternative resource allocations.
 
+<item>All load values in HTML reports can now be scaled by specifying
+a <ref id="htmltaskreport_loadunit" name="loadunit">.
+
 </itemize>
 
 <sect>Installation
@@ -534,14 +537,16 @@ include line breaks.
 
 <label id="time"><tag/TIME/A time in the format HH:MM.
 
-<label id="unit"><tag/UNIT/May be h for hours, d for days, w for
-weeks, m for months, y for years. Week, month and year specifications
-are only approximated values and are handled slightly different for
-length, effort and duration intervals. For length and effort only
-working days are counted. So a week is 5 working days, a month 20
-working days and a year 240 working days. For duration specifications
-calendar days are counted, so a week is 7 days, a month is 30 days and
-a year is 365 days long.
+<label id="unit"><tag/UNIT/May be <tt/min/ for minutes, <tt/h/ for
+hours, <tt/d/ for days, <tt/w/ for weeks, <tt/m/ for months, <tt/y/
+for years. Week, month and year specifications are only approximated
+values and are handled slightly different for length, effort and
+duration intervals. For length and effort only working days are
+counted. The number or working days per week, month or year is
+determined by the setting of <ref id="project_yearlyworkingdays"
+name="yearlyworkingdays">. The number of working hours or minutes per
+working day is determined by the setting of <ref
+id="project_dailyworkinghours" name="dailyworkinghours">.
 
 <label id="weekday"><tag/WEEKDAY/May be
 <descrip>
@@ -818,7 +823,8 @@ Optional attributes:
 See <ref id="htmltaskreport" name="htmltaskresport">
 
 
-<sect1>htmltaskreport &lt;filename&gt;<label id="htmltaskreport">
+<label id="htmltaskreport">
+<sect1>htmltaskreport &lt;filename&gt;
 <p>
 
 filename: <ref id="string" name="STRING">
@@ -901,6 +907,27 @@ expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
 List only tasks that do not have flags meeting the described logical
 expression.
+
+<label id="htmltaskreport_loadunit">
+<tag/loadunit &lt;unit&gt;/
+unit: Can be any of the following values:
+
+<descrip>
+<tag/days/Show load in man/resource-days.
+<tag/hours/Show load in man/resource-hours.
+<tag/longauto/Show laod in the most appropriate unit and show long
+unit name.
+<tag/minutes/Show load in man/resource-minutes.
+<tag/months/Show load in man/resource-months.
+<tag/shortauto/Show load in the most appropriate unit and show short
+unit name.
+<tag/weeks/Show load in man/resource-weeks.
+<tag/years/Show load in man/resource-years.
+</descrip>
+
+The conversion between the load values is controlled by the values of
+<ref id="project_dailyworkinghours" name="dailyworkinghours"> and <ref
+id="project_yearlyworkingdays" name="yearlyworkingdays">.
 
 <label id="htmltaskreport_rawhead">
 <tag/rawhead &lt;html&gt;/
@@ -1185,6 +1212,17 @@ Optional attributes:
 
 <descrip>
 
+<label id="project_dailyworkinghours">
+<tag/dailyworkinghours &lt;value&gt;/
+value: REAL
+
+Set the average number of working hours per day. This is used as the
+base to convert working hours into working days. This affects for
+example the <ref id="task_length" name="length"> task attribute. The
+default value is 8 hours and should work for most Western countries.
+The value you specifiy should match the settings you specified for
+<ref id="workinghours" name="workinghours">.
+
 <label id="project_now">
 <tag/now &lt;sometime&gt;/
 sometime: <ref id="date" name="DATE">
@@ -1201,17 +1239,6 @@ unit: <ref id="unit" name="UNIT">
 Sets the minimum timing resolution. The smaller the value, the longer
 the schedulings process lasts and the more memory the application
 needs. The default is 1 hour. The smallest value is 5 min.
-
-<label id="project_dailyworkinghours">
-<tag/dailyworkinghours &lt;value&gt;/
-value: REAL
-
-Set the average number of working hours per day. This is used as the
-base to convert working hours into working days. This affects for
-example the <ref id="task_length" name="length"> task attribute. The
-default value is 8 hours and should work for most Western countries.
-The value you specifiy should match the settings you specified for
-<ref id="workinghours" name="workinghours">.
 
 <label id="project_yearlyworkingdays">
 <tag/yearlyworkingdays &lt;value&gt;/
