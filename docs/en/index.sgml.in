@@ -138,6 +138,9 @@ used when calling TaskJuggler from CGI scripts.
 
 <item>Fixed sorting by ID for all HTML reports.
 
+<item>Fixed bug in vacation handling. Vacations that started before
+the project were silently ignored.
+
 <item>Added support for <ref name="taskattributes"
 id="export_taskattributes">.
 
@@ -145,6 +148,8 @@ id="export_taskattributes">.
 some values were added and corrected. 
 
 <item>Added a first simple TaskJuggler XML-output viewer for KDE. 
+
+<item>Support for URLs in HTML reports added.
 
 </itemize>
 
@@ -887,10 +892,52 @@ expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 Do not show subresources of resources with flags meeting the
 described logical expression.
 
+<tag/url &lt;id&gt; &lt;href&gt;/
+id: The ID specifies the location of the HTML report where the url
+should appear. The following IDs are currently supported:
+
+<descrip>
+<tag/dayheader/The number of the day in daily calendars. Available
+macros: day, month, year
+<tag/monthheader/The name of the month in weekly or monthly calendars.
+Available macros: day, month year
+<tag/resourcename/The name of the resource. Available macros:
+resourceid
+<tag/taskname/The name of the task. Available macros: taskid
+<tag/weekheader/The number of the week in weekly calendars. Available
+macros: day, month, year
+<tag/yearheader/The number of the year in yearly calendars. Available
+macros: day, month, year
+</descrip>
+
+href: A string pattern that is used to create the embedded URLs. This
+pattern may contain macros which are expanded during the report
+generation. The availability of the macros and their contense depends
+on the specified ID. To protect the macros from beeing expanded during
+file reading the macros in the URL string need to be started with two
+$ signs.
+
+Example:
+<tt>url taskname "TaskList-Weekly.html#task_$${taskid}"</tt>
+
+This attaches a hyperlink to all task names in the report. The
+hyperlinks point to anchors in a file called "TaskList-Weekly.html".
+Taskjuggler automatically generates anchors in reports. The ID of the
+anchors is task_<tt/&lt;taskid&gt;/ or
+resource_<tt/&lt;resourceid&gt;/.
+
+<tt>url monthheader "Resources-2002-$${month}.html"</tt>
+
+This attaches a hyperlink to all month names in a monthly or weekly
+calendar header. The links point to files that contain the number of
+the month in the file name. The number is always two digits and
+prefixed with a 0 if necessary. The year marco expands to 4 digits.
+
+</descrip>
+
 Generates a report of all tasks (excluding hidden and filtered) in
 HTML format. Multiple declarations of htmltaskreport can be made to
 generate several different reports with one run of TaskJuggler.
-</descrip>
 
 
 <sect1>icalreport &lt;filename&gt;<label id="icalreport">
