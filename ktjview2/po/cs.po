@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-04 17:37+0200\n"
-"PO-Revision-Date: 2004-09-04 17:48+0200\n"
+"POT-Creation-Date: 2004-09-04 17:49+0200\n"
+"PO-Revision-Date: 2004-09-04 17:57+0200\n"
 "Last-Translator: Lukáš Tinkl <lukas@kde.org>\n"
 "Language-Team: Czech <kde-czech-apps@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr "je rovno"
 msgid "doesn't equal"
 msgstr "není rovno"
 
-#: filter.cpp:81
+#: filter.cpp:81 filterDialog.cpp:56
 msgid "matches regexp"
 msgstr "odpovídá reg. výrazu"
 
@@ -66,10 +66,6 @@ msgstr "větší nebo rovno"
 #: filterDialog.cpp:51
 msgid "Filter"
 msgstr "Filtr"
-
-#: filterDialog.cpp:56
-msgid "matches reqexp"
-msgstr "odpovídá reg. výrazu"
 
 #: filterDialog.cpp:119
 msgid "new filter"
@@ -352,23 +348,20 @@ msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr "Soubory Taskjuggleru (*.tjp *.tjx *.tji)"
 
 #: ktjview2.cpp:357
-msgid "to open ..."
-msgstr ""
+msgid "Open Project"
+msgstr "Otevřít projekt"
 
 #: ktjview2.cpp:368
-#, fuzzy
 msgid "Project '%1' successfully saved."
-msgstr "Projekt."
+msgstr "Projekt '%1' úspěšně uložen."
 
 #: ktjview2.cpp:370
-#, fuzzy
 msgid "Saving project '%1' failed."
-msgstr "selhání."
+msgstr "Uložení projektu '%1' selhalo."
 
 #: ktjview2.cpp:543 ktjview2.cpp:557
-#, fuzzy
 msgid "&Filter for: %1"
-msgstr "&Filtr pro 1"
+msgstr "&Filtr: %1"
 
 #: ktjview2.cpp:545
 #, fuzzy
@@ -564,8 +557,7 @@ msgid "Report date: %1<br>"
 msgstr "datum<br>"
 
 #: ktjview2view.cpp:434
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "%1%"
 msgstr "%1%"
 
@@ -667,8 +659,7 @@ msgid "&Search:"
 msgstr "&Hledat:"
 
 #: rc.cpp:2 rc.cpp:41 rc.cpp:62
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Form1"
 msgstr "Form1"
 
@@ -678,74 +669,62 @@ msgid "Available filters"
 msgstr ""
 
 #: rc.cpp:7
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Ctrl+T, Ctrl+T"
 msgstr "Ctrl T Ctrl T"
 
 #: rc.cpp:9
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Add a new filter"
 msgstr "Přidat a nové filtr"
 
 #: rc.cpp:12
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Remove the selected filter"
 msgstr "Odstranit filtr"
 
 #: rc.cpp:15
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Rename the selected filter"
 msgstr "Přejmenovat filtr"
 
 #: rc.cpp:17
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Filter criteria"
 msgstr "Filtr"
 
 #: rc.cpp:19
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Matches all of the following"
 msgstr "vše"
 
 #: rc.cpp:21
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&More"
 msgstr "&Více"
 
 #: rc.cpp:23
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Alt+M"
 msgstr "Alt M"
 
 #: rc.cpp:25
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Fewer"
 msgstr "Méně"
 
 #: rc.cpp:27
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Alt+F"
 msgstr "Alt F"
 
 #: rc.cpp:29
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Cl&ear"
 msgstr "Vyprázdnit"
 
 #: rc.cpp:31
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Alt+E"
 msgstr "Alt+E"
 
@@ -755,140 +734,117 @@ msgid "Matches any of the following"
 msgstr ""
 
 #: rc.cpp:35
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Property"
 msgstr "Vlastnost"
 
 #: rc.cpp:37
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Expression"
 msgstr "Výraz"
 
 #: rc.cpp:39
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Value"
 msgstr "Hodnota"
 
 #: rc.cpp:43
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Week&day background color:"
 msgstr "poza&dí barva:"
 
 #: rc.cpp:46
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Weekend background color:"
 msgstr "O víkendu pozadí barva:"
 
 #: rc.cpp:49
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Task color:"
 msgstr "Úkol barva:"
 
 #: rc.cpp:53
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Task &group color:"
 msgstr "Úkol skupina barva:"
 
 #: rc.cpp:56
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Milestone color:"
 msgstr "barva:"
 
 #: rc.cpp:58
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Use &alternate background for horizontal lines"
 msgstr "Použít poz&adí pro"
 
 #: rc.cpp:60
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Alt+A"
 msgstr "Alt"
 
 #: rc.cpp:64
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Free time:"
 msgstr "Volný čas:"
 
 #: rc.cpp:67
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Vacations and sicktime:"
 msgstr "a:"
 
 #: rc.cpp:70
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Weekends and holidays:"
 msgstr "a:"
 
 #: rc.cpp:73
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Background color for week days."
 msgstr "Pozadí barva pro dny."
 
 #: rc.cpp:75
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Background color for weekend days."
 msgstr "Pozadí barva pro dny."
 
 #: rc.cpp:77
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Color for task items."
 msgstr "Barva pro úkol."
 
 #: rc.cpp:79
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Color task group items."
 msgstr "Barva úkol skupina."
 
 #: rc.cpp:81
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Color for milestone items."
 msgstr "Barva pro."
 
 #: rc.cpp:83
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Show alternate horizontal lines."
 msgstr "Zobrazit."
 
 #: rc.cpp:85
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Background color for free time."
 msgstr "Pozadí barva pro free čas."
 
 #: rc.cpp:87
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Background color for vacations and sicktime."
 msgstr "Pozadí barva pro a."
 
 #: rc.cpp:89
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Background color for holidays and weekends."
 msgstr "Pozadí barva pro a."
 
 #: rc.cpp:91
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Edit"
 msgstr "Ú&pravy"
 
@@ -898,32 +854,27 @@ msgid "&Gantt"
 msgstr ""
 
 #: rc.cpp:95
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Resources"
 msgstr "Zd&roje"
 
 #: rc.cpp:97
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Outline"
 msgstr "&Osnova"
 
 #: rc.cpp:99
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "T&asks"
 msgstr "Úlohy"
 
 #: rc.cpp:101
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Resource &Usage"
 msgstr "Zdroj Vy&užití"
 
 #: rc.cpp:103
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "&Tools"
 msgstr "&Nástroje"
 
@@ -933,14 +884,12 @@ msgid "Sidebar"
 msgstr ""
 
 #: rc.cpp:107
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Gantt Toolbar"
 msgstr "Nástrojová lišta"
 
 #: rc.cpp:109
-#, no-c-format
-#, fuzzy
+#, fuzzy, no-c-format
 msgid "Quick Search Toolbar"
 msgstr "Hledat Nástrojová lišta"
 
@@ -1262,4 +1211,7 @@ msgstr "Vyjmout položku"
 #: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
 msgid "Tasklink"
 msgstr ""
+
+#~ msgid "matches reqexp"
+#~ msgstr "odpovídá reg. výrazu"
 
