@@ -301,9 +301,10 @@ public:
 	bool scheduleOk(int& errors, QString scenario);
 	bool preScheduleOk();
 	bool loopDetector();
-	bool loopDetection(LDIList list, bool atEnd, bool fromSub);
+	bool loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent);
 	void computeBuffers();
 	bool isActive();
+	time_t nextSlot(time_t slotDuration);
 
 	void setMilestone() { milestone = TRUE; }
 	bool isMilestone() const { return milestone; }

@@ -40,10 +40,9 @@ class Project
 {
 public:
 	Project();
-	~Project() { }
+	~Project();
 
-	bool addTask(Task* t);
-	bool pass2();
+	bool pass2(bool checkOnlySyntax);
 
 	void preparePlan();
 	void finishPlan();
@@ -122,6 +121,10 @@ public:
 		return vacationList.next();
 	}
 
+	void addTask(Task* t)
+	{
+		taskList.append(t);
+	}
 	Task* getTask(const QString& id)
 	{
 		return taskList.getTask(id);
@@ -140,7 +143,7 @@ public:
 
 	void addAccount(Account* a)
 	{
-		accountList.inSort(a);
+		accountList.append(a);
 	}
 	Account* getAccount(const QString& id)
 	{
@@ -150,7 +153,7 @@ public:
 
 	void addShift(Shift* s)
 	{
-		shiftList.inSort(s);
+		shiftList.append(s);
 	}
 	Shift* getShift(const QString& id)
 	{

@@ -100,7 +100,7 @@ HTMLAccountReport::generate()
 void
 HTMLAccountReport::generatePlanAccount(Account* a)
 {
-	s << "<tr valign=\"center\">";
+	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -489,7 +489,7 @@ HTMLAccountReport::monthlyAccountActual(Account* a, const QString& style)
 void
 HTMLAccountReport::accountName(Account* a)
 {
-	QString spaces = "";
+	QString spaces;
 	int fontSize = 0;
 
 	if (accountSortCriteria[0] == CoreAttributesList::TreeMode)

@@ -404,6 +404,7 @@ Resource::addActualBooking(Booking* nb)
 	// Cross register booking with task.
 	if (retVal && nb->getTask())
 		nb->getTask()->addActualBookedResource(this);
+	delete nb;
 	actualScoreboard = scoreboard;
 	scoreboard = tmp;
 	return retVal;

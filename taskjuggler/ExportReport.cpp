@@ -46,6 +46,8 @@ ExportReport::ExportReport(Project* p, const QString& f,
 	// hide all resources
 	hideResource = new ExpressionTree(new Operation(1));
 
+	showActual = FALSE;
+
 	taskSortCriteria[0] = CoreAttributesList::TreeMode;
 	taskSortCriteria[1] = CoreAttributesList::PlanStartUp;
 	taskSortCriteria[2] = CoreAttributesList::PlanEndUp;
@@ -241,7 +243,7 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 						   	<< endl;
 					break;
 				case TA_COMPLETE:
-					if (t->getComplete() >= 0.0)
+					if (t->getComplete() >= 0.0 && showActual)
 						s << "  complete " << (int) t->getComplete() << endl;
 					break;
 				case TA_RESPONSIBLE:
@@ -284,16 +286,19 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 					<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
 			}
 		}
-		bl = r->getActualJobs();
-		bl.setAutoDelete(TRUE);
-		for (Booking* b = bl.first(); b != 0; b = bl.next())
+		if (showActual)
 		{
-			if (filteredTaskList.findRef(b->getTask()) >= 0)
+			bl = r->getActualJobs();
+			bl.setAutoDelete(TRUE);
+			for (Booking* b = bl.first(); b != 0; b = bl.next())
 			{
-				QString start = time2rfc(b->getStart());
-				QString end = time2rfc(b->getEnd() + 1);
-				s << "  actualbooking " << start << " " << end 
-					<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
+				if (filteredTaskList.findRef(b->getTask()) >= 0)
+				{
+					QString start = time2rfc(b->getStart());
+					QString end = time2rfc(b->getEnd() + 1);
+					s << "  actualbooking " << start << " " << end 
+						<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
+				}
 			}
 		}
 		s << "}" << endl;

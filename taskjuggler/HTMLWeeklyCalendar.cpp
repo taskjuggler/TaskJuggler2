@@ -85,7 +85,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 			s << (isSameDay(project->getNow(), wd) ? "today" :
 				  isWeekend(wd) ? "weekend" : "headersmall");
 			s << "\">"
-				<< "<table width=\"100%\" style=\"text-align=\"left\">"
+				<< "<table width=\"100%\" style=\"text-align:left\">"
 				<< "<tr>"
 				<<   "<td width=\"25%\" rowspan=\"2\" "
 				     "style=\"font-size:250%; text-align:center\">" 
@@ -124,7 +124,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 					{
 						if (first)
 						{
-							s << "<table width=\"100%\" height=\"100%\" "
+							s << "<table width=\"100%\" "
 								"style=\"font-size:100%\">" << endl;
 							first = FALSE;
 						}
@@ -165,7 +165,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 					{
 						if (first)
 						{
-							s << "<table width=\"100%\" height=\"100%\" "
+							s << "<table width=\"100%\" "
 								"style=\"font-size:100%\">" << endl;
 							first = FALSE;
 						}

@@ -1,0 +1,14 @@
+project prj "Loop Detector Test" "$Id" 2000-01-01 2000-01-06
+
+task t1 "Task1" {
+	start 2000-01-01
+	preceeds !t2
+	scheduling asap
+}
+
+task t2 "Task2" {
+	end 2000-01-05
+	depends !t1
+	scheduling alap
+}
+

@@ -16,7 +16,7 @@ function do_testing
   f=$1
   op=$2
   echo "Running test $f" >> ../log
-  $TASKJUGGLER $f 2>> ../log
+  $TASKJUGGLER $TJARGS $f 2>> ../log
   if [ $? $op 0 ] ; then
     errors=$(( $errors + 1 ))
     echo "Test $f failed!"
@@ -50,6 +50,11 @@ touch log
 
 touch .timeStamp
 sleep 1
+
+TJARGS=""
+if [ -f .tjargs ] ; then
+  TJARGS=`cat .tjargs`
+fi
 
 cd Correct
 echo "*** Running tests in Correct..." >> ../log

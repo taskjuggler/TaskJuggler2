@@ -102,6 +102,8 @@ public:
 	bool hasFlag(const QString& flag) { return flags.hasFlag(flag); }
 	FlagList getFlagList() const { return flags; }
 
+	bool hasSameAncestor(CoreAttributes* c);
+
 protected:
 	/// A pointer to access information that are global to the project.
 	Project* project;

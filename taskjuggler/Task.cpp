@@ -112,7 +112,6 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 	complete = -1;
 	startBuffer = 0.0;
 	endBuffer = 0.0;
-	note = "";
 	account = 0;
 	startCredit = endCredit = 0.0;
 	lastSlot = 0;
@@ -207,16 +206,16 @@ Task::fatalError(const char* msg, ...) const
 bool
 Task::schedule(time_t& date, time_t slotDuration)
 {
-	if (DEBUGTS(15))
-		qWarning("Scheduling %s at %s",
-				 id.latin1(), time2tjp(date).latin1());
-
 	// Task is already scheduled.
-	if (schedulingDone)
+	if (schedulingDone || !sub.isEmpty())
 	{
-		qFatal("Task %s is already scheduled", id.latin1());
+		//qFatal("Task %s is already scheduled", id.latin1());
 		return TRUE;
 	}
+
+	if (DEBUGTS(15))
+		qWarning("Trying to schedule %s at %s",
+				 id.latin1(), time2tjp(date).latin1());
 
 	bool limitChanged = FALSE;
 	if (start == 0 &&
@@ -225,7 +224,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 	{
 		/* No start time has been specified. The start time is either
 		 * start time of the parent (or the project start time if the
-		 * tasks has no previous tasks) or the start time is
+		 * task has no previous tasks) or the start time is
 		 * determined by the end date of the last previous task. */
 		time_t es;
 		if (depends.count() == 0)
@@ -273,7 +272,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 			end = le;
 			propagateEnd();
 		}
-		else			return TRUE;	// Task cannot be scheduled yet.
+		else
+			return TRUE;	// Task cannot be scheduled yet.
 		
 		limitChanged = TRUE;
 	}
@@ -490,8 +490,9 @@ Task::propagateStart(bool safeMode)
 				 id.latin1(), time2tjp(start).latin1());
 
 	for (Task* t = previous.first(); t != 0; t = previous.next())
-		if (t->end == 0 && t->scheduling == ALAP &&
-			t->latestEnd() != 0)
+		if (t->end == 0 && t->latestEnd() != 0 &&
+			(t->scheduling == ALAP || 
+			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0)))
 		{
 			t->end = t->latestEnd();
 			if (DEBUGTS(11))
@@ -534,8 +535,9 @@ Task::propagateEnd(bool safeMode)
 				 id.latin1(), time2tjp(end).latin1());
 
 	for (Task* t = followers.first(); t != 0; t = followers.next())
-		if (t->start == 0 && t->scheduling == ASAP &&
-			t->earliestStart() != 0)
+		if (t->start == 0 && t->earliestStart() != 0 && 
+			(t->scheduling == ASAP ||
+			 (t->effort == 0.0 && t->length == 0.0 && t->duration == 0.0)))
 		{
 			t->start = t->earliestStart();
 			if (DEBUGTS(11))
@@ -852,6 +854,8 @@ Task::earliestStart()
 		if (t->end > date)
 			date = t->end;
 	}
+	if (date == 0)
+		return 0;
 
 	return date + 1;
 }
@@ -862,12 +866,14 @@ Task::latestEnd()
 	time_t date = 0;
 	for (Task* t = preceeds.first(); t != 0; t = preceeds.next())
 	{
-		// All tasks this task preceeds must have an start date set.
+		// All tasks this task preceeds must have a start date set.
 		if (t->start == 0)
 			return 0;
 		if (date == 0 || t->start < date)
 			date = t->start;
 	}
+	if (date == 0)
+		return 0;
 
 	return date - 1;
 }
@@ -1120,36 +1126,43 @@ Task::loopDetector()
 		return FALSE;
 	if (DEBUGPF(2))
 		qWarning("Running loop detector for task %s", id.latin1());
-	return loopDetection(LDIList(), FALSE, FALSE);
+	return loopDetection(LDIList(), FALSE, FALSE, FALSE);
 }
 
 bool
-Task::loopDetection(LDIList list, bool atEnd, bool fromSub)
+Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 {
 	if (DEBUGPF(10))
-		qWarning("loopDetection at %s (%s)", id.latin1(), atEnd ? "End" :
-				 "Start");
+		qWarning("%sloopDetection at %s (%s)",
+				 QString().fill(' ', list.count()).latin1(), id.latin1(),
+				 atEnd ? "End" : "Start");
 	
 	LoopDetectorInfo thisTask(this, atEnd);
 	
 	/* If we find the current task (with same position) in the list, we have
 	 * detected a loop. */
-	if (list.find(thisTask) != list.end())
+	LDIList::iterator it;
+	if ((it = list.find(thisTask)) != list.end())
 	{
-		fatalError("Dependency loop detected at task %s (%s)!",
-				   id.latin1(), atEnd ? "End" : "Begining");
-		LDIList::iterator it;
-		for (it = list.begin(); it != list.end() && (*it).getTask() != this;
-			 ++it)
+		QString loopChain;
+		for ( ; it != list.end(); ++it)
 		{
+			loopChain += QString("%1 (%2) -> ")
+				.arg((*it).getTask()->getId())
+				.arg((*it).getAtEnd() ? "End" : "Start");
+			/*
 			(*it).getTask()->fatalError("%s (%s) is part of loop",
 										(*it).getTask()->getId().latin1(),
 										(*it).getAtEnd() ?
-									   	"End" : "Begining");
+									   	"End" : "Start");
+										*/
 		}
+		loopChain += QString("%1 (%2)").arg(id)
+			.arg(atEnd ? "End" : "Start");
+		fatalError("Dependency loop detected: %s", loopChain.latin1());
 		return TRUE;
 	}
-	list.prepend(thisTask);
+	list.append(thisTask);
 
 	/* Now we have to traverse the graph in the direction of the specified
 	 * dependencies. 'preceeds' and 'depends' specify dependencies in the
@@ -1167,21 +1180,59 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub)
 			for (Task* t = (Task*) subCopy.first(); t;
 				 t = (Task*) subCopy.next())
 			{
-				if (DEBUGPF(10))
-					qWarning("Checking sub task %s of %s", t->getId().latin1(),
+				if (DEBUGPF(15))
+					qWarning("%sChecking sub task %s of %s",
+							 QString().fill(' ', list.count()).latin1(),
+							 t->getId().latin1(),
 							 id.latin1());
-				if (t->loopDetection(list, FALSE, FALSE))
+				if (t->loopDetection(list, FALSE, FALSE, TRUE))
 					return TRUE;
 			}
 		
-		if (parent && scheduling == ASAP)
+		if (scheduling == ASAP)
 		{
-			if (DEBUGPF(10))
-				qWarning("Checking parent task of %s", id.latin1());		
-			if (getParent()->loopDetection(list, TRUE, TRUE))
-				return TRUE;
+			if (sub.isEmpty())
+			{
+				if (DEBUGPF(15))
+					qWarning("%sChecking end of task %s",
+							 QString().fill(' ', list.count()).latin1(),
+							 id.latin1());
+				if (loopDetection(list, TRUE, FALSE, FALSE))
+					return TRUE;
+			}	
 		}
-		
+		if (parent && !fromParent)
+		{
+			bool previousHasSameAncestor = FALSE;
+			CoreAttributesList previousCopy = previous;
+			for (Task* t = (Task*) previousCopy.first(); t;
+				 t = (Task*) previousCopy.next())
+			{
+				if (hasSameAncestor(t))
+					previousHasSameAncestor = TRUE;
+			}
+			if (!previousHasSameAncestor)
+			{
+				if (DEBUGPF(15))
+					qWarning("%sChecking parent task of %s",
+							 QString().fill(' ', list.count()).latin1(),	
+							 id.latin1());		
+				if (getParent()->loopDetection(list, FALSE, TRUE, FALSE))
+					return TRUE;
+			}
+		}
+		CoreAttributesList previousCopy = previous;
+		for (Task* t = (Task*) previousCopy.first(); t;
+			 t = (Task*) previousCopy.next())
+			if (t->preceeds.find(this) != -1)
+			{
+				if (DEBUGPF(15))
+					qWarning("%sChecking previous %s of task %s",
+							 QString().fill(' ', list.count()).latin1(),
+							 t->getId().latin1(), id.latin1());
+				if(t->loopDetection(list, TRUE, FALSE, FALSE))
+					return TRUE;
+			}
 	}
 	else
 	{
@@ -1190,46 +1241,64 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub)
 			for (Task* t = (Task*) subCopy.first(); t;
 				 t = (Task*) subCopy.next())
 			{
-				if (DEBUGPF(10))
-					qWarning("Checking sub task %s of %s", t->getId().latin1(),
-							 id.latin1());
-				if (t->loopDetection(list, TRUE, FALSE))
+				if (DEBUGPF(15))
+					qWarning("%sChecking sub task %s of %s",
+							 QString().fill(' ', list.count()).latin1(),	
+							 t->getId().latin1(), id.latin1());
+				if (t->loopDetection(list, TRUE, FALSE, TRUE))
 					return TRUE;
 			}
 		
-		if (parent && scheduling == ALAP)
+		if (scheduling == ALAP)
 		{
-			if (DEBUGPF(10))
-				qWarning("Checking parent task of %s", id.latin1());		
-		   	if (getParent()->loopDetection(list, FALSE, TRUE))
-				return TRUE;
+			if (sub.isEmpty())
+			{
+				if (DEBUGPF(15))
+					qWarning("%sChecking start of task %s",
+							 QString().fill(' ', list.count()).latin1(),	
+							 id.latin1());
+				if (loopDetection(list, FALSE, FALSE, FALSE))
+					return TRUE;
+			}
 		}
+		if (parent && !fromParent)
+		{
+			bool followerHasSameAncestor = FALSE;
+			CoreAttributesList followersCopy = followers;
+			for (Task* t = (Task*) followersCopy.first(); t;
+				 t = (Task*) followersCopy.next())
+			{
+				if (hasSameAncestor(t))
+					followerHasSameAncestor = TRUE;
+			}
+			if (!followerHasSameAncestor)
+			{
+			   if (DEBUGPF(15))
+				   qWarning("%sChecking parent task of %s",
+							QString().fill(' ', list.count()).latin1(),	
+						   	id.latin1());		
+			   if (getParent()->loopDetection(list, TRUE, TRUE, FALSE))
+				   return TRUE;
+			}
+		}
+		CoreAttributesList followersCopy = followers;
+		for (Task* t = (Task*) followersCopy.first(); t;
+			 t = (Task*) followersCopy.next())
+			if (t->depends.find(this) != -1)
+			{
+				if (DEBUGPF(15))
+					qWarning("%sChecking follower %s of task %s",
+							 QString().fill(' ', list.count()).latin1(),	
+							 t->getId().latin1(), id.latin1());
+				if (t->loopDetection(list, FALSE, FALSE, FALSE))
+					return TRUE;
+			}
 	}
-	CoreAttributesList previousCopy = previous;
-	for (Task* t = (Task*) previousCopy.first(); t;
-		 t = (Task*) previousCopy.next())
-		if (depends.find(t) == -1)
-		{
-			if (DEBUGPF(10))
-				qWarning("Checking previous %s of task %s",
-						 t->getId().latin1(), id.latin1());
-			if(t->loopDetection(list, TRUE, FALSE))
-				return TRUE;
-		}
-	CoreAttributesList followersCopy = followers;
-	for (Task* t = (Task*) followersCopy.first(); t;
-		 t = (Task*) followersCopy.next())
-		if (preceeds.find(t) == -1)
-		{
-			if (DEBUGPF(10))
-				qWarning("Checking follower %s of task %s",
-						 t->getId().latin1(), id.latin1());
-			if (t->loopDetection(list, FALSE, FALSE))
-				return TRUE;
-		}
 
 	if (DEBUGPF(10))
-		qWarning("No loops found in %s", id.latin1());
+		qWarning("%sNo loops found in %s (%s)",
+				 QString().fill(' ', list.count()).latin1(),	
+				 id.latin1(), atEnd ? "End" : "Start");
 	return FALSE;
 }
 
@@ -1766,6 +1835,35 @@ Task::isActive()
 		return TRUE;
 
 	return FALSE;
+}
+
+time_t
+Task::nextSlot(time_t slotDuration)
+{
+	if (schedulingDone || !sub.isEmpty())
+		return 0;
+
+	if (scheduling == ASAP && start != 0)
+	{
+		if (effort == 0 && length == 0 && duration == 0 && !milestone &&
+		   	end == 0)
+			return 0;
+
+		if (lastSlot == 0)
+			return start;
+		return lastSlot + 1;
+	}
+	if (scheduling == ALAP && end != 0)
+	{
+		if (effort == 0 && length == 0 && duration == 0 && !milestone &&
+			start == 0)
+			return 0;
+		if (lastSlot == 0)
+			return end - slotDuration + 1;
+		return lastSlot - slotDuration;
+	}
+
+	return 0;
 }
 
 bool

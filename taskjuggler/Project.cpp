@@ -30,6 +30,22 @@ Project::Project()
 	taskList.setAutoDelete(TRUE);
 	resourceList.setAutoDelete(TRUE);
 	accountList.setAutoDelete(TRUE);
+
+	vacationList.setAutoDelete(TRUE);
+	
+	htmlTaskReports.setAutoDelete(TRUE);
+	htmlResourceReports.setAutoDelete(TRUE);
+	htmlAccountReports.setAutoDelete(TRUE);
+	htmlWeeklyCalendars.setAutoDelete(TRUE);
+	exportReports.setAutoDelete(TRUE);
+	
+	xmlreport = 0;
+#ifdef HAVE_ICAL
+#ifdef HAVE_KDE
+	icalReport = 0;
+#endif
+#endif
+
 	activeAsap.setSorting(CoreAttributesList::PrioDown, 0);
 	activeAlap.setSorting(CoreAttributesList::PrioDown, 0);
 	priority = 500;
@@ -46,19 +62,13 @@ Project::Project()
 	end = 0;
 	now = time(0);
 	
-	copyright = "";
+	copyright = QString::null;
 	minEffort = 0.0;
 	maxEffort = 1.0;
 	rate = 0.0;
-	currency = "";
+	currency = QString::null;
 	currencyDigits = 3;
 	kotrus = 0;
-	xmlreport = 0;
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-	icalReport = 0;
-#endif
-#endif
 	
 	/* Initialize working hours with default values that match the Monday -
 	 * Friday 9 - 6 (with 1 hour lunch break) pattern used by many western
@@ -78,6 +88,16 @@ Project::Project()
 	// Saturday
 	workingHours[6] = new QPtrList<Interval>();
 	workingHours[6]->setAutoDelete(TRUE);
+}
+
+Project::~Project()
+{
+	delete xmlreport;
+#ifdef HAVE_ICAL
+#ifdef HAVE_KDE
+	delete icalReport;
+#endif
+#endif
 }
 
 bool
@@ -107,14 +127,7 @@ Project::getIdIndex(const QString& i) const
 }
 
 bool
-Project::addTask(Task* t)
-{
-	taskList.append(t);
-	return TRUE;
-}
-
-bool
-Project::pass2()
+Project::pass2(bool checkOnlySyntax)
 {
 	QDict<Task> idHash;
 	bool error = FALSE;
@@ -158,6 +171,9 @@ Project::pass2()
 
 	if (error)
 		return FALSE;
+
+	if (checkOnlySyntax)
+		return TRUE;
 
 	if (DEBUGPS(1))
 		qWarning("Scheduling plan scenario...");
@@ -247,6 +263,54 @@ Project::schedule(const QString& scenario)
 	sortedTasks.setSorting(CoreAttributesList::SequenceUp, 1);
 	sortedTasks.sort();
 
+	bool done;
+	do
+	{
+		done = TRUE;
+		time_t slot = 0;
+		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
+		{
+			if (slot == 0)
+			{
+				slot = t->nextSlot(scheduleGranularity);
+				if (slot == 0)
+					continue;
+				if (DEBUGPS(5))
+					qWarning("Task %s requests slot %s", t->getId().latin1(),
+							 time2ISO(slot).latin1());
+				if (slot < start)
+				{
+					if (DEBUGPS(2))
+						qWarning("Scheduler ran over start of project");
+
+					if (t->setRunaway(slot, scheduleGranularity))
+					{
+						if (DEBUGPS(5))
+							qDebug("Marking task %s as runaway",
+								   t->getId().latin1());
+						error = TRUE;
+					}
+				}
+				if (slot > end)
+				{
+					if (DEBUGPS(2))
+						qWarning("Scheduler ran over end of project");
+
+					if (t->setRunaway(slot, scheduleGranularity))
+					{
+						if (DEBUGPS(5))
+							qWarning("Marking task %s as runaway",
+									 t->getId().latin1());
+						error = TRUE;
+					}
+				}
+			}
+			t->schedule(slot, scheduleGranularity);
+			done = FALSE;
+		}
+	} while (!done);
+	
+#if 0
 	activeAsap.setSorting(CoreAttributesList::PrioDown, 0);
 	activeAsap.setSorting(CoreAttributesList::SequenceUp, 1);
 	activeAlap.setSorting(CoreAttributesList::PrioDown, 0);
@@ -278,11 +342,7 @@ Project::schedule(const QString& scenario)
 					break;	// Start with top priority tasks again.
 				}
 				if (t->needsEarlierTimeSlot(day + scheduleGranularity))
-				{
-					if (DEBUGPS(5))
-						qWarning("Scheduling backwards now");
 					timeDelta = -scheduleGranularity;
-				}
 			}
 		} while (!done);
 
@@ -339,6 +399,7 @@ Project::schedule(const QString& scenario)
 		}
 	}
 
+#endif
 	if (error)
 		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
 			if (t->isRunaway())
@@ -536,7 +597,7 @@ Project::loadFromXML( const QString& inpFile )
    {
       qDebug("Empty !" );
    }
-   pass2();
+   pass2(FALSE);
    return true;
 }
 

@@ -228,7 +228,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
       if( anz > 0 )
       {
 
-	 QString allSkips = "";
+	 QString allSkips;
 	 bool needOr = false;
 	 int validSkips = 0;
 	 

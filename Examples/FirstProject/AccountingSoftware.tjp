@@ -167,24 +167,23 @@ task AcSo "Accounting Software" {
 # code to be embedded into all the HTML reports.
 macro navbar [
 rawhead
-	'<p><center>
-	<table border="2" cellpadding="10">
+	'<table align="center" border="2" cellpadding="10">
 	<tr>
 	  <td class="default" style="font-size:120%" rowspan="2">
-		<a href="Tasks-Overview.html">Tasks Overview</td>
+		<a href="Tasks-Overview.html">Tasks Overview</a></td>
 	  <td class="default" style="font-size:120%" rowspan="2">
-		<a href="Tasks-Details.html">Tasks Details</td>
+		<a href="Tasks-Details.html">Tasks Details</a></td>
 	  <td class="default" style="font-size:120%" rowspan="2">
-		<a href="Staff-Overview.html">Staff Overview</td>
+		<a href="Staff-Overview.html">Staff Overview</a></td>
 	  <td class="default" style="font-size:120%" rowspan="2">
-		<a href="Staff-Details.html">Staff Details</td>
+		<a href="Staff-Details.html">Staff Details</a></td>
 	  <td class="default" style="font-size:120%" rowspan="2">
-		<a href="Accounting.html">Accounting</td>
+		<a href="Accounting.html">Accounting</a></td>
 	  <td class="default" style="font-size:120%" rowspan="2">
-		<a href="acso.eps">GANTT Chart (Postscript)</td>
+		<a href="acso.eps">GANTT Chart (Postscript)</a></td>
 	</tr>
   </table>
-  </center></p><br>'
+  <br>'
 ]
 
 # As the first report, we would like to have a general overview of all

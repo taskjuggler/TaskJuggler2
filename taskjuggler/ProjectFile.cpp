@@ -75,7 +75,7 @@ FileInfo::open()
 		f = new QTextStream(fh, IO_ReadOnly);
 	}
 
-	lineBuf = "";
+	lineBuf = QString::null;
 	currLine = 1;
 	return TRUE;
 }
@@ -1324,11 +1324,11 @@ ProjectFile::readTaskSupplement(QString prefix)
 		prefix += ".";
 	
 	if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
-		((task = proj->getTask(prefix == "" ?
+		((task = proj->getTask(prefix.isEmpty() ?
 							   token : prefix + token)) == 0))
 	{
 		fatalError("Task '%s' has not been defined yet",
-				   (prefix == "" ? token : prefix + token).latin1());
+				   (prefix.isEmpty() ? token : prefix + token).latin1());
 		return FALSE;
 	}
 	if (nextToken(token) != LCBRACE)
@@ -1953,6 +1953,7 @@ ProjectFile::readShift(Shift* parent)
 	}
 
 	Shift* s = new Shift(proj, id, name, parent);
+	proj->addShift(s);
 
 	TokenType tt;
 	QString token;
@@ -1995,8 +1996,6 @@ ProjectFile::readShift(Shift* parent)
 	}
 	else
 		returnToken(tt, token);
-
-	proj->addShift(s);
 
 	return TRUE;
 }
@@ -3013,6 +3012,10 @@ ProjectFile::readExportReport()
 					break;
 				}
 			}
+		}
+		else if (token == KW("showactual"))
+		{
+			report->setShowActual(TRUE);
 		}
 		else
 		{

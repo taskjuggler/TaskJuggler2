@@ -163,7 +163,7 @@ QString
 Operation::evalFunctionAsString(ExpressionTree* )
 {
 	// There are no functions yet that return a string.
-	return "";
+	return QString::null;
 }
 
 ExpressionTree::ExpressionTree(Operation* op) : expression(op)

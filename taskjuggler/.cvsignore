@@ -3,9 +3,7 @@ Makefile.in
 taskjuggler
 .deps
 .libs
-*.task
 *.gif
-*.html
 taskjuggler.dtd
 *.o
 *.lo

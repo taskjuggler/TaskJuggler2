@@ -26,7 +26,7 @@ class ShiftList : public CoreAttributesList
 public:
 	ShiftList()
 	{
-		sorting[0] = IndexUp;
+		sorting[0] = TreeMode;
 		sorting[1] = SequenceUp;
 		sorting[2] = SequenceUp;
 	}

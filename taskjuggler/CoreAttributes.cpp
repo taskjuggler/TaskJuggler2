@@ -163,7 +163,7 @@ CoreAttributes::treeLevel() const
 void
 CoreAttributes::getFullName(QString& fullName) const
 {
-	fullName = "";
+	fullName = QString::null;
 	for (const CoreAttributes* c = this; c != 0; c = c->parent)
 		fullName = c->name + "." + fullName;
 	// Remove trailing dot.
@@ -178,3 +178,19 @@ CoreAttributes::getFullId() const
 		fullID = c->id + "." + fullID;
 	return fullID;
 }
+
+bool
+CoreAttributes::hasSameAncestor(CoreAttributes* c)
+{
+	if (c == 0)
+		return FALSE;
+	
+	CoreAttributes* p1;
+	for (p1 = this; p1->parent; p1 = p1->parent)
+		;
+	CoreAttributes* p2;
+	for (p2 = c; p2->parent; p2 = p2->parent)
+		;
+	return p1 == p2;
+}
+

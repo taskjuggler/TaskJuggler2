@@ -339,6 +339,12 @@ LOGICALEXPRESSION</link></member>
 logical expression.</para>
 
 </sect2>
+<sect2 id="export_showactual"><title>showactual</title>
+
+<para>If used, not only the plan values are exported, but also the
+actual values.</para>
+
+</sect2>
 <sect2 id="export_taskroot"><title>taskroot &lt;ID&gt;</title>
 
 <para><simplelist type=horiz columns=2>

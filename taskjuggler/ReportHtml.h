@@ -95,7 +95,7 @@ public:
 
 	void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
-	void registerUrl(const QString& key, const QString& url = "")
+	void registerUrl(const QString& key, const QString& url = QString::null)
 	{
 		urls[key] = url;
 	}

@@ -40,6 +40,7 @@ usage(QApplication& a)
 		"   --help               - print this message\n"
 		"   --version            - print the version and copyright info\n"
 		"   -v                   - same as '--version'\n"
+		"   -s                   - stop after syntax check\n"
 		"   --debug N            - print debug output, N must be between\n"
 		"                          0 and 4, the higher N the more output\n"
 		"                          is printed\n"
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
 	int debugLevel = 0;
 	int debugMode = -1;
 	bool updateKotrusDB = FALSE;
-
+	bool checkOnlySyntax = FALSE;
 	bool showHelp = FALSE;
 	bool showCopyright = FALSE;
 	bool terminateProgram = FALSE;
@@ -89,6 +90,8 @@ int main(int argc, char *argv[])
 		else if (strcmp(a.argv()[i], "--version") == 0 ||
 				 strcmp(a.argv()[i], "-v") == 0)
 			showCopyright = TRUE;
+		else if (strcmp(a.argv()[i], "-s") == 0)
+			checkOnlySyntax = TRUE;
 		else if (strcmp(a.argv()[i], "--updatedb") == 0)
 			updateKotrusDB = TRUE;
 		else
@@ -127,20 +130,24 @@ int main(int argc, char *argv[])
 		if (!pf->open(a.argv()[i], QString(cwd) + "/", ""))
 			return (-1);
 		parseErrors = !pf->parse();
+		delete pf;
 	}
 
 	p.readKotrus();
 
-	bool schedulingErrors = !p.pass2();
+	bool schedulingErrors = !p.pass2(checkOnlySyntax);
 
-	if (updateKotrusDB)
-		if (parseErrors || schedulingErrors)
-			qWarning("Due to errors the Kotrus DB will NOT be "
-					 "updated.");
-		else
-			p.updateKotrus();
+	if (!checkOnlySyntax)
+	{
+		if (updateKotrusDB)
+			if (parseErrors || schedulingErrors)
+				qWarning("Due to errors the Kotrus DB will NOT be "
+						 "updated.");
+			else
+				p.updateKotrus();
 
-	p.generateReports();
+		p.generateReports();
+	}
 
 	return (parseErrors || schedulingErrors ? -1 : 0);
 }

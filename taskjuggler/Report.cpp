@@ -59,6 +59,8 @@ Report::~Report()
 	delete rollUpTask;
 	delete hideResource;
 	delete rollUpResource;
+	delete hideAccount;
+	delete rollUpAccount;
 }
 
 bool
