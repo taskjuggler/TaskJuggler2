@@ -662,13 +662,13 @@ zlib.</para></listitem>
 <listitem><para>Fixed handling of resource allocations with multiple
 shift intervals.</para></listitem>
 
-<listitem><para>Fixed double-quoting of HTML speciali characters such
+<listitem><para>Fixed double-quoting of HTML special characters such
 as umlauts.</para></listitem>
 
 <listitem><para>Added query function isDutyOf() to select tasks where
 a certain resource has been assigned to.</para></listitem>
 
-<listitem><para>The contense of XML reports can now be limited with
+<listitem><para>The contents of XML reports can now be limited with
 the usual filter mechanisms. Support for <link
 linkend="PROPERTY_hideresource">hideresource</link>, <link
 linkend="PROPERTY_hidetask">hidetask</link>, <link
@@ -699,7 +699,7 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 <listitem><para>New optimizer that achieves much better resource
 selection resulting in shorter overall project times.</para></listitem>
 
-<listitem><para>The KDE viewer has been completedly rewritten. Version
+<listitem><para>The KDE viewer has been completely rewritten. Version
 2 is much more sophisticated than the old viewer.</para></listitem>
 
 <listitem><para>Fixed a memory leak during XML report
