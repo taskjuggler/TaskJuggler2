@@ -69,9 +69,27 @@ FileInfo::getC(bool expandMacros)
     QChar c;
     if (ungetBuf.isEmpty())
     {
-        *f >> c;
         if (feof(fh))
             c = QChar(EOFile);
+        else
+        {
+            *f >> c;
+            if (c == QChar('\r'))
+            {
+                if (!feof(fh))
+                {
+                    // Test for CR/LF Windows line breaks.
+                    QChar cb;
+                    *f >> cb;
+                    if (cb != QChar('\n'))
+                    {
+                        // Probably a MacOS LF only line break
+                        ungetBuf.append(cb);
+                    }
+                }
+                c = QChar('\n');
+            }
+        }
     }
     else
     {

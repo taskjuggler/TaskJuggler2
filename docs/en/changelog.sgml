@@ -634,6 +634,9 @@ reports.</para></listitem>
 <listitem><para>Fixed segfault in certain cases of inherited resource
 allocations.</para></listitem>
 
+<listitem><para>Microsoft and MacOS text files are now read in
+correctly.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
