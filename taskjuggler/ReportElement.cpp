@@ -630,21 +630,6 @@ const
         }
     }
 
-    /* Now we have to remove all sub tasks of rolled-up tasks
-     * from the filtered list */
-    for (TaskListIterator tli(report->getProject()->getTaskListIterator());
-         *tli != 0; ++tli)
-        if (isRolledUp(*tli, rollUpExp))
-            for (TaskTreeIterator tti(*tli,
-                                      TaskTreeIterator::parentAfterLeaves);
-                 *tti != 0; ++tti)
-                if (*tti != *tli)
-                    filteredList.removeRef(*tti);
-}
-
-void
-ReportElement::sortTaskList(TaskList& filteredList)
-{
     /* In tasktree sorting mode we need to make sure that we don't hide
      * parents of shown tasks. */
     TaskList list = filteredList;
@@ -664,6 +649,21 @@ ReportElement::sortTaskList(TaskList& filteredList)
     }
     filteredList = list;
 
+    /* Now we have to remove all sub tasks of rolled-up tasks
+     * from the filtered list */
+    for (TaskListIterator tli(report->getProject()->getTaskListIterator());
+         *tli != 0; ++tli)
+        if (isRolledUp(*tli, rollUpExp))
+            for (TaskTreeIterator tti(*tli,
+                                      TaskTreeIterator::parentAfterLeaves);
+                 *tti != 0; ++tti)
+                if (*tti != *tli)
+                    filteredList.removeRef(*tti);
+}
+
+void
+ReportElement::sortTaskList(TaskList& filteredList)
+{
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(taskSortCriteria[i], i);
     filteredList.sort();
@@ -700,6 +700,22 @@ const
         }
     }
 
+    /* In resourcetree sorting mode we need to make sure that we don't
+     * hide parents of shown resources. */
+    ResourceList list = filteredList;
+    if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
+    {
+        // Set sorting criteria to sequence no since list.contains() needs it.
+        filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
+        for (ResourceListIterator rli(filteredList); *rli != 0; ++rli)
+        {
+            for (Resource* p = (*rli)->getParent(); p != 0; p = p->getParent())
+                if (list.contains(p) == 0)
+                    list.append(p);
+        }
+    }
+    filteredList = list;
+
     /* Now we have to remove all sub resources of resource in the
      * roll-up list from the filtered list */
     for (ResourceListIterator rli(report->getProject()->
@@ -717,22 +733,6 @@ const
 void
 ReportElement::sortResourceList(ResourceList& filteredList)
 {
-    /* In resourcetree sorting mode we need to make sure that we don't
-     * hide parents of shown resources. */
-    ResourceList list = filteredList;
-    if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-    {
-        // Set sorting criteria to sequence no since list.contains() needs it.
-        filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
-        for (ResourceListIterator rli(filteredList); *rli != 0; ++rli)
-        {
-            for (Resource* p = (*rli)->getParent(); p != 0; p = p->getParent())
-                if (list.contains(p) == 0)
-                    list.append(p);
-        }
-    }
-    filteredList = list;
-
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(resourceSortCriteria[i], i);
     filteredList.sort();
@@ -754,6 +754,22 @@ const
             filteredList.append(*ali);
     }
 
+    /* In accounttree sorting mode we need to make sure that we don't hide
+     * parents of shown accounts. */
+    AccountList list = filteredList;
+    if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
+    {
+        // Set sorting criteria so sequence no since list.contains() needs it.
+        list.setSorting(CoreAttributesList::SequenceUp, 0);
+        for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
+        {
+            for (Account* p = (*ali)->getParent(); p != 0; p = p->getParent())
+                if (list.contains(p) == 0)
+                    list.append(p);
+        }
+    }
+    filteredList = list;
+
     /* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */
     for (AccountListIterator ali(report->getProject()->
@@ -771,22 +787,6 @@ const
 void
 ReportElement::sortAccountList(AccountList& filteredList)
 {
-    /* In accounttree sorting mode we need to make sure that we don't hide
-     * parents of shown accounts. */
-    AccountList list = filteredList;
-    if (accountSortCriteria[0] == CoreAttributesList::TreeMode)
-    {
-        // Set sorting criteria so sequence no since list.contains() needs it.
-        list.setSorting(CoreAttributesList::SequenceUp, 0);
-        for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
-        {
-            for (Account* p = (*ali)->getParent(); p != 0; p = p->getParent())
-                if (list.contains(p) == 0)
-                    list.append(p);
-        }
-    }
-    filteredList = list;
-
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(accountSortCriteria[i], i);
     filteredList.sort();

@@ -64,7 +64,7 @@ HTMLResourceReportElement::generate()
     maxDepthResourceList = filteredResourceList.maxDepth();
 
     TaskList filteredTaskList;
-    filterTaskList(filteredTaskList, 0, hideTask, rollUpResource);
+    filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
     maxDepthTaskList = filteredTaskList.maxDepth();
     
     int rNo = 1;
@@ -96,7 +96,7 @@ HTMLResourceReportElement::generate()
         if (hasVisibleChilds)
             continue;
 
-        filterTaskList(filteredTaskList, *rli, hideTask, rollUpResource);
+        filterTaskList(filteredTaskList, *rli, hideTask, rollUpTask);
         sortTaskList(filteredTaskList);
 
         int tNo = 1;

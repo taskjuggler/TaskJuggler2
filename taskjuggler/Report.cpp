@@ -266,21 +266,6 @@ const
         }
     }
 
-    /* Now we have to remove all sub tasks of rolled-up tasks
-     * from the filtered list */
-    for (TaskListIterator tli(project->getTaskListIterator());
-         *tli != 0; ++tli)
-        if (isRolledUp(*tli, rollUpExp))
-            for (TaskTreeIterator tti(*tli,
-                                      TaskTreeIterator::parentAfterLeaves);
-                 *tti != 0; ++tti)
-                if (*tti != *tli)
-                    filteredList.removeRef(*tti);
-}
-
-void
-Report::sortTaskList(TaskList& filteredList)
-{
     /* In tasktree sorting mode we need to make sure that we don't hide
      * parents of shown tasks. */
     TaskList list = filteredList;
@@ -300,6 +285,21 @@ Report::sortTaskList(TaskList& filteredList)
     }
     filteredList = list;
 
+    /* Now we have to remove all sub tasks of rolled-up tasks
+     * from the filtered list */
+    for (TaskListIterator tli(project->getTaskListIterator());
+         *tli != 0; ++tli)
+        if (isRolledUp(*tli, rollUpExp))
+            for (TaskTreeIterator tti(*tli,
+                                      TaskTreeIterator::parentAfterLeaves);
+                 *tti != 0; ++tti)
+                if (*tti != *tli)
+                    filteredList.removeRef(*tti);
+}
+
+void
+Report::sortTaskList(TaskList& filteredList)
+{
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(taskSortCriteria[i], i);
     filteredList.sort();
@@ -337,22 +337,6 @@ const
         }
     }
 
-    /* Now we have to remove all sub resources of resource in the
-     * roll-up list from the filtered list */
-    for (ResourceListIterator rli(project->getResourceListIterator());
-         *rli != 0; ++rli)
-        if (isRolledUp(*rli, rollUpExp))
-            for (ResourceTreeIterator rti(*rli,
-                                          ResourceTreeIterator::
-                                          parentAfterLeaves);
-                 *rti != 0; ++rti)
-                if (*rti != *rli)
-                    filteredList.removeRef(*rti);
-}
-
-void
-Report::sortResourceList(ResourceList& filteredList)
-{
     /* In resourcetree sorting mode we need to make sure that we don't
      * hide parents of shown resources. */
     ResourceList list = filteredList;
@@ -369,6 +353,22 @@ Report::sortResourceList(ResourceList& filteredList)
     }
     filteredList = list;
 
+    /* Now we have to remove all sub resources of resource in the
+     * roll-up list from the filtered list */
+    for (ResourceListIterator rli(project->getResourceListIterator());
+         *rli != 0; ++rli)
+        if (isRolledUp(*rli, rollUpExp))
+            for (ResourceTreeIterator rti(*rli,
+                                          ResourceTreeIterator::
+                                          parentAfterLeaves);
+                 *rti != 0; ++rti)
+                if (*rti != *rli)
+                    filteredList.removeRef(*rti);
+}
+
+void
+Report::sortResourceList(ResourceList& filteredList)
+{
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(resourceSortCriteria[i], i);
     filteredList.sort();
@@ -389,22 +389,6 @@ const
             filteredList.append(*ali);
     }
 
-    /* Now we have to remove all sub accounts of account in the roll-up list
-     * from the filtered list */
-    for (AccountListIterator ali(project->getAccountListIterator()); 
-         *ali != 0; ++ali)
-        if (isRolledUp(*ali, rollUpExp))
-            for (AccountTreeIterator ati(*ali,
-                                         AccountTreeIterator::
-                                         parentAfterLeaves);
-                 *ati != 0; ++ati)
-                if (*ati != *ali)
-                    filteredList.removeRef(*ati);
-}
-
-void
-Report::sortAccountList(AccountList& filteredList)
-{
     /* In accounttree sorting mode we need to make sure that we don't hide
      * parents of shown accounts. */
     AccountList list = filteredList;
@@ -421,6 +405,22 @@ Report::sortAccountList(AccountList& filteredList)
     }
     filteredList = list;
 
+    /* Now we have to remove all sub accounts of account in the roll-up list
+     * from the filtered list */
+    for (AccountListIterator ali(project->getAccountListIterator()); 
+         *ali != 0; ++ali)
+        if (isRolledUp(*ali, rollUpExp))
+            for (AccountTreeIterator ati(*ali,
+                                         AccountTreeIterator::
+                                         parentAfterLeaves);
+                 *ati != 0; ++ati)
+                if (*ati != *ali)
+                    filteredList.removeRef(*ati);
+}
+
+void
+Report::sortAccountList(AccountList& filteredList)
+{
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(accountSortCriteria[i], i);
     filteredList.sort();
