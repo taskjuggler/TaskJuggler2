@@ -123,9 +123,8 @@ fi
 AC_SUBST(TJX2GANTT)
 
 dnl Check for the stuff needed to create the HTML manual
-AC_CHECK_PROG(SGML2HTML, sgml2html, sgml2html, no)
 AC_CHECK_PROG(DB2HTML, db2html, db2html, no)
-if test "$SGML2HTML" = no -o "$DB2HTML" = no ; then
+if test "$DB2HTML" = no ; then
   AC_MSG_WARN([HTML manual will not be generated])
   HTMLMANUAL="no"
 else
