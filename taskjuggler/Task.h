@@ -101,7 +101,7 @@ public:
     void setResponsible(Resource* r) { responsible = r; }
     Resource* getResponsible() const { return responsible; }
 
-    void setMilestone() { milestone = TRUE; }
+    void setMilestone(bool ms = TRUE) { milestone = ms; }
     bool isMilestone() const { return milestone; }
 
     void setAccount(Account* a) { account = a; }

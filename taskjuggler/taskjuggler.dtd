@@ -1,6 +1,7 @@
 <!-- DTD for TaskJuggler 2.0 XML Files -->
 <!-- (c) 2003 Chris Schlaeger <cs@suse.de> -->
 <!-- This file is licensed under the GNU GPL Version 2.0 -->
+<!-- $Id$ -->
 
 <!-- This is still a draft version, published as a request for
 comments -->
@@ -133,7 +134,8 @@ comments -->
 <!ELEMENT taskList (task+)>
 
 <!ELEMENT task (depends*, precedes*, customAttribute*, flag*, task*,
-                taskScenario*)>
+                taskScenario*, note?, statusNote?,reference?, 
+                shiftSelection*)>
 <!ATTLIST task
   id CDATA #REQUIRED
   name CDATA #REQUIRED
@@ -142,13 +144,24 @@ comments -->
   asapScheduling (0|1) #REQUIRED
   priority CDATA #REQUIRED
   responsible CDATA #IMPLIED
+  account CDATA #IMPLIED
 >
 
 <!ELEMENT depends (#PCDATA)>
+
 <!ELEMENT precedes (#PCDATA)>
 
+<!ELEMENT note (#PCDATA)>
+
+<!ELEMENT statusNote (#PCDATA)>
+
+<!ELEMENT reference (#PCDATA>)
+<!ATTLIST reference
+  url CDATA #REQUIRED
+>
+
 <!ELEMENT taskScenario (start?, end?, maxEnd?, maxStart?, minEnd?,
-                        minStart?)>
+                        minStart?, startCredit*, endCredit*)>
 <!ATTLIST taskScenario
   scenarioId CDATA #REQUIRED
   effort CDATA #IMPLIED
@@ -178,6 +191,10 @@ comments -->
   humanReadable CDATA #IMPLIED
 >
 
+<!ELEMENT startCredit (#PCDATA)>
+
+<!ELEMENT endCredit (#PCDATA)>
+  
 <!ELEMENT customAttribute EMPTY>
 <!ATTLIST customAttribute
   id CDATA #REQUIRED

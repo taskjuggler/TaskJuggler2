@@ -967,6 +967,7 @@ ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
 
     if (!fileName.isEmpty())
         fclose(fh);
+    delete f;
 
     return TRUE;
 }
@@ -995,6 +996,14 @@ ProjectFile::readInclude()
         errorMessage(i18n("File name expected"));
         return FALSE;
     }
+    if (fileName.right(4) != ".tji" &&
+        fileName.right(5) != ".tjsp")
+    {
+        errorMessage(i18n("WARNING: The include file '%1' should have a "
+                          "'.tji' extension.").arg(fileName));
+        // return FALSE;
+    }
+
     QString token;
     TokenType tt;
 

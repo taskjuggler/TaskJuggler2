@@ -1,4 +1,5 @@
 For 1.9.2:
+- Fix RealFormat::format to round instead of truncate.
 - Remove old color support
 - Save user-defined attributes and scenario support to XML.
 - Add conflict output in debug level 2.
@@ -12,6 +13,7 @@ For 2.0:
 - Valgrind the code.
 
 After 2.0:
+- Expand env. variables or parameters as macros.
 - Generic HTML report
 - Allocation selection by skill set.
 - Add support for flexible rates (per task, per shift)

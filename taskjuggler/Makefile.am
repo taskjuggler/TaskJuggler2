@@ -4,6 +4,7 @@ taskjuggler_SOURCES =  main.cpp
 noinst_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp RealFormat.cpp \
+ParserNode.cpp ParserElement.cpp \
 TjMessageHandler.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
 Report.cpp ReportXML.cpp \
@@ -15,7 +16,9 @@ CoreAttributesTreeIterator.cpp \
 ScenarioList.cpp Scenario.cpp \
 TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
-Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
+Allocation.cpp \
+MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
+XMLFile.cpp \
 HTMLPrimitives.cpp TableColumnFormat.cpp TableColumnInfo.cpp \
 ReportElement.cpp HTMLReport.cpp HTMLReportElement.cpp \
 HTMLTaskReport.cpp HTMLTaskReportElement.cpp \

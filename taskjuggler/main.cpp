@@ -22,6 +22,7 @@
 #include "debug.h"
 #include "Project.h"
 #include "ProjectFile.h"
+#include "XMLFile.h"
 #include "kotrus.h"
 
 TjMessageHandler TJMH(TRUE);
@@ -171,15 +172,37 @@ int main(int argc, char *argv[])
     bool first = TRUE;
     for ( ; i < argc; i++)
     {
-        ProjectFile* pf = new ProjectFile(&p);
-        if (!pf->open(a.argv()[i], QString(cwd) + "/", "", TRUE))
-            exit(EXIT_FAILURE);
-        parseErrors |= !pf->parse();
-        if (generateMakeDepList)
-            pf->generateMakeDepList(makeDepFile, !first);
-        if (first)
-            first = FALSE;
-        delete pf;
+        QString fileName = a.argv()[i];
+        if (fileName.right(4) == ".tjx")
+        {
+            XMLFile* xf = new XMLFile(&p);
+            if (!xf->readDOM(fileName, QString(cwd) + "/", "", TRUE))
+                exit(EXIT_FAILURE);
+            parseErrors |= !xf->parse();
+            delete xf;
+        }
+        else
+        {
+            if (fileName.right(4) != ".tjp" &&
+                fileName.right(4) != ".tji")
+            {
+                qWarning(i18n("WARNING: %1 has an unsupported file extension. "
+                              "Please use '.tjp' for toplevel files, '.tji' "
+                              "for included files and '.tjx' for TaskJuggler "
+                              "XML files.")
+                         .arg(fileName));
+                // parseErrors = TRUE;
+            }
+            ProjectFile* pf = new ProjectFile(&p);
+            if (!pf->open(a.argv()[i], QString(cwd) + "/", "", TRUE))
+                exit(EXIT_FAILURE);
+            parseErrors |= !pf->parse();
+            if (generateMakeDepList)
+                pf->generateMakeDepList(makeDepFile, !first);
+            if (first)
+                first = FALSE;
+            delete pf;
+        }
     }
 
     p.readKotrus();

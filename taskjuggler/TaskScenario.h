@@ -30,7 +30,14 @@ class TaskScenario
 public:
     TaskScenario();
     ~TaskScenario() { }
-    
+
+    void setStart(time_t s) { start = s; }
+    void setEnd(time_t e) { end = e; }
+    void setMaxEnd(time_t e) { maxEnd = e; }
+    void setMinEnd(time_t e) { minEnd = e; }
+    void setMaxStart(time_t s) { maxStart = s; }
+    void setMinStart(time_t s) { minStart = s; }
+
     bool isStartOk() const
     {
         return !((minStart > 0 && minStart > start) ||
