@@ -210,7 +210,7 @@ void ktjview2::setupActions()
     m_filterForResourcesAction = new KSelectAction( i18n( "&Filter for: All Resources" ), "filter", KShortcut(),
                                                     this, SLOT( slotFilterForResources() ), actionCollection(), "filter_for_resources" );
     m_resourceFilterItems << i18n( "All Resources" ) << i18n( "Resources On Vacation..." ) << i18n( "Resources On Shift..." )
-                          << i18n( "Allocated Resources..." ) << i18n( "Having Flag..." );
+                          << i18n( "Allocated Resources..." ) << i18n( "Unallocated Resources..." ) << i18n( "Having Flag..." );
 
     m_filterForResourcesAction->setItems( m_resourceFilterItems );
     m_filterForResourcesAction->setCurrentItem( 0 ); // All Resources by default

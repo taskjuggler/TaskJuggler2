@@ -1027,7 +1027,7 @@ bool ktjview2View::filterForResources( int id )
             return false;
         vacation = QDateTime( dlg.getDate() ).toTime_t();
     }
-    else if ( id == 2 || id == 3 )              // date range dialog
+    else if ( id == 2 || id == 3 || id == 4 )              // date range dialog
     {
         TimeDialog dlg( this, time_t2Q( m_project->getStart() ), time_t2Q( m_project->getEnd() ) );
         dlg.setCaption( i18n( "Date Range" ) );
@@ -1036,7 +1036,7 @@ bool ktjview2View::filterForResources( int id )
         start = dlg.getStartDate().toTime_t();
         end = dlg.getEndDate().toTime_t();
     }
-    else if ( id == 4 )         // flag selection dialog
+    else if ( id == 5 )         // flag selection dialog
     {
         SelectDialog dlg( m_project->getAllowedFlags().begin(), true, this );
         if ( dlg.exec() != QDialog::Accepted )
@@ -1073,7 +1073,11 @@ bool ktjview2View::filterForResources( int id )
         {
             showIt = ( res->isAllocated( 0, Interval( start, end ) ) ); // FIXME scenario
         }
-        else if ( id == 4 )     // having flag
+        else if ( id == 4 )     // unallocated
+        {
+            showIt = !( res->isAllocated( 0, Interval( start, end ) ) ); // FIXME scenario
+        }
+        else if ( id == 5 )     // having flag
         {
             for ( QStringList::ConstIterator it = resultList.begin(); it != resultList.end(); ++it )
             {
