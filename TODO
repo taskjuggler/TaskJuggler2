@@ -1,7 +1,5 @@
 For 1.4 release
-- Beautify HTMLCalendar
 - proofread documentation
-- run HTML checker on reports
 
 After 1.4:
 - Add support for completed and status column to HTML task reports.

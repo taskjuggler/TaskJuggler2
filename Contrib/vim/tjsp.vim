@@ -112,6 +112,7 @@ syn keyword tjspkeyword id
 syn keyword tjspkeyword iddown
 syn keyword tjspkeyword idup
 syn keyword tjspkeyword include
+syn keyword tjspkeyword index
 syn keyword tjspkeyword indexdown
 syn keyword tjspkeyword indexup
 syn keyword tjspkeyword isaccount
@@ -196,10 +197,12 @@ syn keyword tjspkeyword sat
 syn keyword tjspkeyword schedule
 syn keyword tjspkeyword scheduling
 syn keyword tjspkeyword select
+syn keyword tjspkeyword seqno
 syn keyword tjspkeyword sequencedown
 syn keyword tjspkeyword sequenceup
 syn keyword tjspkeyword shift
 syn keyword tjspkeyword shortauto
+syn keyword tjspkeyword shorttimeformat
 syn keyword tjspkeyword showactual
 syn keyword tjspkeyword showprojectids
 syn keyword tjspkeyword sortaccounts
