@@ -431,6 +431,10 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, Task* task)
 double
 Resource::getPlanLoad(const Interval& period, Task* task)
 {
+	// If the scoreboard has not been initialized there is no load.
+	if (!planScoreboard)
+		return 0.0;
+	
 	Interval iv(period);
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
@@ -463,6 +467,10 @@ Resource::getPlanLoadSub(uint startIdx, uint endIdx, Task* task)
 double
 Resource::getActualLoad(const Interval& period, Task* task)
 {
+	// If the scoreboard has not been initialized there is no load.
+	if (!actualScoreboard)
+		return 0.0;
+	
 	Interval iv(period);
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
@@ -480,15 +488,14 @@ Resource::getActualLoadSub(uint startIdx, uint endIdx, Task* task)
 	for (Resource* r = subFirst(); r != 0; r = subNext())
 		bookings += r->getActualLoadSub(startIdx, endIdx, task);
 
-	if (actualScoreboard)
-		for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
-		{
-			SbBooking* b = actualScoreboard[i];
-			if (b < (SbBooking*) 4)
-				continue;
-			if (task == 0 || task == b->getTask())
-				bookings++;
-		}
+	for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
+	{
+		SbBooking* b = actualScoreboard[i];
+		if (b < (SbBooking*) 4)
+			continue;
+		if (task == 0 || task == b->getTask())
+			bookings++;
+	}
 
 	return bookings;
 }
