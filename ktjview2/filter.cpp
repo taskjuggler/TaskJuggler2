@@ -20,21 +20,26 @@
  ***************************************************************************/
 
 #include <qstring.h>
+#include <qdom.h>
+#include <qdict.h>
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qstringlist.h>
 
 #include <klocale.h>
 
 #include "filter.h"
 
-Filter::Filter( const QString & name, FilterType type )
+
+Filter::Filter( const QString & name, FilterType type, FilterOp fop )
 {
     m_name = name;
-    m_fop = FOP_AND;
     m_type = type;
+    m_fop = fop;
 }
 
 Filter::~Filter()
 {
-
 }
 
 void Filter::addCondition( const QString & prop, FilterExpr expr, const QString & val )
@@ -44,6 +49,11 @@ void Filter::addCondition( const QString & prop, FilterExpr expr, const QString 
     cond.expr = expr;
     cond.val = val;
     m_conditions.append( cond );
+}
+
+void Filter::setConditions( const QValueVector<FilterCondition> & conditions )
+{
+    m_conditions = conditions;
 }
 
 void Filter::clearConditions()
@@ -92,6 +102,31 @@ QString Filter::exprToString( FilterExpr exp )
     return QString::null;
 }
 
+QDomElement Filter::save( QDomDocument doc )
+{
+    QDomElement resultElem = doc.createElement( "filter" );
+    resultElem.setAttribute( "name", m_name );
+    resultElem.setAttribute( "type", static_cast<int>( m_type ) );
+    resultElem.setAttribute( "fop", static_cast<int>( m_fop ) );
+
+    QDomElement condsElem = doc.createElement( "conditions" );
+
+    QValueVector<FilterCondition>::ConstIterator it;
+    for ( it = m_conditions.constBegin(); it != m_conditions.constEnd(); ++it )
+    {
+        FilterCondition cond = ( *it );
+        QDomElement condElem = doc.createElement( "condition" );
+        condElem.setAttribute( "property", cond.prop );
+        condElem.setAttribute( "expression", cond.expr );
+        condElem.setAttribute( "value", cond.val );
+        condsElem.appendChild( condElem );
+    }
+
+    resultElem.appendChild( condsElem );
+
+    return resultElem;
+}
+
 //------------------------------------------------------
 
 
@@ -103,15 +138,99 @@ FilterManager::FilterManager( const QString & filename )
 
 void FilterManager::load()
 {
-    // TODO
+    // load all the filters from XML
+    QFile file( m_filename );
+    file.open( IO_ReadOnly );
+
+    QDomDocument doc( "filters" );
+    doc.setContent( &file );
+    file.close();
+
+    // insert them into m_filterList
+    m_filterList.clear();
+
+    QDomNodeList filters = doc.elementsByTagName( "filter" );
+
+    for ( uint i = 0; i < filters.count(); i++ )
+    {
+        QDomElement filterElem = filters.item( i ).toElement();
+        if ( !filterElem.isNull() )
+        {
+            const QString name = filterElem.attribute( "name" );
+            Filter * filter = new Filter( name,
+                                          static_cast<FilterType>( filterElem.attribute( "type" ).toInt() ),
+                                          static_cast<FilterOp>( filterElem.attribute( "fop" ).toInt() ) );
+
+            QDomNodeList conditions = filterElem.namedItem( "conditions" ).childNodes();
+            for ( uint j = 0; i < conditions.count(); j++ )
+            {
+                QDomElement condition = conditions.item( i ).toElement();
+                if ( !condition.isNull() )
+                {
+                    filter->addCondition( condition.attribute( "property" ),
+                                          static_cast<FilterExpr>( condition.attribute( "expression" ).toInt() ),
+                                          condition.attribute( "value" ) );
+                }
+            }
+
+            m_filterList.insert( name, filter );
+        }
+    }
 }
 
 void FilterManager::save()
 {
-    // TODO
+    // save all the filters to the XML
+    QDomDocument doc( "filters" );
+
+    FilterListIterator it( m_filterList );
+
+    for ( ; it.current(); ++it )
+    {
+        Filter * filter = ( *it );
+        QDomElement filterElem = filter->save( doc );
+        doc.appendChild( filterElem );
+    }
+
+    QFile file( m_filename );
+    file.open( IO_WriteOnly );
+    QTextStream stream( &file );
+    doc.save( stream, 2 );
+    file.close();
 }
 
 Filter * FilterManager::filter( const QString & name ) const
 {
     return m_filterList.find( name );
+}
+
+void FilterManager::removeFilter( const QString & name )
+{
+    m_filterList.remove( name );
+}
+
+void FilterManager::addFilter( const QString & name, FilterType type,
+                               FilterOp fop, const QValueVector<FilterCondition> & conditions )
+{
+    if ( filter( name ) != 0 )  // filter already exists
+        removeFilter( name );
+
+    Filter * newFilter = new Filter( name, type, fop ); // create new filter
+    newFilter->setConditions( conditions );
+    m_filterList.insert( name, newFilter );
+}
+
+QStringList FilterManager::filterStringList() const
+{
+    QStringList result;
+
+    FilterListIterator it( m_filterList );
+    for ( ; it.current(); ++it )
+    {
+        result.append( it.currentKey() );
+    }
+
+    result.sort();
+
+    return result;
 }

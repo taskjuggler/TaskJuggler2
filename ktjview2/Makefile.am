@@ -26,7 +26,7 @@ kde_kcfg_DATA = ktjview2.kcfg
 METASOURCES = AUTO
 
 messages:
-	extractrc *.ui *.kcfg *.rc> rc.cpp
+	extractrc *.ui *.kcfg *.rc > rc.cpp
 	xgettext -ki18n *.cpp kdgantt/*.cpp -o $(top_srcdir)/ktjview2/po/ktjview2.pot
 	-rm -f rc.cpp
 

@@ -26,6 +26,39 @@
 #include <qvaluevector.h>
 
 class QString;
+class QDomElement;
+
+/**
+ * A filter operation mode (AND/OR)
+ */
+enum FilterOp { FOP_AND = 0, FOP_OR };
+
+/**
+ * A filter expression
+ */
+enum FilterExpr { FEX_CONTAINS = 0, FEX_DOESNTCONTAIN, FEX_EQUALS, FEX_DOESNTEQUAL,
+                  FEX_REGEXP, FEX_NOTREGEXP, FEX_GREATER, FEX_LESS_EQUAL,
+                  FEX_LESS, FEX_GREATER_EQUAL, FEX_LAST = 99 };
+
+/**
+ * Container struct holding one row of filter conditions
+ * @short A filter condition
+ */
+struct FilterCondition
+{
+    /// property
+    QString prop;
+    /// expression
+    FilterExpr expr;
+    /// value
+    QString val;
+};
+
+/**
+ * Identify the data to work on (task/resource)
+ */
+enum FilterType { FT_TASK = 0, FT_RESOURCE };
+
 
 /**
  * Small class representing a task or resource filter based
@@ -37,42 +70,13 @@ class QString;
 class Filter
 {
 public:
-    /**
-     * A filter operation mode (AND/OR)
-     */
-    enum FilterOp { FOP_AND = 0, FOP_OR };
 
-    /**
-     * A filter expression
-     */
-    enum FilterExpr { FEX_CONTAINS = 0, FEX_DOESNTCONTAIN, FEX_EQUALS, FEX_DOESNTEQUAL,
-                      FEX_REGEXP, FEX_NOTREGEXP, FEX_GREATER, FEX_LESS_EQUAL,
-                      FEX_LESS, FEX_GREATER_EQUAL, FEX_LAST = 99 };
-
-    /**
-     * Container struct holding one row of filter conditions
-     * @short A filter condition
-     */
-    struct FilterCondition
-    {
-        /// property
-        QString prop;
-        /// expression
-        FilterExpr expr;
-        /// value
-        QString val;
-    };
-
-    /**
-     * Identify the data to work on (task/resource)
-     */
-    enum FilterType { FT_TASK = 0, FT_RESOURCE };
 
     /**
      * CTOR
      * @param name name of the filter
      */
-    Filter( const QString & name, FilterType type );
+    Filter( const QString & name, FilterType type, FilterOp fop = FOP_AND );
 
     /**
      * DTOR
@@ -130,6 +134,11 @@ public:
     void addCondition( const QString & prop, FilterExpr expr, const QString & val );
 
     /**
+     * Directly assign the list of conditions
+     */
+    void setConditions( const QValueVector<FilterCondition> & conditions );
+
+    /**
      * Clears the list of conditions
      */
     void clearConditions();
@@ -138,6 +147,11 @@ public:
      * @return expression statement converted to a (translated)  QString
      */
     static QString exprToString( FilterExpr exp );
+
+    /**
+     * @return This filter as a DOM element
+     */
+    QDomElement save( QDomDocument doc );
 
 private:
     QString m_name;
@@ -148,6 +162,7 @@ private:
 
 typedef QDict<Filter> FilterList;
 typedef QDictIterator<Filter> FilterListIterator;
+
 
 /**
  * Container class holding individual filters.
@@ -167,7 +182,7 @@ public:
     /**
      * DTOR
      */
-    ~FilterManager();
+    ~FilterManager() { };
 
     /**
      * @return the list of filters
@@ -201,6 +216,12 @@ public:
      * Save the filter definition into an XML file
      */
     void save();
+
+    void addFilter( const QString & name, FilterType type, FilterOp fop, const QValueVector<FilterCondition> & conditions );
+
+    void removeFilter( const QString & name );
+
+    QStringList filterStringList() const;
 
 private:
     QString m_filename;

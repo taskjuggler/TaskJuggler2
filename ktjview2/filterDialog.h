@@ -28,7 +28,9 @@ class KDialogBase;
 
 class Resource;
 class Project;
+
 class FilterWidget;
+class FilterManager;
 
 /**
  * Dialog for defining filters
@@ -87,6 +89,12 @@ private slots:
      */
     void slotFilterChanged( QListBoxItem * item );
 
+private slots:
+    /**
+     * Save the filters back to the XML file
+     */
+    void slotSaveFilters();
+
 private:
     /**
      * @return true if a filter with @p name already exists
@@ -98,6 +106,9 @@ private:
 
     /// list of filter criteria conditions
     QStringList m_conditions;
+
+    /// filter manager
+    FilterManager * m_manager;
 };
 
 #endif

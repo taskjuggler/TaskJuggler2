@@ -33,6 +33,7 @@
 #include <kmessagebox.h>
 #include <kapplication.h>
 #include <kinputdialog.h>
+#include <kstandarddirs.h>
 
 // TJ includes
 #include "Resource.h"
@@ -42,6 +43,7 @@
 // local includes
 #include "filterDialog.h"
 #include "filterWidget.h"
+#include "filter.h"
 
 
 FilterDialog::FilterDialog( QWidget * parent, const char * name )
@@ -53,9 +55,14 @@ FilterDialog::FilterDialog( QWidget * parent, const char * name )
                  << i18n( "greater than" ) << i18n( "less than or equal" )
                  << i18n( "less than" ) << i18n( "greater than or equal" );
 
+    m_manager = new FilterManager( locate( "appdata", "filters.xml" ) );
+
     m_base = new FilterWidget( this, name );
     m_base->tbConditions->setFocusStyle( QTable::FollowStyle );
     setMainWidget( m_base );
+
+    //load the filter list
+    m_base->lbFilters->insertStringList( m_manager->filterStringList() );
 
     connect( ( QWidget * ) m_base->btnMore, SIGNAL( clicked() ), this, SLOT( slotMore() ) );
     connect( ( QWidget * ) m_base->btnFewer, SIGNAL( clicked() ), this, SLOT( slotFewer() ) );
@@ -68,10 +75,13 @@ FilterDialog::FilterDialog( QWidget * parent, const char * name )
              this, SLOT( slotFilterChanged( QListBoxItem * ) ) );
 
     m_base->tbConditions->setColumnStretchable( true, 1 ); // stretch the Expr column
+
+    connect( this, SIGNAL( okClicked() ), this, SLOT( slotSaveFilters() ) );
 }
 
 FilterDialog::~FilterDialog()
 {
+    delete m_manager;
     delete m_base;
 }
 
@@ -101,10 +111,13 @@ void FilterDialog::slotClear()
 void FilterDialog::slotNewFilter()
 {
     QString name = i18n( "new filter" );
-    if ( filterExists( name ) ) // name already exists
+    while ( filterExists( name ) ) // name already exists
     {
         name.append( "_" + kapp->randomString( 3 ) );
     }
+
+    // TODO save the current filter
+
     m_base->lbFilters->insertItem( name, 0 );
     m_base->lbFilters->setCurrentItem( 0 );
     m_base->gbCriteria->setEnabled( true );
@@ -114,8 +127,9 @@ void FilterDialog::slotDeleteFilter()
 {
     int item = m_base->lbFilters->currentItem();
     if ( item != -1 )
-        if ( KMessageBox::questionYesNo( this, i18n( "Do you want to remove the filter '%1'?" ).arg( m_base->lbFilters->currentText() ) )
-                                         == KMessageBox::Yes )
+        if ( KMessageBox::questionYesNo( this, i18n( "Do you want to remove the filter '%1'?" )
+                                         .arg( m_base->lbFilters->currentText() ) )
+             == KMessageBox::Yes )
         {
              m_base->lbFilters->removeItem( item );
              slotFilterChanged( 0 );
@@ -135,7 +149,7 @@ void FilterDialog::slotRenameFilter()
             slotRenameFilter();
         }
         if ( !newName.isEmpty() && ( newName != oldName ) )
-            m_base->lbFilters->changeItem( newName, currItem );
+            m_base->lbFilters->changeItem( newName, currItem ); // TODO rename the current filter
     }
 }
 
@@ -147,13 +161,18 @@ void FilterDialog::slotFilterChanged( QListBoxItem * item )
     m_base->btnDelete->setEnabled( enable );
     m_base->gbCriteria->setEnabled( enable );
 
-
-    // load the current filter
+    // TODO save the current filter
+    // TODO load the new filter
 }
 
 bool FilterDialog::filterExists( const QString & name ) const
 {
     return ( m_base->lbFilters->findItem( name, Qt::ExactMatch ) != 0 );
+}
+
+void FilterDialog::slotSaveFilters()
+{
+    m_manager->save();
 }
 
 #include "filterDialog.moc"
