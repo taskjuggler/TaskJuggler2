@@ -14,6 +14,8 @@
 #include <config.h>
 
 #ifdef HAVE_KDE
+#ifdef HAVE_ICAL
+
 #include <qfile.h>
 #include <config.h>
 #include <libkcal/calendarlocal.h>
@@ -52,7 +54,7 @@ void ReportICal::generate()
       task = taskList.next();
    }
 
-   KCal::ICalFormat *format = new KCal::ICalFormat( &cal );
+   KCal::ICalFormat *format = new KCal::ICalFormat( ); // &cal );
    cal.save( fileName, format );
    qDebug( "saving ical to file " + fileName + " OK" );
 }
@@ -91,4 +93,5 @@ KCal::Todo* ReportICal::addATask( Task *task, KCal::CalendarLocal *cal )
    return( todo );
 }
 
+#endif
 #endif

@@ -12,6 +12,7 @@
 
 #ifndef _Report_ical_h_
 #define _Report_ical_h_
+#ifdef HAVE_ICAL
 
 #include <stdio.h>
 #include <time.h>
@@ -43,4 +44,5 @@ protected:
    ReportICal() { }
 } ;
 
+#endif
 #endif

@@ -42,8 +42,10 @@ Project::Project()
 	currencyDigits = 3;
 	kotrus = 0;
 	xmlreport = 0;
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 	icalReport = 0;
+#endif
 #endif
 }
 
@@ -305,10 +307,13 @@ Project::generateReports()
 
 	if( xmlreport )
 	   xmlreport->generate();
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 	if( icalReport )
 	   icalReport->generate();
 #endif
+#endif
+
 }
 
 bool
@@ -423,7 +428,7 @@ void Project::parseDomElem( QDomElement& parentElem )
    {
       QString tagName = elem.tagName();
       
-      qDebug(  "elemType: " + tagName );
+      qDebug(  "|| elemType: " + tagName );
       
       if( tagName == "Task" )
       {

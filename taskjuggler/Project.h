@@ -28,8 +28,10 @@
 #include "HTMLAccountReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 #include "ReportICal.h"
+#endif
 #endif
 class Kotrus;
 
@@ -154,11 +156,13 @@ public:
 
    bool loadFromXML( const QString& file );
    void parseDomElem( QDomElement& parentElem );
-   
+
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 	void addICalReport( ReportICal *ic ) { icalReport = ic; }
 #endif
-   
+#endif
+
 	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
 
 	void addHTMLResourceReport(HTMLResourceReport* r)
@@ -277,8 +281,10 @@ private:
 	Kotrus* kotrus;
 
 	ReportXML* xmlreport;
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 	ReportICal *icalReport;
+#endif
 #endif
    
 	QList<HTMLTaskReport> htmlTaskReports;

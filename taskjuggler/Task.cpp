@@ -1486,6 +1486,7 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	}		
 }
 
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 
 void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
@@ -1526,6 +1527,7 @@ void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
 }
 
 #endif /* HAVE_KDE */
+#endif /* HAVE_ICAL */
 
 void Task::loadFromXML( QDomElement& parent, Project *project )
 {
@@ -1550,6 +1552,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
 	    QString stId = subTaskElem.attribute("Id");
 	    qDebug( "Recursing to elem " + stId );
 	    Task *t = new Task( project, stId, QString(), this, QString(), 0 );
+	    
 	    addSub(t);
 	    t->loadFromXML( subTaskElem, project );
 	    project->addTask(t);

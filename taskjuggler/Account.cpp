@@ -67,13 +67,13 @@ Account::getActualVolume(const Interval& period)
 }
 
 double
-Account::getPlanBalance(time_t date)
+Account::getPlanBalance(time_t /* date */)
 {
 	return 0.0;
 }
 
 double
-Account::getActualBalance(time_t date)
+Account::getActualBalance(time_t /* date */)
 {
 	return 0.0;
 }

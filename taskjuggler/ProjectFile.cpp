@@ -828,14 +828,22 @@ ProjectFile::parse()
 			      return FALSE;
 			   break;
 			}
-#ifdef HAVE_KDE
 			else if (token == "icalreport" )
 			{
+#ifdef HAVE_ICAL
+#ifdef HAVE_KDE
 			   if( !readICalTaskReport())
+#else
+			      fatalError( "TaskJuggler was built without KDE support -> no ICal support!" );
+#endif
 			      return FALSE;
 			   break;
-			}
+#else
+			   fatalError( "TaskJuggler was built without ICal-Support, sorry." );
+			   break;
 #endif
+			}
+			
 			else if (token == KW("htmltaskreport") ||
 					 token == KW("htmlresourcereport"))
 			{
@@ -1934,7 +1942,7 @@ ProjectFile::readTimeValue(ulong& value)
 }
 
 bool
-ProjectFile::readPlanTimeFrame(Task* task, double& value)
+ProjectFile::readPlanTimeFrame(Task* /* task */, double& value)
 {
 	QString val;
 	TokenType tt;
@@ -2048,6 +2056,7 @@ ProjectFile::readPriority(int& priority)
 	return TRUE;
 }
 
+#ifdef HAVE_ICAL
 #ifdef HAVE_KDE
 bool
 ProjectFile::readICalTaskReport()
@@ -2063,6 +2072,7 @@ ProjectFile::readICalTaskReport()
 
    return( true );
 }
+#endif
 #endif
 
 bool

@@ -29,7 +29,7 @@ class Token
 {
 public:
 
-	Token(TokenType tt, const QString& tx) {}
+   Token(TokenType /* tt */, const QString& /* tx */) {}
 	~Token() { }
 
 private:
