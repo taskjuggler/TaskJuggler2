@@ -1,6 +1,6 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>Gantt</class>
-<author>Lukas Tinkl &lt;lukas@kde.org&gt;</author>
+<author>Lukáš Tinkl &lt;lukas.tinkl@suse.cz&gt;</author>
 <widget class="QWidget">
     <property name="name">
         <cstring>Gantt</cstring>

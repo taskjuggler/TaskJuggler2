@@ -182,10 +182,17 @@ private:
      */
     void enableTasksActions( bool enable );
 
+    /**
+     * Enable/disable Resource actions depending on param @p enable
+     */
     void enableResourceActions( bool enable );
 
+    /**
+     * Enable/disable Resource Usage actions depending on param @p enable
+     */
     void enableResUsageActions( bool enable );
 
+    /// pointer to the main view
     ktjview2View *m_view;
 
     // actions

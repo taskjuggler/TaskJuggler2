@@ -7,11 +7,12 @@ Current features:
 - gantt chart (with task dependencies)
 - sorting
 - quick search bar for searching and filtering the listviews
+- resource usage view
 
 
 Planned features:
 - storable filters
-- resource usage view
+- component for editing definition of the project
 
 
 For the complete list, see:
