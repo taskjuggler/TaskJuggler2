@@ -40,32 +40,33 @@
 KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, KTVHeader *h, const char *name )
    :QCanvas( parent, name )
 {
-   m_taskTable = tab;
-   m_header = h;
-   m_canvasMarker = new QCanvasRectangle( this  );
-   m_canvasMarker->hide();
-   m_canvasMarker->move(0,0);
-   m_canvasMarker->setPen( NoPen );
+    m_canvasItems.setAutoDelete(true);
+    m_taskTable = tab;
+    m_header = h;
+    m_canvasMarker = new QCanvasRectangle( this  );
+    m_canvasMarker->hide();
+    m_canvasMarker->move(0,0);
+    m_canvasMarker->setPen( NoPen );
 
-   m_itemFont.setFamily( "Helvetica [Cronyx]" );
-   m_itemFont.setPointSize(8);
+    m_itemFont.setFamily( "Helvetica [Cronyx]" );
+    m_itemFont.setPointSize(8);
 
 
-   m_dbgMark = new QCanvasLine( this );
-   m_dbgMark->setPoints( 1, 0, 15, 0 );
+    m_dbgMark = new QCanvasLine( this );
+    m_dbgMark->setPoints( 1, 0, 15, 0 );
 
-   QColor markerCol = m_taskTable->colorGroup().highlight();
-   m_canvasMarker->setBrush( m_taskTable->colorGroup().brush( QColorGroup::Highlight ));
+    QColor markerCol = m_taskTable->colorGroup().highlight();
+    m_canvasMarker->setBrush( m_taskTable->colorGroup().brush( QColorGroup::Highlight ));
 
-   m_canvasMarker->setZ(-0.1);
-   setDoubleBuffering( true ); // false );
-   // resize( 400, 300);
+    m_canvasMarker->setZ(-0.1);
+    setDoubleBuffering( true ); // false );
+    // resize( 400, 300);
 
-   m_tasks.setAutoDelete(true);
+    m_tasks.setAutoDelete(false);
 
-   /* TODO: make visible again and synchronise with table in the same way the
-    * table synchronises with this one.
-    */
+    /* TODO: make visible again and synchronise with table in the same way the
+     * table synchronises with this one.
+     */
 
 }
 
@@ -91,7 +92,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
 {
    // qDebug( "Drawing background" );
     if( m_header->startTime() == 0 || m_header->endTime() == 0 ) return;
-    
+
    QCanvas::drawBackground( painter, clip );
 
    QBrush origBrush = painter.brush();
@@ -115,7 +116,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    /* remove one width again to be sure starting outside the visible area */
    x -= dayWidth;
    if( x < 0 ) x = 0;
-   
+
    /* a starttime variable */
    time_t runtime = m_header->timeFromX(x) + ONEDAY/2;
    /* add half a day to avoid round probs. timeFromX is in danger of round probs */
@@ -402,7 +403,7 @@ void KTVTaskCanvas::clear()
 {
     qDebug("Clearing all!");
     // QCanvas::clear();
-    
+
     m_canvasItems.clear();  // removes the memory of the canvas items.
     m_canvasItemList.clear(); // removes the pointer to the items
     m_tasks.clear();

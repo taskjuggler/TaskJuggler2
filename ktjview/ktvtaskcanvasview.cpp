@@ -125,7 +125,7 @@ void KTVTaskCanvasView::zoomIn()
 
     if( w < 60 )
 	w += 5;
-    
+
     qDebug("Setting daywidth %d", w );
     m_header->slSetDayWidth( w );
     xScrollToTime( 50, centerTime );
@@ -158,6 +158,7 @@ void KTVTaskCanvasView::zoomOriginal()
 
 void KTVTaskCanvasView::clear()
 {
+    m_pro = 0;
     if( m_canvas )
     {
         m_canvas->clear();
