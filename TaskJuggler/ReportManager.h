@@ -23,6 +23,7 @@ class QString;
 class QListViewItem;
 class KListView;
 class Report;
+class CoreAttributes;
 
 class ReportManager : public QObject
 {
@@ -51,12 +52,14 @@ public:
 
 signals:
     void signalChangeStatusBar(const QString& text);
+    void signalEditCoreAttributes(CoreAttributes* ca);
 
 public slots:
     void zoomIn();
     void zoomOut();
     void closeCurrentReport();
     void changeStatusBar(const QString& text);
+    void editCoreAttributes(CoreAttributes* ca);
 
 private:
     ReportManager() { }

@@ -26,6 +26,7 @@ public:
                      const QString& n = QString::null);
     virtual ~TjResourceReport();
 
+    virtual const QtReportElement* getReportElement() const;
 
 protected:
     virtual bool generateList();

@@ -81,7 +81,7 @@ public:
     bool isSupportedColumn(const QString& id) const;
     QStringList getSupportedColumnList() const;
     void addColumn(const TableColumnInfo* c);
-    const TableColumnInfo* columnsAt(uint idx);
+    const TableColumnInfo* columnsAt(uint idx) const;
     void clearColumns();
     QPtrListIterator<TableColumnInfo> getColumnsIterator() const;
     void setBarLabels(BarLabelText blt) { barLabels = blt; }

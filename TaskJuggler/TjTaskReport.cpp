@@ -39,6 +39,12 @@ TjTaskReport::~TjTaskReport()
 {
 }
 
+const QtReportElement*
+TjTaskReport::getReportElement() const
+{
+    return reportElement;
+}
+
 bool
 TjTaskReport::generateList()
 {

@@ -166,8 +166,11 @@ void TaskJuggler::setupActions()
                             actionCollection());
     KStdAction::configureToolbars(this, SLOT(optionsConfigureToolbars()),
                                   actionCollection());
-    KStdAction::preferences(this, SLOT(optionsPreferences()),
-                            actionCollection());
+    /* KStdAction::preferences(this, SLOT(optionsPreferences()),
+                            actionCollection()); */
+    new KAction(i18n("Configure Editor" ), "", 0,
+                m_view, SLOT(configureEditor()),
+                actionCollection(), "configure_editor");
 
     // "Help" menu
     new KAction(i18n("Explain Keyword" ), "tj_keyword_help",

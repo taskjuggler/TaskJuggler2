@@ -91,7 +91,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     messageListView = new KListView(editorSplitter);
     messageListView->setSizePolicy(QSizePolicy::Maximum,
                                    QSizePolicy::Preferred);
-    messageListView->setMinimumSize(400, 100);
+    // Should be high enough for at least 4 lines.
+    messageListView->setMinimumSize(400, 120);
     messageListView->setRootIsDecorated(TRUE);
     messageListView->setAllColumnsShowFocus(TRUE);
     messageListView->setSortOrder(Qt::Ascending);
@@ -156,6 +157,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
 
     connect(reportManager, SIGNAL(signalChangeStatusBar(const QString&)),
             this, SLOT(changeStatusBar(const QString&)));
+    connect(reportManager, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
+            this, SLOT(showInEditor(CoreAttributes*)));
 
     connect(loadDelayTimer, SIGNAL(timeout()),
             this, SLOT(loadAfterTimerTimeout()));
@@ -180,11 +183,16 @@ TaskJugglerView::readProperties(KConfig* config)
 {
     QValueList<int> sizes = config->readIntListEntry("MainSplitter");
     mw->mainSplitter->setSizes(sizes);
+    editorSplitterSizes = config->readIntListEntry("EditorSplitter");
+
+    fileManager->readProperties(config);
 }
 
 void
 TaskJugglerView::saveProperties(KConfig* config)
 {
+    fileManager->writeProperties(config);
+
     /* Save the URL of the current project so we can restore it in case
      * TaskJuggler is restarted without a new URL specified. */
     if (!fileManager->getMasterFile().url().isEmpty())
@@ -192,6 +200,9 @@ TaskJugglerView::saveProperties(KConfig* config)
 
     // Save the position of the main splitter.
     config->writeEntry("MainSplitter", mw->mainSplitter->sizes());
+
+    // Save the position of the editor splitter.
+    config->writeEntry("EditorSplitter", editorSplitterSizes);
 }
 
 void
@@ -199,17 +210,13 @@ TaskJugglerView::newProject()
 {
     if (!fileManager->getMasterFile().isEmpty())
     {
-        QMessageBox mb
-            ("TaskJuggler",
+        if (QMessageBox::question
+            (this, "TaskJuggler",
              i18n("You must close the current project before you can \n"
                   "create a new project. Do you really want to do this?"),
-             QMessageBox::Question,
              QMessageBox::Yes | QMessageBox::Escape,
              QMessageBox::No | QMessageBox::Default,
-             QMessageBox::NoButton,
-             this);
-
-        if (mb.exec() == QMessageBox::No)
+             QMessageBox::NoButton) == QMessageBox::No)
             return;
     }
     KURL fileURL = KFileDialog::getSaveURL
@@ -448,6 +455,14 @@ TaskJugglerView::schedule()
         return;
 
     fileManager->saveAllFiles();
+
+    /* If the message list is visible we store the settings of the editor
+     * splitter into a value list. This is reused for later errors and also
+     * stored as property in the config file. */
+    QValueList<int> vl = editorSplitter->sizes();
+    if (vl[1] > 0)
+        editorSplitterSizes = vl;
+
     showReportAfterLoad = TRUE;
     loadProject(fileManager->getMasterFile());
 }
@@ -467,6 +482,15 @@ TaskJugglerView::nextProblem()
         return;
     messageListView->setSelected(lvi, TRUE);
     messageListClicked(lvi);
+
+    // Messages can consist of multiple lines, so we try to make sure that at
+    // least the next 2 lines are visible as well.
+    messageListView->ensureItemVisible(lvi);
+    for (int i = 0; i < 3; ++i)
+        if ((lvi = lvi->itemBelow()) != 0)
+            messageListView->ensureItemVisible(lvi);
+        else
+            break;
 }
 
 void
@@ -484,6 +508,15 @@ TaskJugglerView::previousProblem()
         return;
     messageListView->setSelected(lvi, TRUE);
     messageListClicked(lvi);
+
+    // Messages can consist of multiple lines, so we try to make sure that at
+    // least the next 2 lines are visible as well.
+    messageListView->ensureItemVisible(lvi);
+    for (int i = 0; i < 3; ++i)
+        if ((lvi = lvi->itemBelow()) != 0)
+            messageListView->ensureItemVisible(lvi);
+        else
+            break;
 }
 
 void
@@ -570,11 +603,20 @@ TaskJugglerView::loadProject(const KURL& url)
     int h = editorSplitter->height();
     if (errors)
     {
-        vl.append(int(h * 0.85));
-        vl.append(int(h * 0.15));
+        // The messages should be visible, so we check whether we already have
+        // a setting for the splitter that is large enough. Otherwise we make
+        // the message list 15% of the splitter size.
+        if (editorSplitterSizes.isEmpty() || editorSplitterSizes[1] < 120)
+        {
+            vl.append(int(h * 0.85));
+            vl.append(int(h * 0.15));
+        }
+        else
+            vl = editorSplitterSizes;
         editorSplitter->setSizes(vl);
         changeStatusBar(i18n("The project contains problems!"));
         showEditor();
+        messageListView->setSelected(messageListView->firstChild(), TRUE);
         messageListClicked(messageListView->firstChild());
     }
     else
@@ -749,6 +791,12 @@ TaskJugglerView::changeStatusBar(const QString& text)
 }
 
 void
+TaskJugglerView::configureEditor()
+{
+    fileManager->configureEditor();
+}
+
+void
 TaskJugglerView::focusListViews(int idx)
 {
     switch (idx)
@@ -838,6 +886,13 @@ TaskJugglerView::showReport()
 
     // Bring report page ontop.
     mw->bigTab->showPage(mw->reportTab);
+}
+
+void
+TaskJugglerView::showInEditor(CoreAttributes* ca)
+{
+    fileManager->showInEditor(ca);
+    showEditor();
 }
 
 void

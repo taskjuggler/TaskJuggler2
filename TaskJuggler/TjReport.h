@@ -44,6 +44,8 @@ public:
 
     virtual bool generateReport();
 
+    virtual const QtReportElement* getReportElement() const = 0;
+
     void setLoadingProject(bool lp) { loadingProject = lp; }
 
     void generateTaskListLine(const QtReportElement* reportElement,
@@ -55,6 +57,7 @@ public:
 
 signals:
     void signalChangeStatusBar(const QString& text);
+    void signalEditCoreAttributes(CoreAttributes*);
 
 public slots:
     void zoomIn();
@@ -66,6 +69,8 @@ private slots:
     void regenerateChart();
     void collapsReportItem(QListViewItem* lvi);
     void expandReportItem(QListViewItem* lvi);
+    void listClicked(QListViewItem* lvi, const QPoint&, int column);
+    void doPopupMenu(QListViewItem* lvi, const QPoint& pos, int);
     void syncVSliders(int, int);
     void updateStatusBar();
 
@@ -104,6 +109,9 @@ protected:
     void generateDependencies(Task* const t, QListViewItem* lvi);
     void generateListHeader(const QString& firstHeader, QtReportElement* tab);
     void generateTaskResources(Task* const t);
+
+    void showTaskDetails(const Task* task);
+    void showResourceDetails(const Resource* resource);
 
     virtual QString generateStatusBarText(const QPoint& pos,
                                           const CoreAttributes* ca,

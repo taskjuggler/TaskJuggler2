@@ -14,6 +14,8 @@
 
 #include <klistview.h>
 #include <kglobal.h>
+#include <kconfig.h>
+#include <kdebug.h>
 #include <kiconloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/viewcursorinterface.h>
@@ -31,6 +33,16 @@ ManagedFileInfo::~ManagedFileInfo()
 {
     if (editor)
         delete editor->document();
+}
+
+void
+ManagedFileInfo::readProperties(KConfig* config)
+{
+}
+
+void
+ManagedFileInfo::writeProperties(KConfig* config)
+{
 }
 
 const QString

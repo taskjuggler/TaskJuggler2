@@ -27,6 +27,8 @@ public:
                  const QString& n = QString::null);
     virtual ~TjTaskReport();
 
+    virtual const QtReportElement* getReportElement() const;
+
 protected:
     virtual bool generateList();
     virtual bool generateChart(bool autoFit);

@@ -136,7 +136,8 @@ task AcSo "Accounting Software" {
 			# changed though.
 			effort 1w 
 			depends !!software 
-			allocate test, dev2 
+			allocate test, dev2
+			note "Hopefully most bugs will be found and fixed here."
 		}
 
 		task beta "Beta Test" { 
@@ -209,7 +210,7 @@ task AcSo "Accounting Software" {
 
 # This task report is for use with the TaskJuggler GUI
 taskreport "Project Overview" {
-  columns start, end, effort, duration, completed, cost, revenue
+  columns start, end, effort, duration, completed, note, cost, revenue
 }
 
 # A resource report for use with the TaskJuggler GUI  

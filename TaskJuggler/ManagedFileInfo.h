@@ -19,6 +19,7 @@
 #include <ktexteditor/document.h>
 #include <kurl.h>
 
+class KConfig;
 class KListViewItem;
 class FileManager;
 
@@ -28,6 +29,10 @@ class ManagedFileInfo : public QObject
 public:
     ManagedFileInfo(FileManager* fm, const KURL& url);
     ~ManagedFileInfo();
+
+    void readProperties(KConfig* config);
+
+    void writeProperties(KConfig* config);
 
     const KURL& getFileURL() const { return fileURL; }
 

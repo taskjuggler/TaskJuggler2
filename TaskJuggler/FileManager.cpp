@@ -20,6 +20,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kglobal.h>
+#include <kconfig.h>
 #include <kiconloader.h>
 #include <kstdaction.h>
 #include <kaction.h>
@@ -30,9 +31,11 @@
 #include <ktexteditor/selectioninterface.h>
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
+#include <ktexteditor/configinterface.h>
 
 #include <kdebug.h>
 
+#include "CoreAttributes.h"
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
 
@@ -41,6 +44,7 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b) :
 {
     files.setAutoDelete(TRUE);
     masterFile = 0;
+    editorConfigured = FALSE;
 
     // We don't want the URL column to be visible. This is internal data only.
     browser->setColumnWidthMode(1, QListView::Manual);
@@ -270,6 +274,11 @@ FileManager::showInEditor(const KURL& url)
                               "be found;\nplease check your KDE "
                               "installation."));
                 }
+                if (!editorConfigured)
+                {
+                    KTextEditor::configInterface(document)->readConfig(config);
+                    editorConfigured = TRUE;
+                }
 
                 KTextEditor::View* editor =
                     document->createView(viewStack);
@@ -312,10 +321,40 @@ FileManager::showInEditor(const KURL& url, int line, int col)
     setFocusToEditor();
 }
 
+void
+FileManager::showInEditor(CoreAttributes* ca)
+{
+    KURL url = KURL(ca->getDefinitionFile());
+    int line, col;
+    line = ca->getDefinitionLine();
+    col = 0;
+    showInEditor(url, line, col);
+}
+
 KURL
 FileManager::getCurrentFileURL() const
 {
     return KURL::fromPathOrURL(browser->currentItem()->text(1));
+}
+
+void
+FileManager::readProperties(KConfig* cfg)
+{
+    // We can't do much here for now. As soon as we have the first editor
+    // part, we use the config pointer to read the editor properties. So we
+    // only store the pointer right now.
+    config = cfg;
+}
+
+void
+FileManager::writeProperties(KConfig* config)
+{
+    if (getCurrentFile())
+        KTextEditor::configInterface(getCurrentFile()->getEditor()->
+                                     document())->writeConfig(config);
+
+    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+        (*mfi)->writeProperties(config);
 }
 
 ManagedFileInfo*
@@ -436,11 +475,20 @@ FileManager::selectAll()
 }
 
 void
+FileManager::configureEditor()
+{
+    if (getCurrentFile())
+        KTextEditor::configInterface(getCurrentFile()->getEditor()->
+                                     document())->configDialog();
+}
+
+void
 FileManager::enableEditorActions(bool enable)
 {
     mainWindow->action(KStdAction::name(KStdAction::Save))->setEnabled(enable);
     mainWindow->action(KStdAction::name(KStdAction::SelectAll))->
         setEnabled(enable);
+    mainWindow->action("configure_editor")->setEnabled(enable);
 
     enableClipboardActions(enable);
     enableUndoActions(enable);

@@ -1,4 +1,5 @@
 - Global cost function driven optimizer.
+- Make vacations scenario specific.
 - hasLoad() function
 - support for renewable resources
 - Explain more features with examples in the documentation.

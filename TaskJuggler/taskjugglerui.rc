@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="taskjuggler" version="2">
+<kpartgui name="taskjuggler" version="3">
 
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
@@ -28,6 +28,10 @@
   <Menu name="help"><text>&amp;Help</text>
     <Action name="keyword_help"/>
   </Menu>
+
+  <Menu name="settings"><text>&amp;Settings</text>
+    <Action name="configure_editor"/>
+  </Menu>  
 </MenuBar>
 
 <ToolBar name="NavigationBar" noMerge="1"><text>Navigation Bar</text>

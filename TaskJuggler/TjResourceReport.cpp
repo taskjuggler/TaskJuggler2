@@ -39,6 +39,12 @@ TjResourceReport::~TjResourceReport()
 {
 }
 
+const QtReportElement*
+TjResourceReport::getReportElement() const
+{
+    return reportElement;
+}
+
 bool
 TjResourceReport::generateList()
 {

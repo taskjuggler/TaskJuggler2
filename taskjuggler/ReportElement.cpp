@@ -463,9 +463,12 @@ ReportElement::addColumn(const TableColumnInfo* c)
 }
 
 const TableColumnInfo*
-ReportElement::columnsAt(uint idx)
+ReportElement::columnsAt(uint idx) const
 {
-    return columns.at(idx);
+    uint i = 0;
+    for (QPtrListIterator<TableColumnInfo> pli(columns); *pli; ++pli, i++)
+        if (idx == i)
+            return *pli;
 }
 
 void

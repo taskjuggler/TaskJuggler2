@@ -142,6 +142,8 @@ ReportManager::showReport(QListViewItem* lvi)
 
         connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
                 this, SLOT(changeStatusBar(const QString&)));
+        connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
+                this, SLOT(editCoreAttributes(CoreAttributes*)));
 
         reportStack->addWidget(tjr);
         mr->setReport(tjr);
@@ -181,6 +183,12 @@ void
 ReportManager::changeStatusBar(const QString& text)
 {
     emit signalChangeStatusBar(text);
+}
+
+void
+ReportManager::editCoreAttributes(CoreAttributes* ca)
+{
+    emit signalEditCoreAttributes(ca);
 }
 
 void

@@ -19,6 +19,7 @@
 #include <qcanvas.h>
 #include <qdatetime.h>
 #include <qtimer.h>
+#include <qpopupmenu.h>
 
 #include <klistview.h>
 #include <klocale.h>
@@ -28,6 +29,7 @@
 #include <kcursor.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <ktextbrowser.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -41,6 +43,7 @@
 #include "QtResourceReport.h"
 #include "QtResourceReportElement.h"
 #include "ReportLayers.h"
+#include "RichTextDisplay.h"
 
 //                                           Boundary
 const int TjReport::minStepHour = 20;    //   365 * 24 * 20 = 175200
@@ -109,6 +112,11 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
             this, SLOT(expandReportItem(QListViewItem*)));
     connect(listView, SIGNAL(collapsed(QListViewItem*)),
             this, SLOT(collapsReportItem(QListViewItem*)));
+    connect(listView, SIGNAL(clicked(QListViewItem*, const QPoint&, int)),
+            this, SLOT(listClicked(QListViewItem*, const QPoint&, int)));
+    connect(listView,
+            SIGNAL(rightButtonPressed(QListViewItem*, const QPoint&, int)),
+            this, SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));
     connect(ganttChartView, SIGNAL(contentsMoving(int, int)),
             this, SLOT(syncVSliders(int, int)));
 }
@@ -180,6 +188,8 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
         QString cellText;
+        QPixmap icon;
+
         const TableColumnFormat* tcf =
             reportElement->getColumnFormat((*ci)->getName());
 
@@ -250,8 +260,9 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         else if ((*ci)->getName() == "minstart")
             cellText = time2user(t->getMinStart(scenario),
                                  reportDef->getTimeFormat());
-        else if ((*ci)->getName() == "note")
-            cellText = t->getNote();
+        else if ((*ci)->getName() == "note" && !t->getNote().isEmpty())
+            icon = KGlobal::iconLoader()->
+                loadIcon("tj_note", KIcon::Small);
         else if ((*ci)->getName() == "pathcriticalness")
         {
         }
@@ -306,6 +317,8 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         }
 
         lvi->setText(column, cellText);
+        if (!icon.isNull())
+            lvi->setPixmap(column, icon);
     }
 }
 
@@ -818,7 +831,7 @@ TjReport::markNonWorkingDaysOnBackground()
         {
             QCanvasRectangle* rect =
                 new QCanvasRectangle(x, 0, w, listHeight, ganttChart);
-            rect->setPen(QPen(NoPen));
+            rect->setPen(QPen(col));
             rect->setBrush(QBrush(col));
             rect->setZ(TJRL_OFFTIME);
             rect->show();
@@ -972,6 +985,131 @@ TjReport::expandReportItem(QListViewItem*)
 
     this->generateChart(FALSE);
     syncVSliders(ganttChartView->contentsX(), listView->contentsY());
+}
+
+void
+TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
+{
+    if (!lvi)
+        return;
+
+    CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
+    if (ca->getType() == CA_Task)
+    {
+        Task* t = dynamic_cast<Task*>(ca);
+        const TableColumnInfo* tci =
+            this->getReportElement()->columnsAt(column - 1);
+        if (tci->getName() == "note" && !t->getNote().isEmpty())
+        {
+            // Open a new window that displays the note attached to the task.
+            RichTextDisplay* richTextDisplay =
+                new RichTextDisplay(topLevelWidget());
+            richTextDisplay->setCaption
+                (QString("Note for Task %1 (%2) - TaskJuggler")
+                 .arg(t->getName()).arg(t->getId()));
+            richTextDisplay->textDisplay->setText(t->getNote());
+            richTextDisplay->show();
+        }
+    }
+}
+
+void
+TjReport::doPopupMenu(QListViewItem* lvi, const QPoint& pos, int)
+{
+    if (!lvi)
+        return;
+
+    CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
+    QPopupMenu menu;
+    if (ca->getType() == CA_Task)
+    {
+        Task* t = dynamic_cast<Task*>(ca);
+
+        menu.insertItem(i18n("&Edit Task"), 1);
+        menu.insertItem(i18n("Show Task &Details"), 2);
+        //menu.insertItem(i18n("&Zoom to fit Task"), 3);
+        switch (menu.exec(pos))
+        {
+            case 1:
+                emit signalEditCoreAttributes(ca);
+                break;
+            case 2:
+                showTaskDetails(t);
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        Resource* r = dynamic_cast<Resource*>(ca);
+
+        menu.insertItem(i18n("&Edit Resource"), 1);
+        menu.insertItem(i18n("Show Resource &Details"), 2);
+        switch (menu.exec(pos))
+        {
+            case 1:
+                emit signalEditCoreAttributes(ca);
+                break;
+            case 2:
+                showResourceDetails(r);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void
+TjReport::showTaskDetails(const Task* task)
+{
+    RichTextDisplay* richTextDisplay = new RichTextDisplay(topLevelWidget());
+    richTextDisplay->setCaption
+        (QString("Details of Task %1 (%2) - TaskJuggler")
+         .arg(task->getName()).arg(task->getId()));
+
+    QString predecessors;
+    for (TaskListIterator tli(task->getPreviousIterator()); *tli; ++tli)
+    {
+        if (!predecessors.isEmpty())
+            predecessors += ", ";
+        predecessors += (*tli)->getName() + "(" + (*tli)->getId() + ")";
+    }
+
+    QString successors;
+    for (TaskListIterator tli(task->getFollowersIterator()); *tli; ++tli)
+    {
+        if (!successors.isEmpty())
+            successors += ", ";
+        successors += (*tli)->getName() + " (" + (*tli)->getId() + ")";
+    }
+
+    richTextDisplay->textDisplay->setText
+        (i18n("<b>Start:</b> %1<br/>"
+              "<b>End:</b> %2<br/>"
+              "<hr/><b>Note:</b> %3<br/><hr/>"
+              "<b>Predecessors:</b> %4<br/>"
+              "<b>Successors:</b> %5")
+         .arg(time2tjp(task->getStart(scenario)))
+         .arg(time2tjp(task->getEnd(scenario)))
+         .arg(task->getNote())
+         .arg(predecessors)
+         .arg(successors));
+    richTextDisplay->show();
+}
+
+void
+TjReport::showResourceDetails(const Resource* resource)
+{
+    RichTextDisplay* richTextDisplay = new RichTextDisplay(topLevelWidget());
+    richTextDisplay->setCaption
+        (QString("Details of Resource %1 (%2) - TaskJuggler")
+         .arg(resource->getName()).arg(resource->getFullId()));
+
+    richTextDisplay->textDisplay->setText (i18n("Nothing here yet."));
+    richTextDisplay->show();
 }
 
 void

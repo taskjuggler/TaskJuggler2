@@ -21,9 +21,11 @@
 class QWidgetStack;
 class QStringList;
 
+class KConfig;
 class KMainWindow;
 class KListView;
 class KURL;
+class CoreAttributes;
 
 class FileManager : public QObject
 {
@@ -38,6 +40,10 @@ public:
 
     KURL getCurrentFileURL() const;
     ManagedFileInfo* getCurrentFile() const;
+
+    void readProperties(KConfig* config);
+
+    void writeProperties(KConfig* config);
 
     QString getWordUnderCursor() const;
 
@@ -59,9 +65,12 @@ public:
     void paste();
     void selectAll();
 
+    void configureEditor();
+
 public slots:
     void showInEditor(const KURL& url);
     void showInEditor(const KURL& url, int line, int col);
+    void showInEditor(CoreAttributes* ca);
     void saveCurrentFile();
     void saveCurrentFileAs(const KURL& url);
     void closeCurrentFile();
@@ -76,6 +85,9 @@ private:
     FileManager() { }
 
     KMainWindow* mainWindow;
+
+    KConfig* config;
+    bool editorConfigured;
 
     QString findCommonPath();
     void updateFileBrowser();

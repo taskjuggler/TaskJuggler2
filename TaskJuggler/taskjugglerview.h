@@ -15,6 +15,7 @@
 #define _TASKJUGGLERVIEW_H_
 
 #include <qwidget.h>
+#include <qvaluelist.h>
 
 #include <kparts/part.h>
 #include <ktexteditor/view.h>
@@ -32,6 +33,7 @@ class KListView;
 class KConfig;
 class MainWidget;
 class Project;
+class CoreAttributes;
 class FileManager;
 class ReportManager;
 
@@ -115,6 +117,9 @@ public slots:
     void zoomOut();
     void changeStatusBar(const QString& text);
 
+    void showInEditor(CoreAttributes* ca);
+    void configureEditor();
+
 signals:
     /**
      * Use this signal to change the content of the statusbar
@@ -167,6 +172,7 @@ private:
     QProgressBar* progressBar;
     KListView* messageListView;
     QSplitter* editorSplitter;
+    QValueList<int> editorSplitterSizes;
 
     FileManager* fileManager;
     ReportManager* reportManager;
