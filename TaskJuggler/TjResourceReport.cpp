@@ -559,12 +559,12 @@ TjResourceReport::drawTaskOutline(const Task* t, int y)
     }
     else
     {
-        // A black box outline with a progress bar outline.
+        // A black frame with a progress bar outline.
         QCanvasRectangle* rect =
-            new QCanvasRectangle(time2x(t->getStart(scenario)), y + 4,
+            new QCanvasRectangle(time2x(t->getStart(scenario)), y + 5,
                                  time2x(t->getEnd(scenario)) -
                                  time2x(t->getStart(scenario)),
-                                 itemHeight - 8, ganttChart);
+                                 itemHeight - 10, ganttChart);
 
         rect->setPen(Qt::black);
         rect->setBrush(QBrush(NoBrush));

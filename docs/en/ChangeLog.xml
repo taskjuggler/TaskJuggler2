@@ -692,7 +692,7 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Version 2.1 (Some day)</title>
+<sect2><title>Version 2.1.0 (2005-03-07)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -709,6 +709,13 @@ selection resulting in shorter overall project times.</para></listitem>
 like, that do not contribute to the effort of a task can now be
 modelled by setting their efficiency to 0.0.</para></listitem>
 
+<listitem><para>Added critical path analyser. Each task is rated and
+the rating can be listed in the HTML and CSV report.</para></listitem>
+
+<listitem><para>New task state added. When a task is not finished by
+the planned end date, it now marked as
+<computeroutput>late</computeroutput>.</para></listitem>
+
 <listitem><para>Task dependency specifications (<link
 linkend="PROPERTY_depends">depends</link> or <link
 linkend="PROPERTY_precedes">precedes</link> can now have optional gap
@@ -716,9 +723,6 @@ specification. It is possible to specify the gap in calendar time
 (<link linkend="PROPERTY_gapduration">gapduration</link>) or working
 time (<link
 linkend="PROPERTY_gaplength">gaplength</link>).</para></listitem>
-
-<listitem><para>Fixed a memory leak during XML report
-generation.</para></listitem>
 
 <listitem><para>The speed of report generation has been significantly
 improved. This is especially true for reports that make use of filter
@@ -728,15 +732,11 @@ functions.</para></listitem>
 <computeroutput>statusNote</computeroutput> to XML
 reports.</para></listitem>
 
-<listitem><para>Added critical path analyser. Each task is rated and
-the rating can be listed in the HTML and CSV report.</para></listitem>
-
-<listitem><para>New task state added. When a task is not finished by
-the planned end date, it now marked as
-<computeroutput>late</computeroutput>.</para></listitem>
-
 <listitem><para>Added some missing properties to the documentation.
 Mainly the sorting criterias were missing.</para></listitem>
+
+<listitem><para>Fixed a memory leak during XML report
+generation.</para></listitem>
 
 <listitem><para>Fixed scheduling of nested task that had an external
 dependency and an inherited start/end date.</para></listitem>
