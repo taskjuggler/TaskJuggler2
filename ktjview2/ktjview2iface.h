@@ -29,6 +29,7 @@ class ktjview2Iface : virtual public DCOPObject
 public:
 
 k_dcop:
+  virtual QString projectURL() const = 0;
   virtual void openURL(QString url) = 0;
 };
 

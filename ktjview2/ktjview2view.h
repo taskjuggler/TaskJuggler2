@@ -76,12 +76,17 @@ public:
     virtual ~ktjview2View();
 
     /**
+     * @return URL of the currently open project (DCOP)
+     */
+    virtual QString projectURL() const;
+
+    /**
      * @return URL of the currently open project
      */
     KURL currentURL() const;
 
     /**
-     * DCOP: Open a project from a given @p url
+     * Open a project from a given @p url (DCOP)
      */
     virtual void openURL( QString url );
 

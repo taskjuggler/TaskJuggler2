@@ -220,6 +220,11 @@ void ktjview2View::print( KPrinter * printer )
     p.end();
 }
 
+QString ktjview2View::projectURL() const
+{
+    return m_projectURL.url();
+}
+
 KURL ktjview2View::currentURL() const
 {
     return m_projectURL;
