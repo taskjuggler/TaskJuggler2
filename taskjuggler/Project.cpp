@@ -157,9 +157,9 @@ Project::schedule()
 			}
 	}
 
-	if (unscheduledTasks() > 0)
-		error = TRUE;
-	else
+//	if (unscheduledTasks() > 0)
+//		error = TRUE;
+//	else
 		checkSchedule();
 
 	return !error;

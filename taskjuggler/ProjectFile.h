@@ -112,6 +112,9 @@ private:
 	Project* proj;
 	QList<FileInfo> openFiles;
 	MacroTable macros;
+	uint taskCntr;
+	uint resourceCntr;
+	uint accountCntr;
 };
 
 #endif

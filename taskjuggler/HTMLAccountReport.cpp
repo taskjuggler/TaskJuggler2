@@ -190,20 +190,11 @@ HTMLAccountReport::generateTableHeader()
 		else if (*it == "total")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Total</td>";
 		else if (*it == "daily")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 			htmlDayHeaderMonths();
-		}
 		else if (*it == "weekly")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 			htmlWeekHeaderMonths();
-		}
 		else if (*it == "monthly")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 			htmlMonthHeaderYears();
-		}
 		else
 		{
 			qWarning("Unknown Column '%s' for HTML Task Report\n",
@@ -251,9 +242,10 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 			else if (*it == "name")
 				s << "<td class=\"" << style << "\" rowspan=\""
 				  << (!hidePlan && showActual ? "2" : "1")
-				  << "\"><b>" << label << "</b></td>";
-			else if (*it == "total")
-				s << "<td class=\"" << style << "\" style=\"text-align:right\">"
+				  << "\" nowrap><b>" << label << "</b></td>";
+		else if (*it == "total")
+				s << "<td class=\"" << style
+				  << "\" style=\"text-align:right\">"
 				  << "<b>"
 				  << QString().sprintf("%1.3f", planTotals["total"])
 				  << "</b></td>";
@@ -287,11 +279,12 @@ HTMLAccountReport::generateTotals(const QString& label, const QString& style)
 			else if (*it == "name")
 			{
 				if (hidePlan)
-					s << "<td class=\"" << style << "\"><b>"
+					s << "<td class=\"" << style << "\" nowrap><b>"
 					  << label << "</b></td>";
 			}
 			else if (*it == "total")
-				s << "<td class=\"" << style << "\" style=\"text-align:right\">"
+				s << "<td class=\"" << style
+				  << "\" style=\"text-align:right\">"
 				  << "<b>"
 				  << QString().sprintf("%1.3f", actualTotals["total"])
 				  << "</b></td>";
@@ -312,13 +305,16 @@ HTMLAccountReport::dailyAccountPlan(Account* a, const QString& style)
 	if (hidePlan)
 		return;
 
-	s << "<td class=\"headersmall\">";
-	if (!a)
-		s << "<b>";
-	s << "Plan";
-	if (!a)
-		s << "</b>";
-	s << "</td>" << endl;
+	if (showActual)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << "Plan";
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
@@ -336,13 +332,16 @@ HTMLAccountReport::dailyAccountPlan(Account* a, const QString& style)
 void
 HTMLAccountReport::dailyAccountActual(Account* a, const QString& style)
 {
-	s << "<td class=\"headersmall\">";
-	if (!a)
-		s << "<b>";
-	s << "Actual";
-	if (!a)
-		s << "</b>";
-	s << "</td>" << endl;
+	if (!hidePlan)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << "Actual";
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
@@ -363,13 +362,16 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 	if (hidePlan)
 		return;
 
-	s << "<td class=\"headersmall\">";
-	if (!a)
-		s << "<b>";
-	s << "Plan";
-	if (!a)
-		s << "</b>";
-	s << "</td>" << endl;
+	if (showActual)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << "Plan";
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -390,13 +392,16 @@ HTMLAccountReport::weeklyAccountPlan(Account* a, const QString& style)
 void
 HTMLAccountReport::weeklyAccountActual(Account* a, const QString& style)
 {
-	s << "<td class=\"headersmall\">";
-	if (!a)
-		s << "<b>";
-	s << "Actual";
-	if (!a)
-		s << "</b>";
-	s << "</td>" << endl;
+	if (!hidePlan)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << "Actual";
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -420,13 +425,16 @@ HTMLAccountReport::monthlyAccountPlan(Account* a, const QString& style)
 	if (hidePlan)
 		return;
 
-	s << "<td class=\"headersmall\">";
-	if (!a)
-		s << "<b>";
-	s << "Plan";
-	if (!a)
-		s << "</b>";
-	s << "</td>" << endl;
+	if (showActual)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << "Plan";
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
@@ -447,13 +455,16 @@ HTMLAccountReport::monthlyAccountPlan(Account* a, const QString& style)
 void
 HTMLAccountReport::monthlyAccountActual(Account* a, const QString& style)
 {
-	s << "<td class=\"headersmall\">";
-	if (!a)
-		s << "<b>";
-	s << "Actual";
-	if (!a)
-		s << "</b>";
-	s << "</td>" << endl;
+	if (!hidePlan)
+	{
+		s << "<td class=\"headersmall\">";
+		if (!a)
+			s << "<b>";
+		s << "Actual";
+		if (!a)
+			s << "</b>";
+		s << "</td>" << endl;
+	}
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{

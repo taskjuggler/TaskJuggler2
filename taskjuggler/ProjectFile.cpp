@@ -258,7 +258,11 @@ FileInfo::nextToken(QString& token)
 		{
 			// quoted string
 			while ((c = getC()) != EOF && c != '"')
+			{
+				if (c == '\n')
+					currLine++;
 				token += c;
+			}
 			if (c == EOF)
 			{
 				fatalError("Non terminated string");
@@ -393,6 +397,9 @@ FileInfo::fatalError(const QString& msg)
 ProjectFile::ProjectFile(Project* p)
 {
 	proj = p;
+
+	taskCntr = resourceCntr = accountCntr = 0;
+
 	openFiles.setAutoDelete(TRUE);
 }
 
@@ -744,6 +751,7 @@ ProjectFile::readTask(Task* parent)
 	proj->addTask(task);
 	if (parent)
 		parent->addSub(task);
+	task->setSequenceNo(taskCntr++);
 
 	for (bool done = false ; !done; )
 	{
@@ -805,6 +813,30 @@ ProjectFile::readTask(Task* parent)
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanDuration(d);
+				cantBeParent = TRUE;
+			}
+			else if (token == "actuallength" && !hasSubTasks)
+			{
+				double d;
+				if (!readPlanTimeFrame(task, d))
+					return FALSE;
+				task->setActualLength(d);
+				cantBeParent = TRUE;
+			}
+			else if (token == "actualeffort" && !hasSubTasks)
+			{
+				double d;
+				if (!readPlanTimeFrame(task, d))
+					return FALSE;
+				task->setActualEffort(d);
+				cantBeParent = TRUE;
+			}
+			else if (token == "actualduration" && !hasSubTasks)
+			{
+				double d;
+				if (!readPlanTimeFrame(task, d))
+					return FALSE;
+				task->setActualDuration(d);
 				cantBeParent = TRUE;
 			}
 			else if (token == "complete" && !hasSubTasks)
@@ -1131,6 +1163,7 @@ ProjectFile::readResource(Resource* parent)
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addResource(r);
+	r->setSequenceNo(resourceCntr++);
 
 	return TRUE;
 }
@@ -1217,6 +1250,7 @@ ProjectFile::readAccount(Account* parent)
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addAccount(a);
+	a->setSequenceNo(accountCntr++);
 
 	return TRUE;
 }

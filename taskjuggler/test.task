@@ -13,7 +13,7 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmltaskreport "test1.html" {
-  columns no, name, start, end, costs
+  columns no, name, start, end, costs, monthly
   start 2001-09-01
   end 2002-04-01
   showactual

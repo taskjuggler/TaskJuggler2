@@ -414,20 +414,11 @@ ReportHtml::generateTableHeader()
 		else if (*it == "priority")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
 		else if (*it == "daily")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 			htmlDayHeaderMonths();
-		}
 		else if (*it == "weekly")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 			htmlWeekHeaderMonths();
-		}
 		else if (*it == "monthly")
-		{
-			s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 			htmlMonthHeaderYears();
-		}
 		else
 		{
 			qWarning("Unknown Column '%s' for HTML Task Report\n",
@@ -473,6 +464,9 @@ ReportHtml::htmlDayHeaderDays(bool highlightNow)
 void
 ReportHtml::htmlDayHeaderMonths()
 {
+	if (!hidePlan && showActual)
+		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+
 	for (time_t day = midnight(start); day < end;
 		 day = beginOfMonth(sameTimeNextMonth(day)))
 	{
@@ -506,6 +500,9 @@ ReportHtml::htmlWeekHeaderWeeks(bool highlightNow)
 void
 ReportHtml::htmlWeekHeaderMonths()
 {
+	if (!hidePlan && showActual)
+		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+
 	for (time_t week = beginOfWeek(start); week < end; )
 	{
 		int left = weeksLeftInMonth(week);
@@ -545,6 +542,9 @@ ReportHtml::htmlMonthHeaderMonths(bool highlightNow)
 void
 ReportHtml::htmlMonthHeaderYears()
 {
+	if (!hidePlan && showActual)
+		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
+
 	for (time_t year = midnight(start); year < end;
 		 year = beginOfYear(sameTimeNextYear(year)))
 	{

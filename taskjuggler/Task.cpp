@@ -123,11 +123,19 @@ Task::schedule(time_t date, time_t slotDuration)
 		if (start == 0)
 		{
 			/* No start time has been specified. The start time is
-			 * either the project start time if the tasks has no
-			 * previous tasks, or the start time is determined by the
-			 * end date of the last previous task. */
+			 * either start time of the parent (or the project start
+			 * time if the tasks has no previous tasks) or the start
+			 * time is determined by the end date of the last previous
+			 * task. */
 			if (depends.count() == 0)
-				start = project->getStart();
+			{
+				if (parent == 0)
+					start = project->getStart();
+				else if (getParent()->start != 0)
+					start = getParent()->start;
+				else
+					return TRUE;
+			}
 			else if (earliestStart() > 0)
 				start = earliestStart();
 			else
@@ -158,11 +166,19 @@ Task::schedule(time_t date, time_t slotDuration)
 		if (end == 0)
 		{
 			/* No end time has been specified. The end time is either
-			 * the project end time if the tasks has no following
-			 * tasks, or the end time is determined by the start date
-			 * of the earliest following task. */
+			 * end time of the parent (or the project end time if the
+			 * tasks has no previous tasks) or the end time is
+			 * determined by the start date of the earliest following
+			 * task. */
 			if (preceeds.count() == 0)
-				end = project->getEnd();
+			{
+				if (parent == 0)
+					end = project->getEnd();
+				else if (getParent()->end != 0)
+					end = getParent()->end;
+				else
+					return TRUE;
+			}
 			else if (latestEnd() > 0)
 				end = latestEnd();
 			else
@@ -196,30 +212,17 @@ Task::schedule(time_t date, time_t slotDuration)
 
 		doneDuration += ((double) slotDuration) / ONEDAY;
 		if (!(isWeekend(date) || project->isVacation(date)))
-		{
 			doneLength += ((double) slotDuration) / ONEDAY;
-			/* Move the start date to make sure that there is
-			 * some work going on on the start date. */
-			if (!workStarted && allocations.isEmpty())
-			{
-				if (scheduling == ASAP)
-					start = date;
-				else if (scheduling == ALAP)
-					end = date + slotDuration - 1;
-				else
-					qFatal("Unknown scheduling mode");
-				workStarted = TRUE;
-			}
-		}
 
 		// Check whether we are done with this task.
 		if ((length > 0.0 && doneLength >= length) ||
 			(duration > 0.0 && doneDuration >= duration))
 		{
 			if (scheduling == ASAP)
-				end = tentativeEnd;
+				end = allocations.isEmpty() ? date + slotDuration - 1 :
+					tentativeEnd;
 			else
-				start = tentativeStart;
+				start = allocations.isEmpty() ? date : tentativeStart;
 			schedulingDone = TRUE;
 			return FALSE;
 		}
@@ -277,6 +280,17 @@ bool
 Task::scheduleContainer()
 {
 	Task* t;
+	bool changeMade = FALSE;
+	if (start != earliestStart())
+	{
+		start = earliestStart();
+		changeMade = TRUE;
+	}
+	if (end != latestEnd())
+	{
+		end = latestEnd();
+		changeMade = TRUE;
+	}
 	time_t nstart = 0;
 	time_t nend = 0;
 
@@ -286,19 +300,19 @@ Task::scheduleContainer()
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
 		if (t->start == 0 || t->end == 0)
-			return TRUE;
+			return !changeMade;
 		nstart = t->start;
 		nend = t->end;
 	}
 	else
-		return TRUE;
+		return !changeMade;
 
 	for (t = subNext() ; t != 0; t = subNext())
 	{
 		/* Make sure that all sub tasks have been scheduled. If not we
 		 * can't yet schedule this task. */
 		if (t->start == 0 || t->end == 0)
-			return TRUE;
+			return !changeMade;
 
 		if (t->start < nstart)
 			nstart = t->start;
@@ -306,8 +320,10 @@ Task::scheduleContainer()
 			nend = t->end;
 	}
 
-	start = nstart;
-	end = nend;
+	if (start == 0)
+		start = nstart;
+	if (end == 0)
+		end = nend;
 	schedulingDone = TRUE;
 
 	return FALSE;
@@ -393,17 +409,13 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 }
 
 bool
-Task::isScheduled()
-{
-	return ((start != 0 && end != 0) || !sub.isEmpty());
-}
-
-bool
 Task::needsEarlierTimeSlot(time_t date)
 {
-	if (scheduling == ALAP && end != 0 && start == 0 && date > lastSlot)
+	if (scheduling == ALAP && end != 0 && start == 0 &&
+		date > lastSlot && sub.isEmpty())
 		return TRUE;
-	if (scheduling == ASAP && start != 0 && end == 0 && date > lastSlot + 1)
+	if (scheduling == ASAP && start != 0 && end == 0 &&
+		date > lastSlot + 1 && sub.isEmpty())
 		return TRUE;
 
 	return FALSE;
@@ -663,7 +675,7 @@ Task::preScheduleOk()
 
 	if (durationSpec > 1)
 	{
-		fatalError(
+		fatalError(QString().sprintf("In task %s:", id.latin1()) +
 			"You can specify either a length, a duration or an effort.");
 		return FALSE;
 	}
@@ -671,22 +683,25 @@ Task::preScheduleOk()
 	{
 		if (milestone)
 		{
-			fatalError("You cannot specify a duration criteria for a "
+			fatalError(QString().sprintf("In task %s:", id.latin1()) +
+					   "You cannot specify a duration criteria for a "
 					   "milestone.");
 			return FALSE;
 		}
 		if (limitSpec == 2)
 		{
-			fatalError("You cannot specify a duration criteria together with\n"
+			fatalError(QString().sprintf("In task %s:", id.latin1()) +
+					   "You cannot specify a duration criteria together with "
 					   "a start and end criteria.");
 			return FALSE;
 		}
 	}
 	else if (limitSpec != 2 &&
 			 !(limitSpec == 1 && milestone) &&
-			 !(limitSpec == 0 && !sub.isEmpty()))
+			 !(limitSpec <= 1 && !sub.isEmpty()))
 	{
-		fatalError("If you do not specify a duration criteria you have\n"
+		fatalError(QString().sprintf("In task %s:", id.latin1()) +
+				   "If you do not specify a duration criteria you have "
 				   "to specify a start and end criteria.");
 		return FALSE;
 	}
@@ -708,7 +723,7 @@ Task::preScheduleOk()
 
 	if (durationSpec > 1)
 	{
-		fatalError(
+		fatalError(QString().sprintf("In task %s:", id.latin1()) +
 			"You can specify either an actual length, duration or effort.");
 		return FALSE;
 	}
@@ -716,22 +731,25 @@ Task::preScheduleOk()
 	{
 		if (milestone)
 		{
-			fatalError("You cannot specify an actual duration criteria for a "
+			fatalError(QString().sprintf("In task %s:", id.latin1()) +
+					   "You cannot specify an actual duration criteria for a "
 					   "milestone.");
 			return FALSE;
 		}
 		if (limitSpec == 2)
 		{
-			fatalError("You cannot specify an actual duration criteria\n"
+			fatalError(QString().sprintf("In task %s:", id.latin1()) +
+					   "You cannot specify an actual duration criteria "
 					   "together with a start and end criteria.");
 			return FALSE;
 		}
 	}
 	else if (limitSpec != 2 &&
 			 !(limitSpec == 1 && milestone) &&
-			 !(limitSpec == 0 && !sub.isEmpty()))
+			 !(limitSpec <= 1 && !sub.isEmpty()))
 	{
-		fatalError("If you do not specify an actual duration criteria you\n"
+		fatalError(QString().sprintf("In task %s:", id.latin1()) +
+				   "If you do not specify an actual duration criteria you "
 				   "have to specify a start and end criteria.");
 		return FALSE;
 	}
@@ -811,13 +829,17 @@ void
 Task::treeSortKey(QString& key)
 {
 	if (!parent)
+	{
+		key = QString().sprintf("%06d", sequenceNo) + key;
 		return;
+	}
+
 	int i = 1;
 	for (Task* t = getParent()->subFirst(); t != 0;
 		 t = getParent()->subNext(), i++)
 		if (t == this)
 		{
-			key = QString().sprintf("%04d", i) + key;
+			key = QString().sprintf("%06d", i) + key;
 			break;
 		}
 	getParent()->treeSortKey(key);
@@ -1009,10 +1031,10 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	{
 		QString key1;
 		t1->treeSortKey(key1);
-		key1 += QString("0000") + time2ISO(t1->start);
+//		key1 += QString("0000000") + time2ISO(t1->start);
 		QString key2;
 		t2->treeSortKey(key2);
-		key2 += QString("0000") + time2ISO(t2->start);
+//		key2 += QString("0000000") + time2ISO(t2->start);
 		if (key1 == key2)
 		{
 			/* If the keys are identical we do an inverse sort for the

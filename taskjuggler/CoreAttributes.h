@@ -54,6 +54,8 @@ public:
 	void setIndex(uint idx) { index = idx; }
 	uint getIndex() const { return index; }
 
+	void setSequenceNo(uint no) { sequenceNo = no; }
+
 	void setName(const QString& n) { name = n; }
 	const QString& getName() const { return name; }
 	void getFullName(QString& fullName);
@@ -77,6 +79,9 @@ protected:
 
 	/// An index number that must be unique within the attribute class.
 	uint index;
+
+	/// The index of the task declaration.
+	uint sequenceNo;
 
 	/// A short description of the attribute.
 	QString name;

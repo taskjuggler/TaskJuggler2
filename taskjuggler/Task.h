@@ -258,7 +258,7 @@ public:
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
 	bool schedule(time_t reqStart, time_t duration);
-	bool isScheduled();
+	bool isScheduled() { return schedulingDone; }
 	bool needsEarlierTimeSlot(time_t date);
 
 	/**
