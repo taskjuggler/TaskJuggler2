@@ -21,19 +21,19 @@
 <P>
 <P>TaskJuggler uses one or more ASCII files to describe a project. The main
 project should be placed in a file with the <CODE>.tjp</CODE> extension. This
-main project may contain several sub projects. Such sub projects should be
-placed in files with the <CODE>.tjsp</CODE> extension. These sub projects are
-included into the main project during compile time.
+main project may contain several subprojects. Such subprojects should be
+placed in files with the <CODE>.tjsp</CODE> extension. These subprojects are
+included in the main project during compile time.
 <P>
 <H2><A NAME="ss3.2">3.2 General Usage</A>
 </H2>
 
 <P>
 <P>TaskJuggler works like a compiler. You provide the source files, it computes
-its contents and creates the output files.
+the contents and creates the output files.
 <P>
-<P>After you created the project description file, you have TaskJuggler let it
-compute and create the output. Let's say, you have created the
+<P>After you created the project description file, have TaskJuggler 
+compute and create the output. For example, if you have created the
 <CODE>AcSo.tjp</CODE> project file. You need to send this file to TaskJuggler then:
 <P>
 <BLOCKQUOTE><CODE>
@@ -41,14 +41,14 @@ compute and create the output. Let's say, you have created the
 % taskjuggler AcSo.tjp
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>TaskJuggler will create the type of report you have specified in the
+<P>TaskJuggler will create the type of report specified in the
 <CODE>AcSo.tjp</CODE> file.
 <P>
 <H2><A NAME="ss3.3">3.3 The Command Line Options</A>
 </H2>
 
 <P>
-<P>To get a list of the command line options of taskjugger use the <CODE>--help</CODE>
+<P>To get a list of the command line options of TaskJuggler, use the <CODE>--help</CODE>
 option:
 <P>
 <BLOCKQUOTE><CODE>

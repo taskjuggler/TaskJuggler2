@@ -2,58 +2,58 @@
 <!doctype linuxdoc system>
 <article>
 <title>The TaskJuggler Manual
-<author>Marc R&uuml;hrschneck <tt>mac@suse.de</tt>,
-Chris Schlaeger <tt>cs@suse.de</tt>
-<date>Version 0.2 , Tue Feb 5 13:30:20 CET 2002
+<author>Chris Schlaeger <tt>cs@suse.de</tt>,
+Marc R&uuml;hrschneck <tt>mac@suse.de</tt>
+<date>Version TJVER, Thu Feb 14 14:33:25 CET 2002
 <abstract>
-This document describes TaskJuggler version 0.2
+This document describes TaskJuggler version TJVER
 </abstract>
 
 <toc>
 
 <sect>Introduction
 <p>
-<sect1>What is TaskJuggler
+<sect1>About TaskJuggler
 <p>
 
-TaskJuggler is a project management tool. It helps you to organize and plan
-projects in your company. It schedules the whole project and tries to optimize
+TaskJuggler is a project management tool. It helps to organize and plan
+projects. It schedules the whole project and tries to optimize
 the resources needed for the project.
 
-The output can either be a report showing the several tasks, the resource usage
-or the account information. Multiple reports can be created as html files
-which enables an easy display via a WEB browser.
+The output can be a report showing the several tasks, the resource usage,
+or the account information. Multiple reports can be created as html files, 
+enabling easy display with a web browser. 
 
 <sect1>Changes
 <p>
 
 <sect>Installation
 <p>
-<sect1>How to obtain TaskJuggler 
+<sect1>Obtaining TaskJuggler 
 <p>
 
 TaskJuggler may be obtained from the following web site:
 
 <htmlurl url="http://www.suse.de/~cs/taskjuggler"
-name="http://www.suse.de/~cs/taskjuggler">.
+name="http://www.suse.de/~cs/taskjuggler/">
 
 <sect1>Requirements
 <p>
 
-To build and run TaskJuggler you need:
+To build and run TaskJuggler, you need:
 
 <itemize>
-<item>qt3 - The qt c++ class library in version 3
-<item> gcc 2.95 - The GNU C compiler in version 2.95. The c++ extensions must be
-available
+<item>qt3 &mdash; The qt c++ class library version 3
+<item> gcc 2.95 &mdash; The GNU C compiler version 2.95. The c++
+extensions must be available
 </itemize>
 
 This version of TaskJuggler was built and tested on SuSE Linux 7.3/x86
 
-<sect1>Compilation and installation
+<sect1>Compilation and Installation
 <p>
 
-In order to compile and install TaskJuggler on your system, type the following 
+To compile and install TaskJuggler on your system, type the following 
 in the base directory of the TaskJuggler distribution:
 
 <tscreen><verb>
@@ -63,9 +63,9 @@ in the base directory of the TaskJuggler distribution:
 </verb></tscreen>
 
 <p>
-Since TaskJuggler uses <verb>autoconf</verb> you should have no trouble
+Since TaskJuggler uses <tt/autoconf/, you should have no trouble
 compiling it.
-Should you run into problems please report them to the TaskJuggler developers
+If you have problems, please report them to the TaskJuggler developers
 mailing list at <htmlurl url="mailto:taskjuggler-devel@suse.de"
 name="taskjuggler-devel@suse.de"> in English.
 
@@ -77,32 +77,32 @@ name="taskjuggler-devel@suse.de"> in English.
 
 TaskJuggler uses one or more ASCII files to describe a project. The main
 project should be placed in a file with the <tt>.tjp</tt> extension. This
-main project may contain several sub projects. Such sub projects should be
-placed in files with the <tt>.tjsp</tt> extension. These sub projects are
-included into the main project during compile time.
+main project may contain several subprojects. Such subprojects should be
+placed in files with the <tt>.tjsp</tt> extension. These subprojects are
+included in the main project during compile time.
 
 <sect1> General Usage
 <p>
 
 TaskJuggler works like a compiler. You provide the source files, it computes
-its contents and creates the output files.
+the contents and creates the output files.
 
 <p>
-After you created the project description file, you have TaskJuggler let it
-compute and create the output. Let's say, you have created the
+After you created the project description file, have TaskJuggler 
+compute and create the output. For example, if you have created the
 <tt>AcSo.tjp</tt> project file. You need to send this file to TaskJuggler then:
 
 <tscreen><verb>
 % taskjuggler AcSo.tjp
 </verb></tscreen>
 
-TaskJuggler will create the type of report you have specified in the
+TaskJuggler will create the type of report specified in the
 <tt>AcSo.tjp</tt> file.
 
 <sect1> The Command Line Options
 <p>
 
-To get a list of the command line options of taskjugger use the <tt>--help</tt>
+To get a list of the command line options of TaskJuggler, use the <tt>--help</tt>
 option:
 
 <tscreen><verb>
@@ -112,28 +112,28 @@ option:
 <sect>An Example
 <p>
 
-The easiest way to give you an overview of the functionality of TaskJuggler is
+The easiest way to give an overview of the functionality of TaskJuggler is
 with an example.
 
 <sect1> Introducing the Example: Accounting Software
 <p>
 
-Please refer to section <ref id="example" name="The Example: Accounting
+Refer to section <ref id="example" name="The Example: Accounting
 Software"> for a printout of the example.
 
-In this project, we plan to create an accounting software. The projects
-starts on Jan. 16th 2002 and it's end is planned for 30th of June 2002. The
+In this project, we plan to create an accounting program. The project
+starts on January 16, 2002, and its end is planned for June 30, 2002. The
 project will consist of the following tasks:
 
 <descrip>
-<tag/Specification/The developers will set up the specifiaction for the
+<tag/Specification/The developers set up the specification for the
 software and documentation.
 <tag/Software development/This is the whole process of coding the software. It
-include the following sub tasks:
+includes the following subtasks:
   <descrip>
   <tag/Database coupling/Connection procedures to the database.
-  <tag/Grahpical user interface/Creating the user interface.
-  <tag/Backend functions/Creating the calucation and computing routines for the
+  <tag/Graphical user interface/Creating the user interface.
+  <tag/Back-end functions/Creating the calucation and computing routines for the
   data.
   </descrip>
 
@@ -153,22 +153,22 @@ of the project. For example, we cannot start the project before the contract
 is signed. It is also important to check the planned date of shipping the
 software to the customer.
 
-This process consist of the following sub tasks:
+This process consist of the following subtasks:
   <descrip>
   <tag/Projectstart/This milestone defines the start of the project.
-  <tag/Betaversion/This marks the start of the beta test. Normally the
-  customer wants to see a beta version. So this is also a milestone.
+  <tag/Betaversion/This marks the start of the beta test. Normally, the
+  customer wants to see a beta version, so this is also a milestone.
   <tag/Ship product to customer/This is the date when the project has ended.
-  Software is in final stage, the manual is ready and printed and everyting is
+  Software is in final stage, the manual is ready and printed, and everything is
   shipped to the customer.
   </descrip>
 </descrip>
 
-<sect> The basic parts of a <tt>.tjp</tt> file
+<sect> The Basic Parts of a <tt>.tjp</tt> File
 <p>
 
-This section gives you an overview on the most important commands, properties
-and attributes used in a typical project file. Please refer to <ref
+This section gives an overview of the most important commands, properties,
+and attributes used in a typical project file. Refer to <ref
 id="reference" name="Command Reference"> for a complete list of commands and
 properties usable in project files.
 
@@ -179,18 +179,18 @@ This statement informs TaskJuggler about the most important things on the
 project. These things include:
 
 <descrip>
-<tag/fibu/The project id, unique within the scope of the project
+<tag/fibu/The project ID, unique within the scope of the project
 <tag/Accounting Software/The short description of the project
 <tag/1.0/The version of the schedule
-<tag/2002-01-16 2002-6-30/Begin and end date of the project
+<tag/2002-01-16 2002-6-30/Begin and end dates of the project
 </descrip>
 
-Please refer to the <ref id="project" name="project"> command in the reference
+Refer to the <ref id="project" name="project"> command in the reference
 for details.
 
 <tag>resource dev "Developers" { ... }</tag>
 
-This defines a resource with the unique id <tt/dev/. It will be shown as
+This defines a resource with the unique ID <tt/dev/. It will be shown as
 <tt/Developers/ on the schedule later.
 
 <descrip>
@@ -199,38 +199,38 @@ This defines a resource with the unique id <tt/dev/. It will be shown as
 </descrip>
 
 In the example, the resource consists of the three developers (<tt/dev1/,
-<tt/dev2/ and <tt/dev3/). For every resource, you can specify some additional
-attributes in separate curly brackets {}.
+<tt/dev2/, and <tt/dev3/). For every resource, you can specify additional
+attributes in separate curly braces {}.
 
-Please refer to the <ref id="resource" name="resource"> command in the
+Refer to the <ref id="resource" name="resource"> command in the
 reference for details.
 
 <tag>task AcSo "Accounting Software" { ... }</tag>
 
 This defines the task <tt/AcSo/. In this example, it represents the whole
-project to build the Accounting Software. A task may contain several sub tasks.
+project to build the Accounting Software. A task may contain several subtasks.
 
-Please refer to the <ref id="task" name="task"> command in the reference.
+Refer to the <ref id="task" name="task"> command in the reference.
 
 <tag>htmltaskreport "tasks.html" name,start,end,resources,weekly</tag>
 
-This command creates a task based report in html and saves it as
+This command creates a task-based report in html and saves it as
 <tt/tasks.html/ to the current directory. The report will include the task
-name, start and end of the task and the necessary resources will also be
-listed. The reports resolution will be in weeks.
+name, start and end of the task, and the necessary resources. The report's 
+resolution will be in weeks.
 
-Please refer to the <ref id="htmltaskreport" name="htmltaskreport"> command in
+Refer to the <ref id="htmltaskreport" name="htmltaskreport"> command in
 the reference for details.
 </descrip>
 
-<sect> Other useful commands and environments
+<sect> Other Useful Commands and Environments
 <p>
 
 <descrip> 
 <tag> <tt/now 2002-02-17/</tag>
 
-This sets the current date to 2002-02-17. This is the day/week that will be
-higlighted in the report later. This helps you printing/creating reports for
+This sets the current date to 2002-02-17. This is the day or week that will be
+higlighted in the report later. This helps with printing and creating reports for
 the future.
 
 <tag> <tt/rate 310.0/</tag>
@@ -259,23 +259,24 @@ started with '/*' and ended with '*/'.
 Parameters may be of the following types:
 
 <descrip>
-<label id="id"><tag/ID/A string that may consist of the characters A-Z, a-z, 0-9 and _.
-It may not start with a number
+<label id="id"><tag/ID/A string that may consist of the characters A-Z, a-z, 0-9, and _.
+It may not start with a number.
 
-<label id="global_id"><tag/GLOBAL_ID/A GLOBAL_ID may have the same characters as ID but
-additionally it may contain '.' and '!'. '!' may only be used at the
-beginning and is used in relative IDs. A '!' means one scope up
+<label id="global_id"><tag/GLOBAL_ID/A GLOBAL_ID may have the same characters as ID, but
+additionally may contain '.' and '!'. '!' may only be used at the
+beginning and is used in relative IDs. A '!' means one level up.
 
 <label id="string"><tag/STRING/A string may contain any characters and is enclosed in '"'. A
-string may include line breaks
+string may include line breaks.
 
-<label id="date"><tag/DATE/A DATE is an ISO compliant date YYYY-MM-DD[-hh:mm]. Hour, minute
-and second are optional. If not specified the values are set to 0
+<label id="date"><tag/DATE/A DATE is an ISO-compliant date in the
+format YYYY-MM-DD[-hh:mm]. Hour, minute,
+and second are optional. If not specified, the values are set to 0.
 
-<label id="time"><tag/TIME/A time in the format HH:MM
+<label id="time"><tag/TIME/A time in the format HH:MM.
 
 <label id="unit"><tag/UNIT/May be h for hours, d for days, w for weeks, m for months, y for
-years
+years.
 
 <label id="weekday"><tag/WEEKDAY/May be
 <descrip>
@@ -288,21 +289,22 @@ years
 <tag/sun/ for Sunday
 </descrip>
 
-<label id="integer"><tag/INTEGER/An integer number
+<label id="integer"><tag/INTEGER/A number that is an integer.
 
-<label id="real"><tag/REAL/A real number (e.g. 3.14)
+<label id="real"><tag/REAL/A real number (e.g., 3.14).
 
-<label id="logicalexpression"><tag/LOGICALEXPRESSION/This is a logical expression consting of logical
-operations and '&', or '|' and not '&tilde;' to operation on INTERGER values
+<label id="logicalexpression"><tag/LOGICALEXPRESSION/This is a logical expression consisting of logical
+operations, such as '&' for and, '|' for or, and '&tilde;' for not, to
+operate on INTEGER values
 or symbols. As symbols currently only flag names are supported. The
 expression is evaluated from left to right. '&tilde;' has a higher
-precedance than other operators. Use braces to avoid ambigous
-operations. If flagFoo, flagFooBar and flagBar are declared flags, the
+precedence than other operators. Use braces to avoid ambiguous
+operations. If flagFoo, flagFooBar, and flagBar are declared flags, the
 following example is a correct expression:
 
 (flagFoo | flagFooBar) & &tilde;flagBar
 
-<label id="sortingcriteria"><tag/SORTINGCRITERIA/See attribute description for allowed values
+<label id="sortingcriteria"><tag/SORTINGCRITERIA/See attribute description for allowed values.
 </descrip>
 
 Optional attributes of a property must be enclosed by {}.
@@ -327,8 +329,8 @@ The project property is mandatory and should be the first property in
 a project file. &lt;id&gt; is the default project <ref id="id" name="ID"> used to register
 resource allocations in a global database. &lt;name&gt; is the name of the
 project. &lt;version&gt; is the version of the project file. Typically this
-is the CVS id. &lt;start&gt; and &lt;end&gt; define the timeframe of the
-project. The end may be well after the end of the last task but must
+is the CVS ID. &lt;start&gt; and &lt;end&gt; define the time frame of the
+project. The end may be well after the end of the last task, but must
 be specified to terminate the scheduling process.
 
 <sect1>task &lt;id&gt; &lt;name&gt;<label id="task">
@@ -346,7 +348,7 @@ id: <ref id="id" name="ID">
 
 name: <ref id="string" name="STRING">
 
-A task may have sub tasks. In case sub tasks are specified many of the
+A task may have subtasks. If subtasks are specified, many of the
 other attributes are illegal. See attributes for details.
 
 <tag/note &lt;text&gt;/
@@ -357,62 +359,62 @@ A longer description of the task.
 <tag/start &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The planned start date for the task. In case no start date is given,
-the task must depend on other tasks. If no dependency is given the
+The planned start date for the task. If no start date is given,
+the task must depend on other tasks. If no dependency is given, the
 project start date is used. Setting a start date will switch the
 scheduling policy to ASAP.
 
 <tag/end &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The planned end date for the task. In case no end date is given, the
-task must depend on other tasks. If no dependency is given the project
-start date is used. Setting and end date will switch the scheduling
+The planned end date for the task. If no end date is given, the
+task must depend on other tasks. If no dependency is given, the project
+start date is used. Setting an end date will switch the scheduling
 policy to ALAP.
 
 <tag/minstart &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The earliest wanted start date for the task. In case this date can't
-be met the task is marked in the task list.
+The earliest desired start date for the task. If this date cannot
+be met, the task is marked in the task list.
 
-This attribute is inherited by sub tasks.
+This attribute is inherited by subtasks.
 
 <tag/maxstart &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The latest wanted start date for the task. In case this date can't be
-met the task is marked in the task list.
+The latest desired start date for the task. If this date cannot be
+met, the task is marked in the task list.
 
-This attribute is inherited by sub tasks.
+This attribute is inherited by subtasks.
 
 <tag/actualstart &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The actual start date of the task. This can be specified to do
-plan/actual comparisons.
+The actual start date of the task. This can be specified to compare the planned 
+and actual dates.
 
 <tag/minend &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The earliest wanted end date for the task. In case this date can't be
-met the task is marked in the task list.
+The earliest desired end date for the task. If this date cannot be
+met, the task is marked in the task list.
 
-This attribute is inherited by sub tasks.
+This attribute is inherited by subtasks.
 
 <tag/maxend &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The latest wanted end date for the task. In case this date can't be
-met the task is marked in the task list.
+The latest desired end date for the task. If this date cannot be
+met, the task is marked in the task list.
 
-This attribute is inherited by sub tasks.
+This attribute is inherited by subtasks.
 
 <tag/actualend &lt;date&gt;/
 date: <ref id="date" name="DATE">
 
-The actual end date of the task. This can be specified to do
-plan/actual comparisons.
+The actual end date of the task. This can be specified to compare the planned 
+and actual dates.
 
 <tag/length &lt;number&gt; &lt;unit&gt;/
 number: <ref id="real" name="REAL">
@@ -420,9 +422,9 @@ number: <ref id="real" name="REAL">
 unit: <ref id="unit" name="UNIT">
 
 Specifies the time the task occupies the resources. This is working
-time, not calender time. 7d means 7 working days and not one week.
+time, not calender time. 7d means 7 working days, not one week.
 
-Tasks may not have sub tasks if this attribute is used.
+Tasks may not have subtasks if this attribute is used.
 
 <tag/duration &lt;number&gt; &lt;unit&gt;/
 number: <ref id="real" name="REAL">
@@ -432,7 +434,7 @@ unit: <ref id="unit" name="UNIT">
 Specifies the time the task occupies the resources. This is calender
 time, not working time. 7d means one week.
 
-Tasks may not have sub tasks if this attribute is used.
+Tasks may not have subtasks if this attribute is used.
 
 <tag/effort &lt;number&gt; &lt;unit&gt;/
 number: <ref id="real" name="REAL">
@@ -442,15 +444,15 @@ unit: <ref id="unit" name="UNIT">
 Specifies the effort needed to complete the task. An effort of 4d can
 be done with 2 full-time resources in 2 days.
 
-Tasks may not have sub tasks if this attribute is used.
+Tasks may not have subtasks if this attribute is used.
 
 <tag/complete &lt;percent&gt;/
 percent: <ref id="integer" name="INTEGER">
 
-Specifies how many percent the task is already completed. This can be
-usefull for project tracking.
+Specifies what percentage of the task is already completed. This can be
+useful for project tracking.
 
-Tasks may not have sub tasks if this attribute is used.
+Tasks may not have subtasks if this attribute is used.
 
 <tag/allocate &lt;id&gt;/
 id: <ref id="id" name="ID">
@@ -469,24 +471,24 @@ half a working day for this task.
 id: <ref id="id" name="ID">
 
 Specifies <ref id="id" name="ID">s of alternative resources. One of the alternatives will
-be used in case the main resource is not available. If multiple
-resources are used they must be seperated by a comma.
+be used if the main resource is not available. If multiple
+resources are used, they must be separated by commas.
 
 <tag/persistent/
 
-If set the first available resource out of the specified resource and
-it's specified alternatives will be used for the whole task.
+If set, the first available resource out of the specified resource and
+its specified alternatives will be used for the entire task.
 </descrip>
 
 
-Specifies a resource that can be used to fullfill the task. More than
+Specifies a resource that can be used to fulfill the task. More than
 one resource can be  specified for a task. All resources must be
 declared before they can be used. Ref. 'resource'. Resource
-allocations are mandatory for 'effort' based tasks. Task with a
-'length' or 'duration' specification may have resources allocated but
+allocations are mandatory for 'effort'-based tasks. Task with a
+'length' or 'duration' specification may have resources allocated, but
 do not require them.
 
-Tasks may not have sub tasks if this attribute is used.
+Tasks may not have subtasks if this attribute is used.
 
 <tag/scheduling &lt;policy&gt;/
 policy: <ref id="id" name="ID">
@@ -510,10 +512,10 @@ effective policy.
 id: GLOBAL_<ref id="id" name="ID">
 
 Specifies that the task cannot start before the task with the
-specified <ref id="id" name="ID">s have been finished. If multiple <ref id="id" name="ID">s are specified they
-must be seperated by a comma. ids must be either global or relative. A
+specified <ref id="id" name="ID">s have been finished. If multiple <ref id="id" name="ID">s are specified, they
+must be separated by commas. IDs must be either global or relative. A
 relative <ref id="id" name="ID"> starts with a number of '!'. Each '!' moves the scope to the
-parent task. Global <ref id="id" name="ID">s do not contain '!' but have <ref id="id" name="ID">s seperated by
+parent task. Global <ref id="id" name="ID">s do not contain '!', but have <ref id="id" name="ID">s separated by
 dots.
 
 Example:
@@ -525,19 +527,19 @@ task foo1 {
 task bar { depends foo1.foo2 }
 </verb></tscreen>
 
-By using the 'depends' attribute the scheduling policy is
-automatically set to ASAP. If 'depends' and 'preceeds' are used the
+By using the 'depends' attribute, the scheduling policy is
+automatically set to ASAP. If 'depends' and 'preceeds' are used, the
 last policy counts.
 
 <tag/preceeds &lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;/
 id: GLOBAL_<ref id="id" name="ID">
 
-Specifies that this tasks preceeds the tasks with the specified
-<ref id="id" name="ID">s. If multiple tasks are specified they must be seperated by a
-comma. The format is equivalent to the 'depends' attribute.
+Specifies that this task preceeds the tasks with the specified
+<ref id="id" name="ID">s. If multiple tasks are specified, they must be separated by 
+commas. The format is equivalent to the 'depends' attribute.
 
-By using the 'preceeds' attribute the scheduling policy is
-automatically set to ALAP. If 'depends' and 'preceeds' are used the
+By using the 'preceeds' attribute, the scheduling policy is
+automatically set to ALAP. If 'depends' and 'preceeds' are used, the
 last policy counts.
 
 <tag/flags &lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;/
@@ -546,17 +548,17 @@ id: <ref id="id" name="ID">
 Attaches flags to the task. Flags can be used to filter tasks from the
 the output. Flags must be declared before they can be used. Ref. 'flags'.
 
-Flags are inherited by sub tasks from their parent tasks if they are
-declared before the sub task. Flags that are declared after the sub
-tasks are NOT inherited.
+Flags are inherited by subtasks from their parent tasks if they are
+declared before the subtask. Flags that are declared after the subtasks 
+are NOT inherited.
 
 <tag/responsible &lt;id&gt;/
 id: <ref id="id" name="ID">
 
-The id of the resource that is responsible for this task.
+The ID of the resource that is responsible for this task.
 
-This attribute is inherited by sub tasks if specified prior to the
-definition of the sub task.
+This attribute is inherited by subtasks if specified prior to the
+definition of the subtask.
 
 <tag/priority &lt;value&gt;/
 value: <ref id="integer" name="INTEGER">
@@ -564,17 +566,17 @@ value: <ref id="integer" name="INTEGER">
 Specifies a priority between 1 and 1000. A task with higher priority
 is more likely to get the requested resources.
 
-This attribute is inherited by sub tasks if specified prior to the
-definition of the sub task.
+This attribute is inherited by subtasks if specified prior to the
+definition of the subtask.
 
 <tag/account &lt;id&gt;/
 id: <ref id="id" name="ID">
 
-Specifies the account that all money associated with this task will be
-credited to.
+Specifies the account to which all money associated with this task will be
+credited.
 
-This attribute is inherited by sub tasks if specified prior to the
-definition of the sub task.
+This attribute is inherited by subtasks if specified prior to the
+definition of the subtask.
 
 <tag/startcredit &lt;amount&gt;/
 amount: <ref id="real" name="REAL">
@@ -589,7 +591,7 @@ Specifies an amount that is credited to the account specified by the
 'account' property at the moment the tasks ends.
 </descrip>
 
-Tasks may be nested and some attributes are inherited by the sub tasks.
+Tasks may be nested and some attributes are inherited by the subtasks.
 
 <sect1>account &lt;id&gt; &lt;name&gt; &lt;type&gt;<label id="account">
 <p>
@@ -603,7 +605,7 @@ Optional attributes:
 
 <descrip>
 <tag/account &lt;id&gt; &lt;name&gt;/
-Accounts may be nested. An account that has sub accounts may not have
+Accounts may be nested. An account that has subaccounts may not have
 a balance or a kotrusid.
 
 <tag/credit &lt;date&gt; &lt;description&gt; &lt;amount&gt;/
@@ -621,12 +623,13 @@ transaction.
 id: <ref id="string" name="STRING">
 
 The KoTrus <ref id="id" name="ID"> of the account (Kostentraeger).
+This is a special reserved keyword.  
 </descrip>
 
 Declares an account. Accounts can be used to calculate costs of tasks
-or the whole project. Account declaration may be nested but only the
+or the whole project. Account declaration may be nested, but only the
 top level accounts may have a type attribute specified. All
-sub-accounts inherit this type. The type may be 'Cost' or 'Revenue'.
+subaccounts inherit this type. The type may be 'Cost' or 'Revenue'.
 
 <sect1>resource &lt;id&gt; &lt;name&gt;<label id="resource">
 <p>
@@ -640,9 +643,9 @@ Optional attributes:
 <descrip>
 <tag/resource &lt;id&gt; &lt;name&gt;/
 Resources may be nested to create groups. A nested resource inherits
-the attributes of the parent resource. But only those attributs are
-inherited that have been specified prior to the declaration of the
-nested resource.
+the attributes of the parent resource. Only those attributes 
+ specified prior to the declaration of the
+nested resource are inherited.
 <tag/mineffort &lt;value&gt;/
 value: <ref id="real" name="REAL">
 
@@ -654,7 +657,7 @@ value: <ref id="real" name="REAL">
 
 The daily maximum effort for a resource. Resources will not be
 scheduled to be used more than this value. A value of 1.0 means a
-whole working day. 0.5 means half a working day.
+full working day. 0.5 means half a working day.
 
 <tag/efficiency &lt;value&gt;/
 value: <ref id="real" name="REAL">
@@ -670,7 +673,7 @@ The daily costs of the resource.
 <tag/kotrusid &lt;id&gt;/
 id: <ref id="string" name="STRING">
 
-The KoTrus <ref id="id" name="ID"> of the resource (email address).
+The KoTrus <ref id="id" name="ID"> of the resource (e-mail address).
 
 <tag/vacation &lt;from&gt; &lsqb;- &lt;to&gt;&rsqb;/
 from: <ref id="date" name="DATE">
@@ -697,8 +700,8 @@ from: <ref id="date" name="DATE">
 
 to: <ref id="date" name="DATE">
 
-Assignes the resource to a defined shift during the specified
-interval. Multiple shifts can be defined but shift invervals may not
+Assigns the resource to a defined shift during the specified
+interval. Multiple shifts can be defined, but shift invervals may not
 overlap.
 </descrip>
 
@@ -729,11 +732,11 @@ to: <ref id="time" name="TIME">
 
 Sets the working hours to the specified intervals. If no hours are
 specified for a day, the global definitions are used. If no working
-hours should be specified for a day the keyword 'off' must be used
+hours should be specified for a day, the keyword 'off' must be used
 instead of the time interval.
 
 </descrip>
-When several resource have the same working hours these working hours
+When several resource have the same working hours, these working hours
 should be defined as shifts. Each shift must have a unique <ref id="id" name="ID">.
 Resources can be assigned to shifts for certain intervals. Ref.
 Resources.
@@ -769,8 +772,8 @@ value: <ref id="integer" name="INTEGER">
 Specifies the number of working hours per day. This value is used to
 calculate the daily load from the number of booked hours. If
 workingHoursPerDay is set to 8 and a resource is used for 12 hours on
-a day, the daily load is 1.5. Change this value with care since it
-affects a lot of internal calculations!
+a day, the daily load is 1.5. Change this value with care as it
+affects many internal calculations.
 
 <sect1>priority &lt;value&gt;<label id="priority">
 <p>
@@ -815,39 +818,39 @@ The currency for money values in reports.
 <p>
 number: <ref id="integer" name="INTEGER">
 
-The number of fraction digits.
+The number of decimal places.
 
 <sect1>include &lt;filename&gt;<label id="include">
 <p>
 filename: <ref id="string" name="STRING">
 
-Includes the specified filename as if its contense would be written
+Includes the specified file name as if its contents would be written
 instead of the include property. include commands can be used within
-global scope or between property declarations of tasks, resources and
+global scope or between property declarations of tasks, resources, and
 accounts.
 
 <sect1>macro &lt;id&gt; &lsqb; body &rsqb;<label id="macro">
 <p>
 id: <ref id="id" name="ID">
 
-The body is not optional it must be enclosed in [ ]. Macros can be
+The body is not optional. It must be enclosed in [ ]. Macros can be
 declared like this:
 
 <descrip>
 <tag/macro foo &lsqb; This text &rsqb;/
 
-If later ${foo} is found in the project file it is expanded to ' This
+If later ${foo} is found in the project file, it is expanded to ' This
 text '. Macros may have arguments. Arguments are special macros with
 numbers as names. The number specifies the index of the argument.
 
 <tag/macro foo &lsqb; This ${1} text &rsqb;/
 
-will expand to ' This stupid text if called as ${foo
+will expand to ' This stupid text ' if called as ${foo
 "stupid"}. Macros may call other macros.
 </descrip>
 
-Macro <ref id="id" name="ID">s should have at least one upper case letter as all lower case
-letter <ref id="id" name="ID">s may be used in later version for build-in macros like 'if',
+Macro <ref id="id" name="ID">s should have at least one uppercase letter as all lowercase
+letter <ref id="id" name="ID">s may be used in a later version for built-in macros like 'if',
 'expr' or 'for'.
 
 <sect1>flags &lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;<label id="flags">
@@ -855,8 +858,8 @@ letter <ref id="id" name="ID">s may be used in later version for build-in macros
 id: <ref id="id" name="ID">
 
 Declares the specified flags. Flags can be assigned to tasks,
-resources or accounts to be used as filters during report
-generation. It is legal to declared a flag more than once.
+resources, or accounts to be used as filters during report
+generation. It is legal to declare a flag more than once.
 
 <sect1>timingresolution &lt;value&gt; &lt;unit&gt;<label id="timingresolution">
 <p>
@@ -865,7 +868,7 @@ value: INTERGER
 unit: <ref id="unit" name="UNIT">
 
 Sets the minimum timing resolution. The smaller the value, the longer
-the schedulings process needs. The default is 1 hour. The smallest
+the schedulings process requires. The default is 1 hour. The smallest
 value is 5 min.
 
 <sect1>htmltaskreport &lt;filename&gt;<label id="htmltaskreport">
@@ -883,25 +886,25 @@ Specifies which columns should be included in the task report. The
 following values for colid are available:
 
 <descrip>
-<tag/no/The task index.
-<tag/id/The global <ref id="id" name="ID"> of a task.
-<tag/name/The name of a task, resource or account.
-<tag/start/The start date of a task.
-<tag/end/The end date of a task.
-<tag/minstart/The earliest wanted start date.
-<tag/maxstart/The latest wanted start date.
-<tag/minend/The earliest wanted end date.
-<tag/maxend/The latest wanted end date.
-<tag/priority/The scheduling priority.
-<tag/resources/The names of the used resources.
-<tag/depends/The task index of the tasks that this task depends on.
-<tag/follows/The task index of the tasks that depend on this task.
-<tag/responsible/The name of the resource responsible for a task.
-<tag/responsibilies/A list of all tasks indicies that a resource is responsible for.
-<tag/note/The description of the task.
-<tag/daily/A day-by-day calendar view of the tasks.
-<tag/weekly/A week-by-week calendar view of the tasks.
-<tag/monthly/A month-by-month calendar view of the tasks.
+<tag/no/The task index
+<tag/id/The global <ref id="id" name="ID"> of a task
+<tag/name/The name of a task, resource, or account
+<tag/start/The start date of a task
+<tag/end/The end date of a task
+<tag/minstart/The earliest desired start date
+<tag/maxstart/The latest desired start date
+<tag/minend/The earliest desired end date
+<tag/maxend/The latest desired end date
+<tag/priority/The scheduling priority
+<tag/resources/The names of the used resources
+<tag/depends/The task index of the tasks on which this task depends
+<tag/follows/The task index of the tasks that depend on this task
+<tag/responsible/The name of the resource responsible for a task
+<tag/responsibilies/A list of all tasks indicies for which a resource is responsible 
+<tag/note/The description of the task
+<tag/daily/A day-by-day calendar view of the tasks
+<tag/weekly/A week-by-week calendar view of the tasks
+<tag/monthly/A month-by-month calendar view of the tasks
 </descrip>
 
 <tag/start &lt;day&gt;/
@@ -933,8 +936,8 @@ will be sorted. Possible values are:
 
 <descrip>
 <tag/tasktree/This is the default and creates a list with subtasks
-indented and grouped together. If this sorting is used parent tasks
-are shown when sub tasks are not hidden even if the parent task
+indented and grouped together. If this sorting is used, parent tasks
+are shown when subtasks are not hidden, even if the parent task
 matches the hide expression.
 
 <tag/tree/Show nesting with indentation
@@ -975,7 +978,7 @@ matches the hide expression.
 
 <tag/mineffortdown/Largest minimal effort on top
 
-<tag/maxeffortup/Smallerst maximum effort on top
+<tag/maxeffortup/Smallest maximum effort on top
 
 <tag/maxeffortdown/Largest maximum effort on top
 
@@ -989,31 +992,31 @@ matches the hide expression.
 </descrip>
 
 <tag/showActual/
-If used not only the plan values are listed in the table, but also the
+If used, not only the plan values are listed in the table, but also the
 actual values. The actual values are put underneath the plan values.
 
 <tag/hidetask &lt;expression&gt;/
 expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
-List only tasks that don't have flags that meet the described logical
+List only tasks that do not have flags meeting the described logical
 expression.
 
 <tag/rolluptask &lt;expression&gt;/
 expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
-Don't show sub tasks of tasks that have flags that meet the described
+Do not show subtasks of tasks with flags meeting the described
 logical expression.
 
 <tag/hideresource &lt;expression&gt;/
 expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
-List only resources that don't have flags that meet the described logical
+List only resources that do not have flags meeting the described logical
 expression.
 
 <tag/rollupresource &lt;expression&gt;/
 expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
-Don't show sub resources of resources that have flags that meet the
+Do not show subresources of resources with flags meeting the
 described logical expression.
 
 Generates a report of all tasks (excluding hidden and filtered) in
@@ -1045,21 +1048,21 @@ Specifies which columns should be included in the task report. The
 following values for colid are available:
 
 <descrip>
-<tag/no/The task index.
+<tag/no/The task index
 
-<tag/id/The global <ref id="id" name="ID"> of a task.
+<tag/id/The global <ref id="id" name="ID"> of a task
 
-<tag/name/The name of a task, resource or account.
+<tag/name/The name of a task, resource, or account
 
-<tag/total/Total accumulated values.
+<tag/total/Total accumulated values
 
-<tag/daily/A day-by-day calendar view of the accounts.
+<tag/daily/A day-by-day calendar view of the accounts
 
-<tag/weekly/A week-by-week calendar view of the accounts.
+<tag/weekly/A week-by-week calendar view of the accounts
 
-<tag/monthly/A month-by-month calendar view of the accounts.
+<tag/monthly/A month-by-month calendar view of the accounts
 
-<tag/quaterly/A quarter-by-quarter calender view of the accounts.
+<tag/quaterly/A quarter-by-quarter calender view of the accounts
 </descrip>
 
 <tag/start &lt;day&gt;/
@@ -1075,13 +1078,13 @@ The end date for the calender view.
 <tag/show &lt;flag&gt;&lsqb;,flag&rsqb;/
 flag: <ref id="id" name="ID">
 
-List only accounts that have the listed flags. This attribute
+List only accounts with the listed flags. This attribute
 conflicts with 'hide'.
 
 <tag/hide &lt;flag&gt;&lsqb;,flag&rsqb;/
 flag: <ref id="id" name="ID">
 
-List only accounts that don't have the listed flags. This attribute
+List only accounts that do not have the listed flags. This attribute
 conflicts with 'show'.
 </descrip>
 
@@ -1093,8 +1096,8 @@ mode: <ref id="string" name="STRING">
 sets the kotrus mode. Valid values are
 <itemize>
 <item>'NoKotrus' for no KoTrus connection
-<item>'XML' for to read from an XML-File (not yet supported)
-<item>'DB' to read from database which must be configured in your .taskjugglerrc
+<item>'XML' to read from an XML file (not yet supported)
+<item>'DB' to read from database configured in your .taskjugglerrc
 </itemize>
 
 <sect>The Example: Accounting Software<label id="example">
@@ -1230,9 +1233,9 @@ htmltaskreport "tasks.html" name,start,end,resources,weekly
 TaskJuggler Copyright 2001 Chris Schlaeger , cs@suse.de
 
 
-This program is free software; you can redistribute it and/or modify
+This program is free software. You can redistribute it and modify
 it under the terms of the GNU General Public License version 2 as published
-by the Free Software Foundation; 
+by the Free Software Foundation. 
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -1240,7 +1243,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
+along with this program. If not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 <p>
