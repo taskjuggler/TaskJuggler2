@@ -681,6 +681,14 @@ implemented for XML reports.</para></listitem>
 have resource vacations as well. If the vacation fills the complete
 report cell term, the cell has a yellow background.</para></listitem>
 
+<listitem><para>Fixes for building TaskJuggler on FreeBSD
+added.</para></listitem>
+
+<listitem><para><link linkend="PROPERTY_maxeffort">maxeffort</link>
+and <link linkend="PROPERTY_load">load</link> have been replaced by
+the far more flexible concept of <link
+linkend="PROPERTY_limits">limits</link>.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

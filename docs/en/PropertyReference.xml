@@ -51,6 +51,8 @@
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
+  <!ENTITY example_limits SYSTEM
+   "../../TestSuite/Syntax/Correct/Limits-1.tjp">
   <!ENTITY example_precedes SYSTEM
    "../../TestSuite/Syntax/Correct/Precedes1.tjp">
 ]>
@@ -77,6 +79,7 @@ reports should be specified.</para></descr>
    <optattr>include</optattr>
    <optattr>macro</optattr>
    <optattr>maxeffort</optattr>
+   <optattr>limits</optattr>
    <optattr>priority</optattr>
    <optattr>projectid</optattr>
    <optattr>projectids</optattr>
@@ -591,6 +594,18 @@ should be shown at a maximum.</para></descr>
    <also>currency</also>
   </seealso>
  </property>
+ <property name="dailymax" id="dailymax" inheritable="Yes">
+  <descr><para>Sets the daily limit of a resource usage or a resource
+allocation to a task.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>monthlymax</also>
+   <also>weeklymax</also>
+  </seealso>
+ </property>
  <property name="dailyworkinghours" id="dailyworkinghours" inheritable="No">
   <descr><para>Set the average number of working hours per day. This
 is used as the base to convert working hours into working days. This
@@ -1093,8 +1108,25 @@ no global vacation of or global working time defined.</para>
    <also>effort</also>
   </seealso>
  </property>
+ <property name="limits" id="limits" inheritable="Yes">
+  <descr><para>Specifies limits on the usage of a resource in general,
+or of the allocation of a resource to a task. This property replaces
+the less flexible properties <link
+linkend="PROPERTY_maxeffort">maxeffort</link> and <link
+linkend="PROPERTY_load">load</link>.</para></descr>
+  <optattributes>
+   <optattr>dailymax</optattr>
+   <optattr>weeklymax</optattr>
+   <optattr>monthlymax</optattr>
+  </optattributes>
+  <example>&example_limits;</example>
+ </property>
  <property name="load" id="load" inheritable="No">
-  <descr><para>Specifies the daily load of a resource for an
+  <descr><para>This property has been replaced by <link
+linkend="PROPERTY_limits">limits</link>. The further usage of load is
+strongly discouraged. It will be dropped from future versions of
+TaskJuggler.</para>
+  <para>Specifies the daily load of a resource for an
 allocation. A load of 1.0 (default) means the resource is allocated
 for as many hours as specified by <link
 linkend="PROPERTY_dailyworkinghours">dailyworkinghours</link>. A load
@@ -1196,7 +1228,11 @@ other resource allocations of the task will only be made when the
 mandatory resources are available as well.</para></descr>
  </property>
  <property name="maxeffort" id="maxeffort" inheritable="No">
-  <descr><para>The daily maximum effort for a resource. Resources will not be
+  <descr><para>This property has been replaced by <link
+linkend="PROPERTY_limits">limits</link>. The further usage of maxeffort is
+strongly discouraged. It will be dropped from future versions of
+TaskJuggler.</para>
+  <para>The daily maximum effort for a resource. Resources will not be
 scheduled to be used more than this value. A value of 1.0 means a full
 working day. 0.5 means half a working day.</para></descr>
   <attributes>
@@ -1280,6 +1316,18 @@ detailed specification of what the task is about.</para></descr>
   </attributes>
   <seealso>
    <also>statusnote</also>
+  </seealso>
+ </property>
+ <property name="monthlymax" id="monthlymax" inheritable="Yes">
+  <descr><para>Sets the monthly limit of a resource usage or a resource
+allocation to a task.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>dailymax</also>
+   <also>weeklymax</also>
   </seealso>
  </property>
  <property name="now" id="now" inheritable="Yes">
@@ -1490,6 +1538,7 @@ name="name" type="STRING"/> </attributes>
    <optattr>flags</optattr>
    <optattr>kotrusid</optattr>
    <optattr>maxeffort</optattr>
+   <optattr>limits</optattr>
    <optattr>rate</optattr>
    <optattr>resource</optattr>
    <optattr>shift_selection</optattr>
@@ -2168,6 +2217,18 @@ Currently version 2 is highly recomended.</para></descr>
   <attributes>
    <attr name="number" type="INTEGER"/>
   </attributes>
+ </property>
+ <property name="weeklymax" id="weeklymax" inheritable="Yes">
+  <descr><para>Sets the weekly limit of a resource usage or a resource
+allocation to a task.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>dailymax</also>
+   <also>monthlymax</also>
+  </seealso>
  </property>
  <property name="weekstartsmonday" id="weekstartsmonday" inheritable="No">
   <descr><para>Specify that you want to base all week calculation on

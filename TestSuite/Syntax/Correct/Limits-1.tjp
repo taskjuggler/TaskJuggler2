@@ -1,0 +1,28 @@
+project limits "Limits" "$Id" 2004-03-01 2004-05-01
+
+# Default limit that affects all subsequently defined resources
+limits {
+	weeklymax 4d
+}
+
+resource r1 "R1" { 
+	limits { dailymax 2h weeklymax 6h monthlymax 2.5d }
+}
+
+resource r2 "R2"
+
+task t1 "Task 1" {
+	start 2004-03-01
+	duration 60d
+	# allocation is subject to resource limits
+	allocate r1
+}
+
+task t2 "Task 2" {
+	start 2004-03-01
+	duration 60d
+	# limits can also be specified per allocation
+	allocate r2 {
+	 	limits { dailymax 4h weeklymax 3d monthlymax 2w }
+ 	}
+}

@@ -2728,11 +2728,11 @@ ProjectFile::readLimits()
             delete limits;
             return 0;
         }
-        if (token == KW("daily"))
+        if (token == KW("dailymax"))
             limits->setDailyMax(uval);
-        else if (token == KW("weekly"))
+        else if (token == KW("weeklymax"))
             limits->setWeeklyMax(uval);
-        else if (token == KW("monthly"))
+        else if (token == KW("monthlymax"))
             limits->setMonthlyMax(uval);
         else
         {
