@@ -13,9 +13,11 @@
 #include "CoreAttributesTreeIterator.h"
 #include "CoreAttributes.h"
 
-CoreAttributesTreeIterator::CoreAttributesTreeIterator(CoreAttributes* r)
+CoreAttributesTreeIterator::CoreAttributesTreeIterator(CoreAttributes* r,
+													   IterationMode m)
 {
 	root = current = r;
+	iMode = m;
 	while (current->hasSubs())
 		current = current->getSubList().getFirst();
 }
@@ -46,6 +48,8 @@ CoreAttributesTreeIterator::operator++()
 		}
 		// End of sub list reached. Try parent node then.
 		current = current->getParent();
+		if (iMode == parentAfterLeaves)
+			return current;
 	}
 	return (current = 0);
 }

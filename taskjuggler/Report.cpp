@@ -22,6 +22,9 @@
 #include "Account.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
+#include "TaskTreeIterator.h"
+#include "ResourceTreeIterator.h"
+#include "AccountTreeIterator.h"
 
 #define KW(a) a
 
@@ -265,13 +268,15 @@ const
 		}
 	}
 
-	/* Now we have to remove all sub tasks of task in the roll-up list
+	/* Now we have to remove all sub tasks of rolled-up tasks
      * from the filtered list */
 	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
 		if (isRolledUp(*tli, rollUpExp))
-			for (TaskListIterator thi((*tli)->getSubListIterator()); 
-				 *thi != 0; ++thi)
-				filteredList.remove(*thi);
+			for (TaskTreeIterator tti(*tli,
+									  TaskTreeIterator::parentAfterLeaves);
+				 *tti != 0; ++tti)
+				if (*tti != *tli)
+					filteredList.removeRef(*tti);
 }
 
 void
@@ -329,9 +334,12 @@ const
 	for (ResourceListIterator rli(project->getResourceListIterator());
 		 *rli != 0; ++rli)
 		if (isRolledUp(*rli, rollUpExp))
-			for (ResourceListIterator thi((*rli)->getSubListIterator());
-				 *thi != 0; ++thi)
-				filteredList.remove(*thi);
+			for (ResourceTreeIterator rti(*rli,
+										  ResourceTreeIterator::
+										  parentAfterLeaves);
+				 *rti != 0; ++rti)
+				if (*rti != *rli)
+					filteredList.removeRef(*rti);
 }
 
 void
@@ -380,9 +388,12 @@ const
 	for (AccountListIterator ali(project->getAccountListIterator()); 
 		 *ali != 0; ++ali)
 		if (isRolledUp(*ali, rollUpExp))
-			for (AccountListIterator thi((*ali)->getSubListIterator());
-				 *thi != 0; ++thi)
-				filteredList.remove(*thi);
+			for (AccountTreeIterator ati(*ali,
+										 AccountTreeIterator::
+										 parentAfterLeaves);
+				 *ati != 0; ++ati)
+				if (*ati != *ali)
+					filteredList.removeRef(*ati);
 }
 
 void

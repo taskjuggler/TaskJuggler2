@@ -70,7 +70,8 @@ public:
 	bool hasFlag(const QString& flag) { return flags.hasFlag(flag); }
 	FlagList getFlagList() const { return flags; }
 
-	bool hasSameAncestor(CoreAttributes* c);
+	bool hasSameAncestor(CoreAttributes* c) const;
+	bool isDescendentOf(CoreAttributes* c) const;
 
 protected:
 	/// A pointer to access information that are global to the project.

@@ -18,7 +18,10 @@
 class ResourceTreeIterator : public virtual CoreAttributesTreeIterator
 {
 public:
-	ResourceTreeIterator(Resource* r) : CoreAttributesTreeIterator(r) { } 
+	ResourceTreeIterator(Resource* r,
+						 CoreAttributesTreeIterator::IterationMode m =
+						 CoreAttributesTreeIterator::leavesOnly) 
+		: CoreAttributesTreeIterator(r, m) { } 
 	virtual ~ResourceTreeIterator() { }
 
 	Resource* operator*() { return (Resource*) current; }

@@ -18,7 +18,10 @@ class CoreAttributes;
 class CoreAttributesTreeIterator
 {
 public:
-	CoreAttributesTreeIterator(CoreAttributes* root);
+	enum IterationMode { leavesOnly = 0, parentAfterLeaves };
+	
+	CoreAttributesTreeIterator(CoreAttributes* root, 
+							   IterationMode m = leavesOnly);
 	~CoreAttributesTreeIterator() { }
 
 	CoreAttributes* operator*() { return current; }
@@ -27,6 +30,7 @@ public:
 protected:
 	CoreAttributes* current;
 private:
+	IterationMode iMode;
 	CoreAttributes* root;
 } ;
 
