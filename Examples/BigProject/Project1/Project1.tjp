@@ -1,6 +1,6 @@
 project project1 "First sub project" "1.0" 2002-01-16 2002-06-30
 
-include "../Common/Resources.tjsp"
+include "../Common/Resources.tji"
 
 flags interface
 
@@ -27,7 +27,7 @@ task project1 "First Project" {
 }
 
 # Create the export file.
-export "Project1-Interface.tjsp" {
+export "Project1-Interface.tji" {
   taskattributes flags, note, minstart, maxstart, minend, maxend,
 	complete, responsible, depends
 	hideresource 0

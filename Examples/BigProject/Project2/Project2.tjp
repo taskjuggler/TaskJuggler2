@@ -1,11 +1,11 @@
 project project2 "Second sub project" "1.0" 2002-01-16 2002-06-30
 
-include "../Common/Resources.tjsp"
+include "../Common/Resources.tji"
 /* This project depends on tasks from project1. So we include a file
  * that contains the fully scheduled tasks from project1 so we can
  * reference these tasks. */
 
-include "../Project1/Project1-Interface.tjsp"
+include "../Project1/Project1-Interface.tji"
 
 flags interface
 
