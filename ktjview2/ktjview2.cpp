@@ -508,7 +508,7 @@ void ktjview2::slotFilterForTasks()
     {
         m_filterForTasksAction->setText( i18n( "&Filter for: %1" ).arg( m_taskFilterItems[id] ) );
         m_activeTaskFilter = id;
-        statusBar()->message( i18n( "Task list filtered for '%1'" ).arg( m_taskFilterItems[id] ), 2000 );
+        statusBar()->message( i18n( "Task list filtered for '%1'" ).arg( m_taskFilterItems[id] ), 5000 );
     }
     else
         m_filterForTasksAction->setCurrentItem( m_activeTaskFilter );
@@ -522,7 +522,7 @@ void ktjview2::slotFilterForResources()
     {
         m_filterForResourcesAction->setText( i18n( "&Filter for: %1" ).arg( m_resourceFilterItems[id] ) );
         m_activeResourceFilter = id;
-        statusBar()->message( i18n( "Resource list filtered for '%1'" ).arg( m_resourceFilterItems[id] ), 2000 );
+        statusBar()->message( i18n( "Resource list filtered for '%1'" ).arg( m_resourceFilterItems[id] ), 5000 );
     }
     else
         m_filterForResourcesAction->setCurrentItem( m_activeResourceFilter );
