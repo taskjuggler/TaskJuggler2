@@ -58,8 +58,14 @@
                                 <property name="text">
                                     <string></string>
                                 </property>
+                                <property name="accel">
+                                    <string>Ctrl+T, Ctrl+T</string>
+                                </property>
                                 <property name="iconSet">
                                     <iconset>image0</iconset>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Add a new filter</string>
                                 </property>
                             </widget>
                             <widget class="QPushButton">
@@ -75,6 +81,9 @@
                                 <property name="iconSet">
                                     <iconset>image1</iconset>
                                 </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Remove the selected filter</string>
+                                </property>
                             </widget>
                             <widget class="QPushButton">
                                 <property name="name">
@@ -88,6 +97,9 @@
                                 </property>
                                 <property name="iconSet">
                                     <iconset>image2</iconset>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Rename the selected filter</string>
                                 </property>
                             </widget>
                         </hbox>

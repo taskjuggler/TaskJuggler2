@@ -50,16 +50,6 @@ public:
      */
     ~FilterDialog();
 
-    /**
-     * Load a list of filters from the XML definition
-     */
-    void loadFilterList();
-
-    /**
-     * Save the filters to the XML file
-     */
-    void saveFilters();
-
 private slots:
     /**
      * Add a line of conditions
