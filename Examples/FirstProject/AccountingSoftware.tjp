@@ -344,5 +344,5 @@ htmlaccountreport "Accounting.html" {
 # scheduled project. This will be used by tjx2gantt to create a nice
 # Gantt chart of our project.
 xmlreport "AccountingSoftware.tjx" {
-	version 2
+#	version 2
 }
