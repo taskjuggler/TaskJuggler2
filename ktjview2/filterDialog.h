@@ -22,6 +22,8 @@
 #ifndef _FILTER_DIALOG_
 #define _FILTER_DIALOG_
 
+class QListBox;
+
 class KDialogBase;
 
 class Resource;
@@ -29,7 +31,7 @@ class Project;
 class FilterWidget;
 
 /**
- * Dialog for creating filter conditions
+ * Dialog for defining filters
  *
  * @author Lukas Tinkl <lukas.tinkl@suse.cz>
  * @short Filter dialog
@@ -39,10 +41,24 @@ class FilterDialog: public KDialogBase
     Q_OBJECT
 public:
     /**
-     * CTOR
+     * Standard CTOR
      */
     FilterDialog( QWidget * parent = 0, const char * name = 0 );
+
+    /**
+     * Standard DTOR
+     */
     ~FilterDialog();
+
+    /**
+     * Load a list of filters from the XML definition
+     */
+    void loadFilterList();
+
+    /**
+     * Save the filters to the XML file
+     */
+    void saveFilters();
 
 private slots:
     /**
@@ -75,7 +91,18 @@ private slots:
      */
     void slotRenameFilter();
 
+    /**
+     * React when the filter changes in the listbox
+     * @param item The new filter's item
+     */
+    void slotFilterChanged( QListBoxItem * item );
+
 private:
+    /**
+     * @return true if a filter with @p name already exists
+     */
+    bool filterExists( const QString & name ) const;
+
     /// the base widget
     FilterWidget * m_base;
 
