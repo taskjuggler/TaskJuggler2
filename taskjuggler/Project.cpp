@@ -215,18 +215,13 @@ Project::schedule()
 
 	if (!activeAsap.isEmpty() || !activeAlap.isEmpty())
 	{
-		if (day < start)
-		{
-			qWarning("Some tasks need to start earlier than the specified "
-					 "project start date.");
-			error = TRUE;
-		}
-		if (day >= end)
-		{
-			qWarning("Some tasks need to finish later than the specified "
-					 "project end date.");
-			error = TRUE;
-		}
+		for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
+			qWarning("Task %s does not fit into the project period",
+					 t->getId().latin1());
+		for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
+			qWarning("Task %s does not fit into the project period",
+					 t->getId().latin1());
+		error = TRUE;
 	}
 
 	if (!checkSchedule())
@@ -332,6 +327,6 @@ Project::addActiveTask(Task* t)
 	else
 	{
 		if (activeAlap.findRef(t) == -1)
-			activeAlap.append(t);
+			activeAlap.inSort(t);
 	}
 }

@@ -311,7 +311,7 @@ public:
 	QDomElement xmlElement( QDomDocument& doc );
 
 private:
-	bool scheduleContainer();
+	bool scheduleContainer(bool safeMode);
 	Task* subFirst() { return (Task*) sub.first(); }
 	Task* subNext() { return (Task*) sub.next(); }
 	bool bookResource(Resource* r, time_t day, time_t duration,

@@ -306,6 +306,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 			(scheduling == ALAP && date <= start))
 		{
 			project->removeActiveTask(this);
+			return FALSE;
 		}
 	}
 
@@ -313,7 +314,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 }
 
 bool
-Task::scheduleContainer()
+Task::scheduleContainer(bool safeMode)
 {
 	if (schedulingDone)
 		return TRUE;
@@ -349,12 +350,12 @@ Task::scheduleContainer()
 	if (start == 0)
 	{
 		start = nstart;
-		propagateStart();
+		propagateStart(safeMode);
 	}
 	if (end == 0)
 	{
 		end = nend;
-		propagateEnd();
+		propagateEnd(safeMode);
 	}
 
 	schedulingDone = TRUE;
@@ -393,7 +394,7 @@ Task::propagateStart(bool safeMode)
 	}
 
 	if (safeMode && parent)
-		getParent()->scheduleContainer();
+		getParent()->scheduleContainer(TRUE);
 }
 
 void
@@ -424,17 +425,19 @@ Task::propagateEnd(bool safeMode)
 		}
 
 	if (safeMode && parent)
-		getParent()->scheduleContainer();
+		getParent()->scheduleContainer(TRUE);
 }
 
 void
 Task::propagateInitialValues()
 {
-	// I'm not sure if this isn't dangerous.
 	if (start != 0)
 		propagateStart(FALSE);
 	if (end != 0)
 		propagateEnd(FALSE);
+	// Check if the some data of sub tasks can already be propagated.
+	if (subFirst())
+		scheduleContainer(TRUE);
 }
 
 bool
