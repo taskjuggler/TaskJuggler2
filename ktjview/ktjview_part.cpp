@@ -127,8 +127,9 @@ void KTjviewPart::slReload()
 {
     slChangeStatusBar( i18n("Reverting file"));
 
+    // FIXME: Delete the project. Project cores if deleted (08/2003) !
+    //  delete m_project;
     m_gantt->clear();
-    delete m_project;
     openFile();
 
 }
