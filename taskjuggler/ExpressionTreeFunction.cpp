@@ -281,6 +281,14 @@ ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
                     "unknown '%1' scenario.")
                .arg(ops[0]->evalAsString(et)));
+    if (et->getCoreAttributes()->getProject()->getStart() >
+        ops[1]->evalAsTime(et) ||
+        et->getCoreAttributes()->getProject()->getEnd() <
+        ops[2]->evalAsTime(et) ||
+        ops[1]->evalAsTime(et) >= ops[2]->evalAsTime(et))
+    {
+        return 0;
+    }
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
         (scenarioId, Interval(ops[1]->evalAsTime(et), 
@@ -306,6 +314,14 @@ ExpressionTreeFunction::isAllocatedToProject(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isAllocatedToProject() "
                     "called for unknown '%1' scenario.")
                .arg(ops[1]->evalAsString(et)));
+    if (et->getCoreAttributes()->getProject()->getStart() >
+        ops[2]->evalAsTime(et) ||
+        et->getCoreAttributes()->getProject()->getEnd() <
+        ops[3]->evalAsTime(et) ||
+        ops[2]->evalAsTime(et) >= ops[3]->evalAsTime(et))
+    {
+        return 0;
+    }
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
         (scenarioId, Interval(ops[2]->evalAsTime(et), 
@@ -325,6 +341,14 @@ ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
     if (scenarioId <= 0)
         qFatal(i18n("ExpressionTreeFunction::isplanallocated() called, but "
                     "there is no 'plan' scenario."));
+    if (et->getCoreAttributes()->getProject()->getStart() >
+        ops[1]->evalAsTime(et) ||
+        et->getCoreAttributes()->getProject()->getEnd() <
+        ops[2]->evalAsTime(et) ||
+        ops[1]->evalAsTime(et) >= ops[2]->evalAsTime(et))
+    {
+        return 0;
+    }
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
         (scenarioId, Interval(ops[1]->evalAsTime(et), 
@@ -344,6 +368,15 @@ ExpressionTreeFunction::isActualAllocated(const ExpressionTree* et,
     if (scenarioId <= 0)
         qFatal("ExpressionTreeFunction::isactualallocated() called, but "
                "there is no 'actual' scenario.");
+    if (et->getCoreAttributes()->getProject()->getStart() >
+        ops[1]->evalAsTime(et) ||
+        et->getCoreAttributes()->getProject()->getEnd() <
+        ops[2]->evalAsTime(et) ||
+        ops[1]->evalAsTime(et) >= ops[2]->evalAsTime(et))
+    {
+        return 0;
+    }
+
     return ((Resource*) et->getCoreAttributes())->isAllocated
         (scenarioId, Interval(ops[1]->evalAsTime(et), 
                                 ops[2]->evalAsTime(et)), 

@@ -175,7 +175,7 @@ CSVReportElement::reportTaskLoad(double load, TableCellInfo* tci,
 
 void
 CSVReportElement::reportResourceLoad(double load, TableCellInfo* tci,
-                                      const Interval& period)
+                                      const Interval&)
 {
     QString text;
     if (load > 0.0)
