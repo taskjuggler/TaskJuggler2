@@ -63,47 +63,47 @@ process.</para>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>Automatic scheduling of interdependent tasks with resource
-conflict solver.</para>
+conflict solver.</para></listitem>
 
 <listitem><para>Powerful project description syntax with macro
-support.</para>
+support.</para></listitem>
 
-<listitem><para>Flexible working hours and vacation handling.</para>
+<listitem><para>Flexible working hours and vacation handling.</para></listitem>
 
-<listitem><para>Support for shifts.</para>
+<listitem><para>Support for shifts.</para></listitem>
 
-<listitem><para>Multiple time zone support.</para>
+<listitem><para>Multiple time zone support.</para></listitem>
 
-<listitem><para>Flexible resource grouping.</para>
+<listitem><para>Flexible resource grouping.</para></listitem>
 
-<listitem><para>Project accounting support.</para>
+<listitem><para>Project accounting support.</para></listitem>
 
-<listitem><para>Task may have initial and finishing costs.</para>
+<listitem><para>Task may have initial and finishing costs.</para></listitem>
 
-<listitem><para>Resource may have running costs.</para>
+<listitem><para>Resource may have running costs.</para></listitem>
 
-<listitem><para>Support for simple profit and loss analysis.</para>
+<listitem><para>Support for simple profit and loss analysis.</para></listitem>
 
-<listitem><para>HTML and XML report generation.</para>
+<listitem><para>HTML and XML report generation.</para></listitem>
 
-<listitem><para>Gantt and PERT chart generators.</para>
+<listitem><para>Gantt and PERT chart generators.</para></listitem>
 
 <listitem><para>Support for plan and actual scenario
-comparisons.</para>
+comparisons.</para></listitem>
 
-<listitem><para>Project tracking support.</para>
+<listitem><para>Project tracking support.</para></listitem>
 
 <listitem><para>Groupware support by using a revision control system
-such as CVS or RCS on the project description files.</para>
+such as CVS or RCS on the project description files.</para></listitem>
 
 <listitem><para>Support for central resource allocation
-database.</para>
+database.</para></listitem>
 
-<listitem><para>Support for cascaded and nested projects.</para>
+<listitem><para>Support for cascaded and nested projects.</para></listitem>
 
-<listitem><para>Import and export of sub-projects.</para>
+<listitem><para>Import and export of sub-projects.</para></listitem>
 
-<listitem><para>Unicode support.</para>
+<listitem><para>Unicode support.</para></listitem>
 
 </itemizedlist>
 </para>
@@ -161,12 +161,12 @@ various hardware platforms.</para>
 
 <listitem><para>qt3 &mdash; The <ulink
 url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
-version 3.0 or higher</para>
+version 3.0 or higher</para></listitem>
 
 <listitem><para> GNU Compiler Collection &mdash; We are currently
 using GCC 3.2 to develop TaskJuggler. Since we try to write the code
 platform independent and ANSI standard compliant it should work with
-other compilers as well.</para>
+other compilers as well.</para></listitem>
 
 </itemizedlist></para>
 
@@ -175,7 +175,7 @@ program that translates project descriptions into HTML or XML reports.
 If you want to built this documentation or use the tools to process
 the XML files you need to take care of additional dependencies. If any
 of the following dependencies are not matched, the configure script
-will issue a warning but will not fail.<para>
+will issue a warning but will not fail.</para>
 
 </sect2>
 <sect2><title>The TaskJuggler Documentation</title>
@@ -184,7 +184,7 @@ will issue a warning but will not fail.<para>
 
 <listitem><para>DocBook4 &mdash; The <ulink
 url="http://www.oasis-open.org/docbook/">DocBook</ulink> system with
-additional stylesheets and utilities.<para></listitem>
+additional stylesheets and utilities.</para></listitem>
 
 <listitem><para>DocBook-Toys &mdash; The <ulink
 url="http://www.suse.de/~ke/docbook-toys">DocBook-Toys</ulink> from
@@ -368,19 +368,19 @@ procedure:</para>
 <para><itemizedlist mark='opencircle'>
 
 <listitem><para>Read this manual to make sure that it is actually a
-bug and not a feature.</para>
+bug and not a feature.</para></listitem>
 
 <listitem><para>Check the TaskJuggler <ulink
 url="http://www.taskjuggler.org">web page</ulink>.
 Possibly the bug was already found and a patch or workaround
-exists.</para>
+exists.</para></listitem>
 
 <listitem><para>Try to create a test project that is as small as
-possible but still reproduces the bug.</para>
+possible but still reproduces the bug.</para></listitem>
 
 <listitem><para>Send the test project and a detailed description of
 the problem to the developer mailing list at <ulink
-url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</para>
+url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</para></listitem>
 
 </itemizedlist></para>
 

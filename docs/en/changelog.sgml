@@ -4,7 +4,7 @@
 <para>
 <itemizedlist mark='opencircle'>
 
-<listitem><para>Initial stable public release.</para>
+<listitem><para>Initial stable public release.</para></listitem>
 
 </itemizedlist>
 </para>
@@ -16,10 +16,10 @@
 <itemizedlist mark='opencircle'>
 
 <listitem><para>Fixed completely broken global vacation
-handling.</para>
+handling.</para></listitem>
 
 <listitem><para>Added test case for vacation handling to test
-suite.</para>
+suite.</para></listitem>
 
 </itemizedlist>
 </para>
@@ -31,54 +31,54 @@ suite.</para>
 <itemizedlist mark='opencircle'>
 
 <listitem><para> Added some reports to the example file, so users
-actually get a result of the TaskJuggler run.</para>
+actually get a result of the TaskJuggler run.</para></listitem>
 
 <listitem><para> Support for later completion of task and resources
 added. By writing 'supplement task &lt;ID&gt; { ... }' an already
 defined task can be extended. So it's easier now to create a file
 which contains the vacations for all resources separate from the
-resource definition itself. </para>
+resource definition itself. </para></listitem>
 
 <listitem><para>Extended expression parser to work on string type
-values as well.</para>
+values as well.</para></listitem>
 
 <listitem><para><link linkend="logicalexpression"> logicalexpression
 </link> for hidetask, rolluptask etc. can now contain functions as
 well. Currently there is support for 'istask', 'isresource',
-'isaccount', 'issubtaskof', 'contains', 'ismilestone'.</para>
+'isaccount', 'issubtaskof', 'contains', 'ismilestone'.</para></listitem>
 
 <listitem><para>Moved the docs directory from TaskJuggler subdir to
-topdir.</para>
+topdir.</para></listitem>
 
 <listitem><para>Added feature list and change-log to the
-documentation.</para>
+documentation.</para></listitem>
 
 <listitem><para><xref linkend="property_reference"> is now sorted in
-alphabetical order.</para>
+alphabetical order.</para></listitem>
 
 <listitem><para>Added lots of missing attributes to <link
-linkend="htmlaccountreport"> htmlaccountreport </link>.</para>
+linkend="htmlaccountreport"> htmlaccountreport </link>.</para></listitem>
 
 <listitem><para>Added missing <link linkend="export"> export </link>
 report to documentation. Export reports can now contain the scheduled
-tasks as well as the resource allocations.</para>
+tasks as well as the resource allocations.</para></listitem>
 
 <listitem><para>New keywords
 <computeroutput>planbooking</computeroutput> and
 <computeroutput>actualbooking</computeroutput> to enter fixed bookings
 of <link linkend="resource">resources</link> in the resource
-declaration.</para>
+declaration.</para></listitem>
 
 <listitem><para>Added new example project to illustrate the use of
-export in big projects that are split into sub projects.</para>
+export in big projects that are split into sub projects.</para></listitem>
 
 <listitem><para>HTML comments in HTML report files are now using correct
-syntax.</para>
+syntax.</para></listitem>
 
-<listitem><para>Partial fix for correct time zone handling.</para>
+<listitem><para>Partial fix for correct time zone handling.</para></listitem>
 
 <listitem><para>Support for STDIN reading and STDOUT writing added. This can be
-used when calling TaskJuggler from CGI scripts.</para>
+used when calling TaskJuggler from CGI scripts.</para></listitem>
 
 </itemizedlist>
 </para>
@@ -89,58 +89,60 @@ used when calling TaskJuggler from CGI scripts.</para>
 <para>
 <itemizedlist mark='opencircle'>
 
-<listitem><para>Fixed sorting by ID for all HTML reports.</para>
+<listitem><para>Fixed sorting by ID for all HTML reports.</para></listitem>
 
 <listitem><para>Fixed bug in vacation handling. Vacations that started before
-the project were silently ignored.</para>
+the project were silently ignored.</para></listitem>
 
 <listitem><para>Added support for <link
 linkend="export_taskattributes"> taskattributes </link> to <link
-linkend="export">export</link> report.</para>
+linkend="export">export</link> report.</para></listitem>
 
 <listitem><para>XML Output changes: Basically the XML output is more
-simple to parse, some values were added and corrected.</para>
+simple to parse, some values were added and corrected.</para></listitem>
 
 <listitem><para>Added a first simple TaskJuggler XML-output viewer for
 KDE.  See ktjview/README for installation. Configure with KDE support
-enabled.</para>
+enabled.</para></listitem>
 
 <listitem><para>Disabled ical support by introducing the HAVE_ICAL
 switch in the code.  The switch is not yet configure supported, but
 building with --with-kde-support should work now without failing on
-missing libical.</para>
+missing libical.</para></listitem>
 
-<listitem><para>Support for URLs in HTML reports added.</para>
+<listitem><para>Support for URLs in HTML reports added.</para></listitem>
 
 <listitem><para>Legacy HTML elements have been removed from HTML reports.
-TaskJuggler now creates pure HTML 4.0 code.</para>
+TaskJuggler now creates pure HTML 4.0 code.</para></listitem>
 
 <listitem><para>Added support for insertion of raw HTML code into
 reports. This can be achieved with <link
 linkend="htmltaskreport_rawhead"> rawhead </link> and <link
-linkend="htmltaskreport_rawtail"> rawtail </link>.</para>
+linkend="htmltaskreport_rawtail"> rawtail </link>.</para></listitem>
 
 <listitem><para>Added support for user defined style sheets in HTML
 reports by using the <link linkend="htmltaskreport_rawstylesheet">
-rawstylesheet </link> attribute.</para>
+rawstylesheet </link> attribute.</para></listitem>
 
 <listitem><para>Strings can now be enclosed in either single or double
 quotes. A single quoted string may contain double quotes and vice
-versa.</para>
+versa.</para></listitem>
 
 <listitem><para>Working hours can now be declared on project level.
 This also determines if a day is considered a working day or
-not.</para>
+not.</para></listitem>
 
 <listitem><para>With <link linkend="task_startbuffer"> startbuffer
 </link> and <link linkend="task_endbuffer"> endbuffer </link> you can
 now specify that there might be some air left in a certain
-task.</para>
+task.</para></listitem>
 
 <listitem><para>Remo's Gantt chart generators have been included in the
-<filename>Contrib</filename> directory.</para>
+<filename>Contrib</filename> directory.</para></listitem>
 
 </itemizedlist>
+</para>
+
 </sect2>
 <sect2><title>Version 1.3 (2002-07-30)</title>
 
@@ -152,69 +154,71 @@ While we try very hard to avoid such situations, we do prefer to have
 a consistent and logical language. Since the TaskJuggler user base is
 still comparatively small, we decided to break compatibility now
 rather than later. The changes are fairly minor, so they won't affect
-many users.  Please see further down for more details.</para>
+many users.  Please see further down for more details.</para></listitem>
 
 <listitem><para>Added Perl/Tk tool to view Gantt charts and other
-project information.</para>
+project information.</para></listitem>
 
 <listitem><para>Added PERT-chart generator from Philippe
-Midol-Monnet.</para>
+Midol-Monnet.</para></listitem>
 
 <listitem><para>Added support for shifts in <link
 linkend="task_shift"> shift </link>
 and task <link linkend="task_allocate_shift"> allocate shift
-</link>.</para>
+</link>.</para></listitem>
 
-<listitem><para>Fixed vim syntax highlighting. Some keywords were missing.</para>
+<listitem><para>Fixed vim syntax highlighting. Some keywords were missing.</para></listitem>
 
 <listitem><para>Export report had syntax bug when milestones were present.
-Fixed.</para>
+Fixed.</para></listitem>
 
-<listitem><para>Fixed handling of week, month and year duration specifications.</para>
+<listitem><para>Fixed handling of week, month and year duration specifications.</para></listitem>
 
 <listitem><para><link linkend="project_now">now</link> and <link
 linkend="project_timingresolution">timingresolution</link> are no
 longer properties. They are now optional attributes of <link
 linkend="project">project</link>. They currently still work as
 properties as well but a warning is issued and they will be removed in
-the next major release.</para>
+the next major release.</para></listitem>
 
 <listitem><para><link
 linkend="project_dailyworkinghours">dailyworkinghours</link>
 and <link linkend="project_yearlyworkingdays"> yearlyworkingdays
 </link> have
 been implemented to allow the user for better control over the
-conversion from working days to working hours.</para>
+conversion from working days to working hours.</para></listitem>
 
 <listitem><para>Added support for a <link
 linkend="task_allocate_select">select</link>
-function for alternative resource allocations.</para>
+function for alternative resource allocations.</para></listitem>
 
 <listitem><para>All load values in HTML reports can now be scaled by
 specifying a <link
-linkend="htmltaskreport_loadunit">loadunit</link>.</para>
+linkend="htmltaskreport_loadunit">loadunit</link>.</para></listitem>
 
-<listitem><para>Improved readability of scheduler error messages.</para>
+<listitem><para>Improved readability of scheduler error messages.</para></listitem>
 
 <listitem><para>Added new example project to the Examples directory to
-illustrate how to create shift schedules with TaskJuggler.</para>
+illustrate how to create shift schedules with TaskJuggler.</para></listitem>
 
 <listitem><para>Fixed scheduler for working hours around midnight.
-This bug affected shifts as well as general working hours.</para>
+This bug affected shifts as well as general working hours.</para></listitem>
 
 <listitem><para>Extended timezone support. TaskJuggler will now
-operate properly when TZ environment variable is set.</para>
+operate properly when TZ environment variable is set.</para></listitem>
 
 </itemizedlist>
+</para>
+
 </sect2>
 <sect2><title>Version 1.4 (2002-12-18)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>Only export references to tasks which are exported in
-the same report.</para>
+the same report.</para></listitem>
 
-<listitem><para>Allow supplements of tasks within task definitions.</para>
+<listitem><para>Allow supplements of tasks within task definitions.</para></listitem>
 
 <listitem><para>Converted documentation to DocBook. We now have a much
 nicer and more structured manual. A printable version is available as

@@ -141,7 +141,7 @@ extending the rest with sensible defaults, TaskJuggler adds the time
 midnight February 5th, 2002. Well, almost. Every time you specify a
 time interval, the end date is not included in the interval. But the
 second before the date that you have specified is. So Klaus
-M&uml;llers vacation ends 23:59:59 on February 4th, 2002.<para>
+M&uml;llers vacation ends 23:59:59 on February 4th, 2002.</para>
 
 <para>Peter Murphy only works 6.5 hours a day (actually 6.4 hours). So
 we use the <link linkend="resource_maxeffort"> maxeffort </link>
@@ -185,7 +185,7 @@ accounts. </para>
 problem - the creation of an accounting software. Since the job is
 quite complicated we break it down into several sub tasks. We need to
 do a specification, develop the software, test the software and write
-a manual. In TaskJuggler syntax this would look like that:
+a manual. In TaskJuggler syntax this would look like that:</para>
 
 <para><screen>
 task AcSo "Accounting Software" {
@@ -210,7 +210,7 @@ The full ID of the <computeroutput>spec</computeroutput> task is
 task called Milestones. This task, like most of the other task will
 get some sub tasks later on. We consider the specification task simple
 enough that we don't have to break it into further sub tasks. So let's
-add some more details to it.
+add some more details to it.</para>
 
 <para><screen>
   task spec "Specification" {
@@ -275,7 +275,7 @@ on task A. In this example the <computeroutput>spec</computeroutput>
 task depends on a sub tasks of the
 <computeroutput>deliveries</computeroutput> tasks. We haven't
 specified it yet, but it has the local ID
-<computeroutput>start</computeroutput>.<para>
+<computeroutput>start</computeroutput>.</para>
 
 <para>To specify the dependency between the two task we use the <link
 linkend="task_depends">depends</link> attribute. The attribute must be

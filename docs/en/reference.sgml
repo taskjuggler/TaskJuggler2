@@ -63,11 +63,11 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 <variablelist>
 
 <varlistentry><term>ischildof(<link linkend="id">ID</link>)</term>
-<listitem><para>true if the property has ID as sub.</para></listitem>
+<listitem><para>true if the property has ID as sub.</para></listitem></varlistentry>
 
 <varlistentry><term>isparentof(<link linkend="id">ID</link>)</term>
 <listitem><para>true if the property has ID as enclosing property.
-</para></listitem>
+</para></listitem></varlistentry>
 
 <varlistentry><term>isleaf(<link linkend="id">ID</link>)</term>
 <listitem><para>true if the property has no sub properties.</para></listitem>
@@ -232,6 +232,7 @@ breaks.</para>
 
 </sect2>
 </sect1>
+</chapter>
 <chapter id="property_reference"><title>Property Reference</title>
 <sect1 id="account"><title>account &lt;id&gt; &lt;name&gt; &lt;type&gt;</title>
 
@@ -535,7 +536,7 @@ top of the page and with a larger font.</para>
 <para>Do not show the values of the plan scenario.</para>
 
 <para>See also: <link
-linkend="htmlaccountreport_showactual">showactual</link>
+linkend="htmlaccountreport_showactual">showactual</link></para>
 
 </sect2>
 <sect2 id="htmlaccountreport_rollupaccount"><title>rollupaccount
@@ -822,7 +823,7 @@ are expanded during the report generation. So the value of the macro
 is being changed after each table cell or table line. Consequently
 only build in macros can be used. To protect the macro calls agains
 expansion during the initial file processing, the report macros must
-be prefixed with an additional <computeroutput>$</computeroutput>.
+be prefixed with an additional <computeroutput>$</computeroutput>.</para>
 
 <para>The following macros are supported for normal table cells:</para>
 
@@ -1052,7 +1053,7 @@ linkend="htmltaskreport_caption">caption</link> and the table.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>html:</member><member><link
-linkend="string">STRING</link><member>
+linkend="string">STRING</link></member>
 </simplelist></para>
 
 <para>The <computeroutput>rawstylesheet</computeroutput> attribute can
@@ -1107,8 +1108,8 @@ logical expression.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member><link
-linkend="id">ID</link>/member>
-</simplelist><para>
+linkend="id">ID</link></member>
+</simplelist></para>
 
 <para>Specifies which scenarios should be included in the
 report.</para>
@@ -1119,8 +1120,8 @@ report.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>format:</member><member><link
-linkend="string">STRING</link>/member>
-</simplelist><para>
+linkend="string">STRING</link></member>
+</simplelist></para>
 
 <para>Specifies time format for time short specifications. This is
 normal just the hour and minutes. See <link
@@ -1137,7 +1138,7 @@ values.</para>
 <sect2 id="htmltaskreport_showprojectids"><title>showprojectids</title>
 
 <para>If used, the project id is shown after the load values in the
-calendar columns.<para>
+calendar columns.</para>
 
 </sect2>
 <sect2 id="htmltaskreport_sorttasks"><title>sorttasks
@@ -1343,8 +1344,8 @@ only be used as the first criteria.</member>
 
 <para><simplelist type=horiz columns=2>
 <member>format:</member><member><link
-linkend="string">STRING</link>/member>
-</simplelist><para>
+linkend="string">STRING</link></member>
+</simplelist></para>
 
 <para>Specifies time format for time specifications. See <link
 linkend="project_timeformat">timeformat</link> for details.</para>
@@ -1367,7 +1368,7 @@ are still in progress and are on or ahead of schedule. The third table
 lists all task that have been completed during the report interval.
 The default interval is one week, but can be changed by specifying
 another start and end date. The fourth table lists all task that will
-start during the next report interval, by default, the next week. 
+start during the next report interval, by default, the next week. </para>
 
 <para>Optional attributes:</para>
 
@@ -1410,7 +1411,7 @@ linkend="htmlstatusreport_caption">caption</link> and the table.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>html:</member><member><link
-linkend="string">STRING</link><member>
+linkend="string">STRING</link></member>
 </simplelist></para>
 
 <para>The <computeroutput>rawstylesheet</computeroutput> attribute can
@@ -1509,9 +1510,9 @@ task specified by <computeroutput>taskprefix</computeroutput>.</para>
 <para>sets the KoTrus mode. Valid values are</para>
 
 <para><itemizedlist mark='opencircle'>
-<listitem><para>'NoKotrus' for no KoTrus connection
-<listitem><para>'XML' to read from an XML file (not yet supported)
-<listitem><para>'DB' to read from database configured in your .taskjugglerrc
+<listitem><para>'NoKotrus' for no KoTrus connection</para></listitem>
+<listitem><para>'XML' to read from an XML file (not yet supported)</para></listitem>
+<listitem><para>'DB' to read from database configured in your .taskjugglerrc</para></listitem>
 </itemizedlist></para>
 
 </sect1>
@@ -1522,7 +1523,7 @@ task specified by <computeroutput>taskprefix</computeroutput>.</para>
 </simplelist></para>
 
 <para>The body is not optional. It must be enclosed in [ ]. Macros can be
-declared like this:<para>
+declared like this:</para>
 
 <para><screen>
 macro FOO [ This text ];
@@ -1669,7 +1670,7 @@ The value you specify should match the settings you specified for
 </simplelist></para>
 
 <para>Use the specified day and time for computation of the project status
-instead of the current moment.<para>
+instead of the current moment.</para>
 
 </sect2>
 <sect2 id="project_extend"><title>extend &lt;property&gt; {
@@ -1972,7 +1973,7 @@ time zones specified will be assumed to be in this timezone. The value
 must be a string just like those used for the TZ environment variable.
 Most Linux systems have a command line utility called
 <computeroutput>tzselect</computeroutput> to lookup possible
-values.<para>
+values.</para>
 
 <para>The project start and end time are not affected by this setting. You
 have to explicitly state the timezone for those dates or the system
@@ -2000,13 +2001,13 @@ the numbering of the weeks. TaskJuggler uses the ISO8601 compliant
 definition. The 1st week of the year is the week that contains January
 4. ISO8601 defines Monday as the first day of the week. This can be
 changed by specifying <link linkend="project_weekstartssunday">
-weekstartssunday </link>. <para>
+weekstartssunday </link>. </para>
 
 </sect2>
 <sect2 id="project_weekstartssunday"><title>weekstartssunday</title>
 
 <para>Set the beginning of the week to Sunday. See also <link
-linkend="project_weekstartsmonday"> weekstartsmonday </link>.<para>
+linkend="project_weekstartsmonday"> weekstartsmonday </link>.</para>
 
 </sect2>
 <sect2 id="project_workinghours"><title>workinghours &lt;weekday&gt;
@@ -2117,7 +2118,7 @@ a resource. A team of five should have an efficiency of 5.0.</para>
 </simplelist></para>
 
 <para>The KoTrus <link linkend="id">ID</link> of the resource 
-(e-mail address).<para>
+(e-mail address).</para>
 
 </sect2>
 <sect2 id="resource_maxeffort"><title>maxeffort &lt;value&gt;</title>
@@ -2612,7 +2613,7 @@ are not inherited.</para>
 time, not calender time. 7d means 7 working days, not one week.
 Whether a day is considered a working day or not depends on the
 defined <link linkend="project_workinghours">working hours</link> and global
-<link linkend="vacation">vacations</link>.<para>
+<link linkend="vacation">vacations</link>.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para>
 
@@ -2840,7 +2841,7 @@ shift intervals may not overlap.</para>
 <para>The planned start date for the task. If no start date is given,
 the task must depend on other tasks. If no dependency is given, the
 project start date is used. Setting a start date will switch the
-scheduling policy to ASAP.<para>
+scheduling policy to ASAP.</para>
 
 <para>This attribute is scenario specific.</para>
 
@@ -2865,7 +2866,7 @@ you might have some extra time to squeeze out if needed.</para>
 
 <para>This attribute is scenario specific.</para>
 
-<para>See also: <link linkend="task_endbuffer">endbuffer</link><para>
+<para>See also: <link linkend="task_endbuffer">endbuffer</link></para>
 
 </sect2>
 <sect2 id="task_startcredit"><title>startcredit
