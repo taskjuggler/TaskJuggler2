@@ -1,12 +1,16 @@
 <!-- DTD for TaskJuggler 2.0 XML Files -->
 <!-- Valid TaskJuggler files have the extension ".tjx" and are
 compressed according to RFC1951 and RFC1952 (zlib). -->
-<!-- (c) 2003, 2004 Chris Schlaeger <cs@suse.de> -->
+<!-- (c) 2003, 2004, 2005 Chris Schlaeger <cs@suse.de> -->
 <!-- This file is licensed under the GNU GPL Version 2.0 -->
 <!-- $Id$ -->
 
-<!-- This is still a draft version, published as a request for
-comments -->
+<!-- The DTD has been stable for quite a while now, so it's probably
+save to use. As TaskJuggler evolves, there will certainly be new
+elments added, but the existing ones will not change anymore. -->
+
+<!-- For a documentation of these elements, please see the TaskJuggler
+manual at http://www.taskjuggler.org/docs.php -->
 
 <!ELEMENT taskjuggler (project, vacationList?, shiftList?,
                        resourceList?, taskList, bookingList?)>
