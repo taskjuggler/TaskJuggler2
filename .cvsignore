@@ -5,7 +5,10 @@ configure
 libtool
 config.log
 stamp-h
+stamp-h.in
 config.h
+aclocal.m4
+subdirs
 .cvsignore
 configure.files
 configure.in
