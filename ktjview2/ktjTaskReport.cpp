@@ -17,6 +17,11 @@ KTJTaskReport::KTJTaskReport( Project * proj )
 
 }
 
+KTJTaskReport::~KTJTaskReport()
+{
+    clear();
+}
+
 QString KTJTaskReport::name() const
 {
     return i18n( "Task Report" );
@@ -27,11 +32,16 @@ QString KTJTaskReport::description() const
     return i18n( "Task report combined with allocated resources." );
 }
 
-QicsDataModelDefault KTJTaskReport::generate()
+QicsDataModelDefault * KTJTaskReport::generate()
 {
+    kdDebug() << k_funcinfo << "Generating TaskReport" << endl;
+
     clear();
 
     int columns = generateHeader(); // generate the column header
+
+    m_model->addColumns( columns );
+    kdDebug() << k_funcinfo << "Added " << columns << " columns" << endl;
 
     TaskListIterator tasks = m_proj->getTaskListIterator();
     Task * task = 0;
@@ -82,7 +92,7 @@ int KTJTaskReport::generateHeader()
 
     while ( tmp <= tmpEnd )
     {
-        result.append( QicsDataString( formatDate( tmp, format ) ) );
+        result.append( new QicsDataString( formatDate( tmp, format ) ) );
         tmp += delta;
     }
 
@@ -97,23 +107,28 @@ void KTJTaskReport::generateRow( const Task * task, int columns )
     // generate the task row
     QicsDataModelRow taskRow( columns );
 
-    taskRow.append( QicsDataString( task->getName() ) ); // row header
+    kdDebug() << k_funcinfo << "Generating primary row for task: " << task->getName() << endl;
+
+    taskRow.append( new QicsDataString( task->getName() ) ); // row header
 
     double daily = m_proj->getDailyWorkingHours();
     for ( int i = 0; i < columns; i++ ) // data in columns
     {
         Interval ival = intervalForCol( i );
         double load = task->getLoad( 0, ival ) * daily;
-        taskRow.append( QicsDataDouble( load ) );
+        //kdDebug() << k_funcinfo << "Appending task load: " << load << endl;
+        taskRow.append( new QicsDataDouble( load ) );
     }
 
     m_model->addRows( 1 );
     m_model->setRowItems( m_model->lastRow(), taskRow );
 
+    kdDebug() << k_funcinfo << QString( "Model now contains %1 rows" ).arg( m_model->numRows() ) << endl;
+
     // generate the resource subrows
     for ( ResourceListIterator tli( task->getBookedResourcesIterator( 0 ) ); *tli != 0; ++tli )
     {
-        generateRow( task, static_cast<Resource *>( tli ) );
+         generateRow( task, static_cast<Resource *>( *tli ), columns );
     }
 }
 
@@ -121,11 +136,15 @@ void KTJTaskReport::generateRow( const Task * task, const Resource * res, int co
 {
     QicsDataModelRow resRow( columns );
 
+    kdDebug() << k_funcinfo << "Generating secondary row for task: " << task->getName()
+              << ", and resource: " << res->getName() << endl;
+
     for ( int i = 0; i < columns; i++ ) // data in columns
     {
         Interval ival = intervalForCol( i );
-        double load = res->getLoad( 0, ival, res ) * m_proj->getDailyWorkingHours();
-        resRow.append( load );
+        double load = task->getLoad( 0, ival, res ) * m_proj->getDailyWorkingHours();
+        //kdDebug() << k_funcinfo << "Appending resource load: " << load << endl;
+        resRow.append( new QicsDataDouble( load ) );
     }
 
     m_model->addRows( 1 );

@@ -13,9 +13,10 @@ class KTJTaskReport: public KTJReport
 {
 public:
     KTJTaskReport( Project * proj );
+    virtual ~KTJTaskReport();
     virtual QString name() const;
     virtual QString description() const;
-    virtual QicsDataModelDefault generate();
+    virtual QicsDataModelDefault * generate();
 
 private:
     /**

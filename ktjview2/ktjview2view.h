@@ -48,9 +48,11 @@ class TaskItem;
 class QPopupMenu;
 class ResUsageView;
 class EditorView;
+class ReportView;
+class KTJTaskReport;
 
 enum { ID_VIEW_INFO = 0, ID_VIEW_GANTT, ID_VIEW_RESOURCES, ID_VIEW_TASKS,
-       ID_VIEW_RES_USAGE, ID_VIEW_EDITOR };
+       ID_VIEW_RES_USAGE, ID_VIEW_REPORTS, ID_VIEW_EDITOR };
 
 /**
  * This is the main view class for ktjview2.  Most of the non-menu,
@@ -248,6 +250,11 @@ public slots:
     void collapseAll( KListView * view );
 
     /**
+     * Show the Task Coverage report
+     */
+    void slotTaskCoverage();
+
+    /**
      * Rebuild the project from source, redisplay the views
      */
     void slotBuild();
@@ -381,6 +388,10 @@ private:
     KListView * m_taskView;
     /// resource usage view
     ResUsageView * m_resUsageView;
+
+    /// report view component
+    ReportView * m_reportView;
+    KTJTaskReport * m_taskReport;
     /// editor view
     EditorView * m_editorView;
 

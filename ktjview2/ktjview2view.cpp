@@ -69,6 +69,8 @@
 #include "resUsageView.h"
 #include "editorView.h"
 #include "ktjUtils.h"
+#include "reportView.h"
+#include "ktjTaskReport.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -93,7 +95,7 @@ int pr_RU = 0;
 #endif
 
 ktjview2View::ktjview2View( QWidget *parent )
-    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
+    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 ), m_taskReport( 0 )
 {
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
@@ -172,6 +174,10 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_resUsageView = new ResUsageView( this, "res_usage_view" );
     m_widgetStack->addWidget( m_resUsageView );
 
+    // report view
+    m_reportView = new ReportView( this, "report_view" );
+    m_widgetStack->addWidget( m_reportView );
+
     // editor view
     m_editorView = new EditorView( this, "editor_view" );
     m_widgetStack->addWidget( m_editorView );
@@ -191,6 +197,7 @@ ktjview2View::~ktjview2View()
 {
     delete m_project;
     delete m_ganttPopupMenu;
+    delete m_taskReport;
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -1146,6 +1153,8 @@ void ktjview2View::activateView( int id )
         m_widgetStack->raiseWidget( m_taskView );
     else if ( id == ID_VIEW_RES_USAGE )
         m_widgetStack->raiseWidget( m_resUsageView );
+    else if ( id == ID_VIEW_REPORTS )
+        m_widgetStack->raiseWidget( m_reportView );
     else if ( id == ID_VIEW_EDITOR )
         m_widgetStack->raiseWidget( m_editorView );
 }
@@ -1261,6 +1270,14 @@ QString ktjview2View::projectName() const
         return m_project->getName();
     else
         return QString::null;
+}
+
+void ktjview2View::slotTaskCoverage()
+{
+    if ( !m_taskReport )
+        m_taskReport = new KTJTaskReport( m_project );
+    m_reportView->setDataModel( m_taskReport->generate() );
+    //m_reportView->setTopTitleWidget( m_taskReport->description() ); // TODO
 }
 
 #include "ktjview2view.moc"

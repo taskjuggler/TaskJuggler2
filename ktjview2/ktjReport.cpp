@@ -14,10 +14,11 @@
 KTJReport::KTJReport( Project * proj )
     : m_proj( proj )
 {
-    m_model = new QicsDataModelDefault();
+    m_model = new QicsDataModelDefault( 0, 0 );
     m_start = KtjUtils::time_t2Q( m_proj->getStart() );
     m_end = KtjUtils::time_t2Q( m_proj->getEnd() );
 
+    setDisplayData( DIS_LOAD );
     setScale( SC_DAY );
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="35">
+<kpartgui name="ktjview2" version="36">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -44,6 +44,9 @@
   <Menu name="tasks"><text>T&amp;asks</text>
     <Action name="filter_for_tasks"/>
   </Menu>
+  <Menu name="reports"><text>R&amp;eports</text>
+    <Action name="task_coverage"/>
+  </Menu>
   <Menu name="tools"><text>&amp;Tools</text>
     <Action name="build"/>
   </Menu>
@@ -55,6 +58,7 @@
   <Action name="sidebar_resources"/>
   <Action name="sidebar_res_usage"/>
   <Action name="sidebar_tasks"/>
+  <Action name="sidebar_reports"/>
   <Action name="sidebar_editor"/>
 </ToolBar>
 

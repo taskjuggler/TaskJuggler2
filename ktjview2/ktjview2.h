@@ -158,6 +158,7 @@ private slots:
     void slotSidebarResources();
     void slotSidebarTasks();
     void slotSidebarResUsage();
+    void slotSidebarReports();
     void slotSidebarEditor();
 
     /**
@@ -223,6 +224,8 @@ private:
      */
     void enableResUsageActions( bool enable );
 
+    void enableReportsActions( bool enable );
+
     /**
      * Enable/disable Editor actions depending on param @p enable
      */
@@ -254,11 +257,15 @@ private:
     KAction * m_ruFindAction;
     KSelectAction * m_ruDisplayAction;
 
+    // reports stuff
+    KAction * m_taskCoverageAction;
+
     // Tools stuff
     KAction * m_buildAction;
 
     // sidebar actions
-    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks, * m_sidebarResUsage, * m_sidebarEditor;
+    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources,
+        * m_sidebarTasks, * m_sidebarResUsage, * m_sidebarEditor, * m_sidebarReports;
 };
 
 #endif // _KTJVIEW2_H_

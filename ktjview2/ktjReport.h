@@ -91,7 +91,7 @@ public:
      * Abstract method to generate the report,
      * implementers need to clear the data model first
      */
-    virtual QicsDataModelDefault generate() = 0;
+    virtual QicsDataModelDefault * generate() = 0;
 
     /**
      * @return short unique name of the report (with i18n)

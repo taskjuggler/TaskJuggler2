@@ -247,6 +247,10 @@ void ktjview2::setupActions()
     m_ruFindAction = new KAction( i18n( "&Find..." ), "find", KStdAccel::find(),
                                   m_view, SLOT( slotRUFind() ), actionCollection(), "ru_find" );
 
+    // Reports menu
+    m_taskCoverageAction = new KAction( i18n( "Task coverage" ), 0, KShortcut(),
+                                        m_view, SLOT( slotTaskCoverage() ), actionCollection(), "task_coverage" );
+
     // Tools menu
     m_buildAction = new KAction( i18n( "&Rebuild project" ), "gear", KShortcut(),
                                  m_view, SLOT( slotBuild() ), actionCollection(), "build" );
@@ -277,6 +281,12 @@ void ktjview2::setupActions()
     m_sidebarResUsage->setToolTip( i18n( "Resource Usage" ) );
     m_sidebarResUsage->setExclusiveGroup( "sidebar" );
     connect( m_sidebarResUsage, SIGNAL( activated() ), this, SLOT( slotSidebarResUsage() ) );
+
+    m_sidebarReports = new KRadioAction( i18n( "Reports" ), "reports",
+                                         KShortcut(), actionCollection(), "sidebar_reports" );
+    m_sidebarReports->setToolTip( i18n( "Reports" ) );
+    m_sidebarReports->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarReports, SIGNAL( activated() ), this, SLOT( slotSidebarReports() ) );
 
     m_sidebarEditor = new KRadioAction( i18n( "Editor" ), "edit", KShortcut(), actionCollection(), "sidebar_editor" );
     m_sidebarEditor->setToolTip( i18n( "Project Source Editor" ) );
@@ -452,6 +462,7 @@ void ktjview2::slotSidebarInfo()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableReportsActions( false );
     enableEditorActions( false );
     m_view->activateView( ID_VIEW_INFO );
 }
@@ -464,6 +475,7 @@ void ktjview2::slotSidebarGantt()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableReportsActions( false );
     enableEditorActions( false );
     m_view->activateView( ID_VIEW_GANTT );
 }
@@ -478,6 +490,7 @@ void ktjview2::slotSidebarResources()
     enableTasksActions( false );
     enableResourceActions( true );
     enableResUsageActions( false );
+    enableReportsActions( false );
     enableEditorActions( false );
     m_view->activateView( ID_VIEW_RESOURCES );
 }
@@ -492,6 +505,7 @@ void ktjview2::slotSidebarTasks()
     enableTasksActions( true );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableReportsActions( false );
     enableEditorActions( false );
     m_view->activateView( ID_VIEW_TASKS );
 }
@@ -504,8 +518,22 @@ void ktjview2::slotSidebarResUsage()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( true );
+    enableReportsActions( false );
     enableEditorActions( false );
     m_view->activateView( ID_VIEW_RES_USAGE );
+}
+
+void ktjview2::slotSidebarReports()
+{
+    toolBar( "filterToolBar" )->hide();
+    toolBar( "ganttToolBar" )->hide();
+    enableGanttActions( false );
+    enableTasksActions( false );
+    enableResourceActions( false );
+    enableResUsageActions( false );
+    enableReportsActions( true );
+    enableEditorActions( false );
+    m_view->activateView( ID_VIEW_REPORTS );
 }
 
 void ktjview2::slotSidebarEditor()
@@ -516,6 +544,7 @@ void ktjview2::slotSidebarEditor()
     enableTasksActions( false );
     enableResourceActions( false );
     enableResUsageActions( false );
+    enableReportsActions( false );
     enableEditorActions( true );
     m_view->activateView( ID_VIEW_EDITOR );
 }
@@ -532,6 +561,8 @@ void ktjview2::slotSwitchView( int type )
         m_sidebarTasks->activate();
     else if ( type == ID_VIEW_RES_USAGE )
         m_sidebarResUsage->activate();
+    else if ( type == ID_VIEW_REPORTS )
+        m_sidebarReports->activate();
     else if ( type == ID_VIEW_EDITOR )
         m_sidebarEditor->activate();
 }
@@ -594,6 +625,11 @@ void ktjview2::enableResUsageActions( bool enable )
     m_resScaleAction->setEnabled( enable );
     m_ruFindAction->setEnabled( enable );
     m_ruDisplayAction->setEnabled( enable );
+}
+
+void ktjview2::enableReportsActions( bool enable )
+{
+    m_taskCoverageAction->setEnabled( enable );
 }
 
 void ktjview2::enableEditorActions( bool enable )
