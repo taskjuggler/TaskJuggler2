@@ -690,9 +690,9 @@ sub _display_task_data {
 # taskliste durchrühren und in die hlist einfügen
 sub _fill_hlist {
     my $top = shift;
-    my $task_img    = $top->Bitmap(-file => 'task.xbm');
-    my $mtask_img   = $top->Bitmap(-file => 'mtask.xbm');
-    my $mile_img    = $top->Bitmap(-file => 'mile.xbm');
+    my $task_img    = $top->Bitmap(-file => Tk->findINC('file.xbm'));
+    my $mtask_img   = $top->Bitmap(-file => Tk->findINC('folder.xbm'));
+    my $mile_img    = $top->Bitmap(-file => Tk->findINC('cbxarrow.xbm'));
 
     my $last_container = $task_list;
     my $c = 1;
