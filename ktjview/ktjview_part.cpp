@@ -91,6 +91,12 @@ void KTjviewPart::setupActions()
 		       m_gantt, SLOT(slTimeFrame()),
 		       actionCollection(), "timeFrame" );
 
+    KToggleAction *act = new KToggleAction(i18n("Toggle Gantt View Visibility"),
+					   "today", CTRL+Key_F9,
+					   m_gantt, SLOT(slToggleGanttVisible()),
+					   actionCollection(), "toggleGantt");
+    act->setChecked(true);
+
 
 }
 

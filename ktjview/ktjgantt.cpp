@@ -43,19 +43,19 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
       m_timeDialog(0L)
 {
     m_table  = new KTVTaskTable( this, "TABLE");
-    QVBox *vbox = new QVBox( this );
-    vbox->setFrameStyle( QFrame::NoFrame );
-    vbox->setMargin(0);
-    vbox->setSpacing(0);
+    m_ganttBox = new QVBox( this );
+    m_ganttBox->setFrameStyle( QFrame::NoFrame );
+    m_ganttBox->setMargin(0);
+    m_ganttBox->setSpacing(0);
 
-    vbox->setLineWidth(0);
-    vbox->setBackgroundColor( QColor(red));
-    m_header = new KTVHeader( vbox, "HEADER");
+    m_ganttBox->setLineWidth(0);
+    m_ganttBox->setBackgroundColor( QColor(red));
+    m_header = new KTVHeader( m_ganttBox, "HEADER");
     m_header->setFrameStyle( QFrame::NoFrame );
     m_header->setMargin(0);
     // m_header->setSpacing(0);
 
-    m_canvas = new KTVTaskCanvasView( vbox, m_table, m_header, "CANVAS");
+    m_canvas = new KTVTaskCanvasView( m_ganttBox, m_table, m_header, "CANVAS");
     m_canvas->setFrameStyle( QFrame::NoFrame );
     m_canvas->setMargin(0);
 
@@ -82,10 +82,10 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
     setSizes( sizes );
 
     setResizeMode( m_table, QSplitter::KeepSize );
-    setResizeMode( vbox,  QSplitter::Stretch );
+    setResizeMode( m_ganttBox,  QSplitter::Stretch );
     // notify the part that this is our internal widget
     m_table->show();
-    vbox->show();
+    m_ganttBox->show();
 
 }
 
@@ -240,5 +240,16 @@ void KTJGantt::slTableMoved( int, int y )
     m_canvas->setContentsPos( m_canvas->contentsX(), y );
     
 }
+
+void KTJGantt::slToggleGanttVisible( void )
+{
+    bool isVisible = m_canvas->isVisible();
+    if( isVisible )
+	m_ganttBox->hide();
+    else
+	m_ganttBox->show();
+    
+}
+
 
 #include "ktjgantt.moc"

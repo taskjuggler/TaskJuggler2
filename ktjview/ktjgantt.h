@@ -15,6 +15,7 @@
 #include <time.h>
 #include <qsplitter.h>
 class QWidget;
+class QVBox;
 class QCanvasView;
 class QPainter;
 class KURL;
@@ -70,7 +71,8 @@ public slots:
      *  Start and End of the interval that is displayed
      */
     void slSetWeekStartsMonday( bool t );
-
+    void slToggleGanttVisible();
+    
 protected slots:
     virtual void slCanvasClicked( time_t );
     void slTimeFromDialog();
@@ -89,6 +91,7 @@ private:
     bool                m_weekStartMon;
     bool                m_doTableMove;
 
+    QVBox  	      *m_ganttBox;
     TimeDialog          *m_timeDialog;
 };
 

@@ -5,6 +5,9 @@
     <Action name="file_open"/>
     <Action name="reload"/>
   </Menu>
+  <Menu name="settings">
+    <Action name="toggleGantt"/>
+  </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar">
   <Action name="file_open"/>
@@ -14,6 +17,7 @@
   <Action name="zoomOriginal"/>
   <Action name="timeFrame"/>
   <Action name="reload"/>
+  <Action name="toggleGantt"/>
   <Separator/>
 </ToolBar>
 </kpartgui>
