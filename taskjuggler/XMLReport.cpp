@@ -19,6 +19,8 @@
 #include "taskjuggler.h"
 #include "Project.h"
 #include "Scenario.h"
+#include "VacationList.h"
+#include "VacationInterval.h"
 #include "Shift.h"
 #include "ShiftSelection.h"
 #include "Task.h"
@@ -110,6 +112,8 @@ XMLReport::generate()
 
     if (!generateProjectProperty(&tjEl))
         return FALSE;
+    if (!generateGlobalVacationList(&tjEl))
+        return FALSE;
     if (!generateShiftList(&tjEl))
         return FALSE;
     if (!generateResourceList(&tjEl, filteredResourceList, filteredTaskList))
@@ -125,7 +129,7 @@ XMLReport::generate()
 }
 
 bool
-XMLReport::generateProjectProperty(QDomNode* n)
+XMLReport::generateProjectProperty(QDomElement* n)
 {
     QDomElement el = doc->createElement("project");
     n->appendChild(el);
@@ -135,6 +139,8 @@ XMLReport::generateProjectProperty(QDomNode* n)
     genTextAttr(&el, "version", project->getVersion());
     genDateElement(&el, "start", getStart());
     genDateElement(&el, "end", getEnd() + 1);
+
+    // Generate custom attribute definitions
     if (!generateCustomAttributeDeclaration
         (&el, "task", project->getTaskAttributeDict()))
         return FALSE;
@@ -144,6 +150,10 @@ XMLReport::generateProjectProperty(QDomNode* n)
     if (!generateCustomAttributeDeclaration
         (&el, "account", project->getAccountAttributeDict()))
         return FALSE;
+    
+    // Generate date/time related settings    
+    genLongAttr(&el, "weekStartMonday", 
+                   project->getWeekStartsMonday() ? 1 : 0);
     if (!project->getTimeZone().isEmpty())
         genTextAttr(&el, "timezone", project->getTimeZone());
     genDoubleAttr(&el, "dailyWorkingHours",
@@ -156,6 +166,7 @@ XMLReport::generateProjectProperty(QDomNode* n)
     genTextAttr(&el, "timeFormat", project->getTimeFormat());
     genTextAttr(&el, "shortTimeFormat", project->getShortTimeFormat());
 
+    // Generate currency settings
     RealFormat rf = project->getCurrencyFormat();
     QDomElement cfEl = doc->createElement("currencyFormat");
     el.appendChild(cfEl);
@@ -164,11 +175,8 @@ XMLReport::generateProjectProperty(QDomNode* n)
     genTextAttr(&cfEl, "thousandSep", rf.getThousandSep());
     genTextAttr(&cfEl, "fractionSep", rf.getFractionSep());
     genLongAttr(&cfEl, "fracDigits", rf.getFracDigits());
-    
     if (!project->getCurrency().isEmpty())
         genTextAttr(&el, "currency", project->getCurrency());
-    genLongAttr(&el, "weekStartMonday", 
-                   project->getWeekStartsMonday() ? 1 : 0);
 
     generateWorkingHours(&el, project->getWorkingHours());
    
@@ -233,7 +241,31 @@ XMLReport::generateScenario(QDomElement* parentEl, Scenario* scenario)
 }
 
 bool
-XMLReport::generateShiftList(QDomNode* parentNode)
+XMLReport::generateGlobalVacationList(QDomElement* parentNode)
+{
+    VacationListIterator vli(project->getVacationListIterator());
+
+    if (*vli != 0)
+    {    
+        QDomElement el = doc->createElement("vacationList");
+        parentNode->appendChild(el);
+
+        for ( ; *vli != 0; ++vli)
+        {
+            QDomElement vEl = doc->createElement("vacation");
+            el.appendChild(vEl);
+            
+            genDateElement(&vEl, "start", (*vli)->getStart());
+            genDateElement(&vEl, "end", (*vli)->getEnd());
+            genTextAttr(&vEl, "name", (*vli)->getName());
+        }
+    }
+    
+    return TRUE;
+}
+
+bool
+XMLReport::generateShiftList(QDomElement* parentNode)
 {
     QDomElement el = doc->createElement("shiftList");
     parentNode->appendChild(el);
@@ -299,7 +331,7 @@ XMLReport::generateWorkingHours(QDomElement* parentEl,
 }
 
 bool
-XMLReport::generateResourceList(QDomNode* parentNode,
+XMLReport::generateResourceList(QDomElement* parentNode,
                                 ResourceList& filteredResourceList,
                                 TaskList& filteredTaskList)
 {
@@ -337,6 +369,21 @@ XMLReport::generateResource(QDomElement* parentEl,
                 return FALSE;
         }
     }
+
+    QPtrListIterator<Interval> vli(resource->getVacationListIterator());
+    if (*vli != 0)
+    {
+        QDomElement vlEl = doc->createElement("vacationList");
+        el.appendChild(vlEl);
+        for ( ; *vli != 0; ++vli)
+        {
+            QDomElement vEl = doc->createElement("vacation");
+            vlEl.appendChild(vEl);
+            genDateElement(&vEl, "start", (*vli)->getStart());
+            genDateElement(&vEl, "end", (*vli)->getEnd());
+        }
+    }
+
     generateWorkingHours(&el, resource->getWorkingHours());
     for (ShiftSelectionListIterator sli(*resource->getShiftList()); *sli; ++sli)
     {
@@ -378,7 +425,7 @@ XMLReport::generateResource(QDomElement* parentEl,
 }
 
 bool
-XMLReport::generateTaskList(QDomNode* parentNode, TaskList& filteredTaskList,
+XMLReport::generateTaskList(QDomElement* parentNode, TaskList& filteredTaskList,
                             ResourceList&)
 {
     QDomElement el = doc->createElement("taskList");

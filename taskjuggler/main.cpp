@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
             if (i + 1 >= a.argc())
             {
                 qWarning("--debug needs numerical argument");
-                showCopyright = showHelp = terminateProgram = 1;
+                showCopyright = showHelp = terminateProgram = TRUE;
             }
             debugLevel = QString(a.argv()[++i]).toInt();
         }
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
             if (i + 1 >= a.argc())
             {
                 qWarning("--dbmode needs numerical argument");
-                showCopyright = showHelp = terminateProgram = 1;
+                showCopyright = showHelp = terminateProgram = TRUE;
             }
             debugMode = QString(a.argv()[++i]).toInt();
         }
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     if (showHelp)
         usage(a);
     if (terminateProgram)
-        exit(1);
+        exit(EXIT_FAILURE);
 
     DebugCtrl.setDebugLevel(debugLevel);    
     DebugCtrl.setDebugMode(debugMode);
@@ -154,8 +154,8 @@ int main(int argc, char *argv[])
     {
         ProjectFile* pf = new ProjectFile(&p);
         if (!pf->open(a.argv()[i], QString(cwd) + "/", ""))
-            return (-1);
-        parseErrors = !pf->parse();
+            exit(EXIT_FAILURE);
+        parseErrors |= !pf->parse();
         delete pf;
     }
 
@@ -177,5 +177,6 @@ int main(int argc, char *argv[])
         p.generateReports();
     }
 
-    return (parseErrors || logicalErrors || schedulingErrors ? -1 : 0);
+    return (parseErrors || logicalErrors || schedulingErrors ?
+            EXIT_FAILURE : EXIT_SUCCESS);
 }

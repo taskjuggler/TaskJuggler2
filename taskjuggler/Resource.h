@@ -65,6 +65,10 @@ public:
     double getRate() const { return rate; }
 
     void addVacation(Interval* i);
+    QPtrListIterator<Interval> getVacationListIterator() const
+    {
+        return QPtrListIterator<Interval>(vacations);
+    }
     
     bool hasVacationDay(time_t day) const;
 

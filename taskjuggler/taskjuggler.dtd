@@ -2,7 +2,11 @@
 <!-- (c) 2003 Chris Schlaeger <cs@suse.de> -->
 <!-- This file is licensed under the GNU GPL Version 2.0 -->
 
-<!ELEMENT taskjuggler (project, shiftList, vacation*, resourceList, taskList)>
+<!-- This is still a draft version, published as a request for
+comments -->
+
+<!ELEMENT taskjuggler (project, vacationList?, shiftList?,
+                       resourceList?, taskList)>
 
 <!ELEMENT project (start, end, extend*, now?, currencyFormat,
                    workingHours, scenario?)>
@@ -77,15 +81,12 @@
 >
 
 <!ELEMENT flag (#PCDATA)>
+
+<!ELEMENT vacationList (vacation+)>
  
 <!ELEMENT vacation (start, end)>
 <!ATTLIST vacation
   name CDATA #IMPLIED
->
-
-<!ELEMENT shiftSelection (start, end)>
-<!ATTLIST shiftSelection
-  shiftId CDATA #REQUIRED
 >
 
 <!ELEMENT shiftList (shift*)>
@@ -96,9 +97,14 @@
   name CDATA #REQUIRED
 >
 
+<!ELEMENT shiftSelection (start, end)>
+<!ATTLIST shiftSelection
+  shiftId CDATA #REQUIRED
+>
+
 <!ELEMENT resourceList (resource*)>
 
-<!ELEMENT resource (flags*, workingHours, shiftSelection*, vacation*,
+<!ELEMENT resource (flags*, vacationList?, workingHours, shiftSelection*,
                     resourceScenario, resource*)>
 <!ATTLIST resource
   id CDATA #REQUIRED

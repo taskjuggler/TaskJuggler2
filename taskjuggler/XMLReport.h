@@ -21,7 +21,7 @@
 
 class Project;
 class QDomDocument;
-class QDomNode;
+class QDomElement;
 class QDomElement;
 class CustomAttributeDefinition;
 
@@ -41,21 +41,22 @@ public:
 private:
     XMLReport() { }
 
-    bool generateProjectProperty(QDomNode* n);
+    bool generateProjectProperty(QDomElement* n);
     bool generateCustomAttributeDeclaration(QDomElement* parentEl,
              const QString& propertyName,
              QDictIterator<const CustomAttributeDefinition> it);
     bool generateScenario(QDomElement* parentEl, Scenario* scenario);
 
-    bool generateShiftList(QDomNode* parentNode);
+    bool generateGlobalVacationList(QDomElement* parentNode);
+    bool generateShiftList(QDomElement* parentNode);
     bool generateShift(QDomElement* parentEl, const Shift*);
     bool generateWorkingHours(QDomElement* el,
                               const QPtrList<const Interval>* const* wh);
-    bool generateResourceList(QDomNode* parentNode, ResourceList& frl,
+    bool generateResourceList(QDomElement* parentNode, ResourceList& frl,
                               TaskList& ftl);
     bool generateResource(QDomElement* parentEl, ResourceList& frl,
                           TaskList& ftl, const Resource* r);
-    bool generateTaskList(QDomNode* parentNode, TaskList& ftl,
+    bool generateTaskList(QDomElement* parentNode, TaskList& ftl,
                           ResourceList& frl);
     bool generateTask(QDomElement* parentEl, TaskList& ftl, const Task* task);
     bool generateDepList(QDomElement* el, TaskList& filteredTaskList,

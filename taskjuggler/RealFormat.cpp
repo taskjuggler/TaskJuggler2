@@ -46,7 +46,7 @@ RealFormat::format(double val, bool showZeroFract) const
     }
     if (text.isEmpty())
         text = "0";
-    text.replace(' ', '0');
+    text.replace(QChar(' '), QChar('0'));
     if (!fractionSep.isEmpty() && fracDigits > 0)
     {
         double v = fabs(val) - abs((int) val);
