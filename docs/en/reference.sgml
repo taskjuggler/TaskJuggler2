@@ -2147,7 +2147,8 @@ linkend="date">DATE</link></member>
 </simplelist></para>
 
 <para>Limits the allocation activity during the specified intervals to the
-working hours of the shift. Multiple shifts intervals can be specified
+working hours of the shift specified with
+<computeroutput>ID</computeroutput>. Multiple shifts intervals can be specified
 but shift intervals may not overlap.</para>
 
 </sect3>
