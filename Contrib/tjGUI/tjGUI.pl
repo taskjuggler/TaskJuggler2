@@ -106,6 +106,10 @@ my $top = MainWindow->new();
                                             -relief     => 'groove',
                                             -command    => sub { &_reload() }
                                             )->pack( -side => 'left');
+        my $b_list  = $f_head->Button(  -text       => 'ascii tasklist',
+                                        -relief     => 'groove',
+                                        -command    => sub { &_ascii_list() }
+                                        )->pack( -side => 'left');
         my $b_Bunt  = $f_head->Button(  -text       => 'view gantt',
                                         -relief     => 'groove',
                                         -command    => sub { &_gantt() }
@@ -146,6 +150,8 @@ my $top = MainWindow->new();
             $startUpTextFrame->Label( -text => 'published by the Free Software Foundation.' )->pack();
     }
 
+    _w_area();
+
     #-- statusline
     my $f_bottom = $top->Frame( -relief => 'flat',
                                 -border => 1 )->pack(   -padx   => 3,
@@ -154,11 +160,11 @@ my $top = MainWindow->new();
         my $status_line = $f_bottom->Label( -text => 'have a nice day ...'
                                             )->pack( -side => 'left', -padx => 3);
 
-_w_area();
 _pars_xml();
 
 my $bigPSfilename       = $project{'Id'}.'.ps';
 my $posterPSfilename    = $project{'Id'}.'_poster.ps';
+my $ascii_filename      = $project{'Id'}.'_task_list.txt';
 my $poster_bin          = '/usr/bin/poster';
 
 $project{'h_start'} =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
@@ -194,6 +200,43 @@ my $page_y    = ($page_border * 2) +
 MainLoop;
 
 #-----------------------------------------------------------------------------
+sub _ascii_list {
+    my $top = new MainWindow( -title => 'task list');
+        my $t = $top->Scrolled(qw/Text  -relief         groove
+                                        -borderwidth    1
+                                        -setgrid        true
+                                        -height         50
+                                        -width          79
+                                        -wrap           word
+                                        -scrollbars     e/);
+            $t->pack(qw/-expand yes -fill both/);
+    $top->Button( -text => "save as $ascii_filename",  -command => sub { &_save_ascii_list($t) } )->pack( -expand => 'yes', -fill => 'x', side => 'left' );
+    $top->Button( -text => 'close', -command => sub { $top->destroy } )->pack( -expand => 'yes', -fill => 'x', side => 'left' );
+    my $text = '';
+    foreach my $t (@all_tasks) {
+        $text = $text.'* '.$t->Name.' ['.lc($t->Type)."]\n";
+        $text = $text.('-'x(length($t->Name) + length($t->Type) + 5))."\n";
+        $text = $text."date    : $project{'h_start'} ... $project{'h_end'}\n";
+        $text = $text."complete: ".$t->complete." %\n";
+        $text = $text."note    : ".$t->Note."\n\n\n";
+    }
+    $t->insert('0.0', $text);
+}
+
+sub _save_ascii_list {
+    my $t = shift;
+    eval {
+        open(OUT, ">$ascii_filename")
+    };
+    if ($@) {
+        $status_line->configure( -fg => 'red', -text => "can't write $ascii_filename !" );
+    } else {
+        print OUT $t->get('0.0', 'end');
+        close(OUT);
+        $status_line->configure( -fg => 'black', -text => "$ascii_filename create done" );
+    }
+}
+
 sub _reload {
     $b_Print->destroy   if ($b_Print);
     $b_Poster->destroy  if ($b_Poster);
