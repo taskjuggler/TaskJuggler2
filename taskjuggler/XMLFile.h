@@ -118,6 +118,7 @@ private:
     bool doCandidate(QDomNode& n, ParserTreeContext& n);
     bool doDepends(QDomNode& n, ParserTreeContext& n);
     bool doPrecedes(QDomNode& n, ParserTreeContext& n);
+    bool doNote(QDomNode& n, ParserTreeContext& n);
     bool doFlag(QDomNode& n, ParserTreeContext& n);
     bool doResourceBooking(QDomNode& n, ParserTreeContext& n);
     bool doBooking(QDomNode& n, ParserTreeContext& n);

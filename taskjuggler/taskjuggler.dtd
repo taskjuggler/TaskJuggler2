@@ -15,7 +15,7 @@ comments -->
   id CDATA #REQUIRED
   name CDATA #REQUIRED
   version CDATA #REQUIRED
-  timezone CDATA #REQUIRED
+  timezone CDATA #IMPLIED
   timingResolution CDATA "3600"
   dailyWorkingHours CDATA "8"
   yearlyWorkingDays CDATA "260.714"

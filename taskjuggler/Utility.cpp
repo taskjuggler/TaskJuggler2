@@ -610,7 +610,7 @@ time2ISO(time_t t)
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
-    strftime(buf, 127, "%Y-%m-%d %H:%M %Z", tms);
+    strftime(buf, 127, "%Y-%m-%d %H:%M:%S %Z", tms);
     return QString::fromLocal8Bit(buf);
 }
 

@@ -1207,7 +1207,10 @@ ProjectFile::readTask(Task* parent)
         }
     }
     else
+    {
         task = new Task(proj, id, name, parent, getFile(), getLine());
+        task->inheritValues();
+    }
 
     if (!readTaskBody(task))
         return FALSE;
@@ -3175,7 +3178,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (!readSorting(tab, 2))
                     return FALSE;
             }
-            else if (token == KW("url"))
+            else if (token == "url")
             {
                 errorMessage(i18n("The 'url' attribute is no longer "
                                   "supported. It has been replaced by the "

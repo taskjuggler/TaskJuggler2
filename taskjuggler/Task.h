@@ -78,6 +78,8 @@ public:
 
     enum SchedulingInfo { ASAP, ALAP };
 
+    void inheritValues();
+
     void setProjectId(const QString& i) { projectId = i; }
     const QString& getProjectId() const { return projectId; }
 

@@ -123,7 +123,7 @@ XMLFile::createParseTree()
             ParserNode* resourceNode = new ParserNode(pe);
             {
                 resourceNode->add(pe, "resource");  // recursive link
-                pe = new ParserElement("flag", &XMLFile::doFlag, resourceNode);
+                new ParserElement("flag", &XMLFile::doFlag, resourceNode);
                 pe = new ParserElement("workingHours", 0, resourceNode);
                 createSubTreeWorkingHours
                     (&XMLFile::doResourceWeekdayWorkingHours, pe);
@@ -146,6 +146,7 @@ XMLFile::createParseTree()
             ParserNode* accountNode = new ParserNode(pe);
             {
                 accountNode->add(pe, "account"); // recursive link
+                new ParserElement("flag", &XMLFile::doFlag, accountNode);
             }
         }
         
@@ -187,6 +188,7 @@ XMLFile::createParseTree()
             new ParserElement("flag", &XMLFile::doFlag, taskNode);
             new ParserElement("depends", &XMLFile::doDepends, taskNode);
             new ParserElement("precedes", &XMLFile::doPrecedes, taskNode);
+            new ParserElement("note", &XMLFile::doNote, taskNode);
             createSubTreeCustomAttribute(taskNode);
         }
 
@@ -379,7 +381,8 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext& ptc)
     project->addId(el.attribute("id"));
     project->setName(el.attribute("name"));
     project->setVersion(el.attribute("version"));
-    project->setTimeZone(el.attribute("timezone"));
+    if (el.hasAttribute("timezone") && !el.attribute("timezone").isEmpty())
+        project->setTimeZone(el.attribute("timezone"));
    
     // optional attributes
     project->setScheduleGranularity
@@ -817,6 +820,15 @@ XMLFile::doPrecedes(QDomNode& n, ParserTreeContext& ptc)
 }
 
 bool
+XMLFile::doNote(QDomNode& n, ParserTreeContext& ptc)
+{
+    qDebug("Adding note '%s' to task %s", n.toElement().text().latin1(),
+           ptc.getTask()->getId().latin1());
+    ptc.getTask()->setNote(n.toElement().text());
+    return TRUE;
+}
+
+bool
 XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
@@ -859,6 +871,7 @@ XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
     }
     ptc.getResource()->addBooking(ptc.getScenarioIndex(),
                                   new Booking(ptc.getInterval(), t));
+    
     return TRUE;
 }
 

@@ -125,6 +125,20 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
     scenarios[0].startCredit = 0.0;
     scenarios[0].endCredit = 0.0;
 
+    start = end = 0;
+    duration = length = effort = 0.0;
+}
+
+Task::~Task()
+{
+    project->deleteTask(this);
+    delete [] scenarios;
+}
+
+void
+Task::inheritValues()
+{
+    Task* p = (Task*) parent;
     if (p)
     {
         // Inherit flags from parent task.
@@ -139,7 +153,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
         account = p->account;
         scheduling = p->scheduling;
 
-        for (int sc = 0; sc < proj->getMaxScenarios(); ++sc)
+        for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
         {
             scenarios[sc].minStart = p->scenarios[sc].minStart;
             scenarios[sc].maxStart = p->scenarios[sc].maxEnd;
@@ -169,28 +183,19 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
             allocations.append(new Allocation(**ali));
 
         // Inherit inheritable custom attributes
-        inheritCustomAttributes(proj->getTaskAttributeDict());
+        inheritCustomAttributes(project->getTaskAttributeDict());
     }
     else
     {
         // Set attributes that are inherited from global attributes.
-        projectId = proj->getCurrentId();
-        priority = proj->getPriority();
-        for (int sc = 0; sc < proj->getMaxScenarios(); ++sc)
+        projectId = project->getCurrentId();
+        priority = project->getPriority();
+        for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
         {
             scenarios[sc].minStart = scenarios[sc].minEnd = 0;
             scenarios[sc].maxStart = scenarios[sc].maxEnd = 0;
         }
     }
-
-    start = end = 0;
-    duration = length = effort = 0.0;
-}
-
-Task::~Task()
-{
-    project->deleteTask(this);
-    delete [] scenarios;
 }
 
 bool
@@ -2575,6 +2580,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
         QString stId = subTaskElem.attribute("Id");
         qDebug( "Recursing to elem " + stId );
         Task *t = new Task( project, stId, QString(), this, QString(), 0 );
+        t->inheritValues();
         t->loadFromXML( subTaskElem, project );
         qDebug( "Recursing to elem " + stId + " <FIN>");
      }

@@ -259,7 +259,7 @@ XMLReport::generateGlobalVacationList(QDomElement* parentNode)
             el.appendChild(vEl);
             
             genDateElement(&vEl, "start", (*vli)->getStart());
-            genDateElement(&vEl, "end", (*vli)->getEnd());
+            genDateElement(&vEl, "end", (*vli)->getEnd() + 1);
             genTextAttr(&vEl, "name", (*vli)->getName());
         }
     }
@@ -379,7 +379,7 @@ XMLReport::generateResource(QDomElement* parentEl,
             QDomElement vEl = doc->createElement("vacation");
             vlEl.appendChild(vEl);
             genDateElement(&vEl, "start", (*vli)->getStart());
-            genDateElement(&vEl, "end", (*vli)->getEnd());
+            genDateElement(&vEl, "end", (*vli)->getEnd() + 1);
         }
     }
 
@@ -450,8 +450,8 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                     break;
                 }
             case TA_NOTE:
-                if (task->getNote() != "")
-                    genTextAttr(&el, "note", task->getNote());
+                if (!task->getNote().isEmpty())
+                    genTextElement(&el, "note", task->getNote());
                 break;
             case TA_PRIORITY:
                 genLongAttr(&el, "priority", task->getPriority());
