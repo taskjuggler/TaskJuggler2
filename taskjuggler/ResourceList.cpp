@@ -216,9 +216,9 @@ Resource::initScoreboard()
 
 	// Then mark all resource specific vacation slots as such (2).
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
-		for (time_t date = i->getStart();
-			 date < i->getEnd() &&
-				 project->getStart() <= date && date < project->getEnd();
+		for (time_t date = i->getStart() > project->getStart() ?
+			 i->getStart() : project->getStart();
+			 date < i->getEnd() && date < project->getEnd();
 			 date += project->getScheduleGranularity())
 			scoreboard[sbIndex(date)] = (SbBooking*) 2;
 

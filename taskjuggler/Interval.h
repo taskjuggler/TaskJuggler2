@@ -75,7 +75,7 @@ public:
 		}
 		return FALSE;
 	}
-	int compare(const Interval& i)
+	int compare(const Interval& i) const
 	{
 		if (end < i.start)
 			return -1;	// interval is below i
