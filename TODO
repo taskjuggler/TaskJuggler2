@@ -17,4 +17,5 @@ After 2.0:
 - Add support for risk documentation.
 - Cleanup taskjuggler library API, so it can be used by other apps.
 - Color support for tasks and resources
+- More general concept of limits per time unit.
 

@@ -36,6 +36,7 @@ public:
     bool isVacationDay(time_t day) const;
 
 private:
+    friend class ShiftSelection;
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
 

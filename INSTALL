@@ -2,9 +2,9 @@ Building with KDE support
 =========================
 
 Building with KDE support enhances TaskJuggler with two features:
-- the KDE viewer ktjview for taskjuggler xml output.
-- ability to create ical-reports using keyword icalreport. ical is 
-  a calender format which is compatible with pim applications like 
+- the KDE viewer ktjview for taskjuggler XML output;
+- the ability to create ical reports using keyword icalreport. ical is
+  a calender format which is compatible with PIM applications like
   korganiser. Note: Since the libkcal is not installed properly by
   the KDE distribution, we use a preprocessor flag HAVE_ICAL to 
   enable the ical support. By default, it is not defined, even if 
