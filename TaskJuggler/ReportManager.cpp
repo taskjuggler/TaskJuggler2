@@ -23,6 +23,8 @@
 #include "Report.h"
 #include "ManagedReportInfo.h"
 #include "TjReport.h"
+#include "TjTaskReport.h"
+#include "TjResourceReport.h"
 
 ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
     reportStack(v), browser(b)
@@ -109,17 +111,20 @@ ReportManager::showReport(QListViewItem* lvi)
     TjReport* tjr;
     if ((tjr = mr->getReport()) == 0)
     {
-        tjr = new TjReport(reportStack, mr->getProjectReport());
-        reportStack->addWidget(tjr);
-        mr->setReport(tjr);
         if (strcmp(mr->getProjectReport()->getType(), "QtTaskReport") == 0)
-        {
-            if (!tjr->generateTaskReport())
-                return FALSE;
-        }
+            tjr = new TjTaskReport(reportStack, mr->getProjectReport());
+        else if (strcmp(mr->getProjectReport()->getType(),
+                        "QtResourceReport") == 0)
+            tjr = new TjResourceReport(reportStack, mr->getProjectReport());
         else
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
                 << " not yet supported" << endl;
+
+        reportStack->addWidget(tjr);
+        mr->setReport(tjr);
+
+        if (!tjr->generateReport())
+            return FALSE;
     }
     reportStack->raiseWidget(tjr);
 

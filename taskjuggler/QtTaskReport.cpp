@@ -27,12 +27,3 @@ QtTaskReport::~QtTaskReport()
     delete tab;
 }
 
-bool
-QtTaskReport::generate()
-{
-    generateHeader();
-    tab->generate();
-    generateFooter();
-
-    return TRUE;
-}

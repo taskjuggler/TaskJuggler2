@@ -31,13 +31,13 @@ for f in *.tjp ; do
   ../../taskjuggler/taskjuggler $f | \
   fgrep -v TaskJuggler > $referenceFile || exit 1
 
-  if which validate >/dev/null 2>&1 ; then
-    validate $referenceFile
+  if which xmllint >/dev/null 2>&1 ; then
+    xmllint --noout $referenceFile
     if [ $? -ne 0 ] ; then
       exit 1
     fi
   else
-      echo "Warn: validate not installed!"    
+      echo "Warn: xmllint not installed!"    
   fi
   echo $referenceFile created
 done

@@ -177,19 +177,21 @@ FileManager::updateFileBrowser()
          * differently so it can be easyly identified. */
         if (*mfi == masterFile)
             newFile->setPixmap
-                (0, KGlobal::iconLoader()->loadIcon("vcalendar", KIcon::Small));
+                (0, KGlobal::iconLoader()->
+                 loadIcon("tj_file_tjp", KIcon::Small));
         else
             newFile->setPixmap
-                (0, KGlobal::iconLoader()->loadIcon("source", KIcon::Small));
+                (0, KGlobal::iconLoader()->
+                 loadIcon("tj_file_tji", KIcon::Small));
 
         /* The 3rd column shows whether the file is part of the current
          * project or not. So we need to set the proper icons. */
         if ((*mfi)->isPartOfProject())
             newFile->setPixmap
-                (3, KGlobal::iconLoader()->loadIcon("ok", KIcon::Small));
+                (3, KGlobal::iconLoader()->loadIcon("tj_ok", KIcon::Small));
         else
             newFile->setPixmap
-                (3, KGlobal::iconLoader()->loadIcon("no", KIcon::Small));
+                (3, KGlobal::iconLoader()->loadIcon("tj_not_ok", KIcon::Small));
     }
 }
 

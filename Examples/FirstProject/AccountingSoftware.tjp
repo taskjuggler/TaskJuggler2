@@ -7,20 +7,20 @@
  */
 project acso "Accounting Software" "1.0" 2002-01-16 2002-05-28 {
   # Pick a day during the project that will be reported as 'today' in
-	# the project reports. If not specified the current day will be
-	# used, but this will likely be ouside of the project range, so it
-	# can't be seen in the reports.
- 	now 2002-03-04
-	# Hide the clock time. Only show the date.
-	timeformat "%Y-%m-%d"
-	# The currency for all money values is EUR.
+  # the project reports. If not specified the current day will be
+  # used, but this will likely be ouside of the project range, so it
+  # can't be seen in the reports.
+  now 2002-03-05-13:00
+  # Hide the clock time. Only show the date.
+  timeformat "%Y-%m-%d"
+  # The currency for all money values is EUR.
   currency "EUR"
 
-	# We want to compare the baseline scenario, to one with a slightly
-	# delayed start.
-	scenario plan "Plan" {
-		scenario delayed "Delayed"
-	}
+  # We want to compare the baseline scenario, to one with a slightly
+  # delayed start.
+  scenario plan "Plan" {
+    scenario delayed "Delayed"
+  }
 }
 
 # The daily default rate of all resources. This can be overriden for each
@@ -42,13 +42,13 @@ resource dev "Developers" {
   resource dev2 "Sébastien Bono"
   resource dev3 "Klaus Müller" { vacation 2002-02-01 - 2002-02-05 }
 
-	flags team
+  flags team
 }
 resource misc "The Others" {
   resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
   resource doc "Dim Sung" { rate 280.0 vacation 2002-03-11 - 2002-03-16 }
 
-	flags team
+  flags team
 }
 
 # In order to do a simple profit and loss analysis of the project we
@@ -67,26 +67,26 @@ account rev "Payments" revenue
 # writing.
 task AcSo "Accounting Software" {
 
-	# All work related costs will be booked to this account unless the
-	# sub tasks specifies it differently.
-	account dev
+  # All work related costs will be booked to this account unless the
+  # sub tasks specifies it differently.
+  account dev
 
-	task spec "Specification" {
-		# The effort to finish this task is 20 man days. 
-		effort 20d
-		# Now we use the above declared macro to allocate the resources
-		# for this task. Since they can work in parallel, this task may be
-		# finshed earlier than 20 working days.
-		${allocate_developers}
-		# Each task that does not have sub tasks must have a start or end
-		# criteria and a duration. For this task we use a reference to a
-		# further down defined milestone as a start criteria. So this task
-		# cannot start, before the specified milestone has been reached.
-		# References to other tasks may be relative. Each ! means 'in the
-		# scope of the enclosing task'. To descent into a task the .
-		# together with the id of the tasks have to be specified.
-		depends !deliveries.start 
-	}
+  task spec "Specification" {
+    # The effort to finish this task is 20 man days. 
+    effort 20d
+    # Now we use the above declared macro to allocate the resources
+    # for this task. Since they can work in parallel, this task may be
+    # finshed earlier than 20 working days.
+    ${allocate_developers}
+    # Each task that does not have sub tasks must have a start or end
+    # criteria and a duration. For this task we use a reference to a
+    # further down defined milestone as a start criteria. So this task
+    # cannot start, before the specified milestone has been reached.
+    # References to other tasks may be relative. Each ! means 'in the
+    # scope of the enclosing task'. To descent into a task the .
+    # together with the id of the tasks have to be specified.
+    depends !deliveries.start 
+}
 
 	task software "Software Development" {
 
@@ -162,7 +162,8 @@ task AcSo "Accounting Software" {
 		task start "Projectstart" {
 			# A task that has no duration is a milestone. It only needs a
 			# start or end criteria. All other tasks depend on this task.
-			milestone start 2002-01-16
+			milestone 
+			start 2002-01-16
 			# For some reason the actual start of the project got delayed.
 			# We record this, so that we can compare the plan run to the
 			# delayed run of the project.
@@ -206,10 +207,17 @@ task AcSo "Accounting Software" {
 # generated. The XML report is used to create a Postscript Gantt
 # chart.
 
+# This task report is for use with the TaskJuggler GUI
 taskreport "Project Overview" {
-  columns start, end
+  columns start, end, effort, duration, completed
 }
-  
+
+# A resource report for use with the TaskJuggler GUI  
+resourcereport "Resource Usage" {
+  columns effort
+  hideresource 0
+}
+
 # For conveniance we would like each report to contain links to the
 # other reports. So we declare a macro with a fragment of raw HTML
 # code to be embedded into all the HTML reports.
@@ -298,7 +306,7 @@ htmlresourcereport "Staff-Details.html" {
   columns name, daily, effort
 	# To still keep the report readable we limit it to show only the
 	# data for March 2002.
-	start 2002-03-01
+	start 2002-01-16
 	end 2002-04-01
 	hidetask 0
 	# The teams are virtual resources that we don't want to see. Since

@@ -22,6 +22,7 @@
 #include <klistview.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -32,6 +33,8 @@
 #include "TableColumnFormat.h"
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
+#include "QtResourceReport.h"
+#include "QtResourceReportElement.h"
 
 //                                           Boundary
 const int TjReport::minStepHour = 4;    //   365 * 24 * 4 = 35040
@@ -102,118 +105,28 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
 }
 
 bool
-TjReport::generateTaskReport()
+TjReport::generateReport()
 {
     setLoadingProject(TRUE);
 
-    if (!generateTaskList())
+    if (!this->generateList())
     {
         setLoadingProject(FALSE);
         return FALSE;
     }
-    generateGanttChart(TRUE);
+    if (!this->generateChart(TRUE))
+    {
+        setLoadingProject(FALSE);
+        return FALSE;
+    }
 
     setLoadingProject(FALSE);
 
     return TRUE;
 }
 
-bool
-TjReport::generateTaskList()
-{
-    // Remove all items and columns from list view.
-    listView->clear();
-    while (listView->columns())
-        listView->removeColumn(0);
-
-    if (!reportDef)
-        return FALSE;
-
-    // We need those values frequently. So let's store them in a more
-    // accessible place.
-    reportElement =
-        (dynamic_cast<QtTaskReport*>(reportDef))->getTable();
-    scenario = reportElement->getScenario(0);
-    taskList = reportDef->getProject()->getTaskList();
-
-    // QListView can hide subtasks. So we feed the list with all tasks first
-    // and then later close those items that we want to roll up. This
-    // expression means "roll-up none".
-    ExpressionTree* et = new ExpressionTree;
-    et->setTree("0", reportDef->getProject());
-
-    if (!reportElement->filterTaskList(taskList, 0,
-                                       reportElement->getHideTask(), et))
-        return FALSE;
-
-    if (taskList.isEmpty())
-        return TRUE;
-
-    generateLeftHeader();
-
-    for (TaskListIterator tli(reportDef->getProject()->
-                              getTaskListIterator()); *tli; ++tli)
-    {
-        KListViewItem* newLvi;
-        if ((*tli)->getParent())
-        {
-            newLvi = new KListViewItem
-                (listView->findItem((*tli)->getParent()->getId(),
-                                    1), (*tli)->getName(),
-                 (*tli)->getId());
-        }
-        else
-        {
-            newLvi = new KListViewItem(listView, (*tli)->getName(),
-                                       (*tli)->getId());
-        }
-
-        if ((*tli)->isContainer())
-        {
-            if (reportDef->getRollUpTask())
-            {
-                if (!reportDef->isRolledUp(*tli,
-                                           reportElement->getRollUpTask()))
-                    newLvi->setOpen(TRUE);
-                if (reportElement->getRollUpTask()->getErrorFlag())
-                    return FALSE;
-            }
-            else
-                newLvi->setOpen(TRUE);
-        }
-        else
-        {
-            for (ResourceListIterator rli((*tli)->
-                                          getBookedResourcesIterator(scenario));
-                 *rli; ++rli)
-            {
-                new KListViewItem(newLvi, (*rli)->getName(),
-                                  (*rli)->getFullId());
-            }
-        }
-
-        int column = 2;
-        for (QPtrListIterator<TableColumnInfo>
-             ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
-        {
-
-            if ((*ci)->getName() == "start")
-                newLvi->setText(column,
-                                time2user((*tli)->getStart(scenario),
-                                          reportDef->getTimeFormat()));
-            else if ((*ci)->getName() == "end")
-                newLvi->setText(column,
-                                time2user(((*tli)->isMilestone() ? 1 :
-                                           0) + (*tli)->getEnd(scenario),
-                                          reportDef->getTimeFormat()));
-        }
-    }
-
-    return TRUE;
-}
-
 void
-TjReport::generateGanttChart(bool autoFit)
+TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
 {
     // Clear ganttHeader canvas.
     QCanvasItemList cis = ganttHeader->allItems();
@@ -227,14 +140,23 @@ TjReport::generateGanttChart(bool autoFit)
 
     // Calculate some commenly used values;
     headerHeight = listView->header()->height();
-    itemHeight = listView->lastItem()->height();
-    listHeight = listView->lastItem()->itemPos();
+    itemHeight = listView->firstChild()->height();
+    QListViewItem* lvi;
+    for (lvi = listView->firstChild(); lvi && lvi->itemBelow();
+         lvi = lvi->itemBelow())
+        ;
+    listHeight = lvi->itemPos() + itemHeight;
 
     int overallDuration;
     if (autoFit)
     {
-        startTime = reportElement->getEnd();
-        endTime = reportElement->getStart();
+        /* In autoFit mode we try to fit the full timespan of the project into
+         * the view. We ignore the project time frame specified by the user
+         * and use the start time of the earliest task and the end time of the
+         * last task instead. For a better look we add 5% more at both sides.
+         */
+        startTime = repElement->getEnd();
+        endTime = repElement->getStart();
         for (TaskListIterator tli(taskList); *tli; ++tli)
         {
             if ((*tli)->getStart(scenario) < startTime)
@@ -243,8 +165,8 @@ TjReport::generateGanttChart(bool autoFit)
                 endTime = (*tli)->getEnd(scenario);
         }
         overallDuration = endTime - startTime;
-        startTime -= (time_t) (0.1 * overallDuration);
-        endTime += (time_t) (0.1 * overallDuration);
+        startTime -= (time_t) (0.05 * overallDuration);
+        endTime += (time_t) (0.05 * overallDuration);
         // We try to use a scaling so that the initial Gantt chart is about
         // 800 pixels width.
         for (currentZoomStep = 0;
@@ -261,13 +183,13 @@ TjReport::generateGanttChart(bool autoFit)
     else
     {
         if (startTime == 0)
-            startTime = reportElement->getStart();
+            startTime = repElement->getStart();
         if (endTime == 0)
-            endTime = reportElement->getEnd();
+            endTime = repElement->getEnd();
         overallDuration = endTime - startTime;
     }
 
-    /* Some of the algorithms here require a mininum project duration of 1 day
+    /* Some of the algorithems here require a mininum project duration of 1 day
      * to work properly. */
     if (endTime - startTime < 60 * 60 * 24)
         endTime = startTime + 60 * 60 * 24 + 1;
@@ -283,11 +205,6 @@ TjReport::generateGanttChart(bool autoFit)
     ganttChart->resize(canvasWidth, listHeight);
 
     generateHeaderAndGrid();
-
-    generateGanttTasks();
-
-    ganttHeader->update();
-    ganttChart->update();
 }
 
 void
@@ -359,6 +276,13 @@ TjReport::generateHeaderAndGrid()
             break;
     }
     generateGanttBackground();
+
+    // Draw a red line to mark the current time.
+    if (reportDef->getProject()->getNow() >=
+        reportDef->getProject()->getStart() &&
+        reportDef->getProject()->getNow() < reportDef->getProject()->getEnd())
+        markBoundary(time2x(reportDef->getProject()->getNow()),
+                            QColor("red"), 3);
 }
 
 void
@@ -582,7 +506,7 @@ TjReport::markNonWorkingDaysOnBackground()
 }
 
 void
-TjReport::markBoundary(int x)
+TjReport::markBoundary(int x, const QColor& col, int layer)
 {
     // Draws a vertical line on the ganttChart to higlight a time period
     // boundary.
@@ -590,10 +514,9 @@ TjReport::markBoundary(int x)
         return;
     QCanvasLine* line = new QCanvasLine(ganttChart);
     line->setPoints(x, 0, x, listHeight);
-    QPen pen = line->pen();
-    pen.setColor(colorGroup().mid());
+    QPen pen(col);
     line->setPen(pen);
-    line->setZ(2);
+    line->setZ(layer);
     line->show();
 }
 
@@ -602,7 +525,7 @@ TjReport::markHourBoundaries()
 {
     for (time_t hour = midnight(startTime);
          hour < endTime; hour = hoursLater(3, hour))
-        markBoundary(time2x(hour));
+        markBoundary(time2x(hour), colorGroup().mid());
 }
 
 void
@@ -610,7 +533,7 @@ TjReport::markDayBoundaries()
 {
     for (time_t day = midnight(startTime);
          day < endTime; day = sameTimeNextDay(day))
-        markBoundary(time2x(day));
+        markBoundary(time2x(day), colorGroup().mid());
 }
 
 void
@@ -621,7 +544,7 @@ TjReport::markWeekBoundaries()
     for (time_t week = beginOfWeek(startTime, weekStartsMonday);
          week < endTime;
          week = sameTimeNextWeek(week))
-        markBoundary(time2x(week));
+        markBoundary(time2x(week), colorGroup().mid());
 }
 
 void
@@ -630,7 +553,7 @@ TjReport::markMonthsBoundaries()
     for (time_t month = beginOfMonth(startTime);
          month < endTime; month =
          sameTimeNextMonth(month))
-        markBoundary(time2x(month));
+        markBoundary(time2x(month), colorGroup().mid());
 }
 
 void
@@ -639,7 +562,7 @@ TjReport::markQuarterBoundaries()
     for (time_t quarter = beginOfQuarter(startTime);
          quarter < endTime; quarter =
          sameTimeNextQuarter(quarter))
-        markBoundary(time2x(quarter));
+        markBoundary(time2x(quarter), colorGroup().mid());
 }
 
 void
@@ -661,357 +584,6 @@ TjReport::generateGanttBackground()
     }
 }
 
-void
-TjReport::generateGanttTasks()
-{
-    for (TaskListIterator tli(reportDef->getProject()->
-                              getTaskListIterator()); *tli; ++tli)
-    {
-        QListViewItem* lvi = getTaskListEntry(*tli);
-        if (lvi)
-        {
-            generateTask(*tli, lvi->itemPos());
-            generateDependencies(*tli, lvi);
-            if (lvi->isOpen())
-                generateTaskResources(*tli, lvi->itemPos());
-        }
-    }
-}
-
-void
-TjReport::generateTask(Task* const t, int y)
-{
-    if (t->isMilestone())
-    {
-        // A black diamond.
-        QPointArray a(5);
-        int centerX = time2x(t->getStart(scenario));
-        int centerY = y + itemHeight / 2;
-        int radius = (itemHeight - 8) / 2;
-        a.setPoint(0, centerX, centerY - radius);
-        a.setPoint(1, centerX + radius, centerY);
-        a.setPoint(2, centerX, centerY + radius);
-        a.setPoint(3, centerX - radius, centerY);
-        a.setPoint(4, centerX, centerY - radius);
-
-        QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
-        polygon->setPoints(a);
-        polygon->setPen(QColor("#000000"));
-        polygon->setBrush(QColor("#000000"));
-        polygon->setZ(10);
-        polygon->show();
-    }
-    else if (t->isContainer())
-    {
-        // A black bar with jag at both ends.
-        QPointArray a(9);
-        int start = time2x(t->getStart(scenario));
-        int end = time2x(t->getEnd(scenario));
-        int top = y + 4;
-        int bottom = y + itemHeight - 7;
-        int halfbottom = y + itemHeight / 2 - 1;
-        int jagWidth = 4;
-        a.setPoint(0, start - jagWidth, top);
-        a.setPoint(1, start - jagWidth, halfbottom);
-        a.setPoint(2, start, bottom);
-        a.setPoint(3, start + jagWidth, halfbottom);
-        a.setPoint(4, end - jagWidth, halfbottom);
-        a.setPoint(5, end, bottom);
-        a.setPoint(6, end + jagWidth, halfbottom);
-        a.setPoint(7, end + jagWidth, top);
-        a.setPoint(8, start - jagWidth, top);
-
-        QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
-        polygon->setPoints(a);
-        polygon->setPen(QColor("#000000"));
-        polygon->setBrush(QColor("#000000"));
-        polygon->setZ(10);
-        polygon->show();
-    }
-    else
-    {
-        // A blue box with some fancy interior.
-        QCanvasRectangle* rect =
-            new QCanvasRectangle(time2x(t->getStart(scenario)), y + 4,
-                                 time2x(t->getEnd(scenario)) -
-                                 time2x(t->getStart(scenario)),
-                                 itemHeight - 8, ganttChart);
-
-        rect->setPen(QPen(QColor("#000090")));
-        rect->setBrush(QBrush(QColor("#000090"), Dense4Pattern));
-        rect->setZ(10);
-        rect->show();
-    }
-}
-
-void
-TjReport::generateDependencies(Task* const t1, QListViewItem* t1lvi)
-{
-#define abs(a) ((a) < 0 ? (-(a)) : (a))
-
-    int arrowCounter = 0;
-    TaskList sortedFollowers;
-
-    /* To avoid unnecessary crossing of dependency arrows, we sort the
-     * followers of the current task according to their absolute distance to
-     * the Y position of this task in the list view. */
-    int yPos = t1lvi->itemPos() + itemHeight / 2;
-    for (TaskListIterator tli(t1->getFollowersIterator()); *tli; ++tli)
-    {
-        QListViewItem* lvi2 = getTaskListEntry(*tli);
-        if (!lvi2)
-            continue;
-        int i = 0;
-        for (TaskListIterator stli(sortedFollowers); *stli; ++stli, ++i)
-        {
-            QListViewItem* lvi3 = getTaskListEntry(*stli);
-            if (abs(yPos - lvi2->itemPos()) >
-                abs(yPos - lvi3->itemPos()))
-                break;
-        }
-        sortedFollowers.insert(i, *tli);
-    }
-
-    for (TaskListIterator tli(sortedFollowers); *tli; ++tli)
-    {
-        Task* t2 = *tli;
-        QListViewItem* t2lvi= getTaskListEntry(*tli);
-        if (t2lvi)
-        {
-            int t1x = time2x(t1->getEnd(scenario));
-            int t2x = time2x(t2->getStart(scenario));
-            if (t2->isMilestone())
-                t2x -= (itemHeight - 8) / 2;
-            else if (t2->isContainer())
-                t2x -= 3;
-
-            int t1y = t1lvi->itemPos() + itemHeight / 2;
-            int t2y = t2lvi->itemPos() + itemHeight / 2;
-            int yCenter = t1y < t2y ? t1y + (t2y - t1y) / 2 :
-                t2y + (t1y - t2y) / 2;
-            // Ensure that yCenter is between the task lines.
-            yCenter = (yCenter / itemHeight) * itemHeight;
-
-            // Draw connection line.
-            // Distance between task end and the first break of the arrow.
-            const int minGap = 8;
-            // Min distance between parallel arrors.
-            const int arrowGap = 3;
-            QPointArray a;
-            if (t2x - t1x < 2 * minGap + arrowGap * arrowCounter)
-            {
-                a.resize(6);
-                a.setPoint(0, t1x, t1y);
-                int cx = t1x + minGap + arrowGap * arrowCounter;
-                a.setPoint(1, cx, t1y);
-                a.setPoint(2, cx, yCenter);
-                a.setPoint(3, t2x - minGap, yCenter);
-                a.setPoint(4, t2x - minGap, t2y);
-                a.setPoint(5, t2x, t2y);
-            }
-            else
-            {
-                a.resize(4);
-                a.setPoint(0, t1x, t1y);
-                int cx = t1x + minGap + arrowGap * arrowCounter;
-                a.setPoint(1, cx, t1y);
-                a.setPoint(2, cx, t2y);
-                a.setPoint(3, t2x, t2y);
-            }
-            arrowCounter++;
-
-            for (uint i = 0; i < a.count() - 1; ++i)
-            {
-                QCanvasLine* line = new QCanvasLine(ganttChart);
-                QPen pen(QColor("black"));
-                line->setPen(pen);
-                int x1, y1, x2, y2;
-                a.point(i, &x1, &y1);
-                a.point(i + 1, &x2, &y2);
-                line->setPoints(x1, y1, x2, y2);
-                line->setZ(20);
-                line->show();
-            }
-
-            // Draw arrow head.
-            const int arrowSize = 4;
-            a.resize(4);
-            a.setPoint(0, t2x, t2y);
-            a.setPoint(1, t2x - arrowSize, t2y - arrowSize);
-            a.setPoint(2, t2x - arrowSize, t2y + arrowSize);
-            a.setPoint(3, t2x, t2y);
-
-            QCanvasPolygon* polygon = new QCanvasPolygon(ganttChart);
-            polygon->setPoints(a);
-            polygon->setPen(QColor("black"));
-            polygon->setBrush(QColor("black"));
-            polygon->setZ(20);
-            polygon->show();
-        }
-    }
-}
-
-void
-TjReport::generateTaskResources(Task* const t, int taskY)
-{
-    Interval iv;
-    int rY = taskY + itemHeight;
-    for (ResourceListIterator rli(t->getBookedResourcesIterator(scenario));
-         *rli; ++rli)
-    {
-        switch (stepUnit)
-        {
-            case day:
-                for (time_t i = midnight(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextDay(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextDay(i), rY);
-                break;
-            case week:
-                for (time_t i = beginOfWeek(t->getStart(scenario),
-                                            t->getProject()->
-                                            getWeekStartsMonday());
-                     i <= (t->getEnd(scenario)); i = sameTimeNextWeek(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextWeek(i), rY);
-                break;
-            case month:
-                for (time_t i = beginOfMonth(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextMonth(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextMonth(i), rY);
-                break;
-            case quarter:
-                for (time_t i = beginOfQuarter(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextQuarter(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextQuarter(i),
-                                          rY);
-                break;
-            case year:
-                for (time_t i = beginOfYear(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextYear(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextYear(i), rY);
-                break;
-            default:
-                kdError() << "Unknown stepUnit";
-                break;
-        }
-        rY += itemHeight;
-    }
-}
-
-void
-TjReport::drawResourceLoadColum(Task* const t, Resource* const r,
-                                time_t start, time_t end, int rY)
-{
-    int cellStart = time2x(start);
-    int cellEnd = time2x(end);
-
-    // We will draw the load column into the cell with a margin of 1 pixel
-    // plus the cell seperation line.
-    // Let's try a first shot for column start and width.
-    int cx = cellStart + 2;
-    int cw = cellEnd - cellStart - 3;
-    // Now we trim it so it does not extend over the ends of the task bar. We
-    // also trim the interval so the load is only calculated for intervals
-    // within the task period.
-    if (start < t->getStart(scenario))
-    {
-        start = t->getStart(scenario);
-        cx = time2x(t->getStart(scenario));
-        cw -= time2x(end) - 1 - cx;
-    }
-    if (end > t->getEnd(scenario))
-    {
-        end = t->getEnd(scenario);
-        cw = time2x(t->getEnd(scenario)) - cx;
-    }
-    // Since the above calculation might have destroyed our 1 pixel margin, we
-    // check it again.
-    if (cx < cellStart + 2)
-        cx = cellStart + 2;
-    if (cx + cw > cellEnd - 2)
-        cw = cellEnd - 2 - cx;
-
-    // Now we are calculation the load of the resource with respect to this
-    // task, to all tasks, and we calculate the not yet allocated load.
-    Interval period(start, end);
-    double freeLoad = r->getAvailableWorkLoad(scenario, period);
-    double taskLoad = r->getLoad(scenario, period, AllAccounts, t);
-    double load = r->getLoad(scenario, period, AllAccounts);
-    double otherLoad = load - taskLoad;
-    double maxLoad = load + freeLoad;
-    if (maxLoad <= 0.0)
-        return;
-
-    // Transform the load values into colum Y coordinates.
-    int colBottom = rY + itemHeight - 1;
-    int colTop = rY + 1;
-    int colTaskLoadTop = colBottom - (int) ((colBottom - colTop) *
-                                            (taskLoad / maxLoad));
-    int colOtherLoadTop = colBottom - (int) ((colBottom - colTop) *
-                                             (load / maxLoad));
-
-    // Just some interim variables so we can change the color with only a
-    // single change.
-    QColor thisTaskCol = QColor("#FD13C6");
-    QColor otherTaskCol = QColor("#1AE85B");
-    QColor freeLoadCol = QColor("#C4E00E");
-
-    // Now we draw the columns. But only if the load is larger than 0.
-    if (taskLoad > 0.0)
-    {
-        // Load for this task.
-        QCanvasRectangle* rect = new QCanvasRectangle
-            (cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
-             ganttChart);
-        rect->setBrush(QBrush(thisTaskCol, Dense4Pattern));
-        rect->setPen(thisTaskCol);
-        rect->setZ(10);
-        rect->show();
-    }
-
-    if (otherLoad > 0.0)
-    {
-        QCanvasRectangle* rect = new QCanvasRectangle
-            (cx, colOtherLoadTop, cw,
-             colTaskLoadTop - colOtherLoadTop, ganttChart);
-        rect->setBrush(QBrush(otherTaskCol, Dense4Pattern));
-        rect->setPen(otherTaskCol);
-        rect->setZ(10);
-        rect->show();
-    }
-
-    if (freeLoad > 0.0)
-    {
-        QCanvasRectangle* rect = new QCanvasRectangle
-            (cx, colTop, cw, colOtherLoadTop - colTop,
-             ganttChart);
-        rect->setBrush(QBrush(freeLoadCol, Dense4Pattern));
-        rect->setPen(freeLoadCol);
-        rect->setZ(10);
-        rect->show();
-    }
-}
-
-QListViewItem*
-TjReport::getTaskListEntry(Task* const t)
-{
-    /* Returns the QListViewItem pointer for the task if the task is shown in
-     * the list view. Tasks that have closed parents are not considered to be
-     * visible even though they are part of the list view. Offscreen tasks
-     * are considered visible if they meet the above condition. */
-
-    // Check that the task is in the list. Colum 1 contains the task ID.
-    QListViewItem* lvi = listView->findItem(t->getId(), 1);
-    if (!lvi)
-        return 0;
-
-    // Now make sure that all parents are open.
-    for (QListViewItem* i = lvi; i; i = i->parent())
-        if (i->parent() && !i->parent()->isOpen())
-            return 0;
-
-    return lvi;
-}
-
 int
 TjReport::time2x(time_t t)
 {
@@ -1027,24 +599,19 @@ TjReport::x2time(int x)
 }
 
 void
-TjReport::generateLeftHeader()
+TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
 {
     // The first column is always the Task/Resource column
-    listView->addColumn(i18n("Task"));
+    listView->addColumn(firstHeader);
 
-    // The 2nd column contains the ID and is always hidden.
-    listView->addColumn(i18n("Id"));
-    listView->setColumnWidthMode(1, QListView::Manual);
-    listView->hideColumn(1);
-
-    const QtTaskReportElement* tab =
-        (dynamic_cast<QtTaskReport*>(reportDef))->getTable();
+    int col = 1;
     for (QPtrListIterator<TableColumnInfo>
-         ci = tab->getColumnsIterator(); *ci; ++ci)
+         ci = tab->getColumnsIterator(); *ci; ++ci, ++col)
     {
         const TableColumnFormat* tcf =
             tab->getColumnFormat((*ci)->getName());
         listView->addColumn(tcf->getTitle() + "\n");
+        listView->setColumnAlignment(col, tcf->getHAlign());
     }
 }
 
@@ -1054,7 +621,7 @@ TjReport::collapsReportItem(QListViewItem*)
     if (loadingProject)
         return;
 
-    generateGanttChart(FALSE);
+    this->generateChart(FALSE);
 
     syncVSliders(ganttChartView->contentsX(), listView->contentsY());
 }
@@ -1065,7 +632,7 @@ TjReport::expandReportItem(QListViewItem*)
     if (loadingProject)
         return;
 
-    generateGanttChart(FALSE);
+    this->generateChart(FALSE);
     syncVSliders(ganttChartView->contentsX(), listView->contentsY());
 }
 
@@ -1087,7 +654,7 @@ TjReport::zoomIn()
 
     pixelPerYear = zoomSteps[++currentZoomStep];
     setBestStepUnit();
-    generateGanttChart(FALSE);
+    this->generateChart(FALSE);
 
     ganttHeaderView->setContentsPos(time2x(x), 0);
     ganttChartView->setContentsPos(time2x(x), y);
@@ -1106,7 +673,7 @@ TjReport::zoomOut()
 
     pixelPerYear = zoomSteps[--currentZoomStep];
     setBestStepUnit();
-    generateGanttChart(FALSE);
+    this->generateChart(FALSE);
 
     ganttHeaderView->setContentsPos(time2x(x), 0);
     ganttChartView->setContentsPos(time2x(x), y);
@@ -1125,5 +692,35 @@ TjReport::setBestStepUnit()
         stepUnit = quarter;
     else
         stepUnit = year;
+}
+
+QString
+TjReport::indent(const QString& input, const QListViewItem* lvi, bool right)
+{
+    // First let's find out how deep we are down the tree;
+    int level = treeLevel(lvi);
+
+    if (right)
+    {
+        QString spaces = QString().fill(' ', maxDepth - level);
+        return input + spaces;
+    }
+    else
+    {
+        QString spaces = QString().fill(' ', level);
+        return spaces + input;
+    }
+}
+
+int
+TjReport::treeLevel(const QListViewItem* lvi) const
+{
+    int level = 0;
+    while (lvi->parent())
+    {
+        level++;
+        lvi = lvi->parent();
+    }
+    return level;
 }
 

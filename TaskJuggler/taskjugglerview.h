@@ -29,6 +29,7 @@ class QSplitter;
 class QProgressBar;
 class KURL;
 class KListView;
+class KConfig;
 class MainWidget;
 class Project;
 class FileManager;
@@ -88,6 +89,9 @@ public:
      * Print this view to any medium -- paper or not
      */
     void print(QPainter *, int height, int width);
+
+    void readProperties(KConfig* config);
+    void saveProperties(KConfig* config);
 
 public slots:
     void schedule();

@@ -35,119 +35,86 @@ public:
     QtReportElement(Report* r, const QString& df, int dl);
     virtual ~QtReportElement() { }
 
-    virtual bool generate() = 0;
+    virtual bool generate()  { return FALSE; }
 
-    virtual void genHeadDefault(TableCellInfo* tcf);
-    virtual void genHeadCurrency(TableCellInfo* tcf);
-    virtual void genHeadDaily1(TableCellInfo* tcf);
-    virtual void genHeadDaily2(TableCellInfo* tcf);
-    virtual void genHeadWeekly1(TableCellInfo* tcf);
-    virtual void genHeadWeekly2(TableCellInfo* tcf);
-    virtual void genHeadMonthly1(TableCellInfo* tcf);
-    virtual void genHeadMonthly2(TableCellInfo* tcf);
-    virtual void genHeadQuarterly1(TableCellInfo* tcf);
-    virtual void genHeadQuarterly2(TableCellInfo* tcf);
-    virtual void genHeadYear(TableCellInfo* tcf);
+    virtual void genHeadDefault(TableCellInfo*) { }
+    virtual void genHeadCurrency(TableCellInfo*) { }
+    virtual void genHeadDaily1(TableCellInfo*) { }
+    virtual void genHeadDaily2(TableCellInfo*) { }
+    virtual void genHeadWeekly1(TableCellInfo*) { }
+    virtual void genHeadWeekly2(TableCellInfo*) { }
+    virtual void genHeadMonthly1(TableCellInfo*) { }
+    virtual void genHeadMonthly2(TableCellInfo*) { }
+    virtual void genHeadQuarterly1(TableCellInfo*) { }
+    virtual void genHeadQuarterly2(TableCellInfo*) { }
+    virtual void genHeadYear(TableCellInfo*) { }
 
-    virtual void genCellEmpty(TableCellInfo*);
-    virtual void genCellSequenceNo(TableCellInfo* tli);
-    virtual void genCellNo(TableCellInfo* tli);
-    virtual void genCellHierarchNo(TableCellInfo* tli);
-    virtual void genCellIndex(TableCellInfo* tli);
-    virtual void genCellHierarchIndex(TableCellInfo* tli);
-    virtual void genCellId(TableCellInfo* tli);
-    virtual void genCellName(TableCellInfo* tli);
-    virtual void genCellStart(TableCellInfo* tli);
-    virtual void genCellEnd(TableCellInfo* tli);
-    virtual void genCellMinStart(TableCellInfo* tli);
-    virtual void genCellMaxStart(TableCellInfo* tli);
-    virtual void genCellMinEnd(TableCellInfo* tli);
-    virtual void genCellMaxEnd(TableCellInfo* tli);
-    virtual void genCellStartBuffer(TableCellInfo* tli);
-    virtual void genCellEndBuffer(TableCellInfo* tli);
-    virtual void genCellStartBufferEnd(TableCellInfo* tli);
-    virtual void genCellEndBufferStart(TableCellInfo* tli);
-    virtual void genCellDuration(TableCellInfo* tli);
-    virtual void genCellEffort(TableCellInfo* tli);
-    virtual void genCellCriticalness(TableCellInfo* tli);
-    virtual void genCellPathCriticalness(TableCellInfo* tli);
-    virtual void genCellProjectId(TableCellInfo* tli);
-    virtual void genCellProjectIDs(TableCellInfo* tli);
-    virtual void genCellResources(TableCellInfo* tli);
-    virtual void genCellResponsible(TableCellInfo* tli);
-    virtual void genCellText(TableCellInfo* tli);
-    virtual void genCellStatusNote(TableCellInfo* tli);
-    virtual void genCellCost(TableCellInfo* tli);
-    virtual void genCellRevenue(TableCellInfo* tli);
-    virtual void genCellProfit(TableCellInfo* tli);
-    virtual void genCellPriority(TableCellInfo* tli);
-    virtual void genCellFlags(TableCellInfo* tli);
-    virtual void genCellCompleted(TableCellInfo* tli);
-    virtual void genCellStatus(TableCellInfo* tli);
-    virtual void genCellReference(TableCellInfo* tli);
-    virtual void genCellScenario(TableCellInfo* tli);
-    virtual void genCellDepends(TableCellInfo* tli);
-    virtual void genCellFollows(TableCellInfo* tli);
-    virtual void genCellDailyTask(TableCellInfo* tli);
-    virtual void genCellDailyResource(TableCellInfo* tli);
-    virtual void genCellDailyAccount(TableCellInfo* tli);
-    virtual void genCellWeeklyTask(TableCellInfo* tli);
-    virtual void genCellWeeklyResource(TableCellInfo* tli);
-    virtual void genCellWeeklyAccount(TableCellInfo* tli);
-    virtual void genCellMonthlyTask(TableCellInfo* tli);
-    virtual void genCellMonthlyResource(TableCellInfo* tli);
-    virtual void genCellMonthlyAccount(TableCellInfo* tli);
-    virtual void genCellQuarterlyTask(TableCellInfo* tli);
-    virtual void genCellQuarterlyResource(TableCellInfo* tli);
-    virtual void genCellQuarterlyAccount(TableCellInfo* tli);
-    virtual void genCellYearlyTask(TableCellInfo* tli);
-    virtual void genCellYearlyResource(TableCellInfo* tli);
-    virtual void genCellYearlyAccount(TableCellInfo* tli);
-    virtual void genCellResponsibilities(TableCellInfo* tli);
-    virtual void genCellSchedule(TableCellInfo* tli);
-    virtual void genCellMinEffort(TableCellInfo* tli);
-    virtual void genCellMaxEffort(TableCellInfo* tli);
-    virtual void genCellRate(TableCellInfo* tli);
-    virtual void genCellKotrusId(TableCellInfo* tli);
-    virtual void genCellTotal(TableCellInfo* tli);
+    virtual void genCellEmpty(TableCellInfo*) { }
+    virtual void genCellSequenceNo(TableCellInfo*) { }
+    virtual void genCellNo(TableCellInfo*) { }
+    virtual void genCellHierarchNo(TableCellInfo*) { }
+    virtual void genCellIndex(TableCellInfo*) { }
+    virtual void genCellHierarchIndex(TableCellInfo*) { }
+    virtual void genCellId(TableCellInfo*) { }
+    virtual void genCellName(TableCellInfo*) { }
+    virtual void genCellStart(TableCellInfo*) { }
+    virtual void genCellEnd(TableCellInfo*) { }
+    virtual void genCellMinStart(TableCellInfo*) { }
+    virtual void genCellMaxStart(TableCellInfo*) { }
+    virtual void genCellMinEnd(TableCellInfo*) { }
+    virtual void genCellMaxEnd(TableCellInfo*) { }
+    virtual void genCellStartBuffer(TableCellInfo*) { }
+    virtual void genCellEndBuffer(TableCellInfo*) { }
+    virtual void genCellStartBufferEnd(TableCellInfo*) { }
+    virtual void genCellEndBufferStart(TableCellInfo*) { }
+    virtual void genCellDuration(TableCellInfo*) { }
+    virtual void genCellEffort(TableCellInfo*) { }
+    virtual void genCellCriticalness(TableCellInfo*) { }
+    virtual void genCellPathCriticalness(TableCellInfo*) { }
+    virtual void genCellProjectId(TableCellInfo*) { }
+    virtual void genCellProjectIDs(TableCellInfo*) { }
+    virtual void genCellResources(TableCellInfo*) { }
+    virtual void genCellResponsible(TableCellInfo*) { }
+    virtual void genCellText(TableCellInfo*) { }
+    virtual void genCellStatusNote(TableCellInfo*) { }
+    virtual void genCellCost(TableCellInfo*) { }
+    virtual void genCellRevenue(TableCellInfo*) { }
+    virtual void genCellProfit(TableCellInfo*) { }
+    virtual void genCellPriority(TableCellInfo*) { }
+    virtual void genCellFlags(TableCellInfo*) { }
+    virtual void genCellCompleted(TableCellInfo*) { }
+    virtual void genCellStatus(TableCellInfo*) { }
+    virtual void genCellReference(TableCellInfo*) { }
+    virtual void genCellScenario(TableCellInfo*) { }
+    virtual void genCellDepends(TableCellInfo*) { }
+    virtual void genCellFollows(TableCellInfo*) { }
+    virtual void genCellDailyTask(TableCellInfo*) { }
+    virtual void genCellDailyResource(TableCellInfo*) { }
+    virtual void genCellDailyAccount(TableCellInfo*) { }
+    virtual void genCellWeeklyTask(TableCellInfo*) { }
+    virtual void genCellWeeklyResource(TableCellInfo*) { }
+    virtual void genCellWeeklyAccount(TableCellInfo*) { }
+    virtual void genCellMonthlyTask(TableCellInfo*) { }
+    virtual void genCellMonthlyResource(TableCellInfo*) { }
+    virtual void genCellMonthlyAccount(TableCellInfo*) { }
+    virtual void genCellQuarterlyTask(TableCellInfo*) { }
+    virtual void genCellQuarterlyResource(TableCellInfo*) { }
+    virtual void genCellQuarterlyAccount(TableCellInfo*) { }
+    virtual void genCellYearlyTask(TableCellInfo*) { }
+    virtual void genCellYearlyResource(TableCellInfo*) { }
+    virtual void genCellYearlyAccount(TableCellInfo*) { }
+    virtual void genCellResponsibilities(TableCellInfo*) { }
+    virtual void genCellSchedule(TableCellInfo*) { }
+    virtual void genCellMinEffort(TableCellInfo*) { }
+    virtual void genCellMaxEffort(TableCellInfo*) { }
+    virtual void genCellRate(TableCellInfo*) { }
+    virtual void genCellKotrusId(TableCellInfo*) { }
+    virtual void genCellTotal(TableCellInfo*) { }
+    virtual void genCellSummary(TableCellInfo*) { }
 
-    virtual void genCellSummary(TableCellInfo* tli);
 protected:
     QtReportElement() { }
 
-    void generateTableHeader();
-
-    void generateLine(TableLineInfo* tli, int funcSel);
-
-    void genCell(const QString& text, TableCellInfo* tli, bool multi,
-                 bool filter = TRUE);
-
-    void generateTitle(TableCellInfo* tci, const QString& str);
-
-    void generateSubTitle(TableCellInfo* tci, const QString& str);
-
-    void generateRightIndented(TableCellInfo* tci, const QString& str);
-
-    QColor selectTaskBgColor(TableCellInfo* tci, double load,
-                             const Interval& period, bool daily);
-    QColor selectResourceBgColor(TableCellInfo* tci, double load,
-                                 const Interval& period, bool daily);
-
-    void reportTaskLoad(double load, TableCellInfo* tci,
-                        const Interval& period);
-    void reportResourceLoad(double load, TableCellInfo* tci,
-                            const Interval& period);
-
-    void reportCurrency(double value, TableCellInfo* tci, time_t iv_start);
-
-    void genCellTaskFunc(TableCellInfo* tci, bool daily,
-                         time_t (*beginOfT)(time_t),
-                         time_t (*sameTimeNextT)(time_t));
-    void genCellResourceFunc(TableCellInfo* tci, bool daily,
-                             time_t (*beginOfT)(time_t),
-                             time_t (*sameTimeNextT)(time_t));
-    void genCellAccountFunc(TableCellInfo* tci, time_t (*beginOfT)(time_t),
-                            time_t (*sameTimeNextT)(time_t));
 } ;
 
 #endif

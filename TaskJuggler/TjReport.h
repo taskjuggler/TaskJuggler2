@@ -21,6 +21,7 @@
 #include <qlistview.h>
 
 #include "TaskList.h"
+#include "ResourceList.h"
 
 class QSplitter;
 class KListView;
@@ -29,7 +30,7 @@ class QCanvas;
 class QCanvasView;
 class Task;
 class Resource;
-class QtTaskReportElement;
+class QtReportElement;
 
 class TjReport : public QWidget
 {
@@ -38,7 +39,7 @@ public:
     TjReport(QWidget* p, Report* const rDef, const QString& n = QString::null);
     virtual ~TjReport() { }
 
-    bool generateTaskReport();
+    virtual bool generateReport();
 
     void setLoadingProject(bool lp) { loadingProject = lp; }
 
@@ -51,15 +52,17 @@ private slots:
     void expandReportItem(QListViewItem* lvi);
     void syncVSliders(int, int);
 
-private:
+protected:
     enum StepUnits { day = 0, week, month, quarter, year };
     TjReport() : reportDef(0) { }
 
     int time2x(time_t t);
     time_t x2time(int x);
 
-    bool generateTaskList();
-    void generateGanttChart(bool autoFit);
+    virtual bool generateList() = 0;
+    virtual bool generateChart(bool autoFit) = 0;
+
+    void prepareChart(bool autoFit, QtReportElement* repElement);
     void generateHeaderAndGrid();
     void generateDayHeader(int y);
     void generateWeekHeader(int y);
@@ -69,21 +72,23 @@ private:
     void generateGanttBackground();
     void markNonWorkingHoursOnBackground();
     void markNonWorkingDaysOnBackground();
-    void markBoundary(int x);
+    void markBoundary(int x, const QColor& col, int layer = 2);
     void markHourBoundaries();
     void markDayBoundaries();
     void markWeekBoundaries();
     void markMonthsBoundaries();
     void markQuarterBoundaries();
     void generateGanttTasks();
+    void generateLoadBars();
     void generateTask(Task* const t, int y);
+    void generateResource(Resource* const r, int y);
     void generateDependencies(Task* const t, QListViewItem* lvi);
-    void generateLeftHeader();
-    void generateTaskResources(Task* const t, int taskY);
-    void drawResourceLoadColum(Task* const t, Resource* const r, time_t start,
-                               time_t end, int rY);
+    void generateListHeader(const QString& firstHeader, QtReportElement* tab);
+    void generateTaskResources(Task* const t);
+    QString indent(const QString& input, const QListViewItem* lvi,
+                   bool right);
+    int treeLevel(const QListViewItem* lvi) const;
 
-    QListViewItem* getTaskListEntry(Task* const t);
     void setBestStepUnit();
 
     Report* const reportDef;
@@ -105,8 +110,21 @@ private:
     static const int minStepYear;
     static const int zoomSteps[];
     uint currentZoomStep;
+    /**
+     * We often need to find out if a CoreAttribute is in the ListView and
+     * find the appropriate list item. So we keep a dictionary that maps the
+     * CoreAttribute ID to the QListViewItem*. As the namespaces of the
+     * different CoreAttributes may contain duplicates we use a single
+     * character plus colon prefix to create a unified namespace. So
+     * t:mytask.subtask is a task and r:team.nick is a resource.
+     */
+    QDict<QListViewItem> ca2lviDict;
+    /**
+     * This is the maximum indentation of the list view. It only takes visible
+     * items into account. Visible means not hidden by closed parents.
+     */
+    int maxDepth;
 
-    QtTaskReportElement* reportElement;
     int scenario;
     int headerHeight;
     int listHeight;
@@ -118,6 +136,7 @@ private:
     bool loadingProject;
 
     TaskList taskList;
+    ResourceList resourceList;
 } ;
 
 #endif

@@ -1,5 +1,7 @@
 ## Makefile.am for taskjuggler
 
+SUBDIRS=pics
+
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
 bin_PROGRAMS = TaskJuggler TaskJuggler_client
@@ -17,7 +19,7 @@ TaskJuggler_LDADD = -lktexteditor -ltaskjuggler $(LIB_KFILE) $(LIB_KDEPRINT)
 TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \
 	ReportManager.cpp ManagedReportInfo.cpp \
-	TjReport.cpp \
+	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	taskjuggleriface.skel MainWidget.ui
 
 # these are the headers for your project

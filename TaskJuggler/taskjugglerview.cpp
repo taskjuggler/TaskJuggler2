@@ -41,6 +41,8 @@
 #include <klocale.h>
 #include <kcursor.h>
 #include <kstatusbar.h>
+#include <kconfig.h>
+#include <kiconloader.h>
 
 #include "TjMessageHandler.h"
 #include "MainWidget.h"
@@ -159,6 +161,19 @@ TaskJugglerView::print(QPainter*, int, int)
 {
     // do the actual printing, here
     // p->drawText(etc..)
+}
+
+void
+TaskJugglerView::readProperties(KConfig* config)
+{
+    QValueList<int> sizes = config->readIntListEntry("MainSplitter");
+    mw->mainSplitter->setSizes(sizes);
+}
+
+void
+TaskJugglerView::saveProperties(KConfig* config)
+{
+    config->writeEntry("MainSplitter", mw->mainSplitter->sizes());
 }
 
 QString
@@ -323,25 +338,38 @@ TaskJugglerView::loadProject(const KURL& url)
     if (!errors && !project->scheduleAllScenarios())
         errors = TRUE;
 
-    setCursor(KCursor::arrowCursor());
-
     // Load tasks into Task List View
     KListView* tlv = mw->taskListView;
     tlv->clear();
     tlv->setColumnWidthMode(1, QListView::Manual);
     tlv->hideColumn(1);
     for (TaskListIterator tli(project->getTaskListIterator()); *tli; ++tli)
+    {
+        QListViewItem* lvi;
         if ((*tli)->getParent())
-            new KListViewItem(tlv->findItem((*tli)->getParent()->getId(), 1),
-                (*tli)->getName(),
-                (*tli)->getId(),
-                (*tli)->getDefinitionFile(),
-                QString().sprintf("%d", (*tli)->getDefinitionLine()));
+            lvi = new
+                KListViewItem(tlv->findItem((*tli)->getParent()->getId(), 1),
+                              (*tli)->getName(),
+                              (*tli)->getId(),
+                              (*tli)->getDefinitionFile(),
+                              QString().sprintf
+                              ("%d", (*tli)->getDefinitionLine()));
         else
-            new KListViewItem(tlv, (*tli)->getName(),
-             (*tli)->getId(),
-             (*tli)->getDefinitionFile(),
-             QString().sprintf("%d", (*tli)->getDefinitionLine()));
+            lvi = new KListViewItem(tlv, (*tli)->getName(),
+                                    (*tli)->getId(),
+                                    (*tli)->getDefinitionFile(),
+                                    QString().sprintf
+                                    ("%d", (*tli)->getDefinitionLine()));
+        if ((*tli)->isContainer())
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_task_group", KIcon::Small));
+        else if ((*tli)->isMilestone())
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_milestone", KIcon::Small));
+        else
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_task", KIcon::Small));
+    }
 
     // Load resources into Resource List View
     KListView* rlv = mw->resourceListView;
@@ -350,20 +378,27 @@ TaskJugglerView::loadProject(const KURL& url)
     //rlv->hideColumn(1);
     for (ResourceListIterator rli(project->getResourceListIterator()); *rli;
          ++rli)
+    {
+        QListViewItem* lvi;
         if ((*rli)->getParent())
-            new KListViewItem(rlv->findItem((*rli)->getParent()->getFullId(),
-                                            1),
-                              (*rli)->getName(),
-                              (*rli)->getFullId(),
-                              (*rli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*rli)->getDefinitionLine()));
+            lvi = new KListViewItem
+                (rlv->findItem((*rli)->getParent()->getFullId(), 1),
+                 (*rli)->getName(), (*rli)->getFullId(),
+                 (*rli)->getDefinitionFile(),
+                 QString().sprintf("%d", (*rli)->getDefinitionLine()));
         else
-            new KListViewItem(rlv, (*rli)->getName(),
-                              (*rli)->getFullId(),
-                              (*rli)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*rli)->getDefinitionLine()));
+            lvi = new KListViewItem(rlv, (*rli)->getName(),
+                                    (*rli)->getFullId(),
+                                    (*rli)->getDefinitionFile(),
+                                    QString().sprintf
+                                    ("%d", (*rli)->getDefinitionLine()));
+        if ((*rli)->hasSubs())
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_resource_group", KIcon::Small));
+        else
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_resource", KIcon::Small));
+    }
 
     // Load accounts into Account List View
     KListView* alv = mw->accountListView;
@@ -372,20 +407,26 @@ TaskJugglerView::loadProject(const KURL& url)
     //alv->hideColumn(1);
     for (AccountListIterator ali(project->getAccountListIterator()); *ali;
          ++ali)
+    {
+        QListViewItem* lvi;
         if ((*ali)->getParent())
-            new KListViewItem(alv->findItem((*ali)->getParent()->getFullId(),
-                                            1),
-                              (*ali)->getName(),
-                              (*ali)->getFullId(),
-                              (*ali)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*ali)->getDefinitionLine()));
+            lvi = new KListViewItem
+                (alv->findItem((*ali)->getParent()->getFullId(), 1),
+                 (*ali)->getName(), (*ali)->getFullId(),
+                 (*ali)->getDefinitionFile(),
+                 QString().sprintf("%d", (*ali)->getDefinitionLine()));
         else
-            new KListViewItem(alv, (*ali)->getName(),
-                              (*ali)->getFullId(),
-                              (*ali)->getDefinitionFile(),
-                              QString().sprintf("%d",
-                                                (*ali)->getDefinitionLine()));
+            lvi = new KListViewItem
+                (alv, (*ali)->getName(), (*ali)->getFullId(),
+                 (*ali)->getDefinitionFile(),
+                 QString().sprintf("%d", (*ali)->getDefinitionLine()));
+        if ((*ali)->hasSubs())
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_account_group", KIcon::Small));
+        else
+            lvi->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_account", KIcon::Small));
+    }
 
     // Load reports into Report List View
     reportManager->updateReportList(project->getReportListIterator());
@@ -393,6 +434,7 @@ TaskJugglerView::loadProject(const KURL& url)
     // Load file list into File List View
     fileManager->updateFileList(project->getSourceFiles(), url);
 
+    setCursor(KCursor::arrowCursor());
     setLoadingProject(FALSE);
 
     // We handle warnings like errors, so in case there any messages, we open
@@ -440,11 +482,15 @@ void
 TaskJugglerView::addWarningMessage(const QString& msg, const QString& file,
                                    int line)
 {
+    QListViewItem* lvi;
     if (!file.isEmpty() && line > 0)
-        new KListViewItem(messageListView, msg, file,
-                          QString().sprintf("%d", line));
+        lvi = new KListViewItem(messageListView, msg, file,
+                                QString().sprintf("%d", line));
     else
-        new KListViewItem(messageListView, msg);
+        lvi = new KListViewItem(messageListView, msg);
+
+    lvi->setPixmap(0, KGlobal::iconLoader()->
+                   loadIcon("tj_warning", KIcon::Small));
 }
 
 void
@@ -464,6 +510,8 @@ TaskJugglerView::addErrorMessage(const QString& msg, const QString& file,
     else
         lvi = new KListViewItem(messageListView, shortMsg);
 
+    lvi->setPixmap(0, KGlobal::iconLoader()->
+                   loadIcon("tj_error", KIcon::Small));
 }
 
 void

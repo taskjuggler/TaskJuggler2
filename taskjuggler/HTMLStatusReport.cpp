@@ -21,7 +21,7 @@
 #include "TableColumnInfo.h"
 #include "tjlib-internal.h"
 
-HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f, 
+HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
                                    const QString& df, int dl) :
     HTMLReport(p, f, df, dl)
 {
@@ -46,7 +46,7 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[0]->setStart(project->getStart());
     tables[0]->setEnd(project->getEnd());
     ExpressionTree* et = new ExpressionTree();
-    et->setTree(QString("~(istaskstatus(") + scenarioName + 
+    et->setTree(QString("~(istaskstatus(") + scenarioName +
                 ", inprogresslate) & endsbefore(" + scenarioName + "," +
                 time2tjp(project->getNow()) + "))", project);
     tables[0]->setHideTask(et);
@@ -131,14 +131,14 @@ HTMLStatusReport::getTable(int tabIdx) const
 {
     return tables[tabIdx];
 }
-        
+
 bool
 HTMLStatusReport::generate()
 {
     if (!open())
         return FALSE;
 
-    if (headline.isEmpty())    
+    if (headline.isEmpty())
         headline = i18n("Status report for the period %1 to %2")
             .arg(time2user(start, timeFormat)).arg(time2user(end, timeFormat));
 
@@ -147,7 +147,7 @@ HTMLStatusReport::generate()
     for (int i = 0; i < tablesCount; ++i)
     {
         tables[i]->generate();
-        s << "<br>" << endl;
+        s << "<br/>" << endl;
     }
 
     generateFooter();

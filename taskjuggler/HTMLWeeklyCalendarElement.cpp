@@ -27,7 +27,7 @@
 #include "TableLineInfo.h"
 #include "HTMLReport.h"
 
-HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r, 
+HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r,
                                                      const QString& df,
                                                      int dl) :
     HTMLReportElement(r, df, dl)
@@ -57,7 +57,7 @@ bool
 HTMLWeeklyCalendarElement::generate()
 {
     generateHeader();
-    
+
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
         return FALSE;
@@ -76,7 +76,7 @@ HTMLWeeklyCalendarElement::generate()
         << "style=\"background-color:#000000\"";
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_table\"";
-    
+
     s() << " <thead>" << endl
         << "   <tr style=\"background-color:"
         << colors.getColorName("header")
@@ -94,7 +94,7 @@ HTMLWeeklyCalendarElement::generate()
     s() << "  </tr>" << endl
         << " </thead>" << endl
         << " <tbody>" << endl;
-    
+
     for (time_t week = beginOfWeek(start, weekStartsMonday);
          week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)) - 1; )
     {
@@ -123,13 +123,13 @@ HTMLWeeklyCalendarElement::generate()
                 << QString().sprintf("%d", dayOfMonth(wd)) << "</td>" << endl
                 << "     <td width=\"70%\" style=\"font-size:60%\">";
             if (day == 0)
-                s() << htmlFilter(i18n("Week")) << " " 
+                s() << htmlFilter(i18n("Week")) << " "
                    << QString("%1").arg(weekOfYear(wd, weekStartsMonday));
             else
-                s() << "&nbsp;"; 
+                s() << "&nbsp;";
             s() << "    </tr>"
                 << "    <tr>"
-                << "     <td style=\"font-size:90%\">" 
+                << "     <td style=\"font-size:90%\">"
                 << monthAndYear(wd) << "</td>"
                 << "    </tr>"
                 << "   </table></td>" << endl;
@@ -176,7 +176,7 @@ HTMLWeeklyCalendarElement::generate()
                 if (!first)
                     s() << "     </table>" << endl;
                 else
-                    s() << "     <p>&nbsp;</p>" << endl;   
+                    s() << "     <p>_</p>" << endl;
                 s() << "    </td>";
                 start = savedStart;
                 end = savedEnd;
@@ -186,7 +186,7 @@ HTMLWeeklyCalendarElement::generate()
 
         if (!filteredResourceList.isEmpty())
         {
-            // Generate a table row which lists the resources for each day. 
+            // Generate a table row which lists the resources for each day.
             s() << "  <tr style=\"background-color:"
                 << colors.getColorName("default") << "\">" << endl
                 << endl;
@@ -203,11 +203,11 @@ HTMLWeeklyCalendarElement::generate()
                     << endl;
                 bool first = TRUE;
                 int no = 1;
-                for (ResourceListIterator rli(filteredResourceList); 
-                     *rli != 0; ++rli, ++no) 
+                for (ResourceListIterator rli(filteredResourceList);
+                     *rli != 0; ++rli, ++no)
                 {
                     if ((*rli)->getLoad(scenarios[0],
-                                        Interval(wd, 
+                                        Interval(wd,
                                                  sameTimeNextDay(wd))) > 0.0)
                     {
                         if (first)
@@ -225,7 +225,7 @@ HTMLWeeklyCalendarElement::generate()
                 if (!first)
                     s() << "     </table>" << endl;
                 else
-                    s() << "     <p>&nbsp;</p>" << endl;   
+                    s() << "     <p>_</p>" << endl;
                 s() << "   </td>";
                 start = savedStart;
                 end = savedEnd;
@@ -233,7 +233,7 @@ HTMLWeeklyCalendarElement::generate()
             s() << "  </tr>";
         }
 
-        week = wd;  
+        week = wd;
     }
 
     s() << " </tbody>" << endl << "</table>" << endl;

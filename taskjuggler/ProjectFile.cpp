@@ -47,8 +47,8 @@
 #include "QtReportElement.h"
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
-//#include "QtResourceReport.h"
-//#include "QtResourceReportElement.h"
+#include "QtResourceReport.h"
+#include "QtResourceReportElement.h"
 //#include "QtAccountReport.h"
 //#include "QtAccountReportElement.h"
 #include "CSVTaskReport.h"
@@ -3227,12 +3227,12 @@ ProjectFile::readReport(const QString& reportType)
         report = new QtTaskReport(proj, token, getFile(), getLine());
         tab = ((QtTaskReport*) report)->getTable();
     }
-/*    else if (reportType == KW("resourcereport"))
+    else if (reportType == KW("resourcereport"))
     {
-        report = new QtReport(proj, token, getFile(), getLine());
-        tab = ((QtReportElement*) report)->getTable();
+        report = new QtResourceReport(proj, token, getFile(), getLine());
+        tab = ((QtResourceReport*) report)->getTable();
     }
-    else if (reportType == KW("accountreport"))
+/*    else if (reportType == KW("accountreport"))
     {
         report = new QtReport(proj, token, getFile(), getLine());
         tab = ((QtReportElement*) report)->getTable();

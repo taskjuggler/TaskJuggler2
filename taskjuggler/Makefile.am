@@ -18,8 +18,9 @@ Allocation.cpp \
 MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
 XMLFile.cpp \
 ReportElement.cpp Report.cpp ReportXML.cpp \
-QtReportElement.cpp QtReport.cpp QtTaskReport.cpp \
-QtTaskReportElement.cpp \
+QtReportElement.cpp QtReport.cpp \
+QtTaskReport.cpp QtTaskReportElement.cpp \
+QtResourceReport.cpp QtResourceReportElement.cpp \
 HTMLPrimitives.cpp TableColumnFormat.cpp TableColumnInfo.cpp \
 HTMLReport.cpp HTMLReportElement.cpp \
 HTMLTaskReport.cpp HTMLTaskReportElement.cpp \

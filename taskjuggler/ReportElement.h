@@ -41,7 +41,8 @@ class Resource;
 class ResourceList;
 class Account;
 class AccountList;
-class TableCellInfo;
+class TableCellFormat;
+class TableColumnFormat;
 class TableLineInfo;
 class CustomAttributeDefinition;
 
@@ -111,6 +112,19 @@ public:
     bool setResourceSorting(int sc, int level);
     bool setAccountSorting(int sc, int level);
 
+    bool showTaskTree() const
+    {
+        return taskSortCriteria[0] == CoreAttributesList::TreeMode;
+    }
+    bool showResourceTree() const
+    {
+        return resourceSortCriteria[0] == CoreAttributesList::TreeMode;
+    }
+    bool showAccountTree() const
+    {
+        return accountSortCriteria[0] == CoreAttributesList::TreeMode;
+    }
+
     void setTaskRoot(const QString& root) { taskRoot = root; }
     const QString& getTaskRoot() const { return taskRoot; }
 
@@ -146,6 +160,7 @@ public:
     const TableColumnFormat* getColumnFormat(const QString& key) const;
 
     void setMacros(TableLineInfo* tli);
+    QString scaledLoad(double t, const TableColumnFormat* tcf) const;
 
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;
@@ -239,7 +254,6 @@ protected:
      */
     QString stripTaskRoot(QString taskId) const;
 
-    QString scaledLoad(double t, TableCellInfo* tci) const;
     void reportValue(double value, const QString& bgcol, bool bold);
 
     Report* report;

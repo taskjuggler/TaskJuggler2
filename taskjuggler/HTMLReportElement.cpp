@@ -76,7 +76,7 @@ void
 HTMLReportElement::generateTableHeader()
 {
     // Header line 1
-    s() << "<table align=\"center\" cellpadding=\"2\""
+    s() << "<table align=\"center\" cellpadding=\"2\" "
         << "style=\"background-color:#000000\"";
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_table\"";
@@ -244,7 +244,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         puts(tci->getStatusText());
         puts("';return true;\"");
     }
-    if (!tci->tcf->hAlign.isEmpty() ||
+    if (tci->tcf->hAlign != TableColumnFormat::center ||
         !tci->getHAlign().isEmpty() ||
         tci->getLeftPadding() > 0 ||
         tci->getRightPadding() > 0 ||
@@ -269,10 +269,21 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
             puts(tci->getHAlign());
             puts("; ");
         }
-        else if (!tci->tcf->hAlign.isEmpty())
+        else if (tci->tcf->hAlign != TableColumnFormat::center)
         {
             puts("text-align:");
-            puts(tci->tcf->hAlign);
+            switch(tci->tcf->hAlign)
+            {
+                case TableColumnFormat::center:
+                    puts("center");
+                    break;
+                case TableColumnFormat::left:
+                    puts("left");
+                    break;
+                case TableColumnFormat::right:
+                    puts("right");
+                    break;
+            }
             puts("; ");
         }
         if (tci->getLeftPadding() > 0)
@@ -322,7 +333,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
             + "\">" + cellText + "</a>";
     }
     if (cellText.isEmpty())
-        cellText = "&nbsp;";
+        cellText = "&#160;";
     if (((HTMLReport*) report)->hasStyleSheet())
         puts(" class=\"tj_cell\"");
     puts(">");
@@ -354,7 +365,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
             if (period.contains(tci->tli->task->getEnd(tci->tli->sc)))
                 post += "=v";
             if (load > 0.0 && barLabels != BLT_EMPTY)
-                text = scaledLoad(load, tci);
+                text = scaledLoad(load, tci->tcf);
             else if (pre.isEmpty() && post.isEmpty())
                 text = "==";
             else if (!pre.isEmpty() && !post.isEmpty())
@@ -387,7 +398,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
                     post = "]";
                 }
                 if (load > 0.0 && barLabels != BLT_EMPTY)
-                    text = scaledLoad(load, tci);
+                    text = scaledLoad(load, tci->tcf);
                 else if (pre.isEmpty() && post.isEmpty())
                     text = "==";
                 else if (pre == "[")
@@ -415,7 +426,7 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
     if (load > 0.0)
     {
         if (barLabels != BLT_EMPTY)
-            text += scaledLoad(load, tci);
+            text += scaledLoad(load, tci->tcf);
         if (tci->tli->resource->hasSubs())
             tci->setBoldText(true);
         tci->setHAlign("center");
@@ -605,7 +616,7 @@ HTMLReportElement::genHeadDaily2(TableCellInfo* tci)
                               QString().sprintf("%04d", year(day)),
                               defFileName, defFileLine));
         if (dom < 10)
-            s() << "&nbsp;";
+            s() << "&#160;";
         generateSubTitle(tci, QString().sprintf("%d", dom));
         s() << "</td>" << endl;
     }
@@ -681,7 +692,7 @@ HTMLReportElement::genHeadWeekly2(TableCellInfo* tci)
             s() << " class=\"tj_header_cell\"";
         s() << ">";
         if (woy < 10)
-            s() << "&nbsp;";
+            s() << "&#160;";
         mt.setMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
                               defFileName, defFileLine));
@@ -756,7 +767,7 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo* tci)
             s() << " class=\"tj_header_cell\"";
         s() << ">";
         if (month < 10)
-            s() << "&nbsp;";
+            s() << "&#160;";
         mt.setMacro(new Macro(KW("day"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("month"),
@@ -1042,7 +1053,7 @@ HTMLReportElement::genCellEndBufferStart(TableCellInfo* tci)
 void
 HTMLReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci),
+    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci->tcf),
             tci, FALSE);
 }
 
@@ -1061,14 +1072,15 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
                                           AllAccounts, tci->tli->task);
     }
 
-    generateRightIndented(tci, scaledLoad(val, tci));
+    generateRightIndented(tci, scaledLoad(val, tci->tcf));
 }
 
 void
 HTMLReportElement::genCellCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
-        (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc), tci));
+        (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc),
+                         tci->tcf));
 }
 
 void
@@ -1076,7 +1088,7 @@ HTMLReportElement::genCellPathCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
         (tci, scaledLoad(tci->tli->task->getPathCriticalness(tci->tli->sc),
-                         tci));
+                         tci->tcf));
 }
 
 void
@@ -1739,7 +1751,7 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
                 Interval workPeriod((*bli)->getStart(), (*bli)->getEnd());
                 workPeriod.overlap(reportPeriod);
                 s() << time2user(workPeriod.getStart(), shortTimeFormat)
-                    << "&nbsp;-&nbsp;"
+                    << "&#160;-&#160;"
                     << time2user(workPeriod.getEnd() + 1, shortTimeFormat);
                 s() << "</td>" << endl
                     << "       <td>";
@@ -1753,7 +1765,7 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
         s() << "     </table>" << endl;
     }
     else
-        s() << "&nbsp;";
+        s() << "&#160;";
 
     s() << "   </td>" << endl;
 }

@@ -112,37 +112,39 @@ void TaskJuggler::setupActions()
     KStdAction::preferences(this, SLOT(optionsPreferences()),
                             actionCollection());
 
-    new KAction(i18n("Tas&ks" ), "kontact_todo", KShortcut(KKey("ALT+k")),
+    new KAction(i18n("Tas&ks" ), "tj_task_group", KShortcut(KKey("ALT+k")),
                 m_view, SLOT(setFocusToTaskList()),
                 actionCollection(), "tasks");
-    new KAction(i18n("&Resources" ), "kontact_contacts",
+    new KAction(i18n("&Resources" ), "tj_resource_group",
                 KShortcut(KKey("ALT+r")),
                 m_view, SLOT(setFocusToResourceList()),
                 actionCollection(), "resources");
-    new KAction(i18n("&Accounts" ), "kontact_summary", KShortcut(KKey("ALT+a")),
+    new KAction(i18n("&Accounts" ), "tj_account_group",
+                KShortcut(KKey("ALT+a")),
                 m_view, SLOT(setFocusToAccountList()),
                 actionCollection(), "accounts");
-    new KAction(i18n("Re&ports" ), "identity", KShortcut(KKey("ALT+p")),
+    new KAction(i18n("Re&ports" ), "tj_reports", KShortcut(KKey("ALT+p")),
                 m_view, SLOT(setFocusToReportList()),
                 actionCollection(), "reports");
-    new KAction(i18n("F&iles" ), "editcopy", KShortcut(KKey("ALT+i")),
+    new KAction(i18n("F&iles" ), "tj_file_list", KShortcut(KKey("ALT+i")),
                 m_view, SLOT(setFocusToFileList()),
                 actionCollection(), "files");
-    new KAction(i18n("&Editor" ), "edit", KShortcut(),
+    new KAction(i18n("&Editor" ), "tj_editor", KShortcut(),
                 m_view, SLOT(setFocusToEditor()),
                 actionCollection(), "editor");
-    new KAction(i18n("Rep&ort" ), "contents", KShortcut(),
+    new KAction(i18n("Rep&ort" ), "tj_report", KShortcut(),
                 m_view, SLOT(setFocusToReport()),
                 actionCollection(), "report");
 
-    new KAction(i18n("&Schedule" ), "history", KShortcut(KKey("F9")),
+    new KAction(i18n("&Schedule" ), "tj_schedule", KShortcut(KKey("F9")),
                 m_view, SLOT(schedule()),
                 actionCollection(), "schedule");
-    new KAction(i18n("Goto &previous Problem"), "previous",
+    new KAction(i18n("Goto &previous Problem"), "tj_previous_problem",
                 KShortcut(KKey("F10")),
                 m_view, SLOT(previousProblem()),
                 actionCollection(), "previous_problem");
-    new KAction(i18n("Goto &next Problem"), "next", KShortcut(KKey("F11")),
+    new KAction(i18n("Goto &next Problem"), "tj_next_problem",
+                KShortcut(KKey("F11")),
                 m_view, SLOT(nextProblem()),
                 actionCollection(), "next_problem");
 
@@ -153,7 +155,8 @@ void TaskJuggler::setupActions()
                 m_view, SLOT(zoomOut()),
                 actionCollection(), "zoom_out");
 
-    new KAction(i18n("Explain Keyword" ), "kghostview", KShortcut(KKey("F2")),
+    new KAction(i18n("Explain Keyword" ), "tj_keyword_help",
+                KShortcut(KKey("F2")),
                 m_view, SLOT(keywordHelp()),
                 actionCollection(), "keyword_help");
 
@@ -164,6 +167,9 @@ void
 TaskJuggler::saveProperties(KConfig* config)
 {
     config->setGroup("Global Settings");
+
+    m_view->saveProperties(config);
+
     if (!m_view->currentURL().isEmpty())
         config->writePathEntry("lastURL", m_view->currentURL());
 
@@ -180,6 +186,8 @@ TaskJuggler::readProperties(KConfig* config)
         m_view->openURL(KURL(url));
 
     m_recentAction->loadEntries(config);
+
+    m_view->readProperties(config);
 }
 
 void TaskJuggler::dragEnterEvent(QDragEnterEvent *event)

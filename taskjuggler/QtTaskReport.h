@@ -30,7 +30,8 @@ public:
 
     virtual const char* getType() const { return "QtTaskReport"; }
 
-    bool generate();
+    bool generate() { return FALSE; }
+
     QtTaskReportElement* getTable() { return tab; }
 
 private:

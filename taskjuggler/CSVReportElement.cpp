@@ -61,7 +61,7 @@ CSVReportElement::generateTableHeader()
             s() << fieldSeparator;
         else
             first = FALSE;
-        
+
         if (columnFormat[(*it)->getName()])
         {
             TableCellInfo tci(columnFormat[(*it)->getName()], 0, *it);
@@ -82,7 +82,7 @@ CSVReportElement::generateTableHeader()
             return;
         }
     }
-    
+
     if (!first)
         s() << endl;
 }
@@ -148,7 +148,7 @@ CSVReportElement::generateLine(TableLineInfo* tli, int funcSel)
 }
 
 void
-CSVReportElement::genCell(const QString& text, TableCellInfo* tci, 
+CSVReportElement::genCell(const QString& text, TableCellInfo* tci,
                           bool, bool filterText)
 {
     QString cellText;
@@ -174,7 +174,7 @@ CSVReportElement::reportTaskLoad(double load, TableCellInfo* tci,
 {
     QString text;
     if (tci->tli->task->isActive(tci->tli->sc, period))
-        text = scaledLoad(load, tci);
+        text = scaledLoad(load, tci->tcf);
     genCell(text, tci, FALSE);
 }
 
@@ -184,7 +184,7 @@ CSVReportElement::reportResourceLoad(double load, TableCellInfo* tci,
 {
     QString text;
     if (load > 0.0)
-        text += scaledLoad(load, tci);
+        text += scaledLoad(load, tci->tcf);
     genCell(text, tci, FALSE);
 }
 
@@ -315,7 +315,7 @@ CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
              monthOfWeek(wi, weekStartsMonday) == currMonth;
              wi = sameTimeNextWeek(wi))
             left++;
-             
+
         mt.setMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
                               defFileName, defFileLine));
@@ -335,9 +335,9 @@ CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
                               QString().sprintf
                               ("%04d", yearOfWeek(week, weekStartsMonday)),
                               defFileName, defFileLine));
-        generateTitle(tci, 
+        generateTitle(tci,
                       QString(i18n("%1 %2/Week %3"))
-                      .arg(shortMonthName(monthOfWeek(week, weekStartsMonday) 
+                      .arg(shortMonthName(monthOfWeek(week, weekStartsMonday)
                                           - 1))
                       .arg(yearOfWeek(week, weekStartsMonday))
                       .arg(weekOfYear(week, weekStartsMonday)));
@@ -355,7 +355,7 @@ CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
 {
     bool first = TRUE;
     bool wsm = report->getWeekStartsMonday();
-    for (time_t week = beginOfWeek(start, wsm); week < end; 
+    for (time_t week = beginOfWeek(start, wsm); week < end;
          week = sameTimeNextWeek(week))
     {
         if (first)
@@ -368,7 +368,7 @@ CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
                               ("%02d", dayOfMonth(week)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", 
+                              QString().sprintf("%02d",
                                                 monthOfWeek(week, wsm)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"),
@@ -381,9 +381,9 @@ CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", yearOfWeek(week, wsm)),
                               defFileName, defFileLine));
-        generateTitle(tci, 
+        generateTitle(tci,
                       QString(i18n("%1 %2/Week %3"))
-                      .arg(shortMonthName(monthOfWeek(week, wsm) 
+                      .arg(shortMonthName(monthOfWeek(week, wsm)
                                           - 1))
                       .arg(yearOfWeek(week, wsm)).arg(woy));
     }
@@ -479,7 +479,7 @@ CSVReportElement::genCellEmpty(TableCellInfo* tci)
 void
 CSVReportElement::genCellSequenceNo(TableCellInfo* tci)
 {
-    genCell(tci->tli->ca2 == 0 ? 
+    genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getSequenceNo()) :
             QString(""), tci, TRUE);
 }
@@ -501,7 +501,7 @@ CSVReportElement::genCellHierarchNo(TableCellInfo* tci)
 void
 CSVReportElement::genCellIndex(TableCellInfo* tci)
 {
-    genCell(tci->tli->ca2 == 0 ? 
+    genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getIndex()) :
             QString(""), tci, TRUE);
 }
@@ -516,7 +516,7 @@ CSVReportElement::genCellHierarchIndex(TableCellInfo* tci)
 void
 CSVReportElement::genCellId(TableCellInfo* tci)
 {
-    genCell(tci->tli->ca1->getId(), tci, TRUE); 
+    genCell(tci->tli->ca1->getId(), tci, TRUE);
 }
 
 void
@@ -535,7 +535,7 @@ CSVReportElement::genCellName(TableCellInfo* tci)
     if (tci->tli->specialName.isNull())
     {
         if (tci->tli->task)
-            mt.setMacro(new Macro(KW("taskid"), tci->tli->task->getId(), 
+            mt.setMacro(new Macro(KW("taskid"), tci->tli->task->getId(),
                                   defFileName, defFileLine));
         if (tci->tli->resource)
             mt.setMacro(new Macro(KW("resourceid"), tci->tli->resource->getId(),
@@ -553,7 +553,7 @@ CSVReportElement::genCellName(TableCellInfo* tci)
         {
             lPadding += tci->tli->ca1->treeLevel();
         }
-        text = QString().fill(' ', lPadding) + tci->tli->ca1->getName(); 
+        text = QString().fill(' ', lPadding) + tci->tli->ca1->getName();
     }
     else
         text = tci->tli->specialName;
@@ -616,13 +616,13 @@ void
 CSVReportElement::genCellEndBufferStart(TableCellInfo* tci)
 {
     genCell(time2user(tci->tli->task->getStartBufferEnd
-                      (tci->tli->sc) + 1, timeFormat), tci, FALSE); 
+                      (tci->tli->sc) + 1, timeFormat), tci, FALSE);
 }
 
 void
 CSVReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci),
+    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci->tcf),
             tci, FALSE);
 }
 
@@ -637,18 +637,19 @@ CSVReportElement::genCellEffort(TableCellInfo* tci)
     }
     else if (tci->tli->ca1->getType() == CA_Resource)
     {
-        val = tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end), 
+        val = tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end),
                                           AllAccounts, tci->tli->task);
     }
-    
-    generateRightIndented(tci, scaledLoad(val, tci));
+
+    generateRightIndented(tci, scaledLoad(val, tci->tcf));
 }
 
 void
 CSVReportElement::genCellCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
-        (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc), tci));
+        (tci, scaledLoad(tci->tli->task->getCriticalness(tci->tli->sc),
+                         tci->tcf));
 }
 
 void
@@ -656,7 +657,7 @@ CSVReportElement::genCellPathCriticalness(TableCellInfo* tci)
 {
     generateRightIndented
         (tci, scaledLoad(tci->tli->task->getPathCriticalness(tci->tli->sc),
-                         tci));
+                         tci->tcf));
 }
 
 void
@@ -685,7 +686,7 @@ CSVReportElement::genCellResources(TableCellInfo* tci)
     {
         if (!text.isEmpty())
             text += ", ";
-                    
+
         text += (*rli)->getName();
     }
     genCell(text, tci, FALSE);
@@ -712,8 +713,8 @@ CSVReportElement::genCellText(TableCellInfo* tci)
             genCell(tci->tli->task->getNote(), tci, TRUE);
         return;
     }
-   
-    const TextAttribute* ta = (const TextAttribute*) 
+
+    const TextAttribute* ta = (const TextAttribute*)
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
     if (!ta || ta->getText().isEmpty())
         genCell("", tci, TRUE);
@@ -745,7 +746,7 @@ CSVReportElement::genCellCost(TableCellInfo* tci)
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Cost, tci->tli->task);
     }
-    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci)); 
+    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci));
 }
 
 void
@@ -762,7 +763,7 @@ CSVReportElement::genCellRevenue(TableCellInfo* tci)
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Revenue, tci->tli->task);
     }
-    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci)); 
+    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci));
 }
 
 void
@@ -772,7 +773,7 @@ CSVReportElement::genCellProfit(TableCellInfo* tci)
     if (tci->tli->ca1->getType() == CA_Task)
     {
         val = tci->tli->task->getCredits(tci->tli->sc, Interval(start, end),
-                                    Revenue, tci->tli->resource) - 
+                                    Revenue, tci->tli->resource) -
             tci->tli->task->getCredits(tci->tli->sc, Interval(start, end),
                                   Cost, tci->tli->resource);
     }
@@ -783,7 +784,7 @@ CSVReportElement::genCellProfit(TableCellInfo* tci)
             tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                       Cost, tci->tli->task);
     }
-    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci)); 
+    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci));
 }
 
 void
@@ -877,7 +878,7 @@ CSVReportElement::genCellReference(TableCellInfo* tci)
         }
         return;
     }
-   
+
     const ReferenceAttribute* ra =  (const ReferenceAttribute*)
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
     if (!ra || ra->getUrl().isEmpty())
@@ -924,7 +925,7 @@ CSVReportElement::selectTaskBgColor(TableCellInfo* tci, double load,
     QColor bgCol;
     if (tci->tli->task->isActive(tci->tli->sc, period) &&
         ((tci->tli->resource != 0 && load > 0.0) || tci->tli->resource == 0))
-    { 
+    {
         if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd() - 1))
         {
             if (tci->tli->ca2 == 0)
@@ -932,10 +933,10 @@ CSVReportElement::selectTaskBgColor(TableCellInfo* tci, double load,
             else
                 bgCol = colors.getColor("completed").light(130);
         }
-        else 
+        else
         {
-            if (tci->tli->ca2 == 0 && 
-                !tci->tli->task->isBuffer(tci->tli->sc, period)) 
+            if (tci->tli->ca2 == 0 &&
+                !tci->tli->task->isBuffer(tci->tli->sc, period))
             {
                 bgCol = colors.getColor("booked");
             }
@@ -943,7 +944,7 @@ CSVReportElement::selectTaskBgColor(TableCellInfo* tci, double load,
             {
                 bgCol = colors.getColor("booked").light(130);
             }
-        } 
+        }
     }
     else if (period.contains(report->getProject()->getNow()))
     {
@@ -963,7 +964,7 @@ CSVReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
                                          const Interval& period, bool daily)
 {
     QColor bgCol;
-    if (load > tci->tli->resource->getMinEffort() * 
+    if (load > tci->tli->resource->getMinEffort() *
             tci->tli->resource->getEfficiency())
     {
         if (tci->tli->ca2 == 0)
@@ -1006,7 +1007,7 @@ CSVReportElement::genCellTaskFunc(TableCellInfo* tci,
             s() << fieldSeparator;
 
         Interval period = Interval(t, sameTimeNextT(t) - 1);
-        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+        double load = tci->tli->task->getLoad(tci->tli->sc, period,
                                               tci->tli->resource);
         reportTaskLoad(load, tci, period);
     }
@@ -1048,9 +1049,9 @@ CSVReportElement::genCellAccountFunc(TableCellInfo* tci,
 
         double volume = tci->tli->account->
             getVolume(tci->tli->sc, Interval(t, sameTimeNextT(t) - 1));
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode &&
              tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode))
             tci->tci->addToSum(tci->tli->sc, time2ISO(t), volume);
         reportCurrency(volume, tci, t);
     }
@@ -1088,7 +1089,7 @@ CSVReportElement::genCellWeeklyTask(TableCellInfo* tci)
             s() << fieldSeparator;
 
         Interval period = Interval(week).firstWeek(weekStartsMonday);
-        double load = tci->tli->task->getLoad(tci->tli->sc, period, 
+        double load = tci->tli->task->getLoad(tci->tli->sc, period,
                                               tci->tli->resource);
         reportTaskLoad(load, tci, period);
     }
@@ -1129,9 +1130,9 @@ CSVReportElement::genCellWeeklyAccount(TableCellInfo* tci)
 
         double volume = tci->tli->account->
             getVolume(tci->tli->sc, Interval(week).firstWeek(weekStartsMonday));
-        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode &&
              tci->tli->account->isRoot()) ||
-            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode))
             tci->tci->addToSum(tci->tli->sc, time2ISO(week), volume);
         reportCurrency(volume, tci, week);
     }
@@ -1146,7 +1147,7 @@ CSVReportElement::genCellMonthlyTask(TableCellInfo* tci)
 void
 CSVReportElement::genCellMonthlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, beginOfMonth, sameTimeNextMonth);   
+    genCellResourceFunc(tci, beginOfMonth, sameTimeNextMonth);
 }
 
 void
@@ -1249,7 +1250,7 @@ CSVReportElement::genCellKotrusId(TableCellInfo* tci)
 void
 CSVReportElement::genCellTotal(TableCellInfo* tci)
 {
-    double value = tci->tli->account->getVolume(tci->tli->sc, 
+    double value = tci->tli->account->getVolume(tci->tli->sc,
                                                 Interval(start, end));
     if (tci->tli->account->isLeaf())
         tci->tci->addToSum(tci->tli->sc, "total", value);

@@ -18,13 +18,13 @@
 
 #include "HTMLPrimitives.h"
 
-struct Entity 
+struct Entity
 {
     const char * name;
     Q_UINT16 code;
 };
 
-static const Entity entitylist [] = 
+static const Entity entitylist [] =
 {
     { "AElig", 0x00c6 },
     { "Aacute", 0x00c1 },
@@ -186,7 +186,6 @@ static const Entity entitylist [] =
     { "minus", 0x2212 },
     { "mu", 0x03bc },
     { "nabla", 0x2207 },
-    { "nbsp", 0x00a0 },
     { "ndash", 0x2013 },
     { "ne", 0x2260 },
     { "ni", 0x220b },
