@@ -32,16 +32,20 @@ ManagedFileInfo::ManagedFileInfo(FileManager* fm, const KURL& url) :
 ManagedFileInfo::~ManagedFileInfo()
 {
     if (editor)
-        delete editor->document();
+    {
+        KTextEditor::Document* doc = editor->document();
+        delete editor;
+        delete doc;
+    }
 }
 
 void
-ManagedFileInfo::readProperties(KConfig* config)
+ManagedFileInfo::readProperties(KConfig*)
 {
 }
 
 void
-ManagedFileInfo::writeProperties(KConfig* config)
+ManagedFileInfo::writeProperties(KConfig*)
 {
 }
 

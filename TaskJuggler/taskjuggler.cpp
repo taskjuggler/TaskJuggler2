@@ -96,7 +96,7 @@ void TaskJuggler::setupActions()
     KStdAction::saveAs(this, SLOT(fileSaveAs()), actionCollection());
     KStdAction::close(this, SLOT(fileClose()), actionCollection());
     KStdAction::print(this, SLOT(filePrint()), actionCollection());
-    KStdAction::quit(kapp, SLOT(quit()), actionCollection());
+    KStdAction::quit(kapp, SLOT(closeAllWindows()), actionCollection());
 
     // Setup "Open Recent" menu and load old recent files.
     m_recentAction = KStdAction::openRecent(this, SLOT( load(const KURL&)),
@@ -227,6 +227,12 @@ void TaskJuggler::dropEvent(QDropEvent *event)
         // load in the file
         load(url);
     }
+}
+
+bool
+TaskJuggler::queryClose()
+{
+    return TRUE;
 }
 
 bool

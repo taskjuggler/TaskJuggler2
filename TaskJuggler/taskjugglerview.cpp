@@ -171,6 +171,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
 
 TaskJugglerView::~TaskJugglerView()
 {
+    delete fileManager;
+    delete reportManager;
 }
 
 void

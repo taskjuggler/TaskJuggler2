@@ -63,6 +63,7 @@ protected:
      */
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dropEvent(QDropEvent *event);
+    virtual bool queryClose();
     virtual bool queryExit();
 
 protected slots:

@@ -83,7 +83,8 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
         if (newFile)
         {
             // No, so let's add it to our internal list.
-            ManagedFileInfo* mfi = new ManagedFileInfo(this, KURL::fromPathOrURL(*sli));
+            ManagedFileInfo* mfi =
+                new ManagedFileInfo(this, KURL::fromPathOrURL(*sli));
             mfi->setPartOfProject(TRUE);
             files.append(mfi);
         }
