@@ -506,7 +506,7 @@ FileInfo::errorMessage(const char* msg, ...)
         QString stackDump;
         int i = 0;
         QString file;
-        int line;
+        int line = 0;
         for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
         {
             QStringList argList(*pf->getMacros().getArguments(i));

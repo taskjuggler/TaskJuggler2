@@ -1,6 +1,7 @@
 Makefile
 Makefile.in
 taskjuggler.sgml
+example.sgml
 *.log
 *.aux
 *.tex

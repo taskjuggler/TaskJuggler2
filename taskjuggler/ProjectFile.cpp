@@ -42,7 +42,9 @@
 #include "HTMLWeeklyCalendarElement.h"
 #include "HTMLStatusReport.h"
 #include "HTMLReportElement.h"
-#include "HTMLTaskReport.h"
+#include "CSVTaskReport.h"
+#include "CSVTaskReportElement.h"
+#include "CSVReport.h"
 #include "ExportReport.h"
 #include "TableColumnInfo.h"
 #include "ReportXML.h"
@@ -433,6 +435,12 @@ ProjectFile::parse()
             else if (token == KW("htmlstatusreport"))
             {
                 if (!readHTMLStatusReport())
+                    return FALSE;
+                break;
+            }
+            else if (token == KW("csvtaskreport"))
+            {
+                if (!readCSVReport(token))
                     return FALSE;
                 break;
             }
@@ -3112,6 +3120,248 @@ ProjectFile::readHTMLStatusReport()
         returnToken(tt, token);
 
     proj->addHTMLStatusReport(report);
+
+    return TRUE;
+}
+
+bool
+ProjectFile::readCSVReport(const QString& reportType)
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return FALSE;
+    }
+    
+    CSVReport* report = 0;
+    CSVReportElement* tab = 0;
+    if (reportType == KW("csvtaskreport"))
+    {
+        report = new CSVTaskReport(proj, token, getFile(), getLine());
+        tab = ((CSVTaskReport*) report)->getTable();
+    }
+    else
+    {
+        qFatal("readCSVReport: bad report type");
+        return FALSE;   // Just to please the compiler.
+    }
+        
+    TokenType tt;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return FALSE;
+            }
+            if (token == KW("columns"))
+            {
+                tab->clearColumns();
+                for ( ; ; )
+                {
+                    TableColumnInfo* tci;
+                    if ((tci = readColumn(proj->getMaxScenarios(), tab)) == 0)
+                        return FALSE;
+                    tab->addColumn(tci);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("scenario"))
+            {
+                tab->clearScenarios();
+                QString scId;
+                if ((tt = nextToken(scId)) != ID)
+                {
+                    errorMessage(i18n("Scenario ID expected"));
+                    return FALSE;
+                }
+                if (proj->getScenarioIndex(scId) == -1)
+                {
+                    errorMessage(i18n("Unknown scenario '%1'")
+                                 .arg(scId));
+                    return FALSE;
+                }
+                tab->addScenario(proj->getScenarioIndex(scId) - 1);
+            }
+            else if (token == KW("start"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                tab->setStart(date2time(token));
+            }
+            else if (token == KW("end"))
+            {
+                if (nextToken(token) != DATE)
+                {
+                    errorMessage(i18n("Date expected"));
+                    return FALSE;
+                }
+                tab->setEnd(date2time(token) - 1);
+            }
+            else if (token == KW("rawhead"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                tab->setRawHead(token);
+            }
+            else if (token == KW("rawtail"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                tab->setRawTail(token);
+            }
+            else if (token == KW("showprojectids"))
+            {
+                tab->setShowPIDs(TRUE);
+            }
+            else if (token == KW("accumulate"))
+            {
+                tab->setAccumulate(TRUE);
+            }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setRollUpTask(et);
+            }
+            else if (token == KW("sorttasks"))
+            {
+                if (!readSorting(tab, 0))
+                    return FALSE;
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setRollUpResource(et);
+            }
+            else if (token == KW("sortresources"))
+            {
+                if (!readSorting(tab, 1))
+                    return FALSE;
+            }
+            else if (token == KW("hideaccount"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setHideAccount(et);
+            }
+            else if (token == KW("rollupaccount"))
+            {
+                Operation* op;
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                tab->setRollUpAccount(et);
+            }
+            else if (token == KW("sortaccounts"))
+            {
+                if (!readSorting(tab, 2))
+                    return FALSE;
+            }
+            else if (token == KW("loadunit"))
+            {
+                if (nextToken(token) != ID || !tab->setLoadUnit(token))
+                {
+                    errorMessage(i18n("Illegal load unit"));
+                    return FALSE;
+                }
+            }
+            else if (token == KW("timeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                tab->setTimeFormat(token);
+            }
+            else if (token == KW("shorttimeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    return FALSE;
+                }
+                tab->setShortTimeFormat(token);
+            }
+            else if (token == KW("barlabels"))
+            {
+                if (nextToken(token) != ID)
+                {
+                    errorMessage(i18n("Bar label mode expected"));
+                    return FALSE;
+                }
+                if (token == KW("empty"))
+                    tab->setBarLabels(HTMLReportElement::BLT_EMPTY);
+                else if (token == KW("load"))
+                    tab->setBarLabels(HTMLReportElement::BLT_LOAD);
+                else
+                {
+                    errorMessage(i18n("Unknown bar label mode '%1'")
+                                 .arg(token));
+                    return FALSE;
+                }
+            }
+            else if (token == KW("notimestamp"))
+            {
+                report->setTimeStamp(FALSE);
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    if (!checkReportInterval(tab))
+        return FALSE;
+    
+    if (reportType == KW("csvtaskreport"))
+        proj->addCSVTaskReport((CSVTaskReport*) report);
 
     return TRUE;
 }

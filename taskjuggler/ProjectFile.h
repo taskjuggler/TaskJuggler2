@@ -145,6 +145,7 @@ private:
     bool readPriority(int& priority);
     bool readHTMLReport(const QString& reportType);
     bool readHTMLStatusReport();
+    bool readCSVReport(const QString& reportType);
     bool readExportReport();
     bool readXMLReport();
     bool readReportElement(ReportElement* el);

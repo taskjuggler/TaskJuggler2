@@ -33,6 +33,7 @@
 #include "HTMLAccountReport.h"
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLStatusReport.h"
+#include "CSVTaskReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
 #include "kotrus.h"
@@ -647,6 +648,10 @@ Project::generateReports() const
     // Generate status reports
     for (QPtrListIterator<HTMLStatusReport> ri(htmlStatusReports); 
          *ri != 0; ++ri)
+        (*ri)->generate();
+
+    /// Generate CSV task reports
+    for (QPtrListIterator<CSVTaskReport> ri(csvTaskReports); *ri != 0; ++ri)
         (*ri)->generate();
 
     // Generate export files
