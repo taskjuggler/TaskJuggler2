@@ -93,8 +93,7 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 				<< " actualEnd " << end;
 		}
 
-		if (!filteredResourceList.isEmpty())
-			s << " projectid " << t->getProjectId() << " ";
+		s << " projectid " << t->getProjectId() << " ";
 		if (t->isMilestone())
 			s << " milestone ";
 		
