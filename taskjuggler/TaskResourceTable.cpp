@@ -136,7 +136,7 @@ TaskResourceTable::filterTaskList(TaskList& filteredList, const Resource* r,
 				break;
 			}
 			if (!resourceIsLoadedInAnyScenario && 
-				r->getLoad(*it, iv, *tli) > 0.0)
+				r->getLoad(*it, iv, AllAccounts, *tli) > 0.0)
 			{
 				resourceIsLoadedInAnyScenario = TRUE;
 			}
@@ -205,7 +205,7 @@ TaskResourceTable::filterResourceList(ResourceList& filteredList, const Task* t,
 			QValueList<int>::const_iterator it;
 			for (it = scenarios.begin(); it != scenarios.end(); ++it)
 			{
-				if ((*rli)->getLoad(*it, iv, t) > 0.0)
+				if ((*rli)->getLoad(*it, iv, AllAccounts, t) > 0.0)
 				{
 					resourceIsLoadedInAnyScenario = TRUE;
 				}

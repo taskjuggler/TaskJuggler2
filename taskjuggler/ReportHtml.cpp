@@ -185,7 +185,15 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  t->getCredits(Task::Plan,
-												Interval(start, end), r)),
+												Interval(start, end), Cost, r)),
+				r != 0,
+				"right");
+		else if (*it == KW("revenue"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  t->getCredits(Task::Plan,
+												Interval(start, end),
+                                                Revenue, r)),
 				r != 0,
 				"right");
 		else if (*it == KW("priority"))
@@ -273,11 +281,18 @@ ReportHtml::generateActualTask(const Task* t, const Resource* r)
 		}
 		else if (*it == KW("resources"))
 			scenarioResources(Task::Actual, t, r != 0);
-		else if (*it == "costs")
+		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  t->getCredits(Task::Actual,
-												Interval(start, end), r)),
+												Interval(start, end), Cost, r)),
+				r != 0, "right");
+		else if (*it == KW("revenue"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  t->getCredits(Task::Actual,
+												Interval(start, end), 
+                                                Revenue, r)),
 				r != 0, "right");
 		else if (*it == KW("completed"))
 			if (t->getCompletionDegree(Task::Actual) ==
@@ -366,7 +381,8 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(r->getLoad(Task::Plan, Interval(start, end), t))
+			  << scaledLoad(r->getLoad(Task::Plan, Interval(start, end), 
+                                       AllAccounts, t))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("projectid"))
@@ -401,7 +417,14 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Plan,
-											   	Interval(start, end), t)),
+											   	Interval(start, end), Cost, t)),
+				t != 0, "right");
+		else if (*it == KW("revenue"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  r->getCredits(Task::Plan,
+											   	Interval(start, end),
+                                               Revenue, t)),
 				t != 0, "right");
 		else if (*it == KW("priority"))
 			emptyPlan(t != 0);
@@ -436,7 +459,8 @@ ReportHtml::generateActualResource(const Resource* r, const Task* t)
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
 			  << "\" style=\"text-align:right white-space:nowrap\">"
-			  << scaledLoad(r->getLoad(Task::Actual, Interval(start, end), t))
+			  << scaledLoad(r->getLoad(Task::Actual, Interval(start, end),
+                                      AllAccounts, t))
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("schedule"))
@@ -445,7 +469,15 @@ ReportHtml::generateActualResource(const Resource* r, const Task* t)
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Actual,
-												Interval(start, end), t)),
+												Interval(start, end), Cost, t)),
+				t != 0,
+				"right");
+		else if (*it == KW("revenue"))
+			textOneRow(
+				QString().sprintf("%.*f", project->getCurrencyDigits(),
+								  r->getCredits(Task::Actual,
+												Interval(start, end), 
+                                                Revenue, t)),
 				t != 0,
 				"right");
 		else if (*it == KW("daily"))
@@ -653,6 +685,14 @@ ReportHtml::generateTableHeader()
 		{
 			s << "<td class=\"headerbig\" rowspan=\"2\">"
 				<< i18n("Costs");
+			if (!project->getCurrency().isEmpty())
+				s << " " << htmlFilter(project->getCurrency());
+			s << "</td>";
+		}
+		else if (*it == KW("revenue"))
+		{
+			s << "<td class=\"headerbig\" rowspan=\"2\">"
+				<< i18n("Revenue");
 			if (!project->getCurrency().isEmpty())
 				s << " " << htmlFilter(project->getCurrency());
 			s << "</td>";
@@ -1052,7 +1092,8 @@ ReportHtml::dailyResourcePlan(const Resource* r, const Task* t)
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
-		double load = r->getLoad(Task::Plan, Interval(day).firstDay(), t);
+		double load = r->getLoad(Task::Plan, Interval(day).firstDay(), 
+                                 AllAccounts, t);
 		QString bgCol = 
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" : "bookedlight") :
@@ -1074,7 +1115,8 @@ ReportHtml::dailyResourceActual(const Resource* r, const Task* t)
 	for (time_t day = midnight(start); day < end;
 		 day = sameTimeNextDay(day))
 	{
-		double load = r->getLoad(Task::Actual, Interval(day).firstDay(), t);
+		double load = r->getLoad(Task::Actual, Interval(day).firstDay(),
+                                AllAccounts, t);
 		QString bgCol = 
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
@@ -1168,7 +1210,8 @@ ReportHtml::weeklyResourcePlan(const Resource* r, const Task* t)
 	{
 		double load =
 		   	r->getLoad(Task::Plan, 
-					   Interval(week).firstWeek(weekStartsMonday), t);
+					   Interval(week).firstWeek(weekStartsMonday),
+                      AllAccounts, t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" : "bookedlight") :
@@ -1197,7 +1240,8 @@ ReportHtml::weeklyResourceActual(const Resource* r, const Task* t)
 	{
 		double load = 
 			r->getLoad(Task::Actual, 
-					   Interval(week).firstWeek(weekStartsMonday), t);
+					   Interval(week).firstWeek(weekStartsMonday),
+                      AllAccounts, t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
@@ -1281,7 +1325,8 @@ ReportHtml::monthlyResourcePlan(const Resource* r, const Task* t)
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
-		double load = r->getLoad(Task::Plan, Interval(month).firstMonth(), t);
+		double load = r->getLoad(Task::Plan, Interval(month).firstMonth(),
+                                AllAccounts, t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" : "bookedlight") :
@@ -1300,7 +1345,8 @@ ReportHtml::monthlyResourceActual(const Resource* r, const Task* t)
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
-		double load = r->getLoad(Task::Actual, Interval(month).firstMonth(), t);
+		double load = r->getLoad(Task::Actual, Interval(month).firstMonth(),
+                                AllAccounts, t);
 		QString bgCol =
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :

@@ -18,6 +18,7 @@
 #include "Booking.h"
 #include "BookingList.h"
 #include "SbBooking.h"
+#include "Account.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "kotrus.h"
@@ -403,24 +404,26 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
 }
 
 double
-Resource::getLoad(int sc, const Interval& period, const Task* task) const
+Resource::getLoad(int sc, const Interval& period, AccountType acctType,
+                  const Task* task) const
 {
 	Interval iv(period);
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
 
 	return efficiency * project->convertToDailyLoad
-		(getLoadSub(sc, sbIndex(iv.getStart()), sbIndex(iv.getEnd()), task) *
-		 project->getScheduleGranularity());
+		(getLoadSub(sc, sbIndex(iv.getStart()), sbIndex(iv.getEnd()),
+                    acctType, task) * project->getScheduleGranularity());
 }
 
 long
-Resource::getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const
+Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
+                     const Task* task) const
 {
 	long bookings = 0;
 
 	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
-		bookings += (*rli)->getLoadSub(sc, startIdx, endIdx, task);
+		bookings += (*rli)->getLoadSub(sc, startIdx, endIdx, acctType, task);
 
 	// If the scoreboard has not been initialized there is no load.
 	if (!scoreboards[sc])
@@ -431,7 +434,10 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const
 		SbBooking* b = scoreboards[sc][i];
 		if (b < (SbBooking*) 4)
 			continue;
-		if (task == 0 || task == b->getTask())
+		if (task == 0 ||
+            ((acctType == AllAccounts || 
+              task->getAccount()->getAcctType() == acctType) &&
+             task == b->getTask()))
 			bookings++;
 	}
 
@@ -439,9 +445,10 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const
 }
 
 double
-Resource::getCredits(int sc, const Interval& period, const Task* task) const
+Resource::getCredits(int sc, const Interval& period, AccountType acctType,
+                     const Task* task) const
 {
-	return getLoad(sc, period, task) * rate;
+    return getLoad(sc, period, acctType, task) * rate;
 }
 
 bool

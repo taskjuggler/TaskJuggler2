@@ -14,6 +14,7 @@
 
 #include "time.h"
 
+#include "taskjuggler.h"
 #include "CoreAttributes.h"
 #include "ResourceList.h"
 #include "ShiftSelectionList.h"
@@ -90,9 +91,12 @@ public:
 
 	double getCurrentLoad(const Interval& i, const Task* task = 0) const;
 
-	double getLoad(int sc, const Interval& i, const Task* task = 0) const;
+	double getLoad(int sc, const Interval& i, 
+                   AccountType acctType = AllAccounts,
+                   const Task* task = 0) const;
 
-	double getCredits(int sc, const Interval& i, const Task* task = 0) const;
+	double getCredits(int sc, const Interval& i, AccountType acctType,
+                      const Task* task = 0) const;
 
 	QString getProjectIDs(int sc, const Interval& i, const Task* task = 0) 
 		const;
@@ -119,7 +123,8 @@ private:
 	void initScoreboard();
 	long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
 
-	long getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const;
+	long getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
+                    const Task* task) const;
 
 	uint sbIndex(time_t date) const;
 

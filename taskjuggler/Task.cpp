@@ -843,33 +843,38 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 		load += (*tli)->getLoad(sc, period, resource);
 
 	if (resource)
-		load += resource->getLoad(sc, period, this);
+		load += resource->getLoad(sc, period, AllAccounts, this);
 	else
 		for (ResourceListIterator rli(scenarios[sc].bookedResources); 
 			 *rli != 0; ++rli)
-			load += (*rli)->getLoad(sc, period, this);
+			load += (*rli)->getLoad(sc, period, AllAccounts, this);
 
 	return load;
 }
 
 double
-Task::getCredits(int sc, const Interval& period, const Resource* resource,
-				 bool recursive) const
+Task::getCredits(int sc, const Interval& period, AccountType acctType,
+                 const Resource* resource, bool recursive) const
 {
 	double credits = 0.0;
 
 	if (recursive && !sub.isEmpty())
 	{
 		for (TaskListIterator tli(sub); *tli != 0; ++tli)
-			credits += (*tli)->getCredits(sc, period, resource, recursive);
+			credits += (*tli)->getCredits(sc, period, acctType, resource, 
+                                          recursive);
 	}
 
+    if (acctType != AllAccounts &&
+        (account == 0 || acctType != account->getAcctType()))
+        return credits;
+
 	if (resource)
-		credits += resource->getCredits(sc, period, this);
+		credits += resource->getCredits(sc, period, acctType, this);
 	else
 		for (ResourceListIterator rli(scenarios[sc].bookedResources);
 			 *rli != 0; ++rli)
-			credits += (*rli)->getCredits(sc, period, this);
+			credits += (*rli)->getCredits(sc, period, acctType, this);
 
 	if (period.contains(scenarios[sc].start))
 		credits += scenarios[sc].startCredit;

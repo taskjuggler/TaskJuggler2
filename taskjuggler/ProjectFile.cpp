@@ -1197,6 +1197,13 @@ ProjectFile::readTaskBody(Task* task)
 				}
 				task->setProjectId(token);
 			}
+            else if (token == KW("url"))
+            {
+                QString url, label;
+                if (!readURL(url, label))
+                    return FALSE;
+                task->setUrl(url, label);
+            }
 			else if (token == KW("supplement"))
 			{
 				if (nextToken(token) != ID || (token != KW("task")))
@@ -1288,9 +1295,8 @@ bool
 ProjectFile::readDate(time_t& val, time_t correction)
 {
     QString token;
-    TokenType tt;
     
-	if ((tt = nextToken(token)) != DATE)
+	if (nextToken(token) != DATE)
 	{
 		errorMessage(i18n("Date expected"));
 		return FALSE;
@@ -1307,6 +1313,44 @@ ProjectFile::readDate(time_t& val, time_t correction)
                      .arg(time2ISO(proj->getEnd())));
         return FALSE;
     }
+    return TRUE;
+}
+
+bool
+ProjectFile::readURL(QString& url, QString& label)
+{
+
+    if (nextToken(url) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return FALSE;
+    }
+    label = url;
+    
+    TokenType tt;
+    QString token;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        while ((tt = nextToken(token)) != RBRACE)
+        {
+            if (tt == ID && token == KW("label"))
+            {
+                if (nextToken(label) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+            }
+            else
+            {
+                errorMessage(i18n("ID or '}' expected"));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+    
     return TRUE;
 }
 

@@ -34,7 +34,7 @@ Account::getVolume(int sc, const Interval& period) const
 	// Add plan credits for all tasks that should be credited to this account.
 	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
 		if ((*tli)->getAccount() == this)
-			volume += (*tli)->getCredits(sc, period, 0, FALSE);
+			volume += (*tli)->getCredits(sc, period, acctType, 0, FALSE);
 
 	// Add all transactions that are registered within the period.
 	for (TransactionListIterator tli(transactions); *tli != 0; ++tli)

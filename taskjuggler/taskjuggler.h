@@ -21,7 +21,7 @@ typedef enum TaskStatus
 	InProgressEarly, Finished
 };
 
-typedef enum AccountType { Cost, Revenue };
+typedef enum AccountType { AllAccounts = 0, Cost, Revenue };
 
 #endif
 

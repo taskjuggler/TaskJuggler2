@@ -86,6 +86,14 @@ public:
 	void setNote(const QString& d) { note = d; }
 	const QString& getNote() const { return note; }
 
+    void setUrl(const QString& u, const QString& l)
+    {
+        url = u;
+        urlLabel = l;
+    }
+    const QString& getURL() const { return url; }
+    const QString& getURLLabel() const { return urlLabel; }
+
 	void setScheduling(SchedulingInfo si) { scheduling = si; }
 	SchedulingInfo getScheduling() const { return scheduling; }
 
@@ -206,7 +214,7 @@ public:
 	double getCalcEffort(int sc) const;
 	double getCalcDuration(int sc) const;
 
-	double getCredits(int sc, const Interval& period, 
+	double getCredits(int sc, const Interval& period, AccountType acctType, 
 					  const Resource* resource = 0, bool recursive = TRUE)
 		const;
 
@@ -311,6 +319,12 @@ private:
 
 	/// A longer description of the task.
 	QString note;
+
+    /// A reference to an external document
+    QString url;
+
+    /// A label used instead of the url
+    QString urlLabel;
 
 	/**
 	 * List of tasks Ids that need to be completed before this task

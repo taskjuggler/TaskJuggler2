@@ -260,9 +260,10 @@ const
 								 (*tli)->getStart(Task::Plan) :
 								 (*tli)->getEnd(Task::Plan))) &&
 			(r == 0 || 
-			 r->getLoad(Task::Plan, Interval(start, end), *tli) > 0.0 ||
-			 (showActual && r->getLoad(Task::Actual, 
-									   Interval(start, end), *tli) > 0.0)))
+			 r->getLoad(Task::Plan, Interval(start, end),
+                        AllAccounts, *tli) > 0.0 ||
+			 (showActual && r->getLoad(Task::Actual, Interval(start, end), 
+                                       AllAccounts, *tli) > 0.0)))
 		{
 			filteredList.append(tli);
 		}
@@ -321,9 +322,10 @@ const
 	{
 		if (!isHidden(*rli, hideExp) &&
 			(t == 0 || 
-			 (*rli)->getLoad(Task::Plan, Interval(start, end), t) > 0.0 ||
-			 (showActual && (*rli)->getLoad(Task::Actual, 
-									   Interval(start, end), t) > 0.0)))
+			 (*rli)->getLoad(Task::Plan, Interval(start, end), 
+                             AllAccounts, t) > 0.0 ||
+			 (showActual && (*rli)->getLoad(Task::Actual, Interval(start, end),
+                                            AllAccounts, t) > 0.0)))
 		{
 			filteredList.append(*rli);
 		}
