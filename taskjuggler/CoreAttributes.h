@@ -14,9 +14,11 @@
 #define _CoreAttributes_h_
 
 #include <qstring.h>
+#include <qdict.h>
 
-#include "FlagList.h"
 #include "CoreAttributesList.h"
+#include "FlagList.h"
+#include "CustomAttribute.h"
 
 class Project;
 class CoreAttributes;
@@ -83,6 +85,8 @@ public:
     bool isRoot() const { return parent == 0; }
     bool isLeaf() const { return sub.isEmpty(); }
 
+    void addCustomAttribute(const QString& name, CustomAttribute* ca);
+
 protected:
     /// A pointer to access information that are global to the project.
     Project* project;
@@ -125,6 +129,9 @@ protected:
 
     /// List of flags set for this attribute.
     FlagList flags;
+
+    /// User defined, optional attributes.
+    QDict<CustomAttribute> customAttributes;
 
     CoreAttributes() { }    // Don't use this!
 } ;

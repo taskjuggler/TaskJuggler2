@@ -45,6 +45,8 @@
 #include "ExportReport.h"
 #include "TableColumnInfo.h"
 #include "ReportXML.h"
+#include "ReferenceAttribute.h"
+#include "TextAttribute.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
@@ -656,6 +658,11 @@ ProjectFile::readProject()
             {
                 proj->setWeekStartsMonday(FALSE);
             }
+            else if (token == KW("extend"))
+            {
+                if (!readExtend())
+                    return FALSE;
+            }
             else if (token == KW("include"))
             {
                 if (!readInclude())
@@ -672,6 +679,65 @@ ProjectFile::readProject()
         returnToken(tt, token);
     
     return TRUE;
+}
+
+bool
+ProjectFile::readExtend()
+{
+    QString property;
+
+    if (nextToken(property) != ID ||
+        (property != "task" && property != "resource"))
+    {
+        errorMessage(i18n("'%1' is not a property. Please use 'task' or "
+                          "'resource'.").arg(property));
+        return FALSE;
+    }
+    QString token;
+    if (nextToken(token) != LCBRACE)
+    {
+        errorMessage(i18n("'{' expected."));
+        return FALSE;
+    }
+    TokenType tt;
+    for ( ; ; )
+    {
+        QString attrID;
+        if ((tt = nextToken(attrID)) == RCBRACE)
+            break;
+        else if (tt != ID)
+        {
+            errorMessage(i18n("Attribute ID expected."));
+            return FALSE;
+        }
+        QString attrType;
+        nextToken(attrType);
+        Project::CustomAttributeType cat;
+        if (attrType == "reference")
+            cat = Project::CAT_Reference;
+        else if (attrType == "text")
+            cat = Project::CAT_Text;
+        else
+        {
+            errorMessage(i18n("'%1' is not a known attribute type. Please use "
+                              "'reference' or 'text'.").arg(attrType));
+            return FALSE;
+        }
+        bool ok = FALSE;
+        if (property == "task")
+            ok = proj->addTaskAttribute(attrID, cat);
+        else if (property == "resource")
+            ok = proj->addResourceAttribute(attrID, cat);
+        if (!ok)
+        {
+            errorMessage(i18n("The custom attribute '%1' has already been "
+                         "declared for the property '%2'.")
+                .arg(attrID).arg(property));
+            return FALSE;
+        }
+    }
+   
+    return TRUE; 
 }
 
 TokenType
@@ -934,7 +1000,29 @@ ProjectFile::readTaskBody(Task* task)
         switch (tt = nextToken(token))
         {
         case ID:
-            if (token == KW("task"))
+            if (proj->getTaskAttributeType(token) == Project::CAT_Reference)
+            {
+                QString ref, label;
+                if (!readReference(ref, label))
+                    return FALSE;
+                ReferenceAttribute* ra = new ReferenceAttribute(ref, label);
+                task->addCustomAttribute(token, ra);
+            }
+            else if (proj->getTaskAttributeType(token) == Project::CAT_Text)
+            {
+                QString text;
+                if (nextToken(text) == STRING)
+                {
+                    TextAttribute* ra = new TextAttribute(text);
+                    task->addCustomAttribute(token, ra);
+                }
+                else
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+            }
+            else if (token == KW("task"))
             {
                 if (!readTask(task))
                     return FALSE;

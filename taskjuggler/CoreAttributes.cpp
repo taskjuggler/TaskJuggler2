@@ -123,3 +123,8 @@ CoreAttributes::isParentOf(const CoreAttributes* c) const
     return FALSE;
 }
 
+void
+CoreAttributes::addCustomAttribute(const QString& name, CustomAttribute* ca)
+{
+    customAttributes.insert(name, ca);
+}

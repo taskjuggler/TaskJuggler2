@@ -214,6 +214,25 @@ Project::deleteTask(Task* t)
     taskList.removeRef(t);
 }
 
+bool
+Project::addTaskAttribute(const QString& name, CustomAttributeType type)
+{
+    if (taskAttributes.find(name) != taskAttributes.end())
+        return FALSE;
+
+    taskAttributes[name] = type;
+    return TRUE;
+}
+
+Project::CustomAttributeType 
+Project::getTaskAttributeType(const QString& name)
+{
+    if (taskAttributes.find(name) == taskAttributes.end())
+        return CAT_Undefined;
+
+    return taskAttributes[name];
+}
+
 void
 Project::addShift(Shift* s)
 {
@@ -236,6 +255,25 @@ void
 Project::deleteResource(Resource* r)
 {
     resourceList.removeRef(r);
+}
+
+bool
+Project::addResourceAttribute(const QString& name, CustomAttributeType type)
+{
+    if (resourceAttributes.find(name) == resourceAttributes.end())
+        return FALSE;
+
+    resourceAttributes[name] = type;
+    return TRUE;
+}
+
+Project::CustomAttributeType 
+Project::getResourceAttributeType(const QString& name)
+{
+    if (resourceAttributes.find(name) == resourceAttributes.end())
+        return CAT_Undefined;
+
+    return resourceAttributes[name];
 }
 
 void 

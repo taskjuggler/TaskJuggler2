@@ -17,6 +17,7 @@
 
 #include <qptrlist.h>
 #include <qstringlist.h>
+#include <qmap.h>
 
 #include "VacationList.h"
 #include "ScenarioList.h"
@@ -28,6 +29,7 @@
 
 class QStringList;
 class QDomElement;
+
 class HTMLTaskReport;
 class HTMLResourceReport;
 class HTMLAccountReport;
@@ -53,6 +55,8 @@ class Kotrus;
 class Project
 {
 public:
+    enum CustomAttributeType { CAT_Undefined = 0, CAT_Reference, CAT_Text };
+
     Project();
     ~Project();
 
@@ -371,6 +375,8 @@ public:
     {
         return TaskListIterator(taskList);
     }
+    bool addTaskAttribute(const QString& name, CustomAttributeType cat);
+    CustomAttributeType getTaskAttributeType(const QString& name);
 
     /**
      * This function is for library internal use only. Creating a Resource
@@ -409,6 +415,8 @@ public:
     {
         return ResourceListIterator(resourceList);
     }
+    bool addResourceAttribute(const QString& name, CustomAttributeType cat);
+    CustomAttributeType getResourceAttributeType(const QString& name);
     
     /**
      * This function is for library internal use only. Creating an Account 
@@ -747,6 +755,9 @@ private:
     ResourceList resourceList;
     AccountList accountList;
     ShiftList shiftList;
+
+    QMap<QString, CustomAttributeType> taskAttributes;
+    QMap<QString, CustomAttributeType> resourceAttributes;
 
     Kotrus* kotrus;
 

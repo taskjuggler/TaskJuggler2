@@ -109,6 +109,7 @@ private:
     ProjectFile() {};   // don't use
 
     bool readProject();
+    bool readExtend();
     bool readInclude();
     bool readTask(Task* parent);
     bool readTaskSupplement(QString prefix);
