@@ -71,7 +71,6 @@ public slots:
     void clear();
 
 private:
-    void addTask( Task *t );
     Project *m_pro;
 
     KTVTaskCanvas *m_canvas;

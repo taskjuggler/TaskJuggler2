@@ -1,3 +1,14 @@
+/*
+ * TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
 #include "ktjview_part.h"
 #include <kshortcut.h>
 #include <kiconloader.h>
@@ -67,7 +78,7 @@ void KTjviewPart::setupActions()
 		       actionCollection(), "zoomOut" );
 
     (void) new KAction(i18n("Zoom 1:1"), "viewmag1", CTRL+Key_S,
-		       m_gantt, SLOT(slZoomO riginal()),
+		       m_gantt, SLOT(slZoomOriginal()),
 		       actionCollection(), "zoomOriginal" );
 
     (void) new KAction(i18n("Timeframe"), "history", CTRL+Key_T,
@@ -117,6 +128,7 @@ void KTjviewPart::slReload()
     slChangeStatusBar( i18n("Reverting file"));
 
     delete m_project;
+    m_gantt->clear();
     openFile();
 
 }

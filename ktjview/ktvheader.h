@@ -47,7 +47,8 @@ public:
     int    overallWidth();
     void   setInterval( time_t start, time_t end );
     int    daysInInterval();
-
+    time_t startTime() { return m_start; }
+    time_t endTime()   { return m_end;   }
     void   setWeekStartMon( bool t ) { m_weekStartMon = t; }
 protected:
     enum topOffsetPart { Month, Week, Day, All };

@@ -1,3 +1,14 @@
+/*
+ * TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
 #include "ktvheader.h"
 #include "Utility.h"
 
@@ -16,8 +27,8 @@
 KTVHeader::KTVHeader( QWidget *parentWidget, const char *name)
     : QScrollView( parentWidget, name ),
       m_height(80),
-      m_start(0),
-      m_end(0),
+      m_start(0L),
+      m_end(0L),
       m_dayWidth(24),   // TODO: variable
       m_weekStartMon(false)
 {
@@ -69,6 +80,7 @@ void KTVHeader::slSetDayWidth(int dayW)
 void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int cliph )
 {
     // Calculate the clipping coordinates...
+    if( m_start == 0 || m_end == 0 ) return;
     int x1 = 0, y1 = 0;
     int x2 = overallWidth(), y2 = m_height;
 
@@ -168,7 +180,7 @@ void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int 
             p->setPen( blackPen );
             p->drawLine( dayX, topOffset(Week), dayX, topOffset(All));
 
-            QString weekStr = i18n("Week %1").arg(weekOfYear(trun, m_weekStartMon));
+            QString weekStr = i18n("Week %1").arg(weekOfYear(trun-ONEDAY, m_weekStartMon));
             if( firstWeek )
             {
                 firstWeek = false;
@@ -181,7 +193,7 @@ void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int 
             }
             else
             {
-                p->drawText( dayX+1, topOffset(Week)+1,
+                p->drawText( dayX+1-m_dayWidth*7, topOffset(Week)+1,
                              m_dayWidth*7-2, topOffset(Day)-topOffset(Week)-2,
                              Qt::AlignCenter,
                              weekStr );
@@ -191,11 +203,11 @@ void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int 
         // check for month
         if( dayOfMonth(trun) == 1 )
         {
-            // week begins here.
+            // a new month begins here, draw a vertical line
             p->setPen( blackPen );
             p->drawLine( dayX, topOffset(Month), dayX, topOffset(Week));
 
-            QString mStr = monthAndYear( trun );
+            QString mStr = monthAndYear( trun - ONEDAY /* need _last_ month */ );
             if( firstMon )
             {
                 firstMon = false;
@@ -277,6 +289,8 @@ int KTVHeader::daysInInterval()
 
 time_t KTVHeader::timeFromX( int x )
 {
+    if( !m_dayWidth ) return m_start;
+    // qDebug("MStart ist %ld", m_start );
     return m_start + time_t(double(ONEDAY) * double(x)/double(m_dayWidth));
 }
 
@@ -288,7 +302,8 @@ int KTVHeader::midnightToX( time_t t )
     return m_dayWidth * daysBetween( m_start, midnight(t) );
 }
 
-int KTVHeader::timeToX( time_t t )
+int KTVHeader::timeToX
+( time_t t )
 {
     if( t < m_start ) return 0;
     if( t > m_end ) return width();

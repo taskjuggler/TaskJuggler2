@@ -72,7 +72,7 @@ private:
     KTVCanvasItemBase* taskToCanvasItem( const Task* ) const;
     void drawBackground( QPainter &painter, const QRect & clip );
     KTVTaskTable *m_taskTable;
-    time_t m_start, m_end;
+    // time_t m_start, m_end;
     QPtrDict<Task> m_tasks;    			 // Stores the Tasks for the TableItems
     QPtrDict<KTVCanvasItemBase> m_canvasItems;    // Stores Canvas-Items for the Tasks
 

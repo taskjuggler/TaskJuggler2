@@ -53,6 +53,11 @@ public:
 
     void setInterval( time_t start, time_t end );
 
+    /**
+     * Clear the whole gantt widget and forget everything 
+     */ 
+    void clear();
+    
 public slots:
     void slZoomIn();
     void slZoomOut();

@@ -1,3 +1,15 @@
+/*
+ * TaskJuggler Viewer
+ *
+ * Copyright (c) 2001, 2002 by Klaas Freitag <freitag@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
+
 #include <qdatetime.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -46,8 +58,6 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, KTVHeader *h, 
    m_canvasMarker->setBrush( wBrush ); // QBrush(gray, Dense4Pattern ));
 
    m_canvasMarker->setZ(-0.1);
-   m_start = 0;
-   m_end = 0;
    setDoubleBuffering( true ); // false );
    resize( 400, 300);
 
@@ -69,25 +79,6 @@ void KTVTaskCanvas::setTable( KTVTaskTable *tab )
    m_taskTable = tab;
 }
 
-#if 0
-/* set the interval and calculate the width which is returned */
-int  KTVTaskCanvas::setInterval( time_t start, time_t end )
-{
-   m_start = midnight( start );
-   m_end = midnight( end+ONEDAY );
-   m_days = 1 + daysBetween( m_start, m_end );
-   qDebug( "Setting interval from %ld -> %ld", m_start, m_end );
-
-   int w = m_days*m_dayWidth;
-   int h = 100*m_dayHeight; // TODO 100*
-
-   qDebug("Resizing to %dx%d =%d days", w, h, m_days );
-   resize( w, h ); // TODO: amount of tasks
-   m_canvasMarker->setSize( w, m_canvasMarker->height() );
-
-   return w;
-}
-#endif
 
 void KTVTaskCanvas::resize( int w, int h )
 {
@@ -99,6 +90,8 @@ void KTVTaskCanvas::resize( int w, int h )
 void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
 {
    // qDebug( "Drawing background" );
+    if( m_header->startTime() == 0 || m_header->endTime() == 0 ) return;
+    
    QCanvas::drawBackground( painter, clip );
 
    QBrush origBrush = painter.brush();
@@ -121,7 +114,8 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
       x += dayWidth;
    /* remove one width again to be sure starting outside the visible area */
    x -= dayWidth;
-
+   if( x < 0 ) x = 0;
+   
    /* a starttime variable */
    time_t runtime = m_header->timeFromX(x) + ONEDAY/2;
    /* add half a day to avoid round probs. timeFromX is in danger of round probs */
@@ -398,6 +392,9 @@ KTVCanvasItemBase* KTVTaskCanvas::qCanvasItemToItemBase( QCanvasItem* qItem )
 void KTVTaskCanvas::clear()
 {
     qDebug("Clearing all!");
+    
     m_canvasItems.clear();
+    m_canvasItemList.clear();
     m_tasks.clear();
+    resize(0,0);
 }
