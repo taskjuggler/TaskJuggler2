@@ -113,7 +113,10 @@ CoreAttributes::isDescendentOf(const CoreAttributes* c) const
 bool
 CoreAttributes::isParentOf(const CoreAttributes* c) const
 {
-    for (CoreAttributes const* p = c; p; p = p->parent)
+    if (!c)
+        return FALSE;
+    
+    for (CoreAttributes const* p = c->parent; p; p = p->parent)
         if (p == this)
             return TRUE;
 

@@ -19,6 +19,7 @@
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
+#include "Shift.h"
 #include "debug.h"
 
 #define KW(a) (a)
@@ -53,12 +54,14 @@ ExpressionTreeFunction::findCoreAttributes(const CoreAttributes* ca,
 {
     const CoreAttributes* p;
     
-    if (strcmp(ca->getType(), "task") == 0)
+    if (strcmp(ca->getType(), "Task") == 0)
         p = ca->getProject()->getTask(id);
-    else if (strcmp(ca->getType(), "resource") == 0)
+    else if (strcmp(ca->getType(), "Resource") == 0)
         p = ca->getProject()->getResource(id);
-    else if (strcmp(ca->getType(), "account") == 0)
+    else if (strcmp(ca->getType(), "Account") == 0)
         p = ca->getProject()->getAccount(id);
+    else if (strcmp(ca->getType(), "Shift") == 0)
+        p = ca->getProject()->getShift(id);
     else
         return 0;
 
@@ -72,9 +75,14 @@ ExpressionTreeFunction::isChildOf(const ExpressionTree* et,
     const CoreAttributes* p;
     if ((p = findCoreAttributes(et->getCoreAttributes(),
                                 ops[0]->evalAsString(et))) == 0)
+    {
+        qDebug("%s is no child of %s",
+               et->getCoreAttributes()->getFullId().latin1(),
+               ops[0]->evalAsString(et).latin1());
         return 0;
+    }
 
-    return p->isDescendentOf(et->getCoreAttributes());
+    return et->getCoreAttributes()->isDescendentOf(p);
 }
 
 long
@@ -86,7 +94,7 @@ ExpressionTreeFunction::isParentOf(const ExpressionTree* et,
                                 ops[0]->evalAsString(et))) == 0)
         return 0;
 
-    return p->isParentOf(et->getCoreAttributes());
+    return et->getCoreAttributes()->isParentOf(p);
 }
 
 long
