@@ -88,3 +88,4 @@ ManagedFileInfo::saveAs(const KURL& url)
     fileURL = url;
 }
 
+#include "ManagedFileInfo.moc"

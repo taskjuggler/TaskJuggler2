@@ -214,3 +214,4 @@ ReportManager::setLoadingProject(bool lp)
         (*mri)->setLoadingProject(lp);
 }
 
+#include "ReportManager.moc"

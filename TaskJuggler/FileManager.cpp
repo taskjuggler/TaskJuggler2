@@ -499,3 +499,4 @@ FileManager::setFocusToEditor() const
         getCurrentFile()->getEditor()->setFocus();
 }
 
+#include "FileManager.moc"

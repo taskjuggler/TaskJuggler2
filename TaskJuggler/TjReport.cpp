@@ -1177,3 +1177,4 @@ TjReport::stepIntervalName(time_t ref) const
     return name;
 }
 
+#include "TjReport.moc"
