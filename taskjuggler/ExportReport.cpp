@@ -748,7 +748,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                 break;
             default:
                 qDebug("ExportReport::generateTaskSupplement(): "
-                       "Unknown task attribute %d", TaskAttributeDict[*it]);
+                       "Unknown task attribute %s", (*it).latin1());
                 return FALSE;
         }
     }

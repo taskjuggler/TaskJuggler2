@@ -1,0 +1,118 @@
+<!-- DTD for TaskJuggler 2.0 XML Files -->
+<!-- (c) 2003 Chris Schlaeger <cs@suse.de> -->
+<!-- This file is licensed under the GNU FDL Version 1.0 -->
+
+<!ELEMENT taskjuggler (project, shiftList?, resourceList?, taskList)>
+
+<!ELEMENT project (start, end, extend*, now?, currencyFormat,
+                   workingHours)>
+<!ATTLIST project 
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED
+  version CDATA #REQUIRED
+  timezone CDATA #REQUIRED
+  timingResolution CDATA #REQUIRED
+  dailyWorkingHours CDATA #REQUIRED
+  yearlyWorkingDays CDATA #REQUIRED
+  weekStartMonday CDATA #REQUIRED
+  timeFormat CDATA #REQUIRED
+  shortTimeFormat CDATA #REQUIRED>
+
+<!ELEMENT start EMPTY>
+<!ATTLIST start
+  humanReadable CDATA #REQUIRED
+  time CDATA #REQUIRED>
+
+<!ELEMENT end EMPTY>
+<!ATTLIST end
+  humanReadable CDATA #REQUIRED
+  time CDATA #REQUIRED>
+
+<!ELEMENT now EMPTY>
+<!ATTLIST now
+  humanReadable CDATA #REQUIRED
+  time CDATA #REQUIRED>
+
+<!ELEMENT extend (text*, reference*)>
+<!ATTLIST extend
+  property CDATA #REQUIRED>
+
+<!ELEMENT text EMPTY>
+<!ATTLIST text
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED>
+
+<!ELEMENT reference (#PCDATA)>
+<!ATTLIST reference
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED>
+
+<!ELEMENT currencyFormat (#PCDATA)>
+<!ATTLIST currencyFormat
+  signPrefix CDATA #REQUIRED
+  signSuffix CDATA #REQUIRED
+  thousandSep CDATA #REQUIRED
+  fractionSep CDATA #REQUIRED
+  fracDigits CDATA #REQUIRED>
+
+<!ELEMENT workingHours (sun, mon, tue, wed, thu, fri, sat)>
+<!ELEMENT sun (timeInterval*)>
+<!ELEMENT mon (timeInterval*)>
+<!ELEMENT tue (timeInterval*)>
+<!ELEMENT wed (timeInterval*)>
+<!ELEMENT thu (timeInterval*)>
+<!ELEMENT fri (timeInterval*)>
+<!ELEMENT sat (timeInterval*)>
+<!ELEMENT timeInterval (start, end)>
+ 
+<!ELEMENT flag (#PCDATA)>
+ 
+<!ELEMENT resourceList (resource*)>
+
+<!ELEMENT shiftSelection (start, end)>
+<!ATTLIST shiftSelection
+  shiftId CDATA #REQUIRED>
+
+<!ELEMENT shiftList (shift*)>
+
+<!ELEMENT shift (workingHours, shift*)>
+<!ATTLIST shift
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED>
+
+<!ELEMENT resource (flags*, workingHours, shiftSelection*, resourceScenario, 
+                    resource*)>
+<!ATTLIST resource
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED>
+
+<!ELEMENT resourceScenario (booking*)>
+<!ATTLIST resourceScenario
+  id CDATA #REQUIRED>
+
+<!ELEMENT booking (start, end)>
+<!ATTLIST booking
+  taskId CDATA #REQUIRED>
+
+<!ELEMENT accountList (account*)>
+
+<!ELEMENT taskList (task+)>
+
+<!ELEMENT task (depends*, precedes*, flag*, task*, taskScenario*)>
+<!ATTLIST task
+  id CDATA #REQUIRED
+  name CDATA #REQUIRED
+  projectId CDATA #REQUIRED
+  milestone (0|1) #REQUIRED
+  asapScheduling (0|1) #REQUIRED
+  priority CDATA #REQUIRED
+>
+
+<!ELEMENT taskScenario (start?, end?)>
+<!ATTLIST taskScenario
+  id CDATA #REQUIRED
+  scheduled (0|1) #REQUIRED>
+
+<!ELEMENT depends (#PCDATA)>
+<!ELEMENT precedes (#PCDATA)>
+

@@ -665,7 +665,7 @@ Resource::getStartOfFirstSlot(int sc, const Task* task)
 {
     if (scoreboards[sc] == 0)
         return 0;
-    for (int i = 0; i < sbSize; ++i)
+    for (uint i = 0; i < sbSize; ++i)
     {
         if (scoreboards[sc][i] > ((SbBooking*) 3) &&
             scoreboards[sc][i]->getTask() == task)

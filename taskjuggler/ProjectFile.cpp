@@ -49,6 +49,7 @@
 #include "CSVAccountReport.h"
 #include "CSVAccountReportElement.h"
 #include "CSVReport.h"
+#include "XMLReport.h"
 #include "ExportReport.h"
 #include "TableColumnInfo.h"
 #include "ReportXML.h"
@@ -2786,16 +2787,55 @@ ProjectFile::readICalTaskReport()
 bool
 ProjectFile::readXMLReport()
 {
-   QString token;
-   if (nextToken(token) != STRING)
-   {
-      errorMessage(i18n("File name expected"));
-      return FALSE;
-   }
-   ReportXML *rep = new ReportXML(proj, token, getFile(), getLine());
-   proj->addXMLReport( rep );
+    QString fileName;
+    if (nextToken(fileName) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return FALSE;
+    }
+    int version = 1;
+    TokenType tt;
+    QString token;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        while ((tt = nextToken(token)) != RBRACE)
+        {
+            if (token == KW("version"))
+            {
+                if (nextToken(token) != INTEGER ||
+                    token.toInt() < 1 || token.toInt() > 2)
+                {
+                    errorMessage("Currently only version 1 and 2 are "
+                                 "supported.");
+                    return FALSE;
+                }
+                version = token.toInt();
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute '%1'").arg(token));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+   
+    if (version == 1)
+    {
+        ReportXML *rep = new ReportXML(proj, fileName, getFile(), getLine());
+        proj->addXMLReport(rep);
+    }
+    else
+    {
+        XMLReport* report;
+        report = new XMLReport(proj, fileName, getFile(), getLine());
+        report->setMasterFile(TRUE);
+        report->addTaskAttribute("all");
+        proj->addReport(report);
+    }
 
-   return( true );
+    return(TRUE);
 }
 
 bool
