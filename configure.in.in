@@ -21,7 +21,7 @@ if test "$cv_option_kdesupport" = yes ;then
 
     # FIXME: Proper installation for ical lib, for a workaround add link options
     #        for your system here.
-    KDE_LIBS='-lkcal'
+    KDE_LIBS=''
    dnl LIBICAL="-lical -lkcal"
    DO_NOT_COMPILE="Examples Contrib"
 else
