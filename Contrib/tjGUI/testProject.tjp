@@ -29,7 +29,9 @@ task testProject "testProject for xml2gantt" {
     }
 
     task devel "Development" {
+        note "this is the global development task"
         task dev_1 "Devel-Job 1" {
+            note "devel job 1 ..."
             length 7d
             complete 100
             ${__worker}
@@ -37,6 +39,7 @@ task testProject "testProject for xml2gantt" {
             depends !!start
         }
         task dev_2 "Devel-Job 2" {
+            note "devel job 2 ..."
             length 13d
             complete 90
             ${__worker}
@@ -66,11 +69,13 @@ task testProject "testProject for xml2gantt" {
     }
 
     task beta1 "first public beta" {
+        note "first beta-iso include in cd-tracker"
         depends !devel
         milestone
     }
 
     task docuIN "make input for Documentation-Team" {
+        note "write input for docu-team in ascii"
         task dev_21 "2te with name dev_21" {
             length 14d
             ${__worker}
@@ -84,6 +89,7 @@ task testProject "testProject for xml2gantt" {
     }
 
     task makeDocu "write the documentation" {
+        note "docu-team makes handbook and layout ..."
         task doing "write manuscript" {
             length 12d
             ${__worker}

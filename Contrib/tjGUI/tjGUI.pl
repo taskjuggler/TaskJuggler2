@@ -29,6 +29,7 @@ use Class::MethodMaker
                             Id
                             Name
                             ParentTask
+                            Note
                             startBuffer     endBuffer
                             minStart        maxStart
                             minEnd          maxEnd
@@ -619,6 +620,8 @@ sub _display_task_data {
 
         $l->Label( -text => 'short descr.:' )->pack( -anchor => 'w', -padx => 15  );
             $v->Label( -text => $t->Name )->pack( -anchor => 'w' );
+        $l->Label( -text => 'note:' )->pack( -anchor => 'w', -padx => 15  );
+            $v->Label( -text => $t->Note )->pack( -anchor => 'w' );
         $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
             $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
 
@@ -749,6 +752,7 @@ sub start {
     if ( $element eq 'Task' ) {
         $t = tjTask->new(
             ProjectID       => $_[1],
+            Note            => 'no note available',
             startBuffer     => 0,
             endBuffer       => 0,
             Followers       => [],
@@ -808,6 +812,7 @@ sub text {
         $t->startBuffer("$string")  if ( $elm_fifo[$#elm_fifo] eq 'startBufferSize' );
         $t->endBuffer("$string")    if ( $elm_fifo[$#elm_fifo] eq 'EndBufferSize' );
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
+        $t->Note("$string")         if ( $elm_fifo[$#elm_fifo] eq 'Note' );
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
         if ( $elm_fifo[$#elm_fifo] eq 'Resource' ) {

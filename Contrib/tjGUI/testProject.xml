@@ -6,7 +6,7 @@
  <Priority>500</Priority>
  <start humanReadable="2002-04-15 00:00 CEST" >1018821600</start>
  <end humanReadable="2002-10-01 00:00 CEST" >1033423200</end>
- <now humanReadable="2002-06-20 08:50 CEST" >1024555827</now>
+ <now humanReadable="2002-06-20 11:18 CEST" >1024564727</now>
  <Task Id="testProject" >
   <Index>1</Index>
   <Name>testProject for xml2gantt</Name>
@@ -47,9 +47,10 @@
     <Name>Development</Name>
     <ProjectID>testProject</ProjectID>
     <Priority>500</Priority>
-    <complete>85.9</complete>
+    <complete>86.0</complete>
     <Type>Container</Type>
     <ParentTask>testProject</ParentTask>
+    <Note>this is the global development task</Note>
     <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
     <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
     <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
@@ -67,6 +68,7 @@
       <complete>100.0</complete>
       <Type>Task</Type>
       <ParentTask>testProject.devel</ParentTask>
+      <Note>devel job 1 ...</Note>
       <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
       <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
       <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
@@ -79,8 +81,8 @@
       <ActualStartBufferEnd humanReadable="1970-01-01 01:59 CET" >3599</ActualStartBufferEnd>
       <PlanStartBufferEnd humanReadable="2002-05-02 00:59 CEST" >1020293999</PlanStartBufferEnd>
       <Previous>testProject.start</Previous>
-      <Follower>testProject.devel.dev_21</Follower>
       <Follower>testProject.devel.dev_2</Follower>
+      <Follower>testProject.devel.dev_21</Follower>
       <Allocation ResourceID="worker_1" >
        <Load>100</Load>
        <Persistent>No</Persistent>
@@ -105,6 +107,7 @@
       <complete>90.0</complete>
       <Type>Task</Type>
       <ParentTask>testProject.devel</ParentTask>
+      <Note>devel job 2 ...</Note>
       <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
       <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
       <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
@@ -131,8 +134,8 @@
        <Load>84</Load>
        <Persistent>No</Persistent>
       </Allocation>
-      <Resource Id="worker_3" >Foo Bar</Resource>
       <Resource Id="worker_2" >Bar Baz</Resource>
+      <Resource Id="worker_3" >Foo Bar</Resource>
       <Resource Id="worker_1" >Alfred Qwertz</Resource>
      </Task>
      <Task Id="testProject.devel.dev_21" >
@@ -149,13 +152,14 @@
       <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
       <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
       <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
-      <planStart humanReadable="2002-05-09 16:00 CEST" >1020952800</planStart>
+      <planStart humanReadable="2002-05-10 09:00 CEST" >1021014000</planStart>
       <planEnd humanReadable="2002-05-15 15:59 CEST" >1021471199</planEnd>
       <Previous>testProject.devel.dev_1</Previous>
       <Allocation ResourceID="worker_2" >
        <Load>100</Load>
        <Persistent>No</Persistent>
       </Allocation>
+      <Resource Id="worker_2" >Bar Baz</Resource>
      </Task>
      <Task Id="testProject.devel.dev_3" >
       <Index>7</Index>
@@ -228,8 +232,8 @@
      </Task>
     </SubTasks>
     <Previous>testProject.start</Previous>
-    <Follower>testProject.beta1</Follower>
     <Follower>testProject.buffer</Follower>
+    <Follower>testProject.beta1</Follower>
    </Task>
    <Task Id="testProject.beta1" >
     <Index>9</Index>
@@ -239,6 +243,7 @@
     <complete>0.0</complete>
     <Type>Milestone</Type>
     <ParentTask>testProject</ParentTask>
+    <Note>first beta-iso include in cd-tracker</Note>
     <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
     <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
     <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
@@ -258,6 +263,7 @@
     <complete>0.0</complete>
     <Type>Container</Type>
     <ParentTask>testProject</ParentTask>
+    <Note>write input for docu-team in ascii</Note>
     <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
     <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
     <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
@@ -335,6 +341,7 @@
     <complete>0.0</complete>
     <Type>Container</Type>
     <ParentTask>testProject</ParentTask>
+    <Note>docu-team makes handbook and layout ...</Note>
     <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
     <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
     <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
