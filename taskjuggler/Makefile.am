@@ -1,5 +1,5 @@
 bin_PROGRAMS = taskjuggler
-taskjuggler_SOURCES =  main.cpp kotrus.cpp
+taskjuggler_SOURCES =  main.cpp 
 
 noinst_LTLIBRARIES = libtaskjuggler.la
 
@@ -8,7 +8,7 @@ CoreAttributes.cpp ShiftList.cpp ResourceList.cpp Task.cpp VacationList.cpp \
 Account.cpp Allocation.cpp MacroTable.cpp ProjectFile.cpp \
 HTMLTaskReport.cpp HTMLResourceReport.cpp HTMLAccountReport.cpp \
 ReportHtml.cpp ExportReport.cpp \
-Project.cpp ReportICal.cpp
+Project.cpp ReportICal.cpp kotrus.cpp
 
 libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS)
 
