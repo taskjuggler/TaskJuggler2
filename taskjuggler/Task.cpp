@@ -78,8 +78,8 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		projectId = p->projectId;
 		priority = p->priority;
 		minStart = p->minStart;
-		maxStart = p->maxStart;
-		minEnd = p->minEnd;
+		maxStart = p->maxEnd;
+		minEnd = p->minStart; 
 		maxEnd = p->maxEnd;
 		responsible = p->responsible;
 		account = p->account;
