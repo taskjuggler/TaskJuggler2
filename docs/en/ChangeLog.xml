@@ -773,6 +773,13 @@ Unstable and FC3.</para></listitem>
 <listitem><para>Fixed generation of reports with absolute file
 names.</para></listitem>
 
+<listitem><para>Make sure that all dates specified in project files
+lie within the Unix time space. For technical reasons we need to limit
+this to 1971-01-01 - 2035-01-01.</para></listitem>
+
+<listitem><para>Fixed some crashes related to out of project time
+specifications.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

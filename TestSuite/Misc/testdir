@@ -2,7 +2,7 @@
 
 set errors=0
 
-dirs=`find * -type d -maxdepth 0`
+dirs=`find * -maxdepth 0 -type d`
 
 for d in $dirs ; do
   if [ $d != "CVS" ] ; then

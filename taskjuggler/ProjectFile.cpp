@@ -222,20 +222,6 @@ ProjectFile::parse()
                 proj->setPriority(priority);
                 break;
             }
-            else if (token == "now")
-            {
-                errorMessage
-                    (i18n("WARNING: 'now' is no longer a property. It's now "
-                          " an optional project attribute. Please fix your "
-                          "project file."));
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
-                    return FALSE;
-                }
-                proj->setNow(date2time(token));
-                break;
-            }
             else if (token == KW("mineffort"))
             {
                 TokenType tt;
@@ -633,18 +619,10 @@ ProjectFile::readProject()
     }
     proj->setVersion(token);
     time_t start, end;
-    if (nextToken(token) != DATE)
-    {
-        errorMessage(i18n("Start date expected"));
+    if (!readDate(start, 0, FALSE))
         return FALSE;
-    }
-    start = date2time(token);
-    if (nextToken(token) != DATE)
-    {
-        errorMessage(i18n("End date expected"));
+    if (!readDate(end, 0, FALSE))
         return FALSE;
-    }
-    end = date2time(token);
     if (end <= start)
     {
         errorMessage(i18n("End date must be larger then start date"));
@@ -695,12 +673,10 @@ ProjectFile::readProject()
             }
             else if (token == KW("now"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t now;
+                if (!readDate(now, 0))
                     return FALSE;
-                }
-                proj->setNow(date2time(token));
+                proj->setNow(now);
             }
             else if (token == KW("timingresolution"))
             {
@@ -1901,19 +1877,17 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
 JournalEntry*
 ProjectFile::readJournalEntry()
 {
-    QString date, text;
-
-    if (nextToken(date) != DATE)
-    {
-        errorMessage(i18n("Date expected"));
+    time_t date;
+    if (!readDate(date, 0, FALSE))
         return 0;
-    }
+
+    QString text;
     if (nextToken(text) != STRING)
     {
         errorMessage(i18n("String expected"));
         return 0;
     }
-    return new JournalEntry(date2time(date), text);
+    return new JournalEntry(date, text);
 }
 
 bool
@@ -1929,42 +1903,31 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
             return FALSE;
         }
     }
-    QString start;
-    if ((tt = nextToken(start)) != DATE)
-    {
-        errorMessage(i18n("Date expected"));
+    if (!readDate(from, 0, FALSE))
         return FALSE;
-    }
     QString token;
     if ((tt = nextToken(token)) != MINUS)
     {
         // vacation e. g. 2001-11-28
         returnToken(tt, token);
-        from = date2time(start);
-        to = sameTimeNextDay(date2time(start)) - 1;
+        to = sameTimeNextDay(from) - 1;
     }
     else
     {
         // vacation e. g. 2001-11-28 - 2001-11-30
-        QString end;
-        if ((tt = nextToken(end)) != DATE)
-        {
-            errorMessage(i18n("Date expected"));
+        if (!readDate(to, 1, FALSE))
             return FALSE;
-        }
-        from = date2time(start);
-        if (date2time(start) > date2time(end))
+        if (from > to)
         {
             errorMessage(i18n("Vacation must start before end"));
             return FALSE;
         }
-        to = date2time(end) - 1;
     }
     return TRUE;
 }
 
 bool
-ProjectFile::readDate(time_t& val, time_t correction)
+ProjectFile::readDate(time_t& val, time_t correction, bool checkPrjInterval)
 {
     QString token;
 
@@ -1974,17 +1937,34 @@ ProjectFile::readDate(time_t& val, time_t correction)
         return FALSE;
     }
 
-    val = date2time(token) - correction;
-    if (val + correction < proj->getStart() ||
-        val > proj->getEnd())
+    // Make sure that we are within the UNIX lifetime (kindof).
+    int year = token.left(4).toInt();
+    if (year < 1971)
     {
-        errorMessage(i18n("Date %1 is outside of project time frame "
-                          "(%2 - %3")
-                     .arg(time2tjp(val))
-                     .arg(time2tjp(proj->getStart()))
-                     .arg(time2tjp(proj->getEnd())));
+        errorMessage(i18n("Date must be larger than 1971-01-01"));
         return FALSE;
     }
+    if (year > 2035)
+    {
+        errorMessage(i18n("Date must be smaller than 2035-01-01"));
+        return FALSE;
+    }
+    val = date2time(token) - correction;
+
+    if (checkPrjInterval)
+    {
+        if (val + correction < proj->getStart() ||
+            val > proj->getEnd())
+        {
+            errorMessage(i18n("Date %1 is outside of project time frame "
+                              "(%2 - %3")
+                         .arg(time2tjp(val))
+                         .arg(time2tjp(proj->getStart()))
+                         .arg(time2tjp(proj->getEnd())));
+            return FALSE;
+        }
+    }
+
     return TRUE;
 }
 
@@ -2487,26 +2467,18 @@ ProjectFile::readShiftSelection(time_t& from, time_t& to)
 Booking*
 ProjectFile::readBooking(int& sloppy)
 {
-    QString token;
-
-    if (nextToken(token) != DATE)
-    {
-        errorMessage(i18n("Start date expected"));
+    time_t start;
+    if (!readDate(start, 0))
         return 0;
-    }
-    time_t start = date2time(token);
     if (start < proj->getStart() || start >= proj->getEnd())
     {
         errorMessage(i18n("Start date must be within the project timeframe"));
         return 0;
     }
 
-    if (nextToken(token) != DATE)
-    {
-        errorMessage(i18n("End date expected"));
+    time_t end;
+    if (!readDate(end, 1))
         return 0;
-    }
-    time_t end = date2time(token) - 1;
     if (end <= proj->getStart() || end > proj->getEnd())
     {
         errorMessage(i18n("End date must be within the project timeframe"));
@@ -2519,6 +2491,7 @@ ProjectFile::readBooking(int& sloppy)
     }
 
     Task* task;
+    QString token;
     TokenType tt;
     if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
         (task = proj->getTask(getTaskPrefix() + token)) == 0)
@@ -2684,14 +2657,9 @@ ProjectFile::readAccount(Account* parent)
 bool
 ProjectFile::readCredit(Account* a)
 {
-    QString token;
-
-    if (nextToken(token) != DATE)
-    {
-        errorMessage(i18n("Date expected"));
+    time_t date;
+    if (!readDate(date, 0))
         return FALSE;
-    }
-    time_t date = date2time(token);
 
     QString description;
     if (nextToken(description) != STRING)
@@ -2700,6 +2668,7 @@ ProjectFile::readCredit(Account* a)
         return FALSE;
     }
 
+    QString token;
     TokenType tt;
     if ((tt = nextToken(token)) != REAL && tt != INTEGER)
     {
@@ -3349,21 +3318,17 @@ ProjectFile::readReport(const QString& reportType)
             }
             else if (token == KW("start"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t start;
+                if (!readDate(start, 0))
                     return FALSE;
-                }
-                tab->setStart(date2time(token));
+                tab->setStart(start);
             }
             else if (token == KW("end"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t end;
+                if (!readDate(end, 1))
                     return FALSE;
-                }
-                tab->setEnd(date2time(token) - 1);
+                tab->setEnd(end);
             }
             else if (token == KW("headline"))
             {
@@ -3607,21 +3572,17 @@ ProjectFile::readHTMLReport(const QString& reportType)
             }
             else if (token == KW("start"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t start;
+                if (!readDate(start, 0))
                     goto exit_error;
-                }
-                tab->setStart(date2time(token));
+                tab->setStart(start);
             }
             else if (token == KW("end"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t end;
+                if (!readDate(end, 1))
                     goto exit_error;
-                }
-                tab->setEnd(date2time(token) - 1);
+                tab->setEnd(end);
             }
             else if (token == KW("headline"))
             {
@@ -4014,21 +3975,17 @@ ProjectFile::readCSVReport(const QString& reportType)
             }
             else if (token == KW("start"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t start;
+                if (!readDate(start, 0))
                     return FALSE;
-                }
-                tab->setStart(date2time(token));
+                tab->setStart(start);
             }
             else if (token == KW("end"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t end;
+                if (!readDate(end, 1))
                     return FALSE;
-                }
-                tab->setEnd(date2time(token) - 1);
+                tab->setEnd(end);
             }
             else if (token == KW("rawhead"))
             {
@@ -4443,21 +4400,17 @@ ProjectFile::readReportElement(ReportElement* el)
             }
             else if (token == KW("start"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t start;
+                if (!readDate(start, 0))
                     return FALSE;
-                }
-                el->setStart(date2time(token));
+                el->setStart(start);
             }
             else if (token == KW("end"))
             {
-                if (nextToken(token) != DATE)
-                {
-                    errorMessage(i18n("Date expected"));
+                time_t end;
+                if (!readDate(end, 1))
                     return FALSE;
-                }
-                el->setEnd(date2time(token) - 1);
+                el->setEnd(end);
             }
             else if (token == KW("headline"))
             {
@@ -4671,6 +4624,19 @@ ProjectFile::readLogicalExpression(int precedence)
     }
     else if (tt == DATE)
     {
+        // Make sure that we are within the UNIX lifetime (kindof).
+        int year = token.left(4).toInt();
+        if (year < 1971)
+        {
+            errorMessage(i18n("Date must be larger than 1971-01-01"));
+            return 0;
+        }
+        if (year > 2035)
+        {
+            errorMessage(i18n("Date must be smaller than 2035-01-01"));
+            return 0;
+        }
+
         time_t date;
         if ((date = date2time(token)) == 0)
         {
@@ -5275,6 +5241,19 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
 time_t
 ProjectFile::date2time(const QString& date)
 {
+    // Make sure that we are within the UNIX lifetime (kindof).
+    int year = date.left(4).toInt();
+    if (year < 1971)
+    {
+        errorMessage(i18n("Date must be larger than 1971-01-01"));
+        return FALSE;
+    }
+    if (year > 2035)
+    {
+        errorMessage(i18n("Date must be smaller than 2035-01-01"));
+        return FALSE;
+    }
+
     time_t res;
     if ((res = ::date2time(date)) == 0)
         errorMessage(i18n(getUtilityError()));

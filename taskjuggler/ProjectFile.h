@@ -145,7 +145,7 @@ private:
     bool readAllocate(Task* t);
     UsageLimits* readLimits();
     bool readTimeFrame(double& d, bool workingDays);
-    bool readDate(time_t& val, time_t correction);
+    bool readDate(time_t& val, time_t correction, bool checkPrjInterval = TRUE);
     bool readRealFormat(RealFormat* format);
     bool readReference(QString& ref, QString& label);
     bool readTimeValue(ulong& value);

@@ -1,0 +1,6 @@
+project epoch "Epoch" "1.0" 1971-01-01 2035-01-01 
+
+task t "Task" {
+	start 1970-01-01
+}
+
