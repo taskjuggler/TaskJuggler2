@@ -2574,7 +2574,7 @@ bool
 Task::dependsOnABrother(const Task* p) const
 {
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
-        if ((*tdi)->getTaskRef()->parent == p)
+        if ((*tdi)->getTaskRef() && (*tdi)->getTaskRef()->parent == p)
             return TRUE;
     return FALSE;
 }
@@ -2583,7 +2583,7 @@ bool
 Task::precedesABrother(const Task* p) const
 {
     for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
-        if ((*tdi)->getTaskRef()->parent == p)
+        if ((*tdi)->getTaskRef() && (*tdi)->getTaskRef()->parent == p)
             return TRUE;
     return FALSE;
 }
