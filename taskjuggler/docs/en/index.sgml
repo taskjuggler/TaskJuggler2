@@ -21,8 +21,8 @@ projects in your company. It schedules the whole project and tries to optimize
 the resources needed for the project.
 
 The output can either be a report showing the several tasks, the resource usage
-or the account information. The report is created as a html file which enables
-an easy display via a WEB browser.
+or the account information. Multiple reports can be created as html files
+which enables an easy display via a WEB browser.
 
 <sect1>Changes
 <p>
@@ -32,8 +32,10 @@ an easy display via a WEB browser.
 <sect1>How to obtain TaskJuggler 
 <p>
 
-TaskJuggler my be obtained from the author of the software (<htmlurl
-url="mailto:cs@suse.de" name = "Chris Schlaeger">).
+TaskJuggler may be obtained from the following web site:
+
+<htmlurl url="http://www.suse.de/~cs/taskjuggler"
+name="http://www.suse.de/~cs/taskjuggler">.
 
 <sect1>Requirements
 <p>
@@ -42,7 +44,7 @@ To build and run TaskJuggler you need:
 
 <itemize>
 <item>qt3 - The qt c++ class library in version 3
-<item> gcc 2.96 - The GNU C compiler in version 2.96. The c++ extensions must be
+<item> gcc 2.95 - The GNU C compiler in version 2.95. The c++ extensions must be
 available
 </itemize>
 
@@ -61,10 +63,11 @@ in the base directory of the TaskJuggler distribution:
 </verb></tscreen>
 
 <p>
-Since TaskJuggler uses <verb>autoconf</verb> you should have not trouble
+Since TaskJuggler uses <verb>autoconf</verb> you should have no trouble
 compiling it.
-Should you run into problems please report them to the the author at 
-<htmlurl url="mailto:cs@suse.de" name = "Chris Schlaeger">
+Should you run into problems please report them to the TaskJuggler developers
+mailing list at <htmlurl url="mailto:taskjuggler-devel@suse.de"
+name="taskjuggler-devel@suse.de"> in English.
 
 
 <p>
@@ -82,7 +85,7 @@ included into the main project during compile time.
 <p>
 
 TaskJuggler works like a compiler. You provide the source files, it computes
-its contents and creates an output in HTML.
+its contents and creates the output files.
 
 <p>
 After you created the project description file, you have TaskJuggler let it
@@ -123,7 +126,7 @@ starts on Jan. 16th 2002 and it's end is planned for 30th of June 2002. The
 project will consist of the following tasks:
 
 <descrip>
-<tag/Specifiaction/The developers will set up the specifiaction for the
+<tag/Specification/The developers will set up the specifiaction for the
 software and documentation.
 <tag/Software development/This is the whole process of coding the software. It
 include the following sub tasks:
@@ -176,8 +179,8 @@ This statement informs TaskJuggler about the most important things on the
 project. These things include:
 
 <descrip>
-<tag/fibu/The project name, unique for TaskJuggler
-<tag/Accounting Software/The real name of the project
+<tag/fibu/The project id, unique within the scope of the project
+<tag/Accounting Software/The short description of the project
 <tag/1.0/The version of the schedule
 <tag/2002-01-16 2002-6-30/Begin and end date of the project
 </descrip>
@@ -187,11 +190,11 @@ for details.
 
 <tag>resource dev "Developers" { ... }</tag>
 
-This defines a resource with the unique name <tt/dev/. It will be shown as
+This defines a resource with the unique id <tt/dev/. It will be shown as
 <tt/Developers/ on the schedule later.
 
 <descrip>
-<tag/dev/The resource name, unique for TaskJuggler
+<tag/dev/The resource ID, unique for TaskJuggler
 <tag/Developers/The real name of the resource
 </descrip>
 
@@ -240,7 +243,8 @@ revenue values in the correct currency.
 <tag> <tt/account dev "Development" cost {}/</tag>
 
 This creates an account <tt/dev/ as a <tt/cost/ account. There is also a
-account type <tt/revenue/ (see reference: <ref id="account" name="account">).
+account type <tt/revenue/, which is used to cover all kinds of income (see
+reference: <ref id="account" name="account">).
 </descrip>
 
 <sect>Command Reference<p><label id="reference">
@@ -250,9 +254,9 @@ There are two ways to annotate a project file with comments. All text
 after a '#' will be ignored. Comments that span multiple rows must be
 started with '/*' and ended with '*/'.
 
-<sect1>Attributes<p><label id="attributes">
+<sect1>Parameters<p><label id="parameters">
 
-Attributes may be of the following types:
+Parameters may be of the following types:
 
 <descrip>
 <label id="id"><tag/ID/A string that may consist of the characters A-Z, a-z, 0-9 and _.
@@ -289,14 +293,14 @@ years
 <label id="real"><tag/REAL/A real number (e.g. 3.14)
 
 <label id="logicalexpression"><tag/LOGICALEXPRESSION/This is a logical expression consting of logical
-operations and '&', or '|' and not '~' to operation on INTERGER values
+operations and '&', or '|' and not '&tilde;' to operation on INTERGER values
 or symbols. As symbols currently only flag names are supported. The
-expression is evaluated from left to right. '~' has a higher
+expression is evaluated from left to right. '&tilde;' has a higher
 precedance than other operators. Use braces to avoid ambigous
 operations. If flagFoo, flagFooBar and flagBar are declared flags, the
 following example is a correct expression:
 
-(flagFoo | flagFooBar) & ~flagBar
+(flagFoo | flagFooBar) & &tilde;flagBar
 
 <label id="sortingcriteria"><tag/SORTINGCRITERIA/See attribute description for allowed values
 </descrip>
@@ -418,6 +422,8 @@ unit: <ref id="unit" name="UNIT">
 Specifies the time the task occupies the resources. This is working
 time, not calender time. 7d means 7 working days and not one week.
 
+Tasks may not have sub tasks if this attribute is used.
+
 <tag/duration &lt;number&gt; &lt;unit&gt;/
 number: <ref id="real" name="REAL">
 
@@ -425,6 +431,8 @@ unit: <ref id="unit" name="UNIT">
 
 Specifies the time the task occupies the resources. This is calender
 time, not working time. 7d means one week.
+
+Tasks may not have sub tasks if this attribute is used.
 
 <tag/effort &lt;number&gt; &lt;unit&gt;/
 number: <ref id="real" name="REAL">
@@ -434,11 +442,15 @@ unit: <ref id="unit" name="UNIT">
 Specifies the effort needed to complete the task. An effort of 4d can
 be done with 2 full-time resources in 2 days.
 
+Tasks may not have sub tasks if this attribute is used.
+
 <tag/complete &lt;percent&gt;/
 percent: <ref id="integer" name="INTEGER">
 
 Specifies how many percent the task is already completed. This can be
 usefull for project tracking.
+
+Tasks may not have sub tasks if this attribute is used.
 
 <tag/allocate &lt;id&gt;/
 id: <ref id="id" name="ID">
@@ -474,6 +486,8 @@ allocations are mandatory for 'effort' based tasks. Task with a
 'length' or 'duration' specification may have resources allocated but
 do not require them.
 
+Tasks may not have sub tasks if this attribute is used.
+
 <tag/scheduling &lt;policy&gt;/
 policy: <ref id="id" name="ID">
 
@@ -508,7 +522,7 @@ task foo1 {
    task foo2 { start 2002-12-04 }
    task foo3 { depends !foo2 }
 }
-   task bar { depends foo1.foo2 }
+task bar { depends foo1.foo2 }
 </verb></tscreen>
 
 By using the 'depends' attribute the scheduling policy is
@@ -529,9 +543,8 @@ last policy counts.
 <tag/flags &lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;/
 id: <ref id="id" name="ID">
 
-Attaches flags to the task. Flags can be used to hide the information
-about the task in the output. Flags must be declared before they can
-be used. Ref. 'flags'.
+Attaches flags to the task. Flags can be used to filter tasks from the
+the output. Flags must be declared before they can be used. Ref. 'flags'.
 
 Flags are inherited by sub tasks from their parent tasks if they are
 declared before the sub task. Flags that are declared after the sub
@@ -557,7 +570,7 @@ definition of the sub task.
 <tag/account &lt;id&gt;/
 id: <ref id="id" name="ID">
 
-Specifies the account that all costs associated with this task will be
+Specifies the account that all money associated with this task will be
 credited to.
 
 This attribute is inherited by sub tasks if specified prior to the
@@ -574,9 +587,9 @@ amount: <ref id="real" name="REAL">
 
 Specifies an amount that is credited to the account specified by the
 'account' property at the moment the tasks ends.
+</descrip>
 
 Tasks may be nested and some attributes are inherited by the sub tasks.
-</descrip>
 
 <sect1>account &lt;id&gt; &lt;name&gt; &lt;type&gt;<label id="account">
 <p>
@@ -737,7 +750,7 @@ Defines a vacation period for all resources. The end value is NOT part
 of the vacation. So 2001-12-24 - 2001-12-25 specifies one day of
 vacation, not two days.
 
-<sect1>hours &lt;weekday&gt; &lt;from&gt;-&lt;to&gt;&lsqb;,&lt;from&gt;-&lt;to&gt;&rsqb;<label id="hours">
+<sect1>workinghours &lt;weekday&gt; &lt;from&gt;-&lt;to&gt;&lsqb;,&lt;from&gt;-&lt;to&gt;&rsqb;<label id="hours">
 <p>
 weekday: <ref id="weekday" name="WEEKDAY">
 
@@ -765,7 +778,7 @@ value: <ref id="integer" name="INTEGER">
 
 The default scheduling priority for tasks. The value must be between 1
 and 1000 and is inherited by all tasks if no other priority is
-specified.
+specified. The default value is 500.
 
 <sect1>mineffort &lt;value&gt;<label id="mineffort">
 <p>
@@ -829,7 +842,7 @@ numbers as names. The number specifies the index of the argument.
 
 <tag/macro foo &lsqb; This ${1} text &rsqb;/
 
-will expend to ' This stupid text ] if called as ${foo
+will expand to ' This stupid text if called as ${foo
 "stupid"}. Macros may call other macros.
 </descrip>
 
@@ -1004,7 +1017,7 @@ Don't show sub resources of resources that have flags that meet the
 described logical expression.
 
 Generates a report of all tasks (excluding hidden and filtered) in
-HTML format. Multiple declarations of htmlTaskReport can be made to
+HTML format. Multiple declarations of htmltaskreport can be made to
 generate several different reports with one run of TaskJuggler.
 </descrip>
 
@@ -1218,9 +1231,8 @@ TaskJuggler Copyright 2001 Chris Schlaeger , cs@suse.de
 
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+it under the terms of the GNU General Public License version 2 as published
+by the Free Software Foundation; 
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
