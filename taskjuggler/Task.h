@@ -330,6 +330,7 @@ private:
 		if (bookedResources.find(r) == -1)
 			bookedResources.inSort(r);
 	}
+	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
 	time_t earliestStart();
 	time_t latestEnd();
 	void fatalError(const QString& msg) const;

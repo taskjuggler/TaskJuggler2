@@ -81,6 +81,7 @@
 */
  
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "Task.h"
 #include "Project.h"
@@ -533,6 +534,9 @@ Task::bookResources(time_t date, time_t slotDuration)
 {
 	bool allocFound = FALSE;
 
+	/* When shifts have been defined for a task, there must be a shift
+	 * interval defined for this day and the time must lie within the
+	 * working hours of that shift. */
 	if (shifts.count() > 0 &&
 		!shifts.isOnShift(Interval(date, date + slotDuration - 1)))
 		return FALSE;
@@ -541,68 +545,26 @@ Task::bookResources(time_t date, time_t slotDuration)
 		 a != 0 && (effort == 0.0 || doneEffort < effort);
 		 a = allocations.next())
 	{
+		/* If a shift has been defined for a resource for this task, there
+		 * must be a shift interval defined for this day and the time must
+		 * lie within the working hours of that shift. */
 		if (!a->isOnShift(Interval(date, date + slotDuration - 1)))
 			continue;
+		/* If the allocation has be marked persistent and a resource
+		 * has already been picked, try to book this resource again. If the
+		 * resource is not available there will be no booking for this
+		 * time slot. */
 		if (a->isPersistent() && a->getLockedResource())
-		{	
 			bookResource(a->getLockedResource(), date, slotDuration,
 						 a->getLoad());
-		}
 		else
 		{
-			QPtrList<Resource> candidates = a->getCandidates();
-			QPtrList<Resource> cl;
-			switch (a->getSelectionMode())
-			{
-				case Allocation::order:
-					cl = candidates;
-					break;
-				case Allocation::minLoaded:
-				{
-					if (a->getLockedResource())
-					{
-						cl.append(a->getLockedResource());
-						candidates.remove(a->getLockedResource());
-						a->setLockedResource(0);
-					}
-					while (!candidates.isEmpty())
-					{
-						double minLoad = 0;
-						Resource* minLoaded = 0;
-						for (Resource* r = candidates.first(); r != 0;
-							 r = candidates.next())
-						{
-							double load =
-							   	r->getCurrentLoad(Interval(project->getStart(),
-														   date), 0);
-							if (minLoaded == 0 || load < minLoad)
-							{
-								minLoad = load;
-								minLoaded = r;
-							}
-						}
-						cl.append(minLoaded);
-						candidates.remove(minLoaded);
-					}
-					break;
-				}
-				case Allocation::maxLoaded:
-				{
-					break;
-				}
-				case Allocation::random:
-				{
-					break;
-				}
-				default:
-					qFatal("Illegal selection mode %d", a->getSelectionMode());
-			}
+			QPtrList<Resource> cl = createCandidateList(date, a);
 			for (Resource* r = cl.first(); r != 0; r = cl.next())
 				if (bookResource(r, date, slotDuration, a->getLoad()))
 				{
 					allocFound = TRUE;
-					//if (a->isPersistent())
-						a->setLockedResource(r);
+					a->setLockedResource(r);
 					break;
 				}
 		}
@@ -649,6 +611,100 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 		}
 	}
 	return booked;
+}
+
+QPtrList<Resource>
+Task::createCandidateList(time_t date, Allocation* a)
+{
+	/* This function generates a list of resources that could be allocated to
+	 * the task. The order of the list is determined by the specified
+	 * selection function of the alternatives list. From this list, the
+	 * first available resource is picked later on. */
+	QPtrList<Resource> candidates = a->getCandidates();
+	QPtrList<Resource> cl;
+	
+	/* We try to minimize resource changes for consecutives time slots. So
+	 * the resource used for the previous time slot is put to the 1st position
+	 * of the list. */
+	if (a->getLockedResource())
+	{
+		cl.append(a->getLockedResource());
+		candidates.remove(a->getLockedResource());
+		/* When an allocation is booked the resource is saved as locked
+	     * resource. */
+		a->setLockedResource(0);
+	}
+	switch (a->getSelectionMode())
+	{
+		case Allocation::order:
+			while (candidates.first())
+			{
+				cl.append(candidates.first());
+				candidates.remove(candidates.first());
+			}
+			break;
+		case Allocation::minLoaded:
+		{
+			while (!candidates.isEmpty())
+			{
+				double minLoad = 0;
+				Resource* minLoaded = 0;
+				for (Resource* r = candidates.first(); r != 0;
+					 r = candidates.next())
+				{
+					double load =
+						r->getCurrentLoad(Interval(project->getStart(),
+												   date), 0) /
+						r->getMaxEffort();
+					if (minLoaded == 0 || load < minLoad)
+					{
+						minLoad = load;
+						minLoaded = r;
+					}
+				}
+				cl.append(minLoaded);
+				candidates.remove(minLoaded);
+			}
+			break;
+		}
+		case Allocation::maxLoaded:
+		{
+			while (!candidates.isEmpty())
+			{
+				double maxLoad = 0;
+				Resource* maxLoaded = 0;
+				for (Resource* r = candidates.first(); r != 0;
+					 r = candidates.next())
+				{
+					double load =
+						r->getCurrentLoad(Interval(project->getStart(),
+												   date), 0) /
+						r->getMaxEffort();
+					if (maxLoaded == 0 || load > maxLoad)
+					{
+						maxLoad = load;
+						maxLoaded = r;
+					}
+				}
+				cl.append(maxLoaded);
+				candidates.remove(maxLoaded);
+			}
+			break;
+		}
+		case Allocation::random:
+		{
+			while (candidates.first())
+			{
+				cl.append(candidates.at(rand() % candidates.count()));
+				candidates.remove(candidates.first());
+			}
+			break;
+		}
+		default:
+			qFatal("Illegal selection mode %d", a->getSelectionMode());
+	}
+
+	return cl;
 }
 
 bool

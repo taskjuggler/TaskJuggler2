@@ -13,6 +13,7 @@
 
 #include <config.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <qdom.h>
 #include <qdict.h>
 
@@ -129,6 +130,9 @@ Project::pass2()
 	resourceList.createIndex();
 	accountList.createIndex();
 
+	// Initialize random generator.
+	srand((int) start);
+	
 	// Create hash to map task IDs to pointers.
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 	{
