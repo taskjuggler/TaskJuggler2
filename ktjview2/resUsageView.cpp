@@ -68,7 +68,7 @@ void ResUsageView::resizeData( int len )
 
 void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, bool selected, const QColorGroup & cg )
 {
-    kdDebug() << "Painting cell, row: " << row << " , col: " << col << endl;
+    //kdDebug() << "Painting cell, row: " << row << " , col: " << col << endl;
 
     if ( m_resList.isEmpty() )
         return;
@@ -77,7 +77,7 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
     if ( !res )
         return;
 
-    kdDebug() << "Painting cell, resource: " << res << endl;
+    //kdDebug() << "Painting cell, resource: " << res << endl;
 
     Interval ival = intervalForCol( col );
     if ( ival.isNull() )
@@ -87,19 +87,19 @@ void ResUsageView::paintCell( QPainter * p, int row, int col, const QRect & cr, 
 
     double aload = res->getAvailableWorkLoad( 0, ival );
 
-    kdDebug() << "Painting cell, available workload: " << aload << endl;
+    //kdDebug() << "Painting cell, available workload: " << aload << endl;
 
     double load = res->getLoad( 0, ival ); // FIXME use getLoad() or getCurrentLoad() ???
 
-    kdDebug() << "Painting cell, load: " << load << endl;
+    //kdDebug() << "Painting cell, load: " << load << endl;
 
     const QString text = QString( "%1 / %2" )
                          .arg( KGlobal::locale()->formatNumber( aload, 2 ) )
                          .arg( KGlobal::locale()->formatNumber( load, 2 ) );
 
-    kdDebug() << "Painting cell, text: " << text << endl;
+    //kdDebug() << "Painting cell, text: " << text << endl;
 
-    kdDebug() << "===========================" << endl;
+    //kdDebug() << "===========================" << endl;
 
     QRect cRect = cellRect( row, col );
     p->setClipRect( cRect, QPainter::CoordPainter );
