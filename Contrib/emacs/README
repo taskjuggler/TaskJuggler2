@@ -1,0 +1,11 @@
+The emacs taskjuggler mode was contributed by 
+Sean Dague <sean@dague.net>, 2004-07-03
+
+To use it, copy it to your emacs include directory and
+add to $HOME/.emacs
+
+(load "~/.emacs-config/taskjug"       )
+
+to load it at startup.
+
+
