@@ -35,6 +35,7 @@
 
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/editinterface.h>
+#include <ktexteditor/viewcursorinterface.h>
 
 EditorView::EditorView( QWidget * parent, const char * name )
     : QWidget( parent, name ), m_view( 0 )
@@ -91,6 +92,11 @@ void EditorView::closeDocument()
 {
     doc()->closeURL();
     doc()->setReadWrite( false );
+}
+
+void EditorView::gotoLine( int number )
+{
+    KTextEditor::viewCursorInterface( m_view )->setCursorPosition( number, 0 );
 }
 
 #include "editorView.moc"

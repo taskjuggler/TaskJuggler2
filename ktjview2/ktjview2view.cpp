@@ -257,6 +257,12 @@ bool ktjview2View::openURL( const KURL& url )
 
     recreateProject();
 
+    bool syntaxError = false;
+    bool accessError = false;
+
+    QString errorFile;
+    int errorLine = 0;
+
     if ( tmpFile.endsWith( ".tjx" ) ) // XML file
     {
         XMLFile* xf = new XMLFile( m_project );
@@ -264,13 +270,24 @@ bool ktjview2View::openURL( const KURL& url )
         progressDlg.setLabel( i18n( "Opening XML project" ) );
         if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
         {
-            delete xf;
-            return false;
+            accessError = true;
+            progressDlg.cancel();
+            KMessageBox::error( this, i18n( "Taskjuggler failed to open the project file. Please check your permissions." ) );
         }
-        progressDlg.progressBar()->setProgress( 2 );
-        progressDlg.setLabel( i18n( "Parsing XML project" ) );
-        //kdDebug() << "Parsing XML project" << endl;
-        xf->parse();
+
+        if ( !accessError )
+        {
+            progressDlg.progressBar()->setProgress( 2 );
+            progressDlg.setLabel( i18n( "Parsing XML project" ) );
+            //kdDebug() << "Parsing XML project" << endl;
+            if ( !xf->parse() )
+            {
+                syntaxError = true;
+                progressDlg.cancel();
+                KMessageBox::error( this, i18n( "Taskjuggler failed to parse the project file. Most probably there is a syntax error.\n"
+                                                "You should edit the project and try to fix it.") );
+            }
+        }
         delete xf;
     }
     else if ( tmpFile.endsWith( ".tjp" ) || tmpFile.endsWith( ".tji" ) ) // source file
@@ -280,63 +297,90 @@ bool ktjview2View::openURL( const KURL& url )
         progressDlg.setLabel( i18n( "Opening TJP project" ) );
         if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
         {
-            delete pf;
-            return false;
+            accessError = true;
+            progressDlg.cancel();
+            KMessageBox::error( this, i18n( "Taskjuggler failed to open the project file. Please check your permissions." ) );
         }
         //kdDebug() << "Parsing TJP project" << endl;
-        progressDlg.progressBar()->setProgress( 2 );
-        progressDlg.setLabel( i18n( "Parsing TJP project" ) );
-        pf->parse();
+        if ( !accessError )
+        {
+            progressDlg.progressBar()->setProgress( 2 );
+            progressDlg.setLabel( i18n( "Parsing TJP project" ) );
+
+            if ( !pf->parse() )
+            {
+                syntaxError = true;
+                errorFile = pf->getFile();
+                errorLine = pf->getLine();
+                progressDlg.cancel();
+                KMessageBox::error( this, i18n( "Taskjuggler failed to parse the project file. Most probably there is a syntax error.\n"
+                                                "You should edit the project and try to fix it.") );
+            }
+        }
         delete pf;
     }
     else
     {
+        accessError = true;
         progressDlg.cancel();
         KMessageBox::sorry( this, i18n( "This filetype is not supported." ) );
-        return false;
     }
 
     KIO::NetAccess::removeTempFile( tmpFile );
 
+    if ( accessError )
+        return false;
+
     //kdDebug() << "Generating cross references (pass2)" << endl;
     progressDlg.progressBar()->setProgress( 3 );
     progressDlg.setLabel( i18n( "Generating cross references" ) );
-    if ( ! m_project->pass2( false ) )
+    if ( !m_project->pass2( false ) )
     {
         progressDlg.cancel();
-        KMessageBox::error( this, i18n( "Taskjugggler failed to generate cross references on data structures." ) );
-        return false;
+        //KMessageBox::error( this, i18n( "Taskjugggler failed to generate cross references on data structures." ) );
+        //return false;
     }
 
     //kdDebug() << "Scheduling all scenarios " << endl;
     progressDlg.progressBar()->setProgress( 4 );
     progressDlg.setLabel( i18n( "Scheduling all scenarios" ) );
-    if ( ! m_project->scheduleAllScenarios() )
+    if ( !m_project->scheduleAllScenarios() )
     {
         progressDlg.cancel();
-        KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
-        return false;
+        //KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
+        //return false;
     }
     //m_project->generateReports(); // FIXME do we need that?
 
-    progressDlg.progressBar()->setProgress( 5 );
-    progressDlg.setLabel( i18n( "Building the views" ) );
-
     clearAllViews();
 
-    parseProjectInfo();
-    parseResources( m_project->getResourceListIterator() );
-    parseTasks( m_project->getTaskListIterator() );
-    parseGantt( m_project->getTaskListIterator() );
-    parseLinks( m_project->getTaskListIterator() );
-    parseResUsage();
+    if ( !syntaxError )
+    {
+        progressDlg.progressBar()->setProgress( 5 );
+        progressDlg.setLabel( i18n( "Building the views" ) );
 
-    m_ganttView->setTimelineToStart();
+        parseProjectInfo();
+        parseResources( m_project->getResourceListIterator() );
+        parseTasks( m_project->getTaskListIterator() );
+        parseGantt( m_project->getTaskListIterator() );
+        parseLinks( m_project->getTaskListIterator() );
+        parseResUsage();
 
-    m_editorView->loadDocument( url );
+        m_ganttView->setTimelineToStart();
+
+        m_editorView->loadDocument( url );
+
+        signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
+    }
+    else                        // errors to correct
+    {
+        m_editorView->loadDocument( errorFile );
+        m_editorView->gotoLine( errorLine - 1 );
+
+        signalChangeStatusbar( i18n( "Project %1 loaded with errors" ).arg( m_projectURL.prettyURL() ) );
+    }
 
     m_projectURL = url;
-    signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
 
     progressDlg.progressBar()->setProgress( 6 );
 

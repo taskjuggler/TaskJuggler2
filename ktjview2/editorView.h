@@ -74,6 +74,11 @@ public:
      KTextEditor::View * view() const
         { return m_view; }
 
+    /**
+     * Jump to line with @p number
+     */
+    void gotoLine( int number );
+
 private:
     /**
      * Initialize the KTextEditor components (Document and View)
