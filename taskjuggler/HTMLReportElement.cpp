@@ -1452,7 +1452,7 @@ HTMLReportElement::genCellWeeklyTask(TableCellInfo* tci)
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
-        Interval period = Interval(week).firstWeek(weekStartsMonday);
+        Interval period = Interval(week, sameTimeNextWeek(week) - 1);
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
         QColor bgCol = selectTaskBgColor(tci, load, period, FALSE);
@@ -1492,7 +1492,7 @@ HTMLReportElement::genCellWeeklyResource(TableCellInfo* tci)
     for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
          week = sameTimeNextWeek(week))
     {
-        Interval period = Interval(week).firstWeek(weekStartsMonday);
+        Interval period = Interval(week, sameTimeNextWeek(week) - 1);
         double load = tci->tli->resource->getLoad(tci->tli->sc, period,
                                                   AllAccounts, tci->tli->task);
         QColor bgCol = selectResourceBgColor(tci, load, period, FALSE);
@@ -1533,7 +1533,7 @@ HTMLReportElement::genCellWeeklyAccount(TableCellInfo* tci)
          week = sameTimeNextWeek(week))
     {
         double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(week).firstWeek(weekStartsMonday));
+            getVolume(tci->tli->sc, Interval(week, sameTimeNextWeek(week) - 1));
         if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
              tci->tli->account->isRoot()) ||
             (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 

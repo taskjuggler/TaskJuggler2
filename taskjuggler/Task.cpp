@@ -1782,7 +1782,7 @@ Task::scheduleOk(int sc, int& errors) const
         return FALSE;
     }
     if (scenarios[sc].minEnd != 0 && 
-        end + (milestone ? 1 : 0) < scenarios[sc].minEnd)
+        (end + (milestone ? 1 : 0) < scenarios[sc].minEnd))
     {
         errorMessage(i18n("'%1' end time of task '%2' is too early\n"
                           "Date is:  %3\n"
@@ -1794,7 +1794,7 @@ Task::scheduleOk(int sc, int& errors) const
         return FALSE;
     }
     if (scenarios[sc].maxEnd != 0 && 
-        scenarios[sc].maxEnd < end + (milestone ? 1 : 0))
+        (scenarios[sc].maxEnd < end + (milestone ? 1 : 0)))
     {
         errorMessage(i18n("'%1' end time of task '%2' is too late\n"
                           "Date is:  %2\n"
