@@ -12,6 +12,8 @@
  */
 
 #include "ResourceList.h"
+#ifndef __KOTRUS_H
+#define __KOTRUS_H
 
 class QSqlDatabase;
 
@@ -77,3 +79,6 @@ private:
    
    
 };
+
+#endif
+

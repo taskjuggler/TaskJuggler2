@@ -9,6 +9,8 @@
  *
  * $Id$
  */
+#ifndef __ALLOCATION_H
+#define __ALLOCATION_H
 
 class Allocation
 {
@@ -75,3 +77,4 @@ private:
    SelectionModeType selectionMode;
 } ;
 
+#endif
