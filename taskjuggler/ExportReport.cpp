@@ -120,7 +120,8 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 			for (QStringList::Iterator jt = fl.begin();
 				 jt != fl.end(); ++jt)
 			{
-				allFlags.append(*jt);
+				if (allFlags.find(*jt) == allFlags.end())
+					allFlags.append(*jt);
 			}
 
 		}
@@ -209,7 +210,7 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 								s << ", ";
 							else
 								first = FALSE;
-							s << tp->getFullId();
+							s << tp->getId();
 						}
 						s << endl;
 					}
