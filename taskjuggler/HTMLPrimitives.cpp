@@ -306,7 +306,25 @@ HTMLPrimitives::htmlFilter(const QString& s) const
     for (uint i = 0; i < s.length(); i++)
     {
         QString repl;
-        if (HtmlMap->find(s[i]) != HtmlMap->end())
+        if (s[i] == '<')
+        {
+            uint j = i + 1;
+            if (j < s.length() && s[j] == '/')
+                j++;
+            uint tagNameLen = 0;
+            for ( ; j < s.length() && isalpha(s[j]); ++j)
+                tagNameLen++;
+            if (j < s.length() && s[j] == '/')
+                j++;
+            if (s[j] == '>' && tagNameLen > 0)
+            {
+                repl = s.mid(i, j - i + 1);
+                i = j;
+            }
+            else
+                repl = QString("&") + QString(*(HtmlMap->find(s[i]))) + ";";
+        }
+        else if (HtmlMap->find(s[i]) != HtmlMap->end())
             repl = QString("&") + QString(*(HtmlMap->find(s[i]))) + ";";
         else if (s.mid(i, 2) == "\n\n")
         {
