@@ -15,6 +15,7 @@
 class KTVTaskCanvasItem;
 class QCanvasRectangle;
 class KTVTaskTableItem;
+class KTVCanvasItemBase;
 class KTVTaskTable;
 
 class KTVTaskCanvas: public QCanvas
@@ -46,24 +47,28 @@ protected:
    int    midnightToX( time_t );
    virtual int    topOffset() { return m_topOffset; }
    virtual void   drawDayHead( int x, QPainter &p );
-
+   void connectTasks( Task *fromTask, Task* toTask,
+		      KTVCanvasItemBase *fromItem =0L,
+		      KTVCanvasItemBase *toItem =0L    );
 protected slots:
    void   slHeightChanged( int );
    
 private:
-
+   KTVCanvasItemBase* tableItemToCanvasItem( const KTVTaskTableItem* ) const;
+   KTVCanvasItemBase* taskToCanvasItem( const Task* ) const;
    void drawBackground( QPainter &painter, const QRect & clip );
    int m_days, m_dayWidth, m_dayHeight;
    int m_topOffset;
    KTVTaskTable *m_taskTable;
    time_t m_start, m_end;
-   QPtrDict<Task> m_tasks;    // Stores the Tasks for the TableItems
+   QPtrDict<Task> m_tasks;    			 // Stores the Tasks for the TableItems
    QPtrDict<KTVCanvasItemBase> m_canvasItems;    // Stores Canvas-Items for the Tasks
+   
 
    CanvasItemList    m_canvasItemList;
    QCanvasLine      *m_dbgMark;
    QCanvasRectangle *m_canvasMarker;
-   
+
    int    m_rowHeight;
 };
 

@@ -49,7 +49,7 @@ kde_module_LTLIBRARIES = libktjviewpart.la
 # the Part's source, library search path, and link libraries
 libktjviewpart_la_SOURCES = ktjview_part.cpp ktvtasktable.cpp ktvtasktableitem.cpp \
 	ktvtaskcanvasitem.cpp ktvtaskcanvas.cpp ktvtaskcanvasview.cpp ktjgantt.cpp \
-	ktvcanvasitem.cpp ktvreport.cpp
+	ktvcanvasitem.cpp ktvreport.cpp ktvconnector.cpp
 
 libktjviewpart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) 
 libktjviewpart_la_LIBADD  = $(LIB_KPARTS) $(LIB_KFILE)  ../taskjuggler/libtaskjuggler.la

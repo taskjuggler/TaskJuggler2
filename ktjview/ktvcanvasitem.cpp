@@ -9,12 +9,92 @@ KTVCanvasItemBase::KTVCanvasItemBase()
 {
 }
 
+
+void KTVCanvasItemBase::addConnectIn( KTVConnector *cIn, Task *t )
+{
+   if( cIn && t )
+      m_conIn.insert( t, cIn );
+}
+
+void KTVCanvasItemBase::addConnectOut( KTVConnector *cOut, Task *t )
+{
+   if( cOut && t )
+      m_conOut.insert( t, cOut );
+}
+
+void KTVCanvasItemBase::hide()
+{
+   KTVConnectorListIterator it( m_conIn );
+   KTVConnector *c = 0;
+
+   qDebug( "Hiding connectors!" );
+   while( (c = it.current()) != 0 )
+   {
+      ++it;
+      c->hide();
+   }
+
+   KTVConnectorListIterator it2( m_conOut );
+   while( (c = it2.current()) != 0 )
+   {
+      ++it2;
+      c->hide();
+   }
+}
+
+void KTVCanvasItemBase::moveBy( int dx, int dy)
+{
+   KTVConnectorListIterator it( m_conIn );
+   KTVConnector *c = 0;
+
+   qDebug( "Moving connectors!" );
+   while( (c = it.current()) != 0 )
+   {
+      ++it;
+      /* Preserve the starting point */
+      QPoint ps = c->startPoint();
+      QPoint pe = c->endPoint();
+      pe.setX( pe.x()+dx );
+      pe.setY( pe.y()+dy );
+      c->setConnectPoints( ps, pe );
+   }
+
+   KTVConnectorListIterator it2( m_conOut );
+   while( (c = it2.current()) != 0 )
+   {
+      ++it2;
+      QPoint ps = c->startPoint();
+      QPoint pe = c->endPoint();
+      ps.setX( ps.x()+dx );
+      ps.setY( ps.y()+dy );
+      c->setConnectPoints( ps, pe );
+   }
+}
+
+
 /*
+ * returns the connector coming in from Task t
+ */
+KTVConnector* KTVCanvasItemBase::connectorIn( Task *t )
+{
+   return m_conIn[ (void*) t ];
+}
+
+/*
+ * Returns a connector going out to task t
+ */
+KTVConnector* KTVCanvasItemBase::connectorOut( Task *t )
+{
+   return m_conOut[ (void*) t ];
+}
+
+
+/* **********************************************************************
  * Task
  */
 
-
 KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
+   :KTVCanvasItemBase()
 {
    cRect = new QCanvasRectangle(c);
    m_height = 12;
@@ -41,14 +121,19 @@ void KTVCanvasItemTask::move( double x, double y )
 
 void KTVCanvasItemTask::moveBy( int dx, int dy)
 {
+   qDebug( "Moving in CanvasItemTask!" );
+   KTVCanvasItemBase::moveBy( dx, dy );
+
+   
    if( cRect )
       cRect->moveBy( dx, dy );
    if( m_cText )
-      m_cText->move( dx, dy );
+      m_cText->moveBy( dx, dy );
 }
 
 void KTVCanvasItemTask::hide()
 {
+   KTVCanvasItemBase::hide();
    if( cRect )
       cRect->hide();
    if( m_cText )
@@ -77,9 +162,43 @@ void KTVCanvasItemTask::setTask( Task *t )
       m_cText->show();
    }
 }
+
+QPoint KTVCanvasItemTask::getConnectorIn() const
+{
+   QPoint p;
    
-/* Milestone */
+   if( cRect )
+   {
+      QRect r = cRect->rect();
+      p.setX( r.x());
+      p.setY( r.y()+( r.height()/2));
+   }
+   return p;
+}
+
+QPoint KTVCanvasItemTask::getConnectorOut() const
+{
+   QPoint p;
+   
+   if( cRect )
+   {
+      QRect r = cRect->rect();
+      p.setX( r.right());
+      p.setY( r.y()+( r.height()/2));
+   }
+   return p;
+}
+
+int KTVCanvasItemTask::y()
+{
+   return ( int( cRect->y() ));
+}
+
+/* **********************************************************************
+ * Milestone
+ */
 KTVCanvasItemMilestone::KTVCanvasItemMilestone( QCanvas *c )
+   :KTVCanvasItemBase()
 {
    cPoly = new QCanvasPolygon(c);
 
@@ -136,8 +255,19 @@ bool KTVCanvasItemMilestone::contains( QCanvasItem* ci )
    return( cPoly == ci );
 }
 
-/* container */
+int KTVCanvasItemMilestone::y()
+{
+   if( ! cPoly ) return 0;
+
+   return ( int(cPoly->y()));
+}
+
+
+/* **********************************************************************
+ * container
+ */
 KTVCanvasItemContainer::KTVCanvasItemContainer( QCanvas *c )
+   :KTVCanvasItemBase()
 {
    cPoly = new QCanvasPolygon(c);
    m_height = 16;
@@ -197,3 +327,11 @@ bool KTVCanvasItemContainer::contains( QCanvasItem* ci )
 {
    return( cPoly == ci );
 }
+
+int KTVCanvasItemContainer::y()
+{
+   if( ! cPoly ) return 0;
+
+   return ( int(cPoly->y()));
+}
+

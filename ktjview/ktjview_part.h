@@ -45,7 +45,7 @@ protected:
 
 protected slots:
     void fileOpen();
-
+   void slChangeStatusBar( const QString& );
 
 private:
    KTJGantt *m_widget;

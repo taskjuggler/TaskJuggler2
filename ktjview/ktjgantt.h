@@ -34,6 +34,8 @@ public:
 
 
    void showProject( Project * );
+signals:
+   void statusBarChange( const QString& );
    
 protected:
 

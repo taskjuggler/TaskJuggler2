@@ -194,6 +194,10 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
    QListViewItem* child = it->firstChild();
    while( child )
    {
+      if( child->childCount() > 0 && isOpen(child) )
+      {
+	 setOpen( child, false );
+      }
       emit hideTaskByItem( static_cast<KTVTaskTableItem*>(child) );
       child = child->nextSibling();
    }

@@ -29,7 +29,9 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
 
     // this should be your custom internal widget
     m_widget = new KTJGantt( parentWidget, "GANTT" );
-
+    connect( m_widget, SIGNAL( statusBarChange( const QString& )),
+	     this, SLOT(  slChangeStatusBar( const QString& )));
+    
     // notify the part that this is our internal widget
     setWidget(m_widget);
 
@@ -64,6 +66,7 @@ bool KTjviewPart::openFile()
         return false;
 
     Project *p = new Project();
+    p->setDebugLevel(3);
     p->loadFromXML( m_file );
 
     m_widget->showProject(p);
@@ -73,6 +76,12 @@ bool KTjviewPart::openFile()
 
     return true;
 }
+
+void KTjviewPart::slChangeStatusBar( const QString& str )
+{
+   emit setStatusBarText( str );
+}
+
 
 void KTjviewPart::fileOpen()
 {
