@@ -31,9 +31,9 @@ DebugController DebugCtrl;
 
 Project::Project()
 {
-    /* Pick some reasonable small random prime number since we don't know the
+    /* Pick some reasonable initial number since we don't know the
      * project time frame yet. */
-    initUtility(251);
+    initUtility(20000);
     taskList.setAutoDelete(TRUE);
     resourceList.setAutoDelete(TRUE);
     accountList.setAutoDelete(TRUE);

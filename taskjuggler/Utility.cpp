@@ -113,12 +113,14 @@ void exitUtility()
         return;
 
     for (long i = 0; i < LTHASHTABSIZE; ++i)
+    {
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
             delete htep;
             htep = tmp;
         }
+    }
     delete [] LtHashTab;
     LtHashTab = 0;
 }
@@ -149,12 +151,11 @@ clocaltime(const time_t* t)
 {
     long index = *t % LTHASHTABSIZE;
     if (LtHashTab[index])
-    {
         for (LtHashTabEntry* htep = LtHashTab[index]; htep;
              htep = htep->next)
             if (htep->t == *t)
                 return htep->tms;
-    }
+    
     LtHashTabEntry* htep = new LtHashTabEntry;
     htep->next = LtHashTab[index];
     htep->t = *t;
