@@ -71,6 +71,7 @@ private slots:
     void collapsReportItem(QListViewItem* lvi);
     void expandReportItem(QListViewItem* lvi);
     void listClicked(QListViewItem* lvi, const QPoint&, int column);
+    void listHeaderClicked(int colmun);
     void doPopupMenu(QListViewItem* lvi, const QPoint& pos, int);
     void syncVSlidersGantt2List(int, int);
     void syncVSlidersList2Gantt(int, int);

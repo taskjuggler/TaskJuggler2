@@ -86,6 +86,8 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     listView->setVScrollBarMode(QScrollView::AlwaysOff);
     listView->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     listView->setAllColumnsShowFocus(TRUE);
+    // The sorting does not work yet properly.
+    listView->header()->setClickEnabled(FALSE);
 
     canvasFrame = new QWidget(splitter);
     QVBoxLayout* vl = new QVBoxLayout(canvasFrame, 0, 0);
@@ -120,6 +122,8 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     connect(listView,
             SIGNAL(rightButtonPressed(QListViewItem*, const QPoint&, int)),
             this, SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));
+    connect(listView->header(), SIGNAL(clicked(int)),
+            this, SLOT(listHeaderClicked(int)));
     connect(ganttChartView, SIGNAL(contentsMoving(int, int)),
             this, SLOT(syncVSlidersGantt2List(int, int)));
     connect(listView, SIGNAL(contentsMoving(int, int)),
@@ -1030,6 +1034,12 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
             richTextDisplay->show();
         }
     }
+}
+
+void
+TjReport::listHeaderClicked(int)
+{
+    this->generateChart(FALSE);
 }
 
 void
