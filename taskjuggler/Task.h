@@ -301,6 +301,9 @@ private:
 	bool hasStartDependency(int sc);
 	bool hasEndDependency(int sc);
 
+	bool dependsOnABrother(const Task* p) const;
+	bool precedesABrother(const Task* p) const;
+
 	/// A longer description of the task.
 	QString note;
 
@@ -319,15 +322,27 @@ private:
 	TaskList precedes;
 
 	/**
-	 * A list of all tasks that preceed this task. This is redundant
-	 * information but stored for conveniance. Interdependent tasks are
-	 * linked in a doubly linked list. */
+	 * A list of tasks that have requested to precede this task.
+	 */
+	TaskList predecessors;
+
+	/**
+	 * A list of tasks that have requested to depend on this task.
+	 */
+	TaskList successors;
+
+	/**
+	 * A list of all tasks that preceed this task. It's the combination of
+	 * depends and predecessors. This is redundant information but stored for
+	 * conveniance. Interdependent tasks are linked in a doubly linked list.
+	 */
 	TaskList previous;
 
 	/**
-	 * A list of all tasks that follow this task. This is redundant
-	 * information but stored for conveniance. Interdependent tasks are
-	 * linked in a doubly linked list. */
+	 * A list of all tasks that follow this task. It's the combination of
+	 * precedes and successors. This is redundant information but stored for
+	 * conveniance. Interdependent tasks are linked in a doubly linked list.
+	 */
 	TaskList followers;
 
 	/**

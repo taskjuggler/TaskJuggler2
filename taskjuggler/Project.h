@@ -540,7 +540,7 @@ public:
 	 * tree has been contructed. 
 	 * @return Only if all tests were successful TRUE is returned.
 	 */
-	bool pass2();
+	bool pass2(bool noDepCheck);
 
 	/**
 	 * Schedule all tasks for all scenarios. @return In case any errors were

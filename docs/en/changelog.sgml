@@ -375,6 +375,9 @@ quarterly and yearly calendar columns.</para></listitem>
 <listitem><para>Fixed XML reports so that milestones end dates are
 same as start dates.</para></listitem>
 
+<listitem><para>The dependency loop detector can now be skipped with
+the --nodepcheck command line option.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -256,7 +256,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 					   time2tjp(date).latin1());
 		}
 		/* Do not schedule anything if the current time slot is not
-		 * directly preceeding the previously scheduled time slot. */
+		 * directly preceding the previously scheduled time slot. */
 		if (!((date + slotDuration <= lastSlot) &&
 		   	(lastSlot < date + 2 * slotDuration)))
 			return;
@@ -794,7 +794,7 @@ Task::latestEnd() const
 	time_t date = 0;
 	for (TaskListIterator tli(precedes); *tli != 0; ++tli)
 	{
-		// All tasks this task preceeds must have a start date set.
+		// All tasks this task precedes must have a start date set.
 		if ((*tli)->start == 0)
 			return 0;
 		if (date == 0 || (*tli)->start < date)
@@ -896,6 +896,7 @@ Task::xRef(QDict<Task>& hash)
 		{
 			depends.append(t);
 			previous.append(t);
+			t->successors.append(this);
 			t->followers.append(this);
 			if (DEBUGPF(11))
 				qDebug("Registering follower %s with task %s",
@@ -924,6 +925,7 @@ Task::xRef(QDict<Task>& hash)
 		{
 			precedes.append(t);
 			followers.append(t);
+			t->predecessors.append(this);
 			t->previous.append(this);
 			if (DEBUGPF(11))
 				qDebug("Registering predecessor %s with task %s",
@@ -1062,14 +1064,21 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 			/* If we were not called from a sub task we check all sub tasks.*/
 			for (TaskListIterator tli(sub); *tli != 0; ++tli)
 			{
-				if (DEBUGPF(15))
-					qDebug("%sChecking sub task %s of %s",
-						   QString().fill(' ', list.count()).latin1(),
-						   (*tli)->getId().latin1(),
-						   id.latin1());
-				if ((*tli)->loopDetection(list, FALSE,
-									 LoopDetectorInfo::fromParent))
-					return TRUE;
+				/* If the task depends on a brother we ignore the arc to the
+				 * child since the brother provides an equivalent arc. This
+				 * can significantly decrease the number of checked pathes
+				 * without missing loops. */
+				if (!(*tli)->dependsOnABrother(this))
+				{
+					if (DEBUGPF(15))
+						qDebug("%sChecking sub task %s of %s",
+							   QString().fill(' ', list.count()).latin1(),
+							   (*tli)->getId().latin1(),
+							   id.latin1());
+					if ((*tli)->loopDetection(list, FALSE,
+											  LoopDetectorInfo::fromParent))
+						return TRUE;
+				}
 			}
 
 		if (scheduling == ASAP && sub.isEmpty())
@@ -1089,28 +1098,34 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 		{
 			if (parent)
 			{
-				if (DEBUGPF(15))
-					qDebug("%sChecking parent task of %s",
-						   QString().fill(' ', list.count()).latin1(),	
-						   id.latin1());		
-				if (getParent()->loopDetection(list, FALSE,
-											   LoopDetectorInfo::fromSub))
-					return TRUE;
+				/* If the task depends on a brother we ignore the arc to the
+				 * parent since the brother provides an equivalent arc. This
+				 * can significantly decrease the number of checked pathes
+				 * without missing loops. */
+				if (!dependsOnABrother((const Task*) parent))
+				{
+					if (DEBUGPF(15))
+						qDebug("%sChecking parent task of %s",
+							   QString().fill(' ', list.count()).latin1(),	
+							   id.latin1());		
+					if (getParent()->loopDetection(list, FALSE,
+												   LoopDetectorInfo::fromSub))
+						return TRUE;
+				}
 			}
 
 			/* Now check all previous tasks that had explicit precedes on this
 			 * task. */
-			for (TaskListIterator tli(previous); *tli != 0; ++tli)
-				if ((*tli)->precedes.find(this) != -1)
-				{
-					if (DEBUGPF(15))
-						qDebug("%sChecking previous %s of task %s",
-							   QString().fill(' ', list.count()).latin1(),
-							   (*tli)->getId().latin1(), id.latin1());
-					if((*tli)->loopDetection(list, TRUE, 
-											 LoopDetectorInfo::fromSucc))
-						return TRUE;
-				}
+			for (TaskListIterator tli(predecessors); *tli != 0; ++tli)
+			{
+				if (DEBUGPF(15))
+					qDebug("%sChecking previous %s of task %s",
+						   QString().fill(' ', list.count()).latin1(),
+						   (*tli)->getId().latin1(), id.latin1());
+				if((*tli)->loopDetection(list, TRUE, 
+										 LoopDetectorInfo::fromSucc))
+					return TRUE;
+			}
 		}
 	}
 	else
@@ -1120,13 +1135,20 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 			/* If we were not called from a sub task we check all sub tasks.*/
 			for (TaskListIterator tli(sub); *tli != 0; ++tli)
 			{
-				if (DEBUGPF(15))
-					qDebug("%sChecking sub task %s of %s",
-						   QString().fill(' ', list.count()).latin1(),	
-						   (*tli)->getId().latin1(), id.latin1());
-				if ((*tli)->loopDetection(list, TRUE,
-									 LoopDetectorInfo::fromParent))
-					return TRUE;
+				/* If the task precedes a brother we ignore the arc to the
+				 * child since the brother provides an equivalent arc. This
+				 * can significantly decrease the number of checked pathes
+				 * without missing loops. */
+				if (!(*tli)->precedesABrother(this))
+				{
+					if (DEBUGPF(15))
+						qDebug("%sChecking sub task %s of %s",
+							   QString().fill(' ', list.count()).latin1(),	
+							   (*tli)->getId().latin1(), id.latin1());
+					if ((*tli)->loopDetection(list, TRUE,
+											  LoopDetectorInfo::fromParent))
+						return TRUE;
+				}
 			}
 
 		if (scheduling == ALAP && sub.isEmpty())
@@ -1146,28 +1168,34 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 		{
 			if (parent)
 			{
-				if (DEBUGPF(15))
-					qDebug("%sChecking parent task of %s",
-						   QString().fill(' ', list.count()).latin1(),	
-						   id.latin1());		
-				if (getParent()->loopDetection(list, TRUE,
-											   LoopDetectorInfo::fromSub))
-					return TRUE;
+				/* If the task precedes a brother we ignore the arc to the
+				 * parent since the brother provides an equivalent arc. This
+				 * can significantly decrease the number of checked pathes
+				 * without missing loops. */
+				if (!precedesABrother((const Task*) parent))
+				{
+					if (DEBUGPF(15))
+						qDebug("%sChecking parent task of %s",
+							   QString().fill(' ', list.count()).latin1(),	
+							   id.latin1());		
+					if (getParent()->loopDetection(list, TRUE,
+												   LoopDetectorInfo::fromSub))
+						return TRUE;
+				}
 			}
 
 			/* Now check all following tasks that have explicit depends on this
 			 * task. */
-			for (TaskListIterator tli(followers); *tli != 0; ++tli)
-				if ((*tli)->depends.find(this) != -1)
-				{
-					if (DEBUGPF(15))
-						qDebug("%sChecking follower %s of task %s",
-							   QString().fill(' ', list.count()).latin1(),	
-							   (*tli)->getId().latin1(), id.latin1());
-					if ((*tli)->loopDetection(list, FALSE,
-											  LoopDetectorInfo::fromPrev))
-						return TRUE;
-				}
+			for (TaskListIterator tli(successors); *tli != 0; ++tli)
+			{
+				if (DEBUGPF(15))
+					qDebug("%sChecking follower %s of task %s",
+						   QString().fill(' ', list.count()).latin1(),	
+						   (*tli)->getId().latin1(), id.latin1());
+				if ((*tli)->loopDetection(list, FALSE,
+										  LoopDetectorInfo::fromPrev))
+					return TRUE;
+			}
 		}
 	}
 
@@ -1611,7 +1639,7 @@ Task::scheduleOk(int& errors, QString scenario) const
 		if ((*tli)->end > start && !(*tli)->runAway)
 		{
 			errorMessage(i18n("Impossible dependency:\n"
-							  "Task %1 ends at %2 but needs to preceed\n"
+							  "Task %1 ends at %2 but needs to precede\n"
 							  "task %3 which has a %4 start time of %5")
 						 .arg((*tli)->id).arg(time2tjp((*tli)->end).latin1())
 						 .arg(id).arg(scenario.lower()).arg(time2tjp(start)));
@@ -1856,6 +1884,24 @@ double
 Task::getCalcedCompletionDegree(int sc) const
 {
 	return scenarios[sc].completionDegree;
+}
+
+bool
+Task::dependsOnABrother(const Task* p) const
+{
+	for (TaskListIterator tli(depends); *tli != 0; ++tli)
+		if ((*tli)->parent == p)
+			return TRUE;
+	return FALSE;
+}
+
+bool
+Task::precedesABrother(const Task* p) const
+{
+	for (TaskListIterator tli(precedes); *tli != 0; ++tli)
+		if ((*tli)->parent == p)
+			return TRUE;
+	return FALSE;
 }
 
 QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )

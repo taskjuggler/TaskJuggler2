@@ -195,7 +195,7 @@ Project::calcWorkingDays(const Interval& iv) const
 }
 
 bool
-Project::pass2()
+Project::pass2(bool noDepCheck)
 {
 	QDict<Task> idHash;
 	bool error = FALSE;
@@ -244,10 +244,15 @@ Project::pass2()
 		if (!(*tli)->preScheduleOk())
 			error = TRUE;
 
-	// Check all tasks for dependency loops.
-	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-		if ((*tli)->loopDetector())
-			return FALSE;
+	if (!noDepCheck)
+	{
+		if (DEBUGPS(1))
+			qDebug("Searching for dependency loops...");
+		// Check all tasks for dependency loops.
+		for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+			if ((*tli)->loopDetector())
+				return FALSE;
+	}
 
 	return !error;
 }
@@ -494,7 +499,7 @@ Project::loadFromXML( const QString& inpFile )
    {
       qDebug("Empty !" );
    }
-   pass2();
+   pass2(TRUE);
    scheduleAllScenarios();
    return true;
 }

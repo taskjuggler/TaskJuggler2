@@ -13,7 +13,7 @@
 #ifndef _taskjuggler_h_
 #define _taskjuggler_h_
 
-#define TJURL "http://www.suse.de/~freitag/taskjuggler"
+#define TJURL "http://www.taskjuggler.org"
 
 typedef enum TaskStatus 
 { 

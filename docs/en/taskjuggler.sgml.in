@@ -112,8 +112,8 @@ database.</para>
 <sect1><title>TaskJuggler on the Web</title>
 
 <para>The official TaskJuggler web page can be found at <ulink
-url="http://www.suse.de/~freitag/taskjuggler">
-http://www.suse.de/~freitag/taskjuggler</ulink>.</para>
+url="http://www.taskjuggler.org">
+http://www.taskjuggler.org</ulink>.</para>
 
 <para> Since the developers are mostly busy project managers
 themselves, we have created two forums for users to help each other.
@@ -136,8 +136,8 @@ channel is called #taskjuggler.</para>
 
 <para>TaskJuggler may be obtained from the following web site:</para>
 
-<para><ulink url="http://www.suse.de/~freitag/taskjuggler">
-http://www.suse.de/~freitag/taskjuggler/</ulink></para>
+<para><ulink url="http://www.taskjuggler.org">
+http://www.taskjuggler.org</ulink></para>
 </sect1>
 <sect1><title>Requirements</title>
 
@@ -309,17 +309,51 @@ attributes in the input file.</para>
 </sect1> 
 <sect1><title> The Command Line Options</title>
 
-<para>To get a list of the command line options of TaskJuggler, use
-the <computeroutput>--help</computeroutput> option:</para>
+<para><simplelist type=horiz columns=2>
 
-<para><screen>
-% taskjuggler --help
-</screen></para>
+<member>--help</member>
+<member>Print all command line options with a short
+description.</member>
+
+<member>--version</member>
+<member>Print the version and copyright info.</member>
+
+<member>-v</member><member>Same as '--version'.</member>
+
+<member>-s</member><member>Stop TaskJuggler run after syntax check.
+This option is for testing and debugging purposes only.</member>
+
+<member>--nodepcheck</member>
+<member>Do not check for dependency loops. The loop detector uses an
+algorithm that needs exponentially more time the bigger the dependency
+network gets. So for large projects it can be desireable to skip the
+dependency loop detection. This does not affect the task scheduling
+but can lead to error messages that are difficult to associate with a
+flawed dependency specification.</member>
+
+<member>--debug N</member>
+<member>Print debug output, N must be between 0 and 4, the higher N
+the more output is printed. This option is for testing and debugging
+purposes only.</member>
+
+<member>--dbmode N</member>
+<member>Limit debug output to certain modules of the code. N is a bit
+mask. Each set bit actives output of a certain module. Currently the
+following modules are supported: Project File Reader (1), Project
+Scheduler (2), Task Scheduler (4), Resource Scheduler (8), Expression
+Tree Evaluator (16). This option is for testing and debugging purposes
+only.</member>
+
+<member>--updatedb</member>
+<member>Update the Kotrus database with the new resource usage
+information.</member>
+
+</simplelist></para>
 
 <para>Calling TaskJuggler with . as input filename will cause reading
 from stdin. To redirect output to stdout you can specify -- as
 filename for reports. This feature can for example be used to generate
-dynamic html pages from CGI scripts.</para>
+dynamic HTML pages from CGI scripts.</para>
 
 </sect1> 
 <sect1><title> Reporting Bugs and Sending Feedback</title>
@@ -337,7 +371,7 @@ procedure:</para>
 bug and not a feature.</para>
 
 <listitem><para>Check the TaskJuggler <ulink
-url="http://www.suse.de/~freitag/taskjuggler">web page</ulink>.
+url="http://www.taskjuggler.org">web page</ulink>.
 Possibly the bug was already found and a patch or workaround
 exists.</para>
 

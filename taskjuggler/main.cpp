@@ -47,6 +47,7 @@ usage(QApplication& a)
 		"   --version            - print the version and copyright info\n"
 		"   -v                   - same as '--version'\n"
 		"   -s                   - stop after syntax check\n"
+		"   --nodepcheck         - don't search for dependency loops\n"
 		"   --debug N            - print debug output, N must be between\n"
 		"                          0 and 4, the higher N the more output\n"
 		"                          is printed\n"
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
 	int debugMode = -1;
 	bool updateKotrusDB = FALSE;
 	bool checkOnlySyntax = FALSE;
+	bool noDepCheck = FALSE;
 	bool showHelp = FALSE;
 	bool showCopyright = FALSE;
 	bool terminateProgram = FALSE;
@@ -98,6 +100,8 @@ int main(int argc, char *argv[])
 			showCopyright = TRUE;
 		else if (strcmp(a.argv()[i], "-s") == 0)
 			checkOnlySyntax = TRUE;
+		else if (strcmp(a.argv()[i], "--nodepcheck") == 0)
+			noDepCheck = TRUE;
 		else if (strcmp(a.argv()[i], "--updatedb") == 0)
 			updateKotrusDB = TRUE;
 		else
@@ -139,7 +143,7 @@ int main(int argc, char *argv[])
 
 	p.readKotrus();
 
-	bool logicalErrors = !p.pass2();
+	bool logicalErrors = !p.pass2(noDepCheck);
 	bool schedulingErrors = FALSE;
 
 	if (!checkOnlySyntax)
