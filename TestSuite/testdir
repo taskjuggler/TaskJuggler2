@@ -1,6 +1,6 @@
 #! /bin/sh
 
-set errors=0
+errors=0
 export TASKJUGGLER=../../taskjuggler/taskjuggler
 if test ! -x $TASKJUGGLER ; then
   export TASKJUGGLER=taskjuggler
@@ -12,7 +12,7 @@ function do_testing
   op=$2
   echo "Running test $f" >> log
   $TASKJUGGLER $f 2>> log
-  if [ $? $op 0 ]; then
+  if [ $? $op 0 ] ; then
     errors=$(( $errors + 1 ))
     echo "Test $f failed!"
   fi
@@ -41,7 +41,9 @@ for f in Errors/*.tjp ; do
 done
 
 # remove all HTML files that are newer than the .timeStamp file
-find . -name "*.html" -newer .timeStamp | xargs /bin/rm -f
+if [ $errors -eq 0 ] ; then
+  find . -name "*.html" -newer .timeStamp | xargs /bin/rm -f
+fi
 /bin/rm -f .timeStamp
  
 exit $errors
