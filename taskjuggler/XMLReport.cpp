@@ -714,7 +714,7 @@ XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
 
             const ReferenceAttribute* a =
                 (const ReferenceAttribute*) ca;
-            genTextAttr(&cEl, "url", a->getUrl());
+            genTextAttr(&cEl, "url", a->getURL());
             genTextAttr(&cEl, "label", a->getLabel());
             break;
         }

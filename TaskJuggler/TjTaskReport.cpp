@@ -253,7 +253,7 @@ TjTaskReport::drawTask(Task* const t, int y)
         QPointArray a(5);
         int centerX = time2x(t->getStart(scenario));
         int centerY = y + itemHeight / 2;
-        int radius = (itemHeight - 8) / 2;
+        int radius = (itemHeight - 10) / 2;
         a.setPoint(0, centerX, centerY - radius);
         a.setPoint(1, centerX + radius, centerY);
         a.setPoint(2, centerX, centerY + radius);
@@ -321,8 +321,8 @@ TjTaskReport::drawTask(Task* const t, int y)
 
         // A blue box with some fancy interior.
         QCanvasRectangle* rect =
-            new QCanvasRectangle(start, y + 4, end - start + 1,
-                                 itemHeight - 8, ganttChart);
+            new QCanvasRectangle(start, y + 5, end - start + 1,
+                                 itemHeight - 10, ganttChart);
 
         rect->setPen(QPen(QColor("#4C5EFF")));
         rect->setBrush(QBrush(QColor("#4C5EFF"), Dense4Pattern));
@@ -347,8 +347,8 @@ TjTaskReport::drawTask(Task* const t, int y)
                                   (t->getCompletionDegree(scenario) / 100.0));
 
             rect = new QCanvasRectangle
-                (time2x(t->getStart(scenario)), y + 8, barWidth,
-                 itemHeight - 16, ganttChart);
+                (time2x(t->getStart(scenario)), y + 9, barWidth,
+                 itemHeight - 18, ganttChart);
 
             rect->setPen(Qt::black);
             rect->setBrush(Qt::black);

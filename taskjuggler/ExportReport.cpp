@@ -865,7 +865,7 @@ ExportReport::generateCustomAttributeValue(const QString& id,
             {
                 const ReferenceAttribute* a =
                     (const ReferenceAttribute*) ca;
-                s << "\"" << a->getUrl() << "\" { label \""
+                s << "\"" << a->getURL() << "\" { label \""
                     << a->getLabel() << "\" }" << endl;
                 break;
             }

@@ -24,6 +24,8 @@ void initUtility(long dizeSize);
 
 void exitUtility();
 
+bool isRichText(const QString& str);
+
 void setTimezone(const char* tz);
 
 const QString& getUtilityError();

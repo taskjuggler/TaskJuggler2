@@ -36,7 +36,7 @@ public:
 
     CustomAttributeType getType() const { return CAT_Reference; }
     void setUrl(const QString& u) { url = u; }
-    const QString& getUrl() const { return url; }
+    const QString& getURL() const { return url; }
 
     void setLabel(const QString& l) { label = l; }
     const QString& getLabel() const { return label; }

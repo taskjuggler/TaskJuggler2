@@ -1320,13 +1320,13 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
 
     const ReferenceAttribute* ra =  (const ReferenceAttribute*)
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
-    if (!ra || ra->getUrl().isEmpty())
+    if (!ra || ra->getURL().isEmpty())
         genCell("", tci, TRUE);
     else
     {
-        QString text ="<a href=\"" + ra->getUrl() + "\">";
+        QString text ="<a href=\"" + ra->getURL() + "\">";
         if (ra->getLabel().isEmpty())
-            text += htmlFilter(ra->getUrl());
+            text += htmlFilter(ra->getURL());
         else
             text += htmlFilter(ra->getLabel());
         text += "</a>";

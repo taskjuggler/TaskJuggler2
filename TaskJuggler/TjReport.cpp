@@ -32,6 +32,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
+#include <krun.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -42,6 +43,7 @@
 #include "Report.h"
 #include "TableColumnFormat.h"
 #include "TextAttribute.h"
+#include "ReferenceAttribute.h"
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
 #include "QtResourceReport.h"
@@ -89,6 +91,7 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     listView->setAllColumnsShowFocus(TRUE);
     // The sorting does not work yet properly.
     listView->header()->setClickEnabled(FALSE);
+    listView->setItemMargin(2);
 
     canvasFrame = new QWidget(splitter);
     QVBoxLayout* vl = new QVBoxLayout(canvasFrame, 0, 0);
@@ -271,8 +274,13 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             cellText = time2user(t->getMinStart(scenario),
                                  reportDef->getTimeFormat());
         else if ((*ci)->getName() == "note" && !t->getNote().isEmpty())
-            icon = KGlobal::iconLoader()->
-                loadIcon("tj_note", KIcon::Small);
+        {
+            if (t->getNote().length() > 25 || isRichText(t->getNote()))
+                icon = KGlobal::iconLoader()->
+                    loadIcon("document", KIcon::Small);
+            else
+                cellText = t->getNote();
+        }
         else if ((*ci)->getName() == "pathcriticalness")
         {
         }
@@ -327,29 +335,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         {
         }
         else
-        {
-            // Handle custom attributes
-            const CustomAttribute* custAttr =
-                t->getCustomAttribute((*ci)->getName());
-            if (custAttr)
-            {
-                switch (custAttr->getType())
-                {
-                    case CAT_Text:
-                        cellText =
-                            dynamic_cast<const TextAttribute*>(custAttr)->
-                            getText();
-                        break;
-                    case CAT_Reference:
-                        // TODO: not yet implemented
-                        break;
-                    default:
-                        kdError() << "Unknown attribute type "
-                            << custAttr << endl;
-                }
-            }
-        }
-
+            generateCustomAttribute(t, (*ci)->getName(), cellText, icon);
 
         lvi->setText(column, cellText);
         if (!icon.isNull())
@@ -368,6 +354,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
         QString cellText;
+        QPixmap icon;
         const TableColumnFormat* tcf =
             reportElement->getColumnFormat((*ci)->getName());
 
@@ -441,8 +428,48 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
+        else
+            generateCustomAttribute(r, (*ci)->getName(), cellText, icon);
 
         lvi->setText(column, cellText);
+        if (!icon.isNull())
+            lvi->setPixmap(column, icon);
+    }
+}
+
+void
+TjReport::generateCustomAttribute(const CoreAttributes* ca, const QString name,
+                                  QString& cellText, QPixmap& icon) const
+{
+    // Handle custom attributes
+    const CustomAttribute* custAttr =
+        ca->getCustomAttribute(name);
+    if (custAttr)
+    {
+        switch (custAttr->getType())
+        {
+            case CAT_Undefined:
+                break;
+            case CAT_Text:
+                {
+                    QString text =
+                        dynamic_cast<const TextAttribute*>(custAttr)->
+                        getText();
+                    if (text.length() > 25 || isRichText(text))
+                        icon = KGlobal::iconLoader()->
+                            loadIcon("document", KIcon::Small);
+                    else
+                        cellText = text;
+                    break;
+                }
+            case CAT_Reference:
+                cellText =
+                    dynamic_cast<const
+                    ReferenceAttribute*>(custAttr)->getLabel();
+                icon = KGlobal::iconLoader()->
+                    loadIcon("html", KIcon::Small);
+                break;
+        }
     }
 }
 
@@ -1042,28 +1069,65 @@ void
 TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
 {
     // The first column is always the name and the second column is the hidden
-    // sort index. Both are not in the TCI table.
-    if (!lvi || column <= 1)
+    // sort index. Both are not in the TCI table. All clickable columns have
+    // an icon.
+    if (!lvi || column <= 1 || !lvi->pixmap(column))
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
-    if (ca->getType() == CA_Task)
+    const TableColumnInfo* tci =
+        this->getReportElement()->columnsAt(column - 2);
+
+    if (ca->getType() == CA_Task &&
+        tci->getName() == "note" &&
+        !(dynamic_cast<Task*>(ca))->getNote().isEmpty())
     {
         Task* t = dynamic_cast<Task*>(ca);
-        const TableColumnInfo* tci =
-            this->getReportElement()->columnsAt(column - 2);
-        if (tci->getName() == "note" && !t->getNote().isEmpty())
-        {
-            // Open a new window that displays the note attached to the task.
-            RichTextDisplay* richTextDisplay =
-                new RichTextDisplay(topLevelWidget());
-            richTextDisplay->setCaption
-                (QString("Note for Task %1 (%2) - TaskJuggler")
-                 .arg(t->getName()).arg(t->getId()));
-            richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
+        // Open a new window that displays the note attached to the task.
+        RichTextDisplay* richTextDisplay =
+            new RichTextDisplay(topLevelWidget());
+        richTextDisplay->setCaption
+            (QString("Note for Task %1 (%2) - TaskJuggler")
+             .arg(t->getName()).arg(t->getId()));
+        richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
-            richTextDisplay->textDisplay->setText(t->getNote());
-            richTextDisplay->show();
+        richTextDisplay->textDisplay->setText(t->getNote());
+        richTextDisplay->show();
+    }
+    else if (ca->getCustomAttribute(tci->getName()))
+    {
+        switch (ca->getCustomAttribute(tci->getName())->getType())
+        {
+            case CAT_Undefined:
+                break;
+            case CAT_Text:
+            {
+                const TextAttribute* textAttr =
+                    dynamic_cast<const TextAttribute*>
+                    (ca->getCustomAttribute(tci->getName()));
+                RichTextDisplay* richTextDisplay =
+                    new RichTextDisplay(topLevelWidget());
+                richTextDisplay->setCaption
+                    (QString("%1 for %2 %3 (%4) - TaskJuggler")
+                     .arg(tci->getName())
+                     .arg(ca->getType() == CA_Task ? i18n("Task") :
+                          i18n("Resource"))
+                     .arg(ca->getName())
+                     .arg(ca->getId()));
+                richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
+
+                richTextDisplay->textDisplay->setText(textAttr->getText());
+                richTextDisplay->show();
+                break;
+            }
+            case CAT_Reference:
+            {
+                const ReferenceAttribute* refAttr =
+                    dynamic_cast<const ReferenceAttribute*>
+                    (ca->getCustomAttribute(tci->getName()));
+                KRun::runURL(KURL(refAttr->getURL()), "text/html");
+                break;
+            }
         }
     }
 }

@@ -37,6 +37,34 @@ struct LtHashTabEntry
 static long LTHASHTABSIZE;
 static LtHashTabEntry** LtHashTab = 0;
 
+bool
+isRichText(const QString& str)
+{
+    /* This function tries to guess whether a string is a rich-text string or
+     * not. It looks for xml tags marks and does a simple validation on them.
+     */
+
+    bool hasTags = FALSE;
+    bool inTag = FALSE;
+    for (uint i = 0; i < str.length(); ++i)
+    {
+        if (str[i] == '<')
+        {
+            if (inTag)
+                return FALSE;
+            inTag = hasTags = TRUE;
+        }
+        else if (str[i] == '>')
+        {
+            if (!inTag)
+                return FALSE;
+            inTag = FALSE;
+        }
+    }
+
+    return hasTags && !inTag;
+}
+
 const char*
 timezone2tz(const char* tzone)
 {

@@ -888,13 +888,13 @@ CSVReportElement::genCellReference(TableCellInfo* tci)
 
     const ReferenceAttribute* ra =  (const ReferenceAttribute*)
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
-    if (!ra || ra->getUrl().isEmpty())
+    if (!ra || ra->getURL().isEmpty())
         genCell("", tci, TRUE);
     else
     {
-        QString text = ra->getUrl();
+        QString text = ra->getURL();
         if (ra->getLabel().isEmpty())
-            text += filter(ra->getUrl());
+            text += filter(ra->getURL());
         else
             text += filter(ra->getLabel());
         genCell(text, tci, TRUE, FALSE);

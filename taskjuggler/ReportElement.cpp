@@ -1108,7 +1108,7 @@ ReportElement::setMacros(TableLineInfo* tli)
                         macroValue = ((TextAttribute*) custAttr)->getText();
                         break;
                     case CAT_Reference:
-                        macroValue = ((ReferenceAttribute*) custAttr)->getUrl();
+                        macroValue = ((ReferenceAttribute*) custAttr)->getURL();
                         break;
                     default:
                         break;

@@ -116,6 +116,9 @@ protected:
     void showTaskDetails(const Task* task);
     void showResourceDetails(const Resource* resource);
 
+    void generateCustomAttribute(const CoreAttributes* ca, const QString name,
+                                 QString& cellText, QPixmap& icon) const;
+
     virtual QString generateStatusBarText(const QPoint& pos,
                                           const CoreAttributes* ca,
                                           const CoreAttributes* parent)
