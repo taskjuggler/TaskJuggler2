@@ -717,8 +717,13 @@ public:
         return allowedFlags.contains(flag) > 0;
     }
 
+    const QStringList getAllowedFlags() const
+        {
+            return allowedFlags;
+        }
+
     /**
-     * Converts working seconds to working days. 
+     * Converts working seconds to working days.
      */
     double convertToDailyLoad(long secs) const;
 
