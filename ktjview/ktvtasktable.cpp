@@ -298,11 +298,14 @@ void KTVTaskTable::slUpdateCanvas()
 void KTVTaskTable::resizeContents( int w, int h )
 {
    QScrollView::resizeContents(w, h);
-   if( m_canvasView )
+   if( m_canvasView && m_root )
    {
       int width = m_canvasView->contentsWidth();
       if( m_canvasView->contentsHeight() != h )
-	 m_canvasView->resizeContents(width, h - m_itemHeight - itemMargin());
+      {
+	  // m_canvasView->resizeContents(width, h - m_itemHeight - itemMargin());
+	 m_canvasView->resizeContents(width, h - m_root->height() );
+      }
    }
 
 }
@@ -331,6 +334,6 @@ int KTVTaskTable::rootItemHeight()
 
 void KTVTaskTable::clear()
 {
-    QListView::clear();
     m_root = 0;
+    QListView::clear();
 }

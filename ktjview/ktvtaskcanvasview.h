@@ -69,7 +69,8 @@ public slots:
     void zoomOriginal();
     void slScrollTo(int, int);
     void clear();
-
+    void slTableMoving(int, int);
+    
 private:
     Project *m_pro;
 
@@ -77,6 +78,8 @@ private:
     KTVTaskTable  *m_table;
     KTVHeader     *m_header;
     double         m_scaleFactor;
+
+    bool           m_suppressScroll;
 };
 
 

@@ -38,7 +38,8 @@ KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, KTVHea
     m_canvas(0),
     m_table(tab),
     m_header(h),
-    m_scaleFactor(1.0)
+    m_scaleFactor(1.0),
+    m_suppressScroll(false)
 {
     m_canvas = new KTVTaskCanvas( parent, tab, h, name );
     setCanvas( m_canvas );
@@ -180,6 +181,25 @@ void KTVTaskCanvasView::slScrollTo( int x, int y)
 
 void KTVTaskCanvasView::contentsMousePressEvent ( QMouseEvent *e )
 {
-   qDebug( "Mouse-Move at %d %d", e->pos().x(), e->pos().y());
-   emit canvasClicked( m_header->timeFromX( e->pos().x()));
+    qDebug( "Mouse-Move at %d %d", e->pos().x(), e->pos().y());
+    emit canvasClicked( m_header->timeFromX( e->pos().x()));
+}
+
+void KTVTaskCanvasView::slTableMoving( int, int y )
+{
+    qDebug("Table scrolled to y-Pos %d", y );
+    int yOff = 0;
+
+    if( m_suppressScroll )
+    {
+	m_suppressScroll = false;
+	return;
+    }
+    
+    if( m_table )
+	yOff = m_table->rootItemHeight();
+
+    m_suppressScroll = true;
+    setContentsPos( contentsX(), y);
+    
 }

@@ -69,6 +69,11 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
     connect( m_canvas, SIGNAL(scrolledBy(int,int)),
              m_header, SLOT( scrollBy(int,int)));
 
+    /* connect scroll info of the table to the canvas */
+    connect( m_table,     SIGNAL(contentsMoving(int,int)),
+	     m_canvas,    SLOT(slTableMoving( int, int ) ));
+
+    
     connect( m_table, SIGNAL(newTaskAdded(Task *, KTVTaskTableItem *)),
 	     m_canvas->canvas(), SLOT(slNewTask(Task *, KTVTaskTableItem *) ));
 
