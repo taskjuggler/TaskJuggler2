@@ -121,10 +121,6 @@ public:
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
 
-    void registerUrl(const QString& key);
-    bool setUrl(const QString& key, const QString& url = QString::null);
-    const QString* getUrl(const QString& key) const;
-
     void setAccumulate(bool s) { accumulate = s; }
 
     void filterTaskList(TaskList& filteredList, const Resource* r,
@@ -285,8 +281,6 @@ protected:
     bool showPIDs;
 
     bool accumulate;
-    
-    QMap<QString, QString> urls;
     
     /* The maximum depth of the tree that we have to report in tree-sorting
      * mode. */

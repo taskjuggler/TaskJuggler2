@@ -2,7 +2,7 @@
 # Chris Schlaeger <cs@suse.de>
 # Klaas Freitag <freitag@suse.de>
 # Stephan Kulow <coolo@kde.org>
-# $Id
+# $Id$
 #
 COMPILE_FIRST = taskjuggler
 

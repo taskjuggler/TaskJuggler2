@@ -800,6 +800,139 @@ linkend="task_complete">complete</link>.</member>
 <member>A year-by-year calendar view of the tasks</member>
 </simplelist></para>
 
+<para>Optional attributes of each column:</para>
+
+<para>All optional attributes that have a single text argument support
+macro expansion. Contrary to the normal macro expansion, these macros
+are expanded during the report generation. So the value of the macro
+is being changed after each table cell or table line. Consequently
+only build in macros can be used. To protect the macro calls agains
+expansion during the initial file processing, the report macros must
+be prefixed with an additional <computeroutput>$</computeroutput>.
+
+<para>The following macros are supported for normal table cells:</para>
+
+<para><simplelist type=horiz columns=2>
+<member><computeroutput>$${0}</computeroutput></member>
+<member>This is the original value of the table cell. This macro is
+useful if the user would like to extend the cell text with a fixed
+string.</member>
+
+<member><computeroutput>$${accountid}</computeroutput></member>
+<member>The ID of the account.</member>
+
+<member><computeroutput>$${resourceid}</computeroutput></member>
+<member>The ID of the resource.</member>
+
+<member><computeroutput>$${taskid}</computeroutput></member> <member>the
+id of the task.</member>
+
+</simplelist></para>
+
+<para>Additionally the contense of other cell of the same report line can be
+accessed by the column ID. The following columns are supported:</para>
+
+<para><computeroutput>index, no, hierachindex, hierachno, id,
+name</computeroutput></para>
+
+<para>For the title or sub title of the calendar columns
+(<computeroutput>daily, weekly, monthly, quarterly,
+ yearly</computeroutput>) the
+following macros are supported:</para>
+
+<para><computeroutput>$${day}, $${month}, $${week}, $${quarter},
+	$${year}</computeroutput>.</para>
+
+<sect3 id="htmltaskreport_columns_celltext"><title>celltext &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the text to be shown in each table cell of the column.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_cellurl"><title>cellurl &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>If the text is not empty a hyperlink is attached to the cell
+contense that points to the URL specified here.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_subtitle"><title>subtitle &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the new column sub title. This is only useful for
+columns which have a two-line title like
+<computeroutput>daily</computeroutput>,
+<computeroutput>weekly</computeroutput> and the like.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_subtitleurl"><title>
+subtitleurl &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>If the text is not empty a hyperlink is attached to the cell
+sub title that points to the URL specified here.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_title"><title>title &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>Defines the new column title.</para>
+
+</sect3>
+<sect3 id="htmltaskreport_columns_titleurl"><title>titleurl &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>If the text is not empty a hyperlink is attached to the cell
+title that points to the URL specified here.</para>
+
+</sect3>
+<sect3><title>Examples</title>
+
+<para>To replace the tiltle of the
+<computeroutput>name</computeroutput> column with the text Description
+one has to write the following:</para>
+
+<para><screen>
+columns no, name { title "Description" }, daily
+</screen></para>
+
+<para>The next example adds the value of the <link
+linkend="project_extend">user-defined attribute</link>
+<computeroutput>category</computeroutput> enclosed in brackets in front of
+the original name.</para>
+
+<para><screen>
+columns no, name { celltext "[$${Category}] $${0}" }
+</screen></para>
+
+<para>The following example shows how to add a link to the week number
+in the title of a weekly report. The link can point to another report
+that contains a report with more details, but limited to the specified
+week only.</para>
+
+<para><screen>
+columns no, name, weekly { subtitleurl "http://Report-Week-$${week}.html" }
+</screen></para>
+
+</sect3>
 </sect2>
 <sect2 id="htmltaskreport_end"><title>end &lt;day&gt;</title>
 
@@ -1201,76 +1334,6 @@ linkend="string">STRING</link>/member>
 
 <para>Specifies time format for time specifications. See <link
 linkend="project_timeformat">timeformat</link> for details.</para>
-
-</sect2>
-<sect2 id="htmltaskreport_url"><title>url &lt;id&gt;
-&lt;href&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>id:</member><member>The ID specifies the location of the HTML
-report where the URL should appear.</member>
-<member>href:</member><member>A string pattern that is used to create
-the embedded URLs.</member>
-</simplelist></para>
-
-<para>The following IDs are currently supported:</para>
-
-<para><simplelist type=horiz columns=2>
-<member><computeroutput>dayheader</computeroutput></member>
-<member>The number of the day in daily calendars. Available macros:
-day, month, quarter, week,  year</member>
-
-<member><computeroutput>weekheader</computeroutput></member>
-<member>The number of the week in weekly calendars. Available macros:
-day, month, quarter, week, year</member>
-
-<member><computeroutput>monthheader</computeroutput></member>
-<member>The name of the month in weekly or monthly calendars.
-Available macros: day, month year</member>
-
-<member><computeroutput>quarterheader</computeroutput></member>
-<member>The number of the quarter in quarterly calendars. Available macros:
-day, month, quarter, week,  year</member>
-
-<member><computeroutput>resourcename</computeroutput></member>
-<member>The name of the resource. Available macros:
-resourceid</member>
-
-<member><computeroutput>taskname</computeroutput></member> <member>The
-name of the task. Available macros: taskid</member>
-
-<member><computeroutput>yearheader</computeroutput></member>
-<member>The number of the year in yearly calendars. Available macros:
-day, month, quarter, week,  year</member>
-
-</simplelist></para>
-
-<para>The href pattern may contain macros which are expanded during the report
-generation. The availability of the macros and their content depends
-on the specified ID. To protect the macros from being expanded during
-file reading the macros in the URL string need to be started with two
-$ signs.</para>
-
-<para>Example:</para>
-<para><screen>
-url taskname "TaskList-Weekly.html#task_$${taskid}"
-</screen></para>
-
-<para>This attaches a hyperlink to all task names in the report. The
-hyperlinks point to anchors in a file called "TaskList-Weekly.html".
-Taskjuggler automatically generates anchors in reports. The ID of the
-anchors is task_<computeroutput>&lt;taskid&gt;</computeroutput> or
-resource_<computeroutput>&lt;resourceid&gt;</computeroutput>.</para>
-
-<para><screen>
-url monthheader "Resources-2002-$${month}.html"
-</screen></para>
-
-<para>This attaches a hyperlink to all month names in a monthly or weekly
-calendar header. The links point to files that contain the number of
-the month in the file name. The number is always two digits and
-prefixed with a 0 if necessary. The year macro expands to 4
-digits.</para>
 
 </sect2>
 </sect1>

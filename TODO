@@ -1,18 +1,21 @@
 For 1.9.0:
-- Save user-defined attributes to XML.
 - Document optional column attributes
 
 For 1.9.1:
 - Remove old color support
 - Complete new color support
 - Color support for tasks and resources
+- Save user-defined attributes to XML.
+- Remove KDE stuff from automake/autoconf for default build.
+- Replace isplanallocated() and isactualallocated() with scenario
+  specific function.
 
 For 2.0:
 - Finish multi scenario support
 - Improve scheduler performance.
 - Improve report generation performance.
 - Explain more features with examples in the documentation.
-- Remove KDE dependencies from base components.
+- Valgrind the code.
 
 After 2.0:
 - Generic HTML report

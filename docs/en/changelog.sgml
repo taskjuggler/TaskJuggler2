@@ -431,13 +431,18 @@ task.</para></listitem>
 
 </itemizedlist></para>
 </sect2>
-<sect2><title>Version 1.9.0-unstable (Some day)</title>
+<sect2><title>Version 1.9.0-unstable (2003-06-25)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>A new HTML report type for status report has been
 added. See <link linkend="htmlstatusreport">htmlstatusreport</link>
 for details.</para></listitem>
+
+<listitem><para>HTML reports are now a lot more flexible. New CSS
+elements have being used and the table elements are customizable now.
+See <link linkend=htmltaskreport_columns>optional column
+attributes</link> for details.</para></listitem>
 
 <listitem><para>Support for <link
 linkend="project_extend">user-defined attributes</link> has been
@@ -481,6 +486,14 @@ allocation.</para></listitem>
 
 <listitem><para>Fixed rounding error in effort calculation that led to
 the allocation of an extra time slot in some cases.</para></listitem>
+
+<listitem><para>Fixed wrong scheduling of tasks that had a length or
+duration specified as hours or minutes.</para></listitem>
+
+<listitem><para>'length' based task now use the global working hours
+and global vacation settings as a criteria of what is a working day.
+The tasks now always end during working hours and not at
+midnight.</para></listitem>
 
 <listitem><para>isplanallocated and isactualallocated had broken time
 interval handling. This is fixed now.</para></listitem>

@@ -2793,8 +2793,13 @@ ProjectFile::readHTMLReport(const QString& reportType)
             }
             else if (token == KW("url"))
             {
-                if (!readHtmlUrl(tab))
-                    return FALSE;
+                errorMessage(i18n("The 'url' attribute is no longer "
+                                  "supported. It has been replaced by the "
+                                  "much more flexible column URLs. Please "
+                                  "refer to the TaskJuggler manual to get "
+                                  "more information about optional column "
+                                  "attributes."));
+                return FALSE;
             }
             else if (token == KW("loadunit"))
             {
@@ -3251,8 +3256,13 @@ ProjectFile::readReportElement(ReportElement* el)
             }
             else if (token == KW("url"))
             {
-                if (!readHtmlUrl(el))
-                    return FALSE;
+                errorMessage(i18n("The 'url' attribute is no longer "
+                                  "supported. It has been replaced by the "
+                                  "much more flexible column URLs. Please "
+                                  "refer to the TaskJuggler manual to get "
+                                  "more information about optional column "
+                                  "attributes."));
+                return FALSE;
             }
             else if (token == KW("loadunit"))
             {
@@ -3310,30 +3320,6 @@ ProjectFile::readReportElement(ReportElement* el)
     else
         returnToken(tt, token);
 
-    return TRUE;
-}
-
-bool
-ProjectFile::readHtmlUrl(ReportElement* tab)
-{
-    QString key;
-    QString url;
-
-    if (nextToken(key) != ID)
-    {
-        errorMessage(i18n("URL ID expected"));
-        return FALSE;
-    }
-    if (nextToken(url) != STRING)
-    {
-        errorMessage(i18n("String expected"));
-        return FALSE;
-    }
-    if (!tab->setUrl(key, url))
-    {
-        errorMessage(i18n("Unknown URL ID '%1'").arg(key));
-        return FALSE;
-    }
     return TRUE;
 }
 

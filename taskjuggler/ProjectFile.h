@@ -147,7 +147,6 @@ private:
     bool readXMLReport();
     bool readReportElement(ReportElement* el);
     bool checkReportInterval(ReportElement* report);
-    bool readHtmlUrl(ReportElement* report);
     bool checkReportInterval(HTMLReport* report);
 #ifdef HAVE_KDE
     bool readICalTaskReport();

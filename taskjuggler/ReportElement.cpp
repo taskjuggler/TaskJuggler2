@@ -361,13 +361,6 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
 
     barLabels = BLT_LOAD;
 
-    registerUrl(KW("dayheader"));
-    registerUrl(KW("monthheader"));
-    registerUrl(KW("resourcename"));
-    registerUrl(KW("taskname"));
-    registerUrl(KW("weekheader"));
-    registerUrl(KW("yearheader"));
-
     accumulate = FALSE;
 
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
@@ -409,30 +402,6 @@ QTextStream&
 ReportElement::s() const
 {
     return report->stream(); 
-}
-
-void
-ReportElement::registerUrl(const QString& key)
-{
-    urls[key] = QString::null;
-}
-
-bool
-ReportElement::setUrl(const QString& key, const QString& url)
-{
-    if (urls.find(key) == urls.end())
-        return FALSE;
-
-    urls[key] = url;
-    return TRUE;
-}
-
-const QString*
-ReportElement::getUrl(const QString& key) const
-{
-    if (urls.find(key) == urls.end() || urls[key] == "")
-        return 0;
-    return &urls[key];
 }
 
 bool
