@@ -1,0 +1,35 @@
+project optimize "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+	timezone "GMT"
+}
+
+# This example does not get optimized properly yet. 
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+
+task t1 "Task1" {
+  start 2000-01-01
+	maxend 2000-01-07-18:00
+	effort 5d
+	allocate tux1
+}
+
+task t2 "Task2" {
+	start 2000-01-01
+	#maxend 2000-01-21-18:00
+	effort 6d
+	allocate tux1
+}
+
+task t3 "Task3" {
+	depends !t1
+	#maxend 2000-01-14-18:00
+	effort 10d
+	allocate tux1, tux2
+}
+
+htmltaskreport "Optimize-4.html" {
+	columns name, start, end, criticalness, pathcriticalness, daily
+	notimestamp
+	hideresource 0
+}
+

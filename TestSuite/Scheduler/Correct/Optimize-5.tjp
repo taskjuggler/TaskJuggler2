@@ -1,0 +1,57 @@
+project optimize "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-03-31-0:00-GMT {
+	timezone "GMT"
+}
+
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+resource tux3 "Tux3"
+
+task t0 "Task0" {
+	start 2000-01-01
+	effort 5d
+	allocate tux1 { alternative tux3 }
+}
+
+task t1 "Task1" {
+  start 2000-01-01
+	effort 5d
+	allocate tux1
+}
+
+task t2 "Task2" {
+	start 2000-01-01
+	effort 5d
+	allocate tux2
+}
+
+task t3 "Task3" {
+	depends !t1, !t2
+	effort 4d
+	allocate tux1, tux2
+}
+
+task t4 "Task4" {
+	depends !t3
+	effort 5d
+	allocate tux1
+}
+
+task t5 "Task5" {
+	depends !t3
+	effort 10d
+	allocate tux2
+}
+
+task t6 "Task6" {
+	start 2000-01-01
+	effort 5d
+	allocate tux1
+	maxend 2000-01-25-18:00
+}
+
+htmltaskreport "Optimize-5.html" {
+	columns name, start, end, criticalness, pathcriticalness, daily
+	notimestamp
+	hideresource 0
+}
+
