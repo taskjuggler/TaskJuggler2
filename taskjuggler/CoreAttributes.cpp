@@ -25,10 +25,14 @@ CoreAttributesList::setSorting(SortCriteria s)
 void
 CoreAttributesList::createIndex()
 {
+	int i = 1;
+	for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
+		c->setSequenceNo(i);
+
 	SortCriteria savedSorting = sorting;
 	sorting = TreeMode;
 	sort();
-	int i = 1;
+	i = 1;
 	for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
 		c->setIndex(i);
 	sorting = savedSorting;

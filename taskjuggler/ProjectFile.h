@@ -118,9 +118,6 @@ private:
 	QList<FileInfo> openFiles;
 	QStringList includedFiles;
 	MacroTable macros;
-	uint taskCntr;
-	uint resourceCntr;
-	uint accountCntr;
 };
 
 #endif

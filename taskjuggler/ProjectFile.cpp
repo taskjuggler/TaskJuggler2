@@ -409,8 +409,6 @@ ProjectFile::ProjectFile(Project* p)
 {
 	proj = p;
 
-	taskCntr = resourceCntr = accountCntr = 0;
-
 	openFiles.setAutoDelete(TRUE);
 }
 
@@ -885,7 +883,6 @@ ProjectFile::readTask(Task* parent)
 	proj->addTask(task);
 	if (parent)
 		parent->addSub(task);
-	task->setSequenceNo(taskCntr++);
 
 	for (bool done = false ; !done; )
 	{
@@ -1310,7 +1307,6 @@ ProjectFile::readResource(Resource* parent)
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addResource(r);
-	r->setSequenceNo(resourceCntr++);
 
 	return TRUE;
 }
@@ -1410,7 +1406,6 @@ ProjectFile::readAccount(Account* parent)
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addAccount(a);
-	a->setSequenceNo(accountCntr++);
 
 	return TRUE;
 }

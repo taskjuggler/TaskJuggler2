@@ -1124,20 +1124,9 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	{
 		QString key1;
 		t1->treeSortKey(key1);
-//		key1 += QString("0000000") + time2ISO(t1->start);
 		QString key2;
 		t2->treeSortKey(key2);
-//		key2 += QString("0000000") + time2ISO(t2->start);
-		if (key1 == key2)
-		{
-			/* If the keys are identical we do an inverse sort for the
-			 * end date. That way the parent tasks are sorted above
-			 * their childs. */
-			return t1->end == t2->end ? 0 :
-				t1->end > t2->end ? -1 : 1;
-		}
-		else
-			return key1 < key2 ? -1 : 1;
+		return key1 < key2 ? -1 : 1;
 	}
 	case StartUp:
 		return t1->start == t2->start ? 0 :
