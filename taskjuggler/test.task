@@ -1,0 +1,26 @@
+start 2002-10-13
+
+vacation "Xmas" 2002-12-21 - 2003-01-04
+
+resource joe "Joe Average"
+maxEffort 0.9
+resource zman "ZZZZZ"
+resource bill "Billy the Gate" { maxEffort 1.0 }
+resource abc "The alphabeth" { minEffort 0.8 }
+
+task task1 "foo"{
+	start 2002-12-18
+	effort 10md
+	allocate joe { load 50 alternative bill }
+}
+
+task task2 "foo 2" { effort 11md allocate bill depends task1 }
+
+task container "Container" {
+	task short1 "short1" { effort 0.5md allocate zman depends task1 }
+	task short2 "short2" { effort 0.6md allocate zman depends short1}
+	task task3 "foo 3" { effort 5md allocate bill depends task1 }
+	task untertask "unter" { length 20d depends task3, task2}
+}
+task obertask "ober" { length 7d depends untertask}
+
