@@ -10,7 +10,6 @@ setlocal cinoptions=g0,t0,+0,(0,c0,C1
 setlocal cinwords=task,resource,account,shift,htmltaskreport,htmlresourcereport,htmlaccountreport
 setlocal cinkeys=0{,0},!^F,o,O
 setlocal cindent
-setlocal makeprg=./tj
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -30,19 +29,19 @@ if version >= 600
 endif
 
 
-" define the tjsp syntax
-syn match	tjspinclude		"include.*$"
-syn keyword tjspstruct	 	resource task macro account shift
+" define the tjp syntax
+syn match	tjpinclude		"include.*$"
+syn keyword tjpstruct	 	resource task macro account shift
 " we could also highlight the tags... but it's against the rules
-"syn match 	tjspstruct	 	"task\s*\S*"
-"syn match 	tjspstruct	 	"macro\s*\S*"
-syn keyword tjspspecial		project
-syn match	tjspdelimiter 	contained "[();,~]"
-syn match	tjspjump 		contained "!"
-syn match	tjspbrace		"{}"
-syn match	tjsparg			contained "\${.*}"
-syn match	tjspoperator	contained "[=|&\*\+\<\>]"
-syn match	tjspcomment		"#.*"
+"syn match 	tjpstruct	 	"task\s*\S*"
+"syn match 	tjpstruct	 	"macro\s*\S*"
+syn keyword tjpspecial		project
+syn match	tjpdelimiter 	contained "[();,~]"
+syn match	tjpjump 		contained "!"
+syn match	tjpbrace		"{}"
+syn match	tjparg			contained "\${.*}"
+syn match	tjpoperator	contained "[=|&\*\+\<\>]"
+syn match	tjpcomment		"#.*"
 " TODO: Implement support for C-style comments
 
 syn keyword tjspkeyword account
@@ -51,6 +50,7 @@ syn keyword tjspkeyword accumulate
 syn keyword tjspkeyword alap
 syn keyword tjspkeyword all
 syn keyword tjspkeyword allocate
+syn keyword tjspkeyword allowredefinitions
 syn keyword tjspkeyword alternative
 syn keyword tjspkeyword asap
 syn keyword tjspkeyword barlabels
@@ -191,6 +191,8 @@ syn keyword tjspkeyword priorityup
 syn keyword tjspkeyword profit
 syn keyword tjspkeyword project
 syn keyword tjspkeyword projectid
+syn keyword tjspkeyword projectids
+syn keyword tjspkeyword projection
 syn keyword tjspkeyword quarter
 syn keyword tjspkeyword quarterly
 syn keyword tjspkeyword random
@@ -266,6 +268,7 @@ syn keyword tjspkeyword tue
 syn keyword tjspkeyword undefined
 syn keyword tjspkeyword url
 syn keyword tjspkeyword vacation
+syn keyword tjspkeyword version
 syn keyword tjspkeyword w
 syn keyword tjspkeyword wed
 syn keyword tjspkeyword week
@@ -281,46 +284,46 @@ syn keyword tjspkeyword year
 syn keyword tjspkeyword yearly
 syn keyword tjspkeyword yearlyworkingdays
 syn keyword tjspkeyword years
-"syn keyword tjspmilestone 	contained	  milestone
-syn region  tjspstring	start=+"+ skip=+\\"+ end=+"+ contains=tjsparch 
-syn region  tjspstring	start=+`+ skip=+\\'+ end=+'+ contains=tjsparch 
-syn region  tjspstring	start=+`+ skip=+\\'+ end=+`+ contains=tjsparch 
+"syn keyword tjpmilestone 	contained	  milestone
+syn region  tjpstring	start=+"+ skip=+\\"+ end=+"+ contains=tjparch 
+syn region  tjpstring	start=+`+ skip=+\\'+ end=+'+ contains=tjparch 
+syn region  tjpstring	start=+`+ skip=+\\'+ end=+`+ contains=tjparch 
 
 " Define the default highlighting.
 " For version 5.7 and earlier: only when not done already
 " For version 5.8 and later: only when an item doesn't have highlighting yet
-if version >= 508 || !exists("did_tjsp_syntax_inits")
+if version >= 508 || !exists("did_tjp_syntax_inits")
   if version < 508
-    let did_tjsp_syntax_inits = 1
+    let did_tjp_syntax_inits = 1
     command -nargs=+ HiLink hi link <args>
   else
     command -nargs=+ HiLink hi def link <args>
   endif
 
-  HiLink tjspdelimiter 	Delimiter
-  "HiLink tjspoperator	Operator
-  HiLink tjspoperator	Delimiter
-  HiLink tjspcomment	Comment
-  HiLink tjsparch		Function
-  "HiLink tjspnumber	Number
-  "HiLink tjsptimes		Constant
-  HiLink tjspkeyword	Keyword
-  HiLink tjspspecial	Special
-  HiLink tjsparg		Special
-  HiLink tjspstring		String
-  HiLink tjspinclude	Include
-  HiLink tjspstruct		Structure
-  HiLink tjspmilestone 	Error
+  HiLink tjpdelimiter 	Delimiter
+  "HiLink tjpoperator	Operator
+  HiLink tjpoperator	Delimiter
+  HiLink tjpcomment	Comment
+  HiLink tjparch		Function
+  "HiLink tjpnumber	Number
+  "HiLink tjptimes		Constant
+  HiLink tjpkeyword	Keyword
+  HiLink tjpspecial	Special
+  HiLink tjparg		Special
+  HiLink tjpstring		String
+  HiLink tjpinclude	Include
+  HiLink tjpstruct		Structure
+  HiLink tjpmilestone 	Error
 
-  "HiLink tjspbrace		Operator
+  "HiLink tjpbrace		Operator
   "HiLink taskfold		Operator
 
-  HiLink tjspjump		Include
+  HiLink tjpjump		Include
 
   delcommand HiLink
 endif
 
-let b:current_syntax = "tjsp"
+let b:current_syntax = "tjp"
 
 " vim: ts=4
 
