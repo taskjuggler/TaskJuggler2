@@ -1,9 +1,11 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="22">
+<kpartgui name="ktjview2" version="23">
 <MenuBar>
+<!--
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="filter"/>
   </Menu>
+-->
   <Menu name="tasks"><text>&amp;Tasks</text>
     <Action name="filter_for"/>
   </Menu>

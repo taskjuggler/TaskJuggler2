@@ -95,7 +95,10 @@ void ktjview2::load( const KURL& url )
 
 void ktjview2::setupActions()
 {
-    KStdAction::openNew( this, SLOT(fileNew()), actionCollection() );
+#if 0
+    KStdAction::openNew( this, SLOT(fileNew()), actionCollection() ); // FIXME
+#endif
+
     KStdAction::open( this, SLOT(fileOpen()), actionCollection() );
 
     m_recentAction = KStdAction::openRecent( this, SLOT( load( const KURL& ) ), actionCollection() );
@@ -110,9 +113,11 @@ void ktjview2::setupActions()
     KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
 
     // View menu
-    KStdAction::find( m_view, SLOT( find() ), actionCollection());
+#if 0
+    KStdAction::find( m_view, SLOT( find() ), actionCollection()); // TODO
     new KAction( i18n( "Filter..." ), "filter", KShortcut(),
                  m_view, SLOT( filter() ), actionCollection(), "filter" );
+#endif
 
     // Tasks menu
     m_filterForAction = new KSelectAction( i18n( "&Filter for: All Tasks" ), "filter", KShortcut(),
