@@ -14,9 +14,7 @@
 
 #include <qstring.h>
 
-#include "Account.h"
-#include "Project.h"
-#include "Task.h"
+class Task;
 
 /**
  * @short Booking information for a time slot of the resource.

@@ -51,4 +51,17 @@ public:
 	Resource* operator*() { return (Resource*) get(); }
 } ;
 
+class ResourceTreeIterator : public virtual CoreAttributesTreeIterator
+{
+public:
+	ResourceTreeIterator(Resource* r); 
+	~ResourceTreeIterator() { }
+
+	Resource* operator*() { return (Resource*) current; }
+	Resource* operator++() 
+	{
+	   	return (Resource*) CoreAttributesTreeIterator::operator++();
+	}
+} ;
+
 #endif

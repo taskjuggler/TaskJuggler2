@@ -351,6 +351,11 @@ linkend="htmltaskreport_columns">column</link> with the completion
 degree and the completion status. The rows can also be sorted by these
 new columns.</para></listitem>
 
+<listitem><para>A bug in the handling of nested Resources and Shifts
+has been found and fixed. The bug lead to wrong load values for all
+nested resources. The bug was introduced between versions 1.2 and 1.3.
+</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -33,6 +33,12 @@ public:
 		for (int i = 0; i < maxSortingLevel; i++)
 			sorting[i] = SequenceUp;
    	}
+	CoreAttributesList(const CoreAttributesList& l) :
+		QPtrList<CoreAttributes>(l)
+	{
+		for (int i = 0; i < maxSortingLevel; i++)
+			sorting[i] = l.sorting[i];
+	}
 	virtual ~CoreAttributesList();
 
 	enum SortCriteria {
@@ -77,6 +83,21 @@ public:
 	~CoreAttributesListIterator() { }
 } ;
 
+class CoreAttributesTreeIterator
+{
+public:
+	CoreAttributesTreeIterator(CoreAttributes* root);
+	~CoreAttributesTreeIterator() { }
+
+	CoreAttributes* operator*() { return current; }
+	CoreAttributes* operator++();
+
+protected:
+	CoreAttributes* current;
+private:
+	CoreAttributes* root;
+} ;
+
 /**
  * @short This class is the base class for all attribute classes.
  * @author Chris Schlaeger <cs@suse.de>
@@ -114,9 +135,12 @@ public:
 
 	uint treeLevel() const;
 
-	// TODO: Find a better way to achive this.
-	virtual CoreAttributesList getSubList() const { return sub; }
-
+	CoreAttributesList getSubList() const { return sub; }
+	CoreAttributesListIterator getSubListIterator() const 
+	{ 
+		return CoreAttributesListIterator(sub);
+	}
+	bool hasSubs() const { return !sub.isEmpty(); }
 	void addFlag(QString flag) { flags.addFlag(flag); }
 	void clearFlag(const QString& flag) { flags.clearFlag(flag); }
 	bool hasFlag(const QString& flag) { return flags.hasFlag(flag); }

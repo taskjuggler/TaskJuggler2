@@ -16,6 +16,44 @@ CoreAttributesList::~CoreAttributesList()
 {
 }
 
+CoreAttributesTreeIterator::CoreAttributesTreeIterator(CoreAttributes* r)
+{
+	root = current = r;
+	while (current->hasSubs())
+		current = current->getSubList().first();
+}
+
+#include "assert.h"
+CoreAttributes*
+CoreAttributesTreeIterator::operator++()
+{
+	if (current == 0)
+		return 0;
+
+	while (current != root)
+	{
+		// Find the current CA in the parent's sub list.
+		CoreAttributesListIterator
+			cli(current->getParent()->getSubListIterator());
+		for ( ; *cli != current; ++cli)
+			;
+		// Check if there is another task in the sub list.
+		++cli;
+		if (*cli != 0)
+		{
+			// Find the first leaf in this sub list.
+			current = *cli;
+			while (current->hasSubs())
+				current = current->getSubList().first();
+			// This is the new current task.
+			return current;
+		}
+		// End of sub list reached. Try parent node then.
+		current = current->getParent();
+	}
+	return (current = 0);
+}
+
 void
 CoreAttributesList::setSorting(int s, int level)
 {

@@ -45,10 +45,7 @@ public:
 	Resource* getParent() const { return (Resource*) parent; }
 
 	bool isGroup() const { return !sub.isEmpty(); }
-	void getSubResourceList(ResourceList& rl) const;
-
-	Resource* subResourcesFirst();
-	Resource* subResourcesNext();
+	ResourceList getSubList() const;
 
 	void setMinEffort(double e) { minEffort = e; }
 	double getMinEffort() const { return minEffort; }
@@ -78,7 +75,7 @@ public:
 
 	bool addShift(const Interval& i, Shift* s);
 
-	bool isAvailable(time_t day, time_t duration, int loadFactor, Task* t)
+	bool isAvailable(time_t day, time_t duration, int loadFactor, const Task* t)
 		const;
 
 	bool book(Booking* b);
@@ -87,17 +84,18 @@ public:
 	bool bookInterval(Booking* b);
 	bool addBooking(int sc, Booking* b);
 
-	double getCurrentLoad(const Interval& i, Task* task = 0) const;
+	double getCurrentLoad(const Interval& i, const Task* task = 0) const;
 
-	long getCurrentLoadSub(uint startIdx, uint endIdx, Task* task) const;
+	long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
 
-	double getLoad(int sc, const Interval& i, Task* task = 0) const;
+	double getLoad(int sc, const Interval& i, const Task* task = 0) const;
 
-	long getLoadSub(int sc, uint startIdx, uint endIdx, Task* task) const;
+	long getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const;
 
-	double getCredits(int sc, const Interval& i, Task* task = 0) const;
+	double getCredits(int sc, const Interval& i, const Task* task = 0) const;
 
-	QString getProjectIDs(int sc, const Interval& i, Task* task = 0) const;
+	QString getProjectIDs(int sc, const Interval& i, const Task* task = 0) 
+		const;
 
 	bool isAllocated(int sc, const Interval& i, const QString& prjId) const;
 
@@ -115,10 +113,7 @@ public:
 	void finishScenario(int sc);
 
 private:
-	Resource* subFirst() { return (Resource*) sub.first(); }
-	Resource* subNext() { return (Resource*) sub.next(); }
-
-	void getPIDs(int sc, const Interval& period, Task* task, 
+	void getPIDs(int sc, const Interval& period, const Task* task, 
 				 QStringList& pids) const;
 
 	void initScoreboard();

@@ -38,8 +38,6 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 			 it != pr->flags.end(); ++it)
 			addFlag(*it);
 
-		pr->sub.append(this);
-
 		// Inherit default working hours from parent resource.
 		for (int i = 0; i < 7; i++)
 		{
@@ -126,6 +124,18 @@ Resource::~Resource()
 	MidnightIndex = 0;
 }
 
+ResourceList
+Resource::getSubList() const
+{
+	ResourceList rl;
+	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
+	{
+		qDebug("Copying %s", (*rli)->getId().latin1());
+		rl.append(*rli);
+	}
+	return rl;
+}
+
 void
 Resource::initScoreboard()
 {
@@ -192,47 +202,9 @@ Resource::index2end(uint idx) const
 		project->getScheduleGranularity() - 1;
 }
 
-void
-Resource::getSubResourceList(ResourceList& rl) const
-{
-	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
-	{
-		rl.append(*rli);
-		(*rli)->getSubResourceList(rl);
-	}
-}
-
-Resource*
-Resource::subResourcesFirst()
-{
-	if (sub.isEmpty())
-	{
-		currentSR = 0;
-		return this;
-	}
-
-	currentSR = subFirst();
-	return currentSR->subResourcesFirst();
-}
-
-Resource*
-Resource::subResourcesNext()
-{
-	if (currentSR == 0)
-		return 0;
-	Resource* tmp = currentSR->subResourcesNext();
-	if (tmp == 0)
-	{
-		if ((currentSR = subNext()) == 0)
-			return 0;
-		return currentSR->subResourcesFirst();
-	}
-	return tmp;
-}
-
 bool
-Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
-	const
+Resource::isAvailable(time_t date, time_t duration, int loadFactor,
+					  const Task* t) const
 {
 	// Check if the interval is booked or blocked already.
 	uint sbIdx = sbIndex(date);
@@ -387,7 +359,7 @@ Resource::addVacation(Interval* i)
 }
 
 double
-Resource::getCurrentLoad(const Interval& period, Task* task) const
+Resource::getCurrentLoad(const Interval& period, const Task* task) const
 {
 	Interval iv(period);
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
@@ -399,7 +371,7 @@ Resource::getCurrentLoad(const Interval& period, Task* task) const
 }
 
 long
-Resource::getCurrentLoadSub(uint startIdx, uint endIdx, Task* task) const
+Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
 {
 	long bookings = 0;
 
@@ -419,7 +391,7 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, Task* task) const
 }
 
 double
-Resource::getLoad(int sc, const Interval& period, Task* task) const
+Resource::getLoad(int sc, const Interval& period, const Task* task) const
 {
 	// If the scoreboard has not been initialized there is no load.
 	if (!scoreboards[sc])
@@ -435,7 +407,7 @@ Resource::getLoad(int sc, const Interval& period, Task* task) const
 }
 
 long
-Resource::getLoadSub(int sc, uint startIdx, uint endIdx, Task* task) const
+Resource::getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const
 {
 	long bookings = 0;
 
@@ -455,7 +427,7 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, Task* task) const
 }
 
 double
-Resource::getCredits(int sc, const Interval& period, Task* task) const
+Resource::getCredits(int sc, const Interval& period, const Task* task) const
 {
 	return getLoad(sc, period, task) * rate;
 }
@@ -487,7 +459,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
 }
 
 void
-Resource::getPIDs(int sc, const Interval& period, Task* task, 
+Resource::getPIDs(int sc, const Interval& period, const Task* task, 
 				  QStringList& pids) const
 {
 	Interval iv(period);
@@ -513,7 +485,7 @@ Resource::getPIDs(int sc, const Interval& period, Task* task,
 }
 
 QString
-Resource::getProjectIDs(int sc, const Interval& period, Task* task) const
+Resource::getProjectIDs(int sc, const Interval& period, const Task* task) const
 {
 	QStringList pids;
 	getPIDs(sc, period, task, pids);

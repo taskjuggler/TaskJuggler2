@@ -19,8 +19,6 @@ Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
 {
 	if (p)
 	{
-		p->sub.append(this);
-
 		// Inherit start values from parent resource.
 		for (int i = 0; i < 7; i++)
 		{

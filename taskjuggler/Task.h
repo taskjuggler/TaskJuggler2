@@ -22,18 +22,17 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdom.h>
-#include <time.h>
 
 #include "taskjuggler.h"
 #include "debug.h"
 #include "TaskList.h"
 #include "TaskScenario.h"
 #include "ResourceList.h"
-#include "Utility.h"
+//#include "Utility.h"
 #include "CoreAttributes.h"
 #include "ShiftSelectionList.h"
 #include "LoopDetectorInfo.h"
-#include "Interval.h"
+//#include "Interval.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -50,6 +49,7 @@ class TaskList;
 class QDomElement;
 class QDomDocument;
 class Allocation;
+class Interval;
 
 /**
  * This class stores all task related information and provides methods to
@@ -164,13 +164,7 @@ public:
 				scenarios[sc].end + (milestone ? 1 : 0) <= maxEnd);
 	}
 
-	bool isBuffer(int sc, const Interval& iv) const
-	{
-		return iv.overlaps(Interval(scenarios[sc].start,
-								   	scenarios[sc].startBufferEnd)) ||
-			iv.overlaps(Interval(scenarios[sc].endBufferStart, 
-								 scenarios[sc].end));
-	}
+	bool isBuffer(int sc, const Interval& iv) const;
 	
 	void setComplete(int sc, int c) { scenarios[sc].complete = c; }
 	double getComplete(int sc) const { return scenarios[sc].complete; }
@@ -187,10 +181,7 @@ public:
 	void setEndCredit(int sc, double c) { scenarios[sc].endCredit = c; }
 	double getEndCredit(int sc) const { return scenarios[sc].endCredit; }
 
-	double getCalcEffort(int sc)
-	{
-		return getLoad(sc, Interval(scenarios[sc].start, scenarios[sc].end));
-	}
+	double getCalcEffort(int sc) const;
 	double getCalcDuration(int sc) const;
 
 	double getCredits(int sc, const Interval& period, 
@@ -206,7 +197,8 @@ public:
 		return scenarios[sc].status;
 	}
 
-	double getLoad(int sc, const Interval& period, Resource* resource = 0);
+	double getLoad(int sc, const Interval& period, Resource* resource = 0)
+		const;
 
 	void addBookedResource(int sc, Resource* r)
 	{

@@ -352,7 +352,7 @@ Report::filterResourceList(ResourceList& filteredList, Task* t)
 	{
 		ResourceList toHide;
 		if (isResourceRolledUp(*rli))
-			(*rli)->getSubResourceList(toHide);
+			toHide = (*rli)->getSubList();
 
 		for (ResourceListIterator thi(toHide); *thi != 0; ++thi)
 			filteredList.remove(*thi);

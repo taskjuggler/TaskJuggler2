@@ -85,4 +85,3 @@ export "Team-Export.tjsp" {
 htmltaskreport "Team.html" {
 	columns name, start, end, daily
 }
-

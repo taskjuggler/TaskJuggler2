@@ -626,16 +626,14 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 	bool booked = FALSE;
 	double intervalLoad = project->convertToDailyLoad(slotDuration);
 
-	for (Resource* rit = r->subResourcesFirst(); rit != 0;
-		 rit = r->subResourcesNext())
+	for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
 	{
-		if ((*rit).isAvailable(date, slotDuration, loadFactor, this))
+		if ((*rti)->isAvailable(date, slotDuration, loadFactor, this))
 		{
-			(*rit).book(new Booking(
-				Interval(date, date + slotDuration - 1), this,
-				account ? account->getKotrusId() : QString(""),
-				projectId));
-			addBookedResource(rit);
+			(*rti)->book(new Booking(Interval(date, date + slotDuration - 1), 
+									 this, account ? account->getKotrusId() : 
+									 QString(""), projectId));
+			addBookedResource(*rti);
 
 			/* Move the start date to make sure that there is
 			 * some work going on at the start date. */
@@ -652,11 +650,11 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 
 			tentativeStart = date;
 			tentativeEnd = date + slotDuration - 1;
-			doneEffort += intervalLoad * (*rit).getEfficiency();
+			doneEffort += intervalLoad * (*rti)->getEfficiency();
 
 			if (DEBUGTS(6))
 				qDebug(" Booked resource %s (Effort: %f)",
-					   (*rit).getId().latin1(), doneEffort);
+					   (*rti)->getId().latin1(), doneEffort);
 			booked = TRUE;
 		}
 	}
@@ -772,6 +770,15 @@ Task::isCompleted(int sc, time_t date) const
 	return (project->getNow() > date);
 }
 
+bool 
+Task::isBuffer(int sc, const Interval& iv) const
+{
+	return iv.overlaps(Interval(scenarios[sc].start,
+								scenarios[sc].startBufferEnd)) ||
+		iv.overlaps(Interval(scenarios[sc].endBufferStart, 
+							 scenarios[sc].end));
+}
+
 time_t
 Task::earliestStart() const
 {
@@ -808,6 +815,12 @@ Task::latestEnd() const
 	return date - 1;
 }
 
+double 
+Task::getCalcEffort(int sc) const
+{
+	return getLoad(sc, Interval(scenarios[sc].start, scenarios[sc].end));
+}
+
 double
 Task::getCalcDuration(int sc) const
 {
@@ -819,7 +832,7 @@ Task::getCalcDuration(int sc) const
 }
 
 double
-Task::getLoad(int sc, const Interval& period, Resource* resource)
+Task::getLoad(int sc, const Interval& period, Resource* resource) const
 {
 	double load = 0.0;
 

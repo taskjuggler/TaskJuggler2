@@ -12,16 +12,14 @@
 
 #include <stdio.h>
 
+#include "ResourceList.h"
 #include "debug.h"
 #include "TjMessageHandler.h"
 #include "ShiftSelection.h"
-#include "ResourceList.h"
 #include "Task.h"
 #include "Resource.h"
 #include "Project.h"
 #include "kotrus.h"
-
-/* ========================================================================= */
 
 ResourceList::ResourceList()
 {
@@ -110,3 +108,7 @@ ResourceList::getResource(const QString& id) const
 
 	return 0;
 }
+
+ResourceTreeIterator::ResourceTreeIterator(Resource* r) :
+	CoreAttributesTreeIterator(r) { }
+
