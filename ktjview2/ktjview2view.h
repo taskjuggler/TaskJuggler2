@@ -158,7 +158,7 @@ public slots:
     void loadSettings();
 
     /**
-     * Display the filter selectiion dialog
+     * Display the filter selection dialog
      */
     void filter();
 
@@ -190,7 +190,7 @@ private slots:
     void ensureItemVisible( KDGanttViewItem * item );
 
     /**
-     * Popup a context menu over @p item, at global position @pos, column @p col
+     * Popup a context menu over @p item, at global position @p pos, column @p col
      */
     void popupGanttItemMenu( KDGanttViewItem * item, const QPoint & pos, int col );
 
@@ -199,6 +199,11 @@ private slots:
      */
     void slotJumpToTask();
 
+    /**
+     * Emits a signal for the mainwindow that the Gantt scale changed
+     *
+     * @param scale The new gantt scale
+     */
     void slotScaleChanged( KDGanttView::Scale scale );
 
 private:
