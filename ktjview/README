@@ -1,0 +1,23 @@
+ktjview - TaskJuggler output viewer
+-----------------------------------
+
+ktjview is the first approach to have a graphical output of the taskjuggler
+results. Build it and it acts as Konqueror view. Therefore it only needs to
+be installed (which installs the binary and the desktopfile describing the
+service). The service is registerd for mimetype text/tjx.
+
+To try ktjview, simply
+- create a xml taskreport and name its extension tjx, eg. use
+xmltaskreport "./thisdir/myProject.tjx"
+in your tjp-File.
+
+- open ktjview and open myProject.tjx
+- open myProject.tjx by clicking on it in konqueror if you have registered
+  the mimetype for it.
+
+Note that ktjview is the first try. It is not really usefull yet, but we
+are working on it.
+
+Klaas Freitag <freitag@suse.de>
+$Id$
+
