@@ -1996,12 +1996,13 @@ ProjectFile::readHTMLAccountReport()
 }
 
 Operation*
-ProjectFile::readLogicalExpression()
+ProjectFile::readLogicalExpression(int precedence)
 {
 	Operation* op;
 	QString token;
 	TokenType tt;
 
+	qDebug("readLogicalExpression");
 	if ((tt = nextToken(token)) == ID || tt == INTEGER)
 	{
 		if (tt == ID)
@@ -2009,51 +2010,68 @@ ProjectFile::readLogicalExpression()
 			if (!proj->isAllowedFlag(token))
 			{
 				fatalError(QString("Flag ") + token + " is unknown.");
+				qDebug("Done 0");
 				return 0;
 			}
 			op = new Operation(token);
+			qDebug(token);
 		}
 		else
 			op = new Operation(token.toLong());
-		if ((tt = nextToken(token)) != AND && tt != OR)
+		if (precedence == 0)
 		{
-			returnToken(tt, token);
-		}
-		else if (tt == AND)
-		{
-			Operation* op2 = readLogicalExpression();
-			op = new Operation(op, Operation::And, op2);
-		}
-		else if (tt == OR)
-		{
-			Operation* op2 = readLogicalExpression();
-			op = new Operation(op, Operation::Or, op2);
+			if ((tt = nextToken(token)) != AND && tt != OR)
+			{
+				returnToken(tt, token);
+			}
+			else if (tt == AND)
+			{
+				qDebug("&");
+				Operation* op2 = readLogicalExpression();
+				op = new Operation(op, Operation::And, op2);
+			}
+			else if (tt == OR)
+			{
+				qDebug("|");
+				Operation* op2 = readLogicalExpression();
+				op = new Operation(op, Operation::Or, op2);
+			}
 		}
 	}
 	else if (tt == TILDE)
 	{
-		if ((op = readLogicalExpression()) == 0)
+		qDebug("~");
+		if ((op = readLogicalExpression(1)) == 0)
+		{
+			qDebug("Done 0");
 			return 0;
+		}
 		op = new Operation(op, Operation::Not);
 	}
 	else if (tt == LBRACE)
 	{
+		qDebug("(");
 		if ((op = readLogicalExpression()) == 0)
 		{
+			qDebug("Done 0");
 			return 0;
 		}
 		if ((tt = nextToken(token)) != RBRACE)
 		{
 			fatalError("')' expected");
+			qDebug("Done 0");
 			return 0;
 		}
+		qDebug(")");
 	}
 	else
 	{
 		fatalError("Logical expression expected");
+		qDebug("Done 0");
 		return 0;
 	}
 	
+	qDebug("Done op");
 	return op;
 }
 

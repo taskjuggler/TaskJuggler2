@@ -340,9 +340,11 @@ Task::bookResources(time_t date, time_t slotDuration)
 	{
 		if (a->isPersistent() && a->getLockedResource())
 		{	
-			bookResource(a->getLockedResource(), date, slotDuration);
+			bookResource(a->getLockedResource(), date, slotDuration,
+						 a->getLoad());
 		}
-		else if (bookResource(a->getResource(), date, slotDuration))
+		else if (bookResource(a->getResource(), date, slotDuration,
+							  a->getLoad()))
 		{
 			allocFound = TRUE;
 			if (a->isPersistent())
@@ -353,7 +355,7 @@ Task::bookResources(time_t date, time_t slotDuration)
 			/* TODO: Try to free the main resource from a lower
 			 * priority task. */
 			for (Resource* r = a->first(); r != 0; r = a->next())
-				if (bookResource(r, date, slotDuration))
+				if (bookResource(r, date, slotDuration, a->getLoad()))
 				{
 					allocFound = TRUE;
 					if (a->isPersistent())
@@ -367,7 +369,8 @@ Task::bookResources(time_t date, time_t slotDuration)
 }
 
 bool
-Task::bookResource(Resource* r, time_t date, time_t slotDuration)
+Task::bookResource(Resource* r, time_t date, time_t slotDuration,
+				   int loadFactor)
 {
 	Interval interval;
 
@@ -375,7 +378,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 	for (Resource* rit = r->subResourcesFirst(); rit != 0;
 		 rit = r->subResourcesNext())
 	{
-		if ((*rit).isAvailable(date, slotDuration, interval))
+		if ((*rit).isAvailable(date, slotDuration, interval, loadFactor, this))
 		{
 			double intervalLoad = project->convertToDailyLoad(
 				interval.getDuration());

@@ -108,7 +108,7 @@ private:
 	bool readHTMLReport(const QString& reportType);
 	bool readHTMLAccountReport();
 	bool readXMLTaskReport();
-	Operation* readLogicalExpression();
+	Operation* readLogicalExpression(int precedence = 0);
 	bool readSorting(Report* report, int which);
 	time_t date2time(const QString& date);
 	time_t hhmm2time(const QString& hhmm);

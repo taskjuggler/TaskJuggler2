@@ -139,7 +139,8 @@ public:
 		delete workingHours[day];
 		workingHours[day] = l;
 	}
-	bool isAvailable(time_t day, time_t duration, Interval& i);
+	bool isAvailable(time_t day, time_t duration, Interval& i, int loadFactor,
+					 Task* t);
 
 	void book(Booking* b);
 

@@ -155,7 +155,8 @@ Resource::subResourcesNext()
 }
 
 bool
-Resource::isAvailable(time_t date, time_t duration, Interval& interval)
+Resource::isAvailable(time_t date, time_t duration, Interval& interval,
+					  int loadFactor, Task* t)
 {
 	// Check that the resource is not closed or on vacation
 	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
@@ -177,6 +178,7 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 		if (interval.overlap(Interval(date, date + duration - 1)))
 		{
 			time_t bookedTime = duration;
+			time_t bookedTimeTask = duration;
 			Interval day = Interval(midnight(date),
 									sameTimeNextDay(midnight(date)) - 1);
 			for (Booking* b = jobs.last();
@@ -188,9 +190,15 @@ Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 					return FALSE;
 				// Accumulate total load for the current day.
 				if (day.contains(b->getInterval()))
+				{
 					bookedTime += b->getDuration();
+					if (b->getTask() == t)
+						bookedTimeTask += b->getDuration();
+				}
 			}
-			return project->convertToDailyLoad(bookedTime) <= maxEffort;
+			return project->convertToDailyLoad(bookedTime) <= maxEffort &&
+				project->convertToDailyLoad(bookedTimeTask)
+				<= (loadFactor / 100.0);
 		}
 	}
 	return FALSE;

@@ -304,7 +304,8 @@ private:
 	bool scheduleContainer();
 	Task* subFirst() { return (Task*) sub.first(); }
 	Task* subNext() { return (Task*) sub.next(); }
-	bool bookResource(Resource* r, time_t day, time_t duration);
+	bool bookResource(Resource* r, time_t day, time_t duration,
+					  int loadFactor);
 	bool bookResources(time_t day, time_t duration);
 	void addBookedResource(Resource* r)
 	{
