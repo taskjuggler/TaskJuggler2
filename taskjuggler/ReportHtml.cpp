@@ -51,7 +51,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			s << "<td class=\""
 			  << (t->isPlanStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
-			  << "\" nowrap>"
+			  << "\" style=\"text-align:left\" nowrap>"
 			  << time2ISO(t->getPlanStart())
 			  << "</td>" << endl;
 		else if (*it == "end")
@@ -158,7 +158,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			s << "<td class=\""
 			  << (t->isActualStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
-			  << "\" nowrap>"
+			  << "\" style=\"text-align:left\" nowrap>"
 			  << time2ISO(t->getActualStart())
 			  << "</td>" << endl;
 		}

@@ -1,7 +1,7 @@
 /*
  * ResourceList.cpp - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms version 2 of the GNU General Public License as
@@ -34,9 +34,6 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 	: CoreAttributes(p, i, n, pr)
 {
 	vacations.setAutoDelete(TRUE);
-	jobs.setAutoDelete(TRUE);
-	planJobs.setAutoDelete(TRUE);
-	actualJobs.setAutoDelete(TRUE);
 
 	if (pr)
 	{
@@ -117,16 +114,90 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 
 	sbSize = (p->getEnd() - p->getStart()) /
 		p->getScheduleGranularity() + 1;
-	scoreboard = new (Booking*)[sbSize];
+	planScoreboard = actualScoreboard = 0;
 }
 
-long
+Resource::~Resource()
+{
+	if (planScoreboard)
+	{
+		for (uint i = 0; i < sbSize; i++)
+			if (planScoreboard[i] > (Booking*) 3)
+			{
+				uint j;
+				for (j = i + 1; j < sbSize &&
+						 planScoreboard[i] == planScoreboard[j]; j++)
+					;
+				delete planScoreboard[i];
+				i = j - 1;
+			}
+		delete planScoreboard;
+	}
+	if (actualScoreboard)
+	{
+		for (uint i = 0; i < sbSize; i++)
+			if (actualScoreboard[i] > (Booking*) 3)
+			{
+				uint j;
+				for (j = i + 1; j < sbSize &&
+						 actualScoreboard[i] == actualScoreboard[j]; j++)
+					;
+				delete actualScoreboard[i];
+				i = j - 1;
+			}
+		delete actualScoreboard;
+	}
+}
+
+void
+Resource::initScoreboard()
+{
+	scoreboard = new (Booking*)[sbSize];
+
+	// First mark all scoreboard slots as unavailable.
+	for (uint i = 0; i < sbSize; i++)
+		scoreboard[i] = (Booking*) 1;
+
+	// Then change all worktime slots to 0 (available) again.
+	for (time_t day = project->getStart(); day < project->getEnd();
+		 day = sameTimeNextDay(day))
+	{
+		// Iterate through all the work time intervals for the week day.
+		const int dow = dayOfWeek(day);
+		for (Interval* i = workingHours[dow]->first(); i != 0;
+			 i = workingHours[dow]->next())
+		{
+			/* Construct an Interval that describes the working hours for
+			 * the current day using time_t. */
+			Interval interval = Interval(addTimeToDate(day, (*i).getStart()),
+										 addTimeToDate(day, (*i).getEnd()));
+			for (time_t date = interval.getStart();
+				 date < interval.getEnd() && date < project->getEnd();
+				 date += project->getScheduleGranularity())
+				scoreboard[sbIndex(date)] = (Booking*) 0;
+		}
+	}
+
+	// Then mark all vacation slots as such (2).
+	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
+		for (time_t date = i->getStart();
+			 date < i->getEnd() &&
+				 project->getStart() <= date && date < project->getEnd();
+			 date += project->getScheduleGranularity())
+			scoreboard[sbIndex(date)] = (Booking*) 2;
+}
+
+uint
 Resource::sbIndex(time_t date) const
 {
-	if (date < project->getStart() || date > project->getEnd())
-		qFatal("Date out of range");
 	// Convert date to corresponding scoreboard index.
-	return (date - project->getStart()) / project->getScheduleGranularity();
+	uint sbIdx = (date - project->getStart()) /
+		project->getScheduleGranularity();
+	if (sbIdx < 0 || sbIdx >= sbSize)
+		qFatal("Date %s out of range (Resource %s, Index %d)",
+			   time2ISO(date).latin1(),
+			   id.latin1(), sbIdx);
+	return sbIdx;
 }
 
 void
@@ -168,61 +239,40 @@ Resource::subResourcesNext()
 }
 
 bool
-Resource::isAvailable(time_t date, time_t duration, Interval& interval,
-					  int loadFactor, Task* t)
+Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 {
-	// Check if the interval is booked already.
+	// Check if the interval is booked or blocked already.
 	if (scoreboard[sbIndex(date)])
 		return FALSE;
 
-	// Check that the resource is not closed or on vacation
-	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
-		if (i->overlaps(Interval(date, date + duration - 1)))
-			return FALSE;
+	time_t bookedTime = duration;
+	time_t bookedTimeTask = duration;
 
-	// Iterate through all the work time intervals for the week day.
-	const int dow = dayOfWeek(date);
-	for (Interval* i = workingHours[dow]->first(); i != 0;
-		 i = workingHours[dow]->next())
+	for (uint i = sbIndex(midnight(date));
+		 i < sbIndex(sameTimeNextDay(midnight(date)) - 1); i++)
 	{
-		/* Construct an Interval that describes the working hours for
-		 * the current day using time_t. */
-		interval = Interval(addTimeToDate(date, (*i).getStart()),
-							addTimeToDate(date, (*i).getEnd()));
-		/* If there is an overlap between working time and the requested
-		 * interval we exclude the time starting with the first busy
-		 * interval in that working time. */
-		if (interval.overlap(Interval(date, date + duration - 1)))
-		{
-			time_t bookedTime = duration;
-			time_t bookedTimeTask = duration;
+		Booking* b = scoreboard[i];
+		if (b < (Booking*) 4)
+			continue;
 
-			for (long i = sbIndex(midnight(date));
-				 i < sbIndex(sameTimeNextDay(midnight(date)) - 1); i++)
-			{
-				Booking* b = scoreboard[i];
-				if (b == 0)
-					continue;
-
-				bookedTime += duration;
-				if (b->getTask() == t)
-					bookedTimeTask += duration;
-			}
-			return project->convertToDailyLoad(bookedTime) <= maxEffort &&
-				project->convertToDailyLoad(bookedTimeTask)
-				<= (loadFactor / 100.0);
-		}
+		bookedTime += duration;
+		if (b->getTask() == t)
+			bookedTimeTask += duration;
 	}
-	return FALSE;
+
+	return project->convertToDailyLoad(bookedTime) <= maxEffort &&
+		project->convertToDailyLoad(bookedTimeTask)
+		<= (loadFactor / 100.0);
 }
 
 void
 Resource::book(Booking* nb)
 {
-	long index = sbIndex(nb->getStart());
+	uint index = sbIndex(nb->getStart());
 
 	Booking* b;
-	if (index > 0 && (b = scoreboard[index - 1]) != 0 &&
+	// Try to merge the booking with the booking in the previous slot.
+	if (index > 0 && (b = scoreboard[index - 1]) > (Booking*) 3 &&
 		b->getTask() == nb->getTask() &&
 		b->getProjectId() == nb->getProjectId())
 	{
@@ -232,7 +282,9 @@ Resource::book(Booking* nb)
 		delete nb;
 		return;
 	}
-	if ((b = scoreboard[index + 1]) != 0 && b->getTask() == nb->getTask() &&
+	// Try to merge the booking with the booking in the following slot.
+	if (index < sbSize - 1 && (b = scoreboard[index + 1]) > (Booking*) 3 &&
+		b->getTask() == nb->getTask() &&
 		b->getProjectId() == nb->getProjectId())
 	{
 		if (!b->getInterval().prepend(nb->getInterval()))
@@ -242,26 +294,29 @@ Resource::book(Booking* nb)
 		return;
 	}
 	scoreboard[index] = nb;
-	jobs.append(nb);
 }
 
 double
 Resource::getPlanLoad(const Interval& period, Task* task)
 {
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return 0.0;
+
 	time_t bookedTime = 0;
 
 	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
-		subLoad += r->getPlanLoad(period, task);
+		subLoad += r->getPlanLoad(iv, task);
 
-	for (Booking* b = planJobs.first();
-		 b != 0 && b->getEnd() <= period.getEnd();
-		 b = planJobs.next())
+	for (uint i = sbIndex(iv.getStart());
+		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
-		Interval i = period;
-		if (i.overlap(b->getInterval()) &&
-			(task == 0 || task == b->getTask()))
-			bookedTime += i.getDuration();
+		Booking* b = planScoreboard[i];
+		if (b < (Booking*) 4)
+			continue;
+		if (task == 0 || task == b->getTask())
+			bookedTime += project->getScheduleGranularity();
 	}
 
 	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
@@ -270,20 +325,24 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 double
 Resource::getActualLoad(const Interval& period, Task* task)
 {
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return 0.0;
+
 	time_t bookedTime = 0;
 
 	double subLoad = 0.0;
 	for (Resource* r = subFirst(); r != 0; r = subNext())
-		subLoad += r->getActualLoad(period, task);
+		subLoad += r->getActualLoad(iv, task);
 
-	for (Booking* b = actualJobs.first();
-		 b != 0 && b->getEnd() <= period.getEnd();
-		 b = actualJobs.next())
+	for (uint i = sbIndex(iv.getStart());
+		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
-		Interval i = period;
-		if (i.overlap(b->getInterval()) &&
-			(task == 0 || task == b->getTask()))
-			bookedTime += i.getDuration();
+		Booking* b = actualScoreboard[i];
+		if (b < (Booking*) 4)
+			continue;
+		if (task == 0 || task == b->getTask())
+			bookedTime += project->getScheduleGranularity();
 	}
 
 	return project->convertToDailyLoad(bookedTime) * efficiency + subLoad;
@@ -304,16 +363,20 @@ Resource::getActualCredits(const Interval& period, Task* task)
 void
 Resource::getPlanPIDs(const Interval& period, Task* task, QStringList& pids)
 {
-	for (Resource* r = subFirst(); r != 0; r = subNext())
-		r->getPlanPIDs(period, task, pids);
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return;
 
-	for (Booking* b = planJobs.first();
-		 b != 0 && b->getEnd() <= period.getEnd();
-		 b = planJobs.next())
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		r->getPlanPIDs(iv, task, pids);
+
+	for (uint i = sbIndex(iv.getStart());
+		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
-		Interval i = period;
-		if (i.overlap(b->getInterval()) &&
-			(task == 0 || task == b->getTask()) &&
+		Booking* b = planScoreboard[i];
+		if (b < (Booking*) 4)
+			continue;
+		if ((task == 0 || task == b->getTask()) &&
 			pids.findIndex(b->getProjectId()) == -1)
 		{
 			pids.append(b->getProjectId());
@@ -337,16 +400,20 @@ Resource::getPlanProjectIDs(const Interval& period, Task* task)
 void
 Resource::getActualPIDs(const Interval& period, Task* task, QStringList& pids)
 {
-	for (Resource* r = subFirst(); r != 0; r = subNext())
-		r->getActualPIDs(period, task, pids);
+	Interval iv(period);
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+		return;
 
-	for (Booking* b = actualJobs.first();
-		 b != 0 && b->getEnd() <= period.getEnd();
-		 b = actualJobs.next())
+	for (Resource* r = subFirst(); r != 0; r = subNext())
+		r->getActualPIDs(iv, task, pids);
+
+	for (uint i = sbIndex(iv.getStart());
+		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
-		Interval i = period;
-		if (i.overlap(b->getInterval()) &&
-			(task == 0 || task == b->getTask()) &&
+		Booking* b = actualScoreboard[i];
+		if (b < (Booking*) 4)
+			continue;
+		if ((task == 0 || task == b->getTask()) &&
 			pids.findIndex(b->getProjectId()) == -1)
 		{
 			pids.append(b->getProjectId());
@@ -396,40 +463,60 @@ Resource::hasVacationDay(time_t day)
 	return FALSE;
 }
 
+BookingList
+Resource::getPlanJobs()
+{
+	BookingList bl;
+
+	Booking* b = 0;
+	for (uint i = 0; i < sbSize; i++)
+		if (planScoreboard[i] > (Booking*) 3 && planScoreboard[i] != b)
+		{
+			bl.append(planScoreboard[i]);
+			b = planScoreboard[i];
+		}
+
+	return bl;
+}
+
+BookingList
+Resource::getActualJobs()
+{
+	BookingList bl;
+
+	Booking* b = 0;
+	for (uint i = 0; i < sbSize; i++)
+		if (actualScoreboard[i] > (Booking*) 3 && actualScoreboard[i] != b)
+		{
+			bl.append(actualScoreboard[i]);
+			b = actualScoreboard[i];
+		}
+
+	return bl;
+}
+
 void
 Resource::preparePlan()
 {
-	jobs.clear();
-	for (uint i = 0; i < sbSize; i++)
-		scoreboard[i] = (Booking*) 0;
+	initScoreboard();
 }
 
 void
 Resource::finishPlan()
 {
-	planJobs.clear();
-	// Make deep copy of jobs to planJobs.
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-		planJobs.append(new Booking(*b));
-	planJobs.sort();
+	planScoreboard = scoreboard;
 }
 
 void
 Resource::prepareActual()
 {
-	jobs.clear();
-	for (uint i = 0; i < sbSize; i++)
-		scoreboard[i] = (Booking*) 0;
+	initScoreboard();
 }
 
 void
 Resource::finishActual()
 {
-	actualJobs.clear();
-	// Make deep copy of jobs to actualJobs.
-	for (Booking* b = jobs.first(); b != 0; b = jobs.next())
-		actualJobs.append(new Booking(*b));
-	actualJobs.sort();
+	actualScoreboard = scoreboard;
 }
 
 ResourceList::ResourceList()

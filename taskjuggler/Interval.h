@@ -85,7 +85,11 @@ public:
 			return 0;	// interval overlap
 	}
 	time_t getStart() const { return start; }
+	void setStart(time_t s) { start = s; }
+
 	time_t getEnd() const { return end; }
+	void setEnd(time_t e) { end = e; }
+
 	time_t getDuration() const { return end >= start ? end - start + 1: 0; }
 
 	const Interval& firstDay()

@@ -107,7 +107,7 @@ class Resource : public CoreAttributes
 										  QCollection::Item i2);
 public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
-	virtual ~Resource() { }
+	virtual ~Resource();
 
 	Resource* getParent() const { return (Resource*) parent; }
 
@@ -139,8 +139,7 @@ public:
 		delete workingHours[day];
 		workingHours[day] = l;
 	}
-	bool isAvailable(time_t day, time_t duration, Interval& i, int loadFactor,
-					 Task* t);
+	bool isAvailable(time_t day, time_t duration, int loadFactor, Task* t);
 
 	void book(Booking* b);
 
@@ -171,8 +170,8 @@ public:
 	   return( elem );
         }
 
-	BookingList getPlanJobs() { return planJobs; }
-	BookingList getActualJobs() { return actualJobs; }
+	BookingList getPlanJobs();
+	BookingList getActualJobs();
 
 	void preparePlan();
 	void finishPlan();
@@ -187,7 +186,8 @@ private:
 	void getPlanPIDs(const Interval& period, Task* task, QStringList& pids);
 	void getActualPIDs(const Interval& period, Task* task, QStringList& pids);
 
-	long sbIndex(time_t date) const;
+	void initScoreboard();
+	uint sbIndex(time_t date) const;
 
 	/// Pointer used by subResourceFirst() and subResourceNext().
 	Resource* currentSR;
@@ -215,17 +215,18 @@ private:
 	/// List of all intervals the resource is not available.
 	QList<Interval> vacations;
 
-	/// A list of all planned usages of the resource.
-	BookingList planJobs;
-
-	/// A list of all actual usages of the resource.
-	BookingList actualJobs;
-
-	/// A list of all scheduled uses of the resource.
-	BookingList jobs;
-
+	/**
+	 * For each time slot (of length scheduling granularity) we store a
+	 * pointer to a booking, a '1' if slot is off-hours, a '2' if slot is
+	 * during a vacation or 0 if resource is available. */
 	Booking** scoreboard;
+	/// The number of time slots in the project.
 	uint sbSize;
+
+	/// Scoring of planned usages of the resource.
+	Booking** planScoreboard;
+	/// Scoring of actual usages of the resource.
+	Booking** actualScoreboard;
 } ;
 
 #endif

@@ -231,8 +231,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 			doneLength += ((double) slotDuration) / ONEDAY;
 
 		// Check whether we are done with this task.
-		if ((length > 0.0 && doneLength >= length) ||
-			(duration > 0.0 && doneDuration >= duration))
+		if ((length > 0.0 && doneLength >= length * 0.999999) ||
+			(duration > 0.0 && doneDuration >= duration * 0.999999))
 		{
 			if (scheduling == ASAP)
 			{
@@ -497,18 +497,15 @@ bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 				   int loadFactor)
 {
-	Interval interval;
-
 	bool booked = FALSE;
 	for (Resource* rit = r->subResourcesFirst(); rit != 0;
 		 rit = r->subResourcesNext())
 	{
-		if ((*rit).isAvailable(date, slotDuration, interval, loadFactor, this))
+		if ((*rit).isAvailable(date, slotDuration, loadFactor, this))
 		{
-			double intervalLoad = project->convertToDailyLoad(
-				interval.getDuration());
+			double intervalLoad = project->convertToDailyLoad(slotDuration);
 			(*rit).book(new Booking(
-				interval, this,
+				Interval(date, date + slotDuration - 1), this,
 				account ? account->getKotrusId() : QString(""),
 				projectId));
 			addBookedResource(rit);
@@ -526,8 +523,8 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 				workStarted = TRUE;
 			}
 
-			tentativeStart = interval.getStart();
-			tentativeEnd = interval.getEnd();
+			tentativeStart = date;
+			tentativeEnd = date + slotDuration - 1;
 			doneEffort += intervalLoad * (*rit).getEfficiency();
 
 			booked = TRUE;

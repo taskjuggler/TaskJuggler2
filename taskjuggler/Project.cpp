@@ -270,6 +270,7 @@ Project::generateReports()
 	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
 		 h = htmlTaskReports.next())
 		h->generate();
+
 	// Generate resource reports
 	for (HTMLResourceReport* r = htmlResourceReports.first(); r != 0;
 		 r = htmlResourceReports.next())
