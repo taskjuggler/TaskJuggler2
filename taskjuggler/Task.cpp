@@ -1892,6 +1892,11 @@ Task::computeBuffers()
         scenarios[sc].startBufferEnd = scenarios[sc].start - 1;
         scenarios[sc].endBufferStart = scenarios[sc].end + 1;
 
+        if (scenarios[sc].start == 0 || scenarios[sc].end == 0)
+        {
+            scenarios[sc].startBufferEnd = scenarios[sc].endBufferStart = 0;
+            continue;
+        }
 
         if (duration > 0.0)
         {
