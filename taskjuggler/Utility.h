@@ -73,6 +73,8 @@ inline bool isSameMonth(time_t d1, time_t d2)
 	return beginOfMonth(d1) == beginOfMonth(d2);
 }
 
+int secondsOfDay(time_t d);
+
 int dayOfMonth(time_t d);
 
 int weekOfYear(time_t d);

@@ -569,7 +569,7 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
-			if (token == KW("account"))
+			else if (token == KW("account"))
 			{
 				if (!readAccount(0))
 					return FALSE;
@@ -691,6 +691,7 @@ ProjectFile::parse()
 					return FALSE;
 
 				proj->setWorkingHours(dow, l);
+				break;
 			}
 			else if (token == KW("copyright"))
 			{
@@ -1199,6 +1200,20 @@ ProjectFile::readTaskBody(Task* task)
 				}
 				task->setResponsible(r);
 			}
+			else if (token == KW("shift"))
+			{
+				time_t from, to;
+				from = proj->getStart();
+				to = proj->getEnd();
+				Shift* s;
+				if ((s = readShiftSelection(from, to)) == 0)
+					return FALSE;
+				if (!task->addShift(Interval(from, to), s))
+				{
+					fatalError("Shift intervals may not overlap");
+					return FALSE;
+				}
+			}
 			else if (token == KW("allocate"))
 			{
 				if (!readAllocate(task))
@@ -1559,20 +1574,11 @@ ProjectFile::readResourceBody(Resource* r)
 		}
 		else if (token == KW("shift"))
 		{
-			QString id;
-			if (nextToken(id) != ID)
-			{
-				fatalError("Shift ID expected");
-				return FALSE;
-			}
-			Shift* s;
-			if ((s = proj->getShift(id)) == 0)
-			{
-				fatalError("Unknown shift");
-				return FALSE;
-			}
 			time_t from, to;
-			if (!readVacation(from, to))
+			from = proj->getStart();
+			to = proj->getEnd();
+			Shift* s;
+			if ((s = readShiftSelection(from, to)) == 0)
 				return FALSE;
 			if (!r->addShift(Interval(from, to), s))
 			{
@@ -1707,6 +1713,34 @@ ProjectFile::readShift(Shift* parent)
 	proj->addShift(s);
 
 	return TRUE;
+}
+
+Shift*
+ProjectFile::readShiftSelection(time_t& from, time_t& to)
+{
+	// Syntax: ID [from [- to]]
+	QString id;
+	if (nextToken(id) != ID)
+	{
+		fatalError("Shift ID expected");
+		return 0;
+	}
+	Shift* s = 0;
+	if ((s = proj->getShift(id)) == 0)
+	{
+		fatalError("Unknown shift");
+		return 0;
+	}
+	QString token;
+	TokenType tt;
+	// Clumsy look-ahead
+	tt = nextToken(token);
+	returnToken(tt, token);
+	if (tt == DATE)
+		if (!readVacation(from, to))
+			return 0;
+
+	return s;
 }
 
 Booking*
@@ -1920,6 +1954,19 @@ ProjectFile::readAllocate(Task* t)
 					return FALSE;
 				}
 				a->setLoad((int) (100 * load));
+			}
+			else if (token == KW("shift"))
+			{
+				time_t from = proj->getStart();
+				time_t to = proj->getEnd();
+				Shift* s;
+				if ((s = readShiftSelection(from, to)) == 0)
+					return FALSE;
+				if (!a->addShift(Interval(from, to), s))
+				{
+					fatalError("Shift intervals may not overlap");
+					return FALSE;
+				}
 			}
 			else if (token == KW("persistent"))
 			{

@@ -32,23 +32,41 @@ public:
    Resource* first() { return alternatives.first(); }
    Resource* next() { return alternatives.next(); }
 
-   QDomElement xmlElement( QDomDocument& doc ) const;
+	bool addShift(const Interval& i, Shift* s)
+	{
+		return shifts.insert(new ShiftSelection(i, s));
+	}
+
+	bool isOnShift(const Interval& i)
+	{
+		return shifts.count() == 0 || shifts.isOnShift(i);
+	}
+
+	QDomElement xmlElement( QDomDocument& doc ) const;
+
 private:
-   // Don't use this.
+   /// Don't use this.
    Allocation();
 
+   /// The primary allocated resource.
    Resource* resource;
-   // The maximum daily usage of the resource.
+   
+   /// The maximum daily usage of the resource in percent.
    int load;
 
-   /* True if the allocation should be persistent over the whole task.
+   /// The shifts that limit the allocation to certain intervals.
+   ShiftSelectionList shifts;
+
+   /**
+    * True if the allocation should be persistent over the whole task.
     * If set the first selection will not be changed even if there is an
     * available alternative. */
    bool persistent;
 
+   /// The persintent resource picked by the scheduler.
    Resource* lockedResource;
    
-   // List of alternative resources.
+   /// List of alternative resources.
    QList<Resource> alternatives;
 } ;
 

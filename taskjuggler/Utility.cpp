@@ -125,6 +125,13 @@ monthsBetween(time_t t1, time_t t2)
 	return months;
 }
 
+int
+secondsOfDay(time_t t)
+{
+	struct tm* tms = localtime(&t);
+	return tms->tm_sec + tms->tm_min * 60 + tms->tm_hour * 3600;
+}
+
 int 
 dayOfMonth(time_t t)
 {

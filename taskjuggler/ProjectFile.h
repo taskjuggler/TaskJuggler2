@@ -117,6 +117,7 @@ private:
 					  QString* = 0);
 	bool readAccount(Account* parent);
 	bool readShift(Shift* parent);
+	Shift* readShiftSelection(time_t& from, time_t& to);
 	Booking* readBooking();
 	bool readCredit(Account* a);
 	bool readAllocate(Task* t);

@@ -533,10 +533,16 @@ Task::bookResources(time_t date, time_t slotDuration)
 {
 	bool allocFound = FALSE;
 
+	if (shifts.count() > 0 &&
+		!shifts.isOnShift(Interval(date, date + slotDuration - 1)))
+		return FALSE;
+		
 	for (Allocation* a = allocations.first();
 		 a != 0 && (effort == 0.0 || doneEffort < effort);
 		 a = allocations.next())
 	{
+		if (!a->isOnShift(Interval(date, date + slotDuration - 1)))
+			continue;
 		if (a->isPersistent() && a->getLockedResource())
 		{	
 			bookResource(a->getLockedResource(), date, slotDuration,
@@ -1044,23 +1050,23 @@ Task::scheduleOk()
 	{
 		fatalError(QString().sprintf(
 			"Start time %s of task %s is earlier than requested minimum %s",
-			time2ISO(start).latin1(), id.latin1(),
-			time2ISO(minStart).latin1()));
+			time2tjp(start).latin1(), id.latin1(),
+			time2tjp(minStart).latin1()));
 		return FALSE;
 	}
-	if (minStart != 0 && start > maxStart)
+	if (maxStart != 0 && start > maxStart)
 	{
 		fatalError(QString().sprintf(
 			"Start time %s of task %s is later than requested maximum %s",
-			time2ISO(start).latin1(), id.latin1(),
-			time2ISO(maxStart).latin1()));
+			time2tjp(start).latin1(), id.latin1(),
+			time2tjp(maxStart).latin1()));
 		return FALSE;
 	}
 	if (start < project->getStart() || start > project->getEnd())
 	{
 		fatalError(QString().sprintf(
 			"Start time %s of task %s is outside of project period",
-			time2ISO(start).latin1(), id.latin1()));
+			time2tjp(start).latin1(), id.latin1()));
 		return FALSE;
 	}
 	if (end == 0)
@@ -1072,21 +1078,21 @@ Task::scheduleOk()
 	{
 		fatalError(QString().sprintf(
 			"End time %s of task %s is earlier than requested minimum %s",
-			time2ISO(end).latin1(), id.latin1(), time2ISO(minEnd).latin1()));
+			time2tjp(end).latin1(), id.latin1(), time2tjp(minEnd).latin1()));
 		return FALSE;
 	}
 	if (maxEnd != 0 && end > maxEnd)
 	{
 		fatalError(QString().sprintf(
 			"End time %s of task %s is later than requested maximum %s",
-			time2ISO(end).latin1(), id.latin1(), time2ISO(maxEnd).latin1()));
+			time2tjp(end).latin1(), id.latin1(), time2tjp(maxEnd).latin1()));
 		return FALSE;
 	}
 	if (end < project->getStart() || end > project->getEnd())
 	{
 		fatalError(QString().sprintf(
 			"End time %s of task %s is outside of project period",
-			time2ISO(end).latin1(), id.latin1()));
+			time2tjp(end).latin1(), id.latin1()));
 		return FALSE;
 	}
 	// Check if all previous tasks end before start of this task.
@@ -1096,8 +1102,8 @@ Task::scheduleOk()
 			fatalError(QString().sprintf(
 				"Task %s ends at %s but needs to preceed task %s "
 				"which starts at %s",
-				t->id.latin1(), time2ISO(t->end).latin1(),
-				id.latin1(), time2ISO(start).latin1()));
+				t->id.latin1(), time2tjp(t->end).latin1(),
+				id.latin1(), time2tjp(start).latin1()));
 			return FALSE;
 		}
 	// Check if all following task start after this tasks end.
@@ -1107,8 +1113,8 @@ Task::scheduleOk()
 			fatalError(QString().sprintf(
 				"Task %s starts at %s but needs to follow task %s "
 				"which ends at %s",
-				t->id.latin1(), time2ISO(t->start).latin1(),
-				id.latin1(), time2ISO(end).latin1()));
+				t->id.latin1(), time2tjp(t->start).latin1(),
+				id.latin1(), time2tjp(end).latin1()));
 			return FALSE;
 		}
 
@@ -1117,8 +1123,8 @@ Task::scheduleOk()
 		fatalError(QString().sprintf(
 			"Task %s has not been marked completed. It is scheduled to last "
 			"from %s to %s. This might be a bug in the TaskJuggler "
-			"scheduler.", id.latin1(), time2ISO(start).latin1(),
-			time2ISO(end).latin1()));
+			"scheduler.", id.latin1(), time2tjp(start).latin1(),
+			time2tjp(end).latin1()));
 		return FALSE;
 	}
 

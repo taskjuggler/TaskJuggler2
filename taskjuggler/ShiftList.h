@@ -58,7 +58,9 @@ public:
 			qFatal("day out of range");
 		return workingHours[day];
 	}
-	
+
+	bool isOnShift(const Interval& iv);
+
 private:
 	Shift() { }		// Don't use this.
 	
@@ -74,6 +76,8 @@ public:
 	virtual ~ShiftSelectionList() { }
 
 	bool insert(ShiftSelection* s);
+
+	bool isOnShift(const Interval& iv);
 
 private:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);

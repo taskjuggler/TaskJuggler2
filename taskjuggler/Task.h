@@ -23,6 +23,7 @@
 #include "ResourceList.h"
 #include "Utility.h"
 #include "CoreAttributes.h"
+#include "ShiftList.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -113,6 +114,11 @@ public:
 
 	void addDependency(const QString& id) { dependsIds.append(id); }
 	void addPreceeds(const QString& id) { preceedsIds.append(id); }
+
+	bool addShift(const Interval& i, Shift* s)
+	{
+		return shifts.insert(new ShiftSelection(i, s));
+	}
 
 	void addAllocation(Allocation* a) { allocations.append(a); }
 	Allocation* firstAllocation() { return allocations.first(); }
@@ -411,6 +417,9 @@ private:
 	
 	/// ID of responsible resource.
 	Resource* responsible;
+
+	/// Tasks may only be worked on during the specified shifts.
+	ShiftSelectionList shifts;
 
 	/// List of resource allocations requested by the task
 	QPtrList<Allocation> allocations;
