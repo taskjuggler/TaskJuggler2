@@ -36,7 +36,16 @@ use strict;
 
 my $file       = shift;
 my $input_file = $file;
-$file =~ s/xml$//;
+
+# New suffix for xml file: tjx
+# keep the old one in case...
+if ($file =~ /tjx$/) {
+  $file =~ s/tjx$//;
+}
+else {
+  $file =~ s/xml$//;
+}
+
 my $output_file = $file . "eps";
 
 my $projetxml =
@@ -44,54 +53,19 @@ my $projetxml =
 
 #print Dumper($projetxml);
 
-#my $bx;
-#my $by;
-
-## create global TaskList
-#my $tasks = TaskList->new($projetxml);
 
 # create project
 print "Analysing $input_file\n";
 my $projet = Projet->new($projetxml);
 
 # Extract task from xml/perl struct
-#$tasks->extract_list_task($projetxml);
 $projet->extract_list_task($projetxml);
 
 $projet->process_tasks;
 
-## add dependencies lists for all tasks
-#$tasks->add_depends_by_ref($tasks);
 
-## place all task in  the grid;
-#$tasks->put_in_grid($tasks);
-#$tasks->put_in_line;
-#$tasks->set_lin(0);
 
 print "Creating $output_file\n";
 
 $projet->draw($output_file);
 
-#draw_net($tasks);
-
-#sub draw_net {
-#    my $tasklist = shift;
-
-#    # calculate bouding box
-#    $bx =
-#      ( $tasklist->get_max_col + 1 ) * Task->get_task_width() * Task->cell_coef;
-#    $by = ( $tasklist->get_height ) * Task->get_task_height() * Task->cell_coef;
-
-#    # create postscript file
-#    my $p =
-#      new PostScript::Simple( units => "cm", xsize => $bx, ysize => $by,
-#        eps => 1 );
-
-#    $p->setfont( "Times-Roman", 9 );
-
-#    $p->{pspages} .= " 0 $by u translate \n";
-#    $tasklist->draw( $p, 0, -by );
-
-#    $p->output($output_file)
-
-#}

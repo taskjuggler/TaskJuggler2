@@ -121,7 +121,7 @@ sub draw {
 
     my $marginx = 1.0; # 1cm
     my $marginy = 1.0; # 1cm
-    my $cartouchex = 5.0; # 10cm
+    my $cartouchex = 7.0; # 10cm
     my $cartouchey = 2.0; # 4cm
 
     # calculate bouding box
@@ -134,14 +134,16 @@ sub draw {
       new PostScript::Simple( units => "cm", xsize => $bx, ysize => $by,
         eps => 1 );
 
-    $p->setfont( "Times-Roman", 9 );
+    $p->setfont( "Times-Roman-iso", 9 );
 
 
     #draw cartouche
 #    $p->setlinewidth(0.1);
 #    $p->box( 0, 0, $bx, $by);
 #    $p->setlinewidth(0.025);
-
+    $p->box( $marginx , $marginy, 
+	     $bx - $marginx , $by - $marginy);
+	
     my $lineheight = $cartouchey / 4.0;
     my $colwidth = $cartouchex / 4.0;
     $p->box( $marginx , $marginy, 

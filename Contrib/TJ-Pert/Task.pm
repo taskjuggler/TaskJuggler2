@@ -178,29 +178,6 @@ sub set_abs_lin {
     return;
 }
 
-#sub set_abs_col
-#    {
-#	my $self = shift;
-#	my $line = shift;
-
-#	$self->{Abs_Col} = $line;
-
-#	return;
-#    }
-
-#sub get_abs_lin
-#  {
-#    my $self = shift;
-
-#    return $self->{Abs_Lin};
-#  }
-
-#sub get_abs_col
-#  {
-#    my $self = shift;
-
-#    return $self->{Abs_Col};
-#  }
 
 # return task dependencies
 sub get_dep {
@@ -247,7 +224,26 @@ sub get_parent {
 sub get_end {
     my $self = shift;
 
-    return $self->{Task}->{actualEnd}{content};
+    if ($self->{Task}->{actualEnd}{content} != 0)
+      {
+	return $self->{Task}->{actualEnd}{content}
+      }
+    else 
+      {
+	return $self->{Task}->{planEnd}{content};
+      }
+}
+
+sub get_start {
+    my $self = shift;
+    if ($self->{Task}->{actualStart}{content} != 0)
+      {
+	return $self->{Task}->{actualStart}{content}
+      }
+    else 
+      {
+        return $self->{Task}->{planStart}{content};
+      }
 
 }
 
@@ -272,6 +268,12 @@ sub draw {
     my $y4          = $task_height / 4.0;
     my $text_margin = $y4 / 4.0;
 
+    if ($self->{Task}->{Type} eq "Milestone" )
+	{
+	    $out_ps->box($x_pos + $x3, $y_pos + 3 * $y4, $x_pos + 2 * $x3, $y_pos + $task_height);
+	}
+	else
+	{
     # draw each rectangle inside 
     $out_ps->line( $x_pos, $y_pos + $y4, $x_pos + $task_width, $y_pos + $y4 );
     $out_ps->line( $x_pos, $y_pos + 3 * $y4, $x_pos + $task_width,
@@ -284,7 +286,7 @@ sub draw {
         $x_pos + 2 * $x3, $y_pos + 3 * $y4,
         $x_pos + 2 * $x3, $y_pos + $task_height
     );
-
+	}
 
     # draw progress bar (% complete)
     $out_ps->setcolour("grey80");
@@ -303,6 +305,7 @@ sub draw {
         $self->get_id(),            'centre'
     );
 
+	
     # Start
     my $start_value;
     if ($self->{Task}->{actualStart}{content} != 0)
@@ -315,11 +318,20 @@ sub draw {
       }
     my $start = POSIX::strftime( "%x", localtime( $start_value ) );
 
+   if ($self->{Task}->{Type} eq "Milestone" )
+	{
+    $out_ps->text(
+        $x_pos + $x3 + $x3 / 2.0, $y_pos + 3 * $y4 + $text_margin,
+        $start,             'centre'
+    );
+    }
+    else
+    {
     $out_ps->text(
         $x_pos + $x3 / 2.0, $y_pos + 3 * $y4 + $text_margin,
         $start,             'centre'
     );
-
+    }
     # End
 
     my $end_value;
@@ -333,8 +345,11 @@ sub draw {
       }
     my $end = POSIX::strftime( "%x", localtime( $end_value ) );
 
+   if ($self->{Task}->{Type} ne "Milestone" )
+	{
     $out_ps->text( $x_pos + 2 * $x3 + $x3 / 2.0,
         $y_pos + 3 * $y4 + $text_margin, $end, 'centre' );
+        }
 }
 
 # compute absolute Id from relative Id
@@ -369,11 +384,9 @@ sub find_dep_lst {
         foreach $dep_id ( @{ $self->get_previous_id } ) {
             $dep_ref = $alltasks->find_id($dep_id);
 
-            #print "ID",$dep_id,"\n";
-            # not the best way but it works
-            #	if ($dep_ref->is_container()) {
-            #	  $dep_ref = $dep_ref->last_sub_task;
-            #	}
+            # Task depends of a TaskList then find last task from this list
+            $dep_ref = $dep_ref->last_subtask if ($dep_ref->is_container());
+
             push @lst_dep, $dep_ref;
         }
     }

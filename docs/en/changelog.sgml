@@ -207,7 +207,7 @@ operate properly when TZ environment variable is set.</para>
 
 </itemizedlist>
 </sect2>
-<sect2><title>Version 1.4 (Some Day)</title>
+<sect2><title>Version 1.4 (2002-12-18)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -311,7 +311,7 @@ moved from the Contrib directory to the main directory. The tool
 <computeroutput> xml2png </computeroutput> has been
 removed.</para></listitem>
 
-<listitem><para>Included new version of TJ-Pert from
+<listitem><para>Included new version 0.2.2 of TJ-Pert from
 Philippe.</para></listitem>
 
 <listitem><para>The load numbers on the bars of the HTML task and

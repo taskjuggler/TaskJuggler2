@@ -144,9 +144,20 @@ sub add_depends_by_ref {
 
     my $task;
     foreach $task ( @{ $self->{List} } ) {
-        $lst_dep = $task->find_dep_lst($alltasks);
-        $task->set_dep($lst_dep);
-        $task->add_depends_by_ref($alltasks) if ( $task->is_container );
+      $lst_dep = $task->find_dep_lst($alltasks);
+      $task->set_dep($lst_dep);
+      if ( $task->is_container )
+	{
+	  # traite récursivement les taches de la liste
+	  $task->add_depends_by_ref($alltasks);
+	  
+	  # ajoute les dépendance de la liste à la premiere sous-tache
+	  if ( $lst_dep )
+	    {
+	      my $first = $task->first_subtask();
+	      $first->set_dep($lst_dep);
+	    }
+	}
     }
 }
 
@@ -182,7 +193,7 @@ sub set_height {
 }
 
 # Find latest sub task
-sub last_sub_task {
+sub last_subtask {
     my $self = shift;
 
     my $id = $self->get_id();
@@ -197,9 +208,32 @@ sub last_sub_task {
         }
     }
 
-    $lastsub = $lastsub->last_sub_task() if ( $lastsub->is_container() );
+    $lastsub = $lastsub->last_subtask() if ( $lastsub->is_container() );
 
     return $lastsub;
+}
+
+# Find first subtask
+sub first_subtask {
+    my $self = shift;
+
+    my $id = $self->get_id();
+    my $firstsub;
+    my $date;
+    my $subtask;
+
+    $firstsub = $self->{List}->[0];
+    $date = $firstsub->get_start();
+    foreach $subtask ( @{ $self->{List} } ) {
+        if ( $subtask->get_start() < $date ) {
+            $firstsub = $subtask;
+            $date    = $subtask->get_start();
+        }
+    }
+
+    $firstsub = $firstsub->first_subtask() if ( $firstsub->is_container() );
+
+    return $firstsub;
 }
 
 # return true if the cell is free in local grid
@@ -279,9 +313,9 @@ sub put_in_grid {
                 $self->{Max_X} = $task->get_max_col
                   if ( $self->{Max_X} < $task->get_max_col );
 
-#            $self->{Min_X} = $task->get_min_col if ($self->{Min_X} == -1);
                 $self->{Min_X} = $task->get_min_col
                   if ( $self->{Min_X} > $task->get_min_col );
+
             }
             else {
                 if ( !$task->col_is_set() && $task->can_set_col() ) {
