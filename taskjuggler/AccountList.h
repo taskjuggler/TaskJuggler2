@@ -30,11 +30,8 @@ public:
 	}
 	~AccountList() { }
 
-	Account* first() { return (Account*) CoreAttributesList::first(); }
-	Account* next() { return (Account*) CoreAttributesList::next(); }
-
-	inline void addAccount(Account* a);
-	inline Account* getAccount(const QString& id) const;
+	void addAccount(Account* a);
+	Account* getAccount(const QString& id) const;
 
 	static bool isSupportedSortingCriteria(int sc);
 	

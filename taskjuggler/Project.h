@@ -214,15 +214,16 @@ public:
 	 * If there is a working interval defined for this weekday and the
 	 * day is not registered as a vacation day then it is a workday. 
 	 */
-	bool isWorkingDay(time_t d)
+	bool isWorkingDay(time_t d) const
 	{
-		return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || isVacation(d));
+		return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() || 
+				 isVacation(d));
 	}
 	/**
 	 * Returns the number of working days that overlap with the specified
 	 * interval.
 	 */
-	int calcWorkingDays(const Interval& iv);
+	int calcWorkingDays(const Interval& iv) const;
 
 	/**
 	 * Add a vacation interval to the vacation list. These global vacations
@@ -240,7 +241,7 @@ public:
 	 * Returns TRUE if the passed moment falls within any of the vacation
 	 * intervals.
 	 */
-	bool isVacation(time_t d) { return vacationList.isVacation(d); }
+	bool isVacation(time_t d) const { return vacationList.isVacation(d); }
 	/**
 	 * Returns the first interval in the vacation list. It also sets the
 	 * current list item to the first item.
@@ -262,7 +263,7 @@ public:
 	{
 		taskList.append(t);
 	}
-	Task* getTask(const QString& id)
+	Task* getTask(const QString& id) const
 	{
 		return taskList.getTask(id);
 	}
@@ -270,7 +271,7 @@ public:
 
 	void addResource(Resource* r);
 	
-	Resource* getResource(const QString& id)
+	Resource* getResource(const QString& id) const
 	{
 		return resourceList.getResource(id);
 	}
@@ -280,7 +281,7 @@ public:
 	{
 		accountList.append(a);
 	}
-	Account* getAccount(const QString& id)
+	Account* getAccount(const QString& id) const
 	{
 		return accountList.getAccount(id);
 	}
@@ -288,7 +289,7 @@ public:
 
 	void addShift(Shift* s);
 	
-	Shift* getShift(const QString& id)
+	Shift* getShift(const QString& id) const
 	{
 		return shiftList.getShift(id);
 	}
@@ -366,7 +367,7 @@ public:
 		if (!isAllowedFlag(flag))
 			allowedFlags.append(flag);
 	}
-	bool isAllowedFlag(const QString& flag)
+	bool isAllowedFlag(const QString& flag) const
 	{
 		return allowedFlags.contains(flag) > 0;
 	}
@@ -388,9 +389,22 @@ public:
 	void setTimeFormat(const QString& tf) { timeFormat = tf; }
 	const QString& getTimeFormat() const { return timeFormat; }
 
-	TaskList getTaskList() { return taskList; }
-	ResourceList getResourceList() { return resourceList; }
-	AccountList getAccountList() { return accountList; }
+	TaskList getTaskList() const { return taskList; }
+	TaskListIterator getTaskListIterator() const
+	{
+		return TaskListIterator(taskList);
+	}
+	ResourceList getResourceList() const { return resourceList; }
+	ResourceListIterator getResourceListIterator() const
+	{
+		return ResourceListIterator(resourceList);
+	}
+	
+	AccountList getAccountList() const { return accountList; }
+	AccountListIterator getAccountListIterator() const
+	{
+		return AccountListIterator(accountList);
+	}
 
 	/**
 	 * Generate cross references between all data structures and run a
@@ -405,8 +419,8 @@ public:
 	 * detected FALSE is returned.
 	 */
 	bool scheduleAllScenarios();
-	void generateReports();
-	bool needsActualDataForReports();
+	void generateReports() const;
+	bool needsActualDataForReports() const;
 
 private:
 	void overlayScenario(int sc);
@@ -415,7 +429,7 @@ private:
 	
 	bool schedule(const QString& scenario);
 
-	bool checkSchedule(const QString& scenario);
+	bool checkSchedule(const QString& scenario) const;
 
 	/// The start date of the project
 	time_t start;

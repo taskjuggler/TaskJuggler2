@@ -48,15 +48,15 @@ public:
    	}
 	~Operation() { }
 
-	long evalAsInt(ExpressionTree* et);
-	time_t evalAsTime(ExpressionTree* et);
-	QString evalAsString(ExpressionTree* et);
+	long evalAsInt(const ExpressionTree* et) const;
+	time_t evalAsTime(const ExpressionTree* et) const;
+	QString evalAsString(const ExpressionTree* et) const;
 
 private:
 	Operation() { } // don't use this
 
-	long evalFunction(ExpressionTree* et);
-	QString evalFunctionAsString(ExpressionTree* et);
+	long evalFunction(const ExpressionTree* et) const;
+	QString evalFunctionAsString(const ExpressionTree* et) const;
 
 	opType opt;
 	long value;
@@ -67,10 +67,10 @@ private:
 class ExpressionTree
 {
 public:
-	ExpressionTree(Operation* op);
+	ExpressionTree(const Operation* op);
 	~ExpressionTree() { }
 
-	long evalAsInt(CoreAttributes* c)
+	long evalAsInt(const CoreAttributes* c)
    	{
 		ca = c;
 		return expression->evalAsInt(this);
@@ -83,7 +83,7 @@ public:
 	}
 	void clearSymbolTable() { symbolTable.clear(); }
 
-	CoreAttributes* getCoreAttributes() const { return ca; }
+	const CoreAttributes* getCoreAttributes() const { return ca; }
 
 	static bool isFunction(const QString& name);
 
@@ -92,9 +92,9 @@ public:
 private:
 	ExpressionTree() { }	// don't use this
 
-	CoreAttributes* ca;
+	const CoreAttributes* ca;
 	QDict<long> symbolTable;
-	Operation* expression;
+	const Operation* expression;
 	
 	static QDict<int> funcArgc;
 } ;

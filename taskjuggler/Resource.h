@@ -44,8 +44,12 @@ public:
 
 	Resource* getParent() const { return (Resource*) parent; }
 
+	ResourceListIterator getSubListIterator() const
+	{
+		return ResourceListIterator(sub);
+	}
+
 	bool isGroup() const { return !sub.isEmpty(); }
-	ResourceList getSubList() const;
 
 	void setMinEffort(double e) { minEffort = e; }
 	double getMinEffort() const { return minEffort; }

@@ -327,7 +327,7 @@ ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e,
 }
 
 void
-ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
+ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 {
 	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
@@ -473,7 +473,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 }
 
 void
-ReportHtml::generateActualTask(Task* t, Resource* r)
+ReportHtml::generateActualTask(const Task* t, const Resource* r)
 {
 	s << "<tr>" << endl;
 	for (QStringList::Iterator it = columns.begin();
@@ -545,7 +545,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 }
 
 void
-ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
+ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
 {
 	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
@@ -650,7 +650,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 }
 
 void
-ReportHtml::generateActualResource(Resource* r, Task* t)
+ReportHtml::generateActualResource(const Resource* r, const Task* t)
 {
 	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
@@ -1165,7 +1165,7 @@ ReportHtml::textTwoRows(const QString& text, bool light, const QString& align)
 }
 
 void
-ReportHtml::dailyResourcePlan(Resource* r, Task* t)
+ReportHtml::dailyResourcePlan(const Resource* r, const Task* t)
 {
 	if (hidePlan)
 		return;
@@ -1190,7 +1190,7 @@ ReportHtml::dailyResourcePlan(Resource* r, Task* t)
 }
 
 void
-ReportHtml::dailyResourceActual(Resource* r, Task* t)
+ReportHtml::dailyResourceActual(const Resource* r, const Task* t)
 {
 	if (!hidePlan)
 		s << "<td class=\"headersmall\">Actual</td>" << endl;
@@ -1214,7 +1214,7 @@ ReportHtml::dailyResourceActual(Resource* r, Task* t)
 }
 
 void 
-ReportHtml::dailyTaskPlan(Task* t, Resource* r)
+ReportHtml::dailyTaskPlan(const Task* t, const Resource* r)
 {
 	if (hidePlan)
 		return;
@@ -1247,7 +1247,7 @@ ReportHtml::dailyTaskPlan(Task* t, Resource* r)
 }
 
 void
-ReportHtml::dailyTaskActual(Task* t, Resource* r)
+ReportHtml::dailyTaskActual(const Task* t, const Resource* r)
 {
 	if (!hidePlan)
 		s << "<td class=\"headersmall\">Actual</td>" << endl;
@@ -1279,7 +1279,7 @@ ReportHtml::dailyTaskActual(Task* t, Resource* r)
 }
 
 void
-ReportHtml::weeklyResourcePlan(Resource* r, Task* t)
+ReportHtml::weeklyResourcePlan(const Resource* r, const Task* t)
 {
 	if (hidePlan)
 		return;
@@ -1311,7 +1311,7 @@ ReportHtml::weeklyResourcePlan(Resource* r, Task* t)
 }
 
 void
-ReportHtml::weeklyResourceActual(Resource* r, Task* t)
+ReportHtml::weeklyResourceActual(const Resource* r, const Task* t)
 {
 	if (!hidePlan)
 		s << "<td class=\"headersmall\">Actual</td>" << endl;
@@ -1341,7 +1341,7 @@ ReportHtml::weeklyResourceActual(Resource* r, Task* t)
 }
 
 void 
-ReportHtml::weeklyTaskPlan(Task* t, Resource* r)
+ReportHtml::weeklyTaskPlan(const Task* t, const Resource* r)
 {
 	if (hidePlan)
 		return;
@@ -1368,7 +1368,7 @@ ReportHtml::weeklyTaskPlan(Task* t, Resource* r)
 }
 
 void
-ReportHtml::weeklyTaskActual(Task* t, Resource* r)
+ReportHtml::weeklyTaskActual(const Task* t, const Resource* r)
 {
 	if (!hidePlan)
 		s << "<td class=\"headersmall\">Actual</td>" << endl;
@@ -1394,7 +1394,7 @@ ReportHtml::weeklyTaskActual(Task* t, Resource* r)
 }
 
 void
-ReportHtml::monthlyResourcePlan(Resource* r, Task* t)
+ReportHtml::monthlyResourcePlan(const Resource* r, const Task* t)
 {
 	if (hidePlan)
 		return;
@@ -1416,7 +1416,7 @@ ReportHtml::monthlyResourcePlan(Resource* r, Task* t)
 }
 
 void
-ReportHtml::monthlyResourceActual(Resource* r, Task* t)
+ReportHtml::monthlyResourceActual(const Resource* r, const Task* t)
 {
 	if (!hidePlan)
 		s << "<td class=\"headersmall\">Actual</td>" << endl;
@@ -1437,7 +1437,7 @@ ReportHtml::monthlyResourceActual(Resource* r, Task* t)
 }
 
 void
-ReportHtml::monthlyTaskPlan(Task* t, Resource* r)
+ReportHtml::monthlyTaskPlan(const Task* t, const Resource* r)
 {
 	if (hidePlan)
 		return;
@@ -1461,7 +1461,7 @@ ReportHtml::monthlyTaskPlan(Task* t, Resource* r)
 }
 
 void
-ReportHtml::monthlyTaskActual(Task* t, Resource* r)
+ReportHtml::monthlyTaskActual(const Task* t, const Resource* r)
 {
 	if (!hidePlan)
 		s << "<td class=\"headersmall\">Actual</td>" << endl;
@@ -1485,12 +1485,12 @@ ReportHtml::monthlyTaskActual(Task* t, Resource* r)
 }
 
 void
-ReportHtml::taskName(Task* t, Resource* r, bool big)
+ReportHtml::taskName(const Task* t, const Resource* r, bool big)
 {
 	QString spaces;
 	int fontSize = big ? 100 : 90; 
 	if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
-		for (Resource* rp = r ; rp != 0; rp = rp->getParent())
+		for (const Resource* rp = r ; rp != 0; rp = rp->getParent())
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 	mt.clear();
@@ -1527,12 +1527,12 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 }
 
 void
-ReportHtml::resourceName(Resource* r, Task* t, bool big)
+ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
 {
 	QString spaces;
 	int fontSize = big ? 100 : 90;
 	if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
-		for (Task* tp = t; tp != 0; tp = tp->getParent())
+		for (const Task* tp = t; tp != 0; tp = tp->getParent())
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 	mt.clear();
@@ -1569,7 +1569,7 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 }
 
 void
-ReportHtml::planResources(Task* t, bool light)
+ReportHtml::planResources(const Task* t, bool light)
 {
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
@@ -1590,7 +1590,7 @@ ReportHtml::planResources(Task* t, bool light)
 }
 
 void
-ReportHtml::actualResources(Task* t, bool light)
+ReportHtml::actualResources(const Task* t, bool light)
 {
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
@@ -1611,7 +1611,7 @@ ReportHtml::actualResources(Task* t, bool light)
 }
 
 void
-ReportHtml::generateDepends(Task* t, bool light)
+ReportHtml::generateDepends(const Task* t, bool light)
 {
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
@@ -1619,20 +1619,19 @@ ReportHtml::generateDepends(Task* t, bool light)
 	  << (showActual ? "2" : "1")
 	  << "\" style=\"text-align:left\"><span style=\"font-size:100%\">";
 	bool first = TRUE;
-	for (Task* d = t->firstPrevious(); d != 0;
-		 d = t->nextPrevious())
+	for (TaskListIterator tli(t->getPreviousIterator()); *tli != 0; ++tli)
 	{
 		if (!first)
 			s << ", ";
 		else
 			first = FALSE;
-		s << d->getId();
+		s << (*tli)->getId();
 	}
 	s << "</span</td>" << endl;
 }
 
 void
-ReportHtml::generateFollows(Task* t, bool light)
+ReportHtml::generateFollows(const Task* t, bool light)
 {
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
@@ -1641,19 +1640,18 @@ ReportHtml::generateFollows(Task* t, bool light)
 	  << "\" style=\"text-align:left\">"
 		"<span style=\"font-size:100%\">";
 	bool first = TRUE;
-	for (Task* d = t->firstFollower(); d != 0;
-		 d = t->nextFollower())
+	for (TaskListIterator tli(t->getFollowersIterator()); *tli != 0; ++tli)
 	{
 		if (!first)
 			s << ", ";
-		s << d->getId();
+		s << (*tli)->getId();
 		first = FALSE;
 	}
 	s << "</span</td>" << endl;
 }
 
 void
-ReportHtml::generateResponsibilities(Resource*r, bool light)
+ReportHtml::generateResponsibilities(const Resource*r, bool light)
 {
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
@@ -1677,7 +1675,7 @@ ReportHtml::generateResponsibilities(Resource*r, bool light)
 }
 
 void
-ReportHtml::generateSchedule(int sc, Resource* r, Task* t)
+ReportHtml::generateSchedule(int sc, const Resource* r, const Task* t)
 {
 	s << "<td class=\""
 	  << (t == 0 ? "default" : "defaultlight") 
@@ -1730,7 +1728,7 @@ ReportHtml::generateSchedule(int sc, Resource* r, Task* t)
 }
 
 void
-ReportHtml::flagList(CoreAttributes* c1, CoreAttributes* c2)
+ReportHtml::flagList(const CoreAttributes* c1, const CoreAttributes* c2)
 {
 	FlagList allFlags = c1->getFlagList();
 	QString flagStr;
@@ -1778,7 +1776,7 @@ ReportHtml::generateTaskStatus(TaskStatus status, bool light)
 }
 
 QString
-ReportHtml::htmlFilter(const QString& s)
+ReportHtml::htmlFilter(const QString& s) const
 {
     if (!HtmlMap)
    	{

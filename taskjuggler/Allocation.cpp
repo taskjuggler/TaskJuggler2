@@ -40,7 +40,7 @@ QDomElement Allocation::xmlElement( QDomDocument& doc )
    QDomElement elem = doc.createElement( "Allocation" );
    elem.appendChild(ReportXML::createXMLElem( doc, "Load", QString::number(getLoad()) ));
    elem.appendChild(ReportXML::createXMLElem( doc, "Persistent", isPersistent() ? "Yes":"No" ));
-   elem.setAttribute( "ResourceID", candidates.first()->getId());
+   elem.setAttribute( "ResourceID", candidates.getFirst()->getId());
    
    /* candidates are missing TODO */
    return elem;

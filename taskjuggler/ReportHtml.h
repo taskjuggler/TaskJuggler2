@@ -42,20 +42,20 @@ public:
 
 	enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
 
-	void generatePlanTask(Task* t, Resource* r, uint no);
-	void generateActualTask(Task* t, Resource* r);
+	void generatePlanTask(const Task* t, const Resource* r, uint no);
+	void generateActualTask(const Task* t, const Resource* r);
 
-	void generatePlanResource(Resource* r, Task* t, uint no);
-	void generateActualResource(Resource* r, Task* t);
+	void generatePlanResource(const Resource* r, const Task* t, uint no);
+	void generateActualResource(const Resource* r, const Task* t);
 
 	void reportHTMLHeader();
 	void reportHTMLFooter();
 
 	bool generateTableHeader();
 
-	void generateDepends(Task* t, bool light);
-	void generateFollows(Task* t, bool light);
-	void generateResponsibilities(Resource* r, bool light);
+	void generateDepends(const Task* t, bool light);
+	void generateFollows(const Task* t, bool light);
+	void generateResponsibilities(const Resource* r, bool light);
 	void htmlDailyHeaderDays(bool highlightNow = TRUE);
 	void htmlDailyHeaderMonths();
 	void htmlWeeklyHeaderWeeks(bool highlightNow = TRUE);
@@ -69,33 +69,33 @@ public:
 	void textOneRow(const QString& text, bool light, const QString& align);
 	void textTwoRows(const QString& text, bool light, const QString& align);
 
-	void dailyResourcePlan(Resource* r, Task* t);
-	void dailyResourceActual(Resource* r, Task* t);
-	void dailyTaskPlan(Task* t, Resource* r);
-	void dailyTaskActual(Task* t, Resource* r);
+	void dailyResourcePlan(const Resource* r, const Task* t);
+	void dailyResourceActual(const Resource* r, const Task* t);
+	void dailyTaskPlan(const Task* t, const Resource* r);
+	void dailyTaskActual(const Task* t, const Resource* r);
 
-	void weeklyResourcePlan(Resource* r, Task* t);
-	void weeklyResourceActual(Resource* r, Task* t);
-	void weeklyTaskPlan(Task* t, Resource* r);
-	void weeklyTaskActual(Task* t, Resource* r);
+	void weeklyResourcePlan(const Resource* r, const Task* t);
+	void weeklyResourceActual(const Resource* r, const Task* t);
+	void weeklyTaskPlan(const Task* t, const Resource* r);
+	void weeklyTaskActual(const Task* t, const Resource* r);
 
-	void monthlyResourcePlan(Resource* r, Task* t);
-	void monthlyResourceActual(Resource* r, Task* t);
-	void monthlyTaskPlan(Task* t, Resource* r);
-	void monthlyTaskActual(Task* t, Resource* r);
+	void monthlyResourcePlan(const Resource* r, const Task* t);
+	void monthlyResourceActual(const Resource* r, const Task* t);
+	void monthlyTaskPlan(const Task* t, const Resource* r);
+	void monthlyTaskActual(const Task* t, const Resource* r);
 
-	void taskName(Task* t, Resource* r, bool big);
-	void resourceName(Resource* t, Task* t, bool big);
+	void taskName(const Task* t, const Resource* r, bool big);
+	void resourceName(const Resource* t, const Task* t, bool big);
 
- 	void planResources(Task* t, bool light);
-	void actualResources(Task* t, bool light);
+ 	void planResources(const Task* t, bool light);
+	void actualResources(const Task* t, bool light);
 
 	void reportLoad(double load, const QString& bgcol, bool bold);
 	void reportPIDs(const QString& pids, const QString bgCol, bool bold);
 
-	void generateSchedule(int sc, Resource* r, Task* t);
+	void generateSchedule(int sc, const Resource* r, const Task* t);
 
-	void flagList(CoreAttributes* c1, CoreAttributes* c2);
+	void flagList(const CoreAttributes* c1, const CoreAttributes* c2);
 
 	void generateTaskStatus(TaskStatus status, bool light);
 
@@ -126,7 +126,7 @@ public:
 protected:
 	ReportHtml() { }
 
-	QString htmlFilter(const QString& s);
+	QString htmlFilter(const QString& s) const;
 	QString generateUrl(const QString& key, const QString& txt);
 
 	MacroTable mt;

@@ -483,15 +483,15 @@ void KTVTaskCanvas::slShowTask( Task *t, int ypos )
       cItem->show();
 
       /* check for connections to other tasks, showing dependencies. */
-      for( Task* tp = t->firstPrevious(); itemConnects && tp != 0; tp = t->nextPrevious())
+	  for (TaskListIterator pi(t->getPreviousIterator()); *pi != 0; ++pi)
       {
 	 /* tp is a previous task. Connection starts at tps endpoint and goes to
 	  * this (ts) start point */
 	 // qDebug( "handling previous!" );
-	 KTVCanvasItemBase *tpItem = taskToCanvasItem( tp );
+	 KTVCanvasItemBase *tpItem = taskToCanvasItem( *pi );
 	 if( tpItem )
 	 {
-	    connectTasks( tp, t, tpItem, cItem );
+	    connectTasks( *pi, t, tpItem, cItem );
 	 }
       }
    }

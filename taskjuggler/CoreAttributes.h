@@ -125,7 +125,7 @@ public:
 	void setSequenceNo(uint no) { sequenceNo = no; }
 	uint getSequenceNo() const { return sequenceNo; }
 	
-	Project* getProject() { return project; }
+	Project* getProject() const { return project; }
 
 	void setName(const QString& n) { name = n; }
 	const QString& getName() const { return name; }

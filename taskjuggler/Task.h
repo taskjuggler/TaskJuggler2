@@ -71,11 +71,16 @@ public:
 
 	virtual const char* getType() const { return "Task"; }
 
+	Task* getParent() const { return (Task*) parent; }
+
+	TaskListIterator getSubListIterator() const
+	{
+		return TaskListIterator(sub);
+	}
+
 	enum SchedulingInfo { ASAP, ALAP };
 
 	enum Scenario { Plan = 0, Actual };
-
-	Task* getParent() { return (Task*) parent; }
 
 	void setProjectId(const QString& i) { projectId = i; }
 	const QString& getProjectId() const { return projectId; }
@@ -119,12 +124,18 @@ public:
 	Allocation* firstAllocation() { return allocations.first(); }
 	Allocation* nextAllocation() { return allocations.next(); }
 
-	Task* firstPrevious() { return previous.first(); }
-	Task* nextPrevious() { return previous.next(); }
+	TaskListIterator getPreviousIterator() const
+	{
+		return TaskListIterator(previous);
+	}
+	bool hasPrevious() { return !previous.isEmpty(); }
 
-	Task* firstFollower() { return followers.first(); }
-	Task* nextFollower() { return followers.next(); }
-
+	TaskListIterator getFollowersIterator() const
+	{
+		return TaskListIterator(followers);
+	}
+	bool hasFollowers() { return !followers.isEmpty(); }
+	
 	bool hasPrevious(Task* t) { return previous.find(t) != -1; }
 	bool hasFollower(Task* t) { return followers.find(t) != -1; }
 
@@ -153,12 +164,12 @@ public:
 	void setDuration(int sc, double d) { scenarios[sc].duration = d; }
 	double getPlanDuration(int sc) const { return scenarios[sc].duration; }
 
-	bool isStartOk(int sc)
+	bool isStartOk(int sc) const
 	{
 		return (minStart <= scenarios[sc].start && 
 				scenarios[sc].start <= maxStart);
 	}
-	bool isEndOk(int sc)
+	bool isEndOk(int sc) const
 	{
 		return (minEnd <= scenarios[sc].end + (milestone ? 1 : 0) &&
 				scenarios[sc].end + (milestone ? 1 : 0) <= maxEnd);
@@ -185,7 +196,8 @@ public:
 	double getCalcDuration(int sc) const;
 
 	double getCredits(int sc, const Interval& period, 
-					  Resource* resource = 0, bool recursive = TRUE);
+					  const Resource* resource = 0, bool recursive = TRUE)
+		const;
 
 	bool isActive(int sc, const Interval& period) const;
 	TaskStatus getStatus(int sc) const { return scenarios[sc].status; }
@@ -197,7 +209,7 @@ public:
 		return scenarios[sc].status;
 	}
 
-	double getLoad(int sc, const Interval& period, Resource* resource = 0)
+	double getLoad(int sc, const Interval& period, const Resource* resource = 0)
 		const;
 
 	void addBookedResource(int sc, Resource* r)
@@ -209,7 +221,7 @@ public:
 	{
 		return scenarios[sc].bookedResources.find(r) != -1;
 	}
-	QPtrList<Resource> getBookedResources(int sc) 
+	QPtrList<Resource> getBookedResources(int sc) const
 	{
 		return scenarios[sc].bookedResources; 
 	}
@@ -239,17 +251,6 @@ public:
 	void propagateInitialValues();
 	void setRunaway();
 	bool isRunaway() const;
-
-	/**
-	 * @returns TRUE if the work planned for a day has been completed.
-	 * This is either specified by the 'complete' attribute or if no
-	 * complete attribute is specified, the day is completed if it has
-	 * passed. This function operates on the actual start and end dates.
-	 *
-	 * @param date specifies the day that should be checked.
-	 */
-
-	void getSubTaskList(TaskList& tl) const;
 
 	bool isSubTask(Task* t) const;
 

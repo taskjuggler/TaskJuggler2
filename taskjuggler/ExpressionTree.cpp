@@ -23,8 +23,11 @@
 QDict<int> ExpressionTree::funcArgc;
 
 long
-Operation::evalAsInt(ExpressionTree* et)
+Operation::evalAsInt(const ExpressionTree* et) const
 {
+	QPtrListIterator<Operation> oi(ops);
+	const Operation* op1;
+	const Operation* op2;
 	switch (opt)
 	{
 	case Const:
@@ -37,11 +40,17 @@ Operation::evalAsInt(ExpressionTree* et)
 	case Date:
 		return value;
 	case Not:
-		return !ops.at(0)->evalAsInt(et);
+		return !ops.getFirst()->evalAsInt(et);
 	case And:
-		return ops.at(0)->evalAsInt(et) && ops.at(1)->evalAsInt(et);
+		op1 = *oi;
+		++oi;
+		op2 = *oi;
+		return op1->evalAsInt(et) && op2->evalAsInt(et);
 	case Or:
-		return ops.at(0)->evalAsInt(et) || ops.at(1)->evalAsInt(et);
+		op1 = *oi;
+		++oi;
+		op2 = *oi;
+		return op1->evalAsInt(et) || op2->evalAsInt(et);
 	default:
 		qFatal("Operation::evalAsInt: "
 			   "Unknown opType %d (name: %s)", opt, name.ascii());
@@ -50,7 +59,7 @@ Operation::evalAsInt(ExpressionTree* et)
 }
 
 time_t
-Operation::evalAsTime(ExpressionTree* et)
+Operation::evalAsTime(const ExpressionTree* et) const
 {
 	switch(opt)
 	{
@@ -70,7 +79,7 @@ Operation::evalAsTime(ExpressionTree* et)
 }
 
 QString
-Operation::evalAsString(ExpressionTree* et)
+Operation::evalAsString(const ExpressionTree* et) const
 {
 	switch(opt)
 	{
@@ -90,13 +99,13 @@ Operation::evalAsString(ExpressionTree* et)
 }
 
 long
-Operation::evalFunction(ExpressionTree* et)
+Operation::evalFunction(const ExpressionTree* et) const
 {
 	if (name == "istask")
 	{
 		return strcmp(et->getCoreAttributes()->getType(), "Task") == 0
 			&& et->getCoreAttributes()->getId() ==
-			ops.at(0)->evalAsString(et);
+			ops.getFirst()->evalAsString(et);
 	}
 	else if (name == "issubtaskof")
 	{
@@ -104,7 +113,7 @@ Operation::evalFunction(ExpressionTree* et)
 			return 0;
 		Task* p;
 		if ((p = et->getCoreAttributes()->getProject()->getTask
-			 (ops.at(0)->evalAsString(et))) == 0)
+			 (ops.getFirst()->evalAsString(et))) == 0)
 			return 0;
 		return p->isSubTask((Task*) et->getCoreAttributes());
 	}
@@ -114,7 +123,7 @@ Operation::evalFunction(ExpressionTree* et)
 			return 0;
 		Task* st;
 		if ((st = et->getCoreAttributes()->getProject()->getTask
-			 (ops.at(0)->evalAsString(et))) == 0)
+			 (ops.getFirst()->evalAsString(et))) == 0)
 			return 0;
 		return ((Task*) et->getCoreAttributes())->isSubTask(st);
 	}
@@ -128,33 +137,45 @@ Operation::evalFunction(ExpressionTree* et)
 	{
 		return strcmp(et->getCoreAttributes()->getType(), "Resource") == 0
 			&& et->getCoreAttributes()->getId() ==
-			ops.at(0)->evalAsString(et);
+			ops.getFirst()->evalAsString(et);
 	}
 	else if (name == "isaccount")
 	{
 		return strcmp(et->getCoreAttributes()->getType(), "Account") == 0
 			&& et->getCoreAttributes()->getId() ==
-			ops.at(0)->evalAsString(et);
+			ops.getFirst()->evalAsString(et);
 	}
 	else if (name == "isplanallocated")
 	{
 		if (strcmp(et->getCoreAttributes()->getType(), "Resource") != 0)
 			qFatal("Operation::evalFunction: isplanallocated called for "
 				   "non-resource");
+		QPtrListIterator<Operation> oi(ops);
+		Operation* op0 = *oi;
+		++oi;
+		Operation* op1 = *oi;
+		++oi;
+		Operation* op2 = *oi;
 		return ((Resource*) et->getCoreAttributes())->isAllocated
-			(Task::Plan, Interval(ops.at(1)->evalAsTime(et), 
-								  ops.at(2)->evalAsTime(et)), 
-			 ops.at(0)->evalAsString(et));
+			(Task::Plan, Interval(op1->evalAsTime(et), 
+								  op2->evalAsTime(et)), 
+			 op0->evalAsString(et));
 	}
 	else if (name == "isactualallocated")
 	{
 		if (strcmp(et->getCoreAttributes()->getType(), "Resource") != 0)
 			qFatal("Operation::evalFunction: isactualallocated called for "
 				   "non-resource");
+		QPtrListIterator<Operation> oi(ops);
+		Operation* op0 = *oi;
+		++oi;
+		Operation* op1 = *oi;
+		++oi;
+		Operation* op2 = *oi;
 		return ((Resource*) et->getCoreAttributes())->isAllocated
-			(Task::Actual, Interval(ops.at(1)->evalAsTime(et), 
-									ops.at(2)->evalAsTime(et)), 
-			 ops.at(0)->evalAsString(et));
+			(Task::Actual, Interval(op1->evalAsTime(et), 
+									op2->evalAsTime(et)), 
+			 op0->evalAsString(et));
 	}
 	else
 		qFatal("Unknown function %s", name.data());	
@@ -163,13 +184,13 @@ Operation::evalFunction(ExpressionTree* et)
 }
 
 QString
-Operation::evalFunctionAsString(ExpressionTree* )
+Operation::evalFunctionAsString(const ExpressionTree* ) const
 {
 	// There are no functions yet that return a string.
 	return QString::null;
 }
 
-ExpressionTree::ExpressionTree(Operation* op) : expression(op)
+ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
 {
 	symbolTable.setAutoDelete(TRUE);
 	if (funcArgc.isEmpty())

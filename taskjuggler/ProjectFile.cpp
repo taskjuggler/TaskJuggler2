@@ -758,16 +758,14 @@ ProjectFile::readTask(Task* parent)
 			{
 				QString tn = (parent ? parent->getId() + "." : QString())
 					+ id.left(id.find('.'));
-				TaskList tl;
-				if (parent)
-					parent->getSubTaskList(tl);
-				else
-					tl = proj->getTaskList();
 				bool found = FALSE;
-				for (Task* t = tl.first(); t != 0; t = tl.next())
-					if (t->getId() == tn)
+				for (TaskListIterator tli(parent ?
+										  parent->getSubListIterator() :
+										  proj->getTaskListIterator());
+					 *tli != 0; ++tli)
+					if ((*tli)->getId() == tn)
 					{
-						parent = t;
+						parent = *tli;
 						id = id.right(id.length() - id.find('.') - 1);
 						found = TRUE;
 						break;
@@ -825,14 +823,12 @@ ProjectFile::readTask(Task* parent)
 	}
 	
 	// We need to check that the task id has not been declared before.
-	TaskList tl = proj->getTaskList();
-	for (Task* t = tl.first(); t != 0; t = tl.next())
-		if (t->getId() == id)
-		{
-			errorMessage(i18n("Task %1 has already been declared")
-						 .arg(id));
-			return FALSE;
-		}
+	if (proj->getTask(id))
+	{
+		errorMessage(i18n("Task %1 has already been declared")
+					 .arg(id));
+		return FALSE;
+	}
 
 	Task* task = new Task(proj, id, name, parent, getFile(), getLine());
 
@@ -1977,8 +1973,8 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 			return FALSE;
 		}
 		Interval* iv = new Interval(st, et - 1); 
-		for (Interval* i = l->first(); i != 0; i = l->next())
-			if (iv->overlaps(*i))
+		for (QPtrListIterator<Interval> ili(*l); *ili != 0; ++ili)
+			if (iv->overlaps(**ili))
 			{
 				errorMessage(i18n("Working hour intervals may not overlap"));
 				return FALSE;

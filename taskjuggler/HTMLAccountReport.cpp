@@ -47,12 +47,12 @@ HTMLAccountReport::generate()
 	filterAccountList(filteredList, Account::Cost);
 	sortAccountList(filteredList);
 
-	for (Account* a = filteredList.first(); a != 0; a = filteredList.next())
+	for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
 	{
 		if (!hidePlan)
-			generatePlanAccount(a);
+			generatePlanAccount(*ali);
 		if (showActual)
-			generateActualAccount(a);
+			generateActualAccount(*ali);
 	}
 	generateTotals(i18n("Subtotal Costs"), "headersmall");
 	planTotalsCosts = planTotals;
@@ -63,12 +63,12 @@ HTMLAccountReport::generate()
 	filterAccountList(filteredList, Account::Revenue);
 	sortAccountList(filteredList);
 
-	for (Account* a = filteredList.first(); a != 0; a = filteredList.next())
+	for (AccountListIterator ali(filteredList); *ali != 0; ++ali)
 	{
 		if (!hidePlan)
-			generatePlanAccount(a);
+			generatePlanAccount(*ali);
 		if (showActual)
-			generateActualAccount(a);
+			generateActualAccount(*ali);
 	}
 	generateTotals(i18n("Subtotal Revenue"), "headersmall");
 	planTotalsRevenue = planTotals;

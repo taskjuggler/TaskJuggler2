@@ -148,7 +148,7 @@ Project::addResource(Resource* r)
 }
 
 int
-Project::calcWorkingDays(const Interval& iv)
+Project::calcWorkingDays(const Interval& iv) const
 {
 	int workingDays = 0;
 
@@ -244,8 +244,8 @@ Project::scheduleAllScenarios()
 		finishScenario(Task::Actual);
 	}
 
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->computeBuffers();
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		(*tli)->computeBuffers();
 
 	/* Create indices for all lists according to their default sorting
 	 * criteria. */
@@ -260,17 +260,17 @@ Project::scheduleAllScenarios()
 void
 Project::overlayScenario(int sc)
 {
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->overlayScenario(sc);
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		(*tli)->overlayScenario(sc);
 }
 
 void
 Project::prepareScenario(int sc)
 {
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->prepareScenario(sc);
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->propagateInitialValues();
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		(*tli)->prepareScenario(sc);
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		(*tli)->propagateInitialValues();
 	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
 		(*rli)->prepareScenario(sc);
 }
@@ -280,8 +280,8 @@ Project::finishScenario(int sc)
 {
 	for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
 		(*rli)->finishScenario(sc);
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
-		t->finishScenario(sc);
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+		(*tli)->finishScenario(sc);
 }
 
 bool
@@ -299,41 +299,41 @@ Project::schedule(const QString& scenario)
 	{
 		done = TRUE;
 		time_t slot = 0;
-		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
+		for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
 		{
 			if (slot == 0)
 			{
-				slot = t->nextSlot(scheduleGranularity);
+				slot = (*tli)->nextSlot(scheduleGranularity);
 				if (slot == 0)
 					continue;
 				if (DEBUGPS(5))
-					qDebug("Task %s requests slot %s", t->getId().latin1(),
+					qDebug("Task %s requests slot %s", (*tli)->getId().latin1(),
 							 time2ISO(slot).latin1());
 				if (slot < start || slot > end)
 				{
-					t->setRunaway();
+					(*tli)->setRunaway();
 					if (DEBUGPS(5))
 						qDebug("Marking task %s as runaway",
-							   t->getId().latin1());
+							   (*tli)->getId().latin1());
 					error = TRUE;
 				}
 			}
-			t->schedule(slot, scheduleGranularity);
+			(*tli)->schedule(slot, scheduleGranularity);
 			done = FALSE;
 		}
 	} while (!done);
 	
 	if (error)
-		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
-			if (t->isRunaway())
-				if (t->getScheduling() == Task::ASAP)
-					t->errorMessage
+		for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
+			if ((*tli)->isRunaway())
+				if ((*tli)->getScheduling() == Task::ASAP)
+					(*tli)->errorMessage
 						(i18n("End of task %1 does not fit into the project "
-							  "time frame.").arg(t->getId()));
+							  "time frame.").arg((*tli)->getId()));
 				else
-					t->errorMessage
+					(*tli)->errorMessage
 						(i18n("Start of task %1 does not fit into the "
-							  "project time frame.").arg(t->getId()));
+							  "project time frame.").arg((*tli)->getId()));
 
 	if (!checkSchedule(scenario))
 		error = TRUE;
@@ -342,15 +342,15 @@ Project::schedule(const QString& scenario)
 }
 
 bool
-Project::checkSchedule(const QString& scenario)
+Project::checkSchedule(const QString& scenario) const
 {
 	int errors = 0;
-	for (Task* t = taskList.first(); t != 0; t = taskList.next())
+	for (TaskListIterator tli(taskList); *tli != 0; ++tli)
 	{
 		/* Only check top-level tasks, since they recursively check their sub
 		 * tasks. */
-		if (t->getParent() == 0)
-			t->scheduleOk(errors, scenario);
+		if ((*tli)->getParent() == 0)
+			(*tli)->scheduleOk(errors, scenario);
 		if (errors >= 10)
 		{
 			TJMH.errorMessage
@@ -364,35 +364,33 @@ Project::checkSchedule(const QString& scenario)
 }
 
 void
-Project::generateReports()
+Project::generateReports() const
 {
 	if (DEBUGPS(1))
 		qDebug("Generating reports...");
 
 	// Generate task reports
-	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
-		 h = htmlTaskReports.next())
-		h->generate();
+	for (QPtrListIterator<HTMLTaskReport> ri(htmlTaskReports); *ri != 0; ++ri)
+		(*ri)->generate();
 
 	// Generate resource reports
-	for (HTMLResourceReport* r = htmlResourceReports.first(); r != 0;
-		 r = htmlResourceReports.next())
-		r->generate();
+	for (QPtrListIterator<HTMLResourceReport> ri(htmlResourceReports); 
+		 *ri != 0; ++ri)
+		(*ri)->generate();
 
 	// Generate account reports
-	for (HTMLAccountReport* r = htmlAccountReports.first(); r != 0;
-		 r = htmlAccountReports.next())
-		r->generate();
+	for (QPtrListIterator<HTMLAccountReport> ri(htmlAccountReports); 
+		 *ri != 0; ++ri)
+		(*ri)->generate();
 
 	// Generate calendar reports
-	for (HTMLWeeklyCalendar* r = htmlWeeklyCalendars.first(); r != 0;
-		 r = htmlWeeklyCalendars.next())
-		r->generate();
+	for (QPtrListIterator<HTMLWeeklyCalendar> ri(htmlWeeklyCalendars); 
+		 *ri != 0; ++ri)
+		(*ri)->generate();
 
 	// Generate export files
-	for (ExportReport* e = exportReports.first(); e != 0;
-		 e = exportReports.next())
-		e->generate();
+	for (QPtrListIterator<ExportReport> ri(exportReports); *ri != 0; ++ri)
+		(*ri)->generate();
 
 	if( xmlreport )
 	   xmlreport->generate();
@@ -406,25 +404,24 @@ Project::generateReports()
 }
 
 bool
-Project::needsActualDataForReports()
+Project::needsActualDataForReports() const
 {
 	bool needsActual = FALSE;
 
 	// Generate task reports
-	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
-		 h = htmlTaskReports.next())
-		if (h->getShowActual())
+	for (QPtrListIterator<HTMLTaskReport> ri(htmlTaskReports); *ri != 0; ++ri)
+		if ((*ri)->getShowActual())
 			needsActual = TRUE;
 	// Generate resource reports
-	for (HTMLResourceReport* h = htmlResourceReports.first(); h != 0;
-		 h = htmlResourceReports.next())
-		if (h->getShowActual())
+	for (QPtrListIterator<HTMLResourceReport> ri(htmlResourceReports);
+		 *ri != 0; ++ri)
+		if ((*ri)->getShowActual())
 			needsActual = TRUE;
 
 	// Generate account reports
-	for (HTMLAccountReport* h = htmlAccountReports.first(); h != 0;
-		 h = htmlAccountReports.next())
-		if (h->getShowActual())
+	for (QPtrListIterator<HTMLAccountReport> ri(htmlAccountReports);
+		 *ri != 0; ++ri)
+		if ((*ri)->getShowActual())
 			needsActual = TRUE;
 
 	return needsActual;

@@ -7,10 +7,10 @@ libtaskjuggler_la_SOURCES = Utility.cpp TjMessageHandler.cpp \
 ExpressionTree.cpp Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \
 BookingList.cpp \
-ResourceList.cpp ShiftList.cpp \
-CoreAttributes.cpp Shift.cpp Resource.cpp Task.cpp \
 TaskScenario.cpp VacationList.cpp \
-Account.cpp Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
+TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
+CoreAttributes.cpp Task.cpp Resource.cpp Account.cpp Shift.cpp \
+Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
 HTMLTaskReport.cpp HTMLResourceReport.cpp HTMLAccountReport.cpp \
 HTMLWeeklyCalendar.cpp ReportHtml.cpp ExportReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp

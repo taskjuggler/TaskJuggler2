@@ -20,7 +20,7 @@ CoreAttributesTreeIterator::CoreAttributesTreeIterator(CoreAttributes* r)
 {
 	root = current = r;
 	while (current->hasSubs())
-		current = current->getSubList().first();
+		current = current->getSubList().getFirst();
 }
 
 #include "assert.h"
@@ -44,7 +44,7 @@ CoreAttributesTreeIterator::operator++()
 			// Find the first leaf in this sub list.
 			current = *cli;
 			while (current->hasSubs())
-				current = current->getSubList().first();
+				current = current->getSubList().getFirst();
 			// This is the new current task.
 			return current;
 		}
@@ -73,14 +73,14 @@ CoreAttributesList::createIndex(bool initial)
 	int i = 1;
 	if (initial)
 	{
-		for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
-			c->setSequenceNo(i);
+		for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
+			(*cli)->setSequenceNo(i);
 	}
 	else
 	{
 		sort();
-		for (CoreAttributes* c = first(); c != 0; c = next(), ++i)
-			c->setIndex(i);
+		for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
+			(*cli)->setIndex(i);
 	}
 }
 
@@ -88,9 +88,9 @@ uint
 CoreAttributesList::maxDepth()
 {
 	uint md = 0;
-	for (CoreAttributes* c = first(); c != 0; c = next())
-		if (c->treeLevel() + 1 > md)
-			md = c->treeLevel() + 1;
+	for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli)
+		if ((*cli)->treeLevel() + 1 > md)
+			md = (*cli)->treeLevel() + 1;
 	return md;
 }
 

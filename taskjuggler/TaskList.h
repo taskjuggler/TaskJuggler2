@@ -37,7 +37,7 @@ public:
 	Task* prev()  { return (Task*) CoreAttributesList::prev(); }
 	Task* next()  { return (Task*) CoreAttributesList::next(); }
 
-	Task* getTask(const QString& id);
+	Task* getTask(const QString& id) const;
 
 	static bool isSupportedSortingCriteria(int sc);
 	

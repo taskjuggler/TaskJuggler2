@@ -43,7 +43,7 @@ class ExpressionTree;
 class Report
 {
 public:
-	Report(Project* p, const QString& f, time_t s, time_t e,
+	Report(const Project* p, const QString& f, time_t s, time_t e,
 		   const QString& df, int dl);
 	virtual ~Report();
 
@@ -68,21 +68,14 @@ public:
 	void setHeadline(const QString& hl) { headline = hl; }
 	void setCaption(const QString& c) { caption = c; }
 
-	bool isHidden(CoreAttributes* c, ExpressionTree* et);
-	bool isRolledUp(CoreAttributes* c, ExpressionTree* et);
+	bool isHidden(const CoreAttributes* c, ExpressionTree* et) const;
+	bool isRolledUp(const CoreAttributes* c, ExpressionTree* et) const;
 
 	void setHideTask(ExpressionTree* et);
-
-	void setRollUpTask(ExpressionTree* et);
-	bool isTaskRolledUp(Task* t);
-
 	void setHideResource(ExpressionTree* et);
-
 	void setHideAccount(ExpressionTree* et);
-
+	void setRollUpTask(ExpressionTree* et);
 	void setRollUpResource(ExpressionTree* et);
-	bool isResourceRolledUp(Resource* t);
-
 	void setRollUpAccount(ExpressionTree* et);
 
 	bool setTaskSorting(int sc, int level);
@@ -104,16 +97,17 @@ public:
 
 	bool open();
 
-	void filterTaskList(TaskList& filteredList, Resource* r);
+	void filterTaskList(TaskList& filteredList, const Resource* r);
 	void sortTaskList(TaskList& filteredList);
 
-	void filterResourceList(ResourceList& filteredList, Task* t = 0);
+	void filterResourceList(ResourceList& filteredList, const Task* t = 0)
+		const;
 	void sortResourceList(ResourceList& filteredList);
 
 	void filterAccountList(AccountList& filteredList, Account::AccountType at);
 	void sortAccountList(AccountList& filteredList);
 
-	QString scaledLoad(double t);
+	QString scaledLoad(double t) const;
 protected:
 	void errorMessage(const char* msg, ... );
 
@@ -123,7 +117,7 @@ protected:
 	 */
 	QString stripTaskRoot(QString taskId) const;
 	
-	Project* project;
+	const Project* project;
 	bool weekStartsMonday;
 	QString fileName;
 	QStringList columns;

@@ -91,30 +91,29 @@ bool
 ExportReport::generateTaskList(TaskList& filteredTaskList,
 							   ResourceList&)
 {
-	for (Task* t = filteredTaskList.first(); t != 0;
-		 t = filteredTaskList.next())
+	for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli)
 	{
-		QString start = time2rfc(t->getStart(Task::Plan));
-		QString end = time2rfc(t->getEnd(Task::Plan) + 1);
+		QString start = time2rfc((*tli)->getStart(Task::Plan));
+		QString end = time2rfc((*tli)->getEnd(Task::Plan) + 1);
 
-		s << "task " << stripTaskRoot(t->getId()) 
-			<< " \"" << t->getName() << "\"" << " {" << endl 
+		s << "task " << stripTaskRoot((*tli)->getId()) 
+			<< " \"" << (*tli)->getName() << "\"" << " {" << endl 
 			<< "  start " << start << endl
 			<< "  end " << end << endl;
-		if (t->getScheduled(Task::Plan))
+		if ((*tli)->getScheduled(Task::Plan))
 			s << "  planscheduled" << endl;
 		if (showActual)
 		{
-			start = time2rfc(t->getStart(Task::Actual));
-			end = time2rfc(t->getEnd(Task::Actual) + 1);
+			start = time2rfc((*tli)->getStart(Task::Actual));
+			end = time2rfc((*tli)->getEnd(Task::Actual) + 1);
 			s << "  actualstart " << start << endl
 				<< "  actualend " << end << endl;
-			if (t->getScheduled(Task::Actual))
+			if ((*tli)->getScheduled(Task::Actual))
 				s << "  actualscheduled" << endl;
 		}
 
-		s << "  projectid " << t->getProjectId() << endl;
-		if (t->isMilestone())
+		s << "  projectid " << (*tli)->getProjectId() << endl;
+		if ((*tli)->isMilestone())
 			s << "  milestone " << endl;
 		
 		for (QStringList::Iterator it = taskAttributes.begin(); 
@@ -123,19 +122,20 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 			switch (TaskAttributeDict[*it])
 			{
 				case TA_DEPENDS:
-					if (t->firstPrevious())
+					if ((*tli)->hasPrevious())
 					{
 						bool first = TRUE;
-						for (Task* tp = t->firstPrevious(); tp != 0;
-							 tp = t->nextPrevious())
+						for (TaskListIterator
+							 pli((*tli)->getPreviousIterator()); *pli != 0;
+							 ++pli)
 						{
 							/* Save current list item since findRef() modifies
 							 * it. Remember, we are still iterating the list.
 							 */
 							CoreAttributes* curr = filteredTaskList.current();
-							if (filteredTaskList.findRef(tp) > -1 &&
-								!(t->getParent() != 0 &&
-								  t->getParent()->hasPrevious(tp)))
+							if (filteredTaskList.findRef(*pli) > -1 &&
+								!((*tli)->getParent() != 0 &&
+								  (*tli)->getParent()->hasPrevious(*pli)))
 							{
 								if (first)
 								{
@@ -144,7 +144,7 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
 								}
 								else
 									s << ", ";
-								s << stripTaskRoot(tp->getId());
+								s << stripTaskRoot((*pli)->getId());
 							}
 							/* Restore current list item to continue
 							 * iteration. */
@@ -174,10 +174,9 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 	if (taskAttributes.contains("flags"))
 	{
 		FlagList allFlags;
-		for (Task* t = filteredTaskList.first(); t != 0;
-			 t = filteredTaskList.next())
+		for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli)
 		{
-			QStringList fl = t->getFlagList();
+			QStringList fl = (*tli)->getFlagList();
 			for (QStringList::Iterator jt = fl.begin();
 				 jt != fl.end(); ++jt)
 			{
@@ -200,10 +199,10 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 		}
 	}
 
-	for (Task* t = filteredTaskList.first(); t != 0;
-		 t = filteredTaskList.next())
+	for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli)
 	{
-		s << "supplement task " << stripTaskRoot(t->getId()) << " {" << endl;
+		s << "supplement task " << stripTaskRoot((*tli)->getId()) << " {" 
+			<< endl;
 		for (QStringList::Iterator it = taskAttributes.begin(); 
 			 it != taskAttributes.end(); ++it)
 		{
@@ -211,10 +210,10 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 			{
 				case TA_FLAGS:
 					{
-						if (t->getFlagList().empty())
+						if ((*tli)->getFlagList().empty())
 							break;
 						s << "  flags ";
-						QStringList fl = t->getFlagList();
+						QStringList fl = (*tli)->getFlagList();
 						bool first = TRUE;
 						for (QStringList::Iterator jt = fl.begin();
 							 jt != fl.end(); ++jt)
@@ -229,38 +228,38 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 						break;
 					}
 				case TA_NOTE:
-					if (t->getNote() != "")
-						s << "  note \"" << t->getNote() << "\"" << endl;
+					if ((*tli)->getNote() != "")
+						s << "  note \"" << (*tli)->getNote() << "\"" << endl;
 					break;
 				case TA_MINSTART:
-					if (t->getMinStart() != 0)
-						s << "  minstart " << time2rfc(t->getMinStart()) 
+					if ((*tli)->getMinStart() != 0)
+						s << "  minstart " << time2rfc((*tli)->getMinStart()) 
 							<< endl;
 					break;
 				case TA_MAXSTART:
-					if (t->getMaxStart() != 0)
-						s << "  maxstart " << time2rfc(t->getMaxStart()) 
+					if ((*tli)->getMaxStart() != 0)
+						s << "  maxstart " << time2rfc((*tli)->getMaxStart()) 
 							<< endl;
 					break;
 				case TA_MINEND:
-					if (t->getMinEnd() != 0)
-						s << "  minend " << time2rfc(t->getMinEnd())
+					if ((*tli)->getMinEnd() != 0)
+						s << "  minend " << time2rfc((*tli)->getMinEnd())
 						   	<< endl;
 					break;
 				case TA_MAXEND:
-					if (t->getMaxEnd() != 0)
-						s << "  maxend " << time2rfc(t->getMaxEnd())
+					if ((*tli)->getMaxEnd() != 0)
+						s << "  maxend " << time2rfc((*tli)->getMaxEnd())
 						   	<< endl;
 					break;
 				case TA_COMPLETE:
-					if (t->getComplete(Task::Plan) >= 0.0 && showActual)
+					if ((*tli)->getComplete(Task::Plan) >= 0.0 && showActual)
 						s << "  complete " 
-							<< (int) t->getComplete(Task::Plan) << endl;
+							<< (int) (*tli)->getComplete(Task::Plan) << endl;
 					break;
 				case TA_RESPONSIBLE:
-					if (t->getResponsible())
-						s << "  responsible " << t->getResponsible()->getId()
-						   	<< endl;
+					if ((*tli)->getResponsible())
+						s << "  responsible " 
+							<< (*tli)->getResponsible()->getId() << endl;
 					break;
 				case TA_DEPENDS:
 					// handled in generateTaskList
@@ -290,9 +289,9 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 			bl.setAutoDelete(TRUE);
 			if (bl.isEmpty())
 				continue;
-			for (Booking* b = bl.first(); b != 0; b = bl.next())
+			for (BookingListIterator bli(bl); *bli != 0; ++bli)
 			{
-				if (filteredTaskList.findRef(b->getTask()) >= 0)
+				if (filteredTaskList.findRef((*bli)->getTask()) >= 0)
 				{
 					if (first)
 					{
@@ -300,8 +299,8 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 							<< " {" << endl;
 						first = FALSE;
 					}
-					QString start = time2rfc(b->getStart());
-					QString end = time2rfc(b->getEnd() + 1);
+					QString start = time2rfc((*bli)->getStart());
+					QString end = time2rfc((*bli)->getEnd() + 1);
 					switch (sc)
 					{
 						case Task::Plan:
@@ -315,7 +314,8 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
 								   "Unknown scenario");
 					}
 					s << start << " " << end 
-						<< " " << stripTaskRoot(b->getTask()->getId()) << endl;
+						<< " " << stripTaskRoot((*bli)->getTask()->getId()) 
+						<< endl;
 				}
 			}
 		}

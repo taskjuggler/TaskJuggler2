@@ -151,19 +151,16 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    /* signal to create a new task in the canvas */
    emit( newTaskAdded( t, ktv));
 
-   TaskList subTasks;
-   subTasks.clear();
-
-   t->getSubTaskList(subTasks);
    // int cnt = subTasks.count();
    // qDebug( "Amount of subtasks: " + QString::number(cnt) );
 
    // qDebug( "START: Subpackages for "+ t->getId());
-   for (Task* st = subTasks.last(); st != 0; st = subTasks.prev())
+   TaskListIterator tli(t->getSubListIterator());
+   for (tli.toLast(); *tli != 0; --tli)
    {
       // qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
-      if( st->getParent() == t )
-	 addTask( ktv, st );
+      if( (*tli)->getParent() == t )
+	 addTask( ktv, *tli );
       // qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
    }
    // qDebug( "END: Subpackages for "+ t->getId());

@@ -19,61 +19,9 @@
 
 #include "CoreAttributes.h"
 #include "AccountList.h"
+#include "TransactionList.h"
 
-class Task;
-class TransactionList;
 class Interval;
-
-/**
- * @short Stores all transaction related infromation.
- * @author Chris Schlaeger <cs@suse.de>
- */
-class Transaction
-{
-	friend class TransactionList;
-public:
-	Transaction(time_t d, double a, const QString& descr)
-		: date(d), amount(a), description(descr) { }
-	~Transaction() { }
-
-	time_t getDate() { return date; }
-	double getAmount() { return amount; }
-	const QString& getDescription() { return description; }
-
-private:
-	Transaction() { } 	// dont use this
-	/// The moment when the transaction happened.
-	time_t date;
-	/// The amount deposited or withdrawn.
-	double amount;
-	/// A short description of the transaction purpose
-	QString description;
-} ;
-
-/**
- * @short A list of transactions.
- * @author Chris Schlaeger <cs@suse.de>
- */
-class TransactionList : public QPtrList<Transaction>
-{
-public:
-	TransactionList() { }
-	~TransactionList() { }
-protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-} ;
-
-/**
- * @short Iterator for TransactionList objects.
- * @author Chris Schlaeger <cs@suse.de>
- */
-class TransactionListIterator : public QPtrListIterator<Transaction>
-{
-public:
-	TransactionListIterator(const TransactionList& t) :
-		QPtrListIterator<Transaction>(t) {}
-	~TransactionListIterator() { }
-} ;
 
 /**
  * @short Stores all account related information.
@@ -96,20 +44,17 @@ public:
 
 	Account* getParent() const { return (Account*) parent; }
 
-	// Find better way to achive this.
-	virtual AccountList& getSubList() { return (AccountList&) sub; }
-
+	AccountListIterator getSubListIterator() const
+	{
+		return AccountListIterator(sub);
+	}
 	void setKotrusId(const QString& k) { kotrusId = k; }
 	const QString& getKotrusId() const { return kotrusId; }
 
 	void setAcctType(AccountType at) { acctType = at; }
 	AccountType getAcctType() const { return acctType; }
 
-	void credit(Transaction* t)
-	{
-		transactions.inSort(t);
-	}
-
+	void credit(Transaction* t);
 	bool isGroup() const { return !sub.isEmpty(); }
 
 	double getBalance(int sc, time_t d) const;
@@ -121,20 +66,5 @@ private:
 	TransactionList transactions;
 	AccountType acctType;
 } ;
-
-void
-AccountList::addAccount(Account* a)
-{
-	append(a);
-}
-
-Account*
-AccountList::getAccount(const QString& id) const
-{
-	for (AccountListIterator ali(*this); *ali != 0; ++ali)
-		if ((*ali)->getId() == id)
-			return *ali;
-	return 0;
-}
 
 #endif

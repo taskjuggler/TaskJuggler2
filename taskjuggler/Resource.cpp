@@ -124,18 +124,6 @@ Resource::~Resource()
 	MidnightIndex = 0;
 }
 
-ResourceList
-Resource::getSubList() const
-{
-	ResourceList rl;
-	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
-	{
-		qDebug("Copying %s", (*rli)->getId().latin1());
-		rl.append(*rli);
-	}
-	return rl;
-}
-
 void
 Resource::initScoreboard()
 {

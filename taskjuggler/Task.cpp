@@ -94,16 +94,6 @@
 #include "Allocation.h"
 #include "Booking.h"
 
-Task*
-TaskList::getTask(const QString& id)
-{
-	for (TaskListIterator tli(*this); *tli != 0; ++tli)
-		if ((*tli)->getId() == id)
-			return *tli;
-
-	return 0;
-}
-
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		   const QString& f, int l)
 	: CoreAttributes(proj, id_, n, p), file(f), line(l)
@@ -832,7 +822,7 @@ Task::getCalcDuration(int sc) const
 }
 
 double
-Task::getLoad(int sc, const Interval& period, Resource* resource) const
+Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 {
 	double load = 0.0;
 
@@ -850,8 +840,8 @@ Task::getLoad(int sc, const Interval& period, Resource* resource) const
 }
 
 double
-Task::getCredits(int sc, const Interval& period, Resource* resource,
-				 bool recursive)
+Task::getCredits(int sc, const Interval& period, const Resource* resource,
+				 bool recursive) const
 {
 	double credits = 0.0;
 
@@ -1664,16 +1654,6 @@ Task::isActive(int sc, const Interval& period) const
 									scenarios[sc].end));
 }
 
-void
-Task::getSubTaskList(TaskList& tl) const
-{
-	for (TaskListIterator tli(sub); *tli != 0; ++tli)
-	{
-		tl.append(*tli);
-		(*tli)->getSubTaskList(tl);
-	}
-}
-
 bool
 Task::isSubTask(Task* tsk) const
 {
@@ -2042,113 +2022,6 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    }
 
    return( taskElem );
-}
-
-bool
-TaskList::isSupportedSortingCriteria(int sc)
-{
-	switch (sc & 0xFFFF)
-	{
-	case TreeMode:
-	case StartUp:
-	case StartDown:
-	case EndUp:
-	case EndDown:
-	case StatusUp:
-	case StatusDown:
-	case CompletedUp:
-	case CompletedDown:
-	case PrioUp:
-	case PrioDown:
-	case ResponsibleUp:
-	case ResponsibleDown:
-		return TRUE;
-	default:
-		return CoreAttributesList::isSupportedSortingCriteria(sc);
-	}		
-}
-
-int
-TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
-{
-	if (level < 0 || level >= maxSortingLevel)
-		return -1;
-
-	int sc = sorting[level] >> 16;
-	switch (sorting[level] & 0xFFFF)
-	{
-	case TreeMode:
-		if (level == 0)
-			return compareTreeItemsT(this, t1, t2);
-		else
-			return t1->getSequenceNo() == t2->getSequenceNo() ? 0 :
-				t1->getSequenceNo() < t2->getSequenceNo() ? -1 : 1;
-	case StartUp:
-		return t1->scenarios[sc].start == t2->scenarios[sc].start ? 0 :
-			t1->scenarios[sc].start < t2->scenarios[sc].start ? -1 : 1;
-	case StartDown:
-		return t1->scenarios[sc].start == t2->scenarios[sc].start ? 0 :
-			t1->scenarios[sc].start > t2->scenarios[sc].start ? -1 : 1;
-	case EndUp:
-		return t1->scenarios[sc].end == t2->scenarios[sc].end ? 0 :
-			t1->scenarios[sc].end < t2->scenarios[sc].end ? -1 : 1;
-	case EndDown:
-		return t1->scenarios[sc].end == t2->scenarios[sc].end ? 0 :
-			t1->scenarios[sc].end > t2->scenarios[sc].end ? -1 : 1;
-	case StatusUp:
-		return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
-			t1->scenarios[sc].status < t2->scenarios[sc].status ? -1 : 1;
-	case StatusDown:
-		return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
-			t1->scenarios[sc].status > t2->scenarios[sc].status ? -1 : 1;
-	case CompletedUp:
-		return t1->getCompletionDegree(sc) == t2->getCompletionDegree(sc) ? 0 :
-			t1->getCompletionDegree(sc) < t2->getCompletionDegree(sc) ? -1 : 1;
-	case CompletedDown:
-		return t1->getCompletionDegree(sc) == t2->getCompletionDegree(sc) ? 0 :
-			t1->getCompletionDegree(sc) > t2->getCompletionDegree(sc) ? -1 : 1;
-	case PrioUp:
-		if (t1->priority == t2->priority)
-			return 0;
-		else
-			return (t1->priority - t2->priority);
-	case PrioDown:
-		if (t1->priority == t2->priority)
-			return 0;
-		else
-			return (t2->priority - t1->priority);
-	case ResponsibleUp:
-	{
-		QString fn1;
-		t1->responsible->getFullName(fn1);
-		QString fn2;
-		t2->responsible->getFullName(fn2);
-		return - fn1.compare(fn2);
-	}
-	case ResponsibleDown:
-	{
-		QString fn1;
-		t1->responsible->getFullName(fn1);
-		QString fn2;
-		t2->responsible->getFullName(fn2);
-		return fn1.compare(fn2);
-	}
-	default:
-		return CoreAttributesList::compareItemsLevel(t1, t2, level);
-	}		
-}
-
-int
-TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-	Task* t1 = static_cast<Task*>(i1);
-	Task* t2 = static_cast<Task*>(i2);
-
-	int res;
-	for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
-		if ((res = compareItemsLevel(t1, t2, i)) != 0)
-			return res;
-	return res;
 }
 
 #ifdef HAVE_ICAL

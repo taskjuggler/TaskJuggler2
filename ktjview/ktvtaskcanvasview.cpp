@@ -85,16 +85,12 @@ void KTVTaskCanvasView::addTask(Task *t )
    TaskList subTasks;
    subTasks.clear();
 
-   t->getSubTaskList(subTasks);
-   int cnt = subTasks.count();
-   qDebug( "Amount of subtasks: " + QString::number(cnt) );
-
    qDebug( "START: Subpackages for "+ t->getId());
-   for (Task* st = subTasks.first(); st != 0; st = subTasks.next())
+   for (TaskListIterator tli(t->getSubListIterator()); *tli != 0; ++tli)
    {
       // qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
-      if( st->getParent() == t )
-	 addTask( st );
+      if( (*tli)->getParent() == t )
+	 addTask( *tli );
       //qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
    }
    qDebug( "END: Subpackages for "+ t->getId());
