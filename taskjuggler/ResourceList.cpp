@@ -727,20 +727,19 @@ QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 }
 
 
-/* ================================================================================ */
+/* ========================================================================= */
 
 ResourceList::ResourceList()
 {
 }
 
-
 int
-ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
+ResourceList::compareItemsLevel(Resource* r1, Resource* r2, int level)
 {
-	Resource* r1 = static_cast<Resource*>(i1);
-	Resource* r2 = static_cast<Resource*>(i2);
+	if (level > 2)
+		return -1;
 
-	switch (sorting)
+	switch (sorting[level])
 	{
 	case MinEffortUp:
 		return r1->minEffort == r2->minEffort ? 0 :
@@ -763,8 +762,17 @@ ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	case KotrusIdDown:
 		return r1->kotrusId.compare(r2->kotrusId);
 	default:
-		return CoreAttributesList::compareItems(i1, i2);
+		return CoreAttributesList::compareItemsLevel(r1, r2, level);
 	}
+}
+
+int
+ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
+{
+	Resource* r1 = static_cast<Resource*>(i1);
+	Resource* r2 = static_cast<Resource*>(i2);
+
+	return compareItemsLevel(r1, r2, 0);
 }
 
 Resource*

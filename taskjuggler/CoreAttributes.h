@@ -23,7 +23,12 @@ class CoreAttributes;
 class CoreAttributesList : public QPtrList<CoreAttributes>
 {
 public:
-	CoreAttributesList() { sorting = Sequence; }
+	CoreAttributesList()
+   	{
+	   	sorting[0] = Sequence;
+	   	sorting[1] = Sequence;
+	   	sorting[2] = Sequence;
+   	}
 	virtual ~CoreAttributesList();
 
 	enum SortCriteria { Sequence, TreeMode, NameUp, NameDown, FullNameUp,
@@ -37,13 +42,15 @@ public:
 						KotrusIdUp, KotrusIdDown
 	};
 
-	void setSorting(SortCriteria s);
+	void setSorting(SortCriteria s, int level = 0);
 	void createIndex();
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+	virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+								  int level);
 
-	SortCriteria sorting;
+	SortCriteria sorting[3];
 } ;
 
 class CoreAttributes

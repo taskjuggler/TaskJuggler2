@@ -70,6 +70,7 @@ public:
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+	virtual int compareItemsLevel(Account* a1, Account* a2, int level);
 } ;
 
 class Account : public CoreAttributes

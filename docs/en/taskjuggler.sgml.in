@@ -24,28 +24,27 @@ This document describes TaskJuggler version @VERSION@
 
 <chapter><title>Introduction</title>
 <sect1><title>About TaskJuggler</title>
-<para>
-TaskJuggler is a project management tool for Linux and UNIX
-system-based operating systems. Whether you want to plan your
-colleges shifts for the next month or want to build a skyscraper -
-TaskJuggler is the tool for you.
-</para>
-<para>
-Instead of clicking yourself painfully through hundreds of dialog
-boxes you specify your TaskJuggler project in a simple text format.
-You simply list all your tasks with their dependencies and other
-properties. The information is sent through TaskJuggler and you will
-get all sorts of reports in HTML or XML format.
-</para>
-<para>
-TaskJuggler does not only honor the task interdependencies but also
-takes resource constrains and prioritization into account. Using
+
+<para>TaskJuggler is a project management tool for Linux and UNIX
+system-based operating systems. Whether you want to plan your colleges
+shifts for the next month or want to build a skyscraper - TaskJuggler
+is the tool for you.</para>
+
+<para>Instead of clicking yourself painfully through hundreds of
+dialog boxes you specify your TaskJuggler project in a simple text
+format.  You simply list all your tasks with their dependencies and
+other properties. The information is sent through TaskJuggler and you
+will get all sorts of reports in HTML or XML format.</para>
+
+<para>TaskJuggler does not only honor the task interdependencies but
+also takes resource constrains and prioritization into account. Using
 TaskJuggler's powerful filtering and reporting algorithms you can
 create task lists, resource usage tables, status reports, project
-calendars and project accounting statements.
-</para>
+calendars and project accounting statements.</para>
+
 </sect1>
 <sect1><title>Features and Highlights</title>
+
 <para>
 <itemizedlist mark='opencircle'>
 <listitem><para>Automatic scheduling of interdependent tasks with resource
@@ -72,31 +71,31 @@ database.</para>
 <listitem><para>Support for cascaded and nested projects.</para>
 </itemizedlist>
 </para>
+
 </sect1>
 <sect1><title>TaskJuggler on the Web</title>
-<para>
-The official TaskJuggler web page can be found at <ulink
+
+<para>The official TaskJuggler web page can be found at <ulink
 url="http://www.suse.de/~freitag/taskjuggler">
-http://www.suse.de/~freitag/taskjuggler</ulink>.
+http://www.suse.de/~freitag/taskjuggler</ulink>.</para>
+
+<para> Since the developers are mostly busy project managers
+themselves, we have created two forums for users to help each other.
 </para>
-<para>
-Since the developers are mostly busy project managers themselves, we
-have created two forums for users to help each other.
-</para>
-<para>
-The TaskJuggler user mailing list is hosted by <ulink
-url="http://www.suse.de/en">SuSE</ulink>. You can subscribe at
-<ulink url="http://www.suse.de/en/support/mailinglists">
-http://www.suse.de/en/support/mailinglists/</ulink>.
-</para>
-<para>
-The other forum is an IRC channel at <ulink
-url="http://www.openprojects.net">OpenProjects.net</ulink>. The
-channel is called #taskjuggler.
-</para>
+
+<para>The TaskJuggler user mailing list is hosted by <ulink
+url="http://www.suse.de/en">SuSE</ulink>. You can subscribe at <ulink
+url="http://www.suse.de/en/support/mailinglists">
+http://www.suse.de/en/support/mailinglists/</ulink>.</para>
+
+<para>The other forum is an IRC channel at <ulink
+url="http://www.freenode.net">FreeNode.net</ulink>. The
+channel is called #taskjuggler.</para>
+
 </sect1>
 <sect1><title>Change Log</title>
 <sect2><title>Version 1.0.0 (2002-03-14)</title>
+
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -104,8 +103,10 @@ channel is called #taskjuggler.
 
 </itemizedlist>
 </para>
+
 </sect2>
 <sect2><title>Version 1.0.1 (2002-03-15)</title>
+
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -117,8 +118,10 @@ suite.</para>
 
 </itemizedlist>
 </para>
+
 </sect2>
 <sect2><title>Version 1.1 (2002-05-27)</title>
+
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -173,8 +176,10 @@ used when calling TaskJuggler from CGI scripts.</para>
 
 </itemizedlist>
 </para>
+
 </sect2>
 <sect2><title>Version 1.2 (2002-06-17)</title>
+
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -230,8 +235,8 @@ left in a certain task.</para>
 </itemizedlist>
 </sect2>
 <sect2><title>Version 1.3 (2002-07-30)</title>
-<para>
-<itemizedlist mark='opencircle'>
+
+<para> <itemizedlist mark='opencircle'>
 
 <listitem><para>This release features some bigger cleanup changes.
 Some of them do break compatibility with older version of taskjuggler.
@@ -308,8 +313,8 @@ well now.</para></listitem>
 <listitem><para>Fixed HTML code for bookedlight cells. Those were
 redered without background on some browsers.</para></listitem>
 
-</itemizedlist>
-</para>
+</itemizedlist> </para>
+
 </sect2>
 </sect1>
 </chapter>
@@ -328,21 +333,27 @@ http://www.suse.de/~freitag/taskjuggler/</ulink></para>
 <para><itemizedlist mark='opencircle'>
 
 <listitem><para>qt3 &mdash; The <ulink
-url="ftp://ftp.trolltech.com/qt/source"> qt c++ class library</ulink>
-version 3</para>
+url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
+version 3.0 or higher</para>
 
-<listitem><para> gcc 2.95 &mdash; The <ulink
-url="ftp://ftp.gnu.org/gnu"> GNU C compiler</ulink> version 2.95. The
-c++ extensions must be available.</para>
+<listitem><para> GNU Compiler Collection &mdash; We are currently
+using GCC 3.2 to develop TaskJuggler. Since we try to write the code
+platform independant and ANSI standard compliant it should work with
+other compilers as well.</para>
 
 </itemizedlist></para>
 
-<para>This version of TaskJuggler was built and tested on SuSE Linux 8.0 on
+<para>This version of TaskJuggler was built and tested on SuSE Linux 8.1 on
 various hardware platforms.</para>
 
 </sect1>
 <sect1><title>Compilation and Installation</title>
 <para>
+Before compiling TaskJuggler you need to set the
+<computeroutput>QTDIR</computeroutput> environment variable to the
+base directory of your Qt version. This is normally
+<computeroutput>/usr/lib/qt3</computeroutput>.
+
 To compile and install TaskJuggler on your system, type the following 
 in the base directory of the TaskJuggler distribution:
 
@@ -353,82 +364,82 @@ in the base directory of the TaskJuggler distribution:
 </screen>
 
 </para><para>
-Since TaskJuggler uses <computeroutput>autoconf</computeroutput>, you should have no trouble
-compiling it. If you have problems, please report them to the
-TaskJuggler developers mailing list at <ulink
+Since TaskJuggler uses <computeroutput>autoconf</computeroutput>, you
+should have no trouble compiling it. If you have problems, please
+report them to the TaskJuggler developers mailing list at <ulink
 url="mailto:taskjuggler-devel@suse.com">
-taskjuggler-devel@suse.de</ulink> in English.
-</para>
+taskjuggler-devel@suse.de</ulink> in English.</para>
+
 </sect1>
-</chapter>
-<chapter><title>Usage</title>
+</chapter> 
+<chapter><title>Usage</title> 
 <sect1><title>Basics</title>
 
-<para>TaskJuggler uses one or more text files to describe a project. The
-main project should be placed in a file with the
+<para>TaskJuggler uses one or more text files to describe a project.
+The main project should be placed in a file with the
 <computeroutput>.tjp</computeroutput> extension. This main project may
 contain several subprojects. Such subprojects should be placed in
 files with the <computeroutput>.tjsp</computeroutput> extension. These
 subprojects are included in the main project during compile
 time.</para>
 
-</sect1>
+</sect1> 
 <sect1><title> General Usage</title>
 
-<para> TaskJuggler works like a compiler. You provide the source
-files, it computes the contents and creates the output files.  </para>
+<para>TaskJuggler works like a compiler. You provide the source
+files, it computes the contents and creates the output files.</para>
 
-<para> After you created the project description file, have
-TaskJuggler compute and create the output. For example, if you have
-created the <filename>AcSo.tjp</filename> project file. You need to
-send this file to TaskJuggler then: </para>
+<para>Let's say you have a project file called
+<filename>AcSo.tjp</filename>. It contains the tasks of your project
+and their dependencies. To schedule the project and create report
+files you have to ask TaskJuggler to process it.</para>
 
 <para><screen>
 % taskjuggler AcSo.tjp
-</screen>
-</para>
+</screen> </para>
 
 <para>TaskJuggler will try to schedule all tasks with the specified
 conditions and generate the reports that were requested with the <link
 linkend="htmltaskreport">htmltaskreport</link>, <link
 linkend="htmlresourcereport">htmlresourcereport</link> or other report
-attributes in the input file(s).</para>
+attributes in the input file.</para>
 
-<para>Calling TaskJuggler with . as input filename will cause reading from
-stdin. To redirect output to stdout you can specify -- as filename for
-reports. This feature can for example be used to generate dynamic
-html pages from CGI scripts.</para>
-
-</sect1>
+</sect1> 
 <sect1><title> The Command Line Options</title>
 
-<para>To get a list of the command line options of TaskJuggler, use the
-<computeroutput>--help</computeroutput> option:</para>
+<para>To get a list of the command line options of TaskJuggler, use
+the <computeroutput>--help</computeroutput> option:</para>
 
 <para><screen>
 % taskjuggler --help
 </screen></para>
 
-</sect1>
+<para>Calling TaskJuggler with . as input filename will cause reading
+from stdin. To redirect output to stdout you can specify -- as
+filename for reports. This feature can for example be used to generate
+dynamic html pages from CGI scripts.</para>
+
+</sect1> 
 <sect1><title> Reporting Bugs and Sending Feedback</title>
 
-<para>All official releases of TaskJuggler are meant to be stable releases
-unless explicitly noted differently. But our test suite is still very
-small and some features cannot be tested automatically very well. So
-it's very likely that your current version of TaskJuggler contains
-bugs. If you find a bug please follow this procedure:</para>
+<para>All official releases of TaskJuggler are meant to be stable
+releases unless explicitly noted differently. But our test suite is
+still very small and some features cannot be tested automatically very
+well. So it's very likely that your current version of TaskJuggler
+contains bugs. If you find a bug please follow this procedure:</para>
 
 <para><itemizedlist mark='opencircle'>
 
-<listitem><para>Read this manual to make sure that it is actually a bug and not
-a feature.</para>
+<listitem><para>Read this manual to make sure that it is actually a
+bug and not a feature.</para>
 
 <listitem><para>Check the TaskJuggler <ulink
 url="http://www.suse.de/~freitag/taskjuggler">web page</ulink>.
-Possibly the bug was already found and a patch or workaround exists.</para>
+Possibly the bug was already found and a patch or workaround
+exists.</para>
 
-<listitem><para>Try to create a test project that is as small as possible but
-still reproduces the bug.</para>
+<listitem><para>Try to create a test project that is as small as
+possible but still reproduces the bug.</para>
 
 <listitem><para>Send the test project and a detailed description of
 the problem to the developer mailing list at <ulink
@@ -436,7 +447,7 @@ url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</par
 
 </itemizedlist></para>
 
-</sect1>
+</sect1> 
 </chapter>
 <chapter><title>An Example</title>
 

@@ -1716,12 +1716,12 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 }
 
 int
-TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
+TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
 {
-	Task* t1 = static_cast<Task*>(i1);
-	Task* t2 = static_cast<Task*>(i2);
+	if (level > 2)
+		return -1;
 
-	switch (sorting)
+	switch (sorting[level])
 	{
 	case TreeMode:
 	{
@@ -1770,8 +1770,17 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 		return fn1.compare(fn2);
 	}
 	default:
-		return CoreAttributesList::compareItems(i1, i2);
+		return CoreAttributesList::compareItemsLevel(t1, t2, level);
 	}		
+}
+
+int
+TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
+{
+	Task* t1 = static_cast<Task*>(i1);
+	Task* t2 = static_cast<Task*>(i2);
+
+	return compareItemsLevel(t1, t2, 0);
 }
 
 #ifdef HAVE_ICAL

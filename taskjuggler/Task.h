@@ -58,6 +58,7 @@ public:
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
 } ;
 
 typedef QPtrListIterator<TaskList> TaskListIterator;
@@ -66,8 +67,7 @@ typedef QPtrListIterator<TaskList> TaskListIterator;
 
 class Task : public CoreAttributes
 {
-	friend int TaskList::compareItems(QCollection::Item i1,
-									  QCollection::Item i2);
+	friend int TaskList::compareItemsLevel(Task* t1, Task* t2, int level);
 
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,

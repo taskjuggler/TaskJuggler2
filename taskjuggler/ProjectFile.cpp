@@ -13,7 +13,6 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include <qregexp.h>
 
@@ -40,8 +39,8 @@
 	} \
 }
 
-FileInfo::FileInfo(ProjectFile* p, const QString& file_)
-	: pf(p)
+FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp)
+	: pf(p), taskPrefix(tp)
 {
 	tokenTypeBuf = INVALID;
 	file = file_;
@@ -239,8 +238,13 @@ FileInfo::nextToken(QString& token)
 				   (isalnum(c) || (c == '_') || (c == '.') || (c == '!')))
 				token += c;
 			ungetC(c);
-			if (token.contains('!') || token.contains('.'))
-				return RELATIVE_ID;
+			if (token.contains('.'))
+			{
+				if (token[0] == '!')
+					return RELATIVE_ID;
+				else
+					return ABSOLUTE_ID;
+			}
 			else
 				return ID;
 		}
@@ -509,28 +513,20 @@ ProjectFile::ProjectFile(Project* p)
 }
 
 bool
-ProjectFile::open(const QString& file)
+ProjectFile::open(const QString& file, const QString& parentPath,
+				  const QString& taskPrefix)
 {
 	QString absFileName = file;
+	if (debugLevel > 2)
+		qWarning("Requesting to open file %s", file.latin1());
 	if (absFileName[0] != '/')
-	{
-		if (openFiles.isEmpty())
-		{
-			char buf[1024];
-			if (getcwd(buf, 1023) != 0)
-				absFileName = QString(buf) + "/" + absFileName;
-			else
-				qFatal("ProjectFile::open(): getcwd failed");
-		}
-		else
-			absFileName = openFiles.last()->getPath() + absFileName;
-		if (debugLevel > 2)
-			qWarning("Expanded filename to %s", absFileName.latin1());
-	}
+		absFileName = parentPath + absFileName;
+	
+	if (debugLevel > 2)
+		qWarning("File name before compression: %s", absFileName.latin1());
 	int end = 0;
-	while (absFileName.find("/../", end) >= 0)
+	while ((end = absFileName.find("/../", end)) >= 0)
 	{
-		end = absFileName.find("/../");
 		int start = absFileName.findRev('/', end - 1);
 		if (start < 0)
 			start = 0;
@@ -538,8 +534,10 @@ ProjectFile::open(const QString& file)
 			start++;	// move after '/'
 		if (start < end && absFileName.mid(start, end - start) != "..")
 			absFileName.remove(start, end + strlen("/../") - start);
-		end += strlen("/..");
+		end = start - 1;
 	}
+	if (debugLevel > 2)
+		qWarning("File name after compression: %s", absFileName.latin1());
 
 	// Make sure that we include each file only once.
 	if (includedFiles.findIndex(absFileName) != -1)
@@ -550,16 +548,16 @@ ProjectFile::open(const QString& file)
 		return TRUE;
 	}
 		
-	FileInfo* fi = new FileInfo(this, absFileName);
+	if (debugLevel > 2)
+		qWarning("Reading %s", absFileName.latin1());
+
+	FileInfo* fi = new FileInfo(this, absFileName, taskPrefix);
 
 	if (!fi->open())
 	{
 		qFatal("Cannot open '%s'", absFileName.latin1());
 		return FALSE;
 	}
-
-	if (debugLevel > 2)
-		qWarning("Reading %s", absFileName.latin1());
 
 	openFiles.append(fi);
 	includedFiles.append(absFileName);
@@ -575,6 +573,8 @@ ProjectFile::close()
 
 	if (!fi->close())
 		error = TRUE;
+	if (debugLevel > 2)
+		qWarning("Finished file %s", fi->getFile().latin1());
 	openFiles.removeLast();
 
 	return error;
@@ -1055,6 +1055,15 @@ ProjectFile::nextToken(QString& buf)
 	return tt;
 }
 
+const QString&
+ProjectFile::getTaskPrefix()
+{
+	if (openFiles.isEmpty())
+		return QString::null;
+
+	return openFiles.last()->getTaskPrefix();
+}
+
 void
 ProjectFile::fatalError(const char* msg, ...)
 {
@@ -1071,16 +1080,53 @@ ProjectFile::fatalError(const char* msg, ...)
 bool
 ProjectFile::readInclude()
 {
-	QString token;
+	QString fileName;
 
-	if (nextToken(token) != STRING)
+	if (nextToken(fileName) != STRING)
 	{
 		fatalError("File name expected");
 		return FALSE;
 	}
-	if (!open(token))
-		return FALSE;
+	QString token;
+	TokenType tt;
 
+	QString taskPrefix = "";
+	/* The nextToken() call may yield an EndOfFile and shift file scope to
+	 * parent file. So we have to save the path of the current file to pass it
+	 * later to open(). */
+	QString parentPath = openFiles.last()->getPath();
+	
+	if ((tt = nextToken(token)) == LCBRACE)
+	{
+		while ((tt = nextToken(token)) != RCBRACE)
+		{
+			if (tt == ID && token == KW("taskprefix"))
+			{
+				if (nextToken(token) != ID || tt == ABSOLUTE_ID)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				if (!proj->getTask(token))
+				{
+					fatalError("Task prefix must be a known task");
+					return FALSE;
+				}
+				taskPrefix = token + ".";
+			}
+			else
+			{
+				fatalError("Invalid optional attribute \'%s\'", token.latin1());
+				return FALSE;
+			}
+		}
+	}
+	else
+		returnToken(tt, token);
+	
+	if (!open(fileName, parentPath, taskPrefix))
+		return FALSE;
+	
 	return TRUE;
 }
 
@@ -1092,7 +1138,7 @@ ProjectFile::readTask(Task* parent)
 
 	QString id;
 	if ((tt = nextToken(id)) != ID &&
-		(tt != RELATIVE_ID))
+		(tt != ABSOLUTE_ID) && (tt != RELATIVE_ID))
 	{
 		fatalError("ID expected");
 		return FALSE;
@@ -1111,7 +1157,7 @@ ProjectFile::readTask(Task* parent)
 					parent = parent->getParent();
 				else
 				{
-					fatalError("Invalid relative task ID");
+					fatalError("Invalid relative task ID '%s'", id.latin1());
 					return FALSE;
 				}
 				id = id.right(id.length() - 1);
@@ -1142,6 +1188,16 @@ ProjectFile::readTask(Task* parent)
 			}
 		} while (id[0] == '!' || id.find('.') >= 0);
 	}
+	else if (tt == ABSOLUTE_ID)
+	{
+		QString path = getTaskPrefix() + id.left(id.findRev('.', -1));
+		if ((parent = proj->getTask(path)) == 0)
+		{
+			fatalError("Task '%s' has not been defined", path.latin1());
+			return FALSE;
+		}
+		id = id.right(id.length() - id.findRev('.', -1) - 1);
+	}
 
 	QString name;
 	if ((tt = nextToken(name)) != STRING)
@@ -1156,8 +1212,24 @@ ProjectFile::readTask(Task* parent)
 		return FALSE;
 	}
 
+	/*
+	 * If a pointer to a parent task was given, the id of the parent task is
+	 * used as a prefix to the ID of the task. Toplevel task may be prefixed
+	 * by a task prefix as specified by when including a project file.
+	 */
 	if (parent)
 		id = parent->getId() + "." + id;
+	else
+	{
+		QString tp = getTaskPrefix();
+		if (!tp.isEmpty())
+		{
+			// strip trailing '.'
+			tp = tp.left(tp.length() - 1);
+			parent = proj->getTask(tp);
+			id = tp + "." + id;
+		}
+	}
 	
 	// We need to check that the task id has not been declared before.
 	TaskList tl = proj->getTaskList();
@@ -1194,7 +1266,7 @@ ProjectFile::readTaskSupplement(const QString& prefix)
 	TokenType tt;
 	Task* task;
 
-	if (((tt = nextToken(token)) != ID && tt != RELATIVE_ID) ||
+	if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
 		((task = proj->getTask(prefix == "" ?
 							   token : prefix + "." + token)) == 0))
 	{
@@ -1912,8 +1984,8 @@ ProjectFile::readBooking()
 
 	Task* task;
 	TokenType tt;
-	if (((tt = nextToken(token)) != ID && tt != RELATIVE_ID) ||
-		(task = proj->getTask(token)) == 0)
+	if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
+		(task = proj->getTask(getTaskPrefix() + token)) == 0)
 	{
 		fatalError("Task ID expected");
 		return 0;
@@ -2800,7 +2872,7 @@ ProjectFile::readLogicalExpression(int precedence)
 	QString token;
 	TokenType tt;
 
-	if ((tt = nextToken(token)) == ID || tt == RELATIVE_ID)
+	if ((tt = nextToken(token)) == ID || tt == ABSOLUTE_ID)
 	{
 		if (proj->isAllowedFlag(token))
 			op = new Operation(token);

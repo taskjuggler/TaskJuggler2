@@ -13,12 +13,27 @@
 #include "ShiftList.h"
 #include "Project.h"
 
+int 
+ShiftSelectionList::compareItemsLevel(ShiftSelection* s1, ShiftSelection *s2,
+									  int level)
+{
+	if (level > 2)
+		return -1;
+	
+	if (s1->period.compare(s2->period) == 0)
+		return this->compareItemsLevel(s1, s2, level + 1);
+	
+	return s1->period.compare(s2->period);
+}
+
+										  
 int
 ShiftSelectionList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
-	ShiftSelection* r1 = static_cast<ShiftSelection*>(i1);
-	ShiftSelection* r2 = static_cast<ShiftSelection*>(i2);
-	return r1->period.compare(r2->period);
+	ShiftSelection* s1 = static_cast<ShiftSelection*>(i1);
+	ShiftSelection* s2 = static_cast<ShiftSelection*>(i2);
+
+	compareItemsLevel(s1, s2, 0);
 }
 
 bool

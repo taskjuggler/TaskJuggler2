@@ -26,7 +26,9 @@ class ShiftList : public CoreAttributesList
 public:
 	ShiftList()
 	{
-		sorting = IndexUp;
+		sorting[0] = IndexUp;
+		sorting[1] = Sequence;
+		sorting[2] = Sequence;
 	}
 	~ShiftList() { }
 
@@ -88,12 +90,15 @@ public:
 
 private:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+	virtual int compareItemsLevel(ShiftSelection* s1, ShiftSelection* s2,
+								  int level);
 };
 
 class ShiftSelection
 {
-	friend int ShiftSelectionList::compareItems(QCollection::Item i1,
-											   QCollection::Item i2);
+	friend int ShiftSelectionList::compareItemsLevel(ShiftSelection* s1,
+													 ShiftSelection* s2,
+													 int level);
 public:
 	ShiftSelection(const Interval& p, Shift* s) : period(p), shift(s) { }
 	~ShiftSelection() { }

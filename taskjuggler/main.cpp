@@ -11,6 +11,7 @@
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <qapplication.h>
 #include <qglobal.h>
@@ -95,11 +96,14 @@ int main(int argc, char *argv[])
 
 	bool parseErrors = FALSE;
 
+	char cwd[1024];
+	if (getcwd(cwd, 1023) == 0)
+		qFatal("main(): getcwd failed");
 	for ( ; i < argc; i++)
 	{
 		ProjectFile* pf = new ProjectFile(&p);
 		pf->setDebugLevel(debugLevel);
-		if (!pf->open(a.argv()[i]))
+		if (!pf->open(a.argv()[i], QString(cwd) + "/", ""))
 			return (-1);
 		parseErrors = !pf->parse();
 	}

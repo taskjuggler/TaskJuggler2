@@ -109,12 +109,13 @@ public:
 
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+	virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
 } ;
 
 class Resource : public CoreAttributes
 {
-	friend int ResourceList::compareItems(QCollection::Item i1,
-					      QCollection::Item i2);
+	friend int ResourceList::compareItemsLevel(Resource* r1, Resource* r2,
+											   int level);
 public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource();
