@@ -28,8 +28,9 @@
 #include "HTMLAccountReport.h"
 #include "ExportReport.h"
 #include "ReportXML.h"
+#ifdef HAVE_KDE
 #include "ReportICal.h"
-
+#endif
 class Kotrus;
 
 class Project
@@ -136,7 +137,9 @@ public:
 	ulong getScheduleGranularity() const { return scheduleGranularity; }
 
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
+#ifdef HAVE_KDE
         void addICalReport( ReportICal *ic ) { icalReport = ic; }
+#endif
    
 	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
 
@@ -258,7 +261,9 @@ private:
 	TaskList activeAlap;
 
 	ReportXML* xmlreport;
+#ifdef HAVE_KDE
         ReportICal *icalReport;
+#endif
    
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;

@@ -301,9 +301,10 @@ Project::generateReports()
 
 	if( xmlreport )
 	   xmlreport->generate();
-
+#ifdef HAVE_KDE
 	if( icalReport )
 	   icalReport->generate();
+#endif
 }
 
 bool

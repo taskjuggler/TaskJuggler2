@@ -11,7 +11,7 @@ SOURCES = main.cpp
 DTDFILE = taskjuggler.dtd
 INTERFACES = 
 TRANSLATIONS = 
-KDE_OPTIONS = qtonly
+# KDE_OPTIONS = qtonly
 taskjuggler_LDADD   =  $(LIB_QT) $(LIBSOCKET)
 CXXFLAGS = -Wall -g
 
@@ -23,7 +23,7 @@ INCLUDES= $(all_includes) $(kde_includes) -I/space/projects/
 taskjuggler_METASOURCES = AUTO
 
 # the library search path. 
-taskjuggler_LDFLAGS = $(all_libraries) -lkcal
+taskjuggler_LDFLAGS = $(all_libraries) 
 
 # them while "make clean", use CLEANFILES
 DISTCLEANFILES = $(taskjuggler_METASOURCES)

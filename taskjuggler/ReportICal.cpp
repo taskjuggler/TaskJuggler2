@@ -9,7 +9,7 @@
  *
  * $Id$
  */
-
+#ifdef HAVE_KDE
 #include <qfile.h>
 #include <config.h>
 #include <libkcal/calendarlocal.h>
@@ -85,4 +85,4 @@ KCal::Todo* ReportICal::addATask( Task *task, KCal::CalendarLocal *cal )
    return( todo );
 }
 
-
+#endif
