@@ -34,7 +34,7 @@ TaskJuggler_client_SOURCES = TaskJuggler_client.cpp
 METASOURCES = AUTO
 
 messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/taskjuggler.pot
+	$(XGETTEXT) *.cpp -o $(podir)/TaskJuggler.pot
 
 KDE_ICON = taskjuggler
 
