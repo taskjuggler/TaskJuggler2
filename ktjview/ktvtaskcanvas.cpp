@@ -33,7 +33,7 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *na
       
    m_start = 0;
    m_end = 0;
-   // setDoubleBuffering( false );
+   setDoubleBuffering( false );
    resize( 100, 100);
 }
 
@@ -115,8 +115,13 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    QBrush weekEndBrush( QColor(255,255,170));
    QBrush weekDayBrush( gray );
 
-   // qDebug( "Clip %d %d - %d x %d", clip.x(), clip.y(), clip.width(), clip.height() );
-   
+   qDebug( "Clip %d %d - %d x %d is %s",
+	   clip.x(), clip.y(), clip.width(), clip.height(),
+	   painter.hasClipping()? "on": "off");
+
+   qDebug( "Drawing: %d -", clip.bottom() );
+   if( !painter.hasClipping() )
+      painter.setClipRect( clip );
    int x = 0;
    int y = clip.top() > topOffset() ? clip.top(): topOffset();
 
@@ -131,8 +136,8 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
       {
 	 /* Colorize Weekend */
 	 painter.setBrush( weekEndBrush);
-	 painter.drawRect( x,y,
-			   m_dayWidth, clip.height()+1);
+	 painter.drawRect( x, y,
+			   m_dayWidth, clip.bottom()+1);
       }
       else
       {
@@ -147,7 +152,8 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
       x += m_dayWidth;
    }   
    painter.setBrush( origBrush );
-   
+   setChanged( clip );
+   painter.setClipping( false );
 }
 
 
