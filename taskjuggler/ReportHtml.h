@@ -88,8 +88,7 @@ public:
 	void reportLoad(double load, const QString& bgcol, bool bold);
 	void reportPIDs(const QString& pids, const QString bgCol, bool bold);
 
-	void planSchedule(Resource* r, Task* t);
-	void actualSchedule(Resource* r, Task* t);
+	void generateSchedule(int sc, Resource* r, Task* t);
 
 	void flagList(CoreAttributes* c1, CoreAttributes* c2);
 

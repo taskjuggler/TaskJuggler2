@@ -5,12 +5,21 @@ task t1 "Task1" {
 	
 	task s1 "Sub1" {
 		length 1d
-		precedes !!t2
+		depends !!t3.s1
 	}
 }
 
 task t2 "Task2" {
-  length 1d
 	depends !t1
+	task s1 "Sub1" {
+		length 1d
+	}
+}
+
+task t3 "Task3" {
+	task s1 "Sub1" {
+		length 1d
+		depends !!t2
+	}
 }
 

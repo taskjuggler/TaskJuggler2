@@ -22,6 +22,8 @@ public:
 	LoopDetectorInfo(Task* _t, bool ae) : t(_t), atEnd(ae) { }
 	~LoopDetectorInfo() { }
 
+	enum FromWhere { fromParent, fromSub, fromPrev, fromSucc, fromOtherEnd };
+
 	bool operator==(const LoopDetectorInfo& ldi) const
 	{
 		return t == ldi.t && atEnd == ldi.atEnd;

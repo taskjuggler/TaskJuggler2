@@ -333,4 +333,20 @@ be used as sorting criteria as well. </para></listitem>
 </itemizedlist> </para>
 
 </sect2>
+<sect2><title>Next Version (Some Day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Another redo of the loop detector. Now checking tasks
+not only forward, but also backwards. No enough specified task
+boundaries are no longer detected, since they are flagged with missing
+start/end messages after the scheduler run.</para></listitem>
+
+<listitem><para>Broken HTML table when
+<computeroutput>schedule</computeroutput> was used with
+<computeroutput>showactual</computeroutput> fixed.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

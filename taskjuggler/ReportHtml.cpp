@@ -413,7 +413,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r, uint no)
 		else if (*it == KW("follows"))
 			generateFollows(t, r != 0);
 		else if (*it == KW("schedule"))
-			planSchedule(r, t);
+			emptyPlan(r != 0);
 		else if (*it == KW("mineffort"))
 			emptyPlan(r != 0);
 		else if (*it == KW("maxeffort"))
@@ -516,8 +516,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  t->getCredits(Task::Actual,
 												Interval(start, end), r)),
-				r != 0,
-				"right");
+				r != 0, "right");
 		if (*it == KW("daily"))
 			dailyTaskActual(t, r);
 		else if (*it == KW("weekly"))
@@ -591,7 +590,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 		else if (*it == KW("follows"))
 			emptyPlan(t != 0);
 		else if (*it == KW("schedule"))
-				planSchedule(r, t);
+			generateSchedule(Task::Plan, r, t);
 		else if (*it == KW("mineffort"))
 			textTwoRows(QString().sprintf("%.2f", r->getMinEffort()), t != 0,
 						"right");
@@ -611,8 +610,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t, uint no)
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
 								  r->getCredits(Task::Plan,
 											   	Interval(start, end), t)),
-				t != 0,
-				"right");
+				t != 0, "right");
 		else if (*it == KW("priority"))
 			emptyPlan(t != 0);
 		else if (*it == KW("flags"))
@@ -646,10 +644,7 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 			  << "</td>" << endl;
 		}
 		else if (*it == KW("schedule"))
-		{
-			if (t != 0)
-				actualSchedule(r, t);
-		}
+			generateSchedule(Task::Actual, r, t);
 		else if (*it == KW("costs"))
 			textOneRow(
 				QString().sprintf("%.*f", project->getCurrencyDigits(),
@@ -1617,7 +1612,7 @@ ReportHtml::generateResponsibilities(Resource*r, bool light)
 }
 
 void
-ReportHtml::planSchedule(Resource* r, Task* t)
+ReportHtml::generateSchedule(int sc, Resource* r, Task* t)
 {
 	s << "<td class=\""
 	  << (t == 0 ? "default" : "defaultlight") 
@@ -1625,14 +1620,14 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 
 	if (r)
 	{
-		BookingList planJobs = r->getJobs(Task::Plan);
-		planJobs.setAutoDelete(TRUE);
+		BookingList jobs = r->getJobs(sc);
+		jobs.setAutoDelete(TRUE);
 		time_t prevTime = 0;
 		Interval reportPeriod(start, end);
 		s << "<table style=\"width:150px; font-size:100%; "
 		   "text-align:left\"><tr><th style=\"width:35%\"></th>"
 		   "<th style=\"width:65%\"></th></tr>" << endl;
-		for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
+		for (Booking* b = jobs.first(); b != 0; b = jobs.next())
 		{
 			if ((t == 0 || t == b->getTask()) && 
 				reportPeriod.overlaps(Interval(b->getStart(), b->getEnd())))
@@ -1667,57 +1662,6 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 		s << "&nbsp;";
 
 	s << "</td>" << endl;
-}
-
-void
-ReportHtml::actualSchedule(Resource* r, Task* t)
-{
-	s << "<td class=\""
-	  << (t == 0 ? "default" : "defaultlight") 
-	  << "\" style=\"text-align:left\">";
-
-	if (r)
-	{
-		BookingList actualJobs = r->getJobs(Task::Actual);
-		actualJobs.setAutoDelete(TRUE);
-		time_t prevTime = 0;
-		Interval reportPeriod(start, end);
-		s << "<table style=\"width:150px; font-size:100%; "
-		   "text-align:left\"><tr><th style=\"width:35%\"></th>"
-		   "<th style=\"width:65%\"></th></tr>" << endl;
-		for (Booking* b = actualJobs.first(); b != 0; b = actualJobs.next())
-		{
-			if ((t == 0 || t == b->getTask()) && 
-				reportPeriod.overlaps(Interval(b->getStart(), b->getEnd())))
-			{
-				/* If the reporting interval is not more than a day, we
-				 * do not print the day since this information is most
-				 * likely given by the context of the report. */
-				if (!isSameDay(prevTime, b->getStart()) &&
-					!isSameDay(start, end - 1))
-				{
-					s << "<tr><td colspan=\"2\" style=\"font-size:120%\">"
-						<< time2weekday(b->getStart()) << ", "
-						<< time2date(b->getStart()) << "</td></tr>" << endl;
-				}
-				s << "<tr><td>";
-				Interval workPeriod(b->getStart(), b->getEnd());
-				workPeriod.overlap(reportPeriod);
-				s << time2user(workPeriod.getStart(), shortTimeFormat)
-				   	<< "&nbsp;-&nbsp;"
-					<< time2user(workPeriod.getEnd() + 1, shortTimeFormat);
-				s << "</td><td>";
-				if (t == 0)
-					s << " " << htmlFilter(b->getTask()->getName());
-				s << "</td>" << endl;
-				prevTime = b->getStart();
-				s << "</tr>" << endl;
-			}
-		}
-		s << "</table>" << endl;
-	}
-	else
-		s << "&nbsp;";
 }
 
 void

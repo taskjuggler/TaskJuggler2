@@ -200,12 +200,9 @@ Task::fatalError(const char* msg, ...) const
 void
 Task::schedule(time_t& date, time_t slotDuration)
 {
-	// Task is already scheduled.
+	// Has the task been scheduled already or is it a container?
 	if (schedulingDone || !sub.isEmpty())
-	{
-		//qFatal("Task %s is already scheduled", id.latin1());
 		return;
-	}
 
 	if (DEBUGTS(15))
 		qWarning("Trying to schedule %s at %s",
@@ -576,7 +573,7 @@ Task::bookResources(time_t date, time_t slotDuration)
 	{
 		/* If a shift has been defined for a resource for this task, there
 		 * must be a shift interval defined for this day and the time must
-		 * lie within the working hours of that shift. */
+		 * be within the working hours of that shift. */
 		if (!a->isOnShift(Interval(date, date + slotDuration - 1)))
 		{
 			if (DEBUGRS(15))
@@ -625,7 +622,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 			addBookedResource(rit);
 
 			/* Move the start date to make sure that there is
-			 * some work going on on the start date. */
+			 * some work going on at the start date. */
 			if (!workStarted)
 			{
 				if (scheduling == ASAP)
@@ -978,6 +975,38 @@ Task::implicitXRef()
 }
 
 bool
+Task::hasYoungerBrother()
+{
+	bool previousHasSameParent = FALSE;
+	int previousIndex = previous.at();
+	for (Task* p = previous.first(); 
+		 p && !previousHasSameParent;
+		 p = previous.next())
+	{
+		if (parent == p->parent)
+			previousHasSameParent = TRUE;
+	}
+	previous.at(previousIndex);
+	return previousHasSameParent;
+}
+
+bool
+Task::hasOlderBrother()
+{
+	bool followerHasSameParent = FALSE;
+	int followersIndex = followers.at();
+	for (Task* f = followers.first(); 
+		 f && !followerHasSameParent;
+		 f = followers.next())
+	{
+		if (parent == f->parent)
+			followerHasSameParent = TRUE;
+	}
+
+	followers.at(followersIndex);
+	return followerHasSameParent;
+}
+bool
 Task::loopDetector()
 {
 	/* Only check top-level tasks. All other tasks will be checked then as
@@ -986,11 +1015,18 @@ Task::loopDetector()
 		return FALSE;
 	if (DEBUGPF(2))
 		qWarning("Running loop detector for task %s", id.latin1());
-	return loopDetection(LDIList(), FALSE, FALSE, FALSE);
+	// Check ASAP tasks
+	if (loopDetection(LDIList(), FALSE, LoopDetectorInfo::fromParent))
+		return TRUE;
+	// Check ALAP tasks
+	if (loopDetection(LDIList(), TRUE, LoopDetectorInfo::fromParent))
+		return TRUE;
+	return FALSE;
 }
 
 bool
-Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
+Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
+					caller)
 {
 	if (DEBUGPF(10))
 		qWarning("%sloopDetection at %s (%s)",
@@ -1030,13 +1066,14 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 	 * that we do not follow the arcs in the direction that precedes and
 	 * depends points us. Parent/Child relationships also specify a
 	 * dependency. The scheduling mode of the child determines the direction
-	 * of the flow. With help of the 'fromSub' parameter we make sure that we
+	 * of the flow. With help of the 'caller' parameter we make sure that we
 	 * only visit childs if we were referred to the task by a non-parent-child
 	 * relationship. */
 	if (!atEnd)
 	{
 		CoreAttributesList subCopy = sub;
-		if (!fromSub)
+		if (caller == LoopDetectorInfo::fromPrev ||
+			caller == LoopDetectorInfo::fromParent)
 			/* If we were not called from a sub task we check all sub tasks.*/
 			for (Task* t = (Task*) subCopy.first(); t;
 				 t = (Task*) subCopy.next())
@@ -1046,7 +1083,8 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 							 QString().fill(' ', list.count()).latin1(),
 							 t->getId().latin1(),
 							 id.latin1());
-				if (t->loopDetection(list, FALSE, FALSE, TRUE))
+				if (t->loopDetection(list, FALSE,
+									 LoopDetectorInfo::fromParent))
 					return TRUE;
 			}
 		
@@ -1058,50 +1096,45 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 				qWarning("%sChecking end of task %s",
 						 QString().fill(' ', list.count()).latin1(),
 						 id.latin1());
-			if (loopDetection(list, TRUE, FALSE, FALSE))
+			if (loopDetection(list, TRUE, LoopDetectorInfo::fromOtherEnd))
 				return TRUE;
 		}
-		if (parent && !fromParent)
+		if (caller == LoopDetectorInfo::fromSub ||
+			caller == LoopDetectorInfo::fromOtherEnd || 
+			(caller == LoopDetectorInfo::fromPrev && scheduling == ALAP))
 		{
-			/* If the current task and all directly preceeding tasks have not
-			 * the same ancestor, we can check the parent from here. */
-			bool previousHasSameAncestor = FALSE;
-			CoreAttributesList previousCopy = previous;
-			for (Task* t = (Task*) previousCopy.first(); t;
-				 t = (Task*) previousCopy.next())
-			{
-				if (hasSameAncestor(t))
-					previousHasSameAncestor = TRUE;
-			}
-			if (!previousHasSameAncestor)
+			if (parent)
 			{
 				if (DEBUGPF(15))
 					qWarning("%sChecking parent task of %s",
 							 QString().fill(' ', list.count()).latin1(),	
 							 id.latin1());		
-				if (getParent()->loopDetection(list, FALSE, TRUE, FALSE))
+				if (getParent()->loopDetection(list, FALSE,
+											   LoopDetectorInfo::fromSub))
 					return TRUE;
 			}
+			
+			/* Now check all previous tasks that had explicit precedes on this
+			 * task. */
+			CoreAttributesList previousCopy = previous;
+			for (Task* t = (Task*) previousCopy.first(); t;
+				 t = (Task*) previousCopy.next())
+				if (t->precedes.find(this) != -1)
+				{
+					if (DEBUGPF(15))
+						qWarning("%sChecking previous %s of task %s",
+								 QString().fill(' ', list.count()).latin1(),
+								 t->getId().latin1(), id.latin1());
+					if(t->loopDetection(list, TRUE, LoopDetectorInfo::fromSucc))
+						return TRUE;
+				}
 		}
-		/* Now check all previous tasks that had explicit precedes on this
-		 * task. */
-		CoreAttributesList previousCopy = previous;
-		for (Task* t = (Task*) previousCopy.first(); t;
-			 t = (Task*) previousCopy.next())
-			if (t->precedes.find(this) != -1)
-			{
-				if (DEBUGPF(15))
-					qWarning("%sChecking previous %s of task %s",
-							 QString().fill(' ', list.count()).latin1(),
-							 t->getId().latin1(), id.latin1());
-				if(t->loopDetection(list, TRUE, FALSE, FALSE))
-					return TRUE;
-			}
 	}
 	else
 	{
 		CoreAttributesList subCopy = sub;
-		if (!fromSub)
+		if (caller == LoopDetectorInfo::fromSucc ||
+			caller == LoopDetectorInfo::fromParent)
 			/* If we were not called from a sub task we check all sub tasks.*/
 			for (Task* t = (Task*) subCopy.first(); t;
 				 t = (Task*) subCopy.next())
@@ -1110,7 +1143,8 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 					qWarning("%sChecking sub task %s of %s",
 							 QString().fill(' ', list.count()).latin1(),	
 							 t->getId().latin1(), id.latin1());
-				if (t->loopDetection(list, TRUE, FALSE, TRUE))
+				if (t->loopDetection(list, TRUE,
+									 LoopDetectorInfo::fromParent))
 					return TRUE;
 			}
 		
@@ -1122,45 +1156,40 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 				qWarning("%sChecking start of task %s",
 						 QString().fill(' ', list.count()).latin1(),	
 						 id.latin1());
-			if (loopDetection(list, FALSE, FALSE, FALSE))
+			if (loopDetection(list, FALSE, LoopDetectorInfo::fromOtherEnd))
 				return TRUE;
 		}
-		if (parent && !fromParent)
+		if (caller == LoopDetectorInfo::fromOtherEnd ||
+			caller == LoopDetectorInfo::fromSub ||
+			(caller == LoopDetectorInfo::fromSucc && scheduling == ASAP))
 		{
-			/* If the current task and all directly following tasks have not
-			 * the same ancestor, we can check the parent from here. */
-			bool followerHasSameAncestor = FALSE;
+			if (parent)
+			{
+				if (DEBUGPF(15))
+					qWarning("%sChecking parent task of %s",
+							 QString().fill(' ', list.count()).latin1(),	
+							 id.latin1());		
+				if (getParent()->loopDetection(list, TRUE,
+											   LoopDetectorInfo::fromSub))
+					return TRUE;
+			}
+
+			/* Now check all following tasks that have explicit depends on this
+			 * task. */
 			CoreAttributesList followersCopy = followers;
 			for (Task* t = (Task*) followersCopy.first(); t;
 				 t = (Task*) followersCopy.next())
-			{
-				if (hasSameAncestor(t))
-					followerHasSameAncestor = TRUE;
-			}
-			if (!followerHasSameAncestor)
-			{
-			   if (DEBUGPF(15))
-				   qWarning("%sChecking parent task of %s",
-							QString().fill(' ', list.count()).latin1(),	
-						   	id.latin1());		
-			   if (getParent()->loopDetection(list, TRUE, TRUE, FALSE))
-				   return TRUE;
-			}
+				if (t->depends.find(this) != -1)
+				{
+					if (DEBUGPF(15))
+						qWarning("%sChecking follower %s of task %s",
+								 QString().fill(' ', list.count()).latin1(),	
+								 t->getId().latin1(), id.latin1());
+					if (t->loopDetection(list, FALSE,
+										 LoopDetectorInfo::fromPrev))
+						return TRUE;
+				}
 		}
-		/* Now check all following tasks that had explicit depends on this
-		 * task. */
-		CoreAttributesList followersCopy = followers;
-		for (Task* t = (Task*) followersCopy.first(); t;
-			 t = (Task*) followersCopy.next())
-			if (t->depends.find(this) != -1)
-			{
-				if (DEBUGPF(15))
-					qWarning("%sChecking follower %s of task %s",
-							 QString().fill(' ', list.count()).latin1(),	
-							 t->getId().latin1(), id.latin1());
-				if (t->loopDetection(list, FALSE, FALSE, FALSE))
-					return TRUE;
-			}
 	}
 
 	if (DEBUGPF(10))
@@ -1225,38 +1254,6 @@ Task::hasEndDependency(int sc)
 			return TRUE;
 	return FALSE;
 }
-#if 0
-bool
-Task::hasActualStartDependency()
-{
-	/* Checks whether the task has a start specification for the actual
-	 * scenario. This can be a fixed plan or actual start time or a dependency
-	 * on another task's end or an implicit dependency on the fixed plan or
-	 * actual start time of a parent task. */
-	if (scenarios[0].start != 0 || scenarios[1].start != 0 ||
-	   	!depends.isEmpty())
-		return TRUE;
-	for (Task* p = getParent(); p; p = p->getParent())
-		if (p->scenarios[0].start != 0 || p->scenarios[1].start != 0)
-			return TRUE;
-	return FALSE;
-}
-
-bool
-Task::hasActualEndDependency()
-{
-	/* Checks whether the task has an end specification for the actual
-	 * scenario. This can be a fixed plan or actual end time or a dependency
-	 * on another task's start or an implicit dependency on the fixed plan or
-	 * actual end time of a parent task. */
-	if (scenarios[0].end != 0 || scenarios[1].end != 0 || !precedes.isEmpty())
-		return TRUE;
-	for (Task* p = getParent(); p; p = p->getParent())
-		if (p->scenarios[0].end != 0 || p->scenarios[1].end != 0)
-			return TRUE;
-	return FALSE;
-}
-#endif
 
 bool
 Task::preScheduleOk()
@@ -1518,8 +1515,10 @@ Task::scheduleOk(int& errors, QString scenario)
 
 	if (start == 0)
 	{
-		fatalError(QString("Task '%1' has no %2 start time.")
-				   .arg(id).arg(scenario.lower()));
+		// Only report this for leaf tasks.
+		if (DEBUGPS(1) || sub.isEmpty())
+			fatalError(QString("Task '%1' has no %2 start time.")
+					   .arg(id).arg(scenario.lower()));
 		errors++;
 		return FALSE;
 	}
@@ -1545,8 +1544,10 @@ Task::scheduleOk(int& errors, QString scenario)
 	}
 	if (end == 0)
 	{
-		fatalError(QString("Task '%1' has no %2 end time.")
-				   .arg(id).arg(scenario.lower()));
+		// Only report this for leaf tasks.
+		if (DEBUGPS(1) || sub.isEmpty())
+			fatalError(QString("Task '%1' has no %2 end time.")
+					   .arg(id).arg(scenario.lower()));
 		return FALSE;
 	}
 	if (end + (milestone ? 1 : 0) < minEnd)
@@ -1636,19 +1637,6 @@ Task::scheduleOk(int& errors, QString scenario)
 	}
 	
 	return TRUE;
-}
-
-bool
-Task::isActive()
-{
-	if (schedulingDone || !sub.isEmpty())
-		return FALSE;
-
-	if ((scheduling == ASAP && start != 0) ||
-		(scheduling == ALAP && end != 0))
-		return TRUE;
-
-	return FALSE;
 }
 
 time_t

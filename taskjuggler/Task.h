@@ -249,8 +249,14 @@ public:
 	bool xRef(QDict<Task>& hash);
 	void implicitXRef();
 	QString resolveId(QString relId);
+
+	bool preScheduleOk();
+	bool scheduleOk(int& errors, QString scenario);
+	bool loopDetector();
+	void computeBuffers();
+	time_t nextSlot(time_t slotDuration);
 	void schedule(time_t& reqStart, time_t duration);
-	bool isScheduled() const { return schedulingDone; }
+//	bool isScheduled() const { return schedulingDone; }
 	void propagateStart(bool safeMode = TRUE);
 	void propagateEnd(bool safeMode = TRUE);
 	void propagateInitialValues();
@@ -265,13 +271,6 @@ public:
 	 *
 	 * @param date specifies the day that should be checked.
 	 */
-	bool scheduleOk(int& errors, QString scenario);
-	bool preScheduleOk();
-	bool loopDetector();
-	bool loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent);
-	void computeBuffers();
-	bool isActive();
-	time_t nextSlot(time_t slotDuration);
 
 	void getSubTaskList(TaskList& tl);
 
@@ -292,11 +291,15 @@ public:
    void loadFromXML( QDomElement& parent, Project *project );
    
 private:
+	bool hasYoungerBrother();
+	bool hasOlderBrother();
+
+	bool loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
+					   caller);
 	bool scheduleContainer(bool safeMode);
 	Task* subFirst() { return (Task*) sub.first(); }
 	Task* subNext() { return (Task*) sub.next(); }
-	bool bookResource(Resource* r, time_t day, time_t duration,
-					  int loadFactor);
+	bool bookResource(Resource* r, time_t day, time_t duration, int loadFactor);
 	bool bookResources(time_t day, time_t duration);
 	void addBookedResource(Resource* r)
 	{

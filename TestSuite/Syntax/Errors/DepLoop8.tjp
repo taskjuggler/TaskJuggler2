@@ -1,19 +1,25 @@
 project prj "Loop Detector Test" "$Id" 2000-01-01 2000-01-04
 
 task t1 "Task1" {
-	start 2000-01-01
+	end 2000-01-04
 	
 	task s1 "Sub1" {
-		start 2000-01-02
-		precedes !!t2
-		scheduling asap
+		length 1d
+		preceeds !!t3.s1
 	}
 }
 
 task t2 "Task2" {
+	preceeds !t1
 	task s1 "Sub1" {
 		length 1d
-		depends !!t1
+	}
+}
+
+task t3 "Task3" {
+	task s1 "Sub1" {
+		length 1d
+		preceeds !!t2
 	}
 }
 
