@@ -115,21 +115,18 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    QBrush weekEndBrush( QColor(255,255,170));
    QBrush weekDayBrush( gray );
 
-   qDebug( "Clip %d %d - %d x %d is %s",
-	   clip.x(), clip.y(), clip.width(), clip.height(),
-	   painter.hasClipping()? "on": "off");
+   // qDebug( "Clip %d %d - %d x %d is %s",
+   //	   clip.x(), clip.y(), clip.width(), clip.height(),
+   // 	   painter.hasClipping()? "on": "off");
 
-   qDebug( "Drawing: %d -", clip.bottom() );
-   if( !painter.hasClipping() )
-      painter.setClipRect( clip );
    int x = 0;
-   int y = clip.top() > topOffset() ? clip.top(): topOffset();
+   int y = clip.top() > topOffset() ? clip.top()-1: topOffset();
 
    /* wind to start of the clipping area */
    while ( x < clip.left() ) 
       x += m_dayWidth;
    x -= m_dayWidth;
-   while ( x < clip.right() )
+   while ( x <= clip.right() )
    {
       drawDayHead( x, painter );
       if( isWeekend( timeFromX(x) ) )
@@ -137,7 +134,8 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
 	 /* Colorize Weekend */
 	 painter.setBrush( weekEndBrush);
 	 painter.drawRect( x, y,
-			   m_dayWidth, clip.bottom()+1);
+			   m_dayWidth, clip.height()+2);
+
       }
       else
       {
@@ -146,7 +144,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
       
 	 QPen p1 ( black, 0 );
 	 painter.setPen( p1 );
-	 painter.drawLine( x, y , x, clip.bottom());
+	 painter.drawLine( x, y , x, y+clip.height()+2);
       }
       /* Do drawing */
       x += m_dayWidth;
