@@ -234,7 +234,7 @@ QStringList ResUsageView::getColumnLabels() const
     switch ( m_scale )
     {
     case SC_DAY:
-        format = "%d/%m/%y";
+        format = "%x";
         break;
     case SC_WEEK:
         format = "%V/%Y";
@@ -255,8 +255,8 @@ QStringList ResUsageView::getColumnLabels() const
     time_t tmp = m_start.toTime_t();
     time_t tmpEnd = m_end.toTime_t();
 
-    kdDebug() << "getColumnLabels: m_scale: " << m_scale <<
-        " , delta: " << delta << " , start: " << tmp << ", end: " << tmpEnd << endl;
+    //kdDebug() << "getColumnLabels: m_scale: " << m_scale << " , delta: " << delta <<
+    //" , start: " << tmp << ", end: " << tmpEnd << endl;
 
     while ( tmp <= tmpEnd )
     {
