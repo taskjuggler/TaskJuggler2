@@ -39,6 +39,7 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
       m_header(0L),
       m_table(0L),
       m_weekStartMon( true ),
+      m_doTableMove(true),
       m_timeDialog(0L)
 {
     m_table  = new KTVTaskTable( this, "TABLE");
@@ -63,17 +64,11 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
     m_table->setCanvasView( m_canvas );
 
     /* synchron y scroll */
-    connect( m_canvas, SIGNAL(scrolledBy(int,int)),
-	     m_table,    SLOT(slScrollTo( int, int ) ));
+    connect( m_canvas, SIGNAL( contentsMoving( int, int )),
+	     this,     SLOT( slCanvasMoved( int, int )));
+    connect( m_table,  SIGNAL( contentsMoving( int, int )),
+	     this,     SLOT( slTableMoved(int, int)));
 
-    connect( m_canvas, SIGNAL(scrolledBy(int,int)),
-             m_header, SLOT( scrollBy(int,int)));
-
-    /* connect scroll info of the table to the canvas */
-    connect( m_table,     SIGNAL(contentsMoving(int,int)),
-	     m_canvas,    SLOT(slTableMoving( int, int ) ));
-
-    
     connect( m_table, SIGNAL(newTaskAdded(Task *, KTVTaskTableItem *)),
 	     m_canvas->canvas(), SLOT(slNewTask(Task *, KTVTaskTableItem *) ));
 
@@ -175,4 +170,26 @@ void KTJGantt::slSetWeekStartsMonday(bool t)
 {
     m_weekStartMon = t;
 }
+
+void KTJGantt::slCanvasMoved( int, int y )
+{
+    /* if the canvas moved, set the table accordingly. */
+    if( m_doTableMove )
+    {
+	m_table->setContentsPos( m_table->contentsX(), y );
+    }
+    else
+    {
+	m_doTableMove = true;
+	m_canvas->updateContents();
+    }
+}
+
+void KTJGantt::slTableMoved( int, int y )
+{
+    m_doTableMove = false;
+    m_canvas->setContentsPos( m_canvas->contentsX(), y );
+    
+}
+
 #include "ktjgantt.moc"

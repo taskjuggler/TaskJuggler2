@@ -310,13 +310,6 @@ void KTVTaskTable::resizeContents( int w, int h )
 
 }
 
-
-void KTVTaskTable::slScrollTo( int, int y )
-{
-   scrollBy( 0, y );
-}
-
-
 int KTVTaskTable::headerHeight()
 {
     int m = header()->height() + m_root->height(); // +2*itemMargin()-1;

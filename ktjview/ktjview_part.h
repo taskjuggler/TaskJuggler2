@@ -67,6 +67,7 @@ private:
 
     KTJGantt *m_gantt;
     Project *m_project;
+    QWidget *m_parentWidget;
 };
 
 #endif // KTJVIEWPART_H

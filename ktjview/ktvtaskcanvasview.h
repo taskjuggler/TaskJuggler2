@@ -67,9 +67,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     void zoomOriginal();
-    void slScrollTo(int, int);
     void clear();
-    void slTableMoving(int, int);
     
 private:
     Project *m_pro;

@@ -9,7 +9,10 @@
  *
  * $Id$
  */
+#include <unistd.h>
+
 #include "ktjview_part.h"
+#include "ktjview.h"
 #include <kshortcut.h>
 #include <kiconloader.h>
 #include <kaccel.h>
@@ -25,13 +28,14 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qmultilineedit.h>
-
+#include <kmessagebox.h>
 #include "ktvtasktable.h"
 #include "ktjgantt.h"
 #include "ktvtaskcanvasview.h"
 
 #include "TjMessageHandler.h"
 #include <kshortcut.h>
+#include "XMLFile.h"
 
 /* Handler for TaskJuggler error messages. */
 TjMessageHandler TJMH(TRUE);
@@ -42,7 +46,9 @@ K_EXPORT_COMPONENT_FACTORY( libktjviewpart, KTjviewPartFactory );
 KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
 			  QObject *parent, const char *name,
 			  const QStringList & /*args*/ )
-    : KParts::ReadOnlyPart(parent, name)
+    : KParts::ReadOnlyPart(parent, name),
+      m_parentWidget( parentWidget )
+    
 {
     // we need an instance
     setInstance( KTjviewPartFactory::instance() );
@@ -99,7 +105,8 @@ KAboutData *KTjviewPart::createAboutData()
     // the non-i18n name here must be the same as the directory in
     // which the part's rc file is installed ('partrcdir' in the
     // Makefile)
-    KAboutData *aboutData = new KAboutData("ktjviewpart", I18N_NOOP("KTjviewPart"), "0.1");
+    KAboutData *aboutData = new KAboutData("ktjviewpart", I18N_NOOP("KTjviewPart"),
+					   KTJVIEW_VERSION /* from ktjview.h */ );
     aboutData->addAuthor("Klaas Freitag", 0, "freitag@kde.org");
     return aboutData;
 }
@@ -112,13 +119,32 @@ bool KTjviewPart::openFile()
         return false;
 
     m_project = new Project();
-    // p->setDebugLevel(3);
-    m_project->loadFromXML( m_file );
 
-    m_gantt->showProject(m_project);
+    XMLFile* xf = new XMLFile(m_project);
 
-    // just for fun, set the status bar
-    emit setStatusBarText( m_url.prettyURL() );
+    char cwd[1024];
+    if (getcwd(cwd, 1023) == 0)
+        qFatal("main(): getcwd() failed");
+
+    if (!xf->readDOM(m_file, QString(cwd) + "/", "", TRUE))
+	exit(EXIT_FAILURE);
+
+    if( ! xf->parse() )
+    {
+	KMessageBox::error( m_parentWidget, i18n("The XML File to read is not valid for Taskjuggler.\n"
+					   "KTJView requires XML from Taskjuggler V. 2.x!"),
+			    i18n("XML Read Error") );
+    }
+    else
+    {
+	m_project->pass2(false);
+	m_gantt->showProject(m_project);
+
+	// just for fun, set the status bar
+	emit setStatusBarText( m_url.prettyURL() );
+    }
+
+    delete xf;
 
     return true;
 }
@@ -129,8 +155,8 @@ void KTjviewPart::slReload()
 
     // FIXME: Delete the project. Project cores if deleted (08/2003) !
     m_gantt->clear();
-    // delete m_project;
-    // m_project = 0;
+    delete m_project;
+    m_project = 0;
     openFile();
 
 }

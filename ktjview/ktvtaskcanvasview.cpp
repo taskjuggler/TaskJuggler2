@@ -45,9 +45,6 @@ KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, KTVHea
     setCanvas( m_canvas );
     (void) new TaskTip( this );
 
-    connect( this, SIGNAL( contentsMoving( int, int )),
-             this, SLOT( slScrollTo( int, int )));
-
     setResizePolicy( QScrollView::Default);
     setVScrollBarMode( QScrollView::AlwaysOn );
 
@@ -167,17 +164,6 @@ void KTVTaskCanvasView::clear()
     }
 }
 
-/*
- * This slot is automating the scrolling synchronisation between the listview
- * and the canvas. To this slot the signal contentsMove of the list is connected,
- * which scrolls automagically.
- */
-void KTVTaskCanvasView::slScrollTo( int x, int y)
-{
-   // qDebug( "Scrolling!");
-   emit scrolledBy( x-contentsX(), y - contentsY() );
-}
-
 
 void KTVTaskCanvasView::contentsMousePressEvent ( QMouseEvent *e )
 {
@@ -185,21 +171,3 @@ void KTVTaskCanvasView::contentsMousePressEvent ( QMouseEvent *e )
     emit canvasClicked( m_header->timeFromX( e->pos().x()));
 }
 
-void KTVTaskCanvasView::slTableMoving( int, int y )
-{
-    qDebug("Table scrolled to y-Pos %d", y );
-    int yOff = 0;
-
-    if( m_suppressScroll )
-    {
-	m_suppressScroll = false;
-	return;
-    }
-    
-    if( m_table )
-	yOff = m_table->rootItemHeight();
-
-    m_suppressScroll = true;
-    setContentsPos( contentsX(), y);
-    
-}

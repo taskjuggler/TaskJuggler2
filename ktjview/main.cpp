@@ -5,9 +5,9 @@
 #include <klocale.h>
 
 static const char *description =
-    I18N_NOOP("A KDE KPart Application");
+    I18N_NOOP("A Taskjuggler data viewer for KDE");
 
-static const char *version = "v0.1";
+static const char *version = KTJVIEW_VERSION;
 
 static KCmdLineOptions options[] =
 {

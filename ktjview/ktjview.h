@@ -18,7 +18,9 @@
 
 #include <kapplication.h>
 #include <kparts/mainwindow.h>
- 
+
+#define KTJVIEW_VERSION "0.2"
+
 class KToggleAction;
 
 /**

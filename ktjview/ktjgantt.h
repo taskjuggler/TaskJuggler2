@@ -72,6 +72,9 @@ protected slots:
     virtual void slCanvasClicked( time_t );
     void slTimeFromDialog();
 
+    void slCanvasMoved( int, int );
+    void slTableMoved( int, int );
+    
 signals:
     void statusBarChange( const QString& );
 
@@ -81,7 +84,7 @@ private:
     KTVTaskTable      *m_table;
 
     bool                m_weekStartMon;
-
+    bool                m_doTableMove;
     time_t              m_start;
     time_t              m_end;
 
