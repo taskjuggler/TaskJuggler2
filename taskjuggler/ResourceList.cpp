@@ -175,7 +175,7 @@ Resource::~Resource()
 void
 Resource::initScoreboard()
 {
-	scoreboard = new (SbBooking*)[sbSize];
+	scoreboard = new SbBooking*[sbSize];
 
 	// First mark all scoreboard slots as unavailable.
 	for (uint i = 0; i < sbSize; i++)

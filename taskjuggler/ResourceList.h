@@ -119,7 +119,7 @@ public:
 	Resource(Project* p, const QString& i, const QString& n, Resource* p);
 	virtual ~Resource();
 
-	virtual char* getType() { return "Resource"; }
+	virtual const char* getType() { return "Resource"; }
 
 	Resource* getParent() const { return (Resource*) parent; }
 

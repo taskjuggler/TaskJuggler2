@@ -12,7 +12,7 @@
 
 #include <config.h>
 #include <stdio.h>
-
+#include <qdom.h>
 #include <qdict.h>
 
 #include "Project.h"
@@ -391,3 +391,61 @@ Project::updateKotrus()
 	return TRUE;
 }
 
+
+bool
+Project::loadFromXML( const QString& inpFile )
+{
+   QDomDocument doc;
+   QFile file( inpFile );
+
+   doc.setContent( &file );
+   qDebug(  "Loading XML " + inpFile );
+
+   QDomElement elemProject = doc.documentElement();
+
+   if( !elemProject.isNull())
+   {
+      parseDomElem( elemProject );
+   }
+   else
+   {
+      qDebug("Empty !" );
+   }
+   return true;
+}
+
+
+void Project::parseDomElem( QDomElement& parentElem )
+{
+   QDomElement elem = parentElem.firstChild().toElement();
+
+   for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
+   {
+      QString tagName = elem.tagName();
+      
+      qDebug(  "elemType: " + tagName );
+      
+      if( tagName == "Task" )
+      {
+	 QString tId = elem.attribute("Id");
+	 Task *t = new Task( this, tId, QString(), 0, QString(), 0 );
+
+	 t->loadFromXML( elem, this  );
+	 addTask( t );
+      }
+      else if( tagName == "Name" )
+      {
+	 setName( elem.text() );
+      }
+      else if( tagName == "Version" )
+	 setVersion( elem.text() );
+      else if( tagName == "Priority" )
+	 setPriority( elem.text().toInt());
+      else if( tagName == "start" )
+	 setStart( elem.text().toLong());
+      else if( tagName == "end" )
+	 setEnd( elem.text().toLong());
+	       
+      // parseDomElem( elem );
+   }
+}

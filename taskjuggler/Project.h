@@ -151,6 +151,10 @@ public:
 	ulong getScheduleGranularity() const { return scheduleGranularity; }
 
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
+
+   bool loadFromXML( const QString& file );
+   void parseDomElem( QDomElement& parentElem );
+   
 #ifdef HAVE_KDE
 	void addICalReport( ReportICal *ic ) { icalReport = ic; }
 #endif
@@ -290,6 +294,8 @@ private:
 	 */
 	TaskList activeAsap;
 	TaskList activeAlap;
+
+   // Task *m_xmlParentTask;
 } ;
 
 #endif

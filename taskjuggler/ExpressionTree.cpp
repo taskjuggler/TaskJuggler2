@@ -118,7 +118,7 @@ Operation::evalFunction(ExpressionTree* et)
 }
 
 QString
-Operation::evalFunctionAsString(ExpressionTree* et)
+Operation::evalFunctionAsString(ExpressionTree* )
 {
 	// There are no functions yet that return a string.
 	return "";
