@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-10 11:25+0200\n"
+"POT-Creation-Date: 2004-08-10 18:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,31 +152,31 @@ msgstr ""
 msgid "Set &timeframe"
 msgstr ""
 
-#: ktjview2.cpp:144
+#: ktjview2.cpp:144 kdgantt/KDGanttViewSubwidgets.cpp:718
 msgid "Scale"
 msgstr ""
 
-#: ktjview2.cpp:146
+#: ktjview2.cpp:146 kdgantt/KDGanttViewSubwidgets.cpp:719
 msgid "Minute"
 msgstr ""
 
-#: ktjview2.cpp:146
+#: ktjview2.cpp:146 kdgantt/KDGanttViewSubwidgets.cpp:720
 msgid "Hour"
 msgstr ""
 
-#: ktjview2.cpp:146
+#: ktjview2.cpp:146 kdgantt/KDGanttViewSubwidgets.cpp:721
 msgid "Day"
 msgstr ""
 
-#: ktjview2.cpp:147
+#: ktjview2.cpp:147 kdgantt/KDGanttViewSubwidgets.cpp:722
 msgid "Week"
 msgstr ""
 
-#: ktjview2.cpp:147
+#: ktjview2.cpp:147 kdgantt/KDGanttViewSubwidgets.cpp:723
 msgid "Month"
 msgstr ""
 
-#: ktjview2.cpp:147
+#: ktjview2.cpp:147 kdgantt/KDGanttViewSubwidgets.cpp:724
 msgid "Auto"
 msgstr ""
 
@@ -276,8 +276,16 @@ msgstr ""
 msgid "to open ..."
 msgstr ""
 
-#: ktjview2.cpp:415 ktjview2.cpp:428
+#: ktjview2.cpp:415 ktjview2.cpp:429
 msgid "&Filter for: %1"
+msgstr ""
+
+#: ktjview2.cpp:417
+msgid "Task list filtered for '%1'"
+msgstr ""
+
+#: ktjview2.cpp:431
+msgid "Resource list filtered for '%1'"
 msgstr ""
 
 #: ktjview2view.cpp:115 ktjview2view.cpp:131 selectDialog.cpp:96
@@ -357,157 +365,156 @@ msgstr ""
 msgid "Jump to task details"
 msgstr ""
 
-#: ktjview2view.cpp:182 kdgantt/KDGanttView.cpp:868
+#: ktjview2view.cpp:180 kdgantt/KDGanttView.cpp:868
 msgid "Printing Time: %1"
 msgstr ""
 
-#: ktjview2view.cpp:222
+#: ktjview2view.cpp:220
 msgid "Loading project"
 msgstr ""
 
-#: ktjview2view.cpp:239
+#: ktjview2view.cpp:237
 msgid "Opening XML project"
 msgstr ""
 
-#: ktjview2view.cpp:246
+#: ktjview2view.cpp:244
 msgid "Parsing XML project"
 msgstr ""
 
-#: ktjview2view.cpp:255
+#: ktjview2view.cpp:253
 msgid "Opening TJP project"
 msgstr ""
 
-#: ktjview2view.cpp:263
+#: ktjview2view.cpp:261
 msgid "Parsing TJP project"
 msgstr ""
 
-#: ktjview2view.cpp:270
+#: ktjview2view.cpp:268
 msgid "This filetype is not supported."
 msgstr ""
 
-#: ktjview2view.cpp:278
+#: ktjview2view.cpp:276
 msgid "Generating cross references"
 msgstr ""
 
-#: ktjview2view.cpp:282
+#: ktjview2view.cpp:280
 msgid "Taskjugggler failed to generate cross references on data structures."
 msgstr ""
 
-#: ktjview2view.cpp:288
+#: ktjview2view.cpp:286
 msgid "Scheduling all scenarios"
 msgstr ""
 
-#: ktjview2view.cpp:292
+#: ktjview2view.cpp:290
 msgid "Taskjugggler failed to schedule the scenarios."
 msgstr ""
 
-#: ktjview2view.cpp:298
+#: ktjview2view.cpp:296
 msgid "Building the views"
 msgstr ""
 
-#: ktjview2view.cpp:314
+#: ktjview2view.cpp:312
 msgid "Successfully loaded project %1"
 msgstr ""
 
-#: ktjview2view.cpp:328
+#: ktjview2view.cpp:326
 msgid "Version: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:329
+#: ktjview2view.cpp:327
 msgid "Currency: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:333
+#: ktjview2view.cpp:331
 msgid "Project start: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:337
+#: ktjview2view.cpp:335
 msgid "Project end: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:340
+#: ktjview2view.cpp:338
 msgid "Report date: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:407 ktjview2view.cpp:423
-msgid ""
-"Task group: %1\n"
-"Start: %2\n"
-"End: %3"
+#: ktjview2view.cpp:361
+#, c-format
+msgid "%1%"
 msgstr ""
 
-#: ktjview2view.cpp:412 ktjview2view.cpp:428 ktjview2view.cpp:462
+#: ktjview2view.cpp:405 ktjview2view.cpp:421
+msgid "<em>Task group: %1</em><br>Start: %2<br>End: %3"
+msgstr ""
+
+#: ktjview2view.cpp:410 ktjview2view.cpp:426 ktjview2view.cpp:460
 msgid "(%1 d)"
 msgstr ""
 
-#: ktjview2view.cpp:443
-msgid ""
-"Milestone: %1\n"
-"Date: %2"
+#: ktjview2view.cpp:441
+msgid "<em>Milestone: %1</em><br>Date: %2"
 msgstr ""
 
-#: ktjview2view.cpp:455
+#: ktjview2view.cpp:453
 msgid ""
-"Task: %1\n"
-"Start: %2\n"
-"End: %3\n"
-"Completion: %4\n"
-"Allocations: %5"
+"<em>Task: %1</em><br>Start: %2<br>End: %3<br>Completion: %4%<br>Allocations: "
+"%5"
 msgstr ""
 
-#: ktjview2view.cpp:653
+#: ktjview2view.cpp:651
 msgid "Not started"
 msgstr ""
 
-#: ktjview2view.cpp:656
+#: ktjview2view.cpp:654
 msgid "In progress (late)"
 msgstr ""
 
-#: ktjview2view.cpp:659
+#: ktjview2view.cpp:657
 msgid "In progress"
 msgstr ""
 
-#: ktjview2view.cpp:662
+#: ktjview2view.cpp:660
 msgid "On time"
 msgstr ""
 
-#: ktjview2view.cpp:665
+#: ktjview2view.cpp:663
 msgid "In progress (early)"
 msgstr ""
 
-#: ktjview2view.cpp:668
+#: ktjview2view.cpp:666
 msgid "Finished"
 msgstr ""
 
-#: ktjview2view.cpp:672
+#: ktjview2view.cpp:670
 msgid "Undefined"
 msgstr ""
 
-#: ktjview2view.cpp:732
+#: ktjview2view.cpp:730 kdgantt/KDGanttViewSubwidgets.cpp:2972
+#: kdgantt/KDGanttViewSubwidgets.cpp:2980
+#: kdgantt/KDGanttViewSubwidgets.cpp:2989
 msgid "Task"
 msgstr ""
 
-#: ktjview2view.cpp:733
+#: ktjview2view.cpp:731
 msgid "Task Group"
 msgstr ""
 
-#: ktjview2view.cpp:734
+#: ktjview2view.cpp:732
 msgid "Milestone"
 msgstr ""
 
-#: ktjview2view.cpp:795
-msgid "Task Link"
+#: ktjview2view.cpp:793
+msgid "<em>Task Link</em>"
 msgstr ""
 
-#: ktjview2view.cpp:795
+#: ktjview2view.cpp:793
 msgid "From: "
 msgstr ""
 
-#: ktjview2view.cpp:807
+#: ktjview2view.cpp:805
 msgid "To: "
 msgstr ""
 
-#: ktjview2view.cpp:859 ktjview2view.cpp:958
+#: ktjview2view.cpp:857 ktjview2view.cpp:956
 msgid "Date Range"
 msgstr ""
 
@@ -857,6 +864,102 @@ msgstr ""
 msgid "Show / hide legend"
 msgstr ""
 
+#: kdgantt/KDGanttViewSubwidgets.cpp:708
+msgid "Zoom"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:709
+msgid "Zoom to 100%"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:710
+msgid "Zoom to fit"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:711
+msgid "Zoom in (x 2)"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:712
+msgid "Zoom in (x 6)"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:713
+msgid "Zoom in (x 12)"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:714
+msgid "Zoom out (x 1/2)"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:715
+msgid "Zoom out (x 1/6)"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:716
+msgid "Zoom out (x 1/12)"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:727
+msgid "Time Format"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:728
+msgid "24 Hour"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:729
+msgid "12 PM Hour"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:730
+msgid "24:00 Hour"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:732
+msgid "Year Format"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:733
+msgid "Four Digit"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:734
+msgid "Two Digit"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:735
+msgid "Two Digit Apostrophe"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:736
+msgid "No Date on Minute/Hour Scale"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:739
+msgid "Grid"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:740
+msgid "Show minor grid"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:741
+msgid "Show major grid"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:742
+msgid "Show no grid"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:743
+msgid "Print"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:773
+msgid "Zoom  "
+msgstr ""
+
 #: kdgantt/KDGanttViewSubwidgets.cpp:2524
 msgid " Legend is hidden"
 msgstr ""
@@ -875,6 +978,50 @@ msgstr ""
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:2695
 msgid "No item Found"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2968
+#: kdgantt/KDGanttViewSubwidgets.cpp:2976
+#: kdgantt/KDGanttViewSubwidgets.cpp:2985
+msgid "Summary"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2970
+#: kdgantt/KDGanttViewSubwidgets.cpp:2978
+#: kdgantt/KDGanttViewSubwidgets.cpp:2987
+msgid "Event"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2975
+msgid "New Root"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2983
+msgid "New Child"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2991
+msgid "New After"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2993
+msgid "As Root"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2995
+msgid "As Child"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2997
+msgid "After"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2999
+msgid "Paste"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:3000
+msgid "Cut Item"
 msgstr ""
 
 #: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
