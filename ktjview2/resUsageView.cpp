@@ -131,7 +131,7 @@ void ResUsageView::assignResources( ResourceList reslist )
         if ( level > 0 )
         {
             QString pad;
-            pad.fill( ' ', level );
+            pad.fill( ' ', 2 * level );
             header.prepend( pad );
         }
         m_rowLabels.append( header );
