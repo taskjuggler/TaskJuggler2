@@ -201,7 +201,6 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 				case TA_DEPENDS:
 					if (t->firstPrevious())
 					{
-						s << "  depends ";
 						bool first = TRUE;
 						for (Task* tp = t->firstPrevious(); tp != 0;
 							 tp = t->nextPrevious())
@@ -211,17 +210,21 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 							CoreAttributes* curr = filteredTaskList.current();
 							if (filteredTaskList.findRef(tp) > -1)
 							{
-								if (!first)
-									s << ", ";
-								else
+								if (first)
+								{
+									s << "  depends ";
 									first = FALSE;
+								}
+								else
+									s << ", ";
 								s << tp->getId();
 							}
 							/* Restore current list item to continue
 							 * iteration. */
 							filteredTaskList.findRef(curr);
 						}
-						s << endl;
+						if (!first)
+							s << endl;
 					}
 					break;
 				default:

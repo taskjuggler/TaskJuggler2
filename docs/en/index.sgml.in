@@ -253,6 +253,17 @@ when TZ environment variable is set.
 
 </itemize>
 
+<sect2>Next Version (Some Day)
+<p>
+<itemize>
+
+<item>Only export references to tasks which are exported in
+ExportReports as well.
+
+<item>Allow supplements of tasks within task definitions.
+
+</itemize>
+
 <sect>Installation
 <p>
 <sect1>Obtaining TaskJuggler 
