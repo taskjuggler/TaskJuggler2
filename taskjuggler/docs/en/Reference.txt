@@ -585,4 +585,10 @@ conflicts with 'show'.
 
 ===============================================================================
 
+kotrusMode <mode>
+mode: STRING
 
+sets the kotrus mode. Valid values are 
+ - 'NoKotrus' for no KoTrus connection
+ - 'XML' for to read from an XML-File (not yet supported)
+ - 'DB' to read from database which must be configured in your taskjugglerrc
