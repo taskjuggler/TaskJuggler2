@@ -61,7 +61,7 @@ public:
 	CoreAttributes* getParent() const { return parent; }
 
 	void addSub(CoreAttributes* c) { sub.append(c); }
-	CoreAttributesList getSubList()  const { return sub; }
+	virtual CoreAttributesList getSubList()  const { return sub; }
 
 	void addFlag(QString flag) { flags.addFlag(flag); }
 	void clearFlag(const QString& flag) { flags.clearFlag(flag); }

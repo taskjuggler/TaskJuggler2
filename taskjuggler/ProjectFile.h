@@ -94,15 +94,17 @@ private:
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
 					  QString* = 0);
 	bool readAccount(Account* parent);
+	bool readCredit(Account* a);
 	bool readAllocate(Task* t);
 	bool readPlanTimeFrame(Task* t, double& d);
 	bool readTimeValue(ulong& value);
 	bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
 	bool readPriority(int& priority);
 	bool readHTMLReport(const QString& reportType);
+	bool readHTMLAccountReport();
 	bool readXMLTaskReport();
 	Operation* readLogicalExpression();
-	bool readSorting(Report* report, bool task);
+	bool readSorting(Report* report, int which);
 	time_t date2time(const QString& date);
 	time_t hhmm2time(const QString& hhmm);
 

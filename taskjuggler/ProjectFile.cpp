@@ -1,7 +1,7 @@
 /*
  * ProjectFile.cpp - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms version 2 of the GNU General Public License as
@@ -654,6 +654,12 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
+			else if (token == "htmlaccountreport")
+			{
+				if (!readHTMLAccountReport())
+					return FALSE;
+				break;
+			}
 			else if( token == "kotrusmode" )
 			{
 			   if( kotrus )
@@ -1145,8 +1151,23 @@ ProjectFile::readAccount(Account* parent)
 		fatalError("String expected");
 		return FALSE;
 	}
+	Account::AccountType acctType;
+	if (parent == 0)
+	{
+		/* Only accounts with no parent can have a type specifier. All
+		 * sub accounts inherit the type of the parent. */
+		QString at;
+		if (nextToken(at) != ID && (at != "cost" || at != "revenue"))
+		{
+			fatalError("Account type 'cost' or 'revenue' expected");
+			return FALSE;
+		}
+		acctType = at == "cost" ? Account::Cost : Account::Revenue;
+	}
+	else
+		acctType = parent->getType();
 
-	Account* a = new Account(proj, id, name, parent);
+	Account* a = new Account(proj, id, name, parent, acctType);
 	if (parent)
 		parent->addSub(a);
 
@@ -1170,15 +1191,10 @@ ProjectFile::readAccount(Account* parent)
 					return FALSE;
 				hasSubAccounts = TRUE;
 			}
-			else if (token == "balance" && !hasSubAccounts)
+			else if (token == "credit")
 			{
-				if (nextToken(token) != REAL)
-				{
-					fatalError("Real value exptected");
+				if (!readCredit(a))
 					return FALSE;
-				}
-				a->setOpeningBalance(token.toDouble());
-				cantBeParent = TRUE;
 			}
 			else if (token == "kotrusid" && !hasSubAccounts)
 			{
@@ -1201,6 +1217,36 @@ ProjectFile::readAccount(Account* parent)
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addAccount(a);
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readCredit(Account* a)
+{
+	QString token;
+
+	if (nextToken(token) != DATE)
+	{
+		fatalError("Date expected");
+		return FALSE;
+	}
+	time_t date = date2time(token);
+
+	QString description;
+	if (nextToken(description) != STRING)
+	{
+		fatalError("String expected");
+		return FALSE;
+	}
+
+	if (nextToken(token) != REAL)
+	{
+		fatalError("Real value expected");
+		return FALSE;
+	}
+	Transaction* t = new Transaction(date, token.toDouble(), description);
+	a->credit(t);
 
 	return TRUE;
 }
@@ -1522,7 +1568,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		}
 		else if (token == "sorttasks")
 		{
-			if (!readSorting(report, TRUE))
+			if (!readSorting(report, 0))
 				return FALSE;
 		}
 		else if (token == "hideresource")
@@ -1543,7 +1589,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		}
 		else if (token == "sortresources")
 		{
-			if (!readSorting(report, FALSE))
+			if (!readSorting(report, 1))
 				return FALSE;
 		}
 		else
@@ -1557,6 +1603,118 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		proj->addHTMLTaskReport((HTMLTaskReport*) report);
 	else
 		proj->addHTMLResourceReport((HTMLResourceReport*) report);
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readHTMLAccountReport()
+{
+	QString token;
+	if (nextToken(token) != STRING)
+	{
+		fatalError("File name expected");
+		return FALSE;
+	}
+	
+	HTMLAccountReport* report;
+	report = new HTMLAccountReport(proj, token, proj->getStart(),
+								   proj->getEnd());
+		
+	TokenType tt;
+	if (nextToken(token) != LCBRACE)
+	{
+		openFiles.last()->returnToken(tt, token);
+		return TRUE;
+	}
+
+	for ( ; ; )
+	{
+		if ((tt = nextToken(token)) == RCBRACE)
+			break;
+		else if (tt != ID)
+		{
+			fatalError("Attribute ID or '}' expected");
+			return FALSE;
+		}
+		if (token == "columns")
+		{
+			report->clearColumns();
+			for ( ; ; )
+			{
+				QString col;
+				if ((tt = nextToken(col)) != ID)
+				{
+					fatalError("Column ID expected");
+					return FALSE;
+				}
+				report->addColumn(col);
+				if ((tt = nextToken(token)) != COMMA)
+				{
+					openFiles.last()->returnToken(tt, token);
+					break;
+				}
+			}
+		}
+		else if (token == "start")
+		{
+			if (nextToken(token) != DATE)
+			{
+				fatalError("Date expected");
+				return FALSE;
+			}
+			report->setStart(date2time(token));
+		}
+		else if (token == "end")
+		{
+			if (nextToken(token) != DATE)
+			{
+				fatalError("Date expected");
+				return FALSE;
+			}
+			report->setEnd(date2time(token));
+		}
+		else if (token == "hideplan")
+		{
+			report->setHidePlan(TRUE);
+		}
+		else if (token == "showactual")
+		{
+			report->setShowActual(TRUE);
+		}
+		else if (token == "accumulate")
+		{
+			report->setAccumulate(TRUE);
+		}
+		else if (token == "hideaccount")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setHideAccount(et);
+		}
+		else if (token == "rollupaccount")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setRollUpAccount(et);
+		}
+		else if (token == "sortaccounts")
+		{
+			if (!readSorting(report, 2))
+				return FALSE;
+		}
+		else
+		{
+			fatalError("Illegal attribute");
+			return FALSE;
+		}
+	}
+
+	proj->addHTMLAccountReport(report);
 
 	return TRUE;
 }
@@ -1624,7 +1782,7 @@ ProjectFile::readLogicalExpression()
 }
 
 bool
-ProjectFile::readSorting(Report* report, bool task)
+ProjectFile::readSorting(Report* report, int which)
 {
 	QString token;
 
@@ -1670,10 +1828,21 @@ ProjectFile::readSorting(Report* report, bool task)
 		return FALSE;
 	}
 
-	if (task)
+	switch (which)
+	{
+	case 0:
 		report->setTaskSorting(sorting);
-	else
+		break;
+	case 1:
 		report->setResourceSorting(sorting);
+		break;
+	case 2:
+		report->setAccountSorting(sorting);
+		break;
+	default:
+		qFatal("readSorting: Unknown sorting attribute");
+		return FALSE;
+	}
 
 	return TRUE;
 }

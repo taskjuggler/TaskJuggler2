@@ -455,15 +455,14 @@ ReportHtml::generateTableHeader()
 }
 
 void
-ReportHtml::htmlDayHeaderDays()
+ReportHtml::htmlDayHeaderDays(bool highlightNow)
 {
 	for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
 	{
 		int dom = dayOfMonth(day);
 		s << "<td class=\"" <<
-			(isSameDay(project->getNow(), day) ? "today" :
-			 isWeekend(day) ? "weekend" :
-			 "headersmall")
+			(highlightNow && isSameDay(project->getNow(), day) ?
+			 "today" : isWeekend(day) ? "weekend" : "headersmall")
 		  << "\"><font size=\"-2\">&nbsp;";
 		if (dom < 10)
 			s << "&nbsp;";
@@ -488,15 +487,15 @@ ReportHtml::htmlDayHeaderMonths()
 }
 
 void
-ReportHtml::htmlWeekHeaderWeeks()
+ReportHtml::htmlWeekHeaderWeeks(bool highlightNow)
 {
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
 		int woy = weekOfYear(week);
 		s << "<td class=\"" <<
-			(isSameWeek(project->getNow(), week) ? "today" :
-			 "headersmall")
+			(highlightNow && isSameWeek(project->getNow(), week) ?
+			 "today" : "headersmall")
 		  << "\"><font size=\"-2\">&nbsp;";
 		if (woy < 10)
 			s << "&nbsp;";
@@ -526,19 +525,20 @@ ReportHtml::htmlWeekHeaderMonths()
 }
 
 void
-ReportHtml::htmlMonthHeaderMonths()
+ReportHtml::htmlMonthHeaderMonths(bool highlightNow)
 {
+	static char* mnames[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+							  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
 	for (time_t month = beginOfMonth(start); month < end;
 		 month = sameTimeNextMonth(month))
 	{
 		int moy = monthOfYear(month);
 		s << "<td class=\"" <<
-			(isSameMonth(project->getNow(), month) ? "today" :
-			 "headersmall")
+			(highlightNow && isSameMonth(project->getNow(), month) ?
+			 "today" : "headersmall")
 		  << "\"><font size=\"-2\">&nbsp;";
-		if (moy < 10)
-			s << "&nbsp;";
-		s << QString().sprintf("%d", moy) << "&nbsp;</font></td>";
+		s << mnames[moy - 1] << "</font></td>";
 	}
 }
 

@@ -26,7 +26,7 @@ HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, time_t s,
 	columns.append("name");
 	columns.append("start");
 	columns.append("end");
-	showActual = FALSE;
+
 	// show all tasks
 	hideTask = new ExpressionTree(new Operation(0));
 	// hide all resources
@@ -57,17 +57,7 @@ HTMLTaskReport::generate()
 	filterTaskList(filteredList, 0);
 	sortTaskList(filteredList);
 
-	// Create a task->index no. dictionary.
-	int i = 1;
-	QDict<int> idxDict;
-	idxDict.setAutoDelete(TRUE);
-	for (Task* t = filteredList.first(); t != 0;
-		 t = filteredList.next(), ++i)
-		idxDict.insert(t->getId(), new int(i));
-
-	i = 1;
-	for (Task* t = filteredList.first(); t != 0;
-		 t = filteredList.next(), ++i)
+	for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
 	{
 		generatePlanTask(t, 0);
 		if (showActual)
@@ -91,15 +81,3 @@ HTMLTaskReport::generate()
 	f.close();
 	return TRUE;
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 /*
  * Account.h - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms version 2 of the GNU General Public License as
@@ -21,27 +21,28 @@
 
 class Task;
 class TransactionList;
+class Interval;
 
 class Transaction
 {
 	friend TransactionList;
 public:
-	Transaction(time_t d, double a, Task* t = 0)
-		: date(d), amount(a) { }
+	Transaction(time_t d, double a, const QString& descr)
+		: date(d), amount(a), description(descr) { }
 	~Transaction() { }
 
 	time_t getDate() { return date; }
 	double getAmount() { return amount; }
-	Task* getTask() { return task; }
+	const QString& getDescription() { return description; }
 
 private:
 	Transaction() { } 	// dont use this
-	// The date when the tansaction happened.
+	/// The moment when the transaction happened.
 	time_t date;
-	// The amount deposited or withdrawn.
+	/// The amount deposited or withdrawn.
 	double amount;
-	// The task that caused the transaction (0 if no task).
-	Task* task;
+	/// A short description of the transaction purpose
+	QString description;
 } ;
 
 class TransactionList : public QList<Transaction>
@@ -53,41 +54,7 @@ protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
-class Account : public CoreAttributes
-{
-public:
-	Account(Project* p, const QString& i, const QString& n, Account* pr)
-		: CoreAttributes(p, i, n, pr), openingBalance(0.0)
-	{
-		kotrusId = "";
-	}
-	~Account() { };
-
-	const QString& getId() const { return id; }
-	const QString& getName() const { return name; }
-
-	void setKotrusId(const QString& k) { kotrusId = k; }
-	const QString& getKotrusId() const { return kotrusId; }
-
-	void setOpeningBalance(double b)
-	{
-		openingBalance = b;
-	}
-	void book(Transaction* t)
-	{
-		transactions.inSort(t);
-	}
-
-	void balance(time_t d);
-
-private:
-	Account() { };	// don't use this
-	QString id;
-	QString name;
-	QString kotrusId;
-	double openingBalance;
-	QList<Transaction> transactions;
-} ;
+class Account;
 
 class AccountList : public CoreAttributesList
 {
@@ -95,18 +62,71 @@ public:
 	AccountList() { }
 	~AccountList() { }
 
-	void addAccount(Account* a)
-	{
-		inSort(a);
-	}
-	Account* getAccount(const QString& id)
-	{
-		Account key(0, id, "", 0);
-		return (Account*) at(find(&key));
-	}
-	
+	Account* first() { return (Account*) CoreAttributesList::first(); }
+	Account* next() { return (Account*) CoreAttributesList::next(); }
+
+	inline void addAccount(Account* a);
+	inline Account* getAccount(const QString& id);
+
 protected:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
+
+class Account : public CoreAttributes
+{
+public:
+	enum AccountType { Cost, Revenue };
+
+	Account(Project* p, const QString& i, const QString& n, Account* pr,
+			AccountType at)
+		: CoreAttributes(p, i, n, pr), acctType(at)
+	{
+		kotrusId = "";
+	}
+	~Account() { };
+
+	Account* getParent() { return (Account*) parent; }
+
+	virtual AccountList getSubList() { return (AccountList&) sub; }
+
+	void setKotrusId(const QString& k) { kotrusId = k; }
+	const QString& getKotrusId() const { return kotrusId; }
+
+	void setType(AccountType at) { acctType = at; }
+	AccountType getType() const { return acctType; }
+
+	void credit(Transaction* t)
+	{
+		transactions.inSort(t);
+	}
+
+	bool isGroup() const { return !sub.isEmpty(); }
+
+	double getPlanBalance(time_t d);
+	double getActualBalance(time_t d);
+	double getPlanVolume(const Interval& period);
+	double getActualVolume(const Interval& period);
+
+private:
+	Account() { };	// don't use this
+	QString kotrusId;
+	QList<Transaction> transactions;
+	AccountType acctType;
+} ;
+
+void
+AccountList::addAccount(Account* a)
+{
+	append(a);
+}
+
+Account*
+AccountList::getAccount(const QString& id)
+{
+	for (Account* a = first(); a != 0; a = next())
+		if (a->getId() == id)
+			return a;
+	return 0;
+}
 
 #endif

@@ -122,7 +122,7 @@ weekOfYear(time_t t)
 			tms = localtime(&boy);
 	}
 	tms = localtime(&t);
-	return (tms->tm_yday - i) / 7;
+	return (tms->tm_yday - i) / 7 + 1;
 }
 
 int 

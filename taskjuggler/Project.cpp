@@ -50,6 +50,7 @@ Project::pass2()
 
 	taskList.createIndex();
 	resourceList.createIndex();
+	accountList.createIndex();
 
 	// Create hash to map task IDs to pointers.
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
@@ -198,6 +199,11 @@ Project::generateReports()
 	// Generate resource reports
 	for (HTMLResourceReport* r = htmlResourceReports.first(); r != 0;
 		 r = htmlResourceReports.next())
+		r->generate();
+
+	// Generate account reports
+	for (HTMLAccountReport* r = htmlAccountReports.first(); r != 0;
+		 r = htmlAccountReports.next())
 		r->generate();
 
 	if( xmlreport )

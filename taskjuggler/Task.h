@@ -192,7 +192,8 @@ public:
 	}
 	double getPlanCalcDuration() const;
 
-	double getPlanCosts(const Interval& period, Resource* resource = 0);
+	double getPlanCosts(const Interval& period, Resource* resource = 0,
+						bool recursive = TRUE);
 
 	bool isPlanActive(const Interval& period) const;
 
@@ -236,7 +237,8 @@ public:
 	}
 	double getActualCalcDuration() const;
 
-	double getActualCosts(const Interval& period, Resource* resource = 0);
+	double getActualCosts(const Interval& period, Resource* resource = 0,
+						  bool recursive = TRUE);
 
 	bool isActualActive(const Interval& period) const;
 
@@ -273,7 +275,9 @@ public:
 
 	void setMilestone() { milestone = TRUE; }
 	bool isMilestone() const { return start != 0 && start == end; }
+
 	void setAccount(Account* a) { account = a; }
+	Account* getAccount() const { return account; }
 
 	void getSubTaskList(TaskList& tl);
 

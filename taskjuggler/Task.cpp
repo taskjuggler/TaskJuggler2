@@ -78,6 +78,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		minEnd = p->minEnd;
 		maxEnd = p->maxEnd;
 		responsible = p->responsible;
+		account = p->account;
 	}
 	else
 	{
@@ -518,14 +519,14 @@ Task::getActualLoad(const Interval& period, Resource* resource)
 }
 
 double
-Task::getPlanCosts(const Interval& period, Resource* resource)
+Task::getPlanCosts(const Interval& period, Resource* resource, bool recursive)
 {
 	double costs = 0.0;
 
-	if (subFirst())
+	if (recursive && subFirst())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
-			costs += t->getPlanCosts(period, resource);
+			costs += t->getPlanCosts(period, resource, recursive);
 	}
 
 	if (resource)
@@ -539,14 +540,15 @@ Task::getPlanCosts(const Interval& period, Resource* resource)
 }
 
 double
-Task::getActualCosts(const Interval& period, Resource* resource)
+Task::getActualCosts(const Interval& period, Resource* resource,
+					 bool recursive)
 {
 	double costs = 0.0;
 
-	if (subFirst())
+	if (recursive && subFirst())
 	{
 		for (Task* t = subFirst(); t != 0; t = subNext())
-			costs += t->getActualCosts(period, resource);
+			costs += t->getActualCosts(period, resource, recursive);
 	}
 
 	if (resource)

@@ -46,11 +46,11 @@ public:
 	void generateDepends(Task* t, bool light);
 	void generateFollows(Task* t, bool light);
 	void generateResponsibilities(Resource* r, bool light);
-	void htmlDayHeaderDays();
+	void htmlDayHeaderDays(bool highlightNow = TRUE);
 	void htmlDayHeaderMonths();
-	void htmlWeekHeaderWeeks();
+	void htmlWeekHeaderWeeks(bool highlightNow = TRUE);
 	void htmlWeekHeaderMonths();
-	void htmlMonthHeaderMonths();
+	void htmlMonthHeaderMonths(bool highlightNow = TRUE);
 	void htmlMonthHeaderYears();
 
 	void emptyPlan(bool light);

@@ -333,9 +333,10 @@ definition of the sub task.
 Tasks may be nested and some attributes are inherited by the sub tasks.
 
 ===============================================================================
-account <id> <name>
+account <id> <name> <type>
 id: ID
 name: STRING
+type: ID
 
 Optional attributes:
 
@@ -346,10 +347,14 @@ Accounts may be nested. An account that has sub accounts may not have
 a balance or a kotrusid.
 
 -------------------------------------------------------------------------------
-balance <amount>
+credit <date> <description> <amount>
+date: DATE
+description STRING
 amount: REAL
 
-The initial balance of the account.
+Credits the specified amount to the account at the specified date. The
+description should contain some information about the reason for the
+transaction.
 
 -------------------------------------------------------------------------------
 kotrusid <id>
@@ -359,7 +364,9 @@ The KoTrus ID of the account (Kostentraeger).
 
 -------------------------------------------------------------------------------
 Declares an account. Accounts can be used to calculate costs of tasks
-or the whole project.
+or the whole project. Account declaration may be nested but only the
+top level accounts may have a type attribute specified. All
+sub-accounts inherit this type. The type may be 'Cost' or 'Revenue'.
 
 ===============================================================================
 resource <id> <name>

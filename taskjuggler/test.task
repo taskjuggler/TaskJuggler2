@@ -13,7 +13,7 @@ flags type1, type2, type3
 flags deadline, media, beta, preview, team
 
 htmltaskreport "test1.html" {
-  columns no, name, start, end, weekly
+  columns no, name, start, end, costs
   start 2001-09-01
   end 2002-04-01
   showactual
@@ -37,6 +37,13 @@ htmlresourcereport "test-res.html" {
   hidetask 0
   hideresource 0
 #  showactual
+}
+
+htmlaccountreport "test-account.html" {
+  columns no, name, total, weekly
+  accumulate
+#  showactual
+#  hideplan
 }
 
 macro version [SL 8.0]
@@ -84,6 +91,7 @@ macro ship [
     effort 2d
     allocate mem
     depends !build
+    account testing
   }
 ]
 
@@ -92,6 +100,7 @@ macro test [
     effort 2d
     allocate bg
     depends !build
+    account testing
   }
 ]
 
@@ -108,10 +117,19 @@ task beta${1} "${version} beta${1}" {
 
 vacation "Xmas" 2001-12-21 - 2002-01-05
 
-account acc1 "Work" {
-  account sub "Sub" {
-    kotrusid "SuSE Linux" balance 1000.0
-  }
+account suselinux "SuSE Linux" cost {
+  account base "Base" { kotrusid "Base" }
+  account devel "Development"
+  account testing "Testing"
+}
+
+account budget "R&D Budget" revenue {
+  credit 2001-09-01 "September Budget" 300.0
+  credit 2001-10-01 "October Budget" 300.0
+  credit 2001-11-01 "November Budget" 300.0
+  credit 2001-12-01 "December Budget" 300.0
+  credit 2002-01-01 "January Budget" 300.0
+  credit 2002-02-01 "February Budget" 300.0
 }
 
 mineffort 0.6
@@ -146,6 +164,8 @@ resource kkaempf "Klaus Kaempf"
 
 task sl80 "SuSE Linux 8.0" {
   responsible cs
+  account suselinux
+
 task sl80start "Start of 8.0 development" {
   start 2001-09-28
   actualstart 2001-10-03
@@ -157,6 +177,7 @@ task yast "YaST2 development"{
   allocate yast
   depends !sl80start
   responsible kkaempf
+  account devel
 }
 
 task pack "SL 8.0 package updates" {
@@ -165,6 +186,7 @@ task pack "SL 8.0 package updates" {
   allocate kukuk { load 50 }
   allocate ro { load 50 }
   depends !sl80start
+  account base
 }
 
 task dist "SL 8.0 distribution modifications" {
@@ -173,6 +195,7 @@ task dist "SL 8.0 distribution modifications" {
   allocate kukuk { load 50 }
   allocate ro { load 50 }
   depends !sl80start
+  account base
 }
 
 task alap "ALAP Task" {

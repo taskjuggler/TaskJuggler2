@@ -22,11 +22,16 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e) :
 {
 	taskSortCriteria = CoreAttributesList::TreeMode;
 	resourceSortCriteria = CoreAttributesList::TreeMode;
+	accountSortCriteria = CoreAttributesList::TreeMode;
+
 	hideTask = 0;
 	rollUpTask = 0;
 	hideResource = 0;
 	rollUpResource = 0;
+	hideAccount = 0;
+	rollUpAccount = 0;
 
+	hidePlan = FALSE;
 	showActual = FALSE;
 }
 
@@ -39,29 +44,29 @@ Report::~Report()
 }
 
 bool
-Report::isTaskHidden(Task* t)
+Report::isHidden(CoreAttributes* c, ExpressionTree* et)
 {
-	if (!hideTask)
+	if (!et)
 		return FALSE;
 
-	hideTask->clearSymbolTable();
-	QStringList flags = t->getFlagList();
+	et->clearSymbolTable();
+	QStringList flags = c->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
-		hideTask->registerSymbol(*it, 1);
-	return hideTask->eval() != 0;
+		et->registerSymbol(*it, 1);
+	return et->eval() != 0;
 }
 
 bool
-Report::isResourceHidden(Resource* r)
+Report::isRolledUp(CoreAttributes* c, ExpressionTree* et)
 {
-	if (!hideResource)
+	if (!et)
 		return FALSE;
 
-	hideResource->clearSymbolTable();
-	QStringList flags = r->getFlagList();
+	et->clearSymbolTable();
+	QStringList flags = c->getFlagList();
 	for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
-		hideResource->registerSymbol(*it, 1);
-	return hideResource->eval() != 0;
+		et->registerSymbol(*it, 1);
+	return et->eval() != 0;
 }
 
 bool
@@ -119,6 +124,20 @@ Report::setRollUpResource(ExpressionTree* et)
 }
 
 void
+Report::setHideAccount(ExpressionTree* et)
+{
+	delete hideAccount;
+	hideAccount = et;
+}
+
+void
+Report::setRollUpAccount(ExpressionTree* et)
+{
+	delete rollUpAccount;
+	rollUpAccount = et;
+}
+
+void
 Report::filterTaskList(TaskList& filteredList, Resource* r)
 {
 	/* Create a new list that contains only those tasks that were not
@@ -127,12 +146,13 @@ Report::filterTaskList(TaskList& filteredList, Resource* r)
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 	{
 		Interval iv(start, end);
-		if (!isTaskHidden(t) &&
+		if (!isHidden(t, hideTask) &&
 			iv.overlaps(Interval(t->getPlanStart(), t->getPlanEnd())) &&
 			(r == 0 || r->getPlanLoad(Interval(start, end), t) > 0.0 ||
 			 (showActual && r->getActualLoad(Interval(start, end), t) > 0.0)))
-
+		{
 			filteredList.append(t);
+		}
 	}
 
 	/* Now we have to remove all sub tasks of task in the roll-up list
@@ -180,7 +200,7 @@ Report::filterResourceList(ResourceList& filteredList, Task* t)
 	for (Resource* r = resourceList.first(); r != 0;
 		 r = resourceList.next())
 	{
-		if (!isResourceHidden(r) &&
+		if (!isHidden(r, hideResource) &&
 			(t == 0 || r->getPlanLoad(Interval(start, end), t) > 0.0 ||
 			 (showActual && r->getActualLoad(Interval(start, end), t) > 0.0)))
 		{
@@ -222,6 +242,55 @@ Report::sortResourceList(ResourceList& filteredList)
 	filteredList = list;
 
 	filteredList.setSorting(resourceSortCriteria);
+	filteredList.sort();
+}
+
+void
+Report::filterAccountList(AccountList& filteredList, Account::AccountType at)
+{
+	/* Create a new list that contains only those accounts that were not
+	 * hidden. */
+	filteredList.clear();
+	AccountList accountList = project->getAccountList();
+	for (Account* a = accountList.first(); a != 0; a = accountList.next())
+	{
+		if (!isHidden(a, hideAccount) && a->getType() == at)
+			filteredList.append(a);
+	}
+
+	/* Now we have to remove all sub accounts of account in the roll-up list
+     * from the filtered list */
+	for (Account* a = accountList.first(); a != 0; a = accountList.next())
+	{
+		AccountList toHide;
+		if (isRolledUp(a, rollUpAccount))
+			toHide = a->getSubList();
+
+		for (Account* a = toHide.first(); a != 0; a = toHide.next())
+			filteredList.remove(a);
+	}
+}
+
+void
+Report::sortAccountList(AccountList& filteredList)
+{
+	/* In accounttree sorting mode we need to make sure that we don't hide
+	 * parents of shown accounts. */
+	AccountList list = filteredList;
+	if (accountSortCriteria == CoreAttributesList::TreeMode)
+	{
+		list.setSorting(CoreAttributesList::Pointer);
+		for (Account* t = filteredList.first(); t != 0;
+			 t = filteredList.next())
+		{
+			for (Account* p = t->getParent(); p != 0; p = p->getParent())
+				if (list.contains(p) == 0)
+					list.append(p);
+		}
+	}
+	filteredList = list;
+
+	filteredList.setSorting(accountSortCriteria);
 	filteredList.sort();
 }
 
