@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="TaskJuggler" version="1.22" kateversion="2.3" section="Scripts" extensions="*.tjp;*.tji;*.tjsp" mimetype="">
+<highlighting>
+    <list name="keywords">
+        <item> account </item>
+        <item> project </item>
+        <item> task </item>
+        <item> resource </item>
+        <item> shift </item>
+	<item> scenario </item>
+    </list>
+    <list name="builtinfuncs">
+        <item> accumulate </item>
+        <item> actualbooking </item>
+        <item> actualduration </item>
+        <item> actualeffort </item>
+        <item> actualend </item>
+        <item> actualenddown </item>
+        <item> actualendup </item>
+        <item> actuallength </item>
+        <item> actualscheduled </item>
+        <item> actualstart </item>
+        <item> actualstartdown </item>
+        <item> actualstartup </item>
+        <item> alap </item>
+        <item> allocate </item>
+        <item> alternative </item>
+        <item> asap </item>
+        <item> barlabels </item>
+        <item> caption </item>
+        <item> columns </item>
+        <item> complete </item>
+        <item> containstask </item>
+        <item> copyright </item>
+        <item> cost </item>
+        <item> costs </item>
+        <item> credit </item>
+        <item> currency </item>
+        <item> currencydigits </item>
+        <item> d </item>
+        <item> daily </item>
+        <item> dailyworkinghours </item>
+        <item> day </item>
+        <item> dayheader </item>
+        <item> days </item>
+        <item> db </item>
+        <item> depends </item>
+        <item> duration </item>
+        <item> efficiency </item>
+        <item> effort </item>
+        <item> empty </item>
+        <item> end </item>
+        <item> endbuffer </item>
+        <item> endbufferstart </item>
+        <item> endcredit </item>
+        <item> enddown </item>
+        <item> endup </item>
+        <item> export </item>
+        <item> extend </item>
+        <item> flags </item>
+        <item> follows </item>
+        <item> fri </item>
+        <item> fullnamedown </item>
+        <item> fullnameup </item>
+        <item> h </item>
+        <item> headline </item>
+        <item> hideaccount </item>
+        <item> hideplan </item>
+        <item> hideresource </item>
+        <item> hidetask </item>
+        <item> hours </item>
+        <item> htmlaccountreport </item>
+        <item> htmlresourcereport </item>
+        <item> htmltaskreport </item>
+        <item> htmlweeklycalendar </item>
+        <item> id </item>
+        <item> iddown </item>
+        <item> idup </item>
+        <item> include </item>
+        <item> index </item>
+        <item> indexdown </item>
+        <item> indexup </item>
+	<item> inherit </item>	
+        <item> isaccount </item>
+        <item> isactualallocated </item>
+        <item> ismilestone </item>
+        <item> isplanallocated </item>
+        <item> isresource </item>
+        <item> issubtaskof </item>
+        <item> istask </item>
+        <item> kotrusid </item>
+        <item> kotrusiddown </item>
+        <item> kotrusidup </item>
+        <item> kotrusmode </item>
+        <item> length </item>
+        <item> load </item>
+        <item> loadunit </item>
+        <item> longauto </item>
+        <item> limits </item>
+        <item> m </item>
+        <item> macro </item>
+        <item> maxeffort </item>
+        <item> maxeffortdown </item>
+        <item> maxeffortup </item>
+        <item> maxend </item>
+        <item> maxloaded </item>
+        <item> maxstart </item>
+        <item> milestone </item>
+        <item> min </item>
+        <item> mineffort </item>
+        <item> mineffortdown </item>
+        <item> mineffortup </item>
+        <item> minend </item>
+        <item> minloaded </item>
+        <item> minstart </item>
+        <item> minutes </item>
+        <item> mon </item>
+        <item> month </item>
+        <item> monthheader </item>
+        <item> monthly </item>
+        <item> months </item>
+        <item> name </item>
+        <item> namedown </item>
+        <item> nameup </item>
+        <item> no </item>
+        <item> nokotrus </item>
+        <item> note </item>
+        <item> now </item>
+        <item> off </item>
+        <item> order </item>
+        <item> persistent </item>
+        <item> planbooking </item>
+        <item> planenddown </item>
+        <item> planendup </item>
+        <item> planscheduled </item>
+        <item> planstartdown </item>
+        <item> planstartup </item>
+        <item> precedes </item>
+        <item> priority </item>
+        <item> prioritydown </item>
+        <item> priorityup </item>
+        <item> projectid </item>
+        <item> random </item>
+        <item> rate </item>
+        <item> ratedown </item>
+        <item> rateup </item>
+        <item> rawhead </item>
+        <item> rawstylesheet </item>
+        <item> rawtail </item>
+        <item> resourceid </item>
+        <item> resourcename </item>
+        <item> resources </item>
+        <item> responsibilities </item>
+        <item> responsible </item>
+        <item> responsibledown </item>
+        <item> responsibleup </item>
+        <item> revenue </item>
+        <item> rollupaccount </item>
+        <item> rollupresource </item>
+        <item> rolluptask </item>
+        <item> sat </item>
+        <item> scenarios </item>
+        <item> schedule </item>
+        <item> scheduling </item>
+        <item> select </item>
+        <item> seqno </item>
+        <item> sequencedown </item>
+        <item> sequenceup </item>
+        <item> shortauto </item>
+        <item> shorttimeformat </item>
+        <item> showactual </item>
+        <item> showprojectids </item>
+        <item> sortaccounts </item>
+        <item> sortresources </item>
+        <item> sorttasks </item>
+        <item> start </item>
+        <item> startbuffer </item>
+        <item> startbufferend </item>
+        <item> startcredit </item>
+        <item> startdown </item>
+        <item> startup </item>
+        <item> sun </item>
+        <item> supplement </item>
+        <item> taskattributes </item>
+        <item> taskid </item>
+        <item> taskname </item>
+        <item> taskprefix </item>
+        <item> taskroot </item>
+        <item> thu </item>
+        <item> timeformat </item>
+        <item> timezone </item>
+        <item> timingresolution </item>
+        <item> total </item>
+        <item> tree </item>
+        <item> tue </item>
+        <item> url </item>
+        <item> vacation </item>
+        <item> version </item>
+        <item> w </item>
+        <item> wed </item>
+        <item> weekheader </item>
+        <item> weekly </item>
+        <item> weeks </item>
+        <item> weekstartsmonday </item>
+        <item> weekstartssunday </item>
+        <item> workinghours </item>
+        <item> xml </item>
+        <item> xmlreport </item>
+        <item> y </item>
+        <item> year </item>
+        <item> yearheader </item>
+        <item> yearlyworkingdays </item>
+        <item> years </item>
+    </list>
+    <list name="types">
+        <item>nil</item>
+        <item>true</item>
+        <item>false</item>
+        <item>String</item>
+        <item>Integer</item>
+        <item>Real</item>
+        <item>Logical</item>
+        <item>Character</item>
+        <item>Date</item>
+        <item>Concept</item>
+        <item>Element</item>
+        <item>Attribute</item>
+        <item>Series</item>
+        <item>TypedSeries</item>
+        <item>Map</item>
+    </list>
+    <contexts>
+     <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+        <!-- keywords and other builtins -->
+	<keyword attribute="Builtin Function" String="builtinfuncs" context="#stay"/>
+	<keyword attribute="Keyword" String="keywords" context="#stay"/>
+	<keyword attribute="Data Types" String="types" context="#stay"/>
+	
+	<!-- region (brace) folding -->
+	<DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace2" />
+        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace2" />
+	
+	<DetectChar attribute="Symbol" context="#stay" char="[" beginRegion="Brace1" />
+        <DetectChar attribute="Symbol" context="#stay" char="]" endRegion="Brace1" />
+	
+	<!-- number hilighting -->
+	<Float attribute="Float" context="#stay">
+    	    <AnyChar String="fF" attribute="Float" context="#stay"/>
+	</Float>
+	<Int attribute="Decimal" context="#stay">
+          <StringDetect attribute="Decimal" context="#stay" String="ULL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LUL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LLU" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="UL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LU" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="LL" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="U" insensitive="TRUE"/>
+          <StringDetect attribute="Decimal" context="#stay" String="L" insensitive="TRUE"/>
+	</Int>
+	
+	<!-- strings -->
+	<DetectChar attribute="String" context="String1" char="&apos;"/>
+	<DetectChar attribute="String" context="String2" char="&quot;"/>
+	
+	<!-- comments -->
+	<DetectChar attribute="Comment" context="Comment1" char="#"/>
+        <Detect2Chars attribute="Comment" context="Comment2" char="/" char1="*"/>
+      </context>
+      
+      <context attribute="String" lineEndContext="#stay" name="String1">
+        <DetectChar attribute="String" context="#pop" char="&apos;"/>
+      </context>
+      <context attribute="String" lineEndContext="#stay" name="String2">
+        <DetectChar attribute="String" context="#pop" char="&quot;"/>
+      </context>
+      <context attribute="Comment" lineEndContext="#pop" name="Comment1">
+        <IncludeRules context="##Alerts" />
+      </context>
+      <context attribute="Comment" lineEndContext="#stay" name="Comment2">
+        <Detect2Chars attribute="Comment" context="#pop" char="*" char1="/"/>
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Keyword"  defStyleNum="dsKeyword"/>
+      <itemData name="Builtin Function"  defStyleNum="dsFunction"/>
+      <itemData name="Data Types" defStyleNum="dsDataType"/>
+      <itemData name="Decimal"  defStyleNum="dsDecVal"/>
+      <itemData name="Octal"  defStyleNum="dsBaseN"/>
+      <itemData name="Hex"  defStyleNum="dsBaseN"/>
+      <itemData name="Float"  defStyleNum="dsFloat"/>
+      <itemData name="Char"  defStyleNum="dsChar"/>
+      <itemData name="String"  defStyleNum="dsString"/>
+      <itemData name="String Char"  defStyleNum="dsChar"/>
+      <itemData name="Comment"  defStyleNum="dsComment"/>
+      <itemData name="Symbol"  defStyleNum="dsNormal"/>
+    </itemDatas>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+      <comment name="multiLine" start="/*" end="*/" />
+    </comments>
+    <keywords casesensitive="0" />
+  </general>
+</language>

@@ -1,0 +1,11 @@
+In taskjuggler.xml you find a xml file for syntax highlighting
+for kate, the KDE editor.
+
+It will be installed to $KDEDIR/share/apps/katepart/syntax
+for global or ~/.kde/share/apps/katepart/syntax for personal
+use.
+
+The file was contributed by Remus Pereni <remus@nolimits.ro>
+
+Updates and fixes by Joachim Werner <joe@suse.de> 
+and Lukas Tinkl <lukas.tinkl@suse.cz>

@@ -39,6 +39,10 @@ xdg_apps_DATA = ktjview2.desktop
 tjmimedir = $(kde_mimedir)/application
 tjmime_DATA = x-tjxml.desktop x-tjp.desktop
 
+# Kate HL file
+syntaxkatedir = $(kde_datadir)/katepart/syntax
+syntaxkate_DATA = taskjuggler.xml
+
 # this is where the XML-GUI resource file goes
 rcdir = $(kde_datadir)/ktjview2
 rc_DATA = ktjview2ui.rc
