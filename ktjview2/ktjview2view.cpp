@@ -378,7 +378,7 @@ bool ktjview2View::openURL( const KURL& url )
     {
         m_editorView->loadDocument( errorFile );
         m_editorView->gotoLine( errorLine - 1 );
-        KTextEditor::markInterface( m_editorView->doc() )->setMark( errorLine - 1, KTextEditor::MarkInterface::Error );
+        KTextEditor::markInterface( m_editorView->doc() )->setMark( errorLine - 1, KTextEditor::MarkInterface::markType07 );
         emit signalSwitchView( ID_VIEW_EDITOR );
 
         emit signalChangeStatusbar( i18n( "Project %1 loaded with errors" ).arg( m_projectURL.prettyURL() ) );
