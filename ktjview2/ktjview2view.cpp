@@ -124,8 +124,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_ganttView->setEditable( false );
     m_ganttView->setScale( KDGanttView::Auto );
     m_ganttView->setDisplaySubitemsAsGroup( false );
-    bool use12Clock = KGlobal::locale()->use12Clock();
-    if ( use12Clock )
+    if ( KGlobal::locale()->use12Clock() )
         m_ganttView->setHourFormat( KDGanttView::Hour_12 );
     else
         m_ganttView->setHourFormat( KDGanttView::Hour_24 );
@@ -497,9 +496,10 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
         const QString id = task->getId();
 
-        //kdDebug() << "Parsing gantt item: " << id << endl;
-
         const QString taskName = task->getName();
+
+        //kdDebug() << "Parsing gantt item: " << taskName << endl;
+
         QDateTime start = KtjUtils::time_t2Q( task->getStart( sc ) );
         QDateTime end = KtjUtils::time_t2Q( task->getEnd( sc ) );
         const QString duration = KGlobal::locale()->formatNumber( task->getCalcDuration( sc ), 1 );
@@ -511,12 +511,15 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         const bool isContainer = task->isContainer();
         const bool isLeaf = task->isLeaf();
         const bool hasPrev = task->hasPrevious();
+        const bool hasParent = ( task->getParent() != 0 );
+
+        //kdDebug() << QString( "Item is root(%1), container(%2), leaf(%3)" ).arg( isRoot ).arg( isContainer ).arg( isLeaf ) << endl;
 
         KDGanttViewItem * prevItem = 0;
         if ( hasPrev )
             prevItem = KDGanttViewItem::find( static_cast<Task *>( task->getPreviousIterator().toLast() )->getId() );
 
-        if ( isRoot ) // toplevel container task
+        if ( isRoot && !isLeaf ) // toplevel container task
         {
             KDGanttViewSummaryItem * item = new KDGanttViewSummaryItem( m_ganttView, taskName, id );
             item->setStartTime( start );
@@ -551,15 +554,27 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         {
             //kdDebug() << "Parent ID: " << task->getParent()->getId() << endl;
 
-            KDGanttViewItem * parentItem = KDGanttViewItem::find( task->getParent()->getId() );
+            KDGanttViewItem * parentItem = 0;
+            if ( hasParent )
+                parentItem = KDGanttViewItem::find( task->getParent()->getId() );
 
             if ( task->isMilestone() )  // milestone
             {
                 KDGanttViewEventItem * item;
                 if ( prevItem )
-                    item = new KDGanttViewEventItem( parentItem, prevItem, taskName, id );
+                {
+                    if ( hasParent )
+                        item = new KDGanttViewEventItem( parentItem, prevItem, taskName, id );
+                    else
+                        item = new KDGanttViewEventItem( m_ganttView, prevItem, taskName, id );
+                }
                 else
-                    item = new KDGanttViewEventItem( parentItem, taskName, id );
+                {
+                    if ( hasParent )
+                        item = new KDGanttViewEventItem( parentItem, taskName, id );
+                    else
+                        item = new KDGanttViewEventItem( m_ganttView, taskName, id );
+                }
 
                 item->setStartTime( start );
 
@@ -573,9 +588,19 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
             {
                 KDGanttViewTaskItem * item;
                 if ( prevItem )
-                    item = new KDGanttViewTaskItem( parentItem, prevItem, taskName, id );
+                {
+                    if ( hasParent )
+                        item = new KDGanttViewTaskItem( parentItem, prevItem, taskName, id );
+                    else
+                        item = new KDGanttViewTaskItem( m_ganttView, prevItem, taskName, id );
+                }
                 else
-                    item = new KDGanttViewTaskItem( parentItem, taskName, id );
+                {
+                    if ( hasParent )
+                        item = new KDGanttViewTaskItem( parentItem, taskName, id );
+                    else
+                        item = new KDGanttViewTaskItem( m_ganttView, taskName, id );
+                }
 
                 item->setStartTime( start );
                 item->setEndTime( end );
@@ -596,7 +621,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
             continue;             // uhoh, something bad happened
         }
 
-        //kdDebug() << "Done parsing gantt item: " << id << endl;
+        //kdDebug() << "Done parsing gantt item: " << taskName << endl;
     }
 
     KDGanttViewItem * root = m_ganttView->firstChild(); // expand the root item
@@ -1356,7 +1381,9 @@ void ktjview2View::showPSGantt()
     }
     else
     {
-        KMessageBox::sorry( this, i18n( "XML report could not have been generated; PostScript Gantt chart won't be shown." ) );
+        KMessageBox::sorry( this, i18n( "XML report could not have been generated; PostScript Gantt chart won't be shown.\n"
+                                        "This is probably because you haven't defined the <tt>xmlreport</tt> to be generated in "
+                                        "the project definition file." ) );
     }
 }
 
