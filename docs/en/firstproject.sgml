@@ -341,22 +341,21 @@ directly. So we split it into sub tasks again.</para>
 </screen></para>
 
 <para>We use the <link linkend="task_priority">priority</link>
-attribute to mark the importance of the tasks. By default all tasks
-have a priority of 500 unless the parent tasks specifies it
-differently. Setting the priority to 1000 marks the task as most
-important task, since the possible range is 1 (not important at all)
-to 1000 (ultimately important).
+attribute to mark the importance of the tasks. 500 is the default
+priority of top-level tasks. Setting the priority to 1000 marks the
+task as most important task, since the possible range is 1 (not
+important at all) to 1000 (ultimately important).
 <computeroutput>priority</computeroutput> is an attribute that is
 inherited to sub tasks if specified before the sub tasks declaration.
 So all sub tasks of <computeroutput>software</computeroutput> have a
-priority of 1000 as well.</para>
+priority of 1000 as well unless they have their own priority
+definition.</para>
 
 <para><screen>
     task database "Database coupling" {
       effort 20d
       depends !!spec
-      allocate dev1
-      allocate dev2
+      allocate dev1, dev2
     }
 </screen></para>
 
@@ -373,30 +372,26 @@ resources directly without using a macro.</para>
 <para><screen>
     task gui "Graphical User Interface" {
       effort 35d
-      actual:effort 40d
+      delayed:effort 40d
       depends !database, !backend
-      allocate dev2
-      allocate dev3
+      allocate dev2, dev3
     }
 </screen></para>
 
 <para>TaskJuggler can schedule your project for two different
-scenarios. The first scenario is called the plan scenario. The other
-is referred to as actual scenario. Many of the reports allow you to
+scenarios. We have called the first scenario "plan" scenario
+and the second "delayed" scenario. Many of the reports allow you to
 put the values of both scenarios side by side to each other, so you
-can compare the two scenarios. By default taskjuggler uses two
-scenarios. The default scenario is called
-<computeroutput>plan</computeroutput> and the other is called
-<computeroutput>actual</computeroutput>. All scenario specific values
-that are not explicitly stated for the actual scenario are taken from
+can compare the two scenarios. All scenario specific values
+that are not explicitly stated for the delayed scenario are taken from
 the plan scenario. So the user only has to specify the values that
-differ in the actual scenario. The two scenarios must have the same
+differ in the delayed scenario. The two scenarios must have the same
 task structure and the same dependencies. But the start and end dates
 of tasks as well as the duration may vary. In the example we have
-planed the work on the graphical user interface to be 35 man days. It
+planned the work on the graphical user interface to be 35 man days. It
 turned out that we actually needed 40 man days. By prefixing the start
-effort attribute with <computeroutput>actual:</computeroutput> the
-effort value for the actual scenario can be specified.</para>
+effort attribute with <computeroutput>delayed:</computeroutput> the
+effort value for the delayed scenario can be specified.</para>
 
 <para><screen>
     task backend "Back-End Functions" {
@@ -413,7 +408,7 @@ Sometimes you want to generate reports, that show how much of a task
 has actually been completed. TaskJuggler uses the current date for
 this unless you have specified another date using the <link
 linkend="project_now">now</link> attribute. If a task is ahead of
-schedule or late can be specified using the <link
+schedule or late that can be specified using the <link
 linkend="task_complete">complete</link> attribute. This specifies how
 many percent of the task have been completed up to the current date.
 In our case the back-end implementation is slightly ahead of schedule
@@ -425,15 +420,13 @@ as we will see from the report.</para>
     task alpha "Alpha Test" {
       effort 1w
       depends !!software
-      allocate test
-      allocate dev2
+      allocate test, dev2
     }
 
     task beta "Beta Test" {
       effort 4w
       depends !alpha
-      allocate test
-      allocate dev1
+      allocate test, dev1
     }
   }
 </screen></para>
@@ -451,7 +444,7 @@ the example we stated that we want to credit all development work to
 one account with ID <computeroutput>dev</computeroutput> and all
 documentation work to the account
 <computeroutput>doc</computeroutput>. To achieve this, we use the
-attribute account to credit all tasks to the
+attribute <computeroutput>account</computeroutput> to credit all tasks to the
 <computeroutput>dev</computeroutput> account.</para>
 
 <para><screen>
@@ -473,8 +466,7 @@ again since it is also a sub task of
   task manual "Manual" {
     effort 10w
     depends !deliveries.start
-    allocate doc
-    allocate dev3
+    allocate doc, dev3
     account doc
   }
 </screen></para>
@@ -504,7 +496,7 @@ date.</para>
     task start "Project start" {
       milestone
       start 2002-01-16
-      actual:start 2002-01-20
+      delayed:start 2002-01-20
       startcredit 33000.0
     }
 
@@ -538,8 +530,8 @@ the attribute <link linkend="task_start">start</link> to set a fixed
 start date. All other tasks have direct or indirect dependencies on
 this task. Moving back the start date will slip the whole project.
 This has actually happened, so we use the
-<computeroutput>actual:</computeroutput> prefix again to specify the
-start date for the actual scenario.</para>
+<computeroutput>delayed:</computeroutput> prefix again to specify the
+start date for the delayed scenario.</para>
 
 <para>Every milestone is linked to a customer payment. By using the
 <link linkend="task_startcredit">startcredit</link> attribute we can
@@ -576,11 +568,11 @@ We like to add a navigation bar to each HTML page that holds a number
 of buttons. Each button changes the page to another report. This way
 we can create a navigation bar that holds links to all reports. Since
 we have created a macro, we can add the navigation bar to all reports
-without much hassle. The navigation bar is constructed with HTML tags.
-If you are not familiar with HTML this will look very strange to you.
-Don't worry, this is just a cool feature we would like to demonstrate.
-You can use TaskJuggler to it's full extend without having to learn
-HTML code.</para>
+without much hassle. The navigation bar is constructed with raw HTML
+tags.  If you are not familiar with HTML this will look very strange
+to you.  Don't worry, this is just a cool feature we would like to
+demonstrate. You can use TaskJuggler to it's full extend without
+having to learn HTML code.</para>
 
 <para>The HTML code is injected into the reports using the <link
 linkend="htmltaskreport_rawhead">rawhead</link> attribute. This will
@@ -616,13 +608,11 @@ rawhead
 <sect2><title>Generating HTML Task Reports</title>
 
 <para>As the first report, we would like to have a general overview of all
-tasks with their computed start and end dates. For better
-readability we include a calendar like column that lists the effort
-for each week. The report shell consists mainly of a listing of the
-tasks in a table form. The property <link
-linkend="htmltaskreport">htmltaskreport</link> generates exactly this,
-a list of all tasks in a table. The columns are flexible and
-can be specified with the <link
+tasks with their computed start and end dates. To visualize the dates
+a bit more, we also include a Gantt chart like bar graph.  The
+property <link linkend="htmltaskreport">htmltaskreport</link> defines
+exactly this, a list of all tasks in a table. The columns are flexible
+and can be specified with the <link
 linkend="htmltaskreport_columns">column</link> attribute. For this
 report we like to see the number, the name, the start and end
 date, a weekly calendar and the total effort in the table.</para>
@@ -630,16 +620,29 @@ date, a weekly calendar and the total effort in the table.</para>
 <para><screen>
 htmltaskreport "Tasks-Overview.html" {
   ${navbar}
-  columns no, name, start, end, weekly, effort
+  columns hierarchindex, name, duration, effort { title "Work"},
+          start, end, weekly
+  timeformat "%a %Y-%m-%d"
+  barlabels empty
   headline "Accounting Software Project"
-  caption "This table shows the load for each task on a weekly basis.
-  All values are man-days."
+  caption "This table presents a management-level overview of the
+    project. The values are days or man-days."
 }
 </screen></para>
 
-<para>With the <link linkend="htmltaskreport_headline">headline</link>
-attribute we can specify a headline for the report. To have a little
-more info included as well, we use the <link
+<para>Since we don't like the default column title for the effort
+column we change it to "Work". Dates should be displayed as
+<computeroutput>Sun 2003-09-29</computeroutput>, so we use the attribute <link
+linkend="htmltaskreport_timeformat">timeformat</link>. For the
+overview page we don't like to have load values in the calendar. We
+just want to have the Gantt chart like bars that visualize the
+duration of the tasks. Since the load values are reported by default,
+we use the attribute <link
+linkend="htmltaskreport_barlabels">barlabels</link> to surpress
+them.  With the <link
+linkend="htmltaskreport_headline">headline</link> attribute we can
+specify a headline for the report. To have a little more info included
+as well, we use the <link
 linkend="htmltaskreport_caption">caption</link> attribute. Both of
 these attributes are followed by the string to be included into the
 report.</para>
@@ -655,18 +658,24 @@ active that day or week.</para>
 <para><screen>
 htmltaskreport "Tasks-Details.html" {
   ${navbar}
-  columns no, name, start, end, daily
-  headline "Accounting Software Project"
+  columns no, name, start, end, scenario, daily
+  start 2002-03-01
+  end 2002-04-01
+  scenarios plan, delayed
+  headline "Accounting Software Project - March 2002"
   caption "This table shows the load of each day for all the tasks.
-  Additionally the resources used for each task are listed. Since the
-  project start was delayed, the actual schedule differs significantly
-  from the original plan."
+    Additionally the resources used for each task are listed. Since the
+    project start was delayed, the delayed schedule differs significantly
+    from the original plan."
   hideresource 0
-  showactual
 }
 </screen></para>
 
-<para>We also like to list all assigned resources right after each
+<para>In order to limit the report to a reasonable size, we limit the
+daily calendar to the interval 2002-03-01 - 2002-04-01 with the
+<computeroutput>start</computeroutput> and
+<computeroutput>end</computeroutput> attributes. 
+We also like to list all assigned resources right after each
 task. Normally resources are hidden in task reports but they can be
 enabled by using the <link
 linkend="htmltaskreport_hideresource">hideresource</link> attribute.
@@ -677,7 +686,7 @@ want to show all resources we put a 0 in, so it's false for all
 resources.</para>
 
 <para>To add even more information to this report, we also turn on the
-reporting of values of the actual scenario by using the <link
+reporting of values of the delayed scenario by using the <link
 linkend="htmltaskreport_scenarios">scenarios</link> attribute. This
 causes TaskJuggler to split the lines of the report into one for each
 scenario where appropriate and report the values underneath each
@@ -695,15 +704,15 @@ in hours instead of days.</para>
 <para><screen>
 htmlresourcereport "Staff-Overview.html" {
   ${navbar}
-  columns no, name, weekly, effort
-  showactual
+  columns no, name, scenario, weekly, effort
+  scenarios plan, delayed
   loadunit hours
   headline "Weekly working hours for the Accounting Software Project"
 }
 </screen></para>
 
 <para> Now a similar report but with much more details. We want to
-include that tasks again, this time each resource should be followed
+include the tasks again, this time each resource should be followed
 by the tasks the resource is assigned to. In <link
 linkend="htmltaskreport">htmltaskreports</link> resources are hidden
 by default while in <link
@@ -717,12 +726,14 @@ linkend="htmltaskreport_hideresource">hideresource</link>.</para>
 htmlresourcereport "Staff-Details.html" {
   ${navbar}
   columns name, daily, effort
-  showactual
+  start 2002-03-01
+  end 2002-04-01
   hidetask 0
   hideresource team
   sortresources nameup
   loadunit hours
-  headline "Daily working hours for the Accounting Software Project"
+  headline "Daily working hours for the Accounting Software Project -
+  March 2002"
 }
 </screen></para>
 
@@ -741,9 +752,9 @@ care of this.</para>
 </sect2>
 <sect2><title>Generating HTML Account Reports</title>
 
-<para> To conclude the HTML reports a report that shows how badly the
+<para> To conclude the HTML reports a report that shows how poorly the
 project is calculated is generated. The company won't get rich with this
-project. Due to the slip, it actually needs some money from the bank
+project. Due to the slip, it actually needs a loan from the bank
 to pay the salaries. </para>
 
 <para><screen>
@@ -754,7 +765,7 @@ htmlaccountreport "Accounting.html" {
 	caption "The table shows the profit and loss analysis as well as the
 	         cashflow situation of the Accounting Software Project."
   accumulate
-	showactual
+	scenarios plan, delayed
 }
 </screen></para>
 
@@ -774,10 +785,14 @@ has been added or subtracted from the account would be listed.</para>
 <para> Finally we generate an XML report that contains all info about
 the scheduled project. This report will be used by tjx2gantt to create
 a nice GANTT chart of our project. The file can also be read by tools
-like tjGUI or the KDE Konqueror plug-in. </para>
+like tjGUI or the KDE Konqueror plug-in. Since the Konqueror plug-in
+already uses the new, version 2 XML format, you have to comment out
+the version attribute.</para>
 
 <para><screen>
-xmlreport "AccountingSoftware.tjx"
+xmlreport "AccountingSoftware.tjx" {
+	#version 2
+}
 </screen></para>
 
 </sect2>

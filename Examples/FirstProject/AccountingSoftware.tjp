@@ -343,5 +343,7 @@ htmlaccountreport "Accounting.html" {
 # Finally we generate an XML report that contains all info about the
 # scheduled project. This will be used by tjx2gantt to create a nice
 # Gantt chart of our project.
-xmlreport "AccountingSoftware.tjx"
+xmlreport "AccountingSoftware.tjx" {
+	#version 2
+}
 
