@@ -1,0 +1,32 @@
+project test "Test" "$Id" 2000-01-01 2000-01-31
+
+shift s1 "Shift1" {
+  workinghours mon 10:00 - 12:00, 13:00-15:00
+  workinghours tue 9:00-17:00
+  workinghours wed off
+  workinghours thu off
+  workinghours fri off
+
+  shift s2 "Shift2" {
+    workinghours wed 10:00 - 14:00
+    workinghours thu 10:00 - 18:00
+    workinghours fri 9:00 - 13:00
+  }
+}
+
+resource r1 "Resource1" {
+  # This should result in iterating 0.5 1.0 0.5 loads each day
+  shift s1 2000-01-01 - 2000-01-04
+  shift s2 2000-01-05 - 2000-01-20
+}
+
+task t1 "Task1" {
+  start 2000-01-01
+  effort 10d
+  allocate r1
+}
+
+htmltaskreport "Shift.html" {
+  columns no, name, start, end, daily
+}
+
