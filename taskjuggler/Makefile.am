@@ -18,12 +18,12 @@ CXXFLAGS = -Wall -g
 SUBDIRS = docs 
 
 # set the include path for X, qt and KDE
-INCLUDES= $(all_includes) $(kde_includes) -I/space/projects/
+INCLUDES= $(all_includes)
 
 taskjuggler_METASOURCES = AUTO
 
 # the library search path. 
-taskjuggler_LDFLAGS = $(all_libraries) 
+taskjuggler_LDFLAGS = $(all_libraries) $(LIB_KDEUI) $(LIB_KDECORE)
 
 # them while "make clean", use CLEANFILES
 DISTCLEANFILES = $(taskjuggler_METASOURCES)
