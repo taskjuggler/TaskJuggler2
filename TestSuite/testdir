@@ -12,7 +12,7 @@ else
   export TASKJUGGLER=../$TASKJUGGLER
 fi
 
-function do_testing
+do_testing()
 {
   f=$1
   op=$2
