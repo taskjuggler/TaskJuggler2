@@ -2,14 +2,14 @@
 
 /*
  * Connector
- */ 
+ */
 
-KTVConnector::KTVConnector( QCanvas *c, 
+KTVConnector::KTVConnector( QCanvas *c,
 			   const QPoint& from,
 			   const QPoint& to ):
    QCanvasLine(c)
 {
-   setPen(QPen(black,2));   // TODO configurable
+   setPen(QPen(black,1));   // TODO configurable
    setPoints( from.x(), from.y(), to.x(), to.y());
    setZ( 1.0 );
 }
@@ -17,6 +17,6 @@ KTVConnector::KTVConnector( QCanvas *c,
 
 void KTVConnector::setConnectPoints( const QPoint& from, const QPoint& to )
 {
-   setPoints( from.x(), from.y(), to.x(), to.y()); 
+   setPoints( from.x(), from.y(), to.x(), to.y());
 }
 

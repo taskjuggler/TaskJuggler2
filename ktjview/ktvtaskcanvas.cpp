@@ -53,7 +53,7 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *na
 
    m_headerFont.setFamily( "Helvetica [Cronyx]" );
    m_headerFont.setPointSize(8);
-   
+
 
    /* TODO: make visible again and synchronise with table in the same way the
     * table synchronises with this one.
@@ -90,7 +90,7 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
    resize( m_dayWidth * m_days, s.height() );
    // setAllChanged();
    // update();
-#if 0
+
    /* recalc width an x-positions of all items*/
    const CanvasItemList ktvItems = getCanvasItemsList();
    CanvasItemListIterator it(ktvItems);
@@ -108,7 +108,7 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
    }
    setAllChanged();
    update();
-#endif
+
 }
 
 
@@ -142,7 +142,7 @@ void KTVTaskCanvas::drawCalendar()
    {
       int dayX= timeToX(trun);
       int day = dayOfMonth(trun);
-      
+
       QCanvasRectangle *re = new QCanvasRectangle( this );
       re->setPen( p1 );
       re->setSize( 1+m_dayWidth, dayH );
@@ -150,7 +150,7 @@ void KTVTaskCanvas::drawCalendar()
       re->move( dayX, yDays );
       re->setZ(1.0);
       re->show();
-      
+
       QCanvasText *text = new QCanvasText( QString::number(day), this );
       text->setTextFlags( Qt::AlignCenter );
       text->move( dayX + m_dayWidth/2, yDays + getHeaderLineHeight(Day)/2 );
@@ -165,12 +165,12 @@ void KTVTaskCanvas::drawCalendar()
    dayH = 1+getHeaderLineHeight( Week );
    yDays = topOffset(Week);
    qDebug( "Y-Value for Weeks: %d", yDays );
-   
+
    trun = m_start;
    for( int w = 0; w < weeks; w++ )
    {
       int weekX = timeToX( beginOfWeek(trun));
-      
+
       QCanvasRectangle *re = new QCanvasRectangle( this );
       re->setPen( p1 );
       re->setSize( 1+7*m_dayWidth, dayH );
@@ -178,7 +178,7 @@ void KTVTaskCanvas::drawCalendar()
       re->move( weekX, yDays );
       re->setZ(1.0);
       re->show();
-      
+
       QCanvasText *text = new QCanvasText( i18n("Week %1").arg(weekOfYear(trun)), this );
       text->setTextFlags( Qt::AlignCenter );
       text->move( weekX + (7*m_dayWidth)/2, yDays + getHeaderLineHeight(Week)/2 );
@@ -186,7 +186,7 @@ void KTVTaskCanvas::drawCalendar()
       text->show();
 
       trun = sameTimeNextWeek(trun);
-      
+
    }
 
    /* Draw months */
@@ -194,7 +194,7 @@ void KTVTaskCanvas::drawCalendar()
    dayH = 1+getHeaderLineHeight( Month );
    yDays = topOffset(Month);
    qDebug( "Y-Value for Months: %d", yDays );
-   
+
    trun = m_start;
    for( int w = 0; w < months; w++ )
    {
@@ -202,7 +202,7 @@ void KTVTaskCanvas::drawCalendar()
       int monthX = timeToX( mBegin );
       int cntDays = daysLeftInMonth( mBegin );
       // qDebug("Showing up month %d, %d days long", w, cntDays );
-      
+
       QCanvasRectangle *re = new QCanvasRectangle( this );
       re->setPen( p1 );
       qDebug( "showing month at %d, %d", 1+cntDays * m_dayWidth, dayH );
@@ -211,7 +211,7 @@ void KTVTaskCanvas::drawCalendar()
       re->move( monthX, yDays );
       re->setZ(1.0);
       re->show();
-      
+
       QCanvasText *text = new QCanvasText( QString(monthAndYear(trun)), this );
       text->setTextFlags( Qt::AlignCenter );
       text->move( monthX + (cntDays*m_dayWidth)/2, yDays + getHeaderLineHeight(Month)/2 );
@@ -219,9 +219,9 @@ void KTVTaskCanvas::drawCalendar()
       text->show();
 
       trun = sameTimeNextMonth(trun);
-      
+
    }
-   
+
    setAllChanged();
    update();
 }
@@ -279,7 +279,7 @@ int KTVTaskCanvas::getHeaderLineHeight( topOffsetPart p )
 int  KTVTaskCanvas::topOffset( topOffsetPart part )
 {
    int re = 0;
-   
+
    switch( part )
    {
       case Month:
@@ -333,7 +333,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
 
    while ( x <= clip.right() )
    {
-	  
+
       time_t time = timeFromX(x);
       // drawDayHead  ( time, x, painter );
       // drawWeekHead ( time, x, painter );
@@ -461,6 +461,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 	 m_canvasItemList.append( cItem );
       }
 
+      /* set the items with */
       int w = timeToX( t->getPlanEnd() )-x;
       cItem->setSize( w, cItem->height() );
 
@@ -478,7 +479,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 		   + (m_rowHeight-cItem->height())/2  );
       cItem->show();
 
-      /* check for connections  */
+      /* check for connections to other tasks, showing dependencies. */
       for( Task* tp = t->firstPrevious(); itemConnects && tp != 0; tp = t->nextPrevious())
       {
 	 /* tp is a previous task. Connection starts at tps endpoint and goes to

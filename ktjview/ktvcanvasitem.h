@@ -23,7 +23,7 @@ class QFont;
 
 /*
  * The base. Contains most of the functionality all others need.
- */ 
+ */
 class KTVCanvasItemBase: public QObject
 {
 public:
@@ -36,7 +36,7 @@ public:
 
    virtual int  y(){ return 0; }
    virtual int  x(){ return 0; }
-   
+
    virtual void setSize( int, int );
    virtual void move( double, double ){}
    virtual void moveBy( int, int );
@@ -46,14 +46,16 @@ public:
    virtual int  height( ) const { return m_height; }
    virtual QRect rect()  { return QRect();  }
    virtual bool isVisible() { return false; };
-   
+
    void addConnectIn( KTVConnector*, Task* );
    void addConnectOut( KTVConnector*, Task* );
    KTVConnector* connectorIn( Task* );
    KTVConnector* connectorOut( Task* );
-   
+
    virtual QPoint getConnectorIn() const {return QPoint(); }
    virtual QPoint getConnectorOut() const {return QPoint(); }
+
+    virtual void moveConnectors( int, int );
 
    int               m_height;
 protected:
@@ -65,7 +67,7 @@ protected:
 };
 
 /*
- * List of Pointers to Canvas Items 
+ * List of Pointers to Canvas Items
  */
 class CanvasItemList: public QPtrList<KTVCanvasItemBase>
 {
@@ -97,7 +99,7 @@ public:
    int y();
    int x();
    bool isVisible() { return cRect->isVisible();};
-   
+
    QPoint getConnectorIn() const;
    QPoint getConnectorOut() const;
 private:
@@ -129,7 +131,7 @@ public:
 
 private:
    QCanvasPolygon *cPoly;
-   
+
 };
 
 /*

@@ -42,9 +42,9 @@ void KTVTaskCanvasView::showProject( Project *p )
 {
    qDebug( " ++++++ Starting to show +++++++" );
    m_pro = p;
-   
+
    QString pName = p->getName();
-   
+
    /* resize the canvas */
    m_canvas->slSetDayWidthStandard();
    m_canvas->setInterval( p->getStart(), p->getEnd() );
@@ -60,29 +60,29 @@ void KTVTaskCanvasView::finalise( Project* )
 void KTVTaskCanvasView::addTask(Task *t )
 {
    if( ! t ) return;
-   
+
    QString idx = QString::number(t->getIndex());
    QString name = t->getName();
    qDebug( "Adding task: " + t->getId());
    QDateTime dt;
-   
+
    if( t->isContainer() )
    {
-      
+
    }
    else if( t->isMilestone() )
    {
-      
+
    }
    else
-   
+
    dt.setTime_t( t->getPlanStart() );
-   
+
    dt.setTime_t( t->getPlanEnd() );
-   
+
    TaskList subTasks;
    subTasks.clear();
-   
+
    t->getSubTaskList(subTasks);
    int cnt = subTasks.count();
    qDebug( "Amount of subtasks: " + QString::number(cnt) );
@@ -105,13 +105,13 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
    // qDebug( "On related widget: x=%d", p.x() );
    QPoint r = viewportToContents(p);
    // qDebug( "Converted: x=%d", r.x() );
-   
+
    QCanvasItemList il = canvas()->collisions ( r );
 
    KTVCanvasItemBase *item = 0L;
-   
+
    QCanvasItemList::iterator it;
-   
+
    for ( it = il.begin(); !item && it != il.end(); ++it )
    {
       item = static_cast<KTVTaskCanvas*>(canvas())->qCanvasItemToItemBase( *it );
@@ -122,34 +122,25 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 
 void KTVTaskCanvasView::zoomIn()
 {
+    int w = m_canvas->getDayWidth();
 
-   m_scaleFactor += 0.1;
-   QWMatrix wm;
-   wm.scale( m_scaleFactor, 1.0);
-   setWorldMatrix(wm);
-
-   update();
+    m_canvas->slSetDayWidth( int(1.2 * w));
+    update();
 }
 
 void KTVTaskCanvasView::zoomOut()
 {
-   m_scaleFactor -= 0.1;
-   QWMatrix wm;
-   wm.scale( m_scaleFactor, 1.0);
-   setWorldMatrix(wm);
-   update();
-   
+    int w = m_canvas->getDayWidth();
+
+    m_canvas->slSetDayWidth( int(0.8 * w));
+    update();
+
 }
 
 void KTVTaskCanvasView::zoomOriginal()
 {
-   m_scaleFactor = 1.0;
-   QWMatrix wm;
-   wm.scale( m_scaleFactor, 1.0);
-   setWorldMatrix(wm);
-
-   update();
-
+    m_canvas->slSetDayWidthStandard();
+    update();
 }
 
 
@@ -158,7 +149,7 @@ void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* )
 
    /* Take only the first of the collision list, that is the front most item */
 
- 
+
 }
 
 
