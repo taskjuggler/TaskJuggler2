@@ -83,9 +83,10 @@ my %res_load;
 #-- }
 
 #-- global vars
-my %hlist_entrys; #-- $hlist_entrys{taskID} = entry_ref
+my %hlist_entrys;   #-- $hlist_entrys{taskID} = entry_ref
 my $b_Print;
 my $b_Poster;
+my $par;            #-- der xml-parser
 
 #-- bunt
 my $top = MainWindow->new();
@@ -101,43 +102,49 @@ my $top = MainWindow->new();
                                         -relief     => 'groove',
                                         -command    => sub { $top->destroy }
                                         )->pack( -side => 'left');
+        my $b_reload    = $f_head->Button(  -text       => 'reload',
+                                            -relief     => 'groove',
+                                            -command    => sub { &_reload() }
+                                            )->pack( -side => 'left');
         my $b_Bunt  = $f_head->Button(  -text       => 'view gantt',
                                         -relief     => 'groove',
                                         -command    => sub { &_gantt() }
                                         )->pack( -side => 'left');
 
     #-- working bereich
-    my $f_top = $top->Frame(    -relief => 'sunken',
+    my ($f_top, $task_list, $work_area_frame);
+    sub _w_area {
+        $f_top = $top->Frame(   -relief => 'sunken',
                                 -border => 1 )->pack(   -padx   => 3,
                                                         -pady   => 3,
                                                         -expand => 'yes',
                                                         -fill   => 'both');
 
-        my $task_list = $f_top->Scrolled(qw\HList   -separator /
-                                                    -selectmode extended
-                                                    -width      30
-                                                    -height     20
-                                                    -indent     35
-                                                    -scrollbars se
-                                                    -itemtype   imagetext \
-                                            )->pack(    -side   => 'left',
-                                                        -fill   => 'y');
-            $task_list->configure( -command => sub { _display_task_data($task_list->info('data', $_[0])) } );
+             $task_list = $f_top->Scrolled(qw\HList   -separator /
+                                                        -selectmode extended
+                                                        -width      30
+                                                        -height     20
+                                                        -indent     35
+                                                        -scrollbars se
+                                                        -itemtype   imagetext \
+                                                )->pack(    -side   => 'left',
+                                                            -fill   => 'y');
+                $task_list->configure( -command => sub { _display_task_data($task_list->info('data', $_[0])) } );
 
-        my $work_area_frame = $f_top->Frame(    -relief => 'flat',
-                                                -border => 0)->pack (   -padx   => 0,
-                                                                        -pady   => 0,
-                                                                        -expand => 'yes',
-                                                                        -fill   => 'both');
-
-            #-- beim start bissle geschwafel reinschreiben
-            my $startUpTextFrame = $work_area_frame->Frame()->pack();
-                $startUpTextFrame->Label( -text => 'Welcome to the TaskJuggler-GUI' )->pack();
-                $startUpTextFrame->Label( -text => 'version 0.1' )->pack();
-                $startUpTextFrame->Label( -text => 'Copyright (c) 2002 by Remo Behn <ray@suse.de>' )->pack( -pady => 20);
-                $startUpTextFrame->Label( -text => 'This program is free software; you can redistribute it and/or modify' )->pack();
-                $startUpTextFrame->Label( -text => 'it under the terms of version 2 of the GNU General Public License as' )->pack( -padx => 5 );
-                $startUpTextFrame->Label( -text => 'published by the Free Software Foundation.' )->pack();
+             $work_area_frame = $f_top->Frame(    -relief => 'flat',
+                                                    -border => 0)->pack (   -padx   => 0,
+                                                                            -pady   => 0,
+                                                                            -expand => 'yes',
+                                                                            -fill   => 'both');
+        #-- beim start bissle geschwafel reinschreiben
+        my $startUpTextFrame = $work_area_frame->Frame()->pack();
+            $startUpTextFrame->Label( -text => 'Welcome to the TaskJuggler-GUI' )->pack();
+            $startUpTextFrame->Label( -text => 'version 0.1' )->pack();
+            $startUpTextFrame->Label( -text => 'Copyright (c) 2002 by Remo Behn <ray@suse.de>' )->pack( -pady => 20);
+            $startUpTextFrame->Label( -text => 'This program is free software; you can redistribute it and/or modify' )->pack();
+            $startUpTextFrame->Label( -text => 'it under the terms of version 2 of the GNU General Public License as' )->pack( -padx => 5 );
+            $startUpTextFrame->Label( -text => 'published by the Free Software Foundation.' )->pack();
+    }
 
     #-- statusline
     my $f_bottom = $top->Frame( -relief => 'flat',
@@ -147,7 +154,7 @@ my $top = MainWindow->new();
         my $status_line = $f_bottom->Label( -text => 'have a nice day ...'
                                             )->pack( -side => 'left', -padx => 3);
 
-
+_w_area();
 _pars_xml();
 
 my $bigPSfilename       = $project{'Id'}.'.ps';
@@ -187,6 +194,26 @@ my $page_y    = ($page_border * 2) +
 MainLoop;
 
 #-----------------------------------------------------------------------------
+sub _reload {
+    $b_Print->destroy   if ($b_Print);
+    $b_Poster->destroy  if ($b_Poster);
+    $f_top->destroy;
+    $t = undef;
+    $w = undef;
+    $r = undef;
+    %rmap = ();
+    %project = ();
+    @all_tasks = ();
+    @elm_fifo = ();
+    @task_fifo = ();
+    %res_load = ();
+    %hlist_entrys = ();
+    $b_Print = undef;
+    $b_Poster = undef;
+    _w_area();
+    _pars_xml();
+}
+
 sub _print {
     my $c = shift;
     if ( $bigPSfilename ) {
@@ -834,11 +861,13 @@ sub _fill_hlist {
 
 #------------------------- XML-STUFF -----------------------------------------
 sub _pars_xml {
-    my $par = new XML::Parser(ErrorContext => 1,
-                              Handlers     => { Start   => \&start,
-                                                End     => \&end,
-                                                Char    => \&text,
-                                                Final   => \&final });
+    unless ($par) {
+         $par = new XML::Parser(ErrorContext => 1,
+                                  Handlers     => { Start   => \&start,
+                                                    End     => \&end,
+                                                    Char    => \&text,
+                                                    Final   => \&final });
+    }
     if ( $ARGV[0] ) {
         if ( -r $ARGV[0] ) {
             print "parse xml file: $ARGV[0] ... ";
