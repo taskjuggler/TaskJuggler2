@@ -212,7 +212,36 @@ sub _reload {
     $b_Poster = undef;
     _w_area();
     _pars_xml();
+    __recal_vals();
 }
+
+sub __recal_vals {
+    $project{'h_start'} =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+    $project_start   = $project{'h_start'};
+    ($p_start_year,
+     $p_start_month,
+     $p_start_day)   = split(/-/, $project_start);
+    ($p_start_year, $p_start_month, $p_start_day) = Add_Delta_Days($p_start_year, $p_start_month, $p_start_day, -5);
+    $project{'h_end'}   =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+    $project_end     = $project{'h_end'};
+    ($p_end_year,
+     $p_end_month,
+     $p_end_day)     = split(/-/, $project_end);
+    $project_days    = Delta_Days($p_start_year, $p_start_month, $p_start_day,
+                                     $p_end_year, $p_end_month, $p_end_day);
+    ($today_year, $today_month, $today_day) = Today();
+    $task_count      = $#all_tasks+1; #-- wieviele tasks hat das projekt
+    $res_count       = scalar (keys %rmap);
+    $res_height      = (($task_height + $task_space) * $res_count);
+    $last_Y_task     = 0;
+
+    #-- calc page size
+    $page_x    = ($page_border*2) + ($project_days * $day_x) + ($page_border*2);
+    $page_y    = ($page_border * 2) +
+                 ($header_height * 3) +
+                 (($task_height + $task_space) * $task_count) + $res_height;
+}
+
 
 sub _print {
     my $c = shift;

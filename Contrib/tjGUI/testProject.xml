@@ -6,13 +6,13 @@
  <Priority>500</Priority>
  <start humanReadable="2002-04-15 00:00 CEST" >1018821600</start>
  <end humanReadable="2002-10-01 00:00 CEST" >1033423200</end>
- <now humanReadable="2002-06-20 11:18 CEST" >1024564727</now>
+ <now humanReadable="2002-06-21 12:33 CEST" >1024655593</now>
  <Task Id="testProject" >
   <Index>1</Index>
   <Name>testProject for xml2gantt</Name>
   <ProjectID>testProject</ProjectID>
   <Priority>500</Priority>
-  <complete>36.8</complete>
+  <complete>37.6</complete>
   <Type>Container</Type>
   <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
   <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
@@ -47,7 +47,7 @@
     <Name>Development</Name>
     <ProjectID>testProject</ProjectID>
     <Priority>500</Priority>
-    <complete>86.0</complete>
+    <complete>87.8</complete>
     <Type>Container</Type>
     <ParentTask>testProject</ParentTask>
     <Note>this is the global development task</Note>
@@ -120,8 +120,8 @@
       <ActualEndBufferStart humanReadable="1970-01-01 00:00 CET" >-3599</ActualEndBufferStart>
       <PlanEndBufferStart humanReadable="2002-05-10 08:59 CEST" >1022482800</PlanEndBufferStart>
       <Previous>testProject.devel.dev_1</Previous>
-      <Follower>testProject.devel.dev_3</Follower>
       <Follower>testProject.devel.dev_4</Follower>
+      <Follower>testProject.devel.dev_3</Follower>
       <Allocation ResourceID="worker_1" >
        <Load>100</Load>
        <Persistent>No</Persistent>
@@ -175,11 +175,11 @@
       <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
       <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
       <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
-      <planStart humanReadable="2002-05-30 09:00 CEST" >1022742000</planStart>
+      <planStart humanReadable="2002-05-29 09:00 CEST" >1022655600</planStart>
       <planEnd humanReadable="2002-06-28 15:59 CEST" >1025272799</planEnd>
       <EndBufferSize>5</EndBufferSize>
       <ActualEndBufferStart humanReadable="1970-01-01 00:00 CET" >-3599</ActualEndBufferStart>
-      <PlanEndBufferStart humanReadable="2002-05-30 08:59 CEST" >1025175600</PlanEndBufferStart>
+      <PlanEndBufferStart humanReadable="2002-05-29 08:59 CEST" >1025175600</PlanEndBufferStart>
       <Previous>testProject.devel.dev_2</Previous>
       <Allocation ResourceID="worker_1" >
        <Load>100</Load>
@@ -211,7 +211,7 @@
       <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
       <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
       <actualEnd humanReadable="1970-01-01 01:00 CET" >0</actualEnd>
-      <planStart humanReadable="2002-05-29 09:00 CEST" >1022655600</planStart>
+      <planStart humanReadable="2002-05-28 16:00 CEST" >1022594400</planStart>
       <planEnd humanReadable="2002-05-29 15:59 CEST" >1022680799</planEnd>
       <Previous>testProject.devel.dev_2</Previous>
       <Allocation ResourceID="worker_1" >
@@ -226,9 +226,6 @@
        <Load>84</Load>
        <Persistent>No</Persistent>
       </Allocation>
-      <Resource Id="worker_3" >Foo Bar</Resource>
-      <Resource Id="worker_2" >Bar Baz</Resource>
-      <Resource Id="worker_1" >Alfred Qwertz</Resource>
      </Task>
     </SubTasks>
     <Previous>testProject.start</Previous>
