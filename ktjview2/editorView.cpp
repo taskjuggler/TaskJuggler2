@@ -93,7 +93,7 @@ bool EditorView::loadDocument( const KURL & url )
         return false;
     }
 
-    kdDebug() << "Opening URL " << url << endl;
+    //kdDebug() << "Opening URL " << url << endl;
 
     KTextEditor::markInterface( doc() )->clearMarks();
     return doc()->openURL( url ); // also calls closeURL()
