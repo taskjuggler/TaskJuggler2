@@ -77,11 +77,8 @@ void KTjview::load(const KURL& url)
 
 void KTjview::setupActions()
 {
-    KTjviewPart *viewer = static_cast<KTjviewPart*>( m_part );
-    
     KStdAction::openNew(this, SLOT(fileNew()), actionCollection());
     KStdAction::quit(kapp, SLOT(quit()), actionCollection());
-    // KStdAction::revert( viewer, SLOT(slReload()), actionCollection() );
     
     m_toolbarAction = KStdAction::showToolbar(this, SLOT(optionsShowToolbar()), actionCollection());
     m_statusbarAction = KStdAction::showStatusbar(this, SLOT(optionsShowStatusbar()), actionCollection());
