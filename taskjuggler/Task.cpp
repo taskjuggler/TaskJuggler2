@@ -217,8 +217,8 @@ Task::errorMessage(const char* msg, ...) const
 {
     va_list ap;
     va_start(ap, msg);
-    char buf[1024];
-    vsnprintf(buf, 1024, msg, ap);
+    char buf[2048];
+    vsnprintf(buf, sizeof(buf), msg, ap);
     va_end(ap);
 
     TJMH.errorMessage(buf, file, line);
