@@ -201,7 +201,7 @@ HTMLAccountReport::generateTableHeader()
 			htmlMonthlyHeaderYears();
 		else
 		{
-			qWarning("Unknown Column '%s' for HTML Task Report\n",
+			qWarning("Unknown Column '%s' for HTML Account Report\n",
 					(*it).latin1());
 			return FALSE;
 		}
