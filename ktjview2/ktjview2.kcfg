@@ -16,7 +16,7 @@
       <default>green</default>
     </entry>
     <entry name="GroupColor" type="Color">
-      <label>Color task group items.</label>
+      <label>Color for task group items.</label>
       <default>cyan</default>
     </entry>
     <entry name="MilestoneColor" type="Color">
