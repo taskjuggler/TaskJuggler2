@@ -93,7 +93,7 @@ TaskList::getTask(const QString& id)
 }
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
-		   const QString f, int l)
+		   const QString& f, int l)
 	: CoreAttributes(proj, id_, n, p), file(f), line(l)
 {
 	allocations.setAutoDelete(TRUE);
@@ -1248,7 +1248,24 @@ Task::finishActual()
 	actualBookedResources = bookedResources;
 }
 
-QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
+double Task::getCompleteAtTime(time_t timeSpot) const
+{
+   if( complete != -1 ) return( complete );
+
+   time_t start = getPlanStart();
+   time_t end = getPlanEnd();
+
+   if( timeSpot > end ) return 100.0;
+   if( timeSpot < start ) return 0.0;
+   
+   time_t interval = end - start;
+   time_t done = timeSpot - start;
+
+   return 100./interval*done;
+}
+
+
+QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 {
    QDomElement taskElem = doc.createElement( "Task" );
    QDomElement tempElem;
@@ -1264,7 +1281,9 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Name", getName() ));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "ProjectID", projectId ));
    taskElem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number(getPriority())));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(complete) ));
+
+   double cmplt = getCompleteAtTime( getProject()->getNow());
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(cmplt, 'f', 1) ));
 
    QString tType = "Milestone";
    if( !milestone )
@@ -1469,7 +1488,7 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 
 #ifdef HAVE_KDE
 
-void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal *cal )
+void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
 {
    if( !todo ) return;
    QDateTime dt;
@@ -1506,5 +1525,68 @@ void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal *cal )
    
 }
 
+#endif /* HAVE_KDE */
 
-#endif
+void Task::loadFromXML( QDomElement& parent, Project *project )
+{
+   QDomElement elem = parent.firstChild().toElement();
+
+   for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
+   {
+      qDebug(  "**Task -elemType: " + elem.tagName() );
+      QString elemTagName = elem.tagName();
+
+      if( elemTagName == "Name" )
+      {
+        setName( elem.text());
+      }
+      else if( elemTagName == "SubTasks" )
+      {                       
+	 qDebug(  "## Subtasks found !");
+	 QDomElement subTaskElem = elem.firstChild().toElement();
+	 for( ; !subTaskElem.isNull(); subTaskElem = subTaskElem.nextSibling().toElement() )
+	 {
+	    /* Recursive call for more tasks */
+	    QString stId = subTaskElem.attribute("Id");
+	    qDebug( "Recursing to elem " + stId );
+	    Task *t = new Task( project, stId, QString(), this, QString(), 0 );
+	    addSub(t);
+	    t->loadFromXML( subTaskElem, project );
+	    project->addTask(t);
+	    qDebug( "Recursing to elem " + stId + " <FIN>");
+	 }
+      }
+      else if( elemTagName == "Previous" )
+      {
+	 addDependency( elem.text() );
+      }
+      else if( elemTagName == "Follower" )
+      {
+	 addPreceeds( elem.text() );
+      }
+      else if( elemTagName == "Index" )
+	 setIndex( elem.text().toUInt());
+      else if( elemTagName == "Priority" )
+        setPriority( elem.text().toInt() );
+      else if( elemTagName == "complete" )
+        setComplete( elem.text().toInt() );
+      /* time-stuff: */
+      else if( elemTagName == "minStart" )
+	 setMinStart( elem.text().toLong());
+      else if( elemTagName == "maxStart" )
+	 setMaxStart( elem.text().toLong() );
+      else if( elemTagName == "minEnd" )
+	 setMinEnd( elem.text().toLong() );
+      else if( elemTagName == "maxEnd" )
+	 setMaxEnd( elem.text().toLong() );
+      else if( elemTagName == "actualStart" )
+	 setActualStart( elem.text().toLong() );
+      else if( elemTagName == "actualEnd" )
+	 setActualEnd( elem.text().toLong() );
+      else if( elemTagName == "planStart" )
+	 setPlanStart( elem.text().toLong() );
+      else if( elemTagName == "planEnd" )
+	 setPlanEnd( elem.text().toLong() );
+   }
+}
+

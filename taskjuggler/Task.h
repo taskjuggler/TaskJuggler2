@@ -64,10 +64,10 @@ class Task : public CoreAttributes
 
 public:
 	Task(Project* prj, const QString& id_, const QString& n, Task* p,
-		 const QString f, int l);
+		 const QString& f, int l);
 	virtual ~Task() { }
 
-	virtual char* getType() { return "Task"; }
+	virtual const char* getType() { return "Task"; }
 
 	enum SchedulingInfo { ASAP, ALAP };
 
@@ -99,7 +99,8 @@ public:
 
 	void setComplete(int c) { complete = c; }
 	double getComplete() const { return complete; }
-
+        double getCompleteAtTime( time_t ) const;
+   
 	void setResponsible(Resource* r) { responsible = r; }
 	Resource* getResponsible() const { return responsible; }
 
@@ -281,6 +282,8 @@ public:
    void toTodo( KCal::Todo *, KCal::CalendarLocal * );
 #endif
 
+   void loadFromXML( QDomElement& parent, Project *project );
+   
 private:
 	bool scheduleContainer(bool safeMode);
 	Task* subFirst() { return (Task*) sub.first(); }
