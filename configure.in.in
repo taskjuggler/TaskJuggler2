@@ -23,9 +23,10 @@ if test "$cv_option_kdesupport" = yes ;then
     #        for your system here.
     KDE_LIBS='-lkcal'
    dnl LIBICAL="-lical -lkcal"
+   DO_NOT_COMPILE="Examples Contrib"
 else
    AC_MSG_RESULT(no)
-   DO_NOT_COMPILE="ktjview"
+   DO_NOT_COMPILE="Examples ktjview Contrib"
 fi
 
 dnl AC_SUBST(LIBICAL)
