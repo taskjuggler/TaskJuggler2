@@ -449,7 +449,7 @@ HTMLReportElement::genHeadDaily1(TableCellInfo* tci)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">"; 
-        mt.setMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(day)),
@@ -613,20 +613,20 @@ HTMLReportElement::genHeadMonthly1(TableCellInfo* tci)
          year = beginOfYear(sameTimeNextYear(year)))
     {
         int left = monthLeftInYear(year);
-        if (left > monthsBetween(year, end))
-            left = monthsBetween(year, end);
+        if (left > monthsBetween(year, end) + 1)
+            left = monthsBetween(year, end) + 1;
         s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\"";
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.setMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "01",
                               defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("month"), "1",
+        mt.setMacro(new Macro(KW("month"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"), "1",
                               defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"), "1",
+        mt.setMacro(new Macro(KW("week"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
@@ -658,10 +658,10 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo* tci)
         s() << ">";
         if (month < 10)
             s() << "&nbsp;";
-        mt.setMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfYear(moy)),
+                              QString().sprintf("%02d", moy),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
@@ -672,7 +672,7 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo* tci)
                               ("%02d", weekOfYear(month, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", year(moy)),
+                              QString().sprintf("%04d", year(month)),
                               defFileName, defFileLine));
         generateSubTitle(tci, shortMonthName(moy - 1));
         s() << "</td>" << endl;
@@ -687,20 +687,20 @@ HTMLReportElement::genHeadQuarterly1(TableCellInfo* tci)
          year = beginOfYear(sameTimeNextYear(year)))
     {
         int left = quartersLeftInYear(year);
-        if (left > quartersBetween(year, end))
-            left = quartersBetween(year, end);
+        if (left > quartersBetween(year, end) + 1)
+            left = quartersBetween(year, end) + 1;
         s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\"";
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.setMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "01",
                               defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("month"), "1",
+        mt.setMacro(new Macro(KW("month"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"), "1",
                               defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"), "1", 
+        mt.setMacro(new Macro(KW("week"), "01", 
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
@@ -737,20 +737,20 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo* tci)
             s() << " class=\"tj_header_cell\"";
         s() << ">";
         mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d",
-                                                           dayOfMonth(qoy)),
+                                                           dayOfMonth(quarter)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfYear(qoy)),
+                              QString().sprintf("%02d", monthOfYear(quarter)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"),
-                              QString().sprintf("%d", quarterOfYear(qoy)),
+                              QString().sprintf("%d", qoy),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("week"),
                               QString().sprintf
                               ("%02d", weekOfYear(quarter, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", year(qoy)),
+                              QString().sprintf("%04d", year(quarter)),
                               defFileName, defFileLine));
         generateSubTitle(tci, i18n(qnames[qoy - 1]));
         s() << "</td>" << endl;
@@ -776,7 +776,7 @@ HTMLReportElement::genHeadYear(TableCellInfo* tci)
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"), "1",
                               defFileName, defFileLine));
-        mt.setMacro(new Macro(KW("week"), "1",
+        mt.setMacro(new Macro(KW("week"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),

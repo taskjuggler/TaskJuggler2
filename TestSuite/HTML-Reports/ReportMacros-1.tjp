@@ -12,9 +12,11 @@ task t1 "Task 1" {
 }
 
 task t2 "Task t2" {
-	start 2003-06-18
-	effort 10d
-	allocate r2
+	task t3 "Task 3" {
+	  start 2003-06-18
+	  effort 10d
+	  allocate r2
+	}
 }
 
 htmltaskreport "." {
@@ -25,10 +27,36 @@ htmltaskreport "." {
 	        name {
 							celltext "$${id}"
 					},
-					weekly {
-						titleurl "http://$${month}"
+					daily {
+						titleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
 						subtitleurl
-					 	"xx http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+					},
+					weekly {
+						titleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+						subtitleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+					},
+					monthly {
+						titleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+						subtitleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+					},
+					quarterly {
+						titleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+						subtitleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+					},
+					yearly {
+						titleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+						subtitleurl
+					 	"http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
 					}
+	hideresource 0
 }
 	

@@ -14,6 +14,7 @@
 
 #include "HTMLReport.h"
 #include "Project.h"
+#include "Utility.h"
 
 HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df, 
                        int dl) :
@@ -57,7 +58,8 @@ HTMLReport::generateFooter()
     if (!project->getCopyright().isEmpty())
         s << htmlFilter(project->getCopyright()) << " - ";
     s << "Version " << htmlFilter(project->getVersion())
-      << " - Created with <a HREF=\"" << TJURL <<
+      << " - Created at " << time2user(time(0), timeFormat) 
+      << " with <a HREF=\"" << TJURL <<
       "\">TaskJuggler</a> <a HREF=\"" << TJURL << "/download.php\">v"
       << VERSION << "</a></span></p>" << endl << "</body>\n";
 }
