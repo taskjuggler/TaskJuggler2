@@ -285,8 +285,10 @@ bool ktjview2View::openURL( const KURL& url )
             if ( !xf->parse() )
             {
                 syntaxError = true;
+                errorFile = tmpFile;
                 progressDlg.cancel();
-                KMessageBox::error( this, i18n( "Taskjuggler failed to parse the project file. Most probably there is a syntax error.\n"
+                KMessageBox::error( this, i18n( "Taskjuggler failed to parse the project file. "
+                                                "Most probably there is a syntax error.\n"
                                                 "You should edit the project and try to fix it.") );
             }
         }
@@ -338,6 +340,7 @@ bool ktjview2View::openURL( const KURL& url )
     progressDlg.setLabel( i18n( "Generating cross references" ) );
     if ( !m_project->pass2( false ) )
     {
+        syntaxError = true;
         progressDlg.cancel();
         //KMessageBox::error( this, i18n( "Taskjugggler failed to generate cross references on data structures." ) );
         //return false;
@@ -348,6 +351,7 @@ bool ktjview2View::openURL( const KURL& url )
     progressDlg.setLabel( i18n( "Scheduling all scenarios" ) );
     if ( !m_project->scheduleAllScenarios() )
     {
+        syntaxError = true;
         progressDlg.cancel();
         //KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
         //return false;

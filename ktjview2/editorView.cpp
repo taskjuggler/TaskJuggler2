@@ -83,9 +83,18 @@ bool EditorView::loadDocument( const KURL & url )
     if ( !doc() )
         return false;
 
+    doc()->setReadWrite( true );
+
+    if ( url.url().endsWith( ".tjx" ) ) // XML file, perhaps compressed
+    {
+        KTextEditor::editInterface( doc() )->setText( i18n( "This file is compressed XML. Editting has been disabled." ) );
+        doc()->setModified( false );
+        doc()->setReadWrite( false );
+        return false;
+    }
+
     kdDebug() << "Opening URL " << url << endl;
 
-    doc()->setReadWrite( true );
     KTextEditor::markInterface( doc() )->clearMarks();
     return doc()->openURL( url ); // also calls closeURL()
 }
