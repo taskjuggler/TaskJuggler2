@@ -15,7 +15,8 @@
 
 #include <stdio.h>
 
-#define EOM (EOF - 1)
+#define EOFile 0xFFFF
+#define EOMacro 0xFFFE
 
 typedef enum
 {

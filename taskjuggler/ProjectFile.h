@@ -24,6 +24,7 @@
 #include "Token.h"
 #include "MacroTable.h"
 
+class QTextStream;
 class ProjectFile;
 class Project;
 class Operation;
@@ -38,8 +39,8 @@ public:
 	bool open();
 	bool close();
 
-	int getC(bool expandMacros = TRUE);
-	void ungetC(int c);
+	QChar getC(bool expandMacros = TRUE);
+	void ungetC(QChar c);
 	void expandMarco(QString& c);
 
 	const QString& getFile() const { return file; }
@@ -58,7 +59,7 @@ public:
 	void fatalError(const char* msg, ...);
 
 private:
-	bool getDateFragment(QString& token, int& c);
+	bool getDateFragment(QString& token, QChar& c);
 
 	/**
 	 * A pointer to the ProjectFile class that stores all read-in
@@ -69,8 +70,11 @@ private:
 	// The name of the file.
 	QString file;
 
-	// The file handle used to read the file.
-	FILE* f;
+	// The file handle of the file to read.
+	FILE* fh;
+
+	// The stream used to read the file.
+	QTextStream* f;
 
 	// The number of the line currently being read.
 	int currLine;
@@ -91,7 +95,7 @@ private:
 	 * A buffer for characters that have been pushed back again. This
 	 * simplifies file parsing in some situations.
 	 */
-	QValueList<int> ungetBuf;
+	QValueList<QChar> ungetBuf;
 
 	/**
      * Besides read in characters we can also push back a token. Contrary to

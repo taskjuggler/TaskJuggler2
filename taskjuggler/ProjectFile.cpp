@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <qtextstream.h>
 #include <qregexp.h>
 
 #include "ProjectFile.h"
@@ -50,10 +51,16 @@ bool
 FileInfo::open()
 {
 	if (file.right(2) == "/.")
-		f = stdin;
+	{
+		f = new QTextStream(stdin, IO_ReadOnly);
+		fh = stdin;
+	}
 	else
-		if ((f = fopen(file, "r")) == 0)
+	{
+		if ((fh = fopen(file, "r")) == 0)
 			return FALSE;
+		f = new QTextStream(fh, IO_ReadOnly);
+	}
 
 	lineBuf = "";
 	currLine = 1;
@@ -63,29 +70,32 @@ FileInfo::open()
 bool
 FileInfo::close()
 {
-	if (f == stdin)
+	delete f;
+	if (fh == stdin)
 		return TRUE;
 
-	if (fclose(f) == EOF)
+	if (fclose(fh) == EOF)
 		return FALSE;
 
 	return TRUE;
 }
 
-int
+QChar
 FileInfo::getC(bool expandMacros)
 {
  BEGIN:
-	int c;
+	QChar c;
 	if (ungetBuf.isEmpty())
 	{
-		c = getc(f);
+		*f >> c;
+		if (feof(fh))
+			c = QChar(EOFile);
 	}
 	else
 	{
 		c = ungetBuf.last();
 		ungetBuf.remove(ungetBuf.fromLast());
-		if (c == EOM)
+		if (c.unicode() == EOMacro)
 		{
 			macroStack.removeLast();
 			pf->getMacros().popArguments();
@@ -98,7 +108,7 @@ FileInfo::getC(bool expandMacros)
 	{
 		if (c == '$')
 		{
-			int d;
+			QChar d;
 			if ((d = getC(FALSE)) == '{')
 			{
 				// remove $ from lineBuf;
@@ -119,26 +129,26 @@ FileInfo::getC(bool expandMacros)
 }
 
 void
-FileInfo::ungetC(int c)
+FileInfo::ungetC(QChar c)
 {
 	lineBuf = lineBuf.left(lineBuf.length() - 1);
 	ungetBuf.append(c);
 }
 
 bool
-FileInfo::getDateFragment(QString& token, int& c)
+FileInfo::getDateFragment(QString& token, QChar& c)
 {
 	token += c;
 	c = getC();
 	// c must be a digit
-	if (!isdigit(c))
+	if (!c.isDigit())
 	{
 		fatalError("Corrupted date");
 		return FALSE;
 	}
 	token += c;
 	// read other digits
-	while ((c = getC()) != EOF && isdigit(c))
+	while ((c = getC()).unicode() != EOFile && c.isDigit())
 		token += c;
 
 	return TRUE;
@@ -169,11 +179,11 @@ FileInfo::nextToken(QString& token)
 	// skip blanks and comments
 	for ( ; ; )
 	{
-		int c = getC();
+		QChar c = getC();
+		if (c.unicode() == EOFile)
+			return EndOfFile;
 		switch (c)
 		{
-		case EOF:
-			return EndOfFile;
 		case ' ':
 		case '\t':
 			break;
@@ -188,7 +198,7 @@ FileInfo::nextToken(QString& token)
 					{
 						if (c == '\n')
 							currLine++;
-						else if (c == EOF)
+						else if (c.unicode() == EOFile)
 						{
 							fatalError("Unterminated comment");
 							return EndOfFile;
@@ -204,9 +214,9 @@ FileInfo::nextToken(QString& token)
 			}
 			break;
 		case '#':	// Comments start with '#' and reach towards end of line
-			while ((c = getC(FALSE)) != '\n' && c != EOF)
+			while ((c = getC(FALSE)) != '\n' && c.unicode() != EOFile)
 				;
-			if (c == EOF)
+			if (c.unicode() == EOFile)
 				return EndOfFile;
 			// break missing on purpose
 		case '\n':
@@ -225,8 +235,8 @@ FileInfo::nextToken(QString& token)
 	// analyse non blank characters
 	for ( ; ; )
 	{
-		int c = getC();
-		if (c == EOF)
+		QChar c = getC();
+		if (c.unicode() == EOFile)
 		{
 			fatalError("Unexpected end of file");
 			return EndOfFile;
@@ -234,7 +244,7 @@ FileInfo::nextToken(QString& token)
 		else if (isalpha(c) || (c == '_') || (c == '!'))
 		{
 			token += c;
-			while ((c = getC()) != EOF &&
+			while ((c = getC()).unicode() != EOFile &&
 				   (isalnum(c) || (c == '_') || (c == '.') || (c == '!')))
 				token += c;
 			ungetC(c);
@@ -248,11 +258,11 @@ FileInfo::nextToken(QString& token)
 			else
 				return ID;
 		}
-		else if (isdigit(c))
+		else if (c.isDigit())
 		{
 			// read first number (maybe a year)
 			token += c;
-			while ((c = getC()) != EOF && isdigit(c))
+			while ((c = getC()).unicode() != EOFile && c.isDigit())
 				token += c;
 			if (c == '-')
 			{
@@ -282,7 +292,7 @@ FileInfo::nextToken(QString& token)
 					/* Timezone can either be a name (ref.
 					 * Utility::timezone2tz) or GMT[+-]hh:mm */
 					token += c;
-					while ((c = getC()) != EOF &&
+					while ((c = getC()).unicode() != EOFile &&
 						   (isalnum(c) || c == '+' || c == '-' || c == ':')
 						   && i++ < 9)
 						token += c;
@@ -294,7 +304,7 @@ FileInfo::nextToken(QString& token)
 			{
 				// must be a real number
 				token += c;
-				while ((c = getC()) != EOF && isdigit(c))
+				while ((c = getC()).unicode() != EOFile && c.isDigit())
 					token += c;
 				ungetC(c);
 				return REAL;
@@ -305,7 +315,7 @@ FileInfo::nextToken(QString& token)
 				token += c;
 				for (int i = 0; i < 2; i++)
 				{
-					if ((c = getC()) != EOF && isdigit(c))
+					if ((c = getC()).unicode() != EOFile && c.isDigit())
 						token += c;
 					else
 					{
@@ -324,13 +334,13 @@ FileInfo::nextToken(QString& token)
 		else if (c == '\'')
 		{
 			// single quoted string
-			while ((c = getC()) != EOF && c != '\'')
+			while ((c = getC()).unicode() != EOFile && c != '\'')
 			{
 				if (c == '\n')
 					currLine++;
 				token += c;
 			}
-			if (c == EOF)
+			if (c.unicode() == EOFile)
 			{
 				fatalError("Non terminated string");
 				return EndOfFile;
@@ -340,13 +350,13 @@ FileInfo::nextToken(QString& token)
 		else if (c == '"')
 		{
 			// double quoted string
-			while ((c = getC()) != EOF && c != '"')
+			while ((c = getC()).unicode() != EOFile && c != '"')
 			{
 				if (c == '\n')
 					currLine++;
 				token += c;
 			}
-			if (c == EOF)
+			if (c.unicode() == EOFile)
 			{
 				fatalError("Non terminated string");
 				return EndOfFile;
@@ -356,7 +366,8 @@ FileInfo::nextToken(QString& token)
 		else if (c == '[')
 		{
 			int nesting = 0;
-			while ((c = getC(FALSE)) != EOF && (c != ']' || nesting > 0))
+			while ((c = getC(FALSE)).unicode() != EOFile &&
+				   (c != ']' || nesting > 0))
 			{
 				if (c == '[')
 					nesting++;
@@ -366,7 +377,7 @@ FileInfo::nextToken(QString& token)
 					currLine++;
 				token += c;
 			}
-			if (c == EOF)
+			if (c.unicode() == EOFile)
 			{
 				fatalError("Non terminated macro definition");
 				return EndOfFile;
@@ -375,7 +386,7 @@ FileInfo::nextToken(QString& token)
 		}
 		else
 		{
-			token += QChar(c);
+			token += c;
 			switch (c)
 			{
 			case '{':
@@ -397,8 +408,9 @@ FileInfo::nextToken(QString& token)
 			case '|':
 				return OR;
 			default:
-				fatalError("Illegal character '%c'", c);
-				return EndOfFile;
+				fatalError("Illegal character '%c' (Unicode %d)", c.latin1(),
+						   c.unicode());
+				return INVALID;
 			}
 		}
 	}
@@ -441,7 +453,7 @@ FileInfo::readMacroCall()
 	macroStack.append(pf->getMacros().getMacro(id));
 
 	// mark end of macro
-	ungetC(EOM);
+	ungetC(QChar(EOMacro));
 	// push expanded macro reverse into ungetC buffer.
 	for (int i = macro.length() - 1; i >= 0; --i)
 		ungetC(macro[i].latin1());
