@@ -55,6 +55,8 @@ void
 ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
 {
     s << "<tr valign=\"middle\">";
+    const QString blank( "&nbsp;");
+    
     for (QStringList::Iterator it = columns.begin(); it != columns.end();
          ++it )
     {
@@ -86,16 +88,16 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
               << time2user(t->getEnd(Task::Plan) + 1, timeFormat)
               << "</td>" << endl;
         else if (*it == KW("minstart"))
-            textTwoRows(t->getMinStart() == 0 ? "&nbsp;" :
+            textTwoRows(t->getMinStart() == 0 ? blank :
                         time2user(t->getMinStart(), timeFormat), r != 0, "");
         else if (*it == KW("maxstart"))
-            textTwoRows(t->getMaxStart() == 0 ? "&nbsp;" :
+            textTwoRows(t->getMaxStart() == 0 ? blank :
                         time2user(t->getMaxStart(), timeFormat), r != 0, "");
         else if (*it == KW("minend"))
-            textTwoRows(t->getMinEnd() == 0 ? "&nbsp;" :
+            textTwoRows(t->getMinEnd() == 0 ? blank :
                         time2user(t->getMinEnd(), timeFormat), r != 0, "");
         else if (*it == KW("maxend"))
-            textTwoRows(t->getMaxEnd() == 0 ? "&nbsp;" :
+            textTwoRows(t->getMaxEnd() == 0 ? blank :
                         time2user(t->getMaxEnd(), timeFormat), r != 0, "");
         else if (*it == KW("startbuffer"))
             textTwoRows(QString().sprintf
