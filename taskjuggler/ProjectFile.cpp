@@ -69,8 +69,10 @@ ProjectFile::ProjectFile(Project* p)
 
 bool
 ProjectFile::open(const QString& file, const QString& parentPath,
-                  const QString& taskPrefix)
+                  const QString& taskPrefix, bool masterfile)
 {
+    if (masterfile)
+        masterFile = file;
     QString absFileName = file;
     if (DEBUGPF(10))
         qDebug("Requesting to open file %s", file.latin1());
@@ -933,6 +935,40 @@ ProjectFile::getTaskPrefix()
         return QString::null;
 
     return openFiles.last()->getTaskPrefix();
+}
+
+bool
+ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
+{
+    QTextStream* f;
+    FILE* fh;
+    if (fileName.isEmpty())
+    {
+        f = new QTextStream(stdout, IO_WriteOnly);
+        fh = stdout;
+    }
+    else
+    {
+        if ((fh = fopen(fileName, append ? "a" : "w")) == 0)
+            return FALSE;
+        f = new QTextStream(fh, append ? IO_Append : IO_WriteOnly);
+    }
+    *f << masterFile << ": \\" << endl;
+    bool first = TRUE;
+    for (QStringList::ConstIterator it = includedFiles.begin();
+         it != includedFiles.end(); ++it)
+    {
+        if (first)
+            first = FALSE;
+        else
+            *f << " \\" << endl;
+        *f << "  " << *it;
+    }
+
+    if (!fileName.isEmpty())
+        fclose(fh);
+
+    return TRUE;
 }
 
 void

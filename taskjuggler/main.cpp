@@ -60,6 +60,10 @@ usage(QApplication& a)
         "   --version            - print the version and copyright info\n"
         "   -v                   - same as '--version'\n"
         "   -s                   - stop after syntax check\n"
+        "   -M                   - output include dependencies for\n"
+        "                          make utilities\n"
+        "   --makefile <file>    - generate include dependencies for make\n"
+        "                          utilities into the specified file\n" 
         "   --nodepcheck         - don't search for dependency loops\n"
         "   --debug N            - print debug output, N must be between\n"
         "                          0 and 40, the higher N the more output\n"
@@ -82,10 +86,12 @@ int main(int argc, char *argv[])
     int debugMode = -1;
     bool updateKotrusDB = FALSE;
     bool checkOnlySyntax = FALSE;
+    bool generateMakeDepList = FALSE;
     bool noDepCheck = FALSE;
     bool showHelp = FALSE;
     bool showCopyright = FALSE;
     bool terminateProgram = FALSE;
+    QString makeDepFile;
 
     int i;
     for (i = 1 ; i < a.argc() && a.argv()[i][0] == '-'; i++)
@@ -95,7 +101,7 @@ int main(int argc, char *argv[])
         {
             if (i + 1 >= a.argc())
             {
-                qWarning("--debug needs numerical argument");
+                qWarning(i18n("--debug needs numerical argument"));
                 showCopyright = showHelp = terminateProgram = TRUE;
             }
             debugLevel = QString(a.argv()[++i]).toInt();
@@ -104,16 +110,28 @@ int main(int argc, char *argv[])
         {
             if (i + 1 >= a.argc())
             {
-                qWarning("--dbmode needs numerical argument");
+                qWarning(i18n("--dbmode needs numerical argument"));
                 showCopyright = showHelp = terminateProgram = TRUE;
             }
             debugMode = QString(a.argv()[++i]).toInt();
+        }
+        else if (strcmp(a.argv()[i], "--makefile") == 0)
+        {
+            if (i + 1 >= a.argc())
+            {
+                qWarning(i18n("--makefile needs filename argument"));
+                showCopyright = showHelp = terminateProgram = TRUE;
+            }
+            makeDepFile = a.argv()[++i];
+            generateMakeDepList = TRUE;
         }
         else if (strcmp(a.argv()[i], "--version") == 0 ||
                  strcmp(a.argv()[i], "-v") == 0)
             showCopyright = TRUE;
         else if (strcmp(a.argv()[i], "-s") == 0)
             checkOnlySyntax = TRUE;
+        else if (strcmp(a.argv()[i], "-M") == 0)
+            generateMakeDepList = TRUE;
         else if (strcmp(a.argv()[i], "--nodepcheck") == 0)
             noDepCheck = TRUE;
         else if (strcmp(a.argv()[i], "--updatedb") == 0)
@@ -150,12 +168,17 @@ int main(int argc, char *argv[])
     if (getcwd(cwd, 1023) == 0)
         qFatal("main(): getcwd() failed");
     Project p;
+    bool first = TRUE;
     for ( ; i < argc; i++)
     {
         ProjectFile* pf = new ProjectFile(&p);
-        if (!pf->open(a.argv()[i], QString(cwd) + "/", ""))
+        if (!pf->open(a.argv()[i], QString(cwd) + "/", "", TRUE))
             exit(EXIT_FAILURE);
         parseErrors |= !pf->parse();
+        if (generateMakeDepList)
+            pf->generateMakeDepList(makeDepFile, !first);
+        if (first)
+            first = FALSE;
         delete pf;
     }
 
@@ -164,7 +187,7 @@ int main(int argc, char *argv[])
     bool logicalErrors = !p.pass2(noDepCheck);
     bool schedulingErrors = FALSE;
 
-    if (!checkOnlySyntax)
+    if (!(checkOnlySyntax || generateMakeDepList))
     {
         schedulingErrors = p.getAllocationErrors() || !p.scheduleAllScenarios();
         if (updateKotrusDB)

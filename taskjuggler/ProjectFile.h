@@ -61,9 +61,11 @@ public:
      * @param taskPrefix The ID prefix of the parent task. This is needed when
      * the tasks of the project file should be read as a sub-task of an
      * already existing task.
+     * @param This flag must be true if a top-level file should be processed.
+     * This is a file, that is not included by any other file.
      */
     bool open(const QString& file, const QString& parentPath,
-              const QString& taskPrefix);
+              const QString& taskPrefix, bool masterfile = FALSE);
     /**
      * Close the just read input file.
      */
@@ -103,6 +105,8 @@ public:
     bool moreFiles() { return !openFiles.isEmpty(); }
 
     const QString& getTaskPrefix();
+
+    bool generateMakeDepList(const QString& fileName, bool append) const;
 
     void errorMessage(const char* msg, ...);
 

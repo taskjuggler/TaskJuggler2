@@ -99,13 +99,13 @@ FileInfo::getC(bool expandMacros)
                 goto BEGIN;
             }
             else if (d == '(')
-	    {
+            {
                 // remove $( from lineBuf;
                 lineBuf = lineBuf.left(lineBuf.length() - 2);
                 readEnvironment();
                 goto BEGIN;
-	    }
-	    else
+            }
+            else
             {
                 // $$ escapes $, so discard 2nd $
                 if (d != '$')
@@ -500,16 +500,16 @@ FileInfo::readEnvironment()
 
     if (value != 0)
     {
-	id = value;
+        id = value;
     }
     else
     {
-	id = "";
+        id = "";
     }
 
     // push expanded macro reverse into ungetC buffer.
     for (int i = id.length() - 1; i >= 0; --i)
-	ungetBuf.append(id[i].latin1());
+        ungetBuf.append(id[i].latin1());
 
     return TRUE;
 }
