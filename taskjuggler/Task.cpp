@@ -120,34 +120,61 @@ Task::schedule(time_t date, time_t slotDuration)
 	if (!sub.isEmpty())
 		return scheduleContainer();
 
+	bool limitChanged = FALSE;
+	if (start == 0 &&
+		(scheduling == Task::ASAP ||
+		 (length == 0.0 && duration == 0.0 && effort == 0.0 && !milestone)))
+	{
+		/* No start time has been specified. The start time is either
+		 * start time of the parent (or the project start time if the
+		 * tasks has no previous tasks) or the start time is
+		 * determined by the end date of the last previous task. */
+		time_t es;
+		if (depends.count() == 0)
+		{
+			if (parent == 0)
+				start = project->getStart();
+			else if (getParent()->start != 0)
+				start = getParent()->start;
+			else
+				return TRUE;
+		}
+		else if ((es = earliestStart()) > 0)
+			start = es;
+		else
+			return TRUE;	// Task cannot be scheduled yet.
+
+		limitChanged = TRUE;
+	}
+
+	if (end == 0 &&
+		(scheduling == Task::ALAP ||
+		 (length == 0.0 && duration == 0.0 && effort == 0.0 && !milestone)))
+	{	
+		/* No end time has been specified. The end time is either end
+		 * time of the parent (or the project end time if the tasks
+		 * has no previous tasks) or the end time is determined by the
+		 * start date of the earliest following task. */
+		time_t le;
+		if (preceeds.count() == 0)
+		{
+			if (parent == 0)
+				end = project->getEnd();
+			else if (getParent()->end != 0)
+				end = getParent()->end;
+			else
+				return TRUE;
+		}
+		else if ((le = latestEnd()) > 0)
+			end = le;
+		else
+			return TRUE;	// Task cannot be scheduled yet.
+		
+		limitChanged = TRUE;
+	}
+
 	if (scheduling == Task::ASAP)
 	{
-		bool startChanged = FALSE;
-		if (start == 0)
-		{
-			/* No start time has been specified. The start time is
-			 * either start time of the parent (or the project start
-			 * time if the tasks has no previous tasks) or the start
-			 * time is determined by the end date of the last previous
-			 * task. */
-			time_t es;
-			if (depends.count() == 0)
-			{
-				if (parent == 0)
-					start = project->getStart();
-				else if (getParent()->start != 0)
-					start = getParent()->start;
-				else
-					return TRUE;
-			}
-			else if ((es = earliestStart()) > 0)
-				start = es;
-			else
-				return TRUE;	// Task cannot be scheduled yet.
-
-			startChanged = TRUE;
-			lastSlot = 0;
-		}
 		if (lastSlot == 0)
 		{
 			lastSlot = start - 1;
@@ -160,38 +187,11 @@ Task::schedule(time_t date, time_t slotDuration)
 		/* Do not schedule anything if the time slot is not directly
 		 * following the time slot that was previously scheduled. */
 		if (date != lastSlot + 1)
-			return !startChanged;
+			return !limitChanged;
 		lastSlot = date + slotDuration - 1;
-
 	}
-	else if (scheduling == Task::ALAP)
+	else
 	{
-		bool endChanged = FALSE;
-		if (end == 0)
-		{
-			/* No end time has been specified. The end time is either
-			 * end time of the parent (or the project end time if the
-			 * tasks has no previous tasks) or the end time is
-			 * determined by the start date of the earliest following
-			 * task. */
-			time_t le;
-			if (preceeds.count() == 0)
-			{
-				if (parent == 0)
-					end = project->getEnd();
-				else if (getParent()->end != 0)
-					end = getParent()->end;
-				else
-					return TRUE;
-			}
-			else if ((le = latestEnd()) > 0)
-				end = le;
-			else
-				return TRUE;	// Task cannot be scheduled yet.
-
-			endChanged = TRUE;
-			lastSlot = 0;
-		}
 		if (lastSlot == 0)
 		{
 			lastSlot = end + 1;
@@ -204,7 +204,7 @@ Task::schedule(time_t date, time_t slotDuration)
 		/* Do not schedule anything if the currently time slot is not
 		 * directly preceeding the previously scheduled time slot. */
 		if (date + slotDuration != lastSlot)
-			return !endChanged;
+			return !limitChanged;
 		lastSlot = date;
 	}
 
@@ -411,10 +411,10 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 bool
 Task::needsEarlierTimeSlot(time_t date)
 {
-	if (scheduling == ALAP && end != 0 && !schedulingDone &&
+	if (scheduling == ALAP && lastSlot > 0 && !schedulingDone &&
 		date > lastSlot && sub.isEmpty())
 		return TRUE;
-	if (scheduling == ASAP && start != 0 && !schedulingDone &&
+	if (scheduling == ASAP && lastSlot > 0 && !schedulingDone &&
 		date > lastSlot + 1 && sub.isEmpty())
 		return TRUE;
 
@@ -720,8 +720,8 @@ Task::preScheduleOk()
 			 !(limitSpec <= 1 && !sub.isEmpty()))
 	{
 		fatalError(QString().sprintf("In task %s:", id.latin1()) +
-				   "If you do not specify a duration criteria you have "
-				   "to specify a start and end criteria.");
+				   "If you do not specify a plan duration criteria "
+				   "you have to specify a start and end criteria.");
 		return FALSE;
 	}
 
