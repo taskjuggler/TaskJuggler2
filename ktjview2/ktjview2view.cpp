@@ -30,6 +30,7 @@
 #include <qdir.h>
 #include <qprogressdialog.h>
 #include <qpopupmenu.h>
+#include <qmainwindow.h>
 
 // KDE includes
 #include <kurl.h>
@@ -43,9 +44,9 @@
 #include <kprinter.h>
 #include <klistview.h>
 #include <kapplication.h>
+#include <kmainwindow.h>
 
 // local includes
-#include "koKoolBar.h"
 #include "kdgantt/KDGanttView.h"
 #include "kdgantt/KDGanttViewEventItem.h"
 #include "kdgantt/KDGanttViewSummaryItem.h"
@@ -83,20 +84,6 @@ ktjview2View::ktjview2View( QWidget *parent )
 
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
-
-    // --- side bar
-    m_koolBar = new KoKoolBar( this, "kool_bar" );
-    m_koolBar->setFixedWidth( 80 );
-    mainGroup = m_koolBar->insertGroup( i18n( "Project" ) );
-    infoPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "gohome", KIcon::Desktop ),
-                                      i18n( "Info" ), this, SLOT( slotKoolBar( int, int ) ) );
-    ganttPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "gantt", KIcon::Desktop ),
-                                       i18n( "Gantt" ), this, SLOT( slotKoolBar( int, int ) ) );
-    resPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "resources", KIcon::Desktop ),
-                                     i18n( "Resources" ), this, SLOT( slotKoolBar( int, int ) ) );
-    tasksPage = m_koolBar->insertItem( mainGroup, KGlobal::iconLoader()->loadIcon( "tasks", KIcon::Desktop ),
-                                       i18n( "Tasks" ), this, SLOT( slotKoolBar( int, int ) ) );
-    top_layout->addWidget( m_koolBar );
 
     // --- right view (stacked)
     m_widgetStack = new QWidgetStack( this, "widget_stack" );
@@ -327,22 +314,6 @@ void ktjview2View::openURL( const KURL& url )
     signalChangeCaption( m_project->getName() );
 
     m_progressDlg->setProgress( 6 );
-}
-
-void ktjview2View::slotKoolBar( int /*grp*/, int item )
-{
-    //kdDebug() << k_funcinfo << grp << " " << item << endl;
-
-    emit signalUpdateToolbars( item );     // notify the view change
-
-    if ( item == infoPage )
-        m_widgetStack->raiseWidget( m_textBrowser );
-    else if ( item == ganttPage )
-        m_widgetStack->raiseWidget( m_ganttView );
-    else if ( item == resPage )
-        m_widgetStack->raiseWidget( m_resListView );
-    else if ( item == tasksPage )
-        m_widgetStack->raiseWidget( m_taskView );
 }
 
 void ktjview2View::parseProjectInfo()
@@ -819,7 +790,7 @@ void ktjview2View::slotJumpToTask()
         QListViewItem * item = m_taskView->findItem( sel->name(), 0 );
         if ( item )
         {
-            slotKoolBar( mainGroup, tasksPage );
+            activateView( 3 );  // FIXME update toolbars!!!
             item->setVisible( true ); // might be hidden thru a filter
             m_taskView->setSelected( static_cast<QListViewItem *>( item ), true );
             m_taskView->ensureItemVisible( item );
@@ -897,6 +868,18 @@ bool ktjview2View::filterFor( int id )
     }
 
     return true;
+}
+
+void ktjview2View::activateView( int id )
+{
+    if ( id == 0 )
+        m_widgetStack->raiseWidget( m_textBrowser );
+    else if ( id == 1 )
+        m_widgetStack->raiseWidget( m_ganttView );
+    else if ( id == 2 )
+        m_widgetStack->raiseWidget( m_resListView );
+    else if ( id == 3 )
+        m_widgetStack->raiseWidget( m_taskView );
 }
 
 #include "ktjview2view.moc"

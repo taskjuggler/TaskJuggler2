@@ -125,17 +125,18 @@ private slots:
     void changeCaption( const QString& text );
 
     /**
-     * Update toolbars' visibility based on component selection
-     */
-    void slotUpdateToolbars( int item );
-
-    /**
      * Apply preselected filters on the task list
      */
     void slotFilterFor();
 
+    void slotSidebarInfo();
+    void slotSidebarGantt();
+    void slotSidebarResources();
+    void slotSidebarTasks();
+
 private:
     void setupActions();
+    void setupSidebar();
 
     ktjview2View *m_view;
 
@@ -151,6 +152,9 @@ private:
     // search line
     QLabel * m_searchLabel;
     KListViewSearchLine * m_searchLine;
+
+    // sidebar actions
+    KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks;
 };
 
 #endif // _KTJVIEW2_H_

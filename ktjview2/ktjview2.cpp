@@ -77,12 +77,8 @@ ktjview2::ktjview2()
              this,   SLOT(changeStatusbar(const QString&)) );
     connect( m_view, SIGNAL(signalChangeCaption(const QString&)),
              this,   SLOT(changeCaption(const QString&)) );
-    connect( m_view, SIGNAL( signalUpdateToolbars( int ) ),
-             this, SLOT( slotUpdateToolbars( int ) ) );
 
     m_activeFilter = 0;
-
-    slotUpdateToolbars( 1 );    // init the toolbars visibility
 }
 
 ktjview2::~ktjview2()
@@ -149,12 +145,14 @@ void ktjview2::setupActions()
              m_view, SLOT( slotScale( int ) ) );
 
     // Filter toolbar
-    m_searchLabel = new QLabel( i18n( "&Filter:" ), this, "search_label" );
+    m_searchLabel = new QLabel( i18n( "&Filter:" ), this, "search_label" ); // FIXME
     m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
 
     m_searchLabel->setBuddy( m_searchLine );
-    ( void ) new KWidgetAction( m_searchLabel, i18n( "Filter label" ), KShortcut(), 0, 0, actionCollection(), "filter_label" );
-    ( void ) new KWidgetAction( m_searchLine, i18n( "Filter lineedit" ), KShortcut(), 0, 0, actionCollection(), "filter_lineedit" );
+    ( void ) new KWidgetAction( m_searchLabel, i18n( "Filter label" ), KShortcut(), 0, 0,
+                                actionCollection(), "filter_label" );
+    ( void ) new KWidgetAction( m_searchLine, i18n( "Filter lineedit" ), KShortcut(), 0, 0,
+                                actionCollection(), "filter_lineedit" );
 
 #if 0
     // Resource menu
@@ -162,10 +160,40 @@ void ktjview2::setupActions()
                  m_view, SLOT( queryResource() ), actionCollection(), "query_resource" );
 #endif
 
+    // Sidebar
+    m_sidebarInfo = new KRadioAction( i18n( "Info" ), "gohome", KShortcut(), actionCollection(), "sidebar_info" );
+    m_sidebarInfo->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarInfo, SIGNAL( activated() ), this, SLOT( slotSidebarInfo() ) );
+
+    m_sidebarGantt = new KRadioAction( i18n( "Gantt" ), "gantt", KShortcut(), actionCollection(), "sidebar_gantt" );
+    m_sidebarGantt->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarGantt, SIGNAL( activated() ), this, SLOT( slotSidebarGantt() ) );
+
+    m_sidebarResources = new KRadioAction( i18n( "Resources" ), "resources", KShortcut(), actionCollection(), "sidebar_resources" );
+    m_sidebarResources->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarResources, SIGNAL( activated() ), this, SLOT( slotSidebarResources() ) );
+
+    m_sidebarTasks = new KRadioAction( i18n( "Tasks" ), "tasks", KShortcut(), actionCollection(), "sidebar_tasks" );
+    m_sidebarTasks->setExclusiveGroup( "sidebar" );
+    connect( m_sidebarTasks, SIGNAL( activated() ), this, SLOT( slotSidebarTasks() ) );
+
     setStandardToolBarMenuEnabled( true );
     createStandardStatusBarAction();
 
     createGUI();
+
+    setupSidebar();             // must be after createGUI()
+}
+
+void ktjview2::setupSidebar()
+{
+    KToolBar * sidebar = toolBar( "sidebar" );
+
+    if ( sidebar )
+    {
+        sidebar->setMovingEnabled( false );
+        sidebar->setEnableContextMenu( false );
+    }
 }
 
 void ktjview2::saveProperties( KConfig *config )
@@ -194,8 +222,6 @@ void ktjview2::readProperties( KConfig *config )
     QString url = config->readPathEntry( "lastURL" );
     if ( !url.isEmpty() )
         m_view->openURL( KURL::fromPathOrURL( url ) );
-
-    m_recentAction->loadEntries( config );
 }
 
 void ktjview2::dragEnterEvent( QDragEnterEvent *event )
@@ -297,23 +323,34 @@ bool ktjview2::queryExit()
     return true;
 }
 
-void ktjview2::slotUpdateToolbars( int item )
+void ktjview2::slotSidebarInfo()
 {
-    if ( item == 2 )            // Gantt view
-        toolBar( "ganttToolBar" )->show();
-    else
-        toolBar( "ganttToolBar" )->hide();
+    toolBar( "filterToolBar" )->hide();
+    toolBar( "ganttToolBar" )->hide();
+    m_view->activateView( 0 );
+}
 
-    if ( item == 3 )            // Resources view
-        m_searchLine->setListView( m_view->resListView() );
+void ktjview2::slotSidebarGantt()
+{
+    toolBar( "filterToolBar" )->hide();
+    toolBar( "ganttToolBar" )->show();
+    m_view->activateView( 1 );
+}
 
-    if ( item == 4 )            // Task view
-        m_searchLine->setListView( m_view->taskListView() );
+void ktjview2::slotSidebarResources()
+{
+    m_searchLine->setListView( m_view->resListView() );
+    toolBar( "filterToolBar" )->show();
+    toolBar( "ganttToolBar" )->hide();
+    m_view->activateView( 2 );
+}
 
-    if ( item == 3 || item == 4 )
-        toolBar( "filterToolBar" )->show();
-    else
-        toolBar( "filterToolBar" )->hide();
+void ktjview2::slotSidebarTasks()
+{
+    m_searchLine->setListView( m_view->taskListView() );
+    toolBar( "filterToolBar" )->show();
+    toolBar( "ganttToolBar" )->hide();
+    m_view->activateView( 3 );
 }
 
 void ktjview2::setCalendarMode()

@@ -37,7 +37,6 @@
 class QPainter;
 class KDGanttView;
 class KDGanttViewItem;
-class KoKoolBar;
 class QWidgetStack;
 class QTextBrowser;
 class KListView;
@@ -104,6 +103,8 @@ public:
      */
     bool filterFor( int id );
 
+    void activateView( int id );
+
 public slots:
     /**
      * Set the Gantt to calendar mode depending on @p flag
@@ -161,20 +162,7 @@ signals:
      */
     void signalChangeCaption( const QString& text );
 
-    /**
-     * Notify when the view component changes
-     * @param item The corresponding sidebar entry that was clicked
-     */
-    void signalUpdateToolbars( int item );
-
 private slots:
-    /**
-     * Switch between the items in the sidebar
-     * @param grp ID of the group
-     * @param item ID of the button
-     */
-    void slotKoolBar( int grp, int item );
-
     /**
      * Centers the gantt chart on the selected @p item
      */
@@ -262,12 +250,6 @@ private:
 
     /// our project, @see Project
     Project * m_project;
-
-    int mainGroup;
-    /// IDs for the sidebar buttons
-    int infoPage, ganttPage, resPage, tasksPage;
-    /// sidebar
-    KoKoolBar * m_koolBar;
 
     /// stacked widget on the right side
     QWidgetStack * m_widgetStack;

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="20">
+<kpartgui name="ktjview2" version="22">
 <MenuBar>
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="filter"/>
@@ -19,6 +19,13 @@
     <Action name="timeframe"/>
   </Menu>
 </MenuBar>
+
+<ToolBar name="sidebar" position="left" iconSize="48" iconText="icontextbottom" noEdit="true"><text>Sidebar</text>
+  <Action name="sidebar_info"/>
+  <Action name="sidebar_gantt"/>
+  <Action name="sidebar_resources"/>
+  <Action name="sidebar_tasks"/>
+</ToolBar>
 
 <ToolBar name="ganttToolBar" noMerge="1"><text>Gantt Toolbar</text>
   <Action name="calendar_mode"/>
