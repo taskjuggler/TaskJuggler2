@@ -48,8 +48,8 @@ ShiftSelectionList::isVacationDay(time_t day) const
 bool
 ShiftSelectionList::insert(ShiftSelection* s)
 {
-	for (ShiftSelection* sl = first(); sl != 0; sl = next())
-		if (sl->getPeriod().overlaps(s->getPeriod()))
+	for (ShiftSelectionListIterator ssli(*this); *ssli != 0; ++ssli)
+		if ((*ssli)->getPeriod().overlaps(s->getPeriod()))
 			return FALSE;
 	append(s);
 	return TRUE;

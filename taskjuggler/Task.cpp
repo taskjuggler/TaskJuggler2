@@ -573,15 +573,15 @@ Task::bookResources(time_t date, time_t slotDuration)
 				   time2tjp(date).latin1());
 		return FALSE;
 	}		
-	
-	for (Allocation* a = allocations.first();
-		 a != 0 && (effort == 0.0 || doneEffort < effort);
-		 a = allocations.next())
+
+	for (QPtrListIterator<Allocation> ali(allocations); 
+		 *ali != 0 && (effort == 0.0 || doneEffort < effort);
+		 ++ali)	
 	{
 		/* If a shift has been defined for a resource for this task, there
 		 * must be a shift interval defined for this day and the time must
 		 * be within the working hours of that shift. */
-		if (!a->isOnShift(Interval(date, date + slotDuration - 1)))
+		if (!(*ali)->isOnShift(Interval(date, date + slotDuration - 1)))
 		{
 			if (DEBUGRS(15))
 				qDebug("Allocation not on shift at %s",
@@ -592,17 +592,17 @@ Task::bookResources(time_t date, time_t slotDuration)
 		 * has already been picked, try to book this resource again. If the
 		 * resource is not available there will be no booking for this
 		 * time slot. */
-		if (a->isPersistent() && a->getLockedResource())
-			bookResource(a->getLockedResource(), date, slotDuration,
-						 a->getLoad());
+		if ((*ali)->isPersistent() && (*ali)->getLockedResource())
+			bookResource((*ali)->getLockedResource(), date, slotDuration,
+						 (*ali)->getLoad());
 		else
 		{
-			QPtrList<Resource> cl = createCandidateList(date, a);
-			for (Resource* r = cl.first(); r != 0; r = cl.next())
-				if (bookResource(r, date, slotDuration, a->getLoad()))
+			QPtrList<Resource> cl = createCandidateList(date, *ali);
+			for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
+				if (bookResource((*rli), date, slotDuration, (*ali)->getLoad()))
 				{
 					allocFound = TRUE;
-					a->setLockedResource(r);
+					(*ali)->setLockedResource(*rli);
 					break;
 				}
 		}
@@ -676,10 +676,10 @@ Task::createCandidateList(time_t date, Allocation* a)
 	switch (a->getSelectionMode())
 	{
 		case Allocation::order:
-			while (candidates.first())
+			while (candidates.getFirst())
 			{
-				cl.append(candidates.first());
-				candidates.remove(candidates.first());
+				cl.append(candidates.getFirst());
+				candidates.remove(candidates.getFirst());
 			}
 			break;
 		case Allocation::minLoaded:
@@ -688,17 +688,17 @@ Task::createCandidateList(time_t date, Allocation* a)
 			{
 				double minLoad = 0;
 				Resource* minLoaded = 0;
-				for (Resource* r = candidates.first(); r != 0;
-					 r = candidates.next())
+				for (QPtrListIterator<Resource> rli(candidates); 
+					 *rli != 0; ++rli)
 				{
 					double load =
-						r->getCurrentLoad(Interval(project->getStart(),
-												   date), 0) /
-						r->getMaxEffort();
+						(*rli)->getCurrentLoad(Interval(project->getStart(),
+														date), 0) /
+						(*rli)->getMaxEffort();
 					if (minLoaded == 0 || load < minLoad)
 					{
 						minLoad = load;
-						minLoaded = r;
+						minLoaded = *rli;
 					}
 				}
 				cl.append(minLoaded);
@@ -712,17 +712,17 @@ Task::createCandidateList(time_t date, Allocation* a)
 			{
 				double maxLoad = 0;
 				Resource* maxLoaded = 0;
-				for (Resource* r = candidates.first(); r != 0;
-					 r = candidates.next())
+				for (QPtrListIterator<Resource> rli(candidates); 
+					 *rli != 0; ++rli)
 				{
 					double load =
-						r->getCurrentLoad(Interval(project->getStart(),
-												   date), 0) /
-						r->getMaxEffort();
+						(*rli)->getCurrentLoad(Interval(project->getStart(),
+														date), 0) /
+						(*rli)->getMaxEffort();
 					if (maxLoaded == 0 || load > maxLoad)
 					{
 						maxLoad = load;
-						maxLoaded = r;
+						maxLoaded = *rli;
 					}
 				}
 				cl.append(maxLoaded);
@@ -732,10 +732,10 @@ Task::createCandidateList(time_t date, Allocation* a)
 		}
 		case Allocation::random:
 		{
-			while (candidates.first())
+			while (candidates.getFirst())
 			{
 				cl.append(candidates.at(rand() % candidates.count()));
-				candidates.remove(candidates.first());
+				candidates.remove(candidates.getFirst());
 			}
 			break;
 		}
@@ -1447,15 +1447,19 @@ x->: ASAP task with duration criteria
 	double intervalLoad =
 		project->convertToDailyLoad(project->getScheduleGranularity());
 
-	for (Allocation* a = allocations.first(); a != 0; a = allocations.next())
+	for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
 	{
-		if (a->getLoad() < intervalLoad * 100.0)
+		if ((*ali)->getLoad() < intervalLoad * 100.0)
 		{
-			qDebug("Warning: Load is smaller than scheduling granularity "
-					 "(Task: %s, Resource: %s). Minimal load is %.2f.",
-					 id.latin1(), a->first()->getId().latin1(),
-					 intervalLoad + 0.005);
-			a->setLoad((int) (intervalLoad * 100.0));
+			QPtrListIterator<Resource> rli((*ali)->getCandidatesIterator());
+			errorMessage(i18n
+						 ("Warning: Load is smaller than scheduling "
+						  "granularity (Task: %1, Resource: %2). Minimal "
+						  "load is %3.")
+						 .arg(id).arg((*rli)->getId())
+						 .arg(QString().sprintf("%.2f", intervalLoad +
+												0.005)));
+			(*ali)->setLoad((int) (intervalLoad * 100.0));
 		}
 	}
 
@@ -2006,9 +2010,9 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    if( allocations.count() > 0 )
    {
       QPtrList<Allocation> al(allocations);
-      for (Allocation* a = al.first(); a != 0; a = al.next())
+	  for (QPtrListIterator<Allocation> ali(al); *ali != 0; ++ali)
       {
-	 taskElem.appendChild( a->xmlElement( doc ));
+	 taskElem.appendChild( (*ali)->xmlElement( doc ));
       }
    }
 
@@ -2056,9 +2060,9 @@ void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
    QStringList strList;
    
    Resource *res = 0;
-   for ( res = resList.first(); res; res = resList.next() )
+   for (ResourceListIterator rli(resList); *rli != 0; ++rli)
    {
-      strList.append( res->getName());
+      strList.append( (*rli)->getName());
    }
    todo->setResources(strList);
    

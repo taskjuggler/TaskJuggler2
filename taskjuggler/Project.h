@@ -202,11 +202,20 @@ public:
 	 * Returns the list of working intervals for the specified weekday.
 	 * @param day Day of the week. 0 for Sunday, 1 for Monday and so on.
 	 */
-	QPtrList<Interval>* getWorkingHours(int day)
+	QPtrList<Interval>* getWorkingHours(int day) const
 	{
 		if (day < 0 || day > 6)
 			qFatal("day out of range");
 		return workingHours[day];
+	}
+	/**
+	 * Returns an interator for the list of working intervals for the
+	 * specified weekday.
+	 * @param day Day of the week. 0 for Sunday, 1 for Monday and so on.
+	 */
+	QPtrListIterator<Interval> getWorkingHoursIterator(int day) const
+	{
+		return QPtrListIterator<Interval>(*workingHours[day]);
 	}
 	/**
 	 * If there is a working interval defined for this weekday and the
@@ -290,20 +299,11 @@ public:
 	 */
 	bool isVacation(time_t d) const { return vacationList.isVacation(d); }
 	/**
-	 * Returns the first interval in the vacation list. It also sets the
-	 * current list item to the first item.
+	 * Returns an iterator for the vacation list. 
 	 */
-	Interval* getVacationListFirst()
+	VacationListIterator getVacationListIterator() const
 	{
-		return vacationList.first(); 
-	}
-	/**
-	 * Returns the interval after the current one and sets the current to the
-	 * next in the list.
-	 */
-	Interval* getVacationListNext()
-	{
-		return vacationList.next();
+		return VacationListIterator(vacationList); 
 	}
 
 	/**

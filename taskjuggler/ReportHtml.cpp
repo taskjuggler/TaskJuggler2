@@ -1668,32 +1668,34 @@ ReportHtml::generateSchedule(int sc, const Resource* r, const Task* t)
 		s << "<table style=\"width:150px; font-size:100%; "
 		   "text-align:left\"><tr><th style=\"width:35%\"></th>"
 		   "<th style=\"width:65%\"></th></tr>" << endl;
-		for (Booking* b = jobs.first(); b != 0; b = jobs.next())
+		for (BookingListIterator bli(jobs); *bli != 0; ++bli)
 		{
-			if ((t == 0 || t == b->getTask()) && 
-				reportPeriod.overlaps(Interval(b->getStart(), b->getEnd())))
+			if ((t == 0 || t == (*bli)->getTask()) && 
+				reportPeriod.overlaps(Interval((*bli)->getStart(), 
+											   (*bli)->getEnd())))
 			{
 				/* If the reporting interval is not more than a day, we
 				 * do not print the day since this information is most
 				 * likely given by the context of the report. */
-				if (!isSameDay(prevTime, b->getStart()) &&
+				if (!isSameDay(prevTime, (*bli)->getStart()) &&
 					!isSameDay(start, end - 1))
 				{
 					s << "<tr><td colspan=\"2\" style=\"font-size:120%\">"
-						<< time2weekday(b->getStart()) << ", "
-						<< time2date(b->getStart()) << "</td></tr>" << endl;
+						<< time2weekday((*bli)->getStart()) << ", "
+						<< time2date((*bli)->getStart()) << "</td></tr>" 
+						<< endl;
 				}
 				s << "<tr><td>";
-				Interval workPeriod(b->getStart(), b->getEnd());
+				Interval workPeriod((*bli)->getStart(), (*bli)->getEnd());
 				workPeriod.overlap(reportPeriod);
 				s << time2user(workPeriod.getStart(), shortTimeFormat)
 				   	<< "&nbsp;-&nbsp;"
 					<< time2user(workPeriod.getEnd() + 1, shortTimeFormat);
 				s << "</td><td>";
 				if (t == 0)
-					s << " " << htmlFilter(b->getTask()->getName());
+					s << " " << htmlFilter((*bli)->getTask()->getName());
 				s << "</td>" << endl;
-				prevTime = b->getStart();
+				prevTime = (*bli)->getStart();
 				s << "</tr>" << endl;
 			}
 		}

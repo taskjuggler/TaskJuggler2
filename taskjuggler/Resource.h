@@ -90,11 +90,7 @@ public:
 
 	double getCurrentLoad(const Interval& i, const Task* task = 0) const;
 
-	long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
-
 	double getLoad(int sc, const Interval& i, const Task* task = 0) const;
-
-	long getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const;
 
 	double getCredits(int sc, const Interval& i, const Task* task = 0) const;
 
@@ -121,6 +117,10 @@ private:
 				 QStringList& pids) const;
 
 	void initScoreboard();
+	long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
+
+	long getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const;
+
 	uint sbIndex(time_t date) const;
 
 	time_t index2start(uint idx) const;

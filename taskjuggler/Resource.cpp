@@ -45,15 +45,15 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 		{
 			workingHours[i] = new QPtrList<Interval>();
 			workingHours[i]->setAutoDelete(TRUE);
-			for (Interval* iv = pr->workingHours[i]->first(); iv != 0;
-				 iv = pr->workingHours[i]->next())
-				workingHours[i]->append(new Interval(*iv));
+			for (QPtrListIterator<Interval> ivi(*pr->workingHours[i]);
+				 *ivi != 0; ++ivi)
+				workingHours[i]->append(new Interval(**ivi));
 		}
 
 		// Inherit vacation intervals from parent resource.
-		for (Interval* iv = pr->vacations.first(); iv != 0;
-			 iv = pr->vacations.next())
-			vacations.append(new Interval(*iv));
+		for (QPtrListIterator<Interval> vli(pr->vacations);
+			 *vli != 0; ++vli)
+			vacations.append(new Interval(**vli));
 
 		minEffort = pr->minEffort;
 		maxEffort = pr->maxEffort;
@@ -67,9 +67,9 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 		{
 			workingHours[i] = new QPtrList<Interval>();
 			workingHours[i]->setAutoDelete(TRUE);
-			for (const Interval* iv = p->getWorkingHours(i)->first(); iv != 0;
-				 iv = p->getWorkingHours(i)->next())
-				workingHours[i]->append(new Interval(*iv));
+			for (QPtrListIterator<Interval> ivi(p->getWorkingHoursIterator(i));
+				 *ivi != 0; ++ivi)
+				workingHours[i]->append(new Interval(**ivi));
 		}
 
 		minEffort = p->getMinEffort();
@@ -145,19 +145,19 @@ Resource::initScoreboard()
 	}
 
 	// Then mark all resource specific vacation slots as such (2).
-	for (Interval* i = vacations.first(); i != 0; i = vacations.next())
-		for (time_t date = i->getStart() > project->getStart() ?
-			 i->getStart() : project->getStart();
-			 date < i->getEnd() && date < project->getEnd() + 1;
+	for (QPtrListIterator<Interval> ivi(vacations); *ivi != 0; ++ivi)
+		for (time_t date = (*ivi)->getStart() > project->getStart() ?
+			 (*ivi)->getStart() : project->getStart();
+			 date < (*ivi)->getEnd() && date < project->getEnd() + 1;
 			 date += project->getScheduleGranularity())
 			scoreboard[sbIndex(date)] = (SbBooking*) 2;
 
 	// Mark all global vacation slots as such (2)
-	for (Interval* i = project->getVacationListFirst(); i != 0;
-		 i = project->getVacationListNext())
+	for (VacationListIterator ivi(project->getVacationListIterator());
+		 *ivi != 0; ++ivi)
 	{
-		for (time_t date = i->getStart();
-			 date < i->getEnd() &&
+		for (time_t date = (*ivi)->getStart();
+			 date < (*ivi)->getEnd() &&
 				 project->getStart() <= date && date < project->getEnd() + 1;
 			 date += project->getScheduleGranularity())
 			scoreboard[sbIndex(date)] = (SbBooking*) 2;
@@ -523,10 +523,9 @@ Resource::isOnShift(const Interval& slot) const
 			return (*ssli)->getShift()->isOnShift(slot);
 
 	int dow = dayOfWeek(slot.getStart(), FALSE);
-	for (Interval* i = workingHours[dow]->first(); i != 0;
-		 i = workingHours[dow]->next())
-		if (i->contains(Interval(secondsOfDay(slot.getStart()),
-								 secondsOfDay(slot.getEnd()))))
+	for (QPtrListIterator<Interval> ivi(*workingHours[dow]); *ivi != 0; ++ivi)
+		if ((*ivi)->contains(Interval(secondsOfDay(slot.getStart()),
+									  secondsOfDay(slot.getEnd()))))
 			return TRUE;
 
 	return FALSE;

@@ -119,8 +119,10 @@ public:
 	bool addShift(const Interval& i, Shift* s);
 
 	void addAllocation(Allocation* a) { allocations.append(a); }
-	Allocation* firstAllocation() { return allocations.first(); }
-	Allocation* nextAllocation() { return allocations.next(); }
+	QPtrListIterator<Allocation> getAllocationIterator() const
+	{
+		return QPtrListIterator<Allocation>(allocations);
+	}
 
 	TaskListIterator getPreviousIterator() const
 	{

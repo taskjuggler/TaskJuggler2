@@ -32,9 +32,11 @@ public:
 	Resource* getLockedResource() const { return lockedResource; }
 
 	void addCandidate(Resource* r) { candidates.append(r); }
+	QPtrListIterator<Resource> getCandidatesIterator() const
+	{
+		return QPtrListIterator<Resource>(candidates);
+	}
 	QPtrList<Resource> getCandidates() const { return candidates; }
-	Resource* first() { return candidates.first(); }
-	Resource* next() { return candidates.next(); }
 
 	bool addShift(const Interval& i, Shift* s)
 	{

@@ -26,9 +26,9 @@ Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
 		{
 			workingHours[i] = new QPtrList<Interval>();
 			workingHours[i]->setAutoDelete(TRUE);
-			for (Interval* iv = p->workingHours[i]->first(); iv != 0;
-				 iv = p->workingHours[i]->next())
-				workingHours[i]->append(new Interval(*iv));
+			for (QPtrListIterator<Interval> ivi(*(p->workingHours[i]));
+				 *ivi != 0; ++ivi)
+				workingHours[i]->append(new Interval(**ivi));
 		}
 	}
 	else
@@ -38,9 +38,10 @@ Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
 		{
 			workingHours[i] = new QPtrList<Interval>();
 			workingHours[i]->setAutoDelete(TRUE);
-			for (const Interval* iv = prj->getWorkingHours(i)->first(); iv != 0;
-				 iv = prj->getWorkingHours(i)->next())
-				workingHours[i]->append(new Interval(*iv));
+			for (QPtrListIterator<Interval>
+				 ivi(prj->getWorkingHoursIterator(i));
+				 *ivi != 0; ++ivi)
+				workingHours[i]->append(new Interval(**ivi));
 		}
 	}
 }
