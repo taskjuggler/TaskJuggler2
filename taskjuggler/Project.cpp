@@ -417,12 +417,15 @@ Project::schedule(const QString& scenario)
 			if ((*tli)->isRunaway())
 				if ((*tli)->getScheduling() == Task::ASAP)
 					(*tli)->errorMessage
-						(i18n("End of task %1 does not fit into the project "
-							  "time frame.").arg((*tli)->getId()));
+						(i18n("End of task %1 does not fit into the "
+                              "project time frame. Try using a later project "
+                              "end date.")
+                         .arg((*tli)->getId()));
 				else
 					(*tli)->errorMessage
 						(i18n("Start of task %1 does not fit into the "
-							  "project time frame.").arg((*tli)->getId()));
+							  "project time frame. Try using an earlier "
+                              "project start date.").arg((*tli)->getId()));
 
 	if (!checkSchedule(scenario))
 		error = TRUE;
