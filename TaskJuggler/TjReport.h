@@ -17,10 +17,11 @@
 
 #include <qwidget.h>
 #include <qstring.h>
+#include <qdict.h>
+#include <qlistview.h>
 
 #include "TaskList.h"
 
-class QListViewItem;
 class QSplitter;
 class KListView;
 class Report;
@@ -81,6 +82,8 @@ private:
     QListViewItem* getTaskListEntry(Task* const t);
     void setBestStepUnit();
 
+    int lvi2yPos(QListViewItem* lvi) const;
+
     Report* const reportDef;
     QSplitter* splitter;
     KListView* listView;
@@ -100,6 +103,13 @@ private:
     static const int minStepYear;
     static const int zoomSteps[];
     uint currentZoomStep;
+    /**
+     * This hash table is used to speed up calculation of the Y coordinate of
+     * an item in the list view. We use the Address of the LVI converted to a
+     * QString as the lookup key. */
+    QDict<int> lvi2yPosDict;
+    // And the same for the CoreAttribute pointer.
+    QDict<QListViewItem> ca2lviDict;
 
     QtTaskReportElement* reportElement;
     int scenario;

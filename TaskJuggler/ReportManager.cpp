@@ -116,6 +116,8 @@ ReportManager::showReport(QListViewItem* lvi)
             return FALSE;
     }
     reportStack->raiseWidget(tjr);
+
+    return TRUE;
 }
 
 ManagedReportInfo*

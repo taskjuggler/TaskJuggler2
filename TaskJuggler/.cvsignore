@@ -1,0 +1,17 @@
+.deps
+.exrc
+.libs
+*.moc.cpp
+*.moc
+MainWidget.cpp
+MainWidget.h
+Makefile
+Makefile.in
+Screenshots
+TaskJuggler
+TaskJuggler_client
+taskjuggleriface.kidl
+taskjuggleriface_skel.cpp
+test.html
+test.tjp
+
