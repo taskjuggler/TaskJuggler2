@@ -31,6 +31,8 @@ htmlTaskReport "test1.html" {
 #  end 2002-03-06
 #}
 
+xmlTaskReport "task.xml"
+
 macro version [SL 8.0]
 
 macro work [
