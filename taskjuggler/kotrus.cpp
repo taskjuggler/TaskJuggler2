@@ -88,7 +88,6 @@ int Kotrus::personID( const QString& resourcename )
    connect();
    QSqlCursor cur( "persons");
    cur.select( "login_name='" + resourcename + "'" );
-   
    int id = 0;
    
    while( cur.next())
@@ -109,7 +108,7 @@ int Kotrus::ktID( const QString& ktName )
    connect();
    QSqlCursor cur( "kt");
    // qDebug( "Selecting for " + resourcename );
-   cur.select( "naem='" + ktName + "'" );
+   cur.select( "name='" + ktName + "'" );
 
    int id = 0;
    
@@ -181,7 +180,7 @@ void Kotrus::unlockBookings( const QString& kotrusID )
 
 			   
 BookingList Kotrus::loadBookings( const QString& kotrusID,
-								  const QStringList& skipProjectIDs, int user )
+				  const QStringList& skipProjectIDs, int user )
 {
    
    connect();
@@ -193,8 +192,8 @@ BookingList Kotrus::loadBookings( const QString& kotrusID,
 }
 
 BookingList Kotrus::loadBookingsXML( const QString& kotrusID,
-									 const QStringList& skipProjectIDs,
-									 int user )
+				     const QStringList& skipProjectIDs,
+				     int user )
 {
    BookingList blist;
    /* TODO */
@@ -203,8 +202,8 @@ BookingList Kotrus::loadBookingsXML( const QString& kotrusID,
 }
 
 BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
-								   	const QStringList& skipProjectIDs,
-								   	int user )
+				    const QStringList& skipProjectIDs,
+				    int user )
 {
    QSqlCursor cur( "ktBookings" );
    BookingList blist;
@@ -219,14 +218,39 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
    
    if( pid > 0 )
    {
-	   // TODO: Extend search to multiple skipProjectIDs
       QString sql( "select kt.name, UNIX_TIMESTAMP(b.startTS), UNIX_TIMESTAMP(b.endTS),"
 		   "b.projectID, b.LockTime, b.lockedBy "
-		   "from kt, ktBookings b where b.ktNo=kt.ktNo AND "
-		   "b.projectID    !='" + QString(skipProjectIDs[0]) +"'"
-		   + " AND b.userID =" + QString::number(pid)
-		   + " ORDER BY b.startTS, b.projectID" );
+		   "from kt, ktBookings b where b.ktNo=kt.ktNo AND b.userID =" + QString::number(pid));
 
+      int anz = skipProjectIDs.count();
+      qDebug( "count in list: %d", anz );
+
+      if( anz > 0 )
+      {
+
+	 QString allSkips = "";
+	 bool needOr = false;
+	 int validSkips = 0;
+	 
+	 for ( QStringList::ConstIterator it=skipProjectIDs.begin(); it != skipProjectIDs.end(); ++it )
+	 {
+	    QString skippy( *it );
+	    if( !skippy.isEmpty())
+	    {
+	       if( needOr ) {
+		  allSkips += " OR ";
+	       }
+	       allSkips += "b .projectID='" + skippy +"'";
+	       needOr = true;
+	       validSkips++;
+	    }
+	 }
+
+	 if( validSkips > 0 )
+	    sql += " AND NOT (" + allSkips + ")"; 
+      }
+      sql += " ORDER BY b.startTS, b.projectID";
+      
       qDebug( "SQL: " + sql );
       QSqlQuery query( sql );
 
@@ -268,7 +292,10 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
    }
    else
    {
-      qDebug( "WRN: Could not resolve user " + kotrusID );
+      if( kotrusID.isEmpty() )
+	 qDebug( "WRN: Can not load bookings for empty user!"); 
+      else
+	 qDebug( "WRN: Could not resolve user " + kotrusID );
    }
    return( blist );
 }
@@ -411,11 +438,12 @@ void Kotrus::connect()
 
 void Kotrus::setKotrusMode( const QString& newKotrusMode )
 {
-   if( newKotrusMode == "XML" )
+   
+   if( newKotrusMode.upper() == "XML" )
    {
       mode = XML;
    }
-   else if( newKotrusMode == "DB" )
+   else if( newKotrusMode.upper() == "DB" )
    {
       mode = DB;
    }
