@@ -20,6 +20,7 @@ HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :
    Report(p, f, df, dl)
 {
+    s.setEncoding(QTextStream::Latin1);
 }
 
 void
