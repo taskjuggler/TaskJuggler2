@@ -777,7 +777,14 @@ cat >> conftest.$ac_ext <<EOF
 #include <qiconview.h>
 EOF
 fi
+fi
 
+if test "$kde_qtver" = "3"; then
+cat >> conftest.$ac_ext <<EOF
+#include <qcursor.h>
+#include <qstylefactory.h>
+#include <private/qucomextra_p.h>
+EOF
 fi
 
 echo "#if ! ($kde_qt_verstring)" >> conftest.$ac_ext
@@ -790,6 +797,7 @@ EOF
 if test "$kde_qtver" = "2"; then
 cat >> conftest.$ac_ext <<EOF
     QStringList *t = new QStringList();
+    Q_UNUSED(t);
 EOF
 if test $kde_qtsubver -gt 0; then
 cat >> conftest.$ac_ext <<EOF
@@ -797,9 +805,14 @@ cat >> conftest.$ac_ext <<EOF
     iv.setWordWrapIconText(false);
     QString s;
     s.setLatin1("Elvis is alive", 14);
-    int magnolia = QEvent::Speech; /* new in 2.2 beta2 */
 EOF
 fi
+fi
+if test "$kde_qtver" = "3"; then
+cat >> conftest.$ac_ext <<EOF
+    (void)QStyleFactory::create(QString::null);
+    QCursor c(Qt::WhatsThisCursor);
+EOF
 fi
 cat >> conftest.$ac_ext <<EOF
     return 0;
@@ -811,8 +824,8 @@ AC_DEFUN(KDE_USE_QT,
 [
 
 if test -z "$1"; then
-  kde_qtver=2
-  kde_qtsubver=1
+  kde_qtver=3
+  kde_qtsubver=0
 else
   kde_qtsubver=`echo "$1" | sed -e 's#[0-9]\+\.\([0-9]\+\).*#\1#'`
   # following is the check if subversion isn´t found in passed argument
@@ -822,23 +835,21 @@ else
   kde_qtver=`echo "$1" | sed -e 's#^\([0-9]\+\)\..*#\1#'`
   if test "$kde_qtver" = "1"; then
     kde_qtsubver=42
-  else
-   # this is the version number fallback to 2.1, unless major version is 1 or 2
-   if test "$kde_qtver" != "2"; then
-    kde_qtver=2
-    kde_qtsubver=1
-   fi
   fi
 fi
 
 if test -z "$2"; then
-  if test $kde_qtver = 2; then
+  if test "$kde_qtver" = "2"; then
     if test $kde_qtsubver -gt 0; then
       kde_qt_minversion=">= Qt 2.2.2"
     else
       kde_qt_minversion=">= Qt 2.0.2"
     fi
-  else
+  fi
+  if test "$kde_qtver" = "3"; then
+    kde_qt_minversion=">= Qt 3.0.0"
+  fi
+  if test "$kde_qtver" = "1"; then
     kde_qt_minversion=">= 1.42 and < 2.0"
   fi
 else
@@ -846,25 +857,34 @@ else
 fi
 
 if test -z "$3"; then
+   if test $kde_qtver = 3; then
+     kde_qt_verstring="QT_VERSION >= 300"
+   fi
    if test $kde_qtver = 2; then
-    if test $kde_qtsubver -gt 0; then
-      kde_qt_verstring="QT_VERSION >= 222"
-    else
-      kde_qt_verstring="QT_VERSION >= 200"
-    fi
-   else
+     if test $kde_qtsubver -gt 0; then
+       kde_qt_verstring="QT_VERSION >= 222"
+     else
+       kde_qt_verstring="QT_VERSION >= 200"
+     fi
+   fi
+   if test $kde_qtver = 1; then
     kde_qt_verstring="QT_VERSION >= 142 && QT_VERSION < 200"
-  fi
+   fi
 else
    kde_qt_verstring=$3
 fi
 
+if test $kde_qtver = 3; then
+  kde_qt_dirs="$QTDIR /usr/lib/qt3 /usr/lib/qt"
+fi
 if test $kde_qtver = 2; then
    kde_qt_dirs="$QTDIR /usr/lib/qt2 /usr/lib/qt"
-else
+fi
+if test $kde_qtver = 1; then
    kde_qt_dirs="$QTDIR /usr/lib/qt"
 fi
 ])
+
 
 AC_DEFUN(KDE_CHECK_QT_DIRECT,
 [
