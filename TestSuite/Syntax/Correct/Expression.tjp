@@ -26,11 +26,11 @@ task t3 "FooTask3" {
 }
 
 htmltaskreport "Expression_istask.html" {
-	hidetask istask(t2)
+	hidetask istask(t1.t1_1)
 }
 
 htmltaskreport "Expression_istask_ref.html" {
-	hidetask flag1
+	hidetask flag2
 }
 
 htmltaskreport "Expression_issubtaskof.html" {
