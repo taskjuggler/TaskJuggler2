@@ -7,8 +7,12 @@ CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.sgml example.sgml
 
 install-data-local:
 	$(mkinstalldirs) $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/taskjuggler.ps $(docprefix)
+	@if test "${HTMLMANUAL}" != "no" ; then \
+	  $(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(docprefix);\
+	fi
+	@if test ${PSMANUAL} != "no" ; then \
+	  $(INSTALL_DATA) $(srcdir)/taskjuggler.ps $(docprefix);\
+	fi
 
 uninstall-local:
 	-rm -f $(docprefix)
