@@ -19,7 +19,6 @@
 #include "debug.h"
 #include "ExpressionTree.h"
 #include "tjlib-internal.h"
-#include "TjMessageHandler.h"
 #include "ExpressionFunctionTable.h"
 
 ExpressionParser::ExpressionParser()
@@ -37,9 +36,23 @@ ExpressionParser::parse(const QString& text, const Project* proj)
 {
     tokenizer = new Tokenizer(text);
 
-    tokenizer->open();
-    Operation* op =parseLogicalExpression(0, proj);
-    tokenizer->close();
+    if (!tokenizer->open())
+    {
+        delete tokenizer;
+        tokenizer = 0;
+        return 0;
+    }
+
+    Operation* op = parseLogicalExpression(0, proj);
+    if (!tokenizer->close())
+    {
+        delete tokenizer;
+        tokenizer = 0;
+        return 0;
+    }
+
+    delete tokenizer;
+    tokenizer = 0;
 
     return op;
 }
@@ -70,30 +83,16 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
             }
             else
             {
-                errorMessage(i18n("Function '%1' is not defined").arg(token));
+                errorMessage(i18n("Function '%1' is unknown").arg(token));
                 return 0;
             }
         }
         else
         {
             tokenizer->returnToken(tt, lookAhead);
-/*            if (proj->isAllowedFlag(token) ||
-                proj->getTask(token) ||
-                proj->getResource(token) ||
-                proj->getAccount(token) ||
-                (proj->getScenarioIndex(token) > 0) ||
-                proj->isValidId(token))
-            {
-                if (DEBUGEX(5))
-                    qDebug(QString("Flag or ID '%1' is known.").arg(token));*/
-                op = new Operation(Operation::Id, token);
-/*            }
-            else
-            {
-                errorMessage(i18n("Flag or ID '%1' is unknown.").
-                             arg(token));
-                return 0;
-            }*/
+            /* We can't test here, whether the ID is known or not. So this has
+             * to be checked at evaluation time. */
+            op = new Operation(Operation::Id, token);
         }
     }
     else if (tt == STRING)
@@ -236,11 +235,9 @@ void
 ExpressionParser::errorMessage(const char* msg, ...)
 {
     va_list ap;
-    char buf[1024];
     va_start(ap, msg);
-    vsnprintf(buf, 1024, msg, ap);
+
+    tokenizer->errorMessageVA(msg, ap);
     va_end(ap);
-   
-    TJMH.errorMessage(buf);
 }
 

@@ -37,7 +37,7 @@ HTMLAccountReportElement::~HTMLAccountReportElement()
 {
 }
 
-void
+bool
 HTMLAccountReportElement::generate()
 {
     generateHeader();
@@ -47,11 +47,14 @@ HTMLAccountReportElement::generate()
     s() << "<tbody>" << endl;
 
     AccountList filteredList;
-    filterAccountList(filteredList, AllAccounts, hideAccount, rollUpAccount);
+    if (!filterAccountList(filteredList, AllAccounts, hideAccount,
+                           rollUpAccount))
+        return FALSE;
     maxDepthAccountList = filteredList.maxDepth();
     
     /* Generate table of cost accounts. */
-    filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
+    if (!filterAccountList(filteredList, Cost, hideAccount, rollUpAccount))
+        return FALSE;
     sortAccountList(filteredList);
 
     TableLineInfo tli;
@@ -88,7 +91,8 @@ HTMLAccountReportElement::generate()
     }
 
     /* Generate table of revenue accounts. */
-    filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount);
+    if (!filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount))
+        return FALSE;
     sortAccountList(filteredList);
 
     tli.boldText = FALSE;
@@ -137,5 +141,7 @@ HTMLAccountReportElement::generate()
    
     s() << "</tbody>" << endl;    
     s() << "</table>" << endl;
+
+    return TRUE;
 }
 

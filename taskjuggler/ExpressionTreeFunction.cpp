@@ -41,7 +41,7 @@ ExpressionTreeFunction::checkCoreAttributesType(ExpressionTree* et)
 }
 
 long
-ExpressionTreeFunction::longCall(const ExpressionTree* et, 
+ExpressionTreeFunction::longCall(ExpressionTree* et,
                                  Operation* const ops[]) const
 {
     if (DEBUGEX(15))
@@ -54,32 +54,49 @@ ExpressionTreeFunction::findCoreAttributes(const CoreAttributes* ca,
                                            const QString& id) const
 {
     const CoreAttributes* p;
-    
-    if (ca->getType() == CA_Task)
-        p = ca->getProject()->getTask(id);
-    else if (ca->getType() == CA_Resource)
-        p = ca->getProject()->getResource(id);
-    else if (ca->getType() == CA_Account)
-        p = ca->getProject()->getAccount(id);
-    else if (ca->getType() == CA_Shift)
-        p = ca->getProject()->getShift(id);
-    else
-        return 0;
+
+    switch (ca->getType())
+    {
+        case CA_Task:
+            p = ca->getProject()->getTask(id);
+            break;
+        case CA_Resource:
+            p = ca->getProject()->getResource(id);
+            break;
+        case CA_Account:
+            p = ca->getProject()->getAccount(id);
+            break;
+        case CA_Shift:
+            p = ca->getProject()->getShift(id);
+            break;
+        default:
+            p = 0;
+    }
 
     return p;
 }
 
 long
-ExpressionTreeFunction::isChildOf(const ExpressionTree* et,
+ExpressionTreeFunction::isChildOf(ExpressionTree* et,
                                   Operation* const ops[]) const
 {
     const CoreAttributes* p;
     if ((p = findCoreAttributes(et->getCoreAttributes(),
                                 ops[0]->evalAsString(et))) == 0)
     {
-        qDebug("%s is no child of %s",
-               et->getCoreAttributes()->getFullId().latin1(),
-               ops[0]->evalAsString(et).latin1());
+        et->errorMessage(i18n("isChildOf: '%1' is unknown and not a "
+                              "child of '%2'")
+                         .arg(et->getCoreAttributes()->getFullId())
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
+    if (et->getCoreAttributes()->getType() != p->getType())
+    {
+        et->errorMessage(i18n
+                         ("isChildOf: '%1' and '%2' must be of same type")
+                         .arg(et->getCoreAttributes()->getFullId())
+                         .arg(ops[0]->evalAsString(et)));
         return 0;
     }
 
@@ -87,19 +104,34 @@ ExpressionTreeFunction::isChildOf(const ExpressionTree* et,
 }
 
 long
-ExpressionTreeFunction::isParentOf(const ExpressionTree* et,
+ExpressionTreeFunction::isParentOf(ExpressionTree* et,
                                    Operation* const ops[]) const
 {
     const CoreAttributes* p;
     if ((p = findCoreAttributes(et->getCoreAttributes(),
                                 ops[0]->evalAsString(et))) == 0)
+    {
+        et->errorMessage(i18n("isParentOf: '%1' is unknown and not a "
+                              "child of '%2'")
+                         .arg(et->getCoreAttributes()->getFullId())
+                         .arg(ops[0]->evalAsString(et)));
         return 0;
+    }
+ 
+    if (et->getCoreAttributes()->getType() != p->getType())
+    {
+        et->errorMessage(i18n
+                         ("isParentOf: '%1' and '%2' must be of same type")
+                         .arg(et->getCoreAttributes()->getFullId())
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
 
     return et->getCoreAttributes()->isParentOf(p);
 }
 
 long
-ExpressionTreeFunction::isLeaf(const ExpressionTree* et, 
+ExpressionTreeFunction::isLeaf(ExpressionTree* et,
                                Operation* const []) const
 {
     if (DEBUGEX(15))
@@ -113,190 +145,289 @@ ExpressionTreeFunction::isLeaf(const ExpressionTree* et,
 }
 
 long
-ExpressionTreeFunction::treeLevel(const ExpressionTree* et,
+ExpressionTreeFunction::treeLevel(ExpressionTree* et,
                                   Operation* const []) const
 {
     return et->getCoreAttributes()->treeLevel() + 1;
 }
 
 long
-ExpressionTreeFunction::isTask(const ExpressionTree* et, 
+ExpressionTreeFunction::isTask(ExpressionTree* et,
                                Operation* const ops[]) const
 {
+    if (!ops[0]->isValid())
+    {
+        if (!et->getCoreAttributes()->getProject()->
+            getTask(ops[0]->evalAsString(et)))
+        {
+            et->errorMessage(i18n("isTask: task '%1' is unknown").
+                arg(ops[0]->evalAsString(et)));
+            return 0;
+        }
+        ops[0]->setValid();
+    }
+
     return et->getCoreAttributes()->getType() == CA_Task &&
         et->getCoreAttributes()->getId() == ops[0]->evalAsString(et);
 }
 
 long
-ExpressionTreeFunction::isATask(const ExpressionTree* et, 
+ExpressionTreeFunction::isATask(ExpressionTree* et,
                                 Operation* const []) const
 {
     return et->getCoreAttributes()->getType() == CA_Task;
 }
 
 long
-ExpressionTreeFunction::isMilestone(const ExpressionTree* et,
+ExpressionTreeFunction::isMilestone(ExpressionTree* et,
                                     Operation* const[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     return ((Task*) et->getCoreAttributes())->isMilestone();
 }
 
 long
-ExpressionTreeFunction::isResource(const ExpressionTree* et,
+ExpressionTreeFunction::isResource(ExpressionTree* et,
                                    Operation* const ops[]) const
 {
+    if (!ops[0]->isValid())
+    {
+        if (!et->getCoreAttributes()->getProject()->
+            getResource(ops[0]->evalAsString(et)))
+        {
+            et->errorMessage(i18n("isResource: resource '%1' is unknown").
+                arg(ops[0]->evalAsString(et)));
+            return 0;
+        }
+        ops[0]->setValid(TRUE);
+    }
+
     return et->getCoreAttributes()->getType() == CA_Resource &&
         et->getCoreAttributes()->getId() == ops[0]->evalAsString(et);
 }
 
 long
-ExpressionTreeFunction::isAResource(const ExpressionTree* et,
+ExpressionTreeFunction::isAResource(ExpressionTree* et,
                                     Operation* const []) const
 {
     return et->getCoreAttributes()->getType() == CA_Resource;
 }
 
 long
-ExpressionTreeFunction::isAccount(const ExpressionTree* et,
+ExpressionTreeFunction::isAccount(ExpressionTree* et,
                                   Operation* const ops[]) const
 {
+    if (!ops[0]->isValid())
+    {
+        if (!et->getCoreAttributes()->getProject()->
+            getAccount(ops[0]->evalAsString(et)))
+        {
+            et->errorMessage(i18n("isAccount: account '%1' is unknown").
+                arg(ops[0]->evalAsString(et)));
+            return 0;
+        }
+        ops[0]->setValid(TRUE);
+    }
+
     return et->getCoreAttributes()->getType() == CA_Account &&
         et->getCoreAttributes()->getId() == ops[0]->evalAsString(et);
 }
 
 long
-ExpressionTreeFunction::isAnAccount(const ExpressionTree* et,
+ExpressionTreeFunction::isAnAccount(ExpressionTree* et,
                                     Operation* const []) const
 {
     return et->getCoreAttributes()->getType() == CA_Account;
 }
 
 long
-ExpressionTreeFunction::isTaskStatus(const ExpressionTree* et,
+ExpressionTreeFunction::isTaskStatus(ExpressionTree* et,
                                      Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     int scenario;
     if ((scenario = et->getCoreAttributes()->
          getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
-        qFatal(i18n("ExpressionTreeFunction::isTaskStatus(): "
-                    "Unknown scenario '%1'")
-               .arg(ops[0]->evalAsString(et).latin1()));
+    {
+        et->errorMessage(i18n("isTaskStatus: Unknown scenario '%1")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
     static const char* stati[] = {
         KW("undefined"), KW("notstarted"), KW("inprogresslate"),
         KW("inprogress"), KW("ontime"), KW("inprogressearly"),
         KW("finished")
     };
+    if (!ops[1]->isValid())
+    {
+        bool ok = FALSE;
+        for (uint i = 0; i < (sizeof(stati) / sizeof(char*)); i++)
+            if (ops[1]->evalAsString(et) == stati[i])
+            {
+                ok = TRUE;
+                break;
+            }
+        if (!ok)
+        {
+            et->errorMessage(i18n("isTaskStatus: Unknown task status '%1'")
+                             .arg(ops[1]->evalAsString(et)));
+            return 0;
+        }
+        ops[1]->setValid();
+    }
+
     return strcmp(stati[((Task*) et->getCoreAttributes())
                   ->getStatus(scenario)], ops[1]->evalAsString(et)) == 0;
 }
 
 long
-ExpressionTreeFunction::startsBefore(const ExpressionTree* et,
+ExpressionTreeFunction::startsBefore(ExpressionTree* et,
                                      Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     int scenario;
     if ((scenario = et->getCoreAttributes()->
          getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
-        qFatal(i18n("ExpressionTreeFunction::startsBefore: "
-                    "Unknown scenario '%1'")
-               .arg(ops[0]->evalAsString(et).latin1()));
+    {
+        et->errorMessage(i18n("startsBefore: Unknown scenario '%1'")
+                         .arg(ops[0]->evalAsString(et).latin1()));
+        return 0;
+    }
 
     return ((Task*) et->getCoreAttributes())->getStart(scenario) <
         ops[1]->evalAsTime(et);
 }
 
 long
-ExpressionTreeFunction::startsAfter(const ExpressionTree* et,
+ExpressionTreeFunction::startsAfter(ExpressionTree* et,
                                      Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     int scenario;
     if ((scenario = et->getCoreAttributes()->
          getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
-        qFatal(i18n("ExpressionTreeFunction::startsAfter: "
-                    "Unknown scenario '%1'")
-               .arg(ops[0]->evalAsString(et).latin1()));
+    {
+        et->errorMessage(i18n("startsAfter: Unknown scenario '%1'")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
 
     return ((Task*) et->getCoreAttributes())->getStart(scenario) >=
         ops[1]->evalAsTime(et);
 }
 
 long
-ExpressionTreeFunction::endsBefore(const ExpressionTree* et,
+ExpressionTreeFunction::endsBefore(ExpressionTree* et,
                                      Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     int scenario;
     if ((scenario = et->getCoreAttributes()->
          getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
-        qFatal(i18n("EpessionTreeFunction::endsBefore: Unknown scenario '%1'")
-               .arg(ops[0]->evalAsString(et).latin1()));
+    {
+        et->errorMessage(i18n("endsBefore: Unknown scenario '%s'")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
     return ((Task*) et->getCoreAttributes())->getEnd(scenario) <
         ops[1]->evalAsTime(et);
 }
 
 long
-ExpressionTreeFunction::endsAfter(const ExpressionTree* et,
+ExpressionTreeFunction::endsAfter(ExpressionTree* et,
                                      Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     int scenario;
     if ((scenario = et->getCoreAttributes()->
          getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
-        qFatal(i18n("ExpressionTreeFunction::endsAfter: Unknown scenario '%1'")
-               .arg(ops[0]->evalAsString(et).latin1()));
+    {
+        et->errorMessage(i18n("endsAfter: Unknown scenario '%1'")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
 
     return ((Task*) et->getCoreAttributes())->getEnd(scenario) >
         ops[1]->evalAsTime(et);
 }
 
 long
-ExpressionTreeFunction::isSubTaskOf(const ExpressionTree* et,
+ExpressionTreeFunction::isSubTaskOf(ExpressionTree* et,
                                     Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     Task* p;
     if ((p = et->getCoreAttributes()->getProject()->getTask
          (ops[0]->evalAsString(et))) == 0)
+    {
+        et->errorMessage(i18n("isSubTaskOf: task '%1' is unknown")
+                         .arg(ops[0]->evalAsString(et)));
         return 0;
+    }
+
     return p->isSubTask((Task*) et->getCoreAttributes());
 }
 
 long
-ExpressionTreeFunction::containsTask(const ExpressionTree* et,
+ExpressionTreeFunction::containsTask(ExpressionTree* et,
                                      Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
     Task* st;
     if ((st = et->getCoreAttributes()->getProject()->getTask
          (ops[0]->evalAsString(et))) == 0)
+    {
+        et->errorMessage(i18n("containsTask: task '%1' is unknown")
+                         .arg(et->getCoreAttributes()->getFullId()));
         return 0;
+    }
+
     return ((Task*) et->getCoreAttributes())->isSubTask(st);
 }
 
 long
-ExpressionTreeFunction::isTaskOfProject(const ExpressionTree* et,
+ExpressionTreeFunction::isTaskOfProject(ExpressionTree* et,
                                         Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
+
+    if (!ops[0]->isValid())
+    {
+        if (!et->getCoreAttributes()->getProject()->isValidId
+            (ops[0]->evalAsString(et)))
+        {
+            et->errorMessage(i18n("isTaskOfProject: project ID '%1' is unkown")
+                .arg(ops[0]->evalAsString(et)));
+            return 0;
+        }
+        ops[0]->setValid();
+    }
+
     return ops[0]->evalAsString(et) ==
         ((Task*) (et->getCoreAttributes()))->getProjectId();
 }
 
 long
-ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
+ExpressionTreeFunction::isAllocated(ExpressionTree* et,
                                     Operation* const ops[]) const
 {
     /* Arguments:
@@ -304,56 +435,72 @@ ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
        1 : interval start
        2 : interval end */
     if (et->getCoreAttributes()->getType() != CA_Resource)
-        qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
-                    "non-resource"));
+    {
+        et->errorMessage(i18n("isAllocated: '%1' is not a resource")
+                         .arg(et->getCoreAttributes()->getFullId()));
+        return 0;
+    }
+
     int scenarioId = et->getCoreAttributes()->getProject()->
         getScenarioIndex(ops[0]->evalAsString(et)) - 1;
     if (scenarioId < 0)
-        qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
-                    "unknown '%1' scenario.")
-               .arg(ops[0]->evalAsString(et)));
+    {
+        et->errorMessage(i18n("isAllocated: unknown scenario '%1'")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
     time_t start = ops[1]->evalAsTime(et);
     time_t end = ops[2]->evalAsTime(et);
+    if (start > end)
+    {
+        et->errorMessage(i18n("isAllocated: start date is larger than end "
+                              "date"));
+        return 0;
+    }
     if (et->getCoreAttributes()->getProject()->getStart() > start)
         start = et->getCoreAttributes()->getProject()->getStart();
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
-    if (start > end)
-        qFatal("ExpressionTreeFunction::isAllocated(): start date "
-               "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end), 
+        (scenarioId, Interval(start, end),
          QString::null);
 }
 
 long
-ExpressionTreeFunction::isDutyOf(const ExpressionTree* et,
+ExpressionTreeFunction::isDutyOf(ExpressionTree* et,
                                  Operation* const ops[]) const
 {
     /* Arguments:
        0 : resource id
        1 : scenario id */
     if (et->getCoreAttributes()->getType() != CA_Task)
-        qFatal(i18n("ExpressionTreeFunction::isDutyOf() called for "
-                    "non-task"));
+        return 0;
+
     Resource* resource = et->getCoreAttributes()->getProject()->
         getResource(ops[0]->evalAsString(et));
     if (!resource)
-        qFatal(i18n("ExpressionTreeFunction::isDutyOf() called for unknown "
-                    "resource '%1'.").arg(ops[0]->evalAsString(et)));
+    {
+        et->errorMessage(i18n("isDutyOf: resource '%1' is unknown")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
     int scenarioId = et->getCoreAttributes()->getProject()->
         getScenarioIndex(ops[1]->evalAsString(et)) - 1;
     if (scenarioId < 0)
-        qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
-                    "unknown '%1' scenario.")
-               .arg(ops[1]->evalAsString(et)));
+    {
+        et->errorMessage(i18n("isDutyOf: unknown scenario '%1'")
+                         .arg(ops[1]->evalAsString(et)));
+        return 0;
+    }
 
     return ((Task*) et->getCoreAttributes())->isDutyOf(scenarioId, resource);
 }
 
 long
-ExpressionTreeFunction::isAllocatedToProject(const ExpressionTree* et,
+ExpressionTreeFunction::isAllocatedToProject(ExpressionTree* et,
                                              Operation* const ops[]) const
 {
     /* Arguments:
@@ -362,42 +509,66 @@ ExpressionTreeFunction::isAllocatedToProject(const ExpressionTree* et,
        2 : interval start
        3 : interval end */
     if (et->getCoreAttributes()->getType() != CA_Resource)
-        qFatal(i18n("ExpressionTreeFunction::isAllocatedToProject() "
-                    "called for non-resource"));
+        return 0;
+
+    if (!ops[0]->isValid())
+    {
+        if (!et->getCoreAttributes()->getProject()->isValidId
+            (ops[0]->evalAsString(et)))
+        {
+            et->errorMessage(i18n("isAllocatedToProject: project ID '%1'"
+                                  "is unknown")
+                             .arg(ops[0]->evalAsString(et)));
+            return 0;
+        }
+        ops[0]->setValid();
+    }
+
     int scenarioId = et->getCoreAttributes()->getProject()->
         getScenarioIndex(ops[1]->evalAsString(et)) - 1;
     if (scenarioId < 0)
-        qFatal(i18n("ExpressionTreeFunction::isAllocatedToProject() "
-                    "called for unknown '%1' scenario.")
-               .arg(ops[1]->evalAsString(et)));
+    {
+        et->errorMessage(i18n("isAllocatedToProject: unknown scenario '%1'")
+                         .arg(ops[1]->evalAsString(et)));
+        return 0;
+    }
     time_t start = ops[2]->evalAsTime(et);
     time_t end = ops[3]->evalAsTime(et);
+    if (start > end)
+    {
+        et->errorMessage(i18n("isAllocatedToProject: start date is larger "
+                              "than end date"));
+        return 0;
+    }
     if (et->getCoreAttributes()->getProject()->getStart() > start)
         start = et->getCoreAttributes()->getProject()->getStart();
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
-    if (start > end)
-        qFatal("ExpressionTreeFunction::isAllocatedToProject(): start date "
-               "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end), 
+        (scenarioId, Interval(start, end),
          ops[0]->evalAsString(et));
 }
 
 long
-ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
+ExpressionTreeFunction::isPlanAllocated(ExpressionTree* et,
                                         Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Resource)
-        qFatal(i18n("ExpressionTreeFunction::isplanallocated() called for "
-                    "non-resource '%1'")
-               .arg(et->getCoreAttributes()->getId().latin1()));
+    {
+        et->errorMessage(i18n("isplanallocated: called for "
+                              "non-resource '%1'")
+               .arg(et->getCoreAttributes()->getFullId()));
+        return 0;
+    }
     int scenarioId = et->getCoreAttributes()->getProject()->
         getScenarioIndex("plan") - 1;
     if (scenarioId < 0)
-        qFatal(i18n("ExpressionTreeFunction::isplanallocated() called, but "
-                    "there is no 'plan' scenario."));
+    {
+        et->errorMessage(i18n("isplanallocated: there is no "
+                              "'plan' scenario."));
+        return 0;
+    }
     time_t start = ops[1]->evalAsTime(et);
     time_t end = ops[2]->evalAsTime(et);
     if (et->getCoreAttributes()->getProject()->getStart() > start)
@@ -405,26 +576,34 @@ ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
     if (start > end)
-        qFatal("ExpressionTreeFunction::isPlanAllocated(): start date "
-               "is larger than end date");
+    {
+        et->errorMessage(i18n("isPlanAllocated: start date "
+                              "is larger than end date"));
+        return 0;
+    }
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end), 
+        (scenarioId, Interval(start, end),
          ops[0]->evalAsString(et));
 }
 
 long
-ExpressionTreeFunction::isActualAllocated(const ExpressionTree* et,
+ExpressionTreeFunction::isActualAllocated(ExpressionTree* et,
                                           Operation* const ops[]) const
 {
     if (et->getCoreAttributes()->getType() != CA_Resource)
-        qFatal("ExpressionTreeFunction::isactualallocated() called for "
-               "non-resource");
+    {
+        et->errorMessage(i18n("isactualallocated: called for non-resource"));
+        return 0;
+    }
     int scenarioId = et->getCoreAttributes()->getProject()->
         getScenarioIndex("actual") - 1;
     if (scenarioId < 0)
-        qFatal("ExpressionTreeFunction::isactualallocated() called, but "
-               "there is no 'actual' scenario.");
+    {
+        et->errorMessage(i18n("isactualallocated: there is no 'actual'"
+                             " scenario."));
+        return 0;
+    }
     time_t start = ops[1]->evalAsTime(et);
     time_t end = ops[2]->evalAsTime(et);
     if (et->getCoreAttributes()->getProject()->getStart() > start)
@@ -432,11 +611,14 @@ ExpressionTreeFunction::isActualAllocated(const ExpressionTree* et,
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
     if (start > end)
-        qFatal("ExpressionTreeFunction::isAccountAllocated(): start date "
-               "is larger than end date");
+    {
+        et->errorMessage(i18n("isActualAllocated: start date "
+                              "is larger than end date"));
+        return 0;
+    }
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end), 
+        (scenarioId, Interval(start, end),
          ops[0]->evalAsString(et));
 }
 

@@ -48,7 +48,7 @@ CSVTaskReportElement::~CSVTaskReportElement()
 {
 }
 
-void
+bool
 CSVTaskReportElement::generate()
 {
     generateHeader();
@@ -56,7 +56,8 @@ CSVTaskReportElement::generate()
     generateTableHeader();
 
     TaskList filteredTaskList;
-    filterTaskList(filteredTaskList, 0, getHideTask(), getRollUpTask());
+    if (!filterTaskList(filteredTaskList, 0, getHideTask(), getRollUpTask()))
+        return FALSE;
     sortTaskList(filteredTaskList);
     maxDepthTaskList = filteredTaskList.maxDepth();
 
@@ -78,5 +79,7 @@ CSVTaskReportElement::generate()
     }
 
     generateFooter();
+
+    return TRUE;
 }
 

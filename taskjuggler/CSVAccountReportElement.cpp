@@ -34,7 +34,7 @@ CSVAccountReportElement::~CSVAccountReportElement()
 {
 }
 
-void
+bool
 CSVAccountReportElement::generate()
 {
     generateHeader();
@@ -42,11 +42,14 @@ CSVAccountReportElement::generate()
     generateTableHeader();
 
     AccountList filteredList;
-    filterAccountList(filteredList, AllAccounts, hideAccount, rollUpAccount);
+    if (!filterAccountList(filteredList, AllAccounts, hideAccount,
+                           rollUpAccount))
+        return FALSE;
     maxDepthAccountList = filteredList.maxDepth();
     
     /* Generate table of cost accounts. */
-    filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
+    if (!filterAccountList(filteredList, Cost, hideAccount, rollUpAccount))
+        return FALSE;
     sortAccountList(filteredList);
 
     TableLineInfo tli;
@@ -81,7 +84,8 @@ CSVAccountReportElement::generate()
     }
 
     /* Generate table of revenue accounts. */
-    filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount);
+    if (!filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount))
+        return FALSE;
     sortAccountList(filteredList);
 
     tli.boldText = FALSE;
@@ -124,5 +128,7 @@ CSVAccountReportElement::generate()
         tli.sc = scenarios[sc];
         generateLine(&tli, sc == 0 ? 8 : 9);
     }
+
+    return TRUE;
 }
 

@@ -617,7 +617,7 @@ ReportElement::setLoadUnit(const QString& u)
     return TRUE;
 }
 
-void
+bool
 ReportElement::filterTaskList(TaskList& filteredList, const Resource* r,
                               ExpressionTree* hideExp, 
                               ExpressionTree* rollUpExp)
@@ -658,6 +658,8 @@ const
         {
             filteredList.append(tli);
         }
+        if (hideExp && hideExp->getErrorFlag())
+            return FALSE;
     }
 
     /* In tasktree sorting mode we need to make sure that we don't hide
@@ -683,12 +685,18 @@ const
      * from the filtered list */
     for (TaskListIterator tli(report->getProject()->getTaskListIterator());
          *tli != 0; ++tli)
+    {
         if (isRolledUp(*tli, rollUpExp))
             for (TaskTreeIterator tti(*tli,
                                       TaskTreeIterator::parentAfterLeaves);
                  *tti != 0; ++tti)
                 if (*tti != *tli)
                     filteredList.removeRef(*tti);
+        if (rollUpExp && rollUpExp->getErrorFlag())
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 void
@@ -699,7 +707,7 @@ ReportElement::sortTaskList(TaskList& filteredList)
     filteredList.sort();
 }
 
-void
+bool
 ReportElement::filterResourceList(ResourceList& filteredList, const Task* t,
                            ExpressionTree* hideExp, ExpressionTree* rollUpExp)
 const
@@ -727,6 +735,8 @@ const
         {
             filteredList.append(*rli);
         }
+        if (hideExp && hideExp->getErrorFlag())
+            return FALSE;
     }
 
     /* In resourcetree sorting mode we need to make sure that we don't
@@ -750,6 +760,7 @@ const
     for (ResourceListIterator rli(report->getProject()->
                                   getResourceListIterator());
          *rli != 0; ++rli)
+    {
         if (isRolledUp(*rli, rollUpExp))
             for (ResourceTreeIterator rti(*rli,
                                           ResourceTreeIterator::
@@ -757,6 +768,11 @@ const
                  *rti != 0; ++rti)
                 if (*rti != *rli)
                     filteredList.removeRef(*rti);
+        if (rollUpExp && rollUpExp->getErrorFlag())
+            return FALSE;
+    }
+    
+    return TRUE;
 }
 
 void
@@ -767,7 +783,7 @@ ReportElement::sortResourceList(ResourceList& filteredList)
     filteredList.sort();
 }
 
-void
+bool
 ReportElement::filterAccountList(AccountList& filteredList, AccountType at,
                           ExpressionTree* hideExp, ExpressionTree* rollUpExp)
 const
@@ -781,6 +797,8 @@ const
     {
         if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
             filteredList.append(*ali);
+        if (hideExp && hideExp->getErrorFlag())
+            return FALSE;
     }
 
     /* In accounttree sorting mode we need to make sure that we don't hide
@@ -804,6 +822,7 @@ const
     for (AccountListIterator ali(report->getProject()->
                                  getAccountListIterator()); 
          *ali != 0; ++ali)
+    {
         if (isRolledUp(*ali, rollUpExp))
             for (AccountTreeIterator ati(*ali,
                                          AccountTreeIterator::
@@ -811,6 +830,11 @@ const
                  *ati != 0; ++ati)
                 if (*ati != *ali)
                     filteredList.removeRef(*ati);
+        if (rollUpExp && rollUpExp->getErrorFlag())
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 void

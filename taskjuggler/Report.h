@@ -133,17 +133,17 @@ public:
 
     bool open();
 
-    void filterTaskList(TaskList& filteredList, const Resource* r,
+    bool filterTaskList(TaskList& filteredList, const Resource* r,
                         ExpressionTree* hideExp, ExpressionTree* rollUpExp)
         const;
     void sortTaskList(TaskList& filteredList);
 
-    void filterResourceList(ResourceList& filteredList, const Task* t,
+    bool filterResourceList(ResourceList& filteredList, const Task* t,
                             ExpressionTree* hideExp, ExpressionTree* rollUpExp)
         const;
     void sortResourceList(ResourceList& filteredList);
 
-    void filterAccountList(AccountList& filteredList, AccountType at,
+    bool filterAccountList(AccountList& filteredList, AccountType at,
                            ExpressionTree* hideExp, ExpressionTree*
                            rollUpExp) const;
     void sortAccountList(AccountList& filteredList);

@@ -20,7 +20,7 @@ public:
     CSVAccountReportElement(Report* r, const QString& df, int dl);
     ~CSVAccountReportElement();
 
-    void generate();
+    bool generate();
 
 private:
     CSVAccountReportElement() { }

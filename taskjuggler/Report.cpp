@@ -104,7 +104,7 @@ Report::open()
     return TRUE;
 }
 
-bool 
+bool
 Report::setTaskSorting(int sc, int level)
 {
     if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
@@ -119,7 +119,7 @@ Report::setTaskSorting(int sc, int level)
     return TRUE;
 }
 
-bool 
+bool
 Report::setResourceSorting(int sc, int level)
 {
     if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
@@ -134,7 +134,7 @@ Report::setResourceSorting(int sc, int level)
     return TRUE;
 }
 
-bool 
+bool
 Report::setAccountSorting(int sc, int level)
 {
     if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
@@ -157,7 +157,7 @@ Report::isHidden(const CoreAttributes* c, ExpressionTree* et) const
     {
         return TRUE;
     }
-    
+
     if (!et)
         return FALSE;
 
@@ -192,14 +192,14 @@ void
 Report::setRollUpTask(ExpressionTree* et)
 {
     delete rollUpTask;
-    rollUpTask = et; 
+    rollUpTask = et;
 }
 
 void
 Report::setHideResource(ExpressionTree* et)
 {
     delete hideResource;
-    hideResource = et; 
+    hideResource = et;
 }
 
 void
@@ -223,7 +223,7 @@ Report::setRollUpAccount(ExpressionTree* et)
     rollUpAccount = et;
 }
 
-void
+bool
 Report::filterTaskList(TaskList& filteredList, const Resource* r,
                        ExpressionTree* hideExp, ExpressionTree* rollUpExp)
 const
@@ -239,7 +239,7 @@ const
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
-                if (r->getLoad(*it, Interval(start, end), AllAccounts, *tli) 
+                if (r->getLoad(*it, Interval(start, end), AllAccounts, *tli)
                     > 0.0)
                 {
                     resourceLoadedInAnyScenario = TRUE;
@@ -251,7 +251,7 @@ const
         QValueList<int>::const_iterator it;
         for (it = scenarios.begin(); it != scenarios.end(); ++it)
             if (iv.overlaps(Interval((*tli)->getStart(*it),
-                                 (*tli)->getEnd(*it) == 
+                                 (*tli)->getEnd(*it) ==
                                  (*tli)->getStart(*it) - 1 ?
                                  (*tli)->getStart(*it) :
                                  (*tli)->getEnd(*it))))
@@ -264,6 +264,8 @@ const
         {
             filteredList.append(tli);
         }
+        if (hideExp && hideExp->getErrorFlag())
+            return FALSE;
     }
 
     /* In tasktree sorting mode we need to make sure that we don't hide
@@ -289,12 +291,18 @@ const
      * from the filtered list */
     for (TaskListIterator tli(project->getTaskListIterator());
          *tli != 0; ++tli)
+    {
         if (isRolledUp(*tli, rollUpExp))
             for (TaskTreeIterator tti(*tli,
                                       TaskTreeIterator::parentAfterLeaves);
                  *tti != 0; ++tti)
                 if (*tti != *tli)
                     filteredList.removeRef(*tti);
+        if (rollUpExp && rollUpExp->getErrorFlag())
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 void
@@ -305,7 +313,7 @@ Report::sortTaskList(TaskList& filteredList)
     filteredList.sort();
 }
 
-void
+bool
 Report::filterResourceList(ResourceList& filteredList, const Task* t,
                            ExpressionTree* hideExp, ExpressionTree* rollUpExp)
 const
@@ -335,6 +343,8 @@ const
         {
             filteredList.append(*rli);
         }
+        if (hideExp && hideExp->getErrorFlag())
+            return FALSE;
     }
 
     /* In resourcetree sorting mode we need to make sure that we don't
@@ -357,6 +367,7 @@ const
      * roll-up list from the filtered list */
     for (ResourceListIterator rli(project->getResourceListIterator());
          *rli != 0; ++rli)
+    {
         if (isRolledUp(*rli, rollUpExp))
             for (ResourceTreeIterator rti(*rli,
                                           ResourceTreeIterator::
@@ -364,6 +375,11 @@ const
                  *rti != 0; ++rti)
                 if (*rti != *rli)
                     filteredList.removeRef(*rti);
+        if (rollUpExp && rollUpExp->getErrorFlag())
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 void
@@ -374,7 +390,7 @@ Report::sortResourceList(ResourceList& filteredList)
     filteredList.sort();
 }
 
-void
+bool
 Report::filterAccountList(AccountList& filteredList, AccountType at,
                           ExpressionTree* hideExp, ExpressionTree* rollUpExp)
 const
@@ -382,11 +398,13 @@ const
     /* Create a new list that contains only those accounts that were not
      * hidden. */
     filteredList.clear();
-    for (AccountListIterator ali(project->getAccountListIterator()); 
+    for (AccountListIterator ali(project->getAccountListIterator());
          *ali != 0; ++ali)
     {
         if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
             filteredList.append(*ali);
+        if (hideExp && hideExp->getErrorFlag())
+            return FALSE;
     }
 
     /* In accounttree sorting mode we need to make sure that we don't hide
@@ -407,8 +425,9 @@ const
 
     /* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */
-    for (AccountListIterator ali(project->getAccountListIterator()); 
+    for (AccountListIterator ali(project->getAccountListIterator());
          *ali != 0; ++ali)
+    {
         if (isRolledUp(*ali, rollUpExp))
             for (AccountTreeIterator ati(*ali,
                                          AccountTreeIterator::
@@ -416,6 +435,11 @@ const
                  *ati != 0; ++ati)
                 if (*ati != *ali)
                     filteredList.removeRef(*ati);
+        if (rollUpExp && rollUpExp->getErrorFlag())
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 void
@@ -424,7 +448,7 @@ Report::sortAccountList(AccountList& filteredList)
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(accountSortCriteria[i], i);
     filteredList.sort();
-    
+
     maxDepthAccountList = filteredList.maxDepth();
 }
 
@@ -461,7 +485,7 @@ Report::errorMessage(const char* msg, ... )
     char buf[1024];
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
-        
+
     TJMH.errorMessage(buf, defFileName, defFileLine);
 }
 

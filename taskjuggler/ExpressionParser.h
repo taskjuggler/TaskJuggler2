@@ -36,7 +36,7 @@ public:
 private:
     Operation* parseLogicalExpression(int precedence, const Project* proj);
     Operation* parseFunctionCall(const QString& token, const Project* proj);
-    
+
     void errorMessage(const char* msg, ...);
 
     Tokenizer* tokenizer;

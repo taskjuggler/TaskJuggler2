@@ -344,7 +344,7 @@ Tokenizer::open()
                 return FALSE;
             f = new QTextStream(fh, IO_ReadOnly);
         }
-        
+
         if (DEBUGLEVEL > 0)
             qWarning(i18n("Processing file \'%1\'").arg(file));
     }
@@ -353,7 +353,7 @@ Tokenizer::open()
 
     lineBuf = QString::null;
     currLine = 1;
-    
+
     return TRUE;
 }
 
@@ -444,7 +444,7 @@ Tokenizer::getC(bool expandMacros)
                 // $$ escapes $, so discard 2nd $
                 ungetC(e);
             }
-            else    
+            else
                 ungetC(d);
         }
     }
@@ -504,7 +504,7 @@ Tokenizer::readMacroCall()
     }
     else
         returnToken(tt, id);
-    
+
     if ((tt = nextToken(id)) != ID && tt != INTEGER)
     {
         errorMessage(i18n("Macro ID expected"));
@@ -595,10 +595,10 @@ Tokenizer::errorMessage(const char* msg, ...)
     va_start(ap, msg);
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
-   
+
     if (macroStack.isEmpty())
         TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(lineBuf)),
-                          file, currLine); 
+                          file, currLine);
     else
     {
         QString stackDump;
@@ -624,7 +624,7 @@ Tokenizer::errorMessageVA(const char* msg, va_list ap)
 {
     char buf[1024];
     vsnprintf(buf, 1024, msg, ap);
-    
+
     errorMessage("%s", buf);
 }
 

@@ -31,7 +31,8 @@ ReportICal::ReportICal(Project* p, const QString& f, time_t s, time_t e) :
    
 }
 
-void ReportICal::generate()
+bool
+ReportICal::generate()
 {
    KCal::CalendarLocal cal;
    qDebug( "Generate ical output to "+  fileName );
@@ -39,7 +40,8 @@ void ReportICal::generate()
    cal.setEmail( "");
 
    TaskList filteredList;
-   filterTaskList(filteredList, 0);
+   if (!filterTaskList(filteredList, 0))
+       return FALSE;
    sortTaskList(filteredList);
  
     for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
@@ -49,6 +51,7 @@ void ReportICal::generate()
    KCal::ICalFormat *format = new KCal::ICalFormat( ); // &cal );
    cal.save( fileName, format );
    qDebug( "saving ical to file " + fileName + " OK" );
+   return TRUE;
 }
 
 

@@ -36,7 +36,7 @@ public:
     HTMLReportElement(Report* r, const QString& df, int dl);
     virtual ~HTMLReportElement() { }
 
-    virtual void generate() = 0;
+    virtual bool generate() = 0;
 
     virtual void genHeadDefault(TableCellInfo* tcf);
     virtual void genHeadCurrency(TableCellInfo* tcf);

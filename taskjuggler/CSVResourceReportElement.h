@@ -21,7 +21,7 @@ public:
     CSVResourceReportElement(Report* r, const QString& df, int dl);
     ~CSVResourceReportElement();
 
-    void generate();
+    bool generate();
 private:
     CSVResourceReportElement() { }
 } ;

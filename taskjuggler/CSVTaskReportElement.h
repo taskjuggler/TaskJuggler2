@@ -21,7 +21,7 @@ public:
     CSVTaskReportElement(Report* r, const QString& df, int dl);
     ~CSVTaskReportElement();
 
-    void generate();
+    bool generate();
 private:
     CSVTaskReportElement() { }
 } ;

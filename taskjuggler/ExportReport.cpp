@@ -89,7 +89,8 @@ ExportReport::generate()
        << " */" << endl;
 
     TaskList filteredTaskList;
-    filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
+    if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
+        return FALSE;
     sortTaskList(filteredTaskList);
 
     ResourceList filteredResourceList;

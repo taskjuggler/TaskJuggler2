@@ -49,7 +49,7 @@ CSVResourceReportElement::~CSVResourceReportElement()
 {
 }
 
-void
+bool
 CSVResourceReportElement::generate()
 {
     generateHeader();
@@ -57,7 +57,9 @@ CSVResourceReportElement::generate()
     generateTableHeader();
 
     ResourceList filteredResourceList;
-    filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
+    if (!filterResourceList(filteredResourceList, 0, hideResource,
+                            rollUpResource))
+        return FALSE;
     sortResourceList(filteredResourceList);
     maxDepthResourceList = filteredResourceList.maxDepth();
 
@@ -78,5 +80,7 @@ CSVResourceReportElement::generate()
         }
     }
     generateFooter();
+
+    return TRUE;
 }
 

@@ -27,15 +27,15 @@ class TjMessageHandler : public QObject
 {
     Q_OBJECT
 public:
-    TjMessageHandler(bool cm) : consoleMode(cm) { }
+    TjMessageHandler(bool cm = TRUE) : consoleMode(cm) { }
     virtual ~TjMessageHandler() { }
 
     void warningMessage(const QString& msg, const QString& file = QString::null,
-                   int linei = -1);
-    void errorMessage(const QString& msg, const QString& file = QString::null, int
-                 line = -1);
-    void fatalMessage(const QString& msg, const QString& file = QString::null, int
-                 line = -1);
+                        int linei = -1);
+    void errorMessage(const QString& msg, const QString& file = QString::null,
+                      int line = -1);
+    void fatalMessage(const QString& msg, const QString& file = QString::null,
+                      int line = -1);
 
 signals:
     void printWarning(const QString& msg, const QString& file, int line);
@@ -43,7 +43,6 @@ signals:
     void printFatal(const QString& msg, const QString& file, int line);
 
 private:
-    TjMessageHandler() { }  // Don't use this.
     bool consoleMode;
 } ;
 

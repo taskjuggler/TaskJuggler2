@@ -21,7 +21,7 @@ public:
     HTMLTaskReportElement(Report* r, const QString& df, int dl);
     ~HTMLTaskReportElement();
 
-    void generate();
+    bool generate();
 private:
     HTMLTaskReportElement() { }
 } ;

@@ -23,8 +23,8 @@ class Operation;
 class CoreAttributes;
 
 typedef long (ExpressionTreeFunction::*ExpressionTreeFunctionLongPtr)
-    (const ExpressionTree*, Operation* const ops[]) const;
-    
+    (ExpressionTree*, Operation* const ops[]) const;
+
 class ExpressionTreeFunction
 {
 public:
@@ -42,37 +42,37 @@ public:
     }
     bool checkCoreAttributesType(ExpressionTree* et);
 
-    long longCall(const ExpressionTree* et, Operation* const ops[]) const;
+    long longCall(ExpressionTree* et, Operation* const ops[]) const;
 
-    long isParentOf(const ExpressionTree* et, Operation* const ops[]) const;
-    long isChildOf(const ExpressionTree* et, Operation* const ops[]) const;
-    long isLeaf(const ExpressionTree* et, Operation* const ops[]) const;
-    long treeLevel(const ExpressionTree* et, Operation* const ops[]) const;
-    long isAccount(const ExpressionTree* et, Operation* const ops[]) const;
-    long isAnAccount(const ExpressionTree* et, Operation* const ops[]) const;
-    long isResource(const ExpressionTree* et, Operation* const ops[]) const;
-    long isAResource(const ExpressionTree* et, Operation* const ops[]) const;
-    long isMilestone(const ExpressionTree* et, Operation* const ops[]) const;
-    long isTask(const ExpressionTree* et, Operation* const ops[]) const;
-    long isATask(const ExpressionTree* et, Operation* const ops[]) const;
-    long isSubTaskOf(const ExpressionTree* et, Operation* const ops[]) const;
-    long isTaskOfProject(const ExpressionTree* et, Operation* const ops[])
+    long isParentOf(ExpressionTree* et, Operation* const ops[]) const;
+    long isChildOf(ExpressionTree* et, Operation* const ops[]) const;
+    long isLeaf(ExpressionTree* et, Operation* const ops[]) const;
+    long treeLevel(ExpressionTree* et, Operation* const ops[]) const;
+    long isAccount(ExpressionTree* et, Operation* const ops[]) const;
+    long isAnAccount(ExpressionTree* et, Operation* const ops[]) const;
+    long isResource(ExpressionTree* et, Operation* const ops[]) const;
+    long isAResource(ExpressionTree* et, Operation* const ops[]) const;
+    long isMilestone(ExpressionTree* et, Operation* const ops[]) const;
+    long isTask(ExpressionTree* et, Operation* const ops[]) const;
+    long isATask(ExpressionTree* et, Operation* const ops[]) const;
+    long isSubTaskOf(ExpressionTree* et, Operation* const ops[]) const;
+    long isTaskOfProject(ExpressionTree* et, Operation* const ops[])
         const;
-    long startsBefore(const ExpressionTree* et, Operation* const ops[]) const;
-    long startsAfter(const ExpressionTree* et, Operation* const ops[]) const;
-    long endsBefore(const ExpressionTree* et, Operation* const ops[]) const;
-    long endsAfter(const ExpressionTree* et, Operation* const ops[]) const;
-    long isAllocated(const ExpressionTree* et, Operation* const ops[]) const;
-    long isDutyOf(const ExpressionTree* et, Operation* const ops[]) const;
-    long isAllocatedToProject(const ExpressionTree* et, Operation* const ops[])
+    long startsBefore(ExpressionTree* et, Operation* const ops[]) const;
+    long startsAfter(ExpressionTree* et, Operation* const ops[]) const;
+    long endsBefore(ExpressionTree* et, Operation* const ops[]) const;
+    long endsAfter(ExpressionTree* et, Operation* const ops[]) const;
+    long isAllocated(ExpressionTree* et, Operation* const ops[]) const;
+    long isDutyOf(ExpressionTree* et, Operation* const ops[]) const;
+    long isAllocatedToProject(ExpressionTree* et, Operation* const ops[])
         const;
-   
-    /* Deprecated functions */ 
-    long isTaskStatus(const ExpressionTree* et, Operation* const ops[]) const;
-    long containsTask(const ExpressionTree* et, Operation* const ops[]) const;
-    long isPlanAllocated(const ExpressionTree* et, Operation* const ops[])
+
+    /* Deprecated functions */
+    long isTaskStatus(ExpressionTree* et, Operation* const ops[]) const;
+    long containsTask(ExpressionTree* et, Operation* const ops[]) const;
+    long isPlanAllocated(ExpressionTree* et, Operation* const ops[])
         const;
-    long isActualAllocated(const ExpressionTree* et, Operation* const ops[])
+    long isActualAllocated(ExpressionTree* et, Operation* const ops[])
         const;
 
 private:

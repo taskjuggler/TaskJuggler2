@@ -21,7 +21,7 @@ public:
     HTMLWeeklyCalendarElement(Report* r, const QString& df, int dl);
     ~HTMLWeeklyCalendarElement();
 
-    void generate();
+    bool generate();
     
 private:
     HTMLWeeklyCalendarElement() { }

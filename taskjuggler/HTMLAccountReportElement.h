@@ -20,7 +20,7 @@ public:
     HTMLAccountReportElement(Report* r, const QString& df, int dl);
     ~HTMLAccountReportElement();
 
-    void generate();
+    bool generate();
 
 private:
     HTMLAccountReportElement() { }

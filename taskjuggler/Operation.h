@@ -26,8 +26,8 @@ class Operation;
 class Operation
 {
 public:
-    enum opType { Const = 1, Variable, Function, Id, Date, String, 
-        Not, And, Or, 
+    enum opType { Const = 1, Variable, Function, Id, Date, String,
+        Not, And, Or,
         Greater, Smaller, Equal, GreaterOrEqual, SmallerOrEqual };
 
     Operation(long v) : opt(Const), value(v), opsCount(0) { }
@@ -64,23 +64,30 @@ public:
     Operation(const Operation& op);
     ~Operation();
 
-    long evalAsInt(const ExpressionTree* et) const;
-    time_t evalAsTime(const ExpressionTree* et) const;
-    QString evalAsString(const ExpressionTree* et) const;
+    long evalAsInt(ExpressionTree* et) const;
+    time_t evalAsTime(ExpressionTree* et) const;
+    QString evalAsString(ExpressionTree* et) const;
+
+    void setValid(bool v = TRUE)
+    {
+        valid = v;
+    }
+    bool isValid() const { return valid; }
 
     QString debugString();
-    
+
 private:
     Operation() { } // don't use this
 
-    long evalFunction(const ExpressionTree* et) const;
-    QString evalFunctionAsString(const ExpressionTree* et) const;
+    long evalFunction(ExpressionTree* et) const;
+    QString evalFunctionAsString(ExpressionTree* et) const;
 
     opType opt;
     long value;
     QString name;
     Operation** ops;
     int opsCount;
+    bool valid;
 } ;
 
 #endif

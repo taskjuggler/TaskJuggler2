@@ -3000,33 +3000,45 @@ ProjectFile::readXMLReport()
             else if (token == KW("hidetask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setHideTask(et);
             }
             else if (token == KW("rolluptask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setRollUpTask(et);
             }
             else if (token == KW("hideresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setHideResource(et);
             }
             else if (token == KW("rollupresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setRollUpResource(et);
             }
             else if (token == KW("scenarios"))
@@ -3301,17 +3313,23 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("hidetask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setHideTask(et);
             }
             else if (token == KW("rolluptask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setRollUpTask(et);
             }
             else if (token == KW("sorttasks"))
@@ -3322,17 +3340,23 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("hideresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setHideResource(et);
             }
             else if (token == KW("rollupresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setRollUpResource(et);
             }
             else if (token == KW("sortresources"))
@@ -3343,17 +3367,23 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("hideaccount"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setHideAccount(et);
             }
             else if (token == KW("rollupaccount"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setRollUpAccount(et);
             }
             else if (token == KW("sortaccounts"))
@@ -3659,17 +3689,23 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (token == KW("hidetask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setHideTask(et);
             }
             else if (token == KW("rolluptask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setRollUpTask(et);
             }
             else if (token == KW("sorttasks"))
@@ -3680,17 +3716,23 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (token == KW("hideresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setHideResource(et);
             }
             else if (token == KW("rollupresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setRollUpResource(et);
             }
             else if (token == KW("sortresources"))
@@ -3701,17 +3743,23 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (token == KW("hideaccount"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setHideAccount(et);
             }
             else if (token == KW("rollupaccount"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tab->setRollUpAccount(et);
             }
             else if (token == KW("sortaccounts"))
@@ -3835,33 +3883,45 @@ ProjectFile::readExportReport()
             if (token == KW("hidetask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setHideTask(et);
             }
             else if (token == KW("rolluptask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setRollUpTask(et);
             }
             else if (token == KW("hideresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setHideResource(et);
             }
             else if (token == KW("rollupresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 report->setRollUpResource(et);
             }
             else if (token == KW("taskroot"))
@@ -4079,17 +4139,23 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == KW("hidetask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 el->setHideTask(et);
             }
             else if (token == KW("rolluptask"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 el->setRollUpTask(et);
             }
             else if (token == KW("sorttasks"))
@@ -4100,17 +4166,23 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == KW("hideresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 el->setHideResource(et);
             }
             else if (token == KW("rollupresource"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return FALSE;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 el->setRollUpResource(et);
             }
             else if (token == KW("sortresources"))
@@ -4220,21 +4292,7 @@ ProjectFile::readLogicalExpression(int precedence)
         else
         {
             returnToken(tt, lookAhead);
-            if (proj->isAllowedFlag(token) ||
-                proj->getTask(token) ||
-                proj->getResource(token) ||
-                proj->getAccount(token) ||
-                (proj->getScenarioIndex(token) > 0) ||
-                proj->isValidId(token))
-            {
-                op = new Operation(Operation::Id, token);
-            }
-            else
-            {
-                errorMessage(i18n("Flag or ID '%1' is unknown.").
-                             arg(token));
-                return 0;
-            }
+            op = new Operation(Operation::Id, token);
         }
     }
     else if (tt == STRING)
@@ -4548,17 +4606,23 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
             else if (token == KW("hidecelltext"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return 0;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tci->setHideCellText(et);
             }
             else if (token == KW("hidecellurl"))
             {
                 Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine(); 
                 if ((op = readLogicalExpression()) == 0)
                     return 0;
                 ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
                 tci->setHideCellURL(et);
             }
             else

@@ -49,7 +49,7 @@ HTMLResourceReportElement::~HTMLResourceReportElement()
 {
 }
 
-void
+bool
 HTMLResourceReportElement::generate()
 {
     generateHeader();
@@ -59,12 +59,15 @@ HTMLResourceReportElement::generate()
     s() << "<tbody>" << endl;
     
     ResourceList filteredResourceList;
-    filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
+    if (!filterResourceList(filteredResourceList, 0, hideResource,
+                            rollUpResource))
+        return FALSE;
     sortResourceList(filteredResourceList);
     maxDepthResourceList = filteredResourceList.maxDepth();
 
     TaskList filteredTaskList;
-    filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
+    if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
+        return FALSE;
     maxDepthTaskList = filteredTaskList.maxDepth();
     
     int rNo = 1;
@@ -96,7 +99,8 @@ HTMLResourceReportElement::generate()
         if (hasVisibleChilds)
             continue;
 
-        filterTaskList(filteredTaskList, *rli, hideTask, rollUpTask);
+        if (!filterTaskList(filteredTaskList, *rli, hideTask, rollUpTask))
+            return FALSE;
         sortTaskList(filteredTaskList);
 
         int tNo = 1;
@@ -119,5 +123,7 @@ HTMLResourceReportElement::generate()
     s() << "</tbody>" << endl;
     s() << "</table>" << endl;
     generateFooter();
+
+    return TRUE;
 }
 

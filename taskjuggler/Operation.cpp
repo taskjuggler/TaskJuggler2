@@ -38,7 +38,7 @@ Operation::~Operation()
 }
 
 long
-Operation::evalAsInt(const ExpressionTree* et) const
+Operation::evalAsInt(ExpressionTree* et) const
 {
     switch (opt)
     {
@@ -77,7 +77,7 @@ Operation::evalAsInt(const ExpressionTree* et) const
 }
 
 time_t
-Operation::evalAsTime(const ExpressionTree* et) const
+Operation::evalAsTime(ExpressionTree* et) const
 {
     switch(opt)
     {
@@ -99,7 +99,7 @@ Operation::evalAsTime(const ExpressionTree* et) const
 }
 
 QString
-Operation::evalAsString(const ExpressionTree* et) const
+Operation::evalAsString(ExpressionTree* et) const
 {
     switch(opt)
     {
@@ -121,7 +121,7 @@ Operation::evalAsString(const ExpressionTree* et) const
 }
 
 long
-Operation::evalFunction(const ExpressionTree* et) const
+Operation::evalFunction(ExpressionTree* et) const
 {
     if (EFT.getFunction(name))
     {
@@ -134,7 +134,7 @@ Operation::evalFunction(const ExpressionTree* et) const
 }
 
 QString
-Operation::evalFunctionAsString(const ExpressionTree* ) const
+Operation::evalFunctionAsString(ExpressionTree* ) const
 {
     // There are no functions yet that return a string.
     return QString::null;

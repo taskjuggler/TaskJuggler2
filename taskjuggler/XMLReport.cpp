@@ -133,11 +133,14 @@ XMLReport::generate()
     }
 
     TaskList filteredTaskList;
-    filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
+    if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
+        return FALSE;
     sortTaskList(filteredTaskList);
 
     ResourceList filteredResourceList;
-    filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
+    if (!filterResourceList(filteredResourceList, 0, hideResource,
+                            rollUpResource))
+        return FALSE;
     sortResourceList(filteredResourceList);
 
     if (!generateProjectProperty(&tjEl))

@@ -21,11 +21,10 @@ public:
     HTMLResourceReportElement(Report* r, const QString& df, int dl);
     ~HTMLResourceReportElement();
 
-    void generate();
+    bool generate();
 private:
     HTMLResourceReportElement() { }
 } ;
 
 #endif
-
 
