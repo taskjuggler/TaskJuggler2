@@ -40,7 +40,7 @@ void ReportICal::generate()
    Task *task = taskList.first();
    while( (task = taskList.next()) != 0 )
    {
-      if( task->isContainer())
+      if( task->isContainer() && task->getParent() == 0 )
 	 addATask( task, &cal );
    }
 
