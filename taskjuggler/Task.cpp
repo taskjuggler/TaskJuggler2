@@ -411,10 +411,10 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration)
 bool
 Task::needsEarlierTimeSlot(time_t date)
 {
-	if (scheduling == ALAP && end != 0 && start == 0 &&
+	if (scheduling == ALAP && end != 0 && !schedulingDone &&
 		date > lastSlot && sub.isEmpty())
 		return TRUE;
-	if (scheduling == ASAP && start != 0 && end == 0 &&
+	if (scheduling == ASAP && start != 0 && !schedulingDone &&
 		date > lastSlot + 1 && sub.isEmpty())
 		return TRUE;
 
@@ -892,8 +892,11 @@ Task::scheduleOk()
 
 	if (!schedulingDone)
 	{
-		fatalError("An unknown scheduling problem occured. This is "
-				   "probably a bug in the scheduler.");
+		fatalError(QString().sprintf(
+			"Task %s has not been marked completed. It is scheduled to last "
+			"from %s to %s. This might be a bug in the TaskJuggler "
+			"scheduler.", id.latin1(), time2ISO(start).latin1(),
+			time2ISO(end).latin1()));
 		return FALSE;
 	}
 
