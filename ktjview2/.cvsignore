@@ -14,3 +14,4 @@ gantt.h
 filterWidget.cpp
 filterWidget.h
 *.kidl
+ktjview2iface_skel.cpp
