@@ -134,14 +134,15 @@ my ($p_end_year,
 my $project_days    = Delta_Days($p_start_year, $p_start_month, $p_start_day,
                                  $p_end_year, $p_end_month, $p_end_day);
 my ($today_year, $today_month, $today_day) = Today();
-my $task_count    = $#all_tasks+1; #-- wieviele tasks hat das projekt
-my $page_border   = 10;
-my $header_height = 35;
-my $day_x         = 20; #-- day-width
-my $task_height   = 15; #-- task-height
-my $task_space    = 5; #-- task-space
-my $res_count     = scalar (keys %rmap);
-my $res_height    = (($task_height + $task_space) * $res_count);
+my $task_count      = $#all_tasks+1; #-- wieviele tasks hat das projekt
+my $page_border     = 10;
+my $header_height   = 35;
+my $day_x           = 20; #-- day-width
+my $task_height     = 15; #-- task-height
+my $task_space      = 10; #-- task-space
+my $res_count       = scalar (keys %rmap);
+my $res_height      = (($task_height + $task_space) * $res_count);
+my $last_Y_task     = 0;
 
 #-- calc page size
 my $page_x    = ($page_border*2) + ($project_days * $day_x) + ($page_border*2);
@@ -163,11 +164,157 @@ sub _gantt {
                                             -borderwidth    5
                                             -scrollbars     se
                                             -scrollregion/  => ['0', '0', $x, $y])->pack( -expand => 'yes', -fill => 'both');
-    _draw_grid($c, $page_x, $page_y);
+    _draw_grid($c);
+    _draw_task($c);
+    _draw_res($c);
+}
+
+sub _draw_res {
+    my $c = shift;
+    my $b = 0;
+    my $a = 0;
+    foreach my $i (sort keys %res_load) {
+        foreach my $ii (keys %{$res_load{$i}}) {
+            my $res = $rmap{$i};
+            my $taskID = $ii;
+            my ($start, $end, $load) = @{$res_load{$i}{$ii}};
+                $start =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+                $end =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+            #-- wieviele tage vom anfang her fängt der task an
+            my ($start_year, $start_month, $start_day)  = split(/-/, $start);
+            my ($end_year, $end_month, $end_day)        = split(/-/, $end);
+               ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
+            my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
+                                            $start_year, $start_month, $start_day);
+            #-- länge des tasks in tagen
+            my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
+                                            $end_year, $end_month, $end_day);
+            #-- balken koordinaten
+            my $x1 = $start_delta * $day_x + $page_border;
+            my $y1 = $last_Y_task + ( ($task_height + $task_space) * $b );
+            my $x2 = $x1 + ($task_length * $day_x);
+            my $y2 = $y1 + $task_height;
+            #-- balken
+            $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'gray90', -fill => 'gray90');
+            #-- rahmen drum
+            $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'black');
+            #-- linie dazwischen
+            my $l_y = $y2+($task_space/2);
+            $c->createLine($page_border, $l_y, $page_x-($page_border), $l_y );
+            #-- res-name
+            $c->createText($page_border+$day_x, $y2-($task_space/2), -text => $res, -anchor => 'w');
+            #-- load reinschreiben
+            if ($task_length >= 3) {
+                $c->createText($x2-($day_x*2), $y2-($task_space/2), -text => $load, -anchor => 'w');
+            }
+            $a++;
+        }
+        $b++;
+        $a = 0;
+    }
+}
+
+sub _draw_task {
+    my $c = shift;
+    foreach my $task (@all_tasks) {
+        my $nr      = $task->Index;
+        my $name    = $task->Name;
+        my $start   = $task->h_planStart;
+            $start =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+        my $end     = $task->h_planEnd;
+            $end =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+        my $persent = $task->complete;
+            $persent = 100 if ($persent < 0);
+        #-- wieviele tage vom anfang her fängt der task an
+        my ($start_year, $start_month, $start_day)  = split(/-/, $start);
+        my ($end_year, $end_month, $end_day)        = split(/-/, $end);
+        if ( ($task->Type eq 'Task') || ($task->Type eq 'Container') ) {
+           ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
+        }
+        my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
+                                        $start_year, $start_month, $start_day);
+        #-- länge des tasks in tagen
+        my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
+                                        $end_year, $end_month, $end_day);
+        #-- balken koordinaten
+        my $x1 = $start_delta * $day_x + $page_border;
+        my $y1 = ($task_height * $nr ) + ($task_space * $nr) + $header_height*2 + $page_border;
+        my $x2 = $x1 + ($task_length * $day_x);
+        my $y2 = $y1 + $task_height;
+        #-- letzte y-koordinate mweken um nachher noch die res-balken zu malen
+        $last_Y_task =  $y2 if ($y2 > $last_Y_task);
+        #-- die koordinaten für anfang und ende des tasks merken, da fangen die
+        #-- depend-lines an oder da gehen sie halt hin, hoffentlich ;)
+        $task->x1($x1); $task->y1($y1-($task_height/2));
+        $task->x2($x2); $task->y2($y2+($task_height/2));
+        if ( $task->Type eq 'Task' ) {
+            #-- den task pinseln
+            #-- wenn das ende vor heute liegt und der task nicht 100% fertig hat, dann rot
+            if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
+                if ( $persent < 100 ) {
+                    $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'red', -fill => 'red');
+                }
+            } else {
+                $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'white', -fill => 'white');
+            }
+            #-- buffer balken pinseln
+            if ( $task->startBuffer ) {
+                my $buf = $task->startBuffer;
+                $c->createRectangle($x1, $y1, $x1 + (($task_length/100*$buf) * $day_x), $y2, -outline => 'gray75', -fill => 'gray75');
+            }
+            if ( $task->endBuffer ) {
+                my $buf = $task->endBuffer;
+                $c->createRectangle($x2 - (($task_length/100*$buf) * $day_x), $y1, $x2, $y2, -outline => 'gray75', -fill => 'gray75');
+            }
+            #-- länge von % feritg balken
+            my $per_length = $x1 + (($task_length/100*$persent) * $day_x);
+            #-- % done balken pinseln
+            if ($persent > 0) {
+                $c->createRectangle($x1, $y1, $per_length, $y2, -outline => 'green', -fill => 'green');
+            }
+            #-- rahmen um den task
+            $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'black');
+            #-- text
+            $task->label($name);
+            $task->label_x($x1+1);
+            $task->label_y($y1-($task_height/1.5));
+        }
+        if ( $task->Type eq 'Milestone' ) {
+            my ($x, $y) = ($x1, $y1+($task_height/2));
+            $c->createOval($x-($task_height/3), $y-($task_height/3), $x+($task_height/3), $y+($task_height/3), -outline => 'black', -fill => 'black');
+            #-- text
+            my $am = sprintf('%02d', $start_month);
+            my $ad = sprintf('%02d', $start_day);
+            $task->label("$name ($am-$ad)");
+            $task->label_x($x1+2);
+            $task->label_y($y1-($task_height/2));
+        }
+        if ( $task->Type eq 'Container' ) {
+            $c->createRectangle($x1-($day_x/4), $y1, $x2+($day_x/4), $y2-($task_height/2), -outline => 'black', -fill => 'black');
+            #-- pfeil vorn
+            $c->createPolygon(
+                $x1-($day_x/4), $y1+($task_height/2),
+                $x1, $y1+$task_height,
+                $x1+($day_x/4), $y1+($task_height/2),
+                $x1-($day_x/4), $y1+($task_height/2),
+                -outline => 'black', -fill => 'black');
+            #-- pfeil hinten
+            $c->createPolygon(
+                $x2-($day_x/4), $y2-($task_height/2),
+                $x2, $y2,
+                $x2+($day_x/4), $y2-($task_height/2),
+                $x2-($day_x/4), $y2-($task_height/2),
+                -outline => 'black', -fill => 'black');
+            #-- text
+            $task->label($name);
+            $task->label_x($x1+1);
+            $task->label_y($y1-($task_height/1.5));
+        }
+    }
 }
 
 sub _draw_grid {
-    my ($c, $page_x, $page_y) = @_;
+    my $c = shift;
     for(my $i = 0; $i <= $project_days; $i++) {
         #-- bei welchem tag sind wir gerade
         my ($act_year, $act_month, $act_day) = Add_Delta_Days($p_start_year, $p_start_month, $p_start_day, $i);

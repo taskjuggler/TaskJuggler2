@@ -21,7 +21,8 @@ use Class::MethodMaker
                             h_maxStart      h_maxEnd
                             h_actualStart   h_actualEnd
                             h_planStart     h_planEnd
-                            ) ],
+                            x1 y1 x2 y2
+                            label label_x label_y) ],
     struct          => [ qw(Followers Previous Allocations bookedResources) ];
 
 1;
