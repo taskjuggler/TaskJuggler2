@@ -18,7 +18,7 @@
 </author>
 </authorgroup>
 <copyright>
-	<year>2001, 2002, 2003, 2004</year>
+	<year>2001, 2002, 2003, 2004, 2005</year>
 	<holder>Chris Schl&auml;ger</holder>
 </copyright>
 <date>Version @VERSION@</date>
@@ -63,13 +63,13 @@ is the tool for you.</para>
 <para>Instead of clicking yourself painfully through hundreds of
 dialog boxes you specify your TaskJuggler project in a simple text
 format.  You write down all your tasks with their dependencies and
-other properties using your favorit text editor. The information is
-then sent through the TaskJuggler program and you will get all sorts
-of reports in HTML or XML format. The HTML files can be viewed and
-printed with any web browser that supports Cascading Style Sheets.
-JavaScript support is recommended. The XML files are used by the
-Gantt- and PERT chart generators and the <ulink
-url="http://www.kde.org">KDE</ulink> <ulink
+other properties using the graphical front-end or your favorit text
+editor. The information is processed by the TaskJuggler program
+and you will get all sorts of reports in an interactive format or as
+HTML or XML format. The HTML files can be viewed and printed with any
+web browser that supports Cascading Style Sheets.  JavaScript support
+is recommended. The XML files are used by the Gantt- and PERT chart
+generators and the <ulink url="http://www.kde.org">KDE</ulink> <ulink
 url="http://konqueror.kde.org">Konqueror</ulink> plug-in.</para>
 
 <para>TaskJuggler does not only honor the task interdependencies but
@@ -97,6 +97,9 @@ conflict solver.</para></listitem>
 <listitem><para>Powerful project description syntax with macro
 support.</para></listitem>
 
+<listitem><para>Graphical front-end to enter and view your
+project.</para></listitem>
+
 <listitem><para>Flexible working hours and vacation handling.</para></listitem>
 
 <listitem><para>Support for shifts.</para></listitem>
@@ -107,7 +110,8 @@ support.</para></listitem>
 
 <listitem><para>Project accounting support.</para></listitem>
 
-<listitem><para>Task may have initial and finishing costs.</para></listitem>
+<listitem><para>Task may have initial, finishing and running
+costs.</para></listitem>
 
 <listitem><para>Resource may have running costs.</para></listitem>
 
@@ -144,17 +148,13 @@ url="http://www.taskjuggler.org">
 http://www.taskjuggler.org</ulink>.</para>
 
 <para> Since the developers are mostly busy project managers
-themselves, we have created two forums for users to help each other.
+themselves, we have created a forum for users to help each other.
 </para>
 
 <para>The TaskJuggler user mailing list is hosted by <ulink
-url="http://www.suse.de/en">SuSE</ulink>. You can subscribe and
+url="http://www.novell.com">Novell</ulink>. You can subscribe and
 unsubscribe at <ulink url="http://www.suse.de/en/support/mailinglists">
 http://www.suse.de/en/support/mailinglists/</ulink>.</para>
-
-<para>The other forum is an IRC channel at <ulink
-url="http://www.freenode.net">FreeNode.net</ulink>. The
-channel is called #taskjuggler.</para>
 
 </sect1>
 &ChangeLog;
@@ -179,7 +179,7 @@ TaskJuggler included like the <ulink
 url="http://www.suse.de/en">SuSE</ulink> distribution.</para>
 
 <para>This version of TaskJuggler was built and tested on SuSE Linux
-8.2 and 9.0 on various hardware platforms.</para>
+9.1, 9.2 and 9.3 on various hardware platforms.</para>
 
 <sect2><title>The command line tool taskjuggler</title>
 
@@ -187,9 +187,9 @@ url="http://www.suse.de/en">SuSE</ulink> distribution.</para>
 
 <para><itemizedlist mark='opencircle'>
 
-<listitem><para>qt3.1 &mdash; The <ulink
+<listitem><para>qt3.2 &mdash; The <ulink
 url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
-version 3.1 or higher</para></listitem>
+version 3.3 or higher</para></listitem>
 
 <listitem><para> GNU Compiler Collection &mdash; We are currently
 using GCC 3.2 to develop TaskJuggler. Since we try to write the code
@@ -312,6 +312,16 @@ list at <ulink url="mailto:taskjuggler@suse.com">
 taskjuggler@suse.com</ulink> in English. Maybe someone there can help
 you out.</para>
 
+<para>In case you want to build TaskJuggler without the graphical
+front-ends, you can disable them during them configuration
+process:</para>
+
+<para><screen>
+% ./configure --with-kde-support=no --prefix=/usr/local
+% make
+% make install
+</screen></para>
+
 </sect1>
 </chapter> 
 <chapter><title>Usage</title> 
@@ -333,8 +343,24 @@ extension for such files is
 </sect1> 
 <sect1><title> General Usage</title>
 
-<para>TaskJuggler works like a compiler. You provide the source
-files, it computes the contents and creates the output files.</para>
+<para>To use the graphical front-end simply start it from the menu.
+Depeding on your Linux Distribution you will find it under
+Office/Project Management or a similar entry. To start it from a shell
+type</para>
+
+<para><screen>
+% TaskJuggler
+</screen> </para>
+
+<para>or</para>
+
+<para><screen>
+% ktjview2
+</screen> </para>
+
+<para>The commandline version of TaskJuggler works like a compiler.
+You provide the source files, it computes the contents and creates the
+output files.</para>
 
 <para>Let's say you have a project file called
 <filename>AcSo.tjp</filename>. It contains the tasks of your project
