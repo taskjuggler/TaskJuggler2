@@ -49,7 +49,7 @@ public:
 
     QString hAlign;
     int fontFactor;
-
+    bool noWrap;
     RealFormat realFormat;
 
 protected:

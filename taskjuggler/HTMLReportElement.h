@@ -53,7 +53,9 @@ public:
     virtual void genCellEmpty(TableCellInfo*); 
     virtual void genCellSequenceNo(TableCellInfo* tli);
     virtual void genCellNo(TableCellInfo* tli);
+    virtual void genCellHierarchNo(TableCellInfo* tli);
     virtual void genCellIndex(TableCellInfo* tli);
+    virtual void genCellHierarchIndex(TableCellInfo* tli);
     virtual void genCellId(TableCellInfo* tli);
     virtual void genCellName(TableCellInfo* tli);
     virtual void genCellStart(TableCellInfo* tli);

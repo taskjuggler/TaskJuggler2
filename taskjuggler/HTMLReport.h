@@ -37,10 +37,6 @@ public:
     void generateHeader();
     void generateFooter();
 
-    void setRawStyleSheet(const QString& styleSheet)
-    {
-        rawStyleSheet = styleSheet;
-    }
     void setRawHead(const QString& head)
     {
         rawHead = head;
@@ -54,22 +50,8 @@ public:
 protected:
     HTMLReport() { }
 
-    uint colDefault;
-    uint colDefaultLight;
-    uint colWeekend;
-    uint colVacation;
-    uint colAvailable;
-    uint colBooked;
-    uint colBookedLight;
-    uint colHeader;
-    uint colMilestone;
-    uint colCompleted;
-    uint colCompletedLight;
-    uint colToday;
-
     QString rawHead;
     QString rawTail;
-    QString rawStyleSheet;
 } ;
 
 #endif

@@ -19,7 +19,6 @@
 #include <qstringlist.h>
 #include <qfile.h>
 #include <qvaluelist.h>
-#include <qmap.h>
 
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
@@ -67,10 +66,6 @@ public:
 
     void setHeadline(const QString& hl) { headline = hl; }
     void setCaption(const QString& c) { caption = c; }
-
-    bool setUrl(const QString& key, const QString& url);
-    const QString* getUrl(const QString& key) const;
-    QMap<QString, QString> getUrls() const { return urls; }
 
     bool isHidden(const CoreAttributes* c, ExpressionTree* et) const;
     bool isRolledUp(const CoreAttributes* c, ExpressionTree* et) const;
@@ -171,8 +166,6 @@ protected:
     QString headline;
     QString caption;
    
-    QMap<QString, QString> urls;
-
     /* The maximum depth of the tree that we have to report in tree-sorting
      * mode. */
     uint maxDepthTaskList;

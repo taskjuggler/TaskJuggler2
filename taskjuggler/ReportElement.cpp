@@ -67,12 +67,26 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = "right";
     columnFormat.insert(KW("no"), tcf);
     
+    tcf = new TableColumnFormat(this, i18n("No."));
+    tcf->genTaskLine1 = &ReportElement::genCellHierarchNo;
+    tcf->genResourceLine1 = &ReportElement::genCellHierarchNo;
+    tcf->genAccountLine1 = &ReportElement::genCellHierarchNo;
+    tcf->hAlign = "left";
+    columnFormat.insert(KW("hierarchno"), tcf);
+    
     tcf = new TableColumnFormat(this, i18n("Index"));
     tcf->genTaskLine1 = &ReportElement::genCellIndex;
     tcf->genResourceLine1 = &ReportElement::genCellIndex;
     tcf->genAccountLine1 = &ReportElement::genCellIndex;
     tcf->hAlign = "right";
     columnFormat.insert(KW("index"), tcf);
+    
+    tcf = new TableColumnFormat(this, i18n("No."));
+    tcf->genTaskLine1 = &ReportElement::genCellHierarchIndex;
+    tcf->genResourceLine1 = &ReportElement::genCellHierarchIndex;
+    tcf->genAccountLine1 = &ReportElement::genCellHierarchIndex;
+    tcf->hAlign = "left";
+    columnFormat.insert(KW("hierarchindex"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Id"));
     tcf->genTaskLine1 = &ReportElement::genCellId;
@@ -85,6 +99,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellName;
     tcf->genAccountLine1 = &ReportElement::genCellName;
     tcf->genSummaryLine1 = &ReportElement::genCellName;
+    tcf->noWrap = TRUE;
     columnFormat.insert(KW("name"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Start"));
@@ -371,12 +386,12 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
 
     barLabels = BLT_LOAD;
 
-    setUrl(KW("dayheader"));
-    setUrl(KW("monthheader"));
-    setUrl(KW("resourcename"));
-    setUrl(KW("taskname"));
-    setUrl(KW("weekheader"));
-    setUrl(KW("yearheader"));
+    registerUrl(KW("dayheader"));
+    registerUrl(KW("monthheader"));
+    registerUrl(KW("resourcename"));
+    registerUrl(KW("taskname"));
+    registerUrl(KW("weekheader"));
+    registerUrl(KW("yearheader"));
 
     accumulate = FALSE;
 
@@ -403,7 +418,6 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     taskRoot = r->getTaskRoot();
     loadUnit = r->getLoadUnit();
     showPIDs = r->getShowPIDs();
-    urls = r->getUrls();
 }
 
 ReportElement::~ReportElement()
@@ -422,6 +436,12 @@ ReportElement::s() const
     return report->stream(); 
 }
 
+void
+ReportElement::registerUrl(const QString& key)
+{
+    urls[key] = QString::null;
+}
+
 bool
 ReportElement::setUrl(const QString& key, const QString& url)
 {
@@ -438,6 +458,24 @@ ReportElement::getUrl(const QString& key) const
     if (urls.find(key) == urls.end() || urls[key] == "")
         return 0;
     return &urls[key];
+}
+
+bool
+ReportElement::isSupportedColumn(const QString& id) const
+{
+    return columnFormat[id];
+}
+
+QStringList
+ReportElement::getSupportedColumnList() const
+{
+    QStringList l;
+    QDictIterator<TableColumnFormat> it(columnFormat);
+    for ( ; it.current(); ++it)
+        l.append(it.currentKey());
+
+    l.sort();
+    return l;
 }
 
 bool 

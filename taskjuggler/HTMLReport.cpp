@@ -19,18 +19,6 @@ HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :
    Report(p, f, df, dl)
 {
-    colDefault = 0xf3ebae;
-    colDefaultLight = 0xfffadd;
-    colWeekend = 0xffec80;
-    colVacation = 0xfffc60;
-    colAvailable = 0xa4ff8d;
-    colBooked = 0xff5a5d;
-    colBookedLight = 0xffbfbf;
-    colHeader = 0xa5c2ff;
-    colMilestone = 0xff2a2a;
-    colCompleted = 0x87ff75;
-    colCompletedLight = 0xa1ff9a;
-    colToday = 0xa387ff;
 }
 
 void

@@ -39,6 +39,9 @@ public:
 
     const QString& getName() const { return name; }
 
+    void setTitle(const QString& t) { title = t; }
+    const QString& getTitle() const { return title; }
+
     void clearSum();
     void clearMemory();
     void addToSum(uint sc, const QString& key, double val);
@@ -50,7 +53,8 @@ public:
     
 protected:
     QString name;
-    uint maxScenarios; 
+    uint maxScenarios;
+    QString title;
     
     QMap<QString, double>* sum;
     QMap<QString, double>* memory;

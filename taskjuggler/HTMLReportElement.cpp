@@ -179,6 +179,8 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
         tci->setFontFactor(90);
 
     s() << "   <td";
+    if (tci->tcf->noWrap)
+        s() << " nowrap=\"nowrap\"";
     if (tci->getRows() != 1 || (multi && scenarios.count() > 1))
         s() << " rowspan=\"" << QString("%1")
             .arg(tci->getRows() != 1 ?
@@ -336,18 +338,27 @@ HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString str)
 void
 HTMLReportElement::genHeadDefault(TableCellInfo* tci)
 {
-    s() << "   <td rowspan=\"2\">"
-        << htmlFilter(tci->tcf->getTitle()) << "</td>" << endl;
+    s() << "   <td rowspan=\"2\">";
+    if (!tci->tci->getTitle().isEmpty())
+        s() << htmlFilter(tci->tci->getTitle());
+    else
+        s() << htmlFilter(tci->tcf->getTitle());
+    s() << "</td>" << endl;
 }
 
 void
 HTMLReportElement::genHeadCurrency(TableCellInfo* tci)
 {
 
-    s() << "   <td rowspan=\"2\">"
-        << htmlFilter(i18n(tci->tcf->getTitle()));
-    if (!report->getProject()->getCurrency().isEmpty())
-        s() << " " << htmlFilter(report->getProject()->getCurrency());
+    s() << "   <td rowspan=\"2\">";
+    if (!tci->tci->getTitle().isEmpty())
+        s() << htmlFilter(tci->tci->getTitle());
+    else
+    {
+        s() << htmlFilter(i18n(tci->tcf->getTitle()));
+        if (!report->getProject()->getCurrency().isEmpty())
+            s() << " " << htmlFilter(report->getProject()->getCurrency());
+    }
     s() << "</td>" << endl;
 }
 
@@ -710,11 +721,43 @@ HTMLReportElement::genCellNo(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellHierarchNo(TableCellInfo* tci)
+{
+    QString text;
+    const CoreAttributes* ca = tci->tli->ca1;
+    do
+    {
+        if (!text.isEmpty())
+            text = "." + text;
+        text = QString("%1").arg(ca->getHierarchNo()) + text;
+        ca = ca->getParent();
+    } while (ca);
+    genCell(tci->tli->ca2 == 0 ?
+            text : QString("&nbsp;"), tci, TRUE);
+}
+
+void
 HTMLReportElement::genCellIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? 
             QString().sprintf("%d.", tci->tli->ca1->getIndex()) :
             QString("&nbsp;"), tci, TRUE);
+}
+
+void
+HTMLReportElement::genCellHierarchIndex(TableCellInfo* tci)
+{
+    QString text;
+    const CoreAttributes* ca = tci->tli->ca1;
+    do
+    {
+        if (!text.isEmpty())
+            text = "." + text;
+        text = QString("%1").arg(ca->getHierarchIndex()) + text;
+        ca = ca->getParent();
+    } while (ca);
+    genCell(tci->tli->ca2 == 0 ?
+            text : QString("&nbsp;"), tci, TRUE);
 }
 
 void

@@ -48,6 +48,12 @@ public:
 
     void setSequenceNo(uint no) { sequenceNo = no; }
     uint getSequenceNo() const { return sequenceNo; }
+
+    void setHierarchNo(uint no);
+    uint getHierarchNo() const { return hierarchNo; }
+
+    void setHierarchIndex(uint no);
+    uint getHierarchIndex() const { return hierarchIndex; }
     
     Project* getProject() const { return project; }
 
@@ -88,12 +94,24 @@ protected:
      */
     uint sequenceNo;
 
-    /** The index of the attributes in a logical order that takes the tree
+    /**
+     * The index of the attribute declaration within it's parents childs.
+     */
+    uint hierarchNo;
+    /**
+     * The index of the attributes in a logical order that takes the tree
      * structure and the start and end date into account. Each attribute list
      * has it's own indices.
      */
     int index;
 
+    /**
+     * The index of the attributes of the same parent in a logical order that
+     * takes the tree structure and the start and end date into account. Each
+     * attribute list has it's own indices.
+     */
+    uint hierarchIndex;
+    
     /// A short description of the attribute.
     QString name;
 

@@ -30,6 +30,40 @@ CoreAttributes::treeLevel() const
 }
 
 void
+CoreAttributes::setHierarchNo(uint no)
+{
+    hierarchNo = no;
+    uint hNo = 1;
+    for (CoreAttributesListIterator it(sub); *it; ++it)
+        (*it)->setHierarchNo(hNo++);
+}
+
+void
+CoreAttributes::setHierarchIndex(uint no)
+{
+    if (no == 0)
+    {
+        hierarchIndex = 0;
+        return;
+    }
+    /* If there is no parent, we take the passed number. */
+    if (!parent)
+    {
+        hierarchIndex = no;
+        return;
+    }
+
+    /* Find the highest hierarchIndex of all childs of this CAs parent. */
+    uint max = 0;
+    for (CoreAttributesListIterator it(parent->sub); *it; ++it)
+        if ((*it)->hierarchIndex > max)
+            max = (*it)->hierarchIndex;
+
+    /* The index is then the highest found + 1. */
+    hierarchIndex = max + 1;
+}
+
+void
 CoreAttributes::getFullName(QString& fullName) const
 {
     fullName = QString::null;

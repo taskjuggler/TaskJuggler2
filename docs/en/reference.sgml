@@ -674,6 +674,15 @@ depends</member>
 <member><computeroutput>follows</computeroutput></member>
 <member>The task index of the tasks that depend on this task</member>
 
+<member><computeroutput>hierarchindex</computeroutput></member>
+<member>The hierarchical index of a task. The index is calculated from the
+hierachical structure of the list as well as the start and end dates.
+</member>
+
+<member><computeroutput>hierarchno</computeroutput></member>
+<member>The hierarchical number of a task. It is based on the order of
+declaration.</member>
+
 <member><computeroutput>id</computeroutput></member>
 <member>The global <link linkend="id">ID</link> of a task</member>
 
@@ -753,7 +762,7 @@ scenarios are shown in the table. See also <link
 linkend="htmltaskreport_scenarios">scenarios</link>.</member>
 
 <member><computeroutput>seqno</computeroutput></member>
-<member>The task index in the order of finished declarations. Each
+<member>The task index in the order of declaration. Each
 time a task declaration is completed, the sequence number is increased
 by 1. </member>
 

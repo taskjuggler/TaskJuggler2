@@ -44,6 +44,7 @@ task t3 "FooTask3" {
 }
 
 htmltaskreport "Report_task.html" {
+	columns hierarchindex, name { title "Task Name" }, daily, effort
 }
 
 htmlresourcereport "Report_resource.html" {

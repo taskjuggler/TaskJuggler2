@@ -49,14 +49,31 @@ CoreAttributesList::createIndex(bool initial)
     int i = 1;
     if (initial)
     {
+        uint hNo = 1;
         for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
+        {
             (*cli)->setSequenceNo(i);
+            if ((*cli)->getParent() == 0)
+                (*cli)->setHierarchNo(hNo++);
+        }
     }
     else
     {
         sort();
         for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
+        {
             (*cli)->setIndex(i);
+            // Reset all hierarchIndices to 0. 
+            (*cli)->setHierarchIndex(0);
+        }
+        // Then number them again.
+        uint hNo = 1;
+        for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
+        {
+            (*cli)->setHierarchIndex(hNo);
+            if ((*cli)->getParent() == 0)
+                hNo++;
+        }
     }
 }
 

@@ -100,24 +100,6 @@ Report::open()
     return TRUE;
 }
 
-bool
-Report::setUrl(const QString& key, const QString& url)
-{
-    if (urls.find(key) == urls.end())
-        return FALSE;
-
-    urls[key] = url;
-    return TRUE;
-}
-
-const QString*
-Report::getUrl(const QString& key) const
-{
-    if (urls.find(key) == urls.end() || urls[key] == "")
-        return 0;
-    return &urls[key];
-}
-
 bool 
 Report::setTaskSorting(int sc, int level)
 {

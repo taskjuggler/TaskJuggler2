@@ -202,8 +202,8 @@ ProjectFile::parse()
             else if (token == "now")
             {
                 errorMessage
-                    (i18n("'now' is no longer a property. It's now an "
-                          "optional project attribute. Please fix your "
+                    (i18n("WARNING: 'now' is no longer a property. It's now "
+                          " an optional project attribute. Please fix your "
                           "project file."));
                 if (nextToken(token) != DATE)
                 {
@@ -246,7 +246,7 @@ ProjectFile::parse()
             else if (token == KW("currency"))
             {
                 errorMessage
-                    (i18n("'currency' is no longer a property. It's "
+                    (i18n("WARNING: 'currency' is no longer a property. It's "
                           "now an optional project attribute. Please fix "
                           "your project file."));
                 if (nextToken(token) != STRING)
@@ -260,8 +260,8 @@ ProjectFile::parse()
             else if (token == KW("currencydigits"))
             {
                 errorMessage
-                    (i18n("'currencydigits' has been deprecated. Please use "
-                          "'currencyformat' instead."));
+                    (i18n("WARNING: 'currencydigits' has been deprecated. "
+                          "Please use 'currencyformat' instead."));
                 if (nextToken(token) != INTEGER)
                 {
                     errorMessage(i18n("Integer value expected"));
@@ -273,9 +273,9 @@ ProjectFile::parse()
             else if (token == "timingresolution")
             {
                 errorMessage
-                    (i18n("'timingresolution' is no longer a property. It's "
-                          "now an optional project attribute. Please fix "
-                          "your project file."));
+                    (i18n("WARNING: 'timingresolution' is no longer a "
+                          "property. It's now an optional project attribute. "
+                          "Please fix your project file."));
                 ulong resolution;
                 if (!readTimeValue(resolution))
                     return FALSE;
@@ -298,8 +298,8 @@ ProjectFile::parse()
             else if (token == KW("workinghours"))
             {
                 errorMessage
-                    (i18n("'workinghours' is no longer a property. It's "
-                          "now an optional project attribute. Please fix "
+                    (i18n("WARNING: 'workinghours' is no longer a property. "
+                          "It's now an optional project attribute. Please fix "
                           "your project file."));
                 int dow;
                 QPtrList<Interval>* l = new QPtrList<Interval>();
@@ -409,8 +409,9 @@ ProjectFile::parse()
             else if (token == "xmltaskreport")
             {
                 errorMessage
-                    (i18n("The keyword 'xmltaskreport' is deprecated. Please "
-                          "use the keyword 'xmlreport' instead."));
+                    (i18n("WARNING: The keyword 'xmltaskreport' is "
+                          "deprecated. Please use the keyword 'xmlreport' "
+                          "instead."));
                 if(!readXMLReport())
                     return FALSE;
                 break;
@@ -1286,11 +1287,11 @@ ProjectFile::readTaskBody(Task* task)
             else if (token == "include")
             {
                 errorMessage
-                    (i18n("The 'include' attribute is no longer supported "
-                          "within tasks since it caused ambiguoties between "
-                          "flag declaration and flag attributes. Please use "
-                          "the 'taskprefix' attribute of 'include' ouside "
-                          "of tasks instead."));
+                    (i18n("WARNING: The 'include' attribute is no longer "
+                          "supported within tasks since it caused ambiguoties "
+                          "between flag declaration and flag attributes. "
+                          "Please use the 'taskprefix' attribute of 'include' "
+                          "ouside of tasks instead."));
                 return FALSE;
             }
             else
@@ -2365,14 +2366,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 tab->clearColumns();
                 for ( ; ; )
                 {
-                    QString col;
-                    if ((tt = nextToken(col)) != ID)
-                    {
-                        errorMessage(i18n("Column ID expected"));
+                    TableColumnInfo* tci;
+                    if ((tci = readColumn(proj->getMaxScenarios(), tab)) == 0)
                         return FALSE;
-                    }
-                    tab->addColumn(new TableColumnInfo(proj->getMaxScenarios(),
-                                                       col));
+                    tab->addColumn(tci);
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);
@@ -2466,7 +2463,8 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     errorMessage(i18n("String expected"));
                     return FALSE;
                 }
-                ((HTMLReport*) (tab->getReport()))->setRawStyleSheet(token);
+                errorMessage("WARNING: 'rawstylesheet' is no longer supported. "
+                             "Please use 'rawhead' instead.");
             }
             else if (token == KW("showprojectids"))
             {
@@ -2685,15 +2683,6 @@ ProjectFile::readHTMLStatusReport()
                     return FALSE;
                 }
                 report->setRawTail(token);
-            }
-            else if (token == KW("rawstylesheet"))
-            {
-                if (nextToken(token) != STRING)
-                {
-                    errorMessage(i18n("String expected"));
-                    return FALSE;
-                }
-                report->setRawStyleSheet(token);
             }
             else
             {
@@ -2918,7 +2907,6 @@ ProjectFile::readReportElement(ReportElement* el)
                 }
                 el->setCaption(token);
             }
-#if 0
             else if (token == KW("rawhead"))
             {
                 if (nextToken(token) != STRING)
@@ -2937,12 +2925,12 @@ ProjectFile::readReportElement(ReportElement* el)
                 }
                 el->setRawTail(token);
             }
-#endif
             else if (token == "showactual")
             {
                 errorMessage
-                    (i18n("The keyword 'showactual' has been deprecated."
-                          "Please use the keyword 'scenarios' instead."));
+                    (i18n("WARNING: The keyword 'showactual' has been "
+                          "deprecated. Please use the keyword 'scenarios' "
+                          "instead."));
             }
             else if (token == KW("showprojectids"))
             {
@@ -2990,13 +2978,11 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (!readSorting(el, 1))
                     return FALSE;
             }
-#if 0
             else if (token == KW("url"))
             {
-                if (!readHtmlUrl(report))
+                if (!readHtmlUrl(el))
                     return FALSE;
             }
-#endif
             else if (token == KW("loadunit"))
             {
                 if (nextToken(token) != ID || !el->setLoadUnit(token))
@@ -3074,31 +3060,7 @@ ProjectFile::readHtmlUrl(ReportElement* tab)
     }
     if (!tab->setUrl(key, url))
     {
-        errorMessage(i18n("Unknown URL ID"));
-        return FALSE;
-    }
-    return TRUE;
-}
-
-bool
-ProjectFile::readHtmlUrl(HTMLReport* report)
-{
-    QString key;
-    QString url;
-
-    if (nextToken(key) != ID)
-    {
-        errorMessage(i18n("URL ID expected"));
-        return FALSE;
-    }
-    if (nextToken(url) != STRING)
-    {
-        errorMessage(i18n("String expected"));
-        return FALSE;
-    }
-    if (!report->setUrl(key, url))
-    {
-        errorMessage(i18n("Unknown URL ID"));
+        errorMessage(i18n("Unknown URL ID '%1'").arg(key));
         return FALSE;
     }
     return TRUE;
@@ -3325,6 +3287,58 @@ ProjectFile::readSorting(ReportElement* tab, int which)
     returnToken(tt, token);
 
     return TRUE;
+}
+
+TableColumnInfo*
+ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
+{
+    QString token;
+    TokenType tt;
+    if ((tt = nextToken(token)) != ID)
+    {
+        errorMessage(i18n("Column ID expected"));
+        return 0;
+    }
+    if (!tab->isSupportedColumn(token))
+    {
+        errorMessage(i18n("Unknown colon ID '%1'. Supported IDs are: %2.")
+                     .arg(token).arg(tab->getSupportedColumnList().join(", ")));
+        return 0;
+    }
+    TableColumnInfo* tci = new TableColumnInfo(maxScenarios, token);
+
+    if ((tt = nextToken(token)) == LCBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RCBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                return 0;
+            }
+
+            if (token == KW("title"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return 0;
+                }
+                tci->setTitle(token);
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                return 0;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    return tci;
 }
 
 bool

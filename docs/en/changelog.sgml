@@ -475,6 +475,12 @@ the scenario name should be reported for each line. The attributes
 'showactual' and 'hideplan' have been deprecated. The <link
 linkend="htmltaskreport_scenarios">scenarios</link> attribute now
 controls which scenarios should be shown.</para></listitem>
+
+<listitem><para>HTML reports got the additional columns
+<computeroutput>hierarchno</computeroutput> and
+<computeroutput>hierarchindex</computeroutput>.</para></listitem>
+
 </itemizedlist></para>
+
 </sect2>
 </sect1>

@@ -199,7 +199,7 @@ htmltaskreport "Tasks-Overview.html" {
 	${navbar}
 	# The report should be a table that contains several columns. The
 	# task and their information form the rows of the table.
-  columns no, name, start, end, weekly, effort
+  columns hierarchindex, name, start, end, weekly, effort
 	# Don't show load values.
 	barlabels empty
 	# Set a title for the report

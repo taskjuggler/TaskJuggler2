@@ -19,41 +19,11 @@ task t3 "Task3" {
 }
 
 htmltaskreport "RawTask.html" {
-	rawstylesheet '.default { background-color:#aef3eb; font-size:70%; text-align:center }
-.defaultlight { background-color:#ddfffa; font-size:70%; text-align:center }
-.task { background-color:#aef3eb; font-size:100%; text-align:left }
-.tasklight { background-color:#ddfffa; font-size:100%; text-align:left }
-.available { background-color:#8da4ff; font-size:70%; text-align:center }
-.vacation { background-color:#60fffc; font-size:70%; text-align:center }
-.weekend { background-color:#80ffec; font-size:70%; text-align:center }
-.milestone { background-color:#2aff2a; font-size:70%; text-align:center }
-.booked { background-color:#91ff91; font-size:70%; text-align:center }
-.bookedlight { background-color:#bfffbf; font-size:70%; text-align:center }
-.headersmall { background-color:#ffa5c2; font-size:70%; text-align:center }
-.headerbig { background-color:#ffa5c2; font-size:110%; font-weight:bold; text-align:center }
-.completed { background-color:#7587ff; font-size:70%; text-align:center }
-.completedlight { background-color:#9aa1ff; font-size:70%; text-align:center }
-.today { background-color:#ffa387; font-size:70%; text-align:center }'
 	rawhead '<h1>This is a line of text</h1>'
 	rawtail '<h2>This is another line of text with "double qoutes"</h2>'
 }
 
 htmlresourcereport "RawResource.html" {
-	rawstylesheet '.default { background-color:#aef3eb; font-size:70%; text-align:center }
-.defaultlight { background-color:#ddfffa; font-size:70%; text-align:center }
-.task { background-color:#aef3eb; font-size:100%; text-align:left }
-.tasklight { background-color:#ddfffa; font-size:100%; text-align:left }
-.available { background-color:#8da4ff; font-size:70%; text-align:center }
-.vacation { background-color:#60fffc; font-size:70%; text-align:center }
-.weekend { background-color:#80ffec; font-size:70%; text-align:center }
-.milestone { background-color:#2aff2a; font-size:70%; text-align:center }
-.booked { background-color:#91ff91; font-size:70%; text-align:center }
-.bookedlight { background-color:#bfffbf; font-size:70%; text-align:center }
-.headersmall { background-color:#ffa5c2; font-size:70%; text-align:center }
-.headerbig { background-color:#ffa5c2; font-size:110%; font-weight:bold; text-align:center }
-.completed { background-color:#7587ff; font-size:70%; text-align:center }
-.completedlight { background-color:#9aa1ff; font-size:70%; text-align:center }
-.today { background-color:#ffa387; font-size:70%; text-align:center }'
 	rawhead '<h1>This is a line of text</h1>'
 	rawtail '<h2>This is another line of text with "double qoutes"</h2>'
 }

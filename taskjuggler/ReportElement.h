@@ -26,6 +26,8 @@
 #include "MacroTable.h"
 #include "RealFormat.h"
 
+class QStringList;
+
 class Project;
 class CoreAttributes;
 class ExpressionTree;
@@ -73,6 +75,8 @@ public:
         rawTail = tail;
     }
 
+    bool isSupportedColumn(const QString& id) const;
+    QStringList getSupportedColumnList() const;
     void addColumn(const TableColumnInfo* c) { columns.append(c); }
     const TableColumnInfo* columnsAt(uint idx) { return columns.at(idx); }
     void clearColumns() { columns.clear(); }
@@ -115,6 +119,7 @@ public:
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
 
+    void registerUrl(const QString& key);
     bool setUrl(const QString& key, const QString& url = QString::null);
     const QString* getUrl(const QString& key) const;
 
@@ -150,7 +155,9 @@ public:
     virtual void genCellEmpty(TableCellInfo*) = 0;
     virtual void genCellSequenceNo(TableCellInfo*) = 0;
     virtual void genCellNo(TableCellInfo*) = 0;
+    virtual void genCellHierarchNo(TableCellInfo*) = 0;
     virtual void genCellIndex(TableCellInfo*) = 0;
+    virtual void genCellHierarchIndex(TableCellInfo*) = 0;
     virtual void genCellId(TableCellInfo*) = 0;
     virtual void genCellName(TableCellInfo*) = 0;
     virtual void genCellStart(TableCellInfo*) = 0;

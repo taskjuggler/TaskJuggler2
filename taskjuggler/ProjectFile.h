@@ -33,6 +33,7 @@ class Report;
 class HTMLReport;
 class ReportElement;
 class RealFormat;
+class TableColumnInfo;
 
 /**
  * @short File Parser for project files.
@@ -139,7 +140,6 @@ private:
     bool checkReportInterval(ReportElement* report);
     bool readHtmlUrl(ReportElement* report);
     bool checkReportInterval(HTMLReport* report);
-    bool readHtmlUrl(HTMLReport* report);
 #ifdef HAVE_KDE
     bool readICalTaskReport();
 #endif
@@ -148,6 +148,7 @@ private:
     bool readSorting(Report* report, int which);
     bool readSorting(ReportElement* el, int which);
     bool readSortingMode(int& sorting);
+    TableColumnInfo* readColumn(uint maxScenarios, ReportElement* tab);
     time_t date2time(const QString& date);
     int hhmm2time(const QString& hhmm);
 

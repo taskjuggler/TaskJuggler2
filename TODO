@@ -1,4 +1,11 @@
+- Remove old color support
+- Complete new color support
+- Color support for tasks and resources
+- Document optional column attributes
+- Document htmlstatusreport
+- Finish multi scenario support
 - Generic HTML report
+- CSV reports
 - Implement 'mandatory' attribute for task allocations.
 - Allocation selection by skill set.
 - Add support for flexible rates (per task, per shift)
@@ -7,7 +14,7 @@
 - Improve report generation performance.
 - Explain more features with examples in the documentation.
 - Read XML files just like *.tjp files.
-- Calculate ealiest start and latest end.
+- Calculate earliest start and latest end.
 - Add support for risk documentation.
 - Cleanup taskjuggler library API, so it can be used by other apps.
 

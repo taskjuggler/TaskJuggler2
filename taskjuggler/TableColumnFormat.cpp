@@ -32,5 +32,6 @@ TableColumnFormat::TableColumnFormat(ReportElement* e, const QString& t) :
     genSummaryLine2 = 0;
 
     fontFactor = 100;
+    noWrap = FALSE;
 }
 
