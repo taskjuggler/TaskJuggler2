@@ -1092,13 +1092,14 @@ Task::xRef(QDict<Task>& hash)
 void
 Task::implicitXRef()
 {
+    if (!sub.isEmpty())
+        return;
+
     for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
     {
         /* Propagate implicit dependencies. If a task has no specified start or
          * end date and no start or end dependencies, we check if a parent task
          * has an explicit start or end date which can be used. */
-        if (!sub.isEmpty() || milestone)
-            return;
 
         bool hasDurationSpec = scenarios[sc].duration != 0 ||
             scenarios[sc].length != 0 ||
@@ -1111,7 +1112,9 @@ Task::implicitXRef()
                 if (tp->scenarios[sc].start != 0)
                 {
                     if (DEBUGPF(11))
-                        qDebug("Setting start of task '%s' to %s", id.latin1(),
+                        qDebug("Setting start of task '%s' in scenario %s to "
+                               "%s", id.latin1(), 
+                               project->getScenarioId(sc).latin1(),
                                time2ISO(tp->scenarios[sc].start).latin1());
                     scenarios[sc].start = tp->scenarios[sc].start;
                     break;
@@ -1125,7 +1128,9 @@ Task::implicitXRef()
                 if (tp->scenarios[sc].end != 0)
                 {
                     if (DEBUGPF(11))
-                        qDebug("Setting end of task '%s' to %s", id.latin1(),
+                        qDebug("Setting end of task '%s' in scenario %s to %s",
+                               id.latin1(), 
+                               project->getScenarioId(sc).latin1(),
                                time2ISO(tp->scenarios[sc].end).latin1());
                     scenarios[sc].end = tp->scenarios[sc].end;
                     break;
