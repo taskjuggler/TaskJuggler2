@@ -1,4 +1,11 @@
 Makefile
 Makefile.in
-*.html
-index.sgml
+taskjuggler.sgml
+*.log
+*.aux
+*.tex
+*.dvi
+*.ps
+taskjuggler
+taskjuggler.junk
+

@@ -301,6 +301,13 @@ ExportReports as well.</para>
 
 <listitem><para>Allow supplements of tasks within task definitions.</para>
 
+<listitem><para>Converted documentation to DocBook. We now have a much
+nicer and more structured manual. A printable version is available as
+well now.</para></listitem>
+
+<listitem><para>Fixed HTML code for bookedlight cells. Those were
+redered without background on some browsers.</para></listitem>
+
 </itemizedlist>
 </para>
 </sect2>

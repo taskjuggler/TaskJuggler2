@@ -1,22 +1,21 @@
-EXTRA_DIST = index.html index-1.html index-2.html index-3.html index-4.html index-5.html index-6.html index-7.html index-8.html index-9.html index-10.html index-11.html
+EXTRA_DIST = taskjuggler/*.html
 
 docprefix = $(DESTDIR)$(prefix)/share/doc/packages
 
 install-data-local:
 	$(mkinstalldirs) $(docprefix)/taskjuggler/
-	$(INSTALL_DATA) index.sgml $(docprefix)/taskjuggler/index.sgml
-	$(INSTALL_DATA) $(srcdir)/index.html $(docprefix)/taskjuggler/index.html
-	$(INSTALL_DATA) $(srcdir)/index-*.html $(docprefix)/taskjuggler/
+	$(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(docprefix)/taskjuggler/
+	$(INSTALL_DATA) $(srcdir)/taskjuggler.ps $(docprefix)/taskjuggler
 
 uninstall-local:
-	-rm -f $(docprefix)/taskjuggler/index*
+	-rm -f $(docprefix)/taskjuggler/*.html
+	-rm -f $(docprefix)/taskjuggler/taskjuggler.ps
 
-index.html: index.sgml
-	sgml2html index.sgml
+taskjuggler/book1.html: taskjuggler.sgml
+	db2html taskjuggler.sgml
 
-index.ps: index.sgml
-	sgml2latex index.sgml
-	dvips index.dvi
+taskjuggler.ps: taskjuggler.sgml
+	db2ps taskjuggler.sgml
 
-all: index.html
+all: taskjuggler/book1.html taskjuggler.ps
 
