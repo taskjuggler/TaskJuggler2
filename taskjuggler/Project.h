@@ -484,20 +484,81 @@ public:
 		return ShiftListIterator(accountList);
 	}
 
+    /**
+     * Set the minimum daily effort for resources. This value is not used for
+     * resource allocation. It is currently not used at all. In future
+     * versions TaskJuggler might spit out warnings for all resources that are
+     * not loaded to at least this value each day. The value is inherited by
+     * all resources that are created subsequent to this function call.
+     */
 	void setMinEffort(double m) { minEffort = m; }
+    /**
+     * Returns the default minimum effort value.
+     */
 	double getMinEffort() const { return minEffort; }
 
+    /**
+     * Set the maximum daily effort for resources. This is the default value
+     * inherited by all resources created subsequent to this function call.  A
+     * resource is never loaded more each day than the maximum effort value
+     * specified for the resource.
+     */
 	void setMaxEffort(double m) { maxEffort = m; }
+    /**
+     * Returns the default maximum daily effort value.
+     */
 	double getMaxEffort() const { return maxEffort; }
 
+    /**
+     * Set the default daily cost rate for resources. This value is inherited
+     * by all resources created subsequent to this function call.
+     */
 	void setRate(double r) { rate = r; }
+    /**
+     * Return the default daily cost rate for resources.
+     */
 	double getRate() const { return rate; }
 
+    /**
+     * Set the currency unit for the project.
+     */
 	void setCurrency(const QString& s) { currency = s; }
+    /**
+     * Returns the currency unit setting.
+     */
 	const QString& getCurrency() const { return currency; }
 
+    /**
+     * Sets the number of decimal digits used for all currency values of the
+     * project.
+     */
 	void setCurrencyDigits(int d) { currencyDigits = d; }
+    /**
+     * Returns the number of currency digits.
+     */
 	int getCurrencyDigits() const { return currencyDigits; }
+
+    /**
+     * Sets the format used for timestamps in reports. It will be used as
+     * default for all subsequent report definitions. See the TaskJuggler
+     * manual for the format details.
+     */
+	void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
+    /**
+     * Returns the format for timestamps in reports.
+     */
+	const QString& getShortTimeFormat() const { return shortTimeFormat; }
+
+    /**
+     * Sets the format used for date stamps in reports. It will be used as
+     * default for all subsequent report definitions. See the TaskJuggler
+     * manual for the format details.
+     */
+	void setTimeFormat(const QString& tf) { timeFormat = tf; }
+    /**
+     * Returns the format for date stamps in reports.
+     */
+	const QString& getTimeFormat() const { return timeFormat; }
 
 	void addXMLReport(ReportXML *r ) { xmlreport = r; }
 
@@ -557,12 +618,6 @@ public:
 
 	bool readKotrus();
 	bool updateKotrus();
-
-	void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
-	const QString& getShortTimeFormat() const { return shortTimeFormat; }
-
-	void setTimeFormat(const QString& tf) { timeFormat = tf; }
-	const QString& getTimeFormat() const { return timeFormat; }
 
 	/**
 	 * Generate cross references between all data structures and run a

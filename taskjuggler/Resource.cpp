@@ -196,8 +196,13 @@ Resource::index2end(uint idx) const
 
 bool
 Resource::isAvailable(time_t date, time_t duration, int loadFactor,
-					  const Task* t) const
+					  const Task* t)
 {
+    /* The scoreboard of a resource is only generated on demand, so we large
+     * resource lists that are only scarcely used for the project do not slow
+     * it down too much. */
+	if (!scoreboard)
+		initScoreboard();
 	// Check if the interval is booked or blocked already.
 	uint sbIdx = sbIndex(date);
 	if (scoreboard[sbIdx])
@@ -381,6 +386,9 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
 	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
 		bookings += (*rli)->getCurrentLoadSub(startIdx, endIdx, task);
 
+    if (!scoreboard)
+        return bookings;
+
 	for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
 	{
 		SbBooking* b = scoreboard[i];
@@ -396,10 +404,6 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
 double
 Resource::getLoad(int sc, const Interval& period, const Task* task) const
 {
-	// If the scoreboard has not been initialized there is no load.
-	if (!scoreboards[sc])
-		return 0.0;
-	
 	Interval iv(period);
 	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return 0.0;
@@ -417,6 +421,10 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, const Task* task) const
 	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
 		bookings += (*rli)->getLoadSub(sc, startIdx, endIdx, task);
 
+	// If the scoreboard has not been initialized there is no load.
+	if (!scoreboards[sc])
+		return bookings;
+	
 	for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
 	{
 		SbBooking* b = scoreboards[sc][i];
@@ -440,8 +448,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
 	const
 {
 	Interval iv(period);
-	if (!iv.overlap(Interval(project->getStart(), project->getEnd())) ||
-		!scoreboards[sc])
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return FALSE;
 
 	/* If resource is a group, check members first. */
@@ -449,6 +456,8 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
 		if ((*rli)->isAllocated(sc, iv, prjId))
 			return TRUE;
 
+    if (!scoreboards[sc])
+        return FALSE;
 	for (uint i = sbIndex(iv.getStart());
 		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
@@ -466,13 +475,14 @@ Resource::getPIDs(int sc, const Interval& period, const Task* task,
 				  QStringList& pids) const
 {
 	Interval iv(period);
-	if (!iv.overlap(Interval(project->getStart(), project->getEnd())) ||
-		!scoreboards[sc])
+	if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
 		return;
 
 	for (ResourceListIterator rli(sub); *rli != 0; ++rli)
 		(*rli)->getPIDs(sc, iv, task, pids);
 
+    if (!scoreboards[sc])
+        return;
 	for (uint i = sbIndex(iv.getStart());
 		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
@@ -574,10 +584,7 @@ Resource::getJobs(int sc) const
 void
 Resource::prepareScenario(int sc)
 {
-	if (scoreboards[sc])
-		scoreboard = scoreboards[sc];
-	else
-		initScoreboard();
+    scoreboard = scoreboards[sc];
 }
 
 void

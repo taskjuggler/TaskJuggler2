@@ -79,8 +79,8 @@ public:
 
 	bool addShift(const Interval& i, Shift* s);
 
-	bool isAvailable(time_t day, time_t duration, int loadFactor, const Task* t)
-		const;
+	bool isAvailable(time_t day, time_t duration, int loadFactor,
+                     const Task* t);
 
 	bool book(Booking* b);
 
