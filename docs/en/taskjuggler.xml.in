@@ -1,5 +1,5 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN"
-"/usr/share/sgml/docbook_4.2/docbookx.dtd" [
+"/usr/share/sgml/docbook/dtd/4.2/docbookx.dtd" [
  <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
  <!ENTITY FirstProject SYSTEM "FirstProject.xml">
  <!ENTITY SyntaxReference SYSTEM "SyntaxReference.xml">

@@ -46,7 +46,8 @@ tarball:
 	@if test -d taskjuggler ; then \
 	  rm -f $$doctarball ; \
 	  doctarball="tjmanual-$(VERSION).tar.gz" ; \
-	  cp -a taskjuggler manual ; \
+	  cp -r taskjuggler manual ; \
+	  chmod 755 manual ; \
 	  tar czf $$doctarball manual ; \
 	  rm -r manual ; \
 	  echo $$doctarball " created" ; \
