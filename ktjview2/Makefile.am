@@ -2,28 +2,29 @@
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-SUBDIRS = kdgantt pixmaps
+SUBDIRS = kdgantt qicstable pixmaps
 
 bin_PROGRAMS = ktjview2
 
 # set the include path for X, qt and KDE
-INCLUDES = -I$(top_srcdir)/ktjview2/kdgantt -I$(top_srcdir)/taskjuggler $(all_includes)
+INCLUDES = -I$(top_srcdir)/ktjview2/kdgantt -I$(top_srcdir)/ktjview2/qicstable -I$(top_srcdir)/taskjuggler $(all_includes)
 
 # the library search path. 
 ktjview2_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT) -lktexteditor
+ktjview2_LDADD = $(top_builddir)/ktjview2/kdgantt/libkdgantt.la $(top_builddir)/ktjview2/qicstable/libqicstable.la \
+	$(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT) -lktexteditor
 
 # which sources should be compiled for ktjview2
 ktjview2_SOURCES = main.cpp ktjview2.cpp ktjview2view.cpp TaskItem.cpp ResourceItem.cpp \
 	ktjview2iface.skel timedialog.cpp settings.kcfgc gantt.ui \
 	filterWidget.ui filterDialog.cpp filter.cpp klistviewsearchline.cpp selectDialog.cpp quickSearchWidget.cpp \
-	resUsageView.cpp resUsageCfg.ui ruFindDialog.cpp editorView.cpp
+	resUsageView.cpp resUsageCfg.ui ruFindDialog.cpp editorView.cpp reportView.cpp
 
 kde_kcfg_DATA = ktjview2.kcfg
 
-# let automoc handle all of the meta source files (moc)
+# let moc handle all of the meta source files
 METASOURCES = AUTO
 
 messages:
