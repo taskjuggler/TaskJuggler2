@@ -1448,6 +1448,29 @@ ProjectFile::readHTMLTaskReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpTask(et);
 		}
+		else if (token == "sort")
+		{
+			nextToken(token);
+			if (token == "tasktree")
+				report->setSorting(TaskList::TaskTree);
+			else if (token == "startup")
+				report->setSorting(TaskList::StartUp);
+			else if (token == "startdown")
+				report->setSorting(TaskList::StartDown);
+			else if (token == "endup")
+				report->setSorting(TaskList::EndUp);
+			else if (token == "enddown")
+				report->setSorting(TaskList::EndDown);
+			else if (token == "priorityup")
+				report->setSorting(TaskList::PrioUp);
+			else if (token == "prioritydown")
+				report->setSorting(TaskList::PrioDown);
+			else
+			{
+				fatalError("Sorting criteria expected");
+				return FALSE;
+			}
+		}
 		else
 		{
 			fatalError("Illegal attribute");

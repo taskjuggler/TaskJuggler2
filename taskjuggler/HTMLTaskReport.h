@@ -14,6 +14,7 @@
 #define _HTMLTaskReport_h_
 
 #include "ReportHtml.h"
+#include "Task.h"
 
 class Project;
 
@@ -25,10 +26,13 @@ public:
 	{
 		showActual = FALSE;
 		rollUpTask = 0;
+		sortCriteria = TaskList::TaskTree;
 	}
 	~HTMLTaskReport();
 
 	bool generate();
+
+	void setSorting(TaskList::SortCriteria sc) { sortCriteria = sc; }
 
 	void setShowActual(bool s) { showActual = s; }
 
@@ -37,6 +41,8 @@ public:
 
 private:
 	bool showActual;
+	TaskList::SortCriteria sortCriteria;
+
 	HTMLTaskReport() { }
 	ExpressionTree* rollUpTask;
 } ;

@@ -96,7 +96,8 @@ public:
 	TaskList();
 	virtual ~TaskList();
 
-	enum SortCriteria { Pointer, TaskUp, PrioUp, PrioDown };
+	enum SortCriteria { Pointer, TaskTree, StartUp, StartDown, EndUp, EndDown,
+						PrioUp, PrioDown };
 
 	void setSorting(SortCriteria s) { sorting = s; }
 
@@ -232,6 +233,8 @@ public:
 	void setAccount(Account* a) { account = a; }
 
 	void getSubTaskList(TaskList& tl);
+
+	void treeSortKey(QString& key);
 
 	QDomElement xmlElement( QDomDocument& doc ) const;
 

@@ -61,6 +61,8 @@ HTMLTaskReport::generate()
 		for (Task* l = toHide.first(); l != 0; l = toHide.next())
 			filteredList.remove(l);
 	}
+	filteredList.setSorting(sortCriteria);
+	filteredList.sort();
 
 	QFile f(fileName);
 	if (!f.open(IO_WriteOnly))
@@ -148,22 +150,30 @@ HTMLTaskReport::generate()
 				  << htmlFilter(t->getId()) << "</td>";
 			else if (*it == "name")
 			{
-				int indent;
-				Task* tp = t->getParent();
-				QString spaces = "";
-				for (indent = 0; tp != 0; ++indent)
+				if (sortCriteria == TaskList::TaskTree)
 				{
-					spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
-					tp = tp->getParent();
+					int indent;
+					Task* tp = t->getParent();
+					QString spaces = "";
+					for (indent = 0; tp != 0; ++indent)
+					{
+						spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
+						tp = tp->getParent();
+					}
+					s << "<td class=\"task\" rowspan=\""
+					  << (showActual ? "2" : "1") << "\" nowrap>"
+					  << spaces
+					  << "<font size=\""
+					  << (2 - indent < 0 ? '-' : '+') 
+					  << (2 - indent < 0 ? -(2 - indent) : 2 - indent) << "\">"
+					  << htmlFilter(t->getName())
+					  << "</font></td>" << endl;
 				}
-				s << "<td class=\"task\" rowspan=\""
-				  << (showActual ? "2" : "1") << "\" nowrap>"
-				  << spaces
-				  << "<font size=\""
-				  << (2 - indent < 0 ? '-' : '+') 
-				  << (2 - indent < 0 ? -(2 - indent) : 2 - indent) << "\">"
-				  << htmlFilter(t->getName())
-				  << "</font></td>" << endl;
+				else
+					s << "<td class=\"task\" rowspan=\""
+					  << (showActual ? "2" : "1") << "\" nowrap>"
+					  << htmlFilter(t->getName())
+					  << "</td>" << endl;
 			}
 			else if (*it == "start")
 				s << "<td class=\""

@@ -16,6 +16,7 @@ htmlTaskReport "test1.html" {
   columns  no, name, start, end, daily
 #  start 2001-12-20
   end 2002-02-01
+  sort tasktree
 #  hidetask media | deadline
 #  rolluptask beta | preview
 }

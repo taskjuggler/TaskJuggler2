@@ -491,6 +491,21 @@ Task::getSubTaskList(TaskList& tl)
 	}
 }
 
+void
+Task::treeSortKey(QString& key)
+{
+	if (!parent)
+		return;
+	int i = 1;
+	for (Task* t = parent->subTasks.first(); t != 0;
+		 t = parent->subTasks.next(), i++)
+		if (t == this)
+		{
+			key = QString().sprintf("%04d", i) + key;
+			break;
+		}
+	parent->treeSortKey(key);
+}
 
 QDomElement Task::xmlElement( QDomDocument& doc ) const
 {
@@ -627,31 +642,37 @@ TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
 	{
 	case Pointer:
 		return t1 == t2 ? 0 : t1 < t2 ? -1 : 1;
-	case TaskUp:
+	case TaskTree:
 	{
-		QString t1Path = t1->getId().findRev('.') == -1 ? t1->getId() :
-			t1->getId().left(t1->getId().findRev('.'));
-		QString t2Path = t2->getId().findRev('.') == -1 ? t2->getId() :
-			t2->getId().left(t2->getId().findRev('.'));
-		if (t1Path == t2Path)
+		QString key1;
+		t1->treeSortKey(key1);
+		key1 += QString("0000") + time2ISO(t1->getStart());
+		QString key2;
+		t2->treeSortKey(key2);
+		key2 += QString("0000") + time2ISO(t2->getStart());
+		if (key1 == key2)
 		{
-			if (t1->getStart() == t2->getStart())
-			{
-				if (t1->getEnd() == t2->getEnd())
-				{
-					return t1->getId() == t2->getId() ? 0 :
-						t1->getId() < t2->getId() ? -1 : 1;
-				}
-				else
-					return t1->getEnd() < t2->getEnd() ? -1 : 1;
-			}
-			else
-				return t1->getStart() < t2->getStart() ? -1 : 1;
+			/* If the keys are identical we do an inverse sort for the
+			 * end date. That way the parent tasks are sorted above
+			 * their childs. */
+			return t1->getEnd() == t2->getEnd() ? 0 :
+				t1->getEnd() > t2->getEnd() ? -1 : 1;
 		}
 		else
-			return t1Path < t2Path ? -1 : 1;
-		break;
+			return key1 < key2 ? -1 : 1;
 	}
+	case StartUp:
+		return t1->getStart() == t2->getStart() ? 0 :
+			t1->getStart() > t2->getStart() ? -1 : 1;
+	case StartDown:
+		return t1->getStart() == t2->getStart() ? 0 :
+			t1->getStart() < t2->getStart() ? -1 : 1;
+	case EndUp:
+		return t1->getEnd() == t2->getEnd() ? 0 :
+			t1->getEnd() > t2->getEnd() ? -1 : 1;
+	case EndDown:
+		return t1->getEnd() == t2->getEnd() ? 0 :
+			t1->getEnd() < t2->getEnd() ? -1 : 1;
 	case PrioUp:
 		if (t1->getPriority() == t2->getPriority())
 			return 0; // TODO: Use duration as next criteria

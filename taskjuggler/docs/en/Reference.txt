@@ -55,6 +55,9 @@ flags, the following example is a correct expression:
 
 (flagFoo | flagFooBar) & !flagBar
 
+SORTINGCRITERIA: See attribute description for allowed values.
+
+
 Optional attributes of a property must be enclosed by {}.
 
 ===============================================================================
@@ -490,6 +493,7 @@ aStart: The actual start date.
 minEnd: The earliest wanted end date.
 maxEnd: The latest wanted end date.
 aEnd: The actual end date.
+priority: The scheduling priority.
 resources: The names of the used resources.
 depends: The task index of the tasks that this task depends on.
 follows: The task index of the tasks that depend on this task.
@@ -507,6 +511,30 @@ end <day>
 day: DATE
 
 The end date for the calender view.
+
+-------------------------------------------------------------------------------
+sort <criteria>
+criteria: SORTINGCRITERIA
+
+The sorting criteria specifies how the tasks in the generated report
+will be sorted. Possible values are:
+
+tasktree: This is the default and creates a list with subtasks
+indented and grouped together. If this sorting is used parent tasks
+are shown when sub tasks are not hidden even if the parent task
+matches the hide expression.
+
+startup: Latest start date on top
+
+startdown: Earliest start date on top
+
+endup: Latest end date on top
+
+enddown: Earliest end date on top
+
+priorityup: Lowest priority on top
+
+prioritydown: Highest priority on top
 
 -------------------------------------------------------------------------------
 showActual
