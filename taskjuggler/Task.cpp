@@ -250,8 +250,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 			tentativeEnd = date + slotDuration - 1;
 			if (debugLevel > 2)
 				qWarning("Scheduling of %s starts at %s (%s)",
-						 id.latin1(), time2ISO(lastSlot).latin1(),
-						 time2ISO(date).latin1());
+						 id.latin1(), time2tjp(lastSlot).latin1(),
+						 time2tjp(date).latin1());
 		}
 		/* Do not schedule anything if the time slot is not directly
 		 * following the time slot that was previously scheduled. */
@@ -271,8 +271,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 			tentativeStart = date;
 			if (debugLevel > 2)
 				qWarning("Scheduling of ALAP task %s starts at %s (%s)",
-						 id.latin1(), time2ISO(lastSlot).latin1(),
-						 time2ISO(date).latin1());
+						 id.latin1(), time2tjp(lastSlot).latin1(),
+						 time2tjp(date).latin1());
 		}
 		/* Do not schedule anything if the current time slot is not
 		 * directly preceeding the previously scheduled time slot. */
@@ -284,7 +284,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 
 	if (debugLevel > 3)
 		qWarning("Scheduling %s at %s",
-				 id.latin1(), time2ISO(date).latin1());
+				 id.latin1(), time2tjp(date).latin1());
 
 	if ((duration > 0.0) || (length > 0.0))
 	{
@@ -446,7 +446,7 @@ Task::propagateStart(bool safeMode)
 
 	if (debugLevel > 1)
 		qWarning("PS1: Setting start of %s to %s",
-				 id.latin1(), time2ISO(start).latin1());
+				 id.latin1(), time2tjp(start).latin1());
 
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end == 0 && t->scheduling == ALAP &&
@@ -455,7 +455,7 @@ Task::propagateStart(bool safeMode)
 			t->end = t->latestEnd();
 			if (debugLevel > 1)
 				qWarning("PS2: Setting end of %s to %s",
-						 t->id.latin1(), time2ISO(t->end).latin1());
+						 t->id.latin1(), time2tjp(t->end).latin1());
 			t->propagateEnd(safeMode);
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
@@ -471,7 +471,7 @@ Task::propagateStart(bool safeMode)
 			t->start = start;
 			if (debugLevel > 1)
 				qWarning("PS3: Setting start of %s to %s",
-						 t->id.latin1(), time2ISO(t->start).latin1());	 
+						 t->id.latin1(), time2tjp(t->start).latin1());	 
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 			t->propagateStart(safeMode);
@@ -490,7 +490,7 @@ Task::propagateEnd(bool safeMode)
 
 	if (debugLevel > 1)
 		qWarning("PE1: Setting end of %s to %s",
-				 id.latin1(), time2ISO(end).latin1());
+				 id.latin1(), time2tjp(end).latin1());
 
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (t->start == 0 && t->scheduling == ASAP &&
@@ -499,7 +499,7 @@ Task::propagateEnd(bool safeMode)
 			t->start = t->earliestStart();
 			if (debugLevel > 1)
 				qWarning("PE2: Setting start of %s to %s",
-						 t->id.latin1(), time2ISO(t->start).latin1());
+						 t->id.latin1(), time2tjp(t->start).latin1());
 			t->propagateStart(safeMode);
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
@@ -513,7 +513,7 @@ Task::propagateEnd(bool safeMode)
 			t->end = end;
 			if (debugLevel > 1)
 				qWarning("PE3: Setting end of %s to %s",
-						 t->id.latin1(), time2ISO(t->end).latin1());
+						 t->id.latin1(), time2tjp(t->end).latin1());
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 			t->propagateEnd(safeMode);
