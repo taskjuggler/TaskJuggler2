@@ -875,7 +875,7 @@ bool ktjview2View::filterForTasks( int id )
         resultList = dlg.resultList();
     }
 
-    kdDebug() << "result list: " << resultList << endl;
+    //kdDebug() << "result list: " << resultList << endl;
 
     QListViewItemIterator it( m_taskView );
 
