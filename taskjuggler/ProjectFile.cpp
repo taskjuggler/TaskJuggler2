@@ -3552,7 +3552,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return FALSE;
+                goto exit_error;
             }
             if (token == KW("columns"))
             {
@@ -3561,7 +3561,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 {
                     TableColumnInfo* tci;
                     if ((tci = readColumn(proj->getMaxScenarios(), tab)) == 0)
-                        return FALSE;
+                        goto exit_error;
                     tab->addColumn(tci);
                     if ((tt = nextToken(token)) != COMMA)
                     {
@@ -3579,14 +3579,14 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     if ((tt = nextToken(scId)) != ID)
                     {
                         errorMessage(i18n("Scenario ID expected"));
-                        return FALSE;
+                        goto exit_error;
                     }
                     int scIdx;
                     if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                     {
                         errorMessage(i18n("Unknown scenario '%1'")
                                      .arg(scId));
-                        return FALSE;
+                        goto exit_error;
                     }
                     if (proj->getScenario(scIdx - 1)->getEnabled())
                         tab->addScenario(proj->getScenarioIndex(scId) - 1);
@@ -3602,7 +3602,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != DATE)
                 {
                     errorMessage(i18n("Date expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setStart(date2time(token));
             }
@@ -3611,7 +3611,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != DATE)
                 {
                     errorMessage(i18n("Date expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setEnd(date2time(token) - 1);
             }
@@ -3620,7 +3620,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setHeadline(token);
             }
@@ -3629,7 +3629,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setCaption(token);
             }
@@ -3638,7 +3638,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setRawHead(token);
             }
@@ -3647,7 +3647,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setRawTail(token);
             }
@@ -3656,7 +3656,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 report->setRawStyleSheet(token);
             }
@@ -3674,7 +3674,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideTask(et);
@@ -3685,7 +3685,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpTask(et);
@@ -3693,7 +3693,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("sorttasks"))
             {
                 if (!readSorting(tab, 0))
-                    return FALSE;
+                    goto exit_error;
             }
             else if (token == KW("hideresource"))
             {
@@ -3701,7 +3701,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideResource(et);
@@ -3712,7 +3712,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpResource(et);
@@ -3720,7 +3720,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("sortresources"))
             {
                 if (!readSorting(tab, 1))
-                    return FALSE;
+                    goto exit_error;
             }
             else if (token == KW("hideaccount"))
             {
@@ -3728,7 +3728,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideAccount(et);
@@ -3739,7 +3739,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto exit_error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpAccount(et);
@@ -3747,7 +3747,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("sortaccounts"))
             {
                 if (!readSorting(tab, 2))
-                    return FALSE;
+                    goto exit_error;
             }
             else if (token == "url")
             {
@@ -3757,14 +3757,14 @@ ProjectFile::readHTMLReport(const QString& reportType)
                                   "refer to the TaskJuggler manual to get "
                                   "more information about optional column "
                                   "attributes."));
-                return FALSE;
+                goto exit_error;
             }
             else if (token == KW("loadunit"))
             {
                 if (nextToken(token) != ID || !tab->setLoadUnit(token))
                 {
                     errorMessage(i18n("Illegal load unit"));
-                    return FALSE;
+                    goto exit_error;
                 }
             }
             else if (token == KW("timeformat"))
@@ -3772,7 +3772,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setTimeFormat(token);
             }
@@ -3781,7 +3781,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 tab->setShortTimeFormat(token);
             }
@@ -3790,7 +3790,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (nextToken(token) != ID)
                 {
                     errorMessage(i18n("Bar label mode expected"));
-                    return FALSE;
+                    goto exit_error;
                 }
                 if (token == KW("empty"))
                     tab->setBarLabels(HTMLReportElement::BLT_EMPTY);
@@ -3800,7 +3800,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 {
                     errorMessage(i18n("Unknown bar label mode '%1'")
                                  .arg(token));
-                    return FALSE;
+                    goto exit_error;
                 }
             }
             else if (token == KW("notimestamp"))
@@ -3810,7 +3810,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                goto exit_error;
             }
         }
     }
@@ -3818,11 +3818,15 @@ ProjectFile::readHTMLReport(const QString& reportType)
         returnToken(tt, token);
 
     if (!checkReportInterval(tab))
-        return FALSE;
+        goto exit_error;
 
     proj->addReport(report);
 
     return TRUE;
+
+exit_error:
+    delete report;
+    return FALSE;
 }
 
 bool
