@@ -7,5 +7,7 @@ Icon=taskjuggler
 Type=Application
 DocPath=taskjuggler/taskjuggler.html
 Comment=Project Management Software
+MimeType=application/x-tjp;application/x-tjx
+InitialPreference=4
 Categories=Qt;KDE;ProjectManagement
 Terminal=0

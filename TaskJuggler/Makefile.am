@@ -37,11 +37,15 @@ METASOURCES = AUTO
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/TaskJuggler.pot
 
-KDE_ICON = taskjuggler
+KDE_ICON = taskjuggler taskjuggler_tjp taskjuggler_tji taskjuggler_tjx
 
 # this is where the kdelnk file will go 
 kdelnkdir = $(kde_appsdir)/Utilities
 kdelnk_DATA = taskjuggler.desktop
+
+# register the mimetype
+tjmimedir = $(kde_mimedir)/application
+tjmime_DATA = x-tjp.desktop x-tji.desktop x-tjx.desktop
 
 # this is where the XML-GUI resource file goes
 rcdir = $(kde_datadir)/taskjuggler
