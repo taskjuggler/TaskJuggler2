@@ -14,7 +14,7 @@ LIBADD=-L../taskjuggler/libtaskjuggler.la
 TaskJuggler_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-TaskJuggler_LDADD = -lktexteditor -ltaskjuggler $(LIB_KFILE) $(LIB_KDEPRINT)
+TaskJuggler_LDADD = -lktexteditor ../taskjuggler/libtaskjuggler.la $(LIB_KFILE) $(LIB_KDEPRINT)
 
 # which sources should be compiled for taskjuggler
 TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
