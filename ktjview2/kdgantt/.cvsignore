@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+itemAttributeDialog.cpp
+itemAttributeDialog.h
+moc_KDGanttViewSubwidgets.cpp
+moc_KDMinimizeSplitter.cpp
+moc_KDSemiSizingControl.cpp
+moc_KDSizingControl.cpp
+moc_itemAttributeDialog.cpp
+

@@ -1,0 +1,16 @@
+Begin3
+Title:          ktjview2
+Version:        0.1
+Entered-date:   
+Description:    KDE GUI viewer for TaskJuggler
+Keywords:       KDE Qt Taskjuggler
+Author:         Lukas Tinkl <lukas.tinkl@suse.cz>
+Maintained-by:  Lukas Tinkl <lukas.tinkl@suse.cz>
+Home-page:      
+Alternate-site: 
+Primary-site:   ftp://ftp.kde.org/pub/kde/unstable/apps/utils
+                xxxxxx  ktjview2-0.1.tar.gz
+                xxx     ktjview2-0.1.lsm
+Platform:       Linux. Needs KDE
+Copying-policy: GPL
+End

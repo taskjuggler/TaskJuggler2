@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+  <kcfgfile/>
+  <group name="Gantt">
+    <entry name="WeekdayColor" type="Color">
+      <label>Background color for week days.</label>
+      <default>lightGray</default>
+    </entry>
+    <entry name="WeekendColor" type="Color">
+      <label>Background color for weekend days.</label>
+      <default>lightGray</default>
+    </entry>
+  </group>
+</kcfg>

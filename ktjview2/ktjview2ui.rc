@@ -1,0 +1,21 @@
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<kpartgui name="ktjview2" version="11">
+<MenuBar>
+  <Menu name="gantt"><text>&amp;Gantt</text>
+    <Action name="zoom_in"/>
+    <Action name="zoom_out"/>
+    <Action name="fit_to_page"/>
+    <Separator/>
+    <Action name="scale"/>
+    <Separator/>
+    <Action name="timeframe"/>
+  </Menu>
+</MenuBar>
+
+<ToolBar name="ganttToolBar" noMerge="1"><text>Gantt Toolbar</text>
+  <Action name="zoom_in"/>
+  <Action name="zoom_out"/>
+  <Action name="fit_to_page"/>
+  <Action name="timeframe"/>
+</ToolBar>
+</kpartgui>
