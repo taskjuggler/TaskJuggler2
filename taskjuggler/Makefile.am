@@ -1,5 +1,6 @@
 bin_PROGRAMS = taskjuggler
-taskjuggler_SOURCES = Task.cpp ResourceList.cpp VacationList.cpp \
+taskjuggler_SOURCES = ExpressionTree.cpp \
+Task.cpp ResourceList.cpp VacationList.cpp \
 Account.cpp Utility.cpp MacroTable.cpp ProjectFile.cpp \
 Report.cpp HTMLTaskReport.cpp HTMLResourceReport.cpp \
 Project.cpp main.cpp kotrus.cpp ReportHtml.cpp ReportXML.cpp

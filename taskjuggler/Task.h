@@ -203,6 +203,7 @@ public:
 	{
 		return flags.contains(flag) > 0;
 	}
+	const QStringList& getFlags() { return flags; }
 
 private:
 	bool scheduleContainer();

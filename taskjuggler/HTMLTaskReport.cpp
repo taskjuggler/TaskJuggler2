@@ -37,7 +37,7 @@ HTMLTaskReport::generate()
 		else if (*it == "taskId")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Task ID</td>";
 		else if (*it == "name")
-			s << "<td class=\"headerbig\" rowspan=\"2\">Task</td>";
+			s << "<td class=\"headerbig\" rowspan=\"2\">Task/Milestone</td>";
 		else if (*it == "start")
 			s << "<td class=\"headerbig\" rowspan=\"2\">Start</td>";
 		else if (*it == "end")
@@ -83,13 +83,14 @@ HTMLTaskReport::generate()
 	idxDict.setAutoDelete(TRUE);
 	for (Task* t = project->taskListFirst(); t != 0;
 		 t = project->taskListNext(), ++i)
-		idxDict.insert(t->getId(), new int(i));
+		if (!isHidden(t))
+			idxDict.insert(t->getId(), new int(i));
 
 	i = 1;
 	for (Task* t = project->taskListFirst(); t != 0;
 		 t = project->taskListNext(), ++i)
 	{
-		if (t->hasFlag("hidden"))
+		if (isHidden(t))
 			continue;
 
 		s << "<tr valign=\"center\">";
@@ -147,7 +148,7 @@ HTMLTaskReport::generate()
 				  << "</td>" << endl;
 			else if (*it == "resources")
 			{
-				s << "<td class=\"default\">"
+				s << "<td class=\"default\" style=\"text-align:left\">"
 				  << "<font size=\"-2\">";
 				bool first = TRUE;
 				for (Resource* r = t->firstBookedResource(); r != 0;
@@ -164,32 +165,39 @@ HTMLTaskReport::generate()
 			else if (*it == "depends")
 			{
 				s << "<td class=\"default\" rowspan=\""
-				  << (showActual ? "2" : "1") << "\">"
-						"<font size=\"-2\">";
+				  << (showActual ? "2" : "1")
+				  << "\" style=\"text-align:left\"><font size=\"-2\">";
 				bool first = TRUE;
 				for (Task* d = t->firstPrevious(); d != 0;
 					 d = t->nextPrevious())
 				{
-					if (!first)
-						s << ", ";
-					s << *(idxDict[d->getId()]);
-					first = FALSE;
+					if (idxDict[d->getId()])
+					{
+						if (!first)
+							s << ", ";
+						s << QString().sprintf("%d", *(idxDict[d->getId()]));
+						first = FALSE;
+					}
 				}
 				s << "</font></td>" << endl;
 			}
 			else if (*it == "follows")
 			{
 				s << "<td class=\"default\" rowspan=\""
-				  << (showActual ? "2" : "1") << "\">"
+				  << (showActual ? "2" : "1")
+				  << "\" style=\"text-align:left\">"
 						"<font size=\"-2\">";
 				bool first = TRUE;
 				for (Task* d = t->firstFollower(); d != 0;
 					 d = t->nextFollower())
 				{
-					if (!first)
-						s << ", ";
-					s << *(idxDict[d->getId()]);
-					first = FALSE;
+					if (idxDict[d->getId()])
+					{
+						if (!first)
+							s << ", ";
+						s << QString().sprintf("%d", *(idxDict[d->getId()]));
+						first = FALSE;
+					}
 				}
 				s << "</font></td>" << endl;
 			}

@@ -46,6 +46,15 @@ INTEGER: An integer number.
 
 REAL: A real number (e.g. 3.14).
 
+LOGICALEXPRESSION: This is a logical expression consting of logical
+operations and (&), or (|) and not (~) to operation on INTERGER values
+or symbols. As symbols currently only flag names are supported. The
+expression is evaluated from left to right. Use braces to avoid
+ambigous operations. If flagFoo, flagFooBar and flagBar are declared
+flags, the following example is a correct expression:
+
+(flagFoo | flagFooBar) & !flagBar
+
 Optional attributes of a property must be enclosed by {}.
 
 ===============================================================================
@@ -241,7 +250,9 @@ be used. Ref. 'flags'. Some predefined flags exist for tasks:
 closed: Hides all sub-tasks in all reports.
 hidden: Hides this task in all reports.
 
-Flags are inherited by sub tasks from their parent tasks.
+Flags are inherited by sub tasks from their parent tasks if they are
+declared before the sub task. Flags that are declared after the sub
+tasks are NOT inherited.
 
 -------------------------------------------------------------------------------
 priority <value>
@@ -504,17 +515,11 @@ If used not only the plan values are listed in the table, but also the
 actual values. The actual values are put underneath the plan values.
 
 -------------------------------------------------------------------------------
-show <flag>[,flag]
-flag: ID
+hide <expression>
+expression: LOGICALEXPRESSION
 
-List only tasks that have the listed flags. This attribute conflicts
-with 'hide'.
-
--------------------------------------------------------------------------------
-hide <flag>[,flag]
-
-List only tasks that don't have the listed flags. This attribute
-conflicts with 'show'.
+List only tasks that don't have flags that meet the described logical
+expression.
 
 -------------------------------------------------------------------------------
 Generates a report of all tasks (excluding hidden and filtered) in
@@ -540,17 +545,11 @@ day: DATE
 The end date for the calender view.
 
 -------------------------------------------------------------------------------
-show <flag>[,flag]
-flag: ID
+hide <expression>
+expression: LOGICALEXPRESSION
 
-List only resources that have the listed flags. This attribute conflicts
-with 'hide'.
-
--------------------------------------------------------------------------------
-hide <flag>[,flag]
-
-List only resources that don't have the listed flags. This attribute
-conflicts with 'show'.
+List only tasks that don't have flags that meet the described logical
+expression.
 
 -------------------------------------------------------------------------------
 Generates a report of all resources (excluding hidden and filtered) in

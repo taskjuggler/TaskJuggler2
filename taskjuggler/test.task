@@ -9,28 +9,32 @@ rate 0.479
 
 kotrusMode "NoKotrus"
 
+flags type1, type2, type3
+flags deadline, media
+
 htmlTaskReport "test1.html" {
-  columns  no, name, start, end, daily
-  showActual
+  columns  no, name, start, depends, resources
   start 2001-09-28
-  end 2002-03-08
+  end 2001-11-01
+  hide media | deadline
 }
 
-htmlTaskReport "test2.html" {
-  columns  no, name, start, end, costs
-  start 2001-09-28
-  end 2002-03-08
-}
+#htmlTaskReport "test2.html" {
+#  columns  no, name, start, end, costs
+#  start 2001-09-28
+#  end 2002-03-08
+#}
 
-htmlResourceReport "test-res.html" {
-  columns resource, daily
-  start 2001-11-28
-  end 2002-03-06
-}
+#htmlResourceReport "test-res.html" {
+#  columns resource, daily
+#  start 2001-11-28
+#  end 2002-03-06
+#}
 
 macro version [SL 8.0]
 
 macro work [
+  flags type1
   task work "${1}" {
     length ${3}
     allocate yast
@@ -103,8 +107,6 @@ task beta${1} "${version} beta${1}" {
   ${test "beta ${1}"}
 }
 ]
-
-flags deadline, media
 
 vacation "Xmas" 2001-12-21 - 2002-01-05
 

@@ -1,5 +1,5 @@
 /*
- * ProjectFile.cpp - TaskJuggler
+ * ExpressionTree.h - TaskJuggler
  *
  * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
  *
@@ -13,6 +13,11 @@
 #ifndef _ExpressionTree_h_
 #define _ExpressionTree_h_
 
+#include <qstring.h>
+#include <qdict.h>
+
+class ExpressionTree;
+
 class Operation
 {
 public:
@@ -23,6 +28,8 @@ public:
 	Operation(Operation* o1, opType o, Operation* o2 = 0)
 		: opt(o), op1(o1), op2(o2) { }
 	~Operation() { }
+
+	long eval(ExpressionTree* et);
 
 private:
 	Operation() { } // don't use this
@@ -37,12 +44,25 @@ private:
 class ExpressionTree
 {
 public:
-	ExpressionTree(Operation* op) : expression(op) { }
+	ExpressionTree(Operation* op) : expression(op)
+	{
+		symbolTable.setAutoDelete(TRUE);
+	}
 	~ExpressionTree() { }
+
+	long eval() { return expression->eval(this); }
+	long resolve(const QString& symbol);
+
+	void registerSymbol(const QString& symbol, long value)
+	{
+		symbolTable.insert(symbol, new long(value));
+	}
+	void clearSymbolTable() { symbolTable.clear(); }
 
 private:
 	ExpressionTree() { }	// don't use this
 
+	QDict<long> symbolTable;
 	Operation* expression;
 } ;
 

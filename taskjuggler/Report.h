@@ -41,6 +41,7 @@ public:
 	time_t getEnd() const { return end; }
 
 	void setHide(ExpressionTree* et) { hide = et; }
+	bool isHidden(Task* t);
 
 
 protected:

@@ -289,22 +289,27 @@ FileInfo::nextToken(QString& token)
 		else
 		{
 			token += c;
-			if (c == '{')
-				return LBRACKET;
-			else if (c == '}')
-				return RBRACKET;
-			else if (c == ',')
-				return COMMA;
-			else if (c == '!')
-				return BANG;
-			else if (c == '-')
-				return MINUS;
-			else if (c == '&')
-				return AND;
-			else if (c == '|')
-				return OR;
-			else
+			switch (c)
 			{
+			case '{':
+				return LCBRACE;
+			case '}':
+				return RCBRACE;
+			case '(':
+				return LBRACE;
+			case ')':
+				return RBRACE;
+			case ',':
+				return COMMA;
+			case '~':
+				return TILDE;
+			case '-':
+				return MINUS;
+			case '&':
+				return AND;
+			case '|':
+				return OR;
+			default:
 				fatalError(QString("Illegal character '") + c + "'");
 				return EndOfFile;
 			}
@@ -327,7 +332,7 @@ FileInfo::readMacroCall()
 	QStringList* sl = new QStringList;
 	while ((tt = nextToken(token)) == STRING)
 		sl->append(token);
-	if (tt != RBRACKET)
+	if (tt != RCBRACE)
 	{
 		fatalError("'}' expected");
 		return FALSE;
@@ -717,7 +722,7 @@ ProjectFile::readTask(Task* parent)
 		return FALSE;
 	}
 
-	if ((tt = nextToken(token)) != LBRACKET)
+	if ((tt = nextToken(token)) != LCBRACE)
 	{
 		fatalError("{ expected");
 		return FALSE;
@@ -833,11 +838,6 @@ ProjectFile::readTask(Task* parent)
 			}
 			else if (token == "flags")
 			{
-				if (hasSubTasks)
-				{
-					fatalError("Flags must be declared before the first sub tasks");
-					return FALSE;
-				}
 				for ( ; ; )
 				{
 					QString flag;
@@ -882,7 +882,7 @@ ProjectFile::readTask(Task* parent)
 				return FALSE;
 			}
 			break;
-		case RBRACKET:
+		case RCBRACE:
 			done = true;
 			break;
 		default:
@@ -967,10 +967,10 @@ ProjectFile::readResource()
 							   proj->getMaxEffort(), proj->getRate());
 	TokenType tt;
 	QString token;
-	if ((tt = nextToken(token)) == LBRACKET)
+	if ((tt = nextToken(token)) == LCBRACE)
 	{
 		// read optional attributes
-		while ((tt = nextToken(token)) != RBRACKET)
+		while ((tt = nextToken(token)) != RCBRACE)
 		{
 			if (tt != ID)
 			{
@@ -1073,10 +1073,10 @@ ProjectFile::readAccount()
 	Account* a = new Account(id, name);
 	TokenType tt;
 	QString token;
-	if ((tt = nextToken(token)) == LBRACKET)
+	if ((tt = nextToken(token)) == LCBRACE)
 	{
 		// read optional attributes
-		while ((tt = nextToken(token)) != RBRACKET)
+		while ((tt = nextToken(token)) != RCBRACE)
 		{
 			if (tt != ID)
 			{
@@ -1124,9 +1124,9 @@ ProjectFile::readAllocate(Task* t)
 	Allocation* a = new Allocation(r);
 	QString token;
 	TokenType tt;
-	if ((tt = nextToken(token)) == LBRACKET)
+	if ((tt = nextToken(token)) == LCBRACE)
 	{
-		while ((tt = nextToken(token)) != RBRACKET)
+		while ((tt = nextToken(token)) != RCBRACE)
 		{
 			if (tt != ID)
 			{
@@ -1336,7 +1336,7 @@ ProjectFile::readHTMLTaskReport()
 	HTMLTaskReport* report = new HTMLTaskReport(proj, token, proj->getStart(),
 												proj->getEnd());
 	TokenType tt;
-	if (nextToken(token) != LBRACKET)
+	if (nextToken(token) != LCBRACE)
 	{
 		openFiles.last()->returnToken(tt, token);
 		return TRUE;
@@ -1344,7 +1344,7 @@ ProjectFile::readHTMLTaskReport()
 
 	for ( ; ; )
 	{
-		if ((tt = nextToken(token)) == RBRACKET)
+		if ((tt = nextToken(token)) == RCBRACE)
 			break;
 		else if (tt != ID)
 		{
@@ -1424,7 +1424,7 @@ ProjectFile::readHTMLResourceReport()
 		proj, token, proj->getStart(), proj->getEnd());
 
 	TokenType tt;
-	if (nextToken(token) != LBRACKET)
+	if (nextToken(token) != LCBRACE)
 	{
 		openFiles.last()->returnToken(tt, token);
 		return TRUE;
@@ -1432,7 +1432,7 @@ ProjectFile::readHTMLResourceReport()
 
 	for ( ; ; )
 	{
-		if ((tt = nextToken(token)) == RBRACKET)
+		if ((tt = nextToken(token)) == RCBRACE)
 			break;
 		else if (tt != ID)
 		{
@@ -1492,45 +1492,60 @@ ProjectFile::readLogicalExpression()
 	Operation* op;
 	QString token;
 	TokenType tt;
-	if ((tt = nextToken(token)) == ID)
-		op = new Operation(token);
-	else if (tt == INTEGER)
-		op = new Operation(token.toLong());
-	else if (tt == BANG)
+
+	if ((tt = nextToken(token)) == ID || tt == INTEGER)
 	{
-		op = readLogicalExpression();
-		if (!op)
-			return 0;
-		op = new Operation(op, Operation::Not);
+		if (tt == ID)
+		{
+			if (!proj->isAllowedFlag(token))
+			{
+				fatalError(QString("Flag ") + token + " is unknown.");
+				return 0;
+			}
+			op = new Operation(token);
+		}
+		else
+			op = new Operation(token.toLong());
+		if ((tt = nextToken(token)) != AND && tt != OR)
+		{
+			returnToken(tt, token);
+		}
+		else if (tt == AND)
+		{
+			Operation* op2 = readLogicalExpression();
+			op = new Operation(op, Operation::And, op2);
+		}
+		else if (tt == OR)
+		{
+			Operation* op2 = readLogicalExpression();
+			op = new Operation(op, Operation::Or, op2);
+		}
 	}
-	else if (tt == LBRACKET)
+	else if (tt == TILDE)
 	{
 		if ((op = readLogicalExpression()) == 0)
 			return 0;
+		op = new Operation(op, Operation::Not);
+	}
+	else if (tt == LBRACE)
+	{
+		if ((op = readLogicalExpression()) == 0)
+		{
+			return 0;
+		}
+		if ((tt = nextToken(token)) != RBRACE)
+		{
+			fatalError("')' expected");
+			return 0;
+		}
 	}
 	else
 	{
+		printf("tt: %d\n", tt);
 		fatalError("Logical expression expected");
 		return 0;
 	}
 	
-	if ((tt = nextToken(token)) == RBRACKET)
-		return op;
-	else if (tt == AND)
-	{
-		Operation* op2 = readLogicalExpression();
-		op = new Operation(op, Operation::And, op2);
-	}
-	else if (tt == OR)
-	{
-		Operation* op2 = readLogicalExpression();
-		op = new Operation(op, Operation::Or, op2);
-	}
-	else
-	{
-		fatalError("Logical operand expected");
-		return 0;
-	}
 	return op;
 }
 
