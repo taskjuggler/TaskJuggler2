@@ -3,10 +3,20 @@
 #include "ktvcanvasitem.h"
 
 KTVCanvasItemBase::KTVCanvasItemBase()
-   :QObject(),
-    m_cText(0)
-
+   :QObject()
 {
+    // Required to have reloading to work properly, but ATTENTION here:
+    // ALWAYS leave one of the two lists with autodelete = false, because
+    // one Item is put into both lists. Thus, deleting from both causes a
+    // sigfault.
+    m_conIn.setAutoDelete(true);
+    m_conOut.setAutoDelete(false);
+}
+
+KTVCanvasItemBase::~KTVCanvasItemBase()
+{
+    m_conIn.clear();
+    m_conOut.clear();
 }
 
 
@@ -159,7 +169,8 @@ KTVConnector* KTVCanvasItemBase::connectorOut( Task *t )
  */
 
 KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
-   :KTVCanvasItemBase()
+    :KTVCanvasItemBase(),
+     m_TaskTextXOffset(10)
 {
    cRect = new QCanvasRectangle(c);
    m_height = 16;
@@ -167,10 +178,17 @@ KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
 
    /* Text */
    m_cText = new QCanvasText(c);
+   m_cText->setFont( KTVCanvasItemBase::smFont );
    m_cText->hide();
 
    m_cText->setZ( 12.0 );
    cRect->setZ( 10.0 );
+}
+
+KTVCanvasItemTask::~KTVCanvasItemTask()
+{
+    delete cRect;
+    delete m_cText;
 }
 
 void KTVCanvasItemTask::setSize( int w, int h )
@@ -191,12 +209,19 @@ void KTVCanvasItemTask::setSize( int w, int h )
 
 void KTVCanvasItemTask::move( double x, double y )
 {
-   moveConnectors( x, y );
+    moveConnectors( x, y );
 
-   if( cRect )
-      cRect->move(x,y);
-   if( m_cText )
-      m_cText->move( x+10, y );
+    if( cRect )
+        cRect->move(x,y);
+    if( m_cText )
+    {
+        QFontMetrics fm(m_cText->font());
+        int fHeight=fm.height();
+
+        int yOff = ( m_height-fHeight )/2;
+        qDebug("The Y-Offset is %d", yOff );
+        m_cText->move( x+m_TaskTextXOffset, y+yOff );
+    }
 
 }
 
@@ -297,6 +322,12 @@ KTVCanvasItemMilestone::KTVCanvasItemMilestone( QCanvas *c )
    cPoly->setZ( 10.0 );
 
    setSize( 14, 14 );
+}
+
+KTVCanvasItemMilestone::~KTVCanvasItemMilestone()
+{
+    delete cPoly;
+
 }
 
 void KTVCanvasItemMilestone::setSize( int , int h )
@@ -409,6 +440,11 @@ KTVCanvasItemContainer::KTVCanvasItemContainer( QCanvas *c )
    cPoly->setZ( 10.0 );
 }
 
+KTVCanvasItemContainer::~KTVCanvasItemContainer( )
+{
+    delete cPoly;
+}
+
 void KTVCanvasItemContainer::setSize( int w, int h  )
 {
    QPointArray p(8);
@@ -511,3 +547,4 @@ QPoint KTVCanvasItemContainer::getConnectorOut() const
    return p;
 }
 
+QFont KTVCanvasItemBase::smFont = QFont();
