@@ -1,0 +1,86 @@
+project shifts "Duty Schedule SysAdmin Team" "$Id" 2002-06-01 2002-08-01
+
+flags hidden
+
+shift phonesupport "Phone support" {
+	workinghours mon 9:00 - 12:00
+	workinghours tue 9:00 - 12:00
+	workinghours wed off
+	workinghours thu 14:00 - 17:00
+	workinghours fri 9:00 - 12:00
+}
+
+shift studenthours "Student Hours" {
+	workinghours mon 9:00 - 12:00
+	workinghours tue off
+	workinghours wed 13:00 - 18:00
+	workinghours thu 8:00 - 10:00, 16:00 - 18:00
+	workinghours fri 9:00 - 14:00
+}
+
+resource joe "Joe Bughunter" {
+	vacation 2002-06-10 - 2002-06-13
+}
+resource khaled "Khaled Safri" {
+	shift studenthours
+}
+resource sally "Sally MacPrinter" {
+	vacation 2002-06-17 - 2002-06-20
+}
+resource anders "Anders Gundstrom" {
+	maxeffort 0.8
+}
+
+task start "Start of plan" {
+	start 2002-06-01
+	milestone
+	flags hidden
+}
+
+task usersup "User Support" {
+  depends !start
+	duration 2m
+	shift phonesupport
+	allocate joe { alternative anders, khaled, sally select minloaded }
+}
+
+task t2 "Printer Maintenance" {
+	depends !start
+  duration 2m
+	allocate khaled { alternative sally select minloaded }
+}
+
+task t3 "Network Restructuring" {
+  depends !start
+	priority 300
+  duration 2m
+	allocate anders { alternative joe, sally select minloaded }
+}
+
+task t4 "Backup Team" {
+	depends !start
+	priority 100
+	duration 2m
+	allocate joe
+	allocate sally
+	allocate khaled
+	allocate anders
+}
+
+htmltaskreport "TaskCoverage.html" {
+	columns name, daily
+	hideresource 0
+	hidetask hidden
+}
+
+htmlresourcereport "ResourceUsage.html" {
+	columns name, daily
+}
+
+htmlresourcereport "ShiftTimes.html" {
+	columns name, schedule
+	start 2002-06-03
+	end 2002-06-07
+	hidetask 0
+}
+
