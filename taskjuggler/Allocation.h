@@ -23,6 +23,7 @@ class Allocation
 {
 public:
     Allocation(Resource* r);
+    Allocation(const Allocation& a);
 
     ~Allocation() { }
 

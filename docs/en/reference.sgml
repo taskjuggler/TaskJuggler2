@@ -2195,7 +2195,9 @@ length</link> or <link linkend="task_duration">duration</link>
 specification may have resources allocated, but do not require
 them.</para>
 
-<para>Tasks may not have subtasks if this attribute is used.</para>
+<para>Resource allocations have no impact on container tasks. Sub
+tasks that are declared after the resource allocations inherit the
+allocations.</para>
 
 <para>Optional attributes:</para>
 

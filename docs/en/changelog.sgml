@@ -488,6 +488,10 @@ added.</para></listitem>
 start and end date if they have their sub tasks exported as
 well.</para></listitem>
 
+<listitem><para><link linkend="task_allocate">Resource
+allocations</link> are now inherited from parent
+tasks.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -26,13 +26,27 @@
   /-- DTD --/
 */
 
-/* Constructor */
-Allocation::Allocation( Resource *r) :
+Allocation::Allocation(Resource *r) :
     load(100), persistent(FALSE), lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
     candidates.append(r);
     selectionMode = order;
+}
+
+Allocation::Allocation(const Allocation& a)
+{
+    shifts.setAutoDelete(TRUE);
+
+    load = a.load;
+    persistent = a.persistent;
+    lockedResource = a.lockedResource;
+    selectionMode = a.selectionMode;
+    
+    for (QPtrListIterator<ShiftSelection> sli(a.shifts); *sli; ++sli)
+        shifts.append(new ShiftSelection(**sli));
+
+    candidates = a.candidates;    
 }
 
 /* Creation of the XML Reprsentation of the Allocation */

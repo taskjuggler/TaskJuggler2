@@ -158,6 +158,10 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
             if ((*it)[0] == '!')
                 *it = '!' + *it;
         }
+
+        // Inherit allocations from parent.
+        for (QPtrListIterator<Allocation> ali(p->allocations); *ali; ++ali)
+            allocations.append(new Allocation(**ali));
     }
     else
     {
@@ -1396,17 +1400,16 @@ Task::preScheduleOk()
         if (scenarios[sc].effort > 0.0 && allocations.count() == 0)
         {
             errorMessage(i18n
-                         ("No allocations specified for effort based task %1 "
-                          "in %2 scenario")
-                         .arg(1).arg(project->getScenarioId(sc)));
-            qDebug(QString().sprintf("%f\n", scenarios[sc].effort));
+                         ("No allocations specified for effort based task '%1' "
+                          "in '%2' scenario")
+                         .arg(id).arg(project->getScenarioId(sc)));
             return FALSE;
         }
 
         if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
         {
             errorMessage(i18n
-                         ("Start and end buffers may not overlap in %2 "
+                         ("Start and end buffers may not overlap in '%2' "
                           "scenario. So their sum must be smaller then 100%.")
                          .arg(project->getScenarioId(sc)));
             return FALSE;
@@ -1422,8 +1425,8 @@ Task::preScheduleOk()
             durationSpec++;
         if (durationSpec > 1)
         {
-            errorMessage(i18n("Task %1 may only have one duration "
-                              "criteria in %2 scenario.").arg(id)
+            errorMessage(i18n("Task '%1' may only have one duration "
+                              "criteria in '%2' scenario.").arg(id)
                          .arg(project->getScenarioId(sc)));
             return FALSE;
         }
@@ -1443,15 +1446,16 @@ Task::preScheduleOk()
             if (durationSpec != 0)
             {
                 errorMessage(i18n
-                             ("Container task %1 may not have a plan duration "
-                              "criteria in %2 scenario").arg(id)
+                             ("Container task '%1' may not have a duration "
+                              "criteria in '%2' scenario").arg(id)
                              .arg(project->getScenarioId(sc)));
                 return FALSE;
             }
             if (milestone)
             {
                 errorMessage(i18n
-                             ("A container task may not be a milestone."));
+                             ("The container task '%1' may not be a "
+                              "milestone.").arg(id));
                 return FALSE;
             }
         }
@@ -1460,8 +1464,8 @@ Task::preScheduleOk()
             if (durationSpec != 0)
             {
                 errorMessage(i18n
-                             ("Milestone %1 may not have a plan duration "
-                              "criteria in %2 scenario").arg(id)
+                             ("Milestone '%1' may not have a plan duration "
+                              "criteria in '%2' scenario").arg(id)
                              .arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1476,8 +1480,8 @@ Task::preScheduleOk()
              */
             if (!hasStartDependency(sc) && !hasEndDependency(sc))
             {
-                errorMessage(i18n("Milestone %1 must have a start or end "
-                                  "specification in %2 scenario.")
+                errorMessage(i18n("Milestone '%1' must have a start or end "
+                                  "specification in '%2' scenario.")
                              .arg(id).arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1491,9 +1495,9 @@ Task::preScheduleOk()
                 scenarios[sc].start != scenarios[sc].end + 1)
             {
                 errorMessage(i18n
-                             ("Milestone %1 may not have both a start "
+                             ("Milestone '%1' may not have both a start "
                               "and an end specification that do not "
-                              "match in %2 scenario.").arg(id)
+                              "match in the '%2' scenario.").arg(id)
                              .arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1542,8 +1546,8 @@ Task::preScheduleOk()
                   hasEndDependency(sc) && scenarios[sc].end == 0)) &&
                 durationSpec != 0)
             {
-                errorMessage(i18n("Task %1 has a start, an end and a "
-                                  "duration specification for %2 scenario.")
+                errorMessage(i18n("Task '%1' has a start, an end and a "
+                                  "duration specification for '%2' scenario.")
                              .arg(id).arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1560,8 +1564,8 @@ Task::preScheduleOk()
                 durationSpec == 0)
             {
                 errorMessage(i18n
-                             ("Task %1 has only a start or end specification "
-                              "but no plan duration for the %2 scenario.")
+                             ("Task '%1' has only a start or end specification "
+                              "but no plan duration for the '%2' scenario.")
                              .arg(id).arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1579,8 +1583,8 @@ Task::preScheduleOk()
             if (!hasStartDependency(sc) && scheduling == ASAP)
             {
                 errorMessage(i18n
-                             ("Task %1 needs a start specification to be "
-                              "scheduled in ASAP mode in the %2 scenario.")
+                             ("Task '%1' needs a start specification to be "
+                              "scheduled in ASAP mode in the '%2' scenario.")
                              .arg(id).arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1598,8 +1602,8 @@ Task::preScheduleOk()
             if (!hasEndDependency(sc) && scheduling == ALAP)
             {
                 errorMessage(i18n
-                             ("Task %1 needs an end specification to be "
-                              "scheduled in ALAP mode in the %2 scenario.")
+                             ("Task '%1' needs an end specification to be "
+                              "scheduled in ALAP mode in the '%2' scenario.")
                              .arg(id).arg(project->getScenarioId(sc)));
                 return FALSE;
             }
@@ -1609,7 +1613,7 @@ Task::preScheduleOk()
             (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
         {
             errorMessage(i18n
-                         ("Task %1 has a specified start- or endcredit "
+                         ("Task '%1' has a specified start- or endcredit "
                           "but no account assigned.").arg(id));
             return FALSE;
         }
@@ -1624,8 +1628,8 @@ Task::preScheduleOk()
             QPtrListIterator<Resource> rli((*ali)->getCandidatesIterator());
             errorMessage(i18n
                          ("Warning: Load is smaller than scheduling "
-                          "granularity (Task: %1, Resource: %2). Minimal "
-                          "load is %3.")
+                          "granularity (Task: '%1', Resource: '%2'). Minimal "
+                          "load is '%3'.")
                          .arg(id).arg((*rli)->getId())
                          .arg(QString().sprintf("%.2f", intervalLoad +
                                                 0.005)));
@@ -1646,7 +1650,7 @@ Task::scheduleOk(int& errors, QString scenario) const
     if (errors > currErrors)
     {
         if (DEBUGPS(2))
-            qDebug(QString("Scheduling errors in sub tasks of %1.")
+            qDebug(QString("Scheduling errors in sub tasks of '%1'.")
                    .arg(id));
         return FALSE;
     }
@@ -1670,24 +1674,26 @@ Task::scheduleOk(int& errors, QString scenario) const
 
     if (start == 0)
     {
-        errorMessage(i18n("Task %1 has no %2 start time.")
-                     .arg(id).arg(scenario.lower()));
+        errorMessage(i18n("Task '%1' has no start time for the '%2'"
+                          "scenario.")
+                     .arg(id).arg(scenario));
         errors++;
         return FALSE;
     }
     if (start < project->getStart() || start > project->getEnd())
     {
-        errorMessage(i18n("Start time of task %1 is outside of the "
-                          "project interval (%2 - %3).")
+        errorMessage(i18n("Start time of task '%1' is outside of the "
+                          "project interval (%2 - %3) in '%4' scenario.")
                      .arg(time2tjp(start))
                      .arg(time2tjp(project->getStart()))
-                     .arg(time2tjp(project->getEnd())));
+                     .arg(time2tjp(project->getEnd()))
+                     .arg(scenario));
         errors++;
         return FALSE;
     }
     if (minStart != 0 && start < minStart)
     {
-        errorMessage(i18n("%1 start time of task %2 is too early\n"
+        errorMessage(i18n("'%1' start time of task '%2' is too early\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id).arg(time2tjp(start))
@@ -1697,7 +1703,7 @@ Task::scheduleOk(int& errors, QString scenario) const
     }
     if (maxStart != 0 && maxStart < start)
     {
-        errorMessage(i18n("%1 start time of task %2 is too late\n"
+        errorMessage(i18n("'%1' start time of task '%2' is too late\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id)
@@ -1707,7 +1713,7 @@ Task::scheduleOk(int& errors, QString scenario) const
     }
     if (end == 0)
     {
-        errorMessage(i18n("Task '%1' has no %2 end time.")
+        errorMessage(i18n("Task '%1' has no '%2' end time.")
                      .arg(id).arg(scenario.lower()));
         errors++;
         return FALSE;
@@ -1715,17 +1721,18 @@ Task::scheduleOk(int& errors, QString scenario) const
     if (end + (milestone ? 1 : 0) < project->getStart() ||
         end + (milestone ? 1 : 0) > project->getEnd())
     {
-        errorMessage(i18n("End time of task %1 is outside of the "
-                          "project interval (%2 - %3).")
+        errorMessage(i18n("End time of task '%1' is outside of the "
+                          "project interval (%2 - %3) in '%4' scenario.")
                      .arg(time2tjp(end))
                      .arg(time2tjp(project->getStart()))
-                     .arg(time2tjp(project->getEnd())));
+                     .arg(time2tjp(project->getEnd()))
+                     .arg(scenario));
         errors++;
         return FALSE;
     }
     if (minEnd != 0 && end + (milestone ? 1 : 0) < minEnd)
     {
-        errorMessage(i18n("%1 end time of task %2 is too early\n"
+        errorMessage(i18n("'%1' end time of task '%2' is too early\n"
                           "Date is:  %3\n"
                           "Limit is: %4")
                      .arg(scenario).arg(id)
@@ -1736,7 +1743,7 @@ Task::scheduleOk(int& errors, QString scenario) const
     }
     if (maxEnd != 0 && maxEnd < end + (milestone ? 1 : 0))
     {
-        errorMessage(i18n("%1 end time of task %2 is too late\n"
+        errorMessage(i18n("'%1' end time of task '%2' is too late\n"
                           "Date is:  %2\n"
                           "Limit is: %3")
                      .arg(scenario).arg(id)
@@ -1754,9 +1761,9 @@ Task::scheduleOk(int& errors, QString scenario) const
             {
                 if (!(*tli)->runAway)
                 {
-                    errorMessage(i18n("Task %1 has ealier %2 start than "
+                    errorMessage(i18n("Task '%1' has ealier '%2' start than "
                                       "parent")
-                                 .arg(id).arg(scenario.lower()));
+                                 .arg(id).arg(scenario));
                     errors++;
                 }
                 return FALSE;
@@ -1765,8 +1772,9 @@ Task::scheduleOk(int& errors, QString scenario) const
             {
                 if (!(*tli)->runAway)
                 {
-                    errorMessage(i18n("Task %1 has later %2 end than parent")
-                                 .arg(id).arg(scenario.lower()));
+                    errorMessage(i18n("Task '%1' has later '%2' end than "
+                                      "parent")
+                                 .arg(id).arg(scenario));
                     errors++;
                 }
                 return FALSE;
@@ -1779,10 +1787,10 @@ Task::scheduleOk(int& errors, QString scenario) const
         if ((*tli)->end > start && !(*tli)->runAway)
         {
             errorMessage(i18n("Impossible dependency:\n"
-                              "Task %1 ends at %2 but needs to precede\n"
-                              "task %3 which has a %4 start time of %5")
+                              "Task '%1' ends at %2 but needs to precede\n"
+                              "task '%3' which has a '%4' start time of %5")
                          .arg((*tli)->id).arg(time2tjp((*tli)->end).latin1())
-                         .arg(id).arg(scenario.lower()).arg(time2tjp(start)));
+                         .arg(id).arg(scenario).arg(time2tjp(start)));
             errors++;
             return FALSE;
         }
@@ -1791,17 +1799,17 @@ Task::scheduleOk(int& errors, QString scenario) const
         if (end > (*tli)->start && !(*tli)->runAway)
         {
             errorMessage(i18n("Impossible dependency:\n"
-                              "Task %1 starts at %2 but needs to follow\n"
-                              "task %3 which has a %4 end time of %5")
+                              "Task '%1' starts at %2 but needs to follow\n"
+                              "task %3 which has a '%4' end time of %5")
                          .arg((*tli)->id).arg(time2tjp((*tli)->start))
-                         .arg(id).arg(scenario.lower()).arg(time2tjp(end)));
+                         .arg(id).arg(scenario).arg(time2tjp(end)));
             errors++;
             return FALSE;
         }
 
     if (!schedulingDone)
     {
-        errorMessage(i18n("Task %1 has not been marked completed.\n"
+        errorMessage(i18n("Task '%1' has not been marked completed.\n"
                           "It is scheduled to last from %2 to %3.\n"
                           "This might be a bug in the TaskJuggler scheduler.")
                      .arg(id).arg(time2tjp(start)).arg(time2tjp(end)));
