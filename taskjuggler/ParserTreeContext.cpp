@@ -14,6 +14,7 @@
 #include "Scenario.h"
 #include "Shift.h"
 #include "Resource.h"
+#include "Account.h"
 #include "Task.h"
 #include "VacationInterval.h"
 
@@ -33,6 +34,12 @@ Resource*
 ParserTreeContext::getResource() const
 {
     return dynamic_cast<Resource*>(ca);
+}
+
+Account*
+ParserTreeContext::getAccount() const
+{
+    return dynamic_cast<Account*>(ca);
 }
 
 Task*

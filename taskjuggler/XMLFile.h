@@ -103,6 +103,8 @@ private:
     bool doResourceList(QDomNode& n, ParserTreeContext& n);
     bool doResource(QDomNode& n, ParserTreeContext& n);
     bool doShiftSelection(QDomNode& n, ParserTreeContext& n);
+    bool doAccountList(QDomNode& n, ParserTreeContext& n);
+    bool doAccount(QDomNode& n, ParserTreeContext& n);
     bool doTaskList(QDomNode& n, ParserTreeContext& n);
     bool doTask(QDomNode& n, ParserTreeContext& n);
     bool doTaskScenario(QDomNode& n, ParserTreeContext& n);

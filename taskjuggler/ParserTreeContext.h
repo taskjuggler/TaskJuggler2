@@ -20,6 +20,7 @@ class CoreAttributes;
 class Scenario;
 class Shift;
 class Resource;
+class Account;
 class Task;
 class Resource;
 class TaskScenario;
@@ -45,6 +46,9 @@ public:
     void setResource(Resource* r) { ca = (CoreAttributes*) r; }
     Resource* getResource() const;
 
+    void setAccount(Account* a) { ca = (CoreAttributes*) a; }
+    Account* getAccount() const;
+
     void setTask(Task* t) { ca = (CoreAttributes*) t; }
     Task* getTask() const;
 
@@ -67,7 +71,7 @@ public:
     VacationInterval* getVacationInterval() const;
 
     void setExtendProperty(const QString& ep) { extendProperty = ep; }
-    const QString& getExtendProporty() const { return extendProperty; }
+    const QString& getExtendProperty() const { return extendProperty; }
 
 private:
     CoreAttributes* ca;

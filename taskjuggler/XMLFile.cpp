@@ -26,6 +26,7 @@
 #include "Scenario.h"
 #include "Shift.h"
 #include "Resource.h"
+#include "Account.h"
 #include "Task.h"
 #include "TaskScenario.h"
 #include "Allocation.h"
@@ -132,6 +133,19 @@ XMLFile::createParseTree()
                                           &XMLFile::doShiftSelection,
                                           resourceNode);
                 createSubTreeCustomAttribute(resourceNode);
+            }
+        }
+
+        // accountList element
+        pe = new ParserElement("accountList", &XMLFile::doAccountList,
+                               taskjugglerNode);
+        ParserNode* accountListNode = new ParserNode(pe);
+        {
+            pe = new ParserElement("account", &XMLFile::doAccount,
+                                   accountListNode);
+            ParserNode* accountNode = new ParserNode(pe);
+            {
+                accountNode->add(pe, "account"); // recursive link
             }
         }
         
@@ -308,7 +322,7 @@ XMLFile::parse()
 bool
 XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
 {
-    bool ret = true;
+    bool ret = TRUE;
     
     while (!n.isNull())
     {
@@ -318,8 +332,8 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
             const ParserElement* pEl = pn->getElement(el.tagName());
             if (!pEl)
             {
-		qWarning(i18n("unsupported XML element"));
-		ret = false;
+                qWarning(i18n("Unsupported XML element %1").arg(el.tagName()));
+                ret = FALSE;
             }
             else
             {
@@ -358,7 +372,7 @@ XMLFile::doTaskJuggler(QDomNode&, ParserTreeContext&)
 }
 
 bool
-XMLFile::doProject(QDomNode& n, ParserTreeContext&)
+XMLFile::doProject(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
     // mandatory attributes
@@ -383,6 +397,8 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext&)
      * in the working hour specificiation. A missing day is a day off. */
     for (int i = 0; i < 7; ++i)
         project->setWorkingHours(i, new QPtrList<Interval>);
+   
+    ptc.setScenario(0);
     
     return TRUE;
 }
@@ -455,10 +471,16 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
         cat = CAT_Reference;
     CustomAttributeDefinition* ca =
         new CustomAttributeDefinition(el.attribute("name"), cat);
+    if (!ca)
+    {
+        qWarning(i18n("Unknown custom attribute %1")
+                 .arg(el.attribute("name")));
+        return FALSE;
+    }
     ca->setInherit(el.attribute("inherit").toInt());
-    if (ptc.getExtendProporty() == "task")
+    if (ptc.getExtendProperty() == "task")
         project->addTaskAttribute(el.attribute("id"), ca); 
-    else if (ptc.getExtendProporty() == "resource")
+    else if (ptc.getExtendProperty() == "resource")
         project->addResourceAttribute(el.attribute("id"), ca);
 
     return TRUE;
@@ -561,7 +583,7 @@ XMLFile::doTextAttribute(QDomNode& n, ParserTreeContext& ptc)
     QDomElement el = n.toElement();
     TextAttribute* ta =
         new TextAttribute(el.attribute("text"));
-    ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProporty(), ta);
+    ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProperty(), ta);
     return TRUE;
 }
 
@@ -571,7 +593,7 @@ XMLFile::doReferenceAttribute(QDomNode& n, ParserTreeContext& ptc)
     QDomElement el = n.toElement();
     ReferenceAttribute* ra = 
         new ReferenceAttribute(el.attribute("url"), el.attribute("label"));
-    ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProporty(), ra);
+    ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProperty(), ra);
     return TRUE;
 }
 
@@ -636,6 +658,28 @@ XMLFile::doShiftSelection(QDomNode& n, ParserTreeContext& ptc)
 }
 
 bool
+XMLFile::doAccountList(QDomNode&, ParserTreeContext& ptc)
+{
+    ptc.setAccount(0);
+    return TRUE;
+}
+
+bool
+XMLFile::doAccount(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    Account* a = new Account(project, el.attribute("id"),
+                             el.attribute("name"), ptc.getAccount(),
+                             ptc.getAccount() ?
+                             ptc.getAccount()->getAcctType() :
+                             el.attribute("type") == "cost" ?
+                             Cost : Revenue);
+    ptc.setAccount(a);
+    
+    return TRUE;
+}
+
+bool
 XMLFile::doTaskList(QDomNode&, ParserTreeContext& ptc)
 {
     ptc.setTask(0);
@@ -654,8 +698,12 @@ XMLFile::doTask(QDomNode& n, ParserTreeContext& ptc)
     t->setScheduling(el.attribute("asapScheduling").toInt() ?
                      Task::ASAP : Task::ALAP);
     t->setPriority(el.attribute("priority").toInt());
-    t->setResponsible(project->getResource(el.attribute("responsible")));
-    t->setAccount(project->getAccount(el.attribute("account")));
+
+    // Optional attributes
+    if (!el.attribute("responsible").isEmpty())
+        t->setResponsible(project->getResource(el.attribute("responsible")));
+    if (!el.attribute("account").isEmpty())
+        t->setAccount(project->getAccount(el.attribute("account")));
     
     return TRUE;
 }
@@ -773,8 +821,20 @@ XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
 {
     QDomElement el = n.toElement();
     Resource* resource = project->getResource(el.attribute("resourceId"));
+    if (!resource)
+    {
+        qWarning(i18n("Booking for unknown resource %1")
+                 .arg(el.attribute("resourceId")));
+        return FALSE;
+    }
     ptc.setResource(resource);
-    int sc = project->getScenarioIndex (el.attribute("scenarioId")) - 1;
+    int sc = project->getScenarioIndex(el.attribute("scenarioId")) - 1;
+    if (sc < 0)
+    {
+        qWarning(i18n("Booking for unknown scenario %1")
+                 .arg(el.attribute("scenarioId")));
+        return FALSE;
+    }
     ptc.setScenarioIndex(sc);
     return TRUE;
 }
@@ -791,6 +851,12 @@ bool
 XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
 {
     Task* t = project->getTask(n.toElement().attribute("taskId"));
+    if (!t)
+    {
+        qWarning(i18n("Booking for unknown task %1")
+                 .arg(n.toElement().attribute("taskId")));
+        return FALSE;
+    }
     ptc.getResource()->addBooking(ptc.getScenarioIndex(),
                                   new Booking(ptc.getInterval(), t));
     return TRUE;
