@@ -24,13 +24,17 @@
 class CoreAttributes;
 class ExpressionTree;
 class Operation;
+class Project;
 
 class ExpressionTree
 {
 public:
     ExpressionTree(const Operation* op);
     ExpressionTree(const ExpressionTree& et);
+    ExpressionTree();
     ~ExpressionTree();
+
+    bool setTree(const QString& expr, const Project* proj);
 
     long evalAsInt(const CoreAttributes* c);
     long resolve(const QString& symbol) const;
@@ -43,23 +47,11 @@ public:
 
     const CoreAttributes* getCoreAttributes() const { return ca; }
 
-    static bool isFunction(const QString& name);
-
-    static int arguments(const QString& name);
-
-    ExpressionTreeFunction* getFunction(const QString& name) const
-    {
-        return functions[name];
-    }
-    
 private:
-    ExpressionTree() { }    // don't use this
-
+    void generateFunctionTable();
     const CoreAttributes* ca;
     QDict<long> symbolTable;
     const Operation* expression;
-    
-    static QDict<ExpressionTreeFunction> functions;
 } ;
 
 #endif

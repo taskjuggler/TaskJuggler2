@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp RealFormat.cpp \
+Tokenizer.cpp ExpressionFunctionTable.cpp ExpressionParser.cpp \
 ParserTreeContext.cpp ParserNode.cpp ParserElement.cpp \
 TjMessageHandler.cpp \
 DecisionNode.cpp OptimizerRun.cpp Optimizer.cpp \

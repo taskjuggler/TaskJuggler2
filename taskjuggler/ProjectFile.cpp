@@ -58,6 +58,7 @@
 #include "TextAttribute.h"
 #include "CustomAttributeDefinition.h"
 #include "UsageLimits.h"
+#include "ExpressionFunctionTable.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
@@ -4201,7 +4202,7 @@ ProjectFile::readLogicalExpression(int precedence)
         QString lookAhead;
         if ((tt = nextToken(lookAhead)) == LBRACKET)
         {
-            if (ExpressionTree::isFunction(token))
+            if (EFT.isKnownFunction(token))
             {
                 if ((op = readFunctionCall(token)) == 0)
                 {
@@ -4341,7 +4342,7 @@ ProjectFile::readFunctionCall(const QString& name)
     TokenType tt;
 
     QPtrList<Operation> args;
-    for (int i = 0; i < ExpressionTree::arguments(name); i++)
+    for (int i = 0; i < EFT.getArgumentCount(name); i++)
     {
         if (DEBUGEX(5))
             qDebug("Reading function '%s' arg %d", name.latin1(), i);
@@ -4349,12 +4350,12 @@ ProjectFile::readFunctionCall(const QString& name)
         if ((op = readLogicalExpression()) == 0)
             return 0;
         args.append(op);
-        if ((i < ExpressionTree::arguments(name) - 1) &&
+        if ((i < EFT.getArgumentCount(name) - 1) &&
             nextToken(token) != COMMA)
         {
             errorMessage(i18n("Comma expected. "
                               "Function '%1' needs %2 arguments.")
-                         .arg(name).arg(ExpressionTree::arguments(name)));
+                         .arg(name).arg(EFT.getArgumentCount(name)));
             return 0;
         }
     }

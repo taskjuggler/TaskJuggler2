@@ -45,19 +45,11 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
      * aren't. */
     tables[0]->setStart(project->getStart());
     tables[0]->setEnd(project->getEnd());
-    Operation* op;
-    /* hidetask ~(istaskstatus(plan, inprogresslate) &
-                  endsbefore(plan, ${now})) */
-    op = new Operation
-        (new Operation("istaskstatus", 
-                       new Operation(Operation::String, scenarioName, 0),
-                       new Operation(Operation::String, "inprogresslate", 0)),
-         Operation::And,
-         new Operation("endsbefore",
-                       new Operation(Operation::String, scenarioName, 0),
-                       new Operation(Operation::Date, project->getNow())));
-    op = new Operation(op, Operation::Not);
-    tables[0]->setHideTask(new ExpressionTree(op));
+    ExpressionTree* et = new ExpressionTree();
+    et->setTree(QString("~(istaskstatus(") + scenarioName + 
+                ", inprogresslate) & endsbefore(" + scenarioName + "," +
+                time2tjp(project->getNow()) + "))", project);
+    tables[0]->setHideTask(et);
     tables[0]->setHeadline
         (i18n("Tasks that should have been finished already"));
     tables[0]->clearColumns();
@@ -73,24 +65,13 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     // Ongoing tasks
     tables[1]->setStart(project->getStart());
     tables[1]->setEnd(project->getEnd());
-    /* hidetask ~((istaskstatus(plan, inprogresslate) |
-                  (istaskstatus(plan, inprogress))) &
-                  endsafter(plan, ${now})) */
-    op = new Operation
-        (new Operation
-         (new Operation("istaskstatus", 
-                        new Operation(Operation::String, scenarioName, 0),
-                        new Operation(Operation::String, "inprogresslate", 0)),
-          Operation::Or,
-          (new Operation("istaskstatus", 
-                         new Operation(Operation::String, scenarioName, 0),
-                         new Operation(Operation::String, "inprogress", 0)))),
-         Operation::And,
-         new Operation("endsafter",
-                       new Operation(Operation::String, scenarioName, 0),
-                       new Operation(Operation::Date, project->getNow())));
-    op = new Operation(op, Operation::Not);
-    tables[1]->setHideTask(new ExpressionTree(op));
+    et = new ExpressionTree();
+    et->setTree(QString("~((istaskstatus(") + scenarioName +
+                ", inprogresslate) | "
+                "(istaskstatus(" + scenarioName + ", inprogress))) &"
+                "endsafter(" + scenarioName + "," +
+                time2tjp(project->getNow()) + "))", project);
+    tables[1]->setHideTask(et);
     tables[1]->setHeadline(i18n("Work in progress"));
     tables[1]->clearColumns();
     tables[1]->addColumn(new TableColumnInfo(sc, "name"));
@@ -101,12 +82,10 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     tables[1]->addColumn(new TableColumnInfo(sc, "statusnote"));
 
     // Completed tasks
-    /* hidetask ~istaskstatus(plan, finished) */
-    op = new Operation("istaskstatus", 
-                       new Operation(Operation::String, scenarioName, 0),
-                       new Operation(Operation::String, "finished", 0));
-    op = new Operation(op, Operation::Not);
-    tables[2]->setHideTask(new ExpressionTree(op));
+    et = new ExpressionTree();
+    et->setTree(QString("~istaskstatus(") + scenarioName + ", finished)",
+                project);
+    tables[2]->setHideTask(et);
     tables[2]->setHeadline(i18n("Tasks that have been completed"));
     tables[2]->clearColumns();
     tables[2]->addColumn(new TableColumnInfo(sc, "name"));
@@ -120,17 +99,11 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
         reportEnd = project->getEnd();
     tables[3]->setStart(project->getNow());
     tables[3]->setEnd(project->getEnd());
-    /* hidetask ~(startsafter(plan, ${now}) & startsbefore(${reportend})) */
-    op = new Operation
-        (new Operation("startsafter", 
-                       new Operation(Operation::String, scenarioName, 0),
-                       new Operation(Operation::Date, project->getNow())),
-         Operation::And,
-         new Operation("startsbefore",
-                       new Operation(Operation::String, scenarioName, 0),
-                       new Operation(Operation::Date, reportEnd))); 
-    op = new Operation(op, Operation::Not);
-    tables[3]->setHideTask(new ExpressionTree(op));
+    et = new ExpressionTree();
+    et->setTree(QString("~(startsafter(") + scenarioName + ", " +
+                time2tjp(project->getNow()) + ") & startsbefore(" +
+                scenarioName + "," + time2tjp(reportEnd) + "))", project);
+    tables[3]->setHideTask(et);
     tables[3]->setHeadline(i18n("Upcoming new tasks"));
     tables[3]->clearColumns();
     tables[3]->addColumn(new TableColumnInfo(sc, "name"));

@@ -13,6 +13,7 @@
 #include "Operation.h"
 #include "ExpressionTree.h"
 #include "Utility.h"
+#include "ExpressionFunctionTable.h"
 
 Operation::Operation(const Operation& op)
 {
@@ -122,9 +123,9 @@ Operation::evalAsString(const ExpressionTree* et) const
 long
 Operation::evalFunction(const ExpressionTree* et) const
 {
-    if (et->getFunction(name))
+    if (EFT.getFunction(name))
     {
-        return et->getFunction(name)->longCall(et, ops);
+        return EFT.getFunction(name)->longCall(et, ops);
     }
     else
         qFatal("Unknown function %s", name.data()); 
