@@ -64,7 +64,7 @@ FilterDialog::FilterDialog( QWidget * parent, const char * name )
     connect( ( QWidget * ) m_base->btnDelete, SIGNAL( clicked() ), this, SLOT( slotDeleteFilter() ) );
     connect( ( QWidget * ) m_base->btnRename, SIGNAL( clicked() ), this, SLOT( slotRenameFilter() ) );
 
-    connect( ( QWidget * ) m_base->lbFilters, SIGNAL( currentChanged( QListBoxItem * ) ),
+    connect( ( QWidget * ) m_base->lbFilters, SIGNAL( selectionChanged( QListBoxItem * ) ),
              this, SLOT( slotFilterChanged( QListBoxItem * ) ) );
 
     m_base->tbConditions->setColumnStretchable( true, 1 ); // stretch the Expr column
