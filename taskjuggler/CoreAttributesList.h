@@ -14,6 +14,7 @@
 
 #include <qptrlist.h>
 
+class QString;
 class CoreAttributes;
 
 /**
@@ -54,6 +55,7 @@ public:
 	static const int maxSortingLevel = 3;
 	void setSorting(int s, int level);
 	void createIndex(bool initial = FALSE);
+	int getIndex(const QString& id) const;
 	uint maxDepth() const;
 
 	static bool isSupportedSortingCriteria(int sc);

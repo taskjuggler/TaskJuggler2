@@ -17,6 +17,7 @@
 
 #include <qptrlist.h>
 
+#include "ScenarioList.h"
 #include "TaskList.h"
 #include "ShiftList.h"
 #include "ResourceList.h"
@@ -46,7 +47,7 @@ class Kotrus;
  * the scheduler. For that purpose Project and all related sub-classes provide
  * a copy constructor.
  *
- * @short The root class of all project related infromation.
+ * @short The root class of all project related information.
  * @author Chris Schlaeger <cs@suse.de>
  */
 class Project
@@ -94,14 +95,20 @@ public:
 	/**
 	 * Returns the number of supported scenarios.
 	 */
-	int getMaxScenarios() { return scenarioNames.count(); }
+	int getMaxScenarios() { return scenarioList.count(); }
+	/**
+	 * Returns the id of a scenario.
+	 * @param sc Specifies the scenario.
+	 */
+	const QString& getScenarioId(int sc);
 	/**
 	 * Returns the name of a scenario.
 	 * @param sc Specifies the scenario.
 	 */
 	const QString& getScenarioName(int sc);
 	/**
-	 * Returns the index of the scenario.
+	 * Returns the index of the scenario. The index of the first item in the
+	 * list is 1, not 0!
 	 * @param id the ID of the scenario.
 	 */
 	int getScenarioIndex(const QString& id);
@@ -312,6 +319,13 @@ public:
 		return VacationListIterator(vacationList); 
 	}
 
+	/**
+	 * This function is for library internal use only. Creating a Scenario
+	 * object with the project as parameter will automatically add it to the
+	 * scenario list of the project.
+	 */
+	void addScenario(Scenario* r);
+	
 	/**
 	 * This function is for library internal use only. Creating a Task object
 	 * with the project as parameter will automatically add it to the Task
@@ -621,11 +635,11 @@ private:
      * used. */
 	QStringList projectIDs;
 
-	QStringList scenarioNames;
 	bool hasExtraValues;	// TODO: Fix this for multiple scenarios
 
 	VacationList vacationList;
-	
+
+	ScenarioList scenarioList;	
 	TaskList taskList;
 	ResourceList resourceList;
 	AccountList accountList;

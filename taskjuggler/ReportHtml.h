@@ -122,10 +122,11 @@ public:
 		rawStyleSheet = styleSheet;
 	}
 	
+	QString htmlFilter(const QString& s) const;
+
 protected:
 	ReportHtml() { }
 
-	QString htmlFilter(const QString& s) const;
 	QString generateUrl(const QString& key, const QString& txt);
 
 	MacroTable mt;

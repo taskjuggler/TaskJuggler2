@@ -17,13 +17,17 @@
 
 class Project;
 class TaskList;
+class TaskResourceTable;
 
 class HTMLStatusReport : public ReportHtml
 {
 public:
 	HTMLStatusReport(Project* p, const QString& f, time_t s, time_t e,
 					   const QString& df, int dl);
-	virtual ~HTMLStatusReport() { }
+	virtual ~HTMLStatusReport();
+
+	void setTable(int tab, TaskResourceTable* tp);
+	TaskResourceTable* getTable(int tab) const;
 
 	bool generate();
 
@@ -32,6 +36,8 @@ private:
 
 	bool generateTable(TaskList& filteredTaskList,
 					   ResourceList& filteredResourceList);
+
+	TaskResourceTable* tables[4];
 } ;
 
 #endif

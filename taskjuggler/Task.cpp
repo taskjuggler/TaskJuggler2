@@ -1243,7 +1243,7 @@ Task::preScheduleOk()
 			errorMessage(i18n
 						 ("No allocations specified for effort based task %1 "
 						  "in %2 scenario")
-						 .arg(1).arg(project->getScenarioName(sc)));
+						 .arg(1).arg(project->getScenarioId(sc)));
 			qDebug(QString().sprintf("%f\n", scenarios[sc].effort));
 			return FALSE;
 		}
@@ -1253,7 +1253,7 @@ Task::preScheduleOk()
 			errorMessage(i18n
 						 ("Start and end buffers may not overlap in %2 scenario. "
 						  "So their sum must be smaller then 100%.")
-						 .arg(project->getScenarioName(sc)));
+						 .arg(project->getScenarioId(sc)));
 			return FALSE;
 		}
 
@@ -1269,19 +1269,19 @@ Task::preScheduleOk()
 		{
 			errorMessage(i18n("Task %1 may only have one duration "
 							  "criteria in %2 scenario.").arg(id)
-						 .arg(project->getScenarioName(sc)));
+						 .arg(project->getScenarioId(sc)));
 			return FALSE;
 		}
 
 		/*
 		|: fixed start or end date
 		-: no fixed start or end date
-M: Milestone
-D: start or end dependency
-x->: ASAP task with duration criteria
-<-x: ALAP task with duration criteria
--->: ASAP task without duration criteria
-<--: ALAP task without duration criteria
+		M: Milestone
+		D: start or end dependency
+		x->: ASAP task with duration criteria
+		<-x: ALAP task with duration criteria
+		-->: ASAP task without duration criteria
+		<--: ALAP task without duration criteria
 		 */
 		if (!sub.isEmpty())
 		{
@@ -1290,7 +1290,7 @@ x->: ASAP task with duration criteria
 				errorMessage(i18n
 							 ("Container task %1 may not have a plan duration "
 							  "criteria in %2 scenario").arg(id)
-							 .arg(project->getScenarioName(sc)));
+							 .arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 		}
@@ -1301,7 +1301,7 @@ x->: ASAP task with duration criteria
 				errorMessage(i18n
 							 ("Milestone %1 may not have a plan duration "
 							  "criteria in %2 scenario").arg(id)
-							 .arg(project->getScenarioName(sc)));
+							 .arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 			/*
@@ -1317,7 +1317,7 @@ x->: ASAP task with duration criteria
 			{
 				errorMessage(i18n("Milestone %1 must have a start or end "
 								  "specification in %2 scenario.")
-							 .arg(id).arg(project->getScenarioName(sc)));
+							 .arg(id).arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 			/* err2: different start and end
@@ -1333,7 +1333,7 @@ x->: ASAP task with duration criteria
 							 ("Milestone %1 may not have both a start "
 							  "and an end specification that do not "
 							  "match in %2 scenario.").arg(id)
-							 .arg(project->getScenarioName(sc)));
+							 .arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 		}
@@ -1383,7 +1383,7 @@ x->: ASAP task with duration criteria
 			{
 				errorMessage(i18n("Task %1 has a start, an end and a "
 								  "duration specification for %2 scenario.")
-							 .arg(id).arg(project->getScenarioName(sc)));
+							 .arg(id).arg(project->getScenarioId(sc)));
 				return FALSE;
 			}	
 			/*
@@ -1401,7 +1401,7 @@ x->: ASAP task with duration criteria
 				errorMessage(i18n
 							 ("Task %1 has only a start or end specification "
 							  "but no plan duration for the %2 scenario.")
-							 .arg(id).arg(project->getScenarioName(sc)));
+							 .arg(id).arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 			/*
@@ -1420,7 +1420,7 @@ x->: ASAP task with duration criteria
 				errorMessage(i18n
 							 ("Task %1 needs a start specification to be "
 							  "scheduled in ASAP mode in the %2 scenario.")
-							 .arg(id).arg(project->getScenarioName(sc)));
+							 .arg(id).arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 			/*
@@ -1439,7 +1439,7 @@ x->: ASAP task with duration criteria
 				errorMessage(i18n
 							 ("Task %1 needs an end specification to be "
 							  "scheduled in ALAP mode in the %2 scenario.")
-							 .arg(id).arg(project->getScenarioName(sc)));
+							 .arg(id).arg(project->getScenarioId(sc)));
 				return FALSE;
 			}
 		}

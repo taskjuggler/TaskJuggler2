@@ -32,6 +32,7 @@ public:
 				   CoreAttributes* parent_) :
 		project(p), id(i), name(n), parent(parent_)
 	{
+		index = -1;
 		if (parent_)
 			parent_->sub.append(this);
    	}
@@ -42,8 +43,8 @@ public:
 	const QString& getId() const { return id; }
 	QString getFullId() const;
 	
-	void setIndex(uint idx) { index = idx; }
-	uint getIndex() const { return index; }
+	void setIndex(int idx) { index = idx; }
+	int getIndex() const { return index; }
 
 	void setSequenceNo(uint no) { sequenceNo = no; }
 	uint getSequenceNo() const { return sequenceNo; }
@@ -88,7 +89,7 @@ protected:
 	 * structure and the start and end date into account. Each attribute list
 	 * has it's own indices.
 	 */
-	uint index;
+	int index;
 
 	/// A short description of the attribute.
 	QString name;

@@ -123,7 +123,7 @@ ExpressionTreeFunction::isTaskStatus(const ExpressionTree* et,
 		return 0;
 	int scenario;
 	if ((scenario = et->getCoreAttributes()->
-		 getProject()->getScenarioIndex(ops[0]->evalAsString(et))) < 0)
+		 getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
 		qFatal("Unknown scenario %s",
 			   ops[0]->evalAsString(et).latin1());
 	static const char* stati[] = {
@@ -143,7 +143,7 @@ ExpressionTreeFunction::startsBefore(const ExpressionTree* et,
 		return 0;
 	int scenario;
 	if ((scenario = et->getCoreAttributes()->
-		 getProject()->getScenarioIndex(ops[0]->evalAsString(et))) < 0)
+		 getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
 		qFatal("Unknown scenario %s",
 			   ops[0]->evalAsString(et).latin1());
 
@@ -159,7 +159,7 @@ ExpressionTreeFunction::startsAfter(const ExpressionTree* et,
 		return 0;
 	int scenario;
 	if ((scenario = et->getCoreAttributes()->
-		 getProject()->getScenarioIndex(ops[0]->evalAsString(et))) < 0)
+		 getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
 		qFatal("Unknown scenario %s",
 			   ops[0]->evalAsString(et).latin1());
 
@@ -175,7 +175,7 @@ ExpressionTreeFunction::endsBefore(const ExpressionTree* et,
 		return 0;
 	int scenario;
 	if ((scenario = et->getCoreAttributes()->
-		 getProject()->getScenarioIndex(ops[0]->evalAsString(et))) < 0)
+		 getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
 		qFatal("Unknown scenario %s",
 			   ops[0]->evalAsString(et).latin1());
 	return ((Task*) et->getCoreAttributes())->getEnd(scenario) <
@@ -190,7 +190,7 @@ ExpressionTreeFunction::endsAfter(const ExpressionTree* et,
 		return 0;
 	int scenario;
 	if ((scenario = et->getCoreAttributes()->
-		 getProject()->getScenarioIndex(ops[0]->evalAsString(et))) < 0)
+		 getProject()->getScenarioIndex(ops[0]->evalAsString(et)) - 1) < 0)
 		qFatal("Unknown scenario %s",
 			   ops[0]->evalAsString(et).latin1());
 

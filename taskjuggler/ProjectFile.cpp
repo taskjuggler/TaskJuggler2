@@ -2635,7 +2635,7 @@ ProjectFile::readLogicalExpression(int precedence)
 			proj->getTask(token) ||
 			proj->getResource(token) ||
 			proj->getAccount(token) ||
-			(proj->getScenarioIndex(token) >= 0) ||
+			(proj->getScenarioIndex(token) > 0) ||
 			proj->isValidId(token))
 		{
 			op = new Operation(Operation::Id, token);

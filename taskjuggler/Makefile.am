@@ -5,12 +5,14 @@ noinst_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp TjMessageHandler.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
+TaskResourceTable.cpp \
 Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \
 BookingList.cpp TransactionList.cpp \
 TaskScenario.cpp VacationList.cpp \
 CoreAttributes.cpp CoreAttributesList.cpp \
 CoreAttributesTreeIterator.cpp \
+ScenarioList.cpp Scenario.cpp \
 TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp MacroTable.cpp FileInfo.cpp ProjectFile.cpp \

@@ -20,6 +20,7 @@
 #include "debug.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
+#include "Scenario.h"
 #include "Shift.h"
 #include "Account.h"
 #include "Resource.h"
@@ -43,8 +44,9 @@ Project::Project()
 	htmlWeeklyCalendars.setAutoDelete(TRUE);
 	exportReports.setAutoDelete(TRUE);
 
-	scenarioNames.append("plan");
-	scenarioNames.append("actual");
+	Scenario* plan = new Scenario(this, "plan", "Plan", 0);
+	new Scenario(this, "actual", "Actual", plan);
+	scenarioList.createIndex();
 
 	xmlreport = 0;
 #ifdef HAVE_ICAL
@@ -107,16 +109,19 @@ Project::~Project()
 const QString&
 Project::getScenarioName(int sc)
 {
-	return scenarioNames[sc];
+	return scenarioList.at(sc)->getName();
+}
+
+const QString&
+Project::getScenarioId(int sc)
+{
+	return scenarioList.at(sc)->getId();
 }
 
 int
 Project::getScenarioIndex(const QString& id)
 {
-	for (uint i = 0; i < scenarioNames.count(); ++i)
-		if (scenarioNames[i] == id)
-			return i;
-	return -1;
+	return scenarioList.getIndex(id);
 }
 
 bool
@@ -143,6 +148,12 @@ Project::getIdIndex(const QString& i) const
 	} while (idx > 'Z' - 'A');
 
 	return idxStr;
+}
+
+void 
+Project::addScenario(Scenario* s)
+{
+	scenarioList.append(s);
 }
 
 void 

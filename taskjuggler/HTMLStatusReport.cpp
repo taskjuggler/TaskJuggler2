@@ -16,10 +16,11 @@
 #include "Project.h"
 #include "Resource.h"
 #include "Utility.h"
+#include "TaskResourceTable.h"
 
-HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f, time_t s,
-									   time_t e, const QString& df, int dl) :
-	ReportHtml(p, f, s, e, df, dl)
+HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f, time_t st,
+									   time_t et, const QString& df, int dl) :
+	ReportHtml(p, f, st, et, df, dl)
 {
 	// show all tasks
 	hideTask = new ExpressionTree(new Operation(0));
@@ -33,8 +34,53 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f, time_t s,
 	resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 	resourceSortCriteria[1] = CoreAttributesList::NameUp;
 	resourceSortCriteria[2] = CoreAttributesList::IdUp;
+
+	for (int i = 0; i < 4; ++i)
+		tables[i] = new TaskResourceTable(this, s);
+
+	/* Create table that contains the tasks that should be finished, but
+	 * aren't. */
+	Operation* op;
+	op = new Operation
+		(new Operation("istaskstatus", 
+					   new Operation(Operation::String, "plan", 0),
+					   new Operation(Operation::String, "inprogresslate", 0)),
+		 Operation::And,
+		 new Operation("endsbefore",
+					   new Operation(Operation::String, "plan", 0),
+					   new Operation(Operation::Date, project->getNow())));
+	op = new Operation(op, Operation::Not);
+	tables[0]->setHideTask(new ExpressionTree(op));
+	tables[0]->setHeadline("Tasks that are behind schedule");
+	tables[0]->setStart(project->getStart());
+	tables[0]->setEnd(project->getNow());
+	tables[0]->addColumn(new TableColumn("name"));
+	tables[0]->addColumn(new TableColumn("duration"));
+	tables[0]->addColumn(new TableColumn("end"));
+	tables[0]->addColumn(new TableColumn("complete"));
+	tables[0]->addColumn(new TableColumn("follows"));
+	tables[0]->addColumn(new TableColumn("statusnote"));
 }
 
+HTMLStatusReport::~HTMLStatusReport()
+{
+	for (int i = 0; i < 4; i++)
+		delete tables[i];
+}
+
+void HTMLStatusReport::setTable(int tab, TaskResourceTable* trt)
+{
+	if (tables[tab] && tables[tab] != trt)
+		delete tables[tab];
+	tables[tab] = trt;
+}
+
+TaskResourceTable*
+HTMLStatusReport::getTable(int tab) const
+{
+	return tables[tab];
+}
+		
 bool
 HTMLStatusReport::generate()
 {

@@ -47,6 +47,15 @@ CoreAttributesList::createIndex(bool initial)
 	}
 }
 
+int
+CoreAttributesList::getIndex(const QString& id) const
+{
+	for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli)
+		if ((*cli)->getId() == id)
+			return (*cli)->getIndex();
+	return -1;
+}
+
 uint
 CoreAttributesList::maxDepth() const
 {

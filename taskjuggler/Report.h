@@ -42,6 +42,8 @@ public:
 		   const QString& df, int dl);
 	virtual ~Report();
 
+	const Project* getProject() const { return project; }
+
 	void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
 
 	void setShowActual(bool s) { showActual = s; }
