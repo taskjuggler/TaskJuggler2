@@ -3,9 +3,9 @@
 <title>The TaskJuggler Manual
 <author>Chris Schlaeger <tt>cs@suse.de</tt>,
 Marc R&uuml;hrschneck <tt>mac@suse.de</tt>
-<date>Version TJVER, Thu Feb 14 14:33:25 CET 2002
+<date>Version @VERSION@, Thu Feb 14 14:33:25 CET 2002
 <abstract>
-This document describes TaskJuggler version TJVER
+This document describes TaskJuggler version @VERSION@
 
 </abstract>
 
