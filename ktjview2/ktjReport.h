@@ -71,7 +71,13 @@ public:
     void setDisplayData( int data );
 
     /**
-     * Abstract method to generate the report
+     * Clear the report (model)
+     */
+    void clear();
+
+    /**
+     * Abstract method to generate the report,
+     * implementers need to clear the data model first
      */
     virtual QicsDataModel generate() const = 0;
 

@@ -22,6 +22,8 @@ QString KTJTaskReport::description() const
 
 QicsDataModel KTJTaskReport::generate() const
 {
+    clear();
+
     int columns = generateHeader(); // generate the column header
 
     TaskListIterator tasks = m_proj->getTaskListIterator();
@@ -36,6 +38,8 @@ QicsDataModel KTJTaskReport::generate() const
 
         generateRow( task );    // generate main rows
     }
+
+    return m_model;
 }
 
 int KTJTaskReport::generateHeader()
@@ -81,18 +85,42 @@ int KTJTaskReport::generateHeader()
     return result.count();
 }
 
-void KTJTaskReport::generateRow( const Task * task )
+void KTJTaskReport::generateRow( const Task * task, int columns )
 {
-    // generate the sum row
+    // generate the task row
+    QicsDataModelRow taskRow( columns );
+
+    taskRow.append( task->getName() ); // row header
+
+    double daily = m_proj->getDailyWorkingHours();
+    for ( int i = 0; i < columns; i++ ) // data in columns
+    {
+        Interval ival = intervalForCol( i );
+        double load = task->getLoad( 0, ival ) * daily;
+        taskRow.append( load );
+    }
+
+    m_model->addRows( 1 );
+    m_model->setRowItems( m_model->lastRow(), taskRow );
 
     // generate the resource subrows
     for ( ResourceListIterator tli( task->getBookedResourcesIterator( 0 ) ); *tli != 0; ++tli )
     {
-        generateRow( task, ( *tli ) );
+        generateRow( task, static_cast<Resource *>( tli ) );
     }
 }
 
-void KTJTaskReport::generateRow( const Task * task, const Resource * res )
+void KTJTaskReport::generateRow( const Task * task, const Resource * res, int columns )
 {
+    QicsDataModelRow resRow( columns );
 
+    for ( int i = 0; i < columns; i++ ) // data in columns
+    {
+        Interval ival = intervalForCol( i );
+        double load = res->getLoad( 0, ival, res ) * m_proj->getDailyWorkingHours();
+        resRow.append( load );
+    }
+
+    m_model->addRows( 1 );
+    m_model->setRowItems( m_model->lastRow(), resRow );
 }

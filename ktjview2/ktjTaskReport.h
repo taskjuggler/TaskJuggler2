@@ -20,14 +20,14 @@ private:
     int generateHeader();
 
     /**
-     * Generate main task row
+     * Generate main @p task row
      */
-    void generateRow( const Task * task );
+    void generateRow( const Task * task, int columns );
 
     /**
-     * Generate secondary resource row for task
+     * Generate secondary resource row for @p task
      */
-    void generateRow( const Task * task, const Resource * res );
+    void generateRow( const Task * task, const Resource * res, int columns );
 };
 
 #endif

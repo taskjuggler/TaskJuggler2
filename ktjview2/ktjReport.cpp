@@ -106,3 +106,8 @@ Interval KTJReport::intervalForCol( int col ) const
 
     return Interval( tmp.toTime_t(), intervalEnd );
 }
+
+void KTJReport::clear()
+{
+    m_model->clearModel();
+}
