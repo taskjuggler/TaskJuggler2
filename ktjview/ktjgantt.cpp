@@ -19,15 +19,26 @@
 
 
 KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
-   : QSplitter( parentWidget )
+    : QSplitter( parentWidget ),
+      m_table(0L),
+      m_canvas(0L)
 {
-
-
+    
 }
 
 void KTJGantt::showProject( Project *p )
 {
     // we need an instance
+    if( m_table )
+    {
+	delete m_table;
+    }
+
+    if( m_canvas )
+    {
+	delete m_canvas;
+    }
+    
     m_table = new KTVTaskTable( this, "TABLE");
     m_canvas = new KTVTaskCanvasView( this, m_table, "CANVAS");
     m_table->setCanvasView( m_canvas );

@@ -4,19 +4,24 @@
  * Copyright (C) 2001  <kurt@granroth.org>
  */
 #include "ktjview.h"
+#include "ktjview_part.h"
 
 #include <kkeydialog.h>
 #include <kconfig.h>
 #include <kurl.h>
+#include <klocale.h>
 
 #include <kedittoolbar.h>
 
 #include <kaction.h>
+#include <kaccel.h>
 #include <kstdaction.h>
-
+#include <kiconloader.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
 #include <kstatusbar.h>
+
+
 
 KTjview::KTjview()
     : KParts::MainWindow( 0L, "KTjview" )
@@ -24,8 +29,6 @@ KTjview::KTjview()
     // set the shell's ui resource file
     setXMLFile("ktjview_shell.rc");
 
-    // then, setup our actions
-    setupActions();
 
     // and a status bar
     statusBar()->show();
@@ -49,6 +52,10 @@ KTjview::KTjview()
             // and integrate the part's GUI with the shell's
             createGUI(m_part);
         }
+
+	// then, setup our actions
+	setupActions();
+
     }
     else
     {
@@ -70,9 +77,12 @@ void KTjview::load(const KURL& url)
 
 void KTjview::setupActions()
 {
+    KTjviewPart *viewer = static_cast<KTjviewPart*>( m_part );
+    
     KStdAction::openNew(this, SLOT(fileNew()), actionCollection());
     KStdAction::quit(kapp, SLOT(quit()), actionCollection());
-
+    // KStdAction::revert( viewer, SLOT(slReload()), actionCollection() );
+    
     m_toolbarAction = KStdAction::showToolbar(this, SLOT(optionsShowToolbar()), actionCollection());
     m_statusbarAction = KStdAction::showStatusbar(this, SLOT(optionsShowStatusbar()), actionCollection());
 
@@ -104,7 +114,6 @@ void KTjview::fileNew()
     // create a new window
     (new KTjview)->show();
 }
-
 
 void KTjview::optionsShowToolbar()
 {

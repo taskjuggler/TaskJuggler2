@@ -1,5 +1,8 @@
 #include "ktjview_part.h"
-
+#include <kshortcut.h>
+#include <kiconloader.h>
+#include <kaccel.h>
+#include <kaction.h>
 #include <kinstance.h>
 #include <kaction.h>
 #include <kstdaction.h>
@@ -33,25 +36,29 @@ KTjviewPart::KTjviewPart( QWidget *parentWidget, const char *,
     setInstance( KTjviewPartFactory::instance() );
 
     // this should be your custom internal widget
-    m_widget = new KTJGantt( parentWidget, "GANTT" );
-    connect( m_widget, SIGNAL( statusBarChange( const QString& )),
+    m_gantt = new KTJGantt( parentWidget, "GANTT" );
+    connect( m_gantt, SIGNAL( statusBarChange( const QString& )),
 	     this, SLOT(  slChangeStatusBar( const QString& )));
     
     // notify the part that this is our internal widget
-    setWidget(m_widget);
+    setWidget(m_gantt);
 
     // create our actions
     KStdAction::open(this, SLOT(fileOpen()), actionCollection());
+    (void) new KAction( i18n("&Reload"), "reload",
+			KShortcut( "Ctrl+R" ), this,
+			SLOT(slReload()), actionCollection(), "reload");
+
     (void) new KAction(i18n("Zoom In"), "viewmag+", CTRL+Key_I,
-		       m_widget, SLOT(slZoomIn()),
+		       m_gantt, SLOT(slZoomIn()),
 		       actionCollection(), "zoomIn" );
 
     (void) new KAction(i18n("Zoom Out"), "viewmag-", CTRL+Key_O,
-		       m_widget, SLOT(slZoomOut()),
+		       m_gantt, SLOT(slZoomOut()),
 		       actionCollection(), "zoomOut" );
 
     (void) new KAction(i18n("Zoom 1:1"), "viewmag1", CTRL+Key_S,
-		       m_widget, SLOT(slZoomOriginal()),
+		       m_gantt, SLOT(slZoomO riginal()),
 		       actionCollection(), "zoomOriginal" );
 
     // set our XML-UI resource file
@@ -81,17 +88,27 @@ bool KTjviewPart::openFile()
     if (file.open(IO_ReadOnly) == false)
         return false;
 
-    Project *p = new Project();
+    m_project = new Project();
     // p->setDebugLevel(3);
-    p->loadFromXML( m_file );
+    m_project->loadFromXML( m_file );
 
-    m_widget->showProject(p);
+    m_gantt->showProject(m_project);
 
     // just for fun, set the status bar
     emit setStatusBarText( m_url.prettyURL() );
 
     return true;
 }
+
+void KTjviewPart::slReload()
+{
+    slChangeStatusBar( i18n("Reverting file"));
+    
+    delete m_project;
+    openFile();
+    
+}
+
 
 void KTjviewPart::slChangeStatusBar( const QString& str )
 {

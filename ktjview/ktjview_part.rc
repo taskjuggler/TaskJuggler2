@@ -3,6 +3,7 @@
 <MenuBar>
   <Menu name="file">
     <Action name="file_open"/>
+    <Action name="reload"/>
   </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar">
@@ -11,6 +12,7 @@
   <Action name="zoomIn"/>
   <Action name="zoomOut"/>
   <Action name="zoomOriginal"/>
+  <Action name="reload"/>
   <Separator/>
 </ToolBar>
 </kpartgui>

@@ -20,7 +20,7 @@ class QPainter;
 class KURL;
 class KTJGantt;
 class KAboutData;
-
+class Project;
 /**
  * This is a "Part".  It that does all the real work in a KPart
  * application.
@@ -47,19 +47,24 @@ public:
 
     static KAboutData *createAboutData();
 
+public slots:
+
+    void slReload();
+    
 protected:
     /**
      * This must be implemented by each part
      */
     virtual bool openFile();
-
+    
 
 protected slots:
     void fileOpen();
    void slChangeStatusBar( const QString& );
 
 private:
-   KTJGantt *m_widget;
+   KTJGantt *m_gantt;
+    Project *m_project;
 };
 
 #endif // KTJVIEWPART_H
