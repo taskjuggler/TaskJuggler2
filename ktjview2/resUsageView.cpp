@@ -44,7 +44,7 @@ ResUsageView::ResUsageView( QWidget * parent, const char * name )
 {
     clear();
     setReadOnly( true );
-    setSelectionMode( QTable::NoSelection );
+    setSelectionMode( QTable::SingleRow );
     setSorting( false );
     setDragEnabled ( false );
     setRowMovingEnabled( false );
@@ -196,7 +196,7 @@ Interval ResUsageView::intervalForCol( int col ) const
         intervalEnd = sameTimeNextQuarter( intervalStart.toTime_t() );
         break;
     default:
-        kdWarning() << "Invalid scale in ResUsageView::getInterval" << endl;
+        kdWarning() << "Invalid scale in ResUsageView::intervalForCol" << endl;
         break;
     }
 
@@ -224,7 +224,7 @@ void ResUsageView::updateColumns()
     // set the column labels
     setColumnLabels( labels );
 
-    kdDebug() << "Settings columns: " << labels << " , count: " << labels.count() << endl;
+    //kdDebug() << "Settings columns: " << labels << " , count: " << labels.count() << endl;
 }
 
 QStringList ResUsageView::getColumnLabels() const
