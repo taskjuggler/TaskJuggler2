@@ -878,12 +878,22 @@ Task::createCandidateList(time_t date, Allocation* a)
 bool
 Task::isCompleted(int sc, time_t date) const
 {
-    if (scenarios[sc].complete != -1)
+    if (scenarios[sc].reportedCompletion >= 0.0)
     {
         // some completion degree has been specified.
-        return ((scenarios[sc].complete / 100.0) *
-                (scenarios[sc].end - scenarios[sc].start)
-                + scenarios[sc].start) > date;
+        if (scenarios[sc].effort > 0.0)
+        {
+            if (date < scenarios[sc].start)
+                return FALSE;
+            return qRound((scenarios[sc].effort * 
+                           (scenarios[sc].reportedCompletion / 100.0)) * 1000)
+                >= qRound(getLoad(sc, Interval(scenarios[sc].start, date), 0)
+                         * 1000);
+        }
+        else
+            return ((scenarios[sc].reportedCompletion / 100.0) *
+                    (scenarios[sc].end - scenarios[sc].start)
+                    + scenarios[sc].start) > date;
     }
 
 
@@ -2042,8 +2052,8 @@ Task::overlayScenario(int base, int sc)
         scenarios[sc].startCredit = scenarios[base].startCredit;
     if (scenarios[sc].endCredit < 0.0)
         scenarios[sc].endCredit = scenarios[base].endCredit;
-    if (scenarios[sc].complete == -1)
-        scenarios[sc].complete = scenarios[base].complete;
+    if (scenarios[sc].reportedCompletion < 0.0)
+        scenarios[sc].reportedCompletion = scenarios[base].reportedCompletion;
 }
 
 bool
@@ -2051,7 +2061,7 @@ Task::hasExtraValues(int sc) const
 {
     return scenarios[sc].start != 0 || scenarios[sc].end != 0 ||
         scenarios[sc].length != 0 || scenarios[sc].duration != 0 ||
-        scenarios[sc].effort != 0 || scenarios[sc].complete != -1 ||
+        scenarios[sc].effort != 0 || scenarios[sc].reportedCompletion >= 0.0 ||
         scenarios[sc].startBuffer >= 0.0 || scenarios[sc].endBuffer >= 0.0 ||
         scenarios[sc].startCredit >= 0.0 || scenarios[sc].endCredit >= 0.0;
 }
@@ -2111,7 +2121,7 @@ Task::prepareScenario(int sc)
          * degree according to the overall effort. Then the end date of the
          * task is calculated. */
         if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
-            scenarios[sc].complete = (int) (doneEffort / effort * 100.0);
+            scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
     }
 
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
@@ -2225,8 +2235,8 @@ Task::calcCompletionDegree(int sc)
 double
 Task::getCompletionDegree(int sc) const
 {
-    if(scenarios[sc].complete != -1)
-        return(scenarios[sc].complete);
+    if(scenarios[sc].reportedCompletion >= 0.0)
+        return(scenarios[sc].reportedCompletion);
 
     return scenarios[sc].completionDegree;
 }

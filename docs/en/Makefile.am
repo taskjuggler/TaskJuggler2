@@ -10,7 +10,7 @@ install-data-local:
 	@if test "${HTMLMANUAL}" != "no" ; then \
 	  $(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(DESTDIR)$(docprefix);\
 	fi
-	@if test ${PSMANUAL} != "no" ; then \
+	@if test "${PSMANUAL}" != "no" ; then \
 	  $(INSTALL_DATA) $(srcdir)/taskjuggler.ps $(DESTDIR)$(docprefix);\
 	fi
 
@@ -31,7 +31,7 @@ taskjuggler/book1.html: $(SGMLSOURCES)
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
-	@if test ${PSMANUAL} != "no" ; then \
+	@if test "${PSMANUAL}" != "no" ; then \
 	  db2ps taskjuggler.sgml ;\
 	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
 	    CATALOG.local *.dsl ; \

@@ -2622,6 +2622,14 @@ fractional digits should be shown at a maximum.</para>
 linkend="project_currencyformat">currencyformat</link></para>
 
 </sect2>
+<sect2 id="project_scenario"><title>scenario &lt;id&gt;
+&lt;name&gt;</title>
+
+<para>
+TODO
+</para>
+
+</sect2>
 <sect2 id="project_shorttimeformat"><title>shorttimeformat
 &lt;format&gt;</title>
 

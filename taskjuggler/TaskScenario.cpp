@@ -29,7 +29,7 @@ TaskScenario::TaskScenario()
     effort = 0.0;
     startCredit = -1.0;
     endCredit = -1.0;
-    complete = -1;
+    reportedCompletion = -1.0;
     scheduled = FALSE;
 }
 
@@ -39,12 +39,13 @@ TaskScenario::calcCompletionDegree(time_t now)
     if (now >= end)
     {
         completionDegree = 100.0;
-        status = complete >= 0 && complete < 100 ? InProgressLate : Finished;
+        status = reportedCompletion >= 0 && reportedCompletion < 100 ?
+            InProgressLate : Finished;
     }
     else if (now <= start)
     {
         completionDegree = 0.0;
-        status = complete > 0 ? InProgressEarly : NotStarted;
+        status = reportedCompletion > 0 ? InProgressEarly : NotStarted;
     }
     else if (task->isContainer())
     {
@@ -68,11 +69,11 @@ TaskScenario::calcCompletionDegree(time_t now)
         else
             completionDegree = (100.0 / (end - start + 1)) * (now - start);
 
-        if (complete >= 0)
+        if (reportedCompletion >= 0.0)
         {
-            if (complete < completionDegree)
+            if (reportedCompletion < completionDegree)
                 status = InProgressLate;
-            else if (complete > completionDegree)
+            else if (reportedCompletion > completionDegree)
                 status = InProgressEarly;
         }
     }

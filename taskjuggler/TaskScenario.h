@@ -108,7 +108,7 @@ private:
     double endCredit;
 
     /// User specified percentage of completion of the task
-    int complete;
+    double reportedCompletion;
 
     /// Calculated completion degree
     double completionDegree;

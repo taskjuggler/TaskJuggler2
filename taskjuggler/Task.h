@@ -188,8 +188,11 @@ public:
 
     bool isBuffer(int sc, const Interval& iv) const;
 
-    void setComplete(int sc, int c) { scenarios[sc].complete = c; }
-    double getComplete(int sc) const { return scenarios[sc].complete; }
+    void setComplete(int sc, double c) { scenarios[sc].reportedCompletion = c; }
+    double getComplete(int sc) const 
+    {
+        return scenarios[sc].reportedCompletion; 
+    }
 
     void setStatusNote(int sc, const QString& d)
     {
