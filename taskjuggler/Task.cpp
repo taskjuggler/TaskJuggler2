@@ -157,9 +157,15 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 }
 
 void
-Task::fatalError(const QString& msg) const
+Task::fatalError(const QString& msg, ...) const
 {
-	qWarning("%s:%d:%s\n", file.latin1(), line, msg.latin1());
+	va_list ap;
+	va_start(ap, msg);
+	char buf[1024];
+	vsnprintf(buf, 1024, msg, ap);
+	va_end(ap);
+	
+	qWarning("%s:%d:%s\n", file.latin1(), line, buf);
 }
 
 bool
@@ -1121,14 +1127,13 @@ Task::scheduleOk()
 		{
 			if (start > t->start)
 			{
-				fatalError(QString().sprintf(
-					"Task %s starts ealier than parent", t->id.latin1()));
+				fatalError("Task %s starts ealier than parent",
+						   t->id.latin1());
 				return FALSE;
 			}
 			if (end < t->end)
 			{
-				fatalError(QString().sprintf(
-					"Task %s ends later than parent", t->id.latin1()));
+				fatalError("Task %s ends later than parent", t->id.latin1());
 				return FALSE;
 			}
 		}
@@ -1136,88 +1141,96 @@ Task::scheduleOk()
 
 	if (start == 0)
 	{
-		fatalError(QString("Task '") + id + "' has no start time.");
+		fatalError("Task '%s' has no start time.", id.latin1());
 		return FALSE;
 	}
 	if (minStart != 0 && start < minStart)
 	{
-		fatalError(QString().sprintf(
-			"Start time %s of task %s is earlier than requested minimum %s",
-			time2tjp(start).latin1(), id.latin1(),
-			time2tjp(minStart).latin1()));
+		fatalError("Start time of task %s is too early\n"
+				   "Date is:  %s\n"
+				   "Limit is: %s",
+				   id.latin1(),
+				   time2tjp(start).latin1(),
+				   time2tjp(minStart).latin1());
 		return FALSE;
 	}
 	if (maxStart != 0 && start > maxStart)
 	{
-		fatalError(QString().sprintf(
-			"Start time %s of task %s is later than requested maximum %s",
-			time2tjp(start).latin1(), id.latin1(),
-			time2tjp(maxStart).latin1()));
+		fatalError("Start time of task %s is too late\n"
+				   "Date is:  %s\n"
+				   "Limit is: %s",
+				   id.latin1(),
+				   time2tjp(start).latin1(),
+				   time2tjp(maxStart).latin1());
 		return FALSE;
 	}
 	if (start < project->getStart() || start > project->getEnd())
 	{
-		fatalError(QString().sprintf(
-			"Start time %s of task %s is outside of project period",
-			time2tjp(start).latin1(), id.latin1()));
+		fatalError("Start time %s of task %s is outside of project period",
+			time2tjp(start).latin1(), id.latin1());
 		return FALSE;
 	}
 	if (end == 0)
 	{
-		fatalError(QString("Task '") + id + "' has no end time.");
+		fatalError("Task '%s' has no end time.", id.latin1());
 		return FALSE;
 	}
 	if (minEnd != 0 && end < minEnd)
 	{
-		fatalError(QString().sprintf(
-			"End time %s of task %s is earlier than requested minimum %s",
-			time2tjp(end).latin1(), id.latin1(), time2tjp(minEnd).latin1()));
+		fatalError("End time of task %s is too early\n"
+				   "Date is:  %s\n"
+				   "Limit is: %s",
+				   id.latin1(),
+				   time2tjp(end).latin1(),
+				   time2tjp(minEnd).latin1());
 		return FALSE;
 	}
 	if (maxEnd != 0 && end > maxEnd)
 	{
-		fatalError(QString().sprintf(
-			"End time %s of task %s is later than requested maximum %s",
-			time2tjp(end).latin1(), id.latin1(), time2tjp(maxEnd).latin1()));
+		fatalError("End time of task %s is too late\n"
+				   "Date is:  %s\n"
+				   "Limit is: %s",
+				   id.latin1(),
+				   time2tjp(end).latin1(),
+				   time2tjp(maxEnd).latin1());
 		return FALSE;
 	}
 	if (end < project->getStart() || end > project->getEnd())
 	{
-		fatalError(QString().sprintf(
-			"End time %s of task %s is outside of project period",
-			time2tjp(end).latin1(), id.latin1()));
+		fatalError("End time %s of task %s is outside of project period",
+			time2tjp(end).latin1(), id.latin1());
 		return FALSE;
 	}
 	// Check if all previous tasks end before start of this task.
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end > start)
 		{
-			fatalError(QString().sprintf(
-				"Task %s ends at %s but needs to preceed task %s "
-				"which starts at %s",
-				t->id.latin1(), time2tjp(t->end).latin1(),
-				id.latin1(), time2tjp(start).latin1()));
+			fatalError("Impossible dependency:\n"
+					   "Task %s ends at %s but needs to preceed\n"
+					   "task %s which starts at %s",
+					   t->id.latin1(), time2tjp(t->end).latin1(),
+					   id.latin1(), time2tjp(start).latin1());
 			return FALSE;
 		}
 	// Check if all following task start after this tasks end.
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (end > t->start)
 		{
-			fatalError(QString().sprintf(
-				"Task %s starts at %s but needs to follow task %s "
-				"which ends at %s",
-				t->id.latin1(), time2tjp(t->start).latin1(),
-				id.latin1(), time2tjp(end).latin1()));
+			fatalError("Impossible dependency:\n"
+					   "Task %s starts at %s but needs to follow\n"
+					   "task %s which ends at %s",
+					   t->id.latin1(), time2tjp(t->start).latin1(),
+					   id.latin1(), time2tjp(end).latin1());
 			return FALSE;
 		}
 
 	if (!schedulingDone)
 	{
-		fatalError(QString().sprintf(
-			"Task %s has not been marked completed. It is scheduled to last "
-			"from %s to %s. This might be a bug in the TaskJuggler "
-			"scheduler.", id.latin1(), time2tjp(start).latin1(),
-			time2tjp(end).latin1()));
+		fatalError("Task %s has not been marked completed.\n"
+				   "It is scheduled to last from %s to %s.\n"
+				   "This might be a bug in the TaskJuggler scheduler.",
+				   id.latin1(), time2tjp(start).latin1(),
+				   time2tjp(end).latin1());
 		return FALSE;
 	}
 

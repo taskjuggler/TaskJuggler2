@@ -13,6 +13,8 @@
 #ifndef _Task_h_
 #define _Task_h_
 
+#include <stdarg.h>
+
 #include <qlist.h>
 #include <qdict.h>
 #include <qstring.h>
@@ -333,7 +335,7 @@ private:
 	QPtrList<Resource> createCandidateList(time_t date, Allocation* a);
 	time_t earliestStart();
 	time_t latestEnd();
-	void fatalError(const QString& msg) const;
+	void fatalError(const QString& msg, ...) const;
 
 	/// A longer description of the task.
 	QString note;
