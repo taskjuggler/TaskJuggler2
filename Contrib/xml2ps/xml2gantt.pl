@@ -209,11 +209,6 @@ sub text {
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
-        #if ( $elm_fifo[$#elm_fifo] eq 'Depend' ) {
-        #    #$string =~ s/!//g;
-        #    #$string =~ s/.*\.(.*)$/$1/g;
-        #    push @{$t->Depends}, "$string";
-        #}
         push @{$t->bookedResources}, "$string"  if ( $elm_fifo[$#elm_fifo] eq 'Resource' );
     }
 }
