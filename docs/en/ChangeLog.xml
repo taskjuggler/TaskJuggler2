@@ -692,4 +692,14 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2><title>Next Version (Some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed a memory leak during XML report
+generation.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>
