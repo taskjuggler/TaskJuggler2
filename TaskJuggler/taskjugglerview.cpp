@@ -193,6 +193,7 @@ TaskJugglerView::saveProperties(KConfig* config)
 {
     fileManager->writeProperties(config);
 
+    config->setGroup("Global Settings");
     /* Save the URL of the current project so we can restore it in case
      * TaskJuggler is restarted without a new URL specified. */
     if (!fileManager->getMasterFile().url().isEmpty())
