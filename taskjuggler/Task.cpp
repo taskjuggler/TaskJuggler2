@@ -12,27 +12,23 @@
 
 /* -- DTD --
  <!-- Task element, child of projects and for subtasks -->
- <!ELEMENT Task		(Id, Name, ParentTask*, Note*,
+ <!ELEMENT Task		(Name, ProjectID, Priority, complete, Type,
+                         ParentTask*, Note*,
                          minStart, maxStart,
                          minEnd, maxEnd,
 			 actualStart, actualEnd,
 			 planStart, planEnd,
-			 SubTasks*, Depends*, Previous*, Followers*,
-			 Allocations*, bookedResources*, note*)>
- <!ATTLIST Task         ProjectID CDATA #IMPLIED
-			complete  CDATA #REQUIRED
-                        Priority  CDATA #IMPLIED
-                        Type (Task|Milestone) #REQUIRED>
-			
- <!ELEMENT ParentTask   (#PCDATA)>
- <!ELEMENT Id           (#PCDATA)>
+			 SubTasks*, Depend*, Previous*, Follower*,
+			 Allocations*, bookedResources* )>
+ <!ATTLIST Task         Id CDATA #REQUIRED>
+ 
  <!ELEMENT Name         (#PCDATA)>
- <!ELEMENT Note         (#PCDATA)>
  <!ELEMENT ProjectID    (#PCDATA)>
- <!ELEMENT TaskType     (#PCDATA)>
  <!ELEMENT Priority     (#PCDATA)>
- <!ELEMENT start        (#PCDATA)>
- <!ELEMENT end          (#PCDATA)>
+ <!ELEMENT complete     (#PCDATA)>
+ <!ELEMENT Type         (#PCDATA)>
+ <!ELEMENT ParentTask   (#PCDATA)>
+ <!ELEMENT Note         (#PCDATA)>
  <!ELEMENT minStart     (#PCDATA)>
  <!ELEMENT maxStart     (#PCDATA)>
  <!ELEMENT minEnd       (#PCDATA)>
@@ -42,11 +38,11 @@
  <!ELEMENT planStart    (#PCDATA)>
  <!ELEMENT planEnd      (#PCDATA)>
  <!ELEMENT SubTasks     (Task+)>
- <!ELEMENT Depends      (TaskID+)>
+ <!ELEMENT Depend       (#PCDATA)>
  <!ELEMENT TaskID       (#PCDATA)>
- <!ELEMENT Previous     (TaskID+)>
- <!ELEMENT Followers    (TaskID+)>
- <!ELEMENT Allocations  (Allocation+)>
+ <!ELEMENT Previous     (#PCDATA)>
+ <!ELEMENT Follower     (#PCDATA)>
+ <!ELEMENT Allocation   (#PCDATA)>
  <!ELEMENT Allocation   EMPTY>
  <!ELEMENT bookedResources (ResourceID+)>
  <!ELEMENT ResourceID   (#PCDATA)>
@@ -82,6 +78,7 @@
 
 #include "Task.h"
 #include "Project.h"
+#include "Allocation.h"
 
 int Task::debugLevel = 0;
 
@@ -1251,14 +1248,25 @@ Task::finishActual()
 	actualBookedResources = bookedResources;
 }
 
-QDomElement Task::xmlElement( QDomDocument& doc )
+QDomElement Task::xmlElement( QDomDocument& doc, bool absId )
 {
    QDomElement taskElem = doc.createElement( "Task" );
    QDomElement tempElem;
-   
+
+   QString idStr = getId();
+   if( !absId )
+      idStr = idStr.section( '.', -1 );
+      
+   taskElem.setAttribute( "Id", idStr );
+
    QDomText t;
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "Id", getId()));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "Name",getName() ));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Index", QString::number(getIndex()) ));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Name", getName() ));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "ProjectID", projectId ));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Priority", QString::number(getPriority())));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "complete", QString::number(complete) ));
+   taskElem.appendChild( ReportXML::createXMLElem( doc, "Type", milestone ? "Milestone":"Task" ));
+
    CoreAttributes *parent = getParent();
    if( parent )
       taskElem.appendChild( ReportXML::ReportXML::createXMLElem( doc, "ParentTask", parent->getId()));
@@ -1298,19 +1306,8 @@ QDomElement Task::xmlElement( QDomDocument& doc )
    tempElem.setAttribute( "humanReadable", time2ISO( planEnd ));
    taskElem.appendChild( tempElem );
 
-#if 0
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "maxStart", QString::number( maxStart )));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "minEnd", QString::number( minEnd )));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "maxEnd", QString::number( maxEnd )));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "actualStart", QString::number( actualStart )));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "actualEnd", QString::number( actualEnd )));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "planStart", QString::number( planStart )));
-   taskElem.appendChild( ReportXML::createXMLElem( doc, "planEnd", QString::number( planEnd )));
-#endif
-   taskElem.setAttribute( "ProjectID", projectId );
-   taskElem.setAttribute( "Priority", getPriority() );
-   taskElem.setAttribute( "complete", complete );
-   taskElem.setAttribute( "Type", milestone ? "Milestone" : "Task" );
+   if( getResponsible() )
+      taskElem.appendChild( getResponsible()->xmlIDElement( doc ));      
    
    /* Now start the subtasks */
    int cnt = 0;
@@ -1319,7 +1316,7 @@ QDomElement Task::xmlElement( QDomDocument& doc )
    {
       if( t != this )
       {
-	 QDomElement sTask = t->xmlElement( doc );
+	 QDomElement sTask = t->xmlElement( doc, false );
 	 subTaskElem.appendChild( sTask );
 	 cnt++;
       }
@@ -1330,72 +1327,58 @@ QDomElement Task::xmlElement( QDomDocument& doc )
    /* Tasks (by id) on which this task depends */
    if( dependsIds.count() > 0 )
    {
-      QDomElement deps = doc.createElement( "Depends" );
-      
       for (QValueListConstIterator<QString> it1= dependsIds.begin(); it1 != dependsIds.end(); ++it1)
       {
-	 deps.appendChild( ReportXML::createXMLElem( doc, "TaskID", *it1 ));
+	 QDomElement depElem = ReportXML::createXMLElem( doc, "Depend", *it1 );
+	 taskElem.appendChild( depElem );
+	 
       }
-      taskElem.appendChild( deps );
    }
 
    /* list of tasks by id which are previous */
    if( previous.count() > 0 )
    {
-      QDomElement prevs = doc.createElement( "Previous" );
-
       TaskList tl( previous );
       for (Task* t = tl.first(); t != 0; t = tl.next())
       {	
 	 if( t != this )
 	 {
-	    prevs.appendChild( ReportXML::createXMLElem( doc, "TaskID", t->getId()));
+	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Previous", t->getId()));
 	 }
       }
-      taskElem.appendChild( prevs );
    }
    
    /* list of tasks by id which follow */
    if( followers.count() > 0 )
    {
-      QDomElement foll = doc.createElement( "Followers" );
-
       TaskList tl( followers );
       for (Task* t = tl.first(); t != 0; t = tl.next())
       {	
 	 if( t != this )
 	 {
-	    foll.appendChild( ReportXML::createXMLElem( doc, "TaskID", t->getId()));
+	    taskElem.appendChild( ReportXML::createXMLElem( doc, "Follower", t->getId()));
 	 }
       }
-
-      taskElem.appendChild( foll );
    }
 
    /* Allocations */
    if( allocations.count() > 0 )
    {
-      QDomElement alloc = doc.createElement( "Allocations" );
-
       QPtrList<Allocation> al(allocations);
       for (Allocation* a = al.first(); a != 0; a = al.next())
       {
-	 alloc.appendChild( a->xmlElement( doc ));
+	 taskElem.appendChild( a->xmlElement( doc ));
       }
-      taskElem.appendChild( alloc );
    }
 
    /* booked Ressources */
    if( bookedResources.count() > 0 )
    {	
-      QDomElement bres = doc.createElement( "bookedResources" );
-
       QPtrList<Resource> br(bookedResources);
       for (Resource* r = br.first(); r != 0; r = br.next())
       {
-	 bres.appendChild( r->xmlIDElement( doc ));
+	 taskElem.appendChild( r->xmlIDElement( doc ));
       }
-      taskElem.appendChild( bres );
    }
 
    
