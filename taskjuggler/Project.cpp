@@ -31,6 +31,9 @@ DebugController DebugCtrl;
 
 Project::Project()
 {
+    /* Pick some reasonable small random prime number since we don't know the
+     * project time frame yet. */
+    initUtility(251);
     taskList.setAutoDelete(TRUE);
     resourceList.setAutoDelete(TRUE);
     accountList.setAutoDelete(TRUE);
@@ -106,6 +109,7 @@ Project::~Project()
 	delete icalReport;
 #endif
 #endif
+    exitUtility();
 }
 
 const QString&
@@ -230,6 +234,10 @@ Project::pass2(bool noDepCheck)
 {
 	QDict<Task> idHash;
 	bool error = FALSE;
+
+    /* The optimum size for the localtime hash is twice the number of time
+     * slots times 2 (because of timeslot and timeslot - 1s). */
+    initUtility(4 * ((end - start) / scheduleGranularity));
 
 	// Generate sequence numbers for all lists.
 	taskList.createIndex(TRUE);

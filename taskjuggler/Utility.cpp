@@ -24,6 +24,19 @@ static bool TZDictReady = FALSE;
 
 static QString UtilityError;
 
+/* localtime() calls are fairly expensive, so we implement a hashtable based
+ * cache to avoid redundant calls for the same value. Changing the timezone
+ * invalidates the cache though. */
+struct LtHashTabEntry
+{
+    time_t t;
+    struct tm* tms;
+    LtHashTabEntry* next;
+} ;
+
+static long LTHASHTABSIZE;
+static LtHashTabEntry** LtHashTab = 0;
+
 const char*
 timezone2tz(const char* tzone)
 {
@@ -76,6 +89,81 @@ timezone2tz(const char* tzone)
 	return TZDict[tzone];
 }
 
+void initUtility(long dictSize)
+{
+    if (LtHashTab)
+        exitUtility();
+
+    /* Find a prime number that is equal or bigger than dictSize. */
+    for (long i = 2; i < (dictSize / 2); i++)
+        if (dictSize % i == 0)
+        {
+            dictSize++;
+            i = 1;
+        }
+
+    LtHashTab = new LtHashTabEntry*[LTHASHTABSIZE = dictSize];
+    for (long i = 0; i < LTHASHTABSIZE; ++i)
+        LtHashTab[i] = 0;
+}
+
+void exitUtility()
+{
+    if (!LtHashTab)
+        return;
+
+    for (long i = 0; i < LTHASHTABSIZE; ++i)
+        for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
+        {
+            LtHashTabEntry* tmp = htep->next;
+            delete htep;
+            htep = tmp;
+        }
+    delete [] LtHashTab;
+    LtHashTab = 0;
+}
+
+void
+setTimezone(const char* tz)
+{
+    if (setenv("TZ", tz, 1) < 0)
+        qFatal("Ran out of space in environment section while "
+               "setting timezone.");
+    if (!LtHashTab)
+        return;
+    for (long i = 0; i < LTHASHTABSIZE; ++i)
+    {
+        for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
+        {
+            LtHashTabEntry* tmp = htep->next;
+            delete htep;
+            htep = tmp;
+        }
+        if (LtHashTab[i])
+            LtHashTab[i] = 0;
+    }
+}
+
+const struct tm*
+clocaltime(const time_t* t)
+{
+    long index = *t % LTHASHTABSIZE;
+    if (LtHashTab[index])
+    {
+        for (LtHashTabEntry* htep = LtHashTab[index]; htep;
+             htep = htep->next)
+            if (htep->t == *t)
+                return htep->tms;
+    }
+    LtHashTabEntry* htep = new LtHashTabEntry;
+    htep->next = LtHashTab[index];
+    htep->t = *t;
+    htep->tms = new struct tm;
+    memcpy(htep->tms, localtime(t), sizeof(struct tm));
+    LtHashTab[index] = htep;
+    return htep->tms;
+}
+
 const QString&
 getUtilityError()
 {
@@ -85,7 +173,7 @@ getUtilityError()
 const char*
 monthAndYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char s[32];
 	strftime(s, sizeof(s), "%b %Y", tms);
 	return s;
@@ -94,60 +182,64 @@ monthAndYear(time_t t)
 bool
 isWeekend(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return (tms->tm_wday < 1 || tms->tm_wday > 5);
 }
 
 int
 daysLeftInMonth(time_t t)
 {
-	int left = 0;
-	struct tm* tms = localtime(&t);
-	for (int m = tms->tm_mon; tms->tm_mon == m;
-		 t = sameTimeNextDay(t), localtime(&t))
-	{
-		left++;
-	}
-	return left;
+    int left = 0;
+    const struct tm* tms = clocaltime(&t);
+    for (int m = tms->tm_mon; tms->tm_mon == m; )
+    {
+        left++;
+        t = sameTimeNextDay(t);
+        tms = clocaltime(&t);
+    }
+    return left;
 }
 
 int
 weeksLeftInMonth(time_t t)
 {
-	int left = 0;
-	struct tm* tms = localtime(&t);
-	for (int m = tms->tm_mon; tms->tm_mon == m;
-		 t = sameTimeNextWeek(t), localtime(&t))
-	{
-		left++;
-	}
-	return left;
+    int left = 0;
+    const struct tm* tms = clocaltime(&t);
+    for (int m = tms->tm_mon; tms->tm_mon == m; )
+    {
+        left++;
+        t = sameTimeNextWeek(t);
+        tms = clocaltime(&t);
+    }
+    return left;
 }
 
 int
 monthLeftInYear(time_t t)
 {
-	int left = 0;
-	struct tm* tms = localtime(&t);
-	for (int m = tms->tm_year; tms->tm_year == m;
-		 t = sameTimeNextMonth(t), localtime(&t))
-	{
-		left++;
-	}
-	return left;
+    int left = 0;
+    const struct tm* tms = clocaltime(&t);
+    for (int m = tms->tm_year; tms->tm_year == m; )
+    {
+        left++;
+        t = sameTimeNextMonth(t);
+        tms = clocaltime(&t);
+    }
+    return left;
 }
 
 int
 quartersLeftInYear(time_t t)
 {
-	int left = 0;
-	struct tm* tms = localtime(&t);
-	for (int m = tms->tm_year; tms->tm_year == m;
-		 t = sameTimeNextQuarter(t), localtime(&t))
-	{
-		left++;
-	}
-	return left;
+    int left = 0;
+    const struct tm* tms = clocaltime(&t);
+    for (int m = tms->tm_year; tms->tm_year == m; )
+    {
+        left++;
+        t = sameTimeNextQuarter(t);
+        tms = clocaltime(&t);
+    }
+    return left;
 }
 
 int
@@ -193,14 +285,14 @@ quartersBetween(time_t t1, time_t t2)
 int
 secondsOfDay(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return tms->tm_sec + tms->tm_min * 60 + tms->tm_hour * 3600;
 }
 
 int 
 dayOfMonth(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return tms->tm_mday;
 }
 
@@ -213,7 +305,7 @@ weekOfYear(time_t t, bool beginOnMonday)
 	 * of the week. This is also compliant with DIN 1355. */
 	uint week = 0;
 	uint weekday1Jan = dayOfWeek(beginOfYear(t), beginOnMonday);
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	int days = tms->tm_yday;
 
 	if (weekday1Jan > 3)
@@ -247,7 +339,7 @@ weekOfYear(time_t t, bool beginOnMonday)
 int
 monthOfWeek(time_t t, bool beginOnMonday)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	int tm_mon = tms->tm_mon;
 	int tm_mday = tms->tm_mday;
 	int lastDayOfMonth = dayOfMonth(beginOfMonth(sameTimeNextMonth(t)) - 1);
@@ -273,21 +365,21 @@ monthOfWeek(time_t t, bool beginOnMonday)
 int 
 monthOfYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return tms->tm_mon + 1;
 }
 
 int
 quarterOfYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return tms->tm_mon / 3 + 1;
 }
 
 int
 dayOfWeek(time_t t, bool beginOnMonday)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	if (beginOnMonday)
 		return tms->tm_wday ? tms->tm_wday - 1 : 6;
 	else
@@ -297,7 +389,7 @@ dayOfWeek(time_t t, bool beginOnMonday)
 QString
 dayOfWeekName(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[64];
 
 	strftime(buf, 63, "%A", tms);
@@ -307,7 +399,7 @@ dayOfWeekName(time_t t)
 int
 dayOfYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return tms->tm_yday + 1;
 }
 
@@ -315,14 +407,14 @@ dayOfYear(time_t t)
 int
 year(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	return tms->tm_year + 1900;
 }
 
 int
 yearOfWeek(time_t t, bool beginOnMonday)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	int tm_year = tms->tm_year;
 
 	int lastDayOfYear = dayOfYear(beginOfYear(sameTimeNextYear(t)) - 1);
@@ -342,141 +434,171 @@ yearOfWeek(time_t t, bool beginOnMonday)
 time_t
 midnight(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_sec = tmc.tm_min = tmc.tm_hour = 0;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 beginOfWeek(time_t t, bool beginOnMonday)
 {
-	struct tm* tms;
-	for (tms = localtime(&t) ; tms->tm_wday != (beginOnMonday ? 1 : 0);
-		 t = sameTimeYesterday(t), tms = localtime(&t))
-		;
-	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms;
+	for (tms = clocaltime(&t) ; tms->tm_wday != (beginOnMonday ? 1 : 0); )
+    {
+		t = sameTimeYesterday(t);
+        tms = clocaltime(&t);
+    }
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_sec = tmc.tm_min = tmc.tm_hour = 0;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 beginOfMonth(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mday = 1;
-	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mday = 1;
+	tmc.tm_sec = tmc.tm_min = tmc.tm_hour = 0;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 beginOfQuarter(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mon = (tms->tm_mon / 3) * 3;
-	tms->tm_mday = 1;
-	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mon = (tmc.tm_mon / 3) * 3;
+	tmc.tm_mday = 1;
+	tmc.tm_sec = tmc.tm_min = tmc.tm_hour = 0;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 beginOfYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mon = 0;
-	tms->tm_mday = 1;
-	tms->tm_sec = tms->tm_min = tms->tm_hour = 0;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mon = 0;
+	tmc.tm_mday = 1;
+	tmc.tm_sec = tmc.tm_min = tmc.tm_hour = 0;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeNextDay(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mday++;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mday++;
+	tmc.tm_isdst = -1;
+    if (mktime(&tmc) == -1)
+        qFatal("Error at %s", time2ISO(t).latin1());
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeYesterday(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mday--;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mday--;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeNextWeek(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	int weekday = tms->tm_wday;
 	do
 	{
 		t = sameTimeNextDay(t);
-		tms = localtime(&t);
+		tms = clocaltime(&t);
 	} while (tms->tm_wday != weekday);
-	tms->tm_isdst = -1;
-	return mktime(tms);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeLastWeek(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	int weekday = tms->tm_wday;
 	do
 	{
 		t = sameTimeYesterday(t);
-		tms = localtime(&t);
+		tms = clocaltime(&t);
 	} while (tms->tm_wday != weekday);
-	tms->tm_isdst = -1;
-	return mktime(tms);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeNextMonth(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mon++;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mon++;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeNextQuarter(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_mon += 3;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_mon += 3;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeNextYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_year++;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_year++;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t
 sameTimeLastYear(time_t t)
 {
-	struct tm* tms = localtime(&t);
-	tms->tm_year--;
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+	tmc.tm_year--;
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 QString time2ISO(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, "%Y-%m-%d %H:%M %Z", tms);
@@ -485,7 +607,7 @@ QString time2ISO(time_t t)
 
 QString time2tjp(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%Z", tms);
@@ -494,7 +616,7 @@ QString time2tjp(time_t t)
 
 QString time2rfc(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%z", tms);
@@ -503,7 +625,7 @@ QString time2rfc(time_t t)
 
 QString time2user(time_t t, const QString& timeFormat)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, timeFormat, tms);
@@ -512,7 +634,7 @@ QString time2user(time_t t, const QString& timeFormat)
 
 QString time2time(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, "%H:%M %Z", tms);
@@ -521,7 +643,7 @@ QString time2time(time_t t)
 
 QString time2date(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, "%Y-%m-%d", tms);
@@ -530,7 +652,7 @@ QString time2date(time_t t)
 
 QString time2weekday(time_t t)
 {
-	struct tm* tms = localtime(&t);
+	const struct tm* tms = clocaltime(&t);
 	static char buf[128];
 
 	strftime(buf, 127, "%A", tms);
@@ -541,14 +663,17 @@ time_t
 addTimeToDate(time_t day, time_t hour)
 {
 	day = midnight(day);
-	struct tm* tms = localtime(&day);
+	const struct tm* tms = clocaltime(&day);
 
-	tms->tm_hour = hour / (60 * 60);
-	tms->tm_min = (hour / 60) % 60;
-	tms->tm_sec = hour % 60;
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
 
-	tms->tm_isdst = -1;
-	return mktime(tms);
+	tmc.tm_hour = hour / (60 * 60);
+	tmc.tm_min = (hour / 60) % 60;
+	tmc.tm_sec = hour % 60;
+
+	tmc.tm_isdst = -1;
+	return mktime(&tmc);
 }
 
 time_t

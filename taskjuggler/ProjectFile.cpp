@@ -588,9 +588,7 @@ ProjectFile::readProject()
 					errorMessage(i18n("Timezone name expected"));
 					return FALSE;
 				}
-				if (setenv("TZ", token, 1) < 0)
-					qFatal("Ran out of space in environment section while "
-						   "setting timezone.");
+                setTimezone(token);
 			}
 			else if (token == KW("timeformat"))
 			{

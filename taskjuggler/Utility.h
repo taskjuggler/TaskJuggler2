@@ -20,6 +20,12 @@
 #define ONEDAY (60 * 60 * 24)
 #define ONEHOUR (60 * 60)
 
+void initUtility(long dizeSize);
+
+void exitUtility();
+
+void setTimezone(const char* tz);
+
 const QString& getUtilityError();
 
 const char* timezone2tz(const char* tzone);
