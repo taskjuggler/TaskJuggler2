@@ -1,0 +1,40 @@
+/*
+ * CustomAttributeDefinition.h - TaskJuggler
+ *
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
+#ifndef _CustomAttributeDefinition_h_
+#define _CustomAttributeDefinition_h_
+
+#include <qstring.h>
+
+#include "taskjuggler.h"
+
+/*
+ * @short Class that stores type and name of a custom attribute. 
+ * @author Chris Schlaeger <cs@suse.de>
+ */
+class CustomAttributeDefinition
+{
+public:
+    CustomAttributeDefinition(const QString& n, CustomAttributeType t) :
+        name(n), type(t) { }
+    ~CustomAttributeDefinition() { }
+
+    const QString& getName() const { return name; }
+    CustomAttributeType getType() const { return type; }
+
+private:
+    QString name;
+    CustomAttributeType type;
+} ;
+
+#endif
+
+

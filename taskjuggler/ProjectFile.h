@@ -17,11 +17,13 @@
 
 #include <qptrlist.h>
 
+#include "taskjuggler.h"
 #include "Token.h"
 #include "MacroTable.h"
 #include "FileInfo.h"
 
 class Project;
+class CoreAttributes;
 class Task;
 class Resource;
 class Account;
@@ -111,6 +113,8 @@ private:
     bool readProject();
     bool readExtend();
     bool readInclude();
+    bool readCustomAttribute(CoreAttributes* property, const QString& id, 
+                             CustomAttributeType type);
     bool readTask(Task* parent);
     bool readTaskSupplement(QString prefix);
     bool readTaskBody(Task* task);

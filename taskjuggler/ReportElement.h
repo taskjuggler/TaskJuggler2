@@ -42,6 +42,8 @@ class AccountList;
 class TableColumnFormat;
 class TableColumnInfo;
 class TableCellInfo;
+class TableLineInfo;
+class CustomAttributeDefinition;
 
 /**
  * @short A class that forms the basic element of a report. 
@@ -140,6 +142,13 @@ public:
                            rollUpExp) const;
     void sortAccountList(AccountList& filteredList);
 
+    void addColumnFormat(const QString& id, TableColumnFormat* tcf)
+    {
+        columnFormat.insert(id, tcf);
+    }
+
+    void setMacros(TableLineInfo* tli);
+
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;
     virtual void genHeadDaily1(TableCellInfo*) = 0;
@@ -175,7 +184,7 @@ public:
     virtual void genCellProjectId(TableCellInfo*) = 0;
     virtual void genCellResources(TableCellInfo*) = 0;
     virtual void genCellResponsible(TableCellInfo*) = 0;
-    virtual void genCellNote(TableCellInfo*) = 0;
+    virtual void genCellText(TableCellInfo*) = 0;
     virtual void genCellStatusNote(TableCellInfo*) = 0;
     virtual void genCellCost(TableCellInfo*) = 0;
     virtual void genCellRevenue(TableCellInfo*) = 0;
@@ -214,6 +223,8 @@ public:
     
 protected:
     ReportElement() { }
+
+    void addCustomAttributeColumns(const QDict<CustomAttributeDefinition> cad);
 
     QTextStream& s() const;
     void errorMessage(const char* msg, ... );

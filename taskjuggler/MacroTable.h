@@ -70,7 +70,7 @@ public:
         argStack.clear();
     }
     QString resolve(const QString& name) const;
-    QString expand(const QString& text) const;
+    QString expand(const QString& text);
     Macro* getMacro(const QString& name) const { return macros[name]; }
 
     void setLocation(const QString& df, int dl)

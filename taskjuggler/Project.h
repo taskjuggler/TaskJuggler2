@@ -17,7 +17,7 @@
 
 #include <qptrlist.h>
 #include <qstringlist.h>
-#include <qmap.h>
+#include <qdict.h>
 
 #include "VacationList.h"
 #include "ScenarioList.h"
@@ -38,6 +38,7 @@ class HTMLStatusReport;
 class ExportReport;
 class ReportXML;
 class Kotrus;
+class CustomAttributeDefinition;
 
 /**
  * The Project class is the root of the data tree of the application.
@@ -55,8 +56,6 @@ class Kotrus;
 class Project
 {
 public:
-    enum CustomAttributeType { CAT_Undefined = 0, CAT_Reference, CAT_Text };
-
     Project();
     ~Project();
 
@@ -375,8 +374,24 @@ public:
     {
         return TaskListIterator(taskList);
     }
-    bool addTaskAttribute(const QString& name, CustomAttributeType cat);
-    CustomAttributeType getTaskAttributeType(const QString& name);
+    /**
+     * This function adds a new, user-defined attribute to the Task
+     * attributes. The @param id must be unique within the Task attributes
+     * namespace. @param cad is a pointer to the CustomAttributeDefinition
+     * object.
+     */
+    bool addTaskAttribute(const QString& id, CustomAttributeDefinition* cad);
+    /**
+     * Returns a pointer to the custom attribute object identified by @param id.
+     * If no attributes with the id exists, 0 is returned.
+     */
+    const CustomAttributeDefinition* getTaskAttribute(const QString& id) const;
+    /**
+     * Returns a read-only pointer to the dictionary that holds the pointers
+     * to user-defined attributes of Tasks.
+     */
+    const QDict<CustomAttributeDefinition>
+        getTaskAttributeDict() const { return taskAttributes; }
 
     /**
      * This function is for library internal use only. Creating a Resource
@@ -415,9 +430,27 @@ public:
     {
         return ResourceListIterator(resourceList);
     }
-    bool addResourceAttribute(const QString& name, CustomAttributeType cat);
-    CustomAttributeType getResourceAttributeType(const QString& name);
-    
+    /**
+     * This function adds a new, user-defined attribute to the Resource 
+     * attributes. The @param id must be unique within the Resource attributes
+     * namespace. @param cad is a pointer to the CustomAttributeDefinition
+     * object.
+     */
+    bool addResourceAttribute(const QString& name, 
+                              CustomAttributeDefinition* cad);
+    /**
+     * Returns a pointer to the custom attribute object identified by @param id.
+     * If no attributes with the id exists, 0 is returned.
+     */
+    const CustomAttributeDefinition* getResourceAttribute(const QString& id)
+        const;
+    /**
+     * Returns a read-only pointer to the dictionary that holds the pointers
+     * to user-defined attributes of Resources.
+     */
+    const QDict<CustomAttributeDefinition>
+        getResourceAttributeDict() const { return resourceAttributes; }
+
     /**
      * This function is for library internal use only. Creating an Account 
      * object with the project as parameter will automatically add it to the
@@ -455,6 +488,26 @@ public:
     {
         return AccountListIterator(accountList);
     }
+    /**
+     * This function adds a new, user-defined attribute to the Account 
+     * attributes. The @param id must be unique within the Account attributes
+     * namespace. @param cad is a pointer to the CustomAttributeDefinition
+     * object.
+     */
+    bool addAccountAttribute(const QString& name, 
+                              CustomAttributeDefinition* cad);
+    /**
+     * Returns a pointer to the custom attribute object identified by @param id.
+     * If no attributes with the id exists, 0 is returned.
+     */
+    const CustomAttributeDefinition* getAccountAttribute(const QString& id)
+        const;
+    /**
+     * Returns a read-only pointer to the dictionary that holds the pointers
+     * to user-defined attributes of Accounts.
+     */
+    const QDict<CustomAttributeDefinition>
+        getAccountAttributeDict() const { return resourceAttributes; }
 
     /**
      * This function is for library internal use only. Creating a Shift 
@@ -756,8 +809,8 @@ private:
     AccountList accountList;
     ShiftList shiftList;
 
-    QMap<QString, CustomAttributeType> taskAttributes;
-    QMap<QString, CustomAttributeType> resourceAttributes;
+    QDict<CustomAttributeDefinition> taskAttributes;
+    QDict<CustomAttributeDefinition> resourceAttributes;
 
     Kotrus* kotrus;
 

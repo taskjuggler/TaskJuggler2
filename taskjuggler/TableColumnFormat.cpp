@@ -13,8 +13,9 @@
 #include "TableColumnFormat.h"
 #include "ReportElement.h"
 
-TableColumnFormat::TableColumnFormat(ReportElement* e, const QString& t) :
-  el(e), title(t)
+TableColumnFormat::TableColumnFormat(const QString& i, ReportElement* e, 
+                                     const QString& t) :
+  id(i), el(e), title(t)
 {
     genHeadLine1 = &ReportElement::genHeadDefault;
     genHeadLine2 = 0;
@@ -33,5 +34,8 @@ TableColumnFormat::TableColumnFormat(ReportElement* e, const QString& t) :
 
     fontFactor = 100;
     noWrap = FALSE;
+
+    if (el)
+        el->addColumnFormat(id, this);
 }
 

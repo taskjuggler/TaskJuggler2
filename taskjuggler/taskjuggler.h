@@ -15,6 +15,11 @@
 
 #define TJURL "http://www.taskjuggler.org"
 
+typedef enum CustomAttributeType
+{
+    CAT_Undefined = 0, CAT_Reference, CAT_Text
+};
+
 typedef enum TaskStatus 
 { 
     Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime, 

@@ -12,6 +12,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <qregexp.h>
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
@@ -31,6 +32,8 @@ MacroTable::resolve(const QString& name) const
 {
     if (isdigit(name[0].latin1()))
     {
+        /* If the first character of the name is a digit, we assume that it is
+         * a number. It addresses the n-th argument of the macro call. */
         QPtrListIterator<QStringList> pli(argStack);
         pli.toLast();
         --pli;
@@ -41,14 +44,14 @@ MacroTable::resolve(const QString& name) const
             errorMessage(i18n("Macro argument stack is empty."));
             return QString::null;
         }
-        if ((idx <= 0) || (sl->count() <= idx - 1))
+        if (idx >= sl->count())
         {
             errorMessage
-                (i18n("Index %1 for argument out of range [1 - %2]!")
+                (i18n("Index %1 for argument out of range [0 - %2]!")
                  .arg(idx).arg(sl->count()));
             return QString::null;
         }
-        return (*sl)[idx - 1];
+        return (*sl)[idx];
     }
     else
         if (macros[name])
@@ -61,7 +64,7 @@ MacroTable::resolve(const QString& name) const
 }
 
 QString
-MacroTable::expand(const QString& text) const
+MacroTable::expand(const QString& text)
 {
     QString res;
     for (uint i = 0; i < text.length(); i++)
@@ -82,7 +85,30 @@ MacroTable::expand(const QString& text) const
                     (i18n("Unterminated macro call '%1'").arg(text));
                 return res;
             }
-            res += expand(resolve(text.mid(i + 2, cb - (i + 2))));
+            QStringList* argList = 
+                new QStringList(QStringList::split
+                                (QRegExp("[ \t]+"),
+                                 text.mid(i + 2, cb - (i + 2))));
+            if (argList->count() < 1)
+            {
+                errorMessage
+                    (i18n("Macro call can't be empty."));
+                return res;
+            }
+            for (uint j = 1; j < argList->count(); ++j)
+            {
+                if (!QRegExp("\".*\"").exactMatch((*argList)[j]))
+                {
+                    errorMessage
+                        (i18n("Macro arguments must be enclosed by "
+                              "double quotes."));
+                    return res;
+                }
+            }
+            pushArguments(argList);
+            // TODO: Add support for nested macro calls
+            res += resolve((*argList)[0]);
+            popArguments();
             i = cb;
         }
         else

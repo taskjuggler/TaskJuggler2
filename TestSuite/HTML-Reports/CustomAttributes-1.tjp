@@ -1,0 +1,40 @@
+project ca "Custom Attributes" "$Id$" 2003-05-28 2003-06-28 {
+	extend task {
+		reference myTLink "My TLink"
+		text myTText "My TText"
+		text myText "My Text"
+	}
+
+	extend resource {
+		reference myRLink "My RLink"
+		text myRText "My RText"
+		text myText "My Text"
+	}
+}
+
+resource r1 "Resource 1" {
+	myRLink "http://www.taskjuggler.org/download.php"
+	myRText "It's all right!"
+	myText "Just around the corner"
+}
+
+task t1 "Task 1" {
+	start 2003-05-28
+  effort 1d
+	allocate r1	
+	myTLink "http://www.taskjuggler.org" { label "TJ Web" }
+	myTText "TaskJuggler is great!"
+	myText "No man's land!"
+}
+
+task t2 "Task 2" {
+	depends !t1
+	milestone
+	myText "Hello, world!"
+}
+
+htmltaskreport "." {
+	columns no { celltext "Hallo" }, name { celltext "$${id} $${0}" }, myText, myTLink, myTText, myRLink
+	hideresource 0
+}
+

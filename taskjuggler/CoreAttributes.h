@@ -85,7 +85,8 @@ public:
     bool isRoot() const { return parent == 0; }
     bool isLeaf() const { return sub.isEmpty(); }
 
-    void addCustomAttribute(const QString& name, CustomAttribute* ca);
+    void addCustomAttribute(const QString& id, CustomAttribute* ca);
+    const CustomAttribute* getCustomAttribute(const QString& id) const;
 
 protected:
     /// A pointer to access information that are global to the project.

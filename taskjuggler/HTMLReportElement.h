@@ -73,7 +73,7 @@ public:
     virtual void genCellProjectId(TableCellInfo* tli);
     virtual void genCellResources(TableCellInfo* tli);
     virtual void genCellResponsible(TableCellInfo* tli);
-    virtual void genCellNote(TableCellInfo* tli);
+    virtual void genCellText(TableCellInfo* tli);
     virtual void genCellStatusNote(TableCellInfo* tli);
     virtual void genCellCost(TableCellInfo* tli);
     virtual void genCellRevenue(TableCellInfo* tli);

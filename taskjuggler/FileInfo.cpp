@@ -430,6 +430,7 @@ FileInfo::readMacroCall()
     QString token;
     // Store all arguments in a newly created string list.
     QStringList* sl = new QStringList;
+    sl->append(id);
     while ((tt = nextToken(token)) == STRING)
         sl->append(token);
     if (tt != RCBRACE)
@@ -502,14 +503,21 @@ FileInfo::errorMessage(const char* msg, ...)
     {
         QString stackDump;
         int i = 0;
+        QString file;
+        int line;
         for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
+        {
+            QStringList argList(*pf->getMacros().getArguments(i));
+            argList.pop_front();
             stackDump += "\n  ${" + (*mli)->getName() + " \""
-                + pf->getMacros().getArguments(i)->join("\" \"") + "\"}";
+                + argList.join("\" \"") + "\"}";
+            file = (*mli)->getFile();
+            line = (*mli)->getLine();
+        }
         TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
-                               "\nThis is the macro call stack:%2").
+                               "\nThis is the macro call stack:%3").
                           arg(buf).arg(cleanupLine(lineBuf)).arg(stackDump),
-                          macroStack.last()->getFile(),
-                          macroStack.last()->getLine());
+                          file, line);
     }
 }
 

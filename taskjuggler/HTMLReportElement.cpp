@@ -28,6 +28,8 @@
 #include "TableLineInfo.h"
 #include "TableColumnInfo.h"
 #include "TableCellInfo.h"
+#include "ReferenceAttribute.h"
+#include "TextAttribute.h"
 
 #define KW(a) a
 
@@ -110,6 +112,8 @@ HTMLReportElement::generateTableHeader()
 void
 HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
 {
+    setMacros(tli);
+
     s() << "  <tr valign=\"middle\"";
     if (tli->bgCol.isValid() || tli->boldText || tli->fontFactor != 100)
     {
@@ -218,7 +222,16 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
                 << "%; ";
         s() << "\"";
     }
-    s() << ">" << text << "</td>" << endl;
+    QString cellText(text);
+    if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
+    {
+        QStringList* sl = new QStringList();
+        sl->append(text);
+        mt.pushArguments(sl);
+        cellText = mt.expand(tci->tci->getCellText());
+        mt.popArguments();
+    }
+    s() << ">" << cellText << "</td>" << endl;
 }
 
 void
@@ -782,7 +795,6 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
     QString text;
     if (tci->tli->specialName.isNull())
     {
-        mt.clear();
         if (tci->tli->task)
             mt.addMacro(new Macro(KW("taskid"), tci->tli->task->getId(), 
                                   defFileName, defFileLine));
@@ -950,6 +962,26 @@ HTMLReportElement::genCellResponsible(TableCellInfo* tci)
         genCell("&nbsp", tci, TRUE);
 }
 
+void
+HTMLReportElement::genCellText(TableCellInfo* tci)
+{
+    if (tci->tcf->getId() == "note")
+    {
+        if (tci->tli->task->getNote().isEmpty())
+            genCell("&nbsp;", tci, TRUE);
+        else
+            genCell(htmlFilter(tci->tli->task->getNote()), tci, TRUE);
+        return;
+    }
+    
+    const TextAttribute* ta = (const TextAttribute*) 
+        tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
+    if (!ta || ta->getText().isEmpty())
+        genCell("&nbsp;", tci, TRUE);
+    else
+        genCell(htmlFilter(ta->getText()), tci, TRUE);
+}
+
 #define GCNOTE(a, b) \
 void \
 HTMLReportElement::genCell##a##Note(TableCellInfo* tci) \
@@ -960,7 +992,6 @@ HTMLReportElement::genCell##a##Note(TableCellInfo* tci) \
         genCell(htmlFilter(tci->tli->task->get##a##Note(b)), tci, TRUE); \
 }
 
-GCNOTE(, )
 GCNOTE(Status, tci->tli->sc)
 
 void
@@ -1096,15 +1127,34 @@ HTMLReportElement::genCellStatus(TableCellInfo* tci)
 void
 HTMLReportElement::genCellReference(TableCellInfo* tci)
 {
-    if (tci->tli->task->getReference().isEmpty())
+    if (tci->tcf->getId() == "reference")
+    {
+        if (tci->tli->task->getReference().isEmpty())
+            genCell("&nbsp;", tci, TRUE);
+        else
+        {
+            QString text ="<a href=\"" + tci->tli->task->getReference() + "\">";
+            if (tci->tli->task->getReferenceLabel().isEmpty())
+                text += htmlFilter(tci->tli->task->getReference());
+            else
+                text += htmlFilter(tci->tli->task->getReferenceLabel());
+            text += "<a>";
+            genCell(text, tci, TRUE);
+        }
+        return;
+    }
+   
+    const ReferenceAttribute* ra =  (const ReferenceAttribute*)
+        tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
+    if (!ra || ra->getUrl().isEmpty())
         genCell("&nbsp;", tci, TRUE);
     else
     {
-        QString text ="<a href=\"" + tci->tli->task->getReference() + "\">";
-        if (tci->tli->task->getReferenceLabel().isEmpty())
-            text += htmlFilter(tci->tli->task->getReference());
+        QString text ="<a href=\"" + ra->getUrl() + "\">";
+        if (ra->getLabel().isEmpty())
+            text += htmlFilter(ra->getUrl());
         else
-            text += htmlFilter(tci->tli->task->getReferenceLabel());
+            text += htmlFilter(ra->getLabel());
         text += "<a>";
         genCell(text, tci, TRUE);
     }

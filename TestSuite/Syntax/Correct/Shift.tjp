@@ -14,3 +14,9 @@ resource r1 "Resource1" {
   shift s1 2000-01-01 - 2000-01-10
   shift s2 2000-01-11 - 2000-01-20
 }
+
+task t1 "Task1" {
+	start 2000-01-01
+	milestone
+}
+

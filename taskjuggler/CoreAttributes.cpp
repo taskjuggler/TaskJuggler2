@@ -124,7 +124,14 @@ CoreAttributes::isParentOf(const CoreAttributes* c) const
 }
 
 void
-CoreAttributes::addCustomAttribute(const QString& name, CustomAttribute* ca)
+CoreAttributes::addCustomAttribute(const QString& id, CustomAttribute* ca)
 {
-    customAttributes.insert(name, ca);
+    customAttributes.insert(id, ca);
 }
+
+const CustomAttribute*
+CoreAttributes::getCustomAttribute(const QString& id) const
+{
+    return customAttributes[id];
+}
+

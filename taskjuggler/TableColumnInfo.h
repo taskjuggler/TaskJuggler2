@@ -42,6 +42,9 @@ public:
     void setTitle(const QString& t) { title = t; }
     const QString& getTitle() const { return title; }
 
+    void setCellText(const QString& t) { cellText = t; }
+    const QString& getCellText() const { return cellText; }
+
     void clearSum();
     void clearMemory();
     void addToSum(uint sc, const QString& key, double val);
@@ -55,6 +58,7 @@ protected:
     QString name;
     uint maxScenarios;
     QString title;
+    QString cellText;
     
     QMap<QString, double>* sum;
     QMap<QString, double>* memory;

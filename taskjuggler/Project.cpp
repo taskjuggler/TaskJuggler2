@@ -36,6 +36,7 @@
 #include "ExportReport.h"
 #include "ReportXML.h"
 #include "kotrus.h"
+#include "CustomAttributeDefinition.h"
 
 DebugController DebugCtrl;
 
@@ -215,22 +216,19 @@ Project::deleteTask(Task* t)
 }
 
 bool
-Project::addTaskAttribute(const QString& name, CustomAttributeType type)
+Project::addTaskAttribute(const QString& id, CustomAttributeDefinition* cad)
 {
-    if (taskAttributes.find(name) != taskAttributes.end())
+    if (taskAttributes.find(id))
         return FALSE;
 
-    taskAttributes[name] = type;
+    taskAttributes.insert(id, cad);
     return TRUE;
 }
 
-Project::CustomAttributeType 
-Project::getTaskAttributeType(const QString& name)
+const CustomAttributeDefinition*
+Project::getTaskAttribute(const QString& id) const
 {
-    if (taskAttributes.find(name) == taskAttributes.end())
-        return CAT_Undefined;
-
-    return taskAttributes[name];
+    return taskAttributes[id];
 }
 
 void
@@ -258,22 +256,20 @@ Project::deleteResource(Resource* r)
 }
 
 bool
-Project::addResourceAttribute(const QString& name, CustomAttributeType type)
+Project::addResourceAttribute(const QString& id, 
+                              CustomAttributeDefinition* cad)
 {
-    if (resourceAttributes.find(name) == resourceAttributes.end())
+    if (resourceAttributes.find(id))
         return FALSE;
 
-    resourceAttributes[name] = type;
+    resourceAttributes.insert(id, cad);
     return TRUE;
 }
 
-Project::CustomAttributeType 
-Project::getResourceAttributeType(const QString& name)
+const CustomAttributeDefinition*
+Project::getResourceAttribute(const QString& id) const
 {
-    if (resourceAttributes.find(name) == resourceAttributes.end())
-        return CAT_Undefined;
-
-    return resourceAttributes[name];
+    return resourceAttributes[id];
 }
 
 void 
@@ -286,6 +282,23 @@ void
 Project::deleteAccount(Account* a)
 {
     accountList.removeRef(a);
+}
+
+bool
+Project::addAccountAttribute(const QString& id, 
+                              CustomAttributeDefinition* cad)
+{
+    if (resourceAttributes.find(id))
+        return FALSE;
+
+    resourceAttributes.insert(id, cad);
+    return TRUE;
+}
+
+const CustomAttributeDefinition*
+Project::getAccountAttribute(const QString& id) const
+{
+    return resourceAttributes[id];
 }
 
 bool
@@ -317,6 +330,12 @@ Project::convertToDailyLoad(long secs) const
 bool
 Project::pass2(bool noDepCheck)
 {
+    if (taskList.isEmpty())
+    {
+        qWarning(i18n("The project does not contain any tasks."));
+        return FALSE;
+    }
+
     QDict<Task> idHash;
     bool error = FALSE;
 

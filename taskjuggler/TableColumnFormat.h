@@ -29,7 +29,7 @@ typedef void (ReportElement::*GenCellPtr) (TableCellInfo*);
 class TableColumnFormat
 {
 public:
-    TableColumnFormat(ReportElement* e, const QString& t);
+    TableColumnFormat(const QString& i, ReportElement* e, const QString& t);
     ~TableColumnFormat() { }
 
     const QString& getTitle() const { return title; }
@@ -52,9 +52,12 @@ public:
     bool noWrap;
     RealFormat realFormat;
 
+    const QString& getId() const { return id; }
+
 protected:
     TableColumnFormat() { }
     
+    QString id;
     ReportElement* el;
     QString title;
 } ;
