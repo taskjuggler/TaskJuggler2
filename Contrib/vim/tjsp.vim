@@ -54,6 +54,7 @@ syn keyword tjspkeyword actualend
 syn keyword tjspkeyword actualenddown
 syn keyword tjspkeyword actualendup
 syn keyword tjspkeyword actuallength
+syn keyword tjspkeyword actualscheduled
 syn keyword tjspkeyword actualstart
 syn keyword tjspkeyword actualstartdown
 syn keyword tjspkeyword actualstartup
@@ -61,6 +62,7 @@ syn keyword tjspkeyword alap
 syn keyword tjspkeyword allocate
 syn keyword tjspkeyword alternative
 syn keyword tjspkeyword asap
+syn keyword tjspkeyword barlabels
 syn keyword tjspkeyword caption
 syn keyword tjspkeyword columns
 syn keyword tjspkeyword complete
@@ -82,6 +84,7 @@ syn keyword tjspkeyword depends
 syn keyword tjspkeyword duration
 syn keyword tjspkeyword efficiency
 syn keyword tjspkeyword effort
+syn keyword tjspkeyword empty
 syn keyword tjspkeyword end
 syn keyword tjspkeyword endbuffer
 syn keyword tjspkeyword endbufferstart
@@ -161,6 +164,7 @@ syn keyword tjspkeyword persistent
 syn keyword tjspkeyword planbooking
 syn keyword tjspkeyword planenddown
 syn keyword tjspkeyword planendup
+syn keyword tjspkeyword planscheduled
 syn keyword tjspkeyword planstartdown
 syn keyword tjspkeyword planstartup
 syn keyword tjspkeyword preceeds
@@ -192,6 +196,8 @@ syn keyword tjspkeyword sat
 syn keyword tjspkeyword schedule
 syn keyword tjspkeyword scheduling
 syn keyword tjspkeyword select
+syn keyword tjspkeyword sequencedown
+syn keyword tjspkeyword sequenceup
 syn keyword tjspkeyword shift
 syn keyword tjspkeyword shortauto
 syn keyword tjspkeyword showactual
@@ -214,6 +220,7 @@ syn keyword tjspkeyword taskname
 syn keyword tjspkeyword taskprefix
 syn keyword tjspkeyword taskroot
 syn keyword tjspkeyword thu
+syn keyword tjspkeyword timeformat
 syn keyword tjspkeyword timezone
 syn keyword tjspkeyword timingresolution
 syn keyword tjspkeyword total
@@ -226,9 +233,11 @@ syn keyword tjspkeyword wed
 syn keyword tjspkeyword weekheader
 syn keyword tjspkeyword weekly
 syn keyword tjspkeyword weeks
+syn keyword tjspkeyword weekstartsmonday
+syn keyword tjspkeyword weekstartssunday
 syn keyword tjspkeyword workinghours
 syn keyword tjspkeyword xml
-syn keyword tjspkeyword xmltaskreport
+syn keyword tjspkeyword xmlreport
 syn keyword tjspkeyword y
 syn keyword tjspkeyword year
 syn keyword tjspkeyword yearheader

@@ -659,7 +659,7 @@ ProjectFile::parse()
 				proj->setPriority(priority);
 				break;
 			}
-			else if (token == KW("now"))
+			else if (token == "now")
 			{
 				fatalError("'now' is no longer a property. It's now an "
 						   "optional project attribute. Please fix your "
@@ -722,7 +722,7 @@ ProjectFile::parse()
 				proj->setCurrencyDigits(token.toInt());
 				break;
 			}
-			else if (token == KW("timingresolution"))
+			else if (token == "timingresolution")
 			{
 				fatalError("'timingresolution' is no longer a property. It's "
 						   "now an optional project attribute. Please fix "
@@ -850,7 +850,7 @@ ProjectFile::parse()
 				}
 				break;
 			}
-			else if (token == KW("xmltaskreport"))
+			else if (token == "xmltaskreport")
 			{
 				fatalError("The keyword 'xmltaskreport' is deprecated. Please "
 						   "use the keyword 'xmlreport' instead.");
@@ -1630,7 +1630,7 @@ ProjectFile::readTaskBody(Task* task)
 					return FALSE;
 				break;
 			}	
-			else if (token == KW("include"))
+			else if (token == "include")
 			{
 				fatalError("The 'include' attribute is no longer supported "
 						   "within tasks since it caused ambiguoties between "
