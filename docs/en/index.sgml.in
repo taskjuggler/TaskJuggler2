@@ -61,6 +61,18 @@ or RCS on the project description files.
 The official TaskJuggler web page can be found at <htmlurl
 url="http://www.suse.de/~freitag/taskjuggler"
 name="http://www.suse.de/~freitag/taskjuggler">.
+<p>
+Since the developers are mostly busy project managers themselves, we
+have created two forums for users to help each other.
+<p>
+The TaskJuggler user mailing list is hosted by <htmlurl
+url="http://www.suse.de/en" name="SuSE">. You can subscribe at
+<htmlurl url="http://www.suse.de/en/support/mailinglists"
+name="http://www.suse.de/en/support/mailinglists/">.
+<p>
+The other forum is an IRC channel at <htmlurl
+url="http://www.openprojects.net" name="OpenProjects.net">. The
+channel is called #taskjuggler.
 
 <sect1>Change Log
 
@@ -186,6 +198,14 @@ might be some air left in a certain task.
 <p>
 <itemize>
 
+<item>This release features some bigger cleanup changes. Some of them
+do break compatibility with older version of taskjuggler. While we try
+very hard to avoid such situations, we do prefer to have a consistent
+and logical language. Since the TaskJuggler user base is still
+comparatively small, we decided to break compatibility now rather than
+later. The changes are fairly minor, so they won't affect many users.
+Please see further down for more details.
+
 <item>Added support for shifts in <ref id="task_shift" name="tasks">
 and task <ref id="task_allocate_shift" name="allocations">.
 
@@ -265,9 +285,9 @@ in the base directory of the TaskJuggler distribution:
 
 <p>
 Since TaskJuggler uses <tt/autoconf/, you should have no trouble
-compiling it.  If you have problems, please report them to the
+compiling it. If you have problems, please report them to the
 TaskJuggler developers mailing list at <htmlurl
-url="mailto:taskjuggler-devel@suse.de"
+url="mailto:taskjuggler-devel@suse.com"
 name="taskjuggler-devel@suse.de"> in English.
 
 
@@ -340,8 +360,8 @@ still reproduces the bug.
 
 <item>Send the test project and a detailed description of the problem
 to the developer mailing list at <htmlurl
-url="mailto:taskjuggler-devel@suse.de"
-name="taskjuggler-devel@suse.de">.
+url="mailto:taskjuggler-devel@suse.com"
+name="taskjuggler-devel@suse.com">.
 
 </itemize>
 
@@ -1980,9 +2000,9 @@ experimental. The format might change in future releases.
 <p>
 
 <tscreen><verb>
-project fibu "Accounting Software" "1.0" 2002-01-16 2002-06-30
-
-now 2002-02-17
+project fibu "Accounting Software" "1.0" 2002-01-16 2002-05-01 {
+  now 2002-03-04
+}
 
 # The daily rate of all resources
 rate 310.0
@@ -2000,7 +2020,7 @@ resource dev "Developers" {
   resource dev2 "Larry Bono"
   resource dev3 "Klaus Mueller" { vacation 2002-02-01 - 2002-02-05 }
 }
-resource misc "The others" {
+resource misc "The Others" {
   resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
   resource doc "Dim Sung"
 }
@@ -2019,7 +2039,7 @@ task AcSo "Accounting Software" {
     depends !deliveries.start
   }
 
-  task software "Software development" {
+  task software "Software Development" {
 
     priority 1000
 
@@ -2030,7 +2050,7 @@ task AcSo "Accounting Software" {
       allocate dev2
     }
 
-    task gui "Graphical user interface" {
+    task gui "Graphical User Interface" {
       effort 35d
       actualeffort 40d
       depends !database, !backend
@@ -2038,9 +2058,9 @@ task AcSo "Accounting Software" {
       allocate dev3
     }
 
-    task backend "Backend functions" {
+    task backend "Back-End Functions" {
       effort 30d
-      complete 100
+      complete 80 # This task is ahead of schedule.
       depends !database, !!spec
       allocate dev1
       allocate dev2
@@ -2050,14 +2070,14 @@ task AcSo "Accounting Software" {
 
   task test "Software testing" {
 
-    task alpha "Alpha test" {
+    task alpha "Alpha Test" {
       effort 1w
       depends !!software
       allocate test
       allocate dev2
     }
 
-    task beta "Beta test" {
+    task beta "Beta Test" {
       effort 4w
       depends !alpha
       allocate test
@@ -2090,16 +2110,50 @@ task AcSo "Accounting Software" {
       startcredit 10000.0
     }
 
-    task done "Ship product to customer" {
+    task done "Ship Product to customer" {
       milestone
-      maxend 2002-04-17
+# Uncomment this to trigger a warning that the project is late.
+#      maxend 2002-04-17
       depends !!test.beta, !!manual
       startcredit 20000.0
     }
   }
 }
 
-htmltaskreport "tasks.html" name,start,end,resources,weekly
+htmltaskreport "AcSo-Overview.html" {
+  columns no, name, start, end, weekly, effort
+	headline "Accounting Software Project"
+	caption "This table shows the load for each task on a weekly basis.
+	All values are man-days. Additionally the resources used for each
+	task are listed."
+}
+
+htmltaskreport "AcSo-Tasks.html" {
+  columns no, name, start, end, daily
+	headline "Accounting Software Project"
+	caption "This table shows the load of each day for all the tasks.
+	Additionally the resources used for each task are listed. Since the
+	project start was delayed, the actual schedule differs significantly
+	from the original plan."
+  hideresource 0
+  showactual
+}
+
+htmlresourcereport "AcSo-Resources.html" {
+  columns no, name, weekly, effort
+	end 2002-04-30
+	loadunit hours
+	headline "Weekly working hours for the Accounting Software Project"
+}
+
+htmlaccountreport "AcSo-Accounting.html" {
+  columns no, name, total, monthly
+	headline "P and L for the Accounting Software Project"
+	caption "The table shows the profit and loss analysis as well as the
+	cashflow situation of the Accounting Software Project."
+  accumulate
+  showactual
+}
 </verb></tscreen>
 
 <sect>Questions and Answers<p>
