@@ -343,7 +343,7 @@ public slots:
 signals:
     void timeIntervallSelected( const QDateTime& start,  const QDateTime&  end);
     void timeIntervalSelected( const QDateTime& start,  const QDateTime&  end);
-    void rescaling( Scale );
+    void rescaling( KDGanttView::Scale );
 
     // the following signals are emitted if an item is clicked in the
     // listview (inclusive) or in the ganttview

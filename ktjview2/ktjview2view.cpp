@@ -46,7 +46,6 @@
 #include <kmainwindow.h>
 
 // local includes
-#include "kdgantt/KDGanttView.h"
 #include "kdgantt/KDGanttViewEventItem.h"
 #include "kdgantt/KDGanttViewSummaryItem.h"
 #include "kdgantt/KDGanttViewTaskItem.h"
@@ -109,10 +108,12 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_ganttView->setShowLegendButton( false ); // ### TODO legend?
     //m_ganttView->setShowTimeTablePopupMenu( true );  // not useful, we can't add or manipulate items
     m_ganttView->setWeekendDays( 6, 7 );
-    connect( m_ganttView, SIGNAL( gvItemDoubleClicked( KDGanttViewItem * ) ),
+    connect( m_ganttView, SIGNAL( lvItemDoubleClicked( KDGanttViewItem * ) ),
              this, SLOT( ensureItemVisible( KDGanttViewItem * ) ) );
     connect( m_ganttView, SIGNAL( lvContextMenuRequested ( KDGanttViewItem *, const QPoint &, int ) ),
              this, SLOT( popupGanttItemMenu( KDGanttViewItem *, const QPoint &, int ) ) );
+    connect( m_ganttView, SIGNAL( rescaling( KDGanttView::Scale ) ),
+             this, SLOT( slotScaleChanged( KDGanttView::Scale ) ) );
     m_widgetStack->addWidget( m_ganttView );
 
     // resources list view
@@ -895,6 +896,11 @@ void ktjview2View::recreateProject()
     delete m_project;
     m_project = 0;
     m_project = new Project();
+}
+
+void ktjview2View::slotScaleChanged( KDGanttView::Scale scale )
+{
+    emit signalScaleChanged( static_cast<int>( scale ) );
 }
 
 #include "ktjview2view.moc"

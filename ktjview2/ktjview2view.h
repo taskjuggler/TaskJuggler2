@@ -31,6 +31,7 @@
 #include <klistview.h>
 
 #include "ktjview2iface.h"
+#include "kdgantt/KDGanttView.h"
 
 #include "Project.h"
 
@@ -178,6 +179,11 @@ signals:
      */
     void signalSwitchView( int type );
 
+    /**
+     * Emitted when the Gantt component changes the scale
+     */
+    void signalScaleChanged( int );
+
 private slots:
     /**
      * Centers the gantt chart on the selected @p item
@@ -193,6 +199,8 @@ private slots:
      * Jump from the selected Gantt item into the detailed tasklist item
      */
     void slotJumpToTask();
+
+    void slotScaleChanged( KDGanttView::Scale scale );
 
 private:
     void recreateProject();

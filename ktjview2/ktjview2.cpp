@@ -130,7 +130,7 @@ void ktjview2::setupActions()
     m_filterForAction->setCurrentItem( 0 ); // All Tasks by default
 
     // Gantt menu
-    m_calendarAction = new KToggleAction( i18n( "Calendar mode" ), "month", KShortcut(),
+    m_calendarAction = new KToggleAction( i18n( "Calendar mode" ), "today", KShortcut(),
                                           this, SLOT( setCalendarMode() ),
                                           actionCollection(), "calendar_mode" );
     new KAction( i18n( "Zoom &in" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
@@ -139,7 +139,7 @@ void ktjview2::setupActions()
                  m_view, SLOT( zoomOut() ), actionCollection(), "zoom_out" );
     new KAction( i18n( "&Fit to page" ), "viewmagfit", KShortcut( "Ctrl+0" ),
                  m_view, SLOT( zoomFit() ), actionCollection(), "fit_to_page" );
-    new KAction( i18n( "Set &timeframe" ), "timespan", KShortcut(),
+    new KAction( i18n( "Set &timeframe" ), "clock", KShortcut(),
                  m_view, SLOT( slotZoomTimeframe() ), actionCollection(), "timeframe" );
 
     m_scaleAction = new KSelectAction( i18n( "Scale" ), 0, actionCollection(), "scale" );
@@ -150,6 +150,8 @@ void ktjview2::setupActions()
     m_scaleAction->setCurrentItem( 5 ); // TODO make configurable
     connect( m_scaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotScale( int ) ) );
+    connect( m_view, SIGNAL( signalScaleChanged( int ) ),
+             m_scaleAction, SLOT( setCurrentItem( int ) ) );
 
     // Filter toolbar
     m_searchLabel = new QLabel( i18n( "&Filter:" ), this, "search_label" ); // FIXME
@@ -168,7 +170,7 @@ void ktjview2::setupActions()
 #endif
 
     // Sidebar
-    m_sidebarInfo = new KRadioAction( i18n( "Info" ), "gohome", KShortcut(), actionCollection(), "sidebar_info" );
+    m_sidebarInfo = new KRadioAction( i18n( "Info" ), "info", KShortcut(), actionCollection(), "sidebar_info" );
     m_sidebarInfo->setExclusiveGroup( "sidebar" );
     connect( m_sidebarInfo, SIGNAL( activated() ), this, SLOT( slotSidebarInfo() ) );
 
