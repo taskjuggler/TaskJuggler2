@@ -98,25 +98,30 @@ HTMLReportElement::generateTableHeader()
     s() << "  </tr>" << endl;
 
     // Header line 2
-    bool td = FALSE;
-    s() << "  <tr";
-    if (((HTMLReport*) report)->hasStyleSheet())
-        s() << " class=\"tj_header_row\"";
-    s() << ">" << endl;
+    bool first = TRUE;
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
         if (columnFormat[(*it)->getName()])
             if (columnFormat[(*it)->getName()]->genHeadLine2)
             {
+                if (first)
+                {
+                    s() << "  <tr";
+                    if (((HTMLReport*) report)->hasStyleSheet())
+                        s() << " class=\"tj_header_row\"";
+                    s() << ">" << endl;
+                    first = FALSE;
+                }
+
                 TableCellInfo tci(columnFormat[(*it)->getName()], 0, *it);
                 (*this.*(columnFormat[(*it)->getName()]->genHeadLine2))
                     (&tci);
-                td = TRUE;
             }
     }
-    if (!td)
-        s() << "   <td>&nbsp;</td>" << endl;
-    s() << "  </tr>" << endl << " </thead>\n" << endl;
+    if (!first)
+        s() << "  </tr>" << endl;
+
+    s() << " </thead>\n" << endl;
 }
 
 void
@@ -438,8 +443,8 @@ HTMLReportElement::genHeadDaily1(TableCellInfo* tci)
 {
     // Generates the 1st header line for daily calendar views.
     bool weekStartsMonday = report->getWeekStartsMonday();
-    for (time_t day = midnight(start); day < end;
-         day = beginOfMonth(sameTimeNextMonth(day)))
+    for (time_t day = beginOfMonth(start); day < end;
+         day = sameTimeNextMonth(day))
     {
         int left = daysLeftInMonth(day);
         if (left > daysBetween(day, end))
@@ -609,12 +614,12 @@ void
 HTMLReportElement::genHeadMonthly1(TableCellInfo* tci)
 {
     // Generates 1st header line of monthly calendar view.
-    for (time_t year = midnight(start); year < end;
-         year = beginOfYear(sameTimeNextYear(year)))
+    for (time_t year = beginOfYear(start); year < end;
+         year = sameTimeNextYear(year))
     {
         int left = monthLeftInYear(year);
-        if (left > monthsBetween(year, end) + 1)
-            left = monthsBetween(year, end) + 1;
+        if (left > monthsBetween(year, end))
+            left = monthsBetween(year, end);
         s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\"";
         if (((HTMLReport*) report)->hasStyleSheet())
@@ -683,8 +688,8 @@ void
 HTMLReportElement::genHeadQuarterly1(TableCellInfo* tci)
 {
     // Generates 1st header line of quarterly calendar view.
-    for (time_t year = midnight(start); year < end;
-         year = beginOfYear(sameTimeNextYear(year)))
+    for (time_t year = beginOfYear(start); year < end;
+         year = sameTimeNextYear(year))
     {
         int left = quartersLeftInYear(year);
         if (left > quartersBetween(year, end) + 1)
