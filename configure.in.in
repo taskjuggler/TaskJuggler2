@@ -122,9 +122,10 @@ if test "$DATECALC" = no -o "$XMLPARSER" = no -o \
 fi
 AC_SUBST(TJX2GANTT)
 
+AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, no)
 dnl Check for the stuff needed to create the HTML manual
 AC_CHECK_PROG(DB2HTML, db2html, db2html, no)
-if test "$DB2HTML" = no ; then
+if test "$XSLTPROC" = no -o "$DB2HTML" = no ; then
   AC_MSG_WARN([HTML manual will not be generated])
   HTMLMANUAL="no"
 else
@@ -137,7 +138,8 @@ AC_CHECK_PROG(DB2PS, db2ps, db2ps, no)
 AC_CHECK_PROG(JADE, jade, jade, no)
 AC_CHECK_PROG(JADETEX, jadetex, jadetex, no)
 AC_CHECK_PROG(DVIPS, dvips, dvips, no)
-if test "$DB2PS" = no -o "$JADE" = no -o "$JADETEX" = no -o \
+if test "$XSLTPROC" = no -o "$DB2PS" = no -o \
+        "$JADE" = no -o "$JADETEX" = no -o \
         "$DVIPS" = no ; then
   AC_MSG_WARN([Postscript manual will not be generated])
   PSMANUAL="no"
@@ -146,7 +148,7 @@ else
 fi
 AC_SUBST(PSMANUAL)
 
-AC_OUTPUT(docs/en/taskjuggler.sgml)
+AC_OUTPUT(docs/en/taskjuggler.xml)
 
 dnl KDE_INIT_DOXYGEN([The TaskJuggler API Reference], [Version $VERSION])
 

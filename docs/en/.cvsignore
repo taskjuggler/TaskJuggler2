@@ -1,7 +1,8 @@
 Makefile
 Makefile.in
-taskjuggler.sgml
-example.sgml
+taskjuggler.xml
+GenPropertyReference.xml
+Example.xml
 *.log
 *.aux
 *.tex

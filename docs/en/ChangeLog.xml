@@ -633,7 +633,7 @@ reports.</para></listitem>
 <listitem><para>Fixed segfault in certain cases of inherited resource
 allocations.</para></listitem>
 
-<listitem><para><link linkend="macro">Macro names</link> in macro
+<listitem><para><link linkend="PROPERTY_macro">Macro names</link> in macro
 calls can now be prefixed by a questionmark to surpress warnings if
 the macro is undefined.</para></listitem>
 

@@ -2,8 +2,8 @@ EXTRA_DIST = taskjuggler/*.html
 
 docprefix = $(prefix)/share/doc/packages/taskjuggler/manual
 
-SGMLSOURCES = taskjuggler.sgml changelog.sgml firstproject.sgml reference.sgml example.sgml
-CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.sgml example.sgml
+SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml Example.xml SyntaxReference.xml GenPropertyReference.xml
+CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)
@@ -17,22 +17,26 @@ install-data-local:
 uninstall-local:
 	-rm -f $(DESTDIR)$(docprefix)
 
-example.sgml : ../../Examples/FirstProject/AccountingSoftware.tjp
-	rm -f example.sgml
-	echo "<para><screen>" > example.sgml
-	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' ../../Examples/FirstProject/AccountingSoftware.tjp | expand -t 2 >> example.sgml
-	echo "</screen></para>" >> example.sgml
+Example.xml : ../../Examples/FirstProject/AccountingSoftware.tjp
+	rm -f Example.xml
+	echo "<para><screen>" > Example.xml
+	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' ../../Examples/FirstProject/AccountingSoftware.tjp | expand -t 2 >> Example.xml
+	echo "</screen></para>" >> Example.xml
+
+GenPropertyReference.xml: PropertyReference.xml PropertyReference.xsl
+	xsltproc PropertyReference.xml PropertyReference.xsl -o \
+	  GenPropertyReference.xml
 
 taskjuggler/book1.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
-	  db2html taskjuggler.sgml ;\
+	  db2html --xencoding utf-8 taskjuggler.xml ;\
 	  cp index.html taskjuggler/index.html ; \
 	  rm -rf taskjuggler.junk ;\
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
-	  db2ps taskjuggler.sgml ;\
+	  db2ps taskjuggler.xml ;\
 	  rm -rf db2html.* taskjuggler.aux taskjuggler.log \
 	    CATALOG.local *.dsl ; \
 	fi

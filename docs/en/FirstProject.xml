@@ -5,22 +5,21 @@ that describe the project to schedule it. As you will see now, the
 syntax of the file is easy to understand and very intuitive. This
 chapter will walk you step by step through your first project. You
 create the project plan for a made-up accounting software project.
-Refer to <xref linkend="example"> for a full listing of the
+Refer to <xref linkend="example"/> for a full listing of the
 example. This project demonstrates some of the basic features of
 TaskJuggler for more advanced features please refer to <xref
-linkend="reference">.</para>
+linkend="reference"/>.</para>
 
 <sect1><title>Starting the project</title>
 
 <para>To start a TaskJuggler project file you need to use the
-<link linkend="project">project</link> property.</para>
+<link linkend="PROPERTY_project">project</link> property.</para>
 
 <para><screen>
 project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
 	now 2002-03-04
-  timeformat "%Y-%m-%d"
+	timeformat "%Y-%m-%d"
 	currency "EUR"
-										        
 	scenario plan "Plan" {
 		scenario delayed
 		"Delayed"
@@ -37,17 +36,17 @@ the tasks in. </para>
 <para>All TaskJuggler properties have a certain number of fixed
 attributes and a set of optional attributes. Optional attributes are
 always enclosed in curly braces. In this example we use the optional
-attributes <link linkend="project_now"> now </link> to set the current
+attributes <link linkend="PROPERTY_now"> now </link> to set the current
 day for the scheduler to another value than to the moment your invoke
 TaskJuggler. We pick a day during the above specified project period.
 So we always get the same results of a TaskJuggler run, no matter when
 we process our first project. The <link
-linkend="project_currency">currency</link> attribute specifies the
+linkend="PROPERTY_currency">currency</link> attribute specifies the
 unit of currency values.</para>
 
 <para>Since each country seems to have it's own way of specifying
 dates, the format is configurable. Use the <link
-linkend="project_timeformat">timeformat</link> attribute to specify the
+linkend="PROPERTY_timeformat">timeformat</link> attribute to specify the
 default format. This is the format used for reports. It's not the
 format that you use in TaskJuggler project files. This format is fixed
 and must be Year-Month-Day-Hours:Minutes:Seconds-Timezone. From Hours
@@ -59,7 +58,7 @@ second scenario is how it really happended. The two scenarios have the
 same task structure, but the start and end dates of the task may vary.
 In reality we assume that the project got delayed, so we call the
 second scenario "Delayed". The <link
-linkend="project_scenario">scenario property</link> is used to specify
+linkend="PROPERTY_scenario">scenario property</link> is used to specify
 the scenarios. The delayed scenario is nested into the plan scenario.
 This tells TaskJuggler to use all values from the plan scenario also
 for the delayed scenario unless the delay scenario has it's own
@@ -84,7 +83,7 @@ properties.</para>
 rate 310.0
 </screen></para>
 
-<para>The <link linkend="rate">rate</link> attribute can be used to
+<para>The <link linkend="PROPERTY_rate">rate</link> attribute can be used to
 specify the daily costs of resources.</para>
 
 <para>Macros are another TaskJuggler feature to keep project files
@@ -110,7 +109,7 @@ explain the meaning of the pattern.</para>
 <sect1><title>Declaring Resources</title>
 
 <para>A TaskJuggler feature that you will probably make heavy use of
-is <link linkend="flags"> flags </link>. Once declared you can attach
+is <link linkend="PROPERTY_flags"> flags </link>. Once declared you can attach
 them to many properties. When you generate reports of the TaskJuggler
 results, you can use the flags to filter out information and limit the
 report to exactly those details that you want to have included.</para>
@@ -133,7 +132,7 @@ resource misc "The Others" {
 }
 </screen></para>
 
-<para>This snippet of the example shows the <link linkend="resource">
+<para>This snippet of the example shows the <link linkend="PROPERTY_resource">
 resource </link> property. Resources always have an ID and a Name. IDs
 may only consist of ASCII characters, numbers and the underline
 character. All global TaskJuggler properties have IDs. They need to be
@@ -153,7 +152,7 @@ enclosing scope, resource <computeroutput>dev</computeroutput>.
 Which in turn has inherited it from the global scope. </para>
 
 <para>The declaration of the resource Klaus M&uml;ller uses another
-optional attribute. With <link linkend="resource_vacation"> vacation
+optional attribute. With <link linkend="PROPERTY_vacation_resource"> vacation
 </link> you can specify a certain time interval where the resource is
 not available.</para>
 
@@ -171,9 +170,9 @@ second before the date that you have specified is. So Klaus
 M&uml;llers vacation ends 23:59:59 on February 4th, 2002.</para>
 
 <para>Peter Murphy only works 6.5 hours a day (actually 6.4 hours). So
-we use the <link linkend="resource_maxeffort"> maxeffort </link>
+we use the <link linkend="PROPERTY_maxeffort"> maxeffort </link>
 attribute to limit his daily working hours. We could also define exact
-working hours using the <link linkend="shift"> shift </link> property,
+working hours using the <link linkend="PROPERTY_shift"> shift </link> property,
 but we ignore this for now. </para>
 
 <para>Note that we have attached the flag <computeroutput> team
@@ -198,7 +197,7 @@ account doc "Dokumentation" cost
 account rev "Payments" revenue
 </screen></para>
 
-<para>The <link linkend="account"> account </link> property has 3
+<para>The <link linkend="PROPERTY_account"> account </link> property has 3
 fixed attributes, an ID, a name and a type. The type can either be
 <computeroutput> cost </computeroutput> or <computeroutput> revenue
 </computeroutput>. For the analysis TaskJuggler subtracts the total
@@ -227,7 +226,7 @@ task AcSo "Accounting Software" {
 </screen></para>
 
 <para>Similar to resources, tasks are declared by using the <link
-linkend="task">task</link> keyword followed by an ID and a name
+linkend="PROPERTY_task">task</link> keyword followed by an ID and a name
 string. All TaskJuggler properties have their own namespaces. This
 means, that it is quite OK to have a resource and a task with the same
 ID. Tasks may have optional attributes which can be tasks again, so
@@ -252,12 +251,12 @@ add some more details to it.</para>
 
 <para>The effort to complete the task is specified with 20 man days.
 Alternatively we could have used the <link
-linkend="task_length">length</link> attribute or the <link
-linkend="task_duration">duration</link> attribute.
+linkend="PROPERTY_length">length</link> attribute or the <link
+linkend="PROPERTY_duration">duration</link> attribute.
 <computeroutput>length</computeroutput> specifies the duration of the
 task in working days while <computeroutput>duration</computeroutput>
 specifies the duration in calendar days. Contrary to <link
-linkend="task_effort">effort</link> these two don't have to have a
+linkend="PROPERTY_effort">effort</link> these two don't have to have a
 specification of the involved resources. Since
 <computeroutput>effort</computeroutput> specifies the duration in man
 days, we need to say who should be allocated to the task. The task
@@ -286,7 +285,7 @@ expression</para>
 
 <para>If you need to allocate the same bunch of people to several
 task, the macro saves you some writing. You could have written the
-<link linkend="task_allocate">allocate</link> attributes directly instead
+<link linkend="PROPERTY_allocate">allocate</link> attributes directly instead
 of using the macro. Since the allocation of multiple resources to a
 task is a very common place for macro usage, we found it a good idea
 to use it in this example as well.</para>
@@ -294,7 +293,7 @@ to use it in this example as well.</para>
 <para>One more interesting thing to note is the fact that we like
 the resource <computeroutput>dev2</computeroutput> only to work 50% of
 the day on this task, so we use the optional attribute <link
-linkend="task_allocate_load">load</link> to specify this.</para>
+linkend="PROPERTY_load">load</link> to specify this.</para>
 
 <para>For TaskJuggler to schedule a task it needs to know either the
 start and end criteria of a task, or one of them and a duration
@@ -308,7 +307,7 @@ specified it yet, but it has the local ID
 <computeroutput>start</computeroutput>.</para>
 
 <para>To specify the dependency between the two task we use the <link
-linkend="task_depends">depends</link> attribute. The attribute must be
+linkend="PROPERTY_depends">depends</link> attribute. The attribute must be
 followed by one or more task IDs. If more than one ID is specified,
 each ID has to be separated with a comma from the previous one. Task
 IDs can be either absolute IDs or relative IDs. An absolute ID of a
@@ -340,7 +339,7 @@ directly. So we split it into sub tasks again.</para>
   }
 </screen></para>
 
-<para>We use the <link linkend="task_priority">priority</link>
+<para>We use the <link linkend="PROPERTY_priority">priority</link>
 attribute to mark the importance of the tasks. 500 is the default
 priority of top-level tasks. Setting the priority to 1000 marks the
 task as most important task, since the possible range is 1 (not
@@ -361,7 +360,7 @@ definition.</para>
 
 <para>The work on the database coupling should not start before the
 specification has been finished. So we use again the <link
-linkend="task_depends">depends</link> attribute to let TaskJuggler
+linkend="PROPERTY_depends">depends</link> attribute to let TaskJuggler
 know about this. This time we use two exclamation marks for the
 relative ID. The first one puts us in the scope of the enclosing
 <computeroutput>software</computeroutput> task. The second one is to
@@ -407,9 +406,9 @@ effort value for the delayed scenario can be specified.</para>
 Sometimes you want to generate reports, that show how much of a task
 has actually been completed. TaskJuggler uses the current date for
 this unless you have specified another date using the <link
-linkend="project_now">now</link> attribute. If a task is ahead of
+linkend="PROPERTY_now">now</link> attribute. If a task is ahead of
 schedule or late that can be specified using the <link
-linkend="task_complete">complete</link> attribute. This specifies how
+linkend="PROPERTY_complete">complete</link> attribute. This specifies how
 many percent of the task have been completed up to the current date.
 In our case the back-end implementation is slightly ahead of schedule
 as we will see from the report.</para>
@@ -436,7 +435,7 @@ beta test task. The interesting thing here is, that efforts can not
 only be specified as man days, but also man weeks, man hours, etc. Per
 default TaskJuggler assumes a man week is 40 man hours or 5 man days.
 These values can be changed using the <link
-linkend="project_dailyworkinghours">dailyworkinghours</link>
+linkend="PROPERTY_dailyworkinghours">dailyworkinghours</link>
 attribute.</para>
 
 <para>Let's go back to the outermost task again. At the beginning of
@@ -483,7 +482,7 @@ progress of the project.</para>
 
 <para>TaskJuggler has support for milestones as well. They are handled
 as special types of tasks. By using the optional attribute
-<link linkend="task_milestone">milestone</link> for a task, this task
+<link linkend="PROPERTY_milestone">milestone</link> for a task, this task
 is declared a milestone. Milestones have no duration, so it's illegal
 to specify any duration criteria, or a non identical start and end
 date.</para>
@@ -526,7 +525,7 @@ date.</para>
 of the <computeroutput>deliveries</computeroutput> task. This way they
 show up nicely grouped in the reports. All milestone have either a
 dependency or a fixed start date. For the first milestone we have used
-the attribute <link linkend="task_start">start</link> to set a fixed
+the attribute <link linkend="PROPERTY_start_task">start</link> to set a fixed
 start date. All other tasks have direct or indirect dependencies on
 this task. Moving back the start date will slip the whole project.
 This has actually happened, so we use the
@@ -534,7 +533,7 @@ This has actually happened, so we use the
 start date for the delayed scenario.</para>
 
 <para>Every milestone is linked to a customer payment. By using the
-<link linkend="task_startcredit">startcredit</link> attribute we can
+<link linkend="PROPERTY_startcredit">startcredit</link> attribute we can
 credit the specified amount to the account associated with this task.
 Since we have assigned the <computeroutput>rev</computeroutput>
 account to the enclosing task, all milestones will use this account as
@@ -544,7 +543,7 @@ well.</para>
 <computeroutput>done</computeroutput> that starts with a hash? This
 line is commented out. If TaskJuggler finds a hash it ignores the rest
 of the line. This way you can include comments in your project. The
-<link linkend="task_maxend">maxend</link> attribute specifies that the
+<link linkend="PROPERTY_maxend">maxend</link> attribute specifies that the
 task should end no later than the specified date. This information is
 not used for scheduling but only for checking the schedule afterwards.
 Since the task will end later than the specified date, commenting out
@@ -575,7 +574,7 @@ demonstrate. You can use TaskJuggler to it's full extend without
 having to learn HTML code.</para>
 
 <para>The HTML code is injected into the reports using the <link
-linkend="htmltaskreport_rawhead">rawhead</link> attribute. This will
+linkend="PROPERTY_rawhead">rawhead</link> attribute. This will
 put the HTML code close to the top of the HTML page right after the
 body started. As you can see here, string parameters of attributes can
 be enclosed in single quotes as well. This is handy, if the string
@@ -610,10 +609,10 @@ rawhead
 <para>As the first report, we would like to have a general overview of all
 tasks with their computed start and end dates. To visualize the dates
 a bit more, we also include a Gantt chart like bar graph.  The
-property <link linkend="htmltaskreport">htmltaskreport</link> defines
+property <link linkend="PROPERTY_htmltaskreport">htmltaskreport</link> defines
 exactly this, a list of all tasks in a table. The columns are flexible
 and can be specified with the <link
-linkend="htmltaskreport_columns">column</link> attribute. For this
+linkend="PROPERTY_columns">column</link> attribute. For this
 report we like to see the number, the name, the start and end
 date, a weekly calendar and the total effort in the table.</para>
 
@@ -633,17 +632,17 @@ htmltaskreport "Tasks-Overview.html" {
 <para>Since we don't like the default column title for the effort
 column we change it to "Work". Dates should be displayed as
 <computeroutput>Sun 2003-09-29</computeroutput>, so we use the attribute <link
-linkend="htmltaskreport_timeformat">timeformat</link>. For the
+linkend="PROPERTY_timeformat">timeformat</link>. For the
 overview page we don't like to have load values in the calendar. We
 just want to have the Gantt chart like bars that visualize the
 duration of the tasks. Since the load values are reported by default,
 we use the attribute <link
-linkend="htmltaskreport_barlabels">barlabels</link> to surpress
+linkend="PROPERTY_barlabels">barlabels</link> to surpress
 them.  With the <link
-linkend="htmltaskreport_headline">headline</link> attribute we can
+linkend="PROPERTY_headline">headline</link> attribute we can
 specify a headline for the report. To have a little more info included
 as well, we use the <link
-linkend="htmltaskreport_caption">caption</link> attribute. Both of
+linkend="PROPERTY_caption">caption</link> attribute. Both of
 these attributes are followed by the string to be included into the
 report.</para>
 
@@ -678,7 +677,7 @@ daily calendar to the interval 2002-03-01 - 2002-04-01 with the
 We also like to list all assigned resources right after each
 task. Normally resources are hidden in task reports but they can be
 enabled by using the <link
-linkend="htmltaskreport_hideresource">hideresource</link> attribute.
+linkend="PROPERTY_hideresource">hideresource</link> attribute.
 The attribute is followed by a logical expression that specifies what
 resources to hide. The expression is evaluated for each resource and
 if the result is true (not 0) than the resource is hidden. Since we
@@ -687,7 +686,7 @@ resources.</para>
 
 <para>To add even more information to this report, we also turn on the
 reporting of values of the delayed scenario by using the <link
-linkend="htmltaskreport_scenarios">scenarios</link> attribute. This
+linkend="PROPERTY_scenarios">scenarios</link> attribute. This
 causes TaskJuggler to split the lines of the report into one for each
 scenario where appropriate and report the values underneath each
 other.</para>
@@ -698,7 +697,7 @@ other.</para>
 <para> The previous report listed the resources per task. Now we want
 to generate a report the lists all resources. It's again a report with
 a weekly calendar. This time we use the attribute <link
-linkend="htmltaskreport_loadunit">loadunit</link> to report the load
+linkend="PROPERTY_loadunit">loadunit</link> to report the load
 in hours instead of days.</para>
 
 <para><screen>
@@ -714,13 +713,13 @@ htmlresourcereport "Staff-Overview.html" {
 <para> Now a similar report but with much more details. We want to
 include the tasks again, this time each resource should be followed
 by the tasks the resource is assigned to. In <link
-linkend="htmltaskreport">htmltaskreports</link> resources are hidden
+linkend="PROPERTY_htmltaskreport">htmltaskreports</link> resources are hidden
 by default while in <link
-linkend="htmlresourcereport">htmlresourcereports</link> tasks are
+linkend="PROPERTY_htmlresourcereport">htmlresourcereports</link> tasks are
 hidden by default. To include tasks the attribute <link
-linkend="htmltaskreport_hidetask">hidetask</link> needs to be used. It
+linkend="PROPERTY_hidetask">hidetask</link> needs to be used. It
 is followed by a logical expression just like <link
-linkend="htmltaskreport_hideresource">hideresource</link>.</para>
+linkend="PROPERTY_hideresource">hideresource</link>.</para>
 
 <para><screen>
 htmlresourcereport "Staff-Details.html" {
@@ -742,11 +741,11 @@ two teams by creating two pseudo resources that had the real employees
 as sub resources. We have attached the flag
 <computeroutput>team</computeroutput> to those pseudo resources. We
 now use this flag as logical expression for <link
-linkend="htmltaskreport_hideresource">hideresource</link>. So all
+linkend="PROPERTY_hideresource">hideresource</link>. So all
 resources that have this flag will be hidden in the report. For better
 readability we sort the resource list by name in ascending order. The
 attribute <link
-linkend="htmltaskreport_sortresources">sortresources</link> is taking
+linkend="PROPERTY_sortresources">sortresources</link> is taking
 care of this.</para>
 
 </sect2>
@@ -769,12 +768,12 @@ htmlaccountreport "Accounting.html" {
 }
 </screen></para>
 
-<para>The <link linkend="htmlaccountreport">htmlaccountreport</link>
+<para>The <link linkend="PROPERTY_htmlaccountreport">htmlaccountreport</link>
 property produces similar reports as the above ones, but it lists
 accounts instead of tasks or resources. The
 <computeroutput>total</computeroutput> column shows the value of the
 account at the end of the reported time interval. The <link
-linkend="htmlaccountreport_accumulate">accumulate</link> attribute
+linkend="PROPERTY_accumulate">accumulate</link> attribute
 puts the calendar in accumulation mode. The monthly columns list the
 value of the account at the end of the month. Normally the amount that
 has been added or subtracted from the account would be listed.</para>

@@ -1,11 +1,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
-<!--  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" -->
  <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
- <!ENTITY firstproject SYSTEM "firstproject.sgml">
- <!ENTITY reference SYSTEM "reference.sgml">
+ <!ENTITY FirstProject SYSTEM "FirstProject.xml">
  <!ENTITY SyntaxReference SYSTEM "SyntaxReference.xml">
  <!ENTITY PropertyReference SYSTEM "GenPropertyReference.xml">
- <!ENTITY example SYSTEM "example.sgml">
+ <!ENTITY Example SYSTEM "Example.xml">
 ]>
 <book>
 <bookinfo><title>The TaskJuggler Manual</title>
@@ -413,7 +411,7 @@ url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</par
 
 </sect1> 
 </chapter>
-<!-- &firstproject; -->
+&FirstProject;
 &SyntaxReference;
 &PropertyReference;
 <chapter id="example"><title>The Example: Accounting Software</title>

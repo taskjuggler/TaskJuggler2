@@ -2280,9 +2280,11 @@ ProjectFile::readShift(Shift* parent)
             }
             else if (token == KW("include"))
             {
-                if (!readInclude())
-                    return FALSE;
-                break;
+                errorMessage
+                    (i18n("WARNING: The 'include' attribute is no longer "
+                          "supported within shifts since it caused ambiguoties "
+                          "between flag declaration and flag attributes."));
+                return FALSE;
             }
             else
             {

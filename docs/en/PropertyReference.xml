@@ -155,6 +155,35 @@ task.</para></descr>
    <also>select</also>
   </seealso>
  </property>
+ <property name="barlabels" id="barlabels" inheritable="No">
+  <descr><para>Specifies the contense of the Gantt chart like bars in
+HTML calendar columns. The default is to show load values.</para></descr>
+  <attributes>
+   <attr name="mode" type="ID">
+    <para>See table below for possible values.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>columns</also>
+   <also>showprojectids</also>
+  </seealso>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>empty</varname></member>
+   <member>Do not show any values on calendar bars.</member>
+   
+   <member><varname>load</varname></member>
+   <member>Show task or resource load on calendar bars.</member>
+   
+   </simplelist></para>
+  </freestyle>
+ </property>
  <property name="booking" id="booking" inheritable="No">
   <descr><para></para></descr>
   <attributes>
@@ -170,6 +199,21 @@ task.</para></descr>
   </contexts>
   <seealso>
    <also>projection</also>
+  </seealso>
+ </property>
+ <property name="caption" id="caption" inheritable="No">
+  <descr><para>Specifies the caption used for a report table.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+   <context>htmlweeklycalendar</context>
+  </contexts>
+  <seealso>
+   <also>headline</also>
   </seealso>
  </property>
  <property name="columns" id="columns" inheritable="No">
@@ -191,32 +235,167 @@ report.</para></descr>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
    
-   <member><varname>no</varname></member>
-   <member>The task index</member>
+   <member><varname>completed</varname></member>
+   <member>The percentage the task has been completed already. This is
+   either the value specified by <link
+   linkend="PROPERTY_complete">complete</link> or a value computed according
+   to the current date (or the date specified by <link
+   linkend="PROPERTY_now">now</link>) and the length, duration or
+   effort.</member>
+   
+   <member><varname>cost</varname></member>
+   <member>The accumulated costs of the task and its sub tasks</member>
+   
+   <member><varname>daily</varname></member>
+   <member>A day-by-day calendar view of the tasks</member>
+   
+   <member><varname>depends</varname></member>
+   <member>The task index of the tasks on which this task
+   depends</member>
+   
+   <member><varname>duration</varname></member>
+   <member>The duration of the task</member>
+   
+   <member><varname>effort</varname></member>
+   <member>The effort put into the task</member>
+   
+   <member><varname>end</varname></member>
+   <member>The end date of a task</member>
+   
+   <member><varname>endbuffer</varname></member>
+   <member>The percentage of the endbuffer</member>
+   
+   <member><varname>endbufferstart</varname></member>
+   <member>The start time of the end buffer</member>
+   
+   <member><varname>flags</varname></member>
+   <member>The list of flags assigned to the task or resource</member>
+   
+   <member><varname>follows</varname></member>
+   <member>The task index of the tasks that depend on this task</member>
+   
+   <member><varname>hierarchindex</varname></member>
+   <member>The hierarchical index of a task. The index is calculated from the
+   hierachical structure of the list as well as the start and end dates.
+   </member>
+   
+   <member><varname>hierarchno</varname></member>
+   <member>The hierarchical number of a task. It is based on the order of
+   declaration.</member>
    
    <member><varname>id</varname></member>
    <member>The global ID of a task</member>
    
+   <member><varname>index</varname></member>
+   <member>The index of a task. The index is calculated from the
+   hierachical structure of the list as well as the start and end dates.
+   </member>
+   
+   <member><varname>kotrusid</varname></member>
+   <member>The KotrRUs ID of the resource</member>
+   
+   <member><varname>maxeffort</varname></member>
+   <member>The maximum daily load wanted for the resource</member>
+   
+   <member><varname>maxend</varname></member>
+   <member>The latest desired end date</member>
+   
+   <member><varname>maxstart</varname></member>
+   <member>The latest desired start date</member>
+   
+   <member><varname>mineffort</varname></member>
+   <member>The minimum daily load wanted for the resource</member>
+   
+   <member><varname>minend</varname></member>
+   <member>The earliest desired end date</member>
+   
+   <member><varname>minstart</varname></member>
+   <member>The earliest desired start date</member>
+   
+   <member><varname>monthly</varname></member>
+   <member>A month-by-month calendar view of the tasks</member>
+   
    <member><varname>name</varname></member>
    <member>The name of a task, resource, or account</member>
+   
+   <member><varname>no</varname></member>
+   <member>The task index in the list. It starts with 1 and increases for
+   every listed item by 1.</member>
+   
+   <member><varname>note</varname></member>
+   <member>The description of the task</member>
+   
+   <member><varname>priority</varname></member>
+   <member>The scheduling priority</member>
+   
+   <member><varname>profit</varname></member>
+   <member>The accumulated profit of the task and its sub tasks</member>
+   
+   <member><varname>projectid</varname></member>
+   <member>The project ID of the task</member>
+   
+   <member><varname>projectids</varname></member>
+   <member>The project IDs of the projects a resource is allocated to</member>
+   
+   <member><varname>quarterly</varname></member>
+   <member>A quarter-by-quarter calendar view of the tasks</member>
+   
+   <member><varname>rate</varname></member>
+   <member>The daily rate of the resource</member>
+   
+   <member><varname>reference</varname></member>
+   <member>A reference to a URL that contains further information.</member>
+   
+   <member><varname>resources</varname></member>
+   <member>The names of the used resources</member>
+   
+   <member><varname>responsibilies</varname></member>
+   <member>A list of all tasks indicies for which a resource is
+   responsible </member>
+   
+   <member><varname>responsible</varname></member>
+   <member>The name of the resource responsible for a task</member>
+   
+   <member><varname>revenue</varname></member>
+   <member>The accumulated revenue of the task and its sub tasks</member>
+   
+   <member><varname>scenario</varname></member>
+   <member>The name of the scenario. This column is helpful when multiple
+   scenarios are shown in the table. See also <link
+   linkend="PROPERTY_scenarios">scenarios</link>.</member>
+   
+   <member><varname>seqno</varname></member>
+   <member>The task index in the order of declaration. Each
+   time a task declaration is completed, the sequence number is increased
+   by 1. </member>
+   
+   <member><varname>schedule</varname></member>
+   <member>A detailed schedule of the allocations for the resource.</member>
+   
+   <member><varname>start</varname></member>
+   <member>The start date of a task</member>
+   
+   <member><varname>startbuffer</varname></member>
+   <member>The percentage of the start buffer</member>
+   
+   <member><varname>startbufferend</varname></member>
+   <member>The end time of the start buffer</member>
+   
+   <member><varname>status</varname></member>
+   <member>The current status of the task. This is derived from the
+   current date or the date specified by <link
+   linkend="PROPERTY_now">now</link> and the degree of completion. The
+   degree of completion is either computed or has been specified by <link
+   linkend="PROPERTY_complete">complete</link>.</member>
    
    <member><varname>total</varname></member>
    <member>Total accumulated values</member>
    
-   <member><varname>daily</varname></member>
-   <member>A day-by-day calendar view of the accounts</member>
-   
    <member><varname>weekly</varname></member>
-   <member>A week-by-week calendar view of the accounts</member>
-   
-   <member><varname>monthly</varname></member>
-   <member>A month-by-month calendar view of the accounts</member>
-   
-   <member><varname>quaterly</varname></member>
-   <member>A quarter-by-quarter calender view of the accounts</member>
+   <member>A week-by-week calendar view of the tasks</member>
    
    <member><varname>yearly</varname></member>
-   <member>A year-by-year calender view of the accounts</member>
+   <member>A year-by-year calendar view of the tasks</member>
    
    </simplelist></para>
   </freestyle>
@@ -633,6 +812,22 @@ expressions to filter properties from the reports.</para></descr>
    <also>flags</also>
   </seealso>
  </property>
+ <property name="headline" id="headline" inheritable="No">
+  <descr><para>Specifies the headline for a report.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+   <context>htmlstatusreport</context>
+   <context>htmlweeklycalendar</context>
+  </contexts>
+  <seealso>
+   <also>caption</also>
+  </seealso>
+ </property>
  <property name="hideaccount" id="hideaccount" inheritable="No">
   <descr><para>Do not show accounts that match the specified logical
 expression. If the report is sorted in tree mode (default) then
@@ -729,6 +924,36 @@ task.</para></descr>
    <also>htmltaskreport</also>
   </seealso>
  </property>
+ <property name="htmlstatusreport" id="htmlstatusreport" inheritable="No">
+  <descr><para>Generates a HTML status report. The report consits of 4
+tables: Overdue tasks, ongoing tasks, finished tasks and upcoming
+tasks. The default reporting interval is 1 week.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>scenarios</optattr>
+   <optattr>start_report</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>caption</optattr>
+   <optattr>rawhead</optattr>
+   <optattr>rawstylesheet</optattr>
+   <optattr>rawtail</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>timeformat</optattr>
+   <optattr>shorttimeformat</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>htmlaccountreport</also>
+   <also>htmlresourcereport</also>
+   <also>htmltaskreport</also>
+   <also>htmlweeklycalendar</also>
+  </seealso>
+ </property>
  <property name="htmltaskreport" id="htmltaskreport" inheritable="No">
   <descr><para></para></descr>
   <attributes>
@@ -742,6 +967,44 @@ task.</para></descr>
    <also>csvtaskreport</also>
    <also>htmlaccountreport</also>
    <also>htmlresourcereport</also>
+  </seealso>
+ </property>
+ <property name="htmlweeklycalendar" id="htmlweeklycalendar" inheritable="No">
+  <descr><para>Generates a calendar like HTML report.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>columns</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>start_report</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>caption</optattr>
+   <optattr>rawhead</optattr>
+   <optattr>rawstylesheet</optattr>
+   <optattr>rawtail</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>accumulate</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>timeformat</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>barlabels</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>htmlaccountreport</also>
+   <also>htmlresourcereport</also>
+   <also>htmltaskreport</also>
+   <also>htmlstatusreport</also>
   </seealso>
  </property>
  <property name="include" id="include" inheritable="No">
@@ -909,12 +1172,12 @@ macro FOO [ This ${1} text ]
 <para>will expand to ' This stupid text ' if called as ${FOO
 "stupid"}. Macros may call other macros.</para>
 
-<para>Macro <link linkend="id">ID</link>s should have at least one uppercase
-letter as all lowercase letter<link linkend="id">ID</link>s may be
-used in a later version for built-in macros like 'if', 'expr' or
-'for'. Macro names can be prefixed by a questionmark. In this case the
-macro will expand to nothing if the macro is not defined. Otherwise
-the undefined macro would be flagged with an error message.</para>
+<para>Macro IDs should have at least one uppercase
+letter as all lowercase letter IDs may be used in a later version for
+built-in macros like 'if', 'expr' or 'for'. Macro names can be
+prefixed by a questionmark. In this case the macro will expand to
+nothing if the macro is not defined. Otherwise the undefined macro
+would be flagged with an error message.</para>
 
 <para><screen>
 This macro call ${?foo} will expand to nothing if foo is undefined.
@@ -1222,6 +1485,22 @@ the resource.</para></descr>
    <also>task</also>
   </seealso>
  </property>
+ <property name="rawhead" id="rawhead" inheritable="No">
+  <descr><para>Specifies a section of raw HTML code that will be
+inserted at the top of the report.</para></descr>
+  <attributes>
+   <attr name="html" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmlaccountreport</context>
+  </contexts>
+  <seealso>
+   <also>rawstylesheet</also>
+   <also>rawtail</also>
+  </seealso>
+ </property>
  <property name="rawstylesheet" id="rawstylesheet" inheritable="No">
   <descr><para>Specifies a stylesheet for HTML reports.</para></descr>
   <attributes>
@@ -1232,6 +1511,22 @@ the resource.</para></descr>
    <context>htmlresourcereport</context>
    <context>htmltaskreport</context>
   </contexts>
+ </property>
+ <property name="rawtail" id="rawtail" inheritable="No">
+  <descr><para>Specifies a section of raw HTML code that will be
+inserted at the bottom of the report.</para></descr>
+  <attributes>
+   <attr name="html" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>rawhead</also>
+   <also>rawstylesheet</also>
+  </seealso>
  </property>
  <property name="reference" id="reference" inheritable="No">
   <descr><para>A reference to an external document. If you need more
@@ -1509,6 +1804,19 @@ normal just the hour and minutes.</para></descr>
    <also>timeformat</also>
   </seealso>
  </property>
+ <property name="showprojectids" id="showprojectids" inheritable="No">
+  <descr><para>Specifies that calendar columns in reports should
+contain the project ID after the load value.</para></descr>
+  <contexts>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+   <context>htmlweeklycalendar</context>
+  </contexts>
+  <seealso>
+   <also>barlabels</also>
+   <also>columns</also>
+  </seealso>
+ </property>
  <property name="sortaccounts" id="sortaccounts" inheritable="No">
   <descr><para>Determines how the accounts are sorted in the report. Up to 3
 criteria can be specified. If one criteria is not sufficient to sort a
@@ -1710,7 +2018,7 @@ what task.</para></descr>
   <descr><para>The list of attribute names specifies which task
 attributes should be listed in the report in addition to the ones
 exported by default. The following values are supported. They
-correspond to the respective attributes of a <link linkend="task">
+correspond to the respective attributes of a <link linkend="PROPERTY_task">
 task</link>.</para>
 
 <para><varname>complete</varname>, <varname>depends</varname>,
@@ -2012,6 +2320,16 @@ respected by all resources that are defined hereafter.</para></descr>
    <also>vacation_global</also>
   </seealso>
  </property>
+ <property name="version" id="version" inheritable="No">
+  <descr><para>Specifies which XML format should be generated.
+Currently version 2 is highly recomended.</para></descr>
+  <attributes>
+   <attr name="number" type="INTEGER"/>
+  </attributes>
+  <contexts>
+   <context>xmlreport</context>
+  </contexts>
+ </property>
  <property name="weekstartsmonday" id="weekstartsmonday" inheritable="No">
   <descr><para>Specify that you want to base all week calculation on
 weeks starting on Monday. This is common in many European countries.</para></descr>
@@ -2048,6 +2366,21 @@ America.</para></descr>
    <also>dailyworkinghours</also>
    <also>yearlyworkingdays</also>
   </seealso>
+ </property>
+ <property name="xmlreport" id="xmlreport" inheritable="No">
+  <descr><para>Generates a XML report. TaskJuggler 2.x has a much
+improved XML format. This is not yet the default, but will be in later
+versions. So you should always specify which version of the XML format
+should be generated.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>version</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
  </property>
  <property name="yearlyworkingdays" id="yearlyworkingdays" inheritable="No">
   <descr><para>Specifies the number of average working days per year.
