@@ -48,6 +48,7 @@
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
 #include <ktexteditor/selectioninterface.h>
+#include <ktexteditor/markinterface.h>
 
 // local includes
 #include "kdgantt/KDGanttViewEventItem.h"
@@ -370,14 +371,16 @@ bool ktjview2View::openURL( const KURL& url )
 
         m_editorView->loadDocument( url );
 
-        signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
+        emit signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
     }
     else                        // errors to correct
     {
         m_editorView->loadDocument( errorFile );
         m_editorView->gotoLine( errorLine - 1 );
+        KTextEditor::markInterface( m_editorView->doc() )->setMark( errorLine - 1, KTextEditor::MarkInterface::Error );
+        emit signalSwitchView( ID_VIEW_EDITOR );
 
-        signalChangeStatusbar( i18n( "Project %1 loaded with errors" ).arg( m_projectURL.prettyURL() ) );
+        emit signalChangeStatusbar( i18n( "Project %1 loaded with errors" ).arg( m_projectURL.prettyURL() ) );
     }
 
     m_projectURL = url;

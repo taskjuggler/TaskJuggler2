@@ -36,6 +36,7 @@
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/editinterface.h>
 #include <ktexteditor/viewcursorinterface.h>
+#include <ktexteditor/markinterface.h>
 
 EditorView::EditorView( QWidget * parent, const char * name )
     : QWidget( parent, name ), m_view( 0 )
@@ -85,6 +86,7 @@ bool EditorView::loadDocument( const KURL & url )
     kdDebug() << "Opening URL " << url << endl;
 
     doc()->setReadWrite( true );
+    KTextEditor::markInterface( doc() )->clearMarks();
     return doc()->openURL( url ); // also calls closeURL()
 }
 
