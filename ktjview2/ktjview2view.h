@@ -126,9 +126,9 @@ public slots:
     void loadSettings();
 
     /**
-     * Show a dialog with options to query info about a resource.
+     * Display the filter selectiion dialog
      */
-    //void queryResource();
+    void filter();
 
 signals:
     /**

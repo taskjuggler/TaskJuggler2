@@ -102,6 +102,11 @@ void ktjview2::setupActions()
     KStdAction::configureToolbars( this, SLOT(optionsConfigureToolbars()), actionCollection() );
     KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
 
+    // View menu
+    KStdAction::find( m_view, SLOT( find() ), actionCollection());
+    new KAction( i18n( "Filter..." ), "filter", KShortcut(),
+                 m_view, SLOT( filter() ), actionCollection(), "filter" );
+
     // Gantt menu
     new KAction( i18n( "Zoom &in" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
                  m_view, SLOT( zoomIn() ), actionCollection(), "zoom_in" );
@@ -191,7 +196,7 @@ void ktjview2::fileNew()
 
 void ktjview2::fileOpen()
 {
-    KURL url = KFileDialog::getOpenURL( ":projects", "*.tjp *.tjx|" + i18n( "Taskjuggler files (*.tjp *.tjx)" ),
+    KURL url = KFileDialog::getOpenURL( ":projects", "*.tjp *.tjx *.tji|" + i18n( "Taskjuggler files (*.tjp *.tjx *.tji)" ),
                                         this, i18n( "to open ...", "Open Project" ) );
     if ( !url.isEmpty() )
         load( url );

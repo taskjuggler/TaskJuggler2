@@ -38,7 +38,6 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kio/netaccess.h>
-#include <kfilterdev.h>
 #include <kprinter.h>
 #include <klistview.h>
 
@@ -53,7 +52,7 @@
 #include "timedialog.h"
 #include "TaskItem.h"
 #include "settings.h"
-//#include "resourceQueryDialog.h"
+#include "filterDialog.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -240,7 +239,7 @@ void ktjview2View::openURL( const KURL& url )
         xf->parse();
         delete xf;
     }
-    else if ( tmpFile.endsWith( ".tjp" ) ) // source file
+    else if ( tmpFile.endsWith( ".tjp" ) || tmpFile.endsWith( ".tji" ) ) // source file
     {
         ProjectFile* pf = new ProjectFile( m_project );
         if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
@@ -259,7 +258,7 @@ void ktjview2View::openURL( const KURL& url )
 
     m_project->pass2( false );
     m_project->scheduleAllScenarios();
-    m_project->generateReports();
+    //m_project->generateReports(); // FIXME do we need that?
 
     KIO::NetAccess::removeTempFile( tmpFile );
 
@@ -661,5 +660,13 @@ QString ktjview2View::time_t2QS( time_t secs ) const
     return KGlobal::locale()->formatDateTime( time_t2Q( secs ) );
 }
 
+
+void ktjview2View::filter()
+{
+    FilterDialog * dlg = new FilterDialog( this, "filter_dlg" );
+    dlg->exec();
+    delete dlg;
+    dlg = 0;
+}
 
 #include "ktjview2view.moc"

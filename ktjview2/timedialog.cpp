@@ -11,7 +11,7 @@
 
 TimeDialog::TimeDialog( QWidget *parentWidget, const QDateTime & start, const QDateTime & end )
     : KDialogBase( parentWidget, "TimeDialog", true,
-                   i18n("Setup time Frame"),
+                   i18n("Setup Time Frame"),
                    Ok|Cancel, Ok )
 {
     QVBox *vb = makeVBoxMainWidget();

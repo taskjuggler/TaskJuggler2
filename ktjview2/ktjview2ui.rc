@@ -1,6 +1,9 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="15">
+<kpartgui name="ktjview2" version="16">
 <MenuBar>
+  <Menu name="edit"><text>&amp;Edit</text>
+    <Action name="filter"/>
+  </Menu>
   <Menu name="gantt"><text>&amp;Gantt</text>
     <Action name="zoom_in"/>
     <Action name="zoom_out"/>

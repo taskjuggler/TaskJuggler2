@@ -1,6 +1,7 @@
+ // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; -*-
 /***************************************************************************
- *   Copyright (C) 2004 by Luká¹ Tinkl                                     *
- *   lukas@kde.org                                                         *
+ *   Copyright (C) 2004 by Lukas Tinkl                                     *
+ *   lukas.tinkl@suse.cz                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,27 +19,68 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <kapplication.h>
-#include <dcopclient.h>
-#include <qdatastream.h>
-#include <qstring.h>
+#ifndef _FILTER_DIALOG_
+#define _FILTER_DIALOG_
 
-int main(int argc, char **argv)
+class KDialogBase;
+
+class Resource;
+class Project;
+class FilterWidget;
+
+/**
+ * Dialog for creating filter conditions
+ *
+ * @author Lukas Tinkl <lukas.tinkl@suse.cz>
+ * @short Filter dialog
+ */
+class FilterDialog: public KDialogBase
 {
-    KApplication app(argc, argv, "ktjview2_client", false);
+    Q_OBJECT
+public:
+    /**
+     * CTOR
+     */
+    FilterDialog( QWidget * parent = 0, const char * name = 0 );
+    ~FilterDialog();
 
-    // get our DCOP client and attach so that we may use it
-    DCOPClient *client = app.dcopClient();
-    client->attach();
+private slots:
+    /**
+     * Add a line of conditions
+     */
+    void slotMore();
 
-    // do a 'send' for now
-    QByteArray data;
-    QDataStream ds(data, IO_WriteOnly);
-    if (argc > 1)
-        ds << QString(argv[1]);
-    else
-        ds << QString("http://www.kde.org");
-    client->send("ktjview2", "ktjview2Iface", "openURL(QString)", data);
+    /**
+     * Remove a line of conditions
+     */
+    void slotFewer();
 
-    return app.exec();
-}
+    /**
+     * Clear all the conditions
+     */
+    void slotClear();
+
+    /**
+     * Create a new empty filter
+     */
+    void slotNewFilter();
+
+    /**
+     * Remove the currently selected filter
+     */
+    void slotDeleteFilter();
+
+    /**
+     * Rename the current filter
+     */
+    void slotRenameFilter();
+
+private:
+    /// the base widget
+    FilterWidget * m_base;
+
+    /// list of filter criteria conditions
+    QStringList m_conditions;
+};
+
+#endif

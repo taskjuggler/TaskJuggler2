@@ -8,3 +8,5 @@ gantt.cc
 gantt.h
 gantt.moc
 gantt.o
+filterWidget.cc
+filterWidget.h
