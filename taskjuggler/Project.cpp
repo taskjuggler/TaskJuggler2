@@ -560,9 +560,6 @@ Project::scheduleAllScenarios()
             double bestRating = 0;
             if((*sci)->getOptimize())
             {
-                int runCounter = 0;
-                int bestRun = 0;
-                double bestRating = 0;
                 do
                 {
                     OptimizerRun* run = optimizer.startNewRun();
@@ -602,7 +599,7 @@ Project::scheduleAllScenarios()
             /* It's probably easier to re-run the best run again instead of
              * adding support to all classes so we can save the results of the
              * best run. The optimizer is written in a way that he will only
-             * run the best result one it has been found. */
+             * run the best result once it has been found. */
             if (!(*sci)->getOptimize() || bestRun > 0)
             {
                 OptimizerRun* run = optimizer.startNewRun();
@@ -636,9 +633,25 @@ Project::prepareScenario(int sc)
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->prepareScenario(sc);
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+    {
+        (*tli)->computeCriticalness(sc);
         (*tli)->propagateInitialValues();
+    }
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->prepareScenario(sc);
+    if (DEBUGTS(4))
+    {
+        qDebug("Allocation probabilities for the resources:");
+        for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+            qDebug("Resource %s: %f%%",
+                   (*rli)->getId().latin1(),
+                   (*rli)->getAllocationProbability(sc));
+        qDebug("Criticalnesses of the tasks with respect to resource "
+               "availability:");
+        for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+            qDebug("Task %s: %f", (*tli)->getId().latin1(),
+                   (*tli)->getCriticalness(sc));
+    }
 }
 
 void
@@ -657,7 +670,9 @@ Project::schedule(OptimizerRun* run, int sc)
 
     TaskList sortedTasks(taskList);
     sortedTasks.setSorting(CoreAttributesList::PrioDown, 0);
-    sortedTasks.setSorting(CoreAttributesList::SequenceUp, 1);
+//    sortedTasks.setSorting(CoreAttributesList::SequenceUp, 1);
+    sortedTasks.setSorting(CoreAttributesList::CriticalnessDown, 1);
+    sortedTasks.setSorting(CoreAttributesList::SequenceUp, 2);
     sortedTasks.sort();
 
     bool done;

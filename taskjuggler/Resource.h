@@ -146,6 +146,16 @@ public:
 
     bool bookingsOk(int sc);
 
+    void resetAllocationProbability(int sc) { allocationProbability[sc] = 0; }
+    void addAllocationProbability(int sc, double ap) 
+    { 
+        allocationProbability[sc] += ap; 
+    }
+    double getAllocationProbability(int sc) const 
+    { 
+        return allocationProbability[sc]; 
+    }
+    
 private:
     void getPIDs(int sc, const Interval& period, const Task* task, 
                  QStringList& pids) const;
@@ -205,6 +215,14 @@ private:
 
     SbBooking*** specifiedBookings;
     SbBooking*** scoreboards;
+
+    /**
+     * The allocation probability is calculated prior to scheduling a
+     * scenario. It specifies the likelyhood of the resource to be allocated
+     * for the full project time frame. Values larger than 1 are possible when
+     * the resource has been allocated for multiple tasks.
+     */
+    double* allocationProbability;
 } ;
 
 #endif

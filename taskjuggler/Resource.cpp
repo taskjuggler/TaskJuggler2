@@ -62,6 +62,10 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
         specifiedBookings[sc] = 0;
     }
 
+    allocationProbability = new double[p->getMaxScenarios()];
+    for (int i = 0; i < p->getMaxScenarios(); ++i)
+        allocationProbability[i] = 0;
+    
     if (!DayStartIndex)
     {
         DayStartIndex = new uint[sbSize];
@@ -161,6 +165,7 @@ Resource::~Resource()
             specifiedBookings[sc] = 0;
         }
     }
+    delete [] allocationProbability;
     delete [] specifiedBookings;
     delete [] scoreboards;
 

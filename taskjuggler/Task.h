@@ -280,6 +280,8 @@ public:
     void overlayScenario(int base, int sc);
     void prepareScenario(int sc);
     void finishScenario(int sc);
+    void computeCriticalness(int sc);
+    double getCriticalness(int sc) { return scenarios[sc].criticalness; }
 
     bool hasExtraValues(int sc) const;
 

@@ -42,7 +42,7 @@ task container1 "Container1" {
 }
 
 task container2 "Container2" {
-	end 2003-01-19-23:59
+	end 2003-01-20
 	
 	task c2 "| x-> -D" {
 		start 2003-01-13
@@ -132,7 +132,7 @@ task container3 "Container3" {
 
 task container4 "Container4" {
 	start 2003-01-11
-	end 2003-01-19-23:59
+	end 2003-01-20
 	
 	task c10 "|D x-> -D" {
 		start 2003-01-13

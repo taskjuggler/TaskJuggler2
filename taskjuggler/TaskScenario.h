@@ -118,6 +118,10 @@ private:
     /// Amount that is credited to the account at the end date.
     double endCredit;
 
+    /** Measurement for the likelyhood that the tasks gets the allocated
+     * resources. */ 
+    double criticalness;
+    
     /// User specified percentage of completion of the task
     double reportedCompletion;
 

@@ -184,8 +184,10 @@ Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
 
     if (scheduling == Task::ASAP)
     {
-        if (start == 0)
+        if (start == 0 ||
+            (effort == 0.0 && length == 0.0 && duration == 0.0 && end == 0))
             return;
+        
         if (lastSlot == 0)
         {
             lastSlot = start - 1;
@@ -203,8 +205,10 @@ Task::schedule(OptimizerRun* run, time_t& date, time_t slotDuration)
     }
     else
     {
-        if (end == 0)
+        if (end == 0 ||
+            (effort == 0.0 && length == 0.0 && duration == 0.0 && start == 0))
             return;
+
         if (lastSlot == 0)
         {
             lastSlot = end + 1;
@@ -529,7 +533,7 @@ Task::isRunaway() const
 }
 
 void
-Task::bookResources(OptimizerRun* run, time_t date, time_t slotDuration)
+Task::bookResources(OptimizerRun* /*run*/, time_t date, time_t slotDuration)
 {
     /* If the time slot overlaps with a specified shift interval, the
      * time slot must also be within the specified working hours of that
@@ -647,11 +651,9 @@ Task::bookResources(OptimizerRun* run, time_t date, time_t slotDuration)
             
             bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
-                if (run->checkArc((*rli)->getId()) &&
-                    bookResource((*rli), date, slotDuration,
+                if (bookResource((*rli), date, slotDuration,
                                  (*ali)->getLimits(), maxAvailability))
                 {
-                    run->followArc((*rli)->getId());
                     (*ali)->setLockedResource(*rli);
                     found = TRUE;
                     break;
@@ -2100,8 +2102,87 @@ Task::prepareScenario(int sc)
             scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
     }
 
+    /*
+     * To determine the criticalness of an effort based task, we need to
+     * determine the allocation probability of all of the resources. The more
+     * the resources that are allocated to a task are allocated the smaller is
+     * the likelyhood that the task will get it's allocation, the more
+     * critical it is.
+     *
+     * The allocation probability of a resource is basically effort divided by
+     * number of allocated resources. Since the efficiency of resources can
+     * vary we need to determine the overall efficiency first.
+     *
+     * TODO: We need to respect limits and shifts here!
+     */
+    double allocationEfficiency = 0;
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
+    {
         (*ali)->init();
+        if (scenarios[sc].effort > 0.0)
+        {
+            double maxEfficiency = 0;
+            for (QPtrListIterator<Resource> rli =
+                 (*ali)->getCandidatesIterator(); *rli; ++rli)
+            {
+                for (ResourceTreeIterator rti(*rli); *rti; ++rti)
+                    if ((*rti)->getEfficiency() > maxEfficiency)
+                        maxEfficiency = (*rti)->getEfficiency();
+            }
+            allocationEfficiency += maxEfficiency;
+        }
+    }
+    if (scenarios[sc].effort > 0.0)
+    {
+        /* Now we can add the allocation probability for this task to all the
+         * individual resources. */
+        double effortPerResource = effort / allocationEfficiency;
+        for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
+            for (QPtrListIterator<Resource> rli =
+                 (*ali)->getCandidatesIterator(); *rli; ++rli)
+                for (ResourceTreeIterator rti(*rli); *rti; ++rti)
+                    (*rti)->addAllocationProbability
+                        (sc, effortPerResource * (*rti)->getEfficiency());
+    }
+}
+
+void
+Task::computeCriticalness(int sc)
+{
+    if (scenarios[sc].effort > 0.0)
+    {
+        double overallAllocationProbability = 0;
+        for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
+        {
+            /* We assume that out of the candidates for an allocation the
+             * one with the smallest overall allocation probability will
+             * be assigned to the task. */
+            double smallestAllocationProbablity = 0;
+            for (QPtrListIterator<Resource> rli = 
+                 (*ali)->getCandidatesIterator(); *rli; ++rli)
+            {
+                /* If the candidate is a resource group we use the averadge
+                 * allocation probablility of all the resources of the group.
+                 */
+                int resources = 0;
+                double averageProbability = 0.0;
+                for (ResourceTreeIterator rti(*rli); *rti; ++rti, ++resources)
+                    averageProbability +=
+                        (*rti)->getAllocationProbability(sc);
+
+                if (smallestAllocationProbablity == 0 ||
+                    averageProbability < smallestAllocationProbablity)
+                    smallestAllocationProbablity = averageProbability;
+            }
+            overallAllocationProbability += smallestAllocationProbablity;
+        }
+        scenarios[sc].criticalness = ((scenarios[sc].effort *
+            overallAllocationProbability) / allocations.count()) * 1.1 *
+            (1 + previous.count() + followers.count());
+    }
+    else
+        scenarios[sc].criticalness = 0;
+        
 }
 
 void

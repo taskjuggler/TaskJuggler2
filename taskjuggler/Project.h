@@ -717,6 +717,9 @@ public:
         return allowedFlags.contains(flag) > 0;
     }
 
+    /**
+     * Converts working seconds to working days. 
+     */
     double convertToDailyLoad(long secs) const;
 
     void setKotrus(Kotrus* k);

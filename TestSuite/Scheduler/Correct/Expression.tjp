@@ -71,7 +71,3 @@ htmltaskreport "Expression_istaskstatus_ref.html" {
 	hidetask ~flag1
 }
 
-xmlreport "Expression-Export.tjx" {
-	version 2
-}
-

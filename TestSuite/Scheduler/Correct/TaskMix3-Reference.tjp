@@ -101,7 +101,7 @@ task container4 "Container4" {
   }
   task c12 "|D --> -D" {
     plan:start 2003-01-13-00:00:00-+0000
-    plan:end 2003-01-19-23:59:00-+0000
+    plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
     scheduling asap
   }
@@ -125,7 +125,7 @@ task container4 "Container4" {
   }
   task c22 "-D --> -D" {
     plan:start 2003-01-11-00:00:00-+0000
-    plan:end 2003-01-19-23:59:00-+0000
+    plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
     scheduling asap
   }
@@ -149,7 +149,7 @@ task container4 "Container4" {
   }
   task c29 "-D <-- -D" {
     plan:start 2003-01-11-00:00:00-+0000
-    plan:end 2003-01-19-23:59:00-+0000
+    plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
     scheduling alap
   }
@@ -199,7 +199,7 @@ task container2 "Container2" {
   }
   task c4 "| --> -D" {
     plan:start 2003-01-13-00:00:00-+0000
-    plan:end 2003-01-19-23:59:00-+0000
+    plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
     scheduling asap
   }
@@ -211,7 +211,7 @@ task container2 "Container2" {
   }
   task c7 "| <-- -D" {
     plan:start 2003-01-13-00:00:00-+0000
-    plan:end 2003-01-19-23:59:00-+0000
+    plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
     scheduling alap
   }

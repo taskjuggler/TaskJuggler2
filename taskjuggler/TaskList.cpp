@@ -122,6 +122,16 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
         t2->responsible->getFullName(fn2);
         return fn1.compare(fn2);
     }
+    case CriticalnessUp:
+        return t1->scenarios[sc].criticalness == 
+            t2->scenarios[sc].criticalness ? 0 :
+            t1->scenarios[sc].criticalness < 
+            t2->scenarios[sc].criticalness ? -1 : 1;
+    case CriticalnessDown:
+        return t1->scenarios[sc].criticalness == 
+            t2->scenarios[sc].criticalness ? 0 :
+            t1->scenarios[sc].criticalness > 
+            t2->scenarios[sc].criticalness ? -1 : 1;
     default:
         return CoreAttributesList::compareItemsLevel(t1, t2, level);
     }       
