@@ -30,8 +30,10 @@ noinst_HEADERS = ktjview2.h ktjview2view.h TaskItem.h timedialog.h \
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp *.cc kdgantt/*.cpp -o $(podir)/ktjview2.pot
+messages:
+	extractrc *.ui *.kcfg *.rc> rc.cpp
+	xgettext -ki18n *.cpp *.cc kdgantt/*.cpp -o $(top_srcdir)/ktjview2/po/ktjview2.pot
+	-rm -f rc.cpp
 
 KDE_ICON = ktjview2
 

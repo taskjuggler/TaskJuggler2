@@ -1,0 +1,721 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-07-14 14:31+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: filter.cpp:59 filterDialog.cpp:50
+msgid "contains"
+msgstr ""
+
+#: filter.cpp:62 filterDialog.cpp:50
+msgid "doesn't contain"
+msgstr ""
+
+#: filter.cpp:65 filterDialog.cpp:51
+msgid "equals"
+msgstr ""
+
+#: filter.cpp:68 filterDialog.cpp:51
+msgid "doesn't equal"
+msgstr ""
+
+#: filter.cpp:71
+msgid "matches regexp"
+msgstr ""
+
+#: filter.cpp:74 filterDialog.cpp:52
+msgid "doesn't match regexp"
+msgstr ""
+
+#: filter.cpp:77 filterDialog.cpp:53
+msgid "greater than"
+msgstr ""
+
+#: filter.cpp:80 filterDialog.cpp:53
+msgid "less than or equal"
+msgstr ""
+
+#: filter.cpp:83 filterDialog.cpp:54
+msgid "less than"
+msgstr ""
+
+#: filter.cpp:86 filterDialog.cpp:54
+msgid "greater than or equal"
+msgstr ""
+
+#: filterDialog.cpp:48
+msgid "Filter"
+msgstr ""
+
+#: filterDialog.cpp:52
+msgid "matches reqexp"
+msgstr ""
+
+#: filterDialog.cpp:103
+msgid "new filter"
+msgstr ""
+
+#: filterDialog.cpp:117
+msgid "Do you want to remove the filter '%1'?"
+msgstr ""
+
+#: filterDialog.cpp:131
+msgid "Filter name"
+msgstr ""
+
+#: filterDialog.cpp:131
+msgid "Enter the new filter name:"
+msgstr ""
+
+#: filterDialog.cpp:134
+msgid "Filter with name '%1' already exists. Please try again."
+msgstr ""
+
+#: klistviewsearchline.cpp:220
+msgid "Search Columns"
+msgstr ""
+
+#: klistviewsearchline.cpp:222
+msgid "All Columns"
+msgstr ""
+
+#: ktjview2.cpp:118
+msgid "Filter..."
+msgstr ""
+
+#: ktjview2.cpp:123
+msgid "&Filter for: All Tasks"
+msgstr ""
+
+#: ktjview2.cpp:125
+msgid "All Tasks"
+msgstr ""
+
+#: ktjview2.cpp:125
+msgid "Completed Tasks"
+msgstr ""
+
+#: ktjview2.cpp:125
+msgid "Date Range..."
+msgstr ""
+
+#: ktjview2.cpp:126
+msgid "Incomplete Tasks"
+msgstr ""
+
+#: ktjview2.cpp:126
+msgid "Milestones"
+msgstr ""
+
+#: ktjview2.cpp:126
+msgid "Summary Tasks"
+msgstr ""
+
+#: ktjview2.cpp:127
+msgid "Using Resource..."
+msgstr ""
+
+#: ktjview2.cpp:133
+msgid "Calendar mode"
+msgstr ""
+
+#: ktjview2.cpp:136
+msgid "Zoom &in"
+msgstr ""
+
+#: ktjview2.cpp:138
+msgid "Zoom &out"
+msgstr ""
+
+#: ktjview2.cpp:140
+msgid "&Fit to page"
+msgstr ""
+
+#: ktjview2.cpp:142
+msgid "Set &timeframe"
+msgstr ""
+
+#: ktjview2.cpp:145
+msgid "Scale"
+msgstr ""
+
+#: ktjview2.cpp:147
+msgid "Minute"
+msgstr ""
+
+#: ktjview2.cpp:147
+msgid "Hour"
+msgstr ""
+
+#: ktjview2.cpp:147
+msgid "Day"
+msgstr ""
+
+#: ktjview2.cpp:148
+msgid "Week"
+msgstr ""
+
+#: ktjview2.cpp:148
+msgid "Month"
+msgstr ""
+
+#: ktjview2.cpp:148
+msgid "Auto"
+msgstr ""
+
+#: ktjview2.cpp:157
+msgid "&Filter:"
+msgstr ""
+
+#: ktjview2.cpp:161
+msgid "Filter label"
+msgstr ""
+
+#: ktjview2.cpp:163
+msgid "Filter lineedit"
+msgstr ""
+
+#: ktjview2.cpp:168
+msgid "Query resource..."
+msgstr ""
+
+#: ktjview2.cpp:173
+msgid "Info"
+msgstr ""
+
+#: ktjview2.cpp:177 ktjview2.cpp:314
+msgid "Gantt"
+msgstr ""
+
+#: ktjview2.cpp:181 selectDialog.cpp:46
+msgid "Resources"
+msgstr ""
+
+#: ktjview2.cpp:185 selectDialog.cpp:39
+msgid "Tasks"
+msgstr ""
+
+#: ktjview2.cpp:266
+msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
+msgstr ""
+
+#: ktjview2.cpp:267
+msgid "to open ..."
+msgstr ""
+
+#: ktjview2.cpp:392
+msgid "&Filter for: %1"
+msgstr ""
+
+#: ktjview2view.cpp:115 ktjview2view.cpp:131 selectDialog.cpp:78
+msgid "ID"
+msgstr ""
+
+#: ktjview2view.cpp:116 ktjview2view.cpp:132 selectDialog.cpp:79
+msgid "Name"
+msgstr ""
+
+#: ktjview2view.cpp:117
+msgid "Rate"
+msgstr ""
+
+#: ktjview2view.cpp:118
+msgid "Efficiency"
+msgstr ""
+
+#: ktjview2view.cpp:119
+msgid "Min. Effort"
+msgstr ""
+
+#: ktjview2view.cpp:120
+msgid "Daily Max"
+msgstr ""
+
+#: ktjview2view.cpp:121
+msgid "Weekly Max"
+msgstr ""
+
+#: ktjview2view.cpp:122
+msgid "Monthly Max"
+msgstr ""
+
+#: ktjview2view.cpp:133
+msgid "Start"
+msgstr ""
+
+#: ktjview2view.cpp:134
+msgid "End"
+msgstr ""
+
+#: ktjview2view.cpp:135
+msgid "Duration"
+msgstr ""
+
+#: ktjview2view.cpp:136
+msgid "Priority"
+msgstr ""
+
+#: ktjview2view.cpp:137
+msgid "Completion"
+msgstr ""
+
+#: ktjview2view.cpp:138
+msgid "Status"
+msgstr ""
+
+#: ktjview2view.cpp:139
+msgid "Responsible"
+msgstr ""
+
+#: ktjview2view.cpp:140
+msgid "Effort"
+msgstr ""
+
+#: ktjview2view.cpp:141
+msgid "Allocations"
+msgstr ""
+
+#: ktjview2view.cpp:147
+msgid ""
+"<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
+msgstr ""
+
+#: ktjview2view.cpp:152
+msgid "Jump to task details"
+msgstr ""
+
+#: ktjview2view.cpp:182 kdgantt/KDGanttView.cpp:868
+msgid "Printing Time: %1"
+msgstr ""
+
+#: ktjview2view.cpp:222
+msgid "Loading project"
+msgstr ""
+
+#: ktjview2view.cpp:239
+msgid "Opening XML project"
+msgstr ""
+
+#: ktjview2view.cpp:246
+msgid "Parsing XML project"
+msgstr ""
+
+#: ktjview2view.cpp:255
+msgid "Opening TJP project"
+msgstr ""
+
+#: ktjview2view.cpp:263
+msgid "Parsing TJP project"
+msgstr ""
+
+#: ktjview2view.cpp:270
+msgid "This filetype is not supported."
+msgstr ""
+
+#: ktjview2view.cpp:278
+msgid "Generating cross references"
+msgstr ""
+
+#: ktjview2view.cpp:282
+msgid "Taskjugggler failed to generate cross references on data structures."
+msgstr ""
+
+#: ktjview2view.cpp:288
+msgid "Scheduling all scenarios"
+msgstr ""
+
+#: ktjview2view.cpp:292
+msgid "Taskjugggler failed to schedule the scenarios."
+msgstr ""
+
+#: ktjview2view.cpp:298
+msgid "Building the views"
+msgstr ""
+
+#: ktjview2view.cpp:314
+msgid "Successfully loaded project %1"
+msgstr ""
+
+#: ktjview2view.cpp:328
+msgid "Version: %1<br>"
+msgstr ""
+
+#: ktjview2view.cpp:329
+msgid "Currency: %1<br>"
+msgstr ""
+
+#: ktjview2view.cpp:333
+msgid "Project start: %1<br>"
+msgstr ""
+
+#: ktjview2view.cpp:337
+msgid "Project end: %1<br>"
+msgstr ""
+
+#: ktjview2view.cpp:340
+msgid "Report date: %1<br>"
+msgstr ""
+
+#: ktjview2view.cpp:409 ktjview2view.cpp:425
+msgid ""
+"Task group: %1\n"
+"Start: %2\n"
+"End: %3"
+msgstr ""
+
+#: ktjview2view.cpp:414 ktjview2view.cpp:430 ktjview2view.cpp:463
+msgid "(%1 d)"
+msgstr ""
+
+#: ktjview2view.cpp:445
+msgid ""
+"Milestone: %1\n"
+"Date: %2"
+msgstr ""
+
+#: ktjview2view.cpp:457
+msgid ""
+"Task: %1\n"
+"Start: %2\n"
+"End: %3\n"
+"Allocations: %4"
+msgstr ""
+
+#: ktjview2view.cpp:660
+msgid "Not started"
+msgstr ""
+
+#: ktjview2view.cpp:663
+msgid "In progress (late)"
+msgstr ""
+
+#: ktjview2view.cpp:666
+msgid "In progress"
+msgstr ""
+
+#: ktjview2view.cpp:669
+msgid "On time"
+msgstr ""
+
+#: ktjview2view.cpp:672
+msgid "In progress (early)"
+msgstr ""
+
+#: ktjview2view.cpp:675
+msgid "Finished"
+msgstr ""
+
+#: ktjview2view.cpp:679
+msgid "Undefined"
+msgstr ""
+
+#: ktjview2view.cpp:739
+msgid "Task"
+msgstr ""
+
+#: ktjview2view.cpp:740
+msgid "Task Group"
+msgstr ""
+
+#: ktjview2view.cpp:741
+msgid "Milestone"
+msgstr ""
+
+#: ktjview2view.cpp:830
+msgid "Date Range"
+msgstr ""
+
+#: rc.cpp:1 rc.cpp:22 rc.cpp:35
+msgid "Form1"
+msgstr ""
+
+#: rc.cpp:2
+msgid "Available filters"
+msgstr ""
+
+#: rc.cpp:4
+msgid "Ctrl+T, Ctrl+T"
+msgstr ""
+
+#: rc.cpp:5
+msgid "Add a new filter"
+msgstr ""
+
+#: rc.cpp:7
+msgid "Remove the selected filter"
+msgstr ""
+
+#: rc.cpp:9
+msgid "Rename the selected filter"
+msgstr ""
+
+#: rc.cpp:10
+msgid "Filter criteria"
+msgstr ""
+
+#: rc.cpp:11
+msgid "Matches all of the following"
+msgstr ""
+
+#: rc.cpp:12
+msgid "&More"
+msgstr ""
+
+#: rc.cpp:13
+msgid "Alt+M"
+msgstr ""
+
+#: rc.cpp:14
+msgid "&Fewer"
+msgstr ""
+
+#: rc.cpp:15
+msgid "Alt+F"
+msgstr ""
+
+#: rc.cpp:16
+msgid "Cl&ear"
+msgstr ""
+
+#: rc.cpp:17
+msgid "Alt+E"
+msgstr ""
+
+#: rc.cpp:18
+msgid "Matches any of the following"
+msgstr ""
+
+#: rc.cpp:19
+msgid "Property"
+msgstr ""
+
+#: rc.cpp:20
+msgid "Expression"
+msgstr ""
+
+#: rc.cpp:21
+msgid "Value"
+msgstr ""
+
+#: rc.cpp:23
+msgid "Week&day background color:"
+msgstr ""
+
+#: rc.cpp:24
+msgid "&Weekend background color:"
+msgstr ""
+
+#: rc.cpp:25
+msgid "Task &group color:"
+msgstr ""
+
+#: rc.cpp:26
+msgid "&Task color:"
+msgstr ""
+
+#: rc.cpp:27
+msgid "&Milestone color:"
+msgstr ""
+
+#: rc.cpp:28
+msgid "Use &alternate background for horizontal lines"
+msgstr ""
+
+#: rc.cpp:29
+msgid "Alt+A"
+msgstr ""
+
+#: rc.cpp:36
+msgid "&Check for:"
+msgstr ""
+
+#: rc.cpp:37
+msgid "availability"
+msgstr ""
+
+#: rc.cpp:38
+msgid "allocations"
+msgstr ""
+
+#: rc.cpp:39
+msgid "load"
+msgstr ""
+
+#: rc.cpp:40
+msgid "available workload"
+msgstr ""
+
+#: rc.cpp:41
+msgid "current load"
+msgstr ""
+
+#: rc.cpp:42
+msgid "credits"
+msgstr ""
+
+#: rc.cpp:43
+msgid "vacations"
+msgstr ""
+
+#: rc.cpp:44
+msgid "Result:"
+msgstr ""
+
+#: rc.cpp:46
+msgid "Task:"
+msgstr ""
+
+#: rc.cpp:47
+msgid "Date:"
+msgstr ""
+
+#: rc.cpp:48
+msgid "Scenario:"
+msgstr ""
+
+#: rc.cpp:49 rc.cpp:52 rc.cpp:55 rc.cpp:57 rc.cpp:59
+msgid "From:"
+msgstr ""
+
+#: rc.cpp:50 rc.cpp:51 rc.cpp:54 rc.cpp:56 rc.cpp:58
+msgid "To:"
+msgstr ""
+
+#: rc.cpp:53 rc.cpp:60
+msgid "Account type:"
+msgstr ""
+
+#: rc.cpp:61
+msgid "Vacation day:"
+msgstr ""
+
+#: rc.cpp:62
+msgid "of &resource:"
+msgstr ""
+
+#: rc.cpp:63
+msgid "Background color for week days."
+msgstr ""
+
+#: rc.cpp:64
+msgid "Background color for weekend days."
+msgstr ""
+
+#: rc.cpp:65
+msgid "Color for task items."
+msgstr ""
+
+#: rc.cpp:66
+msgid "Color task group items."
+msgstr ""
+
+#: rc.cpp:67
+msgid "Color for milestone items."
+msgstr ""
+
+#: rc.cpp:68
+msgid "Show alternate horizontal lines."
+msgstr ""
+
+#: rc.cpp:69
+msgid "&Edit"
+msgstr ""
+
+#: rc.cpp:70
+msgid "&Gantt"
+msgstr ""
+
+#: rc.cpp:71
+msgid "&Tasks"
+msgstr ""
+
+#: rc.cpp:72
+msgid "Sidebar"
+msgstr ""
+
+#: rc.cpp:73
+msgid "Gantt Toolbar"
+msgstr ""
+
+#: rc.cpp:74
+msgid "Filter Toolbar"
+msgstr ""
+
+#: resourceQueryDialog.cpp:42
+msgid "Query Resource"
+msgstr ""
+
+#: resourceQueryDialog.cpp:42
+msgid "Check"
+msgstr ""
+
+#: selectDialog.cpp:42
+msgid "Select tasks:"
+msgstr ""
+
+#: selectDialog.cpp:49
+msgid "Select resources:"
+msgstr ""
+
+#: selectDialog.cpp:75
+msgid "Select:"
+msgstr ""
+
+#: timedialog.cpp:26
+msgid "Setup Time Frame"
+msgstr ""
+
+#: timedialog.cpp:33
+msgid "Start Time: "
+msgstr ""
+
+#: timedialog.cpp:37
+msgid "End Time: "
+msgstr ""
+
+#: kdgantt/KDGanttSemiSizingControl.cpp:255
+msgid ""
+"Click on this button to show the \n"
+"legend at the bottom of the widget"
+msgstr ""
+
+#: kdgantt/KDGanttSemiSizingControl.cpp:256
+msgid "Show / hide legend"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2524
+msgid " Legend is hidden"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2543
+msgid "Legend: "
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2625
+msgid "Legend:"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2673
+msgid "Task Name"
+msgstr ""
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:2695
+msgid "No item Found"
+msgstr ""
+
+#: kdgantt/KDGanttViewTaskLink.cpp:179 kdgantt/KDGanttViewTaskLink.cpp:180
+msgid "Tasklink"
+msgstr ""
