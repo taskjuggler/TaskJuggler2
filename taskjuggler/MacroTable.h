@@ -52,6 +52,8 @@ public:
     ~MacroTable() { }
 
     bool addMacro(Macro* m);
+    void setMacro(Macro* m);
+
     void pushArguments(QStringList* sl)
     {
         argStack.append(sl);

@@ -1,0 +1,34 @@
+project repmac "ReportMacros" "$Id$" 2003-06-18 2003-09-18 {
+	now 2003-06-19
+}
+
+resource r1 "Resource 1"
+resource r2 "Resource 2"
+
+task t1 "Task 1" {
+  start 2003-06-18
+	effort 10d
+	allocate r1
+}
+
+task t2 "Task t2" {
+	start 2003-06-18
+	effort 10d
+	allocate r2
+}
+
+htmltaskreport "." {
+	columns hierarchno { 
+		        title "hierarchno"
+						titleurl "http://$${0}" 
+					},
+	        name {
+							celltext "$${id}"
+					},
+					weekly {
+						titleurl "http://$${month}"
+						subtitleurl
+					 	"xx http://$${day}-$${month}-$${quarter}-$${week}-$${year}"
+					}
+}
+	

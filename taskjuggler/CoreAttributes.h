@@ -53,10 +53,10 @@ public:
     uint getSequenceNo() const { return sequenceNo; }
 
     void setHierarchNo(uint no);
-    uint getHierarchNo() const { return hierarchNo; }
+    QString getHierarchNo() const;
 
     void setHierarchIndex(uint no);
-    uint getHierarchIndex() const { return hierarchIndex; }
+    QString getHierarchIndex() const;
     
     Project* getProject() const { return project; }
 

@@ -954,56 +954,75 @@ ReportElement::setMacros(TableLineInfo* tli)
 {
     mt.clear();
 
+    /* In some cases it might be useful to have not only the ID of the current
+     * property but also the assigned property (e. g. in task reports with
+     * resources, we want the task ID while processing the resource line. */ 
+    if (tli->task)
+        mt.addMacro(new Macro(KW("taskid"), tli->task->getId(), 
+                              defFileName, defFileLine));
+    if (tli->resource)
+        mt.addMacro(new Macro(KW("resourceid"), tli->resource->getId(),
+                              defFileName, defFileLine));
+    if (tli->account)
+        mt.addMacro(new Macro(KW("accountid"), tli->account->getId(),
+                              defFileName, defFileLine));
+    
     // Set macros for built-in attributes.
-    mt.addMacro(new Macro(KW("id"), tli->ca1->getId(), 
+    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() : "", 
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("no"), 
-                          QString("%1").arg(tli->ca1->getSequenceNo()),
+    mt.addMacro(new Macro(KW("no"), tli->ca1 ? 
+                          QString("%1").arg(tli->ca1->getSequenceNo()) :
+                          QString(),
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("index"), 
-                          QString("%1").arg(tli->ca1->getIndex()),
+    mt.addMacro(new Macro(KW("index"), tli->ca1 ? 
+                          QString("%1").arg(tli->ca1->getIndex()) :
+                          QString(),
                           defFileName, defFileLine));
-/*    mt.addMacro(new Macro(KW("hierarchno"), tci->tli->ca1->hierarchno(), 
+    mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ? 
+                          tli->ca1->getHierarchNo() : "", 
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("hierarchindex"), tci->tli->ca1->hierarchIndex(), 
-                          defFileName, defFileLine));*/
-    mt.addMacro(new Macro(KW("name"), tli->ca1->getName(), 
+    mt.addMacro(new Macro(KW("hierarchindex"), 
+                          tli->ca1 ? tli->ca1->getHierarchIndex() : "", 
                           defFileName, defFileLine));
- 
-    QDict<CustomAttributeDefinition> dict; 
-    if (strcmp(tli->ca1->getType(), "Task") == 0)
-        dict = report->getProject()->getTaskAttributeDict();
-    else if (strcmp(tli->ca1->getType(), "Resource") == 0)
-        dict = report->getProject()->getResourceAttributeDict();
-    else if (strcmp(tli->ca1->getType(), "Account") == 0)
-        dict = report->getProject()->getAccountAttributeDict();
-    else
-        return;
+    mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : "", 
+                          defFileName, defFileLine));
+    
+    QPtrList< QDict<CustomAttributeDefinition> > dictList;
+    dictList.setAutoDelete(TRUE);
+    dictList.append(new QDict<CustomAttributeDefinition>
+                    (report->getProject()->getTaskAttributeDict()));
+    dictList.append(new QDict<CustomAttributeDefinition>
+                    (report->getProject()->getResourceAttributeDict()));
+    dictList.append(new QDict<CustomAttributeDefinition>
+                    (report->getProject()->getAccountAttributeDict()));
 
-    /* TODO: I really don't like this solution since it creates empty macros
-     * and there is no clean way to avoid 'undefined macro' errors in mixed
-     * task/resource reports. */
-    QDictIterator<CustomAttributeDefinition> cadi(dict);
-    for ( ; cadi.current(); ++cadi)
+    for (QPtrListIterator< QDict<CustomAttributeDefinition> > dli(dictList);
+         *dli; ++dli)
     {
-        const CustomAttribute* custAttr;
-        QString macroName = cadi.currentKey();
-        QString macroValue;
-        if ((custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
+        QDictIterator<CustomAttributeDefinition> cadi(**dli);
+        for ( ; cadi.current(); ++cadi)
         {
-            switch (custAttr->getType())
+            const CustomAttribute* custAttr;
+            QString macroName = cadi.currentKey();
+            QString macroValue;
+            if (tli->ca1 &&
+                (custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
             {
-                case CAT_Text:
-                    macroValue = ((TextAttribute*) custAttr)->getText();
-                    break;
-                case CAT_Reference:
-                    macroValue = ((ReferenceAttribute*) custAttr)->getUrl();
-                    break;
-                default:
-                    break;
+                switch (custAttr->getType())
+                {
+                    case CAT_Text:
+                        macroValue = ((TextAttribute*) custAttr)->getText();
+                        break;
+                    case CAT_Reference:
+                        macroValue = ((ReferenceAttribute*) custAttr)->getUrl();
+                        break;
+                    default:
+                        break;
+                }
             }
+            mt.addMacro(new Macro(macroName, macroValue, defFileName, 
+                                  defFileLine));
         }
-        mt.addMacro(new Macro(macroName, macroValue, defFileName, defFileLine));
     }
 }
 

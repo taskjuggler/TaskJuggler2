@@ -1,9 +1,7 @@
 For 1.9.0:
 - Save user-defined attributes to XML.
 - Implement 'mandatory' attribute for task allocations.
-- Document user-defined attributes.
 - Document optional column attributes
-- Document htmlstatusreport
 
 For 1.9.1:
 - Remove old color support

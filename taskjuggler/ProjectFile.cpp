@@ -3610,6 +3610,33 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                 }
                 tci->setTitle(token);
             }
+            else if (token == KW("titleurl"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return 0;
+                }
+                tci->setTitleURL(token);
+            }
+            else if (token == KW("subtitle"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return 0;
+                }
+                tci->setSubTitle(token);
+            }
+            else if (token == KW("subtitleurl"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return 0;
+                }
+                tci->setSubTitleURL(token);
+            }
             else if (token == KW("celltext"))
             {
                 if (nextToken(token) != STRING)
@@ -3618,6 +3645,15 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
                     return 0;
                 }
                 tci->setCellText(token);
+            }
+            else if (token == KW("cellurl"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return 0;
+                }
+                tci->setCellURL(token);
             }
             else
             {

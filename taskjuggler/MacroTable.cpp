@@ -27,6 +27,12 @@ MacroTable::addMacro(Macro* macro)
     return TRUE;
 }
 
+void
+MacroTable::setMacro(Macro* macro)
+{
+    macros.replace(macro->getName(), macro);
+}
+
 QString
 MacroTable::resolve(const QString& name) const
 {

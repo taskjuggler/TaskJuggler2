@@ -21,7 +21,7 @@ resource r1 "Resource 1" {
 task t1 "Task 1" {
 	start 2003-05-28
 	MyTLink "http://www.taskjuggler.org" { label "TJ Web" }
-	MyTText "TaskJuggler is great!"
+	MyTText "TJ is great!"
 	MyText "No man's land!"
 
 	task t3 "Task 3" {

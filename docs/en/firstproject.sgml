@@ -343,7 +343,7 @@ resources directly without using a macro.</para>
 <para><screen>
     task gui "Graphical User Interface" {
       effort 35d
-      actualeffort 40d
+      actual:effort 40d
       depends !database, !backend
       allocate dev2
       allocate dev3
@@ -354,13 +354,19 @@ resources directly without using a macro.</para>
 scenarios. The first scenario is called the plan scenario. The other
 is referred to as actual scenario. Many of the reports allow you to
 put the values of both scenarios side by side to each other, so you
-can compare the two scenarios. The two scenarios must have the same
+can compare the two scenarios. By default taskjuggler uses two
+scenarios. The default scenario is called
+<computeroutput>plan</computeroutput> and the other is called
+<computeroutput>actual</computeroutput>. All scenario specific values
+that are not explicitly stated for the actual scenario are taken from
+the plan scenario. So the user only has to specify the values that
+differ in the actual scenario. The two scenarios must have the same
 task structure and the same dependencies. But the start and end dates
 of tasks as well as the duration may vary. In the example we have
 planed the work on the graphical user interface to be 35 man days. It
-turned out that we actually needed 40 man days. The <link
-linkend="task_actualeffort">actualeffort</link> attribute can be used
-to specify this.</para>
+turned out that we actually needed 40 man days. By prefixing the start
+effort attribute with <computeroutput>actual:</computeroutput> the
+effort value for the actual scenario can be specified.</para>
 
 <para><screen>
     task backend "Back-End Functions" {
@@ -468,7 +474,7 @@ date.</para>
     task start "Project start" {
       milestone
       start 2002-01-16
-      actualstart 2002-01-20
+      actual:start 2002-01-20
       startcredit 33000.0
     }
 
@@ -501,9 +507,9 @@ dependency or a fixed start date. For the first milestone we have used
 the attribute <link linkend="task_start">start</link> to set a fixed
 start date. All other tasks have direct or indirect dependencies on
 this task. Moving back the start date will slip the whole project.
-This has actually happened, so we use the <link
-linkend="task_actualstart">actualstart</link> attribute to specify the
-real start of the project 4 days later.</para>
+This has actually happened, so we use the
+<computeroutput>actual:</computeroutput> prefix again to specify the
+start date for the actual scenario.</para>
 
 <para>Every milestone is linked to a customer payment. By using the
 <link linkend="task_startcredit">startcredit</link> attribute we can

@@ -42,8 +42,20 @@ public:
     void setTitle(const QString& t) { title = t; }
     const QString& getTitle() const { return title; }
 
+    void setTitleURL(const QString& t) { titleURL = t; }
+    const QString& getTitleURL() const { return titleURL; }
+
+    void setSubTitle(const QString& t) { subTitle = t; }
+    const QString& getSubTitle() const { return subTitle; }
+
+    void setSubTitleURL(const QString& t) { subTitleURL = t; }
+    const QString& getSubTitleURL() const { return subTitleURL; }
+
     void setCellText(const QString& t) { cellText = t; }
     const QString& getCellText() const { return cellText; }
+
+    void setCellURL(const QString& t) { cellURL = t; }
+    const QString& getCellURL() const { return cellURL; }
 
     void clearSum();
     void clearMemory();
@@ -58,7 +70,11 @@ protected:
     QString name;
     uint maxScenarios;
     QString title;
+    QString titleURL;
+    QString subTitle;
+    QString subTitleURL;
     QString cellText;
+    QString cellURL;
     
     QMap<QString, double>* sum;
     QMap<QString, double>* memory;

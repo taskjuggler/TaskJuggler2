@@ -909,27 +909,16 @@ linkend="string">STRING</link><member>
 </simplelist></para>
 
 <para>The <computeroutput>rawstylesheet</computeroutput> attribute can
-be used to change the style sheet of the html report. The default
-style sheet looks similar to this one:</para>
+be used to change the style sheet of the html report. A user-defined
+stylesheet could look like this one:</para>
 
 <para><screen>
-.default { background-color:#f3ebae; font-size:70%; text-align:center }
-.defaultlight { background-color:#fffadd; font-size:70%; text-align:center }
-.task { background-color:#f3ebae; font-size:100%; text-align:left }
-.tasklight { background-color:#fffadd; font-size:100%; text-align:left }
-.available { background-color:#a4ff8d; font-size:70%; text-align:center }
-.vacation { background-color:#fffc60; font-size:70%; text-align:center }
-.weekend { background-color:#ffec80; font-size:70%; text-align:center }
-.milestone { background-color:#ff2a2a; font-size:70%; text-align:center }
-.booked { background-color:#ff9191; font-size:70%; text-align:center }
-.bookedlight { background-color:#ffbfbf; font-size:70%; text-align:center }
-.headersmall { background-color:#a5c2ff; font-size:70%; text-align:center }
-.headerbig { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
-.completed { background-color:#87ff75; font-size:70%; text-align:center }
-.completedlight { background-color:#a1ff9a; font-size:70%; text-align:center }
-.today { background-color:#a387ff; font-size:70%; text-align:center }
+.tj_table { text-align:center }
+.tj_header_row { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
+.tj_row { text-algin:left }
+.tj_cell { background-color:#f3ebae; font-size:70%; text-align:center }
+.tj_header_cell { background-color:#a5c2ff; font-size:70%; text-align:center }
 </screen></para>
-
 </sect2>
 <sect2 id="htmltaskreport_rawtail"><title>rawtail &lt;html&gt;</title>
 
@@ -1292,10 +1281,10 @@ digits.</para>
 </simplelist></para>
 
 <para>Generates a report covering the current status of the project.
-The report consists of 4 tables. The first lists all tasks that should
+The report consists of 4 tables. The first table lists all tasks that should
 have been finished already, but are not. The scenario specific
 attribute <link linkend="task_statusnote">statusnote</link> can be
-used to explain the reason for the delay of add a more detailed
+used to explain the reason for the delay or a more detailed
 description of the task status. The second table lists all tasks that
 are still in progress and are on or ahead of schedule. The third table
 lists all task that have been completed during the report interval.
@@ -1348,25 +1337,15 @@ linkend="string">STRING</link><member>
 </simplelist></para>
 
 <para>The <computeroutput>rawstylesheet</computeroutput> attribute can
-be used to change the style sheet of the html report. The default
-style sheet looks similar to this one:</para>
+be used to change the style sheet of the html report. A user-defined
+stylesheet could look like this one:</para>
 
 <para><screen>
-.default { background-color:#f3ebae; font-size:70%; text-align:center }
-.defaultlight { background-color:#fffadd; font-size:70%; text-align:center }
-.task { background-color:#f3ebae; font-size:100%; text-align:left }
-.tasklight { background-color:#fffadd; font-size:100%; text-align:left }
-.available { background-color:#a4ff8d; font-size:70%; text-align:center }
-.vacation { background-color:#fffc60; font-size:70%; text-align:center }
-.weekend { background-color:#ffec80; font-size:70%; text-align:center }
-.milestone { background-color:#ff2a2a; font-size:70%; text-align:center }
-.booked { background-color:#ff9191; font-size:70%; text-align:center }
-.bookedlight { background-color:#ffbfbf; font-size:70%; text-align:center }
-.headersmall { background-color:#a5c2ff; font-size:70%; text-align:center }
-.headerbig { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
-.completed { background-color:#87ff75; font-size:70%; text-align:center }
-.completedlight { background-color:#a1ff9a; font-size:70%; text-align:center }
-.today { background-color:#a387ff; font-size:70%; text-align:center }
+.tj_table { text-align:center }
+.tj_header_row { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
+.tj_row { text-algin:left }
+.tj_cell { background-color:#f3ebae; font-size:70%; text-align:center }
+.tj_header_cell { background-color:#a5c2ff; font-size:70%; text-align:center }
 </screen></para>
 
 </sect2>
@@ -1384,6 +1363,22 @@ individual needs.</para>
 <para>Optional attributes:</para>
 
 <para>See <link linkend="htmltaskreport">htmltaskreport</link>.</para>
+
+<para><screen>
+htmlstatusreport "." {
+	headline "The big headline"
+	caption "The big caption"
+	table 1 {
+		headline "This is the headline of the first table."
+		caption "This is the caption of the first table."
+		sorttasks indexup
+		hidetask 0
+	}
+	table 2 {
+		columns seqno, name, cost, weekly
+	}
+}
+</screen></para>
 </sect2>
 </sect1>
 <sect1 id="htmlweeklycalendar"><title>htmlweeklycalendar
@@ -2218,6 +2213,18 @@ linkend="string">STRING</link></member>
 <para>Tasks may be nested and some attributes are inherited by the
 subtasks.</para>
 
+<para>Some attributes are scenario specific. To specify the scenario
+for which the attribute is meant, the user can prefix the attribute
+with the scenario ID and a colon. If no scenario ID prefix is used,
+the plan scenario is used.</para>
+
+<para><screen>
+task t "Task" {
+  plan:start 2003-06-16
+  actual:end 2003-06-17
+}
+</screen></para>
+
 <para>Optional attributes:</para>
 
 <sect2 id="task_account"><title>account &lt;id&gt;</title>
@@ -2238,107 +2245,6 @@ specified for the task, it will generate neither cost nor revenue.</para>
 definition of the subtask.</para>
 
 <para>See also: <link linkend="account">account</link></para>
-
-</sect2>
-<sect2 id="task_actualduration"><title>actualduration &lt;number&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>number:</member><member><link linkend="real">REAL</link></member>
-<member>unit:</member><member><link linkend="unit">UNIT</link></member>
-</simplelist></para>
-
-<para>Specifies the actual time the task occupies the resources. This
-is calender time, not working time. 7d means one week.</para>
-
-<para>Tasks may not have subtasks if this attribute is used.</para>
-
-<para>See also: <link linkend="task_actualeffort">actualeffort</link>,
-<link linkend="task_actuallength">actuallength</link>, <link
-linkend="task_duration">duration</link></para>
-
-</sect2>
-<sect2 id="task_actualeffort"><title>actualeffort &lt;number&gt;
-&lt;unit&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>number:</member><member><link
-linkend="real">REAL</link></member>
-<member>unit:</member><member><link
-linkend="unit">UNIT</link></member>
-</simplelist></para>
-
-<para>Specifies the actual effort needed to complete the task. An
-effort of 4d can be done with 2 full-time resources in 2 days.</para>
-
-<para>WARNING: In almost all real world projects effort is not the product
-of time and resources. This is only true if the task can be
-partitioned without adding any overhead. For more information about
-this read "The Mythical Man-Month" by Frederick P. Brooks, Jr.</para>
-
-<para>Tasks may not have subtasks if this attribute is used.</para>
-
-<para>See also: <link
-linkend="task_actualduration">actualduration</link>, <link
-linkend="task_actuallength">actuallength</link>, <link
-linkend="task_effort">effort</link></para>
-
-</sect2>
-<sect2 id="task_actualend"><title>actualend &lt;date&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>date:</member><member><link
-linkend="date">DATE</link></member>
-</simplelist></para>
-
-<para>The actual end date of the task. This can be specified to compare the
-planned and actual dates.</para>
-
-<para>See also: <link linkend="task_end">end</link>, <link
-linkend="task_actualstart">actualstart</link></para>
-
-</sect2>
-<sect2 id="task_actuallength"><title>actuallength &lt;number&gt;
-&lt;unit&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>number:</member><member><link linkend="real">REAL</link></member>
-
-<member>unit:</member><member><link linkend="unit">UNIT</link></member>
-</simplelist></para>
-
-<para>Specifies the actual time the task occupies the resources. This
-is working time, not calender time. 7d means 7 working days, not one
-week. Whether a day is considered a working day or not depends on the
-defined <link linkend="project_workinghours">working hours</link> and global
-<link linkend="vacation">vacations</link>.<para>
-
-<para>Tasks may not have subtasks if this attribute is used.</para>
-
-<para>See also: <link linkend="task_actualduration">actualduration</link>, <link
-linkend="task_actualeffort">actualeffort</link>, <link
-linkend="task_length">length</link></para>
-
-</sect2>
-<sect2 id="task_actualscheduled"><title>actualscheduled</title>
-
-<para> This marks the task as being scheduled for the actual scenario.
-If this attribute is specified, the task must have a fixed actual
-start and end date. It's primarily intended for internal use only.
-</para>
-
-</sect2>
-<sect2 id="task_actualstart"><title>actualstart &lt;date&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>date:</member><member><link
-linkend="date">DATE</link></member>
-</simplelist></para>
-
-<para>The actual start date of the task. This can be specified to
-compare the planned and actual dates.</para>
-
-<para>See also: <link linkend="task_start">start</link>, <link
-linkend="task_actualend">actualend</link></para>
 
 </sect2>
 <sect2 id="task_allocate"><title>allocate &lt;id&gt; [, &lt;id&gt;] </title>
@@ -2460,6 +2366,8 @@ useful for project tracking.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para>
 
+<para>This attribute is scenario specific.</para>
+
 </sect2>
 <sect2 id="task_depends"><title>depends
 &lt;id&gt; [, &lt;id&gt;]</title>
@@ -2510,6 +2418,7 @@ time, not working time. 7d means one week.</para>
 <para>See also: <link linkend="task_effort">effort</link>, <link
 linkend="task_length">length</link></para>
 
+<para>This attribute is scenario specific.</para>
 </sect2>
 <sect2 id="task_effort"><title>effort &lt;number&gt;
 &lt;unit&gt;</title>
@@ -2534,6 +2443,8 @@ this read "The Mythical Man-Month" by Frederick P. Brooks, Jr.</para>
 <para>See also: <link linkend="task_duration">duration</link>, <link
 linkend="task_length">length</link></para>
 
+<para>This attribute is scenario specific.</para>
+
 </sect2>
 <sect2 id="task_end"><title>end &lt;date&gt;</title>
 
@@ -2546,8 +2457,9 @@ task must depend on other tasks. If no dependency is given, the project
 start date is used. Setting an end date will switch the scheduling
 policy to ALAP.</para>
 
-<para>See also: <link linkend="task_actualend">actualend</link>, <link
-linkend="task_start">start</link></para>
+<para>See also: <link linkend="task_start">start</link></para>
+
+<para>This attribute is scenario specific.</para>
 
 </sect2>
 <sect2 id="task_endbuffer"><title>endbuffer &lt;percent&gt;</title>
@@ -2566,6 +2478,8 @@ you might have some extra time to squeeze out if needed.</para>
 
 <para>See also: <link linkend="task_startbuffer">startbuffer</link></para>
 
+<para>This attribute is scenario specific.</para>
+
 </sect2>
 <sect2 id="task_endcredit"><title>endcredit &lt;amount&gt;</title>
 
@@ -2579,6 +2493,8 @@ tasks ends.</para>
 
 <para>See also: <link
 linkend="task_startcredit">startcredit</link></para>
+
+<para>This attribute is scenario specific.</para>
 
 </sect2>
 <sect2 id="task_flags"><title>flags
@@ -2617,6 +2533,8 @@ defined <link linkend="project_workinghours">working hours</link> and global
 <para>See also: <link linkend="task_duration">duration</link>, <link
 linkend="task_effort">effort</link></para>
 
+<para>This attribute is scenario specific.</para>
+
 </sect2>
 <sect2 id="task_maxend"><title>maxend &lt;date&gt;</title>
 
@@ -2628,6 +2546,8 @@ linkend="task_effort">effort</link></para>
 met, the task is marked in the task list.</para>
 
 <para>This attribute is inherited by subtasks.</para>
+
+<para>This attribute is scenario specific.</para>
 
 <para>See also: <link linkend="task_minend">minend</link></para>
 
@@ -2642,6 +2562,8 @@ met, the task is marked in the task list.</para>
 met, the task is marked in the task list.</para>
 
 <para>This attribute is inherited by subtasks.</para>
+
+<para>This attribute is scenario specific.</para>
 
 <para>See also: <link linkend="task_minstart">minstart</link></para>
 
@@ -2665,6 +2587,8 @@ met, the task is marked in the task list.</para>
 
 <para>This attribute is inherited by subtasks.</para>
 
+<para>This attribute is scenario specific.</para>
+
 </sect2>
 <sect2 id="task_minstart"><title>minstart &lt;date&gt;</title>
 
@@ -2676,6 +2600,8 @@ met, the task is marked in the task list.</para>
 be met, the task is marked in the task list.</para>
 
 <para>This attribute is inherited by subtasks.</para>
+
+<para>This attribute is scenario specific.</para>
 
 <para>See also: <link linkend="task_maxstart">maxstart</link></para>
 
@@ -2689,11 +2615,14 @@ be met, the task is marked in the task list.</para>
 <para>A longer description of the task.</para>
 
 </sect2>
-<sect2 id="task_planscheduled"><title>planscheduled</title>
+<sect2 id="task_scheduled"><title>scheduled</title>
 
-<para> This marks the task as being scheduled for the plan scenario.
-If this attribute is specified, the task must have a fixed plan start and
-end date. It's primarily intended for internal use only. </para>
+<para> This marks the task as being scheduled for the scenario.
+If this attribute is specified, the task must have a fixed start and
+end date for the scenario. It's primarily intended for internal use only. 
+</para>
+
+<para>This attribute is scenario specific.</para>
 
 </sect2>
 <sect2 id="task_precedes"><title>precedes
@@ -2827,8 +2756,9 @@ the task must depend on other tasks. If no dependency is given, the
 project start date is used. Setting a start date will switch the
 scheduling policy to ASAP.<para>
 
-<para>See also: <link linkend="task_actualstart">actualstart</link>,
-<link linkend="task_end">task_end</link></para>
+<para>This attribute is scenario specific.</para>
+
+<para>See also: <link linkend="task_end">task_end</link></para>
 
 </sect2>
 <sect2 id="task_startbuffer"><title>startbuffer
@@ -2847,6 +2777,8 @@ for scheduling. You can specify
 <computeroutput>endbuffer</computeroutput> values to document, that
 you might have some extra time to squeeze out if needed.</para>
 
+<para>This attribute is scenario specific.</para>
+
 <para>See also: <link linkend="task_endbuffer">endbuffer</link><para>
 
 </sect2>
@@ -2861,6 +2793,8 @@ you might have some extra time to squeeze out if needed.</para>
 <link linkend="task_account">account</link> property at the moment the
 tasks starts.</para>
 
+<para>This attribute is scenario specific.</para>
+
 <para>See also: <link linkend="account">account</link>, <link
 linkend="task_endcredit">endcredit</link></para>
 
@@ -2872,6 +2806,8 @@ linkend="task_endcredit">endcredit</link></para>
 </simplelist></para>
 
 <para>A description or explanation of the task status.</para>
+
+<para>This attribute is scenario specific.</para>
 
 </sect2>
 <sect2 id="task_task"><title>task &lt;id&gt; &lt;name&gt;</title>

@@ -41,6 +41,21 @@ CoreAttributes::setHierarchNo(uint no)
         (*it)->setHierarchNo(hNo++);
 }
 
+QString
+CoreAttributes::getHierarchNo() const
+{
+    QString text;
+    const CoreAttributes* ca = this;
+    do
+    {
+        if (!text.isEmpty())
+            text = "." + text;
+        text = QString("%1").arg(ca->hierarchNo) + text;
+        ca = ca->getParent();
+    } while (ca);
+    return text;
+}
+
 void
 CoreAttributes::setHierarchIndex(uint no)
 {
@@ -64,6 +79,21 @@ CoreAttributes::setHierarchIndex(uint no)
 
     /* The index is then the highest found + 1. */
     hierarchIndex = max + 1;
+}
+
+QString
+CoreAttributes::getHierarchIndex() const
+{
+    QString text;
+    const CoreAttributes* ca = this;
+    do
+    {
+        if (!text.isEmpty())
+            text = "." + text;
+        text = QString("%1").arg(ca->hierarchIndex) + text;
+        ca = ca->getParent();
+    } while (ca);
+    return text;
 }
 
 void

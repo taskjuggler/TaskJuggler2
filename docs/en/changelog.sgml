@@ -431,9 +431,39 @@ task.</para></listitem>
 
 </itemizedlist></para>
 </sect2>
-<sect2><title>Version 1.9.0 (Some day)</title>
+<sect2><title>Version 1.9.0-unstable (Some day)</title>
 <para>
 <itemizedlist mark='opencircle'>
+
+<listitem><para>A new HTML report type for status report has been
+added. See <link linkend="htmlstatusreport">htmlstatusreport</link>
+for details.</para></listitem>
+
+<listitem><para>Support for <link
+linkend="project_extend">user-defined attributes</link> has been
+added.</para></listitem>
+
+<listitem><para>The format of numbers and currency values can now be
+specified with <link
+linkend="project_numberformat">numberformat</link> and <link
+linkend="project_currencyformat">currencyformat</link>. The old
+keyword currencydigits has been deprecated.</para></listitem>
+
+<listitem><para>All reports have now support for daily, weekly,
+monthly, quarterly and yearly calendars. Task lines now contain
+Gantt-chart like bars.</para></listitem>
+
+<listitem><para>HTML reports got the additional columns
+<computeroutput>hierarchno</computeroutput> and
+<computeroutput>hierarchindex</computeroutput>.</para></listitem>
+
+<listitem><para>Serveral new query functions and operators for <link
+linkend="logicalexpression">logical expressions</link> have been
+added.</para></listitem>
+
+<listitem><para>Scenario specific task attributes can now be prefixed
+with the scenario ID followed by a colon. The attributes starting with
+'plan' or 'actual' have been deprecated.</para></listitem>
 
 <listitem><para>Fixed the URLs for task and resource names in HTML reports.
 </para></listitem>
@@ -452,16 +482,6 @@ the allocation of an extra time slot in some cases.</para></listitem>
 <listitem><para>isplanallocated and isactualallocated had broken time
 interval handling. This is fixed now.</para></listitem>
 
-<listitem><para>All reports have now support for daily, weekly,
-monthly, quarterly and yearly calendars. Task lines now contain
-Gantt-chart like bars.</para></listitem>
-
-<listitem><para>The format of numbers and currency values can now be
-specified with <link
-linkend="project_numberformat">numberformat</link> and <link
-linkend="project_currencyformat">currencyformat</link>. The old
-keyword currencydigits has been deprecated.</para></listitem>
-
 <listitem><para><link
 linkend="project_workinghours">workinghours</link> and <link
 linkend="project_currency">currency</link> are no longer global
@@ -475,14 +495,6 @@ the scenario name should be reported for each line. The attributes
 'showactual' and 'hideplan' have been deprecated. The <link
 linkend="htmltaskreport_scenarios">scenarios</link> attribute now
 controls which scenarios should be shown.</para></listitem>
-
-<listitem><para>HTML reports got the additional columns
-<computeroutput>hierarchno</computeroutput> and
-<computeroutput>hierarchindex</computeroutput>.</para></listitem>
-
-<listitem><para>Serveral new query functions and operators for <link
-linkend="logicalexpression">logical expressions</link> have been
-added.</para></listitem>
 
 <listitem><para>Container tasks in export reports no longer have fixed
 start and end date if they have their sub tasks exported as

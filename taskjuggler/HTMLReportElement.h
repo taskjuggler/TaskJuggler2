@@ -122,9 +122,11 @@ protected:
 
     void genCell(const QString& text, TableCellInfo* tli, bool multi);
 
-    QString generateUrl(const QString& key, const QString& txt);
-
-    void generateRightIndented(TableCellInfo* tci, const QString str);
+    void generateTitle(TableCellInfo* tci, const QString& str);
+    
+    void generateSubTitle(TableCellInfo* tci, const QString& str);
+    
+    void generateRightIndented(TableCellInfo* tci, const QString& str);
 
     QColor selectTaskBgColor(TableCellInfo* tci, double load,
                              const Interval& period, bool daily);

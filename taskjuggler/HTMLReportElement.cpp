@@ -240,6 +240,11 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci, bool multi)
         sl->append(text);
         mt.pushArguments(sl);
         cellText = mt.expand(tci->tci->getCellText());
+        QString cellURL = mt.expand(tci->tci->getCellURL());
+        if (!cellURL.isEmpty())
+        cellText = QString("<a href=\"") + cellURL
+            + "\">" + cellText + "</a>";
+
         mt.popArguments();
     }
     if (((HTMLReport*) report)->hasStyleSheet())
@@ -333,21 +338,50 @@ HTMLReportElement::reportCurrency(double value, TableCellInfo* tci)
     genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
 }
 
-QString
-HTMLReportElement::generateUrl(const QString& key, const QString& txt)
+void
+HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 {
-    if (getUrl(key))
-    {
-        mt.setLocation(defFileName, defFileLine);
-        return QString("<a href=\"") + mt.expand(*getUrl(key))
-            + "\">" + htmlFilter(txt) + "</a>";
-    }
+    QStringList* sl = new QStringList();
+    sl->append(str);
+    mt.pushArguments(sl);
+    QString cellText;
+    if (!tci->tci->getTitle().isEmpty())
+        cellText = mt.expand(tci->tci->getTitle());
     else
-        return htmlFilter(txt);
+        cellText = str;
+    cellText = htmlFilter(cellText);
+    QString cellURL = mt.expand(tci->tci->getTitleURL());
+    if (!cellURL.isEmpty())
+        cellText = QString("<a href=\"") + cellURL
+            + "\">" + cellText + "</a>";
+    mt.popArguments();
+
+    s() << cellText;
 }
 
 void
-HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString str)
+HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
+{
+    QStringList* sl = new QStringList();
+    sl->append(str);
+    mt.pushArguments(sl);
+    QString cellText;
+    if (!tci->tci->getTitle().isEmpty())
+        cellText = mt.expand(tci->tci->getTitle());
+    else
+        cellText = str;
+    cellText = htmlFilter(cellText);
+    QString cellURL = mt.expand(tci->tci->getSubTitleURL());
+    if (!cellURL.isEmpty())
+        cellText = QString("<a href=\"") + cellURL
+            + "\">" + cellText + "</a>";
+    mt.popArguments();
+
+    s() << cellText;
+}
+
+void
+HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString& str)
 {
     int topIndent = 0, subIndent = 0, maxDepth = 0;
     if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
@@ -380,10 +414,7 @@ HTMLReportElement::genHeadDefault(TableCellInfo* tci)
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_header_cell\"";
     s() << ">";
-    if (!tci->tci->getTitle().isEmpty())
-        s() << htmlFilter(tci->tci->getTitle());
-    else
-        s() << htmlFilter(tci->tcf->getTitle());
+    generateTitle(tci, tci->tcf->getTitle());
     s() << "</td>" << endl;
 }
 
@@ -395,19 +426,15 @@ HTMLReportElement::genHeadCurrency(TableCellInfo* tci)
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_header_cell\"";
     s() << ">";
-    if (!tci->tci->getTitle().isEmpty())
-        s() << htmlFilter(tci->tci->getTitle());
-    else
-    {
-        s() << htmlFilter(i18n(tci->tcf->getTitle()));
-        if (!report->getProject()->getCurrency().isEmpty())
-            s() << " " << htmlFilter(report->getProject()->getCurrency());
-    }
+    generateTitle(tci, tci->tcf->getTitle() +
+                  (!report->getProject()->getCurrency().isEmpty() ?
+                   QString(" ") + report->getProject()->getCurrency() :
+                   QString()));
     s() << "</td>" << endl;
 }
 
 void
-HTMLReportElement::genHeadDaily1(TableCellInfo*)
+HTMLReportElement::genHeadDaily1(TableCellInfo* tci)
 {
     // Generates the 1st header line for daily calendar views.
     bool weekStartsMonday = report->getWeekStartsMonday();
@@ -422,30 +449,29 @@ HTMLReportElement::genHeadDaily1(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">"; 
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
+        mt.setMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(day)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
+        mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
                               ("%02d", quarterOfYear(day)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"),
+        mt.setMacro(new Macro(KW("week"),
                               QString().sprintf
                               ("%02d", weekOfYear(day, weekStartsMonday)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(day)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("monthheader"), monthAndYear(day)); 
+        generateTitle(tci, monthAndYear(day));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadDaily2(TableCellInfo*)
+HTMLReportElement::genHeadDaily2(TableCellInfo* tci)
 {
     // Generates the 2nd header line for daily calendar views.
     bool weekStartsMonday = report->getWeekStartsMonday();
@@ -463,32 +489,31 @@ HTMLReportElement::genHeadDaily2(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
+        mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
+        mt.setMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(day)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
+        mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
                               ("%02d", quarterOfYear(day)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"),
+        mt.setMacro(new Macro(KW("week"),
                               QString().sprintf
                               ("%02d", weekOfYear(day, weekStartsMonday)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(day)),
                               defFileName, defFileLine));
         if (dom < 10)
             s() << "&nbsp;";
-        s() << generateUrl(KW("dayheader"), QString().sprintf("%d", dom));
+        generateSubTitle(tci, QString().sprintf("%d", dom));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadWeekly1(TableCellInfo*)
+HTMLReportElement::genHeadWeekly1(TableCellInfo* tci)
 {
     // Generates the 1st header line for weekly calendar views.
     bool weekStartsMonday = report->getWeekStartsMonday();
@@ -507,38 +532,37 @@ HTMLReportElement::genHeadWeekly1(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf
+        mt.setMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
+        mt.setMacro(new Macro(KW("month"),
                               QString().sprintf
                               ("%02d", monthOfWeek(week, weekStartsMonday)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
+        mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
                               ("%02d", quarterOfYear(week)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"),
+        mt.setMacro(new Macro(KW("week"),
                               QString().sprintf
                               ("%02d", weekOfYear(week, weekStartsMonday)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf
                               ("%04d", yearOfWeek(week, weekStartsMonday)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("monthheader"), 
-                         QString("%1 %2").
-                         arg(shortMonthName(monthOfWeek(week, weekStartsMonday)
-                                            - 1)).
-                         arg(yearOfWeek(week, weekStartsMonday)));
+        generateTitle(tci, 
+                      QString("%1 %2").arg(shortMonthName(monthOfWeek(week, 
+                                                          weekStartsMonday) 
+                                                          - 1)).
+                      arg(yearOfWeek(week, weekStartsMonday)));
         s() << "</td>" << endl;
         week = wi;
     }
 }
 
 void
-HTMLReportElement::genHeadWeekly2(TableCellInfo*)
+HTMLReportElement::genHeadWeekly2(TableCellInfo* tci)
 {
     // Generates the 2nd header line for weekly calendar views.
     bool wsm = report->getWeekStartsMonday();
@@ -559,30 +583,30 @@ HTMLReportElement::genHeadWeekly2(TableCellInfo*)
         s() << ">";
         if (woy < 10)
             s() << "&nbsp;";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf
+        mt.setMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfYear(woy)),
+        mt.setMacro(new Macro(KW("month"),
+                              QString().sprintf("%02d", 
+                                                monthOfWeek(week, wsm)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
+        mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
                               ("%02d", quarterOfYear(week)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"),
+        mt.setMacro(new Macro(KW("week"),
                               QString().sprintf("%02d", woy),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", year(woy)),
+        mt.setMacro(new Macro(KW("year"),
+                              QString().sprintf("%04d", yearOfWeek(week, wsm)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("weekheader"), QString().sprintf("%d", woy));
+        generateSubTitle(tci, QString().sprintf("%d", woy));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadMonthly1(TableCellInfo*)
+HTMLReportElement::genHeadMonthly1(TableCellInfo* tci)
 {
     // Generates 1st header line of monthly calendar view.
     for (time_t year = midnight(start); year < end;
@@ -596,26 +620,24 @@ HTMLReportElement::genHeadMonthly1(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"), "1",
+        mt.setMacro(new Macro(KW("month"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"), "1",
+        mt.setMacro(new Macro(KW("quarter"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"), "1",
+        mt.setMacro(new Macro(KW("week"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("yearheader"),
-                         QString().sprintf("%d", ::year(year)));
+        generateTitle(tci, QString().sprintf("%d", ::year(year)));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadMonthly2(TableCellInfo*)
+HTMLReportElement::genHeadMonthly2(TableCellInfo* tci)
 {
     // Generates 2nd header line of monthly calendar view.
     bool weekStartsMonday = report->getWeekStartsMonday();
@@ -636,30 +658,29 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo*)
         s() << ">";
         if (month < 10)
             s() << "&nbsp;";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
+        mt.setMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(moy)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
+        mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
                               ("%02d", quarterOfYear(month)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"),
+        mt.setMacro(new Macro(KW("week"),
                               QString().sprintf
                               ("%02d", weekOfYear(month, weekStartsMonday)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(moy)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("monthheader"), shortMonthName(moy - 1));
+        generateSubTitle(tci, shortMonthName(moy - 1));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadQuarterly1(TableCellInfo*)
+HTMLReportElement::genHeadQuarterly1(TableCellInfo* tci)
 {
     // Generates 1st header line of quarterly calendar view.
     for (time_t year = midnight(start); year < end;
@@ -673,26 +694,24 @@ HTMLReportElement::genHeadQuarterly1(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), "1",
+        mt.setMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"), "1",
+        mt.setMacro(new Macro(KW("month"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"), "1",
+        mt.setMacro(new Macro(KW("quarter"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"), "1", 
+        mt.setMacro(new Macro(KW("week"), "1", 
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("yearheader"),
-                         QString().sprintf("%d", ::year(year)));
+        generateTitle(tci, QString().sprintf("%d", ::year(year)));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
+HTMLReportElement::genHeadQuarterly2(TableCellInfo* tci)
 {
     // Generates 2nd header line of quarterly calendar view.
     static const char* qnames[] =
@@ -717,30 +736,29 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+        mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(qoy)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
+        mt.setMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(qoy)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
+        mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf("%d", quarterOfYear(qoy)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"),
+        mt.setMacro(new Macro(KW("week"),
                               QString().sprintf
                               ("%02d", weekOfYear(quarter, weekStartsMonday)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(qoy)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("quarterheader"), i18n(qnames[qoy - 1]));
+        generateSubTitle(tci, i18n(qnames[qoy - 1]));
         s() << "</td>" << endl;
     }
 }
 
 void
-HTMLReportElement::genHeadYear(TableCellInfo*)
+HTMLReportElement::genHeadYear(TableCellInfo* tci)
 {
     // Generates 1st header line of monthly calendar view.
     for (time_t year = beginOfYear(start); year < end;
@@ -750,22 +768,20 @@ HTMLReportElement::genHeadYear(TableCellInfo*)
         if (((HTMLReport*) report)->hasStyleSheet())
             s() << " class=\"tj_header_cell\"";
         s() << ">";
-        mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+        mt.setMacro(new Macro(KW("day"), QString().sprintf("%02d",
                                                            dayOfMonth(year)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
+        mt.setMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(year)),
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"), "1",
+        mt.setMacro(new Macro(KW("quarter"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("week"), "1",
+        mt.setMacro(new Macro(KW("week"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("year"),
+        mt.setMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
                               defFileName, defFileLine));
-        s() << generateUrl(KW("yearheader"),
-                         QString().sprintf("%d", ::year(year)));
+        generateTitle(tci, QString().sprintf("%d", ::year(year)));
         s() << "</td>" << endl;
     }
 }
@@ -794,17 +810,8 @@ HTMLReportElement::genCellNo(TableCellInfo* tci)
 void
 HTMLReportElement::genCellHierarchNo(TableCellInfo* tci)
 {
-    QString text;
-    const CoreAttributes* ca = tci->tli->ca1;
-    do
-    {
-        if (!text.isEmpty())
-            text = "." + text;
-        text = QString("%1").arg(ca->getHierarchNo()) + text;
-        ca = ca->getParent();
-    } while (ca);
     genCell(tci->tli->ca2 == 0 ?
-            text : QString("&nbsp;"), tci, TRUE);
+            tci->tli->ca1->getHierarchNo() : QString("&nbsp;"), tci, TRUE);
 }
 
 void
@@ -818,17 +825,8 @@ HTMLReportElement::genCellIndex(TableCellInfo* tci)
 void
 HTMLReportElement::genCellHierarchIndex(TableCellInfo* tci)
 {
-    QString text;
-    const CoreAttributes* ca = tci->tli->ca1;
-    do
-    {
-        if (!text.isEmpty())
-            text = "." + text;
-        text = QString("%1").arg(ca->getHierarchIndex()) + text;
-        ca = ca->getParent();
-    } while (ca);
     genCell(tci->tli->ca2 == 0 ?
-            text : QString("&nbsp;"), tci, TRUE);
+            tci->tli->ca1->getHierarchIndex() : QString("&nbsp;"), tci, TRUE);
 }
 
 void
@@ -854,13 +852,13 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
     if (tci->tli->specialName.isNull())
     {
         if (tci->tli->task)
-            mt.addMacro(new Macro(KW("taskid"), tci->tli->task->getId(), 
+            mt.setMacro(new Macro(KW("taskid"), tci->tli->task->getId(), 
                                   defFileName, defFileLine));
         if (tci->tli->resource)
-            mt.addMacro(new Macro(KW("resourceid"), tci->tli->resource->getId(),
+            mt.setMacro(new Macro(KW("resourceid"), tci->tli->resource->getId(),
                                   defFileName, defFileLine));
         if (tci->tli->account)
-            mt.addMacro(new Macro(KW("accountid"), tci->tli->account->getId(),
+            mt.setMacro(new Macro(KW("accountid"), tci->tli->account->getId(),
                                   defFileName, defFileLine));
 
         if ((strcmp(tci->tli->ca1->getType(), "Resource") == 0 &&
@@ -874,27 +872,8 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
             tci->setFontFactor(fontSize + 5 * (maxDepthTaskList - 1 - 
                                                tci->tli->ca1->treeLevel()));
         }
-        tci->setLeftPadding(2 + lPadding * 15); 
-        if (strcmp(tci->tli->ca1->getType(), "Task") == 0)
-        {
-            if (tci->tli->ca2 == 0)
-                text += "<a name=\"task_" + tci->tli->ca1->getId() + "\"></a>";
-            text += generateUrl(KW("taskname"), tci->tli->ca1->getName());
-        }
-        else if (strcmp(tci->tli->ca1->getType(), "Resource") == 0)
-        {
-            if (tci->tli->ca2 == 0)
-                text += "<a name=\"resource_" + tci->tli->ca1->getFullId() 
-                    + "\"></a>";
-            text += generateUrl(KW("resourcename"), tci->tli->ca1->getName());
-        }
-        else if (strcmp(tci->tli->ca1->getType(), "Account") == 0)
-        {
-            if (tci->tli->ca2 == 0)
-                text += "<a name=\"account_" + tci->tli->ca1->getId() 
-                    + "\"></a>";
-            text += generateUrl(KW("accountname"), tci->tli->ca1->getName());
-        }
+        tci->setLeftPadding(2 + lPadding * 15);
+        text = tci->tli->ca1->getName(); 
     }
     else
         text = tci->tli->specialName;
@@ -1031,7 +1010,7 @@ HTMLReportElement::genCellText(TableCellInfo* tci)
             genCell(htmlFilter(tci->tli->task->getNote()), tci, TRUE);
         return;
     }
-    
+   
     const TextAttribute* ta = (const TextAttribute*) 
         tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
     if (!ta || ta->getText().isEmpty())

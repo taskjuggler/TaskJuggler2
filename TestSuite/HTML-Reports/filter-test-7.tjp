@@ -27,7 +27,7 @@ task t1 "Task 1" {
 }
 
 htmltaskreport "." {
-	headline "isparentof(t1.t1.t2) (Should be 22 tasks)"
+	headline "isparentof(t1.t1.t2) (Should be 2 tasks)"
 	sorttasks indexup
 	hidetask ~(isparentof(t1.t1.t2))
 }
