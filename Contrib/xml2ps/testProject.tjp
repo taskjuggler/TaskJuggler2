@@ -30,21 +30,26 @@ task testProject "testProject for xml2gantt" {
 
     task devel "Development" {
         task dev_1 "Devel-Job 1" {
-            length 3d
+            length 7d
+            complete 100
             ${__worker}
+            depends !!start
         }
         task dev_2 "Devel-Job 2" {
             length 13d
+            complete 90
             ${__worker}
             depends !dev_1
         }
         task dev_21 "Devel-Job 2.1" {
             length 4d
+            complete 80
             allocate worker_2
-            depends !dev_2, !dev_1
+            depends !dev_1
         }
         task dev_3 "Devel-Job 3" {
             length 23d
+            complete 35
             ${__worker}
             depends !dev_2
         }
@@ -75,8 +80,9 @@ task testProject "testProject for xml2gantt" {
 #-- export xml-file
 xmltaskreport "testProject.xml"
 
-htmltaskreport "testProject.html" {
-  columns no, name, resources, daily
-  headline "testProject for xml2gantt"
-}
+#-- export html-file
+#htmltaskreport "testProject.html" {
+#  columns no, name, resources, daily
+#  headline "testProject for xml2gantt"
+#}
 

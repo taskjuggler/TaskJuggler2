@@ -76,7 +76,10 @@ my ($p_end_year,
 my $project_days    = Delta_Days($p_start_year, $p_start_month, $p_start_day,
                                  $p_end_year, $p_end_month, $p_end_day);
 my ($today_year, $today_month, $today_day) = Today();
-
+#-- only for test file ;)
+if ( $ARGV[0] eq 'testProject.xml' ) {
+    ($today_year, $today_month, $today_day) = (2002, 05, 30);
+}
 #-- psfile const-settings
 my $page_border   = 10;
 my $day_x         = 5; #-- day-width
@@ -241,10 +244,6 @@ sub _make_postscript_file {
       _draw_depends($p);
       _draw_label($p);
 
-      #-- rahmen um alles
-      #$p->setcolour(0,0,0);
-      #$p->box($page_border, $page_border, $page_x-$page_border, $page_y-$page_border);
-
     $p->output("$out_file");
     print " done\n";
 }
@@ -326,96 +325,96 @@ sub __get_Index_from_Task {
     }
 }
 
+#-- die task-decr draufmalen, ganz zum schluß um alles zu überpinseln
 sub _draw_label {
-  my $p = shift;
-  $p->setcolour(0,0,0);
-  foreach my $task (@all_tasks) {
-    print "+";
-    $p->setfont("Helvetica", 8) if ( $task->Type eq 'Task' );
-    $p->setfont("Helvetica", 6) if ( $task->Type eq 'Milestone' );
-    $p->text($task->label_x, $task->label_y, $task->label);
-  }
+    my $p = shift;
+    $p->setcolour(0,0,0);
+    foreach my $task (@all_tasks) {
+        print "+";
+        $p->setfont("Helvetica", 8) if ( $task->Type eq 'Task' );
+        $p->setfont("Helvetica", 6) if ( $task->Type eq 'Milestone' );
+        $p->text($task->label_x, $task->label_y, $task->label);
+    }
 }
 
+#-- die tasks malen
 sub _draw_task {
-  my ($p, $page_x, $page_y) = @_;
-  foreach my $task (@all_tasks) {
-    print ".";
-    my $nr      = $task->Index;
-    my $name    = $task->Name;
-    my $start   = $task->h_planStart;
-        $start =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
-    my $end     = $task->h_planEnd;
-        $end =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
-    my $persent = $task->complete;
-        $persent = 0 if $persent <= 0;
-    #-- wieviele tage vom anfang her fängt der task an
-    my ($start_year, $start_month, $start_day)  = split(/-/, $start);
-    my ($end_year, $end_month, $end_day)        = split(/-/, $end);
-    my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
-                                    $start_year, $start_month, $start_day);
-#    if ($task->Type eq 'Task') {
-#        ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
-#    }
-    #-- länge des tasks in tagen
-    my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
-                                    $end_year, $end_month, $end_day);
-    #-- balken koordinaten
-    my $_x1 = $start_delta * $day_x;
-    my $_y1 = ($task_height * $nr ) + ($task_space * $nr) + 10; # 10 = nicht über die
-                                                                # monatsnamen oder wochennummern malen ;)
-    my ($x1, $y1) = _trans_coord($_x1, $_y1);
-    my $_x2 = $_x1 + ($task_length * $day_x);
-    my $_y2 = $_y1 + $task_height;
-    my ($x2, $y2) = _trans_coord($_x2, $_y2);
-    #-- die koordinaten für anfang und ende des tasks merken, da fangen die
-    #-- depend-lines an oder da gehen sie halt hin, hoffentlich ;)
-    $task->x1($x1); $task->y1($y1-($task_height/2));
-    $task->x2($x2); $task->y2($y2+($task_height/2));
-    if ( $task->Type eq 'Task' ) {
-        #-- länge von % feritg balken
-        my ($per_length, $d) = _trans_coord($_x1 + (($task_length/100*$persent) * $day_x), 0);
-        #-- wenn das ende vor heute liegt und der task nicht 100% fertig hat, dann rot
-        if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
-          if ( $persent < 100 ) {
-             $p->setcolour(255,0,0);
-             $p->box($x1, $y1, $x2, $y2, 1);
-          }
-        } else {
-          $p->setcolour(255,255,255);
-          $p->box($x1, $y1, $x2, $y2, 1);
+    my ($p, $page_x, $page_y) = @_;
+    foreach my $task (@all_tasks) {
+        print ".";
+        my $nr      = $task->Index;
+        my $name    = $task->Name;
+        my $start   = $task->h_planStart;
+            $start =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+        my $end     = $task->h_planEnd;
+            $end =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
+        my $persent = $task->complete;
+            $persent = 0 if $persent <= 0;
+        #-- wieviele tage vom anfang her fängt der task an
+        my ($start_year, $start_month, $start_day)  = split(/-/, $start);
+        my ($end_year, $end_month, $end_day)        = split(/-/, $end);
+        my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
+                                        $start_year, $start_month, $start_day);
+        #if ($task->Type eq 'Task') {
+        #   ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
+        #}
+        #-- länge des tasks in tagen
+        my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
+                                        $end_year, $end_month, $end_day);
+        #-- balken koordinaten
+        my $_x1 = $start_delta * $day_x;
+        my $_y1 = ($task_height * $nr ) + ($task_space * $nr) + 10; # 10 = nicht über die
+                                                                    # monatsnamen oder wochennummern malen ;)
+        my ($x1, $y1) = _trans_coord($_x1, $_y1);
+        my $_x2 = $_x1 + ($task_length * $day_x);
+        my $_y2 = $_y1 + $task_height;
+        my ($x2, $y2) = _trans_coord($_x2, $_y2);
+        #-- die koordinaten für anfang und ende des tasks merken, da fangen die
+        #-- depend-lines an oder da gehen sie halt hin, hoffentlich ;)
+        $task->x1($x1); $task->y1($y1-($task_height/2));
+        $task->x2($x2); $task->y2($y2+($task_height/2));
+        if ( $task->Type eq 'Task' ) {
+            #-- länge von % feritg balken
+            my ($per_length, $d) = _trans_coord($_x1 + (($task_length/100*$persent) * $day_x), 0);
+            #-- wenn das ende vor heute liegt und der task nicht 100% fertig hat, dann rot
+            if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
+                if ( $persent < 100 ) {
+                    $p->setcolour(255,0,0);
+                    $p->box($x1, $y1, $x2, $y2, 1);
+                }
+            } else {
+                $p->setcolour(255,255,255);
+                $p->box($x1, $y1, $x2, $y2, 1);
+            }
+            #-- % done balken oben drüber pinseln
+            if ($persent > 0) {
+                $p->setcolour(0,255,0);
+                $p->box($x1, $y1, $per_length, $y2, 1);
+            }
+            #-- rahmen um den task
+            $p->setcolour(0,0,0);
+            $p->box($x1, $y1, $x2, $y2, 0);
+            #-- text
+            $task->label($name);
+            $task->label_x($x1+1);
+            $task->label_y($y1-($task_height/1.5));
         }
-        #-- % done balken oben drüber pinseln
-        if ($persent > 0) {
-          $p->setcolour(0,255,0);
-          $p->box($x1, $y1, $per_length, $y2, 1);
+        if ( $task->Type eq 'Milestone' ) {
+            $p->setcolour(0,0,0);
+            my ($x, $y) = _trans_coord($_x1, $_y1+($task_height/2));
+            $p->circle($x, $y, 1, 1);
+            $p->setfont("Helvetica", 6);
+            my $am = sprintf('%02d', $start_month);
+            my $ad = sprintf('%02d', $start_day);
+            #-- text
+            $task->label("$name ($am-$ad)");
+            $task->label_x($x1+2);
+            $task->label_y($y1-($task_height/2));
         }
-        #-- rahmen um den task
-        $p->setcolour(0,0,0);
-        $p->box($x1, $y1, $x2, $y2, 0);
-        #-- text auf task
-        $task->label("$name");
-        $task->label_x($x1+1);
-        $task->label_y($y1-($task_height/1.5));
-        #$p->setfont("Helvetica", 8);
-        #$p->text($x1+1, $y1-($task_height/1.5), $name);
     }
-    if ( $task->Type eq 'Milestone' ) {
-        $p->setcolour(0,0,0);
-        my ($x, $y) = _trans_coord($_x1, $_y1+($task_height/2));
-        $p->circle($x, $y, 1, 1);
-        $p->setfont("Helvetica", 6);
-        my $am = sprintf('%02d', $start_month);
-        my $ad = sprintf('%02d', $start_day);
-        #-- text
-        $task->label("$name ($am-$ad)");
-        $task->label_x($x1+2);
-        $task->label_y($y1-($task_height/2));
-        #$p->text($x1+2, $y1-($task_height/2), "$name ($am-$ad)");
-    }
-  }
 }
 
+#-- monate, wocjen, tage usw. malen
 sub _draw_grid {
     my $p = shift;
     #-- wenn die project-laufzeit 14 tage über das ende des letzten tasks hinausgeht
@@ -495,22 +494,24 @@ sub _draw_grid {
     }
 }
 
+#-- überschrift mit project-name zeichnen
 sub _draw_header {
-  my ($p, $str) = @_;
-  $p->setcolour(0,0,0);
-  $p->setfont("Helvetica", 18);
-  my ($x, $y) = _trans_coord(0,0);
-  $p->text($x, $y+($header_height/2), $str);
-  $p->setcolour(255,255,255);
+    my ($p, $str) = @_;
+    $p->setcolour(0,0,0);
+    $p->setfont("Helvetica", 18);
+    my ($x, $y) = _trans_coord(0,0);
+    $p->text($x, $y+($header_height/2), $str);
+    $p->setcolour(255,255,255);
 }
 
+#-- coords umrechnen
 sub _trans_coord {
-  my ($draw_x, $draw_y) = @_;
+    my ($draw_x, $draw_y) = @_;
 
-  my $ps_x = $page_border + $draw_x;
-  my $ps_y = $page_y - $page_border - $draw_y - $header_height;
+    my $ps_x = $page_border + $draw_x;
+    my $ps_y = $page_y - $page_border - $draw_y - $header_height;
 
-  return ($ps_x, $ps_y);
+    return ($ps_x, $ps_y);
 }
 
 __END__
