@@ -17,6 +17,8 @@
 #include "Project.h"
 #include "kotrus.h"
 
+int Resource::debugLevel = 0;
+
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
  * division. We therefor use a buffer that stores the index of the
@@ -146,7 +148,7 @@ Resource::initScoreboard()
 {
 	scoreboard = new SbBooking*[sbSize];
 
-	// First mark all scoreboard slots as unavailable.
+	// First mark all scoreboard slots as unavailable (1).
 	for (uint i = 0; i < sbSize; i++)
 		scoreboard[i] = (SbBooking*) 1;
 
@@ -251,7 +253,12 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 	// Check if the interval is booked or blocked already.
 	uint sbIdx = sbIndex(date);
 	if (scoreboard[sbIdx])
+	{
+		if (debugLevel > 6)
+			qDebug("Resource %s is busy (%d)", id.latin1(), (int)
+				   scoreboard[sbIdx]);
 		return FALSE;
+	}
 
 	time_t bookedTime = duration;
 	time_t bookedTimeTask = duration;
@@ -260,11 +267,11 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 		MidnightIndex[sbIdx] = sbIndex(midnight(date));
 	uint sbStart = MidnightIndex[sbIdx];
 
-	uint sbIdxEnd = sbIdx +
+	uint sbIdxEnd = sbStart +
 	   	(uint) ((ONEDAY / project->getScheduleGranularity()) * 1.5);	
 	if (MidnightIndex[sbIdxEnd] == -1)
-		MidnightIndex[sbIdxEnd] = sbIndex(sameTimeNextDay(midnight(date)) - 1);
-	uint sbEnd = MidnightIndex[sbIdxEnd];
+		MidnightIndex[sbIdxEnd] = sbIndex(sameTimeNextDay(midnight(date)));
+	uint sbEnd = MidnightIndex[sbIdxEnd] - 1;
 	
 	for (uint i = sbStart; i < sbEnd; i++)
    	{
@@ -277,9 +284,22 @@ Resource::isAvailable(time_t date, time_t duration, int loadFactor, Task* t)
 			bookedTimeTask += duration;
 	}
 
-	return project->convertToDailyLoad(bookedTime) <= maxEffort &&
-		project->convertToDailyLoad(bookedTimeTask)
-		<= (loadFactor / 100.0);
+	double resourceLoad = project->convertToDailyLoad(bookedTime);
+	double taskLoad = project->convertToDailyLoad(bookedTimeTask);
+	if (debugLevel > 6)
+	{
+		if (resourceLoad > maxEffort)
+		{
+			qDebug("Resource %s overloaded (%f)", id.latin1(), resourceLoad);
+			return FALSE;
+		}
+		if (taskLoad > (loadFactor / 100.0))
+		{
+			qDebug("Task overloaded (%f)", loadFactor / 100.0);
+			return FALSE;
+		}
+	}
+	return  resourceLoad <= maxEffort && taskLoad <= (loadFactor / 100.0);
 }
 
 bool
@@ -390,7 +410,7 @@ Resource::getCurrentLoad(const Interval& period, Task* task)
 		subLoad += r->getCurrentLoad(iv, task);
 
 	for (uint i = sbIndex(iv.getStart());
-		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
 		SbBooking* b = scoreboard[i];
 		if (b < (SbBooking*) 4)
@@ -417,7 +437,7 @@ Resource::getPlanLoad(const Interval& period, Task* task)
 		subLoad += r->getPlanLoad(iv, task);
 
 	for (uint i = sbIndex(iv.getStart());
-		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
 		SbBooking* b = planScoreboard[i];
 		if (b < (SbBooking*) 4)
@@ -445,7 +465,7 @@ Resource::getActualLoad(const Interval& period, Task* task)
 
 	if (actualScoreboard)
 		for (uint i = sbIndex(iv.getStart());
-			 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+			 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 		{
 			SbBooking* b = actualScoreboard[i];
 			if (b < (SbBooking*) 4)
@@ -481,7 +501,7 @@ Resource::getPlanPIDs(const Interval& period, Task* task, QStringList& pids)
 		r->getPlanPIDs(iv, task, pids);
 
 	for (uint i = sbIndex(iv.getStart());
-		 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+		 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 	{
 		SbBooking* b = planScoreboard[i];
 		if (b < (SbBooking*) 4)
@@ -519,7 +539,7 @@ Resource::getActualPIDs(const Interval& period, Task* task, QStringList& pids)
 
 	if (actualScoreboard)
 		for (uint i = sbIndex(iv.getStart());
-			 i < sbIndex(iv.getEnd()) && i < sbSize; i++)
+			 i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
 		{
 			SbBooking* b = actualScoreboard[i];
 			if (b < (SbBooking*) 4)

@@ -240,6 +240,9 @@ a <ref id="htmltaskreport_loadunit" name="loadunit">.
 <item>Added new example project to the Examples directory to
 illustrate how to create shift schedules with TaskJuggler.
 
+<item>Fixed scheduler for working hours around midnight. This bug
+affected shifts as well as general working hours.
+
 </itemize>
 
 <sect>Installation

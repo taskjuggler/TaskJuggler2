@@ -2052,9 +2052,9 @@ ProjectFile::readAllocate(Task* t)
 					return FALSE;
 				}
 				double load = token.toDouble();
-				if (load < 0.01 || load > 1.0)
+				if (load < 0.01)
 				{
-					fatalError("Value must be in the range 0.01 - 1.0");
+					fatalError("Value must be at least 0.01");
 					return FALSE;
 				}
 				a->setLoad((int) (100 * load));

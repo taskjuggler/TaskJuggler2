@@ -198,6 +198,8 @@ public:
 	void prepareActual();
 	void finishActual();
 
+	static void setDebugLevel(int l) { debugLevel = l; }
+
 private:
 	Resource* subFirst() { return (Resource*) sub.first(); }
 	Resource* subNext() { return (Resource*) sub.next(); }
@@ -227,6 +229,8 @@ private:
 
 	/// The daily costs of this resource.
 	double rate;
+
+	static int debugLevel;
 
 	/// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;

@@ -544,7 +544,12 @@ Task::bookResources(time_t date, time_t slotDuration)
 	 * time slot must also be within the specified working hours of that
 	 * shift interval. */
 	if (!shifts.isOnShift(Interval(date, date + slotDuration - 1)))
+	{
+		if (debugLevel > 6)
+			qDebug("Task %s is not active at %s", id.latin1(),
+				   time2tjp(date).latin1());
 		return FALSE;
+	}		
 		
 	for (Allocation* a = allocations.first();
 		 a != 0 && (effort == 0.0 || doneEffort < effort);
@@ -554,7 +559,12 @@ Task::bookResources(time_t date, time_t slotDuration)
 		 * must be a shift interval defined for this day and the time must
 		 * lie within the working hours of that shift. */
 		if (!a->isOnShift(Interval(date, date + slotDuration - 1)))
+		{
+			if (debugLevel > 6)
+				qDebug("Allocation not on shift at %s",
+					   time2tjp(date).latin1());
 			continue;
+		}
 		/* If the allocation has be marked persistent and a resource
 		 * has already been picked, try to book this resource again. If the
 		 * resource is not available there will be no booking for this
@@ -612,6 +622,9 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 			tentativeEnd = date + slotDuration - 1;
 			doneEffort += intervalLoad * (*rit).getEfficiency();
 
+			if (debugLevel > 6)
+				qDebug("Booked resource %s (Effort: %f)",
+					   (*rit).getId().latin1(), doneEffort);
 			booked = TRUE;
 		}
 	}

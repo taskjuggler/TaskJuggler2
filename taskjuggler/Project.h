@@ -249,7 +249,8 @@ public:
 	static void setDebugLevel(int l)
    	{
 	   	debugLevel = l;
-		Task::setDebugLevel(l);   
+		Task::setDebugLevel(l);
+		Resource::setDebugLevel(l);
 	}
 
 private:

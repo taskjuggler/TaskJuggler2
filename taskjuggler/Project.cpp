@@ -166,7 +166,8 @@ Project::pass2()
 	if (debugLevel > 0)
 		qWarning("Scheduling plan scenario...");
 	preparePlan();
-	schedule();
+	if (!schedule())
+		error = TRUE;
 	finishPlan();
 
 	if (hasActualValues)
@@ -174,14 +175,15 @@ Project::pass2()
 		if (debugLevel > 0)
 			qWarning("Scheduling actual scenario...");
 		prepareActual();
-		schedule();
+		if (!schedule())
+			error = TRUE;
 		finishActual();
 	}
 
 	for (Task* t = taskList.first(); t != 0; t = taskList.next())
 		t->computeBuffers();
 
-	return TRUE;
+	return !error;
 }
 
 void
