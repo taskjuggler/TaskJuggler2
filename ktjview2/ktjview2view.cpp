@@ -907,7 +907,7 @@ bool ktjview2View::filterForTasks( int id )
         }
         else if ( id == 3 )     // Incomplete tasks
         {
-            showIt = ( task->getStatus(0) != Finished );
+            showIt = ( task->getStatus( 0 ) != Finished );
         }
         else if ( id == 4 )     // Milestones
         {
@@ -921,14 +921,14 @@ bool ktjview2View::filterForTasks( int id )
         {
             for ( QStringList::ConstIterator it = resultList.begin(); it != resultList.end(); ++it )
             {
-                showIt = showIt || task->isDutyOf( 0, m_project->getResource( ( *it ) ) );
+                showIt = showIt || task->isDutyOf( 0, m_project->getResource( (*it) ) );
             }
         }
         else if ( id == 7 )     // Having Flag
         {
             for ( QStringList::ConstIterator it = resultList.begin(); it != resultList.end(); ++it )
             {
-                showIt = showIt || task->hasFlag( ( *it ) );
+                showIt = showIt || task->hasFlag( (*it) );
             }
         }
 
@@ -1055,7 +1055,7 @@ void ktjview2View::collapseAll( KListView * view )
 
     while ( it.current() )
     {
-        ( *it )->setOpen( false );
+        (*it)->setOpen( false );
 
         ++it;
     }
