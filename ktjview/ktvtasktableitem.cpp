@@ -14,6 +14,7 @@ KTVTaskTableItem::KTVTaskTableItem( KTVTaskTableItem *parent, Task *t )
    :KListViewItem( parent ),
     m_task(t)
 {
+   // qDebug("Creating item for task " + t->getId() );
 }
 
 #define  COMPARE(_me,_oth) ( _me==_oth? 0 : (_me<_oth?-1:1))

@@ -11,7 +11,8 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
     m_root(0)
 {
    // addColumn( i18n( "No." ));
-   addColumn( i18n("Tasks" ));
+   addColumn( i18n("Task" ));
+   addColumn( i18n("Task ID" ));
    addColumn( i18n("Plan Duration"));   //  COL_PLAN_LEN
    addColumn( i18n("Priority" ));
    addColumn( i18n("Complete" ));
@@ -44,7 +45,7 @@ void KTVTaskTable::showProject( Project *p )
 
    for (Task* t = taskList.first(); t != 0; t = taskList.next())
    {
-      if( t->getParent() == 0 )
+      if( t->getParent() == 0 && t->isContainer() )
 	 addTask( static_cast<KTVTaskTableItem*>(m_root), t );
    }
 
@@ -60,11 +61,12 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    
    QString idx = QString::number(t->getIndex());
    QString name = t->getName();
-   qDebug( "Adding task: " + name );
+   qDebug( "Adding task: " + t->getId());
    QDateTime dt;
    
    KTVTaskTableItem *ktv =  new KTVTaskTableItem( parent, t );
-   ktv->setText( 0, name );
+   ktv->setText( COL_NAME, name );
+   ktv->setText( COL_ID, t->getId());
 //    ktv->setText( 1, idx );
 
    ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getPlanEnd(), t->getPlanStart() ));
@@ -82,12 +84,17 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    ktv->setText( COL_PLAN_END_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
    
    TaskList subTasks;
+   subTasks.clear();
    
    t->getSubTaskList(subTasks);
+   int cnt = subTasks.count();
+   qDebug( "Amount of subtasks: " + QString::number(cnt) );
 
    for (Task* st = subTasks.first(); st != 0; st = subTasks.next())
    {
+      qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
       addTask( ktv, st );
+      qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
    }
    
    

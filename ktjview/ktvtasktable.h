@@ -8,15 +8,16 @@
 
 #include "ktvtasktableitem.h"
 
-#define COL_NAME 0
-#define COL_PLAN_LEN 1
-#define COL_PRIORITY 2
-#define COL_COMPLETE 3
-#define COL_PLAN_START_DATE 4
-#define COL_PLAN_START_TIME 5
+#define COL_NAME     0
+#define COL_ID       1
+#define COL_PLAN_LEN 2
+#define COL_PRIORITY 3
+#define COL_COMPLETE 4
+#define COL_PLAN_START_DATE 5
+#define COL_PLAN_START_TIME 6
 
-#define COL_PLAN_END_DATE 6
-#define COL_PLAN_END_TIME 7
+#define COL_PLAN_END_DATE 7
+#define COL_PLAN_END_TIME 8
 
 
 class KTVTaskTable: public KListView
