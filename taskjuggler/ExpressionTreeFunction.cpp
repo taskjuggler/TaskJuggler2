@@ -276,8 +276,8 @@ ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
                     "non-resource"));
     int scenarioId = et->getCoreAttributes()->getProject()->
-        getScenarioIndex(ops[0]->evalAsString(et));
-    if (scenarioId <= 0)
+        getScenarioIndex(ops[0]->evalAsString(et)) - 1;
+    if (scenarioId < 0)
         qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
                     "unknown '%1' scenario.")
                .arg(ops[0]->evalAsString(et)));
@@ -309,8 +309,8 @@ ExpressionTreeFunction::isAllocatedToProject(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isAllocatedToProject() "
                     "called for non-resource"));
     int scenarioId = et->getCoreAttributes()->getProject()->
-        getScenarioIndex(ops[1]->evalAsString(et));
-    if (scenarioId <= 0)
+        getScenarioIndex(ops[1]->evalAsString(et)) - 1;
+    if (scenarioId < 0)
         qFatal(i18n("ExpressionTreeFunction::isAllocatedToProject() "
                     "called for unknown '%1' scenario.")
                .arg(ops[1]->evalAsString(et)));
@@ -337,8 +337,8 @@ ExpressionTreeFunction::isPlanAllocated(const ExpressionTree* et,
         qFatal(i18n("ExpressionTreeFunction::isplanallocated() called for "
                     "non-resource"));
     int scenarioId = et->getCoreAttributes()->getProject()->
-        getScenarioIndex("plan");
-    if (scenarioId <= 0)
+        getScenarioIndex("plan") - 1;
+    if (scenarioId < 0)
         qFatal(i18n("ExpressionTreeFunction::isplanallocated() called, but "
                     "there is no 'plan' scenario."));
     if (et->getCoreAttributes()->getProject()->getStart() >
@@ -364,8 +364,8 @@ ExpressionTreeFunction::isActualAllocated(const ExpressionTree* et,
         qFatal("ExpressionTreeFunction::isactualallocated() called for "
                "non-resource");
     int scenarioId = et->getCoreAttributes()->getProject()->
-        getScenarioIndex("actual");
-    if (scenarioId <= 0)
+        getScenarioIndex("actual") - 1;
+    if (scenarioId < 0)
         qFatal("ExpressionTreeFunction::isactualallocated() called, but "
                "there is no 'actual' scenario.");
     if (et->getCoreAttributes()->getProject()->getStart() >
