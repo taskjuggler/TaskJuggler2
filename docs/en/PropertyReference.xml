@@ -1,0 +1,1759 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="PropertyReference.xsl"?>
+<!DOCTYPE properties [
+<!--  <!ENTITY % DocBookDTD PUBLIC "-//OASIS//DTD DocBook V4.2//EN"
+"/usr/share/sgml/docbook_4.2/docbook.dtd">
+ %DocBookDTD; -->
+ <!ELEMENT properties (property*)>
+
+ <!ELEMENT property (descr, attributes?, optattributes?, contexts,
+                     seealso?, freestyle?, example? )>
+ <!ATTLIST property
+   name CDATA #REQUIRED
+   id CDATA #REQUIRED
+   inheritable (Yes|No) "No" 
+   scenario (Yes|No) "No"
+ >
+
+ <!ELEMENT descr (para*)>
+ <!ELEMENT attributes (attr*)>
+ <!ELEMENT attr (para*)>
+ <!ATTLIST attr
+   name CDATA #REQUIRED
+   type CDATA #REQUIRED
+   list (0|1) "0"
+   optional (0|1) "0"
+ >
+
+ <!ELEMENT optattributes (optattr*)>
+ <!ELEMENT optattr (#PCDATA)>
+
+ <!ELEMENT contexts (context)*>
+ <!ELEMENT context (#PCDATA)>
+
+ <!ELEMENT seealso (also*)>
+ <!ELEMENT also (#PCDATA)>
+ <!ELEMENT freestyle (para*)>
+ <!ELEMENT example (#PCDATA)>
+
+ <!ELEMENT para (#PCDATA|varname|link|simplelist)*>
+ <!ELEMENT varname (#PCDATA)*>
+ <!ELEMENT link (#PCDATA)>
+ <!ATTLIST link
+   linkend CDATA #REQUIRED
+ >
+ <!ELEMENT simplelist (member)*>
+ <!ATTLIST simplelist
+   type CDATA #REQUIRED
+   columns CDATA #REQUIRED
+ >
+ <!ELEMENT member (#PCDATA|para|varname|link)*>
+ 
+  <!ENTITY example_depends SYSTEM
+   "../../TestSuite/Syntax/Correct/Depends1.tjp">
+  <!ENTITY example_extend SYSTEM
+   "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
+  <!ENTITY example_precedes SYSTEM
+   "../../TestSuite/Syntax/Correct/Precedes1.tjp">
+]>
+
+<properties>
+ <property name="account" id="account">
+  <descr><para>Declares an account. Accounts can be used to calculate costs
+of tasks or the whole project. Account declaration may be nested, but
+only the top level accounts may have a type attribute specified. All
+An account that has sub-accounts may not have a <link
+linkend="PROPERTY_credit">credit</link> or a <link
+linkend="PROPERTY_kotrusid">kotrusid</link>.  sub-accounts inherit this
+type.</para></descr>
+  <attributes>
+   <attr name="id" type="ID"/>
+   <attr name="name" type="STRING"/>
+   <attr name="type" type="ID" optional="1">
+    <para>The type may be <varname>cost</varname> or
+<varname>revenue</varname>.</para></attr>
+  </attributes>
+  <optattributes>
+   <optattr>account</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>account</context>
+  </contexts>
+  <seealso>
+   <also>htmlaccountreport</also>
+  </seealso>
+ </property>
+ <property name="account" id="account_task" inheritable="Yes">
+  <descr><para>All amounts associated with the task will be credited
+to the specified account.</para></descr>
+  <attributes>
+   <attr name="accountid" type="ID"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>account</also>
+  </seealso>
+ </property>
+ <property name="accumulate" id="accumulate" inheritable="No">
+  <descr><para>If this attribute is specified the values in the calendar
+columns are accumulated over the reported interval.</para></descr>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>htmlaccountreport</context>
+  </contexts>
+ </property>
+ <property name="allowredefinition" id="allowredefinition" inheritable="No">
+  <descr><para>If this attribute is specified, redefinitions of task,
+resources or accounts are not flagged as errors. The primary use of
+this attribute is for projects that are created by merging sub projects
+which are again the result of sub project merging. In certain
+situations enclosing tasks, accounts or resources can be included in more
+than one sub project. This attribute then avoids the error which is
+in most other cases a real user error.</para>
+
+<para>In case attributes of the same property must be specified in two
+different locations the <link linkend="PROPERTY_supplement">supplement</link>
+construct is the recommended way to do this.</para></descr>
+  <contexts>
+   <context>project</context>
+  </contexts>
+ </property>
+ <property name="allocate" id="allocate" inheritable="No">
+  <descr><para>Specify which resources should be allocated to the
+task.</para></descr>
+  <attributes>
+   <attr name="resource" type="ID"/>
+  </attributes>
+  <optattributes>
+   <optattr>alternative</optattr>
+   <optattr>load</optattr>
+   <optattr>mandatory</optattr>
+   <optattr>persistent</optattr>
+   <optattr>select</optattr>
+   <optattr>shift_selection</optattr>
+  </optattributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>effort</also>
+  </seealso>
+ </property>
+ <property name="alternative" id="alternative" inheritable="No">
+  <descr><para>A list of alternative resources for an allocation.</para></descr>
+  <attributes>
+   <attr name="resource" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>allocate</context>
+  </contexts>
+  <seealso>
+   <also>select</also>
+  </seealso>
+ </property>
+ <property name="booking" id="booking" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+   <attr name="start" type="DATE"/>
+   <attr name="end" type="DATE"/>
+   <attr name="task" type="ID"/>
+  </attributes>
+  <optattributes>
+   <optattr>sloppy</optattr>
+  </optattributes>
+  <contexts>
+   <context>resource</context>
+  </contexts>
+  <seealso>
+   <also>projection</also>
+  </seealso>
+ </property>
+ <property name="columns" id="columns" inheritable="No">
+  <descr><para>Specifies which columns shell be included in a
+report.</para></descr>
+  <attributes>
+   <attr name="columnid" type="ID" list="1">
+    <para>See table below for possible values.</para>
+   </attr>
+  </attributes>
+  <optattributes>
+   <optattr></optattr>
+  </optattributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>csvresourcereport</context>
+   <context>csvtaskreport</context>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>no</varname></member>
+   <member>The task index</member>
+   
+   <member><varname>id</varname></member>
+   <member>The global ID of a task</member>
+   
+   <member><varname>name</varname></member>
+   <member>The name of a task, resource, or account</member>
+   
+   <member><varname>total</varname></member>
+   <member>Total accumulated values</member>
+   
+   <member><varname>daily</varname></member>
+   <member>A day-by-day calendar view of the accounts</member>
+   
+   <member><varname>weekly</varname></member>
+   <member>A week-by-week calendar view of the accounts</member>
+   
+   <member><varname>monthly</varname></member>
+   <member>A month-by-month calendar view of the accounts</member>
+   
+   <member><varname>quaterly</varname></member>
+   <member>A quarter-by-quarter calender view of the accounts</member>
+   
+   <member><varname>yearly</varname></member>
+   <member>A year-by-year calender view of the accounts</member>
+   
+   </simplelist></para>
+  </freestyle>
+ </property>
+ <property name="complete" id="complete" inheritable="No"
+scenario="Yes">
+  <descr><para>Specifies what percentage of the task is already
+completed. This can be useful for project tracking. Reports with
+calendar elements may show the completed part of the task in a
+different color.</para>
+
+<para>Tasks may not have subtasks if this attribute is used.</para></descr>
+  <attributes>
+   <attr name="percent" type="INTEGER"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+ </property>
+ <property name="credit" id="credit">
+  <descr><para>Credits the specified amount to the account at the
+specified date. The description should contain some information about
+the reason for the transaction.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+   <attr name="description" type="STRING"/>
+   <attr name="amount" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>account</context>
+  </contexts>
+ </property>
+ <property name="csvaccountreport" id="csvaccountreport">
+  <descr><para>The report lists all specified account values as a comma
+separated list. This is usefull to export TaskJuggler data to Office
+Suites like OpenOffice.org or KOffice.</para></descr>
+  <attributes>
+   <attr name="filename" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>rollupaccount</optattr>
+   <optattr>hideaccount</optattr>
+   <optattr>sortaccounts</optattr>
+   <optattr>start_report</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>htmlaccountreport</also>
+  </seealso>
+ </property>
+ <property name="csvresourcereport" id="csvresourcereport" inheritable="No">
+  <descr><para>The report lists all specified resource values as a
+comma separated list. This is usefull to export TaskJuggler data to
+Office Suites like OpenOffice.org or KOffice.</para></descr>
+  <attributes>
+   <attr name="filename" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>start_report</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>htmlresourcereport</also>
+  </seealso>
+ </property>
+ <property name="csvtaskreport" id="csvtaskreport" inheritable="No">
+  <descr><para>The report lists all specified task values as a comma
+separated list. This is usefull to export TaskJuggler data to Office
+Suites like OpenOffice.org or KOffice.</para></descr>
+  <attributes>
+   <attr name="filename" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>htmltaskreport</also>
+  </seealso>
+ </property>
+ <property name="currency" id="currency" inheritable="No">
+  <descr><para>The default currency unit.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>currencyformat</also>
+  </seealso>
+ </property>
+ <property name="currencyformat" id="currencyformat" inheritable="No">
+  <descr><para>These values specify the default format used for all
+currency values. The <varname>negativeprefix</varname> and
+<varname>negativesuffix</varname> strings enclose negative currency
+values. The <varname>thousandseparator</varname> can be used to make
+large numbers more readable. The <varname>fractionseparator</varname>
+separates the fractional part from the rest.
+<varname>fractiondigits</varname> specifies how many fractional digits
+should be shown at a maximum.</para></descr>
+  <attributes>
+   <attr name="negativeprefix" type="STRING"/>
+   <attr name="negativesuffix" type="STRING"/>
+   <attr name="thousandseparator" type="STRING"/>
+   <attr name="fractionseparator" type="STRING"/>
+   <attr name="fractiondigits" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>currency</also>
+  </seealso>
+ </property>
+ <property name="dailyworkinghours" id="dailyworkinghours" inheritable="No">
+  <descr><para>Set the average number of working hours per day. This
+is used as the base to convert working hours into working days. This
+affects for example the <link linkend="PROPERTY_length">length</link> task
+attribute. The default value is 8 hours and should work for most
+Western countries.  The value you specify should match the settings
+you specified for <link
+linkend="PROPERTY_workinghours">workinghours</link>.</para></descr>
+  <attributes>
+   <attr name="hours" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>yearlyworkingdays</also>
+  </seealso>
+ </property>
+ <property name="depends" id="depends" inheritable="No">
+  <descr><para>Specifies that the task cannot start before the task
+with the specified IDs have been finished. If multiple IDs are
+specified, they must be separated by commas. IDs must be either global
+or relative. A relative ID starts with a number of '!'. Each '!' moves
+the scope to the parent task. Global IDs do
+not contain '!', but have IDs separated by dots.</para>
+
+<para>By using the 'depends' attribute, the scheduling policy is
+automatically set to ASAP. If 'depends' and 'precedes' are used, the
+last policy counts.</para></descr>
+  <attributes>
+   <attr name="task" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>precedes</also>
+  </seealso>
+  <example>&example_depends;</example>
+ </property>
+ <property name="disabled" id="disabled" inheritable="No">
+  <descr><para>Disables the scenario for scheduling.</para></descr>
+  <contexts>
+   <context>scenario</context>
+  </contexts>
+ </property>
+ <property name="duration" id="duration" inheritable="No">
+  <descr><para>Specifies the time the task occupies the resources.
+This is calender time, not working time. 7d means one week. If
+resources are specified they are allocated when available.
+Availability of resources has no impact on the duration of the task.
+It will always be the specified duration.</para>
+
+<para>Tasks may not have subtasks if this attribute is used.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>effort</also>
+   <also>length</also>
+  </seealso>
+ </property>
+ <property name="efficiency" id="efficiency" inheritable="Yes">
+  <descr><para>The efficiency of a resource can be used for two
+purposes. First you can use it as a crude way to model a team. A team
+of 5 people should have an efficiency of 5.0. Keep in mind that you
+cannot track the member of the team individually if you use this
+feature. The other use is to model performance variations between your
+resources.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>resource</context>
+  </contexts>
+  <seealso>
+   <also>load</also>
+  </seealso>
+ </property>
+ <property name="effort" id="effort" inheritable="No" scenario="Yes">
+  <descr><para>Specifies the effort needed to complete the task. An
+effort of 4d can be done with 2 full-time resources in 2 days. The
+task will not finish before the resources have contributed the
+specified effort. So the duration of the task will depend on the
+availability of the resources.</para>
+
+<para>WARNING: In almost all real world projects effort is not the product
+of time and resources. This is only true if the task can be
+partitioned without adding any overhead. For more information about
+this read "The Mythical Man-Month" by Frederick P. Brooks, Jr.</para>
+
+<para>Tasks may not have subtasks if this attribute is
+used.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>duration</also>
+   <also>length</also>
+  </seealso>
+ </property>
+ <property name="end" id="end_report" inheritable="No">
+  <descr><para>Specifies the end date of the report. In task reports only
+tasks that start before this end date are listed.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>csvresourcereport</context>
+   <context>csvtaskreport</context>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>start_report</also>
+  </seealso>
+ </property>
+ <property name="end" id="end_task" inheritable="Yes" scenario="Yes">
+  <descr><para>The end date of the task</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>start_task</also>
+   <also>maxend</also>
+   <also>minend</also>
+   <also>endbuffer</also>
+  </seealso>
+ </property>
+ <property name="endbuffer" id="endbuffer" inheritable="No"
+scenario="Yes">
+  <descr><para>Specifies how much slack time you expect to have at the
+end of the task.</para></descr>
+  <attributes>
+   <attr name="percent" type="REAL">
+    <para>Percent slack of the overall effort, duration or length of
+the task.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>duration</also>
+   <also>effort</also>
+   <also>length</also>
+  </seealso>
+ </property>
+ <property name="endcredit" id="endcredit" inheritable="No"
+scenario="Yes">
+  <descr><para>Specifies an amount that is credited to the account
+specified by the <link linkend="PROPERTY_account_task">account</link> property
+at the moment the tasks ends.</para></descr>
+  <attributes>
+   <attr name="amount" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>startcredit</also>
+  </seealso>
+ </property>
+ <property name="extend" id="extend" inheritable="No">
+  <descr><para>Often it is desireable to collect more information in
+the project file than is necessary for task scheduling and resource
+allocation. To add such information to tasks, resources or accounts
+the user can extend these properties with user-defined attributes. The
+new attributes can be <varname>text</varname> or
+<varname>reference</varname> attributes. Optionally the user can
+specify if the attribute value should be inherited from the enclosing
+property.</para></descr>
+  <attributes>
+   <attr name="property" type="ID">
+    <para>Possible values are <varname>task</varname>, <varname>
+resource</varname> or <varname> account</varname></para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also></also>
+  </seealso>
+  <freestyle>
+   <para>&lt;type&gt; &lt;id&gt; &lt;name&gt;</para>
+
+<para><simplelist type="horiz" columns="2">
+<member>type:</member>
+<member>Specifies the type of the user-defined
+attribute. <varname>text</varname> is a simple text attribute.
+<varname>reference</varname> is an URL to another document.</member>
+
+<member>id:</member>
+<member>An user-defined ID that is unique within
+the used-defined task attributes. To avoid conflicts with future
+built-in attributes, all user defined attributes must start with a
+capital letter.</member>
+
+<member>name:</member>
+<member>A short description of the attribute. It will be used as
+default column header in reports.</member> 
+
+</simplelist></para>
+  </freestyle>
+  <example>&example_extend;</example>
+ </property>
+ <property name="flags" id="flags" inheritable="Yes">
+  <descr><para>Attach a set of flags. The flags can be used in logical
+expressions to filter properties from the reports.</para></descr>
+  <attributes>
+   <attr name="flag" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>account</context>
+   <context>resource</context>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>flags_declare</also>
+  </seealso>
+ </property>
+ <property name="flags" id="flags_declare" inheritable="No">
+  <descr><para>Declare a set of flags for later use.</para></descr>
+  <attributes>
+   <attr name="flag" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>flags</also>
+  </seealso>
+ </property>
+ <property name="hideaccount" id="hideaccount" inheritable="No">
+  <descr><para>Do not show accounts that match the specified logical
+expression. If the report is sorted in tree mode (default) then
+enclosing accounts are listed even if the expression matches the
+account.</para></descr>
+  <attributes>
+   <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>htmlaccountreport</context>
+  </contexts>
+ </property>
+ <property name="hideresource" id="hideresource" inheritable="No">
+  <descr><para>Do not show resources that match the specified logical
+expression. If the report is sorted in tree mode (default) then
+enclosing resources are listed even if the expression matches the
+resource.</para></descr>
+  <attributes>
+   <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>csvresourcereport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+ </property>
+ <property name="hidetask" id="hidetask" inheritable="No">
+  <descr><para>Do not show tasks that match the specified logical
+expression. If the report is sorted in tree mode (default) then
+enclosing tasks are listed even if the expression matches the
+task.</para></descr>
+  <attributes>
+   <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>csvtaskreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+ </property>
+ <property name="htmlaccountreport" id="htmlaccountreport" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+  </attributes>
+  <optattributes>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also></also>
+  </seealso>
+ </property>
+ <property name="htmlresourcereport" id="htmlresourcereport" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+  </attributes>
+  <optattributes>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also></also>
+  </seealso>
+ </property>
+ <property name="htmltaskreport" id="htmltaskreport" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+  </attributes>
+  <optattributes>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also></also>
+  </seealso>
+ </property>
+ <property name="include" id="include" inheritable="No">
+  <descr><para>Includes the specified file name as if its contents
+would be written instead of the include property.
+<varname>include</varname> commands can be used within global scope or
+between property declarations of tasks, resources, and
+accounts.</para>
+
+<para>For technical reasons you have to supply the optional pair of
+curly brackets if the include is followed immediately by a macro that
+is defined within the included file.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>taskprefix</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>project</context>
+  </contexts>
+ </property>
+ <property name="kotrusid" id="kotrusid" inheritable="Yes">
+  <descr><para>The KoTrus ID of the account (cost object). This is a
+special reserved keyword.</para></descr>
+  <attributes>
+    <attr name="id" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>account</context>
+  </contexts>
+ </property>
+ <property name="label" id="label" inheritable="No">
+  <descr><para>Specifies the text for the URL in HTML reports.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>reference</context>
+  </contexts>
+ </property>
+ <property name="length" id="length" inheritable="No" scenario="Yes">
+  <descr><para>Specifies the time the task occupies the resources.
+This is working time, not calender time. 7d means 7 working days, not
+one week.  Whether a day is considered a working day or not depends on
+the defined <link linkend="PROPERTY_workinghours">working hours</link>
+and global <link linkend="PROPERTY_vacation_global">vacations</link>. A task
+with a length specification may have resource allocations. Resources
+are allocated when they are available. The availability has no impact
+on the duration of the task. A day where none of the specified
+resources is available is still considered a working day, if there is
+no global vacation of or global working time defined.</para>
+
+<para>Tasks may not have subtasks if this attribute is used.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>duration</also>
+   <also>effort</also>
+  </seealso>
+ </property>
+ <property name="load" id="load" inheritable="No">
+  <descr><para>Specifies the daily load of a resource for an
+allocation. A load of 1.0 (default) means the resource is allocated
+for as many hours as specified by <link
+linkend="PROPERTY_dailyworkinghours">dailyworkinghours</link>. A load
+of 0.5 means half that many hours. This only works if enough working
+hours have been specified for the particular day.</para></descr>
+  <attributes>
+   <attr name="factor" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>allocate</context>
+  </contexts>
+  <seealso>
+   <also>workinghours</also>
+   <also>vacation_global</also>
+  </seealso>
+ </property>
+ <property name="mandatory" id="mandatory" inheritable="No">
+  <descr><para>Makes a resource allocation mandatory. In this case the
+other resource allocations of the task will only be made when the
+mandatory resources are available as well.</para></descr>
+  <contexts>
+   <context>allocate</context>
+  </contexts>
+ </property>
+ <property name="maxeffort" id="maxeffort" inheritable="No">
+  <descr><para>The daily maximum effort for a resource. Resources will not be
+scheduled to be used more than this value. A value of 1.0 means a full
+working day. 0.5 means half a working day.</para></descr>
+  <attributes>
+   <attr name="workingdays" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>resource</context>
+  </contexts>
+  <seealso>
+   <also>dailyworkinghours</also>
+   <also>workinghours</also>
+  </seealso>
+ </property>
+ <property name="maxend" id="maxend" inheritable="Yes" scenario="Yes">
+  <descr><para>Specifies the maximum wanted end time of the task. The
+value is not used during scheduling, but is checked after all tasks
+have been scheduled. If the end of the task is later than
+the specified value, then an error is reported.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>maxstart</also>
+   <also>minend</also>
+   <also>minstart</also>
+  </seealso>
+ </property>
+ <property name="maxstart" id="maxstart" inheritable="Yes"
+scenario="Yes">
+  <descr><para>Specifies the maximum wanted start time of the task.
+The value is not used during scheduling, but is checked after all
+tasks have been scheduled. If the start of the task is later than
+the specified value, then an error is reported.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>maxend</also>
+   <also>minend</also>
+   <also>minstart</also>
+  </seealso>
+ </property>
+ <property name="minend" id="minend" inheritable="Yes" scenario="Yes">
+  <descr><para>Specifies the minimum wanted end time of the task. The
+value is not used during scheduling, but is checked after all tasks
+have been scheduled. If the end of the task is earlier than
+the specified value, then an error is reported.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>maxend</also>
+   <also>maxstart</also>
+   <also>minstart</also>
+  </seealso>
+ </property>
+ <property name="minstart" id="minstart" inheritable="Yes"
+scenario="Yes">
+  <descr><para>Specifies the minimum wanted start time of the task.
+The value is not used during scheduling, but is checked after all
+tasks have been scheduled. If the start of the task is earlier than
+the specified value, then an error is reported.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>maxend</also>
+   <also>maxstart</also>
+   <also>minend</also>
+  </seealso>
+ </property>
+ <property name="milestone" id="milestone" inheritable="No">
+  <descr><para>Turns the task into a special task that has no
+duration. You may not specify a <link
+linkend="PROPERTY_duration">duration</link>, <link
+linkend="PROPERTY_length">length</link> or <link
+linkend="PROPERTY_effort">effort</link> for a milestone task.</para></descr>
+  <contexts>
+   <context>task</context>
+  </contexts>
+ </property>
+ <property name="note" id="note" inheritable="No">
+  <descr><para>Attach a note to the task. This is usually a more
+detail specification of what the task is about.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>statusnote</also>
+  </seealso>
+ </property>
+ <property name="now" id="now" inheritable="Yes">
+  <descr><para>Specify the date that TaskJuggler uses for calculation
+as current date. If no value is specified, the current value of the
+system clock is used.</para></descr> <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+ </property>
+ <property name="numberformat" id="numberformat" inheritable="Yes">
+  <descr><para>These values specify the default format used for all
+numerical real values. The <varname>negativeprefix</varname> and
+<varname>negativesuffix</varname> strings enclose negative currency
+values. The <varname>thousandseparator</varname> can be used to make
+large numbers more readable. The <varname>fractionseparator</varname>
+separates the fractional part from the rest.
+<varname>fractiondigits</varname> specifies how many fractional digits
+should be shown at a maximum.</para></descr>
+  <attributes>
+   <attr name="negativeprefix" type="STRING"/>
+   <attr name="negativesuffix" type="STRING"/>
+   <attr name="thousandseparator" type="STRING"/>
+   <attr name="fractionseparator" type="STRING"/>
+   <attr name="fractiondigits" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+ </property>
+ <property name="persistent" id="persistent" inheritable="No">
+  <descr><para>Specifies that the resource is used for the whole task.
+This is usefull when several alternative resources have been
+specified. Normaly the selected resource can change after each
+timeslot.</para></descr>
+  <contexts>
+   <context>allocate</context>
+  </contexts>
+  <seealso>
+   <also>alternative</also>
+  </seealso>
+ </property>
+ <property name="priority" id="priority" inheritable="No">
+  <descr><para>Specifies a priority between 1 and 1000. A task with
+higher priority is more likely to get the requested resources.</para>
+
+<para>This attribute is inherited by subtasks if specified prior to
+the definition of the subtask.</para></descr>
+  <attributes>
+   <attr name="value" type="INTEGER"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+ </property>
+ <property name="precedes" id="precedes" inheritable="No">
+  <descr><para>Specifies that the tasks with the specified IDs cannot
+start before the task has been finished. If multiple IDs are
+specified, they must be separated by commas. IDs must be either global
+or relative. A relative ID starts with a number of '!'. Each '!' moves
+the scope to the parent task. Global IDs do
+not contain '!', but have IDs separated by dots.</para>
+
+<para>By using the 'precedes' attribute, the scheduling policy is
+automatically set to ALAP. If both 'precedes' and 'precedes' are used
+within a task, the last policy counts.</para></descr>
+  <attributes>
+   <attr name="task" type="ID" list="1"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>depends</also>
+  </seealso>
+  <example>&example_precedes;</example>
+ </property>
+ <property name="project" id="project" inheritable="No">
+  <descr><para>The project property is mandatory and should be the
+first property in a project file. &lt;id&gt; is the default project
+ID used to register resource allocations in a global database.
+&lt;name&gt; is the name of the project.  &lt;version&gt; is the
+version of the project file. Typically this is the CVS ID.
+&lt;start&gt; and &lt;end&gt; define the time frame of the project.
+The end may be well after the end of the last task, but must be
+specified to terminate the scheduling process.</para></descr>
+  <attributes>
+   <attr name="id" type="ID">
+    <para>The default project ID.</para>
+   </attr>
+   <attr name="name" type="STRING">
+    <para>The name of the project.</para>
+   </attr>
+   <attr name="version" type="STRING">
+    <para>The version of the project file. This could be a revision
+number from a revision control system.</para>
+   </attr>
+   <attr name="start" type="DATE">
+    <para>All task must start after this date.</para>
+   </attr>
+   <attr name="end" type="DATE">
+    <para>All task must end before this date.</para>
+   </attr>
+  </attributes>
+  <optattributes>
+   <optattr>allowredefinition</optattr>
+   <optattr>currencyformat</optattr>
+   <optattr>currency</optattr>
+   <optattr>dailyworkinghours</optattr>
+   <optattr>extend</optattr>
+   <optattr>include</optattr>
+   <optattr>now</optattr>
+   <optattr>numberformat</optattr>
+   <optattr>scenario</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>timeformat</optattr>
+   <optattr>timezone</optattr>
+   <optattr>timingresolution</optattr>
+   <optattr>weekstartsmonday</optattr>
+   <optattr>weekstartssunday</optattr>
+   <optattr>workinghours</optattr>
+   <optattr>yearlyworkingdays</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+ </property>
+ <property name="projection" id="projection" inheritable="No">
+  <descr><para>Enables the projection mode for the scenario. All tasks
+will be scheduled taking the manual bookings into account. The
+tasks will be extended after the last manual bookings until the
+specified effort, length or duration has been reached.</para></descr>
+  <contexts>
+   <context>scenario</context>
+  </contexts>
+  <seealso>
+   <also>booking</also>
+  </seealso>
+ </property>
+ <property name="rawstylesheet" id="rawstylesheet" inheritable="No">
+  <descr><para>Specifies a stylesheet for HTML reports.</para></descr>
+  <attributes>
+   <attr name="stylesheet" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+ </property>
+ <property name="reference" id="reference" inheritable="No">
+  <descr><para>A reference to an external document. If you need more
+than one reference, you can create your own URL placeholders.</para></descr>
+  <attributes>
+   <attr name="url" type="STRING">
+    <para>Should be a well formed URL.</para>
+   </attr>
+  </attributes>
+  <optattributes>
+   <optattr>label</optattr>
+  </optattributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>extend</also>
+  </seealso>
+ </property>
+ <property name="resource" id="resource" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+   <attr name="id" type="ID"/>
+   <attr name="name" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>booking</optattr>
+   <optattr>efficiency</optattr>
+   <optattr>kotrusid</optattr>
+   <optattr>maxeffort</optattr>
+   <optattr>rate</optattr>
+   <optattr>resource</optattr>
+   <optattr>shift</optattr>
+   <optattr>vacation_resource</optattr>
+   <optattr>workinghours</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>resource</context>
+  </contexts>
+  <seealso>
+   <also>task</also>
+  </seealso>
+ </property>
+  <property name="responsible" id="responsible" inheritable="Yes">
+   <descr><para>The ID of the resource that is responsible for this task.</para></descr>
+  <attributes>
+   <attr name="resource" type="ID"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>resource</also>
+  </seealso>
+ </property>
+ <property name="rollupaccount" id="rollupaccount" inheritable="No">
+  <descr><para>Do not show sub-accounts of accounts that match the
+specified logical expression.</para></descr>
+  <attributes>
+   <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>htmlaccountreport</context>
+  </contexts>
+  <seealso>
+   <also>rollupresource</also>
+   <also>rolluptask</also>
+  </seealso>
+ </property>
+ <property name="rollupresrouce" id="rollupresource" inheritable="No">
+  <descr><para>Do not show sub-resources of resources that match the
+specified logical expression.</para></descr>
+  <attributes>
+   <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>csvresourcereport</context>
+   <context>htmlresourcereport</context>
+  </contexts>
+  <seealso>
+   <also>rollupaccount</also>
+   <also>rolluptask</also>
+  </seealso>
+ </property>
+ <property name="rolluptask" id="rolluptask" inheritable="No">
+  <descr><para>Do not show sub-tasks of tasks that match the
+specified logical expression.</para></descr>
+  <attributes>
+   <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
+  </attributes>
+  <contexts>
+   <context>csvtaskreport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>rollupaccount</also>
+   <also>rollupresource</also>
+  </seealso>
+ </property>
+ <property name="scenario" id="scenario" inheritable="No">
+  <descr><para>Specifies the different project scenarios. A scenario
+that is nested into another one inherits all values from the enclosing
+scenario except those values that were specified specifically for this
+scenario.</para></descr>
+  <attributes>
+   <attr name="id" type="ID"/>
+   <attr name="name" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>disabled</optattr>
+   <optattr>projection</optattr>
+   <optattr>scenario</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>scenario</context>
+  </contexts>
+  <seealso>
+   <also>scenarios</also>
+  </seealso>
+ </property>
+ <property name="scenarios" id="scenarios" inheritable="No">
+  <descr><para>List of scenarios that should be included in the
+report.</para></descr>
+  <attributes>
+   <attr name="scenarioid" type="ID" list="1">
+    <para>The ID of the scenario.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>csvresourcereport</context>
+   <context>csvtaskreport</context>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>scenario</also>
+  </seealso>
+ </property>
+ <property name="scheduled" id="scheduled" inheritable="No"
+scenario="Yes">
+  <descr><para>This is mostly for internal use. It specifies that the
+task can be ignored for scheduling in the scenario.</para></descr>
+  <contexts>
+   <context>task</context>
+  </contexts>
+ </property>
+ <property name="scheduling" id="scheduling" inheritable="Yes">
+  <descr><para>Specifies the scheduling policy for the task. A task
+can be scheduled from start to end (As Soon As Possible, ASAP) or from
+end to start (As Late As Possible, ALAP).</para></descr>
+  <attributes>
+   <attr name="type" type="ID">
+    <para>Possible values are <varname>ALAP</varname> or
+<varname>ASAP</varname>.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+ </property>
+ <property name="select" id="select" inheritable="No">
+  <descr><para>The select functions controls which resource is picked
+from an allocation and it's alternatives. The selection is
+re-evaluated each time the resource used in the previous time slot
+becomes unavailable.</para></descr>
+  <attributes>
+   <attr name="mode" type="ID">
+    <para>See table below for possible values.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>allocate</context>
+  </contexts>
+  <seealso>
+   <also>persistent</also>
+  </seealso>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>maxloaded</varname></member>
+   <member>Pick the available resource that has been used the most so
+   far.</member>
+   
+   <member><varname>minloaded</varname></member>
+   <member>Pick the available resource that has been used the least so
+   far.</member>
+   
+   <member><varname>order</varname></member>
+   <member>Pick the first available resource from the list.</member>
+   
+   <member><varname>random</varname></member>
+   <member>Pick a random resource from the list.</member>
+   
+   </simplelist></para>
+  </freestyle>
+ </property>
+ <property name="shorttimeformat" id="shorttimeformat"
+inheritable="Yes">
+  <descr><para>Specifies time format for time short specifications. This is
+normal just the hour and minutes.</para></descr>
+  <attributes>
+   <attr name="format" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>timeformat</also>
+  </seealso>
+ </property>
+ <property name="sortaccounts" id="sortaccounts" inheritable="No">
+  <descr><para>Determines how the accounts are sorted in the report. Up to 3
+criteria can be specified. If one criteria is not sufficient to sort a
+group of accounts, the next criteria will be used to sort the accounts
+within this group.</para></descr>
+  <attributes>
+   <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>htmlaccountreport</context>
+  </contexts>
+ </property>
+ <property name="sortresources" id="sortresources" inheritable="No">
+  <descr><para>Determines how the resources are sorted in the report. Up to 3
+criteria can be specified. If one criteria is not sufficient to sort a
+group of accounts, the next criteria will be used to sort the accounts
+within this group.</para></descr>
+  <attributes>
+   <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
+  </attributes>
+  <contexts>
+   <context>csvresourcereport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+ </property>
+ <property name="sorttasks" id="sorttasks" inheritable="No">
+  <descr><para>Determines how the tasks are sorted in the report. Up to 3
+criteria can be specified. If one criteria is not sufficient to sort a
+group of accounts, the next criteria will be used to sort the accounts
+within this group.</para></descr>
+  <attributes>
+   <attr name="criteria" type="SORTINGCRITERIA" list="1"/>
+  </attributes>
+  <contexts>
+   <context>csvtaskreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+ </property>
+ <property name="start" id="start_report" inheritable="No">
+  <descr><para>Specifies the start date of the report. In task reports only
+tasks that end after this end date are listed.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>csvresourcereport</context>
+   <context>csvtaskreport</context>
+   <context>htmlaccountreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+  </contexts>
+  <seealso>
+   <also>end_report</also>
+  </seealso>
+ </property>
+ <property name="start" id="start_task" inheritable="Yes"
+scenario="Yes">
+  <descr><para>The start date of the task</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>end_task</also>
+   <also>maxstart</also>
+   <also>minstart</also>
+   <also>startbuffer</also>
+  </seealso>
+ </property>
+ <property name="startbuffer" id="startbuffer" inheritable="No"
+scenario="Yes">
+  <descr><para>Specifies how much slack time you expect to have at the
+begining of the task.</para></descr>
+  <attributes>
+   <attr name="percent" type="REAL">
+    <para>Percent slack of the overall effort, duration or length of
+the task.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>duration</also>
+   <also>effort</also>
+   <also>length</also>
+  </seealso>
+ </property>
+ <property name="startcredit" id="startcredit" inheritable="No"
+scenario="Yes">
+  <descr><para>Specifies an amount that is credited to the account
+specified by the <link linkend="PROPERTY_account_task">account</link>
+property at the moment the tasks starts.</para></descr>
+  <attributes>
+   <attr name="amount" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>endcredit</also>
+  </seealso>
+ </property>
+ <property name="statusnote" id="statusnote" inheritable="No"
+scenario="Yes">
+  <descr><para>A note that describes the current status of the
+task.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>note</also>
+  </seealso>
+ </property>
+ <property name="task" id="task" inheritable="No">
+  <descr><para>Tasks are the central elements of a project plan. Use
+a task to specify which resource should be allocated for how long to
+what task.</para></descr>
+  <attributes>
+   <attr name="id" type="ID"/>
+   <attr name="name" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>account</optattr>
+   <optattr>allocate</optattr>
+   <optattr>complete</optattr>
+   <optattr>depends</optattr>
+   <optattr>duration</optattr>
+   <optattr>effort</optattr>
+   <optattr>endbuffer</optattr>
+   <optattr>endcredit</optattr>
+   <optattr>end_task</optattr>
+   <optattr>flags</optattr>
+   <optattr>flags</optattr>
+   <optattr>length</optattr>
+   <optattr>maxend</optattr>
+   <optattr>maxstart</optattr>
+   <optattr>milestone</optattr>
+   <optattr>minend</optattr>
+   <optattr>minstart</optattr>
+   <optattr>note</optattr>
+   <optattr>precedes</optattr>
+   <optattr>priority</optattr>
+   <optattr>projectid</optattr>
+   <optattr>reference</optattr>
+   <optattr>responsible</optattr>
+   <optattr>scheduled</optattr>
+   <optattr>scheduling</optattr>
+   <optattr>shift</optattr>
+   <optattr>startbuffer</optattr>
+   <optattr>startcredit</optattr>
+   <optattr>start_task</optattr>
+   <optattr>statusnote</optattr>
+   <optattr>supplement</optattr>
+   <optattr>task</optattr>
+  </optattributes>
+  <contexts>
+   <context>Global Scope</context>
+   <context>task</context>
+  </contexts>
+  <seealso>
+   <also>resource</also>
+  </seealso>
+ </property>
+ <property name="taskprefix" id="taskprefix" inheritable="No">
+  <descr><para>All tasks in the included file are added as sub-tasks of the
+task specified by <varname>taskprefix</varname>.</para></descr>
+  <attributes>
+   <attr name="prefix" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>include</context>
+  </contexts>
+  <seealso>
+   <also>task</also>
+  </seealso>
+ </property>
+ <property name="timezone" id="timezone" inheritable="No">
+  <descr><para>Sets the default timezone of the project. All times
+that have no time zones specified will be assumed to be in this
+timezone. The value must be a string just like those used for the TZ
+environment variable. Most Linux systems have a command line utility
+called <varname>tzselect</varname> to lookup possible values.</para>
+
+<para>The project start and end time are not affected by this setting. You
+have to explicitly state the timezone for those dates or the system
+defaults are assumed.</para></descr>
+  <attributes>
+   <attr name="zone" type="STRING"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+ </property>
+ <property name="timeformat" id="timeformat" inheritable="Yes">
+  <descr><para>Determines how time specifications in reports look like.</para></descr>
+  <attributes>
+   <attr name="format" type="STRING">
+    <para>See table below for possible values.</para>
+   </attr>
+  </attributes>
+  <contexts>
+   <context>csvaccountreport</context>
+   <context>csvresourcereport</context>
+   <context>csvtaskreport</context>
+   <context>htmlresourcereport</context>
+   <context>htmltaskreport</context>
+   <context>htmltaskreport</context>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>shorttimeformat</also>
+  </seealso>
+  <freestyle>
+<para>
+Ordinary characters placed in the format string are copied to s
+without conversion. Conversion specifiers are introduced by  a
+`%' character, and are replaced in s as follows:</para>
+
+<para><simplelist type="horiz" columns="2">
+
+<member>%a</member><member>The abbreviated weekday name according to
+the  current locale.</member>
+
+<member>%A</member><member>The full weekday name according  to the
+current locale.</member>
+
+<member>%b</member><member>The abbreviated month name according to the
+current locale.</member>
+
+<member>%B</member><member> The full month name according to
+the current locale.</member>  
+
+<member>%c</member><member> The preferred date and time
+representation for the current locale.</member>
+
+<member>%C</member><member> The century number (year/100) as a 2-digit
+integer. (SU)</member>
+	
+<member>%d</member><member>The day of the month as a decimal number
+(range  01 to 31).</member>
+
+<member>%D</member><member>Equivalent  to  %m/%d/%y.  (Yecch  -  for
+Americans only.  Americans should note that in other countries %d/%m/%y 
+is rather common.  This means that in international context this format is
+ambiguous  and should not be used.) (SU)</member>
+
+<member>%e</member><member>Like  %d, the day of the month as a decimal number,
+but a leading zero is replaced by a space. (SU)</member>
+	
+<member>%E</member><member>Modifier: use alternative format, see
+below. (SU)</member>
+	
+<member>%F</member><member>Equivalent to %Y-%m-%d (the ISO 8601 date
+format). (C99)</member>
+
+<member>%G</member><member>The ISO 8601 year with century as a decimal
+number.  The 4-digit year corresponding to the ISO week number  (see
+%V). This has the same format and value as %y, except that if the ISO week
+number belongs to  the previous or next year, that year is used
+instead. (TZ)</member>
+	
+<member>%g</member><member>Like %G, but without century, i.e., with a  2-digit
+year (00-99). (TZ)</member>
+	
+<member>%h</member><member>Equivalent to %b. (SU)</member>
+	
+<member>%H</member><member>The  hour as a decimal number using a
+24-hour clock (range 00 to 23).</member>
+
+<member>%I</member><member>The hour as a decimal number using a
+12-hour  clock (range 01 to 12).</member>
+
+<member>%j</member><member>The  day of the year as a decimal number
+(range 001 to 366).</member>
+
+<member>%k</member><member>The hour (24-hour clock) as a decimal
+number (range 0 to 23); single digits are preceded by a blank.  (See
+also %H.) (TZ)</member>
+
+<member>%l</member><member>The hour (12-hour clock) as a decimal
+number (range 1 to 12); single digits are preceded by a blank. (See
+also %I.) (TZ)</member>
+
+<member>%m</member><member>The month as a decimal number (range 01 to
+12).</member>
+
+<member>%M</member><member>The minute as a decimal number (range 00 to
+59).</member>
+
+<member>%n</member><member>A newline character. (SU)</member>
+
+<member>%O</member><member>Modifier: use alternative format, see
+below. (SU)</member>
+
+<member>%p</member><member>Either 'AM' or 'PM' according  to  the
+given  time value, or the corresponding strings for the
+current locale.  Noon is treated as `pm'  and  midnight as
+'am'.</member>
+
+<member>%P</member><member>Like  %p but in lowercase: 'am' or 'pm' or
+%a corresponding string for the current locale. (GNU)</member>
+
+<member>%r</member><member>The time in a.m. or p.m. notation.   In
+the  POSIX locale this is equivalent to '%I:%M:%S %p'. (SU)</member>
+
+<member>%R</member><member>The  time  in  24-hour notation (%H:%M).
+(SU) For a version including the seconds, see %T below.</member>
+
+<member>%s</member><member>The number of seconds since the Epoch,
+i.e.,  since 1970-01-01 00:00:00 UTC. (TZ)</member>
+
+<member>%S</member><member>The second as a decimal number (range 00 to
+61).</member>
+	 
+<member>%t</member><member>A tab character. (SU)</member>
+
+<member>%T</member><member>The time in 24-hour notation (%H:%M:%S).
+(SU)</member>
+
+<member>%u</member><member>The  day  of  the  week as a decimal, range
+1 to 7, Monday being 1.  See also %w. (SU)</member>
+
+<member>%U</member><member>The week number of the current year  as  a
+decimal number,  range  00  to  53, starting with the first Sunday as
+the first day of week 01. See also %V and %W.</member>
+
+<member>%V</member><member>The ISO 8601:1988 week number of the
+current year as a decimal number, range 01 to 53, where week 1 is the
+first week that has at least 4 days in the current year, and with
+Monday as the first day of the week.  See also %U %and %W.
+%(SU)</member>
+
+<member>%w</member><member>The  day  of  the  week as a decimal, range
+0 to 6, Sunday being 0.  See also %u.</member>
+
+<member>%W</member><member>The week number of the current %year  as  a
+decimal number,  range  00  to  53, starting with the first Monday as
+the first day of week 01.</member>
+
+<member>%x</member><member>The preferred date representation for  the
+current locale without the time.</member>
+
+<member>%X</member><member>The  preferred  time representation for
+the current locale without the date.</member>
+
+<member>%y</member><member>The year as a decimal number without
+a century (range 00 to 99).</member>
+
+<member>%Y</member><member> The year as a decimal number
+including the century.</member>
+
+<member>%z</member><member> The time zone as hour offset from
+GMT. Required to emit RFC822-conformant dates (using "%a, %d %%b
+%Y %H:%M:%S %%z"). (GNU)</member>
+
+<member>%Z</member><member>The time zone or name or
+abbreviation.</member>
+
+<member>%+</member><member>The date and time in date(1) format.
+(TZ)</member>
+
+<member>%%</member><member>A literal '%' character.</member>
+
+</simplelist></para>
+
+<para>Some conversion specifiers can be  modified  by preceding them
+by  the E or O modifier to indicate that an alternative format
+should be used.  If the alternative format  or specification  does
+not exist for the current locale, the behavior will be as if the
+unmodified conversion specification  were used.  (SU) The Single
+Unix Specification mentions %Ec, %EC, %Ex, %%EX, %Ry, %EY, %Od,
+%Oe,  %OH, %OI, %Om, %OM, %OS, %Ou, %OU, %OV, %Ow, %OW,
+%Oy, where the effect of the O modifier is to use alternative
+numeric symbols (say, Roman numerals), and that of the E modifier is
+to use a locale-dependent alternative representation.</para>
+
+<para>The documentation of the
+<varname>timeformat</varname> attribute has been taken
+from the man page of the GNU <varname>strftime</varname>
+function.</para>
+  </freestyle>
+ </property>
+ <property name="timingresolution" id="timingresolution" inheritable="No">
+  <descr><para>Sets the minimum timing resolution. The smaller the
+value, the longer the scheduling process lasts and the more memory the
+application needs. The default is 1 hour. The smallest value is 5
+min.</para>
+
+<para>This value is a pretty fundamental setting of TaskJuggler. It
+has a severe impact on memory usage and scheduling performance. You
+should set this value to the minimum required resolution. Make sure
+that all values that you specify are aligned with the
+resolution.</para></descr>
+  <attributes>
+   <attr name="value" type="INTEGER"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+ </property>
+ <property name="vacation" id="vacation_global" inheritable="Yes">
+  <descr><para>Specify a global vacation day. This vacation is
+respected by all resources that are defined hereafter.</para></descr>
+  <attributes>
+   <attr name="name" type="STRING"/>
+   <attr name="interval" type="DATEINTERVAL"/>
+  </attributes>
+  <contexts>
+   <context>Global Scope</context>
+  </contexts>
+  <seealso>
+   <also>vacation_resource</also>
+  </seealso>
+ </property>
+ <property name="vacation" id="vacation_resource" inheritable="Yes">
+  <descr><para>Specify a vacation period for the resource.</para></descr>
+  <attributes>
+   <attr name="interval" type="DATEINTERVAL"/>
+  </attributes>
+  <contexts>
+   <context>resource</context>
+  </contexts>
+  <seealso>
+   <also>vacation_global</also>
+  </seealso>
+ </property>
+ <property name="weekstartsmonday" id="weekstartsmonday" inheritable="No">
+  <descr><para>Specify that you want to base all week calculation on
+weeks starting on Monday. This is common in many European countries.</para></descr>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>weekstartssunday</also>
+  </seealso>
+ </property>
+ <property name="weekstartssunday" id="weekstartssunday" inheritable="No">
+  <descr><para>Specify that you want to base all week calculation on
+weeks starting on Sunday. This is common in the United States of
+America.</para></descr>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>weekstartsmonday</also>
+  </seealso>
+ </property>
+ <property name="workinghours" id="workinghours" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+   <attr name="weekday" type="WEEKDAY"/>
+   <attr name="interval" type="TIMEINTERVAL" list="1"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+   <context>resource</context>
+   <context>shift</context>
+  </contexts>
+  <seealso>
+   <also>dailyworkinghours</also>
+   <also>yearlyworkingdays</also>
+  </seealso>
+ </property>
+ <property name="yearlyworkingdays" id="yearlyworkingdays" inheritable="No">
+  <descr><para>Specifies the number of average working days per year.
+This should correlate to the specified workinghours and vacation. It
+affects the conversion of working hours, working days, working weeks,
+working months and working years into each other.</para></descr>
+  <attributes>
+   <attr name="days" type="REAL"/>
+  </attributes>
+  <contexts>
+   <context>project</context>
+  </contexts>
+  <seealso>
+   <also>dailyworkinghours</also>
+   <also>loadunit</also>
+   <also>vacation_global</also>
+   <also>workinghours</also>
+  </seealso>
+ </property>
+<!-- 
+ <property name="" id="" inheritable="No">
+  <descr><para></para></descr>
+  <attributes>
+   <attr name="" type=""/>
+  </attributes>
+  <optattributes>
+   <optattr></optattr>
+  </optattributes>
+  <contexts>
+   <context></context>
+  </contexts>
+  <seealso>
+   <also></also>
+  </seealso>
+ </property>
+-->
+</properties>
+
