@@ -424,7 +424,7 @@ void ktjview2::optionsPreferences()
     //dialog->addPage(new General(0, "General"), i18n("General"), "package_settings");
     dialog->addPage( new Gantt(0, "Gantt"), i18n("Gantt"), "gantt" );
     dialog->addPage( new ResUsageCfg(0, "ResUsageCfg"), i18n("Resource Usage"), "resourceusage" );
-    connect(dialog, SIGNAL(settingsChanged()), m_view, SLOT(loadSettings()));
+    connect( dialog, SIGNAL( settingsChanged() ), m_view, SLOT( loadSettings() ) );
     dialog->show();
 }
 

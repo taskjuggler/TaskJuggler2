@@ -54,6 +54,7 @@
 #include <kstandarddirs.h>
 #include <krun.h>
 #include <kprocess.h>
+#include <kinputdialog.h>
 
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
@@ -1319,8 +1320,6 @@ void ktjview2View::showPSGantt()
 
     if ( m_project && m_project->generateXMLReport() )
     {
-        const QString tjx = m_projectURL.prettyURL( -1, KURL::StripFileProtocol ).replace( QRegExp( "tjp$" ), "tjx" );
-        const QString eps = directory + m_project->getId() + ".eps";
         const QString tjx2gantt = KStandardDirs::findExe( "tjx2gantt" );
 
         if ( tjx2gantt.isNull() )
@@ -1328,6 +1327,17 @@ void ktjview2View::showPSGantt()
             KMessageBox::sorry( this, "<qt>" + i18n( "The required application <b>tjx2gantt</b> wasn't found." ) );
             return;
         }
+
+        QStringList items;
+        items << i18n( "Normal" ) << i18n( "Poster" );
+        QString output = KInputDialog::getItem( i18n( "Select Printout Type" ), i18n( "Select type:" ), items,
+                                                0, false, 0, this, "print_select_dialog" );
+
+        QString eps = directory + m_project->getId() + ".eps";
+        if ( output == i18n( "Poster" ) )
+            eps = directory + m_project->getId() + "_poster.eps";
+
+        const QString tjx = m_projectURL.prettyURL( -1, KURL::StripFileProtocol ).replace( QRegExp( "tjp$" ), "tjx" );
 
         QString command = KShellProcess::quote( tjx2gantt ) + " " + KShellProcess::quote( tjx );
 
