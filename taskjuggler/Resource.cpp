@@ -364,7 +364,7 @@ Resource::initFakeScoreboard()
             continue;
         uint startIdx = sbIndex((*ivi)->getStart() >= project->getStart() ?
                                 (*ivi)->getStart() : project->getStart());
-        uint endIdx = sbIndex((*ivi)->getEnd() >= project->getStart() ?
+        uint endIdx = sbIndex((*ivi)->getEnd() <= project->getEnd() ?
                               (*ivi)->getEnd() : project->getEnd());
         for (uint idx = startIdx; idx <= endIdx; ++idx)
             FakeScoreboard[idx] = (SbBooking*) 2;
