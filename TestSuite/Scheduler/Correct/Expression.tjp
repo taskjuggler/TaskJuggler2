@@ -70,3 +70,8 @@ htmltaskreport "Expression_istaskstatus_ref.html" {
 	columns no, name, start, end, status
 	hidetask ~flag1
 }
+
+xmlreport "Expression-Export.tjx" {
+	version 2
+}
+
