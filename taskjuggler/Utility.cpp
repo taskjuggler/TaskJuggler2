@@ -304,6 +304,13 @@ secondsOfDay(time_t t)
 }
 
 int
+hourOfDay(time_t t)
+{
+    const struct tm* tms = clocaltime(&t);
+    return tms->tm_hour;
+}
+
+int
 dayOfMonth(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -451,7 +458,7 @@ beginOfHour(time_t t)
     const struct tm* tms = clocaltime(&t);
     struct tm tmc;
     memcpy(&tmc, tms, sizeof(struct tm));
-    tmc.tm_sec = tmc.tm_min;
+    tmc.tm_sec = tmc.tm_min = 0;
     tmc.tm_isdst = -1;
     return mktime(&tmc);
 }

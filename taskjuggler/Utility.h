@@ -114,6 +114,8 @@ inline bool isSameYear(time_t d1, time_t d2)
 
 int secondsOfDay(time_t d);
 
+int hourOfDay(time_t d);
+
 int dayOfMonth(time_t d);
 
 int dayOfYear(time_t d);
