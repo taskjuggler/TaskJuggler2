@@ -2433,7 +2433,7 @@ bool KDGanttView::displayEmptyTasksAsLine() const
 */
 void KDGanttView::setHorBackgroundLines( int count, QBrush brush )
 {
-  myTimeTable->setHorBackgroundLines(  count, brush );
+  myTimeTable->setHorBackgroundLines( count, brush );
 }
 
 

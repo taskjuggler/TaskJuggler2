@@ -59,30 +59,28 @@ public slots:
     /**
      * Use this method to load whatever file/URL you have
      */
-    void load(const KURL& url);
+    void load( const KURL& url );
 
 protected:
     /**
      * Overridden virtuals for Qt drag 'n drop (XDND)
      */
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-    virtual void dropEvent(QDropEvent *event);
+    virtual void dragEnterEvent( QDragEnterEvent *event );
+    virtual void dropEvent( QDropEvent *event );
     virtual bool queryExit();
 
-protected:
     /**
      * This function is called when it is time for the app to save its
      * properties for session management purposes.
      */
-    void saveProperties(KConfig *);
+    void saveProperties( KConfig * );
 
     /**
      * This function is called when this app is restored.  The KConfig
      * object points to the session management config file that was saved
      * with @ref saveProperties
      */
-    void readProperties(KConfig *);
-
+    void readProperties( KConfig * );
 
 private slots:
     /**
@@ -97,7 +95,13 @@ private slots:
      * Tell the view to print
      */
     void filePrint();
+    /**
+     *Show the config keys dialog
+     */
     void optionsConfigureKeys();
+    /**
+     * Show the config toolbars dialog
+     */
     void optionsConfigureToolbars();
     /**
      * Show the config dialog
@@ -114,7 +118,6 @@ private slots:
 private:
     void setupActions();
 
-private:
     ktjview2View *m_view;
 
     // actions

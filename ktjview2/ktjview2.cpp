@@ -103,13 +103,13 @@ void ktjview2::setupActions()
     KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
 
     // Gantt menu
-    new KAction( i18n( "Zoom In" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
+    new KAction( i18n( "Zoom &in" ), "viewmag+", KStdAccel::shortcut( KStdAccel::ZoomIn ),
                  m_view, SLOT( zoomIn() ), actionCollection(), "zoom_in" );
-    new KAction( i18n( "Zoom Out" ), "viewmag-", KStdAccel::shortcut( KStdAccel::ZoomOut ),
+    new KAction( i18n( "Zoom &out" ), "viewmag-", KStdAccel::shortcut( KStdAccel::ZoomOut ),
                  m_view, SLOT( zoomOut() ), actionCollection(), "zoom_out" );
-    new KAction( i18n( "Fit To Page" ), "viewmagfit", KShortcut( "Ctrl+0" ),
+    new KAction( i18n( "&Fit to page" ), "viewmagfit", KShortcut( "Ctrl+0" ),
                  m_view, SLOT( zoomFit() ), actionCollection(), "fit_to_page" );
-    new KAction( i18n( "Set Timeframe" ), "timespan", KShortcut(),
+    new KAction( i18n( "Set &timeframe" ), "timespan", KShortcut(),
                  m_view, SLOT( slotZoomTimeframe() ), actionCollection(), "timeframe" );
 
     // Resource menu
@@ -124,6 +124,10 @@ void ktjview2::setupActions()
     m_scaleAction->setCurrentItem( 5 ); // TODO make configurable
     connect( m_scaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotScale( int ) ) );
+
+    // Resource menu
+    new KAction( i18n( "&Query resource..." ), 0, KShortcut(),
+                 m_view, SLOT( queryResource() ), actionCollection(), "query_resource" );
 
     setStandardToolBarMenuEnabled( true );
     createStandardStatusBarAction();
@@ -242,7 +246,7 @@ void ktjview2::optionsPreferences()
     KConfigDialog *dialog = new KConfigDialog( this, "settings", Settings::self() );
     //dialog->addPage(new General(0, "General"), i18n("General"), "package_settings");
     dialog->addPage( new Gantt(0, "Gantt"), i18n("Gantt"), "gantt" );
-    //connect(dialog, SIGNAL(settingsChanged()), this, SLOT(loadSettings()));
+    connect(dialog, SIGNAL(settingsChanged()), m_view, SLOT(loadSettings()));
     dialog->show();
 }
 

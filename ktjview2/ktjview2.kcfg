@@ -5,11 +5,15 @@
   <group name="Gantt">
     <entry name="WeekdayColor" type="Color">
       <label>Background color for week days.</label>
-      <default>lightGray</default>
+      <default>white</default>
     </entry>
     <entry name="WeekendColor" type="Color">
       <label>Background color for weekend days.</label>
       <default>lightGray</default>
+    </entry>
+    <entry name="BgLines" type="Bool">
+      <label>Show alternate horizontal lines.</label>
+      <default>true</default>
     </entry>
   </group>
 </kcfg>

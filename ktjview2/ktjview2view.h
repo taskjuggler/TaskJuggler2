@@ -120,6 +120,14 @@ public slots:
      */
     void slotZoomTimeframe();
 
+    /**
+     * Invoked when the config dialog settings change
+     */
+    void loadSettings();
+
+    /**
+     * Show a dialog with options to query info about a resource.
+     */
     void queryResource();
 
 signals:
@@ -148,6 +156,10 @@ private slots:
     void ensureItemVisible( KDGanttViewItem * item );
 
 private:
+    /**
+     *
+     */
+    void setupGantt();
 
     /**
      * Convert TaskStatus enum to human readable string

@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="12">
+<kpartgui name="ktjview2" version="14">
 <MenuBar>
   <Menu name="gantt"><text>&amp;Gantt</text>
     <Action name="zoom_in"/>
@@ -10,7 +10,7 @@
     <Separator/>
     <Action name="timeframe"/>
   </Menu>
-  <Menu name="resource"><text>&amp;Resource</text>
+  <Menu name="resources"><text>&amp;Resources</text>
     <Action name="query_resource"/>
   </Menu>
 </MenuBar>

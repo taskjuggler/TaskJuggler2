@@ -64,12 +64,13 @@
 #include "taskjuggler.h"
 #include "CoreAttributes.h"
 #include "UsageLimits.h"
+#include "Allocation.h"
 
-ktjview2View::ktjview2View(QWidget *parent)
-    : DCOPObject("ktjview2Iface"), QWidget(parent)
+ktjview2View::ktjview2View( QWidget *parent )
+    : DCOPObject( "ktjview2Iface" ), QWidget( parent )
 {
     // setup our layout manager to automatically add our widgets
-    QHBoxLayout *top_layout = new QHBoxLayout(this);
+    QHBoxLayout *top_layout = new QHBoxLayout( this );
 
     // --- side bar
     m_koolBar = new KoKoolBar( this, "kool_bar" );
@@ -97,8 +98,6 @@ ktjview2View::ktjview2View(QWidget *parent)
     m_ganttView = new KDGanttView( this, "gantt_view" );
     m_ganttView->setEditorEnabled( false );
     m_ganttView->setEditable( false );
-    m_ganttView->setWeekendBackgroundColor( Settings::weekendColor() );
-    // TODO set weekday bg color
     m_ganttView->setScale( KDGanttView::Auto );
     //m_ganttView->setCalendarMode( true );
     m_ganttView->setDisplaySubitemsAsGroup( false );
@@ -151,6 +150,10 @@ ktjview2View::ktjview2View(QWidget *parent)
 
     m_textBrowser->setText( i18n( "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>" ) );
     m_widgetStack->raiseWidget( m_textBrowser );
+
+    loadSettings();             // load the config-dialog related settings
+
+    // ### setup popup menus
 }
 
 ktjview2View::~ktjview2View()
@@ -357,7 +360,6 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
         bool isRoot = task->isRoot();
         bool isContainer = task->isContainer();
         bool isLeaf = task->isLeaf();
-        bool isMilestone = task->isMilestone();
 
         if ( isRoot ) // toplevel container task
         {
@@ -369,6 +371,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                       .arg( KGlobal::locale()->formatDateTime( start ) )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
             item->setTooltipText( toolTip );
+            item->setText( taskName );
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
@@ -384,6 +387,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                       .arg( KGlobal::locale()->formatDateTime( start ) )
                       .arg( KGlobal::locale()->formatDateTime( end ) ) ;
             item->setTooltipText( toolTip );
+            item->setText( taskName );
 
             parseGantt( task->getSubListIterator() ); // recurse
         }
@@ -394,7 +398,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
 
             KDGanttViewItem * parentItem = KDGanttViewItem::find( task->getParent()->getId() );
 
-            if ( isMilestone )  // milestone
+            if ( task->isMilestone() )  // milestone
             {
                 KDGanttViewEventItem * item = new KDGanttViewEventItem( parentItem, taskName, id );
                 item->setStartTime( start );
@@ -403,6 +407,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                           .arg( taskName )
                           .arg( KGlobal::locale()->formatDateTime( start ) );
                 item->setTooltipText( toolTip );
+                item->setText( taskName );
             }
             else                // task
             {
@@ -415,6 +420,7 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                           .arg( KGlobal::locale()->formatDateTime( start ) )
                           .arg( KGlobal::locale()->formatDateTime( end ) ) ;
                 item->setTooltipText( toolTip );
+                item->setText( taskName );
             }
         }
 //#endif
@@ -509,7 +515,6 @@ void ktjview2View::parseLinks( TaskListIterator it )
 
             QString depId = depTask->getId();
             //kdDebug() << "Got depId: " << depId << endl;
-
             fromList.append( KDGanttViewItem::find( depId ) );
         }
 
@@ -612,6 +617,26 @@ QString ktjview2View::status2Str( int ts ) const
 void ktjview2View::queryResource()
 {
     //TODO res->isAvailable, isAllocated, getCredits, getLoad/getAvailableWorkload/getCurrentLoad, hasVacationDay
+}
+
+void ktjview2View::setupGantt()
+{
+    for ( int i = 0; i < 7; i++ )
+    {
+        m_ganttView->setWeekdayBackgroundColor( Settings::weekdayColor(), i );
+    }
+    m_ganttView->setWeekendBackgroundColor( Settings::weekendColor() );
+    if ( Settings::bgLines() )
+        m_ganttView->setHorBackgroundLines();
+    else
+        m_ganttView->setHorBackgroundLines( 0 );
+    m_ganttView->update();      // repaint the widget (necessary)
+}
+
+void ktjview2View::loadSettings()
+{
+    setupGantt();
+    // setup other (future) config options
 }
 
 #include "ktjview2view.moc"
