@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ktjview2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-03 19:49+0100\n"
+"POT-Creation-Date: 2005-02-09 14:42+0100\n"
 "PO-Revision-Date: 2005-01-19 23:28+0100\n"
 "Last-Translator: Rune Rønde Laursen <runerl@skjoldhoej.dk>\n"
 "Language-Team: dansk <dansk@klid.dk>\n"
@@ -125,13 +125,15 @@ msgstr ""
 "Afslutning: %2"
 
 #: ktjResourceReport.cpp:97 ktjTaskReport.cpp:137 ktjview2view.cpp:149
-#: ktjview2view.cpp:166 selectDialog.cpp:97
+#: ktjview2view.cpp:170 selectDialog.cpp:97
 msgid "Name"
 msgstr "Navn"
 
 #: ktjview2.cpp:115
-msgid "The file '%1' can not be found; it was probably removed from the system."
-msgstr "Filen '%1' kan ikke findes. Den er sandsynligvis blevet fjernet fra systemet."
+msgid ""
+"The file '%1' can not be found; it was probably removed from the system."
+msgstr ""
+"Filen '%1' kan ikke findes. Den er sandsynligvis blevet fjernet fra systemet."
 
 #: ktjview2.cpp:156
 msgid "&Filter..."
@@ -169,267 +171,267 @@ msgstr "Summariske opgaver"
 msgid "Using Resource..."
 msgstr "Bruger ressource..."
 
-#: ktjview2.cpp:165 ktjview2.cpp:214
+#: ktjview2.cpp:165 ktjview2.cpp:211
 msgid "Having Flag..."
 msgstr "Mister interessen..."
 
 #: ktjview2.cpp:171
-msgid "&Calendar mode"
-msgstr "&Kalendertilstand"
-
-#: ktjview2.cpp:174
 msgid "Zoom &in"
 msgstr "For&stør"
 
-#: ktjview2.cpp:176
+#: ktjview2.cpp:173
 msgid "Zoom &out"
 msgstr "For&mindsk"
 
-#: ktjview2.cpp:178
+#: ktjview2.cpp:175
 msgid "&Fit to page"
 msgstr "Til&pas til side"
 
-#: ktjview2.cpp:180
+#: ktjview2.cpp:177
 msgid "Set &timeframe"
 msgstr "Indstil &tidsramme"
 
-#: ktjview2.cpp:183 ktjview2.cpp:235
+#: ktjview2.cpp:180 ktjview2.cpp:232
 msgid "&Scale"
 msgstr "&Skalér"
 
-#: ktjview2.cpp:185
+#: ktjview2.cpp:182
 msgid "&Minute"
 msgstr "&Minut"
 
-#: ktjview2.cpp:185
+#: ktjview2.cpp:182
 msgid "&Hour"
 msgstr "&Time"
 
-#: ktjview2.cpp:185
+#: ktjview2.cpp:182
 msgid "&Day"
 msgstr "&Dag"
 
-#: ktjview2.cpp:186
+#: ktjview2.cpp:183
 msgid "&Week"
 msgstr "&Uge"
 
-#: ktjview2.cpp:186
+#: ktjview2.cpp:183
 msgid "M&onth"
 msgstr "Må&ned"
 
-#: ktjview2.cpp:186
+#: ktjview2.cpp:183
 msgid "&Auto"
 msgstr "&Auto"
 
-#: ktjview2.cpp:194
+#: ktjview2.cpp:191
 msgid "&Print..."
 msgstr "&Udskriv..."
 
-#: ktjview2.cpp:198
+#: ktjview2.cpp:195
 msgid "&Collapse All"
 msgstr "&Kollaps alt"
 
-#: ktjview2.cpp:199
+#: ktjview2.cpp:196
 msgid "Show Level &1"
 msgstr "Vis niveau &1"
 
-#: ktjview2.cpp:200
+#: ktjview2.cpp:197
 msgid "Show Level &2"
 msgstr "Vis niveau &2"
 
-#: ktjview2.cpp:201
+#: ktjview2.cpp:198
 msgid "Show Level &3"
 msgstr "Vis niveau &3"
 
-#: ktjview2.cpp:202
+#: ktjview2.cpp:199
 msgid "Show Level &4"
 msgstr "Vis niveau &4"
 
-#: ktjview2.cpp:203
+#: ktjview2.cpp:200
 msgid "Show Level &5"
 msgstr "Vis niveau &5"
 
-#: ktjview2.cpp:204
+#: ktjview2.cpp:201
 msgid "Show Level &6"
 msgstr "Vis niveau &6"
 
-#: ktjview2.cpp:205
+#: ktjview2.cpp:202
 msgid "Show Level &7"
 msgstr "Vis niveau &7"
 
-#: ktjview2.cpp:206
+#: ktjview2.cpp:203
 msgid "Show Level &8"
 msgstr "Vis niveau &8"
 
-#: ktjview2.cpp:207
+#: ktjview2.cpp:204
 msgid "Show Level &9"
 msgstr "Vis niveau &9"
 
-#: ktjview2.cpp:208
+#: ktjview2.cpp:205
 msgid "&Expand All"
 msgstr "&Udvid alt"
 
-#: ktjview2.cpp:211
+#: ktjview2.cpp:208
 msgid "&Filter for: All Resources"
 msgstr "&Filtrér på: Alle ressourcer"
 
-#: ktjview2.cpp:213
+#: ktjview2.cpp:210
 msgid "All Resources"
 msgstr "Alle ressourcer"
 
-#: ktjview2.cpp:213
+#: ktjview2.cpp:210
 msgid "Resources On Vacation..."
 msgstr "Ressourcer på ferie..."
 
-#: ktjview2.cpp:213
+#: ktjview2.cpp:210
 msgid "Resources On Shift..."
 msgstr "Ressourcer på vagt..."
 
-#: ktjview2.cpp:214
+#: ktjview2.cpp:211
 msgid "Allocated Resources..."
 msgstr "Tildelte ressourcer..."
 
-#: ktjview2.cpp:214
+#: ktjview2.cpp:211
 msgid "Unallocated Resources..."
 msgstr "Ikke-tildelte ressourcer..."
 
-#: ktjview2.cpp:222
+#: ktjview2.cpp:219
 msgid "Quick search"
 msgstr "Hurtigsøg"
 
-#: ktjview2.cpp:230
+#: ktjview2.cpp:227
 msgid "Query resource..."
 msgstr "Forespørg ressource..."
 
-#: ktjview2.cpp:237
+#: ktjview2.cpp:234
 msgid "&Days"
 msgstr "&Dage"
 
-#: ktjview2.cpp:237
+#: ktjview2.cpp:234
 msgid "&Weeks"
 msgstr "&Uger"
 
-#: ktjview2.cpp:237
+#: ktjview2.cpp:234
 msgid "&Months"
 msgstr "&Måneder"
 
-#: ktjview2.cpp:237
+#: ktjview2.cpp:234
 msgid "&Quarters"
 msgstr "&Kvartaler"
 
-#: ktjview2.cpp:243
+#: ktjview2.cpp:240
 msgid "&Display"
 msgstr "&Vis"
 
-#: ktjview2.cpp:245
+#: ktjview2.cpp:242
 msgid "Load and &total load"
 msgstr "Belastning og &total belastning"
 
-#: ktjview2.cpp:245
+#: ktjview2.cpp:242
 msgid "&Load"
 msgstr "&Belastning"
 
-#: ktjview2.cpp:245
+#: ktjview2.cpp:242
 msgid "&Available load"
 msgstr "Tilgængelig bel&astning"
 
-#: ktjview2.cpp:251
+#: ktjview2.cpp:248
 msgid "&Find..."
 msgstr "&Find..."
 
-#: ktjview2.cpp:255
+#: ktjview2.cpp:252
 msgid "&Task coverage..."
 msgstr "&Opgavedækning..."
 
-#: ktjview2.cpp:258
+#: ktjview2.cpp:255
 msgid "&Resource usage..."
 msgstr "&Ressourceforbrug..."
 
-#: ktjview2.cpp:262
+#: ktjview2.cpp:259
 msgid "&Rebuild project"
 msgstr "&Byg projekt igen"
 
-#: ktjview2.cpp:266
+#: ktjview2.cpp:263
+msgid "Explain Keyword"
+msgstr ""
+
+#: ktjview2.cpp:267
 msgid "Info"
 msgstr "Info"
 
-#: ktjview2.cpp:267
+#: ktjview2.cpp:268
 msgid "Project Info"
 msgstr "Projektinfo"
 
-#: ktjview2.cpp:271 ktjview2.cpp:425
+#: ktjview2.cpp:272 ktjview2.cpp:426
 msgid "Gantt"
 msgstr "Gantt"
 
-#: ktjview2.cpp:272
+#: ktjview2.cpp:273
 msgid "Gantt Chart"
 msgstr "Gantt-diagram"
 
-#: ktjview2.cpp:276 selectDialog.cpp:46
+#: ktjview2.cpp:277 selectDialog.cpp:46
 msgid "Resources"
 msgstr "Ressourcer"
 
-#: ktjview2.cpp:277
+#: ktjview2.cpp:278
 msgid "Resource List"
 msgstr "Ressourceliste"
 
-#: ktjview2.cpp:281 selectDialog.cpp:39
+#: ktjview2.cpp:282 selectDialog.cpp:39
 msgid "Tasks"
 msgstr "Opgaver"
 
-#: ktjview2.cpp:282
+#: ktjview2.cpp:283
 msgid "Task List"
 msgstr "Opgaveliste"
 
-#: ktjview2.cpp:286
+#: ktjview2.cpp:287
 msgid "Usage"
 msgstr "Forbrug"
 
-#: ktjview2.cpp:288 ktjview2.cpp:426
+#: ktjview2.cpp:289 ktjview2.cpp:427
 msgid "Resource Usage"
 msgstr "Ressourceforbrug"
 
-#: ktjview2.cpp:292 ktjview2.cpp:294
+#: ktjview2.cpp:293 ktjview2.cpp:295
 msgid "Reports"
 msgstr "Rapporter"
 
-#: ktjview2.cpp:298
+#: ktjview2.cpp:299
 msgid "Editor"
 msgstr "Editor"
 
-#: ktjview2.cpp:299
+#: ktjview2.cpp:300
 msgid "Project Source Editor"
 msgstr "Projektkilde-editor"
 
-#: ktjview2.cpp:380
+#: ktjview2.cpp:381
 msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr "Taskjugglerfiler (*.tjp *.tjx *.tji)"
 
-#: ktjview2.cpp:381
+#: ktjview2.cpp:382
 msgid "Open Project"
 msgstr "Åbn projekt"
 
-#: ktjview2.cpp:392
+#: ktjview2.cpp:393
 msgid "Project '%1' successfully saved."
 msgstr "Projekt.'%1' gemt"
 
-#: ktjview2.cpp:394
+#: ktjview2.cpp:395
 msgid "Saving project '%1' failed."
 msgstr "Kunne ikke gemme projekt '%1'."
 
-#: ktjview2.cpp:574 ktjview2.cpp:588
+#: ktjview2.cpp:570 ktjview2.cpp:584
 msgid "&Filter for: %1"
 msgstr "&Filtrér på: %1"
 
-#: ktjview2.cpp:576
+#: ktjview2.cpp:572
 msgid "Task list filtered for '%1'"
 msgstr "Opgaveliste filtreret på '%1'"
 
-#: ktjview2.cpp:590
+#: ktjview2.cpp:586
 msgid "Resource list filtered for '%1'"
 msgstr "Ressourceliste filtreret på '%1'"
 
-#: ktjview2view.cpp:148 ktjview2view.cpp:165 selectDialog.cpp:96
+#: ktjview2view.cpp:148 ktjview2view.cpp:169 selectDialog.cpp:96
 msgid "ID"
 msgstr "ID"
 
@@ -457,281 +459,289 @@ msgstr "Ugentligt maksimum"
 msgid "Monthly Max"
 msgstr "Månedligt maksimum"
 
-#: ktjview2view.cpp:167
+#: ktjview2view.cpp:171
 msgid "Start"
 msgstr "Begyndelse"
 
-#: ktjview2view.cpp:168
+#: ktjview2view.cpp:172
 msgid "End"
 msgstr "Afslutning"
 
-#: ktjview2view.cpp:169
+#: ktjview2view.cpp:173
 msgid "Duration"
 msgstr "Varighed"
 
-#: ktjview2view.cpp:170
+#: ktjview2view.cpp:174
 msgid "Priority"
 msgstr "Prioritet"
 
-#: ktjview2view.cpp:171
+#: ktjview2view.cpp:175
 msgid "Completion"
 msgstr "Fuldendt"
 
-#: ktjview2view.cpp:172
+#: ktjview2view.cpp:176
 msgid "Status"
 msgstr "Status"
 
-#: ktjview2view.cpp:173
+#: ktjview2view.cpp:177
 msgid "Responsible"
 msgstr "Ansvarlig"
 
-#: ktjview2view.cpp:174
+#: ktjview2view.cpp:178
 msgid "Effort"
 msgstr "Indsats"
 
-#: ktjview2view.cpp:175
+#: ktjview2view.cpp:179
 msgid "Allocations"
 msgstr "Tildelinger"
 
-#: ktjview2view.cpp:182
-msgid "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
-msgstr "<h1>Intet projekt indlæst</h1><p>Vælg 'Fil -> Åbn...' for at vælge en.</p>"
+#: ktjview2view.cpp:190
+msgid ""
+"<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
+msgstr ""
+"<h1>Intet projekt indlæst</h1><p>Vælg 'Fil -> Åbn...' for at vælge en.</p>"
 
-#: ktjview2view.cpp:203
+#: ktjview2view.cpp:211
 msgid "Jump to task details"
 msgstr "Gå til opgavedetaljer"
 
-#: ktjview2view.cpp:239
+#: ktjview2view.cpp:247
 msgid "Loading project"
 msgstr "Indlæser projekt"
 
-#: ktjview2view.cpp:267
+#: ktjview2view.cpp:275
 msgid "Opening XML project"
 msgstr "Åbner XML-projekt"
 
-#: ktjview2view.cpp:272 ktjview2view.cpp:301
-msgid "Taskjuggler failed to open the project file. Please check your permissions."
+#: ktjview2view.cpp:280 ktjview2view.cpp:309
+msgid ""
+"Taskjuggler failed to open the project file. Please check your permissions."
 msgstr "Taskjuggler kunne ikke åbne projektfilen. Tjek filrettighederne."
 
-#: ktjview2view.cpp:278
+#: ktjview2view.cpp:286
 msgid "Parsing XML project"
 msgstr "Fortolker XML-projekt"
 
-#: ktjview2view.cpp:285 ktjview2view.cpp:315
+#: ktjview2view.cpp:293 ktjview2view.cpp:323
 msgid ""
 "Taskjuggler failed to parse the project file. Most probably there is a "
 "syntax error.\n"
 "You should edit the project and try to fix it."
 msgstr ""
-"TaskJuggler kunne ikke fortolke projektfilen. Sandsynligvis er der en syntaksfejl.\n"
+"TaskJuggler kunne ikke fortolke projektfilen. Sandsynligvis er der en "
+"syntaksfejl.\n"
 "Du bør redigere projektet og forsøge at rette fejlen."
 
-#: ktjview2view.cpp:296
+#: ktjview2view.cpp:304
 msgid "Opening TJP project"
 msgstr "Åbner TJP-projekt"
 
-#: ktjview2view.cpp:307
+#: ktjview2view.cpp:315
 msgid "Parsing TJP project"
 msgstr "Fortolker TJP-projekt"
 
-#: ktjview2view.cpp:325
+#: ktjview2view.cpp:333
 msgid "This filetype is not supported."
 msgstr "Denne filtype er ikke understøttet."
 
-#: ktjview2view.cpp:335
+#: ktjview2view.cpp:343
 msgid "Generating cross references"
 msgstr "Genererer krydsreferencer"
 
-#: ktjview2view.cpp:346
+#: ktjview2view.cpp:354
 msgid "Scheduling all scenarios"
 msgstr "Planlægger alle scenarier"
 
-#: ktjview2view.cpp:360
+#: ktjview2view.cpp:368
 msgid "Building the views"
 msgstr "Opretter visningerne"
 
-#: ktjview2view.cpp:362
+#: ktjview2view.cpp:370
 msgid "Parsing project info"
 msgstr "Fortolker projektinformation"
 
-#: ktjview2view.cpp:365
+#: ktjview2view.cpp:373
 msgid "Parsing resources"
 msgstr "Fortolker ressourcer"
 
-#: ktjview2view.cpp:368
+#: ktjview2view.cpp:376
 msgid "Parsing tasks"
 msgstr "Fortolker opgaver"
 
-#: ktjview2view.cpp:371
+#: ktjview2view.cpp:379
 msgid "Building the Gantt chart"
 msgstr "Opretter Gantt-diagrammet"
 
-#: ktjview2view.cpp:375
+#: ktjview2view.cpp:383
 msgid "Building the Gantt chart links"
 msgstr "Opretter link i Gantt-diagrammet"
 
-#: ktjview2view.cpp:378
+#: ktjview2view.cpp:386
 msgid "Building the Resource usage view"
 msgstr "Opretter visning af ressourceforbrug"
 
-#: ktjview2view.cpp:392
+#: ktjview2view.cpp:400
 msgid "Loading the project source"
 msgstr "Indlæser projektkildekode"
 
-#: ktjview2view.cpp:397
+#: ktjview2view.cpp:405
 msgid "Successfully loaded project '%1'"
 msgstr "Projekt '%1' indlæst"
 
-#: ktjview2view.cpp:408
+#: ktjview2view.cpp:416
 msgid "Project '%1' loaded with errors"
 msgstr "Projekt '%1 indlæst med fejl"
 
-#: ktjview2view.cpp:426
+#: ktjview2view.cpp:434
 msgid "Version: %1<br>"
 msgstr "Version: %1<br>"
 
-#: ktjview2view.cpp:427
+#: ktjview2view.cpp:435
 msgid "Currency: %1<br>"
 msgstr "Møntenhed: %1<br>"
 
-#: ktjview2view.cpp:431
+#: ktjview2view.cpp:439
 msgid "Project start: %1<br>"
 msgstr "Projektbegyndelse: %1<br>"
 
-#: ktjview2view.cpp:435
+#: ktjview2view.cpp:443
 msgid "Project end: %1<br>"
 msgstr "Projektafslutning: %1<br>"
 
-#: ktjview2view.cpp:438
+#: ktjview2view.cpp:446
 msgid "Report date: %1<br>"
 msgstr "Rapportdato: %1<br>"
 
-#: ktjview2view.cpp:470
+#: ktjview2view.cpp:479
 #, c-format
 msgid "%1%"
 msgstr "%1%"
 
-#: ktjview2view.cpp:524 ktjview2view.cpp:543
+#: ktjview2view.cpp:537 ktjview2view.cpp:556
 msgid "<em>Task group: %1</em><br>Start: %2<br>End: %3"
 msgstr "<em>Opgavegruppe: %1</em><br>Begyndelse: %2<br>Afslutning: %3"
 
-#: ktjview2view.cpp:529 ktjview2view.cpp:548 ktjview2view.cpp:590
+#: ktjview2view.cpp:542 ktjview2view.cpp:561 ktjview2view.cpp:625
 msgid "(%1 d)"
 msgstr "(%1 d)"
 
-#: ktjview2view.cpp:566
+#: ktjview2view.cpp:591
 msgid "<em>Milestone: %1</em><br>Date: %2"
 msgstr "<em>Milepæl: %1</em><br>Dato: %2"
 
-#: ktjview2view.cpp:583
+#: ktjview2view.cpp:618
 msgid ""
 "<em>Task: %1</em><br>Start: %2<br>End: %3<br>Completion: %4%<br>Allocations: "
 "%5"
-msgstr "<em>Opgave: %1</em><br>Begyndelse: %2<br>Afslutning: %3<br>Fuldendelse: %4%<br>Tildelinger: %5"
+msgstr ""
+"<em>Opgave: %1</em><br>Begyndelse: %2<br>Afslutning: %3<br>Fuldendelse: %4%"
+"<br>Tildelinger: %5"
 
-#: ktjview2view.cpp:762
+#: ktjview2view.cpp:797
 msgid "Not yet started"
 msgstr "Endnu ikke begyndt"
 
-#: ktjview2view.cpp:765
+#: ktjview2view.cpp:800
 msgid "Behind schedule"
 msgstr "Forsinket"
 
-#: ktjview2view.cpp:768
+#: ktjview2view.cpp:803
 msgid "Work in progress"
 msgstr "Under udførelse"
 
-#: ktjview2view.cpp:771
+#: ktjview2view.cpp:806
 msgid "On schedule"
 msgstr "Planmæssigt"
 
-#: ktjview2view.cpp:774
+#: ktjview2view.cpp:809
 msgid "Ahead of schedule"
 msgstr "Før planlagt tid"
 
-#: ktjview2view.cpp:777
+#: ktjview2view.cpp:812
 msgid "Finished"
 msgstr "Fuldført"
 
-#: ktjview2view.cpp:781
+#: ktjview2view.cpp:816
 msgid "Unknown status"
 msgstr "Ukendt status"
 
-#: ktjview2view.cpp:842 kdgantt/KDGanttViewSubwidgets.cpp:2961
+#: ktjview2view.cpp:877 kdgantt/KDGanttViewSubwidgets.cpp:2961
 #: kdgantt/KDGanttViewSubwidgets.cpp:2969
 #: kdgantt/KDGanttViewSubwidgets.cpp:2978
 msgid "Task"
 msgstr "Opgave"
 
-#: ktjview2view.cpp:843
+#: ktjview2view.cpp:878
 msgid "Task Group"
 msgstr "Opgavegruppe"
 
-#: ktjview2view.cpp:844
+#: ktjview2view.cpp:879
 msgid "Milestone"
 msgstr "Milepæl"
 
-#: ktjview2view.cpp:896
+#: ktjview2view.cpp:933
 msgid "<em>Task Link</em>"
 msgstr "<em>Opgavelink</em>"
 
-#: ktjview2view.cpp:896
+#: ktjview2view.cpp:933
 msgid "From: "
 msgstr "Fra: "
 
-#: ktjview2view.cpp:908
+#: ktjview2view.cpp:945
 msgid "To: "
 msgstr "Til: "
 
-#: ktjview2view.cpp:960 ktjview2view.cpp:1059
+#: ktjview2view.cpp:990 ktjview2view.cpp:1089
 msgid "Date Range"
 msgstr "Datoområde"
 
-#: ktjview2view.cpp:1256 ktjview2view.cpp:1283
+#: ktjview2view.cpp:1286 ktjview2view.cpp:1313
 msgid "To generate a report you must first open a project."
 msgstr "For at oprette en rapport skal du først åbne et projekt."
 
-#: ktjview2view.cpp:1271
+#: ktjview2view.cpp:1301
 msgid "Generated 'Task Coverage' report, from %1 to %2, scale '%3'."
 msgstr "Genereret 'Opgavedækning'-rapport fra %1 til %2, skala '%3'."
 
-#: ktjview2view.cpp:1298
+#: ktjview2view.cpp:1328
 msgid "Generated 'Resource Usage' report, from %1 to %2, scale '%3'."
 msgstr "Genereret 'Ressourceforbrug'-rapport, fra %1 til %2, skala %3."
 
-#: ktjview2view.cpp:1310
+#: ktjview2view.cpp:1340
 msgid "Only local files are supported."
 msgstr "Kun lokale filer er understøttet."
 
-#: ktjview2view.cpp:1327
+#: ktjview2view.cpp:1357
 msgid "The required application <b>tjx2gantt</b> wasn't found."
 msgstr "Det nødvendige program <b>tjx2gantt</b> blev ikke fundet."
 
-#: ktjview2view.cpp:1332
+#: ktjview2view.cpp:1362
 msgid "Normal"
 msgstr "Normal"
 
-#: ktjview2view.cpp:1332 ktjview2view.cpp:1337
+#: ktjview2view.cpp:1362 ktjview2view.cpp:1367
 msgid "Poster"
 msgstr "Plakat"
 
-#: ktjview2view.cpp:1333
+#: ktjview2view.cpp:1363
 msgid "Select Printout Type"
 msgstr "Vælg udskrivningstype"
 
-#: ktjview2view.cpp:1333
+#: ktjview2view.cpp:1363
 msgid "Select type:"
 msgstr "Vælg type:"
 
-#: ktjview2view.cpp:1349
+#: ktjview2view.cpp:1379
 msgid "Failed to create PostScript output."
 msgstr "Kunne ikke oprette PostScript-uddata."
 
-#: ktjview2view.cpp:1357
+#: ktjview2view.cpp:1387
 msgid ""
 "XML report could not have been generated; PostScript Gantt chart won't be "
-"shown."
-msgstr "XML rapport kunne ikke genereres. PostScript Gantt-diagram vises ikke."
+"shown.\n"
+"This is probably because you haven't defined the <tt>xmlreport</tt> to be "
+"generated in the project definition file."
+msgstr ""
 
 #: main.cpp:31
 msgid "A KDE frontend to TaskJuggler"
@@ -746,7 +756,8 @@ msgid "TaskJuggler IDE"
 msgstr "TaskJuggler integreret udviklingsmiljø"
 
 #: main.cpp:44
-msgid "Author and maintainer "
+#, fuzzy
+msgid "Author and maintainer"
 msgstr "Forfatter og vedligeholder "
 
 #: quickSearchWidget.cpp:45
@@ -769,277 +780,282 @@ msgstr "i:"
 msgid "Choose the column where you want to search in"
 msgstr "Vælg den kolonne du vil søge i"
 
-#: rc.cpp:2 rc.cpp:41 rc.cpp:62 rc.cpp:78
+#: rc.cpp:3 rc.cpp:60 rc.cpp:89 rc.cpp:113
 #, no-c-format
 msgid "Form1"
 msgstr "Form1"
 
-#: rc.cpp:4
+#: rc.cpp:6
 #, no-c-format
 msgid "Available filters"
 msgstr "Tilgængelige filtre"
 
-#: rc.cpp:7
+#: rc.cpp:10
 #, no-c-format
 msgid "Ctrl+T, Ctrl+T"
 msgstr "Ctrl+T, Ctrl+T"
 
-#: rc.cpp:9
+#: rc.cpp:13
 #, no-c-format
 msgid "Add a new filter"
 msgstr "Tilføj et nyt filter"
 
-#: rc.cpp:12
+#: rc.cpp:17
 #, no-c-format
 msgid "Remove the selected filter"
 msgstr "Fjern det markerede filter"
 
-#: rc.cpp:15
+#: rc.cpp:21
 #, no-c-format
 msgid "Rename the selected filter"
 msgstr "Omdøb det markerede filter"
 
-#: rc.cpp:17
+#: rc.cpp:24
 #, no-c-format
 msgid "Filter criteria"
 msgstr "Filterkriterier"
 
-#: rc.cpp:19
+#: rc.cpp:27
 #, no-c-format
 msgid "Matches all of the following"
 msgstr "Passer med alle følgende"
 
-#: rc.cpp:21
+#: rc.cpp:30
 #, no-c-format
 msgid "&More"
 msgstr "&Flere"
 
-#: rc.cpp:23
+#: rc.cpp:33
 #, no-c-format
 msgid "Alt+M"
 msgstr "Alt+M"
 
-#: rc.cpp:25
+#: rc.cpp:36
 #, no-c-format
 msgid "&Fewer"
 msgstr "&Færre"
 
-#: rc.cpp:27
+#: rc.cpp:39
 #, no-c-format
 msgid "Alt+F"
 msgstr "Alt+F"
 
-#: rc.cpp:29
+#: rc.cpp:42
 #, no-c-format
 msgid "Cl&ear"
 msgstr "&Ryd"
 
-#: rc.cpp:31
+#: rc.cpp:45
 #, no-c-format
 msgid "Alt+E"
 msgstr "Alt+E"
 
-#: rc.cpp:33
+#: rc.cpp:48
 #, no-c-format
 msgid "Matches any of the following"
 msgstr "Passer med enhver af de følgende"
 
-#: rc.cpp:35
+#: rc.cpp:51
 #, no-c-format
 msgid "Property"
 msgstr "Egenskab"
 
-#: rc.cpp:37
+#: rc.cpp:54
 #, no-c-format
 msgid "Expression"
 msgstr "Udtryk"
 
-#: rc.cpp:39
+#: rc.cpp:57
 #, no-c-format
 msgid "Value"
 msgstr "Værdi"
 
-#: rc.cpp:43
+#: rc.cpp:63
 #, no-c-format
 msgid "Week&day background color:"
 msgstr "Baggrun&dsfarve for hverdage:"
 
-#: rc.cpp:46
+#: rc.cpp:67
 #, no-c-format
 msgid "&Weekend background color:"
 msgstr "Baggrundsfarve for &weekender:"
 
-#: rc.cpp:49
+#: rc.cpp:71
 #, no-c-format
 msgid "&Task color:"
 msgstr "Opgave&farve:"
 
-#: rc.cpp:53
+#: rc.cpp:76
 #, no-c-format
 msgid "Task &group color:"
 msgstr "Farve på op&gavegruppe:"
 
-#: rc.cpp:56
+#: rc.cpp:80
 #, no-c-format
 msgid "&Milestone color:"
 msgstr "Farve på &milepæle:"
 
-#: rc.cpp:58
+#: rc.cpp:83
 #, no-c-format
 msgid "Use &alternate background for horizontal lines"
 msgstr "Brug vekslende b&aggrund for vandrette linjer"
 
-#: rc.cpp:60
+#: rc.cpp:86
 #, no-c-format
 msgid "Alt+A"
 msgstr "Alt+A"
 
-#: rc.cpp:64
+#: rc.cpp:92
 #, no-c-format
 msgid "Sc&ale:"
 msgstr "Sk&ala:"
 
-#: rc.cpp:66 kdgantt/KDGanttViewSubwidgets.cpp:721
+#: rc.cpp:95 kdgantt/KDGanttViewSubwidgets.cpp:721
 #, no-c-format
 msgid "Day"
 msgstr "Dag"
 
-#: rc.cpp:68 kdgantt/KDGanttViewSubwidgets.cpp:722
+#: rc.cpp:98 kdgantt/KDGanttViewSubwidgets.cpp:722
 #, no-c-format
 msgid "Week"
 msgstr "Uge"
 
-#: rc.cpp:70 kdgantt/KDGanttViewSubwidgets.cpp:723
+#: rc.cpp:101 kdgantt/KDGanttViewSubwidgets.cpp:723
 #, no-c-format
 msgid "Month"
 msgstr "Måned"
 
-#: rc.cpp:72
+#: rc.cpp:104
 #, no-c-format
 msgid "Quarter"
 msgstr "Kvartal"
 
-#: rc.cpp:74
+#: rc.cpp:107
 #, no-c-format
 msgid "&End date:"
 msgstr "Afsl&utningsdato:"
 
-#: rc.cpp:76
+#: rc.cpp:110
 #, no-c-format
 msgid "&Start date:"
 msgstr "&Begyndelsesdato:"
 
-#: rc.cpp:80
+#: rc.cpp:116
 #, no-c-format
 msgid "&Free time:"
 msgstr "&Ledig tid:"
 
-#: rc.cpp:83
+#: rc.cpp:120
 #, no-c-format
 msgid "&Vacations and sicktime:"
 msgstr "&Ferie og sygdom:"
 
-#: rc.cpp:86
+#: rc.cpp:124
 #, no-c-format
 msgid "&Weekends and holidays:"
 msgstr "&Weekender og helligdage:"
 
-#: rc.cpp:89
+#: rc.cpp:128
 #, no-c-format
 msgid "Background color for week days."
 msgstr "Baggrundsfarve for hverdage."
 
-#: rc.cpp:91
+#: rc.cpp:131
 #, no-c-format
 msgid "Background color for weekend days."
 msgstr "Baggrundsfarve for weekend."
 
-#: rc.cpp:93
+#: rc.cpp:134
 #, no-c-format
 msgid "Color for task items."
 msgstr "Farve for opgaver."
 
-#: rc.cpp:95
+#: rc.cpp:137
 #, no-c-format
 msgid "Color for task group items."
 msgstr "Farve for opgavegrupper."
 
-#: rc.cpp:97
+#: rc.cpp:140
 #, no-c-format
 msgid "Color for milestone items."
 msgstr "Farve for milepæle."
 
-#: rc.cpp:99
+#: rc.cpp:143
 #, no-c-format
 msgid "Show alternate horizontal lines."
 msgstr "Vis vekslende vandrette linjer."
 
-#: rc.cpp:101
+#: rc.cpp:146
 #, no-c-format
 msgid "Background color for free time."
 msgstr "Baggrund farve for ledig tid."
 
-#: rc.cpp:103
+#: rc.cpp:149
 #, no-c-format
 msgid "Background color for vacations and sicktime."
 msgstr "Baggrundsfarve for ferie og sygedage."
 
-#: rc.cpp:105
+#: rc.cpp:152
 #, no-c-format
 msgid "Background color for holidays and weekends."
 msgstr "Baggrundsfarve for helligdage og weekender."
 
-#: rc.cpp:107
+#: rc.cpp:155
 #, no-c-format
 msgid "&Edit"
 msgstr "&Redigér"
 
-#: rc.cpp:109
+#: rc.cpp:158
 #, no-c-format
 msgid "&Gantt"
 msgstr "&Gantt"
 
-#: rc.cpp:111
+#: rc.cpp:161
 #, no-c-format
 msgid "&Resources"
 msgstr "&Ressourcer"
 
-#: rc.cpp:113
+#: rc.cpp:164
 #, no-c-format
 msgid "&Outline"
 msgstr "&Oversigt"
 
-#: rc.cpp:115
+#: rc.cpp:167
 #, no-c-format
 msgid "Resource &Usage"
 msgstr "Resso&urceforbrug"
 
-#: rc.cpp:117
+#: rc.cpp:170
 #, no-c-format
 msgid "T&asks"
 msgstr "Opg&aver"
 
-#: rc.cpp:119
+#: rc.cpp:173
 #, no-c-format
 msgid "R&eports"
 msgstr "Rapport&er"
 
-#: rc.cpp:121
+#: rc.cpp:176
 #, no-c-format
 msgid "&Tools"
 msgstr "Værk&tøjer"
 
-#: rc.cpp:123
+#: rc.cpp:179
+#, no-c-format
+msgid "&Help"
+msgstr ""
+
+#: rc.cpp:182
 #, no-c-format
 msgid "Sidebar"
 msgstr "Sidebar"
 
-#: rc.cpp:125
+#: rc.cpp:185
 #, no-c-format
 msgid "Gantt Toolbar"
 msgstr "Gantt værktøjslinje"
 
-#: rc.cpp:127
+#: rc.cpp:188
 #, no-c-format
 msgid "Quick Search Toolbar"
 msgstr "Hurtigsøg værktøjslinje"
@@ -1320,3 +1336,11 @@ msgstr "Klip punkt"
 msgid "Tasklink"
 msgstr "Opgavelink"
 
+#~ msgid "&Calendar mode"
+#~ msgstr "&Kalendertilstand"
+
+#~ msgid ""
+#~ "XML report could not have been generated; PostScript Gantt chart won't be "
+#~ "shown."
+#~ msgstr ""
+#~ "XML rapport kunne ikke genereres. PostScript Gantt-diagram vises ikke."
