@@ -1191,6 +1191,9 @@ TjReport::syncVSlidersList2Gantt(int, int y)
 void
 TjReport::updateStatusBar()
 {
+    if (loadingProject)
+        return;
+
     QString text;
     QPoint pos = ganttChartView->mapFromGlobal(QCursor::pos());
     if (pos.x() < 0 || pos.y() < 0 ||

@@ -425,7 +425,7 @@
                         <cstring>editorTab</cstring>
                     </property>
                     <attribute name="title">
-                        <string>&amp;Editor</string>
+                        <string>E&amp;ditor</string>
                     </attribute>
                 </widget>
                 <widget class="QWidget">
