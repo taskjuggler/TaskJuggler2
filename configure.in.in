@@ -38,6 +38,7 @@ AM_INIT_AUTOMAKE(taskjuggler, [2.0.1+cvs])
 dnl AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
 KDE_SET_PREFIX
+KDE_CHECK_LIB64
 
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
