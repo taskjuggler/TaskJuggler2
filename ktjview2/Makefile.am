@@ -2,7 +2,7 @@
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-SUBDIRS = kdgantt qicstable pixmaps
+SUBDIRS = kdgantt pixmaps
 
 bin_PROGRAMS = ktjview2
 
