@@ -271,7 +271,7 @@ const
     TaskList list = filteredList;
     if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
     {
-        // Set sorting criteria so sequence no since list.contains() needs it.
+        // Set sorting criteria to sequence no. since list.contains() needs it.
         filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
         for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
         {

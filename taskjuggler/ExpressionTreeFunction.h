@@ -63,6 +63,7 @@ public:
     long endsBefore(const ExpressionTree* et, Operation* const ops[]) const;
     long endsAfter(const ExpressionTree* et, Operation* const ops[]) const;
     long isAllocated(const ExpressionTree* et, Operation* const ops[]) const;
+    long isDutyOf(const ExpressionTree* et, Operation* const ops[]) const;
     long isAllocatedToProject(const ExpressionTree* et, Operation* const ops[])
         const;
    

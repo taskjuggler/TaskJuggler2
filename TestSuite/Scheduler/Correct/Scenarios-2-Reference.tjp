@@ -1,0 +1,198 @@
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
+ */
+project sc "Multiple Scenarios" "1.0" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
+  timezone "GMT"
+  dailyworkinghours 8
+  yearlyworkingdays 260.714
+  timingresolution 60min
+  timeformat "%Y-%m-%d %H:%M"
+  shorttimeformat "%H:%M"
+  currencyformat "(" ")" "," "." 0
+  weekstartsmonday
+    workinghours sun off
+    workinghours mon 9:00 - 12:00, 13:00 - 18:00
+    workinghours tue 9:00 - 12:00, 13:00 - 18:00
+    workinghours wed 9:00 - 12:00, 13:00 - 18:00
+    workinghours thu 9:00 - 12:00, 13:00 - 18:00
+    workinghours fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat off
+  scenario s1 "Scenario 1" {
+    scenario s2 "Scenario 2" {
+      scenario s4 "Scenario 4" {
+      }
+    }
+    scenario s5 "Scenario 5" {
+      scenario s6 "Scenario 6" {
+        scenario s7 "Scenario 7" {
+        }
+      }
+    }
+  }
+}
+resource tux "Tux" {
+}
+projectids sc
+task t1 "Task1" {
+  projectid sc
+  s1:start 2000-01-01-00:00:00-+0000
+  s1:end 2000-01-03-18:00:00-+0000
+  s1:scheduled
+  s2:start 2000-01-01-00:00:00-+0000
+  s2:end 2000-01-03-18:00:00-+0000
+  s2:scheduled
+  s4:start 2000-01-01-00:00:00-+0000
+  s4:end 2000-01-03-18:00:00-+0000
+  s4:scheduled
+  s5:start 2000-01-01-00:00:00-+0000
+  s5:end 2000-01-03-18:00:00-+0000
+  s5:scheduled
+  s6:start 2000-01-01-00:00:00-+0000
+  s6:end 2000-01-03-18:00:00-+0000
+  s6:scheduled
+  s7:start 2000-01-01-00:00:00-+0000
+  s7:end 2000-01-03-18:00:00-+0000
+  s7:scheduled
+  scheduling asap
+}
+task t2 "Task2" {
+  projectid sc
+  depends t1
+  s1:start 2000-01-03-18:00:00-+0000
+  s1:end 2000-01-04-18:00:00-+0000
+  s1:scheduled
+  s2:start 2000-01-03-18:00:00-+0000
+  s2:end 2000-01-05-18:00:00-+0000
+  s2:scheduled
+  s4:start 2000-01-03-18:00:00-+0000
+  s4:end 2000-01-05-18:00:00-+0000
+  s4:scheduled
+  s5:start 2000-01-03-18:00:00-+0000
+  s5:end 2000-01-05-18:00:00-+0000
+  s5:scheduled
+  s6:start 2000-01-03-18:00:00-+0000
+  s6:end 2000-01-05-18:00:00-+0000
+  s6:scheduled
+  s7:start 2000-01-03-18:00:00-+0000
+  s7:end 2000-01-05-18:00:00-+0000
+  s7:scheduled
+  scheduling asap
+}
+task t4 "Task4" {
+  projectid sc
+  task t5 "Task5" {
+    task t6 "Task6" {
+      s1:start 2000-01-05-00:00:00-+0000
+      s1:end 2000-01-11-18:00:00-+0000
+      s1:scheduled
+      s2:start 2000-01-05-00:00:00-+0000
+      s2:end 2000-01-11-18:00:00-+0000
+      s2:scheduled
+      s4:start 2000-01-05-00:00:00-+0000
+      s4:end 2000-01-11-18:00:00-+0000
+      s4:scheduled
+      s5:start 2000-01-05-00:00:00-+0000
+      s5:end 2000-01-11-18:00:00-+0000
+      s5:scheduled
+      s6:start 2000-01-05-00:00:00-+0000
+      s6:end 2000-01-11-18:00:00-+0000
+      s6:scheduled
+      s7:start 2000-01-05-00:00:00-+0000
+      s7:end 2000-01-11-18:00:00-+0000
+      s7:scheduled
+      scheduling asap
+    }
+    scheduling asap
+  }
+  scheduling asap
+}
+task t3 "Task3" {
+  projectid sc
+  depends t2
+  s1:start 2000-01-05-09:00:00-+0000
+  s1:end 2000-01-05-18:00:00-+0000
+  s1:scheduled
+  s2:start 2000-01-06-09:00:00-+0000
+  s2:end 2000-01-06-18:00:00-+0000
+  s2:scheduled
+  s4:start 2000-01-06-09:00:00-+0000
+  s4:end 2000-01-06-18:00:00-+0000
+  s4:scheduled
+  s5:start 2000-01-06-09:00:00-+0000
+  s5:end 2000-01-07-18:00:00-+0000
+  s5:scheduled
+  s6:start 2000-01-06-09:00:00-+0000
+  s6:end 2000-01-06-18:00:00-+0000
+  s6:scheduled
+  s7:start 2000-01-06-09:00:00-+0000
+  s7:end 2000-01-06-18:00:00-+0000
+  s7:scheduled
+  scheduling asap
+}
+task t7 "Task7" {
+  projectid sc
+  task t8 "Task8" {
+    task t9 "Task8" {
+      s1:start 2000-01-10-09:00:00-+0000
+      s1:end 2000-01-15-00:00:00-+0000
+      s1:scheduled
+      s2:start 2000-01-10-09:00:00-+0000
+      s2:end 2000-01-15-00:00:00-+0000
+      s2:scheduled
+      s4:start 2000-01-11-09:00:00-+0000
+      s4:end 2000-01-15-00:00:00-+0000
+      s4:scheduled
+      s5:start 2000-01-10-09:00:00-+0000
+      s5:end 2000-01-15-00:00:00-+0000
+      s5:scheduled
+      s6:start 2000-01-10-09:00:00-+0000
+      s6:end 2000-01-15-00:00:00-+0000
+      s6:scheduled
+      s7:start 2000-01-10-09:00:00-+0000
+      s7:end 2000-01-15-00:00:00-+0000
+      s7:scheduled
+      scheduling alap
+    }
+    scheduling alap
+  }
+  scheduling alap
+}
+supplement task t1 {
+  priority 500
+}
+supplement task t2 {
+  priority 500
+}
+supplement task t4 {
+  supplement task t5 {
+    supplement task t6 {
+    }
+  }
+  priority 500
+}
+supplement task t3 {
+  priority 500
+}
+supplement task t7 {
+  supplement task t8 {
+    supplement task t9 {
+    }
+  }
+  priority 500
+}
+supplement resource tux {
+  s1:booking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3
+  s1:booking 2000-01-05-13:00:00-+0000 2000-01-05-18:00:00-+0000 t3
+  s2:booking 2000-01-06-09:00:00-+0000 2000-01-06-12:00:00-+0000 t3
+  s2:booking 2000-01-06-13:00:00-+0000 2000-01-06-18:00:00-+0000 t3
+  s4:booking 2000-01-06-09:00:00-+0000 2000-01-06-12:00:00-+0000 t3
+  s4:booking 2000-01-06-13:00:00-+0000 2000-01-06-18:00:00-+0000 t3
+  s5:booking 2000-01-06-09:00:00-+0000 2000-01-06-12:00:00-+0000 t3
+  s5:booking 2000-01-06-13:00:00-+0000 2000-01-06-18:00:00-+0000 t3
+  s5:booking 2000-01-07-09:00:00-+0000 2000-01-07-12:00:00-+0000 t3
+  s5:booking 2000-01-07-13:00:00-+0000 2000-01-07-18:00:00-+0000 t3
+  s6:booking 2000-01-06-09:00:00-+0000 2000-01-06-12:00:00-+0000 t3
+  s6:booking 2000-01-06-13:00:00-+0000 2000-01-06-18:00:00-+0000 t3
+  s7:booking 2000-01-06-09:00:00-+0000 2000-01-06-12:00:00-+0000 t3
+  s7:booking 2000-01-06-13:00:00-+0000 2000-01-06-18:00:00-+0000 t3
+}

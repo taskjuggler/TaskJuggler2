@@ -258,6 +258,11 @@ public:
     void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
     bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
 
+    bool isDutyOf(int sc, const Resource* r) const
+    {
+        return scenarios[sc].isDutyOf(r);
+    }
+
     void overlayScenario(int base, int sc);
     void prepareScenario(int sc);
     void finishScenario(int sc);

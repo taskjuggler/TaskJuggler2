@@ -158,6 +158,13 @@ ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
         functions.insert(etf->getName(), etf);
         
         etf = new ExpressionTreeFunction
+            ("isdutyof", &ExpressionTreeFunction::isDutyOf, 2);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isDutyOf"), &ExpressionTreeFunction::isDutyOf, 2);
+        functions.insert(etf->getName(), etf);
+        
+        etf = new ExpressionTreeFunction
             ("isallocatedtoproject", &ExpressionTreeFunction::isAllocated, 4);
         functions.insert(etf->getName(), etf);
         etf = new ExpressionTreeFunction

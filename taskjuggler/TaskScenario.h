@@ -51,6 +51,11 @@ public:
 
     void calcCompletionDegree(time_t now);
 
+    bool isDutyOf(const Resource* r) const
+    {
+        return bookedResources.containsRef((const CoreAttributes*) r) > 0;
+    }
+
 private:
     /// Pointer to the corresponding task.
     Task* task;

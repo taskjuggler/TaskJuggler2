@@ -662,6 +662,12 @@ zlib.</para></listitem>
 <listitem><para>Fixed handling of resource allocations with multiple
 shift intervals.</para></listitem>
 
+<listitem><para>Fixed double-quoting of HTML speciali characters such
+as umlauts.</para></listitem>
+
+<listitem><para>Added query function isDutyOf() to select tasks where
+a certain resource has been assigned to.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

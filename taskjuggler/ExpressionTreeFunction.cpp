@@ -319,12 +319,37 @@ ExpressionTreeFunction::isAllocated(const ExpressionTree* et,
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
     if (start > end)
-        qFatal("ExpressionTreeFunction::isAllocated: start date "
+        qFatal("ExpressionTreeFunction::isAllocated(): start date "
                "is larger than end date");
 
     return ((Resource*) et->getCoreAttributes())->isAllocated
         (scenarioId, Interval(start, end), 
          QString::null);
+}
+
+long
+ExpressionTreeFunction::isDutyOf(const ExpressionTree* et,
+                                 Operation* const ops[]) const
+{
+    /* Arguments:
+       0 : resource id
+       1 : scenario id */
+    if (et->getCoreAttributes()->getType() != CA_Task)
+        qFatal(i18n("ExpressionTreeFunction::isDutyOf() called for "
+                    "non-task"));
+    Resource* resource = et->getCoreAttributes()->getProject()->
+        getResource(ops[0]->evalAsString(et));
+    if (!resource)
+        qFatal(i18n("ExpressionTreeFunction::isDutyOf() called for unknown "
+                    "resource '%1'.").arg(ops[0]->evalAsString(et)));
+    int scenarioId = et->getCoreAttributes()->getProject()->
+        getScenarioIndex(ops[1]->evalAsString(et)) - 1;
+    if (scenarioId < 0)
+        qFatal(i18n("ExpressionTreeFunction::isAllocated() called for "
+                    "unknown '%1' scenario.")
+               .arg(ops[1]->evalAsString(et)));
+
+    return ((Task*) et->getCoreAttributes())->isDutyOf(scenarioId, resource);
 }
 
 long

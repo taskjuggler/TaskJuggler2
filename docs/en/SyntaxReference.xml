@@ -87,7 +87,7 @@ specified date</para></listitem>
 
 </varlistentry>
 <varlistentry><term>endsBefore(<link linkend="TYPE_ID">ID</link>, <link
-															 linkend="TYPE_DATE">DATE</link>)</term>
+linkend="TYPE_DATE">DATE</link>)</term>
 
 <listitem><para>true if the task ends in scenario ID before the
 specified date</para></listitem>
@@ -105,8 +105,8 @@ ID</para></listitem>
 
 </varlistentry>
 <varlistentry><term>isAllocated(<link linkend="TYPE_ID">ID</link>,
-																<link linkend="TYPE_DATE">DATE</link>,
-																<link linkend="TYPE_DATE">DATE</link>)</term>
+<link linkend="TYPE_DATE">DATE</link>,
+<link linkend="TYPE_DATE">DATE</link>)</term>
 
 <listitem><para>true if the resource has been
 allocated in the specified time interval in the scenario with the
@@ -115,9 +115,9 @@ specified ID.
 
 </varlistentry>
 <varlistentry><term>isAllocatedToProject(<link linkend="TYPE_ID">PRJID</link>
-																				 <link linkend="TYPE_ID">SCENARIOID</link>,
-																<link linkend="TYPE_DATE">DATE</link>,
-																<link linkend="TYPE_DATE">DATE</link>)</term>
+<link linkend="TYPE_ID">SCENARIOID</link>,
+<link linkend="TYPE_DATE">DATE</link>,
+<link linkend="TYPE_DATE">DATE</link>)</term>
 
 <listitem><para>true if the resource has been
 allocated to the specified project in the specified time interval in
@@ -153,7 +153,7 @@ ID.</para></listitem>
 
 </varlistentry>
 <varlistentry><term>isTaskStatus(<link linkend="TYPE_ID">ID</link>,
-																 STATUS)</term>
+STATUS)</term>
 <listitem><para>true if the task has in scenario ID the specified
 status. STATUS can be any of
 <computeroutput>notstarted</computeroutput>,
@@ -165,14 +165,14 @@ status. STATUS can be any of
 
 </varlistentry>
 <varlistentry><term>startsAfter(<link linkend="TYPE_ID">ID</link>, <link
-																 linkend="TYPE_DATE">DATE</link>)</term>
+linkend="TYPE_DATE">DATE</link>)</term>
 
 <listitem><para>true if the task starts in scenario ID after the
 specified date</para></listitem>
 
 </varlistentry>
 <varlistentry><term>startsBefore(<link linkend="TYPE_ID">ID</link>, <link
-																 linkend="TYPE_DATE">DATE</link>)</term>
+linkend="TYPE_DATE">DATE</link>)</term>
 
 <listitem><para>true if the task starts in scenario ID before the
 specified date</para></listitem>
@@ -182,6 +182,13 @@ specified date</para></listitem>
 
 <listitem><para>true if the task is part of the project with the
 specified ID.</para></listitem>
+
+</varlistentry>
+<varlistentry><term>isDutyOf(<link linkend="TYPE_ID">RESOURCE_ID</link>,
+<link linkend="TYPE_ID">SCENARIO_ID</link>)</term>
+
+<listitem><para>true if the resource with the specified ID is assigned
+to the task in the specified scenrio.</para></listitem>
 
 </varlistentry>
 <varlistentry><term>treeLevel()</term>
