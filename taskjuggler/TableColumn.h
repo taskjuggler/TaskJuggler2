@@ -1,0 +1,35 @@
+/*
+ * TableColumn.h - TaskJuggler
+ *
+ * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * $Id$
+ */
+
+#ifndef _TableColumn_h_
+#define _TableColumn_h_
+
+#include <qstring.h>
+
+#include "TableColumn.h"
+
+/**
+ * @short A column of a report.
+ * @author Chris Schlaeger <cs@suse.de>
+ */
+class TableColumn
+{
+public:
+	TableColumn(const QString& n) : name(n) { }
+	~TableColumn() { }
+
+protected:
+	QString name;	
+} ;
+
+#endif
+
