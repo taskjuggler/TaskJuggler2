@@ -24,6 +24,9 @@
 #include "ExpressionTree.h"
 #include "kotrus.h"
 
+// Dummy marco to mark all keywords of taskjuggler syntax
+#define KW(a) a
+
 #define READ_DATE(a, b) \
 (token == a) \
 { \
@@ -519,31 +522,31 @@ ProjectFile::parse()
 		case EndOfFile:
 			return TRUE;
 		case ID:
-			if (token == "task")
+			if (token == KW("task"))
 			{
 				if (!readTask(0))
 					return FALSE;
 				break;
 			}
-			if (token == "account")
+			if (token == KW("account"))
 			{
 				if (!readAccount(0))
 					return FALSE;
 				break;
 			}
-			else if (token == "resource")
+			else if (token == KW("resource"))
 			{
 				if (!readResource(0))
 					return FALSE;
 				break;
 			}
-			else if (token == "shift")
+			else if (token == KW("shift"))
 			{
 				if (!readShift(0))
 					return FALSE;
 				break;	
 			}
-			else if (token == "vacation")
+			else if (token == KW("vacation"))
 			{
 				time_t from, to;
 				QString name;
@@ -552,7 +555,7 @@ ProjectFile::parse()
 				proj->addVacation(name, from, to);
 				break;
 			}
-			else if (token == "priority")
+			else if (token == KW("priority"))
 			{
 				int priority;
 				if (!readPriority(priority))
@@ -560,7 +563,7 @@ ProjectFile::parse()
 				proj->setPriority(priority);
 				break;
 			}
-			else if (token == "now")
+			else if (token == KW("now"))
 			{
 				if (nextToken(token) != DATE)
 				{
@@ -570,7 +573,7 @@ ProjectFile::parse()
 				proj->setNow(date2time(token));
 				break;
 			}
-			else if (token == "mineffort")
+			else if (token == KW("mineffort"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -580,7 +583,7 @@ ProjectFile::parse()
 				proj->setMinEffort(token.toDouble());
 				break;
 			}
-			else if (token == "maxeffort")
+			else if (token == KW("maxeffort"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -590,7 +593,7 @@ ProjectFile::parse()
 				proj->setMaxEffort(token.toDouble());
 				break;
 			}
-			else if (token == "rate")
+			else if (token == KW("rate"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -600,7 +603,7 @@ ProjectFile::parse()
 				proj->setRate(token.toDouble());
 				break;
 			}
-			else if (token == "currency")
+			else if (token == KW("currency"))
 			{
 				if (nextToken(token) != STRING)
 				{
@@ -610,7 +613,7 @@ ProjectFile::parse()
 				proj->setCurrency(token);
 				break;
 			}
-			else if (token == "currencydigits")
+			else if (token == KW("currencydigits"))
 			{
 				if (nextToken(token) != INTEGER)
 				{
@@ -620,7 +623,7 @@ ProjectFile::parse()
 				proj->setCurrencyDigits(token.toInt());
 				break;
 			}
-			else if (token == "timingresolution")
+			else if (token == KW("timingresolution"))
 			{
 				ulong resolution;
 				if (!readTimeValue(resolution))
@@ -639,7 +642,7 @@ ProjectFile::parse()
 				proj->setScheduleGranularity(resolution);
 				break;
 			}
-			else if (token == "copyright")
+			else if (token == KW("copyright"))
 			{
 				if (nextToken(token) != STRING)
 				{
@@ -649,13 +652,13 @@ ProjectFile::parse()
 				proj->setCopyright(token);
 				break;
 			}
-			else if (token == "include")
+			else if (token == KW("include"))
 			{
 				if (!readInclude())
 					return FALSE;
 				break;
 			}
-			else if (token == "macro")
+			else if (token == KW("macro"))
 			{
 				QString id;
 				if (nextToken(id) != ID)
@@ -679,7 +682,7 @@ ProjectFile::parse()
 				}
 				break;
 			}
-			else if (token == "flags")
+			else if (token == KW("flags"))
 			{
 				for ( ; ; )
 				{
@@ -703,7 +706,7 @@ ProjectFile::parse()
 				}
 				break;
 			}
-			else if (token == "project")
+			else if (token == KW("project"))
 			{
 				if (nextToken(token) != ID)
 				{
@@ -751,7 +754,7 @@ ProjectFile::parse()
 				proj->setEnd(end);
 				break;
 			}
-			else if (token == "projectid")
+			else if (token == KW("projectid"))
 			{
 				for ( ; ; )
 				{
@@ -778,40 +781,41 @@ ProjectFile::parse()
 				}
 				break;
 			}
-			else if (token == "xmltaskreport" )
+			else if (token == KW("xmltaskreport"))
 			{
 			   if( !readXMLTaskReport())
 			      return FALSE;
 			   break;
 			}
-			else if (token == "htmltaskreport" ||
-					 token == "htmlresourcereport")
+			else if (token == KW("htmltaskreport") ||
+					 token == KW("htmlresourcereport"))
 			{
 				if (!readHTMLReport(token))
 					return FALSE;
 				break;
 			}
-			else if (token == "htmlaccountreport")
+			else if (token == KW("htmlaccountreport"))
 			{
 				if (!readHTMLAccountReport())
 					return FALSE;
 				break;
 			}
-			else if (token == "export")
+			else if (token == KW("export"))
 			{
 				if (!readExportReport())
 					return FALSE;
 				break;
 			}
-			else if (token == "kotrusmode")
+			else if (token == KW("kotrusmode"))
 			{
 				if (nextToken(token) != STRING ||
-					(token != "db" && token != "xml" && token != "nokotrus"))
+					(token != KW("db") && token != KW("xml") &&
+					 token != KW("nokotrus")))
 				{
 					fatalError("Unknown kotrus mode");
 					return FALSE;
 				}
-				if (token != "nokotrus")
+				if (token != KW("nokotrus"))
 				{
 					Kotrus* kotrus = new Kotrus();
 					kotrus->setKotrusMode(token);
@@ -964,12 +968,12 @@ ProjectFile::readTask(Task* parent)
 		switch (tt = nextToken(token))
 		{
 		case ID:
-			if (token == "task")
+			if (token == KW("task"))
 			{
 				if (!readTask(task))
 					return FALSE;
 			}
-			else if (token == "note")
+			else if (token == KW("note"))
 			{
 				if ((tt = nextToken(token)) == STRING)
 					task->setNote(token);
@@ -979,61 +983,61 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 			}
-			else if (token == "milestone")
+			else if (token == KW("milestone"))
 			{
 				task->setMilestone();
 			}
-			else if READ_DATE("start", setPlanStart)
-			else if READ_DATE("end", setPlanEnd)
-			else if READ_DATE("minstart", setMinStart)
-			else if READ_DATE("maxstart", setMaxStart)
-			else if READ_DATE("minend", setMinEnd)
-			else if READ_DATE("maxend", setMaxEnd)
-			else if READ_DATE("actualstart", setActualStart)
-			else if READ_DATE("actualsnd", setActualEnd)
-			else if (token == "length")
+			else if READ_DATE(KW("start"), setPlanStart)
+			else if READ_DATE(KW("end"), setPlanEnd)
+			else if READ_DATE(KW("minstart"), setMinStart)
+			else if READ_DATE(KW("maxstart"), setMaxStart)
+			else if READ_DATE(KW("minend"), setMinEnd)
+			else if READ_DATE(KW("maxend"), setMaxEnd)
+			else if READ_DATE(KW("actualstart"), setActualStart)
+			else if READ_DATE(KW("actualend"), setActualEnd)
+			else if (token == KW("length"))
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanLength(d);
 			}
-			else if (token == "effort")
+			else if (token == KW("effort"))
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanEffort(d);
 			}
-			else if (token == "duration")
+			else if (token == KW("duration"))
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setPlanDuration(d);
 			}
-			else if (token == "actuallength")
+			else if (token == KW("actuallength"))
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setActualLength(d);
 			}
-			else if (token == "actualeffort")
+			else if (token == KW("actualeffort"))
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setActualEffort(d);
 			}
-			else if (token == "actualduration")
+			else if (token == KW("actualduration"))
 			{
 				double d;
 				if (!readPlanTimeFrame(task, d))
 					return FALSE;
 				task->setActualDuration(d);
 			}
-			else if (token == "complete")
+			else if (token == KW("complete"))
 			{
 				if (nextToken(token) != INTEGER)
 				{
@@ -1048,7 +1052,7 @@ ProjectFile::readTask(Task* parent)
 				}
 				task->setComplete(complete);
 			}
-			else if (token == "responsible")
+			else if (token == KW("responsible"))
 			{
 				Resource* r;
 				if (nextToken(token) != ID ||
@@ -1059,12 +1063,12 @@ ProjectFile::readTask(Task* parent)
 				}
 				task->setResponsible(r);
 			}
-			else if (token == "allocate")
+			else if (token == KW("allocate"))
 			{
 				if (!readAllocate(task))
 					return FALSE;
 			}
-			else if (token == "depends")
+			else if (token == KW("depends"))
 			{
 				for ( ; ; )
 				{
@@ -1084,7 +1088,7 @@ ProjectFile::readTask(Task* parent)
 					}
 				}
 			}
-			else if (token == "preceeds")
+			else if (token == KW("preceeds"))
 			{
 				for ( ; ; )
 				{
@@ -1104,12 +1108,12 @@ ProjectFile::readTask(Task* parent)
 					}
 				}
 			}
-			else if (token == "scheduling")
+			else if (token == KW("scheduling"))
 			{
 				nextToken(token);
-				if (token == "asap")
+				if (token == KW("asap"))
 					task->setScheduling(Task::ASAP);
-				else if (token == "alap")
+				else if (token == KW("alap"))
 					task->setScheduling(Task::ALAP);
 				else
 				{
@@ -1117,7 +1121,7 @@ ProjectFile::readTask(Task* parent)
 					return FALSE;
 				}
 			}
-			else if (token == "flags")
+			else if (token == KW("flags"))
 			{
 				for ( ; ; )
 				{
@@ -1135,7 +1139,7 @@ ProjectFile::readTask(Task* parent)
 					}
 				}
 			}
-			else if (token == "priority")
+			else if (token == KW("priority"))
 			{
 				int priority;
 				if (!readPriority(priority))
@@ -1143,7 +1147,7 @@ ProjectFile::readTask(Task* parent)
 				task->setPriority(priority);
 				break;
 			}
-			else if (token == "account")
+			else if (token == KW("account"))
 			{
 				QString account;
 				if (nextToken(account) != ID ||
@@ -1155,7 +1159,7 @@ ProjectFile::readTask(Task* parent)
 				task->setAccount(proj->getAccount(account));
 				break;
 			}
-			else if (token == "startcredit")
+			else if (token == KW("startcredit"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1165,7 +1169,7 @@ ProjectFile::readTask(Task* parent)
 				task->setStartCredit(token.toDouble());
 				break;
 			}
-			else if (token == "endcredit")
+			else if (token == KW("endcredit"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1175,7 +1179,7 @@ ProjectFile::readTask(Task* parent)
 				task->setEndCredit(token.toDouble());
 				break;
 			}
-			else if (token == "projectid")
+			else if (token == KW("projectid"))
 			{
 				if (nextToken(token) != ID ||
 					!proj->isValidId(token))
@@ -1186,7 +1190,7 @@ ProjectFile::readTask(Task* parent)
 				task->setProjectId(token);
 				break;
 			}
-			else if (token == "include")
+			else if (token == KW("include"))
 			{
 				if (!readInclude())
 					return FALSE;
@@ -1301,12 +1305,12 @@ ProjectFile::readResource(Resource* parent)
 				fatalError(QString("Unknown attribute '") + token + "'");
 				return FALSE;
 			}
-			if (token == "resource")
+			if (token == KW("resource"))
 			{
 				if (!readResource(r))
 					return FALSE;
 			}
-			else if (token == "mineffort")
+			else if (token == KW("mineffort"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1315,7 +1319,7 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setMinEffort(token.toDouble());
 			}
-			else if (token == "maxeffort")
+			else if (token == KW("maxeffort"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1324,7 +1328,7 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setMaxEffort(token.toDouble());
 			}
-			else if (token == "efficiency")
+			else if (token == KW("efficiency"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1333,7 +1337,7 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setEfficiency(token.toDouble());
 			}
-			else if (token == "rate")
+			else if (token == KW("rate"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1342,7 +1346,7 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setRate(token.toDouble());
 			}
-			else if (token == "kotrusid")
+			else if (token == KW("kotrusid"))
 			{
 				if (nextToken(token) != STRING)
 				{
@@ -1351,14 +1355,14 @@ ProjectFile::readResource(Resource* parent)
 				}
 				r->setKotrusId(token);
 			}
-			else if (token == "vacation")
+			else if (token == KW("vacation"))
 			{
 				time_t from, to;
 				if (!readVacation(from, to))
 					return FALSE;
 				r->addVacation(new Interval(from, to));
 			}
-			else if (token == "workinghours")
+			else if (token == KW("workinghours"))
 			{
 				int dow;
 				QPtrList<Interval>* l = new QPtrList<Interval>();
@@ -1367,7 +1371,7 @@ ProjectFile::readResource(Resource* parent)
 				
 				r->setWorkingHours(dow, l);
 			}
-			else if (token == "shift")
+			else if (token == KW("shift"))
 			{
 				QString id;
 				if (nextToken(id) != ID)
@@ -1390,7 +1394,7 @@ ProjectFile::readResource(Resource* parent)
 					return FALSE;
 				}
 			}
-			else if (token == "flags")
+			else if (token == KW("flags"))
 			{
 				for ( ; ; )
 				{
@@ -1408,7 +1412,7 @@ ProjectFile::readResource(Resource* parent)
 					}
 				}
 			}
-			else if (token == "include")
+			else if (token == KW("include"))
 			{
 				if (!readInclude())
 					return FALSE;
@@ -1467,12 +1471,12 @@ ProjectFile::readShift(Shift* parent)
 				fatalError(QString("Unknown attribute '") + token + "'");
 				return FALSE;
 			}
-			if (token == "shift")
+			if (token == KW("shift"))
 			{
 				if (!readShift(s))
 					return FALSE;
 			}
-			else if (token == "workinghours")
+			else if (token == KW("workinghours"))
 			{
 				int dow;
 				QPtrList<Interval>* l = new QPtrList<Interval>();
@@ -1481,7 +1485,7 @@ ProjectFile::readShift(Shift* parent)
 				
 				s->setWorkingHours(dow, l);
 			}
-			else if (token == "include")
+			else if (token == KW("include"))
 			{
 				if (!readInclude())
 					return FALSE;
@@ -1532,12 +1536,13 @@ ProjectFile::readAccount(Account* parent)
 		/* Only accounts with no parent can have a type specifier. All
 		 * sub accounts inherit the type of the parent. */
 		QString at;
-		if (nextToken(at) != ID && (at != "cost" || at != "revenue"))
+		if (nextToken(at) != ID && (at != KW("cost") ||
+								   	at != KW("revenue")))
 		{
 			fatalError("Account type 'cost' or 'revenue' expected");
 			return FALSE;
 		}
-		acctType = at == "cost" ? Account::Cost : Account::Revenue;
+		acctType = at == KW("cost") ? Account::Cost : Account::Revenue;
 	}
 	else
 		acctType = parent->getType();
@@ -1560,18 +1565,18 @@ ProjectFile::readAccount(Account* parent)
 				fatalError(QString("Unknown attribute '") + token + "'");
 				return FALSE;
 			}
-			if (token == "account" && !cantBeParent)
+			if (token == KW("account") && !cantBeParent)
 			{
 				if (!readAccount(a))
 					return FALSE;
 				hasSubAccounts = TRUE;
 			}
-			else if (token == "credit")
+			else if (token == KW("credit"))
 			{
 				if (!readCredit(a))
 					return FALSE;
 			}
-			else if (token == "kotrusid" && !hasSubAccounts)
+			else if (token == KW("kotrusid") && !hasSubAccounts)
 			{
 				if (nextToken(token) != STRING)
 				{
@@ -1581,7 +1586,7 @@ ProjectFile::readAccount(Account* parent)
 				a->setKotrusId(token);
 				cantBeParent = TRUE;
 			}
-			else if (token == "include")
+			else if (token == KW("include"))
 			{
 				if (!readInclude())
 					return FALSE;
@@ -1653,7 +1658,7 @@ ProjectFile::readAllocate(Task* t)
 				fatalError(QString("Unknown attribute '") + token + "'");
 				return FALSE;
 			}
-			if (token == "load")
+			if (token == KW("load"))
 			{
 				if (nextToken(token) != REAL)
 				{
@@ -1668,11 +1673,11 @@ ProjectFile::readAllocate(Task* t)
 				}
 				a->setLoad((int) (100 * load));
 			}
-			else if (token == "persistent")
+			else if (token == KW("persistent"))
 			{
 				a->setPersistent(TRUE);
 			}
-			else if (token == "alternative")
+			else if (token == KW("alternative"))
 			{
 				do
 				{
@@ -1711,17 +1716,17 @@ ProjectFile::readTimeValue(ulong& value)
 		fatalError("Unit expected");
 		return FALSE;
 	}
-	if (unit == "min")
+	if (unit == KW("min"))
 		value = val.toULong() * 60;
-	else if (unit == "h")
+	else if (unit == KW("h"))
 		value = val.toULong() * (60 * 60);
-	else if (unit == "d")
+	else if (unit == KW("d"))
 		value = val.toULong() * (60 * 60 * 24);
-	else if (unit == "w")
+	else if (unit == KW("w"))
 		value = val.toULong() * (60 * 60 * 24 * 7);
-	else if (unit == "m")
+	else if (unit == KW("m"))
 		value = val.toULong() * (60 * 60 * 24 * 30);
-	else if (unit == "y")
+	else if (unit == KW("y"))
 		value = val.toULong() * (60 * 60 * 24 * 356);
 	else
 	{
@@ -1747,17 +1752,17 @@ ProjectFile::readPlanTimeFrame(Task* task, double& value)
 		fatalError("Unit expected");
 		return FALSE;
 	}
-	if (unit == "min")
+	if (unit == KW("min"))
 		value = val.toDouble() / (8 * 60);
-	else if (unit == "h")
+	else if (unit == KW("h"))
 		value = val.toDouble() / 8;
-	else if (unit == "d")
+	else if (unit == KW("d"))
 		value = val.toDouble();
-	else if (unit == "w")
+	else if (unit == KW("w"))
 		value = val.toDouble() * 5;
-	else if (unit == "m")
+	else if (unit == KW("m"))
 		value = val.toDouble() * 20;
-	else if (unit == "y")
+	else if (unit == KW("y"))
 		value = val.toDouble() * 240;
 	else
 	{
@@ -1778,7 +1783,8 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 		fatalError("Weekday expected");
 		return FALSE;
 	}
-	const char* days[] = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
+	const char* days[] = { KW("sun"), KW("mon"), KW("tue"), KW("wed"),
+	   	KW("thu"), KW("fri"), KW("sat") };
 	for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
 		if (days[dayOfWeek] == day)
 			break;
@@ -1790,7 +1796,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 
 	QString token;
 	TokenType tt;
-	if ((tt = nextToken(token)) == ID && token == "off")
+	if ((tt = nextToken(token)) == ID && token == KW("off"))
 		return TRUE;
 	else
 		returnToken(tt, token);
@@ -1854,7 +1860,8 @@ ProjectFile::readXMLTaskReport()
       fatalError("File name expected");
       return FALSE;
    }
-   ReportXML *rep = new ReportXML( proj, token, proj->getStart(), proj->getEnd());
+   ReportXML *rep = new ReportXML(proj, token, proj->getStart(),
+								  proj->getEnd());
    proj->addXMLReport( rep );
 
    return( true );
@@ -1872,10 +1879,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	}
 	
 	ReportHtml* report;
-	if (reportType == "htmltaskreport")
+	if (reportType == KW("htmltaskreport"))
 		report = new HTMLTaskReport(proj, token, proj->getStart(),
 									proj->getEnd());
-	else if (reportType == "htmlresourcereport")
+	else if (reportType == KW("htmlresourcereport"))
 		report = new HTMLResourceReport(proj, token, proj->getStart(),
 										proj->getEnd());
 	else
@@ -1900,7 +1907,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			fatalError("Attribute ID or '}' expected");
 			return FALSE;
 		}
-		if (token == "columns")
+		if (token == KW("columns"))
 		{
 			report->clearColumns();
 			for ( ; ; )
@@ -1919,7 +1926,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 				}
 			}
 		}
-		else if (token == "start")
+		else if (token == KW("start"))
 		{
 			if (nextToken(token) != DATE)
 			{
@@ -1928,7 +1935,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			}
 			report->setStart(date2time(token));
 		}
-		else if (token == "end")
+		else if (token == KW("end"))
 		{
 			if (nextToken(token) != DATE)
 			{
@@ -1937,7 +1944,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			}
 			report->setEnd(date2time(token));
 		}
-		else if (token == "headline")
+		else if (token == KW("headline"))
 		{
 			if (nextToken(token) != STRING)
 			{
@@ -1946,7 +1953,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			}
 			report->setHeadline(token);
 		}
-		else if (token == "caption")
+		else if (token == KW("caption"))
 		{
 			if (nextToken(token) != STRING)
 			{
@@ -1955,15 +1962,15 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			}
 			report->setCaption(token);
 		}
-		else if (token == "showactual")
+		else if (token == KW("showactual"))
 		{
 			report->setShowActual(TRUE);
 		}
-		else if (token == "showprojectids")
+		else if (token == KW("showprojectids"))
 		{
 			report->setShowPIDs(TRUE);
 		}
-		else if (token == "hidetask")
+		else if (token == KW("hidetask"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -1971,7 +1978,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setHideTask(et);
 		}
-		else if (token == "rolluptask")
+		else if (token == KW("rolluptask"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -1979,12 +1986,12 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpTask(et);
 		}
-		else if (token == "sorttasks")
+		else if (token == KW("sorttasks"))
 		{
 			if (!readSorting(report, 0))
 				return FALSE;
 		}
-		else if (token == "hideresource")
+		else if (token == KW("hideresource"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -1992,7 +1999,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setHideResource(et);
 		}
-		else if (token == "rollupresource")
+		else if (token == KW("rollupresource"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -2000,7 +2007,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpResource(et);
 		}
-		else if (token == "sortresources")
+		else if (token == KW("sortresources"))
 		{
 			if (!readSorting(report, 1))
 				return FALSE;
@@ -2012,7 +2019,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 		}
 	}
 
-	if (reportType == "htmltaskreport")
+	if (reportType == KW("htmltaskreport"))
 		proj->addHTMLTaskReport((HTMLTaskReport*) report);
 	else
 		proj->addHTMLResourceReport((HTMLResourceReport*) report);
@@ -2050,7 +2057,7 @@ ProjectFile::readHTMLAccountReport()
 			fatalError("Attribute ID or '}' expected");
 			return FALSE;
 		}
-		if (token == "columns")
+		if (token == KW("columns"))
 		{
 			report->clearColumns();
 			for ( ; ; )
@@ -2069,7 +2076,7 @@ ProjectFile::readHTMLAccountReport()
 				}
 			}
 		}
-		else if (token == "start")
+		else if (token == KW("start"))
 		{
 			if (nextToken(token) != DATE)
 			{
@@ -2078,7 +2085,7 @@ ProjectFile::readHTMLAccountReport()
 			}
 			report->setStart(date2time(token));
 		}
-		else if (token == "end")
+		else if (token == KW("end"))
 		{
 			if (nextToken(token) != DATE)
 			{
@@ -2087,7 +2094,7 @@ ProjectFile::readHTMLAccountReport()
 			}
 			report->setEnd(date2time(token));
 		}
-		else if (token == "headline")
+		else if (token == KW("headline"))
 		{
 			if (nextToken(token) != STRING)
 			{
@@ -2096,7 +2103,7 @@ ProjectFile::readHTMLAccountReport()
 			}
 			report->setHeadline(token);
 		}
-		else if (token == "caption")
+		else if (token == KW("caption"))
 		{
 			if (nextToken(token) != STRING)
 			{
@@ -2105,19 +2112,19 @@ ProjectFile::readHTMLAccountReport()
 			}
 			report->setCaption(token);
 		}
-		else if (token == "hideplan")
+		else if (token == KW("hideplan"))
 		{
 			report->setHidePlan(TRUE);
 		}
-		else if (token == "showactual")
+		else if (token == KW("showactual"))
 		{
 			report->setShowActual(TRUE);
 		}
-		else if (token == "accumulate")
+		else if (token == KW("accumulate"))
 		{
 			report->setAccumulate(TRUE);
 		}
-		else if (token == "hideaccount")
+		else if (token == KW("hideaccount"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -2125,7 +2132,7 @@ ProjectFile::readHTMLAccountReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setHideAccount(et);
 		}
-		else if (token == "rollupaccount")
+		else if (token == KW("rollupaccount"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -2133,7 +2140,7 @@ ProjectFile::readHTMLAccountReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setRollUpAccount(et);
 		}
-		else if (token == "sortaccounts")
+		else if (token == KW("sortaccounts"))
 		{
 			if (!readSorting(report, 2))
 				return FALSE;
@@ -2180,7 +2187,7 @@ ProjectFile::readExportReport()
 			return FALSE;
 		}
 		
-		if (token == "hidetask")
+		if (token == KW("hidetask"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -2188,7 +2195,7 @@ ProjectFile::readExportReport()
 			ExpressionTree* et = new ExpressionTree(op);
 			report->setHideTask(et);
 		}
-		else if (token == "rolluptask")
+		else if (token == KW("rolluptask"))
 		{
 			Operation* op;
 			if ((op = readLogicalExpression()) == 0)
@@ -2282,55 +2289,55 @@ ProjectFile::readSorting(Report* report, int which)
 
 	nextToken(token);
 	CoreAttributesList::SortCriteria sorting;
-	if (token == "tree")
+	if (token == KW("tree"))
 		sorting = CoreAttributesList::TreeMode;
-	else if (token == "indexup")
+	else if (token == KW("indexup"))
 		sorting = CoreAttributesList::IndexUp;
-	else if (token == "indexdown")
+	else if (token == KW("indexdown"))
 		sorting = CoreAttributesList::IndexDown;
-	else if (token == "idup")
+	else if (token == KW("idup"))
 		sorting = CoreAttributesList::IdUp;
-	else if (token == "iddown")
+	else if (token == KW("iddown"))
 		sorting = CoreAttributesList::IdDown;
-	else if (token == "fullnameup")
+	else if (token == KW("fullnameup"))
 		sorting = CoreAttributesList::FullNameUp;
-	else if (token == "fullnamedown")
+	else if (token == KW("fullnamedown"))
 		sorting = CoreAttributesList::FullNameDown;
-	else if (token == "nameup")
+	else if (token == KW("nameup"))
 		sorting = CoreAttributesList::NameUp;
-	else if (token == "namedown")
+	else if (token == KW("namedown"))
 		sorting = CoreAttributesList::NameDown;
-	else if (token == "startup")
+	else if (token == KW("startup"))
 		sorting = CoreAttributesList::StartUp;
-	else if (token == "startdown")
+	else if (token == KW("startdown"))
 		sorting = CoreAttributesList::StartDown;
-	else if (token == "endup")
+	else if (token == KW("endup"))
 		sorting = CoreAttributesList::EndUp;
-	else if (token == "enddown")
+	else if (token == KW("enddown"))
 		sorting = CoreAttributesList::EndDown;
-	else if (token == "priorityup")
+	else if (token == KW("priorityup"))
 		sorting = CoreAttributesList::PrioUp;
-	else if (token == "prioritydown")
+	else if (token == KW("prioritydown"))
 		sorting = CoreAttributesList::PrioDown;
-	else if (token == "responsibleup")
+	else if (token == KW("responsibleup"))
 		sorting = CoreAttributesList::ResponsibleUp;
-	else if (token == "responsibledown")
+	else if (token == KW("responsibledown"))
 		sorting = CoreAttributesList::ResponsibleDown;
-	else if (token == "mineffortup")
+	else if (token == KW("mineffortup"))
 		sorting = CoreAttributesList::MinEffortUp;
-	else if (token == "mineffortdown")
+	else if (token == KW("mineffortdown"))
 		sorting = CoreAttributesList::MinEffortDown;
-	else if (token == "maxeffortup")
+	else if (token == KW("maxeffortup"))
 		sorting = CoreAttributesList::MaxEffortUp;
-	else if (token == "maxeffortdown")
+	else if (token == KW("maxeffortdown"))
 		sorting = CoreAttributesList::MaxEffortDown;
-	else if (token == "rateup")
+	else if (token == KW("rateup"))
 		sorting = CoreAttributesList::RateUp;
-	else if (token == "ratedown")
+	else if (token == KW("ratedown"))
 		sorting = CoreAttributesList::RateDown;
-	else if (token == "kotrusidup")
+	else if (token == KW("kotrusidup"))
 		sorting = CoreAttributesList::KotrusIdUp;
-	else if (token == "kotrusiddown")
+	else if (token == KW("kotrusiddown"))
 		sorting = CoreAttributesList::KotrusIdDown;
 	else
 	{
