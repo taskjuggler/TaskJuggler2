@@ -55,11 +55,12 @@ my %res_load;
 #-- }
 
 #-- global vars
-my %hlist_entrys;       #-- $hlist_entrys{taskID} = entry_ref
+my %hlist_entrys; #-- $hlist_entrys{taskID} = entry_ref
+my $b_Print;
 
 #-- bunt
 my $top = MainWindow->new();
-    $top->geometry("650x500");
+    $top->geometry("750x600");
 
     #-- buttons oben
     my $f_head = $top->Frame(   -relief => 'flat',
@@ -71,9 +72,9 @@ my $top = MainWindow->new();
                                         -relief     => 'groove',
                                         -command    => sub { $top->destroy }
                                         )->pack( -side => 'left');
-        my $b_Bunt  = $f_head->Button(  -text       => 'gantt chart',
+        my $b_Bunt  = $f_head->Button(  -text       => 'view gantt',
                                         -relief     => 'groove',
-                                        -command    => sub { &_gantt }
+                                        -command    => sub { &_gantt() }
                                         )->pack( -side => 'left');
 
     #-- working bereich
@@ -120,6 +121,8 @@ my $top = MainWindow->new();
 
 _pars_xml();
 
+my $bigPSfilename = $project{'Id'}.'.ps';
+
 $project{'h_start'} =~ s/(\d\d\d\d-\d\d-\d\d) .*/$1/g;
 my $project_start   = $project{'h_start'};
 my ($p_start_year,
@@ -153,6 +156,13 @@ my $page_y    = ($page_border * 2) +
 MainLoop;
 
 #-----------------------------------------------------------------------------
+sub _print {
+    my $c = shift;
+    if ( $bigPSfilename ) {
+        $c->postscript( -file => $bigPSfilename, -colormode => 'color', -height => $page_y, -width => $page_x);
+    }
+}
+
 sub _gantt {
     my ($x, $y) = ($page_x, $page_y);
 
@@ -164,6 +174,14 @@ sub _gantt {
                                             -borderwidth    5
                                             -scrollbars     se
                                             -scrollregion/  => ['0', '0', $x, $y])->pack( -expand => 'yes', -fill => 'both');
+
+    if (! defined $b_Print ) {
+        $b_Print = $f_head->Button( -text       => 'print as PS',
+                                    -relief     => 'groove',
+                                    -command    => sub { &_print($c) }
+                                    )->pack( -side => 'left' );
+    }
+
     _draw_grid($c);
     _draw_task($c);
     _draw_res($c);
@@ -477,6 +495,12 @@ sub _draw_grid {
 
 sub _display_task_data {
     my $t = shift;
+
+    if (defined $b_Print) {
+        $b_Print->destroy;
+        $b_Print = undef;
+    }
+
     foreach ($work_area_frame->children) { $_->destroy }
     my $l = $work_area_frame->Frame()->pack( -side => 'left', -fill => 'y' );
     my $v = $work_area_frame->Frame()->pack( -side => 'left', -fill => 'y' );
@@ -543,12 +567,32 @@ sub _display_task_data {
             $v->Label( -text => $t->endBuffer." %" )->pack( -anchor => 'w' );
         $l->Label( -text => 'complete:' )->pack( -anchor => 'w', -padx => 15  );
             $v->Label( -text => $t->complete." %" )->pack( -anchor => 'w' );
+
         $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
             $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
-
         $l->Label( -text => 'resources' )->pack( -anchor => 'w', -padx => 15 );
         my $all_c = 0;
         foreach my $all ( @{$t->bookedResources} ) {
+            $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
+                $v->Label( -text => $all )->pack( -anchor => 'w' );
+            $all_c++;
+        }
+
+        $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+            $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+        $l->Label( -text => 'followers' )->pack( -anchor => 'w', -padx => 15 );
+        $all_c = 0;
+        foreach my $all ( @{$t->Followers} ) {
+            $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
+                $v->Label( -text => $all )->pack( -anchor => 'w' );
+            $all_c++;
+        }
+
+        $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+            $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+        $l->Label( -text => 'previous' )->pack( -anchor => 'w', -padx => 15 );
+        $all_c = 0;
+        foreach my $all ( @{$t->Previous} ) {
             $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
                 $v->Label( -text => $all )->pack( -anchor => 'w' );
             $all_c++;
