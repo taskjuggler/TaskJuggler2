@@ -244,6 +244,8 @@ sub _gantt {
                                             -scrollbars     se
                                             -scrollregion/  => ['0', '0', $x, $y])->pack( -expand => 'yes', -fill => 'both');
 
+    $c->bind('TASK', '<1>' => [\&_item_enter, \$c]);
+
     if (! defined $b_Print ) {
         $b_Print = $f_head->Button( -text       => 'save as PS',
                                     -relief     => 'groove',
@@ -262,6 +264,121 @@ sub _gantt {
     _draw_res($c);
     _draw_depends($c);
     _draw_label($c);
+}
+
+sub _item_enter {
+    my $c = shift;
+    my ($dummy, $taskID) = $c->gettags('current');
+    if ( $taskID ) {
+        my $t;
+        foreach my $i (@all_tasks) {
+            $t = $i if ( $i->Id eq $taskID );
+        }
+        my $top = new MainWindow( -title => 'details view');
+        my $l = $top->Frame()->pack( -side => 'left', -fill => 'y' );
+        my $v = $top->Frame()->pack( -side => 'left', -fill => 'y' );
+            my ($y, $m, $d, $h, $mi, $s);
+            if ( $t->planStart =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->planStart);
+                $t->planStart( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->planEnd =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->planEnd);
+                $t->planEnd( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->minStart =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->minStart);
+                $t->minStart( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->minEnd =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->minEnd);
+                $t->minEnd( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->maxStart =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->maxStart);
+                $t->maxStart( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->maxEnd =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->maxEnd);
+                $t->maxEnd( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->actualStart =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->actualStart);
+                $t->actualStart( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+            if ( $t->actualEnd =~ /^\d+$/ ) {
+                ($y, $m, $d, $h, $mi, $s) = Date::Calc::Time_to_Date($t->actualEnd);
+                $t->actualEnd( sprintf("%04d-%02d-%02d %02d:%02d:%02d" ,$y, $m, $d, $h, $mi, $s) );
+            }
+
+            $l->Label( -text => 'short descr.:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->Name )->pack( -anchor => 'w' );
+            $l->Label( -text => 'note:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->Note )->pack( -anchor => 'w' );
+            $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+
+            $l->Label( -text => 'id:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->Id )->pack( -anchor => 'w' );
+            $l->Label( -text => 'type:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->Type )->pack( -anchor => 'w' );
+            $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+
+            $l->Label( -text => 'plan date:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->planStart." ---> ".$t->planEnd )->pack( -anchor => 'w' );
+            $l->Label( -text => 'min date:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->minStart." ---> ".$t->minEnd )->pack( -anchor => 'w' );
+            $l->Label( -text => 'max date:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->maxStart." ---> ".$t->maxEnd )->pack( -anchor => 'w' );
+            $l->Label( -text => 'actual date:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->actualStart." ---> ".$t->actualEnd )->pack( -anchor => 'w' );
+            $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+
+            $l->Label( -text => 'start buffer:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->startBuffer." %" )->pack( -anchor => 'w' );
+            $l->Label( -text => 'end buffer:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->endBuffer." %" )->pack( -anchor => 'w' );
+            $l->Label( -text => 'complete:' )->pack( -anchor => 'w', -padx => 15  );
+                $v->Label( -text => $t->complete." %" )->pack( -anchor => 'w' );
+
+            my $all_c = 0;
+            foreach my $all ( @{$t->Allocations} ) {
+                if ( $all_c == 0) {
+                    $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                        $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+                    $l->Label( -text => 'allocations' )->pack( -anchor => 'w', -padx => 15 );
+                }
+                $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
+                    $v->Label( -text => "$rmap{$all} ($all): ".$res_load{$all}{$t->Id}[2]." %" )->pack( -anchor => 'w' );
+                $all_c++;
+            }
+
+            $all_c = 0;
+            foreach my $all ( @{$t->Followers} ) {
+                if ( $all_c == 0) {
+                    $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                        $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+                    $l->Label( -text => 'followers' )->pack( -anchor => 'w', -padx => 15 );
+                }
+                $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
+                    $v->Label( -text => $all )->pack( -anchor => 'w' );
+                $all_c++;
+            }
+
+            $all_c = 0;
+            foreach my $all ( @{$t->Previous} ) {
+                if ( $all_c == 0) {
+                    $l->Label( -text => ' ' )->pack( -anchor => 'w', -padx => 15 );
+                        $v->Label( -text => '-'x15 )->pack( -anchor => 'w' );
+                    $l->Label( -text => 'previous' )->pack( -anchor => 'w', -padx => 15 );
+                }
+                $l->Label( -text => '' )->pack( -anchor => 'w', -padx => 15 ) if ($all_c > 0);
+                    $v->Label( -text => $all )->pack( -anchor => 'w' );
+                $all_c++;
+            }
+        }
 }
 
 sub _draw_label {
@@ -441,28 +558,28 @@ sub _draw_task {
             #-- wenn das ende vor heute liegt und der task nicht 100% fertig hat, dann rot
             if ( Delta_Days($today_year, $today_month, $today_day, $end_year, $end_month, $end_day) < 0 ) {
                 if ( $persent < 100 ) {
-                    $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'red', -fill => 'red');
+                    $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'red', -fill => 'red', -tags => ['TASK', $task->Id] );
                 }
             } else {
-                $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'white', -fill => 'white');
+                $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'white', -fill => 'white', -tags => ['TASK', $task->Id]);
             }
             #-- buffer balken pinseln
             if ( $task->startBuffer ) {
                 my $buf = $task->startBuffer;
-                $c->createRectangle($x1, $y1, $x1 + (($task_length/100*$buf) * $day_x), $y2, -outline => 'gray75', -fill => 'gray75');
+                $c->createRectangle($x1, $y1, $x1 + (($task_length/100*$buf) * $day_x), $y2, -outline => 'gray75', -fill => 'gray75', -tags => ['TASK', $task->Id]);
             }
             if ( $task->endBuffer ) {
                 my $buf = $task->endBuffer;
-                $c->createRectangle($x2 - (($task_length/100*$buf) * $day_x), $y1, $x2, $y2, -outline => 'gray75', -fill => 'gray75');
+                $c->createRectangle($x2 - (($task_length/100*$buf) * $day_x), $y1, $x2, $y2, -outline => 'gray75', -fill => 'gray75', -tags => ['TASK', $task->Id]);
             }
             #-- länge von % feritg balken
             my $per_length = $x1 + (($task_length/100*$persent) * $day_x);
             #-- % done balken pinseln
             if ($persent > 0) {
-                $c->createRectangle($x1, $y1, $per_length, $y2, -outline => 'green', -fill => 'green');
+                $c->createRectangle($x1, $y1, $per_length, $y2, -outline => 'green', -fill => 'green', -tags => ['TASK', $task->Id]);
             }
             #-- rahmen um den task
-            $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'black');
+            $c->createRectangle($x1, $y1, $x2, $y2, -outline => 'black', -tags => ['TASK', $task->Id]);
             #-- text
             $task->label($name);
             $task->label_x($x1+$day_x);
@@ -470,7 +587,7 @@ sub _draw_task {
         }
         if ( $task->Type eq 'Milestone' ) {
             my ($x, $y) = ($x1+($day_x/2), $y1+($task_height/2));
-            $c->createOval($x-($task_height/3), $y-($task_height/3), $x+($task_height/3), $y+($task_height/3), -outline => 'black', -fill => 'black');
+            $c->createOval($x-($task_height/3), $y-($task_height/3), $x+($task_height/3), $y+($task_height/3), -outline => 'black', -fill => 'black', -tags => 'MILE');
             #-- text
             my $am = sprintf('%02d', $start_month);
             my $ad = sprintf('%02d', $start_day);
