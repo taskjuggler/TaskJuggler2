@@ -157,3 +157,5 @@ QicsHeader::connectGrid(QicsScreenGrid *grid)
 		this, SIGNAL(gripDoubleClicked(int, int, QicsHeaderType)));
     }
 }
+
+#include "QicsHeader.moc"

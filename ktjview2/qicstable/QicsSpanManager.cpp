@@ -259,3 +259,5 @@ bool QicsSpan::intersects(QicsSpan &span) const
 	// the other guy lies somewhere in E, so it hits me
 	return true;
 }
+
+#include "QicsSpanManager.moc"

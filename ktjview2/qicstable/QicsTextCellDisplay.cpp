@@ -665,3 +665,5 @@ QicsTextCellDisplay::resetValue(QicsEntryWidgetInfo *info)
     if (auto_select)
 	widget->selectAll();
 }
+
+#include "QicsTextCellDisplay.moc"

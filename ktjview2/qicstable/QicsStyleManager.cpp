@@ -837,3 +837,5 @@ QicsStyleManager::getGridProperty(QicsGridStyle::QicsGridStyleProperty name) con
 
     return val;
 }
+
+#include "QicsStyleManager.moc"

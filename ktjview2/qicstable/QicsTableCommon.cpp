@@ -477,3 +477,5 @@ QicsTableCommon::setColumnHeaderUsesModel(bool b)
 }
 
 
+
+#include "QicsTableCommon.moc"

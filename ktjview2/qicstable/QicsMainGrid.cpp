@@ -53,3 +53,5 @@ QicsMainGrid::~QicsMainGrid()
 {
 }
 
+
+#include "QicsMainGrid.moc"

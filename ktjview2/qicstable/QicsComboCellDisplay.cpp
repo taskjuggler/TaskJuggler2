@@ -312,3 +312,5 @@ QicsComboCellDisplay::itemSelected(const QString &val)
 		 info->column(),
 		 val);
 }
+
+#include "QicsComboCellDisplay.moc"

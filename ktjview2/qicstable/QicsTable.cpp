@@ -2694,3 +2694,5 @@ QicsTable::traverseToEndOfRow(void)
 {
     MAIN_GRID->traverseToEndOfRow();
 }
+
+#include "QicsTable.moc"

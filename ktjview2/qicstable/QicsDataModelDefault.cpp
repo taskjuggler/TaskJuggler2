@@ -574,3 +574,5 @@ QicsDataModelDefault::clearRow(int row)
     if (myEmitSignalsFlag)
 	emit modelChanged(QicsRegion(row,0,row,lastColumn()));
 }
+
+#include "QicsDataModelDefault.moc"

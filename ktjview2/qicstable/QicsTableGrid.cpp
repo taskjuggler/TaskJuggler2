@@ -463,3 +463,5 @@ QicsTableGrid::handleGridPropertyChange(QicsGridStyle::QicsGridStyleProperty pro
 	redraw();
     }
 }
+
+#include "QicsTableGrid.moc"

@@ -72,3 +72,5 @@ QicsColumnHeader::setNumRows(int num)
     else if (num <= last)
 	dataModel()->deleteRows(last-num+1, num);
 }
+
+#include "QicsColumnHeader.moc"

@@ -412,3 +412,5 @@ QicsCellCommon::setUserData(void *data)
     setAttr(QicsCellStyle::UserData, static_cast<const void *> (data));
 }
 
+
+#include "QicsCellCommon.moc"

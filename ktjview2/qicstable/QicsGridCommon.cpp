@@ -602,3 +602,5 @@ QicsGridCommon::setDragEnabled(bool b)
 {
     setGridAttr(QicsGridStyle::DragEnabled, static_cast<const void *> (&b));
 }
+
+#include "QicsGridCommon.moc"

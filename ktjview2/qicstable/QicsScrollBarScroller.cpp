@@ -115,3 +115,5 @@ QicsScrollBarScroller::checkBounds(void)
     else
 	myScrollBar->hide();
 }
+
+#include "QicsScrollBarScroller.moc"

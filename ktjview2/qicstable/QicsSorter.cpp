@@ -494,3 +494,5 @@ QicsSorter::moveItems(int target, const QMemArray<int> &itms)
 
     emit orderChanged(myType, visChange);
 }
+
+#include "QicsSorter.moc"

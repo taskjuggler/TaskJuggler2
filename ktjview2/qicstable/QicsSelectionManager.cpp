@@ -1454,3 +1454,5 @@ QicsSelectionManager::orderChanged(QicsIndexType type, QMemArray<int> vismap)
 #endif
 
 }
+
+#include "QicsSelectionManager.moc"

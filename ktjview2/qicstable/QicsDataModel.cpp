@@ -299,3 +299,5 @@ QicsDataModel::writeASCII(QTextStream &stream, const char separator,
 	stream << "\n";
     }
 }
+
+#include "QicsDataModel.moc"

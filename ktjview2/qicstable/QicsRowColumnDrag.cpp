@@ -263,3 +263,5 @@ QicsRowColumnDrag::decodeCellData(const QMimeSource *)
     return false;
 }
 
+
+#include "QicsRowColumnDrag.moc"

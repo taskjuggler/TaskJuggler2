@@ -464,3 +464,5 @@ QicsCheckCellDisplay::checkStateChanged(int state)
 		 info->column(),
 		 (state == 2 ? true : false));
 }
+
+#include "QicsCheckCellDisplay.moc"

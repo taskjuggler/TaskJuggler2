@@ -179,3 +179,5 @@ QicsScrollManager::gridDestroyed(QObject *)
 {
     myPrimaryGrid = 0;
 }
+
+#include "QicsScrollManager.moc"

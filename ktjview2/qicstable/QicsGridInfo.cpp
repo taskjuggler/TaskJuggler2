@@ -1016,3 +1016,5 @@ QicsGridInfo::setCurrentCellValue(const QicsDataItem &itm)
 		     visualColumnIndex(myCurrentCell.column()),
 		     itm);
 }
+
+#include "QicsGridInfo.moc"

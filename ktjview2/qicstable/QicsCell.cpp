@@ -441,3 +441,5 @@ QicsCell::changeDataModel(QicsDataModel *old_dt, QicsDataModel *)
     init();
 }
 
+
+#include "QicsCell.moc"

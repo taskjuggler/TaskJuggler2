@@ -2017,3 +2017,5 @@ QicsScreenGrid::traverse(QicsScrollDirection dir)
 	return;
     }
 }
+
+#include "QicsScreenGrid.moc"

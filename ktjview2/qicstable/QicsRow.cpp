@@ -281,3 +281,5 @@ QicsRow::changeDataModel(QicsDataModel *old_dt, QicsDataModel *)
     // the new data model will already be set in our grid info object
     init();
 }
+
+#include "QicsRow.moc"

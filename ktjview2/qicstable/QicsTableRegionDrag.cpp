@@ -294,3 +294,5 @@ QicsTableRegionDrag::decode(const QMimeSource *e, QicsDataModel &dm)
     return okdrag;
 }
 
+
+#include "QicsTableRegionDrag.moc"

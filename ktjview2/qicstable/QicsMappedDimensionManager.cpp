@@ -226,3 +226,5 @@ int QicsMappedDimensionManager::regionWidth(const QicsRegion &region) const
 
     return width;
 }
+
+#include "QicsMappedDimensionManager.moc"

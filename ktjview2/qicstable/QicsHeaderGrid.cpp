@@ -789,3 +789,5 @@ QicsHeaderGrid::startDrag(QDragObject::DragMode mode)
 	remove = obj->drag();
 }
 
+
+#include "QicsHeaderGrid.moc"

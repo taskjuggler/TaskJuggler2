@@ -2075,3 +2075,5 @@ QicsDimensionManager::deleteColumns(int num, int start_position)
 	}
     }
 }
+
+#include "QicsDimensionManager.moc"
