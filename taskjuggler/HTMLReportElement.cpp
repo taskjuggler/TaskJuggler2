@@ -61,7 +61,8 @@ void
 HTMLReportElement::generateTableHeader()
 {
     // Header line 1
-    s() << "<table align=\"center\" cellpadding=\"2\"";
+    s() << "<table align=\"center\" cellpadding=\"2\""
+        << "style=\"background-color:#000000\"";
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_table\"";
     s() << ">" << endl;
@@ -137,7 +138,7 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
     }
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_row\"";
-    s() << "\">" << endl;
+    s() << ">" << endl;
     
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
@@ -285,7 +286,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
         {
             if (tci->tli->task->isMilestone())
             {
-                text += "&lt;&gt;";
+                text += "<>";
                 tci->setBoldText(true);
             }
             else
@@ -1170,7 +1171,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
                 text += htmlFilter(tci->tli->task->getReference());
             else
                 text += htmlFilter(tci->tli->task->getReferenceLabel());
-            text += "<a>";
+            text += "</a>";
             genCell(text, tci, TRUE, FALSE);
         }
         return;
@@ -1187,7 +1188,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
             text += htmlFilter(ra->getUrl());
         else
             text += htmlFilter(ra->getLabel());
-        text += "<a>";
+        text += "</a>";
         genCell(text, tci, TRUE, FALSE);
     }
 }

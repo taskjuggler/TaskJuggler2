@@ -25,6 +25,7 @@
 #include "Interval.h"
 #include "TableColumnInfo.h"
 #include "TableLineInfo.h"
+#include "HTMLReport.h"
 
 HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r, 
                                                      const QString& df,
@@ -68,7 +69,10 @@ HTMLWeeklyCalendarElement::generate()
     maxDepthResourceList = filteredResourceList.maxDepth();
 
     bool weekStartsMonday = report->getProject()->getWeekStartsMonday();
-    s() << "<table align=\"center\" cellpadding=\"1\">" << endl;
+    s() << "<table align=\"center\" cellpadding=\"2\""
+        << "style=\"background-color:#000000\"";
+    if (((HTMLReport*) report)->hasStyleSheet())
+        s() << " class=\"tj_table\"";
     
     s() << " <thead>" << endl
         << "   <tr style=\"background-color:"
@@ -86,7 +90,7 @@ HTMLWeeklyCalendarElement::generate()
     }
     s() << "  </tr>" << endl
         << " </thead>" << endl
-        << " </tbody>" << endl;
+        << " <tbody>" << endl;
     
     for (time_t week = beginOfWeek(start, weekStartsMonday);
          week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)) - 1; )
@@ -107,7 +111,7 @@ HTMLWeeklyCalendarElement::generate()
             else if (isWeekend(wd))
                s() << " style=\"background-color:"
                   << colors.getColor("header").dark(130).name() << "\"";
-            s() << "\">" << endl
+            s() << ">" << endl
                 << "   <table width=\"100%\">"
                 << endl
                 << "    <tr>" << endl

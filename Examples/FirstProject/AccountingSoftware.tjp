@@ -210,11 +210,11 @@ rawhead
 	  <td><a href="Accounting.html">Accounting</a></td>
 		<td><a href="Calendar.html">Calendar</a></td>
 	</tr>
+	<tr>
 	  <td><a href="Tasks-Details.html">Tasks Details</a></td>
 	  <td><a href="Staff-Details.html">Staff Details</a></td>
 		<td><a href="Status-Report.html">Status Report</a></td>
 	  <td><a href="acso.eps">GANTT Chart (Postscript)</a></td>
-	<tr>
 	</tr>
   </table>
   <br>'
@@ -230,14 +230,17 @@ htmltaskreport "Tasks-Overview.html" {
 	${navbar}
 	# The report should be a table that contains several columns. The
 	# task and their information form the rows of the table.
-  columns hierarchindex, name, start, end, weekly, effort
+  columns hierarchindex, name, duration, effort { title "Work"},
+	        start, end, weekly
+	timeformat "%a %Y-%M-%d"
+  loadunit shortauto	
 	# Don't show load values.
 	barlabels empty
 	# Set a title for the report
 	headline "Accounting Software Project"
 	# And a short description what this report is about.
-	caption "This table shows the load for each task on a weekly basis.
-	All values are man-days."
+	caption "This table presents a management-level overview of the
+	project."
 }
 
 # Now a more detailed report that shows all jobs and the people
@@ -247,9 +250,11 @@ htmltaskreport "Tasks-Details.html" {
 	${navbar}
 	# Now we use a daily calendar.
   columns no, name, start, end, scenario, daily
+	start 2002-03-01
+	end 2002-04-01
 	# Show plan and actual scenario values.
 	scenarios plan, actual
-	headline "Accounting Software Project"
+	headline "Accounting Software Project - March 2002"
 	caption "This table shows the load of each day for all the tasks.
 	Additionally the resources used for each task are listed. Since the
 	project start was delayed, the actual schedule differs significantly
@@ -275,6 +280,8 @@ htmlresourcereport "Staff-Overview.html" {
 htmlresourcereport "Staff-Details.html" {
 	${navbar}
   columns name, daily, effort
+	start 2002-03-01
+	end 2002-04-01
 	hidetask 0
 	# The teams are virtual resources that we don't want to see. Since
 	# we have assigned a flag to those virtual resource, we can just
@@ -284,7 +291,8 @@ htmlresourcereport "Staff-Details.html" {
 	# resource name.
 	sortresources nameup
 	loadunit hours
-	headline "Daily working hours for the Accounting Software Project"
+	headline "Daily working hours for the Accounting Software Project -
+	March 2002"
 }
 
 # To conclude the HTML reports a report that shows how badly the

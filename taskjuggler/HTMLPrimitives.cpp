@@ -212,7 +212,6 @@ static const Entity entitylist [] =
     { "ouml", 0x00f6 },
     { "para", 0x00b6 },
     { "part", 0x2202 },
-    { "percnt", 0x0025 },
     { "permil", 0x2030 },
     { "perp", 0x22a5 },
     { "phi", 0x03c6 },

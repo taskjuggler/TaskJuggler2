@@ -61,7 +61,7 @@ HTMLReport::generateFooter()
         if (!project->getCopyright().isEmpty())
             s << htmlFilter(project->getCopyright()) << " - ";
         s << "Version " << htmlFilter(project->getVersion())
-            << " - Created at " << time2user(time(0), timeFormat) 
+            << " - Created on " << time2user(time(0), timeFormat) 
             << " with <a HREF=\"" << TJURL <<
             "\">TaskJuggler</a> <a HREF=\"" << TJURL << "/download.php\">v"
             << VERSION << "</a></span></p>" << endl << "</body>\n";

@@ -878,12 +878,18 @@ Task::latestEnd() const
 double
 Task::getCalcEffort(int sc) const
 {
+    if (milestone)
+        return 0.0;
+
     return getLoad(sc, Interval(scenarios[sc].start, scenarios[sc].end));
 }
 
 double
 Task::getCalcDuration(int sc) const
 {
+    if (milestone)
+        return 0.0;
+
     time_t delta = scenarios[sc].end - scenarios[sc].start;
     if (delta < ONEDAY)
         return (project->convertToDailyLoad(delta));
@@ -894,6 +900,9 @@ Task::getCalcDuration(int sc) const
 double
 Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 {
+    if (milestone)
+        return 0.0;
+        
     double load = 0.0;
 
     for (TaskListIterator tli(sub); *tli != 0; ++tli)
