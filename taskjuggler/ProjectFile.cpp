@@ -258,18 +258,11 @@ ProjectFile::close()
 {
 	bool error = FALSE;
 
-	// There should be exactly 1 open file when this function is called.
-	if (openFiles.count() != 1)
+	FileInfo* fi = openFiles.getLast();
+
+	if (!fi->close())
 		error = TRUE;
-
-	while (!openFiles.isEmpty())
-	{
-		FileInfo* fi = openFiles.getLast();
-
-		if (!fi->close())
-			error = TRUE;
-		openFiles.removeLast();
-	}
+	openFiles.removeLast();
 
 	return error;
 }
@@ -289,7 +282,10 @@ ProjectFile::parse()
 			break;
 		case EndOfFile:
 			close();
-			return TRUE;
+			printf("File closed\n");
+			if (openFiles.isEmpty())
+				return TRUE;
+			break;
 		case ID:
 			if (token == "start")
 			{
@@ -351,6 +347,17 @@ ProjectFile::parse()
 					return FALSE;
 				}
 				proj->setRate(token.toDouble());
+				break;
+			}
+			else if (token == "include")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("File name expected");
+					return FALSE;
+				}
+				if (!open(token))
+					return FALSE;
 				break;
 			}
 			// break missing on purpose!
@@ -424,123 +431,74 @@ ProjectFile::readTask(Task* parent)
 				return FALSE;
 			break;
 		case ID:
-			cantBeParent = TRUE;
-			if (hasSubTasks)
-			{
-				fatalError("This attribute is not allowed in parent tasks");
-				return FALSE;
-			}
-			if READ_DATE("start", setStart)
-			else if READ_DATE("minStart", setMinStart)
-			else if READ_DATE("maxStart", setMaxStart)
-			else if READ_DATE("minEnd", setMinEnd)
-			else if READ_DATE("maxEnd", setMaxEnd)
-			else if READ_DATE("actualStart", setActualStart)
-			else if READ_DATE("actualEnd", setActualEnd)
-			else if (token == "note")
+			/* These attributes can be used in any type of task (normal,
+			 * container, milestone. */
+			if (token == "note")
 			{
 				if ((tt = nextToken(token)) == STRING)
-				{
 					task->setNote(token);
-				}
 				else
 				{
 					fatalError("String expected");
 					return FALSE;
 				}
 			}
-			else if (token == "length")
-			{
-				if (task->getEffort() > 0.0)
-				{
-					fatalError("You can specify either a length or an effort.");
-					return FALSE;
-				}
-				QString len;
-				if (nextToken(len) != INTEGER)
-				{
-					fatalError("Integer expected");
-					return FALSE;
-				}
-				QString unit;
-				if (nextToken(unit) != ID)
-				{
-					fatalError("Unit expected");
-					return FALSE;
-				}
-				if (unit == "d")
-					task->setLength(len.toInt());
-				else if (unit == "w")
-					task->setLength(len.toInt() * 5);
-				else if (unit == "m")
-					task->setLength(len.toInt() * 20);
-				else
-				{
-					fatalError("Unit expected");
-					return FALSE;
-				}
-			}
-			else if (token == "effort")
-			{
-				if (task->getLength() > 0)
-				{
-					fatalError("You can specify either a length or an effort.");
-					return FALSE;
-				}
-				QString effort;
-				if ((tt = nextToken(effort)) != INTEGER &&
-					tt != REAL)
-				{
-					fatalError("Real number expected");
-					return FALSE;
-				}
-				QString unit;
-				if (nextToken(unit) != ID)
-				{
-					fatalError("Unit expected");
-					return FALSE;
-				}
-				if (unit == "md")
-					task->setEffort(effort.toDouble());
-				else if (unit == "mw")
-					task->setEffort(effort.toDouble() * 5);
-				else if (unit == "mm")
-					task->setEffort(effort.toDouble() * 20);
-				else
-				{
-					fatalError("Unit expected");
-					return FALSE;
-				}
-			}
-			else if (token == "allocate")
-			{
-				if (!readAllocate(task))
-					return FALSE;
-			}
-			else if (token == "depends")
-			{
-				for ( ; ; )
-				{
-					QString id;
-					if ((tt = nextToken(id)) != ID &&
-						tt != GLOBAL_ID)
-					{
-						fatalError("Task ID expected");
-						return FALSE;
-					}
-					task->addDependency(id);
-					if ((tt = nextToken(token)) != COMMA)
-					{
-						openFiles.last()->returnToken(tt, token);
-						break;
-					}
-				}
-			}
 			else
 			{
-				fatalError(QString("Unknown task attribute '")
-						   + token + "'");
-				return FALSE;
+				/* These attributes can only be used in normal tasks. */
+				cantBeParent = TRUE;
+				if (hasSubTasks)
+				{
+					fatalError("This attribute is not allowed in parent tasks");
+					return FALSE;
+				}
+				if READ_DATE("start", setStart)
+				else if READ_DATE("minStart", setMinStart)
+				else if READ_DATE("maxStart", setMaxStart)
+				else if READ_DATE("minEnd", setMinEnd)
+				else if READ_DATE("maxEnd", setMaxEnd)
+				else if READ_DATE("actualStart", setActualStart)
+				else if READ_DATE("actualEnd", setActualEnd)
+				else if (token == "length")
+				{
+					if (!readLength(task))
+						return FALSE;
+				}
+				else if (token == "effort")
+				{
+					if (!readEffort(task))
+						return FALSE;
+				}
+				else if (token == "allocate")
+				{
+					if (!readAllocate(task))
+						return FALSE;
+				}
+				else if (token == "depends")
+				{
+					for ( ; ; )
+					{
+						QString id;
+						if ((tt = nextToken(id)) != ID &&
+							tt != GLOBAL_ID)
+						{
+							fatalError("Task ID expected");
+							return FALSE;
+						}
+						task->addDependency(id);
+						if ((tt = nextToken(token)) != COMMA)
+						{
+							openFiles.last()->returnToken(tt, token);
+							break;
+						}
+					}
+				}
+				else
+				{
+					fatalError(QString("Unknown task attribute '")
+							   + token + "'");
+					return FALSE;
+				}
 			}
 			break;
 		case RBRACKET:
@@ -666,6 +624,20 @@ ProjectFile::readResource()
 				}
 				r->setRate(token.toDouble());
 			}
+			else if (token == "kotrusId")
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("String expected");
+					return FALSE;
+				}
+				r->setKotrusId(token);
+			}
+			else
+			{
+				fatalError(QString("Unknown attribute '") + token + "'");
+				return FALSE;
+			}
 		}
 	}
 	else
@@ -733,6 +705,78 @@ ProjectFile::readAllocate(Task* t)
 	else
 		openFiles.last()->returnToken(tt, token);
 	t->addAllocation(a);
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readLength(Task* task)
+{
+	if (task->getEffort() > 0.0)
+	{
+		fatalError("You can specify either a length or an effort.");
+		return FALSE;
+	}
+	QString len;
+	if (nextToken(len) != INTEGER)
+	{
+		fatalError("Integer expected");
+		return FALSE;
+	}
+	QString unit;
+	if (nextToken(unit) != ID)
+	{
+		fatalError("Unit expected");
+		return FALSE;
+	}
+	if (unit == "d")
+		task->setLength(len.toInt());
+	else if (unit == "w")
+		task->setLength(len.toInt() * 5);
+	else if (unit == "m")
+		task->setLength(len.toInt() * 20);
+	else
+	{
+		fatalError("Unit expected");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readEffort(Task* task)
+{
+	if (task->getLength() > 0)
+	{
+		fatalError("You can specify either a length or an effort.");
+		return FALSE;
+	}
+	QString effort;
+	TokenType tt;
+	if ((tt = nextToken(effort)) != INTEGER &&
+		tt != REAL)
+	{
+		fatalError("Real number expected");
+		return FALSE;
+	}
+	QString unit;
+	if (nextToken(unit) != ID)
+	{
+		fatalError("Unit expected");
+		return FALSE;
+	}
+	if (unit == "md")
+		task->setEffort(effort.toDouble());
+	else if (unit == "mw")
+		task->setEffort(effort.toDouble() * 5);
+	else if (unit == "mm")
+		task->setEffort(effort.toDouble() * 20);
+	else
+	{
+		fatalError("Unit expected");
+		return FALSE;
+	}
 
 	return TRUE;
 }

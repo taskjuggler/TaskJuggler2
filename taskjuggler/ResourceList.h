@@ -32,10 +32,23 @@ public:
 	Task* getTask() const { return task; }
 	double getEffort() const { return effort; }
 
+	void setAccount(const QString a) { account = a; }
+	const QString& getAccount() const { return account; }
+
+	void setProjectId(const QString i) { projectId = i; }
+	const QString& getProjectId() const { return projectId; }
+
 private:
+	// The day of the booking
 	time_t date;
+	// A pointer to the task that caused the booking
 	Task* task;
+	// The effort (in man days) the resource is used that day.
 	double effort;
+	// String identifying the KoTrus account the effort is credited to.
+	QString account;
+	// The Project ID
+	QString projectId;
 } ;
 
 class Resource
@@ -61,15 +74,30 @@ public:
 	double isAvailable(time_t date);
 	bool book(Booking* b);
 
+	void setKotrusId(const QString k) { kotrusId = k; }
+	const QString& getKotrusId() const { return kotrusId; }
+
 	void printText();
 
 private:
+	// The ID of the resource. Must be unique in the project.
 	QString id;
+	// The resource name. E. g. real name or room number.
 	QString name;
+
+	// The minimum effort (in man days) the resource should be used per day.
 	double minEffort;
+	// The maximum effort (in man days) the resource should be used per day.
 	double maxEffort;
+	// The daily costs of this resource.
 	double rate;
+
+	// KoTrus ID, ID by which the resource is known to KoTrus.
+	QString kotrusId;
+
+	// List of all intervals the resource is not available.
 	VacationList vacationList;
+	// A list of all uses of the resource.
 	QList<Booking> jobs;
 } ;
 

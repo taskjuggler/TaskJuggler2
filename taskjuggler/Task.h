@@ -154,6 +154,9 @@ private:
 	// Percentage of completion of the task
 	int complete;
 
+	// Account where the costs of the task are credited to.
+	QString account;
+
 	// List of tasks Ids that need to be completed before this task can start
 	QStringList depends;
 	// Same as previous but pointers to tasks that are resolved in pass2

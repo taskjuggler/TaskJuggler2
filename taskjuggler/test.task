@@ -2,11 +2,7 @@ start 2002-10-13
 
 vacation "Xmas" 2002-12-21 - 2003-01-04
 
-resource joe "Joe Average"
-maxEffort 0.9
-resource zman "ZZZZZ"
-resource bill "Billy the Gate" { maxEffort 1.0 }
-resource abc "The alphabeth" { minEffort 0.8 }
+include "resource.task"
 
 task task1 "foo"{
 	start 2002-12-18

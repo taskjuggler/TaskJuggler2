@@ -71,6 +71,8 @@ private:
 	bool readResource();
 	bool readVacation();
 	bool readAllocate(Task* t);
+	bool readLength(Task* t);
+	bool readEffort(Task* t);
 	time_t date2time(const QString& date);
 
 	QString masterFile;
