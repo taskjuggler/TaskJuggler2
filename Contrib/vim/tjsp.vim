@@ -68,8 +68,10 @@ syn keyword tjspkeyword currency
 syn keyword tjspkeyword currencydigits
 syn keyword tjspkeyword d
 syn keyword tjspkeyword daily
+syn keyword tjspkeyword dailyworkinghours
 syn keyword tjspkeyword day
 syn keyword tjspkeyword dayheader
+syn keyword tjspkeyword days
 syn keyword tjspkeyword db
 syn keyword tjspkeyword depends
 syn keyword tjspkeyword duration
@@ -93,6 +95,7 @@ syn keyword tjspkeyword hideaccount
 syn keyword tjspkeyword hideplan
 syn keyword tjspkeyword hideresource
 syn keyword tjspkeyword hidetask
+syn keyword tjspkeyword hours
 syn keyword tjspkeyword htmlaccountreport
 syn keyword tjspkeyword htmlresourcereport
 syn keyword tjspkeyword htmltaskreport
@@ -108,12 +111,15 @@ syn keyword tjspkeyword kotrusidup
 syn keyword tjspkeyword kotrusmode
 syn keyword tjspkeyword length
 syn keyword tjspkeyword load
+syn keyword tjspkeyword loadunit
+syn keyword tjspkeyword longauto
 syn keyword tjspkeyword m
 syn keyword tjspkeyword macro
 syn keyword tjspkeyword maxeffort
 syn keyword tjspkeyword maxeffortdown
 syn keyword tjspkeyword maxeffortup
 syn keyword tjspkeyword maxend
+syn keyword tjspkeyword maxloaded
 syn keyword tjspkeyword maxstart
 syn keyword tjspkeyword milestone
 syn keyword tjspkeyword min
@@ -121,11 +127,14 @@ syn keyword tjspkeyword mineffort
 syn keyword tjspkeyword mineffortdown
 syn keyword tjspkeyword mineffortup
 syn keyword tjspkeyword minend
+syn keyword tjspkeyword minloaded
 syn keyword tjspkeyword minstart
+syn keyword tjspkeyword minutes
 syn keyword tjspkeyword mon
 syn keyword tjspkeyword month
 syn keyword tjspkeyword monthheader
 syn keyword tjspkeyword monthly
+syn keyword tjspkeyword months
 syn keyword tjspkeyword name
 syn keyword tjspkeyword namedown
 syn keyword tjspkeyword nameup
@@ -134,6 +143,7 @@ syn keyword tjspkeyword nokotrus
 syn keyword tjspkeyword note
 syn keyword tjspkeyword now
 syn keyword tjspkeyword off
+syn keyword tjspkeyword order
 syn keyword tjspkeyword persistent
 syn keyword tjspkeyword planbooking
 syn keyword tjspkeyword preceeds
@@ -142,6 +152,7 @@ syn keyword tjspkeyword prioritydown
 syn keyword tjspkeyword priorityup
 syn keyword tjspkeyword project
 syn keyword tjspkeyword projectid
+syn keyword tjspkeyword random
 syn keyword tjspkeyword rate
 syn keyword tjspkeyword ratedown
 syn keyword tjspkeyword rateup
@@ -163,7 +174,9 @@ syn keyword tjspkeyword rolluptask
 syn keyword tjspkeyword sat
 syn keyword tjspkeyword schedule
 syn keyword tjspkeyword scheduling
+syn keyword tjspkeyword select
 syn keyword tjspkeyword shift
+syn keyword tjspkeyword shortauto
 syn keyword tjspkeyword showactual
 syn keyword tjspkeyword showprojectids
 syn keyword tjspkeyword sortaccounts
@@ -192,12 +205,15 @@ syn keyword tjspkeyword w
 syn keyword tjspkeyword wed
 syn keyword tjspkeyword weekheader
 syn keyword tjspkeyword weekly
+syn keyword tjspkeyword weeks
 syn keyword tjspkeyword workinghours
 syn keyword tjspkeyword xml
 syn keyword tjspkeyword xmltaskreport
 syn keyword tjspkeyword y
 syn keyword tjspkeyword year
 syn keyword tjspkeyword yearheader
+syn keyword tjspkeyword yearlyworkingdays
+syn keyword tjspkeyword years
 "syn keyword tjspmilestone 	contained	  milestone
 syn region  tjspstring	start=+"+ skip=+\\"+ end=+"+ contains=tjsparch 
 syn region  tjspstring	start=+`+ skip=+\\'+ end=+'+ contains=tjsparch 
