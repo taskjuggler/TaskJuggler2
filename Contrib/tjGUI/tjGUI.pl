@@ -192,12 +192,14 @@ sub _print {
         my ($bx1, $by1, $bx2, $by2) = $c->bbox('all');
         $c->postscript( -file       => $bigPSfilename,
                         -colormode  => 'color',
-                        -x          => 0,
-                        -y          => 0,
+                        -x          => $bx1,
+                        -y          => $by1,
                         -height     => $by2,
                         -width      => $bx2,
                         -pagex      => 0,
                         -pagey      => 0,
+                        -pagewidth  => $page_x,
+                        -pageheight => $page_y,
                         -pageanchor => 'sw'
                         );
     }
@@ -218,10 +220,9 @@ sub _poster {
                     next unless /BoundingBox:/;
                     $_ =~ s/.*BoundingBox:\s+.+\s+.+\s+(\d+)\s+(\d+)/$1\*$2p/;
                     chomp;
-                    $format = "$1*$2";
+                    $format = "$1*$2p";
                 }
             close(IN);
-            print "$poster_bin -i$format -mA4 -p$format $bigPSfilename > $posterPSfilename\n";
             `$poster_bin -i$format -mA4 -p$format $bigPSfilename > $posterPSfilename\n`;
             $status_line->configure( -fg => 'black', -text => "poster: $posterPSfilename create done" );
         } else {
@@ -248,12 +249,12 @@ sub _gantt {
                                     -command    => sub { &_print($c) }
                                     )->pack( -side => 'left' );
     }
-#--    if (! defined $b_Poster ) {
-#--        $b_Poster = $f_head->Button(    -text       => 'make PS poster',
-#--                                        -relief     => 'groove',
-#--                                        -command    => sub { &_poster($c) }
-#--                                        )->pack( -side => 'left' );
-#--    }
+    if (! defined $b_Poster ) {
+        $b_Poster = $f_head->Button(    -text       => 'make PS poster',
+                                        -relief     => 'groove',
+                                        -command    => sub { &_poster($c) }
+                                        )->pack( -side => 'left' );
+    }
 
     _draw_grid($c);
     _draw_task($c);
