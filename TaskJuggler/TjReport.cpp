@@ -12,6 +12,8 @@
 
 #include "TjReport.h"
 
+#include <assert.h>
+
 #include <qsplitter.h>
 #include <qlayout.h>
 #include <qfont.h>
@@ -991,7 +993,8 @@ TjReport::expandReportItem(QListViewItem*)
 void
 TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
 {
-    if (!lvi)
+    // The first column is always the name and it's not in the TCI table.
+    if (!lvi || column == 0)
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
