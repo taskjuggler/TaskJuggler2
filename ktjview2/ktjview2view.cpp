@@ -19,6 +19,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+//#define PROFILE               // profiling enabled if defined
+
 // Qt includes
 #include <qpainter.h>
 #include <qlayout.h>
@@ -77,6 +79,16 @@
 #include "CoreAttributes.h"
 #include "UsageLimits.h"
 #include "Allocation.h"
+
+#ifdef PROFILE
+int pr_INFO = 0;
+int pr_GANTT = 0;
+int pr_GANTT_LINKS = 0;
+int pr_RES = 0;
+int pr_TASKS = 0;
+int pr_RU = 0;
+#include "kprofilemethod.h"
+#endif
 
 ktjview2View::ktjview2View( QWidget *parent )
     : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
@@ -365,15 +377,36 @@ bool ktjview2View::openURL( const KURL& url )
         progressDlg.progressBar()->setProgress( 5 );
         progressDlg.setLabel( i18n( "Building the views" ) );
 
+        progressDlg.setLabel( i18n( "Parsing project info" ) );
         parseProjectInfo();
+
+        progressDlg.setLabel( i18n( "Parsing resources" ) );
         parseResources( m_project->getResourceListIterator() );
+
+        progressDlg.setLabel( i18n( "Parsing tasks" ) );
         parseTasks( m_project->getTaskListIterator() );
+
+        progressDlg.setLabel( i18n( "Building the Gantt chart" ) );
         parseGantt( m_project->getTaskListIterator() );
+
+        progressDlg.setLabel( i18n( "Building the Gantt chart links" ) );
         parseLinks( m_project->getTaskListIterator() );
+
+        progressDlg.setLabel( i18n( "Building the Resource usage view" ) );
         parseResUsage();
+
+#ifdef PROFILE
+        PROFILE_METHOD_PRINT( pr_INFO, "Parsing info" );
+        PROFILE_METHOD_PRINT( pr_RES, "Parsing resources" );
+        PROFILE_METHOD_PRINT( pr_TASKS, "Parsing tasks" );
+        PROFILE_METHOD_PRINT( pr_GANTT, "Parsing gantt" );
+        PROFILE_METHOD_PRINT( pr_GANTT_LINKS, "Parsing gantt links" );
+        PROFILE_METHOD_PRINT( pr_RU, "Parsing RU" );
+#endif
 
         m_ganttView->setTimelineToStart();
 
+        progressDlg.setLabel( i18n( "Loading the project source" ) );
         m_editorView->loadDocument( url );
 
         emit signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
@@ -397,6 +430,10 @@ bool ktjview2View::openURL( const KURL& url )
 
 void ktjview2View::parseProjectInfo()
 {
+#ifdef PROFILE
+    PROFILE_METHOD_BEGIN( pr_INFO );
+#endif
+
     QString text;
 
     // general info
@@ -420,10 +457,18 @@ void ktjview2View::parseProjectInfo()
     text += m_project->getCopyright();
 
     m_textBrowser->setText( text );
+
+#ifdef PROFILE
+    PROFILE_METHOD_END( pr_INFO );
+#endif
 }
 
 void ktjview2View::parseTasks( TaskListIterator it, int sc )
 {
+#ifdef PROFILE
+    PROFILE_METHOD_BEGIN( pr_TASKS );
+#endif
+
     Task * task;
 
     while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
@@ -446,10 +491,18 @@ void ktjview2View::parseTasks( TaskListIterator it, int sc )
         item->setText( 9, KGlobal::locale()->formatNumber( task->getEffort( sc ) ) );
         item->setText( 10, formatAllocations( task ) );
     }
+
+#ifdef PROFILE
+    PROFILE_METHOD_END( pr_TASKS );
+#endif
 }
 
 void ktjview2View::parseGantt( TaskListIterator it, int sc )
 {
+#ifdef PROFILE
+    PROFILE_METHOD_BEGIN( pr_GANTT );
+#endif
+
     Task * task;
 
     while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
@@ -550,10 +603,18 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
     KDGanttViewItem * root = m_ganttView->firstChild(); // expand the root item
     if ( root )
         root->setOpen( true );
+
+#ifdef PROFILE
+    PROFILE_METHOD_END( pr_GANTT );
+#endif
 }
 
 void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * parentItem )
 {
+#ifdef PROFILE
+    PROFILE_METHOD_BEGIN( pr_RES );
+#endif
+
     Resource * res;
 
     while ( ( res = static_cast<Resource *>( it.current() ) ) != 0 )
@@ -643,10 +704,18 @@ void ktjview2View::parseResources( ResourceListIterator it, KListViewItem * pare
             continue;             // uhoh, something bad happened
         }
     }
+
+#ifdef PROFILE
+    PROFILE_METHOD_END( pr_RES );
+#endif
 }
 
 void ktjview2View::parseLinks( TaskListIterator it )
 {
+#ifdef PROFILE
+    PROFILE_METHOD_BEGIN( pr_GANTT_LINKS );
+#endif
+
     Task * task;
 
     while ( ( task = static_cast<Task *>( it.current() ) ) != 0 )
@@ -680,6 +749,10 @@ void ktjview2View::parseLinks( TaskListIterator it )
         KDGanttViewTaskLink * taskLink = new KDGanttViewTaskLink( fromList, toList );
         taskLink->setTooltipText( formatLinks( fromList, toList ) );
     }
+
+#ifdef PROFILE
+    PROFILE_METHOD_END( pr_GANTT_LINKS );
+#endif
 }
 
 void ktjview2View::ensureItemVisible( KDGanttViewItem * item )
@@ -1153,10 +1226,18 @@ void ktjview2View::collapseAll( KListView * view )
 
 void ktjview2View::parseResUsage()
 {
+#ifdef PROFILE
+    PROFILE_METHOD_BEGIN( pr_RU );
+#endif
+
     m_resUsageView->setProject( m_project );
     m_resUsageView->setStartDate( time_t2Q( m_project->getStart() ) );
     m_resUsageView->setEndDate( time_t2Q( m_project->getEnd() ) );
     m_resUsageView->assignResources( m_project->getResourceList() );
+
+#ifdef PROFILE
+    PROFILE_METHOD_END( pr_RU );
+#endif
 }
 
 void ktjview2View::slotResScale( int scale )
