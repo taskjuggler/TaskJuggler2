@@ -16,8 +16,8 @@
  <!-- The head of all: Project -->
  <!ELEMENT Project      (Name, Version, Priority, start, end, now, Task+)>
  <!ATTLIST Project
-	   Id           CDATA #REQUIRED
-	   WeekStart    CDATA #IMPLIED>
+       Id           CDATA #REQUIRED
+       WeekStart    CDATA #IMPLIED>
  <!ELEMENT Name         (#PCDATA)>
  <!ELEMENT Version      (#PCDATA)>
  <!ELEMENT Priority     (#PCDATA)>
@@ -44,7 +44,7 @@
 #include "Utility.h"
 
 ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e,
-					 const QString& df, int dl) :
+                     const QString& df, int dl) :
    Report(p, f, s, e, df, dl)
 {
 
@@ -86,22 +86,22 @@ void ReportXML::generate()
       proj.appendChild( ReportXML::createXMLElem( doc, "Copyright", hStr ));
    
    proj.appendChild( ReportXML::createXMLElem( doc, "Priority",
-					       QString::number(project->getPriority())));
+                           QString::number(project->getPriority())));
    
    QDomElement tempElem;
    tempElem = ReportXML::createXMLElem( doc, "start",
-					QString::number(project->getStart()));
+                    QString::number(project->getStart()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getStart()));
    
    proj.appendChild( tempElem );
    
    tempElem = ReportXML::createXMLElem( doc, "end",
-					QString::number(project->getEnd()));
+                    QString::number(project->getEnd()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getEnd()));
    proj.appendChild( tempElem );
 
    tempElem = ReportXML::createXMLElem( doc, "now",
-					QString::number(project->getNow()));
+                    QString::number(project->getNow()));
    tempElem.setAttribute( "humanReadable", time2ISO( project->getNow()));
    proj.appendChild( tempElem );
    
@@ -117,13 +117,13 @@ void ReportXML::generate()
    if (*tli != 0)
    {
       proj.appendChild( (*tli)->xmlElement( doc ));
-   	    for(++tli ; *tli != 0; ++tli)
-		{
+        for(++tli ; *tli != 0; ++tli)
+        {
            /* only tasks which have child-tasks and no parent,
             *  since tasks do their subtasks recursive */
             if( (*tli)->isContainer() && (*tli)->getParent() == 0 )
-	             proj.appendChild( (*tli)->xmlElement( doc ));
-        }	
+                 proj.appendChild( (*tli)->xmlElement( doc ));
+        }   
    }
    QString xml = doc.toString();
 
@@ -132,9 +132,9 @@ void ReportXML::generate()
       QFile fi( fileName );
       if ( fi.open(IO_WriteOnly) ) {    // file opened successfully
         QTextStream t( &fi );        // use a text stream
-	t.setEncoding( QTextStream::UnicodeUTF8 );
-	t << xml;
-	fi.close();
+    t.setEncoding( QTextStream::UnicodeUTF8 );
+    t << xml;
+    fi.close();
       }
    }
    // qDebug( "XML: %s", xml.latin1() );

@@ -14,43 +14,43 @@
 #include "CoreAttributes.h"
 
 CoreAttributesTreeIterator::CoreAttributesTreeIterator(CoreAttributes* r,
-													   IterationMode m)
+                                                       IterationMode m)
 {
-	root = current = r;
-	iMode = m;
-	while (current->hasSubs())
-		current = current->getSubList().getFirst();
+    root = current = r;
+    iMode = m;
+    while (current->hasSubs())
+        current = current->getSubList().getFirst();
 }
 
 CoreAttributes*
 CoreAttributesTreeIterator::operator++()
 {
-	if (current == 0)
-		return 0;
+    if (current == 0)
+        return 0;
 
-	while (current != root)
-	{
-		// Find the current CA in the parent's sub list.
-		CoreAttributesListIterator
-			cli(current->getParent()->getSubListIterator());
-		for ( ; *cli != current; ++cli)
-			;
-		// Check if there is another task in the sub list.
-		++cli;
-		if (*cli != 0)
-		{
-			// Find the first leaf in this sub list.
-			current = *cli;
-			while (current->hasSubs())
-				current = current->getSubList().getFirst();
-			// This is the new current task.
-			return current;
-		}
-		// End of sub list reached. Try parent node then.
-		current = current->getParent();
-		if (iMode == parentAfterLeaves)
-			return current;
-	}
-	return (current = 0);
+    while (current != root)
+    {
+        // Find the current CA in the parent's sub list.
+        CoreAttributesListIterator
+            cli(current->getParent()->getSubListIterator());
+        for ( ; *cli != current; ++cli)
+            ;
+        // Check if there is another task in the sub list.
+        ++cli;
+        if (*cli != 0)
+        {
+            // Find the first leaf in this sub list.
+            current = *cli;
+            while (current->hasSubs())
+                current = current->getSubList().getFirst();
+            // This is the new current task.
+            return current;
+        }
+        // End of sub list reached. Try parent node then.
+        current = current->getParent();
+        if (iMode == parentAfterLeaves)
+            return current;
+    }
+    return (current = 0);
 }
 

@@ -25,48 +25,48 @@ class CoreAttributes;
 class CoreAttributesList : public QPtrList<CoreAttributes>
 {
 public:
-	CoreAttributesList()
-   	{
-		for (int i = 0; i < maxSortingLevel; i++)
-			sorting[i] = SequenceUp;
-   	}
-	CoreAttributesList(const CoreAttributesList& l) :
-		QPtrList<CoreAttributes>(l)
-	{
-		for (int i = 0; i < maxSortingLevel; i++)
-			sorting[i] = l.sorting[i];
-	}
-	virtual ~CoreAttributesList();
+    CoreAttributesList()
+    {
+        for (int i = 0; i < maxSortingLevel; i++)
+            sorting[i] = SequenceUp;
+    }
+    CoreAttributesList(const CoreAttributesList& l) :
+        QPtrList<CoreAttributes>(l)
+    {
+        for (int i = 0; i < maxSortingLevel; i++)
+            sorting[i] = l.sorting[i];
+    }
+    virtual ~CoreAttributesList();
 
-	enum SortCriteria {
-	   	SequenceUp = 0, SequenceDown,
-		TreeMode, NameUp, NameDown, FullNameUp,
-		FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
-		StatusUp, StatusDown, CompletedUp, CompletedDown,
-		PrioUp, PrioDown,
-		ResponsibleUp, ResponsibleDown,
-		MinEffortUp, MinEffortDown,
-		MaxEffortUp, MaxEffortDown,
-		RateUp, RateDown,
-		KotrusIdUp, KotrusIdDown,
-		StartUp, StartDown, EndUp, EndDown
-	};
+    enum SortCriteria {
+        SequenceUp = 0, SequenceDown,
+        TreeMode, NameUp, NameDown, FullNameUp,
+        FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
+        StatusUp, StatusDown, CompletedUp, CompletedDown,
+        PrioUp, PrioDown,
+        ResponsibleUp, ResponsibleDown,
+        MinEffortUp, MinEffortDown,
+        MaxEffortUp, MaxEffortDown,
+        RateUp, RateDown,
+        KotrusIdUp, KotrusIdDown,
+        StartUp, StartDown, EndUp, EndDown
+    };
 
-	static const int maxSortingLevel = 3;
-	void setSorting(int s, int level);
-	void createIndex(bool initial = FALSE);
-	int getIndex(const QString& id) const;
-	uint maxDepth() const;
+    static const int maxSortingLevel = 3;
+    void setSorting(int s, int level);
+    void createIndex(bool initial = FALSE);
+    int getIndex(const QString& id) const;
+    uint maxDepth() const;
 
-	static bool isSupportedSortingCriteria(int sc);
+    static bool isSupportedSortingCriteria(int sc);
 
-	virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
-								  int level);
-	
+    virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                  int level);
+    
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 
-	int sorting[maxSortingLevel];
+    int sorting[maxSortingLevel];
 } ;
 
 /**
@@ -76,9 +76,9 @@ protected:
 class CoreAttributesListIterator : public QPtrListIterator<CoreAttributes>
 {
 public:
-	CoreAttributesListIterator(const CoreAttributesList& l) :
-		QPtrListIterator<CoreAttributes>(l) { }
-	virtual ~CoreAttributesListIterator() { }
+    CoreAttributesListIterator(const CoreAttributesList& l) :
+        QPtrListIterator<CoreAttributes>(l) { }
+    virtual ~CoreAttributesListIterator() { }
 } ;
 
 #endif

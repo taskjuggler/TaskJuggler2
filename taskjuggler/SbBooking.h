@@ -23,15 +23,15 @@ class Task;
 class SbBooking
 {
 public:
-	SbBooking(Task* t)
-		: task(t) { }
-	~SbBooking() { }
-	
-	Task* getTask() const { return task; }
+    SbBooking(Task* t)
+        : task(t) { }
+    ~SbBooking() { }
+    
+    Task* getTask() const { return task; }
 
 private:
-	/// A pointer to the task that caused the booking
-	Task* task;
+    /// A pointer to the task that caused the booking
+    Task* task;
 
     /// For future use.
     // double amount;

@@ -23,72 +23,72 @@
 class Macro
 {
 public:
-	Macro(const QString& n, const QString& v, const QString& f, uint l)
-		: name(n), value(v), file(f), line(l) { }
-	~Macro() { }
+    Macro(const QString& n, const QString& v, const QString& f, uint l)
+        : name(n), value(v), file(f), line(l) { }
+    ~Macro() { }
 
-	const QString& getName() const { return name; }
-	const QString& getValue() const { return value; }
-	const QString& getFile() const { return file; }
-	const uint getLine() const { return line; }
+    const QString& getName() const { return name; }
+    const QString& getValue() const { return value; }
+    const QString& getFile() const { return file; }
+    const uint getLine() const { return line; }
 
 private:
-	Macro() { }	// don't use this
+    Macro() { } // don't use this
 
-	QString name;
-	QString value;
-	QString file;
-	uint line;
+    QString name;
+    QString value;
+    QString file;
+    uint line;
 } ;
 
 class MacroTable
 {
 public:
-	MacroTable()
-	{
-		macros.setAutoDelete(TRUE);
-		argStack.setAutoDelete(TRUE);
-	}
-	~MacroTable() { }
+    MacroTable()
+    {
+        macros.setAutoDelete(TRUE);
+        argStack.setAutoDelete(TRUE);
+    }
+    ~MacroTable() { }
 
-	bool addMacro(Macro* m);
-	void pushArguments(QStringList* sl)
-	{
-		argStack.append(sl);
-	}
-	void popArguments()
-	{
-		argStack.removeLast();
-	}
+    bool addMacro(Macro* m);
+    void pushArguments(QStringList* sl)
+    {
+        argStack.append(sl);
+    }
+    void popArguments()
+    {
+        argStack.removeLast();
+    }
     const QStringList* getArguments(int i)
     {
         return argStack.at(i);
     }
-	void clear()
-	{
-		macros.clear();
-		argStack.clear();
-	}
-	QString resolve(const QString& name) const;
-	QString expand(const QString& text) const;
-	Macro* getMacro(const QString& name) const { return macros[name]; }
+    void clear()
+    {
+        macros.clear();
+        argStack.clear();
+    }
+    QString resolve(const QString& name) const;
+    QString expand(const QString& text) const;
+    Macro* getMacro(const QString& name) const { return macros[name]; }
 
-	void setLocation(const QString& df, int dl)
-	{
-		defFileName = df;
-		defFileLine = dl;
-	}
+    void setLocation(const QString& df, int dl)
+    {
+        defFileName = df;
+        defFileLine = dl;
+    }
 
 private:
-	void errorMessage(const char* txt, ... ) const;
+    void errorMessage(const char* txt, ... ) const;
 
-	/* We store a file name and a line number in case we need this for
-	 * error reports or warnings. */
-	QString defFileName;
-	int defFileLine;
-	
-	QDict<Macro> macros;
-	QPtrList<QStringList> argStack;
+    /* We store a file name and a line number in case we need this for
+     * error reports or warnings. */
+    QString defFileName;
+    int defFileLine;
+    
+    QDict<Macro> macros;
+    QPtrList<QStringList> argStack;
 } ;
 
 #endif

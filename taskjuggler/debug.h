@@ -16,33 +16,33 @@
 #define DEBUGMODE DebugCtrl.getDebugMode()
 #define DEBUGLEVEL DebugCtrl.getDebugLevel()
 
-#define DEBUGPF(l) ((DEBUGMODE & 1) && DEBUGLEVEL >= l)	// Project File Reader
-#define DEBUGPS(l) ((DEBUGMODE & 2) && DEBUGLEVEL >= l)	// Project Scheduler
-#define DEBUGTS(l) ((DEBUGMODE & 4) && DEBUGLEVEL >= l)	// Task Scheduler
-#define DEBUGRS(l) ((DEBUGMODE & 8) && DEBUGLEVEL >= l)	// Resource Scheduler
+#define DEBUGPF(l) ((DEBUGMODE & 1) && DEBUGLEVEL >= l) // Project File Reader
+#define DEBUGPS(l) ((DEBUGMODE & 2) && DEBUGLEVEL >= l) // Project Scheduler
+#define DEBUGTS(l) ((DEBUGMODE & 4) && DEBUGLEVEL >= l) // Task Scheduler
+#define DEBUGRS(l) ((DEBUGMODE & 8) && DEBUGLEVEL >= l) // Resource Scheduler
 #define DEBUGEX(l) ((DEBUGMODE & 16) && DEBUGLEVEL >= l) // Expression Tree Ev.
 
 class DebugController
 {
 public:
-	DebugController() : debugLevel(0), debugMode(-1) { }
-	~DebugController() { }
-	
-	void setDebugLevel(int l)
-   	{
-	   	debugLevel = l;
-	}
-	int getDebugLevel() const { return debugLevel; }
-	
-	void setDebugMode(int m)
-	{
-		debugMode = m;
-	}
-	int getDebugMode() const { return debugMode; }
+    DebugController() : debugLevel(0), debugMode(-1) { }
+    ~DebugController() { }
+    
+    void setDebugLevel(int l)
+    {
+        debugLevel = l;
+    }
+    int getDebugLevel() const { return debugLevel; }
+    
+    void setDebugMode(int m)
+    {
+        debugMode = m;
+    }
+    int getDebugMode() const { return debugMode; }
 
 protected:
-	int debugLevel;
-	int debugMode;
+    int debugLevel;
+    int debugMode;
 } ;
 
 extern DebugController DebugCtrl;

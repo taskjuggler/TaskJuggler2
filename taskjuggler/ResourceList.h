@@ -25,17 +25,17 @@ class Resource;
 class ResourceList : public CoreAttributesList
 {
 public:
-	ResourceList();
-	virtual ~ResourceList() { }
+    ResourceList();
+    virtual ~ResourceList() { }
 
-	Resource* getResource(const QString& id) const;
+    Resource* getResource(const QString& id) const;
 
-	static bool isSupportedSortingCriteria(int sc);
-	
-	virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
+    static bool isSupportedSortingCriteria(int sc);
+    
+    virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -45,10 +45,10 @@ protected:
 class ResourceListIterator : public virtual CoreAttributesListIterator 
 {
 public:
-	ResourceListIterator(const CoreAttributesList& l) :
-		CoreAttributesListIterator(l) { }
-	~ResourceListIterator() { }
-	Resource* operator*() { return (Resource*) get(); }
+    ResourceListIterator(const CoreAttributesList& l) :
+        CoreAttributesListIterator(l) { }
+    ~ResourceListIterator() { }
+    Resource* operator*() { return (Resource*) get(); }
 } ;
 
 #endif

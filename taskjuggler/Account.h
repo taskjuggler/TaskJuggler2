@@ -32,35 +32,35 @@ class Interval;
 class Account : public CoreAttributes
 {
 public:
-	Account(Project* p, const QString& i, const QString& n, Account* pr,
-			AccountType at);
-	virtual ~Account();
+    Account(Project* p, const QString& i, const QString& n, Account* pr,
+            AccountType at);
+    virtual ~Account();
 
-	virtual const char* getType() const { return "Account"; }
+    virtual const char* getType() const { return "Account"; }
 
-	Account* getParent() const { return (Account*) parent; }
+    Account* getParent() const { return (Account*) parent; }
 
-	AccountListIterator getSubListIterator() const
-	{
-		return AccountListIterator(sub);
-	}
-	void setKotrusId(const QString& k) { kotrusId = k; }
-	const QString& getKotrusId() const { return kotrusId; }
+    AccountListIterator getSubListIterator() const
+    {
+        return AccountListIterator(sub);
+    }
+    void setKotrusId(const QString& k) { kotrusId = k; }
+    const QString& getKotrusId() const { return kotrusId; }
 
-	void setAcctType(AccountType at) { acctType = at; }
-	AccountType getAcctType() const { return acctType; }
+    void setAcctType(AccountType at) { acctType = at; }
+    AccountType getAcctType() const { return acctType; }
 
-	void credit(Transaction* t);
-	bool isGroup() const { return !sub.isEmpty(); }
+    void credit(Transaction* t);
+    bool isGroup() const { return !sub.isEmpty(); }
 
-	double getBalance(int sc, time_t d) const;
-	double getVolume(int sc, const Interval& period) const;
+    double getBalance(int sc, time_t d) const;
+    double getVolume(int sc, const Interval& period) const;
 
 private:
-	Account() { };	// don't use this
-	QString kotrusId;
-	TransactionList transactions;
-	AccountType acctType;
+    Account() { };  // don't use this
+    QString kotrusId;
+    TransactionList transactions;
+    AccountType acctType;
 } ;
 
 #endif

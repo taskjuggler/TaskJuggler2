@@ -27,16 +27,16 @@
 class VacationInterval : public Interval
 {
 public:
-	VacationInterval() { }
+    VacationInterval() { }
 
-	VacationInterval(const QString& n, const Interval& i)
-		: Interval(i), name(n) { }
-	virtual ~VacationInterval() { }
+    VacationInterval(const QString& n, const Interval& i)
+        : Interval(i), name(n) { }
+    virtual ~VacationInterval() { }
 
-	const QString& getName() const { return name; }
+    const QString& getName() const { return name; }
 
 private:
-	QString name;
+    QString name;
 } ;
 
 /**
@@ -46,17 +46,17 @@ private:
 class VacationList : public QPtrList<VacationInterval>
 {
 public:
-	VacationList() { setAutoDelete(TRUE); }
-	virtual ~VacationList() {}
+    VacationList() { setAutoDelete(TRUE); }
+    virtual ~VacationList() {}
 
-	void add(const QString& name, const Interval& i)
-	{
-		inSort(new VacationInterval(name, i));
-	}
-	bool isVacation(time_t date) const;
+    void add(const QString& name, const Interval& i)
+    {
+        inSort(new VacationInterval(name, i));
+    }
+    bool isVacation(time_t date) const;
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -66,9 +66,9 @@ protected:
 class VacationListIterator : public QPtrListIterator<VacationInterval>
 {
 public:
-	VacationListIterator(const VacationList& l) :
-		QPtrListIterator<VacationInterval>(l) { }
-	virtual ~VacationListIterator() { }
+    VacationListIterator(const VacationList& l) :
+        QPtrListIterator<VacationInterval>(l) { }
+    virtual ~VacationListIterator() { }
 } ;
 
 #endif

@@ -22,14 +22,14 @@
 class HTMLResourceReport : public ReportHtml
 {
 public:
-	HTMLResourceReport(Project* p, const QString& f, time_t s, time_t e,
-					   const QString& df, int dl);
-	virtual ~HTMLResourceReport() { }
+    HTMLResourceReport(Project* p, const QString& f, time_t s, time_t e,
+                       const QString& df, int dl);
+    virtual ~HTMLResourceReport() { }
 
-	bool generate();
+    bool generate();
 
 private:
-	HTMLResourceReport() { }
+    HTMLResourceReport() { }
 } ;
 
 #endif

@@ -26,17 +26,17 @@ class Interval;
 class ShiftSelectionList : public QPtrList<ShiftSelection>
 {
 public:
-	ShiftSelectionList() { }
-	virtual ~ShiftSelectionList() { }
+    ShiftSelectionList() { }
+    virtual ~ShiftSelectionList() { }
 
-	bool insert(ShiftSelection* s);
+    bool insert(ShiftSelection* s);
 
-	bool isOnShift(const Interval& iv) const;
+    bool isOnShift(const Interval& iv) const;
 
-	bool isVacationDay(time_t day) const;
+    bool isVacationDay(time_t day) const;
 
 private:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
 
 /**
@@ -46,9 +46,9 @@ private:
 class ShiftSelectionListIterator : public QPtrListIterator<ShiftSelection>
 {
 public:
-	ShiftSelectionListIterator(const ShiftSelectionList& s) :
-		QPtrListIterator<ShiftSelection>(s) { }
-	virtual ~ShiftSelectionListIterator() { }
+    ShiftSelectionListIterator(const ShiftSelectionList& s) :
+        QPtrListIterator<ShiftSelection>(s) { }
+    virtual ~ShiftSelectionListIterator() { }
 } ;
 
 #endif

@@ -20,21 +20,21 @@ class Project;
 class ExportReport : public Report
 {
 public:
-	ExportReport(Project* p, const QString& f, const QString& df, int dl);
-	virtual ~ExportReport() { }
+    ExportReport(Project* p, const QString& f, const QString& df, int dl);
+    virtual ~ExportReport() { }
 
-	bool generate();
-	bool generateTaskList(TaskList& ftl, ResourceList& frl);
-	bool generateTaskAttributeList(TaskList& ftl);
-	bool generateResourceList(TaskList& ftl, ResourceList& frl);
+    bool generate();
+    bool generateTaskList(TaskList& ftl, ResourceList& frl);
+    bool generateTaskAttributeList(TaskList& ftl);
+    bool generateResourceList(TaskList& ftl, ResourceList& frl);
 
-	bool addTaskAttribute(const QString& ta);
-	QStringList getTaskAttributes() const { return taskAttributes; }
-	
+    bool addTaskAttribute(const QString& ta);
+    QStringList getTaskAttributes() const { return taskAttributes; }
+    
 private:
-	ExportReport() { }
+    ExportReport() { }
 
-	QStringList taskAttributes;
+    QStringList taskAttributes;
 };
 
 #endif

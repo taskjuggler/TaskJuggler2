@@ -18,16 +18,16 @@
 class TaskTreeIterator : public virtual CoreAttributesTreeIterator
 {
 public:
-	TaskTreeIterator(Task* r, CoreAttributesTreeIterator::IterationMode m =
-					 CoreAttributesTreeIterator::leavesOnly)
-	   	: CoreAttributesTreeIterator(r, m) { } 
-	virtual ~TaskTreeIterator() { }
+    TaskTreeIterator(Task* r, CoreAttributesTreeIterator::IterationMode m =
+                     CoreAttributesTreeIterator::leavesOnly)
+        : CoreAttributesTreeIterator(r, m) { } 
+    virtual ~TaskTreeIterator() { }
 
-	Task* operator*() { return (Task*) current; }
-	Task* operator++() 
-	{
-	   	return (Task*) CoreAttributesTreeIterator::operator++();
-	}
+    Task* operator*() { return (Task*) current; }
+    Task* operator++() 
+    {
+        return (Task*) CoreAttributesTreeIterator::operator++();
+    }
 } ;
 
 #endif

@@ -14,7 +14,7 @@
 bool
 ShiftSelection::isVacationDay(time_t day) const
 {
-	return period.contains(day) && shift->isVacationDay(day);
+    return period.contains(day) && shift->isVacationDay(day);
 }
 
 

@@ -24,21 +24,21 @@ class Account;
 class AccountList : public CoreAttributesList
 {
 public:
-	AccountList() 
-	{ 
-	   	sorting[0] = CoreAttributesList::TreeMode;
-		sorting[1] = CoreAttributesList::IdUp;
-	}
-	~AccountList() { }
+    AccountList() 
+    { 
+        sorting[0] = CoreAttributesList::TreeMode;
+        sorting[1] = CoreAttributesList::IdUp;
+    }
+    ~AccountList() { }
 
-	Account* getAccount(const QString& id) const;
+    Account* getAccount(const QString& id) const;
 
-	static bool isSupportedSortingCriteria(int sc);
-	
-	virtual int compareItemsLevel(Account* a1, Account* a2, int level);
+    static bool isSupportedSortingCriteria(int sc);
+    
+    virtual int compareItemsLevel(Account* a1, Account* a2, int level);
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -49,10 +49,10 @@ protected:
 class AccountListIterator : public virtual CoreAttributesListIterator 
 {
 public:
-	AccountListIterator(const CoreAttributesList& l) :
-		CoreAttributesListIterator(l) { }
-	virtual ~AccountListIterator() { }
-	Account* operator*() { return (Account*) get(); }
+    AccountListIterator(const CoreAttributesList& l) :
+        CoreAttributesListIterator(l) { }
+    virtual ~AccountListIterator() { }
+    Account* operator*() { return (Account*) get(); }
 } ;
 
 #endif

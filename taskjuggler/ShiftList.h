@@ -26,19 +26,19 @@ class Project;
 class ShiftList : public CoreAttributesList
 {
 public:
-	ShiftList()
-	{
-		sorting[0] = TreeMode;
-		sorting[1] = SequenceUp;
-	}
-	virtual ~ShiftList() { }
+    ShiftList()
+    {
+        sorting[0] = TreeMode;
+        sorting[1] = SequenceUp;
+    }
+    virtual ~ShiftList() { }
 
-	Shift* getShift(const QString& id) const;
+    Shift* getShift(const QString& id) const;
 
-	virtual int compareItemsLevel(Shift* s1, Shift* s2, int level);
+    virtual int compareItemsLevel(Shift* s1, Shift* s2, int level);
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -49,10 +49,10 @@ protected:
 class ShiftListIterator : public virtual CoreAttributesListIterator 
 {
 public:
-	ShiftListIterator(const CoreAttributesList& l) :
-		CoreAttributesListIterator(l) { }
-	virtual ~ShiftListIterator() { }
-	Shift* operator*() { return (Shift*) get(); }
+    ShiftListIterator(const CoreAttributesList& l) :
+        CoreAttributesListIterator(l) { }
+    virtual ~ShiftListIterator() { }
+    Shift* operator*() { return (Shift*) get(); }
 } ;
 
 #endif

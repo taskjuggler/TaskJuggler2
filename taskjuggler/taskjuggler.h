@@ -17,8 +17,8 @@
 
 typedef enum TaskStatus 
 { 
-	Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime, 
-	InProgressEarly, Finished
+    Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime, 
+    InProgressEarly, Finished
 };
 
 typedef enum AccountType { AllAccounts = 0, Cost, Revenue };

@@ -28,37 +28,37 @@ class Operation;
 class ExpressionTree
 {
 public:
-	ExpressionTree(const Operation* op);
-	~ExpressionTree();
+    ExpressionTree(const Operation* op);
+    ~ExpressionTree();
 
-	long evalAsInt(const CoreAttributes* c);
-	long resolve(const QString& symbol) const;
+    long evalAsInt(const CoreAttributes* c);
+    long resolve(const QString& symbol) const;
 
-	void registerSymbol(const QString& symbol, long value)
-	{
-		symbolTable.insert(symbol, new long(value));
-	}
-	void clearSymbolTable() { symbolTable.clear(); }
+    void registerSymbol(const QString& symbol, long value)
+    {
+        symbolTable.insert(symbol, new long(value));
+    }
+    void clearSymbolTable() { symbolTable.clear(); }
 
-	const CoreAttributes* getCoreAttributes() const { return ca; }
+    const CoreAttributes* getCoreAttributes() const { return ca; }
 
-	static bool isFunction(const QString& name);
+    static bool isFunction(const QString& name);
 
-	static int arguments(const QString& name);
+    static int arguments(const QString& name);
 
-	ExpressionTreeFunction* getFunction(const QString& name) const
-	{
-		return functions[name];
-	}
-	
+    ExpressionTreeFunction* getFunction(const QString& name) const
+    {
+        return functions[name];
+    }
+    
 private:
-	ExpressionTree() { }	// don't use this
+    ExpressionTree() { }    // don't use this
 
-	const CoreAttributes* ca;
-	QDict<long> symbolTable;
-	const Operation* expression;
-	
-	static QDict<ExpressionTreeFunction> functions;
+    const CoreAttributes* ca;
+    QDict<long> symbolTable;
+    const Operation* expression;
+    
+    static QDict<ExpressionTreeFunction> functions;
 } ;
 
 #endif

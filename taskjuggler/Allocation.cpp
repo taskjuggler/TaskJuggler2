@@ -28,11 +28,11 @@
 
 /* Constructor */
 Allocation::Allocation( Resource *r) :
-	load(100), persistent(FALSE), lockedResource(0)
+    load(100), persistent(FALSE), lockedResource(0)
 {
     shifts.setAutoDelete(TRUE);
-	candidates.append(r);
-	selectionMode = order;
+    candidates.append(r);
+    selectionMode = order;
 }
 
 /* Creation of the XML Reprsentation of the Allocation */
@@ -51,16 +51,16 @@ QDomElement Allocation::xmlElement( QDomDocument& doc )
 bool
 Allocation::setSelectionMode(const QString& smt)
 {
-	if (smt == KW("order"))
-		selectionMode = order;
-	else if (smt == KW("minloaded"))
-		selectionMode = minLoaded;
-	else if (smt == KW("maxloaded"))
-		selectionMode = maxLoaded;
-	else if (smt == KW("random"))
-		selectionMode = random;
-	else
-		return FALSE;
-	return TRUE;
+    if (smt == KW("order"))
+        selectionMode = order;
+    else if (smt == KW("minloaded"))
+        selectionMode = minLoaded;
+    else if (smt == KW("maxloaded"))
+        selectionMode = maxLoaded;
+    else if (smt == KW("random"))
+        selectionMode = random;
+    else
+        return FALSE;
+    return TRUE;
 }
 

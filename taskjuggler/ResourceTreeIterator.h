@@ -18,17 +18,17 @@
 class ResourceTreeIterator : public virtual CoreAttributesTreeIterator
 {
 public:
-	ResourceTreeIterator(Resource* r,
-						 CoreAttributesTreeIterator::IterationMode m =
-						 CoreAttributesTreeIterator::leavesOnly) 
-		: CoreAttributesTreeIterator(r, m) { } 
-	virtual ~ResourceTreeIterator() { }
+    ResourceTreeIterator(Resource* r,
+                         CoreAttributesTreeIterator::IterationMode m =
+                         CoreAttributesTreeIterator::leavesOnly) 
+        : CoreAttributesTreeIterator(r, m) { } 
+    virtual ~ResourceTreeIterator() { }
 
-	Resource* operator*() { return (Resource*) current; }
-	Resource* operator++() 
-	{
-	   	return (Resource*) CoreAttributesTreeIterator::operator++();
-	}
+    Resource* operator*() { return (Resource*) current; }
+    Resource* operator++() 
+    {
+        return (Resource*) CoreAttributesTreeIterator::operator++();
+    }
 } ;
 
 #endif

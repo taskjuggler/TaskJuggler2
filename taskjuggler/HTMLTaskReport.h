@@ -25,14 +25,14 @@ class Project;
 class HTMLTaskReport : public ReportHtml
 {
 public:
-	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e,
-				   const QString& df, int dl);
-	virtual ~HTMLTaskReport() { }
+    HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e,
+                   const QString& df, int dl);
+    virtual ~HTMLTaskReport() { }
 
-	bool generate();
+    bool generate();
 
 private:
-	HTMLTaskReport() { }
+    HTMLTaskReport() { }
 } ;
 
 #endif

@@ -15,10 +15,10 @@
 #include "Project.h"
 
 Scenario::Scenario(Project* p, const QString& i, const QString& n,
-				   Scenario* pr)
-	: CoreAttributes(p, i, n, pr)
+                   Scenario* pr)
+    : CoreAttributes(p, i, n, pr)
 {
-	p->addScenario(this);
+    p->addScenario(this);
 }
 
 Scenario::~Scenario()
@@ -29,6 +29,6 @@ Scenario::~Scenario()
 ScenarioListIterator 
 Scenario::getSubListIterator() const
 {
-	return ScenarioListIterator(sub);
+    return ScenarioListIterator(sub);
 }
 

@@ -14,46 +14,46 @@
 
 void
 TjMessageHandler::warningMessage(const QString& msg, const QString& file, int
-								 line)
+                                 line)
 {
-	if (consoleMode)
-	{
-		if (file.isEmpty())
-			qWarning("%s", msg.latin1());
-		else
-			qWarning("%s:%d: %s", file.latin1(), line, msg.latin1());
-	}
-	else
-		printWarning(msg, file, line);
+    if (consoleMode)
+    {
+        if (file.isEmpty())
+            qWarning("%s", msg.latin1());
+        else
+            qWarning("%s:%d: %s", file.latin1(), line, msg.latin1());
+    }
+    else
+        printWarning(msg, file, line);
 }
 
 void
 TjMessageHandler::errorMessage(const QString& msg, const QString& file, int
-							   line)
+                               line)
 {
-	if (consoleMode)
-	{
-		if (file.isEmpty())
-			qWarning("%s", msg.latin1());
-		else
-			qWarning("%s:%d: %s", file.latin1(), line, msg.latin1());
-	}
-	else
-		printError(msg, file, line);
+    if (consoleMode)
+    {
+        if (file.isEmpty())
+            qWarning("%s", msg.latin1());
+        else
+            qWarning("%s:%d: %s", file.latin1(), line, msg.latin1());
+    }
+    else
+        printError(msg, file, line);
 }
 
 void
 TjMessageHandler::fatalMessage(const QString& msg, const QString& file, int
-							   line)
+                               line)
 {
-	if (consoleMode)
-	{
-		if (file.isEmpty())
-			qFatal("%s", msg.latin1());
-		else
-			qFatal("%s:%d: %s", file.latin1(), line, msg.latin1());
-	}
-	else
-		printFatal(msg, file, line);
+    if (consoleMode)
+    {
+        if (file.isEmpty())
+            qFatal("%s", msg.latin1());
+        else
+            qFatal("%s:%d: %s", file.latin1(), line, msg.latin1());
+    }
+    else
+        printFatal(msg, file, line);
 }
 

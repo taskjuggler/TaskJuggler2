@@ -24,31 +24,31 @@
 class Booking : public SbBooking
 {
 public:
-	Booking(const Interval& iv, Task* t)
-		: SbBooking(t), interval(iv) { }
-	Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
-			interval(iv) { }
-	~Booking() { }
+    Booking(const Interval& iv, Task* t)
+        : SbBooking(t), interval(iv) { }
+    Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
+            interval(iv) { }
+    ~Booking() { }
 
-	time_t getStart() const { return interval.getStart(); }
-	time_t getEnd() const { return interval.getEnd(); }
-	time_t getDuration() const { return interval.getDuration(); }
-	Interval& getInterval() { return interval; }
+    time_t getStart() const { return interval.getStart(); }
+    time_t getEnd() const { return interval.getEnd(); }
+    time_t getDuration() const { return interval.getDuration(); }
+    Interval& getInterval() { return interval; }
 
-	void setLockTS( const QString& ts ) { lockTS = ts; }
-	const QString& getLockTS() const { return lockTS; }
+    void setLockTS( const QString& ts ) { lockTS = ts; }
+    const QString& getLockTS() const { return lockTS; }
 
-	void setLockerId( const QString& id ) { lockerId = id; }
-	const QString& getLockerId() const { return lockerId; }
+    void setLockerId( const QString& id ) { lockerId = id; }
+    const QString& getLockerId() const { return lockerId; }
 
 private:
-	/// The booked time period.
-	Interval interval;
-	/// The database lock timestamp
-	QString lockTS;
+    /// The booked time period.
+    Interval interval;
+    /// The database lock timestamp
+    QString lockTS;
 
-	/// the lockers ID
-	QString lockerId;
+    /// the lockers ID
+    QString lockerId;
 } ;
 
 #endif

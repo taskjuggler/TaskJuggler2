@@ -24,32 +24,32 @@ class LoopDetectorInfo;
  */
 class LoopDetectorInfo
 {
-	friend class LDIList;
+    friend class LDIList;
 public:
-	LoopDetectorInfo() { }
-	LoopDetectorInfo(Task* _t, bool ae) : t(_t), atEnd(ae) { }
-	~LoopDetectorInfo() { }
+    LoopDetectorInfo() { }
+    LoopDetectorInfo(Task* _t, bool ae) : t(_t), atEnd(ae) { }
+    ~LoopDetectorInfo() { }
 
-	enum FromWhere { fromParent, fromSub, fromPrev, fromSucc, fromOtherEnd };
+    enum FromWhere { fromParent, fromSub, fromPrev, fromSucc, fromOtherEnd };
 
-	bool operator==(const LoopDetectorInfo& ldi) const
-	{
-		return t == ldi.t && atEnd == ldi.atEnd;
-	}
-	bool operator!=(const LoopDetectorInfo& ldi) const
-	{
-		return t != ldi.t || atEnd != ldi.atEnd;
-	}
-	Task* getTask() const { return t; }
-	bool getAtEnd() const { return atEnd; }
-	LoopDetectorInfo* next() const { return nextLDI; }
-	LoopDetectorInfo* prev() const { return prevLDI; }
+    bool operator==(const LoopDetectorInfo& ldi) const
+    {
+        return t == ldi.t && atEnd == ldi.atEnd;
+    }
+    bool operator!=(const LoopDetectorInfo& ldi) const
+    {
+        return t != ldi.t || atEnd != ldi.atEnd;
+    }
+    Task* getTask() const { return t; }
+    bool getAtEnd() const { return atEnd; }
+    LoopDetectorInfo* next() const { return nextLDI; }
+    LoopDetectorInfo* prev() const { return prevLDI; }
 protected:
-	LoopDetectorInfo* nextLDI;
-	LoopDetectorInfo* prevLDI;
+    LoopDetectorInfo* nextLDI;
+    LoopDetectorInfo* prevLDI;
 private:
-	Task* t;
-	bool atEnd;
+    Task* t;
+    bool atEnd;
 } ;
 
 /**
@@ -63,58 +63,58 @@ private:
 class LDIList
 {
 public:
-	LDIList() 
-	{
-		root = leaf = 0;
-		items = 0;   
-	}
-	virtual ~LDIList()
-   	{
-		for (LoopDetectorInfo* p = root; p; p = root)
-		{
-			root = p->nextLDI;
-			delete p;
-		}
-   	}
-	LoopDetectorInfo* first() const { return root; }
-	LoopDetectorInfo* last() const { return leaf; }
-	long count() const { return items; }
-	
-	void append(LoopDetectorInfo* p)
-	{
-		if (root == 0)
-		{
-			root = leaf = p;
-			leaf->prevLDI = 0;
-		}
-		else
-		{
-			leaf->nextLDI = p;
-			leaf->nextLDI->prevLDI = leaf;
-			leaf = leaf->nextLDI;
-		}
-		leaf->nextLDI = 0;
-		++items;
-	}
-	void removeLast()
-	{
-		if (leaf == root)
-		{
-			delete leaf;
-			root = leaf = 0;
-		}
-		else
-		{
-			leaf = leaf->prevLDI;
-			delete leaf->nextLDI;
-			leaf->nextLDI = 0;
-		}
-		--items;
-	}
+    LDIList() 
+    {
+        root = leaf = 0;
+        items = 0;   
+    }
+    virtual ~LDIList()
+    {
+        for (LoopDetectorInfo* p = root; p; p = root)
+        {
+            root = p->nextLDI;
+            delete p;
+        }
+    }
+    LoopDetectorInfo* first() const { return root; }
+    LoopDetectorInfo* last() const { return leaf; }
+    long count() const { return items; }
+    
+    void append(LoopDetectorInfo* p)
+    {
+        if (root == 0)
+        {
+            root = leaf = p;
+            leaf->prevLDI = 0;
+        }
+        else
+        {
+            leaf->nextLDI = p;
+            leaf->nextLDI->prevLDI = leaf;
+            leaf = leaf->nextLDI;
+        }
+        leaf->nextLDI = 0;
+        ++items;
+    }
+    void removeLast()
+    {
+        if (leaf == root)
+        {
+            delete leaf;
+            root = leaf = 0;
+        }
+        else
+        {
+            leaf = leaf->prevLDI;
+            delete leaf->nextLDI;
+            leaf->nextLDI = 0;
+        }
+        --items;
+    }
 private:
-	long items;
-	LoopDetectorInfo* root;
-	LoopDetectorInfo* leaf;
+    long items;
+    LoopDetectorInfo* root;
+    LoopDetectorInfo* leaf;
 } ;
 
 #endif

@@ -18,22 +18,22 @@
 class FlagList : public QStringList
 {
 public:
-	FlagList() { }
-	virtual ~FlagList() { }
+    FlagList() { }
+    virtual ~FlagList() { }
 
-	void addFlag(QString flag)
-	{
-		if (!hasFlag(flag))
-			append(flag);
-	}
-	void clearFlag(const QString& flag)
-	{
-		remove(flag);
-	}
-	bool hasFlag(const QString& flag) const
-	{
-		return contains(flag) > 0;
-	}
+    void addFlag(QString flag)
+    {
+        if (!hasFlag(flag))
+            append(flag);
+    }
+    void clearFlag(const QString& flag)
+    {
+        remove(flag);
+    }
+    bool hasFlag(const QString& flag) const
+    {
+        return contains(flag) > 0;
+    }
 } ;
 
 #endif

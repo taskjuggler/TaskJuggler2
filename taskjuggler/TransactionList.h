@@ -23,24 +23,24 @@
  */
 class Transaction
 {
-	friend class TransactionList;
+    friend class TransactionList;
 public:
-	Transaction(time_t d, double a, const QString& descr)
-		: date(d), amount(a), description(descr) { }
-	~Transaction() { }
+    Transaction(time_t d, double a, const QString& descr)
+        : date(d), amount(a), description(descr) { }
+    ~Transaction() { }
 
-	time_t getDate() { return date; }
-	double getAmount() { return amount; }
-	const QString& getDescription() { return description; }
+    time_t getDate() { return date; }
+    double getAmount() { return amount; }
+    const QString& getDescription() { return description; }
 
 private:
-	Transaction() { } 	// dont use this
-	/// The moment when the transaction happened.
-	time_t date;
-	/// The amount deposited or withdrawn.
-	double amount;
-	/// A short description of the transaction purpose
-	QString description;
+    Transaction() { }   // dont use this
+    /// The moment when the transaction happened.
+    time_t date;
+    /// The amount deposited or withdrawn.
+    double amount;
+    /// A short description of the transaction purpose
+    QString description;
 } ;
 
 /**
@@ -50,10 +50,10 @@ private:
 class TransactionList : public QPtrList<Transaction>
 {
 public:
-	TransactionList() { }
-	virtual ~TransactionList() { }
+    TransactionList() { }
+    virtual ~TransactionList() { }
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -63,9 +63,9 @@ protected:
 class TransactionListIterator : public QPtrListIterator<Transaction>
 {
 public:
-	TransactionListIterator(const TransactionList& t) :
-		QPtrListIterator<Transaction>(t) {}
-	virtual ~TransactionListIterator() { }
+    TransactionListIterator(const TransactionList& t) :
+        QPtrListIterator<Transaction>(t) {}
+    virtual ~TransactionListIterator() { }
 } ;
 
 #endif

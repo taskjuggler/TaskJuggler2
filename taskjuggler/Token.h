@@ -22,10 +22,10 @@
 
 typedef enum
 {
-	INVALID = 0, EndOfStatement, EndOfFile, MacroBody,
-	ID, ABSOLUTE_ID, RELATIVE_ID,
-	RCBRACE, LCBRACE, RBRACE, LBRACE, COMMA, TILDE, MINUS, AND, OR,
-	DATE, HOUR, INTEGER, REAL, STRING
+    INVALID = 0, EndOfStatement, EndOfFile, MacroBody,
+    ID, ABSOLUTE_ID, RELATIVE_ID,
+    RCBRACE, LCBRACE, RBRACE, LBRACE, COMMA, TILDE, MINUS, AND, OR,
+    DATE, HOUR, INTEGER, REAL, STRING
 } TokenType;
 
 class Token
@@ -33,12 +33,12 @@ class Token
 public:
 
    Token(TokenType /* tt */, const QString& /* tx */) {}
-	~Token() { }
+    ~Token() { }
 
 private:
-	Token() { } // don't use
-	TokenType type;
-	QString text;
+    Token() { } // don't use
+    TokenType type;
+    QString text;
 } ;
 
 #endif

@@ -27,55 +27,55 @@ QDict<ExpressionTreeFunction> ExpressionTree::functions;
 ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
 {
     functions.setAutoDelete(TRUE);
-	symbolTable.setAutoDelete(TRUE);
-	if (functions.isEmpty())
-	{
-		ExpressionTreeFunction* etf = new ExpressionTreeFunction
-			(KW("istask"), &ExpressionTreeFunction::isTask, 1);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("issubtaskof"), &ExpressionTreeFunction::isSubTaskOf, 1);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("containstask"), &ExpressionTreeFunction::containsTask, 1);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("ismilestone"), &ExpressionTreeFunction::isMilestone, 0);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("isresource"), &ExpressionTreeFunction::isResource, 1);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("isaccount"), &ExpressionTreeFunction::isAccount, 1);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("istaskstatus"), &ExpressionTreeFunction::isTaskStatus, 2);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("startsbefore"), &ExpressionTreeFunction::startsBefore, 2);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("startsafter"), &ExpressionTreeFunction::startsAfter, 2);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("endsbefore"), &ExpressionTreeFunction::endsBefore, 2);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("endsafter"), &ExpressionTreeFunction::endsAfter, 2);
-		functions.insert(etf->getName(), etf);
+    symbolTable.setAutoDelete(TRUE);
+    if (functions.isEmpty())
+    {
+        ExpressionTreeFunction* etf = new ExpressionTreeFunction
+            (KW("istask"), &ExpressionTreeFunction::isTask, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("issubtaskof"), &ExpressionTreeFunction::isSubTaskOf, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("containstask"), &ExpressionTreeFunction::containsTask, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("ismilestone"), &ExpressionTreeFunction::isMilestone, 0);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isresource"), &ExpressionTreeFunction::isResource, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isaccount"), &ExpressionTreeFunction::isAccount, 1);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("istaskstatus"), &ExpressionTreeFunction::isTaskStatus, 2);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("startsbefore"), &ExpressionTreeFunction::startsBefore, 2);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("startsafter"), &ExpressionTreeFunction::startsAfter, 2);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("endsbefore"), &ExpressionTreeFunction::endsBefore, 2);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("endsafter"), &ExpressionTreeFunction::endsAfter, 2);
+        functions.insert(etf->getName(), etf);
 
-		/* The following functions are for legacy support only. Their
-		 * use is discouraged since they will disappear some day.
-		 */
-		etf = new ExpressionTreeFunction
-			(KW("isplanallocated"), 
-			 &ExpressionTreeFunction::isPlanAllocated, 3);
-		functions.insert(etf->getName(), etf);
-		etf = new ExpressionTreeFunction
-			(KW("isactualallocated"),
-			 &ExpressionTreeFunction::isActualAllocated, 3);
-		functions.insert(etf->getName(), etf);
-	}
+        /* The following functions are for legacy support only. Their
+         * use is discouraged since they will disappear some day.
+         */
+        etf = new ExpressionTreeFunction
+            (KW("isplanallocated"), 
+             &ExpressionTreeFunction::isPlanAllocated, 3);
+        functions.insert(etf->getName(), etf);
+        etf = new ExpressionTreeFunction
+            (KW("isactualallocated"),
+             &ExpressionTreeFunction::isActualAllocated, 3);
+        functions.insert(etf->getName(), etf);
+    }
 }
 
 ExpressionTree::~ExpressionTree()
@@ -86,25 +86,25 @@ ExpressionTree::~ExpressionTree()
 long 
 ExpressionTree::evalAsInt(const CoreAttributes* c)
 {
-	ca = c;
-	return expression->evalAsInt(this);
+    ca = c;
+    return expression->evalAsInt(this);
 }
 
 long
 ExpressionTree::resolve(const QString& symbol) const
 {
-	return symbolTable[symbol] != 0 ? *(symbolTable[symbol]) : 0;
+    return symbolTable[symbol] != 0 ? *(symbolTable[symbol]) : 0;
 }
 
 bool
 ExpressionTree::isFunction(const QString& name)
 {
-	return functions[name];
+    return functions[name];
 }
 
 int
 ExpressionTree::arguments(const QString& name)
 {
-	return functions[name]->getArgumentCount();
+    return functions[name]->getArgumentCount();
 }
 

@@ -24,21 +24,21 @@
  */
 class ShiftSelection
 {
-	friend int ShiftSelectionList::compareItems(QCollection::Item i1, 
-												QCollection::Item i2);
+    friend int ShiftSelectionList::compareItems(QCollection::Item i1, 
+                                                QCollection::Item i2);
 
 public:
-	ShiftSelection(const Interval& p, Shift* s) : period(p), shift(s) { }
-	~ShiftSelection() { }
+    ShiftSelection(const Interval& p, Shift* s) : period(p), shift(s) { }
+    ~ShiftSelection() { }
 
-	const Interval& getPeriod() const { return period; }
-	Shift* getShift() const { return shift; }
+    const Interval& getPeriod() const { return period; }
+    Shift* getShift() const { return shift; }
 
-	bool isVacationDay(time_t day) const;
+    bool isVacationDay(time_t day) const;
 
 private:
-	Interval period;
-	Shift* shift;
+    Interval period;
+    Shift* shift;
 };
 
 #endif

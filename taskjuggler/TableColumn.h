@@ -24,11 +24,11 @@
 class TableColumn
 {
 public:
-	TableColumn(const QString& n) : name(n) { }
-	~TableColumn() { }
+    TableColumn(const QString& n) : name(n) { }
+    ~TableColumn() { }
 
 protected:
-	QString name;	
+    QString name;   
 } ;
 
 #endif

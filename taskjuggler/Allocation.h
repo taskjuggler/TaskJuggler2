@@ -18,42 +18,42 @@
 class Allocation
 {
 public:
-	Allocation(Resource* r);
+    Allocation(Resource* r);
 
-	~Allocation() { }
+    ~Allocation() { }
 
-	void setLoad(int l) { load = l; }
-	int getLoad() const { return load; }
+    void setLoad(int l) { load = l; }
+    int getLoad() const { return load; }
 
-	void setPersistent(bool p) { persistent = p; }
-	bool isPersistent() const { return persistent; }
+    void setPersistent(bool p) { persistent = p; }
+    bool isPersistent() const { return persistent; }
 
-	void setLockedResource(Resource* r) { lockedResource = r; }
-	Resource* getLockedResource() const { return lockedResource; }
+    void setLockedResource(Resource* r) { lockedResource = r; }
+    Resource* getLockedResource() const { return lockedResource; }
 
-	void addCandidate(Resource* r) { candidates.append(r); }
-	QPtrListIterator<Resource> getCandidatesIterator() const
-	{
-		return QPtrListIterator<Resource>(candidates);
-	}
-	QPtrList<Resource> getCandidates() const { return candidates; }
+    void addCandidate(Resource* r) { candidates.append(r); }
+    QPtrListIterator<Resource> getCandidatesIterator() const
+    {
+        return QPtrListIterator<Resource>(candidates);
+    }
+    QPtrList<Resource> getCandidates() const { return candidates; }
 
-	bool addShift(const Interval& i, Shift* s)
-	{
-		return shifts.insert(new ShiftSelection(i, s));
-	}
+    bool addShift(const Interval& i, Shift* s)
+    {
+        return shifts.insert(new ShiftSelection(i, s));
+    }
 
-	bool isOnShift(const Interval& i)
-	{
-		return shifts.isOnShift(i);
-	}
+    bool isOnShift(const Interval& i)
+    {
+        return shifts.isOnShift(i);
+    }
 
-	enum SelectionModeType { order, minLoaded, maxLoaded, random };
-	void setSelectionMode(SelectionModeType smt) { selectionMode = smt; }
-	bool setSelectionMode(const QString& smt);
-	SelectionModeType getSelectionMode() const { return selectionMode; }
+    enum SelectionModeType { order, minLoaded, maxLoaded, random };
+    void setSelectionMode(SelectionModeType smt) { selectionMode = smt; }
+    bool setSelectionMode(const QString& smt);
+    SelectionModeType getSelectionMode() const { return selectionMode; }
 
-	QDomElement xmlElement(QDomDocument& doc);
+    QDomElement xmlElement(QDomDocument& doc);
 
 private:
    /// Don't use this.

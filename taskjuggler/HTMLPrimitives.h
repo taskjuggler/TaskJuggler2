@@ -21,9 +21,9 @@
 class HTMLPrimitives
 {
 public:
-	HTMLPrimitives() { }
-	~HTMLPrimitives() { }
-	QString htmlFilter(const QString& s) const;
+    HTMLPrimitives() { }
+    ~HTMLPrimitives() { }
+    QString htmlFilter(const QString& s) const;
 } ;
 
 #endif

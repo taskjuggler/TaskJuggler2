@@ -23,11 +23,11 @@
 class BookingList : public QPtrList<Booking>
 {
 public:
-	BookingList() { }
-	virtual ~BookingList() { }
+    BookingList() { }
+    virtual ~BookingList() { }
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
 
 /**
@@ -37,9 +37,9 @@ protected:
 class BookingListIterator : public QPtrListIterator<Booking> 
 {
 public:
-	BookingListIterator(const BookingList& l) :
-		QPtrListIterator<Booking>(l) { }
-	virtual ~BookingListIterator() { }
+    BookingListIterator(const BookingList& l) :
+        QPtrListIterator<Booking>(l) { }
+    virtual ~BookingListIterator() { }
 } ;
 
 #endif

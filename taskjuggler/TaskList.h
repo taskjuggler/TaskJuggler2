@@ -25,22 +25,22 @@ class Task;
 class TaskList : public virtual CoreAttributesList
 {
 public:
-	TaskList()
-   	{
-	   	sorting[0] = CoreAttributesList::TreeMode;
-		sorting[1] = CoreAttributesList::StartUp;
-		sorting[2] = CoreAttributesList::EndUp;
-	}
-	virtual ~TaskList() { }
+    TaskList()
+    {
+        sorting[0] = CoreAttributesList::TreeMode;
+        sorting[1] = CoreAttributesList::StartUp;
+        sorting[2] = CoreAttributesList::EndUp;
+    }
+    virtual ~TaskList() { }
 
-	Task* getTask(const QString& id) const;
+    Task* getTask(const QString& id) const;
 
-	static bool isSupportedSortingCriteria(int sc);
-	
-	virtual int compareItemsLevel(Task* t1, Task* T2, int level);
+    static bool isSupportedSortingCriteria(int sc);
+    
+    virtual int compareItemsLevel(Task* t1, Task* T2, int level);
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -51,10 +51,10 @@ protected:
 class TaskListIterator : public virtual CoreAttributesListIterator 
 {
 public:
-	TaskListIterator(const CoreAttributesList& l) :
-		CoreAttributesListIterator(l) { }
-	virtual ~TaskListIterator() { }
-	Task* operator*() { return (Task*) get(); }
+    TaskListIterator(const CoreAttributesList& l) :
+        CoreAttributesListIterator(l) { }
+    virtual ~TaskListIterator() { }
+    Task* operator*() { return (Task*) get(); }
 } ;
 
 #endif

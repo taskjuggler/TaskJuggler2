@@ -139,8 +139,8 @@ int Kotrus::lockBookings( int pid, int lockID )
 
       if( lockID == 0 )
       {
-	 qFatal( "Unknown user <" + user + ">, please edit $HOME/.qt/taskjugglerrc");
-	 return( -1 );
+     qFatal( "Unknown user <" + user + ">, please edit $HOME/.qt/taskjugglerrc");
+     return( -1 );
       }
    }
    else if( lockID == -1 )
@@ -180,9 +180,9 @@ void Kotrus::unlockBookings( const QString& kotrusID )
 
 
 
-			   
+               
 BookingList Kotrus::loadBookings( const QString& kotrusID,
-				  const QStringList& skipProjectIDs, int user )
+                  const QStringList& skipProjectIDs, int user )
 {
    
    connect();
@@ -194,8 +194,8 @@ BookingList Kotrus::loadBookings( const QString& kotrusID,
 }
 
 BookingList Kotrus::loadBookingsXML( const QString& /*kotrusID*/,
-				     const QStringList& /*skipProjectIDs*/,
-				     int /*user*/ )
+                     const QStringList& /*skipProjectIDs*/,
+                     int /*user*/ )
 {
    BookingList blist;
    /* TODO */
@@ -204,8 +204,8 @@ BookingList Kotrus::loadBookingsXML( const QString& /*kotrusID*/,
 }
 
 BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
-				    const QStringList& skipProjectIDs,
-				    int user )
+                    const QStringList& skipProjectIDs,
+                    int user )
 {
    QSqlCursor cur( "ktBookings" );
    BookingList blist;
@@ -221,8 +221,8 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
    if( pid > 0 )
    {
       QString sql( "select kt.name, UNIX_TIMESTAMP(b.startTS), UNIX_TIMESTAMP(b.endTS),"
-		   "b.projectID, b.LockTime, b.lockedBy "
-		   "from kt, ktBookings b where b.ktNo=kt.ktNo AND b.userID =" + QString::number(pid));
+           "b.projectID, b.LockTime, b.lockedBy "
+           "from kt, ktBookings b where b.ktNo=kt.ktNo AND b.userID =" + QString::number(pid));
 
       int anz = skipProjectIDs.count();
       qDebug( "count in list: %d", anz );
@@ -230,26 +230,26 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
       if( anz > 0 )
       {
 
-	 QString allSkips;
-	 bool needOr = false;
-	 int validSkips = 0;
-	 
-	 for ( QStringList::ConstIterator it=skipProjectIDs.begin(); it != skipProjectIDs.end(); ++it )
-	 {
-	    QString skippy( *it );
-	    if( !skippy.isEmpty())
-	    {
-	       if( needOr ) {
-		  allSkips += " OR ";
-	       }
-	       allSkips += "b .projectID='" + skippy +"'";
-	       needOr = true;
-	       validSkips++;
-	    }
-	 }
+     QString allSkips;
+     bool needOr = false;
+     int validSkips = 0;
+     
+     for ( QStringList::ConstIterator it=skipProjectIDs.begin(); it != skipProjectIDs.end(); ++it )
+     {
+        QString skippy( *it );
+        if( !skippy.isEmpty())
+        {
+           if( needOr ) {
+          allSkips += " OR ";
+           }
+           allSkips += "b .projectID='" + skippy +"'";
+           needOr = true;
+           validSkips++;
+        }
+     }
 
-	 if( validSkips > 0 )
-	    sql += " AND NOT (" + allSkips + ")"; 
+     if( validSkips > 0 )
+        sql += " AND NOT (" + allSkips + ")"; 
       }
       sql += " ORDER BY b.startTS, b.projectID";
       
@@ -259,43 +259,43 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
       
       while( query.next() )
       {
-	 bool ok;
-	 bool generalOk = true;
-	 
-	 time_t start = query.value(1).toUInt(&ok);
-	 generalOk = generalOk && ok;
-	 time_t end = query.value(2).toUInt(&ok);
-	 generalOk = generalOk && ok;
+     bool ok;
+     bool generalOk = true;
+     
+     time_t start = query.value(1).toUInt(&ok);
+     generalOk = generalOk && ok;
+     time_t end = query.value(2).toUInt(&ok);
+     generalOk = generalOk && ok;
 
-	 const Interval interval( start, end );
+     const Interval interval( start, end );
 
-	 if( generalOk )
-	 {
-	    QString account = query.value(0).toString(); /* account => kt.name */
-	    QString project = query.value(3).toString(); /* project => projectID */
-	    QString ltime = query.value(4).toString();   /* LockTime */
-	    QString locker = query.value(5).toString();  /* email of locker */
+     if( generalOk )
+     {
+        QString account = query.value(0).toString(); /* account => kt.name */
+        QString project = query.value(3).toString(); /* project => projectID */
+        QString ltime = query.value(4).toString();   /* LockTime */
+        QString locker = query.value(5).toString();  /* email of locker */
 
-	    qDebug("Loaded booking for project " + project );
-	    
-	    Booking *nbook = new Booking( interval, (Task*) 0L);
-	    nbook->setLockTS( ltime );
-	    nbook->setLockerId( locker );
-	    
-	    blist.append( nbook );
-	 }
-	 else
-	 {
-	    qFatal( "ERR: Could not convert timestamps!" );
-	 }
+        qDebug("Loaded booking for project " + project );
+        
+        Booking *nbook = new Booking( interval, (Task*) 0L);
+        nbook->setLockTS( ltime );
+        nbook->setLockerId( locker );
+        
+        blist.append( nbook );
+     }
+     else
+     {
+        qFatal( "ERR: Could not convert timestamps!" );
+     }
       }
    }
    else
    {
       if( kotrusID.isEmpty() )
-	 qDebug( "WRN: Can not load bookings for empty user!"); 
+     qDebug( "WRN: Can not load bookings for empty user!"); 
       // else
-	 // qDebug( "WRN: Could not resolve user " + kotrusID );
+     // qDebug( "WRN: Could not resolve user " + kotrusID );
    }
    return( blist );
 }
@@ -305,9 +305,9 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
 
 
 int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
-			  const QString& projectID, 
-			  const BookingList& blist,
-			  int   lockedFor )
+              const QString& projectID, 
+              const BookingList& blist,
+              int   lockedFor )
 {
    if( mode == NoKotrus ) return( 0 );
    if( mode == XML ) return( saveBookingsXML( kotrusID, projectID, blist, lockedFor ));
@@ -336,8 +336,8 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
 
       if( foreignLocks > 0 )
       {
-	 qWarning( "Have foreign Locks on User " + kotrusID );
-	 return 0;
+     qWarning( "Have foreign Locks on User " + kotrusID );
+     return 0;
       }
    }
    else
@@ -377,9 +377,9 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
 }
 
 int Kotrus::saveBookingsXML( const QString& /*kotrusID*/,  /* the user id */
-			  const QString& /*projectID*/, 
-			  const BookingList& /*blist*/,
-			  int   /*lockedFor*/ )
+              const QString& /*projectID*/, 
+              const BookingList& /*blist*/,
+              int   /*lockedFor*/ )
 {
    /* TODO */
    return( 0 );
@@ -422,12 +422,12 @@ void Kotrus::connect()
       
       if ( kotrusDB->open() )
       {
-	 // Database successfully opened; we can now issue SQL commands.
-	 qDebug( "Opening database " + db + ": Success" );
+     // Database successfully opened; we can now issue SQL commands.
+     qDebug( "Opening database " + db + ": Success" );
       }
       else
       {
-	 qDebug( "Opening database " + db + ": Failed" );
+     qDebug( "Opening database " + db + ": Failed" );
 
       }
    }

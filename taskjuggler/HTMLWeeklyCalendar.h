@@ -21,17 +21,17 @@ class TaskList;
 class HTMLWeeklyCalendar : public ReportHtml
 {
 public:
-	HTMLWeeklyCalendar(Project* p, const QString& f, time_t s, time_t e,
-					   const QString& df, int dl);
-	virtual ~HTMLWeeklyCalendar() { }
+    HTMLWeeklyCalendar(Project* p, const QString& f, time_t s, time_t e,
+                       const QString& df, int dl);
+    virtual ~HTMLWeeklyCalendar() { }
 
-	bool generate();
+    bool generate();
 
 private:
-	HTMLWeeklyCalendar() { }	// don't call this directly
+    HTMLWeeklyCalendar() { }    // don't call this directly
 
-	bool generateCalendar(TaskList& filteredTaskList,
-						  ResourceList& filteredResourceList);
+    bool generateCalendar(TaskList& filteredTaskList,
+                          ResourceList& filteredResourceList);
 } ;
 
 #endif

@@ -16,10 +16,10 @@
 #include "Project.h"
 
 Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
-				 AccountType at) : CoreAttributes(p, i, n, pr), acctType(at)
+                 AccountType at) : CoreAttributes(p, i, n, pr), acctType(at)
 {
-	p->addAccount(this);
-	kotrusId = "";
+    p->addAccount(this);
+    kotrusId = "";
 }
 
 Account::~Account()
@@ -30,28 +30,28 @@ Account::~Account()
 double
 Account::getVolume(int sc, const Interval& period) const
 {
-	double volume = 0.0;
-	// Add plan credits for all tasks that should be credited to this account.
-	for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
-		if ((*tli)->getAccount() == this)
-			volume += (*tli)->getCredits(sc, period, acctType, 0, FALSE);
+    double volume = 0.0;
+    // Add plan credits for all tasks that should be credited to this account.
+    for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
+        if ((*tli)->getAccount() == this)
+            volume += (*tli)->getCredits(sc, period, acctType, 0, FALSE);
 
-	// Add all transactions that are registered within the period.
-	for (TransactionListIterator tli(transactions); *tli != 0; ++tli)
-		if (period.contains((*tli)->getDate()))
-			volume += (*tli)->getAmount();
+    // Add all transactions that are registered within the period.
+    for (TransactionListIterator tli(transactions); *tli != 0; ++tli)
+        if (period.contains((*tli)->getDate()))
+            volume += (*tli)->getAmount();
 
-	return volume;
+    return volume;
 }
 
 double
 Account::getBalance(int /*sc*/, time_t /* date */) const
 {
-	return 0.0;
+    return 0.0;
 }
 
 void 
 Account::credit(Transaction* t)
 {
-	transactions.inSort(t);
+    transactions.inSort(t);
 }

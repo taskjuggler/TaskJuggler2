@@ -15,26 +15,26 @@
 int
 VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)
 {
-	Interval* i1 = static_cast<Interval*>(it1);
-	Interval* i2 = static_cast<Interval*>(it2);
+    Interval* i1 = static_cast<Interval*>(it1);
+    Interval* i2 = static_cast<Interval*>(it2);
 
-	if (i1->getStart() == i2->getStart())
-	{
-		if (i1->getEnd() == i2->getEnd())
-			return 0;
-		else
-			return i2->getEnd() - i1->getEnd();
-	}
-	else
-		return i2->getStart() - i1->getStart();
+    if (i1->getStart() == i2->getStart())
+    {
+        if (i1->getEnd() == i2->getEnd())
+            return 0;
+        else
+            return i2->getEnd() - i1->getEnd();
+    }
+    else
+        return i2->getStart() - i1->getStart();
 }
 
 bool
 VacationList::isVacation(time_t date) const
 {
-	for (VacationListIterator vli(*this); *vli != 0; ++vli)
-		if ((*vli)->contains(date))
-			return TRUE;
+    for (VacationListIterator vli(*this); *vli != 0; ++vli)
+        if ((*vli)->contains(date))
+            return TRUE;
 
-	return FALSE;
+    return FALSE;
 }

@@ -78,22 +78,22 @@ time_t sameTimeLastYear(time_t t);
 
 inline bool isSameDay(time_t d1, time_t d2)
 {
-	return midnight(d1) == midnight(d2);
+    return midnight(d1) == midnight(d2);
 }
 
 inline bool isSameWeek(time_t d1, time_t d2, bool beginOnMonday)
 {
-	return beginOfWeek(d1, beginOnMonday) == beginOfWeek(d2, beginOnMonday);
+    return beginOfWeek(d1, beginOnMonday) == beginOfWeek(d2, beginOnMonday);
 }
 
 inline bool isSameMonth(time_t d1, time_t d2)
 {
-	return beginOfMonth(d1) == beginOfMonth(d2);
+    return beginOfMonth(d1) == beginOfMonth(d2);
 }
 
 inline bool isSameQuarter(time_t d1, time_t d2)
 {
-	return beginOfQuarter(d1) == beginOfQuarter(d2);
+    return beginOfQuarter(d1) == beginOfQuarter(d2);
 }
 
 int secondsOfDay(time_t d);

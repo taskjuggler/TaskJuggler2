@@ -15,8 +15,8 @@
 class ReportElement
 {
 public:
-	ReportElement() { }
-	~ReportElement() { }
+    ReportElement() { }
+    ~ReportElement() { }
 } ;
 
 #endif

@@ -15,47 +15,47 @@
 #include "Project.h"
 
 Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p) :
-	CoreAttributes(prj, i, n, p)
+    CoreAttributes(prj, i, n, p)
 {
-	prj->addShift(this);
+    prj->addShift(this);
 
-	if (p)
-	{
-		// Inherit start values from parent resource.
-		for (int i = 0; i < 7; i++)
-		{
-			workingHours[i] = new QPtrList<Interval>();
-			workingHours[i]->setAutoDelete(TRUE);
-			for (QPtrListIterator<Interval> ivi(*(p->workingHours[i]));
-				 *ivi != 0; ++ivi)
-				workingHours[i]->append(new Interval(**ivi));
-		}
-	}
-	else
-	{
-		// Inherit start values from project defaults.
-		for (int i = 0; i < 7; i++)
-		{
-			workingHours[i] = new QPtrList<Interval>();
-			workingHours[i]->setAutoDelete(TRUE);
-			for (QPtrListIterator<Interval>
-				 ivi(prj->getWorkingHoursIterator(i));
-				 *ivi != 0; ++ivi)
-				workingHours[i]->append(new Interval(**ivi));
-		}
-	}
+    if (p)
+    {
+        // Inherit start values from parent resource.
+        for (int i = 0; i < 7; i++)
+        {
+            workingHours[i] = new QPtrList<Interval>();
+            workingHours[i]->setAutoDelete(TRUE);
+            for (QPtrListIterator<Interval> ivi(*(p->workingHours[i]));
+                 *ivi != 0; ++ivi)
+                workingHours[i]->append(new Interval(**ivi));
+        }
+    }
+    else
+    {
+        // Inherit start values from project defaults.
+        for (int i = 0; i < 7; i++)
+        {
+            workingHours[i] = new QPtrList<Interval>();
+            workingHours[i]->setAutoDelete(TRUE);
+            for (QPtrListIterator<Interval>
+                 ivi(prj->getWorkingHoursIterator(i));
+                 *ivi != 0; ++ivi)
+                workingHours[i]->append(new Interval(**ivi));
+        }
+    }
 }
 
 Shift::~Shift()
 {
-	for (int i = 0; i < 7; i++)
-		delete workingHours[i];
+    for (int i = 0; i < 7; i++)
+        delete workingHours[i];
     project->deleteShift(this);
 }
 
 bool 
 Shift::isVacationDay(time_t day) const
 {
-	return workingHours[dayOfWeek(day, FALSE)]->isEmpty();
+    return workingHours[dayOfWeek(day, FALSE)]->isEmpty();
 }
 

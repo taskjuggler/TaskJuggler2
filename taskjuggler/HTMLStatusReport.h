@@ -22,22 +22,22 @@ class TaskResourceTable;
 class HTMLStatusReport : public ReportHtml
 {
 public:
-	HTMLStatusReport(Project* p, const QString& f, time_t s, time_t e,
-					   const QString& df, int dl);
-	virtual ~HTMLStatusReport();
+    HTMLStatusReport(Project* p, const QString& f, time_t s, time_t e,
+                       const QString& df, int dl);
+    virtual ~HTMLStatusReport();
 
-	void setTable(int tab, TaskResourceTable* tp);
-	TaskResourceTable* getTable(int tab) const;
+    void setTable(int tab, TaskResourceTable* tp);
+    TaskResourceTable* getTable(int tab) const;
 
-	bool generate();
+    bool generate();
 
 private:
-	HTMLStatusReport() { }	// don't call this directly
+    HTMLStatusReport() { }  // don't call this directly
 
-	bool generateTable(TaskList& filteredTaskList,
-					   ResourceList& filteredResourceList);
+    bool generateTable(TaskList& filteredTaskList,
+                       ResourceList& filteredResourceList);
 
-	TaskResourceTable* tables[4];
+    TaskResourceTable* tables[4];
 } ;
 
 #endif

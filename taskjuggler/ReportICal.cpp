@@ -42,9 +42,9 @@ void ReportICal::generate()
    filterTaskList(filteredList, 0);
    sortTaskList(filteredList);
  
-	for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
-		if ((*tli)->isContainer() && (*tli)->getParent() == 0)
-			addTask(*tli, &cal);	
+    for (TaskListIterator tli(filteredList); *tli != 0; ++tli)
+        if ((*tli)->isContainer() && (*tli)->getParent() == 0)
+            addTask(*tli, &cal);    
 
    KCal::ICalFormat *format = new KCal::ICalFormat( ); // &cal );
    cal.save( fileName, format );
@@ -66,20 +66,20 @@ KCal::Todo* ReportICal::addATask( Task *task, KCal::CalendarLocal *cal )
       /* Task is has subtasks */
       TaskList subs;
       task->getSubTaskList(subs);
-	  for (TaskListIterator tli(task->getSubListIterator()); *tli != 0; ++tli)
+      for (TaskListIterator tli(task->getSubListIterator()); *tli != 0; ++tli)
       {
-	 // qDebug("Turniing wheel" );
-	 
-	 if( *tli != task )
-	 {
-	    // qDebug("Adding subtask " + subTask->getName());
-	    KCal::Todo *subTodo = addATask( *tli, cal );
-	    subTodo->setRelatedTo( todo );
-	    // qDebug("Added subtask OK" );
+     // qDebug("Turniing wheel" );
+     
+     if( *tli != task )
+     {
+        // qDebug("Adding subtask " + subTask->getName());
+        KCal::Todo *subTodo = addATask( *tli, cal );
+        subTodo->setRelatedTo( todo );
+        // qDebug("Added subtask OK" );
 
-	    // todo->setRelatedTo( subTodo );
-	    // cal->addTodo( subTodo );
-	 }
+        // todo->setRelatedTo( subTodo );
+        // cal->addTodo( subTodo );
+     }
       }
    }
    return( todo );

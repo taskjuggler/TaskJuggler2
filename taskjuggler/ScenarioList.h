@@ -25,17 +25,17 @@ class Scenario;
 class ScenarioList : public CoreAttributesList
 {
 public:
-	ScenarioList();
-	virtual ~ScenarioList() { }
+    ScenarioList();
+    virtual ~ScenarioList() { }
 
-	Scenario* getScenario(const QString& id) const;
+    Scenario* getScenario(const QString& id) const;
 
-	static bool isSupportedSortingCriteria(int sc);
-	
-	virtual int compareItemsLevel(Scenario* r1, Scenario* r2, int level);
+    static bool isSupportedSortingCriteria(int sc);
+    
+    virtual int compareItemsLevel(Scenario* r1, Scenario* r2, int level);
 
 protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
@@ -45,10 +45,10 @@ protected:
 class ScenarioListIterator : public virtual CoreAttributesListIterator 
 {
 public:
-	ScenarioListIterator(const CoreAttributesList& l) :
-		CoreAttributesListIterator(l) { }
-	~ScenarioListIterator() { }
-	Scenario* operator*() { return (Scenario*) get(); }
+    ScenarioListIterator(const CoreAttributesList& l) :
+        CoreAttributesListIterator(l) { }
+    ~ScenarioListIterator() { }
+    Scenario* operator*() { return (Scenario*) get(); }
 } ;
 
 #endif

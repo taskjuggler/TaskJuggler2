@@ -18,20 +18,20 @@ class CoreAttributes;
 class CoreAttributesTreeIterator
 {
 public:
-	enum IterationMode { leavesOnly = 0, parentAfterLeaves };
-	
-	CoreAttributesTreeIterator(CoreAttributes* root, 
-							   IterationMode m = leavesOnly);
-	~CoreAttributesTreeIterator() { }
+    enum IterationMode { leavesOnly = 0, parentAfterLeaves };
+    
+    CoreAttributesTreeIterator(CoreAttributes* root, 
+                               IterationMode m = leavesOnly);
+    ~CoreAttributesTreeIterator() { }
 
-	CoreAttributes* operator*() { return current; }
-	CoreAttributes* operator++();
+    CoreAttributes* operator*() { return current; }
+    CoreAttributes* operator++();
 
 protected:
-	CoreAttributes* current;
+    CoreAttributes* current;
 private:
-	IterationMode iMode;
-	CoreAttributes* root;
+    IterationMode iMode;
+    CoreAttributes* root;
 } ;
 
 #endif

@@ -20,17 +20,17 @@ class QString;
 
 class Scenario : public CoreAttributes
 {
-	friend int ScenarioList::compareItemsLevel(Scenario* r1, Scenario* r2,
-											   int level);
+    friend int ScenarioList::compareItemsLevel(Scenario* r1, Scenario* r2,
+                                               int level);
 public:
-	Scenario(Project* p, const QString& i, const QString& n, Scenario* p);
-	virtual ~Scenario();
+    Scenario(Project* p, const QString& i, const QString& n, Scenario* p);
+    virtual ~Scenario();
 
-	virtual const char* getType() const { return "Scenario"; }
+    virtual const char* getType() const { return "Scenario"; }
 
-	Scenario* getParent() const { return (Scenario*) parent; }
+    Scenario* getParent() const { return (Scenario*) parent; }
 
-	ScenarioListIterator getSubListIterator() const;
+    ScenarioListIterator getSubListIterator() const;
 } ;
 
 #endif
