@@ -20,17 +20,17 @@
 
 <!ELEMENT start EMPTY>
 <!ATTLIST start
-  humanReadable CDATA #REQUIRED
+  humanReadable CDATA #IMPLIED
   time CDATA #REQUIRED>
 
 <!ELEMENT end EMPTY>
 <!ATTLIST end
-  humanReadable CDATA #REQUIRED
+  humanReadable CDATA #IMPLIED
   time CDATA #REQUIRED>
 
 <!ELEMENT now EMPTY>
 <!ATTLIST now
-  humanReadable CDATA #REQUIRED
+  humanReadable CDATA #IMPLIED
   time CDATA #REQUIRED>
 
 <!ELEMENT extend (text*, reference*)>
@@ -67,6 +67,10 @@
  
 <!ELEMENT flag (#PCDATA)>
  
+<!ELEMENT vacation (start, end)>
+<!ATTLIST vacation
+  name CDATA #IMPLIED>
+
 <!ELEMENT resourceList (resource*)>
 
 <!ELEMENT shiftSelection (start, end)>
@@ -80,8 +84,8 @@
   id CDATA #REQUIRED
   name CDATA #REQUIRED>
 
-<!ELEMENT resource (flags*, workingHours, shiftSelection*, resourceScenario, 
-                    resource*)>
+<!ELEMENT resource (flags*, workingHours, shiftSelection*, vacation*,
+                    resourceScenario, resource*)>
 <!ATTLIST resource
   id CDATA #REQUIRED
   name CDATA #REQUIRED>
@@ -106,11 +110,15 @@
   milestone (0|1) #REQUIRED
   asapScheduling (0|1) #REQUIRED
   priority CDATA #REQUIRED
+  responsible CDATA #IMPLIED
 >
 
 <!ELEMENT taskScenario (start?, end?)>
 <!ATTLIST taskScenario
-  id CDATA #REQUIRED
+  scenarioId CDATA #REQUIRED
+  effort CDATA #IMPLIED
+  duration CDATA #IMPLIED
+  length CDATA #IMPLIED
   scheduled (0|1) #REQUIRED>
 
 <!ELEMENT depends (#PCDATA)>

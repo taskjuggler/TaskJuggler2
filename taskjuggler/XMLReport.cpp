@@ -35,7 +35,8 @@
 
 static QMap<QString, int> TaskAttributeDict;
 typedef enum TADs {
-    TA_UNDEFINED = 0, TA_FLAGS, TA_NOTE, TA_PRIORITY, TA_MINSTART,
+    TA_UNDEFINED = 0, TA_FLAGS, TA_NOTE, TA_PRIORITY, 
+    TA_EFFORT, TA_LENGTH, TA_DURATION, TA_MINSTART,
     TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
     TA_DEPENDS };
 
@@ -45,6 +46,9 @@ XMLReport::XMLReport(Project* p, const QString& f,
 {
     if (TaskAttributeDict.empty())
     {
+        TaskAttributeDict[KW("effort")] = TA_EFFORT;
+        TaskAttributeDict[KW("length")] = TA_LENGTH;
+        TaskAttributeDict[KW("duration")] = TA_DURATION;
         TaskAttributeDict[KW("complete")] = TA_COMPLETE;
         TaskAttributeDict[KW("depends")] = TA_DEPENDS;
         TaskAttributeDict[KW("flags")] = TA_FLAGS;
@@ -79,7 +83,7 @@ XMLReport::generate()
     if (!open())
         return FALSE;
   
-    doc = new QDomDocument("taskjuggler SYSTEM \"taskjuggler2.dtd\"");
+    doc = new QDomDocument("taskjuggler SYSTEM \"taskjuggler.dtd\"");
     doc->appendChild(doc->createProcessingInstruction
                      ("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 
@@ -128,8 +132,8 @@ XMLReport::generateProjectProperty(QDomNode* n)
     genTextAttr(&el, "id", project->getId());
     genTextAttr(&el, "name", project->getName());
     genTextAttr(&el, "version", project->getVersion());
-    genTimeElement(&el, "start", getStart());
-    genTimeElement(&el, "end", getEnd() + 1);
+    genDateElement(&el, "start", getStart());
+    genDateElement(&el, "end", getEnd() + 1);
     if (!generateCustomAttributeDeclaration
         (&el, "task", project->getTaskAttributeDict()))
         return FALSE;
@@ -147,7 +151,7 @@ XMLReport::generateProjectProperty(QDomNode* n)
                      project->getYearlyWorkingDays());
     genLongAttr(&el, "timingResolution", project->getScheduleGranularity()); 
     if (timeStamp)
-        genTimeElement(&el, "now", project->getNow());
+        genDateElement(&el, "now", project->getNow());
     genTextAttr(&el, "timeFormat", project->getTimeFormat());
     genTextAttr(&el, "shortTimeFormat", project->getShortTimeFormat());
 
@@ -315,8 +319,8 @@ XMLReport::generateResource(QDomElement* parentEl,
         el.appendChild(sSel);
 
         genTextAttr(&sSel, "shiftId", (*sli)->getShift()->getId());
-        genTimeElement(&sSel, "start", (*sli)->getPeriod().getStart());
-        genTimeElement(&sSel, "end", (*sli)->getPeriod().getEnd() + 1);
+        genDateElement(&sSel, "start", (*sli)->getPeriod().getStart());
+        genDateElement(&sSel, "end", (*sli)->getPeriod().getEnd() + 1);
     }
 
     for (QValueListIterator<int> sit = scenarios.begin(); 
@@ -338,8 +342,8 @@ XMLReport::generateResource(QDomElement* parentEl,
                 QDomElement bEl = doc->createElement("booking");
                 scEl.appendChild(bEl);
                 
-                genTimeElement(&bEl, "start", (*bli)->getStart());
-                genTimeElement(&bEl, "end", (*bli)->getEnd() + 1);
+                genDateElement(&bEl, "start", (*bli)->getStart());
+                genDateElement(&bEl, "end", (*bli)->getEnd() + 1);
                 genTextAttr(&bEl, "taskId",  
                             stripTaskRoot((*bli)->getTask()->getId())); 
             }
@@ -433,6 +437,9 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
             case TA_PRIORITY:
                 genLongAttr(&el, "priority", task->getPriority());
                 break;
+            case TA_EFFORT:
+            case TA_LENGTH:
+            case TA_DURATION:
             case TA_MINSTART:
             case TA_MAXSTART:
             case TA_MINEND:
@@ -478,12 +485,12 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
     {
         QDomElement scEl = doc->createElement("taskScenario");
         el.appendChild(scEl);
-        genTextAttr(&scEl, "id", project->getScenarioId(*it));
+        genTextAttr(&scEl, "scenarioId", project->getScenarioId(*it));
 
         if (task->getStart(*it)) 
-            genTimeElement(&scEl, "start", task->getStart(*it));
+            genDateElement(&scEl, "start", task->getStart(*it));
         if (task->getEnd(*it) && !task->isMilestone())
-            genTimeElement(&scEl, "end", task->getEnd(*it) + 1);
+            genDateElement(&scEl, "end", task->getEnd(*it) + 1);
         genLongAttr(&scEl, "scheduled", task->getScheduled(*it) ? 1 : 0);
 
         for (QStringList::Iterator atIt = taskAttributes.begin(); 
@@ -493,24 +500,37 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                 continue;
             switch (TaskAttributeDict[*atIt])
             {
+                case TA_EFFORT:
+                    if (task->getEffort(*it) != 0)
+                        genDoubleAttr(&scEl, "effort", task->getEffort(*it));
+                    break;
+                case TA_LENGTH:
+                    if (task->getLength(*it) != 0)
+                        genDoubleAttr(&scEl, "length", task->getLength(*it));
+                    break;
+                case TA_DURATION:
+                    if (task->getDuration(*it) != 0)
+                        genDoubleAttr(&scEl, "duration",
+                                    task->getDuration(*it));
+                    break;
                 case TA_MINSTART:
                     if (task->getMinStart(*it) != 0)
-                        genTimeElement(&scEl, "minStart",
+                        genDateElement(&scEl, "minStart",
                                        task->getMinStart(*it)); 
                     break;
                 case TA_MAXSTART:
                     if (task->getMaxStart(*it) != 0)
-                        genTimeElement(&scEl, "maxStart",
+                        genDateElement(&scEl, "maxStart",
                                        task->getMaxStart(*it));
                     break;
                 case TA_MINEND:
                     if (task->getMinEnd(*it) != 0)
-                        genTimeElement(&scEl, "minEnd",
+                        genDateElement(&scEl, "minEnd",
                                        task->getMinEnd(*it));
                     break;
                 case TA_MAXEND:
                     if (task->getMaxEnd(*it) != 0)
-                        genTimeElement(&scEl, "maxEnd",
+                        genDateElement(&scEl, "maxEnd",
                                        task->getMaxEnd(*it));
                     break;
                 case TA_COMPLETE:
@@ -619,6 +639,23 @@ XMLReport::genTextElement(QDomElement* parentEl, const QString& name,
     el.appendChild(doc->createTextNode(text));
     parentEl->appendChild(el);
     
+}
+
+void
+XMLReport::genDateElement(QDomElement* parentEl, const QString& name,
+                          time_t val)
+{
+   QDomElement el = doc->createElement(name);
+   
+   QDomAttr at = doc->createAttribute("time");
+   at.setValue(QString::number(val));
+   el.setAttributeNode(at);
+   
+   at = doc->createAttribute("humanReadable");
+   at.setValue(time2user(val, timeFormat));
+   el.setAttributeNode(at);
+
+   parentEl->appendChild(el);
 }
 
 void

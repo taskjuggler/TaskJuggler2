@@ -66,6 +66,7 @@ private:
 
     void genTextElement(QDomElement* parentEl, const QString& name,
                         const QString& text);
+    void genDateElement(QDomElement* el, const QString& name, time_t val);
     void genTimeElement(QDomElement* el, const QString& name, time_t val);
 
     QDomDocument* doc;

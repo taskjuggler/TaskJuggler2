@@ -175,7 +175,7 @@ public:
     double getEffort(int sc) const { return scenarios[sc].effort; }
 
     void setDuration(int sc, double d) { scenarios[sc].duration = d; }
-    double getPlanDuration(int sc) const { return scenarios[sc].duration; }
+    double getDuration(int sc) const { return scenarios[sc].duration; }
 
     bool isStartOk(int sc) const
     {
