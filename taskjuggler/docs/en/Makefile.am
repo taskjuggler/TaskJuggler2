@@ -35,7 +35,7 @@ uninstall-local:
 	-rm -f $(docprefix)/taskjuggler/index-10.html
 	-rm -f $(docprefix)/taskjuggler/index-11.html
 
-index.sgml: index.sgml.in
+index.sgml: ../../../config.h index.sgml.in
 	sed 's,TJVER,@VERSION@,' index.sgml.in > index.sgml
 	sgml2html index.sgml
 
