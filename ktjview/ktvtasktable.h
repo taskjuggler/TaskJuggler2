@@ -41,7 +41,7 @@ protected slots:
    void slExpanded( QListViewItem* );
    void slCollapsed( QListViewItem* );
    void slSelectionChanged( QListViewItem* );
-
+   void slScrollTo( int, int );
 signals:
    void itemHeightChanged(int);
    void topOffsetChanged(int);
@@ -51,6 +51,8 @@ signals:
    void hideTaskByItem( KTVTaskTableItem* );
    void needUpdate();
    void moveMarker(int);
+   void heightChanged( int );
+   void scrolledBy( int, int );
    
 private:
    void addTask( KTVTaskTableItem *parent, Task *t );

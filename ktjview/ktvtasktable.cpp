@@ -36,6 +36,9 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
 
    setSorting( -1, false );
 
+   connect( this, SIGNAL( contentsMoving( int, int )),
+	    this, SLOT( slScrollTo( int, int )));
+   
    connect( this, SIGNAL( expanded( QListViewItem* )),
 	    this, SLOT( slExpanded( QListViewItem* )));
    
@@ -227,6 +230,20 @@ void KTVTaskTable::slExpanded( QListViewItem* it)
       emit showTaskByItem( static_cast<KTVTaskTableItem*>(child) );
       child = child->nextSibling();
    }
-
    emit needUpdate();
 }
+
+void KTVTaskTable::slScrollTo( int, int y )
+{
+   emit scrolledBy( 0, y - contentsY() );
+}
+
+
+#if 0
+void KTVTaskTable::viewportResizeEvent ( QResizeEvent * e )
+{
+   qDebug("Was resized to %dx%d", e->size().width(), e->size().height() );
+   emit( heightChanged( contentsHeight() )); // e->size().height()));
+   QListView::resizeEvent ( e );
+}
+#endif

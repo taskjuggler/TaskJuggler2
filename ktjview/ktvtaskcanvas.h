@@ -41,12 +41,15 @@ public slots:
    void slShowDebugMarker( int );
    
 protected:
-   
    time_t timeFromX( int x );
    int    timeToX( time_t );
    int    midnightToX( time_t );
    virtual int    topOffset() { return m_topOffset; }
    virtual void   drawDayHead( int x, QPainter &p );
+
+protected slots:
+   void   slHeightChanged( int );
+   
 private:
 
    void drawBackground( QPainter &painter, const QRect & clip );

@@ -29,8 +29,15 @@ void KTJGantt::showProject( Project *p )
     m_table = new KTVTaskTable( this, "TABLE");
     m_canvas = new KTVTaskCanvasView( this, m_table, "CANVAS");
 
+    /* synchron y scroll */
+    connect( m_table, SIGNAL(scrolledBy(int,int)),
+	     m_canvas, SLOT(scrollBy( int, int ) ));
+    
     connect( m_table, SIGNAL(itemHeightChanged(int)),
 	     m_canvas->canvas(), SLOT  (slSetRowHeight(int) ));
+
+    connect( m_table, SIGNAL(heightChanged(int)),
+	     m_canvas->canvas(), SLOT  (slHeightChanged(int) ));
 
     connect( m_table, SIGNAL(newTaskAdded(Task *, KTVTaskTableItem *)),
 	     m_canvas->canvas(), SLOT(slNewTask(Task *, KTVTaskTableItem *) ));

@@ -1,14 +1,16 @@
 #include <klocale.h>
-
+#include <qfont.h>
 #include "ktvcanvasitem.h"
 
 KTVCanvasItemBase::KTVCanvasItemBase()
-   :QObject()
+   :QObject(),
+    m_cText(0)
+   
 {
 }
 
 /*
- *
+ * Task
  */
 
 
@@ -17,6 +19,10 @@ KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
    cRect = new QCanvasRectangle(c);
    m_height = 12;
    cRect->setBrush( red );
+
+   /* Text */
+   m_cText = new QCanvasText(c);
+   m_cText->hide();
 }
 
 void KTVCanvasItemTask::setSize( int w, int h )
@@ -29,24 +35,32 @@ void KTVCanvasItemTask::move( double x, double y )
 {
    if( cRect )
       cRect->move(x,y);
+   if( m_cText )
+      m_cText->move( x+10, y );
 }
 
 void KTVCanvasItemTask::moveBy( int dx, int dy)
 {
    if( cRect )
       cRect->moveBy( dx, dy );
+   if( m_cText )
+      m_cText->move( dx, dy );
 }
 
 void KTVCanvasItemTask::hide()
 {
    if( cRect )
       cRect->hide();
+   if( m_cText )
+      m_cText->hide();
 }
 
 void KTVCanvasItemTask::show()
 {
    if( cRect )
       cRect->show();
+   if( m_cText )
+      m_cText->show();
 }
 
 bool KTVCanvasItemTask::contains( QCanvasItem* ci )
@@ -54,7 +68,16 @@ bool KTVCanvasItemTask::contains( QCanvasItem* ci )
    return( cRect == ci );
 }
 
-
+void KTVCanvasItemTask::setTask( Task *t )
+{
+   m_task = t;
+   if( m_cText )
+   {
+      m_cText->setText( t->getName());
+      m_cText->show();
+   }
+}
+   
 /* Milestone */
 KTVCanvasItemMilestone::KTVCanvasItemMilestone( QCanvas *c )
 {

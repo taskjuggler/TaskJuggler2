@@ -6,15 +6,18 @@
 #include <Project.h>
 #include <Task.h>
 
-
+class QFont;
 
 class KTVCanvasItemBase: public QObject
 {
 public:
    KTVCanvasItemBase( );
-   void  setTask( Task *t ){ m_task = t; }
+   virtual void  setTask( Task *t ){ m_task = t; }
    Task* getTask()         { return m_task; }
 
+   void setFont( const QFont& f)
+      { if( m_cText ) m_cText->setFont( f ); }
+   
    virtual void setSize( int, int ){}
    virtual void move( double, double ){}
    virtual void moveBy( int, int ){}
@@ -24,11 +27,14 @@ public:
    virtual int  height( ) const { return m_height; }
    
    static void slSetRowHeight( int _h ) { m_rowHeight = _h; }
-   
 protected:
-   Task      *m_task;
-   int        m_height;
-   static int m_rowHeight;
+   Task             *m_task;
+   int               m_height;
+   QCanvasText      *m_cText;
+
+private:
+   static 	int 	m_rowHeight;
+
 };
 
 /*
@@ -57,6 +63,8 @@ public:
    void hide();
    void show();
    bool contains( QCanvasItem* );
+
+   void setTask( Task* );
 private:
    QCanvasRectangle *cRect;
 };

@@ -20,7 +20,9 @@ KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const 
    m_canvas = new KTVTaskCanvas( parent, tab, name );
    setCanvas( m_canvas );
    
-   m_canvas->resize( 100, 100);
+   setVScrollBarMode( QScrollView::AlwaysOff );
+
+   m_canvas->resize( 400, 300);
 }
 
 

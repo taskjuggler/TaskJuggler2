@@ -46,7 +46,11 @@ KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *na
    m_start = 0;
    m_end = 0;
    setDoubleBuffering( false );
-   resize( 100, 100);
+   resize( 400, 300);
+   /* TODO: make visible again and synchronise with table in the same way the
+    * table synchronises with this one.
+    */
+   
 }
 
 
@@ -298,3 +302,13 @@ void KTVTaskCanvas::slShowDebugMarker( int y )
    
    qDebug( "Moving debug-mark to %d", y );
 }
+
+void KTVTaskCanvas::slHeightChanged( int newHeight )
+{
+   qDebug(" Setting new height %d", newHeight );
+
+   int w = width();
+   
+   resize( w, newHeight );
+}
+ 
