@@ -452,10 +452,11 @@ void ktjview2View::parseGantt( TaskListIterator it, int sc )
                 item->setStartTime( start );
                 item->setEndTime( end );
 
-                toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3\nAllocations: %4" )
+                toolTip = i18n( "Task: %1\nStart: %2\nEnd: %3\nCompletion: %4\nAllocations: %5" )
                           .arg( taskName )
                           .arg( KGlobal::locale()->formatDateTime( start ) )
                           .arg( KGlobal::locale()->formatDateTime( end ) )
+                          .arg( KGlobal::locale()->formatNumber( task->getCompletionDegree( sc ), 2 ) )
                           .arg( formatAllocations( task ) );
                 item->setTooltipText( toolTip );
                 item->setText( taskName  + " " +i18n( "(%1 d)" ).arg( duration ) );
