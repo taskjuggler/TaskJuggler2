@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-14 14:31+0200\n"
+"POT-Creation-Date: 2004-07-15 19:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -176,47 +176,39 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-#: ktjview2.cpp:157
-msgid "&Filter:"
-msgstr ""
-
-#: ktjview2.cpp:161
-msgid "Filter label"
+#: ktjview2.cpp:158
+msgid "Quick search"
 msgstr ""
 
 #: ktjview2.cpp:163
-msgid "Filter lineedit"
-msgstr ""
-
-#: ktjview2.cpp:168
 msgid "Query resource..."
 msgstr ""
 
-#: ktjview2.cpp:173
+#: ktjview2.cpp:168
 msgid "Info"
 msgstr ""
 
-#: ktjview2.cpp:177 ktjview2.cpp:314
+#: ktjview2.cpp:172 ktjview2.cpp:309
 msgid "Gantt"
 msgstr ""
 
-#: ktjview2.cpp:181 selectDialog.cpp:46
+#: ktjview2.cpp:176 selectDialog.cpp:46
 msgid "Resources"
 msgstr ""
 
-#: ktjview2.cpp:185 selectDialog.cpp:39
+#: ktjview2.cpp:180 selectDialog.cpp:39
 msgid "Tasks"
 msgstr ""
 
-#: ktjview2.cpp:266
+#: ktjview2.cpp:261
 msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr ""
 
-#: ktjview2.cpp:267
+#: ktjview2.cpp:262
 msgid "to open ..."
 msgstr ""
 
-#: ktjview2.cpp:392
+#: ktjview2.cpp:389
 msgid "&Filter for: %1"
 msgstr ""
 
@@ -369,73 +361,78 @@ msgstr ""
 msgid "Report date: %1<br>"
 msgstr ""
 
-#: ktjview2view.cpp:409 ktjview2view.cpp:425
+#: ktjview2view.cpp:407 ktjview2view.cpp:423
 msgid ""
 "Task group: %1\n"
 "Start: %2\n"
 "End: %3"
 msgstr ""
 
-#: ktjview2view.cpp:414 ktjview2view.cpp:430 ktjview2view.cpp:463
+#: ktjview2view.cpp:412 ktjview2view.cpp:428 ktjview2view.cpp:462
 msgid "(%1 d)"
 msgstr ""
 
-#: ktjview2view.cpp:445
+#: ktjview2view.cpp:443
 msgid ""
 "Milestone: %1\n"
 "Date: %2"
 msgstr ""
 
-#: ktjview2view.cpp:457
+#: ktjview2view.cpp:455
 msgid ""
 "Task: %1\n"
 "Start: %2\n"
 "End: %3\n"
-"Allocations: %4"
+"Completion: %4\n"
+"Allocations: %5"
 msgstr ""
 
-#: ktjview2view.cpp:660
+#: ktjview2view.cpp:653
 msgid "Not started"
 msgstr ""
 
-#: ktjview2view.cpp:663
+#: ktjview2view.cpp:656
 msgid "In progress (late)"
 msgstr ""
 
-#: ktjview2view.cpp:666
+#: ktjview2view.cpp:659
 msgid "In progress"
 msgstr ""
 
-#: ktjview2view.cpp:669
+#: ktjview2view.cpp:662
 msgid "On time"
 msgstr ""
 
-#: ktjview2view.cpp:672
+#: ktjview2view.cpp:665
 msgid "In progress (early)"
 msgstr ""
 
-#: ktjview2view.cpp:675
+#: ktjview2view.cpp:668
 msgid "Finished"
 msgstr ""
 
-#: ktjview2view.cpp:679
+#: ktjview2view.cpp:672
 msgid "Undefined"
 msgstr ""
 
-#: ktjview2view.cpp:739
+#: ktjview2view.cpp:732
 msgid "Task"
 msgstr ""
 
-#: ktjview2view.cpp:740
+#: ktjview2view.cpp:733
 msgid "Task Group"
 msgstr ""
 
-#: ktjview2view.cpp:741
+#: ktjview2view.cpp:734
 msgid "Milestone"
 msgstr ""
 
-#: ktjview2view.cpp:830
+#: ktjview2view.cpp:829
 msgid "Date Range"
+msgstr ""
+
+#: quickSearchWidget.cpp:46
+msgid "&Search:"
 msgstr ""
 
 #: rc.cpp:1 rc.cpp:22 rc.cpp:35
@@ -651,7 +648,7 @@ msgid "Gantt Toolbar"
 msgstr ""
 
 #: rc.cpp:74
-msgid "Filter Toolbar"
+msgid "Quick Search Toolbar"
 msgstr ""
 
 #: resourceQueryDialog.cpp:42
