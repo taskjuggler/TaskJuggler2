@@ -1,8 +1,8 @@
 - Implement 'mandatory' attribute for task allocations.
-- Add support for shifts to resource allocations.
 - Fix timezone handling.
 - Make project file reader unicode aware.
 - i18n messages.
 - Add more test cases to the test suite.
 - Explain more features with examples in the documentation.
+- read XML files just as *.tjp files
 
