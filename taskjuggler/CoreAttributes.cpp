@@ -21,6 +21,7 @@ CoreAttributes::CoreAttributes(Project* p, const QString& i,
                                CoreAttributes* parent_) :
         project(p), id(i), name(n), parent(parent_)
 {
+    customAttributes.setAutoDelete(TRUE);
     index = -1;
     sub = new CoreAttributesList();
     if (parent_)

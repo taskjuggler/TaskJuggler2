@@ -27,7 +27,7 @@ public:
         : task(t) { }
     SbBooking(const SbBooking* b) { task = b->task; }
     ~SbBooking() { }
-    
+
     Task* getTask() const { return task; }
 
 private:

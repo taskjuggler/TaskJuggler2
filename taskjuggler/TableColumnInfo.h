@@ -33,11 +33,7 @@ public:
         clearSum();
         clearMemory();
     }
-    ~TableColumnInfo()
-    {
-        delete [] sum;
-        delete [] memory;
-    }
+    ~TableColumnInfo();
 
     const QString& getName() const { return name; }
 

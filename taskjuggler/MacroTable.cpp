@@ -95,7 +95,7 @@ MacroTable::resolve(const QStringList* argList)
             return QString::null;
         }
         qWarning("%s", (*argList)[1].latin1());
-        return QString::null; 
+        return QString::null;
     }
     else if (name == "warning")
     {
@@ -159,7 +159,7 @@ MacroTable::resolve(const QStringList* argList)
         if (DEBUGMA(15))
             qDebug("After argument expansion: [%s]", result.latin1());
     }
-            
+
     if (result.isNull() && !emptyIsLegal)
         errorMessage
             (i18n("Usage of undefined macro '%1'").arg(name));
@@ -205,10 +205,10 @@ MacroTable::expandReportVariable(QString text, const QStringList* argList)
                      .arg(text.left(i)));
                 return QString::null;
             }
-            
+
             if (varName == "0")
                 res += (*argList)[0];
-            else 
+            else
             {
                 QStringList sl;
                 sl.append(varName);
@@ -229,7 +229,7 @@ MacroTable::evalExpression(const QString expr) const
     // This is a very simple expression evaluator for static expressions.
 
     QString arg1, arg2, op;
-   
+
     uint i = 0;
     QChar delim;
     // Skip spaces
@@ -299,7 +299,7 @@ MacroTable::evalExpression(const QString expr) const
     else if (op == ">")
     {
         return arg1.toLong() > arg2.toLong();
-    } 
+    }
     else if (op == "<=")
     {
         return arg1.toLong() <= arg2.toLong();
@@ -316,7 +316,7 @@ MacroTable::evalExpression(const QString expr) const
 
 UNEXPEND:
     errorMessage(i18n("Unexpected end of expression: %1").arg(expr.left(i)));
-    return FALSE; 
+    return FALSE;
 }
 
 void

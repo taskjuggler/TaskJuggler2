@@ -12,27 +12,33 @@
 
 #include "TableColumnInfo.h"
 
-void 
+TableColumnInfo::~TableColumnInfo()
+{
+    delete [] sum;
+    delete [] memory;
+}
+
+void
 TableColumnInfo::clearSum()
 {
     delete [] sum;
     sum = new QMap<QString, double>[maxScenarios];
 }
 
-void 
+void
 TableColumnInfo::clearMemory()
 {
     delete [] memory;
     memory = new QMap<QString, double>[maxScenarios];
 }
 
-void 
+void
 TableColumnInfo::addToSum(uint sc, const QString& key, double val)
 {
     sum[sc][key] += val;
 }
 
-void 
+void
 TableColumnInfo::addSumToMemory(bool subtract)
 {
     QMap<QString, double>::Iterator sit;
@@ -43,7 +49,7 @@ TableColumnInfo::addSumToMemory(bool subtract)
             if (subtract)
                 memory[sc][sit.key()] -= *sit;
             else
-                memory[sc][sit.key()] += *sit; 
+                memory[sc][sit.key()] += *sit;
         }
 }
 

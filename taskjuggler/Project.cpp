@@ -53,7 +53,8 @@ Project::Project()
     initUtility(20000);
 
     vacationList.setAutoDelete(TRUE);
-
+    taskAttributes.setAutoDelete(TRUE);
+    resourceAttributes.setAutoDelete(TRUE);
     reports.setAutoDelete(TRUE);
 
     allowRedefinitions = FALSE;

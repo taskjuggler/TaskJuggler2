@@ -30,12 +30,27 @@ public:
         Not, And, Or,
         Greater, Smaller, Equal, GreaterOrEqual, SmallerOrEqual };
 
-    Operation(long v) : opt(Const), value(v), opsCount(0) { }
-    Operation(opType ot, const QString& n) : opt(ot), name(n), opsCount(0) { }
-    Operation(opType ot, long v) : opt(ot), value(v), opsCount(0) { }
+    Operation(long v) : opt(Const), value(v), opsCount(0)
+    {
+        valid = FALSE;
+    }
+    Operation(opType ot, const QString& n) : opt(ot), name(n), opsCount(0)
+    {
+        valid = FALSE;
+    }
+    Operation(opType ot, long v) : opt(ot), value(v), opsCount(0)
+    {
+        valid = FALSE;
+    }
     Operation(opType ot, const QString& n, long v) :
-        opt(ot), value(v), name(n), opsCount(0) { }
-    Operation(const QString& v) : opt(Variable), name(v), opsCount(0) { }
+        opt(ot), value(v), name(n), opsCount(0)
+    {
+        valid = FALSE;
+    }
+    Operation(const QString& v) : opt(Variable), name(v), opsCount(0)
+    {
+        valid = FALSE;
+    }
     Operation(Operation* o1, opType o, Operation* o2 = 0)
         : opt(o)
     {
@@ -43,6 +58,7 @@ public:
         ops[0] = o1;
         ops[1] = o2;
         opsCount = 2;
+        valid = FALSE;
     }
     Operation(const QString& n, Operation* o1) : name(n)
     {
@@ -50,6 +66,7 @@ public:
         ops = new Operation*[1];
         ops[0] = o1;
         opsCount = 1;
+        valid = FALSE;
     }
     Operation(const QString& n, Operation* o1, Operation* o2) : name(n)
     {
@@ -58,9 +75,13 @@ public:
         ops[0] = o1;
         ops[1] = o2;
         opsCount = 2;
+        valid = FALSE;
     }
     Operation(const QString& n, Operation* args[], int c) :
-       opt(Function), name(n), ops(args), opsCount(c) { }
+       opt(Function), name(n), ops(args), opsCount(c)
+    {
+        valid = FALSE;
+    }
     Operation(const Operation& op);
     ~Operation();
 

@@ -133,7 +133,7 @@ FileInfo::getC(bool expandMacros)
                 // $$ escapes $, so discard 2nd $
                 ungetC(e);
             }
-            else    
+            else
                 ungetC(d);
         }
     }
@@ -471,7 +471,7 @@ FileInfo::readMacroCall()
     }
     else
         returnToken(tt, id);
-    
+
     if ((tt = nextToken(id)) != ID && tt != INTEGER)
     {
         errorMessage(i18n("Macro ID expected"));
@@ -487,6 +487,7 @@ FileInfo::readMacroCall()
         sl->append(token);
     if (tt != RBRACE)
     {
+        delete sl;
         errorMessage(i18n("'}' expected"));
         return FALSE;
     }
@@ -494,6 +495,7 @@ FileInfo::readMacroCall()
     // expand the macro
     pf->getMacros().setLocation(file, currLine);
     QString macro = pf->getMacros().resolve(sl);
+    delete sl;
 
     if (macro.isNull() && prefix.isEmpty())
         return FALSE;
@@ -578,10 +580,10 @@ FileInfo::errorMessage(const char* msg, ...)
     va_start(ap, msg);
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
-   
+
     if (macroStack.isEmpty())
         TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(lineBuf)),
-                          file, currLine); 
+                          file, currLine);
     else
     {
         QString stackDump;
@@ -607,7 +609,7 @@ FileInfo::errorMessageVA(const char* msg, va_list ap)
 {
     char buf[1024];
     vsnprintf(buf, 1024, msg, ap);
-    
+
     errorMessage("%s", buf);
 }
 

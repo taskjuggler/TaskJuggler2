@@ -21,6 +21,7 @@ Operation::Operation(const Operation& op)
     value = op.value;
     name = op.name;
     opsCount = op.opsCount;
+    valid = FALSE;
     if (opsCount > 0)
     {
         ops = new Operation*[opsCount];

@@ -362,13 +362,14 @@ Tokenizer::close()
 {
     if (!file.isEmpty())
     {
-        delete f;
         if (fh == stdin)
             return TRUE;
 
         if (fclose(fh) == EOF)
             return FALSE;
     }
+    else
+        delete f;
 
     return TRUE;
 }

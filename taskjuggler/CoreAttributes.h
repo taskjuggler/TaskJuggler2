@@ -40,7 +40,7 @@ public:
 
     const QString& getId() const { return id; }
     QString getFullId() const;
-    
+
     void setIndex(int idx) { index = idx; }
     int getIndex() const { return index; }
 
@@ -52,7 +52,7 @@ public:
 
     void setHierarchIndex(uint no);
     QString getHierarchIndex() const;
-    
+
     Project* getProject() const { return project; }
 
     void setName(const QString& n) { name = n; }
@@ -64,8 +64,8 @@ public:
     uint treeLevel() const;
 
     CoreAttributesList getSubList() const;
-    CoreAttributesListIterator getSubListIterator() const; 
-    
+    CoreAttributesListIterator getSubListIterator() const;
+
     bool hasSubs() const;
     void addFlag(QString flag) { flags.addFlag(flag); }
     void clearFlag(const QString& flag) { flags.clearFlag(flag); }
@@ -118,14 +118,14 @@ protected:
      * attribute list has it's own indices.
      */
     uint hierarchIndex;
-    
+
     /// A short description of the attribute.
     QString name;
 
     /// Pointer to parent. If there is no parent the pointer is 0.
     CoreAttributes* parent;
 
-    /// List of child attributes. 
+    /// List of child attributes.
     CoreAttributesList* sub;
 
     /// List of flags set for this attribute.
@@ -163,7 +163,7 @@ template<class TL, class T> int compareTreeItemsT(TL* list, T* c1, T* c2)
     }
 
     QPtrListIterator<T> cal1(cl1);
-    QPtrListIterator<T> cal2(cl2); 
+    QPtrListIterator<T> cal2(cl2);
     for ( ; *cal1 != 0 && *cal2 != 0; ++cal1, ++cal2)
     {
         int res;

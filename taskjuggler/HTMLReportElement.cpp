@@ -308,6 +308,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
             QStringList* sl = new QStringList();
             sl->append(text);
             cellText = mt.expandReportVariable(tci->tci->getCellText(), sl);
+            delete sl;
         }
     }
     if (!tci->tci->getCellURL().isEmpty() && (tci->tli->ca1 == 0 ||
@@ -316,6 +317,7 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         QStringList* sl = new QStringList();
         sl->append(text);
         QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(), sl);
+        delete sl;
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
     }
@@ -450,6 +452,7 @@ HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
         cellText = str;
     cellText = htmlFilter(cellText);
     QString cellURL = mt.expandReportVariable(tci->tci->getTitleURL(), sl);
+    delete sl;
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
@@ -469,6 +472,7 @@ HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
         cellText = str;
     cellText = htmlFilter(cellText);
     QString cellURL = mt.expandReportVariable(tci->tci->getSubTitleURL(), sl);
+    delete sl;
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";

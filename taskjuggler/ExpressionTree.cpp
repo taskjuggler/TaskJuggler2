@@ -83,7 +83,7 @@ ExpressionTree::errorMessage(const char* msg, ...)
     va_end(ap);
 
     TJMH.errorMessage(buf, defFileName, defLineNo);
-    delete buf;
+    delete [] buf;
     evalErrorFlag = TRUE;
 }
 

@@ -53,13 +53,13 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
 
     start = r->getStart();
     end = r->getEnd();
-    
+
     timeFormat = r->getTimeFormat();
     shortTimeFormat = r->getShortTimeFormat();
     numberFormat = r->getNumberFormat();
     currencyFormat = r->getCurrencyFormat();
 
-    TableColumnFormat* tcf = 
+    TableColumnFormat* tcf =
         new TableColumnFormat(KW("seqno"), this, i18n("Seq. No."));
     tcf->genTaskLine1 = &ReportElement::genCellSequenceNo;
     tcf->genResourceLine1 = &ReportElement::genCellSequenceNo;
@@ -71,87 +71,87 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellNo;
     tcf->genAccountLine1 = &ReportElement::genCellNo;
     tcf->hAlign = "right";
-    
+
     tcf = new TableColumnFormat(KW("hierarchno"), this, i18n("No."));
     tcf->genTaskLine1 = &ReportElement::genCellHierarchNo;
     tcf->genResourceLine1 = &ReportElement::genCellHierarchNo;
     tcf->genAccountLine1 = &ReportElement::genCellHierarchNo;
     tcf->hAlign = "left";
-    
+
     tcf = new TableColumnFormat(KW("index"), this, i18n("Index"));
     tcf->genTaskLine1 = &ReportElement::genCellIndex;
     tcf->genResourceLine1 = &ReportElement::genCellIndex;
     tcf->genAccountLine1 = &ReportElement::genCellIndex;
     tcf->hAlign = "right";
-    
+
     tcf = new TableColumnFormat(KW("hierarchindex"), this, i18n("No."));
     tcf->genTaskLine1 = &ReportElement::genCellHierarchIndex;
     tcf->genResourceLine1 = &ReportElement::genCellHierarchIndex;
     tcf->genAccountLine1 = &ReportElement::genCellHierarchIndex;
     tcf->hAlign = "left";
-    
+
     tcf = new TableColumnFormat(KW("id"), this, i18n("Id"));
     tcf->genTaskLine1 = &ReportElement::genCellId;
     tcf->genResourceLine1 = &ReportElement::genCellId;
     tcf->genAccountLine1 = &ReportElement::genCellId;
-    
+
     tcf = new TableColumnFormat(KW("name"), this, i18n("Name"));
     tcf->genTaskLine1 = &ReportElement::genCellName;
     tcf->genResourceLine1 = &ReportElement::genCellName;
     tcf->genAccountLine1 = &ReportElement::genCellName;
     tcf->genSummaryLine1 = &ReportElement::genCellName;
     tcf->noWrap = TRUE;
-    
+
     tcf = new TableColumnFormat(KW("start"), this, i18n("Start"));
     tcf->genTaskLine1 = &ReportElement::genCellStart;
     tcf->genTaskLine2 = &ReportElement::genCellStart;
-    
+
     tcf = new TableColumnFormat(KW("end"), this, i18n("End"));
     tcf->genTaskLine1 = &ReportElement::genCellEnd;
     tcf->genTaskLine2 = &ReportElement::genCellEnd;
-    
+
     tcf = new TableColumnFormat(KW("minstart"), this, i18n("Min. Start"));
     tcf->genTaskLine1 = &ReportElement::genCellMinStart;
     tcf->genTaskLine2 = &ReportElement::genCellMinStart;
-    
+
     tcf = new TableColumnFormat(KW("maxstart"), this, i18n("Max. Start"));
     tcf->genTaskLine1 = &ReportElement::genCellMaxStart;
     tcf->genTaskLine2 = &ReportElement::genCellMaxStart;
-    
+
     tcf = new TableColumnFormat(KW("minend"), this, i18n("Min. End"));
     tcf->genTaskLine1 = &ReportElement::genCellMinEnd;
     tcf->genTaskLine2 = &ReportElement::genCellMinEnd;
-    
+
     tcf = new TableColumnFormat(KW("maxend"), this, i18n("Max. End"));
     tcf->genTaskLine1 = &ReportElement::genCellMaxEnd;
     tcf->genTaskLine2 = &ReportElement::genCellMaxEnd;
-    
-    tcf = new TableColumnFormat(KW("startbufferend"), this, 
+
+    tcf = new TableColumnFormat(KW("startbufferend"), this,
                                 i18n("Start Buf. End"));
     tcf->genTaskLine1 = &ReportElement::genCellStartBufferEnd;
     tcf->genTaskLine2 = &ReportElement::genCellStartBufferEnd;
-    
-    tcf = new TableColumnFormat(KW("endbufferstart"), this, 
+
+    tcf = new TableColumnFormat(KW("endbufferstart"), this,
                                 i18n("End Buf. Start"));
     tcf->genTaskLine1 = &ReportElement::genCellEndBufferStart;
     tcf->genTaskLine2 = &ReportElement::genCellEndBufferStart;
-    
+
     tcf = new TableColumnFormat(KW("startbuffer"), this, i18n("Start Buf."));
     tcf->genTaskLine1 = &ReportElement::genCellStartBuffer;
     tcf->genTaskLine2 = &ReportElement::genCellStartBuffer;
     tcf->hAlign = "right";
-    
+
     tcf = new TableColumnFormat(KW("endbuffer"), this, i18n("End Buf."));
     tcf->genTaskLine1 = &ReportElement::genCellEndBuffer;
     tcf->genTaskLine2 = &ReportElement::genCellEndBuffer;
     tcf->hAlign = "right";
-    
+
     tcf = new TableColumnFormat(KW("duration"), this, i18n("Duration"));
     tcf->genTaskLine1 = &ReportElement::genCellDuration;
     tcf->genTaskLine2 = &ReportElement::genCellDuration;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("effort"), this, i18n("Effort"));
     tcf->genTaskLine1 = &ReportElement::genCellEffort;
     tcf->genTaskLine2 = &ReportElement::genCellEffort;
@@ -159,93 +159,93 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellEffort;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("criticalness"), this, i18n("Criticalness"));
     tcf->genTaskLine1 = &ReportElement::genCellCriticalness;
     tcf->genTaskLine2 = &ReportElement::genCellCriticalness;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("pathcriticalness"), this,
                                 i18n("Path Criticalness"));
     tcf->genTaskLine1 = &ReportElement::genCellPathCriticalness;
     tcf->genTaskLine2 = &ReportElement::genCellPathCriticalness;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("projectid"), this, i18n("Project ID"));
     tcf->genTaskLine1 = &ReportElement::genCellProjectId;
-    
+
     tcf = new TableColumnFormat(KW("projectids"), this, i18n("Project IDs"));
     tcf->genResourceLine1 = &ReportElement::genCellProjectIDs;
-    
+
     tcf = new TableColumnFormat(KW("resources"), this, i18n("Resources"));
     tcf->genTaskLine1 = &ReportElement::genCellResources;
     tcf->genTaskLine2 = &ReportElement::genCellResources;
     tcf->fontFactor = 80;
-    
+
     tcf = new TableColumnFormat(KW("responsible"), this, i18n("Responsible"));
     tcf->genTaskLine1 = &ReportElement::genCellResponsible;
-    
-    tcf = new TableColumnFormat(KW("responsibilities"), this, 
+
+    tcf = new TableColumnFormat(KW("responsibilities"), this,
                                 i18n("Responsibilities"));
     tcf->genResourceLine1 = &ReportElement::genCellResponsibilities;
     tcf->fontFactor = 80;
-    
+
     tcf = new TableColumnFormat(KW("depends"), this, i18n("Dependencies"));
     tcf->genTaskLine1 = &ReportElement::genCellDepends;
     tcf->fontFactor = 80;
-    
+
     tcf = new TableColumnFormat(KW("follows"), this, i18n("Followers"));
     tcf->genTaskLine1 = &ReportElement::genCellFollows;
     tcf->fontFactor = 80;
-    
+
     tcf = new TableColumnFormat(KW("schedule"), this, i18n("Schedule"));
     tcf->genResourceLine1 = &ReportElement::genCellSchedule;
     tcf->genResourceLine2 = &ReportElement::genCellSchedule;
-    
+
     tcf = new TableColumnFormat(KW("mineffort"), this, i18n("Min. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMinEffort;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("maxeffort"), this, i18n("Max. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMaxEffort;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("flags"), this, i18n("Flags"));
     tcf->genTaskLine1 = &ReportElement::genCellFlags;
     tcf->genResourceLine1 = &ReportElement::genCellFlags;
-    
+
     tcf = new TableColumnFormat(KW("completed"), this, i18n("Completed"));
     tcf->genTaskLine1 = &ReportElement::genCellCompleted;
     tcf->genTaskLine2 = &ReportElement::genCellCompleted;
     tcf->hAlign = "right";
-    
+
     tcf = new TableColumnFormat(KW("status"), this, i18n("Status"));
     tcf->genTaskLine1 = &ReportElement::genCellStatus;
     tcf->genTaskLine2 = &ReportElement::genCellStatus;
     tcf->hAlign = "center";
-    
+
     tcf = new TableColumnFormat(KW("kotrusid"), this, i18n("Kotrus ID"));
     tcf->genResourceLine1 = &ReportElement::genCellKotrusId;
-    
+
     tcf = new TableColumnFormat(KW("note"), this, i18n("Note"));
     tcf->genTaskLine1 = &ReportElement::genCellText;
     tcf->fontFactor = 80;
-    
+
     tcf = new TableColumnFormat(KW("statusnote"), this, i18n("Status Note"));
     tcf->genTaskLine1 = &ReportElement::genCellStatusNote;
     tcf->fontFactor = 80;
-    
+
     tcf = new TableColumnFormat(KW("priority"), this, i18n("Priority"));
     tcf->genTaskLine1 = &ReportElement::genCellPriority;
     tcf->hAlign = "right";
-    
+
     tcf = new TableColumnFormat(KW("reference"), this, i18n("Reference"));
     tcf->genTaskLine1 = &ReportElement::genCellReference;
-    
+
     tcf = new TableColumnFormat(KW("scenario"), this, i18n("Scenario"));
     tcf->genTaskLine1 = &ReportElement::genCellScenario;
     tcf->genTaskLine2 = &ReportElement::genCellScenario;
@@ -256,13 +256,13 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellScenario;
     tcf->genSummaryLine2 = &ReportElement::genCellScenario;
     tcf->hAlign = "left";
-    
+
     tcf = new TableColumnFormat(KW("rate"), this, i18n("Rate"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genResourceLine1 = &ReportElement::genCellRate;
     tcf->hAlign = "right";
     tcf->realFormat = currencyFormat;
-    
+
     tcf = new TableColumnFormat(KW("cost"), this, i18n("Cost"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genTaskLine1 = &ReportElement::genCellCost;
@@ -271,7 +271,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellCost;
     tcf->hAlign = "right";
     tcf->realFormat = currencyFormat;
-    
+
     tcf = new TableColumnFormat(KW("revenue"), this, i18n("Revenue"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genTaskLine1 = &ReportElement::genCellRevenue;
@@ -280,7 +280,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellRevenue;
     tcf->hAlign = "right";
     tcf->realFormat = currencyFormat;
-    
+
     tcf = new TableColumnFormat(KW("profit"), this, i18n("Profit"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genTaskLine1 = &ReportElement::genCellProfit;
@@ -289,7 +289,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellProfit;
     tcf->hAlign = "right";
     tcf->realFormat = currencyFormat;
-   
+
     tcf = new TableColumnFormat(KW("total"), this, i18n("Total"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genAccountLine1 = &ReportElement::genCellTotal;
@@ -312,7 +312,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("weekly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadWeekly1;
     tcf->genHeadLine2 = &ReportElement::genHeadWeekly2;
@@ -326,7 +326,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-    
+
     tcf = new TableColumnFormat(KW("monthly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadMonthly1;
     tcf->genHeadLine2 = &ReportElement::genHeadMonthly2;
@@ -340,7 +340,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-   
+
     tcf = new TableColumnFormat(KW("quarterly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadQuarterly1;
     tcf->genHeadLine2 = &ReportElement::genHeadQuarterly2;
@@ -354,7 +354,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
     tcf->realFormat = numberFormat;
-   
+
     tcf = new TableColumnFormat(KW("yearly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadYear;
     tcf->genTaskLine1 = &ReportElement::genCellYearlyTask;
@@ -372,7 +372,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     addCustomAttributeColumns(r->getProject()->getResourceAttributeDict());
     addCustomAttributeColumns(r->getProject()->getAccountAttributeDict());
 
-    // All reports default to just showing the first scenario.   
+    // All reports default to just showing the first scenario.
     scenarios.append(0);
 
     barLabels = BLT_LOAD;
@@ -386,9 +386,9 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
         accountSortCriteria[i] = r->getAccountSorting(i);
     }
 
-    hideTask = r->getHideTask() ? 
+    hideTask = r->getHideTask() ?
         new ExpressionTree(*r->getHideTask()) : 0;
-    rollUpTask = r->getRollUpTask() ? 
+    rollUpTask = r->getRollUpTask() ?
         new ExpressionTree(*r->getRollUpTask()) : 0;
     hideResource = r->getHideResource() ?
         new ExpressionTree(*r->getHideResource()) : 0;
@@ -413,19 +413,19 @@ ReportElement::~ReportElement()
     delete hideAccount;
     delete rollUpAccount;
 }
-    
-QTextStream& 
+
+QTextStream&
 ReportElement::s() const
 {
-    return report->stream(); 
+    return report->stream();
 }
 
 bool
 ReportElement::isSupportedColumn(const QString& id) const
 {
-    return columnFormat[id] || 
+    return columnFormat[id] ||
         report->getProject()->getTaskAttribute(id) ||
-        report->getProject()->getResourceAttribute(id) || 
+        report->getProject()->getResourceAttribute(id) ||
         report->getProject()->getAccountAttribute(id);
 }
 
@@ -443,23 +443,23 @@ ReportElement::getSupportedColumnList() const
 
 void
 ReportElement::addColumn(const TableColumnInfo* c)
-{ 
+{
     columns.append(c);
 }
 
-const TableColumnInfo* 
-ReportElement::columnsAt(uint idx) 
-{ 
+const TableColumnInfo*
+ReportElement::columnsAt(uint idx)
+{
     return columns.at(idx);
 }
 
 void
 ReportElement::clearColumns()
-{ 
+{
     columns.clear();
 }
 
-bool 
+bool
 ReportElement::setTaskSorting(int sc, int level)
 {
     if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
@@ -474,7 +474,7 @@ ReportElement::setTaskSorting(int sc, int level)
     return TRUE;
 }
 
-bool 
+bool
 ReportElement::setResourceSorting(int sc, int level)
 {
     if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
@@ -489,7 +489,7 @@ ReportElement::setResourceSorting(int sc, int level)
     return TRUE;
 }
 
-bool 
+bool
 ReportElement::setAccountSorting(int sc, int level)
 {
     if (level >= 0 && level < CoreAttributesList::maxSortingLevel)
@@ -517,7 +517,7 @@ ReportElement::isHidden(const CoreAttributes* c, ExpressionTree* et) const
     {
         return TRUE;
     }
-    
+
     // If we don't have an ExpressionTree the object is always visible.
     if (!et)
         return FALSE;
@@ -534,7 +534,7 @@ ReportElement::isHidden(const CoreAttributes* c, ExpressionTree* et) const
 bool
 ReportElement::isRolledUp(const CoreAttributes* c, ExpressionTree* et) const
 {
-    /* Determine wheter a CoreAttributes object should hide all it's 
+    /* Determine wheter a CoreAttributes object should hide all it's
      * descendants. */
 
     /* If we don't have an ExpressionTree the object's descendants are always
@@ -561,14 +561,14 @@ void
 ReportElement::setRollUpTask(ExpressionTree* et)
 {
     delete rollUpTask;
-    rollUpTask = et; 
+    rollUpTask = et;
 }
 
 void
 ReportElement::setHideResource(ExpressionTree* et)
 {
     delete hideResource;
-    hideResource = et; 
+    hideResource = et;
 }
 
 void
@@ -619,7 +619,7 @@ ReportElement::setLoadUnit(const QString& u)
 
 bool
 ReportElement::filterTaskList(TaskList& filteredList, const Resource* r,
-                              ExpressionTree* hideExp, 
+                              ExpressionTree* hideExp,
                               ExpressionTree* rollUpExp)
 const
 {
@@ -729,9 +729,9 @@ const
                     taskLoadedInAnyScenario = TRUE;
                     break;
                 }
-        } 
+        }
         if (!isHidden(*rli, hideExp) &&
-            (t == 0 || taskLoadedInAnyScenario)) 
+            (t == 0 || taskLoadedInAnyScenario))
         {
             filteredList.append(*rli);
         }
@@ -771,7 +771,7 @@ const
         if (rollUpExp && rollUpExp->getErrorFlag())
             return FALSE;
     }
-    
+
     return TRUE;
 }
 
@@ -792,7 +792,7 @@ const
      * hidden. */
     filteredList.clear();
     for (AccountListIterator ali(report->getProject()->
-                                 getAccountListIterator()); 
+                                 getAccountListIterator());
          *ali != 0; ++ali)
     {
         if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
@@ -820,7 +820,7 @@ const
     /* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */
     for (AccountListIterator ali(report->getProject()->
-                                 getAccountListIterator()); 
+                                 getAccountListIterator());
          *ali != 0; ++ali)
     {
         if (isRolledUp(*ali, rollUpExp))
@@ -843,7 +843,7 @@ ReportElement::sortAccountList(AccountList& filteredList)
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(accountSortCriteria[i], i);
     filteredList.sort();
-    
+
     maxDepthAccountList = filteredList.maxDepth();
 }
 
@@ -854,7 +854,7 @@ ReportElement::scaledLoad(double t, TableCellInfo* tci) const
     QValueList<double> factors;
     const char* shortUnit[] = { "d", "min", "h", "w", "m", "y" };
     const char* unit[] = { "day", "minute", "hour", "week", "month", "year" };
-    const char* units[] = { "days", "minutes", "hours", "weeks", "months", 
+    const char* units[] = { "days", "minutes", "hours", "weeks", "months",
         "years"};
     double max[] = { 0, 60, 48, 8, 24, 0 };
 
@@ -866,7 +866,7 @@ ReportElement::scaledLoad(double t, TableCellInfo* tci) const
     factors.append(1.0 / report->getProject()->getYearlyWorkingDays());
 
     QString str;
-    
+
     if (loadUnit == shortAuto || loadUnit == longAuto)
     {
         for (QValueList<double>::Iterator it = factors.begin();
@@ -941,7 +941,7 @@ ReportElement::errorMessage(const char* msg, ... )
     char buf[1024];
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
-        
+
     TJMH.errorMessage(buf, defFileName, defFileLine);
 }
 
@@ -988,9 +988,9 @@ ReportElement::setMacros(TableLineInfo* tli)
 
     /* In some cases it might be useful to have not only the ID of the current
      * property but also the assigned property (e. g. in task reports with
-     * resources, we want the task ID while processing the resource line. */ 
+     * resources, we want the task ID while processing the resource line. */
     if (tli->task)
-        mt.addMacro(new Macro(KW("taskid"), tli->task->getId(), 
+        mt.addMacro(new Macro(KW("taskid"), tli->task->getId(),
                               defFileName, defFileLine));
     if (tli->resource)
         mt.addMacro(new Macro(KW("resourceid"), tli->resource->getId(),
@@ -998,27 +998,27 @@ ReportElement::setMacros(TableLineInfo* tli)
     if (tli->account)
         mt.addMacro(new Macro(KW("accountid"), tli->account->getId(),
                               defFileName, defFileLine));
-    
+
     // Set macros for built-in attributes.
-    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() : QString(), 
+    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() : QString(),
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("no"), tli->ca1 ? 
+    mt.addMacro(new Macro(KW("no"), tli->ca1 ?
                           QString("%1").arg(tli->ca1->getSequenceNo()) :
                           QString(),
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("index"), tli->ca1 ? 
+    mt.addMacro(new Macro(KW("index"), tli->ca1 ?
                           QString("%1").arg(tli->ca1->getIndex()) :
                           QString(),
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ? 
-                          tli->ca1->getHierarchNo() : QString(), 
+    mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ?
+                          tli->ca1->getHierarchNo() : QString(),
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("hierarchindex"), 
-                          tli->ca1 ? tli->ca1->getHierarchIndex() : QString(), 
+    mt.addMacro(new Macro(KW("hierarchindex"),
+                          tli->ca1 ? tli->ca1->getHierarchIndex() : QString(),
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : QString(), 
+    mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : QString(),
                           defFileName, defFileLine));
-    
+
     QPtrList< QDict<const CustomAttributeDefinition> > dictList;
     dictList.setAutoDelete(TRUE);
     dictList.append(new QDict<const CustomAttributeDefinition>
@@ -1028,7 +1028,7 @@ ReportElement::setMacros(TableLineInfo* tli)
     dictList.append(new QDict<const CustomAttributeDefinition>
                     (report->getProject()->getAccountAttributeDict()));
 
-    for (QPtrListIterator< QDict<const CustomAttributeDefinition> > 
+    for (QPtrListIterator< QDict<const CustomAttributeDefinition> >
          dli(dictList); *dli; ++dli)
     {
         QDictIterator<const CustomAttributeDefinition> cadi(**dli);
@@ -1052,7 +1052,7 @@ ReportElement::setMacros(TableLineInfo* tli)
                         break;
                 }
             }
-            mt.addMacro(new Macro(macroName, macroValue, defFileName, 
+            mt.addMacro(new Macro(macroName, macroValue, defFileName,
                                   defFileLine));
         }
     }
