@@ -24,6 +24,7 @@
 #include <qwidget.h>
 
 class QLabel;
+class QComboBox;
 class KListView;
 class KListViewSearchLine;
 class KToolBarButton;
@@ -55,9 +56,21 @@ public slots:
      */
     void reset();
 
+private slots:
+    /**
+     * Tell the search line to search in column @p index only
+     */
+    void setSearchColumn( int index );
+
 private:
+    /**
+     * Fills the column selection combo box
+     */
+    void fillColumnCombo();
+
     KToolBarButton * m_clearButton;
-    QLabel * m_searchLabel;
+    QLabel * m_searchLabel, * m_inLabel;
+    QComboBox * m_colCombo;
     KListViewSearchLine * m_searchLine;
 };
 

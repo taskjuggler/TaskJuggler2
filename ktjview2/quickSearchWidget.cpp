@@ -24,6 +24,9 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qapplication.h>
+#include <qtooltip.h>
+#include <qvaluelist.h>
+#include <qcombobox.h>
 
 #include <klistview.h>
 #include <kiconloader.h>
@@ -43,11 +46,19 @@ QuickSearchWidget::QuickSearchWidget( QWidget * parent, const char * name )
     connect( m_clearButton, SIGNAL( clicked() ), this, SLOT( reset() ) );
     lay->add( m_clearButton );
 
-    m_searchLabel = new QLabel( i18n( "&Search:" ), this, "kde toolbar widget" );
+    m_searchLabel = new QLabel( i18n( "&Search for:" ), this, "kde toolbar widget" );
+    QToolTip::add( m_searchLabel, i18n( "Clear the search" ) );
     lay->add( m_searchLabel );
 
     m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
     lay->addWidget( m_searchLine, 1 ); // adds the widget stretched
+
+    m_inLabel = new QLabel( i18n( "in:" ), this, "kde toolbar widget" );
+    lay->add( m_inLabel );
+
+    m_colCombo = new QComboBox( this, "column_combo" );
+    connect( m_colCombo, SIGNAL( activated( int ) ), this, SLOT( setSearchColumn( int ) ) );
+    lay->add( m_colCombo );
 
     m_searchLabel->setBuddy( m_searchLine );
 }
@@ -55,11 +66,34 @@ QuickSearchWidget::QuickSearchWidget( QWidget * parent, const char * name )
 void QuickSearchWidget::setListView( KListView * view )
 {
     m_searchLine->setListView( view );
+    fillColumnCombo();
+    setSearchColumn( m_colCombo->currentItem() );
 }
 
 void QuickSearchWidget::reset()
 {
     m_searchLine->clear();
+}
+
+void QuickSearchWidget::fillColumnCombo()
+{
+    if ( !m_searchLine->listView() )
+        return;
+
+    m_colCombo->clear();
+
+    for ( int i = 0; i < m_searchLine->listView()->columns(); i++ )
+    {
+        m_colCombo->insertItem( m_searchLine->listView()->columnText( i ) );
+    }
+}
+
+void QuickSearchWidget::setSearchColumn( int index )
+{
+    QValueList<int> list;
+    list.append( index );
+    m_searchLine->setSearchColumns( list );
+    m_searchLine->updateSearch();
 }
 
 #include "quickSearchWidget.moc"
