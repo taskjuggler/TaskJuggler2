@@ -238,6 +238,7 @@ private:
     KRecentFilesAction *m_recentAction;
     KSelectAction * m_scaleAction;
     KToggleAction * m_calendarAction;
+    KAction * m_psGanttAction;
 
     // task filter stuff
     KSelectAction * m_filterForTasksAction;

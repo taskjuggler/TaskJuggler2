@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="ktjview2" version="37">
+<kpartgui name="ktjview2" version="38">
 <MenuBar>
 <!--
   <Menu name="edit"><text>&amp;Edit</text>
@@ -16,6 +16,8 @@
     <Action name="scale"/>
     <Separator/>
     <Action name="timeframe"/>
+    <Separator/>
+    <Action name="ps_gantt"/>
   </Menu>
   <Menu name="resource"><text>&amp;Resources</text>
     <Menu name="show_outline"><text>&amp;Outline</text>

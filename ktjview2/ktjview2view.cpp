@@ -21,6 +21,9 @@
 
 #define PROFILE               // profiling enabled if defined
 
+#include <unistd.h>
+#include <string.h>
+
 // Qt includes
 #include <qpainter.h>
 #include <qlayout.h>
@@ -32,6 +35,8 @@
 #include <qdir.h>
 #include <qpopupmenu.h>
 #include <qptrlist.h>
+#include <qfile.h>
+#include <qregexp.h>
 
 // KDE includes
 #include <kurl.h>
@@ -47,6 +52,9 @@
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <kprogress.h>
+#include <kstandarddirs.h>
+#include <krun.h>
+#include <kprocess.h>
 
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
@@ -283,6 +291,10 @@ bool ktjview2View::openURL( const KURL& url )
 
     //kdDebug() << "Project is in temp file: " << tmpFile << endl;
 
+    const QString curDir = url.directory( false );
+
+    //kdDebug() << k_funcinfo << "Curdir: " << curDir << endl;
+
     recreateProject();
 
     bool syntaxError = false;
@@ -296,7 +308,7 @@ bool ktjview2View::openURL( const KURL& url )
         XMLFile* xf = new XMLFile( m_project );
         progressDlg.progressBar()->setProgress( 1 );
         progressDlg.setLabel( i18n( "Opening XML project" ) );
-        if ( !xf->readDOM( tmpFile, QDir::currentDirPath(), "", true ) )
+        if ( !xf->readDOM( tmpFile, curDir, "", true ) )
         {
             accessError = true;
             progressDlg.cancel();
@@ -325,7 +337,7 @@ bool ktjview2View::openURL( const KURL& url )
         ProjectFile* pf = new ProjectFile( m_project );
         progressDlg.progressBar()->setProgress( 1 );
         progressDlg.setLabel( i18n( "Opening TJP project" ) );
-        if ( !pf->open( tmpFile, QDir::currentDirPath(), "", true ) )
+        if ( !pf->open( tmpFile, curDir, "", true ) )
         {
             accessError = true;
             progressDlg.cancel();
@@ -382,7 +394,6 @@ bool ktjview2View::openURL( const KURL& url )
         //KMessageBox::error( this, i18n( "Taskjugggler failed to schedule the scenarios." ) );
         //return false;
     }
-    //m_project->generateReports(); // FIXME do we need that?
 
     clearAllViews();
 
@@ -424,7 +435,9 @@ bool ktjview2View::openURL( const KURL& url )
         progressDlg.setLabel( i18n( "Loading the project source" ) );
         m_editorView->loadDocument( url );
 
-        emit signalChangeStatusbar( i18n( "Successfully loaded project %1" ).arg( m_projectURL.prettyURL() ) );
+        m_projectURL = url;
+
+        emit signalChangeStatusbar( i18n( "Successfully loaded project '%1'" ).arg( m_projectURL.prettyURL() ) );
     }
     else                        // errors to correct
     {
@@ -433,10 +446,10 @@ bool ktjview2View::openURL( const KURL& url )
         KTextEditor::markInterface( m_editorView->doc() )->setMark( errorLine - 1, KTextEditor::MarkInterface::markType07 );
         emit signalSwitchView( ID_VIEW_EDITOR );
 
-        emit signalChangeStatusbar( i18n( "Project %1 loaded with errors" ).arg( m_projectURL.prettyURL() ) );
-    }
+        m_projectURL = url;
 
-    m_projectURL = url;
+        emit signalChangeStatusbar( i18n( "Project '%1' loaded with errors" ).arg( m_projectURL.prettyURL() ) );
+    }
 
     progressDlg.progressBar()->setProgress( 6 );
 
@@ -1330,6 +1343,52 @@ void ktjview2View::slotResourceUsage()
                                     .arg( KGlobal::locale()->formatDateTime( dlg.endDate() ) )
                                     .arg( dlg.scaleString() ) );
         emit setQuickSearchView( m_reportView );
+    }
+}
+
+void ktjview2View::showPSGantt()
+{
+    if ( !m_projectURL.isLocalFile() )
+    {
+        KMessageBox::sorry( this, i18n( "Only local files are supported." ) );
+        return;
+    }
+
+    const QString directory = m_projectURL.directory( false );
+    if ( chdir( QFile::encodeName( directory ) ) == -1 )
+    {
+        kdWarning() << k_funcinfo << "Couldn't change working dir to " << directory << endl;
+        return;
+    }
+
+    if ( m_project && m_project->generateXMLReport() )
+    {
+        const QString tjx = m_projectURL.prettyURL( -1, KURL::StripFileProtocol ).replace( QRegExp( "tjp$" ), "tjx" );
+        const QString eps = directory + m_project->getId() + ".eps";
+        const QString tjx2gantt = KStandardDirs::findExe( "tjx2gantt" );
+
+        if ( tjx2gantt.isNull() )
+        {
+            KMessageBox::sorry( this, "<qt>" + i18n( "The required application <b>tjx2gantt</b> wasn't found." ) );
+            return;
+        }
+
+        QString command = KShellProcess::quote( tjx2gantt ) + " " + KShellProcess::quote( tjx );
+
+        // generate the EPS
+        int rc = system( QFile::encodeName( command ) );
+
+        if ( rc == -1 || !QFile::exists( eps ) )
+        {
+            KMessageBox::sorry( this, "<qt>" + i18n( "Failed to create PostScript output." ) );
+            return;
+        }
+
+        KRun::runURL( eps, "image/x-eps", false, false );
+    }
+    else
+    {
+        KMessageBox::sorry( this, i18n( "XML report could not have been generated; PostScript Gantt chart won't be shown." ) );
     }
 }
 

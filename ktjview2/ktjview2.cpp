@@ -131,7 +131,6 @@ void ktjview2::setupActions()
     KStdAction::openNew( this, SLOT(fileNew()), actionCollection() ); // FIXME
 #endif
 
-
     // File menu
     KStdAction::open( this, SLOT( fileOpen() ), actionCollection() );
     KStdAction::save( this, SLOT( fileSave() ), actionCollection() );
@@ -139,12 +138,12 @@ void ktjview2::setupActions()
     m_recentAction = KStdAction::openRecent( this, SLOT( load( const KURL& ) ), actionCollection() );
     m_recentAction->loadEntries( kapp->config() );
 
-    KStdAction::print(this, SLOT(filePrint()), actionCollection());
-    KStdAction::quit(this, SLOT(close()), actionCollection());
+    //KStdAction::print( this, SLOT( filePrint() ), actionCollection() );
+    KStdAction::quit( this, SLOT( close() ), actionCollection() );
 
-    KStdAction::keyBindings( this, SLOT(optionsConfigureKeys()), actionCollection() );
-    KStdAction::configureToolbars( this, SLOT(optionsConfigureToolbars()), actionCollection() );
-    KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
+    KStdAction::keyBindings( this, SLOT( optionsConfigureKeys() ), actionCollection() );
+    KStdAction::configureToolbars( this, SLOT( optionsConfigureToolbars() ), actionCollection() );
+    KStdAction::preferences( this, SLOT( optionsPreferences() ), actionCollection() );
 
     // Edit menu
     KStdAction::undo( m_view, SLOT( slotUndo() ), actionCollection() );
@@ -185,14 +184,17 @@ void ktjview2::setupActions()
 
     m_scaleAction = new KSelectAction( i18n( "&Scale" ), 0, actionCollection(), "scale" );
     QStringList items = QStringList();
-    items << i18n( "Minute" ) << i18n( "Hour" ) << i18n( "Day" ) <<
-        i18n( "Week" ) << i18n( "Month" ) << i18n( "Auto" );
+    items << i18n( "&Minute" ) << i18n( "&Hour" ) << i18n( "&Day" ) <<
+        i18n( "&Week" ) << i18n( "M&onth" ) << i18n( "&Auto" );
     m_scaleAction->setItems( items );
     m_scaleAction->setCurrentItem( 5 ); // TODO make configurable
     connect( m_scaleAction, SIGNAL( activated( int ) ),
              m_view, SLOT( slotScale( int ) ) );
     connect( m_view, SIGNAL( signalScaleChanged( int ) ),
              m_scaleAction, SLOT( setCurrentItem( int ) ) );
+
+    m_psGanttAction = new KAction( i18n( "&Print..." ), "fileprint", KStdAccel::shortcut( KStdAccel::Print ),
+                                   m_view, SLOT( showPSGantt() ), actionCollection(), "ps_gantt" );
 
     // Resources menu
     new KAction( i18n( "&Collapse All" ), 0, KShortcut(), this, SLOT( collapseAll() ), actionCollection(), "collapse_all" );
@@ -255,7 +257,7 @@ void ktjview2::setupActions()
     m_taskCoverageAction = new KAction( i18n( "&Task coverage..." ), 0, KShortcut(),
                                         m_view, SLOT( slotTaskCoverage() ), actionCollection(), "task_coverage" );
 
-    m_resUsageAction = new KAction( i18n( "Resource usage..." ), 0, KShortcut(),
+    m_resUsageAction = new KAction( i18n( "&Resource usage..." ), 0, KShortcut(),
                                     m_view, SLOT( slotResourceUsage() ), actionCollection(), "resource_usage" );
 
     // Tools menu
@@ -613,6 +615,7 @@ void ktjview2::enableGanttActions( bool enable )
 {
     m_scaleAction->setEnabled( enable );
     m_calendarAction->setEnabled( enable );
+    m_psGanttAction->setEnabled( enable );
     action( "zoom_in" )->setEnabled( enable );
     action( "zoom_out" )->setEnabled( enable );
     action( "fit_to_page" )->setEnabled( enable );

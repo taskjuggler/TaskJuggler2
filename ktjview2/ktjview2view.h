@@ -208,6 +208,8 @@ public slots:
      */
     void slotScale( int scale );
 
+    void showPSGantt();
+
     /**
      * Select a scale for the resource usage view
      * @param scale the requested scale
