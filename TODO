@@ -2,7 +2,6 @@
 - Save user-defined attributes to XML.
 - Remove old color support
 - Complete new color support
-- Re-add rawstylesheet support again
 - Color support for tasks and resources
 - Document optional column attributes
 - Document htmlstatusreport
