@@ -16,10 +16,12 @@
 #include <klistview.h>
 #include <Project.h>
 #include <Task.h>
+#include <qptrlist.h>
 
 #include <qpixmap.h>
 
 #include "ktvtasktableitem.h"
+#include "taskcolumntype.h"
 
 #define COL_NAME 0
 #define COL_ID 1
@@ -35,6 +37,7 @@
 class QPixmap;
 class KTVTaskCanvas;
 class QListViewItem;
+
 
 class KTVTaskTable: public KListView
 {
@@ -66,17 +69,18 @@ public:
 public slots:
     void resizeContents( int, int );
     void clear();
+    void setupColumns();
 
 protected:
     virtual void wheelEvent( QWheelEvent * ) {};
     void createRoot();
-
+    void showTaskInTable( KTVTaskTableItem*, Task*, int );
 protected slots:
     void slUpdateCanvas();
     void slExpanded( QListViewItem* );
     void slCollapsed( QListViewItem* );
     void slSelectionChanged( QListViewItem* );
-
+    
 signals:
     void newTaskAdded( Task*, KTVTaskTableItem* );
     void moveItems( int y, int dy);  // move items on canvas from int y by dy
@@ -98,6 +102,9 @@ private:
     QPixmap m_taskPix;
     QPixmap m_containerPix;
     QPixmap m_menPix;
+
+    QPtrList<TaskColumnType> columnList;
+    
 };
 
 

@@ -50,7 +50,7 @@ kde_module_LTLIBRARIES = libktjviewpart.la
 libktjviewpart_la_SOURCES = ktjview_part.cpp ktvtasktable.cpp ktvtasktableitem.cpp \
 	ktvtaskcanvas.cpp ktvtaskcanvasview.cpp ktjgantt.cpp \
 	ktvcanvasitem.cpp ktvreport.cpp ktvconnector.cpp tasktip.cpp \
-	ktvheader.cpp timedialog.cpp
+	ktvheader.cpp timedialog.cpp taskcolumntype.cpp
 
 libktjviewpart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries) 
 libktjviewpart_la_LIBADD  = $(LIB_KPARTS) $(LIB_KFILE)  ../taskjuggler/libtaskjuggler.la

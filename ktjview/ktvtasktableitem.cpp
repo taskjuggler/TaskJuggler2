@@ -65,8 +65,8 @@ int KTVTaskTableItem::compare( QListViewItem *i, int col, bool ascending ) const
 	    r = COMPARE( me, other );
 	    break;
 	 case COL_COMPLETE:
-	     me = mTask->getComplete(0); // Task::Plan);
-	     other = iTask->getComplete(0); // Task::Plan);
+	     me = (time_t) mTask->getComplete(0); // Task::Plan);
+	     other = (time_t) iTask->getComplete(0); // Task::Plan);
 
 	    r = COMPARE( me, other );
 	    break;
