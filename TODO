@@ -1,1 +1,8 @@
+- Add support for 'rawhead', 'rawtail' and 'rawstyle' to report
+  classes.
+- Implement 'mandatory' attribute for task allocations.
+- Fix timezone handling.
+- Make project file reader unicode aware.
+- i18n messages.
+- Add more test cases to the test suite.
 

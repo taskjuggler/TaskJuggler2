@@ -132,7 +132,7 @@ used when calling TaskJuggler from CGI scripts.
 
 </itemize>
 
-<sect2>Next Release
+<sect2>Version 1.2 (2002-06-17)
 <p>
 <itemize>
 
@@ -150,6 +150,20 @@ some values were added and corrected.
 <item>Added a first simple TaskJuggler XML-output viewer for KDE. 
 
 <item>Support for URLs in HTML reports added.
+
+<item>Legacy HTML elements have been removed from HTML reports.
+TaskJuggler now creates pure HTML 4.0 code.
+
+<item>Added support for insertion of raw HTML code into reports. This
+can be achived with <ref name="rawhead" id="htmltaskreport_rawhead">
+and <ref name="rawtail" id="htmltaskreport_rawtail">.
+
+<item>Added support for user defined style sheets in HTML reports by
+using the <ref name="rawstylesheet" id="htmltaskreport_rawstylesheet">
+attribute.
+
+<item>Strings can now be enclosed in either single or double quotes. A
+single quoted string may contain double quotes and vice versa.
 
 </itemize>
 
@@ -469,7 +483,9 @@ name="ID">)/ true if the account has the listed ID.
 description for allowed values.
 
 <label id="string"><tag/STRING/A string may contain any characters and
-is enclosed in '"'. A string may include line breaks.
+is enclosed in single quotes or double quotes. A single quoted string
+may contain double quote characters and vice versa. A string may
+include line breaks.
 
 <label id="time"><tag/TIME/A time in the format HH:MM.
 
@@ -750,6 +766,15 @@ filename: <ref id="string" name="STRING">
 Optional attributes:
 
 <descrip>
+
+<label id="htmltaskreport_caption">
+<tag/caption &lt;text&gt;/
+text: <ref id="string" name="STRING">
+
+Defines the caption used for the report. The caption is printed right
+above the task list.
+
+<label id="htmltaskreport_columns">
 <tag/columns &lt;colid&gt;&lsqb,&lt;colid&gt;&rsqb/
 colid: <ref id="id" name="ID">
 
@@ -778,28 +803,95 @@ following values for colid are available:
 <tag/monthly/A month-by-month calendar view of the tasks
 </descrip>
 
-<tag/start &lt;day&gt;/
-day: <ref id="date" name="DATE">
-
-The start date for the calender view.
-
+<label id="htmltaskreport_end">
 <tag/end &lt;day&gt;/
 day: <ref id="date" name="DATE">
 
 The end date for the calender view.
 
+<label id="htmltaskreport_headline">
 <tag/headline &lt;text&gt;/
 text: <ref id="string" name="STRING">
 
 Defines the headline used for the report. The headline is printed on
 top of the page and with a larger font.
 
-<tag/caption &lt;text&gt;/
-text: <ref id="string" name="STRING">
+<label id="htmltaskreport_hidesource">
+<tag/hideresource &lt;expression&gt;/
+expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
 
-Defines the caption used for the report. The caption is printed right
-above the task list.
+List only resources that do not have flags meeting the described logical
+expression.
 
+<label id="htmltaskreport_hidetask">
+<tag/hidetask &lt;expression&gt;/
+expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
+
+List only tasks that do not have flags meeting the described logical
+expression.
+
+<label id="htmltaskreport_rawhead">
+<tag/rawhead &lt;html&gt;/
+
+html: <ref id="string" name="STRING">
+
+The <tt/rawhead/ attribute can be used to insert HTML code between the
+<ref name="caption" id="htmltaskreport_caption"> and the table.
+
+<label id="htmltaskreport_rawstylesheet">
+<tag/rawstylesheet &lt;html&gt;/
+
+html: <ref id="string" name="STRING">
+
+The <tt/rawstylesheet/ attribute can be used to change the stylesheet
+of the htmlreport. The default stylesheet looks similar to this one:
+
+<verb>
+.default { background-color:#f3ebae; font-size:70%; text-align:center }
+.defaultlight { background-color:#fffadd; font-size:70%; text-align:center }
+.task { background-color:#f3ebae; font-size:100%; text-align:left }
+.tasklight { background-color:#fffadd; font-size:100%; text-align:left }
+.available { background-color:#a4ff8d; font-size:70%; text-align:center }
+.vacation { background-color:#fffc60; font-size:70%; text-align:center }
+.weekend { background-color:#ffec80; font-size:70%; text-align:center }
+.milestone { background-color:#ff2a2a; font-size:70%; text-align:center }
+.booked { background-color:#ff9191; font-size:70%; text-align:center }
+.bookedlight { background-color:#ffbfbf; font-size:70%; text-align:center }
+.headersmall { background-color:#a5c2ff; font-size:70%; text-align:center }
+.headerbig { background-color:#a5c2ff; font-size:110%; font-weight:bold; text-align:center }
+.completed { background-color:#87ff75; font-size:70%; text-align:center }
+.completedlight { background-color:#a1ff9a; font-size:70%; text-align:center }
+.today { background-color:#a387ff; font-size:70%; text-align:center }
+</verb>
+
+<label id="htmltaskreport_rawtail">
+<tag/rawtail &lt;html&gt;/
+
+html: <ref id="string" name="STRING">
+
+The <tt/rawtail/ attribute can be used to insert raw html code after
+the table.
+
+<label id="htmltaskreport_rollupresource">
+<tag/rollupresource &lt;expression&gt;/
+expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
+
+Do not show subresources of resources with flags meeting the
+described logical expression.
+
+<label id="htmltaskreport_rolluptask">
+<tag/rolluptask &lt;expression&gt;/
+expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
+
+Do not show subtasks of tasks with flags meeting the described
+logical expression.
+
+<label id="htmltaskreport_showactual">
+<tag/showactual/
+If used, not only the plan values are listed in the table, but also the
+actual values. The actual values are put underneath the plan values.
+
+<label id="htmltaskreport_sorttasks">
 <tag/sorttasks &lt;criteria&gt;/
 
 criteria: <ref id="sortingcriteria" name="SORTINGCRITERIA">
@@ -864,34 +956,13 @@ matches the hide expression.
 <tag/kotrusiddown/First kotrusid on top
 </descrip>
 
-<tag/showActual/
-If used, not only the plan values are listed in the table, but also the
-actual values. The actual values are put underneath the plan values.
+<label id="htmltaskreport_start">
+<tag/start &lt;day&gt;/
+day: <ref id="date" name="DATE">
 
-<tag/hidetask &lt;expression&gt;/
-expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
+The start date for the calender view.
 
-List only tasks that do not have flags meeting the described logical
-expression.
-
-<tag/rolluptask &lt;expression&gt;/
-expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
-
-Do not show subtasks of tasks with flags meeting the described
-logical expression.
-
-<tag/hideresource &lt;expression&gt;/
-expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
-
-List only resources that do not have flags meeting the described logical
-expression.
-
-<tag/rollupresource &lt;expression&gt;/
-expression: <ref id="logicalexpression" name="LOGICALEXPRESSION">
-
-Do not show subresources of resources with flags meeting the
-described logical expression.
-
+<label id="htmltaskreport_url">
 <tag/url &lt;id&gt; &lt;href&gt;/
 id: The ID specifies the location of the HTML report where the url
 should appear. The following IDs are currently supported:

@@ -314,9 +314,25 @@ FileInfo::nextToken(QString& token)
 				return INTEGER;
 			}
 		}
+		else if (c == '\'')
+		{
+			// single quoted string
+			while ((c = getC()) != EOF && c != '\'')
+			{
+				if (c == '\n')
+					currLine++;
+				token += c;
+			}
+			if (c == EOF)
+			{
+				fatalError("Non terminated string");
+				return EndOfFile;
+			}
+			return STRING;
+		}
 		else if (c == '"')
 		{
-			// quoted string
+			// double quoted string
 			while ((c = getC()) != EOF && c != '"')
 			{
 				if (c == '\n')
@@ -2159,6 +2175,33 @@ ProjectFile::readHTMLReport(const QString& reportType)
 				return FALSE;
 			}
 			report->setCaption(token);
+		}
+		else if (token == KW("rawhead"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			report->setRawHead(token);
+		}
+		else if (token == KW("rawtail"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			report->setRawTail(token);
+		}
+		else if (token == KW("rawstylesheet"))
+		{
+			if (nextToken(token) != STRING)
+			{
+				fatalError("String expected");
+				return FALSE;
+			}
+			report->setRawStyleSheet(token);
 		}
 		else if (token == KW("showactual"))
 		{

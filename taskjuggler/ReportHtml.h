@@ -96,6 +96,21 @@ public:
 	bool setUrl(const QString& key, const QString& url);
 	const QString* getUrl(const QString& key) const;
 
+	void setRawHead(const QString& head)
+	{
+		rawHead = head;
+	}
+
+	void setRawTail(const QString& tail)
+	{
+		rawTail = tail;
+	}
+
+	void setRawStyleSheet(const QString& styleSheet)
+	{
+		rawStyleSheet = styleSheet;
+	}
+	
 protected:
 	ReportHtml() { }
 
@@ -116,6 +131,10 @@ protected:
 	uint colCompleted;
 	uint colCompletedLight;
 	uint colToday;
+
+	QString rawHead;
+	QString rawTail;
+	QString rawStyleSheet;
 
 	QMap<QString, QString> urls;
 } ;

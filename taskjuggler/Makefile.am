@@ -16,8 +16,6 @@ DTDFILE = taskjuggler.dtd
 
 # KDE_OPTIONS = qtonly
 taskjuggler_LDADD  =  libtaskjuggler.la
-AM_CXXFLAGS = -Wall -O2
-ICAL_INCLUDES = -I/space/kde3/kdepim
 
 # set the include path for X, qt and KDE
 INCLUDES= $(all_includes) $(ICAL_INCLUDES)

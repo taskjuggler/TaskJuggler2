@@ -47,7 +47,7 @@ ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e,
 void
 ReportHtml::generatePlanTask(Task* t, Resource* r)
 {
-	s << "<tr valign=\"center\">";
+	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -62,14 +62,14 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			s << "<td class=\""
 			  << (t->isPlanStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
-			  << "\" style=\"text-align:left\" nowrap>"
+			  << "\" style=\"text-align:left white-space:nowrap\">"
 			  << time2ISO(t->getPlanStart())
 			  << "</td>" << endl;
 		else if (*it == KW("end"))
 			s << "<td class=\""
 			  << (t->isPlanEndOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
-			  << "\" nowrap>"
+			  << "\" style=\"text-align:left white-space:nowrap\">"
 			  << time2ISO(t->getPlanEnd())
 			  << "</td>" << endl;
 		else if (*it == KW("minstart"))
@@ -84,8 +84,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right\""
-			  << " nowrap>";
+			  << "\" style=\"text-align:right white-space:nowrap\">";
 			scaleTime(t->getPlanCalcDuration());
 			s << "</td>" << endl;
 		}
@@ -93,8 +92,7 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right\""
-			  << " nowrap>";
+			  << "\" style=\"text-align:right white-space:nowrap\">";
 			scaleTime(t->getPlanLoad(Interval(start, end), r));
 			s << "</td>" << endl;
 		}
@@ -130,9 +128,9 @@ ReportHtml::generatePlanTask(Task* t, Resource* r)
 			  << "\" rowspan=\""
 			  << (showActual ? "2" : "1")
 			  << "\" style=\"text-align:left\">"
-			  << "<font size=\"-2\">";
+			  << "<span style=\"font-size:0.8em\">";
 			s << htmlFilter(t->getNote());
-			s << "</font></td>" << endl;
+			s << "</span></td>" << endl;
 		}
 		else if (*it == KW("costs"))
 			textOneRow(
@@ -169,7 +167,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			s << "<td class=\""
 			  << (t->isActualStartOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
-			  << "\" style=\"text-align:left\" nowrap>"
+			  << "\" style=\"text-align:left white-space:nowrap\">"
 			  << time2ISO(t->getActualStart())
 			  << "</td>" << endl;
 		}
@@ -178,7 +176,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 			s << "<td class=\""
 			  << (t->isActualEndOk() ?
 				  (r == 0 ? "default" : "defaultlight") : "milestone")
-			  << "\" nowrap>"
+			  << "\" style=\"white-space:nowrap\""
 			  << time2ISO(t->getActualEnd())
 			  << "</td>" << endl;
 		}
@@ -186,8 +184,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right\""
-			  << " nowrap>";
+			  << "\" style=\"text-align:right white-space:nowrap\">";
 			scaleTime(t->getActualCalcDuration());
 			s << "</td>" << endl;
 		}
@@ -195,8 +192,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 		{
 			s << "<td class=\""
 			  << (r == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right\""
-			  << " nowrap>";
+			  << "\" style=\"text-align:right white-space:nowrap\">";
 			scaleTime(t->getActualLoad(Interval(start, end), r));
 			s << "</td>" << endl;
 		}
@@ -222,7 +218,7 @@ ReportHtml::generateActualTask(Task* t, Resource* r)
 void
 ReportHtml::generatePlanResource(Resource* r, Task* t)
 {
-	s << "<tr valign=\"center\">";
+	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -251,8 +247,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 		{
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right\""
-			  << " nowrap>";
+			  << "\" style=\"text-align:right white-space:nowrap\">";
 			scaleTime(r->getPlanLoad(Interval(start, end), t));
 			s << "</td>" << endl;
 		}
@@ -313,7 +308,7 @@ ReportHtml::generatePlanResource(Resource* r, Task* t)
 void
 ReportHtml::generateActualResource(Resource* r, Task* t)
 {
-	s << "<tr valign=\"center\">";
+	s << "<tr valign=\"middle\">";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -321,8 +316,7 @@ ReportHtml::generateActualResource(Resource* r, Task* t)
 		{
 			s << "<td class=\""
 			  << (t == 0 ? "default" : "defaultlight")
-			  << "\" style=\"text-align:right\""
-			  << " nowrap>";
+			  << "\" style=\"text-align:right white-space:nowrap\">";
 			scaleTime(r->getActualLoad(Interval(start, end), t));
 			s << "</td>" << endl;
 		}
@@ -359,56 +353,66 @@ ReportHtml::reportHTMLHeader()
 	  << "<head>" << endl
 	  << "<title>Task Report</title>" << endl
 	  << "<style type=\"text/css\"><!--" << endl;
-	s.reset();
-	s.setf(QTextStream::hex);
-	s << ".default { background-color:#" << colDefault
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".defaultlight { background-color:#" << colDefaultLight
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".task { background-color:#" << colDefault
-	  << "; font-size:100%; text-align:left }" << endl
-	  << ".tasklight { background-color:#" << colDefaultLight
-	  << "; font-size:100%; text-align:left }" << endl
-	  << ".available { background-color:#" << colAvailable
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".vacation { background-color:#" << colVacation
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".weekend { background-color:#" << colWeekend
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".milestone { background-color:#" << colMilestone
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".booked { background-color:#" << colBooked
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".bookedlight { background-color:#" << colBookedLight
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".headersmall { background-color:#" << colHeader
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".headerbig { background-color:#" << colHeader
-	  << "; font-size:110%; font-weight:bold; text-align:center }" << endl
-	  << ".completed { background-color:#" << colCompleted
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".completedlight { background-color:#" << colCompletedLight
-	  << "; font-size:70%; text-align:center }" << endl
-	  << ".today { background-color:#" << colToday
-	  << "; font-size:70%; text-align:center }" << endl
-	  << "--></style>" << endl
-	  << "</head>" << endl
+	if (rawStyleSheet.isEmpty())
+	{
+		s.reset();
+		s.setf(QTextStream::hex);
+		s << ".default { background-color:#" << colDefault
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".defaultlight { background-color:#" << colDefaultLight
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".task { background-color:#" << colDefault
+			<< "; font-size:100%; text-align:left }" << endl
+			<< ".tasklight { background-color:#" << colDefaultLight
+			<< "; font-size:100%; text-align:left }" << endl
+			<< ".available { background-color:#" << colAvailable
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".vacation { background-color:#" << colVacation
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".weekend { background-color:#" << colWeekend
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".milestone { background-color:#" << colMilestone
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".booked { background-color:#" << colBooked
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".bookedlight { background-color:#" << colBookedLight
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".headersmall { background-color:#" << colHeader
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".headerbig { background-color:#" << colHeader
+			<< "; font-size:110%; font-weight:bold; text-align:center }" << endl
+			<< ".completed { background-color:#" << colCompleted
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".completedlight { background-color:#" << colCompletedLight
+			<< "; font-size:70%; text-align:center }" << endl
+			<< ".today { background-color:#" << colToday
+			<< "; font-size:70%; text-align:center }" << endl;
+	}
+	else
+		s << rawStyleSheet << endl;
+	s << "--></style>" << endl;
+	s << "</head>" << endl
 	  << "<body>" << endl;
 
 	if (!headline.isEmpty())
 		s << "<h1>" << htmlFilter(headline) << "</h1>" << endl;
 	if (!caption.isEmpty())
 		s << "<p>" << htmlFilter(caption) << "<p>" << endl;
+	if (!rawHead.isEmpty())
+		s << rawHead << endl;
 }
 
 void
 ReportHtml::reportHTMLFooter()
 {
-	s << "<p><font size=\"-2\">"
+	if (!rawTail.isEmpty())
+		s << rawTail << endl;
+
+	s << "<p><span style=\"font-size:0.6em\">"
 	  << project->getCopyright()
 	  << " - " << project->getVersion()
 	  << " - TaskJuggler v"
-	  << VERSION << "</font></p></body>\n";
+	  << VERSION << "</span></p></body>\n";
 }
 
 bool
@@ -495,17 +499,29 @@ ReportHtml::generateTableHeader()
 	s << "</tr>" << endl;
 
 	// Header line 2
+	bool td = FALSE;
 	s << "<tr>" << endl;
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
 		if (*it == KW("daily"))
+		{
+			td = TRUE;
 			htmlDailyHeaderDays();
+		}
 		else if (*it == KW("weekly"))
+		{
+			td = TRUE;
 			htmlWeeklyHeaderWeeks();
+		}
 		else if (*it == KW("monthly"))
+		{
+			td = TRUE;
 			htmlMonthlyHeaderMonths();
+		}
 	}
+	if (!td)
+		s << "<td>&nbsp;</td>";
 	s << "</tr>\n" << endl;
 
 	return TRUE;
@@ -521,7 +537,7 @@ ReportHtml::htmlDailyHeaderDays(bool highlightNow)
 		s << "<td class=\"" <<
 			(highlightNow && isSameDay(project->getNow(), day) ?
 			 "today" : isWeekend(day) ? "weekend" : "headersmall")
-		  << "\"><font size=\"-2\">&nbsp;";
+		  << "\"><span style=\"font-size:0.8em\">&nbsp;";
 		mt.clear();
 		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
 							  defFileName, defFileLine));
@@ -534,7 +550,7 @@ ReportHtml::htmlDailyHeaderDays(bool highlightNow)
 		if (dom < 10)
 			s << "&nbsp;";
 		s << generateUrl(KW("dayheader"), QString().sprintf("%d", dom));
-		s << "</font></td>";
+		s << "</span></td>";
 	}
 }
 
@@ -579,7 +595,7 @@ ReportHtml::htmlWeeklyHeaderWeeks(bool highlightNow)
 		s << "<td class=\"" <<
 			(highlightNow && isSameWeek(project->getNow(), week) ?
 			 "today" : "headersmall")
-		  << "\"><font size=\"-2\">&nbsp;";
+		  << "\"><span style=\"font-size:0.8em\">&nbsp;";
 		if (woy < 10)
 			s << "&nbsp;";
 		mt.clear();
@@ -593,7 +609,7 @@ ReportHtml::htmlWeeklyHeaderWeeks(bool highlightNow)
 							  QString().sprintf("%04d", year(woy)),
 							  defFileName, defFileLine));
 		s << generateUrl(KW("weekheader"), QString().sprintf("%d", woy));
-		s << "</font></td>";
+		s << "</span></td>";
 	}
 }
 
@@ -646,7 +662,7 @@ ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 		s << "<td class=\"" <<
 			(highlightNow && isSameMonth(project->getNow(), month) ?
 			 "today" : "headersmall")
-		  << "\"><font size=\"-2\">&nbsp;";
+		  << "\"><span style=\"font-size:0.8em\">&nbsp;";
 		mt.clear();
 		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
 														   dayOfMonth(moy)),
@@ -658,7 +674,7 @@ ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 							  QString().sprintf("%04d", year(moy)),
 							  defFileName, defFileLine));
 		s << generateUrl(KW("monthheader"), mnames[moy - 1]);
-		s << "</font></td>";
+		s << "</span></td>";
 	}
 }
 
@@ -717,9 +733,8 @@ ReportHtml::textOneRow(const QString& text, bool light, const QString& align)
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default") << "\"";
 	if (!align.isEmpty())
-		s << " style=\"text-align:" << align << "\"";
-	s << " nowrap>"
-	  << text << "</td>";
+		s << " style=\"text-align:" << align << " white-space:nowrap\"";
+	s << ">" << text << "</td>";
 }
 
 void
@@ -730,9 +745,8 @@ ReportHtml::textTwoRows(const QString& text, bool light, const QString& align)
 	  << "\" rowspan=\""
 	  << (showActual ? "2" : "1") << "\"";
 	if (!align.isEmpty())
-		s << " style=\"text-align:" << align << "\"";
-	s << " nowrap>"
-	  << text << "</td>";
+		s << " style=\"text-align:" << align << " white-space:nowrap\"";
+	s << ">" << text << "</td>";
 }
 
 void
@@ -1038,43 +1052,42 @@ void
 ReportHtml::taskName(Task* t, Resource* r, bool big)
 {
 	QString spaces = "";
-	int fontSize = big ? 2 : -1;
+	int fontSize = big ? 150 : 100;
 	if (resourceSortCriteria == CoreAttributesList::TreeMode)
-		for (Resource* rp = r ; rp != 0; --fontSize)
+		for (Resource* rp = r ; rp != 0; fontSize = (int) (fontSize * 0.85))
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 			rp = rp->getParent();
 		}
 
 	mt.clear();
-	mt.addMacro(new Macro(KW("taskid"), t->getFullId(), defFileName,
+	mt.addMacro(new Macro(KW("taskid"), t->getId(), defFileName,
 						  defFileLine));
 
 	if (taskSortCriteria == CoreAttributesList::TreeMode)
 	{
 		Task* tp = t->getParent();
-		for ( ; tp != 0; --fontSize)
+		for ( ; tp != 0; fontSize = (int) (fontSize * 0.85))
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 			tp = tp->getParent();
 		}
 		s << "<td class=\""
 		  << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" nowrap>"
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
 		  << spaces
-		  << "<font size=\""
-		  << (fontSize < 0 ? '-' : '+') 
-		  << (fontSize < 0 ? -fontSize : fontSize) << "\">";
+		  << "<span style=\"font-size:" 
+		  << QString().sprintf("%d", fontSize) << "%\">";
 		if (r == 0)
-			s << "<a name=\"task_" << t->getFullId() << "\"></a>";
+			s << "<a name=\"task_" << t->getId() << "\"></a>";
 		s << generateUrl(KW("taskname"), t->getName());
-		s << "</font></td>" << endl;
+		s << "</span></td>" << endl;
 	}
 	else
 	{
 		s << "<td class=\""
 		  << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" nowrap>"
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
 		  << spaces;
 		if (r == 0)
 			s << "<a name=\"task_" << t->getFullId() << "\"></a>";
@@ -1087,9 +1100,9 @@ void
 ReportHtml::resourceName(Resource* r, Task* t, bool big)
 {
 	QString spaces = "";
-	int fontSize = big ? 2 : -1;
+	int fontSize = big ? 150 : 100;
 	if (taskSortCriteria == CoreAttributesList::TreeMode)
-		for (Task* tp = t; tp != 0; --fontSize)
+		for (Task* tp = t; tp != 0; fontSize = (int) (fontSize * 0.85))
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 			tp = tp->getParent();
@@ -1102,28 +1115,27 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 	if (resourceSortCriteria == CoreAttributesList::TreeMode)
 	{
 		Resource* rp = r->getParent();
-		for ( ; rp != 0; --fontSize)
+		for ( ; rp != 0; fontSize = (int) (fontSize * 0.85))
 		{
 			spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 			rp = rp->getParent();
 		}
 		s << "<td class=\""
 		  << (t == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" nowrap>"
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
 		  << spaces
-		  << "<font size=\""
-		  << (fontSize < 0 ? '-' : '+') 
-		  << (fontSize < 0 ? -fontSize : fontSize) << "\">";
+		  << "<span style=\"font-size:" 
+		  << QString().sprintf("%d", fontSize) << "%\">";
 		if (t == 0)
 			s << "<a name=\"resource_" << r->getId() << "\"></a>";
 		s << generateUrl(KW("resourcename"), r->getName());
-		s << "</font></td>" << endl;
+		s << "</span></td>" << endl;
 	}
 	else
 	{
 		s << "<td class=\""
 		  << (t == 0 ? "task" : "tasklight") << "\" rowspan=\""
-		  << (showActual ? "2" : "1") << "\" nowrap>"
+		  << (showActual ? "2" : "1") << "\" style=\"white-space:nowrap\">"
 		  << spaces;
 		if (t == 0)
 			s << "<a name=\"resource_" << r->getId() << "\"></a>";
@@ -1138,7 +1150,7 @@ ReportHtml::planResources(Task* t, bool light)
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
 	  << "\" style=\"text-align:left\">"
-	  << "<font size=\"-2\">";
+	  << "<span style=\"font-size:0.8em\">";
 	bool first = TRUE;
 	QPtrList<Resource> planResources = t->getPlanBookedResources();
 	for (Resource* r = planResources.first(); r != 0;
@@ -1150,7 +1162,7 @@ ReportHtml::planResources(Task* t, bool light)
 		s << htmlFilter(r->getName());
 		first = FALSE;
 	}
-	s << "</font></td>" << endl;
+	s << "</span></td>" << endl;
 }
 
 void
@@ -1159,7 +1171,7 @@ ReportHtml::actualResources(Task* t, bool light)
 	s << "<td class=\""
 	  << (light ? "defaultlight" : "default")
 	  << "\" style=\"text-align:left\">"
-	  << "<font size=\"-2\">";
+	  << "<span style=\"font-size:0.8em\">";
 	bool first = TRUE;
 	QPtrList<Resource> actualResources = t->getActualBookedResources();
 	for (Resource* r = actualResources.first(); r != 0;
@@ -1171,7 +1183,7 @@ ReportHtml::actualResources(Task* t, bool light)
 		s << htmlFilter(r->getName());
 		first = FALSE;
 	}
-	s << "</font></td>" << endl;
+	s << "</span></td>" << endl;
 }
 
 void
@@ -1181,7 +1193,7 @@ ReportHtml::generateDepends(Task* t, bool light)
 	  << (light ? "defaultlight" : "default")
 	  << "\" rowspan=\""
 	  << (showActual ? "2" : "1")
-	  << "\" style=\"text-align:left\"><font size=\"-2\">";
+	  << "\" style=\"text-align:left\"><span style=\"font-size:0.8em\">";
 	bool first = TRUE;
 	for (Task* d = t->firstPrevious(); d != 0;
 		 d = t->nextPrevious())
@@ -1190,7 +1202,7 @@ ReportHtml::generateDepends(Task* t, bool light)
 			s << ", ";
 		s << QString().sprintf("%d", d->getIndex());
 	}
-	s << "</font></td>" << endl;
+	s << "</span</td>" << endl;
 }
 
 void
@@ -1201,7 +1213,7 @@ ReportHtml::generateFollows(Task* t, bool light)
 	  << "\" rowspan=\""
 	  << (showActual ? "2" : "1")
 	  << "\" style=\"text-align:left\">"
-		"<font size=\"-2\">";
+		"<span style=\"font-size:0.8em\">";
 	bool first = TRUE;
 	for (Task* d = t->firstFollower(); d != 0;
 		 d = t->nextFollower())
@@ -1211,7 +1223,7 @@ ReportHtml::generateFollows(Task* t, bool light)
 		s << QString().sprintf("%d", d->getIndex());
 		first = FALSE;
 	}
-	s << "</font></td>" << endl;
+	s << "</span</td>" << endl;
 }
 
 void
@@ -1222,7 +1234,7 @@ ReportHtml::generateResponsibilities(Resource*r, bool light)
 	  << "\" rowspan=\""
 	  << (showActual ? "2" : "1")
 	  << "\" style=\"text-align:left\">"
-		"<font size=\"-2\">";
+		"<span style=\"font-size:0.8em\">";
 	bool first = TRUE;
 	TaskList tl = project->getTaskList();
 	for (Task* t = tl.first(); t != 0; t = tl.next())
@@ -1235,7 +1247,7 @@ ReportHtml::generateResponsibilities(Resource*r, bool light)
 			first = FALSE;
 		}
 	}
-	s << "</font></td>" << endl;
+	s << "</span></td>" << endl;
 }
 
 void
@@ -1344,7 +1356,7 @@ void
 ReportHtml::reportPIDs(const QString& pids, const QString bgCol, bool bold)
 {
 	s << "<td class=\""
-	  << bgCol << "\" nowrap>";
+	  << bgCol << "\" style=\"white-space:nowrap\">";
 	if (bold)
 		s << "<b>";
 	s << pids;
