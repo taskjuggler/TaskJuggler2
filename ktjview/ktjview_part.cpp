@@ -67,20 +67,7 @@ bool KTjviewPart::openFile()
     p->loadFromXML( m_file );
 
     m_widget->showProject(p);
-#if 0
-    // our example widget is text-based, so we use QTextStream instead
-    // of a raw QDataStream
-    QTextStream stream(&file);
-    QString str;
-    while (!stream.eof())
-    {
-       QString goof = stream.readLine();
-       kdDebug() << "# " << goof << endl;
-       str += stream.readLine() + "\n";
-    }
 
-    file.close();
-#endif
     // just for fun, set the status bar
     emit setStatusBarText( m_url.prettyURL() );
 

@@ -9,11 +9,14 @@
 #include "ktvtasktable.h"
 #include "Project.h"
 #include "Task.h"
+#include "ktvreport.h"
 
 #define PIX_MILESTONE "flag"
 #define PIX_TASK      "package_settings"
 #define PIX_CONTAINER "attach"
 #define PIX_PROJECT   "finish"
+
+/* need to inherit Report here because the sort functions are protected */
 
 KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    :KListView( parent, name ),
@@ -31,7 +34,7 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    addColumn( i18n("Plan End"));   //  COL_PLAN_END_DATE );
    addColumn( i18n("Plan End"));   //  COL_PLAN_END_TIME );
 
-   setShowSortIndicator( true );
+   setSorting( -1, false );
 
    connect( this, SIGNAL( expanded( QListViewItem* )),
 	    this, SLOT( slExpanded( QListViewItem* )));
@@ -76,11 +79,14 @@ void KTVTaskTable::showProject( Project *p )
    emit topOffsetChanged( header()->height() + m_root->height() );
    
    qDebug( "Y-Pos of root: %d, height is %d", m_root->itemPos(), m_root->height() );
-   
-   
-   TaskList taskList = p->getTaskList();
 
-   for (Task* t = taskList.first(); t != 0; t = taskList.next())
+   KTVReport rep( p, QString("dummy"), p->getStart(), p->getEnd() );
+   TaskList filteredList;
+   filteredList.setSorting( CoreAttributesList::TreeMode );
+   rep.filterTaskList(filteredList, 0);
+   rep.sortTaskList(filteredList);
+  
+   for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
    {
       if( (t->getParent() == 0) && t->isContainer() )
 	 {
@@ -137,7 +143,7 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    subTasks.clear();
    
    t->getSubTaskList(subTasks);
-   int cnt = subTasks.count();
+   // int cnt = subTasks.count();
    // qDebug( "Amount of subtasks: " + QString::number(cnt) );
 
    // qDebug( "START: Subpackages for "+ t->getId());

@@ -19,6 +19,12 @@
 KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
    : QSplitter( parentWidget )
 {
+
+
+}
+
+void KTJGantt::showProject( Project *p )
+{
     // we need an instance
     m_table = new KTVTaskTable( this, "TABLE");
     m_canvas = new KTVTaskCanvasView( this, m_table, "CANVAS");
@@ -54,18 +60,18 @@ KTJGantt::KTJGantt( QWidget *parentWidget, const char *)
     setResizeMode( m_table, QSplitter::KeepSize );
     setResizeMode( m_canvas, QSplitter::Stretch );
     // notify the part that this is our internal widget
+
+    m_canvas->showProject( p );
+    m_table->showProject( p );
+    m_table->show();
+    m_canvas->show(); 
+    update();
 }
 
 KTJGantt::~KTJGantt()
 {
 }
 
-
-void KTJGantt::showProject( Project *p )
-{
-   m_canvas->showProject( p );
-   m_table->showProject( p );
-}
 
 
 #include "ktjgantt.moc"

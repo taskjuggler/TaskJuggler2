@@ -33,19 +33,6 @@ void KTVTaskCanvasView::showProject( Project *p )
    
    /* resize the canvas */
    m_canvas->setInterval( p->getStart(), p->getEnd() );
-#if 0
-   TaskList taskList = p->getTaskList();
-
-   for (Task* t = taskList.first(); t != 0; t = taskList.next())
-   {
-      if( (t->getParent() == 0) && t->isContainer() )
-	 {
-	    qDebug( "showProject: Adding a Task" );
-	    addTask(  t );
-	    qDebug( "showProject: Adding a Task <FIN>" );
-	 }
-   }
-#endif
 
 }
 
