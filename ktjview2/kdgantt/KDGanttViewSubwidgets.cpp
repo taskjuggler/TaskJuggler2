@@ -705,42 +705,42 @@ KDTimeHeaderWidget:: KDTimeHeaderWidget( QWidget* parent,KDGanttView* gant ):QWi
     myGridMinorWidth = 0;
     myPopupMenu = new QPopupMenu(this);
     QPopupMenu * zoomPopupMenu = new QPopupMenu(this);
-    myPopupMenu->insertItem (tr("Zoom"),zoomPopupMenu, 1);
-    zoomPopupMenu->insertItem( tr("Zoom to 100%"),this, SLOT(setSettings(int)),0 ,21,21 );
-    zoomPopupMenu->insertItem( tr("Zoom to fit"),this, SLOT(setSettings(int)),0 ,20,20 );
-    zoomPopupMenu->insertItem( tr("Zoom in (x 2)"),this, SLOT(setSettings(int)),0 ,22,22 );
-    zoomPopupMenu->insertItem( tr("Zoom in (x 6)"),this, SLOT(setSettings(int)),0 ,24,24 );
-    zoomPopupMenu->insertItem( tr("Zoom in (x 12)"),this, SLOT(setSettings(int)),0 ,26,26 );
-    zoomPopupMenu->insertItem( tr("Zoom out (x 1/2)"),this, SLOT(setSettings(int)),0 ,23,23 );
-    zoomPopupMenu->insertItem( tr("Zoom out (x 1/6)"),this, SLOT(setSettings(int)),0 ,25,25 );
-    zoomPopupMenu->insertItem( tr("Zoom out (x 1/12)"),this, SLOT(setSettings(int)),0 ,27,27 );
+    myPopupMenu->insertItem (i18n("Zoom"),zoomPopupMenu, 1);
+    zoomPopupMenu->insertItem( i18n("Zoom to 100%"),this, SLOT(setSettings(int)),0 ,21,21 );
+    zoomPopupMenu->insertItem( i18n("Zoom to fit"),this, SLOT(setSettings(int)),0 ,20,20 );
+    zoomPopupMenu->insertItem( i18n("Zoom in (x 2)"),this, SLOT(setSettings(int)),0 ,22,22 );
+    zoomPopupMenu->insertItem( i18n("Zoom in (x 6)"),this, SLOT(setSettings(int)),0 ,24,24 );
+    zoomPopupMenu->insertItem( i18n("Zoom in (x 12)"),this, SLOT(setSettings(int)),0 ,26,26 );
+    zoomPopupMenu->insertItem( i18n("Zoom out (x 1/2)"),this, SLOT(setSettings(int)),0 ,23,23 );
+    zoomPopupMenu->insertItem( i18n("Zoom out (x 1/6)"),this, SLOT(setSettings(int)),0 ,25,25 );
+    zoomPopupMenu->insertItem( i18n("Zoom out (x 1/12)"),this, SLOT(setSettings(int)),0 ,27,27 );
     scalePopupMenu = new QPopupMenu(this);
-    myPopupMenu->insertItem (tr("Scale"),scalePopupMenu, 2);
-    scalePopupMenu->insertItem( tr("Minute"),this, SLOT(setSettings(int)),0 ,1,1 );
-    scalePopupMenu->insertItem( tr("Hour"),this, SLOT(setSettings(int)),0 ,2,2 );
-    scalePopupMenu->insertItem( tr("Day"),this, SLOT(setSettings(int)),0 ,3,3 );
-    scalePopupMenu->insertItem( tr("Week"),this, SLOT(setSettings(int)),0 ,4,4 );
-    scalePopupMenu->insertItem( tr("Month"),this, SLOT(setSettings(int)),0 ,5,5 );
-    scalePopupMenu->insertItem( tr("Auto"),this, SLOT(setSettings(int)),0 ,6,6 );
+    myPopupMenu->insertItem (i18n("Scale"),scalePopupMenu, 2);
+    scalePopupMenu->insertItem( i18n("Minute"),this, SLOT(setSettings(int)),0 ,1,1 );
+    scalePopupMenu->insertItem( i18n("Hour"),this, SLOT(setSettings(int)),0 ,2,2 );
+    scalePopupMenu->insertItem( i18n("Day"),this, SLOT(setSettings(int)),0 ,3,3 );
+    scalePopupMenu->insertItem( i18n("Week"),this, SLOT(setSettings(int)),0 ,4,4 );
+    scalePopupMenu->insertItem( i18n("Month"),this, SLOT(setSettings(int)),0 ,5,5 );
+    scalePopupMenu->insertItem( i18n("Auto"),this, SLOT(setSettings(int)),0 ,6,6 );
     scalePopupMenu->setCheckable ( true );
     timePopupMenu = new QPopupMenu(this);
-    myPopupMenu->insertItem (tr("Time Format"),timePopupMenu, 3);
-    timePopupMenu->insertItem( tr("24 Hour"),this, SLOT(setSettings(int)),0 ,40,40 );
-    timePopupMenu->insertItem( tr("12 PM Hour"),this, SLOT(setSettings(int)),0 ,41,41 );
-    timePopupMenu->insertItem( tr("24:00 Hour"),this, SLOT(setSettings(int)),0 ,42,42 );
+    myPopupMenu->insertItem (i18n("Time Format"),timePopupMenu, 3);
+    timePopupMenu->insertItem( i18n("24 Hour"),this, SLOT(setSettings(int)),0 ,40,40 );
+    timePopupMenu->insertItem( i18n("12 PM Hour"),this, SLOT(setSettings(int)),0 ,41,41 );
+    timePopupMenu->insertItem( i18n("24:00 Hour"),this, SLOT(setSettings(int)),0 ,42,42 );
     yearPopupMenu = new QPopupMenu(this);
-    myPopupMenu->insertItem (tr("Year Format"),yearPopupMenu, 4);
-    yearPopupMenu->insertItem( tr("Four Digit"),this, SLOT(setSettings(int)),0 ,50,50 );
-    yearPopupMenu->insertItem( tr("Two Digit"),this, SLOT(setSettings(int)),0 ,51,51 );
-    yearPopupMenu->insertItem( tr("Two Digit Apostrophe"),this, SLOT(setSettings(int)),0 ,52,52 );
-    yearPopupMenu->insertItem( tr("No Date on Minute/Hour Scale"),this, SLOT(setSettings(int)),0 ,53,53 );
+    myPopupMenu->insertItem (i18n("Year Format"),yearPopupMenu, 4);
+    yearPopupMenu->insertItem( i18n("Four Digit"),this, SLOT(setSettings(int)),0 ,50,50 );
+    yearPopupMenu->insertItem( i18n("Two Digit"),this, SLOT(setSettings(int)),0 ,51,51 );
+    yearPopupMenu->insertItem( i18n("Two Digit Apostrophe"),this, SLOT(setSettings(int)),0 ,52,52 );
+    yearPopupMenu->insertItem( i18n("No Date on Minute/Hour Scale"),this, SLOT(setSettings(int)),0 ,53,53 );
 
     gridPopupMenu = new QPopupMenu(this);
-    myPopupMenu->insertItem (tr("Grid"),gridPopupMenu,5);
-    gridPopupMenu->insertItem( tr("Show minor grid"),this, SLOT(setSettings(int)),0 ,10,10 );
-    gridPopupMenu->insertItem( tr("Show major grid"),this, SLOT(setSettings(int)),0 ,11,11 );
-    gridPopupMenu->insertItem( tr("Show no grid"),this, SLOT(setSettings(int)),0 ,12,12 );
-    myPopupMenu->insertItem( tr("Print"),this, SLOT(setSettings(int)),0 ,30,30 );
+    myPopupMenu->insertItem (i18n("Grid"),gridPopupMenu,5);
+    gridPopupMenu->insertItem( i18n("Show minor grid"),this, SLOT(setSettings(int)),0 ,10,10 );
+    gridPopupMenu->insertItem( i18n("Show major grid"),this, SLOT(setSettings(int)),0 ,11,11 );
+    gridPopupMenu->insertItem( i18n("Show no grid"),this, SLOT(setSettings(int)),0 ,12,12 );
+    myPopupMenu->insertItem( i18n("Print"),this, SLOT(setSettings(int)),0 ,30,30 );
     connect(myPopupMenu, SIGNAL (  aboutToShow () ) , this, SLOT( preparePopupMenu() )) ;
     flagZoomToFit = false;
     setShowMinorTicks( true );
@@ -770,7 +770,7 @@ void  KDTimeHeaderWidget::preparePopupMenu()
     myPopupMenu->setItemVisible ( 4, flagShowYear );
     myPopupMenu->setItemVisible ( 5, flagShowGrid);
     myPopupMenu->setItemVisible ( 30, flagShowPrint );
-    myPopupMenu->changeItem( 1, tr ("Zoom  ") + "(" +QString::number( zoomFactor(), 'f',3) +")" );
+    myPopupMenu->changeItem( 1, i18n("Zoom  ") + "(" + QString::number( zoomFactor(), 'f', 3 ) +")" );
     int i = 0;
     int id;
     while ( ( id = scalePopupMenu->idAt( i++ )) >= 0 ) {
@@ -2965,39 +2965,39 @@ KDGanttCanvasView::KDGanttCanvasView( KDGanttView* sender,QCanvas* canvas, QWidg
     onItem = new QPopupMenu( this );
     QPopupMenu * newMenu = new QPopupMenu( this );
     QPopupMenu * onView = new QPopupMenu( this );
-    onView->insertItem( tr( "Summary" ), this,
+    onView->insertItem( i18n( "Summary" ), this,
                         SLOT ( newRootItem( int ) ), 0, 0 );
-    onView->insertItem( tr( "Event" ), this,
+    onView->insertItem( i18n( "Event" ), this,
                         SLOT ( newRootItem( int ) ), 0, 1);
-    onView->insertItem( tr( "Task" ), this,
+    onView->insertItem( i18n( "Task" ), this,
                         SLOT ( newRootItem( int ) ), 0, 2 );
 
-    onItem->insertItem( tr( "New Root" ), onView );
-    newMenu->insertItem( tr( "Summary" ),
+    onItem->insertItem( i18n( "New Root" ), onView );
+    newMenu->insertItem( i18n( "Summary" ),
                          this, SLOT ( newChildItem(  int) ), 0, 0 );
-    newMenu->insertItem( tr( "Event" ),
+    newMenu->insertItem( i18n( "Event" ),
                          this, SLOT ( newChildItem( int ) ), 0, 1 );
-    newMenu->insertItem( tr( "Task" ),
+    newMenu->insertItem( i18n( "Task" ),
                          this, SLOT ( newChildItem( int ) ), 0, 2 );
 
-    onItem->insertItem( tr( "New Child" ), newMenu );
+    onItem->insertItem( i18n( "New Child" ), newMenu );
     QPopupMenu * afterMenu = new QPopupMenu( this );
-    afterMenu->insertItem( tr( "Summary" ),
+    afterMenu->insertItem( i18n( "Summary" ),
                            this, SLOT ( newChildItem(  int) ), 0, 0+4 );
-    afterMenu->insertItem( tr( "Event" ),
+    afterMenu->insertItem( i18n( "Event" ),
                            this, SLOT ( newChildItem( int ) ), 0, 1+4 );
-    afterMenu->insertItem( tr( "Task" ),
+    afterMenu->insertItem( i18n( "Task" ),
                            this, SLOT ( newChildItem( int ) ), 0, 2+4 );
-    onItem->insertItem( tr( "New After" ), afterMenu );
+    onItem->insertItem( i18n( "New After" ), afterMenu );
     QPopupMenu *pasteMenu = new QPopupMenu( this );
-    pasteMenu->insertItem( tr( "As Root" ),
+    pasteMenu->insertItem( i18n( "As Root" ),
                            this, SLOT ( pasteItem( int ) ), 0, 0 );
-    pasteMenu->insertItem( tr( "As Child" ),
+    pasteMenu->insertItem( i18n( "As Child" ),
                            this, SLOT ( pasteItem( int ) ), 0, 1 );
-    pasteMenu->insertItem( tr( "After" ),
+    pasteMenu->insertItem( i18n( "After" ),
                            this, SLOT ( pasteItem( int ) ), 0, 2 );
-    onItem->insertItem( tr( "Paste" ), pasteMenu, 3 );
-    onItem->insertItem( tr( "Cut Item" ), this, SLOT ( cutItem() ) );
+    onItem->insertItem( i18n( "Paste" ), pasteMenu, 3 );
+    onItem->insertItem( i18n( "Cut Item" ), this, SLOT ( cutItem() ) );
     onItem->setItemEnabled( 3, false );
     myMyContentsHeight = 0;
     _showItemAddPopupMenu = false;
