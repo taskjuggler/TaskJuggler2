@@ -56,7 +56,7 @@ void KtjResourceReport::generate()
     while ( ( res = static_cast<Resource *>( it.current() ) ) != 0 )
     {
         ++it;
-        if ( res->isGroup() ) // skip groups
+        if ( res->isGroup() || !isResourceLoaded( res ) ) // skip groups and unallocated resources
             continue;
         generatePrimaryRow( m_view, res, cols );
     }
@@ -153,4 +153,10 @@ bool KtjResourceReport::isResourceLoaded( Resource * res, Task * task ) const
 {
     const Interval ival( startDate().toTime_t(), endDate().toTime_t() );
     return ( task->getLoad( 0, ival, res ) > 0 );
+}
+
+bool KtjResourceReport::isResourceLoaded( Resource * res ) const
+{
+    const Interval ival( startDate().toTime_t(), endDate().toTime_t() );
+    return ( res->getLoad( 0, ival ) > 0 );
 }

@@ -69,10 +69,16 @@ private:
     void generateSecondaryRow( KListViewItem * parent, Resource * res, Task * task, int columns );
 
     /**
-     * Helper function for filtering the tasklist
+     * Helper function for filtering the task list
      * @return true if the Resource @p res is allocated to Task @p task during the report interval
      */
     bool isResourceLoaded( Resource * res, Task * task ) const;
+
+    /**
+     * Helper function for filtering the resource list
+     * @return true if the Resource @p res has some allocation during the report interval
+     */
+    bool isResourceLoaded( Resource * res ) const;
 };
 
 #endif
