@@ -33,6 +33,7 @@
 #include <kdialog.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kcompletion.h>
 
 ruFindDlg::ruFindDlg( QStringList data, QWidget* parent, const char* name )
     : KDialogBase( parent, name, false, i18n( "Resource Usage Search" ), User1|Close, User1,
@@ -77,7 +78,11 @@ ruFindDlg::ruFindDlg( QStringList data, QWidget* parent, const char* name )
     connect( leResource, SIGNAL( textChanged( const QString & ) ),
              this, SLOT( slotTextChanged( const QString & ) ) );
 
-    // TODO completion
+    // completion
+    KCompletion * comp = new KCompletion();
+    comp->setItems( m_data.gres( QRegExp( "^\\s+" ), "" ) );
+    leResource->setCompletionObject( comp );
+    leResource->setAutoDeleteCompletionObject( true );
 
     slotTextChanged( leResource->text() ); // update the Find button
 }
