@@ -53,18 +53,18 @@ TaskScenario::calcCompletionDegree(time_t now)
     {
         completionDegree = (100.0 / (end - start + 1)) * (now - start);
         status = InProgress;
-    }   
-    else 
+    }
+    else
     {
         status = OnTime;
         if (effort > 0.0)
         {
             completionDegree = (100.0 / effort) *
-                task->getLoad(index, Interval(start, now)); 
+                task->getLoad(index, Interval(start, now));
         }
         else if (length > 0.0)
         {
-            completionDegree = (100.0 / 
+            completionDegree = (100.0 /
                 task->getProject()->calcWorkingDays(Interval(start, end))) *
                 task->getProject()->calcWorkingDays(Interval(start, now));
         }
@@ -80,5 +80,4 @@ TaskScenario::calcCompletionDegree(time_t now)
         }
     }
 }
-
 

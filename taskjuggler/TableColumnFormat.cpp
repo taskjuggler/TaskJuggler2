@@ -13,7 +13,7 @@
 #include "TableColumnFormat.h"
 #include "ReportElement.h"
 
-TableColumnFormat::TableColumnFormat(const QString& i, ReportElement* e, 
+TableColumnFormat::TableColumnFormat(const QString& i, ReportElement* e,
                                      const QString& t) :
   id(i), el(e), title(t)
 {
@@ -34,6 +34,7 @@ TableColumnFormat::TableColumnFormat(const QString& i, ReportElement* e,
 
     fontFactor = 100;
     noWrap = FALSE;
+    hAlign = center;
 
     if (el)
         el->addColumnFormat(id, this);

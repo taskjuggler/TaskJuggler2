@@ -749,12 +749,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
 {
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-    {
-        qDebug("%s - %s", time2ISO(period.getStart()).latin1(),
-               time2ISO(period.getEnd()).latin1());
-
         return FALSE;
-    }
 
     /* If resource is a group, check members first. */
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
@@ -780,12 +775,7 @@ Resource::isAllocated(int sc, const Interval& period, const Task* task) const
 {
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-    {
-        qDebug("%s - %s", time2ISO(period.getStart()).latin1(),
-               time2ISO(period.getEnd()).latin1());
-
         return FALSE;
-    }
 
     /* If resource is a group, check members first. */
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)

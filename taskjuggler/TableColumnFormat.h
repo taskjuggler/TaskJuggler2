@@ -29,10 +29,16 @@ typedef void (ReportElement::*GenCellPtr) (TableCellInfo*);
 class TableColumnFormat
 {
 public:
+    enum HorizAlign { center = 0, left, right };
+
     TableColumnFormat(const QString& i, ReportElement* e, const QString& t);
     ~TableColumnFormat() { }
 
     const QString& getTitle() const { return title; }
+    HorizAlign getHAlign() const { return hAlign; }
+    int getFontFactor() const { return fontFactor; }
+    bool getNoWrap() const { return noWrap; }
+    RealFormat getRealFormat() const { return realFormat; }
 
     GenCellPtr genHeadLine1;
     GenCellPtr genHeadLine2;
@@ -47,7 +53,7 @@ public:
     GenCellPtr genSummaryLine1;
     GenCellPtr genSummaryLine2;
 
-    QString hAlign;
+    HorizAlign hAlign;
     int fontFactor;
     bool noWrap;
     RealFormat realFormat;
@@ -56,7 +62,7 @@ public:
 
 protected:
     TableColumnFormat() { }
-    
+
     QString id;
     ReportElement* el;
     QString title;
