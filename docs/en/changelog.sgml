@@ -406,6 +406,10 @@ some browsers.</para></listitem>
 <listitem><para>Fixed segfault in XML report generation. Only plan
 values are now exported in XML report.</para></listitem>
 
+<listitem><para>Task scheduling is also set when a fixed <link
+linkend="task_start">start</link> or <link
+linkend="task_end">end</link> date is specified.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

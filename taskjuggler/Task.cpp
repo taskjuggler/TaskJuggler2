@@ -438,11 +438,14 @@ Task::propagateStart(bool notUpwards)
 
 	/* If one end of a milestone is fixed, then the other end can be set as
 	 * well. */
-	if (milestone && end == 0)
+	if (milestone)
 	{
-		end = start - 1;
 		schedulingDone = TRUE;
-		propagateEnd(notUpwards);
+        if (end == 0)
+        {
+            end = start - 1;
+            propagateEnd(notUpwards);
+        }
 	}
 
 	/* Set start date to all previous that have no start date yet, but are
@@ -493,11 +496,14 @@ Task::propagateEnd(bool notUpwards)
 
 	/* If one end of a milestone is fixed, then the other end can be set as
 	 * well. */
-	if (milestone && start == 0)
+	if (milestone)
 	{
-		start = end + 1;
 		schedulingDone = TRUE;
-		propagateStart(notUpwards);
+        if (start == 0)
+        {
+            start = end + 1;
+            propagateStart(notUpwards);
+        }
 	}
 
 	/* Set start date to all followers that have no start date yet, but are

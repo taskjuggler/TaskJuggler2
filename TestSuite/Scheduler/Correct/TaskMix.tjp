@@ -73,6 +73,7 @@ task t8 "M2<-|" {
 task t9 "|->|" {
 	start 2003-01-06
 	end 2003-01-27
+	scheduling asap
 	allocate tux7
 }
 

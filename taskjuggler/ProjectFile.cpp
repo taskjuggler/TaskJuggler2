@@ -266,7 +266,8 @@ ProjectFile::parse()
 				}
 				if (resolution < 60 * 5)
 				{
-					errorMessage(i18n("timing resolution must be at least 5 min"));
+					errorMessage(i18n("timing resolution must be at least 5 "
+                                      "min"));
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);
@@ -576,7 +577,8 @@ ProjectFile::readProject()
 					return FALSE;
 				if (resolution < 60 * 5)
 				{
-					errorMessage(i18n("timing resolution must be at least 5 min"));
+					errorMessage(i18n("timing resolution must be at least 5 "
+                                      "min"));
 					return FALSE;
 				}
 				proj->setScheduleGranularity(resolution);
@@ -918,14 +920,42 @@ ProjectFile::readTaskBody(Task* task)
 			{
 				task->setMilestone();
 			}
-			else if READ_DATE(KW("start"), setStart(Task::Plan, val), 0)
-			else if READ_DATE(KW("end"), setEnd(Task::Plan, val), 1)
+            else if (token == KW("start"))
+            {
+                time_t val;
+                if (!readDate(val, 0))
+                    return FALSE;
+                task->setStart(Task::Plan, val);
+                task->setScheduling(Task::ASAP);
+            }
+            else if (token == KW("end"))
+            {
+                time_t val;
+                if (!readDate(val, 1))
+                    return FALSE;
+                task->setEnd(Task::Plan, val);
+                task->setScheduling(Task::ALAP);
+            }
+            else if (token == KW("actualstart"))
+            {
+                time_t val;
+                if (!readDate(val, 0))
+                    return FALSE;
+                task->setStart(Task::Actual, val);
+                task->setScheduling(Task::ASAP);
+            }
+            else if (token == KW("actualend"))
+            {
+                time_t val;
+                if (!readDate(val, 1))
+                    return FALSE;
+                task->setEnd(Task::Actual, val);
+                task->setScheduling(Task::ALAP);
+            }
 			else if READ_DATE(KW("minstart"), setMinStart(val), 0)
 			else if READ_DATE(KW("maxstart"), setMaxStart(val), 0)
 			else if READ_DATE(KW("minend"), setMinEnd(val), 0)
 			else if READ_DATE(KW("maxend"), setMaxEnd(val), 0)
-			else if READ_DATE(KW("actualstart"), setStart(Task::Actual, val), 0)
-			else if READ_DATE(KW("actualend"), setEnd(Task::Actual, val), 1)
 			else if (token == KW("length"))
 			{
 				double d;
@@ -982,7 +1012,8 @@ ProjectFile::readTaskBody(Task* task)
 				int complete = token.toInt();
 				if (complete < 0 || complete > 100)
 				{
-					errorMessage(i18n("Value of complete must be between 0 and 100"));
+					errorMessage(i18n("Value of complete must be between 0 "
+                                      "and 100"));
 					return FALSE;
 				}
 				task->setComplete(Task::Plan, complete);
@@ -1251,6 +1282,32 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
 		to = date2time(end) - 1;
 	}
 	return TRUE;
+}
+
+bool
+ProjectFile::readDate(time_t& val, time_t correction)
+{
+    QString token;
+    TokenType tt;
+    
+	if ((tt = nextToken(token)) != DATE)
+	{
+		errorMessage(i18n("Date expected"));
+		return FALSE;
+	}
+    
+    val = date2time(token) - correction;
+    if (val < proj->getStart() ||
+        val > proj->getEnd())
+    {
+        errorMessage(i18n("Date %s is outside of project time frame "
+                          "(%s - %s")
+                     .arg(time2ISO(val))
+                     .arg(time2ISO(proj->getStart()))
+                     .arg(time2ISO(proj->getEnd())));
+        return FALSE;
+    }
+    return TRUE;
 }
 
 bool
