@@ -1,10 +1,10 @@
 /*
  * Project.h - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -18,6 +18,7 @@
 
 #include <qlist.h>
 
+#include "ShiftList.h"
 #include "Task.h"
 #include "ResourceList.h"
 #include "VacationList.h"
@@ -25,6 +26,7 @@
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
+#include "ExportReport.h"
 #include "ReportXML.h"
 
 class Project
@@ -102,6 +104,15 @@ public:
 		return accountList.getAccount(id);
 	}
 
+	void addShift(Shift* s)
+	{
+		shiftList.inSort(s);
+	}
+	Shift* getShift(const QString& id)
+	{
+		return shiftList.getShift(id);
+	}
+
 	void setMinEffort(double m) { minEffort = m; }
 	double getMinEffort() const { return minEffort; }
 
@@ -137,6 +148,11 @@ public:
 		htmlAccountReports.append(a);
 	}
 
+	void addExportReport(ExportReport* e)
+	{
+		exportReports.append(e);
+	}
+
 	void addAllowedFlag(QString flag)
 	{
 		if (!isAllowedFlag(flag))
@@ -160,7 +176,13 @@ public:
 	bool needsActualDataForReports();
 	void removeActiveTask(Task* t);
 	void addActiveTask(Task* t);
-   
+
+	static void setDebugLevel(int l)
+   	{
+	   	debugLevel = l;
+		Task::setDebugLevel(l);   
+	}
+
 private:
 	bool checkSchedule();
 	void updateActiveTaskList(TaskList& sortedTasks);
@@ -217,6 +239,7 @@ private:
      * used. */
 	QStringList projectIDs;
 
+	ShiftList shiftList;
 	TaskList taskList;
 	ResourceList resourceList;
 	VacationList vacationList;
@@ -230,6 +253,9 @@ private:
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;
 	QList<HTMLAccountReport> htmlAccountReports;
+	QList<ExportReport> exportReports;
+
+	static int debugLevel;
 } ;
 
 #endif

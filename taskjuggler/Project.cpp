@@ -1,10 +1,10 @@
 /*
  * Project.cpp - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -17,6 +17,8 @@
 
 #include "Project.h"
 #include "Utility.h"
+
+int Project::debugLevel = 0;
 
 Project::Project()
 {
@@ -107,14 +109,16 @@ Project::pass2()
 	if (error)
 		return FALSE;
 
-	qWarning("Scheduling plan scenario...");
+	if (debugLevel > 0)
+		qWarning("Scheduling plan scenario...");
 	preparePlan();
 	schedule();
 	finishPlan();
 
 	if (hasActualValues)
 	{
-		qWarning("Scheduling actual scenario...");
+		if (debugLevel > 0)
+			qWarning("Scheduling actual scenario...");
 		prepareActual();
 		schedule();
 		finishActual();
@@ -198,12 +202,14 @@ Project::schedule()
 
 		if (timeDelta < 0)
 			continue;
-
+		uint i = 0;
 		do
 		{
 			done = TRUE;
+			i = 0;
 			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
 			{
+				i++;
 				if (!t->schedule(day, scheduleGranularity))
 				{
 					done = FALSE;
@@ -211,15 +217,17 @@ Project::schedule()
 				}
 			}
 		} while (!done);
+		if (i != activeAsap.count())
+			qFatal("activeAsap list corrupted");
 	}
 
 	if (!activeAsap.isEmpty() || !activeAlap.isEmpty())
 	{
 		for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
-			qWarning("Task %s does not fit into the project period",
+			qWarning("Task %s does not fit into the project time frame",
 					 t->getId().latin1());
 		for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
-			qWarning("Task %s does not fit into the project period",
+			qWarning("Task %s does not fit into the project time frame",
 					 t->getId().latin1());
 		error = TRUE;
 	}
@@ -259,7 +267,8 @@ Project::checkSchedule()
 void
 Project::generateReports()
 {
-	qWarning("Generating reports...");
+	if (debugLevel > 0)
+		qWarning("Generating reports...");
 
 	// Generate task reports
 	for (HTMLTaskReport* h = htmlTaskReports.first(); h != 0;
@@ -275,6 +284,10 @@ Project::generateReports()
 	for (HTMLAccountReport* r = htmlAccountReports.first(); r != 0;
 		 r = htmlAccountReports.next())
 		r->generate();
+
+	for (ExportReport* e = exportReports.first(); e != 0;
+		 e = exportReports.next())
+		e->generate();
 
 	if( xmlreport )
 	   xmlreport->generate();
@@ -310,6 +323,9 @@ Project::removeActiveTask(Task* t)
 {
 	t->setScheduled();
 
+	if (debugLevel > 2)
+		qWarning("Deactivating %s", t->getId().latin1());
+
 	if (t->getScheduling() == Task::ASAP)
 		activeAsap.removeRef(t);
 	else
@@ -322,11 +338,19 @@ Project::addActiveTask(Task* t)
 	if (t->getScheduling() == Task::ASAP)
 	{
 		if (activeAsap.findRef(t) == -1)
+		{
+			if (debugLevel > 2)
+				qWarning("Activating %s", t->getId().latin1());
 			activeAsap.inSort(t);
+		}
 	}
 	else
 	{
 		if (activeAlap.findRef(t) == -1)
+		{
+			if (debugLevel > 2)
+				qWarning("Activating %s", t->getId().latin1());	
 			activeAlap.inSort(t);
+		}
 	}
 }

@@ -4,7 +4,7 @@
  * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -140,6 +140,9 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 
 Resource::~Resource()
 {
+	for (int i = 0; i < 7; i++)
+		delete workingHours[i];
+
 	if (planScoreboard)
 	{
 		for (uint i = 0; i < sbSize; i++)
@@ -185,6 +188,15 @@ Resource::initScoreboard()
 	for (time_t day = project->getStart(); day < project->getEnd();
 		 day = sameTimeNextDay(day))
 	{
+		for (ShiftSelection* sl = shifts.first(); sl != 0;
+				sl = shifts.next())
+		{
+			if (sl->getPeriod().contains(day))
+			{
+				// TODO: Not yet implemented.
+			}
+		}
+		
 		// Iterate through all the work time intervals for the week day.
 		const int dow = dayOfWeek(day);
 		for (Interval* i = workingHours[dow]->first(); i != 0;

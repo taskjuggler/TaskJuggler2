@@ -1,10 +1,10 @@
 /*
  * task.cpp - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -48,6 +48,8 @@
 
 #include "Task.h"
 #include "Project.h"
+
+int Task::debugLevel = 0;
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 		   const QString f, int l)
@@ -188,10 +190,14 @@ Task::schedule(time_t& date, time_t slotDuration)
 			doneLength = 0.0;
 			workStarted = FALSE;
 			tentativeEnd = date + slotDuration - 1;
+			if (debugLevel > 2)
+				qWarning("Scheduling of %s starts at %s (%s)",
+						 id.latin1(), time2ISO(lastSlot).latin1(),
+						 time2ISO(date).latin1());
 		}
 		/* Do not schedule anything if the time slot is not directly
 		 * following the time slot that was previously scheduled. */
-		if (date != lastSlot + 1)
+		if (!((date - slotDuration <= lastSlot) && (lastSlot < date)))
 			return !limitChanged;
 		lastSlot = date + slotDuration - 1;
 	}
@@ -205,13 +211,22 @@ Task::schedule(time_t& date, time_t slotDuration)
 			doneLength = 0.0;
 			workStarted = FALSE;
 			tentativeStart = date;
+			if (debugLevel > 2)
+				qWarning("Scheduling of ALAP task %s starts at %s (%s)",
+						 id.latin1(), time2ISO(lastSlot).latin1(),
+						 time2ISO(date).latin1());
 		}
-		/* Do not schedule anything if the currently time slot is not
+		/* Do not schedule anything if the current time slot is not
 		 * directly preceeding the previously scheduled time slot. */
-		if (date + slotDuration != lastSlot)
+		if (!((date + slotDuration <= lastSlot) &&
+		   	(lastSlot < date + 2 * slotDuration)))
 			return !limitChanged;
 		lastSlot = date;
 	}
+
+	if (debugLevel > 3)
+		qWarning("Scheduling %s at %s",
+				 id.latin1(), time2ISO(date).latin1());
 
 	if ((duration > 0.0) || (length > 0.0))
 	{
@@ -224,6 +239,10 @@ Task::schedule(time_t& date, time_t slotDuration)
 		if (!(isWeekend(date) || project->isVacation(date)))
 			doneLength += ((double) slotDuration) / ONEDAY;
 
+		if (debugLevel > 4)
+			qWarning("Length: %f/%f   Duration: %f/%f",
+					 doneLength, length,
+					 doneDuration, duration);
 		// Check whether we are done with this task.
 		if ((length > 0.0 && doneLength >= length * 0.999999) ||
 			(duration > 0.0 && doneDuration >= duration * 0.999999))
@@ -369,11 +388,18 @@ Task::propagateStart(bool safeMode)
 	if (start == 0)
 		return;
 
+	if (debugLevel > 1)
+		qWarning("PS1: Setting start of %s to %s",
+				 id.latin1(), time2ISO(start).latin1());
+
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end == 0 && t->scheduling == ALAP &&
 			t->latestEnd() != 0)
 		{
 			t->end = t->latestEnd();
+			if (debugLevel > 1)
+				qWarning("PS2: Setting end of %s to %s",
+						 t->id.latin1(), time2ISO(t->end).latin1());
 			t->propagateEnd(safeMode);
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
@@ -387,6 +413,9 @@ Task::propagateStart(bool safeMode)
 			t->sub.isEmpty() && t->scheduling == ASAP)
 		{
 			t->start = start;
+			if (debugLevel > 1)
+				qWarning("PS3: Setting start of %s to %s",
+						 t->id.latin1(), time2ISO(t->start).latin1());	 
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 			t->propagateStart(safeMode);
@@ -403,11 +432,18 @@ Task::propagateEnd(bool safeMode)
 	if (end == 0)
 		return;
 
+	if (debugLevel > 1)
+		qWarning("PE1: Setting end of %s to %s",
+				 id.latin1(), time2ISO(end).latin1());
+
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (t->start == 0 && t->scheduling == ASAP &&
 			t->earliestStart() != 0)
 		{
 			t->start = t->earliestStart();
+			if (debugLevel > 1)
+				qWarning("PE2: Setting start of %s to %s",
+						 t->id.latin1(), time2ISO(t->start).latin1());
 			t->propagateStart(safeMode);
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
@@ -419,6 +455,9 @@ Task::propagateEnd(bool safeMode)
 			t->sub.isEmpty() && t->scheduling == ALAP)
 		{
 			t->end = end;
+			if (debugLevel > 1)
+				qWarning("PE3: Setting end of %s to %s",
+						 t->id.latin1(), time2ISO(t->end).latin1());
 			if (safeMode && t->isActive())
 				project->addActiveTask(t);
 			t->propagateEnd(safeMode);
@@ -556,7 +595,7 @@ Task::earliestStart()
 			return 0;
 		// Milestones are assumed to have duration 0.
 		if (t->end > date)
-			date = t->end + (t->start == t->end ? 0 : 1);
+			date = t->end + (t->milestone ? 0 : 1);
 	}
 
 	return date;

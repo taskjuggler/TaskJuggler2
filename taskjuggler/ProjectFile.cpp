@@ -4,7 +4,7 @@
  * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -12,6 +12,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stream.h>
 #include <unistd.h>
 
@@ -239,7 +240,7 @@ FileInfo::nextToken(QString& token)
 				token += c;
 			if (c == '-')
 			{
-				// this must be a ISO date yyyy-mm-dd[-hh:mm]
+				// this must be a ISO date yyyy-mm-dd[[-hh:mm]-TZ]
 				getDateFragment(token, c);
 				if (c != '-')
 				{
@@ -256,6 +257,13 @@ FileInfo::nextToken(QString& token)
 						return EndOfFile;
 					}
 					getDateFragment(token, c);
+				}
+				int i = 0;
+				if (c == '-')
+				{
+					token += c;
+					while ((c = getC()) != EOF && isalnum(c) && i++ < 12)
+						token += c;
 				}
 				ungetC(c);
 				return DATE;
@@ -522,6 +530,12 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
+			else if (token == "shift")
+			{
+				if (!readShift(0))
+					return FALSE;
+				break;	
+			}
 			else if (token == "vacation")
 			{
 				time_t from, to;
@@ -776,6 +790,12 @@ ProjectFile::parse()
 					return FALSE;
 				break;
 			}
+			else if (token == "export")
+			{
+				if (!readExportReport())
+					return FALSE;
+				break;
+			}
 			else if( token == "kotrusmode" )
 			{
 			   if( kotrus )
@@ -919,19 +939,17 @@ ProjectFile::readTask(Task* parent)
 	}
 
 	if (parent)
-	{
 		id = parent->getId() + "." + id;
-		// We need to check that the task id has not been declared before.
-		TaskList tl;
-		parent->getSubTaskList(tl);
-		for (Task* t = tl.first(); t != 0; t = tl.next())
-			if (t->getId() == id)
-			{
-				fatalError(QString().sprintf(
-					"Task %s has already been declared", id.latin1()));
-				return FALSE;
-			}
-	}
+	
+	// We need to check that the task id has not been declared before.
+	TaskList tl = proj->getTaskList();
+	for (Task* t = tl.first(); t != 0; t = tl.next())
+		if (t->getId() == id)
+		{
+			fatalError(QString().sprintf
+					   ("Task %s has already been declared", id.latin1()));
+			return FALSE;
+		}
 
 	Task* task = new Task(proj, id, name, parent, getFile(), getLine());
 
@@ -1347,6 +1365,29 @@ ProjectFile::readResource(Resource* parent)
 				
 				r->setWorkingHours(dow, l);
 			}
+			else if (token == "shift")
+			{
+				QString id;
+				if (nextToken(id) != ID)
+				{
+					fatalError("Shift ID expected");
+					return FALSE;
+				}
+				Shift* s;
+				if ((s = proj->getShift(id)) == 0)
+				{
+					fatalError("Unknown shift");
+					return FALSE;
+				}
+				time_t from, to;
+				if (!readVacation(from, to))
+					return FALSE;
+				if (!r->addShift(Interval(from, to), s))
+				{
+					fatalError("Shift interval overlaps with other");
+					return FALSE;
+				}
+			}
 			else if (token == "flags")
 			{
 				for ( ; ; )
@@ -1382,6 +1423,79 @@ ProjectFile::readResource(Resource* parent)
 		openFiles.last()->returnToken(tt, token);
 
 	proj->addResource(r);
+
+	return TRUE;
+}
+
+bool
+ProjectFile::readShift(Shift* parent)
+{
+	// Syntax: 'shift id "name" { ... }
+	QString id;
+	if (nextToken(id) != ID)
+	{
+		fatalError("ID expected");
+		return FALSE;
+	}
+	QString name;
+	if (nextToken(name) != STRING)
+	{
+		fatalError("String expected");
+		return FALSE;
+	}
+
+	if (proj->getShift(id))
+	{
+		fatalError(QString().sprintf(
+			"Shift %s has already been defined", id.latin1()));
+		return FALSE;
+	}
+
+	Shift* s = new Shift(proj, id, name, parent);
+
+	TokenType tt;
+	QString token;
+	if ((tt = nextToken(token)) == LCBRACE)
+	{
+		// read optional attributes
+		while ((tt = nextToken(token)) != RCBRACE)
+		{
+			if (tt != ID)
+			{
+				fatalError(QString("Unknown attribute '") + token + "'");
+				return FALSE;
+			}
+			if (token == "shift")
+			{
+				if (!readShift(s))
+					return FALSE;
+			}
+			else if (token == "workinghours")
+			{
+				int dow;
+				QPtrList<Interval>* l = new QPtrList<Interval>();
+				if (!readWorkingHours(dow, l))
+					return FALSE;
+				
+				s->setWorkingHours(dow, l);
+			}
+			else if (token == "include")
+			{
+				if (!readInclude())
+					return FALSE;
+				break;
+			}
+			else
+			{
+				fatalError(QString("Unknown attribute '") + token + "'");
+				return FALSE;
+			}
+		}
+	}
+	else
+		openFiles.last()->returnToken(tt, token);
+
+	proj->addShift(s);
 
 	return TRUE;
 }
@@ -1662,7 +1776,7 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 		fatalError("Weekday expected");
 		return FALSE;
 	}
-	const char* days[] = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+	const char* days[] = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
 	for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
 		if (days[dayOfWeek] == day)
 			break;
@@ -1671,6 +1785,14 @@ ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
 		fatalError("Weekday expected");
 		return FALSE;
 	}
+
+	QString token;
+	TokenType tt;
+	if ((tt = nextToken(token)) == ID && token == "off")
+		return TRUE;
+	else
+		returnToken(tt, token);
+
 	for ( ; ; )
 	{
 		QString start;
@@ -2026,6 +2148,64 @@ ProjectFile::readHTMLAccountReport()
 	return TRUE;
 }
 
+bool
+ProjectFile::readExportReport()
+{
+	QString token;
+	if (nextToken(token) != STRING)
+	{
+		fatalError("File name expected");
+		return FALSE;
+	}
+	
+	ExportReport* report;
+	report = new ExportReport(proj, token);
+		
+	TokenType tt;
+	if ((tt = nextToken(token)) != LCBRACE)
+	{
+		openFiles.last()->returnToken(tt, token);
+		return TRUE;
+	}
+
+	for ( ; ; )
+	{
+		if ((tt = nextToken(token)) == RCBRACE)
+			break;
+		else if (tt != ID)
+		{
+			fatalError("Attribute ID or '}' expected");
+			return FALSE;
+		}
+		
+		if (token == "hidetask")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setHideTask(et);
+		}
+		else if (token == "rolluptask")
+		{
+			Operation* op;
+			if ((op = readLogicalExpression()) == 0)
+				return FALSE;
+			ExpressionTree* et = new ExpressionTree(op);
+			report->setRollUpTask(et);
+		}
+		else
+		{
+			fatalError("Illegal attribute");
+			return FALSE;
+		}
+	}
+
+	proj->addExportReport(report);
+
+	return TRUE;
+}
+
 Operation*
 ProjectFile::readLogicalExpression(int precedence)
 {
@@ -2179,14 +2359,25 @@ time_t
 ProjectFile::date2time(const QString& date)
 {
 	int y, m, d, hour, min;
-	if (date.find(':') == -1)
-	{
-		sscanf(date, "%d-%d-%d", &y, &m, &d);
+	char tZone[16] = "";
+	if (sscanf(date, "%d-%d-%d-%d:%d-%s", &y, &m, &d, &hour, &min, tZone) == 6)
+		;
+	else if (sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min) == 5)
+		tZone[0] = '\0';
+	else if (sscanf(date, "%d-%d-%d", &y, &m, &d) == 3)
+	{			
+		tZone[0] = '\0';
 		hour = min = 0;
 	}
-	else
-		sscanf(date, "%d-%d-%d-%d:%d", &y, &m, &d, &hour, &min);
 
+	char savedTZ[16] = "";
+	if (strcmp(tZone, "") != 0)
+	{
+		if (getenv("TZ"))
+			strcpy(getenv("TZ"), savedTZ);
+		setenv("TZ", tZone, 1);
+	}
+	
 	if (y < 1970)
 	{
 		fatalError("Year must be larger than 1969");
@@ -2205,6 +2396,11 @@ ProjectFile::date2time(const QString& date)
 
 	struct tm t = { 0, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
 	time_t localTime = mktime(&t);
+
+	if (strcmp(savedTZ, "") != 0) 
+		setenv("TZ", savedTZ, 1);
+	else
+		unsetenv("TZ");
 
 	return localTime;
 }

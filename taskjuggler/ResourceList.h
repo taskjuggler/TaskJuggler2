@@ -1,10 +1,10 @@
 /*
  * ResourceList.h - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -21,6 +21,7 @@
 #include "Interval.h"
 #include "VacationList.h"
 #include "CoreAttributes.h"
+#include "ShiftList.h"
 
 class Project;
 class Task;
@@ -139,6 +140,12 @@ public:
 		delete workingHours[day];
 		workingHours[day] = l;
 	}
+
+	bool addShift(const Interval& i, Shift* s)
+	{
+		return shifts.insert(new ShiftSelection(i, s));
+	}
+
 	bool isAvailable(time_t day, time_t duration, int loadFactor, Task* t);
 
 	void book(Booking* b);
@@ -209,8 +216,17 @@ private:
 	/// KoTrus ID, ID by which the resource is known to KoTrus.
 	QString kotrusId;
 
-	/// The list of working or opening hours for the resource.
+	/// The list of standard working or opening hours for the resource.
 	QList<Interval>* workingHours[7];
+
+	/**
+	 * In addition to the standard working hours a set of shifts can be
+	 * defined. This is useful when the working hours change over time.
+	 * A shift is only active in a defined interval. If no interval is
+	 * defined for a period of time the standard working hours of the
+	 * resource are used.
+	 */
+	ShiftSelectionList shifts;
 
 	/// List of all intervals the resource is not available.
 	QList<Interval> vacations;

@@ -1,10 +1,10 @@
 /*
  * task.h - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -310,6 +310,8 @@ public:
 
 	QDomElement xmlElement( QDomDocument& doc );
 
+	static void setDebugLevel(int l) { debugLevel = l; }
+
 private:
 	bool scheduleContainer(bool safeMode);
 	Task* subFirst() { return (Task*) sub.first(); }
@@ -520,6 +522,8 @@ private:
 
 	/// A list of all the resources booked for this task.
 	QPtrList<Resource> bookedResources;
+
+	static int debugLevel;
 } ;
 
 #endif

@@ -322,3 +322,6 @@ task sl80.outOfScope "Out of Scope" {
 
   task !!global "Global Task" { milestone depends sl80.sl80start }
 }
+
+export "test.tjsp" { }
+

@@ -1,10 +1,10 @@
 /*
  * ProjectFile.h - TaskJuggler
  *
- * Copyright (c) 2001 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms version 2 of the GNU General Public License as
+ * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
  * $Id$
@@ -99,6 +99,7 @@ private:
 	bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
 					  QString* = 0);
 	bool readAccount(Account* parent);
+	bool readShift(Shift* parent);
 	bool readCredit(Account* a);
 	bool readAllocate(Task* t);
 	bool readPlanTimeFrame(Task* t, double& d);
@@ -107,6 +108,7 @@ private:
 	bool readPriority(int& priority);
 	bool readHTMLReport(const QString& reportType);
 	bool readHTMLAccountReport();
+	bool readExportReport();
 	bool readXMLTaskReport();
 	Operation* readLogicalExpression(int precedence = 0);
 	bool readSorting(Report* report, int which);
