@@ -1211,7 +1211,3 @@ msgstr "Vyjmout položku"
 #: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
 msgid "Tasklink"
 msgstr ""
-
-#~ msgid "matches reqexp"
-#~ msgstr "odpovídá reg. výrazu"
-
