@@ -38,6 +38,7 @@ KTVHeader::KTVHeader( QWidget *parentWidget, const char *name)
     m_headerFont.setFamily( "Helvetica [Cronyx]" );
     m_headerFont.setPointSize(8);
 
+    setBackgroundColor( Qt::white );
     // setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ));
 }
 
@@ -66,6 +67,7 @@ void KTVHeader::setInterval( time_t start, time_t end )
     m_start = start;
     m_end = end;
     slSetDayWidth( m_dayWidth ); // to trigger resizing of contents
+    updateContents();
 
 }
 
@@ -301,11 +303,10 @@ int KTVHeader::midnightToX( time_t t )
     return m_dayWidth * daysBetween( m_start, midnight(t) );
 }
 
-int KTVHeader::timeToX
-( time_t t )
+int KTVHeader::timeToX( time_t t )
 {
-    if( t < m_start ) return 0;
-    if( t > m_end ) return width();
+    // if( t < m_start ) return 0;
+    // if( t > m_end ) return width();
 
     double p = double(m_dayWidth)/double(ONEDAY);
 
