@@ -47,14 +47,28 @@
  <!ELEMENT member (#PCDATA|para|varname|link)*>
  <!ELEMENT screen (#PCDATA)>
  
+  <!ENTITY example_alternative SYSTEM
+   "../../TestSuite/Syntax/Correct/Alternative.tjp">
+  <!ENTITY example_booking SYSTEM
+   "../../TestSuite/Syntax/Correct/Booking.tjp">
   <!ENTITY example_depends SYSTEM
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
+  <!ENTITY example_journalentry SYSTEM
+   "../../TestSuite/Syntax/Correct/Journal.tjp">
   <!ENTITY example_limits SYSTEM
    "../../TestSuite/Syntax/Correct/Limits-1.tjp">
+  <!ENTITY example_mandatory SYSTEM
+   "../../TestSuite/Syntax/Correct/Mandatory.tjp">
+  <!ENTITY example_numberformat SYSTEM
+   "../../TestSuite/Syntax/Correct/Numberformat.tjp">
+  <!ENTITY example_persistent SYSTEM
+   "../../TestSuite/Syntax/Correct/Persistent.tjp">
   <!ENTITY example_precedes SYSTEM
    "../../TestSuite/Syntax/Correct/Precedes1.tjp">
+  <!ENTITY example_select SYSTEM
+   "../../TestSuite/Syntax/Correct/Select.tjp">
 ]>
 
 <properties>
@@ -155,7 +169,7 @@ task.</para></descr>
   </attributes>
   <optattributes>
    <optattr>alternative</optattr>
-   <optattr>load</optattr>
+   <optattr>limits</optattr>
    <optattr>mandatory</optattr>
    <optattr>persistent</optattr>
    <optattr>select</optattr>
@@ -166,13 +180,17 @@ task.</para></descr>
   </seealso>
  </property>
  <property name="alternative" id="alternative" inheritable="No">
-  <descr><para>A list of alternative resources for an allocation.</para></descr>
+  <descr><para>A list of alternative resources for an allocation.
+  There is no difference between the allocated resource and its
+  alternatives. If no selection criteria is given, TaskJuggler picks
+  the resource that it finds most appropriate.</para></descr>
   <attributes>
    <attr name="resource" type="ID" list="1"/>
   </attributes>
   <seealso>
    <also>select</also>
   </seealso>
+  <example>&example_alternative;</example>
  </property>
  <property name="barlabels" id="barlabels" inheritable="No">
   <descr><para>Specifies the contense of the Gantt chart like bars in
@@ -199,7 +217,17 @@ HTML calendar columns. The default is to show load values.</para></descr>
   </freestyle>
  </property>
  <property name="booking" id="booking" inheritable="No" scenario="Yes">
-  <descr><para></para></descr>
+  <descr><para>The booking attribute can be used to report completed
+  work. This can be part of the necessary effort or the whole effort.
+  When the scenario is scheduled in projection mode, TaskJuggler
+  assumes that only the work reported with bookings has been done up
+  to now. It then schedules a plan for the still missing effort.</para>
+  <para>This attribute is also used within export reports to describe
+  the details of a scheduled project.</para>
+  <para>The sloppy attribute can be used when you want to skip
+  non-working time or other allocations automatically. If it's not
+  given, all bookings must only cover working time for the
+  resource.</para></descr>
   <attributes>
    <attr name="start" type="DATE"/>
    <attr name="end" type="DATE"/>
@@ -211,6 +239,7 @@ HTML calendar columns. The default is to show load values.</para></descr>
   <seealso>
    <also>projection</also>
   </seealso>
+  <example>&example_booking;</example>
  </property>
  <property name="caption" id="caption" inheritable="No">
   <descr><para>Specifies the caption used for a report table.</para></descr>
@@ -517,7 +546,6 @@ bottom of the report.</para></descr>
    <attr name="text" type="STRING"/>
   </attributes>
   <seealso>
-   <also>booking</also>
    <also>headline</also>
    <also>caption</also>
   </seealso>
@@ -615,11 +643,12 @@ should be shown at a maximum.</para></descr>
    <attr name="negativesuffix" type="STRING"/>
    <attr name="thousandseparator" type="STRING"/>
    <attr name="fractionseparator" type="STRING"/>
-   <attr name="fractiondigits" type="STRING"/>
+   <attr name="fractiondigits" type="INTEGER"/>
   </attributes>
   <seealso>
    <also>currency</also>
   </seealso>
+  <example>&example_numberformat;</example>
  </property>
  <property name="dailymax" id="dailymax" inheritable="Yes">
   <descr><para>Sets the daily limit of a resource usage or a resource
@@ -1147,6 +1176,16 @@ is defined within the included file.</para></descr>
    <also>export</also>
   </seealso>
  </property>
+ <property name="journalentry" id="journalentry" inheritable="No">
+  <descr><para>Journal entries are meant for documentation purposes.
+  They consist of a date and a text entry. Each journal entry adds a
+  new entry to the journal of the property.</para></descr>
+  <attributes>
+   <attr name="date" type="DATE"/>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <example>&example_journalentry;</example>
+ </property>
  <property name="kotrusid" id="kotrusid" inheritable="Yes">
   <descr><para>The KoTrus ID of the account (cost object). This is a
 special reserved keyword.</para></descr>
@@ -1187,7 +1226,11 @@ no global vacation of or global working time defined.</para>
 or of the allocation of a resource to a task. This property replaces
 the less flexible properties <link
 linkend="PROPERTY_maxeffort">maxeffort</link> and <link
-linkend="PROPERTY_load">load</link>.</para></descr>
+linkend="PROPERTY_load">load</link>.</para>
+<para>When applied to an allocation this limits the use of all
+alternative resources or group memembers as a whole. There has been a
+bug in version 2.0.x that resulted in faulty limit computation. This
+has been fixed with version 2.1.</para></descr>
   <optattributes>
    <optattr>dailymax</optattr>
    <optattr>weeklymax</optattr>
@@ -1297,9 +1340,12 @@ This macro call ${?foo} will expand to nothing if foo is undefined.
   </freestyle>
  </property>
  <property name="mandatory" id="mandatory" inheritable="No">
-  <descr><para>Makes a resource allocation mandatory. In this case the
-other resource allocations of the task will only be made when the
-mandatory resources are available as well.</para></descr>
+  <descr><para>Makes a resource allocation mandatory. This means, that
+  for each time slot only then resources are allocated when all
+  mandatory resources are available. So either all mandatory resources
+  can be allocated for the time slot, or no resource will be
+  allocated.</para></descr>
+  <example>&example_mandatory;</example>
  </property>
  <property name="maxeffort" id="maxeffort" inheritable="No">
   <descr><para>This property has been replaced by <link
@@ -1425,17 +1471,21 @@ should be shown at a maximum.</para></descr>
    <attr name="negativesuffix" type="STRING"/>
    <attr name="thousandseparator" type="STRING"/>
    <attr name="fractionseparator" type="STRING"/>
-   <attr name="fractiondigits" type="STRING"/>
+   <attr name="fractiondigits" type="INTEGER"/>
   </attributes>
+  <example>&example_numberformat;</example>
  </property>
  <property name="persistent" id="persistent" inheritable="No">
-  <descr><para>Specifies that the resource is used for the whole task.
-This is usefull when several alternative resources have been
-specified. Normaly the selected resource can change after each
-timeslot.</para></descr>
+  <descr><para>Specifies that once a resource is picked from the list
+  of alternatives this resource is used for the whole task.
+  This is usefull when several alternative resources have been
+  specified. Normaly the selected resource can change after each
+  break. A break is an interval of at least one timeslot where no
+  resources were available.</para></descr>
   <seealso>
    <also>alternative</also>
   </seealso>
+  <example>&example_persistent;</example>
  </property>
  <property name="priority" id="priority" inheritable="No">
   <descr><para>Specifies a priority between 1 and 1000. A task with
@@ -1506,6 +1556,7 @@ number from a revision control system.</para>
    <optattr>dailyworkinghours</optattr>
    <optattr>extend</optattr>
    <optattr>include</optattr>
+   <optattr>journalentry</optattr>
    <optattr>now</optattr>
    <optattr>numberformat</optattr>
    <optattr>scenario</optattr>
@@ -1615,6 +1666,7 @@ name="name" type="STRING"/> </attributes>
    <optattr>booking</optattr>
    <optattr>efficiency</optattr>
    <optattr>flags</optattr>
+   <optattr>journalentry</optattr>
    <optattr>kotrusid</optattr>
    <optattr>maxeffort</optattr>
    <optattr>limits</optattr>
@@ -1721,7 +1773,10 @@ end to start (As Late As Possible, <varname>alap</varname>).</para></descr>
   <descr><para>The select functions controls which resource is picked
 from an allocation and it's alternatives. The selection is
 re-evaluated each time the resource used in the previous time slot
-becomes unavailable.</para></descr>
+becomes unavailable.</para>
+<para>Even for non-persistent allocations a change in the resource
+selection only happends if the resource used in the previous (or next
+for ASAP tasks) time slot has become unavailable.</para></descr>
   <attributes>
    <attr name="mode" type="ID">
     <para>See table below for possible values.</para>
@@ -1754,23 +1809,40 @@ becomes unavailable.</para></descr>
    
    </simplelist></para>
   </freestyle>
+  <example>&example_select;</example>
  </property>
  <property name="sloppy" id="sloppy" inheritable="No">
   <descr><para>Controls how strict TaskJuggler checks booking
-intervals for conflicts with vacation and other bookings. In case the
-error is surpressed the booking will not overwrite the existing
-bookings. It will avoid the already assigned intervals during booking.
-</para></descr>
+  intervals for conflicts with vacation and other bookings. In case
+  the error is surpressed the booking will not overwrite the existing
+  bookings. It will avoid the already assigned intervals during
+  booking.</para></descr>
   <attributes>
    <attr name="value" type="INTEGER">
-    <para>Number between 0 and 3. 0 (default): period may not contain
-any off-duty hours, vacation or other task assignments. 1: period may
-contain off-duty hours, but not vacation or other task assignments. 2:
-period may contain off-duty hours and vacation, but no other task
-assignments. 3: Period may overlap with off-duty hours, vacation or
-other task assignments. These are silently skipped.</para>
+    <para>Number between 0 and 3. See table below.</para>
    </attr>
   </attributes>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>sloppy 0:</varname></member>
+   <member>Period may not contain any off-duty hours, vacation or
+   other task assignments.</member>
+
+   <member><varname>sloppy 1:</varname></member>
+   <member>Period may contain off-duty hours, but not vacation or
+   other task assignments.</member>
+   
+   <member><varname>sloppy 2:</varname></member>
+   <member>Period may contain off-duty hours and vacation, but no
+   other task assignments.</member>
+
+   <member><varname>sloppy 3:</varname></member>
+   <member>Period may overlap with off-duty hours, vacation or other
+   task assignments. These are silently skipped.</member>
+   
+   </simplelist></para>
+  </freestyle>
  </property>
  <property name="shift" id="shift" inheritable="No">
   <descr><para>When several resource have the same working hours,
@@ -2039,6 +2111,7 @@ what task.</para></descr>
    <optattr>endcredit</optattr>
    <optattr>end_task</optattr>
    <optattr>flags</optattr>
+   <optattr>journalentry</optattr>
    <optattr>length</optattr>
    <optattr>maxend</optattr>
    <optattr>maxstart</optattr>
