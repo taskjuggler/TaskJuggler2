@@ -26,7 +26,7 @@ class ShiftList : public CoreAttributesList
 public:
 	ShiftList()
 	{
-		sorting = Pointer;
+		sorting = IndexUp;
 	}
 	~ShiftList() { }
 

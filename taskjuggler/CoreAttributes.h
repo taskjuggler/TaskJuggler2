@@ -23,10 +23,10 @@ class CoreAttributes;
 class CoreAttributesList : public QPtrList<CoreAttributes>
 {
 public:
-	CoreAttributesList() { sorting = Pointer; }
+	CoreAttributesList() { sorting = Sequence; }
 	virtual ~CoreAttributesList();
 
-	enum SortCriteria { Pointer, TreeMode, NameUp, NameDown, FullNameUp,
+	enum SortCriteria { Sequence, TreeMode, NameUp, NameDown, FullNameUp,
 						FullNameDown, IdUp, IdDown, IndexUp, IndexDown, 
 						StartUp, StartDown, EndUp, EndDown,
 						PrioUp, PrioDown,
@@ -63,7 +63,8 @@ public:
 	uint getIndex() const { return index; }
 
 	void setSequenceNo(uint no) { sequenceNo = no; }
-
+	uint getSequenceNo() const { return sequenceNo; }
+	
 	Project* getProject() { return project; }
 
 	void setName(const QString& n) { name = n; }

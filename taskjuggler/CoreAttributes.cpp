@@ -47,8 +47,8 @@ CoreAttributesList::compareItems(QCollection::Item i1, QCollection::Item i2)
 
 	switch (sorting)
 	{
-	case Pointer:
-		return c1 - c2;
+	case Sequence:
+			return c2->getSequenceNo() - c1->getSequenceNo();
 	case TreeMode:
 	case FullNameDown:
 	{

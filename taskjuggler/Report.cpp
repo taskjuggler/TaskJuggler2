@@ -234,7 +234,7 @@ Report::sortTaskList(TaskList& filteredList)
 	TaskList list = filteredList;
 	if (taskSortCriteria == CoreAttributesList::TreeMode)
 	{
-		filteredList.setSorting(CoreAttributesList::Pointer);
+		filteredList.setSorting(CoreAttributesList::IndexUp);
 		for (Task* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{
@@ -288,7 +288,7 @@ Report::sortResourceList(ResourceList& filteredList)
 	ResourceList list = filteredList;
 	if (resourceSortCriteria == CoreAttributesList::TreeMode)
 	{
-		filteredList.setSorting(ResourceList::Pointer);
+		filteredList.setSorting(ResourceList::IndexUp);
 		for (Resource* r = filteredList.first(); r != 0;
 			 r = filteredList.next())
 		{
@@ -337,7 +337,7 @@ Report::sortAccountList(AccountList& filteredList)
 	AccountList list = filteredList;
 	if (accountSortCriteria == CoreAttributesList::TreeMode)
 	{
-		list.setSorting(CoreAttributesList::Pointer);
+		list.setSorting(CoreAttributesList::IndexUp);
 		for (Account* t = filteredList.first(); t != 0;
 			 t = filteredList.next())
 		{

@@ -724,7 +724,6 @@ QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 
 ResourceList::ResourceList()
 {
-	sorting = Pointer;
 }
 
 
