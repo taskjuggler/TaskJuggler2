@@ -72,14 +72,14 @@ public:
         lockedResource = 0;
         conflictStart = 0;
     }
-    
+
 private:
     /**
      * Limit values that regulate how many allocations can be made per
      * day/week/month.
      */
     UsageLimits* limits;
-    
+
     /// The shifts that can limit the allocation to certain intervals.
     ShiftSelectionList shifts;
 
@@ -97,7 +97,7 @@ private:
      */
     bool mandatory;
 
-    /// The persintent resource picked by the scheduler.
+    /// The persistent resource picked by the scheduler.
     Resource* lockedResource;
 
     /// Start of a resource conflict. Used during scheduling only.
