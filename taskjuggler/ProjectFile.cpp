@@ -22,6 +22,8 @@
 #include "Project.h"
 #include "Token.h"
 #include "ExpressionTree.h"
+#include "Allocation.h"
+
 #include "kotrus.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
