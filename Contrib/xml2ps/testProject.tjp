@@ -1,0 +1,82 @@
+project testProject  "testProject for xml2gantt" "$Id$" 2002-01-01 2002-12-15
+
+rate 0.330
+currency "KEUR"
+
+resource worker_1 "Alfred Qwertz" {
+     maxeffort 0.8
+}
+resource worker_2 "Bar Baz" {
+     maxeffort 0.75
+}
+resource worker_3 "Foo Bar" {
+     maxeffort 0.3
+}
+
+macro __worker [
+        allocate worker_1   { load 1.00 }
+        allocate worker_2   { load 0.75 }
+        allocate worker_3   { load 0.85 }
+]
+
+#-- tasks
+task testProject "testProject for xml2gantt" {
+    priority 500
+    task start "Start of Development" {
+        start 2002-05-01
+        end   2002-05-01
+        milestone
+    }
+
+    task devel "Development" {
+        task dev_1 "Devel-Job 1" {
+            length 3d
+            ${__worker}
+        }
+        task dev_2 "Devel-Job 2" {
+            length 13d
+            ${__worker}
+            depends !dev_1
+        }
+        task dev_21 "Devel-Job 2.1" {
+            length 4d
+            allocate worker_2
+            depends !dev_2, !dev_1
+        }
+        task dev_3 "Devel-Job 3" {
+            length 23d
+            ${__worker}
+            depends !dev_2
+        }
+        depends !start
+    }
+
+    task beta1 "first public beta" {
+        depends !devel
+        milestone
+    }
+
+    task docuIN "make input for Documentation-Team" {
+        task dev_21 "2te mal dev_21" {
+            length 14d
+            ${__worker}
+        }
+        depends !beta1
+    }
+
+    task done "Lunch of Product" {
+        start 2002-08-12
+        end   2002-08-12
+        milestone
+        depends !docuIN, !beta1, !devel
+    }
+}
+
+#-- export xml-file
+xmltaskreport "testProject.xml"
+
+htmltaskreport "testProject.html" {
+  columns no, name, resources, daily
+  headline "testProject for xml2gantt"
+}
+

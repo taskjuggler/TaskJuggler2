@@ -2,3 +2,5 @@
 *.xml
 *.eps
 *.old
+*.swp
+*.*.swp

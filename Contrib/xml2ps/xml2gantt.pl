@@ -341,6 +341,9 @@ sub _draw_task {
     my ($end_year, $end_month, $end_day)        = split(/-/, $end);
     my $start_delta = Delta_Days(   $p_start_year, $p_start_month, $p_start_day,
                                     $start_year, $start_month, $start_day);
+#    if ($task->Type eq 'Task') {
+#        ($end_year, $end_month, $end_day) = Add_Delta_Days($end_year, $end_month, $end_day, 1);
+#    }
     #-- länge des tasks in tagen
     my $task_length = Delta_Days(   $start_year, $start_month, $start_day,
                                     $end_year, $end_month, $end_day);
