@@ -329,8 +329,11 @@ FileInfo::nextToken(QString& token)
             // double quoted string
             while ((c = getC()).unicode() != EOFile && c != '"')
             {
-                if (c == '\n')
+                if ((c == '\n')
+		    && macroStack.isEmpty())
+		{
                     currLine++;
+		}
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -351,7 +354,7 @@ FileInfo::nextToken(QString& token)
                 else if (c == ']')
                     nesting--;
                 if (c == '\n')
-                    currLine++;
+                    currLine++;			// macroStack.isEmpty ??
                 token += c;
             }
             if (c.unicode() == EOFile)
