@@ -24,6 +24,7 @@
 #include "Account.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
+#include "ReportXML.h"
 
 class Project
 {
@@ -102,7 +103,9 @@ public:
 	void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
 	ulong getScheduleGranularity() const { return scheduleGranularity; }
 
-	void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
+   void addXMLReport(ReportXML *r ) { xmlreport = r; }
+   
+   void addHTMLTaskReport(HTMLTaskReport* h) { htmlTaskReports.append(h); }
 
 	void addHTMLResourceReport(HTMLResourceReport* r)
 	{
@@ -131,6 +134,7 @@ public:
 
 	void generateReports();
 
+   
 private:
 	bool checkSchedule();
 
@@ -175,6 +179,8 @@ private:
 	VacationList vacationList;
 	AccountList accountList;
 
+   ReportXML *xmlreport;
+   
 	QList<HTMLTaskReport> htmlTaskReports;
 	QList<HTMLResourceReport> htmlResourceReports;
 } ;
