@@ -47,7 +47,14 @@ class ResUsageView: public QTable
 {
     Q_OBJECT
 public:
+    /**
+     * CTOR
+     */
     ResUsageView( QWidget * parent = 0, const char * name = 0 );
+
+    /**
+     * DTOR
+     */
     virtual ~ResUsageView();
 
     /**
@@ -166,6 +173,9 @@ private:
      */
     int getWorkingDays( const Interval & ival ) const;
 
+    /**
+     * @return the list of resources associated with this view
+     */
     ResourceList resList() const
         { return m_resList; }
 
