@@ -54,6 +54,8 @@ HTMLWeeklyCalendarElement::~HTMLWeeklyCalendarElement()
 void
 HTMLWeeklyCalendarElement::generate()
 {
+    generateHeader();
+    
     TaskList filteredTaskList;
     filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
     sortTaskList(filteredTaskList);
@@ -65,7 +67,7 @@ HTMLWeeklyCalendarElement::generate()
     maxDepthResourceList = filteredResourceList.maxDepth();
     
     bool weekStartsMonday = report->getProject()->getWeekStartsMonday();
-    s() << "<table align=\"center\" cellpadding=\"1\">\n" << endl;
+    s() << "<table align=\"center\" cellpadding=\"1\">" << endl;
     for (time_t week = beginOfWeek(start, weekStartsMonday);
          week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)); )
     {
@@ -73,39 +75,46 @@ HTMLWeeklyCalendarElement::generate()
         /* Generate table row that contains the day of the month, the month
          * and the year. The row starts with a cell that shows the week number
          * of the first day of the week. */
-        s() << "  <tr>" << endl;
-        s() << "   <td width=\"5.5%\" class=\"headersmall\" "
-            "style=\"font-size:110%\">"
+        s() << "  <tr style=\"background-color:"
+            << colors.getColorName("header")
+            << "; text-align:center\">" << endl;
+        s() << "   <td width=\"5.5%\" style=\"font-size:110%\">"
             << "Week " << QString().sprintf("%d",
                                             weekOfYear(wd, weekStartsMonday))
             << "</td>" << endl;
         for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
         {
-            s() << "   <td width=\"13.5%\" class=\"";
-            s() << (isSameDay(report->getProject()->getNow(), wd) ? "today" :
-                    isWeekend(wd) ? "weekend" : "headersmall");
+            s() << "   <td width=\"13.5%\"";
+            if (isSameDay(report->getProject()->getNow(), wd))
+               s() << " style=\"background-color:"
+                  << colors.getColorName("today") << "\"";
+            else if (isWeekend(wd))
+               s() << " style=\"background-color:"
+                  << colors.getColor("header").dark(130).name() << "\"";
             s() << "\">" << endl
-                << "<table width=\"100%\" style=\"text-align:center\">"
-                << "  <tr>"
-                << "   <td width=\"25%\" rowspan=\"2\" "
-                   "style=\"font-size:280%; text-align:center\">" 
+                << "   <table width=\"100%\">"
+                << endl
+                << "    <tr>" << endl
+                << "     <td width=\"25%\" rowspan=\"2\" "
+                   "style=\"font-size:280%; text-align:center\">"
                 << QString().sprintf("%d", dayOfMonth(wd)) << "</td>" << endl
-                << "<td width=\"75%\" style=\"font-size:90%\">" 
+                << "     <td width=\"75%\" style=\"font-size:90%\">" 
                 << htmlFilter(dayOfWeekName(wd)) << "</td>" << endl
-                << "  </tr>"
-                << "  <tr>"
-                << "   <td style=\"font-size:100%\">" 
+                << "    </tr>"
+                << "    <tr>"
+                << "     <td style=\"font-size:100%\">" 
                 << monthAndYear(wd) << "</td>"
-                << "  </tr>"
-                << "</table></td>" << endl;
+                << "    </tr>"
+                << "   </table></td>" << endl;
         }
         s() << "  </tr>" << endl;
 
         if (!filteredTaskList.isEmpty())
         {
             // Generate a row with lists the tasks for each day.
-            s() << "  <tr>" << endl
-                << "    <td width=\"5.5%\" class=\"default\">&nbsp;</td>" 
+            s() << "  <tr style=\"background-color:"
+                << colors.getColorName("default") << "\">" << endl
+                << "    <td width=\"5.5%\">&nbsp;</td>" 
                 << endl;
             wd = week;
             for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
@@ -116,8 +125,8 @@ HTMLWeeklyCalendarElement::generate()
                 time_t savedEnd = end;
                 start = wd;
                 end = sameTimeNextDay(wd);
-                s() << "   <td width=\"13.5%\" class=\"default\" "
-                    "style=\"vertical-align:top\">" << endl;
+                s() << "   <td width=\"13.5%\" style=\"vertical-align:top\">"
+                    << endl;
                 bool first = TRUE;
                 int no = 1;
                 for (TaskListIterator tli(filteredTaskList); *tli != 0;
@@ -128,21 +137,20 @@ HTMLWeeklyCalendarElement::generate()
                     {
                         if (first)
                         {
-                            s() << "<table width=\"100%\" "
-                                "style=\"font-size:150%\">" << endl;
+                            s() << "     <table width=\"100%\">" << endl;
                             first = FALSE;
                         }
                         TableLineInfo tli1;
-                        tli1.bgCol = colors.getColor("default");
                         tli1.ca1 = tli1.task = *tli;
                         tli1.idxNo = no;
+                        tli1.fontFactor = 40;
                         generateLine(&tli1, 2);
                     }
                 }
                 if (!first)
-                    s() << "</table>" << endl;
+                    s() << "     </table>" << endl;
                 else
-                    s() << "<p>&nbsp;</p>" << endl;   
+                    s() << "     <p>&nbsp;</p>" << endl;   
                 s() << "    </td>";
                 start = savedStart;
                 end = savedEnd;
@@ -153,8 +161,9 @@ HTMLWeeklyCalendarElement::generate()
         if (!filteredResourceList.isEmpty())
         {
             // Generate a table row which lists the resources for each day. 
-            s() << "  <tr>" << endl
-                << "   <td width=\"5.5%\" class=\"default\">&nbsp;</td>"
+            s() << "  <tr style=\"background-color:"
+                << colors.getColorName("default") << "\">" << endl
+                << "    <td width=\"5.5%\">&nbsp;</td>" 
                 << endl;
             wd = week;
             for (int day = 0; day < 7; ++day, wd = sameTimeNextDay(wd))
@@ -165,8 +174,8 @@ HTMLWeeklyCalendarElement::generate()
                 time_t savedEnd = end;
                 start = wd;
                 end = sameTimeNextDay(wd);
-                s() << "   <td width=\"13.5%\" class=\"default\" "
-                    "style=\"vertical-align:top\">" << endl;
+                s() << "   <td width=\"13.5%\" style=\"vertical-align:top\">"
+                    << endl;
                 bool first = TRUE;
                 int no = 1;
                 for (ResourceListIterator rli(filteredResourceList); 
@@ -178,21 +187,20 @@ HTMLWeeklyCalendarElement::generate()
                     {
                         if (first)
                         {
-                            s() << "<table width=\"100%\" "
-                                "style=\"font-size:150%\">" << endl;
+                            s() << "     <table width=\"100%\">" << endl;
                             first = FALSE;
                         }
                         TableLineInfo tli2;
-                        tli2.bgCol = colors.getColor("default");
                         tli2.ca1 = tli2.resource = *rli;
                         tli2.idxNo = no;
+                        tli2.fontFactor = 40;
                         generateLine(&tli2, 4);
                     }
                 }
                 if (!first)
-                    s() << "</table>" << endl;
+                    s() << "     </table>" << endl;
                 else
-                    s() << "<p>&nbsp;</p>" << endl;   
+                    s() << "     <p>&nbsp;</p>" << endl;   
                 s() << "   </td>";
                 start = savedStart;
                 end = savedEnd;
@@ -204,5 +212,7 @@ HTMLWeeklyCalendarElement::generate()
     }
 
     s() << "</table>" << endl;
+
+    generateFooter();
 }
 

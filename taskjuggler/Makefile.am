@@ -3,7 +3,8 @@ taskjuggler_SOURCES =  main.cpp
 
 noinst_LTLIBRARIES = libtaskjuggler.la
 
-libtaskjuggler_la_SOURCES = Utility.cpp TjMessageHandler.cpp \
+libtaskjuggler_la_SOURCES = Utility.cpp RealFormat.cpp \
+TjMessageHandler.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
 Report.cpp ReportXML.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \

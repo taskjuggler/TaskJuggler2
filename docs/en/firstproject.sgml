@@ -18,6 +18,7 @@ linkend="reference">.</para>
 <para><screen>
 project acso "Accounting Software" "$Id" 2002-01-16 2002-04-26 {
   now 2002-03-04
+  currency "EUR"
 }
 </screen></para>
 
@@ -34,7 +35,9 @@ attributes <link linkend="project_now"> now </link> to set the current
 day for the scheduler to another value than to the moment your invoke
 TaskJuggler. We pick a day during the above specified project period.
 So we always get the same results of a TaskJuggler run, no matter when
-we process our first project.</para>
+we process our first project. The <link
+linkend="project_currency">currency</link> attribute specifies the
+currency.</para>
 
 </sect1>
 <sect1><title>Global Attributes</title>
@@ -52,13 +55,10 @@ properties.</para>
 
 <para><screen>
 rate 310.0
-currency "EUR"
 </screen></para>
 
 <para>The <link linkend="rate">rate</link> attribute can be used to
-specify the daily costs of resources. The <link
-linkend="currency">currency</link> attribute specifies the
-currency.</para>
+specify the daily costs of resources.</para>
 
 <para>Macros are another TaskJuggler feature to keep project files
 small. Macros are text patterns that can be defined once and inserted

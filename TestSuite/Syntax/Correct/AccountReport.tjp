@@ -1,0 +1,32 @@
+project prj "Test Project" "$Id$" 2000-01-01 2000-02-01
+
+rate 330.0
+
+resource tux "Tux"
+
+account labor "Labor Costs" cost
+account income "Income" revenue
+
+task t1 "Task1" {
+  start 2000-01-01
+  length 1d
+	account income
+	startcredit 2000.0
+}
+
+task t2 "Task2" {
+  start 2000-01-01
+  duration 1d
+}
+
+task t3 "Task3" {
+  start 2000-01-01
+  effort 10d
+	account labor
+  allocate tux
+}
+
+htmlaccountreport "AccountReport.html" {
+	columns no, name, total, daily
+}
+

@@ -24,6 +24,7 @@
 #include "ShiftList.h"
 #include "ResourceList.h"
 #include "AccountList.h"
+#include "RealFormat.h"
 
 class QStringList;
 class QDomElement;
@@ -533,11 +534,25 @@ public:
      * Sets the number of decimal digits used for all currency values of the
      * project.
      */
-    void setCurrencyDigits(int d) { currencyDigits = d; }
-    /**
-     * Returns the number of currency digits.
+    void setCurrencyDigits(uint d) { currencyFormat.setFracDigits(d); }
+
+    /*
+     * Sets the default number format for load and other values.
      */
-    int getCurrencyDigits() const { return currencyDigits; }
+    void setNumberFormat(const RealFormat& rf) { numberFormat = rf; }
+    /*
+     * Returns the current default number format.
+     */
+    const RealFormat& getNumberFormat() const { return numberFormat; }
+
+    /*
+     * Sets the default currency format.
+     */
+    void setCurrencyFormat(const RealFormat& rf) { currencyFormat = rf; }
+    /*
+     * Returns the default currency format.
+     */
+    const RealFormat& getCurrencyFormat() const { return currencyFormat; }
 
     /**
      * Sets the format used for timestamps in reports. It will be used as
@@ -669,6 +684,16 @@ private:
      */
     QString shortTimeFormat;
 
+    /// The currency of used for all money values.
+    QString currency;
+    /// The number of fraction digits of all money values.
+    int currencyDigits;
+
+    // The default format used for printing load values and the like.
+    RealFormat numberFormat;
+    // The default format used for printing currency values.
+    RealFormat currencyFormat;
+
     /**
      * The default priority that will be inherited by all tasks. Sub tasks
      * will inherit the priority of its parent task. */
@@ -678,11 +703,6 @@ private:
     double minEffort;
     double maxEffort;
     double rate;
-
-    /// The currency of used for all money values.
-    QString currency;
-    /// The number of fraction digits of all money values.
-    int currencyDigits;
 
     /* The average number of working hours per day. This factor is used
      * when converting hours in working days. It should match the workingHours

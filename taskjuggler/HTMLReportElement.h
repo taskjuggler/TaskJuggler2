@@ -13,12 +13,11 @@
 #ifndef _HTMLReportElement_h_
 #define _HTMLReportElement_h_
 
-#include <qstring.h>
-#include <qmap.h>
-
 #include "ReportElement.h"
 #include "HTMLPrimitives.h"
-#include "MacroTable.h"
+
+class QColor;
+class QString;
 
 class Project;
 class Report;
@@ -37,48 +36,7 @@ public:
     HTMLReportElement(Report* r, const QString& df, int dl);
     virtual ~HTMLReportElement() { }
 
-    enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
-
     virtual void generate() = 0;
-
-    void generateTableHeader();
-
-    void generateHeader();
-    void generateFooter();
-
-    void generateLine(TableLineInfo* tli, int funcSel);
-
-    void genCell(const QString& text, TableCellInfo* tli, bool multi);
-
-    void reportPIDs(const QString& pids, const QString bgCol, bool bold);
-
-    QColor selectTaskBgColor(TableCellInfo* tci, const Interval& period,
-                             bool daily);
-    QColor selectResourceBgColor(TableCellInfo* tci, double load,
-                                 const Interval& period, bool daily);
-
-    void reportTaskLoad(double load, TableCellInfo* tci,
-                        const Interval& period);
-    void reportResourceLoad(double load, TableCellInfo* tci,
-                            const Interval& period);
-
-    void reportCurrency(double value, TableCellInfo* tci);
-
-    void setBarLabels(BarLabelText blt) { barLabels = blt; }
-
-    void registerUrl(const QString& key, const QString& url = QString::null)
-    {
-        urls[key] = url;
-    }
-    void setRawHead(const QString& head)
-    {
-        rawHead = head;
-    }
-
-    void setRawTail(const QString& tail)
-    {
-        rawTail = tail;
-    }
 
     virtual void genHeadDefault(TableCellInfo* tcf);
     virtual void genHeadCurrency(TableCellInfo* tcf);
@@ -150,19 +108,34 @@ public:
     virtual void genCellTotal(TableCellInfo* tli);
 
     virtual void genCellSummary(TableCellInfo* tli);
-
 protected:
     HTMLReportElement() { }
 
+    void generateTableHeader();
+
+    void generateHeader();
+    void generateFooter();
+
+    void generateLine(TableLineInfo* tli, int funcSel);
+
+    void genCell(const QString& text, TableCellInfo* tli, bool multi);
+
     QString generateUrl(const QString& key, const QString& txt);
+
     void generateRightIndented(TableCellInfo* tci, const QString str);
 
-    MacroTable mt;
+    QColor selectTaskBgColor(TableCellInfo* tci, double load,
+                             const Interval& period, bool daily);
+    QColor selectResourceBgColor(TableCellInfo* tci, double load,
+                                 const Interval& period, bool daily);
 
-    BarLabelText barLabels;
+    void reportTaskLoad(double load, TableCellInfo* tci,
+                        const Interval& period);
+    void reportResourceLoad(double load, TableCellInfo* tci,
+                            const Interval& period);
 
-    QString rawHead;
-    QString rawTail;
+    void reportCurrency(double value, TableCellInfo* tci);
+
 } ;
 
 #endif

@@ -245,6 +245,10 @@ ProjectFile::parse()
             }
             else if (token == KW("currency"))
             {
+                errorMessage
+                    (i18n("'currency' is no longer a property. It's "
+                          "now an optional project attribute. Please fix "
+                          "your project file."));
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
@@ -255,6 +259,9 @@ ProjectFile::parse()
             }
             else if (token == KW("currencydigits"))
             {
+                errorMessage
+                    (i18n("'currencydigits' has been deprecated. Please use "
+                          "'currencyformat' instead."));
                 if (nextToken(token) != INTEGER)
                 {
                     errorMessage(i18n("Integer value expected"));
@@ -290,6 +297,10 @@ ProjectFile::parse()
             }
             else if (token == KW("workinghours"))
             {
+                errorMessage
+                    (i18n("'workinghours' is no longer a property. It's "
+                          "now an optional project attribute. Please fix "
+                          "your project file."));
                 int dow;
                 QPtrList<Interval>* l = new QPtrList<Interval>();
                 if (!readWorkingHours(dow, l))
@@ -558,7 +569,16 @@ ProjectFile::readProject()
             }
             if (tt == RCBRACE)
                 break;
-            if (token == KW("dailyworkinghours"))
+            if (token == KW("workinghours"))
+            {
+                int dow;
+                QPtrList<Interval>* l = new QPtrList<Interval>();
+                if (!readWorkingHours(dow, l))
+                    return FALSE;
+
+                proj->setWorkingHours(dow, l);
+            }
+            else if (token == KW("dailyworkinghours"))
             {
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
@@ -625,6 +645,29 @@ ProjectFile::readProject()
                 }
                 proj->setShortTimeFormat(token);
             }
+            else if (token == KW("numberformat"))
+            {
+                RealFormat format;
+                if (!readRealFormat(&format))
+                    return FALSE;
+                proj->setNumberFormat(format);
+            }
+            else if (token == KW("currencyformat"))
+            {
+                RealFormat format;
+                if (!readRealFormat(&format))
+                    return FALSE;
+                proj->setCurrencyFormat(format);
+            } 
+            else if (token == KW("currency"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return FALSE;
+                }
+                proj->setCurrency(token);
+            }
             else if (token == KW("weekstartsmonday"))
             {
                 proj->setWeekStartsMonday(TRUE);
@@ -632,6 +675,11 @@ ProjectFile::readProject()
             else if (token == KW("weekstartssunday"))
             {
                 proj->setWeekStartsMonday(FALSE);
+            }
+            else if (token == KW("include"))
+            {
+                if (!readInclude())
+                    return FALSE;
             }
             else
             {
@@ -1074,8 +1122,12 @@ ProjectFile::readTaskBody(Task* task)
             }
             else if (token == KW("allocate"))
             {
-                if (!readAllocate(task))
-                    return FALSE;
+                do
+                {
+                    if (!readAllocate(task))
+                        return FALSE;
+                } while ((tt = nextToken(token)) == COMMA);
+                returnToken(tt, token);
             }
             else if (token == KW("depends"))
             {
@@ -1328,6 +1380,48 @@ ProjectFile::readDate(time_t& val, time_t correction)
                      .arg(time2ISO(proj->getEnd())));
         return FALSE;
     }
+    return TRUE;
+}
+
+bool
+ProjectFile::readRealFormat(RealFormat* format)
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return FALSE;
+    }
+    format->setSignPrefix(token);
+
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return FALSE;
+    }
+    format->setSignSuffix(token);
+
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return FALSE;
+    }
+    format->setThousandSep(token);
+    
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return FALSE;
+    }
+    format->setFractionSep(token);
+
+    if (nextToken(token) != INTEGER || token.toInt() < 0 || token.toInt() > 5)
+    {
+        errorMessage(i18n("Number between 0 and 5 expected"));
+        return FALSE;
+    }
+    format->setFracDigits(token.toInt());
+
     return TRUE;
 }
 

@@ -45,6 +45,8 @@ Report::Report(const Project* p, const QString& f, const QString& df, int dl) :
     weekStartsMonday = p->getWeekStartsMonday();
     timeFormat = p->getTimeFormat();
     shortTimeFormat = p->getShortTimeFormat();
+    numberFormat = p->getNumberFormat();
+    currencyFormat = p->getCurrencyFormat();
 
     hideTask = 0;
     rollUpTask = 0;
@@ -462,100 +464,6 @@ Report::setLoadUnit(const QString& u)
         return FALSE;
 
     return TRUE;
-}
-
-QString
-Report::scaledLoad(double t) const
-{
-    QStringList variations;
-    QValueList<double> factors;
-    const char* shortUnit[] = { "d", "min", "h", "w", "m", "y" };
-    const char* unit[] = { "day", "minute", "hour", "week", "month", "year" };
-    const char* units[] = { "days", "minutes", "hours", "weeks", "months", 
-        "years"};
-    double max[] = { 0, 60, 48, 8, 24, 0 };
-
-    factors.append(1);
-    factors.append(project->getDailyWorkingHours() * 60);
-    factors.append(project->getDailyWorkingHours());
-    factors.append(1.0 / project->getWeeklyWorkingDays());
-    factors.append(1.0 / project->getMonthlyWorkingDays());
-    factors.append(1.0 / project->getYearlyWorkingDays());
-
-    QString str;
-    
-    if (loadUnit == shortAuto || loadUnit == longAuto)
-    {
-        for (QValueList<double>::Iterator it = factors.begin();
-             it != factors.end(); ++it)
-        {
-            str.sprintf("%.1f", t * *it);
-            // If str ends with ".0" remove ".0".
-            if (str[str.length() - 1] == '0')
-                str = str.left(str.length() - 2);
-            int idx = factors.findIndex(*it);
-            if ((*it != 1.0 && str == "0") ||
-                (max[idx] != 0 && max[idx] < (t * *it)))
-                variations.append("");
-            else
-                variations.append(str);
-        }
-
-        uint shortest = 0;
-        for (QStringList::Iterator it = variations.begin();
-             it != variations.end();
-             ++it)
-        {
-            if ((*it).length() > 0 &&
-                (*it).length() - ((*it).find('.') < 0 ? 0 : 1) <
-                variations[shortest].length() -
-                (variations[shortest].find('.') < 0 ? 0 : 1))
-            {
-                shortest = variations.findIndex(*it);
-            }
-        }
-        str = variations[shortest];
-        if (loadUnit == longAuto)
-        {
-            if (variations[shortest] == "1")
-                str += QString(" ") + unit[shortest];
-            else
-                str += QString(" ") + units[shortest];
-        }
-        else
-            str += shortUnit[shortest];
-    }
-    else
-    {
-        switch (loadUnit)
-        {
-            case days:
-                str.sprintf("%.1f", t * factors[0]);
-                break;
-            case minutes:
-                str.sprintf("%.1f", t * factors[1]);
-                break;
-            case hours:
-                str.sprintf("%.1f", t * factors[2]);
-                break;
-            case weeks:
-                str.sprintf("%.1f", t * factors[3]);
-                break;
-            case months:
-                str.sprintf("%.1f", t * factors[4]);
-                break;
-            case years:
-                str.sprintf("%.1f", t * factors[5]);
-                break;
-            case shortAuto:
-            case longAuto:
-                break;  // handled above switch statement already
-        }
-        // If str ends with ".0" remove ".0".
-        if (str[str.length() - 1] == '0')
-            str = str.left(str.length() - 2);
-    }
-    return str;
 }
 
 void

@@ -1,14 +1,13 @@
 project test "Test" "$Id" 2002-01-01-0:00-CET 2002-11-31-0:00-CET {
 	timezone "Europe/Berlin"
+  workinghours mon 8:00 - 12:00, 13:00-17:00
+  workinghours tue 8:00 - 12:00, 13:00-17:00
+  workinghours wed 8:00 - 12:00, 13:00-17:00
+  workinghours thu 8:00 - 12:00, 13:00-17:00
+  workinghours fri 8:00 - 12:00, 13:00-17:00
+  workinghours sat off
+  workinghours sun off
 }
-
-workinghours mon 8:00 - 12:00, 13:00-17:00
-workinghours tue 8:00 - 12:00, 13:00-17:00
-workinghours wed 8:00 - 12:00, 13:00-17:00
-workinghours thu 8:00 - 12:00, 13:00-17:00
-workinghours fri 8:00 - 12:00, 13:00-17:00
-workinghours sat off
-workinghours sun off
 
 shift s1 "Shift1" {
   workinghours mon 6:00-14:00

@@ -23,6 +23,7 @@
 
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
+#include "RealFormat.h"
 
 class Project;
 class CoreAttributes;
@@ -119,6 +120,12 @@ public:
     void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
     const QString& getShortTimeFormat() const { return shortTimeFormat; }
 
+    void setNumberFormat(const RealFormat& rf) { numberFormat = rf; }
+    const RealFormat& getNumberFormat() const { return numberFormat; }
+
+    void setCurrencyFormat(const RealFormat& rf) { currencyFormat = rf; }
+    const RealFormat& getCurrencyFormat() const { return currencyFormat; }
+
     bool open();
 
     void filterTaskList(TaskList& filteredList, const Resource* r,
@@ -135,8 +142,6 @@ public:
                            ExpressionTree* hideExp, ExpressionTree*
                            rollUpExp) const;
     void sortAccountList(AccountList& filteredList);
-
-    QString scaledLoad(double t) const;
 
 protected:
     Report() { }
@@ -183,6 +188,8 @@ protected:
     time_t end;
     QString timeFormat;
     QString shortTimeFormat;
+    RealFormat numberFormat;
+    RealFormat currencyFormat;
     
     int taskSortCriteria[CoreAttributesList::maxSortingLevel];
     int resourceSortCriteria[CoreAttributesList::maxSortingLevel];

@@ -23,6 +23,8 @@
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
 #include "TableColorSet.h"
+#include "MacroTable.h"
+#include "RealFormat.h"
 
 class Project;
 class CoreAttributes;
@@ -46,6 +48,8 @@ class TableCellInfo;
 class ReportElement
 {
 public:
+    enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
+
     ReportElement(Report* r, const QString& df, int dl);
     virtual ~ReportElement();
 
@@ -59,9 +63,20 @@ public:
     void setHeadline(const QString& hl) { headline = hl; }
     void setCaption(const QString& c) { caption = c; }
 
+    void setRawHead(const QString& head)
+    {
+        rawHead = head;
+    }
+
+    void setRawTail(const QString& tail)
+    {
+        rawTail = tail;
+    }
+
     void addColumn(const TableColumnInfo* c) { columns.append(c); }
     const TableColumnInfo* columnsAt(uint idx) { return columns.at(idx); }
     void clearColumns() { columns.clear(); }
+    void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
     void setStart(time_t s) { start = s; }
     time_t getStart() const { return start; }
@@ -100,7 +115,7 @@ public:
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
 
-    bool setUrl(const QString& key, const QString& url);
+    bool setUrl(const QString& key, const QString& url = QString::null);
     const QString* getUrl(const QString& key) const;
 
     void setAccumulate(bool s) { accumulate = s; }
@@ -202,7 +217,7 @@ protected:
      */
     QString stripTaskRoot(QString taskId) const;
     
-    QString scaledLoad(double t) const;
+    QString scaledLoad(double t, TableCellInfo* tci) const;
     void reportValue(double value, const QString& bgcol, bool bold);
 
     Report* report;
@@ -212,8 +227,15 @@ protected:
     time_t start;
     time_t end;
 
+    BarLabelText barLabels;
+
+    QString rawHead;
+    QString rawTail;
+
     QString timeFormat;
     QString shortTimeFormat;
+    RealFormat numberFormat;
+    RealFormat currencyFormat;
     
     /* We store the location of the report definition in case we need it
      * for error reporting. */
@@ -253,6 +275,8 @@ protected:
     uint maxDepthTaskList;
     uint maxDepthResourceList;
     uint maxDepthAccountList;
+
+    MacroTable mt;
 } ;
 
 #endif

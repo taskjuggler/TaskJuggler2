@@ -431,7 +431,7 @@ task.</para></listitem>
 
 </itemizedlist></para>
 </sect2>
-<sect2><title>Some version (Some day)</title>
+<sect2><title>Version 2.0 (Some day)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -442,7 +442,7 @@ task.</para></listitem>
 values are now indented in tree sorting mode for all HTML reports.
 </para></listitem>
 
-<listitem><para>Length and duration tasks are with resource
+<listitem><para>Length and duration tasks with resource
 allocations are no longer trimmed to the first and last resource
 allocation.</para></listitem>
 
@@ -452,6 +452,29 @@ the allocation of an extra time slot in some cases.</para></listitem>
 <listitem><para>isplanallocated and isactualallocated had broken time
 interval handling. This is fixed now.</para></listitem>
 
+<listitem><para>All reports have now support for daily, weekly,
+monthly, quarterly and yearly calendars. Task lines now contain
+Gantt-chart like bars.</para></listitem>
+
+<listitem><para>The format of numbers and currency values can now be
+specified with <link
+linkend="project_numberformat">numberformat</link> and <link
+linkend="project_currencyformat">currencyformat</link>. The old
+keyword currencydigits has been deprecated.</para></listitem>
+
+<listitem><para><link
+linkend="project_workinghours">workinghours</link> and <link
+linkend="project_currency">currency</link> are no longer global
+properties. They are now optional attributes of the project
+property.</para></listitem>
+
+<listitem><para>The scenario name is no longer displayed by default if
+more than one scenario is included in a report. A column
+<computeroutput>scenario</computeroutput> must be explicitly added if
+the scenario name should be reported for each line. The attributes
+'showactual' and 'hideplan' have been deprecated. The <link
+linkend="htmltaskreport_scenarios">scenarios</link> attribute now
+controls which scenarios should be shown.</para></listitem>
 </itemizedlist></para>
 </sect2>
 </sect1>

@@ -34,14 +34,6 @@
 HTMLReportElement::HTMLReportElement(Report* r, const QString& df, int dl) :
    ReportElement(r, df, dl)
 {
-    barLabels = BLT_LOAD;
-
-    registerUrl(KW("dayheader"));
-    registerUrl(KW("monthheader"));
-    registerUrl(KW("resourcename"));
-    registerUrl(KW("taskname"));
-    registerUrl(KW("weekheader"));
-    registerUrl(KW("yearheader"));
 }
 
 void
@@ -118,12 +110,18 @@ HTMLReportElement::generateTableHeader()
 void
 HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
 {
-    s() << "  <tr valign=\"middle\"" 
-        << " style=\"background-color:" << tli->bgCol.name() << "; ";
-    if (tli->boldText)    
-        s() << "font-weight:bold; ";
-    if (tli->fontFactor != 100)
-        s() << "font-size:" << QString("%1").arg(tli->fontFactor) << "%; ";
+    s() << "  <tr valign=\"middle\"";
+    if (tli->bgCol.isValid() || tli->boldText || tli->fontFactor != 100)
+    {
+       s() << " style=\"";
+       if (tli->bgCol.isValid())
+           s() << "background-color:" << tli->bgCol.name() << "; ";
+       if (tli->boldText)    
+           s() << "font-weight:bold; ";
+       if (tli->fontFactor != 100)
+           s() << "font-size:" << QString("%1").arg(tli->fontFactor) << "%; ";
+       s() << "\"";
+    }
     s() << "\">" << endl;
     
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
@@ -236,7 +234,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
             if (period.contains(tci->tli->task->getEnd(tci->tli->sc)))
                 post += "=v";
             if (load > 0.0 && barLabels != BLT_EMPTY)
-                text += scaledLoad(load);
+                text += scaledLoad(load, tci);
             else if (pre.isEmpty() && post.isEmpty())
                 text += "==";
             text = pre + text + post;
@@ -259,7 +257,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
                                     getEnd(tci->tli->sc)))
                     post += "=]";
                 if (load > 0.0 && barLabels != BLT_EMPTY)
-                    text += scaledLoad(load);
+                    text += scaledLoad(load, tci);
                 else if (pre.isEmpty() && post.isEmpty())
                     text += "==";
                 text = pre + text + post;
@@ -280,7 +278,7 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
     if (load > 0.0)
     {
         if (barLabels != BLT_EMPTY)
-            text += scaledLoad(load);
+            text += scaledLoad(load, tci);
         if (tci->tli->resource->hasSubs())
             tci->setBoldText(true);
     }
@@ -292,23 +290,7 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
 void
 HTMLReportElement::reportCurrency(double value, TableCellInfo* tci)
 {
-    genCell(QString().sprintf("%.*f", 
-                              report->getProject()->getCurrencyDigits(),
-                              value), tci, FALSE);
-}
-
-void
-HTMLReportElement::reportPIDs(const QString& pids, const QString bgCol, 
-                              bool bold)
-{
-    s() << "   <td class=\""
-      << bgCol << "\" style=\"white-space:nowrap\">";
-    if (bold)
-        s() << "<b>";
-    s() << pids;
-    if (bold)
-        s() << "</b>";
-    s() << "</td>" << endl;
+    genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
 }
 
 QString
@@ -373,6 +355,7 @@ void
 HTMLReportElement::genHeadDaily1(TableCellInfo*)
 {
     // Generates the 1st header line for daily calendar views.
+    bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t day = midnight(start); day < end;
          day = beginOfMonth(sameTimeNextMonth(day)))
     {
@@ -382,11 +365,18 @@ HTMLReportElement::genHeadDaily1(TableCellInfo*)
         s() << "   <td colspan=\""
             << QString().sprintf("%d", left) << "\">"; 
         mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
-                                                           dayOfMonth(day)),
+        mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(day)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"),
+                              QString().sprintf
+                              ("%02d", quarterOfYear(day)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"),
+                              QString().sprintf
+                              ("%02d", weekOfYear(day, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(day)),
@@ -400,6 +390,7 @@ void
 HTMLReportElement::genHeadDaily2(TableCellInfo*)
 {
     // Generates the 2nd header line for daily calendar views.
+    bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
     {
         int dom = dayOfMonth(day);
@@ -416,6 +407,14 @@ HTMLReportElement::genHeadDaily2(TableCellInfo*)
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(day)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"),
+                              QString().sprintf
+                              ("%02d", quarterOfYear(day)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"),
+                              QString().sprintf
+                              ("%02d", weekOfYear(day, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(day)),
@@ -445,13 +444,24 @@ HTMLReportElement::genHeadWeekly1(TableCellInfo*)
         s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\">";
         mt.clear();
+        mt.addMacro(new Macro(KW("day"), QString().sprintf
+                              ("%02d", dayOfMonth(week)),
+                              defFileName, defFileLine));
         mt.addMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfWeek(week,
-                                                            weekStartsMonday)),
+                              QString().sprintf
+                              ("%02d", monthOfWeek(week, weekStartsMonday)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"),
+                              QString().sprintf
+                              ("%02d", quarterOfYear(week)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"),
+                              QString().sprintf
+                              ("%02d", weekOfYear(week, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", yearOfWeek(week,
-                                                            weekStartsMonday)),
+                              QString().sprintf
+                              ("%04d", yearOfWeek(week, weekStartsMonday)),
                               defFileName, defFileLine));
         s() << generateUrl(KW("monthheader"), 
                          QString("%1 %2").
@@ -483,11 +493,18 @@ HTMLReportElement::genHeadWeekly2(TableCellInfo*)
         if (woy < 10)
             s() << "&nbsp;";
         mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
-                                                           dayOfMonth(woy)),
+        mt.addMacro(new Macro(KW("day"), QString().sprintf
+                              ("%02d", dayOfMonth(week)),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(woy)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"),
+                              QString().sprintf
+                              ("%02d", quarterOfYear(week)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"),
+                              QString().sprintf("%02d", woy),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(woy)),
@@ -510,11 +527,13 @@ HTMLReportElement::genHeadMonthly1(TableCellInfo*)
         s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\">";
         mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
-                                                           dayOfMonth(year)),
+        mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfYear(year)),
+        mt.addMacro(new Macro(KW("month"), "1",
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"), "1",
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"), "1",
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
@@ -529,6 +548,7 @@ void
 HTMLReportElement::genHeadMonthly2(TableCellInfo*)
 {
     // Generates 2nd header line of monthly calendar view.
+    bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t month = beginOfMonth(start); month < end;
          month = sameTimeNextMonth(month))
     {
@@ -544,11 +564,18 @@ HTMLReportElement::genHeadMonthly2(TableCellInfo*)
         if (month < 10)
             s() << "&nbsp;";
         mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
-                                                           dayOfMonth(moy)),
+        mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(moy)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"),
+                              QString().sprintf
+                              ("%02d", quarterOfYear(month)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"),
+                              QString().sprintf
+                              ("%02d", weekOfYear(month, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(moy)),
@@ -571,14 +598,13 @@ HTMLReportElement::genHeadQuarterly1(TableCellInfo*)
         s() << "   <td colspan=\""
           << QString().sprintf("%d", left) << "\">";
         mt.clear();
-        mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
-                                                           dayOfMonth(year)),
+        mt.addMacro(new Macro(KW("day"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d", monthOfYear(year)),
+        mt.addMacro(new Macro(KW("month"), "1",
                               defFileName, defFileLine));
-        mt.addMacro(new Macro(KW("quarter"),
-                              QString().sprintf("%d", quarterOfYear(year)),
+        mt.addMacro(new Macro(KW("quarter"), "1",
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"), "1", 
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
@@ -599,6 +625,7 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
         I18N_NOOP("3rd Quarter"), I18N_NOOP("4th Quarter")
     };
 
+    bool weekStartsMonday = report->getWeekStartsMonday();
     for (time_t quarter = beginOfQuarter(start); quarter < end;
          quarter = sameTimeNextQuarter(quarter))
     {
@@ -620,6 +647,10 @@ HTMLReportElement::genHeadQuarterly2(TableCellInfo*)
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("quarter"),
                               QString().sprintf("%d", quarterOfYear(qoy)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"),
+                              QString().sprintf
+                              ("%02d", weekOfYear(quarter, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", year(qoy)),
@@ -643,6 +674,10 @@ HTMLReportElement::genHeadYear(TableCellInfo*)
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("month"),
                               QString().sprintf("%02d", monthOfYear(year)),
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("quarter"), "1",
+                              defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("week"), "1",
                               defFileName, defFileLine));
         mt.addMacro(new Macro(KW("year"),
                               QString().sprintf("%04d", ::year(year)),
@@ -815,8 +850,8 @@ HTMLReportElement::genCellEndBufferStart(TableCellInfo* tci)
 void
 HTMLReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc)), tci,
-                       FALSE);
+    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc), tci),
+            tci, FALSE);
 }
 
 void
@@ -834,7 +869,7 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
                                           AllAccounts, tci->tli->task);
     }
     
-    generateRightIndented(tci, scaledLoad(val));
+    generateRightIndented(tci, scaledLoad(val, tci));
 }
 
 void
@@ -899,9 +934,7 @@ HTMLReportElement::genCellCost(TableCellInfo* tci)
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Cost, tci->tli->task);
     }
-    generateRightIndented
-        (tci, QString().sprintf("%.*f", report->getProject()->
-                                getCurrencyDigits(), val)); 
+    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci)); 
 }
 
 void
@@ -918,9 +951,8 @@ HTMLReportElement::genCellRevenue(TableCellInfo* tci)
         val = tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                         Revenue, tci->tli->task);
     }
-    generateRightIndented
-        (tci, QString().sprintf("%.*f", report->getProject()->
-                                getCurrencyDigits(), val)); }
+    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci)); 
+}
 
 void
 HTMLReportElement::genCellProfit(TableCellInfo* tci)
@@ -940,9 +972,7 @@ HTMLReportElement::genCellProfit(TableCellInfo* tci)
             tci->tli->resource->getCredits(tci->tli->sc, Interval(start, end),
                                       Cost, tci->tli->task);
     }
-    generateRightIndented(tci, 
-                          QString().sprintf("%.*f", report->getProject()->
-                                            getCurrencyDigits(), val)); 
+    generateRightIndented(tci, tci->tcf->realFormat.format(val, tci)); 
 }
 
 void
@@ -1065,11 +1095,12 @@ GCDEPFOL(Depends, Previous)
 GCDEPFOL(Follows, Followers)
 
 QColor
-HTMLReportElement::selectTaskBgColor(TableCellInfo* tci, const Interval& period,
-                                 bool daily)
+HTMLReportElement::selectTaskBgColor(TableCellInfo* tci, double load,
+                                     const Interval& period, bool daily)
 {
     QColor bgCol;
-    if (tci->tli->task->isActive(tci->tli->sc, period))
+    if (tci->tli->task->isActive(tci->tli->sc, period) &&
+        ((tci->tli->resource != 0 && load > 0.0) || tci->tli->resource == 0))
     { 
         if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd() - 1))
         {
@@ -1145,9 +1176,9 @@ HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
          day = sameTimeNextDay(day))
     {
         Interval period = Interval(day).firstDay();
-        tci->setBgColor(selectTaskBgColor(tci, period, TRUE));
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
+        tci->setBgColor(selectTaskBgColor(tci, load, period, TRUE));
         reportTaskLoad(load, tci, period);
     }
 }
@@ -1174,7 +1205,9 @@ HTMLReportElement::genCellDailyAccount(TableCellInfo* tci)
     {
         double volume = tci->tli->account->getVolume(tci->tli->sc, 
                                                      Interval(day).firstDay());
-        if (tci->tli->account->isLeaf())
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode &&
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(day), volume);
         reportCurrency(volume, tci);
     }
@@ -1188,9 +1221,9 @@ HTMLReportElement::genCellWeeklyTask(TableCellInfo* tci)
          week = sameTimeNextWeek(week))
     {
         Interval period = Interval(week).firstWeek(weekStartsMonday);
-        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
+        tci->setBgColor(selectTaskBgColor(tci, load, period, FALSE));
         reportTaskLoad(load, tci, period);
     }
 }
@@ -1219,7 +1252,9 @@ HTMLReportElement::genCellWeeklyAccount(TableCellInfo* tci)
     {
         double volume = tci->tli->account->
             getVolume(tci->tli->sc, Interval(week).firstWeek(weekStartsMonday));
-        if (tci->tli->account->isLeaf())
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(week), volume);
         reportCurrency(volume, tci);
     }
@@ -1232,9 +1267,9 @@ HTMLReportElement::genCellMonthlyTask(TableCellInfo* tci)
          month = sameTimeNextMonth(month))
     {
         Interval period = Interval(month).firstMonth();
-        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
+        tci->setBgColor(selectTaskBgColor(tci, load, period, FALSE));
         reportTaskLoad(load, tci, period);
     }
 }
@@ -1256,12 +1291,15 @@ HTMLReportElement::genCellMonthlyResource(TableCellInfo* tci)
 void
 HTMLReportElement::genCellMonthlyAccount(TableCellInfo* tci)
 {
+    tci->tcf->realFormat = currencyFormat;
     for (time_t month = beginOfMonth(start); month < end;
          month = sameTimeNextMonth(month))
     {
         double volume = tci->tli->account->
-            getVolume(tci->tli->sc, Interval(month).firstDay());
-        if (tci->tli->account->isLeaf())
+            getVolume(tci->tli->sc, Interval(month).firstMonth());
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
             tci->tci->addToSum(tci->tli->sc, time2ISO(month), volume);
         reportCurrency(volume, tci);
     }
@@ -1274,9 +1312,9 @@ HTMLReportElement::genCellQuarterlyTask(TableCellInfo* tci)
          quarter = sameTimeNextQuarter(quarter))
     {
         Interval period = Interval(quarter).firstQuarter();
-        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
+        tci->setBgColor(selectTaskBgColor(tci, load, period, FALSE));
         reportTaskLoad(load, tci, period);
     }
 }
@@ -1296,8 +1334,19 @@ HTMLReportElement::genCellQuarterlyResource(TableCellInfo* tci)
 }
 
 void
-HTMLReportElement::genCellQuarterlyAccount(TableCellInfo*)
+HTMLReportElement::genCellQuarterlyAccount(TableCellInfo* tci)
 {
+    for (time_t quarter = beginOfQuarter(start); quarter < end;
+         quarter = sameTimeNextQuarter(quarter))
+    {
+        double volume = tci->tli->account->
+            getVolume(tci->tli->sc, Interval(quarter).firstQuarter());
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
+            tci->tci->addToSum(tci->tli->sc, time2ISO(quarter), volume);
+        reportCurrency(volume, tci);
+    }
 }
 
 void
@@ -1307,9 +1356,9 @@ HTMLReportElement::genCellYearlyTask(TableCellInfo* tci)
          year = sameTimeNextYear(year))
     {
         Interval period = Interval(year).firstYear();
-        tci->setBgColor(selectTaskBgColor(tci, period, FALSE));
         double load = tci->tli->task->getLoad(tci->tli->sc, period, 
                                               tci->tli->resource);
+        tci->setBgColor(selectTaskBgColor(tci, load, period, FALSE));
         reportTaskLoad(load, tci, period);
     }
 }
@@ -1329,40 +1378,42 @@ HTMLReportElement::genCellYearlyResource(TableCellInfo* tci)
 }
 
 void
-HTMLReportElement::genCellYearlyAccount(TableCellInfo*)
+HTMLReportElement::genCellYearlyAccount(TableCellInfo* tci)
 {
+    for (time_t year = beginOfYear(start); year < end;
+         year = sameTimeNextYear(year))
+    {
+        double volume = tci->tli->account->
+            getVolume(tci->tli->sc, Interval(year).firstYear());
+        if ((accountSortCriteria[0] == CoreAttributesList::TreeMode && 
+             tci->tli->account->isRoot()) ||
+            (accountSortCriteria[0] != CoreAttributesList::TreeMode)) 
+            tci->tci->addToSum(tci->tli->sc, time2ISO(year), volume);
+        reportCurrency(volume, tci);
+    }
 }
 
 void
 HTMLReportElement::genCellResponsibilities(TableCellInfo* tci)
 {
-    s() << "   <td class=\""
-      << (tci->tli->ca2 != 0 ? "defaultlight" : "default")
-      << "\" rowspan=\""
-      << QString("%1").arg(scenarios.count())
-      << "\" style=\"text-align:left\">"
-        "<span style=\"font-size:100%\">";
-    bool first = TRUE;
+    QString text;
     for (TaskListIterator it(report->getProject()->getTaskListIterator());
          *it != 0; ++it)
     {
         if ((*it)->getResponsible() == tci->tli->resource)
         {
-            if (!first)
-                s() << ", ";
-            s() << (*it)->getId();
-            first = FALSE;
+            if (!text.isEmpty())
+                text += ", ";
+            text += (*it)->getId();
         }
     }
-    s() << "</span></td>" << endl;
+    genCell(text, tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellSchedule(TableCellInfo* tci)
 {
-    s() << "   <td class=\""
-      << (tci->tli->ca2 == 0 ? "default" : "defaultlight") 
-      << "\" style=\"text-align:left\">";
+    s() << "   <td>" << endl;
 
     if (tci->tli->resource)
     {
@@ -1370,9 +1421,12 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
         jobs.setAutoDelete(TRUE);
         time_t prevTime = 0;
         Interval reportPeriod(start, end);
-        s() << "<table style=\"width:150px; font-size:100%; "
-           "text-align:left\"><tr><th style=\"width:35%\"></th>"
-           "<th style=\"width:65%\"></th></tr>" << endl;
+        s() << "    <table style=\"width:150px; font-size:100%; "
+           << "text-align:left\">" << endl
+           << "      <tr>" << endl
+           << "       <th style=\"width:35%\"></th>" << endl
+           << "       <th style=\"width:65%\"></th>" << endl
+           << "      </tr>" << endl;
         for (BookingListIterator bli(jobs); *bli != 0; ++bli)
         {
             if ((tci->tli->ca2 == 0 || tci->tli->task == (*bli)->getTask()) && 
@@ -1385,38 +1439,43 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
                 if (!isSameDay(prevTime, (*bli)->getStart()) &&
                     !isSameDay(start, end - 1))
                 {
-                    s() << "<tr><td colspan=\"2\" style=\"font-size:120%\">"
+                    s() << "      <tr>" << endl
+                        << "       <td colspan=\"2\" style=\"font-size:120%\">"
                         << time2weekday((*bli)->getStart()) << ", "
-                        << time2date((*bli)->getStart()) << "</td></tr>" 
+                        << time2date((*bli)->getStart()) << "</td>" << endl
+                        << "      </tr>" 
                         << endl;
                 }
-                s() << "<tr><td>";
+                s() << "       <tr>" << endl
+                    << "        <td>";
                 Interval workPeriod((*bli)->getStart(), (*bli)->getEnd());
                 workPeriod.overlap(reportPeriod);
                 s() << time2user(workPeriod.getStart(), shortTimeFormat)
                     << "&nbsp;-&nbsp;"
                     << time2user(workPeriod.getEnd() + 1, shortTimeFormat);
-                s() << "</td><td>";
+                s() << "</td>" << endl
+                    << "       <td>";
                 if (tci->tli->ca2 == 0)
                     s() << " " << htmlFilter((*bli)->getTask()->getName());
-                s() << "</td>" << endl;
+                s() << "       </td>" << endl;
                 prevTime = (*bli)->getStart();
-                s() << "</tr>" << endl;
+                s() << "      </tr>" << endl;
             }
         }
-        s() << "</table>" << endl;
+        s() << "     </table>" << endl;
     }
     else
         s() << "&nbsp;";
 
-    s() << "</td>" << endl;
+    s() << "   </td>" << endl;
 }
 
 #define GCEFFORT(a) \
 void \
 HTMLReportElement::genCell##a##Effort(TableCellInfo* tci) \
 { \
-    genCell(QString().sprintf("%.2f", tci->tli->resource->get##a##Effort()), \
+    genCell(tci->tcf->realFormat.format \
+            (tci->tli->resource->get##a##Effort(), FALSE), \
             tci, TRUE); \
 }
 
@@ -1426,8 +1485,7 @@ GCEFFORT(Max)
 void
 HTMLReportElement::genCellRate(TableCellInfo* tci)
 {
-    genCell(QString().sprintf("%.*f", report->getProject()->getCurrencyDigits(),
-                              tci->tli->resource->getRate()),
+    genCell(tci->tcf->realFormat.format(tci->tli->resource->getRate(), tci),
             tci, TRUE);
 }
 
@@ -1444,9 +1502,7 @@ HTMLReportElement::genCellTotal(TableCellInfo* tci)
                                                 Interval(start, end));
     if (tci->tli->account->isLeaf())
         tci->tci->addToSum(tci->tli->sc, "total", value);
-    genCell(QString().sprintf("%.*f",
-                              report->getProject()->getCurrencyDigits(),
-                              value), tci, FALSE);
+    genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
 }
 
 void
@@ -1457,10 +1513,15 @@ HTMLReportElement::genCellSummary(TableCellInfo* tci)
     if (sum)
     {
         uint sc = tci->tli->sc;
+        double val = 0.0;
         for (it = sum[sc].begin(); it != sum[sc].end(); ++it)
-            genCell(QString().sprintf
-                    ("%.*f", report->getProject()->getCurrencyDigits(), 
-                     *it), tci, FALSE);
+        {
+            if (accumulate)
+                val += *it;
+            else
+                val = *it;
+            genCell(tci->tcf->realFormat.format(val, tci), tci, FALSE);
+        }
     }
     else
         genCell("&nbsp;", tci, FALSE);

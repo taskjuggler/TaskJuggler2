@@ -11,14 +11,16 @@ project acso "Accounting Software" "$Id$" 2002-01-16 2002-04-26 {
 	# used, but this will likely be ouside of the project range, so it
 	# can't be seen in the reports.
  	now 2002-03-04
+	# Hide the clock time. Only show the date.
 	timeformat "%Y-%m-%d"
+	# The currency for all money values is EUR.
+  currency "EUR"
 }
 
 # The daily default rate of all resources. This can be overriden for each
 # resource. We specify this, so that we can do a good calculation of
 # the costs of the project.
 rate 310.0
-currency "EUR"
 
 # This is one way to form teams
 macro allocate_developers [
@@ -170,17 +172,17 @@ macro navbar [
 rawhead
 	'<table align="center" border="2" cellpadding="10">
 	<tr>
-	  <td class="default" style="font-size:120%" rowspan="2">
+	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
 		<a href="Tasks-Overview.html">Tasks Overview</a></td>
-	  <td class="default" style="font-size:120%" rowspan="2">
+	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
 		<a href="Tasks-Details.html">Tasks Details</a></td>
-	  <td class="default" style="font-size:120%" rowspan="2">
+	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
 		<a href="Staff-Overview.html">Staff Overview</a></td>
-	  <td class="default" style="font-size:120%" rowspan="2">
+	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
 		<a href="Staff-Details.html">Staff Details</a></td>
-	  <td class="default" style="font-size:120%" rowspan="2">
+	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
 		<a href="Accounting.html">Accounting</a></td>
-	  <td class="default" style="font-size:120%" rowspan="2">
+	  <td style="background-color:#f3ebae; font-size:120%" rowspan="2">
 		<a href="acso.eps">GANTT Chart (Postscript)</a></td>
 	</tr>
   </table>

@@ -72,6 +72,7 @@ public:
 
     bool hasSameAncestor(CoreAttributes* c) const;
     bool isDescendentOf(CoreAttributes* c) const;
+    bool isRoot() const { return parent == 0; }
     bool isLeaf() const { return sub.isEmpty(); }
 
 protected:

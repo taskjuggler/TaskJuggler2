@@ -32,6 +32,7 @@ class Operation;
 class Report;
 class HTMLReport;
 class ReportElement;
+class RealFormat;
 
 /**
  * @short File Parser for project files.
@@ -124,6 +125,7 @@ private:
     bool readAllocate(Task* t);
     bool readPlanTimeFrame(double& d, bool workingDays);
     bool readDate(time_t& val, time_t correction);
+    bool readRealFormat(RealFormat* format);
     bool readReference(QString& ref, QString& label);
     bool readTimeValue(ulong& value);
     bool readPercent(double& value);

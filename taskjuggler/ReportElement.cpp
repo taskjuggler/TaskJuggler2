@@ -19,6 +19,7 @@
 #include "Interval.h"
 #include "TableColumnFormat.h"
 #include "TableColumnInfo.h"
+#include "TableCellInfo.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
@@ -43,6 +44,14 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     maxDepthTaskList = 1;
     maxDepthResourceList = 1;
     maxDepthAccountList = 1;
+
+    start = r->getStart();
+    end = r->getEnd();
+    
+    timeFormat = r->getTimeFormat();
+    shortTimeFormat = r->getShortTimeFormat();
+    numberFormat = r->getNumberFormat();
+    currencyFormat = r->getCurrencyFormat();
 
     TableColumnFormat* tcf = new TableColumnFormat(this, i18n("Seq. No."));
     tcf->genTaskLine1 = &ReportElement::genCellSequenceNo;
@@ -130,6 +139,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellDuration;
     tcf->genTaskLine2 = &ReportElement::genCellDuration;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("duration"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Effort"));
@@ -138,6 +148,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellEffort;
     tcf->genResourceLine2 = &ReportElement::genCellEffort;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("effort"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Project ID"));
@@ -174,11 +185,13 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(this, i18n("Min. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMinEffort;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("mineffort"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Max. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMaxEffort;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("maxeffort"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Flags"));
@@ -237,6 +250,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
     tcf->genResourceLine1 = &ReportElement::genCellRate;
     tcf->hAlign = "right";
+    tcf->realFormat = currencyFormat;
     columnFormat.insert(KW("rate"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Cost"));
@@ -246,6 +260,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellCost;
     tcf->genResourceLine2 = &ReportElement::genCellCost;
     tcf->hAlign = "right";
+    tcf->realFormat = currencyFormat;
     columnFormat.insert(KW("cost"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Revenue"));
@@ -255,6 +270,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellRevenue;
     tcf->genResourceLine2 = &ReportElement::genCellRevenue;
     tcf->hAlign = "right";
+    tcf->realFormat = currencyFormat;
     columnFormat.insert(KW("revenue"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Profit"));
@@ -264,6 +280,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellProfit;
     tcf->genResourceLine2 = &ReportElement::genCellProfit;
     tcf->hAlign = "right";
+    tcf->realFormat = currencyFormat;
     columnFormat.insert(KW("profit"), tcf);
    
     tcf = new TableColumnFormat(this, i18n("Total"));
@@ -273,6 +290,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellSummary;
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
+    tcf->realFormat = currencyFormat;
     columnFormat.insert(KW("total"), tcf);
 
     tcf = new TableColumnFormat(this, "");
@@ -287,6 +305,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellSummary;
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("daily"), tcf);
     
     tcf = new TableColumnFormat(this, "");
@@ -301,6 +320,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellSummary;
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("weekly"), tcf);
     
     tcf = new TableColumnFormat(this, "");
@@ -315,6 +335,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellSummary;
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("monthly"), tcf);
    
     tcf = new TableColumnFormat(this, "");
@@ -329,6 +350,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellSummary;
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("quarterly"), tcf);
    
     tcf = new TableColumnFormat(this, "");
@@ -342,15 +364,19 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine1 = &ReportElement::genCellSummary;
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = "right";
+    tcf->realFormat = numberFormat;
     columnFormat.insert(KW("yearly"), tcf);
    
     scenarios.append(0);
 
-    start = r->getStart();
-    end = r->getEnd();
-    
-    timeFormat = r->getTimeFormat();
-    shortTimeFormat = r->getShortTimeFormat();
+    barLabels = BLT_LOAD;
+
+    setUrl(KW("dayheader"));
+    setUrl(KW("monthheader"));
+    setUrl(KW("resourcename"));
+    setUrl(KW("taskname"));
+    setUrl(KW("weekheader"));
+    setUrl(KW("yearheader"));
 
     accumulate = FALSE;
 
@@ -774,7 +800,7 @@ ReportElement::sortAccountList(AccountList& filteredList)
 }
 
 QString
-ReportElement::scaledLoad(double t) const
+ReportElement::scaledLoad(double t, TableCellInfo* tci) const
 {
     QStringList variations;
     QValueList<double> factors;
@@ -798,10 +824,7 @@ ReportElement::scaledLoad(double t) const
         for (QValueList<double>::Iterator it = factors.begin();
              it != factors.end(); ++it)
         {
-            str.sprintf("%.1f", t * *it);
-            // If str ends with ".0" remove ".0".
-            if (str[str.length() - 1] == '0')
-                str = str.left(str.length() - 2);
+            str = tci->tcf->realFormat.format(t * *it, FALSE);
             int idx = factors.findIndex(*it);
             if ((*it != 1.0 && str == "0") ||
                 (max[idx] != 0 && max[idx] < (t * *it)))
@@ -816,9 +839,7 @@ ReportElement::scaledLoad(double t) const
              ++it)
         {
             if ((*it).length() > 0 &&
-                (*it).length() - ((*it).find('.') < 0 ? 0 : 1) <
-                variations[shortest].length() -
-                (variations[shortest].find('.') < 0 ? 0 : 1))
+                (*it).length() < variations[shortest].length())
             {
                 shortest = variations.findIndex(*it);
             }
@@ -839,30 +860,27 @@ ReportElement::scaledLoad(double t) const
         switch (loadUnit)
         {
             case days:
-                str.sprintf("%.1f", t * factors[0]);
+                str = tci->tcf->realFormat.format(t * factors[0], FALSE);
                 break;
             case minutes:
-                str.sprintf("%.1f", t * factors[1]);
+                str = tci->tcf->realFormat.format(t * factors[1], FALSE);
                 break;
             case hours:
-                str.sprintf("%.1f", t * factors[2]);
+                str = tci->tcf->realFormat.format(t * factors[2], FALSE);
                 break;
             case weeks:
-                str.sprintf("%.1f", t * factors[3]);
+                str = tci->tcf->realFormat.format(t * factors[3], FALSE);
                 break;
             case months:
-                str.sprintf("%.1f", t * factors[4]);
+                str = tci->tcf->realFormat.format(t * factors[4], FALSE);
                 break;
             case years:
-                str.sprintf("%.1f", t * factors[5]);
+                str = tci->tcf->realFormat.format(t * factors[5], FALSE);
                 break;
             case shortAuto:
             case longAuto:
                 break;  // handled above switch statement already
         }
-        // If str ends with ".0" remove ".0".
-        if (str[str.length() - 1] == '0')
-            str = str.left(str.length() - 2);
     }
     return str;
 }

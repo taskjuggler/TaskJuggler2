@@ -284,30 +284,6 @@ reports. The text will appear underneath the HTML reports right next
 to the TaskJuggler version information.</para>
 
 </sect1>
-<sect1 id="currency"><title>currency &lt;text&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>text:</><member><link linkend="string">STRING</link></>
-</simplelist></para>
-
-<para>The currency for money values in reports.</para>
-
-<para>See also: <link linkend="account">account</link>, <link
-linkend="currencydigits">currencydigits</link></para>
-
-</sect1>
-<sect1 id="currencydigits"><title>currencydigits &lt;number&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>number:</><member><link linkend="integer">INTEGER</link></>
-</simplelist></para>
-
-<para>The number of decimal digits used for currency values.</para>
-
-<para>See also: <link linkend="account">account</link>, <link
-linkend="currency">currency</link></para>
-
-</sect1>
 <sect1 id="export"><title>export &lt;filename&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -425,7 +401,7 @@ task</link>.</para>
 </sect2>
 
 </sect1>
-<sect1 id="flags"><title>flags &lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;</title>
+<sect1 id="flags"><title>flags &lt;id&gt; [, &lt;id&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</><member><link linkend="id">ID</link></>
@@ -466,7 +442,7 @@ above the task list.</para>
 
 </sect2>
 <sect2 id="htmlaccountreport_columns"><title>columns
-&lt;colid&gt;&lsqb;,&lt;colid&gt;&rsqb;</title>
+&lt;colid&gt; [, &lt;colid&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>colid:</><member><link linkend="id">ID</link></>
@@ -649,7 +625,7 @@ above the task list.</para>
 
 </sect2>
 <sect2 id="htmltaskreport_columns"><title>columns
-&lt;colid&gt;&lsqb,&lt;colid&gt;&rsqb</title>
+&lt;colid&gt; [, &lt;colid&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>colid:</member><member><link linkend="id">ID</link></member>
@@ -749,6 +725,9 @@ every listed item by 1.</member>
 <member><computeroutput>projectid</computeroutput></member>
 <member>The project id of the task</member>
 
+<member><computeroutput>quarterly</computeroutput></member>
+<member>A quarter-by-quarter calendar view of the tasks</member>
+
 <member><computeroutput>rate</computeroutput></member>
 <member>The daily rate of the resource</member>
 
@@ -767,6 +746,11 @@ responsible </member>
 
 <member><computeroutput>revenue</computeroutput></member>
 <member>The accumulated revenue of the task and its sub tasks</member>
+
+<member><computeroutput>scenario</computeroutput></member>
+<member>The name of the scenario. This column is helpful when multiple
+scenarios are shown in the table. See also <link
+linkend="htmltaskreport_scenarios">scenarios</link>.</member>
 
 <member><computeroutput>seqno</computeroutput></member>
 <member>The task index in the order of finished declarations. Each
@@ -794,6 +778,9 @@ linkend="task_complete">complete</link>.</member>
 
 <member><computeroutput>weekly</computeroutput></member>
 <member>A week-by-week calendar view of the tasks</member>
+
+<member><computeroutput>yearly</computeroutput></member>
+<member>A year-by-year calendar view of the tasks</member>
 </simplelist></para>
 
 </sect2>
@@ -960,6 +947,18 @@ linkend="logicalexpression">LOGICALEXPRESSION</link></member>
 
 <para>Do not show subtasks of tasks with flags meeting the described
 logical expression.</para>
+
+</sect2>
+<sect2 id="htmltaskreport_scenarios"><title>scenarios
+&lt;id&gt; [, &lt;id&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>id:</member><member><link
+linkend="id">ID</link>/member>
+</simplelist><para>
+
+<para>Specifies which scenarios should be included in the
+report.</para>
 
 </sect2>
 <sect2 id="htmltaskreport_shorttimeformat"><title>shorttimeformat
@@ -1213,11 +1212,19 @@ the embedded URLs.</member>
 <para><simplelist type=horiz columns=2>
 <member><computeroutput>dayheader</computeroutput></member>
 <member>The number of the day in daily calendars. Available macros:
-day, month, year</member>
+day, month, quarter, week,  year</member>
+
+<member><computeroutput>weekheader</computeroutput></member>
+<member>The number of the week in weekly calendars. Available macros:
+day, month, quarter, week, year</member>
 
 <member><computeroutput>monthheader</computeroutput></member>
 <member>The name of the month in weekly or monthly calendars.
 Available macros: day, month year</member>
+
+<member><computeroutput>quarterheader</computeroutput></member>
+<member>The number of the quarter in quarterly calendars. Available macros:
+day, month, quarter, week,  year</member>
 
 <member><computeroutput>resourcename</computeroutput></member>
 <member>The name of the resource. Available macros:
@@ -1226,13 +1233,9 @@ resourceid</member>
 <member><computeroutput>taskname</computeroutput></member> <member>The
 name of the task. Available macros: taskid</member>
 
-<member><computeroutput>weekheader</computeroutput></member>
-<member>The number of the week in weekly calendars. Available macros:
-day, month, year</member>
-
 <member><computeroutput>yearheader</computeroutput></member>
 <member>The number of the year in yearly calendars. Available macros:
-day, month, year</member>
+day, month, quarter, week,  year</member>
 
 </simplelist></para>
 
@@ -1321,7 +1324,7 @@ task specified by <computeroutput>taskprefix</computeroutput>.</para>
 </itemizedlist></para>
 
 </sect1>
-<sect1 id="macro"><title>macro &lt;id&gt; &lsqb; body &rsqb;</title>
+<sect1 id="macro"><title>macro &lt;id&gt; [ body ]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member><link linkend="id">ID</link></member>
@@ -1331,7 +1334,7 @@ task specified by <computeroutput>taskprefix</computeroutput>.</para>
 declared like this:<para>
 
 <para><screen>
-macro FOO &lsqb; This text &rsqb;
+macro FOO [ This text ];
 </screen></para>
 
 <para>If later ${FOO} is found in the project file, it is expanded to ' This
@@ -1340,7 +1343,7 @@ numbers as names. The number specifies the index of the
 argument.</para>
 
 <para><screen>
-macro FOO &lsqb; This ${1} text &rsqb;
+macro FOO [ This ${1} text ]
 </screen></para>
 
 <para>will expand to ' This stupid text ' if called as ${FOO
@@ -1407,6 +1410,50 @@ The end may be well after the end of the last task, but must be
 specified to terminate the scheduling process.</para>
 <para>Optional attributes:</para>
 
+<sect2 id="project_currency"><title>currency &lt;text&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>text:</><member><link linkend="string">STRING</link></>
+</simplelist></para>
+
+<para>The currency for money values in reports.</para>
+
+<para>See also: <link linkend="account">account</link>, <link
+linkend="project_currencyformat">project_currencyformat</link></para>
+
+</sect2>
+<sect2 id="project_currencyformat"><title>currencyformat 
+&lt;negativeprefix&gt;
+&lt;negativesuffix&gt;
+&lt;thousandseparator&gt;
+&lt;fractionseparator&gt;
+&lt;fractiondigits&gt;
+</title>
+
+<para><simplelist type=horiz columns=2>
+<member>negativeprefix:</><member><link linkend="string">STRING</link></>
+<member>negativesuffix:</><member><link linkend="string">STRING</link></>
+<member>thousandseparator:</><member><link linkend="string">STRING</link></>
+<member>fractionseparator:</><member><link linkend="string">STRING</link></>
+<member>fractiondigits:</><member><link linkend="integer">INTEGER</link></>
+</simplelist></para>
+
+<para>These values specify the default format used for all currency
+values. The <computeroutput>negativeprefix</computeroutput> and
+<computeroutput>negativesuffix</computeroutput> strings enclose
+negative currency values. The
+<computeroutput>thousandseparator</computeroutput> can be used to make
+large numbers more readable. The
+<computeroutput>fractionseparator</computeroutput> separates the
+fractional part from the rest.
+<computeroutput>fractiondigits</computeroutput> specifies how many
+fractional digits should be shown at a maximum.</para>
+
+<para>See also: <link linkend="account">account</link>, <link
+linkend="project_currency">currency</link> and <link
+linkend="project_numberformat">numberformat</link></para>
+
+</sect2>
 <sect2 id="project_dailyworkinghours"><title>dailyworkinghours
 &lt;value&gt;</title>
 
@@ -1420,7 +1467,8 @@ base to convert working hours into working days. This affects for
 example the <link linkend="task_length">length</link> task attribute. The
 default value is 8 hours and should work for most Western countries.
 The value you specify should match the settings you specified for
-<link linkend="workinghours">workinghours</link>.</para>
+<link linkend="project_workinghours">workinghours</link>. See also
+<link linkend="project_yearlyworkingdays">yearlyworkingdays</link>.</para>
 
 </sect2>
 <sect2 id="project_now"><title>now &lt;sometime&gt;</title>
@@ -1431,6 +1479,37 @@ The value you specify should match the settings you specified for
 
 <para>Use the specified day and time for computation of the project status
 instead of the current moment.<para>
+
+</sect2>
+<sect2 id="project_numberformat"><title>numberformat 
+&lt;negativeprefix&gt;
+&lt;negativesuffix&gt;
+&lt;thousandseparator&gt;
+&lt;fractionseparator&gt;
+&lt;fractiondigits&gt;
+</title>
+
+<para><simplelist type=horiz columns=2>
+<member>negativeprefix:</><member><link linkend="string">STRING</link></>
+<member>negativesuffix:</><member><link linkend="string">STRING</link></>
+<member>thousandseparator:</><member><link linkend="string">STRING</link></>
+<member>fractionseparator:</><member><link linkend="string">STRING</link></>
+<member>fractiondigits:</><member><link linkend="integer">INTEGER</link></>
+</simplelist></para>
+
+<para>These values specify the default format used for all numbers
+such as load values. The <computeroutput>negativeprefix</computeroutput> and
+<computeroutput>negativesuffix</computeroutput> strings enclose
+negative currency values. The
+<computeroutput>thousandseparator</computeroutput> can be used to make
+large numbers more readable. The
+<computeroutput>fractionseparator</computeroutput> separates the
+fractional part from the rest.
+<computeroutput>fractiondigits</computeroutput> specifies how many
+fractional digits should be shown at a maximum.</para>
+
+<para>See also: <link
+linkend="project_currencyformat">currencyformat</link></para>
 
 </sect2>
 <sect2 id="project_shorttimeformat"><title>shorttimeformat
@@ -1678,6 +1757,31 @@ weekstartssunday </link>. <para>
 linkend="project_weekstartsmonday"> weekstartsmonday </link>.<para>
 
 </sect2>
+<sect2 id="project_workinghours"><title>workinghours &lt;weekday&gt;
+&lt;from&gt;-&lt;to&gt; [&lt;from&gt;-&lt;to&gt;]</title>
+
+<para><simplelist type=horiz columns=2>
+<member>weekday:</member><member><link
+linkend="weekday">WEEKDAY</link></member>
+<member>from:</member><member><link
+linkend="time">TIME</link></member>
+<member>to:</member><member><link linkend="time">TIME</link></member>
+</simplelist></para>
+
+<para>Sets the working hours to the specified intervals. The values are used
+as default values for all resources defined afterwards. The default
+values are <computeroutput>08:00-12:00</computeroutput> and
+<computeroutput>13:00-17:00</computeroutput> from
+<computeroutput>Mon</computeroutput> -
+<computeroutput>Fri</computeroutput>. A day that has
+no defined working hours is not considered a working day when
+determining the <link linkend="task_length">length</link> of a
+task.</para>
+
+<para>See also: <link linkend="resource_workinghours">resource</link>,
+<link linkend="shift_workinghours">shift</link></para>
+
+</sect2>
 <sect2 id="project_yearlyworkingdays"><title>yearlyworkingdays
 &lt;value&gt;</title>
 
@@ -1691,8 +1795,9 @@ base to convert working days into working months or working years.
 This affects for example the<link linkend="task_length">length</link> task
 attribute. The default value is 252 days and should work for most
 Western countries. The value you specify should match the settings you
-specified for<link linkend="workinghours">workinghours</link> and
-<link linkend="vacation">vacation</link>.</para>
+specified for<link linkend="project_workinghours">workinghours</link> and
+<link linkend="vacation">vacation</link>. See also <link
+linkend="project_dailyworkinghours">dailyworkinghours</link>.</para>
 
 </sect2>
 </sect1>
@@ -1828,8 +1933,8 @@ Multiple shifts can be defined, but shift intervals may not
 overlap.</para>
 
 </sect2>
-<sect2 id="resource_vacation"><title>vacation &lt;from&gt; &lsqb;-
-&lt;to&gt;&rsqb;</title>
+<sect2 id="resource_vacation"><title>vacation &lt;from&gt; [-
+&lt;to&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>from:</member><member><link linkend="date">DATE</link></member>
@@ -1841,8 +1946,7 @@ the vacation. It specifies the first second after the vacation.</para>
 
 </sect2>
 <sect2 id="resource_workinghours"><title>workinghours &lt;weekday&gt;
-&lt;from&gt; -
-&lt;to&gt;&lsqb;,&lt;from&gt;-&lt;to&gt;&rsqb;</</title>
+&lt;from&gt; - &lt;to&gt; [, &lt;from&gt;-&lt;to&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>weekday:</member><member><link linkend="weekday">WEEKDAY</link></member>
@@ -1853,7 +1957,7 @@ the vacation. It specifies the first second after the vacation.</para>
 <para>Sets the working hours to the specified intervals. If no hours are
 specified for a day, the global definitions are used.</para>
 
-<para>See also:<link linkend="workinghours">workinghours</link></para>
+<para>See also:<link linkend="project_workinghours">workinghours</link></para>
 
 </sect2>
 </sect1>
@@ -1887,7 +1991,7 @@ enclosing shift.</para>
 
 </sect2>
 <sect2 id="shift_workinghours"><title>workinghours &lt;weekday&gt;
-&lt;from&gt;-&lt;to&gt;&lsqb;,&lt;from&gt;-&lt;to&gt;&rsqb</title>
+&lt;from&gt;-&lt;to&gt; [,&lt;from&gt;-&lt;to&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>weekday:</member><member><link linkend="weekday">WEEKDAY</link></member>
@@ -1900,7 +2004,7 @@ specified for a day, the global definitions are used. If no working
 hours should be specified for a day, the keyword 'off' must be used
 instead of the time interval.</para>
 
-<para>See also: <link linkend="workinghours">workinghours</link>,
+<para>See also: <link linkend="project_workinghours">workinghours</link>,
 <link linkend="resource_workinghours">resource</link></para>
 
 </sect2>
@@ -2025,7 +2129,7 @@ linkend="task_actualstart">actualstart</link></para>
 <para>Specifies the actual time the task occupies the resources. This
 is working time, not calender time. 7d means 7 working days, not one
 week. Whether a day is considered a working day or not depends on the
-defined <link linkend="workinghours">working hours</link> and global
+defined <link linkend="project_workinghours">working hours</link> and global
 <link linkend="vacation">vacations</link>.<para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para>
@@ -2057,7 +2161,7 @@ compare the planned and actual dates.</para>
 linkend="task_actualend">actualend</link></para>
 
 </sect2>
-<sect2 id="task_allocate"><title>allocate &lt;id&gt;</title>
+<sect2 id="task_allocate"><title>allocate &lt;id&gt; [, &lt;id&gt;] </title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member><link linkend="id">ID</link></member>
@@ -2079,7 +2183,7 @@ them.</para>
 <para>Optional attributes:</para>
 
 <sect3 id="task_allocate_alternative"><title>alternative
-&lt;id&gt;&lsqb,&lt;id&gt;&rsqb;</title>
+&lt;id&gt; [, &lt;id&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member><link linkend="id">ID</link></member>
@@ -2176,7 +2280,7 @@ useful for project tracking.</para>
 
 </sect2>
 <sect2 id="task_depends"><title>depends
-&lt;id&gt;&lsqb,&lt;id&gt;&rsqb;</title>
+&lt;id&gt; [, &lt;id&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member>GLOBAL_<link
@@ -2296,7 +2400,7 @@ linkend="task_startcredit">startcredit</link></para>
 
 </sect2>
 <sect2 id="task_flags"><title>flags
-&lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;</title>
+&lt;id&gt; [, &lt;id&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member><link linkend="id">ID</link></member>
@@ -2323,7 +2427,7 @@ are not inherited.</para>
 <para>Specifies the time the task occupies the resources. This is working
 time, not calender time. 7d means 7 working days, not one week.
 Whether a day is considered a working day or not depends on the
-defined <link linkend="workinghours">working hours</link> and global
+defined <link linkend="project_workinghours">working hours</link> and global
 <link linkend="vacation">vacations</link>.<para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para>
@@ -2411,7 +2515,7 @@ end date. It's primarily intended for internal use only. </para>
 
 </sect2>
 <sect2 id="task_precedes"><title>precedes
-&lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;</title>
+&lt;id&gt; [, &lt;id&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member>GLOBAL_<link
@@ -2591,7 +2695,8 @@ other attributes are illegal. See attributes for details.</para>
 
 </sect2>
 </sect1>
-<sect1 id="vacation"><title>vacation name &lt;start&gt; &lsqb;- &lt;end&gt;&rsqb;</title>
+<sect1 id="vacation"><title>vacation name &lt;start&gt; [-
+&lt;end&gt;]</title>
 
 <para><simplelist type=horiz columns=2>
 <member>name:</member><member><link
@@ -2604,44 +2709,6 @@ linkend="string">STRING</link></member>
 of the vacation. So <computeroutput>2001-12-24 -
 2001-12-25</computeroutput> specifies one day of
 vacation, not two days.</para>
-
-</sect1>
-<sect1 id="workinghours"><title>workinghours &lt;weekday&gt; &lt;from&gt;-&lt;to&gt;&lsqb;,&lt;from&gt;-&lt;to&gt;&rsqb;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>weekday:</member><member><link
-linkend="weekday">WEEKDAY</link></member>
-<member>from:</member><member><link
-linkend="time">TIME</link></member>
-<member>to:</member><member><link linkend="time">TIME</link></member>
-</simplelist></para>
-
-<para>Sets the working hours to the specified intervals. The values are used
-as default values for all resources defined afterwards. The default
-values are <computeroutput>08:00-12:00</computeroutput> and
-<computeroutput>13:00-17:00</computeroutput> from
-<computeroutput>Mon</computeroutput> -
-<computeroutput>Fri</computeroutput>. A day that has
-no defined working hours is not considered a working day when
-determining the <link linkend="task_length">length</link> of a
-task.</para>
-
-<para>See also: <link linkend="resource_workinghours">resource</link>,
-<link linkend="shift_workinghours">shift</link></para>
-
-</sect1>
-<sect1 id="workinghoursperday"><title>workinghoursperday &lt;value&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>value:</member><member><link
-linkend="integer">INTEGER</link></member>
-</simplelist></para>
-
-<para>Specifies the number of working hours per day. This value is used to
-calculate the daily load from the number of booked hours. If
-workinghoursperday is set to 8 and a resource is used for 12 hours on
-a day, the daily load is 1.5. Change this value with care as it
-affects many internal calculations.</para>
 
 </sect1>
 <sect1 id="xmlreport"><title>xmlreport &lt;filename&gt;</title>

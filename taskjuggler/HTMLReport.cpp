@@ -46,46 +46,7 @@ HTMLReport::generateHeader()
       << "<title>Task Report</title>" << endl
       << "<meta http-equiv=\"Content-Type\" content=\"text/html; "
       << "charset=utf-8\">" << endl
-      << "<style type=\"text/css\"><!--" << endl;
-    if (rawStyleSheet.isEmpty())
-    {
-        s.reset();
-        s.setf(QTextStream::hex);
-        s << ".default { background-color:#" << colDefault
-            << "; font-size:70%; text-align:center }" << endl
-            << ".defaultlight { background-color:#" << colDefaultLight
-            << "; font-size:70%; text-align:center }" << endl
-            << ".task { background-color:#" << colDefault
-            << "; font-size:100%; text-align:left }" << endl
-            << ".tasklight { background-color:#" << colDefaultLight
-            << "; font-size:100%; text-align:left }" << endl
-            << ".available { background-color:#" << colAvailable
-            << "; font-size:70%; text-align:center }" << endl
-            << ".vacation { background-color:#" << colVacation
-            << "; font-size:70%; text-align:center }" << endl
-            << ".weekend { background-color:#" << colWeekend
-            << "; font-size:70%; text-align:center }" << endl
-            << ".milestone { background-color:#" << colMilestone
-            << "; font-size:70%; text-align:center }" << endl
-            << ".booked { background-color:#" << colBooked
-            << "; font-size:70%; text-align:center }" << endl
-            << ".bookedlight { background-color:#" << colBookedLight
-            << "; font-size:70%; text-align:center }" << endl
-            << ".headersmall { background-color:#" << colHeader
-            << "; font-size:70%; text-align:center }" << endl
-            << ".headerbig { background-color:#" << colHeader
-            << "; font-size:110%; font-weight:bold; text-align:center }" << endl
-            << ".completed { background-color:#" << colCompleted
-            << "; font-size:70%; text-align:center }" << endl
-            << ".completedlight { background-color:#" << colCompletedLight
-            << "; font-size:70%; text-align:center }" << endl
-            << ".today { background-color:#" << colToday
-            << "; font-size:70%; text-align:center }" << endl;
-    }
-    else
-        s << rawStyleSheet << endl;
-    s << "--></style>" << endl;
-    s << "</head>" << endl
+      << "</head>" << endl
       << "<body>" << endl;
 
     if (!rawHead.isEmpty())
@@ -107,7 +68,7 @@ HTMLReport::generateFooter()
         s << htmlFilter(project->getCopyright()) << " - ";
     s << "Version " << htmlFilter(project->getVersion())
       << " - Created with <a HREF=\"" << TJURL <<
-      "\">TaskJuggler v"
+      "\">TaskJuggler</a> <a HREF=\"" << TJURL << "/download.php\">v"
       << VERSION << "</a></span></p>" << endl << "</body>\n";
 }
 

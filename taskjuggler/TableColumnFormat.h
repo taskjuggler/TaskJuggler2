@@ -15,6 +15,8 @@
 
 #include <qstring.h>
 
+#include "RealFormat.h"
+
 class ReportElement;
 class TableCellInfo;
 
@@ -47,6 +49,8 @@ public:
 
     QString hAlign;
     int fontFactor;
+
+    RealFormat realFormat;
 
 protected:
     TableColumnFormat() { }

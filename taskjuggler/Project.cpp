@@ -80,6 +80,8 @@ Project::Project()
     weekStartsMonday = TRUE;
     timeFormat = "%Y-%m-%d %H:%M";
     shortTimeFormat = "%H:%M";
+    numberFormat = RealFormat("-", "", ",", ".", 1);
+    currencyFormat = RealFormat("(", ")", ",", ".", 0);
 
     start = 0;
     end = 0;
