@@ -210,7 +210,7 @@ void ResUsageView::updateColumns()
 
 QStringList ResUsageView::getColumnLabels() const
 {
-    const char * format;
+    QString format;
 
     switch ( m_scale )
     {
@@ -224,7 +224,7 @@ QStringList ResUsageView::getColumnLabels() const
         format = "%m/%Y";
         break;
     case SC_QUARTER:
-        format = "Q%q/%Y";      // FIXME is %q the correct wildcard?
+        format = "Q%q/%Y";
         break;
     default:
         kdWarning() << "Invalid scale in ResUsageView::getColumnLabels" << endl;
@@ -233,26 +233,28 @@ QStringList ResUsageView::getColumnLabels() const
 
     time_t delta = intervalForCol( 0 ).getDuration();
     QStringList result;
-    QDateTime tmp = m_start;
+    time_t tmp = m_start.toTime_t();
+    time_t tmpEnd = m_end.toTime_t();
 
     kdDebug() << "getColumnLabels: m_scale: " << m_scale <<
-        " , delta: " << delta << " , start: " << tmp << ", end: " << m_end << endl;
+        " , delta: " << delta << " , start: " << tmp << ", end: " << tmpEnd << endl;
 
-    while ( tmp <= m_end )
+    while ( tmp <= tmpEnd )
     {
         result.append( formatDate( tmp, format ) );
-        tmp = tmp.addSecs( delta );
+        tmp += delta;
     }
 
     return result;
 }
 
-QString ResUsageView::formatDate( const QDateTime & date, const char * format ) const
+QString ResUsageView::formatDate( time_t date, QString format ) const
 {
-    const time_t tdate = date.toTime_t();
-    const struct tm* tms = localtime( &tdate );
+    if ( m_scale == SC_QUARTER )
+        format.replace( "%q", QString::number( quarterOfYear( date ) ) ); // workaround against missing %q in strftime
+    const struct tm* tms = localtime( &date );
     static char s[32];
-    strftime(s, sizeof(s), format, tms);
+    strftime(s, sizeof(s), format.latin1(), tms);
     return QString::fromLocal8Bit(s);
 }
 

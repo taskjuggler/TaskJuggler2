@@ -73,7 +73,7 @@ private:
      * @return formatted @p date according to @p format and the current scale
      * (uses strftime)
      */
-    QString formatDate( const QDateTime & date, const char * format ) const;
+    QString formatDate( time_t date, QString format ) const;
 
     /// list of resources
     ResourceList m_resList;
