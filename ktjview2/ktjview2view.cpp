@@ -71,6 +71,7 @@
 #include "ktjUtils.h"
 #include "ktjReportView.h"
 #include "ktjTaskReport.h"
+#include "ktjResourceReport.h"
 #include "ktjReportDialog.h"
 
 // TJ includes
@@ -784,26 +785,26 @@ QString ktjview2View::status2Str( int ts ) const
     switch ( ( TaskStatus ) ts )
     {
     case NotStarted:
-        return i18n( "Not started" );
+        return i18n( "Not yet started" );
         break;
     case InProgressLate:
-        return i18n( "In progress (late)" );
+        return i18n( "Behind schedule" );
         break;
     case InProgress:
-        return i18n( "In progress" );
+        return i18n( "Work in progress" );
         break;
     case OnTime:
-        return i18n( "On time" );
+        return i18n( "On schedule" );
         break;
     case InProgressEarly:
-        return i18n( "In progress (early)" );
+        return i18n( "Ahead of schedule" );
         break;
     case Finished:
         return i18n( "Finished" );
         break;
     case Undefined:
     default:
-        return i18n( "Undefined" );
+        return i18n( "Unknown status" );
         break;
     }
 }
@@ -1294,6 +1295,33 @@ void ktjview2View::slotTaskCoverage()
         report->generate();
         delete report;
         emit signalChangeStatusbar( i18n( "Generated 'Task Coverage' report, from %1 to %2, scale '%3'." )
+                                    .arg( KGlobal::locale()->formatDateTime( dlg.startDate() ) )
+                                    .arg( KGlobal::locale()->formatDateTime( dlg.endDate() ) )
+                                    .arg( dlg.scaleString() ) );
+        emit setQuickSearchView( m_reportView );
+    }
+}
+
+void ktjview2View::slotResourceUsage()
+{
+    if ( !m_project )
+    {
+        KMessageBox::error( this, i18n( "To generate a report you must first open a project." ) );
+        return;
+    }
+
+    KtjReportDialog dlg( KtjUtils::time_t2Q( m_project->getStart() ),
+                         KtjUtils::time_t2Q( m_project->getEnd() ),
+                         this, "report_dialog" );
+    if ( dlg.exec() == KDialogBase::Accepted )
+    {
+        KtjResourceReport * report = new KtjResourceReport( m_project, m_reportView );
+        report->setStartDate( dlg.startDate() );
+        report->setEndDate( dlg.endDate() );
+        report->setScale( dlg.scale() );
+        report->generate();
+        delete report;
+        emit signalChangeStatusbar( i18n( "Generated 'Resource Usage' report, from %1 to %2, scale '%3'." )
                                     .arg( KGlobal::locale()->formatDateTime( dlg.startDate() ) )
                                     .arg( KGlobal::locale()->formatDateTime( dlg.endDate() ) )
                                     .arg( dlg.scaleString() ) );

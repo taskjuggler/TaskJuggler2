@@ -19,8 +19,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef _KTJTASKREPORT_H_
-#define _KTJTASKREPORT_H_
+#ifndef _KTJRESOURCEREPORT_H_
+#define _KTJRESOURCEREPORT_H_
 
 #include "ktjReport.h"
 #include "ktjReportView.h"
@@ -30,13 +30,13 @@
 #include "Resource.h"
 
 /**
- * @short Task Coverage report
+ * @short Resource Usage report
  *
- * This report shows tasks and their allocated resources in a hierarchical view
+ * This report shows resources and their tasks in a hierarchical view
  * together with load
  * @author Lukas Tinkl <lukas.tinkl@suse.cz>
  */
-class KtjTaskReport: public KtjReport
+class KtjResourceReport: public KtjReport
 {
 public:
     /**
@@ -44,7 +44,7 @@ public:
      * @param proj The project to work on
      * @param view View (KListView based) where to display data
      */
-    KtjTaskReport( Project * proj, KtjReportView * view );
+    KtjResourceReport( Project * proj, KtjReportView * view );
     virtual void generate();
 
 protected:
@@ -52,21 +52,27 @@ protected:
 
 private:
     /**
-     * Generate primary row with tasks
+     * Generate primary row with resouces
      * @param parent view where to attach this item
-     * @param task Task to work on
+     * @param res Resource to work on
      * @param columns number of columns
      */
-    void generatePrimaryRow( KtjReportView * parent, Task * task, int columns );
+    void generatePrimaryRow( KtjReportView * parent, Resource * res, int columns );
 
     /**
-     * Generate secondary row with resources
+     * Generate secondary row with tasks
      * @param parent parent item where to attach this item
-     * @param task Task to work on
-     * @param res Resource allocated to @p task
+     * @param res Resource to work on
+     * @param task Task handled by @p res
      * @param columns number of columns
      */
-    void generateSecondaryRow( KListViewItem * parent, Task * task, Resource * res, int columns );
+    void generateSecondaryRow( KListViewItem * parent, Resource * res, Task * task, int columns );
+
+    /**
+     * Helper function for filtering the tasklist
+     * @return true if the Resource @p res is allocated to Task @p task during the report interval
+     */
+    bool isResourceLoaded( Resource * res, Task * task ) const;
 };
 
 #endif

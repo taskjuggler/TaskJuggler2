@@ -255,6 +255,9 @@ void ktjview2::setupActions()
     m_taskCoverageAction = new KAction( i18n( "&Task coverage..." ), 0, KShortcut(),
                                         m_view, SLOT( slotTaskCoverage() ), actionCollection(), "task_coverage" );
 
+    m_resUsageAction = new KAction( i18n( "Resource usage..." ), 0, KShortcut(),
+                                    m_view, SLOT( slotResourceUsage() ), actionCollection(), "resource_usage" );
+
     // Tools menu
     m_buildAction = new KAction( i18n( "&Rebuild project" ), "gear", KShortcut(),
                                  m_view, SLOT( slotBuild() ), actionCollection(), "build" );
@@ -636,6 +639,7 @@ void ktjview2::enableResUsageActions( bool enable )
 void ktjview2::enableReportsActions( bool enable )
 {
     m_taskCoverageAction->setEnabled( enable );
+    m_resUsageAction->setEnabled( enable );
 }
 
 void ktjview2::enableEditorActions( bool enable )

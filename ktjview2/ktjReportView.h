@@ -18,6 +18,10 @@ public:
      */
     virtual void clear();
 
+protected:
+    virtual QString tooltip( QListViewItem *item, int column ) const;
+    virtual bool showTooltip( QListViewItem *, const QPoint &, int ) const;
+
 private:
     /**
      * Remove all the columns from the view

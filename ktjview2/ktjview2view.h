@@ -261,6 +261,11 @@ public slots:
     void slotTaskCoverage();
 
     /**
+     * Show the Resource Usage report
+     */
+    void slotResourceUsage();
+
+    /**
      * Rebuild the project from source, redisplay the views
      */
     void slotBuild();

@@ -259,6 +259,7 @@ private:
 
     // reports stuff
     KAction * m_taskCoverageAction;
+    KAction * m_resUsageAction;
 
     // Tools stuff
     KAction * m_buildAction;
