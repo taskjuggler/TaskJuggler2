@@ -77,6 +77,7 @@ void KTVCanvasItemBase::moveInConnectorsBy( int dx, int dy )
    {
       ++it;
       /* Preserve the starting point */
+      qDebug("This is c: %p", c );
       QPoint ps = c->startPoint();
       // qDebug( "Connector start point: %d, %d!", ps.x(), ps.y() );
       QPoint pe = c->endPoint();

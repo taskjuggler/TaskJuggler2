@@ -61,7 +61,7 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    m_milestonePix = loader->loadIcon( PIX_MILESTONE, KIcon::Small );
    m_taskPix      = loader->loadIcon( PIX_TASK     , KIcon::Small );
    m_containerPix = loader->loadIcon( PIX_CONTAINER, KIcon::Small );
-   
+
    setMargin(0);
    setLineWidth(0);
    setItemMargin(8);
@@ -73,11 +73,15 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    columnList.append( new TaskColumnType( i18n(COMPLETE),
 					  i18n("The percentage the task has been completed already. This is either the value specified by complete or a value computed according to the current date (or the date specified by now) and the length, duration or effort."),
 					  Int ));
-   
+
    columnList.append( new TaskColumnType( i18n(COST),
 					  i18n("The accumulated costs of the task and its sub tasks"),
 					  Money ));
-   
+
+   columnList.append( new TaskColumnType( i18n(PRIORITY),
+                                          i18n("The priority of this task in a range from 0 to 1000"),
+                                          Int ));
+
    columnList.append( new TaskColumnType( i18n(DEPEND),
 					  i18n("The task index of the tasks on which this task depends"),
 					  Tasks ));
@@ -102,13 +106,54 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
 					  i18n("The effort put into the task"),
 					  Time ));
 
-   columnList.append( new TaskColumnType( i18n(END),
-					  i18n("The enddate of the task"),
-					  TimeStamp ));
+   columnList.append( new TaskColumnType( i18n(LENGTH),
+					  i18n("The length of the task"),
+					  Time ));
 
    columnList.append( new TaskColumnType( i18n(START),
 					  i18n("The startdate of the task"),
 					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(MIN_START),
+					  i18n("The minimum startdate of the task"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(MAX_START),
+					  i18n("The maximum startdate of the task"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(END),
+					  i18n("The enddate of the task"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(MIN_END),
+					  i18n("The minimum enddate of the task"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(MAX_END),
+					  i18n("The maximum enddate of the task"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(START_BUFFER_END),
+					  i18n("The start buffer end"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(END_BUFFER_START),
+					  i18n("The end buffer start"),
+					  TimeStamp ));
+
+   columnList.append( new TaskColumnType( i18n(RESPONSIBLE),
+                                          i18n("The responsible person for this task"),
+                                          Resources ));
+
+   columnList.append( new TaskColumnType( i18n(STATUS),
+                                          i18n("The status of this task"),
+                                          String ));
+
+   columnList.append( new TaskColumnType( i18n(STATUS_NOTE),
+                                          i18n("The status note of this task"),
+                                          String ));
+
 
    setupColumns();
 }
@@ -208,7 +253,7 @@ void KTVTaskTable::setupColumns()
 void KTVTaskTable::showTaskInTable( KTVTaskTableItem *ktv, Task *t, int scene)
 {
     if( ! ktv) return;
-    
+
     ktv->setText( COL_NAME, t->getName() );
     if( t->isContainer() )
 	ktv->setPixmap( COL_NAME, m_containerPix );
@@ -216,7 +261,7 @@ void KTVTaskTable::showTaskInTable( KTVTaskTableItem *ktv, Task *t, int scene)
 	ktv->setPixmap( COL_NAME, m_milestonePix );
     else
 	ktv->setPixmap( COL_NAME, m_taskPix );
-    
+
     QPtrListIterator<TaskColumnType> it(columnList);
     TaskColumnType *colType = 0;
     /* go through the list of possible columns. The columns that are
@@ -244,12 +289,12 @@ void KTVTaskTable::showTaskInTable( KTVTaskTableItem *ktv, Task *t, int scene)
     dt.setTime_t( t->getStart(0) );
     ktv->setText( COL_PLAN_START_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
     ktv->setText( COL_PLAN_START_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
-   
+
     dt.setTime_t( t->getEnd(0) );
     ktv->setText( COL_PLAN_END_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
     ktv->setText( COL_PLAN_END_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
 #endif
-    
+
 }
 
 
@@ -264,7 +309,7 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
 
    KTVTaskTableItem *ktv =  new KTVTaskTableItem( parent, t, m_itemHeight );
    showTaskInTable(ktv, t, 0 );  // TODO Scenario !!!
-   
+
    /* signal to create a new task in the canvas */
    emit( newTaskAdded( t, ktv));
 
@@ -328,7 +373,7 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
 	   // Call recursivly to close all children
 	   if( child->childCount() )
 	       slCollapsed( child );
-	   
+
 	   // Note: The next signal is not connected internally.
            emit hideTaskByItem( static_cast<KTVTaskTableItem*>(child) );
            m_canvasView->getCanvas()->slHideTask(static_cast<KTVTaskTableItem*>(child));
@@ -361,7 +406,7 @@ void KTVTaskTable::slExpanded( QListViewItem* it)
 
 	    if( child->childCount() && child->isOpen() )
 		slExpanded( child );
-	    
+
             /* No longer connected to internal reasons, but maybe extern */
             emit showTaskByItem( static_cast<KTVTaskTableItem*>(child) );
 

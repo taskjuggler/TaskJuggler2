@@ -18,16 +18,25 @@
 
 #define COST     "Cost"
 #define COMPLETE "Completed"
+#define PRIORITY "Priority"
 #define DEPEND   "Dependencies"
 #define PRECEDES  "Precedes"
 #define PREVIOUS  "Previous"
 #define FOLLOWERS "Followers"
-
+#define RESPONSIBLE "Responsible"
 #define DURATION "Duration"
 #define EFFORT    "Effort"
+#define LENGTH    "Length"
 #define END       "End"
 #define START     "Start"
-
+#define START_BUFFER_END "StartBufferEnd"
+#define END_BUFFER_START "EndBufferStart"
+#define MIN_START "MinStart"
+#define MAX_START "MaxStart"
+#define MIN_END   "MinEnd"
+#define MAX_END   "MaxEnd"
+#define STATUS    "Status"
+#define STATUS_NOTE "StatusNote"
 
 typedef enum ColumnType { Int=0, String, Money, Resources, Tasks, Timespan, Time, TimeStamp };
 
@@ -56,6 +65,8 @@ private:
     QString format( double ) const;
     QString format( TaskListIterator it ) const;
     QString format( time_t t ) const;
+    QString format( Resource *res ) const;
+
     ColumnType m_type;
     QString    m_name, m_desc;
     bool       m_show;
