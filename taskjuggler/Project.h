@@ -72,7 +72,7 @@ public:
      * Returns the first (default) ID of the project.
      */
     QString getId() const
-    { 
+    {
         return projectIDs.isEmpty() ? QString::null : projectIDs.first();
     }
     /**
@@ -100,7 +100,7 @@ public:
      * 27th is "AA" and so on.
      */
     QString getIdIndex(const QString& i) const;
-    
+
     /**
      * Returns the number of supported scenarios.
      */
@@ -112,12 +112,12 @@ public:
     Scenario* getScenario(int sc) const;
     /**
      * Returns a pointer to the scenario with index sc.
-     * @param sc Specifies the scenario.
+     * @param sc Index of the scenario in the project scenario list.
      */
     const QString& getScenarioId(int sc) const;
     /**
      * Returns the name of a scenario.
-     * @param sc Specifies the scenario.
+     * @param sc Index of the scenario in the project scenario list.
      */
     const QString& getScenarioName(int sc) const;
     /**
@@ -145,7 +145,7 @@ public:
     const QString& getName() const { return name; }
 
     /**
-     * Set the version number of the project. This version is maily used for
+     * Set the version number of the project. This version is mainly used for
      * reports.
      */
     void setVersion(const QString& v) { version = v; }
@@ -163,7 +163,7 @@ public:
      * Returns the copyright information of the project.
      */
     const QString& getCopyright() const { return copyright; }
-    
+
     /**
      * Set the default priority for all top-level tasks. Normally this value
      * is 500.
@@ -260,10 +260,10 @@ public:
     }
     /**
      * If there is a working interval defined for this weekday and the
-     * day is not registered as a vacation day then it is a workday. 
+     * day is not registered as a vacation day then it is a workday.
      */
     bool isWorkingDay(time_t d) const;
-    
+
     /**
      * If the interval overlaps with a vacation day or the interval is outside
      * of the defined working hours, FALSE is returned. Otherwise TRUE.
@@ -296,7 +296,7 @@ public:
      */
     double getWeeklyWorkingDays() const
     {
-        return yearlyWorkingDays / 52.1429; 
+        return yearlyWorkingDays / 52.1429;
     }
 
     /**
@@ -305,9 +305,9 @@ public:
      * vacation settings. The value is derived from the yearlyWorkingDays
      * setting. This function returns the value.
      */
-    double getMonthlyWorkingDays() const 
-    { 
-        return yearlyWorkingDays / 12; 
+    double getMonthlyWorkingDays() const
+    {
+        return yearlyWorkingDays / 12;
     }
 
     /**
@@ -335,7 +335,7 @@ public:
      * not be a working day. Vacation intervals may not overlap.
      * @param n Name of the vacation.
      * @param i The time interval the vacation lasts.
-     */  
+     */
     void addVacation(const QString& n, const Interval& i)
     {
         vacationList.add(n, i);
@@ -350,11 +350,11 @@ public:
      */
     bool isVacation(time_t d) const { return vacationList.isVacation(d); }
     /**
-     * Returns an iterator for the vacation list. 
+     * Returns an iterator for the vacation list.
      */
     VacationListIterator getVacationListIterator() const
     {
-        return VacationListIterator(vacationList); 
+        return VacationListIterator(vacationList);
     }
 
     /**
@@ -369,7 +369,7 @@ public:
      * project.
      */
     void deleteScenario(Scenario* s);
-    
+
     /**
      * This function is for library internal use only. Creating a Task object
      * with the project as parameter will automatically add it to the Task
@@ -424,9 +424,9 @@ public:
      * to user-defined attributes of Tasks.
      */
     const QDict<const CustomAttributeDefinition>&
-        getTaskAttributeDict() const 
-    { 
-        return (const QDict<const CustomAttributeDefinition>&) taskAttributes; 
+        getTaskAttributeDict() const
+    {
+        return (const QDict<const CustomAttributeDefinition>&) taskAttributes;
     }
 
     /**
@@ -467,12 +467,12 @@ public:
         return ResourceListIterator(resourceList);
     }
     /**
-     * This function adds a new, user-defined attribute to the Resource 
+     * This function adds a new, user-defined attribute to the Resource
      * attributes. The @param id must be unique within the Resource attributes
      * namespace. @param cad is a pointer to the CustomAttributeDefinition
      * object.
      */
-    bool addResourceAttribute(const QString& name, 
+    bool addResourceAttribute(const QString& name,
                               CustomAttributeDefinition* cad);
     /**
      * Returns a pointer to the custom attribute object identified by @param id.
@@ -485,14 +485,14 @@ public:
      * to user-defined attributes of Resources.
      */
     const QDict<const CustomAttributeDefinition>&
-        getResourceAttributeDict() const 
-    { 
-        return (const QDict<const CustomAttributeDefinition>&) 
-            resourceAttributes; 
+        getResourceAttributeDict() const
+    {
+        return (const QDict<const CustomAttributeDefinition>&)
+            resourceAttributes;
     }
 
     /**
-     * This function is for library internal use only. Creating an Account 
+     * This function is for library internal use only. Creating an Account
      * object with the project as parameter will automatically add it to the
      * Account list of the project.
      */
@@ -529,12 +529,12 @@ public:
         return AccountListIterator(accountList);
     }
     /**
-     * This function adds a new, user-defined attribute to the Account 
+     * This function adds a new, user-defined attribute to the Account
      * attributes. The @param id must be unique within the Account attributes
      * namespace. @param cad is a pointer to the CustomAttributeDefinition
      * object.
      */
-    bool addAccountAttribute(const QString& name, 
+    bool addAccountAttribute(const QString& name,
                               CustomAttributeDefinition* cad);
     /**
      * Returns a pointer to the custom attribute object identified by @param id.
@@ -547,14 +547,14 @@ public:
      * to user-defined attributes of Accounts.
      */
     const QDict<const CustomAttributeDefinition>&
-        getAccountAttributeDict() const 
-    { 
+        getAccountAttributeDict() const
+    {
         return (const QDict<const CustomAttributeDefinition>&)
-            resourceAttributes; 
+            resourceAttributes;
     }
 
     /**
-     * This function is for library internal use only. Creating a Shift 
+     * This function is for library internal use only. Creating a Shift
      * object with the project as parameter will automatically add it to the
      * Shift list of the project.
      */
@@ -616,7 +616,7 @@ public:
      * Returns the default effort limits for resources.
      */
     const UsageLimits* getResourceLimits() const { return resourceLimits; }
-    
+
     /**
      * Set the default daily cost rate for resources. This value is inherited
      * by all resources created subsequent to this function call.
@@ -733,7 +733,7 @@ public:
     /**
      * Generate cross references between all data structures and run a
      * consistency check. This function must be called after the project data
-     * tree has been contructed. 
+     * tree has been contructed.
      * @return Only if all tests were successful TRUE is returned.
      */
     bool pass2(bool noDepCheck);
@@ -747,7 +747,7 @@ private:
     void overlayScenario(int base, int sc);
     void prepareScenario(int sc);
     void finishScenario(int sc);
-    
+
     bool schedule(OptimizerRun* run, int sc);
 
     bool checkSchedule(int sc) const;
@@ -772,7 +772,7 @@ private:
     QString version;
     /// Some legal words to please the boss.
     QString copyright;
-    
+
     /// The default timezone of the project.
     QString timeZone;
     /**
@@ -828,7 +828,7 @@ private:
     /* The list of standard working or opening hours. These values will be
      * inherited by the resources as default working hours. */
     QPtrList<Interval>* workingHours[7];
-    
+
     /**
      * The granularity of the scheduler in seconds. No intervals
      * shorter than this time will be scheduled. */
@@ -857,7 +857,7 @@ private:
 
     VacationList vacationList;
 
-    ScenarioList scenarioList;  
+    ScenarioList scenarioList;
     TaskList taskList;
     ResourceList resourceList;
     AccountList accountList;
@@ -871,7 +871,7 @@ private:
     TaskList originalTaskList;
     ResourceList originalResourceList;
     AccountList originalAccountList;
-    
+
     QDict<CustomAttributeDefinition> taskAttributes;
     QDict<CustomAttributeDefinition> resourceAttributes;
 
@@ -884,7 +884,7 @@ private:
 #endif
 #endif
 
-    QPtrList<Report> reports;   
+    QPtrList<Report> reports;
 } ;
 
 #endif
