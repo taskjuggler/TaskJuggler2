@@ -41,7 +41,7 @@ task m1 "|  M -" {
 
 task m2 "|  M -D" {
 	start 2003-01-13
-	preceeds !t2
+	precedes !t2
 	milestone
 }
 
@@ -54,7 +54,7 @@ task m3 "|D M -" {
 task m4 "|D M -D" {
 	start 2003-01-13
 	depends !t1
-	preceeds !t2
+	precedes !t2
 	milestone
 }
 
@@ -64,13 +64,13 @@ task m5 "- M |" {
 }
 
 task m6 "- M -D" {
-  preceeds !t2
+  precedes !t2
 	milestone
 }
 
 task m7 "- M |D" {
 	end 2003-01-18
-	preceeds !t2
+	precedes !t2
 	milestone
 }
 
@@ -87,21 +87,21 @@ task m9 "-D M |" {
 
 task m10_asap "-D M -D (ASAP)" {
 	depends !t1
-	preceeds !t2
+	precedes !t2
 	scheduling asap
 	milestone
 }
 
 task m10_alap "-D M -D (ALAP)" {
 	depends !t1
-	preceeds !t2
+	precedes !t2
 	scheduling alap
 	milestone
 }
 
 task m11 "-D M |D" {
 	depends !t1
-	preceeds !t2
+	precedes !t2
 	end 2003-01-18
 	milestone
 }

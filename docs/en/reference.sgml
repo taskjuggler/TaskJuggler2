@@ -1,4 +1,4 @@
-<chapter><title>Language Reference<anchor id="reference"></title>
+<chapter id="reference"><title>Language Reference</title>
 <sect1 id="comments"><title>Comments</title>
 
 <para>There are two ways to annotate a project file with comments. All text
@@ -196,7 +196,7 @@ breaks.</para>
 <para>Declares an account. Accounts can be used to calculate costs of tasks
 or the whole project. Account declaration may be nested, but only the
 top level accounts may have a type attribute specified. All
-subaccounts inherit this type. The type may be
+sub-accounts inherit this type. The type may be
 <computeroutput>cost</computeroutput> or
 <computeroutput>revenue</computeroutput>.</para>
 
@@ -208,7 +208,7 @@ linkend="htmlaccountreport">htmlaccountreport</link></para>
 <sect2 id="account_account"><title>account &lt;id&gt;
 &lt;name&gt;</title>
 
-<para>Accounts may be nested. An account that has subaccounts may not have
+<para>Accounts may be nested. An account that has sub-accounts may not have
 a balance or a kotrusid.</para>
 
 </sect2>
@@ -288,7 +288,7 @@ same export report.</para>
 <para>The export report can be used to share certain tasks or milestones
 with other projects. When an export report is included the project IDs
 of the included tasks must be declared first with the <link
-linkend="projectid">projectid property</link>.</para>
+linkend="projectid">project id property</link>.</para>
 
 <para>Optional attributes:</para>
 
@@ -323,7 +323,7 @@ expression.</para>
 linkend="logicalexpression">LOGICALEXPRESSION</link></>
 </simplelist></para>
 
-<para>Do not show subresources of resources with flags meeting the
+<para>Do not show sub-resources of resources with flags meeting the
 described logical expression.</para>
 
 </sect2>
@@ -504,7 +504,7 @@ linkend="htmlaccountreport_showactual">showactual</link>
 linkend="logicalexpression">LOGICALEXPRESSION</link></member>
 </simplelist></para>
 
-<para>Do not show subaccounts of accounts that match the specified logical
+<para>Do not show sub-accounts of accounts that match the specified logical
 expression.</para>
 
 </sect2>
@@ -557,7 +557,7 @@ SORTINGCRITERIA</link></member>
 
 <para>Optional attributes:</para>
 
-<para>See <link linkend="htmltaskreport">htmltaskresport</link></para>
+<para>See <link linkend="htmltaskreport">htmltaskreport</link></para>
 
 </sect1>
 <sect1 id="htmltaskreport"><title>htmltaskreport &lt;filename&gt;</title>
@@ -838,8 +838,8 @@ linkend="string">STRING</link><member>
 </simplelist></para>
 
 <para>The <computeroutput>rawstylesheet</computeroutput> attribute can
-be used to change the stylesheet of the htmlreport. The default
-stylesheet looks similar to this one:</para>
+be used to change the style sheet of the html report. The default
+style sheet looks similar to this one:</para>
 
 <para><screen>
 .default { background-color:#f3ebae; font-size:70%; text-align:center }
@@ -879,7 +879,7 @@ used to insert raw html code after the table.</para>
 linkend="logicalexpression">LOGICALEXPRESSION</link></member>
 </simplelist></para>
 
-<para>Do not show subresources of resources with flags meeting the
+<para>Do not show sub-resources of resources with flags meeting the
 described logical expression.</para>
 
 </sect2>
@@ -932,7 +932,7 @@ linkend="sortingcriteria">SORTINGCRITERIA</link></member>
 <para>The sorting criteria specifies how the tasks in the generated report
 will be sorted. If two items match a criteria they are sorted
 according to the next criteria. Up to three criteria are supported.
-Most sorting criterias come as pair of two, so the list can be sorted
+Most sorting criteria come as pair of two, so the list can be sorted
 in ascending order (suffix -up) or descending order (suffix -down).
 Possible values are:</para>
 
@@ -995,13 +995,13 @@ only be used as the first criteria.</member>
 <computeroutput>enddown</computeroutput></member>
 
 <member><computeroutput>actualstartup</computeroutput></member>
-<member>Ealiest actual start date on top</member>
+<member>Earliest actual start date on top</member>
 
 <member><computeroutput>actualstartdown</computeroutput></member>
 <member>Latest actual start date on top</member>
 
 <member><computeroutput>actualendup</computeroutput></member>
-<member>Ealiest actual end date on top</member>
+<member>Earliest actual end date on top</member>
 
 <member><computeroutput>actualenddown</computeroutput></member>
 <member>Latest actual end date on top</member>
@@ -1124,7 +1124,7 @@ linkend="project_timeformat">timeformat</link> for details.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>id:</member><member>The ID specifies the location of the HTML
-report where the url should appear.</member>
+report where the URL should appear.</member>
 <member>href:</member><member>A string pattern that is used to create
 the embedded URLs.</member>
 </simplelist></para>
@@ -1158,8 +1158,8 @@ day, month, year</member>
 </simplelist></para>
 
 <para>The href pattern may contain macros which are expanded during the report
-generation. The availability of the macros and their contense depends
-on the specified ID. To protect the macros from beeing expanded during
+generation. The availability of the macros and their content depends
+on the specified ID. To protect the macros from being expanded during
 file reading the macros in the URL string need to be started with two
 $ signs.</para>
 
@@ -1181,7 +1181,7 @@ url monthheader "Resources-2002-$${month}.html"
 <para>This attaches a hyperlink to all month names in a monthly or weekly
 calendar header. The links point to files that contain the number of
 the month in the file name. The number is always two digits and
-prefixed with a 0 if necessary. The year marco expands to 4
+prefixed with a 0 if necessary. The year macro expands to 4
 digits.</para>
 
 </sect2>
@@ -1195,7 +1195,7 @@ digits.</para>
 
 <para>Optional attributes:</para>
 
-<para>See <link linkend="htmltaskreport">htmltaskresport</link></para>
+<para>See <link linkend="htmltaskreport">htmltaskreport</link></para>
 
 </sect1>
 <sect1 id="icalreport"><title>icalreport &lt;filename&gt;</title>
@@ -1233,7 +1233,7 @@ task specified by <computeroutput>taskprefix</computeroutput>.</para>
 <member>mode:</member><member><link linkend="string">STRING</link></member>
 </simplelist></para>
 
-<para>sets the kotrus mode. Valid values are</para>
+<para>sets the KoTrus mode. Valid values are</para>
 
 <para><itemizedlist mark='opencircle'>
 <listitem><para>'NoKotrus' for no KoTrus connection
@@ -1340,7 +1340,7 @@ linkend="real">REAL</link></member>
 base to convert working hours into working days. This affects for
 example the <link linkend="task_length">length</link> task attribute. The
 default value is 8 hours and should work for most Western countries.
-The value you specifiy should match the settings you specified for
+The value you specify should match the settings you specified for
 <link linkend="workinghours">workinghours</link>.</para>
 
 </sect2>
@@ -1362,7 +1362,7 @@ instead of the current moment.<para>
 linkend="string">STRING</link></member>
 </simplelist></para>
 
-<para>Determins how short time specifications in reports look like. It is
+<para>Determines how short time specifications in reports look like. It is
 just a global default settings, since it can be specified for each
 report <link
 linkend="htmltaskreport_shorttimeformat">individually</link>. The
@@ -1377,7 +1377,7 @@ linkend="project_timeformat">timeformat</link>.</para>
 linkend="string">STRING</link></member>
 </simplelist></para>
 
-<para>Determins how time specifications in reports look like. It is
+<para>Determines how time specifications in reports look like. It is
 just a global default settings, since it can be specified for each
 report <link linkend="htmltaskreport_timeformat">individually</link>.</para>
 
@@ -1536,12 +1536,12 @@ abbreviation.</member>
 <para>Some conversion specifiers can be  modified  by preceding them
 by  the E or O modifier to indicate that an alterna­ tive format
 should be used.  If the alternative format  or specification  does
-not exist for the current locale, the behaviour will be as if the
+not exist for the current locale, the behavior will be as if the
 unmodified conversion specifi­ cation  were used.  (SU) The Single
 Unix Specification mentions %Ec, %EC, %Ex, %%EX, %Ry, %EY, %Od,
 %Oe,  %OH, %OI, %Om, %OM, %OS, %Ou, %OU, %OV, %Ow, %OW,
 %Oy, where the effect of the O modifier is to use alternative
-numeric symbols (say, roman numerals), and that of the E modifier is
+numeric symbols (say, Roman numerals), and that of the E modifier is
 to use a locale-dependent alternative representation.</para>
 
 <para>The documentation of the
@@ -1558,9 +1558,9 @@ linkend="string">STRING</link></member>
 </simplelist></para>
 
 <para>Sets the default timezone of the project. All times that have no
-timezones spezified will be assumed to be in this timezone. The value
+time zones specified will be assumed to be in this timezone. The value
 must be a string just like those used for the TZ environment variable.
-Most Linux systems have a commandline utitity called
+Most Linux systems have a command line utility called
 <computeroutput>tzselect</computeroutput> to lookup possible
 values.<para>
 
@@ -1574,12 +1574,12 @@ defaults are assumed.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>value:</member><member><link
-linkend="integer">INTERGER</link></member>
+linkend="integer">INTEGER</link></member>
 <member>unit:</member><member><link linkend="unit">UNIT</link></member>
 </simplelist></para>
 
 <para>Sets the minimum timing resolution. The smaller the value, the longer
-the schedulings process lasts and the more memory the application
+the scheduling process lasts and the more memory the application
 needs. The default is 1 hour. The smallest value is 5 min.</para>
 
 </sect2>
@@ -1745,7 +1745,7 @@ prior to the declaration of the nested resource are inherited.</para>
 </simplelist></para>
 
 <para>Assigns the resource to a defined shift during the specified interval.
-Multiple shifts can be defined, but shift invervals may not
+Multiple shifts can be defined, but shift intervals may not
 overlap.</para>
 
 </sect2>
@@ -1838,9 +1838,9 @@ already defined tasks or resources. The additional attributes must
 obey the same rules as in regular task or resource definitions and
 must be enclosed by curly braces.</para>
 
-<para>This construct is primerily meant for situations where the information
-about a task or resource is split over serveral files. E. g. the
-vacation dates for the resources may be in a seperate file that was
+<para>This construct is primarily meant for situations where the information
+about a task or resource is split over several files. E. g. the
+vacation dates for the resources may be in a separate file that was
 generated by some other tool.</para>
 
 </sect1>
@@ -1955,7 +1955,7 @@ linkend="task_length">length</link></para>
 
 <para> This marks the task as being scheduled for the actual scenario.
 If this attribute is specified, the task must have a fixed actual
-start and end date. It's primerly intended for internal use only.
+start and end date. It's primarily intended for internal use only.
 </para>
 
 </sect2>
@@ -2025,7 +2025,7 @@ be used for at most half a working day for this task.</para>
 
 <para><simplelist type=horiz columns=2>
 <member>criteria:</member><member>Determines the selection criteria.
-The following criterias are supported:</member>
+The following criteria are supported:</member>
 </simplelist></para>
 
 <para><simplelist type=horiz columns=2>
@@ -2064,7 +2064,7 @@ linkend="date">DATE</link></member>
 
 <para>Limits the allocation activity during the specified intervals to the
 working hours of the shift. Multiple shifts intervals can be specified
-but shift invervals may not overlap.</para>
+but shift intervals may not overlap.</para>
 
 </sect3>
 <sect3 id="task_allocate_persistent"><title>persistent</title>
@@ -2113,11 +2113,11 @@ task bar { depends foo1.foo2 }
 </screen></para>
 
 <para>By using the 'depends' attribute, the scheduling policy is
-automatically set to ASAP. If 'depends' and 'preceeds' are used, the
+automatically set to ASAP. If 'depends' and 'precedes' are used, the
 last policy counts.</para>
 
 <para>See also: <link linkend="task_scheduling">scheduling</link>,
-<link linkend="task_preceeds">preceeds</link></para>
+<link linkend="task_precedes">precedes</link></para>
 
 </sect2>
 <sect2 id="task_duration"><title>duration &lt;number&gt;
@@ -2185,7 +2185,7 @@ linkend="task_start">start</link></para>
 
 <para>The end buffer specifies how many percent of the specified
 length, duration or effort may be shortened at the end. This value is
-soley for documentational purposes. It is not used for scheduling. You
+solely for documentational purposes. It is not used for scheduling. You
 can specify <computeroutput>startbuffer</computeroutput> or
 <computeroutput>endbuffer</computeroutput> values to document, that
 you might have some extra time to squeeze out if needed.</para>
@@ -2319,10 +2319,10 @@ be met, the task is marked in the task list.</para>
 
 <para> This marks the task as being scheduled for the plan scenario.
 If this attribute is specified, the task must have a fixed plan start and
-end date. It's primerly intended for internal use only. </para>
+end date. It's primarily intended for internal use only. </para>
 
 </sect2>
-<sect2 id="task_preceeds"><title>preceeds
+<sect2 id="task_precedes"><title>precedes
 &lt;id&gt;&lsqb;,&lt;id&gt;&rsqb;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -2330,16 +2330,16 @@ end date. It's primerly intended for internal use only. </para>
 linkend="id">ID</link></member>
 </simplelist></para>
 
-<para>Specifies that this task preceeds the tasks with the specified
+<para>Specifies that this task precedes the tasks with the specified
 <link linkend="id">ID</link>s. If multiple tasks are specified, they must be
 separated by commas. The format is equivalent to the 'depends'
 attribute.</para>
 
-<para>By using the <computeroutput>preceeds</computeroutput>
+<para>By using the <computeroutput>precedes</computeroutput>
 attribute, the <link linkend="task_scheduling">scheduling policy</link> is
 automatically set to ALAP. If <link
 linkend="task_depends">depends</link> and
-<link linkend="task_preceeds">preceeds</link> are used, the
+<link linkend="task_precedes">precedes</link> are used, the
 last policy counts.</para>
 
 </sect2>
@@ -2362,7 +2362,7 @@ definition of the subtask.</para>
 <member>id:</member><member><link linkend="id">ID</link></member>
 </simplelist></para>
 
-<para>Assings the specified project ID to the task. This will overwrite the
+<para>Assigns the specified project ID to the task. This will overwrite the
 inherited project id. Subtasks that are defined after a <computeroutput>projectid</computeroutput>
 statement will inherit the project ID.</para>
 
@@ -2403,7 +2403,7 @@ possible.</member>
 
 <para>The scheduling policy is automatically changed if the <link
 linkend="task_depends">depends</link> or <link
-linkend="task_preceeds">preceeds</link> attributes are used. If
+linkend="task_precedes">precedes</link> attributes are used. If
 multiple attributes that affect the scheduling policy are used, that
 last attribute determines the effective policy.</para>
 
@@ -2419,7 +2419,7 @@ last attribute determines the effective policy.</para>
 
 <para>Limits the task activity during the specified interval to the working
 hours of the specified shift. Multiple shifts can be defined, but
-shift invervals may not overlap.</para>
+shift intervals may not overlap.</para>
 
 </sect2>
 <sect2 id="task_start"><title>start &lt;date&gt;</title>
@@ -2446,8 +2446,8 @@ scheduling policy to ASAP.<para>
 </simplelist></para>
 
 <para>The start buffer specifies how many percent of the specified
-length, duration or effort may be shortened at the begining of the
-task. This value is soley for documentational purposes. It is not used
+length, duration or effort may be shortened at the beginning of the
+task. This value is solely for documentational purposes. It is not used
 for scheduling. You can specify
 <computeroutput>startbuffer</computeroutput> or
 <computeroutput>endbuffer</computeroutput> values to document, that
@@ -2479,7 +2479,7 @@ linkend="task_endcredit">endcredit</link></para>
 </simplelist></para>
 
 <para>A task may have subtasks. If subtasks are specified, many of the
-other ttributes are illegal. See attributes for details.</para>
+other attributes are illegal. See attributes for details.</para>
 
 </sect2>
 </sect1>
@@ -2531,7 +2531,7 @@ linkend="integer">INTEGER</link></member>
 
 <para>Specifies the number of working hours per day. This value is used to
 calculate the daily load from the number of booked hours. If
-workingHoursPerDay is set to 8 and a resource is used for 12 hours on
+workinghoursperday is set to 8 and a resource is used for 12 hours on
 a day, the daily load is 1.5. Change this value with care as it
 affects many internal calculations.</para>
 
@@ -2545,7 +2545,7 @@ linkend="string">STRING</link></member>
 
 <para>Creates a XML report of the scheduled project. The filename
 should have the extension <computeroutput>.tjx</computeroutput>. Note
-that the file format is still not completly stable yet. We might
+that the file format is still not completely stable yet. We might
 change it in future releases of TaskJuggler. If you plan to use it for
 your own application, please contact us first.</para>
 

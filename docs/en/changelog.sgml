@@ -72,7 +72,7 @@ declaration.</para>
 <listitem><para>Added new example project to illustrate the use of
 export in big projects that are split into sub projects.</para>
 
-<listitem><para>HTML comment in HTML report files is now using correct
+<listitem><para>HTML comments in HTML report files are now using correct
 syntax.</para>
 
 <listitem><para>Partial fix for correct time zone handling.</para>
@@ -95,8 +95,8 @@ used when calling TaskJuggler from CGI scripts.</para>
 the project were silently ignored.</para>
 
 <listitem><para>Added support for <link
-linkend="export_taskattributes"> taskattributes </link>
-.</para>
+linkend="export_taskattributes"> taskattributes </link> to <link
+linkend="export">export</link> report.</para>
 
 <listitem><para>XML Output changes: Basically the XML output is more
 simple to parse, some values were added and corrected.</para>
@@ -116,7 +116,7 @@ missing libical.</para>
 TaskJuggler now creates pure HTML 4.0 code.</para>
 
 <listitem><para>Added support for insertion of raw HTML code into
-reports. This can be achived with <link
+reports. This can be achieved with <link
 linkend="htmltaskreport_rawhead"> rawhead </link> and <link
 linkend="htmltaskreport_rawtail"> rawtail </link>.</para>
 
@@ -137,7 +137,7 @@ not.</para>
 now specify that there might be some air left in a certain
 task.</para>
 
-<listitem><para>Remo's GANTT chart generators have been included in the
+<listitem><para>Remo's Gantt chart generators have been included in the
 <filename>Contrib</filename> directory.</para>
 
 </itemizedlist>
@@ -154,10 +154,10 @@ still comparatively small, we decided to break compatibility now
 rather than later. The changes are fairly minor, so they won't affect
 many users.  Please see further down for more details.</para>
 
-<listitem><para>Added Perl/Tk tool to view GANTT charts and other
+<listitem><para>Added Perl/Tk tool to view Gantt charts and other
 project information.</para>
 
-<listitem><para>Added Pert-chart generator from Philippe
+<listitem><para>Added PERT-chart generator from Philippe
 Midol-Monnet.</para>
 
 <listitem><para>Added support for shifts in <link
@@ -246,8 +246,8 @@ added at arbitrary points in the task tree as sub
 projects.</para></listitem>
 
 <listitem><para>Include statements within tasks are no longer
-supported. They caused in ambiguous interpretation of
-'flags'.</para></listitem>
+supported. They lead to ambiguous interpretation of
+certain attributes.</para></listitem>
 
 <listitem><para>The optional attribute <link
 linkend="export_taskroot">taskroot</link> has been added to <link
@@ -270,7 +270,7 @@ given time frame.</para></listitem>
 weekly reports. You can use the optional project attributes <link
 linkend="project_weekstartssunday"> weekstartssunday </link> and <link
 linkend="project_weekstartsmonday"> weekstartsmonday </link> to
-specify wheter you like to start you week on Sunday or
+specify whether you like to start you week on Sunday or
 Monday.</para></listitem>
 
 <listitem><para>Support for a <computeroutput>flags</computeroutput>
@@ -289,10 +289,10 @@ suite to validate the checker.</para></listitem>
 
 <listitem><para>The error reporting has been drastically improved. The
 messages should be more precise now and errors that are triggered by
-other errors should be not be so promiment anymore.</para></listitem>
+other errors should be not so prominent anymore.</para></listitem>
 
 <listitem><para>A new report type has been added. <link
-linkend="htmlweeklycalendar"> htmlweeklyreport </link> can be used to
+linkend="htmlweeklycalendar"> htmlweeklycalendar</link> can be used to
 generate weekly calendars.</para></listitem>
 
 <listitem><para>The format of time specifications in HTML reports is
@@ -307,9 +307,12 @@ remains identical. </para></listitem>
 
 <listitem><para>The tool <computeroutput> xml2gantt.pl </computeroutput>
 has been renamed to <computeroutput> tjx2gantt </computeroutput> and
-moved from the contrib directory to the main directory. The tool
+moved from the Contrib directory to the main directory. The tool
 <computeroutput> xml2png </computeroutput> has been
 removed.</para></listitem>
+
+<listitem><para>Included new version of TJ-Pert from
+Philippe.</para></listitem>
 
 <listitem><para>The load numbers on the bars of the HTML task and
 resource reports can now be turned on and off using the <link
@@ -317,8 +320,8 @@ linkend="htmltaskreport_barlabels"> barlabels </link>
 attribute.</para></listitem>
 
 <listitem><para>The HTML reports feature now 3 kind of index numbers.
-The sequence number reflectes the order of declaration in the project
-files. The index is a logical order based on the hierachy and other
+The sequence number reflects the order of declaration in the project
+files. The index is a logical order based on the hierarchy and other
 attributes. The number is the index in the generated list. What used
 to be the <computeroutput>no</computeroutput> <link
 linkend="htmltaskreport_columns">column</link> is now the

@@ -5,7 +5,7 @@ task a "Task A" {
 	
 	task b1 "Task B1" {
 		task c1 "Task C1" {
-			preceeds !!b2.c1
+			precedes !!b2.c1
 			length 1d
 		}
 		task c2 "Task C2" {

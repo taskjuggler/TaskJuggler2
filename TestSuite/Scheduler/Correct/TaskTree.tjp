@@ -13,7 +13,7 @@ task m1 "Milestone1" {
 }
 
 task t2 "Task2" {
-  preceeds !m1
+  precedes !m1
   length 5d
 }
 

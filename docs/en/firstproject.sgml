@@ -4,17 +4,16 @@
 that describe the project to schedule it. As you will see now, the
 syntax of the file is easy to understand and very intuitive. This
 chapter will walk you step by step through your first project. You
-create the project plan for an accounting software project. </para>
+create the project plan for a made-up accounting software project.
+Refer to <xref linkend="example"> for a full listing of the
+example. This project demonstrates some of the basic features of
+TaskJuggler for more advanced features please refer to <xref
+linkend="reference">.</para>
 
 <sect1><title>Starting the project</title>
 
-<para>Refer to <xref linkend="example"> for a printout of the
-example.</para>
-
-<para> It uses a made-up software development project to demontrate
-some of the basic features of TaskJuggler. To start a TaskJuggler
-project file you need to use the <link linkend="project"> project
-</link> attribute. </para>
+<para>To start a TaskJuggler project file you need to use the
+<link linkend="project">project</link> property.</para>
 
 <para><screen>
 project acso "Accounting Software" "$Id" 2002-01-16 2002-04-26 {
@@ -32,29 +31,34 @@ the tasks in. </para>
 attributes and a set of optional attributes. Optional attributes are
 always enclosed in curly braces. In this example we use the optional
 attributes <link linkend="project_now"> now </link> to set the current
-day for the scheduler to another value than the moment your invoke
+day for the scheduler to another value than to the moment your invoke
 TaskJuggler. We pick a day during the above specified project period.
 So we always get the same results of a TaskJuggler run, no matter when
 we process our first project.</para>
+
+</sect1>
+<sect1><title>Global Attributes</title>
 
 <para>Besides finding suitable start and end dates of our project, we
 also like to do a simple profit and loss analysis. So we have to
 specify the default daily costs of an employee. This can be changed
 for certain employees later, but it illustrates an important concept
-of TaskJugger - inheritance of attributes. In order to reduce the size
+of TaskJuggler - inheritance of attributes. In order to reduce the size
 of the TaskJuggler project file to a still readable minimum,
 properties inherit many optional attributes from their enclosing
-scope. We'll se further down, what this actually means. Here we are at
+scope. We'll see further down, what this actually means. Here we are at
 top-level scope, so this is the default for all following
 properties.</para>
-
-</sect1>
-<sect1><title>Global Attributes</title>
 
 <para><screen>
 rate 310.0
 currency "EUR"
 </screen></para>
+
+<para>The <link linkend="rate">rate</link> attribute can be used to
+specify the daily costs of resources. The <link
+linkend="currency">currency</link> attribute specifies the
+currency.</para>
 
 <para>Macros are another TaskJuggler feature to keep project files
 small. Macros are text patterns that can be defined once and inserted
@@ -73,7 +77,7 @@ macro allocate_developers [
 ${allocate_developers} </computeroutput> and TaskJuggler will replace
 the <computeroutput> ${allocate_developers} </computeroutput> with the
 pattern. We will use the macro further down in the example and then
-exmplain the meaning of the pattern.</para>
+explain the meaning of the pattern.</para>
 
 </sect1>
 <sect1><title>Declaring Resources</title>
@@ -82,7 +86,7 @@ exmplain the meaning of the pattern.</para>
 is <link linkend="flags"> flags </link>. Once declared you can attach
 them to many properties. When you generate reports of the TaskJuggler
 results, you can use the flags to filter out information and limit the
-report to exactly those details that you want included.</para>
+report to exactly those details that you want to have included.</para>
 
 <para><screen>
 flags team
@@ -102,21 +106,24 @@ resource misc "The Others" {
 }
 </screen></para>
 
-<para>This snippit of the example shows the <link linkend="resource">
+<para>This snippet of the example shows the <link linkend="resource">
 resource </link> property. Resources always have an ID and a Name. IDs
-may only consist of ASCII characters, numbers or the unterline
-character. Names are strings and as such enclosed in double quotes.
-Strings may contain any character, even non-ASCII characters. As you
-can see, resource properties can be nested. <computeroutput> dev
-</computeroutput> is a virtual resource, a team, that consists of
-three other resources.</para>
+may only consist of ASCII characters, numbers and the underline
+character. All global TaskJuggler properties have IDs. They need to be
+unique within their property class. The ID is needed so that we can
+reference the property again later without having the need to write
+the potentially much longer name. Names are strings and as such
+enclosed in double quotes.  Strings may contain any character, even
+non-ASCII characters. As you can see, resource properties can be
+nested. <computeroutput> dev </computeroutput> is a virtual resource,
+a team, that consists of three other resources.</para>
 
-<para><computeroutput> dev1 </computeroutput>, alias Paul Smith costs
+<para><computeroutput>dev1</computeroutput>, alias Paul Smith costs
 more than the normal employee. So the declaration of <computeroutput>
-dev1 </computeroutput> overwrites the inherited default rate with a
+dev1</computeroutput> overwrites the inherited default rate with a
 new value of 330.0. The default value has been inherited from the
-enclosing scope, resource <computeroutput> dev </computeroutput>.
-Which in turn has it inherited from the global scope. </para>
+enclosing scope, resource <computeroutput>dev</computeroutput>.
+Which in turn has inherited it from the global scope. </para>
 
 <para>The declaration of the resource Klaus M&uml;ller uses another
 optional attribute. With <link linkend="resource_vacation"> vacation
@@ -128,10 +135,10 @@ intervals. Internally TaskJuggler uses the number of seconds after
 January 1st, 1970 to store any date. So all dates are actually stored
 with an accuracy of 1 second. <computeroutput> 2002-02-01
 </computeroutput> specifies midnight February 1st, 2002. Again
-following the TaskJugger concept of needing as little info as needed and
+following the TaskJuggler concept of needing as little info as needed and
 extending the rest with sensible defaults, TaskJuggler adds the time
 0:00:00 if nothing else has been specified. So the vacation ends on
-midnight February 5th, 2002. Well, almost. Everytime you specify a
+midnight February 5th, 2002. Well, almost. Every time you specify a
 time interval, the end date is not included in the interval. But the
 second before the date that you have specified is. So Klaus
 M&uml;llers vacation ends 23:59:59 on February 4th, 2002.<para>
@@ -152,7 +159,7 @@ sub-resources, then they would have the flags attached as well.</para>
 <sect1><title>Declaring Accounts</title>
 
 <para>The use of our resources will create costs. For a profit and
-loss analysis, we need to balance the costs agains the customer
+loss analysis, we need to balance the costs against the customer
 payments. So that we don't get lost with all the amounts, we declare 3
 accounts to credit the amounts to. We create one account for the
 development costs, one for the documentation costs and one for the
@@ -176,9 +183,9 @@ accounts. </para>
 
 <para>Let's focus on the real work now. The project should solve a
 problem - the creation of an accounting software. Since the job is
-quite complicated we break it down into serveral sub tasks. We need to
+quite complicated we break it down into several sub tasks. We need to
 do a specification, develop the software, test the software and write
-a manual. In TaskJuggler syntax this would look like this:
+a manual. In TaskJuggler syntax this would look like that:
 
 <para><screen>
 task AcSo "Accounting Software" {
@@ -192,9 +199,12 @@ task AcSo "Accounting Software" {
 <para>Just like resources, tasks are declared by using the <link
 linkend="task">task</link> keyword followed by an ID and a name
 string. All TaskJuggler properties have their own namespaces. This
-means, that it is quite ok to have a resource and a task with the same
+means, that it is quite OK to have a resource and a task with the same
 ID. Tasks may have optional attributes which can be tasks again, so
-tasks can be nested.</para>
+tasks can be nested. In constrast to all other TaskJuggler properties,
+task IDs inherit the ID of the enclosing task as a prefix to the ID.
+The full ID of the <computeroutput>spec</computeroutput> task is
+<computeroutput>AcSo.spec</computeroutput>.</para>
 
 <para>To track important milestones of the project, we also added a
 task called Milestones. This task, like most of the other task will
@@ -211,16 +221,24 @@ add some more details to it.
 </screen></para>
 
 <para>The effort to complete the task is specified with 20 man days.
-Alternativly we could have used the <link
+Alternatively we could have used the <link
 linkend="task_length">length</link> attribute or the <link
 linkend="task_duration">duration</link> attribute.
 <computeroutput>length</computeroutput> specifies the duration of the
 task in working days while <computeroutput>duration</computeroutput>
 specifies the duration in calendar days. Contrary to <link
-linkend="task_effort">effort</link> these two need no specification of
-the involved resources. Since <computeroutput>effort</computeroutput>
-specifies the duration in man days, we need to say who should be
-allocated to the task. Here we use the above mentioned macro
+linkend="task_effort">effort</link> these two don't have to have a
+specification of the involved resources. Since
+<computeroutput>effort</computeroutput> specifies the duration in man
+days, we need to say who should be allocated to the task. The task
+won't finish before the resources could be allocated long enough to
+reach the specified effort. Tasks with
+<computeroutput>length</computeroutput> or
+<computeroutput>duration</computeroutput> criteria and allocated
+resources, will last exactly as long as requested. Resources will be
+allocated only if available.</para> 
+
+<para>Here we use the above mentioned macro
 <computeroutput>allocate_developers</computeroutput>. The
 expression</para>
 
@@ -236,9 +254,9 @@ expression</para>
   allocate dev3
 </screen></para>
 
-<para>If you need to allocate the same bunch of people to serveral
+<para>If you need to allocate the same bunch of people to several
 task, the macro saves you some writing. You could have written the
-<link linkend="task_allocate">allocate</link>-attributes directly instead
+<link linkend="task_allocate">allocate</link> attributes directly instead
 of using the macro. Since the allocation of multiple resources to a
 task is a very common place for macro usage, we found it a good idea
 to use it in this example as well.</para>
@@ -253,17 +271,19 @@ start and end criteria of a task, or one of them and a duration
 specification. The start and end criteria can either be fixed dates or
 relative dates. Relative dates are specification of the type "task B
 starts after task A has finished". Or in other words, task B depends
-on task A. In this example the specification task depends on a
-sub tasks of the deliveries tasks. We haven't specified it yet, but it
-has the ID <computeroutput>start</computeroutput>.<para>
+on task A. In this example the <computeroutput>spec</computeroutput>
+task depends on a sub tasks of the
+<computeroutput>deliveries</computeroutput> tasks. We haven't
+specified it yet, but it has the local ID
+<computeroutput>start</computeroutput>.<para>
 
 <para>To specify the dependency between the two task we use the <link
 linkend="task_depends">depends</link> attribute. The attribute must be
 followed by one or more task IDs. If more than one ID is specified,
-each ID has to be seperated with a comma from the previous one. Task
+each ID has to be separated with a comma from the previous one. Task
 IDs can be either absolute IDs or relative IDs. An absolute ID of a
 task is the ID of this task prepended by the IDs of all enclosing
-tasks. The task IDs are seperated by a dot from each other. The
+tasks. The task IDs are separated by a dot from each other. The
 absolute ID of the specification task would be
 <computeroutput>AcSo.spec</computeroutput>.</para>
 
@@ -298,7 +318,8 @@ important task, since the possible range is 1 (not important at all)
 to 1000 (ultimately important).
 <computeroutput>priority</computeroutput> is an attribute that is
 inherited to sub tasks if specified before the sub tasks declaration.
-</para>
+So all sub tasks of <computeroutput>software</computeroutput> have a
+priority of 1000 as well.</para>
 
 <para><screen>
     task database "Database coupling" {
@@ -393,7 +414,7 @@ attribute.</para>
 the example we stated that we want to credit all development work to
 one account with ID <computeroutput>dev</computeroutput> and all
 documentation work to the account
-<computeroutput>doc</computeroutput>. To achive this, we use the
+<computeroutput>doc</computeroutput>. To achieve this, we use the
 attribute account to credit all tasks to the
 <computeroutput>dev</computeroutput> account.</para>
 
@@ -422,15 +443,15 @@ again since it is also a sub task of
   }
 </screen></para>
 
-<para>All task that have been discussed so far, had a certain duration. We
-did not specify the duration explicitly, but we expect them to last
-for a certain period of time. Sometimes you just want to capture a
-certain moment in your project plan. These moments are usually called
-milestones since they have some level of importance for the progress
-of the project.</para>
-
 </sect1>
 <sect1><title>Specifying Milestones</title>
+
+<para>All task that have been discussed so far, had a certain duration. We
+did not always specify the duration explicitly, but we expect them to
+last for a certain period of time. Sometimes you just want to capture
+a certain moment in your project plan. These moments are usually
+called milestones since they have some level of importance for the
+progress of the project.</para>
 
 <para>TaskJuggler has support for milestones as well. They are handled
 as special types of tasks. By using the optional attribute
@@ -444,7 +465,7 @@ date.</para>
 
     account rev
 
-    task start "Projectstart" {
+    task start "Project start" {
       milestone
       start 2002-01-16
       actualstart 2002-01-20
@@ -457,7 +478,7 @@ date.</para>
       startcredit 13000.0
     }
 
-    task beta "Betaversion" {
+    task beta "Beta version" {
       milestone
       depends !!test.alpha
       startcredit 13000.0
@@ -480,7 +501,7 @@ dependency or a fixed start date. For the first milestone we have used
 the attribute <link linkend="task_start">start</link> to set a fixed
 start date. All other tasks have direct or indirect dependencies on
 this task. Moving back the start date will slip the whole project.
-This has actually happenend, so we use the <link
+This has actually happened, so we use the <link
 linkend="task_actualstart">actualstart</link> attribute to specify the
 real start of the project 4 days later.</para>
 
@@ -489,20 +510,30 @@ real start of the project 4 days later.</para>
 credit the specified amount to the account associated with this task.
 Since we have assigned the <computeroutput>rev</computeroutput>
 account to the enclosing task, all milestones will use this account as
-well.
+well.</para>
+
+<para>Did you notice the line in the task
+<computeroutput>done</computeroutput> that starts with a hash? This
+line is commented out. If TaskJuggler finds a hash it ignores the rest
+of the line. This way you can include comments in your project. The
+<link linkend="task_maxend">maxend</link> attribute specifies that the
+task should end no later than the specified date. This information is
+not used for scheduling but only for checking the schedule afterwards.
+Since the task will end later than the specified date, commenting out
+the line would trigger a warning.</para>
 
 <para>Now the project has been completely specified. Stopping here would
 result in a valid TaskJuggler file that could be processed and
 scheduled. But no reports would be generated to visualize the
 results.</para>
 
-<para>TaskJuggler offers a number of report types. Probably the most
-popular ones are the HTML reports. You can advice TaskJuggler to
-generate one or more HTML pages that contains lists of your tasks,
-resources or accounts.</para>
-
 </sect1>
 <sect1><title>Generating Reports of the scheduled Project</title>
+
+<para>TaskJuggler offers a number of report types. Probably the most
+popular ones are the HTML reports. You can advice TaskJuggler to
+generate one or more HTML pages that contain lists of your tasks,
+resources or accounts.</para>
 
 <para>Before we start with the reports, we present you another macro.
 We like to add a navigation bar to each HTML page that holds a number
@@ -511,16 +542,16 @@ we can create a navigation bar that holds links to all reports. Since
 we have created a macro, we can add the navigation bar to all reports
 without much hassle. The navigation bar is constructed with HTML tags.
 If you are not familiar with HTML this will look very strange to you.
-Don't worry, this is just a cool feature we like to demonstrate. You
-can use TaskJuggler to it's full extend without having to learn HTML
-code.</para>
+Don't worry, this is just a cool feature we would like to demonstrate.
+You can use TaskJuggler to it's full extend without having to learn
+HTML code.</para>
 
 <para>The HTML code is injected into the reports using the <link
 linkend="htmltaskreport_rawhead">rawhead</link> attribute. This will
 put the HTML code close to the top of the HTML page right after the
 body started. As you can see here, string parameters of attributes can
 be enclosed in single quotes as well. This is handy, if the string
-itself needs to contain doublequotes.</para>
+itself needs to contain double quotes.</para>
 
 <para><screen>
 macro navbar [
@@ -641,7 +672,7 @@ by the tasks the resource is assigned to. In <link
 linkend="htmltaskreport">htmltaskreports</link> resources are hidden
 by default while in <link
 linkend="htmlresourcereport">htmlresourcereports</link> tasks are
-hidded by default. To include tasks the attribute <link
+hidden by default. To include tasks the attribute <link
 linkend="htmltaskreport_hidetask">hidetask</link> needs to be used. It
 is followed by a logical expression just like <link
 linkend="htmltaskreport_hideresource">hideresource</link>.</para>
@@ -698,8 +729,8 @@ accounts instead of tasks or resources. The
 account at the end of the reported time interval. The <link
 linkend="htmlaccountreport_accumulate">accumulate</link> attribute
 puts the calendar in accumulation mode. The monthly columns list the
-value of the account at the end of the month. Normaly the amount that
-has been added or subtraced from the account would be listed.</para>
+value of the account at the end of the month. Normally the amount that
+has been added or subtracted from the account would be listed.</para>
 
 </sect2>
 <sect2><title>Generating XML Reports</title>
@@ -707,7 +738,7 @@ has been added or subtraced from the account would be listed.</para>
 <para> Finally we generate an XML report that contains all info about
 the scheduled project. This report will be used by tjx2gantt to create
 a nice GANTT chart of our project. The file can also be read by tools
-like tjGUI or the KDE Konqueror plugin. </para>
+like tjGUI or the KDE Konqueror plug-in. </para>
 
 <para><screen>
 xmlreport "AccountingSoftware.tjx"

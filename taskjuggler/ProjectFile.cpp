@@ -1519,7 +1519,7 @@ ProjectFile::readTaskBody(Task* task)
 					}
 				}
 			}
-			else if (token == KW("preceeds"))
+			else if (token == KW("precedes") || token == "preceeds")
 			{
 				if (!task->getSubList().isEmpty())
 				{
@@ -1538,7 +1538,7 @@ ProjectFile::readTaskBody(Task* task)
 					}
 					if (tt == ABSOLUTE_ID)
 						id = getTaskPrefix() + id;
-					task->addPreceeds(id);
+					task->addPrecedes(id);
 					task->setScheduling(Task::ALAP);
 					if ((tt = nextToken(token)) != COMMA)
 					{

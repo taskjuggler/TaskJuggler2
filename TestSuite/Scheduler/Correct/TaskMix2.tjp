@@ -32,7 +32,7 @@ task t2 "<-|" {
 }
 
 task m2 "Milestone2" {
-	preceeds !t2
+	precedes !t2
 	milestone
 }
 
@@ -46,7 +46,7 @@ task c2 "| x-> -D" {
 	start 2003-01-13
 	effort 5d
 	allocate tux2
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 }
 
@@ -57,13 +57,13 @@ task c3 "| --> |" {
 
 task c4 "| --> -D" {
 	start 2003-01-13
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 }
 
 task c5 "| --> |D" {
 	start 2003-01-13
-	preceeds !m2
+	precedes !m2
 	end 2003-01-18
 	scheduling asap
 }
@@ -76,13 +76,13 @@ task c6 "| <-- |" {
 
 task c7 "| <-- -D" {
 	start 2003-01-13
-	preceeds !m2
+	precedes !m2
 	scheduling alap
 }
 
 task c8 "| <-- |D" {
 	start 2003-01-13
-	preceeds !m2
+	precedes !m2
 	end 2003-01-18
 	scheduling alap
 }
@@ -97,7 +97,7 @@ task c9 "|D x-> -" {
 task c10 "|D x-> -D" {
 	start 2003-01-13
 	depends !m1
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 	effort 5d
 	allocate tux4
@@ -113,14 +113,14 @@ task c11 "|D --> |" {
 task c12 "|D --> -D" {
 	start 2003-01-13
 	depends !m1
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 }
 
 task c13 "|D --> |D" {
 	start 2003-01-13
 	depends !m1
-	preceeds !m2
+	precedes !m2
 	end 2003-01-18
 	scheduling asap
 }
@@ -135,7 +135,7 @@ task c14 "|D <-- |" {
 task c15 "|D <-- -D" {
 	start 2003-01-13
 	depends !m1
-	preceeds !m2
+	precedes !m2
 	end 2003-01-18
 	scheduling alap
 }
@@ -150,14 +150,14 @@ task c16 "- <-x |" {
 task c17 "- <-x -D" {
 	effort 5d
 	allocate tux6
-	preceeds !m2
+	precedes !m2
 }
 
 task c18 "- <-x |D" {
 	end 2003-01-18
 	effort 5d
 	allocate tux7
-	preceeds !m2
+	precedes !m2
 }
 
 task c19 "-D x-> -" {
@@ -170,7 +170,7 @@ task c20 "-D x-> -D" {
 	depends !m1
 	effort 5d
 	allocate tux9
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 }
 
@@ -181,14 +181,14 @@ task c21 "-D --> |" {
 
 task c22 "-D --> -D" {
 	depends !m1
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 }
 
 task c23 "-D --> |D" {
 	depends !m1
 	end 2003-01-18
-	preceeds !m2
+	precedes !m2
 	scheduling asap
 }
 
@@ -204,7 +204,7 @@ task c25 "-D <-x -D" {
 	depends !m1
 	effort 5d
 	allocate tux11
-	preceeds !m2
+	precedes !m2
 }
 
 task c26 "-D <-x |D" {
@@ -212,7 +212,7 @@ task c26 "-D <-x |D" {
 	effort 5d
 	allocate tux12
 	end 2003-01-18
-	preceeds !m2
+	precedes !m2
 }
 
 task c28 "-D <-- |" {
@@ -223,13 +223,13 @@ task c28 "-D <-- |" {
 
 task c29 "-D <-- -D" {
 	depends !m1
-	preceeds !m2
+	precedes !m2
 }
 
 task c30 "-D <-- |D" {
 	depends !m1
 	end 2003-01-18
-	preceeds !m2
+	precedes !m2
 }
 
 htmltaskreport "TaskMix2.html" {

@@ -5,7 +5,7 @@ task t1 "Task1" {
 	
 	task s1 "Sub1" {
 		length 1d
-		preceeds !!t2
+		precedes !!t2
 	}
 }
 

@@ -29,30 +29,32 @@ This document describes TaskJuggler version @VERSION@
 <sect1><title>About TaskJuggler</title>
 
 <para>TaskJuggler is a project planing tool for Linux and UNIX
-system-based operating systems. Whether you want to plan your colleges
-shifts for the next month or want to build a skyscraper - TaskJuggler
+system-based operating systems. Whether you want to build a skyscraper
+or plan your colleges shifts for the next month - TaskJuggler
 is the tool for you.</para>
 
 <para>Instead of clicking yourself painfully through hundreds of
 dialog boxes you specify your TaskJuggler project in a simple text
-format.  You simply list all your tasks with their dependencies and
-other properties. The information is sent through TaskJuggler and you
-will get all sorts of reports in HTML or XML format. The HTML files
-can be viewed and printed with any web browser that supports Cascading
-Style Sheets. The XML files are used by the Gantt- and PERT chart
-generators and the KDE Konqueror pluging.</para>
+format.  You specify all your tasks with their dependencies and
+other properties using your favorit text editor. The information is
+sent through TaskJuggler and you will get all sorts of reports in HTML
+or XML format. The HTML files can be viewed and printed with any web
+browser that supports Cascading Style Sheets. The XML files are used
+by the Gantt- and PERT chart generators and the KDE Konqueror
+plug-in.</para>
 
 <para>TaskJuggler does not only honor the task interdependencies but
 also takes resource constrains and prioritization into account. Using
-TaskJuggler's powerful filtering and reporting algorithms you can
-create task lists, resource usage tables, status reports, project
-calendars and project accounting statements.</para>
+TaskJugglers powerful filtering and reporting algorithms you can
+create a variety of task lists, resource usage tables, status reports,
+project calendars and project accounting statements.</para>
 
-<para>Since TaskJuggler is not contrained by the performance requirements
+<para>Since TaskJuggler is not constrained by the performance requirements
 of real-time editing it can offer a much broader set of features not
-found in any of the GUI based project planing tools. The the project
-description language is easy to learn and supports you very
-effectively during your planing process.</para> 
+found in any of the WYSIWYG (What You See Is What You Get) project
+planing tools. The the project description language is easy to learn
+and supports you very effectively during your planing and tracking
+process.</para> 
 
 </sect1>
 <sect1><title>Features and Highlights</title>
@@ -76,15 +78,15 @@ support.</para>
 
 <listitem><para>Project accounting support.</para>
 
-<listitem><para>Task may have initial costs, finishing costs.</para>
+<listitem><para>Task may have initial and finishing costs.</para>
 
 <listitem><para>Resource may have running costs.</para>
 
-<listitem><para>Support for simple profit/loss analysis.</para>
+<listitem><para>Support for simple profit and loss analysis.</para>
 
 <listitem><para>HTML and XML report generation.</para>
 
-<listitem><para>GANTT and PERT chart generators.</para>
+<listitem><para>Gantt and PERT chart generators.</para>
 
 <listitem><para>Support for plan and actual scenario
 comparisons.</para>
@@ -139,6 +141,20 @@ http://www.suse.de/~freitag/taskjuggler/</ulink></para>
 </sect1>
 <sect1><title>Requirements</title>
 
+<para>TaskJuggler uses many additional tools. We have avoided to
+re-invent the wheel again wherever possible, at the same time we tried
+to keep the dependency list reasonably small. Nevertheless can it be
+challenging to the unexperienced user to build and install TaskJuggler
+from source code. Most users are probably better served by using
+binary packages from their distributor. Some distributions even have
+TaskJuggler included like the <ulink
+url="http://www.suse.de/en">SuSE</ulink> distribution.</para>
+
+<para>This version of TaskJuggler was built and tested on SuSE Linux 8.1 on
+various hardware platforms.</para>
+
+<sect2><title>The command line tool taskjuggler</title>
+
 <para>To build and run TaskJuggler, you need:</para>
 
 <para><itemizedlist mark='opencircle'>
@@ -149,13 +165,85 @@ version 3.0 or higher</para>
 
 <listitem><para> GNU Compiler Collection &mdash; We are currently
 using GCC 3.2 to develop TaskJuggler. Since we try to write the code
-platform independant and ANSI standard compliant it should work with
+platform independent and ANSI standard compliant it should work with
 other compilers as well.</para>
 
 </itemizedlist></para>
 
-<para>This version of TaskJuggler was built and tested on SuSE Linux 8.1 on
-various hardware platforms.</para>
+<para>These requirements are enough to build and use the command line
+program that translates project descriptions into HTML or XML reports.
+If you want to built this documentation or use the tools to process
+the XML files you need to take care of additional dependencies. If any
+of the following dependencies are not matched, the configure script
+will issue a warning but will not fail.<para>
+
+</sect2>
+<sect2><title>The TaskJuggler Documentation</title>
+
+<para><itemizedlist mark='opencircle'>
+
+<listitem><para>DocBook4 &mdash; The <ulink
+url="http://www.oasis-open.org/docbook/">DocBook</ulink> system with
+additional stylesheets and utilities.<para></listitem>
+
+<listitem><para>DocBook-Toys &mdash; The <ulink
+url="http://www.suse.de/~ke/docbook-toys">DocBook-Toys</ulink> from
+Karl Eichwalder.</para></listitem>
+
+<listitem><para>JadeTeX &mdash; If you want to build the Postscript
+version of the documentation you need the <ulink
+url="ftp://ftp.dante.de/tex-archive/macros/jadetex">JadeTeX</ulink>
+macro package for <ulink
+url="http://www.tug.org/teTeX">teTeX</ulink>.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
+<sect2><title>tjx2gantt - Transforms XML files to Postscript Gantt
+charts</title>
+
+<para>tjx2gantt is installed by default and generates Postscript Gantt
+charts from the XML files that TaskJuggler generates. tjx2gantt is
+written in Perl.</para>
+
+<para><itemizedlist mark='opencircle'>
+
+<listitem><para>Perl 5.6 &mdash; The <ulink
+url="http://www.perl.com/pub/a/language/info/software.html#stable">Perl</ulink>
+interpreter and the following Perl modules.</para></listitem>
+
+<listitem><para>XML::Parser &mdash; Available from <ulink
+url="http://www.cpan.org/modules/by-module/XML/XML-Parser-2.31.tar.gz">CPAN</ulink></para></listitem>
+
+<listitem><para>PostScript::Simple &mdash; Available from <ulink
+url="http://www.cpan.org/modules/by-module/PostScript/PostScript-Simple-0.04.tar.gz">CPAN</ulink></para></listitem>
+
+<listitem><para>Date::Calc &mdash; Available from <ulink
+url="http://www.cpan.org/modules/by-module/Date/Date-Calc-5.0.tar.gz">CPAN</ulink></para></listitem>
+
+<listitem><para>Class::MethodMaker &mdash; Available from <ulink
+url="http://www.cpan.org/modules/by-module/Class/Class-MethodMaker-1.06.tar.gz">CPAN</ulink></para></listitem>
+
+<listitem><para>Data::Dumper &mdash; Available from <ulink
+url="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.101.tar.gz">CPAN</ulink>.
+This module is only needed for debugging.</para></listitem>
+
+<listitem><para>Poster &mdash; The <ulink
+url="http://www.geocities.com/SiliconValley/5682/poster.html">Poster</ulink>
+utility cuts big Postscript pictures into printable chunks. It's handy
+but optional as well.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
+<sect2><title>Contributed Stuff</title>
+
+<para>Serveral people have contributed useful tools for TaskJuggler
+users. These tools can be found in the Contrib directory of the source
+code package. Please refer to the included README files for
+installation information.</para>
+
+</sect2>
 
 </sect1>
 <sect1><title>Compilation and Installation</title>
@@ -163,23 +251,26 @@ various hardware platforms.</para>
 Before compiling TaskJuggler you need to set the
 <computeroutput>QTDIR</computeroutput> environment variable to the
 base directory of your Qt version. This is normally
-<computeroutput>/usr/lib/qt3</computeroutput>.
+<computeroutput>/usr/lib/qt3</computeroutput>.</para>
 
-To compile and install TaskJuggler on your system, type the following 
-in the base directory of the TaskJuggler distribution:
+<para>To compile and install TaskJuggler on your system, type the following 
+in the base directory of the TaskJuggler distribution:</para>
 
-<screen>
+<para><screen>
 % ./configure
 % make
 % make install
-</screen>
+</screen></para>
 
-</para><para>
-Since TaskJuggler uses <computeroutput>autoconf</computeroutput>, you
-should have no trouble compiling it. If you have problems, please
-report them to the TaskJuggler developers mailing list at <ulink
-url="mailto:taskjuggler-devel@suse.com">
-taskjuggler-devel@suse.de</ulink> in English.</para>
+<para>Since TaskJuggler uses <computeroutput>autoconf</computeroutput>, you
+should have no trouble compiling it. TaskJugger has some weak or
+non-mandatory dependencies. If any of there are not satisfied, a
+warning is issued. In case a mandatory dependency is not found, an
+error is displayed and the configuration program stops. If you have
+problems, please report them to the TaskJuggler mailing
+list at <ulink url="mailto:taskjuggler@suse.com">
+taskjuggler@suse.de</ulink> in English. Maybe someone there can help
+you out.</para>
 
 </sect1>
 </chapter> 
@@ -189,9 +280,9 @@ taskjuggler-devel@suse.de</ulink> in English.</para>
 <para>TaskJuggler uses one or more text files to describe a project.
 The main project should be placed in a file with the
 <computeroutput>.tjp</computeroutput> extension. This main project may
-contain several subprojects. Such subprojects should be placed in
+contain several sub-projects. Such sub-projects should be placed in
 files with the <computeroutput>.tjsp</computeroutput> extension. These
-subprojects are included in the main project during compile
+sub-projects are included in the main project during compile
 time.</para>
 
 </sect1> 
@@ -237,7 +328,8 @@ dynamic html pages from CGI scripts.</para>
 releases unless explicitly noted differently. But our test suite is
 still very small and some features cannot be tested automatically very
 well. So it's very likely that your current version of TaskJuggler
-contains bugs. If you find a bug please follow this procedure:</para>
+contains some bugs. If you find a bug please follow this
+procedure:</para>
 
 <para><itemizedlist mark='opencircle'>
 

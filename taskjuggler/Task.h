@@ -126,7 +126,7 @@ public:
 	Resource* getResponsible() const { return responsible; }
 
 	bool addDepends(const QString& id);
-	bool addPreceeds(const QString& id);
+	bool addPrecedes(const QString& id);
 
 	bool addShift(const Interval& i, Shift* s)
 	{
@@ -377,10 +377,10 @@ private:
 	TaskList depends;
 
 	/// List of tasks Ids that have to follow when this task is completed.
-	QStringList preceedsIds;
+	QStringList precedesIds;
 
 	/// A list of task pointers created from preceedsIds in xRef.
-	TaskList preceeds;
+	TaskList precedes;
 
 	/**
 	 * A list of all tasks that preceed this task. This is redundant

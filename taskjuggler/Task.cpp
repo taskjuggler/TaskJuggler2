@@ -149,10 +149,10 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 				*it = '!' + *it;
 		}
 		
-		// Inherit preceeds from parent. Relative IDs need to get another '!'.
-		preceedsIds = p->preceedsIds;
-		for (QStringList::Iterator it = preceedsIds.begin();
-			 it != preceedsIds.end(); ++it)
+		// Inherit precedes from parent. Relative IDs need to get another '!'.
+		precedesIds = p->precedesIds;
+		for (QStringList::Iterator it = precedesIds.begin();
+			 it != precedesIds.end(); ++it)
 		{
 			if ((*it)[0] == '!')
 				*it = '!' + *it;
@@ -185,9 +185,9 @@ Task::addDepends(const QString& rid)
 }
 
 bool
-Task::addPreceeds(const QString& rid)
+Task::addPrecedes(const QString& rid)
 {
-   	preceedsIds.append(rid);
+   	precedesIds.append(rid);
 	return TRUE;
 }
 
@@ -411,7 +411,7 @@ Task::scheduleContainer(bool safeMode)
 		propagateStart(safeMode);
 	}
 
-	if (end == 0 || (!preceeds.isEmpty() && nend < end))
+	if (end == 0 || (!precedes.isEmpty() && nend < end))
 	{
 		end = nend;
 		propagateEnd(safeMode);
@@ -767,7 +767,7 @@ time_t
 Task::latestEnd()
 {
 	time_t date = 0;
-	for (Task* t = preceeds.first(); t != 0; t = preceeds.next())
+	for (Task* t = precedes.first(); t != 0; t = precedes.next())
 	{
 		// All tasks this task preceeds must have a start date set.
 		if (t->start == 0)
@@ -933,8 +933,8 @@ Task::xRef(QDict<Task>& hash)
 		}
 	}
 
-	for (QStringList::Iterator it = preceedsIds.begin();
-		 it != preceedsIds.end(); ++it)
+	for (QStringList::Iterator it = precedesIds.begin();
+		 it != precedesIds.end(); ++it)
 	{
 		QString absId = resolveId(*it);
 		Task* t;
@@ -943,7 +943,7 @@ Task::xRef(QDict<Task>& hash)
 			fatalError(QString("Unknown dependency '") + absId + "'");
 			error = TRUE;
 		}
-		else if (preceeds.find(t) != -1)
+		else if (precedes.find(t) != -1)
 		{
 			fatalError(QString("No need to specify dependency '") + absId +
 							   "' twice.");
@@ -951,7 +951,7 @@ Task::xRef(QDict<Task>& hash)
 		}
 		else
 		{
-			preceeds.append(t);
+			precedes.append(t);
 			followers.append(t);
 			t->previous.append(this);
 			if (DEBUGPF(11))
@@ -998,7 +998,7 @@ Task::implicitXRef()
 			}
 		}
 	/* And the same for end values */
-	if ((planEnd == 0 || actualEnd == 0) && preceeds.isEmpty())
+	if ((planEnd == 0 || actualEnd == 0) && precedes.isEmpty())
 		for (Task* tp = getParent(); tp; tp = tp->getParent())
 		{
 			if (tp->planEnd != 0 && planEnd == 0 &&
@@ -1068,9 +1068,9 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 	list.append(thisTask);
 
 	/* Now we have to traverse the graph in the direction of the specified
-	 * dependencies. 'preceeds' and 'depends' specify dependencies in the
+	 * dependencies. 'precedes' and 'depends' specify dependencies in the
 	 * opposite direction of the flow of the tasks. So we have to make sure
-	 * that we do not follow the arcs in the direction that preceeds and
+	 * that we do not follow the arcs in the direction that precedes and
 	 * depends points us. Parent/Child relationships also specify a
 	 * dependency. The scheduling mode of the child determines the direction
 	 * of the flow. With help of the 'fromSub' parameter we make sure that we
@@ -1126,12 +1126,12 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 					return TRUE;
 			}
 		}
-		/* Now check all previous tasks that had explicit preceeds on this
+		/* Now check all previous tasks that had explicit precedes on this
 		 * task. */
 		CoreAttributesList previousCopy = previous;
 		for (Task* t = (Task*) previousCopy.first(); t;
 			 t = (Task*) previousCopy.next())
-			if (t->preceeds.find(this) != -1)
+			if (t->precedes.find(this) != -1)
 			{
 				if (DEBUGPF(15))
 					qWarning("%sChecking previous %s of task %s",
@@ -1261,7 +1261,7 @@ Task::hasPlanEndDependency()
 	 * scenario. This can be a fixed end time or a dependency on another
 	 * task's start or an implicit dependency on the fixed end time of a
 	 * parent task. */
-	if (planEnd != 0 || !preceeds.isEmpty())
+	if (planEnd != 0 || !precedes.isEmpty())
 		return TRUE;
 	for (Task* p = getParent(); p; p = p->getParent())
 		if (p->planEnd != 0)
@@ -1291,7 +1291,7 @@ Task::hasActualEndDependency()
 	 * scenario. This can be a fixed plan or actual end time or a dependency
 	 * on another task's start or an implicit dependency on the fixed plan or
 	 * actual end time of a parent task. */
-	if (planEnd != 0 || actualEnd != 0 || !preceeds.isEmpty())
+	if (planEnd != 0 || actualEnd != 0 || !precedes.isEmpty())
 		return TRUE;
 	for (Task* p = getParent(); p; p = p->getParent())
 		if (p->planEnd != 0 || p->actualEnd != 0)
@@ -1609,7 +1609,7 @@ Task::scheduleOk(int& errors, QString scenario)
 	for (Task* t = depends.first(); t; t = depends.next())
 		if (t->runAway)
 			return FALSE;
-	for (Task* t = preceeds.first(); t; t = preceeds.next())
+	for (Task* t = precedes.first(); t; t = precedes.next())
 		if (t->runAway)
 			return FALSE;
 
@@ -2386,7 +2386,7 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       }
       else if( elemTagName == "Follower" )
       {
-	 addPreceeds( elem.text() );
+	 addPrecedes( elem.text() );
       }
       else if( elemTagName == "Index" )
 	 setIndex( elem.text().toUInt());
