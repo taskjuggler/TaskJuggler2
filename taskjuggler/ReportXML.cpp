@@ -68,7 +68,7 @@ void ReportXML::generate()
    if( ! project ) return;
    QDomDocument doc( "Project" );
    doc.appendChild( doc.createProcessingInstruction(
-        "xml", "version=\"1.0\" encoding=\"iso-8859-1\""));
+        "xml", "version=\"1.0\" encoding=\"utf8\""));
 
    /* Create the Project xml representation */
    QDomElement proj = doc.createElement( "Project" );
@@ -125,13 +125,14 @@ void ReportXML::generate()
 	             proj.appendChild( (*tli)->xmlElement( doc ));
         }	
    }
-   QString xml = doc.toString();
+   QCString xml = doc.toCString();
 
    if( ! fileName.isEmpty())
    {
       QFile fi( fileName );
       if ( fi.open(IO_WriteOnly) ) {    // file opened successfully
         QTextStream t( &fi );        // use a text stream
+	// t.setEncoding( QTextStream::UnicodeUTF8 );
 	t << xml;
 	fi.close();
       }

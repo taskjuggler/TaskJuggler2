@@ -2251,7 +2251,6 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
 	    qDebug( "Recursing to elem " + stId );
 	    Task *t = new Task( project, stId, QString(), this, QString(), 0 );
 	    t->loadFromXML( subTaskElem, project );
-	    project->addTask(t);
 	    qDebug( "Recursing to elem " + stId + " <FIN>");
 	 }
       }
