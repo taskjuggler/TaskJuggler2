@@ -232,6 +232,11 @@ public slots:
      */
     void collapseAll( KListView * view );
 
+    /**
+     * Rebuild the project from source, redisplay the views
+     */
+    void slotBuild();
+
 signals:
     /**
      * Use this signal to change the content of the statusbar

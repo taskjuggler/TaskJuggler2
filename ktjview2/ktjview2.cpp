@@ -232,6 +232,10 @@ void ktjview2::setupActions()
     m_ruFindAction = new KAction( i18n( "&Find..." ), "find", KStdAccel::find(),
                                   m_view, SLOT( slotRUFind() ), actionCollection(), "ru_find" );
 
+    // Tools menu
+    m_buildAction = new KAction( i18n( "&Rebuild project" ), "exec", KShortcut(),
+                                 m_view, SLOT( slotBuild() ), actionCollection(), "build" );
+
     // Sidebar
     m_sidebarInfo = new KRadioAction( i18n( "Info" ), "projectinfo", KShortcut(), actionCollection(), "sidebar_info" );
     m_sidebarInfo->setToolTip( i18n( "Project Info" ) );

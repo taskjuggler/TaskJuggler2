@@ -248,6 +248,9 @@ private:
     KAction * m_ruFindAction;
     KSelectAction * m_ruDisplayAction;
 
+    // Tools stuff
+    KAction * m_buildAction;
+
     // sidebar actions
     KRadioAction * m_sidebarInfo, * m_sidebarGantt, * m_sidebarResources, * m_sidebarTasks, * m_sidebarResUsage, * m_sidebarEditor;
 };

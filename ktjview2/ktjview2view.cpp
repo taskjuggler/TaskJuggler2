@@ -1138,4 +1138,9 @@ void ktjview2View::slotRedo()
     KTextEditor::undoInterface( m_editorView->doc() )->redo();
 }
 
+void ktjview2View::slotBuild()
+{
+    openURL( m_projectURL );
+}
+
 #include "ktjview2view.moc"
