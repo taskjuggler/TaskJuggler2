@@ -132,7 +132,11 @@ bool KTjviewPart::openFile()
     if( ! xf->parse() )
     {
 	KMessageBox::error( m_parentWidget, i18n("The XML File to read is not valid for Taskjuggler.\n"
-					   "KTJView requires XML from Taskjuggler V. 2.x!"),
+						 "KTJView requires XML following the schema of Taskjuggler V. 2.x!\n"
+						 "To create a correct xml file for ktjview, add the following to your project:\n"
+						 "   xmlreport \"foo.tjx\" {"
+						 "       version 2"
+						 "   }"),
 			    i18n("XML Read Error") );
     }
     else
@@ -174,7 +178,7 @@ void KTjviewPart::fileOpen()
     // the Open shortcut is pressed (usually CTRL+O) or the Open toolbar
     // button is clicked
     QString file_name = KFileDialog::getOpenFileName(QString::null,
-						     "*.xml|TaskJuggler xml\n*.tjx|TaskJuggler output");
+						     "*.xml *.tjx *.XML *.TJX|TaskJuggler XML output (v. 2.x)");
 
     if (file_name.isEmpty() == false)
         openURL(file_name);
