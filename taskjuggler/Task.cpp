@@ -906,6 +906,9 @@ Task::xRef(QDict<Task>& hash)
 {
 	bool error = FALSE;
 
+	if (debugLevel > 3)
+		qDebug("Creating cross references for task %s", id.latin1());
+	
 	for (QStringList::Iterator it = dependsIds.begin();
 		 it != dependsIds.end(); ++it)
 	{
@@ -929,7 +932,7 @@ Task::xRef(QDict<Task>& hash)
 			t->followers.append(this);
 			if (debugLevel > 3)
 				qDebug("Registering follower %s with task %s",
-					   t->getId().latin1(), id.latin1());
+					   id.latin1(), t->getId().latin1());
 		}
 	}
 
@@ -956,7 +959,7 @@ Task::xRef(QDict<Task>& hash)
 			t->previous.append(this);
 			if (debugLevel > 3)
 				qDebug("Registering predecessor %s with task %s",
-					   t->getId().latin1(), id.latin1());
+					   id.latin1(), t->getId().latin1());
 		}
 	}
 
