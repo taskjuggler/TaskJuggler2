@@ -469,6 +469,18 @@ ProjectFile::parse()
                     return FALSE;
                 break;
             }
+            else if (token == KW("csvresourcereport"))
+            {
+                if (!readCSVReport(token))
+                    return FALSE;
+                break;
+            }
+            else if (token == KW("csvaccountreport"))
+            {
+                if (!readCSVReport(token))
+                    return FALSE;
+                break;
+            }
             else if (token == KW("export"))
             {
                 if (!readExportReport())
