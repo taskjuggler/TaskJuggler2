@@ -1,5 +1,5 @@
 /*
- * task.cpp - TaskJuggler
+ * Task.cpp - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003 by Chris Schlaeger <cs@suse.de>
  *
@@ -1868,7 +1868,7 @@ Task::scheduleOk(int sc, int& errors) const
         errors++;
         return FALSE;
     }
-    if (scenarios[sc].minEnd != 0 && (end + 1) < scenarios[sc].minEnd)
+    if (scenarios[sc].minEnd != 0 && end < scenarios[sc].minEnd)
     {
         errorMessage(i18n("'%1' end time of task '%2' is too early\n"
                           "Date is:  %3\n"

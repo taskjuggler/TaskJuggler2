@@ -45,8 +45,8 @@ public:
     }
     bool isEndOk(bool milestone) const
     {
-        return !((minEnd > 0 && minEnd > (end + (milestone ? 1 : 0))) ||
-                 (maxEnd > 0 && (end + (milestone ? 1 : 0)) > maxEnd));
+        return !((minEnd > 0 && (end < minEnd)) ||
+                 (maxEnd > 0 && (end > maxEnd)));
     }
 
     void calcCompletionDegree(time_t now);
