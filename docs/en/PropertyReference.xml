@@ -218,8 +218,9 @@ HTML calendar columns. The default is to show load values.</para></descr>
    <attr name="text" type="STRING"/>
   </attributes>
   <seealso>
-   <also>headline</also>
+   <also>complete</also>
    <also>copyright</also>
+   <also>headline</also>
   </seealso>
  </property>
  <property name="celltext" id="celltext" inheritable="No">
@@ -505,6 +506,7 @@ bottom of the report.</para></descr>
    <attr name="text" type="STRING"/>
   </attributes>
   <seealso>
+   <also>booking</also>
    <also>headline</also>
    <also>caption</also>
   </seealso>
