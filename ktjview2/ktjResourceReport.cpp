@@ -80,7 +80,7 @@ int KtjResourceReport::setupColumns()
         format = "Q%q/%y";
         break;
     default:
-        kdWarning() << "Invalid scale in ResUsageView::getColumnLabels" << endl;
+        kdWarning() << "Invalid scale in KtjResourceReport::getColumnLabels" << endl;
         break;
     }
 
