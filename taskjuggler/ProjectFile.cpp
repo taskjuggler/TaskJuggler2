@@ -1068,6 +1068,15 @@ ProjectFile::readProject()
 				}
 				proj->setTimeFormat(token);
 			}
+			else if (token == KW("shorttimeformat"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Time format string expected");
+					return FALSE;
+				}
+				proj->setShortTimeFormat(token);
+			}
 			else if (token == KW("weekstartsmonday"))
 			{
 				proj->setWeekStartsMonday(TRUE);
@@ -2712,6 +2721,15 @@ ProjectFile::readHTMLReport(const QString& reportType)
 					return FALSE;
 				}
 				report->setTimeFormat(token);
+			}
+			else if (token == KW("shorttimeformat"))
+			{
+				if (nextToken(token) != STRING)
+				{
+					fatalError("Time format string expected");
+					return FALSE;
+				}
+				report->setShortTimeFormat(token);
 			}
 			else if (token == KW("barlabels"))
 			{

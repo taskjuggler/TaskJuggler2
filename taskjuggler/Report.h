@@ -94,6 +94,7 @@ public:
 	bool setLoadUnit(const QString& u);
 
 	void setTimeFormat(const QString& tf) { timeFormat = tf; }
+	void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
 
 	Report() { }
 
@@ -126,7 +127,8 @@ protected:
 	time_t end;
 
 	QString timeFormat;
-
+	QString shortTimeFormat;
+	
 	/* We store the location of the report definition in case we need it
 	 * for error reporting. */
 	QString defFileName;

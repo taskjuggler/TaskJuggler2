@@ -34,6 +34,7 @@ Report::Report(Project* p, const QString& f, time_t s, time_t e,
 
 	weekStartsMonday = p->getWeekStartsMonday();
 	timeFormat = p->getTimeFormat();
+	shortTimeFormat = p->getShortTimeFormat();
 
 	hideTask = 0;
 	rollUpTask = 0;

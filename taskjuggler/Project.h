@@ -249,6 +249,9 @@ public:
 	bool readKotrus();
 	bool updateKotrus();
 
+	void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
+	const QString& getShortTimeFormat() const { return shortTimeFormat; }
+
 	void setTimeFormat(const QString& tf) { timeFormat = tf; }
 	const QString& getTimeFormat() const { return timeFormat; }
 
@@ -258,8 +261,6 @@ public:
 
 	void generateReports();
 	bool needsActualDataForReports();
-	void removeActiveTask(Task* t);
-	void addActiveTask(Task* t);
 
 	static void setDebugLevel(int l)
    	{
@@ -276,7 +277,6 @@ public:
 
 private:
 	bool checkSchedule(const QString& scenario);
-	void updateActiveTaskList(TaskList& sortedTasks);
 
 	/// The start date of the project
 	time_t start;
@@ -296,6 +296,7 @@ private:
 	QString copyright;
 
 	QString timeFormat;
+	QString shortTimeFormat;
 
 	/**
 	 * The default priority that will be inherited by all tasks. Sub tasks
@@ -370,12 +371,6 @@ private:
 
 	static int debugLevel;
 	static int debugMode;
-	/**
-	 * The task lists for active ASAP and ALAP tasks are only used
-	 * during the scheduling process.
-	 */
-	TaskList activeAsap;
-	TaskList activeAlap;
 } ;
 
 #endif

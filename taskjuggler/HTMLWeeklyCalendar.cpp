@@ -85,16 +85,16 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 			s << (isSameDay(project->getNow(), wd) ? "today" :
 				  isWeekend(wd) ? "weekend" : "headersmall");
 			s << "\">"
-				<< "<table width=\"100%\" style=\"text-align:left\">"
+				<< "<table width=\"100%\" style=\"text-align:center\">"
 				<< "<tr>"
 				<<   "<td width=\"25%\" rowspan=\"2\" "
-				     "style=\"font-size:250%; text-align:center\">" 
+				     "style=\"font-size:280%; text-align:center\">" 
 				<<   QString().sprintf("%d", dayOfMonth(wd)) << "</td>"
-				<<   "<td width=\"105%\">" 
+				<<   "<td width=\"75%\" style=\"font-size:90%\">" 
 				<<   htmlFilter(dayOfWeekName(wd)) << "</td>"
 				<< "</tr>"
 				<< "<tr>"
-				<<   "<td style=\"font-size:110%\">" 
+				<<   "<td style=\"font-size:100%\">" 
 				<<   monthAndYear(wd) << "</td>"
 				<< "</tr>"
 				<< "</table></td>" << endl;
@@ -125,7 +125,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 						if (first)
 						{
 							s << "<table width=\"100%\" "
-								"style=\"font-size:100%\">" << endl;
+								"style=\"font-size:150%\">" << endl;
 							first = FALSE;
 						}
 						generatePlanTask(t, 0, filteredTaskList.at() + 1);
@@ -166,7 +166,7 @@ HTMLWeeklyCalendar::generateCalendar(TaskList& filteredTaskList, ResourceList&
 						if (first)
 						{
 							s << "<table width=\"100%\" "
-								"style=\"font-size:100%\">" << endl;
+								"style=\"font-size:150%\">" << endl;
 							first = FALSE;
 						}
 						generatePlanResource(r, 0,

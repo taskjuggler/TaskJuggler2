@@ -203,83 +203,24 @@ Task::fatalError(const char* msg, ...) const
 	qWarning("%s:%d:%s\n", file.latin1(), line, buf);
 }
 
-bool
+void
 Task::schedule(time_t& date, time_t slotDuration)
 {
 	// Task is already scheduled.
 	if (schedulingDone || !sub.isEmpty())
 	{
 		//qFatal("Task %s is already scheduled", id.latin1());
-		return TRUE;
+		return;
 	}
 
 	if (DEBUGTS(15))
 		qWarning("Trying to schedule %s at %s",
 				 id.latin1(), time2tjp(date).latin1());
 
-	bool limitChanged = FALSE;
-	if (start == 0 &&
-		(scheduling == Task::ASAP ||
-		 (length == 0.0 && duration == 0.0 && effort == 0.0 && !milestone)))
-	{
-		/* No start time has been specified. The start time is either
-		 * start time of the parent (or the project start time if the
-		 * task has no previous tasks) or the start time is
-		 * determined by the end date of the last previous task. */
-		time_t es;
-		if (depends.count() == 0)
-		{
-			if (parent == 0)
-				start = project->getStart();
-			else if (getParent()->start != 0)
-				start = getParent()->start;
-			else
-				return TRUE;
-			propagateStart();
-		}
-		else if ((es = earliestStart()) > 0)
-		{
-			start = es;
-			propagateStart();
-		}
-		else
-			return TRUE;	// Task cannot be scheduled yet.
-
-		limitChanged = TRUE;
-	}
-
-	if (end == 0 &&
-		(scheduling == Task::ALAP ||
-		 (length == 0.0 && duration == 0.0 && effort == 0.0 && !milestone)))
-	{	
-		/* No end time has been specified. The end time is either end
-		 * time of the parent (or the project end time if the tasks
-		 * has no previous tasks) or the end time is determined by the
-		 * start date of the earliest following task. */
-		time_t le;
-		if (preceeds.count() == 0)
-		{
-			if (parent == 0)
-				end = project->getEnd();
-			else if (getParent()->end != 0)
-				end = getParent()->end;
-			else
-				return TRUE;
-			propagateEnd();
-		}
-		else if ((le = latestEnd()) > 0)
-		{
-			end = le;
-			propagateEnd();
-		}
-		else
-			return TRUE;	// Task cannot be scheduled yet.
-		
-		limitChanged = TRUE;
-	}
-
 	if (scheduling == Task::ASAP)
 	{
+		if (start == 0)
+			return;
 		if (lastSlot == 0)
 		{
 			lastSlot = start - 1;
@@ -296,11 +237,13 @@ Task::schedule(time_t& date, time_t slotDuration)
 		/* Do not schedule anything if the time slot is not directly
 		 * following the time slot that was previously scheduled. */
 		if (!((date - slotDuration <= lastSlot) && (lastSlot < date)))
-			return !limitChanged;
+			return;
 		lastSlot = date + slotDuration - 1;
 	}
 	else
 	{
+		if (end == 0)
+			return;
 		if (lastSlot == 0)
 		{
 			lastSlot = end + 1;
@@ -318,7 +261,7 @@ Task::schedule(time_t& date, time_t slotDuration)
 		 * directly preceeding the previously scheduled time slot. */
 		if (!((date + slotDuration <= lastSlot) &&
 		   	(lastSlot < date + 2 * slotDuration)))
-			return !limitChanged;
+			return;
 		lastSlot = date;
 	}
 
@@ -367,8 +310,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 					start = date;
 				propagateStart();
 			}
-			project->removeActiveTask(this);
-			return FALSE;
+			schedulingDone = TRUE;
+			return;
 		}
 	}
 	else if (effort > 0.0)
@@ -391,8 +334,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 				start = tentativeStart;
 				propagateStart();
 			}
-			project->removeActiveTask(this);
-			return FALSE;
+			schedulingDone = TRUE;
+			return;
 		}
 	}
 	else if (milestone)
@@ -408,8 +351,8 @@ Task::schedule(time_t& date, time_t slotDuration)
 			start = end + 1;
 			propagateStart();
 		}
-		project->removeActiveTask(this);
-		return FALSE;
+		schedulingDone = TRUE;
+		return;
 	}
 	else if (start != 0 && end != 0)
 	{
@@ -420,12 +363,12 @@ Task::schedule(time_t& date, time_t slotDuration)
 		if ((scheduling == ASAP && (date + slotDuration) >= end) ||
 			(scheduling == ALAP && date <= start))
 		{
-			project->removeActiveTask(this);
-			return FALSE;
+			schedulingDone = TRUE;
+			return;
 		}
 	}
 
-	return TRUE;
+	return;
 }
 
 bool
@@ -489,6 +432,8 @@ Task::propagateStart(bool safeMode)
 		qWarning("PS1: Setting start of %s to %s",
 				 id.latin1(), time2tjp(start).latin1());
 
+	/* Set start date to all previous that have no start date yet, but are
+	 * ALAP task or have no duration. */
 	for (Task* t = previous.first(); t != 0; t = previous.next())
 		if (t->end == 0 && t->latestEnd() != 0 &&
 			(t->scheduling == ALAP || 
@@ -498,9 +443,8 @@ Task::propagateStart(bool safeMode)
 			if (DEBUGTS(11))
 				qWarning("PS2: Setting end of %s to %s",
 						 t->id.latin1(), time2tjp(t->end).latin1());
+			/* Recursively propagate the end date */
 			t->propagateEnd(safeMode);
-			if (safeMode && t->isActive())
-				project->addActiveTask(t);
 		}
 
 	/* Propagate start time to sub tasks which have only an implicit
@@ -514,8 +458,7 @@ Task::propagateStart(bool safeMode)
 			if (DEBUGTS(11))
 				qWarning("PS3: Setting start of %s to %s",
 						 t->id.latin1(), time2tjp(t->start).latin1());	 
-			if (safeMode && t->isActive())
-				project->addActiveTask(t);
+			/* Recursively propagate the start date */
 			t->propagateStart(safeMode);
 		}
 	}
@@ -534,6 +477,8 @@ Task::propagateEnd(bool safeMode)
 		qWarning("PE1: Setting end of %s to %s",
 				 id.latin1(), time2tjp(end).latin1());
 
+	/* Set start date to all followers that have no start date yet, but are
+	 * ASAP task or have no duration. */
 	for (Task* t = followers.first(); t != 0; t = followers.next())
 		if (t->start == 0 && t->earliestStart() != 0 && 
 			(t->scheduling == ASAP ||
@@ -543,9 +488,8 @@ Task::propagateEnd(bool safeMode)
 			if (DEBUGTS(11))
 				qWarning("PE2: Setting start of %s to %s",
 						 t->id.latin1(), time2tjp(t->start).latin1());
+			/* Recursively propagate the start date */
 			t->propagateStart(safeMode);
-			if (safeMode && t->isActive())
-				project->addActiveTask(t);
 		}
 	/* Propagate end time to sub tasks which have only an implicit
 	 * dependancy on the parent task. Do not touch container tasks. */
@@ -557,8 +501,7 @@ Task::propagateEnd(bool safeMode)
 			if (DEBUGTS(11))
 				qWarning("PE3: Setting end of %s to %s",
 						 t->id.latin1(), time2tjp(t->end).latin1());
-			if (safeMode && t->isActive())
-				project->addActiveTask(t);
+			/* Recursively propagate the end date */
 			t->propagateEnd(safeMode);
 		}
 
@@ -574,42 +517,15 @@ Task::propagateInitialValues()
 	if (end != 0)
 		propagateEnd(FALSE);
 	// Check if the some data of sub tasks can already be propagated.
-	if (subFirst())
+	if (!sub.isEmpty())
 		scheduleContainer(TRUE);
 }
 
-bool
-Task::setRunaway(time_t date, int slotDuration)
+void
+Task::setRunaway()
 {
-	/* Only mark tasks that have been scheduled in the last timeslot */
-	if (scheduling == ASAP)
-	{	
-		if (DEBUGTS(10))
-			qDebug("Task %s: lastSlot: %s, date + slotDuration - 1: %s",
-				   id.latin1(),
-				   time2ISO(lastSlot).latin1(),
-				   time2ISO(date + slotDuration - 1).latin1());
-		if (lastSlot == 0 || lastSlot > date + slotDuration - 1)
-			return FALSE;
-	}
-	else
-	{
-		if (DEBUGTS(10))
-			qDebug("Task %s: lastSlot: %s, date: %s", id.latin1(),
-				   time2ISO(lastSlot).latin1(),
-				   time2ISO(date).latin1());
-		if (lastSlot == 0 || lastSlot > date)
-			return FALSE;
-	}
-
-	project->removeActiveTask(this);
+	schedulingDone = TRUE;
 	runAway = TRUE;
-	if (scheduling == ASAP)
-		end = maxEnd + 1;
-	else
-		start = minStart - 1;
-
-	return TRUE;
 }
 
 bool
@@ -813,19 +729,6 @@ Task::createCandidateList(time_t date, Allocation* a)
 	}
 
 	return cl;
-}
-
-bool
-Task::needsEarlierTimeSlot(time_t date)
-{
-	if (scheduling == ALAP && lastSlot > 0 && !schedulingDone &&
-		date > lastSlot && sub.isEmpty())
-		return TRUE;
-	if (scheduling == ASAP && lastSlot > 0 && !schedulingDone &&
-		date > lastSlot + 1 && sub.isEmpty())
-		return TRUE;
-
-	return FALSE;
 }
 
 bool
@@ -1177,6 +1080,7 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 	{
 		CoreAttributesList subCopy = sub;
 		if (!fromSub)
+			/* If we were not called from a sub task we check all sub tasks.*/
 			for (Task* t = (Task*) subCopy.first(); t;
 				 t = (Task*) subCopy.next())
 			{
@@ -1189,20 +1093,21 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 					return TRUE;
 			}
 		
-		if (scheduling == ASAP)
+		if (scheduling == ASAP && sub.isEmpty())
 		{
-			if (sub.isEmpty())
-			{
-				if (DEBUGPF(15))
-					qWarning("%sChecking end of task %s",
-							 QString().fill(' ', list.count()).latin1(),
-							 id.latin1());
-				if (loopDetection(list, TRUE, FALSE, FALSE))
-					return TRUE;
-			}	
+			/* Leaf task are followed in their scheduling direction. So we
+			 * move from the task start to the task end. */
+			if (DEBUGPF(15))
+				qWarning("%sChecking end of task %s",
+						 QString().fill(' ', list.count()).latin1(),
+						 id.latin1());
+			if (loopDetection(list, TRUE, FALSE, FALSE))
+				return TRUE;
 		}
 		if (parent && !fromParent)
 		{
+			/* If the current task and all directly preceeding tasks have not
+			 * the same ancestor, we can check the parent from here. */
 			bool previousHasSameAncestor = FALSE;
 			CoreAttributesList previousCopy = previous;
 			for (Task* t = (Task*) previousCopy.first(); t;
@@ -1221,6 +1126,8 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 					return TRUE;
 			}
 		}
+		/* Now check all previous tasks that had explicit preceeds on this
+		 * task. */
 		CoreAttributesList previousCopy = previous;
 		for (Task* t = (Task*) previousCopy.first(); t;
 			 t = (Task*) previousCopy.next())
@@ -1238,6 +1145,7 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 	{
 		CoreAttributesList subCopy = sub;
 		if (!fromSub)
+			/* If we were not called from a sub task we check all sub tasks.*/
 			for (Task* t = (Task*) subCopy.first(); t;
 				 t = (Task*) subCopy.next())
 			{
@@ -1249,20 +1157,21 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 					return TRUE;
 			}
 		
-		if (scheduling == ALAP)
+		if (scheduling == ALAP && sub.isEmpty())
 		{
-			if (sub.isEmpty())
-			{
-				if (DEBUGPF(15))
-					qWarning("%sChecking start of task %s",
-							 QString().fill(' ', list.count()).latin1(),	
-							 id.latin1());
-				if (loopDetection(list, FALSE, FALSE, FALSE))
-					return TRUE;
-			}
+			/* Leaf task are followed in their scheduling direction. So we
+			 * move from the task end to the task start. */
+			if (DEBUGPF(15))
+				qWarning("%sChecking start of task %s",
+						 QString().fill(' ', list.count()).latin1(),	
+						 id.latin1());
+			if (loopDetection(list, FALSE, FALSE, FALSE))
+				return TRUE;
 		}
 		if (parent && !fromParent)
 		{
+			/* If the current task and all directly following tasks have not
+			 * the same ancestor, we can check the parent from here. */
 			bool followerHasSameAncestor = FALSE;
 			CoreAttributesList followersCopy = followers;
 			for (Task* t = (Task*) followersCopy.first(); t;
@@ -1281,6 +1190,8 @@ Task::loopDetection(LDIList list, bool atEnd, bool fromSub, bool fromParent)
 				   return TRUE;
 			}
 		}
+		/* Now check all following tasks that had explicit depends on this
+		 * task. */
 		CoreAttributesList followersCopy = followers;
 		for (Task* t = (Task*) followersCopy.first(); t;
 			 t = (Task*) followersCopy.next())

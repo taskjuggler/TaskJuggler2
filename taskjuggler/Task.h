@@ -278,14 +278,12 @@ public:
 	bool xRef(QDict<Task>& hash);
 	void implicitXRef();
 	QString resolveId(QString relId);
-	bool schedule(time_t& reqStart, time_t duration);
+	void schedule(time_t& reqStart, time_t duration);
 	bool isScheduled() const { return schedulingDone; }
-	void setScheduled() { schedulingDone = TRUE; }
-	bool needsEarlierTimeSlot(time_t date);
 	void propagateStart(bool safeMode = TRUE);
 	void propagateEnd(bool safeMode = TRUE);
 	void propagateInitialValues();
-	bool setRunaway(time_t date, int slotDuration);
+	void setRunaway();
 	bool isRunaway();
 
 	/**

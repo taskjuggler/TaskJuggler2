@@ -297,7 +297,8 @@ generate weekly calendars.</para></listitem>
 
 <listitem><para>The format of time specifications in HTML reports is
 now configurable via <link linkend="project_timeformat"> timeformat 
-</link></para></listitem>
+</link> and <link
+linkend="project_shorttimeformat">shorttimeformat</link></para></listitem>
 
 <listitem><para>The keyword <computeroutput> xmltaskreport
 </computeroutput> is now deprecated. It has been replaced by <link

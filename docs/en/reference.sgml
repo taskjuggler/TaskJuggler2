@@ -713,6 +713,9 @@ responsible </member>
 time a task declaration is completed, the sequence number is increased
 by 1. </member>
 
+<member><computeroutput>schedule</computeroutput></member>
+<member>A detailed schedule of the allocations for the resource.</member>
+
 <member><computeroutput>start</computeroutput></member>
 <member>The start date of a task</member>
 
@@ -890,6 +893,19 @@ linkend="logicalexpression">LOGICALEXPRESSION</link></member>
 
 <para>Do not show subtasks of tasks with flags meeting the described
 logical expression.</para>
+
+</sect2>
+<sect2 id="htmltaskreport_shorttimeformat"><title>shorttimeformat
+&lt;format&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>format:</member><member><link
+linkend="string">STRING</link>/member>
+</simplelist><para>
+
+<para>Specifies time format for time short specifications. This is
+normal just the hour and minutes. See <link
+linkend="project_timeformat">timeformat</link> for details.</para>
 
 </sect2>
 <sect2 id="htmltaskreport_showactual"><title>showactual</title>
@@ -1336,6 +1352,22 @@ The value you specifiy should match the settings you specified for
 
 <para>Use the specified day and time for computation of the project status
 instead of the current moment.<para>
+
+</sect2>
+<sect2 id="project_shorttimeformat"><title>shorttimeformat
+&lt;format&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>format:</member><member><link
+linkend="string">STRING</link></member>
+</simplelist></para>
+
+<para>Determins how short time specifications in reports look like. It is
+just a global default settings, since it can be specified for each
+report <link
+linkend="htmltaskreport_shorttimeformat">individually</link>. The
+format of the string is identical to <link
+linkend="project_timeformat">timeformat</link>.</para>
 
 </sect2>
 <sect2 id="project_timeformat"><title>timeformat &lt;format&gt;</title>

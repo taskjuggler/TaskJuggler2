@@ -15,7 +15,7 @@ install-data-local:
 uninstall-local:
 	-rm -f $(docprefix)
 
-$(TARGETNAME).tjx : $(TARGETNAME).tjp
+$(TARGETNAME).tjx : $(TARGETNAME).tjp $(TASKJUGGLER)
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
 all: $(TARGETNAME).tjx

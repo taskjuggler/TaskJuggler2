@@ -1620,6 +1620,9 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 		planJobs.setAutoDelete(TRUE);
 		time_t prevTime = 0;
 		Interval reportPeriod(start, end);
+		s << "<table style=\"width:150px; font-size:100%; "
+		   "text-align:left\"><tr><th style=\"width:35%\"></th>"
+		   "<th style=\"width:65%\"></th></tr>" << endl;
 		for (Booking* b = planJobs.first(); b != 0; b = planJobs.next())
 		{
 			if ((t == 0 || t == b->getTask()) && 
@@ -1631,22 +1634,25 @@ ReportHtml::planSchedule(Resource* r, Task* t)
 				if (!isSameDay(prevTime, b->getStart()) &&
 					!isSameDay(start, end - 1))
 				{
-					s << "<p><span style=\"font-size:160%\">"
+					s << "<tr><td colspan=\"2\" style=\"font-size:120%\">"
 						<< time2weekday(b->getStart()) << ", "
-						<< time2date(b->getStart()) << "</span><p>" << endl;
+						<< time2date(b->getStart()) << "</td></tr>" << endl;
 				}
-				if (!isSameDay(start, end - 1))
-					s << "&nbsp;&nbsp;&nbsp;";
+				s << "<tr><td>";
 				Interval workPeriod(b->getStart(), b->getEnd());
 				workPeriod.overlap(reportPeriod);
-				s << time2time(workPeriod.getStart()) << " - "
-					<< time2time(workPeriod.getEnd() + 1);
+				s << time2user(workPeriod.getStart(), shortTimeFormat)
+				   	<< "&nbsp;-&nbsp;"
+					<< time2user(workPeriod.getEnd() + 1, shortTimeFormat);
+				s << "</td><td>";
 				if (t == 0)
 					s << " " << htmlFilter(b->getTask()->getName());
-				s << "<br>" << endl;
+				s << "</td>" << endl;
 				prevTime = b->getStart();
+				s << "</tr>" << endl;
 			}
 		}
+		s << "</table>" << endl;
 	}
 	else
 		s << "&nbsp;";
@@ -1666,11 +1672,14 @@ ReportHtml::actualSchedule(Resource* r, Task* t)
 		BookingList actualJobs = r->getActualJobs();
 		actualJobs.setAutoDelete(TRUE);
 		time_t prevTime = 0;
+		Interval reportPeriod(start, end);
+		s << "<table style=\"width:150px; font-size:100%; "
+		   "text-align:left\"><tr><th style=\"width:35%\"></th>"
+		   "<th style=\"width:65%\"></th></tr>" << endl;
 		for (Booking* b = actualJobs.first(); b != 0; b = actualJobs.next())
 		{
 			if ((t == 0 || t == b->getTask()) && 
-				Interval(start, end).overlaps(Interval(b->getStart(),
-													   b->getEnd())))
+				reportPeriod.overlaps(Interval(b->getStart(), b->getEnd())))
 			{
 				/* If the reporting interval is not more than a day, we
 				 * do not print the day since this information is most
@@ -1678,25 +1687,28 @@ ReportHtml::actualSchedule(Resource* r, Task* t)
 				if (!isSameDay(prevTime, b->getStart()) &&
 					!isSameDay(start, end - 1))
 				{
-					s << "<p><span style=\"font-size:160%\">"
+					s << "<tr><td colspan=\"2\" style=\"font-size:120%\">"
 						<< time2weekday(b->getStart()) << ", "
-						<< time2date(b->getStart()) << "</span><p>" << endl;
+						<< time2date(b->getStart()) << "</td></tr>" << endl;
 				}
-				if (!isSameDay(start, end - 1))
-					s << "&nbsp;&nbsp;&nbsp;";
-				s << time2time(b->getStart()) << " - "
-					<< time2time(b->getEnd());
+				s << "<tr><td>";
+				Interval workPeriod(b->getStart(), b->getEnd());
+				workPeriod.overlap(reportPeriod);
+				s << time2user(workPeriod.getStart(), shortTimeFormat)
+				   	<< "&nbsp;-&nbsp;"
+					<< time2user(workPeriod.getEnd() + 1, shortTimeFormat);
+				s << "</td><td>";
 				if (t == 0)
 					s << " " << htmlFilter(b->getTask()->getName());
-				s << "<br>" << endl;
+				s << "</td>" << endl;
 				prevTime = b->getStart();
+				s << "</tr>" << endl;
 			}
 		}
+		s << "</table>" << endl;
 	}
 	else
 		s << "&nbsp;";
-
-	s << "</td>" << endl;
 }
 
 void

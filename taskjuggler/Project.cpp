@@ -46,8 +46,6 @@ Project::Project()
 #endif
 #endif
 
-	activeAsap.setSorting(CoreAttributesList::PrioDown, 0);
-	activeAlap.setSorting(CoreAttributesList::PrioDown, 0);
 	priority = 500;
 	/* The following settings are country and culture dependent. Those
 	 * defaults are probably true for many Western countries, but have to be
@@ -56,17 +54,16 @@ Project::Project()
 	yearlyWorkingDays = 252;
 	scheduleGranularity = ONEHOUR;
 	weekStartsMonday = TRUE;
-	timeFormat = "%Y-%m-%d %H:%M %Z";
+	timeFormat = "%Y-%m-%d %H:%M";
+	shortTimeFormat = "%H:%M";
 
 	start = 0;
 	end = 0;
 	now = time(0);
 	
-	copyright = QString::null;
 	minEffort = 0.0;
 	maxEffort = 1.0;
 	rate = 0.0;
-	currency = QString::null;
 	currencyDigits = 3;
 	kotrus = 0;
 	
@@ -278,31 +275,13 @@ Project::schedule(const QString& scenario)
 				if (DEBUGPS(5))
 					qWarning("Task %s requests slot %s", t->getId().latin1(),
 							 time2ISO(slot).latin1());
-				if (slot < start)
+				if (slot < start || slot > end)
 				{
-					if (DEBUGPS(2))
-						qWarning("Scheduler ran over start of project");
-
-					if (t->setRunaway(slot, scheduleGranularity))
-					{
-						if (DEBUGPS(5))
-							qDebug("Marking task %s as runaway",
-								   t->getId().latin1());
-						error = TRUE;
-					}
-				}
-				if (slot > end)
-				{
-					if (DEBUGPS(2))
-						qWarning("Scheduler ran over end of project");
-
-					if (t->setRunaway(slot, scheduleGranularity))
-					{
-						if (DEBUGPS(5))
-							qWarning("Marking task %s as runaway",
-									 t->getId().latin1());
-						error = TRUE;
-					}
+					t->setRunaway();
+					if (DEBUGPS(5))
+						qDebug("Marking task %s as runaway",
+							   t->getId().latin1());
+					error = TRUE;
 				}
 			}
 			t->schedule(slot, scheduleGranularity);
@@ -310,96 +289,6 @@ Project::schedule(const QString& scenario)
 		}
 	} while (!done);
 	
-#if 0
-	activeAsap.setSorting(CoreAttributesList::PrioDown, 0);
-	activeAsap.setSorting(CoreAttributesList::SequenceUp, 1);
-	activeAlap.setSorting(CoreAttributesList::PrioDown, 0);
-	activeAlap.setSorting(CoreAttributesList::SequenceUp, 1);
-
-	time_t timeDelta = scheduleGranularity;
-	bool done = FALSE;
-	time_t day;
-
-	/* Find all tasks than have enough information to be scheduled and sort
-	 * them into two lists; one list for all ASAP tasks and one list for all
-	 * ALAP tasks. */
-	updateActiveTaskList(sortedTasks);
-	for (day = start; !(activeAsap.isEmpty() && activeAlap.isEmpty()); )
-	{
-		if (DEBUGPS(10))
-			qWarning("Scheduling slot %s", time2ISO(day).latin1());
-		timeDelta = scheduleGranularity;
-		do
-		{
-			if (DEBUGPS(10))
-				qWarning("%d active ALAP tasks", activeAlap.count());
-			done = TRUE;
-			for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
-			{
-				if (!t->schedule(day, scheduleGranularity))
-				{
-					done = FALSE;
-					break;	// Start with top priority tasks again.
-				}
-				if (t->needsEarlierTimeSlot(day + scheduleGranularity))
-					timeDelta = -scheduleGranularity;
-			}
-		} while (!done);
-
-		if (timeDelta >= 0)
-		{
-			do
-			{
-				if (DEBUGPS(10))
-					qWarning("%d active ASAP tasks", activeAsap.count());
-				done = TRUE;
-				for (Task* t = activeAsap.first(); t != 0;
-					 t = activeAsap.next())
-				{
-					if (!t->schedule(day, scheduleGranularity))
-					{
-						done = FALSE;
-						break;	// Start with top priority tasks again.
-					}
-				}
-			} while (!done);
-		}
-		day += timeDelta;
-	
-		/* Runaway detection */
-		if (day < start)
-		{
-			if (DEBUGPS(2))
-				qWarning("Scheduler ran over start of project");
-			
-			for (Task* t = activeAlap.first(); t != 0; t = activeAlap.next())
-				if (t->setRunaway(day - timeDelta, scheduleGranularity))
-				{
-					if (DEBUGPS(5))
-						qDebug("Marking task %s as runaway",
-							   t->getId().latin1());
-					error = TRUE;
-				}
-			day = start;
-		}
-		if (day > end)
-		{
-			if (DEBUGPS(2))
-				qWarning("Scheduler ran over end of project");
-			
-			for (Task* t = activeAsap.first(); t != 0; t = activeAsap.next())
-				if (t->setRunaway(day - timeDelta, scheduleGranularity))
-				{
-					if (DEBUGPS(5))
-						qWarning("Marking task %s as runaway",
-								 t->getId().latin1());
-					error = TRUE;
-				}
-			day = end - scheduleGranularity;
-		}
-	}
-
-#endif
 	if (error)
 		for (Task* t = sortedTasks.first(); t; t = sortedTasks.next())
 			if (t->isRunaway())
@@ -416,14 +305,6 @@ Project::schedule(const QString& scenario)
 		error = TRUE;
 
 	return !error;
-}
-
-void
-Project::updateActiveTaskList(TaskList& sortedTasks)
-{
-	for (Task* t = sortedTasks.first(); t != 0; t = sortedTasks.next())
-		if (t->isActive())
-			addActiveTask(t);
 }
 
 bool
@@ -445,14 +326,6 @@ Project::checkSchedule(const QString& scenario)
 	}
 
 	return errors == 0;
-}
-
-void
-Project::setKotrus(Kotrus* k)
-{
-	if (kotrus)
-		delete kotrus;
-	kotrus = k;
 }
 
 void
@@ -523,40 +396,11 @@ Project::needsActualDataForReports()
 }
 
 void
-Project::removeActiveTask(Task* t)
+Project::setKotrus(Kotrus* k)
 {
-	t->setScheduled();
-
-	if (DEBUGPS(5))
-		qWarning("Deactivating %s", t->getId().latin1());
-
-	if (t->getScheduling() == Task::ASAP)
-		activeAsap.removeRef(t);
-	else
-		activeAlap.removeRef(t);
-}
-
-void
-Project::addActiveTask(Task* t)
-{
-	if (t->getScheduling() == Task::ASAP)
-	{
-		if (activeAsap.findRef(t) == -1)
-		{
-			if (DEBUGPS(5))
-				qWarning("Activating %s", t->getId().latin1());
-			activeAsap.inSort(t);
-		}
-	}
-	else
-	{
-		if (activeAlap.findRef(t) == -1)
-		{
-			if (DEBUGPS(5))
-				qWarning("Activating %s", t->getId().latin1());	
-			activeAlap.inSort(t);
-		}
-	}
+	if (kotrus)
+		delete kotrus;
+	kotrus = k;
 }
 
 bool
@@ -576,7 +420,6 @@ Project::updateKotrus()
 {
 	return TRUE;
 }
-
 
 bool
 Project::loadFromXML( const QString& inpFile )
