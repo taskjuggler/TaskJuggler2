@@ -20,17 +20,26 @@ example.sgml : ../../Examples/FirstProject/AccountingSoftware.tjp
 	echo "</screen></para>" >> example.sgml
 
 taskjuggler/book1.html: $(SGMLSOURCES)
-	@if test "${HTMLMANUAL}" != "no" ; then \ 
+	@if test "${HTMLMANUAL}" != "no" ; then \
 	  db2html taskjuggler.sgml ;\
 	  rm -rf taskjuggler.junk ;\
 	fi
+
+taskjuggler/index.html: taskjuggler/book1.html
+	@cp index.html taskjuggler/index.html
 
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test ${PSMANUAL} != "no" ; then \
 	  db2ps taskjuggler.sgml ;\
 	fi
 
-all: taskjuggler/book1.html taskjuggler.ps
+tarball: $(SGMLSOURCES)
+	@if test -d taskjuggler ; then \
+	doctarball = "tjmanual-$(VERSION).tar.gz" ; \
+	echo " created" ; \
+	fi
+
+all: taskjuggler/index.html taskjuggler.ps
 
 check:
 	xmllint ${SGMLSOURCES}
