@@ -82,18 +82,16 @@ void KTVTaskTable::showProject( Project *p )
 
    KTVReport rep( p, QString("dummy"), p->getStart(), p->getEnd() );
    TaskList filteredList;
-   filteredList.setSorting( CoreAttributesList::TreeMode );
+   // filteredList.setSorting( CoreAttributesList::TreeMode );
    rep.filterTaskList(filteredList, 0);
    rep.sortTaskList(filteredList);
   
    for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
    {
       if( (t->getParent() == 0) && t->isContainer() )
-	 {
-	    // qDebug( "showProject: Adding a Task" );
-	    addTask( static_cast<KTVTaskTableItem*>(m_root), t );
-	    // qDebug( "showProject: Adding a Task <FIN>" );
-	 }
+      {
+	 addTask( static_cast<KTVTaskTableItem*>(m_root), t );
+      }
    }
 
    /* open the first child of the project */
@@ -147,7 +145,7 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
    // qDebug( "Amount of subtasks: " + QString::number(cnt) );
 
    // qDebug( "START: Subpackages for "+ t->getId());
-   for (Task* st = subTasks.first(); st != 0; st = subTasks.next())
+   for (Task* st = subTasks.last(); st != 0; st = subTasks.prev())
    {
       // qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
       if( st->getParent() == t )

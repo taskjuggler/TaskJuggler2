@@ -132,7 +132,7 @@ void KTVTaskCanvas::drawBackground( QPainter &painter, const QRect & clip )
    /* take the start day of the project, calculate midnight
     * and draw vertical lines. 
     */
-   QBrush weekEndBrush( QColor(255,255,170));
+   QBrush weekEndBrush( QColor(246,242,222));
    QBrush weekDayBrush( gray );
 
    // qDebug( "Clip %d %d - %d x %d is %s",
