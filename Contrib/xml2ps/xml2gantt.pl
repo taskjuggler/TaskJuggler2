@@ -37,7 +37,7 @@ package tjTask;
                                 h_planStart h_planEnd
                                 x1 y1 x2 y2
                                 label label_x label_y ) ],
-        struct          => [ qw(Followers Depends Previous Allocations bookedResources) ];
+        struct          => [ qw(Followers Previous Allocations bookedResources) ];
 
 use XML::Parser;
 use PostScript::Simple;
@@ -160,7 +160,6 @@ sub start {
         $t = tjTask->new(
             ProjectID       => $_[1],
             Followers       => [],
-            Depends         => [],
             Previous        => [],
             Allocations     => [],
             bookedResources => []
@@ -210,11 +209,11 @@ sub text {
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
-        if ( $elm_fifo[$#elm_fifo] eq 'Depend' ) {
-            #$string =~ s/!//g;
-            #$string =~ s/.*\.(.*)$/$1/g;
-            push @{$t->Depends}, "$string";
-        }
+        #if ( $elm_fifo[$#elm_fifo] eq 'Depend' ) {
+        #    #$string =~ s/!//g;
+        #    #$string =~ s/.*\.(.*)$/$1/g;
+        #    push @{$t->Depends}, "$string";
+        #}
         push @{$t->bookedResources}, "$string"  if ( $elm_fifo[$#elm_fifo] eq 'Resource' );
     }
 }
@@ -252,7 +251,7 @@ sub _draw_depends {
     my $p = shift;
     foreach my $task (@all_tasks) {
         $p->setcolour(0,0,255);
-        foreach my $t (@{$task->Depends}) {
+        foreach my $t (@{$task->Previous}) {
             my $i = __get_Index_from_Task($t);
             #-- die ende koordinaten vom task holen, von dem ich abhänge
             my ($x1, $y1) = __get_start_cood($i) if $i;
