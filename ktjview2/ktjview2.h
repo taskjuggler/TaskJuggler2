@@ -53,7 +53,7 @@ public:
     /**
      * Default Destructor
      */
-    ~ktjview2();
+    virtual ~ktjview2();
 
 public slots:
     /**
@@ -67,7 +67,16 @@ protected:
      */
     virtual void dragEnterEvent( QDragEnterEvent *event );
     virtual void dropEvent( QDropEvent *event );
+
+    /**
+     * @override to save the Recent Open File list
+     */
     virtual bool queryExit();
+
+    /**
+     * @override to ask the user to save the changed document (Project)
+     */
+    virtual bool queryClose();
 
     /**
      * This function is called when it is time for the app to save its

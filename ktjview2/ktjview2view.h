@@ -73,7 +73,7 @@ public:
 	/**
 	 * Destructor
 	 */
-    ~ktjview2View();
+    virtual ~ktjview2View();
 
     /**
      * @return URL of the currently open project

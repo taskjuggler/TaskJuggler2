@@ -89,7 +89,6 @@ ktjview2::ktjview2()
 
 ktjview2::~ktjview2()
 {
-    delete m_view;
 }
 
 void ktjview2::load( const KURL& url )
@@ -398,6 +397,11 @@ bool ktjview2::queryExit()
     return true;
 }
 
+bool ktjview2::queryClose()
+{
+    return m_view->editor()->doc()->queryClose();
+}
+
 void ktjview2::slotSidebarInfo()
 {
     toolBar( "filterToolBar" )->hide();
@@ -609,7 +613,5 @@ void ktjview2::collapseAll()
 {
     m_view->collapseAll( m_view->resListView() );
 }
-
-
 
 #include "ktjview2.moc"

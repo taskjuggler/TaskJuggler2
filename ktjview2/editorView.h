@@ -22,7 +22,7 @@ public:
      */
     EditorView( QWidget * parent = 0, const char * name = 0 );
 
-    ~EditorView();
+    virtual ~EditorView();
 
     /**
      * @return the URL of the document being displayed

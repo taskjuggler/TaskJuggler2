@@ -227,6 +227,10 @@ bool ktjview2View::openURL( const KURL& url )
 {
     //kdDebug() << "Loading project from URL: " << url << endl;
 
+    // prompt the user to save the doc first, if modified
+    if ( !m_editorView->doc()->closeURL() )
+        return false;
+
     KProgressDialog progressDlg( this, "progress_dialog", i18n( "Loading project" ), QString::null, true );
     progressDlg.progressBar()->setTotalSteps( 6 );
     progressDlg.setAutoReset( true );
@@ -790,8 +794,6 @@ void ktjview2View::clearAllViews()
     m_taskView->clear();
 
     m_resUsageView->clear();
-
-    m_editorView->closeDocument();
 }
 
 QString ktjview2View::formatAllocations( Task* task ) const
