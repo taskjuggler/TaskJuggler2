@@ -6,13 +6,13 @@
  <Priority>500</Priority>
  <start humanReadable="2002-04-15 00:00 CEST" >1018821600</start>
  <end humanReadable="2002-10-01 00:00 CEST" >1033423200</end>
- <now humanReadable="2002-06-18 09:03 CEST" >1024383833</now>
+ <now humanReadable="2002-06-20 08:50 CEST" >1024555827</now>
  <Task Id="testProject" >
   <Index>1</Index>
   <Name>testProject for xml2gantt</Name>
   <ProjectID>testProject</ProjectID>
   <Priority>500</Priority>
-  <complete>35.3</complete>
+  <complete>36.8</complete>
   <Type>Container</Type>
   <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
   <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
@@ -47,7 +47,7 @@
     <Name>Development</Name>
     <ProjectID>testProject</ProjectID>
     <Priority>500</Priority>
-    <complete>82.5</complete>
+    <complete>85.9</complete>
     <Type>Container</Type>
     <ParentTask>testProject</ParentTask>
     <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
@@ -229,7 +229,7 @@
     </SubTasks>
     <Previous>testProject.start</Previous>
     <Follower>testProject.beta1</Follower>
-    <Follower>testProject.done</Follower>
+    <Follower>testProject.buffer</Follower>
    </Task>
    <Task Id="testProject.beta1" >
     <Index>9</Index>
@@ -402,10 +402,30 @@
      </Task>
     </SubTasks>
     <Previous>testProject.docuIN</Previous>
+    <Follower>testProject.buffer</Follower>
+   </Task>
+   <Task Id="testProject.buffer" >
+    <Index>16</Index>
+    <Name>sec plan buffer time</Name>
+    <ProjectID>testProject</ProjectID>
+    <Priority>500</Priority>
+    <complete>0.0</complete>
+    <Type>Task</Type>
+    <ParentTask>testProject</ParentTask>
+    <minStart humanReadable="2002-04-15 00:00 CEST" >1018821600</minStart>
+    <maxStart humanReadable="2002-10-01 00:00 CEST" >1033423200</maxStart>
+    <minEnd humanReadable="2002-04-15 00:00 CEST" >1018821600</minEnd>
+    <maxEnd humanReadable="2002-10-01 00:00 CEST" >1033423200</maxEnd>
+    <actualStart humanReadable="1970-01-01 01:00 CET" >0</actualStart>
+    <actualEnd humanReadable="2002-09-15 00:00 CEST" >1032040800</actualEnd>
+    <planStart humanReadable="2002-08-19 11:00 CEST" >1029747600</planStart>
+    <planEnd humanReadable="2002-09-15 00:00 CEST" >1032040800</planEnd>
+    <Previous>testProject.devel</Previous>
+    <Previous>testProject.makeDocu</Previous>
     <Follower>testProject.done</Follower>
    </Task>
    <Task Id="testProject.done" >
-    <Index>16</Index>
+    <Index>17</Index>
     <Name>Lunch of Product</Name>
     <ProjectID>testProject</ProjectID>
     <Priority>500</Priority>
@@ -420,8 +440,7 @@
     <actualEnd humanReadable="2002-09-15 00:00 CEST" >1032040800</actualEnd>
     <planStart humanReadable="2002-09-15 00:00 CEST" >1032040800</planStart>
     <planEnd humanReadable="2002-09-15 00:00 CEST" >1032040800</planEnd>
-    <Previous>testProject.devel</Previous>
-    <Previous>testProject.makeDocu</Previous>
+    <Previous>testProject.buffer</Previous>
    </Task>
   </SubTasks>
  </Task>
