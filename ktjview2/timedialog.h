@@ -48,4 +48,4 @@ private:
     KDateTimeWidget *m_dateEnd;
 };
 
-#endif // KTJVIEWPART_H
+#endif

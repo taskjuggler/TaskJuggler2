@@ -92,9 +92,15 @@ public:
      */
     void print( KPrinter * printer );
 
+    /**
+     * @return the listview that displays the tasks
+     */
     KListView * taskListView() const
         { return m_taskView; }
 
+    /**
+     * @return the listview that displays the resources
+     */
     KListView * resListView() const
         { return m_resListView; }
 
@@ -105,6 +111,9 @@ public:
      */
     bool filterFor( int id );
 
+    /**
+     * Raise the stacked view widget with @p id
+     */
     void activateView( int id );
 
 public slots:
@@ -164,6 +173,9 @@ signals:
      */
     void signalChangeCaption( const QString& text );
 
+    /**
+     * Signal the main window that we want to switch views programatically
+     */
     void signalSwitchView( int type );
 
 private slots:
@@ -211,7 +223,8 @@ private:
 
     /**
      * Parse the task list and build the gantt chart
-     * @param sc Index of the scenario
+     * @param it iterator over the list of tasks
+     * @param sc index of the scenario
      */
     void parseGantt( TaskListIterator it, int sc = 0 );
 
@@ -229,7 +242,7 @@ private:
 
     /**
      * Parses relations between tasks (dependencies)
-     * @param it iterator over the list of resources
+     * @param it iterator over the list of tasks
      */
     void parseLinks( TaskListIterator it );
 
@@ -267,8 +280,10 @@ private:
     /// task (flat) view
     KListView * m_taskView;
 
+    /// loading progress dialog
     QProgressDialog * m_progressDlg;
 
+    /// gantt listview item popup menu
     QPopupMenu * m_ganttPopupMenu;
 };
 

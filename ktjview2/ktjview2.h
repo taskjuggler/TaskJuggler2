@@ -58,7 +58,7 @@ public:
 
 public slots:
     /**
-     * Use this method to load whatever file/URL you have
+     * Load a project from @p url
      */
     void load( const KURL& url );
 
@@ -99,10 +99,13 @@ private slots:
      */
     void filePrint();
 
+    /**
+     * Toggle the gantt view calendar mode status
+     */
     void setCalendarMode();
 
     /**
-     *Show the config keys dialog
+     * Show the config keys dialog
      */
     void optionsConfigureKeys();
 
@@ -121,7 +124,14 @@ private slots:
      */
     void newToolbarConfig();
 
+    /**
+     * Change status bar text to @p text
+     */
     void changeStatusbar( const QString& text );
+
+    /**
+     * Set window caption to @p text
+     */
     void changeCaption( const QString& text );
 
     /**
@@ -134,10 +144,19 @@ private slots:
     void slotSidebarResources();
     void slotSidebarTasks();
 
+    /**
+     * Activate the sidebar actions, switch the view
+     */
     void slotSwitchView( int type );
 
 private:
+    /**
+     * Create actions
+     */
     void setupActions();
+    /**
+     * Setup the sidebar attributes
+     */
     void setupSidebar();
 
     ktjview2View *m_view;
@@ -147,6 +166,7 @@ private:
     KSelectAction * m_scaleAction;
     KToggleAction * m_calendarAction;
 
+    // filter stuff
     KSelectAction * m_filterForAction;
     QStringList m_filterItems;
     int m_activeFilter;
