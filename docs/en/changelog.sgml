@@ -588,6 +588,10 @@ allocated 8 hours per day.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
+<listitem><para>Support for new XML format has been added. The olf
+format is still supported. TJ can read and write the new XML
+files.</para></listitem>
+
 <listitem><para>The property <link
 linkend="projectids">projectids</link> has been added. It is used in
 export reports to declare all the project IDs that are used in the
@@ -608,6 +612,9 @@ values to taskjuggler.</para></listitem>
 
 <listitem><para>Several inconsistencies and off-by-one errors with
 respect to task end times have been fixed.</para></listitem>
+
+<listitem><para>TaskJuggler can now create 'make' compatible
+dependency information.</para></listitem>
 
 </itemizedlist></para>
 

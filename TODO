@@ -1,14 +1,8 @@
-For 1.9.2:
-- Fix RealFormat::format to round instead of truncate.
-- Remove old color support
-- Save user-defined attributes and scenario support to XML.
-- Add conflict output in debug level 2.
+For 1.9.3:
 - Update AccountingSoftware example in manual.
 - 1.x -> 2.x migration guide chapter.
 
 For 2.0:
-- Improve scheduler performance.
-- Improve report generation performance.
 - Explain more features with examples in the documentation.
 - Valgrind the code.
 
