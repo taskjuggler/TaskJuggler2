@@ -2494,8 +2494,11 @@ affects many internal calculations.</para>
 linkend="string">STRING</link></member>
 </simplelist></para>
 
-<para>Creates a xml report of the scheduled project. Note that this is still
-experimental. The format might change in future releases.</para>
+<para>Creates a XML report of the scheduled project. The filename
+should have the extension <computeroutput>.tjx</computeroutput>. Note
+that the file format is still not completly stable yet. We might
+change it in future releases of TaskJuggler. If you plan to use it for
+your own application, please contact us first.</para>
 
 </sect1>
 </chapter>
