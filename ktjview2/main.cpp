@@ -26,7 +26,7 @@
 #include <klocale.h>
 
 static const char description[] =
-    I18N_NOOP("A KDE frontend to Taskjuggler");
+    I18N_NOOP("A KDE frontend to TaskJuggler");
 
 static const char version[] = "0.4";
 
@@ -38,7 +38,7 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char **argv)
 {
-    KAboutData about("ktjview2", I18N_NOOP("Taskjuggler viewer"), version, description,
+    KAboutData about("ktjview2", I18N_NOOP("TaskJuggler IDE"), version, description,
                      KAboutData::License_GPL, "(C) 2004 SUSE AG", 0, 0, "lukas.tinkl@suse.cz");
     about.addAuthor( "Lukáš Tinkl", I18N_NOOP( "Author and maintainer " ), "lukas.tinkl@suse.cz" );
     KCmdLineArgs::init(argc, argv, &about);
