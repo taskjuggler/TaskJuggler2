@@ -45,6 +45,7 @@ int main(int argc, char **argv)
     // register ourselves as a dcop client
     app.dcopClient()->registerAs(app.name(), false);
 
+    TaskJuggler *widget;
     // see if we are starting with session management
     if (app.isRestored())
     {
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
         KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
         if (args->count() == 0)
         {
-            TaskJuggler *widget = new TaskJuggler;
+            widget = new TaskJuggler;
             widget->show();
         }
         else
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
             int i = 0;
             for (; i < args->count(); i++)
             {
-                TaskJuggler *widget = new TaskJuggler;
+                widget = new TaskJuggler;
                 widget->show();
                 widget->load(args->url(i));
             }
@@ -72,6 +73,9 @@ int main(int argc, char **argv)
         args->clear();
     }
 
-    return app.exec();
+    int retVal = app.exec();
+
+    delete widget;
+    return retVal;
 }
 
