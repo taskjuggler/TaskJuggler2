@@ -36,12 +36,12 @@ comments -->
 <!ATTLIST now
   humanReadable CDATA #IMPLIED>
 
-<!ELEMENT extend (extendAttribute*)>
+<!ELEMENT extend (extendAttributeDefinition*)>
 <!ATTLIST extend
   property CDATA #REQUIRED>
 
-<!ELEMENT extendAttribute EMPTY>
-<!ATTLIST extendAttribute
+<!ELEMENT extendAttributeDefinition EMPTY>
+<!ATTLIST extendAttributeDefinition
   id CDATA #REQUIRED
   name CDATA #REQUIRED
   type (text|reference) #REQUIRED
@@ -186,12 +186,20 @@ comments -->
 
 <!ELEMENT endCredit (#PCDATA)>
   
-<!ELEMENT customAttribute EMPTY>
+<!ELEMENT customAttribute (textAttribute|referenceAttribute)>
 <!ATTLIST customAttribute
   id CDATA #REQUIRED
-  text CDATA #IMPLIED
-  url CDATA #IMPLIED
-  label CDATA #IMPLIED
+>
+
+<!ELEMENT textAttribute EMPTY>
+<!ATTLIST textAttribute
+  text CDATA #REQUIRED
+>
+
+<!ELEMENT referenceAttribute EMPTY>
+<!ATTLIST referenceAttribute
+  url CDATA #REQUIRED
+  label CDATA #REQUIRED
 >
 
 <!ELEMENT bookingList (resourceBooking*)>

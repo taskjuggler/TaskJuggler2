@@ -72,6 +72,7 @@ private:
                                    ParserElement* parentEl);
     void createSubTreeVacationList(ParserFunctionPtr func,
                                    ParserNode* parentNode);
+    void createSubTreeCustomAttribute(ParserNode* parentNode);
 
     bool parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc);
 
@@ -94,6 +95,9 @@ private:
     bool doResourceVacation(QDomNode& n, ParserTreeContext& n);
     bool doVacationStart(QDomNode& n, ParserTreeContext& n);
     bool doVacationEnd(QDomNode& n, ParserTreeContext& n);
+    bool doCustomAttribute(QDomNode& n, ParserTreeContext& n);
+    bool doTextAttribute(QDomNode& n, ParserTreeContext& n);
+    bool doReferenceAttribute(QDomNode& n, ParserTreeContext& n);
     bool doShiftList(QDomNode& n, ParserTreeContext& n);
     bool doShift(QDomNode& n, ParserTreeContext& n);
     bool doResourceList(QDomNode& n, ParserTreeContext& n);

@@ -32,6 +32,8 @@
 #include "VacationInterval.h"
 #include "Booking.h"
 #include "CustomAttributeDefinition.h"
+#include "ReferenceAttribute.h"
+#include "TextAttribute.h"
 
 ParserNode* XMLFile::parserRootNode = 0;
 
@@ -54,13 +56,16 @@ XMLFile::createParseTree()
 {
     /* Build the tree that describes how we expect the DOM tree to look like.
      * Each node of the tree can have an arbitrary number of elements. Each
-     * element may then again have a node, when it has sub-elements. */
+     * element may then again have a node, when it has sub-elements. The
+     * structure of the tree built here very closely resembles the
+     * taskjuggler.dtd. */
     parserRootNode = new ParserNode();
     ParserElement* pe = 
         new ParserElement("taskjuggler", &XMLFile::doTaskJuggler,
                           parserRootNode); 
     ParserNode* taskjugglerNode = new ParserNode(pe);
     {
+        // Project Element
         pe = new ParserElement("project", &XMLFile::doProject, taskjugglerNode);
         ParserNode* projectNode = new ParserNode(pe);
         {
@@ -70,7 +75,7 @@ XMLFile::createParseTree()
             pe = new ParserElement("extend", &XMLFile::doExtend, projectNode);
             ParserNode* extendNode = new ParserNode(pe);
             {
-                new ParserElement("extendAttribute",
+                new ParserElement("extendAttributeDefinition",
                                   &XMLFile::doExtendAttribute,
                                   extendNode);
             }
@@ -87,9 +92,11 @@ XMLFile::createParseTree()
             }
         }
 
+        // vacationlist element
         createSubTreeVacationList(&XMLFile::doProjectVacation,
                                   taskjugglerNode);
 
+        // shiftList element
         pe = new ParserElement("shiftList", &XMLFile::doShiftList,
                                taskjugglerNode);
         ParserNode* shiftListNode = new ParserNode(pe);
@@ -105,6 +112,7 @@ XMLFile::createParseTree()
             }
         }
         
+        // resourceList element
         pe = new ParserElement("resourceList", &XMLFile::doResourceList,
                                taskjugglerNode);
         ParserNode* resourceListNode = new ParserNode(pe);
@@ -123,9 +131,11 @@ XMLFile::createParseTree()
                 createSubTreeTimeInterval("shiftSelection",
                                           &XMLFile::doShiftSelection,
                                           resourceNode);
+                createSubTreeCustomAttribute(resourceNode);
             }
         }
         
+        // taskList element
         pe = new ParserElement("taskList", &XMLFile::doTaskList,
                                taskjugglerNode);
         ParserNode* taskListNode = new ParserNode(pe);
@@ -163,8 +173,10 @@ XMLFile::createParseTree()
             new ParserElement("flag", &XMLFile::doFlag, taskNode);
             new ParserElement("depends", &XMLFile::doDepends, taskNode);
             new ParserElement("precedes", &XMLFile::doPrecedes, taskNode);
+            createSubTreeCustomAttribute(taskNode);
         }
 
+        // bookingList element
         pe = new ParserElement("bookingList", 0, taskjugglerNode);
         ParserNode* bookingListNode = new ParserNode(pe);
         {
@@ -222,6 +234,22 @@ XMLFile::createSubTreeVacationList(ParserFunctionPtr func,
     ParserNode* vacationListNode = new ParserNode(pe);
     {
         createSubTreeTimeInterval("vacation", func, vacationListNode);
+    }
+}
+
+void
+XMLFile::createSubTreeCustomAttribute(ParserNode* parentNode)
+{
+    ParserElement* pe = 
+        new ParserElement("customAttribute", &XMLFile::doCustomAttribute,
+                          parentNode);
+    ParserNode* customAttributeNode = new ParserNode(pe);
+    {
+        new ParserElement("textAttribute", &XMLFile::doTextAttribute,
+                          customAttributeNode);
+        new ParserElement("referenceAttribute",
+                          &XMLFile::doReferenceAttribute,
+                          customAttributeNode);
     }
 }
 
@@ -521,6 +549,33 @@ XMLFile::doResourceVacation(QDomNode& n, ParserTreeContext& ptc)
 }
 
 bool
+XMLFile::doCustomAttribute(QDomNode& n, ParserTreeContext& ptc)
+{
+    ptc.setExtendProperty(n.toElement().attribute("id"));
+    return TRUE;
+}
+
+bool
+XMLFile::doTextAttribute(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    TextAttribute* ta =
+        new TextAttribute(el.attribute("text"));
+    ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProporty(), ta);
+    return TRUE;
+}
+
+bool
+XMLFile::doReferenceAttribute(QDomNode& n, ParserTreeContext& ptc)
+{
+    QDomElement el = n.toElement();
+    ReferenceAttribute* ra = 
+        new ReferenceAttribute(el.attribute("url"), el.attribute("label"));
+    ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProporty(), ra);
+    return TRUE;
+}
+
+bool
 XMLFile::doShiftList(QDomNode&, ParserTreeContext& ptc)
 {
     ptc.setShift(0);
@@ -740,5 +795,4 @@ XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
                                   new Booking(ptc.getInterval(), t));
     return TRUE;
 }
-
 

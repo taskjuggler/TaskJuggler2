@@ -207,7 +207,8 @@ ProjectFile::parse()
             }
             else if (token == KW("mineffort"))
             {
-                if (nextToken(token) != REAL)
+                TokenType tt;
+                if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value exptected"));
                     return FALSE;
@@ -217,7 +218,8 @@ ProjectFile::parse()
             }
             else if (token == KW("maxeffort"))
             {
-                if (nextToken(token) != REAL)
+                TokenType tt;
+                if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value exptected"));
                     return FALSE;
@@ -227,7 +229,8 @@ ProjectFile::parse()
             }
             else if (token == KW("rate"))
             {
-                if (nextToken(token) != REAL)
+                TokenType tt;
+                if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value exptected"));
                     return FALSE;
@@ -1761,7 +1764,8 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
     else if (attribute == KW("startcredit"))
     {
         QString token;
-        if (nextToken(token) != REAL)
+        TokenType tt;
+        if ((tt =nextToken(token)) != REAL && tt != INTEGER)
         {
             errorMessage(i18n("Real value expected"));
             return -1;
@@ -1771,7 +1775,8 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
     else if (attribute == KW("endcredit"))
     {
         QString token;
-        if (nextToken(token) != REAL)
+        TokenType tt;
+        if ((tt = nextToken(token)) != REAL && tt != INTEGER)
         {
             errorMessage(i18n("Real value expected"));
             return -1;
@@ -2084,7 +2089,8 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("mineffort"))
         {
-            if (nextToken(token) != REAL)
+            TokenType tt;
+            if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Real value exptected"));
                 return FALSE;
@@ -2093,7 +2099,8 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("maxeffort"))
         {
-            if (nextToken(token) != REAL)
+            TokenType tt;
+            if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Real value exptected"));
                 return FALSE;
@@ -2102,7 +2109,8 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("efficiency"))
         {
-            if (nextToken(token) != REAL)
+            TokenType tt;
+            if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Read value expected"));
                 return FALSE;
@@ -2111,7 +2119,8 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("rate"))
         {
-            if (nextToken(token) != REAL)
+            TokenType tt;
+            if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Real value exptected"));
                 return FALSE;
@@ -2525,7 +2534,8 @@ ProjectFile::readCredit(Account* a)
         return FALSE;
     }
 
-    if (nextToken(token) != REAL)
+    TokenType tt;
+    if ((tt = nextToken(token)) != REAL && tt != INTEGER)
     {
         errorMessage(i18n("Real value expected"));
         return FALSE;
@@ -2563,7 +2573,8 @@ ProjectFile::readAllocate(Task* t)
             }
             if (token == KW("load"))
             {
-                if (nextToken(token) != REAL)
+                TokenType tt;
+                if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value expected"));
                     return FALSE;

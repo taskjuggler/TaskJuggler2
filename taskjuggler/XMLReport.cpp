@@ -214,7 +214,7 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
                        "Unknown CAT %d", it.current()->getType());
                 return FALSE;
         }
-        QDomElement exEl = doc->createElement("extendAttribute");
+        QDomElement exEl = doc->createElement("extendAttributeDefinition");
         el.appendChild(exEl);
         genTextAttr(&exEl, "id", it.currentKey());
         genTextAttr(&exEl, "name", it.current()->getName());
@@ -607,19 +607,27 @@ XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
     parentEl->appendChild(el);
 
     genTextAttr(&el, "id", id);
-    
+   
     const CustomAttribute* ca = property->getCustomAttribute(id);
     switch (ca->getType())
     {
         case CAT_Text:
-            genTextAttr(&el, "text", ((const TextAttribute*) ca)->getText());
+        {
+            QDomElement cEl = doc->createElement("textAttribute");
+            el.appendChild(cEl);
+    
+            genTextAttr(&cEl, "text", ((const TextAttribute*) ca)->getText());
             break;
+        }
         case CAT_Reference:
         {
+            QDomElement cEl = doc->createElement("referenceAttribute");
+            el.appendChild(cEl);
+            
             const ReferenceAttribute* a = 
                 (const ReferenceAttribute*) ca;
-            genTextAttr(&el, "url", a->getUrl());
-            genTextAttr(&el, "label", a->getLabel());
+            genTextAttr(&cEl, "url", a->getUrl());
+            genTextAttr(&cEl, "label", a->getLabel());
             break;
         }
         default:
