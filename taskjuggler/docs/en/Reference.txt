@@ -33,13 +33,13 @@ UNIT: May be h for hours, d for days, w for weeks, m for months, y for
 years.
 
 WEEKDAY: May be
-Mon for Monday
-Tue for Tuesday
-Wed for Wednesday
-Thu for Thursday
-Fri for Friday
-Sat for Saturday
-Sun for Sunday
+mon for Monday
+tue for Tuesday
+wed for Wednesday
+thu for Thursday
+fri for Friday
+sat for Saturday
+sun for Sunday
 
 INTEGER: An integer number.
 
@@ -442,13 +442,27 @@ Specifies a vacation for a resource. The to value is NOT included in
 the vacation.
 
 -------------------------------------------------------------------------------
-hours <weekday> <from>-<to>[,<from>-<to>]
+workinghours <weekday> <from>-<to>[,<from>-<to>]
 weekday: WEEKDAY
 from: TIME
 to: TIME
 
 Sets the working hours to the specified intervals. If no hours are
 specified for a day, the global definitions are used.
+
+-------------------------------------------------------------------------------
+
+===============================================================================
+
+shift <id> <name>
+id: ID
+name: STRING
+
+-------------------------------------------------------------------------------
+
+shift <id> <name>
+id: ID
+name: STRING
 
 -------------------------------------------------------------------------------
 

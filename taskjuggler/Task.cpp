@@ -522,12 +522,13 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
 				   int loadFactor)
 {
 	bool booked = FALSE;
+	double intervalLoad = project->convertToDailyLoad(slotDuration);
+
 	for (Resource* rit = r->subResourcesFirst(); rit != 0;
 		 rit = r->subResourcesNext())
 	{
 		if ((*rit).isAvailable(date, slotDuration, loadFactor, this))
 		{
-			double intervalLoad = project->convertToDailyLoad(slotDuration);
 			(*rit).book(new Booking(
 				Interval(date, date + slotDuration - 1), this,
 				account ? account->getKotrusId() : QString(""),
@@ -936,6 +937,20 @@ Task::preScheduleOk()
 			return FALSE;
 		}
 	}
+
+	double intervalLoad = project->convertToDailyLoad(project->getScheduleGranularity());
+
+	for (Allocation* a = allocations.first(); a != 0; a = allocations.next())
+	{
+		if (a->getLoad() < intervalLoad * 100.0)
+		{
+			qWarning("Warning: Load is smaller than scheduling granularity "
+					 "(Task: %s, Resource: %s). Minimal load is %.3f.",
+					 a->getResource()->getId().latin1(), id.latin1(), intervalLoad);
+			a->setLoad((int) (intervalLoad * 100.0));
+		}
+	}
+
 	return TRUE;
 }
 
