@@ -76,7 +76,7 @@ ktjview2::ktjview2()
     connect( m_view, SIGNAL(signalChangeStatusbar(const QString&)),
              this,   SLOT(changeStatusbar(const QString&)) );
     connect( m_view, SIGNAL(signalChangeCaption(const QString&)),
-             this,   SLOT(changeCaption(const QString&)) );
+             this,   SLOT(setCaption(const QString&)) );
 
     m_activeFilter = 0;
 
@@ -318,12 +318,6 @@ void ktjview2::changeStatusbar( const QString& text )
 {
     // display the text on the statusbar
     statusBar()->message( text );
-}
-
-void ktjview2::changeCaption( const QString& text )
-{
-    // display the text on the caption
-    setCaption( text );
 }
 
 bool ktjview2::queryExit()

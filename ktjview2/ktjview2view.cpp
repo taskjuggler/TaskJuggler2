@@ -752,10 +752,10 @@ void ktjview2View::filter()
 
 void ktjview2View::clearAllViews()
 {
-    m_resListView->clear();
-    m_taskView->clear();
     //m_ganttView->taskLinks().clear();
     //m_ganttView->clear();
+    m_resListView->clear();
+    m_taskView->clear();
 }
 
 QString ktjview2View::formatAllocations( Task* task )

@@ -130,11 +130,6 @@ private slots:
     void changeStatusbar( const QString& text );
 
     /**
-     * Set window caption to @p text
-     */
-    void changeCaption( const QString& text );
-
-    /**
      * Apply preselected filters on the task list
      */
     void slotFilterFor();
@@ -158,6 +153,8 @@ private:
      * Setup the sidebar attributes
      */
     void setupSidebar();
+
+
 
     ktjview2View *m_view;
 
