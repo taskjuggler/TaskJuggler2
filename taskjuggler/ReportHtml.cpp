@@ -790,7 +790,7 @@ ReportHtml::dailyResourcePlan(Resource* r, Task* t)
 		double load = r->getPlanLoad(Interval(day).firstDay(), t);
 		QString bgCol = 
 			load > r->getMinEffort() * r->getEfficiency() ?
-			(t == 0 ? "booked" : "bookedLight") :
+			(t == 0 ? "booked" : "bookedlight") :
 			isSameDay(project->getNow(), day) ? "today" :
 			isWeekend(day) ? "weekend" :
 			project->isVacation(day) || r->hasVacationDay(day) ?
@@ -814,7 +814,7 @@ ReportHtml::dailyResourceActual(Resource* r, Task* t)
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
 			 (t->isCompleted(sameTimeNextDay(day) - 1) ?
-			  "completedlight" : "bookedLight")) :
+			  "completedlight" : "bookedlight")) :
 			isSameDay(project->getNow(), day) ? "today" :
 			isWeekend(day) ? "weekend" :
 			project->isVacation(day) || r->hasVacationDay(day) ?
@@ -929,7 +929,7 @@ ReportHtml::weeklyResourceActual(Resource* r, Task* t)
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
 			 (t->isCompleted(sameTimeNextWeek(week) - 1) ?
-			  "completedlight" : "bookedLight")) :
+			  "completedlight" : "bookedlight")) :
 			isSameWeek(project->getNow(), week) ? "today" :
 			(t == 0 ? "default" : "defaultlight");
 		if (showPIDs)
@@ -1026,7 +1026,7 @@ ReportHtml::monthlyResourceActual(Resource* r, Task* t)
 			load > r->getMinEffort() * r->getEfficiency() ?
 			(t == 0 ? "booked" :
 			 (t->isCompleted(sameTimeNextMonth(month) - 1) ?
-			  "completedlight" : "bookedLight")) :
+			  "completedlight" : "bookedlight")) :
 			isSameMonth(project->getNow(), month) ? "today" :
 			(t == 0 ? "default" : "defaultlight");
 		reportLoad(load, bgCol, !r->isGroup());
