@@ -46,16 +46,18 @@ QuickSearchWidget::QuickSearchWidget( QWidget * parent, const char * name )
     connect( m_clearButton, SIGNAL( clicked() ), this, SLOT( reset() ) );
     lay->add( m_clearButton );
 
-    m_searchLabel = new QLabel( i18n( "Search &for:" ), this, "kde toolbar widget" );
+    m_searchLabel = new QLabel( i18n( "Search for:" ), this, "kde toolbar widget" );
     lay->add( m_searchLabel );
 
     m_searchLine = new KListViewSearchLine( this, 0, "search_line" );
+    QToolTip::add( m_searchLine, i18n( "Specify the text you are looking for" ) );
     lay->addWidget( m_searchLine, 1 ); // adds the widget stretched
 
     m_inLabel = new QLabel( i18n( "in:" ), this, "kde toolbar widget" );
     lay->add( m_inLabel );
 
     m_colCombo = new QComboBox( this, "column_combo" );
+    QToolTip::add( m_colCombo, i18n( "Choose the column where you want to search in" ) );
     connect( m_colCombo, SIGNAL( activated( int ) ), this, SLOT( setSearchColumn( int ) ) );
     lay->add( m_colCombo );
 
