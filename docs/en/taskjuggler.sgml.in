@@ -27,13 +27,13 @@ This document describes TaskJuggler version @VERSION@
 <para>
 TaskJuggler is a project management tool for Linux and UNIX
 system-based operating systems. Whether you want to plan your
-college's shifts for the next month or want to build a skyscraper -
+colleges shifts for the next month or want to build a skyscraper -
 TaskJuggler is the tool for you.
 </para>
 <para>
 Instead of clicking yourself painfully through hundreds of dialog
 boxes you specify your TaskJuggler project in a simple text format.
-You simply list all your tasks and their dependencies and other
+You simply list all your tasks with their dependencies and other
 properties. The information is sent through TaskJuggler and you will
 get all sorts of reports in HTML or XML format.
 </para>

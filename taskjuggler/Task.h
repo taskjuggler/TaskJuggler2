@@ -50,8 +50,8 @@ public:
 	virtual ~TaskList() { }
 
 	Task* first() { return (Task*) CoreAttributesList::first(); }
-        Task* last()  { return (Task*) CoreAttributesList::last(); }
-        Task* prev()  { return (Task*) CoreAttributesList::prev(); }
+	Task* last()  { return (Task*) CoreAttributesList::last(); }
+	Task* prev()  { return (Task*) CoreAttributesList::prev(); }
 	Task* next()  { return (Task*) CoreAttributesList::next(); }
 
 	Task* getTask(const QString& id);

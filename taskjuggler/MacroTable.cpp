@@ -67,8 +67,13 @@ MacroTable::expand(const QString& text)
 				continue;
 			}
 			uint cb;
-			for (cb = 1; cb < text.length() && text[cb] != '}'; cb++)
+			for (cb = i + 2; cb < text.length() && text[cb] != '}'; cb++)
 				;
+			if (text[cb] != '}')
+			{
+				warningMsg("Unterminated macro call '%s'", text.latin1());
+				return res;
+			}
 			res += expand(resolve(text.mid(i + 2, cb - (i + 2))));
 			i = cb;
 		}
