@@ -6,12 +6,16 @@
 #include <qrect.h>
 #include <qpainter.h>
 
+#include <qtooltip.h>
+
 #include "ktvtasktable.h"
 #include "ktvtaskcanvas.h"
 #include "ktvtaskcanvasview.h"
+#include "ktvcanvasitem.h"
 #include "Project.h"
 #include "Task.h"
 #include "Utility.h"
+#include "tasktip.h"
 
 
 KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const char *name )
@@ -19,6 +23,7 @@ KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const 
 {
    m_canvas = new KTVTaskCanvas( parent, tab, name );
    setCanvas( m_canvas );
+   (void) new TaskTip( this );
    
    setVScrollBarMode( QScrollView::AlwaysOff );
 
@@ -71,39 +76,39 @@ void KTVTaskCanvasView::addTask(Task *t )
    qDebug( "START: Subpackages for "+ t->getId());
    for (Task* st = subTasks.first(); st != 0; st = subTasks.next())
    {
-      qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
+      // qDebug( "Calling subtask " + st->getId() + " from " + t->getId() );
       if( st->getParent() == t )
 	 addTask( st );
-      qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
+      //qDebug( "Calling subtask " + st->getId() + " from " + t->getId() + " <FIN>" );
    }
    qDebug( "END: Subpackages for "+ t->getId());
    qDebug( "Adding task: " + t->getId() + "<FIN>");
 
 }
 
-void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* e )
+KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 {
-   QCanvasItemList l = canvas()->collisions(e->pos());
+   QCanvasItemList il = canvas()->collisions ( p );
 
-   const CanvasItemList ktvItems = static_cast<KTVTaskCanvas*>(canvas())->getCanvasItemsList();
+   KTVCanvasItemBase *item = 0L;
+   
+   QCanvasItemList::iterator it;
+   
+   for ( it = il.begin(); !item && it != il.end(); ++it )
+   {
+      item = static_cast<KTVTaskCanvas*>(canvas())->qCanvasItemToItemBase( *it );
+   }
+
+   return item;
+}
+
+
+
+void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* )
+{
 
    /* Take only the first of the collision list, that is the front most item */
 
-   CanvasItemListIterator it(ktvItems);
-   
-   for ( ; it.current(); ++it )
-   {
-      if( (*it)->contains( l.first() ) )
-      {
-	 /* find out to which ItemBase this CanvasItem belongs to */
-	 Task *t = (*it)->getTask();
-
-	 if( t )
-	 {
-	    QString tname = t->getName();
-	    qDebug( "Setting on task %s", tname.latin1());
-	 }
-      }
-   }
+ 
 }
 

@@ -66,7 +66,7 @@ bool KTjviewPart::openFile()
         return false;
 
     Project *p = new Project();
-    p->setDebugLevel(3);
+    // p->setDebugLevel(3);
     p->loadFromXML( m_file );
 
     m_widget->showProject(p);

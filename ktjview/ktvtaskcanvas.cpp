@@ -206,32 +206,11 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
    for ( ; it.current(); ++it )
    {
       int y = (*it)->y();
-      qDebug( "Moving thing from y %d", y );
       if( y > startHere )
       {
 	 (*it)->moveBy(0, dy);
       }
    }
-
-#if 0
-   for ( it = items.begin(); it != items.end(); ++it )
-      if( (*it)->y() > startHere )
-      {
-	 qDebug( "moving!" );
-	 const CanvasItemList ktvItems = static_cast<KTVTaskCanvas*>(canvas())->getCanvasItemsList();
-	 CanvasItemListIterator it(ktvItems);
-   
-	 for ( ; it.current(); ++it )
-	 {
-	    if( (*it)->contains( l.first() ) )
-	    {
-
-
-	 
-	 KTVCanvasItemBase *canvasItem = static_cast<KTVCanvasItemBase*>(*it);
-	 canvasItem->moveBy( 0,dy );
-      }
-#endif
 }
 
 
@@ -268,7 +247,6 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 
    if( t )
    {
-      bool itemConnects = false; /* local flag if item connects to others with a line */
       /* paint */
       KTVCanvasItemBase *cItem = taskToCanvasItem( t );
       int x = timeToX( t->getPlanStart() );
@@ -286,7 +264,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 	 {
 	    cItem = new KTVCanvasItemTask( this );
 	 }
-	 cItem->setFont( QFont( "Helvetica", 10 ));
+	 cItem->setFont( QFont( "Helvetica", 8 ));
 	 cItem->setTask(t);
 	 // cItem->setZ(1.0);
 	 Q_ASSERT(cItem );
@@ -303,14 +281,16 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
             
       }
 
-      itemConnects = !( t->isMilestone() || t->isContainer() );
+      bool itemConnects = false; /* local flag if item connects to others with a line */
+      itemConnects = !( t->isContainer() );
       
-      qDebug("---###  showing task at %d, %d!", x, yPos);
+      // qDebug("---###  showing task at %d, %d!", x, yPos);
 
       /* yPos contains the bottom-position, from that we subtract the height
        * of the row and add the offset.
        */
-      // qDebug( "Returning height: %d", cItem->height() );
+
+      /* This moves the item to the position where it should be */
       cItem->move( x, yPos + topOffset() - m_rowHeight + (m_rowHeight-cItem->height())/2  );
       cItem->show();
 
@@ -337,19 +317,20 @@ void KTVTaskCanvas::connectTasks( Task *fromTask, Task* actTask,
       tasks. In case a task should be hided, all connections dealing with that
       task need to be hidden, regardless if connected to or from..
    */
+   if( !( fromItem && actItem ) ) return;
+   
    if( !fromTask )
    {
-      
+      fromTask = fromItem->getTask();
    }
 
    if( ! actTask )
    {
-      
+      actTask = actItem->getTask();
    }
 
    QPoint from = fromItem->getConnectorOut();
    QPoint to   =  actItem->getConnectorIn();
-
    
    KTVConnector *newCon = 0;
 
@@ -367,7 +348,8 @@ void KTVTaskCanvas::connectTasks( Task *fromTask, Task* actTask,
       qDebug("Connector exists!" );
       newCon->setConnectPoints( from, to );
    }
-   newCon->show();
+   if( fromItem->isVisible() && actItem->isVisible() )
+      newCon->show();
 
 }
 				  
@@ -411,3 +393,19 @@ void KTVTaskCanvas::slHeightChanged( int newHeight )
    resize( w, newHeight );
 }
  
+
+KTVCanvasItemBase* KTVTaskCanvas::qCanvasItemToItemBase( QCanvasItem* qItem )
+{
+   const CanvasItemList ktvItems = getCanvasItemsList();
+   
+   CanvasItemListIterator it(ktvItems);
+   
+   for ( ; it.current(); ++it )
+   {
+      if( (*it)->contains(qItem ) )
+      {
+	 return (*it);
+      }
+   }
+   return 0L;
+}

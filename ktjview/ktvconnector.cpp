@@ -9,18 +9,9 @@ KTVConnector::KTVConnector( QCanvas *c,
 			   const QPoint& to ):
    QCanvasLine(c)
 {
-   QPointArray pa(2);
-
-   setPen(QPen(black,2));
-#if 0
-   qDebug("Connecting from %d/%d to %d/%d", from.x(), from.y(),
-	  to.x(), to.y() );
-   pa.setPoint( 0, from );
-   pa.setPoint( 1, to );
-   
-   setPoints( pa );
-#endif
-   setPoints( from.x(), from.y(), to.x(), to.y()); 
+   setPen(QPen(black,2));   // TODO configurable
+   setPoints( from.x(), from.y(), to.x(), to.y());
+   setZ( 1.0 );
 }
 
 

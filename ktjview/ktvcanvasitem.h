@@ -17,7 +17,7 @@ class KTVCanvasItemBase: public QObject
 {
 public:
    KTVCanvasItemBase( );
-   void  setTask( Task *t ){ m_task = t; }
+   virtual void  setTask( Task *t ){ m_task = t; }
    Task* getTask()         { return m_task; }
 
    void setFont( const QFont& f)
@@ -31,7 +31,9 @@ public:
    virtual void hide();
    virtual bool contains( QCanvasItem* ){ return false; }
    virtual int  height( ) const { return m_height; }
-
+   virtual QRect rect()  { return QRect();  }
+   virtual bool isVisible() { return false; };
+   
    void addConnectIn( KTVConnector*, Task* );
    void addConnectOut( KTVConnector*, Task* );
    KTVConnector* connectorIn( Task* );
@@ -80,8 +82,11 @@ public:
    bool contains( QCanvasItem* );
 
    void setTask( Task* );
+   QRect rect() { return cRect->rect(); }
 
    int y();
+
+   bool isVisible() { return cRect->isVisible();};
    
    QPoint getConnectorIn() const;
    QPoint getConnectorOut() const;
@@ -104,6 +109,13 @@ public:
    void show();
    bool contains( QCanvasItem* );
    int y();
+   bool isVisible() { return cPoly->isVisible();};
+
+   QPoint getConnectorOut() const;
+   QPoint getConnectorIn() const;
+
+   QRect rect() { return cPoly->boundingRect(); }
+
 private:
    QCanvasPolygon *cPoly;
    
@@ -124,6 +136,8 @@ public:
    void show();
    bool contains( QCanvasItem* );
    int y();
+   QRect rect() { return cPoly->boundingRect(); }
+   bool isVisible() { return cPoly->isVisible();};
 private:
    QCanvasPolygon    *cPoly;
 };

@@ -98,11 +98,14 @@ KTVCanvasItemTask::KTVCanvasItemTask( QCanvas *c )
 {
    cRect = new QCanvasRectangle(c);
    m_height = 12;
-   cRect->setBrush( red );
+   cRect->setBrush( QColor(0xDB, 0xE8, 0x4F));
 
    /* Text */
    m_cText = new QCanvasText(c);
    m_cText->hide();
+
+   m_cText->setZ( 12.0 );
+   cRect->setZ( 10.0 );
 }
 
 void KTVCanvasItemTask::setSize( int w, int h )
@@ -158,8 +161,13 @@ void KTVCanvasItemTask::setTask( Task *t )
    m_task = t;
    if( m_cText )
    {
+      qDebug("### This is the Tasks Name: " + t->getName() );
       m_cText->setText( t->getName());
       m_cText->show();
+   }
+   else
+   {
+      qDebug("### No text defined!" );
    }
 }
 
@@ -203,6 +211,7 @@ KTVCanvasItemMilestone::KTVCanvasItemMilestone( QCanvas *c )
    cPoly = new QCanvasPolygon(c);
 
    cPoly->setBrush( blue );
+   cPoly->setZ( 10.0 );
    
    setSize( 14, 14 );
 }
@@ -234,6 +243,7 @@ void KTVCanvasItemMilestone::move( double x, double y )
 
 void KTVCanvasItemMilestone::moveBy( int dx, int dy)
 {
+   KTVCanvasItemBase::moveBy( dx, dy );
    if( cPoly )
       cPoly->moveBy( dx, dy );
 }
@@ -263,6 +273,33 @@ int KTVCanvasItemMilestone::y()
 }
 
 
+QPoint KTVCanvasItemMilestone::getConnectorIn() const
+{
+   QPoint p;
+   
+   if( cPoly )
+   {
+      QRect r = cPoly->boundingRect();
+      p.setX( r.x());
+      p.setY( r.y()+( r.height()/2));
+   }
+   return p;
+}
+
+QPoint KTVCanvasItemMilestone::getConnectorOut() const
+{
+   QPoint p;
+   
+   if( cPoly )
+   {
+      QRect r = cPoly->boundingRect();
+      p.setX( r.right());
+      p.setY( r.y()+( r.height()/2));
+   }
+   return p;
+}
+
+
 /* **********************************************************************
  * container
  */
@@ -274,6 +311,7 @@ KTVCanvasItemContainer::KTVCanvasItemContainer( QCanvas *c )
    setSize( 0, m_height );
    cPoly->setBrush( blue );
    cPoly->setPen( QColor(blue) );
+   cPoly->setZ( 10.0 );
 }
 
 void KTVCanvasItemContainer::setSize( int w, int h  )

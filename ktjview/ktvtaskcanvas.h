@@ -40,7 +40,13 @@ public slots:
    void slShowMarker( int );
    void slSetTopOffset( int );
    void slShowDebugMarker( int );
-   
+
+   /**
+    * searches the according KTVCanvasItemBase object for a QCanvasItem.
+    * QCanvasItems are deliverd by a lot of 'I was clicked'-functions of the
+    * canvas and we mostly like to know what KTVCanvasItem we are talking about.
+    */
+   KTVCanvasItemBase* qCanvasItemToItemBase( QCanvasItem* );
 protected:
    time_t timeFromX( int x );
    int    timeToX( time_t );
