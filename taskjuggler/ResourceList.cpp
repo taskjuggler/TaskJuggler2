@@ -15,6 +15,11 @@
 #include "ResourceList.h"
 #include "Task.h"
 #include "Project.h"
+#include "kotrus.h"
+
+
+extern Kotrus *kotrus;
+
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
 				   double mie, double mae, double r)
@@ -40,7 +45,6 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
 
 	efficiency = 1.0;
 }
-
 bool
 Resource::isAvailable(time_t date, time_t duration, Interval& interval)
 {
@@ -125,6 +129,27 @@ Resource::isAssignedTo(Task* task)
 	return FALSE;
 }
 
+
+
+/* retrieve all bookings _not_ belonging to this project */
+bool
+Resource::dbLoadBookings( const QString& kotrusID, const QString& skipProjectID )
+{
+   bool result = true;
+   
+   if( ! kotrus ) return( false );
+
+   BookingList blist = kotrus->loadBookings( kotrusID, skipProjectID );
+   
+   
+   return( result );
+}
+
+
+
+/* ******************************************************************************** */
+
+
 bool
 Resource::hasVacationDay(time_t day)
 {
@@ -137,6 +162,7 @@ Resource::hasVacationDay(time_t day)
 
 	return FALSE;
 }
+
 
 int
 ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
