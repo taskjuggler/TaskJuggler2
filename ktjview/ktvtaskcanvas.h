@@ -42,7 +42,8 @@ public:
    void setTable( KTVTaskTable *tab );
    const CanvasItemList& getCanvasItemsList() const { return m_canvasItemList; }
    int getDayWidth() { return m_dayWidth; }
-   
+
+    enum headerReso{ Day, Week, Month}; /* smallest reso of the header */
 public slots:
    void slSetRowHeight(int);
    void slNewTask( Task *t, KTVTaskTableItem *it ){ m_tasks.insert( it, t ); }
@@ -61,19 +62,25 @@ public slots:
    KTVCanvasItemBase* qCanvasItemToItemBase( QCanvasItem* );
    void slSetDayWidth( int );
    void slSetDayWidthStandard();
-   
+
 protected:
-   time_t timeFromX( int x );
-   int    timeToX( time_t );
-   int    midnightToX( time_t );
-   virtual int    topOffset() { return m_topOffset; }
-   virtual void   drawDayHead( int x, QPainter &p );
+    enum topOffsetPart { Complete, Upper, Lower };
+    time_t            timeFromX( int x );
+    int                 timeToX( time_t );
+    int             midnightToX( time_t );
+    virtual int       topOffset( topOffsetPart part = Complete );
+
+    virtual void    drawDayHead( QFont &f, time_t time, int x, QPainter &p );
+    virtual void   drawWeekHead( const QFont &f, time_t time, int x, QPainter &p );
+    virtual void  drawMonthHead( const QFont &f, time_t time, int x, QPainter &p );
+
+
    void connectTasks( Task *fromTask, Task* toTask,
 		      KTVCanvasItemBase *fromItem =0L,
 		      KTVCanvasItemBase *toItem =0L    );
 protected slots:
    void   slHeightChanged( int );
-   
+
 private:
    KTVCanvasItemBase* tableItemToCanvasItem( const KTVTaskTableItem* ) const;
    KTVCanvasItemBase* taskToCanvasItem( const Task* ) const;
@@ -84,13 +91,16 @@ private:
    time_t m_start, m_end;
    QPtrDict<Task> m_tasks;    			 // Stores the Tasks for the TableItems
    QPtrDict<KTVCanvasItemBase> m_canvasItems;    // Stores Canvas-Items for the Tasks
-   
+
 
    CanvasItemList    m_canvasItemList;
    QCanvasLine      *m_dbgMark;
    QCanvasRectangle *m_canvasMarker;
 
    int    m_rowHeight;
+
+    int   m_monthStartX;
+    int   m_weekStartX;
 };
 
 

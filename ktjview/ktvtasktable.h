@@ -64,7 +64,7 @@ signals:
    void moveMarker(int);
    void heightChanged( int );
    void scrolledBy( int, int );
-   
+
 private:
    void addTask( KTVTaskTableItem *parent, Task *t );
    QString beautyTimeSpan( time_t tStart, time_t tEnd ) const;
