@@ -630,8 +630,8 @@ the scope to the parent task. Global IDs do
 not contain '!', but have IDs separated by dots.</para>
 
 <para>By using the 'depends' attribute, the scheduling policy is
-automatically set to ASAP. If 'depends' and 'precedes' are used, the
-last policy counts.</para></descr>
+automatically set to <varname>asap</varname>. If 'depends' and
+'precedes' are used, the last policy counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
@@ -1382,8 +1382,9 @@ the scope to the parent task. Global IDs do
 not contain '!', but have IDs separated by dots.</para>
 
 <para>By using the 'precedes' attribute, the scheduling policy is
-automatically set to ALAP. If both 'precedes' and 'precedes' are used
-within a task, the last policy counts.</para></descr>
+automatically set to <varname>alap</varname>. If both 'precedes' and
+'precedes' are used within a task, the last policy
+counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
@@ -1628,12 +1629,13 @@ task can be ignored for scheduling in the scenario.</para></descr>
  </property>
  <property name="scheduling" id="scheduling" inheritable="Yes">
   <descr><para>Specifies the scheduling policy for the task. A task
-can be scheduled from start to end (As Soon As Possible, ASAP) or from
-end to start (As Late As Possible, ALAP).</para></descr>
+can be scheduled from start to end (As Soon As Possible,
+<varname>asap</varname>) or from
+end to start (As Late As Possible, <varname>alap</varname>).</para></descr>
   <attributes>
    <attr name="type" type="ID">
-    <para>Possible values are <varname>ALAP</varname> or
-<varname>ASAP</varname>.</para>
+    <para>Possible values are <varname>alap</varname> or
+<varname>asap</varname>.</para>
    </attr>
   </attributes>
  </property>
