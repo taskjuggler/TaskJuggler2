@@ -9,8 +9,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>309</width>
-            <height>207</height>
+            <width>302</width>
+            <height>192</height>
         </rect>
     </property>
     <property name="caption">
@@ -31,6 +31,14 @@
                 <cstring>kcfg_WeekdayColor</cstring>
             </property>
         </widget>
+        <widget class="KColorButton" row="0" column="1">
+            <property name="name">
+                <cstring>kcfg_WeekdayColor</cstring>
+            </property>
+            <property name="text">
+                <string></string>
+            </property>
+        </widget>
         <widget class="QLabel" row="1" column="0">
             <property name="name">
                 <cstring>textLabel2</cstring>
@@ -42,32 +50,12 @@
                 <cstring>kcfg_WeekendColor</cstring>
             </property>
         </widget>
-        <spacer row="6" column="1">
+        <widget class="KColorButton" row="1" column="1">
             <property name="name">
-                <cstring>spacer1</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>90</height>
-                </size>
-            </property>
-        </spacer>
-        <widget class="QLabel" row="3" column="0">
-            <property name="name">
-                <cstring>textLabel2_2</cstring>
+                <cstring>kcfg_WeekendColor</cstring>
             </property>
             <property name="text">
-                <string>Task &amp;group color:</string>
-            </property>
-            <property name="buddy" stdset="0">
-                <cstring>kcfg_GroupColor</cstring>
+                <string></string>
             </property>
         </widget>
         <widget class="QLabel" row="2" column="0">
@@ -79,61 +67,6 @@
             </property>
             <property name="buddy" stdset="0">
                 <cstring>kcfg_TaskColor</cstring>
-            </property>
-        </widget>
-        <widget class="QLabel" row="4" column="0">
-            <property name="name">
-                <cstring>textLabel3</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;Milestone color:</string>
-            </property>
-            <property name="buddy" stdset="0">
-                <cstring>kcfg_MilestoneColor</cstring>
-            </property>
-        </widget>
-        <spacer row="1" column="2">
-            <property name="name">
-                <cstring>spacer2</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>130</width>
-                    <height>20</height>
-                </size>
-            </property>
-        </spacer>
-        <widget class="QCheckBox" row="5" column="0" rowspan="1" colspan="2">
-            <property name="name">
-                <cstring>kcfg_BgLines</cstring>
-            </property>
-            <property name="text">
-                <string>Use &amp;alternate background for horizontal lines</string>
-            </property>
-            <property name="accel">
-                <string>Alt+A</string>
-            </property>
-        </widget>
-        <widget class="KColorButton" row="1" column="1">
-            <property name="name">
-                <cstring>kcfg_WeekendColor</cstring>
-            </property>
-            <property name="text">
-                <string></string>
-            </property>
-        </widget>
-        <widget class="KColorButton" row="0" column="1">
-            <property name="name">
-                <cstring>kcfg_WeekdayColor</cstring>
-            </property>
-            <property name="text">
-                <string></string>
             </property>
         </widget>
         <widget class="KColorButton" row="2" column="1">
@@ -152,12 +85,45 @@
                 <string></string>
             </property>
         </widget>
+        <widget class="QLabel" row="3" column="0">
+            <property name="name">
+                <cstring>textLabel2_2</cstring>
+            </property>
+            <property name="text">
+                <string>Task &amp;group color:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>kcfg_GroupColor</cstring>
+            </property>
+        </widget>
         <widget class="KColorButton" row="4" column="1">
             <property name="name">
                 <cstring>kcfg_MilestoneColor</cstring>
             </property>
             <property name="text">
                 <string></string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="4" column="0">
+            <property name="name">
+                <cstring>textLabel3</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Milestone color:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>kcfg_MilestoneColor</cstring>
+            </property>
+        </widget>
+        <widget class="QCheckBox" row="5" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>kcfg_BgLines</cstring>
+            </property>
+            <property name="text">
+                <string>Use &amp;alternate background for horizontal lines</string>
+            </property>
+            <property name="accel">
+                <string>Alt+A</string>
             </property>
         </widget>
     </grid>
