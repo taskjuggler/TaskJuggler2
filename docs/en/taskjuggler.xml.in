@@ -428,10 +428,11 @@ url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</par
 &FirstProject;
 &SyntaxReference;
 &PropertyReference;
+
 <chapter id="example"><title>The Example: Accounting Software</title>
-<!-- &example; -->
-<para>foo</para>
+&Example;
 </chapter>
+
 <chapter><title>Migrating from TaskJuggler 1.x to 2.0</title>
 
 <sect1><title>Achiving compatibility</title>
