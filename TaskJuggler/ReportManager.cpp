@@ -29,6 +29,8 @@ ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
 {
     reports.setAutoDelete(TRUE);
 
+    loadingProject = FALSE;
+
     // Hide the 2nd column. It contains the report ID that is of no interest
     // to the user.
     browser->setColumnWidthMode(1, QListView::Manual);
@@ -93,7 +95,7 @@ ReportManager::updateReportBrowser()
     qtReports->setOpen(TRUE);
 }
 
-void
+bool
 ReportManager::showReport(QListViewItem* lvi)
 {
     ManagedReportInfo* mr = 0;
@@ -102,7 +104,7 @@ ReportManager::showReport(QListViewItem* lvi)
             mr = *mri;
 
     if (!mr)
-        return;
+        return TRUE;
 
     TjReport* tjr;
     if ((tjr = mr->getReport()) == 0)
@@ -110,6 +112,8 @@ ReportManager::showReport(QListViewItem* lvi)
         tjr = new TjReport(reportStack, mr->getProjectReport());
         reportStack->addWidget(tjr);
         mr->setReport(tjr);
+        if (!tjr->generateTaskReport())
+            return FALSE;
     }
     reportStack->raiseWidget(tjr);
 }
@@ -146,6 +150,9 @@ ReportManager::clear()
 void
 ReportManager::zoomIn()
 {
+    if (loadingProject)
+        return;
+
     if (getCurrentReport())
         getCurrentReport()->getReport()->zoomIn();
 }
@@ -153,6 +160,9 @@ ReportManager::zoomIn()
 void
 ReportManager::zoomOut()
 {
+    if (loadingProject)
+        return;
+
     if (getCurrentReport())
         getCurrentReport()->getReport()->zoomOut();
 }
@@ -160,7 +170,18 @@ ReportManager::zoomOut()
 void
 ReportManager::setFocusToReport() const
 {
+    if (loadingProject)
+        return;
+
     if (getCurrentReport() && getCurrentReport()->getReport())
         getCurrentReport()->getReport()->setFocus();
+}
+
+void
+ReportManager::setLoadingProject(bool lp)
+{
+    loadingProject = lp;
+    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+        (*mri)->setLoadingProject(lp);
 }
 

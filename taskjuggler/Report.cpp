@@ -160,9 +160,22 @@ Report::isHidden(const CoreAttributes* c, ExpressionTree* et) const
         return FALSE;
 
     et->clearSymbolTable();
-    QStringList flags = c->getFlagList();
-    for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
-        et->registerSymbol(*it, 1);
+    QStringList allFlags = project->getAllowedFlags();
+    for (QStringList::Iterator ait = allFlags.begin(); ait != allFlags.end();
+         ++ait)
+    {
+        bool found = FALSE;
+        QStringList flags = c->getFlagList();
+        for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
+            if (*it == *ait)
+            {
+                et->registerSymbol(*it, 1);
+                found = TRUE;
+                break;
+            }
+        if (!found)
+            et->registerSymbol(*ait, 0);
+    }
     return et->evalAsInt(c) != 0;
 }
 
@@ -173,9 +186,22 @@ Report::isRolledUp(const CoreAttributes* c, ExpressionTree* et) const
         return FALSE;
 
     et->clearSymbolTable();
-    QStringList flags = c->getFlagList();
-    for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
-        et->registerSymbol(*it, 1);
+    QStringList allFlags = project->getAllowedFlags();
+    for (QStringList::Iterator ait = allFlags.begin(); ait != allFlags.end();
+         ++ait)
+    {
+        bool found = FALSE;
+        QStringList flags = c->getFlagList();
+        for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
+            if (*it == *ait)
+            {
+                et->registerSymbol(*it, 1);
+                found = TRUE;
+                break;
+            }
+        if (!found)
+            et->registerSymbol(*ait, 0);
+    }
     return et->evalAsInt(c) != 0;
 }
 

@@ -41,14 +41,17 @@ public:
 
     void setFocusToReport() const;
 
+    bool showReport(QListViewItem*);
+
     bool isProjectLoaded() const;
+
+    void setLoadingProject(bool lp);
 
     void clear();
 
 public slots:
     void zoomIn();
     void zoomOut();
-    void showReport(QListViewItem*);
     void closeCurrentReport();
 
 private:
@@ -65,6 +68,8 @@ private:
     KListViewItem* xmlReports;
 
     QPtrList<ManagedReportInfo> reports;
+
+    bool loadingProject;
 } ;
 
 #endif

@@ -19,21 +19,25 @@
 #include <klocale.h>
 
 static const char description[] =
-    I18N_NOOP("A KDE Application");
+    I18N_NOOP("A Project Management Software for Linux");
 
 static const char version[] = "0.1";
 
 static KCmdLineOptions options[] =
 {
-    { "+[URL]", I18N_NOOP( "Document to open" ), 0 },
+    { "+[URL]", I18N_NOOP("Project (TJP File) to open"), 0 },
     KCmdLineLastOption
 };
 
 int main(int argc, char **argv)
 {
-    KAboutData about("taskjuggler", I18N_NOOP("TaskJuggler"), version, description,
-                     KAboutData::License_GPL, "(C) %{YEAR} Chris Schlaeger", 0, 0, "cs@suse.de");
+    KAboutData about("taskjuggler", I18N_NOOP("TaskJuggler"), version,
+                     description,
+                     KAboutData::License_GPL,
+                     "(c) 2002, 2003, 2004, 2005 Chris Schlaeger",
+                     0, 0, "cs@suse.de");
     about.addAuthor( "Chris Schlaeger", 0, "cs@suse.de" );
+
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication app;
@@ -70,3 +74,4 @@ int main(int argc, char **argv)
 
     return app.exec();
 }
+

@@ -19,10 +19,19 @@ ManagedReportInfo::ManagedReportInfo(ReportManager* rm, Report* r) :
 {
     report = 0;
     browserEntry = 0;
+    loadingProject = FALSE;
 }
 
 ManagedReportInfo::~ManagedReportInfo()
 {
     delete report;
+}
+
+void
+ManagedReportInfo::setLoadingProject(bool lp)
+{
+    loadingProject = lp;
+    if (report)
+        report->setLoadingProject(lp);
 }
 

@@ -27,6 +27,7 @@ class Report;
 class QCanvas;
 class QCanvasView;
 class Task;
+class QtTaskReportElement;
 
 class TjReport : public QWidget
 {
@@ -35,7 +36,9 @@ public:
     TjReport(QWidget* p, Report* const rDef, const QString& n = QString::null);
     virtual ~TjReport() { }
 
-    void generateTaskReport();
+    bool generateTaskReport();
+
+    void setLoadingProject(bool lp) { loadingProject = lp; }
 
 public slots:
     void zoomIn();
@@ -51,6 +54,7 @@ private:
     TjReport() : reportDef(0) { }
 
     int time2x(time_t t);
+    time_t x2time(int x);
 
     void generateGanttChart(bool autoFit);
     void generateHeaderAndGrid();
@@ -60,13 +64,21 @@ private:
     void generateQuarterHeader(int y);
     void generateYearHeader(int y);
     void generateGanttBackground();
+    void markNonWorkingHoursOnBackground();
     void markNonWorkingDaysOnBackground();
+    void markBoundary(int x);
+    void markHourBoundaries();
+    void markDayBoundaries();
+    void markWeekBoundaries();
     void markMonthsBoundaries();
+    void markQuarterBoundaries();
     void generateGanttTasks();
-    void generateTask(Task* t, int y);
+    void generateTask(Task* const t, int y);
+    void generateDependencies(Task* const t, QListViewItem* lvi);
     void generateLeftHeader();
     void generateRightHeader();
 
+    QListViewItem* getTaskListEntry(Task* const t);
     void setBestStepUnit();
 
     Report* const reportDef;
@@ -80,14 +92,16 @@ private:
 
     int pixelPerYear;
     StepUnits stepUnit;
-    static const int minStepDay = 20;
-    static const int minStepWeek = 35;
-    static const int minStepMonth = 35;
-    static const int minStepQuarter = 50;
-    static const int minStepYear = 80;
+    static const int minStepHour;
+    static const int minStepDay;
+    static const int minStepWeek;
+    static const int minStepMonth;
+    static const int minStepQuarter;
+    static const int minStepYear;
     static const int zoomSteps[];
     uint currentZoomStep;
 
+    QtTaskReportElement* reportElement;
     int scenario;
     int headerHeight;
     int listHeight;
@@ -95,6 +109,8 @@ private:
     int canvasWidth;
     time_t startTime;
     time_t endTime;
+
+    bool loadingProject;
 
     TaskList taskList;
 } ;

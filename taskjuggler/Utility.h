@@ -52,6 +52,8 @@ int quartersBetween(time_t t1, time_t t2);
 
 bool isWeekend(time_t d);
 
+time_t beginOfHour(time_t t);
+
 time_t midnight(time_t t);
 
 time_t beginOfWeek(time_t t, bool beginOnMonday);
@@ -61,6 +63,8 @@ time_t beginOfMonth(time_t t);
 time_t beginOfQuarter(time_t t);
 
 time_t beginOfYear(time_t t);
+
+time_t hoursLater(int n, time_t t);
 
 time_t sameTimeNextDay(time_t t);
 

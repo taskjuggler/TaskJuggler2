@@ -18,9 +18,11 @@
 
 #include <kparts/part.h>
 #include <ktexteditor/view.h>
+#include <kurl.h>
 
 #include <taskjuggleriface.h>
 
+class QTimer;
 class QPainter;
 class QListViewItem;
 class QSplitter;
@@ -115,6 +117,7 @@ signals:
 
 private slots:
     void slotOnURL(const QString& url);
+    void loadAfterTimerTimeout();
     void slotSetTitle(const QString& title);
     void addWarningMessage(const QString& msg, const QString& file, int line);
     void addErrorMessage(const QString& msg, const QString& file, int line);
@@ -132,6 +135,8 @@ private slots:
 private:
     bool loadProject(const KURL& url);
 
+    void setLoadingProject(bool lp);
+
     Project* project;
     MainWidget* mw;
     QProgressBar* progressBar;
@@ -140,6 +145,10 @@ private:
 
     FileManager* fileManager;
     ReportManager* reportManager;
+
+    QTimer* loadDelayTimer;
+    KURL urlToLoad;
+    bool loadingProject;
 };
 
 #endif // _TASKJUGGLERVIEW_H_

@@ -120,7 +120,7 @@ void exitUtility()
             delete htep;
             htep = tmp;
         }
-    
+
     delete [] LtHashTab;
     LtHashTab = 0;
 }
@@ -156,7 +156,7 @@ clocaltime(const time_t* t)
              htep = htep->next)
             if (htep->t == *t)
                 return htep->tms;
-    
+
     LtHashTabEntry* htep = new LtHashTabEntry;
     htep->next = LtHashTab[index];
     htep->t = *t;
@@ -303,7 +303,7 @@ secondsOfDay(time_t t)
     return tms->tm_sec + tms->tm_min * 60 + tms->tm_hour * 3600;
 }
 
-int 
+int
 dayOfMonth(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -324,19 +324,19 @@ weekOfYear(time_t t, bool beginOnMonday)
 
     if (weekday1Jan > 3)
         days = days - (7 - weekday1Jan);
-    else 
+    else
         days = days + weekday1Jan;
 
     if (days < 0)
         if ((weekday1Jan == 4) ||
             (dayOfWeek(beginOfYear(beginOfYear(t) - 1), beginOnMonday) == 3))
             week = 53;
-        else 
+        else
             week = 52;
-    else 
+    else
         week = days / 7 + 1;
 
-    if ((days > 360) && (week > 52)) 
+    if ((days > 360) && (week > 52))
     {
         if (weekday1Jan == 3)
             week = 53;
@@ -376,7 +376,7 @@ monthOfWeek(time_t t, bool beginOnMonday)
     return tm_mon + 1;
 }
 
-int 
+int
 monthOfYear(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -446,6 +446,17 @@ yearOfWeek(time_t t, bool beginOnMonday)
 }
 
 time_t
+beginOfHour(time_t t)
+{
+    const struct tm* tms = clocaltime(&t);
+    struct tm tmc;
+    memcpy(&tmc, tms, sizeof(struct tm));
+    tmc.tm_sec = tmc.tm_min;
+    tmc.tm_isdst = -1;
+    return mktime(&tmc);
+}
+
+time_t
 midnight(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -508,6 +519,13 @@ beginOfYear(time_t t)
     tmc.tm_sec = tmc.tm_min = tmc.tm_hour = 0;
     tmc.tm_isdst = -1;
     return mktime(&tmc);
+}
+
+time_t
+hoursLater(int h, time_t t)
+{
+    // I hope this is correct under all circumstances.
+    return t + h * ONEHOUR;
 }
 
 time_t
@@ -604,7 +622,7 @@ sameTimeLastYear(time_t t)
     return mktime(&tmc);
 }
 
-QString 
+QString
 time2ISO(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -614,7 +632,7 @@ time2ISO(time_t t)
     return QString::fromLocal8Bit(buf);
 }
 
-QString 
+QString
 time2tjp(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -624,7 +642,7 @@ time2tjp(time_t t)
     return QString::fromLocal8Bit(buf);
 }
 
-QString 
+QString
 time2rfc(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -634,7 +652,7 @@ time2rfc(time_t t)
     return QString::fromLocal8Bit(buf);
 }
 
-QString 
+QString
 time2user(time_t t, const QString& timeFormat, bool localtime)
 {
     const struct tm* tms;
@@ -649,7 +667,7 @@ time2user(time_t t, const QString& timeFormat, bool localtime)
     return QString::fromLocal8Bit(buf);
 }
 
-QString 
+QString
 time2time(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -659,7 +677,7 @@ time2time(time_t t)
     return QString::fromLocal8Bit(buf);
 }
 
-QString 
+QString
 time2date(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -669,7 +687,7 @@ time2date(time_t t)
     return QString::fromLocal8Bit(buf);
 }
 
-QString 
+QString
 time2weekday(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
@@ -773,7 +791,7 @@ date2time(const QString& date)
         else
             unsetenv("TZ");
     }
-    
+
     return localTime;
 }
 

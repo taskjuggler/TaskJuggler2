@@ -21,6 +21,7 @@
 #include "ExpressionParser.h"
 #include "ExpressionFunctionTable.h"
 #include "TjMessageHandler.h"
+#include "tjlib-internal.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
@@ -68,9 +69,16 @@ ExpressionTree::evalAsInt(const CoreAttributes* c)
 }
 
 long
-ExpressionTree::resolve(const QString& symbol) const
+ExpressionTree::resolve(const QString& symbol)
 {
-    return symbolTable[symbol] != 0 ? *(symbolTable[symbol]) : 0;
+    if (!symbolTable[symbol])
+    {
+        errorMessage(i18n("Unknown identifier '%1' in logical expression")
+                     .arg(symbol));
+        return 0;
+    }
+
+    return *(symbolTable[symbol]);
 }
 
 void

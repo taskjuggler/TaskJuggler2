@@ -34,6 +34,8 @@ public:
     void setReport(TjReport* r) { report = r; }
     TjReport* getReport() const { return report; }
 
+    void setLoadingProject(bool lp);
+
 private:
     ManagedReportInfo() : projectReport(0) { }
 
@@ -42,6 +44,8 @@ private:
 
     KListViewItem* browserEntry;
     TjReport* report;
+
+    bool loadingProject;
 } ;
 
 #endif

@@ -27,6 +27,7 @@
 #include <qfont.h>
 #include <qwidgetstack.h>
 #include <qprogressbar.h>
+#include <qtimer.h>
 
 #include <kdebug.h>
 #include <kmainwindow.h>
@@ -72,6 +73,9 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     mw->mainSplitter->setSizes(vl);
 
     project = 0;
+    loadingProject = FALSE;
+
+    loadDelayTimer = new QTimer(this);
 
     QVBoxLayout* l = new QVBoxLayout(mw->bigTab->page(0), 0, 6);
     editorSplitter = new QSplitter(mw->bigTab->page(0));
@@ -137,6 +141,9 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     connect(messageListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(messageListClicked(QListViewItem*)));
 
+    connect(loadDelayTimer, SIGNAL(timeout()),
+            this, SLOT(loadAfterTimerTimeout()));
+
     KStatusBar* statusBar = (static_cast<KMainWindow*>(parent))->statusBar();
     progressBar = new QProgressBar(statusBar);
     progressBar->setMaximumSize(150, progressBar->maximumHeight());
@@ -181,9 +188,28 @@ TaskJugglerView::openURL(QString url)
 void
 TaskJugglerView::openURL(const KURL& url)
 {
-    fileManager->clear();
-    if (loadProject(url))
-        emit announceRecentURL(url);
+    /* When we switch to a new project, we clear all lists and reports.
+     * Loading and processing may take some time, so it looks odd to still see
+     * all the old data after the load had been initiated. */
+    if (fileManager->getMasterFile() != url)
+    {
+        fileManager->clear();
+        reportManager->clear();
+    }
+
+    /* This function can be triggered before the app->exec() has been called.
+     * So the GUI won't show up before all files are loaded and scheduled.
+     * With a timer we delay the load so we are sure app->exec has been
+     * called. */
+    loadDelayTimer->start(200, TRUE);
+    urlToLoad = url;
+}
+
+void
+TaskJugglerView::loadAfterTimerTimeout()
+{
+    // This function catches the signal triggered by the timer set in openURL.
+    loadProject(urlToLoad);
 }
 
 void
@@ -266,6 +292,7 @@ TaskJugglerView::loadProject(const KURL& url)
     QString fileName = url.path();
 
     delete project;
+    setLoadingProject(TRUE);
     project = new Project();
     connect(project, SIGNAL(updateProgressInfo(const QString&)),
             this, SLOT(showProgressInfo(const QString&)));
@@ -275,7 +302,12 @@ TaskJugglerView::loadProject(const KURL& url)
     ProjectFile* pf = new ProjectFile(project);
     setCursor(KCursor::workingCursor());
     if (!pf->open(fileName, "", "", TRUE))
+    {
+        setLoadingProject(FALSE);
         return FALSE;
+    }
+
+    emit announceRecentURL(url);
 
     bool errors = FALSE;
     messageListView->clear();
@@ -358,6 +390,13 @@ TaskJugglerView::loadProject(const KURL& url)
     // Load file list into File List View
     fileManager->updateFileList(project->getSourceFiles(), url);
 
+    setLoadingProject(FALSE);
+
+    // We handle warnings like errors, so in case there any messages, we open
+    // the message window.
+    if (messageListView->lastItem())
+        errors = TRUE;
+
     // Show message list when errors have occured
     QValueList<int> vl;
     int h = editorSplitter->height();
@@ -365,6 +404,7 @@ TaskJugglerView::loadProject(const KURL& url)
     {
         vl.append(int(h * 0.85));
         vl.append(int(h * 0.15));
+        editorSplitter->setSizes(vl);
         emit signalChangeStatusbar(i18n("The project contains problems!"));
         messageListClicked(messageListView->firstChild());
     }
@@ -372,6 +412,7 @@ TaskJugglerView::loadProject(const KURL& url)
     {
         vl.append(int(h));
         vl.append(int(0));
+        editorSplitter->setSizes(vl);
         emit signalChangeStatusbar(i18n("The project has been scheduled "
                                         "without problems!"));
         // Load the main file into the editor.
@@ -388,7 +429,6 @@ TaskJugglerView::loadProject(const KURL& url)
             reportListClicked(firstReport);
         }
     }
-    editorSplitter->setSizes(vl);
 
     return TRUE;
 }
@@ -475,12 +515,18 @@ TaskJugglerView::setFocusToReport()
 void
 TaskJugglerView::zoomIn()
 {
+    if (loadingProject)
+        return;
+
     reportManager->zoomIn();
 }
 
 void
 TaskJugglerView::zoomOut()
 {
+    if (loadingProject)
+        return;
+
     reportManager->zoomOut();
 }
 
@@ -562,8 +608,22 @@ TaskJugglerView::reportListClicked(QListViewItem* lvi)
     if (!lvi)
         return;
 
-    mw->bigTab->showPage(mw->reportTab);
-    reportManager->showReport(lvi);
+    if (!reportManager->showReport(lvi))
+    {
+        // The report generation can also produce errors.
+        mw->bigTab->showPage(mw->editorTab);
+        int h = editorSplitter->height();
+        QValueList<int> vl;
+        vl.append(int(h * 0.85));
+        vl.append(int(h * 0.15));
+        editorSplitter->setSizes(vl);
+
+        emit signalChangeStatusbar
+            (i18n("The project contains problems!"));
+        messageListClicked(messageListView->firstChild());
+    }
+    else
+        mw->bigTab->showPage(mw->reportTab);
 }
 
 void
@@ -595,6 +655,14 @@ TaskJugglerView::keywordHelp()
         QString keyword = fileManager->getWordUnderCursor();
         kapp->invokeHelp(QString("PROPERTY_") + keyword);
     }
+}
+
+void
+TaskJugglerView::setLoadingProject(bool lp)
+{
+    loadingProject = lp;
+    if (reportManager)
+        reportManager->setLoadingProject(lp);
 }
 
 #include "taskjugglerview.moc"
