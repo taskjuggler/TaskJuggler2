@@ -1,3 +1,5 @@
+# translation of cs.po to 
+# translation of cs.po to
 # translation of cs.po to Czech
 # translation of ktjview2.po to Czech
 # This file is distributed under the same license as the PACKAGE package.
@@ -8,20 +10,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-04 17:49+0200\n"
-"PO-Revision-Date: 2004-09-04 17:57+0200\n"
+"POT-Creation-Date: 2004-11-03 16:55+0100\n"
+"PO-Revision-Date: 2004-11-03 19:18+0100\n"
 "Last-Translator: Lukáš Tinkl <lukas@kde.org>\n"
-"Language-Team: Czech <kde-czech-apps@lists.sf.net>\n"
+"Language-Team:  <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9\n"
+"X-Generator: KBabel 1.9.1\n"
 
 #: editorView.cpp:66
 msgid ""
 "A KDE text-editor component could not be found;\n"
 "please check your KDE installation."
 msgstr ""
+"Komponenta textového editoru KDE nebyla nalezena;\n"
+"prosím zkontrolujte si svou instalaci KDE."
+
+#: editorView.cpp:90
+msgid "This file is compressed XML. Editting has been disabled."
+msgstr "Tento soubor je komprimované XML, editace byla zakázána."
 
 #: filter.cpp:69 filterDialog.cpp:54
 msgid "contains"
@@ -85,7 +93,7 @@ msgstr "Zadejte název nového filtru:"
 
 #: filterDialog.cpp:154
 msgid "Filter with name '%1' already exists. Please try again."
-msgstr ""
+msgstr "Filtr s názvem '%1' již existuje, prosím zkuste znovu."
 
 #: klistviewsearchline.cpp:220
 msgid "Search Columns"
@@ -95,1119 +103,1213 @@ msgstr "Prohledávat sloupce"
 msgid "All Columns"
 msgstr "Všechny sloupce"
 
-#: ktjview2.cpp:151
+#: ktjListView.cpp:26
+msgid "Show"
+msgstr "Zobrazit"
+
+#: ktjReportDialog.cpp:35
+msgid "Create Report"
+msgstr "Vytvořit report"
+
+#: ktjReportDialog.cpp:41
+msgid "Create"
+msgstr "Vytvořit"
+
+#: ktjReportDialog.cpp:42
+msgid "Create the report with the specified options"
+msgstr "Vytvořit report s danými volbami"
+
+#: ktjReportView.cpp:39
+msgid ""
+"Start: %1\n"
+"End: %2"
+msgstr ""
+"Počátek: %1\n"
+"Konec: %2"
+
+#: ktjResourceReport.cpp:97 ktjTaskReport.cpp:137 ktjview2view.cpp:149
+#: ktjview2view.cpp:166 selectDialog.cpp:97
+msgid "Name"
+msgstr "Jméno"
+
+#: ktjview2.cpp:115
+msgid "The file '%1' can not be found; it was probably removed from the system."
+msgstr "Nelze najít soubor '%1', pravděpodobně byl odstraněn ze systému."
+
+#: ktjview2.cpp:156
 msgid "&Filter..."
 msgstr "&Filtr..."
 
-#: ktjview2.cpp:156
+#: ktjview2.cpp:161
 msgid "&Filter for: All Tasks"
 msgstr "&Filtr: všechny úkoly"
 
-#: ktjview2.cpp:158
+#: ktjview2.cpp:163
 msgid "All Tasks"
 msgstr "Všechny úkoly"
 
-#: ktjview2.cpp:158
+#: ktjview2.cpp:163
 msgid "Completed Tasks"
 msgstr "Dokončené úkoly"
 
-#: ktjview2.cpp:158
+#: ktjview2.cpp:163
 msgid "Date Range..."
 msgstr "Rozsah dat..."
 
-#: ktjview2.cpp:159
+#: ktjview2.cpp:164
 msgid "Incomplete Tasks"
 msgstr "Nedokončené úkoly"
 
-#: ktjview2.cpp:159
+#: ktjview2.cpp:164
 msgid "Milestones"
 msgstr "Milníky"
 
-#: ktjview2.cpp:159
+#: ktjview2.cpp:164
 msgid "Summary Tasks"
 msgstr "Souhrné úkoly"
 
-#: ktjview2.cpp:160
+#: ktjview2.cpp:165
 msgid "Using Resource..."
 msgstr "Používající zdroj..."
 
-#: ktjview2.cpp:160 ktjview2.cpp:206
+#: ktjview2.cpp:165 ktjview2.cpp:214
 msgid "Having Flag..."
 msgstr "Mající značku..."
 
-#: ktjview2.cpp:166
+#: ktjview2.cpp:171
 msgid "&Calendar mode"
 msgstr "&Kalendářový režim"
 
-#: ktjview2.cpp:169
+#: ktjview2.cpp:174
 msgid "Zoom &in"
 msgstr "Přiblíž&it"
 
-#: ktjview2.cpp:171
+#: ktjview2.cpp:176
 msgid "Zoom &out"
 msgstr "&Oddálit"
 
-#: ktjview2.cpp:173
+#: ktjview2.cpp:178
 msgid "&Fit to page"
 msgstr "Přizpůsobit &stránce"
 
-#: ktjview2.cpp:175
+#: ktjview2.cpp:180
 msgid "Set &timeframe"
-msgstr "Nas&tavit rozsah času"
+msgstr "Nas&tavit časový rámec"
 
-#: ktjview2.cpp:178 ktjview2.cpp:224
+#: ktjview2.cpp:183 ktjview2.cpp:235
 msgid "&Scale"
 msgstr "&Měřítko"
 
-#: ktjview2.cpp:180 kdgantt/KDGanttViewSubwidgets.cpp:719
-msgid "Minute"
-msgstr "Minuty"
+#: ktjview2.cpp:185
+msgid "&Minute"
+msgstr "&Minuty"
 
-#: ktjview2.cpp:180 kdgantt/KDGanttViewSubwidgets.cpp:720
-msgid "Hour"
-msgstr "Hodiny"
+#: ktjview2.cpp:185
+msgid "&Hour"
+msgstr "&Hodiny"
 
-#: ktjview2.cpp:180 kdgantt/KDGanttViewSubwidgets.cpp:721
-msgid "Day"
-msgstr "Dny"
+#: ktjview2.cpp:185
+msgid "&Day"
+msgstr "&Dny"
 
-#: ktjview2.cpp:181 kdgantt/KDGanttViewSubwidgets.cpp:722
-msgid "Week"
-msgstr "Týdny"
+#: ktjview2.cpp:186
+msgid "&Week"
+msgstr "&Týdny"
 
-#: ktjview2.cpp:181 kdgantt/KDGanttViewSubwidgets.cpp:723
-msgid "Month"
-msgstr "Měsíce"
+#: ktjview2.cpp:186
+msgid "M&onth"
+msgstr "Měsí&ce"
 
-#: ktjview2.cpp:181 kdgantt/KDGanttViewSubwidgets.cpp:724
-msgid "Auto"
-msgstr "Automaticky"
+#: ktjview2.cpp:186
+msgid "&Auto"
+msgstr "&Automaticky"
 
-#: ktjview2.cpp:190
+#: ktjview2.cpp:194
+msgid "&Print..."
+msgstr "&Tisk..."
+
+#: ktjview2.cpp:198
 msgid "&Collapse All"
 msgstr "S&vinout vše"
 
-#: ktjview2.cpp:191
+#: ktjview2.cpp:199
 msgid "Show Level &1"
 msgstr "Zobrazit úroveň &1"
 
-#: ktjview2.cpp:192
+#: ktjview2.cpp:200
 msgid "Show Level &2"
 msgstr "Zobrazit úroveň &2"
 
-#: ktjview2.cpp:193
+#: ktjview2.cpp:201
 msgid "Show Level &3"
 msgstr "Zobrazit úroveň &3"
 
-#: ktjview2.cpp:194
+#: ktjview2.cpp:202
 msgid "Show Level &4"
 msgstr "Zobrazit úroveň &4"
 
-#: ktjview2.cpp:195
+#: ktjview2.cpp:203
 msgid "Show Level &5"
 msgstr "Zobrazit úroveň &5"
 
-#: ktjview2.cpp:196
+#: ktjview2.cpp:204
 msgid "Show Level &6"
 msgstr "Zobrazit úroveň &6"
 
-#: ktjview2.cpp:197
+#: ktjview2.cpp:205
 msgid "Show Level &7"
 msgstr "Zobrazit úroveň &7"
 
-#: ktjview2.cpp:198
+#: ktjview2.cpp:206
 msgid "Show Level &8"
 msgstr "Zobrazit úroveň &8"
 
-#: ktjview2.cpp:199
+#: ktjview2.cpp:207
 msgid "Show Level &9"
 msgstr "Zobrazit úroveň &9"
 
-#: ktjview2.cpp:200
+#: ktjview2.cpp:208
 msgid "&Expand All"
 msgstr "Rozbalit vš&e"
 
-#: ktjview2.cpp:203
+#: ktjview2.cpp:211
 msgid "&Filter for: All Resources"
 msgstr "&Filtr: všechny zdroje"
 
-#: ktjview2.cpp:205
+#: ktjview2.cpp:213
 msgid "All Resources"
 msgstr "Všechny zdroje"
 
-#: ktjview2.cpp:205
+#: ktjview2.cpp:213
 msgid "Resources On Vacation..."
 msgstr "Zdroje na dovolené..."
 
-#: ktjview2.cpp:205
+#: ktjview2.cpp:213
 msgid "Resources On Shift..."
 msgstr "Zdroje na směně..."
 
-#: ktjview2.cpp:206
+#: ktjview2.cpp:214
 msgid "Allocated Resources..."
 msgstr "Přiřazené zdroje..."
 
 #: ktjview2.cpp:214
+msgid "Unallocated Resources..."
+msgstr "Nepřiřazené zdroje..."
+
+#: ktjview2.cpp:222
 msgid "Quick search"
 msgstr "Rychlé hledání"
 
-#: ktjview2.cpp:219
+#: ktjview2.cpp:230
 msgid "Query resource..."
 msgstr "Dotaz na zdroj..."
 
-#: ktjview2.cpp:226
+#: ktjview2.cpp:237
 msgid "&Days"
 msgstr "&Dny"
 
-#: ktjview2.cpp:226
+#: ktjview2.cpp:237
 msgid "&Weeks"
 msgstr "&Týdny"
 
-#: ktjview2.cpp:226
+#: ktjview2.cpp:237
 msgid "&Months"
 msgstr "&Měsíce"
 
-#: ktjview2.cpp:226
+#: ktjview2.cpp:237
 msgid "&Quarters"
 msgstr "&Kvartály"
 
-#: ktjview2.cpp:232
+#: ktjview2.cpp:243
 msgid "&Display"
 msgstr "Zo&brazit"
 
-#: ktjview2.cpp:234
+#: ktjview2.cpp:245
 msgid "Load and &total load"
 msgstr "Za&tížení a celkové zatížení"
 
-#: ktjview2.cpp:234
+#: ktjview2.cpp:245
 msgid "&Load"
 msgstr "Zatíž&ení"
 
-#: ktjview2.cpp:234
+#: ktjview2.cpp:245
 msgid "&Available load"
 msgstr "Dostupné z&atížení"
 
-#: ktjview2.cpp:240
+#: ktjview2.cpp:251
 msgid "&Find..."
 msgstr "&Najít..."
 
-#: ktjview2.cpp:244
-msgid "&Rebuild project"
-msgstr ""
+#: ktjview2.cpp:255
+msgid "&Task coverage..."
+msgstr "Pokry&tí úkolů..."
 
-#: ktjview2.cpp:248
+#: ktjview2.cpp:258
+msgid "&Resource usage..."
+msgstr "Využití zd&rojů..."
+
+#: ktjview2.cpp:262
+msgid "&Rebuild project"
+msgstr "Znovu sestavit p&rojekt"
+
+#: ktjview2.cpp:266
 msgid "Info"
 msgstr "Info"
 
-#: ktjview2.cpp:249
+#: ktjview2.cpp:267
 msgid "Project Info"
 msgstr "Info o projektu"
 
-#: ktjview2.cpp:253 ktjview2.cpp:417
+#: ktjview2.cpp:271 ktjview2.cpp:425
 msgid "Gantt"
 msgstr "Gantt"
 
-#: ktjview2.cpp:254
+#: ktjview2.cpp:272
 msgid "Gantt Chart"
 msgstr "Ganttův graf"
 
-#: ktjview2.cpp:258 selectDialog.cpp:46
+#: ktjview2.cpp:276 selectDialog.cpp:46
 msgid "Resources"
 msgstr "Zdroje"
 
-#: ktjview2.cpp:259
+#: ktjview2.cpp:277
 msgid "Resource List"
 msgstr "Seznam zdrojů"
 
-#: ktjview2.cpp:263 selectDialog.cpp:39
+#: ktjview2.cpp:281 selectDialog.cpp:39
 msgid "Tasks"
 msgstr "Úkoly"
 
-#: ktjview2.cpp:264
+#: ktjview2.cpp:282
 msgid "Task List"
 msgstr "Seznam úkolů"
 
-#: ktjview2.cpp:268
+#: ktjview2.cpp:286
 msgid "Usage"
 msgstr "Využití"
 
-#: ktjview2.cpp:270 ktjview2.cpp:418
+#: ktjview2.cpp:288 ktjview2.cpp:426
 msgid "Resource Usage"
 msgstr "Využití zdrojů"
 
-#: ktjview2.cpp:274
+#: ktjview2.cpp:292 ktjview2.cpp:294
+msgid "Reports"
+msgstr "Reporty"
+
+#: ktjview2.cpp:298
 msgid "Editor"
 msgstr "Editor"
 
-#: ktjview2.cpp:275
+#: ktjview2.cpp:299
 msgid "Project Source Editor"
 msgstr "Editor zdroje projektu"
 
-#: ktjview2.cpp:356
+#: ktjview2.cpp:380
 msgid "Taskjuggler files (*.tjp *.tjx *.tji)"
 msgstr "Soubory Taskjuggleru (*.tjp *.tjx *.tji)"
 
-#: ktjview2.cpp:357
+#: ktjview2.cpp:381
 msgid "Open Project"
 msgstr "Otevřít projekt"
 
-#: ktjview2.cpp:368
+#: ktjview2.cpp:392
 msgid "Project '%1' successfully saved."
 msgstr "Projekt '%1' úspěšně uložen."
 
-#: ktjview2.cpp:370
+#: ktjview2.cpp:394
 msgid "Saving project '%1' failed."
 msgstr "Uložení projektu '%1' selhalo."
 
-#: ktjview2.cpp:543 ktjview2.cpp:557
+#: ktjview2.cpp:574 ktjview2.cpp:588
 msgid "&Filter for: %1"
 msgstr "&Filtr: %1"
 
-#: ktjview2.cpp:545
-#, fuzzy
+#: ktjview2.cpp:576
 msgid "Task list filtered for '%1'"
-msgstr "Úkol pro"
+msgstr "Seznam úloh filtrován na '%1'"
 
-#: ktjview2.cpp:559
-#, fuzzy
+#: ktjview2.cpp:590
 msgid "Resource list filtered for '%1'"
-msgstr "Zdroj pro"
+msgstr "Seznam zdrojů filtrován na '%1'"
 
-#: ktjview2view.cpp:122 ktjview2view.cpp:138 selectDialog.cpp:96
-#, fuzzy
+#: ktjview2view.cpp:148 ktjview2view.cpp:165 selectDialog.cpp:96
 msgid "ID"
 msgstr "ID"
 
-#: ktjview2view.cpp:123 ktjview2view.cpp:139 selectDialog.cpp:97
-#, fuzzy
-msgid "Name"
-msgstr "Jméno"
-
-#: ktjview2view.cpp:124
-#, fuzzy
+#: ktjview2view.cpp:150
 msgid "Rate"
-msgstr "Míra"
+msgstr "Náklady"
 
-#: ktjview2view.cpp:125
+#: ktjview2view.cpp:151
 msgid "Efficiency"
-msgstr ""
+msgstr "Efektivnost"
 
-#: ktjview2view.cpp:126
-#, fuzzy
+#: ktjview2view.cpp:152
 msgid "Min. Effort"
-msgstr "Min"
+msgstr "Min. náklady"
 
-#: ktjview2view.cpp:127
-#, fuzzy
+#: ktjview2view.cpp:153
 msgid "Daily Max"
-msgstr "Denně Max"
+msgstr "Max denně"
 
-#: ktjview2view.cpp:128
-#, fuzzy
+#: ktjview2view.cpp:154
 msgid "Weekly Max"
-msgstr "Týdně Max"
+msgstr "Max týdně"
 
-#: ktjview2view.cpp:129
-#, fuzzy
+#: ktjview2view.cpp:155
 msgid "Monthly Max"
-msgstr "Měsíčně Max"
+msgstr "Max měsíčně"
 
-#: ktjview2view.cpp:140
-#, fuzzy
+#: ktjview2view.cpp:167
 msgid "Start"
-msgstr "Start"
+msgstr "Počátek"
 
-#: ktjview2view.cpp:141
-#, fuzzy
+#: ktjview2view.cpp:168
 msgid "End"
 msgstr "Konec"
 
-#: ktjview2view.cpp:142
-#, fuzzy
+#: ktjview2view.cpp:169
 msgid "Duration"
 msgstr "Doba trvání"
 
-#: ktjview2view.cpp:143
-#, fuzzy
+#: ktjview2view.cpp:170
 msgid "Priority"
 msgstr "Priorita"
 
-#: ktjview2view.cpp:144
-#, fuzzy
+#: ktjview2view.cpp:171
 msgid "Completion"
-msgstr "Doplňování"
+msgstr "Dokončení"
 
-#: ktjview2view.cpp:145
-#, fuzzy
+#: ktjview2view.cpp:172
 msgid "Status"
 msgstr "Stav"
 
-#: ktjview2view.cpp:146
+#: ktjview2view.cpp:173
 msgid "Responsible"
-msgstr ""
+msgstr "Odpovědná osoba"
 
-#: ktjview2view.cpp:147
+#: ktjview2view.cpp:174
 msgid "Effort"
-msgstr ""
+msgstr "Úsilí"
 
-#: ktjview2view.cpp:148
+#: ktjview2view.cpp:175
 msgid "Allocations"
-msgstr ""
+msgstr "Přiřazení"
 
-#: ktjview2view.cpp:154
-#, fuzzy
+#: ktjview2view.cpp:182
 msgid "<h1>No Project Loaded</h1><p>Choose 'File -> Open...' to select one.</p>"
-msgstr "<h1> Ne Projekt Nahráno</h1><p> Soubor Otevřít do jedna</p>"
+msgstr ""
+"<h1>Žádný projekt není načten</h1><p>Zvolte 'Soubor -> Otevřít...' "
+"a nějaký zvolte.</p>"
 
-#: ktjview2view.cpp:171
-#, fuzzy
+#: ktjview2view.cpp:203
 msgid "Jump to task details"
-msgstr "do úkol"
+msgstr "Přejít na detaily o úkolu"
 
-#: ktjview2view.cpp:199 kdgantt/KDGanttView.cpp:868
-#, fuzzy
-msgid "Printing Time: %1"
-msgstr "Tisk Čas 1"
-
-#: ktjview2view.cpp:248
-#, fuzzy
+#: ktjview2view.cpp:239
 msgid "Loading project"
-msgstr "Načítání"
+msgstr "Načítání projektu"
 
-#: ktjview2view.cpp:271
+#: ktjview2view.cpp:267
 msgid "Opening XML project"
-msgstr ""
+msgstr "Otevírání XML projektu"
 
-#: ktjview2view.cpp:276 ktjview2view.cpp:303
-#, fuzzy
+#: ktjview2view.cpp:272 ktjview2view.cpp:301
 msgid "Taskjuggler failed to open the project file. Please check your permissions."
-msgstr "selhání do soubor."
-
-#: ktjview2view.cpp:282
-msgid "Parsing XML project"
 msgstr ""
+"Nelze otevřít soubor s projektem. Zkontrolujte svá přístupová "
+"práva k němu."
 
-#: ktjview2view.cpp:288 ktjview2view.cpp:317
-#, fuzzy
+#: ktjview2view.cpp:278
+msgid "Parsing XML project"
+msgstr "Analýza XML projektu"
+
+#: ktjview2view.cpp:285 ktjview2view.cpp:315
 msgid ""
 "Taskjuggler failed to parse the project file. Most probably there is a "
 "syntax error.\n"
 "You should edit the project and try to fix it."
-msgstr "selhání do soubor je a error a do."
+msgstr ""
+"Nelze analyzovat soubor s projektem, pravděpodobně je v něm syntaktická chyba.\n"
+"Měli byste soubor upravit a pokusit se ji odstranit."
 
-#: ktjview2view.cpp:298
+#: ktjview2view.cpp:296
 msgid "Opening TJP project"
-msgstr ""
+msgstr "Otevírání TJP projektu"
 
-#: ktjview2view.cpp:309
+#: ktjview2view.cpp:307
 msgid "Parsing TJP project"
-msgstr ""
+msgstr "Analýza TJP projektu"
 
-#: ktjview2view.cpp:327
-#, fuzzy
+#: ktjview2view.cpp:325
 msgid "This filetype is not supported."
-msgstr "je ne."
+msgstr "Tento typ souboru není podporován."
 
-#: ktjview2view.cpp:337
+#: ktjview2view.cpp:335
 msgid "Generating cross references"
-msgstr ""
+msgstr "Generování křížových odkazů"
 
-#: ktjview2view.cpp:347
-#, fuzzy
+#: ktjview2view.cpp:346
 msgid "Scheduling all scenarios"
-msgstr "Načasovávám vše"
+msgstr "Plánování scénářů"
 
-#: ktjview2view.cpp:361
+#: ktjview2view.cpp:360
 msgid "Building the views"
-msgstr ""
+msgstr "Sestavování pohledů"
 
-#: ktjview2view.cpp:374
-#, fuzzy
-msgid "Successfully loaded project %1"
-msgstr "Úspěšně 1"
+#: ktjview2view.cpp:362
+msgid "Parsing project info"
+msgstr "Analýza informací o projektu"
 
-#: ktjview2view.cpp:383
-#, fuzzy
-msgid "Project %1 loaded with errors"
-msgstr "Projekt"
+#: ktjview2view.cpp:365
+msgid "Parsing resources"
+msgstr "Analýza zdrojů"
 
-#: ktjview2view.cpp:399
-#, fuzzy
-msgid "Version: %1<br>"
-msgstr "Verze<br>"
+#: ktjview2view.cpp:368
+msgid "Parsing tasks"
+msgstr "Analýza úkolů"
 
-#: ktjview2view.cpp:400
-#, fuzzy
-msgid "Currency: %1<br>"
-msgstr "Měna<br>"
+#: ktjview2view.cpp:371
+msgid "Building the Gantt chart"
+msgstr "Sestavování Gantt grafu"
 
-#: ktjview2view.cpp:404
-#, fuzzy
-msgid "Project start: %1<br>"
-msgstr "Projekt<br>"
+#: ktjview2view.cpp:375
+msgid "Building the Gantt chart links"
+msgstr "Sestavování propojení v Gantt grafu"
+
+#: ktjview2view.cpp:378
+msgid "Building the Resource usage view"
+msgstr "Sestavování pohledu na využití zdrojů"
+
+#: ktjview2view.cpp:392
+msgid "Loading the project source"
+msgstr "Načítání zdroje projektu"
+
+#: ktjview2view.cpp:397
+msgid "Successfully loaded project '%1'"
+msgstr "Projekt '%1' úspěšně načten"
 
 #: ktjview2view.cpp:408
-#, fuzzy
+msgid "Project '%1' loaded with errors"
+msgstr "Projekt '%1' načten s chybami"
+
+#: ktjview2view.cpp:426
+msgid "Version: %1<br>"
+msgstr "Verze: %1<br>"
+
+#: ktjview2view.cpp:427
+msgid "Currency: %1<br>"
+msgstr "Měna: %1<br>"
+
+#: ktjview2view.cpp:431
+msgid "Project start: %1<br>"
+msgstr "Počátek projektu: %1<br>"
+
+#: ktjview2view.cpp:435
 msgid "Project end: %1<br>"
-msgstr "Projekt<br>"
+msgstr "Konec projektu: %1<br>"
 
-#: ktjview2view.cpp:411
-#, fuzzy
+#: ktjview2view.cpp:438
 msgid "Report date: %1<br>"
-msgstr "datum<br>"
+msgstr "Datum reportu: %1<br>"
 
-#: ktjview2view.cpp:434
-#, fuzzy, c-format
+#: ktjview2view.cpp:470
+#, c-format
 msgid "%1%"
 msgstr "%1%"
 
-#: ktjview2view.cpp:478 ktjview2view.cpp:494
-#, fuzzy
+#: ktjview2view.cpp:524 ktjview2view.cpp:543
 msgid "<em>Task group: %1</em><br>Start: %2<br>End: %3"
-msgstr "<em> Úkol skupina</em><br> Start<br> Konec 3"
+msgstr "<em>Skupina úkolů: %1</em><br>Počátek: %2<br>Konec: %3"
 
-#: ktjview2view.cpp:483 ktjview2view.cpp:499 ktjview2view.cpp:533
+#: ktjview2view.cpp:529 ktjview2view.cpp:548 ktjview2view.cpp:590
 msgid "(%1 d)"
-msgstr ""
+msgstr "(%1 d)"
 
-#: ktjview2view.cpp:514
-#, fuzzy
+#: ktjview2view.cpp:566
 msgid "<em>Milestone: %1</em><br>Date: %2"
-msgstr "<em></em><br> Datum 2"
+msgstr "<em>Milník: %1</em><br>Datum: %2"
 
-#: ktjview2view.cpp:526
-#, fuzzy
+#: ktjview2view.cpp:583
 msgid ""
 "<em>Task: %1</em><br>Start: %2<br>End: %3<br>Completion: %4%<br>Allocations: "
 "%5"
-msgstr "<em> Úkol</em><br> Start<br> Konec<br> Doplňování<br> 5"
+msgstr ""
+"<em>Úkol: %1</em><br>Počátek: %2<br>Konec: %3<br> "
+"Dokončení: %4%<br>Přiřazení: %5"
 
-#: ktjview2view.cpp:724
-#, fuzzy
-msgid "Not started"
-msgstr "Ne"
+#: ktjview2view.cpp:762
+msgid "Not yet started"
+msgstr "Nezapočato"
 
-#: ktjview2view.cpp:727
-#, fuzzy
-msgid "In progress (late)"
-msgstr "Dovnitř"
+#: ktjview2view.cpp:765
+msgid "Behind schedule"
+msgstr "Za plánem"
 
-#: ktjview2view.cpp:730
-#, fuzzy
-msgid "In progress"
-msgstr "Dovnitř"
+#: ktjview2view.cpp:768
+msgid "Work in progress"
+msgstr "Probíhá práce"
 
-#: ktjview2view.cpp:733
-#, fuzzy
-msgid "On time"
-msgstr "Zapnout čas"
+#: ktjview2view.cpp:771
+msgid "On schedule"
+msgstr "V plánu"
 
-#: ktjview2view.cpp:736
-#, fuzzy
-msgid "In progress (early)"
-msgstr "Dovnitř"
+#: ktjview2view.cpp:774
+msgid "Ahead of schedule"
+msgstr "Napřed v plánu"
 
-#: ktjview2view.cpp:739
-#, fuzzy
+#: ktjview2view.cpp:777
 msgid "Finished"
-msgstr "Ukončeno"
+msgstr "Dokončeno"
 
-#: ktjview2view.cpp:743
-#, fuzzy
-msgid "Undefined"
-msgstr "Nedefinováno"
+#: ktjview2view.cpp:781
+msgid "Unknown status"
+msgstr "Neznámý stav"
 
-#: ktjview2view.cpp:804 kdgantt/KDGanttViewSubwidgets.cpp:2962
-#: kdgantt/KDGanttViewSubwidgets.cpp:2970
-#: kdgantt/KDGanttViewSubwidgets.cpp:2979
-#, fuzzy
+#: ktjview2view.cpp:842 kdgantt/KDGanttViewSubwidgets.cpp:2961
+#: kdgantt/KDGanttViewSubwidgets.cpp:2969
+#: kdgantt/KDGanttViewSubwidgets.cpp:2978
 msgid "Task"
 msgstr "Úkol"
 
-#: ktjview2view.cpp:805
-#, fuzzy
+#: ktjview2view.cpp:843
 msgid "Task Group"
-msgstr "Úkol Skupina"
+msgstr "Skupina úkolů"
 
-#: ktjview2view.cpp:806
+#: ktjview2view.cpp:844
 msgid "Milestone"
-msgstr ""
+msgstr "Milník"
 
-#: ktjview2view.cpp:869
-#, fuzzy
+#: ktjview2view.cpp:896
 msgid "<em>Task Link</em>"
-msgstr "<em> Úkol Odkaz</em>"
+msgstr "<em>Propojení úkolů</em>"
 
-#: ktjview2view.cpp:869
-#, fuzzy
+#: ktjview2view.cpp:896
 msgid "From: "
 msgstr "Od: "
 
-#: ktjview2view.cpp:881
-#, fuzzy
+#: ktjview2view.cpp:908
 msgid "To: "
-msgstr "Komu: "
+msgstr "Do: "
 
-#: ktjview2view.cpp:933 ktjview2view.cpp:1032
-#, fuzzy
+#: ktjview2view.cpp:960 ktjview2view.cpp:1059
 msgid "Date Range"
-msgstr "Rozsah data"
+msgstr "Rozsah datumů"
 
-#: quickSearchWidget.cpp:46
-#, fuzzy
-msgid "&Search:"
-msgstr "&Hledat:"
+#: ktjview2view.cpp:1256 ktjview2view.cpp:1283
+msgid "To generate a report you must first open a project."
+msgstr "K vygenerování reportu musíte nejprve otevřít projekt."
 
-#: rc.cpp:2 rc.cpp:41 rc.cpp:62
-#, fuzzy, no-c-format
+#: ktjview2view.cpp:1271
+msgid "Generated 'Task Coverage' report, from %1 to %2, scale '%3'."
+msgstr "Vygenerován report 'Pokrytí úkolů', od %1 do %2, měřítko '%3'."
+
+#: ktjview2view.cpp:1298
+msgid "Generated 'Resource Usage' report, from %1 to %2, scale '%3'."
+msgstr "Vygenerován report 'Využití zdrojů', od %1 do %2, měřítko '%3'."
+
+#: ktjview2view.cpp:1310
+msgid "Only local files are supported."
+msgstr "Jsou podporovány pouze lokální soubory."
+
+#: ktjview2view.cpp:1327
+msgid "The required application <b>tjx2gantt</b> wasn't found."
+msgstr "Požadovaná aplikace <b>tjx2gantt</b> nebyla nalezena."
+
+#: ktjview2view.cpp:1332
+msgid "Normal"
+msgstr "Normální"
+
+#: ktjview2view.cpp:1332 ktjview2view.cpp:1337
+msgid "Poster"
+msgstr "Poster"
+
+#: ktjview2view.cpp:1333
+msgid "Select Printout Type"
+msgstr "Vybrat typ výtisku"
+
+#: ktjview2view.cpp:1333
+msgid "Select type:"
+msgstr "Vyberte typ:"
+
+#: ktjview2view.cpp:1349
+msgid "Failed to create PostScript output."
+msgstr "Vytvoření výstupu v PostScriptu selhalo."
+
+#: ktjview2view.cpp:1357
+msgid ""
+"XML report could not have been generated; PostScript Gantt chart won't be "
+"shown."
+msgstr "Nelze vygenerovat XML report, Gantt graf nebude zobrazen."
+
+#: quickSearchWidget.cpp:45
+msgid "Clear the search"
+msgstr "Vyčistit hledání"
+
+#: quickSearchWidget.cpp:49
+msgid "Search for:"
+msgstr "Hledat:"
+
+#: quickSearchWidget.cpp:53
+msgid "Specify the text you are looking for"
+msgstr "Zadejte text, který hledáte"
+
+#: quickSearchWidget.cpp:56
+msgid "in:"
+msgstr "v:"
+
+#: quickSearchWidget.cpp:60
+msgid "Choose the column where you want to search in"
+msgstr "Zvolte sloupec, který chcete prohledávat"
+
+#: rc.cpp:2 rc.cpp:41 rc.cpp:62 rc.cpp:78
+#, no-c-format
 msgid "Form1"
 msgstr "Form1"
 
 #: rc.cpp:4
 #, no-c-format
 msgid "Available filters"
-msgstr ""
+msgstr "Dostupné filtry"
 
 #: rc.cpp:7
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Ctrl+T, Ctrl+T"
-msgstr "Ctrl T Ctrl T"
+msgstr ""
 
 #: rc.cpp:9
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Add a new filter"
-msgstr "Přidat a nové filtr"
+msgstr "Přidat nový filtr"
 
 #: rc.cpp:12
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Remove the selected filter"
-msgstr "Odstranit filtr"
+msgstr "Odstranit vybraný filtr"
 
 #: rc.cpp:15
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Rename the selected filter"
-msgstr "Přejmenovat filtr"
+msgstr "Přejmenovat vybraný filtr"
 
 #: rc.cpp:17
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Filter criteria"
-msgstr "Filtr"
+msgstr "Kritéria filtru"
 
 #: rc.cpp:19
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Matches all of the following"
-msgstr "vše"
+msgstr "Porovnat vše následující"
 
 #: rc.cpp:21
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "&More"
 msgstr "&Více"
 
 #: rc.cpp:23
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Alt+M"
-msgstr "Alt M"
+msgstr ""
 
 #: rc.cpp:25
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "&Fewer"
-msgstr "Méně"
+msgstr "&Méně"
 
 #: rc.cpp:27
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Alt+F"
-msgstr "Alt F"
+msgstr ""
 
 #: rc.cpp:29
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Cl&ear"
-msgstr "Vyprázdnit"
+msgstr "V&yprázdnit"
 
 #: rc.cpp:31
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Alt+E"
-msgstr "Alt+E"
+msgstr ""
 
 #: rc.cpp:33
 #, no-c-format
 msgid "Matches any of the following"
-msgstr ""
+msgstr "Porovnat cokoliv z následujícího"
 
 #: rc.cpp:35
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Property"
 msgstr "Vlastnost"
 
 #: rc.cpp:37
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Expression"
 msgstr "Výraz"
 
 #: rc.cpp:39
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Value"
 msgstr "Hodnota"
 
 #: rc.cpp:43
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Week&day background color:"
-msgstr "poza&dí barva:"
+msgstr "Barva poza&dí pracovních dnů:"
 
 #: rc.cpp:46
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "&Weekend background color:"
-msgstr "O víkendu pozadí barva:"
+msgstr "Barva pozadí &víkendu:"
 
 #: rc.cpp:49
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "&Task color:"
-msgstr "Úkol barva:"
+msgstr "&Barva úkolu:"
 
 #: rc.cpp:53
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Task &group color:"
-msgstr "Úkol skupina barva:"
+msgstr "Barva s&kupiny úkolů:"
 
 #: rc.cpp:56
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "&Milestone color:"
-msgstr "barva:"
+msgstr "Barva &milníku:"
 
 #: rc.cpp:58
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Use &alternate background for horizontal lines"
-msgstr "Použít poz&adí pro"
+msgstr "Použít stříd&ající se barvu pro vodorovné řádky"
 
 #: rc.cpp:60
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Alt+A"
-msgstr "Alt"
+msgstr ""
 
 #: rc.cpp:64
-#, fuzzy, no-c-format
+#, no-c-format
+msgid "Sc&ale:"
+msgstr "&Měřítko:"
+
+#: rc.cpp:66 kdgantt/KDGanttViewSubwidgets.cpp:721
+#, no-c-format
+msgid "Day"
+msgstr "Dny"
+
+#: rc.cpp:68 kdgantt/KDGanttViewSubwidgets.cpp:722
+#, no-c-format
+msgid "Week"
+msgstr "Týdny"
+
+#: rc.cpp:70 kdgantt/KDGanttViewSubwidgets.cpp:723
+#, no-c-format
+msgid "Month"
+msgstr "Měsíce"
+
+#: rc.cpp:72
+#, no-c-format
+msgid "Quarter"
+msgstr "Kvartály"
+
+#: rc.cpp:74
+#, no-c-format
+msgid "&End date:"
+msgstr "&Koncové datum:"
+
+#: rc.cpp:76
+#, no-c-format
+msgid "&Start date:"
+msgstr "&Počáteční datum:"
+
+#: rc.cpp:80
+#, no-c-format
 msgid "&Free time:"
-msgstr "Volný čas:"
-
-#: rc.cpp:67
-#, fuzzy, no-c-format
-msgid "&Vacations and sicktime:"
-msgstr "a:"
-
-#: rc.cpp:70
-#, fuzzy, no-c-format
-msgid "&Weekends and holidays:"
-msgstr "a:"
-
-#: rc.cpp:73
-#, fuzzy, no-c-format
-msgid "Background color for week days."
-msgstr "Pozadí barva pro dny."
-
-#: rc.cpp:75
-#, fuzzy, no-c-format
-msgid "Background color for weekend days."
-msgstr "Pozadí barva pro dny."
-
-#: rc.cpp:77
-#, fuzzy, no-c-format
-msgid "Color for task items."
-msgstr "Barva pro úkol."
-
-#: rc.cpp:79
-#, fuzzy, no-c-format
-msgid "Color task group items."
-msgstr "Barva úkol skupina."
-
-#: rc.cpp:81
-#, fuzzy, no-c-format
-msgid "Color for milestone items."
-msgstr "Barva pro."
+msgstr "Vo&lný čas:"
 
 #: rc.cpp:83
-#, fuzzy, no-c-format
-msgid "Show alternate horizontal lines."
-msgstr "Zobrazit."
+#, no-c-format
+msgid "&Vacations and sicktime:"
+msgstr "Do&volená a nemoc:"
 
-#: rc.cpp:85
-#, fuzzy, no-c-format
-msgid "Background color for free time."
-msgstr "Pozadí barva pro free čas."
-
-#: rc.cpp:87
-#, fuzzy, no-c-format
-msgid "Background color for vacations and sicktime."
-msgstr "Pozadí barva pro a."
+#: rc.cpp:86
+#, no-c-format
+msgid "&Weekends and holidays:"
+msgstr "Vík&endy a svátky:"
 
 #: rc.cpp:89
-#, fuzzy, no-c-format
-msgid "Background color for holidays and weekends."
-msgstr "Pozadí barva pro a."
+#, no-c-format
+msgid "Background color for week days."
+msgstr "Barva pozadí pro dny."
 
 #: rc.cpp:91
-#, fuzzy, no-c-format
-msgid "&Edit"
-msgstr "Ú&pravy"
+#, no-c-format
+msgid "Background color for weekend days."
+msgstr "Barva pozadí pro víkendové dny."
 
 #: rc.cpp:93
 #, no-c-format
-msgid "&Gantt"
-msgstr ""
+msgid "Color for task items."
+msgstr "Barva pro úkoly."
 
 #: rc.cpp:95
-#, fuzzy, no-c-format
-msgid "&Resources"
-msgstr "Zd&roje"
+#, no-c-format
+msgid "Color task group items."
+msgstr "Barva pro skupiny úkolů."
 
 #: rc.cpp:97
-#, fuzzy, no-c-format
-msgid "&Outline"
-msgstr "&Osnova"
+#, no-c-format
+msgid "Color for milestone items."
+msgstr "Barva pro položky milníků."
 
 #: rc.cpp:99
-#, fuzzy, no-c-format
-msgid "T&asks"
-msgstr "Úlohy"
+#, no-c-format
+msgid "Show alternate horizontal lines."
+msgstr "Zobrazovat střídající čáry na pozadí."
 
 #: rc.cpp:101
-#, fuzzy, no-c-format
-msgid "Resource &Usage"
-msgstr "Zdroj Vy&užití"
+#, no-c-format
+msgid "Background color for free time."
+msgstr "Barva pozadí pro volný čas."
 
 #: rc.cpp:103
-#, fuzzy, no-c-format
-msgid "&Tools"
-msgstr "&Nástroje"
+#, no-c-format
+msgid "Background color for vacations and sicktime."
+msgstr "Barva pozadí pro dovolenou a nemoc."
 
 #: rc.cpp:105
 #, no-c-format
-msgid "Sidebar"
-msgstr ""
+msgid "Background color for holidays and weekends."
+msgstr "Barva pozadí pro svátky a víkendy."
 
 #: rc.cpp:107
-#, fuzzy, no-c-format
-msgid "Gantt Toolbar"
-msgstr "Nástrojová lišta"
+#, no-c-format
+msgid "&Edit"
+msgstr "Ú&pravy"
 
 #: rc.cpp:109
-#, fuzzy, no-c-format
+#, no-c-format
+msgid "&Gantt"
+msgstr "&Gantt"
+
+#: rc.cpp:111
+#, no-c-format
+msgid "&Resources"
+msgstr "Zd&roje"
+
+#: rc.cpp:113
+#, no-c-format
+msgid "&Outline"
+msgstr "&Osnova"
+
+#: rc.cpp:115
+#, no-c-format
+msgid "Resource &Usage"
+msgstr "Vy&užití zdrojů"
+
+#: rc.cpp:117
+#, no-c-format
+msgid "T&asks"
+msgstr "Ú&lohy"
+
+#: rc.cpp:119
+#, no-c-format
+msgid "R&eports"
+msgstr "R&eporty"
+
+#: rc.cpp:121
+#, no-c-format
+msgid "&Tools"
+msgstr "Nás&troje"
+
+#: rc.cpp:123
+#, no-c-format
+msgid "Sidebar"
+msgstr "Postranní lišta"
+
+#: rc.cpp:125
+#, no-c-format
+msgid "Gantt Toolbar"
+msgstr "Nástrojová lišta Gantt grafu"
+
+#: rc.cpp:127
+#, no-c-format
 msgid "Quick Search Toolbar"
-msgstr "Hledat Nástrojová lišta"
+msgstr "Lišta rychlého hledání"
 
 #: resUsageView.cpp:312
-#, fuzzy
 msgid "&Copy"
 msgstr "&Kopírovat"
 
-#: resUsageView.cpp:436
-#, fuzzy
+#: resUsageView.cpp:412
 msgid "No matching resource found."
-msgstr "Ne."
+msgstr "Žádný odpovídající zdroj nenalezen."
 
-#: resUsageView.cpp:441
-#, fuzzy
+#: resUsageView.cpp:417
 msgid "No more matching resources found."
-msgstr "Ne více."
+msgstr "Žádný další odpovídající zdroj nenalezen."
 
 #: ruFindDialog.cpp:39
-#, fuzzy
 msgid "Resource Usage Search"
-msgstr "Zdroj Využití Hledat"
+msgstr "Hledání ve využití zdrojů"
 
 #: ruFindDialog.cpp:40
-#, fuzzy
 msgid "&Find"
 msgstr "Na&jít"
 
 #: ruFindDialog.cpp:45
-#, fuzzy
 msgid "Resource"
 msgstr "Zdroj"
 
 #: ruFindDialog.cpp:53
-#, fuzzy
 msgid "&Name:"
 msgstr "&Název:"
 
 #: ruFindDialog.cpp:56
-#, fuzzy
 msgid "C&ase sensitive"
 msgstr "Rozlišov&at velikost"
 
 #: ruFindDialog.cpp:62
-#, fuzzy
 msgid "&Regular expression"
 msgstr "&Regulární výraz"
 
 #: selectDialog.cpp:42
-#, fuzzy
 msgid "Select tasks:"
-msgstr "Vybrat:"
+msgstr "Vybrat úlohy:"
 
 #: selectDialog.cpp:49
-#, fuzzy
 msgid "Select resources:"
-msgstr "Vybrat:"
+msgstr "Vybrat zdroje:"
 
 #: selectDialog.cpp:67
-#, fuzzy
 msgid "Flags"
 msgstr "Příznaky"
 
 #: selectDialog.cpp:70
-#, fuzzy
 msgid "Select flags:"
-msgstr "Vybrat:"
+msgstr "Vybrat příznaky:"
 
 #: selectDialog.cpp:72
 msgid "Flag"
-msgstr ""
+msgstr "Příznak"
 
 #: selectDialog.cpp:93
-#, fuzzy
 msgid "Select:"
 msgstr "Vybrat:"
 
 #: timedialog.cpp:26
-#, fuzzy
 msgid "Setup Time Frame"
-msgstr "Nastavení Čas Rámec"
+msgstr "Nastavit časový rámec"
 
 #: timedialog.cpp:32
-#, fuzzy
 msgid "Start Time: "
-msgstr "Start Čas "
+msgstr "Počáteční čas: "
 
 #: timedialog.cpp:36
-#, fuzzy
 msgid "End Time: "
-msgstr "Konec Čas "
+msgstr "Konečný čas: "
 
 #: timedialog.cpp:41
-#, fuzzy
 msgid "Select Date"
-msgstr "Vybrat Datum"
+msgstr "Vybrat datum"
 
 #: timedialog.cpp:47
-#, fuzzy
 msgid "Select date: "
-msgstr "Vybrat datum "
+msgstr "Vybrat datum: "
 
 #: kdgantt/KDGanttSemiSizingControl.cpp:255
-#, fuzzy
 msgid ""
 "Click on this button to show the \n"
 "legend at the bottom of the widget"
-msgstr "Kliknutí do spodní strana"
+msgstr ""
+"Kliknutím na toto tlačítko zobrazíte\n"
+"legendu vespod grafu."
 
 #: kdgantt/KDGanttSemiSizingControl.cpp:256
-#, fuzzy
 msgid "Show / hide legend"
-msgstr "Zobrazit"
+msgstr "Zobrazit / skrýt legendu"
+
+#: kdgantt/KDGanttView.cpp:868
+msgid "Printing Time: %1"
+msgstr "Čas tisku: %1"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:708
-#, fuzzy
 msgid "Zoom"
 msgstr "Zvětšení"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:709
-#, fuzzy
 msgid "Zoom to 100%"
-msgstr "Zvětšení do"
+msgstr "Zvětšit na 100%"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:710
-#, fuzzy
 msgid "Zoom to fit"
-msgstr "Zvětšení do"
+msgstr "Přizpůsobit"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:711
-#, fuzzy
 msgid "Zoom in (x 2)"
-msgstr "Zvětšení in x"
+msgstr "Zvětšit (x 2)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:712
-#, fuzzy
 msgid "Zoom in (x 6)"
-msgstr "Zvětšení in x"
+msgstr "Zvětšit (x 6)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:713
-#, fuzzy
 msgid "Zoom in (x 12)"
-msgstr "Zvětšení in x"
+msgstr "Zvětšit (x 12)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:714
-#, fuzzy
 msgid "Zoom out (x 1/2)"
-msgstr "Zvětšení x"
+msgstr "Zmenšit (x 1/2)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:715
-#, fuzzy
 msgid "Zoom out (x 1/6)"
-msgstr "Zvětšení x"
+msgstr "Zmenšit (x 1/6)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:716
-#, fuzzy
 msgid "Zoom out (x 1/12)"
-msgstr "Zvětšení x"
+msgstr "Zvětšit (x 1/12)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:718
-#, fuzzy
 msgid "Scale"
-msgstr "Zvětšené"
+msgstr "Měřítko"
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:719
+msgid "Minute"
+msgstr "Minuty"
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:720
+msgid "Hour"
+msgstr "Hodiny"
+
+#: kdgantt/KDGanttViewSubwidgets.cpp:724
+msgid "Auto"
+msgstr "Automaticky"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:727
-#, fuzzy
 msgid "Time Format"
 msgstr "Formát času"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:728
-#, fuzzy
 msgid "24 Hour"
-msgstr "Hodina"
+msgstr "24 hodin"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:729
-#, fuzzy
 msgid "12 PM Hour"
-msgstr "PM Hodina"
+msgstr "12 hodin (odp.)"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:730
-#, fuzzy
 msgid "24:00 Hour"
-msgstr "Hodina"
+msgstr "24:00 hodin"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:732
-#, fuzzy
 msgid "Year Format"
-msgstr "Rok Formát"
+msgstr "Formát roku"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:733
-#, fuzzy
 msgid "Four Digit"
-msgstr "Číslice"
+msgstr "4 číslice"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:734
-#, fuzzy
 msgid "Two Digit"
-msgstr "2 Číslice"
+msgstr "2 číslice"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:735
-#, fuzzy
 msgid "Two Digit Apostrophe"
-msgstr "2 Číslice"
+msgstr "2 číslice s apostrofem"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:736
-#, fuzzy
 msgid "No Date on Minute/Hour Scale"
-msgstr "Ne Datum Minuta Hodina Zvětšené"
+msgstr "Bez datumu na měřítku minut/hodin"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:739
-#, fuzzy
 msgid "Grid"
 msgstr "Mřížka"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:740
-#, fuzzy
 msgid "Show minor grid"
-msgstr "Zobrazit"
+msgstr "Zobrazovat vedlejší mřížku"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:741
-#, fuzzy
 msgid "Show major grid"
-msgstr "Zobrazit"
+msgstr "Zobrazovat hlavní mřížku"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:742
-#, fuzzy
 msgid "Show no grid"
-msgstr "Zobrazit ne"
+msgstr "Nezobrazovat mřížku"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:743
-#, fuzzy
 msgid "Print"
 msgstr "Tisk"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:773
-#, fuzzy
 msgid "Zoom  "
 msgstr "Zvětšení "
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:2514
-#, fuzzy
 msgid " Legend is hidden"
 msgstr " Legenda je skryta"
 
 #: kdgantt/KDGanttViewSubwidgets.cpp:2533
-#, fuzzy
 msgid "Legend: "
 msgstr "Legenda: "
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2615
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2614
 msgid "Legend:"
 msgstr "Legenda:"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2663
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2662
 msgid "Task Name"
 msgstr "Název úkolu"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2685
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2684
 msgid "No item Found"
 msgstr "Nenalezena žádná položka"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2958
-#: kdgantt/KDGanttViewSubwidgets.cpp:2966
-#: kdgantt/KDGanttViewSubwidgets.cpp:2975
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2957
+#: kdgantt/KDGanttViewSubwidgets.cpp:2965
+#: kdgantt/KDGanttViewSubwidgets.cpp:2974
 msgid "Summary"
 msgstr "Shrnutí"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2960
-#: kdgantt/KDGanttViewSubwidgets.cpp:2968
-#: kdgantt/KDGanttViewSubwidgets.cpp:2977
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2959
+#: kdgantt/KDGanttViewSubwidgets.cpp:2967
+#: kdgantt/KDGanttViewSubwidgets.cpp:2976
 msgid "Event"
 msgstr "Událost"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2965
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2964
 msgid "New Root"
 msgstr "Nový kořen"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2973
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2972
 msgid "New Child"
 msgstr "Nový potomek"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2981
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2980
 msgid "New After"
-msgstr "Nový po"
+msgstr "Nový za"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2983
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2982
 msgid "As Root"
 msgstr "Jako kořen"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2985
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2984
 msgid "As Child"
 msgstr "Jako potomek"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2987
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2986
 msgid "After"
-msgstr "Po"
+msgstr "Za"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2989
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2988
 msgid "Paste"
 msgstr "Vložit"
 
-#: kdgantt/KDGanttViewSubwidgets.cpp:2990
-#, fuzzy
+#: kdgantt/KDGanttViewSubwidgets.cpp:2989
 msgid "Cut Item"
 msgstr "Vyjmout položku"
 
 #: kdgantt/KDGanttViewTaskLink.cpp:199 kdgantt/KDGanttViewTaskLink.cpp:200
 msgid "Tasklink"
-msgstr ""
+msgstr "Propojení úkolů"
+

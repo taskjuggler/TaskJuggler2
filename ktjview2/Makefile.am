@@ -1,6 +1,6 @@
 ## Makefile.am for ktjview2
 
-SUBDIRS = kdgantt pixmaps pics
+SUBDIRS = kdgantt pixmaps pics po
 
 # this is the program that gets installed. its name is used for all
 # of the other Makefile.am variables
