@@ -19,6 +19,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kglobalsettings.h>
 
 #include "Report.h"
 #include "ManagedReportInfo.h"

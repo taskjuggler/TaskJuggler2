@@ -28,6 +28,7 @@
 #include "ExpressionTree.h"
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
+#include "ReportLayers.h"
 
 TjTaskReport::TjTaskReport(QWidget* p, Report* const rDef,
                            const QString& n) : TjReport(p, rDef, n)
@@ -255,7 +256,7 @@ TjTaskReport::drawTask(Task* const t, int y)
         polygon->setPoints(a);
         polygon->setPen(Qt::black);
         polygon->setBrush(Qt::black);
-        polygon->setZ(10);
+        polygon->setZ(TJRL_TASKS);
         polygon->show();
     }
     else if (t->isContainer())
@@ -282,7 +283,7 @@ TjTaskReport::drawTask(Task* const t, int y)
         polygon->setPoints(a);
         polygon->setPen(Qt::black);
         polygon->setBrush(Qt::black);
-        polygon->setZ(10);
+        polygon->setZ(TJRL_TASKS);
         polygon->show();
     }
     else
@@ -296,7 +297,7 @@ TjTaskReport::drawTask(Task* const t, int y)
 
         rect->setPen(QPen(QColor("#4C5EFF")));
         rect->setBrush(QBrush(QColor("#4C5EFF"), Dense4Pattern));
-        rect->setZ(10);
+        rect->setZ(TJRL_TASKS);
         rect->show();
 
         // The black progress bar.
@@ -323,7 +324,7 @@ TjTaskReport::drawTask(Task* const t, int y)
 
             rect->setPen(Qt::black);
             rect->setBrush(Qt::black);
-            rect->setZ(11);
+            rect->setZ(TJRL_TASKCOMP);
             rect->show();
         }
     }
@@ -415,7 +416,7 @@ TjTaskReport::drawDependencies(Task* const t1, QListViewItem* t1lvi)
                 a.point(i, &x1, &y1);
                 a.point(i + 1, &x2, &y2);
                 line->setPoints(x1, y1, x2, y2);
-                line->setZ(20);
+                line->setZ(TJRL_DEPARROWS);
                 line->show();
             }
 
@@ -431,7 +432,7 @@ TjTaskReport::drawDependencies(Task* const t1, QListViewItem* t1lvi)
             polygon->setPoints(a);
             polygon->setPen(Qt::black);
             polygon->setBrush(Qt::black);
-            polygon->setZ(20);
+            polygon->setZ(TJRL_DEPARROWS);
             polygon->show();
         }
     }
@@ -551,7 +552,7 @@ TjTaskReport::drawResourceLoadColum(Task* const t, Resource* const r,
              ganttChart);
         rect->setBrush(QBrush(thisTaskCol, Dense4Pattern));
         rect->setPen(thisTaskCol);
-        rect->setZ(10);
+        rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 
@@ -562,7 +563,7 @@ TjTaskReport::drawResourceLoadColum(Task* const t, Resource* const r,
              colTaskLoadTop - colOtherLoadTop, ganttChart);
         rect->setBrush(QBrush(otherTaskCol, Dense6Pattern));
         rect->setPen(otherTaskCol);
-        rect->setZ(10);
+        rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 
@@ -573,7 +574,7 @@ TjTaskReport::drawResourceLoadColum(Task* const t, Resource* const r,
              ganttChart);
         rect->setBrush(QBrush(freeLoadCol, Dense6Pattern));
         rect->setPen(freeLoadCol);
-        rect->setZ(10);
+        rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 }

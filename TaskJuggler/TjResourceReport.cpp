@@ -28,6 +28,7 @@
 #include "ExpressionTree.h"
 #include "QtResourceReport.h"
 #include "QtResourceReportElement.h"
+#include "ReportLayers.h"
 
 TjResourceReport::TjResourceReport(QWidget* p, Report* const rDef,
                                    const QString& n) : TjReport(p, rDef, n)
@@ -374,7 +375,7 @@ TjResourceReport::drawResourceLoadColumn(const Resource* r, time_t start,
             (cx, colLoadTop, cw, colBottom - colLoadTop, ganttChart);
         rect->setBrush(loadBrush);
         rect->setPen(loadCol);
-        rect->setZ(10);
+        rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 
@@ -385,7 +386,7 @@ TjResourceReport::drawResourceLoadColumn(const Resource* r, time_t start,
              ganttChart);
         rect->setBrush(freeLoadBrush);
         rect->setPen(freeLoadCol);
-        rect->setZ(10);
+        rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 }
@@ -497,7 +498,7 @@ TjResourceReport::drawTaskLoadColumn(const Task* t, const Resource* r,
              ganttChart);
         rect->setBrush(resourceLoadBrush);
         rect->setPen(resourceLoadCol);
-        rect->setZ(10);
+        rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 }
@@ -534,7 +535,7 @@ TjResourceReport::drawTaskOutline(const Task* t, int y)
             a.point(i, &x1, &y1);
             a.point(i + 1, &x2, &y2);
             line->setPoints(x1, y1, x2, y2);
-            line->setZ(15);
+            line->setZ(TJRL_TASKOUTLINE);
             line->show();
         }
     }
@@ -549,37 +550,8 @@ TjResourceReport::drawTaskOutline(const Task* t, int y)
 
         rect->setPen(Qt::black);
         rect->setBrush(QBrush(NoBrush));
-        rect->setZ(15);
+        rect->setZ(TJRL_TASKOUTLINE);
         rect->show();
-#if 0
-        // The black progress bar.
-        if (t->getCompletionDegree(scenario) > 0.0)
-        {
-            /* TODO: This does not work 100% correct for effort or length
-             * based tasks. It's only correct for duration tasks. */
-            int barWidth;
-            if (t->getCompletionDegree(scenario) ==
-                t->getCalcedCompletionDegree(scenario) &&
-                reportDef->getProject()->getNow() < t->getEnd(scenario))
-            {
-                barWidth = time2x(reportDef->getProject()->getNow()) -
-                    time2x(t->getStart(scenario));
-            }
-            else
-                barWidth = (int) ((time2x(t->getEnd(scenario)) -
-                                   time2x(t->getStart(scenario))) *
-                                  (t->getCompletionDegree(scenario) / 100.0));
-
-            rect = new QCanvasRectangle
-                (time2x(t->getStart(scenario)), y + 8, barWidth,
-                 itemHeight - 16, ganttChart);
-
-            rect->setPen(Qt::black);
-            rect->setBrush(QBrush(NoBrush));
-            rect->setZ(16);
-            rect->show();
-        }
-#endif
     }
 }
 

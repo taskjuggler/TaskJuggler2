@@ -173,8 +173,10 @@ TaskJugglerView::~TaskJugglerView()
 void
 TaskJugglerView::print(QPainter*, int, int)
 {
-    // do the actual printing, here
-    // p->drawText(etc..)
+    QMessageBox::information(this, "TaskJuggler",
+                             i18n("Sorry, printing is not yet implemented!"),
+                             QMessageBox::Ok | QMessageBox::Default,
+                             QMessageBox::NoButton);
 }
 
 void
@@ -187,13 +189,13 @@ TaskJugglerView::readProperties(KConfig* config)
 void
 TaskJugglerView::saveProperties(KConfig* config)
 {
-    config->writeEntry("MainSplitter", mw->mainSplitter->sizes());
-}
+    /* Save the URL of the current project so we can restore it in case
+     * TaskJuggler is restarted without a new URL specified. */
+    if (!fileManager->getMasterFile().url().isEmpty())
+        config->writePathEntry("lastURL", fileManager->getMasterFile().url());
 
-QString
-TaskJugglerView::currentURL()
-{
-    return fileManager->getMasterFile().url();
+    // Save the position of the main splitter.
+    config->writeEntry("MainSplitter", mw->mainSplitter->sizes());
 }
 
 void
@@ -201,17 +203,21 @@ TaskJugglerView::newProject()
 {
     if (!fileManager->getMasterFile().isEmpty())
     {
-        int but = QMessageBox::question
-            (this, i18n("Create a new Project"),
+        QMessageBox mb
+            ("TaskJuggler",
              i18n("You must close the current project before you can \n"
                   "create a new project. Do you really want to do this?"),
-             QMessageBox::Yes, QMessageBox::No | QMessageBox::Default);
+             QMessageBox::Question,
+             QMessageBox::Yes | QMessageBox::Escape,
+             QMessageBox::No | QMessageBox::Default,
+             QMessageBox::NoButton,
+             this);
 
-        if (but == QMessageBox::No)
+        if (mb.exec() == QMessageBox::No)
             return;
     }
     KURL fileURL = KFileDialog::getSaveURL
-        (i18n("Pick a name for the new project file"), "*.tjp",
+        (i18n("TaskJuggler - Pick a name for the new project file"), "*.tjp",
          this, "New Project File");
     if (fileURL.isEmpty() || !fileURL.isValid())
     {
@@ -227,7 +233,7 @@ TaskJugglerView::newProject()
     if (templateProject.isEmpty())
     {
         QMessageBox::critical
-            (this, i18n("Error while creating new Project"),
+            (this, i18n("TaskJuggler - Error while creating new Project"),
              i18n("Could not find ProjectTemplate.tjp!"),
              QMessageBox::Ok | QMessageBox::Default,
              QMessageBox::NoButton);
@@ -251,22 +257,43 @@ TaskJugglerView::newProject()
 void
 TaskJugglerView::newInclude()
 {
+    // Make sure that we have already a project we can add the file to.
     if (fileManager->getMasterFile().isEmpty())
     {
         QMessageBox::warning
-            (this, i18n("New Include File"),
+            (this, i18n("TaskJuggler - New Include File"),
              i18n("You need to load or create a project before \n"
                   "you can create a new include file."),
              QMessageBox::Yes | QMessageBox::Default, QMessageBox::NoButton);
         return;
     }
 
-    KURL file_url = KFileDialog::getSaveURL
+    // Ask user for the name of the new file.
+    KURL fileURL = KFileDialog::getSaveURL
         (i18n("Pick a name for the new include file"), "*.tji",
          this, "New Include File");
-    if (!file_url.isEmpty() && file_url.isValid())
+
+    // Find out the name of the include file template.
+    QString templateInclude = KGlobal::dirs()->findResource
+        ("data", "taskjuggler/IncludeTemplate.tji");
+    if (templateInclude.isEmpty())
     {
-    kdDebug() << "New include file"<< endl;
+        QMessageBox::critical
+            (this, i18n("TaskJuggler - Error while creating include File"),
+             i18n("Could not find IncludeTemplate.tji!"),
+             QMessageBox::Ok | QMessageBox::Default,
+             QMessageBox::NoButton);
+        return;
+    }
+
+    if (!fileURL.isEmpty() && fileURL.isValid())
+    {
+        // Add template to list of files.
+        fileManager->addFile(KURL(templateInclude), fileURL);
+        // Open the file list.
+        mw->listViews->setCurrentItem(mw->filesPage);
+        // Show the new file in the editor.
+        showEditor();
     }
 }
 

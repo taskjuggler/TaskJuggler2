@@ -94,6 +94,25 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
         showInEditor(files.at(0)->getFileURL());
 }
 
+void
+FileManager::addFile(const KURL& url, const KURL& newURL)
+{
+    // Add new file to list of managed files.
+    ManagedFileInfo* mfi = new ManagedFileInfo(this, url);
+    files.append(mfi);
+    mfi->saveAs(newURL);
+
+    // Insert the file into the browser and update the directory hierachy if
+    // necessary.
+    updateFileBrowser();
+    QListViewItem* lvi = mfi->getBrowserEntry();
+    lvi->setSelected(TRUE);
+    browser->ensureItemVisible(lvi);
+
+    // Open new file in editor.
+    showInEditor(newURL);
+}
+
 QString
 FileManager::findCommonPath()
 {

@@ -82,9 +82,9 @@ ManagedFileInfo::saveAs(const KURL& url)
     if (editor)
     {
         editor->document()->saveAs(url);
-        fileURL = url;
         modified = FALSE;
         browserEntry->setPixmap(2, 0);
     }
+    fileURL = url;
 }
 

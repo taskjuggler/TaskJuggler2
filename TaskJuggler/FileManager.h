@@ -34,6 +34,8 @@ public:
 
     void updateFileList(const QStringList& fl, const KURL& mf);
 
+    void addFile(const KURL& nf, const KURL& nnf);
+
     KURL getCurrentFileURL() const;
     ManagedFileInfo* getCurrentFile() const;
 

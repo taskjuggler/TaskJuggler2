@@ -184,9 +184,6 @@ TaskJuggler::saveProperties(KConfig* config)
 
     m_view->saveProperties(config);
 
-    if (!m_view->currentURL().isEmpty())
-        config->writePathEntry("lastURL", m_view->currentURL());
-
     m_recentAction->saveEntries(config);
 }
 

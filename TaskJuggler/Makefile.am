@@ -44,4 +44,4 @@ kdelnk_DATA = taskjuggler.desktop
 
 # this is where the XML-GUI resource file goes
 rcdir = $(kde_datadir)/taskjuggler
-rc_DATA = taskjugglerui.rc ProjectTemplate.tjp
+rc_DATA = taskjugglerui.rc ProjectTemplate.tjp IncludeTemplate.tji
