@@ -899,6 +899,9 @@ void ktjview2View::clearAllViews()
     m_taskView->clear();
 
     m_resUsageView->clear();
+
+    delete m_taskReport;
+    m_taskReport = 0;
 }
 
 QString ktjview2View::formatAllocations( Task* task ) const
@@ -1274,9 +1277,14 @@ QString ktjview2View::projectName() const
 
 void ktjview2View::slotTaskCoverage()
 {
+    if ( !m_project )
+        return;
+
     if ( !m_taskReport )
-        m_taskReport = new KTJTaskReport( m_project ); // FIXME delete with closing a project file!!!
+        m_taskReport = new KTJTaskReport( m_project );
     m_reportView->setDataModel( m_taskReport->generate() );
+    m_reportView->setRowHeaderUsesModel( true );
+    m_reportView->setColumnHeaderUsesModel( true );
     //m_reportView->setTopTitleWidget( m_taskReport->description() ); // TODO
 }
 
