@@ -794,7 +794,7 @@ void ktjview2View::slotJumpToTask()
         {
             emit signalSwitchView( ID_VIEW_TASKS );
             item->setVisible( true ); // might be hidden thru a filter
-            m_taskView->setSelected( static_cast<QListViewItem *>( item ), true );
+            m_taskView->setSelected( item, true );
             m_taskView->ensureItemVisible( item );
         }
     }
