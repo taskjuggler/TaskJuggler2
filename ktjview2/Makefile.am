@@ -35,6 +35,10 @@ KDE_ICON = ktjview2
 
 xdg_apps_DATA = ktjview2.desktop
 
+# register the mimetype
+tjmimedir = $(kde_mimedir)/application
+tjmime_DATA = x-tjxml.desktop x-tjp.desktop
+
 # this is where the XML-GUI resource file goes
 rcdir = $(kde_datadir)/ktjview2
 rc_DATA = ktjview2ui.rc

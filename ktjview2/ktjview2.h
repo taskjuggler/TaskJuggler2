@@ -66,6 +66,7 @@ protected:
      * Overridden virtuals for Qt drag 'n drop (XDND)
      */
     virtual void dragEnterEvent( QDragEnterEvent *event );
+
     virtual void dropEvent( QDropEvent *event );
 
     /**
