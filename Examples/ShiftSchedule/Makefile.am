@@ -5,12 +5,12 @@ TARGETNAME=ShiftSchedule
 EXTRA_DIST = *.html *.tjp *.tjx *.eps
 CLEANFILES = *.html *.tjx *.eps
 
-docprefix = $(DESTDIR)$(prefix)/share/doc/packages/taskjuggler/Examples/$(TARGETNAME)
+docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/$(TARGETNAME)
 
 install-data-local:
-	$(mkinstalldirs) $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.html $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.tjp $(docprefix)
+	$(mkinstalldirs) $(DESTDIR)$(docprefix)
+	$(INSTALL_DATA) $(srcdir)/*.html $(DESTDIR)$(docprefix)
+	$(INSTALL_DATA) $(srcdir)/*.tjp $(DESTDIR)$(docprefix)
 
 uninstall-local:
 	-rm -f $(docprefix)

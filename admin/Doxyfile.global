@@ -17,13 +17,13 @@
 # The PROJECT_NAME tag is a single word (or a sequence of words surrounded 
 # by quotes) that should identify the project.
 
-PROJECT_NAME           = "TaskJuggler"
+PROJECT_NAME           = 
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. 
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = "Version 1.4"
+PROJECT_NUMBER         = 
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -228,11 +228,15 @@ GENERATE_BUGLIST       = YES
 # will result in a user defined paragraph with heading "Side Effects:". 
 # You can put \n's in the value part of an alias to insert newlines.
 
+# @ref in KDE docu are for kdoc, doxygen doesn't need them, so we alias them
+# to nothing here
+
 ALIASES                = libdoc=@mainpage \
                          sect=<p><b> \
                          reimplemented= \
                          "deprecated=<b>This class or method is obsolete, it is provided for compatibility only.</b>" \
-                         obsolete=@deprecated
+                         obsolete=@deprecated \
+			 ref=
 
 # The ENABLED_SECTIONS tag can be used to enable conditional 
 # documentation sections, marked by \if sectionname ... \endif.
@@ -670,7 +674,7 @@ MAN_OUTPUT             =
 # The MAN_EXTENSION tag determines the extension that is added to 
 # the generated man pages (default is the subroutine's section .3)
 
-MAN_EXTENSION          = .tj3
+MAN_EXTENSION          = .kde3
 
 # If the MAN_LINKS tag is set to YES and Doxygen generates man output, 
 # then it will generate one additional man file for each entity 

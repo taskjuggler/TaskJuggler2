@@ -5,19 +5,19 @@ TARGETNAME=AccountingSoftware
 EXTRA_DIST = *.html *.tjp *.tjx *.eps
 CLEANFILES = *.html *.tjx *.eps
 
-docprefix = $(DESTDIR)$(prefix)/share/doc/packages/taskjuggler/Examples/FirstProject
+docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/FirstProject
 
 install-data-local:
-	$(mkinstalldirs) $(docprefix) 
-	$(INSTALL_DATA) $(srcdir)/*.html $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.tjp $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.tjx $(docprefix)
+	$(mkinstalldirs) $(DESTDIR)$(docprefix) 
+	$(INSTALL_DATA) $(srcdir)/*.html $(DESTDIR)$(docprefix)
+	$(INSTALL_DATA) $(srcdir)/*.tjp $(DESTDIR)$(docprefix)
+	$(INSTALL_DATA) $(srcdir)/*.tjx $(DESTDIR)$(docprefix)
 	@if test -f acso.eps ; then \
-	  $(INSTALL_DATA) $(srcdir)/*.eps $(docprefix) ; \
+	  $(INSTALL_DATA) $(srcdir)/*.eps $(DESTDIR)$(docprefix) ; \
 	fi
 
 uninstall-local:
-	-rm -f $(docprefix)
+	-rm -f $(DESTDIR)$(docprefix)
 
 $(TARGETNAME).tjx : $(TARGETNAME).tjp $(TASKJUGGLER)
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp

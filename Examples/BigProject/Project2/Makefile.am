@@ -5,15 +5,15 @@ TARGETNAME=Project2
 EXTRA_DIST = *.html *.tjp
 CLEANFILES = *.html
 
-docprefix = $(DESTDIR)$(prefix)/share/doc/packages/taskjuggler/Examples/BigProject/$(TARGETNAME)
+docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/BigProject/$(TARGETNAME)
 
 install-data-local:
-	$(mkinstalldirs) $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.html $(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.tjp $(docprefix)
+	$(mkinstalldirs) $(DESTDIR)$(docprefix)
+	$(INSTALL_DATA) $(srcdir)/*.html $(DESTDIR)$(docprefix)
+	$(INSTALL_DATA) $(srcdir)/*.tjp $(DESTDIR)$(docprefix)
 
 uninstall-local:
-	-rm -f $(docprefix)
+	-rm -f $(DESTDIR)$(docprefix)
 
 $(TARGETNAME).tjsp : $(TARGETNAME).tjp
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp

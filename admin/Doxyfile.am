@@ -12,8 +12,9 @@ apidox-am-yes:
 		fi ;\
 		cp $(top_srcdir)/admin/Doxyfile.global Doxyfile; \
 		echo "PROJECT_NAME           = \"$(subdir) Library\"" >> Doxyfile; \
+		echo "PROJECT_NUMBER         = \"Version $(VERSION)\"" >> Doxyfile; \
 		echo "INPUT                  = $(srcdir)" >> Doxyfile; \
-		echo "IMAGE_PATH             = $(top_srcdir)/docs/api" >> Doxyfile ;\
+		echo "IMAGE_PATH             = $(top_srcdir)/doc/api" >> Doxyfile ;\
 		echo "OUTPUT_DIRECTORY       = $(top_builddir)/apidocs" >> Doxyfile; \
 		echo "HTML_OUTPUT            = $(subdir)/html" >> Doxyfile; \
 		echo "LATEX_OUTPUT           = $(subdir)/latex" >> Doxyfile; \

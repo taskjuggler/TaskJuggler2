@@ -1,21 +1,21 @@
 EXTRA_DIST = taskjuggler/*.html
 
-docprefix = $(DESTDIR)$(prefix)/share/doc/packages/taskjuggler/manual
+docprefix = $(prefix)/share/doc/packages/taskjuggler/manual
 
 SGMLSOURCES = taskjuggler.sgml changelog.sgml firstproject.sgml reference.sgml example.sgml
 CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.sgml example.sgml
 
 install-data-local:
-	$(mkinstalldirs) $(docprefix)
+	$(mkinstalldirs) $(DESTDIR)$(docprefix)
 	@if test "${HTMLMANUAL}" != "no" ; then \
-	  $(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(docprefix);\
+	  $(INSTALL_DATA) $(srcdir)/taskjuggler/*.html $(DESTDIR)$(docprefix);\
 	fi
 	@if test ${PSMANUAL} != "no" ; then \
-	  $(INSTALL_DATA) $(srcdir)/taskjuggler.ps $(docprefix);\
+	  $(INSTALL_DATA) $(srcdir)/taskjuggler.ps $(DESTDIR)$(docprefix);\
 	fi
 
 uninstall-local:
-	-rm -f $(docprefix)
+	-rm -f $(DESTDIR)$(docprefix)
 
 example.sgml : ../../Examples/FirstProject/AccountingSoftware.tjp
 	rm -f example.sgml
