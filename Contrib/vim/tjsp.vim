@@ -66,6 +66,7 @@ syn keyword tjspkeyword barlabels
 syn keyword tjspkeyword caption
 syn keyword tjspkeyword columns
 syn keyword tjspkeyword complete
+syn keyword tjspkeyword completed
 syn keyword tjspkeyword containstask
 syn keyword tjspkeyword copyright
 syn keyword tjspkeyword cost
@@ -90,8 +91,11 @@ syn keyword tjspkeyword endbuffer
 syn keyword tjspkeyword endbufferstart
 syn keyword tjspkeyword endcredit
 syn keyword tjspkeyword enddown
+syn keyword tjspkeyword endsafter
+syn keyword tjspkeyword endsbefore
 syn keyword tjspkeyword endup
 syn keyword tjspkeyword export
+syn keyword tjspkeyword finished
 syn keyword tjspkeyword flags
 syn keyword tjspkeyword follows
 syn keyword tjspkeyword fri
@@ -106,6 +110,7 @@ syn keyword tjspkeyword hidetask
 syn keyword tjspkeyword hours
 syn keyword tjspkeyword htmlaccountreport
 syn keyword tjspkeyword htmlresourcereport
+syn keyword tjspkeyword htmlstatusreport
 syn keyword tjspkeyword htmltaskreport
 syn keyword tjspkeyword htmlweeklycalendar
 syn keyword tjspkeyword id
@@ -115,6 +120,9 @@ syn keyword tjspkeyword include
 syn keyword tjspkeyword index
 syn keyword tjspkeyword indexdown
 syn keyword tjspkeyword indexup
+syn keyword tjspkeyword inprogress
+syn keyword tjspkeyword inprogressearly
+syn keyword tjspkeyword inprogresslate
 syn keyword tjspkeyword isaccount
 syn keyword tjspkeyword isactualallocated
 syn keyword tjspkeyword ismilestone
@@ -122,6 +130,7 @@ syn keyword tjspkeyword isplanallocated
 syn keyword tjspkeyword isresource
 syn keyword tjspkeyword issubtaskof
 syn keyword tjspkeyword istask
+syn keyword tjspkeyword istaskstatus
 syn keyword tjspkeyword kotrusid
 syn keyword tjspkeyword kotrusiddown
 syn keyword tjspkeyword kotrusidup
@@ -158,22 +167,31 @@ syn keyword tjspkeyword nameup
 syn keyword tjspkeyword no
 syn keyword tjspkeyword nokotrus
 syn keyword tjspkeyword note
+syn keyword tjspkeyword notstarted
 syn keyword tjspkeyword now
 syn keyword tjspkeyword off
+syn keyword tjspkeyword ontime
 syn keyword tjspkeyword order
 syn keyword tjspkeyword persistent
 syn keyword tjspkeyword planbooking
+syn keyword tjspkeyword plancompleteddown
+syn keyword tjspkeyword plancompletedup
 syn keyword tjspkeyword planenddown
 syn keyword tjspkeyword planendup
 syn keyword tjspkeyword planscheduled
 syn keyword tjspkeyword planstartdown
 syn keyword tjspkeyword planstartup
-syn keyword tjspkeyword preceeds
+syn keyword tjspkeyword planstatusdown
+syn keyword tjspkeyword planstatusup
+syn keyword tjspkeyword precedes
 syn keyword tjspkeyword priority
 syn keyword tjspkeyword prioritydown
 syn keyword tjspkeyword priorityup
 syn keyword tjspkeyword project
 syn keyword tjspkeyword projectid
+syn keyword tjspkeyword quarter
+syn keyword tjspkeyword quarterheader
+syn keyword tjspkeyword quarterly
 syn keyword tjspkeyword random
 syn keyword tjspkeyword rate
 syn keyword tjspkeyword ratedown
@@ -213,7 +231,11 @@ syn keyword tjspkeyword startbuffer
 syn keyword tjspkeyword startbufferend
 syn keyword tjspkeyword startcredit
 syn keyword tjspkeyword startdown
+syn keyword tjspkeyword startsafter
+syn keyword tjspkeyword startsbefore
 syn keyword tjspkeyword startup
+syn keyword tjspkeyword status
+syn keyword tjspkeyword statusnote
 syn keyword tjspkeyword sun
 syn keyword tjspkeyword supplement
 syn keyword tjspkeyword task
@@ -229,6 +251,7 @@ syn keyword tjspkeyword timingresolution
 syn keyword tjspkeyword total
 syn keyword tjspkeyword tree
 syn keyword tjspkeyword tue
+syn keyword tjspkeyword undefined
 syn keyword tjspkeyword url
 syn keyword tjspkeyword vacation
 syn keyword tjspkeyword w
@@ -244,6 +267,7 @@ syn keyword tjspkeyword xmlreport
 syn keyword tjspkeyword y
 syn keyword tjspkeyword year
 syn keyword tjspkeyword yearheader
+syn keyword tjspkeyword yearly
 syn keyword tjspkeyword yearlyworkingdays
 syn keyword tjspkeyword years
 "syn keyword tjspmilestone 	contained	  milestone
