@@ -29,10 +29,10 @@ HTMLResourceReportElement::HTMLResourceReportElement(Report* r,
     columns.append(new TableColumn("start"));
     columns.append(new TableColumn("end"));
 
-    // show all tasks
+    // show all resources
     setHideResource(new ExpressionTree(new Operation(0)));
-    // hide all resources
-    setHideResource(new ExpressionTree(new Operation(1)));
+    // hide all tasks
+    setHideTask(new ExpressionTree(new Operation(1)));
 
     taskSortCriteria[0] = CoreAttributesList::TreeMode;
     taskSortCriteria[1] = CoreAttributesList::StartUp;

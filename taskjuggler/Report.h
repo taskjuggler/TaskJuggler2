@@ -18,6 +18,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qfile.h>
+#include <qvaluelist.h>
+#include <qmap.h>
 
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
@@ -48,11 +50,6 @@ public:
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
     bool getWeekStartsMonday() { return weekStartsMonday; }
 
-    void setShowActual(bool s) { showActual = s; }
-    bool getShowActual() const { return showActual; }
-
-    void setHidePlan(bool s) { hidePlan = s; }
-    
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
 
@@ -68,6 +65,10 @@ public:
 
     void setHeadline(const QString& hl) { headline = hl; }
     void setCaption(const QString& c) { caption = c; }
+
+    bool setUrl(const QString& key, const QString& url);
+    const QString* getUrl(const QString& key) const;
+    QMap<QString, QString> getUrls() const { return urls; }
 
     bool isHidden(const CoreAttributes* c, ExpressionTree* et) const;
     bool isRolledUp(const CoreAttributes* c, ExpressionTree* et) const;
@@ -135,6 +136,7 @@ public:
     void sortAccountList(AccountList& filteredList);
 
     QString scaledLoad(double t) const;
+
 protected:
     Report() { }
 
@@ -156,14 +158,14 @@ protected:
     QString defFileName;
     int defFileLine;
     
+    QValueList<int> scenarios;
+
     bool weekStartsMonday;
 
     QString headline;
     QString caption;
    
-    /* TODO: These two are obsolete soon */
-    bool hidePlan;
-    bool showActual;
+    QMap<QString, QString> urls;
 
     /* The maximum depth of the tree that we have to report in tree-sorting
      * mode. */

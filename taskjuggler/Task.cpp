@@ -78,6 +78,7 @@
 */
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "Task.h"
 #include "TjMessageHandler.h"
@@ -288,29 +289,25 @@ Task::schedule(time_t& date, time_t slotDuration)
                    doneLength, length,
                    doneDuration, duration);
         // Check whether we are done with this task.
-        if ((length > 0.0 && doneLength >= length * 0.999999) ||
-            (duration > 0.0 && doneDuration >= duration * 0.999999))
+        /* The accumulated done* values contain rounding errors. This prevents
+         * exact float comparisons. To avoid rounding problems we compare the
+         * rounded values of the done* values multiplied by 2048. This should
+         * result in worst case errors of smaller than a minute. The value
+         * 2048 was chosen in the hope that a compiler is clever enough to
+         * avoid a costly multiplication if possible. */
+        if ((length > 0.0 && 
+             round(doneLength * 2048) >= round(length * 2048)) ||
+            (duration > 0.0 && 
+             round(doneDuration * 2048) >= round(duration * 2048)))
         {
             if (scheduling == ASAP)
             {
-                if (doneEffort > 0.0)
-                {
-                    end = tentativeEnd;
-                    date = end - slotDuration + 1;
-                }
-                else
-                    end = date + slotDuration - 1;
+                end = date + slotDuration - 1;
                 propagateEnd();
             }
             else
             {
-                if (doneEffort > 0.0)
-                {
-                    start = tentativeStart;
-                    date = start;
-                }
-                else
-                    start = date;
+                start = date;
                 propagateStart();
             }
             schedulingDone = TRUE;
@@ -325,7 +322,7 @@ Task::schedule(time_t& date, time_t slotDuration)
          * effort. */
         bookResources(date, slotDuration);
         // Check whether we are done with this task.
-        if (doneEffort >= effort)
+        if (round(doneEffort * 2048) >= round(effort * 2048))
         {
             if (scheduling == ASAP)
             {

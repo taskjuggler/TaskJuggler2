@@ -11,6 +11,7 @@
 #include "ktvtaskcanvasview.h"
 #include "Project.h"
 #include "Task.h"
+#include "Utility.h"
 #include "ktvreport.h"
 
 #define PIX_MILESTONE "flag"

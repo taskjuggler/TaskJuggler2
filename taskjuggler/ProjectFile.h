@@ -30,7 +30,7 @@ class Booking;
 class Interval;
 class Operation;
 class Report;
-class ReportHtml;
+class HTMLReport;
 class ReportElement;
 
 /**
@@ -130,16 +130,14 @@ private:
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
     bool readPriority(int& priority);
     bool readHTMLReport(const QString& reportType);
-    bool readNewHTMLReport(const QString& reportType);
-    bool readHTMLAccountReport();
     bool readHTMLStatusReport();
     bool readExportReport();
     bool readXMLReport();
     bool readReportElement(ReportElement* el);
     bool checkReportInterval(ReportElement* report);
     bool readHtmlUrl(ReportElement* report);
-    bool checkReportInterval(ReportHtml* report);
-    bool readHtmlUrl(ReportHtml* report);
+    bool checkReportInterval(HTMLReport* report);
+    bool readHtmlUrl(HTMLReport* report);
 #ifdef HAVE_KDE
     bool readICalTaskReport();
 #endif

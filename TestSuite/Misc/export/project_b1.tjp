@@ -17,7 +17,7 @@ task t3 "Task3" {
 	length 13d
 	allocate r3
 	flags f3, f5
-	complete 50
+	#complete 50
 }
 
 task t5 "Task5" {

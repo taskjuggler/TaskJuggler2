@@ -40,6 +40,10 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     columns.setAutoDelete(TRUE);
     columnFormat.setAutoDelete(TRUE);
 
+    columnTotals = 0;
+    columnTotalsCosts = 0;
+    columnTotalsRevenue = 0;
+
     maxDepthTaskList = 1;
     maxDepthResourceList = 1;
     maxDepthAccountList = 1;
@@ -47,26 +51,31 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     TableColumnFormat* tcf = new TableColumnFormat(this, i18n("Seq. No."));
     tcf->genTaskLine1 = &ReportElement::genCellSequenceNo;
     tcf->genResourceLine1 = &ReportElement::genCellSequenceNo;
+    tcf->genAccountLine1 = &ReportElement::genCellSequenceNo;
     columnFormat.insert(KW("seqno"), tcf);
 
     tcf = new TableColumnFormat(this, i18n("No."));
     tcf->genTaskLine1 = &ReportElement::genCellNo;
     tcf->genResourceLine1 = &ReportElement::genCellNo;
+    tcf->genAccountLine1 = &ReportElement::genCellNo;
     columnFormat.insert(KW("no"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Index"));
     tcf->genTaskLine1 = &ReportElement::genCellIndex;
     tcf->genResourceLine1 = &ReportElement::genCellIndex;
+    tcf->genAccountLine1 = &ReportElement::genCellIndex;
     columnFormat.insert(KW("index"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Id"));
     tcf->genTaskLine1 = &ReportElement::genCellId;
     tcf->genResourceLine1 = &ReportElement::genCellId;
+    tcf->genAccountLine1 = &ReportElement::genCellId;
     columnFormat.insert(KW("id"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Name"));
     tcf->genTaskLine1 = &ReportElement::genCellName;
     tcf->genResourceLine1 = &ReportElement::genCellName;
+    tcf->genAccountLine1 = &ReportElement::genCellName;
     columnFormat.insert(KW("name"), tcf);
     
     tcf = new TableColumnFormat(this, i18n("Start"));
@@ -233,7 +242,14 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine1 = &ReportElement::genCellProfit;
     tcf->genResourceLine2 = &ReportElement::genCellProfit;
     columnFormat.insert(KW("profit"), tcf);
-    
+   
+    tcf = new TableColumnFormat(this, i18n("Total"));
+    tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
+    tcf->genAccountLine1 = &ReportElement::genCellTotal;
+    tcf->genAccountLine2 = &ReportElement::genCellTotal;
+    tcf->genSummaryLine = &ReportElement::genCellSummary;
+    columnFormat.insert(KW("total"), tcf);
+
     tcf = new TableColumnFormat(this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadDaily1;
     tcf->genHeadLine2 = &ReportElement::genHeadDaily2;
@@ -241,6 +257,8 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellDailyTask;
     tcf->genResourceLine1 = &ReportElement::genCellDailyResource;
     tcf->genResourceLine2 = &ReportElement::genCellDailyResource;
+    tcf->genAccountLine1 = &ReportElement::genCellDailyAccount;
+    tcf->genAccountLine2 = &ReportElement::genCellDailyAccount;
     columnFormat.insert(KW("daily"), tcf);
     
     tcf = new TableColumnFormat(this, "");
@@ -250,6 +268,8 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellWeeklyTask;
     tcf->genResourceLine1 = &ReportElement::genCellWeeklyResource;
     tcf->genResourceLine2 = &ReportElement::genCellWeeklyResource;
+    tcf->genAccountLine1 = &ReportElement::genCellWeeklyAccount;
+    tcf->genAccountLine2 = &ReportElement::genCellWeeklyAccount;
     columnFormat.insert(KW("weekly"), tcf);
     
     tcf = new TableColumnFormat(this, "");
@@ -259,7 +279,30 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellMonthlyTask;
     tcf->genResourceLine1 = &ReportElement::genCellMonthlyResource;
     tcf->genResourceLine2 = &ReportElement::genCellMonthlyResource;
+    tcf->genAccountLine1 = &ReportElement::genCellMonthlyAccount;
+    tcf->genAccountLine2 = &ReportElement::genCellMonthlyAccount;
     columnFormat.insert(KW("monthly"), tcf);
+   
+    tcf = new TableColumnFormat(this, "");
+    tcf->genHeadLine1 = &ReportElement::genHeadQuarterly1;
+    tcf->genHeadLine2 = &ReportElement::genHeadQuarterly2;
+    tcf->genTaskLine1 = &ReportElement::genCellQuarterlyTask;
+    tcf->genTaskLine2 = &ReportElement::genCellQuarterlyTask;
+    tcf->genResourceLine1 = &ReportElement::genCellQuarterlyResource;
+    tcf->genResourceLine2 = &ReportElement::genCellQuarterlyResource;
+    tcf->genAccountLine1 = &ReportElement::genCellQuarterlyAccount;
+    tcf->genAccountLine2 = &ReportElement::genCellQuarterlyAccount;
+    columnFormat.insert(KW("quarterly"), tcf);
+   
+    tcf = new TableColumnFormat(this, "");
+    tcf->genHeadLine1 = &ReportElement::genHeadYear;
+    tcf->genTaskLine1 = &ReportElement::genCellYearlyTask;
+    tcf->genTaskLine2 = &ReportElement::genCellYearlyTask;
+    tcf->genResourceLine1 = &ReportElement::genCellYearlyResource;
+    tcf->genResourceLine2 = &ReportElement::genCellYearlyResource;
+    tcf->genAccountLine1 = &ReportElement::genCellYearlyAccount;
+    tcf->genAccountLine2 = &ReportElement::genCellYearlyAccount;
+    columnFormat.insert(KW("yearly"), tcf);
    
     scenarios.append(0);
 
@@ -268,6 +311,8 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     
     timeFormat = r->getTimeFormat();
     shortTimeFormat = r->getShortTimeFormat();
+
+    accumulate = FALSE;
 
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
     {
@@ -292,6 +337,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     taskRoot = r->getTaskRoot();
     loadUnit = r->getLoadUnit();
     showPIDs = r->getShowPIDs();
+    urls = r->getUrls();
 }
 
 ReportElement::~ReportElement()
@@ -308,6 +354,24 @@ QTextStream&
 ReportElement::s() const
 {
     return report->stream(); 
+}
+
+bool
+ReportElement::setUrl(const QString& key, const QString& url)
+{
+    if (urls.find(key) == urls.end())
+        return FALSE;
+
+    urls[key] = url;
+    return TRUE;
+}
+
+const QString*
+ReportElement::getUrl(const QString& key) const
+{
+    if (urls.find(key) == urls.end() || urls[key] == "")
+        return 0;
+    return &urls[key];
 }
 
 bool 

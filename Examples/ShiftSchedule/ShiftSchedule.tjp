@@ -157,7 +157,7 @@ ${shiftschedule "paul"}
 
 /*
  * Now we want a detailed schedule with exact start and end times for
- * a whole week. To save some typing we define a macro fro this and
+ * a whole week. To save some typing we define a macro for this and
  * hand over the start and end times of the weeks as arguments.
  */
 macro shifttimes [

@@ -16,6 +16,7 @@
 class CoreAttributes;
 class Task;
 class Resource;
+class Account;
 
 class TableLineInfo
 {
@@ -23,14 +24,16 @@ class TableLineInfo
 
 public:
     TableLineInfo(const CoreAttributes* c1, const CoreAttributes* c2, 
-                  const Task* t, const Resource* r, uint n, int s) :
-        ca1(c1), ca2(c2), task(t), resource(r), no(n), sc(s) { }
+                  const Task* t, const Resource* r, const Account* a,
+                  uint n, int s) :
+        ca1(c1), ca2(c2), task(t), resource(r), account(a), no(n), sc(s) { }
     ~TableLineInfo() { }
 
     const CoreAttributes* const ca1;
     const CoreAttributes* const ca2;
     const Task* const task;
     const Resource* const resource;
+    const Account* const account;
     const uint no;
     const int sc;
 

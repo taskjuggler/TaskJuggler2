@@ -19,8 +19,9 @@ HTMLPrimitives.cpp TableColumnFormat.cpp \
 ReportElement.cpp HTMLReport.cpp HTMLReportElement.cpp \
 HTMLTaskReport.cpp HTMLTaskReportElement.cpp \
 HTMLResourceReport.cpp HTMLResourceReportElement.cpp \
-HTMLAccountReport.cpp \
-HTMLStatusReport.cpp HTMLWeeklyCalendar.cpp ReportHtml.cpp \
+HTMLWeeklyCalendar.cpp HTMLWeeklyCalendarElement.cpp \
+HTMLAccountReport.cpp HTMLAccountReportElement.cpp \
+HTMLStatusReport.cpp \
 ExportReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp
 

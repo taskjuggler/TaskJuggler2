@@ -48,6 +48,14 @@ public:
     void generateFirstResource(const Resource* r, const Task* t, uint no);
     void generateNextResource(int sc, const Resource* r, const Task* t);
 
+    void generateFirstAccount(const Account* a, uint no);
+    void generateNextAccount(int sc, const Account* a);
+
+    void generateSummary(const QString& name, const QString& style);
+
+    void singleRowCell(const QString& text, TableLineInfo* tli);
+    void multiRowCell(const QString& text, TableLineInfo* tli);
+
     void textOneRow(const QString& text, bool light, const QString& align);
     void textMultiRows(const QString& text, bool light, const QString& align);
 
@@ -56,15 +64,14 @@ public:
     void reportLoad(double load, const QString& bgcol, bool bold,
                     bool milestone = FALSE);
 
+    void reportValue(double value, const QString& bgCol, bool bold);
+
     void setBarLabels(BarLabelText blt) { barLabels = blt; }
 
     void registerUrl(const QString& key, const QString& url = QString::null)
     {
         urls[key] = url;
     }
-    bool setUrl(const QString& key, const QString& url);
-    const QString* getUrl(const QString& key) const;
-
     void setRawHead(const QString& head)
     {
         rawHead = head;
@@ -123,16 +130,28 @@ public:
     virtual void genCellFollows(TableLineInfo* tli);
     virtual void genCellDailyTask(TableLineInfo* tli);
     virtual void genCellDailyResource(TableLineInfo* tli);
+    virtual void genCellDailyAccount(TableLineInfo* tli);
     virtual void genCellWeeklyTask(TableLineInfo* tli);
     virtual void genCellWeeklyResource(TableLineInfo* tli);
+    virtual void genCellWeeklyAccount(TableLineInfo* tli);
     virtual void genCellMonthlyTask(TableLineInfo* tli);
     virtual void genCellMonthlyResource(TableLineInfo* tli);
+    virtual void genCellMonthlyAccount(TableLineInfo* tli);
+    virtual void genCellQuarterlyTask(TableLineInfo* tli);
+    virtual void genCellQuarterlyResource(TableLineInfo* tli);
+    virtual void genCellQuarterlyAccount(TableLineInfo* tli);
+    virtual void genCellYearlyTask(TableLineInfo* tli);
+    virtual void genCellYearlyResource(TableLineInfo* tli);
+    virtual void genCellYearlyAccount(TableLineInfo* tli);
     virtual void genCellResponsibilities(TableLineInfo* tli);
     virtual void genCellSchedule(TableLineInfo* tli);
     virtual void genCellMinEffort(TableLineInfo* tli);
     virtual void genCellMaxEffort(TableLineInfo* tli);
     virtual void genCellRate(TableLineInfo* tli);
     virtual void genCellKotrusId(TableLineInfo* tli);
+    virtual void genCellTotal(TableLineInfo* tli);
+
+    virtual void genCellSummary(TableLineInfo* tli);
 
 protected:
     HTMLReportElement() { }
@@ -146,8 +165,6 @@ protected:
 
     QString rawHead;
     QString rawTail;
-
-    QMap<QString, QString> urls;
 } ;
 
 #endif

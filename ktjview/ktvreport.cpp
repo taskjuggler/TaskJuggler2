@@ -16,7 +16,7 @@
 #include "ktvreport.h"
 
 KTVReport::KTVReport( Project *p, const QString& f, time_t s, time_t e) :
-   Report(p, f, s, e, QString(), 0 )
+   Report(p, f, QString(), 0)
 {
    
 }

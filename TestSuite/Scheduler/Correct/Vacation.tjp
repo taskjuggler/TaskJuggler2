@@ -44,8 +44,8 @@ task t3 "Task3" {
 	start 2000-01-01
 	length 13d
 	allocate r3
-	minend 2000-01-26-17:59:59
-	maxend 2000-01-26-17:59:59
+	minend 2000-01-26-23:59:59
+	maxend 2000-01-26-23:59:59
 }
 
 task t4 "Task4" {

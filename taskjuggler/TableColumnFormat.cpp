@@ -24,5 +24,10 @@ TableColumnFormat::TableColumnFormat(ReportElement* e, const QString& t) :
 
     genResourceLine1 = &ReportElement::genCellEmpty;
     genResourceLine2 = 0;
+
+    genAccountLine1 = &ReportElement::genCellEmpty;
+    genAccountLine2 = 0;
+
+    genSummaryLine = &ReportElement::genCellEmpty;
 }
 

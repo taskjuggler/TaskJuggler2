@@ -43,7 +43,10 @@ public:
     GenCellPtr genTaskLine2;
     GenCellPtr genResourceLine1;
     GenCellPtr genResourceLine2;
+    GenCellPtr genAccountLine1;
+    GenCellPtr genAccountLine2;
 
+    GenCellPtr genSummaryLine;
 protected:
     TableColumnFormat() { }
     

@@ -18,6 +18,7 @@
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
+#include "Account.h"
 #include "Report.h"
 #include "Booking.h"
 #include "BookingList.h"
@@ -46,9 +47,8 @@ void
 HTMLReportElement::generateFirstTask(const Task* t, const Resource* r, uint no)
 {
     s() << "  <tr valign=\"middle\">" << endl;
-    const QString blank( "&nbsp;");
    
-    TableLineInfo tli(t, r, t, r, no, 0);
+    TableLineInfo tli(t, r, t, r, 0, no, 0);
 
     for (QPtrListIterator<TableColumn> it(columns); it; ++it )
     {
@@ -59,7 +59,7 @@ HTMLReportElement::generateFirstTask(const Task* t, const Resource* r, uint no)
                 (&tli);
         }
         else
-            qFatal("generatePlanTask: Unknown Column %s",
+            qFatal("generateFirstTask: Unknown Column %s",
                    ((*it)->getName()).latin1());
     }
     s() << "  </tr>" << endl;
@@ -68,7 +68,7 @@ HTMLReportElement::generateFirstTask(const Task* t, const Resource* r, uint no)
 void
 HTMLReportElement::generateNextTask(int sc, const Task* t, const Resource* r)
 {
-    TableLineInfo tli(t, r, t, r, 0, sc);
+    TableLineInfo tli(t, r, t, r, 0, 0, sc);
 
     s() << "  <tr>" << endl;
     for (QPtrListIterator<TableColumn> it(columns); it; ++it )
@@ -87,7 +87,7 @@ void
 HTMLReportElement::generateFirstResource(const Resource* r, const Task* t, 
                                         uint no)
 {
-    TableLineInfo tli(r, t, t, r, no, 0);
+    TableLineInfo tli(r, t, t, r, 0, no, 0);
     
     s() << "  <tr valign=\"middle\">";
     for (QPtrListIterator<TableColumn> it(columns); it; ++it )
@@ -99,7 +99,7 @@ HTMLReportElement::generateFirstResource(const Resource* r, const Task* t,
                 (&tli);
         }
         else
-            qFatal("generatePlanResource: Unknown Column %s",
+            qFatal("generateFirstResource: Unknown Column %s",
                    ((*it)->getName()).latin1());
     }
     s() << "  </tr>" << endl;
@@ -109,7 +109,7 @@ void
 HTMLReportElement::generateNextResource(int sc, const Resource* r, 
                                         const Task* t)
 {
-    TableLineInfo tli(r, t, t, r, 0, sc);
+    TableLineInfo tli(r, t, t, r, 0, 0, sc);
     
     s() << "  <tr valign=\"middle\">";
     for (QPtrListIterator<TableColumn> it(columns); it; ++it )
@@ -118,6 +118,45 @@ HTMLReportElement::generateNextResource(int sc, const Resource* r,
             columnFormat[(*it)->getName()]->genResourceLine2)
         {
             (*this.*(columnFormat[(*it)->getName()]->genResourceLine2))
+                (&tli);
+        }
+    }
+    s() << "  </tr>" << endl;
+}
+
+void
+HTMLReportElement::generateFirstAccount(const Account* a, uint no)
+{
+    TableLineInfo tli(a, 0, 0, 0, a, no, 0);
+
+    s() << "  <tr valign=\"middle\">" << endl;
+    for (QPtrListIterator<TableColumn> it(columns); it; ++it )
+    {
+        if (columnFormat[(*it)->getName()] &&
+            columnFormat[(*it)->getName()]->genAccountLine1)
+        {
+            (*this.*(columnFormat[(*it)->getName()]->genAccountLine1))
+                (&tli);
+        }
+        else
+            qFatal("generateFirstAccount: Unknown Column %s",
+                   ((*it)->getName()).latin1());
+    }
+    s() << "  </tr>" << endl;
+}
+
+void
+HTMLReportElement::generateNextAccount(int sc, const Account* a)
+{
+    TableLineInfo tli(a, 0, 0, 0, a, 0, sc);
+    
+    s() << "  <tr valign=\"middle\">";
+    for (QPtrListIterator<TableColumn> it(columns); it; ++it )
+    {
+        if (columnFormat[(*it)->getName()] &&
+            columnFormat[(*it)->getName()]->genAccountLine2)
+        {
+            (*this.*(columnFormat[(*it)->getName()]->genAccountLine2))
                 (&tli);
         }
     }
@@ -189,6 +228,44 @@ HTMLReportElement::generateTableHeader()
 }
 
 void
+HTMLReportElement::generateSummary(const QString& name, const QString&)
+{
+    TableLineInfo tli(0, 0, 0, 0, 0, 0, 0);
+    
+    s() << "  <tr valign=\"middle\">" << endl;
+    for (QPtrListIterator<TableColumn> it(columns); it; ++it )
+    {
+        if ((*it)->getName() == "name")
+            singleRowCell(name, &tli); 
+        else if (columnFormat[(*it)->getName()])
+        {
+            if (columnFormat[(*it)->getName()]->genSummaryLine)
+            {
+                (*this.*(columnFormat[(*it)->getName()]->genSummaryLine))
+                    (&tli);
+            }
+        }
+    }
+    s() << "  </tr>" << endl;
+}
+
+void
+HTMLReportElement::singleRowCell(const QString& text, TableLineInfo*)
+{
+    s() << "   <td ";
+    s() << ">" << text << "</td>" << endl;
+}
+
+void
+HTMLReportElement::multiRowCell(const QString& text, TableLineInfo*)
+{
+    s() << "   <td class=\""
+        << "\" rowspan=\""
+        << QString("%1").arg(scenarios.count()) << "\"";
+    s() << ">" << text << "</td>" << endl;
+}
+
+void
 HTMLReportElement::textOneRow(const QString& text, bool light, 
                               const QString& align)
 {
@@ -235,6 +312,22 @@ HTMLReportElement::reportLoad(double load, const QString& bgCol, bool bold,
           << bgCol << "\">&nbsp;</td>" << endl;
 }
 
+
+void
+HTMLReportElement::reportValue(double value, const QString& bgCol, bool bold)
+{
+    s() << "   <td class=\""
+      << bgCol << "\" style=\"text-align:right\">";
+    if (bold)
+        s() << "<b>";
+    s() << QString().sprintf("%.*f", 
+                           report->getProject()->getCurrencyDigits(), value);
+//      scaleTime(value, FALSE);
+    if (bold)
+        s() << "</b>";
+    s() << "</td>" << endl;
+}
+
 void
 HTMLReportElement::reportPIDs(const QString& pids, const QString bgCol, 
                               bool bold)
@@ -247,24 +340,6 @@ HTMLReportElement::reportPIDs(const QString& pids, const QString bgCol,
     if (bold)
         s() << "</b>";
     s() << "</td>" << endl;
-}
-
-bool
-HTMLReportElement::setUrl(const QString& key, const QString& url)
-{
-    if (urls.find(key) == urls.end())
-        return FALSE;
-
-    urls[key] = url;
-    return TRUE;
-}
-
-const QString*
-HTMLReportElement::getUrl(const QString& key) const
-{
-    if (urls.find(key) == urls.end() || urls[key] == "")
-        return 0;
-    return &urls[key];
 }
 
 QString
@@ -653,11 +728,16 @@ HTMLReportElement::genCellName(TableLineInfo* tli)
     if (tli->resource)
         mt.addMacro(new Macro(KW("resourceid"), tli->resource->getId(),
                               defFileName, defFileLine));
+    if (tli->account)
+        mt.addMacro(new Macro(KW("accountid"), tli->account->getId(),
+                              defFileName, defFileLine));
 
-    if (((strcmp(tli->ca1->getType(), "Resource") == 0 &&
-          resourceSortCriteria[0] == CoreAttributesList::TreeMode)) ||
+    if ((strcmp(tli->ca1->getType(), "Resource") == 0 &&
+         resourceSortCriteria[0] == CoreAttributesList::TreeMode) ||
         (strcmp(tli->ca1->getType(), "Task") == 0 &&
-         taskSortCriteria[0] == CoreAttributesList::TreeMode))
+         taskSortCriteria[0] == CoreAttributesList::TreeMode) ||
+        (strcmp(tli->ca1->getType(), "Account") == 0 &&
+         accountSortCriteria[0] == CoreAttributesList::TreeMode))
     {
         lPadding += tli->ca1->treeLevel();
         fontSize = fontSize + 5 * (maxDepthTaskList - 1 - 
@@ -693,6 +773,12 @@ HTMLReportElement::genCellName(TableLineInfo* tli)
             s() << "<a name=\"resource_" << tli->ca1->getFullId() 
                 << "\"></a>";
         s() << generateUrl(KW("resourcename"), tli->ca1->getName());
+    }
+    else if (strcmp(tli->ca1->getType(), "Account") == 0)
+    {
+        if (tli->ca2 == 0)
+            s() << "<a name=\"account_" << tli->ca1->getId() << "\"></a>";
+        s() << generateUrl(KW("accountname"), tli->ca1->getName());
     }
     s() << "</span></td>" << endl;
 }
@@ -1087,6 +1173,25 @@ HTMLReportElement::genCellDailyResource(TableLineInfo* tli)
 }
 
 void
+HTMLReportElement::genCellDailyAccount(TableLineInfo* tli)
+{
+    for (time_t day = midnight(start); day < end;
+         day = sameTimeNextDay(day))
+    {
+        QString style("default");
+        if (tli->account)
+        {
+            double volume = 
+                tli->account->getVolume(tli->sc, Interval(day).firstDay());
+            columnTotals[tli->sc][time2ISO(day)] += volume;
+            reportValue(volume, style, FALSE);
+        }
+        else
+            reportValue(columnTotals[tli->sc][time2ISO(day)], style, TRUE);
+    }
+}
+
+void
 HTMLReportElement::genCellWeeklyTask(TableLineInfo* tli)
 {
     bool weekStartsMonday = report->getWeekStartsMonday();
@@ -1097,7 +1202,8 @@ HTMLReportElement::genCellWeeklyTask(TableLineInfo* tli)
                                          firstWeek(weekStartsMonday),
                                          tli->resource);
         QString bgCol = 
-            tli->task->isActive(tli->sc, Interval(week).firstWeek(weekStartsMonday)) ?
+            tli->task->isActive(tli->sc, 
+                                Interval(week).firstWeek(weekStartsMonday)) ?
             (tli->task->isCompleted(tli->sc, sameTimeNextWeek(week) - 1) ?
              (tli->ca2 == 0 ? "completed" : "completedlight") :
              tli->task->isMilestone() ? "milestone" :
@@ -1139,7 +1245,8 @@ HTMLReportElement::genCellWeeklyResource(TableLineInfo* tli)
         if (showPIDs)
         {
             QString pids = tli->resource->
-                getProjectIDs(tli->sc, Interval(week).firstWeek(weekStartsMonday), 
+                getProjectIDs(tli->sc, 
+                              Interval(week).firstWeek(weekStartsMonday), 
                               tli->task);
             reportPIDs(pids, bgCol, !tli->resource->isGroup());
         }
@@ -1149,24 +1256,8 @@ HTMLReportElement::genCellWeeklyResource(TableLineInfo* tli)
 }
 
 void
-HTMLReportElement::genCellMonthlyResource(TableLineInfo* tli)
+HTMLReportElement::genCellWeeklyAccount(TableLineInfo*)
 {
-    for (time_t month = beginOfMonth(start); month < end;
-         month = sameTimeNextMonth(month))
-    {
-        double load = tli->resource->
-            getLoad(tli->sc, Interval(month).firstMonth(),
-                    AllAccounts, tli->task);
-        QString bgCol =
-            load > tli->resource->getMinEffort() * 
-            tli->resource->getEfficiency() ?
-            (tli->ca2 == 0 ? "booked" :
-             (tli->task->isCompleted(tli->sc, sameTimeNextMonth(month) - 1) ?
-              "completedlight" : "bookedlight")) :
-            isSameMonth(report->getProject()->getNow(), month) ? 
-            "today" : (tli->ca2 == 0 ? "default" : "defaultlight");
-        reportLoad(load, bgCol, !tli->resource->isGroup());
-    }
 }
 
 void
@@ -1194,6 +1285,140 @@ HTMLReportElement::genCellMonthlyTask(TableLineInfo* tli)
                    tli->task->isActive(tli->sc, Interval(month).firstMonth()) && 
                    tli->task->isMilestone());
     }
+}
+
+void
+HTMLReportElement::genCellMonthlyResource(TableLineInfo* tli)
+{
+    for (time_t month = beginOfMonth(start); month < end;
+         month = sameTimeNextMonth(month))
+    {
+        double load = tli->resource->
+            getLoad(tli->sc, Interval(month).firstMonth(),
+                    AllAccounts, tli->task);
+        QString bgCol =
+            load > tli->resource->getMinEffort() * 
+            tli->resource->getEfficiency() ?
+            (tli->ca2 == 0 ? "booked" :
+             (tli->task->isCompleted(tli->sc, sameTimeNextMonth(month) - 1) ?
+              "completedlight" : "bookedlight")) :
+            isSameMonth(report->getProject()->getNow(), month) ? 
+            "today" : (tli->ca2 == 0 ? "default" : "defaultlight");
+        reportLoad(load, bgCol, !tli->resource->isGroup());
+    }
+}
+
+void
+HTMLReportElement::genCellMonthlyAccount(TableLineInfo*)
+{
+}
+
+void
+HTMLReportElement::genCellQuarterlyTask(TableLineInfo* tli)
+{
+    for (time_t quarter = beginOfQuarter(start); quarter < end;
+         quarter = sameTimeNextQuarter(quarter))
+    {
+        double load = tli->task->getLoad(tli->sc, 
+                                         Interval(quarter).firstQuarter(),
+                                         tli->resource);
+        QString bgCol = 
+            tli->task->isActive(tli->sc, 
+                                Interval(quarter).firstQuarter()) ?
+            (tli->task->isCompleted(tli->sc, 
+                                    sameTimeNextQuarter(quarter) - 1) ?
+             (tli->ca2 == 0 ? "completed" : "completedlight"):
+             tli->task->isMilestone() ? "milestone" :
+             (tli->ca2 == 0 &&
+              !tli->task->isBuffer(tli->sc, 
+                                   Interval(quarter).firstQuarter())
+              ? "booked" : "bookedlight")) :
+            isSameQuarter(report->getProject()->getNow(), quarter) ? 
+            "today" : (tli->ca2 == 0 ? "default" : "defaultlight");
+        reportLoad(load, bgCol, !tli->task->isContainer(), 
+                   tli->task->isActive(tli->sc, 
+                                       Interval(quarter).firstQuarter()) && 
+                   tli->task->isMilestone());
+    }
+}
+
+void
+HTMLReportElement::genCellQuarterlyResource(TableLineInfo* tli)
+{
+    for (time_t quarter = beginOfQuarter(start); quarter < end;
+         quarter = sameTimeNextQuarter(quarter))
+    {
+        double load = tli->resource->
+            getLoad(tli->sc, Interval(quarter).firstQuarter(),
+                    AllAccounts, tli->task);
+        QString bgCol =
+            load > tli->resource->getMinEffort() * 
+            tli->resource->getEfficiency() ?
+            (tli->ca2 == 0 ? "booked" :
+             (tli->task->isCompleted(tli->sc, 
+                                     sameTimeNextQuarter(quarter) - 1) ?
+              "completedlight" : "bookedlight")) :
+            isSameQuarter(report->getProject()->getNow(), quarter) ? 
+            "today" : (tli->ca2 == 0 ? "default" : "defaultlight");
+        reportLoad(load, bgCol, !tli->resource->isGroup());
+    }
+}
+
+void
+HTMLReportElement::genCellQuarterlyAccount(TableLineInfo*)
+{
+}
+
+void
+HTMLReportElement::genCellYearlyTask(TableLineInfo* tli)
+{
+    for (time_t year = beginOfYear(start); year < end;
+         year = sameTimeNextYear(year))
+    {
+        double load = tli->task->getLoad(tli->sc, Interval(year).firstYear(),
+                                         tli->resource);
+        QString bgCol = 
+            tli->task->isActive(tli->sc, 
+                                Interval(year).firstYear()) ?
+            (tli->task->isCompleted(tli->sc, sameTimeNextYear(year) - 1) ?
+             (tli->ca2 == 0 ? "completed" : "completedlight"):
+             tli->task->isMilestone() ? "milestone" :
+             (tli->ca2 == 0 &&
+              !tli->task->isBuffer(tli->sc, 
+                                   Interval(year).firstYear())
+              ? "booked" : "bookedlight")) :
+            isSameYear(report->getProject()->getNow(), year) ? 
+            "today" : (tli->ca2 == 0 ? "default" : "defaultlight");
+        reportLoad(load, bgCol, !tli->task->isContainer(), 
+                   tli->task->isActive(tli->sc, Interval(year).firstYear()) && 
+                   tli->task->isMilestone());
+    }
+}
+
+void
+HTMLReportElement::genCellYearlyResource(TableLineInfo* tli)
+{
+    for (time_t year = beginOfYear(start); year < end;
+         year = sameTimeNextYear(year))
+    {
+        double load = tli->resource->
+            getLoad(tli->sc, Interval(year).firstYear(),
+                    AllAccounts, tli->task);
+        QString bgCol =
+            load > tli->resource->getMinEffort() * 
+            tli->resource->getEfficiency() ?
+            (tli->ca2 == 0 ? "booked" :
+             (tli->task->isCompleted(tli->sc, sameTimeNextYear(year) - 1) ?
+              "completedlight" : "bookedlight")) :
+            isSameYear(report->getProject()->getNow(), year) ? 
+            "today" : (tli->ca2 == 0 ? "default" : "defaultlight");
+        reportLoad(load, bgCol, !tli->resource->isGroup());
+    }
+}
+
+void
+HTMLReportElement::genCellYearlyAccount(TableLineInfo*)
+{
 }
 
 void
@@ -1299,5 +1524,21 @@ void
 HTMLReportElement::genCellKotrusId(TableLineInfo* tli)
 {
     textMultiRows(tli->resource->getKotrusId(), tli->ca2 != 0, "left");
+}
+
+void
+HTMLReportElement::genCellTotal(TableLineInfo* tli)
+{
+    double value = tli->account->getVolume(tli->sc, Interval(start, end));
+    columnTotals[tli->sc]["total"] += value;
+    textOneRow(QString().sprintf("%.*f",
+                                 report->getProject()->getCurrencyDigits(),
+                                 value), FALSE, "right");
+}
+
+void
+HTMLReportElement::genCellSummary(TableLineInfo* tli)
+{
+    multiRowCell("&nbsp", tli);
 }
 

@@ -54,8 +54,6 @@ ExportReport::ExportReport(Project* p, const QString& f,
     // hide all resources
     hideResource = new ExpressionTree(new Operation(1));
 
-    showActual = FALSE;
-
     taskSortCriteria[0] = CoreAttributesList::TreeMode;
     taskSortCriteria[1] = CoreAttributesList::StartUp;
     taskSortCriteria[2] = CoreAttributesList::EndUp;
@@ -104,9 +102,10 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
             << "  end " << end << endl;
         if ((*tli)->getScheduled(Task::Plan))
             s << "  planscheduled" << endl;
-        if (showActual)
+        // TODO: Fix scenario handling
+        if (scenarios.count() > 1)
         {
-            start = time2rfc((*tli)->getStart(Task::Actual));
+            start = time2rfc((*tli)->getStart(1));
             end = time2rfc((*tli)->getEnd(Task::Actual) + 1);
             s << "  actualstart " << start << endl
                 << "  actualend " << end << endl;
@@ -254,7 +253,8 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
                             << endl;
                     break;
                 case TA_COMPLETE:
-                    if ((*tli)->getComplete(Task::Plan) >= 0.0 && showActual)
+                    // TODO: Fix scenario handling
+                    if ((*tli)->getComplete(Task::Plan) >= 0.0)
                         s << "  complete " 
                             << (int) (*tli)->getComplete(Task::Plan) << endl;
                     break;
@@ -285,7 +285,8 @@ ExportReport::generateResourceList(TaskList& filteredTaskList,
         bool first = TRUE;
         for (int sc = Task::Plan; sc <= Task::Actual; sc++)
         {
-            if (sc == Task::Actual && !showActual)
+            // TODO: Fix scenario handling
+            if (sc == Task::Actual)
                 continue;
             BookingList bl = (*rli)->getJobs(sc);
             bl.setAutoDelete(TRUE);

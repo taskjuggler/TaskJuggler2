@@ -239,7 +239,7 @@ htmlresourcereport "Staff-Overview.html" {
 htmlresourcereport "Staff-Details.html" {
 	${navbar}
   columns name, daily, effort
-#	showactual
+  scenarios plan, actual	
 	hidetask 0
 	# The teams are virtual resources that we don't want to see. Since
 	# we have assigned a flag to those virtual resource, we can just

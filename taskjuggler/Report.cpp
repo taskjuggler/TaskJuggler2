@@ -53,8 +53,6 @@ Report::Report(const Project* p, const QString& f, const QString& df, int dl) :
     hideAccount = 0;
     rollUpAccount = 0;
 
-    hidePlan = FALSE;
-    showActual = FALSE;
     showPIDs = FALSE;
 
     loadUnit = days;
@@ -98,6 +96,24 @@ Report::open()
     }
     s.setDevice(&f);
     return TRUE;
+}
+
+bool
+Report::setUrl(const QString& key, const QString& url)
+{
+    if (urls.find(key) == urls.end())
+        return FALSE;
+
+    urls[key] = url;
+    return TRUE;
+}
+
+const QString*
+Report::getUrl(const QString& key) const
+{
+    if (urls.find(key) == urls.end() || urls[key] == "")
+        return 0;
+    return &urls[key];
 }
 
 bool 
@@ -220,31 +236,6 @@ Report::setRollUpAccount(ExpressionTree* et)
     rollUpAccount = et;
 }
 
-bool
-Report::setLoadUnit(const QString& u)
-{
-    if (u == KW("minutes"))
-        loadUnit = minutes;
-    else if (u == KW("hours"))
-        loadUnit = hours;
-    else if (u == KW("days"))
-        loadUnit = days;
-    else if (u == KW("weeks"))
-        loadUnit = weeks;
-    else if (u == KW("months"))
-        loadUnit = months;
-    else if (u == KW("years"))
-        loadUnit = years;
-    else if (u == KW("shortauto"))
-        loadUnit = shortAuto;
-    else if (u == KW("longauto"))
-        loadUnit = longAuto;
-    else
-        return FALSE;
-
-    return TRUE;
-}
-
 void
 Report::filterTaskList(TaskList& filteredList, const Resource* r,
                        ExpressionTree* hideExp, ExpressionTree* rollUpExp)
@@ -253,19 +244,34 @@ const
     /* Create a new list that contains only those tasks that were not
      * hidden. */
     filteredList.clear();
-    for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
+    for (TaskListIterator tli(project->getTaskListIterator());
+         *tli != 0; ++tli)
     {
+        bool resourceLoadedInAnyScenario = FALSE;
+        if (r != 0)
+        {
+            QValueList<int>::const_iterator it;
+            for (it = scenarios.begin(); it != scenarios.end();
+                 ++it)
+                if (r->getLoad(*it, Interval(start, end),
+                               AllAccounts,
+                               *tli)
+                    > 0.0)
+                {
+                    resourceLoadedInAnyScenario =
+                        TRUE;
+                    break;
+                }
+        }
         Interval iv(start, end);
         if (!isHidden(*tli, hideExp) &&
             iv.overlaps(Interval((*tli)->getStart(Task::Plan),
-                                 (*tli)->isMilestone() ? 
+                                 (*tli)->isMilestone() ?
                                  (*tli)->getStart(Task::Plan) :
-                                 (*tli)->getEnd(Task::Plan))) &&
-            (r == 0 || 
-             r->getLoad(Task::Plan, Interval(start, end),
-                        AllAccounts, *tli) > 0.0 ||
-             (showActual && r->getLoad(Task::Actual, Interval(start, end), 
-                                       AllAccounts, *tli) > 0.0)))
+                                 (*tli)->getEnd(Task::Plan)))
+            &&
+            (r == 0 ||
+             resourceLoadedInAnyScenario))
         {
             filteredList.append(tli);
         }
@@ -273,7 +279,8 @@ const
 
     /* Now we have to remove all sub tasks of rolled-up tasks
      * from the filtered list */
-    for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
+    for (TaskListIterator tli(project->getTaskListIterator());
+         *tli != 0; ++tli)
         if (isRolledUp(*tli, rollUpExp))
             for (TaskTreeIterator tti(*tli,
                                       TaskTreeIterator::parentAfterLeaves);
@@ -320,12 +327,22 @@ const
     for (ResourceListIterator rli(project->getResourceListIterator());
          *rli != 0; ++rli)
     {
+        bool taskLoadedInAnyScenario = FALSE;
+        if (t != 0)
+        {
+            QValueList<int>::const_iterator it;
+            for (it = scenarios.begin(); it != scenarios.end();
+                 ++it)
+                if ((*rli)->getLoad(*it, Interval(start, end),
+                                    AllAccounts, t) > 0.0)
+                {
+                    taskLoadedInAnyScenario =
+                        TRUE;
+                    break;
+                }
+        }
         if (!isHidden(*rli, hideExp) &&
-            (t == 0 || 
-             (*rli)->getLoad(Task::Plan, Interval(start, end), 
-                             AllAccounts, t) > 0.0 ||
-             (showActual && (*rli)->getLoad(Task::Actual, Interval(start, end),
-                                            AllAccounts, t) > 0.0)))
+            (t == 0 || taskLoadedInAnyScenario))
         {
             filteredList.append(*rli);
         }
@@ -420,6 +437,31 @@ Report::sortAccountList(AccountList& filteredList)
     filteredList.sort();
     
     maxDepthAccountList = filteredList.maxDepth();
+}
+
+bool
+Report::setLoadUnit(const QString& u)
+{
+    if (u == KW("minutes"))
+        loadUnit = minutes;
+    else if (u == KW("hours"))
+        loadUnit = hours;
+    else if (u == KW("days"))
+        loadUnit = days;
+    else if (u == KW("weeks"))
+        loadUnit = weeks;
+    else if (u == KW("months"))
+        loadUnit = months;
+    else if (u == KW("years"))
+        loadUnit = years;
+    else if (u == KW("shortauto"))
+        loadUnit = shortAuto;
+    else if (u == KW("longauto"))
+        loadUnit = longAuto;
+    else
+        return FALSE;
+
+    return TRUE;
 }
 
 QString

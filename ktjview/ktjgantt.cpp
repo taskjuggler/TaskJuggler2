@@ -18,6 +18,7 @@
 #include "ktvtaskcanvasview.h"
 #include "ktvheader.h"
 #include "timedialog.h"
+#include "Utility.h"
 #include <qvbox.h>
 
 

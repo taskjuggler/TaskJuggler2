@@ -18,6 +18,7 @@
 #include <qptrlist.h>
 #include <qtextstream.h>
 #include <qdict.h>
+#include <qmap.h>
 
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
@@ -97,6 +98,11 @@ public:
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
 
+    bool setUrl(const QString& key, const QString& url);
+    const QString* getUrl(const QString& key) const;
+
+    void setAccumulate(bool s) { accumulate = s; }
+
     void filterTaskList(TaskList& filteredList, const Resource* r,
                         ExpressionTree* hideExp, ExpressionTree* rollUpExp)
         const;
@@ -160,16 +166,27 @@ public:
     virtual void genCellFollows(TableLineInfo*) = 0;
     virtual void genCellDailyTask(TableLineInfo*) = 0;
     virtual void genCellDailyResource(TableLineInfo*) = 0;
+    virtual void genCellDailyAccount(TableLineInfo*) = 0;
     virtual void genCellWeeklyTask(TableLineInfo*) = 0;
     virtual void genCellWeeklyResource(TableLineInfo*) = 0;
+    virtual void genCellWeeklyAccount(TableLineInfo*) = 0;
     virtual void genCellMonthlyTask(TableLineInfo*) = 0;
     virtual void genCellMonthlyResource(TableLineInfo*) = 0;
+    virtual void genCellMonthlyAccount(TableLineInfo*) = 0;
+    virtual void genCellQuarterlyTask(TableLineInfo*) = 0;
+    virtual void genCellQuarterlyResource(TableLineInfo*) = 0;
+    virtual void genCellQuarterlyAccount(TableLineInfo*) = 0;
+    virtual void genCellYearlyTask(TableLineInfo*) = 0;
+    virtual void genCellYearlyResource(TableLineInfo*) = 0;
+    virtual void genCellYearlyAccount(TableLineInfo*) = 0;
     virtual void genCellResponsibilities(TableLineInfo*) = 0;
     virtual void genCellSchedule(TableLineInfo*) = 0;
     virtual void genCellMinEffort(TableLineInfo*) = 0;
     virtual void genCellMaxEffort(TableLineInfo*) = 0;
     virtual void genCellRate(TableLineInfo*) = 0;
     virtual void genCellKotrusId(TableLineInfo*) = 0;
+    virtual void genCellTotal(TableLineInfo*) = 0;
+    virtual void genCellSummary(TableLineInfo*) = 0;
     
 protected:
     ReportElement() { }
@@ -184,6 +201,7 @@ protected:
     QString stripTaskRoot(QString taskId) const;
     
     QString scaledLoad(double t) const;
+    void reportValue(double value, const QString& bgcol, bool bold);
 
     Report* report;
     QValueList<int> scenarios;
@@ -220,13 +238,21 @@ protected:
     
     LoadUnit loadUnit;
 
+    bool showPIDs;
+
+    bool accumulate;
+    
+    QMap<QString, QString> urls;
+    
     /* The maximum depth of the tree that we have to report in tree-sorting
      * mode. */
     uint maxDepthTaskList;
     uint maxDepthResourceList;
     uint maxDepthAccountList;
     
-    bool showPIDs;
+    QMap<QString, double>* columnTotals;
+    QMap<QString, double>* columnTotalsCosts;
+    QMap<QString, double>* columnTotalsRevenue;
 } ;
 
 #endif
