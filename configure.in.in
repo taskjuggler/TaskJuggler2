@@ -79,6 +79,7 @@ if test "$DATECALC" = no -o "$XMLPARSER" = no -o \
   AC_MSG_WARN(tjx2gantt GANTT chart generator will not work)
   TJX2GANTT="no"
 fi
+AC_SUBST(TJX2GANTT)
 
 dnl Check for the stuff needed to create the HTML manual
 AC_CHECK_PROG(SGML2HTML, sgml2html, sgml2html, no)
