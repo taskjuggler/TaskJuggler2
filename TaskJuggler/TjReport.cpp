@@ -702,12 +702,12 @@ TjReport::indent(const QString& input, const QListViewItem* lvi, bool right)
 
     if (right)
     {
-        QString spaces = QString().fill(' ', maxDepth - level);
+        QString spaces = QString().fill(' ', 2 * (maxDepth - level));
         return input + spaces;
     }
     else
     {
-        QString spaces = QString().fill(' ', level);
+        QString spaces = QString().fill(' ', 2 * level);
         return spaces + input;
     }
 }

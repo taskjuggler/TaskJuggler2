@@ -214,7 +214,7 @@ taskreport "Project Overview" {
 
 # A resource report for use with the TaskJuggler GUI  
 resourcereport "Resource Usage" {
-  columns effort
+  columns effort, freeload, utilization
   hideresource 0
 }
 

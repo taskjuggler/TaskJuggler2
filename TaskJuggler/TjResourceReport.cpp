@@ -57,14 +57,8 @@ TjResourceReport::generateList()
     resourceList = reportDef->getProject()->getResourceList();
     taskList = reportDef->getProject()->getTaskList();
 
-    // QListView can hide subtasks. So we feed the list with all tasks first
-    // and then later close those items that we want to roll up. This
-    // expression means "roll-up none".
-    ExpressionTree* et = new ExpressionTree;
-    et->setTree("0", reportDef->getProject());
-
     if (!reportElement->filterResourceList
-        (resourceList, 0, reportElement->getHideResource(), et))
+        (resourceList, 0, reportElement->getHideResource(), 0))
         return FALSE;
 
     if (resourceList.isEmpty())
@@ -127,9 +121,10 @@ TjResourceReport::generateList()
             // user did not want to hide this task.
             TaskList filteredTaskList = taskList;
             if (!reportElement->filterTaskList
-                (filteredTaskList, *rli, reportElement->getHideTask(), et))
+                (filteredTaskList, *rli, reportElement->getHideTask(), 0))
                 return FALSE;
             reportElement->sortTaskList(filteredTaskList);
+
             for (TaskListIterator tli(filteredTaskList); *tli; ++tli)
             {
                 /* We iterate through the filtered task list and check whether
@@ -212,6 +207,27 @@ TjResourceReport::generateListLine(const Resource* r, QListViewItem* lvi)
             val = r->getLoad(scenario, Interval(reportElement->getStart(),
                                                 reportElement->getEnd()));
             cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
+                              tcf->getHAlign() == TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "freeload")
+        {
+            double val = 0.0;
+            val = r->getAvailableWorkLoad
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()));
+            cellText = indent(reportElement->scaledLoad(val, tcf), lvi,
+                              tcf->getHAlign() == TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "utilization")
+        {
+            double load = r->getLoad
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()));
+            double freeLoad = r->getAvailableWorkLoad
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()));
+            double val = 100.0 / (1.0 + (freeLoad / load));
+            cellText = indent(QString().sprintf("%.1f%%", val), lvi,
                               tcf->getHAlign() == TableColumnFormat::right);
         }
         else if ((*ci)->getName() == "note")
@@ -372,11 +388,9 @@ TjResourceReport::drawResourceTasks(const Resource* r)
 {
     // Now we draw all tasks that this resource is working on, if the
     // user did not want to hide the task.
-    ExpressionTree* et = new ExpressionTree;
-    et->setTree("0", reportDef->getProject());
     TaskList filteredTaskList = taskList;
     if (!reportElement->filterTaskList
-        (filteredTaskList, r, reportElement->getHideTask(), et))
+        (filteredTaskList, r, reportElement->getHideTask(), 0))
         return FALSE;
     reportElement->sortTaskList(filteredTaskList);
     for (TaskListIterator tli(filteredTaskList); *tli; ++tli)

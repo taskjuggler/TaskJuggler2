@@ -8,7 +8,7 @@ project prj "htmltaskreport test" "$Id$" ${prjStart}  ${prjEnd} {
 
 flags flag1, flag2, flag3, flag4
 
-include "html-test-macros.tjsp"
+include "html-test-macros.tji"
 
 resource tux1 "Tux 1" {
 	rate 300.0
