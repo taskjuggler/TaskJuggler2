@@ -378,6 +378,9 @@ same as start dates.</para></listitem>
 <listitem><para>The dependency loop detector can now be skipped with
 the --nodepcheck command line option.</para></listitem>
 
+<listitem><para>The dependency loop detector runs now significantly
+faster for larger projects.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

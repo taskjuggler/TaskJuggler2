@@ -1004,42 +1004,39 @@ Task::loopDetector()
 	if (DEBUGPF(2))
 		qDebug("Running loop detector for task %s", id.latin1());
 	// Check ASAP tasks
-	if (loopDetection(LDIList(), FALSE, LoopDetectorInfo::fromParent))
+	LDIList list;
+	if (loopDetection(list, FALSE, LoopDetectorInfo::fromParent))
 		return TRUE;
 	// Check ALAP tasks
-	if (loopDetection(LDIList(), TRUE, LoopDetectorInfo::fromParent))
+	if (loopDetection(list, TRUE, LoopDetectorInfo::fromParent))
 		return TRUE;
 	return FALSE;
 }
 
 bool
-Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
+Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
 					caller)
 {
 	if (DEBUGPF(10))
 		qDebug("%sloopDetection at %s (%s)",
 			   QString().fill(' ', list.count() + 1).latin1(), id.latin1(),
 			   atEnd ? "End" : "Start");
-
-	LoopDetectorInfo thisTask(this, atEnd);
-
+	
 	/* If we find the current task (with same position) in the list, we have
 	 * detected a loop. */
-	LDIList::iterator it;
-	if ((it = list.find(thisTask)) != list.end())
+	LoopDetectorInfo* thisTask = new LoopDetectorInfo(this, atEnd);
+	if ((atEnd && loopDetectorMarkEnd) || (!atEnd && loopDetectorMarkStart))
 	{
 		QString loopChain;
-		for ( ; it != list.end(); ++it)
+		LoopDetectorInfo* it;
+		for (it = list.first(); *it != *thisTask; it =
+			 it->next())
+			;
+		for ( ; it != 0; it = it->next())
 		{
 			loopChain += QString("%1 (%2) -> ")
-				.arg((*it).getTask()->getId())
-				.arg((*it).getAtEnd() ? "End" : "Start");
-			/*
-			(*it).getTask()->fatalError("%s (%s) is part of loop",
-			(*it).getTask()->getId().latin1(),
-			(*it).getAtEnd() ?
-			"End" : "Start");
-			 */
+				.arg(it->getTask()->getId())
+				.arg(it->getAtEnd() ? "End" : "Start");
 		}
 		loopChain += QString("%1 (%2)").arg(id)
 			.arg(atEnd ? "End" : "Start");
@@ -1047,7 +1044,7 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 		return TRUE;
 	}
 	list.append(thisTask);
-
+	
 	/* Now we have to traverse the graph in the direction of the specified
 	 * dependencies. 'precedes' and 'depends' specify dependencies in the
 	 * opposite direction of the flow of the tasks. So we have to make sure
@@ -1059,6 +1056,16 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 	 * relationship. */
 	if (!atEnd)
 	{
+		loopDetectorMarkStart = TRUE;
+		/*
+		     |
+		     v
+		   +--------
+		-->| o--+
+		   +--- | --
+		        |
+			    V
+		*/	 
 		if (caller == LoopDetectorInfo::fromPrev ||
 			caller == LoopDetectorInfo::fromParent)
 			/* If we were not called from a sub task we check all sub tasks.*/
@@ -1081,6 +1088,13 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 				}
 			}
 
+		/*
+		     |
+		     v
+		   +--------
+		-->| o---->
+		   +--------
+		*/
 		if (scheduling == ASAP && sub.isEmpty())
 		{
 			/* Leaf task are followed in their scheduling direction. So we
@@ -1096,6 +1110,15 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 			caller == LoopDetectorInfo::fromOtherEnd || 
 			(caller == LoopDetectorInfo::fromPrev && scheduling == ALAP))
 		{
+			/*
+			     ^
+			     |
+			   + | -----
+			-->| o <--
+			   +--------
+			     ^
+				 |
+			*/
 			if (parent)
 			{
 				/* If the task depends on a brother we ignore the arc to the
@@ -1114,22 +1137,46 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 				}
 			}
 
+			/*
+			 <---+
+			   + | -----
+			-->| o <--
+			   +--------
+			     ^
+				 |
+			*/
 			/* Now check all previous tasks that had explicit precedes on this
 			 * task. */
 			for (TaskListIterator tli(predecessors); *tli != 0; ++tli)
 			{
-				if (DEBUGPF(15))
-					qDebug("%sChecking previous %s of task %s",
-						   QString().fill(' ', list.count()).latin1(),
-						   (*tli)->getId().latin1(), id.latin1());
-				if((*tli)->loopDetection(list, TRUE, 
-										 LoopDetectorInfo::fromSucc))
-					return TRUE;
+				/* If the parent of the predecessor is also in the predecessor
+				 * list, we can safely ignore the predecessor. */
+				if (predecessors.findRef((*tli)->parent) == -1)
+				{
+					if (DEBUGPF(15))
+						qDebug("%sChecking previous %s of task %s",
+							   QString().fill(' ', list.count()).latin1(),
+							   (*tli)->getId().latin1(), id.latin1());
+					if((*tli)->loopDetection(list, TRUE, 
+											 LoopDetectorInfo::fromSucc))
+						return TRUE;
+				}
 			}
 		}
+		loopDetectorMarkStart = FALSE;
 	}
 	else
 	{
+		loopDetectorMarkEnd = TRUE;
+		/*
+		      |
+		      v
+		--------+
+		   +--o |<--
+		-- | ---+
+		   |
+		   v
+		*/	
 		if (caller == LoopDetectorInfo::fromSucc ||
 			caller == LoopDetectorInfo::fromParent)
 			/* If we were not called from a sub task we check all sub tasks.*/
@@ -1151,6 +1198,13 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 				}
 			}
 
+		/*
+		      |
+		      v
+		--------+
+		 <----o |<--
+		--------+
+		*/	
 		if (scheduling == ALAP && sub.isEmpty())
 		{
 			/* Leaf task are followed in their scheduling direction. So we
@@ -1166,6 +1220,15 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 			caller == LoopDetectorInfo::fromSub ||
 			(caller == LoopDetectorInfo::fromSucc && scheduling == ASAP))
 		{
+			/*
+			      ^
+			      |
+			----- | +
+			  --> o |<--
+			--------+
+			      ^
+			      |
+			*/	
 			if (parent)
 			{
 				/* If the task precedes a brother we ignore the arc to the
@@ -1184,20 +1247,35 @@ Task::loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
 				}
 			}
 
+			/*
+			      +---> 
+			----- | +
+			  --> o |<--
+			--------+
+			      ^
+			      |
+			*/	
 			/* Now check all following tasks that have explicit depends on this
 			 * task. */
 			for (TaskListIterator tli(successors); *tli != 0; ++tli)
 			{
-				if (DEBUGPF(15))
-					qDebug("%sChecking follower %s of task %s",
-						   QString().fill(' ', list.count()).latin1(),	
-						   (*tli)->getId().latin1(), id.latin1());
-				if ((*tli)->loopDetection(list, FALSE,
-										  LoopDetectorInfo::fromPrev))
-					return TRUE;
+				/* If the parent of the successor is also in the successor
+				 * list, we can safely ignore the successor. */
+				if (successors.findRef((*tli)->parent) == -1)
+				{
+					if (DEBUGPF(15))
+						qDebug("%sChecking follower %s of task %s",
+							   QString().fill(' ', list.count()).latin1(),	
+							   (*tli)->getId().latin1(), id.latin1());
+					if ((*tli)->loopDetection(list, FALSE,
+											  LoopDetectorInfo::fromPrev))
+						return TRUE;
+				}
 			}
 		}
+		loopDetectorMarkEnd = FALSE;
 	}
+	list.removeLast();
 
 	if (DEBUGPF(5))
 		qDebug("%sNo loops found in %s (%s)",

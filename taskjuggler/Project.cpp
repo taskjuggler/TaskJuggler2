@@ -250,6 +250,8 @@ Project::pass2(bool noDepCheck)
 			qDebug("Searching for dependency loops...");
 		// Check all tasks for dependency loops.
 		for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+			(*tli)->initLoopDetector();
+		for (TaskListIterator tli(taskList); *tli != 0; ++tli)
 			if ((*tli)->loopDetector())
 				return FALSE;
 	}

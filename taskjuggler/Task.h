@@ -258,6 +258,11 @@ public:
 
 	bool preScheduleOk();
 	bool scheduleOk(int& errors, QString scenario) const;
+	void initLoopDetector()
+	{
+		loopDetectorMarkStart = FALSE;
+		loopDetectorMarkEnd = FALSE;
+	}
 	bool loopDetector();
 	void computeBuffers();
 	time_t nextSlot(time_t slotDuration) const;
@@ -282,7 +287,7 @@ public:
    void loadFromXML( QDomElement& parent, Project *project );
    
 private:
-	bool loopDetection(LDIList list, bool atEnd, LoopDetectorInfo::FromWhere
+	bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
 					   caller);
 	bool scheduleContainer(bool safeMode);
 	Task* subFirst() { return (Task*) sub.first(); }
@@ -464,6 +469,12 @@ private:
 	 * frame. */
 	bool runAway;
 
+	/**
+	 * The loop detector marks are used during dependency loop detection only.
+	 */
+	bool loopDetectorMarkStart;
+	bool loopDetectorMarkEnd;
+	
 	/// A list of all the resources booked for this task.
 	ResourceList bookedResources;
 } ;
