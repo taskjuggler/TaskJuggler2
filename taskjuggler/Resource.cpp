@@ -434,10 +434,10 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
-        if (task == 0 ||
-            ((acctType == AllAccounts || 
-              task->getAccount()->getAcctType() == acctType) &&
-             task == b->getTask()))
+        if ((task == 0 || 
+            (task != 0 && task == b->getTask()) && 
+             (acctType == AllAccounts || 
+              b->getTask()->getAccount()->getAcctType() == acctType)))
             bookings++;
     }
 

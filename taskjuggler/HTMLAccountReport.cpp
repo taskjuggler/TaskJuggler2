@@ -46,6 +46,9 @@ HTMLAccountReport::generate()
     s << "<tbody>" << endl;
 
     AccountList filteredList;
+    filterAccountList(filteredList, AllAccounts, hideAccount, rollUpAccount);
+    maxDepthAccountList = filteredList.maxDepth();
+    
     filterAccountList(filteredList, Cost, hideAccount, rollUpAccount);
     sortAccountList(filteredList);
 

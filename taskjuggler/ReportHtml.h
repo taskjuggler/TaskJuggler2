@@ -91,6 +91,12 @@ public:
     void taskName(const Task* t, const Resource* r, bool big);
     void resourceName(const Resource* t, const Task* t, bool big);
 
+    void taskCostRev(const Task* t, const Resource* r, double val);
+    void resourceCostRev(const Task* t, const Resource* r, double val);
+
+    void taskLoadValue(const Task* t, const Resource* r, double val);
+    void resourceLoadValue(const Task* t, const Resource* r, double val);
+    
     void scenarioResources(int sc, const Task* t, bool light);
 
     void reportLoad(double load, const QString& bgcol, bool bold,

@@ -52,7 +52,12 @@ HTMLResourceReport::generate()
     ResourceList filteredResourceList;
     filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
     sortResourceList(filteredResourceList);
+    maxDepthResourceList = filteredResourceList.maxDepth();
 
+    TaskList filteredTaskList;
+    filterTaskList(filteredTaskList, 0, hideTask, rollUpResource);
+    maxDepthTaskList = filteredTaskList.maxDepth();
+    
     int rNo = 1;
     for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
          ++rli, ++rNo)
@@ -61,7 +66,6 @@ HTMLResourceReport::generate()
         if (showActual)
             generateActualResource(*rli, 0);
 
-        TaskList filteredTaskList;
         filterTaskList(filteredTaskList, *rli, hideTask, rollUpResource);
         sortTaskList(filteredTaskList);
 

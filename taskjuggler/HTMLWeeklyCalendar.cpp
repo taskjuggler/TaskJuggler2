@@ -51,10 +51,12 @@ HTMLWeeklyCalendar::generate()
     TaskList filteredTaskList;
     filterTaskList(filteredTaskList, 0, hideTask, rollUpTask);
     sortTaskList(filteredTaskList);
+    maxDepthTaskList = filteredTaskList.maxDepth();
 
     ResourceList filteredResourceList;
     filterResourceList(filteredResourceList, 0, hideResource, rollUpResource);
     sortResourceList(filteredResourceList);
+    maxDepthResourceList = filteredResourceList.maxDepth();
     
     generateCalendar(filteredTaskList, filteredResourceList);
 

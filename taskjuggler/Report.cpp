@@ -305,8 +305,6 @@ Report::sortTaskList(TaskList& filteredList)
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(taskSortCriteria[i], i);
     filteredList.sort();
-
-    maxDepthTaskList = filteredList.maxDepth();
 }
 
 void
@@ -352,7 +350,7 @@ Report::sortResourceList(ResourceList& filteredList)
     ResourceList list = filteredList;
     if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
     {
-        // Set sorting criteria so sequence no since list.contains() needs it.
+        // Set sorting criteria to sequence no since list.contains() needs it.
         filteredList.setSorting(CoreAttributesList::SequenceUp, 0);
         for (ResourceListIterator rli(filteredList); *rli != 0; ++rli)
         {
@@ -366,8 +364,6 @@ Report::sortResourceList(ResourceList& filteredList)
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(resourceSortCriteria[i], i);
     filteredList.sort();
-    
-    maxDepthResourceList = filteredList.maxDepth();
 }
 
 void

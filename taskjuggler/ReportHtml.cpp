@@ -122,13 +122,7 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
               << "</td>" << endl;
         }
         else if (*it == KW("effort"))
-        {
-            s << "<td class=\""
-              << (r == 0 ? "default" : "defaultlight")
-              << "\" style=\"text-align:right white-space:nowrap\">"
-              << scaledLoad(t->getLoad(Task::Plan, Interval(start, end), r))
-              << "</td>" << endl;
-        }
+            taskLoadValue(t, r, t->getLoad(Task::Plan, Interval(start, end), r)); 
         else if (*it == KW("projectid"))
             textTwoRows(t->getProjectId() + " (" +
                         project->getIdIndex(t->getProjectId()) + ")", r != 0,
@@ -184,31 +178,18 @@ ReportHtml::generatePlanTask(const Task* t, const Resource* r, uint no)
             s << "</span></td>" << endl;
         }
         else if (*it == KW("cost") || *it == "costs")
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  t->getCredits(Task::Plan,
-                                                Interval(start, end), Cost, r)),
-                r != 0,
-                "right");
+            taskCostRev(t, r, t->getCredits(Task::Plan,
+                                            Interval(start, end), Cost, r));
         else if (*it == KW("revenue"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  t->getCredits(Task::Plan,
-                                                Interval(start, end),
-                                                Revenue, r)),
-                r != 0,
-                "right");
+            taskCostRev(t, r, t->getCredits(Task::Plan,
+                                            Interval(start, end),
+                                            Revenue, r));
         else if (*it == KW("profit"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  t->getCredits(Task::Plan,
-                                                Interval(start, end),
-                                                Revenue, r) -
-                                  t->getCredits(Task::Plan,
-                                                Interval(start, end),
-                                                Cost, r)),
-                r != 0,
-                "right");
+            taskCostRev(t, r,
+                        t->getCredits(Task::Plan, Interval(start, end),
+                                      Revenue, r) -
+                        t->getCredits(Task::Plan, Interval(start, end),
+                                      Cost, r));
         else if (*it == KW("priority"))
             textTwoRows(QString().sprintf("%d", t->getPriority()), r != 0,
                         "right");
@@ -306,38 +287,21 @@ ReportHtml::generateActualTask(const Task* t, const Resource* r)
               << "</td>" << endl;
         }
         else if (*it == KW("effort"))
-        {
-            s << "<td class=\""
-              << (r == 0 ? "default" : "defaultlight")
-              << "\" style=\"text-align:right white-space:nowrap\">"
-              << scaledLoad(t->getLoad(Task::Actual, Interval(start, end), r))
-              << "</td>" << endl;
-        }
+            taskLoadValue(t, r, t->getLoad(Task::Actual, Interval(start, end), r));
         else if (*it == KW("resources"))
             scenarioResources(Task::Actual, t, r != 0);
         else if (*it == KW("cost") || *it == "costs")
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  t->getCredits(Task::Actual,
-                                                Interval(start, end), Cost, r)),
-                r != 0, "right");
+            taskCostRev(t, r, t->getCredits(Task::Actual,
+                                            Interval(start, end), Cost, r));
         else if (*it == KW("revenue"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  t->getCredits(Task::Actual,
-                                                Interval(start, end), 
-                                                Revenue, r)),
-                r != 0, "right");
+            taskCostRev(t, r, t->getCredits(Task::Actual,
+                                            Interval(start, end), Revenue, r));
         else if (*it == KW("profit"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  t->getCredits(Task::Actual,
-                                                Interval(start, end), 
-                                                Revenue, r) -
-                                  t->getCredits(Task::Actual,
-                                                Interval(start, end), 
-                                                Cost, r)),
-                r != 0, "right");
+            taskCostRev(t, r,
+                        t->getCredits(Task::Actual, Interval(start, end),
+                                      Revenue, r) -
+                        t->getCredits(Task::Actual, Interval(start, end),
+                                      Cost, r));
         else if (*it == KW("completed"))
             if (t->getCompletionDegree(Task::Actual) ==
                 t->getCalcedCompletionDegree(Task::Actual))
@@ -421,14 +385,8 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
         else if (*it == KW("duration"))
             emptyPlan(t != 0);
         else if (*it == KW("effort"))
-        {
-            s << "<td class=\""
-              << (t == 0 ? "default" : "defaultlight")
-              << "\" style=\"text-align:right white-space:nowrap\">"
-              << scaledLoad(r->getLoad(Task::Plan, Interval(start, end), 
-                                       AllAccounts, t))
-              << "</td>" << endl;
-        }
+            resourceLoadValue(t, r, r->getLoad(Task::Plan, Interval(start, end), 
+                                               AllAccounts, t));
         else if (*it == KW("projectid"))
             emptyPlan(t != 0);
         else if (*it == KW("resources"))
@@ -458,28 +416,18 @@ ReportHtml::generatePlanResource(const Resource* r, const Task* t, uint no)
         else if (*it == KW("note"))
             emptyPlan(t != 0);
         else if (*it == KW("cost") || *it == "costs")
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  r->getCredits(Task::Plan,
-                                                Interval(start, end), Cost, t)),
-                t != 0, "right");
+            resourceCostRev(t, r, r->getCredits(Task::Plan,
+                                                Interval(start, end), Cost, t));
         else if (*it == KW("revenue"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  r->getCredits(Task::Plan,
-                                                Interval(start, end),
-                                                Revenue, t)),
-                t != 0, "right");
+            resourceCostRev(t, r, r->getCredits(Task::Plan,
+                                                Interval(start, end), 
+                                                Revenue, t));
         else if (*it == KW("profit"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  r->getCredits(Task::Plan,
-                                                Interval(start, end),
-                                                Revenue, t) -
-                                  r->getCredits(Task::Plan,
-                                                Interval(start, end),
-                                                Cost, t)),
-                t != 0, "right");
+            resourceCostRev(t, r,
+                            r->getCredits(Task::Plan, Interval(start, end),
+                                          Revenue, t) -
+                            r->getCredits(Task::Plan, Interval(start, end),
+                                          Cost, t));
         else if (*it == KW("priority"))
             emptyPlan(t != 0);
         else if (*it == KW("flags"))
@@ -511,39 +459,23 @@ ReportHtml::generateActualResource(const Resource* r, const Task* t)
          ++it )
     {
         if (*it == KW("effort"))
-        {
-            s << "<td class=\""
-              << (t == 0 ? "default" : "defaultlight")
-              << "\" style=\"text-align:right white-space:nowrap\">"
-              << scaledLoad(r->getLoad(Task::Actual, Interval(start, end),
-                                      AllAccounts, t))
-              << "</td>" << endl;
-        }
+            resourceLoadValue(t, r, r->getLoad(Task::Actual, Interval(start, end),
+                                               AllAccounts, t));
         else if (*it == KW("schedule"))
             generateSchedule(Task::Actual, r, t);
         else if (*it == KW("cost") || *it == "costs")
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  r->getCredits(Task::Actual,
-                                                Interval(start, end), Cost, t)),
-                t != 0, "right");
+            resourceCostRev(t, r, r->getCredits(Task::Actual,
+                                                Interval(start, end), Cost, t));
         else if (*it == KW("revenue"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  r->getCredits(Task::Actual,
+            resourceCostRev(t, r, r->getCredits(Task::Actual,
                                                 Interval(start, end), 
-                                                Revenue, t)),
-                t != 0, "right");
+                                                Revenue, t));
         else if (*it == KW("profit"))
-            textOneRow(
-                QString().sprintf("%.*f", project->getCurrencyDigits(),
-                                  r->getCredits(Task::Actual,
-                                                Interval(start, end), 
-                                                Revenue, t) -
-                                  r->getCredits(Task::Actual,
-                                                Interval(start, end), 
-                                                Cost, t)),
-                t != 0, "right");
+            resourceCostRev(t, r,
+                            r->getCredits(Task::Actual, Interval(start, end),
+                                          Revenue, t) -
+                            r->getCredits(Task::Actual, Interval(start, end),
+                                          Cost, t));
         else if (*it == KW("daily"))
             dailyResourceActual(r, t);
         else if (*it == KW("weekly"))
@@ -1491,8 +1423,7 @@ ReportHtml::taskName(const Task* t, const Resource* r, bool big)
 
     if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
     {
-        for (uint i = 0; i < t->treeLevel(); i++)
-            lPadding++;
+        lPadding += t->treeLevel();
         fontSize = fontSize + 5 * (maxDepthTaskList - 1 - t->treeLevel()); 
         s << "<td class=\""
           << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
@@ -1560,6 +1491,82 @@ ReportHtml::resourceName(const Resource* r, const Task* t, bool big)
         s << generateUrl(KW("resourcename"), r->getName());
         s << "</td>" << endl;
     }
+}
+
+void
+ReportHtml::taskCostRev(const Task* t, const Resource* r, double val)
+{
+    int resIndent = 0, taskIndent = 0;
+    if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
+        taskIndent = r == 0 ? 8 : 5;
+    if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
+        resIndent = (r != 0 ? 0 : 5) * maxDepthResourceList;
+        
+    s << "<td class=\"default" << (r != 0 ? "light" : "") << "\""
+        << " style=\"text-align:right; white-space:nowrap;"
+        << " padding-right:" 
+        << QString("%1").arg(resIndent +
+                             (maxDepthTaskList - 1 - t->treeLevel()) * taskIndent)
+        << "\">"
+        << QString().sprintf("%.*f", project->getCurrencyDigits(), val)
+        << "</td>";
+}
+
+void
+ReportHtml::resourceCostRev(const Task* t, const Resource* r, double val)
+{
+    int resIndent = 0, taskIndent = 0;
+    if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
+        resIndent = t == 0 ? 8 : 5;
+    if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
+        taskIndent = (t != 0 ? 0 : 5) * maxDepthTaskList;
+    
+    s << "<td class=\"default" << (t != 0 ? "light" : "") << "\""
+        << " style=\"text-align:right; white-space:nowrap;"
+        << " padding-right:" 
+        << QString("%1").arg(taskIndent +
+                             (maxDepthResourceList - 1 - r->treeLevel()) * resIndent)
+        << "\">"
+        << QString().sprintf("%.*f", project->getCurrencyDigits(), val)
+        << "</td>";
+}
+
+void
+ReportHtml::taskLoadValue(const Task* t, const Resource* r, double val)
+{
+    int resIndent = 0, taskIndent = 0;
+    if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
+        taskIndent = r == 0 ? 8 : 5;
+    if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
+        resIndent = (r != 0 ? 0 : 5) * maxDepthResourceList;
+    
+    s << "<td class=\"default" << (r == 0 ? "" : "light")
+        << "\" style=\"text-align:right; white-space:nowrap;"
+        << " padding-right:" 
+        << QString("%1").arg(resIndent +
+                             (maxDepthTaskList - 1 - t->treeLevel()) * taskIndent)
+        << "\">"
+        << scaledLoad(val)
+        << "</td>" << endl;
+}
+
+void
+ReportHtml::resourceLoadValue(const Task* t, const Resource* r, double val)
+{
+    int resIndent = 0, taskIndent = 0;
+    if (resourceSortCriteria[0] == CoreAttributesList::TreeMode)
+        resIndent = t == 0 ? 8 : 5;
+    if (taskSortCriteria[0] == CoreAttributesList::TreeMode)
+        taskIndent = (t != 0 ? 0 : 5) * maxDepthTaskList;
+    
+    s << "<td class=\"default" << (t == 0 ? "" : "light")
+        << "\" style=\"text-align:right; white-space:nowrap;"
+        << " padding-right:" 
+        << QString("%1").arg(taskIndent +
+                             (maxDepthResourceList - 1 - r->treeLevel()) * resIndent)
+        << "\">"
+        << scaledLoad(val)
+        << "</td>" << endl;
 }
 
 void
