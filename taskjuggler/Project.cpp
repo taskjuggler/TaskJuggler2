@@ -53,6 +53,8 @@ Project::Project()
     
     reports.setAutoDelete(TRUE);
 
+    allowRedefinitions = FALSE;
+
     new Scenario(this, "plan", "Plan", 0);
     scenarioList.createIndex(TRUE);
     scenarioList.createIndex(FALSE);

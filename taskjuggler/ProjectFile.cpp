@@ -699,6 +699,10 @@ ProjectFile::readProject()
                     return FALSE;
                 scenariosDefined = TRUE;
             }
+            else if (token == KW("allowredefinitions"))
+            {
+                proj->setAllowRedefinitions(TRUE);
+            }
             else if (token == KW("include"))
             {
                 if (!readInclude())
@@ -1094,15 +1098,30 @@ ProjectFile::readTask(Task* parent)
         }
     }
     
+    Task* task;
     // We need to check that the task id has not been declared before.
-    if (proj->getTask(id))
+    if ((task = proj->getTask(id)) != 0)
     {
-        errorMessage(i18n("Task %1 has already been declared")
-                     .arg(id));
-        return FALSE;
+        if (proj->getAllowRedefinitions())
+        {
+            if (task->getName() != name)
+            {
+                errorMessage(i18n
+                         ("Redefinition of task '%1' with different name '%2'. "
+                          "Previous name was '%3'.")
+                     .arg(id).arg(name).arg(task->getName()));
+                return FALSE;
+            }
+        }
+        else
+        {
+            errorMessage(i18n("Task %1 has already been declared")
+                         .arg(id));
+            return FALSE;
+        }
     }
-
-    Task* task = new Task(proj, id, name, parent, getFile(), getLine());
+    else
+        task = new Task(proj, id, name, parent, getFile(), getLine());
 
     if (!readTaskBody(task))
         return FALSE;
@@ -1878,14 +1897,29 @@ ProjectFile::readResource(Resource* parent)
         return FALSE;
     }
 
-    if (proj->getResource(id))
+    Resource* r;
+    if ((r = proj->getResource(id)) != 0)
     {
-        errorMessage(i18n("Resource %1 has already been defined")
-                     .arg(id));
-        return FALSE;
+        if (proj->getAllowRedefinitions())
+        {
+            if (r->getName() != name)
+            {
+                errorMessage(i18n
+                         ("Redefinition of resource '%1' with different "
+                          "name '%2'. Previous name was '%3'.")
+                     .arg(id).arg(name).arg(r->getName()));
+                return FALSE;
+            }
+        }
+        else
+        {
+            errorMessage(i18n("Resource %1 has already been defined")
+                         .arg(id));
+            return FALSE;
+        }
     }
-
-    Resource* r = new Resource(proj, id, name, parent);
+    else
+        r = new Resource(proj, id, name, parent);
 
     TokenType tt;
     QString token;
@@ -2284,7 +2318,29 @@ ProjectFile::readAccount(Account* parent)
     else
         acctType = parent->getAcctType();
 
-    Account* a = new Account(proj, id, name, parent, acctType);
+    Account* a;
+    if ((a = proj->getAccount(id)) != 0)
+    {
+        if (proj->getAllowRedefinitions())
+        {
+            if (a->getName() != name)
+            {
+                errorMessage(i18n
+                         ("Redefinition of account '%1' with different "
+                          "name '%2'. Previous name was '%3'.")
+                     .arg(id).arg(name).arg(a->getName()));
+                return FALSE;
+            }
+        }
+        else
+        {
+            errorMessage(i18n("Account '%1' has already been defined")
+                         .arg(id));
+            return FALSE;
+        }
+    }
+    else
+        a = new Account(proj, id, name, parent, acctType);
 
     TokenType tt;
     QString token;
@@ -2510,6 +2566,11 @@ ProjectFile::readTimeFrame(double& value, bool workingDays)
     if ((tt = nextToken(val)) != REAL && tt != INTEGER)
     {
         errorMessage(i18n("Real value expected"));
+        return FALSE;
+    }
+    if (val.toDouble() <= 0.0)
+    {
+        errorMessage(i18n("Value must be greater than 0."));
         return FALSE;
     }
     QString unit;

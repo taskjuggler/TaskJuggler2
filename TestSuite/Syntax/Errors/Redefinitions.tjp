@@ -1,0 +1,19 @@
+project redefs "Redefinition Test" "1.0" 2003-07-30 2003-08-30 {
+  allowredefinitions
+}
+
+task t1 "Task1" {
+	task t2 "Task2" {
+		start 2003-07-30
+		milestone
+	}
+}
+
+task t1 "Task X" {
+	task t3 "Task3" {
+		start 2003-07-30
+		milestone
+	}
+}
+
+	

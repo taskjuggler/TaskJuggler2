@@ -586,11 +586,9 @@ Task::isRunaway() const
     return runAway;
 }
 
-bool
+void
 Task::bookResources(time_t date, time_t slotDuration)
 {
-    bool allocFound = FALSE;
-
     /* If the time slot overlaps with a specified shift interval, the
      * time slot must also be within the specified working hours of that
      * shift interval. */
@@ -599,7 +597,7 @@ Task::bookResources(time_t date, time_t slotDuration)
         if (DEBUGRS(15))
             qDebug("Task %s is not active at %s", id.latin1(),
                    time2tjp(date).latin1());
-        return FALSE;
+        return;
     }
 
     /* If any of the resources is marked as being mandatory, we have to check
@@ -622,33 +620,41 @@ Task::bookResources(time_t date, time_t slotDuration)
                                  this)) > 0) 
                 {
                     allMandatoriesAvailables = FALSE;
+                    if (availability >= 4 && !(*ali)->getConflictStart())
+                        (*ali)->setConflictStart(date);
                     break;
                 }
-                else if (availability >= 4 && !(*ali)->getConflictStart())
-                    (*ali)->setConflictStart(date);
             }
             else
             {
+                /* For a mandatory allocation with alternatives at least one
+                 * of the resources or resource groups must be available. */
                 bool found = FALSE;
+                int maxAvailability = 0;
                 QPtrList<Resource> candidates = (*ali)->getCandidates();
                 for (QPtrListIterator<Resource> rli(candidates); 
                      *rli && !found; ++rli)
                 {
+                    /* If a resource group is marked mandatory, all members
+                     * of the group must be available. */
                     int availability;
+                    bool allAvailable = TRUE;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
                         if ((availability = 
                              (*rti)->isAvailable(date, slotDuration,
                                                  (*ali)->getLoad(), this)) > 0)
                         {
-                            found = TRUE;
-                            break;
+                            allAvailable = FALSE;
+                            if (availability >= maxAvailability)
+                                maxAvailability = availability;
                         }
-                        else if (availability >= 4 &&
-                                 !(*ali)->getConflictStart())
-                            (*ali)->setConflictStart(date);
+                    if (allAvailable)
+                        found = TRUE;
                 }
                 if (!found)
                 {
+                    if (maxAvailability >= 4 && !(*ali)->getConflictStart())
+                        (*ali)->setConflictStart(date); 
                     allMandatoriesAvailables = FALSE;
                     break;
                 }
@@ -673,34 +679,80 @@ Task::bookResources(time_t date, time_t slotDuration)
          * has already been picked, try to book this resource again. If the
          * resource is not available there will be no booking for this
          * time slot. */
+        int maxAvailability = 0;
         if ((*ali)->isPersistent() && (*ali)->getLockedResource())
-            bookResource((*ali)->getLockedResource(), date, slotDuration,
-                         (*ali)->getLoad());
+        {
+            if (!bookResource((*ali)->getLockedResource(), date, slotDuration,
+                         (*ali)->getLoad(), maxAvailability))
+            {
+                if (maxAvailability >= 4 && !(*ali)->getConflictStart())
+                    (*ali)->setConflictStart(date);
+            }
+            else if ((*ali)->getConflictStart())
+            {
+                if (DEBUGRS(2))
+                    qDebug("Resource %s is not available for task '%s' "
+                           "from %s to %s",
+                           (*ali)->getLockedResource()->getId().latin1(),
+                           id.latin1(),
+                           time2ISO((*ali)->getConflictStart()).latin1(),
+                           time2ISO(date).latin1());
+                (*ali)->setConflictStart(0);
+            }
+        }       
         else
         {
             QPtrList<Resource> cl = createCandidateList(date, *ali);
+            bool found = FALSE;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
-                if (bookResource((*rli), date, slotDuration, (*ali)->getLoad()))
+                if (bookResource((*rli), date, slotDuration,
+                                 (*ali)->getLoad(), maxAvailability))
                 {
-                    allocFound = TRUE;
                     (*ali)->setLockedResource(*rli);
+                    found = TRUE;
                     break;
                 }
+            if (!found && maxAvailability >= 4 && !(*ali)->getConflictStart())
+                (*ali)->setConflictStart(date);
+            else if (found && (*ali)->getConflictStart())
+            {
+                if (DEBUGRS(2))
+                {
+                    QString candidates;
+                    bool first = TRUE;
+                    for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
+                    {
+                        if (first)
+                            first = FALSE;
+                        else
+                            candidates += ", ";
+                        candidates += (*rli)->getId();
+                    }
+                    qDebug("No resource of the allocation (%s) is available "
+                           "for task '%s' from %s to %s",
+                           candidates.latin1(),
+                           id.latin1(),
+                           time2ISO((*ali)->getConflictStart()).latin1(),
+                           time2ISO(date).latin1());
+                }  
+                (*ali)->setConflictStart(0);
+            }
         }
     }
-    return allocFound;
 }
 
 bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
-                   int loadFactor)
+                   int loadFactor, int& maxAvailability)
 {
     bool booked = FALSE;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
 
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
     {
-        if ((*rti)->isAvailable(date, slotDuration, loadFactor, this) == 0)
+        int availability;
+        if ((availability = 
+             (*rti)->isAvailable(date, slotDuration, loadFactor, this)) == 0)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));
@@ -728,6 +780,8 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
                        (*rti)->getId().latin1(), doneEffort);
             booked = TRUE;
         }
+        else if (availability > maxAvailability)
+            maxAvailability = availability;
     }
     return booked;
 }

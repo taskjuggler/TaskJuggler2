@@ -315,6 +315,9 @@ public:
     void setScheduleGranularity(ulong s) { scheduleGranularity = s; }
     ulong getScheduleGranularity() const { return scheduleGranularity; }
 
+    void setAllowRedefinitions(bool ar) { allowRedefinitions = ar; }
+    bool getAllowRedefinitions() const { return allowRedefinitions; }
+
     /**
      * Add a vacation interval to the vacation list. These global vacations
      * are meant for events like Christmas, Eastern or corporate hollidays.
@@ -740,6 +743,8 @@ private:
     time_t end;
     /// The current date used in status calculations and reports.
     time_t now;
+
+    bool allowRedefinitions;
 
     /// True if week based calculations use Monday as first day of week.
     bool weekStartsMonday;

@@ -2444,6 +2444,21 @@ The end may be well after the end of the last task, but must be
 specified to terminate the scheduling process.</para>
 <para>Optional attributes:</para>
 
+<sect2 id="project_allowredefinition"><title>allowredefinition</title>
+
+<para>If this attribute is specified, redefinitions of task, resources
+or accounts are not flagged as errors. The primary use of this
+attribute is for projects that are created by mergin sub projects
+which are again the result of sub project merging. In certain
+situations enclosing tasks, accounts or resources can included in more
+than one sub projects. This attribute then avoids the error which is
+in most other cases a real user error.</para>
+
+<para>In case attributes of the same property must be specified in two
+different locations the <link linkend="supplement">supplement</link>
+construct is the recommended way to do this.</para>
+
+</sect2>
 <sect2 id="project_currency"><title>currency &lt;text&gt;</title>
 
 <para><simplelist type=horiz columns=2>
