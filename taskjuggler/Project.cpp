@@ -484,17 +484,29 @@ Project::scheduleAllScenarios()
 
     for (ScenarioListIterator sli(scenarioList); *sli; ++sli)
     {
-        if (DEBUGPS(1))
-            qDebug(i18n("Scheduling scenario '%1' ...").arg((*sli)->getId()));
-        prepareScenario((*sli)->getSequenceNo() - 1);
-        if (!schedule(0))
+        if ((*sli)->getEnabled())
         {
-            if (DEBUGPS(2))
-                qDebug(i18n("Scheduling errors in scenario '%1'.")
-                       .arg((*sli)->getId()));
-            error = TRUE;
+            if (DEBUGPS(1))
+                qDebug(i18n("Scheduling scenario '%1' ...").arg((*sli)->getId()));
+            prepareScenario((*sli)->getSequenceNo() - 1);
+            if (!schedule(0))
+            {
+                if (DEBUGPS(2))
+                    qDebug(i18n("Scheduling errors in scenario '%1'.")
+                           .arg((*sli)->getId()));
+                error = TRUE;
+            }
+            finishScenario((*sli)->getSequenceNo() - 1);
+
+            for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+            {
+                if (!(*rli)->bookingsOk((*sli)->getSequenceNo() - 1))
+                {
+                    error = TRUE;
+                    break;
+                }
+            }
         }
-        finishScenario((*sli)->getSequenceNo() - 1);
     }
 
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
@@ -564,14 +576,14 @@ Project::schedule(int sc)
                 if (slot == 0)
                     continue;
                 if (DEBUGPS(5))
-                    qDebug("Task %s requests slot %s", (*tli)->getId().latin1(),
-                             time2ISO(slot).latin1());
+                    qDebug("Task '%s' requests slot %s", 
+                           (*tli)->getId().latin1(), time2ISO(slot).latin1());
                 if (slot < start || 
                     slot > (end - (time_t) scheduleGranularity + 1))
                 {
                     (*tli)->setRunaway();
                     if (DEBUGPS(5))
-                        qDebug("Marking task %s as runaway",
+                        qDebug("Marking task '%s' as runaway",
                                (*tli)->getId().latin1());
                     error = TRUE;
                     slot = 0;
@@ -588,13 +600,13 @@ Project::schedule(int sc)
             if ((*tli)->isRunaway())
                 if ((*tli)->getScheduling() == Task::ASAP)
                     (*tli)->errorMessage
-                        (i18n("End of task %1 does not fit into the "
+                        (i18n("End of task '%1' does not fit into the "
                               "project time frame. Try using a later project "
                               "end date.")
                          .arg((*tli)->getId()));
                 else
                     (*tli)->errorMessage
-                        (i18n("Start of task %1 does not fit into the "
+                        (i18n("Start of task '%1' does not fit into the "
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
 
@@ -619,7 +631,7 @@ Project::checkSchedule(int sc) const
             TJMH.errorMessage
                 (i18n("Too many errors in %1 scenario. Giving up.")
                  .arg(getScenarioId(sc)));
-            break;
+            return FALSE;
         }
     }
 

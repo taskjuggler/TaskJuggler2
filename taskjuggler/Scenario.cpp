@@ -19,6 +19,8 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
     : CoreAttributes(p, i, n, pr)
 {
     p->addScenario(this);
+    enabled = TRUE;
+    projectionMode = FALSE;
 }
 
 Scenario::~Scenario()

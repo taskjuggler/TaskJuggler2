@@ -593,6 +593,15 @@ linkend="projectids">projectids</link> has been added. It is used in
 export reports to declare all the project IDs that are used in the
 report.</para></listitem>
 
+<listitem><para>Resource booking periods can now overlap with off-duty
+hours, vacation or other task assignments. This is controlled by the
+<link linkend="resource_booking_sloppy">sloppy</link> attribute.
+</para></listitem>
+
+<listitem><para>Effort based tasks now correctly recognize if the
+effort was partially specified with booking attributes. The effort is
+no longer allocated ontop of the bookings.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

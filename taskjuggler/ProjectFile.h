@@ -132,7 +132,7 @@ private:
     bool readAccount(Account* parent);
     bool readShift(Shift* parent);
     Shift* readShiftSelection(time_t& from, time_t& to);
-    Booking* readBooking();
+    Booking* readBooking(int& sloppy);
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
     bool readTimeFrame(double& d, bool workingDays);

@@ -53,10 +53,13 @@ task t3 "Task3" {
   scheduling asap
 }
 supplement task t1 {
+  priority 500
 }
 supplement task t2 {
+  priority 400
 }
 supplement task t3 {
+  priority 300
 }
 supplement resource r1 {
   plan:booking 2000-01-11-09:00:00-+0000 2000-01-11-12:00:00-+0000 t3

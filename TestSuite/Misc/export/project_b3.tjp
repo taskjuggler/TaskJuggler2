@@ -5,7 +5,7 @@ include "workforce.tji"
 include "project_b2_export.tji"
 
 htmltaskreport "project_b3.html" {
-	columns name, start, end, daily
+	columns name, id, projectid, start, end, daily
 	sorttasks nameup
 	hideresource 0
 	notimestamp

@@ -35,8 +35,12 @@ public:
     void setEnabled(bool e) { enabled = e; }
     bool getEnabled() const { return enabled; }
 
+    void setProjectionMode(bool p) { projectionMode = p; }
+    bool getProjectionMode() const  { return projectionMode; }
+
 private:
     bool enabled;
+    bool projectionMode;
 } ;
 
 #endif

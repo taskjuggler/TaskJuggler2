@@ -1,0 +1,32 @@
+project test "Sloppy Bookings" "1.0" 2003-08-07 2003-10-01 {
+  scenario plan "Plan" {
+		projection
+	}
+}
+
+resource r1 "Resource 1" {
+	vacation 2003-08-12 - 2003-08-15
+}
+
+task t1 "Task 1" {
+	start 2003-08-07
+	effort 10d
+	allocate r1
+}
+
+supplement resource r1 {
+	booking 2003-08-07 2003-08-17 t1 { sloppy 3 }
+}
+
+export "SloppyBookings-1-Export.tjp" {
+	hidetask 0
+	hideresource 0
+	taskattributes all
+	notimestamp
+}
+
+htmltaskreport "SloppyBookings-1.html" {
+	columns no, name, start, end, daily
+	hideresource 0
+}
+

@@ -55,7 +55,7 @@ export "project_a_sub.tji" {
 }
 
 htmltaskreport "project_a.html" {
-	columns name, start, end, daily
+	columns name, id, projectid, start, end, daily
 	sorttasks nameup
 	hideresource 0
 	notimestamp

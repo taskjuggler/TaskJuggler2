@@ -896,6 +896,10 @@ ProjectFile::readScenario(Scenario* parent)
             {
                 scenario->setEnabled(FALSE);
             }
+            else if (token == KW("projection"))
+            {
+                scenario->setProjectionMode(TRUE);
+            }
         }
     }
     else
@@ -2149,9 +2153,10 @@ ProjectFile::readResourceScenarioAttribute(const QString attribute,
     if (attribute == KW("booking"))
     {
         Booking* b;
-        if ((b = readBooking()) == 0)
+        int sloppy;
+        if ((b = readBooking(sloppy)) == 0)
             return FALSE;
-        if (!resource->addBooking(sc, b))
+        if (!resource->addBooking(sc, b, sloppy))
             proj->setAllocationErrors(TRUE);
     }
     else if (enforce)
@@ -2266,7 +2271,7 @@ ProjectFile::readShiftSelection(time_t& from, time_t& to)
 }
 
 Booking*
-ProjectFile::readBooking()
+ProjectFile::readBooking(int& sloppy)
 {
     QString token;
 
@@ -2307,6 +2312,32 @@ ProjectFile::readBooking()
         errorMessage(i18n("Task ID expected"));
         return 0;
     }
+
+    sloppy = 0;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        while ((tt = nextToken(token)) != RBRACE)
+        {
+            if (token == "sloppy")
+            {
+                if (nextToken(token) != INTEGER ||
+                    token.toInt() < 0 || token.toInt() > 3)
+                {
+                    errorMessage(i18n("Number between 0 and 3 expected"));
+                    return 0;
+                }
+                sloppy = token.toInt(); 
+            }
+            else
+            {
+                errorMessage(i18n("Attribute ID expected"));
+                return 0;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+    
     return new Booking(Interval(start, end), task);
 }
 
@@ -2894,13 +2925,15 @@ ProjectFile::readHTMLReport(const QString& reportType)
                         errorMessage(i18n("Scenario ID expected"));
                         return FALSE;
                     }
-                    if (proj->getScenarioIndex(scId) == -1)
+                    int scIdx;
+                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                     {
                         errorMessage(i18n("Unknown scenario '%1'")
                                      .arg(scId));
                         return FALSE;
                     }
-                    tab->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if (proj->getScenario(scIdx - 1)->getEnabled())
+                        tab->addScenario(proj->getScenarioIndex(scId) - 1);
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);
@@ -3649,13 +3682,15 @@ ProjectFile::readReportElement(ReportElement* el)
                         errorMessage(i18n("Scenario ID expected"));
                         return FALSE;
                     }
-                    if (proj->getScenarioIndex(scId) == -1)
+                    int scIdx;
+                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                     {
                         errorMessage(i18n("Unknown scenario %1")
                                      .arg(scId));
                         return FALSE;
                     }
-                    el->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if (proj->getScenario(scIdx - 1)->getEnabled())
+                        el->addScenario(proj->getScenarioIndex(scId) - 1);
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);

@@ -326,7 +326,7 @@ Resource::bookSlot(uint idx, SbBooking* nb)
 }
 
 bool
-Resource::bookInterval(Booking* nb, int sc)
+Resource::bookInterval(Booking* nb, int sc, int sloppy)
 {
     uint sIdx = sbIndex(nb->getStart());
     uint eIdx = sbIndex(nb->getEnd());
@@ -342,6 +342,11 @@ Resource::bookInterval(Booking* nb, int sc)
                 ;
             if (scoreboard[i] == (SbBooking*) 1)
             {
+                if (sloppy > 0)
+                {
+                    i = j;
+                    continue;
+                }
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
                           "%2 has no duty hours at %3 - %4 "
@@ -353,6 +358,11 @@ Resource::bookInterval(Booking* nb, int sc)
             }
             else if (scoreboard[i] == (SbBooking*) 2)
             {
+                if (sloppy > 1)
+                {
+                    i = j;
+                    continue;
+                }
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
                           "%2 is on vacation at %3 - %4. "
@@ -363,6 +373,12 @@ Resource::bookInterval(Booking* nb, int sc)
                      .arg(nb->getTask()->getId().latin1()));
             }
             else
+            {
+                if (sloppy > 2)
+                {
+                    i = j;
+                    continue;
+                }
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
                           "Allocation conflict for %2 at %3 - %4. "
@@ -372,6 +388,7 @@ Resource::bookInterval(Booking* nb, int sc)
                      .arg(time2ISO(index2end(j - 1)))
                      .arg(scoreboard[i]->getTask()->getId().latin1())
                      .arg(nb->getTask()->getId().latin1()));
+            }
 
             conflict = TRUE;
             i = j;
@@ -387,7 +404,7 @@ Resource::bookInterval(Booking* nb, int sc)
 }
 
 bool
-Resource::addBooking(int sc, Booking* nb)
+Resource::addBooking(int sc, Booking* nb, int sloppy)
 {
     SbBooking** tmp = scoreboard;
     
@@ -395,7 +412,7 @@ Resource::addBooking(int sc, Booking* nb)
         scoreboard = scoreboards[sc];
     else
         initScoreboard();
-    bool retVal = bookInterval(nb, sc);
+    bool retVal = bookInterval(nb, sc, sloppy);
     // Cross register booking with task.
     if (retVal && nb->getTask())
         nb->getTask()->addBookedResource(sc, this);
@@ -643,6 +660,40 @@ Resource::getJobs(int sc) const
     return bl;
 }
 
+time_t
+Resource::getStartOfFirstSlot(int sc, const Task* task)
+{
+    if (scoreboards[sc] == 0)
+        return 0;
+    for (int i = 0; i < sbSize; ++i)
+    {
+        if (scoreboards[sc][i] > ((SbBooking*) 3) &&
+            scoreboards[sc][i]->getTask() == task)
+            return index2start(i);
+    }
+
+    return 0;
+}
+
+time_t
+Resource::getEndOfLastSlot(int sc, const Task* task)
+{
+    if (scoreboards[sc] == 0)
+        return 0;
+    int i = sbSize;
+    for ( ; ; )
+    {
+        --i;
+        if (scoreboards[sc][i] > ((SbBooking*) 3) &&
+            scoreboards[sc][i]->getTask() == task)
+            return index2end(i);
+        if (i == 0)
+            break;
+    }
+
+    return 0;
+}
+
 void
 Resource::prepareScenario(int sc)
 {
@@ -655,6 +706,42 @@ Resource::finishScenario(int sc)
     scoreboards[sc] = scoreboard;
 }
 
+bool
+Resource::bookingsOk(int sc)
+{
+    if (scoreboards[sc] == 0)
+        return TRUE;
+   
+    if (hasSubs())
+    {
+       TJMH.errorMessage
+          (i18n("Group resource '%1' may not have bookings") .arg(id));
+       return FALSE;
+    }
+    
+    for (uint i = 0; i < sbSize; ++i)
+        if (scoreboards[sc][i] >= ((SbBooking*) 4))
+        {
+            time_t start = index2start(i);
+            time_t end = index2end(i);
+            time_t tStart = scoreboards[sc][i]->getTask()->getStart(sc);
+            time_t tEnd = scoreboards[sc][i]->getTask()->getEnd(sc);
+            if (start < tStart || start > tEnd ||
+                end < tStart || end > tEnd)
+            {
+                TJMH.errorMessage
+                    (i18n("Booking of resource '%1' on task '%2' at %3 "
+                          "is outside of task interval (%4 - %5) "
+                          "in scenario '%6'")
+                     .arg(id).arg(scoreboards[sc][i]->getTask()->getId())
+                     .arg(time2ISO(start)).arg(time2ISO(tStart))
+                     .arg(time2ISO(tEnd)).arg(project->getScenarioId(sc)));
+                return FALSE;
+            }
+        }
+
+    return TRUE;
+}
 
 QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 {

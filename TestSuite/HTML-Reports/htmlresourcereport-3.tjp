@@ -1,0 +1,29 @@
+project prj "htmltaskreport test" "1.0" 2003-07-01-0:00-GMT 2003-09-01-00:00-GMT {
+ 	timezone "GMT"
+  timeformat "%Y-%m-%d %H:%M:%S %Z"	
+	now 2003-07-20
+}
+
+resource tuxies "Tux Team" {
+	resource tux1 "tux 1" {
+		vacation 2003-07-07 - 2003-07-12
+	}
+	resource tux2 "tux 2" {
+	}
+}
+
+account c "Cost" cost
+
+task t1 "Task 1" {
+	start 2003-07-01
+	task t2 "Task 2" {
+		effort 30d
+		allocate tux1
+	}
+}
+
+htmlresourcereport "." {
+	columns no, name, weekly
+	barlabels empty
+	hidetask 0
+}

@@ -2959,7 +2959,7 @@ otherwise.</para>
 
 <para>Optional attributes:</para>
 
-<sect2 id="resource_actualbooking"><title>actualbooking &lt;from&gt;
+<sect2 id="resource_booking"><title>booking &lt;from&gt;
 &lt;to&gt; &lt;task&gt;</title>
 
 <para><simplelist type=horiz columns=2>
@@ -2970,6 +2970,21 @@ otherwise.</para>
 
 <para>Assigns the resource for the specified interval to the specified task.
 This assignment is used for the actual scenario.</para>
+
+<para>Optional attributes:</para>
+
+<sect3 id="resource_booking_sloppy"><title>sloppy &lt;mode&gt;</title>
+
+<para><simplelist type=horiz columns=2>
+<member>sloppy:</member><member>Number between 0 and 3. 0 (default):
+period may not contain any off-duty hours, vacation or other task
+assignments. 1: period may contain off-duty hours, but not vacation or
+other task assignments. 2: period may contain off-duty hours and
+vacation, but no other task assignments. 3: Period may overlap with
+off-duty hours, vacation or other task assignments. These are silently
+skipped.</member>
+</simplelist></para>
+</sect3>
 
 </sect2>
 <sect2 id="resource_efficiency"><title>efficiency
@@ -3012,19 +3027,6 @@ working day. 0.5 means half a working day.</para>
 
 <para>The daily minimum effort for a resource. Resources that are used less
 than this value will be marked in the report.</para>
-
-</sect2>
-<sect2 id="resource_planbooking"><title>planbooking &lt;from&gt;
-&lt;to&gt; &lt;task&gt;</title>
-
-<para><simplelist type=horiz columns=2>
-<member>from:</member><member><link linkend="date">DATE</link></member>
-<member>to:</member><member><link linkend="date">DATE</link></member>
-<member>task:</member><member><link linkend="id">ID</link></member>
-</simplelist></para>
-
-<para>Assigns the resource for the specified interval to the specified task.
-This assignment is used for the plan scenario.</para>
 
 </sect2>
 <sect2 id="resource_rate"><title>rate &lt;value&gt;</title>

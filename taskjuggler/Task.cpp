@@ -91,6 +91,7 @@
 #include "Allocation.h"
 #include "Booking.h"
 #include "ReportXML.h"
+#include "Scenario.h"
 #include "CustomAttributeDefinition.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
@@ -242,10 +243,6 @@ Task::schedule(time_t& date, time_t slotDuration)
         if (lastSlot == 0)
         {
             lastSlot = start - 1;
-            doneEffort = 0.0;
-            doneDuration = 0.0;
-            doneLength = 0.0;
-            workStarted = FALSE;
             tentativeEnd = date + slotDuration - 1;
             if (DEBUGTS(5))
                 qDebug("Scheduling of %s starts at %s (%s)",
@@ -265,10 +262,6 @@ Task::schedule(time_t& date, time_t slotDuration)
         if (lastSlot == 0)
         {
             lastSlot = end + 1;
-            doneEffort = 0.0;
-            doneDuration = 0.0;
-            doneLength = 0.0;
-            workStarted = FALSE;
             tentativeStart = date;
             if (DEBUGTS(5))
                 qDebug("Scheduling of ALAP task %s starts at %s (%s)",
@@ -1727,10 +1720,25 @@ Task::preScheduleOk()
         {
             errorMessage(i18n
                          ("Task '%1' has a specified start- or endcredit "
-                          "but no account assigned.").arg(id));
+                          "but no account assigned in scenario '%2'.")
+                         .arg(id).arg(project->getScenarioId(sc)));
             return FALSE;
         }
 
+        if (!scenarios[sc].bookedResources.isEmpty() && scheduling == ALAP &&
+            !scenarios[sc].scheduled)
+        {
+            errorMessage
+                (i18n("Error in task '%1' (scenario '%2'). "
+                      "An ALAP task can only have bookings if it has been "
+                      "completely scheduled. The 'scheduled' attribute must be "
+                      "present. Keep in mind that certain attributes such as "
+                      "'precedes' or 'end' implicitly set the scheduling mode "
+                      "to ALAP. Put 'scheduling asap' at the end of the task "
+                      "definition to avoid the problem.")
+                 .arg(id).arg(project->getScenarioId(sc)));
+            return FALSE;
+        }
     }
     double intervalLoad =
         project->convertToDailyLoad(project->getScheduleGranularity());
@@ -2047,11 +2055,50 @@ Task::prepareScenario(int sc)
     length = scenarios[sc].length;
     effort = scenarios[sc].effort;
     lastSlot = 0;
+    doneEffort = 0.0;
+    doneDuration = 0.0;
+    doneLength = 0.0;
+    tentativeStart = tentativeEnd = 0;
+    workStarted = FALSE;
     schedulingDone = scenarios[sc].scheduled;
     runAway = FALSE;
     bookedResources.clear();
     bookedResources = scenarios[sc].bookedResources;
-    
+
+    /* The user could have made manual bookings already. The effort of these
+     * bookings needs to be calculated so that the scheduler only schedules
+     * the still missing effort. Scheduling will begin after the last booking.
+     * This will only work for ASAP tasks. ALAP tasks cannot be partly booked. */
+    time_t firstSlot = 0;
+    for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
+    {
+        doneEffort += (*rli)->getLoad(sc, 
+                                      Interval(project->getStart(),
+                                               project->getEnd()),
+                                      AllAccounts, this);
+        if (doneEffort > 0.0)
+        {
+            if (firstSlot == 0 || firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
+                firstSlot = (*rli)->getStartOfFirstSlot(sc, this);
+            time_t ls = (*rli)->getEndOfLastSlot(sc, this);
+            if (ls > lastSlot)
+                lastSlot = ls;
+        }
+    }
+    if (lastSlot > 0)
+    {
+        workStarted = TRUE;
+        // Trim start to first booked time slot.
+        start = firstSlot;
+
+        /* In projection mode, we assume that the completed work has been
+         * reported with booking attributes. Now we compute the completion
+         * degree according to the overall effort. Then the end date of the
+         * task is calculated. */
+        if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
+            scenarios[sc].complete = (int) (doneEffort / effort * 100.0);
+    }
+
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
         (*ali)->init();
 }

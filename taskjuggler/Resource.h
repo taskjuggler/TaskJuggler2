@@ -98,8 +98,8 @@ public:
     bool book(Booking* b);
 
     bool bookSlot(uint idx, SbBooking* nb);
-    bool bookInterval(Booking* b, int sc);
-    bool addBooking(int sc, Booking* b);
+    bool bookInterval(Booking* b, int sc, int sloppy = 0);
+    bool addBooking(int sc, Booking* b, int sloppy = 0);
 
     double getCurrentLoad(const Interval& i, const Task* task = 0) const;
 
@@ -118,6 +118,9 @@ public:
 
     BookingList getJobs(int sc) const;
 
+    time_t getStartOfFirstSlot(int sc, const Task* task);
+    time_t getEndOfLastSlot(int sc, const Task* task);
+
     void setKotrusId(const QString k) { kotrusId = k; }
     const QString& getKotrusId() const { return kotrusId; }
 
@@ -128,6 +131,8 @@ public:
 
     void prepareScenario(int sc);
     void finishScenario(int sc);
+
+    bool bookingsOk(int sc);
 
 private:
     void getPIDs(int sc, const Interval& period, const Task* task, 

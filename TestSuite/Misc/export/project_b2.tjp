@@ -22,7 +22,7 @@ task t4 "Task4" {
 include "project_a_sub.tji" { taskprefix t4 }
 
 htmltaskreport "project_b.html" {
-	columns name, start, end, daily
+	columns name, id, projectid, start, end, daily
 	sorttasks nameup
 	hideresource 0
 	notimestamp
