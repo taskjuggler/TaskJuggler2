@@ -107,6 +107,8 @@ contain functions as well. Currently there is support for 'istask',
 <item>Added new example project to illustrate the use of export in big
 projects that are split into sub projects.
 
+<item>HTML comment in HTML report files is now using correct syntax.
+
 </itemize>
 <p>
 
