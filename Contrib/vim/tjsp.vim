@@ -3,6 +3,13 @@
 " Maintainer:	Peter Poeml <poeml@suse.de>
 " Last Change:	2002 Jan 23
 
+setlocal softtabstop=2
+setlocal cindent shiftwidth=2
+setlocal tabstop=2
+setlocal cinoptions=g0t0+0(0c0,C1
+setlocal cinwords="task,resource,account,htmltaskreport,htmlresourcereport,htmlaccountreport"
+setlocal cinkeys="0{,0},!^F,o,O"
+setlocal makeprg=./tj
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
