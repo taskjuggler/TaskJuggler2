@@ -1351,7 +1351,7 @@ otherwise.</para>
 <para>Optional attributes:</para>
 
 <sect2 id="resource_actualbooking"><title>actualbooking &lt;from&gt;
-&lt;to&gt; &lt;project&gt; &lt;task&gt;</title>
+&lt;to&gt; &lt;task&gt;</title>
 
 <para><simplelist type=horiz columns=2>
 <member>from:</member><member><link linkend="date">DATE</link></member>
@@ -1406,7 +1406,7 @@ than this value will be marked in the report.</para>
 
 </sect2>
 <sect2 id="resource_planbooking"><title>planbooking &lt;from&gt;
-&lt;to&gt; &lt;project&gt; &lt;task&gt;</title>
+&lt;to&gt; &lt;task&gt;</title>
 
 <para><simplelist type=horiz columns=2>
 <member>from:</member><member><link linkend="date">DATE</link></member>
