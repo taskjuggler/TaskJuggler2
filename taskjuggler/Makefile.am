@@ -15,6 +15,7 @@ ScenarioList.cpp Scenario.cpp \
 TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp \
+Journal.cpp \
 MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
 XMLFile.cpp \
 ReportElement.cpp Report.cpp ReportXML.cpp \

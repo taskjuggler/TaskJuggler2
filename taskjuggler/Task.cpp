@@ -28,6 +28,7 @@
 #include "CustomAttributeDefinition.h"
 #include "UsageLimits.h"
 #include "OptimizerRun.h"
+#include "Journal.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& df, int dl)
@@ -152,6 +153,18 @@ Task::inheritValues()
             scenarios[sc].maxStart = scenarios[sc].maxEnd = 0;
         }
     }
+}
+
+void
+Task::addJournalEntry(JournalEntry* entry)
+{
+    journal.append(entry);
+}
+
+JournalIterator
+Task::getJournalIterator() const
+{
+    return JournalIterator(journal);
 }
 
 TaskDependency*

@@ -462,6 +462,18 @@ Project::convertToDailyLoad(long secs) const
     return ((double) secs / (dailyWorkingHours * ONEHOUR));
 }
 
+void
+Project::addJournalEntry(JournalEntry* entry)
+{
+    journal.append(entry);
+}
+
+JournalIterator
+Project::getJournalIterator() const
+{
+    return JournalIterator(journal);
+}
+
 bool
 Project::pass2(bool noDepCheck)
 {

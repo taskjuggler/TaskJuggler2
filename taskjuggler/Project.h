@@ -1,7 +1,7 @@
 /*
  * Project.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -28,6 +28,7 @@
 #include "AccountList.h"
 #include "RealFormat.h"
 #include "QtReport.h"
+#include "Journal.h"
 
 class QStringList;
 class QDomElement;
@@ -754,6 +755,10 @@ public:
 
     void setMaxErrors(int me) { maxErrors = me; }
 
+    void addJournalEntry(JournalEntry* entry);
+
+    JournalIterator getJournalIterator() const;
+
     /**
      * Generate cross references between all data structures and run a
      * consistency check. This function must be called after the project data
@@ -882,6 +887,8 @@ private:
     bool allocationErrors;
 
     int maxErrors;
+
+    Journal journal;
 
     VacationList vacationList;
 

@@ -39,6 +39,7 @@ class RealFormat;
 class TableColumnInfo;
 class UsageLimits;
 class TaskDependency;
+class JournalEntry;
 
 /**
  * @short File Parser for project files.
@@ -133,6 +134,7 @@ private:
     bool readResourceBody(Resource* r);
     int readResourceScenarioAttribute(const QString attribute, Resource* t,
                                       int sc, bool enforce);
+    JournalEntry* readJournalEntry();
     bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
                       QString* = 0);
     bool readAccount(Account* parent);

@@ -67,6 +67,7 @@
 #include "CustomAttributeDefinition.h"
 #include "UsageLimits.h"
 #include "ExpressionFunctionTable.h"
+#include "JournalEntry.h"
 
 // Dummy marco to mark all keywords of taskjuggler syntax
 #define KW(a) a
@@ -790,6 +791,14 @@ ProjectFile::readProject()
             else if (token == KW("allowredefinitions"))
             {
                 proj->setAllowRedefinitions(TRUE);
+            }
+            else if (token == KW("journalentry"))
+            {
+                JournalEntry* entry;
+                if ((entry = readJournalEntry()) == 0)
+                    return FALSE;
+
+                proj->addJournalEntry(entry);
             }
             else if (token == KW("include"))
             {
@@ -1701,6 +1710,15 @@ ProjectFile::readTaskBody(Task* task)
                     return FALSE;
                 break;
             }
+            else if (token == KW("journalentry"))
+            {
+                JournalEntry* entry;
+                if ((entry = readJournalEntry()) == 0)
+                    return FALSE;
+
+                task->addJournalEntry(entry);
+                break;
+            }
             else if (token == "include")
             {
                 errorMessage
@@ -1875,6 +1893,24 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         return 0;
 
     return 1;
+}
+
+JournalEntry*
+ProjectFile::readJournalEntry()
+{
+    QString date, text;
+
+    if (nextToken(date) != DATE)
+    {
+        errorMessage(i18n("Date expected"));
+        return 0;
+    }
+    if (nextToken(text) != STRING)
+    {
+        errorMessage(i18n("String expected"));
+        return 0;
+    }
+    return new JournalEntry(date2time(date), text);
 }
 
 bool
@@ -2285,11 +2321,23 @@ ProjectFile::readResourceBody(Resource* r)
                 }
             }
         }
+        else if (token == KW("journalentry"))
+        {
+            JournalEntry* entry;
+            if ((entry = readJournalEntry()) == 0)
+                return FALSE;
+
+            r->addJournalEntry(entry);
+        }
         else if (token == KW("include"))
         {
+            errorMessage
+                (i18n("WARNING: The 'include' attribute is no longer "
+                      "supported within resources since it caused ambiguoties "
+                      "between flag declaration and flag attributes."));
+            // TODO: Remove this after the 2.1 release.
             if (!readInclude())
                 return FALSE;
-            break;
         }
         else
         {

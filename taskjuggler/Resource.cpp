@@ -1308,6 +1308,18 @@ Resource::bookingsOk(int sc)
     return TRUE;
 }
 
+void
+Resource::addJournalEntry(JournalEntry* entry)
+{
+    journal.append(entry);
+}
+
+JournalIterator
+Resource::getJournalIterator() const
+{
+    return JournalIterator(journal);
+}
+
 QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 {
    QDomElement elem = ReportXML::createXMLElem( doc, "Resource", getName());

@@ -32,6 +32,7 @@
 #include "ShiftSelectionList.h"
 #include "LoopDetectorInfo.h"
 #include "TaskDependency.h"
+#include "Journal.h"
 
 #ifdef HAVE_ICAL
 #ifdef HAVE_KDE
@@ -87,6 +88,10 @@ public:
 
     void setNote(const QString& d) { note = d; }
     const QString& getNote() const { return note; }
+
+    void addJournalEntry(JournalEntry* entry);
+
+    JournalIterator getJournalIterator() const;
 
     void setReference(const QString& r, const QString& l)
     {
@@ -362,6 +367,9 @@ private:
 
     /// A longer description of the task.
     QString note;
+
+    /// List of notes with a date attached.
+    Journal journal;
 
     /// A reference to an external document
     QString ref;

@@ -19,6 +19,7 @@
 #include "ResourceList.h"
 #include "ShiftSelectionList.h"
 #include "ResourceScenario.h"
+#include "Journal.h"
 
 class Project;
 class Shift;
@@ -171,6 +172,10 @@ public:
         return TaskListIterator(scenarios[sc].allocatedTasks);
     }
 
+    void addJournalEntry(JournalEntry* entry);
+
+    JournalIterator getJournalIterator() const;
+
 private:
     void getPIDs(int sc, const Interval& period, const Task* task,
                  QStringList& pids) const;
@@ -197,6 +202,9 @@ private:
 
     /// The minimum effort (in man days) the resource should be used per day.
     double minEffort;
+
+    /// List of notes with a date attached.
+    Journal journal;
 
     /// Usage limits of the resource.
     UsageLimits* limits;

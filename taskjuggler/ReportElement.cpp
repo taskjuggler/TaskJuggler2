@@ -469,6 +469,8 @@ ReportElement::columnsAt(uint idx) const
     for (QPtrListIterator<TableColumnInfo> pli(columns); *pli; ++pli, i++)
         if (idx == i)
             return *pli;
+
+    return 0;
 }
 
 void

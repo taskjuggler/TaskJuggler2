@@ -1,0 +1,17 @@
+project journal "Project" "$Id" 2000-01-01 2000-01-04 {
+  journalentry 2000-01-02 "the first entry"
+	journalentry 2000-01-03 "the next entry"
+}
+
+resource tux "Tux" {
+  journalentry 2000-01-02 "the first entry"
+	journalentry 2000-01-03 "the next entry"
+}
+
+task t1 "Task1" {
+  journalentry 2000-01-01 "the first entry"
+	journalentry 2000-01-03 "the next entry"
+  start 2000-01-01
+  milestone
+}
+
