@@ -38,16 +38,16 @@ package tjTask;
                                 x1 y1 x2 y2 ) ],
         struct          => [ qw(Followers Depends Previous Allocations bookedResources) ];
 
-    use XML::Parser;
-    use PostScript::Simple;
-    use Date::Calc qw(  Today
-                        Delta_Days
-                        Add_Delta_Days
-                        Week_Number
-                        Day_of_Week
-                        Day_of_Week_Abbreviation
-                        Month_to_Text
-                        Monday_of_Week);
+use XML::Parser;
+use PostScript::Simple;
+use Date::Calc qw(  Today
+                    Delta_Days
+                    Add_Delta_Days
+                    Week_Number
+                    Day_of_Week
+                    Day_of_Week_Abbreviation
+                    Month_to_Text
+                    Monday_of_Week);
 
 #-- main package -------------------------------------------------------------
 #-- xml parsen und datenstrukturen zusammenrühren
@@ -76,7 +76,7 @@ my $project_days    = Delta_Days($p_start_year, $p_start_month, $p_start_day,
                                  $p_end_year, $p_end_month, $p_end_day);
 my ($today_year, $today_month, $today_day) = Today();
 
-#-- psfile settings
+#-- psfile const-settings
 my $page_border   = 10;
 my $day_x         = 5; #-- day-width
 my $task_height   = 5; #-- task-height
@@ -105,7 +105,6 @@ sub _make_poster {
             next unless /BoundingBox:/;
             $_ =~ s/.*BoundingBox:\s+\d+\s+\d+\s+(\d+)\s+(\d+)/$1\*$2p/;
             chomp;
-            #print "$_\n";
             $format = $_;
         }
     close(IN);
@@ -114,7 +113,7 @@ sub _make_poster {
             `$poster -i$format -mA4 -p$format $out_file > $out_file_p`;
         print "done\n";
     } else {
-        print "can't make poster, $poster not found !\n";
+        print "INFO: can't make poster, $poster not found !\n";
     }
 }
 
@@ -175,9 +174,7 @@ sub start {
         $t->h_planEnd("$_[1]")      if ( $element eq 'planEnd' );
         push @{$t->Allocations}, "$_[1]"    if ( $elm_fifo[$#elm_fifo] eq 'Allocation' );
     }
-    if ( $element eq 'Task' ) {
-        $t->Id($_[1]);
-    }
+    $t->Id($_[1]) if ( $element eq 'Task' );
 }
 
 sub text {
@@ -209,9 +206,9 @@ sub text {
         $t->ParentTask("$string")   if ( $elm_fifo[$#elm_fifo] eq 'ParentTask' );
         push @{$t->Previous}, "$string"         if ( $elm_fifo[$#elm_fifo] eq 'Previous' );
         push @{$t->Followers}, "$string"        if ( $elm_fifo[$#elm_fifo] eq 'Follower' );
-        #push @{$t->Depends}, "$string"          if ( $elm_fifo[$#elm_fifo] eq 'Depend' );
         if ( $elm_fifo[$#elm_fifo] eq 'Depend' ) {
             $string =~ s/!//g;
+            $string =~ s/.*\.(.*)$/$1/g;
             push @{$t->Depends}, "$string";
         }
         push @{$t->bookedResources}, "$string"  if ( $elm_fifo[$#elm_fifo] eq 'Resource' );
@@ -225,6 +222,7 @@ sub end {
 
 sub final {
     my ($ex, $string) = @_;
+    return;
 }
 
 #---------------- bunt stuff --------------------------------
@@ -239,7 +237,7 @@ sub _make_postscript_file {
       _draw_header($p, $project_name);
       _draw_grid($p);
       _draw_task($p, $page_x, $page_y);
-      _draw_depends($p, $page_x, $page_y);
+      _draw_depends($p);
 
       #-- rahmen um alles
       #$p->setcolour(0,0,0);
@@ -250,11 +248,10 @@ sub _make_postscript_file {
 }
 
 sub _draw_depends {
-    my ($p, $page_x, $page_y) = @_;
+    my $p = shift;
     foreach my $task (@all_tasks) {
         $p->setcolour(0,0,255);
         foreach my $t (@{$task->Depends}) {
-            $t =~ s/.*\.(.*)$/$1/g;
             my $i = __get_Index_from_Task($t);
             #-- die ende koordinaten vom task holen, von dem ich abhänge
             my ($x1, $y1) = __get_start_cood($i) if $i;
@@ -315,24 +312,16 @@ sub __get_start_cood {
     my $id = shift;
     my ($x, $y);
     foreach my $t (@all_tasks) {
-        if ( $t->Index eq $id ) {
-            $x = $t->x2;
-            $y = $t->y2;
-        }
+        return ($t->x2, $t->y2) if ( $t->Index eq $id );
     }
-    return ($x, $y);
 }
 
 #-- sucht zu einem tasknamen den index raus und gibt ihn zurück
 sub __get_Index_from_Task {
     my $name = shift;
-    my $ret;
     foreach my $t (@all_tasks) {
-        if ( $t->Id eq $name ) {
-            $ret = $t->Index;
-        }
+        return $t->Index if ( $t->Id eq $name );
     }
-    return $ret;
 }
 
 sub _draw_task {
@@ -430,7 +419,6 @@ sub _draw_grid {
         #-- welcher monat (name)
         my $act_month_name = Month_to_Text($act_month);
         #-- welcher tag (name)
-        #my $act_day_name = Day_of_Week_to_Text($act_dow);
         my $act_day_name = Day_of_Week_Abbreviation($act_dow);
         #-- farbe für die tage festlegen
         $p->setcolour('white');
@@ -459,7 +447,7 @@ sub _draw_grid {
         }
         ($_x, $_y)   = ($i*$day_x, $day_x*$h_month_week);
         ($x, $y)     = _trans_coord($_x, $_y);
-        $p->line($x, $y, $x, $page_border, 0, 0, 0);
+        $p->line($x, $y, $x, $page_border, 191, 191, 191);
         #-- wochen-nummer reinpinseln
         if ( $h_month_week == 2 ) {
             $p->setcolour(0,0,0);
@@ -478,6 +466,7 @@ sub _draw_grid {
             }
         }
         #-- tage in den header schreiben
+        $p->setcolour(0,0,0);
         $p->setfont("Helvetica", 6);
         $p->text($x+0.5, $page_y-$page_border-($header_height*3)+($task_height/1.5), sprintf('%02d', $act_day));
     }
