@@ -28,6 +28,7 @@
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qclipboard.h>
+#include <qfile.h>
 
 #include <kprinter.h>
 #include <kglobal.h>
@@ -109,6 +110,13 @@ ktjview2::~ktjview2()
 
 void ktjview2::load( const KURL& url )
 {
+    if ( url.isLocalFile() && !QFile::exists( url.prettyURL( -1, KURL::StripFileProtocol ) ) ) // check for non-existent recent files
+    {
+        KMessageBox::error( this, i18n( "The file '%1' can not be found; it was probably removed from the system." ).arg( url.prettyURL() ) );
+        m_recentAction->removeURL( url );
+        return;
+    }
+
     if ( m_view->openURL( url ) )
     {
         m_recentAction->addURL( url );
@@ -128,7 +136,6 @@ void ktjview2::setupActions()
     KStdAction::save( this, SLOT( fileSave() ), actionCollection() );
 
     m_recentAction = KStdAction::openRecent( this, SLOT( load( const KURL& ) ), actionCollection() );
-    m_recentAction->setMaxItems( 10 );
     m_recentAction->loadEntries( kapp->config() );
 
     KStdAction::print(this, SLOT(filePrint()), actionCollection());
