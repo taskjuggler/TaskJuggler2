@@ -17,6 +17,7 @@
 #include <qdict.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qdom.h>
 #include <time.h>
 
 #include "ResourceList.h"
@@ -25,6 +26,10 @@
 class Project;
 class Resource;
 class Account;
+
+class QDomElement;
+class QDomDocument;
+
 
 class Allocation
 {
@@ -53,6 +58,12 @@ public:
 	Resource* first() { return alternatives.first(); }
 	Resource* next() { return alternatives.next(); }
 
+   QDomElement xmlElement( QDomDocument& doc ) const
+      {
+	 QDomElement elem = doc.createElement( "Allocation" );
+	 return elem;
+      };
+
 private:
 	// Don't use this.
 	Allocation();
@@ -71,6 +82,28 @@ private:
 	// List of alternative resources.
 	QList<Resource> alternatives;
 } ;
+
+
+class Task;
+
+class TaskList : public QPtrList<Task>
+{
+public:
+	TaskList();
+	virtual ~TaskList();
+
+	enum SortCriteria { PrioUp, PrioDown };
+
+	void setSorting(SortCriteria s) { sorting = s; }
+
+protected:
+	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+
+private:
+	SortCriteria sorting;
+} ;
+
+
 
 class Task
 {
@@ -168,7 +201,8 @@ public:
 
 	Task* getParent() const { return parent; }
 	void addSubTask(Task* t) { subTasks.append(t); }
-
+   TaskList getSubTaskList()  const { return subTasks; }
+   
 	bool xRef(QDict<Task>& hash);
 	QString resolveId(QString relId);
 	bool schedule(time_t reqStart, time_t duration);
@@ -205,11 +239,14 @@ public:
 	}
 	const QStringList& getFlags() { return flags; }
 
+   QDomElement xmlElement( QDomDocument& doc ) const;
 private:
 	bool scheduleContainer();
 	bool bookResource(Resource* r, time_t day, time_t duration);
 	bool bookResources(time_t day, time_t duration);
-	time_t earliestStart();
+
+   QDomElement createXMLElem( QDomDocument& doc, const QString& name, const QString& val ) const;
+   time_t earliestStart();
 	void fatalError(const QString& msg) const;
 
 	Project* project;
@@ -223,7 +260,7 @@ private:
 	// Pointer to parent task.
 	Task* parent;
 	// List of sub tasks.
-	QList<Task> subTasks;
+	TaskList subTasks;
 
 	// Name if the file where this task has been defined.
 	QString file;
@@ -278,30 +315,14 @@ private:
 	// List of tasks Ids that need to be completed before this task can start
 	QStringList depends;
 	// Same as previous but pointers to tasks that are resolved in pass2
-	QList<Task> previous;
+	TaskList previous;
 	// List of tasks that depend on this task
-	QList<Task> followers;
+	TaskList followers;
 	// List of resource allocations requested by the task
 	QList<Allocation> allocations;
 	// List of booked resources
 	QList<Resource> bookedResources;
 } ;
 
-class TaskList : public QList<Task>
-{
-public:
-	TaskList();
-	virtual ~TaskList();
-
-	enum SortCriteria { PrioUp, PrioDown };
-
-	void setSorting(SortCriteria s) { sorting = s; }
-
-protected:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-
-private:
-	SortCriteria sorting;
-} ;
 
 #endif
