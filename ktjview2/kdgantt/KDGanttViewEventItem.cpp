@@ -4,7 +4,7 @@
 */
 
 /****************************************************************************
- ** Copyright (C)  2002-2004 Klarälvdalens Datakonsult AB.  All rights reserved.
+ ** Copyright (C)  2002-2004 Klarï¿½vdalens Datakonsult AB.  All rights reserved.
  **
  ** This file is part of the KDGantt library.
  **
@@ -143,6 +143,7 @@ void KDGanttViewEventItem::setStartTime( const QDateTime& start )
     return;
   }
     myStartTime = start;
+    myEndTime = start;
     if ( myStartTime < leadTime() )
       setLeadTime( myStartTime );
     else {
