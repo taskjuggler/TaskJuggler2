@@ -27,6 +27,7 @@
 #include <qdragobject.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
+#include <qclipboard.h>
 
 #include <kprinter.h>
 #include <kglobal.h>
@@ -53,6 +54,7 @@
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/selectioninterface.h>
 
 ktjview2::ktjview2()
     : KMainWindow( 0, "ktjview2" ),
@@ -80,6 +82,10 @@ ktjview2::ktjview2()
              this,   SLOT(changeStatusbar(const QString&)) );
     connect( m_view, SIGNAL(signalChangeCaption(const QString&)),
              this,   SLOT(setCaption(const QString&)) );
+
+    // react to clipboard changes
+    connect( m_view->editor()->doc(), SIGNAL( selectionChanged() ),
+             this, SLOT( enableClipboardActions() ) );
 
     m_activeTaskFilter = 0;
     m_activeResourceFilter = 0;
@@ -119,6 +125,11 @@ void ktjview2::setupActions()
     KStdAction::keyBindings( this, SLOT(optionsConfigureKeys()), actionCollection() );
     KStdAction::configureToolbars( this, SLOT(optionsConfigureToolbars()), actionCollection() );
     KStdAction::preferences( this, SLOT(optionsPreferences()), actionCollection() );
+
+    // Edit menu
+    KStdAction::cut( m_view, SLOT( slotCut() ), actionCollection() );
+    KStdAction::copy( m_view, SLOT( slotCopy() ), actionCollection() );
+    KStdAction::paste( m_view, SLOT( slotPaste() ), actionCollection() );
 
     // View menu
 #if 0
@@ -557,7 +568,17 @@ void ktjview2::enableResUsageActions( bool enable )
 
 void ktjview2::enableEditorActions( bool enable )
 {
-    actionCollection()->action( KStdAction::name( KStdAction::Save ) )->setEnabled( enable );
+    action( KStdAction::name( KStdAction::Save ) )->setEnabled( enable );
+    enableClipboardActions( enable );
+}
+
+void ktjview2::enableClipboardActions( bool enable )
+{
+    bool hasSelection = KTextEditor::selectionInterface( m_view->editor()->doc() )->hasSelection();
+    bool isClipEmpty = QApplication::clipboard()->text( QClipboard::Clipboard ).isEmpty();
+    action( KStdAction::name( KStdAction::Cut ) )->setEnabled( enable && hasSelection);
+    action( KStdAction::name( KStdAction::Copy ) )->setEnabled( enable && hasSelection );
+    action( KStdAction::name( KStdAction::Paste ) )->setEnabled( enable && !isClipEmpty );
 }
 
 void ktjview2::expandAll()

@@ -156,6 +156,10 @@ ktjview2View::ktjview2View( QWidget *parent )
     // editor view
     m_editorView = new EditorView( this, "editor_view" );
     m_widgetStack->addWidget( m_editorView );
+    connect( m_editorView->doc(), SIGNAL( setWindowCaption( const QString & ) ),
+             this, SIGNAL( signalChangeCaption( const QString & ) ) );
+    connect( m_editorView->doc(), SIGNAL( setStatusBarText( const QString & ) ),
+             this, SIGNAL( signalChangeStatusbar( const QString & ) ) );
 
     // gantt popup menu
     m_ganttPopupMenu = new QPopupMenu( this, "gantt_popup" );
@@ -1104,6 +1108,21 @@ void ktjview2View::slotRUFind()
 void ktjview2View::slotResDisplay( int display )
 {
     m_resUsageView->setDisplayData( display );
+}
+
+void ktjview2View::slotCut()
+{
+    m_editorView->slotCut();
+}
+
+void ktjview2View::slotCopy()
+{
+    m_editorView->slotCopy();
+}
+
+void ktjview2View::slotPaste()
+{
+    m_editorView->slotPaste();
 }
 
 #include "ktjview2view.moc"

@@ -74,21 +74,21 @@ public:
      KTextEditor::View * view() const
         { return m_view; }
 
-signals:
+public slots:
     /**
-     * Emitted when the text (source of the project) changes
+     * Cut the selected text to cliboard
      */
-    void textChanged();
+    void slotCut();
 
     /**
-     * Emitted when the cursor changes its position
+     * Copy the selected text to cliboard
      */
-    void cursorChanged();
+    void slotCopy();
 
     /**
-     * Emitted when the selection changes
+     * Paste the selected text from cliboard
      */
-    void selectionChanged();
+    void slotPaste();
 
 private:
     /**

@@ -35,6 +35,7 @@
 
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/editinterface.h>
+#include <ktexteditor/clipboardinterface.h>
 
 EditorView::EditorView( QWidget * parent, const char * name )
     : QWidget( parent, name ), m_view( 0 )
@@ -72,10 +73,6 @@ bool EditorView::init()
     m_layout->addWidget( m_view, 1 );
     m_view->show();
 
-    connect( doc(), SIGNAL( textChanged() ), this, SIGNAL( textChanged() ) );  // FIXME check this
-    connect( m_view, SIGNAL( cursorPositionChanged() ), this, SIGNAL( cursorChanged() ) );
-    connect( doc(), SIGNAL( selectionChanged() ), this, SIGNAL( selectionChanged() ) );
-
     return true;
 }
 
@@ -94,6 +91,21 @@ void EditorView::closeDocument()
 {
     doc()->closeURL();
     doc()->setReadWrite( false );
+}
+
+void EditorView::slotCut()
+{
+    KTextEditor::clipboardInterface( m_view )->cut();
+}
+
+void EditorView::slotCopy()
+{
+    KTextEditor::clipboardInterface( m_view )->copy();
+}
+
+void EditorView::slotPaste()
+{
+    KTextEditor::clipboardInterface( m_view )->paste();
 }
 
 #include "editorView.moc"

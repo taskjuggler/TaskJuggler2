@@ -176,6 +176,8 @@ private slots:
     void outline9();
     void collapseAll();
 
+    void enableClipboardActions( bool enable = true );
+
 private:
     /**
      * Create actions

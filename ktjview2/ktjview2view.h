@@ -134,6 +134,21 @@ public:
 
 public slots:
     /**
+     * Cut the selected text to cliboard (Editor slot)
+     */
+    void slotCut();
+
+    /**
+     * Copy the selected text to cliboard (Editor slot)
+     */
+    void slotCopy();
+
+    /**
+     * Paste the selected text from cliboard (Editor slot)
+     */
+    void slotPaste();
+
+    /**
      * Set the Gantt to calendar mode depending on @p flag
      */
     void setCalendarMode( bool flag );
