@@ -949,15 +949,15 @@ sub _pars_xml {
     } else {
         my @types = (["XML files", [qw/.xml .XML/]],
                      ["All files", '*']);
-        use Tk::FileSelect;
-        my $FSref = $top->FileSelect();
-        $file = $FSref->Show;
-        #require Tk::FBox;
-        #Tk::FBox->import('as_default');
-        #my $fw = $top->MainWindow;
-        #delete $fw->{'tk_getOpenFile'};
-        #delete $fw->{'tk_getSaveFile'};
-        #$file = $fw->getOpenFile(-filetypes => \@types);
+        #use Tk::FileSelect;
+        #my $FSref = $top->FileSelect();
+        #$file = $FSref->Show;
+        require Tk::FBox;
+        Tk::FBox->import('as_default');
+        my $fw = $top->MainWindow;
+        delete $fw->{'tk_getOpenFile'};
+        delete $fw->{'tk_getSaveFile'};
+        $file = $fw->getOpenFile(-filetypes => \@types);
 
         if ( $file and $file ne '' ) {
             $par->parsefile($file);

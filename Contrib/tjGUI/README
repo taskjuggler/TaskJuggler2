@@ -18,7 +18,7 @@ required
     Class::MethodMaker
             http://www.cpan.org/modules/by-module/Class/Class-MethodMaker-1.06.tar.gz
 
-    Tk >= 800.023
+    Tk >= 800.024 [ Tk < 800.024 is broken ;( ]
             http://www.cpan.org/modules/by-module/Tk/Tk-800.*.tar.gz
 
 
