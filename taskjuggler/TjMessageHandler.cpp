@@ -57,3 +57,4 @@ TjMessageHandler::fatalMessage(const QString& msg, const QString& file, int
         printFatal(msg, file, line);
 }
 
+#include "TjMessageHandler.moc"

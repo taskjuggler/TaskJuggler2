@@ -1,7 +1,4 @@
-bin_PROGRAMS = taskjuggler
-taskjuggler_SOURCES =  main.cpp 
-
-noinst_LTLIBRARIES = libtaskjuggler.la
+lib_LTLIBRARIES = libtaskjuggler.la
 
 libtaskjuggler_la_SOURCES = Utility.cpp RealFormat.cpp \
 ParserTreeContext.cpp ParserNode.cpp ParserElement.cpp \
@@ -35,20 +32,19 @@ ExportReport.cpp \
 XMLReport.cpp \
 Project.cpp ReportICal.cpp kotrus.cpp
 
+libtaskjuggler_la_LDFLAGS = $(all_libraries) $(QT_LDFLAGS) -no-undefined
+libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS)
 libtaskjuggler_la_METASOURCES = AUTO
 
-libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS)
+bin_PROGRAMS = taskjuggler
+taskjuggler_SOURCES = main.cpp 
 
-# KDE_OPTIONS = qtonly
-taskjuggler_LDADD  =  libtaskjuggler.la
+taskjuggler_LDADD = libtaskjuggler.la
 
 # set the include path for X, qt and KDE
-INCLUDES= $(all_includes) $(ICAL_INCLUDES)
+INCLUDES = $(ICAL_INCLUDES) $(all_includes)
 
-# the library search path. 
-libtaskjuggler_la_LDFLAGS = $(all_libraries) 
-
-# this is to enable Qt behavoir of am_edit
+# this is to enable Qt behavior of am_edit
 KDE_OPTIONS = qtonly
 
 messages: 

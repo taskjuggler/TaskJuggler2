@@ -85,7 +85,7 @@ if test "$cv_option_kdesupport" = yes ;then
    DO_NOT_COMPILE="Contrib"
 else
    kde_htmldir=${datadir}/taskjuggler
-   DO_NOT_COMPILE="ktjview Contrib"
+   DO_NOT_COMPILE="ktjview ktjview2 Contrib"
 fi
 
 AC_CHECK_PROG(PERL, perl, perl, no)
