@@ -138,7 +138,8 @@ void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int 
     //
     // qDebug( "Y-Value for Days: %d", yDays );
     trun = m_start;  // m_start is on midnight
-    for( int i = 0; i < daysInInterval(); i++ )
+    int days = daysInInterval();
+    for( int i = 0; i < days; i++ )
     {
         int dayX= timeToX(trun);
         int day = dayOfMonth(trun);
@@ -156,7 +157,7 @@ void KTVHeader::drawContents( QPainter *p, int clipx, int clipy, int clipw, int 
     trun = m_start;  // m_start is on midnight
     bool firstWeek = true;
     bool firstMon  = true;
-    for( int i = 0; i < daysInInterval(); i++ )
+    for( int i = 0; i < days; i++ )
     {
         int dayX= timeToX(trun);
         // check for week
