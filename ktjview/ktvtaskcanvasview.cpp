@@ -88,7 +88,11 @@ void KTVTaskCanvasView::addTask(Task *t )
 
 KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
 {
-   QCanvasItemList il = canvas()->collisions ( p );
+   qDebug( "On related widget: x=%d", p.x() );
+   QPoint r = viewportToContents(p);
+   qDebug( "Converted: x=%d", r.x() );
+   
+   QCanvasItemList il = canvas()->collisions ( r );
 
    KTVCanvasItemBase *item = 0L;
    

@@ -20,7 +20,7 @@
 class Task;
 
 /**
- * Tooltip that displays task info
+ * Tooltip that displays task info. 
  */
 
 class TaskTip: public QToolTip

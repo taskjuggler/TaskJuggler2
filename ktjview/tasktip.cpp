@@ -25,17 +25,27 @@ void TaskTip::maybeTip( const QPoint& pos )
    if ( !parentWidget()->inherits( "KTVTaskCanvasView" ) )
       return;
    
-   KTVCanvasItemBase *cItem = ((KTVTaskCanvasView*) parentWidget())->taskItemAt( pos );
+   KTVTaskCanvasView *viewPort = (KTVTaskCanvasView*) parentWidget();
+   Q_CHECK_PTR(viewPort);
 
+   KTVCanvasItemBase *cItem = viewPort->taskItemAt( pos );
+   
    if( !cItem )  /* No item found */
    {
       return;
-      qDebug("There is no item!" );
    }
 
    QRect r( cItem->rect() );
-   qDebug( "The items rect starts at %d-%d", r.x(), r.y() );
-   tip( r, beautyTask(cItem->getTask()) );
+   QRect rView( viewPort->contentsToViewport( r.topLeft() ),
+		viewPort->contentsToViewport( r.bottomRight() ));
+   
+   Task *mt = cItem->getTask();
+   if( mt )
+   {
+      qDebug( "The items rect starts is from %d to %d with task %p", r.x(), r.right(), mt );
+   
+      tip( rView, beautyTask(mt) );
+   }
 
 }
 
@@ -47,15 +57,9 @@ QString TaskTip::beautyTask( Task *t ) const
    {
       QString h;
       
-      ret = i18n( "Task " ) + t->getName() + " (" + t->getId() + ")<P>";
-      ret += QString("<TABLE cellpadding=\"2\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getPlanStart() ));
+      ret = i18n( "Task <B>" ) + t->getName() + "</B><BR>";
+      ret += QString("<TABLE cellpadding=\"0\" cellspacing=\"2\"><TR><TD>Plan Start</TD><TD>%1</TD></TR>").arg(time2ISO( t->getPlanStart() ));
       ret += QString("<TR><TD>Plan End</TD><TD>%1</TD></TR></TABLE>").arg(time2ISO( t->getPlanEnd() ));
-#if 0
-      ret += i18n( "Plan: " ) +  );
-      ret += " - " + time2ISO( t->getPlanEnd() )+ "<BR>";
-      ret += i18n( "Actual: " ) + time2ISO( t->getActualStart() );
-      ret += " - " + time2ISO( t->getActualEnd() )+ "<BR>";
-#endif
    }
    return ret;
 }
