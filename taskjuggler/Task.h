@@ -62,9 +62,15 @@ public:
 	QDomElement xmlElement( QDomDocument& doc ) const
 	{
 		QDomElement elem = doc.createElement( "Allocation" );
+		elem.setAttribute( "load", load );
+		elem.setAttribute( "ResourceID", resource->getId());
+
+		/* Alternatives are missing TODO */
 		return elem;
 	};
 
+   
+   
 private:
 	// Don't use this.
 	Allocation();
@@ -100,6 +106,10 @@ protected:
 private:
 	SortCriteria sorting;
 } ;
+
+typedef QPtrListIterator<TaskList> TaskListIterator;
+
+
 
 class Task : public FlagList
 {
@@ -302,9 +312,9 @@ private:
 	// List of tasks that depend on this task
 	TaskList followers;
 	// List of resource allocations requested by the task
-	QList<Allocation> allocations;
+	QPtrList<Allocation> allocations;
 	// List of booked resources
-	QList<Resource> bookedResources;
+	QPtrList<Resource> bookedResources;
 } ;
 
 #endif
