@@ -892,7 +892,7 @@ ProjectFile::parse()
 					fatalError("'task' or 'resource' expected");
 					return FALSE;
 				}
-				if ((token == "task" && !readTaskSupplement()) ||
+				if ((token == "task" && !readTaskSupplement("")) ||
 					(token == "resource" && !readResourceSupplement()))
 					return FALSE;
 				break;
@@ -1189,16 +1189,18 @@ ProjectFile::readTask(Task* parent)
 }
 
 bool
-ProjectFile::readTaskSupplement()
+ProjectFile::readTaskSupplement(const QString& prefix)
 {
 	QString token;
 	TokenType tt;
 	Task* task;
 
 	if (((tt = nextToken(token)) != ID && tt != RELATIVE_ID) ||
-		((task = proj->getTask(token)) == 0))
+		((task = proj->getTask(prefix == "" ?
+							   token : prefix + "." + token)) == 0))
 	{
-		fatalError("Already defined task ID expected");
+		fatalError("Task '%s' has not been defined yet",
+				   (prefix == "" ? token : prefix + "." + token).latin1());
 		return FALSE;
 	}
 	if (nextToken(token) != LCBRACE)
@@ -1465,6 +1467,18 @@ ProjectFile::readTaskBody(Task* task)
 				}
 				task->setProjectId(token);
 			}
+			else if (token == KW("supplement"))
+			{
+				if (nextToken(token) != ID || (token != KW("task")))
+				{
+					fatalError("'task' expected");
+					return FALSE;
+				}
+				if ((token == "task" && 
+					 !readTaskSupplement(task->getId())))
+					return FALSE;
+				break;
+			}	
 			else if (token == KW("include"))
 			{
 				if (!readInclude())

@@ -1,0 +1,12 @@
+project test "Test Project" "$Id" 2000-01-01 2000-01-04
+
+task top "Top Task" {
+  start 2000-01-01
+
+	task sub "Sub Task" {
+	}
+	supplement task sub {
+		length 1d
+	}
+}
+
