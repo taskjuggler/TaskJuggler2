@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Create a taskjuggler tarball in the current directory
+#
+# Copyright 2003 Klaas Freitag <freitag@suse.de>
+# 
+# Parameter: The required version (defaults to cvs)
+#
+tmpdir=/tmp/tjball
+v=cvs
+tj=taskjuggler-${1:-$v}
+dir=`pwd`
+
+echo "Building version" $tj tarball
+
+rm -rf $tmpdir
+mkdir $tmpdir
+cd $tmpdir
+
+# CVSROOT must be set outside.
+if test -z $CVSROOT ; then
+   echo "Please set CVSROOT properly."
+   exit 1
+fi
+
+cd $tmpdir
+cvs export -r HEAD taskjuggler 1>/dev/null
+
+mv taskjuggler $tj
+
+(cd $tj && make -f Makefile.cvs 1>/dev/null )
+
+archive=$tj.tar.bz2
+
+tar cjf $archive $tj
+
+cp $archive $dir
+cd $dir
+
+rm -rf $tmpdir
+
