@@ -53,6 +53,12 @@ task testProject "testProject for xml2gantt" {
             ${__worker}
             depends !dev_2
         }
+        task dev_4 "Devel-Job 4" {
+            length 1d
+            complete 35
+            ${__worker}
+            depends !dev_2
+        }
         depends !start
     }
 
