@@ -17,7 +17,7 @@
 #include <qptrdict.h>
 #include <qpoint.h>
 
-class KTVConnector: public QCanvasLine
+class KTVConnector: public QCanvasPolygon
 {
 public:
    KTVConnector( QCanvas *,
@@ -25,8 +25,14 @@ public:
 		 const QPoint& to   = QPoint() );
 
    void setConnectPoints( const QPoint&, const QPoint& );
+
+   QPoint startPoint() const;
+   QPoint endPoint() const;
    
    ~KTVConnector() {}
+private:
+   static const int m_wingX = 4;
+   static const int m_wingY = 8;
 };
 
 

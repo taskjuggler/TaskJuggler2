@@ -27,7 +27,6 @@ void KTVCanvasItemBase::hide()
    KTVConnectorListIterator it( m_conIn );
    KTVConnector *c = 0;
 
-   qDebug( "Hiding connectors!" );
    while( (c = it.current()) != 0 )
    {
       ++it;
@@ -52,24 +51,40 @@ void KTVCanvasItemBase::moveBy( int, int )
 
 }
 
-void KTVCanvasItemBase::moveConnectors( int dx, int dy )
+void KTVCanvasItemBase::moveConnectorsBy( int dx, int dy )
+{
+   moveInConnectorsBy( dx, dy );
+   moveOutConnectorsBy( dx, dy );
+}
+
+void KTVCanvasItemBase::moveInConnectorsBy( int dx, int dy )
 {
    KTVConnectorListIterator it( m_conIn );
    KTVConnector *c = 0;
 
-   qDebug( "Moving connectors!" );
+   // qDebug( "Moving In connectors by %d, %d!", dx, dy );
    while( (c = it.current()) != 0 )
    {
       ++it;
       /* Preserve the starting point */
       QPoint ps = c->startPoint();
+      // qDebug( "Connector start point: %d, %d!", ps.x(), ps.y() );
       QPoint pe = c->endPoint();
+      // qDebug( "Connector end  point: %d, %d!", pe.x(), pe.y() );
       pe.setX( pe.x()+dx );
       pe.setY( pe.y()+dy );
+      // qDebug( "In connector end-Point is %dx%d", pe.x(), pe.y());
       c->setConnectPoints( ps, pe );
    }
+}
+
+void KTVCanvasItemBase::moveOutConnectorsBy( int dx, int dy )
+{
 
    KTVConnectorListIterator it2( m_conOut );
+   KTVConnector *c = 0;
+
+   // qDebug( "Moving Out connectors by %d, %d!", dx, dy );
    while( (c = it2.current()) != 0 )
    {
       ++it2;
@@ -77,6 +92,46 @@ void KTVCanvasItemBase::moveConnectors( int dx, int dy )
       QPoint pe = c->endPoint();
       ps.setX( ps.x()+dx );
       ps.setY( ps.y()+dy );
+      c->setConnectPoints( ps, pe );
+   }
+}
+
+/* move in- and out-connectors to absolute position */
+void KTVCanvasItemBase::moveConnectors( double x, double y )
+{
+   moveInConnectors(x,y);
+   moveOutConnectors(x,y);
+}
+void KTVCanvasItemBase::moveInConnectors( double x, double y )
+{
+   KTVConnectorListIterator it( m_conIn );
+   KTVConnector *c = 0;
+
+   while( (c = it.current()) != 0 )
+   {
+      ++it;
+      /* Preserve the starting point */
+      QPoint ps = c->startPoint();
+      QPoint pe = c->endPoint();
+      pe.setX( int(x) );
+      pe.setY( int(y) );
+      c->setConnectPoints( ps, pe );
+   }
+}
+
+void KTVCanvasItemBase::moveOutConnectors( double x, double y )
+{
+
+   KTVConnectorListIterator it2( m_conOut );
+   KTVConnector *c = 0;
+
+   while( (c = it2.current()) != 0 )
+   {
+      ++it2;
+      QPoint ps = c->startPoint();
+      QPoint pe = c->endPoint();
+      ps.setX( int(x) );
+      ps.setY( int(y) );
       c->setConnectPoints( ps, pe );
    }
 }
@@ -126,36 +181,29 @@ void KTVCanvasItemTask::setSize( int w, int h )
       /* TODO: Height adjusting */
 
       /* Move the outgoing connectors */
-      KTVConnectorListIterator conIt( m_conOut );
-      KTVConnector *c;
-      while( (c = conIt.current()) != 0 )
-      {
-	 ++conIt;
-	 QPoint ps = c->startPoint();
-
-	 ps.setX( ps.x()+dx );
-	 // ps.setY( ps.y()+dy );
-	 c->setConnectPoints( ps, c->endPoint() );
-      }
+      moveOutConnectorsBy( dx, 0 );
 
       /* And now resize the box */
       cRect->setSize( w, h );
    }
-
+   m_height = h;
 }
 
 void KTVCanvasItemTask::move( double x, double y )
 {
+   moveConnectors( x, y );
+
    if( cRect )
       cRect->move(x,y);
    if( m_cText )
       m_cText->move( x+10, y );
+
 }
 
 void KTVCanvasItemTask::moveBy( int dx, int dy)
 {
-   qDebug( "Moving in CanvasItemTask!" );
-   moveConnectors( dx, dy );
+    // qDebug( "1. Moving in CanvasItemTask by %d, %d!", dx, dy );
+   moveConnectorsBy( dx, dy );
 
 
    if( cRect )
@@ -209,7 +257,7 @@ QPoint KTVCanvasItemTask::getConnectorIn() const
    {
       QRect r = cRect->rect();
       p.setX( r.x());
-      p.setY( r.y()+( r.height()/2));
+      p.setY( r.y()); // +( r.height()/2));
    }
    return p;
 }
@@ -255,6 +303,8 @@ void KTVCanvasItemMilestone::setSize( int , int h )
 {
    if(! cPoly ) return;
 
+   int oldW = cPoly->boundingRect().width();
+
    QPointArray p(4);
 
    m_height = h;
@@ -268,23 +318,27 @@ void KTVCanvasItemMilestone::setSize( int , int h )
 
    cPoly->setPoints( p );
 
+   /* move connectors, width and height are identical for milestones */
+   moveOutConnectors( (m_height - oldW)/2, 0 );
 }
 
 void KTVCanvasItemMilestone::move( double x, double y )
 {
    if( cPoly )
       cPoly->move(x,y);
+   moveConnectors( x, y );
 }
 
 void KTVCanvasItemMilestone::moveBy( int dx, int dy)
 {
-   moveConnectors( dx, dy );
+   moveConnectorsBy( dx, dy );
    if( cPoly )
       cPoly->moveBy( dx, dy );
 }
 
 void KTVCanvasItemMilestone::hide()
 {
+   KTVCanvasItemBase::hide();
    if( cPoly )
       cPoly->hide();
 }
@@ -359,12 +413,15 @@ void KTVCanvasItemContainer::setSize( int w, int h  )
 {
    QPointArray p(8);
 
-   w = w < h ? h : w;
+   // w = w < h ? h : w;
+
+   m_height = h;
 
    if( !cPoly ) return;
 
    int dx = w- (cPoly->boundingRect()).width();
-   moveConnectors( dx, 0 );
+   if( dx != 0 )
+       moveOutConnectors( dx, 0 );
 
    p.setPoint(0, 0, 0);
    p.setPoint(1, 0, h);
@@ -375,26 +432,6 @@ void KTVCanvasItemContainer::setSize( int w, int h  )
    p.setPoint(5, w-h/2, h/2);
    p.setPoint(6, w, h );
    p.setPoint(7, w, 0 );
-#if 0
-   /* This is like
-    *  +-----~-----+
-    *  |+----~----+|
-    *  ||         ||
-    *  \/         \/
-    * Do not forget to enhance the point-array to 10 !
-    */
-   p.setPoint( 0, 0, 0 );
-   p.setPoint( 1, 0, h/2 );
-   p.setPoint( 2, h/2, h );
-   p.setPoint( 3, h, h/2 );
-   p.setPoint( 4, h, h/2-2 );
-
-   p.setPoint( 5, w-h, h/2-2 );
-   p.setPoint( 6, w-h, h/2 );
-   p.setPoint( 7, w-h/2, h );
-   p.setPoint( 8, w, h/2 );
-   p.setPoint( 9, w, 0 );
-#endif
 
    cPoly->setPoints( p );
 }
@@ -403,11 +440,12 @@ void KTVCanvasItemContainer::move( double x, double y )
 {
    if( cPoly )
       cPoly->move(x,y);
+   moveConnectors( x, y);
 }
 
 void KTVCanvasItemContainer::moveBy( int dx, int dy)
 {
-    moveConnectors( dx, dy );
+   moveConnectorsBy( dx, dy);
 
    if( cPoly )
       cPoly->moveBy( dx, dy );

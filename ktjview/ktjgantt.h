@@ -12,6 +12,7 @@
 #ifndef KTJGANTT_H
 #define KTJGANTT_H
 
+#include <time.h>
 #include <qsplitter.h>
 class QWidget;
 class QCanvasView;
@@ -46,18 +47,22 @@ public:
     virtual ~KTJGantt();
 
 
-   void showProject( Project * );
-   
+    void showProject( Project * );
+
 public slots:
-   void slZoomIn();
-   void slZoomOut();
-   void slZoomOriginal();
+    void slZoomIn();
+    void slZoomOut();
+    void slZoomOriginal();
+
+protected slots:
+    virtual void slCanvasClicked( time_t );
+
 signals:
-   void statusBarChange( const QString& );
+    void statusBarChange( const QString& );
 
 private:
-   KTVTaskCanvasView *m_canvas;
-   KTVTaskTable *m_table;
+    KTVTaskCanvasView *m_canvas;
+    KTVTaskTable *m_table;
 };
 
 #endif // KTJVIEWPART_H

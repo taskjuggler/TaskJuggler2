@@ -17,6 +17,7 @@
 #include "Task.h"
 #include "Utility.h"
 #include "tasktip.h"
+#include <qevent.h>
 
 
 KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const char *name )
@@ -24,7 +25,7 @@ KTVTaskCanvasView::KTVTaskCanvasView( QWidget *parent, KTVTaskTable* tab, const 
     m_canvas(0),
     m_scaleFactor(1.0)
 {
-   m_canvas = new KTVTaskCanvas( parent, tab, name );
+    m_canvas = new KTVTaskCanvas( parent, tab, name );
    setCanvas( m_canvas );
    (void) new TaskTip( this );
 
@@ -49,6 +50,7 @@ void KTVTaskCanvasView::showProject( Project *p )
    m_canvas->slSetDayWidthStandard();
    m_canvas->setInterval( p->getStart(), p->getEnd() );
 
+   m_canvas->slSetWeekStartsMonday( p->getWeekStartsMonday() );
 }
 
 void KTVTaskCanvasView::finalise( Project* )
@@ -120,36 +122,61 @@ KTVCanvasItemBase*  KTVTaskCanvasView::taskItemAt( const QPoint& p )
    return item;
 }
 
+/*
+ * returns the time that is currently centered in the viewport.
+ */
+time_t KTVTaskCanvasView::getCenterTime()
+{
+    int x = contentsX() + contentsWidth()/2;
+    time_t t = m_canvas->timeFromX( x );
+
+    qDebug("getCenterTime: %s", (const char*) time2ISO(t) );
+    return( t );
+}
+
+/**
+ * ensure that the given time is visible at a p percent of the viewport
+ * width from the left side.
+ *
+ */
+void KTVTaskCanvasView::xScrollToTime( int p, time_t ti )
+{
+    int timeX = m_canvas->timeToX( ti );
+
+    if( p > 0 && p <= 100 )
+    {
+        timeX -= int(double(p/100.0)*contentsWidth());
+    }
+    qDebug( "Centering on %d %s", timeX, (const char*) time2ISO(timeX));
+    setContentsPos( timeX, contentsY() );
+}
+
 void KTVTaskCanvasView::zoomIn()
 {
     int w = m_canvas->getDayWidth();
-
+    time_t centerTime = getCenterTime();
+    qDebug("getCenterTime1: %s", (const char*) time2ISO(centerTime) );
     m_canvas->slSetDayWidth( int(1.2 * w));
+    xScrollToTime( 50, centerTime );
     update();
 }
 
 void KTVTaskCanvasView::zoomOut()
 {
     int w = m_canvas->getDayWidth();
-
+    time_t centerTime = getCenterTime();
     m_canvas->slSetDayWidth( int(0.8 * w));
+    xScrollToTime( 50, centerTime );
     update();
 
 }
 
 void KTVTaskCanvasView::zoomOriginal()
 {
+    time_t centerTime = getCenterTime();
     m_canvas->slSetDayWidthStandard();
+    xScrollToTime( 50, centerTime );
     update();
-}
-
-
-void KTVTaskCanvasView::contentsMousePressEvent( QMouseEvent* )
-{
-
-   /* Take only the first of the collision list, that is the front most item */
-
-
 }
 
 
@@ -162,5 +189,11 @@ void KTVTaskCanvasView::slScrollTo( int, int y)
 {
    // qDebug( "Scrolling!");
    emit scrolledBy( 0, y - contentsY() );
+}
 
+
+void KTVTaskCanvasView::contentsMousePressEvent ( QMouseEvent *e )
+{
+   qDebug( "Mouse-Move at %d %d", e->pos().x(), e->pos().y());
+   emit canvasClicked( m_canvas->timeFromX( e->pos().x()));
 }

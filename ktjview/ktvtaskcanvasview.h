@@ -29,40 +29,52 @@ class QPoint;
 class KTVTaskCanvasView: public QCanvasView
 {
     Q_OBJECT
-
-    friend class KTVTaskTable;
-   
 public:
     KTVTaskCanvasView( QWidget *parent, KTVTaskTable *tab=0, const char *name = 0 );
     virtual ~KTVTaskCanvasView(){ }
-   void showProject( Project * );
-   void contentsMousePressEvent( QMouseEvent* e );
+    void showProject( Project * );
 
-   /**
-    * find a task item under the clicked point.
-    *
-    * @returns a task item or zero.
-    */
-   KTVCanvasItemBase* taskItemAt( const QPoint& );
 
-   void finalise( Project *p );
+    KTVTaskCanvas* getCanvas() { return m_canvas; }
+    /**
+     * find a task item under the clicked point.
+     *
+     * @returns a task item or zero.
+     */
+    KTVCanvasItemBase* taskItemAt( const QPoint& );
+
+    void finalise( Project *p );
+
+    /**
+     * @return the time that is currently in center of the viewport.
+     */
+    time_t getCenterTime();
+
+    /* ensure that the given time is visible at a p percent of the viewport
+     * width from the left side.
+     */
+    void xScrollToTime( int, time_t );
+
+protected:
+    void contentsMousePressEvent( QMouseEvent * );
 
 signals:
-   void scrolledBy( int, int );
-   
-public slots:
-   void zoomIn();
-   void zoomOut();
-   void zoomOriginal();
-   void slScrollTo(int, int);
-   
-   
-private:
-   void addTask( Task *t );
-   Project *m_pro;
+    void scrolledBy( int, int );
+    void canvasClicked( time_t );
 
-   KTVTaskCanvas *m_canvas;
-   double         m_scaleFactor;
+public slots:
+    void zoomIn();
+    void zoomOut();
+    void zoomOriginal();
+    void slScrollTo(int, int);
+
+
+private:
+    void addTask( Task *t );
+    Project *m_pro;
+
+    KTVTaskCanvas *m_canvas;
+    double         m_scaleFactor;
 
 };
 

@@ -41,13 +41,13 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
 
    connect( this, SIGNAL( expanded( QListViewItem* )),
 	    this, SLOT( slExpanded( QListViewItem* )));
-   
+
    connect( this, SIGNAL( collapsed( QListViewItem* )),
 	    this, SLOT( slCollapsed( QListViewItem* )));
 
    connect( this, SIGNAL( selectionChanged(QListViewItem*)),
 	    this, SLOT(slSelectionChanged(QListViewItem*)));
-   
+
 
    setVScrollBarMode( QScrollView::AlwaysOff );
 
@@ -56,8 +56,8 @@ KTVTaskTable::KTVTaskTable( QWidget *parent, const char *name )
    m_milestonePix = loader->loadIcon( PIX_MILESTONE, KIcon::Small );
    m_taskPix      = loader->loadIcon( PIX_TASK     , KIcon::Small );
    m_containerPix = loader->loadIcon( PIX_CONTAINER, KIcon::Small );
-   
-   
+
+
 }
 
 
@@ -72,24 +72,25 @@ void KTVTaskTable::showProject( Project *p )
    if( m_root )
       delete m_root;
 
-   qDebug( " ++++++ Starting to show +++++++, itemHeight: %d", m_itemHeight);
-   
+
    QString pName = p->getName();
 
    m_root = new KTVTaskTableItem( this, m_itemHeight );
-   
+
+   setItemHeight( m_root->height() );
+   emit topOffsetChanged( header()->height() + m_root->height() );
+
    m_root->setExpandable( true );
 
    KIconLoader *loader = KGlobal::iconLoader();
    m_root->setPixmap( COL_NAME, loader->loadIcon( PIX_MILESTONE, KIcon::Small ));
-   
+
+   qDebug( " ++++++ Starting to show +++++++, itemHeight: %d", m_itemHeight);
+
    m_root->setOpen( true );
-   
+
    m_root->setText( COL_NAME, i18n("Project: %1").arg(pName) );
 
-   setItemHeight( m_root->height() );
-   emit topOffsetChanged( header()->height() + m_root->height() );
-   
    qDebug( "Y-Pos of root: %d, height is %d", m_root->itemPos(), m_root->height() );
 
    KTVReport rep( p, QString("dummy"), p->getStart(), p->getEnd() );
@@ -97,7 +98,7 @@ void KTVTaskTable::showProject( Project *p )
    // filteredList.setSorting( CoreAttributesList::TreeMode );
    rep.filterTaskList(filteredList, 0);
    rep.sortTaskList(filteredList);
-  
+
    for (Task* t = filteredList.first(); t != 0; t = filteredList.next())
    {
       if( (t->getParent() == 0) && t->isContainer() )
@@ -115,14 +116,14 @@ void KTVTaskTable::showProject( Project *p )
 void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
 {
    if( ! t ) return;
-   
+
    QString idx = QString::number(t->getIndex());
    QString name = t->getName();
    // qDebug( "Adding task: " + t->getId());
    QDateTime dt;
-   
+
    KTVTaskTableItem *ktv =  new KTVTaskTableItem( parent, t, m_itemHeight );
-   
+
    ktv->setText( COL_NAME, name );
    if( t->isContainer() )
       ktv->setPixmap( COL_NAME, m_containerPix );
@@ -130,28 +131,28 @@ void KTVTaskTable::addTask( KTVTaskTableItem *parent, Task *t )
       ktv->setPixmap( COL_NAME, m_milestonePix );
    else
       ktv->setPixmap( COL_NAME, m_taskPix );
-   
+
    ktv->setText( COL_ID, t->getId() );
    ktv->setText( COL_PLAN_LEN, beautyTimeSpan( t->getPlanEnd(), t->getPlanStart() ));
    ktv->setText( COL_PRIORITY, QString::number( t->getPriority() ));
-   
+
    double cmplt = t->getComplete();
    ktv->setText( COL_COMPLETE, cmplt == -1 ? i18n("iP"):  i18n("%1%").arg(cmplt));
-   
+
    dt.setTime_t( t->getPlanStart() );
    ktv->setText( COL_PLAN_START_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
    ktv->setText( COL_PLAN_START_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
-   
+
    dt.setTime_t( t->getPlanEnd() );
    ktv->setText( COL_PLAN_END_DATE, KGlobal::locale()->formatDate( dt.date(), true ));
    ktv->setText( COL_PLAN_END_TIME, KGlobal::locale()->formatTime( dt.time(), false ));
 
    /* signal to create a new task in the canvas */
    emit( newTaskAdded( t, ktv));
-   
+
    TaskList subTasks;
    subTasks.clear();
-   
+
    t->getSubTaskList(subTasks);
    // int cnt = subTasks.count();
    // qDebug( "Amount of subtasks: " + QString::number(cnt) );
@@ -174,7 +175,7 @@ QString KTVTaskTable::beautyTimeSpan( time_t tStart, time_t tEnd ) const
 {
    if( tStart == tEnd ) return( "-" );
    int daysBet = daysBetween( tStart>tEnd?tEnd:tStart, tStart<tEnd?tEnd:tStart );
-   
+
    if( daysBet != 0 )
       return( i18n( "%1 days").arg( daysBet ));
    else
@@ -198,20 +199,49 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
    int y = it->itemPos();
    int childCnt = it->childCount();
 
+   QListViewItem* child = it->firstChild();
+
    qDebug("---- ### expanded, childs: %d !", childCnt );
+
+   while( child )
+   {
+      // if( child->childCount() > 0 && isOpen(child) )
+      // {
+      //    setOpen( child, false );
+      // }
+      emit hideTaskByItem( static_cast<KTVTaskTableItem*>(child) );
+      m_canvasView->getCanvas()->slHideTask(static_cast<KTVTaskTableItem*>(child));
+      child = child->nextSibling();
+   }
+
+   m_canvasView->getCanvas()->slMoveItems(y + m_itemHeight, -1 * childCnt * m_itemHeight );
+   emit moveItems( y + m_itemHeight, -1 * childCnt * m_itemHeight );
+   slUpdateCanvas();
+}
+
+
+
+void KTVTaskTable::slExpanded( QListViewItem* it)
+{
+    int y = it->itemPos();
+   int childCnt = it->childCount();
+
+   qDebug("---- ### expanded, childs: %d !", childCnt );
+
+   // emit moveItems( y, childCnt * m_itemHeight );
+   /* move items of the whole canvas to gain space for the new subproject */
+   m_canvasView->getCanvas()->slMoveItems( y, childCnt*m_itemHeight );
 
    QListViewItem* child = it->firstChild();
    while( child )
    {
-      if( child->childCount() > 0 && isOpen(child) )
-      {
-	 setOpen( child, false );
-      }
-      emit hideTaskByItem( static_cast<KTVTaskTableItem*>(child) );
+      m_canvasView->getCanvas()->slShowTask(static_cast<KTVTaskTableItem*>(child));
+
+      /* No longer connected to internal reasons, but maybe extern */
+      emit showTaskByItem( static_cast<KTVTaskTableItem*>(child) );
+
       child = child->nextSibling();
    }
-
-   emit moveItems( y + m_itemHeight, -1 * childCnt * m_itemHeight );
    slUpdateCanvas();
 }
 
@@ -219,30 +249,11 @@ void KTVTaskTable::slCollapsed( QListViewItem *it )
 void KTVTaskTable::slSelectionChanged( QListViewItem *it )
 {
    if( ! it ) return;
-   
+
    int y = it->itemPos();
 
    emit moveMarker( y- it->height() );
-   
-}
 
-
-void KTVTaskTable::slExpanded( QListViewItem* it)
-{
-   int y = it->itemPos()+m_itemHeight;
-   int childCnt = it->childCount();
-
-   qDebug("---- ### expanded, childs: %d !", childCnt );
-
-   emit moveItems( y, childCnt * m_itemHeight );
-
-   QListViewItem* child = it->firstChild();
-   while( child )
-   {
-      emit showTaskByItem( static_cast<KTVTaskTableItem*>(child) );
-      child = child->nextSibling();
-   }
-   slUpdateCanvas();
 }
 
 
@@ -257,7 +268,7 @@ void KTVTaskTable::slUpdateCanvas()
  * canvas of the new height of both scrollview contents. Both of the
  * contents need to be synced in height in order to provide one correct
  * scrollbar for both scrollviews.
- * 
+ *
  */
 void KTVTaskTable::resizeContents( int w, int h )
 {
@@ -265,10 +276,10 @@ void KTVTaskTable::resizeContents( int w, int h )
    if( m_canvasView )
    {
       int width = m_canvasView->contentsWidth();
-      m_canvasView->resizeContents(width, h);
+      if( m_canvasView->contentsHeight() != h )
+	 m_canvasView->resizeContents(width, h);
    }
-   
-   qDebug( "Setting height to %d", h );
+
 }
 
 

@@ -25,14 +25,14 @@
 KTVTaskCanvas::KTVTaskCanvas( QWidget *parent, KTVTaskTable* tab, const char *name )
    :QCanvas( parent, name ),
     m_dayHeight( 15 ),
-    m_topOffset( 25 )
+    m_topOffset( 25 ),
+    m_weekStartMon( true )
 {
    m_taskTable = tab;
    m_days = 0;
    m_dayWidth = STD_DAYWIDTH;
    if( m_taskTable )
       m_dayHeight = m_taskTable->header()->height()-1;
-
 
    m_canvasMarker = new QCanvasRectangle( this  );
    m_canvasMarker->hide();
@@ -89,7 +89,6 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
    QSize s = size();
    resize( m_dayWidth * m_days, s.height() );
    // setAllChanged();
-   // update();
 
    /* recalc width an x-positions of all items*/
    const CanvasItemList ktvItems = getCanvasItemsList();
@@ -97,14 +96,7 @@ void KTVTaskCanvas::slSetDayWidth( int _w )
 
    for ( ; it.current(); ++it )
    {
-      Task *t = (*it)->getTask();
-      int old_x = (*it)->x();
-      int new_x = timeToX( t->getPlanStart() );
-      int w = timeToX( t->getPlanEnd() )-new_x;
-
-      (*it)->setSize(w, (*it)->height() );
-
-      (*it)->moveBy(new_x - old_x, 0);
+       slShowTask( (*it)->getTask(), (*it)->y() );
    }
    setAllChanged();
    update();
@@ -169,7 +161,7 @@ void KTVTaskCanvas::drawCalendar()
    trun = m_start;
    for( int w = 0; w < weeks; w++ )
    {
-      int weekX = timeToX( beginOfWeek(trun));
+      int weekX = timeToX( beginOfWeek(trun, m_weekStartMon));
 
       QCanvasRectangle *re = new QCanvasRectangle( this );
       re->setPen( p1 );
@@ -179,7 +171,7 @@ void KTVTaskCanvas::drawCalendar()
       re->setZ(1.0);
       re->show();
 
-      QCanvasText *text = new QCanvasText( i18n("Week %1").arg(weekOfYear(trun)), this );
+      QCanvasText *text = new QCanvasText( i18n("Week %1").arg( weekOfYear(trun, m_weekStartMon)), this );
       text->setTextFlags( Qt::AlignCenter );
       text->move( weekX + (7*m_dayWidth)/2, yDays + getHeaderLineHeight(Week)/2 );
       text->setZ( 2.0 );
@@ -382,8 +374,8 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
    // Move all items residing on a higher y position than y by dy.
    qDebug( "Moving canvas items from %d by %d", y, dy );
 
-   int startHere = y+getHeaderLineHeight(All)-m_rowHeight;
-   slShowDebugMarker( startHere );
+   int startHere = y+getHeaderLineHeight(All);
+   slShowDebugMarker( startHere+dy );
 
    const CanvasItemList ktvItems = getCanvasItemsList();
    CanvasItemListIterator it(ktvItems);
@@ -391,7 +383,7 @@ void KTVTaskCanvas::slMoveItems( int y, int dy )
    for ( ; it.current(); ++it )
    {
       int y = (*it)->y();
-      if( y > startHere )
+      if( y >= startHere )
       {
 	 (*it)->moveBy(0, dy);
       }
@@ -426,10 +418,21 @@ void KTVTaskCanvas::slHideTask( KTVTaskTableItem *tabItem )
 
 void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
 {
-   int yPos = tabItem->itemPos();
+    if( !tabItem ) return;
+    int yPos = tabItem->itemPos()  /* returns y position in table */
+               + getHeaderLineHeight(All) /* Top offset for calendar */
+               - m_rowHeight              /* one line back */
+               + (m_rowHeight-tabItem->height())/2;  /* center item */
 
-   Task *t = static_cast<Task*>(m_tasks[ (void*) tabItem ]);
+    Task *t = static_cast<Task*>(m_tasks[ (void*) tabItem ]);
+    slShowTask( t, yPos );
+}
 
+/*
+ * Shows the task at position ypos, which must be in canvas coordinates.
+ */
+void KTVTaskCanvas::slShowTask( Task *t, int ypos )
+{
    if( t )
    {
       /* paint */
@@ -437,6 +440,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
       int x = timeToX( t->getPlanStart() );
       if( ! cItem )
       {
+          // qDebug(" ***** creating new !" );
 	 if( t->isMilestone() )
 	 {
 	    cItem = new KTVCanvasItemMilestone( this );
@@ -475,8 +479,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
        */
 
       /* This moves the item to the position where it should be */
-      cItem->move( x, yPos + getHeaderLineHeight(All) - m_rowHeight
-		   + (m_rowHeight-cItem->height())/2  );
+      cItem->move( x, ypos );
       cItem->show();
 
       /* check for connections to other tasks, showing dependencies. */
@@ -484,7 +487,7 @@ void KTVTaskCanvas::slShowTask( KTVTaskTableItem *tabItem )
       {
 	 /* tp is a previous task. Connection starts at tps endpoint and goes to
 	  * this (ts) start point */
-	 qDebug( "handling previous!" );
+	 // qDebug( "handling previous!" );
 	 KTVCanvasItemBase *tpItem = taskToCanvasItem( tp );
 	 if( tpItem )
 	 {
@@ -530,12 +533,13 @@ void KTVTaskCanvas::connectTasks( Task *fromTask, Task* actTask,
    }
    else
    {
-      qDebug("Connector exists!" );
+       // qDebug("Connector exists!" );
       newCon->setConnectPoints( from, to );
    }
    if( fromItem->isVisible() && actItem->isVisible() )
       newCon->show();
 
+   /* No update here - slows down everything */
 }
 
 
@@ -565,7 +569,7 @@ void KTVTaskCanvas::slShowDebugMarker( int y )
 {
    m_dbgMark->move( 0, y );
    if( !m_dbgMark->visible() ) m_dbgMark->show();
-
+   update();
    qDebug( "Moving debug-mark to %d", y );
 }
 

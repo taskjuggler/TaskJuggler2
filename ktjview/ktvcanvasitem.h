@@ -55,8 +55,14 @@ public:
    virtual QPoint getConnectorIn() const {return QPoint(); }
    virtual QPoint getConnectorOut() const {return QPoint(); }
 
-    virtual void moveConnectors( int, int );
+   virtual void moveInConnectors ( double, double );
+   virtual void moveOutConnectors( double, double );
+   virtual void moveConnectors   ( double, double );
 
+   virtual void moveInConnectorsBy ( int, int );
+   virtual void moveOutConnectorsBy( int, int );
+   virtual void moveConnectorsBy   ( int, int );
+   
    int               m_height;
 protected:
    Task             *m_task;
