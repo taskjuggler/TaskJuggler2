@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -38,7 +39,8 @@ class ExpressionTree;
 class Report
 {
 public:
-	Report(Project* p, const QString& f, time_t s, time_t e);
+	Report(Project* p, const QString& f, time_t s, time_t e,
+		   const QString& df, int dl);
 	virtual ~Report();
 
 	void setShowActual(bool s) { showActual = s; }
@@ -106,11 +108,18 @@ protected:
 
 	void scaleTime(double t, bool verboseUnit = TRUE);
 
+	void warningMsg(const char* msg, ... );
+
 	Project* project;
 	QString fileName;
 	QStringList columns;
 	time_t start;
 	time_t end;
+	/* We store the location of the report definition in case we need it
+	 * for error reporting. */
+	QString defFileName;
+	int defFileLine;
+	
 
 	QString headline;
 	QString caption;

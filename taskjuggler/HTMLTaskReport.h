@@ -21,7 +21,8 @@ class Project;
 class HTMLTaskReport : public ReportHtml
 {
 public:
-	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e);
+	HTMLTaskReport(Project* p, const QString& f, time_t s, time_t e,
+				   const QString& df, int dl);
 	~HTMLTaskReport() { }
 
 	bool generate();

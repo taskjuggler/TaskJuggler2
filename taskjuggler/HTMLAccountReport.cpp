@@ -21,8 +21,8 @@
 #define KW(a) a
 
 HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f, time_t s,
-							   time_t e) :
-	ReportHtml(p, f, s, e)
+							   time_t e, const QString& df, int dl) :
+	ReportHtml(p, f, s, e, df, dl)
 {
 	columns.append("no");
 	columns.append("name");
@@ -194,11 +194,11 @@ HTMLAccountReport::generateTableHeader()
 			s << "</td>";
 		}
 		else if (*it == KW("daily"))
-			htmlDayHeaderMonths();
+			htmlDailyHeaderMonths();
 		else if (*it == KW("weekly"))
-			htmlWeekHeaderMonths();
+			htmlWeeklyHeaderMonths();
 		else if (*it == KW("monthly"))
-			htmlMonthHeaderYears();
+			htmlMonthlyHeaderYears();
 		else
 		{
 			qWarning("Unknown Column '%s' for HTML Task Report\n",
@@ -214,11 +214,11 @@ HTMLAccountReport::generateTableHeader()
 		 ++it )
 	{
 		if (*it == KW("daily"))
-			htmlDayHeaderDays(FALSE);
+			htmlDailyHeaderDays(FALSE);
 		else if (*it == KW("weekly"))
-			htmlWeekHeaderWeeks(FALSE);
+			htmlWeeklyHeaderWeeks(FALSE);
 		else if (*it == KW("monthly"))
-			htmlMonthHeaderMonths(FALSE);
+			htmlMonthlyHeaderMonths(FALSE);
 	}
 	s << "</tr>\n" << endl;
 

@@ -15,11 +15,13 @@
 #include "Project.h"
 #include "Report.h"
 #include "Utility.h"
+#include "MacroTable.h"
 
 #define KW(a) a
 
-ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e) :
-   Report(p, f, s, e)
+ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e,
+					   const QString& df, int dl) :
+   Report(p, f, s, e, df, dl)
 {
 	colDefault = 0xf3ebae;
 	colDefaultLight = 0xfffadd;
@@ -33,14 +35,19 @@ ReportHtml::ReportHtml(Project* p, const QString& f, time_t s, time_t e) :
 	colCompleted = 0x87ff75;
 	colCompletedLight = 0xa1ff9a;
 	colToday = 0xa387ff;
+
+	registerUrl(KW("dayheader"));
+	registerUrl(KW("monthheader"));
+	registerUrl(KW("resourcename"));
+	registerUrl(KW("taskname"));
+	registerUrl(KW("weekheader"));
+	registerUrl(KW("yearheader"));
 }
 
 void
 ReportHtml::generatePlanTask(Task* t, Resource* r)
 {
 	s << "<tr valign=\"center\">";
-	if (r == 0)
-		s << "<a name=\"task_" << t->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -153,8 +160,6 @@ void
 ReportHtml::generateActualTask(Task* t, Resource* r)
 {
 	s << "<tr bgcolor=\"" << colAvailable << "\">" << endl;
-	if (r == 0)
-		s << "<a name=\"task_" << t->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin();
 		 it != columns.end();
 		 ++it )
@@ -218,8 +223,6 @@ void
 ReportHtml::generatePlanResource(Resource* r, Task* t)
 {
 	s << "<tr valign=\"center\">";
-	if (r == 0)
-		s << "<a name=\"task_" << t->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -311,8 +314,6 @@ void
 ReportHtml::generateActualResource(Resource* r, Task* t)
 {
 	s << "<tr valign=\"center\">";
-	if (t == 0)
-		s << "<a name=\"resource_" << r->getName() << "\"></a>";
 	for (QStringList::Iterator it = columns.begin(); it != columns.end();
 		 ++it )
 	{
@@ -479,11 +480,11 @@ ReportHtml::generateTableHeader()
 		else if (*it == KW("priority"))
 			s << "<td class=\"headerbig\" rowspan=\"2\">Priority</td>";
 		else if (*it == KW("daily"))
-			htmlDayHeaderMonths();
+			htmlDailyHeaderMonths();
 		else if (*it == KW("weekly"))
-			htmlWeekHeaderMonths();
+			htmlWeeklyHeaderMonths();
 		else if (*it == KW("monthly"))
-			htmlMonthHeaderYears();
+			htmlMonthlyHeaderYears();
 		else
 		{
 			qWarning("Unknown Column '%s' for HTML Task Report\n",
@@ -499,11 +500,11 @@ ReportHtml::generateTableHeader()
 		 ++it )
 	{
 		if (*it == KW("daily"))
-			htmlDayHeaderDays();
+			htmlDailyHeaderDays();
 		else if (*it == KW("weekly"))
-			htmlWeekHeaderWeeks();
+			htmlWeeklyHeaderWeeks();
 		else if (*it == KW("monthly"))
-			htmlMonthHeaderMonths();
+			htmlMonthlyHeaderMonths();
 	}
 	s << "</tr>\n" << endl;
 
@@ -511,8 +512,9 @@ ReportHtml::generateTableHeader()
 }
 
 void
-ReportHtml::htmlDayHeaderDays(bool highlightNow)
+ReportHtml::htmlDailyHeaderDays(bool highlightNow)
 {
+	// Generates the 2nd header line for daily calendar views.
 	for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
 	{
 		int dom = dayOfMonth(day);
@@ -520,15 +522,26 @@ ReportHtml::htmlDayHeaderDays(bool highlightNow)
 			(highlightNow && isSameDay(project->getNow(), day) ?
 			 "today" : isWeekend(day) ? "weekend" : "headersmall")
 		  << "\"><font size=\"-2\">&nbsp;";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d", dom),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(day)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", year(day)),
+							  defFileName, defFileLine));
 		if (dom < 10)
 			s << "&nbsp;";
-		s << QString().sprintf("%d", dom) << "</font></td>";
+		s << generateUrl(KW("dayheader"), QString().sprintf("%d", dom));
+		s << "</font></td>";
 	}
 }
 
 void
-ReportHtml::htmlDayHeaderMonths()
+ReportHtml::htmlDailyHeaderMonths()
 {
+	// Generates the 1st header line for daily calendar views.
 	if (!hidePlan && showActual)
 		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 
@@ -539,15 +552,26 @@ ReportHtml::htmlDayHeaderMonths()
 		if (left > daysBetween(day, end))
 			left = daysBetween(day, end);
 		s << "<td class=\"headerbig\" colspan=\""
-		  << QString().sprintf("%d", left)
-		  << "\">"
-		  << monthAndYear(day) << "</td>" << endl;
+			<< QString().sprintf("%d", left) << "\">"; 
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(day)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(day)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", year(day)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("monthheader"), monthAndYear(day)); 
+		s << "</td>" << endl;
 	}
 }
 
 void
-ReportHtml::htmlWeekHeaderWeeks(bool highlightNow)
+ReportHtml::htmlWeeklyHeaderWeeks(bool highlightNow)
 {
+	// Generates the 2nd header line for weekly calendar views.
 	for (time_t week = beginOfWeek(start); week < end;
 		 week = sameTimeNextWeek(week))
 	{
@@ -558,13 +582,25 @@ ReportHtml::htmlWeekHeaderWeeks(bool highlightNow)
 		  << "\"><font size=\"-2\">&nbsp;";
 		if (woy < 10)
 			s << "&nbsp;";
-		s << QString().sprintf("%d", woy) << "</font></td>";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(woy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(woy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", year(woy)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("weekheader"), QString().sprintf("%d", woy));
+		s << "</font></td>";
 	}
 }
 
 void
-ReportHtml::htmlWeekHeaderMonths()
+ReportHtml::htmlWeeklyHeaderMonths()
 {
+	// Generates the 1st header line for weekly calendar views.
 	if (!hidePlan && showActual)
 		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 
@@ -574,9 +610,19 @@ ReportHtml::htmlWeekHeaderMonths()
 		if (left > weeksBetween(week, end))
 			left = weeksBetween(week, end);
 		s << "<td class=\"headerbig\" colspan=\""
-		  << QString().sprintf("%d", left)
-		  << "\">"
-		  << monthAndYear(week) << "</td>" << endl;
+		  << QString().sprintf("%d", left) << "\">";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(week)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(week)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", year(week)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("monthheader"), monthAndYear(week));
+		s << "</td>" << endl;
 
 		time_t newWeek = beginOfWeek(beginOfMonth(sameTimeNextMonth(week)));
 		if (isSameMonth(newWeek, week))
@@ -587,8 +633,9 @@ ReportHtml::htmlWeekHeaderMonths()
 }
 
 void
-ReportHtml::htmlMonthHeaderMonths(bool highlightNow)
+ReportHtml::htmlMonthlyHeaderMonths(bool highlightNow)
 {
+	// Generates 2nd header line of monthly calendar view.
 	static char* mnames[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 							  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
@@ -600,13 +647,25 @@ ReportHtml::htmlMonthHeaderMonths(bool highlightNow)
 			(highlightNow && isSameMonth(project->getNow(), month) ?
 			 "today" : "headersmall")
 		  << "\"><font size=\"-2\">&nbsp;";
-		s << mnames[moy - 1] << "</font></td>";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(moy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(moy)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", year(moy)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("monthheader"), mnames[moy - 1]);
+		s << "</font></td>";
 	}
 }
 
 void
-ReportHtml::htmlMonthHeaderYears()
+ReportHtml::htmlMonthlyHeaderYears()
 {
+	// Generates 1st header line of monthly calendar view.
 	if (!hidePlan && showActual)
 		s << "<td class=\"headerbig\" rowspan=\"2\">&nbsp;</td>";
 
@@ -617,8 +676,20 @@ ReportHtml::htmlMonthHeaderYears()
 		if (left > monthsBetween(year, end))
 			left = monthsBetween(year, end);
 		s << "<td class=\"headerbig\" colspan=\""
-		  << QString().sprintf("%d", left) << "\">"
-		  << QString().sprintf("%d", ::year(year)) << "</td>" << endl;
+		  << QString().sprintf("%d", left) << "\">";
+		mt.clear();
+		mt.addMacro(new Macro(KW("day"), QString().sprintf("%02d",
+														   dayOfMonth(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("month"),
+							  QString().sprintf("%02d", monthOfYear(year)),
+							  defFileName, defFileLine));
+		mt.addMacro(new Macro(KW("year"),
+							  QString().sprintf("%04d", ::year(year)),
+							  defFileName, defFileLine));
+		s << generateUrl(KW("yearheader"),
+						 QString().sprintf("%d", ::year(year)));
+		s << "</td>" << endl;
 	}
 }
 
@@ -975,6 +1046,10 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 			rp = rp->getParent();
 		}
 
+	mt.clear();
+	mt.addMacro(new Macro(KW("taskid"), t->getFullId(), defFileName,
+						  defFileLine));
+
 	if (taskSortCriteria == CoreAttributesList::TreeMode)
 	{
 		Task* tp = t->getParent();
@@ -989,16 +1064,23 @@ ReportHtml::taskName(Task* t, Resource* r, bool big)
 		  << spaces
 		  << "<font size=\""
 		  << (fontSize < 0 ? '-' : '+') 
-		  << (fontSize < 0 ? -fontSize : fontSize) << "\">"
-		  << htmlFilter(t->getName())
-		  << "</font></td>" << endl;
+		  << (fontSize < 0 ? -fontSize : fontSize) << "\">";
+		if (r == 0)
+			s << "<a name=\"task_" << t->getFullId() << "\"></a>";
+		s << generateUrl(KW("taskname"), t->getName());
+		s << "</font></td>" << endl;
 	}
 	else
+	{
 		s << "<td class=\""
 		  << (r == 0 ? "task" : "tasklight") << "\" rowspan=\""
 		  << (showActual ? "2" : "1") << "\" nowrap>"
-		  << spaces << htmlFilter(t->getName())
-		  << "</td>" << endl;
+		  << spaces;
+		if (r == 0)
+			s << "<a name=\"task_" << t->getFullId() << "\"></a>";
+		s << generateUrl(KW("taskname"), t->getName());
+		s << "</td>" << endl;
+	}
 }
 
 void
@@ -1013,6 +1095,10 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 			tp = tp->getParent();
 		}
 
+	mt.clear();
+	mt.addMacro(new Macro(KW("resourceid"), r->getId(), defFileName,
+						  defFileLine));
+	
 	if (resourceSortCriteria == CoreAttributesList::TreeMode)
 	{
 		Resource* rp = r->getParent();
@@ -1027,16 +1113,23 @@ ReportHtml::resourceName(Resource* r, Task* t, bool big)
 		  << spaces
 		  << "<font size=\""
 		  << (fontSize < 0 ? '-' : '+') 
-		  << (fontSize < 0 ? -fontSize : fontSize) << "\">"
-		  << htmlFilter(r->getName())
-		  << "</font></td>" << endl;
+		  << (fontSize < 0 ? -fontSize : fontSize) << "\">";
+		if (t == 0)
+			s << "<a name=\"resource_" << r->getId() << "\"></a>";
+		s << generateUrl(KW("resourcename"), r->getName());
+		s << "</font></td>" << endl;
 	}
 	else
+	{
 		s << "<td class=\""
 		  << (t == 0 ? "task" : "tasklight") << "\" rowspan=\""
 		  << (showActual ? "2" : "1") << "\" nowrap>"
-		  << spaces << htmlFilter(r->getName())
-		  << "</td>" << endl;
+		  << spaces;
+		if (t == 0)
+			s << "<a name=\"resource_" << r->getId() << "\"></a>";
+		s << generateUrl(KW("resourcename"), r->getName());
+		s << "</td>" << endl;
+	}
 }
 
 void
@@ -1259,3 +1352,35 @@ ReportHtml::reportPIDs(const QString& pids, const QString bgCol, bool bold)
 		s << "</b>";
 	s << "</td>" << endl;
 }
+
+bool
+ReportHtml::setUrl(const QString& key, const QString& url)
+{
+	if (urls.find(key) == urls.end())
+		return FALSE;
+
+	urls[key] = url;
+	return TRUE;
+}
+
+const QString*
+ReportHtml::getUrl(const QString& key) const
+{
+	if (urls.find(key) == urls.end() || urls[key] == "")
+		return 0;
+	return &urls[key];
+}
+
+QString
+ReportHtml::generateUrl(const QString& key, const QString& txt)
+{
+	if (getUrl(key))
+	{
+		mt.setLocation(defFileName, defFileLine);
+		return QString("<a href=\"") + mt.expand(*getUrl(key))
+			+ "\">" + htmlFilter(txt) + "</a>";
+	}
+	else
+		return htmlFilter(txt);
+}
+

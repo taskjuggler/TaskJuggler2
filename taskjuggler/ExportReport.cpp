@@ -24,8 +24,9 @@ typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,
 	TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
 	TA_DEPENDS };
 
-ExportReport::ExportReport(Project* p, const QString& f) :
-	Report(p, f, p->getStart(), p->getEnd())
+ExportReport::ExportReport(Project* p, const QString& f,
+						   const QString& df, int dl) :
+	Report(p, f, p->getStart(), p->getEnd(), df, dl)
 {
 	if (TaskAttributeDict.empty())
 	{
@@ -205,9 +206,7 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 								s << ", ";
 							else
 								first = FALSE;
-							QString absID;
-							tp->getFullID(absID);
-							s << absID;
+							s << tp->getFullId();
 						}
 						s << endl;
 					}

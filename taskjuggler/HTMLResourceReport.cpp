@@ -18,8 +18,9 @@
 #include "ExpressionTree.h"
 
 HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
-									   time_t s, time_t e) :
-	ReportHtml(p, f, s, e)
+									   time_t s, time_t e, const QString& df,
+									   int dl) :
+	ReportHtml(p, f, s, e, df, dl)
 {
 	columns.append("name");
 

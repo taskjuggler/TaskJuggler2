@@ -20,8 +20,10 @@
 #include <qstringlist.h>
 #include <qcolor.h>
 #include <qtextstream.h>
+#include <qmap.h>
 
 #include "Report.h"
+#include "MacroTable.h"
 
 class Project;
 class ExpressionTree;
@@ -29,7 +31,8 @@ class ExpressionTree;
 class ReportHtml : public Report
 {
 public:
-	ReportHtml(Project* p, const QString& f, time_t s, time_t e);
+	ReportHtml(Project* p, const QString& f, time_t s, time_t e,
+			   const QString& df, int dl);
 	virtual ~ReportHtml() { }
 
 	void generatePlanTask(Task* t, Resource* r);
@@ -46,12 +49,12 @@ public:
 	void generateDepends(Task* t, bool light);
 	void generateFollows(Task* t, bool light);
 	void generateResponsibilities(Resource* r, bool light);
-	void htmlDayHeaderDays(bool highlightNow = TRUE);
-	void htmlDayHeaderMonths();
-	void htmlWeekHeaderWeeks(bool highlightNow = TRUE);
-	void htmlWeekHeaderMonths();
-	void htmlMonthHeaderMonths(bool highlightNow = TRUE);
-	void htmlMonthHeaderYears();
+	void htmlDailyHeaderDays(bool highlightNow = TRUE);
+	void htmlDailyHeaderMonths();
+	void htmlWeeklyHeaderWeeks(bool highlightNow = TRUE);
+	void htmlWeeklyHeaderMonths();
+	void htmlMonthlyHeaderMonths(bool highlightNow = TRUE);
+	void htmlMonthlyHeaderYears();
 
 	void emptyPlan(bool light);
 	void emptyActual(bool light);
@@ -86,10 +89,20 @@ public:
 	void planSchedule(Resource* r, Task* t);
 	void actualSchedule(Resource* r, Task* t);
 
+	void registerUrl(const QString& key, const QString& url = "")
+	{
+		urls[key] = url;
+	}
+	bool setUrl(const QString& key, const QString& url);
+	const QString* getUrl(const QString& key) const;
+
 protected:
 	ReportHtml() { }
 
 	QString htmlFilter(const QString& s);
+	QString generateUrl(const QString& key, const QString& txt);
+
+	MacroTable mt;
 
 	uint colDefault;
 	uint colDefaultLight;
@@ -103,6 +116,8 @@ protected:
 	uint colCompleted;
 	uint colCompletedLight;
 	uint colToday;
+
+	QMap<QString, QString> urls;
 } ;
 
 #endif

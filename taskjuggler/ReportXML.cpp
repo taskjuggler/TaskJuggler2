@@ -43,8 +43,9 @@
 #include "ReportXML.h"
 #include "Utility.h"
 
-ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e) :
-   Report(p, f, s, e )
+ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e,
+					 const QString& df, int dl) :
+   Report(p, f, s, e, df, dl)
 {
 
 }

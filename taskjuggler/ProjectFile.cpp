@@ -99,7 +99,7 @@ FileInfo::getC(bool expandMacros)
 		if (c == '$')
 		{
 			int d;
-			if ((d = getC()) == '{')
+			if ((d = getC(FALSE)) == '{')
 			{
 				// remove $ from lineBuf;
 				lineBuf = lineBuf.left(lineBuf.length() - 1);
@@ -107,7 +107,11 @@ FileInfo::getC(bool expandMacros)
 				goto BEGIN;
 			}
 			else
-				ungetC(d);
+			{
+				// $$ escapes $, so discard 2nd $
+			   	if (d != '$')
+					ungetC(d);
+			}
 		}
 	}
 
@@ -400,7 +404,8 @@ FileInfo::readMacroCall()
 	pf->getMacros().pushArguments(sl);
 
 	// expand the macro
-	QString macro = pf->getMacros().expand(id);
+	pf->getMacros().setLocation(file, currLine);
+	QString macro = pf->getMacros().resolve(id);
 	if (macro.isNull())
 	{
 		fatalError(QString("Unknown macro ") + id);
@@ -2052,7 +2057,7 @@ ProjectFile::readXMLTaskReport()
       return FALSE;
    }
    ReportXML *rep = new ReportXML(proj, token, proj->getStart(),
-								  proj->getEnd());
+								  proj->getEnd(), getFile(), getLine());
    proj->addXMLReport( rep );
 
    return( true );
@@ -2072,10 +2077,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
 	ReportHtml* report;
 	if (reportType == KW("htmltaskreport"))
 		report = new HTMLTaskReport(proj, token, proj->getStart(),
-									proj->getEnd());
+									proj->getEnd(), getFile(), getLine());
 	else if (reportType == KW("htmlresourcereport"))
 		report = new HTMLResourceReport(proj, token, proj->getStart(),
-										proj->getEnd());
+										proj->getEnd(), getFile(), getLine());
 	else
 	{
 		qFatal("readHTMLReport: bad report type");
@@ -2203,6 +2208,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
 			if (!readSorting(report, 1))
 				return FALSE;
 		}
+		else if (token == KW("url"))
+		{
+			if (!readHtmlUrl(report))
+				return FALSE;
+		}
 		else
 		{
 			fatalError("Illegal attribute");
@@ -2230,7 +2240,7 @@ ProjectFile::readHTMLAccountReport()
 	
 	HTMLAccountReport* report;
 	report = new HTMLAccountReport(proj, token, proj->getStart(),
-								   proj->getEnd());
+								   proj->getEnd(), getFile(), getLine());
 		
 	TokenType tt;
 	if ((tt = nextToken(token)) != LCBRACE)
@@ -2359,7 +2369,7 @@ ProjectFile::readExportReport()
 	}
 	
 	ExportReport* report;
-	report = new ExportReport(proj, token);
+	report = new ExportReport(proj, token, getFile(), getLine());
 		
 	TokenType tt;
 	if ((tt = nextToken(token)) != LCBRACE)
@@ -2438,6 +2448,30 @@ ProjectFile::readExportReport()
 
 	proj->addExportReport(report);
 
+	return TRUE;
+}
+
+bool
+ProjectFile::readHtmlUrl(ReportHtml* report)
+{
+	QString key;
+	QString url;
+
+	if (nextToken(key) != ID)
+	{
+		fatalError("URL ID expected");
+		return FALSE;
+	}
+	if (nextToken(url) != STRING)
+	{
+		fatalError("String expected");
+		return FALSE;
+	}
+	if (!report->setUrl(key, url))
+	{
+		fatalError("Unknown URL ID");
+		return FALSE;
+	}
 	return TRUE;
 }
 

@@ -57,7 +57,7 @@ public:
 	virtual char* getType() { return "CoreAttributes"; }
 
 	const QString& getId() const { return id; }
-	void getFullID(QString& fullID) const;
+	QString getFullId() const;
 	
 	void setIndex(uint idx) { index = idx; }
 	uint getIndex() const { return index; }

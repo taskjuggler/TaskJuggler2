@@ -18,8 +18,10 @@
 #include "Utility.h"
 #include "ExpressionTree.h"
 
-Report::Report(Project* p, const QString& f, time_t s, time_t e) :
-		project(p), fileName(f), start(s), end(e)
+Report::Report(Project* p, const QString& f, time_t s, time_t e,
+			   const QString& df, int dl) :
+		project(p), fileName(f), start(s), end(e), defFileName(df),
+		defFileLine(dl)
 {
 	taskSortCriteria = CoreAttributesList::TreeMode;
 	resourceSortCriteria = CoreAttributesList::TreeMode;
@@ -377,3 +379,15 @@ Report::scaleTime(double t, bool verboseUnit)
 	else
 		s << shortUnit[shortest];
 }
+
+void
+Report::warningMsg(const char* msg, ... )
+{
+	va_list ap;
+	va_start(ap, msg);
+	char buf[1024];
+	vsnprintf(buf, 1024, msg, ap);
+	va_end(ap);
+	qWarning("%s:%d:%s", defFileName.latin1(), defFileLine, buf);
+}
+

@@ -30,7 +30,8 @@ class ExpressionTree;
 class ReportXML : public Report
 {
 public:
-   ReportXML(Project* p, const QString& f, time_t s, time_t e);
+   ReportXML(Project* p, const QString& f, time_t s, time_t e,
+			 const QString& df, int dl);
    virtual ~ReportXML() { }
 
    void generate();

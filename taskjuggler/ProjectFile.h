@@ -26,6 +26,7 @@
 class ProjectFile;
 class Project;
 class Operation;
+class ReportHtml;
 
 class FileInfo
 {
@@ -83,8 +84,18 @@ public:
 			openFiles.last()->returnToken(t, buf);
 	}
 
-	const QString& getFile() { return openFiles.last()->getFile(); }
-	int getLine() { return openFiles.last()->getLine(); }
+	const QString& getFile()
+   	{
+		if (openFiles.isEmpty())
+			return QString::null;
+	   	return openFiles.last()->getFile(); 
+	}
+	int getLine()
+   	{
+		if (openFiles.isEmpty())
+			return -1;
+	   	return openFiles.last()->getLine(); 
+	}
 
 	bool moreFiles() { return !openFiles.isEmpty(); }
 
@@ -117,6 +128,7 @@ private:
 	bool readHTMLAccountReport();
 	bool readExportReport();
 	bool readXMLTaskReport();
+	bool readHtmlUrl(ReportHtml* report);
 #ifdef HAVE_KDE
 	bool readICalTaskReport();
 #endif

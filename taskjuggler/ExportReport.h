@@ -20,7 +20,7 @@ class Project;
 class ExportReport : public Report
 {
 public:
-	ExportReport(Project* p, const QString& f);
+	ExportReport(Project* p, const QString& f, const QString& df, int dl);
 	virtual ~ExportReport() { }
 
 	bool generate();

@@ -13,6 +13,8 @@
 #ifndef _MacroTable_h_
 #define _MacroTable_h_
 
+#include <stdarg.h>
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
@@ -58,10 +60,29 @@ public:
 	{
 		argStack.removeLast();
 	}
-	QString expand(const QString& name);
+	void clear()
+	{
+		macros.clear();
+		argStack.clear();
+	}
+	QString resolve(const QString& name);
+	QString expand(const QString& text);
 	Macro* getMacro(const QString& name) const { return macros[name]; }
 
+	void setLocation(const QString& df, int dl)
+	{
+		defFileName = df;
+		defFileLine = dl;
+	}
+
 private:
+	void warningMsg(const char* txt, ... );
+
+	/* We store a file name and a line number in case we need this for
+	 * error reports or warnings. */
+	QString defFileName;
+	int defFileLine;
+	
 	QDict<Macro> macros;
 	QPtrList<QStringList> argStack;
 } ;

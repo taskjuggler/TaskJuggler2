@@ -94,12 +94,13 @@ CoreAttributes::getFullName(QString& fullName) const
 	fullName.remove(fullName.length() - 1, 1);
 }
 
-void
-CoreAttributes::getFullID(QString& fullID) const
+QString
+CoreAttributes::getFullId() const
 {
-	fullID = "";
+	QString fullID = "";
 	for (const CoreAttributes* c = this; c != 0; c = c->parent)
 		fullID = c->id + "." + fullID;
 	// Remove trailing dot.
 	fullID.remove(fullID.length() - 1, 1);
+	return fullID;
 }
