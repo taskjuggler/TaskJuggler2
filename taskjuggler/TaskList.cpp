@@ -44,7 +44,7 @@ TaskList::isSupportedSortingCriteria(int sc)
         return TRUE;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
-    }       
+    }
 }
 
 int
@@ -98,12 +98,22 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
     }
     case PrioUp:
         if (t1->priority == t2->priority)
-            return 0;
+        {
+            if (t1->scheduling == t2->scheduling)
+                return 0;
+            else if (t1->scheduling == Task::ASAP)
+                return -1;
+        }
         else
             return (t1->priority - t2->priority);
     case PrioDown:
         if (t1->priority == t2->priority)
-            return 0;
+        {
+            if (t1->scheduling == t2->scheduling)
+                return 0;
+            else if (t1->scheduling == Task::ASAP)
+                return 1;
+        }
         else
             return (t2->priority - t1->priority);
     case ResponsibleUp:
@@ -123,28 +133,28 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
         return fn1.compare(fn2);
     }
     case CriticalnessUp:
-        return t1->scenarios[sc].criticalness == 
+        return t1->scenarios[sc].criticalness ==
             t2->scenarios[sc].criticalness ? 0 :
-            t1->scenarios[sc].criticalness < 
+            t1->scenarios[sc].criticalness <
             t2->scenarios[sc].criticalness ? -1 : 1;
     case CriticalnessDown:
-        return t1->scenarios[sc].criticalness == 
+        return t1->scenarios[sc].criticalness ==
             t2->scenarios[sc].criticalness ? 0 :
-            t1->scenarios[sc].criticalness > 
+            t1->scenarios[sc].criticalness >
             t2->scenarios[sc].criticalness ? -1 : 1;
     case PathCriticalnessUp:
-        return t1->scenarios[sc].pathCriticalness == 
+        return t1->scenarios[sc].pathCriticalness ==
             t2->scenarios[sc].pathCriticalness ? 0 :
-            t1->scenarios[sc].pathCriticalness < 
+            t1->scenarios[sc].pathCriticalness <
             t2->scenarios[sc].pathCriticalness ? -1 : 1;
     case PathCriticalnessDown:
-        return t1->scenarios[sc].pathCriticalness == 
+        return t1->scenarios[sc].pathCriticalness ==
             t2->scenarios[sc].pathCriticalness ? 0 :
-            t1->scenarios[sc].pathCriticalness > 
+            t1->scenarios[sc].pathCriticalness >
             t2->scenarios[sc].pathCriticalness ? -1 : 1;
     default:
         return CoreAttributesList::compareItemsLevel(t1, t2, level);
-    }       
+    }
 }
 
 int

@@ -354,8 +354,20 @@ Resource::isAvailable(time_t date, const UsageLimits* aLimits, const Task* t)
     if (scoreboard[sbIdx])
     {
         if (DEBUGRS(6))
-            qDebug("  Resource %s is busy (%ld)", id.latin1(), (long)
-                   scoreboard[sbIdx]);
+        {
+            QString reason;
+            if (scoreboard[sbIdx] == ((SbBooking*) 1))
+                reason = "vacation";
+            else if (scoreboard[sbIdx] == ((SbBooking*) 2))
+                reason = "overloaded";
+            else if (scoreboard[sbIdx] == ((SbBooking*) 3))
+                reason = "overloaded for " + t->getId();
+            else
+                reason = "allocated to " +
+                    scoreboard[sbIdx]->getTask()->getId();
+            qDebug("  Resource %s is busy (%s)", id.latin1(),
+                   reason.latin1());
+        }
         return scoreboard[sbIdx] < ((SbBooking*) 4) ? 1 : 4;
     }
 

@@ -670,41 +670,62 @@ Project::schedule(int sc)
 {
     bool error = FALSE;
 
-    TaskList sortedTasks(taskList);
+    TaskList fullSortedTasks(taskList);
+    // The scheduling function only cares about leaf tasks. Container tasks
+    // are scheduled automatically when all their childern are scheduled. So
+    // we create a task list that only contains leaf tasks.
+    TaskList sortedTasks;
+    int leafTasks = 0;
+    Task::SchedulingInfo si = Task::ASAP;
+    for (TaskListIterator tli(fullSortedTasks); *tli != 0; ++tli)
+        if (!(*tli)->hasSubs())
+        {
+            sortedTasks.append(*tli);
+            leafTasks++;
+        }
+
     sortedTasks.setSorting(CoreAttributesList::PrioDown, 0);
-//    sortedTasks.setSorting(CoreAttributesList::SequenceUp, 1);
     sortedTasks.setSorting(CoreAttributesList::PathCriticalnessDown, 1);
     sortedTasks.setSorting(CoreAttributesList::SequenceUp, 2);
     sortedTasks.sort();
 
     bool done;
-    int updateMsgTimer = 0;
+    /* While the scheduling process progresses, the list contains more and
+     * more scheduled tasks. We use the cleanupTimer to remove those in
+     * certain intervals. As we potentially have already completed tasks in
+     * the list when we start, we initialize the timer with a very large
+     * number so the first round of cleanup is done right after the first
+     * scheduling pass. */
+    int cleanupTimer = 100000;
     do
     {
         done = TRUE;
         time_t slot = 0;
+        Task::SchedulingInfo schedulingInfo = Task::ASAP;
+
+        /* The task list is sorted by priority. The priority decreases towards
+         * the end of the list. We iterate through the list and look for a
+         * task that can be scheduled. It the determines the time slot that
+         * will be scheduled during this run for all subsequent tasks as well.
+         */
         for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
         {
             if (slot == 0)
             {
+                /* No time slot has been set yet. Check if this task can be
+                 * scheduled and provides a suggestion. */
                 slot = (*tli)->nextSlot(scheduleGranularity);
+                schedulingInfo = (*tli)->getScheduling();
+                /* If not, try the next task. */
                 if (slot == 0)
                     continue;
-                if (++updateMsgTimer > 2000)
-                {
-                    updateMsgTimer = 0;
-                    int completedTasks = 0;
-                    for (TaskListIterator tli2(sortedTasks); *tli2; ++tli2)
-                        if ((*tli2)->isSchedulingDone())
-                            completedTasks++;
-                    setProgressBar(completedTasks, sortedTasks.count());
-                    setProgressInfo
-                        (i18n("Scheduling scenario %1 at %1")
-                         .arg(getScenarioId(sc)).arg(time2tjp(slot)));
-                }
-                if (DEBUGPS(5))
+
+                if (DEBUGPS(4))
                     qDebug("Task '%s' requests slot %s",
                            (*tli)->getId().latin1(), time2ISO(slot).latin1());
+                /* If the task wants a time slot outside of the project time
+                 * frame, we flag this task as a runaway and go to the next
+                 * task. */
                 if (slot < start ||
                     slot > (end - (time_t) scheduleGranularity + 1))
                 {
@@ -717,9 +738,41 @@ Project::schedule(int sc)
                     continue;
                 }
             }
-            (*tli)->schedule(sc, slot, scheduleGranularity);
             done = FALSE;
+            /* Each task has a scheduling direction (forward or backward)
+             * depending on it's constrains. The task with the highest
+             * priority determins the time slot and hence the scheduling
+             * direction. Since tasks that have the other direction cannot the
+             * scheduled then, we have to stop this run as soon as we hit a
+             * task that runs in the other direction. If we would not do this,
+             * tasks with lower priority would grab resources form tasks with
+             * higher priority. */
+            if ((*tli)->getScheduling() != schedulingInfo &&
+                !(*tli)->isMilestone())
+                break;
+
+            // Schedule this task for the current time slot.
+            (*tli)->schedule(sc, slot, scheduleGranularity);
         }
+
+        /* Remove all fully scheduled tasks from the list in regular
+         * intervals. This is fairly expensive, so we need to balance the
+         * frequency with the performance improvements due to the shortened
+         * list. We also provide progress feedback via a signal. */
+        if (++cleanupTimer > 8000)
+        {
+            cleanupTimer = 0;
+            TaskList tmpList;
+            for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
+                if (!(*tli)->isSchedulingDone())
+                    tmpList.append(*tli);
+            sortedTasks = tmpList;
+            setProgressBar(leafTasks - sortedTasks.count(), leafTasks);
+            setProgressInfo
+                (i18n("Scheduling scenario %1 at %1")
+                 .arg(getScenarioId(sc)).arg(time2tjp(slot)));
+        }
+
     } while (!done);
 
     if (error)
@@ -737,6 +790,8 @@ Project::schedule(int sc)
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
 
+    /* Check that the resulting schedule meets all the requirements that the
+     * user has specified. */
     if (!checkSchedule(sc))
         error = TRUE;
 

@@ -211,7 +211,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             tentativeEnd = date + slotDuration - 1;
             if (DEBUGTS(5))
                 qDebug("Scheduling of %s starts at %s (%s)",
-                       id.latin1(), time2tjp(lastSlot).latin1(),
+                       id.latin1(), time2tjp(start).latin1(),
                        time2tjp(date).latin1());
         }
         /* Do not schedule anything if the time slot is not directly
@@ -285,6 +285,8 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
                 propagateStart(sc);
             }
             schedulingDone = TRUE;
+            if (DEBUGTS(4))
+                qDebug("Scheduling of task %s completed", id.latin1());
             return;
         }
     }
@@ -309,6 +311,8 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
                 propagateStart(sc);
             }
             schedulingDone = TRUE;
+            if (DEBUGTS(4))
+                qDebug("Scheduling of task %s completed", id.latin1());
             return;
         }
     }
@@ -337,6 +341,8 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             (scheduling == ALAP && date <= start))
         {
             schedulingDone = TRUE;
+            if (DEBUGTS(4))
+                qDebug("Scheduling of task %s completed", id.latin1());
             return;
         }
     }
@@ -390,6 +396,8 @@ Task::scheduleContainer(int sc, bool safeMode)
         propagateEnd(sc, safeMode);
     }
 
+    if (DEBUGTS(4))
+        qDebug("Scheduling of task %s completed", id.latin1());
     schedulingDone = TRUE;
 
     return FALSE;
@@ -471,6 +479,8 @@ Task::propagateEnd(int sc, bool notUpwards)
      * well. */
     if (milestone)
     {
+        if (DEBUGTS(4))
+            qDebug("Scheduling of task %s completed", id.latin1());
         schedulingDone = TRUE;
         if (start == 0)
         {
@@ -1701,7 +1711,7 @@ Task::preScheduleOk(int sc)
         if (durationSpec != 0)
         {
             errorMessage(i18n
-                         ("Milestone '%1' may not have a plan duration "
+                         ("Milestone '%1' may not have a duration "
                           "criteria in '%2' scenario").arg(id)
                          .arg(project->getScenarioId(sc)));
             return FALSE;
@@ -1804,7 +1814,7 @@ Task::preScheduleOk(int sc)
         {
             errorMessage(i18n
                          ("Task '%1' has only a start or end specification "
-                          "but no plan duration for the '%2' scenario.")
+                          "but no duration for the '%2' scenario.")
                          .arg(id).arg(project->getScenarioId(sc)));
             return FALSE;
         }
@@ -2070,27 +2080,42 @@ Task::scheduleOk(int sc, int& errors) const
 time_t
 Task::nextSlot(time_t slotDuration) const
 {
-    if (schedulingDone || !sub->isEmpty())
+    /* This function returns the start of the next time slot this task wants
+     * to be scheduled in. If there is no such slot because the tasks does not
+     * yet have all necessary information, 0 is returned. This also happens
+     * when the task has already be completely scheduled. */
+    if (schedulingDone)
         return 0;
 
-    if (scheduling == ASAP && start != 0)
+    if (scheduling == ASAP)
     {
-        if (effort == 0.0 && length == 0.0 && duration == 0.0 && !milestone &&
-            end == 0)
-            return 0;
+        if (start != 0)
+        {
+            if (effort == 0.0 && length == 0.0 && duration == 0.0 &&
+                !milestone && end == 0)
+                return 0;
 
-        if (lastSlot == 0)
-            return start;
-        return lastSlot + 1;
-    }
-    if (scheduling == ALAP && end != 0)
-    {
-        if (effort == 0.0 && length == 0.0 && duration == 0.0 && !milestone &&
-            start == 0)
+            if (lastSlot == 0)
+                return start;
+            return lastSlot + 1;
+        }
+        else
             return 0;
-        if (lastSlot == 0)
-            return end - slotDuration + 1;
-        return lastSlot - slotDuration;
+    }
+    else
+    {
+        if (end != 0)
+        {
+            if (effort == 0.0 && length == 0.0 && duration == 0.0 &&
+                !milestone && start == 0)
+                return 0;
+
+            if (lastSlot == 0)
+                return end - slotDuration + 1;
+            return lastSlot - slotDuration;
+        }
+        else
+            return 0;
     }
 
     return 0;
