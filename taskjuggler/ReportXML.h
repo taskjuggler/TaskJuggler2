@@ -33,6 +33,7 @@ public:
    ReportXML(Project* p, const QString& f, time_t s, time_t e);
    virtual ~ReportXML() { }
 
+   void generate();
 protected:
    ReportXML() { }
 

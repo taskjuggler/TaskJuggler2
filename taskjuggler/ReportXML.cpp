@@ -22,3 +22,24 @@ ReportXML::ReportXML(Project* p, const QString& f, time_t s, time_t e) :
 
 }
 
+
+void ReportXML::generate()
+{
+   if( ! project ) return;
+   
+   QDomDocument doc( "TaskjugglerTasks" );
+   QDomElement root = doc.createElement( "TaskJuggerTasks" );
+   doc.appendChild( root );
+
+   Task *task = project->taskListFirst();
+   root.appendChild( task->xmlElement( doc ));
+   while( (task = project->taskListNext()) != 0 )
+   {
+      root.appendChild( task->xmlElement( doc ));
+   }	
+
+   QString xml = doc.toString();
+
+   // qDebug( "XML: %s", xml.latin1() );
+   
+}
