@@ -69,8 +69,6 @@
 #include "resUsageView.h"
 #include "editorView.h"
 #include "ktjUtils.h"
-#include "reportView.h"
-#include "ktjTaskReport.h"
 
 // TJ includes
 #include "XMLFile.h"
@@ -95,7 +93,7 @@ int pr_RU = 0;
 #endif
 
 ktjview2View::ktjview2View( QWidget *parent )
-    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 ), m_taskReport( 0 )
+    : DCOPObject( "ktjview2Iface" ), QWidget( parent ), m_project( 0 )
 {
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout( this );
@@ -175,7 +173,7 @@ ktjview2View::ktjview2View( QWidget *parent )
     m_widgetStack->addWidget( m_resUsageView );
 
     // report view
-    m_reportView = new ReportView( this, "report_view" );
+    m_reportView = new KListView( this, "report_view" );
     m_widgetStack->addWidget( m_reportView );
 
     // editor view
@@ -197,7 +195,6 @@ ktjview2View::~ktjview2View()
 {
     delete m_project;
     delete m_ganttPopupMenu;
-    delete m_taskReport;
 }
 
 void ktjview2View::print( KPrinter * printer )
@@ -899,9 +896,6 @@ void ktjview2View::clearAllViews()
     m_taskView->clear();
 
     m_resUsageView->clear();
-
-    delete m_taskReport;
-    m_taskReport = 0;
 }
 
 QString ktjview2View::formatAllocations( Task* task ) const
@@ -1280,26 +1274,6 @@ void ktjview2View::slotTaskCoverage()
     if ( !m_project )
         return;
 
-    if ( !m_taskReport )
-        m_taskReport = new KTJTaskReport( m_project );
-    kdDebug() << k_funcinfo << "Clearing the report" << endl;
-    m_reportView->clear();
-    kdDebug() << k_funcinfo << "Generating data model" << endl;
-    QicsDataModelDefault * model = m_taskReport->generate();
-    kdDebug() << k_funcinfo << QString( "Model is %1x%2" )
-        .arg( model->numRows() ).arg( model->numColumns() ) << endl;
-    m_reportView->setDataModel( model ); // FIXME freezes on third(!) invokation
-    kdDebug() << k_funcinfo << "Setting row header" << endl;
-    QicsDataModelColumn rowHeader = m_taskReport->rowHeader();
-    kdDebug() << k_funcinfo << QString( "Row header has %1 rows" ).arg( rowHeader.count() )
-              << endl;
-    m_reportView->setRowHeader( rowHeader );
-    kdDebug() << k_funcinfo << "Setting column header" << endl;
-    QicsDataModelRow colHeader = m_taskReport->columnHeader();
-    kdDebug() << k_funcinfo << QString( "Col header has %1 columns" ).arg( colHeader.count() )
-              << endl;
-    m_reportView->setColumnHeader( colHeader );
-    //m_reportView->setTopTitleWidget( m_taskReport->description() ); // TODO
 }
 
 #include "ktjview2view.moc"
