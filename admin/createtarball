@@ -9,6 +9,10 @@
 tmpdir=/tmp/tjball
 v=cvs
 ver=${1:-$v}
+
+release=HEAD
+rel=${2:-$release}
+
 tj=taskjuggler-$ver
 dir=`pwd`
 wantdocs=1
@@ -26,9 +30,10 @@ if test -z $CVSROOT ; then
 fi
 
 cd $tmpdir
-cvs export -r HEAD taskjuggler 1>/dev/null
+cvs export -r $rel taskjuggler 1>/dev/null
 
 mv taskjuggler $tj
+rm `find $tj -name .cvsignore`
 
 (cd $tj && make -f Makefile.cvs 1>/dev/null )
 
