@@ -13,7 +13,8 @@ class KTJReport
 {
 public:
     /**
-     * CTOR
+     * CTOR, creates a default data model
+     * @see m_model
      * @param proj TJ Project to work on
      */
     KTJReport( Project * proj );
@@ -44,6 +45,7 @@ public:
 
     /**
      * Set the scale
+     * @see Scale
      */
     void setScale( int sc );
 
@@ -91,12 +93,12 @@ public:
     virtual QicsDataModel generate() = 0;
 
     /**
-     * @return short unique name of the report
+     * @return short unique name of the report (with i18n)
      */
     virtual QString name() const = 0;
 
     /**
-     * @return verbose description of the report
+     * @return verbose description of the report (with i18n)
      */
     virtual QString description() const = 0;
 
