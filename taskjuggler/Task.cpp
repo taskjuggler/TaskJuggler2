@@ -1186,6 +1186,7 @@ Task::xRef(QDict<Task>& hash)
             }
             else
             {
+                (*tdi)->setTaskRef(t);
                 if (t == this)
                 {
                     errorMessage(i18n("Task '%1' cannot depend on self.")
@@ -1193,7 +1194,6 @@ Task::xRef(QDict<Task>& hash)
                     error = TRUE;
                     break;
                 }
-                (*tdi)->setTaskRef(t);
                 previous.append(t);
                 t->successors.append(this);
                 t->followers.append(this);
