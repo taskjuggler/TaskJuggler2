@@ -2,7 +2,7 @@ EXTRA_DIST = taskjuggler/*.html
 docprefix = /usr/share/doc/packages/taskjuggler/
 kdeprefix = $(prefix)/share/doc/HTML/en/taskjuggler/
 
-SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml Example.xml SyntaxReference.xml GenPropertyReference.xml index.docbook
+SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml UsageGuide.xml Example.xml SyntaxReference.xml GenPropertyReference.xml index.docbook
 CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml taskjuggler.junk db2html.* taskjuggler.log CATALOG.local *.dsl
 
 install-data-local:

@@ -3,6 +3,7 @@
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
  <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
  <!ENTITY FirstProject SYSTEM "FirstProject.xml">
+ <!ENTITY UsageGuide SYSTEM "UsageGuide.xml">
  <!ENTITY SyntaxReference SYSTEM "SyntaxReference.xml">
  <!ENTITY PropertyReference SYSTEM "GenPropertyReference.xml">
  <!ENTITY Example SYSTEM "Example.xml">
@@ -468,6 +469,7 @@ url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</par
 </sect1> 
 </chapter>
 &FirstProject;
+&UsageGuide;
 &SyntaxReference;
 &PropertyReference;
 

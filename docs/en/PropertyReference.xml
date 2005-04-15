@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="PropertyReference.xsl"?>
 <!DOCTYPE properties [
 <!--  <!ENTITY % DocBookDTD PUBLIC "-//OASIS//DTD DocBook V4.2//EN"
-"/usr/share/sgml/docbook_4.2/docbook.dtd">
+"/usr/share/sgml/docbook/dtd/4.2xml/docbookx.dtd">
  %DocBookDTD; -->
  <!ELEMENT properties (property*)>
 
@@ -55,6 +55,8 @@
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
+  <!ENTITY example_include SYSTEM
+   "../../TestSuite/Syntax/Correct/Include2.tjp">
   <!ENTITY example_journalentry SYSTEM
    "../../TestSuite/Syntax/Correct/Journal.tjp">
   <!ENTITY example_limits SYSTEM
@@ -1175,6 +1177,7 @@ is defined within the included file.</para></descr>
   <seealso>
    <also>export</also>
   </seealso>
+  <example>&example_include;</example>
  </property>
  <property name="journalentry" id="journalentry" inheritable="No">
   <descr><para>Journal entries are meant for documentation purposes.
@@ -2168,13 +2171,16 @@ attributes.</para></descr>
  </property>
  <property name="taskprefix" id="taskprefix" inheritable="No">
   <descr><para>All tasks in the included file are added as sub-tasks of the
-task specified by <varname>taskprefix</varname>.</para></descr>
+task specified by <varname>taskprefix</varname>. The
+<varname>taskprefix</varname> must be a valid absolute ID of an
+already defined task.</para></descr>
   <attributes>
-   <attr name="prefix" type="STRING"/>
+   <attr name="prefix" type="ID"/>
   </attributes>
   <seealso>
    <also>task</also>
   </seealso>
+  <example>&example_include;</example>
  </property>
  <property name="taskroot" id="taskroot" inheritable="No">
   <descr><para>Only tasks below the specified root-level tasks are

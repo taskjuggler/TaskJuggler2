@@ -780,6 +780,9 @@ this to 1971-01-01 - 2035-01-01.</para></listitem>
 <listitem><para>Fixed some crashes related to out of project time
 specifications.</para></listitem>
 
+<listitem><para>Warnings about pre 2.0 deprecated syntax elements have
+been converted to errors.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
