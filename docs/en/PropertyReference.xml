@@ -53,6 +53,8 @@
    "../../TestSuite/Syntax/Correct/Booking.tjp">
   <!ENTITY example_depends SYSTEM
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
+  <!ENTITY example_export SYSTEM
+   "../../TestSuite/Syntax/Correct/Export.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
   <!ENTITY example_include SYSTEM
@@ -841,17 +843,21 @@ project IDs of the included tasks must be declared first with the
    <attr name="filename" type="STRING"/>
   </attributes>
   <optattributes>
+   <optattr>end_report</optattr>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
+   <optattr>properties</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
    <optattr>scenarios</optattr>
+   <optattr>start_report</optattr>
    <optattr>taskattributes</optattr>
    <optattr>taskroot</optattr>
   </optattributes>
   <seealso>
    <also>include</also>
   </seealso>
+  <example>&example_export;</example>
  </property>
  <property name="extend" id="extend" inheritable="No">
   <descr><para>Often it is desireable to collect more information in
@@ -1609,6 +1615,38 @@ specified effort, length or duration has been reached.</para></descr>
    <also>booking</also>
   </seealso>
  </property>
+ <property name="properties" id="properties" inheritable="No">
+  <descr><para>This attribute determines which properties will be
+  included in the report.</para></descr>
+  <attributes>
+   <attr name="property" type="ID" list="1">
+    <para>See table below for possible values.</para>
+   </attr> 
+  </attributes>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>all</varname></member>
+   <member>Include all properties.</member>
+   
+   <member><varname>bookings</varname></member>
+   <member>Include all bookings for the report interval. Only bookings
+   for non-filtered resources will be included.</member>
+   
+   <member><varname>shifts</varname></member>
+   <member>Include all shift definitions.</member>
+   
+   <member><varname>tasks</varname></member>
+   <member>Include all task definitions for non-filtered tasks.</member>
+   
+   <member><varname>resources</varname></member>
+   <member>Include all resource definitions for non-filtered
+   resources.</member>
+   
+   </simplelist></para>
+  </freestyle> 
+  <example>&example_export;</example>
+ </property>
  <property name="rate" id="rate" inheritable="Yes">
   <descr><para>Specifies the daily costs of the resource. The amount
 are credited to the account specified with the task that makes use of
@@ -2168,6 +2206,7 @@ attributes.</para></descr>
   <attributes>
    <attr name="attribute" type="ID" list="1"/>
   </attributes>
+  <example>&example_export;</example>
  </property>
  <property name="taskprefix" id="taskprefix" inheritable="No">
   <descr><para>All tasks in the included file are added as sub-tasks of the

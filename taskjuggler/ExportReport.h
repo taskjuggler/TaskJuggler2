@@ -35,6 +35,12 @@ public:
 
     void setMasterFile(bool mf) { masterFile = mf; }
 
+    void resetContentFlags();
+    void setListShifts(bool ls) { listShifts = ls; }
+    void setListResources(bool lr) { listResources = lr; }
+    void setListTasks(bool lt) { listTasks = lt; }
+    void setListBookings(bool lb) { listBookings = lb; }
+
 private:
     ExportReport() { }
 
@@ -66,6 +72,11 @@ private:
 
     // True if the file should be a standalone project (*.tjp file).
     bool masterFile;
+
+    bool listShifts;
+    bool listTasks;
+    bool listResources;
+    bool listBookings;
 };
 
 #endif

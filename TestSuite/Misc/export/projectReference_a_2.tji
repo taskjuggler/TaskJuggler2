@@ -1,0 +1,73 @@
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
+ */
+projectids test
+task t1 "Task1" {
+  projectid test
+  plan:start 2000-01-04-09:00:00--0700
+  plan:end 2000-01-26-18:00:00--0700
+  plan:scheduled
+  scheduling asap
+}
+task t3 "Task3" {
+  projectid test
+  plan:start 2000-01-04-09:00:00--0700
+  plan:end 2000-01-26-18:00:00--0700
+  plan:scheduled
+  scheduling asap
+}
+task t4 "Task4" {
+  projectid test
+  task t1 "Task1" {
+    depends t3
+    plan:start 2000-01-26-18:00:00--0700
+    plan:end 2000-02-21-18:00:00--0700
+    plan:scheduled
+    scheduling asap
+  }
+  task t2 "Task2" {
+    depends t4.t1
+    plan:start 2000-02-22-09:00:00--0700
+    plan:end 2000-03-06-18:00:00--0700
+    plan:scheduled
+    scheduling asap
+  }
+  scheduling asap
+}
+task t5 "Task5" {
+  projectid test
+  depends t1
+  plan:start 2000-01-27-09:00:00--0700
+  plan:end 2000-02-02-18:00:00--0700
+  plan:scheduled
+  scheduling asap
+}
+task t2 "Task2" {
+  projectid test
+  depends t1
+  plan:start 2000-02-03-09:00:00--0700
+  plan:end 2000-03-01-18:00:00--0700
+  plan:scheduled
+  scheduling asap
+}
+supplement task t1 {
+  priority 500
+}
+supplement task t3 {
+  priority 500
+}
+supplement task t4 {
+  supplement task t1 {
+    UserText "Hello, world!"
+  }
+  supplement task t2 {
+    UserRef "http://www.taskjuggler.org" { label "TaskJuggler" }
+  }
+  priority 500
+}
+supplement task t5 {
+  priority 1000
+}
+supplement task t2 {
+  priority 500
+}

@@ -4,6 +4,16 @@
 export LANG=en_US
 export LC_COLLATE=POSIX 
 
+cd Misc
+dirs=`find . -type d`
+for d in "$dirs" ; do
+  cd $d
+  if test -x createrefs ; then
+    ./createrefs
+  fi
+  cd ..
+done
+
 cd Scheduler/Correct
 /bin/rm -f *-Export.tjp *-Reference.tjp
 for f in *.tjp ; do

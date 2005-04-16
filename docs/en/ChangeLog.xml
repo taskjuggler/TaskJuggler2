@@ -783,6 +783,14 @@ specifications.</para></listitem>
 <listitem><para>Warnings about pre 2.0 deprecated syntax elements have
 been converted to errors.</para></listitem>
 
+<listitem><para>The contents of export reports can now be customized
+with the <link linkend="PROPERTY_properties">properties</link>
+attribute. The report interval is customizable as well
+now.</para></listitem>
+
+<listitem><para>Add new chapter to manual that describes how to use
+TaskJuggler as a project tracking tool.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

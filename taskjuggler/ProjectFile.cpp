@@ -1,7 +1,7 @@
 /*
  * ProjectFile.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -271,68 +271,33 @@ ProjectFile::parse()
             else if (token == KW("currency"))
             {
                 errorMessage
-                    (i18n("WARNING: 'currency' is no longer a property. It's "
+                    (i18n("ERROR: 'currency' is no longer a property. It's "
                           "now an optional project attribute. Please fix "
                           "your project file."));
-                if (nextToken(token) != STRING)
-                {
-                    errorMessage(i18n("String expected"));
-                    return FALSE;
-                }
-                proj->setCurrency(token);
-                break;
+                return FALSE;
             }
             else if (token == KW("currencydigits"))
             {
                 errorMessage
-                    (i18n("WARNING: 'currencydigits' has been deprecated. "
+                    (i18n("ERROR: 'currencydigits' has been deprecated. "
                           "Please use 'currencyformat' instead."));
-                if (nextToken(token) != INTEGER)
-                {
-                    errorMessage(i18n("Integer value expected"));
-                    return FALSE;
-                }
-                proj->setCurrencyDigits(token.toInt());
-                break;
+                return FALSE;
             }
             else if (token == "timingresolution")
             {
                 errorMessage
-                    (i18n("WARNING: 'timingresolution' is no longer a "
+                    (i18n("ERROR: 'timingresolution' is no longer a "
                           "property. It's now an optional project attribute. "
                           "Please fix your project file."));
-                ulong resolution;
-                if (!readTimeValue(resolution))
-                    return FALSE;
-                if (proj->resourceCount() > 0)
-                {
-                    errorMessage
-                        (i18n("The timing resolution cannot be changed after "
-                              "resources have been declared."));
-                    return FALSE;
-                }
-                if (resolution < 60 * 5)
-                {
-                    errorMessage(i18n("timing resolution must be at least 5 "
-                                      "min"));
-                    return FALSE;
-                }
-                proj->setScheduleGranularity(resolution);
-                break;
+                return FALSE;
             }
             else if (token == KW("workinghours"))
             {
                 errorMessage
-                    (i18n("WARNING: 'workinghours' is no longer a property. "
+                    (i18n("ERROR: 'workinghours' is no longer a property. "
                           "It's now an optional project attribute. Please fix "
                           "your project file."));
-                int dow;
-                QPtrList<Interval>* l = new QPtrList<Interval>();
-                if (!readWorkingHours(dow, l))
-                    return FALSE;
-
-                proj->setWorkingHours(dow, l);
-                break;
+                return FALSE;
             }
             else if (token == KW("copyright"))
             {
@@ -455,12 +420,10 @@ ProjectFile::parse()
             else if (token == "xmltaskreport")
             {
                 errorMessage
-                    (i18n("WARNING: The keyword 'xmltaskreport' is "
+                    (i18n("ERROR: The keyword 'xmltaskreport' is "
                           "deprecated. Please use the keyword 'xmlreport' "
                           "instead."));
-                if(!readXMLReport())
-                    return FALSE;
-                break;
+                return FALSE;
             }
             else if (token == KW("xmlreport"))
             {
@@ -507,19 +470,9 @@ ProjectFile::parse()
                     return FALSE;
                 break;
             }
-            else if (token == KW("csvtaskreport"))
-            {
-                if (!readCSVReport(token))
-                    return FALSE;
-                break;
-            }
-            else if (token == KW("csvresourcereport"))
-            {
-                if (!readCSVReport(token))
-                    return FALSE;
-                break;
-            }
-            else if (token == KW("csvaccountreport"))
+            else if (token == KW("csvtaskreport") ||
+                     token == KW("csvresourcereport") ||
+                     token == KW("csvaccountreport"))
             {
                 if (!readCSVReport(token))
                     return FALSE;
@@ -625,7 +578,7 @@ ProjectFile::readProject()
         return FALSE;
     if (end <= start)
     {
-        errorMessage(i18n("End date must be larger then start date"));
+        errorMessage(i18n("End date must be larger than start date"));
         return FALSE;
     }
     proj->setStart(start);
@@ -1049,9 +1002,9 @@ ProjectFile::readInclude()
     if (fileName.right(4) != ".tji" &&
         fileName.right(5) != ".tjsp")
     {
-        errorMessage(i18n("WARNING: The include file '%1' should have a "
+        errorMessage(i18n("ERROR: The include file '%1' should have a "
                           "'.tji' extension.").arg(fileName));
-        // return FALSE;
+        return FALSE;
     }
 
     QString token;
@@ -1370,142 +1323,52 @@ ProjectFile::readTaskBody(Task* task)
             }
             else if (token == "actualstart")
             {
-                errorMessage(i18n("WARNING: 'actualstart' has been "
+                errorMessage(i18n("ERROR: 'actualstart' has been "
                                   "deprecated. Please use 'actual:start' "
                                   "instead."));
-                time_t val;
-                if (!readDate(val, 0))
-                    return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual") - 1;
-                if (actualIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'actual' scenario by default "
-                              "any more. Please put the following line in "
-                              "your project header:\n"
-                              "scenario plan \"Plan\" { "
-                              "scenario actual \"Actual\" }"));
-                    return FALSE;
-                }
-                task->setSpecifiedStart(actualIdx, val);
-                task->setScheduling(Task::ASAP);
+                return FALSE;
             }
             else if (token == "actualend")
             {
-                errorMessage(i18n("WARNING: 'actualend' has been "
+                errorMessage(i18n("ERROR: 'actualend' has been "
                                   "deprecated. Please use 'actual:end' "
                                   "instead."));
-                time_t val;
-                if (!readDate(val, 1))
-                    return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual") - 1;
-                if (actualIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'actual' scenario by default "
-                              "any more. Please put the following line in "
-                              "your project header:\n"
-                              "scenario plan \"Plan\" { "
-                              "scenario actual \"Actual\" }"));
-                    return FALSE;
-                }
-                task->setSpecifiedEnd(actualIdx, val);
-                task->setScheduling(Task::ALAP);
+                return FALSE;
             }
             else if (token == "actuallength")
             {
-                errorMessage(i18n("WARNING: 'actuallength' has been "
+                errorMessage(i18n("ERROR: 'actuallength' has been "
                                   "deprecated. Please use 'actual:length' "
                                   "instead."));
-                double d;
-                if (!readTimeFrame(d, TRUE))
-                    return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual") - 1;
-                if (actualIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'actual' scenario by default "
-                              "any more. Please put the following line in "
-                              "your project header:\n"
-                              "scenario plan \"Plan\" { "
-                              "scenario actual \"Actual\" }"));
-                    return FALSE;
-                }
-                task->setLength(actualIdx, d);
+                return FALSE;
             }
             else if (token == "actualeffort")
             {
-                errorMessage(i18n("WARNING: 'actualeffort' has been "
+                errorMessage(i18n("ERROR: 'actualeffort' has been "
                                   "deprecated. Please use 'actual:effort' "
                                   "instead."));
-                double d;
-                if (!readTimeFrame(d, TRUE))
-                    return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual") - 1;
-                if (actualIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'actual' scenario by default "
-                              "any more. Please put the following line in "
-                              "your project header:\n"
-                              "scenario plan \"Plan\" { "
-                              "scenario actual \"Actual\" }"));
-                    return FALSE;
-                }
-                task->setEffort(actualIdx, d);
+                return FALSE;
             }
             else if (token == "actualduration")
             {
-                errorMessage(i18n("WARNING: 'actualduration' has been "
+                errorMessage(i18n("ERROR: 'actualduration' has been "
                                   "deprecated. Please use 'actual:duration' "
                                   "instead."));
-                double d;
-                if (!readTimeFrame(d, FALSE))
-                    return FALSE;
-                int actualIdx = proj->getScenarioIndex("actual") - 1;
-                if (actualIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'actual' scenario by default "
-                              "any more. Please put the following line in "
-                              "your project header:\n"
-                              "scenario plan \"Plan\" { "
-                              "scenario actual \"Actual\" }"));
-                    return FALSE;
-                }
-                task->setDuration(actualIdx, d);
+                return FALSE;
             }
             else if (token == "planscheduled")
             {
-                errorMessage(i18n("WARNING: 'planscheduled' has been "
+                errorMessage(i18n("ERROR: 'planscheduled' has been "
                                   "deprecated. Please use 'plan:scheduled' "
                                   "instead."));
-                int planIdx = proj->getScenarioIndex("plan") - 1;
-                if (planIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'plan' scenario."));
-                    return FALSE;
-                }
-                task->setSpecifiedScheduled(planIdx, TRUE);
+                return FALSE;
             }
             else if (token == "actualscheduled")
             {
-                errorMessage(i18n("WARNING: 'actualscheduled' has been "
+                errorMessage(i18n("ERROR: 'actualscheduled' has been "
                                   "deprecated. Please use 'actual:scheduled' "
                                   "instead."));
-                int actualIdx = proj->getScenarioIndex("actual") - 1;
-                if (actualIdx < 0)
-                {
-                    errorMessage
-                        (i18n("ERROR: There is no 'actual' scenario by default "
-                              "any more. Please put the following line in "
-                              "your project header:\n"
-                              "scenario plan \"Plan\" { "
-                              "scenario actual \"Actual\" }"));
-                    return FALSE;
-                }
-                task->setSpecifiedScheduled(actualIdx, TRUE);
+                return FALSE;
             }
             else if (token == KW("responsible"))
             {
@@ -1701,7 +1564,7 @@ ProjectFile::readTaskBody(Task* task)
             else if (token == "include")
             {
                 errorMessage
-                    (i18n("WARNING: The 'include' attribute is no longer "
+                    (i18n("ERROR: The 'include' attribute is no longer "
                           "supported within tasks since it caused ambiguoties "
                           "between flag declaration and flag attributes. "
                           "Please use the 'taskprefix' attribute of 'include' "
@@ -2315,12 +2178,10 @@ ProjectFile::readResourceBody(Resource* r)
         else if (token == KW("include"))
         {
             errorMessage
-                (i18n("WARNING: The 'include' attribute is no longer "
+                (i18n("ERROR: The 'include' attribute is no longer "
                       "supported within resources since it caused ambiguoties "
                       "between flag declaration and flag attributes."));
-            // TODO: Remove this after the 2.1 release.
-            if (!readInclude())
-                return FALSE;
+            return FALSE;
         }
         else
         {
@@ -2418,7 +2279,7 @@ ProjectFile::readShift(Shift* parent)
             else if (token == KW("include"))
             {
                 errorMessage
-                    (i18n("WARNING: The 'include' attribute is no longer "
+                    (i18n("ERROR: The 'include' attribute is no longer "
                           "supported within shifts since it caused ambiguoties "
                           "between flag declaration and flag attributes."));
                 return FALSE;
@@ -4179,8 +4040,7 @@ ProjectFile::readExportReport()
         return FALSE;
     }
 
-    if (token.right(4) != ".tjp" && token.right(4) != ".tji" &&
-        token.right(5) != ".tjsp")
+    if (token.right(4) != ".tjp" && token.right(4) != ".tji")
     {
         errorMessage(i18n("Illegal extension for export file name. "
                           "Please use '.tjp' for standalone projects and "
@@ -4192,7 +4052,17 @@ ProjectFile::readExportReport()
     report = new ExportReport(proj, token, getFile(), getLine());
 
     if (token.right(4) == ".tjp")
+    {
         report->setMasterFile(TRUE);
+        report->setListShifts(TRUE);
+        report->setListResources(TRUE);
+    }
+    else
+    {
+        report->setListShifts(FALSE);
+        report->setListResources(FALSE);
+    }
+
 
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
@@ -4308,6 +4178,57 @@ ProjectFile::readExportReport()
                     }
                     if (proj->getScenario(scIdx - 1)->getEnabled())
                         report->addScenario(proj->getScenarioIndex(scId) - 1);
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
+            else if (token == KW("start"))
+            {
+                time_t start;
+                if (!readDate(start, 0))
+                    return FALSE;
+                report->setStart(start);
+            }
+            else if (token == KW("end"))
+            {
+                time_t end;
+                if (!readDate(end, 1))
+                    return FALSE;
+                report->setEnd(end);
+            }
+            else if (token == KW("properties"))
+            {
+                report->resetContentFlags();
+                for ( ; ; )
+                {
+                    if ((tt = nextToken(token)) != ID)
+                    {
+                        errorMessage(i18n("Property name expected"));
+                        return FALSE;
+                    }
+                    if (token == KW("all"))
+                    {
+                        report->setListShifts(TRUE);
+                        report->setListTasks(TRUE);
+                        report->setListResources(TRUE);
+                        report->setListBookings(TRUE);
+                    }
+                    else if (token == KW("shifts"))
+                        report->setListShifts(TRUE);
+                    else if (token == KW("tasks"))
+                        report->setListTasks(TRUE);
+                    else if (token == KW("resources"))
+                        report->setListResources(TRUE);
+                    else if (token == KW("bookings"))
+                        report->setListBookings(TRUE);
+                    else
+                    {
+                        errorMessage(i18n("Unknown property %1").arg(token));
+                        return FALSE;
+                    }
                     if ((tt = nextToken(token)) != COMMA)
                     {
                         returnToken(tt, token);
@@ -4451,9 +4372,10 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == "showactual")
             {
                 errorMessage
-                    (i18n("WARNING: The keyword 'showactual' has been "
+                    (i18n("ERROR: The keyword 'showactual' has been "
                           "deprecated. Please use the keyword 'scenarios' "
                           "instead."));
+                return FALSE;
             }
             else if (token == KW("showprojectids"))
             {
@@ -5164,10 +5086,13 @@ ProjectFile::readSortingMode(int& sorting)
         }
 
         if (deprecatedWarning)
+        {
             errorMessage
-                (i18n("WARNING: Concatenating the scenario name and the "
+                (i18n("ERROR: Concatenating the scenario name and the "
                       "sorting criteria has been deprecated. Please separate "
                       "them by a colon. E. g. 'plan:start', 'actual:end'"));
+            return FALSE;
+        }
     }
 
     return TRUE;

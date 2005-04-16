@@ -1,7 +1,7 @@
 /*
  * MacroTable.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -52,6 +52,11 @@ public:
     bool addMacro(Macro* m);
     void setMacro(Macro* m);
 
+    bool deleteMacro(const QString name)
+    {
+        return macros.remove(name);
+    }
+
     void clear()
     {
         macros.clear();
@@ -71,10 +76,11 @@ private:
     void errorMessage(const char* txt, ... ) const;
 
     /* We store a file name and a line number in case we need this for
-     * error reports or warnings. */
+     * error reports or warnings. This is the location of the macro reference,
+     * not the macro definitions. */
     QString defFileName;
     int defFileLine;
-    
+
     QDict<Macro> macros;
 } ;
 

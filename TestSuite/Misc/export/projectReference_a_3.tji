@@ -1,0 +1,11 @@
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
+ */
+resource r3 "Resource3" {
+}
+resource team "Team" {
+  resource r1 "Resource1" {
+  }
+  resource r2 "Resource2" {
+  }
+}

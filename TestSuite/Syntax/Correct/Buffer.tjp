@@ -13,7 +13,7 @@ resource tux3 "Tux3"
 
 task t1 "Task1" {
   start 2000-01-01
-  actualstart 2000-01-05
+  actual:start 2000-01-05
   length 10d
   startbuffer 20
   endbuffer 20
@@ -22,7 +22,7 @@ task t1 "Task1" {
 
 task t2 "Task2" {
   start 2000-01-01
-  actualstart 2000-01-05
+  actual:start 2000-01-05
   duration 10d
   startbuffer 20.0
   endbuffer 20.0
@@ -31,7 +31,7 @@ task t2 "Task2" {
 
 task t3 "Task3" {
   start 2000-01-01
-  actualstart 2000-01-05
+  actual:start 2000-01-05
   effort 10d
   allocate tux3
   startbuffer 20
@@ -40,7 +40,7 @@ task t3 "Task3" {
 
 task t4 "Task4" {
   start 2000-01-01
-  actualstart 2000-01-05
+  actual:start 2000-01-05
   end 2000-01-15
   startbuffer 20
   endbuffer 20

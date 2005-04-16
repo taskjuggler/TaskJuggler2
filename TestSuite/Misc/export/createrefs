@@ -1,0 +1,9 @@
+#! /bin/sh
+../../../taskjuggler/taskjuggler project_a.tjp
+mv project_a_1.tjp projectReference_a_1.tjp
+mv project_a_2.tji projectReference_a_2.tji
+mv project_a_3.tji projectReference_a_3.tji
+mv project_a_4.tji projectReference_a_4.tji
+
+rm *.html project_*.tji
+

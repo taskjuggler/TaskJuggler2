@@ -1,6 +1,6 @@
 <chapter><title>Usage Guide</title>
 
-<sect1><title>Tracking your project</title>
+<sect1><title>Tracking the Project</title>
 
 <para>Once the initial plan has been made and the project has started
 TaskJuggler can be turned from a planning tool into a tracking tools.
@@ -8,27 +8,81 @@ You don't have to change a lot to do this. After all, as the initial
 plan is almost always just a first guess, you need to continue
 planning your project as new details become evident. So what you
 really want is a way to gradully freeze the plan as work has been
-completed, while still having full flexibility with all work that
-still has to be done.</para>
+completed, while still having full flexibility with all future
+work.</para>
 
 <para>While it is generally accepted to invest some amount of time
 into the project planning, it is very common that once the project has
-started, project managers tend to avoid a proper tracking of the
-project. My bet is that the vast majority of project plans is only
+been started, project managers tend to avoid a proper tracking of the
+project. Our bet is that the vast majority of project plans are only
 made to get management or investor approval. After the approval phase,
 many project managers only work with their project plan again when the
 project is running really late. On the other hand there are projects
-which are done using traditional project management techniques that
+which are done using strict project management techniques that
 require detailed status tracking. Both extremes probably have their
-fans and TaskJuggler offers good support for both. And a whole lot of
-alternatives in between these two extremes.</para>
+fans and TaskJuggler offers good support for both extremes as well as
+various techniques in between.</para>
 
-<para>The initial project plan should be made by entering a minimum
-amount of information such as task dependencies and efforts.
+<sect2><title>Recording Progress</title>
+
+<para>As mentioned previously, your initial project plan is only a
+first estimate of how the project will progress. During the course of
+the project you will have to make changes to the plan as new
+information needs to be taken into account and you probably want to
+track the progress of the project in a formalized form. TaskJuggler
+will support you during this phase of the project as well, but it
+needs your help. You need to provide the additional information in the
+project file. In return you get current status reports and an updated
+project plan based on the current status of the project.</para>
+
+<para>The most simple form of capturing where you are with the project
+is to use the <link linkend="PROPERTY_complete">complete</link>
+attribute.</para>
+
+<para><screen>
+task impl "Implementation" {
+  depends !spec
+  effort 4w
+  allocate dev1, dev2
+  complete 50
+}
+</screen></para>
+
+<para>This tells TaskJuggler that 50% of the task's effort has been
+completed by the current date. Tasks that have no completetion
+specification will be assumed to be on track. TaskJuggler calculates
+the completion degree based on the current date. Completion
+specifications only need to be supplied for tasks that are either
+ahead of schedule or behind schedule. Please keep in mind that the
+completion degree does not affect the scheduling and resource
+allocation. It is only for reporting purposes. It also does not tell
+TaskJuggler which resource actually worked on the tasks.</para>
+
+<para>If you want the past work to affect scheduling you need to use
+the booking statements as outlined in the next section.</para>
+
+<para>When your project plan reflects the current status of your
+project TaskJuggler can generate nice status reports for you. To
+generate a HTML report for the last week that lists all tasks that are
+running late, all tasks that are ongoing, tasks that have been
+completed the last week and task that will be started next week you
+just have to specify the following.</para>
+
+<para><screen>
+htmlstatusreport "Status-Report.html" {
+}
+</screen></para>
+
+</sect2>
+<sect2><title>Recording Resource Usage</title>
+
+<para>The initial project plan should be made by entering the minimum
+necessary amount of information such as task dependencies and efforts.
 TaskJuggler will then compute all the missing data based on this. This
 is your project baseline. As the project progresses you can now track
-the actually completed work. Let's assume you had the following task
-in your original plan.</para>
+the actually completed work by recording the work that your resources
+have done. Let's assume you had the following task in your original
+plan.</para>
 
 <para><screen>
 task impl "Implementation" {
@@ -74,24 +128,37 @@ data without much effort. If you are interested in this you should
 have a look at the download section of the <ulink
 url="http://www.taskjuggler.org">TaskJuggler web site</ulink>.</para>
 
-<para>In case your project does not deviate a lot from your project
-plan, you can generate the file with the booking statements
+<para>As a side note we would like to mention that the recording of
+the work time of employees is regulated by labor law in certain
+countries. You might also need approval from a Worker's Council before
+you can deploy time recording tools.</para>
+
+<para>In case your actual progress does not deviate a lot from your
+project plan, you can generate the file with the booking statements
 automatically.</para>
 
 <para><screen>
-export "DoneWork.tji" {
+export "DoneWork-Week15.tji" {
   hideresource 0
   start 2005-04-11
   end 2005-04-16
+  properties bookings
 }
 </screen></para>
 
-<para>This will generate a TaskJuggler include file that you can then
-include into your project again. Besides the bookings for the
-specified interval it also contains the complete task tree. You have
-to delete this task tree before you can use this file. You also want
-to check all the bookings and modify them in case they do not match
-what really happened.</para>
+<para>This will generate a TaskJuggler include file that contains all
+bookings according to the project plan for the specified interval. You
+can then use this file as a baseline and modify it to reflect the real
+work that has happened during the interval. After that you can include
+it into your project again.</para>
+
+<para><screen>
+include "DoneWork-Week15.tji"
+</screen></para>
+
+<para>As this include file references the tasks and resources of your
+project you should include it after all task and resource
+definitions.</para>
 
 <para>To make TaskJuggler aware that you want to compute the end date
 based on the bookings and the effort you need to enable the
@@ -120,26 +187,36 @@ specified bookings. So if you specify bookings for a task you should
 not specify a booking as well. It will be ignored and replaced by a
 value based on the specified bookings.</para>
 
+<para>When you now schedule the project again, it will take these bookings
+into account and generate a new project plan based on your current
+project status.</para>
+
+<para>Each time you review your project status you should generate
+such an include file for the period that you are reviewing. Then you
+sync the content with the feedback that you get from your resources and
+add the file to the project plan.</para>
+
+</sect2>
 </sect1>
 <sect1><title>Freezing your project as it progresses</title>
 
 <para>During the planning phase of the project you want to specify as
 little as necessary and have TaskJuggler calculate the rest of the
-project variables. As the project progresses more and more variables turn into
-constants. Whenever this happens, you should tell TaskJuggler about
-it. If you don't do it, TaskJuggler will assume that it has full
-freedom to pick these values and you will end up with a project plan
-that has nothing to do with the past part of the project. Especially
-when you have a fairly dense resource allocation the plan will become
-very dynamic. Small changes in the plan can result in a significantly
-different scheduling result. The scheduling algorithm that is used by
-TaskJuggler is fairly complex and always tries to achieve the best
-possible result. It does not know that you have scheduled the project
-before and expect a similar result after the changes. The result is
-always correct according to the specification you have entered, but it
-can differ a lot even after fairly small changes. That is why you have
-to tell TaskJuggler when scheduled values have become reality and are
-no longer flexible.</para>
+project variables. As the project progresses more and more variables
+turn into constants. Whenever this happens, you should tell
+TaskJuggler about it. If you don't do it, TaskJuggler will assume that
+it has full freedom to pick these values and you will end up with a
+project plan that has nothing to do with the past part of the project.
+Especially when you have a fairly dense resource allocation the plan
+will become very dynamic. Small changes in the plan can result in a
+significantly different scheduling result. The scheduling algorithm
+that is used by TaskJuggler is fairly complex and always tries to
+achieve the best possible result. It does not know that you have
+scheduled the project before and expect a similar result after the
+changes. The result is always correct according to the specification
+you have entered, but it can differ a lot even after fairly small
+changes. That is why you have to tell TaskJuggler when scheduled
+values have become reality and are no longer flexible.</para>
 
 <para>Once a task has been completed it is a good idea to
 remove the allocation statements from the tasks to prevent accidental
@@ -150,63 +227,13 @@ dependencies, but this is not required. You just have
 overspecified the task. In case you have made contradicting
 statements, TaskJuggler will issue an error message. This is for
 example the case when you have a fixed start date and a booking that
-starts earlier.</para>
+starts earlier than the start date.</para>
 
 <para>In general it is perfectly ok to overspecify your project. For
 example, you can have a fixed start date on a task as well as a start
 dependency. As long as they don't contradict each other, they can
-peacefully live together and you can use them as additional error
-check points.</para>
-
-</sect1>
-<sect1><title>Keeping your project up-to-date and reporting status</title>
-
-<para>As mentioned previously, your initial project plan is only a
-first estimate of how the project will progress. During the course of
-the project you will have to make changes to the plan as new
-information needs to be taken into account and you probably want to
-track the progress of the project in a formalized form. TaskJuggler
-will support you during this phase of the project as well, but it
-needs you help. You need to provide the additional information in the
-project file. In return you get current status reports and an updated
-project plan based on the current status of the project.</para>
-
-<para>The most simple form of capturing where you are with the project
-is to use the <link linkend="PROPERTY_complete">complete</link>
-attribute.</para>
-
-<para><screen>
-task impl "Implementation" {
-  depends !spec
-  effort 4w
-  allocate dev1, dev2
-  complete 50
-}
-</screen></para>
-
-<para>This tells TaskJuggler that 50% of the task's effort has been
-completed by the current date. Tasks that have no completetion
-specification will be assume to be on track. So TaskJuggler calculates
-the completion degree based on the current date. So completion
-specifications only need to be supplied for tasks that are either
-ahead of schedule or behind schedule. Please keep in mind that the
-completion degree does not affect the scheduling. It is only for
-reporting purposes.</para>
-
-<para>If you want the past work to affect scheduling you need to use
-the booking statements as outlined above.</para>
-
-<para>When your project plan reflects the current status of your
-project TaskJuggler can generate nice status reports for you. To
-generate a HTML report for the last week that lists all tasks that are
-running late, all tasks that are ongoing, tasks that have been
-completed the last week and task that will be started next week you
-just have to specify the following.</para>
-
-<para><screen>
-htmlstatusreport "Status-Report.html" {
-}
-</screen></para>
+peacefully live together and you can use them as additional check
+points.</para>
 
 </sect1>
 </chapter>

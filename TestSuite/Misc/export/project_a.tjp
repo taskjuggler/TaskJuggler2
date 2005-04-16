@@ -54,6 +54,32 @@ export "project_a_sub.tji" {
 	hideresource 0
 }
 
+export "project_a_1.tjp" {
+	taskattributes all
+	properties all
+	hideresource 0
+	notimestamp
+}
+
+export "project_a_2.tji" {
+	taskattributes all
+	properties tasks
+	hideresource 0
+	notimestamp
+}
+
+export "project_a_3.tji" {
+	properties resources
+	hideresource 0
+	notimestamp
+}
+
+export "project_a_4.tji" {
+	properties bookings
+	hideresource 0
+	notimestamp
+}
+
 htmltaskreport "project_a.html" {
 	columns name, id, projectid, start, end, daily
 	sorttasks nameup

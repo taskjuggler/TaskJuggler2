@@ -70,6 +70,11 @@ ExportReport::ExportReport(Project* p, const QString& f,
     scenarios.append(0);
 
     masterFile = FALSE;
+
+    listShifts = TRUE;
+    listTasks = TRUE;
+    listResources = TRUE;
+    listBookings = TRUE;
 }
 
 bool
@@ -98,26 +103,33 @@ ExportReport::generate()
     sortResourceList(filteredResourceList);
 
     if (masterFile)
-    {
         if (!generateProjectProperty())
             return FALSE;
+
+    if (listShifts)
         if (!generateShiftList())
             return FALSE;
+
+    if (listResources)
         if (!generateResourceList(filteredResourceList, filteredTaskList))
+            return FALSE;
+
+    if (listTasks)
+    {
+        if (!generateProjectIds(filteredTaskList))
+            return FALSE;
+
+        if (!generateTaskList(filteredTaskList, filteredResourceList))
+            return FALSE;
+
+        if (!generateTaskAttributeList(filteredTaskList))
             return FALSE;
     }
 
-    if (!generateProjectIds(filteredTaskList))
-        return FALSE;
-
-    if (!generateTaskList(filteredTaskList, filteredResourceList))
-        return FALSE;
-    if (!generateTaskAttributeList(filteredTaskList))
-        return FALSE;
-
-    if (!generateResourceAttributesList(filteredTaskList,
-                                        filteredResourceList))
-        return FALSE;
+    if (listBookings)
+        if (!generateResourceAttributesList(filteredTaskList,
+                                            filteredResourceList))
+            return FALSE;
 
     f.close();
     return TRUE;
@@ -824,7 +836,11 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
 
             for (BookingListIterator bli(bl); *bli != 0; ++bli)
             {
-                if (filteredTaskList.findRef((*bli)->getTask()) >= 0)
+                /* Bookings are only generated for those task that have not
+                 * been filtered out and if the booking overlaps with the
+                 * report interval. */
+                if (filteredTaskList.findRef((*bli)->getTask()) >= 0 &&
+                    (*bli)->getInterval().overlaps(Interval(start, end)))
                 {
                     if (first)
                     {
@@ -832,8 +848,12 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                             << " {" << endl;
                         first = FALSE;
                     }
-                    QString start = time2rfc((*bli)->getStart());
-                    QString end = time2rfc((*bli)->getEnd() + 1);
+                    /* Trim the booking interval so that it does not extend
+                     * out of the report interval. */
+                    Interval iv((*bli)->getInterval());
+                    iv.overlap(Interval(start, end));
+                    QString start = time2rfc(iv.getStart());
+                    QString end = time2rfc(iv.getEnd() + 1);
                     s << "  " << project->getScenarioId(*sit) << ":booking ";
                     s << start << " " << end
                         << " " << stripTaskRoot((*bli)->getTask()->getId())
@@ -910,5 +930,14 @@ ExportReport::addTaskAttribute(const QString& ta)
         return TRUE;
     taskAttributes.append(ta);
     return TRUE;
+}
+
+void
+ExportReport::resetContentFlags()
+{
+    listShifts = FALSE;
+    listTasks = FALSE;
+    listResources = FALSE;
+    listBookings = FALSE;
 }
 
