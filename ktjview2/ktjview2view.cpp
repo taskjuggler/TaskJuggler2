@@ -21,6 +21,7 @@
 
 #define PROFILE               // profiling enabled if defined
 
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
