@@ -791,6 +791,9 @@ now.</para></listitem>
 <listitem><para>Add new chapter to manual that describes how to use
 TaskJuggler as a project tracking tool.</para></listitem>
 
+<listitem><para>Filtering resources and tasks in the TaskJuggler GUI
+reports now always works properly.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

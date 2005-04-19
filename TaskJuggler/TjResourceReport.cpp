@@ -83,8 +83,7 @@ TjResourceReport::generateList()
      * we have to fill the table first with all entries before we can fill
      * those columns. */
     int i = 0;
-    for (ResourceListIterator rli(reportDef->getProject()->
-                                  getResourceListIterator()); *rli; ++rli)
+    for (ResourceListIterator rli(resourceList); *rli; ++rli)
     {
         /* Create a new item. If it has a parent, we need to look up the
          * parent LVI, so it get's inserted as child of that parent. */
@@ -185,8 +184,7 @@ TjResourceReport::generateList()
 
     // Now we know the maximum tree depth and can fill in the rest of the
     // columns.
-    for (ResourceListIterator rli(reportDef->getProject()->
-                                  getResourceListIterator()); *rli; ++rli)
+    for (ResourceListIterator rli(resourceList); *rli; ++rli)
     {
         generateResourceListLine
             (reportElement,

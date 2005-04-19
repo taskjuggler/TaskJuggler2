@@ -7,7 +7,7 @@ SUBDIRS=pics
 bin_PROGRAMS = TaskJuggler TaskJuggler_client
 
 # set the include path for X, qt and KDE
-INCLUDES = $(all_includes)
+INCLUDES = -I../taskjuggler $(all_includes)
 
 # the library search path. 
 LIBADD=-L../taskjuggler/libtaskjuggler.la

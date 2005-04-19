@@ -14,7 +14,7 @@
 #define _Account_h_
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <time.h>
 
 #include "CoreAttributes.h"

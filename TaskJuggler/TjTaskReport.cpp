@@ -89,8 +89,7 @@ TjTaskReport::generateList()
      * have to fill the table first with all entries before we can fill those
      * columns. */
     int i = 0;
-    for (TaskListIterator tli(reportDef->getProject()->
-                              getTaskListIterator()); *tli; ++tli)
+    for (TaskListIterator tli(taskList); *tli; ++tli)
     {
         KListViewItem* newLvi;
         if ((*tli)->getParent())
@@ -151,8 +150,7 @@ TjTaskReport::generateList()
 
     // Now we know the maximum tree depth and can fill in the rest of the
     // columns.
-    for (TaskListIterator tli(reportDef->getProject()->
-                              getTaskListIterator()); *tli; ++tli)
+    for (TaskListIterator tli(taskList); *tli; ++tli)
     {
         generateTaskListLine(reportElement, *tli,
                              ca2lviDict[QString("t:") + (*tli)->getId()]);
