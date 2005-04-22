@@ -2549,7 +2549,7 @@ ProjectFile::readAllocate(Task* t)
     Resource* r;
     if (nextToken(id) != ID || (r = proj->getResource(id)) == 0)
     {
-        errorMessage(i18n("Resource ID expected"));
+        errorMessage(i18n("Resource ID '%1' is unknown").arg(id));
         return FALSE;
     }
     Allocation* a = new Allocation();
