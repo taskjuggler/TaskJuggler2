@@ -602,6 +602,7 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
   </optattributes>
   <seealso>
    <also>htmlresourcereport</also>
+   <also>resourcereport</also>
   </seealso>
  </property>
  <property name="csvtaskreport" id="csvtaskreport" inheritable="No">
@@ -622,6 +623,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
   </optattributes>
   <seealso>
    <also>htmltaskreport</also>
+   <also>taskreport</also>
   </seealso>
  </property>
  <property name="currency" id="currency" inheritable="No">
@@ -1008,6 +1010,7 @@ task.</para></descr>
   <descr><para>The report lists all specified account values as a HTML
 page.</para></descr>
   <attributes>
+   <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
    <optattr>accumulate</optattr>
@@ -1037,6 +1040,7 @@ page.</para></descr>
 values as a HTML page. The tasks that the resources are allocated to
 can be listed as well.</para></descr>
   <attributes>
+   <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
    <optattr>accumulate</optattr>
@@ -1065,6 +1069,7 @@ can be listed as well.</para></descr>
    <also>csvresourcereport</also>
    <also>htmlaccountreport</also>
    <also>htmltaskreport</also>
+   <also>resourcereport</also>
   </seealso>
  </property>
  <property name="htmlstatusreport" id="htmlstatusreport" inheritable="No">
@@ -1099,6 +1104,7 @@ tasks. The default reporting interval is 1 week.</para></descr>
 as a HTML page. The resources that are allocated to the tasks can be
 listed as well.</para></descr>
   <attributes>
+   <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
    <optattr>accumulate</optattr>
@@ -1127,6 +1133,7 @@ listed as well.</para></descr>
    <also>csvtaskreport</also>
    <also>htmlaccountreport</also>
    <also>htmlresourcereport</also>
+   <also>taskreport</also>
   </seealso>
  </property>
  <property name="htmlweeklycalendar" id="htmlweeklycalendar" inheritable="No">
@@ -1724,7 +1731,40 @@ name="name" type="STRING"/> </attributes>
    <also>task</also>
   </seealso>
  </property>
-  <property name="responsible" id="responsible" inheritable="Yes">
+ <property name="resourcereport" id="resourcereport" inheritable="No">
+  <descr><para>This report is intended for the TaskJuggler graphical
+  user interface. The report lists all tasks and their respective values
+as a HTML page. The resources that are allocated to the tasks can be
+listed as well.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>caption</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
+  </optattributes>
+  <seealso>
+   <also>csvtaskreport</also>
+   <also>htmlaccountreport</also>
+   <also>htmlresourcereport</also>
+   <also>taskreport</also>
+  </seealso>
+ </property>
+ <property name="responsible" id="responsible" inheritable="Yes">
    <descr><para>The ID of the resource that is responsible for this task.</para></descr>
   <attributes>
    <attr name="resource" type="ID"/>
@@ -2220,6 +2260,40 @@ already defined task.</para></descr>
    <also>task</also>
   </seealso>
   <example>&example_include;</example>
+ </property>
+ <property name="taskreport" id="taskreport" inheritable="No">
+  <descr><para>This report is intended for the TaskJuggler graphical
+  user interface. The report lists all tasks and their respective values
+as a HTML page. The resources that are allocated to the tasks can be
+listed as well.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>caption</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+   <optattr>taskroot</optattr>
+   <optattr>timeformat</optattr>
+  </optattributes>
+  <seealso>
+   <also>csvtaskreport</also>
+   <also>htmlaccountreport</also>
+   <also>htmlresourcereport</also>
+   <also>resourcereport</also>
+  </seealso>
  </property>
  <property name="taskroot" id="taskroot" inheritable="No">
   <descr><para>Only tasks below the specified root-level tasks are

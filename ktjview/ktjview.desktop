@@ -1,8 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Type=Service
-Name=TaskJuggler simple View
-Name[de]=TaskJuggler Ansicht
-ServiceTypes=KParts/ReadOnlyPart
-X-KDE-Library=libktjviewpart
-MimeType=application/x-tjxml
