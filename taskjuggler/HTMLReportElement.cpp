@@ -329,8 +329,11 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         sl->append(text);
         QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(), sl);
         delete sl;
-        cellText = QString("<a href=\"") + cellURL
-            + "\">" + cellText + "</a>";
+	if (!cellURL.isEmpty())
+	{
+	    cellText = QString("<a href=\"") + cellURL
+			+ "\">" + cellText + "</a>";
+	}
     }
     if (cellText.isEmpty())
         cellText = "&#160;";
