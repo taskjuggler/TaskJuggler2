@@ -9,6 +9,7 @@ stamp-h.in
 config.h.in
 config.h
 aclocal.m4
+acinclude.m4
 subdirs
 .cvsignore
 configure.files
