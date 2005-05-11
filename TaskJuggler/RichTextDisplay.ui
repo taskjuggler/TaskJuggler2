@@ -70,7 +70,7 @@
                                 </size>
                             </property>
                             <property name="text">
-                                <string>&amp;Ok</string>
+                                <string>&amp;OK</string>
                             </property>
                             <property name="accel">
                                 <string>Alt+O</string>
@@ -94,8 +94,8 @@
     </connection>
 </connections>
 <tabstops>
-    <tabstop>okButton</tabstop>
     <tabstop>textDisplay</tabstop>
+    <tabstop>okButton</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
