@@ -7,14 +7,14 @@ SUBDIRS=pics
 bin_PROGRAMS = TaskJuggler TaskJuggler_client
 
 # set the include path for X, qt and KDE
-INCLUDES = -I../taskjuggler $(all_includes)
+INCLUDES = -I$(top_srcdir)/taskjuggler $(all_includes)
 
 # the library search path. 
 LIBADD=-L../taskjuggler/libtaskjuggler.la
 TaskJuggler_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-TaskJuggler_LDADD = -lktexteditor ../taskjuggler/libtaskjuggler.la $(LIB_KFILE) $(LIB_KDEPRINT)
+TaskJuggler_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
 
 # which sources should be compiled for taskjuggler
 TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
