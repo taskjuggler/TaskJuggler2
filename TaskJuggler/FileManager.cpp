@@ -628,7 +628,7 @@ FileManager::enableEditorActions(bool enable)
     mainWindow->action(KStdAction::name(KStdAction::Find))->setEnabled(enable);
     mainWindow->action(KStdAction::name(KStdAction::FindNext))->
         setEnabled(enable);
-    mainWindow->action("find_previous")->setEnabled(enable);
+    mainWindow->action(KStdAction::name(KStdAction::FindPrev))->setEnabled(enable);
 
     enableClipboardActions(enable);
     enableUndoActions(enable);

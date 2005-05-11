@@ -112,9 +112,7 @@ void TaskJuggler::setupActions()
     KStdAction::selectAll(m_view, SLOT(selectAll()), actionCollection());
     KStdAction::find(m_view, SLOT(find()), actionCollection());
     KStdAction::findNext(m_view, SLOT(findNext()), actionCollection());
-    new KAction(i18n("Find Pre&vious"), "back",
-                KShortcut(KKey("Shift+F3")), m_view, SLOT(findPrevious()),
-                actionCollection(), "find_previous");
+    KStdAction::findPrev(m_view, SLOT(findPrevious()), actionCollection());
 
     // "Goto" menu
     new KAction(i18n("Tas&ks"), "tj_task_group", KShortcut(KKey("ALT+k")),

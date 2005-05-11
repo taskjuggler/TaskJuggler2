@@ -646,7 +646,7 @@ TaskJugglerView::loadProject(const KURL& url)
         vl.append(int(0));
         editorSplitter->setSizes(vl);
         changeStatusBar(i18n("The project has been scheduled "
-                             "without problems!"));
+                             "without problems."));
         // Load the main file into the editor.
         fileManager->showInEditor(fileName);
         if (showReportAfterLoad)
@@ -720,7 +720,7 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
             if (!file.isEmpty() && line > 0)
                 parent= new KListViewItem
                     (messageListView, "", textLine, file,
-                     QString().sprintf("%d", line),
+                     QString::number(line),
                      QString().sprintf("%03d", messageCounter));
             else
                 parent = new KListViewItem
@@ -1038,14 +1038,12 @@ TaskJugglerView::updateTaskList()
                               (*tli)->getName(),
                               (*tli)->getId(),
                               (*tli)->getDefinitionFile(),
-                              QString().sprintf
-                              ("%d", (*tli)->getDefinitionLine()));
+                              QString::number((*tli)->getDefinitionLine()));
         else
             lvi = new KListViewItem(tlv, (*tli)->getName(),
                                     (*tli)->getId(),
                                     (*tli)->getDefinitionFile(),
-                                    QString().sprintf
-                                    ("%d", (*tli)->getDefinitionLine()));
+                                    QString::number((*tli)->getDefinitionLine()));
         if ((*tli)->isContainer())
         {
             lvi->setPixmap(0, KGlobal::iconLoader()->
@@ -1079,13 +1077,12 @@ TaskJugglerView::updateResourceList()
                 (rlv->findItem((*rli)->getParent()->getFullId(), 1),
                  (*rli)->getName(), (*rli)->getFullId(),
                  (*rli)->getDefinitionFile(),
-                 QString().sprintf("%d", (*rli)->getDefinitionLine()));
+                 QString::number((*rli)->getDefinitionLine()));
         else
             lvi = new KListViewItem(rlv, (*rli)->getName(),
                                     (*rli)->getFullId(),
                                     (*rli)->getDefinitionFile(),
-                                    QString().sprintf
-                                    ("%d", (*rli)->getDefinitionLine()));
+                                    QString::number((*rli)->getDefinitionLine()));
         if ((*rli)->hasSubs())
         {
             lvi->setPixmap(0, KGlobal::iconLoader()->
@@ -1116,12 +1113,12 @@ TaskJugglerView::updateAccountList()
                 (alv->findItem((*ali)->getParent()->getFullId(), 1),
                  (*ali)->getName(), (*ali)->getFullId(),
                  (*ali)->getDefinitionFile(),
-                 QString().sprintf("%d", (*ali)->getDefinitionLine()));
+                 QString::number((*ali)->getDefinitionLine()));
         else
             lvi = new KListViewItem
                 (alv, (*ali)->getName(), (*ali)->getFullId(),
                  (*ali)->getDefinitionFile(),
-                 QString().sprintf("%d", (*ali)->getDefinitionLine()));
+                 QString::number((*ali)->getDefinitionLine()));
         if ((*ali)->hasSubs())
         {
             lvi->setPixmap(0, KGlobal::iconLoader()->
