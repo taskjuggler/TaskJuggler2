@@ -27,7 +27,6 @@
 #include <qwidgetstack.h>
 #include <qprogressbar.h>
 #include <qtimer.h>
-#include <qmessagebox.h>
 
 #include <kdebug.h>
 #include <kmainwindow.h>
@@ -45,6 +44,7 @@
 #include <kstatusbar.h>
 #include <kconfig.h>
 #include <kiconloader.h>
+#include <kstdguiitem.h>
 
 #include "TjMessageHandler.h"
 #include "taskjuggler.h"
@@ -213,36 +213,23 @@ TaskJugglerView::newProject()
 {
     if (!fileManager->getMasterFile().isEmpty())
     {
-        if (QMessageBox::question
-            (this, "TaskJuggler",
-             i18n("You must close the current project before you can \n"
-                  "create a new project. Do you really want to do this?"),
-             QMessageBox::Yes | QMessageBox::Escape,
-             QMessageBox::No | QMessageBox::Default,
-             QMessageBox::NoButton) == QMessageBox::No)
+        if ( KMessageBox::warningContinueCancel( this, i18n("You must close the current project before you can\n"
+                                                            "create a new project. Do you really want to do this?"),
+                                                 QString::null,
+                                                 KStdGuiItem::close() ) != KMessageBox::Continue )
             return;
     }
-    KURL fileURL = KFileDialog::getSaveURL
-        (i18n("TaskJuggler - Pick a name for the new project file"), "*.tjp",
-         this, "New Project File");
+    KURL fileURL = KFileDialog::getSaveURL( i18n("Pick a name for the new project file"), "*.tjp", this, i18n( "New Project File" ) );
     if (fileURL.isEmpty() || !fileURL.isValid())
     {
-        QMessageBox::critical(this, i18n("Error while creating new Project"),
-                              i18n("The specified file URL is not valid!"),
-                              QMessageBox::Ok | QMessageBox::Default,
-                              QMessageBox::NoButton);
+        KMessageBox::sorry( this, i18n("The specified file URL is not valid."), i18n("Error while creating new Project") );
         return;
     }
 
-    QString templateProject = KGlobal::dirs()->findResource
-        ("data", "taskjuggler/ProjectTemplate.tjp");
+    QString templateProject = locate("data", "taskjuggler/ProjectTemplate.tjp");
     if (templateProject.isEmpty())
     {
-        QMessageBox::critical
-            (this, i18n("TaskJuggler - Error while creating new Project"),
-             i18n("Could not find ProjectTemplate.tjp!"),
-             QMessageBox::Ok | QMessageBox::Default,
-             QMessageBox::NoButton);
+        KMessageBox::sorry( this, i18n("Could not find ProjectTemplate.tjp."), i18n("Error while creating new Project") );
         return;
     }
 
@@ -266,29 +253,21 @@ TaskJugglerView::newInclude()
     // Make sure that we have already a project we can add the file to.
     if (fileManager->getMasterFile().isEmpty())
     {
-        QMessageBox::warning
-            (this, i18n("TaskJuggler - New Include File"),
-             i18n("You need to load or create a project before \n"
-                  "you can create a new include file."),
-             QMessageBox::Yes | QMessageBox::Default, QMessageBox::NoButton);
+        KMessageBox::sorry( this, i18n("You need to load or create a project before\n"
+                                       "you can create a new include file."),
+                            i18n("New Include File") );
         return;
     }
 
     // Ask user for the name of the new file.
-    KURL fileURL = KFileDialog::getSaveURL
-        (i18n("Pick a name for the new include file"), "*.tji",
-         this, "New Include File");
+    KURL fileURL = KFileDialog::getSaveURL (i18n("Pick a name for the new include file"), "*.tji",
+                                            this, i18n( "New Include File" ));
 
     // Find out the name of the include file template.
-    QString templateInclude = KGlobal::dirs()->findResource
-        ("data", "taskjuggler/IncludeTemplate.tji");
+    QString templateInclude = locate("data", "taskjuggler/IncludeTemplate.tji");
     if (templateInclude.isEmpty())
     {
-        QMessageBox::critical
-            (this, i18n("TaskJuggler - Error while creating include File"),
-             i18n("Could not find IncludeTemplate.tji!"),
-             QMessageBox::Ok | QMessageBox::Default,
-             QMessageBox::NoButton);
+        KMessageBox::sorry( this, i18n("Could not find IncludeTemplate.tji."), i18n("Error while creating include File") );
         return;
     }
 
@@ -320,22 +299,20 @@ TaskJugglerView::openURL(KURL url)
     if (!fileManager->getMasterFile().isEmpty())
     {
         // Make sure the user really wants to load a new project.
-        int but = QMessageBox::question
-            (this, i18n("Load a new Project"),
-             i18n("You must close the current project before you can load\n"
-                  "a new project. All files of the current project will \n"
-                  "be saved automatically. Do you really want to do this?"),
-             QMessageBox::Yes, QMessageBox::No | QMessageBox::Default);
+        int but = KMessageBox::warningContinueCancel( this, i18n("You must close the current project before you can load\n"
+                                                                 "a new project. All files of the current project will\n"
+                                                                 "be saved automatically. Do you really want to do this?"),
+                                                      i18n("Load a new Project"),
+                                                      KStdGuiItem::close() );
 
-        if (but == QMessageBox::No)
+        if (but != KMessageBox::Continue)
             return;
     }
 
     // If the URL hasn't been specified yet, ask the user for it.
     if (url.isEmpty())
     {
-        url = KFileDialog::getOpenURL(QString::null, QString::null, this,
-                                      i18n("Open a new Project"));
+        url = KFileDialog::getOpenURL(":projects", "*.tjp *.tji", this, i18n("Open a new Project"));
         if (url.isEmpty())
             return;
     }
@@ -572,11 +549,8 @@ TaskJugglerView::loadProject(const KURL& url)
     setCursor(KCursor::waitCursor());
     if (!pf->open(fileName, "", "", TRUE))
     {
-        QMessageBox::critical(this, i18n("Error loading Project"),
-                              i18n("Cannot open file %1!")
-                              .arg(url.prettyURL()),
-                              QMessageBox::Ok | QMessageBox::Default,
-                              QMessageBox::NoButton);
+        KMessageBox::error( this, i18n("Cannot open file %1.").arg(url.prettyURL()),
+                            i18n("Error loading Project") );
         setCursor(KCursor::arrowCursor());
         setLoadingProject(FALSE);
         return FALSE;

@@ -17,7 +17,6 @@
 #include <qdragobject.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
-#include <qmessagebox.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -39,6 +38,7 @@
 #include <kstdaction.h>
 #include <kdebug.h>
 #include <kprinter.h>
+#include <kmessagebox.h>
 
 TaskJuggler::TaskJuggler()
     : KMainWindow( 0, "TaskJuggler" ),
@@ -269,10 +269,7 @@ TaskJuggler::fileClose()
 
 void TaskJuggler::filePrint()
 {
-    QMessageBox::information(this, "TaskJuggler",
-                             i18n("Sorry, printing is not yet implemented!"),
-                             QMessageBox::Ok | QMessageBox::Default,
-                             QMessageBox::NoButton);
+    KMessageBox::sorry( this, i18n("Sorry, printing is not yet implemented.") );
     return;
 #if 0
     // this slot is called whenever the File->Print menu is selected,
