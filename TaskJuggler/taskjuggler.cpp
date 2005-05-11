@@ -121,7 +121,7 @@ void TaskJuggler::setupActions()
                 KShortcut(KKey("ALT+a")),
                 m_view, SLOT(setFocusToAccountList()),
                 actionCollection(), "accounts");
-    new KAction(i18n("Re&ports"), "tj_reports", KShortcut(KKey("ALT+p")),
+    new KAction(i18n("Re&ports"), "tj_report_list", KShortcut(KKey("ALT+p")),
                 m_view, SLOT(setFocusToReportList()),
                 actionCollection(), "reports");
     new KAction(i18n("F&iles"), "tj_file_list", KShortcut(KKey("ALT+i")),
