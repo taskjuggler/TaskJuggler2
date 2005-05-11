@@ -1086,8 +1086,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
         // Open a new window that displays the note attached to the task.
         RichTextDisplay* richTextDisplay =
             new RichTextDisplay(topLevelWidget());
-        richTextDisplay->setCaption
-            (QString("Note for Task %1 (%2) - TaskJuggler")
+        richTextDisplay->setCaption(i18n("Note for Task %1 (%2) - TaskJuggler")
              .arg(t->getName()).arg(t->getId()));
         richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
@@ -1108,7 +1107,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
                 RichTextDisplay* richTextDisplay =
                     new RichTextDisplay(topLevelWidget());
                 richTextDisplay->setCaption
-                    (QString("%1 for %2 %3 (%4) - TaskJuggler")
+                    (i18n("%1 for %2 %3 (%4) - TaskJuggler")
                      .arg(tci->getName())
                      .arg(ca->getType() == CA_Task ? i18n("Task") :
                           i18n("Resource"))
@@ -1257,7 +1256,7 @@ TjReport::showResourceDetails(const Resource* resource)
 {
     RichTextDisplay* richTextDisplay = new RichTextDisplay(topLevelWidget());
     richTextDisplay->setCaption
-        (QString("Details of Resource %1 (%2) - TaskJuggler")
+        (i18n("Details of Resource %1 (%2) - TaskJuggler")
          .arg(resource->getName()).arg(resource->getFullId()));
     richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
