@@ -57,11 +57,6 @@ TaskJuggler::TaskJuggler()
     // and a status bar
     statusBar()->show();
 
-    // apply the saved mainwindow settings, if any, and ask the mainwindow
-    // to automatically save settings if changed: window size, toolbar
-    // position, icon size, etc.
-    setAutoSaveSettings();
-
     // allow the view to change the statusbar and caption
     connect(m_view, SIGNAL(signalChangeStatusbar(const QString&)),
             this,   SLOT(changeStatusbar(const QString&)));
@@ -160,15 +155,6 @@ void TaskJuggler::setupActions()
                 actionCollection(), "zoom_out");
 
     // "Settings" menu
-    m_toolbarAction = KStdAction::showToolbar(this, SLOT(optionsShowToolbar()),
-                                              actionCollection());
-    m_statusbarAction = KStdAction::showStatusbar
-        (this, SLOT(optionsShowStatusbar()), actionCollection());
-
-    KStdAction::keyBindings(this, SLOT(optionsConfigureKeys()),
-                            actionCollection());
-    KStdAction::configureToolbars(this, SLOT(optionsConfigureToolbars()),
-                                  actionCollection());
     /* KStdAction::preferences(this, SLOT(optionsPreferences()),
                             actionCollection()); */
     new KAction(i18n("Configure Editor" ), "", 0,
@@ -181,7 +167,7 @@ void TaskJuggler::setupActions()
                 m_view, SLOT(keywordHelp()),
                 actionCollection(), "keyword_help");
 
-    createGUI();
+    setupGUI( ToolBar | Keys | StatusBar | Save | Create );
 }
 
 void
@@ -308,62 +294,6 @@ void TaskJuggler::filePrint()
         // and send the result to the printer
         p.end();
     }
-#endif
-}
-
-void TaskJuggler::optionsShowToolbar()
-{
-    // this is all very cut and paste code for showing/hiding the
-    // toolbar
-    if (m_toolbarAction->isChecked())
-        toolBar()->show();
-    else
-        toolBar()->hide();
-}
-
-void TaskJuggler::optionsShowStatusbar()
-{
-    // this is all very cut and paste code for showing/hiding the
-    // statusbar
-    if (m_statusbarAction->isChecked())
-        statusBar()->show();
-    else
-        statusBar()->hide();
-}
-
-void TaskJuggler::optionsConfigureKeys()
-{
-    KKeyDialog::configure(actionCollection());
-}
-
-void TaskJuggler::optionsConfigureToolbars()
-{
-    // use the standard toolbar editor
-#if defined(KDE_MAKE_VERSION)
-# if KDE_VERSION >= KDE_MAKE_VERSION(3,1,0)
-    saveMainWindowSettings(KGlobal::config(), autoSaveGroup());
-# else
-    saveMainWindowSettings(KGlobal::config());
-# endif
-#else
-    saveMainWindowSettings(KGlobal::config());
-#endif
-}
-
-void TaskJuggler::newToolbarConfig()
-{
-    // this slot is called when user clicks "Ok" or "Apply" in the toolbar editor.
-    // recreate our GUI, and re-apply the settings (e.g. "text under icons", etc.)
-    createGUI();
-
-#if defined(KDE_MAKE_VERSION)
-# if KDE_VERSION >= KDE_MAKE_VERSION(3,1,0)
-    applyMainWindowSettings(KGlobal::config(), autoSaveGroup());
-# else
-    applyMainWindowSettings(KGlobal::config());
-# endif
-#else
-    applyMainWindowSettings(KGlobal::config());
 #endif
 }
 

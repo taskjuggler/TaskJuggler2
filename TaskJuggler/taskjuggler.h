@@ -90,12 +90,7 @@ private slots:
     void fileSaveAs();
     void fileClose();
     void filePrint();
-    void optionsShowToolbar();
-    void optionsShowStatusbar();
-    void optionsConfigureKeys();
-    void optionsConfigureToolbars();
     void optionsPreferences();
-    void newToolbarConfig();
 
     void changeStatusbar(const QString& text);
     void addRecentURL(const KURL& text);
@@ -108,8 +103,6 @@ private:
     TaskJugglerView *m_view;
 
     KPrinter   *m_printer;
-    KToggleAction *m_toolbarAction;
-    KToggleAction *m_statusbarAction;
     KRecentFilesAction *m_recentAction;
 };
 
