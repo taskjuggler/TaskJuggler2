@@ -17,10 +17,13 @@
 
 class QDomNode;
 class ParserTreeContext;
+class ParserElement;
 class ParserNode;
 class XMLFile;
 
 typedef bool (XMLFile::*ParserFunctionPtr)(QDomNode&, ParserTreeContext&);
+
+#include "XMLFile.h"
 
 class ParserElement
 {

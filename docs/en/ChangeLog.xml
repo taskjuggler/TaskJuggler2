@@ -794,6 +794,8 @@ TaskJuggler as a project tracking tool.</para></listitem>
 <listitem><para>Filtering resources and tasks in the TaskJuggler GUI
 reports now always works properly.</para></listitem>
 
+<listitem><para>Fixed build with GCC 4.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

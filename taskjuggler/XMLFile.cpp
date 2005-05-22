@@ -19,7 +19,6 @@
 
 #include "tjlib-internal.h"
 #include "debug.h"
-#include "XMLFile.h"
 #include "ParserNode.h"
 #include "ParserElement.h"
 #include "ParserTreeContext.h"

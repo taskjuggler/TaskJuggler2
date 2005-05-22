@@ -85,7 +85,7 @@
 #include "ktjReportDialog.h"
 
 // TJ includes
-#include "XMLFile.h"
+#include "ParserElement.h"
 #include "ProjectFile.h"
 #include "TaskList.h"
 #include "CoreAttributesList.h"

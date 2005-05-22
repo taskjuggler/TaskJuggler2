@@ -27,7 +27,7 @@
 #include "Scenario.h"
 #include "Optimizer.h"
 #include "OptimizerRun.h"
-#include "XMLFile.h"
+#include "ParserElement.h"
 #include "kotrus.h"
 
     void
