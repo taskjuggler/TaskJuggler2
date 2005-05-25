@@ -796,6 +796,9 @@ reports now always works properly.</para></listitem>
 
 <listitem><para>Fixed build with GCC 4.</para></listitem>
 
+<listitem><para>Fixed sorting of task reports when not using the
+default scenario as first scenario.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

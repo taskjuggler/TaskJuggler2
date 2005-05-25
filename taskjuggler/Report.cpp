@@ -346,6 +346,10 @@ const
 void
 Report::sortTaskList(TaskList& filteredList)
 {
+    /* The sorting can only honor the first scenario. Other scenarios are
+     * ignort for the sorting. */
+    filteredList.setSortScenario(scenarios[0]);
+
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(taskSortCriteria[i], i);
     filteredList.sort();

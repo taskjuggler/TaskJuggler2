@@ -53,8 +53,7 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
     if (level < 0 || level >= maxSortingLevel)
         return -1;
 
-    int sc = ((unsigned int) sorting[level]) >> 16;
-    switch (sorting[level] & 0xFFFF)
+    switch (sorting[level])
     {
     case TreeMode:
         if (level == 0)
@@ -63,37 +62,49 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
             return t1->getSequenceNo() == t2->getSequenceNo() ? 0 :
                 t1->getSequenceNo() < t2->getSequenceNo() ? -1 : 1;
     case StartUp:
-        return t1->scenarios[sc].start == t2->scenarios[sc].start ? 0 :
-            t1->scenarios[sc].start < t2->scenarios[sc].start ? -1 : 1;
+        return t1->scenarios[sortScenario].start ==
+            t2->scenarios[sortScenario].start ? 0 :
+            t1->scenarios[sortScenario].start <
+            t2->scenarios[sortScenario].start ? -1 : 1;
     case StartDown:
-        return t1->scenarios[sc].start == t2->scenarios[sc].start ? 0 :
-            t1->scenarios[sc].start > t2->scenarios[sc].start ? -1 : 1;
+        return t1->scenarios[sortScenario].start ==
+            t2->scenarios[sortScenario].start ? 0 :
+            t1->scenarios[sortScenario].start >
+            t2->scenarios[sortScenario].start ? -1 : 1;
     case EndUp:
-        return t1->scenarios[sc].end == t2->scenarios[sc].end ? 0 :
-            t1->scenarios[sc].end < t2->scenarios[sc].end ? -1 : 1;
+        return t1->scenarios[sortScenario].end ==
+            t2->scenarios[sortScenario].end ? 0 :
+            t1->scenarios[sortScenario].end < t2->scenarios[sortScenario].end
+            ? -1 : 1;
     case EndDown:
-        return t1->scenarios[sc].end == t2->scenarios[sc].end ? 0 :
-            t1->scenarios[sc].end > t2->scenarios[sc].end ? -1 : 1;
+        return t1->scenarios[sortScenario].end ==
+            t2->scenarios[sortScenario].end ? 0 :
+            t1->scenarios[sortScenario].end > t2->scenarios[sortScenario].end
+            ? -1 : 1;
     case StatusUp:
-        return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
-            t1->scenarios[sc].status < t2->scenarios[sc].status ? -1 : 1;
+        return t1->scenarios[sortScenario].status ==
+            t2->scenarios[sortScenario].status ? 0 :
+            t1->scenarios[sortScenario].status <
+            t2->scenarios[sortScenario].status ? -1 : 1;
     case StatusDown:
-        return t1->scenarios[sc].status == t2->scenarios[sc].status ? 0 :
-            t1->scenarios[sc].status > t2->scenarios[sc].status ? -1 : 1;
+        return t1->scenarios[sortScenario].status ==
+            t2->scenarios[sortScenario].status ? 0 :
+            t1->scenarios[sortScenario].status >
+            t2->scenarios[sortScenario].status ? -1 : 1;
     case CompletedUp:
     {
         /* Unfortunately the floating point arithmetic on x86 processors is
          * slightly different from other processors. To get identical
          * results on all CPUs we ignore some precision that we don't need
          * anyhow. */
-        int cd1 = (int) (t1->getCompletionDegree(sc) * 1000);
-        int cd2 = (int) (t2->getCompletionDegree(sc) * 1000);
+        int cd1 = (int) (t1->getCompletionDegree(sortScenario) * 1000);
+        int cd2 = (int) (t2->getCompletionDegree(sortScenario) * 1000);
         return cd1 == cd2 ? 0 : cd1 < cd2 ? -1 : 1;
     }
     case CompletedDown:
     {
-        int cd1 = (int) (t1->getCompletionDegree(sc) * 1000);
-        int cd2 = (int) (t2->getCompletionDegree(sc) * 1000);
+        int cd1 = (int) (t1->getCompletionDegree(sortScenario) * 1000);
+        int cd2 = (int) (t2->getCompletionDegree(sortScenario) * 1000);
         return cd1 == cd2 ? 0 : cd1 > cd2 ? -1 : 1;
     }
     case PrioUp:
@@ -133,25 +144,25 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
         return fn1.compare(fn2);
     }
     case CriticalnessUp:
-        return t1->scenarios[sc].criticalness ==
-            t2->scenarios[sc].criticalness ? 0 :
-            t1->scenarios[sc].criticalness <
-            t2->scenarios[sc].criticalness ? -1 : 1;
+        return t1->scenarios[sortScenario].criticalness ==
+            t2->scenarios[sortScenario].criticalness ? 0 :
+            t1->scenarios[sortScenario].criticalness <
+            t2->scenarios[sortScenario].criticalness ? -1 : 1;
     case CriticalnessDown:
-        return t1->scenarios[sc].criticalness ==
-            t2->scenarios[sc].criticalness ? 0 :
-            t1->scenarios[sc].criticalness >
-            t2->scenarios[sc].criticalness ? -1 : 1;
+        return t1->scenarios[sortScenario].criticalness ==
+            t2->scenarios[sortScenario].criticalness ? 0 :
+            t1->scenarios[sortScenario].criticalness >
+            t2->scenarios[sortScenario].criticalness ? -1 : 1;
     case PathCriticalnessUp:
-        return t1->scenarios[sc].pathCriticalness ==
-            t2->scenarios[sc].pathCriticalness ? 0 :
-            t1->scenarios[sc].pathCriticalness <
-            t2->scenarios[sc].pathCriticalness ? -1 : 1;
+        return t1->scenarios[sortScenario].pathCriticalness ==
+            t2->scenarios[sortScenario].pathCriticalness ? 0 :
+            t1->scenarios[sortScenario].pathCriticalness <
+            t2->scenarios[sortScenario].pathCriticalness ? -1 : 1;
     case PathCriticalnessDown:
-        return t1->scenarios[sc].pathCriticalness ==
-            t2->scenarios[sc].pathCriticalness ? 0 :
-            t1->scenarios[sc].pathCriticalness >
-            t2->scenarios[sc].pathCriticalness ? -1 : 1;
+        return t1->scenarios[sortScenario].pathCriticalness ==
+            t2->scenarios[sortScenario].pathCriticalness ? 0 :
+            t1->scenarios[sortScenario].pathCriticalness >
+            t2->scenarios[sortScenario].pathCriticalness ? -1 : 1;
     default:
         return CoreAttributesList::compareItemsLevel(t1, t2, level);
     }
