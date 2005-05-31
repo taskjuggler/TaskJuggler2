@@ -1,11 +1,14 @@
-project test "Test" "$Id" 2000-01-01 2000-01-31
+project prj "Example" "1.0" 2000-01-01 2000-01-31
 
 shift s1 "Shift1" {
+	# Special working hours Monday to Wednesday. Use program defaults
+	# for other days.
   workinghours mon 10:00 - 12:00, 13:00-15:00
   workinghours tue 9:00-14:00
   workinghours wed off
 
   shift s2 "Shift2" {
+		# Like s1 but with different times on Monday
     workinghours mon 10:00 - 17:00
   }
 }
@@ -17,6 +20,9 @@ resource r1 "Resource1" {
 
 task t1 "Task1" {
   start 2000-01-01
-  milestone
+  length 200h
+	# During the specified interval only work at the shift s2 working
+	# hours.
+	shift s2 2000-01-09 - 2000-01-17
 }
 

@@ -1,5 +1,9 @@
 project test "Test Project" "$Id" 2000-01-01 2000-01-04
 
+flags important
+
+resource joe "Joe"
+
 task top "Top Task" {
   start 2000-01-01
 
@@ -8,5 +12,13 @@ task top "Top Task" {
   supplement task sub {
     length 1d
   }
+}
+
+supplement resource joe {
+	vacation 2000-02-10 - 2000-02-20
+}
+
+supplement task top {
+	flags important
 }
 

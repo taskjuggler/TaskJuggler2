@@ -1,55 +1,23 @@
-project simple "Simple Project" "$Id" 2000-01-01 2000-01-20 {
-  scenario plan "Plan" {
-    scenario actual "Actual"
-  }
-}
-
-vacation "Free1" 2000-01-04
-vacation "Free2" 2000-01-13
+project simple "Simple Project" "$Id" 2000-01-01 2000-01-20
 
 resource tux1 "Tux1"
-resource tux2 "Tux2"
-resource tux3 "Tux3"
 
 task t1 "Task1" {
   start 2000-01-01
-  actual:start 2000-01-05
   length 10d
+	# 20% of the working time of this task are marked as buffer at the
+	# beginning.
   startbuffer 20
-  endbuffer 20
+	# An additional 10% of the working time of this task are marked as
+	# buffer at the end.
+  endbuffer 10.0
   allocate tux1
 }
 
-task t2 "Task2" {
-  start 2000-01-01
-  actual:start 2000-01-05
-  duration 10d
-  startbuffer 20.0
-  endbuffer 20.0
-  allocate tux2
-}
-
-task t3 "Task3" {
-  start 2000-01-01
-  actual:start 2000-01-05
-  effort 10d
-  allocate tux3
-  startbuffer 20
-  endbuffer 20
-}
-
-task t4 "Task4" {
-  start 2000-01-01
-  actual:start 2000-01-05
-  end 2000-01-15
-  startbuffer 20
-  endbuffer 20
-}
-
+# Generate a report that lists the start end end dates for the
+# buffers.
 htmltaskreport "Buffer.html" {
   columns no, name, start, startbufferend, endbufferstart, end,
   startbuffer, endbuffer, duration, effort, daily
-  sorttasks nameup
-  scenarios plan, actual
   hideresource 0
 }
