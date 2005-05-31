@@ -1,6 +1,5 @@
-2,3c2,5
-< <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN"
-<   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+2,2c2,5
+< <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN" "/usr/share/xml/docbook/schema/dtd/4.4/docbookx.dtd" [
 ---
 > <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" 
 > "dtd/kdex.dtd" [

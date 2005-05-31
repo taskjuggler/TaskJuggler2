@@ -2368,7 +2368,19 @@ Task::prepareScenario(int sc)
          * degree according to the overall effort. Then the end date of the
          * task is calculated. */
         if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
+        {
             scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
+
+            if (doneEffort >= effort)
+            {
+                /* In case the required effort is reached or exceeded by the
+                 * specified bookings for this task, we set the task end to
+                 * the last booking and mark the task as completely scheduled.
+                 */
+                end = scenarios[sc].end = lastSlot;
+                schedulingDone = TRUE;
+            }
+        }
     }
 
     /*
@@ -2914,9 +2926,9 @@ void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
    else if( prio < 700) calPrio = 3;
    else if( prio < 800) calPrio = 2;
    else if( prio < 900) calPrio = 1;
-   
+
    todo->setPriority( calPrio );
-   
+
    todo->setCompleted( getComplete(0) );
 
    /* Resources */

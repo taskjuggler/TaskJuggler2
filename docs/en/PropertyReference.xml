@@ -47,16 +47,24 @@
  <!ELEMENT member (#PCDATA|para|varname|link)*>
  <!ELEMENT screen (#PCDATA)>
  
+  <!ENTITY example_allocate SYSTEM
+   "../../TestSuite/Syntax/Correct/Allocate-1.tjp">
   <!ENTITY example_alternative SYSTEM
    "../../TestSuite/Syntax/Correct/Alternative.tjp">
   <!ENTITY example_booking SYSTEM
    "../../TestSuite/Syntax/Correct/Booking.tjp">
+  <!ENTITY example_buffer SYSTEM
+   "../../TestSuite/Syntax/Correct/Buffer.tjp">
+  <!ENTITY example_columns SYSTEM
+   "../../TestSuite/Syntax/Correct/Columns.tjp">
   <!ENTITY example_depends SYSTEM
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
   <!ENTITY example_export SYSTEM
    "../../TestSuite/Syntax/Correct/Export.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
+  <!ENTITY example_gap SYSTEM
+   "../../TestSuite/Syntax/Correct/Gap.tjp">
   <!ENTITY example_include SYSTEM
    "../../TestSuite/Syntax/Correct/Include2.tjp">
   <!ENTITY example_journalentry SYSTEM
@@ -71,8 +79,16 @@
    "../../TestSuite/Syntax/Correct/Persistent.tjp">
   <!ENTITY example_precedes SYSTEM
    "../../TestSuite/Syntax/Correct/Precedes1.tjp">
+  <!ENTITY example_project SYSTEM
+   "../../TestSuite/Syntax/Correct/Project.tjp">
+  <!ENTITY example_scenario SYSTEM
+   "../../TestSuite/Syntax/Correct/Scenario.tjp">
   <!ENTITY example_select SYSTEM
    "../../TestSuite/Syntax/Correct/Select.tjp">
+  <!ENTITY example_shift SYSTEM
+   "../../TestSuite/Syntax/Correct/Shift.tjp">
+  <!ENTITY example_supplement SYSTEM
+   "../../TestSuite/Syntax/Correct/Supplement.tjp">
 ]>
 
 <properties>
@@ -158,8 +174,9 @@ resources or accounts are not flagged as errors. The primary use of
 this attribute is for projects that are created by merging sub projects
 which are again the result of sub project merging. In certain
 situations enclosing tasks, accounts or resources can be included in more
-than one sub project. This attribute then avoids the error which is
-in most other cases a real user error.</para>
+than one sub project. This attribute then avoids the error message which is
+in most other cases a real user error. So use this feature with care
+as real errors might go undetected.</para>
 
 <para>In case attributes of the same property must be specified in two
 different locations the <link linkend="PROPERTY_supplement">supplement</link>
@@ -182,6 +199,7 @@ task.</para></descr>
   <seealso>
    <also>effort</also>
   </seealso>
+  <example>&example_allocate;</example>
  </property>
  <property name="alternative" id="alternative" inheritable="No">
   <descr><para>A list of alternative resources for an allocation.
@@ -266,6 +284,7 @@ otherwise all cells of the column will have the same fixed value.</para></descr>
   <seealso>
    <also>cellurl</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="cellurl" id="cellurl" inheritable="No">
   <descr><para>Specifies an URL that is attached to the cell contense
@@ -276,6 +295,7 @@ of the cells of the column in HTML reports.</para></descr>
   <seealso>
    <also>celltext</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="columns" id="columns" inheritable="No">
   <descr><para>Specifies which columns shell be included in a
@@ -527,6 +547,7 @@ following macros are supported:</para>
 <para><varname>$${day}, $${month}, $${week}, $${quarter},
 $${year}</varname>.</para>
   </freestyle>
+  <example>&example_columns;</example>
  </property>
  <property name="complete" id="complete" inheritable="No"
 scenario="Yes">
@@ -712,6 +733,7 @@ automatically set to <varname>asap</varname>. If 'depends' and
  </property>
  <property name="disabled" id="disabled" inheritable="No">
   <descr><para>Disables the scenario for scheduling.</para></descr>
+  <example>&example_scenario;</example>
  </property>
  <property name="duration" id="duration" inheritable="No"
  scenario="Yes">
@@ -806,7 +828,9 @@ the task.</para>
    <also>duration</also>
    <also>effort</also>
    <also>length</also>
+   <also>startbuffer</also>
   </seealso>
+  <example>&example_buffer;</example>
  </property>
  <property name="endcredit" id="endcredit" inheritable="No"
 scenario="Yes">
@@ -932,6 +956,7 @@ expressions to filter properties from the reports.</para></descr>
    <also>duration</also>
    <also>gaplength</also>
   </seealso>
+  <example>&example_gap;</example>
  </property>
  <property name="gaplength" id="gaplength" inheritable="Yes" scenario="Yes">
   <descr><para>Specifies the minimum required gap between the end of a
@@ -949,6 +974,7 @@ expressions to filter properties from the reports.</para></descr>
    <also>gapduration</also>
    <also>length</also>
   </seealso>
+  <example>&example_gap;</example>
  </property>
  <property name="headline" id="headline" inheritable="No">
   <descr><para>Specifies the headline for a report.</para></descr>
@@ -977,6 +1003,7 @@ account.</para></descr>
   <seealso>
    <also>hidecellurl</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="hidecellurl" id="hidecellurl" inheritable="No">
   <descr><para>If the expression is true, no URL will be attached to the cell
@@ -987,6 +1014,7 @@ contense.</para></descr>
   <seealso>
    <also>hidecelltext</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="hideresource" id="hideresource" inheritable="No">
   <descr><para>Do not show resources that match the specified logical
@@ -1588,6 +1616,7 @@ number from a revision control system.</para>
    <optattr>workinghours</optattr>
    <optattr>yearlyworkingdays</optattr>
   </optattributes>
+  <example>&example_project;</example>
  </property>
  <property name="projectid" id="projectid" inheritable="Yes">
   <descr><para>At global scope it declares a new project id and
@@ -1621,6 +1650,7 @@ specified effort, length or duration has been reached.</para></descr>
   <seealso>
    <also>booking</also>
   </seealso>
+  <example>&example_booking;</example>
  </property>
  <property name="properties" id="properties" inheritable="No">
   <descr><para>This attribute determines which properties will be
@@ -1810,6 +1840,9 @@ specified logical expression.</para></descr>
   <descr><para>Specifies the different project scenarios. A scenario
 that is nested into another one inherits all values from the enclosing
 scenario except those values that were specified specifically for this
+scenario. There can only be one top-level scenario. It is usually
+called <computeroutput>plan</computeroutput> scenario. By default
+this scenario is pre-defined but can be overwritten with any other
 scenario.</para></descr>
   <attributes>
    <attr name="id" type="ID"/>
@@ -1823,6 +1856,7 @@ scenario.</para></descr>
   <seealso>
    <also>scenarios</also>
   </seealso>
+  <example>&example_scenario;</example>
  </property>
  <property name="scenarios" id="scenarios" inheritable="No">
   <descr><para>List of scenarios that should be included in the
@@ -1932,7 +1966,8 @@ for ASAP tasks) time slot has become unavailable.</para></descr>
   <descr><para>When several resource have the same working hours,
 these working hours should be defined as shifts. Each shift must have
 a unique ID. Resources can be assigned to shifts for certain
-intervals.</para></descr>
+intervals. Shifts can also be used to limit work on certain tasks to
+the hours of the shift.</para></descr>
   <attributes>
    <attr name="id" type="ID"/>
    <attr name="name" type="STRING"/>
@@ -1944,6 +1979,7 @@ intervals.</para></descr>
   <seealso>
    <also>shift_selection</also>
   </seealso>
+  <example>&example_shift;</example>
  </property>
  <property name="shift" id="shift_selection" inheritable="No">
   <descr><para>Limites the resource working time or work on a task to
@@ -1963,6 +1999,7 @@ assigned for the whole project time frame.</para>
   <seealso>
    <also>shift</also>
   </seealso>
+  <example>&example_shift;</example>
  </property>
  <property name="shorttimeformat" id="shorttimeformat"
 inheritable="Yes">
@@ -2109,9 +2146,11 @@ the task.</para>
   </attributes>
   <seealso>
    <also>duration</also>
+   <also>endbuffer</also>
    <also>effort</also>
    <also>length</also>
   </seealso>
+  <example>&example_buffer;</example>
  </property>
  <property name="startcredit" id="startcredit" inheritable="No"
 scenario="Yes">
@@ -2144,6 +2183,7 @@ column.</para></descr> <attributes>
   <seealso>
    <also>subtitleurl</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="subtitleurl" id="subtitleurl" inheritable="No">
   <descr><para>Specifies an URL that is attached to the column subtitle
@@ -2154,6 +2194,7 @@ of HTML reports.</para></descr>
   <seealso>
    <also>subtitle</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="supplement" id="supplement" inheritable="No">
   <descr><para>The supplement keyword provides a mechanism to add more
@@ -2175,6 +2216,7 @@ was generated by some other tool.</para></descr>
    <also>resource</also>
    <also>task</also>
   </seealso>
+  <example>&example_supplement;</example>
  </property>
  <property name="task" id="task" inheritable="No">
   <descr><para>Tasks are the central elements of a project plan. Use
@@ -2524,6 +2566,7 @@ column.</para></descr> <attributes>
   <seealso>
    <also>titleurl</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="titleurl" id="titleurl" inheritable="No">
   <descr><para>Specifies an URL that is attached to the column title
@@ -2534,6 +2577,7 @@ of HTML reports.</para></descr>
   <seealso>
    <also>title</also>
   </seealso>
+  <example>&example_columns;</example>
  </property>
  <property name="vacation" id="vacation_global" inheritable="Yes">
   <descr><para>Specify a global vacation day. This vacation is
@@ -2600,6 +2644,7 @@ of resources to certain time slots of week days.</para></descr>
    <also>dailyworkinghours</also>
    <also>yearlyworkingdays</also>
   </seealso>
+  <example>&example_project;</example>
  </property>
  <property name="xmlreport" id="xmlreport" inheritable="No">
   <descr><para>Generates a XML report. TaskJuggler 2.x has a much
@@ -2622,7 +2667,12 @@ should be generated.</para></descr>
   <descr><para>Specifies the number of average working days per year.
 This should correlate to the specified workinghours and vacation. It
 affects the conversion of working hours, working days, working weeks,
-working months and working years into each other.</para></descr>
+working months and working years into each other.</para>
+<para>When public holidays and vacations are disregarded, this value
+should be equal to the number of working days per week times 52.1428
+(the average number of weeks per year). E. g. for a culture with 5
+working days it is 260.714 (the default), for 6 working days it is
+312.8568 and for 7 working days it is 365.</para></descr>
   <attributes>
    <attr name="days" type="REAL"/>
   </attributes>
@@ -2632,6 +2682,7 @@ working months and working years into each other.</para></descr>
    <also>vacation_global</also>
    <also>workinghours</also>
   </seealso>
+  <example>&example_project;</example>
  </property>
 <!-- 
  <property name="" id="" inheritable="No">

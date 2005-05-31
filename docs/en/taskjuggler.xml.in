@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN" "/usr/share/xml/docbook/schema/dtd/4.4/docbookx.dtd" [
  <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
  <!ENTITY FirstProject SYSTEM "FirstProject.xml">
  <!ENTITY UsageGuide SYSTEM "UsageGuide.xml">
@@ -144,18 +143,20 @@ database.</para></listitem>
 </sect1>
 <sect1><title>TaskJuggler on the Web</title>
 
-<para>The official TaskJuggler web page can be found at <ulink
+<para>The official TaskJuggler web site can be found at <ulink
 url="http://www.taskjuggler.org">
 http://www.taskjuggler.org</ulink>.</para>
 
-<para> Since the developers are mostly busy project managers
-themselves, we have created a forum for users to help each other.
-</para>
+<para>Since the developers are mostly busy project managers
+themselves, we have created a <ulink
+url="http://www.taskjuggler.org/FUDforum2">forum</ulink> for users to
+help each other.</para>
 
-<para>The TaskJuggler user mailing list is hosted by <ulink
-url="http://www.novell.com">Novell</ulink>. You can subscribe and
-unsubscribe at <ulink url="http://www.suse.de/en/support/mailinglists">
-http://www.suse.de/en/support/mailinglists/</ulink>.</para>
+<para>The TaskJuggler project has been sponsored by SUSE for several
+years. After the aquistion by <ulink
+url="www.novell.com">Novell</ulink> the sponsorship continued. They
+kindly host our web presence and our <ulink
+url="http://bugzilla.novell.com">Bugtracking System</ulink>.</para>
 
 </sect1>
 &ChangeLog;
@@ -168,27 +169,56 @@ http://www.suse.de/en/support/mailinglists/</ulink>.</para>
 <para><ulink url="http://www.taskjuggler.org">
 http://www.taskjuggler.org</ulink></para>
 </sect1>
-<sect1><title>Requirements</title>
+<sect1><title>The TaskJuggler Components</title>
 
-<para>TaskJuggler uses many additional tools. We have avoided to
-re-invent the wheel again wherever possible, at the same time we tried
-to keep the dependency list reasonably small. Nevertheless can it be
-challenging to the unexperienced user to build and install TaskJuggler
-from source code. Most users are probably better served by using
-binary packages from their distributor. Some distributions even have
-TaskJuggler included like the <ulink
-url="http://www.suse.de/en">SuSE</ulink> distribution.</para>
+<para>TaskJuggler consists of several modular components that you
+might need or not. TaskJuggler also uses some additional tools. We
+have avoided to re-invent the wheel again wherever possible, at the
+same time we tried to keep the dependency list reasonably small.
+Nevertheless can it be challenging to the unexperienced user to build
+and install TaskJuggler from source code. Most users are probably
+better served by using binary packages from their distributor. Almost
+every mainstream 
+distribution has TaskJuggler included in recent version of their
+product. If not, you might like to contact them to inform them that
+they are missing an essential package.</para>
 
 <para>This version of TaskJuggler was built and tested on SuSE Linux
 9.1, 9.2 and 9.3 on various hardware platforms.</para>
 
+<sect2><title>The Graphical User Interfaces</title>
+
+<para>With version 2.1 came a new graphical front-end. It's an integrated
+Project management environment. At this point we have two different
+programs, but you will probably only need one of them as they are very
+similar in functionality.</para>
+
+<para>The first option is called
+<computeroutput>TaskJuggler</computeroutput>.
+Don't confuse this with <computeroutput>taskjuggler</computeroutput>
+which is the commandline version. When you want to start TaskJuggler
+from a shell, you need to type it with a capital T and J.</para>
+
+<para>The second option is called
+<computeroutput>ktjview2</computeroutput>.</para>
+
+<para>We recommend to try them both and <ulink
+url="http://www.taskjuggler.org/FUDforum2/">let us know</ulink> which
+one you like better.</para>
+
+<para>The graphical front-ends make use of the libraries of the <ulink
+url="www.kde.org">K Desktop Environment</ulink>. We recommend to use
+at least version 3.4. Earlier version will probably work as well, but
+we have not tested them.</para>
+
+</sect2>
 <sect2><title>The command line tool taskjuggler</title>
 
 <para>To build and run TaskJuggler, you need:</para>
 
 <para><itemizedlist mark='opencircle'>
 
-<listitem><para>qt3.2 &mdash; The <ulink
+<listitem><para>Qt3.2 &mdash; The <ulink
 url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
 version 3.3 or higher</para></listitem>
 
@@ -246,6 +276,10 @@ charts</title>
 <para>tjx2gantt is installed by default and generates Postscript Gantt
 charts from the XML files that TaskJuggler generates. tjx2gantt is
 written in Perl.</para>
+
+<para>This program is no longer maintained and will be dropped at some
+point in the future. If you are interested to take it over, please
+<ulink url="www.taskjuggler.org/FUDforum2">contact us</ulink>.</para>
 
 <para><itemizedlist mark='opencircle'>
 
@@ -584,8 +618,15 @@ allocated 8 hours per day.</para>
 </sect2>
 </sect1>
 </chapter>
-<chapter><title>Questions and Answers</title>
+<chapter id="FAQ"><title>Questions and Answers</title>
 <sect1><title>General Questions</title>
+
+<para>Q: The GUI does not seem to have a
+<computeroutput>New</computeroutput> entry in the File menu. How can I
+create a new project?</para>
+<para>A: ktjview2 does not support this funktionality. It's mostly a
+project viewer. Use <computeroutput>TaskJuggler</computeroutput> if
+you want to create projects from the GUI.</para>
 
 <para>Q: Why does taskjuggler use Qt when it's not an X11
 application?</para>
@@ -609,7 +650,7 @@ were successfull.</para>
 </chapter>
 <chapter><title>Copyright</title>
 
-<para>TaskJuggler Copyright 2001, 2002, 2003 Chris Schlaeger
+<para>TaskJuggler Copyright 2001, 2002, 2003, 2004, 2005 Chris Schlaeger
 &lt;cs@suse.de&gt;</para>
 
 <para>This program is free software. You can redistribute it and modify it
@@ -630,7 +671,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</para>
 
 <para>Linux is a registered trademark of Linus Torvalds.</para>
 
-<para>KDE is a trademark of KDE e. V.</para>
+<para>KDE and the K Desktop environment are a registered trademark of
+KDE e. V.</para>
 
 <para>TaskJuggler is a trademark of Chris Schl&auml;ger.</para>
 

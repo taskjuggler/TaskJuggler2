@@ -480,8 +480,8 @@ HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
     QStringList* sl = new QStringList();
     sl->append(str);
     QString cellText;
-    if (!tci->tci->getTitle().isEmpty())
-        cellText = mt.expandReportVariable(tci->tci->getTitle(), sl);
+    if (!tci->tci->getSubTitle().isEmpty())
+        cellText = mt.expandReportVariable(tci->tci->getSubTitle(), sl);
     else
         cellText = str;
     cellText = htmlFilter(cellText);

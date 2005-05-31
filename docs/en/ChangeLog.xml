@@ -692,7 +692,7 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Version 2.1.0 (2005-03-07)</title>
+<sect2 id="Changelog_2_1_0"><title>Version 2.1.0 (2005-03-07)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -763,7 +763,7 @@ directory where you started the program.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Some Version (Some Day)</title>
+<sect2 id="Changelog_2_1_1"><title>2.1.1 (Some Day)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -798,6 +798,10 @@ reports now always works properly.</para></listitem>
 
 <listitem><para>Fixed sorting of task reports when not using the
 default scenario as first scenario.</para></listitem>
+
+<listitem><para>Fixed projection scheduling mode. Tasks with bookings
+equal or larger than the effort lead to scheduling
+errors.</para></listitem>
 
 </itemizedlist></para>
 
