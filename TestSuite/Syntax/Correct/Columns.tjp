@@ -3,51 +3,51 @@ project prj  "Project" "1.0" 2005-01-01 2005-03-01
 resource r "Resource"
 
 task t "Task" {
-	task s "SubTask" {
-	  start 2005-01-01
-	  effort 5d
-		allocate r
-	}
+  task s "SubTask" {
+    start 2005-01-01
+    effort 5d
+    allocate r
+  }
 }
 
 # Just a very basic report with some standard columns
 htmltaskreport "SimpleReport.html" {
-	columns hierarchindex, name, start, end, weekly
+  columns hierarchindex, name, start, end, weekly
 }
 
 # Report with custom colum title
 htmltaskreport "CustomTitle.html" {
-	columns hierarchindex, name { title "Work Item" }, effort
+  columns hierarchindex, name { title "Work Item" }, effort
 }
 
 # Report with custom colum title and subtitle
 htmltaskreport "CustomSubTitle.html" {
-	columns hierarchindex, name,
-					monthly { title " " subtitle "$${month} $${year}" }
-	loadunit days
+  columns hierarchindex, name,
+          monthly { title " " subtitle "$${month} $${year}" }
+  loadunit days
 }
 
 # Report with efforts only for leaf tasks 
 htmltaskreport "LeafEfforts.html" {
-	columns hierarchindex, name,
-					effort { hidecelltext ~isLeaf() }
+  columns hierarchindex, name,
+          effort { hidecelltext ~isLeaf() }
 }
 
 # Report with link in title of calendar
 htmltaskreport "LinkURL.html" {
-	columns hierarchindex, name,
-					monthly { subtitleurl "Monthly-Detail-$${month}.html" }
+  columns hierarchindex, name,
+          monthly { subtitleurl "Monthly-Detail-$${month}.html" }
 }
 
 # Report with link to page with furter task details
 htmltaskreport "LinkToTaskDetails.html" {
-	columns hierarchindex,
-					name { cellurl "TaskDetails-$${taskid}.html"
-						     hidecellurl ~isLeaf() }, start, end
+  columns hierarchindex,
+          name { cellurl "TaskDetails-$${taskid}.html"
+                 hidecellurl ~isLeaf() }, start, end
 }
 
 # Report with index and task name combined in one single column
 htmltaskreport "CombinedColumn.html" {
-	columns name { celltext "$${hierarchno} $${0}"}, start, end, weekly
+  columns name { celltext "$${hierarchno} $${0}"}, start, end, weekly
 }
 

@@ -5,11 +5,11 @@ resource tux1 "Tux1"
 task t1 "Task1" {
   start 2000-01-01
   length 10d
-	# 20% of the working time of this task are marked as buffer at the
-	# beginning.
+  # 20% of the working time of this task are marked as buffer at the
+  # beginning.
   startbuffer 20
-	# An additional 10% of the working time of this task are marked as
-	# buffer at the end.
+  # An additional 10% of the working time of this task are marked as
+  # buffer at the end.
   endbuffer 10.0
   allocate tux1
 }

@@ -15,10 +15,10 @@ task top "Top Task" {
 }
 
 supplement resource joe {
-	vacation 2000-02-10 - 2000-02-20
+  vacation 2000-02-10 - 2000-02-20
 }
 
 supplement task top {
-	flags important
+  flags important
 }
 
