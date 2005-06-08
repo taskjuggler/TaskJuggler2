@@ -47,6 +47,8 @@
  <!ELEMENT member (#PCDATA|para|varname|link)*>
  <!ELEMENT screen (#PCDATA)>
  
+  <!ENTITY example_account SYSTEM
+   "../../TestSuite/Syntax/Correct/Account.tjp">
   <!ENTITY example_allocate SYSTEM
    "../../TestSuite/Syntax/Correct/Allocate-1.tjp">
   <!ENTITY example_alternative SYSTEM
@@ -57,14 +59,20 @@
    "../../TestSuite/Syntax/Correct/Buffer.tjp">
   <!ENTITY example_columns SYSTEM
    "../../TestSuite/Syntax/Correct/Columns.tjp">
+  <!ENTITY example_complete SYSTEM
+   "../../TestSuite/Syntax/Correct/Complete.tjp">
   <!ENTITY example_depends SYSTEM
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
+  <!ENTITY example_durations SYSTEM
+   "../../TestSuite/Syntax/Correct/Durations.tjp">
   <!ENTITY example_export SYSTEM
    "../../TestSuite/Syntax/Correct/Export.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
   <!ENTITY example_gap SYSTEM
    "../../TestSuite/Syntax/Correct/Gap.tjp">
+  <!ENTITY example_htmltaskreport SYSTEM
+   "../../TestSuite/Syntax/Correct/HtmlTaskReport.tjp">
   <!ENTITY example_include SYSTEM
    "../../TestSuite/Syntax/Correct/Include2.tjp">
   <!ENTITY example_journalentry SYSTEM
@@ -73,6 +81,8 @@
    "../../TestSuite/Syntax/Correct/Limits-1.tjp">
   <!ENTITY example_mandatory SYSTEM
    "../../TestSuite/Syntax/Correct/Mandatory.tjp">
+  <!ENTITY example_minmax SYSTEM
+   "../../TestSuite/Syntax/Correct/MinMax.tjp">
   <!ENTITY example_numberformat SYSTEM
    "../../TestSuite/Syntax/Correct/Numberformat.tjp">
   <!ENTITY example_persistent SYSTEM
@@ -81,12 +91,16 @@
    "../../TestSuite/Syntax/Correct/Precedes1.tjp">
   <!ENTITY example_project SYSTEM
    "../../TestSuite/Syntax/Correct/Project.tjp">
+  <!ENTITY example_resource SYSTEM
+   "../../TestSuite/Syntax/Correct/Resource.tjp">
   <!ENTITY example_scenario SYSTEM
    "../../TestSuite/Syntax/Correct/Scenario.tjp">
   <!ENTITY example_select SYSTEM
    "../../TestSuite/Syntax/Correct/Select.tjp">
   <!ENTITY example_shift SYSTEM
    "../../TestSuite/Syntax/Correct/Shift.tjp">
+  <!ENTITY example_simple SYSTEM
+   "../../TestSuite/Syntax/Correct/Simple.tjp">
   <!ENTITY example_supplement SYSTEM
    "../../TestSuite/Syntax/Correct/Supplement.tjp">
 ]>
@@ -126,6 +140,7 @@ reports should be specified.</para></descr>
    <optattr>vacation_global</optattr>
    <optattr>xmlreport</optattr>
   </optattributes>
+  <example>&example_simple;</example>
  </property>
  <property name="account" id="account">
   <descr><para>Declares an account. Accounts can be used to calculate costs
@@ -153,6 +168,7 @@ this type.</para></descr>
    <also>csvaccountreport</also>
    <also>htmlaccountreport</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="account" id="account_task" inheritable="Yes">
   <descr><para>All amounts associated with the task will be credited
@@ -163,10 +179,12 @@ to the specified account.</para></descr>
   <seealso>
    <also>account</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="accumulate" id="accumulate" inheritable="No">
   <descr><para>If this attribute is specified the values in the calendar
 columns are accumulated over the reported interval.</para></descr>
+  <example>&example_account;</example>
  </property>
  <property name="allowredefinition" id="allowredefinition" inheritable="No">
   <descr><para>If this attribute is specified, redefinitions of task,
@@ -273,6 +291,7 @@ HTML calendar columns. The default is to show load values.</para></descr>
    <also>copyright</also>
    <also>headline</also>
   </seealso>
+  <example>&example_htmltaskreport;</example>
  </property>
  <property name="celltext" id="celltext" inheritable="No">
   <descr><para>Specifies an alternative text that is used for all
@@ -562,6 +581,7 @@ different color.</para>
     <para>The value must be between 0 and 100.</para>
    </attr>
   </attributes>
+  <example>&example_complete;</example>
  </property>
  <property name="copyright" id="copyright" inheritable="No">
   <descr><para>Adds a copyright notice to all subsequently defined
@@ -574,6 +594,7 @@ bottom of the report.</para></descr>
    <also>headline</also>
    <also>caption</also>
   </seealso>
+  <example>&example_htmltaskreport;</example>
  </property>
  <property name="credit" id="credit">
   <descr><para>Credits the specified amount to the account at the
@@ -584,6 +605,7 @@ the reason for the transaction.</para></descr>
    <attr name="description" type="STRING"/>
    <attr name="amount" type="REAL"/>
   </attributes>
+  <example>&example_account;</example>
  </property>
  <property name="csvaccountreport" id="csvaccountreport">
   <descr><para>The report lists all specified account values as a comma
@@ -655,6 +677,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
   <seealso>
    <also>currencyformat</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="currencyformat" id="currencyformat" inheritable="Yes">
   <descr><para>These values specify the default format used for all
@@ -688,6 +711,7 @@ allocation to a task.</para></descr>
    <also>monthlymax</also>
    <also>weeklymax</also>
   </seealso>
+  <example>&example_limits;</example>
  </property>
  <property name="dailyworkinghours" id="dailyworkinghours" inheritable="No">
   <descr><para>Set the average number of working hours per day. This
@@ -703,6 +727,7 @@ linkend="PROPERTY_workinghours">workinghours</link>.</para></descr>
   <seealso>
    <also>yearlyworkingdays</also>
   </seealso>
+  <example>&example_project;</example>
  </property>
  <property name="depends" id="depends" inheritable="No">
   <descr><para>Specifies that the task cannot start before the task
@@ -752,6 +777,7 @@ It will always be the specified duration.</para>
    <also>effort</also>
    <also>length</also>
   </seealso>
+  <example>&example_durations;</example>
  </property>
  <property name="efficiency" id="efficiency" inheritable="Yes">
   <descr><para>The efficiency of a resource can be used for two
@@ -791,6 +817,7 @@ used.</para></descr>
    <also>duration</also>
    <also>length</also>
   </seealso>
+  <example>&example_durations;</example>
  </property>
  <property name="end" id="end_report" inheritable="No">
   <descr><para>Specifies the end date of the report. In task reports only
@@ -843,6 +870,7 @@ at the moment the tasks ends.</para></descr>
   <seealso>
    <also>startcredit</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="export" id="export" inheritable="No">
   <descr><para>The export report looks like a regular taskjuggler file
@@ -985,6 +1013,7 @@ expressions to filter properties from the reports.</para></descr>
    <also>caption</also>
    <also>copyright</also>
   </seealso>
+  <example>&example_htmltaskreport;</example>
  </property>
  <property name="hideaccount" id="hideaccount" inheritable="No">
   <descr><para>Do not show accounts that match the specified logical
@@ -1228,6 +1257,10 @@ is defined within the included file.</para></descr>
    <attr name="date" type="DATE"/>
    <attr name="text" type="STRING"/>
   </attributes>
+  <seealso>
+   <also>note</also>
+   <also>statusnote</also>
+  </seealso>
   <example>&example_journalentry;</example>
  </property>
  <property name="kotrusid" id="kotrusid" inheritable="Yes">
@@ -1242,6 +1275,7 @@ special reserved keyword.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
+  <example>&example_extend;</example>
  </property>
  <property name="length" id="length" inheritable="No" scenario="Yes">
   <descr><para>Specifies the time the task occupies the resources.
@@ -1264,6 +1298,7 @@ no global vacation of or global working time defined.</para>
    <also>duration</also>
    <also>effort</also>
   </seealso>
+  <example>&example_durations;</example>
  </property>
  <property name="limits" id="limits" inheritable="Yes">
   <descr><para>Specifies limits on the usage of a resource in general,
@@ -1420,6 +1455,7 @@ the specified value, then an error is reported.</para></descr>
    <also>minend</also>
    <also>minstart</also>
   </seealso>
+  <example>&example_minmax;</example>
  </property>
  <property name="maxstart" id="maxstart" inheritable="Yes"
 scenario="Yes">
@@ -1435,6 +1471,7 @@ the specified value, then an error is reported.</para></descr>
    <also>minend</also>
    <also>minstart</also>
   </seealso>
+  <example>&example_minmax;</example>
  </property>
  <property name="minend" id="minend" inheritable="Yes" scenario="Yes">
   <descr><para>Specifies the minimum wanted end time of the task. The
@@ -1449,6 +1486,7 @@ the specified value, then an error is reported.</para></descr>
    <also>maxstart</also>
    <also>minstart</also>
   </seealso>
+  <example>&example_minmax;</example>
  </property>
  <property name="minstart" id="minstart" inheritable="Yes"
 scenario="Yes">
@@ -1464,6 +1502,7 @@ the specified value, then an error is reported.</para></descr>
    <also>maxstart</also>
    <also>minend</also>
   </seealso>
+  <example>&example_minmax;</example>
  </property>
  <property name="milestone" id="milestone" inheritable="No">
   <descr><para>Turns the task into a special task that has no
@@ -1482,6 +1521,7 @@ detailed specification of what the task is about.</para></descr>
    <attr name="text" type="STRING"/>
   </attributes>
   <seealso>
+   <also>journalentry</also>
    <also>statusnote</also>
   </seealso>
  </property>
@@ -1496,6 +1536,7 @@ allocation to a task.</para></descr>
    <also>dailymax</also>
    <also>weeklymax</also>
   </seealso>
+  <example>&example_limits;</example>
  </property>
  <property name="now" id="now" inheritable="Yes">
   <descr><para>Specify the date that TaskJuggler uses for calculation
@@ -1503,6 +1544,7 @@ as current date. If no value is specified, the current value of the
 system clock is used.</para></descr> <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
+  <example>&example_complete;</example>
  </property>
  <property name="numberformat" id="numberformat" inheritable="Yes">
   <descr><para>These values specify the default format used for all
@@ -1616,7 +1658,7 @@ number from a revision control system.</para>
    <optattr>workinghours</optattr>
    <optattr>yearlyworkingdays</optattr>
   </optattributes>
-  <example>&example_project;</example>
+  <example>&example_simple;</example>
  </property>
  <property name="projectid" id="projectid" inheritable="Yes">
   <descr><para>At global scope it declares a new project id and
@@ -1760,6 +1802,7 @@ name="name" type="STRING"/> </attributes>
   <seealso>
    <also>task</also>
   </seealso>
+  <example>&example_resource;</example>
  </property>
  <property name="resourcereport" id="resourcereport" inheritable="No">
   <descr><para>This report is intended for the TaskJuggler graphical
@@ -2163,6 +2206,7 @@ property at the moment the tasks starts.</para></descr>
   <seealso>
    <also>endcredit</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="statusnote" id="statusnote" inheritable="No"
 scenario="Yes">
@@ -2172,6 +2216,7 @@ task.</para></descr>
    <attr name="text" type="STRING"/>
   </attributes>
   <seealso>
+   <also>journalentry</also>
    <also>note</also>
   </seealso>
  </property>
@@ -2263,6 +2308,7 @@ what task.</para></descr>
   <seealso>
    <also>resource</also>
   </seealso>
+  <example>&example_simple;</example>
  </property>
  <property name="taskattributes" id="taskattributes" inheritable="No">
   <descr><para>The list of attribute names specifies which task
@@ -2617,6 +2663,7 @@ allocation to a task.</para></descr>
    <also>dailymax</also>
    <also>monthlymax</also>
   </seealso>
+  <example>&example_limits;</example>
  </property>
  <property name="weekstartsmonday" id="weekstartsmonday" inheritable="No">
   <descr><para>Specify that you want to base all week calculation on

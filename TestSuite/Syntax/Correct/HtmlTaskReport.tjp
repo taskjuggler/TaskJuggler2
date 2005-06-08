@@ -1,4 +1,6 @@
 project simple "Simple Project" "1.0" 2005-06-06 2005-06-26
+  
+copyright "Bucks Beavis Inc."
 
 resource tux "Tux"
 
@@ -21,5 +23,11 @@ task items "Project breakdown" {
   }
 }
 
-taskreport "My Tasks"
+htmltaskreport "ProjectBreakdown.html" {
+  caption "This is the project breakdown"
+  headline "Project Breakdown"
+  columns name, start, end, daily
+  # Don't hide any resource, meaning show them all.
+  hideresource 0
+}
 

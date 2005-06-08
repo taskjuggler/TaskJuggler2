@@ -342,10 +342,10 @@ should have no trouble compiling it. TaskJugger has some weak or
 non-mandatory dependencies. If any of there are not satisfied, a
 warning is issued. In case a mandatory dependency is not found, an
 error is displayed and the configuration program stops. If you have
-problems, please report them to the TaskJuggler mailing
-list at <ulink url="mailto:taskjuggler@suse.com">
-taskjuggler@suse.com</ulink> in English. Maybe someone there can help
-you out.</para>
+problems, please report them to the TaskJuggler user forum at
+<ulink url="http://www.taskjuggler.org/FUDforum2">
+http://www.taskjuggler.org/FUDforum2</ulink> in English. Maybe someone
+there can help you out.</para>
 
 <para>In case you want to build TaskJuggler without the graphical
 front-ends, you can disable them during them configuration
@@ -495,8 +495,8 @@ exists.</para></listitem>
 possible but still reproduces the bug.</para></listitem>
 
 <listitem><para>Send the test project and a detailed description of
-the problem to the developer mailing list at <ulink
-url="mailto:taskjuggler-devel@suse.com">taskjuggler-devel@suse.com</ulink>.</para></listitem>
+the problem to the developer forum at <ulink
+url="http://www.taskjuggler.org/FUDforum2">http://www.taskjuggler.org/FUDforum2</ulink>.</para></listitem>
 
 </itemizedlist></para>
 

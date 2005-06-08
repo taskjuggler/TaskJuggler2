@@ -50,7 +50,7 @@ taskjuggler/book1.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
 	  mkdir -p taskjuggler ; \
 	  db2html taskjuggler.xml ;\
-	  cp index.html taskjuggler/index.html ; \
+	  cp taskjuggler/book1.html taskjuggler/index.html ; \
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
