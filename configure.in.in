@@ -130,7 +130,7 @@ AC_CHECK_PROG(MEINPROC, meinproc, meinproc, no)
 if test "$MEINPROC" = no ; then
   AC_MSG_WARN([KDE online help will not be generated])
 fi  
-AC_CHECK_PROG(DB2HTML, db2html, db2html, no)
+AC_CHECK_PROG(DB2HTML, docbook2html, docbook2html, no)
 if test "$XSLTPROC" = no -o "$DB2HTML" = no ; then
   AC_MSG_WARN([HTML manual will not be generated])
   HTMLMANUAL="no"
@@ -140,8 +140,9 @@ fi
 AC_SUBST(HTMLMANUAL)
 
 dnl Check for the stuff needed to create the PS manual
-AC_CHECK_PROG(DB2PS, db2ps, db2ps, no)
-AC_CHECK_PROG(JADE, jade, jade, no)
+AC_CHECK_PROG(DB2PS, docbook2ps, docbook2ps, no)
+AC_CHECK_PROG(DB2PDF, docbook2pdf, docbook2pdf, no)
+AC_CHECK_PROG(JADE, openjade, openjade, no)
 AC_CHECK_PROG(JADETEX, jadetex, jadetex, no)
 AC_CHECK_PROG(DVIPS, dvips, dvips, no)
 if test "$XSLTPROC" = no -o "$DB2PS" = no -o \

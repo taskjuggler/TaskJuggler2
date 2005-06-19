@@ -3,7 +3,7 @@ docprefix = /usr/share/doc/packages/taskjuggler/
 kdeprefix = $(prefix)/share/doc/HTML/en/taskjuggler/
 
 SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml UsageGuide.xml Example.xml SyntaxReference.xml GenPropertyReference.xml index.docbook
-CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml taskjuggler.junk db2html.* taskjuggler.log CATALOG.local *.dsl
+CLEANFILES = *.log *.aux *.dvi *.ps *.tex taskjuggler.xml GenPropertyReference.xml Example.xml taskjuggler.log CATALOG.local
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(kdeprefix)
@@ -46,21 +46,22 @@ index.cache.bz2 : index.docbook GenPropertyReference.xml Example.xml
 	  $(MEINPROC) --check --cache index.cache.bz2 ./index.docbook; \
 	fi  
 
-taskjuggler/book1.html: $(SGMLSOURCES)
+taskjuggler/index.html: $(SGMLSOURCES)
 	@if test "${HTMLMANUAL}" != "no" ; then \
+	  rm -rf taskjuggler ; \
 	  mkdir -p taskjuggler ; \
-	  db2html taskjuggler.xml ;\
-	  cp taskjuggler/book1.html taskjuggler/index.html ; \
+	  cd taskjuggler ; \
+	  $(DB2HTML) ../taskjuggler.xml ; \
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
-	  db2ps taskjuggler.xml ;\
+	  $(DB2PS) taskjuggler.xml ;\
 	fi
 
 taskjuggler.pdf: $(SGMLSOURCES)
 	@if test "${PSMANUAL}" != "no" ; then \
-	  db2pdf taskjuggler.xml ;\
+	  $(DB2PDF) taskjuggler.xml ;\
 	fi
 
 tarball: 
@@ -74,7 +75,7 @@ tarball:
 	  echo $$doctarball " created" ; \
 	fi
 
-all-local: index.cache.bz2 taskjuggler/book1.html taskjuggler.ps taskjuggler.pdf
+all-local: index.cache.bz2 taskjuggler/index.html taskjuggler.ps taskjuggler.pdf
 
 check-local:
 	xmllint ${SGMLSOURCES}

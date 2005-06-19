@@ -77,6 +77,8 @@ case $AUTOMAKE_STRING in
   *unsermake* ) :
     echo "*** YOU'RE USING UNSERMAKE."
     echo "*** GOOD LUCK!! :)"
+    echo "*** Set the environment variable UNSERMAKE to 'no' to"
+    echo "*** disable UNSERMAKE in case you have problems with it."
     UNSERMAKE=unsermake
     ;;
   * )

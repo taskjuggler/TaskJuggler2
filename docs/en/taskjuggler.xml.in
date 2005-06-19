@@ -245,9 +245,9 @@ will issue a warning but will not fail.</para>
 url="http://www.oasis-open.org/docbook/">DocBook</ulink> system with
 additional stylesheets and utilities.</para></listitem>
 
-<listitem><para>DocBook-Toys &mdash; The <ulink
-url="http://www.suse.de/~ke/docbook-toys">DocBook-Toys</ulink> from
-Karl Eichwalder.</para></listitem>
+<listitem><para>docbook-utils&mdash; The <ulink
+url="ftp://sources.redhat.com/pub/docbook-tools">jade wrapper
+scripts</ulink> from Eric Bishoff.</para></listitem>
 
 <listitem><para>OpenJade &mdash; The <ulink
 url="http://openjade.sourceforge.net/">OpenJade</ulink>
@@ -262,6 +262,11 @@ url="http://www.tug.org/teTeX">teTeX</ulink>.</para></listitem>
 <listitem><para>XSLT Processor &mdash; like xsltproc from the <ulink
 url="http://xmlsoft.org/XSLT/">libxslt</ulink>
 package.</para></listitem>
+
+<listitem><para>Meinproc &mdash; the XSLT processor for the <ulink
+url="http://www.kde.org">KDE</ulink> Helpcenter. You only need
+meinproc in case you want to build the GUI. meinproc is part of any
+KDE distribution.</para></listitem>
 
 <listitem><para>dvips &mdash; This is usually part of your TeX system
 like <ulink
@@ -650,8 +655,8 @@ were successfull.</para>
 </chapter>
 <chapter><title>Copyright</title>
 
-<para>TaskJuggler Copyright 2001, 2002, 2003, 2004, 2005 Chris Schlaeger
-&lt;cs@suse.de&gt;</para>
+<para>TaskJuggler Copyright 2001, 2002, 2003, 2004, 2005 Chris
+Schl&auml;ger &lt;cs@suse.de&gt;</para>
 
 <para>This program is free software. You can redistribute it and modify it
 under the terms of the GNU General Public License version 2 as
@@ -674,7 +679,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</para>
 <para>KDE and the K Desktop environment are a registered trademark of
 KDE e. V.</para>
 
-<para>TaskJuggler is a trademark of Chris Schl&auml;ger.</para>
+<para>TaskJuggler is a trademark of Chris Schl&auml;er.</para>
 
 <para>UNIX is a registered trademark and The Open Group is a trademark of
 The Open Group in the US and other countries.</para>
