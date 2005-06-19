@@ -1,4 +1,4 @@
-<chapter><title>Your First Project</title>
+<chapter id="tutorial"><title>Your First Project</title>
 
 <para>We have mentioned already that TaskJuggler uses plain text files
 that describe the project to schedule it. As you will see now, the

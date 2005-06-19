@@ -1,0 +1,55 @@
+html, body {
+  background-color: #ffffff;
+  color: black;
+}
+
+a:link
+{
+  color: #820;
+  background-color: transparent;
+  font-weight: 800;
+}
+
+a:visited
+{
+  color: #dd0;
+  background-color: transparent;
+  font-weight: 800;
+}
+
+a:active
+{
+  color: #156;
+  background-color: transparent;
+  font-weight: 800;
+}
+
+a:hover
+{
+  color: #000;
+  background-color: transparent;
+  font-weight: 800;
+}
+
+DIV.NAVHEADER {
+  background-color: #c05800;
+  padding:8px;
+}
+
+DIV.NAVFOOTER {
+  background-color: #c05800;
+  padding:8px;
+}
+
+PRE {
+  background-color: #e5e5e5;
+  font-size: small;
+  font:Courier .9em normal;
+  padding:8px;
+}
+
+TABLE.CALSTABLE {
+  background-color: #e5e5e5;
+  padding: 45px;
+}
+  

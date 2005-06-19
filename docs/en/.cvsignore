@@ -11,5 +11,6 @@ Example.xml
 *.pdf
 taskjuggler
 taskjuggler.out
+pdftex.cfg
 index.cache.bz2
 index.docbook

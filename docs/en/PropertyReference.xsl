@@ -36,7 +36,7 @@
   <xsl:apply-templates select="attributes" mode="body"/>
   <xsl:apply-templates select="optattributes"/>
   <row>
-   <entry>Context</entry>
+   <entry><command>Context</command></entry>
    <entry spanname="sp1">
     <xsl:variable name="prop" select="@id"/>
     <!-- Search all properties and list those who have the current
@@ -61,11 +61,11 @@
    </entry>
   </row>
   <row>
-   <entry>Inheritable</entry>
+   <entry><command>Inheritable</command></entry>
    <entry>
     <xsl:value-of select="@inheritable"/>
    </entry>
-   <entry>Scenario Spec.</entry>
+   <entry><command>Scenario Spec.</command></entry>
    <entry>
     <xsl:value-of select="@scenario"/>
    </entry>
@@ -82,7 +82,7 @@
 
  <xsl:template match="descr">
   <row>
-   <entry>Description</entry>
+   <entry><command>Description</command></entry>
    <entry spanname="sp1"><xsl:copy-of select="para"/></entry>
   </row>
  </xsl:template>
@@ -93,26 +93,26 @@
 
  <xsl:template match="attr" mode="head">
    <xsl:if test="@optional = 1">[ </xsl:if>
-   &lt;<xsl:value-of select="@name"/>&gt;
+   &lt;<parameter><xsl:value-of select="@name"/></parameter>&gt;
   <xsl:if test="@list = 1">
-   [, &lt;<xsl:value-of select="@name"/>&gt; ... ]
+   [, &lt;<parameter><xsl:value-of select="@name"/></parameter>&gt; ... ]
   </xsl:if>
   <xsl:if test="@optional = 1"> ]</xsl:if>
  </xsl:template>
 
  <xsl:template match="attributes" mode="body">
   <row>
-   <entry morerows="{count(*)}">Attributes</entry>
-   <entry align="center">Name</entry>
-   <entry align="center">Type</entry>
-   <entry align="center">Description</entry>
+   <entry morerows="{count(*)}"><command>Attributes</command></entry>
+   <entry align="center"><command>Name</command></entry>
+   <entry align="center"><command>Type</command></entry>
+   <entry align="center"><command>Description</command></entry>
   </row>
   <xsl:apply-templates select="attr" mode="body"/>
  </xsl:template>
 
  <xsl:template match="attr" mode="body">
   <row> 
-   <entry><xsl:value-of select="@name"/></entry>
+   <entry><parameter><xsl:value-of select="@name"/></parameter></entry>
    <entry><link linkend="TYPE_{@type}"><xsl:value-of
            select="@type"/></link></entry>
    <entry>
@@ -123,7 +123,7 @@
 
  <xsl:template match="optattributes">
   <row>
-   <entry>Optional Attributes</entry>
+   <entry><command>Optional Attributes</command></entry>
    <entry spanname="sp1"><xsl:apply-templates select="optattr"/></entry>
   </row>
  </xsl:template>
@@ -143,7 +143,7 @@
 
  <xsl:template match="seealso">
   <row>
-   <entry>See also</entry>
+   <entry><command>See also</command></entry>
    <entry spanname="sp1"><xsl:apply-templates select="also"/></entry>
   </row>
  </xsl:template>

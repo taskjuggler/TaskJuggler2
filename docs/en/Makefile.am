@@ -46,12 +46,13 @@ index.cache.bz2 : index.docbook GenPropertyReference.xml Example.xml
 	  $(MEINPROC) --check --cache index.cache.bz2 ./index.docbook; \
 	fi  
 
-taskjuggler/index.html: $(SGMLSOURCES)
+taskjuggler/index.html: $(SGMLSOURCES) taskjuggler.dsl
 	@if test "${HTMLMANUAL}" != "no" ; then \
 	  rm -rf taskjuggler ; \
 	  mkdir -p taskjuggler ; \
 	  cd taskjuggler ; \
-	  $(DB2HTML) ../taskjuggler.xml ; \
+	  $(DB2HTML) -d ../taskjuggler.dsl#html ../taskjuggler.xml ; \
+	  cp ../taskjuggler.css . ; \
 	fi
 
 taskjuggler.ps: $(SGMLSOURCES)
