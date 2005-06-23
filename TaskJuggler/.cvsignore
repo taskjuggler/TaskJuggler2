@@ -11,6 +11,7 @@ RichTextDisplay.cpp
 RichTextDisplay.h
 Makefile
 Makefile.in
+tags
 Screenshots
 TaskJuggler
 TaskJuggler_client

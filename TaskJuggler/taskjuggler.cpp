@@ -166,6 +166,9 @@ void TaskJuggler::setupActions()
                 KShortcut(KKey("F2")),
                 m_view, SLOT(keywordHelp()),
                 actionCollection(), "keyword_help");
+    new KAction(i18n("Tutorial" ), "tj_tutorial", 0,
+                m_view, SLOT(tutorial()),
+                actionCollection(), "tutorial");
 
     setupGUI( ToolBar | Keys | StatusBar | Save | Create );
 }

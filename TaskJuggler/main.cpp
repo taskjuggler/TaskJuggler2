@@ -21,7 +21,7 @@
 static const char description[] =
     I18N_NOOP("A Project Management Software for Linux");
 
-static const char version[] = "0.1";
+static const char version[] = VERSION;
 
 static KCmdLineOptions options[] =
 {
@@ -35,8 +35,17 @@ int main(int argc, char **argv)
                      description,
                      KAboutData::License_GPL,
                      "(c) 2002, 2003, 2004, 2005 Chris Schlaeger",
-                     0, 0, "cs@suse.de");
-    about.addAuthor( "Chris Schlaeger", 0, "cs@suse.de" );
+                     I18N_NOOP("TaskJuggler is a project management tool for "
+                               "Linux and UNIX-like operating systems. Its \n"
+                               "new approach to project planning and tracking "
+                               "is superior to the commonly used Gantt chart \n"
+                               "editing tools. It has already been "
+                               "successfully used in many projects and \n"
+                               "scales easily to projects with hundreds of "
+                               "resources and thousands of tasks."),
+                     "http://www.taskjuggler.org",
+                     "bugs@taskjuggler.org");
+    about.addAuthor("Chris Schlaeger", 0, "cs@suse.de" );
 
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);

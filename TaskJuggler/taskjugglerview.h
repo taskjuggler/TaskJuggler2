@@ -152,6 +152,7 @@ private slots:
     void messageListClicked(QListViewItem* lvi);
     void showProgressInfo(const QString& fn);
     void keywordHelp();
+    void tutorial();
 
 private:
     bool loadProject(const KURL& url);

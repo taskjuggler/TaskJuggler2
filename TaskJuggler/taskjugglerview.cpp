@@ -988,6 +988,12 @@ TaskJugglerView::keywordHelp()
 }
 
 void
+TaskJugglerView::tutorial()
+{
+    kapp->invokeHelp("tutorial");
+}
+
+void
 TaskJugglerView::setLoadingProject(bool lp)
 {
     loadingProject = lp;
