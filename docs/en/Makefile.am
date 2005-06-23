@@ -79,7 +79,7 @@ tarball:
 all-local: index.cache.bz2 taskjuggler/index.html taskjuggler.ps taskjuggler.pdf
 
 check-local:
-	xmllint ${SGMLSOURCES}
+	xmllint --loaddtd --noout --valid taskjuggler.xml
 
 clean-local:
 	rm -rf taskjuggler index.cache.bz2 index.docbook \

@@ -151,7 +151,7 @@ new value of 330.0. The default value has been inherited from the
 enclosing scope, resource <computeroutput>dev</computeroutput>.
 Which in turn has inherited it from the global scope. </para>
 
-<para>The declaration of the resource Klaus M&uml;ller uses another
+<para>The declaration of the resource Klaus M&uuml;ller uses another
 optional attribute. With <link linkend="PROPERTY_vacation_resource"> vacation
 </link> you can specify a certain time interval where the resource is
 not available.</para>
@@ -167,7 +167,7 @@ extending the rest with sensible defaults, TaskJuggler adds the time
 midnight February 5th, 2002. Well, almost. Every time you specify a
 time interval, the end date is not included in the interval. But the
 second before the date that you have specified is. So Klaus
-M&uml;llers vacation ends 23:59:59 on February 4th, 2002.</para>
+M&uuml;llers vacation ends 23:59:59 on February 4th, 2002.</para>
 
 <para>Peter Murphy only works 6.5 hours a day (actually 6.4 hours). So
 we use the <link linkend="PROPERTY_maxeffort"> maxeffort </link>
