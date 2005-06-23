@@ -4,10 +4,9 @@
 #
 # Copyright 2003 Klaas Freitag <freitag@suse.de>
 # 
-# Parameter 1: The required version (defaults to svn)
-# Parameter 2: The branch or release (defaults to HEAD)
+# Parameter: The required version (defaults to svn)
 #
-tmpdir=/tmp/taskjuggler-$RANDOM
+tmpdir=/tmp/tjball
 v=svn
 ver=${1:-$v}
 
@@ -16,6 +15,7 @@ rel=${2:-$release}
 
 tj=taskjuggler-$ver
 dir=`pwd`
+wantdocs=1
 
 echo "Building version" $tj tarball
 
@@ -24,22 +24,51 @@ mkdir $tmpdir
 cd $tmpdir
 
 cd $tmpdir
-svn co http://einstein.suse.de/svn/taskjuggler -r $rel 1>/dev/null
+svn export -r $rel http://einstein.suse.de/svn/taskjuggler/trunk/ 
+# cvs export -r $rel taskjuggler 1>/dev/null
 
-mv taskjuggler/trunk $tj
-# Remove subversion meta data
-find $tj -name .cvsignore | xargs rm -f
-find $tj -name .svn | xargs rm -rf
+mv trunk $tj
+rm `find $tj -name .cvsignore`
 
+export UNSERMAKE=no
 (cd $tj && make -f Makefile.cvs 1>/dev/null )
 
 archive=$tj.tar.bz2
 
-tar cjf $archive $tj
+tar cjf $archive $tj 
 
+# Archvive is created now, start to produce documentation
+if [ -n $wantdocs ] ; then
+    cd $tj
+    ./configure &> /dev/null 
+    cd docs
+  
+    doctarball=manual-$ver.tar.bz2
+  
+    if make  ; then
+      
+	cd en
+	rm -rf manual-$ver
+	cp -r taskjuggler manual-$ver
+	chmod 755 manual-$ver
+	tar cjf $dir/$doctarball manual-$ver
+	
+	# check for postscript and pdf
+	if [ -e taskjuggler.ps ] ; then
+	    cp taskjuggler.ps $dir/manual-$ver.ps
+	fi
+
+	if [ -e taskjuggler.pdf ] ; then
+	    cp taskjuggler.pdf $dir/manual-$ver.pdf
+	fi
+
+	cd ..
+    fi
+    cd ../..
+fi
 # Copy stuff home
 cp $archive $dir
 cd $dir
 
-rm -rf $tmpdir
+# rm -rf $tmpdir
 
