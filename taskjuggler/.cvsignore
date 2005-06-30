@@ -1,6 +1,7 @@
 Makefile
 Makefile.in
 taskjuggler
+tags
 *.moc.cpp
 .deps
 .libs

@@ -26,6 +26,7 @@ class KMainWindow;
 class KListView;
 class KURL;
 class CoreAttributes;
+class Report;
 class FindDialog;
 
 class FileManager : public QObject
@@ -76,6 +77,7 @@ public slots:
     void showInEditor(const KURL& url);
     void showInEditor(const KURL& url, int line, int col);
     void showInEditor(CoreAttributes* ca);
+    void showInEditor(const Report* report);
     void saveCurrentFile();
     void saveCurrentFileAs(const KURL& url);
     void closeCurrentFile();

@@ -140,10 +140,12 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     connect(mw->accountListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(accountListClicked(QListViewItem*)));
 
-    connect(mw->reportListView, SIGNAL(clicked(QListViewItem*)),
-            this, SLOT(reportListClicked(QListViewItem*)));
     connect(mw->reportListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(reportListClicked(QListViewItem*)));
+    connect(mw->reportListView,
+            SIGNAL(mouseButtonClicked(int, QListViewItem*, const QPoint&, int)),
+            this,
+            SLOT(reportListClicked(int, QListViewItem*, const QPoint&, int)));
 
     connect(mw->fileListView, SIGNAL(clicked(QListViewItem*)),
             this, SLOT(fileListClicked(QListViewItem*)));
@@ -159,6 +161,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
             this, SLOT(changeStatusBar(const QString&)));
     connect(reportManager, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
             this, SLOT(showInEditor(CoreAttributes*)));
+    connect(reportManager, SIGNAL(signalEditReport(const Report*)),
+            this, SLOT(showInEditor(const Report*)));
 
     connect(loadDelayTimer, SIGNAL(timeout()),
             this, SLOT(loadAfterTimerTimeout()));
@@ -891,6 +895,13 @@ TaskJugglerView::showInEditor(CoreAttributes* ca)
 }
 
 void
+TaskJugglerView::showInEditor(const Report* report)
+{
+    fileManager->showInEditor(report);
+    showEditor();
+}
+
+void
 TaskJugglerView::taskListClicked(QListViewItem* lvi)
 {
     if (lvi)
@@ -926,10 +937,29 @@ TaskJugglerView::accountListClicked(QListViewItem* lvi)
 void
 TaskJugglerView::reportListClicked(QListViewItem* lvi)
 {
+    reportListClicked(Qt::LeftButton, lvi, QPoint(), 0);
+}
+
+void
+TaskJugglerView::reportListClicked(int button, QListViewItem* lvi,
+                                   const QPoint& p, int col)
+{
     if (!lvi)
         return;
 
-    if (!reportManager->showReport(lvi))
+    bool errors = FALSE;
+    bool showReportTab = TRUE;
+    switch (button)
+    {
+        case Qt::LeftButton:
+            errors = !reportManager->showReport(lvi);
+            break;
+        case Qt::RightButton:
+            reportManager->showRMBMenu(lvi, p, col, errors, showReportTab);
+            break;
+    }
+
+    if (errors)
     {
         // The report generation can also produce errors.
         mw->bigTab->showPage(mw->editorTab);
@@ -942,7 +972,7 @@ TaskJugglerView::reportListClicked(QListViewItem* lvi)
         changeStatusBar(i18n("The project contains problems!"));
         messageListClicked(messageListView->firstChild());
     }
-    else
+    else if (showReportTab)
         showReport();
 }
 

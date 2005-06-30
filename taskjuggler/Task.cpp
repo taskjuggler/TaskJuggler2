@@ -2890,64 +2890,6 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    return( taskElem );
 }
 
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-
-void Task::toTodo( KCal::Todo* todo, KCal::CalendarLocal* /* cal */ )
-{
-   if( !todo ) return;
-   QDateTime dt;
-
-   // todo->setReadOnly( true );
-
-   /* Start-Time of the task */
-   dt.setTime_t( getStart(0) );
-   todo->setDtStart( dt );
-   todo->setHasDueDate( true );
-
-   /* Due-Time of the todo -> plan End  */
-   dt.setTime_t( getEnd(0));
-   todo->setDtDue( dt );
-   todo->setHasStartDate(true);
-
-   /* Description and summary -> project ID */
-   todo->setDescription( getNote() );
-   todo->setSummary( getName() );
-
-   /* ICal defines priorities between 1..9 where 1 is the highest */
-   int prio = getPriority();
-   int calPrio = 9;
-   if( prio < 100 ) calPrio = 9;
-   else if( prio < 200) calPrio = 8;
-   else if( prio < 300) calPrio = 7;
-   else if( prio < 400) calPrio = 6;
-   else if( prio < 500) calPrio = 5;
-   else if( prio < 600) calPrio = 4;
-   else if( prio < 700) calPrio = 3;
-   else if( prio < 800) calPrio = 2;
-   else if( prio < 900) calPrio = 1;
-
-   todo->setPriority( calPrio );
-
-   todo->setCompleted( getComplete(0) );
-
-   /* Resources */
-   QPtrList<Resource> resList;
-//    resList = getBookedResources(0);
-   QStringList strList;
-
-   ResourceListIterator rli = getBookedResourcesIterator(0);
-   for (; *rli != 0; ++rli)
-   {
-      strList.append( (*rli)->getName());
-   }
-   todo->setResources(strList);
-
-}
-
-#endif /* HAVE_KDE */
-#endif /* HAVE_ICAL */
-
 void Task::loadFromXML( QDomElement& parent, Project *project )
 {
    QDomElement elem = parent.firstChild().toElement();

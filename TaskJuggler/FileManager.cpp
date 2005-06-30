@@ -41,6 +41,7 @@
 #include <kdebug.h>
 
 #include "CoreAttributes.h"
+#include "Report.h"
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
 #include "FindDialog.h"
@@ -339,6 +340,16 @@ FileManager::showInEditor(CoreAttributes* ca)
     KURL url = KURL(ca->getDefinitionFile());
     int line, col;
     line = ca->getDefinitionLine();
+    col = 0;
+    showInEditor(url, line, col);
+}
+
+void
+FileManager::showInEditor(const Report* report)
+{
+    KURL url = KURL(report->getDefinitionFile());
+    int line, col;
+    line = report->getDefinitionLine();
     col = 0;
     showInEditor(url, line, col);
 }

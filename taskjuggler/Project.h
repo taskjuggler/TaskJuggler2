@@ -29,9 +29,6 @@
 #include "RealFormat.h"
 #include "QtReport.h"
 #include "Journal.h"
-#ifdef HAVE_ICAL
-#include "ReportICal.h"
-#endif
 
 class QStringList;
 class QDomElement;
@@ -721,12 +718,6 @@ public:
     bool loadFromXML( const QString& file );
     void parseDomElem( QDomElement& parentElem );
 
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-    void addICalReport( ReportICal *ic ) { icalReport = ic; }
-#endif
-#endif
-
     void addAllowedFlag(QString flag)
     {
         if (!isAllowedFlag(flag))
@@ -917,12 +908,9 @@ private:
 
     Kotrus* kotrus;
 
+    /* This is for version 1.0 XML reports and should be removed before the
+     * next major release. */
     ReportXML* xmlreport;
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-    ReportICal *icalReport;
-#endif
-#endif
 
     QPtrList<Report> reports;
     QPtrList<QtReport> interactiveReports;

@@ -78,15 +78,11 @@ if test "$cv_option_kdesupport" = yes ;then
     KDE_CHECK_THREADING
     AC_PATH_KDE 
 
-    # FIXME: Proper installation for ical lib, for a workaround add link options
-    #        for your system here.
-    KDE_LIBS=''
-   dnl LIBICAL="-lical -lkcal"
-   AC_SUBST(KDE_LIBS)
-   DO_NOT_COMPILE="ktjview Contrib"
+    AC_SUBST(KDE_LIBS)
+    DO_NOT_COMPILE="Contrib"
 else
-   kde_htmldir=${datadir}/taskjuggler
-   DO_NOT_COMPILE="ktjview ktjview2 TaskJuggler Contrib"
+    kde_htmldir=${datadir}/taskjuggler
+    DO_NOT_COMPILE="ktjview2 TaskJuggler Contrib"
 fi
 
 AC_CHECK_PROG(PERL, perl, perl, no)
@@ -158,9 +154,4 @@ AC_SUBST(PSMANUAL)
 AC_OUTPUT(docs/en/taskjuggler.xml)
 
 dnl KDE_INIT_DOXYGEN([The TaskJuggler API Reference], [Version $VERSION])
-
-KDE_CHECK_HEADER( libkcal/calendarlocal.h, [have_ical=yes],[have_ical=no])
-if test "$have_ical" = yes ; then
-    AC_DEFINE(HAVE_ICAL, 1, [defined if support for kde pim calendar files])
-fi
 

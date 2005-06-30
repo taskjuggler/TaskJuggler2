@@ -16,20 +16,26 @@
 
 #include <qstring.h>
 #include <qdict.h>
+#include <qptrlist.h>
 
 #include <Report.h>
 
 class Project;
 class QDomDocument;
 class QDomElement;
-class QDomElement;
 class CustomAttributeDefinition;
+class Scenario;
+class Shift;
+class Interval;
+class TaskDependency;
 
 class XMLReport : public Report
 {
 public:
     XMLReport(Project* p, const QString& f, const QString& df, int dl);
     virtual ~XMLReport();
+
+    virtual const char* getType() const { return "XMLReport"; }
 
     bool generate();
 

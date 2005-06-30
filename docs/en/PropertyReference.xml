@@ -1228,6 +1228,22 @@ listed as well.</para></descr>
    <also>htmlstatusreport</also>
   </seealso>
  </property>
+ <property name="icalreport" id="icalreport" inheritable="No">
+  <descr><para>Generates an ICal report accoring to RFC2445. This is
+  standardized format used by many calendar applications such as
+  KOrganizer. The filename should have a
+  <varname>.ics</varname> extension.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
+  </optattributes>
+ </property>
  <property name="include" id="include" inheritable="No">
   <descr><para>Includes the specified file name as if its contents
 would be written instead of the include property.
@@ -2697,7 +2713,8 @@ of resources to certain time slots of week days.</para></descr>
   <descr><para>Generates a XML report. TaskJuggler 2.x has a much
 improved XML format. This is not yet the default, but will be in later
 versions. So you should always specify which version of the XML format
-should be generated.</para></descr>
+should be generated. The file name should have a
+<varname>.tjx</varname> extension.</para></descr>
   <attributes>
    <attr name="file" type="STRING"/>
   </attributes>

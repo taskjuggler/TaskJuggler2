@@ -24,6 +24,7 @@ class QListViewItem;
 class KListView;
 class Report;
 class CoreAttributes;
+class Report;
 
 class ReportManager : public QObject
 {
@@ -42,7 +43,10 @@ public:
 
     void setFocusToReport() const;
 
+    bool generateReport(QListViewItem*);
     bool showReport(QListViewItem*);
+    void showRMBMenu(QListViewItem*, const QPoint&, int, bool& errors,
+                     bool& showReport);
 
     bool isProjectLoaded() const;
 
@@ -53,6 +57,7 @@ public:
 signals:
     void signalChangeStatusBar(const QString& text);
     void signalEditCoreAttributes(CoreAttributes* ca);
+    void signalEditReport(const Report* report);
 
 public slots:
     void zoomIn();
@@ -60,6 +65,7 @@ public slots:
     void closeCurrentReport();
     void changeStatusBar(const QString& text);
     void editCoreAttributes(CoreAttributes* ca);
+    void editReport(const Report* report);
 
 private:
     ReportManager() { }
@@ -73,6 +79,7 @@ private:
     KListViewItem* htmlReports;
     KListViewItem* csvReports;
     KListViewItem* xmlReports;
+    KListViewItem* icalReports;
     KListViewItem* exportReports;
 
     QPtrList<ManagedReportInfo> reports;

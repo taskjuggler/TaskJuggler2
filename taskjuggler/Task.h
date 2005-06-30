@@ -34,13 +34,6 @@
 #include "TaskDependency.h"
 #include "Journal.h"
 
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-#include <libkcal/todo.h>
-#include <libkcal/calendarlocal.h>
-#endif
-#endif
-
 class Project;
 class Resource;
 class Account;
@@ -332,12 +325,7 @@ public:
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-   void toTodo( KCal::Todo *, KCal::CalendarLocal * );
-#endif
-#endif
-   void loadFromXML( QDomElement& parent, Project *p );
+    void loadFromXML( QDomElement& parent, Project *p );
     void allocationFromXML( const QDomElement& );
 private:
     bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere

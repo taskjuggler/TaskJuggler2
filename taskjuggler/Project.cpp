@@ -65,12 +65,9 @@ Project::Project()
     scenarioList.createIndex(TRUE);
     scenarioList.createIndex(FALSE);
 
+    /* This is the version 1.0 XML reports. It should be deleted for the next
+     * major release. */
     xmlreport = 0;
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-    icalReport = 0;
-#endif
-#endif
 
     priority = 500;
     /* The following settings are country and culture dependent. Those
@@ -171,12 +168,9 @@ Project::~Project()
             }
     }
 
+    // Remove support for 1.0 XML reports for next major release. */
     delete xmlreport;
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-    delete icalReport;
-#endif
-#endif
+
     for (int i = 0; i < 7; ++i)
         delete workingHours[i];
     exitUtility();
@@ -867,13 +861,6 @@ Project::generateReports() const
     }
 
     generateXMLReport();
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
-    if( icalReport )
-       icalReport->generate();
-#endif
-#endif
-
 }
 
 void

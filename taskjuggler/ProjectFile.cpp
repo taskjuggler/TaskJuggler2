@@ -59,8 +59,8 @@
 #include "CSVAccountReportElement.h"
 #include "CSVReport.h"
 #include "XMLReport.h"
-#ifdef HAVE_ICAL
-#include "ReportICal.h"
+#ifdef HAVE_KDE
+#include "ICalReport.h"
 #endif
 #include "ExportReport.h"
 #include "TableColumnInfo.h"
@@ -433,20 +433,10 @@ ProjectFile::parse()
             }
             else if (token == KW("icalreport"))
             {
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
                if( !readICalTaskReport())
-#else
-                  errorMessage(i18n( "TaskJuggler was built without KDE support -> no ICal support!" ));
-#endif
                   return FALSE;
                break;
-#else
-               errorMessage(i18n( "TaskJuggler was built without ICal-Support, sorry." ));
-               break;
-#endif
             }
-
             else if (token == KW("htmltaskreport") ||
                      token == KW("htmlresourcereport") ||
                      token == KW("htmlweeklycalendar") ||
@@ -2889,24 +2879,109 @@ ProjectFile::readPriority(int& priority)
 bool
 ProjectFile::readICalTaskReport()
 {
-    bool result = false;
-#ifdef HAVE_ICAL
-#ifdef HAVE_KDE
+#ifndef HAVE_KDE
+    errorMessage(i18n("The program was compiled without KDE support. "
+                      "Therefor ICal support has been disabled."));
+    return FALSE;
+#else
+    QString fileName;
+    if (nextToken(fileName) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return FALSE;
+    }
+    if (fileName.right(4) != ".ics" && fileName.right(4) != ".ICS")
+    {
+        errorMessage(i18n("File name '%1' for ICal files must end with "
+                          "\".ics\" extension.").arg(fileName));
+        return FALSE;
+    }
 
-   QString filename;
-   if (nextToken(filename) != STRING)
-   {
-      errorMessage(i18n("File name expected"));
-   }
-   else
-   {
-       ReportICal *rep = new ReportICal( proj, filename, getFile(), getLine() );
-       proj->addICalReport( rep );
-       result = true;
-   }
+    ICalReport* report;
+    report = new ICalReport(proj, fileName, getFile(), getLine());
+    TokenType tt;
+    QString token;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        while ((tt = nextToken(token)) != RBRACE)
+        {
+            if (token == KW("hidetask"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setHideTask(et);
+            }
+            else if (token == KW("rolluptask"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setRollUpTask(et);
+            }
+            else if (token == KW("hideresource"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setHideResource(et);
+            }
+            else if (token == KW("rollupresource"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    return FALSE;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setRollUpResource(et);
+            }
+            else if (token == KW("scenario"))
+            {
+                report->clearScenarios();
+                QString scId;
+                if ((tt = nextToken(scId)) != ID)
+                {
+                    errorMessage(i18n("Scenario ID expected"));
+                    return FALSE;
+                }
+                int scIdx;
+                if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                {
+                    errorMessage(i18n("Unknown scenario %1")
+                                 .arg(scId));
+                    return FALSE;
+                }
+                if (proj->getScenario(scIdx - 1)->getEnabled())
+                    report->addScenario(proj->getScenarioIndex(scId) - 1);
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute '%1'").arg(token));
+                return FALSE;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    proj->addReport(report);
+
+    return(TRUE);
 #endif
-#endif
-   return( result );
 }
 
 bool

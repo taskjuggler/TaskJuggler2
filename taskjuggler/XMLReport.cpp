@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include "XMLReport.h"
+
 #include <config.h>
 #include <zlib.h>
 

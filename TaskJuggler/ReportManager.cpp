@@ -14,6 +14,7 @@
 
 #include <qwidgetstack.h>
 #include <qstring.h>
+#include <qpopupmenu.h>
 
 #include <klistview.h>
 #include <kiconloader.h>
@@ -25,6 +26,10 @@
 
 #include "Report.h"
 #include "HTMLReport.h"
+#include "ICalReport.h"
+#include "CSVReport.h"
+#include "XMLReport.h"
+#include "ExportReport.h"
 
 #include "ManagedReportInfo.h"
 #include "TjReport.h"
@@ -73,6 +78,7 @@ ReportManager::updateReportBrowser()
     htmlReports = new KListViewItem(browser, i18n("HTML Reports"));
     csvReports = new KListViewItem(browser, i18n("CSV Reports"));
     xmlReports = new KListViewItem(browser, i18n("XML Reports"));
+    icalReports = new KListViewItem(browser, i18n("iCalendars"));
     exportReports = new KListViewItem(browser, i18n("Export Reports"));
 
     int i = 0;
@@ -88,6 +94,8 @@ ReportManager::updateReportBrowser()
             parent = csvReports;
         else if (strncmp(r->getType(), "XML", 3) == 0)
             parent = xmlReports;
+        else if (strncmp(r->getType(), "ICal", 4) == 0)
+            parent = icalReports;
         else if (strncmp(r->getType(), "Export", 6) == 0)
             parent = exportReports;
         else
@@ -102,6 +110,59 @@ ReportManager::updateReportBrowser()
         (*mri)->setBrowserEntry(item);
     }
     qtReports->setOpen(TRUE);
+}
+
+bool
+ReportManager::generateReport(QListViewItem* lvi)
+{
+    ManagedReportInfo* mr = 0;
+    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+        if ((*mri)->getBrowserEntry() == lvi)
+            mr = *mri;
+
+    if (!mr)
+        return TRUE;
+
+    if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
+        ; // Nothing to do
+    else if (strncmp(mr->getProjectReport()->getType(), "CSV", 3) == 0)
+    {
+        CSVReport* csvReport =
+            dynamic_cast<CSVReport*>(mr->getProjectReport());
+        return csvReport->generate();
+    }
+    else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
+    {
+        ExportReport* exportReport =
+            dynamic_cast<ExportReport*>(mr->getProjectReport());
+        return exportReport->generate();
+    }
+    else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
+    {
+        HTMLReport* htmlReport =
+            dynamic_cast<HTMLReport*>(mr->getProjectReport());
+        return htmlReport->generate();
+    }
+    else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
+    {
+        ICalReport* icalReport =
+            dynamic_cast<ICalReport*>(mr->getProjectReport());
+        return icalReport->generate();
+    }
+    else if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
+    {
+        XMLReport* xmlReport =
+            dynamic_cast<XMLReport*>(mr->getProjectReport());
+        return xmlReport->generate();
+    }
+    else
+    {
+        kdDebug() << "Report type " << mr->getProjectReport()->getType()
+            << " not yet supported" << endl;
+        return FALSE;
+    }
+
+    return TRUE;
 }
 
 bool
@@ -123,6 +184,23 @@ ReportManager::showReport(QListViewItem* lvi)
         else if (strcmp(mr->getProjectReport()->getType(),
                         "QtResourceReport") == 0)
             tjr = new TjResourceReport(reportStack, mr->getProjectReport());
+        else if (strncmp(mr->getProjectReport()->getType(), "CSV", 3) == 0)
+        {
+            CSVReport* csvReport =
+                dynamic_cast<CSVReport*>(mr->getProjectReport());
+            if (!csvReport->generate())
+                return FALSE;
+            // show the CSV file in preferred CSV handler
+            KURL reportUrl =
+                KURL::fromPathOrURL(mr->getProjectReport()->
+                                    getDefinitionFile());
+            reportUrl.setFileName(mr->getProjectReport()->getFileName());
+
+            changeStatusBar(i18n("Displaying CSV report: '%1'")
+                            .arg(mr->getProjectReport()->getFileName()));
+            KRun::runURL(reportUrl, "text/x-csv");
+            return TRUE;
+        }
         else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
         {
             HTMLReport* htmlReport =
@@ -140,6 +218,23 @@ ReportManager::showReport(QListViewItem* lvi)
             KRun::runURL(reportUrl, "text/html");
             return TRUE;
         }
+        else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
+        {
+            ICalReport* icalReport =
+                dynamic_cast<ICalReport*>(mr->getProjectReport());
+            if (!icalReport->generate())
+                return FALSE;
+            // show the TODO list in Korganizer
+            KURL reportUrl =
+                KURL::fromPathOrURL(mr->getProjectReport()->
+                                    getDefinitionFile());
+            reportUrl.setFileName(mr->getProjectReport()->getFileName());
+
+            changeStatusBar(i18n("Displaying iCalendar: '%1'")
+                            .arg(mr->getProjectReport()->getFileName()));
+            KRun::runURL(reportUrl, "text/calendar");
+            return TRUE;
+        }
         else
         {
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
@@ -147,20 +242,67 @@ ReportManager::showReport(QListViewItem* lvi)
             return FALSE;
         }
 
-        connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
-                this, SLOT(changeStatusBar(const QString&)));
-        connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
-                this, SLOT(editCoreAttributes(CoreAttributes*)));
+        if (tjr)
+        {
+            connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
+                    this, SLOT(changeStatusBar(const QString&)));
+            connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
+                    this, SLOT(editCoreAttributes(CoreAttributes*)));
 
-        reportStack->addWidget(tjr);
-        mr->setReport(tjr);
+            if (!tjr->generateReport())
+            {
+                delete tjr;
+                return FALSE;
+            }
 
-        if (!tjr->generateReport())
-            return FALSE;
+            reportStack->addWidget(tjr);
+            mr->setReport(tjr);
+        }
     }
-    reportStack->raiseWidget(tjr);
+    if (tjr)
+        reportStack->raiseWidget(tjr);
 
     return TRUE;
+}
+
+void
+ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
+                           bool& errors, bool& showReportTab)
+{
+    ManagedReportInfo* mr = 0;
+    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+        if ((*mri)->getBrowserEntry() == lvi)
+            mr = *mri;
+
+    if (!mr)
+        return;
+
+    // Generate a context popup menu.
+    QPopupMenu menu;
+    menu.insertItem(i18n("&Show Report"), 1);
+    menu.insertItem(i18n("&Generate Report"), 2);
+    menu.insertItem(i18n("&Edit Report Definition"), 3);
+
+    // The interactive reports can not be generated, so we disable the entry.
+    if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
+        menu.setItemEnabled(2, FALSE);
+
+    switch (menu.exec(pos))
+    {
+        case 1:
+            errors = !showReport(lvi);
+            break;
+        case 2:
+            errors = !generateReport(lvi);
+            showReportTab = FALSE;
+            break;
+        case 3:
+            editReport(mr->getProjectReport());
+            showReportTab = FALSE;
+            break;
+        default:
+            break;
+    }
 }
 
 ManagedReportInfo*
@@ -196,6 +338,12 @@ void
 ReportManager::editCoreAttributes(CoreAttributes* ca)
 {
     emit signalEditCoreAttributes(ca);
+}
+
+void
+ReportManager::editReport(const Report* report)
+{
+    emit signalEditReport(report);
 }
 
 void

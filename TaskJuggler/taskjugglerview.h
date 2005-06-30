@@ -28,12 +28,14 @@ class QPainter;
 class QListViewItem;
 class QSplitter;
 class QProgressBar;
+class QPoint;
 class KURL;
 class KListView;
 class KConfig;
 class MainWidget;
 class Project;
 class CoreAttributes;
+class Report;
 class FileManager;
 class ReportManager;
 
@@ -122,6 +124,7 @@ public slots:
     void changeStatusBar(const QString& text);
 
     void showInEditor(CoreAttributes* ca);
+    void showInEditor(const Report* report);
     void configureEditor();
 
 signals:
@@ -148,6 +151,8 @@ private slots:
     void resourceListClicked(QListViewItem* lvi);
     void accountListClicked(QListViewItem* lvi);
     void reportListClicked(QListViewItem* lvi);
+    void reportListClicked(int button, QListViewItem* lvi, const QPoint& p,
+                           int col);
     void fileListClicked(QListViewItem* lvi);
     void messageListClicked(QListViewItem* lvi);
     void showProgressInfo(const QString& fn);

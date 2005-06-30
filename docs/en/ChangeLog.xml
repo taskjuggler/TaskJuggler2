@@ -806,6 +806,10 @@ errors.</para></listitem>
 <listitem><para>We are now using docbook-utils instead of docbook-toys
 to generate the documentation.</para></listitem>
 
+<listitem><para>The code for the generation of iCal reports has been
+revived again. iCal is a standard format to exchange data with
+calendar applications such as KOrganizer.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
