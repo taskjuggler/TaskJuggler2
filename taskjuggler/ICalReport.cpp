@@ -60,9 +60,12 @@ ICalReport::generateTODO(Task* task, ResourceList& resourceList)
     todo->setHasDueDate(TRUE);
 
     /* Due-Time of the todo -> plan End  */
-    dt.setTime_t(task->getEnd(scenarios[0]));
+    dt.setTime_t(task->getEnd(scenarios[0]) + 1);
     todo->setDtDue(dt);
     todo->setHasStartDate(TRUE);
+
+    // Make sure that the time is not ignored.
+    todo->setFloats(FALSE);
 
     /* Description and summary -> project ID */
     todo->setDescription(task->getNote());
