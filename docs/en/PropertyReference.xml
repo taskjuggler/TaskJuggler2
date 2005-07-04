@@ -1838,7 +1838,7 @@ listed as well.</para></descr>
    <optattr>loadunit</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
-   <optattr>scenarios</optattr>
+   <optattr>scenario_report</optattr>
    <optattr>shorttimeformat</optattr>
    <optattr>showprojectids</optattr>
    <optattr>sortresources</optattr>
@@ -1916,6 +1916,18 @@ scenario.</para></descr>
    <also>scenarios</also>
   </seealso>
   <example>&example_scenario;</example>
+ </property>
+ <property name="scenario" id="scenario_report" inheritable="No">
+  <descr><para>ID of the scenario that should be included in the
+report.</para></descr>
+  <attributes>
+   <attr name="scenarioid" type="ID">
+    <para>The ID of the scenario.</para>
+   </attr>
+  </attributes>
+  <seealso>
+   <also>scenario</also>
+  </seealso>
  </property>
  <property name="scenarios" id="scenarios" inheritable="No">
   <descr><para>List of scenarios that should be included in the
@@ -2383,7 +2395,7 @@ listed as well.</para></descr>
    <optattr>loadunit</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
-   <optattr>scenarios</optattr>
+   <optattr>scenario_report</optattr>
    <optattr>shorttimeformat</optattr>
    <optattr>showprojectids</optattr>
    <optattr>sortresources</optattr>
