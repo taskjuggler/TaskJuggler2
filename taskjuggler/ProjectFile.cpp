@@ -3249,8 +3249,10 @@ ProjectFile::readReport(const QString& reportType)
                     return FALSE;
                 }
                 if (proj->getScenario(scIdx - 1)->getEnabled())
+                {
+                    tab->clearScenarios();
                     tab->addScenario(proj->getScenarioIndex(scId) - 1);
-                break;
+                }
             }
             else if (token == KW("start"))
             {
