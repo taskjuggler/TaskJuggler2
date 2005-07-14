@@ -486,6 +486,10 @@ TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
     for (QCanvasItemList::Iterator it = cis.begin(); it != cis.end(); ++it)
         delete *it;
 
+    // Make sure that we only prepare the chart if the listView isn't empty.
+    if (!listView->firstChild())
+        return;
+
     // Calculate some commenly used values;
     headerHeight = listView->header()->height();
     itemHeight = listView->firstChild()->height();
