@@ -17,13 +17,12 @@ linkend="reference"/>.</para>
 
 <para><screen>
 project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
-	now 2002-03-04
-	timeformat "%Y-%m-%d"
-	currency "EUR"
-	scenario plan "Plan" {
-		scenario delayed
-		"Delayed"
-	}
+  now 2002-03-04
+  timeformat "%Y-%m-%d"
+  currency "EUR"
+  scenario plan "Plan" {
+    scenario delayed "Delayed"
+  }
 }
 </screen></para>
 
@@ -558,9 +557,53 @@ results.</para>
 <sect1><title>Generating Reports of the scheduled Project</title>
 
 <para>TaskJuggler offers a number of report types. Probably the most
-popular ones are the HTML reports. You can advice TaskJuggler to
-generate one or more HTML pages that contain lists of your tasks,
-resources or accounts.</para>
+popular ones are interactive reports and HTML reports.</para>
+
+<sect2><title>Generating Interactive Reports</title>
+
+<para>Interactive reports are only available in the TaskJuggler GUI. The
+command line version will just ignore interactive report definitions.
+To view a <link linkend="PROPERTY_taskreport">task report</link> in
+the GUI, you have to add the following lines to your project.</para>
+
+<para><screen>
+taskreport "Project Overview" {
+  columns start, end, effort, duration, completed, status, note, cost, revenue
+}
+</screen></para>
+
+<para>The syntax is very similar to other report types. The only noticable
+differences are:</para>
+
+<para><itemizedlist>
+
+<listitem><para>A column with the task name is always
+included.</para></listitem>
+
+<listitem><para>A Gantt chart will always be
+displayed.</para></listitem>
+
+<listitem><para>Interactive reports only support one scenario. By
+default this is the first scenario, but the user can select another
+scenario to be displayed.</para></listitem>
+
+</itemizedlist></para>
+
+<para>The interactive <link linkend="PROPERTY_resourcereport">resource
+reports</link> have a very similar syntax:</para>
+
+<para><screen>
+resourcereport "Resource Usage" {
+  columns effort, freeload, utilization, rate
+  hideresource 0
+}
+</screen></para>
+
+</sect2>
+<sect2><title>Generating HTML Reports</title>
+
+<para>You can advice TaskJuggler to generate one or more HTML pages that
+contain lists of your tasks, resources or accounts.</para>
 
 <para>Before we start with the reports, we present you another macro.
 We like to add a navigation bar to each HTML page that holds a number
@@ -604,6 +647,7 @@ rawhead
 ]
 </screen></para>
 
+</sect2>
 <sect2><title>Generating HTML Task Reports</title>
 
 <para>As the first report, we would like to have a general overview of all

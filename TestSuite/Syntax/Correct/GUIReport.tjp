@@ -1,0 +1,45 @@
+project simple "Simple Project" "1.0" 2005-06-06 2005-06-26
+  
+resource tux "Tux"
+resource tuxia "Tuxia"
+
+task items "Project breakdown" {
+  start 2005-06-06
+
+  task plan "Plan work" {
+		task phase1 "Phase 1" {
+			effort 5d
+			allocate tuxia
+		}
+		task phase2 "Phase 2" {
+			effort 2d
+			allocate tux
+		}
+  }
+
+  task implementation "Implement work" {
+    effort 5d
+    allocate tux
+    depends !plan
+  }
+
+  task acceptance "Customer acceptance" {
+    duration 5d
+    depends !implementation
+  }
+}
+
+taskreport "Project Breakdown" {
+  columns start, end, effort
+	# Open only the first level of tasks
+	rolluptask treelevel() > 1
+}
+
+resourcereport "Resource Allocations" {
+	columns id, effort
+  # We only want to see the tasks with real work (without parents),
+  # sorted by name
+  sorttasks nameup
+  hidetask ~isleaf()
+}
+

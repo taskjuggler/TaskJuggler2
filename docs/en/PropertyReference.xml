@@ -71,6 +71,8 @@
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
   <!ENTITY example_gap SYSTEM
    "../../TestSuite/Syntax/Correct/Gap.tjp">
+  <!ENTITY example_guireport SYSTEM
+   "../../TestSuite/Syntax/Correct/GUIReport.tjp">
   <!ENTITY example_htmltaskreport SYSTEM
    "../../TestSuite/Syntax/Correct/HtmlTaskReport.tjp">
   <!ENTITY example_include SYSTEM
@@ -81,6 +83,8 @@
    "../../TestSuite/Syntax/Correct/Limits-1.tjp">
   <!ENTITY example_mandatory SYSTEM
    "../../TestSuite/Syntax/Correct/Mandatory.tjp">
+  <!ENTITY example_milestone SYSTEM
+   "../../TestSuite/Syntax/Correct/Milestone.tjp">
   <!ENTITY example_minmax SYSTEM
    "../../TestSuite/Syntax/Correct/MinMax.tjp">
   <!ENTITY example_numberformat SYSTEM
@@ -89,10 +93,14 @@
    "../../TestSuite/Syntax/Correct/Persistent.tjp">
   <!ENTITY example_precedes SYSTEM
    "../../TestSuite/Syntax/Correct/Precedes1.tjp">
+  <!ENTITY example_priority SYSTEM
+   "../../TestSuite/Syntax/Correct/Priority.tjp">
   <!ENTITY example_project SYSTEM
    "../../TestSuite/Syntax/Correct/Project.tjp">
   <!ENTITY example_resource SYSTEM
    "../../TestSuite/Syntax/Correct/Resource.tjp">
+  <!ENTITY example_responsible SYSTEM
+   "../../TestSuite/Syntax/Correct/Responsible.tjp">
   <!ENTITY example_scenario SYSTEM
    "../../TestSuite/Syntax/Correct/Scenario.tjp">
   <!ENTITY example_select SYSTEM
@@ -1540,6 +1548,7 @@ detailed specification of what the task is about.</para></descr>
    <also>journalentry</also>
    <also>statusnote</also>
   </seealso>
+  <example>&example_milestone;</example>
  </property>
  <property name="monthlymax" id="monthlymax" inheritable="Yes">
   <descr><para>Sets the monthly limit of a resource usage or a resource
@@ -1601,6 +1610,7 @@ the definition of the subtask.</para></descr>
   <attributes>
    <attr name="value" type="INTEGER"/>
   </attributes>
+  <example>&example_priority;</example>
  </property>
  <property name="precedes" id="precedes" inheritable="No">
   <descr><para>Specifies that the tasks with the specified IDs cannot
@@ -1753,6 +1763,7 @@ the resource.</para></descr>
    <also>account</also>
    <also>task</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="rawhead" id="rawhead" inheritable="No">
   <descr><para>Specifies a section of raw HTML code that will be
@@ -1852,15 +1863,19 @@ listed as well.</para></descr>
    <also>htmlresourcereport</also>
    <also>taskreport</also>
   </seealso>
+  <example>&example_guireport;</example>
  </property>
  <property name="responsible" id="responsible" inheritable="Yes">
-   <descr><para>The ID of the resource that is responsible for this task.</para></descr>
+   <descr><para>The ID of the resource that is responsible for this
+   task. This value is for documenation purposes only. It's not used
+   by the scheduler.</para></descr>
   <attributes>
    <attr name="resource" type="ID"/>
   </attributes>
   <seealso>
    <also>resource</also>
   </seealso>
+  <example>&example_responsible;</example>
  </property>
  <property name="rollupaccount" id="rollupaccount" inheritable="No">
   <descr><para>Do not show sub-accounts of accounts that match the
@@ -2410,6 +2425,7 @@ listed as well.</para></descr>
    <also>htmlresourcereport</also>
    <also>resourcereport</also>
   </seealso>
+  <example>&example_guireport;</example>
  </property>
  <property name="taskroot" id="taskroot" inheritable="No">
   <descr><para>Only tasks below the specified root-level tasks are
