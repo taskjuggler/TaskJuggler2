@@ -254,11 +254,10 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                                  t->getEnd(scenario),
                                  reportDef->getTimeFormat());
         else if ((*ci)->getName() == "endbuffer")
-        {
-        }
+            cellText.sprintf("%3.0f", t->getEndBuffer(scenario));
         else if ((*ci)->getName() == "endbufferstart")
-        {
-        }
+            cellText = time2user(t->getEndBufferStart(scenario),
+                                 reportDef->getTimeFormat());
         else if ((*ci)->getName() == "id")
             cellText = t->getId();
         else if ((*ci)->getName() == "maxend")
@@ -282,18 +281,18 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 cellText = t->getNote();
         }
         else if ((*ci)->getName() == "pathcriticalness")
-        {
-        }
+            cellText = indent(QString().sprintf
+                              ("%f", t->getPathCriticalness(scenario)),
+                              lvi, tcf->getHAlign() ==
+                              TableColumnFormat::right);
         else if ((*ci)->getName() == "priority")
             cellText = indent(QString().sprintf("%d", t->getPriority()),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         else if ((*ci)->getName() == "projectid")
-        {
-        }
-        else if ((*ci)->getName() == "projectids")
-        {
-        }
+            cellText = t->getProjectId() + " (" +
+                reportElement->getReport()->getProject()->getIdIndex
+                (t->getProjectId()) + ")";
         else if ((*ci)->getName() == "profit")
         {
             double val = t->getCredits
@@ -306,8 +305,20 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
+        else if ((*ci)->getName() == "resources")
+        {
+            for (ResourceListIterator rli
+                 (t->getBookedResourcesIterator(scenario)); *rli != 0; ++rli)
+            {
+                if (!cellText.isEmpty())
+                    cellText += ", ";
+
+                cellText += (*rli)->getName();
+            }
+        }
         else if ((*ci)->getName() == "responsible")
         {
+            cellText = t->getResponsible()->getName();
         }
         else if ((*ci)->getName() == "revenue")
         {
@@ -322,17 +333,22 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             cellText = time2user(t->getStart(scenario),
                                  reportDef->getTimeFormat());
         else if ((*ci)->getName() == "startbuffer")
-        {
-        }
+            cellText.sprintf("%3.0f", t->getStartBuffer(scenario));
         else if ((*ci)->getName() == "startbufferend")
-        {
-        }
+            cellText = time2user(t->getStartBufferEnd(scenario),
+                                 reportDef->getTimeFormat());
         else if ((*ci)->getName() == "status")
         {
             cellText = t->getStatusText(scenario);
         }
         else if ((*ci)->getName() == "statusnote")
         {
+            if (t->getStatusNote(scenario).length() > 25 ||
+                isRichText(t->getStatusNote(scenario)))
+                icon = KGlobal::iconLoader()->
+                    loadIcon("document", KIcon::Small);
+            else
+                cellText = t->getStatusNote(scenario);
         }
         else
             generateCustomAttribute(t, (*ci)->getName(), cellText, icon);
@@ -413,6 +429,10 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                                   tcf->getHAlign() == TableColumnFormat::right);
             }
         }
+        else if ((*ci)->getName() == "projectids")
+            cellText = r->getProjectIDs
+                (scenario, Interval(reportElement->getStart(),
+                                    reportElement->getEnd()));
         else if ((*ci)->getName() == "rate")
         {
             cellText = indent(tcf->realFormat.format(r->getRate(), FALSE),
@@ -1095,6 +1115,22 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
         richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
         richTextDisplay->textDisplay->setText(t->getNote());
+        richTextDisplay->show();
+    }
+    else if (ca->getType() == CA_Task &&
+             tci->getName() == "statusnote" &&
+             !(dynamic_cast<Task*>(ca))->getStatusNote(scenario).isEmpty())
+    {
+        Task* t = dynamic_cast<Task*>(ca);
+        // Open a new window that displays the note attached to the task.
+        RichTextDisplay* richTextDisplay =
+            new RichTextDisplay(topLevelWidget());
+        richTextDisplay->setCaption
+            (i18n("Status Note for Task %1 (%2) - TaskJuggler")
+             .arg(t->getName()).arg(t->getId()));
+        richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
+
+        richTextDisplay->textDisplay->setText(t->getStatusNote(scenario));
         richTextDisplay->show();
     }
     else if (ca->getCustomAttribute(tci->getName()))
