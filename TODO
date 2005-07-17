@@ -1,12 +1,16 @@
-- Global cost function driven optimizer.
-- Make vacations scenario specific.
-- hasLoad() function
-- support for renewable resources
+Work in progress:
 - Explain more features with examples in the documentation.
-- Generic HTML report.
+
+Probably:
+- Printing for interactive reports
+- Interactive account report
+- Add support for risk documentation.
+
+Maybe:
+- Make vacations scenario specific.
+- Limits for accounts.
+- support for renewable resources
 - Allocation selection by skill set.
 - Add support for flexible rates (per task, per shift)
-- Calculate earliest start and latest end.
-- Add support for risk documentation.
 - Cleanup taskjuggler library API, so it can be used by other apps.
 - Color support for tasks and resources.

@@ -31,7 +31,7 @@ rate 310.0
 # This is one way to form teams
 macro allocate_developers [
   allocate dev1
-  allocate dev2 { load 0.5 }
+  allocate dev2 { limits { dailymax 4h } }
   allocate dev3
 ]
 
@@ -45,7 +45,7 @@ resource dev "Developers" {
   flags team
 }
 resource misc "The Others" {
-  resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
+  resource test "Peter Murphy" { limits { dailymax 6.4h } rate 240.0 }
   resource doc "Dim Sung" { rate 280.0 vacation 2002-03-11 - 2002-03-16 }
 
   flags team
@@ -72,7 +72,7 @@ task AcSo "Accounting Software" {
   account dev
 
   task spec "Specification" {
-    # The effort to finish this task is 20 man days. 
+    # The effort to finish this task is 20 man days.
     effort 20d
     # Now we use the above declared macro to allocate the resources
     # for this task. Since they can work in parallel, this task may be
@@ -85,120 +85,120 @@ task AcSo "Accounting Software" {
     # References to other tasks may be relative. Each ! means 'in the
     # scope of the enclosing task'. To descent into a task the .
     # together with the id of the tasks have to be specified.
-    depends !deliveries.start 
+    depends !deliveries.start
 }
 
-	task software "Software Development" {
+  task software "Software Development" {
 
-		# The software is the most critical task of the project. So we set
-		# the priority of this tasks (and all sub tasks) to 1000, the top
-		# priority. The higher the priority the more likely will the task
-		# get the requested resources.
-		priority 1000
+    # The software is the most critical task of the project. So we set
+    # the priority of this tasks (and all sub tasks) to 1000, the top
+    # priority. The higher the priority the more likely will the task
+    # get the requested resources.
+    priority 1000
 
-		task database "Database coupling" { 
-			effort 20d
-			# This task depends on a task in the scope of the enclosing
-			# tasks enclosing task. So we need 2 ! to get there.
-			depends !!spec 
-			allocate dev1, dev2 
-		}
+    task database "Database coupling" {
+      effort 20d
+      # This task depends on a task in the scope of the enclosing
+      # tasks enclosing task. So we need 2 ! to get there.
+      depends !!spec
+      allocate dev1, dev2
+    }
 
-		task gui "Graphical User Interface" { 
-			effort 35d
-			# This task has taken 5 man days more than originally planned.
-			# We record this as well, so that we can generate reports that
-			# compare the delayed schedule of the project to the original plan.
-			delayed:effort 40d 
-			depends !database, !backend 
-			allocate dev2, dev3
-		}
+    task gui "Graphical User Interface" {
+      effort 35d
+      # This task has taken 5 man days more than originally planned.
+      # We record this as well, so that we can generate reports that
+      # compare the delayed schedule of the project to the original plan.
+      delayed:effort 40d
+      depends !database, !backend
+      allocate dev2, dev3
+    }
 
-		task backend "Back-End Functions" { 
-			effort 30d
-			# This task is behind schedule since it should have been
-			# finished already. To document this we specify that the tasks
-			# is 95% completed. If nothing is specified, TaskJuggler assumes
-			# that the task is on schedule and computes the completion rate
-			# according to the current day and the plan data.
-			complete 95 
-			depends !database, !!spec 
-			allocate dev1, dev2 
-		}
-	}
+    task backend "Back-End Functions" {
+      effort 30d
+      # This task is behind schedule since it should have been
+      # finished already. To document this we specify that the tasks
+      # is 95% completed. If nothing is specified, TaskJuggler assumes
+      # that the task is on schedule and computes the completion rate
+      # according to the current day and the plan data.
+      complete 95
+      depends !database, !!spec
+      allocate dev1, dev2
+    }
+  }
 
-	task test "Software testing" {
+  task test "Software testing" {
 
-		task alpha "Alpha Test" {
-			# Efforts can not only be specified as man days, but also man
-			# weeks, man hours, etc. Per default taskjuggler assumes a man
-			# week is 40 man hours or 5 man days. These values can be
-			# changed though.
-			effort 1w 
-			depends !!software 
-			allocate test, dev2
-			note "Hopefully most bugs will be found and fixed here."
-		}
+    task alpha "Alpha Test" {
+      # Efforts can not only be specified as man days, but also man
+      # weeks, man hours, etc. Per default taskjuggler assumes a man
+      # week is 40 man hours or 5 man days. These values can be
+      # changed though.
+      effort 1w
+      depends !!software
+      allocate test, dev2
+      note "Hopefully most bugs will be found and fixed here."
+    }
 
-		task beta "Beta Test" { 
-			effort 4w 
-			depends !alpha 
-			allocate test, dev1
-		} 
-	}
+    task beta "Beta Test" {
+      effort 4w
+      depends !alpha
+      allocate test, dev1
+    }
+  }
 
-	task manual "Manual" { 
-		effort 10w 
-		depends !deliveries.start 
-		allocate doc, dev3
-	 	account doc 
-	}
+  task manual "Manual" {
+    effort 10w
+    depends !deliveries.start
+    allocate doc, dev3
+    account doc
+  }
 
-	task deliveries "Milestones" {
+  task deliveries "Milestones" {
 
-		# Some milestones have customer payments associated with them. We
-		# credit these payments to the 'rev' account.
-		account rev
+    # Some milestones have customer payments associated with them. We
+    # credit these payments to the 'rev' account.
+    account rev
 
-		task start "Projectstart" {
-			# A task that has no duration is a milestone. It only needs a
-			# start or end criteria. All other tasks depend on this task.
-			milestone 
-			start 2002-01-16
-			# For some reason the actual start of the project got delayed.
-			# We record this, so that we can compare the plan run to the
-			# delayed run of the project.
-			delayed:start 2002-01-20
-			# At the begining of this task we receive a payment from the
-			# customer. This is credited to the account assiciated with this
-			# task when the task starts.
-			startcredit 33000.0 
-		}
+    task start "Projectstart" {
+      # A task that has no duration is a milestone. It only needs a
+      # start or end criteria. All other tasks depend on this task.
+      milestone
+      start 2002-01-16
+      # For some reason the actual start of the project got delayed.
+      # We record this, so that we can compare the plan run to the
+      # delayed run of the project.
+      delayed:start 2002-01-20
+      # At the begining of this task we receive a payment from the
+      # customer. This is credited to the account assiciated with this
+      # task when the task starts.
+      startcredit 33000.0
+    }
 
-		task prev "Technology Preview" { 
-			milestone 
-			depends !!software.backend 
-			startcredit 13000.0 
-		}
+    task prev "Technology Preview" {
+      milestone
+      depends !!software.backend
+      startcredit 13000.0
+    }
 
-		task beta "Betaversion" { 
-			milestone 
-			depends !!test.alpha
-			startcredit 13000.0 
-		}
+    task beta "Betaversion" {
+      milestone
+      depends !!test.alpha
+      startcredit 13000.0
+    }
 
-		task done "Ship Product to customer" { 
-			milestone
-			# The next line can be uncommented to trigger a warning about
-			# the project being late. For all tasks limits for the start and
-			# end value can be specified. Those limits are checked after the
-			# project has been scheduled. For all violated limits a warning
-			# is issued.  
-			# maxend 2002-04-17
-			depends !!test.beta, !!manual 
-			startcredit 14000.0 
-		} 
-	} 
+    task done "Ship Product to customer" {
+      milestone
+      # The next line can be uncommented to trigger a warning about
+      # the project being late. For all tasks limits for the start and
+      # end value can be specified. Those limits are checked after the
+      # project has been scheduled. For all violated limits a warning
+      # is issued.
+      # maxend 2002-04-17
+      depends !!test.beta, !!manual
+      startcredit 14000.0
+    }
+  }
 }
 
 # Now the project has been completely specified. Stopping here would
@@ -211,11 +211,13 @@ task AcSo "Accounting Software" {
 # This task report is for use with the TaskJuggler GUI
 taskreport "Project Overview" {
   columns start, end, effort, duration, completed, status, note, cost, revenue
+  scenario delayed
 }
 
-# A resource report for use with the TaskJuggler GUI  
+# A resource report for use with the TaskJuggler GUI
 resourcereport "Resource Usage" {
   columns effort, freeload, utilization, rate
+  scenario delayed
   hideresource 0
 }
 
@@ -224,20 +226,20 @@ resourcereport "Resource Usage" {
 # code to be embedded into all the HTML reports.
 macro navbar [
 rawhead
-	'<table align="center" border="2" cellpadding="10"
-	  style="background-color:#f3ebae; font-size:105%">
-	<tr>
-	  <td><a href="Tasks-Overview.html">Tasks Overview</a></td>
-	  <td><a href="Staff-Overview.html">Staff Overview</a></td>
-	  <td><a href="Accounting.html">Accounting</a></td>
-		<td><a href="Calendar.html">Calendar</a></td>
-	</tr>
-	<tr>
-	  <td><a href="Tasks-Details.html">Tasks Details</a></td>
-	  <td><a href="Staff-Details.html">Staff Details</a></td>
-		<td><a href="Status-Report.html">Status Report</a></td>
-	  <td><a href="acso.eps">GANTT Chart (Postscript)</a></td>
-	</tr>
+  '<table align="center" border="2" cellpadding="10"
+    style="background-color:#f3ebae; font-size:105%">
+  <tr>
+    <td><a href="Tasks-Overview.html">Tasks Overview</a></td>
+    <td><a href="Staff-Overview.html">Staff Overview</a></td>
+    <td><a href="Accounting.html">Accounting</a></td>
+    <td><a href="Calendar.html">Calendar</a></td>
+  </tr>
+  <tr>
+    <td><a href="Tasks-Details.html">Tasks Details</a></td>
+    <td><a href="Staff-Details.html">Staff Details</a></td>
+    <td><a href="Status-Report.html">Status Report</a></td>
+    <td><a href="acso.eps">GANTT Chart (Postscript)</a></td>
+  </tr>
   </table>
   <br>'
 ]
@@ -247,115 +249,115 @@ rawhead
 # readability we include a calendar like column that lists the effort
 # for each week.
 htmltaskreport "Tasks-Overview.html" {
-	# This report should contain the navigation bar we have declared
-	# above.
-	${navbar}
-	# The report should be a table that contains several columns. The
-	# task and their information form the rows of the table. Since we
-	# don't like the title of the effort column, we change it to "Work".
+  # This report should contain the navigation bar we have declared
+  # above.
+  ${navbar}
+  # The report should be a table that contains several columns. The
+  # task and their information form the rows of the table. Since we
+  # don't like the title of the effort column, we change it to "Work".
   columns hierarchindex, name, duration, effort { title "Work"},
-	        start, end, weekly
-	# For this report we like to have the abbreviated weekday in front
-	# of the date. %a is the tag for this.
-	timeformat "%a %Y-%m-%d"
-	
-	# Don't show load values.
-	barlabels empty
-	# Set a title for the report
-	headline "Accounting Software Project"
-	# And a short description what this report is about.
-	caption "This table presents a management-level overview of the
-	project. The values are days or man-days."
+          start, end, weekly
+  # For this report we like to have the abbreviated weekday in front
+  # of the date. %a is the tag for this.
+  timeformat "%a %Y-%m-%d"
+
+  # Don't show load values.
+  barlabels empty
+  # Set a title for the report
+  headline "Accounting Software Project"
+  # And a short description what this report is about.
+  caption "This table presents a management-level overview of the
+  project. The values are days or man-days."
 }
 
 # Now a more detailed report that shows all jobs and the people
 # assigned to the tasks. It also features a comparison of the plan and
 # delayed scenario.
 htmltaskreport "Tasks-Details.html" {
-	${navbar}
-	# Now we use a daily calendar.
+  ${navbar}
+  # Now we use a daily calendar.
   columns no, name, start, end, scenario, daily
-	#start 2002-03-01
-	#end 2002-04-01
-	# Show plan and delayed scenario values.
-	scenarios plan, delayed 
-	headline "Accounting Software Project - March 2002"
-	caption "This table shows the load of each day for all the tasks.
-	Additionally the resources used for each task are listed. Since the
-	project start was delayed, the delayed schedule differs significantly
-	from the original plan."
-	# Don't hide any resources, that is show them all.
+  #start 2002-03-01
+  #end 2002-04-01
+  # Show plan and delayed scenario values.
+  scenarios plan, delayed
+  headline "Accounting Software Project - March 2002"
+  caption "This table shows the load of each day for all the tasks.
+  Additionally the resources used for each task are listed. Since the
+  project start was delayed, the delayed schedule differs significantly
+  from the original plan."
+  # Don't hide any resources, that is show them all.
   hideresource 0
 }
 
 # The previous report listed the resources per task. Now we generate a
 # report the lists all resources.
 htmlresourcereport "Staff-Overview.html" {
-	${navbar}
-	# Add a column with the total effort per task.
+  ${navbar}
+  # Add a column with the total effort per task.
   columns no, name { cellurl "http://www.tj.org" }, scenario, weekly, effort
   scenarios plan, delayed
-	# Since we want to see the load values as hours per week, we switch
-	# the unit that loads are reported in to hours.
-	loadunit hours
-	headline "Weekly working hours for the Accounting Software Project"
+  # Since we want to see the load values as hours per week, we switch
+  # the unit that loads are reported in to hours.
+  loadunit hours
+  headline "Weekly working hours for the Accounting Software Project"
 }
 
 # Now a report similar to the above one but with much more details.
 htmlresourcereport "Staff-Details.html" {
-	${navbar}
+  ${navbar}
   columns name, daily, effort
-	# To still keep the report readable we limit it to show only the
-	# data for March 2002.
-	start 2002-01-16
-	end 2002-04-01
-	hidetask 0
-	# The teams are virtual resources that we don't want to see. Since
-	# we have assigned a flag to those virtual resource, we can just
-	# hide them.
-	hideresource team
-	# We also like to have the report sorted alphabetically ascending by
-	# resource name.
-	sortresources nameup
-	loadunit hours
-	headline "Daily working hours for the Accounting Software Project -
-	March 2002"
+  # To still keep the report readable we limit it to show only the
+  # data for March 2002.
+  start 2002-01-16
+  end 2002-04-01
+  hidetask 0
+  # The teams are virtual resources that we don't want to see. Since
+  # we have assigned a flag to those virtual resource, we can just
+  # hide them.
+  hideresource team
+  # We also like to have the report sorted alphabetically ascending by
+  # resource name.
+  sortresources nameup
+  loadunit hours
+  headline "Daily working hours for the Accounting Software Project -
+  March 2002"
 }
 
 htmlweeklycalendar "Calendar.html" {
-	${navbar}
-	headline "Ongoing Tasks - March 2002"
-	start 2002-03-01
-	end 2002-04-01
+  ${navbar}
+  headline "Ongoing Tasks - March 2002"
+  start 2002-03-01
+  end 2002-04-01
 }
 
 htmlstatusreport "Status-Report.html" {
-	${navbar}
+  ${navbar}
 }
 
 # To conclude the HTML reports a report that shows how badly the
 # project is calculated is generated. The company won't get rich with
 # this project. Due to the slip, it actually needs some money from the
 # bank to pay the salaries.
-htmlaccountreport "Accounting.html" { 
-	${navbar}
-	# Besides the number of the account and the name we have a column
-	# with the total values (at the end of the project) and the values
-	# for each month of the project.
-	columns no, name, scenario, total, monthly 
-	headline "P&L for the Accounting Software Project" 
-	caption "The table shows the profit and loss
-	         analysis as well as the cashflow situation of the Accounting
+htmlaccountreport "Accounting.html" {
+  ${navbar}
+  # Besides the number of the account and the name we have a column
+  # with the total values (at the end of the project) and the values
+  # for each month of the project.
+  columns no, name, scenario, total, monthly
+  headline "P&L for the Accounting Software Project"
+  caption "The table shows the profit and loss
+           analysis as well as the cashflow situation of the Accounting
            Software Project."
-	# Since this is a cashflow calculation we show accumulated values
-	# per account.
-	accumulate
- 	scenarios plan, delayed 
+  # Since this is a cashflow calculation we show accumulated values
+  # per account.
+  accumulate
+  scenarios plan, delayed
 }
 
 # Finally we generate an XML report that contains all info about the
 # scheduled project. This will be used by tjx2gantt to create a nice
 # Gantt chart of our project.
 xmlreport "AccountingSoftware.tjx" {
-#	version 2
+# version 2
 }

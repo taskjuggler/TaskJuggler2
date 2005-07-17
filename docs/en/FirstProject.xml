@@ -1,4 +1,4 @@
-<chapter id="tutorial"><title>Your First Project</title>
+<chapter id="tutorial"><title>Tutorial: Your First Project</title>
 
 <para>We have mentioned already that TaskJuggler uses plain text files
 that describe the project to schedule it. As you will see now, the
@@ -30,7 +30,9 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
 your project, a version number and a start and end date. The start and
 end dates don't need to be exact, but must enclose all tasks. It
 specifies the time interval the TaskJuggler scheduler will use to fit
-the tasks in. </para>
+the tasks in. So, make it big enough, that all your tasks fit within.
+But don't make it too big, since this will result in longer scheduling
+times and higher memory consumption.</para>
 
 <para>All TaskJuggler properties have a certain number of fixed
 attributes and a set of optional attributes. Optional attributes are
@@ -43,13 +45,13 @@ we process our first project. The <link
 linkend="PROPERTY_currency">currency</link> attribute specifies the
 unit of currency values.</para>
 
-<para>Since each country seems to have it's own way of specifying
-dates, the format is configurable. Use the <link
-linkend="PROPERTY_timeformat">timeformat</link> attribute to specify the
-default format. This is the format used for reports. It's not the
+<para>Since each culture has it's own way of specifying dates, the
+format is configurable. Use the <link
+linkend="PROPERTY_timeformat">timeformat</link> attribute to specify
+the default format. This is the format used for reports. It's not the
 format that you use in TaskJuggler project files. This format is fixed
-and must be Year-Month-Day-Hours:Minutes:Seconds-Timezone. From Hours
-onwards, the values are optional and default to 0.</para>
+and must be Year-Month-Day-Hours:Minutes:Seconds-Timezone. All values
+after day are optional.</para>
 
 <para>In this tutorial we would like to compare two scenarios of the
 project. The first scenario is the one that we have planned. The
@@ -93,7 +95,7 @@ text pattern is enclosed by square brackets. </para>
 <para><screen>
 macro allocate_developers [
   allocate dev1
-  allocate dev2 { load 0.5 }
+  allocate dev2 { limits { dailymax 4h } }
   allocate dev3
 ]
 </screen></para>
@@ -124,24 +126,25 @@ resource dev "Developers" {
   flags team
 }
 resource misc "The Others" {
-  resource test "Peter Murphy" { maxeffort 0.8 rate 240.0 }
+  resource test "Peter Murphy" { limits { dailymax 6.4h } rate 240.0 }
   resource doc "Dim Sung" { rate 280.0 }
 
   flags team
 }
 </screen></para>
 
-<para>This snippet of the example shows the <link linkend="PROPERTY_resource">
-resource </link> property. Resources always have an ID and a Name. IDs
-may only consist of ASCII characters, numbers and the underline
-character. All global TaskJuggler properties have IDs. They need to be
-unique within their property class. The ID is needed so that we can
-reference the property again later without having the need to write
-the potentially much longer name. Names are strings and as such
-enclosed in double quotes.  Strings may contain any character, even
-non-ASCII characters. As you can see, resource properties can be
-nested. <computeroutput> dev </computeroutput> is a virtual resource,
-a team, that consists of three other resources.</para>
+<para>This snippet of the example shows the <link
+linkend="PROPERTY_resource">resource</link> property. Resources always
+have an ID and a Name. IDs may only consist of ASCII characters,
+numbers and the underline character. All global TaskJuggler properties
+have IDs. They need to be unique within their property class. The ID
+is needed so that we can reference the property again later without
+having the need to write the potentially much longer name. Names are
+strings and as such enclosed in double quotes.  Strings may contain
+any character, even non-ASCII characters. As you can see, resource
+properties can be nested. <computeroutput> dev </computeroutput> is a
+virtual resource, a team, that consists of three other
+resources.</para>
 
 <para><computeroutput>dev1</computeroutput>, alias Paul Smith costs
 more than the normal employee. So the declaration of <computeroutput>
@@ -151,8 +154,7 @@ enclosing scope, resource <computeroutput>dev</computeroutput>.
 Which in turn has inherited it from the global scope. </para>
 
 <para>The declaration of the resource Klaus M&uuml;ller uses another
-optional attribute. With <link linkend="PROPERTY_vacation_resource"> vacation
-</link> you can specify a certain time interval where the resource is
+optional attribute. With <link linkend="PROPERTY_vacation_resource">vacation</link> you can specify a certain time interval where the resource is
 not available.</para>
 
 <para>Here you need to understand how TaskJuggler handles time
@@ -160,23 +162,23 @@ intervals. Internally TaskJuggler uses the number of seconds after
 January 1st, 1970 to store any date. So all dates are actually stored
 with an accuracy of 1 second. <computeroutput> 2002-02-01
 </computeroutput> specifies midnight February 1st, 2002. Again
-following the TaskJuggler concept of needing as little info as needed and
-extending the rest with sensible defaults, TaskJuggler adds the time
-0:00:00 if nothing else has been specified. So the vacation ends on
-midnight February 5th, 2002. Well, almost. Every time you specify a
-time interval, the end date is not included in the interval. But the
-second before the date that you have specified is. So Klaus
+following the TaskJuggler concept of needing as little information as
+needed and extending the rest with sensible defaults, TaskJuggler adds
+the time 0:00:00 if nothing else has been specified. So the vacation
+ends on midnight February 5th, 2002. Well, almost. Every time you
+specify a time interval, the end date is not included in the interval.
+But the second before the date that you have specified is. So Klaus
 M&uuml;llers vacation ends 23:59:59 on February 4th, 2002.</para>
 
-<para>Peter Murphy only works 6.5 hours a day (actually 6.4 hours). So
-we use the <link linkend="PROPERTY_maxeffort"> maxeffort </link>
-attribute to limit his daily working hours. We could also define exact
-working hours using the <link linkend="PROPERTY_shift"> shift </link> property,
-but we ignore this for now. </para>
+<para>Peter Murphy only works 6.4 hours a day. So we use the <link
+linkend="PROPERTY_limits">limits</link> attribute to limit his daily
+working hours. We could also define exact working hours using the
+<link linkend="PROPERTY_shift">shift</link> property, but we ignore
+this for now. </para>
 
 <para>Note that we have attached the flag <computeroutput> team
 </computeroutput> after the declaration of the sub-resources to the
-team resources. This way, they flags don't get inherited by the
+team resources. This way, they flags don't get handed down to the
 sub-resources. If we would have declared the flags before the
 sub-resources, then they would have the flags attached as well.</para>
 
@@ -185,9 +187,9 @@ sub-resources, then they would have the flags attached as well.</para>
 
 <para>The use of our resources will create costs. For a profit and
 loss analysis, we need to balance the costs against the customer
-payments. So that we don't get lost with all the amounts, we declare 3
-accounts to credit the amounts to. We create one account for the
-development costs, one for the documentation costs and one for the
+payments. In order to not get lost with all the various amounts, we
+declare 3 accounts to credit the amounts to. We create one account for
+the development costs, one for the documentation costs and one for the
 customer payments.</para>
 
 <para><screen>
@@ -196,12 +198,12 @@ account doc "Dokumentation" cost
 account rev "Payments" revenue
 </screen></para>
 
-<para>The <link linkend="PROPERTY_account"> account </link> property has 3
+<para>The <link linkend="PROPERTY_account">account</link> property has 3
 fixed attributes, an ID, a name and a type. The type can either be
 <computeroutput> cost </computeroutput> or <computeroutput> revenue
 </computeroutput>. For the analysis TaskJuggler subtracts the total
 amount of all cost accounts from the total amount from all revenue
-accounts. </para>
+accounts.</para>
 
 <para>Accounts can also be nested. Nested accounts may not have a type
 specified. They inherit the type of the top-level account.</para>
@@ -278,7 +280,7 @@ expression</para>
 
 <para><screen>
   allocate dev1
-  allocate dev2 { load 0.5 }
+  allocate dev2 { limits { dailymax 4h } }
   allocate dev3
 </screen></para>
 
@@ -292,7 +294,7 @@ to use it in this example as well.</para>
 <para>One more interesting thing to note is the fact that we like
 the resource <computeroutput>dev2</computeroutput> only to work 50% of
 the day on this task, so we use the optional attribute <link
-linkend="PROPERTY_load">load</link> to specify this.</para>
+linkend="PROPERTY_limits">limits</link> to specify this.</para>
 
 <para>For TaskJuggler to schedule a task it needs to know either the
 start and end criteria of a task, or one of them and a duration
@@ -344,7 +346,7 @@ priority of top-level tasks. Setting the priority to 1000 marks the
 task as most important task, since the possible range is 1 (not
 important at all) to 1000 (ultimately important).
 <computeroutput>priority</computeroutput> is an attribute that is
-inherited to sub tasks if specified before the sub tasks declaration.
+handed down to sub tasks if specified before the sub tasks declaration.
 So all sub tasks of <computeroutput>software</computeroutput> have a
 priority of 1000 as well unless they have their own priority
 definition.</para>
@@ -455,9 +457,9 @@ task AcSo "Accounting Software" {
 
 <para>Since we specify the attribute for the top-level task before we
 declare any sub tasks, this attribute will be inherited by all sub
-tasks and their sub tasks and so on. Since the only exception is the
-writing of the manual, we need to change the account for this task
-again since it is also a sub task of
+tasks and their sub tasks and so on. The only exception is the
+writing of the manual. We need to change the account for this task
+again as it is also a sub task of
 <computeroutput>AcSo</computeroutput>.</para>
 
 <para><screen>
@@ -569,6 +571,7 @@ the GUI, you have to add the following lines to your project.</para>
 <para><screen>
 taskreport "Project Overview" {
   columns start, end, effort, duration, completed, status, note, cost, revenue
+  scenario delayed
 }
 </screen></para>
 
@@ -585,7 +588,9 @@ displayed.</para></listitem>
 
 <listitem><para>Interactive reports only support one scenario. By
 default this is the first scenario, but the user can select another
-scenario to be displayed.</para></listitem>
+scenario to be displayed. To view the delayed scenario we use the
+keyword <link
+linkend="PROPERTY_scenario_report">scenario</link>.</para></listitem>
 
 </itemizedlist></para>
 
@@ -595,6 +600,7 @@ reports</link> have a very similar syntax:</para>
 <para><screen>
 resourcereport "Resource Usage" {
   columns effort, freeload, utilization, rate
+  scenario delayed
   hideresource 0
 }
 </screen></para>
