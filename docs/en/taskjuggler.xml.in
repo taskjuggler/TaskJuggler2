@@ -218,7 +218,7 @@ we have not tested them.</para>
 
 <para><itemizedlist mark='opencircle'>
 
-<listitem><para>Qt3.2 &mdash; The <ulink
+<listitem><para>Qt &mdash; The <ulink
 url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
 version 3.3 or higher</para></listitem>
 
