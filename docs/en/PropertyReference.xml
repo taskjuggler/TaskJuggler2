@@ -65,10 +65,14 @@
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
   <!ENTITY example_durations SYSTEM
    "../../TestSuite/Syntax/Correct/Durations.tjp">
+  <!ENTITY example_efficiency SYSTEM
+   "../../TestSuite/Syntax/Correct/Efficiency.tjp">
   <!ENTITY example_export SYSTEM
    "../../TestSuite/Syntax/Correct/Export.tjp">
   <!ENTITY example_extend SYSTEM
    "../../TestSuite/Syntax/Correct/CustomAttributes.tjp">
+  <!ENTITY example_flags SYSTEM
+   "../../TestSuite/Syntax/Correct/Flags.tjp">
   <!ENTITY example_gap SYSTEM
    "../../TestSuite/Syntax/Correct/Gap.tjp">
   <!ENTITY example_guireport SYSTEM
@@ -804,6 +808,7 @@ have an efficiency of 0.0.</para></descr>
   <seealso>
    <also>load</also>
   </seealso>
+  <example>&example_efficiency;</example>
  </property>
  <property name="effort" id="effort" inheritable="No" scenario="Yes">
   <descr><para>Specifies the effort needed to complete the task. An
@@ -970,6 +975,7 @@ expressions to filter properties from the reports.</para></descr>
   <seealso>
    <also>flags_declare</also>
   </seealso>
+  <example>&example_flags;</example>
  </property>
  <property name="flags" id="flags_declare" inheritable="No">
   <descr><para>Declare a set of flags for later use.</para></descr>
@@ -979,6 +985,7 @@ expressions to filter properties from the reports.</para></descr>
   <seealso>
    <also>flags</also>
   </seealso>
+  <example>&example_flags;</example>
  </property>
  <property name="gapduration" id="gapduration" inheritable="Yes"
  scenario="Yes">
@@ -1101,6 +1108,7 @@ page.</para></descr>
    <also>htmlresourcereport</also>
    <also>htmltaskreport</also>
   </seealso>
+  <example>&example_account;</example>
  </property>
  <property name="htmlresourcereport" id="htmlresourcereport" inheritable="No">
   <descr><para>The report lists all resources and their respective
