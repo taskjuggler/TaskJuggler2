@@ -6,7 +6,7 @@ task project_start "Project Start" {
 }
 
 task deadline "Important Deadline" {
-	start 2005-07-20
-	# A task with only a start or end date and no duration specification
-	# is automatically assumed to be a milestone.
+  start 2005-07-20
+  # A task with only a start or end date and no duration specification
+  # is automatically assumed to be a milestone.
 }

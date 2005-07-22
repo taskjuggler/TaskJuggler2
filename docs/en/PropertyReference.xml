@@ -75,6 +75,8 @@
    "../../TestSuite/Syntax/Correct/GUIReport.tjp">
   <!ENTITY example_htmltaskreport SYSTEM
    "../../TestSuite/Syntax/Correct/HtmlTaskReport.tjp">
+  <!ENTITY example_icalreport SYSTEM
+   "../../TestSuite/Syntax/Correct/ICalReport.tjp">
   <!ENTITY example_include SYSTEM
    "../../TestSuite/Syntax/Correct/Include2.tjp">
   <!ENTITY example_journalentry SYSTEM
@@ -1251,6 +1253,7 @@ listed as well.</para></descr>
    <optattr>rolluptask</optattr>
    <optattr>scenarios</optattr>
   </optattributes>
+  <example>&example_icalreport;</example>
  </property>
  <property name="include" id="include" inheritable="No">
   <descr><para>Includes the specified file name as if its contents

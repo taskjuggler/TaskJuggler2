@@ -1,4 +1,4 @@
-project simple "Simple Project" "1.0" 2005-06-06 2005-06-26
+project prj "ICal Export Demo" "1.0" 2005-06-06 2005-06-26
   
 resource tux "Tux"
 resource tuxia "Tuxia"
@@ -29,17 +29,7 @@ task items "Project breakdown" {
   }
 }
 
-taskreport "Project Breakdown" {
-  columns start, end, effort
-  # Open only the first level of tasks
-  rolluptask treelevel() > 1
+icalreport "Tux-TODO-List.ics" {
+  # Only export tasks that tux is assigned to
+  hidetask ~isDutyOf(tux, plan)
 }
-
-resourcereport "Resource Allocations" {
-  columns id, effort
-  # We only want to see the tasks with real work (without parents),
-  # sorted by name
-  sorttasks nameup
-  hidetask ~isleaf()
-}
-
