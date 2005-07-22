@@ -93,9 +93,9 @@ TjTaskReport::generateList()
     {
         KListViewItem* newLvi;
         if ((*tli)->getParent() &&
+            taskList.findRef((*tli)->getParent()) >= 0 &&
             (*tli)->getParent()->getId().length() >
-            reportElement->getTaskRoot().length() &&
-            taskList.findRef((*tli)->getParent()) >= 0)
+            reportElement->getTaskRoot().length())
             newLvi = new KListViewItem
                 (ca2lviDict[QString("t:") + (*tli)->getParent()->getId()],
                  (*tli)->getName());

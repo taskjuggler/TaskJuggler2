@@ -88,7 +88,8 @@ TjResourceReport::generateList()
         /* Create a new item. If it has a parent, we need to look up the
          * parent LVI, so it get's inserted as child of that parent. */
         KListViewItem* newLvi;
-        if ((*rli)->getParent())
+        if ((*rli)->getParent() &&
+            resourceList.findRef((*rli)->getParent()) >= 0)
             newLvi = new KListViewItem
                 (ca2lviDict[QString("r:") + (*rli)->getParent()->getFullId()],
                  (*rli)->getName());
