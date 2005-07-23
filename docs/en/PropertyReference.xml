@@ -109,6 +109,8 @@
    "../../TestSuite/Syntax/Correct/Responsible.tjp">
   <!ENTITY example_scenario SYSTEM
    "../../TestSuite/Syntax/Correct/Scenario.tjp">
+  <!ENTITY example_scheduling SYSTEM
+   "../../TestSuite/Syntax/Correct/Scheduling.tjp">
   <!ENTITY example_select SYSTEM
    "../../TestSuite/Syntax/Correct/Select.tjp">
   <!ENTITY example_shift SYSTEM
@@ -771,7 +773,7 @@ automatically set to <varname>asap</varname>. If 'depends' and
    <optattr>gaplength</optattr>
   </optattributes>
   <seealso>
-   <also>complete</also>
+   <also>scheduling</also>
    <also>precedes</also>
   </seealso>
   <example>&example_depends;</example>
@@ -849,9 +851,12 @@ tasks that start before this end date are listed.</para></descr>
   <seealso>
    <also>start_report</also>
   </seealso>
+  <example>&example_export;</example>
  </property>
  <property name="end" id="end_task" inheritable="Yes" scenario="Yes">
-  <descr><para>The end date of the task</para></descr>
+  <descr><para>The end date of the task. This attributes also
+  implicitely sets the scheduling policy of the tasks to
+  <varname>alap</varname>.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
@@ -859,8 +864,10 @@ tasks that start before this end date are listed.</para></descr>
    <also>start_task</also>
    <also>maxend</also>
    <also>minend</also>
+   <also>scheduling</also>
    <also>endbuffer</also>
   </seealso>
+  <example>&example_durations;</example>
  </property>
  <property name="endbuffer" id="endbuffer" inheritable="No"
 scenario="Yes">
@@ -1559,7 +1566,9 @@ linkend="PROPERTY_effort">effort</link> or subtasks for a milestone
 task.</para>
 <para>A task that only has a start or an end specification and no
 duration specification or sub tasks, will be recognized as milestone
-automatically.</para></descr> </property>
+automatically.</para></descr>
+  <example>&example_milestone;</example>
+ </property>
  <property name="note" id="note" inheritable="No">
   <descr><para>Attach a note to the task. This is usually a more
 detailed specification of what the task is about.</para></descr>
@@ -1570,7 +1579,6 @@ detailed specification of what the task is about.</para></descr>
    <also>journalentry</also>
    <also>statusnote</also>
   </seealso>
-  <example>&example_milestone;</example>
  </property>
  <property name="monthlymax" id="monthlymax" inheritable="Yes">
   <descr><para>Sets the monthly limit of a resource usage or a resource
@@ -1654,8 +1662,8 @@ counts.</para></descr>
    <optattr>gaplength</optattr>
   </optattributes>
   <seealso>
-   <also>complete</also>
    <also>depends</also>
+   <also>scheduling</also>
   </seealso>
   <example>&example_precedes;</example>
  </property>
@@ -1987,13 +1995,45 @@ task can be ignored for scheduling in the scenario.</para></descr>
   <descr><para>Specifies the scheduling policy for the task. A task
 can be scheduled from start to end (As Soon As Possible,
 <varname>asap</varname>) or from
-end to start (As Late As Possible, <varname>alap</varname>).</para></descr>
+end to start (As Late As Possible, <varname>alap</varname>).</para>
+  <para>A task can be scheduled from start to end (ASAP mode) when it
+  has a hard (start) or soft (depends) criteria for the start time. A
+  task can be scheduled from end to start (ALAP mode) when it has a
+  hard (end) or soft (precedes) criteria for the end time.</para>
+  <para>Some task attributes set the scheduling policy implicitely.
+  This attribute can be used to explicitely set the scheduling policy
+  of the task to a certain direction. To avoid it being overwritten
+  again by an implicite attribute this attribute should always be the
+  last attribute of the task.</para>
+  <para>A random mixture of ASAP and ALAP tasks can have unexpected
+  side effects on the scheduling of the project. It increases
+  significantly the scheduling complexity and results in much longer
+  scheduling times. Especially in projects with many hundreds of tasks
+  the scheduling time of a project with a mixture of ASAP and ALAP
+  times can be 2 to 10 times longer. When the projects contains chains
+  of ALAP and ASAP tasks the tasks further down the dependency chain
+  will be served much later than other non-chained task even when they
+  have a much higher priority. This can result in situations where
+  high priority tasks do not get their resources even though the
+  parallel competing tasks have a much lower priority.</para>
+  <para>As a general rule, try to avoid ASAP tasks whenever possible.
+  Have a close eye on tasks that have been switched implicitely to
+  ALAP mode because the <varname>end</varname> attribute comes after
+  the <varname>start</varname> attribute.</para>
+  </descr>
   <attributes>
    <attr name="type" type="ID">
     <para>Possible values are <varname>alap</varname> or
 <varname>asap</varname>.</para>
    </attr>
   </attributes>
+  <seealso>
+    <also>depends</also>
+    <also>end_task</also>
+    <also>precedes</also>
+    <also>start_task</also>
+  </seealso>  
+  <example>&example_scheduling;</example>
  </property>
  <property name="select" id="select" inheritable="No">
   <descr><para>The select functions controls which resource is picked
@@ -2228,10 +2268,13 @@ tasks that end after this end date are listed.</para></descr>
   <seealso>
    <also>end_report</also>
   </seealso>
+  <example>&example_export;</example>
  </property>
  <property name="start" id="start_task" inheritable="Yes"
 scenario="Yes">
-  <descr><para>The start date of the task</para></descr>
+  <descr><para>The start date of the task. This attribute also
+  implicitely sets the scheduling policy of the task to
+  <varname>asap</varname>.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
   </attributes>
@@ -2239,8 +2282,10 @@ scenario="Yes">
    <also>end_task</also>
    <also>maxstart</also>
    <also>minstart</also>
+   <also>scheduling</also>
    <also>startbuffer</also>
   </seealso>
+  <example>&example_durations;</example>
  </property>
  <property name="startbuffer" id="startbuffer" inheritable="No"
 scenario="Yes">

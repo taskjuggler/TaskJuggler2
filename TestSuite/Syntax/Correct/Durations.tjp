@@ -9,6 +9,12 @@ task t "Enclosing" {
     duration 10d
   }
 
+	task intervalTask "Interval Task" {
+		# This task is similar to the durationTask. Instead of a start
+		# date and a duration it has a fixed start and end date.
+		end 2005-06-17
+	}
+
   task lengthTask "Length Task" {
     # This task 10 working days long. So about 12 calendar days.
     length 10d
