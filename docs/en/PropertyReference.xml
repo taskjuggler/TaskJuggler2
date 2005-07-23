@@ -117,6 +117,12 @@
    "../../TestSuite/Syntax/Correct/Simple.tjp">
   <!ENTITY example_supplement SYSTEM
    "../../TestSuite/Syntax/Correct/Supplement.tjp">
+  <!ENTITY example_taskroot SYSTEM
+   "../../TestSuite/Syntax/Correct/TaskRoot.tjp">
+  <!ENTITY example_vacation SYSTEM
+   "../../TestSuite/Syntax/Correct/Vacation.tjp">
+  <!ENTITY example_xmlreport SYSTEM
+   "../../TestSuite/Syntax/Correct/XMLReport.tjp">
 ]>
 
 <properties>
@@ -2454,6 +2460,7 @@ become top-level tasks in the exported file.</para></descr>
     <para>ID of a task that specifies the new root level</para>
    </attr>
   </attributes>
+  <example>&example_taskroot;</example>
  </property>
  <property name="timezone" id="timezone" inheritable="No">
   <descr><para>Sets the default timezone of the project. All times
@@ -2696,6 +2703,7 @@ respected by all resources that are defined hereafter.</para></descr>
   <seealso>
    <also>vacation_resource</also>
   </seealso>
+  <example>&example_vacation;</example>
  </property>
  <property name="vacation" id="vacation_resource" inheritable="Yes">
   <descr><para>Specify a vacation period for the resource.</para></descr>
@@ -2705,6 +2713,7 @@ respected by all resources that are defined hereafter.</para></descr>
   <seealso>
    <also>vacation_global</also>
   </seealso>
+  <example>&example_vacation;</example>
  </property>
  <property name="version" id="version" inheritable="No">
   <descr><para>Specifies which XML format should be generated.
@@ -2712,6 +2721,7 @@ Currently version 2 is highly recomended.</para></descr>
   <attributes>
    <attr name="number" type="INTEGER"/>
   </attributes>
+  <example>&example_xmlreport;</example>
  </property>
  <property name="weeklymax" id="weeklymax" inheritable="Yes">
   <descr><para>Sets the weekly limit of a resource usage or a resource
@@ -2759,7 +2769,10 @@ of resources to certain time slots of week days.</para></descr>
 improved XML format. This is not yet the default, but will be in later
 versions. So you should always specify which version of the XML format
 should be generated. The file name should have a
-<varname>.tjx</varname> extension.</para></descr>
+<varname>.tjx</varname> extension. Version 2 files are gzip compressed
+XML Files. The DTD for the version 2 file format can be found on the <ulink
+url="http://www.taskjuggler.org/show_dtd.php">TaskJuggler Web
+Site</ulink>.</para></descr>
   <attributes>
    <attr name="file" type="STRING"/>
   </attributes>
@@ -2771,6 +2784,7 @@ should be generated. The file name should have a
    <optattr>scenarios</optattr>
    <optattr>version</optattr>
   </optattributes>
+  <example>&example_xmlreport;</example>
  </property>
  <property name="yearlyworkingdays" id="yearlyworkingdays" inheritable="No">
   <descr><para>Specifies the number of average working days per year.

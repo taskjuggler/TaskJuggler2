@@ -1,0 +1,33 @@
+project simple "XML Report Example" "1.0" 2005-06-06 2005-06-26
+
+resource tux "Tux"
+
+task items "Project breakdown" {
+  start 2005-06-06
+
+  task plan "Plan work" {
+    length 3d
+  }
+
+  task implementation "Implement work" {
+    effort 5d
+    allocate tux
+    depends !plan
+  }
+
+  task acceptance "Customer acceptance" {
+    duration 5d
+    depends !implementation
+  }
+}
+
+# This is the format that e. g. tjx2gantt can read
+xmlreport "Version1.tjx" {
+  version 1
+}
+
+# This is the format that taskjuggler can read and write
+xmlreport "Version2.tjx" {
+  version 2
+}
+
