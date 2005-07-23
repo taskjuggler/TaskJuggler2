@@ -283,6 +283,10 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
     menu.insertItem(i18n("&Generate Report"), 2);
     menu.insertItem(i18n("&Edit Report Definition"), 3);
 
+    // The XML reports cannot be be viewed, so we disable the entry.
+    if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
+        menu.setItemEnabled(1, FALSE);
+
     // The interactive reports can not be generated, so we disable the entry.
     if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
         menu.setItemEnabled(2, FALSE);
