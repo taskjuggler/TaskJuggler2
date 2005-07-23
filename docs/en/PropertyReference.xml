@@ -859,7 +859,8 @@ tasks that start before this end date are listed.</para></descr>
  <property name="endbuffer" id="endbuffer" inheritable="No"
 scenario="Yes">
   <descr><para>Specifies how much slack time you expect to have at the
-end of the task.</para></descr>
+end of the task. This has no impact on the scheduling of the process.
+This information is for documentation purposes only.</para></descr>
   <attributes>
    <attr name="percent" type="REAL">
     <para>Percent slack of the overall effort, duration or length of
@@ -1070,6 +1071,7 @@ resource.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
+  <example>&example_htmltaskreport;</example>
  </property>
  <property name="hidetask" id="hidetask" inheritable="No">
   <descr><para>Do not show tasks that match the specified logical
@@ -1079,6 +1081,7 @@ task.</para></descr>
   <attributes>
    <attr name="logicalexpression" type="LOGICALEXPRESSION"/>
   </attributes>
+  <example>&example_guireport;</example>
  </property>
  <property name="htmlaccountreport" id="htmlaccountreport" inheritable="No">
   <descr><para>The report lists all specified account values as a HTML
@@ -1306,7 +1309,9 @@ special reserved keyword.</para></descr>
   </attributes>
  </property>
  <property name="label" id="label" inheritable="No">
-  <descr><para>Specifies the text for the URL in HTML reports.</para></descr>
+  <descr><para>Specifies the text for the URL in HTML reports. If no
+  label is specified, the URL will be displayed. If a label has been
+  specified, the URL will not be shown.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
   </attributes>
@@ -2234,7 +2239,8 @@ scenario="Yes">
  <property name="startbuffer" id="startbuffer" inheritable="No"
 scenario="Yes">
   <descr><para>Specifies how much slack time you expect to have at the
-begining of the task.</para></descr>
+begining of the task. This information has no impact on the scheduling
+of the project. It is for documentation purposes only.</para></descr>
   <attributes>
    <attr name="percent" type="REAL">
     <para>Percent slack of the overall effort, duration or length of
