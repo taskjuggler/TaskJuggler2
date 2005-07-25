@@ -22,6 +22,7 @@ class QWidgetStack;
 class QString;
 class QListViewItem;
 class KListView;
+class KPrinter;
 class Report;
 class CoreAttributes;
 class Report;
@@ -31,7 +32,7 @@ class ReportManager : public QObject
     Q_OBJECT
 public:
     ReportManager(QWidgetStack* v, KListView* b);
-    virtual ~ReportManager() { }
+    virtual ~ReportManager();
 
     void updateReportList(QPtrListIterator<Report> rli);
 
@@ -53,6 +54,8 @@ public:
     void setLoadingProject(bool lp);
 
     void clear();
+
+    void print();
 
 signals:
     void signalChangeStatusBar(const QString& text);
@@ -83,6 +86,7 @@ private:
     KListViewItem* exportReports;
 
     QPtrList<ManagedReportInfo> reports;
+    KPrinter* printer;
 
     bool loadingProject;
 } ;

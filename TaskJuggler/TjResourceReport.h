@@ -16,8 +16,10 @@
 #include "TjReport.h"
 
 class QPoint;
+class KPrinter;
 class CoreAttributes;
 class QtResourceReportElement;
+class TjPrintReport;
 
 class TjResourceReport : public TjReport
 {
@@ -27,6 +29,8 @@ public:
     virtual ~TjResourceReport();
 
     virtual const QtReportElement* getReportElement() const;
+
+    virtual TjPrintReport* generateReport(KPrinter* printer);
 
 protected:
     virtual bool generateList();

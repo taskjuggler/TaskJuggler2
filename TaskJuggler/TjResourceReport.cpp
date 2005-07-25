@@ -21,7 +21,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kcursor.h>
-
+#include <kmessagebox.h>
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
@@ -37,6 +37,14 @@ TjResourceReport::TjResourceReport(QWidget* p, Report* const rDef,
 
 TjResourceReport::~TjResourceReport()
 {
+}
+
+TjPrintReport*
+TjResourceReport::generateReport(KPrinter* printer)
+{
+    KMessageBox::sorry(this, i18n("Sorry, printing of Resource Reports is not "
+                                  "yet implemented."));
+    return 0;
 }
 
 const QtReportElement*

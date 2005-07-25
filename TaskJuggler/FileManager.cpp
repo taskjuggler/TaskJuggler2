@@ -37,6 +37,7 @@
 #include <ktexteditor/undointerface.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/searchinterface.h>
+#include <ktexteditor/printinterface.h>
 
 #include <kdebug.h>
 
@@ -619,6 +620,14 @@ FileManager::selectAll()
     if (getCurrentFile())
         KTextEditor::selectionInterface(getCurrentFile()->getEditor()->
                                         document())->selectAll();
+}
+
+void
+FileManager::print()
+{
+    if (getCurrentFile())
+        KTextEditor::printInterface(getCurrentFile()->getEditor()->
+                                    document())->print();
 }
 
 void

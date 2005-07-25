@@ -71,6 +71,8 @@ public:
     void paste();
     void selectAll();
 
+    void print();
+
     void configureEditor();
 
 public slots:

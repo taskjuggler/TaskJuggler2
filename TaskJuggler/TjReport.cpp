@@ -33,6 +33,7 @@
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
 #include <krun.h>
+#include <kprinter.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -50,6 +51,7 @@
 #include "QtResourceReportElement.h"
 #include "ReportLayers.h"
 #include "RichTextDisplay.h"
+#include "TjPrintReport.h"
 
 //                                           Boundary
 const int TjReport::minStepHour = 20;    //   365 * 24 * 20 = 175200
@@ -137,6 +139,20 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
 TjReport::~TjReport()
 {
     delete statusBarUpdateTimer;
+}
+
+void
+TjReport::print(KPrinter* printer)
+{
+    printer->setup(this);
+
+    TjPrintReport* tjpr;
+    if ((tjpr = generateReport(printer)) == 0)
+        return;
+
+    tjpr->printReportPage((QPaintDevice*) printer, 0, 0);
+    printer->newPage();
+    tjpr->printReportPage((QPaintDevice*) printer, 0, 1);
 }
 
 bool

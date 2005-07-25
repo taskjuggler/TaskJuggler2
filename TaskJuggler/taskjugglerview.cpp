@@ -180,8 +180,17 @@ TaskJugglerView::~TaskJugglerView()
 }
 
 void
-TaskJugglerView::print(QPainter*, int, int)
+TaskJugglerView::print()
 {
+    switch (mw->bigTab->currentPageIndex())
+    {
+    case 0: // Text Editor
+        fileManager->print();
+    case 1: // Report
+        reportManager->print();
+    default: // A new widget?
+        break;
+    }
 }
 
 void
@@ -217,23 +226,27 @@ TaskJugglerView::newProject()
 {
     if (!fileManager->getMasterFile().isEmpty())
     {
-        if ( KMessageBox::warningContinueCancel( this, i18n("You must close the current project before you can\n"
-                                                            "create a new project. Do you really want to do this?"),
-                                                 QString::null,
-                                                 KStdGuiItem::close() ) != KMessageBox::Continue )
+        if (KMessageBox::warningContinueCancel
+            (this, i18n("You must close the current project before you can\n"
+                        "create a new project. Do you really want to do this?"),
+             QString::null, KStdGuiItem::close()) != KMessageBox::Continue)
             return;
     }
-    KURL fileURL = KFileDialog::getSaveURL( i18n("Pick a name for the new project file"), "*.tjp", this, i18n( "New Project File" ) );
+    KURL fileURL = KFileDialog::getSaveURL
+        (i18n("Pick a name for the new project file"), "*.tjp", this,
+         i18n("New Project File"));
     if (fileURL.isEmpty() || !fileURL.isValid())
     {
-        KMessageBox::sorry( this, i18n("The specified file URL is not valid."), i18n("Error while creating new Project") );
+        KMessageBox::sorry(this, i18n("The specified file URL is not valid."),
+                           i18n("Error while creating new Project"));
         return;
     }
 
     QString templateProject = locate("data", "taskjuggler/ProjectTemplate.tjp");
     if (templateProject.isEmpty())
     {
-        KMessageBox::sorry( this, i18n("Could not find ProjectTemplate.tjp."), i18n("Error while creating new Project") );
+        KMessageBox::sorry(this, i18n("Could not find ProjectTemplate.tjp."),
+                           i18n("Error while creating new Project"));
         return;
     }
 

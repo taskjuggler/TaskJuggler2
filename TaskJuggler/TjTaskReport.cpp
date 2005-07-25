@@ -21,6 +21,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kcursor.h>
+#include <kmessagebox.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -29,6 +30,7 @@
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
 #include "ReportLayers.h"
+#include "TjPrintTaskReport.h"
 
 TjTaskReport::TjTaskReport(QWidget* p, Report* const rDef,
                            const QString& n) : TjReport(p, rDef, n)
@@ -37,6 +39,20 @@ TjTaskReport::TjTaskReport(QWidget* p, Report* const rDef,
 
 TjTaskReport::~TjTaskReport()
 {
+}
+
+TjPrintReport*
+TjTaskReport::generateReport(KPrinter* printer)
+{
+    KMessageBox::sorry(this, i18n("Sorry, printing of Task Reports is not "
+                                  "yet implemented."));
+    return 0;
+#if 0
+    TjPrintTaskReport* tptr = new TjPrintTaskReport(reportDef);
+    tptr->generate((QPaintDevice*) printer);
+
+    return tptr;
+#endif
 }
 
 const QtReportElement*

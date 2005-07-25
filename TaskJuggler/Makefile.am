@@ -18,6 +18,8 @@ TaskJuggler_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.la 
 
 # which sources should be compiled for taskjuggler
 TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
+	TjPrintReport.cpp TjPrintTaskReport.cpp \
+	TjReportRow.cpp TjReportCell.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \
 	ReportManager.cpp ManagedReportInfo.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \

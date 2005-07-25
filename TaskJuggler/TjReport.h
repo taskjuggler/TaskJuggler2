@@ -29,12 +29,14 @@ class QCanvas;
 class QCanvasView;
 class QTimer;
 class KListView;
+class KPrinter;
 class Report;
 class Task;
 class Resource;
 class QtReportElement;
 class Interval;
 class JournalIterator;
+class TjPrintReport;
 
 class TjReport : public QWidget
 {
@@ -55,6 +57,9 @@ public:
     void generateResourceListLine(const QtReportElement* reportElement,
                                   const Resource* r, QListViewItem* lvi,
                                   const Task* t = 0);
+    void print(KPrinter* printer);
+
+    virtual TjPrintReport* generateReport(KPrinter* printer) = 0;
 
 signals:
     void signalChangeStatusBar(const QString& text);

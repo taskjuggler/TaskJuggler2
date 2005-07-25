@@ -272,9 +272,11 @@ TaskJuggler::fileClose()
 
 void TaskJuggler::filePrint()
 {
+    m_view->print();
+
+#if 0
     KMessageBox::sorry( this, i18n("Sorry, printing is not yet implemented.") );
     return;
-#if 0
     // this slot is called whenever the File->Print menu is selected,
     // the Print shortcut is pressed (usually CTRL+P) or the Print toolbar
     // button is clicked

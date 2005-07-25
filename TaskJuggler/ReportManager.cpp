@@ -23,6 +23,7 @@
 #include <kglobalsettings.h>
 #include <kurl.h>
 #include <krun.h>
+#include <kprinter.h>
 
 #include "Report.h"
 #include "HTMLReport.h"
@@ -47,6 +48,14 @@ ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
     // to the user.
     browser->setColumnWidthMode(1, QListView::Manual);
     browser->hideColumn(1);
+
+    printer = 0;
+}
+
+ReportManager::~ReportManager()
+{
+    clear();
+    delete printer;
 }
 
 QListViewItem*
@@ -354,6 +363,16 @@ void
 ReportManager::clear()
 {
     reports.clear();
+}
+
+void
+ReportManager::print()
+{
+    if (!printer)
+        printer = new KPrinter(this);
+
+    if (getCurrentReport())
+        getCurrentReport()->getReport()->print(printer);
 }
 
 void

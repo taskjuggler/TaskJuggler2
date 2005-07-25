@@ -32,6 +32,7 @@ class QPoint;
 class KURL;
 class KListView;
 class KConfig;
+class KPrinter;
 class MainWidget;
 class Project;
 class CoreAttributes;
@@ -89,10 +90,7 @@ public:
 
     virtual void close();
 
-    /**
-     * Print this view to any medium -- paper or not
-     */
-    void print(QPainter *, int height, int width);
+    void print();
 
     void readProperties(KConfig* config);
     void saveProperties(KConfig* config);

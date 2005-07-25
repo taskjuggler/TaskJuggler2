@@ -16,9 +16,11 @@
 #include "TjReport.h"
 
 class QPoint;
-class CoreAttributes;
 class QListViewItem;
+class KPrinter;
+class CoreAttributes;
 class QtTaskReportElement;
+class TjPrintReport;
 
 class TjTaskReport : public TjReport
 {
@@ -28,6 +30,8 @@ public:
     virtual ~TjTaskReport();
 
     virtual const QtReportElement* getReportElement() const;
+
+    virtual TjPrintReport* generateReport(KPrinter* printer);
 
 protected:
     virtual bool generateList();

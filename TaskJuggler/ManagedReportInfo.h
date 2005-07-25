@@ -16,6 +16,7 @@
 #include <qstring.h>
 
 class KListViewItem;
+class KPrinter;
 class ReportManager;
 class TjReport;
 class Report;
@@ -37,6 +38,8 @@ public:
     TjReport* getReport() const { return report; }
 
     void setLoadingProject(bool lp);
+
+    void print(KPrinter* printer);
 
 private:
     ManagedReportInfo() : projectReport(0) { }
