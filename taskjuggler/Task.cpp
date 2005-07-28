@@ -1194,6 +1194,7 @@ Task::xRef(QDict<Task>& hash)
     if (DEBUGPF(5))
         qDebug("Creating cross references for task %s ...", id.latin1());
 
+    QPtrList<TaskDependency> brokenDeps;
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
     {
         QString absId = resolveId((*tdi)->getTaskRefId());
@@ -1201,6 +1202,7 @@ Task::xRef(QDict<Task>& hash)
         if ((t = hash.find(absId)) == 0)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
+            brokenDeps.append(*tdi);
             error = TRUE;
         }
         else
@@ -1213,12 +1215,8 @@ Task::xRef(QDict<Task>& hash)
                     error = TRUE;
                     break;
                 }
-            if (error)
-            {
-                // Make it a warning only for the time beeing.
-                error = FALSE;
-            }
-            else
+
+            if (!error)
             {
                 (*tdi)->setTaskRef(t);
                 if (t == this)
@@ -1237,6 +1235,10 @@ Task::xRef(QDict<Task>& hash)
             }
         }
     }
+    // Remove broken dependencies as they can cause trouble later on.
+    for (QPtrListIterator<TaskDependency> tdi(brokenDeps); *tdi; ++tdi)
+        depends.removeRef(*tdi);
+    brokenDeps.clear();
 
     for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
     {
@@ -1252,17 +1254,12 @@ Task::xRef(QDict<Task>& hash)
             for (QPtrListIterator<TaskDependency> tdi2(precedes); *tdi2; ++tdi2)
                 if ((*tdi2)->getTaskRef() == t)
                 {
-                    errorMessage(i18n("No need to specify dependency '%1'")
-                                 .arg(absId));
+                    errorMessage(i18n("No need to specify dependency '%1'"
+                                      "multiple times").arg(absId));
                     error = TRUE;
                     break;
                 }
-            if (error)
-            {
-                // Make it a warning only for the time beeing.
-                error = FALSE;
-            }
-            else
+            if (!error)
             {
                 (*tdi)->setTaskRef(t);
                 if (t == this)
@@ -1281,6 +1278,10 @@ Task::xRef(QDict<Task>& hash)
             }
         }
     }
+    // Remove broken dependencies as they can cause trouble later on.
+    for (QPtrListIterator<TaskDependency> tdi(brokenDeps); *tdi; ++tdi)
+        precedes.removeRef(*tdi);
+    brokenDeps.clear();
 
     return !error;
 }

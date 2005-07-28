@@ -908,7 +908,8 @@ Project::loadFromXML( const QString& inpFile )
    {
       qDebug("Empty !" );
    }
-   pass2(TRUE);
+   if (!pass2(TRUE))
+       return FALSE;
    scheduleAllScenarios();
    return true;
 }
