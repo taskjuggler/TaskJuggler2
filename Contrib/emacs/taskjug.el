@@ -85,11 +85,11 @@
                     (setq cur-indent (+ (current-indentation) default-tab-width)) ; Do the actual indenting
                     (setq not-indented nil))
                 (if (bobp)
-                    (setq not-indented nil))))))
+                    (setq not-indented nil)))))))
       
       (if cur-indent
           (indent-line-to cur-indent)
-        (indent-line-to 0)))))) ; If we didn't see an indentation hint, then allow no indentation
+        (indent-line-to 0))))) ; If we didn't see an indentation hint, then allow no indentation
 
 
 (defun taskjug-mode ()
