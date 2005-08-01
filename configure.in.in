@@ -79,6 +79,7 @@ if test "$cv_option_kdesupport" = yes ;then
     AC_PATH_KDE 
 
     AC_SUBST(KDE_LIBS)
+    dnl These libs are part of KDEPIM
     LIBKCAL="-lkcal"
     DO_NOT_COMPILE=""
 else
@@ -124,37 +125,42 @@ AC_SUBST(TJX2GANTT)
 
 dnl Check for the stuff needed to create the HTML manual
 AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, no)
-dnl meinproc is usualy part of kdelibs
-AC_CHECK_PROG(MEINPROC, meinproc, meinproc, no)
-if test "$MEINPROC" = no ; then
-  AC_MSG_WARN([KDE online help will not be generated])
-fi  
-AC_CHECK_PROG(DB2HTML, docbook2html, docbook2html, no)
-if test "$XSLTPROC" = no -o "$DB2HTML" = no ; then
-  AC_MSG_WARN([HTML manual will not be generated])
-  HTMLMANUAL="no"
-else
-  HTMLMANUAL="yes"
-fi
-AC_SUBST(HTMLMANUAL)
+if test "$XSLTPROC" = no ; then
+  AC_MSG_WARN([Documentation will not be generated])
+  DO_NOT_COMPILE="${DO_NOT_COMPILE} docs"
+else  
+  dnl meinproc is usualy part of kdelibs
+  AC_CHECK_PROG(MEINPROC, meinproc, meinproc, no)
+  if test "$MEINPROC" = no ; then
+    AC_MSG_WARN([KDE online help will not be generated])
+  fi  
+  AC_CHECK_PROG(DB2HTML, docbook2html, docbook2html, no)
+  if test "$DB2HTML" = no ; then
+    AC_MSG_WARN([HTML manual will not be generated])
+    HTMLMANUAL="no"
+  else
+    HTMLMANUAL="yes"
+  fi
+  AC_SUBST(HTMLMANUAL)
 
-dnl Check for the stuff needed to create the PS manual
-AC_CHECK_PROG(DB2PS, docbook2ps, docbook2ps, no)
-AC_CHECK_PROG(DB2PDF, docbook2pdf, docbook2pdf, no)
-AC_CHECK_PROG(JADE, openjade, openjade, no)
-AC_CHECK_PROG(JADETEX, jadetex, jadetex, no)
-AC_CHECK_PROG(DVIPS, dvips, dvips, no)
-if test "$XSLTPROC" = no -o "$DB2PS" = no -o \
-        "$JADE" = no -o "$JADETEX" = no -o \
-        "$DVIPS" = no ; then
-  AC_MSG_WARN([Postscript manual will not be generated])
-  PSMANUAL="no"
-else
-  PSMANUAL="yes"
-fi
-AC_SUBST(PSMANUAL)
+  dnl Check for the stuff needed to create the PS manual
+  AC_CHECK_PROG(DB2PS, docbook2ps, docbook2ps, no)
+  AC_CHECK_PROG(DB2PDF, docbook2pdf, docbook2pdf, no)
+  AC_CHECK_PROG(JADE, openjade, openjade, no)
+  AC_CHECK_PROG(JADETEX, jadetex, jadetex, no)
+  AC_CHECK_PROG(DVIPS, dvips, dvips, no)
+  if test "$XSLTPROC" = no -o "$DB2PS" = no -o \
+          "$JADE" = no -o "$JADETEX" = no -o \
+          "$DVIPS" = no ; then
+    AC_MSG_WARN([Postscript manual will not be generated])
+    PSMANUAL="no"
+  else
+    PSMANUAL="yes"
+  fi
+  AC_SUBST(PSMANUAL)
 
-AC_OUTPUT(docs/en/taskjuggler.xml)
+  AC_OUTPUT(docs/en/taskjuggler.xml)
+fi
 
 dnl KDE_INIT_DOXYGEN([The TaskJuggler API Reference], [Version $VERSION])
 

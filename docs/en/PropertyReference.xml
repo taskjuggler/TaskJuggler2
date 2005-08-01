@@ -103,6 +103,8 @@
    "../../TestSuite/Syntax/Correct/Priority.tjp">
   <!ENTITY example_project SYSTEM
    "../../TestSuite/Syntax/Correct/Project.tjp">
+  <!ENTITY example_reports SYSTEM
+   "../../TestSuite/Syntax/Correct/Reports.tjp">
   <!ENTITY example_resource SYSTEM
    "../../TestSuite/Syntax/Correct/Resource.tjp">
   <!ENTITY example_responsible SYSTEM
@@ -778,7 +780,8 @@ automatically set to <varname>asap</varname>. If 'depends' and
   </seealso>
   <example>&example_depends;</example>
  </property>
- <property name="disabled" id="disabled" inheritable="No">
+ <property name="disabled" id="disabled" inheritable="No"
+ schenario="Yes">
   <descr><para>Disables the scenario for scheduling.</para></descr>
   <example>&example_scenario;</example>
  </property>
@@ -1837,6 +1840,7 @@ than one reference, you can create your own URL placeholders.</para></descr>
   <seealso>
    <also>extend</also>
   </seealso>
+  <example>&example_extend;</example>
  </property>
  <property name="resource" id="resource" inheritable="No">
   <descr><para>Task use resources to fullfill the specified
@@ -2109,6 +2113,7 @@ for ASAP tasks) time slot has become unavailable.</para></descr>
    
    </simplelist></para>
   </freestyle>
+  <example>&example_booking;</example>
  </property>
  <property name="shift" id="shift" inheritable="No">
   <descr><para>When several resource have the same working hours,
@@ -2258,6 +2263,7 @@ tree
    </para>
   </attr>
   </attributes>
+  <example>&example_reports;</example>
  </property>
  <property name="start" id="start_report" inheritable="No">
   <descr><para>Specifies the start date of the report. In task reports only
