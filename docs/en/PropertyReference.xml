@@ -2757,12 +2757,17 @@ respected by all resources that are defined hereafter.</para></descr>
   <example>&example_vacation;</example>
  </property>
  <property name="vacation" id="vacation_resource" inheritable="Yes">
-  <descr><para>Specify a vacation period for the resource.</para></descr>
+  <descr><para>Specify a vacation period for the resource. It can also
+  be used to block out the time before a resource joint or after it
+  left. For employees changing their work schedule from full-time to
+  part-time, or vice versa, please refer to the 'Shift' property.
+  </para></descr>
   <attributes>
    <attr name="interval" type="DATEINTERVAL"/>
   </attributes>
   <seealso>
    <also>vacation_global</also>
+   <also>shift_selection</also>
   </seealso>
   <example>&example_vacation;</example>
  </property>

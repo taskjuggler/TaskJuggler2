@@ -15,6 +15,18 @@ resource team "A team" {
   }
 }
 
+# The vacation property is also usefull when new employees start
+# working in the course of a project or if someone quits.
+resource tuxia "Tuxia" {
+  # Tuxia is a new employee as of August 1st 2005
+  vacation 1971-01-01 - 2005-08-01
+}
+ 
+resource tuxus "Tuxus" {
+  # Tuxus quits his job on September 1st 2005
+	vacation 2005-09-01 - 2030-01-01
+}
+
 task t "An important date" {
   start 2005-07-22
 }
