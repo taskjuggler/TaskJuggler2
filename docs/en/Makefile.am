@@ -41,7 +41,7 @@ index.docbook : taskjuggler.xml
 	cp taskjuggler.xml index.docbook
 	patch index.docbook < kde-doc.patch
 
-index.cache.bz2 : index.docbook GenPropertyReference.xml Example.xml
+index.cache.bz2 : index.docbook $(SGMLSOURCES)
 	@if test "${MEINPROC}" != "no" ; then \
 	  $(MEINPROC) --check --cache index.cache.bz2 ./index.docbook; \
 	fi  

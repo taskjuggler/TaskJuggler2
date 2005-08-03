@@ -52,8 +52,8 @@ reference.</para>
 
 </preface>
 
-<chapter><title>Introduction</title>
-<sect1><title>About TaskJuggler</title>
+<chapter id="introduction"><title>Introduction</title>
+<sect1 id="about_taskjuggler"><title>About TaskJuggler</title>
 
 <para>TaskJuggler is a project planing tool for Linux and UNIX
 system-based operating systems. Whether you want to build a skyscraper
@@ -86,7 +86,7 @@ and supports you very effectively during your planing and tracking
 process.</para> 
 
 </sect1>
-<sect1><title>Features and Highlights</title>
+<sect1 id="features_and_highlights"><title>Features and Highlights</title>
 
 <para>
 <itemizedlist mark='opencircle'>
@@ -141,7 +141,7 @@ database.</para></listitem>
 </para>
 
 </sect1>
-<sect1><title>TaskJuggler on the Web</title>
+<sect1 id="taskjuggler_on_the_web"><title>TaskJuggler on the Web</title>
 
 <para>The official TaskJuggler web site can be found at <ulink
 url="http://www.taskjuggler.org">
@@ -160,16 +160,131 @@ url="http://bugzilla.novell.com">Bugtracking System</ulink>.</para>
 
 </sect1>
 &ChangeLog;
+<sect1 id="how_to_contribute"><title>How to Contribute</title>
+
+<sect2 id="why_contribute"><title>Why contribute?</title>
+
+<para>TaskJuggler is an Open Source Project. It was developed by
+volunteers mostly in their spare time. Made available under the GNU
+General Public license and similar licenses, TaskJuggler can be shared
+and used free of charge by anybody who respects the license
+conditions. Does that mean you can use it without worrying about
+anything? Clearly not! Though users have no legal obligation to
+contribute, you should feel a moral obligation to support Open Source
+in whatever way you can. This can range from helping out other Open
+Source users to actively contributing to the TaskJuggler Project. The
+following section describes, how you can contribute to any of the
+components that are part of the TaskJuggler software releases.</para>
+
+</sect2>
+<sect2 id="preparing_a_contribution"><title>Preparing a
+contribution</title>
+
+<para>To get started you need to download the most current development
+snapshot from the <ulink
+url="http://www.taskjuggler.org/download.php">TaskJuggler Download
+Site</ulink>. The development snapshot is updated once a day to
+provide access to the continous development. It is important that you
+use a very recent snapshot as the developers might have made changes
+in the same files as you. This increases the chance for change
+collisions which can ultimately lead to the rejection of your
+contribution.</para>
+
+<para>Unpack the tarball as described in the installation section.
+Then rename the taskjuggler directory to something like
+<varname>taskjuggler-yourname</varname>. Then unpack the tarball again
+in the same place as before. You should now have a directory that
+contains two identical directory trees, each with a slightly different
+name of the top-level directoy of each tree.</para>
+
+<para>Next you need to find the files where you want to make your
+modifications. Please make your changes only in the
+<varname>taskjuggler-yourname</varname> directory. The other directory
+must be left unmodified. We need it later on to create a file that
+just contains your changes. Sometimes files will be generated from
+other files. Do not change those generated files. Your changes will be
+overwritten the next time you call the make utility. To identify those
+files, some familiarity with make and other Linux tools are
+helpful. Whenever there is a file with the same base name and the extension
+<varname>.in</varname> in the same directory, then the file is
+generated from the <varname>.in</varname>-file. You need to modify the
+<varname>.in</varname>-file, not the one with just the base
+name. Another indicator is the fact that the file is not part of the
+tarball. With few exceptions that can be identified by the .in-file rule
+above, the tarball does not contain any generated files.</para>
+
+</sect2>
+<sect2 id="creating_a_patch"><title>Creating a Patch</title>
+
+<para>When you are done with your changes, it's a good idea to test them.
+Type
+
+<screen>make</screen>
+
+in the <varname>taskjuggler-yourname</varname> directory. In case
+there are no errors, you can inspect the result. In case everything
+builds fine, you can remove all generated files again by typing 
+
+<screen>make distclean</screen>
+
+Now you can generate a file that just contains
+your modifications by typing
+<screen>diff -ru taskjuggler-svn taskjuggker-yourname > taskjuggler-yourname.diff</screen>
+
+Inspect the generated file
+<varname>taskjuggler-yourname.diff</varname> and make sure it only
+contains diffs for files that you have changed and the changes are the
+way you want them to be. In case there are generated files included as
+well, please remove those files and regenerate the diff.</para>
+
+<para>As you can see, the diff utility performs a line-by-line
+comparisons of the files. Therefor make sure, you only make changes
+that have an impact on the generated files. Do you change indentation
+or line wrapping of paragraphs. These kind of changes increase the
+size of diff files and make it much harder to evaluate the patches.
+When making changes to the program code, please use our coding
+style. In case your contribution is large enough to justify a
+copyright claim, please indicate this in the patch. For modifications
+to existing files, we assume that your contribution falls under the
+same license as the modified file. All new files need to contain a
+license declaration.</para>
+
+</sect2>
+<sect2 id="contributing_translations"><title>Contributing Translations</title>
+
+<para>Another possible area of contribution are translation of
+TaskJuggler into languages other than US english. Our development
+process is in pricinple prepared for translations, but the first
+translation will definitely be a bit bumpy to include. TaskJuggler has
+several hunderd messages and more than hundred pages of documentation.
+Any translation is a significant effort and an ongoing commitment.
+TaskJuggler is still actively developed and this requires the
+translations to be updated as well. Please understand that we do not
+want to ship partial or outdated translations to our users.</para>
+
+</sect2>
+<sect2 id="some_final_words_to_contributors"><title>Some final words
+to Contributors</title>
+
+<para>We do welcome all contributions but please understand that we
+reseve the right to reject any contribution that does not follow the
+above guidelines or otherwise conflicts with the goals of the
+TaskJuggler team. It is a good idea to contact the team prior to
+making any larger efforts.</para>
+
+</sect2>
+</sect1>
 </chapter>
-<chapter><title>Installation</title>
-<sect1><title>Obtaining TaskJuggler </title>
+<chapter id="installation"><title>Installation</title>
+<sect1 id="obtaining_taskjuggler"><title>Obtaining TaskJuggler </title>
 
 <para>TaskJuggler may be obtained from the following web site:</para>
 
 <para><ulink url="http://www.taskjuggler.org">
 http://www.taskjuggler.org</ulink></para>
 </sect1>
-<sect1><title>The TaskJuggler Components</title>
+<sect1 id="the_taskjuggler_components"><title>The TaskJuggler
+Components</title>
 
 <para>TaskJuggler consists of several modular components that you
 might need or not. TaskJuggler also uses some additional tools. We
@@ -186,7 +301,8 @@ they are missing an essential package.</para>
 <para>This version of TaskJuggler was built and tested on SuSE Linux
 9.1, 9.2 and 9.3 on various hardware platforms.</para>
 
-<sect2><title>The Graphical User Interfaces</title>
+<sect2 id="the_graphical_use_interface"><title>The Graphical User
+Interfaces</title>
 
 <para>With version 2.1 came a new graphical front-end. It's an integrated
 Project management environment. At this point we have two different
@@ -212,7 +328,8 @@ at least version 3.4. Earlier version will probably work as well, but
 we have not tested them.</para>
 
 </sect2>
-<sect2><title>The command line tool taskjuggler</title>
+<sect2 id="the_command_line_tool_taskjuggler"><title>The command line
+tool taskjuggler</title>
 
 <para>To build and run TaskJuggler, you need:</para>
 
@@ -237,7 +354,8 @@ of the following dependencies are not matched, the configure script
 will issue a warning but will not fail.</para>
 
 </sect2>
-<sect2><title>The TaskJuggler Documentation</title>
+<sect2 id="the_taskjuggler_documentation"><title>The TaskJuggler
+Documentation</title>
 
 <para><itemizedlist mark='opencircle'>
 
@@ -275,12 +393,16 @@ url="http://www.tug.org/teTeX">te_latex</ulink>.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>tjx2gantt - Transforms XML files to Postscript Gantt
-charts</title>
+<sect2
+id="tjx2gantt_transforms_xml_files_to_postscript_gantt"><title>tjx2gantt
+- Transforms XML files to Postscript Gantt charts</title>
 
 <para>tjx2gantt is installed by default and generates Postscript Gantt
 charts from the XML files that TaskJuggler generates. tjx2gantt is
 written in Perl.</para>
+
+<para>tjx2gantt only reads in the XML format version 1 of taskjuggler.
+Please specify the format version when requesting XML reports.</para>
 
 <para>This program is no longer maintained and will be dropped at some
 point in the future. If you are interested to take it over, please
@@ -316,7 +438,7 @@ but optional as well.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2><title>Contributed Stuff</title>
+<sect2 id="contributed_stuff"><title>Contributed Stuff</title>
 
 <para>Serveral people have contributed useful tools for TaskJuggler
 users. These tools can be found in the Contrib directory of the source
@@ -326,7 +448,7 @@ installation information.</para>
 </sect2>
 
 </sect1>
-<sect1><title>Compilation and Installation</title>
+<sect1 id="compilation_and_installation"><title>Compilation and Installation</title>
 <para>
 Before compiling TaskJuggler you need to set the
 <computeroutput>QTDIR</computeroutput> environment variable to the
@@ -364,8 +486,8 @@ process:</para>
 
 </sect1>
 </chapter> 
-<chapter><title>Usage</title> 
-<sect1><title>Basics</title>
+<chapter id="usage"><title>Usage</title> 
+<sect1 id="basics"><title>Basics</title>
 
 <para>TaskJuggler uses one or more text files to describe a project.
 The main project should be placed in a file with the
@@ -381,7 +503,7 @@ extension for such files is
 <computeroutput>.tjx</computeroutput>.</para>
 
 </sect1> 
-<sect1><title> General Usage</title>
+<sect1 id="general_usage"><title> General Usage</title>
 
 <para>To use the graphical front-end simply start it from the menu.
 Depeding on your Linux Distribution you will find it under
@@ -418,7 +540,8 @@ linkend="PROPERTY_htmlresourcereport">htmlresourcereport</link> or other report
 properties in the input file.</para>
 
 </sect1> 
-<sect1><title> The Command Line Options</title>
+<sect1 id="the_command_line_options"><title> The Command Line
+Options</title>
 
 <para><simplelist type="horiz" columns="2">
 
@@ -477,7 +600,8 @@ filename for reports. This feature can for example be used to generate
 dynamic HTML pages from CGI scripts.</para>
 
 </sect1> 
-<sect1><title> Reporting Bugs and Sending Feedback</title>
+<sect1 id="reporting_bugs_and_sending_feedback"><title>Reporting Bugs
+and Sending Feedback</title>
 
 <para>All official releases of TaskJuggler are meant to be stable
 releases unless explicitly noted differently. But our test suite is
@@ -516,9 +640,10 @@ url="http://www.taskjuggler.org/FUDforum2">http://www.taskjuggler.org/FUDforum2<
 &Example;
 </chapter>
 
-<chapter><title>Migrating from TaskJuggler 1.x to 2.0</title>
+<chapter id="migrating_from_taskjuggler_1_x_to_2_x"><title>Migrating
+from TaskJuggler 1.x to 2.x</title>
 
-<sect1><title>Achiving compatibility</title>
+<sect1 id="achiving_compatibility"><title>Achiving compatibility</title>
 
 <para>Are you also frustrated by tools that can't read the data of
 their earlier incarnations? After all those files contain your
@@ -545,7 +670,7 @@ statement should look like in new syntax. The following sections
 discuss the conceptual changes and what statements need to be
 changed.</para>
 
-<sect2><title>Syntax changes</title>
+<sect2 id="syntax_changes"><title>Syntax changes</title>
 
 <para>TaskJugger 1.x could only handle two scenarios with the fixed
 name <computeroutput>plan</computeroutput> and
@@ -599,7 +724,7 @@ format is still supported. TJ can read both old and new format XML
 files but will use the new XML format for output.</para>
 
 </sect2>
-<sect2><title>Scheduler changes</title>
+<sect2 id="scheduler_changes"><title>Scheduler changes</title>
 
 <para>Length and duration tasks with resource
 allocations are no longer trimmed to the first and last resource
@@ -624,7 +749,7 @@ allocated 8 hours per day.</para>
 </sect1>
 </chapter>
 <chapter id="FAQ"><title>Questions and Answers</title>
-<sect1><title>General Questions</title>
+<sect1 id="general_questions"><title>General Questions</title>
 
 <para>Q: The GUI does not seem to have a
 <computeroutput>New</computeroutput> entry in the File menu. How can I
@@ -641,7 +766,8 @@ types like lists and arrays. It also uses the Unicode functions, the
 SQL database interface and the XML support of Qt.</para>
 
 </sect1>
-<sect1><title>Compiling and installation</title>
+<sect1 id="compiling_and_installation"><title>Compiling and
+installation</title>
 
 <para>Q: Can TaskJuggler be compiled and used on Windows?</para>
 <para>A: Probably yes, but we have never tried it. It should compile
@@ -649,7 +775,7 @@ but require possible some minor tweaks of the sources. You should have
 a good knowledge of C++ and Qt when you try this. Let us know if you
 were successfull.</para>
 </sect1>
-<sect1><title>Usage</title>
+<sect1 id="FAQ_usage"><title>Usage</title>
 <para>Nothing here yet.</para>
 </sect1>
 </chapter>

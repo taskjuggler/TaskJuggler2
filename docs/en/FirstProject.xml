@@ -10,7 +10,7 @@ example. This project demonstrates some of the basic features of
 TaskJuggler for more advanced features please refer to <xref
 linkend="reference"/>.</para>
 
-<sect1><title>Starting the project</title>
+<sect1 id="starting_the_project"><title>Starting the project</title>
 
 <para>To start a TaskJuggler project file you need to use the
 <link linkend="PROPERTY_project">project</link> property.</para>
@@ -67,7 +67,7 @@ values. We'll see further down, how to specify values for a
 scenario.</para>
 
 </sect1>
-<sect1><title>Global Attributes</title>
+<sect1 id="global_attributes"><title>Global Attributes</title>
 
 <para>Besides finding suitable start and end dates of our project, we
 also like to do a simple profit and loss analysis. So we have to
@@ -107,7 +107,7 @@ pattern. We will use the macro further down in the example and then
 explain the meaning of the pattern.</para>
 
 </sect1>
-<sect1><title>Declaring Resources</title>
+<sect1 id="declaring_resources"><title>Declaring Resources</title>
 
 <para>A TaskJuggler feature that you will probably make heavy use of
 is <link linkend="PROPERTY_flags"> flags </link>. Once declared you can attach
@@ -183,7 +183,7 @@ sub-resources. If we would have declared the flags before the
 sub-resources, then they would have the flags attached as well.</para>
 
 </sect1>
-<sect1><title>Declaring Accounts</title>
+<sect1 id="declaring_accounts"><title>Declaring Accounts</title>
 
 <para>The use of our resources will create costs. For a profit and
 loss analysis, we need to balance the costs against the customer
@@ -209,7 +209,7 @@ accounts.</para>
 specified. They inherit the type of the top-level account.</para>
 
 </sect1>
-<sect1><title>Specifying the Tasks</title>
+<sect1 id="specifying_the_tasks"><title>Specifying the Tasks</title>
 
 <para>Let's focus on the real work now. The project should solve a
 problem - the creation of an accounting software. Since the job is
@@ -472,7 +472,7 @@ again as it is also a sub task of
 </screen></para>
 
 </sect1>
-<sect1><title>Specifying Milestones</title>
+<sect1 id="specifying_milestones"><title>Specifying Milestones</title>
 
 <para>All task that have been discussed so far, had a certain duration. We
 did not always specify the duration explicitly, but we expect them to
@@ -556,12 +556,12 @@ scheduled. But no reports would be generated to visualize the
 results.</para>
 
 </sect1>
-<sect1><title>Generating Reports of the scheduled Project</title>
+<sect1 id="generating_reports_of_the_scheduled_projects"><title>Generating Reports of the scheduled Project</title>
 
 <para>TaskJuggler offers a number of report types. Probably the most
 popular ones are interactive reports and HTML reports.</para>
 
-<sect2><title>Generating Interactive Reports</title>
+<sect2 id="generating_interactive_reports"><title>Generating Interactive Reports</title>
 
 <para>Interactive reports are only available in the TaskJuggler GUI. The
 command line version will just ignore interactive report definitions.
@@ -606,7 +606,7 @@ resourcereport "Resource Usage" {
 </screen></para>
 
 </sect2>
-<sect2><title>Generating HTML Reports</title>
+<sect2 id="generating_html_reports"><title>Generating HTML Reports</title>
 
 <para>You can advice TaskJuggler to generate one or more HTML pages that
 contain lists of your tasks, resources or accounts.</para>
@@ -654,7 +654,8 @@ rawhead
 </screen></para>
 
 </sect2>
-<sect2><title>Generating HTML Task Reports</title>
+<sect2 id="generating_html_task_reports"><title>Generating HTML Task
+Reports</title>
 
 <para>As the first report, we would like to have a general overview of all
 tasks with their computed start and end dates. To visualize the dates
@@ -742,7 +743,8 @@ scenario where appropriate and report the values underneath each
 other.</para>
 
 </sect2>
-<sect2><title>Generating HTML Resource Reports</title>
+<sect2 id="generating_html_resource_reports"><title>Generating HTML
+Resource Reports</title>
 
 <para> The previous report listed the resources per task. Now we want
 to generate a report the lists all resources. It's again a report with
@@ -799,7 +801,8 @@ linkend="PROPERTY_sortresources">sortresources</link> is taking
 care of this.</para>
 
 </sect2>
-<sect2><title>Generating HTML Account Reports</title>
+<sect2 id="generating_html_account_reports"><title>Generating HTML
+Account Reports</title>
 
 <para> To conclude the HTML reports a report that shows how poorly the
 project is calculated is generated. The company won't get rich with this
@@ -829,7 +832,7 @@ value of the account at the end of the month. Normally the amount that
 has been added or subtracted from the account would be listed.</para>
 
 </sect2>
-<sect2><title>Generating XML Reports</title>
+<sect2 id="generating_xml_reports"><title>Generating XML Reports</title>
 
 <para> Finally we generate an XML report that contains all info about
 the scheduled project. This report will be used by tjx2gantt to create
