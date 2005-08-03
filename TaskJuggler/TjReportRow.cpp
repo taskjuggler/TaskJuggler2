@@ -12,13 +12,31 @@
 
 #include "TjReportRow.h"
 
+#include "CoreAttributes.h"
+
 TjReportRow::TjReportRow(int columns)
 {
-    cells = new TjReportCell[columns];
+    cells = new (TjReportCell*)[columns];
+
+    topY = height = yPage = 0;
 }
 
 TjReportRow::~TjReportRow()
 {
     delete [] cells;
+}
+
+void
+TjReportRow::insertCell(TjReportCell* c, int pos)
+{
+    if (pos > ((int) ((sizeof(cells) / sizeof(TjReportCell*))) - 1))
+        qFatal("TjReportRow::insert: pos out of range");
+    cells[pos] = c;
+}
+
+void
+TjReportRow::setCoreAttributes(const CoreAttributes* c)
+{
+    ca = c;
 }
 

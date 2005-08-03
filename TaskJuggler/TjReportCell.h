@@ -16,17 +16,28 @@
 #include <qstring.h>
 #include <qnamespace.h>
 
+class TjReportRow;
+class TjReportColumn;
+
 class TjReportCell
 {
 public:
-    TjReportCell();
+    TjReportCell(TjReportRow* r, TjReportColumn* c);
+
     ~TjReportCell() { }
 
+    void setText(const QString& t) { text = t; }
+    const QString& getText() const { return text; }
+
 private:
+    TjReportCell() { }
+
+    TjReportRow* row;
+    TjReportColumn* column;
+
     QString text;
     Qt::AlignmentFlags alignment;
     int indentLevel;
-    int minWidth;
 } ;
 
 #endif

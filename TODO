@@ -7,10 +7,11 @@ Probably:
 - Add support for risk documentation.
 
 Maybe:
-- Make vacations scenario specific.
+- Make vacations and shifts scenario specific.
 - Limits for accounts.
 - support for renewable resources
 - Allocation selection by skill set.
 - Add support for flexible rates (per task, per shift)
 - Cleanup taskjuggler library API, so it can be used by other apps.
 - Color support for tasks and resources.
+- Limits for accounts.

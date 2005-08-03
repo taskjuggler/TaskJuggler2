@@ -12,9 +12,9 @@
 
 #include "TjReportCell.h"
 
-TjReportCell::TjReportCell()
+TjReportCell::TjReportCell(TjReportRow* r, TjReportColumn* c) :
+    row(r), column(c)
 {
-    minWidth = 0;
     indentLevel = 0;
     alignment = Qt::AlignLeft;
 }

@@ -40,7 +40,7 @@ TjResourceReport::~TjResourceReport()
 }
 
 TjPrintReport*
-TjResourceReport::generateReport(KPrinter* printer)
+TjResourceReport::generateReport(KPrinter* /*printer*/)
 {
     KMessageBox::sorry(this, i18n("Sorry, printing of Resource Reports is not "
                                   "yet implemented."));

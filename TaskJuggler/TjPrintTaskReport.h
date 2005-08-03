@@ -29,8 +29,6 @@ public:
     virtual void printReportPage(QPaintDevice* pd, int x, int y);
 
 private:
-    TjPrintTaskReport();
-
     QtTaskReportElement* reportElement;
 } ;
 

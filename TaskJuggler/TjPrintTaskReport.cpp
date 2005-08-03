@@ -14,8 +14,12 @@
 
 #include <qpaintdevice.h>
 #include <qpainter.h>
+#include <qpaintdevicemetrics.h>
 
 #include "Project.h"
+#include "Task.h"
+#include "Resource.h"
+#include "ResourceList.h"
 #include "ReportElement.h"
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
@@ -29,9 +33,58 @@ TjPrintTaskReport::generate(QPaintDevice* pd)
     // We need those values frequently. So let's store them in a more
     // accessible place.
     reportElement =
-        (dynamic_cast<QtTaskReport*>(reportDef))->getTable();
+        (dynamic_cast<const QtTaskReport*>(reportDef))->getTable();
     scenario = reportElement->getScenario(0);
-    taskList = reportDef->getProject()->getTaskList();
+    TaskList filteredTaskList = reportDef->getProject()->getTaskList();
+    resourceList = reportDef->getProject()->getResourceList();
+
+    /* Get complete task list, filter and sort it. Then determine the maximum
+     * tree level. */
+    if (!reportElement->filterTaskList(taskList, 0,
+                                       reportElement->getHideTask(),
+                                       reportElement->getRollUpTask()))
+        return FALSE;
+    reportElement->sortTaskList(filteredTaskList);
+    maxDepthTaskList = filteredTaskList.maxDepth();
+
+    /* Same for resource list. Just that we don't have to sort it. It needs to
+     * be regenerated per task later on. */
+    ResourceList filteredResourceList;
+    if (!reportElement->filterResourceList(filteredResourceList, 0,
+                                           reportElement->getHideResource(),
+                                           reportElement->getRollUpResource()))
+        return FALSE;
+    maxDepthResourceList = filteredResourceList.maxDepth();
+
+    generateTableHeader(reportElement);
+
+    for (TaskListIterator tli(taskList); *tli; ++tli)
+    {
+        TjReportRow* row = new TjReportRow(getNumberOfColumns());
+        row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli));
+        rows.append(row);
+
+        generateTaskListRow(reportElement, row, *tli);
+
+        ResourceList filteredResourceList;
+        if (!reportElement->filterResourceList
+            (filteredResourceList, *tli, reportElement->getHideResource(),
+             reportElement->getRollUpResource()))
+            return FALSE;
+        reportElement->sortResourceList(filteredResourceList);
+        for (ResourceListIterator rli(filteredResourceList); *rli; ++rli)
+        {
+            row = new TjReportRow(getNumberOfColumns());
+            row->setCoreAttributes(static_cast<const CoreAttributes*>(*rli));
+            rows.append(row);
+
+            generateResourceListRow(reportElement, row, *rli, *tli);
+        }
+    }
+
+    computeTableMetrics();
+
+    QPaintDeviceMetrics metrics(pd);
 
     p->begin(pd);
 
@@ -41,7 +94,7 @@ TjPrintTaskReport::generate(QPaintDevice* pd)
 }
 
 void
-TjPrintTaskReport::printReportPage(QPaintDevice* pd, int x, int y)
+TjPrintTaskReport::printReportPage(QPaintDevice* /*pd*/, int x, int y)
 {
     p->setClipRect(1000 * x, 3000 * y, 1000, 3000);
 }

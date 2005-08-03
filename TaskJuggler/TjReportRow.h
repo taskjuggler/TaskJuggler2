@@ -23,12 +23,31 @@ public:
     TjReportRow(int columns);
     ~TjReportRow();
 
-private:
-    TjReportRow();
+    void setTopY(int y) { topY = y; }
+    int getTopY() const { return topY; }
 
-    CoreAttributes* ca;
+    void setHeight(int h) { height = h; }
+    int getHeight() const  { return height; }
+
+    void setYPage(int y) { yPage = y; }
+    int getYPage() const { return yPage; }
+
+    void insertCell(TjReportCell* c, int pos);
+    TjReportCell* getCell(int pos) { return cells[pos]; }
+
+    void setCoreAttributes(const CoreAttributes* c);
+
+private:
+    TjReportRow() { }
+
+    int topY;
+    int height;
+    // The vertical page number of the page this column is on.
+    int yPage;
+
+    const CoreAttributes* ca;
     bool hidden;
-    TjReportCell* cells;
+    TjReportCell** cells;
 } ;
 
 #endif
