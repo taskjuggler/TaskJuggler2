@@ -763,7 +763,7 @@ directory where you started the program.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_1_1"><title>Version 2.1.1 (Some Day)</title>
+<sect2 id="Changelog_2_1_1"><title>Version 2.1.1 (2005-08-04)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -782,6 +782,9 @@ TaskJuggler as a project tracking tool.</para></listitem>
 <listitem><para>The HTML version of the manual has now a new look and
 many more syntax examples have been added to the property
 reference.</para></listitem>
+
+<listitem><para>The TaskJuggler editor now supports printing of
+project files.</para></listitem>
 
 <listitem><para>Fixed build with GCC 4.</para></listitem>
 
