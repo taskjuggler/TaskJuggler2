@@ -2120,8 +2120,8 @@ for ASAP tasks) time slot has become unavailable.</para></descr>
 these working hours should be defined as shifts. Each shift must have
 a unique ID. Resources can be assigned to shifts for certain
 intervals. Shifts can also be used to limit work on certain tasks to
-the hours of the shift.</para></descr>
-  <attributes>
+the hours of the shift or to switch part time schedules of a
+resource.</para></descr> <attributes>
    <attr name="id" type="ID"/>
    <attr name="name" type="STRING"/>
   </attributes>
@@ -2135,7 +2135,7 @@ the hours of the shift.</para></descr>
   <example>&example_shift;</example>
  </property>
  <property name="shift" id="shift_selection" inheritable="No">
-  <descr><para>Limites the resource working time or work on a task to
+  <descr><para>Limits the resource working time or work on a task to
 a defined shift during the specified interval. Multiple shifts can be
 defined, but shift intervals may not overlap.</para></descr>
   <attributes>
