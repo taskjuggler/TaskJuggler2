@@ -59,7 +59,7 @@ public:
                                   const Task* t = 0);
     void print(KPrinter* printer);
 
-    virtual TjPrintReport* generateReport(KPrinter* printer) = 0;
+    virtual TjPrintReport* newPrintReport(QPaintDevice* pd) = 0;
 
 signals:
     void signalChangeStatusBar(const QString& text);

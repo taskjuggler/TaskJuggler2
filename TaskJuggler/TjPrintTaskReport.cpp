@@ -25,7 +25,7 @@
 #include "QtTaskReportElement.h"
 
 bool
-TjPrintTaskReport::generate(QPaintDevice* pd)
+TjPrintTaskReport::generate()
 {
     if (!reportDef)
         return FALSE;
@@ -84,18 +84,6 @@ TjPrintTaskReport::generate(QPaintDevice* pd)
 
     computeTableMetrics();
 
-    QPaintDeviceMetrics metrics(pd);
-
-    p->begin(pd);
-
-    p->drawRect(100, 100, 1000, 500);
-
     return TRUE;
-}
-
-void
-TjPrintTaskReport::printReportPage(QPaintDevice* /*pd*/, int x, int y)
-{
-    p->setClipRect(1000 * x, 3000 * y, 1000, 3000);
 }
 

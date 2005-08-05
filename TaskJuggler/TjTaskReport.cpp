@@ -42,17 +42,14 @@ TjTaskReport::~TjTaskReport()
 }
 
 TjPrintReport*
-TjTaskReport::generateReport(KPrinter* /*printer*/)
+TjTaskReport::newPrintReport(QPaintDevice* pd)
 {
+#if 1
     KMessageBox::sorry(this, i18n("Sorry, printing of Task Reports is not "
                                   "yet implemented."));
     return 0;
-#if 0
-    TjPrintTaskReport* tptr = new TjPrintTaskReport(reportDef);
-    tptr->setPageGeometry();
-    tptr->generate((QPaintDevice*) printer);
-
-    return tptr;
+#else
+    return new TjPrintTaskReport(reportDef, pd);
 #endif
 }
 

@@ -14,7 +14,7 @@
 
 #include "CoreAttributes.h"
 
-TjReportRow::TjReportRow(int columns)
+TjReportRow::TjReportRow(int cols) : columns(cols)
 {
     cells = new (TjReportCell*)[columns];
 
@@ -29,8 +29,9 @@ TjReportRow::~TjReportRow()
 void
 TjReportRow::insertCell(TjReportCell* c, int pos)
 {
-    if (pos > ((int) ((sizeof(cells) / sizeof(TjReportCell*))) - 1))
-        qFatal("TjReportRow::insert: pos out of range");
+    if (pos > columns - 1)
+        qFatal("TjReportRow::insert: pos (%d) out of range (%d)",
+               pos, columns);
     cells[pos] = c;
 }
 

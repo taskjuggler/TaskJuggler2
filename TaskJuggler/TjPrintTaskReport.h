@@ -21,12 +21,11 @@ class QtTaskReportElement;
 class TjPrintTaskReport : public TjPrintReport
 {
 public:
-    TjPrintTaskReport(Report* const rd) : TjPrintReport(rd) { }
+    TjPrintTaskReport(Report* const rd, QPaintDevice* pd) :
+        TjPrintReport(rd, pd) { }
     ~TjPrintTaskReport() { }
 
-    virtual bool generate(QPaintDevice* pd);
-
-    virtual void printReportPage(QPaintDevice* pd, int x, int y);
+    virtual bool generate();
 
 private:
     QtTaskReportElement* reportElement;

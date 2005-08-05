@@ -13,6 +13,7 @@
 #include "TjPrintReport.h"
 
 #include <qpainter.h>
+#include <qpaintdevicemetrics.h>
 #include <qfontmetrics.h>
 
 #include "Report.h"
@@ -28,7 +29,8 @@
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
 
-TjPrintReport::TjPrintReport(const Report* rd) : reportDef(rd)
+TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
+    reportDef(rd), paintDevice(pd)
 {
     rows.setAutoDelete(TRUE);
     columns.setAutoDelete(TRUE);
@@ -41,6 +43,13 @@ TjPrintReport::TjPrintReport(const Report* rd) : reportDef(rd)
 TjPrintReport::~TjPrintReport()
 {
     delete p;
+}
+
+void
+TjPrintReport::getNumberOfPages(int& xPages, int& yPages)
+{
+    xPages = columns.last()->getXPage() + 1;
+    yPages = rows.last()->getYPage() + 1;
 }
 
 void
@@ -239,6 +248,12 @@ TjPrintReport::computeTableMetrics()
     QFont fnt;
     QFontMetrics fm(fnt);
 
+    // Set the left and top margin to 2cm
+    QPaintDeviceMetrics metrics(paintDevice);
+    leftMargin = topMargin = (int) ((2 / 2.54) * metrics.logicalDpiY());
+    pageWidth = metrics.width() - 2 * leftMargin;
+    pageHeight = metrics.height() - 2 * topMargin;
+
     /* We iterate over all the rows and determine their heights. This also
      * defines the top Y coordinate and the vertical page number. */
     int topOfRow = 0;
@@ -285,5 +300,36 @@ TjPrintReport::computeTableMetrics()
         }
         (*cit)->setXPage(xPage);
     }
+}
+
+void
+TjPrintReport::printReportPage(int x, int y)
+{
+    QPainter p;
+
+    p.begin(paintDevice);
+
+    for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
+    {
+        if ((*rit)->getYPage() == y)
+        {
+            for (int col = 0; col < getNumberOfColumns(); ++col)
+            {
+                TjReportColumn* reportColumn = columns.at(col);
+                if (reportColumn->getXPage() == x)
+                {
+                    TjReportCell* cell = (*rit)->getCell(col);
+                    p.drawRect(reportColumn->getLeftX(),
+                               (*rit)->getTopY(),
+                               reportColumn->getWidth(),
+                               (*rit)->getHeight());
+                    p.drawText(reportColumn->getLeftX(),
+                               (*rit)->getTopY(), cell->getText());
+                }
+            }
+        }
+    }
+
+    p.end();
 }
 

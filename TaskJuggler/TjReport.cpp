@@ -147,12 +147,19 @@ TjReport::print(KPrinter* printer)
     printer->setup(this);
 
     TjPrintReport* tjpr;
-    if ((tjpr = generateReport(printer)) == 0)
+    if ((tjpr = newPrintReport(printer)) == 0)
         return;
 
-    tjpr->printReportPage((QPaintDevice*) printer, 0, 0);
-    printer->newPage();
-    tjpr->printReportPage((QPaintDevice*) printer, 0, 1);
+    tjpr->generate();
+
+    int xPages, yPages;
+    tjpr->getNumberOfPages(xPages, yPages);
+    for (int x = 0; x < xPages; ++x)
+        for (int y = 0; y < yPages; ++y)
+        {
+            tjpr->printReportPage(x, y);
+            printer->newPage();
+        }
 }
 
 bool

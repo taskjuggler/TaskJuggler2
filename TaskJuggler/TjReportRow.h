@@ -20,7 +20,7 @@ class CoreAttributes;
 class TjReportRow
 {
 public:
-    TjReportRow(int columns);
+    TjReportRow(int cols);
     ~TjReportRow();
 
     void setTopY(int y) { topY = y; }
@@ -40,6 +40,7 @@ public:
 private:
     TjReportRow() { }
 
+    int columns;
     int topY;
     int height;
     // The vertical page number of the page this column is on.

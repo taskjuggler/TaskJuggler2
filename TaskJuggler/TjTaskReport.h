@@ -31,7 +31,7 @@ public:
 
     virtual const QtReportElement* getReportElement() const;
 
-    virtual TjPrintReport* generateReport(KPrinter* printer);
+    virtual TjPrintReport* newPrintReport(QPaintDevice* pd);
 
 protected:
     virtual bool generateList();

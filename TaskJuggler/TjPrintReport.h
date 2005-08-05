@@ -31,14 +31,16 @@ class ReportElement;
 class TjPrintReport
 {
 public:
-    TjPrintReport(const Report* rd);
+    TjPrintReport(const Report* rd, QPaintDevice* pd);
     virtual ~TjPrintReport();
 
-    virtual bool generate(QPaintDevice* pd) = 0;
+    virtual bool generate() = 0;
 
-    virtual void printReportPage(QPaintDevice* pd, int x, int y) = 0;
+    void printReportPage(int x, int y);
 
     int getNumberOfColumns() const { return columns.count(); }
+
+    void getNumberOfPages(int& xPages, int& yPages);
 
 protected:
     void generateTableHeader(const ReportElement* el);
@@ -56,6 +58,7 @@ protected:
     const Report* reportDef;
     const QtReportElement* reportElement;
 
+    QPaintDevice* paintDevice;
     int scenario;
     TaskList taskList;
     ResourceList resourceList;
