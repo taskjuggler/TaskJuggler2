@@ -32,7 +32,7 @@ HTMLResourceReport::generate()
     if (!open())
         return FALSE;
 
-    generateHeader();
+    generateHeader("Resource Report");
     tab->generate();
     generateFooter();
 

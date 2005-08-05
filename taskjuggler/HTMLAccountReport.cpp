@@ -17,7 +17,7 @@
 
 #define KW(a) a
 
-HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f, 
+HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f,
                                      const QString& df, int dl) :
     HTMLReport(p, f, df, dl)
 {
@@ -35,7 +35,7 @@ HTMLAccountReport::generate()
     if (!open())
         return FALSE;
 
-    generateHeader();
+    generateHeader("Account Report");
     tab->generate();
     generateFooter();
 

@@ -36,7 +36,7 @@ public:
 
     virtual const char* getType() const { return "HTMLReport"; }
 
-    void generateHeader();
+    void generateHeader(const QString& title);
     void generateFooter();
 
     void setRawStyleSheet(const QString& ss)

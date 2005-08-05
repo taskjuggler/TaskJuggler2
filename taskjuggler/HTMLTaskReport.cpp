@@ -15,7 +15,7 @@
 #include "HTMLTaskReport.h"
 #include "HTMLTaskReportElement.h"
 
-HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, const QString& df, 
+HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, const QString& df,
                                int dl) :
     HTMLReport(p, f, df, dl)
 {
@@ -33,7 +33,7 @@ HTMLTaskReport::generate()
     if (!open())
         return FALSE;
 
-    generateHeader();
+    generateHeader("Task Report");
     tab->generate();
     generateFooter();
 

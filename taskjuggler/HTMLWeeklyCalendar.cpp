@@ -15,7 +15,7 @@
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLWeeklyCalendarElement.h"
 
-HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f, 
+HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f,
                                        const QString& df, int dl) :
     HTMLReport(p, f, df, dl)
 {
@@ -32,8 +32,8 @@ HTMLWeeklyCalendar::generate()
 {
     if (!open())
         return FALSE;
-    
-    generateHeader();
+
+    generateHeader("Weekly Calendar");
     tab->generate();
     generateFooter();
 

@@ -20,11 +20,11 @@ HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :
    Report(p, f, df, dl)
 {
-    s.setEncoding(QTextStream::Latin1);
+    s.setEncoding(QTextStream::UnicodeUTF8);
 }
 
 void
-HTMLReport::generateHeader()
+HTMLReport::generateHeader(const QString& title)
 {
     s << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
         " \"http://www.w3.org/TR/REC-html40/loose.dtd\">"
@@ -35,7 +35,7 @@ HTMLReport::generateHeader()
       << TJURL << " -->" << endl
       << "<html>" << endl
       << "<head>" << endl
-      << "<title>Task Report</title>" << endl
+      << "<title>" << title << "</title>" << endl
       << "<meta http-equiv=\"Content-Type\" content=\"text/html; "
       << "charset=utf-8\"/>" << endl;
 #if 0
