@@ -12,12 +12,14 @@
 
 #include "TjPrintReport.h"
 
+#include <assert.h>
+
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qfontmetrics.h>
 
 #include "Report.h"
-#include "ReportElement.h"
+#include "QtReportElement.h"
 #include "TableColumnInfo.h"
 #include "ReportElement.h"
 #include "Project.h"
@@ -38,6 +40,7 @@ TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
     p = new QPainter();
 
     leftMargin = topMargin = pageWidth = pageHeight = 0;
+    cellMargin = 2;
 }
 
 TjPrintReport::~TjPrintReport()
@@ -53,7 +56,7 @@ TjPrintReport::getNumberOfPages(int& xPages, int& yPages)
 }
 
 void
-TjPrintReport::generateTableHeader(const ReportElement* reportElement)
+TjPrintReport::generateTableHeader()
 {
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci)
@@ -67,8 +70,7 @@ TjPrintReport::generateTableHeader(const ReportElement* reportElement)
 }
 
 void
-TjPrintReport::generateTaskListRow(const ReportElement* reportElement,
-                                   TjReportRow* row, const Task* task,
+TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
                                    const Resource* resource)
 {
     // Skip the first colum. It contains the hardwired task name.
@@ -205,11 +207,19 @@ TjPrintReport::generateTaskListRow(const ReportElement* reportElement,
 }
 
 void
-TjPrintReport::generateResourceListRow(const ReportElement* /*reportElement*/,
-                                       TjReportRow* /*row*/,
+TjPrintReport::generateResourceListRow(TjReportRow* row,
                                        const Resource* /*resource*/,
                                        const Task* /*task*/)
 {
+    int colIdx= 0;
+    for (QPtrListIterator<TableColumnInfo>
+         ci = reportElement->getColumnsIterator(); *ci; ++ci, ++colIdx)
+    {
+        QString cellText;
+        TjReportCell* cell = new TjReportCell(row, columns.at(colIdx));
+        cell->setText(cellText);
+        row->insertCell(cell, colIdx);
+    }
 }
 
 void
@@ -268,7 +278,14 @@ TjPrintReport::computeTableMetrics()
         for (int col = 0; col < getNumberOfColumns(); ++col)
         {
             TjReportCell* cell = (*rit)->getCell(col);
+            assert(cell != 0);
+            assert(cell->getRow() == *rit);
+            assert(cell->getColumn() == columns.at(col));
+            if (cell->getText().isEmpty())
+                continue;
             QRect br = fm.boundingRect(cell->getText());
+            br.setWidth(br.width() + 2 * cellMargin);
+            br.setHeight(br.height() + 2 * cellMargin);
             if (br.height() > maxHeight)
                 maxHeight = br.height();
             if (columns.at(col)->getWidth() < br.width())
@@ -282,6 +299,7 @@ TjPrintReport::computeTableMetrics()
             yPage++;
         }
         (*rit)->setYPage(yPage);
+        (*rit)->setHeight(maxHeight);
     }
 
     /* Now that we know all the column widths, we can determine their absolute
@@ -323,8 +341,9 @@ TjPrintReport::printReportPage(int x, int y)
                                (*rit)->getTopY(),
                                reportColumn->getWidth(),
                                (*rit)->getHeight());
-                    p.drawText(reportColumn->getLeftX(),
-                               (*rit)->getTopY(), cell->getText());
+                    p.drawText(reportColumn->getLeftX() + cellMargin,
+                               (*rit)->getTopY() + (*rit)->getHeight() -
+                               cellMargin, cell->getText());
                 }
             }
         }

@@ -44,7 +44,7 @@ TjTaskReport::~TjTaskReport()
 TjPrintReport*
 TjTaskReport::newPrintReport(QPaintDevice* pd)
 {
-#if 1
+#if 0
     KMessageBox::sorry(this, i18n("Sorry, printing of Task Reports is not "
                                   "yet implemented."));
     return 0;

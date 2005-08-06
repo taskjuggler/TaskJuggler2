@@ -10,6 +10,7 @@
  * $Id: taskjuggler.cpp 1085 2005-06-23 20:34:54Z cs $
  */
 
+#include <assert.h>
 #include "TjReportRow.h"
 
 #include "CoreAttributes.h"
@@ -17,6 +18,8 @@
 TjReportRow::TjReportRow(int cols) : columns(cols)
 {
     cells = new (TjReportCell*)[columns];
+    for (int i = 0; i < columns; ++i)
+        cells[i] = 0;
 
     topY = height = yPage = 0;
 }
@@ -33,6 +36,14 @@ TjReportRow::insertCell(TjReportCell* c, int pos)
         qFatal("TjReportRow::insert: pos (%d) out of range (%d)",
                pos, columns);
     cells[pos] = c;
+}
+
+TjReportCell*
+TjReportRow::getCell(int pos) const
+{
+    assert(pos >= 0);
+    assert(pos < columns);
+    return cells[pos];
 }
 
 void

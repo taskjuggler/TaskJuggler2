@@ -56,7 +56,7 @@ TjPrintTaskReport::generate()
         return FALSE;
     maxDepthResourceList = filteredResourceList.maxDepth();
 
-    generateTableHeader(reportElement);
+    generateTableHeader();
 
     for (TaskListIterator tli(taskList); *tli; ++tli)
     {
@@ -64,7 +64,7 @@ TjPrintTaskReport::generate()
         row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli));
         rows.append(row);
 
-        generateTaskListRow(reportElement, row, *tli);
+        generateTaskListRow(row, *tli);
 
         ResourceList filteredResourceList;
         if (!reportElement->filterResourceList
@@ -78,7 +78,7 @@ TjPrintTaskReport::generate()
             row->setCoreAttributes(static_cast<const CoreAttributes*>(*rli));
             rows.append(row);
 
-            generateResourceListRow(reportElement, row, *rli, *tli);
+            generateResourceListRow(row, *rli, *tli);
         }
     }
 

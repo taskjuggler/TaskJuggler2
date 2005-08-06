@@ -33,7 +33,7 @@ public:
     int getYPage() const { return yPage; }
 
     void insertCell(TjReportCell* c, int pos);
-    TjReportCell* getCell(int pos) { return cells[pos]; }
+    TjReportCell* getCell(int pos) const;
 
     void setCoreAttributes(const CoreAttributes* c);
 

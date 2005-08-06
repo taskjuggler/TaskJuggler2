@@ -29,6 +29,9 @@ public:
     void setText(const QString& t) { text = t; }
     const QString& getText() const { return text; }
 
+    TjReportRow* getRow() const { return row; }
+    TjReportColumn* getColumn() const { return column; }
+
 private:
     TjReportCell() { }
 

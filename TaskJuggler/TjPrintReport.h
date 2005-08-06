@@ -43,11 +43,10 @@ public:
     void getNumberOfPages(int& xPages, int& yPages);
 
 protected:
-    void generateTableHeader(const ReportElement* el);
-    void generateTaskListRow(const ReportElement* el, TjReportRow* row,
-                             const Task* task, const Resource* resource = 0);
-    void generateResourceListRow(const ReportElement* el, TjReportRow* row,
-                                 const Resource* resource,
+    void generateTableHeader();
+    void generateTaskListRow(TjReportRow* row, const Task* task,
+                             const Resource* resource = 0);
+    void generateResourceListRow(TjReportRow* row, const Resource* resource,
                                  const Task* task = 0);
 
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
@@ -58,17 +57,18 @@ protected:
     const Report* reportDef;
     const QtReportElement* reportElement;
 
-    QPaintDevice* paintDevice;
     int scenario;
     TaskList taskList;
     ResourceList resourceList;
-    QPainter* p;
 
     int maxDepthTaskList;
     int maxDepthResourceList;
 
     QPtrList<TjReportRow> rows;
     QPtrList<TjReportColumn> columns;
+
+    QPaintDevice* paintDevice;
+    QPainter* p;
 
     // The top and left (non-printable) margin of the page in pixels.
     int topMargin;
@@ -77,6 +77,8 @@ protected:
     // The printable size of the page in pixels.
     int pageWidth;
     int pageHeight;
+
+    int cellMargin;
 } ;
 
 #endif
