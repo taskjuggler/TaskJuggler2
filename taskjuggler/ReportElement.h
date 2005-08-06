@@ -143,17 +143,17 @@ public:
     bool filterTaskList(TaskList& filteredList, const Resource* r,
                         ExpressionTree* hideExp, ExpressionTree* rollUpExp)
         const;
-    void sortTaskList(TaskList& filteredList);
+    void sortTaskList(TaskList& filteredList) const;
 
     bool filterResourceList(ResourceList& filteredList, const Task* t,
                             ExpressionTree* hideExp, ExpressionTree* rollUpExp)
         const;
-    void sortResourceList(ResourceList& filteredList);
+    void sortResourceList(ResourceList& filteredList) const;
 
     bool filterAccountList(AccountList& filteredList, AccountType at,
                            ExpressionTree* hideExp, ExpressionTree*
                            rollUpExp) const;
-    void sortAccountList(AccountList& filteredList);
+    void sortAccountList(AccountList& filteredList) const;
 
     void addColumnFormat(const QString& id, TableColumnFormat* tcf)
     {

@@ -38,7 +38,7 @@ bool
 CSVAccountReportElement::generate()
 {
     generateHeader();
-    
+
     generateTableHeader();
 
     AccountList filteredList;
@@ -46,11 +46,12 @@ CSVAccountReportElement::generate()
                            rollUpAccount))
         return FALSE;
     maxDepthAccountList = filteredList.maxDepth();
-    
+
     /* Generate table of cost accounts. */
     if (!filterAccountList(filteredList, Cost, hideAccount, rollUpAccount))
         return FALSE;
     sortAccountList(filteredList);
+    maxDepthAccountList = filteredList.maxDepth();
 
     TableLineInfo tli;
     int aNo = 1;
@@ -65,9 +66,9 @@ CSVAccountReportElement::generate()
             generateLine(&tli, sc == 0 ? 6 : 7);
         }
     }
-  
+
     /* Generate summary line for cost accounts. */
-    tli.boldText = TRUE; 
+    tli.boldText = TRUE;
     tli.specialName = i18n("Total Costs");
     for (uint sc = 0; sc < scenarios.count(); ++sc)
     {
@@ -76,7 +77,7 @@ CSVAccountReportElement::generate()
         tli.sc = scenarios[sc];
         generateLine(&tli, sc == 0 ? 8 : 9);
     }
-    
+
     for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
     {
         (*ci)->addSumToMemory(TRUE);
@@ -87,6 +88,7 @@ CSVAccountReportElement::generate()
     if (!filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount))
         return FALSE;
     sortAccountList(filteredList);
+    maxDepthAccountList = filteredList.maxDepth();
 
     tli.boldText = FALSE;
     tli.specialName = QString::null;
@@ -101,7 +103,7 @@ CSVAccountReportElement::generate()
             generateLine(&tli, sc == 0 ? 6 : 7);
         }
     }
-    
+
     /* Generate summary line for revenue accounts. */
     tli.boldText = TRUE;
     tli.specialName = i18n("Total Revenues");
@@ -119,7 +121,7 @@ CSVAccountReportElement::generate()
         (*ci)->recallMemory();
     }
 
-    /* Generate total summary line. */    
+    /* Generate total summary line. */
     tli.specialName = i18n("Total");
     for (uint sc = 0; sc < scenarios.count(); ++sc)
     {

@@ -28,7 +28,7 @@ HTMLAccountReportElement::HTMLAccountReportElement(Report* r,
     columns.append(new TableColumnInfo(sc, "no"));
     columns.append(new TableColumnInfo(sc, "name"));
     columns.append(new TableColumnInfo(sc, "total"));
-    
+
     accountSortCriteria[0] = CoreAttributesList::TreeMode;
     accountSortCriteria[1] = CoreAttributesList::NameUp;
 }
@@ -41,7 +41,7 @@ bool
 HTMLAccountReportElement::generate()
 {
     generateHeader();
-    
+
     generateTableHeader();
 
     s() << "<tbody>" << endl;
@@ -51,11 +51,12 @@ HTMLAccountReportElement::generate()
                            rollUpAccount))
         return FALSE;
     maxDepthAccountList = filteredList.maxDepth();
-    
+
     /* Generate table of cost accounts. */
     if (!filterAccountList(filteredList, Cost, hideAccount, rollUpAccount))
         return FALSE;
     sortAccountList(filteredList);
+    maxDepthAccountList = filteredList.maxDepth();
 
     TableLineInfo tli;
     int aNo = 1;
@@ -71,9 +72,9 @@ HTMLAccountReportElement::generate()
             generateLine(&tli, sc == 0 ? 6 : 7);
         }
     }
-  
+
     /* Generate summary line for cost accounts. */
-    tli.boldText = TRUE; 
+    tli.boldText = TRUE;
     tli.specialName = i18n("Total Costs");
     for (uint sc = 0; sc < scenarios.count(); ++sc)
     {
@@ -83,7 +84,7 @@ HTMLAccountReportElement::generate()
         tli.bgCol = colors.getColor("header").dark(100 + sc * 10);
         generateLine(&tli, sc == 0 ? 8 : 9);
     }
-    
+
     for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
     {
         (*ci)->addSumToMemory(TRUE);
@@ -94,6 +95,7 @@ HTMLAccountReportElement::generate()
     if (!filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount))
         return FALSE;
     sortAccountList(filteredList);
+    maxDepthAccountList = filteredList.maxDepth();
 
     tli.boldText = FALSE;
     tli.specialName = QString::null;
@@ -109,7 +111,7 @@ HTMLAccountReportElement::generate()
             generateLine(&tli, sc == 0 ? 6 : 7);
         }
     }
-    
+
     /* Generate summary line for revenue accounts. */
     tli.boldText = TRUE;
     tli.specialName = i18n("Total Revenues");
@@ -128,18 +130,18 @@ HTMLAccountReportElement::generate()
         (*ci)->recallMemory();
     }
 
-    /* Generate total summary line. */    
+    /* Generate total summary line. */
     tli.specialName = i18n("Total");
     for (uint sc = 0; sc < scenarios.count(); ++sc)
     {
         tli.row = sc;
         tli.idxNo = 0;
         tli.sc = scenarios[sc];
-        tli.bgCol = colors.getColor("default").dark(100 + sc * 10); 
+        tli.bgCol = colors.getColor("default").dark(100 + sc * 10);
         generateLine(&tli, sc == 0 ? 8 : 9);
     }
-   
-    s() << "</tbody>" << endl;    
+
+    s() << "</tbody>" << endl;
     s() << "</table>" << endl;
 
     return TRUE;

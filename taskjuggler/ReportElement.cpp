@@ -754,7 +754,7 @@ const
 }
 
 void
-ReportElement::sortTaskList(TaskList& filteredList)
+ReportElement::sortTaskList(TaskList& filteredList) const
 {
     /* The sorting can only honor the first scenario. Other scenarios are
      * ignort for the sorting. */
@@ -835,7 +835,7 @@ const
 }
 
 void
-ReportElement::sortResourceList(ResourceList& filteredList)
+ReportElement::sortResourceList(ResourceList& filteredList) const
 {
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(resourceSortCriteria[i], i);
@@ -898,13 +898,11 @@ const
 }
 
 void
-ReportElement::sortAccountList(AccountList& filteredList)
+ReportElement::sortAccountList(AccountList& filteredList) const
 {
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++)
         filteredList.setSorting(accountSortCriteria[i], i);
     filteredList.sort();
-
-    maxDepthAccountList = filteredList.maxDepth();
 }
 
 QString
