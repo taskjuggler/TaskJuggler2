@@ -25,10 +25,8 @@ public:
         TjPrintReport(rd, pd) { }
     ~TjPrintTaskReport() { }
 
+    virtual void initialize();
     virtual bool generate();
-
-private:
-    QtTaskReportElement* reportElement;
 } ;
 
 #endif

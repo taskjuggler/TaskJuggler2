@@ -12,6 +12,8 @@
 
 #include "TjPrintTaskReport.h"
 
+#include <assert.h>
+
 #include <qpaintdevice.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
@@ -24,17 +26,23 @@
 #include "QtTaskReport.h"
 #include "QtTaskReportElement.h"
 
-bool
-TjPrintTaskReport::generate()
+void
+TjPrintTaskReport::initialize()
 {
-    if (!reportDef)
-        return FALSE;
+    assert(reportDef != 0);
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
     reportElement =
         (dynamic_cast<const QtTaskReport*>(reportDef))->getTable();
     scenario = reportElement->getScenario(0);
+}
+
+bool
+TjPrintTaskReport::generate()
+{
+    assert(reportDef != 0);
+
     TaskList filteredTaskList = reportDef->getProject()->getTaskList();
     resourceList = reportDef->getProject()->getResourceList();
 
@@ -44,8 +52,11 @@ TjPrintTaskReport::generate()
                                        reportElement->getHideTask(),
                                        reportElement->getRollUpTask()))
         return FALSE;
-    reportElement->sortTaskList(filteredTaskList);
+    (static_cast<const QtTaskReportElement*>(reportElement))->
+        sortTaskList(filteredTaskList);
     maxDepthTaskList = filteredTaskList.maxDepth();
+    if (filteredTaskList.isEmpty())
+        return TRUE;
 
     /* Same for resource list. Just that we don't have to sort it. It needs to
      * be regenerated per task later on. */

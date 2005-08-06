@@ -20,6 +20,7 @@
 
 #include "Report.h"
 #include "QtReportElement.h"
+#include "QtReport.h"
 #include "TableColumnInfo.h"
 #include "ReportElement.h"
 #include "Project.h"
@@ -37,21 +38,20 @@ TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
     rows.setAutoDelete(TRUE);
     columns.setAutoDelete(TRUE);
 
-    p = new QPainter();
-
     leftMargin = topMargin = pageWidth = pageHeight = 0;
     cellMargin = 2;
 }
 
 TjPrintReport::~TjPrintReport()
 {
-    delete p;
 }
 
 void
 TjPrintReport::getNumberOfPages(int& xPages, int& yPages)
 {
+    assert(columns.last() != 0);
     xPages = columns.last()->getXPage() + 1;
+    assert(rows.last() != 0);
     yPages = rows.last()->getYPage() + 1;
 }
 
@@ -73,7 +73,6 @@ void
 TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
                                    const Resource* resource)
 {
-    // Skip the first colum. It contains the hardwired task name.
     int colIdx= 0;
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++colIdx)
@@ -131,6 +130,8 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
                                  reportDef->getTimeFormat());
         else if ((*ci)->getName() == "id")
             cellText = task->getId();
+        else if ((*ci)->getName() == "index")
+            cellText.sprintf("%d.", task->getIndex());
         else if ((*ci)->getName() == "maxend")
             cellText = time2user(task->getMaxEnd(scenario),
                                  reportDef->getTimeFormat());
@@ -143,6 +144,8 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
         else if ((*ci)->getName() == "minstart")
             cellText = time2user(task->getMinStart(scenario),
                                  reportDef->getTimeFormat());
+        else if ((*ci)->getName() == "name")
+            cellText = task->getName();
         else if ((*ci)->getName() == "note" && !task->getNote().isEmpty())
             cellText = task->getNote();
         else if ((*ci)->getName() == "pathcriticalness")
@@ -274,7 +277,7 @@ TjPrintReport::computeTableMetrics()
         /* For each row we iterate over the cells to detemine their minimum
          * bounding rect. For each cell use the minimum width to determine the
          * overall column width. */
-        int maxHeight = 0;
+        int maxHeight = fm.height() + 2 * cellMargin;
         for (int col = 0; col < getNumberOfColumns(); ++col)
         {
             TjReportCell* cell = (*rit)->getCell(col);
@@ -312,43 +315,62 @@ TjPrintReport::computeTableMetrics()
         colX += (*cit)->getWidth();
         if (colX > pageWidth)
         {
-            colX = 0;
-            (*cit)->setLeftX(0);
+            // The first column is repeated at the left of each page
+            colX = columns.at(0)->getWidth();
+            (*cit)->setLeftX(colX);
             xPage++;
         }
         (*cit)->setXPage(xPage);
     }
 }
 
+bool
+TjPrintReport::beginPrinting()
+{
+    return p.begin(paintDevice);
+}
+
+void
+TjPrintReport::endPrinting()
+{
+    p.end();
+}
+
 void
 TjPrintReport::printReportPage(int x, int y)
 {
-    QPainter p;
-
-    p.begin(paintDevice);
-
     for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
     {
         if ((*rit)->getYPage() == y)
         {
+            /* The first column is repeated as left column on each page. On
+             * the first page we of course don't have to do this. */
+            if (x > 0)
+                printReportCell(*rit, 0);
+
             for (int col = 0; col < getNumberOfColumns(); ++col)
             {
                 TjReportColumn* reportColumn = columns.at(col);
                 if (reportColumn->getXPage() == x)
-                {
-                    TjReportCell* cell = (*rit)->getCell(col);
-                    p.drawRect(reportColumn->getLeftX(),
-                               (*rit)->getTopY(),
-                               reportColumn->getWidth(),
-                               (*rit)->getHeight());
-                    p.drawText(reportColumn->getLeftX() + cellMargin,
-                               (*rit)->getTopY() + (*rit)->getHeight() -
-                               cellMargin, cell->getText());
-                }
+                    printReportCell(*rit, col);
             }
         }
     }
+}
 
-    p.end();
+void
+TjPrintReport::printReportCell(TjReportRow* row, int col)
+{
+    QFont fnt;
+    QFontMetrics fm(fnt);
+    int descent = fm.descent();
+
+    TjReportCell* cell = row->getCell(col);
+    TjReportColumn* column = cell->getColumn();
+    p.drawRect(column->getLeftX(), row->getTopY(), column->getWidth(),
+               row->getHeight());
+    p.drawText(column->getLeftX() + cellMargin,
+               row->getTopY() + row->getHeight() - cellMargin - descent - 1,
+               cell->getText());
 }
 

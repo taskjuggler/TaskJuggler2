@@ -17,12 +17,12 @@
 #include "TjReportColumn.h"
 
 #include <qptrlist.h>
+#include <qpainter.h>
 
 #include "TaskList.h"
 #include "ResourceList.h"
 
 class QPaintDevice;
-class QPainter;
 class Report;
 class QtReportElement;
 class TaskList;
@@ -34,9 +34,12 @@ public:
     TjPrintReport(const Report* rd, QPaintDevice* pd);
     virtual ~TjPrintReport();
 
+    virtual void initialize() = 0;
     virtual bool generate() = 0;
 
+    bool beginPrinting();
     void printReportPage(int x, int y);
+    void endPrinting();
 
     int getNumberOfColumns() const { return columns.count(); }
 
@@ -54,6 +57,8 @@ protected:
 
     void computeTableMetrics();
 
+    void printReportCell(TjReportRow* row, int col);
+
     const Report* reportDef;
     const QtReportElement* reportElement;
 
@@ -68,7 +73,7 @@ protected:
     QPtrList<TjReportColumn> columns;
 
     QPaintDevice* paintDevice;
-    QPainter* p;
+    QPainter p;
 
     // The top and left (non-printable) margin of the page in pixels.
     int topMargin;
