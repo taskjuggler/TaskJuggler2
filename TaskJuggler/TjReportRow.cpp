@@ -17,7 +17,7 @@
 
 TjReportRow::TjReportRow(int cols) : columns(cols)
 {
-    cells = new (TjReportCell*)[columns];
+    cells = new TjReportCell*[columns];
     for (int i = 0; i < columns; ++i)
         cells[i] = 0;
 
