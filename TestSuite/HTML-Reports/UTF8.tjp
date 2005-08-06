@@ -1,0 +1,23 @@
+project utf8 "UTF-8 Test Project" "1.0" 2005-08-05 2005-09-01
+
+resource r1 "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß"
+resource r2 "ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğ"
+
+task t1 "àáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ" {
+	start 2005-08-05
+	effort 1d
+	allocate r1
+}
+
+task t2 "ŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞş" {
+	start 2005-08-05
+	effort 1d
+	allocate r2
+	note "αβγδεζηθικλμνξοπρςστυφχψω"
+}
+
+htmltaskreport "." {
+	columns name, resources, note
+	hideresource 0
+}
+
