@@ -144,13 +144,15 @@ TjReport::~TjReport()
 void
 TjReport::print(KPrinter* printer)
 {
+    printer->setResolution(300);
     printer->setup(this);
 
     TjPrintReport* tjpr;
     if ((tjpr = newPrintReport(printer)) == 0)
         return;
     tjpr->initialize();
-    tjpr->generate();
+    tjpr->generate(printer->orientation() == KPrinter::Portrait ?
+                   QPrinter::Portrait : QPrinter::Landscape);
 
     int xPages, yPages;
     tjpr->getNumberOfPages(xPages, yPages);

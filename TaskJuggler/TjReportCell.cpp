@@ -16,5 +16,4 @@ TjReportCell::TjReportCell(TjReportRow* r, TjReportColumn* c) :
     row(r), column(c)
 {
     indentLevel = 0;
-    alignment = Qt::AlignLeft;
 }

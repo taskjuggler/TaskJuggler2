@@ -38,6 +38,7 @@ public:
     HorizAlign getHAlign() const { return hAlign; }
     int getFontFactor() const { return fontFactor; }
     bool getNoWrap() const { return noWrap; }
+    bool getIndent() const { return indent; }
     RealFormat getRealFormat() const { return realFormat; }
 
     GenCellPtr genHeadLine1;
@@ -56,6 +57,7 @@ public:
     HorizAlign hAlign;
     int fontFactor;
     bool noWrap;
+    bool indent;
     RealFormat realFormat;
 
     const QString& getId() const { return id; }

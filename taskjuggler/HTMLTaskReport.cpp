@@ -12,6 +12,7 @@
 
 #include <qfile.h>
 
+#include "tjlib-internal.h"
 #include "HTMLTaskReport.h"
 #include "HTMLTaskReportElement.h"
 
@@ -33,7 +34,7 @@ HTMLTaskReport::generate()
     if (!open())
         return FALSE;
 
-    generateHeader("Task Report");
+    generateHeader(i18n("Task Report"));
     tab->generate();
     generateFooter();
 

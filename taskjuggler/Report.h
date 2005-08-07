@@ -83,7 +83,10 @@ public:
     time_t getEnd() const { return end; }
 
     void setHeadline(const QString& hl) { headline = hl; }
+    const QString& getHeadline() const { return headline; }
+
     void setCaption(const QString& c) { caption = c; }
+    const QString& getCaption() const { return caption; }
 
     bool isHidden(const CoreAttributes* c, ExpressionTree* et) const;
     bool isRolledUp(const CoreAttributes* c, ExpressionTree* et) const;

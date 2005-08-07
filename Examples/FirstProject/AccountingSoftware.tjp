@@ -210,7 +210,8 @@ task AcSo "Accounting Software" {
 
 # This task report is for use with the TaskJuggler GUI
 taskreport "Project Overview" {
-  columns start, end, effort, duration, completed, status, note, cost, revenue
+  headline "Accounting Software Project - Overview"
+  columns index, name, start, end, effort, duration, completed, status, note, cost, revenue
   scenario delayed
 }
 

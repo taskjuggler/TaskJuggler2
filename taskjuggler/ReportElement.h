@@ -66,7 +66,10 @@ public:
     int getScenario(int sc) const { return scenarios[sc]; }
 
     void setHeadline(const QString& hl) { headline = hl; }
+    const QString& getHeadline() const { return headline; }
+
     void setCaption(const QString& c) { caption = c; }
+    const QString& getCaption() const { return caption; }
 
     void setRawHead(const QString& head)
     {
@@ -109,8 +112,19 @@ public:
     ExpressionTree* getRollUpAccount() const { return rollUpAccount; }
 
     bool setTaskSorting(int sc, int level);
+    int getTaskSorting(int level) const { return taskSortCriteria[level]; }
+
     bool setResourceSorting(int sc, int level);
+    int getResourceSorting(int level) const
+    {
+        return resourceSortCriteria[level];
+    }
+
     bool setAccountSorting(int sc, int level);
+    int getAccountSorting(int level) const
+    {
+        return accountSortCriteria[level];
+    }
 
     bool showTaskTree() const
     {
@@ -127,6 +141,8 @@ public:
 
     void setTaskRoot(const QString& root) { taskRoot = root; }
     const QString& getTaskRoot() const { return taskRoot; }
+
+    int taskRootLevel() const;
 
     bool setLoadUnit(const QString& u);
 

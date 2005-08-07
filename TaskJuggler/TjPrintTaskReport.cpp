@@ -39,7 +39,7 @@ TjPrintTaskReport::initialize()
 }
 
 bool
-TjPrintTaskReport::generate()
+TjPrintTaskReport::generate(QPrinter::Orientation orientation)
 {
     assert(reportDef != 0);
 
@@ -93,7 +93,7 @@ TjPrintTaskReport::generate()
         }
     }
 
-    computeTableMetrics();
+    layoutPages(orientation);
 
     return TRUE;
 }

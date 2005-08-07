@@ -22,6 +22,7 @@
 #include "QtReportElement.h"
 #include "QtReport.h"
 #include "TableColumnInfo.h"
+#include "TableColumnFormat.h"
 #include "ReportElement.h"
 #include "Project.h"
 #include "Task.h"
@@ -39,7 +40,15 @@ TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
     columns.setAutoDelete(TRUE);
 
     leftMargin = topMargin = pageWidth = pageHeight = 0;
-    cellMargin = 2;
+    cellMargin = 0;
+    headlineHeight = 0;
+    tableRight = tableBottom = 0;
+
+    standardFont.setPixelSize(pointsToYPixels(7));
+    tableHeaderFont.setPixelSize(pointsToYPixels(7));
+    headlineFont.setPixelSize(pointsToYPixels(12));
+
+    indentSteps = mmToXPixels(3);
 }
 
 TjPrintReport::~TjPrintReport()
@@ -61,10 +70,31 @@ TjPrintReport::generateTableHeader()
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci)
     {
-        //const TableColumnFormat* tcf =
-        //    reportElement->getColumnFormat((*ci)->getName());
-
         TjReportColumn* col = new TjReportColumn;
+        const TableColumnFormat* tcf =
+            reportElement->getColumnFormat((*ci)->getName());
+        col->setTableColumnFormat(tcf);
+        if (tcf->getIndent())
+        {
+            int maxIndentLevel = 1;
+            if (((tcf->genTaskLine1 &&
+                  tcf->genTaskLine1 != &ReportElement::genCellEmpty) &&
+                 tcf->genResourceLine2) ||
+                ((tcf->genResourceLine1 &&
+                  tcf->genResourceLine1 != &ReportElement::genCellEmpty) &&
+                 tcf->genTaskLine2))
+                maxIndentLevel = maxDepthTaskList + maxDepthResourceList;
+            else if ((tcf->genTaskLine1 &&
+                      tcf->genTaskLine1 != &ReportElement::genCellEmpty) &&
+                     !tcf->genResourceLine2)
+                maxIndentLevel = maxDepthTaskList;
+            else if ((tcf->genResourceLine1 &&
+                      tcf->genResourceLine1 != &ReportElement::genCellEmpty) &&
+                     !tcf->genTaskLine2)
+                maxIndentLevel = maxDepthResourceList;
+            col->setMaxIndentLevel(maxIndentLevel);
+        }
+
         columns.append(col);
     }
 }
@@ -78,9 +108,18 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++colIdx)
     {
         QString cellText;
-
+        TjReportCell* cell = new TjReportCell(row, columns.at(colIdx));
         const TableColumnFormat* tcf =
             reportElement->getColumnFormat((*ci)->getName());
+
+        /* Determine whether the cell content should be indented. And if so,
+         * then on what level. */
+        if (tcf->getIndent() &&
+            reportDef->getTaskSorting(0) == CoreAttributesList::TreeMode)
+        {
+            cell->setIndentLevel(task->treeLevel() -
+                                 reportElement->taskRootLevel());
+        }
 
         if ((*ci)->getName() == "completed")
         {
@@ -145,7 +184,19 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
             cellText = time2user(task->getMinStart(scenario),
                                  reportDef->getTimeFormat());
         else if ((*ci)->getName() == "name")
+        {
+            if (reportDef->getTaskSorting(0) == CoreAttributesList::TreeMode)
+            {
+                if (resource)
+                    cell->setIndentLevel(maxDepthResourceList +
+                                         task->treeLevel() -
+                                         reportElement->taskRootLevel());
+                else
+                    cell->setIndentLevel(task->treeLevel() -
+                                         reportElement->taskRootLevel());
+            }
             cellText = task->getName();
+        }
         else if ((*ci)->getName() == "note" && !task->getNote().isEmpty())
             cellText = task->getNote();
         else if ((*ci)->getName() == "pathcriticalness")
@@ -203,7 +254,6 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
         else
             generateCustomAttribute(task, (*ci)->getName(), cellText);
 
-        TjReportCell* cell = new TjReportCell(row, columns.at(colIdx));
         cell->setText(cellText);
         row->insertCell(cell, colIdx);
     }
@@ -256,24 +306,62 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
 }
 
 void
-TjPrintReport::computeTableMetrics()
+TjPrintReport::layoutPages(QPrinter::Orientation orientation)
 {
-    QFont fnt;
-    QFontMetrics fm(fnt);
-
     // Set the left and top margin to 2cm
     QPaintDeviceMetrics metrics(paintDevice);
-    leftMargin = topMargin = (int) ((2 / 2.54) * metrics.logicalDpiY());
-    pageWidth = metrics.width() - 2 * leftMargin;
-    pageHeight = metrics.height() - 2 * topMargin;
+    leftMargin = mmToXPixels(10);
+    topMargin = mmToYPixels(10);
+    if (orientation == QPrinter::Portrait)
+    {
+        pageWidth = metrics.width() - 2 * leftMargin;
+        pageHeight = metrics.height() - 2 * topMargin;
+    }
+    else
+    {
+        pageWidth = metrics.height() - 2 * topMargin;
+        pageHeight = metrics.width() - 2 * leftMargin;
+    }
+
+    cellMargin = mmToXPixels(1);
+
+    // Determine height of headline
+    if (!reportElement->getHeadline().isEmpty())
+    {
+        QFontMetrics fm(headlineFont);
+        QRect br = fm.boundingRect(reportElement->getHeadline());
+        int margin = mmToYPixels(2);
+        headlineHeight = br.height() + 2 * margin + 1;
+        headlineX = leftMargin + (pageWidth - br.width()) / 2;
+        headlineBase = topMargin + headlineHeight - 1 - margin - fm.descent();
+    }
+
+    // Determine geometries for table header elements
+    headerY = topMargin + headlineHeight;
+    headerHeight = 0;
+    for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
+    {
+        const TableColumnFormat* tcf = (*cit)->getTableColumnFormat();
+        QFontMetrics fm(tableHeaderFont);
+        QRect br = fm.boundingRect(tcf->getTitle());
+        br.setWidth(br.width() + 2 * cellMargin + 1);
+        br.setHeight(br.height() + 2 * cellMargin + 1);
+        if (br.height() > headerHeight)
+            headerHeight = br.height();
+        if ((*cit)->getWidth() < br.width())
+            (*cit)->setWidth(br.width());
+    }
+
+    QFontMetrics fm(standardFont);
+    tableRight = leftMargin + pageWidth;
+    tableBottom = topMargin + pageHeight;
 
     /* We iterate over all the rows and determine their heights. This also
      * defines the top Y coordinate and the vertical page number. */
-    int topOfRow = 0;
+    int topOfRow = topMargin + headlineHeight + headerHeight;
     int yPage = 0;
     for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
     {
-        (*rit)->setTopY(topOfRow);
         /* For each row we iterate over the cells to detemine their minimum
          * bounding rect. For each cell use the minimum width to determine the
          * overall column width. */
@@ -287,40 +375,48 @@ TjPrintReport::computeTableMetrics()
             if (cell->getText().isEmpty())
                 continue;
             QRect br = fm.boundingRect(cell->getText());
-            br.setWidth(br.width() + 2 * cellMargin);
-            br.setHeight(br.height() + 2 * cellMargin);
+            // Compute the indentation depth for the cell.
+            int indentation = 0;
+            if (columns.at(col)->getTableColumnFormat()->getHAlign() ==
+                TableColumnFormat::left)
+                indentation = cell->getIndentLevel() * indentSteps;
+            else if (columns.at(col)->getTableColumnFormat()->getHAlign() ==
+                     TableColumnFormat::right)
+                indentation = (columns.at(col)->getMaxIndentLevel() - 1 -
+                    cell->getIndentLevel()) * indentSteps;
+            br.setWidth(br.width() + 2 * cellMargin + 1 + indentation);
+            br.setHeight(br.height() + 2 * cellMargin + 1);
             if (br.height() > maxHeight)
                 maxHeight = br.height();
             if (columns.at(col)->getWidth() < br.width())
                 columns.at(col)->setWidth(br.width());
         }
-        topOfRow += maxHeight;
-        if (topOfRow > pageHeight)
+        if (topOfRow + maxHeight > tableBottom)
         {
-            topOfRow = 0;
-            (*rit)->setTopY(0);
+            topOfRow = topMargin + headlineHeight + headerHeight;
             yPage++;
         }
+        (*rit)->setTopY(topOfRow);
+        topOfRow += maxHeight;
         (*rit)->setYPage(yPage);
         (*rit)->setHeight(maxHeight);
     }
 
     /* Now that we know all the column widths, we can determine their absolute
      * X coordinate and the X page. */
-    int colX = 0;
+    int colX = leftMargin;
     int xPage = 0;
     for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
     {
-        (*cit)->setLeftX(colX);
-        colX += (*cit)->getWidth();
-        if (colX > pageWidth)
+        if (colX + (*cit)->getWidth() > leftMargin + pageWidth)
         {
             // The first column is repeated at the left of each page
-            colX = columns.at(0)->getWidth();
-            (*cit)->setLeftX(colX);
+            colX = leftMargin + columns.at(0)->getWidth();
             xPage++;
         }
+        (*cit)->setLeftX(colX);
         (*cit)->setXPage(xPage);
+        colX += (*cit)->getWidth();
     }
 }
 
@@ -339,38 +435,142 @@ TjPrintReport::endPrinting()
 void
 TjPrintReport::printReportPage(int x, int y)
 {
-    for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
+    QFont fnt;
+    QFontMetrics fm(fnt);
+    int descent = fm.descent();
+
+    // Draw outer frame
+    p.setPen(QPen(Qt::black, 1));
+    p.drawRect(leftMargin, topMargin, pageWidth, pageHeight);
+
+    // Draw headline if needed
+    if (headlineHeight > 0)
     {
+        p.setFont(headlineFont);
+        p.drawText(headlineX, headlineBase, reportElement->getHeadline());
+        p.setPen(QPen(Qt::black, 1));
+        p.drawLine(leftMargin, topMargin + headlineHeight - 1,
+                   leftMargin + pageWidth, topMargin + headlineHeight - 1);
+    }
+
+    // Draw the table header
+    for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
+    {
+        p.setPen(QPen(Qt::black, 1));
+        p.setFont(tableHeaderFont);
+        if (*cit == columns.first() || (*cit)->getXPage() == x)
+        {
+            const TableColumnFormat* tcf = (*cit)->getTableColumnFormat();
+            p.drawText((*cit)->getLeftX() + cellMargin - 1,
+                       headerY + headerHeight - cellMargin - descent - 1,
+                       tcf->getTitle());
+            // Draw right cell border
+            p.drawLine((*cit)->getLeftX() + (*cit)->getWidth() - 1,
+                       headerY, (*cit)->getLeftX() + (*cit)->getWidth() - 1,
+                       headerY + headerHeight - 1);
+        }
+        // Draw lower border of header
+        p.drawLine(leftMargin, headerY + headerHeight - 1,
+                   leftMargin + pageWidth, headerY + headerHeight - 1);
+    }
+
+    // Draw the table cells for this page
+    for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
         if ((*rit)->getYPage() == y)
         {
-            /* The first column is repeated as left column on each page. On
-             * the first page we of course don't have to do this. */
-            if (x > 0)
-                printReportCell(*rit, 0);
+            // Draw lower border line for row
+            p.setPen(QPen(Qt::black, 1));
+            p.drawLine(leftMargin, (*rit)->getTopY() + (*rit)->getHeight() - 1,
+                       leftMargin + columns.at(0)->getWidth() - 1,
+                       (*rit)->getTopY() + (*rit)->getHeight() - 1);
+            p.setPen(QPen(Qt::gray, 1));
+            p.drawLine(leftMargin + columns.at(0)->getWidth(),
+                       (*rit)->getTopY() + (*rit)->getHeight() - 1,
+                       leftMargin + pageWidth - 1,
+                       (*rit)->getTopY() + (*rit)->getHeight() - 1);
 
             for (int col = 0; col < getNumberOfColumns(); ++col)
             {
                 TjReportColumn* reportColumn = columns.at(col);
-                if (reportColumn->getXPage() == x)
+                /* The first column is repeated as left column on each page.
+                 * On the first page we of course don't have to do this. */
+                if (reportColumn->getXPage() == x || col == 0)
+                {
                     printReportCell(*rit, col);
+
+                    // Draw right cell border
+                    p.setPen(QPen(col == 0 ? Qt::black : Qt::gray, 1));
+                    p.drawLine(columns.at(col)->getLeftX() +
+                               columns.at(col)->getWidth() - 1,
+                               (*rit)->getTopY(),
+                               columns.at(col)->getLeftX() +
+                               columns.at(col)->getWidth() - 1,
+                               (*rit)->getTopY() + (*rit)->getHeight());
+                }
             }
         }
-    }
 }
 
 void
 TjPrintReport::printReportCell(TjReportRow* row, int col)
 {
-    QFont fnt;
-    QFontMetrics fm(fnt);
+    QFontMetrics fm(standardFont);
     int descent = fm.descent();
 
     TjReportCell* cell = row->getCell(col);
     TjReportColumn* column = cell->getColumn();
-    p.drawRect(column->getLeftX(), row->getTopY(), column->getWidth(),
-               row->getHeight());
-    p.drawText(column->getLeftX() + cellMargin,
-               row->getTopY() + row->getHeight() - cellMargin - descent - 1,
-               cell->getText());
+    p.setFont(standardFont);
+    p.setPen(QPen(Qt::black, 1));
+    int y = row->getTopY() + row->getHeight() - cellMargin - descent - 1;
+    switch (column->getTableColumnFormat()->getHAlign())
+    {
+        case TableColumnFormat::left:
+            p.drawText(column->getLeftX() + cellMargin - 1 +
+                       cell->getIndentLevel() * indentSteps, y,
+                       cell->getText());
+            break;
+        case TableColumnFormat::center:
+        {
+            QFontMetrics fm(standardFont);
+            QRect br = fm.boundingRect(cell->getText());
+            int x = (columns.at(col)->getWidth() -
+                     (2 * cellMargin + br.width())) / 2;
+            p.drawText(column->getLeftX() + cellMargin - 1 + x, y,
+                       cell->getText());
+            break;
+        }
+        case TableColumnFormat::right:
+        {
+            QFontMetrics fm(standardFont);
+            QRect br = fm.boundingRect(cell->getText());
+            int x = columns.at(col)->getWidth() -
+                (2 * cellMargin + br.width() +
+                 ((column->getMaxIndentLevel() - 1 -
+                  cell->getIndentLevel()) * indentSteps));
+            p.drawText(column->getLeftX() + cellMargin - 1 + x, y,
+                       cell->getText());
+        }
+    }
+}
+
+int
+TjPrintReport::mmToXPixels(int mm)
+{
+    QPaintDeviceMetrics metrics(paintDevice);
+    return (int) ((mm / 25.4) * metrics.logicalDpiX());
+}
+
+int
+TjPrintReport::mmToYPixels(int mm)
+{
+    QPaintDeviceMetrics metrics(paintDevice);
+    return (int) ((mm / 25.4) * metrics.logicalDpiY());
+}
+
+int
+TjPrintReport::pointsToYPixels(int pts)
+{
+    QPaintDeviceMetrics metrics(paintDevice);
+    return (int) ((pts * (0.376 / 25.4)) * metrics.logicalDpiY());
 }
 

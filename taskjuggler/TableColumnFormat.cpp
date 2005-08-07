@@ -34,6 +34,7 @@ TableColumnFormat::TableColumnFormat(const QString& i, ReportElement* e,
 
     fontFactor = 100;
     noWrap = FALSE;
+    indent = FALSE;
     hAlign = center;
 
     if (el)

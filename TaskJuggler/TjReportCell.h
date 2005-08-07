@@ -32,6 +32,9 @@ public:
     TjReportRow* getRow() const { return row; }
     TjReportColumn* getColumn() const { return column; }
 
+    void setIndentLevel(int idl) { indentLevel = idl; }
+    int getIndentLevel() const { return indentLevel; }
+
 private:
     TjReportCell() { }
 
@@ -39,7 +42,6 @@ private:
     TjReportColumn* column;
 
     QString text;
-    Qt::AlignmentFlags alignment;
     int indentLevel;
 } ;
 

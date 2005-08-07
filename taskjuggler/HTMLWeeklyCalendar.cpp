@@ -12,6 +12,7 @@
 
 #include <qfile.h>
 
+#include "tjlib-internal.h"
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLWeeklyCalendarElement.h"
 
@@ -33,7 +34,7 @@ HTMLWeeklyCalendar::generate()
     if (!open())
         return FALSE;
 
-    generateHeader("Weekly Calendar");
+    generateHeader(i18n("Weekly Calendar"));
     tab->generate();
     generateFooter();
 

@@ -15,12 +15,15 @@
 
 #include "TjReportCell.h"
 
+class TableColumnFormat;
+
 class TjReportColumn
 {
 public:
     TjReportColumn()
     {
         leftX = width = xPage = 0;
+        maxIndentLevel = 1;
     }
     ~TjReportColumn() { }
 
@@ -33,11 +36,23 @@ public:
     void setXPage(int x) { xPage = x; }
     int getXPage() const { return xPage; }
 
+    void setTableColumnFormat(const TableColumnFormat* t) { tcf = t; }
+    const TableColumnFormat* getTableColumnFormat() const { return tcf; }
+
+    void setMaxIndentLevel(int level) { maxIndentLevel = level; }
+    int getMaxIndentLevel() const { return maxIndentLevel; }
+
 private:
+    // The leftmost pixel of the column
     int leftX;
+    // The column width in pixels
     int width;
     // The horizontal page number of the page this column is on.
     int xPage;
+
+    int maxIndentLevel;
+
+    const TableColumnFormat* tcf;
 } ;
 
 #endif

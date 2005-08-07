@@ -142,7 +142,7 @@ HTMLStatusReport::generate()
         headline = i18n("Status report for the period %1 to %2")
             .arg(time2user(start, timeFormat)).arg(time2user(end, timeFormat));
 
-    generateHeader("Status Report");
+    generateHeader(i18n("Status Report"));
 
     for (int i = 0; i < tablesCount; ++i)
     {

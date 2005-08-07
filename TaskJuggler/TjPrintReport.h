@@ -18,6 +18,8 @@
 
 #include <qptrlist.h>
 #include <qpainter.h>
+#include <qfont.h>
+#include <qprinter.h>
 
 #include "TaskList.h"
 #include "ResourceList.h"
@@ -35,7 +37,7 @@ public:
     virtual ~TjPrintReport();
 
     virtual void initialize() = 0;
-    virtual bool generate() = 0;
+    virtual bool generate(QPrinter::Orientation orientation) = 0;
 
     bool beginPrinting();
     void printReportPage(int x, int y);
@@ -55,12 +57,16 @@ protected:
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
                                  QString& cellText) const;
 
-    void computeTableMetrics();
+    void layoutPages(QPrinter::Orientation orientation);
 
     void printReportCell(TjReportRow* row, int col);
 
     const Report* reportDef;
     const QtReportElement* reportElement;
+
+    int mmToXPixels(int mm);
+    int mmToYPixels(int mm);
+    int pointsToYPixels(int pts);
 
     int scenario;
     TaskList taskList;
@@ -75,15 +81,41 @@ protected:
     QPaintDevice* paintDevice;
     QPainter p;
 
+    QFont standardFont;
+    QFont tableHeaderFont;
+    QFont headlineFont;
+
     // The top and left (non-printable) margin of the page in pixels.
     int topMargin;
     int leftMargin;
 
-    // The printable size of the page in pixels.
+    // The printable size of the page in pixels
     int pageWidth;
     int pageHeight;
 
+    // The leftmost pixes of the headline
+    int headlineX;
+    // The Y coordinate of the headline baseline
+    int headlineBase;
+    // The height of the headline in pixels
+    int headlineHeight;
+
+    // The top pixel of the table header
+    int headerY;
+
+    // The height of the table header in pixels
+    int headerHeight;
+
+    // Rightmost pixel of the table
+    int tableRight;
+    // Lowermost pixel of the table
+    int tableBottom;
+
+    // The margin around cell content in pixels
     int cellMargin;
+
+    // The step size for indentation of table cell content in pixels
+    int indentSteps;
 } ;
 
 #endif

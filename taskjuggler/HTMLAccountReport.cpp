@@ -12,6 +12,7 @@
 
 #include <qfile.h>
 
+#include "tjlib-internal.h"
 #include "HTMLAccountReport.h"
 #include "HTMLAccountReportElement.h"
 
@@ -35,7 +36,7 @@ HTMLAccountReport::generate()
     if (!open())
         return FALSE;
 
-    generateHeader("Account Report");
+    generateHeader(i18n("Account Report"));
     tab->generate();
     generateFooter();
 
