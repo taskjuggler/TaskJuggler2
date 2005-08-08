@@ -29,6 +29,7 @@ class Report;
 class QtReportElement;
 class TaskList;
 class ReportElement;
+class TjGanttChart;
 
 class TjPrintReport
 {
@@ -84,6 +85,11 @@ protected:
     QFont standardFont;
     QFont tableHeaderFont;
     QFont headlineFont;
+    QFont signatureFont;
+
+    bool showGantt;
+    TjGanttChart* ganttChart;
+    QObject* ganttChartObj;
 
     // The top and left (non-printable) margin of the page in pixels.
     int topMargin;
@@ -116,6 +122,16 @@ protected:
 
     // The step size for indentation of table cell content in pixels
     int indentSteps;
+
+    // The top pixel of the footer
+    int footerY;
+    // The height of the footer in pixels
+    int footerHeight;
+
+    // The top pixel of the bottom line.
+    int bottomlineY;
+    // The height of the bottom line in pixels
+    int bottomlineHeight;
 } ;
 
 #endif

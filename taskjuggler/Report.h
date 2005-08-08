@@ -67,7 +67,7 @@ public:
     int getScenario(int sc) const { return scenarios[sc]; }
 
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
-    bool getWeekStartsMonday() { return weekStartsMonday; }
+    bool getWeekStartsMonday() const { return weekStartsMonday; }
 
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }

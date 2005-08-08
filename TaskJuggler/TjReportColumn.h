@@ -24,6 +24,7 @@ public:
     {
         leftX = width = xPage = 0;
         maxIndentLevel = 1;
+        isGantt = FALSE;
     }
     ~TjReportColumn() { }
 
@@ -42,6 +43,9 @@ public:
     void setMaxIndentLevel(int level) { maxIndentLevel = level; }
     int getMaxIndentLevel() const { return maxIndentLevel; }
 
+    void setIsGantt(bool ig) { isGantt = ig; }
+    bool getIsGantt() const { return isGantt; }
+
 private:
     // The leftmost pixel of the column
     int leftX;
@@ -53,6 +57,9 @@ private:
     int maxIndentLevel;
 
     const TableColumnFormat* tcf;
+
+    // This flag is set if the column contains the GANTT chart.
+    bool isGantt;
 } ;
 
 #endif

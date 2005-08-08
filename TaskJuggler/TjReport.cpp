@@ -159,8 +159,8 @@ TjReport::print(KPrinter* printer)
     if (!tjpr->beginPrinting())
         return;
     bool first = TRUE;
-    for (int x = 0; x < xPages; ++x)
-        for (int y = 0; y < yPages; ++y)
+    for (int y = 0; y < yPages; ++y)
+        for (int x = 0; x < xPages; ++x)
         {
             if (first)
                 first = FALSE;

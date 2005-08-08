@@ -23,6 +23,9 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-05-28 {
   }
 }
 
+# This is not a real copyright for this file. It's just used as an example.
+copyright "© 2002 Crappy Software, Inc."
+
 # The daily default rate of all resources. This can be overriden for each
 # resource. We specify this, so that we can do a good calculation of
 # the costs of the project.

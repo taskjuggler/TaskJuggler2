@@ -147,7 +147,10 @@ public:
     bool setLoadUnit(const QString& u);
 
     void setTimeFormat(const QString& tf) { timeFormat = tf; }
+    const QString getTimeFormat() const { return timeFormat; }
+
     void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
+    const QString& getShortTimeFormat() const { return shortTimeFormat; }
 
     const RealFormat& getNumberFormat() const { return numberFormat; }
 
