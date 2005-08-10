@@ -112,9 +112,6 @@ TjTaskReport::generateList()
             (*tli)->getParent()->getId().length() >
             reportElement->getTaskRoot().length())
         {
-            qDebug("Task: %s, Parent: %s p: %p", (*tli)->getName().latin1(),
-                   (*tli)->getParent()->getId().latin1(),
-                   ca2lviDict[QString("t:") + (*tli)->getParent()->getId()]);
             newLvi = new KListViewItem
                 (ca2lviDict[QString("t:") + (*tli)->getParent()->getId()],
                  (*tli)->getName());
