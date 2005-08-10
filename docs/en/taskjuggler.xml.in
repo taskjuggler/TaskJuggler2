@@ -229,7 +229,7 @@ builds fine, you can remove all generated files again by typing
 
 Now you can generate a file that just contains
 your modifications by typing
-<screen>diff -ru taskjuggler-svn taskjuggker-yourname > taskjuggler-yourname.diff</screen>
+<screen>diff -ru taskjuggler-svn taskjuggler-yourname > taskjuggler-yourname.diff</screen>
 
 Inspect the generated file
 <varname>taskjuggler-yourname.diff</varname> and make sure it only
