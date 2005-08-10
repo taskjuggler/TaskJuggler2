@@ -12,12 +12,15 @@
 
 #include "TjGanttChart.h"
 
+#include <assert.h>
+
 #include <qnamespace.h>
 #include <qcanvas.h>
 #include <qpen.h>
 #include <qbrush.h>
 #include <qdatetime.h>
 #include <klocale.h>
+#include <qpainter.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -89,6 +92,13 @@ TjGanttChart::setSizes(int hh, int ch, int w)
     headerHeight = hh;
     chartHeight = ch;
     width = w;
+
+    assert(headerHeight > 0);
+    assert(headerHeight < 32767);   // QCanvas limit
+    assert(chartHeight > 0);
+    assert(chartHeight < 32767);    // QCanvas limit
+    assert(width > 0);
+    assert(width < 32767);          // QCanvas limit
 
     header->resize(width, headerHeight);
     chart->resize(width, chartHeight);
@@ -235,7 +245,10 @@ TjGanttChart::paintHeader(const QRect& clip, QPainter* p, bool dbuf)
 void
 TjGanttChart::paintChart(const QRect& clip, QPainter* p, bool dbuf)
 {
+    p->setClipping(true);
+    p->setClipRect(clip);
     chart->drawArea(clip, p, dbuf);
+    p->setClipping(false);
 }
 
 void
@@ -434,8 +447,7 @@ void
 TjGanttChart::generateMonthHeader(int y, bool withYear)
 {
     for (time_t month = beginOfMonth(startTime);
-         month < endTime; month =
-         sameTimeNextMonth(month))
+         month < endTime; month = sameTimeNextMonth(month))
     {
         int x = time2x(month);
         if (x < 0)

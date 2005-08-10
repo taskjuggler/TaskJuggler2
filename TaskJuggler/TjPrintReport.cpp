@@ -387,7 +387,7 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
 
     // And now the table layout
     tableRight = leftMargin + pageWidth;
-    tableBottom = bottomlineY - 1;
+    tableBottom = footerY - 1;
 
     /* We iterate over all the rows and determine their heights. This also
      * defines the top Y coordinate and the vertical page number. */
@@ -425,6 +425,9 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
                 maxHeight = br.height();
             if (columns.at(col)->getWidth() < br.width())
                 columns.at(col)->setWidth(br.width());
+            // This is a hack to handle oversize columns
+            if (columns.at(col)->getWidth() > ((int) (2.0/3 * pageWidth)))
+                columns.at(col)->setWidth(pageWidth / 2);
         }
         if (topOfRow + maxHeight > tableBottom)
         {
@@ -604,10 +607,6 @@ TjPrintReport::printReportPage(int x, int y)
                          reportColumn->getXPage() == x && !ganttChartPainted)
                 {
                     ganttChartPainted = true;
-                    QRect vp = p.viewport();
-                    vp.setX(columns.at(col)->getLeftX());
-                    vp.setY((*rit)->getTopY());
-                    p.setViewport(vp);
                     int tableHeight = 0;
                     int prevTablesHeight = 0;
                     for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
@@ -615,8 +614,14 @@ TjPrintReport::printReportPage(int x, int y)
                             prevTablesHeight += (*rit)->getHeight();
                         else if ((*rit)->getYPage() == y)
                             tableHeight += (*rit)->getHeight();
+                    QRect vp = p.viewport();
+                    vp.setX(columns.at(col)->getLeftX());
+                    vp.setY((*rit)->getTopY() - prevTablesHeight);
+                    p.setViewport(vp);
+                    qDebug("prevTablesHeight: %d, tableHeight: %d",
+                           prevTablesHeight, tableHeight);
                     ganttChart->paintChart
-                        (QRect(0, prevTablesHeight, columns.at(col)->getWidth(),
+                        (QRect(0, 0, columns.at(col)->getWidth(),
                                tableHeight), &p);
                     vp.setX(0);
                     vp.setY(0);
