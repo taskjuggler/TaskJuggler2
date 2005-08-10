@@ -235,7 +235,12 @@ TaskJugglerView::newProject()
     KURL fileURL = KFileDialog::getSaveURL
         (i18n("Pick a name for the new project file"), "*.tjp", this,
          i18n("New Project File"));
-    if (fileURL.isEmpty() || !fileURL.isValid())
+
+    // Check if user cancelled the message box
+    if (fileURL.isEmpty())
+        return;
+
+    if (fileURL.isValid())
     {
         KMessageBox::sorry(this, i18n("The specified file URL is not valid."),
                            i18n("Error while creating new Project"));
