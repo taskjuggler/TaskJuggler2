@@ -4,20 +4,20 @@ SUBDIRS=pics
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-bin_PROGRAMS = TaskJuggler TaskJuggler_client
+bin_PROGRAMS = TaskJugglerUI TaskJuggler_client
 
 # set the include path for X, qt and KDE
 INCLUDES = -I$(top_srcdir)/taskjuggler $(all_includes)
 
 # the library search path. 
 LIBADD=-L../taskjuggler/libtaskjuggler.la
-TaskJuggler_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+TaskJugglerUI_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-TaskJuggler_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
+TaskJugglerUI_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
 
 # which sources should be compiled for taskjuggler
-TaskJuggler_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
+TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjGanttChart.cpp \
 	TjPrintReport.cpp TjPrintTaskReport.cpp \
 	TjReportRow.cpp TjReportCell.cpp \

@@ -812,7 +812,11 @@ date2time(const QString& date)
         return 0;
     }
 
+#ifdef __CYGWIN__
+    struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1 };
+#else
     struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
+#endif
     time_t localTime = mktime(&t);
 
     if (restoreTZ)
