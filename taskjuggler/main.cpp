@@ -6,6 +6,13 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
+ *
+ * As a special exception, you have permission to link this program with
+ * the Qt3 library and distribute executables, as long as you follow the
+ * requirements of the GNU GPL version 2 in regard to all of the software
+ * in the executable aside from Qt3.
+ *
+ * $Id$
  */
 
 #include <config.h>
