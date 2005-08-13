@@ -4,7 +4,7 @@ SUBDIRS=pics
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-bin_PROGRAMS = TaskJugglerUI TaskJuggler_client
+bin_PROGRAMS = TaskJugglerUI
 
 # set the include path for X, qt and KDE
 INCLUDES = -I$(top_srcdir)/taskjuggler $(all_includes)
@@ -29,11 +29,6 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 
 # these are the headers for your project
 noinst_HEADERS = taskjuggler.h taskjugglerview.h pref.h
-
-# client stuff
-TaskJuggler_client_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-TaskJuggler_client_LDADD   = $(LIB_KDECORE)
-TaskJuggler_client_SOURCES = TaskJuggler_client.cpp
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
