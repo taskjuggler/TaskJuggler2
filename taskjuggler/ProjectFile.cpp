@@ -181,6 +181,17 @@ ProjectFile::parse()
         case EndOfFile:
             return TRUE;
         case ID:
+            // Only macro and include are allowed prior to the project header.
+            if (proj->getEnd() == 0 &&
+                token != KW("project") && token != KW("macro") &&
+                token != KW("include"))
+            {
+                errorMessage
+                    (i18n("The project properties must be defined prior to any "
+                          "account, shift, task or resource."));
+                return FALSE;
+            }
+
             if (token == KW("task"))
             {
                 if (!readTask(0))
