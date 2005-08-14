@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=TaskJuggler
-Exec=TaskJuggler
+Exec=TaskJugglerUI
 GenericName=Project Management Software
 Icon=taskjuggler
 Type=Application

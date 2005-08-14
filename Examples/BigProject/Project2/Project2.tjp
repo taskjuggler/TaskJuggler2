@@ -9,7 +9,10 @@ include "../Project1/Project1-Interface.tji"
 
 flags interface
 
+account acc "Project Costs" cost
+
 task project2 "Second Project" {
+	account acc
 	task task1 "Task 1" {
 		length 12d
 		start 2002-01-16
@@ -30,7 +33,7 @@ task project2 "Second Project" {
 }
 
 htmltaskreport "Project2.html" {
-	columns no, name, projectid, start, end, weekly
+	columns no, name, projectid, start, end, cost, weekly
 	hideresource 0
 	headline "Combined Projects"
 	caption "This report has been composed out of two projects. The
@@ -39,3 +42,11 @@ htmltaskreport "Project2.html" {
 	project."
 }
 
+# Instead of repeating the specifications of your html reports in each
+# file, you can include a file with common report specifications
+include "../Common/Reports.tji"{}
+
+# The optional curly braces {} must be supplied here,  because the
+# macro defined in the included file is called immediately afterwards
+
+${Accounting "Project"}

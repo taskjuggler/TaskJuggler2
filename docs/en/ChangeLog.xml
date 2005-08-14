@@ -820,4 +820,15 @@ errors.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2 id="Changelog_next"><title>Next Version(Some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed account reports which had summary lines that
+were all 0. In HTML reports the summary columns were rendered all
+black.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

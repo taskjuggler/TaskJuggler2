@@ -1284,15 +1284,17 @@ listed as well.</para></descr>
  </property>
  <property name="include" id="include" inheritable="No">
   <descr><para>Includes the specified file name as if its contents
-would be written instead of the include property.
-<varname>include</varname> commands can be used within global scope or
-between property declarations of tasks, resources, and
-accounts.</para>
+would be written instead of the include property. The only exception
+is the <varname>include</varname> statement itself. When the included
+files contains other include statements or report definitions, the
+filenames are relative to file where they are defined in.
+<varname>include</varname> commands can be used in the project header,
+at global scope or between property declarations of tasks, resources,
+and accounts.</para>
 
 <para>For technical reasons you have to supply the optional pair of
-curly brackets if the include is followed immediately by a macro that
-is defined within the included file.</para></descr>
-  <attributes>
+curly brackets if the include is followed immediately by a macro call that
+is defined within the included file.</para></descr> <attributes>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
@@ -1438,7 +1440,10 @@ report.</para></descr>
  </property>
  <property name="macro" id="macro" inheritable="No">
   <descr><para>Defines a text fragment that can later be inserted by
-using the specified ID.</para></descr>
+using the specified ID.</para>
+<para>See the description of the <varname>include</varname> statement
+for details on how to use a macro immediately after including the file
+where the macro has been defined in.</para></descr>
   <attributes>
    <attr name="id" type="ID"/>
   </attributes>
@@ -1473,6 +1478,7 @@ would be flagged with an error message.</para>
 This macro call ${?foo} will expand to nothing if foo is undefined.
 </screen></para>
   </freestyle>
+  <seealso>include</seealso>
  </property>
  <property name="mandatory" id="mandatory" inheritable="No">
   <descr><para>Makes a resource allocation mandatory. This means, that
