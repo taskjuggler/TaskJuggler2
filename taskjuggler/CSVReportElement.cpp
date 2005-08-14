@@ -11,6 +11,7 @@
  */
 
 #include <config.h>
+#include <assert.h>
 
 #include "CSVReportElement.h"
 #include "TjMessageHandler.h"
@@ -215,8 +216,9 @@ CSVReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 }
 
 void
-CSVReportElement::generateSubTitle(TableCellInfo*, const QString&)
+CSVReportElement::generateSubTitle(TableCellInfo* tci, const QString&)
 {
+    tci->tci->increaseSubColumns();
 }
 
 void
@@ -1276,10 +1278,12 @@ CSVReportElement::genCellSummary(TableCellInfo* tci)
 {
     QMap<QString, double>::ConstIterator it;
     const QMap<QString, double>* sum = tci->tci->getSum();
-    if (sum)
+    assert(sum != 0);
+
+    uint sc = tci->tli->sc;
+    double val = 0.0;
+    if (sum[sc].begin() != sum[sc].end())
     {
-        uint sc = tci->tli->sc;
-        double val = 0.0;
         for (it = sum[sc].begin(); it != sum[sc].end(); ++it)
         {
             if (accumulate)
@@ -1290,6 +1294,14 @@ CSVReportElement::genCellSummary(TableCellInfo* tci)
         }
     }
     else
-        genCell("", tci, FALSE);
+    {
+        // The column counter is not set in all cases. These are always single
+        // column cases.
+        if (tci->tci->getSubColumns() > 0)
+            for (uint col = 0; col < tci->tci->getSubColumns(); ++col)
+                genCell(tci->tcf->realFormat.format(0.0, tci), tci, FALSE);
+        else
+            genCell(tci->tcf->realFormat.format(0.0, tci), tci, FALSE);
+    }
 }
 

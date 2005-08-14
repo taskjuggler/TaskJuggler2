@@ -30,6 +30,7 @@ public:
         hideCellText = hideCellURL = 0;
         sum = memory = 0;
         maxScenarios = sc;
+        subColumns = 0;
         clearSum();
         clearMemory();
     }
@@ -69,7 +70,10 @@ public:
     void addSumToMemory(bool subtract);
     void negateMemory();
     void recallMemory();
-    
+
+    void increaseSubColumns() { ++subColumns; }
+    uint getSubColumns() const { return subColumns; }
+
 protected:
     QString name;
     uint maxScenarios;
@@ -84,6 +88,8 @@ protected:
 
     QMap<QString, double>* sum;
     QMap<QString, double>* memory;
+
+    uint subColumns;
 
 private:
     TableColumnInfo() { }
