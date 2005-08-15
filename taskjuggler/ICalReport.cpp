@@ -95,7 +95,11 @@ ICalReport::generateTODO(Task* task, ResourceList& resourceList)
 bool
 ICalReport::generate()
 {
+#if KDE_IS_VERSION(3,4,89)
+    KCal::CalendarLocal cal("UTC");
+#else
     KCal::CalendarLocal cal;
+#endif
 
     if( !open())
     {
