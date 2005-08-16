@@ -46,9 +46,3 @@ TjReportRow::getCell(int pos) const
     return cells[pos];
 }
 
-void
-TjReportRow::setCoreAttributes(const CoreAttributes* c)
-{
-    ca = c;
-}
-

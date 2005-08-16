@@ -35,7 +35,8 @@ public:
     void insertCell(TjReportCell* c, int pos);
     TjReportCell* getCell(int pos) const;
 
-    void setCoreAttributes(const CoreAttributes* c);
+    void setCoreAttributes(const CoreAttributes* c) { ca = c; }
+    const CoreAttributes* getCoreAttributes() const { return ca; }
 
 private:
     TjReportRow() { }

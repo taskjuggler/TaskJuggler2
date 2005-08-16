@@ -36,6 +36,7 @@
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
 #include "TjGanttChart.h"
+#include "TjObjPosTable.h"
 
 TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
     reportDef(rd), paintDevice(pd)
@@ -49,6 +50,13 @@ TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
         ganttChartObj = new QObject();
         ganttChart = new TjGanttChart(ganttChartObj);
     }
+    else
+    {
+        ganttChartObj = 0;
+        ganttChart = 0;
+    }
+
+    objPosTable = 0;
 
     leftMargin = topMargin = pageWidth = pageHeight = 0;
     cellMargin = 0;
@@ -65,6 +73,9 @@ TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
 
 TjPrintReport::~TjPrintReport()
 {
+    delete ganttChartObj;
+    delete ganttChart;
+    delete objPosTable;
 }
 
 void
@@ -115,6 +126,11 @@ TjPrintReport::generateTableHeader()
         TjReportColumn* col = new TjReportColumn;
         col->setIsGantt(TRUE);
         columns.append(col);
+
+        objPosTable = new TjObjPosTable;
+        // Just a first guess
+        objPosTable->resize((int) (taskList.count() * 0.3
+                                   * resourceList.count() * 0.1));
     }
 }
 
@@ -327,6 +343,12 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
 void
 TjPrintReport::layoutPages(QPrinter::Orientation orientation)
 {
+    if (showGantt)
+    {
+        // We now know how many rows we got, so we can resize the hash table.
+        objPosTable->resize(rows.count());
+    }
+
     // Set the left and top margin to 2cm
     QPaintDeviceMetrics metrics(paintDevice);
     leftMargin = mmToXPixels(10);
@@ -391,7 +413,8 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
 
     /* We iterate over all the rows and determine their heights. This also
      * defines the top Y coordinate and the vertical page number. */
-    int topOfRow = topMargin + headlineHeight + headerHeight;
+    int topOfTable = topMargin + headlineHeight + headerHeight;
+    int topOfRow = topOfTable;
     int yPage = 0;
     for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
     {
@@ -438,7 +461,13 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         topOfRow += maxHeight;
         (*rit)->setYPage(yPage);
         (*rit)->setHeight(maxHeight);
+
+        if (showGantt)
+            objPosTable->addEntry((*rit)->getCoreAttributes(),
+                                 (*rit)->getTopY() - topOfTable,
+                                 (*rit)->getHeight());
     }
+    qDebug("table end: %d", topOfRow - topOfTable);
 
     /* Now that we know all the column widths, we can determine their absolute
      * X coordinate and the X page. */
@@ -471,7 +500,8 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
             }
             (*cit)->setLeftX(colX);
             (*cit)->setXPage(xPage);
-            ganttChartWidth = leftMargin + pageWidth - colX;
+            ganttChartWidth = pageWidth - (colX - leftMargin);
+            qDebug("ganttChartWidth: %d", ganttChartWidth);
             (*cit)->setWidth(ganttChartWidth);
             colX += (*cit)->getWidth();
         }
@@ -482,9 +512,11 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         int tableHeight = 0;
         for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
             tableHeight += (*rit)->getHeight();
+        qDebug("tableHeight: %d", tableHeight);
         ganttChart->setProjectAndReportData(reportElement, &taskList,
                                             &resourceList);
-        ganttChart->setSizes(headerHeight, tableHeight, ganttChartWidth);
+        ganttChart->setSizes(objPosTable, headerHeight - 1, tableHeight - 1,
+                             ganttChartWidth - 1);
         ganttChart->setColors(Qt::white, Qt::white, Qt::lightGray, Qt::gray,
                               Qt::lightGray, Qt::darkGray);
         ganttChart->setScaleMode(TjGanttChart::fitSize);
@@ -532,15 +564,16 @@ TjPrintReport::printReportPage(int x, int y)
         p.setFont(tableHeaderFont);
         if ((*cit)->getIsGantt() && (*cit)->getXPage() == x)
         {
-            QRect vp = p.viewport();
+            QRect vpSave = p.viewport();
+            QRect vp;
             vp.setX((*cit)->getLeftX());
             vp.setY(headerY);
+            vp.setWidth(vpSave.width());
+            vp.setHeight(vpSave.height());
             p.setViewport(vp);
-            ganttChart->paintHeader(QRect(0, 0, (*cit)->getWidth(),
-                                          headerHeight), &p);
-            vp.setX(0);
-            vp.setY(0);
-            p.setViewport(vp);
+            ganttChart->paintHeader(QRect(0, 0, (*cit)->getWidth() - 1,
+                                          headerHeight - 1), &p);
+            p.setViewport(vpSave);
         }
         else if ((*cit == columns.first() || (*cit)->getXPage() == x) &&
                  !(*cit)->getIsGantt())
@@ -591,7 +624,6 @@ TjPrintReport::printReportPage(int x, int y)
                                    reportColumn->getLeftX() +
                                    reportColumn->getWidth() - 1,
                                    (*rit)->getTopY() + (*rit)->getHeight() - 1);
-
                     }
 
                     // Draw right cell border
@@ -607,25 +639,37 @@ TjPrintReport::printReportPage(int x, int y)
                          reportColumn->getXPage() == x && !ganttChartPainted)
                 {
                     ganttChartPainted = true;
+                    /* Compute the height of the table on this page and the
+                     * combined height of all previous tables. */
                     int tableHeight = 0;
                     int prevTablesHeight = 0;
-                    for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
-                        if ((*rit)->getYPage() < y)
-                            prevTablesHeight += (*rit)->getHeight();
-                        else if ((*rit)->getYPage() == y)
-                            tableHeight += (*rit)->getHeight();
-                    QRect vp = p.viewport();
+                    for (QPtrListIterator<TjReportRow> rit1(rows); *rit1;
+                         ++rit1)
+                        if ((*rit1)->getYPage() < y)
+                            prevTablesHeight += (*rit1)->getHeight();
+                        else if ((*rit1)->getYPage() == y)
+                            tableHeight += (*rit1)->getHeight();
+
+                    QRect vpSave = p.viewport();
+                    QRect vp;
                     vp.setX(columns.at(col)->getLeftX());
                     vp.setY((*rit)->getTopY() - prevTablesHeight);
+                    vp.setWidth(vpSave.width());
+                    vp.setHeight(vpSave.height());
                     p.setViewport(vp);
-                    qDebug("prevTablesHeight: %d, tableHeight: %d",
-                           prevTablesHeight, tableHeight);
                     ganttChart->paintChart
-                        (QRect(0, 0, columns.at(col)->getWidth(),
-                               tableHeight), &p);
-                    vp.setX(0);
-                    vp.setY(0);
-                    p.setViewport(vp);
+                        (QRect(0, 0, columns.at(col)->getLeftX() +
+                               columns.at(col)->getWidth() - 1,
+                               tableHeight + (*rit)->getTopY() - 1), &p);
+                    p.setViewport(vpSave);
+
+                    // Draw lower border
+                    p.setPen(QPen(Qt::black, 1));
+                    p.drawLine(reportColumn->getLeftX(),
+                               (*rit)->getTopY() + tableHeight - 1,
+                               reportColumn->getLeftX() +
+                               reportColumn->getWidth() - 1,
+                               (*rit)->getTopY() + tableHeight - 1);
                 }
             }
         }

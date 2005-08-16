@@ -23,10 +23,13 @@ class QPainter;
 class QRect;
 class QCanvas;
 class Project;
+class Task;
+class Resource;
 class TaskList;
 class ResourceList;
 class QtReport;
 class QtReportElement;
+class TjObjPosTable;
 
 class TjGanttChart {
 public:
@@ -36,8 +39,9 @@ public:
     ~TjGanttChart();
 
     void setProjectAndReportData(const QtReportElement* r,
-                                 const TaskList* tl, const ResourceList* rl);
-    void setSizes(int headerHeight, int chartHeight, int width);
+                                 TaskList* tl, ResourceList* rl);
+    void setSizes(const TjObjPosTable* opt, int headerHeight, int chartHeight,
+                  int width);
 
     void setColors(const QColor& hBackground, const QColor& cBackground,
                    const QColor& altBackground,
@@ -71,6 +75,13 @@ private:
     void markMonthsBoundaries();
     void markQuarterBoundaries();
 
+    void generateGanttTasks();
+    void drawTask(const Task* t);
+    void drawDependencies(const Task* t1);
+    void drawTaskResources(const Task* t);
+    void drawResourceLoadColum(const Task* t, const Resource* r, time_t start,
+                               time_t end, int rY);
+
     int time2x(time_t t) const;
     time_t x2time(int x) const;
 
@@ -81,6 +92,8 @@ private:
 
     time_t startTime;
     time_t endTime;
+
+    const TjObjPosTable* objPosTable;
 
     int headerHeight;
     int chartHeight;
@@ -109,8 +122,8 @@ private:
     const Project* project;
     const QtReport* reportDef;
     const QtReportElement* reportElement;
-    const TaskList* taskList;
-    const ResourceList* resourceList;
+    TaskList* taskList;
+    ResourceList* resourceList;
     int scenario;
 } ;
 

@@ -30,6 +30,7 @@ class QtReportElement;
 class TaskList;
 class ReportElement;
 class TjGanttChart;
+class TjObjPosTable;
 
 class TjPrintReport
 {
@@ -79,6 +80,7 @@ protected:
     QPtrList<TjReportRow> rows;
     QPtrList<TjReportColumn> columns;
 
+    TjObjPosTable* objPosTable;
     QPaintDevice* paintDevice;
     QPainter p;
 
