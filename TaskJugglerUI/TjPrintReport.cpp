@@ -15,6 +15,7 @@
 #include <config.h>
 #include <assert.h>
 
+#include <qptrlist.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qfontmetrics.h>
@@ -415,8 +416,11 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
      * defines the top Y coordinate and the vertical page number. */
     int topOfTable = topMargin + headlineHeight + headerHeight;
     int topOfRow = topOfTable;
+    int absTopOfRow = 0;
+    int minRowHeight = 0;
     int yPage = 0;
-    for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
+    TjReportRow* prevRow = 0;
+    for (QPtrListIterator<TjReportRow> rit(rows); *rit; prevRow = *rit, ++rit)
     {
         /* For each row we iterate over the cells to detemine their minimum
          * bounding rect. For each cell use the minimum width to determine the
@@ -448,6 +452,10 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
                 maxHeight = br.height();
             if (columns.at(col)->getWidth() < br.width())
                 columns.at(col)->setWidth(br.width());
+
+            if (minRowHeight == 0 || minRowHeight > br.height())
+                minRowHeight = br.height();
+
             // This is a hack to handle oversize columns
             if (columns.at(col)->getWidth() > ((int) (2.0/3 * pageWidth)))
                 columns.at(col)->setWidth(pageWidth / 2);
@@ -456,25 +464,31 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         {
             topOfRow = topMargin + headlineHeight + headerHeight;
             yPage++;
+            if (prevRow)
+                prevRow->setLastOnPage(true);
         }
-        (*rit)->setTopY(topOfRow);
-        topOfRow += maxHeight;
-        (*rit)->setYPage(yPage);
-        (*rit)->setHeight(maxHeight);
 
         if (showGantt)
-            objPosTable->addEntry((*rit)->getCoreAttributes(),
-                                 (*rit)->getTopY() - topOfTable,
-                                 (*rit)->getHeight());
+            objPosTable->addEntry((*rit)->getCoreAttributes(), absTopOfRow,
+                                 maxHeight);
+
+        (*rit)->setTopY(topOfRow);
+        topOfRow += maxHeight;
+        absTopOfRow += maxHeight;
+        (*rit)->setYPage(yPage);
+        (*rit)->setHeight(maxHeight);
     }
-    qDebug("table end: %d", topOfRow - topOfTable);
+    if (prevRow)
+        prevRow->setLastOnPage(true);
 
     /* Now that we know all the column widths, we can determine their absolute
      * X coordinate and the X page. */
     int colX = leftMargin;
     int xPage = 0;
     int ganttChartWidth = 0;
-    for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
+    TjReportColumn* prevColumn = 0;
+    for (QPtrListIterator<TjReportColumn> cit(columns); *cit;
+         prevColumn = cit, ++cit)
     {
         if (!(*cit)->getIsGantt())
         {
@@ -483,6 +497,9 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
                 // The first column is repeated at the left of each page
                 colX = leftMargin + columns.at(0)->getWidth();
                 xPage++;
+
+                if (prevColumn)
+                    prevColumn->setLastOnPage(true);
             }
             (*cit)->setLeftX(colX);
             (*cit)->setXPage(xPage);
@@ -497,15 +514,19 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
                 // The first column is repeated at the left of each page
                 colX = leftMargin + columns.at(0)->getWidth();
                 xPage++;
+
+                if (prevColumn)
+                    prevColumn->setLastOnPage(true);
             }
             (*cit)->setLeftX(colX);
             (*cit)->setXPage(xPage);
             ganttChartWidth = pageWidth - (colX - leftMargin);
-            qDebug("ganttChartWidth: %d", ganttChartWidth);
             (*cit)->setWidth(ganttChartWidth);
             colX += (*cit)->getWidth();
         }
     }
+    if (prevColumn)
+        prevColumn->setLastOnPage(true);
 
     if (showGantt)
     {
@@ -516,7 +537,7 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         ganttChart->setProjectAndReportData(reportElement, &taskList,
                                             &resourceList);
         ganttChart->setSizes(objPosTable, headerHeight - 1, tableHeight - 1,
-                             ganttChartWidth - 1);
+                             ganttChartWidth - 1, minRowHeight);
         ganttChart->setColors(Qt::white, Qt::white, Qt::lightGray, Qt::gray,
                               Qt::lightGray, Qt::darkGray);
         ganttChart->setScaleMode(TjGanttChart::fitSize);
@@ -545,6 +566,7 @@ TjPrintReport::printReportPage(int x, int y)
 
     // Draw outer frame
     p.setPen(QPen(Qt::black, 1));
+    p.setBrush(Qt::white);
     p.drawRect(leftMargin, topMargin, pageWidth, pageHeight);
 
     // Draw headline if needed
@@ -564,16 +586,9 @@ TjPrintReport::printReportPage(int x, int y)
         p.setFont(tableHeaderFont);
         if ((*cit)->getIsGantt() && (*cit)->getXPage() == x)
         {
-            QRect vpSave = p.viewport();
-            QRect vp;
-            vp.setX((*cit)->getLeftX());
-            vp.setY(headerY);
-            vp.setWidth(vpSave.width());
-            vp.setHeight(vpSave.height());
-            p.setViewport(vp);
-            ganttChart->paintHeader(QRect(0, 0, (*cit)->getWidth() - 1,
+            ganttChart->paintHeader(QRect((*cit)->getLeftX(), headerY,
+                                          (*cit)->getWidth() - 1,
                                           headerHeight - 1), &p);
-            p.setViewport(vpSave);
         }
         else if ((*cit == columns.first() || (*cit)->getXPage() == x) &&
                  !(*cit)->getIsGantt())
@@ -583,9 +598,10 @@ TjPrintReport::printReportPage(int x, int y)
                        headerY + headerHeight - cellMargin - descent - 1,
                        tcf->getTitle());
             // Draw right cell border
-            p.drawLine((*cit)->getLeftX() + (*cit)->getWidth() - 1,
-                       headerY, (*cit)->getLeftX() + (*cit)->getWidth() - 1,
-                       headerY + headerHeight - 1);
+            if (!(*cit)->getLastOnPage())
+                p.drawLine((*cit)->getLeftX() + (*cit)->getWidth() - 1,
+                           headerY, (*cit)->getLeftX() + (*cit)->getWidth() - 1,
+                           headerY + headerHeight - 1);
         }
     }
     // Draw lower border of header
@@ -608,32 +624,28 @@ TjPrintReport::printReportPage(int x, int y)
                     printReportCell(*rit, col);
 
                     // Draw lower border line for row
-                    if (col == 0)
-                    {
+                    if (col == 0 || (*rit)->getLastOnPage())
                         p.setPen(QPen(Qt::black, 1));
-                        p.drawLine(leftMargin,
-                                   (*rit)->getTopY() + (*rit)->getHeight() - 1,
-                                   leftMargin + columns.at(0)->getWidth() - 1,
-                                   (*rit)->getTopY() + (*rit)->getHeight() - 1);
-                    }
                     else
-                    {
                         p.setPen(QPen(Qt::gray, 1));
-                        p.drawLine(reportColumn->getLeftX(),
-                                   (*rit)->getTopY() + (*rit)->getHeight() - 1,
-                                   reportColumn->getLeftX() +
-                                   reportColumn->getWidth() - 1,
-                                   (*rit)->getTopY() + (*rit)->getHeight() - 1);
-                    }
+
+                    p.drawLine(reportColumn->getLeftX(),
+                               (*rit)->getTopY() + (*rit)->getHeight() - 1,
+                               reportColumn->getLeftX() +
+                               reportColumn->getWidth() - 1,
+                               (*rit)->getTopY() + (*rit)->getHeight() - 1);
 
                     // Draw right cell border
-                    p.setPen(QPen(col == 0 ? Qt::black : Qt::gray, 1));
-                    p.drawLine(columns.at(col)->getLeftX() +
-                               columns.at(col)->getWidth() - 1,
-                               (*rit)->getTopY(),
-                               columns.at(col)->getLeftX() +
-                               columns.at(col)->getWidth() - 1,
-                               (*rit)->getTopY() + (*rit)->getHeight());
+                    if (!columns.at(col)->getLastOnPage())
+                    {
+                        p.setPen(QPen(col == 0 ? Qt::black : Qt::gray, 1));
+                        p.drawLine(columns.at(col)->getLeftX() +
+                                   columns.at(col)->getWidth() - 1,
+                                   (*rit)->getTopY(),
+                                   columns.at(col)->getLeftX() +
+                                   columns.at(col)->getWidth() - 1,
+                                   (*rit)->getTopY() + (*rit)->getHeight());
+                    }
                 }
                 else if (reportColumn->getIsGantt() &&
                          reportColumn->getXPage() == x && !ganttChartPainted)
@@ -650,18 +662,12 @@ TjPrintReport::printReportPage(int x, int y)
                         else if ((*rit1)->getYPage() == y)
                             tableHeight += (*rit1)->getHeight();
 
-                    QRect vpSave = p.viewport();
-                    QRect vp;
-                    vp.setX(columns.at(col)->getLeftX());
-                    vp.setY((*rit)->getTopY() - prevTablesHeight);
-                    vp.setWidth(vpSave.width());
-                    vp.setHeight(vpSave.height());
-                    p.setViewport(vp);
                     ganttChart->paintChart
-                        (QRect(0, 0, columns.at(col)->getLeftX() +
+                        (0, prevTablesHeight,
+                         QRect(columns.at(col)->getLeftX(),
+                               (*rit)->getTopY(),
                                columns.at(col)->getWidth() - 1,
-                               tableHeight + (*rit)->getTopY() - 1), &p);
-                    p.setViewport(vpSave);
+                               tableHeight - 1), &p);
 
                     // Draw lower border
                     p.setPen(QPen(Qt::black, 1));

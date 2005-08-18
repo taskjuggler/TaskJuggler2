@@ -32,6 +32,9 @@ public:
     void setYPage(int y) { yPage = y; }
     int getYPage() const { return yPage; }
 
+    void setLastOnPage(bool lop) { lastOnPage = lop; }
+    bool getLastOnPage() const { return lastOnPage; }
+
     void insertCell(TjReportCell* c, int pos);
     TjReportCell* getCell(int pos) const;
 
@@ -49,6 +52,8 @@ private:
 
     const CoreAttributes* ca;
     bool hidden;
+    // True if this row is the last row on the page.
+    bool lastOnPage;
     TjReportCell** cells;
 } ;
 

@@ -24,7 +24,7 @@ public:
     {
         leftX = width = xPage = 0;
         maxIndentLevel = 1;
-        isGantt = FALSE;
+        isGantt = lastOnPage = FALSE;
     }
     ~TjReportColumn() { }
 
@@ -43,6 +43,9 @@ public:
     void setMaxIndentLevel(int level) { maxIndentLevel = level; }
     int getMaxIndentLevel() const { return maxIndentLevel; }
 
+    void setLastOnPage(bool lop) { lastOnPage = lop; }
+    bool getLastOnPage() const { return lastOnPage; }
+
     void setIsGantt(bool ig) { isGantt = ig; }
     bool getIsGantt() const { return isGantt; }
 
@@ -57,6 +60,9 @@ private:
     int maxIndentLevel;
 
     const TableColumnFormat* tcf;
+
+    // True if this column is the last column on the page.
+    bool lastOnPage;
 
     // This flag is set if the column contains the GANTT chart.
     bool isGantt;

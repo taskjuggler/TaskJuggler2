@@ -14,7 +14,9 @@
 
 #include <time.h>
 
+#include <qstringlist.h>
 #include <qcolor.h>
+#include <qfont.h>
 
 #include "ReportLayers.h"
 
@@ -41,7 +43,7 @@ public:
     void setProjectAndReportData(const QtReportElement* r,
                                  TaskList* tl, ResourceList* rl);
     void setSizes(const TjObjPosTable* opt, int headerHeight, int chartHeight,
-                  int width);
+                  int width, int minRowHeight);
 
     void setColors(const QColor& hBackground, const QColor& cBackground,
                    const QColor& altBackground,
@@ -51,7 +53,12 @@ public:
 
     void generate();
     void paintHeader(const QRect& clip, QPainter* p, bool dbuf = false);
-    void paintChart(const QRect& clip, QPainter* p, bool dbuf = false);
+    void paintChart(int x, int y, const QRect& clip, QPainter* p,
+                    bool dbuf = false);
+    void paintLegend(const QRect& clip, QPainter* p, bool dbuf = false);
+
+    void generateLegend(int width, int height);
+    int legendHeight(int width);
 
 private:
     enum StepUnits { hour = 0, day, week, month, quarter, year };
@@ -77,6 +84,10 @@ private:
 
     void generateGanttTasks();
     void drawTask(const Task* t);
+    void drawTaskShape(int start, int end, int centerY, int height,
+                       int barWidth);
+    void drawMilestoneShape(int centerX, int centerY, int height);
+    void drawContainterShape(int start, int end, int centerY, int height);
     void drawDependencies(const Task* t1);
     void drawTaskResources(const Task* t);
     void drawResourceLoadColum(const Task* t, const Resource* r, time_t start,
@@ -87,8 +98,11 @@ private:
 
     void setBestStepUnit();
 
+    int generateLegend();
+
     QCanvas* header;
     QCanvas* chart;
+    QCanvas* legend;
 
     time_t startTime;
     time_t endTime;
@@ -98,6 +112,7 @@ private:
     int headerHeight;
     int chartHeight;
     int width;
+    int minRowHeight;
 
     QColor headerBackgroundCol;
     QColor chartBackgroundCol;
@@ -125,6 +140,12 @@ private:
     TaskList* taskList;
     ResourceList* resourceList;
     int scenario;
+
+    QFont legendFont;
+    QStringList legendLabels;
+    int maxLegendLabelWidth;
+    int legendLabelHeight;
+    int legendLabelRows;
 } ;
 
 #endif

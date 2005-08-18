@@ -1,0 +1,23 @@
+# Some reports may be usefull for many different projects
+# Instead of specifying the report in each project file separately,
+# you can do this once in a common file
+
+# By putting the report specification into a macro, you can call it
+# with variables. This will also make sure the html report is created
+# in the same directory as the project file
+
+macro Accounting [
+
+htmlaccountreport "AccountingReport.html" {
+  columns no, name, total, monthly 
+
+	# ${1} is the first argument given when you call the macro in the
+	# project file
+	# Here the variable contains the name of the project
+
+	headline "P&L for the ${1} project" 
+  caption "The table shows the profit and loss analysis as well as the cashflow situation of the ${1} Project."
+  accumulate
+}
+
+]

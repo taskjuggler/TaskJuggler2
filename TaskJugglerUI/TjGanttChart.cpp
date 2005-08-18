@@ -64,6 +64,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
     headerHeight = 0;
     chartHeight = 0;
     width = 0;
+    minRowHeight = 0;
 
     scaleMode = fitSize;
 }
@@ -87,13 +88,15 @@ TjGanttChart::setProjectAndReportData(const QtReportElement* r,
 }
 
 void
-TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w)
+TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w,
+                       int mrh)
 {
     objPosTable = opt;
 
     headerHeight = hh;
     chartHeight = ch;
     width = w;
+    minRowHeight = mrh;
 
     assert(headerHeight > 0);
     assert(headerHeight < 32767);   // QCanvas limit
@@ -243,18 +246,65 @@ TjGanttChart::generate()
 void
 TjGanttChart::paintHeader(const QRect& clip, QPainter* p, bool dbuf)
 {
-    qDebug("TjGanttChart: w: %d, h: %d, cw: %d, ch: %d", header->width(),
-           header->height(), clip.width(), clip.height());
-    header->drawArea(clip, p, dbuf);
+    QRect vpSave = p->viewport();
+    QRect vp;
+    vp.setX(clip.x());
+    vp.setY(clip.y());
+    vp.setWidth(vpSave.width());
+    vp.setHeight(vpSave.height());
+    p->setViewport(vp);
+
+    p->setClipping(true);
+    p->setClipRect(clip);
+
+    header->drawArea(QRect(0, 0, header->width(), header->height()), p, dbuf);
+
+    p->setClipping(false);
+
+    p->setViewport(vpSave);
 }
 
 void
-TjGanttChart::paintChart(const QRect& clip, QPainter* p, bool dbuf)
+TjGanttChart::paintChart(int x, int y, const QRect& clip, QPainter* p,
+                         bool dbuf)
 {
+    QRect vpSave = p->viewport();
+    QRect vp;
+    vp.setX(clip.x() - x);
+    vp.setY(clip.y() - y);
+    vp.setWidth(vpSave.width());
+    vp.setHeight(vpSave.height());
+    p->setViewport(vp);
+
     p->setClipping(true);
     p->setClipRect(clip);
-    chart->drawArea(clip, p, dbuf);
+
+    chart->drawArea(QRect(0, 0, chart->width(), chart->height()), p, dbuf);
+
     p->setClipping(false);
+
+    p->setViewport(vpSave);
+}
+
+void
+TjGanttChart::paintLegend(const QRect& clip, QPainter* p, bool dbuf)
+{
+    QRect vpSave = p->viewport();
+    QRect vp;
+    vp.setX(clip.x());
+    vp.setY(clip.y());
+    vp.setWidth(vpSave.width());
+    vp.setHeight(vpSave.height());
+    p->setViewport(vp);
+
+    p->setClipping(true);
+    p->setClipRect(clip);
+
+    legend->drawArea(QRect(0, 0, legend->width(), legend->height()), p, dbuf);
+
+    p->setClipping(false);
+
+    p->setViewport(vpSave);
 }
 
 void
@@ -712,117 +762,136 @@ void
 TjGanttChart::drawTask(const Task* t)
 {
     int y = objPosTable->caToPos(t);
-    int itemHeight = objPosTable->caToHeight(t);
+    int centerY = y + minRowHeight / 2;
 
     if (t->isMilestone())
     {
-        // A black diamond.
-        QPointArray a(5);
         int centerX = time2x(t->getStart(scenario));
-        int centerY = y + itemHeight / 2;
-        int radius = (itemHeight - 10) / 2;
-        a.setPoint(0, centerX, centerY - radius);
-        a.setPoint(1, centerX + radius, centerY);
-        a.setPoint(2, centerX, centerY + radius);
-        a.setPoint(3, centerX - radius, centerY);
-        a.setPoint(4, centerX, centerY - radius);
 
-        QCanvasPolygon* polygon = new QCanvasPolygon(chart);
-        polygon->setPoints(a);
-        polygon->setPen(Qt::black);
-        polygon->setBrush(Qt::black);
-        polygon->setZ(TJRL_TASKS);
-        polygon->show();
+        drawMilestoneShape(centerX, centerY, minRowHeight);
     }
     else if (t->isContainer())
     {
-        // A black bar with jag at both ends.
         int start = time2x(t->getStart(scenario));
         int end = time2x(t->getEnd(scenario));
-        int centerY = y + (objPosTable->caToHeight(t) / 2);
-        int jagWidth = 4;
-        int top = centerY - 3;
-        int halfbottom = centerY + 3;
-        int bottom = halfbottom + jagWidth + 1;
 
-        // Black bar
-        QPointArray a(4);
-        a.setPoint(0, start - jagWidth, top);
-        a.setPoint(1, start - jagWidth, halfbottom);
-        a.setPoint(2, end + jagWidth + 1, halfbottom);
-        a.setPoint(3, end + jagWidth + 1, top);
-        QCanvasPolygon* polygon = new QCanvasPolygon(chart);
-        polygon->setPoints(a);
-        polygon->setPen(Qt::black);
-        polygon->setBrush(Qt::black);
-        polygon->setZ(TJRL_TASKS);
-        polygon->show();
-
-        // Left jag
-        a.resize(3);
-        a.setPoint(0, start - jagWidth, halfbottom);
-        a.setPoint(1, start, bottom);
-        a.setPoint(2, start + jagWidth + 1, halfbottom);
-        polygon = new QCanvasPolygon(chart);
-        polygon->setPoints(a);
-        polygon->setPen(Qt::black);
-        polygon->setBrush(Qt::black);
-        polygon->setZ(TJRL_TASKS);
-        polygon->show();
-
-        // Right jag
-        a.setPoint(0, end - jagWidth, halfbottom);
-        a.setPoint(1, end, bottom);
-        a.setPoint(2, end + jagWidth + 1, halfbottom);
-        polygon = new QCanvasPolygon(chart);
-        polygon->setPoints(a);
-        polygon->setPen(Qt::black);
-        polygon->setBrush(Qt::black);
-        polygon->setZ(TJRL_TASKS);
-        polygon->show();
+        drawContainterShape(start, end, centerY, minRowHeight);
     }
     else
     {
         int start = time2x(t->getStart(scenario));
         int end = time2x(t->getEnd(scenario));
 
-        // A blue box with some fancy interior.
-        QCanvasRectangle* rect =
-            new QCanvasRectangle(start, y + 5, end - start + 1,
-                                 itemHeight - 10, chart);
-
-        rect->setPen(QPen(QColor("#4C5EFF")));
-        rect->setBrush(QBrush(QColor("#4C5EFF"), Qt::Dense4Pattern));
-        rect->setZ(TJRL_TASKS);
-        rect->show();
-
-        // The black progress bar.
-        if (t->getCompletionDegree(scenario) > 0.0)
+        /* TODO: This does not work 100% correct for effort or length
+         * based tasks. It's only correct for duration tasks. */
+        int barWidth = 0;
+        if (t->getCompletionDegree(scenario) ==
+            t->getCalcedCompletionDegree(scenario) &&
+            reportDef->getProject()->getNow() < t->getEnd(scenario))
         {
-            /* TODO: This does not work 100% correct for effort or length
-             * based tasks. It's only correct for duration tasks. */
-            int barWidth;
-            if (t->getCompletionDegree(scenario) ==
-                t->getCalcedCompletionDegree(scenario) &&
-                reportDef->getProject()->getNow() < t->getEnd(scenario))
-            {
-                barWidth = time2x(reportDef->getProject()->getNow()) -
-                    start;
-            }
-            else
-                barWidth = (int) ((end - start) *
-                                  (t->getCompletionDegree(scenario) / 100.0));
-
-            rect = new QCanvasRectangle
-                (time2x(t->getStart(scenario)), y + 9, barWidth,
-                 itemHeight - 18, chart);
-
-            rect->setPen(Qt::black);
-            rect->setBrush(Qt::black);
-            rect->setZ(TJRL_TASKCOMP);
-            rect->show();
+            barWidth = time2x(reportDef->getProject()->getNow()) -
+                start;
         }
+        else
+            barWidth = (int) ((end - start) *
+                              (t->getCompletionDegree(scenario) / 100.0));
+
+        drawTaskShape(start, end, centerY, minRowHeight, barWidth);
     }
+}
+
+void
+TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
+                            int barWidth)
+{
+    // A blue box with some fancy interior.
+    QCanvasRectangle* rect =
+        new QCanvasRectangle(start, centerY - (int) (height * 0.4),
+                             end - start, (int) (height * 0.8), chart);
+
+    rect->setPen(QPen(QColor("#4C5EFF")));
+    rect->setBrush(QBrush(QColor("#4C5EFF"), Qt::Dense4Pattern));
+    rect->setZ(TJRL_TASKS);
+    rect->show();
+
+    // The black progress bar.
+    if (barWidth > 0)
+    {
+        rect = new QCanvasRectangle (start, centerY - (int) (height * 0.2),
+                                     barWidth, (int) (height * 0.4), chart);
+
+        rect->setPen(Qt::black);
+        rect->setBrush(Qt::black);
+        rect->setZ(TJRL_TASKCOMP);
+        rect->show();
+    }
+}
+
+void
+TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height)
+{
+    int radius = (int) (height * 0.4);
+
+    // A black diamond.
+    QPointArray a(5);
+    a.setPoint(0, centerX, centerY - radius);
+    a.setPoint(1, centerX + radius, centerY);
+    a.setPoint(2, centerX, centerY + radius);
+    a.setPoint(3, centerX - radius, centerY);
+    a.setPoint(4, centerX, centerY - radius);
+
+    QCanvasPolygon* polygon = new QCanvasPolygon(chart);
+    polygon->setPoints(a);
+    polygon->setPen(Qt::black);
+    polygon->setBrush(Qt::black);
+    polygon->setZ(TJRL_TASKS);
+    polygon->show();
+}
+
+void
+TjGanttChart::drawContainterShape(int start, int end, int centerY, int height)
+{
+    // A black bar with jag at both ends.
+    int jagWidth = (int) (height * 0.25);
+    int top = centerY - (int) (height * 0.2);
+    int halfbottom = centerY + (int) (height * 0.2);
+    int bottom = halfbottom + jagWidth + (int) (height * 0.1);
+
+    // Black bar
+    QPointArray a(4);
+    a.setPoint(0, start - jagWidth, top);
+    a.setPoint(1, start - jagWidth, halfbottom);
+    a.setPoint(2, end + jagWidth + 1, halfbottom);
+    a.setPoint(3, end + jagWidth + 1, top);
+    QCanvasPolygon* polygon = new QCanvasPolygon(chart);
+    polygon->setPoints(a);
+    polygon->setPen(Qt::black);
+    polygon->setBrush(Qt::black);
+    polygon->setZ(TJRL_TASKS);
+    polygon->show();
+
+    // Left jag
+    a.resize(3);
+    a.setPoint(0, start - jagWidth, halfbottom);
+    a.setPoint(1, start, bottom);
+    a.setPoint(2, start + jagWidth + 1, halfbottom);
+    polygon = new QCanvasPolygon(chart);
+    polygon->setPoints(a);
+    polygon->setPen(Qt::black);
+    polygon->setBrush(Qt::black);
+    polygon->setZ(TJRL_TASKS);
+    polygon->show();
+
+    // Right jag
+    a.setPoint(0, end - jagWidth, halfbottom);
+    a.setPoint(1, end, bottom);
+    a.setPoint(2, end + jagWidth + 1, halfbottom);
+    polygon = new QCanvasPolygon(chart);
+    polygon->setPoints(a);
+    polygon->setPen(Qt::black);
+    polygon->setBrush(Qt::black);
+    polygon->setZ(TJRL_TASKS);
+    polygon->show();
 }
 
 void
@@ -837,7 +906,7 @@ TjGanttChart::drawDependencies(const Task* t1)
     /* To avoid unnecessary crossing of dependency arrows, we sort the
      * followers of the current task according to their absolute distance to
      * the Y position of this task in the list view. */
-    int yPos = objPosTable->caToPos(t1) + objPosTable->caToHeight(t1) / 2;
+    int yPos = objPosTable->caToPos(t1) + minRowHeight / 2;
     for (TaskListIterator tli(t1->getFollowersIterator()); *tli; ++tli)
     {
         int t2y = objPosTable->caToPos(*tli);
@@ -862,14 +931,12 @@ TjGanttChart::drawDependencies(const Task* t1)
             int t1x = time2x(t1->getEnd(scenario));
             int t2x = time2x(t2->getStart(scenario));
             if (t2->isMilestone())
-                t2x -= (objPosTable->caToHeight(t2) - 8) / 2;
+                t2x -= (int) (minRowHeight * 0.4);
             else if (t2->isContainer())
                 t2x -= 3;
 
-            int t1y = objPosTable->caToPos(t1) +
-                objPosTable->caToHeight(t1) / 2;
-            int t2y = objPosTable->caToPos(t2) +
-                objPosTable->caToHeight(t2) / 2;
+            int t1y = objPosTable->caToPos(t1) + minRowHeight / 2;
+            int t2y = objPosTable->caToPos(t2) + minRowHeight / 2;
             int yCenter = t1y < t2y ? t1y + (t2y - t1y) / 2 :
                 t2y + (t1y - t2y) / 2;
             // Ensure that yCenter is between the task lines.
@@ -877,9 +944,9 @@ TjGanttChart::drawDependencies(const Task* t1)
 
             // Draw connection line.
             // Distance between task end and the first break of the arrow.
-            const int minGap = 8;
+            const int minGap = (int) (minRowHeight * 0.5);
             // Min distance between parallel arrors.
-            const int arrowGap = 3;
+            const int arrowGap = (int) (minRowHeight * 0.2);
             QPointArray a;
             if (t2x - t1x < 2 * minGap + arrowGap * arrowCounter)
             {
@@ -917,7 +984,7 @@ TjGanttChart::drawDependencies(const Task* t1)
             }
 
             // Draw arrow head.
-            const int arrowSize = 4;
+            const int arrowSize = (int) (minRowHeight * 0.3);
             a.resize(4);
             a.setPoint(0, t2x, t2y);
             a.setPoint(1, t2x - arrowSize, t2y - arrowSize);
@@ -1115,5 +1182,45 @@ TjGanttChart::setBestStepUnit()
         stepUnit = quarter;
     else
         stepUnit = year;
+}
+
+int
+TjGanttChart::legendHeight(int width)
+{
+    if (!legendLabels.isEmpty())
+        return legendLabelRows * legendLabelHeight +
+            (int) (legendLabelHeight * 0.3);
+
+    legendLabels.append(i18n("Container Task"));
+    legendLabels.append(i18n("Milestone"));
+    legendLabels.append(i18n("Future Task"));
+    legendLabels.append(i18n("In-progress Task"));
+    legendLabels.append(i18n("Completed Task"));
+
+    maxLegendLabelWidth = 0;
+    QFontMetrics fm(legendFont);
+    legendLabelHeight = (int) (fm.height() * 1.2);
+    for (QStringList::Iterator it = legendLabels.begin();
+         it != legendLabels.end(); ++it)
+    {
+        QRect br = fm.boundingRect(*it);
+        br.setWidth((int) (br.width() + (int) legendLabelHeight * 0.2));
+        if (maxLegendLabelWidth < br.width())
+            maxLegendLabelWidth = br.width();
+    }
+
+    // The symbols' width will be 4 * the height
+    int columns = width / (maxLegendLabelWidth + 4 * legendLabelHeight);
+
+    legendLabelRows = legendLabels.count() / columns +
+        (legendLabels.count() % columns != 0 ? 1 : 0);
+
+    return legendLabelRows * legendLabelHeight +
+        (int) (legendLabelHeight * 0.3);
+}
+
+void
+TjGanttChart::generateLegend(int /*width*/, int /*height*/)
+{
 }
 
