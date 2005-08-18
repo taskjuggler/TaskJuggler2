@@ -765,9 +765,9 @@ not contain '!', but have IDs separated by dots.</para>
 braces.</para>
 
 <para>By using the 'depends' attribute, the scheduling policy is
-automatically set to <varname>asap</varname>. If 'depends' and
-'precedes' are used, the last policy counts.</para></descr>
-  <attributes>
+automatically set to <varname>asap</varname>. If
+<varname>depends</varname> and <varname>precedes</varname> are used,
+the last policy counts.</para></descr> <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
   <optattributes>
@@ -1660,9 +1660,9 @@ the scope to the parent task. Global IDs do
 not contain '!', but have IDs separated by dots.</para>
 
 <para>By using the 'precedes' attribute, the scheduling policy is
-automatically set to <varname>alap</varname>. If both 'precedes' and
-'precedes' are used within a task, the last policy
-counts.</para></descr>
+automatically set to <varname>alap</varname>. If both
+<varname>depends</varname> and <varname>precedes</varname> are used
+within a task, the last policy counts.</para></descr>
   <attributes>
    <attr name="task" type="ID" list="1"/>
   </attributes>
