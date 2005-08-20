@@ -60,6 +60,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
 {
     header = new QCanvas(obj);
     chart = new QCanvas(obj);
+    legend = new QCanvas(obj);
 
     headerHeight = 0;
     chartHeight = 0;
@@ -73,6 +74,7 @@ TjGanttChart::~TjGanttChart()
 {
     delete header;
     delete chart;
+    delete legend;
 }
 
 void
@@ -768,14 +770,14 @@ TjGanttChart::drawTask(const Task* t)
     {
         int centerX = time2x(t->getStart(scenario));
 
-        drawMilestoneShape(centerX, centerY, minRowHeight);
+        drawMilestoneShape(centerX, centerY, minRowHeight, chart);
     }
     else if (t->isContainer())
     {
         int start = time2x(t->getStart(scenario));
         int end = time2x(t->getEnd(scenario));
 
-        drawContainterShape(start, end, centerY, minRowHeight);
+        drawContainterShape(start, end, centerY, minRowHeight, chart);
     }
     else
     {
@@ -796,18 +798,18 @@ TjGanttChart::drawTask(const Task* t)
             barWidth = (int) ((end - start) *
                               (t->getCompletionDegree(scenario) / 100.0));
 
-        drawTaskShape(start, end, centerY, minRowHeight, barWidth);
+        drawTaskShape(start, end, centerY, minRowHeight, barWidth, chart);
     }
 }
 
 void
 TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
-                            int barWidth)
+                            int barWidth, QCanvas* canvas)
 {
     // A blue box with some fancy interior.
     QCanvasRectangle* rect =
         new QCanvasRectangle(start, centerY - (int) (height * 0.4),
-                             end - start, (int) (height * 0.8), chart);
+                             end - start, (int) (height * 0.8), canvas);
 
     rect->setPen(QPen(QColor("#4C5EFF")));
     rect->setBrush(QBrush(QColor("#4C5EFF"), Qt::Dense4Pattern));
@@ -818,7 +820,7 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
     if (barWidth > 0)
     {
         rect = new QCanvasRectangle (start, centerY - (int) (height * 0.2),
-                                     barWidth, (int) (height * 0.4), chart);
+                                     barWidth, (int) (height * 0.4), canvas);
 
         rect->setPen(Qt::black);
         rect->setBrush(Qt::black);
@@ -828,7 +830,8 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
 }
 
 void
-TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height)
+TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
+                                  QCanvas* canvas)
 {
     int radius = (int) (height * 0.4);
 
@@ -840,7 +843,7 @@ TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height)
     a.setPoint(3, centerX - radius, centerY);
     a.setPoint(4, centerX, centerY - radius);
 
-    QCanvasPolygon* polygon = new QCanvasPolygon(chart);
+    QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
     polygon->setPen(Qt::black);
     polygon->setBrush(Qt::black);
@@ -849,7 +852,8 @@ TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height)
 }
 
 void
-TjGanttChart::drawContainterShape(int start, int end, int centerY, int height)
+TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
+                                   QCanvas* canvas)
 {
     // A black bar with jag at both ends.
     int jagWidth = (int) (height * 0.25);
@@ -863,7 +867,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height)
     a.setPoint(1, start - jagWidth, halfbottom);
     a.setPoint(2, end + jagWidth + 1, halfbottom);
     a.setPoint(3, end + jagWidth + 1, top);
-    QCanvasPolygon* polygon = new QCanvasPolygon(chart);
+    QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
     polygon->setPen(Qt::black);
     polygon->setBrush(Qt::black);
@@ -875,7 +879,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height)
     a.setPoint(0, start - jagWidth, halfbottom);
     a.setPoint(1, start, bottom);
     a.setPoint(2, start + jagWidth + 1, halfbottom);
-    polygon = new QCanvasPolygon(chart);
+    polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
     polygon->setPen(Qt::black);
     polygon->setBrush(Qt::black);
@@ -886,7 +890,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height)
     a.setPoint(0, end - jagWidth, halfbottom);
     a.setPoint(1, end, bottom);
     a.setPoint(2, end + jagWidth + 1, halfbottom);
-    polygon = new QCanvasPolygon(chart);
+    polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
     polygon->setPen(Qt::black);
     polygon->setBrush(Qt::black);
@@ -1193,11 +1197,12 @@ TjGanttChart::legendHeight(int width)
 
     legendLabels.append(i18n("Container Task"));
     legendLabels.append(i18n("Milestone"));
-    legendLabels.append(i18n("Future Task"));
+    legendLabels.append(i18n("Planned Task"));
     legendLabels.append(i18n("In-progress Task"));
     legendLabels.append(i18n("Completed Task"));
 
     maxLegendLabelWidth = 0;
+    legendFont.setPixelSize(32);
     QFontMetrics fm(legendFont);
     legendLabelHeight = (int) (fm.height() * 1.2);
     for (QStringList::Iterator it = legendLabels.begin();
@@ -1209,18 +1214,75 @@ TjGanttChart::legendHeight(int width)
             maxLegendLabelWidth = br.width();
     }
 
-    // The symbols' width will be 4 * the height
-    int columns = width / (maxLegendLabelWidth + 4 * legendLabelHeight);
+    /* The symbols' width will be 4 * the height. The margin is half the label
+     * height. We have a margin before the symbol, between the symbol and the
+     * text and 2 times after the text. That's 2 times the label height as
+     * margins. */
+    int columns = width / (maxLegendLabelWidth + 6 * legendLabelHeight);
 
     legendLabelRows = legendLabels.count() / columns +
         (legendLabels.count() % columns != 0 ? 1 : 0);
 
-    return legendLabelRows * legendLabelHeight +
-        (int) (legendLabelHeight * 0.3);
+    return (1 + (int) (1.5 * legendLabelRows)) * legendLabelHeight;
 }
 
 void
-TjGanttChart::generateLegend(int /*width*/, int /*height*/)
+TjGanttChart::generateLegend(int width, int height)
 {
+    legend->resize(width, height);
+
+    int col = 0;
+    int row = 0;
+    int margin = (int) (0.5 * legendLabelHeight);
+    int symbolWidth = (int) (4.0 * legendLabelHeight);
+    for (QStringList::Iterator it = legendLabels.begin();
+         it != legendLabels.end(); ++it)
+    {
+        int x = (int) (legendLabelHeight * 0.5) +
+            col * (maxLegendLabelWidth + (int) (5.5 * legendLabelHeight));
+        int yCenter = (int) (legendLabelHeight * (1.5 * row + 1.0));
+
+        switch (col * legendLabelRows + row)
+        {
+            case 0:     // Container task
+                drawContainterShape(x + 2 * margin,
+                                    x + symbolWidth, yCenter,
+                                    legendLabelHeight, legend);
+                break;
+            case 1:     // Milestone
+                drawMilestoneShape(x + symbolWidth, yCenter,
+                                   legendLabelHeight, legend);
+                break;
+            case 2:     // Planned task
+                drawTaskShape(x + margin,
+                              x + margin + symbolWidth, yCenter,
+                              legendLabelHeight, 0, legend);
+                break;
+            case 3:     // In-progress task
+                drawTaskShape(x + margin,
+                              x + margin + symbolWidth, yCenter,
+                              legendLabelHeight, symbolWidth / 2, legend);
+                break;
+            case 4:     // Completed task
+                drawTaskShape(x + margin,
+                              x + margin + symbolWidth, yCenter,
+                              legendLabelHeight, symbolWidth, legend);
+                break;
+        }
+
+        QCanvasText* text = new QCanvasText(*it, legend);
+        text->setColor(Qt::black);
+        text->setFont(legendFont);
+        text->setX(x + 2 * margin + symbolWidth);
+        text->setY((int) (legendLabelHeight * (0.5 + 1.5 * row)));
+        text->setZ(0);
+        text->show();
+
+        if (++row >= legendLabelRows)
+        {
+            row = 0;
+            col++;
+        }
+    }
 }
 

@@ -354,16 +354,8 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
     QPaintDeviceMetrics metrics(paintDevice);
     leftMargin = mmToXPixels(10);
     topMargin = mmToYPixels(10);
-    if (orientation == QPrinter::Portrait)
-    {
-        pageWidth = metrics.width() - 2 * leftMargin;
-        pageHeight = metrics.height() - 2 * topMargin;
-    }
-    else
-    {
-        pageWidth = metrics.height() - 2 * topMargin;
-        pageHeight = metrics.width() - 2 * leftMargin;
-    }
+    pageWidth = metrics.height() - 2 * topMargin;
+    pageHeight = metrics.width() - 2 * leftMargin;
 
     cellMargin = mmToXPixels(1);
 
@@ -405,7 +397,10 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
     bottomlineY = topMargin + pageHeight - bottomlineHeight;
 
     // Determine the geometry of the footer
-    footerHeight = mmToYPixels(15); // Use a fixed footer for now
+    if (showGantt)
+        footerHeight = ganttChart->legendHeight(pageWidth - 2);
+    else
+        footerHeight = mmToYPixels(0); // Use a fixed footer for now
     footerY = bottomlineY - footerHeight;
 
     // And now the table layout
@@ -533,7 +528,6 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         int tableHeight = 0;
         for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
             tableHeight += (*rit)->getHeight();
-        qDebug("tableHeight: %d", tableHeight);
         ganttChart->setProjectAndReportData(reportElement, &taskList,
                                             &resourceList);
         ganttChart->setSizes(objPosTable, headerHeight - 1, tableHeight - 1,
@@ -542,6 +536,8 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
                               Qt::lightGray, Qt::darkGray);
         ganttChart->setScaleMode(TjGanttChart::fitSize);
         ganttChart->generate();
+        ganttChart->generateLegend(pageWidth - mmToXPixels(10),
+                                   footerHeight - 2);
     }
 }
 
@@ -683,12 +679,16 @@ TjPrintReport::printReportPage(int x, int y)
     // Draw footer
     p.setPen(QPen(Qt::black, 1));
     p.drawLine(leftMargin, footerY, leftMargin + pageWidth - 1, footerY);
+    ganttChart->paintLegend(QRect(leftMargin + mmToXPixels(5),
+                                  footerY + 2, pageWidth - mmToXPixels(10),
+                                  footerHeight - 1), &p);
 
     // Draw bottom line
     p.setPen(QPen(Qt::black, 1));
     p.drawLine(leftMargin, bottomlineY, leftMargin + pageWidth - 1,
                bottomlineY);
     // Page number in the center
+    p.setFont(standardFont);
     QString pageMark = i18n("Page %1 of %2")
         .arg(y * (columns.last()->getXPage() + 1) + x + 1)
         .arg((columns.last()->getXPage() + 1) * (rows.last()->getYPage() + 1));

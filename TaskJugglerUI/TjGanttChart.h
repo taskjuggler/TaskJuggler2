@@ -85,9 +85,11 @@ private:
     void generateGanttTasks();
     void drawTask(const Task* t);
     void drawTaskShape(int start, int end, int centerY, int height,
-                       int barWidth);
-    void drawMilestoneShape(int centerX, int centerY, int height);
-    void drawContainterShape(int start, int end, int centerY, int height);
+                       int barWidth, QCanvas* canvas);
+    void drawMilestoneShape(int centerX, int centerY, int height,
+                            QCanvas* canvas);
+    void drawContainterShape(int start, int end, int centerY, int height,
+                             QCanvas* canvas);
     void drawDependencies(const Task* t1);
     void drawTaskResources(const Task* t);
     void drawResourceLoadColum(const Task* t, const Resource* r, time_t start,
