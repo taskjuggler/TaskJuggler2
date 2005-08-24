@@ -23,6 +23,8 @@ TjReportRow::TjReportRow(int cols) : columns(cols)
 
     topY = height = yPage = 0;
     lastOnPage = false;
+
+    ca = subCA = 0;
 }
 
 TjReportRow::~TjReportRow()

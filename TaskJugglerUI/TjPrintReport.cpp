@@ -297,7 +297,7 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
 
 void
 TjPrintReport::generateResourceListRow(TjReportRow* row,
-                                       const Resource* /*resource*/,
+                                       const Resource* resource,
                                        const Task* /*task*/)
 {
     int colIdx= 0;
@@ -306,8 +306,33 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
     {
         QString cellText;
         TjReportCell* cell = new TjReportCell(row, columns.at(colIdx));
+        const TableColumnFormat* tcf =
+            reportElement->getColumnFormat((*ci)->getName());
+
+        /* Determine whether the cell content should be indented. And if so,
+         * then on what level. */
+        if (tcf->getIndent() &&
+            reportDef->getTaskSorting(0) == CoreAttributesList::TreeMode)
+        {
+            cell->setIndentLevel(resource->treeLevel());
+        }
+
+        if ((*ci)->getName() == "name")
+        {
+            if (reportDef->getTaskSorting(0) == CoreAttributesList::TreeMode)
+            {
+                if (resource)
+                    cell->setIndentLevel(maxDepthResourceList +
+                                         resource->treeLevel());
+                else
+                    cell->setIndentLevel(resource->treeLevel());
+            }
+            cellText = resource->getName();
+        }
+
         cell->setText(cellText);
         row->insertCell(cell, colIdx);
+
     }
 }
 
@@ -342,12 +367,16 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
 }
 
 void
-TjPrintReport::layoutPages(QPrinter::Orientation orientation)
+TjPrintReport::layoutPages(QPrinter::Orientation /*orientation*/)
 {
     if (showGantt)
     {
-        // We now know how many rows we got, so we can resize the hash table.
+        /* We now know how many rows we got, so we can resize the hash
+         * table. */
         objPosTable->resize(rows.count());
+
+        QPaintDeviceMetrics metrics(paintDevice);
+        ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
     }
 
     // Set the left and top margin to 2cm
@@ -367,7 +396,8 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         int margin = mmToYPixels(2);
         headlineHeight = br.height() + 2 * margin + 1;
         headlineX = leftMargin + (pageWidth - br.width()) / 2;
-        headlineBase = topMargin + headlineHeight - 1 - margin - fm.descent();
+        headlineBase = topMargin + headlineHeight - 1 - margin -
+            fm.descent();
     }
 
     // Determine geometries for table header elements
@@ -375,7 +405,11 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
     headerHeight = 0;
     for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
     {
-        if (!(*cit)->getIsGantt())
+        if ((*cit)->getIsGantt())
+        {
+            headerHeight = ganttChart->calcHeaderHeight();
+        }
+        else
         {
             const TableColumnFormat* tcf = (*cit)->getTableColumnFormat();
             QFontMetrics fm(tableHeaderFont);
@@ -387,8 +421,6 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
             if ((*cit)->getWidth() < br.width())
                 (*cit)->setWidth(br.width());
         }
-        else
-            headerHeight *= 2;
     }
 
     // Determine height of bottom line
@@ -398,7 +430,7 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
 
     // Determine the geometry of the footer
     if (showGantt)
-        footerHeight = ganttChart->legendHeight(pageWidth - 2);
+        footerHeight = ganttChart->calcLegendHeight(pageWidth - 2);
     else
         footerHeight = mmToYPixels(0); // Use a fixed footer for now
     footerY = bottomlineY - footerHeight;
@@ -440,7 +472,7 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
             else if (columns.at(col)->getTableColumnFormat()->getHAlign() ==
                      TableColumnFormat::right)
                 indentation = (columns.at(col)->getMaxIndentLevel() - 1 -
-                    cell->getIndentLevel()) * indentSteps;
+                               cell->getIndentLevel()) * indentSteps;
             br.setWidth(br.width() + 2 * cellMargin + 1 + indentation);
             br.setHeight(br.height() + 2 * cellMargin + 1);
             if (br.height() > maxHeight)
@@ -464,8 +496,9 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         }
 
         if (showGantt)
-            objPosTable->addEntry((*rit)->getCoreAttributes(), absTopOfRow,
-                                 maxHeight);
+            objPosTable->addEntry((*rit)->getCoreAttributes(),
+                                  (*rit)->getSubCoreAttributes(), absTopOfRow,
+                                  maxHeight);
 
         (*rit)->setTopY(topOfRow);
         topOfRow += maxHeight;
@@ -743,45 +776,45 @@ TjPrintReport::printReportCell(TjReportRow* row, int col)
                        cell->getText());
             break;
         case TableColumnFormat::center:
-        {
-            QFontMetrics fm(standardFont);
-            QRect br = fm.boundingRect(cell->getText());
-            int x = (columns.at(col)->getWidth() -
-                     (2 * cellMargin + br.width())) / 2;
-            p.drawText(column->getLeftX() + cellMargin - 1 + x, y,
-                       cell->getText());
-            break;
-        }
+            {
+                QFontMetrics fm(standardFont);
+                QRect br = fm.boundingRect(cell->getText());
+                int x = (columns.at(col)->getWidth() -
+                         (2 * cellMargin + br.width())) / 2;
+                p.drawText(column->getLeftX() + cellMargin - 1 + x, y,
+                           cell->getText());
+                break;
+            }
         case TableColumnFormat::right:
-        {
-            QFontMetrics fm(standardFont);
-            QRect br = fm.boundingRect(cell->getText());
-            int x = columns.at(col)->getWidth() -
-                (2 * cellMargin + br.width() +
-                 ((column->getMaxIndentLevel() - 1 -
-                  cell->getIndentLevel()) * indentSteps));
-            p.drawText(column->getLeftX() + cellMargin - 1 + x, y,
-                       cell->getText());
-        }
+            {
+                QFontMetrics fm(standardFont);
+                QRect br = fm.boundingRect(cell->getText());
+                int x = columns.at(col)->getWidth() -
+                    (2 * cellMargin + br.width() +
+                     ((column->getMaxIndentLevel() - 1 -
+                       cell->getIndentLevel()) * indentSteps));
+                p.drawText(column->getLeftX() + cellMargin - 1 + x, y,
+                           cell->getText());
+            }
     }
 }
 
 int
-TjPrintReport::mmToXPixels(int mm)
+TjPrintReport::mmToXPixels(double mm)
 {
     QPaintDeviceMetrics metrics(paintDevice);
     return (int) ((mm / 25.4) * metrics.logicalDpiX());
 }
 
 int
-TjPrintReport::mmToYPixels(int mm)
+TjPrintReport::mmToYPixels(double mm)
 {
     QPaintDeviceMetrics metrics(paintDevice);
     return (int) ((mm / 25.4) * metrics.logicalDpiY());
 }
 
 int
-TjPrintReport::pointsToYPixels(int pts)
+TjPrintReport::pointsToYPixels(double pts)
 {
     QPaintDeviceMetrics metrics(paintDevice);
     return (int) ((pts * (0.376 / 25.4)) * metrics.logicalDpiY());

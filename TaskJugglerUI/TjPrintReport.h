@@ -66,9 +66,9 @@ protected:
     const Report* reportDef;
     const QtReportElement* reportElement;
 
-    int mmToXPixels(int mm);
-    int mmToYPixels(int mm);
-    int pointsToYPixels(int pts);
+    int mmToXPixels(double mm);
+    int mmToYPixels(double mm);
+    int pointsToYPixels(double pts);
 
     int scenario;
     TaskList taskList;

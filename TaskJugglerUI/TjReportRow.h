@@ -38,8 +38,13 @@ public:
     void insertCell(TjReportCell* c, int pos);
     TjReportCell* getCell(int pos) const;
 
-    void setCoreAttributes(const CoreAttributes* c) { ca = c; }
+    void setCoreAttributes(const CoreAttributes* c,
+                           const CoreAttributes* sc)
+    {
+        ca = c; subCA = sc;
+    }
     const CoreAttributes* getCoreAttributes() const { return ca; }
+    const CoreAttributes* getSubCoreAttributes() const { return subCA; }
 
 private:
     TjReportRow() { }
@@ -51,6 +56,7 @@ private:
     int yPage;
 
     const CoreAttributes* ca;
+    const CoreAttributes* subCA;
     bool hidden;
     // True if this row is the last row on the page.
     bool lastOnPage;

@@ -72,7 +72,7 @@ TjPrintTaskReport::generate(QPrinter::Orientation orientation)
     for (TaskListIterator tli(taskList); *tli; ++tli)
     {
         TjReportRow* row = new TjReportRow(getNumberOfColumns());
-        row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli));
+        row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli), 0);
         rows.append(row);
 
         generateTaskListRow(row, *tli);
@@ -86,7 +86,8 @@ TjPrintTaskReport::generate(QPrinter::Orientation orientation)
         for (ResourceListIterator rli(filteredResourceList); *rli; ++rli)
         {
             row = new TjReportRow(getNumberOfColumns());
-            row->setCoreAttributes(static_cast<const CoreAttributes*>(*rli));
+            row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli),
+                                   static_cast<const CoreAttributes*>(*rli));
             rows.append(row);
 
             generateResourceListRow(row, *rli, *tli);

@@ -20,18 +20,32 @@
 class CoreAttributes;
 
 class TjObjPosTable {
+    friend class TjObjPosTableIterator;
+
 public:
     TjObjPosTable() { entries.setAutoDelete(true); }
     ~TjObjPosTable() { }
 
     void resize(int sz);
-    void addEntry(const CoreAttributes* ca, int pos, int height);
 
-    int caToPos(const CoreAttributes* ca) const;
-    int caToHeight(const CoreAttributes* ca) const;
+    void addEntry(const CoreAttributes* ca, const CoreAttributes* subCa,
+                  int pos, int height);
+
+    int caToPos(const CoreAttributes* ca, const CoreAttributes* subCa = 0)
+        const;
+
+    int caToHeight(const CoreAttributes* ca, const CoreAttributes* subCa = 0)
+        const;
 
 private:
     QDict<TjObjPosTableEntry> entries;
+} ;
+
+class TjObjPosTableIterator : public QDictIterator<TjObjPosTableEntry> {
+public:
+    TjObjPosTableIterator(const TjObjPosTable& opt) :
+        QDictIterator<TjObjPosTableEntry>(opt.entries) { }
+    ~TjObjPosTableIterator() { }
 } ;
 
 #endif

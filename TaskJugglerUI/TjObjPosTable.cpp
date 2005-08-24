@@ -12,6 +12,10 @@
 
 #include "TjObjPosTable.h"
 
+#include <assert.h>
+
+#include "CoreAttributes.h"
+
 void
 TjObjPosTable::resize(int sz)
 {
@@ -37,24 +41,44 @@ TjObjPosTable::resize(int sz)
 }
 
 void
-TjObjPosTable::addEntry(const CoreAttributes* ca, int pos, int height)
+TjObjPosTable::addEntry(const CoreAttributes* ca, const CoreAttributes* subCa,
+                        int pos, int height)
 {
-    TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, pos, height);
-    entries.insert(QString().sprintf("%p", ca), entry);
+    TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, subCa, pos, height);
+    if (subCa)
+        entries.insert(ca->getFullId() + ":" + subCa->getFullId(), entry);
+    else
+        entries.insert(ca->getFullId(), entry);
 }
 
 int
-TjObjPosTable::caToPos(const CoreAttributes* ca) const
+TjObjPosTable::caToPos(const CoreAttributes* ca, const CoreAttributes* subCa)
+    const
 {
-    QString key = QString().sprintf("%p", ca);
+    assert(ca);
+
+    QString key;
+    if (subCa)
+        key = ca->getFullId() + ":" + subCa->getFullId();
+    else
+        key = ca->getFullId();
 
     return entries[key] == 0 ? -1 : entries[key]->getPos();
 }
 
 int
-TjObjPosTable::caToHeight(const CoreAttributes* ca) const
+TjObjPosTable::caToHeight(const CoreAttributes* ca,
+                          const CoreAttributes* subCa) const
 {
-    QString key = QString().sprintf("%p", ca);
+    assert(ca);
+
+    QString key;
+
+    if (subCa)
+        key = ca->getFullId() + ":" + subCa->getFullId();
+    else
+        key = ca->getFullId();
 
     return entries[key] == 0 ? -1 : entries[key]->getHeight();
 }
+

@@ -78,6 +78,20 @@ TjGanttChart::~TjGanttChart()
 }
 
 void
+TjGanttChart::setDPI(int dx, int dy)
+{
+    dpiX = dx;
+    dpiY = dy;
+
+    // The line width should be roughly 1 pixel per 100 DPI.
+    lineWidth = ((dpiX + dpiY) / 2) / 100;
+    // Lines with even width look odd. So make sure we always have an odd line
+    // width.
+    if (lineWidth % 2 == 0)
+        lineWidth++;
+}
+
+void
 TjGanttChart::setProjectAndReportData(const QtReportElement* r,
                                       TaskList* tl, ResourceList* rl)
 {
@@ -124,6 +138,55 @@ TjGanttChart::setColors(const QColor& hBg, const QColor& cBg,
     midCol = md;
 }
 
+int
+TjGanttChart::calcHeaderHeight()
+{
+    headerFont.setPixelSize(pointsToYPixels(7));
+    QFontMetrics fm(headerFont);
+
+    headerMargin = (int) (fm.height() * 0.15);
+    // The header consists of 2 lines seperated by a line.
+    return (2 * (fm.height() + 2 * headerMargin)) + lineWidth;
+}
+
+int
+TjGanttChart::calcLegendHeight(int width)
+{
+    if (!legendLabels.isEmpty())
+        return legendLabelRows * legendLabelHeight +
+            (int) (legendLabelHeight * 0.3);
+
+    legendLabels.append(i18n("Container Task"));
+    legendLabels.append(i18n("Milestone"));
+    legendLabels.append(i18n("Planned Task"));
+    legendLabels.append(i18n("In-progress Task"));
+    legendLabels.append(i18n("Completed Task"));
+
+    maxLegendLabelWidth = 0;
+    legendFont.setPixelSize(pointsToYPixels(7));
+    QFontMetrics fm(legendFont);
+    legendLabelHeight = (int) (fm.height() * 1.2);
+    for (QStringList::Iterator it = legendLabels.begin();
+         it != legendLabels.end(); ++it)
+    {
+        QRect br = fm.boundingRect(*it);
+        br.setWidth((int) (br.width() + (int) legendLabelHeight * 0.2));
+        if (maxLegendLabelWidth < br.width())
+            maxLegendLabelWidth = br.width();
+    }
+
+    /* The symbols' width will be 4 * the height. The margin is half the label
+     * height. We have a margin before the symbol, between the symbol and the
+     * text and 2 times after the text. That's 2 times the label height as
+     * margins. */
+    int columns = width / (maxLegendLabelWidth + 6 * legendLabelHeight);
+
+    legendLabelRows = legendLabels.count() / columns +
+        (legendLabels.count() % columns != 0 ? 1 : 0);
+
+    return (1 + (int) (1.5 * legendLabelRows)) * legendLabelHeight;
+}
+
 void
 TjGanttChart::generate()
 {
@@ -150,32 +213,26 @@ TjGanttChart::generate()
             if (pixelPerYear / (4 * minStepHour) > 365 * 24)
             {
                 stepUnit = hour;
-                //endTime += 60 * 60;
             }
             else if (pixelPerYear / (4 * minStepDay) >= 365)
             {
                 stepUnit = day;
-                //endTime += 60 * 60 * 24;
             }
             else if (pixelPerYear / (4 * minStepWeek) >= 52)
             {
                 stepUnit = week;
-                //endTime += 60 * 60 * 24 * 7;
             }
             else if (pixelPerYear / (4 * minStepMonth) >= 12)
             {
                 stepUnit = month;
-                //endTime += 60 * 60 * 24 * 31;
             }
             else if (pixelPerYear / (4 * minStepQuarter) >= 4)
             {
                 stepUnit = quarter;
-                //endTime += 60 * 60 * 24 * 92;
             }
             else
             {
                 stepUnit = year;
-                //endTime += 60 * 60 * 24 * 366;
             }
             break;
         }
@@ -243,6 +300,74 @@ TjGanttChart::generate()
     generateHeaderAndGrid();
 
     generateGanttTasks();
+}
+
+void
+TjGanttChart::generateLegend(int width, int height)
+{
+    legend->resize(width, height);
+
+    int col = 0;
+    int row = 0;
+    // The margin around or between all elements in pixels
+    int margin = (int) (0.5 * legendLabelHeight);
+    // The horizontal size of the graphical elements in pixels
+    int symbolWidth = (int) (4.0 * legendLabelHeight);
+    for (QStringList::Iterator it = legendLabels.begin();
+         it != legendLabels.end(); ++it)
+    {
+        /* The elements of the legends are drawn in columns from left to
+         * right. */
+        int x = margin +
+            col * (maxLegendLabelWidth + (int) (5.5 * legendLabelHeight));
+        int yCenter = (int) (legendLabelHeight * (1.5 * row + 1.0));
+
+        // Draw graphical element
+        switch (col * legendLabelRows + row)
+        {
+            case 0:     // Container task
+                drawContainterShape(x + 2 * margin,
+                                    x + symbolWidth, yCenter,
+                                    legendLabelHeight, legend);
+                break;
+            case 1:     // Milestone
+                drawMilestoneShape(x + symbolWidth, yCenter,
+                                   legendLabelHeight, legend);
+                break;
+            case 2:     // Planned task
+                drawTaskShape(x + margin,
+                              x + margin + symbolWidth, yCenter,
+                              legendLabelHeight, 0, legend);
+                break;
+            case 3:     // In-progress task
+                drawTaskShape(x + margin,
+                              x + margin + symbolWidth, yCenter,
+                              legendLabelHeight, symbolWidth / 2, legend);
+                break;
+            case 4:     // Completed task
+                drawTaskShape(x + margin,
+                              x + margin + symbolWidth, yCenter,
+                              legendLabelHeight, symbolWidth, legend);
+                break;
+        }
+
+        // Draw description of graphical element
+        QCanvasText* text = new QCanvasText(*it, legend);
+        text->setColor(Qt::black);
+        text->setFont(legendFont);
+        text->setX(x + 2 * margin + symbolWidth);
+        text->setY((int) (legendLabelHeight * (0.5 + 1.5 * row)));
+        text->setZ(0);
+        text->show();
+
+        /* If we have finished a column advance to the top of the next right
+         * column. */
+        if (++row >= legendLabelRows)
+        {
+            row = 0;
+            col++;
+        }
+    }
 }
 
 void
@@ -408,25 +533,9 @@ TjGanttChart::generateHourHeader(int y)
     for (time_t hour = midnight(startTime); hour < endTime;
          hour = hoursLater(1, hour))
     {
-        int x = time2x(hour);
-        if (x < 0)
-            continue;
-        QCanvasLine* line = new QCanvasLine(header);
-        line->setPoints(x, y, x, y + headerHeight / 2);
-        QPen pen = line->pen();
-        pen.setColor(midCol);
-        line->setPen(pen);
-        line->setZ(TJRL_GRIDLINES);
-        line->show();
-
-        // Write hour of day.
         QString label;
         label = QString("%1").arg(hourOfDay(hour));
-        QCanvasText* text = new QCanvasText(label, header);
-        text->setX(x + 2);
-        text->setY(y);
-        text->setZ(TJRL_GRIDLABLES);
-        text->show();
+        drawHeaderCell(hour, hoursLater(1, hour), y, label);
     }
 }
 
@@ -436,18 +545,6 @@ TjGanttChart::generateDayHeader(int y)
     for (time_t day = midnight(startTime);
          day < endTime; day = sameTimeNextDay(day))
     {
-        int x = time2x(day);
-        if (x < 0)
-            continue;
-        QCanvasLine* line = new QCanvasLine(header);
-        line->setPoints(x, y, x, y + headerHeight / 2);
-        QPen pen = line->pen();
-        pen.setColor(midCol);
-        line->setPen(pen);
-        line->setZ(TJRL_GRIDLINES);
-        line->show();
-
-        // Write day of month.
         QString label;
         int stepSize = pixelPerYear / 365;
         if (stepSize > 70)
@@ -461,11 +558,7 @@ TjGanttChart::generateDayHeader(int y)
                 .arg(dayOfMonth(day));
         else
             label = QString("%1").arg(dayOfMonth(day));
-        QCanvasText* text = new QCanvasText(label, header);
-        text->setX(x + 2);
-        text->setY(y);
-        text->setZ(TJRL_GRIDLABLES);
-        text->show();
+        drawHeaderCell(day, sameTimeNextDay(day), y, label);
     }
 }
 
@@ -478,26 +571,9 @@ TjGanttChart::generateWeekHeader(int y)
          week < endTime;
          week = sameTimeNextWeek(week))
     {
-        // Draw vertical line at beginning of week.
-        int x = time2x(week);
-        if (x < 0)
-            continue;
-        QCanvasLine* line = new QCanvasLine(header);
-        line->setPoints(x, y, x, y + headerHeight / 2);
-        QPen pen = line->pen();
-        pen.setColor(midCol);
-        line->setPen(pen);
-        line->setZ(TJRL_GRIDLINES);
-        line->show();
-
-        // Write week number.
-        QCanvasText* text = new QCanvasText
-            (i18n("short for week of year", "W%1")
-             .arg(weekOfYear(week, weekStartsMonday)),
-             header);
-        text->move(x + 2, y);
-        text->setZ(TJRL_GRIDLABLES);
-        text->show();
+        drawHeaderCell(week, sameTimeNextWeek(week), y,
+                       (i18n("short for week of year", "W%1")
+                        .arg(weekOfYear(week, weekStartsMonday))));
     }
 }
 
@@ -507,40 +583,11 @@ TjGanttChart::generateMonthHeader(int y, bool withYear)
     for (time_t month = beginOfMonth(startTime);
          month < endTime; month = sameTimeNextMonth(month))
     {
-        int x = time2x(month);
-        if (x < 0)
-            continue;
-        QCanvasLine* line = new QCanvasLine(header);
-        line->setPoints(x, y, x, y + headerHeight / 2);
-        QPen pen = line->pen();
-        pen.setColor(midCol);
-        line->setPen(pen);
-        line->setZ(TJRL_GRIDLINES);
-        line->show();
-
-        // Write month name (and year).
-        QString s = withYear ?
+         QString label = withYear ?
             QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(month)))
             .arg(::year(month)) :
             QString("%1").arg(QDate::shortMonthName(monthOfYear(month)));
-        QCanvasText* text = new QCanvasText(s, header);
-        text->move(x + 2, y);
-        text->setZ(TJRL_GRIDLABLES);
-        text->show();
-
-        if (pixelPerYear / 12 > 600)
-        {
-            x += pixelPerYear / (2 * 12);
-            // Draw month name (and year).
-            QString s = withYear ?
-                QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(month)))
-                .arg(::year(month)) :
-                QString("%1").arg(QDate::shortMonthName(monthOfYear(month)));
-            QCanvasText* text = new QCanvasText(s, header);
-            text->move(x + 2, y);
-            text->setZ(TJRL_GRIDLABLES);
-            text->show();
-        }
+        drawHeaderCell(month, sameTimeNextMonth(month), y, label);
     }
 }
 
@@ -551,25 +598,9 @@ TjGanttChart::generateQuarterHeader(int y)
          quarter < endTime; quarter =
          sameTimeNextQuarter(quarter))
     {
-        int x = time2x(quarter);
-        if (x < 0)
-            continue;
-        QCanvasLine* line = new QCanvasLine(header);
-        line->setPoints(x, y, x, y + headerHeight / 2);
-        QPen pen = line->pen();
-        pen.setColor(midCol);
-        line->setPen(pen);
-        line->setZ(TJRL_GRIDLINES);
-        line->show();
-
-        // Write quarter number.
-        QCanvasText* text =
-            new QCanvasText(i18n("short for quater of year", "Q%1")
-                            .arg(quarterOfYear(quarter)),
-                            header);
-        text->move(x + 2, y);
-        text->setZ(TJRL_GRIDLABLES);
-        text->show();
+        drawHeaderCell(quarter, sameTimeNextQuarter(quarter), y,
+                       i18n("short for quater of year", "Q%1")
+                       .arg(quarterOfYear(quarter)));
     }
 }
 
@@ -579,24 +610,35 @@ TjGanttChart::generateYearHeader(int y)
     for (time_t year = beginOfYear(startTime);
          year < endTime; year = sameTimeNextYear(year))
     {
-        int x = time2x(year);
-        if (x < 0)
-            continue;
-        QCanvasLine* line = new QCanvasLine(header);
-        line->setPoints(time2x(year), y, time2x(year), y + headerHeight / 2);
-        QPen pen = line->pen();
-        pen.setColor(midCol);
-        line->setPen(pen);
-        line->setZ(TJRL_GRIDLINES);
-        line->show();
-
-        // Write year.
-        QCanvasText* text =
-            new QCanvasText(QString("%1").arg(::year(year)), header);
-        text->move(x + 2, y);
-        text->setZ(TJRL_GRIDLABLES);
-        text->show();
+        drawHeaderCell(year, sameTimeNextYear(year), y,
+                       QString("%1").arg(::year(year)));
     }
+}
+
+void
+TjGanttChart::drawHeaderCell(int start, int end, int y, const QString label)
+{
+    int xs = time2x(start);
+    int xe = time2x(end);
+    // Draw vertical line at beginning of week.
+    QCanvasLine* line = new QCanvasLine(header);
+    line->setPoints(xs, y, xs, y + headerHeight / 2);
+    QPen pen = line->pen();
+    pen.setColor(midCol);
+    line->setPen(pen);
+    line->setZ(TJRL_GRIDLINES);
+    line->show();
+
+    // Write week number.
+    QCanvasText* text = new QCanvasText(label, header);
+    text->setFont(headerFont);
+    // Center the label horizontally in the cell.
+    QFontMetrics fm(headerFont);
+    QRect br = fm.boundingRect(label);
+    xs += ((xe - xs) - br.width()) / 2;
+    text->move(xs + lineWidth / 2 + 1 + headerMargin, y + headerMargin);
+    text->setZ(TJRL_GRIDLABLES);
+    text->show();
 }
 
 void
@@ -623,7 +665,7 @@ TjGanttChart::markNonWorkingHoursOnBackground()
 
         QCanvasRectangle* rect =
             new QCanvasRectangle(x, 0, w, chartHeight, chart);
-        rect->setPen(QPen(col));
+        rect->setPen(QPen(col, lineWidth));
         rect->setBrush(QBrush(col));
         rect->setZ(TJRL_OFFTIME);
         rect->show();
@@ -648,7 +690,7 @@ TjGanttChart::markNonWorkingDaysOnBackground()
         {
             QCanvasRectangle* rect =
                 new QCanvasRectangle(x, 0, w, chartHeight, chart);
-            rect->setPen(QPen(col));
+            rect->setPen(QPen(col, lineWidth));
             rect->setBrush(QBrush(col));
             rect->setZ(TJRL_OFFTIME);
             rect->show();
@@ -752,11 +794,24 @@ TjGanttChart::generateGanttBackground()
 void
 TjGanttChart::generateGanttTasks()
 {
-    for (TaskListIterator tli(*taskList); *tli; ++tli)
+    for (TjObjPosTableIterator it(*objPosTable); it.current(); ++it)
     {
-        drawTask(*tli);
-        drawDependencies(*tli);
-        //    drawTaskResources(*tli);
+        if (it.current()->getCoreAttributes()->getType() == CA_Task &&
+            it.current()->getSubCoreAttributes() == 0)
+        {
+            const Task* t = static_cast<const Task*>
+                (it.current()->getCoreAttributes());
+            drawTask(t);
+            drawDependencies(t);
+        }
+        else if (it.current()->getCoreAttributes()->getType() == CA_Task &&
+                 it.current()->getSubCoreAttributes()->getType() == CA_Resource)
+            drawTaskResource(static_cast<const Resource*>
+                             (it.current()->getSubCoreAttributes()),
+                             static_cast<const Task*>
+                             (it.current()->getCoreAttributes()));
+        else
+            qFatal("TjGanttChart::generateGanttTasks(): Unknown CA");
     }
 }
 
@@ -811,7 +866,7 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
         new QCanvasRectangle(start, centerY - (int) (height * 0.4),
                              end - start, (int) (height * 0.8), canvas);
 
-    rect->setPen(QPen(QColor("#4C5EFF")));
+    rect->setPen(QPen(QColor("#4C5EFF"), lineWidth));
     rect->setBrush(QBrush(QColor("#4C5EFF"), Qt::Dense4Pattern));
     rect->setZ(TJRL_TASKS);
     rect->show();
@@ -822,7 +877,7 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
         rect = new QCanvasRectangle (start, centerY - (int) (height * 0.2),
                                      barWidth, (int) (height * 0.4), canvas);
 
-        rect->setPen(Qt::black);
+        rect->setPen(QPen(Qt::black, lineWidth));
         rect->setBrush(Qt::black);
         rect->setZ(TJRL_TASKCOMP);
         rect->show();
@@ -845,7 +900,7 @@ TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
 
     QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setPen(Qt::black);
+    polygon->setPen(QPen(Qt::black, lineWidth));
     polygon->setBrush(Qt::black);
     polygon->setZ(TJRL_TASKS);
     polygon->show();
@@ -869,7 +924,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     a.setPoint(3, end + jagWidth + 1, top);
     QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setPen(Qt::black);
+    polygon->setPen(QPen(Qt::black, lineWidth));
     polygon->setBrush(Qt::black);
     polygon->setZ(TJRL_TASKS);
     polygon->show();
@@ -881,7 +936,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     a.setPoint(2, start + jagWidth + 1, halfbottom);
     polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setPen(Qt::black);
+    polygon->setPen(QPen(Qt::black, lineWidth));
     polygon->setBrush(Qt::black);
     polygon->setZ(TJRL_TASKS);
     polygon->show();
@@ -892,7 +947,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     a.setPoint(2, end + jagWidth + 1, halfbottom);
     polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setPen(Qt::black);
+    polygon->setPen(QPen(Qt::black, lineWidth));
     polygon->setBrush(Qt::black);
     polygon->setZ(TJRL_TASKS);
     polygon->show();
@@ -977,8 +1032,7 @@ TjGanttChart::drawDependencies(const Task* t1)
             for (uint i = 0; i < a.count() - 1; ++i)
             {
                 QCanvasLine* line = new QCanvasLine(chart);
-                QPen pen(Qt::black);
-                line->setPen(pen);
+                line->setPen(QPen(Qt::black, lineWidth));
                 int x1, y1, x2, y2;
                 a.point(i, &x1, &y1);
                 a.point(i + 1, &x2, &y2);
@@ -997,7 +1051,7 @@ TjGanttChart::drawDependencies(const Task* t1)
 
             QCanvasPolygon* polygon = new QCanvasPolygon(chart);
             polygon->setPoints(a);
-            polygon->setPen(Qt::black);
+            polygon->setPen(QPen(Qt::black, lineWidth));
             polygon->setBrush(Qt::black);
             polygon->setZ(TJRL_DEPARROWS);
             polygon->show();
@@ -1006,60 +1060,54 @@ TjGanttChart::drawDependencies(const Task* t1)
 }
 
 void
-TjGanttChart::drawTaskResources(const Task* /*t*/)
+TjGanttChart::drawTaskResource(const Resource* r, const Task* t)
 {
-#if 0
+    qDebug("drawTaskResource");
     Interval iv;
-    for (ResourceListIterator rli(t->getBookedResourcesIterator(scenario));
-         *rli; ++rli)
+    int rY = objPosTable->caToPos(t, r);
+    switch (stepUnit)
     {
-        int rY = ca2lviDict[QString("r:") + t->getId() + ":" +
-            (*rli)->getFullId()]->itemPos();
-        switch (stepUnit)
-        {
-            case hour:
-                for (time_t i = beginOfHour(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = hoursLater(1, i))
-                    drawResourceLoadColum(t, *rli, i, hoursLater(1, i) - 1, rY);
-                break;
-            case day:
-                for (time_t i = midnight(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextDay(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextDay(i) - 1,
-                                          rY);
-                break;
-            case week:
-                for (time_t i = beginOfWeek(t->getStart(scenario),
-                                            t->getProject()->
-                                            getWeekStartsMonday());
-                     i <= (t->getEnd(scenario)); i = sameTimeNextWeek(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextWeek(i) - 1,
-                                          rY);
-                break;
-            case month:
-                for (time_t i = beginOfMonth(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextMonth(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextMonth(i) - 1,
-                                          rY);
-                break;
-            case quarter:
-                for (time_t i = beginOfQuarter(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextQuarter(i))
-                    drawResourceLoadColum(t, *rli, i,
-                                          sameTimeNextQuarter(i) - 1, rY);
-                break;
-            case year:
-                for (time_t i = beginOfYear(t->getStart(scenario));
-                     i <= (t->getEnd(scenario)); i = sameTimeNextYear(i))
-                    drawResourceLoadColum(t, *rli, i, sameTimeNextYear(i) - 1,
-                                          rY);
-                break;
-            default:
-                kdError() << "Unknown stepUnit";
-                break;
-        }
+        case hour:
+            for (time_t i = beginOfHour(t->getStart(scenario));
+                 i <= (t->getEnd(scenario)); i = hoursLater(1, i))
+                drawResourceLoadColum(t, r, i, hoursLater(1, i) - 1, rY);
+            break;
+        case day:
+            for (time_t i = midnight(t->getStart(scenario));
+                 i <= (t->getEnd(scenario)); i = sameTimeNextDay(i))
+                drawResourceLoadColum(t, r, i, sameTimeNextDay(i) - 1,
+                                      rY);
+            break;
+        case week:
+            for (time_t i = beginOfWeek(t->getStart(scenario),
+                                        t->getProject()->
+                                        getWeekStartsMonday());
+                 i <= (t->getEnd(scenario)); i = sameTimeNextWeek(i))
+                drawResourceLoadColum(t, r, i, sameTimeNextWeek(i) - 1,
+                                      rY);
+            break;
+        case month:
+            for (time_t i = beginOfMonth(t->getStart(scenario));
+                 i <= (t->getEnd(scenario)); i = sameTimeNextMonth(i))
+                drawResourceLoadColum(t, r, i, sameTimeNextMonth(i) - 1,
+                                      rY);
+            break;
+        case quarter:
+            for (time_t i = beginOfQuarter(t->getStart(scenario));
+                 i <= (t->getEnd(scenario)); i = sameTimeNextQuarter(i))
+                drawResourceLoadColum(t, r, i,
+                                      sameTimeNextQuarter(i) - 1, rY);
+            break;
+        case year:
+            for (time_t i = beginOfYear(t->getStart(scenario));
+                 i <= (t->getEnd(scenario)); i = sameTimeNextYear(i))
+                drawResourceLoadColum(t, r, i, sameTimeNextYear(i) - 1,
+                                      rY);
+            break;
+        default:
+            qFatal("TjGanttChart::drawTaskResource(): Unknown stepUnit");
+            break;
     }
-#endif
 }
 
 void
@@ -1073,8 +1121,8 @@ TjGanttChart::drawResourceLoadColum(const Task* t, const Resource* r,
     // We will draw the load column into the cell with a margin of 1 pixel
     // plus the cell seperation line.
     // Let's try a first shot for column start and width.
-    int cx = cellStart + 2;
-    int cw = cellEnd - cellStart - 3;
+    int cx = cellStart + mmToXPixels(0.5);
+    int cw = cellEnd - cellStart - mmToXPixels(0.5) - 1;
     // Now we trim it so it does not extend over the ends of the task bar. We
     // also trim the interval so the load is only calculated for intervals
     // within the task period.
@@ -1089,12 +1137,12 @@ TjGanttChart::drawResourceLoadColum(const Task* t, const Resource* r,
         end = t->getEnd(scenario);
         cw = time2x(end) - cx + 1;
     }
-    // Since the above calculation might have destroyed our 1 pixel margin, we
+    // Since the above calculation might have destroyed our 0.5mm margin, we
     // check it again.
-    if (cx < cellStart + 2)
-        cx = cellStart + 2;
-    if (cx + cw > cellEnd - 2)
-        cw = cellEnd - 2 - cx;
+    if (cx < cellStart + mmToXPixels(0.5))
+        cx = cellStart + mmToXPixels(0.5);
+    if (cx + cw > cellEnd - mmToXPixels(0.5) - 1)
+        cw = cellEnd - mmToXPixels(0.5) - 1 - cx;
 
     // Now we are calculation the load of the resource with respect to this
     // task, to all tasks, and we calculate the not yet allocated load.
@@ -1129,7 +1177,7 @@ TjGanttChart::drawResourceLoadColum(const Task* t, const Resource* r,
             (cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
              chart);
         rect->setBrush(QBrush(thisTaskCol, Qt::Dense4Pattern));
-        rect->setPen(thisTaskCol);
+        rect->setPen(QPen(thisTaskCol, lineWidth));
         rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
@@ -1140,7 +1188,7 @@ TjGanttChart::drawResourceLoadColum(const Task* t, const Resource* r,
             (cx, colOtherLoadTop, cw,
              colTaskLoadTop - colOtherLoadTop, chart);
         rect->setBrush(QBrush(otherTaskCol, Qt::Dense6Pattern));
-        rect->setPen(otherTaskCol);
+        rect->setPen(QPen(otherTaskCol, lineWidth));
         rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
@@ -1151,7 +1199,7 @@ TjGanttChart::drawResourceLoadColum(const Task* t, const Resource* r,
             (cx, colTop, cw, colOtherLoadTop - colTop,
              chart);
         rect->setBrush(QBrush(freeLoadCol, Qt::Dense6Pattern));
-        rect->setPen(freeLoadCol);
+        rect->setPen(QPen(freeLoadCol, lineWidth));
         rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
@@ -1189,100 +1237,21 @@ TjGanttChart::setBestStepUnit()
 }
 
 int
-TjGanttChart::legendHeight(int width)
+TjGanttChart::mmToXPixels(double mm)
 {
-    if (!legendLabels.isEmpty())
-        return legendLabelRows * legendLabelHeight +
-            (int) (legendLabelHeight * 0.3);
-
-    legendLabels.append(i18n("Container Task"));
-    legendLabels.append(i18n("Milestone"));
-    legendLabels.append(i18n("Planned Task"));
-    legendLabels.append(i18n("In-progress Task"));
-    legendLabels.append(i18n("Completed Task"));
-
-    maxLegendLabelWidth = 0;
-    legendFont.setPixelSize(32);
-    QFontMetrics fm(legendFont);
-    legendLabelHeight = (int) (fm.height() * 1.2);
-    for (QStringList::Iterator it = legendLabels.begin();
-         it != legendLabels.end(); ++it)
-    {
-        QRect br = fm.boundingRect(*it);
-        br.setWidth((int) (br.width() + (int) legendLabelHeight * 0.2));
-        if (maxLegendLabelWidth < br.width())
-            maxLegendLabelWidth = br.width();
-    }
-
-    /* The symbols' width will be 4 * the height. The margin is half the label
-     * height. We have a margin before the symbol, between the symbol and the
-     * text and 2 times after the text. That's 2 times the label height as
-     * margins. */
-    int columns = width / (maxLegendLabelWidth + 6 * legendLabelHeight);
-
-    legendLabelRows = legendLabels.count() / columns +
-        (legendLabels.count() % columns != 0 ? 1 : 0);
-
-    return (1 + (int) (1.5 * legendLabelRows)) * legendLabelHeight;
+    return (int) ((mm / 25.4) * dpiX);
 }
 
-void
-TjGanttChart::generateLegend(int width, int height)
+int
+TjGanttChart::mmToYPixels(double mm)
 {
-    legend->resize(width, height);
-
-    int col = 0;
-    int row = 0;
-    int margin = (int) (0.5 * legendLabelHeight);
-    int symbolWidth = (int) (4.0 * legendLabelHeight);
-    for (QStringList::Iterator it = legendLabels.begin();
-         it != legendLabels.end(); ++it)
-    {
-        int x = (int) (legendLabelHeight * 0.5) +
-            col * (maxLegendLabelWidth + (int) (5.5 * legendLabelHeight));
-        int yCenter = (int) (legendLabelHeight * (1.5 * row + 1.0));
-
-        switch (col * legendLabelRows + row)
-        {
-            case 0:     // Container task
-                drawContainterShape(x + 2 * margin,
-                                    x + symbolWidth, yCenter,
-                                    legendLabelHeight, legend);
-                break;
-            case 1:     // Milestone
-                drawMilestoneShape(x + symbolWidth, yCenter,
-                                   legendLabelHeight, legend);
-                break;
-            case 2:     // Planned task
-                drawTaskShape(x + margin,
-                              x + margin + symbolWidth, yCenter,
-                              legendLabelHeight, 0, legend);
-                break;
-            case 3:     // In-progress task
-                drawTaskShape(x + margin,
-                              x + margin + symbolWidth, yCenter,
-                              legendLabelHeight, symbolWidth / 2, legend);
-                break;
-            case 4:     // Completed task
-                drawTaskShape(x + margin,
-                              x + margin + symbolWidth, yCenter,
-                              legendLabelHeight, symbolWidth, legend);
-                break;
-        }
-
-        QCanvasText* text = new QCanvasText(*it, legend);
-        text->setColor(Qt::black);
-        text->setFont(legendFont);
-        text->setX(x + 2 * margin + symbolWidth);
-        text->setY((int) (legendLabelHeight * (0.5 + 1.5 * row)));
-        text->setZ(0);
-        text->show();
-
-        if (++row >= legendLabelRows)
-        {
-            row = 0;
-            col++;
-        }
-    }
+    return (int) ((mm / 25.4) * dpiY);
 }
+
+int
+TjGanttChart::pointsToYPixels(double pts)
+{
+    return (int) ((pts * (0.376 / 25.4)) * dpiY);
+}
+
 

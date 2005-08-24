@@ -44,6 +44,7 @@ public:
                                  TaskList* tl, ResourceList* rl);
     void setSizes(const TjObjPosTable* opt, int headerHeight, int chartHeight,
                   int width, int minRowHeight);
+    void setDPI(int dx, int dy);
 
     void setColors(const QColor& hBackground, const QColor& cBackground,
                    const QColor& altBackground,
@@ -51,6 +52,8 @@ public:
                    const QColor& base2, const QColor& mid);
     void setScaleMode(ScaleMode sm) { scaleMode = sm; }
 
+    int calcHeaderHeight();
+    int calcLegendHeight(int width);
     void generate();
     void paintHeader(const QRect& clip, QPainter* p, bool dbuf = false);
     void paintChart(int x, int y, const QRect& clip, QPainter* p,
@@ -58,7 +61,6 @@ public:
     void paintLegend(const QRect& clip, QPainter* p, bool dbuf = false);
 
     void generateLegend(int width, int height);
-    int legendHeight(int width);
 
 private:
     enum StepUnits { hour = 0, day, week, month, quarter, year };
@@ -72,6 +74,7 @@ private:
     void generateMonthHeader(int y, bool withYear);
     void generateQuarterHeader(int y);
     void generateYearHeader(int y);
+    void drawHeaderCell(int x, int y, int xe, const QString label);
     void generateGanttBackground();
     void markNonWorkingHoursOnBackground();
     void markNonWorkingDaysOnBackground();
@@ -91,7 +94,7 @@ private:
     void drawContainterShape(int start, int end, int centerY, int height,
                              QCanvas* canvas);
     void drawDependencies(const Task* t1);
-    void drawTaskResources(const Task* t);
+    void drawTaskResource(const Resource* r, const Task* t);
     void drawResourceLoadColum(const Task* t, const Resource* r, time_t start,
                                time_t end, int rY);
 
@@ -102,15 +105,26 @@ private:
 
     int generateLegend();
 
+    int mmToXPixels(double mm);
+    int mmToYPixels(double mm);
+    int pointsToYPixels(double pts);
+
     QCanvas* header;
     QCanvas* chart;
     QCanvas* legend;
+
+    // Vertical and horizontal resolution
+    int dpiX;
+    int dpiY;
+
+    int lineWidth;
 
     time_t startTime;
     time_t endTime;
 
     const TjObjPosTable* objPosTable;
 
+    int headerMargin;
     int headerHeight;
     int chartHeight;
     int width;
@@ -143,6 +157,7 @@ private:
     ResourceList* resourceList;
     int scenario;
 
+    QFont headerFont;
     QFont legendFont;
     QStringList legendLabels;
     int maxLegendLabelWidth;
