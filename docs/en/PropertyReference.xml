@@ -301,6 +301,7 @@ HTML calendar columns. The default is to show load values.</para></descr>
    <optattr>sloppy</optattr>
   </optattributes>
   <seealso>
+   <also>complete</also>
    <also>projection</also>
   </seealso>
   <example>&example_booking;</example>
@@ -597,7 +598,8 @@ scenario="Yes">
   <descr><para>Specifies what percentage of the task is already
 completed. This can be useful for project tracking. Reports with
 calendar elements may show the completed part of the task in a
-different color.</para>
+different color. The completion percentage has no impact on the
+scheduler. It's meant for documentation purposes only.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para></descr>
   <attributes>
@@ -606,6 +608,9 @@ different color.</para>
    </attr>
   </attributes>
   <example>&example_complete;</example>
+  <seealso>
+   <also>booking</also>
+  </seealso>
  </property>
  <property name="copyright" id="copyright" inheritable="No">
   <descr><para>Adds a copyright notice to all subsequently defined

@@ -39,7 +39,7 @@ public:
     virtual ~TjPrintReport();
 
     virtual void initialize() = 0;
-    virtual bool generate(QPrinter::Orientation orientation) = 0;
+    virtual bool generate() = 0;
 
     bool beginPrinting();
     void printReportPage(int x, int y);
@@ -59,7 +59,7 @@ protected:
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
                                  QString& cellText) const;
 
-    void layoutPages(QPrinter::Orientation orientation);
+    void layoutPages();
 
     void printReportCell(TjReportRow* row, int col);
 
@@ -134,6 +134,8 @@ protected:
     int bottomlineY;
     // The height of the bottom line in pixels
     int bottomlineHeight;
+
+    QDict<int> specialColumns;
 } ;
 
 #endif

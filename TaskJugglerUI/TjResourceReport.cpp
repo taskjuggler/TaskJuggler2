@@ -29,6 +29,7 @@
 #include "QtResourceReport.h"
 #include "QtResourceReportElement.h"
 #include "ReportLayers.h"
+#include "TjPrintResourceReport.h"
 
 TjResourceReport::TjResourceReport(QWidget* p, Report* const rDef,
                                    const QString& n) : TjReport(p, rDef, n)
@@ -40,11 +41,9 @@ TjResourceReport::~TjResourceReport()
 }
 
 TjPrintReport*
-TjResourceReport::newPrintReport(QPaintDevice*)
+TjResourceReport::newPrintReport(QPaintDevice* pd)
 {
-    KMessageBox::sorry(this, i18n("Sorry, printing of Resource Reports is not "
-                                  "yet implemented."));
-    return 0;
+    return new TjPrintResourceReport(reportDef, pd);
 }
 
 const QtReportElement*

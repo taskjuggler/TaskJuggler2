@@ -26,8 +26,11 @@ class LoopDetectorInfo
 {
     friend class LDIList;
 public:
-    LoopDetectorInfo() { }
-    LoopDetectorInfo(Task* _t, bool ae) : t(_t), atEnd(ae) { }
+    LoopDetectorInfo()
+    {
+        prevLDI = nextLDI = 0;
+    }
+    LoopDetectorInfo(const Task* _t, bool ae) : t(_t), atEnd(ae) { }
     ~LoopDetectorInfo() { }
 
     enum FromWhere { fromParent, fromSub, fromPrev, fromSucc, fromOtherEnd };
@@ -40,7 +43,7 @@ public:
     {
         return t != ldi.t || atEnd != ldi.atEnd;
     }
-    Task* getTask() const { return t; }
+    const Task* getTask() const { return t; }
     bool getAtEnd() const { return atEnd; }
     LoopDetectorInfo* next() const { return nextLDI; }
     LoopDetectorInfo* prev() const { return prevLDI; }
@@ -48,7 +51,7 @@ protected:
     LoopDetectorInfo* nextLDI;
     LoopDetectorInfo* prevLDI;
 private:
-    Task* t;
+    const Task* t;
     bool atEnd;
 } ;
 
@@ -79,6 +82,15 @@ public:
     LoopDetectorInfo* first() const { return root; }
     LoopDetectorInfo* last() const { return leaf; }
     long count() const { return items; }
+
+    bool find(const LoopDetectorInfo* ref) const
+    {
+        for (LoopDetectorInfo* p = root; p; p = p->nextLDI)
+            if (*p == *ref)
+                return true;
+
+        return false;
+    }
 
     void append(LoopDetectorInfo* p)
     {

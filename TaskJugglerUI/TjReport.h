@@ -37,6 +37,8 @@ class QtReportElement;
 class Interval;
 class JournalIterator;
 class TjPrintReport;
+class TjObjPosTable;
+class TjGanttChart;
 
 class TjReport : public QWidget
 {
@@ -145,6 +147,10 @@ protected:
     QSplitter* splitter;
     KListView* listView;
     QWidget* canvasFrame;
+
+    //TjObjPosTable* objPosTable;
+    //TjGanttChart* ganttChart;
+
     QCanvas* ganttHeader;
     QCanvasView* ganttHeaderView;
     QCanvas* ganttChart;
@@ -198,6 +204,11 @@ protected:
 
     TaskList taskList;
     ResourceList resourceList;
+
+    /* The interactive reports treat the indexes, name and calendar columns
+     * differently than most other reports. They provide special rendering for
+     * them and need to be ignored during generic column rendering. */
+    QDict<int> specialColumns;
 } ;
 
 #endif

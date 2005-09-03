@@ -39,22 +39,18 @@ TjPrintTaskReport::initialize()
 }
 
 bool
-TjPrintTaskReport::generate(QPrinter::Orientation orientation)
+TjPrintTaskReport::generate()
 {
-    assert(reportDef != 0);
-
-    TaskList filteredTaskList = reportDef->getProject()->getTaskList();
-    resourceList = reportDef->getProject()->getResourceList();
-
     /* Get complete task list, filter and sort it. Then determine the maximum
      * tree level. */
-    if (!reportElement->filterTaskList(taskList, 0,
+    TaskList filteredTaskList;
+    if (!reportElement->filterTaskList(filteredTaskList, 0,
                                        reportElement->getHideTask(),
                                        reportElement->getRollUpTask()))
         return FALSE;
+    maxDepthTaskList = filteredTaskList.maxDepth();
     (static_cast<const QtTaskReportElement*>(reportElement))->
         sortTaskList(filteredTaskList);
-    maxDepthTaskList = filteredTaskList.maxDepth();
     if (filteredTaskList.isEmpty())
         return TRUE;
 
@@ -69,15 +65,15 @@ TjPrintTaskReport::generate(QPrinter::Orientation orientation)
 
     generateTableHeader();
 
-    for (TaskListIterator tli(taskList); *tli; ++tli)
+    int index = 1;
+    for (TaskListIterator tli(filteredTaskList); *tli; ++tli)
     {
-        TjReportRow* row = new TjReportRow(getNumberOfColumns());
+        TjReportRow* row = new TjReportRow(getNumberOfColumns(), index++);
         row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli), 0);
         rows.append(row);
 
         generateTaskListRow(row, *tli);
 
-        ResourceList filteredResourceList;
         if (!reportElement->filterResourceList
             (filteredResourceList, *tli, reportElement->getHideResource(),
              reportElement->getRollUpResource()))
@@ -85,7 +81,7 @@ TjPrintTaskReport::generate(QPrinter::Orientation orientation)
         reportElement->sortResourceList(filteredResourceList);
         for (ResourceListIterator rli(filteredResourceList); *rli; ++rli)
         {
-            row = new TjReportRow(getNumberOfColumns());
+            row = new TjReportRow(getNumberOfColumns(), index++);
             row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli),
                                    static_cast<const CoreAttributes*>(*rli));
             rows.append(row);
@@ -94,7 +90,7 @@ TjPrintTaskReport::generate(QPrinter::Orientation orientation)
         }
     }
 
-    layoutPages(orientation);
+    layoutPages();
 
     return TRUE;
 }

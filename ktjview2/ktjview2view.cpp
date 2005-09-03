@@ -342,7 +342,8 @@ bool ktjview2View::openURL( const KURL& url )
     //kdDebug() << "Generating cross references (pass2)" << endl;
     progressDlg.progressBar()->setProgress( 3 );
     progressDlg.setLabel( i18n( "Generating cross references" ) );
-    if ( !m_project->pass2( false ) )
+    bool fatalError;
+    if ( !m_project->pass2( false, fatalError ) )
     {
         syntaxError = true;
         progressDlg.cancel();

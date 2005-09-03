@@ -761,7 +761,7 @@ public:
      * tree has been contructed.
      * @return Only if all tests were successful TRUE is returned.
      */
-    bool pass2(bool noDepCheck);
+    bool pass2(bool noDepCheck, bool& fatalError);
 
     bool scheduleScenario(Scenario* sc);
     void completeBuffersAndIndices();

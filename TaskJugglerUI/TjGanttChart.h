@@ -86,16 +86,18 @@ private:
     void markQuarterBoundaries();
 
     void generateGanttTasks();
-    void drawTask(const Task* t);
+    void drawTask(const Task* t, const Resource* r);
     void drawTaskShape(int start, int end, int centerY, int height,
-                       int barWidth, QCanvas* canvas);
+                       int barWidth, bool outlineOnly, QCanvas* canvas);
     void drawMilestoneShape(int centerX, int centerY, int height,
-                            QCanvas* canvas);
+                            bool outlineOnly, QCanvas* canvas);
     void drawContainterShape(int start, int end, int centerY, int height,
-                             QCanvas* canvas);
+                             bool outlineOnly, QCanvas* canvas);
     void drawDependencies(const Task* t1);
     void drawTaskResource(const Resource* r, const Task* t);
-    void drawResourceLoadColum(const Task* t, const Resource* r, time_t start,
+    void drawResource(const Resource* r);
+    void drawResourceTask(const Task* t, const Resource* r);
+    void drawResourceLoadColum(const Resource* r, const Task* t, time_t start,
                                time_t end, int rY);
 
     int time2x(time_t t) const;

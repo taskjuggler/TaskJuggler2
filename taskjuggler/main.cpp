@@ -236,10 +236,10 @@ int main(int argc, char *argv[])
 
     p.readKotrus();
 
-    bool logicalErrors = !p.pass2(noDepCheck);
     bool schedulingErrors = FALSE;
+    bool logicalErrors = !p.pass2(noDepCheck, schedulingErrors);
 
-    if (!(checkOnlySyntax || generateMakeDepList))
+    if (!schedulingErrors && !(checkOnlySyntax || generateMakeDepList))
     {
         schedulingErrors = p.getAllocationErrors() ||
             !p.scheduleAllScenarios();

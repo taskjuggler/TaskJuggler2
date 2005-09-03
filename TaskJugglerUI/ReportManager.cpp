@@ -55,7 +55,6 @@ ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
 ReportManager::~ReportManager()
 {
     clear();
-    delete printer;
 }
 
 QListViewItem*
@@ -84,36 +83,99 @@ ReportManager::updateReportBrowser()
     browser->clear();
 
     qtReports = new KListViewItem(browser, i18n("Interactive Reports"));
+    qtReports->setPixmap(0, KGlobal::iconLoader()->
+                         loadIcon("tj_interactive_reports", KIcon::Small));
     htmlReports = new KListViewItem(browser, i18n("HTML Reports"));
+    htmlReports->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_html_reports", KIcon::Small));
     csvReports = new KListViewItem(browser, i18n("CSV Reports"));
+    csvReports->setPixmap(0, KGlobal::iconLoader()->
+                          loadIcon("tj_csv_reports", KIcon::Small));
     xmlReports = new KListViewItem(browser, i18n("XML Reports"));
+    xmlReports->setPixmap(0, KGlobal::iconLoader()->
+                          loadIcon("tj_xml_reports", KIcon::Small));
     icalReports = new KListViewItem(browser, i18n("iCalendars"));
+    icalReports->setPixmap(0, KGlobal::iconLoader()->
+                           loadIcon("tj_ical_reports", KIcon::Small));
     exportReports = new KListViewItem(browser, i18n("Export Reports"));
+    exportReports->setPixmap(0, KGlobal::iconLoader()->
+                             loadIcon("tj_export_reports", KIcon::Small));
 
     int i = 0;
     for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri, ++i)
     {
         Report* r = (*mri)->getProjectReport();
         KListViewItem* parent = 0;
+        int prefix = 0;
         if (strncmp(r->getType(), "Qt", 2) == 0)
+        {
+            prefix = 2;
             parent = qtReports;
+        }
         else if (strncmp(r->getType(), "HTML", 4) == 0)
+        {
+            prefix = 4;
             parent = htmlReports;
+        }
         else if (strncmp(r->getType(), "CSV", 3) == 0)
+        {
+            prefix = 3;
             parent = csvReports;
+        }
         else if (strncmp(r->getType(), "XML", 3) == 0)
+        {
+            prefix = 3;
             parent = xmlReports;
+        }
         else if (strncmp(r->getType(), "ICal", 4) == 0)
+        {
+            prefix = 4;
             parent = icalReports;
+        }
         else if (strncmp(r->getType(), "Export", 6) == 0)
+        {
+            prefix = 6;
             parent = exportReports;
+        }
         else
             kdError() << "ReportManager::updateReportBrowser(): "
                 << "Unsupported report type " << r->getType() << endl;
 
+        QPixmap subTypeIcon;
+        const char* subType = r->getType() + prefix;
+        if (strncmp(subType, "Task", strlen("Task")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_task_group",
+                                                KIcon::Small);
+        else if (strncmp(subType, "Resource", strlen("Resource")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_resource_group",
+                                                KIcon::Small);
+        else if (strncmp(subType, "Account", strlen("Account")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_account_group",
+                                                KIcon::Small);
+        else if (strncmp(subType, "WeeklyCalendar",
+                         strlen("WeeklyCalendar")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_calendar_report",
+                                                KIcon::Small);
+        else if (strncmp(subType, "Status", strlen("Status")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_status_report",
+                                                KIcon::Small);
+        else
+        {
+            qDebug("Unknown type: %s", r->getType());
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_report",
+                                                KIcon::Small);
+        }
+
         KListViewItem* item = new KListViewItem
             (parent, r->getFileName(), QString::number(i),
              r->getDefinitionFile(), QString::number(r->getDefinitionLine()));
+        item->setPixmap(0, subTypeIcon);
 
         // Save the pointer to the list view item for future references.
         (*mri)->setBrowserEntry(item);
@@ -368,11 +430,14 @@ ReportManager::clear()
 void
 ReportManager::print()
 {
-    if (!printer)
-        printer = new KPrinter(this);
+    // Looks like I have to create a KPrinter for each print job. Otherwise it
+    // messes up the paper size.
+    printer = new KPrinter(this);
 
     if (getCurrentReport())
         getCurrentReport()->getReport()->print(printer);
+
+    delete printer;
 }
 
 void

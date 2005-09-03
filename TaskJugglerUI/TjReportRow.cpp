@@ -15,7 +15,7 @@
 
 #include "CoreAttributes.h"
 
-TjReportRow::TjReportRow(int cols) : columns(cols)
+TjReportRow::TjReportRow(int cols, int idx) : columns(cols), index(idx)
 {
     cells = new TjReportCell*[columns];
     for (int i = 0; i < columns; ++i)

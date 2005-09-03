@@ -193,6 +193,20 @@ CoreAttributes::isParentOf(const CoreAttributes* c) const
 }
 
 bool
+CoreAttributes::isChildOf(const CoreAttributes* c) const
+{
+    const CoreAttributes* ca = parent;
+    while (ca)
+    {
+        if (ca == c)
+            return true;
+        ca = ca->parent;
+    }
+
+    return false;
+}
+
+bool
 CoreAttributes::isLeaf() const
 {
     return sub->isEmpty();

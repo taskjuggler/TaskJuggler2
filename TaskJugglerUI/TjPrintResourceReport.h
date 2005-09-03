@@ -10,20 +10,20 @@
  * $Id: taskjuggler.cpp 1085 2005-06-23 20:34:54Z cs $
  */
 
-#ifndef _TjPrintTaskReport_h_
-#define _TjPrintTaskReport_h_
+#ifndef _TjPrintResourceReport_h_
+#define _TjPrintResourceReport_h_
 
 #include "TjPrintReport.h"
 
 class QPaintDevice;
 class QtTaskReportElement;
 
-class TjPrintTaskReport : public TjPrintReport
+class TjPrintResourceReport : public TjPrintReport
 {
 public:
-    TjPrintTaskReport(Report* const rd, QPaintDevice* pd) :
+    TjPrintResourceReport(Report* const rd, QPaintDevice* pd) :
         TjPrintReport(rd, pd) { }
-    ~TjPrintTaskReport() { }
+    ~TjPrintResourceReport() { }
 
     virtual void initialize();
     virtual bool generate();

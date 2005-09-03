@@ -171,6 +171,28 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     progressBar = new QProgressBar(statusBar);
     progressBar->setMaximumSize(150, progressBar->maximumHeight());
     statusBar->addWidget(progressBar, 0, TRUE);
+
+    // Add icons to the toolbox tab headers
+    mw->listViews->setItemIconSet(mw->listViews->indexOf(mw->tasksPage),
+                                  QIconSet(KGlobal::iconLoader()->
+                                           loadIcon("tj_task_group",
+                                                    KIcon::Toolbar)));
+    mw->listViews->setItemIconSet(mw->listViews->indexOf(mw->resourcesPage),
+                                  QIconSet(KGlobal::iconLoader()->
+                                           loadIcon("tj_resource_group",
+                                                    KIcon::Toolbar)));
+    mw->listViews->setItemIconSet(mw->listViews->indexOf(mw->accountsPage),
+                                  QIconSet(KGlobal::iconLoader()->
+                                           loadIcon("tj_account_group",
+                                                    KIcon::Toolbar)));
+    mw->listViews->setItemIconSet(mw->listViews->indexOf(mw->reportsPage),
+                                  QIconSet(KGlobal::iconLoader()->
+                                           loadIcon("tj_report_list",
+                                                    KIcon::Toolbar)));
+    mw->listViews->setItemIconSet(mw->listViews->indexOf(mw->filesPage),
+                                  QIconSet(KGlobal::iconLoader()->
+                                           loadIcon("tj_file_list",
+                                                    KIcon::Toolbar)));
 }
 
 TaskJugglerView::~TaskJugglerView()
@@ -240,7 +262,7 @@ TaskJugglerView::newProject()
     if (fileURL.isEmpty())
         return;
 
-    if (fileURL.isValid())
+    if (!fileURL.isValid())
     {
         KMessageBox::sorry(this, i18n("The specified file URL is not valid."),
                            i18n("Error while creating new Project"));
@@ -586,7 +608,8 @@ TaskJugglerView::loadProject(const KURL& url)
     if (!pf->parse())
         errors = TRUE;
     changeStatusBar(i18n("Checking project..."));
-    if (!errors && !project->pass2(FALSE))
+    bool fatalError;
+    if (!errors && !project->pass2(FALSE, fatalError))
         errors = TRUE;
     changeStatusBar(i18n("Scheduling..."));
     if (!errors && !project->scheduleAllScenarios())

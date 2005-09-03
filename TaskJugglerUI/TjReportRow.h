@@ -20,8 +20,10 @@ class CoreAttributes;
 class TjReportRow
 {
 public:
-    TjReportRow(int cols);
+    TjReportRow(int cols, int index);
     ~TjReportRow();
+
+    int getIndex() const { return index; }
 
     void setTopY(int y) { topY = y; }
     int getTopY() const { return topY; }
@@ -61,6 +63,8 @@ private:
     // True if this row is the last row on the page.
     bool lastOnPage;
     TjReportCell** cells;
+
+    int index;
 } ;
 
 #endif

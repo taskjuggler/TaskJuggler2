@@ -32,7 +32,7 @@ public:
 
     bool generate() { return FALSE; }
 
-    QtResourceReportElement* getTable() { return tab; }
+    QtResourceReportElement* getTable() const { return tab; }
 
 private:
     QtResourceReport() { }

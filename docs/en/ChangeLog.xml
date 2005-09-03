@@ -828,6 +828,13 @@ errors.</para></listitem>
 were all 0. In HTML reports the summary columns were rendered all
 black.</para></listitem>
 
+<listitem><para>The TaskJuggler user interface now supports printing
+of high-quality task and resource reports.</para></listitem>
+
+<listitem><para>Fixed detection of cyclic brother tasks. This caused
+taskjuggler to go into a memory hogging endless
+loop.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

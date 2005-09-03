@@ -22,6 +22,7 @@
 #include <qdatetime.h>
 #include <qtimer.h>
 #include <qpopupmenu.h>
+#include <qdict.h>
 
 #include <klistview.h>
 #include <klocale.h>
@@ -52,6 +53,7 @@
 #include "ReportLayers.h"
 #include "RichTextDisplay.h"
 #include "TjPrintReport.h"
+#include "TjGanttChart.h"
 
 //                                           Boundary
 const int TjReport::minStepHour = 20;    //   365 * 24 * 20 = 175200
@@ -99,6 +101,9 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     QVBoxLayout* vl = new QVBoxLayout(canvasFrame, 0, 0);
     canvasFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
+    //ganttChart = 0;
+    //objPosTable = 0;
+
     ganttHeader = new QCanvas(this);
     ganttHeaderView = new QCanvasView(ganttHeader, canvasFrame);
     ganttHeaderView->setHScrollBarMode(QScrollView::AlwaysOff);
@@ -134,10 +139,25 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
             this, SLOT(syncVSlidersGantt2List(int, int)));
     connect(listView, SIGNAL(contentsMoving(int, int)),
             this, SLOT(syncVSlidersList2Gantt(int, int)));
+
+    specialColumns.insert("index", (int*) 1);
+    specialColumns.insert("hierarchindex", (int*) 1);
+    specialColumns.insert("hierarchno", (int*) 1);
+    specialColumns.insert("no", (int*) 1);
+    specialColumns.insert("seqno", (int*) 1);
+    specialColumns.insert("name", (int*) 1);
+    specialColumns.insert("hourly", (int*) 1);
+    specialColumns.insert("daily", (int*) 1);
+    specialColumns.insert("weekly", (int*) 1);
+    specialColumns.insert("monthly", (int*) 1);
+    specialColumns.insert("quarterly", (int*) 1);
+    specialColumns.insert("yearly", (int*) 1);
 }
 
 TjReport::~TjReport()
 {
+    //delete ganttChart;
+    //delete objPosTable;
     delete statusBarUpdateTimer;
 }
 
@@ -145,14 +165,16 @@ void
 TjReport::print(KPrinter* printer)
 {
     printer->setResolution(300);
-    printer->setup(this);
+    printer->setCreator(QString("TaskJuggler %1 - visit %2")
+                        .arg(VERSION).arg(TJURL));
+    if (!printer->setup(this))
+        return;
 
     TjPrintReport* tjpr;
     if ((tjpr = newPrintReport(printer)) == 0)
         return;
     tjpr->initialize();
-    tjpr->generate(printer->orientation() == KPrinter::Portrait ?
-                   QPrinter::Portrait : QPrinter::Landscape);
+    tjpr->generate();
 
     int xPages, yPages;
     tjpr->getNumberOfPages(xPages, yPages);
@@ -232,6 +254,15 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
+        /* The name and indices columns are automatically added as first
+         * columns, so we will just ignore them if the user has requested them
+         * as well. Calendar columns get special treatment as well. */
+        if (specialColumns[(*ci)->getName()])
+        {
+            column--;
+            continue;
+        }
+
         QString cellText;
         QPixmap icon;
 
@@ -278,42 +309,32 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             val = t->getLoad(scenario, Interval(t->getStart(scenario),
                                                 t->getEnd(scenario)), r);
             cellText = indent
-                (reportElement->scaledLoad (val, tcf->realFormat),
+                (reportElement->scaledLoad(val, tcf->realFormat),
                  lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
         else if ((*ci)->getName() == "end")
             cellText = time2user((t->isMilestone() ? 1 : 0) +
                                  t->getEnd(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "endbuffer")
             cellText.sprintf("%3.0f", t->getEndBuffer(scenario));
         else if ((*ci)->getName() == "endbufferstart")
             cellText = time2user(t->getEndBufferStart(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "id")
             cellText = t->getId();
-        else if ((*ci)->getName() == "index")
-        {
-            column--;
-            continue;
-        }
         else if ((*ci)->getName() == "maxend")
             cellText = time2user(t->getMaxEnd(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "maxstart")
             cellText = time2user(t->getMaxStart(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "minend")
             cellText = time2user(t->getMinEnd(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "minstart")
             cellText = time2user(t->getMinStart(scenario),
-                                 reportDef->getTimeFormat());
-        else if ((*ci)->getName() == "name")
-        {
-            column--;
-            continue;
-        }
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "note" && !t->getNote().isEmpty())
         {
             if (t->getNote().length() > 25 || isRichText(t->getNote()))
@@ -373,12 +394,12 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         }
         else if ((*ci)->getName() == "start")
             cellText = time2user(t->getStart(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "startbuffer")
             cellText.sprintf("%3.0f", t->getStartBuffer(scenario));
         else if ((*ci)->getName() == "startbufferend")
             cellText = time2user(t->getStartBufferEnd(scenario),
-                                 reportDef->getTimeFormat());
+                                 reportElement->getTimeFormat());
         else if ((*ci)->getName() == "status")
         {
             cellText = t->getStatusText(scenario);
@@ -411,6 +432,15 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
+        /* The name and indices columns are automatically added as first
+         * columns, so we will just ignore them if the user has requested them
+         * as well. Calendar columns get special treatment as well. */
+        if (specialColumns[(*ci)->getName()])
+        {
+            column--;
+            continue;
+        }
+
         QString cellText;
         QPixmap icon;
         const TableColumnFormat* tcf =
@@ -455,16 +485,6 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
         else if ((*ci)->getName() == "id")
         {
             cellText = r->getFullId();
-        }
-        else if ((*ci)->getName() == "index")
-        {
-            column--;
-            continue;
-        }
-        else if ((*ci)->getName() == "name")
-        {
-            column--;
-            continue;
         }
         else if ((*ci)->getName() == "projectids")
             cellText = r->getProjectIDs
@@ -548,6 +568,15 @@ TjReport::generateCustomAttribute(const CoreAttributes* ca, const QString name,
 void
 TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
 {
+#if 0
+    /* The object position mapping table changes most likely with every
+     * re-generation. So we delete it and create a new one. */
+    delete objPosTable;
+    objPosTable = new TjObjPosTable;
+    // Just a first guess. Will be set to proper size later on.
+    objPosTable->resize((int) (taskList.count() * 0.3 *
+                               resourceList.count() * 0.1));
+#endif
     // Clear ganttHeader canvas.
     QCanvasItemList cis = ganttHeader->allItems();
     for (QCanvasItemList::Iterator it = cis.begin(); it != cis.end(); ++it)
@@ -1115,9 +1144,8 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
     {
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
-         * as well. */
-        if ((*ci)->getName() == "index" ||
-            (*ci)->getName() == "name")
+         * as well. Calendar columns get special treatment as well. */
+        if (specialColumns[(*ci)->getName()])
         {
             col--;
             continue;

@@ -469,7 +469,7 @@ Project::getJournalIterator() const
 }
 
 bool
-Project::pass2(bool noDepCheck)
+Project::pass2(bool noDepCheck, bool& fatalError)
 {
     if (taskList.isEmpty())
     {
@@ -531,11 +531,14 @@ Project::pass2(bool noDepCheck)
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if (!(*tli)->preScheduleOk((*sci)->getSequenceNo() - 1))
+            {
                 error = TRUE;
+                fatalError = true;
+            }
 
     if (!noDepCheck)
     {
-        setProgressInfo(i18n("Searching for dependency loops..."));
+        setProgressInfo(i18n("Searching for dependency loops ..."));
         if (DEBUGPS(1))
             qDebug("Searching for dependency loops ...");
         // Check all tasks for dependency loops.
@@ -543,7 +546,23 @@ Project::pass2(bool noDepCheck)
             (*tli)->initLoopDetector();
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->loopDetector())
+            {
+                fatalError = true;
                 return FALSE;
+            }
+
+        setProgressInfo(i18n("Searching for underspecified tasks ..."));
+        if (DEBUGPS(1))
+            qDebug("Searching for underspecified tasks ...");
+        for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
+            for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+                if (!(*tli)->checkDetermination((*sci)->getSequenceNo() - 1))
+                {
+                    error = TRUE;
+                    fatalError = true;
+                }
+        if (fatalError)
+            return false;
     }
 
     return !error;
@@ -908,7 +927,8 @@ Project::loadFromXML( const QString& inpFile )
    {
       qDebug("Empty !" );
    }
-   if (!pass2(TRUE))
+   bool fatalError;
+   if (!pass2(TRUE, fatalError))
        return FALSE;
    scheduleAllScenarios();
    return true;

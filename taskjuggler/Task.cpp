@@ -1226,8 +1226,10 @@ Task::xRef(QDict<Task>& hash)
                     error = TRUE;
                     break;
                 }
+                // Unidirectional link
+                predecessors.append(t);
+                // Bidirectional link
                 previous.append(t);
-                t->successors.append(this);
                 t->followers.append(this);
                 if (DEBUGPF(11))
                     qDebug("Registering follower %s with task %s",
@@ -1269,8 +1271,10 @@ Task::xRef(QDict<Task>& hash)
                     error = TRUE;
                     break;
                 }
+                // Unidirectional link
+                successors.append(t);
+                // Bidirectional link
                 followers.append(t);
-                t->predecessors.append(this);
                 t->previous.append(this);
                 if (DEBUGPF(11))
                     qDebug("Registering predecessor %s with task %s",
@@ -1384,7 +1388,7 @@ Task::saveSpecifiedBookedResources()
 }
 
 bool
-Task::loopDetector()
+Task::loopDetector() const
 {
     /* Only check top-level tasks. All other tasks will be checked then as
      * well. */
@@ -1404,36 +1408,15 @@ Task::loopDetector()
 
 bool
 Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
-                    caller)
+                    caller) const
 {
     if (DEBUGPF(10))
         qDebug("%sloopDetection at %s (%s)",
                QString().fill(' ', list.count() + 1).latin1(), id.latin1(),
                atEnd ? "End" : "Start");
 
-    /* If we find the current task (with same position) in the list, we have
-     * detected a loop. */
-    LoopDetectorInfo* thisTask = new LoopDetectorInfo(this, atEnd);
-    if ((atEnd && loopDetectorMarkEnd) || (!atEnd && loopDetectorMarkStart))
-    {
-        QString loopChain;
-        LoopDetectorInfo* it;
-        for (it = list.first(); *it != *thisTask; it =
-             it->next())
-            ;
-        for ( ; it != 0; it = it->next())
-        {
-            loopChain += QString("%1 (%2) -> ")
-                .arg(it->getTask()->getId())
-                .arg(it->getAtEnd() ? "End" : "Start");
-        }
-        loopChain += QString("%1 (%2)").arg(id)
-            .arg(atEnd ? "End" : "Start");
-        delete thisTask;
-        errorMessage(i18n("Dependency loop detected: %1").arg(loopChain));
-        return TRUE;
-    }
-    list.append(thisTask);
+    if (checkPathForLoops(list, atEnd))
+        return true;
 
     /* Now we have to traverse the graph in the direction of the specified
      * dependencies. 'precedes' and 'depends' specify dependencies in the
@@ -1446,49 +1429,38 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
      * relationship. */
     if (!atEnd)
     {
-        loopDetectorMarkStart = TRUE;
-        /*
-             |
-             v
-           +--------
-        -->| o--+
-           +--- | --
-                |
-                V
-        */
         if (caller == LoopDetectorInfo::fromPrev ||
             caller == LoopDetectorInfo::fromParent)
+        {
+            /*
+                 |
+                 v
+               +--------
+            -->| o--+
+               +--- | --
+                    |
+                    V
+            */
             /* If we were not called from a sub task we check all sub tasks.*/
             for (TaskListIterator tli(*sub); *tli != 0; ++tli)
             {
-                /* If the task depends on a brother we ignore the arc to the
-                 * child since the brother provides an equivalent arc. This
-                 * can significantly decrease the number of checked pathes
-                 * without missing loops. */
-                if (!(*tli)->dependsOnABrother(this))
-                {
-                    if (DEBUGPF(15))
-                        qDebug("%sChecking sub task %s of %s",
-                               QString().fill(' ', list.count()).latin1(),
-                               (*tli)->getId().latin1(),
-                               id.latin1());
-                    if ((*tli)->loopDetection(list, FALSE,
-                                              LoopDetectorInfo::fromParent))
-                        return TRUE;
-                }
+                if (DEBUGPF(15))
+                    qDebug("%sChecking sub task %s of %s",
+                           QString().fill(' ', list.count()).latin1(),
+                           (*tli)->getId().latin1(),
+                           id.latin1());
+                if ((*tli)->loopDetection(list, false,
+                                          LoopDetectorInfo::fromParent))
+                    return true;
             }
 
-        /*
-             |
-             v
-           +--------
-        -->| o---->
-           +--------
-        */
-        if (scheduling == ASAP && sub->isEmpty())
-        {
-            /* Leaf task are followed in their scheduling direction. So we
-             * move from the task start to the task end. */
+            /*
+                 |
+                 v
+               +--------
+            -->| o---->
+               +--------
+            */
             if (DEBUGPF(15))
                 qDebug("%sChecking end of task %s",
                        QString().fill(' ', list.count()).latin1(),
@@ -1496,151 +1468,117 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
             if (loopDetection(list, TRUE, LoopDetectorInfo::fromOtherEnd))
                 return TRUE;
         }
+
         if (caller == LoopDetectorInfo::fromSub ||
-            caller == LoopDetectorInfo::fromOtherEnd ||
-            (caller == LoopDetectorInfo::fromPrev && scheduling == ALAP))
+            caller == LoopDetectorInfo::fromOtherEnd)
         {
             /*
                  ^
                  |
                + | -----
-            -->| o <--
+               | o <--
                +--------
                  ^
                  |
             */
             if (parent)
             {
-                /* If the task depends on a brother we ignore the arc to the
-                 * parent since the brother provides an equivalent arc. This
-                 * can significantly decrease the number of checked pathes
-                 * without missing loops. */
-                if (!dependsOnABrother((const Task*) parent))
-                {
-                    if (DEBUGPF(15))
-                        qDebug("%sChecking parent task of %s",
-                               QString().fill(' ', list.count()).latin1(),
-                               id.latin1());
-                    if (getParent()->loopDetection(list, FALSE,
-                                                   LoopDetectorInfo::fromSub))
-                        return TRUE;
-                }
+                if (DEBUGPF(15))
+                    qDebug("%sChecking parent task of %s",
+                           QString().fill(' ', list.count()).latin1(),
+                           id.latin1());
+                if (getParent()->loopDetection(list, false,
+                                               LoopDetectorInfo::fromSub))
+                    return true;
             }
 
             /*
-             <---+
-               + | -----
-            -->| o <--
                +--------
-                 ^
-                 |
-            */
-            /* Now check all previous tasks that had explicit precedes on this
-             * task. */
+            <--|- o <--
+               +--------
+                  ^
+                  |
+             */
+            // Now check all previous tasks that task depends on.
             for (TaskListIterator tli(predecessors); *tli != 0; ++tli)
             {
-                /* If the parent of the predecessor is also in the predecessor
-                 * list, we can safely ignore the predecessor. */
-                if (predecessors.findRef((*tli)->parent) == -1)
-                {
-                    if (DEBUGPF(15))
-                        qDebug("%sChecking previous %s of task %s",
-                               QString().fill(' ', list.count()).latin1(),
-                               (*tli)->getId().latin1(), id.latin1());
-                    if((*tli)->loopDetection(list, TRUE,
-                                             LoopDetectorInfo::fromSucc))
-                        return TRUE;
-                }
+                if (DEBUGPF(15))
+                    qDebug("%sChecking previous %s of task %s",
+                           QString().fill(' ', list.count()).latin1(),
+                           (*tli)->getId().latin1(), id.latin1());
+                if((*tli)->loopDetection(list, TRUE,
+                                         LoopDetectorInfo::fromSucc))
+                    return true;
             }
         }
-        loopDetectorMarkStart = FALSE;
     }
     else
     {
-        loopDetectorMarkEnd = TRUE;
-        /*
-              |
-              v
-        --------+
-           +--o |<--
-        -- | ---+
-           |
-           v
-        */
         if (caller == LoopDetectorInfo::fromSucc ||
             caller == LoopDetectorInfo::fromParent)
+        {
+            /*
+                  |
+                  v
+            --------+
+               +--o |<--
+            -- | ---+
+               |
+               v
+            */
             /* If we were not called from a sub task we check all sub tasks.*/
             for (TaskListIterator tli(*sub); *tli != 0; ++tli)
             {
-                /* If the task precedes a brother we ignore the arc to the
-                 * child since the brother provides an equivalent arc. This
-                 * can significantly decrease the number of checked pathes
-                 * without missing loops. */
-                if (!(*tli)->precedesABrother(this))
-                {
-                    if (DEBUGPF(15))
-                        qDebug("%sChecking sub task %s of %s",
-                               QString().fill(' ', list.count()).latin1(),
-                               (*tli)->getId().latin1(), id.latin1());
-                    if ((*tli)->loopDetection(list, TRUE,
-                                              LoopDetectorInfo::fromParent))
-                        return TRUE;
-                }
+                if (DEBUGPF(15))
+                    qDebug("%sChecking sub task %s of %s",
+                           QString().fill(' ', list.count()).latin1(),
+                           (*tli)->getId().latin1(), id.latin1());
+                if ((*tli)->loopDetection(list, true,
+                                          LoopDetectorInfo::fromParent))
+                    return true;
             }
 
-        /*
-              |
-              v
-        --------+
-         <----o |<--
-        --------+
-        */
-        if (scheduling == ALAP && sub->isEmpty())
-        {
-            /* Leaf task are followed in their scheduling direction. So we
-             * move from the task end to the task start. */
+            /*
+                  |
+                  v
+            --------+
+             <----o |<--
+            --------+
+            */
             if (DEBUGPF(15))
                 qDebug("%sChecking start of task %s",
                        QString().fill(' ', list.count()).latin1(),
                        id.latin1());
-            if (loopDetection(list, FALSE, LoopDetectorInfo::fromOtherEnd))
-                return TRUE;
+            if (loopDetection(list, false, LoopDetectorInfo::fromOtherEnd))
+                return true;
         }
+
         if (caller == LoopDetectorInfo::fromOtherEnd ||
-            caller == LoopDetectorInfo::fromSub ||
-            (caller == LoopDetectorInfo::fromSucc && scheduling == ASAP))
+            caller == LoopDetectorInfo::fromSub)
         {
             /*
                   ^
                   |
             ----- | +
-              --> o |<--
+              --> o |
             --------+
                   ^
                   |
             */
             if (parent)
             {
-                /* If the task precedes a brother we ignore the arc to the
-                 * parent since the brother provides an equivalent arc. This
-                 * can significantly decrease the number of checked pathes
-                 * without missing loops. */
-                if (!precedesABrother((const Task*) parent))
-                {
-                    if (DEBUGPF(15))
-                        qDebug("%sChecking parent task of %s",
-                               QString().fill(' ', list.count()).latin1(),
-                               id.latin1());
-                    if (getParent()->loopDetection(list, TRUE,
-                                                   LoopDetectorInfo::fromSub))
-                        return TRUE;
-                }
+                if (DEBUGPF(15))
+                    qDebug("%sChecking parent task of %s",
+                           QString().fill(' ', list.count()).latin1(),
+                           id.latin1());
+                if (getParent()->loopDetection(list, true,
+                                               LoopDetectorInfo::fromSub))
+                    return true;
             }
 
             /*
-                  +--->
-            ----- | +
-              --> o |<--
+            --------+
+              --> o-|-->
             --------+
                   ^
                   |
@@ -1649,21 +1587,15 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
              * task. */
             for (TaskListIterator tli(successors); *tli != 0; ++tli)
             {
-                /* If the parent of the successor is also in the successor
-                 * list, we can safely ignore the successor. */
-                if (successors.findRef((*tli)->parent) == -1)
-                {
-                    if (DEBUGPF(15))
-                        qDebug("%sChecking follower %s of task %s",
-                               QString().fill(' ', list.count()).latin1(),
-                               (*tli)->getId().latin1(), id.latin1());
-                    if ((*tli)->loopDetection(list, FALSE,
-                                              LoopDetectorInfo::fromPrev))
-                        return TRUE;
-                }
+                if (DEBUGPF(15))
+                    qDebug("%sChecking follower %s of task %s",
+                           QString().fill(' ', list.count()).latin1(),
+                           (*tli)->getId().latin1(), id.latin1());
+                if ((*tli)->loopDetection(list, FALSE,
+                                          LoopDetectorInfo::fromPrev))
+                    return true;
             }
         }
-        loopDetectorMarkEnd = FALSE;
     }
     list.removeLast();
 
@@ -1672,6 +1604,203 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                  QString().fill(' ', list.count()).latin1(),
                  id.latin1(), atEnd ? "End" : "Start");
     return FALSE;
+}
+
+bool
+Task::checkPathForLoops(LDIList& list, bool atEnd) const
+{
+    /* If we find the current task (with same position) in the list, we have
+     * detected a loop. In case there is no loop detected we add this tasks at
+     * the end of the list. */
+    LoopDetectorInfo* thisTask = new LoopDetectorInfo(this, atEnd);
+    if (list.find(thisTask))
+    {
+        QString loopChain;
+        LoopDetectorInfo* it;
+        /* Find the first occurence of this task in the list. This is the
+         * start of the loop. */
+        for (it = list.first(); *it != *thisTask; it = it->next())
+            ;
+        /* Then copy all loop elements to the loopChain string. */
+        for ( ; it != 0; it = it->next())
+        {
+            loopChain += QString("%1 (%2) -> ")
+                .arg(it->getTask()->getId())
+                .arg(it->getAtEnd() ? "End" : "Start");
+        }
+        loopChain += QString("%1 (%2)").arg(id)
+            .arg(atEnd ? "End" : "Start");
+        delete thisTask;
+        errorMessage(i18n("Dependency loop detected: %1").arg(loopChain));
+        return true;
+    }
+    list.append(thisTask);
+
+    return false;
+}
+
+bool
+Task::checkDetermination(int sc) const
+{
+    /* Check if the task and it's dependencies have enough information to
+     * produce a fixed determined schedule. */
+    if (DEBUGPF(10))
+        qDebug("Checking determination of task %s",
+               id.latin1());
+    LDIList list;
+
+    if (!startCanBeDetermined(list, sc))
+    {
+        errorMessage
+            (i18n("The start of task '%1' (scenario '%2') is underspecified. "
+                  "This is caused by underspecified dependent tasks. You "
+                  "must use more fixed dates to solve this problem.")
+             .arg(id).arg(project->getScenarioId(sc)));
+        return false;
+    }
+
+    if (!endCanBeDetermined(list, sc))
+    {
+        errorMessage
+            (i18n("The end of task '%1' (scenario '%2') is underspecified. "
+                  "This is caused by underspecified dependent tasks. You "
+                  "must use more fixed dates to solve this problem.")
+             .arg(id).arg(project->getScenarioId(sc)));
+        return false;
+    }
+
+    return true;
+}
+
+bool
+Task::startCanBeDetermined(LDIList& list, int sc) const
+{
+    if (DEBUGPF(10))
+        qDebug("Checking if start of task %s can be determined",
+               id.latin1());
+
+    if (checkPathForLoops(list, false))
+        return false;
+
+    for (const Task* t = this; t; t = static_cast<const Task*>(t->parent))
+        if (scenarios[sc].specifiedStart != 0)
+        {
+            if (DEBUGPF(10))
+                qDebug("Start of task %s can be determined (fixed date)",
+                       id.latin1());
+            goto isDetermined;
+        }
+
+    if (scheduling == ALAP &&
+        (scenarios[sc].duration != 0.0 || scenarios[sc].length != 0.0 ||
+         scenarios[sc].effort != 0.0 || milestone) &&
+        endCanBeDetermined(list, sc))
+    {
+        if (DEBUGPF(10))
+            qDebug("Start of task %s can be determined (end + fixed length)",
+                   id.latin1());
+        goto isDetermined;
+    }
+
+    for (TaskListIterator tli(predecessors); *tli; ++tli)
+        if ((*tli)->endCanBeDetermined(list, sc))
+        {
+            if (DEBUGPF(10))
+                qDebug("Start of task %s can be determined (dependency)",
+                       id.latin1());
+            goto isDetermined;
+        }
+
+    if (hasSubs())
+    {
+        for (TaskListIterator tli = getSubListIterator(); *tli; ++tli)
+            if (!(*tli)->startCanBeDetermined(list, sc))
+                goto isNotDetermined;
+
+        if (DEBUGPF(10))
+            qDebug("Start of task %s can be determined (children)",
+                   id.latin1());
+        goto isDetermined;
+    }
+
+isNotDetermined:
+    if (DEBUGPF(10))
+        qDebug("Start of task %s cannot be determined",
+               id.latin1());
+    list.removeLast();
+    return false;
+
+isDetermined:
+    list.removeLast();
+    return true;
+}
+
+bool
+Task::endCanBeDetermined(LDIList& list, int sc) const
+{
+    if (DEBUGPF(10))
+        qDebug("Checking if end of task %s can be determined",
+               id.latin1());
+
+    if (checkPathForLoops(list, true))
+        return false;
+
+    for (const Task* t = this; t; t = static_cast<const Task*>(t->parent))
+        if (scenarios[sc].specifiedEnd != 0)
+        {
+            if (DEBUGPF(10))
+                qDebug("End of task %s can be determined (fixed date)",
+                       id.latin1());
+            goto isDetermined;
+        }
+
+    if (scheduling == ASAP &&
+        (scenarios[sc].duration != 0.0 || scenarios[sc].length != 0.0 ||
+         scenarios[sc].effort != 0.0 || milestone) &&
+        startCanBeDetermined(list, sc))
+    {
+        if (DEBUGPF(10))
+            qDebug("End of task %s can be determined (end + fixed length)",
+                   id.latin1());
+        goto isDetermined;
+    }
+
+    for (TaskListIterator tli(successors); *tli; ++tli)
+        if ((*tli)->startCanBeDetermined(list, sc))
+        {
+            if (DEBUGPF(10))
+                qDebug("End of task %s can be determined (dependency)",
+                       id.latin1());
+            goto isDetermined;
+        }
+
+    if (hasSubs())
+    {
+        for (TaskListIterator tli = getSubListIterator(); *tli; ++tli)
+            if (!(*tli)->endCanBeDetermined(list, sc))
+            {
+                if (DEBUGPF(10))
+                    qDebug("End of task %s cannot be determined (child %s)",
+                           id.latin1(), (*tli)->id.latin1());
+                goto isNotDetermined;
+            }
+
+        if (DEBUGPF(10))
+            qDebug("End of task %s can be determined (children)",
+                   id.latin1());
+        goto isDetermined;
+    }
+
+isNotDetermined:
+    if (DEBUGPF(10))
+        qDebug("End of task %s cannot be determined",
+               id.latin1());
+    list.removeLast();
+    return false;
+
+isDetermined:
+    list.removeLast();
+    return true;
 }
 
 QString
@@ -1701,7 +1830,7 @@ Task::resolveId(QString relId)
 }
 
 bool
-Task::hasStartDependency(int sc)
+Task::hasStartDependency(int sc) const
 {
     /* Checks whether the task has a start specification for the
      * scenario. This can be a fixed start time or a dependency on another
@@ -1716,7 +1845,7 @@ Task::hasStartDependency(int sc)
 }
 
 bool
-Task::hasEndDependency(int sc)
+Task::hasEndDependency(int sc) const
 {
     /* Checks whether the task has an end specification for the
      * scenario. This can be a fixed end time or a dependency on another
@@ -1731,7 +1860,7 @@ Task::hasEndDependency(int sc)
 }
 
 bool
-Task::hasStartDependency()
+Task::hasStartDependency() const
 {
     /* Check whether the task or any of it's sub tasks has a start
      * dependency. */
@@ -1746,7 +1875,7 @@ Task::hasStartDependency()
 }
 
 bool
-Task::hasEndDependency()
+Task::hasEndDependency() const
 {
     /* Check whether the task or any of it's sub tasks has an end
      * dependency. */
@@ -1792,7 +1921,6 @@ Task::preScheduleOk(int sc)
         return FALSE;
     }
 
-    // Check plan values.
     int durationSpec = 0;
     if (scenarios[sc].effort > 0.0)
         durationSpec++;
@@ -1986,34 +2114,34 @@ Task::preScheduleOk(int sc)
                          .arg(id).arg(project->getScenarioId(sc)));
             return FALSE;
         }
-  }
+    }
 
-  if (!account &&
-      (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
-  {
-      errorMessage(i18n
-                   ("Task '%1' has a specified start- or endcredit "
-                    "but no account assigned in scenario '%2'.")
-                   .arg(id).arg(project->getScenarioId(sc)));
-      return FALSE;
-  }
+    if (!account &&
+        (scenarios[sc].startCredit > 0.0 || scenarios[sc].endCredit > 0.0))
+    {
+        errorMessage(i18n
+                     ("Task '%1' has a specified start- or endcredit "
+                      "but no account assigned in scenario '%2'.")
+                     .arg(id).arg(project->getScenarioId(sc)));
+        return FALSE;
+    }
 
-  if (!scenarios[sc].bookedResources.isEmpty() && scheduling == ALAP &&
-      !scenarios[sc].specifiedScheduled)
-  {
-      errorMessage
-          (i18n("Error in task '%1' (scenario '%2'). "
-                "An ALAP task can only have bookings if it has been "
-                "completely scheduled. The 'scheduled' attribute must be "
-                "present. Keep in mind that certain attributes such as "
-                "'precedes' or 'end' implicitly set the scheduling mode "
-                "to ALAP. Put 'scheduling asap' at the end of the task "
-                "definition to avoid the problem.")
-           .arg(id).arg(project->getScenarioId(sc)));
-      return FALSE;
-  }
+    if (!scenarios[sc].bookedResources.isEmpty() && scheduling == ALAP &&
+        !scenarios[sc].specifiedScheduled)
+    {
+        errorMessage
+            (i18n("Error in task '%1' (scenario '%2'). "
+                  "An ALAP task can only have bookings if it has been "
+                  "completely scheduled. The 'scheduled' attribute must be "
+                  "present. Keep in mind that certain attributes such as "
+                  "'precedes' or 'end' implicitly set the scheduling mode "
+                  "to ALAP. Put 'scheduling asap' at the end of the task "
+                  "definition to avoid the problem.")
+             .arg(id).arg(project->getScenarioId(sc)));
+        return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 
 bool
@@ -2639,24 +2767,6 @@ double
 Task::getCalcedCompletionDegree(int sc) const
 {
     return scenarios[sc].completionDegree;
-}
-
-bool
-Task::dependsOnABrother(const Task* p) const
-{
-    for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
-        if ((*tdi)->getTaskRef() && (*tdi)->getTaskRef()->parent == p)
-            return TRUE;
-    return FALSE;
-}
-
-bool
-Task::precedesABrother(const Task* p) const
-{
-    for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
-        if ((*tdi)->getTaskRef() && (*tdi)->getTaskRef()->parent == p)
-            return TRUE;
-    return FALSE;
 }
 
 QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )

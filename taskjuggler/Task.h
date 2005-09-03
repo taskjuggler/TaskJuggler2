@@ -304,10 +304,9 @@ public:
     bool scheduleOk(int sc, int& errors) const;
     void initLoopDetector()
     {
-        loopDetectorMarkStart = FALSE;
-        loopDetectorMarkEnd = FALSE;
     }
-    bool loopDetector();
+    bool loopDetector() const;
+    bool checkDetermination(int sc) const;
     void computeBuffers();
     time_t nextSlot(time_t slotDuration) const;
     void schedule(int sc, time_t& reqStart, time_t duration);
@@ -329,7 +328,8 @@ public:
     void allocationFromXML( const QDomElement& );
 private:
     bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
-                       caller);
+                       caller) const;
+    bool checkPathForLoops(LDIList& list, bool atEnd) const;
     bool scheduleContainer(int sc, bool safeMode);
     Task* subFirst() { return (Task*) sub->first(); }
     Task* subNext() { return (Task*) sub->next(); }
@@ -345,14 +345,14 @@ private:
     time_t earliestStart(int sc) const;
     time_t latestEnd(int sc) const;
 
-    bool hasStartDependency(int sc);
-    bool hasEndDependency(int sc);
+    bool startCanBeDetermined(LDIList& list, int sc) const;
+    bool endCanBeDetermined(LDIList& list, int sc) const;
 
-    bool hasStartDependency();
-    bool hasEndDependency();
+    bool hasStartDependency(int sc) const;
+    bool hasEndDependency(int sc) const;
 
-    bool dependsOnABrother(const Task* p) const;
-    bool precedesABrother(const Task* p) const;
+    bool hasStartDependency() const;
+    bool hasEndDependency() const;
 
     double computeBackwardCriticalness(int sc);
     double computeForwardCriticalness(int sc);
@@ -500,12 +500,6 @@ private:
     /** This flag is set when the task does not fit into the project time
      * frame. */
     bool runAway;
-
-    /**
-     * The loop detector marks are used during dependency loop detection only.
-     */
-    bool loopDetectorMarkStart;
-    bool loopDetectorMarkEnd;
 
     /// A list of all the resources booked for this task.
     ResourceList bookedResources;
