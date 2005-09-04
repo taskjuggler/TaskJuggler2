@@ -700,10 +700,9 @@ TjPrintReport::layoutPages()
                                             &resourceList);
         ganttChart->setSizes(objPosTable, headerHeight - 1, tableHeight - 1,
                              ganttChartWidth - 1, minRowHeight);
-        ganttChart->setColors(Qt::white, Qt::white, Qt::lightGray, Qt::gray,
-                              Qt::lightGray, Qt::darkGray);
-        ganttChart->setScaleMode(TjGanttChart::fitSize);
-        ganttChart->generate();
+//        ganttChart->setColors(Qt::white, Qt::white, Qt::lightGray, Qt::gray,
+//                              Qt::lightGray, Qt::darkGray);
+        ganttChart->generate(TjGanttChart::fitSize);
         ganttChart->generateLegend(pageWidth - mmToXPixels(10),
                                    footerHeight - 2);
     }

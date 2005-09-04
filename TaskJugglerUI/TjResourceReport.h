@@ -41,17 +41,6 @@ protected:
                                           const CoreAttributes* parent) const;
 
 private:
-    bool generateChartLoadBars();
-    void drawResource(const Resource* r, int y);
-    bool drawResourceTasks(const Resource* r);
-    void drawResourceLoadColumn(const Resource* r, time_t start,
-                                time_t end, int rY);
-    void drawTaskLoadColumn(const Task* t, const Resource* r,
-                            time_t start, time_t end, int rY);
-    void drawTaskOutline(const Task* t, int y);
-    QListViewItem* getResourceListEntry(const Resource* r);
-    QListViewItem* getTaskListEntry(const Task* t, const Resource* r);
-
     QtResourceReportElement* reportElement;
 } ;
 

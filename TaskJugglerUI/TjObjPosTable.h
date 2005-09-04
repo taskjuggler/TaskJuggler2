@@ -38,6 +38,9 @@ public:
         const;
 
 private:
+    QString generateKey(const CoreAttributes* ca,
+                        const CoreAttributes* subCa) const;
+
     QDict<TjObjPosTableEntry> entries;
 } ;
 

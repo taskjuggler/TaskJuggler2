@@ -45,10 +45,7 @@ TjObjPosTable::addEntry(const CoreAttributes* ca, const CoreAttributes* subCa,
                         int pos, int height)
 {
     TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, subCa, pos, height);
-    if (subCa)
-        entries.insert(ca->getFullId() + ":" + subCa->getFullId(), entry);
-    else
-        entries.insert(ca->getFullId(), entry);
+    entries.insert(generateKey(ca, subCa), entry);
 }
 
 int
@@ -57,11 +54,7 @@ TjObjPosTable::caToPos(const CoreAttributes* ca, const CoreAttributes* subCa)
 {
     assert(ca);
 
-    QString key;
-    if (subCa)
-        key = ca->getFullId() + ":" + subCa->getFullId();
-    else
-        key = ca->getFullId();
+    QString key = generateKey(ca, subCa);
 
     return entries[key] == 0 ? -1 : entries[key]->getPos();
 }
@@ -72,13 +65,30 @@ TjObjPosTable::caToHeight(const CoreAttributes* ca,
 {
     assert(ca);
 
-    QString key;
-
-    if (subCa)
-        key = ca->getFullId() + ":" + subCa->getFullId();
-    else
-        key = ca->getFullId();
+    QString key = generateKey(ca, subCa);
 
     return entries[key] == 0 ? -1 : entries[key]->getHeight();
 }
 
+QString
+TjObjPosTable::generateKey(const CoreAttributes* ca,
+                           const CoreAttributes* subCa) const
+{
+    QString key;
+    if (ca->getType() == CA_Task)
+    {
+        if (subCa)
+            key = QString("r:") + ca->getFullId() + ":" + subCa->getId();
+        else
+            key = QString("t:") + ca->getFullId();
+    }
+    else
+    {
+        if (subCa)
+            key = QString("t:") + ca->getId() + ":" + subCa->getFullId();
+        else
+            key = QString("r:") + ca->getId();
+    }
+
+    return key;
+}

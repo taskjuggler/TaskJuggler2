@@ -42,12 +42,6 @@ protected:
                                           const CoreAttributes* parent) const;
 
 private:
-    void generateGanttTasks();
-    void drawTask(Task* const t, int y);
-    void drawDependencies(Task* const t1, QListViewItem* t1lvi);
-    void drawTaskResources(Task* const t);
-    void drawResourceLoadColum(Task* const t, Resource* const r,
-                               time_t start, time_t end, int rY);
     QListViewItem* getTaskListEntry(const Task* t);
 
     QtTaskReportElement* reportElement;

@@ -96,29 +96,14 @@ protected:
     virtual bool generateChart(bool autoFit) = 0;
 
     void prepareChart(bool autoFit, QtReportElement* repElement);
-    void generateHeaderAndGrid();
-    void generateHourHeader(int y);
-    void generateDayHeader(int y);
-    void generateWeekHeader(int y);
-    void generateMonthHeader(int y, bool withYear);
-    void generateQuarterHeader(int y);
-    void generateYearHeader(int y);
-    void generateGanttBackground();
-    void markNonWorkingHoursOnBackground();
-    void markNonWorkingDaysOnBackground();
-    void markBoundary(int x, bool now = FALSE, int layer = TJRL_GRIDLINES);
-    void markHourBoundaries(int distance);
-    void markDayBoundaries();
-    void markWeekBoundaries();
-    void markMonthsBoundaries();
-    void markQuarterBoundaries();
-    void generateGanttTasks();
+    /*void generateGanttTasks();
     void generateLoadBars();
     void generateTask(Task* const t, int y);
     void generateResource(Resource* const r, int y);
     void generateDependencies(Task* const t, QListViewItem* lvi);
-    void generateListHeader(const QString& firstHeader, QtReportElement* tab);
     void generateTaskResources(Task* const t);
+*/
+    void generateListHeader(const QString& firstHeader, QtReportElement* tab);
 
     void showTaskDetails(const Task* task);
     void showResourceDetails(const Resource* resource);
@@ -148,12 +133,10 @@ protected:
     KListView* listView;
     QWidget* canvasFrame;
 
-    //TjObjPosTable* objPosTable;
-    //TjGanttChart* ganttChart;
+    TjObjPosTable* objPosTable;
+    TjGanttChart* ganttChart;
 
-    QCanvas* ganttHeader;
     QCanvasView* ganttHeaderView;
-    QCanvas* ganttChart;
     QCanvasView* ganttChartView;
 
     int pixelPerYear;

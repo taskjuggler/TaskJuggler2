@@ -14,6 +14,9 @@
 
 #include <time.h>
 
+#include <list>
+#include <map>
+
 #include <qstringlist.h>
 #include <qcolor.h>
 #include <qfont.h>
@@ -46,21 +49,25 @@ public:
                   int width, int minRowHeight);
     void setDPI(int dx, int dy);
 
-    void setColors(const QColor& hBackground, const QColor& cBackground,
-                   const QColor& altBackground,
-                   const QColor& base,
-                   const QColor& base2, const QColor& mid);
-    void setScaleMode(ScaleMode sm) { scaleMode = sm; }
+    void setColor(const char* name, QColor col);
 
     int calcHeaderHeight();
+    void setHeaderHeight(int hh);
     int calcLegendHeight(int width);
-    void generate();
+    void generate(ScaleMode scaleMode);
     void paintHeader(const QRect& clip, QPainter* p, bool dbuf = false);
     void paintChart(int x, int y, const QRect& clip, QPainter* p,
                     bool dbuf = false);
     void paintLegend(const QRect& clip, QPainter* p, bool dbuf = false);
 
     void generateLegend(int width, int height);
+
+    QCanvas* getHeaderCanvas() const { return header; }
+    QCanvas* getChartCanvas() const { return chart; }
+    QCanvas* getLegendCanvas() const { return legend; }
+
+    void zoomIn();
+    void zoomOut();
 
 private:
     enum StepUnits { hour = 0, day, week, month, quarter, year };
@@ -85,7 +92,7 @@ private:
     void markMonthsBoundaries();
     void markQuarterBoundaries();
 
-    void generateGanttTasks();
+    void generateGanttElements();
     void drawTask(const Task* t, const Resource* r);
     void drawTaskShape(int start, int end, int centerY, int height,
                        int barWidth, bool outlineOnly, QCanvas* canvas);
@@ -132,14 +139,9 @@ private:
     int width;
     int minRowHeight;
 
-    QColor headerBackgroundCol;
-    QColor chartBackgroundCol;
-    QColor altBackgroundCol;
-    QColor baseCol;
-    QColor base2Col;
-    QColor midCol;
+    std::map<const char*, QColor, std::less<const char*> > colors;
 
-    ScaleMode scaleMode;
+    std::list<int> newZoomSteps;
 
     int pixelPerYear;
     StepUnits stepUnit;

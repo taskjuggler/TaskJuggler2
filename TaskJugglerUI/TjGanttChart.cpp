@@ -67,7 +67,29 @@ TjGanttChart::TjGanttChart(QObject* obj)
     width = 0;
     minRowHeight = 0;
 
-    scaleMode = fitSize;
+    project = 0;
+    objPosTable = 0;
+
+    dpiX = dpiY = 0;
+    headerMargin = 0;
+    startTime = endTime = 0;
+
+    colors["headerBackgroundCol"] = Qt::white;
+    colors["headerLineCol"] = Qt::black;
+    colors["headerShadowCol"] = Qt::white;
+    colors["chartBackgroundCol"] = Qt::white;
+    colors["chartAltBackgroundCol"] = Qt::white;
+    colors["chartTimeOffCol"] = QColor("#CECECE");
+    colors["chartLineCol"] = QColor("#4F4F4F");
+    colors["todayLineCol"] = Qt::red;
+    colors["taskCol"] = QColor("#4C5EFF");
+    colors["milestoneCol"] = Qt::black;
+    colors["containerCol"] = Qt::black;
+    colors["completionCol"] = Qt::black;
+    colors["depLineCol"] = QColor("#4C5EFF");
+    colors["taskLoadCol"] = QColor("#FD13C6");
+    colors["otherLoadCol"] = QColor("#FF8D13");
+    colors["freeLoadCol"] = QColor("#00AC00");
 }
 
 TjGanttChart::~TjGanttChart()
@@ -75,20 +97,6 @@ TjGanttChart::~TjGanttChart()
     delete header;
     delete chart;
     delete legend;
-}
-
-void
-TjGanttChart::setDPI(int dx, int dy)
-{
-    dpiX = dx;
-    dpiY = dy;
-
-    // The line width should be roughly 1 pixel per 100 DPI.
-    lineWidth = ((dpiX + dpiY) / 2) / 100;
-    // Lines with even width look odd. So make sure we always have an odd line
-    // width.
-    if (lineWidth % 2 == 0)
-        lineWidth++;
 }
 
 void
@@ -107,6 +115,9 @@ void
 TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w,
                        int mrh)
 {
+    // Make sure that setProjectAndReportData() has been called first.
+    assert(project != 0);
+
     objPosTable = opt;
 
     headerHeight = hh;
@@ -126,21 +137,38 @@ TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w,
 }
 
 void
-TjGanttChart::setColors(const QColor& hBg, const QColor& cBg,
-                        const QColor& aBg, const QColor& bs,
-                        const QColor& bs2, const QColor& md)
+TjGanttChart::setDPI(int dx, int dy)
 {
-    headerBackgroundCol = hBg;
-    chartBackgroundCol = cBg;
-    altBackgroundCol = aBg;
-    baseCol = bs;
-    base2Col = bs2;
-    midCol = md;
+    // Make sure that setProjectAndReportData() has been called first.
+    assert(project != 0);
+    // Make sure setSizes() has been called first();
+    assert(objPosTable != 0);
+
+    dpiX = dx;
+    dpiY = dy;
+
+    // The line width should be roughly 1 pixel per 100 DPI.
+    lineWidth = ((dpiX + dpiY) / 2) / 100;
+    // Lines with even width look odd. So make sure we always have an odd line
+    // width.
+    if (lineWidth % 2 == 0)
+        lineWidth++;
+}
+
+void
+TjGanttChart::setColor(const char* name, QColor col)
+{
+    assert(colors.find(name) != colors.end());
+
+    colors[name] = col;
 }
 
 int
 TjGanttChart::calcHeaderHeight()
 {
+    // Make sure setDPI() has been called first.
+    assert (dpiX > 0 && dpiY > 0);
+
     headerFont.setPixelSize(pointsToYPixels(7));
     QFontMetrics fm(headerFont);
 
@@ -149,9 +177,31 @@ TjGanttChart::calcHeaderHeight()
     return (2 * (fm.height() + 2 * headerMargin)) + lineWidth;
 }
 
+void
+TjGanttChart::setHeaderHeight(int hh)
+{
+    // Make sure setDPI() has been called first.
+    assert (dpiX > 0 && dpiY > 0);
+
+    int textHeight = (int) ((hh - lineWidth) / (2 * (1 + 2 * 0.15)));
+    int fontSize = textHeight;
+    int fontHeight;
+    do
+    {
+        headerFont.setPixelSize(--fontSize);
+        QFontMetrics fm(headerFont);
+        fontHeight = fm.height();
+    } while (fontHeight > textHeight);
+
+    headerMargin = (int) (fontSize * 0.15);
+}
+
 int
 TjGanttChart::calcLegendHeight(int width)
 {
+    // Make sure setDPI() has been called first.
+    assert (dpiX > 0 && dpiY > 0);
+
     if (!legendLabels.isEmpty())
         return legendLabelRows * legendLabelHeight +
             (int) (legendLabelHeight * 0.3);
@@ -188,8 +238,12 @@ TjGanttChart::calcLegendHeight(int width)
 }
 
 void
-TjGanttChart::generate()
+TjGanttChart::generate(ScaleMode scaleMode)
 {
+    /* Make sure that setHeaderHeight() or calcHeaderHeight() have been called
+     * first. */
+    assert(headerMargin > 0);
+
     // Clear ganttHeader canvas.
     QCanvasItemList cis = header->allItems();
     for (QCanvasItemList::Iterator it = cis.begin(); it != cis.end(); ++it)
@@ -299,12 +353,15 @@ TjGanttChart::generate()
 
     generateHeaderAndGrid();
 
-    generateGanttTasks();
+    generateGanttElements();
 }
 
 void
 TjGanttChart::generateLegend(int width, int height)
 {
+    // Make sure setDPI() has been called first.
+    assert (dpiX > 0 && dpiY > 0);
+
     legend->resize(width, height);
 
     int col = 0;
@@ -374,6 +431,9 @@ TjGanttChart::generateLegend(int width, int height)
 void
 TjGanttChart::paintHeader(const QRect& clip, QPainter* p, bool dbuf)
 {
+    // Make sure generate() has been called first.
+    assert(startTime > 0 && endTime > 0);
+
     QRect vpSave = p->viewport();
     QRect vp;
     vp.setX(clip.x());
@@ -396,6 +456,9 @@ void
 TjGanttChart::paintChart(int x, int y, const QRect& clip, QPainter* p,
                          bool dbuf)
 {
+    // Make sure generate() has been called first.
+    assert(startTime > 0 && endTime > 0);
+
     QRect vpSave = p->viewport();
     QRect vp;
     vp.setX(clip.x() - x);
@@ -436,12 +499,32 @@ TjGanttChart::paintLegend(const QRect& clip, QPainter* p, bool dbuf)
 }
 
 void
+TjGanttChart::zoomIn()
+{
+    if (currentZoomStep >= sizeof(zoomSteps) / sizeof(int) - 1)
+        return;
+
+    pixelPerYear = zoomSteps[++currentZoomStep];
+    setBestStepUnit();
+}
+
+void
+TjGanttChart::zoomOut()
+{
+    if (currentZoomStep == 0)
+        return;
+
+    pixelPerYear = zoomSteps[--currentZoomStep];
+    setBestStepUnit();
+}
+
+void
 TjGanttChart::generateHeaderAndGrid()
 {
     QCanvasLine* line = new QCanvasLine(header);
     line->setPoints(0, headerHeight / 2, width, headerHeight / 2);
     QPen pen = line->pen();
-    pen.setColor(midCol);
+    pen.setColor(colors["headerLineCol"]);
     line->setPen(pen);
     line->setZ(TJRL_GRIDLINES);
     line->show();
@@ -449,7 +532,7 @@ TjGanttChart::generateHeaderAndGrid()
     line = new QCanvasLine(header);
     line->setPoints(0, headerHeight - 1, width, headerHeight - 1);
     pen = line->pen();
-    pen.setColor(headerBackgroundCol);
+    pen.setColor(colors["headerBackgroundCol"]);
     line->setPen(pen);
     line->setZ(TJRL_BACKGROUND);
     line->show();
@@ -457,11 +540,11 @@ TjGanttChart::generateHeaderAndGrid()
     QCanvasRectangle* rect =
         new QCanvasRectangle(0, 0, width, headerHeight - 1, header);
     pen = rect->pen();
-    pen.setColor(midCol);
+    pen.setColor(colors["headerLineCol"]);
     rect->setPen(pen);
     QBrush brush = rect->brush();
     brush.setStyle(QBrush::SolidPattern);
-    brush.setColor(headerBackgroundCol);
+    brush.setColor(colors["headerBackgroundCol"]);
     rect->setBrush(brush);
     rect->setZ(TJRL_BACKGROUND);
     rect->show();
@@ -625,7 +708,7 @@ TjGanttChart::drawHeaderCell(int start, int end, int y, const QString label)
     QCanvasLine* line = new QCanvasLine(header);
     line->setPoints(xs, y, xs, y + headerHeight / 2);
     QPen pen = line->pen();
-    pen.setColor(midCol);
+    pen.setColor(colors["headerLineCol"]);
     line->setPen(pen);
     line->setZ(TJRL_GRIDLINES);
     line->show();
@@ -652,7 +735,7 @@ TjGanttChart::drawHeaderCell(int start, int end, int y, const QString label)
 void
 TjGanttChart::markNonWorkingHoursOnBackground()
 {
-    QColor col = base2Col.dark(110);
+    QColor col = colors["chartTimeOffCol"];
     // Mark non-working days with a light grey background.
     for (time_t hour = midnight(startTime);
          hour < endTime; )
@@ -683,7 +766,7 @@ TjGanttChart::markNonWorkingHoursOnBackground()
 void
 TjGanttChart::markNonWorkingDaysOnBackground()
 {
-    QColor col = base2Col.dark(110);
+    QColor col = colors["chartTimeOffCol"];
     // Mark non-working days with a light grey background.
     for (time_t day = midnight(startTime);
          day < endTime; day = sameTimeNextDay(day))
@@ -711,9 +794,9 @@ TjGanttChart::markBoundary(int x, bool now, int layer)
 {
     QColor col;
     if (now)
-        col = QColor(Qt::red);
+        col = colors["todayLineCol"];
     else
-        col = altBackgroundCol;
+        col = colors["chartLineCol"];
 
     // Draws a vertical line on the chart to higlight a time period
     // boundary.
@@ -779,7 +862,7 @@ TjGanttChart::generateGanttBackground()
         new QCanvasRectangle(0, 0, chart->width(), chart->height(),
                              chart);
     rect->setPen(QPen(Qt::NoPen));
-    QColor bgColor = chartBackgroundCol;
+    QColor bgColor = colors["chartBackgroundCol"];
     rect->setBrush(QBrush(bgColor));
     rect->setZ(TJRL_BACKGROUND);
     rect->show();
@@ -793,14 +876,14 @@ TjGanttChart::generateGanttBackground()
 
         rect = new QCanvasRectangle(0, y, width, 25, chart);
         rect->setPen(QPen(Qt::NoPen));
-        rect->setBrush(QBrush(altBackgroundCol));
+        rect->setBrush(QBrush(colors["chartAltBackgroundCol"]));
         rect->setZ(TJRL_BACKLINES);
         rect->show();
     }
 }
 
 void
-TjGanttChart::generateGanttTasks()
+TjGanttChart::generateGanttElements()
 {
     for (TjObjPosTableIterator it(*objPosTable); it.current(); ++it)
     {
@@ -839,7 +922,7 @@ TjGanttChart::generateGanttTasks()
             drawTask(t, r);
         }
         else
-            qFatal("TjGanttChart::generateGanttTasks(): Unknown CA");
+            assert(0);
     }
 }
 
@@ -897,24 +980,24 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
 {
     // A blue box with some fancy interior.
     QCanvasRectangle* rect =
-        new QCanvasRectangle(start, centerY - (int) (height * 0.4),
-                             end - start, (int) (height * 0.8), canvas);
+        new QCanvasRectangle(start, centerY - (int) (height * 0.35),
+                             end - start, (int) (height * 0.7) + 1, canvas);
 
-    rect->setPen(QPen(QColor("#4C5EFF"), lineWidth));
-    rect->setBrush(outlineOnly ? Qt::NoBrush :
-                   QBrush(QColor("#4C5EFF"), Qt::Dense4Pattern));
+    rect->setPen(QPen(colors["taskCol"], lineWidth));
+    rect->setBrush(QBrush(colors["taskCol"], outlineOnly ?
+                          Qt::Dense6Pattern : Qt::Dense4Pattern));
     rect->setZ(TJRL_TASKS);
     rect->show();
 
     // The black progress bar.
     if (barWidth > 0)
     {
-        rect = new QCanvasRectangle(start, centerY - (int) (height * 0.2),
-                                    barWidth, (int) (height * 0.4), canvas);
+        rect = new QCanvasRectangle(start, centerY - (int) (height * 0.15),
+                                    barWidth, (int) (height * 0.3) + 1, canvas);
 
-        rect->setPen(QPen(Qt::black, lineWidth));
-        rect->setBrush(QBrush(Qt::black,
-                              outlineOnly ? Qt::NoBrush : Qt::SolidPattern));
+        rect->setPen(QPen(colors["completionCol"], lineWidth));
+        rect->setBrush(QBrush(colors["completionCol"], outlineOnly ?
+                              Qt::Dense4Pattern : Qt::SolidPattern));
         rect->setZ(TJRL_TASKCOMP);
         rect->show();
     }
@@ -924,7 +1007,7 @@ void
 TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
                                  bool outlineOnly, QCanvas* canvas)
 {
-    int radius = (int) (height * 0.4);
+    int radius = (int) (height * 0.375);
 
     // A black diamond.
     QPointArray a(5);
@@ -936,8 +1019,8 @@ TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
 
     QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setBrush(QBrush(Qt::black,
-                             outlineOnly ? Qt::NoBrush : Qt::SolidPattern));
+    polygon->setBrush(QBrush(colors["milestoneCol"], outlineOnly ?
+                             Qt::Dense4Pattern : Qt::SolidPattern));
     polygon->setZ(TJRL_TASKS);
     polygon->show();
 }
@@ -948,8 +1031,8 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
 {
     // A bar with jag at both ends.
     int jagWidth = (int) (height * 0.25);
-    int top = centerY - (int) (height * 0.2);
-    int halfbottom = centerY + (int) (height * 0.2);
+    int top = centerY - (int) (height * 0.15);
+    int halfbottom = centerY + (int) (height * 0.15);
     int bottom = halfbottom + jagWidth + (int) (height * 0.1);
 
     QPointArray a(9);
@@ -963,29 +1046,30 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     a.setPoint(7, end + jagWidth, top);
     a.setPoint(8, start - jagWidth, top);
 
+    /* QCanvasPolygon does not draw a solid perimeter. So we have to do this
+     * on our own. */
     if (outlineOnly)
     {
         for (uint i = 0; i < a.count() - 1; ++i)
         {
             QCanvasLine* line = new QCanvasLine(canvas);
-            QPen pen(Qt::black);
+            QPen pen(colors["containerCol"]);
             line->setPen(pen);
             int x1, y1, x2, y2;
             a.point(i, &x1, &y1);
             a.point(i + 1, &x2, &y2);
             line->setPoints(x1, y1, x2, y2);
-            line->setZ(TJRL_TASKOUTLINE);
+            line->setZ(TJRL_TASKS);
             line->show();
         }
     }
-    else
-    {
-        QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
-        polygon->setPoints(a);
-        polygon->setBrush(Qt::black);
-        polygon->setZ(TJRL_TASKS);
-        polygon->show();
-    }
+
+    QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
+    polygon->setPoints(a);
+    polygon->setBrush(QBrush(colors["containerCol"], outlineOnly ?
+                             Qt::Dense4Pattern : Qt::SolidPattern));
+    polygon->setZ(TJRL_TASKS);
+    polygon->show();
 }
 
 void
@@ -1033,8 +1117,6 @@ TjGanttChart::drawDependencies(const Task* t1)
             int t2y = objPosTable->caToPos(t2) + minRowHeight / 2;
             int yCenter = t1y < t2y ? t1y + (t2y - t1y) / 2 :
                 t2y + (t1y - t2y) / 2;
-            // Ensure that yCenter is between the task lines.
-            //yCenter = (yCenter / objPosTable->caToPos(t2)) * itemHeight;
 
             // Draw connection line.
             // Distance between task end and the first break of the arrow.
@@ -1067,7 +1149,7 @@ TjGanttChart::drawDependencies(const Task* t1)
             for (uint i = 0; i < a.count() - 1; ++i)
             {
                 QCanvasLine* line = new QCanvasLine(chart);
-                line->setPen(QPen(Qt::black, lineWidth));
+                line->setPen(QPen(colors["depLineCol"], lineWidth));
                 int x1, y1, x2, y2;
                 a.point(i, &x1, &y1);
                 a.point(i + 1, &x2, &y2);
@@ -1086,7 +1168,7 @@ TjGanttChart::drawDependencies(const Task* t1)
 
             QCanvasPolygon* polygon = new QCanvasPolygon(chart);
             polygon->setPoints(a);
-            polygon->setBrush(Qt::black);
+            polygon->setBrush(colors["depLineCol"]);
             polygon->setZ(TJRL_DEPARROWS);
             polygon->show();
         }
@@ -1096,6 +1178,9 @@ TjGanttChart::drawDependencies(const Task* t1)
 void
 TjGanttChart::drawTaskResource(const Resource* r, const Task* t)
 {
+    /* For each time interval we draw a column that represents the load of the
+     * resource allocated to the task. The end columns are trimmed to be in
+     * the same horizontal interval as the task bar. */
     Interval iv;
     int rY = objPosTable->caToPos(t, r);
     switch (stepUnit)
@@ -1133,14 +1218,15 @@ TjGanttChart::drawTaskResource(const Resource* r, const Task* t)
                 drawResourceLoadColum(r, t, i, sameTimeNextYear(i) - 1, rY);
             break;
         default:
-            qFatal("TjGanttChart::drawTaskResource(): Unknown stepUnit");
-            break;
+            assert(0);
     }
 }
 
 void
 TjGanttChart::drawResource(const Resource* r)
 {
+    /* For each horizontal interval of the Gantt chart we draw a column that
+     * represents the load of the resource for that interval. */
     Interval iv;
     int rY = objPosTable->caToPos(r, 0);
     switch (stepUnit)
@@ -1178,8 +1264,7 @@ TjGanttChart::drawResource(const Resource* r)
                 drawResourceLoadColum(r, 0, i, sameTimeNextYear(i) - 1, rY);
             break;
         default:
-            qFatal("TjGanttChart::drawTaskResource(): Unknown stepUnit");
-            break;
+            assert(0);
     }
 }
 
@@ -1241,12 +1326,6 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
     int colOtherLoadTop = colBottom - (int) ((colBottom - colTop) *
                                              (load / maxLoad));
 
-    // Just some interim variables so we can change the color with only a
-    // single change.
-    QColor thisTaskCol = QColor("#FD13C6");
-    QColor otherTaskCol = QColor("#AB7979");
-    QColor freeLoadCol = QColor("#C4E00E");
-
     // Now we draw the columns. But only if the load is larger than 0.
     if (taskLoad > 0.0)
     {
@@ -1254,30 +1333,32 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
         QCanvasRectangle* rect = new QCanvasRectangle
             (cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
              chart);
-        rect->setBrush(QBrush(thisTaskCol, Qt::Dense4Pattern));
-        rect->setPen(QPen(thisTaskCol, lineWidth));
+        rect->setBrush(QBrush(colors["taskLoadCol"], Qt::Dense4Pattern));
+        rect->setPen(QPen(colors["taskLoadCol"], lineWidth));
         rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 
     if (otherLoad > 0.0)
     {
+        // Load for other tasks.
         QCanvasRectangle* rect = new QCanvasRectangle
             (cx, colOtherLoadTop, cw,
              colTaskLoadTop - colOtherLoadTop, chart);
-        rect->setBrush(QBrush(otherTaskCol, Qt::Dense6Pattern));
-        rect->setPen(QPen(otherTaskCol, lineWidth));
+        rect->setBrush(QBrush(colors["otherLoadCol"], Qt::Dense4Pattern));
+        rect->setPen(QPen(colors["otherLoadCol"], lineWidth));
         rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
 
     if (freeLoad > 0.0)
     {
+        // Unallocated load.
         QCanvasRectangle* rect = new QCanvasRectangle
             (cx, colTop, cw, colOtherLoadTop - colTop,
              chart);
-        rect->setBrush(QBrush(freeLoadCol, Qt::Dense6Pattern));
-        rect->setPen(QPen(freeLoadCol, lineWidth));
+        rect->setBrush(QBrush(colors["freeLoadCol"], Qt::Dense4Pattern));
+        rect->setPen(QPen(colors["freeLoadCol"], lineWidth));
         rect->setZ(TJRL_LOADBARS);
         rect->show();
     }
