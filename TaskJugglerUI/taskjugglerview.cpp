@@ -593,8 +593,9 @@ TaskJugglerView::loadProject(const KURL& url)
     setCursor(KCursor::waitCursor());
     if (!pf->open(fileName, "", "", TRUE))
     {
-        KMessageBox::error( this, i18n("Cannot open file %1.").arg(url.prettyURL()),
-                            i18n("Error loading Project") );
+        KMessageBox::error(this, i18n("Cannot open file %1.")
+                           .arg(url.prettyURL()),
+                           i18n("Error loading Project") );
         setCursor(KCursor::arrowCursor());
         setLoadingProject(FALSE);
         return FALSE;
@@ -608,8 +609,8 @@ TaskJugglerView::loadProject(const KURL& url)
     if (!pf->parse())
         errors = TRUE;
     changeStatusBar(i18n("Checking project..."));
-    bool fatalError;
-    if (!errors && !project->pass2(FALSE, fatalError))
+    bool fatalError = false;
+    if ((!errors && !project->pass2(FALSE, fatalError)) || fatalError)
         errors = TRUE;
     changeStatusBar(i18n("Scheduling..."));
     if (!errors && !project->scheduleAllScenarios())
