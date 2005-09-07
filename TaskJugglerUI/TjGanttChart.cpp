@@ -158,8 +158,6 @@ TjGanttChart::setDPI(int dx, int dy)
 void
 TjGanttChart::setColor(const char* name, QColor col)
 {
-    assert(colors.find(name) != colors.end());
-
     colors[name] = col;
 }
 

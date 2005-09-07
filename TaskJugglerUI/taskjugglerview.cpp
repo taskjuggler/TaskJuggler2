@@ -297,21 +297,25 @@ TaskJugglerView::newInclude()
     // Make sure that we have already a project we can add the file to.
     if (fileManager->getMasterFile().isEmpty())
     {
-        KMessageBox::sorry( this, i18n("You need to load or create a project before\n"
-                                       "you can create a new include file."),
-                            i18n("New Include File") );
+        KMessageBox::sorry
+            (this, i18n("You need to load or create a project before\n"
+                        "you can create a new include file."),
+             i18n("New Include File"));
         return;
     }
 
     // Ask user for the name of the new file.
-    KURL fileURL = KFileDialog::getSaveURL (i18n("Pick a name for the new include file"), "*.tji",
-                                            this, i18n( "New Include File" ));
+    KURL fileURL = KFileDialog::getSaveURL
+        (i18n("Pick a name for the new include file"), "*.tji",
+         this, i18n("New Include File"));
 
     // Find out the name of the include file template.
     QString templateInclude = locate("data", "taskjuggler/IncludeTemplate.tji");
     if (templateInclude.isEmpty())
     {
-        KMessageBox::sorry( this, i18n("Could not find IncludeTemplate.tji."), i18n("Error while creating include File") );
+        KMessageBox::sorry
+            (this, i18n("Could not find IncludeTemplate.tji."),
+             i18n("Error while creating include File"));
         return;
     }
 
@@ -323,6 +327,8 @@ TaskJugglerView::newInclude()
         mw->listViews->setCurrentItem(mw->filesPage);
         // Show the new file in the editor.
         showEditor();
+        // Save the file so that it physically exists.
+        save();
     }
 }
 
@@ -343,11 +349,13 @@ TaskJugglerView::openURL(KURL url)
     if (!fileManager->getMasterFile().isEmpty())
     {
         // Make sure the user really wants to load a new project.
-        int but = KMessageBox::warningContinueCancel( this, i18n("You must close the current project before you can load\n"
-                                                                 "a new project. All files of the current project will\n"
-                                                                 "be saved automatically. Do you really want to do this?"),
-                                                      i18n("Load a new Project"),
-                                                      KStdGuiItem::close() );
+        int but = KMessageBox::warningContinueCancel
+            (this, i18n("You must close the current project before you can\n"
+                        "load a new project. All files of the current\n"
+                        "project will be saved automatically.\n"
+                        "Do you really want to do this?"),
+             i18n("Load a new Project"),
+             KStdGuiItem::close());
 
         if (but != KMessageBox::Continue)
             return;
@@ -356,7 +364,8 @@ TaskJugglerView::openURL(KURL url)
     // If the URL hasn't been specified yet, ask the user for it.
     if (url.isEmpty())
     {
-        url = KFileDialog::getOpenURL(":projects", "*.tjp *.tji", this, i18n("Open a new Project"));
+        url = KFileDialog::getOpenURL(":projects", "*.tjp *.tji", this,
+                                      i18n("Open a new Project"));
         if (url.isEmpty())
             return;
     }
