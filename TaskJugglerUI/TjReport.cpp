@@ -382,7 +382,8 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         }
         else if ((*ci)->getName() == "responsible")
         {
-            cellText = t->getResponsible()->getName();
+            if (t->getResponsible())
+                cellText = t->getResponsible()->getName();
         }
         else if ((*ci)->getName() == "revenue")
         {
