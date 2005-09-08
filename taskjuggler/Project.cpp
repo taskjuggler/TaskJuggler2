@@ -473,7 +473,7 @@ Project::pass2(bool noDepCheck, bool& fatalError)
 {
     if (taskList.isEmpty())
     {
-        qWarning(i18n("The project does not contain any tasks."));
+        TJMH.errorMessage(i18n("The project does not contain any tasks."));
         return FALSE;
     }
 
