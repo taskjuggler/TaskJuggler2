@@ -158,6 +158,8 @@ TjGanttChart::setDPI(int dx, int dy)
 void
 TjGanttChart::setColor(const char* name, QColor col)
 {
+    assert(colors.find(name) != colors.end());
+
     colors[name] = col;
 }
 
@@ -181,6 +183,7 @@ TjGanttChart::setHeaderHeight(int hh)
     // Make sure setDPI() has been called first.
     assert (dpiX > 0 && dpiY > 0);
 
+    // Same as in calcHeaderHeight(). textHeight is fm.height()
     int textHeight = (int) ((hh - lineWidth) / (2 * (1 + 2 * 0.15)));
     int fontSize = textHeight;
     int fontHeight;
@@ -191,7 +194,7 @@ TjGanttChart::setHeaderHeight(int hh)
         fontHeight = fm.height();
     } while (fontHeight > textHeight);
 
-    headerMargin = (int) (fontSize * 0.15);
+    headerMargin = (int) (fontHeight * 0.15);
 }
 
 int
@@ -519,6 +522,7 @@ TjGanttChart::zoomOut()
 void
 TjGanttChart::generateHeaderAndGrid()
 {
+    // Draw divider line between the two header lines
     QCanvasLine* line = new QCanvasLine(header);
     line->setPoints(0, headerHeight / 2, width, headerHeight / 2);
     QPen pen = line->pen();
@@ -526,7 +530,7 @@ TjGanttChart::generateHeaderAndGrid()
     line->setPen(pen);
     line->setZ(TJRL_GRIDLINES);
     line->show();
-
+/*
     line = new QCanvasLine(header);
     line->setPoints(0, headerHeight - 1, width, headerHeight - 1);
     pen = line->pen();
@@ -534,11 +538,12 @@ TjGanttChart::generateHeaderAndGrid()
     line->setPen(pen);
     line->setZ(TJRL_BACKGROUND);
     line->show();
-
+*/
+    // Fill header background
     QCanvasRectangle* rect =
         new QCanvasRectangle(0, 0, width, headerHeight - 1, header);
     pen = rect->pen();
-    pen.setColor(colors["headerLineCol"]);
+    pen.setColor(colors["headerBackgroundCol"]);
     rect->setPen(pen);
     QBrush brush = rect->brush();
     brush.setStyle(QBrush::SolidPattern);
@@ -612,18 +617,21 @@ TjGanttChart::generateHeaderAndGrid()
 void
 TjGanttChart::generateHourHeader(int y)
 {
+    bool first = true;
     for (time_t hour = midnight(startTime); hour < endTime;
          hour = hoursLater(1, hour))
     {
         QString label;
         label = QString("%1").arg(hourOfDay(hour));
-        drawHeaderCell(hour, hoursLater(1, hour), y, label);
+        drawHeaderCell(hour, hoursLater(1, hour), y, label, first);
+        first = false;
     }
 }
 
 void
 TjGanttChart::generateDayHeader(int y)
 {
+    bool first = true;
     for (time_t day = midnight(startTime);
          day < endTime; day = sameTimeNextDay(day))
     {
@@ -640,7 +648,8 @@ TjGanttChart::generateDayHeader(int y)
                 .arg(dayOfMonth(day));
         else
             label = QString("%1").arg(dayOfMonth(day));
-        drawHeaderCell(day, sameTimeNextDay(day), y, label);
+        drawHeaderCell(day, sameTimeNextDay(day), y, label, first);
+        first = false;
     }
 }
 
@@ -648,6 +657,7 @@ void
 TjGanttChart::generateWeekHeader(int y)
 {
     bool weekStartsMonday = reportDef->getWeekStartsMonday();
+    bool first = true;
 
     for (time_t week = beginOfWeek(startTime, weekStartsMonday);
          week < endTime;
@@ -655,13 +665,15 @@ TjGanttChart::generateWeekHeader(int y)
     {
         drawHeaderCell(week, sameTimeNextWeek(week), y,
                        (i18n("short for week of year", "W%1")
-                        .arg(weekOfYear(week, weekStartsMonday))));
+                        .arg(weekOfYear(week, weekStartsMonday))), first);
+        first = false;
     }
 }
 
 void
 TjGanttChart::generateMonthHeader(int y, bool withYear)
 {
+    bool first = true;
     for (time_t month = beginOfMonth(startTime);
          month < endTime; month = sameTimeNextMonth(month))
     {
@@ -669,47 +681,56 @@ TjGanttChart::generateMonthHeader(int y, bool withYear)
             QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(month)))
             .arg(::year(month)) :
             QString("%1").arg(QDate::shortMonthName(monthOfYear(month)));
-        drawHeaderCell(month, sameTimeNextMonth(month), y, label);
+        drawHeaderCell(month, sameTimeNextMonth(month), y, label, first);
+        first = false;
     }
 }
 
 void
 TjGanttChart::generateQuarterHeader(int y)
 {
+    bool first = true;
     for (time_t quarter = beginOfQuarter(startTime);
          quarter < endTime; quarter =
          sameTimeNextQuarter(quarter))
     {
         drawHeaderCell(quarter, sameTimeNextQuarter(quarter), y,
                        i18n("short for quater of year", "Q%1")
-                       .arg(quarterOfYear(quarter)));
+                       .arg(quarterOfYear(quarter)), first);
+        first = false;
     }
 }
 
 void
 TjGanttChart::generateYearHeader(int y)
 {
+    bool first = true;
     for (time_t year = beginOfYear(startTime);
          year < endTime; year = sameTimeNextYear(year))
     {
         drawHeaderCell(year, sameTimeNextYear(year), y,
-                       QString("%1").arg(::year(year)));
+                       QString("%1").arg(::year(year)), first);
+        first = false;
     }
 }
 
 void
-TjGanttChart::drawHeaderCell(int start, int end, int y, const QString label)
+TjGanttChart::drawHeaderCell(int start, int end, int y, const QString label,
+                             bool first)
 {
     int xs = time2x(start);
     int xe = time2x(end);
-    // Draw vertical line at beginning of week.
-    QCanvasLine* line = new QCanvasLine(header);
-    line->setPoints(xs, y, xs, y + headerHeight / 2);
-    QPen pen = line->pen();
-    pen.setColor(colors["headerLineCol"]);
-    line->setPen(pen);
-    line->setZ(TJRL_GRIDLINES);
-    line->show();
+    if (!first)
+    {
+        // Draw vertical line at beginning of cell.
+        QCanvasLine* line = new QCanvasLine(header);
+        line->setPoints(xs, y, xs, y + headerHeight / 2);
+        QPen pen = line->pen();
+        pen.setColor(colors["headerLineCol"]);
+        line->setPen(pen);
+        line->setZ(TJRL_GRIDLINES);
+        line->show();
+    }
 
     // Write week number.
     QCanvasText* text = new QCanvasText(label, header);
@@ -717,15 +738,21 @@ TjGanttChart::drawHeaderCell(int start, int end, int y, const QString label)
     // Center the label horizontally in the cell.
     QFontMetrics fm(headerFont);
     QRect br = fm.boundingRect(label);
+    br.setWidth(br.width() + 2 * headerMargin);
     // Make sure that at least some parts of the label are visible.
     if (xe > header->width())
         xe = header->width();
     if (xs < 0)
         xs = 0;
-    if (xs + br.width() > xe)
+    // Make sure the label does not overwrite the 2nd cell
+    if (xs == 0 && xs + br.width() > xe)
         xs = xe - br.width();
+    // Make sure that the label starts at the left cell end in case the last
+    // cell does not fit in the header anymore.
+    if (xe == header->width() && xs + br.width() > xe)
+        xe = xs + br.width();
     xs += ((xe - xs) - br.width()) / 2;
-    text->move(xs + lineWidth / 2 + 1 + headerMargin, y + headerMargin);
+    text->move(xs, y + headerMargin);
     text->setZ(TJRL_GRIDLABLES);
     text->show();
 }

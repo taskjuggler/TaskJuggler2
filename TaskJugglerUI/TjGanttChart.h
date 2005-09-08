@@ -81,7 +81,7 @@ private:
     void generateMonthHeader(int y, bool withYear);
     void generateQuarterHeader(int y);
     void generateYearHeader(int y);
-    void drawHeaderCell(int x, int y, int xe, const QString label);
+    void drawHeaderCell(int x, int y, int xe, const QString label, bool first);
     void generateGanttBackground();
     void markNonWorkingHoursOnBackground();
     void markNonWorkingDaysOnBackground();
@@ -139,7 +139,14 @@ private:
     int width;
     int minRowHeight;
 
-    std::map<const char*, QColor, std::less<const char*> > colors;
+    struct ltstr
+    {
+        bool operator()(const char* s1, const char* s2) const
+        {
+            return strcmp(s1, s2) < 0;
+        }
+    };
+    std::map<const char*, QColor, ltstr> colors;
 
     std::list<int> newZoomSteps;
 
