@@ -153,11 +153,6 @@ TjPrintReport::generateTableHeader()
         TjReportColumn* col = new TjReportColumn;
         col->setIsGantt(TRUE);
         columns.append(col);
-
-        objPosTable = new TjObjPosTable;
-        // Just a first guess. We set the proper size later on.
-        objPosTable->resize((int) (taskList.count() * 0.3
-                                   * resourceList.count() * 0.1));
     }
 }
 
@@ -306,7 +301,10 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
             }
         }
         else if ((*ci)->getName() == "responsible")
-            cellText = task->getResponsible()->getName();
+        {
+            if (task->getResponsible())
+                cellText = task->getResponsible()->getName();
+        }
         else if ((*ci)->getName() == "revenue")
         {
             double val = task->getCredits
@@ -505,10 +503,11 @@ TjPrintReport::layoutPages()
 {
     if (showGantt)
     {
-        /* We now know how many rows we got, so we can resize the hash
-         * table. */
+        objPosTable = new TjObjPosTable;
         objPosTable->resize(rows.count());
 
+        ganttChart->setProjectAndReportData(reportElement, &taskList,
+                                            &resourceList);
         QPaintDeviceMetrics metrics(paintDevice);
         ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
     }
@@ -696,8 +695,6 @@ TjPrintReport::layoutPages()
         int tableHeight = 0;
         for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
             tableHeight += (*rit)->getHeight();
-        ganttChart->setProjectAndReportData(reportElement, &taskList,
-                                            &resourceList);
         ganttChart->setSizes(objPosTable, headerHeight - 1, tableHeight - 1,
                              ganttChartWidth - 1, minRowHeight);
 //        ganttChart->setColors(Qt::white, Qt::white, Qt::lightGray, Qt::gray,

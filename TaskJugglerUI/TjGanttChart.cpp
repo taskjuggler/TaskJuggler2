@@ -141,8 +141,6 @@ TjGanttChart::setDPI(int dx, int dy)
 {
     // Make sure that setProjectAndReportData() has been called first.
     assert(project != 0);
-    // Make sure setSizes() has been called first();
-    assert(objPosTable != 0);
 
     dpiX = dx;
     dpiY = dy;
@@ -241,6 +239,8 @@ TjGanttChart::calcLegendHeight(int width)
 void
 TjGanttChart::generate(ScaleMode scaleMode)
 {
+    // Make sure setSizes() has been called first();
+    assert(objPosTable != 0);
     /* Make sure that setHeaderHeight() or calcHeaderHeight() have been called
      * first. */
     assert(headerMargin > 0);

@@ -5,6 +5,7 @@ Probably:
 - Printing for interactive reports
 - Interactive account report
 - Add support for risk documentation.
+- Add C++ style // comments.
 
 Maybe:
 - Make vacations and shifts scenario specific.
