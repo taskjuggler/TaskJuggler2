@@ -39,7 +39,7 @@ public:
     virtual ~TjPrintReport();
 
     virtual void initialize() = 0;
-    virtual bool generate() = 0;
+    virtual bool generate(QPrinter::Orientation) = 0;
 
     bool beginPrinting();
     void printReportPage(int x, int y);
@@ -59,7 +59,8 @@ protected:
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
                                  QString& cellText) const;
 
-    void layoutPages();
+    void layoutPages(QPrinter::Orientation orientation);
+    void expandColumns(int xPage, int remainder, TjReportColumn* lastColumn);
 
     void printReportCell(TjReportRow* row, int col);
 

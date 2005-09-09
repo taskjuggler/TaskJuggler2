@@ -50,6 +50,8 @@ TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
 
     objPosTable = 0;
 
+    showGantt = false;
+
     // Initialize the geometry variables with 0. This makes it a bit easier to
     // detect programming bugs.
     leftMargin = topMargin = pageWidth = pageHeight = 0;
@@ -101,6 +103,7 @@ TjPrintReport::generateTableHeader()
          * for now. */
         if (specialColumns[(*ci)->getName()])
         {
+            qDebug("Special columns %s found", (*ci)->getName().latin1());
             /* No matter how many calendar columns the user has specified. We
              * only generate one. */
             showGantt = true;
@@ -499,7 +502,7 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
 }
 
 void
-TjPrintReport::layoutPages()
+TjPrintReport::layoutPages(QPrinter::Orientation orientation)
 {
     if (showGantt)
     {
@@ -516,8 +519,27 @@ TjPrintReport::layoutPages()
     QPaintDeviceMetrics metrics(paintDevice);
     leftMargin = mmToXPixels(10);
     topMargin = mmToYPixels(10);
-    pageWidth = metrics.height() - 2 * topMargin;
-    pageHeight = metrics.width() - 2 * leftMargin;
+
+    /* I haven't figured out the relationship between the orientation and the
+     * device size. Sometimes it fits, sometime it doesn't. This code tries to
+     * always do the right thing. */
+    if ((orientation == QPrinter::Landscape &&
+         metrics.width() > metrics.height()) ||
+        (orientation == QPrinter::Portrait &&
+         metrics.width() < metrics.height()))
+    {
+        pageWidth = metrics.width() - 2 * topMargin;
+        pageHeight = metrics.height() - 2 * leftMargin;
+    }
+    else
+    {
+        qDebug("Flipping page size settings! Orientation: %s W: %d  H: %d",
+               orientation == QPrinter::Landscape ? "Landscape" : "Portrait",
+               metrics.width(), metrics.height());
+        pageWidth = metrics.height() - 2 * topMargin;
+        pageHeight = metrics.width() - 2 * leftMargin;
+    }
+
 
     cellMargin = mmToXPixels(1);
 
@@ -656,6 +678,8 @@ TjPrintReport::layoutPages()
         {
             if (colX + (*cit)->getWidth() > leftMargin + pageWidth)
             {
+                int remainder = leftMargin + pageWidth - colX;
+                expandColumns(xPage, remainder, prevColumn);
                 // The first column is repeated at the left of each page
                 colX = leftMargin + columns.at(0)->getWidth();
                 xPage++;
@@ -688,21 +712,56 @@ TjPrintReport::layoutPages()
         }
     }
     if (prevColumn)
+    {
+        if (!prevColumn->getIsGantt())
+            expandColumns(xPage, leftMargin + pageWidth - colX, prevColumn);
         prevColumn->setLastOnPage(true);
+    }
 
     if (showGantt)
     {
         int tableHeight = 0;
         for (QPtrListIterator<TjReportRow> rit(rows); *rit; ++rit)
             tableHeight += (*rit)->getHeight();
-        ganttChart->setSizes(objPosTable, headerHeight - 1, tableHeight - 1,
-                             ganttChartWidth - 1, minRowHeight);
-//        ganttChart->setColors(Qt::white, Qt::white, Qt::lightGray, Qt::gray,
-//                              Qt::lightGray, Qt::darkGray);
+        ganttChart->setSizes(objPosTable, headerHeight - 4, tableHeight - 4,
+                             ganttChartWidth - 3, minRowHeight);
         ganttChart->generate(TjGanttChart::fitSize);
         ganttChart->generateLegend(pageWidth - mmToXPixels(10),
                                    footerHeight - 2);
     }
+}
+
+void
+TjPrintReport::expandColumns(int xPage, int remainder,
+                             TjReportColumn* lastColumn)
+{
+    int expandableColumns;
+    for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
+        if ((*cit)->getXPage() == xPage &&
+            (*cit)->getTableColumnFormat()->getExpandable())
+            expandableColumns++;
+    qDebug("%d expandable columns on page %d",
+           expandableColumns, xPage);
+
+    if (expandableColumns > 0)
+    {
+        int xCorr = 0;
+        for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
+            if ((*cit)->getXPage() == xPage)
+            {
+                (*cit)->setLeftX((*cit)->getLeftX() + xCorr);
+                if ((*cit)->getTableColumnFormat()->
+                    getExpandable())
+                {
+                    (*cit)->setWidth((*cit)->getWidth() + remainder /
+                                     expandableColumns);
+                    xCorr += remainder / expandableColumns;
+                }
+            }
+    }
+    else
+        if (lastColumn)
+            lastColumn->setWidth(lastColumn->getWidth() + remainder);
 }
 
 bool
@@ -746,9 +805,9 @@ TjPrintReport::printReportPage(int x, int y)
         p.setFont(tableHeaderFont);
         if ((*cit)->getIsGantt() && (*cit)->getXPage() == x)
         {
-            ganttChart->paintHeader(QRect((*cit)->getLeftX(), headerY,
-                                          (*cit)->getWidth() - 1,
-                                          headerHeight - 1), &p);
+            ganttChart->paintHeader(QRect((*cit)->getLeftX() + 1, headerY + 2,
+                                          (*cit)->getWidth() - 3,
+                                          headerHeight - 4), &p);
         }
         else if ((*cit == columns.first() || (*cit)->getXPage() == x) &&
                  !(*cit)->getIsGantt())
@@ -765,6 +824,7 @@ TjPrintReport::printReportPage(int x, int y)
         }
     }
     // Draw lower border of header
+    p.setPen(QPen(Qt::black, 1));
     p.drawLine(leftMargin, headerY + headerHeight - 1,
                leftMargin + pageWidth, headerY + headerHeight - 1);
 
@@ -825,10 +885,10 @@ TjPrintReport::printReportPage(int x, int y)
 
                     ganttChart->paintChart
                         (0, prevTablesHeight,
-                         QRect(columns.at(col)->getLeftX(),
-                               (*rit)->getTopY(),
-                               columns.at(col)->getWidth() - 1,
-                               tableHeight - 1), &p);
+                         QRect(columns.at(col)->getLeftX() + 1,
+                               (*rit)->getTopY() + 1,
+                               columns.at(col)->getWidth() - 3,
+                               tableHeight - 4), &p);
 
                     // Draw lower border
                     p.setPen(QPen(Qt::black, 1));

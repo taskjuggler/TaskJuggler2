@@ -104,6 +104,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = TableColumnFormat::left;
     tcf->indent = TRUE;
     tcf->noWrap = TRUE;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("start"), this, i18n("Start"));
     tcf->genTaskLine1 = &ReportElement::genCellStart;
@@ -207,37 +208,44 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(KW("projectids"), this, i18n("Project IDs"));
     tcf->genResourceLine1 = &ReportElement::genCellProjectIDs;
     tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("resources"), this, i18n("Resources"));
     tcf->genTaskLine1 = &ReportElement::genCellResources;
     tcf->genTaskLine2 = &ReportElement::genCellResources;
     tcf->hAlign = TableColumnFormat::left;
     tcf->fontFactor = 80;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("responsible"), this, i18n("Responsible"));
     tcf->genTaskLine1 = &ReportElement::genCellResponsible;
     tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("responsibilities"), this,
                                 i18n("Responsibilities"));
     tcf->genResourceLine1 = &ReportElement::genCellResponsibilities;
     tcf->hAlign = TableColumnFormat::left;
     tcf->fontFactor = 80;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("depends"), this, i18n("Dependencies"));
     tcf->genTaskLine1 = &ReportElement::genCellDepends;
     tcf->hAlign = TableColumnFormat::left;
     tcf->fontFactor = 80;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("follows"), this, i18n("Followers"));
     tcf->genTaskLine1 = &ReportElement::genCellFollows;
     tcf->hAlign = TableColumnFormat::left;
     tcf->fontFactor = 80;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("schedule"), this, i18n("Schedule"));
     tcf->genResourceLine1 = &ReportElement::genCellSchedule;
     tcf->genResourceLine2 = &ReportElement::genCellSchedule;
     tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("mineffort"), this, i18n("Min. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMinEffort;
@@ -253,6 +261,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellFlags;
     tcf->genResourceLine1 = &ReportElement::genCellFlags;
     tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("completed"), this, i18n("Completed"));
     tcf->genTaskLine1 = &ReportElement::genCellCompleted;
@@ -264,6 +273,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellStatus;
     tcf->genTaskLine2 = &ReportElement::genCellStatus;
     tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("kotrusid"), this, i18n("Kotrus ID"));
     tcf->genResourceLine1 = &ReportElement::genCellKotrusId;
@@ -273,11 +283,13 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellText;
     tcf->hAlign = TableColumnFormat::left;
     tcf->fontFactor = 80;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("statusnote"), this, i18n("Status Note"));
     tcf->genTaskLine1 = &ReportElement::genCellStatusNote;
     tcf->hAlign = TableColumnFormat::left;
     tcf->fontFactor = 80;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("priority"), this, i18n("Priority"));
     tcf->genTaskLine1 = &ReportElement::genCellPriority;
@@ -286,6 +298,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf = new TableColumnFormat(KW("reference"), this, i18n("Reference"));
     tcf->genTaskLine1 = &ReportElement::genCellReference;
     tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("scenario"), this, i18n("Scenario"));
     tcf->genTaskLine1 = &ReportElement::genCellScenario;
@@ -361,6 +374,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("weekly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadWeekly1;
@@ -375,6 +389,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("monthly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadMonthly1;
@@ -389,6 +404,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("quarterly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadQuarterly1;
@@ -403,6 +419,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
+    tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("yearly"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadYear;
@@ -416,6 +433,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
+    tcf->expandable = true;
 
     addCustomAttributeColumns(r->getProject()->getTaskAttributeDict());
     addCustomAttributeColumns(r->getProject()->getResourceAttributeDict());

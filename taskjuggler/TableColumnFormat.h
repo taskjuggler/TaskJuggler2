@@ -38,6 +38,7 @@ public:
     HorizAlign getHAlign() const { return hAlign; }
     int getFontFactor() const { return fontFactor; }
     bool getNoWrap() const { return noWrap; }
+    bool getExpandable() const { return expandable; }
     bool getIndent() const { return indent; }
     RealFormat getRealFormat() const { return realFormat; }
 
@@ -57,6 +58,7 @@ public:
     HorizAlign hAlign;
     int fontFactor;
     bool noWrap;
+    bool expandable;
     bool indent;
     RealFormat realFormat;
 

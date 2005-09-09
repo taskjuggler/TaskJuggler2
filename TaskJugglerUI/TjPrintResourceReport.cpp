@@ -35,7 +35,7 @@ TjPrintResourceReport::initialize()
 }
 
 bool
-TjPrintResourceReport::generate()
+TjPrintResourceReport::generate(QPrinter::Orientation orientation)
 {
     /* Get complete resource list, filter and sort it. Then determine the
      * maximum tree level. */
@@ -86,7 +86,7 @@ TjPrintResourceReport::generate()
         }
     }
 
-    layoutPages();
+    layoutPages(orientation);
 
     return TRUE;
 }

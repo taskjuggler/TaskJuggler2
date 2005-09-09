@@ -171,11 +171,13 @@ TjReport::print(KPrinter* printer)
     if (!printer->setup(this))
         return;
 
+    qDebug("Orientation: %d", printer->orientation());
     TjPrintReport* tjpr;
-    if ((tjpr = newPrintReport(printer)) == 0)
+    if ((tjpr = this->newPrintReport(printer)) == 0)
         return;
     tjpr->initialize();
-    tjpr->generate();
+    tjpr->generate(printer->orientation() == KPrinter::Landscape ?
+                   QPrinter::Landscape : QPrinter::Portrait);
 
     int xPages, yPages;
     tjpr->getNumberOfPages(xPages, yPages);

@@ -26,7 +26,7 @@ public:
     ~TjPrintResourceReport() { }
 
     virtual void initialize();
-    virtual bool generate();
+    virtual bool generate(QPrinter::Orientation orientation);
 } ;
 
 #endif
