@@ -14,7 +14,7 @@
 
 #include <time.h>
 
-#include <list>
+#include <vector>
 #include <map>
 
 #include <qstringlist.h>
@@ -30,21 +30,20 @@ class QCanvas;
 class Project;
 class Task;
 class Resource;
-class TaskList;
-class ResourceList;
 class QtReport;
 class QtReportElement;
 class TjObjPosTable;
+class TjGanttZoomStep;
+class Interval;
 
 class TjGanttChart {
 public:
-    enum ScaleMode { fitSize = 0, fitInterval, manual };
+    enum ScaleMode { manual = 0, fitSize, autoZoom };
 
     TjGanttChart(QObject* obj);
     ~TjGanttChart();
 
-    void setProjectAndReportData(const QtReportElement* r,
-                                 TaskList* tl, ResourceList* rl);
+    void setProjectAndReportData(const QtReportElement* r);
     void setSizes(const TjObjPosTable* opt, int headerHeight, int chartHeight,
                   int width, int minRowHeight);
     void setDPI(int dx, int dy);
@@ -66,21 +65,23 @@ public:
     QCanvas* getChartCanvas() const { return chart; }
     QCanvas* getLegendCanvas() const { return legend; }
 
-    void zoomIn();
-    void zoomOut();
+    bool zoomIn();
+    bool zoomOut();
+
+    Interval stepInterval(time_t ref) const;
+    QString stepIntervalName(time_t ref) const;
+
+    int time2x(time_t t) const;
+    time_t x2time(int x) const;
+
+    int getWidth() const { return width; }
 
 private:
-    enum StepUnits { hour = 0, day, week, month, quarter, year };
-
     TjGanttChart() { }
 
+    void calcStepSizes();
     void generateHeaderAndGrid();
-    void generateHourHeader(int y);
-    void generateDayHeader(int y);
-    void generateWeekHeader(int y);
-    void generateMonthHeader(int y, bool withYear);
-    void generateQuarterHeader(int y);
-    void generateYearHeader(int y);
+    void generateHeaderLine(int y);
     void drawHeaderCell(int x, int y, int xe, const QString label, bool first);
     void generateGanttBackground();
     void markNonWorkingHoursOnBackground();
@@ -107,10 +108,8 @@ private:
     void drawResourceLoadColum(const Resource* r, const Task* t, time_t start,
                                time_t end, int rY);
 
-    int time2x(time_t t) const;
-    time_t x2time(int x) const;
-
-    void setBestStepUnit();
+    void zoomToFitWindow(int width, time_t duration);
+    void allTasksInterval();
 
     int generateLegend();
 
@@ -131,6 +130,9 @@ private:
     time_t startTime;
     time_t endTime;
 
+    time_t unclippedEndTime;
+    bool clipped;
+
     const TjObjPosTable* objPosTable;
 
     int headerMargin;
@@ -148,24 +150,12 @@ private:
     };
     std::map<const char*, QColor, ltstr> colors;
 
-    std::list<int> newZoomSteps;
-
-    int pixelPerYear;
-    StepUnits stepUnit;
-    static const int minStepHour;
-    static const int minStepDay;
-    static const int minStepWeek;
-    static const int minStepMonth;
-    static const int minStepQuarter;
-    static const int minStepYear;
-    static const int zoomSteps[];
+    std::vector<TjGanttZoomStep*> zoomSteps;
     unsigned int currentZoomStep;
 
     const Project* project;
     const QtReport* reportDef;
     const QtReportElement* reportElement;
-    TaskList* taskList;
-    ResourceList* resourceList;
     int scenario;
 
     QFont headerFont;

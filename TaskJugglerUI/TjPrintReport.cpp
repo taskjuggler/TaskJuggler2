@@ -509,8 +509,7 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         objPosTable = new TjObjPosTable;
         objPosTable->resize(rows.count());
 
-        ganttChart->setProjectAndReportData(reportElement, &taskList,
-                                            &resourceList);
+        ganttChart->setProjectAndReportData(reportElement);
         QPaintDeviceMetrics metrics(paintDevice);
         ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
     }
@@ -528,6 +527,9 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         (orientation == QPrinter::Portrait &&
          metrics.width() < metrics.height()))
     {
+        qDebug("Plausible page size settings! Orientation: %s W: %d  H: %d",
+               orientation == QPrinter::Landscape ? "Landscape" : "Portrait",
+               metrics.width(), metrics.height());
         pageWidth = metrics.width() - 2 * topMargin;
         pageHeight = metrics.height() - 2 * leftMargin;
     }
@@ -725,7 +727,7 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
             tableHeight += (*rit)->getHeight();
         ganttChart->setSizes(objPosTable, headerHeight - 4, tableHeight - 4,
                              ganttChartWidth - 3, minRowHeight);
-        ganttChart->generate(TjGanttChart::fitSize);
+        ganttChart->generate(TjGanttChart::autoZoom);
         ganttChart->generateLegend(pageWidth - mmToXPixels(10),
                                    footerHeight - 2);
     }
@@ -735,7 +737,7 @@ void
 TjPrintReport::expandColumns(int xPage, int remainder,
                              TjReportColumn* lastColumn)
 {
-    int expandableColumns;
+    int expandableColumns = 0;
     for (QPtrListIterator<TjReportColumn> cit(columns); *cit; ++cit)
         if ((*cit)->getXPage() == xPage &&
             (*cit)->getTableColumnFormat()->getExpandable())

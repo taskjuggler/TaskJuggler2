@@ -186,29 +186,15 @@ TjTaskReport::generateList()
     return TRUE;
 }
 
-bool
-TjTaskReport::generateChart(bool autoFit)
-{
-    setCursor(KCursor::waitCursor());
-
-    prepareChart(autoFit, reportElement);
-
-    ganttChart->getHeaderCanvas()->update();
-    ganttChart->getChartCanvas()->update();
-
-    setCursor(KCursor::arrowCursor());
-    return TRUE;
-}
-
 QString
 TjTaskReport::generateStatusBarText(const QPoint& pos,
                                     const CoreAttributes* ca,
                                     const CoreAttributes* parent) const
 {
     QPoint chartPos = ganttChartView->viewportToContents(pos);
-    time_t refTime = x2time(chartPos.x());
-    Interval iv = stepInterval(refTime);
-    QString ivName = stepIntervalName(refTime);
+    time_t refTime = ganttChart->x2time(chartPos.x());
+    Interval iv = ganttChart->stepInterval(refTime);
+    QString ivName = ganttChart->stepIntervalName(refTime);
 
     QString text;
     if (ca->getType() == CA_Task)

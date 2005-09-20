@@ -88,21 +88,11 @@ protected:
     enum StepUnits { hour = 0, day, week, month, quarter, year };
     TjReport() : reportDef(0) { }
 
-    int time2x(time_t t) const;
-    time_t x2time(int x) const;
-
     virtual bool event(QEvent* ev);
     virtual bool generateList() = 0;
-    virtual bool generateChart(bool autoFit) = 0;
 
-    void prepareChart(bool autoFit, QtReportElement* repElement);
-    /*void generateGanttTasks();
-    void generateLoadBars();
-    void generateTask(Task* const t, int y);
-    void generateResource(Resource* const r, int y);
-    void generateDependencies(Task* const t, QListViewItem* lvi);
-    void generateTaskResources(Task* const t);
-*/
+    void prepareChart(const QtReportElement* repElement);
+
     void generateListHeader(const QString& firstHeader, QtReportElement* tab);
 
     void showTaskDetails(const Task* task);
@@ -120,9 +110,6 @@ protected:
                    bool right);
     int treeLevel(const QListViewItem* lvi) const;
 
-    Interval stepInterval(time_t ref) const;
-    QString stepIntervalName(time_t ref) const;
-
     QString generateJournal(JournalIterator jit) const;
 
     time_t stepLength() const;
@@ -139,16 +126,13 @@ protected:
     QCanvasView* ganttHeaderView;
     QCanvasView* ganttChartView;
 
-    int pixelPerYear;
-    StepUnits stepUnit;
-    static const int minStepHour;
-    static const int minStepDay;
-    static const int minStepWeek;
-    static const int minStepMonth;
-    static const int minStepQuarter;
-    static const int minStepYear;
-    static const int zoomSteps[];
-    uint currentZoomStep;
+    /**
+     * We some widgets that need to be fit into the window the first time the
+     * widget is rendered on the screen. We use the following variable to keep
+     * track of this.
+     */
+    bool autoFit;
+
     /**
      * We often need to find out if a CoreAttribute is in the ListView and
      * find the appropriate list item. So we keep a dictionary that maps the

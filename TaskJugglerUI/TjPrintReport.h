@@ -20,17 +20,16 @@
 #include <qpainter.h>
 #include <qfont.h>
 #include <qprinter.h>
-
-#include "TaskList.h"
-#include "ResourceList.h"
+#include <qdict.h>
 
 class QPaintDevice;
 class Report;
 class QtReportElement;
-class TaskList;
 class ReportElement;
 class TjGanttChart;
 class TjObjPosTable;
+class Task;
+class Resource;
 
 class TjPrintReport
 {
@@ -72,8 +71,6 @@ protected:
     int pointsToYPixels(double pts);
 
     int scenario;
-    TaskList taskList;
-    ResourceList resourceList;
 
     int maxDepthTaskList;
     int maxDepthResourceList;

@@ -57,35 +57,11 @@
 #include "TjGanttChart.h"
 #include "TjObjPosTable.h"
 
-//                                           Boundary
-const int TjReport::minStepHour = 20;    //   365 * 24 * 20 = 175200
-const int TjReport::minStepDay = 20;     //   365 * 20 = 7300
-const int TjReport::minStepWeek = 35;    //   52 * 35 = 1820
-const int TjReport::minStepMonth = 35;   //   12 * 35 = 420
-const int TjReport::minStepQuarter = 25; //   4 * 25 = 100
-const int TjReport::minStepYear = 80;    //   1 * 80 = 80
-
-const int TjReport::zoomSteps[] =
-{
-           // Mode       Sublines
-    80,    // Year       Quarter
-    141,   // Quarter
-    250,   // Quarter    Month
-    441,   // Month
-    780,   // Month      Week
-    1378,  // Month      Week
-    2435,  // Week
-    4302,  // Week       Day
-    7602,  // Day
-    13434, // Day
-    41946, // Hour
-    176000
-} ;
-
 TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     : QWidget(p, n), reportDef(rDef)
 {
     loadingProject = FALSE;
+    autoFit = true;
 
     QHBoxLayout* hl = new QHBoxLayout(this, 0, 0);
     splitter = new QSplitter(Horizontal, this);
@@ -114,9 +90,6 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     ganttChartView = new QCanvasView(ganttChart->getChartCanvas(),
                                      canvasFrame);
 
-    currentZoomStep = 5;
-    stepUnit = week;
-    pixelPerYear = zoomSteps[currentZoomStep];
     startTime = endTime = 0;
 
     vl->addWidget(ganttHeaderView);
@@ -171,7 +144,8 @@ TjReport::print(KPrinter* printer)
     if (!printer->setup(this))
         return;
 
-    qDebug("Orientation: %d", printer->orientation());
+    qDebug("Orientation: %s", printer->orientation() == KPrinter::Portrait ?
+           "Portrait" : "Landscape");
     TjPrintReport* tjpr;
     if ((tjpr = this->newPrintReport(printer)) == 0)
         return;
@@ -224,9 +198,10 @@ TjReport::generateReport()
     setLoadingProject(FALSE);
     setCursor(KCursor::arrowCursor());
 
-    if (!this->generateChart(TRUE))
-        return FALSE;
-
+    /* The first time we generate the report, the window has not been fully
+     * layouted yet. So we can't set the splitter to a good size and generate
+     * the gantt report immediately. We use a 200ms timer to delay the
+     * rendering. Hopefully by then the window has been layouted properly. */
     QTimer* delayTimer = new QTimer(this);
     connect(delayTimer, SIGNAL(timeout()),
             this, SLOT(regenerateChart()));
@@ -244,7 +219,18 @@ TjReport::generateReport()
 void
 TjReport::regenerateChart()
 {
-    this->generateChart(FALSE);
+    setCursor(KCursor::waitCursor());
+
+    prepareChart(this->getReportElement());
+
+    // When we are here, we have rendered the widgets at least once. So we can
+    // turn off autoFit mode.
+    autoFit = false;
+
+    ganttChart->getHeaderCanvas()->update();
+    ganttChart->getChartCanvas()->update();
+
+    setCursor(KCursor::arrowCursor());
 }
 
 void
@@ -570,7 +556,7 @@ TjReport::generateCustomAttribute(const CoreAttributes* ca, const QString name,
 }
 
 void
-TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
+TjReport::prepareChart(const QtReportElement* repElement)
 {
     /* The object position mapping table changes most likely with every
      * re-generation. So we delete it and create a new one. */
@@ -636,67 +622,20 @@ TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
         ;
     listHeight = lvi->itemPos() + itemHeight;
 
-    int overallDuration;
-    if (autoFit)
-    {
-        /* In autoFit mode we try to fit the full timespan of the project into
-         * the view. We ignore the project time frame specified by the user
-         * and use the start time of the earliest task and the end time of the
-         * last task instead. For a better look we add 5% more at both sides.
-         */
-        startTime = repElement->getEnd();
-        endTime = repElement->getStart();
-        for (TaskListIterator tli(taskList); *tli; ++tli)
-        {
-            if ((*tli)->getStart(scenario) < startTime)
-                startTime = (*tli)->getStart(scenario);
-            if ((*tli)->getEnd(scenario) > endTime)
-                endTime = (*tli)->getEnd(scenario);
-        }
-        overallDuration = endTime - startTime;
-        startTime -= (time_t) (0.05 * overallDuration);
-        endTime += (time_t) (0.05 * overallDuration);
-        // We try to use a scaling so that the initial Gantt chart is about
-        // 800 pixels width.
-        for (currentZoomStep = 0;
-             currentZoomStep < sizeof(zoomSteps) / sizeof(int) &&
-             (((float) (endTime - startTime) / (60 * 60 * 24 * 365)) *
-             zoomSteps[currentZoomStep]) < 800;
-             ++currentZoomStep)
-            ;
-        if (currentZoomStep > 0)
-            --currentZoomStep;
-        pixelPerYear = zoomSteps[currentZoomStep];
-        setBestStepUnit();
-    }
-    else
-    {
-        if (startTime == 0)
-            startTime = repElement->getStart();
-        if (endTime == 0)
-            endTime = repElement->getEnd();
-        overallDuration = endTime - startTime;
-    }
-
-    /* Some of the algorithems here require a mininum project duration of 1 day
-     * to work properly. */
-    if (endTime - startTime < 60 * 60 * 24)
-        endTime = startTime + 60 * 60 * 24 + 1;
-
-    /* QCanvas can only handle 32767 pixel width. So we have to shorten the
-     * report period if the chart exceeds this size. */
-    if (time2x(endTime) > 32767)
-        endTime = x2time(32767 - 2);
-
-    canvasWidth = time2x(endTime);
-    canvasFrame->setMaximumWidth(canvasWidth + 2);
-
     // Resize header canvas to new size.
     ganttHeaderView->setFixedHeight(headerHeight);
 
-    ganttChart->setProjectAndReportData(getReportElement(), &taskList,
-                                        &resourceList);
-    ganttChart->setSizes(objPosTable, headerHeight, listHeight, canvasWidth,
+    ganttChart->setProjectAndReportData(getReportElement());
+    QValueList<int> sizes = splitter->sizes();
+    if (autoFit)
+    {
+        /* In autoFit mode we show 1/3 table and 2/3 gantt chart. Otherwise we
+         * just keep the current size of the splitter. */
+        sizes[0] = static_cast<int>(width() / 3.0);
+        sizes[1] = static_cast<int>(width() * 2.0/3.0);
+        splitter->setSizes(sizes);
+    }
+    ganttChart->setSizes(objPosTable, headerHeight, listHeight, sizes[1],
                          itemHeight);
     QPaintDeviceMetrics metrics(ganttChartView);
     ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
@@ -714,23 +653,10 @@ TjReport::prepareChart(bool autoFit, QtReportElement* repElement)
                          KGlobalSettings::calculateAlternateBackgroundColor
                          (listView->colorGroup().base()).dark(130));
     ganttChart->setHeaderHeight(headerHeight);
-    ganttChart->generate(autoFit ? TjGanttChart::fitInterval :
+    ganttChart->generate(autoFit ? TjGanttChart::fitSize:
                          TjGanttChart::manual);
 
-}
-
-int
-TjReport::time2x(time_t t) const
-{
-    return (int) ((t - startTime) *
-                  (((float) pixelPerYear) / (60 * 60 * 24 * 365)));
-}
-
-time_t
-TjReport::x2time(int x) const
-{
-    return (time_t) (startTime + ((float) x * 60 * 60 * 24 * 365) /
-                     pixelPerYear);
+    canvasFrame->setMaximumWidth(ganttChart->getWidth());
 }
 
 void
@@ -771,7 +697,7 @@ TjReport::collapsReportItem(QListViewItem*)
     if (loadingProject)
         return;
 
-    this->generateChart(FALSE);
+    regenerateChart();
 
     syncVSlidersGantt2List(ganttChartView->contentsX(), listView->contentsY());
 }
@@ -782,7 +708,7 @@ TjReport::expandReportItem(QListViewItem*)
     if (loadingProject)
         return;
 
-    this->generateChart(FALSE);
+    regenerateChart();
     syncVSlidersGantt2List(ganttChartView->contentsX(), listView->contentsY());
 }
 
@@ -871,7 +797,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
 void
 TjReport::listHeaderClicked(int)
 {
-    this->generateChart(FALSE);
+    regenerateChart();
 }
 
 void
@@ -1067,41 +993,37 @@ TjReport::updateStatusBar()
 void
 TjReport::zoomIn()
 {
-    if (currentZoomStep >= sizeof(zoomSteps) / sizeof(int) - 1)
-        return;
-
-    ganttChart->zoomIn();
-
-    time_t x = x2time(ganttChartView->contentsX());
+    time_t x = ganttChart->x2time(ganttChartView->contentsX());
     int y = ganttChartView->contentsY();
 
-    pixelPerYear = zoomSteps[++currentZoomStep];
-    setBestStepUnit();
-    this->generateChart(FALSE);
+    if (!ganttChart->zoomIn())
+        return;
+    canvasFrame->setMaximumWidth(ganttChart->getWidth());
 
-    ganttHeaderView->setContentsPos(time2x(x), 0);
-    ganttChartView->setContentsPos(time2x(x), y);
+    ganttHeaderView->repaint();
+    ganttChartView->repaint();
+    update();
+
+    ganttHeaderView->setContentsPos(ganttChart->time2x(x), 0);
+    ganttChartView->setContentsPos(ganttChart->time2x(x), y);
 }
 
 void
 TjReport::zoomOut()
 {
-    if (currentZoomStep == 0 ||
-        ((zoomSteps[currentZoomStep - 1] * (float) (endTime - startTime))
-         / (60 * 60 * 24 * 365)) < canvasFrame->minimumWidth())
-        return;
-
-    ganttChart->zoomOut();
-
-    time_t x = x2time(ganttChartView->contentsX());
+    time_t x = ganttChart->x2time(ganttChartView->contentsX());
     int y = ganttChartView->contentsY();
 
-    pixelPerYear = zoomSteps[--currentZoomStep];
-    setBestStepUnit();
-    this->generateChart(FALSE);
+    if (!ganttChart->zoomOut())
+        return;
+    canvasFrame->setMaximumWidth(ganttChart->getWidth());
 
-    ganttHeaderView->setContentsPos(time2x(x), 0);
-    ganttChartView->setContentsPos(time2x(x), y);
+    ganttHeaderView->repaint();
+    ganttChartView->repaint();
+    update();
+
+    ganttHeaderView->setContentsPos(ganttChart->time2x(x), 0);
+    ganttChartView->setContentsPos(ganttChart->time2x(x), y);
 }
 
 void
@@ -1120,23 +1042,6 @@ TjReport::hide()
         statusBarUpdateTimer->stop();
 
     QWidget::hide();
-}
-
-void
-TjReport::setBestStepUnit()
-{
-    if (pixelPerYear / minStepHour > 365 * 24)
-        stepUnit = hour;
-    else if (pixelPerYear / minStepDay >= 365)
-        stepUnit = day;
-    else if (pixelPerYear / minStepWeek >= 52)
-        stepUnit = week;
-    else if (pixelPerYear / minStepMonth >= 12)
-        stepUnit = month;
-    else if (pixelPerYear / minStepQuarter >= 4)
-        stepUnit = quarter;
-    else
-        stepUnit = year;
 }
 
 QString
@@ -1169,79 +1074,6 @@ TjReport::treeLevel(const QListViewItem* lvi) const
             kdFatal() << "Tree level explosion";
     }
     return level;
-}
-
-Interval
-TjReport::stepInterval(time_t ref) const
-{
-    Interval iv;
-    switch (stepUnit)
-    {
-        case hour:
-            iv.setStart(beginOfHour(ref));
-            iv.setEnd(hoursLater(1, iv.getStart()) - 1);
-            break;
-        case day:
-            iv.setStart(midnight(ref));
-            iv.setEnd(sameTimeNextDay(iv.getStart()) - 1);
-            break;
-        case week:
-            iv.setStart(beginOfWeek
-                        (ref, reportDef->getProject()->getWeekStartsMonday()));
-            iv.setEnd(sameTimeNextWeek(iv.getStart()) - 1);
-            break;
-        case month:
-            iv.setStart(beginOfMonth(ref));
-            iv.setEnd(sameTimeNextMonth(iv.getStart()) - 1);
-            break;
-        case quarter:
-            iv.setStart(beginOfQuarter(ref));
-            iv.setEnd(sameTimeNextQuarter(iv.getStart()) - 1);
-            break;
-        case year:
-            iv.setStart(beginOfYear(ref));
-            iv.setEnd(sameTimeNextYear(iv.getStart()) - 1);
-            break;
-        default:
-            kdFatal() << "Unknown stepUnit";
-    }
-    return iv;
-}
-
-QString
-TjReport::stepIntervalName(time_t ref) const
-{
-    QString name;
-    switch (stepUnit)
-    {
-        case hour:
-            name = time2user(beginOfHour(ref), "%k:%M " +
-                             KGlobal::locale()->dateFormat());
-            break;
-        case day:
-            name = time2user(midnight(ref), KGlobal::locale()->dateFormat());
-            break;
-        case week:
-        {
-            bool wsm = reportDef->getProject()->getWeekStartsMonday();
-            name = i18n("Week %1, %2").arg(weekOfYear(ref, wsm))
-                .arg(::year(ref));
-            break;
-        }
-        case month:
-            name = QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(ref)))
-                .arg(::year(ref));
-            break;
-        case quarter:
-            name = QString("Q%1 %2").arg(quarterOfYear(ref)).arg(::year(ref));
-            break;
-        case year:
-            name = QString().sprintf("%d", ::year(ref));
-            break;
-        default:
-            kdFatal() << "Unknown stepUnit";
-    }
-    return name;
 }
 
 QString

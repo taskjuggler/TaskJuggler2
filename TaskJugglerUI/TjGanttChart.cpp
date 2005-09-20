@@ -19,8 +19,10 @@
 #include <qpen.h>
 #include <qbrush.h>
 #include <qdatetime.h>
-#include <klocale.h>
 #include <qpainter.h>
+
+#include <klocale.h>
+#include <kglobal.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -30,31 +32,7 @@
 #include "QtReport.h"
 #include "QtReportElement.h"
 #include "TjObjPosTable.h"
-
-//                                           Boundary
-const int TjGanttChart::minStepHour = 20;    //   365 * 24 * 20 = 175200
-const int TjGanttChart::minStepDay = 20;     //   365 * 20 = 7300
-const int TjGanttChart::minStepWeek = 35;    //   52 * 35 = 1820
-const int TjGanttChart::minStepMonth = 35;   //   12 * 35 = 420
-const int TjGanttChart::minStepQuarter = 25; //   4 * 25 = 100
-const int TjGanttChart::minStepYear = 80;    //   1 * 80 = 80
-
-const int TjGanttChart::zoomSteps[] =
-{
-           // Mode       Sublines
-    80,    // Year       Quarter
-    141,   // Quarter
-    250,   // Quarter    Month
-    441,   // Month
-    780,   // Month      Week
-    1378,  // Month      Week
-    2435,  // Week
-    4302,  // Week       Day
-    7602,  // Day
-    13434, // Day
-    41946, // Hour
-    176000
-} ;
+#include "TjGanttZoomStep.h"
 
 TjGanttChart::TjGanttChart(QObject* obj)
 {
@@ -90,6 +68,9 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["taskLoadCol"] = QColor("#FD13C6");
     colors["otherLoadCol"] = QColor("#FF8D13");
     colors["freeLoadCol"] = QColor("#00AC00");
+
+    currentZoomStep = 0;
+    clipped = false;
 }
 
 TjGanttChart::~TjGanttChart()
@@ -100,14 +81,11 @@ TjGanttChart::~TjGanttChart()
 }
 
 void
-TjGanttChart::setProjectAndReportData(const QtReportElement* r,
-                                      TaskList* tl, ResourceList* rl)
+TjGanttChart::setProjectAndReportData(const QtReportElement* r)
 {
     reportElement = r;
     reportDef = static_cast<const QtReport*>(reportElement->getReport());
     project = reportDef->getProject();
-    taskList = tl;
-    resourceList = rl;
     scenario = reportElement->getScenario(0);
 }
 
@@ -170,6 +148,8 @@ TjGanttChart::calcHeaderHeight()
     headerFont.setPixelSize(pointsToYPixels(7));
     QFontMetrics fm(headerFont);
 
+    calcStepSizes();
+
     headerMargin = (int) (fm.height() * 0.15);
     // The header consists of 2 lines seperated by a line.
     return (2 * (fm.height() + 2 * headerMargin)) + lineWidth;
@@ -192,7 +172,100 @@ TjGanttChart::setHeaderHeight(int hh)
         fontHeight = fm.height();
     } while (fontHeight > textHeight);
 
+    calcStepSizes();
+
     headerMargin = (int) (fontHeight * 0.15);
+}
+
+void
+TjGanttChart::calcStepSizes()
+{
+    // Remove and delete all entries from the zoomStep list.
+    for (std::vector<TjGanttZoomStep*>::iterator it = zoomSteps.begin();
+         it != zoomSteps.end(); ++it)
+        delete *it;
+    zoomSteps.clear();
+
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::day,
+                         "WWW WWW 00, 0000", "%a %b %d, %Y",
+                         TjGanttZoomStep::hour,
+                         "00", "%H", 24, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::month,
+                         "WWW 0000", "%b %Y",
+                         TjGanttZoomStep::day,
+                         "00", "%d", 31, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::month,
+                         "WWW 0000", "%b %Y",
+                         TjGanttZoomStep::day,
+                         "00", "%d", 31, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::month,
+                         "WWW 0000", "%b %Y",
+                         TjGanttZoomStep::day,
+                         "00", "%d", 31, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::month,
+                         "WWW 0000", "%b %Y",
+                         TjGanttZoomStep::day,
+                         "W", "#w", 31, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::month,
+                         "0000", "%b %Y",
+                         TjGanttZoomStep::week,
+                         "W00", i18n("W#W"), 5,
+                         reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::month,
+                         "0000", "%b %Y",
+                         TjGanttZoomStep::week,
+                         "W00", i18n("W#W"), 5,
+                         reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::year,
+                         "0000", "%Y",
+                         TjGanttZoomStep::month,
+                         "WWW", "%b", 12, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::year,
+                         "0000", "%Y",
+                         TjGanttZoomStep::month,
+                         "00", "%m", 12, reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::year,
+                         "0000", "%Y",
+                         TjGanttZoomStep::quarter,
+                         "W0", i18n("Q#Q"), 4,
+                         reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::year, "", "",
+                         TjGanttZoomStep::year, "0000", "%Y", 1,
+                         reportDef->getWeekStartsMonday(),
+                         headerFont));
+    zoomSteps.push_back(new TjGanttZoomStep
+                        (TjGanttZoomStep::year, "", "",
+                         TjGanttZoomStep::year, "0000", "%Y", 1,
+                         reportDef->getWeekStartsMonday(),
+                         headerFont));
+
+    int ppyHint = 24 * 365;
+    for (std::vector<TjGanttZoomStep*>::iterator it = zoomSteps.begin();
+         it != zoomSteps.end(); ++it)
+    {
+        ppyHint = (int) ((*it)->calcStepSize(ppyHint) / 2.2);
+    }
 }
 
 int
@@ -255,73 +328,27 @@ TjGanttChart::generate(ScaleMode scaleMode)
     for (QCanvasItemList::Iterator it = cis.begin(); it != cis.end(); ++it)
         delete *it;
 
-    int overallDuration;
     switch (scaleMode)
     {
-        case fitSize:
+        case autoZoom:
         {
             startTime = reportElement->getStart();
             endTime = reportElement->getEnd();
-            overallDuration = endTime - startTime;
-            pixelPerYear = (int) ((double) width /
-                                  (overallDuration / (60.0 * 60 * 24 * 365)));
-            if (pixelPerYear / (4 * minStepHour) > 365 * 24)
-            {
-                stepUnit = hour;
-            }
-            else if (pixelPerYear / (4 * minStepDay) >= 365)
-            {
-                stepUnit = day;
-            }
-            else if (pixelPerYear / (4 * minStepWeek) >= 52)
-            {
-                stepUnit = week;
-            }
-            else if (pixelPerYear / (4 * minStepMonth) >= 12)
-            {
-                stepUnit = month;
-            }
-            else if (pixelPerYear / (4 * minStepQuarter) >= 4)
-            {
-                stepUnit = quarter;
-            }
-            else
-            {
-                stepUnit = year;
-            }
+            /* In case the user has not choosen a report interval that differs
+             * from the project interval, we use the best fit interval. */
+            if (startTime == reportDef->getProject()->getStart() &&
+                endTime == reportDef->getProject()->getEnd())
+                allTasksInterval();
+
+            zoomToFitWindow(width, endTime - startTime);
+
+            endTime = x2time(width);
             break;
         }
-        case fitInterval:
+        case fitSize:
         {
-            /* In autoFit mode we try to fit the full timespan of the project
-             * into the view. We ignore the project time frame specified by
-             * the user and use the start time of the earliest task and the
-             * end time of the last task instead. For a better look we add 5%
-             * more at both sides. */
-            startTime = reportElement->getEnd();
-            endTime = reportElement->getStart();
-            for (TaskListIterator tli(*taskList); *tli; ++tli)
-            {
-                if ((*tli)->getStart(scenario) < startTime)
-                    startTime = (*tli)->getStart(scenario);
-                if ((*tli)->getEnd(scenario) > endTime)
-                    endTime = (*tli)->getEnd(scenario);
-            }
-            overallDuration = endTime - startTime;
-            startTime -= (time_t) (0.05 * overallDuration);
-            endTime += (time_t) (0.05 * overallDuration);
-            // We try to use a scaling so that the initial Gantt chart is about
-            // 800 pixels width.
-            for (currentZoomStep = 0; currentZoomStep < sizeof(zoomSteps) /
-                 sizeof(int) && (((float) (endTime - startTime) /
-                                  (60 * 60 * 24 * 365)) *
-                                 zoomSteps[currentZoomStep]) < 800;
-                 ++currentZoomStep)
-                ;
-            if (currentZoomStep > 0)
-                --currentZoomStep;
-            pixelPerYear = zoomSteps[currentZoomStep];
-            setBestStepUnit();
+            allTasksInterval();
+            zoomToFitWindow(header->width(), endTime - startTime);
             break;
         }
         case manual:
@@ -330,8 +357,16 @@ TjGanttChart::generate(ScaleMode scaleMode)
                 startTime = reportElement->getStart();
             if (endTime == 0)
                 endTime = reportElement->getEnd();
-            overallDuration = endTime - startTime;
+            if (clipped)
+            {
+                endTime = unclippedEndTime;
+                clipped = false;
+            }
+
+            break;
         }
+        default:
+            assert(0);
     }
 
     /* Some of the algorithems here require a mininum project duration of 1 day
@@ -339,10 +374,14 @@ TjGanttChart::generate(ScaleMode scaleMode)
     if (endTime - startTime < 60 * 60 * 24)
         endTime = startTime + 60 * 60 * 24 + 1;
 
-    /* QCanvas can only handle 32767 pixel width. So we have to shorten the
-     * report period if the chart exceeds this size. */
+    /* QCanvasView can only handle 32767 pixel width. So we have to shorten
+     * the report period if the chart exceeds this size. */
     if (time2x(endTime) > 32767)
+    {
+        unclippedEndTime = endTime;
+        clipped = true;
         endTime = x2time(32767 - 2);
+    }
 
     width = time2x(endTime);
 
@@ -355,6 +394,9 @@ TjGanttChart::generate(ScaleMode scaleMode)
     generateHeaderAndGrid();
 
     generateGanttElements();
+
+    header->update();
+    chart->update();
 }
 
 void
@@ -499,24 +541,109 @@ TjGanttChart::paintLegend(const QRect& clip, QPainter* p, bool dbuf)
     p->setViewport(vpSave);
 }
 
-void
-TjGanttChart::zoomIn()
+Interval
+TjGanttChart::stepInterval(time_t ref) const
 {
-    if (currentZoomStep >= sizeof(zoomSteps) / sizeof(int) - 1)
-        return;
+    assert(zoomSteps.size() > 0);
 
-    pixelPerYear = zoomSteps[++currentZoomStep];
-    setBestStepUnit();
+    Interval iv;
+    switch (zoomSteps[currentZoomStep]->getStepUnit(false))
+    {
+        case TjGanttZoomStep::hour:
+            iv.setStart(beginOfHour(ref));
+            iv.setEnd(hoursLater(1, iv.getStart()) - 1);
+            break;
+        case TjGanttZoomStep::day:
+            iv.setStart(midnight(ref));
+            iv.setEnd(sameTimeNextDay(iv.getStart()) - 1);
+            break;
+        case TjGanttZoomStep::week:
+            iv.setStart(beginOfWeek
+                        (ref, reportDef->getProject()->getWeekStartsMonday()));
+            iv.setEnd(sameTimeNextWeek(iv.getStart()) - 1);
+            break;
+        case TjGanttZoomStep::month:
+            iv.setStart(beginOfMonth(ref));
+            iv.setEnd(sameTimeNextMonth(iv.getStart()) - 1);
+            break;
+        case TjGanttZoomStep::quarter:
+            iv.setStart(beginOfQuarter(ref));
+            iv.setEnd(sameTimeNextQuarter(iv.getStart()) - 1);
+            break;
+        case TjGanttZoomStep::year:
+            iv.setStart(beginOfYear(ref));
+            iv.setEnd(sameTimeNextYear(iv.getStart()) - 1);
+            break;
+        default:
+            assert(0);
+    }
+    return iv;
 }
 
-void
+QString
+TjGanttChart::stepIntervalName(time_t ref) const
+{
+    assert(zoomSteps.size() > 0);
+
+    QString name;
+    switch (zoomSteps[currentZoomStep]->getStepUnit(false))
+    {
+        case TjGanttZoomStep::hour:
+            name = time2user(beginOfHour(ref), "%k:%M " +
+                             KGlobal::locale()->dateFormat());
+            break;
+        case TjGanttZoomStep::day:
+            name = time2user(midnight(ref), KGlobal::locale()->dateFormat());
+            break;
+        case TjGanttZoomStep::week:
+        {
+            bool wsm = reportDef->getProject()->getWeekStartsMonday();
+            name = i18n("Week %1, %2").arg(weekOfYear(ref, wsm))
+                .arg(::year(ref));
+            break;
+        }
+        case TjGanttZoomStep::month:
+            name = QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(ref)))
+                .arg(::year(ref));
+            break;
+        case TjGanttZoomStep::quarter:
+            name = QString("Q%1 %2").arg(quarterOfYear(ref)).arg(::year(ref));
+            break;
+        case TjGanttZoomStep::year:
+            name = QString().sprintf("%d", ::year(ref));
+            break;
+        default:
+            assert(0);
+    }
+    return name;
+}
+
+bool
+TjGanttChart::zoomIn()
+{
+    assert(zoomSteps.size() > 0);
+
+    if (currentZoomStep == 0)
+        return false;
+
+    currentZoomStep--;
+    generate(manual);
+
+    return true;
+}
+
+bool
 TjGanttChart::zoomOut()
 {
-    if (currentZoomStep == 0)
-        return;
+    assert(zoomSteps.size() > 0);
 
-    pixelPerYear = zoomSteps[--currentZoomStep];
-    setBestStepUnit();
+    if (currentZoomStep >= zoomSteps.size() - 1)
+        return false;
+
+    currentZoomStep++;
+    generate(manual);
+
+    return true;
 }
 
 void
@@ -552,55 +679,47 @@ TjGanttChart::generateHeaderAndGrid()
     rect->setZ(TJRL_BACKGROUND);
     rect->show();
 
-    switch (stepUnit)
+    generateHeaderLine(0);
+    generateHeaderLine(headerHeight / 2);
+    TjGanttZoomStep* czs = zoomSteps[currentZoomStep];
+    switch (czs->getStepUnit(false))
     {
-        case hour:
-            generateDayHeader(0);
-            generateHourHeader(headerHeight / 2);
+        case TjGanttZoomStep::hour:
             markHourBoundaries(1);
             markNonWorkingHoursOnBackground();
             break;
-        case day:
-            generateMonthHeader(0, TRUE);
-            generateDayHeader(headerHeight / 2);
+        case TjGanttZoomStep::day:
             markDayBoundaries();
-            if (pixelPerYear > 365 * 24 * 2)
+            if (czs->getPixelsPerYear() > 365 * 24 * 2)
                 markNonWorkingHoursOnBackground();
             else
                 markNonWorkingDaysOnBackground();
-            if (pixelPerYear > 365 * 8 * 8)
+            if (czs->getPixelsPerYear() > 365 * 8 * 8)
                 markHourBoundaries(3);
             break;
-        case week:
-            generateMonthHeader(0, TRUE);
-            generateWeekHeader(headerHeight / 2);
+        case TjGanttZoomStep::week:
             markNonWorkingDaysOnBackground();
             markWeekBoundaries();
-            if (pixelPerYear > 365 * 10)
+            if (czs->getPixelsPerYear() > 365 * 10)
                 markDayBoundaries();
             break;
-        case month:
-            generateYearHeader(0);
-            generateMonthHeader(headerHeight / 2, FALSE);
+        case TjGanttZoomStep::month:
             markMonthsBoundaries();
             // Ensure that we have at least 2 pixels per day.
-            if (pixelPerYear > 52 * 14)
+            if (czs->getPixelsPerYear() > 52 * 14)
                 markNonWorkingDaysOnBackground();
             break;
-        case quarter:
-            generateYearHeader(0);
-            generateQuarterHeader(headerHeight / 2);
+        case TjGanttZoomStep::quarter:
             markQuarterBoundaries();
-            if (pixelPerYear > 12 * 20)
+            if (czs->getPixelsPerYear() > 12 * 20)
                 markMonthsBoundaries();
             break;
-        case year:
-            generateYearHeader(headerHeight / 2);
+        case TjGanttZoomStep::year:
             // Ensure that we have at least 20 pixels per month or per
             // quarter.
-            if (pixelPerYear > 20 * 12)
+            if (czs->getPixelsPerYear() > 20 * 12)
                 markMonthsBoundaries();
-            else if (pixelPerYear >= 20 * 4)
+            else if (czs->getPixelsPerYear() >= 20 * 4)
                 markQuarterBoundaries();
             break;
     }
@@ -615,101 +734,33 @@ TjGanttChart::generateHeaderAndGrid()
 }
 
 void
-TjGanttChart::generateHourHeader(int y)
+TjGanttChart::generateHeaderLine(int y)
 {
-    bool first = true;
-    for (time_t hour = midnight(startTime); hour < endTime;
-         hour = hoursLater(1, hour))
-    {
-        QString label;
-        label = QString("%1").arg(hourOfDay(hour));
-        drawHeaderCell(hour, hoursLater(1, hour), y, label, first);
-        first = false;
-    }
-}
+    assert(zoomSteps.size() > 0);
 
-void
-TjGanttChart::generateDayHeader(int y)
-{
-    bool first = true;
-    for (time_t day = midnight(startTime);
-         day < endTime; day = sameTimeNextDay(day))
-    {
-        QString label;
-        int stepSize = pixelPerYear / 365;
-        if (stepSize > 70)
-            label = QString("%1, %2 %3")
-                .arg(QDate::shortDayName(dayOfWeek(day, TRUE) + 1))
-                .arg(QDate::shortMonthName(monthOfYear(day)))
-                .arg(dayOfMonth(day));
-        else if (stepSize > 45)
-            label = QString("%1 %2")
-                .arg(QDate::shortDayName(dayOfWeek(day, TRUE) + 1))
-                .arg(dayOfMonth(day));
-        else
-            label = QString("%1").arg(dayOfMonth(day));
-        drawHeaderCell(day, sameTimeNextDay(day), y, label, first);
-        first = false;
-    }
-}
-
-void
-TjGanttChart::generateWeekHeader(int y)
-{
-    bool weekStartsMonday = reportDef->getWeekStartsMonday();
+    TjGanttZoomStep* czs = zoomSteps[currentZoomStep];
     bool first = true;
 
-    for (time_t week = beginOfWeek(startTime, weekStartsMonday);
-         week < endTime;
-         week = sameTimeNextWeek(week))
+    for (time_t t = czs->intervalStart(y == 0, startTime); t < endTime;
+         t = czs->nextIntervalStart(y == 0, t))
     {
-        drawHeaderCell(week, sameTimeNextWeek(week), y,
-                       (i18n("short for week of year", "W%1")
-                        .arg(weekOfYear(week, weekStartsMonday))), first);
-        first = false;
-    }
-}
+        QString format = czs->getFormat(y == 0);
 
-void
-TjGanttChart::generateMonthHeader(int y, bool withYear)
-{
-    bool first = true;
-    for (time_t month = beginOfMonth(startTime);
-         month < endTime; month = sameTimeNextMonth(month))
-    {
-         QString label = withYear ?
-            QString("%1 %2").arg(QDate::shortMonthName(monthOfYear(month)))
-            .arg(::year(month)) :
-            QString("%1").arg(QDate::shortMonthName(monthOfYear(month)));
-        drawHeaderCell(month, sameTimeNextMonth(month), y, label, first);
-        first = false;
-    }
-}
+        int pos;
+        if ((pos = format.find("#w")) >= 0)
+            format.replace
+                (pos, 2, QString("%1").
+                 arg(time2user(t, "%a")[0]));
+        else if ((pos = format.find("#W")) >= 0)
+            format.replace
+                (pos, 2, QString("%1").
+                 arg(weekOfYear(t, czs->getWeekStartsMonday())));
+        else if ((pos = format.find("#Q")) >= 0)
+            format.replace(pos, 2, QString("%1").arg(quarterOfYear(t)));
 
-void
-TjGanttChart::generateQuarterHeader(int y)
-{
-    bool first = true;
-    for (time_t quarter = beginOfQuarter(startTime);
-         quarter < endTime; quarter =
-         sameTimeNextQuarter(quarter))
-    {
-        drawHeaderCell(quarter, sameTimeNextQuarter(quarter), y,
-                       i18n("short for quater of year", "Q%1")
-                       .arg(quarterOfYear(quarter)), first);
-        first = false;
-    }
-}
-
-void
-TjGanttChart::generateYearHeader(int y)
-{
-    bool first = true;
-    for (time_t year = beginOfYear(startTime);
-         year < endTime; year = sameTimeNextYear(year))
-    {
-        drawHeaderCell(year, sameTimeNextYear(year), y,
-                       QString("%1").arg(::year(year)), first);
+        drawHeaderCell(t, czs->nextIntervalStart(y == 0, t), y,
+                       time2user(t, format),
+                       first);
         first = false;
     }
 }
@@ -1003,6 +1054,17 @@ void
 TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
                             int barWidth, bool outlineOnly, QCanvas* canvas)
 {
+    /* Workaround for a QCanvasView problem. In Qt3.x it can only handle 32767
+     * pixels per dimension. */
+    if (start < 0)
+        start = 0;
+    else if (start > 32767)
+        start = 32767;
+    if (end < 0)
+        end = 0;
+    else if (end > 32767)
+        end = 32767;
+
     // A blue box with some fancy interior.
     QCanvasRectangle* rect =
         new QCanvasRectangle(start, centerY - (int) (height * 0.35),
@@ -1058,7 +1120,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     int jagWidth = (int) (height * 0.25);
     int top = centerY - (int) (height * 0.15);
     int halfbottom = centerY + (int) (height * 0.15);
-    int bottom = halfbottom + jagWidth + (int) (height * 0.1);
+    int bottom = halfbottom + jagWidth;
 
     QPointArray a(9);
     a.setPoint(0, start - jagWidth, top);
@@ -1070,6 +1132,18 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     a.setPoint(6, end + jagWidth, halfbottom);
     a.setPoint(7, end + jagWidth, top);
     a.setPoint(8, start - jagWidth, top);
+
+    /* Workaround for a QCanvasView problem. In Qt3.x it can only handle 32767
+     * pixels per dimension. */
+    for (uint i = 0; i < a.count(); ++i)
+    {
+        QPoint p = a[i];
+        if (p.x() < 0)
+            p.setX(0);
+        if (p.x() > 32767)
+            p.setX(32767);
+        a[i] = p;
+    }
 
     /* QCanvasPolygon does not draw a solid perimeter. So we have to do this
      * on our own. */
@@ -1132,11 +1206,16 @@ TjGanttChart::drawDependencies(const Task* t1)
         if (t2Top >= 0)
         {
             int t1x = time2x(t1->getEnd(scenario));
+            if (t1->isMilestone())
+                t1x += (int) (minRowHeight * 0.4);
+            else if (t1->isContainer())
+                t1x += (int) (minRowHeight * 0.25);
+
             int t2x = time2x(t2->getStart(scenario));
             if (t2->isMilestone())
                 t2x -= (int) (minRowHeight * 0.4);
             else if (t2->isContainer())
-                t2x -= 3;
+                t2x -= (int) (minRowHeight * 0.25);
 
             int t1y = objPosTable->caToPos(t1) + minRowHeight / 2;
             int t2y = objPosTable->caToPos(t2) + minRowHeight / 2;
@@ -1171,6 +1250,18 @@ TjGanttChart::drawDependencies(const Task* t1)
             }
             arrowCounter++;
 
+            /* Workaround for a QCanvasView problem. In Qt3.x it can only
+             * handle 32767 pixels per dimension. */
+            for (uint i = 0; i < a.count(); ++i)
+            {
+                QPoint p = a[i];
+                if (p.x() < 0)
+                    p.setX(0);
+                if (p.x() > 32767)
+                    p.setX(32767);
+                a[i] = p;
+            }
+
             for (uint i = 0; i < a.count() - 1; ++i)
             {
                 QCanvasLine* line = new QCanvasLine(chart);
@@ -1203,94 +1294,33 @@ TjGanttChart::drawDependencies(const Task* t1)
 void
 TjGanttChart::drawTaskResource(const Resource* r, const Task* t)
 {
+    assert(zoomSteps.size() > 0);
+
     /* For each time interval we draw a column that represents the load of the
      * resource allocated to the task. The end columns are trimmed to be in
      * the same horizontal interval as the task bar. */
     Interval iv;
+    TjGanttZoomStep* czs = zoomSteps[currentZoomStep];
     int rY = objPosTable->caToPos(t, r);
-    switch (stepUnit)
-    {
-        case hour:
-            for (time_t i = beginOfHour(t->getStart(scenario));
-                 i <= (t->getEnd(scenario)); i = hoursLater(1, i))
-                drawResourceLoadColum(r, t, i, hoursLater(1, i) - 1, rY);
-            break;
-        case day:
-            for (time_t i = midnight(t->getStart(scenario));
-                 i <= (t->getEnd(scenario)); i = sameTimeNextDay(i))
-                drawResourceLoadColum(r, t, i, sameTimeNextDay(i) - 1, rY);
-            break;
-        case week:
-            for (time_t i = beginOfWeek(t->getStart(scenario),
-                                        t->getProject()->
-                                        getWeekStartsMonday());
-                 i <= (t->getEnd(scenario)); i = sameTimeNextWeek(i))
-                drawResourceLoadColum(r, t, i, sameTimeNextWeek(i) - 1, rY);
-            break;
-        case month:
-            for (time_t i = beginOfMonth(t->getStart(scenario));
-                 i <= (t->getEnd(scenario)); i = sameTimeNextMonth(i))
-                drawResourceLoadColum(r, t, i, sameTimeNextMonth(i) - 1, rY);
-            break;
-        case quarter:
-            for (time_t i = beginOfQuarter(t->getStart(scenario));
-                 i <= (t->getEnd(scenario)); i = sameTimeNextQuarter(i))
-                drawResourceLoadColum(r, t, i, sameTimeNextQuarter(i) - 1, rY);
-            break;
-        case year:
-            for (time_t i = beginOfYear(t->getStart(scenario));
-                 i <= (t->getEnd(scenario)); i = sameTimeNextYear(i))
-                drawResourceLoadColum(r, t, i, sameTimeNextYear(i) - 1, rY);
-            break;
-        default:
-            assert(0);
-    }
+    for (time_t i = czs->intervalStart(false, t->getStart(scenario));
+         i <= (t->getEnd(scenario)); i = czs->nextIntervalStart(false, i))
+        drawResourceLoadColum(r, t, i, czs->nextIntervalStart(false, i) - 1,
+                              rY);
 }
 
 void
 TjGanttChart::drawResource(const Resource* r)
 {
+    assert(zoomSteps.size() > 0);
+
     /* For each horizontal interval of the Gantt chart we draw a column that
      * represents the load of the resource for that interval. */
     Interval iv;
+    TjGanttZoomStep* czs = zoomSteps[currentZoomStep];
     int rY = objPosTable->caToPos(r, 0);
-    switch (stepUnit)
-    {
-        case hour:
-            for (time_t i = beginOfHour(reportElement->getStart());
-                 i <= reportElement->getEnd(); i = hoursLater(1, i))
-                drawResourceLoadColum(r, 0, i, hoursLater(1, i) - 1, rY);
-            break;
-        case day:
-            for (time_t i = midnight(reportElement->getStart());
-                 i <= reportElement->getEnd(); i = sameTimeNextDay(i))
-                drawResourceLoadColum(r, 0, i, sameTimeNextDay(i) - 1, rY);
-            break;
-        case week:
-            for (time_t i = beginOfWeek(reportElement->getStart(),
-                                        reportDef->getProject()->
-                                        getWeekStartsMonday());
-                 i <= (reportElement->getEnd()); i = sameTimeNextWeek(i))
-                drawResourceLoadColum(r, 0, i, sameTimeNextWeek(i) - 1, rY);
-            break;
-        case month:
-            for (time_t i = beginOfMonth(reportElement->getStart());
-                 i <= (reportElement->getEnd()); i = sameTimeNextMonth(i))
-                drawResourceLoadColum(r, 0, i, sameTimeNextMonth(i) - 1, rY);
-            break;
-        case quarter:
-            for (time_t i = beginOfQuarter(reportElement->getStart());
-                 i <= (reportElement->getEnd()); i = sameTimeNextQuarter(i))
-                drawResourceLoadColum(r, 0, i, sameTimeNextQuarter(i) - 1, rY);
-            break;
-        case year:
-            for (time_t i = beginOfYear(reportElement->getStart());
-                 i <= (reportElement->getEnd()); i = sameTimeNextYear(i))
-                drawResourceLoadColum(r, 0, i, sameTimeNextYear(i) - 1, rY);
-            break;
-        default:
-            assert(0);
-    }
+    for (time_t i = czs->intervalStart(false, reportElement->getStart());
+         i <= reportElement->getEnd(); i = czs->nextIntervalStart(false, i))
+        drawResourceLoadColum(r, 0, i, czs->nextIntervalStart(false, i) - 1, rY);
 }
 
 void
@@ -1392,32 +1422,77 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
 int
 TjGanttChart::time2x(time_t t) const
 {
+    assert(zoomSteps.size() > 0);
+
     return (int) ((t - startTime) *
-                  (((float) pixelPerYear) / (60 * 60 * 24 * 365)));
+                  (((float) zoomSteps[currentZoomStep]->getPixelsPerYear())
+                   / (60 * 60 * 24 * 365)));
 }
 
 time_t
 TjGanttChart::x2time(int x) const
 {
+    assert(zoomSteps.size() > 0);
+
     return (time_t) (startTime + ((float) x * 60 * 60 * 24 * 365) /
-                     pixelPerYear);
+                     zoomSteps[currentZoomStep]->getPixelsPerYear());
 }
 
 void
-TjGanttChart::setBestStepUnit()
+TjGanttChart::zoomToFitWindow(int width, time_t duration)
 {
-    if (pixelPerYear / minStepHour > 365 * 24)
-        stepUnit = hour;
-    else if (pixelPerYear / minStepDay >= 365)
-        stepUnit = day;
-    else if (pixelPerYear / minStepWeek >= 52)
-        stepUnit = week;
-    else if (pixelPerYear / minStepMonth >= 12)
-        stepUnit = month;
-    else if (pixelPerYear / minStepQuarter >= 4)
-        stepUnit = quarter;
+    double years = static_cast<double>(duration) / (60 * 60 * 24 * 365);
+    currentZoomStep = 0;
+    for (std::vector<TjGanttZoomStep*>::iterator it = zoomSteps.begin();
+         it != zoomSteps.end(); ++it)
+    {
+        if ((*it)->getPixelsPerYear() * years < width)
+            return;
+        currentZoomStep++;
+    }
+}
+
+void
+TjGanttChart::allTasksInterval()
+{
+    /* Find the ealiest start of any task and the latest end of any
+     * task. */
+    startTime = reportElement->getEnd();
+    endTime = reportElement->getStart();
+    for (TjObjPosTableIterator it(*objPosTable); it.current(); ++it)
+    {
+        const Task* t;
+        if (it.current()->getCoreAttributes()->getType() == CA_Task)
+            t = static_cast<const Task*>
+                (it.current()->getCoreAttributes());
+        else if (it.current()->getSubCoreAttributes() &&
+                 it.current()->getSubCoreAttributes()->getType() ==
+                 CA_Task)
+            t = static_cast<const Task*>
+                (it.current()->getSubCoreAttributes());
+        else
+            continue;
+        if (t->getStart(scenario) < startTime)
+            startTime = t->getStart(scenario);
+        if (t->getEnd(scenario) > endTime)
+            endTime = t->getEnd(scenario);
+    }
+    if (startTime <= endTime)
+    {
+        /* Add 5% of the interval duration to both ends, so the tasks are not
+         * cut off right at the end. */
+        int duration = endTime - startTime;
+        startTime -= (time_t) (0.05 * duration);
+        endTime += (time_t) (0.05 * duration);
+    }
     else
-        stepUnit = year;
+    {
+        /* The report does not contain any tasks. So we simply use the
+         * requested interval. */
+        startTime = reportElement->getStart();
+        endTime = reportElement->getEnd();
+    }
+
 }
 
 int
