@@ -17,6 +17,7 @@
 #include <qdragobject.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
+#include <qtimer.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -39,6 +40,7 @@
 #include <kdebug.h>
 #include <kprinter.h>
 #include <kmessagebox.h>
+#include <ktip.h>
 
 TaskJuggler::TaskJuggler()
     : KMainWindow( 0, "TaskJuggler" ),
@@ -66,6 +68,11 @@ TaskJuggler::TaskJuggler()
             this, SLOT(addRecentURL(const KURL&)));
 
     readProperties(kapp->config());
+
+    delayTimer = new QTimer(this);
+    connect(delayTimer, SIGNAL(timeout()),
+            this, SLOT(showTip()));
+    delayTimer->start(200, TRUE);
 }
 
 TaskJuggler::~TaskJuggler()
@@ -127,10 +134,10 @@ void TaskJuggler::setupActions()
     new KAction(i18n("F&iles"), "tj_file_list", KShortcut(KKey("ALT+i")),
                 m_view, SLOT(setFocusToFileList()),
                 actionCollection(), "files");
-    new KAction(i18n("&Editor"), "tj_editor", KShortcut(),
+    new KAction(i18n("E&ditor"), "tj_editor", KShortcut("ALT+d"),
                 m_view, SLOT(setFocusToEditor()),
                 actionCollection(), "editor");
-    new KAction(i18n("Rep&ort"), "tj_report", KShortcut(),
+    new KAction(i18n("Rep&ort"), "tj_report", KShortcut("ALT+o"),
                 m_view, SLOT(setFocusToReport()),
                 actionCollection(), "report");
 
@@ -162,15 +169,17 @@ void TaskJuggler::setupActions()
                 actionCollection(), "configure_editor");
 
     // "Help" menu
-    new KAction(i18n("Explain Keyword" ), "tj_keyword_help",
+    new KAction(i18n("Tip of the day"), "idea", 0, this,
+                SLOT(showTip()), actionCollection(), "tip");
+    new KAction(i18n("Explain Keyword"), "tj_keyword_help",
                 KShortcut(KKey("F2")),
                 m_view, SLOT(keywordHelp()),
                 actionCollection(), "keyword_help");
-    new KAction(i18n("Tutorial" ), "tj_tutorial", 0,
+    new KAction(i18n("Tutorial"), "tj_tutorial", 0,
                 m_view, SLOT(tutorial()),
                 actionCollection(), "tutorial");
 
-    setupGUI( ToolBar | Keys | StatusBar | Save | Create );
+    setupGUI(ToolBar | Keys | StatusBar | Save | Create);
 }
 
 void
@@ -307,6 +316,21 @@ void TaskJuggler::optionsPreferences()
     {
         // redo your settings
     }
+}
+
+void
+TaskJuggler::showTip()
+{
+    KTipDialog::showTip(this, QString::null, true);
+}
+
+void
+TaskJuggler::showTipOnStart()
+{
+    delete delayTimer;
+    delayTimer = 0;
+
+    KTipDialog::showTip(this);
 }
 
 void TaskJuggler::changeStatusbar(const QString& text)

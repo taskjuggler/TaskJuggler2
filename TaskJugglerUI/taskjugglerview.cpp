@@ -27,10 +27,12 @@
 #include <qwidgetstack.h>
 #include <qprogressbar.h>
 #include <qtimer.h>
+#include <qlistview.h>
 
 #include <kdebug.h>
 #include <kmainwindow.h>
 #include <kapp.h>
+#include <kaction.h>
 #include <kurl.h>
 #include <ktrader.h>
 #include <klibloader.h>
@@ -651,6 +653,7 @@ TaskJugglerView::loadProject(const KURL& url)
     // Show message list when errors have occured
     QValueList<int> vl;
     int h = editorSplitter->height();
+    KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
     if (errors)
     {
         // The messages should be visible, so we check whether we already have
@@ -668,6 +671,9 @@ TaskJugglerView::loadProject(const KURL& url)
         showEditor();
         messageListView->setSelected(messageListView->firstChild(), TRUE);
         messageListClicked(messageListView->firstChild());
+
+        mainWindow->action("next_problem")->setEnabled(true);
+        mainWindow->action("previous_problem")->setEnabled(true);
     }
     else
     {
@@ -676,8 +682,10 @@ TaskJugglerView::loadProject(const KURL& url)
         editorSplitter->setSizes(vl);
         changeStatusBar(i18n("The project has been scheduled "
                              "without problems."));
-        // Load the main file into the editor.
-        fileManager->showInEditor(fileName);
+
+        mainWindow->action("next_problem")->setEnabled(false);
+        mainWindow->action("previous_problem")->setEnabled(false);
+
         if (showReportAfterLoad)
         {
             QListViewItem* firstReport =
@@ -686,11 +694,8 @@ TaskJugglerView::loadProject(const KURL& url)
             {
                 // Open the report list.
                 mw->listViews->setCurrentItem(mw->reportsPage);
-                // Simulate a click on the first interactive report to open the
-                // report view and show the first report.
-                mw->reportListView->setSelected(firstReport, TRUE);
                 showReport();
-                reportListClicked(firstReport);
+                reportManager->showReport(0);
             }
             else
                 showEditor();
@@ -918,7 +923,7 @@ TaskJugglerView::showEditor()
 
     (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
 
-    mw->bigTab->showPage(mw->editorTab);
+    setFocusToEditor();
 }
 
 void
@@ -1087,12 +1092,32 @@ TaskJugglerView::updateTaskList()
 {
     // Load tasks into Task List View
     KListView* tlv = mw->taskListView;
+
+    /* We'd like to preserve as much state as possible during scheduling runs.
+     * So we store the current item and all open items, so that we can restore
+     * them in the new list after scheduling. This of course only works if
+     * those tasks still exist. */
+    QStringList openTasks, closedTasks;
+    for (QListViewItemIterator lvi(tlv); *lvi; ++lvi)
+        if ((*lvi)->firstChild())
+            if ((*lvi)->isOpen())
+                openTasks.append((*lvi)->text(1));
+            else
+                closedTasks.append((*lvi)->text(1));
+    QString currentTask;
+    if (tlv->currentItem())
+        currentTask = tlv->currentItem()->text(1);
+
     tlv->clear();
     tlv->setColumnWidthMode(1, QListView::Manual);
     tlv->hideColumn(1);
+    QListViewItem* newCurrentTask = 0;
     for (TaskListIterator tli(project->getTaskListIterator()); *tli; ++tli)
     {
         QListViewItem* lvi;
+        /* The list view has 4 columns: The task name, the task ID, the name
+         * of the file where the tasks has been defined, and the line where
+         * the definition started. */
         if ((*tli)->getParent())
             lvi = new
                 KListViewItem(tlv->findItem((*tli)->getParent()->getId(), 1),
@@ -1101,15 +1126,28 @@ TaskJugglerView::updateTaskList()
                               (*tli)->getDefinitionFile(),
                               QString::number((*tli)->getDefinitionLine()));
         else
-            lvi = new KListViewItem(tlv, (*tli)->getName(),
-                                    (*tli)->getId(),
-                                    (*tli)->getDefinitionFile(),
-                                    QString::number((*tli)->getDefinitionLine()));
+            lvi = new KListViewItem
+                (tlv, (*tli)->getName(), (*tli)->getId(),
+                 (*tli)->getDefinitionFile(),
+                 QString::number((*tli)->getDefinitionLine()));
+
+        if ((*tli)->getId() == currentTask)
+            newCurrentTask = lvi;
+
         if ((*tli)->isContainer())
         {
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_task_group", KIcon::Small));
-            lvi->setOpen((*tli)->treeLevel() < 2);
+
+            /* Tasks that have been in the list before will get their old
+             * open/closed state back. New tasks will be open if they are on
+             * the first 2 levels. */
+            if (openTasks.find((*tli)->getId()) != openTasks.end())
+                lvi->setOpen(true);
+            else if (closedTasks.find((*tli)->getId()) != closedTasks.end())
+                lvi->setOpen(false);
+            else
+                lvi->setOpen((*tli)->treeLevel() < 2);
         }
         else if ((*tli)->isMilestone())
             lvi->setPixmap(0, KGlobal::iconLoader()->
@@ -1119,6 +1157,9 @@ TaskJugglerView::updateTaskList()
                            loadIcon("tj_task", KIcon::Small));
     }
 
+    // Restore selected task if it's still in the list.
+    if (newCurrentTask)
+        tlv->setCurrentItem(newCurrentTask);
 }
 
 void
@@ -1126,13 +1167,33 @@ TaskJugglerView::updateResourceList()
 {
     // Load resources into Resource List View
     KListView* rlv = mw->resourceListView;
+
+    /* We'd like to preserve as much state as possible during scheduling runs.
+     * So we store the current item and all open items, so that we can restore
+     * them in the new list after scheduling. This of course only works if
+     * those tasks still exist. */
+    QStringList openResources, closedResources;
+    for (QListViewItemIterator lvi(rlv); *lvi; ++lvi)
+        if ((*lvi)->firstChild())
+            if ((*lvi)->isOpen())
+                openResources.append((*lvi)->text(1));
+            else
+                closedResources.append((*lvi)->text(1));
+    QString currentResource;
+    if (rlv->currentItem())
+        currentResource = rlv->currentItem()->text(1);
+
     rlv->clear();
     rlv->setColumnWidthMode(1, QListView::Manual);
-    //rlv->hideColumn(1);
+    rlv->hideColumn(1);
+    QListViewItem* newCurrentResource = 0;
     for (ResourceListIterator rli(project->getResourceListIterator()); *rli;
          ++rli)
     {
         QListViewItem* lvi;
+        /* The list view has 4 columns: The resource name, the resource ID,
+         * the name of the file where the resources has been defined, and the
+         * line where the definition started. */
         if ((*rli)->getParent())
             lvi = new KListViewItem
                 (rlv->findItem((*rli)->getParent()->getFullId(), 1),
@@ -1140,21 +1201,34 @@ TaskJugglerView::updateResourceList()
                  (*rli)->getDefinitionFile(),
                  QString::number((*rli)->getDefinitionLine()));
         else
-            lvi = new KListViewItem(rlv, (*rli)->getName(),
-                                    (*rli)->getFullId(),
-                                    (*rli)->getDefinitionFile(),
-                                    QString::number((*rli)->getDefinitionLine()));
+            lvi = new KListViewItem
+                (rlv, (*rli)->getName(), (*rli)->getFullId(),
+                 (*rli)->getDefinitionFile(),
+                 QString::number((*rli)->getDefinitionLine()));
+
+        if ((*rli)->getFullId() == currentResource)
+            newCurrentResource = lvi;
+
         if ((*rli)->hasSubs())
         {
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_resource_group", KIcon::Small));
-            lvi->setOpen((*rli)->treeLevel() < 2);
+            if (openResources.find((*rli)->getId()) != openResources.end())
+                lvi->setOpen(true);
+            else if (closedResources.find((*rli)->getId()) !=
+                     closedResources.end())
+                lvi->setOpen(false);
+            else
+                lvi->setOpen((*rli)->treeLevel() < 2);
         }
         else
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_resource", KIcon::Small));
     }
 
+    // Restore selected resource if it's still in the list.
+    if (newCurrentResource)
+        rlv->setCurrentItem(newCurrentResource);
 }
 
 void
@@ -1162,9 +1236,26 @@ TaskJugglerView::updateAccountList()
 {
     // Load accounts into Account List View
     KListView* alv = mw->accountListView;
+
+    /* We'd like to preserve as much state as possible during scheduling runs.
+     * So we store the current item and all open items, so that we can restore
+     * them in the new list after scheduling. This of course only works if
+     * those tasks still exist. */
+    QStringList openAccounts, closedAccounts;
+    for (QListViewItemIterator lvi(alv); *lvi; ++lvi)
+        if ((*lvi)->firstChild())
+            if ((*lvi)->isOpen())
+                openAccounts.append((*lvi)->text(1));
+            else
+                closedAccounts.append((*lvi)->text(1));
+    QString currentAccount;
+    if (alv->currentItem())
+        currentAccount = alv->currentItem()->text(1);
+
     alv->clear();
     alv->setColumnWidthMode(1, QListView::Manual);
-    //alv->hideColumn(1);
+    alv->hideColumn(1);
+    QListViewItem* newCurrentAccount= 0;
     for (AccountListIterator ali(project->getAccountListIterator()); *ali;
          ++ali)
     {
@@ -1180,17 +1271,30 @@ TaskJugglerView::updateAccountList()
                 (alv, (*ali)->getName(), (*ali)->getFullId(),
                  (*ali)->getDefinitionFile(),
                  QString::number((*ali)->getDefinitionLine()));
+
+        if ((*ali)->getFullId() == currentAccount)
+            newCurrentAccount = lvi;
+
         if ((*ali)->hasSubs())
         {
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_account_group", KIcon::Small));
-            lvi->setOpen((*ali)->treeLevel() < 2);
+            if (openAccounts.find((*ali)->getId()) != openAccounts.end())
+                lvi->setOpen(true);
+            else if (closedAccounts.find((*ali)->getId()) !=
+                     closedAccounts.end())
+                lvi->setOpen(false);
+            else
+                lvi->setOpen((*ali)->treeLevel() < 2);
         }
         else
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_account", KIcon::Small));
     }
 
+    // Restore selected resource if it's still in the list.
+    if (newCurrentAccount)
+        alv->setCurrentItem(newCurrentAccount);
 }
 
 #include "taskjugglerview.moc"

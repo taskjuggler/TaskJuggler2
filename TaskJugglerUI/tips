@@ -1,0 +1,26 @@
+
+<tip category="TaskJuggler">
+<html>
+<p>...that the TaskJuggler manual contains a tutorial that gets you
+productive with TaskJuggler in less than an hour?</p>
+
+<p>The TaskJuggler tutorial can be accessed through the Help menu.</p>
+</html>
+</tip>
+
+<tip category="TaskJuggler">
+<html>
+<p>...that pressing F2 in the editor will give you the online help for
+the keyword under the cursor?</p>
+</html>
+</tip>
+
+<tip category="TaskJuggler">
+<html>
+<p>...the editor supports keyword completion?</p>
+
+<p>To active it, just enable it in the Plugins section of the Editor
+Preferences dialog.</p>
+</html>
+</tip>
+

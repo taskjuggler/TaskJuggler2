@@ -23,6 +23,7 @@
 
 #include "taskjugglerview.h"
 
+class QTimer;
 class KPrinter;
 class KToggleAction;
 class KRecentFilesAction;
@@ -91,6 +92,8 @@ private slots:
     void fileClose();
     void filePrint();
     void optionsPreferences();
+    void showTipOnStart();
+    void showTip();
 
     void changeStatusbar(const QString& text);
     void addRecentURL(const KURL& text);
@@ -99,11 +102,12 @@ private:
     void setupAccel();
     void setupActions();
 
-private:
     TaskJugglerView *m_view;
 
     KPrinter   *m_printer;
     KRecentFilesAction *m_recentAction;
+
+    QTimer* delayTimer;
 };
 
 #endif // _TASKJUGGLER_H_

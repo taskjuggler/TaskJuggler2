@@ -168,6 +168,7 @@ protected:
     bool loadingProject;
 
     QTimer* statusBarUpdateTimer;
+    QTimer* delayTimer;
 
     TaskList taskList;
     ResourceList resourceList;

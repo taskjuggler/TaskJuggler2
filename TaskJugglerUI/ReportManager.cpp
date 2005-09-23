@@ -80,26 +80,53 @@ ReportManager::updateReportList(QPtrListIterator<Report> rli)
 void
 ReportManager::updateReportBrowser()
 {
+    QStringList openReports;
+    for (QListViewItemIterator lvi(browser); *lvi; ++lvi)
+        if ((*lvi)->firstChild())
+            if ((*lvi)->isOpen())
+                openReports.append((*lvi)->text(0));
+    QString currentReport;
+    if (browser->currentItem() && browser->currentItem()->firstChild() == 0)
+        currentReport = browser->currentItem()->text(0);
+
     browser->clear();
 
     qtReports = new KListViewItem(browser, i18n("Interactive Reports"));
     qtReports->setPixmap(0, KGlobal::iconLoader()->
                          loadIcon("tj_interactive_reports", KIcon::Small));
+    qtReports->setOpen(openReports.isEmpty() ||
+                       openReports.find(qtReports->text(0)) !=
+                       openReports.end());
+
     htmlReports = new KListViewItem(browser, i18n("HTML Reports"));
     htmlReports->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_html_reports", KIcon::Small));
+    htmlReports->setOpen(openReports.find(htmlReports->text(0)) !=
+                         openReports.end());
+
     csvReports = new KListViewItem(browser, i18n("CSV Reports"));
     csvReports->setPixmap(0, KGlobal::iconLoader()->
                           loadIcon("tj_csv_reports", KIcon::Small));
+    csvReports->setOpen(openReports.find(csvReports->text(0)) !=
+                        openReports.end());
+
     xmlReports = new KListViewItem(browser, i18n("XML Reports"));
     xmlReports->setPixmap(0, KGlobal::iconLoader()->
                           loadIcon("tj_xml_reports", KIcon::Small));
+    xmlReports->setOpen(openReports.find(xmlReports->text(0)) !=
+                         openReports.end());
+
     icalReports = new KListViewItem(browser, i18n("iCalendars"));
     icalReports->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_ical_reports", KIcon::Small));
+    icalReports->setOpen(openReports.find(icalReports->text(0)) !=
+                         openReports.end());
+
     exportReports = new KListViewItem(browser, i18n("Export Reports"));
     exportReports->setPixmap(0, KGlobal::iconLoader()->
                              loadIcon("tj_export_reports", KIcon::Small));
+    exportReports->setOpen(openReports.find(exportReports->text(0)) !=
+                           openReports.end());
 
     int i = 0;
     for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri, ++i)
@@ -177,10 +204,20 @@ ReportManager::updateReportBrowser()
              r->getDefinitionFile(), QString::number(r->getDefinitionLine()));
         item->setPixmap(0, subTypeIcon);
 
+        // Restore current report.
+        if (item->text(0) == currentReport)
+            browser->setCurrentItem(item);
+
         // Save the pointer to the list view item for future references.
         (*mri)->setBrowserEntry(item);
     }
-    qtReports->setOpen(TRUE);
+
+    // Make sure that we have a current report. If the current report is a
+    // report folder, then select the first interactive report if it exists.
+    if (browser->currentItem() == 0 ||
+        browser->currentItem()->firstChild() != 0)
+        if (qtReports->firstChild() != 0)
+            browser->setCurrentItem(qtReports->firstChild());
 }
 
 bool
@@ -240,6 +277,17 @@ bool
 ReportManager::showReport(QListViewItem* lvi)
 {
     ManagedReportInfo* mr = 0;
+    if (!lvi)
+    {
+        /* If the lvi is null then we try to show the current report or the
+         * first interactive report. */
+        if (browser->currentItem())
+            lvi = browser->currentItem();
+        else if (qtReports->firstChild())
+            lvi = (qtReports->firstChild());
+        else
+            return true;
+    }
     for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
         if ((*mri)->getBrowserEntry() == lvi)
             mr = *mri;

@@ -159,6 +159,17 @@ FileManager::updateFileBrowser()
 {
     QString commonPath = findCommonPath();
 
+    QStringList openDirectories, closedDirectories;
+    for (QListViewItemIterator lvi(browser); *lvi; ++lvi)
+        if ((*lvi)->firstChild())
+            if ((*lvi)->isOpen())
+                openDirectories.append((*lvi)->text(1));
+            else
+                closedDirectories.append((*lvi)->text(1));
+    QString currentFile;
+    if (browser->currentItem())
+        currentFile = browser->currentItem()->text(1);
+
     // Remove all entries from file browser
     browser->clear();
 
@@ -202,6 +213,15 @@ FileManager::updateFileBrowser()
             }
             else
                 currentDir = lvi;
+
+            if (openDirectories.find(currentDir->text(1)) !=
+                openDirectories.end())
+                currentDir->setOpen(true);
+            else if (closedDirectories.find(currentDir->text(1)) !=
+                     closedDirectories.end())
+                currentDir->setOpen(false);
+            else
+                currentDir->setOpen(true);
         }
         KListViewItem* newFile;
         if (currentDir)
@@ -214,6 +234,9 @@ FileManager::updateFileBrowser()
                 new KListViewItem(browser,
                                   shortenedURL.right(shortenedURL.length() -
                                                      start), url);
+
+        if (newFile->text(1) == currentFile)
+            browser->setCurrentItem(newFile);
 
         // Save the pointer to the browser entry.
         (*mfi)->setBrowserEntry(newFile);
@@ -271,6 +294,7 @@ FileManager::isProjectLoaded() const
 void
 FileManager::showInEditor(const KURL& url)
 {
+    qDebug("showInEditor(%s)", url.path().latin1());
     for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
         if ((*mfi)->getFileURL() == url)
         {

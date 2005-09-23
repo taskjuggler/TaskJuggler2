@@ -48,3 +48,7 @@ tjmime_DATA = x-tjp.desktop x-tji.desktop x-tjx.desktop
 # this is where the XML-GUI resource file goes
 rcdir = $(kde_datadir)/taskjuggler
 rc_DATA = taskjugglerui.rc ProjectTemplate.tjp IncludeTemplate.tji
+
+misc_DATA = tips
+miscdir = $(kde_datadir)/taskjuggler
+

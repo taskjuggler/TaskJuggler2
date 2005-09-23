@@ -96,7 +96,7 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     vl->addWidget(ganttChartView);
     hl->addWidget(splitter);
 
-    statusBarUpdateTimer = 0;
+    statusBarUpdateTimer = delayTimer = 0;
 
     connect(listView, SIGNAL(expanded(QListViewItem*)),
             this, SLOT(expandReportItem(QListViewItem*)));
@@ -202,7 +202,7 @@ TjReport::generateReport()
      * layouted yet. So we can't set the splitter to a good size and generate
      * the gantt report immediately. We use a 200ms timer to delay the
      * rendering. Hopefully by then the window has been layouted properly. */
-    QTimer* delayTimer = new QTimer(this);
+    delayTimer = new QTimer(this);
     connect(delayTimer, SIGNAL(timeout()),
             this, SLOT(regenerateChart()));
     delayTimer->start(200, TRUE);
@@ -219,6 +219,9 @@ TjReport::generateReport()
 void
 TjReport::regenerateChart()
 {
+    delete delayTimer;
+    delayTimer = 0;
+
     setCursor(KCursor::waitCursor());
 
     prepareChart(this->getReportElement());

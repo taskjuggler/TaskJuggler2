@@ -188,44 +188,44 @@ TjGanttChart::calcStepSizes()
 
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::day,
-                         "WWW WWW 00, 0000", "%a %b %d, %Y",
+                         "WWWWWWWW WWWWWWWWWWWW 00, 0000", "%A %B %d, %Y",
                          TjGanttZoomStep::hour,
                          "00", "%H", 24, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::month,
-                         "WWW 0000", "%b %Y",
+                         "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "00", "%d", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::month,
-                         "WWW 0000", "%b %Y",
+                         "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "00", "%d", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::month,
-                         "WWW 0000", "%b %Y",
+                         "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "00", "%d", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::month,
-                         "WWW 0000", "%b %Y",
+                         "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "W", "#w", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::month,
-                         "0000", "%b %Y",
+                         "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::week,
                          "W00", i18n("W#W"), 5,
                          reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::month,
-                         "0000", "%b %Y",
+                         "WWW 0000", "%b %Y",
                          TjGanttZoomStep::week,
                          "W00", i18n("W#W"), 5,
                          reportDef->getWeekStartsMonday(),
@@ -746,6 +746,8 @@ TjGanttChart::generateHeaderLine(int y)
     {
         QString format = czs->getFormat(y == 0);
 
+        if (format.isEmpty())
+            break;
         int pos;
         if ((pos = format.find("#w")) >= 0)
             format.replace
