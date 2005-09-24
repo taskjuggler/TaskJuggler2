@@ -133,7 +133,7 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
         t1->responsible->getFullName(fn1);
         QString fn2;
         t2->responsible->getFullName(fn2);
-        return - fn1.compare(fn2);
+        return fn1.compare(fn2);
     }
     case ResponsibleDown:
     {
@@ -141,7 +141,7 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
         t1->responsible->getFullName(fn1);
         QString fn2;
         t2->responsible->getFullName(fn2);
-        return fn1.compare(fn2);
+        return -fn1.compare(fn2);
     }
     case CriticalnessUp:
         return t1->scenarios[sortScenario].criticalness ==
