@@ -114,18 +114,19 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     connect(listView, SIGNAL(contentsMoving(int, int)),
             this, SLOT(syncVSlidersList2Gantt(int, int)));
 
-    specialColumns.insert("index", (int*) 1);
-    specialColumns.insert("hierarchindex", (int*) 1);
-    specialColumns.insert("hierarchno", (int*) 1);
-    specialColumns.insert("no", (int*) 1);
-    specialColumns.insert("seqno", (int*) 1);
-    specialColumns.insert("name", (int*) 1);
-    specialColumns.insert("hourly", (int*) 1);
-    specialColumns.insert("daily", (int*) 1);
-    specialColumns.insert("weekly", (int*) 1);
-    specialColumns.insert("monthly", (int*) 1);
-    specialColumns.insert("quarterly", (int*) 1);
-    specialColumns.insert("yearly", (int*) 1);
+    indexColumns.insert("index");
+    indexColumns.insert("hierarchindex");
+    indexColumns.insert("hierarchno");
+    indexColumns.insert("no");
+    indexColumns.insert("seqno");
+    indexColumns.insert("name");
+
+    ganttColumns.insert("hourly");
+    ganttColumns.insert("daily");
+    ganttColumns.insert("weekly");
+    ganttColumns.insert("monthly");
+    ganttColumns.insert("quarterly");
+    ganttColumns.insert("yearly");
 }
 
 TjReport::~TjReport()
@@ -176,7 +177,7 @@ TjReport::event(QEvent* ev)
     // Regenerate the chart in case of a palette change.
     if (ev->type() == QEvent::ApplicationPaletteChange)
     {
-        //oldGanttChart->setBackgroundColor(listView->colorGroup().base());
+        setGanttChartColors();
         regenerateChart();
     }
 
@@ -250,7 +251,8 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar columns get special treatment as well. */
-        if (specialColumns[(*ci)->getName()])
+        if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
+            ganttColumns.find((*ci)->getName()) != ganttColumns.end())
         {
             column--;
             continue;
@@ -447,7 +449,8 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar columns get special treatment as well. */
-        if (specialColumns[(*ci)->getName()])
+        if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
+            ganttColumns.find((*ci)->getName()) != ganttColumns.end())
         {
             column--;
             continue;
@@ -590,6 +593,7 @@ TjReport::prepareChart()
          ++lvit)
     {
         const QListViewItem* lvi = lvit.current();
+        // Find out if the list entry is visible at all.
         const QListViewItem* p;
         bool isVisible = true;
         for (p = lvi->parent(); p; p = p->parent())
@@ -598,9 +602,11 @@ TjReport::prepareChart()
                 isVisible = false;
                 break;
             }
+        // If no, we ignore it.
         if (!isVisible)
             continue;
 
+        // Reconstruct the CoreAttributes pointers.
         QStringList tokens = QStringList::split(":", lvit.currentKey());
         const CoreAttributes* ca1 = 0;
         const CoreAttributes* ca2 = 0;
@@ -653,27 +659,25 @@ TjReport::prepareChart()
     {
         /* In autoFit mode we show 1/3 table and 2/3 gantt chart. Otherwise we
          * just keep the current size of the splitter. */
-        sizes[0] = static_cast<int>(width() / 3.0);
-        sizes[1] = static_cast<int>(width() * 2.0/3.0);
+        if (showGantt)
+        {
+            sizes[0] = static_cast<int>(width() / 3.0);
+            sizes[1] = static_cast<int>(width() * 2.0/3.0);
+        }
+        else
+        {
+            sizes[0] = width();
+            sizes[1] = 0;
+        }
         splitter->setSizes(sizes);
     }
-    ganttChart->setSizes(objPosTable, headerHeight, listHeight, sizes[1],
+    ganttChart->setSizes(objPosTable, headerHeight, listHeight,
+                         sizes[1] == 0 ? static_cast<int>(width() * 2.0/3.0) :
+                         sizes[1],
                          itemHeight);
     QPaintDeviceMetrics metrics(ganttChartView);
     ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
-    ganttChart->setColor("headerBackgroundCol", colorGroup().background());
-    ganttChart->setColor("headerLineCol", Qt::black);
-    ganttChart->setColor("headerShadowCol", colorGroup().mid());
-    ganttChart->setColor("chartBackgroundCol", listView->colorGroup().base());
-    ganttChart->setColor("chartAltBackgroundCol",
-                         KGlobalSettings::calculateAlternateBackgroundColor
-                         (listView->colorGroup().base()));
-    ganttChart->setColor("chartTimeOffCol",
-                         KGlobalSettings::calculateAlternateBackgroundColor
-                         (listView->colorGroup().base()).dark(110));
-    ganttChart->setColor("chartLineCol",
-                         KGlobalSettings::calculateAlternateBackgroundColor
-                         (listView->colorGroup().base()).dark(130));
+    setGanttChartColors();
     ganttChart->setHeaderHeight(headerHeight);
     ganttChart->generate(autoFit ? TjGanttChart::fitSize:
                          TjGanttChart::manual);
@@ -693,6 +697,7 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
     listView->setSortOrder(Qt::Ascending);
     listView->setSortColumn(1);
 
+    showGantt = false;
     int col = 2;
     for (QPtrListIterator<TableColumnInfo>
          ci = tab->getColumnsIterator(); *ci; ++ci, ++col)
@@ -700,7 +705,11 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar columns get special treatment as well. */
-        if (specialColumns[(*ci)->getName()])
+        if (ganttColumns.find((*ci)->getName()) != ganttColumns.end())
+            showGantt = true;
+
+        if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
+            ganttColumns.find((*ci)->getName()) != ganttColumns.end())
         {
             col--;
             continue;
@@ -1112,6 +1121,24 @@ TjReport::generateJournal(JournalIterator jit) const
             "</i></b><br/>" + (*jit)->getText() + "<br/>";
 
     return text;
+}
+
+void
+TjReport::setGanttChartColors()
+{
+    ganttChart->setColor("headerBackgroundCol", colorGroup().background());
+    ganttChart->setColor("headerLineCol", Qt::black);
+    ganttChart->setColor("headerShadowCol", colorGroup().mid());
+    ganttChart->setColor("chartBackgroundCol", listView->colorGroup().base());
+    ganttChart->setColor("chartAltBackgroundCol",
+                         KGlobalSettings::calculateAlternateBackgroundColor
+                         (listView->colorGroup().base()));
+    ganttChart->setColor("chartTimeOffCol",
+                         KGlobalSettings::calculateAlternateBackgroundColor
+                         (listView->colorGroup().base()).dark(110));
+    ganttChart->setColor("chartLineCol",
+                         KGlobalSettings::calculateAlternateBackgroundColor
+                         (listView->colorGroup().base()).dark(130));
 }
 
 #include "TjReport.moc"

@@ -118,20 +118,6 @@ fi
 rm -f $TMPFILE
 ])
 
-dnl Check for the stuff the GANTT chart generator needs
-CHECK_PERL_MODULE(Date::Calc, DATECALC)
-CHECK_PERL_MODULE(XML::Parser, XMLPARSER)
-CHECK_PERL_MODULE(Class::MethodMaker, CLASSMETHODMAKER)
-CHECK_PERL_MODULE(PostScript::Simple, POSTSCRIPTSIMPLE)
-AC_CHECK_PROG(POSTER, poster, poster, no)
-if test "$DATECALC" = no -o "$XMLPARSER" = no -o \
-        "$CLASSMETHODMAKER" = no -o "$POSTSCRIPTSIMPLE" = no -o \
-        "$POSTER" = no ; then
-  AC_MSG_WARN([tjx2gantt GANTT chart generator will not work])
-  TJX2GANTT="no"
-fi
-AC_SUBST(TJX2GANTT)
-
 if test "$tj_enable_docs" != "no" ; then
   dnl Check for the stuff needed to create the HTML manual
   AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, no)

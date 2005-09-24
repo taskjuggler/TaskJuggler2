@@ -24,6 +24,7 @@ class QStringList;
 class KConfig;
 class KMainWindow;
 class KListView;
+class KListViewSearchLine;
 class KURL;
 class CoreAttributes;
 class Report;
@@ -33,7 +34,8 @@ class FileManager : public QObject
 {
     Q_OBJECT
 public:
-    FileManager(KMainWindow* m, QWidgetStack* v, KListView* b);
+    FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
+                KListViewSearchLine* s);
     virtual ~FileManager() { }
 
     void updateFileList(const QStringList& fl, const KURL& mf);
@@ -116,6 +118,7 @@ private:
 
     QWidgetStack* viewStack;
     KListView* browser;
+    KListViewSearchLine* searchLine;
     QPtrList<ManagedFileInfo> files;
     ManagedFileInfo* masterFile;
 } ;

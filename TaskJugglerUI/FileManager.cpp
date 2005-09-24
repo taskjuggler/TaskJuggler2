@@ -20,6 +20,7 @@
 #include <kmainwindow.h>
 #include <kstatusbar.h>
 #include <klistview.h>
+#include <klistviewsearchline.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kglobal.h>
@@ -47,8 +48,9 @@
 #include "ManagedFileInfo.h"
 #include "FindDialog.h"
 
-FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b) :
-    mainWindow(m), viewStack(v), browser(b)
+FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
+                         KListViewSearchLine* s) :
+    mainWindow(m), viewStack(v), browser(b), searchLine(s)
 {
     files.setAutoDelete(TRUE);
     masterFile = 0;
@@ -261,6 +263,8 @@ FileManager::updateFileBrowser()
             newFile->setPixmap
                 (3, KGlobal::iconLoader()->loadIcon("tj_not_ok", KIcon::Small));
     }
+
+    searchLine->updateSearch();
 }
 
 void

@@ -22,6 +22,7 @@ class QWidgetStack;
 class QString;
 class QListViewItem;
 class KListView;
+class KListViewSearchLine;
 class KPrinter;
 class Report;
 class CoreAttributes;
@@ -31,7 +32,7 @@ class ReportManager : public QObject
 {
     Q_OBJECT
 public:
-    ReportManager(QWidgetStack* v, KListView* b);
+    ReportManager(QWidgetStack* v, KListView* b, KListViewSearchLine* s);
     virtual ~ReportManager();
 
     void updateReportList(QPtrListIterator<Report> rli);
@@ -77,6 +78,7 @@ private:
 
     QWidgetStack* reportStack;
     KListView* browser;
+    KListViewSearchLine* searchLine;
 
     KListViewItem* qtReports;
     KListViewItem* htmlReports;

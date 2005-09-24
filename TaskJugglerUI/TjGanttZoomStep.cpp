@@ -12,6 +12,8 @@
 
 #include "TjGanttZoomStep.h"
 
+#include <assert.h>
+
 #include <qfontmetrics.h>
 
 #include "Utility.h"

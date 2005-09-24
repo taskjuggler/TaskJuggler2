@@ -9,8 +9,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>726</width>
-            <height>887</height>
+            <width>719</width>
+            <height>631</height>
         </rect>
     </property>
     <property name="caption">
@@ -35,7 +35,7 @@
                     <cstring>listViews</cstring>
                 </property>
                 <property name="currentIndex">
-                    <number>0</number>
+                    <number>3</number>
                 </property>
                 <widget class="QWidget">
                     <property name="name">
@@ -54,7 +54,10 @@
                         <property name="margin">
                             <number>0</number>
                         </property>
-                        <widget class="KListView" row="0" column="0">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
                             <column>
                                 <property name="text">
                                     <string>Task Name</string>
@@ -109,6 +112,22 @@
                                 <bool>true</bool>
                             </property>
                         </widget>
+                        <widget class="KListViewSearchLine" row="1" column="1">
+                            <property name="name">
+                                <cstring>taskListViewSearch</cstring>
+                            </property>
+                            <property name="urlDropsEnabled" stdset="0">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Filter</string>
+                            </property>
+                        </widget>
                     </grid>
                 </widget>
                 <widget class="QWidget">
@@ -121,14 +140,17 @@
                     <attribute name="label">
                         <string>&amp;Resources</string>
                     </attribute>
-                    <vbox>
+                    <grid>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
                         <property name="margin">
                             <number>0</number>
                         </property>
-                        <widget class="KListView">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
                             <column>
                                 <property name="text">
                                     <string>Resource Name</string>
@@ -183,7 +205,23 @@
                                 <bool>true</bool>
                             </property>
                         </widget>
-                    </vbox>
+                        <widget class="KListViewSearchLine" row="1" column="1">
+                            <property name="name">
+                                <cstring>resourceListViewSearch</cstring>
+                            </property>
+                            <property name="urlDropsEnabled" stdset="0">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Filter </string>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
                 <widget class="QWidget">
                     <property name="name">
@@ -195,14 +233,17 @@
                     <attribute name="label">
                         <string>&amp;Accounts</string>
                     </attribute>
-                    <vbox>
+                    <grid>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
                         <property name="margin">
                             <number>0</number>
                         </property>
-                        <widget class="KListView">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
                             <column>
                                 <property name="text">
                                     <string>Account Name</string>
@@ -257,7 +298,23 @@
                                 <bool>true</bool>
                             </property>
                         </widget>
-                    </vbox>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Filter </string>
+                            </property>
+                        </widget>
+                        <widget class="KListViewSearchLine" row="1" column="1">
+                            <property name="name">
+                                <cstring>accountListViewSearch</cstring>
+                            </property>
+                            <property name="urlDropsEnabled" stdset="0">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
                 <widget class="QWidget">
                     <property name="name">
@@ -269,14 +326,17 @@
                     <attribute name="label">
                         <string>Re&amp;ports</string>
                     </attribute>
-                    <vbox>
+                    <grid>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
                         <property name="margin">
                             <number>0</number>
                         </property>
-                        <widget class="KListView">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
                             <column>
                                 <property name="text">
                                     <string>Report Name</string>
@@ -331,7 +391,23 @@
                                 <bool>true</bool>
                             </property>
                         </widget>
-                    </vbox>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Filter </string>
+                            </property>
+                        </widget>
+                        <widget class="KListViewSearchLine" row="1" column="1">
+                            <property name="name">
+                                <cstring>reportListViewSearch</cstring>
+                            </property>
+                            <property name="urlDropsEnabled" stdset="0">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
                 <widget class="QWidget">
                     <property name="name">
@@ -343,14 +419,17 @@
                     <attribute name="label">
                         <string>F&amp;iles</string>
                     </attribute>
-                    <vbox>
+                    <grid>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
                         <property name="margin">
                             <number>0</number>
                         </property>
-                        <widget class="KListView">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
                             <column>
                                 <property name="text">
                                     <string>File Name</string>
@@ -405,7 +484,23 @@
                                 <bool>true</bool>
                             </property>
                         </widget>
-                    </vbox>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2_2_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Filter </string>
+                            </property>
+                        </widget>
+                        <widget class="KListViewSearchLine" row="1" column="1">
+                            <property name="name">
+                                <cstring>fileListViewSearch</cstring>
+                            </property>
+                            <property name="urlDropsEnabled" stdset="0">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </grid>
                 </widget>
             </widget>
             <widget class="QTabWidget">
@@ -473,14 +568,29 @@
     </hbox>
 </widget>
 <tabstops>
+    <tabstop>taskListView</tabstop>
+    <tabstop>taskListViewSearch</tabstop>
+    <tabstop>resourceListView</tabstop>
+    <tabstop>resourceListViewSearch</tabstop>
+    <tabstop>accountListView</tabstop>
+    <tabstop>accountListViewSearch</tabstop>
+    <tabstop>reportListView</tabstop>
+    <tabstop>reportListViewSearch</tabstop>
+    <tabstop>fileListView</tabstop>
+    <tabstop>fileListViewSearch</tabstop>
     <tabstop>bigTab</tabstop>
 </tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>klistview.h</includehint>
+    <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
+    <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
+    <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
+    <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
+    <includehint>klistviewsearchline.h</includehint>
 </includehints>
 </UI>

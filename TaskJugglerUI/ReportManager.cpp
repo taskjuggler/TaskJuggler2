@@ -24,6 +24,7 @@
 #include <kurl.h>
 #include <krun.h>
 #include <kprinter.h>
+#include <klistviewsearchline.h>
 
 #include "Report.h"
 #include "HTMLReport.h"
@@ -36,9 +37,11 @@
 #include "TjReport.h"
 #include "TjTaskReport.h"
 #include "TjResourceReport.h"
+#include "MainWidget.h"
 
-ReportManager::ReportManager(QWidgetStack* v, KListView* b) :
-    reportStack(v), browser(b)
+ReportManager::ReportManager(QWidgetStack* v, KListView* b,
+                             KListViewSearchLine* s) :
+    reportStack(v), browser(b), searchLine(s)
 {
     reports.setAutoDelete(TRUE);
 
@@ -218,6 +221,8 @@ ReportManager::updateReportBrowser()
         browser->currentItem()->firstChild() != 0)
         if (qtReports->firstChild() != 0)
             browser->setCurrentItem(qtReports->firstChild());
+
+    searchLine->updateSearch();
 }
 
 bool

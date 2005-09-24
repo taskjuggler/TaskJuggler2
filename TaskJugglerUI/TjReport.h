@@ -14,6 +14,8 @@
 #define _TjReport_h_
 
 #include <time.h>
+#include <string.h>
+#include <set>
 
 #include <qwidget.h>
 #include <qstring.h>
@@ -112,6 +114,8 @@ protected:
 
     QString generateJournal(JournalIterator jit) const;
 
+    void setGanttChartColors();
+
     time_t stepLength() const;
     void setBestStepUnit();
 
@@ -158,6 +162,7 @@ protected:
     int maxDepth;
 
     int scenario;
+    bool showGantt;
     int headerHeight;
     int listHeight;
     int itemHeight;
@@ -173,10 +178,18 @@ protected:
     TaskList taskList;
     ResourceList resourceList;
 
-    /* The interactive reports treat the indexes, name and calendar columns
+    struct ltstr
+    {
+        bool operator()(const char* s1, const char* s2) const
+        {
+            return strcmp(s1, s2) < 0;
+        }
+    } ;
+    /* The interactive reports treat the indexes, name and gantt columns
      * differently than most other reports. They provide special rendering for
      * them and need to be ignored during generic column rendering. */
-    QDict<int> specialColumns;
+    std::set<const char*, ltstr> indexColumns;
+    std::set<const char*, ltstr> ganttColumns;
 } ;
 
 #endif

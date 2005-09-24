@@ -41,12 +41,14 @@
 #include <kstandarddirs.h>
 #include <krun.h>
 #include <klistview.h>
+#include <klistviewsearchline.h>
 #include <klocale.h>
 #include <kcursor.h>
 #include <kstatusbar.h>
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <kstdguiitem.h>
+#include <klistviewsearchline.h>
 
 #include "TjMessageHandler.h"
 #include "taskjuggler.h"
@@ -78,6 +80,12 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     vl.append(180);
     vl.append(400);
     mw->mainSplitter->setSizes(vl);
+
+    mw->taskListViewSearch->setListView(mw->taskListView);
+    mw->resourceListViewSearch->setListView(mw->resourceListView);
+    mw->accountListViewSearch->setListView(mw->accountListView);
+    mw->reportListViewSearch->setListView(mw->reportListView);
+    mw->fileListViewSearch->setListView(mw->fileListView);
 
     project = 0;
     loadingProject = FALSE;
@@ -114,8 +122,10 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     l->addWidget(editorSplitter);
 
     fileManager = new FileManager(dynamic_cast<KMainWindow*>(parent),
-                                  editorStack, mw->fileListView);
-    reportManager = new ReportManager(mw->reportStack, mw->reportListView);
+                                  editorStack, mw->fileListView,
+                                  mw->fileListViewSearch);
+    reportManager = new ReportManager(mw->reportStack, mw->reportListView,
+                                      mw->reportListViewSearch);
 
     connect(&TJMH, SIGNAL(printWarning(const QString&, const QString&, int)),
             this, SLOT(addWarningMessage(const QString&, const QString&, int)));
@@ -1109,8 +1119,6 @@ TaskJugglerView::updateTaskList()
         currentTask = tlv->currentItem()->text(1);
 
     tlv->clear();
-    //tlv->setColumnWidthMode(1, QListView::Manual);
-    //tlv->hideColumn(1);
     QListViewItem* newCurrentTask = 0;
     for (TaskListIterator tli(project->getTaskListIterator()); *tli; ++tli)
     {
@@ -1160,6 +1168,8 @@ TaskJugglerView::updateTaskList()
     // Restore selected task if it's still in the list.
     if (newCurrentTask)
         tlv->setCurrentItem(newCurrentTask);
+
+    mw->taskListViewSearch->updateSearch();
 }
 
 void
@@ -1184,8 +1194,6 @@ TaskJugglerView::updateResourceList()
         currentResource = rlv->currentItem()->text(1);
 
     rlv->clear();
-    //rlv->setColumnWidthMode(1, QListView::Manual);
-    //rlv->hideColumn(1);
     QListViewItem* newCurrentResource = 0;
     for (ResourceListIterator rli(project->getResourceListIterator()); *rli;
          ++rli)
@@ -1229,6 +1237,8 @@ TaskJugglerView::updateResourceList()
     // Restore selected resource if it's still in the list.
     if (newCurrentResource)
         rlv->setCurrentItem(newCurrentResource);
+
+    mw->resourceListViewSearch->updateSearch();
 }
 
 void
@@ -1253,8 +1263,6 @@ TaskJugglerView::updateAccountList()
         currentAccount = alv->currentItem()->text(1);
 
     alv->clear();
-    //alv->setColumnWidthMode(1, QListView::Manual);
-    //alv->hideColumn(1);
     QListViewItem* newCurrentAccount= 0;
     for (AccountListIterator ali(project->getAccountListIterator()); *ali;
          ++ali)
@@ -1295,6 +1303,8 @@ TaskJugglerView::updateAccountList()
     // Restore selected resource if it's still in the list.
     if (newCurrentAccount)
         alv->setCurrentItem(newCurrentAccount);
+
+    mw->accountListViewSearch->updateSearch();
 }
 
 #include "taskjugglerview.moc"
