@@ -103,7 +103,6 @@ TjPrintReport::generateTableHeader()
          * for now. */
         if (specialColumns[(*ci)->getName()])
         {
-            qDebug("Special columns %s found", (*ci)->getName().latin1());
             /* No matter how many calendar columns the user has specified. We
              * only generate one. */
             showGantt = true;
@@ -114,6 +113,12 @@ TjPrintReport::generateTableHeader()
         const TableColumnFormat* tcf =
             reportElement->getColumnFormat((*ci)->getName());
         col->setTableColumnFormat(tcf);
+
+        if (!(*ci)->getTitle().isEmpty())
+            col->setTitle((*ci)->getTitle());
+        else
+            col->setTitle(tcf->getTitle());
+
         if (tcf->getIndent())
         {
             /* This header should be generic for task and resource reports. We
@@ -218,6 +223,16 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
         {
             cellText = QString().sprintf("%f", task->getCriticalness(scenario));
         }
+        else if ((*ci)->getName() == "depends")
+        {
+            for (TaskListIterator it(task->getPreviousIterator()); *it != 0;
+                 ++it)
+            {
+                if (!cellText.isEmpty())
+                    cellText += ", ";
+                cellText += (*it)->getId();
+            }
+        }
         else if ((*ci)->getName() == "duration")
             cellText = reportElement->scaledLoad
                 (task->getCalcDuration(scenario), tcf->realFormat);
@@ -238,6 +253,16 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
         else if ((*ci)->getName() == "endbufferstart")
             cellText = time2user(task->getEndBufferStart(scenario),
                                  reportElement->getTimeFormat());
+        else if ((*ci)->getName() == "follows")
+        {
+            for (TaskListIterator it(task->getFollowersIterator()); *it != 0;
+                 ++it)
+            {
+                if (!cellText.isEmpty())
+                    cellText += ", ";
+                cellText += (*it)->getId();
+            }
+        }
         else if ((*ci)->getName() == "hierarchindex")
         {
             if (!resource)
@@ -568,9 +593,8 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
         }
         else
         {
-            const TableColumnFormat* tcf = (*cit)->getTableColumnFormat();
             QFontMetrics fm(tableHeaderFont);
-            QRect br = fm.boundingRect(tcf->getTitle());
+            QRect br = fm.boundingRect((*cit)->getTitle());
             br.setWidth(br.width() + 2 * cellMargin + 1);
             br.setHeight(br.height() + 2 * cellMargin + 1);
             if (br.height() > headerHeight)
@@ -814,10 +838,9 @@ TjPrintReport::printReportPage(int x, int y)
         else if ((*cit == columns.first() || (*cit)->getXPage() == x) &&
                  !(*cit)->getIsGantt())
         {
-            const TableColumnFormat* tcf = (*cit)->getTableColumnFormat();
             p.drawText((*cit)->getLeftX() + cellMargin - 1,
                        headerY + headerHeight - cellMargin - descent - 1,
-                       tcf->getTitle());
+                       (*cit)->getTitle());
             // Draw right cell border
             if (!(*cit)->getLastOnPage())
                 p.drawLine((*cit)->getLeftX() + (*cit)->getWidth() - 1,

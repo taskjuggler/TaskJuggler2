@@ -1109,8 +1109,8 @@ TaskJugglerView::updateTaskList()
         currentTask = tlv->currentItem()->text(1);
 
     tlv->clear();
-    tlv->setColumnWidthMode(1, QListView::Manual);
-    tlv->hideColumn(1);
+    //tlv->setColumnWidthMode(1, QListView::Manual);
+    //tlv->hideColumn(1);
     QListViewItem* newCurrentTask = 0;
     for (TaskListIterator tli(project->getTaskListIterator()); *tli; ++tli)
     {
@@ -1184,8 +1184,8 @@ TaskJugglerView::updateResourceList()
         currentResource = rlv->currentItem()->text(1);
 
     rlv->clear();
-    rlv->setColumnWidthMode(1, QListView::Manual);
-    rlv->hideColumn(1);
+    //rlv->setColumnWidthMode(1, QListView::Manual);
+    //rlv->hideColumn(1);
     QListViewItem* newCurrentResource = 0;
     for (ResourceListIterator rli(project->getResourceListIterator()); *rli;
          ++rli)
@@ -1253,8 +1253,8 @@ TaskJugglerView::updateAccountList()
         currentAccount = alv->currentItem()->text(1);
 
     alv->clear();
-    alv->setColumnWidthMode(1, QListView::Manual);
-    alv->hideColumn(1);
+    //alv->setColumnWidthMode(1, QListView::Manual);
+    //alv->hideColumn(1);
     QListViewItem* newCurrentAccount= 0;
     for (AccountListIterator ali(project->getAccountListIterator()); *ali;
          ++ali)

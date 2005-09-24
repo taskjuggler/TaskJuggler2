@@ -224,7 +224,7 @@ TjReport::regenerateChart()
 
     setCursor(KCursor::waitCursor());
 
-    prepareChart(this->getReportElement());
+    prepareChart();
 
     // When we are here, we have rendered the widgets at least once. So we can
     // turn off autoFit mode.
@@ -241,7 +241,8 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                                const Task* t, QListViewItem* lvi,
                                const Resource* r)
 {
-    // Skip the first colum. It contains the hardwired task name.
+    // Skip the first two columns. They contain the hardwired task name and the
+    // sort index column.
     int column = 2;
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
@@ -292,6 +293,15 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
+        else if ((*ci)->getName() == "depends")
+        {
+            for (TaskListIterator it(t->getPreviousIterator()); *it != 0; ++it)
+            {
+                if (!cellText.isEmpty())
+                    cellText += ", ";
+                cellText += (*it)->getId();
+            }
+        }
         else if ((*ci)->getName() == "duration")
             cellText = reportElement->scaledLoad
                 (t->getCalcDuration(scenario), tcf->realFormat);
@@ -313,6 +323,15 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         else if ((*ci)->getName() == "endbufferstart")
             cellText = time2user(t->getEndBufferStart(scenario),
                                  reportElement->getTimeFormat());
+        else if ((*ci)->getName() == "follows")
+        {
+            for (TaskListIterator it(t->getFollowersIterator()); *it != 0; ++it)
+            {
+                if (!cellText.isEmpty())
+                    cellText += ", ";
+                cellText += (*it)->getId();
+            }
+        }
         else if ((*ci)->getName() == "id")
             cellText = t->getId();
         else if ((*ci)->getName() == "maxend")
@@ -559,7 +578,7 @@ TjReport::generateCustomAttribute(const CoreAttributes* ca, const QString name,
 }
 
 void
-TjReport::prepareChart(const QtReportElement* repElement)
+TjReport::prepareChart()
 {
     /* The object position mapping table changes most likely with every
      * re-generation. So we delete it and create a new one. */
@@ -689,7 +708,10 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
 
         const TableColumnFormat* tcf =
             tab->getColumnFormat((*ci)->getName());
-        listView->addColumn(tcf->getTitle() + "\n");
+        QString title = tcf->getTitle();
+        if (!(*ci)->getTitle().isEmpty())
+            title = (*ci)->getTitle();
+        listView->addColumn(title + "\n");
         listView->setColumnAlignment(col, tcf->getHAlign());
     }
 }

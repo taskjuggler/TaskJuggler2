@@ -71,7 +71,7 @@ TaskJuggler::TaskJuggler()
 
     delayTimer = new QTimer(this);
     connect(delayTimer, SIGNAL(timeout()),
-            this, SLOT(showTip()));
+            this, SLOT(showTipOnStart()));
     delayTimer->start(200, TRUE);
 }
 

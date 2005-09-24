@@ -91,7 +91,7 @@ protected:
     virtual bool event(QEvent* ev);
     virtual bool generateList() = 0;
 
-    void prepareChart(const QtReportElement* repElement);
+    void prepareChart();
 
     void generateListHeader(const QString& firstHeader, QtReportElement* tab);
 

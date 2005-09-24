@@ -50,6 +50,9 @@ public:
     void setIsGantt(bool ig) { isGantt = ig; }
     bool getIsGantt() const { return isGantt; }
 
+    void setTitle(const QString& t) { title = t; }
+    const QString& getTitle() const { return title; }
+
 private:
     // The leftmost pixel of the column
     int leftX;
@@ -67,6 +70,9 @@ private:
 
     // This flag is set if the column contains the GANTT chart.
     bool isGantt;
+
+    // The column title
+    QString title;
 } ;
 
 #endif
