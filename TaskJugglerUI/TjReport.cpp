@@ -68,7 +68,6 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
 
     listView = new KListView(splitter);
     listView->setRootIsDecorated(TRUE);
-    listView->setVScrollBarMode(QScrollView::AlwaysOff);
     listView->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     listView->setAllColumnsShowFocus(TRUE);
     // The sorting does not work yet properly.
@@ -89,6 +88,7 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
 
     ganttChartView = new QCanvasView(ganttChart->getChartCanvas(),
                                      canvasFrame);
+    ganttChartView->setVScrollBarMode(QScrollView::AlwaysOff);
 
     startTime = endTime = 0;
 
