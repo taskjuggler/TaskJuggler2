@@ -115,8 +115,8 @@ TjTaskReport::generateList()
         else
             newLvi = new KListViewItem(listView, (*tli)->getName());
 
-        ca2lviDict.insert(QString("t:") + (*tli)->getId(), newLvi);
-        lvi2caDict.insert(QString().sprintf("%p", newLvi), *tli);
+        ca2lviDict[QString("t:") + (*tli)->getId()] = newLvi;
+        lvi2caDict[QString().sprintf("%p", newLvi)] = *tli;
 
         if (treeLevel(newLvi) > maxDepth)
             maxDepth = treeLevel(newLvi);
@@ -153,10 +153,10 @@ TjTaskReport::generateList()
                     new KListViewItem(newLvi, (*rli)->getName());
                 lvi->setPixmap(0, KGlobal::iconLoader()->
                                loadIcon("tj_resource", KIcon::Small));
-                ca2lviDict.insert(QString("r:") + (*tli)->getId() +
-                                  ":" + (*rli)->getId(), lvi);
-                lvi2caDict.insert(QString().sprintf("%p", lvi), *rli);
-                lvi2ParentCaDict.insert(QString().sprintf("%p", lvi), *tli);
+                ca2lviDict[QString("r:") + (*tli)->getId() +
+                    ":" + (*rli)->getId()] = lvi;
+                lvi2caDict[QString().sprintf("%p", lvi)] = *rli;
+                lvi2ParentCaDict[QString().sprintf("%p", lvi)] = *tli;
                 if (treeLevel(lvi) > maxDepth)
                     maxDepth = treeLevel(lvi);
             }

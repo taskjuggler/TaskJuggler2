@@ -107,8 +107,8 @@ TjResourceReport::generateList()
 
         // Store the new LVI into the dictionary and check if we have reached
         // a new tree level maximum.
-        ca2lviDict.insert(QString("r:") + (*rli)->getId(), newLvi);
-        lvi2caDict.insert(QString().sprintf("%p", newLvi), *rli);
+        ca2lviDict[QString("r:") + (*rli)->getId()] = newLvi;
+        lvi2caDict[QString().sprintf("%p", newLvi)] = *rli;
 
         if (treeLevel(newLvi) > maxDepth)
             maxDepth = treeLevel(newLvi);
@@ -178,10 +178,10 @@ TjResourceReport::generateList()
                                          "tj_task_group" : "tj_task"),
                                         KIcon::Small));
                 // Insert the task in the LVI lookup dictionary.
-                ca2lviDict.insert(QString("t:") + (*rli)->getId() +
-                                  ":" + (*tli)->getId(), lvi);
-                lvi2caDict.insert(QString().sprintf("%p", lvi), *tli);
-                lvi2ParentCaDict.insert(QString().sprintf("%p", lvi), *rli);
+                ca2lviDict[QString("t:") + (*rli)->getId() +
+                    ":" + (*tli)->getId()] = lvi;
+                lvi2caDict[QString().sprintf("%p", lvi)] = *tli;
+                lvi2ParentCaDict[QString().sprintf("%p", lvi)] = *rli;
 
                 // Adjust the maxDepth setting if new treelevel maximum has
                 // been found.

@@ -589,10 +589,10 @@ TjReport::prepareChart()
     objPosTable = new TjObjPosTable;
     // Just a first guess. Will be set to proper size later on.
     objPosTable->resize(ca2lviDict.size());
-    for (QDictIterator<QListViewItem> lvit(ca2lviDict); lvit.current();
-         ++lvit)
+    for (std::map<const QString, QListViewItem*, ltQString>::iterator
+         lvit = ca2lviDict.begin(); lvit != ca2lviDict.end(); ++lvit)
     {
-        const QListViewItem* lvi = lvit.current();
+        const QListViewItem* lvi = (*lvit).second;
         // Find out if the list entry is visible at all.
         const QListViewItem* p;
         bool isVisible = true;
@@ -607,7 +607,7 @@ TjReport::prepareChart()
             continue;
 
         // Reconstruct the CoreAttributes pointers.
-        QStringList tokens = QStringList::split(":", lvit.currentKey());
+        QStringList tokens = QStringList::split(":", (*lvit).first);
         const CoreAttributes* ca1 = 0;
         const CoreAttributes* ca2 = 0;
         const Project* project = reportDef->getProject();

@@ -14,17 +14,18 @@
 #define _TjReport_h_
 
 #include <time.h>
-#include <string.h>
 #include <set>
+#include <map>
 
 #include <qwidget.h>
 #include <qstring.h>
-#include <qdict.h>
 #include <qlistview.h>
 
 #include "TaskList.h"
 #include "ResourceList.h"
 #include "ReportLayers.h"
+#include "ltQString.h"
+#include "ltstr.h"
 
 class QSplitter;
 class QCanvas;
@@ -87,7 +88,6 @@ private slots:
     void updateStatusBar();
 
 protected:
-    enum StepUnits { hour = 0, day, week, month, quarter, year };
     TjReport() : reportDef(0) { }
 
     virtual bool event(QEvent* ev);
@@ -145,15 +145,15 @@ protected:
      * character plus colon prefix to create a unified namespace. So
      * t:mytask.subtask is a task and r:team.nick is a resource.
      */
-    QDict<QListViewItem> ca2lviDict;
+    std::map<const QString, QListViewItem*, ltQString> ca2lviDict;
 
     /* And the same in the other direction. We use the hex-ed address of the
      * LVI as key. */
-    QDict<CoreAttributes> lvi2caDict;
+    std::map<const QString, CoreAttributes*, ltQString> lvi2caDict;
 
     /* For nested lists we need to be able to map the lvi to the parent
      * CoreAttributes. */
-    QDict<CoreAttributes> lvi2ParentCaDict;
+    std::map<const QString, CoreAttributes*, ltQString> lvi2ParentCaDict;
 
     /**
      * This is the maximum indentation of the list view. It only takes visible
@@ -178,13 +178,6 @@ protected:
     TaskList taskList;
     ResourceList resourceList;
 
-    struct ltstr
-    {
-        bool operator()(const char* s1, const char* s2) const
-        {
-            return strcmp(s1, s2) < 0;
-        }
-    } ;
     /* The interactive reports treat the indexes, name and gantt columns
      * differently than most other reports. They provide special rendering for
      * them and need to be ignored during generic column rendering. */

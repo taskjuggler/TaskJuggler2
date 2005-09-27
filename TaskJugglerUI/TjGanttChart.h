@@ -22,6 +22,7 @@
 #include <qfont.h>
 
 #include "ReportLayers.h"
+#include "ltstr.h"
 
 class QObject;
 class QPainter;
@@ -141,13 +142,6 @@ private:
     int width;
     int minRowHeight;
 
-    struct ltstr
-    {
-        bool operator()(const char* s1, const char* s2) const
-        {
-            return strcmp(s1, s2) < 0;
-        }
-    };
     std::map<const char*, QColor, ltstr> colors;
 
     std::vector<TjGanttZoomStep*> zoomSteps;

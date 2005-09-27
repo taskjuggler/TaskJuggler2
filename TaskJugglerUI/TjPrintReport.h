@@ -13,14 +13,16 @@
 #ifndef _TjPrintReport_h_
 #define _TjPrintReport_h_
 
-#include "TjReportRow.h"
-#include "TjReportColumn.h"
+#include <set>
+#include <vector>
 
-#include <qptrlist.h>
 #include <qpainter.h>
 #include <qfont.h>
 #include <qprinter.h>
-#include <qdict.h>
+
+#include "TjReportRow.h"
+#include "TjReportColumn.h"
+#include "ltstr.h"
 
 class QPaintDevice;
 class Report;
@@ -44,7 +46,7 @@ public:
     void printReportPage(int x, int y);
     void endPrinting();
 
-    int getNumberOfColumns() const { return columns.count(); }
+    int getNumberOfColumns() const { return columns.size(); }
 
     void getNumberOfPages(int& xPages, int& yPages);
 
@@ -75,8 +77,8 @@ protected:
     int maxDepthTaskList;
     int maxDepthResourceList;
 
-    QPtrList<TjReportRow> rows;
-    QPtrList<TjReportColumn> columns;
+    std::vector<TjReportRow*> rows;
+    std::vector<TjReportColumn*> columns;
 
     TjObjPosTable* objPosTable;
     QPaintDevice* paintDevice;
@@ -133,7 +135,7 @@ protected:
     // The height of the bottom line in pixels
     int bottomlineHeight;
 
-    QDict<int> specialColumns;
+    std::set<const char*, ltstr> specialColumns;
 } ;
 
 #endif
