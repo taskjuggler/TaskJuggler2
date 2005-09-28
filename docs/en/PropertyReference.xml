@@ -770,7 +770,7 @@ not contain '!', but have IDs separated by dots.</para>
 braces.</para>
 
 <para>By using the 'depends' attribute, the scheduling policy is
-automatically set to <varname>asap</varname>. If
+automatically set to <varname>asap</varname>. If both
 <varname>depends</varname> and <varname>precedes</varname> are used,
 the last policy counts.</para></descr> <attributes>
    <attr name="task" type="ID" list="1"/>

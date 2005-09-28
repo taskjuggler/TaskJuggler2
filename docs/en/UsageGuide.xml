@@ -184,8 +184,8 @@ calculates the end date of the task based on the effort that is still
 left over. It also computes the <link
 linkend="PROPERTY_complete">complete</link> value based on the
 specified bookings. So if you specify bookings for a task you should
-not specify a booking as well. It will be ignored and replaced by a
-value based on the specified bookings.</para>
+not specify a a completion value as well. It will be ignored and
+replaced by a value based on the specified bookings.</para>
 
 <para>When you now schedule the project again, it will take these bookings
 into account and generate a new project plan based on your current
