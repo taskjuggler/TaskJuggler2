@@ -1957,12 +1957,11 @@ specified logical expression.</para></descr>
  </property>
  <property name="scenario" id="scenario" inheritable="No">
   <descr><para>Specifies the different project scenarios. A scenario
-that is nested into another one inherits all values from the enclosing
-scenario except those values that were specified specifically for this
-scenario. There can only be one top-level scenario. It is usually
-called <computeroutput>plan</computeroutput> scenario. By default
-this scenario is pre-defined but can be overwritten with any other
-scenario.</para></descr>
+  that is nested into another one inherits all inheritable values from
+  the enclosing scenario. There can only be one top-level scenario. It
+  is usually called <computeroutput>plan</computeroutput> scenario. By
+  default this scenario is pre-defined but can be overwritten with any
+  other scenario.</para></descr>
   <attributes>
    <attr name="id" type="ID"/>
    <attr name="name" type="STRING"/>
