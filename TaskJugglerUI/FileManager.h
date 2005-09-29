@@ -13,8 +13,9 @@
 #ifndef _FileManager_h_
 #define _FileManager_h_
 
+#include <list>
+
 #include <qobject.h>
-#include <qptrlist.h>
 
 #include "ManagedFileInfo.h"
 
@@ -36,7 +37,7 @@ class FileManager : public QObject
 public:
     FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
                 KListViewSearchLine* s);
-    virtual ~FileManager() { }
+    virtual ~FileManager();
 
     void updateFileList(const QStringList& fl, const KURL& mf);
 
@@ -119,7 +120,7 @@ private:
     QWidgetStack* viewStack;
     KListView* browser;
     KListViewSearchLine* searchLine;
-    QPtrList<ManagedFileInfo> files;
+    std::list<ManagedFileInfo*> files;
     ManagedFileInfo* masterFile;
 } ;
 

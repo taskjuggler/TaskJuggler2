@@ -44,8 +44,7 @@
 
 TaskJuggler::TaskJuggler()
     : KMainWindow( 0, "TaskJuggler" ),
-      m_view(new TaskJugglerView(this)),
-      m_printer(0)
+      m_view(new TaskJugglerView(this))
 {
     // accept dnd
     setAcceptDrops(true);

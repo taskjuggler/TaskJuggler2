@@ -963,40 +963,40 @@ TjGanttChart::generateGanttBackground()
 void
 TjGanttChart::generateGanttElements()
 {
-    for (TjObjPosTableIterator it(*objPosTable); it.current(); ++it)
+    for (TjObjPosTableConstIterator it(*objPosTable); *it; ++it)
     {
-        if (it.current()->getCoreAttributes()->getType() == CA_Task &&
-            it.current()->getSubCoreAttributes() == 0)
+        if ((*it)->getCoreAttributes()->getType() == CA_Task &&
+            (*it)->getSubCoreAttributes() == 0)
         {
             const Task* t = static_cast<const Task*>
-                (it.current()->getCoreAttributes());
+                ((*it)->getCoreAttributes());
             drawTask(t, false);
             drawDependencies(t);
         }
-        else if (it.current()->getCoreAttributes()->getType() == CA_Resource
-                 && it.current()->getSubCoreAttributes() == 0)
+        else if ((*it)->getCoreAttributes()->getType() == CA_Resource
+                 && (*it)->getSubCoreAttributes() == 0)
         {
             const Resource* r = static_cast<const Resource*>
-                (it.current()->getCoreAttributes());
+                ((*it)->getCoreAttributes());
             drawResource(r);
         }
-        else if (it.current()->getCoreAttributes()->getType() == CA_Task &&
-                 it.current()->getSubCoreAttributes()->getType() == CA_Resource)
+        else if ((*it)->getCoreAttributes()->getType() == CA_Task &&
+                 (*it)->getSubCoreAttributes()->getType() == CA_Resource)
         {
             const Task* t = static_cast<const Task*>
-                (it.current()->getCoreAttributes());
+                ((*it)->getCoreAttributes());
             const Resource* r = static_cast<const Resource*>
-                (it.current()->getSubCoreAttributes());
+                ((*it)->getSubCoreAttributes());
             drawTaskResource(r, t);
         }
-        else if (it.current()->getCoreAttributes()->getType() ==
+        else if ((*it)->getCoreAttributes()->getType() ==
                  CA_Resource &&
-                 it.current()->getSubCoreAttributes()->getType() == CA_Task)
+                 (*it)->getSubCoreAttributes()->getType() == CA_Task)
         {
             const Resource* r = static_cast<const Resource*>
-                (it.current()->getCoreAttributes());
+                ((*it)->getCoreAttributes());
             const Task* t = static_cast<const Task*>
-                (it.current()->getSubCoreAttributes());
+                ((*it)->getSubCoreAttributes());
             drawTask(t, r);
         }
         else
@@ -1461,17 +1461,17 @@ TjGanttChart::allTasksInterval()
      * task. */
     startTime = reportElement->getEnd();
     endTime = reportElement->getStart();
-    for (TjObjPosTableIterator it(*objPosTable); it.current(); ++it)
+    for (TjObjPosTableConstIterator it(*objPosTable); (*it); ++it)
     {
         const Task* t;
-        if (it.current()->getCoreAttributes()->getType() == CA_Task)
+        if ((*it)->getCoreAttributes()->getType() == CA_Task)
             t = static_cast<const Task*>
-                (it.current()->getCoreAttributes());
-        else if (it.current()->getSubCoreAttributes() &&
-                 it.current()->getSubCoreAttributes()->getType() ==
+                ((*it)->getCoreAttributes());
+        else if ((*it)->getSubCoreAttributes() &&
+                 (*it)->getSubCoreAttributes()->getType() ==
                  CA_Task)
             t = static_cast<const Task*>
-                (it.current()->getSubCoreAttributes());
+                ((*it)->getSubCoreAttributes());
         else
             continue;
         if (t->getStart(scenario) < startTime)
@@ -1494,7 +1494,6 @@ TjGanttChart::allTasksInterval()
         startTime = reportElement->getStart();
         endTime = reportElement->getEnd();
     }
-
 }
 
 int

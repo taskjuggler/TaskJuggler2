@@ -32,7 +32,6 @@ class QPoint;
 class KURL;
 class KListView;
 class KConfig;
-class KPrinter;
 class MainWidget;
 class Project;
 class CoreAttributes;

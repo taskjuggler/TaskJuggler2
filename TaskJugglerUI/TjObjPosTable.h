@@ -13,20 +13,21 @@
 #ifndef _TjObjPosTable_h_
 #define _TjObjPosTable_h_
 
-#include <qdict.h>
+#include <map>
+
+#include <ltQString.h>
 
 #include "TjObjPosTableEntry.h"
 
 class CoreAttributes;
 
-class TjObjPosTable {
-    friend class TjObjPosTableIterator;
+class TjObjPosTable
+{
+    friend class TjObjPosTableConstIterator;
 
 public:
-    TjObjPosTable() { entries.setAutoDelete(true); }
-    ~TjObjPosTable() { }
-
-    void resize(int sz);
+    TjObjPosTable() { }
+    ~TjObjPosTable();
 
     void addEntry(const CoreAttributes* ca, const CoreAttributes* subCa,
                   int pos, int height);
@@ -41,14 +42,27 @@ private:
     QString generateKey(const CoreAttributes* ca,
                         const CoreAttributes* subCa) const;
 
-    QDict<TjObjPosTableEntry> entries;
+    std::map<const QString, TjObjPosTableEntry*, ltQString> entries;
 } ;
 
-class TjObjPosTableIterator : public QDictIterator<TjObjPosTableEntry> {
+class TjObjPosTableConstIterator
+{
 public:
-    TjObjPosTableIterator(const TjObjPosTable& opt) :
-        QDictIterator<TjObjPosTableEntry>(opt.entries) { }
-    ~TjObjPosTableIterator() { }
+    TjObjPosTableConstIterator(const TjObjPosTable& o) : opt(o)
+    {
+        it = opt.entries.begin();
+    }
+    ~TjObjPosTableConstIterator() { }
+
+    TjObjPosTableEntry* operator*() const
+    {
+        return it == opt.entries.end() ? 0 : (*it).second;
+    }
+    void operator++() { ++it; }
+
+private:
+    const TjObjPosTable& opt;
+    std::map<const QString, TjObjPosTableEntry*, ltQString>::const_iterator it;
 } ;
 
 #endif

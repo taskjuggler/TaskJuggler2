@@ -145,14 +145,11 @@ TjReport::print(KPrinter* printer)
     if (!printer->setup(this))
         return;
 
-    qDebug("Orientation: %s", printer->orientation() == KPrinter::Portrait ?
-           "Portrait" : "Landscape");
     TjPrintReport* tjpr;
     if ((tjpr = this->newPrintReport(printer)) == 0)
         return;
     tjpr->initialize();
-    tjpr->generate(printer->orientation() == KPrinter::Landscape ?
-                   QPrinter::Landscape : QPrinter::Portrait);
+    tjpr->generate(printer->orientation());
 
     int xPages, yPages;
     tjpr->getNumberOfPages(xPages, yPages);
@@ -587,8 +584,6 @@ TjReport::prepareChart()
      * re-generation. So we delete it and create a new one. */
     delete objPosTable;
     objPosTable = new TjObjPosTable;
-    // Just a first guess. Will be set to proper size later on.
-    objPosTable->resize(ca2lviDict.size());
     for (std::map<const QString, QListViewItem*, ltQString>::iterator
          lvit = ca2lviDict.begin(); lvit != ca2lviDict.end(); ++lvit)
     {

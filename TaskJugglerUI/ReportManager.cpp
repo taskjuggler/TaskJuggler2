@@ -12,6 +12,8 @@
 
 #include "ReportManager.h"
 
+#include <assert.h>
+
 #include <qwidgetstack.h>
 #include <qstring.h>
 #include <qpopupmenu.h>
@@ -43,8 +45,6 @@ ReportManager::ReportManager(QWidgetStack* v, KListView* b,
                              KListViewSearchLine* s) :
     reportStack(v), browser(b), searchLine(s)
 {
-    reports.setAutoDelete(TRUE);
-
     loadingProject = FALSE;
 
     // Hide the 2nd column. It contains the report ID that is of no interest
@@ -63,7 +63,8 @@ ReportManager::~ReportManager()
 QListViewItem*
 ReportManager::getFirstInteractiveReportItem() const
 {
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
         if (strncmp((*mri)->getProjectReport()->getType(), "Qt", 2) == 0)
             return (*mri)->getBrowserEntry();
 
@@ -73,9 +74,9 @@ ReportManager::getFirstInteractiveReportItem() const
 void
 ReportManager::updateReportList(QPtrListIterator<Report> rli)
 {
-    reports.clear();
+    clear();
     for ( ; *rli; ++rli)
-        reports.append(new ManagedReportInfo(this, *rli));
+        reports.push_front(new ManagedReportInfo(this, *rli));
 
     updateReportBrowser();
 }
@@ -132,7 +133,8 @@ ReportManager::updateReportBrowser()
                            openReports.end());
 
     int i = 0;
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri, ++i)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
     {
         Report* r = (*mri)->getProjectReport();
         KListViewItem* parent = 0;
@@ -229,7 +231,8 @@ bool
 ReportManager::generateReport(QListViewItem* lvi)
 {
     ManagedReportInfo* mr = 0;
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
         if ((*mri)->getBrowserEntry() == lvi)
             mr = *mri;
 
@@ -293,7 +296,8 @@ ReportManager::showReport(QListViewItem* lvi)
         else
             return true;
     }
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
         if ((*mri)->getBrowserEntry() == lvi)
             mr = *mri;
 
@@ -394,7 +398,8 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
                            bool& errors, bool& showReportTab)
 {
     ManagedReportInfo* mr = 0;
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
         if ((*mri)->getBrowserEntry() == lvi)
             mr = *mri;
 
@@ -436,7 +441,8 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
 ManagedReportInfo*
 ReportManager::getCurrentReport() const
 {
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
         if ((*mri)->getBrowserEntry() == browser->currentItem())
             return *mri;
 
@@ -451,7 +457,20 @@ ReportManager::closeCurrentReport()
     {
         reportStack->removeWidget(mri->getReport());
         reportStack->raiseWidget(0);
-        reports.removeRef(mri);
+
+        // Find the mri in the reports list, delete and remove it.
+        for (std::list<ManagedReportInfo*>::iterator mrit =
+             reports.begin(); mrit != reports.end(); ++mrit)
+            if (*mrit == mri)
+            {
+                delete *mrit;
+                reports.erase(mrit);
+                mri = 0;
+                break;
+            }
+
+        assert(mri == 0);
+
         updateReportBrowser();
     }
 }
@@ -477,6 +496,10 @@ ReportManager::editReport(const Report* report)
 void
 ReportManager::clear()
 {
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
+        delete *mri;
+
     reports.clear();
 }
 
@@ -527,7 +550,8 @@ void
 ReportManager::setLoadingProject(bool lp)
 {
     loadingProject = lp;
-    for (QPtrListIterator<ManagedReportInfo> mri(reports); *mri; ++mri)
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
         (*mri)->setLoadingProject(lp);
 }
 

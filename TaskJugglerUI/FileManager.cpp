@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include <assert.h>
+
 #include <qwidgetstack.h>
 #include <qstring.h>
 #include <qapplication.h>
@@ -52,7 +54,6 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
                          KListViewSearchLine* s) :
     mainWindow(m), viewStack(v), browser(b), searchLine(s)
 {
-    files.setAutoDelete(TRUE);
     masterFile = 0;
     editorConfigured = FALSE;
 
@@ -64,6 +65,11 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
     browser->hideColumn(1);
 }
 
+FileManager::~FileManager()
+{
+    clear();
+}
+
 void
 FileManager::updateFileList(const QStringList& fl, const KURL& url)
 {
@@ -71,7 +77,8 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
         return;
 
     // First we mark all files as no longer part of the project.
-    for (QPtrListIterator<ManagedFileInfo> fli(files); *fli; ++fli)
+    for (std::list<ManagedFileInfo*>::iterator fli = files.begin();
+         fli != files.end(); ++fli)
         (*fli)->setPartOfProject(FALSE);
 
     /* Then we add the new ones and mark the existing ones as part of the
@@ -83,7 +90,8 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
 
         bool newFile = TRUE;
         // Is this file being managed already?
-        for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+        for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+             mfi != files.end(); ++mfi)
         {
             if ((*mfi)->getFileURL() == url)
             {
@@ -99,7 +107,7 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
             ManagedFileInfo* mfi =
                 new ManagedFileInfo(this, KURL::fromPathOrURL(*sli));
             mfi->setPartOfProject(TRUE);
-            files.append(mfi);
+            files.push_back(mfi);
         }
     }
     setMasterFile(url);
@@ -109,7 +117,7 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
     if (browser->currentItem())
         showInEditor(getCurrentFileURL());
     else
-        showInEditor(files.at(0)->getFileURL());
+        showInEditor(files.front()->getFileURL());
 }
 
 void
@@ -117,7 +125,7 @@ FileManager::addFile(const KURL& url, const KURL& newURL)
 {
     // Add new file to list of managed files.
     ManagedFileInfo* mfi = new ManagedFileInfo(this, url);
-    files.append(mfi);
+    files.push_back(mfi);
     // First show the file with the old name so it get's loaded.
     showInEditor(url);
     mfi->saveAs(newURL);
@@ -136,15 +144,16 @@ FileManager::addFile(const KURL& url, const KURL& newURL)
 QString
 FileManager::findCommonPath()
 {
-    if (files.isEmpty())
+    if (files.empty())
         return QString::null;
 
     int lastMatch = 0;
     int end;
-    QString firstURL = files.at(0)->getFileURL().url();
+    QString firstURL = files.front()->getFileURL().url();
     while ((end = firstURL.find("/", lastMatch)) >= 0)
     {
-        for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+        for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+             mfi != files.end(); ++mfi)
         {
             QString url = (*mfi)->getFileURL().url();
             if (url.left(end) != firstURL.left(end))
@@ -175,7 +184,8 @@ FileManager::updateFileBrowser()
     // Remove all entries from file browser
     browser->clear();
 
-    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+    for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
     {
         /* Now we are inserting the file into the file browser again.
          * We don't care about the common path and create tree nodes for each
@@ -270,7 +280,8 @@ FileManager::updateFileBrowser()
 void
 FileManager::setMasterFile(const KURL& url)
 {
-    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+    for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
         if ((*mfi)->getFileURL() == url)
         {
             masterFile = *mfi;
@@ -298,8 +309,8 @@ FileManager::isProjectLoaded() const
 void
 FileManager::showInEditor(const KURL& url)
 {
-    qDebug("showInEditor(%s)", url.path().latin1());
-    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+    for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
         if ((*mfi)->getFileURL() == url)
         {
             if (!(*mfi)->getEditor())
@@ -405,18 +416,20 @@ FileManager::writeProperties(KConfig* config)
         KTextEditor::configInterface(getCurrentFile()->getEditor()->
                                      document())->writeConfig(config);
 
-    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+    for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
         (*mfi)->writeProperties(config);
 }
 
 ManagedFileInfo*
 FileManager::getCurrentFile() const
 {
-    if (files.isEmpty())
+    if (files.empty())
         return 0;
 
     KURL url = getCurrentFileURL();
-    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+    for (std::list<ManagedFileInfo*>::const_iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
         if ((*mfi)->getFileURL() == url)
             return *mfi;
 
@@ -460,7 +473,18 @@ FileManager::closeCurrentFile()
     {
         viewStack->removeWidget(mfi->getEditor());
         viewStack->raiseWidget(0);
-        files.removeRef(mfi);
+
+        for (std::list<ManagedFileInfo*>::iterator mfit = files.begin();
+             mfit != files.end(); ++mfit)
+            if (*mfit == mfi)
+            {
+                delete *mfit;
+                files.erase(mfit);
+                mfi = 0;
+                break;
+            }
+        assert(mfi == 0);
+
         updateFileBrowser();
         if (masterFile == mfi)
             masterFile = 0;
@@ -470,15 +494,19 @@ FileManager::closeCurrentFile()
 void
 FileManager::saveAllFiles()
 {
-    for (QPtrListIterator<ManagedFileInfo> mfi(files); *mfi; ++mfi)
+    for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
         (*mfi)->save();
 }
 
 void
 FileManager::clear()
 {
-    masterFile = 0;
+    for (std::list<ManagedFileInfo*>::iterator it = files.begin();
+         it != files.end(); ++it)
+        delete *it;
     files.clear();
+    masterFile = 0;
 }
 
 void

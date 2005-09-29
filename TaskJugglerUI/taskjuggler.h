@@ -24,7 +24,6 @@
 #include "taskjugglerview.h"
 
 class QTimer;
-class KPrinter;
 class KToggleAction;
 class KRecentFilesAction;
 class KURL;
@@ -35,7 +34,6 @@ class KURL;
  *
  * @short Main window class
  * @author Chris Schlaeger <cs@suse.de>
- * @version 0.1
  */
 class TaskJuggler : public KMainWindow
 {
@@ -104,7 +102,6 @@ private:
 
     TaskJugglerView *m_view;
 
-    KPrinter   *m_printer;
     KRecentFilesAction *m_recentAction;
 
     QTimer* delayTimer;

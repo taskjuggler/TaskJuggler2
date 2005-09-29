@@ -39,7 +39,7 @@ TjPrintTaskReport::initialize()
 }
 
 bool
-TjPrintTaskReport::generate(QPrinter::Orientation orientation)
+TjPrintTaskReport::generate(KPrinter::Orientation orientation)
 {
     /* Get complete task list, filter and sort it. Then determine the maximum
      * tree level. */

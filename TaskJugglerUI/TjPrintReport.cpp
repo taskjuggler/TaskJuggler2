@@ -532,12 +532,11 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
 }
 
 void
-TjPrintReport::layoutPages(QPrinter::Orientation orientation)
+TjPrintReport::layoutPages(KPrinter::Orientation orientation)
 {
     if (showGantt)
     {
         objPosTable = new TjObjPosTable;
-        objPosTable->resize(rows.size());
 
         ganttChart->setProjectAndReportData(reportElement);
         QPaintDeviceMetrics metrics(paintDevice);
@@ -552,21 +551,21 @@ TjPrintReport::layoutPages(QPrinter::Orientation orientation)
     /* I haven't figured out the relationship between the orientation and the
      * device size. Sometimes it fits, sometime it doesn't. This code tries to
      * always do the right thing. */
-    if ((orientation == QPrinter::Landscape &&
+    if ((orientation == KPrinter::Landscape &&
          metrics.width() > metrics.height()) ||
-        (orientation == QPrinter::Portrait &&
+        (orientation == KPrinter::Portrait &&
          metrics.width() < metrics.height()))
     {
-        qDebug("Plausible page size settings! Orientation: %s W: %d  H: %d",
-               orientation == QPrinter::Landscape ? "Landscape" : "Portrait",
+        qDebug("Orientation: %s W: %d  H: %d - Settings ok",
+               orientation == KPrinter::Landscape ? "Landscape" : "Portrait",
                metrics.width(), metrics.height());
         pageWidth = metrics.width() - 2 * topMargin;
         pageHeight = metrics.height() - 2 * leftMargin;
     }
     else
     {
-        qDebug("Flipping page size settings! Orientation: %s W: %d  H: %d",
-               orientation == QPrinter::Landscape ? "Landscape" : "Portrait",
+        qDebug("Orientation: %s W: %d  H: %d - Makes no sense! Flipping!",
+               orientation == KPrinter::Landscape ? "Landscape" : "Portrait",
                metrics.width(), metrics.height());
         pageWidth = metrics.height() - 2 * topMargin;
         pageHeight = metrics.width() - 2 * leftMargin;

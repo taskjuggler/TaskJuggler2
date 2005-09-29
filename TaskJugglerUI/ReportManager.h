@@ -13,6 +13,8 @@
 #ifndef _ReportManager_h_
 #define _ReportManager_h_
 
+#include <list>
+
 #include <qobject.h>
 #include <qptrlist.h>
 
@@ -87,7 +89,7 @@ private:
     KListViewItem* icalReports;
     KListViewItem* exportReports;
 
-    QPtrList<ManagedReportInfo> reports;
+    std::list<ManagedReportInfo*> reports;
     KPrinter* printer;
 
     bool loadingProject;
