@@ -111,7 +111,6 @@ Project::Project()
     workingHours[6] = new QPtrList<Interval>();
     workingHours[6]->setAutoDelete(TRUE);
 
-    allocationErrors = FALSE;
     maxErrors = 0;
 }
 

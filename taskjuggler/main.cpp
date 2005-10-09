@@ -241,8 +241,7 @@ int main(int argc, char *argv[])
 
     if (!schedulingErrors && !(checkOnlySyntax || generateMakeDepList))
     {
-        schedulingErrors = p.getAllocationErrors() ||
-            !p.scheduleAllScenarios();
+        schedulingErrors = !p.scheduleAllScenarios();
         if (updateKotrusDB)
             if (parseErrors || logicalErrors || schedulingErrors)
                 qWarning("Due to errors the Kotrus DB will NOT be "

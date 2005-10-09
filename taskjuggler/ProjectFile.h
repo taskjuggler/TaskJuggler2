@@ -132,15 +132,14 @@ private:
     bool readResource(Resource* parent);
     bool readResourceSupplement();
     bool readResourceBody(Resource* r);
-    int readResourceScenarioAttribute(const QString attribute, Resource* t,
-                                      int sc, bool enforce);
+
     JournalEntry* readJournalEntry();
     bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
                       QString* = 0);
     bool readAccount(Account* parent);
     bool readShift(Shift* parent);
     Shift* readShiftSelection(time_t& from, time_t& to);
-    Booking* readBooking(int& sloppy);
+    Booking* readBooking(int sc, int& sloppy);
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
     UsageLimits* readLimits();

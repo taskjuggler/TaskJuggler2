@@ -744,9 +744,6 @@ public:
     bool readKotrus();
     bool updateKotrus();
 
-    void setAllocationErrors(bool e) { allocationErrors = e; }
-    bool getAllocationErrors() const { return allocationErrors; }
-
     void setMaxErrors(int me) { maxErrors = me; }
 
     void addJournalEntry(JournalEntry* entry);
@@ -879,8 +876,6 @@ private:
     QStringList projectIDs;
 
     QString currentId;
-
-    bool allocationErrors;
 
     int maxErrors;
 

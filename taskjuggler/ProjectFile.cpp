@@ -2028,19 +2028,22 @@ ProjectFile::readResourceBody(Resource* r)
             errorMessage(i18n("Unknown attribute '%1'").arg(token));
             return FALSE;
         }
+        int sc = 0;
         if ((nextTT = nextToken(next)) == COLON)
         {
-            int sc;
-            if ((sc = proj->getScenarioIndex(token)) < 1)
+            if ((sc = proj->getScenarioIndex(token) - 1) < 0)
             {
                 errorMessage(i18n("Scenario ID expected. '%1' is not "
                                   "a defined scenario.").arg(token));
                 return FALSE;
             }
             tt = nextToken(token);
-            if (readResourceScenarioAttribute(token, r, sc - 1, TRUE) < 1)
-                return FALSE;
-            continue;
+            // Now make sure that the attribute is really scenario specific.
+            if (token != "booking")
+            {
+                errorMessage(i18n("Scenario specific resource attribute "
+                                  "expected."));
+            }
         }
         else
             returnToken(nextTT, next);
@@ -2052,8 +2055,15 @@ ProjectFile::readResourceBody(Resource* r)
                                      getType()))
                 return FALSE;
         }
-        else if ((readResourceScenarioAttribute(token, r, 0, FALSE)) > 0)
-            ;   // intentionally empty statement
+        else if (token == KW("booking"))
+        {
+            Booking* b;
+            int sloppy;
+            if ((b = readBooking(sc, sloppy)) == 0)
+                return FALSE;
+            if (!r->addBooking(sc, b, sloppy))
+                return FALSE;
+        }
         else if (token == KW("resource"))
         {
             if (!readResource(r))
@@ -2194,32 +2204,6 @@ ProjectFile::readResourceBody(Resource* r)
     return TRUE;
 }
 
-int
-ProjectFile::readResourceScenarioAttribute(const QString attribute,
-                                           Resource* resource,
-                                           int sc, bool enforce)
-{
-    if (attribute == KW("booking"))
-    {
-        Booking* b;
-        int sloppy;
-        if ((b = readBooking(sloppy)) == 0)
-            return FALSE;
-        if (!resource->addBooking(sc, b, sloppy))
-            proj->setAllocationErrors(TRUE);
-    }
-    else if (enforce)
-    {
-        // Only if the enforce flag is set an unknown attribute is an error.
-        errorMessage(i18n("Scenario specific resource attribute expected."));
-        return -1;
-    }
-    else
-        return 0;
-
-    return 1;
-}
-
 bool
 ProjectFile::readShift(Shift* parent)
 {
@@ -2327,7 +2311,7 @@ ProjectFile::readShiftSelection(time_t& from, time_t& to)
 }
 
 Booking*
-ProjectFile::readBooking(int& sloppy)
+ProjectFile::readBooking(int sc, int& sloppy)
 {
     time_t start;
     if (!readDate(start, 0))
@@ -2349,6 +2333,13 @@ ProjectFile::readBooking(int& sloppy)
     if (start >= end)
     {
         errorMessage(i18n("End date must be after start date"));
+        return 0;
+    }
+
+    if (proj->getScenario(sc)->getProjectionMode() && end > proj->getNow())
+    {
+        errorMessage(i18n("In projection Mode all bookings must end prior "
+                          "to the current or 'now' date."));
         return 0;
     }
 
