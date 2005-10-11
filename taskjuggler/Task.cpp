@@ -2519,9 +2519,10 @@ Task::prepareScenario(int sc)
      * the likelyhood that the task will get it's allocation, the more
      * critical it is.
      *
-     * The allocation probability of a resource is basically effort divided by
-     * number of allocated resources. Since the efficiency of resources can
-     * vary we need to determine the overall efficiency first.
+     * The allocation probability of a resource for this task is basically
+     * effort divided by number of allocated resources. Since the efficiency
+     * of resources can vary we need to determine the overall efficiency
+     * first.
      *
      * TODO: We need to respect limits and shifts here!
      */
@@ -2579,6 +2580,8 @@ Task::computeCriticalness(int sc)
                 for (ResourceTreeIterator rti(*rli); *rti; ++rti, ++resources)
                     averageProbability +=
                         (*rti)->getAllocationProbability(sc);
+                if (resources > 0)
+                    averageProbability /= resources;
 
                 if (smallestAllocationProbablity == 0 ||
                     averageProbability < smallestAllocationProbablity)
@@ -2586,8 +2589,39 @@ Task::computeCriticalness(int sc)
             }
             overallAllocationProbability += smallestAllocationProbablity;
         }
-        scenarios[sc].criticalness = (scenarios[sc].effort *
-            overallAllocationProbability) / allocations.count();
+        /* New we normalize the allocationProbability to the duration of the
+         * project (working days). For a resource that is statistically
+         * allocated no more and no less than the number of working days in
+         * the expected project time the probability will be one. This
+         * certainly neglects many things like vacations, shifts, parallel
+         * assignements and other factors. But we don't know enough about
+         * these factors yet, to take them into account. So we have to live
+         * with what we got. */
+        overallAllocationProbability /=
+            allocations.count() *
+            ((project->getEnd() - project->getStart()) / (60.0 * 60 * 24)) *
+            (project->getYearlyWorkingDays() / 365.0);
+        /* Weight the average allocation probability with the effort of the
+         * task. The higher the effort and the higher the probability that the
+         * resources are allocated, the more critical the task rating gets. To
+         * ensure that the criticalness is at least as high as a comparable
+         * 'length' tasks use the effort value as a baseline and add the
+         * weighted effort ontop. */
+        scenarios[sc].criticalness = (1 + overallAllocationProbability) *
+            scenarios[sc].effort;
+    }
+    else if (scenarios[sc].duration > 0.0)
+        scenarios[sc].criticalness = duration;
+    else if (scenarios[sc].length > 0.0)
+        scenarios[sc].criticalness = length *
+            (365 / project->getYearlyWorkingDays());
+    else if (isMilestone())
+    {
+        /* People think of milestones usually as something important. So let's
+         * assume a milestone has the importance of a full working day. This
+         * is only done to raise the criticalness of pathes that contain
+         * milestones. */
+        scenarios[sc].criticalness = 1.0;
     }
     else
         scenarios[sc].criticalness = 0;
@@ -2604,14 +2638,12 @@ Task::computePathCriticalness(int sc)
      * higher criticalness level than the individual tasks. In fact, the path
      * criticalness of this chain is equal to the sum of the individual
      * criticalnesses of the tasks.
+     *
+     * Since both the forward and backward functions include the
+     * criticalness of this function we have to subtract it again.
      */
-    if (effort > 0.0)
-        /* Since both the forward and backward functions include the
-         * criticalness of this function we have to subtract it again. */
-        scenarios[sc].pathCriticalness = computeBackwardCriticalness(sc) -
-            scenarios[sc].criticalness + computeForwardCriticalness(sc);
-    else
-        scenarios[sc].pathCriticalness = 0.0;
+    scenarios[sc].pathCriticalness = computeBackwardCriticalness(sc) -
+        scenarios[sc].criticalness + computeForwardCriticalness(sc);
 }
 
 double

@@ -252,9 +252,9 @@ private:
 
     /**
      * The allocation probability is calculated prior to scheduling a
-     * scenario. It specifies the likelyhood of the resource to be allocated
-     * for the full project time frame. Values larger than 1 are possible when
-     * the resource has been allocated for multiple tasks.
+     * scenario. It is the expected average effort the resource has to deliver
+     * based on the assignments to tasks, not taking parallel assignments into
+     * account.
      */
     double* allocationProbability;
 
