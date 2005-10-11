@@ -1647,7 +1647,12 @@ should be shown at a maximum.</para></descr>
  </property>
  <property name="priority" id="priority" inheritable="No">
   <descr><para>Specifies a priority between 1 and 1000. A task with
-higher priority is more likely to get the requested resources.</para>
+higher priority is more likely to get the requested resources. Don't
+confuse the priority of a tasks with the importance or urgency of a
+task. It only increases the chances that the tasks gets the requested
+resources. It does not mean that the task happens earlier, though that
+is usually the effect you will see. It also does not have any affect
+on tasks that don't have any resources assigned (e.g. milestones).</para>
 
 <para>This attribute is inherited by subtasks if specified prior to
 the definition of the subtask.</para></descr>
