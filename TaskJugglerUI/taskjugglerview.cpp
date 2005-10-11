@@ -245,8 +245,9 @@ TaskJugglerView::saveProperties(KConfig* config)
     config->setGroup("Global Settings");
     /* Save the URL of the current project so we can restore it in case
      * TaskJuggler is restarted without a new URL specified. */
-    if (!fileManager->getMasterFile().url().isEmpty())
-        config->writePathEntry("lastURL", fileManager->getMasterFile().url());
+    if (fileManager->getMasterFile())
+        config->writePathEntry("lastURL",
+                               fileManager->getMasterFileURL().url());
 
     // Save the position of the main splitter.
     config->writeEntry("MainSplitter", mw->mainSplitter->sizes());
@@ -258,7 +259,7 @@ TaskJugglerView::saveProperties(KConfig* config)
 void
 TaskJugglerView::newProject()
 {
-    if (!fileManager->getMasterFile().isEmpty())
+    if (fileManager->getMasterFile())
     {
         if (KMessageBox::warningContinueCancel
             (this, i18n("You must close the current project before you can\n"
@@ -307,7 +308,7 @@ void
 TaskJugglerView::newInclude()
 {
     // Make sure that we have already a project we can add the file to.
-    if (fileManager->getMasterFile().isEmpty())
+    if (!fileManager->getMasterFile())
     {
         KMessageBox::sorry
             (this, i18n("You need to load or create a project before\n"
@@ -354,11 +355,10 @@ void
 TaskJugglerView::openURL(KURL url)
 {
     /* If the URL matches the currently loaded project do nothing. */
-    if (!fileManager->getMasterFile().isEmpty() &&
-        fileManager->getMasterFile() == url)
+    if (fileManager->getMasterFile() && fileManager->getMasterFileURL() == url)
         return;
 
-    if (!fileManager->getMasterFile().isEmpty())
+    if (fileManager->getMasterFile())
     {
         // Make sure the user really wants to load a new project.
         int but = KMessageBox::warningContinueCancel
@@ -436,7 +436,8 @@ void
 TaskJugglerView::close()
 {
     fileManager->closeCurrentFile();
-    if (fileManager->getMasterFile().path().isEmpty())
+    // In case we closed the master file, we will close the whole project.
+    if (!fileManager->getMasterFile())
         closeProject();
 }
 
@@ -453,8 +454,8 @@ TaskJugglerView::closeProject()
     mw->fileListView->clear();
     messageListView->clear();
     messageCounter = 0;
-    slotSetTitle( i18n( "No Project" ) );
-    changeStatusBar( QString::null ); // clear the status bar
+    slotSetTitle(i18n("No Project"));
+    changeStatusBar(QString::null); // clear the status bar
 }
 
 void
@@ -514,7 +515,7 @@ TaskJugglerView::findPrevious()
 void
 TaskJugglerView::schedule()
 {
-    if (fileManager->getMasterFile().path().isEmpty())
+    if (!fileManager->getMasterFile())
         return;
 
     fileManager->saveAllFiles();
@@ -527,7 +528,7 @@ TaskJugglerView::schedule()
         editorSplitterSizes = vl;
 
     showReportAfterLoad = TRUE;
-    loadProject(fileManager->getMasterFile());
+    loadProject(fileManager->getMasterFileURL());
 }
 
 void

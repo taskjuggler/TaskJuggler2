@@ -287,17 +287,15 @@ FileManager::setMasterFile(const KURL& url)
             masterFile = *mfi;
             return;
         }
-    kdFatal() << "Master file not in list of managed files" << endl;
+    // Master file must be in list of managed files.
+    assert(0);
 }
 
 const KURL&
-FileManager::getMasterFile() const
+FileManager::getMasterFileURL() const
 {
     static KURL dummy;
-    if (!masterFile)
-        return dummy;
-    else
-        return masterFile->getFileURL();
+    return masterFile ? masterFile->getFileURL() : dummy;
 }
 
 bool
@@ -397,7 +395,8 @@ FileManager::showInEditor(const Report* report)
 KURL
 FileManager::getCurrentFileURL() const
 {
-    return KURL::fromPathOrURL(browser->currentItem()->text(1));
+    return files.empty() ? KURL() :
+        KURL::fromPathOrURL(browser->currentItem()->text(1));
 }
 
 void
@@ -478,16 +477,17 @@ FileManager::closeCurrentFile()
              mfit != files.end(); ++mfit)
             if (*mfit == mfi)
             {
-                delete *mfit;
-                files.erase(mfit);
+                if (masterFile == mfi)
+                    masterFile = 0;
+
+                delete mfi;
                 mfi = 0;
+                files.erase(mfit);
                 break;
             }
         assert(mfi == 0);
 
         updateFileBrowser();
-        if (masterFile == mfi)
-            masterFile = 0;
     }
 }
 

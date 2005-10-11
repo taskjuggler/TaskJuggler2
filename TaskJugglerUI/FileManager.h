@@ -56,7 +56,8 @@ public:
 
     void setFocusToEditor() const;
 
-    const KURL& getMasterFile() const;
+    const KURL& getMasterFileURL() const;
+    ManagedFileInfo* getMasterFile() { return masterFile; }
 
     bool isProjectLoaded() const;
 
