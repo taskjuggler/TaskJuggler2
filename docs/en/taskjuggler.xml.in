@@ -97,8 +97,8 @@ conflict solver.</para></listitem>
 <listitem><para>Powerful project description syntax with macro
 support.</para></listitem>
 
-<listitem><para>Graphical front-end to enter and view your
-project.</para></listitem>
+<listitem><para>Graphical front-end to enter your project and generate
+powerful reports.</para></listitem>
 
 <listitem><para>Flexible working hours and vacation handling.</para></listitem>
 
@@ -171,10 +171,11 @@ and used free of charge by anybody who respects the license
 conditions. Does that mean you can use it without worrying about
 anything? Clearly not! Though users have no legal obligation to
 contribute, you should feel a moral obligation to support Open Source
-in whatever way you can. This can range from helping out other Open
-Source users to actively contributing to the TaskJuggler Project. The
-following section describes, how you can contribute to any of the
-components that are part of the TaskJuggler software releases.</para>
+in whatever way you can. This can range from helping out other
+users with their first Linux installation to actively contributing to
+the TaskJuggler Project. The following section describes, how you can
+contribute to any of the components that are part of the TaskJuggler
+software releases.</para>
 
 </sect2>
 <sect2 id="preparing_a_contribution"><title>Preparing a
@@ -305,22 +306,13 @@ they are missing an essential package.</para>
 Interfaces</title>
 
 <para>With version 2.1 came a new graphical front-end. It's an integrated
-Project management environment. At this point we have two different
-programs, but you will probably only need one of them as they are very
-similar in functionality.</para>
+Project management environment.</para>
 
-<para>The first option is called
-<computeroutput>TaskJuggler</computeroutput>.
+<para>The front-end is called
+<computeroutput>TaskJugglerUI</computeroutput>.
 Don't confuse this with <computeroutput>taskjuggler</computeroutput>
-which is the commandline version. When you want to start TaskJuggler
-from a shell, you need to type it with a capital T and J.</para>
-
-<para>The second option is called
-<computeroutput>ktjview2</computeroutput>.</para>
-
-<para>We recommend to try them both and <ulink
-url="http://www.taskjuggler.org/FUDforum2/">let us know</ulink> which
-one you like better.</para>
+which is the commandline version. When you want to start TaskJugglerUI
+from a shell, you need to type it with the capital letters.</para>
 
 <para>The graphical front-ends make use of the libraries of the <ulink
 url="www.kde.org">K Desktop Environment</ulink>. We recommend to use
@@ -393,51 +385,6 @@ url="http://www.tug.org/teTeX">te_latex</ulink>.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2
-id="tjx2gantt_transforms_xml_files_to_postscript_gantt"><title>tjx2gantt
-- Transforms XML files to Postscript Gantt charts</title>
-
-<para>tjx2gantt is installed by default and generates Postscript Gantt
-charts from the XML files that TaskJuggler generates. tjx2gantt is
-written in Perl.</para>
-
-<para>tjx2gantt only reads in the XML format version 1 of taskjuggler.
-Please specify the format version when requesting XML reports.</para>
-
-<para>This program is no longer maintained and will be dropped at some
-point in the future. If you are interested to take it over, please
-<ulink url="www.taskjuggler.org/FUDforum2">contact us</ulink>.</para>
-
-<para><itemizedlist mark='opencircle'>
-
-<listitem><para>Perl 5.6 &mdash; The <ulink
-url="http://www.perl.com/pub/a/language/info/software.html#stable">Perl</ulink>
-interpreter and the following Perl modules.</para></listitem>
-
-<listitem><para>XML::Parser &mdash; Available from <ulink
-url="http://www.cpan.org/modules/by-module/XML/XML-Parser-2.31.tar.gz">CPAN</ulink></para></listitem>
-
-<listitem><para>PostScript::Simple &mdash; Available from <ulink
-url="http://www.cpan.org/modules/by-module/PostScript/PostScript-Simple-0.04.tar.gz">CPAN</ulink></para></listitem>
-
-<listitem><para>Date::Calc &mdash; Available from <ulink
-url="http://www.cpan.org/modules/by-module/Date/Date-Calc-5.3.tar.gz">CPAN</ulink></para></listitem>
-
-<listitem><para>Class::MethodMaker &mdash; Available from <ulink
-url="http://www.cpan.org/modules/by-module/Class/Class-MethodMaker-1.06.tar.gz">CPAN</ulink></para></listitem>
-
-<listitem><para>Data::Dumper &mdash; Available from <ulink
-url="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.101.tar.gz">CPAN</ulink>.
-This module is only needed for debugging.</para></listitem>
-
-<listitem><para>Poster &mdash; The <ulink
-url="http://www.geocities.com/SiliconValley/5682/poster.html">Poster</ulink>
-utility cuts big Postscript pictures into printable chunks. It's handy
-but optional as well.</para></listitem>
-
-</itemizedlist></para>
-
-</sect2>
 <sect2 id="contributed_stuff"><title>Contributed Stuff</title>
 
 <para>Serveral people have contributed useful tools for TaskJuggler
@@ -448,8 +395,8 @@ installation information.</para>
 </sect2>
 
 </sect1>
-<sect1 id="compilation_and_installation"><title>Compilation and Installation</title>
-<para>
+<sect1 id="compilation_and_installation"><title>Compilation and
+Installation</title> <para>
 Before compiling TaskJuggler you need to set the
 <computeroutput>QTDIR</computeroutput> environment variable to the
 base directory of your Qt version. This is normally
@@ -503,21 +450,15 @@ extension for such files is
 <computeroutput>.tjx</computeroutput>.</para>
 
 </sect1> 
-<sect1 id="general_usage"><title> General Usage</title>
+<sect1 id="general_usage"><title>General Usage</title>
 
 <para>To use the graphical front-end simply start it from the menu.
-Depeding on your Linux Distribution you will find it under
+Depeding on your Linux Distribution you will usually find it under
 Office/Project Management or a similar entry. To start it from a shell
 type</para>
 
 <para><screen>
-% TaskJuggler
-</screen> </para>
-
-<para>or</para>
-
-<para><screen>
-% ktjview2
+% TaskJugglerUI
 </screen> </para>
 
 <para>The commandline version of TaskJuggler works like a compiler.
@@ -750,13 +691,6 @@ allocated 8 hours per day.</para>
 </chapter>
 <chapter id="FAQ"><title>Questions and Answers</title>
 <sect1 id="general_questions"><title>General Questions</title>
-
-<para>Q: The GUI does not seem to have a
-<computeroutput>New</computeroutput> entry in the File menu. How can I
-create a new project?</para>
-<para>A: ktjview2 does not support this funktionality. It's mostly a
-project viewer. Use <computeroutput>TaskJuggler</computeroutput> if
-you want to create projects from the GUI.</para>
 
 <para>Q: Why does taskjuggler use Qt when it's not an X11
 application?</para>

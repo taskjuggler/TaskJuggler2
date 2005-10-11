@@ -85,7 +85,7 @@ if test "$cv_option_kdesupport" = yes ;then
 else
     kde_htmldir=${datadir}/taskjuggler
     LIBKCAL=""
-    DO_NOT_COMPILE="ktjview2 TaskJuggler Contrib"
+    DO_NOT_COMPILE="TaskJuggler Contrib"
 fi
 AC_SUBST(LIBKCAL)
 

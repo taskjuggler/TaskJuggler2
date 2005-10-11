@@ -828,16 +828,18 @@ errors.</para></listitem>
 were all 0. In HTML reports the summary columns were rendered all
 black.</para></listitem>
 
+<listitem><para>The two graphical front-ends that have been present in earlier
+TaskJuggler releases have been merged into one new front-end. It's
+called TaskJugglerUI. The <computeroutput>ktjview2</computeroutput>
+and <computeroutput>TaskJuggler</computeroutput> executables are no
+longer included. This was done to avoid name clashes on
+Windows/Cygwin.</para></listitem>
+
 <listitem><para>The TaskJuggler user interface now supports printing
 of high-quality task and resource reports.</para></listitem>
 
 <listitem><para>Fixed detection of cyclic brother tasks. This caused
-taskjuggler to go into a memory hogging endless
-loop.</para></listitem>
-
-<listitem><para>The name for the executable for the TaskJuggler GUI
-has been changed to TaskJugglerUI. This was done to avoid name clashes
-on Windows/Cygwin.</para></listitem>
+taskjuggler to go into a memory hogging endless loop.</para></listitem>
 
 <listitem><para>Major usability improvements for the GUI. It's now
 fully navigatable by keyboard. The scaling/zooming of the Gantt chart

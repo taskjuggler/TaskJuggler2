@@ -1,5 +1,0 @@
-# Code generation options for kconfig_compiler
-File=ktjview2.kcfg
-ClassName=Settings
-Singleton=true
-Mutators=false

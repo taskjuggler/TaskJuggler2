@@ -1,5 +1,0 @@
-New in version 0.6:
-- double clicking in the task/resource listview enables you to directly edit the
-  corresponding task/resource in the editor part
-- removed useless Calendar mode from the Gantt chart
-- the editor now supports getting help for the keyword under the cursor

@@ -1,8 +1,0 @@
-#1 when loading a second project, the Gantt chart (with task links) can't be
-cleared (crash)
-
-#2 when the toolbars are reconfigured, the sidebar can be detached; won't happen
-upon next start
-
-#3 sometimes at the application exit, the Gantt component (with task links)
-crashes
