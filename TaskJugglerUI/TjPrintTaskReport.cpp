@@ -39,7 +39,7 @@ TjPrintTaskReport::initialize()
 }
 
 bool
-TjPrintTaskReport::generate(KPrinter::Orientation orientation)
+TjPrintTaskReport::generate()
 {
     /* Get complete task list, filter and sort it. Then determine the maximum
      * tree level. */
@@ -90,7 +90,7 @@ TjPrintTaskReport::generate(KPrinter::Orientation orientation)
         }
     }
 
-    layoutPages(orientation);
+    layoutPages();
 
     return TRUE;
 }

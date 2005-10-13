@@ -56,6 +56,7 @@
 #include "TjPrintReport.h"
 #include "TjGanttChart.h"
 #include "TjObjPosTable.h"
+#include "KPrinterWrapper.h"
 
 TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     : QWidget(p, n), reportDef(rDef)
@@ -139,17 +140,22 @@ TjReport::~TjReport()
 void
 TjReport::print(KPrinter* printer)
 {
+    printer->setFullPage(true);
     printer->setResolution(300);
     printer->setCreator(QString("TaskJuggler %1 - visit %2")
                         .arg(VERSION).arg(TJURL));
-    if (!printer->setup(this))
+    if (!printer->setup(this, i18n("Print %1").arg(reportDef->getFileName())))
         return;
+
+    /* This is a hack to workaround the problem that the KPrinter settings
+     * not transferred to the QPrinter object when not printing to a file. */
+    ((KPrinterWrapper*) printer)->preparePrinting();
 
     TjPrintReport* tjpr;
     if ((tjpr = this->newPrintReport(printer)) == 0)
         return;
     tjpr->initialize();
-    tjpr->generate(printer->orientation());
+    tjpr->generate();
 
     int xPages, yPages;
     tjpr->getNumberOfPages(xPages, yPages);

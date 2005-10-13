@@ -37,11 +37,11 @@ class Resource;
 class TjPrintReport
 {
 public:
-    TjPrintReport(const Report* rd, QPaintDevice* pd);
+    TjPrintReport(const Report* rd, KPrinter* pr);
     virtual ~TjPrintReport();
 
     virtual void initialize() = 0;
-    virtual bool generate(KPrinter::Orientation) = 0;
+    virtual bool generate() = 0;
 
     bool beginPrinting();
     void printReportPage(int x, int y);
@@ -61,7 +61,7 @@ protected:
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
                                  QString& cellText) const;
 
-    void layoutPages(KPrinter::Orientation orientation);
+    void layoutPages();
     void expandColumns(int xPage, int remainder, TjReportColumn* lastColumn);
 
     void printReportCell(TjReportRow* row, int col);
@@ -82,7 +82,7 @@ protected:
     std::vector<TjReportColumn*> columns;
 
     TjObjPosTable* objPosTable;
-    QPaintDevice* paintDevice;
+    KPrinter* printer;
     QPainter p;
 
     QFont standardFont;

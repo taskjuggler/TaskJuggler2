@@ -42,9 +42,9 @@ TjResourceReport::~TjResourceReport()
 }
 
 TjPrintReport*
-TjResourceReport::newPrintReport(QPaintDevice* pd)
+TjResourceReport::newPrintReport(KPrinter* pr)
 {
-    return new TjPrintResourceReport(reportDef, pd);
+    return new TjPrintResourceReport(reportDef, pr);
 }
 
 const QtReportElement*

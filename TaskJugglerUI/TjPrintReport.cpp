@@ -40,8 +40,8 @@
 #include "TjGanttChart.h"
 #include "TjObjPosTable.h"
 
-TjPrintReport::TjPrintReport(const Report* rd, QPaintDevice* pd) :
-    reportDef(rd), paintDevice(pd)
+TjPrintReport::TjPrintReport(const Report* rd, KPrinter* pr) :
+    reportDef(rd), printer(pr)
 {
     ganttChartObj = new QObject();
     ganttChart = new TjGanttChart(ganttChartObj);
@@ -532,46 +532,22 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
 }
 
 void
-TjPrintReport::layoutPages(KPrinter::Orientation orientation)
+TjPrintReport::layoutPages()
 {
+    QPaintDeviceMetrics metrics(printer);
+
     if (showGantt)
     {
         objPosTable = new TjObjPosTable;
 
         ganttChart->setProjectAndReportData(reportElement);
-        QPaintDeviceMetrics metrics(paintDevice);
         ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
     }
-
-    // Set the left and top margin to 2cm
-    QPaintDeviceMetrics metrics(paintDevice);
-    leftMargin = mmToXPixels(10);
-    topMargin = mmToYPixels(10);
-
-    /* I haven't figured out the relationship between the orientation and the
-     * device size. Sometimes it fits, sometime it doesn't. This code tries to
-     * always do the right thing. */
-    if ((orientation == KPrinter::Landscape &&
-         metrics.width() > metrics.height()) ||
-        (orientation == KPrinter::Portrait &&
-         metrics.width() < metrics.height()))
-    {
-        qDebug("Orientation: %s W: %d  H: %d - Settings ok",
-               orientation == KPrinter::Landscape ? "Landscape" : "Portrait",
-               metrics.width(), metrics.height());
-        pageWidth = metrics.width() - 2 * topMargin;
-        pageHeight = metrics.height() - 2 * leftMargin;
-    }
-    else
-    {
-        qDebug("Orientation: %s W: %d  H: %d - Makes no sense! Flipping!",
-               orientation == KPrinter::Landscape ? "Landscape" : "Portrait",
-               metrics.width(), metrics.height());
-        pageWidth = metrics.height() - 2 * topMargin;
-        pageHeight = metrics.width() - 2 * leftMargin;
-    }
-
-
+    // Set the left and top margin to 15mm
+    leftMargin = mmToXPixels(15);
+    topMargin = mmToYPixels(15);
+    pageWidth = metrics.width() - 2 * leftMargin;
+    pageHeight = metrics.height() - 2 * topMargin;
     cellMargin = mmToXPixels(1);
 
     // Determine height of headline
@@ -802,7 +778,7 @@ TjPrintReport::expandColumns(int xPage, int remainder,
 bool
 TjPrintReport::beginPrinting()
 {
-    return p.begin(paintDevice);
+    return p.begin(printer);
 }
 
 void
@@ -1030,21 +1006,21 @@ TjPrintReport::printReportCell(TjReportRow* row, int col)
 int
 TjPrintReport::mmToXPixels(double mm)
 {
-    QPaintDeviceMetrics metrics(paintDevice);
+    QPaintDeviceMetrics metrics(printer);
     return (int) ((mm / 25.4) * metrics.logicalDpiX());
 }
 
 int
 TjPrintReport::mmToYPixels(double mm)
 {
-    QPaintDeviceMetrics metrics(paintDevice);
+    QPaintDeviceMetrics metrics(printer);
     return (int) ((mm / 25.4) * metrics.logicalDpiY());
 }
 
 int
 TjPrintReport::pointsToYPixels(double pts)
 {
-    QPaintDeviceMetrics metrics(paintDevice);
+    QPaintDeviceMetrics metrics(printer);
     return (int) ((pts * (0.376 / 25.4)) * metrics.logicalDpiY());
 }
 

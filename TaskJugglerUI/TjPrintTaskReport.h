@@ -15,18 +15,18 @@
 
 #include "TjPrintReport.h"
 
-class QPaintDevice;
+class KPrinter;
 class QtTaskReportElement;
 
 class TjPrintTaskReport : public TjPrintReport
 {
 public:
-    TjPrintTaskReport(Report* const rd, QPaintDevice* pd) :
-        TjPrintReport(rd, pd) { }
+    TjPrintTaskReport(Report* const rd, KPrinter* pr) :
+        TjPrintReport(rd, pr) { }
     ~TjPrintTaskReport() { }
 
     virtual void initialize();
-    virtual bool generate(KPrinter::Orientation orientation);
+    virtual bool generate();
 } ;
 
 #endif

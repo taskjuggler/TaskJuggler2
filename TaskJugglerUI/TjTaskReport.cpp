@@ -43,9 +43,9 @@ TjTaskReport::~TjTaskReport()
 }
 
 TjPrintReport*
-TjTaskReport::newPrintReport(QPaintDevice* pd)
+TjTaskReport::newPrintReport(KPrinter* pr)
 {
-    return new TjPrintTaskReport(reportDef, pd);
+    return new TjPrintTaskReport(reportDef, pr);
 }
 
 const QtReportElement*
