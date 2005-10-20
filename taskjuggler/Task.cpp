@@ -224,7 +224,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             lastSlot = start - 1;
             tentativeEnd = date + slotDuration - 1;
             if (DEBUGTS(5))
-                qDebug("Scheduling of %s starts at %s (%s)",
+                qDebug("Scheduling of ASAP task %s starts at %s (%s)",
                        id.latin1(), time2tjp(start).latin1(),
                        time2tjp(date).latin1());
         }
@@ -232,6 +232,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
          * following the time slot that was previously scheduled. */
         if (!((date - slotDuration <= lastSlot) && (lastSlot < date)))
             return;
+
         lastSlot = date + slotDuration - 1;
     }
     else

@@ -724,6 +724,7 @@ Project::schedule(int sc)
     {
         done = TRUE;
         time_t slot = 0;
+        int priority = 0;
         Task::SchedulingInfo schedulingInfo = Task::ASAP;
 
         /* The task list is sorted by priority. The priority decreases towards
@@ -738,14 +739,16 @@ Project::schedule(int sc)
                 /* No time slot has been set yet. Check if this task can be
                  * scheduled and provides a suggestion. */
                 slot = (*tli)->nextSlot(scheduleGranularity);
+                priority = (*tli)->getPriority();
                 schedulingInfo = (*tli)->getScheduling();
                 /* If not, try the next task. */
                 if (slot == 0)
                     continue;
 
                 if (DEBUGPS(4))
-                    qDebug("Task '%s' requests slot %s",
-                           (*tli)->getId().latin1(), time2ISO(slot).latin1());
+                    qDebug("Task '%s' (Prio %d) requests slot %s",
+                           (*tli)->getId().latin1(), (*tli)->getPriority(),
+                           time2ISO(slot).latin1());
                 /* If the task wants a time slot outside of the project time
                  * frame, we flag this task as a runaway and go to the next
                  * task. */
@@ -772,6 +775,17 @@ Project::schedule(int sc)
              * higher priority. */
             if ((*tli)->getScheduling() != schedulingInfo &&
                 !(*tli)->isMilestone())
+            {
+                if (DEBUGPS(4))
+                    qDebug("Changing scheduling direction to %d due to task "
+                           "'%s'", (*tli)->getScheduling(),
+                           (*tli)->getId().latin1());
+                break;
+            }
+            /* We must avoid that lower priority tasks get resources even
+             * though there are higher priority tasks that are ready to be
+             * scheduled but have a non-adjacent last slot. */
+            if ((*tli)->getPriority() < priority)
                 break;
 
             // Schedule this task for the current time slot.
