@@ -168,8 +168,8 @@ TjTaskReport::generateList()
     // columns.
     for (TaskListIterator tli(taskList); *tli; ++tli)
     {
-        generateTaskListLine(reportElement, *tli,
-                             ca2lviDict[QString("t:") + (*tli)->getId()]);
+        QListViewItem* lvi = ca2lviDict[QString("t:") + (*tli)->getId()];
+        generateTaskListLine(reportElement, *tli, lvi);
         if (!(*tli)->isContainer() && !(*tli)->isMilestone())
         {
             for (ResourceListIterator rli((*tli)->

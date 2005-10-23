@@ -245,6 +245,10 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                                const Task* t, QListViewItem* lvi,
                                const Resource* r)
 {
+    assert(reportElement != 0);
+    assert(t != 0);
+    assert(lvi != 0);
+
     // Skip the first two columns. They contain the hardwired task name and the
     // sort index column.
     int column = 2;
@@ -444,6 +448,10 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                                    const Resource* r, QListViewItem* lvi,
                                    const Task* t)
 {
+    assert(reportElement != 0);
+    assert(r != 0);
+    assert(lvi != 0);
+
     // Skip the first colum. It contains the hardwired resource name.
     int column = 2;
     for (QPtrListIterator<TableColumnInfo>
@@ -1100,6 +1108,8 @@ TjReport::indent(const QString& input, const QListViewItem* lvi, bool right)
 int
 TjReport::treeLevel(const QListViewItem* lvi) const
 {
+    assert(lvi != 0);
+
     int level = 0;
     while (lvi->parent())
     {
