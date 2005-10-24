@@ -853,6 +853,9 @@ circumstances resources were allocated to lower priority tasks even
 though they should have been assigned to higher priority
 tasks.</para></listitem>
 
+<listitem><para>Fixed critical bug that turned 'precedes' of parent
+tasks into 'depends' of child tasks.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

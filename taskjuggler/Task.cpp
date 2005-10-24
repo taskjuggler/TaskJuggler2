@@ -133,7 +133,7 @@ Task::inheritValues()
                 td->setGapDuration(sc, (*tdi)->getGapDuration(sc));
                 td->setGapLength(sc, (*tdi)->getGapLength(sc));
             }
-            depends.append(td);
+            precedes.append(td);
         }
 
         // Inherit allocations from parent.
@@ -1227,6 +1227,20 @@ Task::xRef(QDict<Task>& hash)
                     error = TRUE;
                     break;
                 }
+                if (t->isChildOf(this))
+                {
+                    errorMessage(i18n("Task '%1' cannot depend on child.")
+                                 .arg(id));
+                    error = TRUE;
+                    break;
+                }
+                if (isChildOf(t))
+                {
+                    errorMessage(i18n("Task '%1' cannot depend on parent.")
+                                 .arg(t->id));
+                    error = TRUE;
+                    break;
+                }
                 // Unidirectional link
                 predecessors.append(t);
                 // Bidirectional link
@@ -1269,6 +1283,20 @@ Task::xRef(QDict<Task>& hash)
                 {
                     errorMessage(i18n("Task '%1' cannot precede self.")
                                  .arg(id));
+                    error = TRUE;
+                    break;
+                }
+                if (t->isChildOf(this))
+                {
+                    errorMessage(i18n("Task '%1' cannot precede a child.")
+                                 .arg(id));
+                    error = TRUE;
+                    break;
+                }
+                if (isChildOf(t))
+                {
+                    errorMessage(i18n("Task '%1' cannot precede parent.")
+                                 .arg(t->id));
                     error = TRUE;
                     break;
                 }
@@ -2658,7 +2686,7 @@ Task::computeBackwardCriticalness(int sc)
             maxCriticalness)
             maxCriticalness = criticalness;
     if (parent &&
-        (criticalness = ((Task*) parent)->computeBackwardCriticalness(sc) >
+        ((criticalness = ((Task*) parent)->computeBackwardCriticalness(sc)) >
          maxCriticalness))
         maxCriticalness = criticalness;
 
@@ -2676,7 +2704,7 @@ Task::computeForwardCriticalness(int sc)
             maxCriticalness)
             maxCriticalness = criticalness;
     if (parent &&
-        (criticalness = ((Task*) parent)->computeForwardCriticalness(sc) >
+        ((criticalness = ((Task*) parent)->computeForwardCriticalness(sc)) >
          maxCriticalness))
         maxCriticalness = criticalness;
 
