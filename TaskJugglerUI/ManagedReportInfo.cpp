@@ -47,8 +47,8 @@ ManagedReportInfo::setLoadingProject(bool lp)
 }
 
 void
-ManagedReportInfo::print(KPrinter* printer)
+ManagedReportInfo::print()
 {
-    report->print(printer);
+    report->print();
 }
 

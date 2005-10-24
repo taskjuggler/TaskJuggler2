@@ -138,14 +138,16 @@ TjReport::~TjReport()
 }
 
 void
-TjReport::print(KPrinter* printer)
+TjReport::print()
 {
+    KPrinter* printer = new KPrinter;
+
     printer->setFullPage(true);
     printer->setResolution(300);
     printer->setCreator(QString("TaskJuggler %1 - visit %2")
                         .arg(VERSION).arg(TJURL));
     if (!printer->setup(this, i18n("Print %1").arg(reportDef->getFileName())))
-        return;
+        goto done;
 
     /* This is a hack to workaround the problem that the KPrinter settings
      * not transferred to the QPrinter object when not printing to a file. */
@@ -153,25 +155,32 @@ TjReport::print(KPrinter* printer)
 
     TjPrintReport* tjpr;
     if ((tjpr = this->newPrintReport(printer)) == 0)
-        return;
+        goto done;
     tjpr->initialize();
     tjpr->generate();
 
     int xPages, yPages;
     tjpr->getNumberOfPages(xPages, yPages);
     if (!tjpr->beginPrinting())
-        return;
-    bool first = TRUE;
-    for (int y = 0; y < yPages; ++y)
-        for (int x = 0; x < xPages; ++x)
-        {
-            if (first)
-                first = FALSE;
-            else
-                printer->newPage();
-            tjpr->printReportPage(x, y);
-        }
-    tjpr->endPrinting();
+        goto done;
+
+    // This block avoids a compile error due to gotos crossing 'first'.
+    {
+        bool first = TRUE;
+        for (int y = 0; y < yPages; ++y)
+            for (int x = 0; x < xPages; ++x)
+            {
+                if (first)
+                    first = FALSE;
+                else
+                    printer->newPage();
+                tjpr->printReportPage(x, y);
+            }
+        tjpr->endPrinting();
+    }
+
+done:
+    delete printer;
 }
 
 bool

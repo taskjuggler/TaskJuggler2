@@ -25,7 +25,6 @@
 #include <kglobalsettings.h>
 #include <kurl.h>
 #include <krun.h>
-#include <kprinter.h>
 #include <klistviewsearchline.h>
 
 #include "Report.h"
@@ -51,8 +50,6 @@ ReportManager::ReportManager(QWidgetStack* v, KListView* b,
     // to the user.
     browser->setColumnWidthMode(1, QListView::Manual);
     browser->hideColumn(1);
-
-    printer = 0;
 }
 
 ReportManager::~ReportManager()
@@ -506,14 +503,8 @@ ReportManager::clear()
 void
 ReportManager::print()
 {
-    // Looks like I have to create a KPrinter for each print job. Otherwise it
-    // messes up the paper size.
-    printer = new KPrinter(this);
-
     if (getCurrentReport())
-        getCurrentReport()->getReport()->print(printer);
-
-    delete printer;
+        getCurrentReport()->getReport()->print();
 }
 
 void

@@ -281,30 +281,6 @@ TaskJuggler::fileClose()
 void TaskJuggler::filePrint()
 {
     m_view->print();
-
-#if 0
-    KMessageBox::sorry( this, i18n("Sorry, printing is not yet implemented.") );
-    return;
-    // this slot is called whenever the File->Print menu is selected,
-    // the Print shortcut is pressed (usually CTRL+P) or the Print toolbar
-    // button is clicked
-    if (!m_printer) m_printer = new KPrinter;
-    if (m_printer->setup(this))
-    {
-        // setup the printer.  with Qt, you always "print" to a
-        // QPainter.. whether the output medium is a pixmap, a screen,
-        // or paper
-        QPainter p;
-        p.begin(m_printer);
-
-        // we let our view do the actual printing
-        QPaintDeviceMetrics metrics(m_printer);
-        m_view->print(&p, metrics.height(), metrics.width());
-
-        // and send the result to the printer
-        p.end();
-    }
-#endif
 }
 
 void TaskJuggler::optionsPreferences()

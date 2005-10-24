@@ -62,7 +62,7 @@ public:
     void generateResourceListLine(const QtReportElement* reportElement,
                                   const Resource* r, QListViewItem* lvi,
                                   const Task* t = 0);
-    void print(KPrinter* printer);
+    void print();
 
     virtual TjPrintReport* newPrintReport(KPrinter* pr) = 0;
 

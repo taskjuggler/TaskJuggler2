@@ -25,7 +25,6 @@ class QString;
 class QListViewItem;
 class KListView;
 class KListViewSearchLine;
-class KPrinter;
 class Report;
 class CoreAttributes;
 class Report;
@@ -90,7 +89,6 @@ private:
     KListViewItem* exportReports;
 
     std::list<ManagedReportInfo*> reports;
-    KPrinter* printer;
 
     bool loadingProject;
 } ;

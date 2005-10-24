@@ -16,7 +16,6 @@
 #include <qstring.h>
 
 class KListViewItem;
-class KPrinter;
 class ReportManager;
 class TjReport;
 class Report;
@@ -39,7 +38,7 @@ public:
 
     void setLoadingProject(bool lp);
 
-    void print(KPrinter* printer);
+    void print();
 
 private:
     ManagedReportInfo() : projectReport(0) { }
