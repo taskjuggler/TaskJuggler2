@@ -209,6 +209,7 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
 
 TaskJugglerView::~TaskJugglerView()
 {
+    delete project;
     delete fileManager;
     delete reportManager;
 }
@@ -456,6 +457,9 @@ TaskJugglerView::closeProject()
     messageCounter = 0;
     slotSetTitle(i18n("No Project"));
     changeStatusBar(QString::null); // clear the status bar
+
+    delete project;
+    project = 0;
 }
 
 void
@@ -604,6 +608,7 @@ TaskJugglerView::loadProject(const KURL& url)
     QString fileName = url.path();
 
     delete project;
+    project = 0;
     setLoadingProject(TRUE);
     project = new Project();
     connect(project, SIGNAL(updateProgressInfo(const QString&)),
@@ -620,6 +625,7 @@ TaskJugglerView::loadProject(const KURL& url)
                            i18n("Error loading Project") );
         setCursor(KCursor::arrowCursor());
         setLoadingProject(FALSE);
+        delete pf;
         return FALSE;
     }
 
@@ -630,6 +636,7 @@ TaskJugglerView::loadProject(const KURL& url)
     messageCounter = 0;
     if (!pf->parse())
         errors = TRUE;
+    delete pf;
     changeStatusBar(i18n("Checking project..."));
     bool fatalError = false;
     if ((!errors && !project->pass2(FALSE, fatalError)) || fatalError)

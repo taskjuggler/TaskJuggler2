@@ -80,6 +80,7 @@ public:
 private:
     TjGanttChart() { }
 
+    void clearZoomSteps();
     void calcStepSizes();
     void generateHeaderAndGrid();
     void generateHeaderLine(int y);

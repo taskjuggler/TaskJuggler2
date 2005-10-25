@@ -32,23 +32,28 @@ public:
 
     Operation(long v) : opt(Const), value(v), opsCount(0)
     {
+        ops = 0;
         valid = FALSE;
     }
     Operation(opType ot, const QString& n) : opt(ot), name(n), opsCount(0)
     {
+        ops = 0;
         valid = FALSE;
     }
     Operation(opType ot, long v) : opt(ot), value(v), opsCount(0)
     {
+        ops = 0;
         valid = FALSE;
     }
     Operation(opType ot, const QString& n, long v) :
         opt(ot), value(v), name(n), opsCount(0)
     {
+        ops = 0;
         valid = FALSE;
     }
     Operation(const QString& v) : opt(Variable), name(v), opsCount(0)
     {
+        ops = 0;
         valid = FALSE;
     }
     Operation(Operation* o1, opType o, Operation* o2 = 0)

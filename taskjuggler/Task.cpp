@@ -1528,8 +1528,8 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                   ^
                   |
              */
-            // Now check all previous tasks that task depends on.
-            for (TaskListIterator tli(predecessors); *tli != 0; ++tli)
+            // Now check all previous tasks.
+            for (TaskListIterator tli(previous); *tli != 0; ++tli)
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking previous %s of task %s",
@@ -1612,9 +1612,8 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                   ^
                   |
             */
-            /* Now check all following tasks that have explicit depends on this
-             * task. */
-            for (TaskListIterator tli(successors); *tli != 0; ++tli)
+            // Now check all following tasks.
+            for (TaskListIterator tli(followers); *tli != 0; ++tli)
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking follower %s of task %s",

@@ -20,7 +20,10 @@
 class Journal : public QPtrList<JournalEntry>
 {
 public:
-    Journal() { }
+    Journal()
+    {
+        setAutoDelete(true);
+    }
     ~Journal() { }
 
 protected:

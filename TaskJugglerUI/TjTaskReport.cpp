@@ -85,7 +85,12 @@ TjTaskReport::generateList()
 
     if (!reportElement->filterTaskList(taskList, 0,
                                        reportElement->getHideTask(), et))
+    {
+        delete et;
         return FALSE;
+    }
+    delete et;
+
     reportElement->sortTaskList(taskList);
 
     if (taskList.isEmpty())

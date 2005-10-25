@@ -141,6 +141,7 @@ void
 TjReport::print()
 {
     KPrinter* printer = new KPrinter;
+    TjPrintReport* tjpr = 0;
 
     printer->setFullPage(true);
     printer->setResolution(300);
@@ -153,7 +154,6 @@ TjReport::print()
      * not transferred to the QPrinter object when not printing to a file. */
     ((KPrinterWrapper*) printer)->preparePrinting();
 
-    TjPrintReport* tjpr;
     if ((tjpr = this->newPrintReport(printer)) == 0)
         goto done;
     tjpr->initialize();
@@ -180,6 +180,7 @@ TjReport::print()
     }
 
 done:
+    delete tjpr;
     delete printer;
 }
 

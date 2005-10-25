@@ -20,6 +20,7 @@ Operation::Operation(const Operation& op)
     opt = op.opt;
     value = op.value;
     name = op.name;
+    ops = 0;
     opsCount = op.opsCount;
     valid = FALSE;
     if (opsCount > 0)
@@ -34,8 +35,7 @@ Operation::~Operation()
 {
     for (int i = 0 ; i < opsCount; ++i)
         delete ops[i];
-    if (opsCount > 0)
-        delete [] ops;
+    delete [] ops;
 }
 
 long
@@ -129,7 +129,7 @@ Operation::evalFunction(ExpressionTree* et) const
         return EFT.getFunction(name)->longCall(et, ops);
     }
     else
-        qFatal("Unknown function %s", name.data()); 
+        qFatal("Unknown function %s", name.data());
 
     return 0;
 }

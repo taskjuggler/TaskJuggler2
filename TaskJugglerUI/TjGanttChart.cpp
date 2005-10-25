@@ -75,6 +75,8 @@ TjGanttChart::TjGanttChart(QObject* obj)
 
 TjGanttChart::~TjGanttChart()
 {
+    clearZoomSteps();
+
     delete header;
     delete chart;
     delete legend;
@@ -104,11 +106,8 @@ TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w,
     minRowHeight = mrh;
 
     assert(headerHeight > 0);
-    assert(headerHeight < 32767);   // QCanvas limit
     assert(chartHeight > 0);
-    assert(chartHeight < 32767);    // QCanvas limit
     assert(width > 0);
-    assert(width < 32767);          // QCanvas limit
 
     header->resize(width, headerHeight);
     chart->resize(width, chartHeight);
@@ -178,13 +177,19 @@ TjGanttChart::setHeaderHeight(int hh)
 }
 
 void
-TjGanttChart::calcStepSizes()
+TjGanttChart::clearZoomSteps()
 {
     // Remove and delete all entries from the zoomStep list.
     for (std::vector<TjGanttZoomStep*>::iterator it = zoomSteps.begin();
          it != zoomSteps.end(); ++it)
         delete *it;
     zoomSteps.clear();
+}
+
+void
+TjGanttChart::calcStepSizes()
+{
+    clearZoomSteps();
 
     zoomSteps.push_back(new TjGanttZoomStep
                         (TjGanttZoomStep::day,
