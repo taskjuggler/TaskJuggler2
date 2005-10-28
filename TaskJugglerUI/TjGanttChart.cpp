@@ -76,10 +76,6 @@ TjGanttChart::TjGanttChart(QObject* obj)
 TjGanttChart::~TjGanttChart()
 {
     clearZoomSteps();
-
-    delete header;
-    delete chart;
-    delete legend;
 }
 
 void
@@ -288,6 +284,9 @@ TjGanttChart::calcLegendHeight(int width)
     legendLabels.append(i18n("Planned Task"));
     legendLabels.append(i18n("In-progress Task"));
     legendLabels.append(i18n("Completed Task"));
+    legendLabels.append(i18n("Task Work Load"));
+    legendLabels.append(i18n("Other Work Load"));
+    legendLabels.append(i18n("Free Load"));
 
     maxLegendLabelWidth = 0;
     legendFont.setPixelSize(pointsToYPixels(7));
@@ -454,6 +453,24 @@ TjGanttChart::generateLegend(int width, int height)
                 drawTaskShape(x + margin,
                               x + margin + symbolWidth, yCenter,
                               legendLabelHeight, symbolWidth, false, legend);
+                break;
+            case 5:     // Allocated to this task
+                drawLoadBar(x + margin,
+                            (int) (legendLabelHeight * (1.5 * row + 0.5)),
+                            symbolWidth, legendLabelHeight,
+                            "taskLoadCol", legend);
+                break;
+            case 6:     // Allocated to other task
+                drawLoadBar(x + margin,
+                            (int) (legendLabelHeight * (1.5 * row + 0.5)),
+                            symbolWidth, legendLabelHeight,
+                            "otherLoadCol", legend);
+                break;
+            case 7:     // Free time
+                drawLoadBar(x + margin,
+                            (int) (legendLabelHeight * (1.5 * row + 0.5)),
+                            symbolWidth, legendLabelHeight,
+                            "freeLoadCol", legend);
                 break;
         }
 
@@ -1392,38 +1409,35 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
     if (taskLoad > 0.0)
     {
         // Load for this task.
-        QCanvasRectangle* rect = new QCanvasRectangle
-            (cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
-             chart);
-        rect->setBrush(QBrush(colors["taskLoadCol"], Qt::Dense4Pattern));
-        rect->setPen(QPen(colors["taskLoadCol"], lineWidth));
-        rect->setZ(TJRL_LOADBARS);
-        rect->show();
+        drawLoadBar(cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
+                    "taskLoadCol", chart);
     }
 
     if (otherLoad > 0.0)
     {
         // Load for other tasks.
-        QCanvasRectangle* rect = new QCanvasRectangle
-            (cx, colOtherLoadTop, cw,
-             colTaskLoadTop - colOtherLoadTop, chart);
-        rect->setBrush(QBrush(colors["otherLoadCol"], Qt::Dense4Pattern));
-        rect->setPen(QPen(colors["otherLoadCol"], lineWidth));
-        rect->setZ(TJRL_LOADBARS);
-        rect->show();
+        drawLoadBar(cx, colOtherLoadTop, cw, colTaskLoadTop - colOtherLoadTop,
+                    "otherLoadCol", chart);
     }
 
     if (freeLoad > 0.0)
     {
         // Unallocated load.
-        QCanvasRectangle* rect = new QCanvasRectangle
-            (cx, colTop, cw, colOtherLoadTop - colTop,
-             chart);
-        rect->setBrush(QBrush(colors["freeLoadCol"], Qt::Dense4Pattern));
-        rect->setPen(QPen(colors["freeLoadCol"], lineWidth));
-        rect->setZ(TJRL_LOADBARS);
-        rect->show();
+        drawLoadBar(cx, colTop, cw, colOtherLoadTop - colTop, "freeLoadCol",
+                    chart);
     }
+}
+
+void
+TjGanttChart::drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
+                          QCanvas* canvas)
+{
+    QCanvasRectangle* rect = new QCanvasRectangle
+        (cx, cy, cw, ch, canvas);
+    rect->setBrush(QBrush(colors[col], Qt::Dense4Pattern));
+    rect->setPen(QPen(colors[col], lineWidth));
+    rect->setZ(TJRL_LOADBARS);
+    rect->show();
 }
 
 int

@@ -110,6 +110,8 @@ private:
     void drawResourceLoadColum(const Resource* r, const Task* t, time_t start,
                                time_t end, int rY);
 
+    void drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
+                     QCanvas* canvas);
     void zoomToFitWindow(int width, time_t duration);
     void allTasksInterval();
 

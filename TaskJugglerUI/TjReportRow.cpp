@@ -29,6 +29,8 @@ TjReportRow::TjReportRow(int cols, int idx) : columns(cols), index(idx)
 
 TjReportRow::~TjReportRow()
 {
+    for (int i = 0; i < columns; ++i)
+        delete cells[i];
     delete [] cells;
 }
 

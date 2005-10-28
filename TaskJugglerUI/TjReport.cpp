@@ -708,7 +708,7 @@ void
 TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
 {
     // The first column is always the Task/Resource column
-    listView->addColumn(firstHeader);
+    listView->addColumn(firstHeader + "\n");
     // The second column is the sort index. It is always hidden.
     listView->addColumn("sortIndex");
     listView->setColumnWidthMode(1, QListView::Manual);

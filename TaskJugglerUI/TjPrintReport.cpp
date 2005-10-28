@@ -705,6 +705,8 @@ TjPrintReport::layoutPages()
              * does not fit on this page anymore, we start a new page. */
             if (colX > leftMargin + (int) ((2.0 / 3) * pageWidth))
             {
+                int remainder = leftMargin + pageWidth - colX;
+                expandColumns(xPage, remainder, prevColumn);
                 // The first column is repeated at the left of each page
                 colX = leftMargin + columns[0]->getWidth();
                 xPage++;
@@ -750,8 +752,6 @@ TjPrintReport::expandColumns(int xPage, int remainder,
         if ((*cit)->getXPage() == xPage &&
             (*cit)->getTableColumnFormat()->getExpandable())
             expandableColumns++;
-    qDebug("%d expandable columns on page %d",
-           expandableColumns, xPage);
 
     if (expandableColumns > 0)
     {
@@ -771,8 +771,10 @@ TjPrintReport::expandColumns(int xPage, int remainder,
             }
     }
     else
+    {
         if (lastColumn)
             lastColumn->setWidth(lastColumn->getWidth() + remainder);
+    }
 }
 
 bool
