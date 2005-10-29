@@ -958,13 +958,14 @@ ReportElement::sortAccountList(AccountList& filteredList) const
 }
 
 QString
-ReportElement::scaledLoad(double t, const RealFormat& realFormat) const
+ReportElement::scaledLoad(double t, const RealFormat& realFormat,
+                          bool showUnit, bool longUnit) const
 {
     QStringList variations;
     QValueList<double> factors;
-    const char* shortUnit[] = { "d", "min", "h", "w", "m", "y" };
-    const char* unit[] = { "day", "minute", "hour", "week", "month", "year" };
-    const char* units[] = { "days", "minutes", "hours", "weeks", "months",
+    const char* shortUnit[] = { "min", "h", "d", "w", "m", "y" };
+    const char* unit[] = { "minute", "hour", "day", "week", "month", "year" };
+    const char* units[] = { "minutes", "hours", "days", "weeks", "months",
         "years"};
     double max[] = { 0, 60, 48, 8, 24, 0 };
 
@@ -1017,14 +1018,14 @@ ReportElement::scaledLoad(double t, const RealFormat& realFormat) const
     {
         switch (loadUnit)
         {
-            case days:
-                str = realFormat.format(t * factors[0], FALSE);
-                break;
             case minutes:
                 str = realFormat.format(t * factors[1], FALSE);
                 break;
             case hours:
                 str = realFormat.format(t * factors[2], FALSE);
+                break;
+            case days:
+                str = realFormat.format(t * factors[0], FALSE);
                 break;
             case weeks:
                 str = realFormat.format(t * factors[3], FALSE);
@@ -1039,6 +1040,10 @@ ReportElement::scaledLoad(double t, const RealFormat& realFormat) const
             case longAuto:
                 break;  // handled above switch statement already
         }
+        // Add unit in case it's forced by caller.
+        if (showUnit && loadUnit <= years)
+            str += longUnit ? QString(" ") + units[loadUnit] :
+                QString(shortUnit[loadUnit]);
     }
     return str;
 }

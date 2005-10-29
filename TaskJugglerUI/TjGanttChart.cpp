@@ -458,19 +458,19 @@ TjGanttChart::generateLegend(int width, int height)
                 drawLoadBar(x + margin,
                             (int) (legendLabelHeight * (1.5 * row + 0.5)),
                             symbolWidth, legendLabelHeight,
-                            "taskLoadCol", legend);
+                            "taskLoadCol", Qt::Dense4Pattern, legend);
                 break;
             case 6:     // Allocated to other task
                 drawLoadBar(x + margin,
                             (int) (legendLabelHeight * (1.5 * row + 0.5)),
                             symbolWidth, legendLabelHeight,
-                            "otherLoadCol", legend);
+                            "otherLoadCol", Qt::Dense4Pattern, legend);
                 break;
             case 7:     // Free time
                 drawLoadBar(x + margin,
                             (int) (legendLabelHeight * (1.5 * row + 0.5)),
                             symbolWidth, legendLabelHeight,
-                            "freeLoadCol", legend);
+                            "freeLoadCol", Qt::Dense4Pattern, legend);
                 break;
         }
 
@@ -1089,10 +1089,14 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
     else if (end > 32767)
         end = 32767;
 
+    // Make sure that the task is at least 2 pixels width.
+    if (end <= start)
+        end = start + 1;
+
     // A blue box with some fancy interior.
     QCanvasRectangle* rect =
-        new QCanvasRectangle(start, centerY - (int) (height * 0.35),
-                             end - start, (int) (height * 0.7) + 1, canvas);
+        new QCanvasRectangle(start, centerY - (int) (height * 0.3),
+                             end - start, (int) (height * 0.6) + 1, canvas);
 
     rect->setPen(QPen(colors["taskCol"], lineWidth));
     rect->setBrush(QBrush(colors["taskCol"], outlineOnly ?
@@ -1103,8 +1107,9 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
     // The black progress bar.
     if (barWidth > 0)
     {
-        rect = new QCanvasRectangle(start, centerY - (int) (height * 0.15),
-                                    barWidth, (int) (height * 0.3) + 1, canvas);
+        rect = new QCanvasRectangle
+            (start, centerY - (int) (height * 0.12), barWidth,
+             (int) (height * 0.24) + 1, canvas);
 
         rect->setPen(QPen(colors["completionCol"], lineWidth));
         rect->setBrush(QBrush(colors["completionCol"], outlineOnly ?
@@ -1150,8 +1155,18 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     a.setPoint(0, start - jagWidth, top);
     a.setPoint(1, start - jagWidth, halfbottom);
     a.setPoint(2, start, bottom);
-    a.setPoint(3, start + jagWidth, halfbottom);
-    a.setPoint(4, end - jagWidth, halfbottom);
+    if (start + jagWidth < end - jagWidth)
+    {
+        a.setPoint(3, start + jagWidth, halfbottom);
+        a.setPoint(4, end - jagWidth, halfbottom);
+    }
+    else
+    {
+        a.setPoint(3, start + (end - start) / 2,
+                   halfbottom + jagWidth - ((end - start) / 2));
+        a.setPoint(4, start + (end - start) / 2,
+                   halfbottom + jagWidth - ((end - start) / 2));
+    }
     a.setPoint(5, end, bottom);
     a.setPoint(6, end + jagWidth, halfbottom);
     a.setPoint(7, end + jagWidth, top);
@@ -1358,8 +1373,8 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
     // We will draw the load column into the cell with a margin of 1 pixel
     // plus the cell seperation line.
     // Let's try a first shot for column start and width.
-    int cx = cellStart + mmToXPixels(0.5);
-    int cw = cellEnd - cellStart - mmToXPixels(0.5) - 1;
+    int cx = cellStart + mmToXPixels(0.6) + 1;
+    int cw = cellEnd - cellStart - 2 * mmToXPixels(0.6) - 1;
 
     if (t)
     {
@@ -1370,28 +1385,44 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
         {
             start = t->getStart(scenario);
             cx = time2x(start);
-            cw = time2x(end) - cx + 1;
+            cw = time2x(end) - cx;
         }
         if (end > t->getEnd(scenario))
         {
             end = t->getEnd(scenario);
-            cw = time2x(end) - cx + 1;
+            cw = time2x(end) - cx;
         }
     }
 
-    // Since the above calculation might have destroyed our 0.5mm margin, we
+    // Since the above calculation might have destroyed our 0.6mm margin, we
     // check it again.
-    if (cx < cellStart + mmToXPixels(0.5))
-        cx = cellStart + mmToXPixels(0.5);
-    if (cx + cw > cellEnd - mmToXPixels(0.5) - 1)
-        cw = cellEnd - mmToXPixels(0.5) - 1 - cx;
+    if (cx < cellStart + mmToXPixels(0.6) + 1)
+        cx = cellStart + mmToXPixels(0.6) + 1;
+    if (cx + cw > cellEnd - mmToXPixels(0.6))
+        cw = cellEnd - mmToXPixels(0.6) - cx;
 
     // Now we are calculation the load of the resource with respect to this
     // task, to all tasks, and we calculate the not yet allocated load.
     Interval period(start, end);
     double freeLoad = r->getAvailableWorkLoad(scenario, period);
-    double taskLoad = r->getLoad(scenario, period, AllAccounts, t);
-    double load = r->getLoad(scenario, period, AllAccounts);
+    double taskLoad;
+    double load;
+    Qt::BrushStyle pattern;
+
+    if (r->getEfficiency() > 0.0)
+    {
+        freeLoad = r->getAvailableWorkLoad(scenario, period);
+        taskLoad = r->getLoad(scenario, period, AllAccounts, t);
+        load = r->getLoad(scenario, period, AllAccounts);
+        pattern = Qt::Dense4Pattern;
+    }
+    else
+    {
+        freeLoad = r->getAvailableTimeLoad(scenario, period);
+        taskLoad = r->getAllocatedTimeLoad(scenario, period, AllAccounts, t);
+        load = r->getAllocatedTimeLoad(scenario, period, AllAccounts);
+        pattern = Qt::Dense5Pattern;
+    }
     double otherLoad = load - taskLoad;
     double maxLoad = load + freeLoad;
     if (maxLoad <= 0.0)
@@ -1410,31 +1441,31 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
     {
         // Load for this task.
         drawLoadBar(cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
-                    "taskLoadCol", chart);
+                    "taskLoadCol", pattern, chart);
     }
 
     if (otherLoad > 0.0)
     {
         // Load for other tasks.
         drawLoadBar(cx, colOtherLoadTop, cw, colTaskLoadTop - colOtherLoadTop,
-                    "otherLoadCol", chart);
+                    "otherLoadCol", pattern, chart);
     }
 
     if (freeLoad > 0.0)
     {
         // Unallocated load.
         drawLoadBar(cx, colTop, cw, colOtherLoadTop - colTop, "freeLoadCol",
-                    chart);
+                    pattern, chart);
     }
 }
 
 void
 TjGanttChart::drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
-                          QCanvas* canvas)
+                          Qt::BrushStyle pattern, QCanvas* canvas)
 {
     QCanvasRectangle* rect = new QCanvasRectangle
         (cx, cy, cw, ch, canvas);
-    rect->setBrush(QBrush(colors[col], Qt::Dense4Pattern));
+    rect->setBrush(QBrush(colors[col], pattern));
     rect->setPen(QPen(colors[col], lineWidth));
     rect->setZ(TJRL_LOADBARS);
     rect->show();
@@ -1532,5 +1563,4 @@ TjGanttChart::pointsToYPixels(double pts)
 {
     return (int) ((pts * (0.376 / 25.4)) * dpiY);
 }
-
 

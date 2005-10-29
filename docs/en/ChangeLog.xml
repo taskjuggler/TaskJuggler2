@@ -856,6 +856,9 @@ tasks.</para></listitem>
 <listitem><para>Fixed critical bug that turned 'precedes' of parent
 tasks into 'depends' of child tasks.</para></listitem>
 
+<listitem><para>Fixed cost accounting for non-working resources. They
+were always accounted to 0.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

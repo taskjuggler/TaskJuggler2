@@ -123,8 +123,15 @@ public:
     double getLoad(int sc, const Interval& i,
                    AccountType acctType = AllAccounts,
                    const Task* task = 0) const;
+    double getAllocatedTimeLoad(int sc, const Interval& period,
+                                AccountType acctType, const Task* task = 0)
+        const;
+    long getAllocatedTime(int sc, const Interval& period, AccountType acctType,
+                          const Task* task = 0) const;
 
     double getAvailableWorkLoad(int sc, const Interval& period) const;
+    double getAvailableTimeLoad(int sc, const Interval& period) const;
+    long getAvailableTime(int sc, const Interval& period) const;
 
     double getCredits(int sc, const Interval& i, AccountType acctType,
                       const Task* task = 0) const;
@@ -187,10 +194,10 @@ private:
 
     long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
 
-    long getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
-                    const Task* task) const;
+    long getAllocatedSlots(int sc, uint startIdx, uint endIdx,
+                           AccountType acctType, const Task* task) const;
 
-    long getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const;
+    long getAvailableSlots(int sc, uint startIdx, uint endIdx) const;
 
     bool isAllocatedSub(int sc, uint startIdx, uint endIdx, const QString&
                         prjId) const;

@@ -612,6 +612,9 @@ TjReport::prepareChart()
          lvit = ca2lviDict.begin(); lvit != ca2lviDict.end(); ++lvit)
     {
         const QListViewItem* lvi = (*lvit).second;
+        if (!lvi)
+            continue;
+
         // Find out if the list entry is visible at all.
         const QListViewItem* p;
         bool isVisible = true;

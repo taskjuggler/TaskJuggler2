@@ -111,7 +111,7 @@ private:
                                time_t end, int rY);
 
     void drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
-                     QCanvas* canvas);
+                     Qt::BrushStyle pattern, QCanvas* canvas);
     void zoomToFitWindow(int width, time_t duration);
     void allTasksInterval();
 

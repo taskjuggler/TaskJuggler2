@@ -204,10 +204,11 @@ TjResourceReport::generateList()
             for (TaskListIterator tli((*rli)->getTaskListIterator(scenario));
                  *tli; ++tli)
             {
-                generateTaskListLine(reportElement,
-                                     *tli, ca2lviDict[QString("t:") +
-                                     (*rli)->getId() + ":" +
-                                     (*tli)->getId()], *rli);
+                QListViewItem* lvi = ca2lviDict[QString("t:") +
+                    (*rli)->getId() + ":" + (*tli)->getId()];
+                // Some tasks may be hidden, so we have to ignore those.
+                if (lvi)
+                    generateTaskListLine(reportElement, *tli, lvi, *rli);
             }
         }
     }
@@ -230,12 +231,15 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
         const Task* t = dynamic_cast<const Task*>(ca);
         const Resource* r = dynamic_cast<const Resource*>(parent);
         double load = t->getLoad(scenario, iv, r);
-        text = i18n("%1(%2) - %3:  Load=%4  Task %5(%6)")
+        double allocatedTimeLoad = t->getAllocatedTimeLoad(scenario, iv, r);
+        text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time: %5  Task %6(%7)")
             .arg(r->getName())
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat()))
+                 (load, reportDef->getNumberFormat(), true, false))
+            .arg(reportElement->scaledLoad
+                 (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
             .arg(t->getName())
             .arg(t->getId());
     }
@@ -243,15 +247,19 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
     {
         const Resource* r = dynamic_cast<const Resource*>(ca);
         double load = r->getLoad(scenario, iv, AllAccounts);
+        double allocatedTimeLoad = r->getAllocatedTimeLoad
+            (scenario, iv, AllAccounts);
         double freeLoad = r->getAvailableWorkLoad(scenario, iv);
-        text = i18n("%1(%2) - %3:  Load=%4  Free=%5")
+        text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time: %5  Free=%6")
             .arg(r->getName())
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat()))
+                 (load, reportDef->getNumberFormat(), true, false))
             .arg(reportElement->scaledLoad
-                 (freeLoad, reportDef->getNumberFormat()));
+                 (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
+            .arg(reportElement->scaledLoad
+                 (freeLoad, reportDef->getNumberFormat(), true, false));
     }
 
     return text;

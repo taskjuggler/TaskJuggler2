@@ -1156,6 +1156,38 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 }
 
 double
+Task::getAllocatedTimeLoad(int sc, const Interval& period,
+                           const Resource* resource) const
+{
+    return project->convertToDailyLoad
+        (getAllocatedTime(sc, period, resource));
+}
+
+long
+Task::getAllocatedTime(int sc, const Interval& period,
+                       const Resource* resource) const
+{
+    if (milestone)
+        return 0;
+
+    long allocatedTime = 0;
+
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
+        allocatedTime += (*tli)->getAllocatedTime(sc, period, resource);
+
+    if (resource)
+        allocatedTime += resource->getAllocatedTime(sc, period, AllAccounts,
+                                                    this);
+    else
+        for (ResourceListIterator rli(scenarios[sc].bookedResources);
+             *rli != 0; ++rli)
+            allocatedTime += (*rli)->getAllocatedTime(sc, period, AllAccounts,
+                                                      this);
+
+    return allocatedTime;
+}
+
+double
 Task::getCredits(int sc, const Interval& period, AccountType acctType,
                  const Resource* resource, bool recursive) const
 {

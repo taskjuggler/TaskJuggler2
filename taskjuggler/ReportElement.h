@@ -181,7 +181,8 @@ public:
     const TableColumnFormat* getColumnFormat(const QString& key) const;
 
     void setMacros(TableLineInfo* tli);
-    QString scaledLoad(double t, const RealFormat& realFormat) const;
+    QString scaledLoad(double t, const RealFormat& realFormat,
+                       bool showUnit = FALSE, bool longUnit = FALSE) const;
 
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;

@@ -181,10 +181,11 @@ TjTaskReport::generateList()
                                           getBookedResourcesIterator(scenario));
                  *rli; ++rli)
             {
-                generateResourceListLine(reportElement,
-                                         *rli, ca2lviDict[QString("r:") +
-                                         (*tli)->getId() + ":" +
-                                         (*rli)->getId()], *tli);
+                QListViewItem* lvi = ca2lviDict[QString("r:") +
+                    (*tli)->getId() + ":" + (*rli)->getId()];
+                // Make sure that the resource is not hidden.
+                if (lvi)
+                    generateResourceListLine(reportElement, *rli, lvi, *tli);
             }
         }
     }
@@ -207,24 +208,32 @@ TjTaskReport::generateStatusBarText(const QPoint& pos,
     {
         const Task* t = dynamic_cast<const Task*>(ca);
         double load = t->getLoad(scenario, iv);
-        text = i18n("%1(%2) - %3:  Load=%4")
+        double allocatedTimeLoad = t->getAllocatedTimeLoad(scenario, iv);
+        text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time=%5")
             .arg(t->getName())
             .arg(t->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat()));
+                 (load, reportDef->getNumberFormat(), true, false))
+            .arg(reportElement->scaledLoad
+                 (allocatedTimeLoad, reportDef->getNumberFormat(), true,
+                  false));
     }
     else
     {
         const Resource* r = dynamic_cast<const Resource*>(ca);
         const Task* t = dynamic_cast<const Task*>(parent);
         double load = r->getLoad(scenario, iv, AllAccounts, t);
-        text = i18n("%1(%2) - %3:  Load=%4  %5(%6)")
+        double allocatedTimeLoad = r->getAllocatedTimeLoad
+            (scenario, iv, AllAccounts, t);
+        text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time=%5  %6(%7)")
             .arg(r->getName())
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat()))
+                 (load, reportDef->getNumberFormat(), true, false))
+            .arg(reportElement->scaledLoad
+                 (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
             .arg(t->getName())
             .arg(t->getId());
     }

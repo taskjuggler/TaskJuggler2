@@ -35,7 +35,7 @@ typedef enum AccountType { AllAccounts = 0, Cost, Revenue };
 
 typedef enum LoadUnit
 {
-    minutes, hours, days, weeks, months, years, shortAuto, longAuto
+    minutes = 0, hours, days, weeks, months, years, shortAuto, longAuto
 };
 
 #endif

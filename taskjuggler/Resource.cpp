@@ -834,9 +834,24 @@ double
 Resource::getLoad(int sc, const Interval& period, AccountType acctType,
                   const Task* task) const
 {
+    return efficiency * getAllocatedTimeLoad(sc, period, acctType, task);
+}
+
+double
+Resource::getAllocatedTimeLoad(int sc, const Interval& period,
+                               AccountType acctType, const Task* task) const
+{
+    return project->convertToDailyLoad
+        (getAllocatedTime(sc, period, acctType, task));
+}
+
+long
+Resource::getAllocatedTime(int sc, const Interval& period, AccountType acctType,
+                          const Task* task) const
+{
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-        return 0.0;
+        return 0;
     uint startIdx = sbIndex(iv.getStart());
     uint endIdx = sbIndex(iv.getEnd());
     if (scenarios[sc].firstSlot > 0 && scenarios[sc].lastSlot > 0)
@@ -847,19 +862,19 @@ Resource::getLoad(int sc, const Interval& period, AccountType acctType,
             endIdx = scenarios[sc].lastSlot;
     }
 
-    return efficiency * project->convertToDailyLoad
-        (getLoadSub(sc, startIdx, endIdx, acctType, task) *
-         project->getScheduleGranularity());
+    return getAllocatedSlots(sc, startIdx, endIdx, acctType, task) *
+        project->getScheduleGranularity();
 }
 
 long
-Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
-                     const Task* task) const
+Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
+                            AccountType acctType, const Task* task) const
 {
     long bookings = 0;
 
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
-        bookings += (*rli)->getLoadSub(sc, startIdx, endIdx, acctType, task);
+        bookings += (*rli)->getAllocatedSlots(sc, startIdx, endIdx, acctType,
+                                              task);
 
     // If the scoreboard has not been initialized there is no load.
     if (!scoreboards[sc])
@@ -901,25 +916,36 @@ Resource::getLoadSub(int sc, uint startIdx, uint endIdx, AccountType acctType,
 double
 Resource::getAvailableWorkLoad(int sc, const Interval& period) const
 {
-    Interval iv(period);
-    if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-        return 0.0;
+    return efficiency * getAvailableTimeLoad(sc, period);
+}
 
-    return efficiency * project->convertToDailyLoad
-        (getAvailableWorkLoadSub(sc, sbIndex(iv.getStart()),
-                                 sbIndex(iv.getEnd())) *
-         project->getScheduleGranularity());
+double
+Resource::getAvailableTimeLoad(int sc, const Interval& period) const
+{
+    return project->convertToDailyLoad(getAvailableTime(sc, period));
 }
 
 long
-Resource::getAvailableWorkLoadSub(int sc, uint startIdx, uint endIdx) const
+Resource::getAvailableTime(int sc, const Interval& period) const
+{
+    Interval iv(period);
+    if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+        return 0;
+
+    return getAvailableSlots(sc, sbIndex(iv.getStart()),
+                             sbIndex(iv.getEnd())) *
+        project->getScheduleGranularity();
+}
+
+long
+Resource::getAvailableSlots(int sc, uint startIdx, uint endIdx) const
 {
     long availSlots = 0;
 
     if (!sub->isEmpty())
     {
         for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
-            availSlots += (*rli)->getAvailableWorkLoadSub(sc, startIdx, endIdx);
+            availSlots += (*rli)->getAvailableSlots(sc, startIdx, endIdx);
     }
     else
     {
@@ -946,7 +972,8 @@ double
 Resource::getCredits(int sc, const Interval& period, AccountType acctType,
                      const Task* task) const
 {
-    return getLoad(sc, period, acctType, task) * rate;
+    return project->convertToDailyLoad
+        (getAllocatedTime(sc, period, acctType, task)) * rate;
 }
 
 bool

@@ -249,6 +249,10 @@ public:
 
     double getLoad(int sc, const Interval& period, const Resource* resource = 0)
         const;
+    long getAllocatedTime(int sc, const Interval& period,
+                          const Resource* resource = 0) const;
+    double getAllocatedTimeLoad(int sc, const Interval& period,
+                                const Resource* resource = 0) const;
 
     void addBookedResource(int sc, Resource* r)
     {
