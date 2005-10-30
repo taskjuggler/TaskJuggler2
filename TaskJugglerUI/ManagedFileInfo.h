@@ -15,8 +15,8 @@
 
 #include <qobject.h>
 
-#include <ktexteditor/view.h>
-#include <ktexteditor/document.h>
+#include <kate/view.h>
+#include <kate/document.h>
 #include <kurl.h>
 
 class KConfig;
@@ -40,7 +40,7 @@ public:
 
     bool isModified() { return modified; }
 
-    void save();
+    void save(bool ask);
 
     void saveAs(const KURL& url);
 
@@ -57,6 +57,8 @@ public:
 
 public slots:
     void setModified();
+    void setModifiedOnDisc(Kate::Document*, bool modified,
+                           unsigned char reason);
 
 private:
     ManagedFileInfo() { }

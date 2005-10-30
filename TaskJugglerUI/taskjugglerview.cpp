@@ -38,6 +38,7 @@
 #include <klibloader.h>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
+#include <kfileitem.h>
 #include <kstandarddirs.h>
 #include <krun.h>
 #include <klistview.h>
@@ -66,6 +67,7 @@
 #include "ManagedFileInfo.h"
 #include "ReportManager.h"
 #include "ManagedReportInfo.h"
+#include "TemplateSelector.h"
 
 TaskJugglerView::TaskJugglerView(QWidget *parent)
     : DCOPObject("TaskJugglerIface"), QWidget(parent)
@@ -269,31 +271,47 @@ TaskJugglerView::newProject()
              QString::null, KStdGuiItem::close()) != KMessageBox::Continue)
             return;
     }
-    KURL fileURL = KFileDialog::getSaveURL
-        (i18n("Pick a name for the new project file"), "*.tjp", this,
-         i18n("New Project File"));
 
-    // Check if user cancelled the message box
-    if (fileURL.isEmpty())
-        return;
-
-    if (!fileURL.isValid())
+    KURL fileURL;
+    for ( ; ; )
     {
-        KMessageBox::sorry(this, i18n("The specified file URL is not valid."),
-                           i18n("Error while creating new Project"));
-        return;
+        fileURL = KFileDialog::getSaveURL
+            (":project", "*.tjp", this,
+             i18n("Pick a name for the new project file"));
+
+        // Check if user cancelled the message box
+        if (fileURL.isEmpty())
+            return;
+
+        if (!fileURL.isValid())
+        {
+            KMessageBox::sorry
+                (this, i18n("The specified project name is not valid."),
+                 i18n("Please enter a valid project file name."));
+        }
+        else if (fileURL.url().right(4) != ".tjp")
+        {
+            KMessageBox::sorry
+                (this, i18n("Project file names must have a .tjp extension."),
+                 i18n("Please enter a valid project file name."));
+        }
+        else if (KFileItem(fileURL, "application/x-tjp",
+                           KFileItem::Unknown).size() != 0)
+        {
+            if (KMessageBox::warningContinueCancel
+                (this, i18n("The file %1 already exists.\n"
+                            "Do you really want replace the content?")
+                 .arg(fileURL.url()),
+                 QString::null, KStdGuiItem::ok()) == KMessageBox::Continue)
+                break;
+        }
+        else
+            break;
     }
 
-    QString templateProject = locate("data", "taskjuggler/ProjectTemplate.tjp");
-    if (templateProject.isEmpty())
-    {
-        KMessageBox::sorry(this, i18n("Could not find ProjectTemplate.tjp."),
-                           i18n("Error while creating new Project"));
+    QString templateFile;
+    if ((templateFile = pickTemplateFile("tjp")).isEmpty())
         return;
-    }
-
-    // Make sure we don't lose any changes.
-    fileManager->saveAllFiles();
 
     /* When we switch to a new project, we clear all lists and reports.
      * Loading and processing may take some time, so it looks odd to still see
@@ -302,7 +320,7 @@ TaskJugglerView::newProject()
     closeProject();
 
     showReportAfterLoad = FALSE;
-    loadProject(KURL(templateProject));
+    loadProject(KURL(templateFile));
     saveAs(fileURL);
 }
 
@@ -319,32 +337,99 @@ TaskJugglerView::newInclude()
         return;
     }
 
-    // Ask user for the name of the new file.
-    KURL fileURL = KFileDialog::getSaveURL
-        (i18n("Pick a name for the new include file"), "*.tji",
-         this, i18n("New Include File"));
-
-    // Find out the name of the include file template.
-    QString templateInclude = locate("data", "taskjuggler/IncludeTemplate.tji");
-    if (templateInclude.isEmpty())
+    KURL fileURL;
+    for ( ; ; )
     {
-        KMessageBox::sorry
-            (this, i18n("Could not find IncludeTemplate.tji."),
-             i18n("Error while creating include File"));
+        // Ask user for the name of the new file.
+        fileURL = KFileDialog::getSaveURL
+            (":include", "*.tji",
+             this, i18n("Pick a name for the new include file"));
+
+        // Check if user cancelled the message box
+        if (fileURL.isEmpty())
+            return;
+
+        if (!fileURL.isValid())
+        {
+            KMessageBox::sorry
+                (this, i18n("The specified file name is not valid."),
+                 i18n("Please enter a valid include file name."));
+        }
+        else if (fileURL.url().right(4) != ".tji")
+        {
+            KMessageBox::sorry
+                (this, i18n("Include files must have a .tji extension."),
+                 i18n("Please enter a valid include file name."));
+        }
+        else if (KFileItem(fileURL, "application/x-tji",
+                           KFileItem::Unknown).size() != 0)
+        {
+            if (KMessageBox::warningContinueCancel
+                (this, i18n("The file %1 already exists.\n"
+                            "Do you really want replace the content?")
+                 .arg(fileURL.url()),
+                 QString::null, KStdGuiItem::ok()) == KMessageBox::Continue)
+                break;
+        }
+        else
+            break;  // We have a valid name.
+    }
+
+    QString templateFile;
+    if ((templateFile = pickTemplateFile("tji")).isEmpty())
         return;
+
+    // Add template to list of files.
+    fileManager->addFile(KURL(templateFile), fileURL);
+    // Open the file list.
+    mw->listViews->setCurrentItem(mw->filesPage);
+    // Show the new file in the editor.
+    showEditor();
+    // Save the file so that it physically exists.
+    save();
+}
+
+QString
+TaskJugglerView::pickTemplateFile(const QString& extension)
+{
+    // Generate list with all template file names.
+    KStandardDirs stdDirs;
+    QStringList templates = KStandardDirs().findAllResources
+        ("data", QString("taskjuggler/Templates/") +
+         KGlobal().locale()->language() + "/*." + extension);
+    /* If no templates for the current language were found, try the default
+     * language. */
+    if (templates.count() == 0)
+        templates = KStandardDirs().findAllResources
+            ("data", QString("taskjuggler/Templates/") +
+             KGlobal().locale()->defaultLanguage() + "/*." + extension);
+
+    if (templates.count() == 0)
+    {
+        KMessageBox::sorry(this, i18n("Could not find any project templates."),
+                           i18n("Please check your TaskJuggler installation."));
+        return QString::null;
     }
 
-    if (!fileURL.isEmpty() && fileURL.isValid())
+    TemplateSelector* selector = new TemplateSelector(topLevelWidget());
+    for (QStringList::Iterator it = templates.begin(); it != templates.end();
+         ++it)
     {
-        // Add template to list of files.
-        fileManager->addFile(KURL(templateInclude), fileURL);
-        // Open the file list.
-        mw->listViews->setCurrentItem(mw->filesPage);
-        // Show the new file in the editor.
-        showEditor();
-        // Save the file so that it physically exists.
-        save();
+        /* We show the template name (file name without path and extension)
+         * and the full file name. */
+        int nameStart = (*it).findRev('/') + 1;
+        QString name = (*it).mid
+            (nameStart, (*it).length() - nameStart -
+             QString("." + extension).length());
+        // Convert all underscores to spaces.
+        name.replace('_', ' ');
+        KListViewItem* lvi = new KListViewItem(selector->templateList, name);
+        lvi->setText(1, *it);
     }
+    if (selector->exec() == QDialog::Rejected)
+        return QString::null;
+
+    return selector->templateList->selectedItem()->text(1);
 }
 
 void
@@ -364,9 +449,8 @@ TaskJugglerView::openURL(KURL url)
     {
         // Make sure the user really wants to load a new project.
         int but = KMessageBox::warningContinueCancel
-            (this, i18n("You must close the current project before you can\n"
-                        "load a new project. All files of the current\n"
-                        "project will be saved automatically.\n"
+            (this, i18n("You must close the current project before you can "
+                        "load a new project.\n"
                         "Do you really want to do this?"),
              i18n("Load a new Project"),
              KStdGuiItem::close());
@@ -378,14 +462,11 @@ TaskJugglerView::openURL(KURL url)
     // If the URL hasn't been specified yet, ask the user for it.
     if (url.isEmpty())
     {
-        url = KFileDialog::getOpenURL(":projects", "*.tjp *.tji", this,
+        url = KFileDialog::getOpenURL(":project", "*.tjp *.tji", this,
                                       i18n("Open a new Project"));
         if (url.isEmpty())
             return;
     }
-
-    // Make sure we don't lose any changes.
-    fileManager->saveAllFiles();
 
     /* When we switch to a new project, we clear all lists and reports.
      * Loading and processing may take some time, so it looks odd to still see
@@ -419,8 +500,7 @@ void
 TaskJugglerView::saveAs()
 {
     KURL url = KFileDialog::getSaveURL
-        (i18n("Pick an alternative name for the current file"),
-         "*.tjp, *.tji", this, i18n("Save file as"));
+        (QString::null, "*.tjp, *.tji", this, i18n("Save file as"));
 
     if (!url.isEmpty() && url.isValid())
         saveAs(url);
@@ -437,6 +517,7 @@ TaskJugglerView::saveAs(const KURL& url)
 void
 TaskJugglerView::close()
 {
+    fileManager->saveCurrentFile(true);
     fileManager->closeCurrentFile();
     // In case we closed the master file, we will close the whole project.
     if (!fileManager->getMasterFile())
@@ -446,6 +527,9 @@ TaskJugglerView::close()
 void
 TaskJugglerView::closeProject()
 {
+    // Give the user the option to save all modified files.
+    fileManager->saveAllFiles(true);
+
     // Clear all project specific data structures.
     fileManager->clear();
     reportManager->clear();

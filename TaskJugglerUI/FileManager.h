@@ -39,6 +39,8 @@ public:
                 KListViewSearchLine* s);
     virtual ~FileManager();
 
+    KMainWindow* getMainWindow() const { return mainWindow; }
+
     void updateFileList(const QStringList& fl, const KURL& mf);
 
     void addFile(const KURL& nf, const KURL& nnf);
@@ -61,7 +63,8 @@ public:
 
     bool isProjectLoaded() const;
 
-    void saveAllFiles();
+    void saveAllFiles(bool ask = false);
+    void saveCurrentFile(bool ask = false);
     void clear();
 
     void find();
@@ -84,7 +87,6 @@ public slots:
     void showInEditor(const KURL& url, int line, int col);
     void showInEditor(CoreAttributes* ca);
     void showInEditor(const Report* report);
-    void saveCurrentFile();
     void saveCurrentFileAs(const KURL& url);
     void closeCurrentFile();
     void setCursorPosition(int line, int col);

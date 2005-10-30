@@ -157,6 +157,7 @@ private slots:
     void tutorial();
 
 private:
+    QString pickTemplateFile(const QString& extention);
     bool loadProject(const KURL& url);
 
     void updateTaskList();

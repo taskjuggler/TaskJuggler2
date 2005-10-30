@@ -12,20 +12,27 @@
 
 #include "ManagedFileInfo.h"
 
+#include <kmainwindow.h>
 #include <klistview.h>
+#include <kmessagebox.h>
+#include <klocale.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <kurl.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/editinterface.h>
+#include <kate/document.h>
+
+#include "FileManager.h"
 
 ManagedFileInfo::ManagedFileInfo(FileManager* fm, const KURL& url) :
     manager(fm), fileURL(url)
 {
     editor = 0;
-    modified = FALSE;
+    modified = false;
     browserEntry = 0;
 }
 
@@ -61,8 +68,20 @@ void
 ManagedFileInfo::setModified()
 {
     modified = TRUE;
-    browserEntry->setPixmap(2, KGlobal::iconLoader()->loadIcon("filesaveas",
-                                                               KIcon::Small));
+    if (browserEntry)
+        browserEntry->setPixmap(2, KGlobal::iconLoader()->loadIcon
+                                ("filesaveas", KIcon::Small));
+}
+
+void
+ManagedFileInfo::setModifiedOnDisc(Kate::Document* doc, bool,
+                                   unsigned char reason)
+{
+    if (!editor || reason != 1)
+        return;
+
+    doc->reloadFile();
+    modified = false;
 }
 
 QString
@@ -82,12 +101,19 @@ ManagedFileInfo::getWordUnderCursor() const
 }
 
 void
-ManagedFileInfo::save()
+ManagedFileInfo::save(bool ask)
 {
     if (modified && editor)
     {
+        if (ask && KMessageBox::warningYesNo
+            (manager->getMainWindow(),
+             i18n("The file %1 has unsaved modifications.\n"
+                  "Do you want to save your modifications?")
+             .arg(fileURL.url())) != KMessageBox::Yes)
+            return;
+
         editor->document()->save();
-        modified = FALSE;
+        modified = false;
         browserEntry->setPixmap(2, 0);
     }
 }
@@ -98,7 +124,7 @@ ManagedFileInfo::saveAs(const KURL& url)
     if (editor)
     {
         editor->document()->saveAs(url);
-        modified = FALSE;
+        modified = false;
         if (browserEntry)
             browserEntry->setPixmap(2, 0);
     }

@@ -322,8 +322,9 @@ FileManager::showInEditor(const KURL& url)
                     KMessageBox::error
                         (viewStack,
                          i18n("A KDE text-editor component could not "
-                              "be found;\nplease check your KDE "
+                              "be found; please check your KDE "
                               "installation."));
+                    return;
                 }
                 if (!editorConfigured)
                 {
@@ -347,6 +348,13 @@ FileManager::showInEditor(const KURL& url)
                 // Signal to update the file-modified status
                 connect(document, SIGNAL(textChanged()),
                         *mfi, SLOT(setModified()));
+
+                connect(document,
+                        SIGNAL(modifiedOnDisc(Kate::Document*, bool,
+                                              unsigned char)),
+                        *mfi,
+                        SLOT(setModifiedOnDisc(Kate::Document*, bool,
+                                               unsigned char)));
 
                 // Signal to en- or disable clipboard actions
                 connect(document, SIGNAL(selectionChanged()),
@@ -448,10 +456,10 @@ FileManager::getWordUnderCursor() const
 }
 
 void
-FileManager::saveCurrentFile()
+FileManager::saveCurrentFile(bool ask)
 {
     if (getCurrentFile())
-        getCurrentFile()->save();
+        getCurrentFile()->save(ask);
 }
 
 void
@@ -492,11 +500,11 @@ FileManager::closeCurrentFile()
 }
 
 void
-FileManager::saveAllFiles()
+FileManager::saveAllFiles(bool ask)
 {
     for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
          mfi != files.end(); ++mfi)
-        (*mfi)->save();
+        (*mfi)->save(ask);
 }
 
 void

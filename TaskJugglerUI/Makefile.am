@@ -27,7 +27,8 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjHTMLReport.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	taskjuggleriface.skel \
-	MainWidget.ui RichTextDisplay.ui FindDialog.ui
+	MainWidget.ui RichTextDisplay.ui FindDialog.ui \
+	TemplateSelector.ui
 
 # these are the headers for your project
 noinst_HEADERS = taskjuggler.h taskjugglerview.h pref.h
@@ -49,7 +50,7 @@ tjmime_DATA = x-tjp.desktop x-tji.desktop x-tjx.desktop
 
 # this is where the XML-GUI resource file goes
 rcdir = $(kde_datadir)/taskjuggler
-rc_DATA = taskjugglerui.rc ProjectTemplate.tjp IncludeTemplate.tji
+rc_DATA = taskjugglerui.rc
 
 misc_DATA = tips
 miscdir = $(kde_datadir)/taskjuggler
