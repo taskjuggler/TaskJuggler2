@@ -859,6 +859,9 @@ tasks into 'depends' of child tasks.</para></listitem>
 <listitem><para>Fixed cost accounting for non-working resources. They
 were always accounted to 0.</para></listitem>
 
+<listitem><para>Use embedded HTML browser for HTML reports instead of
+lauching an external browser.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

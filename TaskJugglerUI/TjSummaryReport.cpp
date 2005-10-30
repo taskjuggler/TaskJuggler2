@@ -123,4 +123,5 @@ TjSummaryReport::hide()
     QWidget::hide();
 }
 
+#include "TjSummaryReport.moc"
 

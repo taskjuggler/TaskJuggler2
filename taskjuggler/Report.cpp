@@ -89,30 +89,38 @@ Report::open()
     }
     else
     {
-        QString absFileName = fileName;
-        // Check if the fileName is not an absolute file name.
-        if (fileName[0] != '/')
-        {
-            // Prepend the path of the file where the report was defined, so
-            // relative report file names are always interpreted relative to
-            // their definition.
-            QString path;
-            if (defFileName[0] == '/')
-                path = defFileName.left(defFileName.findRev('/', -1) + 1);
-            absFileName = path + fileName;
-        }
-        f.setName(absFileName);
+        QString fullFileName = getFullFileName();
+        f.setName(fullFileName);
 
         if (!f.open(IO_WriteOnly))
         {
             TJMH.errorMessage
                 (QString(i18n("Cannot open report file %1!\n"))
-                 .arg(absFileName.latin1()));
+                 .arg(fullFileName.latin1()));
             return FALSE;
         }
     }
     s.setDevice(&f);
     return TRUE;
+}
+
+QString
+Report::getFullFileName() const
+{
+    QString fullFileName = fileName;
+    // Check if the fileName is not an absolute file name.
+    if (fileName[0] != '/')
+    {
+        // Prepend the path of the file where the report was defined, so
+        // relative report file names are always interpreted relative to
+        // their definition.
+        QString path;
+        if (defFileName[0] == '/')
+            path = defFileName.left(defFileName.findRev('/', -1) + 1);
+        fullFileName = path + fileName;
+    }
+
+    return fullFileName;
 }
 
 bool

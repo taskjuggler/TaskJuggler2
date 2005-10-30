@@ -64,10 +64,6 @@ public:
 
     virtual TjPrintReport* newPrintReport(KPrinter* pr) = 0;
 
-signals:
-    void signalChangeStatusBar(const QString& text);
-    void signalEditCoreAttributes(CoreAttributes*);
-
 public slots:
     void zoomIn();
     void zoomOut();

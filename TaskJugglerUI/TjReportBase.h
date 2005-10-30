@@ -15,10 +15,12 @@
 
 #include <qwidget.h>
 
+class CoreAttributes;
 class Report;
 
 class TjReportBase : public QWidget
 {
+    Q_OBJECT
 public:
     TjReportBase(QWidget* p, Report* const rDef,
                  const QString& n = QString::null);
@@ -32,6 +34,10 @@ public:
 
     virtual void print();
 
+signals:
+    void signalChangeStatusBar(const QString& text);
+    void signalEditCoreAttributes(CoreAttributes*);
+
 public slots:
     virtual void zoomIn();
     virtual void zoomOut();
@@ -44,8 +50,6 @@ protected:
     Report* const reportDef;
 
     bool loadingProject;
-
-private:
 } ;
 
 #endif

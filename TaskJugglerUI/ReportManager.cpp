@@ -40,6 +40,7 @@
 #include "ManagedReportInfo.h"
 #include "TjReportBase.h"
 #include "TjSummaryReport.h"
+#include "TjHTMLReport.h"
 #include "TjTaskReport.h"
 #include "TjResourceReport.h"
 #include "MainWidget.h"
@@ -356,22 +357,7 @@ ReportManager::showReport(QListViewItem* lvi)
             return TRUE;
         }
         else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
-        {
-            HTMLReport* htmlReport =
-                dynamic_cast<HTMLReport*>(mr->getProjectReport());
-            if (!htmlReport->generate())
-                return FALSE;
-            // show the HTML file in web browser
-            KURL reportUrl =
-                KURL::fromPathOrURL(mr->getProjectReport()->
-                                    getDefinitionFile());
-            reportUrl.setFileName(mr->getProjectReport()->getFileName());
-
-            changeStatusBar(i18n("Displaying HTML report: '%1'")
-                            .arg(mr->getProjectReport()->getFileName()));
-            KRun::runURL(reportUrl, "text/html");
-            return TRUE;
-        }
+            tjr = new TjHTMLReport(reportStack, mr->getProjectReport());
         else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
         {
             ICalReport* icalReport =

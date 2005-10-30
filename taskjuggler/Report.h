@@ -57,6 +57,7 @@ public:
     }
     const Project* getProject() const { return project; }
     const QString& getFileName() const { return fileName; }
+    QString getFullFileName() const;
 
     const QString& getDefinitionFile() const { return defFileName; }
     uint getDefinitionLine() const { return defFileLine; }

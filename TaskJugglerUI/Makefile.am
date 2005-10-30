@@ -14,7 +14,7 @@ LIBADD=-L../taskjuggler/libtaskjuggler.la
 TaskJugglerUI_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # the libraries to link against.
-TaskJugglerUI_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT)
+TaskJugglerUI_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.la $(LIB_KIO) $(LIB_KDEPRINT) $(LIB_KHTML)
 
 # which sources should be compiled for taskjuggler
 TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
@@ -24,6 +24,7 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \
 	ReportManager.cpp ManagedReportInfo.cpp \
 	TjReportBase.cpp TjSummaryReport.cpp \
+	TjHTMLReport.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	taskjuggleriface.skel \
 	MainWidget.ui RichTextDisplay.ui FindDialog.ui

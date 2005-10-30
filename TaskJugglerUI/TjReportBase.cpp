@@ -42,4 +42,4 @@ TjReportBase::hide()
 {
 }
 
-
+#include "TjReportBase.moc"

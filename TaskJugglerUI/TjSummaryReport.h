@@ -21,6 +21,8 @@ class QTextBrowser;
 
 class TjSummaryReport : public TjReportBase
 {
+    Q_OBJECT
+
 public:
     TjSummaryReport(QWidget* p, const Project* pr,
                  const QString& n = QString::null);
