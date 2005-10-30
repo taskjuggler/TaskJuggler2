@@ -124,7 +124,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     fileManager = new FileManager(dynamic_cast<KMainWindow*>(parent),
                                   editorStack, mw->fileListView,
                                   mw->fileListViewSearch);
-    reportManager = new ReportManager(mw->reportStack, mw->reportListView,
+    reportManager = new ReportManager(dynamic_cast<KMainWindow*>(parent),
+                                      mw->reportStack, mw->reportListView,
                                       mw->reportListViewSearch);
 
     connect(&TJMH, SIGNAL(printWarning(const QString&, const QString&, int)),
@@ -655,7 +656,7 @@ TaskJugglerView::loadProject(const KURL& url)
     updateAccountList();
 
     // Load reports into Report List View
-    reportManager->updateReportList(project->getReportListIterator());
+    reportManager->updateReportList(project);
 
     // Load file list into File List View
     fileManager->updateFileList(project->getSourceFiles(), url);
@@ -706,17 +707,10 @@ TaskJugglerView::loadProject(const KURL& url)
 
         if (showReportAfterLoad)
         {
-            QListViewItem* firstReport =
-                reportManager->getFirstInteractiveReportItem();
-            if (firstReport)
-            {
-                // Open the report list.
-                mw->listViews->setCurrentItem(mw->reportsPage);
-                showReport();
-                reportManager->showReport(0);
-            }
-            else
-                showEditor();
+            // Open the report list.
+            mw->listViews->setCurrentItem(mw->reportsPage);
+            showReport();
+            reportManager->showReport(0);
         }
         else
             showEditor();
@@ -908,6 +902,7 @@ TaskJugglerView::focusBigTab(QWidget*)
                     fileManager->getCurrentFile()->getUniqueName();
             fileManager->enableEditorActions(TRUE);
             fileManager->setFocusToEditor();
+            reportManager->enableReportActions(false);
 
             break;
 
@@ -920,6 +915,8 @@ TaskJugglerView::focusBigTab(QWidget*)
             // Open report list in toolbox and select current report.
             mw->listViews->setCurrentIndex(3);
             reportManager->setFocusToReport();
+            // Enable report menu and toolbar actions.
+            reportManager->enableReportActions(true);
 
             // Disable all editor actions.
             fileManager->enableEditorActions(FALSE);

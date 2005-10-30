@@ -18,6 +18,8 @@
 #include <qstring.h>
 #include <qpopupmenu.h>
 
+#include <kmainwindow.h>
+#include <kaction.h>
 #include <klistview.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -27,6 +29,7 @@
 #include <krun.h>
 #include <klistviewsearchline.h>
 
+#include "Project.h"
 #include "Report.h"
 #include "HTMLReport.h"
 #include "ICalReport.h"
@@ -35,14 +38,15 @@
 #include "ExportReport.h"
 
 #include "ManagedReportInfo.h"
-#include "TjReport.h"
+#include "TjReportBase.h"
+#include "TjSummaryReport.h"
 #include "TjTaskReport.h"
 #include "TjResourceReport.h"
 #include "MainWidget.h"
 
-ReportManager::ReportManager(QWidgetStack* v, KListView* b,
-                             KListViewSearchLine* s) :
-    reportStack(v), browser(b), searchLine(s)
+ReportManager::ReportManager(KMainWindow* m, QWidgetStack* v,
+                             KListView* b, KListViewSearchLine* s) :
+    mainWindow(m), reportStack(v), browser(b), searchLine(s)
 {
     loadingProject = FALSE;
 
@@ -62,18 +66,29 @@ ReportManager::getFirstInteractiveReportItem() const
 {
     for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
          mri != reports.end(); ++mri)
+    {
+        // Watch out for the summary report.
+        if (!(*mri)->getProjectReport())
+            continue;
         if (strncmp((*mri)->getProjectReport()->getType(), "Qt", 2) == 0)
             return (*mri)->getBrowserEntry();
+    }
 
     return 0;
 }
 
 void
-ReportManager::updateReportList(QPtrListIterator<Report> rli)
+ReportManager::updateReportList(const Project* pr)
 {
     clear();
+    project = pr;
+
+    QPtrListIterator<Report> rli = project->getReportListIterator();
     for ( ; *rli; ++rli)
         reports.push_front(new ManagedReportInfo(this, *rli));
+    /* Add the summary report. There is no report definition in the project
+     * for the summary report, so we pass a 0 pointer. */
+    reports.push_front(new ManagedReportInfo(this, 0));
 
     updateReportBrowser();
 }
@@ -134,6 +149,11 @@ ReportManager::updateReportBrowser()
          mri != reports.end(); ++mri)
     {
         Report* r = (*mri)->getProjectReport();
+
+        // The summary report has no report definition.
+        if (!r)
+            continue;
+
         KListViewItem* parent = 0;
         int prefix = 0;
         if (strncmp(r->getType(), "Qt", 2) == 0)
@@ -290,8 +310,6 @@ ReportManager::showReport(QListViewItem* lvi)
             lvi = browser->currentItem();
         else if (qtReports->firstChild())
             lvi = (qtReports->firstChild());
-        else
-            return true;
     }
     for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
          mri != reports.end(); ++mri)
@@ -299,12 +317,23 @@ ReportManager::showReport(QListViewItem* lvi)
             mr = *mri;
 
     if (!mr)
-        return TRUE;
-
-    TjReport* tjr;
-    if ((tjr = mr->getReport()) == 0)
     {
-        if (strcmp(mr->getProjectReport()->getType(), "QtTaskReport") == 0)
+        /* In case there is no corresponding list view entry we show the
+         * summary report. The summary report has no report definition, so it
+         * can be identified by a 0 pointer. */
+        for (std::list<ManagedReportInfo*>::const_iterator
+             mri = reports.begin();
+             mri != reports.end(); ++mri)
+            if ((*mri)->getProjectReport() == 0)
+                mr = *mri;
+    }
+
+    TjReportBase* tjr = mr->getReport();
+    if (tjr == 0)
+    {
+        if (mr->getProjectReport() == 0)
+            tjr = new TjSummaryReport(reportStack, project);
+        else if (strcmp(mr->getProjectReport()->getType(), "QtTaskReport") == 0)
             tjr = new TjTaskReport(reportStack, mr->getProjectReport());
         else if (strcmp(mr->getProjectReport()->getType(),
                         "QtResourceReport") == 0)
@@ -369,10 +398,14 @@ ReportManager::showReport(QListViewItem* lvi)
 
         if (tjr)
         {
-            connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
-                    this, SLOT(changeStatusBar(const QString&)));
-            connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
-                    this, SLOT(editCoreAttributes(CoreAttributes*)));
+            if (tjr->getReportDefinition() != 0)
+            {
+                // The summary report does not have these signals.
+                connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
+                        this, SLOT(changeStatusBar(const QString&)));
+                connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
+                        this, SLOT(editCoreAttributes(CoreAttributes*)));
+            }
 
             if (!tjr->generateReport())
             {
@@ -535,6 +568,13 @@ ReportManager::setFocusToReport() const
 
     if (getCurrentReport() && getCurrentReport()->getReport())
         getCurrentReport()->getReport()->setFocus();
+}
+
+void
+ReportManager::enableReportActions(bool enable)
+{
+    mainWindow->action("zoom_in")->setEnabled(enable);
+    mainWindow->action("zoom_out")->setEnabled(enable);
 }
 
 void

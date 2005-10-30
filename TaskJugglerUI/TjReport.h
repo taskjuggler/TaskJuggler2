@@ -17,10 +17,10 @@
 #include <set>
 #include <map>
 
-#include <qwidget.h>
 #include <qstring.h>
 #include <qlistview.h>
 
+#include "TjReportBase.h"
 #include "TaskList.h"
 #include "ResourceList.h"
 #include "ReportLayers.h"
@@ -43,7 +43,7 @@ class TjPrintReport;
 class TjObjPosTable;
 class TjGanttChart;
 
-class TjReport : public QWidget
+class TjReport : public TjReportBase
 {
     Q_OBJECT
 public:
@@ -53,8 +53,6 @@ public:
     virtual bool generateReport();
 
     virtual const QtReportElement* getReportElement() const = 0;
-
-    void setLoadingProject(bool lp) { loadingProject = lp; }
 
     void generateTaskListLine(const QtReportElement* reportElement,
                               const Task* t, QListViewItem* lvi,
@@ -88,7 +86,7 @@ private slots:
     void updateStatusBar();
 
 protected:
-    TjReport() : reportDef(0) { }
+    TjReport() { }
 
     virtual bool event(QEvent* ev);
     virtual bool generateList() = 0;
@@ -119,7 +117,6 @@ protected:
     time_t stepLength() const;
     void setBestStepUnit();
 
-    Report* const reportDef;
     QSplitter* splitter;
     KListView* listView;
     QWidget* canvasFrame;
@@ -169,8 +166,6 @@ protected:
     int canvasWidth;
     time_t startTime;
     time_t endTime;
-
-    bool loadingProject;
 
     QTimer* statusBarUpdateTimer;
     QTimer* delayTimer;

@@ -796,7 +796,7 @@ Project::schedule(int sc)
          * intervals. This is fairly expensive, so we need to balance the
          * frequency with the performance improvements due to the shortened
          * list. We also provide progress feedback via a signal. */
-        if (++cleanupTimer > 8000)
+        if (++cleanupTimer > 4000)
         {
             cleanupTimer = 0;
             TaskList tmpList;
@@ -827,13 +827,15 @@ Project::schedule(int sc)
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
 
-    /* Check that the resulting schedule meets all the requirements that the
-     * user has specified. */
-    if (!checkSchedule(sc))
-        error = TRUE;
-
     if (!error)
         setProgressBar(100, 100);
+
+    /* Check that the resulting schedule meets all the requirements that the
+     * user has specified. */
+    setProgressInfo(i18n("Checking schedule of scenario %1")
+                    .arg(getScenarioId(sc)));
+    if (!checkSchedule(sc))
+        error = TRUE;
 
     return !error;
 }

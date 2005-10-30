@@ -59,7 +59,7 @@
 #include "KPrinterWrapper.h"
 
 TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
-    : QWidget(p, n), reportDef(rDef)
+    : TjReportBase(p, rDef, n)
 {
     loadingProject = FALSE;
     autoFit = true;
@@ -1026,19 +1026,24 @@ TjReport::syncVSlidersList2Gantt(int, int y)
 void
 TjReport::updateStatusBar()
 {
-    if (loadingProject)
+    if (loadingProject || !isVisible() || !ganttChartView->isVisible())
         return;
 
-    QString text;
     QPoint pos = ganttChartView->mapFromGlobal(QCursor::pos());
     if (pos.x() < 0 || pos.y() < 0 ||
         pos.x() > ganttChartView->width() ||
         pos.y() > ganttChartView->height())
+    {
+        emit signalChangeStatusBar("");
         return;
+    }
 
     QListViewItem* lvi = listView->itemAt(QPoint(50, pos.y()));
     if (!lvi)
+    {
+        emit signalChangeStatusBar("");
         return;
+    }
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
     CoreAttributes* parent = lvi2ParentCaDict[QString().sprintf("%p", lvi)];
@@ -1049,6 +1054,9 @@ TjReport::updateStatusBar()
 void
 TjReport::zoomIn()
 {
+    if (!isVisible())
+        return;
+
     time_t x = ganttChart->x2time(ganttChartView->contentsX());
     int y = ganttChartView->contentsY();
 
@@ -1067,6 +1075,9 @@ TjReport::zoomIn()
 void
 TjReport::zoomOut()
 {
+    if (!isVisible())
+        return;
+
     time_t x = ganttChart->x2time(ganttChartView->contentsX());
     int y = ganttChartView->contentsY();
 

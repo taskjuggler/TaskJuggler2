@@ -23,8 +23,10 @@
 class QWidgetStack;
 class QString;
 class QListViewItem;
+class KMainWindow;
 class KListView;
 class KListViewSearchLine;
+class Project;
 class Report;
 class CoreAttributes;
 class Report;
@@ -33,10 +35,11 @@ class ReportManager : public QObject
 {
     Q_OBJECT
 public:
-    ReportManager(QWidgetStack* v, KListView* b, KListViewSearchLine* s);
+    ReportManager(KMainWindow* mainWindow, QWidgetStack* v, KListView* b,
+                  KListViewSearchLine* s);
     virtual ~ReportManager();
 
-    void updateReportList(QPtrListIterator<Report> rli);
+    void updateReportList(const Project* pr);
 
     ManagedReportInfo* getCurrentReport() const;
 
@@ -45,6 +48,8 @@ public:
     QWidgetStack* getReportStack() const { return reportStack; }
 
     void setFocusToReport() const;
+
+    void enableReportActions(bool enable);
 
     bool generateReport(QListViewItem*);
     bool showReport(QListViewItem*);
@@ -76,6 +81,10 @@ private:
     ReportManager() { }
 
     void updateReportBrowser();
+
+    KMainWindow* mainWindow;
+
+    const Project* project;
 
     QWidgetStack* reportStack;
     KListView* browser;

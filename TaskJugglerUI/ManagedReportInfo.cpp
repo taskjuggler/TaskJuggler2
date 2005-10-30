@@ -12,8 +12,9 @@
 
 #include "ManagedReportInfo.h"
 
-#include "Report.h"
+#include "klocale.h"
 
+#include "Report.h"
 #include "TjReport.h"
 
 ManagedReportInfo::ManagedReportInfo(ReportManager* rm, Report* r) :
@@ -32,10 +33,10 @@ ManagedReportInfo::~ManagedReportInfo()
 const QString&
 ManagedReportInfo::getName() const
 {
-    if (report)
+    if (projectReport)
         return projectReport->getFileName();
-
-    return QString::null;
+    else
+        return QString::null;
 }
 
 void
