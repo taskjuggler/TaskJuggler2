@@ -55,3 +55,4 @@ rc_DATA = taskjugglerui.rc
 misc_DATA = tips
 miscdir = $(kde_datadir)/taskjuggler
 
+kde_conf_DATA = taskjugglerrc

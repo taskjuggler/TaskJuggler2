@@ -319,9 +319,13 @@ TaskJugglerView::newProject()
      * project specific data structures. */
     closeProject();
 
-    showReportAfterLoad = FALSE;
-    loadProject(KURL(templateFile));
+    fileManager->addFile(KURL(templateFile), fileURL);
+    QStringList fileList;
+    fileList.append(fileURL.url());
+    fileManager->updateFileList(fileList, fileURL);
     saveAs(fileURL);
+    fileManager->expandMacros();
+    showEditor();
 }
 
 void
@@ -545,6 +549,14 @@ TaskJugglerView::closeProject()
 
     delete project;
     project = 0;
+}
+
+bool
+TaskJugglerView::quit(bool force)
+{
+    fileManager->saveAllFiles(!force);
+
+    return true;
 }
 
 void

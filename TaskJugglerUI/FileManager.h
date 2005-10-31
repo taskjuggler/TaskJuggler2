@@ -45,6 +45,8 @@ public:
 
     void addFile(const KURL& nf, const KURL& nnf);
 
+    void setMasterFile(const KURL& url);
+
     KURL getCurrentFileURL() const;
     ManagedFileInfo* getCurrentFile() const;
 
@@ -65,6 +67,7 @@ public:
 
     void saveAllFiles(bool ask = false);
     void saveCurrentFile(bool ask = false);
+    void expandMacros();
     void clear();
 
     void find();
@@ -107,7 +110,6 @@ private:
 
     QString findCommonPath();
     void updateFileBrowser();
-    void setMasterFile(const KURL& url);
 
     void search();
 

@@ -862,6 +862,10 @@ were always accounted to 0.</para></listitem>
 <listitem><para>Use embedded HTML browser for HTML reports instead of
 lauching an external browser.</para></listitem>
 
+<listitem><para>The GUI supports now multiple project
+templates. The templates can be customized on loading to reflect the
+current date.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

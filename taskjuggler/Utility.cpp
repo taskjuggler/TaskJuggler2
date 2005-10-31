@@ -178,6 +178,11 @@ setTimezone(const char* tz)
 const struct tm*
 clocaltime(const time_t* t)
 {
+    /* In some cases we haven't initialized the module yet. So we do not use
+     * the cache. */
+    if (!LtHashTab)
+        return localtime(t);
+
     long index = *t % LTHASHTABSIZE;
     if (LtHashTab[index])
         for (LtHashTabEntry* htep = LtHashTab[index]; htep;

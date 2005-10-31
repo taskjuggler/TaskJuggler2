@@ -11,6 +11,7 @@
  */
 
 #include <assert.h>
+#include <time.h>
 
 #include <qwidgetstack.h>
 #include <qstring.h>
@@ -41,9 +42,10 @@
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/printinterface.h>
-
+#include <ktexteditor/templateinterface.h>
 #include <kdebug.h>
 
+#include "Utility.h"
 #include "CoreAttributes.h"
 #include "Report.h"
 #include "FileManager.h"
@@ -403,7 +405,7 @@ FileManager::showInEditor(const Report* report)
 KURL
 FileManager::getCurrentFileURL() const
 {
-    return files.empty() ? KURL() :
+    return files.empty() || browser->currentItem() == 0 ? KURL() :
         KURL::fromPathOrURL(browser->currentItem()->text(1));
 }
 
@@ -505,6 +507,30 @@ FileManager::saveAllFiles(bool ask)
     for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
          mfi != files.end(); ++mfi)
         (*mfi)->save(ask);
+}
+
+void
+FileManager::expandMacros()
+{
+    QMap<QString, QString> map;
+    map["projectstart"] = time2user(time(0), "%Y-%m-%d");
+    map["projectend"] = time2user(time(0) + 60 * 60 * 24 * 180, "%Y-%m-%d");
+
+    if (getCurrentFile())
+    {
+        KTextEditor::EditInterface* ei =
+            KTextEditor::editInterface(getCurrentFile()->getEditor()->
+                                       document());
+        for (unsigned int i = 0; i < ei->numLines(); ++i)
+        {
+            QString line = ei->textLine(i).latin1();
+            QMap<QString, QString>::Iterator it;
+            for (it = map.begin(); it != map.end(); ++it)
+                line.replace(QString("@@") + it.key() + "@@", it.data());
+            ei->removeLine(i);
+            ei->insertLine(i, line);
+        }
+    }
 }
 
 void

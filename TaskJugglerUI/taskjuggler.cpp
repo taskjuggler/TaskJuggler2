@@ -238,6 +238,7 @@ TaskJuggler::queryClose()
 bool
 TaskJuggler::queryExit()
 {
+    m_view->quit(false);
     saveProperties(kapp->config());
     return TRUE;
 }

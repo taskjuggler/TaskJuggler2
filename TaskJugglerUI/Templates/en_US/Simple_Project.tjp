@@ -3,7 +3,7 @@
  * of TaskJuggler and can be used as a base for your first projects.
  * You can put your own template in 
  * 
- * ${KDEHOME}/share/apps/taskjuggler/ProjectTemplate.tjp
+ * ${KDEHOME}/share/apps/taskjuggler/Templates/${LANG}/
  *
  * Permission to read, modify and distribute this file without any
  * restrictions is granted.
@@ -12,12 +12,7 @@
  * description of the various syntax elements. You can find more
  * information about TaskJuggler at http://www.taskjuggler.org!
  */
-project yourID "Your Project" "1.0" 2005-01-01 2005-12-31 {
-  # Pick a day during the project that will be reported as 'today' in
-  # the project reports. If not specified the current day will be
-  # used, but this will likely be ouside of the project range, so it
-  # can't be seen in the reports.
-  now 2005-03-05-13:00
+project yourID "Your Project" "1.0" @@projectstart@@ @@projectend@@ {
   # Hide the clock time. Only show the date.
   timeformat "%Y-%m-%d"
   # The currency for all money values is EUR.

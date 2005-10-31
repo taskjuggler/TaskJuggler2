@@ -48,39 +48,23 @@ class ReportManager;
  *
  * @short Main view
  * @author Chris Schlaeger <cs@suse.de>
- * @version 0.1
  */
 class TaskJugglerView : public QWidget, public TaskJugglerIface
 {
     Q_OBJECT
 public:
-	/**
-	 * Default constructor
-	 */
     TaskJugglerView(QWidget *parent);
 
-	/**
-	 * Destructor
-	 */
     virtual ~TaskJugglerView();
 
-    /**
-     * Random 'get' function
-     */
     QString currentURL();
 
     virtual void newProject();
 
     virtual void newInclude();
 
-    /**
-     * Random 'set' function accessed by DCOP
-     */
     virtual void openURL(QString url);
 
-    /**
-     * Random 'set' function
-     */
     virtual void openURL(KURL url);
 
     virtual void save();
@@ -93,6 +77,8 @@ public:
 
     void readProperties(KConfig* config);
     void saveProperties(KConfig* config);
+
+    bool quit(bool force);
 
 public slots:
     void undo();
