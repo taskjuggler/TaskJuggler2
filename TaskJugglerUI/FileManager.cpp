@@ -15,10 +15,12 @@
 
 #include <qwidgetstack.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
+#include <qregexp.h>
 
 #include <kmainwindow.h>
 #include <kstatusbar.h>
@@ -43,7 +45,8 @@
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/printinterface.h>
 #include <ktexteditor/templateinterface.h>
-#include <kdebug.h>
+#include <kdatepicker.h>
+#include <kcombobox.h>
 
 #include "Utility.h"
 #include "CoreAttributes.h"
@@ -51,6 +54,7 @@
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
 #include "FindDialog.h"
+#include "TjDatePicker.h"
 
 FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
                          KListViewSearchLine* s) :
@@ -524,11 +528,14 @@ FileManager::expandMacros()
         for (unsigned int i = 0; i < ei->numLines(); ++i)
         {
             QString line = ei->textLine(i).latin1();
-            QMap<QString, QString>::Iterator it;
-            for (it = map.begin(); it != map.end(); ++it)
-                line.replace(QString("@@") + it.key() + "@@", it.data());
-            ei->removeLine(i);
-            ei->insertLine(i, line);
+            if (line.find("@@"))
+            {
+                QMap<QString, QString>::Iterator it;
+                for (it = map.begin(); it != map.end(); ++it)
+                    line.replace(QString("@@") + it.key() + "@@", it.data());
+                ei->removeLine(i);
+                ei->insertLine(i, line);
+            }
         }
     }
 }
@@ -710,6 +717,71 @@ FileManager::selectAll()
     if (getCurrentFile())
         KTextEditor::selectionInterface(getCurrentFile()->getEditor()->
                                         document())->selectAll();
+}
+
+void
+FileManager::insertDate()
+{
+    KTextEditor::EditInterface* ei =
+        KTextEditor::editInterface(getCurrentFile()->getEditor()->
+                                   document());
+    KTextEditor::ViewCursorInterface* ci =
+        KTextEditor::viewCursorInterface(getCurrentFile()->getEditor());
+    unsigned int l, c;
+    ci->cursorPosition(&l, &c);
+
+    QString line = ei->textLine(l).latin1();
+    int cStart;
+    unsigned int cEnd;
+    for (cStart = c; cStart >= 0 && line[cStart] != ' '; --cStart)
+        ;
+    cStart++;
+    for (cEnd = cStart + 1; cEnd < line.length() && line[cEnd] != ' '; ++cEnd)
+        ;
+    unsigned int wLength = cEnd - cStart;
+    QString currentWord = line.mid(cStart, wLength);
+    TjDatePicker* picker = new TjDatePicker(mainWindow);
+    QString tZone;
+    if (QRegExp("\\d{4}-\\d{1,2}-\\d{1,2}(-\\d{1,2}:\\d{1,2}"
+                "(:\\d{1,2}|)|)(-\\w*|)")
+        .search(currentWord) == 0)
+    {
+        QStringList tokens = QStringList::split(QRegExp("[-:]"), currentWord);
+        QDate date = QDate(tokens[0].toInt(), tokens[1].toInt(),
+                           tokens[2].toInt());
+        picker->date->setDate(date);
+        if (tokens.count() > 3)
+        {
+            picker->hours->setCurrentText(tokens[3]);
+            picker->minutes->setCurrentText(tokens[4]);
+        }
+        if (tokens.count() > 5)
+            tZone = tokens[6];
+    }
+    else
+    {
+        wLength = 0;
+        cStart = c;
+    }
+
+    if (picker->exec() == QDialog::Rejected)
+        return;
+
+    QString pickedDate = picker->date->date().toString(Qt::ISODate);
+    if (picker->hours->currentText().toInt() != 0 ||
+        picker->minutes->currentText().toInt() != 0)
+    {
+        pickedDate += "-" + picker->hours->currentText() + ":" +
+            picker->minutes->currentText();
+    }
+    if (!tZone.isEmpty())
+        pickedDate += "-" + tZone;
+
+    line.replace(cStart, wLength, pickedDate);
+    ei->removeLine(l);
+    ei->insertLine(l, line);
+    // Put cursor right after the inserted date.
+    ci->setCursorPosition(l, cStart + pickedDate.length());
 }
 
 void

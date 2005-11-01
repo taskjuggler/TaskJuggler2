@@ -114,6 +114,9 @@ void TaskJuggler::setupActions()
     KStdAction::find(m_view, SLOT(find()), actionCollection());
     KStdAction::findNext(m_view, SLOT(findNext()), actionCollection());
     KStdAction::findPrev(m_view, SLOT(findPrevious()), actionCollection());
+    new KAction(i18n("Insert Date"), "", KShortcut(KKey("CTRL+d")),
+                m_view, SLOT(insertDate()),
+                actionCollection(), "insert_date");
 
     // "Goto" menu
     new KAction(i18n("Tas&ks"), "tj_task_group", KShortcut(KKey("ALT+k")),

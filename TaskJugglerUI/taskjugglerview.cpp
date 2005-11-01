@@ -614,6 +614,12 @@ TaskJugglerView::findPrevious()
 }
 
 void
+TaskJugglerView::insertDate()
+{
+    fileManager->insertDate();
+}
+
+void
 TaskJugglerView::schedule()
 {
     if (!fileManager->getMasterFile())

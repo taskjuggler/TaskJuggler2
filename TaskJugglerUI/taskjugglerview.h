@@ -91,6 +91,7 @@ public slots:
     void find();
     void findNext();
     void findPrevious();
+    void insertDate();
 
     void schedule();
     void nextProblem();

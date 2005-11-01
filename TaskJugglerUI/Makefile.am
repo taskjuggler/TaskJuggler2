@@ -28,7 +28,7 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	taskjuggleriface.skel \
 	MainWidget.ui RichTextDisplay.ui FindDialog.ui \
-	TemplateSelector.ui
+	TemplateSelector.ui TjDatePicker.ui
 
 # these are the headers for your project
 noinst_HEADERS = taskjuggler.h taskjugglerview.h pref.h

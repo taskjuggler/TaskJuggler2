@@ -80,6 +80,7 @@ public:
     void copy();
     void paste();
     void selectAll();
+    void insertDate();
 
     void print();
 
