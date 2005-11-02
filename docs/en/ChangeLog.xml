@@ -866,6 +866,13 @@ lauching an external browser.</para></listitem>
 templates. The templates can be customized on loading to reflect the
 current date.</para></listitem>
 
+<listitem><para>Added date picker to GUI editor. By pressing CTRL+D
+the user can insert or change a date using the comfortable date picker
+widget.</para></listitem>
+
+<listitem><para>The GUI editor now supports search and replace over
+all files.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

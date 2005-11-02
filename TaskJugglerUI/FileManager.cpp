@@ -527,7 +527,7 @@ FileManager::expandMacros()
                                        document());
         for (unsigned int i = 0; i < ei->numLines(); ++i)
         {
-            QString line = ei->textLine(i).latin1();
+            QString line = ei->textLine(i);
             if (line.find("@@"))
             {
                 QMap<QString, QString>::Iterator it;
@@ -588,11 +588,19 @@ FileManager::startSearch()
     searchCaseSensitive = findDialog->caseSensitiveCB->isChecked();
     searchFromCursor = findDialog->fromCursorCB->isChecked();
     searchBackwards = findDialog->backwardsCB->isChecked();
+    searchAllFiles = findDialog->allFilesCB->isChecked();
+    searchAndReplace = findDialog->enableReplacementCB->isChecked();
+    if (searchAndReplace)
+        replacementText = findDialog->replacement->text();
+    else
+        replacementText = QString::null;
+    replaceAll = findDialog->replaceAllCB->isChecked();
 
     if (searchPattern.isEmpty())
         return;
 
-    KTextEditor::View* editor = getCurrentFile()->getEditor();
+    firstSearchedFile = getCurrentFile();
+    KTextEditor::View* editor = firstSearchedFile->getEditor();
 
     if (searchFromCursor)
     {
@@ -613,15 +621,22 @@ FileManager::startSearch()
         else
             lastMatchLine = lastMatchCol = matchLen = 0;
     }
-    search();
+
+    replacementCounter = 0;
+    while (search() && searchAndReplace && replaceAll)
+        ;
+    if (searchAndReplace && replaceAll)
+        mainWindow->statusBar()->message(i18n
+            ("Replaced %1 occurences").arg(replacementCounter));
 }
 
-void
+bool
 FileManager::search()
 {
     if (!getCurrentFile() || searchPattern.isEmpty())
-        return;
+        return false;
 
+tryAgain:
     KTextEditor::View* editor = getCurrentFile()->getEditor();
     KTextEditor::Document* document = editor->document();
 
@@ -649,28 +664,105 @@ FileManager::search()
          searchCaseSensitive, searchBackwards))
     {
         // Found it!
-        KTextEditor::viewCursorInterface(editor)->
-            setCursorPosition(lastMatchLine, lastMatchCol);
-        mainWindow->statusBar()->message("");
+        if (searchAndReplace)
+        {
+            // Replace the found text with the replacement text.
+            KTextEditor::EditInterface* ei =
+                KTextEditor::editInterface(getCurrentFile()->getEditor()->
+                                           document());
+            QString line = ei->textLine(lastMatchLine);
+            line.replace(lastMatchCol, matchLen, replacementText);
+            ei->removeLine(lastMatchLine);
+            ei->insertLine(lastMatchLine, line);
+            replacementCounter++;
+            // Place cursor after the replaced text.
+            KTextEditor::viewCursorInterface(editor)->
+                setCursorPosition(lastMatchLine,
+                                  lastMatchCol + replacementText.length());
+        }
+        else
+        {
+            KTextEditor::viewCursorInterface(editor)->
+                setCursorPosition(lastMatchLine, lastMatchCol);
+            mainWindow->statusBar()->message("");
+        }
+        return true;
     }
     else
     {
         // Nothing found. Prepare wrap-around.
         if (searchBackwards)
         {
-            mainWindow->statusBar()->message
-                (i18n("Nothing found. Press F3 again to start from bottom!"));
-            lastMatchLine =
-                KTextEditor::editInterface(document)->numLines() - 1;
-            lastMatchCol = KTextEditor::editInterface(document)->
-                lineLength(lastMatchLine) - 1;
+            if (searchAllFiles)
+            {
+                ManagedFileInfo* cf = getCurrentFile();
+                std::list<ManagedFileInfo*>::iterator mfi;
+                for (mfi = files.begin(); mfi != files.end() && *mfi != cf;
+                     ++mfi)
+                    ;
+                assert(mfi != files.end());
+                if (mfi == files.begin())
+                    mfi = files.end();
+                    --mfi;
+                if (*mfi == firstSearchedFile)
+                {
+                    mainWindow->statusBar()->message(i18n("Nothing found!"));
+                    return false;
+                }
+                else
+                {
+                    showInEditor((*mfi)->getFileURL());
+                    lastMatchLine =
+                        KTextEditor::editInterface(document)->numLines() - 1;
+                    lastMatchCol = KTextEditor::editInterface(document)->
+                        lineLength(lastMatchLine) - 1;
+                    goto tryAgain;
+                }
+            }
+            else
+            {
+                mainWindow->statusBar()->message
+                    (i18n("Nothing found. Press F3 again to start from "
+                          "bottom!"));
+                lastMatchLine =
+                    KTextEditor::editInterface(document)->numLines() - 1;
+                lastMatchCol = KTextEditor::editInterface(document)->
+                    lineLength(lastMatchLine) - 1;
+            }
         }
         else
         {
-            mainWindow->statusBar()->message
-                (i18n("Nothing found. Press F3 again to start from top!"));
-            lastMatchLine = lastMatchCol = 0;
+            if (searchAllFiles)
+            {
+                ManagedFileInfo* cf = getCurrentFile();
+                std::list<ManagedFileInfo*>::iterator mfi;
+                for (mfi = files.begin(); mfi != files.end() && *mfi != cf;
+                     ++mfi)
+                    ;
+                assert(mfi != files.end());
+                mfi++;
+                if (mfi == files.end())
+                    mfi = files.begin();
+                if (*mfi == firstSearchedFile)
+                {
+                    mainWindow->statusBar()->message(i18n("Nothing found!"));
+                    return false;
+                }
+                else
+                {
+                    showInEditor((*mfi)->getFileURL());
+                    lastMatchLine = lastMatchCol = matchLen = 0;
+                    goto tryAgain;
+                }
+            }
+            else
+            {
+                mainWindow->statusBar()->message
+                    (i18n("Nothing found. Press F3 again to start from top!"));
+                lastMatchLine = lastMatchCol = 0;
+            }
         }
+        return false;
     }
 }
 
@@ -722,62 +814,92 @@ FileManager::selectAll()
 void
 FileManager::insertDate()
 {
+    // Create some shortcuts for the edit and cursor interface.
     KTextEditor::EditInterface* ei =
         KTextEditor::editInterface(getCurrentFile()->getEditor()->
                                    document());
     KTextEditor::ViewCursorInterface* ci =
         KTextEditor::viewCursorInterface(getCurrentFile()->getEditor());
+    // Save current cursor position
     unsigned int l, c;
     ci->cursorPosition(&l, &c);
 
-    QString line = ei->textLine(l).latin1();
+    // Get current line.
+    QString line = ei->textLine(l);
+    // Find the word under the cursor and save it.
     int cStart;
     unsigned int cEnd;
     for (cStart = c; cStart >= 0 && line[cStart] != ' '; --cStart)
         ;
-    cStart++;
+    /* Make sure cStart points to the first character of the word or keep the
+     * current cursor position in case there is no word. */
+    if (cStart < 0 || line[cStart] == ' ')
+        cStart++;
     for (cEnd = cStart + 1; cEnd < line.length() && line[cEnd] != ' '; ++cEnd)
         ;
-    unsigned int wLength = cEnd - cStart;
-    QString currentWord = line.mid(cStart, wLength);
+    /* Make sure cEnd points to the last character of the word or keep the
+     * current cursor position in case there is no word. */
+    if (cEnd > line.length() || line[cEnd] == ' ')
+        cEnd--;
+
     TjDatePicker* picker = new TjDatePicker(mainWindow);
     QString tZone;
-    if (QRegExp("\\d{4}-\\d{1,2}-\\d{1,2}(-\\d{1,2}:\\d{1,2}"
-                "(:\\d{1,2}|)|)(-\\w*|)")
-        .search(currentWord) == 0)
+    unsigned int wLength = 0;
+    if (line[cStart] != ' ')
     {
-        QStringList tokens = QStringList::split(QRegExp("[-:]"), currentWord);
-        QDate date = QDate(tokens[0].toInt(), tokens[1].toInt(),
-                           tokens[2].toInt());
-        picker->date->setDate(date);
-        if (tokens.count() > 3)
+        // We have a word under the cursor.
+        wLength = cEnd - cStart + 1;
+        QString currentWord = line.mid(cStart, wLength);
+
+        // Now test if it is a valid date.
+        if (QRegExp("\\d{4}-\\d{1,2}-\\d{1,2}(-\\d{1,2}:\\d{1,2}"
+                    "(:\\d{1,2}(-\\w*|)|)|)")
+            .search(currentWord) == 0)
         {
-            picker->hours->setCurrentText(tokens[3]);
-            picker->minutes->setCurrentText(tokens[4]);
+            // If it is, use it to initialize the date picker widget.
+            QStringList tokens = QStringList::split(QRegExp("[-:]"),
+                                                    currentWord);
+            QDate date = QDate(tokens[0].toInt(), tokens[1].toInt(),
+                               tokens[2].toInt());
+            picker->date->setDate(date);
+            if (tokens.count() > 3)
+            {
+                picker->hours->setCurrentText(tokens[3]);
+                picker->minutes->setCurrentText(tokens[4]);
+            }
+            if (tokens.count() > 5)
+                tZone = tokens[6];
         }
-        if (tokens.count() > 5)
-            tZone = tokens[6];
+        else
+        {
+            wLength = 0;
+            cStart = c;
+        }
     }
     else
-    {
-        wLength = 0;
         cStart = c;
-    }
 
+    // Display the date picker widget.
     if (picker->exec() == QDialog::Rejected)
         return;
 
+    // Extract the picked date and time.
     QString pickedDate = picker->date->date().toString(Qt::ISODate);
     if (picker->hours->currentText().toInt() != 0 ||
         picker->minutes->currentText().toInt() != 0)
     {
         pickedDate += "-" + picker->hours->currentText() + ":" +
             picker->minutes->currentText();
+        if (!tZone.isEmpty())
+            pickedDate += "-" + tZone;
     }
-    if (!tZone.isEmpty())
-        pickedDate += "-" + tZone;
 
-    line.replace(cStart, wLength, pickedDate);
+    // Replace the old date with the newly picked date.
+    if (wLength > 0)
+        line.replace(cStart, wLength, pickedDate);
+    else
+        line.insert(cStart, pickedDate);
+    // Replace the old line with the new line.
     ei->removeLine(l);
     ei->insertLine(l, line);
     // Put cursor right after the inserted date.
@@ -810,7 +932,9 @@ FileManager::enableEditorActions(bool enable)
     mainWindow->action(KStdAction::name(KStdAction::Find))->setEnabled(enable);
     mainWindow->action(KStdAction::name(KStdAction::FindNext))->
         setEnabled(enable);
-    mainWindow->action(KStdAction::name(KStdAction::FindPrev))->setEnabled(enable);
+    mainWindow->action(KStdAction::name(KStdAction::FindPrev))->
+        setEnabled(enable);
+    mainWindow->action("insert_date")->setEnabled(enable);
 
     enableClipboardActions(enable);
     enableUndoActions(enable);

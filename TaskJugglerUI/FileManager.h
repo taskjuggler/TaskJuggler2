@@ -112,16 +112,22 @@ private:
     QString findCommonPath();
     void updateFileBrowser();
 
-    void search();
+    bool search();
 
     FindDialog* findDialog;
     QString searchPattern;
+    QString replacementText;
     uint matchLen;
     bool searchCaseSensitive;
     bool searchWholeWords;
     bool searchFromCursor;
     bool searchBackwards;
+    bool searchAllFiles;
+    bool searchAndReplace;
+    bool replaceAll;
     uint lastMatchLine, lastMatchCol;
+    uint replacementCounter;
+    ManagedFileInfo* firstSearchedFile;
 
     QWidgetStack* viewStack;
     KListView* browser;

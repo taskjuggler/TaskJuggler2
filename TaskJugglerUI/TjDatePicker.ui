@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>309</width>
-            <height>368</height>
+            <width>307</width>
+            <height>380</height>
         </rect>
     </property>
     <property name="caption">
@@ -90,6 +90,9 @@
             <property name="name">
                 <cstring>groupBox1</cstring>
             </property>
+            <property name="focusPolicy">
+                <enum>NoFocus</enum>
+            </property>
             <property name="title">
                 <string>Date</string>
             </property>
@@ -100,6 +103,9 @@
                 <widget class="KDatePicker" row="0" column="0">
                     <property name="name">
                         <cstring>date</cstring>
+                    </property>
+                    <property name="focusPolicy">
+                        <enum>NoFocus</enum>
                     </property>
                 </widget>
             </grid>
@@ -240,7 +246,7 @@
                         <cstring>hours</cstring>
                     </property>
                     <property name="sizeLimit">
-                        <number>2</number>
+                        <number>12</number>
                     </property>
                 </widget>
                 <widget class="QLabel">
@@ -316,7 +322,7 @@
                         <cstring>minutes</cstring>
                     </property>
                     <property name="sizeLimit">
-                        <number>2</number>
+                        <number>12</number>
                     </property>
                 </widget>
                 <spacer>
