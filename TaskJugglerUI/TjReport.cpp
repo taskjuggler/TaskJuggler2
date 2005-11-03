@@ -334,8 +334,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                  lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
         else if ((*ci)->getName() == "end")
-            cellText = time2user((t->isMilestone() ? 1 : 0) +
-                                 t->getEnd(scenario),
+            cellText = time2user(t->getEnd(scenario) + 1,
                                  reportElement->getTimeFormat());
         else if ((*ci)->getName() == "endbuffer")
             cellText.sprintf("%3.0f", t->getEndBuffer(scenario));
