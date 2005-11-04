@@ -51,30 +51,27 @@ public:
 
     void calcCompletionDegree(time_t now);
 
-    bool isDutyOf(const Resource* r) const
-    {
-        return bookedResources.containsRef((const CoreAttributes*) r) > 0;
-    }
+    bool isDutyOf(const Resource* r) const;
 
     ResourceListIterator getBookedResourcesIterator() const
     {
 	return ResourceListIterator(bookedResources);
     }
-    
+
 private:
     /// Pointer to the corresponding task.
     Task* task;
 
     /// Index of the scenario
     int index;
-   
+
     /// Time the user has specified as a start time.
     time_t specifiedStart;
-    
+
     /// Time the user has specified as an end time.
     time_t specifiedEnd;
 
-    /// Time when the task starts 
+    /// Time when the task starts
     time_t start;
 
     /// Time when the task ends
@@ -101,13 +98,13 @@ private:
      * all goes well. This value is for documentation purposes only. It is
      * not used for task scheduling. */
     double endBuffer;
-    
+
     /// Time when the start buffer ends.
     time_t startBufferEnd;
 
     /// Time when the end buffer starts.
     time_t endBufferStart;
-    
+
     /// The duration of the task (in calendar days).
     double duration;
 
@@ -119,14 +116,14 @@ private:
 
     /// Amount that is credited to the account at the start date.
     double startCredit;
-    
+
     /// Amount that is credited to the account at the end date.
     double endCredit;
 
     /** Measure for the likelyhood that the tasks gets the allocated
-     * resources. */ 
+     * resources. */
     double criticalness;
-   
+
     // Measure for the criticalness of the task chain.
     double pathCriticalness;
 

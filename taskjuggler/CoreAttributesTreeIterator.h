@@ -13,26 +13,74 @@
 #ifndef _CoreAttributesTreeIterator_h_
 #define _CoreAttributesTreeIterator_h_
 
+enum IterationMode { leavesOnly = 0, parentAfterLeaves };
+
 class CoreAttributes;
 
-class CoreAttributesTreeIterator
+template <class T>
+class CoreAttributesTreeIteratorT
 {
 public:
-    enum IterationMode { leavesOnly = 0, parentAfterLeaves };
-    
-    CoreAttributesTreeIterator(CoreAttributes* root, 
-                               IterationMode m = leavesOnly);
-    ~CoreAttributesTreeIterator() { }
 
-    CoreAttributes* operator*() { return current; }
-    CoreAttributes* operator++();
+    CoreAttributesTreeIteratorT(T* root, IterationMode m = leavesOnly);
+    ~CoreAttributesTreeIteratorT() { }
+
+    T* operator*() { return current; }
+    T* operator++();
 
 protected:
-    CoreAttributes* current;
+    T* current;
 private:
     IterationMode iMode;
-    CoreAttributes* root;
+    T* root;
 } ;
+
+template <class T>
+CoreAttributesTreeIteratorT<T>::CoreAttributesTreeIteratorT(T* r,
+                                                            IterationMode m)
+{
+    root = current = r;
+    iMode = m;
+    while (current->hasSubs())
+        current = current->getSubList().getFirst();
+}
+
+template <class T>
+T*
+CoreAttributesTreeIteratorT<T>::operator++()
+{
+    if (current == 0)
+        return 0;
+
+    while (current != root)
+    {
+        // Find the current CA in the parent's sub list.
+        CoreAttributesListIterator
+            cli(current->getParent()->getSubListIterator());
+        for ( ; *cli != current; ++cli)
+            ;
+        // Check if there is another task in the sub list.
+        ++cli;
+        if (*cli != 0)
+        {
+            // Find the first leaf in this sub list.
+            current = *cli;
+            while (current->hasSubs())
+                current = current->getSubList().getFirst();
+            // This is the new current task.
+            return current;
+        }
+        // End of sub list reached. Try parent node then.
+        current = current->getParent();
+        if (iMode == parentAfterLeaves)
+            return current;
+    }
+    return (current = 0);
+}
+
+typedef CoreAttributesTreeIteratorT<CoreAttributes> CoreAttributesTreeIterator;
+typedef CoreAttributesTreeIteratorT<const CoreAttributes>
+    ConstCoreAttributesTreeIterator;
 
 #endif
 

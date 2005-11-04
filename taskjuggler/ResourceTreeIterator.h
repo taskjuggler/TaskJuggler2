@@ -15,21 +15,25 @@
 
 #include "CoreAttributesTreeIterator.h"
 
-class ResourceTreeIterator : public virtual CoreAttributesTreeIterator
+template <class T, class R>
+class ResourceTreeIteratorT : public virtual T
 {
 public:
-    ResourceTreeIterator(Resource* r,
-                         CoreAttributesTreeIterator::IterationMode m =
-                         CoreAttributesTreeIterator::leavesOnly) 
-        : CoreAttributesTreeIterator(r, m) { } 
-    virtual ~ResourceTreeIterator() { }
+    ResourceTreeIteratorT(R* r, IterationMode m = leavesOnly)
+        : T(r, m) { }
+    virtual ~ResourceTreeIteratorT() { }
 
-    Resource* operator*() { return (Resource*) current; }
-    Resource* operator++() 
+    R* operator*() { return (R*) T::current; }
+    R* operator++()
     {
-        return (Resource*) CoreAttributesTreeIterator::operator++();
+        return (R*) T::operator++();
     }
 } ;
+
+typedef ResourceTreeIteratorT<CoreAttributesTreeIterator, Resource>
+    ResourceTreeIterator;
+typedef ResourceTreeIteratorT<ConstCoreAttributesTreeIterator, const Resource>
+    ConstResourceTreeIterator;
 
 #endif
 

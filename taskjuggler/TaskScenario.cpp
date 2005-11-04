@@ -14,6 +14,7 @@
 #include "Interval.h"
 #include "TaskScenario.h"
 #include "Task.h"
+#include "ResourceTreeIterator.h"
 #include "Project.h"
 
 TaskScenario::TaskScenario()
@@ -81,3 +82,11 @@ TaskScenario::calcCompletionDegree(time_t now)
     }
 }
 
+bool TaskScenario::isDutyOf(const Resource* r) const
+{
+    for (ConstResourceTreeIterator rti(r); *rti; ++rti)
+        if (bookedResources.containsRef((const CoreAttributes*) *rti) > 0)
+            return true;
+
+    return false;
+}

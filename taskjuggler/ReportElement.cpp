@@ -793,8 +793,7 @@ const
          *tli != 0; ++tli)
     {
         if (isRolledUp(*tli, rollUpExp))
-            for (TaskTreeIterator tti(*tli,
-                                      TaskTreeIterator::parentAfterLeaves);
+            for (TaskTreeIterator tti(*tli, parentAfterLeaves);
                  *tti != 0; ++tti)
                 if (*tti != *tli)
                     filteredList.removeRef(*tti);
@@ -873,9 +872,7 @@ const
          *rli != 0; ++rli)
     {
         if (isRolledUp(*rli, rollUpExp))
-            for (ResourceTreeIterator rti(*rli,
-                                          ResourceTreeIterator::
-                                          parentAfterLeaves);
+            for (ResourceTreeIterator rti(*rli, parentAfterLeaves);
                  *rti != 0; ++rti)
                 if (*rti != *rli)
                     filteredList.removeRef(*rti);
@@ -936,9 +933,7 @@ const
          *ali != 0; ++ali)
     {
         if (isRolledUp(*ali, rollUpExp))
-            for (AccountTreeIterator ati(*ali,
-                                         AccountTreeIterator::
-                                         parentAfterLeaves);
+            for (AccountTreeIterator ati(*ali, parentAfterLeaves);
                  *ati != 0; ++ati)
                 if (*ati != *ali)
                     filteredList.removeRef(*ati);

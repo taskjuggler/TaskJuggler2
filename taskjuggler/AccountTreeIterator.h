@@ -18,14 +18,12 @@
 class AccountTreeIterator : public virtual CoreAttributesTreeIterator
 {
 public:
-    AccountTreeIterator(Account* r, 
-                        CoreAttributesTreeIterator::IterationMode m =
-                        CoreAttributesTreeIterator::leavesOnly)
-        : CoreAttributesTreeIterator(r, m) { } 
+    AccountTreeIterator(Account* r, IterationMode m = leavesOnly)
+        : CoreAttributesTreeIterator(r, m) { }
     virtual ~AccountTreeIterator() { }
 
     Account* operator*() { return (Account*) current; }
-    Account* operator++() 
+    Account* operator++()
     {
         return (Account*) CoreAttributesTreeIterator::operator++();
     }
