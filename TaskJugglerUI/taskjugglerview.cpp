@@ -129,6 +129,7 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     reportManager = new ReportManager(dynamic_cast<KMainWindow*>(parent),
                                       mw->reportStack, mw->reportListView,
                                       mw->reportListViewSearch);
+    lastBrowserUsedWithEditor = 0;
 
     connect(&TJMH, SIGNAL(printWarning(const QString&, const QString&, int)),
             this, SLOT(addWarningMessage(const QString&, const QString&, int)));
@@ -812,8 +813,8 @@ TaskJugglerView::loadProject(const KURL& url)
         if (showReportAfterLoad)
         {
             // Open the report list.
-            mw->listViews->setCurrentItem(mw->reportsPage);
             showReport();
+            mw->listViews->setCurrentItem(mw->reportsPage);
             bool dummy;
             reportManager->showReport(0, dummy);
         }
@@ -892,50 +893,48 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
 void
 TaskJugglerView::setFocusToTaskList()
 {
-    mw->listViews->setCurrentIndex(0);
-    focusListViews(0);
+    mw->listViews->setCurrentItem(mw->tasksPage);
+    focusListViews(mw->listViews->indexOf(mw->taskListView));
 }
 
 void
 TaskJugglerView::setFocusToResourceList()
 {
-    mw->listViews->setCurrentIndex(1);
-    focusListViews(1);
+    mw->listViews->setCurrentItem(mw->resourcesPage);
+    focusListViews(mw->listViews->indexOf(mw->resourceListView));
 }
 
 void
 TaskJugglerView::setFocusToAccountList()
 {
-    mw->listViews->setCurrentIndex(2);
-    focusListViews(2);
+    mw->listViews->setCurrentItem(mw->accountsPage);
+    focusListViews(mw->listViews->indexOf(mw->accountListView));
 }
 
 void
 TaskJugglerView::setFocusToReportList()
 {
-    mw->listViews->setCurrentIndex(3);
-    focusListViews(3);
+    mw->listViews->setCurrentItem(mw->reportsPage);
+    focusListViews(mw->listViews->indexOf(mw->reportListView));
 }
 
 void
 TaskJugglerView::setFocusToFileList()
 {
-    mw->listViews->setCurrentIndex(4);
-    focusListViews(4);
+    mw->listViews->setCurrentItem(mw->filesPage);
+    focusListViews(mw->listViews->indexOf(mw->fileListView));
 }
 
 void
 TaskJugglerView::setFocusToEditor()
 {
-    mw->bigTab->showPage(mw->editorTab);
-    fileManager->setFocusToEditor();
+    showEditor();
 }
 
 void
 TaskJugglerView::setFocusToReport()
 {
-    mw->bigTab->showPage(mw->reportTab);
-    reportManager->setFocusToReport();
+    showReport();
 }
 
 void
@@ -974,19 +973,19 @@ TaskJugglerView::focusListViews(int idx)
     switch (idx)
     {
         case 0:
-            mw->taskListView->setFocus();
+            mw->fileListView->setFocus();
             break;
         case 1:
-            mw->resourceListView->setFocus();
+            mw->taskListView->setFocus();
             break;
         case 2:
-            mw->accountListView->setFocus();
+            mw->resourceListView->setFocus();
             break;
         case 3:
-            mw->reportListView->setFocus();
+            mw->accountListView->setFocus();
             break;
         case 4:
-            mw->fileListView->setFocus();
+            mw->reportListView->setFocus();
             break;
     }
 }
@@ -1006,19 +1005,23 @@ TaskJugglerView::focusBigTab(QWidget*)
                 windowCaption +=
                     fileManager->getCurrentFile()->getUniqueName();
             fileManager->enableEditorActions(TRUE);
+            mw->listViews->setCurrentIndex(lastBrowserUsedWithEditor);
             fileManager->setFocusToEditor();
             reportManager->enableReportActions(false);
 
             break;
 
         case 1:
+            if (mw->listViews->currentItem() != mw->reportsPage)
+                lastBrowserUsedWithEditor = mw->listViews->currentIndex();
+
             // The report page has become visible
             if (reportManager->getCurrentReport())
                 windowCaption +=
                     reportManager->getCurrentReport()->getName();
 
             // Open report list in toolbox and select current report.
-            mw->listViews->setCurrentIndex(3);
+            mw->listViews->setCurrentIndex(4);
             reportManager->setFocusToReport();
             // Enable report menu and toolbar actions.
             reportManager->enableReportActions(true);
@@ -1043,12 +1046,16 @@ TaskJugglerView::showEditor()
 
     (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
 
-    setFocusToEditor();
+    mw->bigTab->showPage(mw->editorTab);
+    fileManager->setFocusToEditor();
 }
 
 void
 TaskJugglerView::showReport()
 {
+    if (mw->listViews->currentItem() != mw->reportsPage)
+        lastBrowserUsedWithEditor = mw->listViews->currentIndex();
+
     // Set the window caption to "<project name> - <report name>"
     QString windowCaption;
     if (project)
@@ -1061,6 +1068,7 @@ TaskJugglerView::showReport()
 
     // Bring report page ontop.
     mw->bigTab->showPage(mw->reportTab);
+    reportManager->setFocusToReport();
 }
 
 void
@@ -1145,7 +1153,7 @@ TaskJugglerView::reportListClicked(int button, QListViewItem* lvi,
     if (errors)
     {
         // The report generation can also produce errors.
-        mw->bigTab->showPage(mw->editorTab);
+        showEditor();
         int h = editorSplitter->height();
         QValueList<int> vl;
         vl.append(int(h * 0.85));

@@ -35,8 +35,101 @@
                     <cstring>listViews</cstring>
                 </property>
                 <property name="currentIndex">
-                    <number>3</number>
+                    <number>4</number>
                 </property>
+                <widget class="QWidget">
+                    <property name="name">
+                        <cstring>filesPage</cstring>
+                    </property>
+                    <property name="backgroundMode">
+                        <enum>PaletteBackground</enum>
+                    </property>
+                    <attribute name="label">
+                        <string>F&amp;iles</string>
+                    </attribute>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
+                            <column>
+                                <property name="text">
+                                    <string>File Name</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>URL</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>false</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Modif.</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Active</string>
+                                </property>
+                                <property name="clickable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="resizable">
+                                    <bool>true</bool>
+                                </property>
+                            </column>
+                            <property name="name">
+                                <cstring>fileListView</cstring>
+                            </property>
+                            <property name="allColumnsShowFocus">
+                                <bool>true</bool>
+                            </property>
+                            <property name="rootIsDecorated">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>textLabel1_2_2_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Filter </string>
+                            </property>
+                        </widget>
+                        <widget class="KListViewSearchLine" row="1" column="1">
+                            <property name="name">
+                                <cstring>fileListViewSearch</cstring>
+                            </property>
+                            <property name="urlDropsEnabled" stdset="0">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
                 <widget class="QWidget">
                     <property name="name">
                         <cstring>tasksPage</cstring>
@@ -402,99 +495,6 @@
                         <widget class="KListViewSearchLine" row="1" column="1">
                             <property name="name">
                                 <cstring>reportListViewSearch</cstring>
-                            </property>
-                            <property name="urlDropsEnabled" stdset="0">
-                                <bool>false</bool>
-                            </property>
-                        </widget>
-                    </grid>
-                </widget>
-                <widget class="QWidget">
-                    <property name="name">
-                        <cstring>filesPage</cstring>
-                    </property>
-                    <property name="backgroundMode">
-                        <enum>PaletteBackground</enum>
-                    </property>
-                    <attribute name="label">
-                        <string>F&amp;iles</string>
-                    </attribute>
-                    <grid>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>3</number>
-                        </property>
-                        <widget class="KListView" row="0" column="0" rowspan="1" colspan="2">
-                            <column>
-                                <property name="text">
-                                    <string>File Name</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>true</bool>
-                                </property>
-                            </column>
-                            <column>
-                                <property name="text">
-                                    <string>URL</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>false</bool>
-                                </property>
-                            </column>
-                            <column>
-                                <property name="text">
-                                    <string>Modif.</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>true</bool>
-                                </property>
-                            </column>
-                            <column>
-                                <property name="text">
-                                    <string>Active</string>
-                                </property>
-                                <property name="clickable">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="resizable">
-                                    <bool>true</bool>
-                                </property>
-                            </column>
-                            <property name="name">
-                                <cstring>fileListView</cstring>
-                            </property>
-                            <property name="allColumnsShowFocus">
-                                <bool>true</bool>
-                            </property>
-                            <property name="rootIsDecorated">
-                                <bool>true</bool>
-                            </property>
-                        </widget>
-                        <widget class="QLabel" row="1" column="0">
-                            <property name="name">
-                                <cstring>textLabel1_2_2_2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Filter </string>
-                            </property>
-                        </widget>
-                        <widget class="KListViewSearchLine" row="1" column="1">
-                            <property name="name">
-                                <cstring>fileListViewSearch</cstring>
                             </property>
                             <property name="urlDropsEnabled" stdset="0">
                                 <bool>false</bool>

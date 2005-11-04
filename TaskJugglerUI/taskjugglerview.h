@@ -173,6 +173,7 @@ private:
     FileManager* fileManager;
     ReportManager* reportManager;
 
+    int lastBrowserUsedWithEditor;
     int messageCounter;
     QTimer* loadDelayTimer;
     KURL urlToLoad;
