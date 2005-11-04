@@ -214,6 +214,10 @@ ReportManager::updateReportBrowser()
             subTypeIcon =
                 KGlobal::iconLoader()->loadIcon("tj_status_report",
                                                 KIcon::Small);
+        else if (strncmp(subType, "Report", strlen("Report")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_file_tji",
+                                                KIcon::Small);
         else
         {
             qDebug("Unknown type: %s", r->getType());
@@ -300,9 +304,10 @@ ReportManager::generateReport(QListViewItem* lvi)
 }
 
 bool
-ReportManager::showReport(QListViewItem* lvi)
+ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
 {
     ManagedReportInfo* mr = 0;
+    showReportTab = true;
     if (!lvi)
     {
         /* If the lvi is null then we try to show the current report or the
@@ -375,6 +380,21 @@ ReportManager::showReport(QListViewItem* lvi)
             KRun::runURL(reportUrl, "text/calendar");
             return TRUE;
         }
+        else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
+        {
+            // Generate the report file
+            ExportReport* exportReport =
+                dynamic_cast<ExportReport*>(mr->getProjectReport());
+            if (!exportReport->generate())
+                return false;
+
+            // Get the full file name as URL and show it in the editor
+            KURL reportUrl =
+                KURL::fromPathOrURL(mr->getProjectReport()->getFullFileName());
+            emit signalEditFile(reportUrl);
+            showReportTab = false;
+            return true;
+        }
         else
         {
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
@@ -439,8 +459,11 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
     switch (menu.exec(pos))
     {
         case 1:
-            errors = !showReport(lvi);
+        {
+            bool dummy;
+            errors = !showReport(lvi, dummy);
             break;
+        }
         case 2:
             errors = !generateReport(lvi);
             showReportTab = FALSE;

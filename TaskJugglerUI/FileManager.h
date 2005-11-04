@@ -43,6 +43,8 @@ public:
 
     void updateFileList(const QStringList& fl, const KURL& mf);
 
+    void addFile(const KURL& url);
+
     void addFile(const KURL& nf, const KURL& nnf);
 
     void setMasterFile(const KURL& url);
@@ -111,6 +113,7 @@ private:
 
     QString findCommonPath();
     void updateFileBrowser();
+    ManagedFileInfo* getMFI(const KURL& url);
 
     bool search();
 

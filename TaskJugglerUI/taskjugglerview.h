@@ -109,6 +109,7 @@ public slots:
 
     void showInEditor(CoreAttributes* ca);
     void showInEditor(const Report* report);
+    void showInEditor(const KURL& url);
     void configureEditor();
 
 signals:

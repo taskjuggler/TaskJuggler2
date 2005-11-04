@@ -26,6 +26,7 @@ class QListViewItem;
 class KMainWindow;
 class KListView;
 class KListViewSearchLine;
+class KURL;
 class Project;
 class Report;
 class CoreAttributes;
@@ -52,7 +53,7 @@ public:
     void enableReportActions(bool enable);
 
     bool generateReport(QListViewItem*);
-    bool showReport(QListViewItem*);
+    bool showReport(QListViewItem*, bool& showReport);
     void showRMBMenu(QListViewItem*, const QPoint&, int, bool& errors,
                      bool& showReport);
 
@@ -68,6 +69,7 @@ signals:
     void signalChangeStatusBar(const QString& text);
     void signalEditCoreAttributes(CoreAttributes* ca);
     void signalEditReport(const Report* report);
+    void signalEditFile(const KURL& url);
 
 public slots:
     void zoomIn();

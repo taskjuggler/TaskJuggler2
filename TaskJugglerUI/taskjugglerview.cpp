@@ -178,6 +178,8 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
             this, SLOT(showInEditor(CoreAttributes*)));
     connect(reportManager, SIGNAL(signalEditReport(const Report*)),
             this, SLOT(showInEditor(const Report*)));
+    connect(reportManager, SIGNAL(signalEditFile(const KURL&)),
+            this, SLOT(showInEditor(const KURL&)));
 
     connect(loadDelayTimer, SIGNAL(timeout()),
             this, SLOT(loadAfterTimerTimeout()));
@@ -812,7 +814,8 @@ TaskJugglerView::loadProject(const KURL& url)
             // Open the report list.
             mw->listViews->setCurrentItem(mw->reportsPage);
             showReport();
-            reportManager->showReport(0);
+            bool dummy;
+            reportManager->showReport(0, dummy);
         }
         else
             showEditor();
@@ -1075,6 +1078,13 @@ TaskJugglerView::showInEditor(const Report* report)
 }
 
 void
+TaskJugglerView::showInEditor(const KURL& url)
+{
+    fileManager->addFile(url, url);
+    showEditor();
+}
+
+void
 TaskJugglerView::taskListClicked(QListViewItem* lvi)
 {
     if (lvi)
@@ -1125,7 +1135,7 @@ TaskJugglerView::reportListClicked(int button, QListViewItem* lvi,
     switch (button)
     {
         case Qt::LeftButton:
-            errors = !reportManager->showReport(lvi);
+            errors = !reportManager->showReport(lvi, showReportTab);
             break;
         case Qt::RightButton:
             reportManager->showRMBMenu(lvi, p, col, errors, showReportTab);

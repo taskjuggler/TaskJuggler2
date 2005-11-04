@@ -127,21 +127,45 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
 }
 
 void
+FileManager::addFile(const KURL& url)
+{
+    if (getMFI(url) == 0)
+    {
+        // Add new file to list of managed files.
+        ManagedFileInfo* mfi = new ManagedFileInfo(this, url);
+        files.push_back(mfi);
+
+        // Insert the file into the browser and update the directory hierachy if
+        // necessary.
+        updateFileBrowser();
+        QListViewItem* lvi = mfi->getBrowserEntry();
+        lvi->setSelected(TRUE);
+        browser->ensureItemVisible(lvi);
+    }
+
+    // Open new file in editor.
+    showInEditor(url);
+}
+
+void
 FileManager::addFile(const KURL& url, const KURL& newURL)
 {
-    // Add new file to list of managed files.
-    ManagedFileInfo* mfi = new ManagedFileInfo(this, url);
-    files.push_back(mfi);
-    // First show the file with the old name so it get's loaded.
-    showInEditor(url);
-    mfi->saveAs(newURL);
+    if (getMFI(newURL) == 0)
+    {
+        // Add new file to list of managed files.
+        ManagedFileInfo* mfi = new ManagedFileInfo(this, url);
+        files.push_back(mfi);
+        // First show the file with the old name so it get's loaded.
+        showInEditor(url);
+        mfi->saveAs(newURL);
 
-    // Insert the file into the browser and update the directory hierachy if
-    // necessary.
-    updateFileBrowser();
-    QListViewItem* lvi = mfi->getBrowserEntry();
-    lvi->setSelected(TRUE);
-    browser->ensureItemVisible(lvi);
+        // Insert the file into the browser and update the directory hierachy if
+        // necessary.
+        updateFileBrowser();
+        QListViewItem* lvi = mfi->getBrowserEntry();
+        lvi->setSelected(TRUE);
+        browser->ensureItemVisible(lvi);
+    }
 
     // Open new file in editor.
     showInEditor(newURL);
@@ -210,6 +234,10 @@ FileManager::updateFileBrowser()
              (dirNameEnd = shortenedURL.find("/", start)) > 0;
              start = dirNameEnd + 1)
         {
+            // Ignore multiple slahes
+            if (dirNameEnd == start + 1)
+                continue;
+
             KListViewItem* lvi;
             if ((lvi = static_cast<KListViewItem*>
                  (browser->findItem(shortenedURL.left(dirNameEnd), 1))) == 0)
@@ -991,6 +1019,17 @@ FileManager::setFocusToEditor() const
 {
     if (getCurrentFile())
         getCurrentFile()->getEditor()->setFocus();
+}
+
+ManagedFileInfo*
+FileManager::getMFI(const KURL& url)
+{
+    for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
+         mfi != files.end(); ++mfi)
+        if ((*mfi)->getFileURL() == url)
+            return *mfi;
+
+    return 0;
 }
 
 #include "FileManager.moc"
