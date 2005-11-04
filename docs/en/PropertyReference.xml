@@ -370,6 +370,10 @@ file processing, the report macros must be prefixed with an additional
   <freestyle>
    <para><simplelist type="horiz" columns="2">
    
+   <member><varname>chart</varname></member>
+   <member>Use this column to get Gantt and resource charts. It's only
+   supported by the interactive reports in the GUI.</member>
+   
    <member><varname>completed</varname></member>
    <member>The percentage the task has been completed already. This is
    either the value specified by <link
@@ -385,9 +389,6 @@ file processing, the report macros must be prefixed with an additional
    <member>The criticalness of the task. It is a measure for the
    probability that an effort task gets the requested resources
    early.</member>
-   
-   <member><varname>cost</varname></member>
-   <member>The accumulated costs of the task and its sub tasks</member>
    
    <member><varname>daily</varname></member>
    <member>A day-by-day calendar view of the tasks</member>
@@ -649,6 +650,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rollupaccount</optattr>
    <optattr>hideaccount</optattr>
+   <optattr>separator</optattr>
    <optattr>sortaccounts</optattr>
    <optattr>start_report</optattr>
   </optattributes>
@@ -669,6 +671,7 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rollupresource</optattr>
    <optattr>hideresource</optattr>
+   <optattr>separator</optattr>
    <optattr>sortresources</optattr>
    <optattr>start_report</optattr>
   </optattributes>
@@ -690,6 +693,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rolluptask</optattr>
    <optattr>hidetask</optattr>
+   <optattr>separator</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
   </optattributes>
@@ -2053,6 +2057,13 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
     <also>start_task</also>
   </seealso>  
   <example>&example_scheduling;</example>
+ </property>
+ <property name="separator" id="separator" inheritable="No">
+  <descr><para>Specifies the separator used in CSV reports between the
+  values. The default value is a semicolon.</para></descr>
+  <attributes>
+   <attr name="sep" type="STRING"/>
+  </attributes>
  </property>
  <property name="select" id="select" inheritable="No">
   <descr><para>The select functions controls which resource is picked

@@ -109,7 +109,11 @@ TjPrintReport::generateTableHeader()
         if (specialColumns.find((*ci)->getName()) != specialColumns.end())
         {
             /* No matter how many calendar columns the user has specified. We
-             * only generate one. */
+             * them all. */
+            continue;
+        }
+        else if ((*ci)->getName() == "chart")
+        {
             showGantt = true;
             continue;
         }
@@ -179,7 +183,8 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
     {
         /* The calendar columns need special treatment. We just ignore them
          * for now. */
-        if (specialColumns.find((*ci)->getName()) != specialColumns.end())
+        if (specialColumns.find((*ci)->getName()) != specialColumns.end() ||
+            (*ci)->getName() == "chart")
         {
             colIdx--;
             continue;
@@ -382,7 +387,8 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
     {
         /* The calendar columns need special treatment. We just ignore them
          * for now. */
-        if (specialColumns.find((*ci)->getName()) != specialColumns.end())
+        if (specialColumns.find((*ci)->getName()) != specialColumns.end() ||
+            (*ci)->getName() == "chart")
         {
             colIdx--;
             continue;

@@ -122,12 +122,11 @@ TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     indexColumns.insert("seqno");
     indexColumns.insert("name");
 
-    ganttColumns.insert("hourly");
-    ganttColumns.insert("daily");
-    ganttColumns.insert("weekly");
-    ganttColumns.insert("monthly");
-    ganttColumns.insert("quarterly");
-    ganttColumns.insert("yearly");
+    specialColumns.insert("daily");
+    specialColumns.insert("weekly");
+    specialColumns.insert("monthly");
+    specialColumns.insert("quarterly");
+    specialColumns.insert("yearly");
 }
 
 TjReport::~TjReport()
@@ -267,9 +266,10 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
     {
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
-         * as well. Calendar columns get special treatment as well. */
+         * as well. Calendar and chart columns get special treatment as well. */
         if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
-            ganttColumns.find((*ci)->getName()) != ganttColumns.end())
+            specialColumns.find((*ci)->getName()) != specialColumns.end() ||
+            (*ci)->getName() == "chart")
         {
             column--;
             continue;
@@ -468,9 +468,10 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
     {
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
-         * as well. Calendar columns get special treatment as well. */
+         * as well. Calendar and chart columns get special treatment as well. */
         if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
-            ganttColumns.find((*ci)->getName()) != ganttColumns.end())
+            specialColumns.find((*ci)->getName()) != specialColumns.end() ||
+            (*ci)->getName() == "chart")
         {
             column--;
             continue;
@@ -726,11 +727,11 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar columns get special treatment as well. */
-        if (ganttColumns.find((*ci)->getName()) != ganttColumns.end())
+        if ((*ci)->getName() == "chart")
             showGantt = true;
 
         if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
-            ganttColumns.find((*ci)->getName()) != ganttColumns.end())
+            specialColumns.find((*ci)->getName()) != specialColumns.end())
         {
             col--;
             continue;

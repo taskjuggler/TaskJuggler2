@@ -845,6 +845,10 @@ taskjuggler to go into a memory hogging endless loop.</para></listitem>
 fully navigatable by keyboard. The scaling/zooming of the Gantt chart
 has been improved.</para></listitem>
 
+<listitem><para>To get Gantt and resource reports in the GUI the
+column 'chart' must be specified. They are no longer displayed
+automatically.</para></listitem>
+
 <listitem><para>The GUI now supports printing of task and resource
 reports including the nice Gantt charts.</para></listitem>
 
@@ -862,6 +866,9 @@ were always accounted to 0.</para></listitem>
 <listitem><para>Use embedded HTML browser for HTML reports instead of
 lauching an external browser.</para></listitem>
 
+<listitem><para>Export reports are now loaded into the editor when
+selected in the report browser.</para></listitem>
+
 <listitem><para>The GUI supports now multiple project
 templates. The templates can be customized on loading to reflect the
 current date.</para></listitem>
@@ -872,6 +879,10 @@ widget.</para></listitem>
 
 <listitem><para>The GUI editor now supports search and replace over
 all files.</para></listitem>
+
+<listitem><para>The default separator for CSV files is now a semicolon
+since this is what OpenOffice.org uses by default. But this can be
+changed if needed.</para></listitem>
 
 </itemizedlist></para>
 

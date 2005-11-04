@@ -435,6 +435,8 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->realFormat = numberFormat;
     tcf->expandable = true;
 
+    tcf = new TableColumnFormat(KW("chart"), this, "");
+
     addCustomAttributeColumns(r->getProject()->getTaskAttributeDict());
     addCustomAttributeColumns(r->getProject()->getResourceAttributeDict());
     addCustomAttributeColumns(r->getProject()->getAccountAttributeDict());

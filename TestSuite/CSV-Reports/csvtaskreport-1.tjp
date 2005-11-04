@@ -73,4 +73,5 @@ task t1 "Task 1" {
 csvtaskreport "." {
 	${AllColumns}
 	hideresource 0
+	separator ","
 }

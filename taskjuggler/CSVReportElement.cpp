@@ -39,7 +39,7 @@
 CSVReportElement::CSVReportElement(Report* r, const QString& df, int dl) :
    ReportElement(r, df, dl)
 {
-    fieldSeparator = ",";
+    fieldSeparator = ";";
 }
 
 void

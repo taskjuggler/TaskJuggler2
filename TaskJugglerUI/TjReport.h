@@ -173,7 +173,7 @@ protected:
      * differently than most other reports. They provide special rendering for
      * them and need to be ignored during generic column rendering. */
     std::set<const char*, ltstr> indexColumns;
-    std::set<const char*, ltstr> ganttColumns;
+    std::set<const char*, ltstr> specialColumns;
 } ;
 
 #endif

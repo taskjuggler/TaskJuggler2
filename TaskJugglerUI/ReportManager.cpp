@@ -404,15 +404,6 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
 
         if (tjr)
         {
-            if (tjr->getReportDefinition() != 0)
-            {
-                // The summary report does not have these signals.
-                connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
-                        this, SLOT(changeStatusBar(const QString&)));
-                connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
-                        this, SLOT(editCoreAttributes(CoreAttributes*)));
-            }
-
             if (!tjr->generateReport())
             {
                 delete tjr;
