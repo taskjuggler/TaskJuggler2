@@ -1,0 +1,5 @@
+[TaskJuggler]
+Mimetypes=application/x-tjp;application/x-tji
+Section=Scripts
+Variables=kate: indent-mode varindent; var-indent-indent-after ^\\s*\\w+\\s.*\\{[^}]*$; var-indent-indent ; var-indent-unindent ^\\s*\\}; var-indent-triggerchars };
+Wildcards=*.tjp;*.tji
