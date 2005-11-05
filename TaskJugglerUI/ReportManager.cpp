@@ -404,6 +404,11 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
 
         if (tjr)
         {
+            connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
+                    this, SLOT(changeStatusBar(const QString&)));
+            connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
+                    this, SLOT(editCoreAttributes(CoreAttributes*)));
+
             if (!tjr->generateReport())
             {
                 delete tjr;

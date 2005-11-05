@@ -508,6 +508,9 @@ Project::pass2(bool noDepCheck, bool& fatalError)
         // Set dates according to implicit dependencies
         (*tli)->implicitXRef();
 
+        // Sort allocations properly
+        (*tli)->sortAllocations();
+
         // Save so far booked resources as specified resources
         (*tli)->saveSpecifiedBookedResources();
     }

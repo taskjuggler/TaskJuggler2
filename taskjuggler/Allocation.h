@@ -57,6 +57,8 @@ public:
         return shifts.isOnShift(i);
     }
 
+    bool isWorker() const;
+
     enum SelectionModeType
     {
         order, minAllocationProbability, minLoaded, maxLoaded, random

@@ -1438,6 +1438,32 @@ Task::implicitXRef()
 }
 
 void
+Task::sortAllocations()
+{
+    if (allocations.isEmpty())
+        return;
+
+    allocations.setAutoDelete(false);
+    for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; )
+    {
+        QPtrListIterator<Allocation> tmp = ali;
+        ++ali;
+        if (!(*tmp)->isWorker())
+        {
+            /* If the resource does not do any work we move it to the front of
+             * the list. That way the 0 effective resources are always
+             * allocated no matter if the effort limit has been reached or not.
+             * At least in the same booking call. */
+            Allocation* a = *tmp;
+            allocations.removeRef(a);
+            allocations.prepend(a);
+        }
+
+    }
+    allocations.setAutoDelete(true);
+}
+
+void
 Task::saveSpecifiedBookedResources()
 {
     /* The project file readers use the same resource booking mechanism as the

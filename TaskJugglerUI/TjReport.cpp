@@ -728,7 +728,11 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar columns get special treatment as well. */
         if ((*ci)->getName() == "chart")
+        {
             showGantt = true;
+            col--;
+            continue;
+        }
 
         if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
             specialColumns.find((*ci)->getName()) != specialColumns.end())

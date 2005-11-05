@@ -894,35 +894,35 @@ void
 TaskJugglerView::setFocusToTaskList()
 {
     mw->listViews->setCurrentItem(mw->tasksPage);
-    focusListViews(mw->listViews->indexOf(mw->taskListView));
+    focusListViews(mw->listViews->indexOf(mw->tasksPage));
 }
 
 void
 TaskJugglerView::setFocusToResourceList()
 {
     mw->listViews->setCurrentItem(mw->resourcesPage);
-    focusListViews(mw->listViews->indexOf(mw->resourceListView));
+    focusListViews(mw->listViews->indexOf(mw->resourcesPage));
 }
 
 void
 TaskJugglerView::setFocusToAccountList()
 {
     mw->listViews->setCurrentItem(mw->accountsPage);
-    focusListViews(mw->listViews->indexOf(mw->accountListView));
+    focusListViews(mw->listViews->indexOf(mw->accountsPage));
 }
 
 void
 TaskJugglerView::setFocusToReportList()
 {
     mw->listViews->setCurrentItem(mw->reportsPage);
-    focusListViews(mw->listViews->indexOf(mw->reportListView));
+    focusListViews(mw->listViews->indexOf(mw->reportsPage));
 }
 
 void
 TaskJugglerView::setFocusToFileList()
 {
     mw->listViews->setCurrentItem(mw->filesPage);
-    focusListViews(mw->listViews->indexOf(mw->fileListView));
+    focusListViews(mw->listViews->indexOf(mw->filesPage));
 }
 
 void

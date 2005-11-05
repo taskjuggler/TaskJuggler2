@@ -10,9 +10,12 @@
  * $Id$
  */
 
+#include "Resource.h"
+
 #include <assert.h>
 
-#include "Resource.h"
+#include "ResourceTreeIterator.h"
+
 #include "Project.h"
 #include "Interval.h"
 #include "VacationInterval.h"
@@ -659,6 +662,16 @@ void
 Resource::addVacation(Interval* i)
 {
     vacations.append(i);
+}
+
+bool
+Resource::isWorker() const
+{
+    for (ConstResourceTreeIterator rti(this); *rti; ++rti)
+        if ((*rti)->efficiency == 0.0)
+            return false;
+
+    return true;
 }
 
 double

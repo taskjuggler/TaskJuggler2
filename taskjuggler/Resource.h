@@ -70,6 +70,8 @@ public:
     void setEfficiency(double e) { efficiency = e; }
     double getEfficiency() const { return efficiency; }
 
+    bool isWorker() const;
+
     void setRate(double r) { rate = r; }
     double getRate() const { return rate; }
 

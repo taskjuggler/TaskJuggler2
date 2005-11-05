@@ -301,6 +301,7 @@ public:
 
     bool xRef(QDict<Task>& hash);
     void implicitXRef();
+    void sortAllocations();
     void saveSpecifiedBookedResources();
     QString resolveId(QString relId);
 
