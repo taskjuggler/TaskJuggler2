@@ -22,6 +22,8 @@
         <item> caption </item>
         <item> celltext </item>
         <item> cellurl </item>
+        <item> caption </item>
+        <item> chart </item>
         <item> columns </item>
         <item> complete </item>
         <item> completed </item>
