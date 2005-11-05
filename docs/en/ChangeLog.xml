@@ -824,10 +824,6 @@ errors.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
-<listitem><para>Fixed account reports which had summary lines that
-were all 0. In HTML reports the summary columns were rendered all
-black.</para></listitem>
-
 <listitem><para>The two graphical front-ends that have been present in earlier
 TaskJuggler releases have been merged into one new front-end. It's
 called TaskJugglerUI. The <computeroutput>ktjview2</computeroutput>
@@ -838,30 +834,9 @@ Windows/Cygwin.</para></listitem>
 <listitem><para>The TaskJuggler user interface now supports printing
 of high-quality task and resource reports.</para></listitem>
 
-<listitem><para>Fixed detection of cyclic brother tasks. This caused
-taskjuggler to go into a memory hogging endless loop.</para></listitem>
-
 <listitem><para>Major usability improvements for the GUI. It's now
 fully navigatable by keyboard. The scaling/zooming of the Gantt chart
 has been improved.</para></listitem>
-
-<listitem><para>To get Gantt and resource reports in the GUI the
-column 'chart' must be specified. They are no longer displayed
-automatically.</para></listitem>
-
-<listitem><para>The GUI now supports printing of task and resource
-reports including the nice Gantt charts.</para></listitem>
-
-<listitem><para>Fixed bug in priority handling. Under certain
-circumstances resources were allocated to lower priority tasks even
-though they should have been assigned to higher priority
-tasks.</para></listitem>
-
-<listitem><para>Fixed critical bug that turned 'precedes' of parent
-tasks into 'depends' of child tasks.</para></listitem>
-
-<listitem><para>Fixed cost accounting for non-working resources. They
-were always accounted to 0.</para></listitem>
 
 <listitem><para>Use embedded HTML browser for HTML reports instead of
 lauching an external browser.</para></listitem>
@@ -880,9 +855,31 @@ widget.</para></listitem>
 <listitem><para>The GUI editor now supports search and replace over
 all files.</para></listitem>
 
+<listitem><para>To get Gantt and resource reports in the GUI the
+column 'chart' must be specified. They are no longer displayed
+automatically.</para></listitem>
+
 <listitem><para>The default separator for CSV files is now a semicolon
 since this is what OpenOffice.org uses by default. But this can be
 changed if needed.</para></listitem>
+
+<listitem><para>Fixed account reports which had summary lines that
+were all 0. In HTML reports the summary columns were rendered all
+black.</para></listitem>
+
+<listitem><para>Fixed detection of cyclic brother tasks. This caused
+taskjuggler to go into a memory hogging endless loop.</para></listitem>
+
+<listitem><para>Fixed bug in priority handling. Under certain
+circumstances resources were allocated to lower priority tasks even
+though they should have been assigned to higher priority
+tasks.</para></listitem>
+
+<listitem><para>Fixed critical bug that turned 'precedes' of parent
+tasks into 'depends' of child tasks.</para></listitem>
+
+<listitem><para>Fixed cost accounting for non-working resources. They
+were always accounted to 0.</para></listitem>
 
 </itemizedlist></para>
 
