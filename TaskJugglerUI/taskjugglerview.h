@@ -11,8 +11,8 @@
  */
 
 
-#ifndef _TASKJUGGLERVIEW_H_
-#define _TASKJUGGLERVIEW_H_
+#ifndef _TaskJugglerView_h_
+#define _TaskJugglerView_h_
 
 #include <qwidget.h>
 #include <qvaluelist.h>
@@ -160,8 +160,8 @@ private:
     void addMessage(const QString& msg, const QString& file, int line,
                     bool error);
 
-    void TaskJugglerView::showEditor();
-    void TaskJugglerView::showReport();
+    void showEditor();
+    void showReport();
 
     Project* project;
     MainWidget* mw;
@@ -181,4 +181,4 @@ private:
     bool loadingProject;
 };
 
-#endif // _TASKJUGGLERVIEW_H_
+#endif
