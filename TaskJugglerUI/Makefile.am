@@ -1,6 +1,6 @@
 ## Makefile.am for taskjuggler
 
-SUBDIRS=pics
+SUBDIRS=pics Templates
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
@@ -52,7 +52,7 @@ tjmime_DATA = x-tjp.desktop x-tji.desktop x-tjx.desktop
 rcdir = $(kde_datadir)/taskjuggler
 rc_DATA = taskjugglerui.rc
 
-misc_DATA = tips
 miscdir = $(kde_datadir)/taskjuggler
+misc_DATA = tips katefiletyperc
 
 kde_conf_DATA = taskjugglerrc

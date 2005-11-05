@@ -18,6 +18,7 @@
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qtimer.h>
+#include <qstringlist.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -30,6 +31,7 @@
 #include <kaccel.h>
 #include <kio/netaccess.h>
 #include <kconfig.h>
+#include <kstandarddirs.h>
 #include <kurl.h>
 #include <kurldrag.h>
 #include <kurlrequesterdlg.h>
@@ -65,6 +67,12 @@ TaskJuggler::TaskJuggler()
             this,   SLOT(changeCaption(const QString&)));
     connect(m_view, SIGNAL(announceRecentURL(const KURL&)),
             this, SLOT(addRecentURL(const KURL&)));
+
+    /* Add the taskjuggler apps dir as additional resource so the katepart
+     * will find the katefiletyperc file in there. */
+    KGlobal().dirs()->addResourceDir
+        ("config", KGlobal().dirs()->findResourceDir
+         ("data", "taskjuggler/taskjugglerui.rc") + "/taskjuggler/");
 
     readProperties(kapp->config());
 

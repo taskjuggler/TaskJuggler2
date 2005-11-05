@@ -190,7 +190,6 @@
         <item> containstask </item>
         <item> criticalnessdown </item>
         <item> criticalnessup </item>
-        <item> d </item>
         <item> daily </item>
         <item> day </item>
         <item> days </item>
@@ -199,7 +198,6 @@
         <item> fri </item>
         <item> fullnamedown </item>
         <item> fullnameup </item>
-        <item> h </item>
         <item> hours </item>
         <item> iddown </item>
         <item> idup </item>
@@ -233,7 +231,6 @@
         <item> maxeffortdown </item>
         <item> maxeffortup </item>
         <item> maxloaded </item>
-        <item> min </item>
         <item> minallocated </item>
         <item> mineffortdown </item>
         <item> mineffortup </item>
@@ -269,18 +266,25 @@
         <item> thu </item>
         <item> tue </item>
         <item> undefined </item>
-        <item> w </item>
         <item> wed </item>
         <item> week </item>
         <item> weekly </item>
         <item> weeks </item>
-        <item> y </item>
         <item> year </item>
         <item> yearly </item>
         <item> years </item>
     </list>
     <contexts>
      <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+        <!-- Date(+Time) values -->
+        <RegExpr attribute="Date" name="Date" String="\d{4}-\d{2}-\d{2}\S*"/>
+	<!-- Time values -->
+	<RegExpr attribute="Time" name="Time"
+	 String="\d{1-2}:\d{2}(:\d{2}|)"/>
+	<!-- Duration specifications --> 
+	<RegExpr attribute="Duration" name="Duration"
+	 String="\d(min|h|d|w|m|y)"/>
+
         <!-- keywords and other builtins -->
 	<keyword attribute="Builtin Function" String="builtinfuncs" context="#stay"/>
 	<keyword attribute="Keyword" String="keywords" context="#stay"/>
@@ -336,10 +340,9 @@
       <itemData name="Builtin Function"  defStyleNum="dsFunction"/>
       <itemData name="Data Types" defStyleNum="dsDataType"/>
       <itemData name="Decimal"  defStyleNum="dsDecVal"/>
-      <itemData name="Octal"  defStyleNum="dsBaseN"/>
-      <itemData name="Hex"  defStyleNum="dsBaseN"/>
-      <itemData name="Float"  defStyleNum="dsFloat"/>
-      <itemData name="Char"  defStyleNum="dsChar"/>
+      <itemData name="Float" defStyleNum="dsDecVal"/>
+      <itemData name="Date"  defStyleNum="dsBaseN"/>
+      <itemData name="Time"  defStyleNum="dsBaseN"/>
       <itemData name="String"  defStyleNum="dsString"/>
       <itemData name="String Char"  defStyleNum="dsChar"/>
       <itemData name="Comment"  defStyleNum="dsComment"/>

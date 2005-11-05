@@ -402,13 +402,13 @@ TaskJugglerView::pickTemplateFile(const QString& extension)
     // Generate list with all template file names.
     KStandardDirs stdDirs;
     QStringList templates = KStandardDirs().findAllResources
-        ("data", QString("taskjuggler/Templates/") +
+        ("data", QString("taskjuggler/templates/") +
          KGlobal().locale()->language() + "/*." + extension);
     /* If no templates for the current language were found, try the default
      * language. */
     if (templates.count() == 0)
         templates = KStandardDirs().findAllResources
-            ("data", QString("taskjuggler/Templates/") +
+            ("data", QString("taskjuggler/templates/") +
              KGlobal().locale()->defaultLanguage() + "/*." + extension);
 
     if (templates.count() == 0)

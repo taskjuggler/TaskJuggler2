@@ -2414,7 +2414,7 @@ ProjectFile::readAccount(Account* parent)
         /* Only accounts with no parent can have a type specifier. All
          * sub accounts inherit the type of the parent. */
         QString at;
-        if (nextToken(at) != ID && (at != KW("cost") ||
+        if (nextToken(at) != ID || (at != KW("cost") &&
                                     at != KW("revenue")))
         {
             errorMessage(i18n("Account type 'cost' or 'revenue' expected"));
