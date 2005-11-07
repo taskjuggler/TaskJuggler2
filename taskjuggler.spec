@@ -1,25 +1,25 @@
 #
-# spec file for package taskjuggler (Version 2.1.1)
+# spec file for package taskjuggler (Version 2.2.0_beta1 )
 #
 # Copyright (c) 2005 SUSE LINUX Products GmbH, Nuernberg, Germany.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
-# Please submit bugfixes or comments via http://www.suse.de/feedback/
+# Please submit bugfixes or comments via http://bugs.opensuse.org
 #
 
 # norootforbuild
-# neededforbuild  kde3-devel-packages kdepim3 kdepim3-devel docbook-utils openjade jadetex opensp tetex docbook-dsssl-stylesheets docbook-xsl-stylesheets docbook_4
+# neededforbuild  docbook-dsssl-stylesheets docbook-utils docbook-xsl-stylesheets docbook_4 jadetex kde3-devel-packages kdepim3 kdepim3-devel openjade opensp tetex
 
-BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel gettext-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv klogd less libacl libattr libcom_err libgcc libnscd libselinux libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel arts arts-devel autoconf automake binutils expat fam fam-devel fontconfig fontconfig-devel freeglut freeglut-devel freetype2 freetype2-devel gcc gcc-c++ gdbm gettext glib2 glib2-devel gnome-filesystem jack jack-devel kdelibs3 kdelibs3-devel kdelibs3-doc kdepim3 kdepim3-devel libacl-devel libart_lgpl libart_lgpl-devel libattr-devel libgcrypt libgcrypt-devel libgpg-error libgpg-error-devel libidn libidn-devel libjpeg libjpeg-devel liblcms liblcms-devel libmng libmng-devel libpng libpng-devel libstdc++-devel libtiff libtiff-devel libtool libxml2 libxml2-devel libxslt libxslt-devel openssl-devel pcre pcre-devel perl perl-Class-MethodMaker perl-Date-Calc perl-PostScript-Simple perl-XML-Parser pkgconfig poster python qt3 qt3-devel rpm unsermake update-desktop-files xorg-x11-Mesa xorg-x11-Mesa-devel xorg-x11-devel xorg-x11-libs
+BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel gettext-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv klogd less libacl libattr libcom_err libgcc libnscd libselinux libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel Mesa Mesa-devel arts arts-devel autoconf automake binutils docbook-dsssl-stylesheets docbook-utils docbook-xsl-stylesheets docbook_4 expat fam fam-devel fontconfig fontconfig-devel freeglut freeglut-devel freetype2 freetype2-devel gcc gcc-c++ gdbm gettext glib2 glib2-devel gnome-filesystem jack jack-devel jadetex kdelibs3 kdelibs3-devel kdelibs3-doc kdepim3 kdepim3-devel libacl-devel libart_lgpl libart_lgpl-devel libattr-devel libdrm libdrm-devel libgcrypt libgcrypt-devel libgpg-error libgpg-error-devel libidn libidn-devel libjpeg libjpeg-devel liblcms liblcms-devel libmng libmng-devel libpng libpng-devel libstdc++-devel libtiff libtiff-devel libtool libxml2 libxml2-devel libxslt libxslt-devel openjade opensp openssl-devel pcre pcre-devel perl pkgconfig python qt3 qt3-devel rpm te_ams te_latex tetex unsermake update-desktop-files xorg-x11-devel xorg-x11-libs
 
 Name:         taskjuggler
 URL:          http://www.taskjuggler.org
 License:      GPL
 Group:        Productivity/Office/Other
 Summary:      Project management software
-Version:      svn20051105
-Release:      9
+Version:      2.2.0_beta1 
+Release:      1
 Source0:      taskjuggler-%{version}.tar.bz2 
 Requires:     qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
 # Patch1:       fix-gcc41.diff
@@ -75,8 +75,7 @@ update_admin --no-unsermake
    $configkde \
  --libdir=/opt/kde3/%_lib \
  --with-qt-libraries=/usr/lib/qt3/%_lib \
- --disable-final \
- --with-kde-support=yes
+ --disable-final
 make
 
 %install
@@ -126,7 +125,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/taskjuggler/Contrib/tjx2gantt
 %{_docdir}/taskjuggler/Contrib/emacs
 %{_docdir}/taskjuggler/Contrib/vim
-
 %package kde
 Provides:     taskjuggler-kde
 Summary:      Project Management Software for KDE
@@ -134,36 +132,12 @@ Group:        Productivity/Office/Other
 Autoreqprov:  on
 
 %description kde
-This package contains the graphical version of TaskJuggler.
+TaskJuggler is a project management tool for Linux and UNIX based
+operating systems. Whether you want to plan your college's shifts for
+the next month or want to build a skyscraper - TaskJuggler is the tool
+for you.
 
-TaskJuggler is a project management tool for Linux and UNIX-like
-operating systems. Its new approach to project planning and tracking is
-far superior to the commonly used Gantt chart editing tools. It has
-already been successfully used in many projects and scales easily to
-projects with hundreds of resources and thousands of tasks.
-
-TaskJuggler is an Open Source tools for serious project managers. It
-covers the complete spectrum of project management tasks from the first
-idea to the completion of the project. It assists you during project
-scoping, resource assignment, cost and revenue planing, risk and
-communication management.
-
-TaskJuggler provides an optimizing scheduler that computes your project
-time lines and resource assignments based on the project outline and
-the constrains that you have provided. The build-in resource balancer
-and consistency checker offload you from having to worry about
-irrelevant details and ring the alarm if the project gets out of hand.
-Its flexible "as many details as necessary"-approach allows you to
-still plan your project as you go, making it also ideal for new
-management strategies such as Extreme Programming and Agile Project
-Management.
-
-If you are about to build a skyscraper or just want to put together
-your colleague's shift plan for the next month, TaskJuggler is the
-right tool for you. If you just want to draw nice looking Gantt charts
-to impress your boss or your investors, TaskJuggler might not be right
-for you. It takes some effort to master its power, but it will become a
-companion you don't want to miss anymore.
+This package provides an XML viewer for files exported by taskjuggler.
 
 
 
@@ -186,10 +160,12 @@ Authors:
 /opt/kde3/share/apps/taskjuggler/
 /opt/kde3/share/config/taskjugglerrc
 /opt/kde3/share/doc/HTML/en/taskjuggler
-/opt/kde3/share/applications/kde/taskjuggler.desktop
-/usr/share/applications/kde/taskjuggler.desktop
+/usr/share/applications/kde
 
 %changelog -n taskjuggler
+* Sun Nov 06 2005 - cs@suse.de
+- Update to version 2.2.0_beta1.
+- Cleaned up the spec file. The Perl stuff is no longer needed.
 * Thu Oct 13 2005 - stbinner@suse.de
 - remove extra qualification for gcc 4.1 compilation
 * Tue Oct 11 2005 - stbinner@suse.de
