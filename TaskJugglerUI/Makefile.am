@@ -19,6 +19,7 @@ TaskJugglerUI_LDADD = -lktexteditor $(top_builddir)/taskjuggler/libtaskjuggler.l
 # which sources should be compiled for taskjuggler
 TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjObjPosTable.cpp TjGanttZoomStep.cpp TjGanttChart.cpp \
+	TjLineAccounter.cpp \
 	TjPrintReport.cpp TjPrintTaskReport.cpp TjPrintResourceReport.cpp \
 	TjReportRow.cpp TjReportCell.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \

@@ -36,6 +36,7 @@ class QtReportElement;
 class TjObjPosTable;
 class TjGanttZoomStep;
 class Interval;
+class TjLineAccounter;
 
 class TjGanttChart {
 public:
@@ -103,7 +104,7 @@ private:
                             bool outlineOnly, QCanvas* canvas);
     void drawContainterShape(int start, int end, int centerY, int height,
                              bool outlineOnly, QCanvas* canvas);
-    void drawDependencies(const Task* t1);
+    void drawDependencies(const Task* t1, TjLineAccounter* collisionDetector);
     void drawTaskResource(const Resource* r, const Task* t);
     void drawResource(const Resource* r);
     void drawResourceTask(const Task* t, const Resource* r);

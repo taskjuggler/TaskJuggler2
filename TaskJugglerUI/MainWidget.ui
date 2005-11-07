@@ -9,21 +9,21 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>719</width>
-            <height>631</height>
+            <width>662</width>
+            <height>525</height>
         </rect>
     </property>
     <property name="caption">
         <string>TaskJuggler Main Window</string>
     </property>
-    <hbox>
+    <grid>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
         <property name="margin">
             <number>1</number>
         </property>
-        <widget class="QSplitter">
+        <widget class="QSplitter" row="0" column="0">
             <property name="name">
                 <cstring>mainSplitter</cstring>
             </property>
@@ -35,7 +35,7 @@
                     <cstring>listViews</cstring>
                 </property>
                 <property name="currentIndex">
-                    <number>4</number>
+                    <number>0</number>
                 </property>
                 <widget class="QWidget">
                     <property name="name">
@@ -522,6 +522,118 @@
                     <attribute name="title">
                         <string>E&amp;ditor</string>
                     </attribute>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>0</number>
+                        </property>
+                        <widget class="QSplitter" row="0" column="0">
+                            <property name="name">
+                                <cstring>editorSplitter</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <widget class="QWidgetStack">
+                                <property name="name">
+                                    <cstring>editorStack</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>5</hsizetype>
+                                        <vsizetype>7</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <widget class="QWidget">
+                                    <property name="name">
+                                        <cstring>WStackPage</cstring>
+                                    </property>
+                                    <attribute name="id">
+                                        <number>0</number>
+                                    </attribute>
+                                </widget>
+                            </widget>
+                            <widget class="KListView">
+                                <column>
+                                    <property name="text">
+                                        <string></string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Message</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>File</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Line</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Counter</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>messageListView</cstring>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>400</width>
+                                        <height>120</height>
+                                    </size>
+                                </property>
+                                <property name="allColumnsShowFocus">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="rootIsDecorated">
+                                    <bool>true</bool>
+                                </property>
+                            </widget>
+                        </widget>
+                    </grid>
                 </widget>
                 <widget class="QWidget">
                     <property name="name">
@@ -565,7 +677,7 @@
                 </widget>
             </widget>
         </widget>
-    </hbox>
+    </grid>
 </widget>
 <tabstops>
     <tabstop>taskListView</tabstop>
@@ -592,5 +704,6 @@
     <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
     <includehint>klistviewsearchline.h</includehint>
+    <includehint>klistview.h</includehint>
 </includehints>
 </UI>

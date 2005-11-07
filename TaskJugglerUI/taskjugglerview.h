@@ -166,8 +166,8 @@ private:
     Project* project;
     MainWidget* mw;
     QProgressBar* progressBar;
-    KListView* messageListView;
-    QSplitter* editorSplitter;
+    //KListView* messageListView;
+    //QSplitter* editorSplitter;
     QValueList<int> editorSplitterSizes;
 
     FileManager* fileManager;

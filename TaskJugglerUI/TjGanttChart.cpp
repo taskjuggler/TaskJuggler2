@@ -33,6 +33,7 @@
 #include "QtReportElement.h"
 #include "TjObjPosTable.h"
 #include "TjGanttZoomStep.h"
+#include "TjLineAccounter.h"
 
 TjGanttChart::TjGanttChart(QObject* obj)
 {
@@ -985,6 +986,7 @@ TjGanttChart::generateGanttBackground()
 void
 TjGanttChart::generateGanttElements()
 {
+    TjLineAccounter* collisionDetector = new TjLineAccounter(mmToXPixels(1));
     for (TjObjPosTableConstIterator it(*objPosTable); *it; ++it)
     {
         if ((*it)->getCoreAttributes()->getType() == CA_Task &&
@@ -993,7 +995,8 @@ TjGanttChart::generateGanttElements()
             const Task* t = static_cast<const Task*>
                 ((*it)->getCoreAttributes());
             drawTask(t, false);
-            drawDependencies(t);
+
+            drawDependencies(t, collisionDetector);
         }
         else if ((*it)->getCoreAttributes()->getType() == CA_Resource
                  && (*it)->getSubCoreAttributes() == 0)
@@ -1024,6 +1027,7 @@ TjGanttChart::generateGanttElements()
         else
             assert(0);
     }
+    delete collisionDetector;
 }
 
 void
@@ -1211,29 +1215,39 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
 }
 
 void
-TjGanttChart::drawDependencies(const Task* t1)
+TjGanttChart::drawDependencies(const Task* t1,
+                               TjLineAccounter* collisionDetector)
 {
 #define abs(a) ((a) < 0 ? (-(a)) : (a))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
-    int arrowCounter = 0;
     TaskList sortedFollowers;
 
     /* To avoid unnecessary crossing of dependency arrows, we sort the
      * followers of the current task according to their absolute distance to
      * the Y position of this task in the list view. */
+    int xPos = time2x(t1->getEnd(scenario));
     int yPos = objPosTable->caToPos(t1) + minRowHeight / 2;
     for (TaskListIterator tli(t1->getFollowersIterator()); *tli; ++tli)
     {
+        int t2x = time2x((*tli)->getStart(scenario));
         int t2y = objPosTable->caToPos(*tli);
         int i = 0;
         for (TaskListIterator stli(sortedFollowers); *stli; ++stli, ++i)
         {
+            int t3x = time2x((*tli)->getStart(scenario));
             int t3y = objPosTable->caToPos(*stli);
             if (t3y < 0)
                 continue;
-            if (abs(yPos - t2y) > abs(yPos - t3y))
-                break;
+            if (xPos != t2x && xPos != t3x)
+            {
+                if (((xPos - t2x) / abs(yPos - t2y)) >
+                    ((xPos - t3x) / abs(yPos - t3y)))
+                    break;
+            }
+            else
+                if (abs(yPos - t2y) < abs(yPos - t3y))
+                    break;
         }
         sortedFollowers.insert(i, *tli);
     }
@@ -1258,36 +1272,73 @@ TjGanttChart::drawDependencies(const Task* t1)
 
             int t1y = objPosTable->caToPos(t1) + minRowHeight / 2;
             int t2y = objPosTable->caToPos(t2) + minRowHeight / 2;
-            int yCenter = t1y < t2y ? t1y + (t2y - t1y) / 2 :
-                t2y + (t1y - t2y) / 2;
+            int yCenter = t1y + (t1y < t2y ? 1 : -1) * minRowHeight / 2;
 
             // Draw connection line.
             // Distance between task end and the first break of the arrow.
-            const int minGap = (int) (minRowHeight * 0.5);
+            const int endGap = (int) (minRowHeight * 0.4);
             // Min distance between parallel arrors.
-            const int arrowGap = (int) (minRowHeight * 0.2);
+            const int lineGap= (int) (minRowHeight * 0.1);
             QPointArray a;
-            if (t2x - t1x < 2 * minGap + arrowGap * arrowCounter)
+            if (t2x - t1x < 2 * endGap)
             {
+                /* The tasks end and start are closer together than the
+                 * minimum distance required for the initial and final
+                 * horizontal part of the arrow. A horizontal backstroke is
+                 * needed. */
                 a.resize(6);
+                /* Task end horizontal off to the right */
                 a.setPoint(0, t1x, t1y);
-                int cx = t1x + minGap + arrowGap * arrowCounter;
-                a.setPoint(1, cx, t1y);
-                a.setPoint(2, cx, yCenter);
-                a.setPoint(3, min(t2x, cx) - minGap, yCenter);
-                a.setPoint(4, min(t2x, cx) - minGap, t2y);
+                int c1x = t1x + endGap;
+                while (collisionDetector->collision(true, c1x, t1y, t2y))
+                    c1x += lineGap;
+                a.setPoint(1, c1x, t1y);
+                collisionDetector->insertLine(false, t1y, t1x, c1x);
+                /* vertical up/down to mid horizontal */
+                int c2x = min(t2x, c1x) - endGap;
+                while (collisionDetector->collision(false, yCenter, c2x, c1x))
+                    yCenter += t1y < t2y ? lineGap : -lineGap;
+                // Check that we haven't run over the 2nd task
+                if (t1y < t2y)
+                {
+                    if (yCenter > t2y - minRowHeight / 2)
+                        yCenter = t2y - minRowHeight / 2;
+                }
+                else
+                    if (yCenter < t2y + minRowHeight / 2)
+                        yCenter = t2y + minRowHeight / 2;
+                a.setPoint(2, c1x, yCenter);
+                collisionDetector->insertLine(true, c1x, t1y, yCenter);
+                /* mid horizontal */
+                while (collisionDetector->collision(true, c2x, yCenter, t2y))
+                    c2x -= lineGap;
+                a.setPoint(3, c2x, yCenter);
+                collisionDetector->insertLine(false, yCenter, c2x, c1x);
+                /* vertical up/down from mid horizontal */
+                a.setPoint(4, c2x, t2y);
+                collisionDetector->insertLine(true, c2x, yCenter, t2y);
+                /* horizontal to task start */
                 a.setPoint(5, t2x, t2y);
+                collisionDetector->insertLine(false, t2y, c2x, t2x);
             }
             else
             {
+                /* We have enough space, no backstroke needed. */
                 a.resize(4);
                 a.setPoint(0, t1x, t1y);
-                int cx = t1x + minGap + arrowGap * arrowCounter;
+                int cx = t1x + endGap;
+                while (collisionDetector->collision(true, cx, t1y, t2y))
+                    cx += lineGap;
+                /* Make sure we haven't overrun the start of the task. */
+                if (cx > t2x - endGap)
+                    cx = t2x - endGap;
                 a.setPoint(1, cx, t1y);
+                collisionDetector->insertLine(false, t1y, t1x, cx);
                 a.setPoint(2, cx, t2y);
+                collisionDetector->insertLine(true, cx, t1y, t2y);
                 a.setPoint(3, t2x, t2y);
+                collisionDetector->insertLine(false, t2y, cx, t2x);
             }
-            arrowCounter++;
 
             /* Workaround for a QCanvasView problem. In Qt3.x it can only
              * handle 32767 pixels per dimension. */
@@ -1301,6 +1352,7 @@ TjGanttChart::drawDependencies(const Task* t1)
                 a[i] = p;
             }
 
+            // Draw the arrow lines.
             for (uint i = 0; i < a.count() - 1; ++i)
             {
                 QCanvasLine* line = new QCanvasLine(chart);

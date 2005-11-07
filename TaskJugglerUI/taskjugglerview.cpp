@@ -94,37 +94,14 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
 
     loadDelayTimer = new QTimer(this);
 
-    QVBoxLayout* l = new QVBoxLayout(mw->bigTab->page(0), 0, 6);
-    editorSplitter = new QSplitter(mw->bigTab->page(0));
-    editorSplitter->setOrientation(Vertical);
-
-    QWidgetStack* editorStack = new QWidgetStack(editorSplitter);
-
-    messageListView = new KListView(editorSplitter);
-    messageListView->setSizePolicy(QSizePolicy::Maximum,
-                                   QSizePolicy::Preferred);
-    // Should be high enough for at least 4 lines.
-    messageListView->setMinimumSize(400, 120);
-    messageListView->setRootIsDecorated(TRUE);
-    messageListView->setAllColumnsShowFocus(TRUE);
-    messageListView->setSortOrder(Qt::Ascending);
-    messageListView->setSortColumn(4);
-    messageListView->addColumn("");
-    messageListView->addColumn(i18n("Error Message"));
-    messageListView->addColumn(i18n("File"));
-    messageListView->addColumn(i18n("Line"));
-    messageListView->addColumn(i18n("Counter"));
-    messageListView->setColumnWidthMode(4, QListView::Manual);
-    messageListView->hideColumn(4);
-
-    vl.clear();
-    vl.append(int(100));
-    vl.append(int(0));
-    editorSplitter->setSizes(vl);
-    l->addWidget(editorSplitter);
+    mw->messageListView->setColumnText(0, "");
+    mw->messageListView->setSortOrder(Qt::Ascending);
+    mw->messageListView->setSortColumn(4);
+    mw->messageListView->setColumnWidthMode(4, QListView::Manual);
+    mw->messageListView->hideColumn(4);
 
     fileManager = new FileManager(dynamic_cast<KMainWindow*>(parent),
-                                  editorStack, mw->fileListView,
+                                  mw->editorStack, mw->fileListView,
                                   mw->fileListViewSearch);
     reportManager = new ReportManager(dynamic_cast<KMainWindow*>(parent),
                                       mw->reportStack, mw->reportListView,
@@ -168,9 +145,9 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     connect(mw->fileListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(fileListClicked(QListViewItem*)));
 
-    connect(messageListView, SIGNAL(clicked(QListViewItem*)),
+    connect(mw->messageListView, SIGNAL(clicked(QListViewItem*)),
             this, SLOT(messageListClicked(QListViewItem*)));
-    connect(messageListView, SIGNAL(returnPressed(QListViewItem*)),
+    connect(mw->messageListView, SIGNAL(returnPressed(QListViewItem*)),
             this, SLOT(messageListClicked(QListViewItem*)));
 
     connect(reportManager, SIGNAL(signalChangeStatusBar(const QString&)),
@@ -545,7 +522,7 @@ TaskJugglerView::closeProject()
     mw->accountListView->clear();
     mw->reportListView->clear();
     mw->fileListView->clear();
-    messageListView->clear();
+    mw->messageListView->clear();
     messageCounter = 0;
     slotSetTitle(i18n("No Project"));
     changeStatusBar(QString::null); // clear the status bar
@@ -633,7 +610,7 @@ TaskJugglerView::schedule()
     /* If the message list is visible we store the settings of the editor
      * splitter into a value list. This is reused for later errors and also
      * stored as property in the config file. */
-    QValueList<int> vl = editorSplitter->sizes();
+    QValueList<int> vl = mw->editorSplitter->sizes();
     if (vl[1] > 0)
         editorSplitterSizes = vl;
 
@@ -644,7 +621,7 @@ TaskJugglerView::schedule()
 void
 TaskJugglerView::nextProblem()
 {
-    QListViewItem* lvi = messageListView->currentItem();
+    QListViewItem* lvi = mw->messageListView->currentItem();
     if (!lvi)
         return;
     // Not all items have a file name, skip those.
@@ -654,15 +631,17 @@ TaskJugglerView::nextProblem()
     } while (lvi && lvi->text(2).isEmpty());
     if (!lvi)
         return;
-    messageListView->setSelected(lvi, TRUE);
+    mw->messageListView->clearSelection();
+    mw->messageListView->setCurrentItem(lvi);
+    lvi->setSelected(true);
     messageListClicked(lvi);
 
     // Messages can consist of multiple lines, so we try to make sure that at
     // least the next 2 lines are visible as well.
-    messageListView->ensureItemVisible(lvi);
+    mw->messageListView->ensureItemVisible(lvi);
     for (int i = 0; i < 3; ++i)
         if ((lvi = lvi->itemBelow()) != 0)
-            messageListView->ensureItemVisible(lvi);
+            mw->messageListView->ensureItemVisible(lvi);
         else
             break;
 }
@@ -670,7 +649,7 @@ TaskJugglerView::nextProblem()
 void
 TaskJugglerView::previousProblem()
 {
-    QListViewItem* lvi = messageListView->currentItem();
+    QListViewItem* lvi = mw->messageListView->currentItem();
     if (!lvi)
         return;
     // Not all items have a file name, skip those.
@@ -680,15 +659,17 @@ TaskJugglerView::previousProblem()
     } while (lvi && lvi->text(2).isEmpty());
     if (!lvi)
         return;
-    messageListView->setSelected(lvi, TRUE);
+    mw->messageListView->clearSelection();
+    mw->messageListView->setCurrentItem(lvi);
+    lvi->setSelected(true);
     messageListClicked(lvi);
 
     // Messages can consist of multiple lines, so we try to make sure that at
     // least the next 2 lines are visible as well.
-    messageListView->ensureItemVisible(lvi);
+    mw->messageListView->ensureItemVisible(lvi);
     for (int i = 0; i < 3; ++i)
         if ((lvi = lvi->itemBelow()) != 0)
-            messageListView->ensureItemVisible(lvi);
+            mw->messageListView->ensureItemVisible(lvi);
         else
             break;
 }
@@ -738,7 +719,7 @@ TaskJugglerView::loadProject(const KURL& url)
     emit announceRecentURL(url);
 
     bool errors = FALSE;
-    messageListView->clear();
+    mw->messageListView->clear();
     messageCounter = 0;
     if (!pf->parse())
         errors = TRUE;
@@ -776,7 +757,7 @@ TaskJugglerView::loadProject(const KURL& url)
 
     // Show message list when errors have occured
     QValueList<int> vl;
-    int h = editorSplitter->height();
+    int h = mw->editorSplitter->height();
     KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
     if (errors)
     {
@@ -790,11 +771,14 @@ TaskJugglerView::loadProject(const KURL& url)
         }
         else
             vl = editorSplitterSizes;
-        editorSplitter->setSizes(vl);
+        mw->editorSplitter->setSizes(vl);
         changeStatusBar(i18n("The project contains problems!"));
         showEditor();
-        messageListView->setSelected(messageListView->firstChild(), TRUE);
-        messageListClicked(messageListView->firstChild());
+        mw->messageListView->clearSelection();
+        QListViewItem* lvi = mw->messageListView->firstChild();
+        mw->messageListView->setCurrentItem(lvi);
+        lvi->setSelected(true);
+        messageListClicked(lvi);
 
         mainWindow->action("next_problem")->setEnabled(true);
         mainWindow->action("previous_problem")->setEnabled(true);
@@ -803,7 +787,7 @@ TaskJugglerView::loadProject(const KURL& url)
     {
         vl.append(int(h));
         vl.append(int(0));
-        editorSplitter->setSizes(vl);
+        mw->editorSplitter->setSizes(vl);
         changeStatusBar(i18n("The project has been scheduled "
                              "without problems."));
 
@@ -871,12 +855,12 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
         {
             if (!file.isEmpty() && line > 0)
                 parent= new KListViewItem
-                    (messageListView, "", textLine, file,
+                    (mw->messageListView, "", textLine, file,
                      QString::number(line),
                      QString().sprintf("%03d", messageCounter));
             else
                 parent = new KListViewItem
-                    (messageListView, "", textLine, "", "",
+                    (mw->messageListView, "", textLine, "", "",
                      QString().sprintf("%03d", messageCounter));
 
             parent->setOpen(TRUE);
@@ -1154,14 +1138,14 @@ TaskJugglerView::reportListClicked(int button, QListViewItem* lvi,
     {
         // The report generation can also produce errors.
         showEditor();
-        int h = editorSplitter->height();
+        int h = mw->editorSplitter->height();
         QValueList<int> vl;
         vl.append(int(h * 0.85));
         vl.append(int(h * 0.15));
-        editorSplitter->setSizes(vl);
+        mw->editorSplitter->setSizes(vl);
 
         changeStatusBar(i18n("The project contains problems!"));
-        messageListClicked(messageListView->firstChild());
+        messageListClicked(mw->messageListView->firstChild());
     }
     else if (showReportTab)
         showReport();

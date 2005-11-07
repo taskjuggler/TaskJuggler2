@@ -28,6 +28,7 @@
 #include <kurl.h>
 #include <krun.h>
 #include <klistviewsearchline.h>
+#include <kmessagebox.h>
 
 #include "Project.h"
 #include "Report.h"
@@ -261,37 +262,41 @@ ReportManager::generateReport(QListViewItem* lvi)
     if (!mr)
         return TRUE;
 
+    bool retVal = true;
     if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
-        ; // Nothing to do
+    {
+        // Nothing to do
+        return true;
+    }
     else if (strncmp(mr->getProjectReport()->getType(), "CSV", 3) == 0)
     {
         CSVReport* csvReport =
             dynamic_cast<CSVReport*>(mr->getProjectReport());
-        return csvReport->generate();
+        retVal = csvReport->generate();
     }
     else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
     {
         ExportReport* exportReport =
             dynamic_cast<ExportReport*>(mr->getProjectReport());
-        return exportReport->generate();
+        retVal = exportReport->generate();
     }
     else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
     {
         HTMLReport* htmlReport =
             dynamic_cast<HTMLReport*>(mr->getProjectReport());
-        return htmlReport->generate();
+        retVal = htmlReport->generate();
     }
     else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
     {
         ICalReport* icalReport =
             dynamic_cast<ICalReport*>(mr->getProjectReport());
-        return icalReport->generate();
+        retVal = icalReport->generate();
     }
     else if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
     {
         XMLReport* xmlReport =
             dynamic_cast<XMLReport*>(mr->getProjectReport());
-        return xmlReport->generate();
+        retVal = xmlReport->generate();
     }
     else
     {
@@ -300,7 +305,17 @@ ReportManager::generateReport(QListViewItem* lvi)
         return FALSE;
     }
 
-    return TRUE;
+    if (retVal)
+        KMessageBox::information(0, i18n("The report '%1' has been generated")
+                                 .arg(mr->getProjectReport()->getFileName()),
+                                 QString::null, "ConfirmReportGeneration");
+    else
+        KMessageBox::error(0, i18n("An error occured while generating the "
+                                   "report '%1'")
+                           .arg(mr->getProjectReport()->getFileName()),
+                           i18n("Report Generation failed"));
+
+    return retVal;
 }
 
 bool
@@ -391,8 +406,17 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             // Get the full file name as URL and show it in the editor
             KURL reportUrl =
                 KURL::fromPathOrURL(mr->getProjectReport()->getFullFileName());
-            emit signalEditFile(reportUrl);
-            showReportTab = false;
+            if (reportUrl.url().right(4) == ".tjp")
+            {
+                changeStatusBar(i18n("Starting new TaskJuggler for '%1'")
+                    .arg(mr->getProjectReport()->getFileName()));
+                KRun::runURL(reportUrl, "application/x-tjp");
+            }
+            else
+            {
+                emit signalEditFile(reportUrl);
+                showReportTab = false;
+            }
             return true;
         }
         else

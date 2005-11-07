@@ -139,7 +139,9 @@ FileManager::addFile(const KURL& url)
         // necessary.
         updateFileBrowser();
         QListViewItem* lvi = mfi->getBrowserEntry();
-        lvi->setSelected(TRUE);
+        browser->clearSelection();
+        browser->setCurrentItem(lvi);
+        lvi->setSelected(true);
         browser->ensureItemVisible(lvi);
     }
 
@@ -163,7 +165,9 @@ FileManager::addFile(const KURL& url, const KURL& newURL)
         // necessary.
         updateFileBrowser();
         QListViewItem* lvi = mfi->getBrowserEntry();
-        lvi->setSelected(TRUE);
+        browser->clearSelection();
+        browser->setCurrentItem(lvi);
+        lvi->setSelected(true);
         browser->ensureItemVisible(lvi);
     }
 
@@ -400,7 +404,13 @@ FileManager::showInEditor(const KURL& url)
             }
             viewStack->raiseWidget((*mfi)->getEditor());
 
-            browser->setSelected((*mfi)->getBrowserEntry(), TRUE);
+            browser->clearSelection();
+            QListViewItem* lvi = (*mfi)->getBrowserEntry();
+            if (lvi)
+            {
+                browser->setCurrentItem(lvi);
+                lvi->setSelected(true);
+            }
 
             break;
         }
