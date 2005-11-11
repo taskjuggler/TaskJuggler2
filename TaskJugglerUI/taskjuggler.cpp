@@ -38,6 +38,7 @@
 #include <kedittoolbar.h>
 #include <kstdaccel.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kstdaction.h>
 #include <kdebug.h>
 #include <kprinter.h>
@@ -86,7 +87,8 @@ TaskJuggler::~TaskJuggler()
 {
 }
 
-void TaskJuggler::load(const KURL& url)
+void
+TaskJuggler::load(const KURL& url)
 {
     setCaption(url.prettyURL());
     m_view->openURL(url);
@@ -190,6 +192,30 @@ void TaskJuggler::setupActions()
                 actionCollection(), "tutorial");
 
     setupGUI(ToolBar | Keys | StatusBar | Save | Create);
+}
+
+void
+TaskJuggler::enableActions(bool enable)
+{
+    KActionPtrList actionList = actionCollection()->actions();
+    for (KActionPtrList::iterator it = actionList.begin();
+         it != actionList.end(); ++it)
+    {
+        if (enable)
+        {
+            if (enabledActionsBuf.find((*it)->name()) != 0)
+                (*it)->setEnabled(true);
+        }
+        else
+        {
+            enabledActionsBuf.clear();
+            if ((*it)->isEnabled())
+            {
+                enabledActionsBuf.insert((*it)->name());
+                (*it)->setEnabled(false);
+            }
+        }
+    }
 }
 
 void

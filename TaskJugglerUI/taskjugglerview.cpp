@@ -68,6 +68,7 @@
 #include "ReportManager.h"
 #include "ManagedReportInfo.h"
 #include "TemplateSelector.h"
+#include "taskjuggler.h"
 
 TaskJugglerView::TaskJugglerView(QWidget *parent)
     : DCOPObject("TaskJugglerIface"), QWidget(parent)
@@ -300,11 +301,8 @@ TaskJugglerView::newProject()
     closeProject();
 
     fileManager->addFile(KURL(templateFile), fileURL);
-    QStringList fileList;
-    fileList.append(fileURL.url());
-    fileManager->updateFileList(fileList, fileURL);
-    saveAs(fileURL);
     fileManager->expandMacros();
+    saveAs(fileURL);
     showEditor();
 }
 
@@ -704,6 +702,7 @@ TaskJugglerView::loadProject(const KURL& url)
             progressBar, SLOT(setProgress(int, int)));
 
     ProjectFile* pf = new ProjectFile(project);
+    (dynamic_cast<TaskJuggler*>(parent()))->enableActions(false);
     setCursor(KCursor::waitCursor());
     if (!pf->open(fileName, "", "", TRUE))
     {
@@ -711,6 +710,7 @@ TaskJugglerView::loadProject(const KURL& url)
                            .arg(url.prettyURL()),
                            i18n("Error loading Project") );
         setCursor(KCursor::arrowCursor());
+        (dynamic_cast<TaskJuggler*>(parent()))->enableActions(true);
         setLoadingProject(FALSE);
         delete pf;
         return FALSE;
@@ -748,6 +748,7 @@ TaskJugglerView::loadProject(const KURL& url)
     fileManager->updateFileList(project->getSourceFiles(), url);
 
     setCursor(KCursor::arrowCursor());
+    (dynamic_cast<TaskJuggler*>(parent()))->enableActions(true);
     setLoadingProject(FALSE);
 
     // We handle warnings like errors, so in case there any messages, we open

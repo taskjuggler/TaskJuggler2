@@ -37,13 +37,13 @@ RealFormat::format(double val, bool showZeroFract) const
     /* The algorithm further down does only truncation after fracDigits. So we
      * have to do real rounding first. */
     val = qRound(val * pow(10, fracDigits)) / pow(10, fracDigits);
-    
+
     QString text;
     for (double v = fabs(val); v >= 1.0; v /= 1000)
     {
         if (!text.isEmpty())
             text = thousandSep + text;
-        if (v > 1000.0)
+        if (v >= 1000.0)
             text = QString("%1").arg((int) v % 1000, 3) + text;
         else
             text = QString("%1").arg((int) v % 1000) + text;

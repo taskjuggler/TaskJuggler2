@@ -226,6 +226,7 @@ FileManager::updateFileBrowser()
          * remaining directory. So we can browse the files in a directory like
          * tree. */
         QString url = (*mfi)->getFileURL().url();
+
         // Remove common path from URL.
         QString shortenedURL = url.right(url.length() -
                                          commonPath.length());

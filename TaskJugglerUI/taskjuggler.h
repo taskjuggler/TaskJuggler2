@@ -18,10 +18,13 @@
 #include <config.h>
 #endif
 
+#include <set>
+
 #include <kapplication.h>
 #include <kmainwindow.h>
 
 #include "taskjugglerview.h"
+#include "ltstr.h"
 
 class QTimer;
 class KToggleAction;
@@ -48,6 +51,8 @@ public:
      * Default Destructor
      */
     virtual ~TaskJuggler();
+
+    void enableActions(bool enable);
 
 public slots:
     /**
@@ -105,6 +110,7 @@ private:
     KRecentFilesAction *m_recentAction;
 
     QTimer* delayTimer;
+    std::set<const char*, ltstr> enabledActionsBuf;
 };
 
 #endif // _TASKJUGGLER_H_

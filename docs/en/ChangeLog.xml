@@ -863,6 +863,9 @@ automatically.</para></listitem>
 since this is what OpenOffice.org uses by default. But this can be
 changed if needed.</para></listitem>
 
+<listitem><para>Fixed reporting of value 1,000 in US currency
+format.</para></listitem>
+
 <listitem><para>Fixed account reports which had summary lines that
 were all 0. In HTML reports the summary columns were rendered all
 black.</para></listitem>
