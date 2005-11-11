@@ -964,11 +964,11 @@ ReportElement::scaledLoad(double t, const RealFormat& realFormat,
     const char* unit[] = { "minute", "hour", "day", "week", "month", "year" };
     const char* units[] = { "minutes", "hours", "days", "weeks", "months",
         "years"};
-    double max[] = { 0, 60, 48, 8, 24, 0 };
+    double max[] = { 60, 48, 0, 8, 24, 0 };
 
-    factors.append(1);
     factors.append(report->getProject()->getDailyWorkingHours() * 60);
     factors.append(report->getProject()->getDailyWorkingHours());
+    factors.append(1);
     factors.append(1.0 / report->getProject()->getWeeklyWorkingDays());
     factors.append(1.0 / report->getProject()->getMonthlyWorkingDays());
     factors.append(1.0 / report->getProject()->getYearlyWorkingDays());
@@ -989,7 +989,7 @@ ReportElement::scaledLoad(double t, const RealFormat& realFormat,
                 variations.append(str);
         }
 
-        uint shortest = 0;
+        uint shortest = 2;      // default to days in case all are the same
         for (QStringList::Iterator it = variations.begin();
              it != variations.end();
              ++it)
@@ -1016,13 +1016,13 @@ ReportElement::scaledLoad(double t, const RealFormat& realFormat,
         switch (loadUnit)
         {
             case minutes:
-                str = realFormat.format(t * factors[1], FALSE);
+                str = realFormat.format(t * factors[0], FALSE);
                 break;
             case hours:
-                str = realFormat.format(t * factors[2], FALSE);
+                str = realFormat.format(t * factors[1], FALSE);
                 break;
             case days:
-                str = realFormat.format(t * factors[0], FALSE);
+                str = realFormat.format(t * factors[2], FALSE);
                 break;
             case weeks:
                 str = realFormat.format(t * factors[3], FALSE);
