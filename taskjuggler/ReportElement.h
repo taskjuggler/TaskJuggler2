@@ -181,8 +181,10 @@ public:
     const TableColumnFormat* getColumnFormat(const QString& key) const;
 
     void setMacros(TableLineInfo* tli);
+    QString scaledDuration(double t, const RealFormat& realFormat,
+                           bool showUnit = false, bool longUnit = false) const;
     QString scaledLoad(double t, const RealFormat& realFormat,
-                       bool showUnit = FALSE, bool longUnit = FALSE) const;
+                       bool showUnit = false, bool longUnit = false) const;
 
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;
@@ -279,6 +281,9 @@ protected:
      */
     QString stripTaskRoot(QString taskId) const;
 
+    QString scaledValue(double t, const RealFormat& realFormat,
+                        bool showUnit, bool longUnit,
+                        const QValueList<double>& factors) const;
     void reportValue(double value, const QString& bgcol, bool bold);
 
     Report* report;

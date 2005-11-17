@@ -624,8 +624,8 @@ CSVReportElement::genCellEndBufferStart(TableCellInfo* tci)
 void
 CSVReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc),
-                       tci->tcf->realFormat),
+    genCell(scaledDuration(tci->tli->task->getCalcDuration(tci->tli->sc),
+                           tci->tcf->realFormat),
             tci, FALSE);
 }
 

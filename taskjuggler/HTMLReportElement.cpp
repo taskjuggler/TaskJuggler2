@@ -1059,8 +1059,8 @@ HTMLReportElement::genCellEndBufferStart(TableCellInfo* tci)
 void
 HTMLReportElement::genCellDuration(TableCellInfo* tci)
 {
-    genCell(scaledLoad(tci->tli->task->getCalcDuration(tci->tli->sc),
-                       tci->tcf->realFormat),
+    genCell(scaledDuration(tci->tli->task->getCalcDuration(tci->tli->sc),
+                           tci->tcf->realFormat),
             tci, FALSE);
 }
 

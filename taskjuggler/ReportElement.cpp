@@ -955,16 +955,26 @@ ReportElement::sortAccountList(AccountList& filteredList) const
 }
 
 QString
+ReportElement::scaledDuration(double t, const RealFormat& realFormat,
+                              bool showUnit, bool longUnit) const
+{
+    QValueList<double> factors;
+
+    factors.append(24 * 60);
+    factors.append(24);
+    factors.append(1);
+    factors.append(1.0 / 7);
+    factors.append(1.0 / 30.42);
+    factors.append(1.0 / 365);
+
+    return scaledValue(t, realFormat, showUnit, longUnit, factors);
+}
+
+QString
 ReportElement::scaledLoad(double t, const RealFormat& realFormat,
                           bool showUnit, bool longUnit) const
 {
-    QStringList variations;
     QValueList<double> factors;
-    const char* shortUnit[] = { "min", "h", "d", "w", "m", "y" };
-    const char* unit[] = { "minute", "hour", "day", "week", "month", "year" };
-    const char* units[] = { "minutes", "hours", "days", "weeks", "months",
-        "years"};
-    double max[] = { 60, 48, 0, 8, 24, 0 };
 
     factors.append(report->getProject()->getDailyWorkingHours() * 60);
     factors.append(report->getProject()->getDailyWorkingHours());
@@ -973,11 +983,26 @@ ReportElement::scaledLoad(double t, const RealFormat& realFormat,
     factors.append(1.0 / report->getProject()->getMonthlyWorkingDays());
     factors.append(1.0 / report->getProject()->getYearlyWorkingDays());
 
+    return scaledValue(t, realFormat, showUnit, longUnit, factors);
+}
+
+QString
+ReportElement::scaledValue(double t, const RealFormat& realFormat,
+                           bool showUnit, bool longUnit,
+                           const QValueList<double>& factors) const
+{
+    QStringList variations;
+    const char* shortUnit[] = { "min", "h", "d", "w", "m", "y" };
+    const char* unit[] = { "minute", "hour", "day", "week", "month", "year" };
+    const char* units[] = { "minutes", "hours", "days", "weeks", "months",
+        "years"};
+    double max[] = { 60, 48, 0, 8, 24, 0 };
+
     QString str;
 
     if (loadUnit == shortAuto || loadUnit == longAuto)
     {
-        for (QValueList<double>::Iterator it = factors.begin();
+        for (QValueList<double>::ConstIterator it = factors.begin();
              it != factors.end(); ++it)
         {
             str = realFormat.format(t * *it, FALSE);

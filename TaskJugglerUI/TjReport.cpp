@@ -322,7 +322,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             }
         }
         else if ((*ci)->getName() == "duration")
-            cellText = reportElement->scaledLoad
+            cellText = reportElement->scaledDuration
                 (t->getCalcDuration(scenario), tcf->realFormat);
         else if ((*ci)->getName() == "effort")
         {

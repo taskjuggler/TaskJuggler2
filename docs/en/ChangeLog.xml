@@ -866,6 +866,10 @@ changed if needed.</para></listitem>
 <listitem><para>Fixed reporting of value 1,000 in US currency
 format.</para></listitem>
 
+<listitem><para>Fixed reported task duration value in all report
+types.  Value was only correct when unit 'days' was
+used.</para></listitem>
+
 <listitem><para>Fixed account reports which had summary lines that
 were all 0. In HTML reports the summary columns were rendered all
 black.</para></listitem>
