@@ -1,7 +1,7 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -46,10 +46,6 @@ TjLineAccounter::insertLine(bool vertical, int coord, int start, int end)
             (*it)->end < end)); ++it)
         ;
     list.insert(it, line);
-
-    qDebug("Inserted %s Line at %d", vertical ? "vertical" : "horizontal", coord);
-    for (std::list<TjLine*>::iterator it = list.begin(); it != list.end(); ++it)
-        qDebug("  C: %d  S: %d  E: %d", (*it)->coord, (*it)->start, (*it)->end);
 }
 
 bool

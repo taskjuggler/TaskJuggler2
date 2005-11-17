@@ -1,7 +1,7 @@
 /*
  * ExportReport.cpp - TaskJuggler
  *
- * Copyright (c) 2002 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2002 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -173,7 +173,7 @@ ExportReport::generateProjectProperty()
         << rf.getFractionSep() << "\" "
         << rf.getFracDigits() << endl;
     if (!project->getCurrency().isEmpty())
-        s << "  currency " << project->getCurrency() << endl;
+        s << "  currency \"" << project->getCurrency() << "\"" << endl;
     if (project->getWeekStartsMonday())
         s << "  weekstartsmonday" << endl;
     else

@@ -1,7 +1,7 @@
 /*
  * ExpressionTree.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -29,7 +29,7 @@ class Project;
 /**
  * @short This class represents the logical expressions that can be used to
  * filter @see CoreAttributesList objects.
- * @author Chris Schlaeger <cs@suse.de>
+ * @author Chris Schlaeger <cs@kde.org>
  * @descr To filter certain elements out of CoreAttributes lists one needs to
  * specify a logical expression that describes the elements that should remain
  * in the list. The ExpressionTree stores such a logical expression. To filter

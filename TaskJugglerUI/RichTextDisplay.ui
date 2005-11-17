@@ -1,7 +1,7 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>RichTextDisplay</class>
 <comment>This form is used to display the "note" attached to a task, resource, etc.</comment>
-<author>Chris Schlaeger &lt;cs@suse.de&gt;</author>
+<author>Chris Schlaeger &lt;cs@kde.org&gt;</author>
 <widget class="QDialog">
     <property name="name">
         <cstring>RichTextDisplay</cstring>

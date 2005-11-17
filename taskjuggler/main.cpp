@@ -1,7 +1,7 @@
 /*
  * main.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -49,7 +49,7 @@ copyright()
 {
     qWarning
         (i18n(
-              "\nCopyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@suse.de>\n"
+              "\nCopyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>\n"
               "and Klaas Freitag <freitag@suse.de>\n\n"
               "This program is free software; you can redistribute it and/or\n"
               "modify it under the terms of version 2 of the GNU General\n"
@@ -90,9 +90,8 @@ usage(QApplication& a)
               "                          new resource usage information\n"));
     qWarning
         (i18n(
-              "To report bugs please follow the instructions in the manual\n"
-              "and send the information to the taskjuggler developer mailing\n"
-              "list at taskjuggler-devel@suse.de\n"));
+              "To report bugs please follow the instructions in the "
+              "manual\n"));
 }
 
 int main(int argc, char *argv[])

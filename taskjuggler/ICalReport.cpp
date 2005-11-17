@@ -1,7 +1,7 @@
 /*
  * ICalReport.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
  * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Klaas Freitag <freitag@suse.de>
  *
  * This program is free software; you can redistribute it and/or modify

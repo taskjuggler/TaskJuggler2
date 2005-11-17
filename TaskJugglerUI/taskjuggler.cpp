@@ -1,7 +1,7 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -197,18 +197,21 @@ void TaskJuggler::setupActions()
 void
 TaskJuggler::enableActions(bool enable)
 {
+    if (!enable)
+        enabledActionsBuf.clear();
+
     KActionPtrList actionList = actionCollection()->actions();
     for (KActionPtrList::iterator it = actionList.begin();
          it != actionList.end(); ++it)
     {
         if (enable)
         {
-            if (enabledActionsBuf.find((*it)->name()) != 0)
+            if (enabledActionsBuf.find((*it)->name()) !=
+                enabledActionsBuf.end())
                 (*it)->setEnabled(true);
         }
         else
         {
-            enabledActionsBuf.clear();
             if ((*it)->isEnabled())
             {
                 enabledActionsBuf.insert((*it)->name());

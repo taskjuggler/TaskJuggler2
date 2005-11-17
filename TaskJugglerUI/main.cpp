@@ -1,7 +1,7 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@suse.de>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
                                "resources and thousands of tasks."),
                      "http://www.taskjuggler.org",
                      "bugs@taskjuggler.org");
-    about.addAuthor("Chris Schlaeger", 0, "cs@suse.de" );
+    about.addAuthor("Chris Schlaeger", 0, "cs@kde.org" );
 
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);
