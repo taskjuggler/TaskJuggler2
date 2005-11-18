@@ -522,12 +522,9 @@ TjPrintReport::generateCustomAttribute(const CoreAttributes* ca,
             case CAT_Undefined:
                 break;
             case CAT_Text:
-                {
-                    QString text =
-                        dynamic_cast<const TextAttribute*>(custAttr)->
-                        getText();
-                    cellText = text;
-                }
+                cellText =
+                    dynamic_cast<const TextAttribute*>(custAttr)->getText();
+                break;
             case CAT_Reference:
                 cellText =
                     dynamic_cast<const
