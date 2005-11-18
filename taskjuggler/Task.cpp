@@ -2616,6 +2616,26 @@ Task::prepareScenario(int sc)
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
     {
         (*ali)->init();
+        if ((*ali)->isPersistent() && !bookedResources.isEmpty())
+        {
+            /* If the allocation is persistent and we have already bookings,
+             * we need to find the resource with the last booking for this
+             * task and save it as looked resource. */
+            time_t lastSlot = 0;
+            Resource* lastResource = 0;
+            for (QPtrListIterator<Resource> rli =
+                 (*ali)->getCandidatesIterator(); *rli; ++rli)
+                for (ResourceTreeIterator rti(*rli); *rti; ++rti)
+                    if (bookedResources.findRef(*rti) != -1 &&
+                        (lastResource == 0 ||
+                         lastSlot < (*rti)->getEndOfLastSlot(sc, this)))
+                    {
+                        lastSlot = (*rti)->getEndOfLastSlot(sc, this);
+                        lastResource = *rli;
+                    }
+
+            (*ali)->setLockedResource(lastResource);
+        }
         if (scenarios[sc].effort > 0.0)
         {
             double maxEfficiency = 0;

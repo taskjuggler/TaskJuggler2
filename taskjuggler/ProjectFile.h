@@ -169,7 +169,7 @@ private:
     bool readSortingMode(int& sorting);
     TableColumnInfo* readColumn(uint maxScenarios, ReportElement* tab);
     bool readTaskDepOptions(TaskDependency* td);
-    time_t date2time(const QString& date);
+    bool date2time(const QString& date, time_t& val);
     int hhmm2time(const QString& hhmm);
 
     QString masterFile;

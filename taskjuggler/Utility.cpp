@@ -816,6 +816,21 @@ date2time(const QString& date)
         UtilityError = i18n("Day must be between 1 and 31");
         return 0;
     }
+    if (hour < 0 || hour > 23)
+    {
+        UtilityError = i18n("Hour must be between 0 and 23");
+        return 0;
+    }
+    if (min < 0 || min > 59)
+    {
+        UtilityError = i18n("Minutes must be between 0 and 59");
+        return 0;
+    }
+    if (sec < 0 || sec > 59)
+    {
+        UtilityError = i18n("Seconds must be between 0 and 59");
+        return 0;
+    }
 
 #ifdef __CYGWIN__
     struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1 };

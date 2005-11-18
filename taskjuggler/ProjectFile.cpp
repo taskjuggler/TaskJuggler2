@@ -1798,22 +1798,13 @@ ProjectFile::readDate(time_t& val, time_t correction, bool checkPrjInterval)
     if (nextToken(token) != DATE)
     {
         errorMessage(i18n("Date expected"));
-        return FALSE;
+        return false;
     }
 
-    // Make sure that we are within the UNIX lifetime (kindof).
-    int year = token.left(4).toInt();
-    if (year < 1971)
-    {
-        errorMessage(i18n("Date must be larger than 1971-01-01"));
-        return FALSE;
-    }
-    if (year > 2035)
-    {
-        errorMessage(i18n("Date must be smaller than 2035-01-01"));
-        return FALSE;
-    }
-    val = date2time(token) - correction;
+    if (!date2time(token, val))
+        return false;
+
+    val -= correction;
 
     if (checkPrjInterval)
     {
@@ -1825,11 +1816,11 @@ ProjectFile::readDate(time_t& val, time_t correction, bool checkPrjInterval)
                          .arg(time2tjp(val))
                          .arg(time2tjp(proj->getStart()))
                          .arg(time2tjp(proj->getEnd())));
-            return FALSE;
+            return false;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -4643,27 +4634,10 @@ ProjectFile::readLogicalExpression(int precedence)
     }
     else if (tt == DATE)
     {
-        // Make sure that we are within the UNIX lifetime (kindof).
-        int year = token.left(4).toInt();
-        if (year < 1971)
-        {
-            errorMessage(i18n("Date must be larger than 1971-01-01"));
-            return 0;
-        }
-        if (year > 2035)
-        {
-            errorMessage(i18n("Date must be smaller than 2035-01-01"));
-            return 0;
-        }
-
         time_t date;
-        if ((date = date2time(token)) == 0)
-        {
-            errorMessage("%s", getUtilityError().latin1());
+        if (!date2time(token, date))
             return 0;
-        }
-        else
-            op = new Operation(Operation::Date, date);
+        op = new Operation(Operation::Date, date);
     }
     else if (tt == INTEGER)
     {
@@ -5260,26 +5234,25 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
     return TRUE;
 }
 
-time_t
-ProjectFile::date2time(const QString& date)
+bool
+ProjectFile::date2time(const QString& date, time_t& val)
 {
     // Make sure that we are within the UNIX lifetime (kindof).
     int year = date.left(4).toInt();
     if (year < 1971)
     {
         errorMessage(i18n("Date must be larger than 1971-01-01"));
-        return FALSE;
+        return false;
     }
     if (year > 2035)
     {
         errorMessage(i18n("Date must be smaller than 2035-01-01"));
-        return FALSE;
+        return false;
     }
 
-    time_t res;
-    if ((res = ::date2time(date)) == 0)
+    if ((val = ::date2time(date)) == 0)
         errorMessage(i18n(getUtilityError()));
-    return res;
+    return true;
 }
 
 int
