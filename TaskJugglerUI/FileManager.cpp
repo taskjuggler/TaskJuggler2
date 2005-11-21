@@ -44,7 +44,6 @@
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/printinterface.h>
-#include <ktexteditor/templateinterface.h>
 #include <kdatepicker.h>
 #include <kcombobox.h>
 

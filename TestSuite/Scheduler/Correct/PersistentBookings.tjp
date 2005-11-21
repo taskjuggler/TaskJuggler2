@@ -1,0 +1,58 @@
+project test "Persistent Bookings Test" "1.0" 2005-11-18 2006-05-17
+
+resource r1 "Resource 1"
+resource r2 "Resource 2"
+resource r3 "Resource 3"
+resource r4 "Resource 4"
+resource r5 "Resource 5"
+resource r6 "Resource 6"
+
+resource group1 "Group 1" {
+  resource r7 "Resource 7"
+  resource r8 "Resource 8"
+}
+
+resource group2 "Group 2" {
+  resource r9 "Resource 9"
+  resource r10 "Resource 10"
+  resource r11 "Resource 11"
+  resource r12 "Resource 12"
+  resource r13 "Resource 13"
+}
+
+resource group3 "Group 3" {
+  resource r14 "Resource 14"
+  resource r15 "Resource 15"
+}
+
+task t1 "Task 1" {
+  start 2005-11-18
+  effort 20d
+  allocate r1 { alternative r2, r3, r4, r5, r6 persistent }
+}
+
+task t2 "Task 2" {
+  start 2005-11-18
+  effort 20d
+  allocate group1 { alternative group2, group3 persistent }
+}
+
+supplement resource r4 {
+  booking 2005-11-18 2005-11-22 t1 { sloppy 2 }
+}
+
+supplement resource r11 {
+  booking 2005-11-18 2005-11-23 t2 { sloppy 2 }
+}
+
+taskreport "Tasks" {
+  columns no, name, start, end, chart
+  hideresource 0
+}
+
+export "PersistentBookings-Export.tjp" {
+  hidetask 0
+  hideresource 0
+  taskattributes all
+  notimestamp
+}
