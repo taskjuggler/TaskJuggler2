@@ -1142,15 +1142,20 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
 
     double load = 0.0;
 
-    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
-        load += (*tli)->getLoad(sc, period, resource);
-
-    if (resource)
-        load += resource->getLoad(sc, period, AllAccounts, this);
+    if (isContainer())
+    {
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
+            load += (*tli)->getLoad(sc, period, resource);
+    }
     else
-        for (ResourceListIterator rli(scenarios[sc].bookedResources);
-             *rli != 0; ++rli)
-            load += (*rli)->getLoad(sc, period, AllAccounts, this);
+    {
+        if (resource)
+            load += resource->getLoad(sc, period, AllAccounts, this);
+        else
+            for (ResourceListIterator rli(scenarios[sc].bookedResources);
+                 *rli != 0; ++rli)
+                load += (*rli)->getLoad(sc, period, AllAccounts, this);
+    }
 
     return load;
 }
@@ -1172,17 +1177,22 @@ Task::getAllocatedTime(int sc, const Interval& period,
 
     long allocatedTime = 0;
 
-    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
-        allocatedTime += (*tli)->getAllocatedTime(sc, period, resource);
-
-    if (resource)
-        allocatedTime += resource->getAllocatedTime(sc, period, AllAccounts,
-                                                    this);
+    if (isContainer())
+    {
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
+            allocatedTime += (*tli)->getAllocatedTime(sc, period, resource);
+    }
     else
-        for (ResourceListIterator rli(scenarios[sc].bookedResources);
-             *rli != 0; ++rli)
-            allocatedTime += (*rli)->getAllocatedTime(sc, period, AllAccounts,
-                                                      this);
+    {
+        if (resource)
+            allocatedTime += resource->getAllocatedTime(sc, period, AllAccounts,
+                                                        this);
+        else
+            for (ResourceListIterator rli(scenarios[sc].bookedResources);
+                 *rli != 0; ++rli)
+                allocatedTime += (*rli)->getAllocatedTime(sc, period,
+                                                          AllAccounts, this);
+    }
 
     return allocatedTime;
 }
@@ -2422,7 +2432,7 @@ Task::scheduleOk(int sc, int& errors) const
 }
 
 time_t
-Task::nextSlot(time_t slotDuration) const
+Task::nextSlot(int sc, time_t slotDuration) const
 {
     /* This function returns the start of the next time slot this task wants
      * to be scheduled in. If there is no such slot because the tasks does not
@@ -2439,6 +2449,12 @@ Task::nextSlot(time_t slotDuration) const
                 !milestone && end == 0)
                 return 0;
 
+            /* In projection mode we limit the scheduler to operate between
+             * 'now' and the project end. */
+            if (project->getScenario(sc)->getStrictBookings() &&
+                lastSlot < project->getNow())
+                return project->getNow();
+
             if (lastSlot == 0)
                 return start;
             return lastSlot + 1;
@@ -2454,8 +2470,17 @@ Task::nextSlot(time_t slotDuration) const
                 !milestone && start == 0)
                 return 0;
 
+            /* In projection mode we limit the scheduler to operate between
+             * 'now' and the project end. */
+            if (project->getScenario(sc)->getStrictBookings() &&
+                ((lastSlot != 0 &&
+                  lastSlot - slotDuration < project->getNow()) ||
+                 (lastSlot == 0 && end < project->getNow())))
+                return 0;
+
             if (lastSlot == 0)
                 return end - slotDuration + 1;
+
             return lastSlot - slotDuration;
         }
         else
@@ -2572,6 +2597,19 @@ Task::prepareScenario(int sc)
                 lastSlot = ls;
         }
     }
+
+    if (project->getScenario(sc)->getStrictBookings() &&
+        lastSlot == 0 && !allocations.isEmpty() &&
+        scheduling == ASAP &&
+        (effort > 0.0 || length > 0.0 || duration > 0.0))
+    {
+        /* In projection mode with strict bookings, TaskJuggler assumes that
+         * all work up until now has been specified with bookings. So the
+         * scheduling starts at the 'now' slot. In sloppy mode, this is only
+         * assumed for tasks who have at least one booking. */
+        start = project->getNow();
+    }
+
     if (lastSlot > 0 && !schedulingDone)
     {
         workStarted = TRUE;
@@ -2585,6 +2623,8 @@ Task::prepareScenario(int sc)
         if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
         {
             scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
+            if (scenarios[sc].reportedCompletion > 100.0)
+                scenarios[sc].reportedCompletion = 100.0;
 
             if (doneEffort >= effort)
             {
@@ -2595,6 +2635,8 @@ Task::prepareScenario(int sc)
                 end = scenarios[sc].end = lastSlot;
                 schedulingDone = TRUE;
             }
+            else
+                lastSlot = project->getNow() - 1;
         }
     }
 
@@ -2795,8 +2837,6 @@ Task::finishScenario(int sc)
     scenarios[sc].end = end;
     scenarios[sc].bookedResources = bookedResources;
     scenarios[sc].scheduled = schedulingDone;
-
-    calcCompletionDegree(sc);
 }
 
 void
@@ -2889,7 +2929,16 @@ Task::computeBuffers()
 void
 Task::calcCompletionDegree(int sc)
 {
-    scenarios[sc].calcCompletionDegree(project->getNow());
+    time_t now = project->getNow();
+
+    /* In-progress container task are pretty complex to deal with. The mixture
+     * of effort, length and duration tasks makes it impossible to use one
+     * coherent criteria to determine the progress of a task. */
+    if (isContainer() && scenarios[sc].start < now && now <= scenarios[sc].end)
+        calcContainerCompletionDegree(sc, now);
+    else
+        /* Calc completion for simple tasks and determine the task state. */
+        scenarios[sc].calcCompletionDegree(now);
 }
 
 double
@@ -2905,6 +2954,104 @@ double
 Task::getCalcedCompletionDegree(int sc) const
 {
     return scenarios[sc].completionDegree;
+}
+
+void
+Task::calcContainerCompletionDegree(int sc, time_t now)
+{
+    assert(isContainer());
+    assert(scenarios[sc].start < now && now <= scenarios[sc].end);
+
+    scenarios[sc].status = InProgress;
+
+    int totalMilestones = 0;
+    int completedMilestones = 0;
+    if (countMilestones(sc, now, totalMilestones, completedMilestones))
+    {
+        scenarios[sc].completionDegree = completedMilestones * 100.0 /
+            totalMilestones;
+        return;
+    }
+
+    double totalEffort = 0.0;
+    double completedEffort = 0.0;
+    if (sumUpEffort(sc, now, totalEffort, completedEffort))
+    {
+        scenarios[sc].completionDegree = completedEffort * 100.0 /
+            totalEffort;
+        return;
+    }
+}
+
+bool
+Task::countMilestones(int sc, time_t now, int& totalMilestones,
+                      int& completedMilestones)
+{
+    if (isContainer())
+    {
+        for (TaskListIterator tli(*sub); *tli; ++tli)
+            if (!(*tli)->countMilestones(sc, now, totalMilestones,
+                                         completedMilestones))
+                return false;
+
+        return true;
+    }
+    else if (isMilestone())
+    {
+        totalMilestones++;
+        if (scenarios[sc].start <= now)
+            completedMilestones++;
+        return true;
+    }
+
+    return false;
+}
+
+bool
+Task::sumUpEffort(int sc, time_t now, double& totalEffort,
+                  double& completedEffort)
+{
+    if (isContainer())
+    {
+        for (TaskListIterator tli(*sub); *tli; ++tli)
+            if (!(*tli)->sumUpEffort(sc, now, totalEffort, completedEffort))
+                return false;
+
+        return true;
+    }
+    if (scenarios[sc].effort > 0.0)
+    {
+        /* Pure effort based tasks are simple to handle. The total effort is
+         * specified and the effort up to 'now' can be computed. */
+        totalEffort += scenarios[sc].effort;
+        if (scenarios[sc].start < now)
+            completedEffort += getLoad(sc, Interval(scenarios[sc].start, now));
+
+        return true;
+    }
+    if (!allocations.isEmpty())
+    {
+        /* This is for length and duration tasks that have allocations. We
+         * handle them similar to effort tasks. Since there is no specified
+         * total effort, we calculate the total allocated effort. */
+        totalEffort += getLoad(sc, Interval(scenarios[sc].start,
+                                            scenarios[sc].end));
+        if (scenarios[sc].start < now)
+            completedEffort += getLoad(sc, Interval(scenarios[sc].start, now));
+
+        return true;
+    }
+    if (isMilestone())
+    {
+        /* We assume that milestones are only dependent on sub tasks of this
+         * tasks. So we can ignore them for the completion degree. In case
+         * there is a non completed task that the milestone depends on, the
+         * milestone is accounted for as well. This approximation should work
+         * fine for most real world projects. */
+        return true;
+    }
+
+    return false;
 }
 
 QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )

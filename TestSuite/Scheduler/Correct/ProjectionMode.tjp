@@ -1,0 +1,55 @@
+project prj "Strict Bookings Test" "1.0" 2005-11-20-00:00:00-GMT 2006-05-19-00:00:00-GMT {
+  now 2005-12-24
+  timezone "GMT"
+  scenario plan "Plan" {
+    projection
+  }
+}
+
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+resource tux3 "Tux3"
+
+task prj "Project" {
+  start 2005-11-20
+  task t1 "T1" {
+    effort 10d
+    allocate tux1
+    minend 2005-12-19-18:00
+    maxend 2005-12-19-18:00
+  }
+  task t2 "T2" {
+    effort 20d
+    allocate tux2
+    minend 2006-01-16-18:00
+    maxend 2006-01-16-18:00
+  }
+  task t3 "T3" {
+    effort 20d
+    allocate tux3
+    minend 2005-12-16-18:00
+    maxend 2005-12-16-18:00
+  }
+}
+
+supplement resource tux1 {
+  # Overbook prj.t1
+  booking 2005-11-20 2005-12-20 prj.t1 { sloppy 2 }
+}
+
+supplement resource tux2 {
+  booking 2005-11-20 2005-11-25 prj.t2 { sloppy 2 }
+}
+
+taskreport "Tasks" {
+  columns no, name, start, end, effort, completed, status, chart
+  hideresource 0
+}
+
+export "ProjectionMode-Export.tjp" {
+	hidetask 0
+	hideresource 0
+	taskattributes all
+	notimestamp
+}
+

@@ -244,8 +244,12 @@ ExportReport::generateScenario(const Scenario* scenario, int indent)
     indent += 2;
     if (!scenario->getEnabled())
         s << QString().fill(' ', indent) << "disabled" << endl;
-    if (scenario->getProjectionMode())
-        s << QString().fill(' ', indent) << "projection" << endl;
+    else
+        s << QString().fill(' ', indent) << "enabled" << endl;
+
+    /* Exporting strict, sloppy, projection or baseline does not make any
+     * sense. It will lead to illegal projects as these flags are only
+     * legal in unscheduled projects. */
 
     for (ScenarioListIterator sci(scenario->getSubListIterator());
          *sci != 0; ++sci)

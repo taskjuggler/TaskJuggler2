@@ -62,7 +62,13 @@ int main(int argc, char **argv)
     // see if we are starting with session management
     if (app.isRestored())
     {
-        RESTORE(TaskJuggler);
+        for (int i = 1; KMainWindow::canBeRestored(i); ++i)
+        {
+            TaskJuggler* widget = new TaskJuggler;
+            widget->restore(i);
+            if (i == 1)
+                widget->loadLastProject();
+        }
     }
     else
     {
@@ -71,8 +77,12 @@ int main(int argc, char **argv)
         TaskJuggler* widget = new TaskJuggler;
         app.setMainWidget(widget);
         widget->show();
+
         if (args->count() > 0)
             widget->load(args->url(0));
+        else
+            widget->loadLastProject();
+
         args->clear();
     }
 

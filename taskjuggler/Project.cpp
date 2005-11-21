@@ -690,6 +690,10 @@ Project::finishScenario(int sc)
         (*rli)->finishScenario(sc);
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->finishScenario(sc);
+    /* We need to have finished the scenario for all tasks before we can
+     * calculate the completion degree. */
+    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+        (*tli)->calcCompletionDegree(sc);
 }
 
 bool
@@ -741,7 +745,7 @@ Project::schedule(int sc)
             {
                 /* No time slot has been set yet. Check if this task can be
                  * scheduled and provides a suggestion. */
-                slot = (*tli)->nextSlot(scheduleGranularity);
+                slot = (*tli)->nextSlot(sc, scheduleGranularity);
                 priority = (*tli)->getPriority();
                 schedulingInfo = (*tli)->getScheduling();
                 /* If not, try the next task. */

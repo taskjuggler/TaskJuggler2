@@ -103,6 +103,16 @@ ManagedFileInfo::getWordUnderCursor() const
 void
 ManagedFileInfo::save(bool ask)
 {
+    /* For some reason editor->document()->save() triggers a
+     * KMainWindow::saveAll() which then ends up calling this function
+     * recursively. To avoid this, we use a static flag to detect this
+     * condition and avoid the recursive execution. */
+    static bool rec = false;
+
+    if (rec)
+        return;
+
+    rec = true;
     if (modified && editor)
     {
         if (ask && KMessageBox::warningYesNo
@@ -116,6 +126,7 @@ ManagedFileInfo::save(bool ask)
         modified = false;
         browserEntry->setPixmap(2, 0);
     }
+    rec = false;
 }
 
 void

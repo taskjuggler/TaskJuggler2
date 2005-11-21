@@ -411,8 +411,8 @@ some browsers.</para></listitem>
 values are now exported in XML report.</para></listitem>
 
 <listitem><para>Task scheduling is also set when a fixed <link
-linkend="PROPERTY_start_task">start</link> or <link
-linkend="PROPERTY_end_task">end</link> date is specified.</para></listitem>
+linkend="PROPERTY_start">start</link> or <link
+linkend="PROPERTY_end">end</link> date is specified.</para></listitem>
 
 <listitem><para>Better error reporting for syntax errors in macros.
 The call stack with full arguments is included in the error message
@@ -855,6 +855,10 @@ widget.</para></listitem>
 <listitem><para>The GUI editor now supports search and replace over
 all files.</para></listitem>
 
+<listitem><para>The computation of completion degrees of container
+task has been improved to produce more meaningful values for all
+milestone or all effort tasks.</para></listitem>
+
 <listitem><para>To get Gantt and resource reports in the GUI the
 column 'chart' must be specified. They are no longer displayed
 automatically.</para></listitem>
@@ -862,6 +866,12 @@ automatically.</para></listitem>
 <listitem><para>The default separator for CSV files is now a semicolon
 since this is what OpenOffice.org uses by default. But this can be
 changed if needed.</para></listitem>
+
+<listitem><para>The projection scheduling mode has been fixed and
+extended. In strict mode bookings will be scheduled only after the
+current date. In sloppy mode, bookings will also be scheduled prior to
+the current date for tasks that have no bookings at
+all. The modes can be set in the scenario definition.</para></listitem>
 
 <listitem><para>Fixed reporting of value 1,000 in US currency
 format.</para></listitem>

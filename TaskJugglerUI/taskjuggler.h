@@ -54,6 +54,8 @@ public:
 
     void enableActions(bool enable);
 
+    void loadLastProject();
+
 public slots:
     /**
      * Use this method to load whatever file/URL you have
@@ -111,6 +113,7 @@ private:
 
     QTimer* delayTimer;
     std::set<const char*, ltstr> enabledActionsBuf;
+    QString lastURL;
 };
 
 #endif // _TASKJUGGLER_H_

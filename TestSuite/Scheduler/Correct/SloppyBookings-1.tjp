@@ -1,7 +1,8 @@
 project test "Sloppy Bookings" "1.0" 2003-08-07-0:00-GMT 2003-10-01-0:00-GMT {
-	timezone "GMT"
+  timezone "GMT"
+  now 2003-09-01
   scenario plan "Plan" {
-		projection
+		projection { strict }
 	}
 }
 

@@ -19,9 +19,21 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
     : CoreAttributes(p, i, n, pr)
 {
     p->addScenario(this);
-    enabled = TRUE;
-    projectionMode = FALSE;
-    optimize = FALSE;
+    if (pr)
+    {
+        // Inherit settings from parent scenario.
+        enabled = pr->enabled;
+        projectionMode = pr->projectionMode;
+        optimize = pr->optimize;
+        strictBookings = pr->strictBookings;
+    }
+    else
+    {
+        enabled = true;
+        projectionMode = false;
+        optimize = false;
+        strictBookings = false;
+    }
 }
 
 Scenario::~Scenario()
@@ -29,7 +41,7 @@ Scenario::~Scenario()
     project->deleteScenario(this);
 }
 
-ScenarioListIterator 
+ScenarioListIterator
 Scenario::getSubListIterator() const
 {
     return ScenarioListIterator(*sub);

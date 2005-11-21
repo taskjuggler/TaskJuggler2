@@ -18,13 +18,19 @@ project sc "Multiple Scenarios" "1.0" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:5
     workinghours fri 9:00 - 12:00, 13:00 - 18:00
     workinghours sat off
   scenario s1 "Scenario 1" {
+    enabled
     scenario s2 "Scenario 2" {
+      enabled
       scenario s4 "Scenario 4" {
+        enabled
       }
     }
     scenario s5 "Scenario 5" {
+      enabled
       scenario s6 "Scenario 6" {
+        enabled
         scenario s7 "Scenario 7" {
+          enabled
         }
       }
     }

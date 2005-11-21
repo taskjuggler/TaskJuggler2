@@ -18,7 +18,9 @@ project dg "Dependency Gaps" "$Id" 2004-12-19-00:00:00-GMT 2005-01-31-23:59:59-G
     workinghours fri 9:00 - 12:00, 13:00 - 18:00
     workinghours sat off
   scenario sc1 "Scenario 1" {
+    enabled
     scenario sc2 "scenario 2" {
+      enabled
     }
   }
 }

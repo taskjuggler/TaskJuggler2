@@ -59,7 +59,7 @@ public:
 
     QString currentURL();
 
-    virtual void newProject();
+    virtual void newProject(KURL fileURL = KURL());
 
     virtual void newInclude();
 

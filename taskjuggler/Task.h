@@ -240,6 +240,7 @@ public:
 
     bool isCompleted(int sc, time_t date) const;
     void calcCompletionDegree(int sc);
+    void calcContainerCompletionDegree(int sc, time_t now);
     double getCompletionDegree(int sc) const;
     double getCalcedCompletionDegree(int sc) const;
     TaskStatus getCompletionStatus(int sc) const
@@ -313,7 +314,7 @@ public:
     bool loopDetector() const;
     bool checkDetermination(int sc) const;
     void computeBuffers();
-    time_t nextSlot(time_t slotDuration) const;
+    time_t nextSlot(int sc, time_t slotDuration) const;
     void schedule(int sc, time_t& reqStart, time_t duration);
     void propagateStart(int sc, bool safeMode = TRUE);
     void propagateEnd(int sc, bool safeMode = TRUE);
@@ -361,6 +362,11 @@ private:
 
     double computeBackwardCriticalness(int sc);
     double computeForwardCriticalness(int sc);
+
+    bool countMilestones(int sc, time_t now, int& totalMilestones,
+                         int& completedMilestones);
+    bool sumUpEffort(int sc, time_t now, double& totalEffort,
+                     double& completedEffort);
 
     /// A longer description of the task.
     QString note;
@@ -444,9 +450,8 @@ private:
      * scheduler run. They might be initialized by other values and/or
      * they might contain results of the scheduling run. But they should
      * never be initialized directly or read out directly. They should have
-     * corresponding variables which have a plan or acutal prefix that are
-     * used to initialize them or to store there values. The get/set
-     * interface functions should only access the plan/actual variables. */
+     * corresponding scenario variables. The get/set interface functions
+     * should only access the scenario variables. */
 
     /// Day when the task should start
     time_t start;

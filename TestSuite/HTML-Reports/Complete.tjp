@@ -1,0 +1,76 @@
+project test "Complete Test Case" "1.0" 2005-10-19 2006-05-18 {
+  now 2005-11-19
+}
+
+resource tux "Tux"
+
+task m1 "Milestone Task" {
+  task m2 "M2" {
+    start 2005-10-19
+  }
+  task m3 "M3" {
+    task m4 "M4" {
+      start 2005-10-22
+    }
+  }
+  task m5 "M5" {
+    start 2005-12-01
+  }
+  task m6 "M6" {
+    task m7 "M7" {
+      start 2005-12-24
+    }
+  }
+}
+
+task e1 "Effort Task" {
+  task e2 "E2" {
+    start 2005-10-19
+    effort 2d
+    allocate tux
+  }
+  task e3 "E3" {
+    task e4 "E4" {
+      start 2005-10-19
+      effort 2d
+      allocate tux
+    }
+    task e5 "E5" {
+      start 2005-10-19
+      effort 2d
+      allocate tux
+    }
+  }
+  task e6 "E6" {
+    start 2005-12-24
+    effort 2d
+    allocate tux
+  }
+  task e7 "E7" {
+    start 2005-11-17
+    effort 8d
+    allocate tux
+  }
+  task e8 "E8" {
+    task e9 "E9" {
+      start 2005-11-07
+      length 3d
+      allocate tux
+    }
+    task e10 "E10" {
+      start 2005-12-05
+      length 3d
+      allocate tux
+    }
+  }
+}
+
+taskreport "Tasks" {
+  columns no, name, start, end, effort, completed, status, chart
+  loadunit days
+}
+
+htmltaskreport "." {
+  columns no, name, start, end, effort, completed, status
+  loadunit days
+}

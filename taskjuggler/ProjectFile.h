@@ -121,6 +121,7 @@ private:
     bool readProject();
     bool readExtend();
     bool readScenario(Scenario* parent);
+    bool readProjection(Scenario* scenario);
     bool readInclude();
     bool readCustomAttribute(CoreAttributes* property, const QString& id,
                              CustomAttributeType type);

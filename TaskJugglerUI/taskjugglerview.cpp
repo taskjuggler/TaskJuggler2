@@ -101,6 +101,12 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     mw->messageListView->setColumnWidthMode(4, QListView::Manual);
     mw->messageListView->hideColumn(4);
 
+    // Make sure the error list is completely hidden.
+    QValueList<int> sizes;
+    sizes.append(100);
+    sizes.append(0);
+    mw->editorSplitter->setSizes(sizes);
+
     fileManager = new FileManager(dynamic_cast<KMainWindow*>(parent),
                                   mw->editorStack, mw->fileListView,
                                   mw->fileListViewSearch);
@@ -217,7 +223,6 @@ TaskJugglerView::readProperties(KConfig* config)
 {
     QValueList<int> sizes = config->readIntListEntry("MainSplitter");
     mw->mainSplitter->setSizes(sizes);
-    editorSplitterSizes = config->readIntListEntry("EditorSplitter");
 
     fileManager->readProperties(config);
 }
@@ -236,13 +241,10 @@ TaskJugglerView::saveProperties(KConfig* config)
 
     // Save the position of the main splitter.
     config->writeEntry("MainSplitter", mw->mainSplitter->sizes());
-
-    // Save the position of the editor splitter.
-    config->writeEntry("EditorSplitter", editorSplitterSizes);
 }
 
 void
-TaskJugglerView::newProject()
+TaskJugglerView::newProject(KURL fileURL)
 {
     if (fileManager->getMasterFile())
     {
@@ -253,12 +255,12 @@ TaskJugglerView::newProject()
             return;
     }
 
-    KURL fileURL;
     for ( ; ; )
     {
-        fileURL = KFileDialog::getSaveURL
-            (":project", "*.tjp", this,
-             i18n("Pick a name for the new project file"));
+        if (fileURL.isEmpty())
+            fileURL = KFileDialog::getSaveURL
+                (":project", "*.tjp", this,
+                 i18n("Pick a name for the new project file"));
 
         // Check if user cancelled the message box
         if (fileURL.isEmpty())
@@ -288,6 +290,8 @@ TaskJugglerView::newProject()
         }
         else
             break;
+
+        fileURL = "";
     }
 
     QString templateFile;
@@ -301,8 +305,9 @@ TaskJugglerView::newProject()
     closeProject();
 
     fileManager->addFile(KURL(templateFile), fileURL);
+    fileManager->setMasterFile(fileURL);
     fileManager->expandMacros();
-    saveAs(fileURL);
+    fileManager->saveCurrentFile(false);
     showEditor();
 }
 
@@ -441,14 +446,25 @@ TaskJugglerView::openURL(KURL url)
             return;
     }
 
-    // If the URL hasn't been specified yet, ask the user for it.
-    if (url.isEmpty())
+    do
     {
-        url = KFileDialog::getOpenURL(":project", "*.tjp *.tji", this,
-                                      i18n("Open a new Project"));
+        // If the URL hasn't been specified yet, ask the user for it.
         if (url.isEmpty())
-            return;
+        {
+            url = KFileDialog::getOpenURL(":project", "*.tjp", this,
+                                          i18n("Open a new Project"));
+            if (url.isEmpty())
+                return;
+        }
+        if (url.path().right(4) != ".tjp")
+        {
+            KMessageBox::error
+                (this, i18n("The project file name must have a '.tjp' "
+                            "extension."), i18n("Bad file name"));
+            url = "";
+        }
     }
+    while (url.isEmpty());
 
     /* When we switch to a new project, we clear all lists and reports.
      * Loading and processing may take some time, so it looks odd to still see
@@ -688,7 +704,10 @@ bool
 TaskJugglerView::loadProject(const KURL& url)
 {
     if (loadingProject)
+    {
+        qDebug("TaskJugglerView::loadProject(): Project loading flag is already set");
         return TRUE;
+    }
 
     QString fileName = url.path();
 

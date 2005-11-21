@@ -41,9 +41,13 @@ public:
     void setOptimize(bool o) { optimize = o; }
     bool getOptimize() const { return optimize; }
 
+    void setStrictBookings(bool s) { strictBookings = s; }
+    bool getStrictBookings() const { return strictBookings; }
+
 private:
     bool enabled;
     bool projectionMode;
+    bool strictBookings;
     bool optimize;
 } ;
 

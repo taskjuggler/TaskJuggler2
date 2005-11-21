@@ -891,15 +891,22 @@ ProjectFile::readScenario(Scenario* parent)
             }
             else if (token == KW("disabled"))
             {
-                scenario->setEnabled(FALSE);
+                scenario->setEnabled(false);
+            }
+            else if (token == KW("enabled"))
+            {
+                scenario->setEnabled(true);
             }
             else if (token == KW("projection"))
             {
-                scenario->setProjectionMode(TRUE);
+                if (!readProjection(scenario))
+                    return false;
             }
-            else if (token == KW("optimize"))
+            else if (token == KW("baseline"))
             {
-                scenario->setOptimize(TRUE);
+                scenario->setProjectionMode(false);
+                /* baseline mode implies sloppy bookings. */
+                scenario->setStrictBookings(false);
             }
             else
             {
@@ -913,6 +920,45 @@ ProjectFile::readScenario(Scenario* parent)
         returnToken(tt, token);
 
     return TRUE;
+}
+
+bool
+ProjectFile::readProjection(Scenario* scenario)
+{
+    TokenType tt;
+    QString token;
+
+    scenario->setProjectionMode(true);
+
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        for ( ; ; )
+        {
+            tt = nextToken(token);
+            if (tt == RBRACE)
+            {
+                return true;
+            }
+            if (token == KW("strict"))
+            {
+                scenario->setStrictBookings(true);
+            }
+            else if (token == KW("sloppy"))
+            {
+                scenario->setStrictBookings(false);
+            }
+            else
+            {
+                errorMessage(i18n("Unknown projection attribute '%1'")
+                             .arg(token));
+                return false;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    return true;
 }
 
 TokenType

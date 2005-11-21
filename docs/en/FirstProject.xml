@@ -526,7 +526,7 @@ date.</para>
 of the <computeroutput>deliveries</computeroutput> task. This way they
 show up nicely grouped in the reports. All milestone have either a
 dependency or a fixed start date. For the first milestone we have used
-the attribute <link linkend="PROPERTY_start_task">start</link> to set a fixed
+the attribute <link linkend="PROPERTY_start">start</link> to set a fixed
 start date. All other tasks have direct or indirect dependencies on
 this task. Moving back the start date will slip the whole project.
 This has actually happened, so we use the

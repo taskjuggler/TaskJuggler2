@@ -18,6 +18,7 @@ project test "Test" "$Id" 2002-01-01-00:00:00-CET 2002-11-30-23:59:59-CET {
     workinghours fri 8:00 - 12:00, 13:00 - 17:00
     workinghours sat off
   scenario plan "Plan" {
+    enabled
   }
 }
 shift s1 "Shift1" {

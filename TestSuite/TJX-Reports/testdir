@@ -21,6 +21,9 @@ for f in *.tjp ; do
   fi
   cmp $tjxFile $referenceFile
   if test $? -ne 0 ; then
+    zcat $tjxFile > ${tjxFile}.asc
+    zcat $referenceFile > ${referenceFile}.asc
+    diff -u ${tjxFile}.asc ${referenceFile}.asc | head -n 10
     errors=$(($errors + 1))
   fi
 
@@ -38,16 +41,16 @@ EOF
   fi
   cmp $tjxFile $tjxFile2
   if test $? -ne 0 ; then
-    zcat $tjxFile > $tjxFile.xml
-    zcat $tjxFile2 > $tjxFile2.xml
-    diff $tjxFile.xml $tjxFile2.xml | head -10
+    zcat $tjxFile > ${tjxFile}.asc
+    zcat $tjxFile2 > ${tjxFile2}.asc
+    diff ${tjxFile}.asc ${tjxFile2}.asc | head -n 10
     errors=$(($errors + 1))
   fi
 
   # In case there were no errors with this test case, then remove the
   # output files again.
   if test $olderrors -eq $errors ; then
-    rm $tjxFile $tjxFile2
+    rm -f $tjxFile $tjxFile2 *.asc
   fi
 done
 

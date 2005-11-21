@@ -39,7 +39,7 @@ TaskScenario::TaskScenario()
 void
 TaskScenario::calcCompletionDegree(time_t now)
 {
-    if (now >= end)
+    if (now > end)
     {
         completionDegree = 100.0;
         status = reportedCompletion >= 0 && reportedCompletion < 100 ?
@@ -49,11 +49,6 @@ TaskScenario::calcCompletionDegree(time_t now)
     {
         completionDegree = 0.0;
         status = reportedCompletion > 0 ? InProgressEarly : NotStarted;
-    }
-    else if (task->isContainer())
-    {
-        completionDegree = (100.0 / (end - start + 1)) * (now - start);
-        status = InProgress;
     }
     else
     {

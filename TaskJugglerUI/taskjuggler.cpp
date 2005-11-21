@@ -28,6 +28,7 @@
 #include <kstatusbar.h>
 #include <kkeydialog.h>
 #include <kfiledialog.h>
+#include <kfileitem.h>
 #include <kaccel.h>
 #include <kio/netaccess.h>
 #include <kconfig.h>
@@ -88,11 +89,24 @@ TaskJuggler::~TaskJuggler()
 }
 
 void
-TaskJuggler::load(const KURL& url)
+TaskJuggler::load(const KURL& fileURL)
 {
-    setCaption(url.prettyURL());
-    m_view->openURL(url);
-    m_recentAction->addURL(url);
+    if (KFileItem(fileURL, "application/x-tjp",
+                           KFileItem::Unknown).size() == 0)
+    {
+        if (KMessageBox::warningContinueCancel
+            (this, i18n("The project file '%1' cannot be opened. If you "
+                        "continue, a new file with this name will be "
+                        "created.").arg(fileURL.url()), i18n("File not found"),
+             KStdGuiItem::cont(), "WarnOnNewFileCreation") ==
+            KMessageBox::Cancel)
+            return;
+
+        // Create a new project with the specified name.`
+        m_view->newProject(fileURL);
+    }
+    else
+        m_view->openURL(fileURL);
 }
 
 void TaskJuggler::setupActions()
@@ -235,23 +249,29 @@ void
 TaskJuggler::readProperties(KConfig* config)
 {
     config->setGroup("Global Settings");
-    QString url = config->readPathEntry("lastURL");
-
-    if (!url.isEmpty())
-        m_view->openURL(KURL(url));
+    lastURL = config->readPathEntry("lastURL");
 
     m_recentAction->loadEntries(config);
 
     m_view->readProperties(config);
 }
 
-void TaskJuggler::dragEnterEvent(QDragEnterEvent *event)
+void
+TaskJuggler::loadLastProject()
+{
+    if (!lastURL.isEmpty())
+        m_view->openURL(KURL(lastURL));
+}
+
+void
+TaskJuggler::dragEnterEvent(QDragEnterEvent *event)
 {
     // accept uri drops only
     event->accept(KURLDrag::canDecode(event));
 }
 
-void TaskJuggler::dropEvent(QDropEvent *event)
+void
+TaskJuggler::dropEvent(QDropEvent *event)
 {
     // this is a very simplistic implementation of a drop event.  we
     // will only accept a dropped URL.  the Qt dnd code can do *much*
@@ -365,6 +385,7 @@ void
 TaskJuggler::addRecentURL(const KURL& url)
 {
     m_recentAction->addURL(url);
+    setCaption(url.prettyURL());
 }
 
 #include "taskjuggler.moc"

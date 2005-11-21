@@ -280,6 +280,14 @@ HTML calendar columns. The default is to show load values.</para></descr>
    </simplelist></para>
   </freestyle>
  </property>
+ <property name="baseline" id="baseline" inheritable="Yes">
+  <descr><para>Disables the projection mode for the scenario. This is
+  the default for the top-level scenario. In baseline mode it is
+  assumed that no bookings are provided for any task.</para></descr>
+  <seealso>
+   <also>projection</also>
+  </seealso>
+ </property>
  <property name="booking" id="booking" inheritable="No" scenario="Yes">
   <descr><para>The booking attribute can be used to report completed
   work. This can be part of the necessary effort or the whole effort.
@@ -303,6 +311,8 @@ HTML calendar columns. The default is to show load values.</para></descr>
   <seealso>
    <also>complete</also>
    <also>projection</also>
+   <also>sloppy_projection</also>
+   <also>strict</also>
   </seealso>
   <example>&example_booking;</example>
  </property>
@@ -789,10 +799,13 @@ the last policy counts.</para></descr> <attributes>
   </seealso>
   <example>&example_depends;</example>
  </property>
- <property name="disabled" id="disabled" inheritable="No"
+ <property name="disabled" id="disabled" inheritable="Yes"
  schenario="Yes">
   <descr><para>Disables the scenario for scheduling.</para></descr>
   <example>&example_scenario;</example>
+  <seealso>
+   <also>enabled</also>
+  </seealso> 
  </property>
  <property name="duration" id="duration" inheritable="No"
  scenario="Yes">
@@ -854,6 +867,14 @@ used.</para></descr>
   </seealso>
   <example>&example_durations;</example>
  </property>
+ <property name="enabled" id="enabled" inheritable="Yes"
+ schenario="Yes">
+  <descr><para>Enable the scenario for scheduling. This is the default
+  for the top-level scenario.</para></descr>
+  <seealso>
+   <also>disabled</also>
+  </seealso> 
+ </property>
  <property name="end" id="end_report" inheritable="No">
   <descr><para>Specifies the end date of the report. In task reports only
 tasks that start before this end date are listed.</para></descr>
@@ -865,7 +886,7 @@ tasks that start before this end date are listed.</para></descr>
   </seealso>
   <example>&example_export;</example>
  </property>
- <property name="end" id="end_task" inheritable="Yes" scenario="Yes">
+ <property name="end" id="end" inheritable="Yes" scenario="Yes">
   <descr><para>The end date of the task. This attributes also
   implicitely sets the scheduling policy of the tasks to
   <varname>alap</varname>.</para></descr>
@@ -873,7 +894,7 @@ tasks that start before this end date are listed.</para></descr>
    <attr name="date" type="DATE"/>
   </attributes>
   <seealso>
-   <also>start_task</also>
+   <also>start</also>
    <also>maxend</also>
    <also>minend</also>
    <also>scheduling</also>
@@ -1763,12 +1784,20 @@ projects that each have their own ID.</para></descr> <attributes>
    <also>projectid</also>
   </seealso>
  </property>
- <property name="projection" id="projection" inheritable="No">
+ <property name="projection" id="projection" inheritable="Yes">
   <descr><para>Enables the projection mode for the scenario. All tasks
 will be scheduled taking the manual bookings into account. The
-tasks will be extended after the last manual bookings until the
-specified effort, length or duration has been reached.</para></descr>
+tasks will be extended by scheduling new bookings starting with the
+current date until the specified effort, length or duration has been
+reached. In sloppy mode tasks with no bookings will be filled from the
+original start. In strict mode all tasks will be filled starting with
+the current date. No bookings will be added prior to the current
+date.</para></descr> <optattributes>
+<optattr>sloppy_projection</optattr>
+   <optattr>strict</optattr>
+  </optattributes> 
   <seealso>
+   <also>baseline</also>
    <also>booking</also>
   </seealso>
   <example>&example_booking;</example>
@@ -1976,6 +2005,7 @@ specified logical expression.</para></descr>
    <attr name="name" type="STRING"/>
   </attributes>
   <optattributes>
+   <optattr>baseline</optattr>
    <optattr>disabled</optattr>
    <optattr>projection</optattr>
    <optattr>scenario</optattr>
@@ -2052,9 +2082,9 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
   </attributes>
   <seealso>
     <also>depends</also>
-    <also>end_task</also>
+    <also>end</also>
     <also>precedes</also>
-    <also>start_task</also>
+    <also>start</also>
   </seealso>  
   <example>&example_scheduling;</example>
  </property>
@@ -2106,40 +2136,6 @@ for ASAP tasks) time slot has become unavailable.</para></descr>
    </simplelist></para>
   </freestyle>
   <example>&example_select;</example>
- </property>
- <property name="sloppy" id="sloppy" inheritable="No">
-  <descr><para>Controls how strict TaskJuggler checks booking
-  intervals for conflicts with vacation and other bookings. In case
-  the error is surpressed the booking will not overwrite the existing
-  bookings. It will avoid the already assigned intervals during
-  booking.</para></descr>
-  <attributes>
-   <attr name="value" type="INTEGER">
-    <para>Number between 0 and 3. See table below.</para>
-   </attr>
-  </attributes>
-  <freestyle>
-   <para><simplelist type="horiz" columns="2">
-   
-   <member><varname>sloppy 0:</varname></member>
-   <member>Period may not contain any off-duty hours, vacation or
-   other task assignments.</member>
-
-   <member><varname>sloppy 1:</varname></member>
-   <member>Period may contain off-duty hours, but not vacation or
-   other task assignments.</member>
-   
-   <member><varname>sloppy 2:</varname></member>
-   <member>Period may contain off-duty hours and vacation, but no
-   other task assignments.</member>
-
-   <member><varname>sloppy 3:</varname></member>
-   <member>Period may overlap with off-duty hours, vacation or other
-   task assignments. These are silently skipped.</member>
-   
-   </simplelist></para>
-  </freestyle>
-  <example>&example_booking;</example>
  </property>
  <property name="shift" id="shift" inheritable="No">
   <descr><para>When several resource have the same working hours,
@@ -2199,6 +2195,53 @@ contain the project ID after the load value.</para></descr>
    <also>columns</also>
   </seealso>
  </property>
+ <property name="sloppy" id="sloppy" inheritable="No">
+  <descr><para>Controls how strict TaskJuggler checks booking
+  intervals for conflicts with vacation and other bookings. In case
+  the error is surpressed the booking will not overwrite the existing
+  bookings. It will avoid the already assigned intervals during
+  booking.</para></descr>
+  <attributes>
+   <attr name="value" type="INTEGER">
+    <para>Number between 0 and 3. See table below.</para>
+   </attr>
+  </attributes>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>sloppy 0:</varname></member>
+   <member>Period may not contain any off-duty hours, vacation or
+   other task assignments.</member>
+
+   <member><varname>sloppy 1:</varname></member>
+   <member>Period may contain off-duty hours, but not vacation or
+   other task assignments.</member>
+   
+   <member><varname>sloppy 2:</varname></member>
+   <member>Period may contain off-duty hours and vacation, but no
+   other task assignments.</member>
+
+   <member><varname>sloppy 3:</varname></member>
+   <member>Period may overlap with off-duty hours, vacation or other
+   task assignments. These are silently skipped.</member>
+   
+   </simplelist></para>
+  </freestyle>
+  <example>&example_booking;</example>
+ </property>
+ <property name="sloppy" id="sloppy_projection" inheritable="Yes">
+  <descr><para>Puts the scenario in sloppy bookings mode. This is the
+  default. This mode makes only sense when you also use projection
+  mode for this scenario. In sloppy mode all task that don't have any
+  bookings provided will be filled with bookings according to the
+  original schedule. In strict mode, no bookings will be filled in for
+  any task prior to the current (or now) date.</para></descr>
+  <seealso>
+   <also>booking</also>
+   <also>projection</also>
+   <also>strict</also>
+  </seealso>
+ </property> 
  <property name="sortaccounts" id="sortaccounts" inheritable="No">
   <descr><para>Determines how the accounts are sorted in the report. Up to 3
 criteria can be specified. If one criteria is not sufficient to sort a
@@ -2302,7 +2345,7 @@ tasks that end after this end date are listed.</para></descr>
   </seealso>
   <example>&example_export;</example>
  </property>
- <property name="start" id="start_task" inheritable="Yes"
+ <property name="start" id="start" inheritable="Yes"
 scenario="Yes">
   <descr><para>The start date of the task. This attribute also
   implicitely sets the scheduling policy of the task to
@@ -2311,7 +2354,7 @@ scenario="Yes">
    <attr name="date" type="DATE"/>
   </attributes>
   <seealso>
-   <also>end_task</also>
+   <also>end</also>
    <also>maxstart</also>
    <also>minstart</also>
    <also>scheduling</also>
@@ -2363,6 +2406,19 @@ task.</para></descr>
    <also>note</also>
   </seealso>
  </property>
+ <property name="strict" id="strict" inheritable="Yes">
+  <descr><para>Puts the scenario in strict bookings mode. This mode
+  makes only sense when you also use projection mode for this
+  scenario. In strict mode, no bookings will be filled in for
+  any task prior to the current (or now) date. In sloppy mode all task
+  that don't have any bookings provided will be filled with bookings
+  according to the original schedule.</para></descr>
+  <seealso>
+   <also>booking</also>
+   <also>sloppy</also>
+   <also>projection</also>
+  </seealso>
+ </property> 
  <property name="subtitle" id="subtitle" inheritable="No">
   <descr><para>Specifies an alternative subtitle for a report
 column.</para></descr> <attributes>
@@ -2423,7 +2479,7 @@ what task.</para></descr>
    <optattr>effort</optattr>
    <optattr>endbuffer</optattr>
    <optattr>endcredit</optattr>
-   <optattr>end_task</optattr>
+   <optattr>end</optattr>
    <optattr>flags</optattr>
    <optattr>journalentry</optattr>
    <optattr>length</optattr>
@@ -2443,7 +2499,7 @@ what task.</para></descr>
    <optattr>shift_selection</optattr>
    <optattr>startbuffer</optattr>
    <optattr>startcredit</optattr>
-   <optattr>start_task</optattr>
+   <optattr>start</optattr>
    <optattr>statusnote</optattr>
    <optattr>supplement</optattr>
    <optattr>task</optattr>
