@@ -314,7 +314,7 @@ public:
     bool loopDetector() const;
     bool checkDetermination(int sc) const;
     void computeBuffers();
-    time_t nextSlot(int sc, time_t slotDuration) const;
+    time_t nextSlot(time_t slotDuration) const;
     void schedule(int sc, time_t& reqStart, time_t duration);
     void propagateStart(int sc, bool safeMode = TRUE);
     void propagateEnd(int sc, bool safeMode = TRUE);

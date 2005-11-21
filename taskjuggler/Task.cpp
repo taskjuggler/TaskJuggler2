@@ -589,6 +589,20 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
         return;
     }
 
+    /* In projection mode we do not allow bookings prior to the current date
+     * for any task (in strict mode) or tasks which have user specified
+     * bookings (sloppy mode). */
+    if (project->getScenario(sc)->getProjectionMode() &&
+        date < project->getNow() &&
+        (project->getScenario(sc)->getStrictBookings() ||
+         !scenarios[sc].specifiedBookedResources.isEmpty()))
+    {
+        if (DEBUGRS(15))
+            qDebug("No allocations prior to current date for task %s",
+                   id.latin1());
+        return;
+    }
+
     /* If any of the resources is marked as being mandatory, we have to check
      * if this resource is available. In case it's not available we do not
      * allocate any of the other resources for the time slot. */
@@ -2433,7 +2447,7 @@ Task::scheduleOk(int sc, int& errors) const
 }
 
 time_t
-Task::nextSlot(int sc, time_t slotDuration) const
+Task::nextSlot(time_t slotDuration) const
 {
     /* This function returns the start of the next time slot this task wants
      * to be scheduled in. If there is no such slot because the tasks does not
@@ -2450,12 +2464,6 @@ Task::nextSlot(int sc, time_t slotDuration) const
                 !milestone && end == 0)
                 return 0;
 
-            /* In projection mode we limit the scheduler to operate between
-             * 'now' and the project end. */
-            if (project->getScenario(sc)->getStrictBookings() &&
-                lastSlot < project->getNow())
-                return project->getNow();
-
             if (lastSlot == 0)
                 return start;
             return lastSlot + 1;
@@ -2469,14 +2477,6 @@ Task::nextSlot(int sc, time_t slotDuration) const
         {
             if (effort == 0.0 && length == 0.0 && duration == 0.0 &&
                 !milestone && start == 0)
-                return 0;
-
-            /* In projection mode we limit the scheduler to operate between
-             * 'now' and the project end. */
-            if (project->getScenario(sc)->getStrictBookings() &&
-                ((lastSlot != 0 &&
-                  lastSlot - slotDuration < project->getNow()) ||
-                 (lastSlot == 0 && end < project->getNow())))
                 return 0;
 
             if (lastSlot == 0)
@@ -2597,18 +2597,6 @@ Task::prepareScenario(int sc)
             if (ls > lastSlot)
                 lastSlot = ls;
         }
-    }
-
-    if (project->getScenario(sc)->getStrictBookings() &&
-        lastSlot == 0 && !allocations.isEmpty() &&
-        scheduling == ASAP &&
-        (effort > 0.0 || length > 0.0 || duration > 0.0))
-    {
-        /* In projection mode with strict bookings, TaskJuggler assumes that
-         * all work up until now has been specified with bookings. So the
-         * scheduling starts at the 'now' slot. In sloppy mode, this is only
-         * assumed for tasks who have at least one booking. */
-        start = project->getNow();
     }
 
     if (lastSlot > 0 && !schedulingDone)

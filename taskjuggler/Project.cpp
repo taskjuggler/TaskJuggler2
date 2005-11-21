@@ -745,7 +745,7 @@ Project::schedule(int sc)
             {
                 /* No time slot has been set yet. Check if this task can be
                  * scheduled and provides a suggestion. */
-                slot = (*tli)->nextSlot(sc, scheduleGranularity);
+                slot = (*tli)->nextSlot(scheduleGranularity);
                 priority = (*tli)->getPriority();
                 schedulingInfo = (*tli)->getScheduling();
                 /* If not, try the next task. */

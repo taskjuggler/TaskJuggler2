@@ -1,4 +1,4 @@
-project prj "Strict Bookings Test" "1.0" 2005-11-20-00:00:00-GMT 2006-05-19-00:00:00-GMT {
+project prj "Sloppy Bookings Test" "1.0" 2005-11-20-00:00:00-GMT 2006-05-19-00:00:00-GMT {
   now 2005-12-24
   timezone "GMT"
   scenario plan "Plan" {
@@ -47,9 +47,9 @@ taskreport "Tasks" {
 }
 
 export "ProjectionMode-Export.tjp" {
-	hidetask 0
-	hideresource 0
-	taskattributes all
-	notimestamp
+  hidetask 0
+  hideresource 0
+  taskattributes all
+  notimestamp
 }
 
