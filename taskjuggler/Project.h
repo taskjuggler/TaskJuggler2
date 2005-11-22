@@ -761,6 +761,7 @@ public:
     bool pass2(bool noDepCheck, bool& fatalError);
 
     bool scheduleScenario(Scenario* sc);
+    void breakScheduling();
     void completeBuffersAndIndices();
     bool scheduleAllScenarios();
     void generateReports() const;
@@ -910,6 +911,9 @@ private:
     QPtrList<Report> reports;
     QPtrList<QtReport> interactiveReports;
     QStringList sourceFiles;
+
+    // This flag is raised to abort the scheduling.
+    bool breakFlag;
 } ;
 
 #endif

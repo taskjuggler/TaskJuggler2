@@ -586,6 +586,8 @@ Project::scheduleScenario(Scenario* sc)
             qDebug(i18n("Scheduling errors in scenario '%1'.")
                    .arg(sc->getId()));
         error = TRUE;
+        if (breakFlag)
+            return false;
     }
     finishScenario(scIdx);
 
@@ -628,6 +630,8 @@ Project::scheduleAllScenarios()
 
             if (!scheduleScenario(*sci))
                 schedulingOk = FALSE;
+            if (breakFlag)
+                return false;
         }
 
     completeBuffersAndIndices();
@@ -727,6 +731,7 @@ Project::schedule(int sc)
      * number so the first round of cleanup is done right after the first
      * scheduling pass. */
     int cleanupTimer = 100000;
+    breakFlag = false;
     do
     {
         done = TRUE;
@@ -817,7 +822,15 @@ Project::schedule(int sc)
                  .arg(getScenarioId(sc)).arg(time2tjp(slot)));
         }
 
-    } while (!done);
+    } while (!done && !breakFlag);
+
+    if (breakFlag)
+    {
+        setProgressInfo(i18n(""));
+        setProgressBar(0, 0);
+        TJMH.errorMessage(i18n("Scheduling aborted on user request"));
+        return false;
+    }
 
     if (error)
         for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
@@ -845,6 +858,12 @@ Project::schedule(int sc)
         error = TRUE;
 
     return !error;
+}
+
+void
+Project::breakScheduling()
+{
+    breakFlag = true;
 }
 
 bool

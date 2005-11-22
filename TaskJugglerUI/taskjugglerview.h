@@ -94,6 +94,7 @@ public slots:
     void insertDate();
 
     void schedule();
+    void stop();
     void nextProblem();
     void previousProblem();
     void setFocusToTaskList();

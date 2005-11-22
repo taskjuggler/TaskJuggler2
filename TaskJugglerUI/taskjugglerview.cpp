@@ -12,6 +12,8 @@
 
 #include "taskjugglerview.h"
 
+#include <map>
+
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qlayout.h>
@@ -69,6 +71,7 @@
 #include "ManagedReportInfo.h"
 #include "TemplateSelector.h"
 #include "taskjuggler.h"
+#include "ltstr.h"
 
 TaskJugglerView::TaskJugglerView(QWidget *parent)
     : DCOPObject("TaskJugglerIface"), QWidget(parent)
@@ -617,7 +620,10 @@ void
 TaskJugglerView::schedule()
 {
     if (!fileManager->getMasterFile())
+    {
+        kdDebug() << "TaskJugglerView::schedule(): No master file set" << endl;
         return;
+    }
 
     fileManager->saveAllFiles();
 
@@ -630,6 +636,13 @@ TaskJugglerView::schedule()
 
     showReportAfterLoad = TRUE;
     loadProject(fileManager->getMasterFileURL());
+}
+
+void
+TaskJugglerView::stop()
+{
+    if (project)
+        project->breakScheduling();
 }
 
 void
@@ -705,7 +718,8 @@ TaskJugglerView::loadProject(const KURL& url)
 {
     if (loadingProject)
     {
-        qDebug("TaskJugglerView::loadProject(): Project loading flag is already set");
+        kdDebug() << "TaskJugglerView::loadProject(): Project loading flag is "
+                                                      "already set" << endl;
         return TRUE;
     }
 
@@ -1248,15 +1262,18 @@ TaskJugglerView::updateTaskList()
 
     tlv->clear();
     QListViewItem* newCurrentTask = 0;
+    std::map<const char*, QListViewItem*, ltstr> tlvHash;
     for (TaskListIterator tli(project->getTaskListIterator()); *tli; ++tli)
     {
         QListViewItem* lvi;
         /* The list view has 4 columns: The task name, the task ID, the name
          * of the file where the tasks has been defined, and the line where
          * the definition started. */
-        if ((*tli)->getParent())
+        if ((*tli)->getParent() &&
+            tlvHash.find((*tli)->getParent()->getId().latin1()) !=
+            tlvHash.end())
             lvi = new
-                KListViewItem(tlv->findItem((*tli)->getParent()->getId(), 1),
+                KListViewItem(tlvHash[(*tli)->getParent()->getId().latin1()],
                               (*tli)->getName(),
                               (*tli)->getId(),
                               (*tli)->getDefinitionFile(),
@@ -1266,6 +1283,8 @@ TaskJugglerView::updateTaskList()
                 (tlv, (*tli)->getName(), (*tli)->getId(),
                  (*tli)->getDefinitionFile(),
                  QString::number((*tli)->getDefinitionLine()));
+        // Add new LVI to hash table
+        tlvHash[(*tli)->getId().latin1()] = lvi;
 
         if ((*tli)->getId() == currentTask)
             newCurrentTask = lvi;
@@ -1323,6 +1342,7 @@ TaskJugglerView::updateResourceList()
 
     rlv->clear();
     QListViewItem* newCurrentResource = 0;
+    std::map<const char*, QListViewItem*, ltstr> rlvHash;
     for (ResourceListIterator rli(project->getResourceListIterator()); *rli;
          ++rli)
     {
@@ -1330,9 +1350,11 @@ TaskJugglerView::updateResourceList()
         /* The list view has 4 columns: The resource name, the resource ID,
          * the name of the file where the resources has been defined, and the
          * line where the definition started. */
-        if ((*rli)->getParent())
+        if ((*rli)->getParent() &&
+            rlvHash.find((*rli)->getParent()->getFullId().latin1()) !=
+            rlvHash.end())
             lvi = new KListViewItem
-                (rlv->findItem((*rli)->getParent()->getFullId(), 1),
+                (rlvHash[(*rli)->getParent()->getFullId().latin1()],
                  (*rli)->getName(), (*rli)->getFullId(),
                  (*rli)->getDefinitionFile(),
                  QString::number((*rli)->getDefinitionLine()));
@@ -1341,6 +1363,9 @@ TaskJugglerView::updateResourceList()
                 (rlv, (*rli)->getName(), (*rli)->getFullId(),
                  (*rli)->getDefinitionFile(),
                  QString::number((*rli)->getDefinitionLine()));
+
+        // Add new LVI to hash table
+        rlvHash[(*rli)->getFullId().latin1()] = lvi;
 
         if ((*rli)->getFullId() == currentResource)
             newCurrentResource = lvi;
@@ -1392,13 +1417,16 @@ TaskJugglerView::updateAccountList()
 
     alv->clear();
     QListViewItem* newCurrentAccount= 0;
+    std::map<const char*, QListViewItem*, ltstr> alvHash;
     for (AccountListIterator ali(project->getAccountListIterator()); *ali;
          ++ali)
     {
         QListViewItem* lvi;
-        if ((*ali)->getParent())
+        if ((*ali)->getParent() &&
+            alvHash.find((*ali)->getParent()->getFullId().latin1()) !=
+            alvHash.end())
             lvi = new KListViewItem
-                (alv->findItem((*ali)->getParent()->getFullId(), 1),
+                (alvHash[(*ali)->getParent()->getFullId().latin1()],
                  (*ali)->getName(), (*ali)->getFullId(),
                  (*ali)->getDefinitionFile(),
                  QString::number((*ali)->getDefinitionLine()));
@@ -1407,6 +1435,9 @@ TaskJugglerView::updateAccountList()
                 (alv, (*ali)->getName(), (*ali)->getFullId(),
                  (*ali)->getDefinitionFile(),
                  QString::number((*ali)->getDefinitionLine()));
+
+        // Add new LVI to hash table
+        alvHash[(*ali)->getFullId().latin1()] = lvi;
 
         if ((*ali)->getFullId() == currentAccount)
             newCurrentAccount = lvi;

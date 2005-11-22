@@ -171,6 +171,9 @@ void TaskJuggler::setupActions()
     new KAction(i18n("&Schedule"), "tj_schedule", KShortcut(KKey("F9")),
                 m_view, SLOT(schedule()),
                 actionCollection(), "schedule");
+    new KAction(i18n("Stop scheduling"), "stop", 0,
+                m_view, SLOT(stop()),
+                actionCollection(), "stop");
     new KAction(i18n("Goto &previous Problem"), "tj_previous_problem",
                 KShortcut(KKey("F10")),
                 m_view, SLOT(previousProblem()),
@@ -218,6 +221,13 @@ TaskJuggler::enableActions(bool enable)
     for (KActionPtrList::iterator it = actionList.begin();
          it != actionList.end(); ++it)
     {
+        /* The "stop" action will be handled opposite to all other actions. */
+        if (strcmp((*it)->name(), "stop") == 0)
+        {
+            (*it)->setEnabled(!enable);
+            continue;
+        }
+
         if (enable)
         {
             if (enabledActionsBuf.find((*it)->name()) !=
