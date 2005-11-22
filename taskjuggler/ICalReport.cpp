@@ -29,6 +29,11 @@
 #include "Resource.h"
 #include "Operation.h"
 
+// Older versions of KDE do not have this macro
+#ifndef KDE_IS_VERSION
+#define KDE_IS_VERSION(a,b,c) 0
+#endif
+
 ICalReport::ICalReport(Project* p, const QString& file, const QString& defFile,
                        int dl) : Report(p, file, defFile, dl)
 {
