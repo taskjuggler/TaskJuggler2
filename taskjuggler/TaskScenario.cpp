@@ -32,6 +32,7 @@ TaskScenario::TaskScenario()
     startCredit = -1.0;
     endCredit = -1.0;
     reportedCompletion = -1.0;
+    containerCompletion = -1.0;
     scheduled = FALSE;
     criticalness = pathCriticalness = 0.0;
 }

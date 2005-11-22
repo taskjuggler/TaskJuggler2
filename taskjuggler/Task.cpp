@@ -2936,7 +2936,8 @@ Task::getCompletionDegree(int sc) const
     if(scenarios[sc].reportedCompletion >= 0.0)
         return(scenarios[sc].reportedCompletion);
 
-    return scenarios[sc].completionDegree;
+    return isContainer() && scenarios[sc].containerCompletion >= 0.0 ?
+        scenarios[sc].containerCompletion : scenarios[sc].completionDegree;
 }
 
 double
@@ -2955,18 +2956,26 @@ Task::calcContainerCompletionDegree(int sc, time_t now)
 
     int totalMilestones = 0;
     int completedMilestones = 0;
-    if (countMilestones(sc, now, totalMilestones, completedMilestones))
+    int reportedCompletedMilestones = 0;
+    if (countMilestones(sc, now, totalMilestones, completedMilestones,
+                        reportedCompletedMilestones))
     {
         scenarios[sc].completionDegree = completedMilestones * 100.0 /
             totalMilestones;
+        scenarios[sc].containerCompletion = reportedCompletedMilestones
+            * 100.0 / totalMilestones;
         return;
     }
 
     double totalEffort = 0.0;
     double completedEffort = 0.0;
-    if (sumUpEffort(sc, now, totalEffort, completedEffort))
+    double reportedCompletedEffort = 0.0;
+    if (sumUpEffort(sc, now, totalEffort, completedEffort,
+                    reportedCompletedEffort))
     {
         scenarios[sc].completionDegree = completedEffort * 100.0 /
+            totalEffort;
+        scenarios[sc].containerCompletion = reportedCompletedEffort * 100.0 /
             totalEffort;
         return;
     }
@@ -2974,14 +2983,22 @@ Task::calcContainerCompletionDegree(int sc, time_t now)
 
 bool
 Task::countMilestones(int sc, time_t now, int& totalMilestones,
-                      int& completedMilestones)
+                      int& completedMilestones,
+                      int& reportedCompletedMilestones)
 {
     if (isContainer())
     {
         for (TaskListIterator tli(*sub); *tli; ++tli)
             if (!(*tli)->countMilestones(sc, now, totalMilestones,
-                                         completedMilestones))
+                                         completedMilestones,
+                                         reportedCompletedMilestones))
                 return false;
+
+        /* A reported completion for a container always overrides the computed
+         * completion. */
+        if (scenarios[sc].reportedCompletion >= 0.0)
+            reportedCompletedMilestones = (int) (totalMilestones *
+                scenarios[sc].reportedCompletion / 100.0);
 
         return true;
     }
@@ -2990,6 +3007,13 @@ Task::countMilestones(int sc, time_t now, int& totalMilestones,
         totalMilestones++;
         if (scenarios[sc].start <= now)
             completedMilestones++;
+
+        if (scenarios[sc].reportedCompletion >= 100.0)
+            reportedCompletedMilestones++;
+        else
+            if (scenarios[sc].start <= now)
+                reportedCompletedMilestones++;
+
         return true;
     }
 
@@ -2998,13 +3022,20 @@ Task::countMilestones(int sc, time_t now, int& totalMilestones,
 
 bool
 Task::sumUpEffort(int sc, time_t now, double& totalEffort,
-                  double& completedEffort)
+                  double& completedEffort, double& reportedCompletedEffort)
 {
     if (isContainer())
     {
         for (TaskListIterator tli(*sub); *tli; ++tli)
-            if (!(*tli)->sumUpEffort(sc, now, totalEffort, completedEffort))
+            if (!(*tli)->sumUpEffort(sc, now, totalEffort, completedEffort,
+                                     reportedCompletedEffort))
                 return false;
+
+        /* A reported completion for a container always overrides the computed
+         * completion. */
+        if (scenarios[sc].reportedCompletion >= 0.0)
+            reportedCompletedEffort = totalEffort *
+                scenarios[sc].reportedCompletion / 100.0;
 
         return true;
     }
@@ -3013,8 +3044,18 @@ Task::sumUpEffort(int sc, time_t now, double& totalEffort,
         /* Pure effort based tasks are simple to handle. The total effort is
          * specified and the effort up to 'now' can be computed. */
         totalEffort += scenarios[sc].effort;
+        double load = getLoad(sc, Interval(scenarios[sc].start, now));
         if (scenarios[sc].start < now)
-            completedEffort += getLoad(sc, Interval(scenarios[sc].start, now));
+            completedEffort += load;
+
+        /* If the user reported a completion we use this instead of the
+         * calculated completion. */
+        if (scenarios[sc].reportedCompletion >= 0.0)
+            reportedCompletedEffort +=
+                getLoad(sc, Interval(scenarios[sc].start, scenarios[sc].end)) *
+                scenarios[sc].reportedCompletion / 100.0;
+        else
+            reportedCompletedEffort += load;
 
         return true;
     }
@@ -3023,10 +3064,20 @@ Task::sumUpEffort(int sc, time_t now, double& totalEffort,
         /* This is for length and duration tasks that have allocations. We
          * handle them similar to effort tasks. Since there is no specified
          * total effort, we calculate the total allocated effort. */
-        totalEffort += getLoad(sc, Interval(scenarios[sc].start,
-                                            scenarios[sc].end));
+        double totalLoad = getLoad(sc, Interval(scenarios[sc].start,
+                                                scenarios[sc].end));
+        totalEffort += totalLoad;
+        double load = getLoad(sc, Interval(scenarios[sc].start, now));
         if (scenarios[sc].start < now)
-            completedEffort += getLoad(sc, Interval(scenarios[sc].start, now));
+            completedEffort += load;
+
+        /* If the user reported a completion we use this instead of the
+         * calculated completion. */
+        if (scenarios[sc].reportedCompletion >= 0.0)
+            reportedCompletedEffort += totalLoad *
+                scenarios[sc].reportedCompletion / 100.0;
+        else
+            reportedCompletedEffort += load;
 
         return true;
     }

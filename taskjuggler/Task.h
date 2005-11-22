@@ -364,9 +364,11 @@ private:
     double computeForwardCriticalness(int sc);
 
     bool countMilestones(int sc, time_t now, int& totalMilestones,
-                         int& completedMilestones);
+                         int& completedMilestones,
+                         int& reportedCompletedMilestones);
     bool sumUpEffort(int sc, time_t now, double& totalEffort,
-                     double& completedEffort);
+                     double& completedEffort,
+                     double& reportedCompletedEffort);
 
     /// A longer description of the task.
     QString note;

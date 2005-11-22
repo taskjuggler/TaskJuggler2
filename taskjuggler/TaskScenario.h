@@ -130,6 +130,11 @@ private:
     /// User specified percentage of completion of the task
     double reportedCompletion;
 
+    /* Container tasks can have an indirect reported completion. This is based
+     * on reported completions and calculated completions of their subtasks.
+     * This value is only valid for container tasks. */
+    double containerCompletion;
+
     /// Calculated completion degree
     double completionDegree;
 
