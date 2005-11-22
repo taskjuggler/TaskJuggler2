@@ -854,7 +854,6 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
      * Column 3: Line number (emty for additional lines)
      * Column 4: Counter (Hidden)
      */
-    ++messageCounter;
     QString text = msg;
     QListViewItem* parent = 0;
     do
@@ -877,11 +876,11 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
                 parent= new KListViewItem
                     (mw->messageListView, "", textLine, file,
                      QString::number(line),
-                     QString().sprintf("%03d", messageCounter));
+                     QString().sprintf("%03d", ++messageCounter));
             else
                 parent = new KListViewItem
                     (mw->messageListView, "", textLine, "", "",
-                     QString().sprintf("%03d", messageCounter));
+                     QString().sprintf("%03d", ++messageCounter));
 
             parent->setOpen(TRUE);
             parent->setPixmap(0, KGlobal::iconLoader()->
@@ -890,7 +889,7 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
         }
         else
             new KListViewItem(parent, "", textLine, "", "",
-                              QString().sprintf("%03d", messageCounter));
+                              QString().sprintf("%03d", ++messageCounter));
     } while (!text.isEmpty());
 }
 
