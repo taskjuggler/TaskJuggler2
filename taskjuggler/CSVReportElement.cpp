@@ -668,11 +668,14 @@ CSVReportElement::genCellUtilization(TableCellInfo* tci)
     {
         double load =
             tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end));
-        double availableLoad =
-            tci->tli->resource->getAvailableWorkLoad
-            (tci->tli->sc, Interval(start, end));
+        if (load > 0.0)
+        {
+            double availableLoad =
+                tci->tli->resource->getAvailableWorkLoad
+                (tci->tli->sc, Interval(start, end));
 
-        val = 100.0 / (1.0 + availableLoad / load);
+            val = 100.0 / (1.0 + availableLoad / load);
+        }
     }
 
     generateRightIndented(tci, QString().sprintf("%.1f%%", val));

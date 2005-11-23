@@ -1209,12 +1209,6 @@ ProjectFile::readTask(Task* parent)
         return FALSE;
     }
 
-    if ((tt = nextToken(token)) != LBRACE)
-    {
-        errorMessage(i18n("{ expected"));
-        return FALSE;
-    }
-
     /*
      * If a pointer to a parent task was given, the id of the parent task is
      * used as a prefix to the ID of the task. Toplevel task may be prefixed
@@ -1263,8 +1257,13 @@ ProjectFile::readTask(Task* parent)
         task->inheritValues();
     }
 
-    if (!readTaskBody(task))
-        return FALSE;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        if (!readTaskBody(task))
+            return FALSE;
+    }
+    else
+        returnToken(tt, token);
 
     if (task->getName().isEmpty())
     {

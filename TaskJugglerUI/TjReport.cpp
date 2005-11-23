@@ -548,10 +548,16 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                 double load = r->getLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
-                double freeLoad = r->getAvailableWorkLoad
-                    (scenario, Interval(reportElement->getStart(),
-                                        reportElement->getEnd()));
-                double val = 100.0 / (1.0 + (freeLoad / load));
+                double val;
+                if (load <= 0.0)
+                    val = 0.0;
+                else
+                {
+                    double freeLoad = r->getAvailableWorkLoad
+                        (scenario, Interval(reportElement->getStart(),
+                                            reportElement->getEnd()));
+                    val = 100.0 / (1.0 + (freeLoad / load));
+                }
                 cellText = indent(QString().sprintf("%.1f%%", val), lvi,
                                   tcf->getHAlign() == TableColumnFormat::right);
             }
