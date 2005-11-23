@@ -1,4 +1,6 @@
-project test "Persistent Bookings Test" "1.0" 2005-11-18 2006-05-17
+project test "Persistent Bookings Test" "1.0" 2005-11-18-00:00-GMT 2006-05-17-00:00-GMT {
+	timezone "GMT"
+}
 
 resource r1 "Resource 1"
 resource r2 "Resource 2"
