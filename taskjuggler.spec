@@ -18,7 +18,7 @@ URL:          http://www.taskjuggler.org
 License:      GPL
 Group:        Productivity/Office/Other
 Summary:      Project management software
-Version:      2.2.0_beta1 
+Version:      2.2.0_beta2 
 Release:      1
 Source0:      taskjuggler-%{version}.tar.bz2 
 Requires:     qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
