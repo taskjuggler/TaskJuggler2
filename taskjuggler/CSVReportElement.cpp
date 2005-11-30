@@ -104,7 +104,7 @@ CSVReportElement::generateLine(TableLineInfo* tli, int funcSel)
             else
                 first = FALSE;
 
-            GenCellPtr gcf;
+            GenCellPtr gcf = 0;
             switch (funcSel)
             {
                 case 0:

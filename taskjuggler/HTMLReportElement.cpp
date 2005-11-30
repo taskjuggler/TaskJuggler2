@@ -174,7 +174,7 @@ HTMLReportElement::generateLine(TableLineInfo* tli, int funcSel)
         TableCellInfo tci(columnFormat[(*it)->getName()], tli, *it);
         if (columnFormat[(*it)->getName()])
         {
-            GenCellPtr gcf;
+            GenCellPtr gcf = 0;
             switch (funcSel)
             {
                 case 0:
