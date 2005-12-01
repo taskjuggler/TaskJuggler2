@@ -1283,8 +1283,11 @@ TaskJugglerView::updateTaskList()
                 (tlv, (*tli)->getName(), (*tli)->getId(),
                  (*tli)->getDefinitionFile(),
                  QString::number((*tli)->getDefinitionLine()));
+
         // Add new LVI to hash table
-        tlvHash[(*tli)->getId().latin1()] = lvi;
+        char* key = new char[strlen((*tli)->getId().latin1()) + 1];
+        strcpy(key, (*tli)->getId().latin1());
+        tlvHash[key] = lvi;
 
         if ((*tli)->getId() == currentTask)
             newCurrentTask = lvi;
@@ -1311,6 +1314,10 @@ TaskJugglerView::updateTaskList()
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_task", KIcon::Small));
     }
+
+    for (std::map<const char*, QListViewItem*, ltstr>::iterator
+         lvit = tlvHash.begin(); lvit != tlvHash.end(); ++lvit)
+        delete [] (*lvit).first;
 
     // Restore selected task if it's still in the list.
     if (newCurrentTask)
@@ -1365,7 +1372,9 @@ TaskJugglerView::updateResourceList()
                  QString::number((*rli)->getDefinitionLine()));
 
         // Add new LVI to hash table
-        rlvHash[(*rli)->getFullId().latin1()] = lvi;
+        char* key = new char[strlen((*rli)->getFullId().latin1()) + 1];
+        strcpy(key, (*rli)->getFullId().latin1());
+        rlvHash[key] = lvi;
 
         if ((*rli)->getFullId() == currentResource)
             newCurrentResource = lvi;
@@ -1386,6 +1395,10 @@ TaskJugglerView::updateResourceList()
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_resource", KIcon::Small));
     }
+
+    for (std::map<const char*, QListViewItem*, ltstr>::iterator
+         lvit = rlvHash.begin(); lvit != rlvHash.end(); ++lvit)
+        delete [] (*lvit).first;
 
     // Restore selected resource if it's still in the list.
     if (newCurrentResource)
@@ -1437,7 +1450,9 @@ TaskJugglerView::updateAccountList()
                  QString::number((*ali)->getDefinitionLine()));
 
         // Add new LVI to hash table
-        alvHash[(*ali)->getFullId().latin1()] = lvi;
+        char* key = new char[strlen((*ali)->getFullId().latin1()) + 1];
+        strcpy(key, (*ali)->getFullId().latin1());
+        alvHash[key] = lvi;
 
         if ((*ali)->getFullId() == currentAccount)
             newCurrentAccount = lvi;
@@ -1458,6 +1473,10 @@ TaskJugglerView::updateAccountList()
             lvi->setPixmap(0, KGlobal::iconLoader()->
                            loadIcon("tj_account", KIcon::Small));
     }
+
+    for (std::map<const char*, QListViewItem*, ltstr>::iterator
+         lvit = alvHash.begin(); lvit != alvHash.end(); ++lvit)
+        delete [] (*lvit).first;
 
     // Restore selected resource if it's still in the list.
     if (newCurrentAccount)
