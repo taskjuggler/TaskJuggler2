@@ -459,7 +459,9 @@ TjGanttChart::generateLegend(int width, int height)
                 drawLoadBar(x + margin,
                             (int) (legendLabelHeight * (1.5 * row + 0.5)),
                             symbolWidth, legendLabelHeight,
-                            "taskLoadCol", Qt::Dense4Pattern, legend);
+                            "taskLoadCol",
+                            dpiX > 100 ? Qt::Dense3Pattern :
+                            Qt::Dense4Pattern, legend);
                 break;
             case 6:     // Allocated to other task
                 drawLoadBar(x + margin,
@@ -471,7 +473,9 @@ TjGanttChart::generateLegend(int width, int height)
                 drawLoadBar(x + margin,
                             (int) (legendLabelHeight * (1.5 * row + 0.5)),
                             symbolWidth, legendLabelHeight,
-                            "freeLoadCol", Qt::Dense4Pattern, legend);
+                            "freeLoadCol",
+                            dpiX > 100 ? Qt::Dense5Pattern :
+                            Qt::Dense4Pattern, legend);
                 break;
         }
 
@@ -1459,21 +1463,35 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
     double freeLoad = r->getAvailableWorkLoad(scenario, period);
     double taskLoad;
     double load;
-    Qt::BrushStyle pattern;
+    Qt::BrushStyle pattern1 , pattern2, pattern3;
 
     if (r->getEfficiency() > 0.0)
     {
         freeLoad = r->getAvailableWorkLoad(scenario, period);
         taskLoad = r->getLoad(scenario, period, AllAccounts, t);
         load = r->getLoad(scenario, period, AllAccounts);
-        pattern = Qt::Dense4Pattern;
+        if (dpiX > 100)
+        {
+            pattern1 = Qt::Dense1Pattern;
+            pattern2 = Qt::Dense2Pattern;
+            pattern3 = Qt::Dense3Pattern;
+        }
+        else
+            pattern1 = pattern2 = pattern3 = Qt::Dense4Pattern;
     }
     else
     {
         freeLoad = r->getAvailableTimeLoad(scenario, period);
         taskLoad = r->getAllocatedTimeLoad(scenario, period, AllAccounts, t);
         load = r->getAllocatedTimeLoad(scenario, period, AllAccounts);
-        pattern = Qt::Dense5Pattern;
+        if (dpiX > 100)
+        {
+            pattern1 = Qt::Dense4Pattern;
+            pattern2 = Qt::Dense5Pattern;
+            pattern3 = Qt::Dense6Pattern;
+        }
+        else
+            pattern1 = pattern2 = pattern3 = Qt::Dense5Pattern;
     }
     double otherLoad = load - taskLoad;
     double maxLoad = load + freeLoad;
@@ -1493,21 +1511,21 @@ TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
     {
         // Load for this task.
         drawLoadBar(cx, colTaskLoadTop, cw, colBottom - colTaskLoadTop,
-                    "taskLoadCol", pattern, chart);
+                    "taskLoadCol", pattern1, chart);
     }
 
     if (otherLoad > 0.0)
     {
         // Load for other tasks.
         drawLoadBar(cx, colOtherLoadTop, cw, colTaskLoadTop - colOtherLoadTop,
-                    "otherLoadCol", pattern, chart);
+                    "otherLoadCol", pattern2, chart);
     }
 
     if (freeLoad > 0.0)
     {
         // Unallocated load.
         drawLoadBar(cx, colTop, cw, colOtherLoadTop - colTop, "freeLoadCol",
-                    pattern, chart);
+                    pattern3, chart);
     }
 }
 
