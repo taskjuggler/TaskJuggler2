@@ -33,7 +33,7 @@ dnl Perform program name transformation
 AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
-AM_INIT_AUTOMAKE(taskjuggler, [2.2.0-beta2])
+AM_INIT_AUTOMAKE(taskjuggler, [2.2.0])
 
 dnl AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
@@ -73,6 +73,7 @@ AM_CONDITIONAL(include_KDE, test "$cv_option_kdesupport" = yes)
 AM_CONDITIONAL(include_ARTS, false)
 AC_PATH_QT
 
+find TestSuite -name ignorelist | xargs rm
 if test "$cv_option_kdesupport" = yes ;then
     AC_DEFINE(HAVE_KDE,1,[Define if you have KDE])
     KDE_CHECK_THREADING
@@ -84,8 +85,9 @@ if test "$cv_option_kdesupport" = yes ;then
     DO_NOT_COMPILE=""
 else
     kde_htmldir=${datadir}/taskjuggler
+    echo "ICalReport.tjp" > TestSuite/Syntax/Correct/ignorelist
     LIBKCAL=""
-    DO_NOT_COMPILE="TaskJuggler Contrib"
+    DO_NOT_COMPILE="TaskJugglerUI Contrib"
 fi
 AC_SUBST(LIBKCAL)
 

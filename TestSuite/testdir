@@ -44,6 +44,18 @@ do_testing()
   fi
 }
 
+test_file()
+{
+  if [ -f ignorelist ] ; then
+    grep -c $f ignorelist > /dev/null
+    if [ $? -ne 0 ] ; then
+      do_testing $1 $2
+    fi
+  else  
+    do_testing $1 $2
+  fi  
+}
+
 rm -f log
 touch log
 
@@ -58,12 +70,12 @@ fi
 cd Correct
 echo "*** Running tests in Correct..." >> ../log
 for f in *.tjp ; do
-  do_testing $f -ne
+  test_file $f -ne
 done
 cd ../Errors
 echo "*** Running tests in Errors..." >> ../log
 for f in *.tjp ; do
-  do_testing $f -eq
+  test_file $f -eq
 done
 cd ..
 

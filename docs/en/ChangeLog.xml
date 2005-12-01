@@ -820,7 +820,7 @@ errors.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_2_0"><title>Version 2.2.0 (Some day)</title>
+<sect2 id="Changelog_2_2_0"><title>Version 2.2.0 (2005-11-30)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -828,18 +828,18 @@ errors.</para></listitem>
 TaskJuggler releases have been merged into one new front-end. It's
 called TaskJugglerUI. The <computeroutput>ktjview2</computeroutput>
 and <computeroutput>TaskJuggler</computeroutput> executables are no
-longer included. This was done to avoid name clashes on
+longer included. This was done also to avoid name clashes on
 Windows/Cygwin.</para></listitem>
 
 <listitem><para>The TaskJuggler user interface now supports printing
 of high-quality task and resource reports.</para></listitem>
 
 <listitem><para>Major usability improvements for the GUI. It's now
-fully navigatable by keyboard. The scaling/zooming of the Gantt chart
+fully navigable by keyboard. The scaling/zooming of the Gantt chart
 has been improved.</para></listitem>
 
-<listitem><para>Use embedded HTML browser for HTML reports instead of
-lauching an external browser.</para></listitem>
+<listitem><para>HTML reports are now rendered with an embedded
+browser instead of lauching an external browser.</para></listitem>
 
 <listitem><para>Export reports are now loaded into the editor when
 selected in the report browser.</para></listitem>
@@ -861,7 +861,9 @@ milestone or all effort tasks.</para></listitem>
 
 <listitem><para>To get Gantt and resource reports in the GUI the
 column 'chart' must be specified. They are no longer displayed
-automatically.</para></listitem>
+automatically. This was done to have more consistency between the
+printed version of the GUI reports and the other
+reports.</para></listitem>
 
 <listitem><para>The default separator for CSV files is now a semicolon
 since this is what OpenOffice.org uses by default. But this can be
@@ -877,7 +879,7 @@ all. The modes can be set in the scenario definition.</para></listitem>
 format.</para></listitem>
 
 <listitem><para>Fixed reported task duration value in all report
-types.  Value was only correct when unit 'days' was
+types. Value was only correct when unit 'days' was
 used.</para></listitem>
 
 <listitem><para>Fixed account reports which had summary lines that

@@ -210,19 +210,38 @@ task AcSo "Accounting Software" {
 # results. So we define 2 interactive reports, 7 HTML reports and
 # 1 XML report.
 
-# This task report is for use with the TaskJuggler GUI
+# This task report is for use with the TaskJugglerUI. It provides a
+# first overview of the project
 taskreport "Project Overview" {
   headline "Accounting Software Project - Overview"
-  columns index, name, start, end, effort, duration, completed, status, note,
-cost, revenue, chart
+  columns index, name, start, end, effort, duration, completed, status, note
+  hideresource 1
+  scenario delayed
+}
+
+# Another report showing a Gantt chart
+taskreport "Gantt Chart" {
+  headline "Accounting Software Project - Gantt Chart"
+  columns hierarchindex, name, start, end, effort, duration, chart
+  hideresource 1
+  scenario plan
+}
+
+# A report with cost and revenue numbers
+taskreport "Project Cost and Revenue" {
+  headline "Accounting Software Project - Cost and Revenue"
+  columns hierarchindex, name, start, end, cost, revenue
+  hideresource 1
   scenario delayed
 }
 
 # A resource report for use with the TaskJuggler GUI
 resourcereport "Resource Usage" {
-  columns effort, freeload, utilization, rate, chart
+  headline "Accounting Software Project - Resource Allocations"
+  columns name, effort, freeload, utilization, rate, chart
   scenario delayed
   hideresource 0
+  loadunit days
 }
 
 # For conveniance we would like each report to contain links to the
