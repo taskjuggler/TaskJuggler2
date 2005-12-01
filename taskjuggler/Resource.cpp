@@ -524,9 +524,12 @@ Resource::book(Booking* nb)
 bool
 Resource::bookSlot(uint idx, SbBooking* nb)
 {
-    // Test if the time slot is still available.
+    // Make sure that the time slot is still available.
     if (scoreboard[idx] != 0)
+    {
+        delete nb;
         return FALSE;
+    }
 
     SbBooking* b;
     // Try to merge the booking with the booking in the previous slot.
