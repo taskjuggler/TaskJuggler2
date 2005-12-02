@@ -24,3 +24,12 @@ Preferences dialog.</p>
 </html>
 </tip>
 
+<tip category="TaskJuggler">
+<html>
+<p>...the editor had a graphical date selector?</p>
+
+<p>You can insert or change a date under the cursor by pressing
+CTRL-D.</p>
+</html>
+</tip>
+
