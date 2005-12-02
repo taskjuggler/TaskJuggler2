@@ -65,10 +65,10 @@ rate 300.0
 # }
 
 resource people "People" {
-	
+  
 }
 resource equipment "Equipment" {
-	efficiency 0.0
+  efficiency 0.0
 }
 
 # In order to do a simple profit and loss analysis of the project we
@@ -91,74 +91,99 @@ task myProject "My Project" {
   # sub tasks specifies it differently.
   account costs
 
-	task planning "Planning Phase" {
-		# The tasks in this phase are just milestones that usually precede
-		# this plan. Nevertheless it's a good idea to document the time
-		# line.
-		task concept "Project Concept" { start @@projectstart@@ }
-	  task rfp "Request for Proposal" { start @@projectstart@@ }
-		task greenlight "Greenlight" { start @@projectstart@@ }
-		task definition "Definition" { start @@projectstart@@ }
-		task approval "Approval" { start @@projectstart@@ }
-		task kickoff "Kick-off" { start @@projectstart@@ }
-		task plan "Plan" { start @@projectstart@@ }
-		task approach "Approach" { start @@projectstart@@ }
-	}
-	task design "Design Phase" {
-	}
-	task development "Development Phase" {
-	}
-	task integration "Integration Phase" {
-	}
-	task deployment "Deployment Phase" {
-	}
-	task postDeployment "Post-Deployment Phase" {
-	}
+  task planning "Planning Phase" {
+    # The tasks in this phase are just milestones that usually precede
+    # this plan. Nevertheless it's a good idea to document the time
+    # line.
+    task concept "Project Concept" { start @@projectstart@@ }
+    task rfp "Request for Proposal" { start @@projectstart@@ }
+    task greenlight "Greenlight" { start @@projectstart@@ }
+    task definition "Definition" { start @@projectstart@@ }
+    task approval "Approval" { start @@projectstart@@ }
+    task kickoff "Kick-off" { start @@projectstart@@ }
+    task plan "Plan" { start @@projectstart@@ }
+    task approach "Approach" { start @@projectstart@@ }
+  }
+  task design "Design Phase" {
+  }
+  task development "Development Phase" {
+  }
+  task integration "Integration Phase" {
+  }
+  task deployment "Deployment Phase" {
+  }
+  task postDeployment "Post-Deployment Phase" {
+  }
 }
 
-# This task report is for use with the TaskJuggler GUI
-taskreport "Project Overview" {
-  columns start, end, effort, duration, completed, cost, revenue
-}
-
-# A report featuring a Gantt Chart
+# A traditional Gantt Chart for the TaskJugglerUI
 taskreport "Gantt Chart" {
-	columns start, end, effort, chart
-	loadunit days
-}
-
-# A resource report for use with the TaskJuggler GUI  
-resourcereport "Resource Usage" {
-  columns effort, freeload, utilization, rate
-  hideresource 0
-}
-
-htmltaskreport "Tasks-Overview.html" {
-  # The report should be a table that contains several columns. The
-  # task and their information form the rows of the table. Since we
-  # don't like the title of the effort column, we change it to "Work".
-  columns hierarchindex, name, duration, effort { title "Work"},
-          start, end, weekly
+  headline "Project Gantt Chart"
+  columns hierarchindex, name, start, end, effort, duration, chart
   # For this report we like to have the abbreviated weekday in front
   # of the date. %a is the tag for this.
   timeformat "%a %Y-%m-%d"
-  
-  # Don't show load values.
-  barlabels empty
-  # Set a title for the report
-  headline "Accounting Software Project"
-  # And a short description what this report is about.
-  caption "This table presents a management-level overview of the
-  project. The values are days or man-days."
+  loadunit days
+  hideresource 1
 }
 
+# A list of tasks showing the resources assigned to each task.
+taskreport "Task Usage" {
+  headline "Task Usage Report"
+  columns hierarchindex, name, start, end, effort { title "Work" }, duration,
+          cost, revenue
+  timeformat "%Y-%m-%d"
+  loadunit days
+  hideresource 0
+}
+
+# A list of all tasks with the percentage complete for each task
+taskreport "Tracking Gantt" {
+  headline "Tracking Gantt Chart"
+  columns hierarchindex, name, start, end, effort { title "Work" }, duration,
+          completed, chart
+  timeformat "%a %Y-%m-%d"
+  loadunit days
+  hideresource 1
+}
+
+# A graph showing resource allocation. It idengifies whether each
+# resource is under- or over-allocated for.
+resourcereport "Resource Graph" {
+  headline "Resource Allocation Graph"
+  columns no, name, rate, utilization, freeload, chart
+  loadunit days
+  hidetask 1
+}
+
+# A list of all project resources, both human and material resources,
+# together with the costs for each.
+resourcereport "Resource Sheet" {
+  headline "Resource Sheet"
+  columns no, name, efficiency, id, maxeffort, rate
+  loadunit days
+  hidetask 1
+}
+
+# A list of resources and each task associated with each resource.
+resourcereport "Resource Usage" {
+  headline "Resource Usage Report"
+  columns no, name, utilization, freeload, cost
+  loadunit days
+  hidetask 0
+}
+
+# This report looks like a regular calendar that shows the tasks by
+# their dates.
+htmlweeklycalendar "Calendar.html" {
+}
+
+# This report is a status report for the current week. It also
+# provides an outlook for the next week.
 htmlstatusreport "Status-Report.html" {
 }
 
-# To conclude the HTML reports a report that shows how badly the
-# project is calculated is generated. The company won't get rich with
-# this project. Due to the slip, it actually needs some money from the
-# bank to pay the salaries.
+# A P&L report for the project.
 htmlaccountreport "Accounting.html" { 
   # Besides the number of the account and the name we have a column
   # with the total values (at the end of the project) and the values
