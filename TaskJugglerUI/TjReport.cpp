@@ -57,6 +57,7 @@
 #include "TjGanttChart.h"
 #include "TjObjPosTable.h"
 #include "KPrinterWrapper.h"
+#include "UsageLimits.h"
 
 TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
     : TjReportBase(p, rDef, n)
@@ -525,6 +526,33 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
         else if ((*ci)->getName() == "id")
         {
             cellText = r->getFullId();
+        }
+        else if ((*ci)->getName() == "maxeffort")
+        {
+            const UsageLimits* limits = r->getLimits();
+            if (limits == 0)
+                cellText = i18n("no Limits");
+            else
+            {
+                int sg = reportDef->getProject()->getScheduleGranularity();
+                if (limits->getDailyMax() > 0)
+                    cellText = i18n("D: %1h").arg(limits->getDailyMax() *
+                                               sg / (60 * 60));
+                if (limits->getWeeklyMax() > 0)
+                {
+                    if (!cellText.isEmpty())
+                        cellText += ", ";
+                    cellText += i18n("W: %1h").arg(limits->getWeeklyMax() *
+                                                sg / (60 * 60));
+                }
+                if (limits->getMonthlyMax() > 0)
+                {
+                    if (!cellText.isEmpty())
+                        cellText += ", ";
+                    cellText += i18n("M: %1d").arg(limits->getMonthlyMax() *
+                                                      sg / (60 * 60 * 24));
+                }
+            }
         }
         else if ((*ci)->getName() == "projectids")
             cellText = r->getProjectIDs
