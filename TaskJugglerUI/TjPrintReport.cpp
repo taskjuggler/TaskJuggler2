@@ -197,13 +197,19 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
 
         /* Determine whether the cell content should be indented. And if so,
          * then on what level. */
-        if (tcf->getIndent() &&
-            reportElement->getTaskSorting(0) == CoreAttributesList::TreeMode)
+        if (tcf->getIndent())
         {
-            int indentLevel = task->treeLevel() -
-                reportElement->taskRootLevel();
-            if (resource)
+            int indentLevel = 0;
+
+            if (reportElement->getTaskSorting(0) ==
+                CoreAttributesList::TreeMode)
+                indentLevel += task->treeLevel() -
+                    reportElement->taskRootLevel();
+
+            if (resource && reportElement->getResourceSorting(0) ==
+                CoreAttributesList::TreeMode)
                 indentLevel += maxDepthResourceList;
+
             cell->setIndentLevel(indentLevel);
         }
 
@@ -401,13 +407,18 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
 
         /* Determine whether the cell content should be indented. And if so,
          * then on what level. */
-        if (tcf->getIndent() &&
-            reportElement->getResourceSorting(0) ==
-            CoreAttributesList::TreeMode)
+        if (tcf->getIndent())
         {
-            int indentLevel = resource->treeLevel();
-            if (task)
+            int indentLevel = 0;
+
+            if (reportElement->getResourceSorting(0) ==
+                CoreAttributesList::TreeMode)
+                indentLevel += resource->treeLevel();
+
+            if (task != 0 && reportElement->getTaskSorting(0) ==
+                CoreAttributesList::TreeMode)
                 indentLevel += maxDepthTaskList;
+
             cell->setIndentLevel(indentLevel);
         }
 
@@ -417,6 +428,10 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, task);
             cellText = tcf->realFormat.format(val, FALSE);
+        }
+        else if ((*ci)->getName() == "efficiency")
+        {
+            cellText = QString().sprintf("%.1lf", resource->getEfficiency());
         }
         else if ((*ci)->getName() == "effort")
         {

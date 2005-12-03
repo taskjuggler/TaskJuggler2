@@ -491,6 +491,10 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
+        else if ((*ci)->getName() == "efficiency")
+        {
+            cellText = QString().sprintf("%.1lf", r->getEfficiency());
+        }
         else if ((*ci)->getName() == "effort")
         {
             double val = 0.0;
