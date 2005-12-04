@@ -1,8 +1,8 @@
 TASKJUGGLER=../../taskjuggler/taskjuggler
 TARGETNAME=AccountingSoftware
 
-EXTRA_DIST = *.html *.tjp *.tjx
-CLEANFILES = *.html *.tjx
+EXTRA_DIST = *.html *.tjp
+CLEANFILES = *.html
 
 docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/FirstProject
 
@@ -15,8 +15,8 @@ install-data-local:
 uninstall-local:
 	-rm -f $(DESTDIR)$(docprefix)
 
-$(TARGETNAME).tjx : $(TARGETNAME).tjp $(TASKJUGGLER)
+Calendar.html : $(TARGETNAME).tjp $(TASKJUGGLER)
 	$(TASKJUGGLER) --debug 1 $(TARGETNAME).tjp
 
-all-local: $(TARGETNAME).tjx
+all-local: Calendar.html
 
