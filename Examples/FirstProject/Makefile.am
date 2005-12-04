@@ -10,7 +10,6 @@ install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix) 
 	$(INSTALL_DATA) $(srcdir)/*.html $(DESTDIR)$(docprefix)
 	$(INSTALL_DATA) $(srcdir)/*.tjp $(DESTDIR)$(docprefix)
-	$(INSTALL_DATA) $(srcdir)/*.tjx $(DESTDIR)$(docprefix)
 
 uninstall-local:
 	-rm -f $(DESTDIR)$(docprefix)
