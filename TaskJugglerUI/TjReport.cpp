@@ -36,6 +36,7 @@
 #include <ktextbrowser.h>
 #include <krun.h>
 #include <kprinter.h>
+#include <kmessagebox.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -698,8 +699,20 @@ TjReport::prepareChart()
     }
 
     // Make sure that we only prepare the chart if the listView isn't empty.
+
     if (!listView->firstChild())
+    {
+        QValueList<int> sizes;
+        sizes.append(width());
+        sizes.append(0);
+        splitter->setSizes(sizes);
+        KMessageBox::information
+            (this, i18n("The report does not contain any data. Either there "
+                        "were no properties defined for this report or the "
+                        "filter expressions have eliminated all entries."),
+             QString::null, "EmptyReportInfo");
         return;
+    }
 
     // Calculate some commenly used values;
     headerHeight = listView->header()->height();
@@ -731,6 +744,7 @@ TjReport::prepareChart()
         }
         splitter->setSizes(sizes);
     }
+
     ganttChart->setSizes(objPosTable, headerHeight, listHeight,
                          sizes[1] == 0 ? static_cast<int>(width() * 2.0/3.0) :
                          sizes[1],
