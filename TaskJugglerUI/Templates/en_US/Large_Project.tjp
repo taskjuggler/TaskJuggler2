@@ -147,7 +147,7 @@ taskreport "Tracking Gantt" {
   hideresource 1
 }
 
-# A graph showing resource allocation. It idengifies whether each
+# A graph showing resource allocation. It identifies whether each
 # resource is under- or over-allocated for.
 resourcereport "Resource Graph" {
   headline "Resource Allocation Graph"

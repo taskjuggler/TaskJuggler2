@@ -561,286 +561,170 @@ results.</para>
 <para>TaskJuggler offers a number of report types. Probably the most
 popular ones are interactive reports and HTML reports.</para>
 
-<sect2 id="generating_interactive_reports"><title>Generating Interactive Reports</title>
+<sect2 id="generating_interactive_reports"><title>Generating
+Interactive Reports</title>
 
 <para>Interactive reports are only available in the TaskJuggler GUI. The
 command line version will just ignore interactive report definitions.
 To view a <link linkend="PROPERTY_taskreport">task report</link> in
-the GUI, you have to add the following lines to your project.</para>
+the GUI, you have to add the following lines to your project. This
+will give you a list of all the project's tasks and the classical
+Gantt chart.</para>
 
 <para><screen>
-taskreport "Project Overview" {
-  columns start, end, effort, duration, completed, status, note
-  hideresource 1
-  scenario delayed
-}
-</screen></para>
-
-<para>The syntax is very similar to other report types. The only noticable
-differences are:</para>
-
-<para><itemizedlist>
-
-<listitem><para>A column with the task name is always
-included.</para></listitem>
-
-<listitem><para>A Gantt chart will always be
-displayed.</para></listitem>
-
-<listitem><para>Interactive reports only support one scenario. By
-default this is the first scenario, but the user can select another
-scenario to be displayed. To view the delayed scenario we use the
-keyword <link
-linkend="PROPERTY_scenario_report">scenario</link>.</para></listitem>
-
-</itemizedlist></para>
-
-<para>The interactive reports also support Gantt charts. To get a
-Gantt report, just add the keyword
-<computeroutput>chart</computeroutput> to the columns.</para>
-
-<para><screen>
-# Another report showing a Gantt chart
 taskreport "Gantt Chart" {
-  headline "Accounting Software Project - Gantt Chart"
+  headline "Project Gantt Chart"
   columns hierarchindex, name, start, end, effort, duration, chart
+  timeformat "%a %Y-%m-%d"
+  loadunit days
   hideresource 1
-  scenario plan
 }
 </screen></para>
 
 <para>The GUI requires the <computeroutput>name</computeroutput>
 column to be present in the report. If you don't specify it, it will
 be added automatically. It does not support any of the index columns.
-It's nevertheless a good idea to request it, as the printed version of
-the interactive reports behave like the other reports. They only show
-specified columns. The printed reports repeat the first column on
-every page in case it does not fit on a single page.</para>
+They will not be shown in the GUI.  It's nevertheless a good idea to
+request it, as the printed version of the interactive reports behave
+like the other reports. They only show specified columns. The printed
+reports repeat the first column on every page in case it does not fit
+on a single page. To print a report from the GUI just select
+File->Print from the menu or click the printer icon in the tool
+bar.</para>
 	
-<para>The interactive <link linkend="PROPERTY_resourcereport">resource
-reports</link> have a very similar syntax:</para>
+<para>For this report we like to have the abbreviated weekday in front
+of the date. <computeroutput>%a</computeroutput> is the tag for this.
+See the <link linkend="PROPERTY_timeformat">manual</link> for a
+complete list of all
+options.</para>
+
+<para>We don't want to see any resources in this report, so we hide
+them all. 1 means always hide a resource. To show all resources we could write a
+0, which means never hide a resource. Or we could write a logical
+expression that only shows the leaf resources and sorts them by name
+like we did for the next report. It's a list of all tasks showing the
+resources assigned to each task.</para>
 
 <para><screen>
+taskreport "Task Usage" {
+  headline "Task Usage Report"
+  columns hierarchindex, name, start, end, effort { title "Work" }, duration,
+  cost, revenue
+  timeformat "%Y-%m-%d"
+  loadunit days
+  hideresource ~isLeaf()
+  sortresources nameup
+}
+</screen></para>
+
+<para>The default title for the
+<computeroutput>effort</computeroutput> column is replaced with a
+custom tiltle. Additionally we show the cost and revenue of all tasks
+and resources. All loads are shown as resource-days.</para>
+
+<para>The next report is similar to the first one but has the
+completion degree as additional column.</para>
+
+<para><screen>
+# A list of all tasks with the percentage complete for each task
+taskreport "Tracking Gantt" {
+  headline "Tracking Gantt Chart"
+  columns hierarchindex, name, start, end, effort { title "Work" }, duration,
+  completed, chart
+  timeformat "%a %Y-%m-%d"
+  loadunit days
+  hideresource 1
+}
+</screen></para>
+
+<para>We can also have resource-centric reports. This is done with the
+report type <link
+linkend="PROPERTY_resourcereport">resourcereport</link>. The following
+report is showing resource allocation. It identifies whether each
+resource is under- or over-allocated for.</para>
+
+<para><screen>
+resourcereport "Resource Graph" {
+  headline "Resource Allocation Graph"
+  columns no, name, rate, utilization, freeload, chart
+  loadunit days
+  hidetask 1
+}
+</screen></para>
+
+<para>The next report is a list of all project resources, both human
+and material resources, together with the costs for each.</para>
+
+<para><screen>
+resourcereport "Resource Sheet" {
+  headline "Resource Sheet"
+  columns no, name, efficiency, id, maxeffort, rate
+  loadunit days
+  hidetask 1
+}
+</screen></para>
+
+<para>The next report is similar to the previous one, but also lists
+the tasks for each of the resources. It also provides details about
+the cost for each resource and task.</para>
+
+<para><screen>
+# A list of resources and each task associated with each resource.
 resourcereport "Resource Usage" {
-  columns effort, freeload, utilization, rate
-  scenario delayed
-  hideresource 0
+  headline "Resource Usage Report"
+  columns no, name, utilization, freeload, cost
+  loadunit days
+  hidetask 0
 }
 </screen></para>
 
 </sect2>
 <sect2 id="generating_html_reports"><title>Generating HTML Reports</title>
 
-<para>You can advice TaskJuggler to generate one or more HTML pages that
-contain lists of your tasks, resources or accounts.</para>
+<para>In addition to the interactive reports, TaskJuggler also
+provides HTML reports. These reports have the benefit, that you can
+create report files that you can publish on a web server. TaskJuggler
+supports a variety of HTML reports. Please look into the manual for a
+full list. In this tutorial we will only cover a subset of
+them.</para>
 
-<para>Before we start with the reports, we present you another macro.
-We like to add a navigation bar to each HTML page that holds a number
-of buttons. Each button changes the page to another report. This way
-we can create a navigation bar that holds links to all reports. Since
-we have created a macro, we can add the navigation bar to all reports
-without much hassle. The navigation bar is constructed with raw HTML
-tags.  If you are not familiar with HTML this will look very strange
-to you.  Don't worry, this is just a cool feature we would like to
-demonstrate. You can use TaskJuggler to it's full extend without
-having to learn HTML code.</para>
-
-<para>The HTML code is injected into the reports using the <link
-linkend="PROPERTY_rawhead">rawhead</link> attribute. This will
-put the HTML code close to the top of the HTML page right after the
-body started. As you can see here, string parameters of attributes can
-be enclosed in single quotes as well. This is handy, if the string
-itself needs to contain double quotes.</para>
+<para>The first HTML report looks like a regular calendar. It lists
+all ongoing tasks for each day.</para>
 
 <para><screen>
-macro navbar [
-rawhead
-  '&lt;p&gt;&lt;center&gt;
-  &lt;table border="2" cellpadding="10"&gt;
-  &lt;tr&gt;
-    &lt;td class="default" style="font-size:120%" rowspan="2"&gt;
-    &lt;a href="Tasks-Overview.html"&gt;Tasks Overview&lt;/td&gt;
-    &lt;td class="default" style="font-size:120%" rowspan="2"&gt;
-    &lt;a href="Tasks-Details.html"&gt;Tasks Details&lt;/td&gt;
-    &lt;td class="default" style="font-size:120%" rowspan="2"&gt;
-    &lt;a href="Staff-Overview.html"&gt;Staff Overview&lt;/td&gt;
-    &lt;td class="default" style="font-size:120%" rowspan="2"&gt;
-    &lt;a href="Staff-Details.html"&gt;Staff Details&lt;/td&gt;
-    &lt;td class="default" style="font-size:120%" rowspan="2"&gt;
-    &lt;a href="Accounting.html"&gt;Accounting&lt;/td&gt;
-    &lt;td class="default" style="font-size:120%" rowspan="2"&gt;
-    &lt;a href="acso.eps"&gt;GANTT Chart (Postscript)&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;/table&gt;
-  &lt;/center&gt;&lt;/p&gt;&lt;br&gt;'
-]
-</screen></para>
-
-</sect2>
-<sect2 id="generating_html_task_reports"><title>Generating HTML Task
-Reports</title>
-
-<para>As the first report, we would like to have a general overview of all
-tasks with their computed start and end dates. To visualize the dates
-a bit more, we also include a Gantt chart like bar graph.  The
-property <link linkend="PROPERTY_htmltaskreport">htmltaskreport</link> defines
-exactly this, a list of all tasks in a table. The columns are flexible
-and can be specified with the <link
-linkend="PROPERTY_columns">column</link> attribute. For this
-report we like to see the number, the name, the start and end
-date, a weekly calendar and the total effort in the table.</para>
-
-<para><screen>
-htmltaskreport "Tasks-Overview.html" {
-  ${navbar}
-  columns hierarchindex, name, duration, effort { title "Work"},
-          start, end, weekly
-  timeformat "%a %Y-%m-%d"
-  barlabels empty
-  headline "Accounting Software Project"
-  caption "This table presents a management-level overview of the
-    project. The values are days or man-days."
+# This report looks like a regular calendar that shows the tasks by
+# their dates.
+htmlweeklycalendar "Calendar.html" {
 }
 </screen></para>
 
-<para>Since we don't like the default column title for the effort
-column we change it to "Work". Dates should be displayed as
-<computeroutput>Sun 2003-09-29</computeroutput>, so we use the attribute <link
-linkend="PROPERTY_timeformat">timeformat</link>. For the
-overview page we don't like to have load values in the calendar. We
-just want to have the Gantt chart like bars that visualize the
-duration of the tasks. Since the load values are reported by default,
-we use the attribute <link
-linkend="PROPERTY_barlabels">barlabels</link> to surpress
-them.  With the <link
-linkend="PROPERTY_headline">headline</link> attribute we can
-specify a headline for the report. To have a little more info included
-as well, we use the <link
-linkend="PROPERTY_caption">caption</link> attribute. Both of
-these attributes are followed by the string to be included into the
-report.</para>
-
-<para>
-Now we like to generate a report that contains a lot more details
-about the task. The weekly calendar is replaced by a daily calendar.
-The weekly calendar had a column for each week. The daily calendar
-features a column for each day. The column includes the load for the
-task for the week or day and a colored background in case the task is
-active that day or week.</para>
+<para>The next HTML report is a weekly status report. You can generate
+such a report each week to update your team, your management and your
+clients about the current project status. The report lists all the
+events of the recent week and all upcoming new tasks for the next
+week.</para>
 
 <para><screen>
-htmltaskreport "Tasks-Details.html" {
-  ${navbar}
-  columns no, name, start, end, scenario, daily
-  start 2002-03-01
-  end 2002-04-01
-  scenarios plan, delayed
-  headline "Accounting Software Project - March 2002"
-  caption "This table shows the load of each day for all the tasks.
-    Additionally the resources used for each task are listed. Since the
-    project start was delayed, the delayed schedule differs significantly
-    from the original plan."
-  hideresource 0
+# This report is a status report for the current week. It also
+# provides an outlook for the next week.
+htmlstatusreport "Status-Report.html" {
 }
 </screen></para>
-
-<para>In order to limit the report to a reasonable size, we limit the
-daily calendar to the interval 2002-03-01 - 2002-04-01 with the
-<computeroutput>start</computeroutput> and
-<computeroutput>end</computeroutput> attributes. 
-We also like to list all assigned resources right after each
-task. Normally resources are hidden in task reports but they can be
-enabled by using the <link
-linkend="PROPERTY_hideresource">hideresource</link> attribute.
-The attribute is followed by a logical expression that specifies what
-resources to hide. The expression is evaluated for each resource and
-if the result is true (not 0) than the resource is hidden. Since we
-want to show all resources we put a 0 in, so it's false for all
-resources.</para>
-
-<para>To add even more information to this report, we also turn on the
-reporting of values of the delayed scenario by using the <link
-linkend="PROPERTY_scenarios">scenarios</link> attribute. This
-causes TaskJuggler to split the lines of the report into one for each
-scenario where appropriate and report the values underneath each
-other.</para>
-
-</sect2>
-<sect2 id="generating_html_resource_reports"><title>Generating HTML
-Resource Reports</title>
-
-<para> The previous report listed the resources per task. Now we want
-to generate a report the lists all resources. It's again a report with
-a weekly calendar. This time we use the attribute <link
-linkend="PROPERTY_loadunit">loadunit</link> to report the load
-in hours instead of days.</para>
-
-<para><screen>
-htmlresourcereport "Staff-Overview.html" {
-  ${navbar}
-  columns no, name, scenario, weekly, effort
-  scenarios plan, delayed
-  loadunit hours
-  headline "Weekly working hours for the Accounting Software Project"
-}
-</screen></para>
-
-<para> Now a similar report but with much more details. We want to
-include the tasks again, this time each resource should be followed
-by the tasks the resource is assigned to. In <link
-linkend="PROPERTY_htmltaskreport">htmltaskreports</link> resources are hidden
-by default while in <link
-linkend="PROPERTY_htmlresourcereport">htmlresourcereports</link> tasks are
-hidden by default. To include tasks the attribute <link
-linkend="PROPERTY_hidetask">hidetask</link> needs to be used. It
-is followed by a logical expression just like <link
-linkend="PROPERTY_hideresource">hideresource</link>.</para>
-
-<para><screen>
-htmlresourcereport "Staff-Details.html" {
-  ${navbar}
-  columns name, daily, effort
-  start 2002-03-01
-  end 2002-04-01
-  hidetask 0
-  hideresource team
-  sortresources nameup
-  loadunit hours
-  headline "Daily working hours for the Accounting Software Project -
-  March 2002"
-}
-</screen></para>
-
-<para>When specifying the resources we have grouped the resources into
-two teams by creating two pseudo resources that had the real employees
-as sub resources. We have attached the flag
-<computeroutput>team</computeroutput> to those pseudo resources. We
-now use this flag as logical expression for <link
-linkend="PROPERTY_hideresource">hideresource</link>. So all
-resources that have this flag will be hidden in the report. For better
-readability we sort the resource list by name in ascending order. The
-attribute <link
-linkend="PROPERTY_sortresources">sortresources</link> is taking
-care of this.</para>
-
-</sect2>
-<sect2 id="generating_html_account_reports"><title>Generating HTML
-Account Reports</title>
 
 <para> To conclude the HTML reports a report that shows how poorly the
 project is calculated is generated. The company won't get rich with this
 project. Due to the slip, it actually needs a loan from the bank
-to pay the salaries. </para>
+to pay the salaries.</para>
 
 <para><screen>
 htmlaccountreport "Accounting.html" {
-	${navbar}
-  columns no, name, total, monthly 
-	headline "P&amp;L for the Accounting Software Project" 
-	caption "The table shows the profit and loss analysis as well as the
-	         cashflow situation of the Accounting Software Project."
+  columns no, name, scenario, total, monthly
+  headline "P&amp;L for the Project"
+  caption "The table shows the profit and loss
+           analysis as well as the cashflow situation of the Accounting
+           Software Project."
   accumulate
-	scenarios plan, delayed
+  scenarios plan, delayed
 }
 </screen></para>
 
@@ -853,22 +737,6 @@ linkend="PROPERTY_accumulate">accumulate</link> attribute
 puts the calendar in accumulation mode. The monthly columns list the
 value of the account at the end of the month. Normally the amount that
 has been added or subtracted from the account would be listed.</para>
-
-</sect2>
-<sect2 id="generating_xml_reports"><title>Generating XML Reports</title>
-
-<para> Finally we generate an XML report that contains all info about
-the scheduled project. This report will be used by tjx2gantt to create
-a nice GANTT chart of our project. The file can also be read by tools
-like tjGUI or the KDE Konqueror plug-in. Since the Konqueror plug-in
-already uses the new, version 2 XML format, you have to comment out
-the version attribute.</para>
-
-<para><screen>
-xmlreport "AccountingSoftware.tjx" {
-	#version 2
-}
-</screen></para>
 
 </sect2>
 </sect1>
