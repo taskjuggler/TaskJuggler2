@@ -5,7 +5,7 @@ TARGETNAME=Project2
 EXTRA_DIST = *.html *.tjp
 CLEANFILES = *.html
 
-docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/BigProject/$(TARGETNAME)
+docprefix = @PACKAGES_DIR@Examples/BigProject/$(TARGETNAME)
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)

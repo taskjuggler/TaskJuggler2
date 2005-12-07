@@ -5,7 +5,7 @@ TARGETNAME=ShiftSchedule
 EXTRA_DIST = *.html *.tjp *.tjx
 CLEANFILES = *.html *.tjx
 
-docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/$(TARGETNAME)
+docprefix = @PACKAGES_DIR@Examples/$(TARGETNAME)
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix)

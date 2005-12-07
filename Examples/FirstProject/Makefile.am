@@ -4,7 +4,7 @@ TARGETNAME=AccountingSoftware
 EXTRA_DIST = *.html *.tjp
 CLEANFILES = *.html
 
-docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/FirstProject
+docprefix = @PACKAGES_DIR@Examples/FirstProject
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix) 

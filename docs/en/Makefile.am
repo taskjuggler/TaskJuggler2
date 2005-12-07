@@ -1,5 +1,5 @@
 EXTRA_DIST = taskjuggler/*.html 
-docprefix = /usr/share/doc/packages/taskjuggler/
+docprefix = @PACKAGES_DIR@
 kdeprefix = $(prefix)/share/doc/HTML/en/taskjuggler/
 
 SGMLSOURCES = taskjuggler.xml ChangeLog.xml FirstProject.xml UsageGuide.xml Example.xml SyntaxReference.xml GenPropertyReference.xml index.docbook

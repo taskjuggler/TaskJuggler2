@@ -1,6 +1,6 @@
 SUBDIRS = Common Project1 Project2 
 
-docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/BigProject
+docprefix = @PACKAGES_DIR@Examples/BigProject
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix) 

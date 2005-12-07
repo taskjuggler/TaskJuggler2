@@ -1,4 +1,4 @@
-docprefix = $(prefix)/share/doc/packages/taskjuggler/Examples/BigProject/Common
+docprefix = @PACKAGES_DIR@Examples/BigProject/Common
 
 install-data-local:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(docprefix) 
