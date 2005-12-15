@@ -300,12 +300,12 @@ product. If not, you might like to contact them to inform them that
 they are missing an essential package.</para>
 
 <para>This version of TaskJuggler was built and tested on SuSE Linux
-9.1, 9.2 and 9.3 on various hardware platforms.</para>
+9.3 and 10.0 on various hardware platforms.</para>
 
 <sect2 id="the_graphical_use_interface"><title>The Graphical User
 Interfaces</title>
 
-<para>With version 2.1 came a new graphical front-end. It's an integrated
+<para>With version 2.2 came a new graphical front-end. It's an integrated
 Project management environment.</para>
 
 <para>The front-end is called
@@ -332,7 +332,7 @@ url="ftp://ftp.trolltech.com/qt/source"> Qt C++ class library</ulink>
 version 3.3 or higher</para></listitem>
 
 <listitem><para> GNU Compiler Collection &mdash; We are currently
-using GCC 3.2 to develop TaskJuggler. Since we try to write the code
+using GCC 4.0 to develop TaskJuggler. Since we try to write the code
 platform independent and ANSI standard compliant it should work with
 other compilers as well.</para></listitem>
 
