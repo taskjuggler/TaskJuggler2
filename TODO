@@ -1,11 +1,10 @@
 Work in progress:
-- Add new svnmailer.
-- Fix vacation after bookings bug.
+- Critical path analysis (post scheduling)
 
 Probably:
-- Printing for interactive reports
+- 'allowoffhours' attribute for bookings
+- 'limits' for tasks, not just for allocations.
 - Interactive account report
-- Add support for risk documentation.
 - Add C++ style // comments.
 
 Maybe:
@@ -16,6 +15,5 @@ Maybe:
 - Add support for flexible rates (per task, per shift)
 - Cleanup taskjuggler library API, so it can be used by other apps.
 - Color support for tasks and resources.
-- Limits for accounts.
 - Gap with snap on weekdays.
 
