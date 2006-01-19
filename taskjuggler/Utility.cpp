@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <qdict.h>
 
@@ -832,7 +833,7 @@ date2time(const QString& date)
         return 0;
     }
 
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || (defined(__SVR4) && defined(__sun))
     struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1 };
 #else
     struct tm t = { sec, min, hour, d, m - 1, y - 1900, 0, 0, -1, 0, 0 };
@@ -854,4 +855,31 @@ date2time(const QString& date)
     return localTime;
 }
 
+#if defined(__SVR4) && defined(__sun)
+/*
+ * Note: a proper implementation of a "setenv" function for Solaris
+ *       would take a map where the "variable-name" is linked to a
+ *       pointer. This would allow freeing the memory allocated here
+ *       (a kind of garbage collection).
+ */
+
+int setenv(const char* var, const char* val, int ignore)
+{
+   int varLen = strlen(var);
+   int valLen = strlen(val);
+   char *buffer = NULL;
+
+   if ((buffer = (char*) malloc (varLen + valLen + 2)) == NULL)
+      return -1;
+
+   sprintf (buffer, "%s=%s", var, val);
+
+   return putenv(buffer) ? -1 : 0;
+}
+
+int unsetenv (const char *var)
+{
+   return 0;    /* SKIP */
+}
+#endif
 
