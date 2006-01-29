@@ -643,6 +643,14 @@ ProjectFile::readProject()
                                       "min"));
                     return FALSE;
                 }
+                if (resolution >
+                    (ulong) ((proj->getEnd() - proj->getStart()) / 24))
+                {
+                    errorMessage(i18n("timing resolution must be at least "
+                                      "24 times smaller than the project "
+                                      "duration"));
+                    return FALSE;
+                }
                 proj->setScheduleGranularity(resolution);
             }
             else if (token == KW("timezone"))
