@@ -1055,12 +1055,18 @@ time_t
 Task::earliestStart(int sc) const
 {
     time_t date = 0;
+    // All tasks this task depends on must have an end date set.
+    for (TaskListIterator tli(previous); *tli; ++tli)
+        if ((*tli)->end == 0)
+        {
+            if ((*tli)->scheduling == ASAP)
+                return 0;
+        }
+        else if ((*tli)->end + 1 > date)
+            date = (*tli)->end + 1;
+
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi != 0; ++tdi)
     {
-        // All tasks this task depends on must have an end date set.
-        if ((*tdi)->getTaskRef()->end == 0)
-            return 0;
-
         /* Add the gapDuration and/or gapLength to the end of the dependent
          * task. */
         time_t potentialDate = (*tdi)->getTaskRef()->end + 1;
@@ -1092,12 +1098,18 @@ time_t
 Task::latestEnd(int sc) const
 {
     time_t date = 0;
+    // All tasks this task precedes must have a start date set.
+    for (TaskListIterator tli(followers); *tli; ++tli)
+        if ((*tli)->start == 0)
+        {
+            if ((*tli)->scheduling == ALAP)
+                return 0;
+        }
+        else if (date == 0 || (*tli)->start - 1 < date)
+            date = (*tli)->start - 1;
+
     for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
     {
-        // All tasks this task precedes must have a start date set.
-        if ((*tdi)->getTaskRef()->start == 0)
-            return 0;
-
         /* Subtract the gapDuration and/or gapLength from the start of the
          * following task. */
         time_t potentialDate = (*tdi)->getTaskRef()->start - 1;

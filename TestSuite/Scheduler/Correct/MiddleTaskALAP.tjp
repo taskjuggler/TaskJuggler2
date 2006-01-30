@@ -1,0 +1,18 @@
+project prj "Middle Task ASAP Test" "1.0" 2005-05-01-00:00-GMT 2007-07-01-00:00-GMT {
+	timezone "GMT"
+}
+
+task t1 "Task 1" {
+  end 2005-06-01
+  duration 2d
+}
+task t2 "Task 2" {
+  duration 1d
+  precedes !t1
+}
+task t3 "Task 3" {
+  duration 1d
+  depends !t2
+  precedes !t1
+}
+

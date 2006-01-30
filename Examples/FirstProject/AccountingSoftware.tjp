@@ -207,8 +207,7 @@ task AcSo "Accounting Software" {
 # Now the project has been completely specified. Stopping here would
 # result in a valid TaskJuggler file that could be processed and
 # scheduled. But no reports would be generated to visualize the
-# results. So we define 2 interactive reports, 7 HTML reports and
-# 1 XML report.
+# results.
 
 # A traditional Gantt Chart for the TaskJugglerUI
 taskreport "Gantt Chart" {
@@ -291,5 +290,12 @@ htmlaccountreport "Accounting.html" {
   # Since this is a cashflow calculation we show accumulated values
   # per account.
   accumulate
+  scenarios plan, delayed
+}
+
+xmlreport "XML-Report.tjx" {
+  version 2
+  hidetask 0
+  hideresource 0
   scenarios plan, delayed
 }

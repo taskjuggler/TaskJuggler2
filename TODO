@@ -6,6 +6,7 @@ Probably:
 - 'limits' for tasks, not just for allocations.
 - Interactive account report
 - Add C++ style // comments.
+- Macros to do date/time arithmetic.
 
 Maybe:
 - Make vacations and shifts scenario specific.
@@ -16,4 +17,5 @@ Maybe:
 - Cleanup taskjuggler library API, so it can be used by other apps.
 - Color support for tasks and resources.
 - Gap with snap on weekdays.
-
+- When tasks inherit a parent dependency they all get arrows in the
+  Gantt chart. This looks clobbered.
