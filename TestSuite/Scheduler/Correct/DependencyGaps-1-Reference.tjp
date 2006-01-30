@@ -48,7 +48,7 @@ task t6 "3 days after m1, 1 working days after m1" {
   depends m1 { sc1:gapduration 72h sc1:gaplength 8h }
   sc1:start 2004-12-22-11:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-10:00:00-+0000
+  sc2:start 2004-12-24-10:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -58,7 +58,7 @@ task t5 "3 days after m1, 3 working days after m1" {
   depends m1 { sc1:gapduration 72h sc1:gaplength 24h }
   sc1:start 2004-12-22-18:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-10:00:00-+0000
+  sc2:start 2004-12-24-10:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -68,7 +68,7 @@ task t1 "5 days after m1" {
   depends m1 { sc1:gapduration 120h }
   sc1:start 2004-12-24-11:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-10:00:00-+0000
+  sc2:start 2004-12-26-10:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -78,7 +78,7 @@ task t7 "3 days after m1, 3 days after m2" {
   depends m1 { sc1:gapduration 72h }, m2 { sc1:gapduration 72h }
   sc1:start 2004-12-24-12:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-21:00:00-+0000
+  sc2:start 2004-12-24-21:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -88,7 +88,7 @@ task t8 "3 working days after m1, 3 working days after m2" {
   depends m1 { sc1:gaplength 24h }, m2 { sc1:gaplength 24h }
   sc1:start 2004-12-24-12:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-21:00:00-+0000
+  sc2:start 2004-12-24-18:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -98,7 +98,7 @@ task t2 "5 working days after m1" {
   depends m1 { sc1:gaplength 40h }
   sc1:start 2004-12-24-18:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-10:00:00-+0000
+  sc2:start 2004-12-28-10:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -108,7 +108,7 @@ task t3 "5 days after m2" {
   depends m2 { sc1:gapduration 120h }
   sc1:start 2004-12-26-12:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-21:00:00-+0000
+  sc2:start 2004-12-26-21:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
@@ -118,14 +118,14 @@ task t4 "5 working days after m2" {
   depends m2 { sc1:gaplength 40h }
   sc1:start 2004-12-28-12:00:00-+0000
   sc1:scheduled
-  sc2:start 2004-12-21-21:00:00-+0000
+  sc2:start 2004-12-28-18:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling asap
 }
-task t12 "5 working days before m3" {
+task t12 "5 (0) working days before m3" {
   projectid dg
-  precedes m3 { sc1:gaplength 40h }
+  precedes m3 { sc1:gaplength 40h sc2:gaplength 0h }
   sc1:start 2005-01-07-13:00:00-+0000
   sc1:scheduled
   sc2:start 2005-01-13-21:00:00-+0000
@@ -133,7 +133,7 @@ task t12 "5 working days before m3" {
   milestone 
   scheduling alap
 }
-task t11 "5 days before m3" {
+task t11 "5 (3) days before m3" {
   projectid dg
   precedes m3 { sc1:gapduration 120h sc2:gapduration 72h }
   sc1:start 2005-01-09-12:00:00-+0000
@@ -148,7 +148,7 @@ task t13 "5 days before m4" {
   precedes m4 { sc1:gapduration 120h }
   sc1:start 2005-01-10-00:00:00-+0000
   sc1:scheduled
-  sc2:start 2005-01-15-00:00:00-+0000
+  sc2:start 2005-01-10-00:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling alap
@@ -158,7 +158,7 @@ task t14 "5 working days before m4" {
   precedes m4 { sc1:gaplength 40h }
   sc1:start 2005-01-10-09:00:00-+0000
   sc1:scheduled
-  sc2:start 2005-01-15-00:00:00-+0000
+  sc2:start 2005-01-10-09:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling alap
@@ -168,7 +168,7 @@ task t17 "3 days before m3, 3 days before m4" {
   precedes m3 { sc1:gapduration 72h }, m4 { sc1:gapduration 72h }
   sc1:start 2005-01-11-12:00:00-+0000
   sc1:scheduled
-  sc2:start 2005-01-13-21:00:00-+0000
+  sc2:start 2005-01-10-21:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling alap
@@ -178,7 +178,7 @@ task t18 "3 working days before m3, 3 working days before m4" {
   precedes m3 { sc1:gaplength 24h }, m4 { sc1:gaplength 24h }
   sc1:start 2005-01-11-13:00:00-+0000
   sc1:scheduled
-  sc2:start 2005-01-13-21:00:00-+0000
+  sc2:start 2005-01-11-09:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling alap
@@ -188,7 +188,7 @@ task t15 "3 days before m4, 3 working days before m4" {
   precedes m4 { sc1:gapduration 72h sc1:gaplength 24h }
   sc1:start 2005-01-12-00:00:00-+0000
   sc1:scheduled
-  sc2:start 2005-01-15-00:00:00-+0000
+  sc2:start 2005-01-12-00:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling alap
@@ -198,7 +198,7 @@ task t16 "3 days before m4, 1 working days before m4" {
   precedes m4 { sc1:gapduration 72h sc1:gaplength 8h }
   sc1:start 2005-01-12-00:00:00-+0000
   sc1:scheduled
-  sc2:start 2005-01-15-00:00:00-+0000
+  sc2:start 2005-01-12-00:00:00-+0000
   sc2:scheduled
   milestone 
   scheduling alap

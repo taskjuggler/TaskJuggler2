@@ -903,4 +903,17 @@ were always accounted to 0.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2 id="Changelog_2_2_1"><title>Version 2.2.1 (Some Day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed handling of tasks that have 'precedes' and
+'depends' attributes.</para></listitem>
+
+<listitem><para>Fixed 'gaplength' and 'gapduration' handling for other
+scenarios than the default one.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

@@ -8,7 +8,7 @@ DecisionNode.cpp OptimizerRun.cpp Optimizer.cpp \
 Operation.cpp ExpressionTree.cpp ExpressionTreeFunction.cpp \
 ShiftSelectionList.cpp ShiftSelection.cpp \
 BookingList.cpp TransactionList.cpp \
-TaskScenario.cpp VacationList.cpp \
+TaskDependency.cpp TaskScenario.cpp VacationList.cpp \
 CoreAttributes.cpp CoreAttributesList.cpp \
 ScenarioList.cpp Scenario.cpp \
 TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \

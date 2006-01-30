@@ -587,14 +587,16 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
                 s << " { ";
                 for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
                 {
-                    if ((*depIt)->getGapDuration(sc) != 0)
+                    if ((sc == 0 && (*depIt)->getGapDurationNR(sc) > 0) ||
+                        (sc > 0 && (*depIt)->getGapDurationNR(sc) >= 0))
                         s << project->getScenarioId(sc)
                             << ":gapduration "
-                            << (*depIt)->getGapDuration(sc) / 3600.0 << "h ";
-                    if ((*depIt)->getGapLength(sc) != 0)
+                            << (*depIt)->getGapDurationNR(sc) / 3600.0 << "h ";
+                    if ((sc == 0 && (*depIt)->getGapLengthNR(sc) > 0) ||
+                        (sc > 0 && (*depIt)->getGapLengthNR(sc) >= 0))
                         s << project->getScenarioId(sc)
                             << ":gaplength "
-                            << (*depIt)->getGapLength(sc) / 3600.0 << "h ";
+                            << (*depIt)->getGapLengthNR(sc) / 3600.0 << "h ";
                 }
                 s << "}";
             }

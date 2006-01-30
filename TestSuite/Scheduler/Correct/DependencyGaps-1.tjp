@@ -69,13 +69,13 @@ task m4 "Milestone 4" {
 	milestone
 }
 
-task t11 "5 days before m3" {
+task t11 "5 (3) days before m3" {
 	precedes m3 { sc1:gapduration 5d sc2:gapduration 3d }
 	milestone
 }
 
-task t12 "5 working days before m3" {
-	precedes m3 { gaplength 5d }
+task t12 "5 (0) working days before m3" {
+	precedes m3 { gaplength 5d sc2:gaplength 0d }
 	milestone
 }
 
@@ -122,3 +122,12 @@ htmltaskreport "DependencyGaps-1.html" {
 	scenarios sc1, sc2
 }
 
+taskreport "sc1" {
+	columns no, name, start, end, chart
+	scenario sc1
+}
+
+taskreport "sc2" {
+	columns no, name, start, end, chart
+	scenario sc2
+}

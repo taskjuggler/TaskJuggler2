@@ -2781,7 +2781,7 @@ ProjectFile::readTimeValue(ulong& value)
 }
 
 bool
-ProjectFile::readTimeFrame(double& value, bool workingDays)
+ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
 {
     QString val;
     TokenType tt;
@@ -2790,11 +2790,23 @@ ProjectFile::readTimeFrame(double& value, bool workingDays)
         errorMessage(i18n("Real value expected"));
         return FALSE;
     }
-    if (val.toDouble() <= 0.0)
+    if (allowZero)
     {
-        errorMessage(i18n("Value must be greater than 0."));
-        return FALSE;
+        if (val.toDouble() < 0.0)
+        {
+            errorMessage(i18n("Value must not be negative."));
+            return FALSE;
+        }
     }
+    else
+    {
+        if (val.toDouble() <= 0.0)
+        {
+            errorMessage(i18n("Value must be greater than 0."));
+            return FALSE;
+        }
+    }
+
     QString unit;
     if (nextToken(unit) != ID)
     {
@@ -5257,7 +5269,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         if (token == KW("gapduration"))
         {
             double d;
-            if (!readTimeFrame(d, FALSE))
+            if (!readTimeFrame(d, FALSE, scenarioIdx > 0))
                 return FALSE;
             /* Set the duration and round it down to be a multiple of the
              * schedule granularity. */
@@ -5268,7 +5280,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         else if (token == KW("gaplength"))
         {
             double d;
-            if (!readTimeFrame(d, FALSE))
+            if (!readTimeFrame(d, FALSE, scenarioIdx > 0))
                 return FALSE;
             /* Set the length and round it down to be a multiple of the
              * schedule granularity. */

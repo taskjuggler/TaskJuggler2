@@ -30,19 +30,8 @@ class Task;
 class TaskDependency
 {
 public:
-    TaskDependency(QString tri, int maxScenarios) : taskRefId(tri)
-    {
-        gapDuration = new long[maxScenarios];
-        gapLength = new long[maxScenarios];
-        taskRef = 0;
-        for (int sc = 0; sc < maxScenarios; ++sc)
-            gapDuration[sc] = gapLength[sc] = 0;
-    }
-    ~TaskDependency()
-    {
-        delete [] gapDuration;
-        delete [] gapLength;
-    }
+    TaskDependency(QString tri, int maxScenarios);
+    ~TaskDependency();
 
     const QString getTaskRefId() const { return taskRefId; }
 
@@ -50,10 +39,12 @@ public:
     const Task* getTaskRef() const { return taskRef; }
 
     void setGapDuration(int sc, long d) { gapDuration[sc] = d; }
-    long getGapDuration(int sc) const { return gapDuration[sc]; }
+    long getGapDuration(int sc) const;
+    long getGapDurationNR(int sc) const { return gapDuration[sc]; }
 
     void setGapLength(int sc, long l) { gapLength[sc] = l; }
-    long getGapLength(int sc) const { return gapLength[sc]; }
+    long getGapLength(int sc) const;
+    long getGapLengthNR(int sc) const { return gapLength[sc]; }
 
 private:
     TaskDependency() { }    // Don't use this!

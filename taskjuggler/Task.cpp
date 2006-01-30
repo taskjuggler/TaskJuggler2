@@ -115,8 +115,8 @@ Task::inheritValues()
                                                     project->getMaxScenarios());
             for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
             {
-                td->setGapDuration(sc, (*tdi)->getGapDuration(sc));
-                td->setGapLength(sc, (*tdi)->getGapLength(sc));
+                td->setGapDuration(sc, (*tdi)->getGapDurationNR(sc));
+                td->setGapLength(sc, (*tdi)->getGapLengthNR(sc));
             }
             depends.append(td);
         }
@@ -131,8 +131,8 @@ Task::inheritValues()
                                                     project->getMaxScenarios());
             for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
             {
-                td->setGapDuration(sc, (*tdi)->getGapDuration(sc));
-                td->setGapLength(sc, (*tdi)->getGapLength(sc));
+                td->setGapDuration(sc, (*tdi)->getGapDurationNR(sc));
+                td->setGapLength(sc, (*tdi)->getGapLengthNR(sc));
             }
             precedes.append(td);
         }
