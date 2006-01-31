@@ -1,5 +1,5 @@
 /*
- * TaskDependency.h - TaskJuggler
+ * TaskDependency.cpp - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
  *
@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TaskDependency.h 1214 2005-11-17 20:05:36Z cs $
+ * $Id$
  */
 
 #include "TaskDependency.h"
