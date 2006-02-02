@@ -2872,6 +2872,10 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
                 for (TaskListIterator tli(task->followers); *tli; ++tli)
                     if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
                     {
+                        if (!task->scenarios[sc].criticalLinks.
+                            containsRef(*tli))
+                            task->scenarios[sc].criticalLinks.append(*tli);
+
                         scenarios[sc].isOnCriticalPath = true;
                         critical = true;
                     }

@@ -1377,9 +1377,12 @@ TjGanttChart::drawDependencies(const Task* t1,
                 a[i] = p;
             }
 
-            QColor col = colors[t1->isOnCriticalPath(scenario, false) &&
-                t2->isOnCriticalPath(scenario, false) ?
+            QColor col = colors[t1->hasCriticalLinkTo(scenario, t2) ?
                 "critDepLineCol" : "depLineCol"];
+            /* Make sure that the critical arrows are one level above the
+             * normal ones. */
+            int layer = TJRL_DEPARROWS +
+                (t1->hasCriticalLinkTo(scenario, t2) ? 1 : 0);
 
             // Draw the arrow lines.
             for (uint i = 0; i < a.count() - 1; ++i)
@@ -1390,7 +1393,7 @@ TjGanttChart::drawDependencies(const Task* t1,
                 a.point(i, &x1, &y1);
                 a.point(i + 1, &x2, &y2);
                 line->setPoints(x1, y1, x2, y2);
-                line->setZ(TJRL_DEPARROWS);
+                line->setZ(layer);
                 line->show();
             }
 
@@ -1405,7 +1408,7 @@ TjGanttChart::drawDependencies(const Task* t1,
             QCanvasPolygon* polygon = new QCanvasPolygon(chart);
             polygon->setPoints(a);
             polygon->setBrush(col);
-            polygon->setZ(TJRL_DEPARROWS);
+            polygon->setZ(layer);
             polygon->show();
         }
     }

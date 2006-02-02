@@ -165,6 +165,12 @@ private:
 
     /// List of booked resources.
     ResourceList bookedResources;
+
+    /**
+     * This list stores pointers to the task that have been found to be
+     * critical followers.
+     */
+    QPtrList<Task> criticalLinks;
 } ;
 
 #endif

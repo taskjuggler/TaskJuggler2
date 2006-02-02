@@ -929,7 +929,7 @@ ProjectFile::readScenario(Scenario* parent)
                     errorMessage(i18n("Slack rate must be between 0 and 100"));
                     return -1;
                 }
-                scenario->setMinSlackRate(rate);
+                scenario->setMinSlackRate(rate / 100.0);
             }
             else
             {

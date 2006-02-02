@@ -305,6 +305,11 @@ public:
         return scenarios[sc].isOnCriticalPath;
     }
 
+    bool hasCriticalLinkTo(int sc, const Task* t) const
+    {
+        return scenarios[sc].criticalLinks.containsRef(t);
+    }
+
     bool hasExtraValues(int sc) const;
 
     bool isContainer() const { return !sub->isEmpty(); }
