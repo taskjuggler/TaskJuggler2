@@ -44,11 +44,15 @@ public:
     void setStrictBookings(bool s) { strictBookings = s; }
     bool getStrictBookings() const { return strictBookings; }
 
+    void setMinSlackRate(double msr) { minSlackRate = msr; }
+    double getMinSlackRate() const { return minSlackRate; }
+
 private:
     bool enabled;
     bool projectionMode;
     bool strictBookings;
     bool optimize;
+    double minSlackRate;
 } ;
 
 #endif

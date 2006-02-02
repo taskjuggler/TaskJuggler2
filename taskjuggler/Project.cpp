@@ -697,7 +697,11 @@ Project::finishScenario(int sc)
     /* We need to have finished the scenario for all tasks before we can
      * calculate the completion degree. */
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+    {
         (*tli)->calcCompletionDegree(sc);
+        (*tli)->checkAndMarkCriticalPath(sc,
+                                         getScenario(sc)->getMinSlackRate());
+    }
 }
 
 bool

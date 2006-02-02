@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     KAboutData about("taskjuggler", I18N_NOOP("TaskJuggler"), version,
                      description,
                      KAboutData::License_GPL,
-                     "(c) 2002, 2003, 2004, 2005 Chris Schlaeger",
+                     "(c) 2002, 2003, 2004, 2005, 2006 Chris Schlaeger",
                      I18N_NOOP("TaskJuggler is a project management tool for "
                                "Linux and UNIX-like operating systems. Its \n"
                                "new approach to project planning and tracking "

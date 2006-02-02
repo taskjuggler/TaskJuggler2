@@ -1,7 +1,8 @@
 /*
  * ExpressionFunctionTable.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -46,7 +47,7 @@ ExpressionFunctionTable::ExpressionFunctionTable()
         ("istaskofproject", &ExpressionTreeFunction::isTaskOfProject, 1);
     functions.insert(etf->getName(), etf);
     etf = new ExpressionTreeFunction
-        (KW("isTaskOfProject"), 
+        (KW("isTaskOfProject"),
          &ExpressionTreeFunction::isTaskOfProject, 1);
     functions.insert(etf->getName(), etf);
 
@@ -156,17 +157,26 @@ ExpressionFunctionTable::ExpressionFunctionTable()
     functions.insert(etf->getName(), etf);
 
     etf = new ExpressionTreeFunction
-        ("isallocatedtoproject", &ExpressionTreeFunction::isAllocated, 4);
+        ("isallocatedtoproject",
+         &ExpressionTreeFunction::isAllocatedToProject, 4);
     functions.insert(etf->getName(), etf);
     etf = new ExpressionTreeFunction
-        (KW("isAllocatedToProject"), 
+        (KW("isAllocatedToProject"),
          &ExpressionTreeFunction::isAllocatedToProject, 4);
+    functions.insert(etf->getName(), etf);
+
+    etf = new ExpressionTreeFunction
+        ("isoncriticalpath", &ExpressionTreeFunction::isOnCriticalPath, 1);
+    functions.insert(etf->getName(), etf);
+    etf = new ExpressionTreeFunction
+        (KW("isOnCriticalPath"),
+         &ExpressionTreeFunction::isOnCriticalPath, 1);
     functions.insert(etf->getName(), etf);
 
     /* The following functions are for legacy support only. Their
      * use is discouraged since they will disappear some day. */
     etf = new ExpressionTreeFunction
-        (KW("isplanallocated"), 
+        (KW("isplanallocated"),
          &ExpressionTreeFunction::isPlanAllocated, 3);
     functions.insert(etf->getName(), etf);
     etf = new ExpressionTreeFunction

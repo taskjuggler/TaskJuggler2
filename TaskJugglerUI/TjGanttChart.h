@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: taskjuggler.cpp 1085 2005-06-23 20:34:54Z cs $
+ * $Id$
  */
 #ifndef _TjGanttChart_h_
 #define _TjGanttChart_h_
@@ -99,11 +99,12 @@ private:
     void generateGanttElements();
     void drawTask(const Task* t, const Resource* r);
     void drawTaskShape(int start, int end, int centerY, int height,
-                       int barWidth, bool outlineOnly, QCanvas* canvas);
+                       int barWidth, bool critical, bool outlineOnly,
+                       QCanvas* canvas);
     void drawMilestoneShape(int centerX, int centerY, int height,
-                            bool outlineOnly, QCanvas* canvas);
+                            bool critical, bool outlineOnly, QCanvas* canvas);
     void drawContainterShape(int start, int end, int centerY, int height,
-                             bool outlineOnly, QCanvas* canvas);
+                             bool critical, bool outlineOnly, QCanvas* canvas);
     void drawDependencies(const Task* t1, TjLineAccounter* collisionDetector);
     void drawTaskResource(const Resource* r, const Task* t);
     void drawResource(const Resource* r);

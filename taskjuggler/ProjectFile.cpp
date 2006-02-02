@@ -916,6 +916,21 @@ ProjectFile::readScenario(Scenario* parent)
                 /* baseline mode implies sloppy bookings. */
                 scenario->setStrictBookings(false);
             }
+            else if (token == KW("minslackrate"))
+            {
+                if ((tt = nextToken(token)) != REAL && tt != INTEGER)
+                {
+                    errorMessage(i18n("Real value expected"));
+                    return -1;
+                }
+                double rate = token.toDouble();
+                if (rate < 0.0 || rate > 100.0)
+                {
+                    errorMessage(i18n("Slack rate must be between 0 and 100"));
+                    return -1;
+                }
+                scenario->setMinSlackRate(rate);
+            }
             else
             {
                 errorMessage(i18n("Unknown scenario attribute '%1'")

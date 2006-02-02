@@ -49,8 +49,8 @@ copyright()
 {
     qWarning
         (i18n(
-              "\nCopyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>\n"
-              "and Klaas Freitag <freitag@suse.de>\n\n"
+              "\nCopyright (c) 2001, 2002, 2003, 2004, 2005, 2006 \n"
+              "by Chris Schlaeger <cs@kde.org> and Klaas Freitag <freitag@suse.de>\n\n"
               "This program is free software; you can redistribute it and/or\n"
               "modify it under the terms of version 2 of the GNU General\n"
               "Public License as published by the Free Software Foundation.\n\n"

@@ -19,8 +19,8 @@
 #define TJRL_GRIDLABLES 5
 #define TJRL_NOWLINE 5
 #define TJRL_TASKS 10
-#define TJRL_TASKCOMP 11
-#define TJRL_DEPARROWS 12
+#define TJRL_TASKCOMP 15
+#define TJRL_DEPARROWS 16
 #define TJRL_LOADBARS 10
 
 #endif

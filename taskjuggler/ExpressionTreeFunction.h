@@ -66,6 +66,7 @@ public:
     long isDutyOf(ExpressionTree* et, Operation* const ops[]) const;
     long isAllocatedToProject(ExpressionTree* et, Operation* const ops[])
         const;
+    long isOnCriticalPath(ExpressionTree* et, Operation* const ops[]) const;
 
     /* Deprecated functions */
     long isTaskStatus(ExpressionTree* et, Operation* const ops[]) const;

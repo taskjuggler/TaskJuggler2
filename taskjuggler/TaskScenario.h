@@ -124,8 +124,15 @@ private:
      * resources. */
     double criticalness;
 
-    // Measure for the criticalness of the task chain.
+    /** Measure for the criticalness of the task chain. This value is computed
+     * prior to scheduling. It's in fact used to improve the scheduling
+     * result. But it should not be confused with the critical path of the
+     * final result. */
     double pathCriticalness;
+
+    /** Contrary to the previous criticalness related values this is the
+     * result of the post-scheduling analysis. */
+    bool isOnCriticalPath;
 
     /// User specified percentage of completion of the task
     double reportedCompletion;

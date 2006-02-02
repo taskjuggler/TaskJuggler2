@@ -2572,6 +2572,7 @@ Task::prepareScenario(int sc)
     start = scenarios[sc].start = scenarios[sc].specifiedStart;
     end = scenarios[sc].end = scenarios[sc].specifiedEnd;
     schedulingDone = scenarios[sc].scheduled = scenarios[sc].specifiedScheduled;
+    scenarios[sc].isOnCriticalPath = false;
 
     duration = scenarios[sc].duration;
     length = scenarios[sc].length;
@@ -2829,6 +2830,66 @@ Task::computeForwardCriticalness(int sc)
         maxCriticalness = criticalness;
 
     return scenarios[sc].criticalness + maxCriticalness;
+}
+
+void
+Task::checkAndMarkCriticalPath(int sc, double minSlack)
+{
+    // The algorithm has to start at a leaf task that has no predecessors.
+    if (hasSubs() || !previous.isEmpty())
+        return;
+
+    analyzePath(sc, minSlack, getStart(sc), 0);
+}
+
+bool
+Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
+{
+    bool critical = false;
+
+    if (hasSubs())
+    {
+        for (TaskListIterator tli(*sub); *tli; ++tli)
+            if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
+            {
+                scenarios[sc].isOnCriticalPath = true;
+                critical = true;
+            }
+    }
+    else
+    {
+        bool hasFollowers = false;
+
+        if (!milestone)
+            busyTime += (getEnd(sc) - getStart(sc));
+
+        for (Task* task = this; task; task = task->getParent())
+        {
+            if (!task->followers.isEmpty())
+            {
+                hasFollowers = true;
+
+                for (TaskListIterator tli(task->followers); *tli; ++tli)
+                    if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
+                    {
+                        scenarios[sc].isOnCriticalPath = true;
+                        critical = true;
+                    }
+            }
+        }
+
+        if (!hasFollowers)
+        {
+            // We've reached the end of a path. Now let's see if it's critical.
+            long overallDuration = getEnd(sc) - pathStart;
+            critical = ((double) busyTime / overallDuration) >
+                       (1.0 - minSlack);
+            if (critical)
+                scenarios[sc].isOnCriticalPath = true;
+        }
+    }
+
+    return critical;
 }
 
 void

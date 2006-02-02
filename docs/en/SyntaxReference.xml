@@ -152,6 +152,12 @@ ID.</para></listitem>
 <listitem><para>true if the task has the listed ID.</para></listitem>
 
 </varlistentry>
+<varlistentry><term>isOnCriticalPath(<link linkend="TYPE_ID">ID</link>)</term>
+
+<listitem><para>true if the task is on a critical path in scenario
+ID.</para></listitem>
+
+</varlistentry>
 <varlistentry><term>isTaskStatus(<link linkend="TYPE_ID">ID</link>,
 STATUS)</term>
 <listitem><para>true if the task has in scenario ID the specified

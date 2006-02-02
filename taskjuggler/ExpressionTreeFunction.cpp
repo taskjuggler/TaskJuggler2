@@ -551,6 +551,28 @@ ExpressionTreeFunction::isAllocatedToProject(ExpressionTree* et,
 }
 
 long
+ExpressionTreeFunction::isOnCriticalPath(ExpressionTree* et,
+                                         Operation* const ops[]) const
+{
+    /* Arguments:
+       0 : scenario id */
+    if (et->getCoreAttributes()->getType() != CA_Task)
+        return 0;
+
+    int scenarioId = et->getCoreAttributes()->getProject()->
+        getScenarioIndex(ops[0]->evalAsString(et)) - 1;
+    if (scenarioId < 0)
+    {
+        et->errorMessage(i18n("isOnCriticalPath: unknown scenario '%1'")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
+    Task* task = ((Task*) et->getCoreAttributes());
+    return task->isOnCriticalPath(scenarioId);
+}
+
+long
 ExpressionTreeFunction::isPlanAllocated(ExpressionTree* et,
                                         Operation* const ops[]) const
 {

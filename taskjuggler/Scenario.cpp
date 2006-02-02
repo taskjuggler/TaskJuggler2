@@ -26,6 +26,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
         projectionMode = pr->projectionMode;
         optimize = pr->optimize;
         strictBookings = pr->strictBookings;
+        minSlackRate = pr->minSlackRate;
     }
     else
     {
@@ -33,6 +34,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
         projectionMode = false;
         optimize = false;
         strictBookings = false;
+        minSlackRate = 0.05;
     }
 }
 

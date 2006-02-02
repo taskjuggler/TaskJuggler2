@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: taskjuggler.cpp 1085 2005-06-23 20:34:54Z cs $
+ * $Id$
  */
 
 #include "TjGanttChart.h"
@@ -60,12 +60,14 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["chartAltBackgroundCol"] = Qt::white;
     colors["chartTimeOffCol"] = QColor("#CECECE");
     colors["chartLineCol"] = QColor("#4F4F4F");
-    colors["todayLineCol"] = Qt::red;
+    colors["todayLineCol"] = Qt::green;
     colors["taskCol"] = QColor("#4C5EFF");
+    colors["critTaskCol"] = Qt::red;
     colors["milestoneCol"] = Qt::black;
     colors["containerCol"] = Qt::black;
     colors["completionCol"] = Qt::black;
     colors["depLineCol"] = QColor("#4C5EFF");
+    colors["critDepLineCol"] = Qt::red;
     colors["taskLoadCol"] = QColor("#FD13C6");
     colors["otherLoadCol"] = QColor("#FF8D13");
     colors["freeLoadCol"] = QColor("#00AC00");
@@ -433,27 +435,28 @@ TjGanttChart::generateLegend(int width, int height)
             case 0:     // Container task
                 drawContainterShape(x + 2 * margin,
                                     x + symbolWidth, yCenter,
-                                    legendLabelHeight, false, legend);
+                                    legendLabelHeight, false, false, legend);
                 break;
             case 1:     // Milestone
                 drawMilestoneShape(x + symbolWidth, yCenter,
-                                   legendLabelHeight, false, legend);
+                                   legendLabelHeight, false, false, legend);
                 break;
             case 2:     // Planned task
                 drawTaskShape(x + margin,
                               x + margin + symbolWidth, yCenter,
-                              legendLabelHeight, 0, false, legend);
+                              legendLabelHeight, 0, false, false, legend);
                 break;
             case 3:     // In-progress task
                 drawTaskShape(x + margin,
                               x + margin + symbolWidth, yCenter,
-                              legendLabelHeight, symbolWidth / 2, false,
+                              legendLabelHeight, symbolWidth / 2, false, false,
                               legend);
                 break;
             case 4:     // Completed task
                 drawTaskShape(x + margin,
                               x + margin + symbolWidth, yCenter,
-                              legendLabelHeight, symbolWidth, false, legend);
+                              legendLabelHeight, symbolWidth, false, false,
+                              legend);
                 break;
             case 5:     // Allocated to this task
                 drawLoadBar(x + margin,
@@ -1045,14 +1048,16 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
     {
         int centerX = time2x(t->getStart(scenario));
 
-        drawMilestoneShape(centerX, centerY, minRowHeight, r != 0, chart);
+        drawMilestoneShape(centerX, centerY, minRowHeight,
+                           t->isOnCriticalPath(scenario), r != 0, chart);
     }
     else if (t->isContainer())
     {
         int start = time2x(t->getStart(scenario));
         int end = time2x(t->getEnd(scenario));
 
-        drawContainterShape(start, end, centerY, minRowHeight, r != 0, chart);
+        drawContainterShape(start, end, centerY, minRowHeight,
+                            t->isOnCriticalPath(scenario, true), r != 0, chart);
     }
     else
     {
@@ -1073,14 +1078,15 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
             barWidth = (int) ((end - start) *
                               (t->getCompletionDegree(scenario) / 100.0));
 
-        drawTaskShape(start, end, centerY, minRowHeight, barWidth, r != 0,
-                      chart);
+        drawTaskShape(start, end, centerY, minRowHeight, barWidth,
+                      t->isOnCriticalPath(scenario, true), r != 0, chart);
     }
 }
 
 void
 TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
-                            int barWidth, bool outlineOnly, QCanvas* canvas)
+                            int barWidth, bool critical, bool outlineOnly,
+                            QCanvas* canvas)
 {
     /* Workaround for a QCanvasView problem. In Qt3.x it can only handle 32767
      * pixels per dimension. */
@@ -1102,7 +1108,7 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
         new QCanvasRectangle(start, centerY - (int) (height * 0.3),
                              end - start, (int) (height * 0.6) + 1, canvas);
 
-    rect->setPen(QPen(colors["taskCol"], lineWidth));
+    rect->setPen(QPen(colors[critical ? "critTaskCol" : "taskCol"], lineWidth));
     rect->setBrush(QBrush(colors["taskCol"], outlineOnly ?
                           Qt::Dense6Pattern : Qt::Dense4Pattern));
     rect->setZ(TJRL_TASKS);
@@ -1125,7 +1131,8 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
 
 void
 TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
-                                 bool outlineOnly, QCanvas* canvas)
+                                 bool critical, bool outlineOnly,
+                                 QCanvas* canvas)
 {
     int radius = (int) (height * 0.375);
 
@@ -1137,17 +1144,35 @@ TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
     a.setPoint(3, centerX - radius, centerY);
     a.setPoint(4, centerX, centerY - radius);
 
+
     QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setBrush(QBrush(colors["milestoneCol"], outlineOnly ?
-                             Qt::Dense4Pattern : Qt::SolidPattern));
+    polygon->setBrush(QBrush(colors["milestoneCol"],
+                             outlineOnly ? Qt::Dense4Pattern :
+                             Qt::SolidPattern));
+
+    if (critical)
+        for (uint i = 0; i < a.count() - 1; ++i)
+        {
+            QCanvasLine* line = new QCanvasLine(canvas);
+            QPen pen(colors["critTaskCol"]);
+            line->setPen(pen);
+            int x1, y1, x2, y2;
+            a.point(i, &x1, &y1);
+            a.point(i + 1, &x2, &y2);
+            line->setPoints(x1, y1, x2, y2);
+            line->setZ(TJRL_TASKS + 1);
+            line->show();
+        }
+
     polygon->setZ(TJRL_TASKS);
     polygon->show();
 }
 
 void
 TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
-                                  bool outlineOnly, QCanvas* canvas)
+                                  bool critical, bool outlineOnly,
+                                  QCanvas* canvas)
 {
     // A bar with jag at both ends.
     int jagWidth = (int) (height * 0.25);
@@ -1195,7 +1220,7 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
         for (uint i = 0; i < a.count() - 1; ++i)
         {
             QCanvasLine* line = new QCanvasLine(canvas);
-            QPen pen(colors["containerCol"]);
+            QPen pen(colors[critical ? "critTaskCol" : "containerCol"]);
             line->setPen(pen);
             int x1, y1, x2, y2;
             a.point(i, &x1, &y1);
@@ -1352,11 +1377,15 @@ TjGanttChart::drawDependencies(const Task* t1,
                 a[i] = p;
             }
 
+            QColor col = colors[t1->isOnCriticalPath(scenario, false) &&
+                t2->isOnCriticalPath(scenario, false) ?
+                "critDepLineCol" : "depLineCol"];
+
             // Draw the arrow lines.
             for (uint i = 0; i < a.count() - 1; ++i)
             {
                 QCanvasLine* line = new QCanvasLine(chart);
-                line->setPen(QPen(colors["depLineCol"], lineWidth));
+                line->setPen(QPen(col, lineWidth));
                 int x1, y1, x2, y2;
                 a.point(i, &x1, &y1);
                 a.point(i + 1, &x2, &y2);
@@ -1375,7 +1404,7 @@ TjGanttChart::drawDependencies(const Task* t1,
 
             QCanvasPolygon* polygon = new QCanvasPolygon(chart);
             polygon->setPoints(a);
-            polygon->setBrush(colors["depLineCol"]);
+            polygon->setBrush(col);
             polygon->setZ(TJRL_DEPARROWS);
             polygon->show();
         }
