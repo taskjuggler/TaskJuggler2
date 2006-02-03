@@ -2869,7 +2869,7 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
                     if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
                     {
                         if (!task->scenarios[sc].criticalLinks.
-                            containsRef(*tli))
+                            findRef(*tli) >= 0)
                             task->scenarios[sc].criticalLinks.append(*tli);
 
                         scenarios[sc].isOnCriticalPath = true;

@@ -1255,6 +1255,11 @@ TjGanttChart::drawDependencies(const Task* t1,
     int yPos = objPosTable->caToPos(t1) + minRowHeight / 2;
     for (TaskListIterator tli(t1->getFollowersIterator()); *tli; ++tli)
     {
+        /* If the parent has the same follower, it's an inherited dependency
+         * and we don't have to draw the arrows for every sub task. */
+        if ((*tli)->getParent() && (*tli)->getParent()->hasPrevious(t1))
+            continue;
+
         int t2x = time2x((*tli)->getStart(scenario));
         int t2y = objPosTable->caToPos(*tli);
         int i = 0;
@@ -1279,6 +1284,11 @@ TjGanttChart::drawDependencies(const Task* t1,
 
     for (TaskListIterator tli(sortedFollowers); *tli; ++tli)
     {
+        /* If the parent has the same follower, it's an inherited dependency
+         * and we don't have to draw the arrows for every sub task. */
+        if ((*tli)->getParent() && (*tli)->getParent()->hasPrevious(t1))
+            continue;
+
         Task* t2 = *tli;
         int t2Top = objPosTable->caToPos(*tli);
         if (t2Top >= 0)

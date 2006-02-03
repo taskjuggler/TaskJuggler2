@@ -20,7 +20,7 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-04-28 {
   # delayed start.
   scenario plan "Plan" {
     # Mark all pathes as critical that have less than 15% slack time.
-    minslackrate 15
+    minslackrate 10
     scenario delayed "Delayed"
   }
 }
@@ -101,11 +101,12 @@ task AcSo "Accounting Software" {
     # get the requested resources.
     priority 1000
 
+    # All subtasks depend on the specification task.
+    depends !spec
     task database "Database coupling" {
       effort 20d
       # This task depends on a task in the scope of the enclosing
       # tasks enclosing task. So we need 2 ! to get there.
-      depends !!spec
       allocate dev1, dev2
     }
 
@@ -127,7 +128,7 @@ task AcSo "Accounting Software" {
       # that the task is on schedule and computes the completion rate
       # according to the current day and the plan data.
       complete 95
-      depends !database, !!spec
+      depends !database
       allocate dev1, dev2
     }
   }

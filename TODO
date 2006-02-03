@@ -1,5 +1,4 @@
 Work in progress:
-- Critical path analysis (post scheduling)
 
 Probably:
 - 'allowoffhours' attribute for bookings
@@ -17,5 +16,3 @@ Maybe:
 - Cleanup taskjuggler library API, so it can be used by other apps.
 - Color support for tasks and resources.
 - Gap with snap on weekdays.
-- When tasks inherit a parent dependency they all get arrows in the
-  Gantt chart. This looks clobbered.

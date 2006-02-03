@@ -913,6 +913,12 @@ were always accounted to 0.</para></listitem>
 <listitem><para>Fixed 'gaplength' and 'gapduration' handling for other
 scenarios than the default one.</para></listitem>
 
+<listitem><para>Fixed 'duration' column in all reports. Values equal
+or smaller than 24 hours were reported too high.</para></listitem>
+
+<listitem><para>No longer show dependency arrows in Gantt chart for
+inherited dependencies.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
