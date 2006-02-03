@@ -1154,11 +1154,7 @@ Task::getCalcDuration(int sc) const
     if (milestone)
         return 0.0;
 
-    time_t delta = scenarios[sc].end - scenarios[sc].start;
-    if (delta < ONEDAY)
-        return (project->convertToDailyLoad(delta));
-    else
-        return (double) delta / ONEDAY;
+    return (double) (scenarios[sc].end + 1 - scenarios[sc].start) / ONEDAY;
 }
 
 double
