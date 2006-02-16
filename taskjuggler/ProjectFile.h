@@ -139,11 +139,12 @@ private:
                       QString* = 0);
     bool readAccount(Account* parent);
     bool readShift(Shift* parent);
-    Shift* readShiftSelection(time_t& from, time_t& to);
-    Booking* readBooking(int sc, int& sloppy);
+    Shift* readShiftSelection(Interval& iv);
+    bool readBooking(int sc, Resource* resource);
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
     UsageLimits* readLimits();
+    bool ProjectFile::readInterval(Interval& iv, bool check);
     bool readTimeFrame(double& d, bool workingDays, bool allowZero = false);
     bool readDate(time_t& val, time_t correction, bool checkPrjInterval = TRUE);
     bool readRealFormat(RealFormat* format);

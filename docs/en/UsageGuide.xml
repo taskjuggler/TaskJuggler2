@@ -128,6 +128,18 @@ data without much effort. If you are interested in this you should
 have a look at the download section of the <ulink
 url="http://www.taskjuggler.org">TaskJuggler web site</ulink>.</para>
 
+<para>It is ok to specify bookings beyond the effort value found in
+the task definition. In case you want to declare a task as done, even
+if the bookings do not reach the specified effort or length, you can
+use the <link linkend="PROPERTY_scheduled">scheduled</link>
+property.</para>
+
+<para><screen>
+supplement task impl {
+  actual:scheduled
+}
+</screen></para>
+
 <para>As a side note we would like to mention that the recording of
 the work time of employees is regulated by labor law in certain
 countries. You might also need approval from a Worker's Council before

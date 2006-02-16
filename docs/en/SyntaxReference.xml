@@ -25,9 +25,15 @@ since this can be ambiguous, the offset to GMT as
 </sect2>
 <sect2 id="TYPE_DATEINTERVAL"><title>DATEINTERVAL</title>
 
-<para>A date interval consists of a start and end DATE. The end date
-is optional. If it is missing a 24 hour interval is assumed. The start
-and end date must be seperated by a dash character.</para>
+<para>There are three ways to specify a date interval. The first is
+the most obvious. A date interval consists of a start and end <link
+linkend="TYPE_DATE">DATE</link>. The start
+and end date may be seperated by a dash character. In the second form,
+the end date is omitted. A 24 hour interval is assumed. The third form
+specifies the interval duration. In this form the start date
+is followed by a plus character. The plus character must be separated
+from the start date by a space or newline character. The plus must be
+followed by a number and a <link linkend="TYPE_UNIT">UNIT</link>.</para>
 </sect2>
 <sect2 id="TYPE_GLOBAL_ID"><title>GLOBAL_ID</title>
 

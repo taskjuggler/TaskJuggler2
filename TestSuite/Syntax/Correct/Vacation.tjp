@@ -6,8 +6,8 @@ vacation "Labor Day" 2005-09-05
 vacation "Christmas" 2005-12-25 - 2005-12-27
 
 resource team "A team" {
-  # A 2 days of team vacation
-  vacation 2005-10-07 - 2006-10-09
+  # 2 days of team vacation
+  vacation 2005-10-07 +2d
   resource tux2 "Tux2" 
   resource tux3 "Tux3" {
     # And one extra day

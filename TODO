@@ -1,11 +1,12 @@
 Work in progress:
+- 'allowoffhours' attribute for bookings
+- less verbose booking syntax
 
 Probably:
-- 'allowoffhours' attribute for bookings
+- Macros to do date/time arithmetic.
 - 'limits' for tasks, not just for allocations.
 - Interactive account report
 - Add C++ style // comments.
-- Macros to do date/time arithmetic.
 
 Maybe:
 - Make vacations and shifts scenario specific.

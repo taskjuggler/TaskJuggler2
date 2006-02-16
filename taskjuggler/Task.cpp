@@ -1,7 +1,8 @@
 /*
  * Task.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -2608,33 +2609,45 @@ Task::prepareScenario(int sc)
         }
     }
 
-    if (lastSlot > 0 && !schedulingDone)
+    if (lastSlot > 0)
     {
-        workStarted = TRUE;
-        // Trim start to first booked time slot.
-        start = firstSlot;
-
-        /* In projection mode, we assume that the completed work has been
-         * reported with booking attributes. Now we compute the completion
-         * degree according to the overall effort. Then the end date of the
-         * task is calculated. */
-        if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
+        if (schedulingDone)
         {
-            scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
-            if (scenarios[sc].reportedCompletion > 100.0)
-                scenarios[sc].reportedCompletion = 100.0;
-
-            if (doneEffort >= effort)
-            {
-                /* In case the required effort is reached or exceeded by the
-                 * specified bookings for this task, we set the task end to
-                 * the last booking and mark the task as completely scheduled.
-                 */
+            /* If the done flag is set, the user declares that the task is
+             * done. If no end date has been specified, set the end date to
+             * the end of the last slot. */
+            if (scenarios[sc].end == 0)
                 end = scenarios[sc].end = lastSlot;
-                schedulingDone = TRUE;
+        }
+        else
+        {
+            /* Some bookings have been specified for the task, but it is not
+             * marked completed yet. */
+            workStarted = TRUE;
+            // Trim start to first booked time slot.
+            start = firstSlot;
+
+            /* In projection mode, we assume that the completed work has been
+             * reported with booking attributes. Now we compute the completion
+             * degree according to the overall effort. Then the end date of
+             * the task is calculated. */
+            if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
+            { scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
+                if (scenarios[sc].reportedCompletion > 100.0)
+                    scenarios[sc].reportedCompletion = 100.0;
+
+                if (doneEffort >= effort)
+                {
+                    /* In case the required effort is reached or exceeded by
+                     * the specified bookings for this task, we set the task
+                     * end to the last booking and mark the task as completely
+                     * scheduled. */
+                    end = scenarios[sc].end = lastSlot;
+                    schedulingDone = TRUE;
+                }
+                else
+                    lastSlot = project->getNow() - 1;
             }
-            else
-                lastSlot = project->getNow() - 1;
         }
     }
 

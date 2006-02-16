@@ -1,7 +1,8 @@
 /*
  * ProjectFile.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -572,18 +573,11 @@ ProjectFile::readProject()
         return FALSE;
     }
     proj->setVersion(token);
-    time_t start, end;
-    if (!readDate(start, 0, FALSE))
-        return FALSE;
-    if (!readDate(end, 0, FALSE))
-        return FALSE;
-    if (end <= start)
-    {
-        errorMessage(i18n("End date must be larger than start date"));
-        return FALSE;
-    }
-    proj->setStart(start);
-    proj->setEnd(end - 1);
+    Interval iv;
+    if (!readInterval(iv, false))
+        return false;
+    proj->setStart(iv.getStart());
+    proj->setEnd(iv.getEnd());
 
     TokenType tt;
     bool scenariosDefined = FALSE;
@@ -1452,13 +1446,11 @@ ProjectFile::readTaskBody(Task* task)
             }
             else if (token == KW("shift"))
             {
-                time_t from, to;
-                from = proj->getStart();
-                to = proj->getEnd();
+                Interval iv(proj->getStart(), proj->getEnd());
                 Shift* s;
-                if ((s = readShiftSelection(from, to)) == 0)
+                if ((s = readShiftSelection(iv)) == 0)
                     return FALSE;
-                if (!task->addShift(Interval(from, to), s))
+                if (!task->addShift(iv, s))
                 {
                     errorMessage(i18n("Shift intervals may not overlap"));
                     return FALSE;
@@ -1835,27 +1827,14 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
             return FALSE;
         }
     }
-    if (!readDate(from, 0, FALSE))
-        return FALSE;
-    QString token;
-    if ((tt = nextToken(token)) != MINUS)
-    {
-        // vacation e. g. 2001-11-28
-        returnToken(tt, token);
-        to = sameTimeNextDay(from) - 1;
-    }
-    else
-    {
-        // vacation e. g. 2001-11-28 - 2001-11-30
-        if (!readDate(to, 1, FALSE))
-            return FALSE;
-        if (from > to)
-        {
-            errorMessage(i18n("Vacation must start before end"));
-            return FALSE;
-        }
-    }
-    return TRUE;
+    Interval iv;
+    if (!readInterval(iv, false))
+        return false;
+
+    from = iv.getStart();
+    to = iv.getEnd();
+
+    return true;
 }
 
 bool
@@ -2116,12 +2095,16 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("booking"))
         {
+            if (!readBooking(sc, r))
+                return false;
+            /*
             Booking* b;
             int sloppy;
             if ((b = readBooking(sc, sloppy)) == 0)
                 return FALSE;
             if (!r->addBooking(sc, b, sloppy))
                 return FALSE;
+                */
         }
         else if (token == KW("resource"))
         {
@@ -2191,10 +2174,10 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("vacation"))
         {
-            time_t from, to;
-            if (!readVacation(from, to))
+            Interval* iv = new Interval;
+            if (!readInterval(*iv, false))
                 return FALSE;
-            r->addVacation(new Interval(from, to));
+            r->addVacation(iv);
         }
         else if (token == KW("workinghours"))
         {
@@ -2207,13 +2190,11 @@ ProjectFile::readResourceBody(Resource* r)
         }
         else if (token == KW("shift"))
         {
-            time_t from, to;
-            from = proj->getStart();
-            to = proj->getEnd();
+            Interval iv(proj->getStart(), proj->getEnd());
             Shift* s;
-            if ((s = readShiftSelection(from, to)) == 0)
+            if ((s = readShiftSelection(iv)) == 0)
                 return FALSE;
-            if (!r->addShift(Interval(from, to), s))
+            if (!r->addShift(iv, s))
             {
                 errorMessage(i18n("Shift interval overlaps with other"));
                 return FALSE;
@@ -2342,7 +2323,7 @@ ProjectFile::readShift(Shift* parent)
 }
 
 Shift*
-ProjectFile::readShiftSelection(time_t& from, time_t& to)
+ProjectFile::readShiftSelection(Interval& iv)
 {
     // Syntax: ID [from [- to]]
     QString id;
@@ -2363,56 +2344,60 @@ ProjectFile::readShiftSelection(time_t& from, time_t& to)
     tt = nextToken(token);
     returnToken(tt, token);
     if (tt == DATE)
-        if (!readVacation(from, to))
+        if (!readInterval(iv, false))
             return 0;
 
     return s;
 }
 
-Booking*
-ProjectFile::readBooking(int sc, int& sloppy)
+bool
+ProjectFile::readBooking(int sc, Resource* resource)
 {
-    time_t start;
-    if (!readDate(start, 0))
-        return 0;
-    if (start < proj->getStart() || start >= proj->getEnd())
+    Task* task;
+    QString token;
+    TokenType tt = nextToken(token);
+    Interval iv;
+
+    if (tt == DATE)
     {
-        errorMessage(i18n("Start date must be within the project timeframe"));
-        return 0;
+        /* Old format: DATE TASKID [{ options }] */
+        returnToken(tt, token);
+
+        if (!readInterval(iv, true))
+            return false;
+
+        if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
+            (task = proj->getTask(getTaskPrefix() + token)) == 0)
+        {
+            errorMessage(i18n("Task ID expected"));
+            return false;
+        }
+    }
+    else
+    {
+        /* New format: TASKID, DATE [,DATE] [{ options }] */
+        if ((tt != ID && tt != ABSOLUTE_ID) ||
+            (task = proj->getTask(getTaskPrefix() + token)) == 0)
+        {
+            errorMessage(i18n("Task ID expected"));
+            return false;
+        }
+        if (!readInterval(iv, true))
+            return false;
     }
 
-    time_t end;
-    if (!readDate(end, 1))
-        return 0;
-    if (end <= proj->getStart() || end > proj->getEnd())
-    {
-        errorMessage(i18n("End date must be within the project timeframe"));
-        return 0;
-    }
-    if (start >= end)
-    {
-        errorMessage(i18n("End date must be after start date"));
-        return 0;
-    }
 
-    if (proj->getScenario(sc)->getProjectionMode() && end > proj->getNow())
+    /* This is probably no longer necessary. It should be ok to specify
+     * bookings after now.
+    if (proj->getScenario(sc)->getProjectionMode() &&
+        iv.getEnd() > proj->getNow())
     {
         errorMessage(i18n("In projection Mode all bookings must end prior "
                           "to the current or 'now' date."));
         return 0;
-    }
+    } */
 
-    Task* task;
-    QString token;
-    TokenType tt;
-    if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
-        (task = proj->getTask(getTaskPrefix() + token)) == 0)
-    {
-        errorMessage(i18n("Task ID expected"));
-        return 0;
-    }
-
-    sloppy = 0;
+    int sloppy = 0;
     if ((tt = nextToken(token)) == LBRACE)
     {
         while ((tt = nextToken(token)) != RBRACE)
@@ -2430,14 +2415,18 @@ ProjectFile::readBooking(int sc, int& sloppy)
             else
             {
                 errorMessage(i18n("Attribute ID expected"));
-                return 0;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return new Booking(Interval(start, end), task);
+    Booking* b = new Booking(iv, task);
+    if (!resource->addBooking(sc, b, sloppy))
+        return false;
+
+    return true;
 }
 
 bool
@@ -2650,12 +2639,11 @@ ProjectFile::readAllocate(Task* t)
             }
             else if (token == KW("shift"))
             {
-                time_t from = proj->getStart();
-                time_t to = proj->getEnd();
+                Interval iv(proj->getStart(), proj->getEnd());
                 Shift* s;
-                if ((s = readShiftSelection(from, to)) == 0)
+                if ((s = readShiftSelection(iv)) == 0)
                     return FALSE;
-                if (!a->addShift(Interval(from, to), s))
+                if (!a->addShift(iv, s))
                 {
                     errorMessage(i18n("Shift intervals may not overlap"));
                     return FALSE;
@@ -2763,10 +2751,11 @@ ProjectFile::readLimits()
 bool
 ProjectFile::readTimeValue(ulong& value)
 {
+    TokenType tt;
     QString val;
-    if (nextToken(val) != INTEGER)
+    if ((tt = nextToken(val)) != INTEGER && tt != REAL)
     {
-        errorMessage(i18n("Integer value expected"));
+        errorMessage(i18n("Number expected"));
         return FALSE;
     }
     QString unit;
@@ -2775,24 +2764,82 @@ ProjectFile::readTimeValue(ulong& value)
         errorMessage(i18n("Unit expected"));
         return FALSE;
     }
+    int factor = 0;
     if (unit == KW("min"))
-        value = val.toULong() * 60;
+        factor = 60;
     else if (unit == KW("h"))
-        value = val.toULong() * (60 * 60);
+        factor = 60 * 60;
     else if (unit == KW("d"))
-        value = val.toULong() * (60 * 60 * 24);
+        factor = 60 * 60 * 24;
     else if (unit == KW("w"))
-        value = val.toULong() * (60 * 60 * 24 * 7);
+        factor = 60 * 60 * 24 * 7;
     else if (unit == KW("m"))
-        value = val.toULong() * (60 * 60 * 24 * 30);
+        factor = 60 * 60 * 24 * 30;
     else if (unit == KW("y"))
-        value = val.toULong() * (60 * 60 * 24 * 356);
+        factor = 60 * 60 * 24 * 356;
     else
     {
         errorMessage(i18n("Unit expected"));
         return FALSE;
     }
+
+    value = (ulong) (val.toDouble() * factor);
     return TRUE;
+}
+
+bool
+ProjectFile::readInterval(Interval& iv, bool check)
+{
+    time_t start;
+    if (!readDate(start, 0, check))
+        return false;
+
+    TokenType tt;
+    QString token;
+
+    time_t end;
+    if ((tt = nextToken(token)) == PLUS)
+    {
+        ulong duration;
+        if (!readTimeValue(duration))
+            return false;
+        end = start + duration - 1;
+
+        if (check && (end <= proj->getStart() || end > proj->getEnd()))
+        {
+            errorMessage(i18n("End date must be within the project timeframe"));
+            return false;
+        }
+    }
+    else
+    {
+        // Ignore the MINUS token, it's redundant.
+        if (tt == MINUS)
+            tt = nextToken(token);
+
+        if (tt != DATE)
+        {
+            /* In case the following token is not a date, we assume that it's
+             * a one day interval. */
+            end = sameTimeNextDay(start) - 1;
+            returnToken(tt, token);
+        }
+        else
+        {
+            returnToken(tt, token);
+            if (!readDate(end, 1, check))
+                return false;
+        }
+    }
+
+    if (start >= end)
+    {
+        errorMessage(i18n("End date must be after start date"));
+        return false;
+    }
+
+    iv = Interval(start, end);
+    return true;
 }
 
 bool
