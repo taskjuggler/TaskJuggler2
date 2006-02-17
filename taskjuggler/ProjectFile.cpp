@@ -2097,14 +2097,6 @@ ProjectFile::readResourceBody(Resource* r)
         {
             if (!readBooking(sc, r))
                 return false;
-            /*
-            Booking* b;
-            int sloppy;
-            if ((b = readBooking(sc, sloppy)) == 0)
-                return FALSE;
-            if (!r->addBooking(sc, b, sloppy))
-                return FALSE;
-                */
         }
         else if (token == KW("resource"))
         {
@@ -2387,15 +2379,19 @@ ProjectFile::readBooking(int sc, Resource* resource)
     }
 
 
-    /* This is probably no longer necessary. It should be ok to specify
-     * bookings after now.
-    if (proj->getScenario(sc)->getProjectionMode() &&
-        iv.getEnd() > proj->getNow())
+    if (task->hasSubs())
     {
-        errorMessage(i18n("In projection Mode all bookings must end prior "
-                          "to the current or 'now' date."));
+        errorMessage(i18n("'%1' is a container task. It must not have "
+                          "bookings assigned to it.").arg(task->getId()));
         return 0;
-    } */
+    }
+    if (task->isMilestone())
+    {
+        errorMessage(i18n("'%1' is a milestone task. It must not have "
+                          "bookings assigned to it.").arg(task->getId()));
+        return 0;
+    }
+
 
     int sloppy = 0;
     if ((tt = nextToken(token)) == LBRACE)

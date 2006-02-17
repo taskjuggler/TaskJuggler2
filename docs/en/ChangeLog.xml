@@ -919,6 +919,9 @@ or smaller than 24 hours were reported too high.</para></listitem>
 <listitem><para>No longer show dependency arrows in Gantt chart for
 inherited dependencies.</para></listitem>
 
+<listitem><para>Generate propper warning when bookings are assigned to
+container tasks or milestones.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

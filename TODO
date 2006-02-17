@@ -1,6 +1,7 @@
 Work in progress:
 - 'allowoffhours' attribute for bookings
 - less verbose booking syntax
+- Split toolbar with zoom and scheduling icons.
 
 Probably:
 - Macros to do date/time arithmetic.

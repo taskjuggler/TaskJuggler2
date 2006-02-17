@@ -2012,6 +2012,22 @@ Task::hasEndDependency() const
 bool
 Task::preScheduleOk(int sc)
 {
+    if (hasSubs() && !scenarios[sc].bookedResources.isEmpty())
+    {
+        errorMessage(i18n
+                     ("Task '%1' is a container task and must not have "
+                      "bookings assigned to it.").arg(id));
+        return false;
+    }
+
+    if (milestone && !scenarios[sc].bookedResources.isEmpty())
+    {
+        errorMessage(i18n
+                     ("Task '%1' is a milestone task and must not have "
+                      "bookings assigned to it.").arg(id));
+        return false;
+    }
+
     if (scenarios[sc].specifiedScheduled && !sub->isEmpty() &&
         (scenarios[sc].specifiedStart == 0 ||
          scenarios[sc].specifiedEnd == 0))
