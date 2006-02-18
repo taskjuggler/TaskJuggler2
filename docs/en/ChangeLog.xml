@@ -927,6 +927,10 @@ slots with 'booking' when the <link
 linkend="PROPERTY_overtime">overtime</link> attribute is
 used.</para></listitem>
 
+<listitem><para>Fix build system so that kde-config is no longer
+mandatory. This simplifies compiling on Windows/Cygwin and Qt-only
+installs.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

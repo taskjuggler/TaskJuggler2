@@ -37,7 +37,20 @@ AM_INIT_AUTOMAKE(taskjuggler, [2.2.0-svn])
 
 dnl AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
-KDE_SET_PREFIX
+AC_MSG_CHECKING([for KDE support])
+AC_ARG_WITH(kde-support,
+        [  --with-kde-support[={yes|no}] Integrate KDE support [default=yes]],
+        [
+                case "${withval}" in
+                        yes|no) cv_option_kdesupport=$withval;;
+                        *)  AC_MSG_ERROR(bad value ${withval} for --with-kde-support) ;;
+                esac
+        ], [cv_option_kdesupport=yes])
+AC_MSG_RESULT([$cv_option_kdesupport])
+
+if test "$cv_option_kdesupport" = yes ;then
+  KDE_SET_PREFIX
+fi  
 KDE_CHECK_LIB64
 
 dnl generate the config header
@@ -68,17 +81,6 @@ dnl KDE_USE_QT
 dnl AC_PATH_KDE
 
 dnl End of configure.in.min
-
-AC_MSG_CHECKING([for KDE support])
-AC_ARG_WITH(kde-support,
-        [  --with-kde-support[={yes|no}] Integrate KDE support [default=yes]],
-        [
-                case "${withval}" in
-                        yes|no) cv_option_kdesupport=$withval;;
-                        *)  AC_MSG_ERROR(bad value ${withval} for --with-kde-support) ;;
-                esac
-        ], [cv_option_kdesupport=yes])
-AC_MSG_RESULT([$cv_option_kdesupport])
 
 AM_CONDITIONAL(include_KDE, test "$cv_option_kdesupport" = yes)
 AM_CONDITIONAL(include_ARTS, false)
