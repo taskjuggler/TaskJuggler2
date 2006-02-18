@@ -922,6 +922,11 @@ inherited dependencies.</para></listitem>
 <listitem><para>Generate propper warning when bookings are assigned to
 container tasks or milestones.</para></listitem>
 
+<listitem><para>It is now possible to book off-hour and vacation time
+slots with 'booking' when the <link
+linkend="PROPERTY_overtime">overtime</link> attribute is
+used.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

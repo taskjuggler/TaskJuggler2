@@ -34,6 +34,12 @@ specifies the interval duration. In this form the start date
 is followed by a plus character. The plus character must be separated
 from the start date by a space or newline character. The plus must be
 followed by a number and a <link linkend="TYPE_UNIT">UNIT</link>.</para>
+
+<para><screen>2006-02-18 - 2006-02-19
+2006-02-18
+2006-02-18 +1d
+</screen></para>
+
 </sect2>
 <sect2 id="TYPE_GLOBAL_ID"><title>GLOBAL_ID</title>
 
@@ -66,8 +72,7 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 	flagBar are declared flags, the following example is a correct
 	expression:</para>
 
-<para><screen>
-(flagFoo | flagFooBar) &amp; &tilde;flagBar
+<para><screen>(flagFoo | flagFooBar) &amp; &tilde;flagBar
 </screen></para>
 
 <para>The following functions can be used in logical expressions:

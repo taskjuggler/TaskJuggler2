@@ -112,9 +112,9 @@ public:
 
     bool book(Booking* b);
 
-    bool bookSlot(uint idx, SbBooking* nb);
-    bool bookInterval(Booking* b, int sc, int sloppy = 0);
-    bool addBooking(int sc, Booking* b, int sloppy = 0);
+    bool bookSlot(uint idx, SbBooking* nb, int overtime = 0);
+    bool bookInterval(Booking* b, int sc, int sloppy = 0, int overtime = 0);
+    bool addBooking(int sc, Booking* b, int sloppy = 0, int overtime = 0);
 
     double getCurrentLoad(const Interval& i, const Task* task = 0) const;
 

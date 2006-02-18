@@ -1,4 +1,4 @@
-project prj "Project" "1.0" 2003-06-05 2003-07-05 {
+project prj "Project" "1.0" 2003-06-05 +1m {
   # The baseline date for the projection.
   now 2003-06-15
   scenario plan "Plan" {
@@ -18,7 +18,8 @@ task t1 "Task 1" {
 
 supplement resource r1 {
   # This is the work that has been done up until now by r1.
-  booking 2003-06-06 2003-06-07 t1 { sloppy 2 }
-  booking 2003-06-08 2003-06-09 t1 { sloppy 2 }
-  booking 2003-06-11 2003-06-12 t1 { sloppy 2 }
+  booking t1 2003-06-06 +8h { sloppy 2 }
+  booking t1 2003-06-08 +8h { sloppy 2 }
+  # Book interval that extends into off-hours.
+  booking t1 2003-06-11-8:00 +10h { overtime 1 }
 }

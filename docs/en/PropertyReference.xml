@@ -301,11 +301,11 @@ HTML calendar columns. The default is to show load values.</para></descr>
   given, all bookings must only cover working time for the
   resource.</para></descr>
   <attributes>
-   <attr name="start" type="DATE"/>
-   <attr name="end" type="DATE"/>
    <attr name="task" type="ID"/>
+   <attr name="period" type="DATEINTERVAL"/>
   </attributes>
   <optattributes>
+   <optattr>overtime</optattr>
    <optattr>sloppy</optattr>
   </optattributes>
   <seealso>
@@ -1658,6 +1658,30 @@ should be shown at a maximum.</para></descr>
   </attributes>
   <example>&example_numberformat;</example>
  </property>
+ <property name="overtime" id="overtime" inheritable="No">
+  <descr><para>This attribute enables bookings to override working
+  hours and vacations.</para></descr>
+  <attributes>
+   <attr name="value" type="INTEGER">
+    <para>Number between 0 and 2. See table below.</para>
+   </attr>
+  </attributes>
+  <freestyle>
+   <para><simplelist type="horiz" columns="2">
+   
+   <member><varname>overtime 0:</varname></member>
+   <member>You can only book available working hours. (Default)</member>
+
+   <member><varname>overtime 1:</varname></member>
+   <member>You can book off-hours as well.</member>
+   
+   <member><varname>overtime 2:</varname></member>
+   <member>You can book normal working hours, off-hours and vacations.</member>
+
+   </simplelist></para>
+  </freestyle>
+  <example>&example_booking;</example>
+ </property>
  <property name="persistent" id="persistent" inheritable="No">
   <descr><para>Specifies that once a resource is picked from the list
   of alternatives this resource is used for the whole task.
@@ -1731,11 +1755,9 @@ specified to terminate the scheduling process.</para></descr>
     <para>The version of the project file. This could be a revision
 number from a revision control system.</para>
    </attr>
-   <attr name="start" type="DATE">
-    <para>All task must start after this date.</para>
-   </attr>
-   <attr name="end" type="DATE">
-    <para>All task must end before this date.</para>
+   <attr name="period" type="DATEINTERVAL">
+    <para>The expected interval of the project. It may be larger than
+    necessary, but it needs to be large enough to fit all tasks.</para>
    </attr>
   </attributes>
   <optattributes>
@@ -2211,7 +2233,7 @@ contain the project ID after the load value.</para></descr>
    
    <member><varname>sloppy 0:</varname></member>
    <member>Period may not contain any off-duty hours, vacation or
-   other task assignments.</member>
+   other task assignments. (Default)</member>
 
    <member><varname>sloppy 1:</varname></member>
    <member>Period may contain off-duty hours, but not vacation or

@@ -518,14 +518,14 @@ Resource::book(Booking* nb)
 {
     uint idx = sbIndex(nb->getStart());
 
-    return bookSlot(idx, nb);
+    return bookSlot(idx, nb, 0);
 }
 
 bool
-Resource::bookSlot(uint idx, SbBooking* nb)
+Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
 {
     // Make sure that the time slot is still available.
-    if (scoreboard[idx] != 0)
+    if (scoreboard[idx] > (SbBooking*) overtime)
     {
         delete nb;
         return FALSE;
@@ -553,7 +553,7 @@ Resource::bookSlot(uint idx, SbBooking* nb)
 }
 
 bool
-Resource::bookInterval(Booking* nb, int sc, int sloppy)
+Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
 {
     uint sIdx = sbIndex(nb->getStart());
     uint eIdx = sbIndex(nb->getEnd());
@@ -561,7 +561,7 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy)
     bool conflict = FALSE;
 
     for (uint i = sIdx; i <= eIdx; i++)
-        if (scoreboard[i])
+        if (scoreboard[i] > (SbBooking*) overtime)
         {
             uint j;
             for (j = i + 1 ; j <= eIdx &&
@@ -625,13 +625,14 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy)
         return FALSE;
 
     for (uint i = sIdx; i <= eIdx; i++)
-        bookSlot(i, new SbBooking(*nb));
+        if (scoreboard[i] <= (SbBooking*) overtime)
+            bookSlot(i, new SbBooking(*nb), overtime);
 
     return TRUE;
 }
 
 bool
-Resource::addBooking(int sc, Booking* nb, int sloppy)
+Resource::addBooking(int sc, Booking* nb, int sloppy, int overtime)
 {
     SbBooking** tmp = scoreboard;
 
@@ -639,7 +640,7 @@ Resource::addBooking(int sc, Booking* nb, int sloppy)
         scoreboard = scoreboards[sc];
     else
         initScoreboard();
-    bool retVal = bookInterval(nb, sc, sloppy);
+    bool retVal = bookInterval(nb, sc, sloppy, overtime);
     // Cross register booking with task.
     if (retVal && nb->getTask())
         nb->getTask()->addBookedResource(sc, this);

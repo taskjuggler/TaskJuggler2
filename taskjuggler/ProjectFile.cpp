@@ -2394,11 +2394,12 @@ ProjectFile::readBooking(int sc, Resource* resource)
 
 
     int sloppy = 0;
+    int overtime = 0;
     if ((tt = nextToken(token)) == LBRACE)
     {
         while ((tt = nextToken(token)) != RBRACE)
         {
-            if (token == "sloppy")
+            if (token == KW("sloppy"))
             {
                 if (nextToken(token) != INTEGER ||
                     token.toInt() < 0 || token.toInt() > 3)
@@ -2407,6 +2408,16 @@ ProjectFile::readBooking(int sc, Resource* resource)
                     return 0;
                 }
                 sloppy = token.toInt();
+            }
+            else if (token == KW("overtime"))
+            {
+                if (nextToken(token) != INTEGER ||
+                    token.toInt() < 0 || token.toInt() > 2)
+                {
+                    errorMessage(i18n("Number between 0 and 2 expected"));
+                    return 0;
+                }
+                overtime = token.toInt();
             }
             else
             {
@@ -2419,7 +2430,7 @@ ProjectFile::readBooking(int sc, Resource* resource)
         returnToken(tt, token);
 
     Booking* b = new Booking(iv, task);
-    if (!resource->addBooking(sc, b, sloppy))
+    if (!resource->addBooking(sc, b, sloppy, overtime))
         return false;
 
     return true;
