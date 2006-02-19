@@ -323,10 +323,15 @@ public:
 
     bool preScheduleOk(int sc);
     bool scheduleOk(int sc, int& errors) const;
-    void initLoopDetector()
-    {
-    }
-    bool loopDetector() const;
+    /**
+     * Checks for loops in task interdependencies starting with the current
+     * task.
+     * @param ckedTaskList The list of already checked tasks. Will be appended
+     * to.
+     * @retval true if a loop was detected.
+     * @retval false otherwise.
+     */
+    bool loopDetector(LDIList& chkedTaskList) const;
     bool checkDetermination(int sc) const;
     void computeBuffers();
     time_t nextSlot(time_t slotDuration) const;
@@ -348,8 +353,16 @@ public:
     void loadFromXML( QDomElement& parent, Project *p );
     void allocationFromXML( const QDomElement& );
 private:
-    bool loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
-                       caller) const;
+    /**
+     * Checks for loops in task interdependencies starting with the current
+     * task under ASAP or ALAP scheduling.
+     * @param ckedTaskList The list of already checked tasks. Will be appended
+     * to.
+     * @retval true if a loop was detected.
+     * @retval false otherwise.
+     */
+    bool loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
+                       LoopDetectorInfo::FromWhere caller) const;
     bool checkPathForLoops(LDIList& list, bool atEnd) const;
     bool scheduleContainer(int sc, bool safeMode);
     Task* subFirst() { return (Task*) sub->first(); }

@@ -1,7 +1,7 @@
 /*
  * LoopDetectorInfo.h - TaskJuggler
  *
- * Copyright (c) 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2002, 2003, 2004, 2005, 2006 by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -122,6 +122,20 @@ public:
             leaf->nextLDI = 0;
         }
         --items;
+    }
+    LoopDetectorInfo* popLast()
+    {
+        LoopDetectorInfo* lst = leaf;
+        if (leaf == root)
+            root = leaf = 0;
+        else
+        {
+            leaf = leaf->prevLDI;
+            leaf->nextLDI = 0;
+        }
+        --items;
+        lst->prevLDI = lst->nextLDI = 0;
+        return lst;
     }
 private:
     long items;

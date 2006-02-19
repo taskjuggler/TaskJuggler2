@@ -1,7 +1,8 @@
 /*
  * Project.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -544,10 +545,9 @@ Project::pass2(bool noDepCheck, bool& fatalError)
         if (DEBUGPS(1))
             qDebug("Searching for dependency loops ...");
         // Check all tasks for dependency loops.
+        LDIList chkedTaskList;
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-            (*tli)->initLoopDetector();
-        for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-            if ((*tli)->loopDetector())
+            if ((*tli)->loopDetector(chkedTaskList))
             {
                 fatalError = true;
                 return FALSE;
@@ -709,13 +709,12 @@ Project::schedule(int sc)
 {
     bool error = FALSE;
 
-    TaskList fullSortedTasks(taskList);
     // The scheduling function only cares about leaf tasks. Container tasks
     // are scheduled automatically when all their childern are scheduled. So
     // we create a task list that only contains leaf tasks.
     TaskList sortedTasks;
     int leafTasks = 0;
-    for (TaskListIterator tli(fullSortedTasks); *tli != 0; ++tli)
+    for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         if (!(*tli)->hasSubs())
         {
             sortedTasks.append(*tli);

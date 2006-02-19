@@ -1509,7 +1509,7 @@ Task::saveSpecifiedBookedResources()
 }
 
 bool
-Task::loopDetector() const
+Task::loopDetector(LDIList& chkedTaskList) const
 {
     /* Only check top-level tasks. All other tasks will be checked then as
      * well. */
@@ -1519,22 +1519,32 @@ Task::loopDetector() const
         qDebug("Running loop detector for task %s", id.latin1());
     // Check ASAP tasks
     LDIList list;
-    if (loopDetection(list, FALSE, LoopDetectorInfo::fromParent))
+    if (loopDetection(list, chkedTaskList, FALSE, LoopDetectorInfo::fromParent))
         return TRUE;
     // Check ALAP tasks
-    if (loopDetection(list, TRUE, LoopDetectorInfo::fromParent))
+    if (loopDetection(list, chkedTaskList, TRUE, LoopDetectorInfo::fromParent))
         return TRUE;
     return FALSE;
 }
 
 bool
-Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
+Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd, LoopDetectorInfo::FromWhere
                     caller) const
 {
     if (DEBUGPF(10))
         qDebug("%sloopDetection at %s (%s)",
                QString().fill(' ', list.count() + 1).latin1(), id.latin1(),
                atEnd ? "End" : "Start");
+
+    // First, check whether the task has already been checked for loops.
+    {
+        LoopDetectorInfo thisTask(this, atEnd);
+        if (chkedTaskList.find(&thisTask))
+        {
+            // Already checked
+            return false;
+        }
+    }
 
     if (checkPathForLoops(list, atEnd))
         return true;
@@ -1570,7 +1580,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(),
                            id.latin1());
-                if ((*tli)->loopDetection(list, false,
+                if ((*tli)->loopDetection(list, chkedTaskList, false,
                                           LoopDetectorInfo::fromParent))
                     return true;
             }
@@ -1586,7 +1596,8 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 qDebug("%sChecking end of task %s",
                        QString().fill(' ', list.count()).latin1(),
                        id.latin1());
-            if (loopDetection(list, TRUE, LoopDetectorInfo::fromOtherEnd))
+            if (loopDetection(list, chkedTaskList, TRUE,
+                              LoopDetectorInfo::fromOtherEnd))
                 return TRUE;
         }
 
@@ -1608,7 +1619,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                     qDebug("%sChecking parent task of %s",
                            QString().fill(' ', list.count()).latin1(),
                            id.latin1());
-                if (getParent()->loopDetection(list, false,
+                if (getParent()->loopDetection(list, chkedTaskList, false,
                                                LoopDetectorInfo::fromSub))
                     return true;
             }
@@ -1627,7 +1638,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                     qDebug("%sChecking previous %s of task %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if((*tli)->loopDetection(list, TRUE,
+                if((*tli)->loopDetection(list, chkedTaskList, TRUE,
                                          LoopDetectorInfo::fromSucc))
                     return true;
             }
@@ -1654,7 +1665,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                     qDebug("%sChecking sub task %s of %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if ((*tli)->loopDetection(list, true,
+                if ((*tli)->loopDetection(list, chkedTaskList, true,
                                           LoopDetectorInfo::fromParent))
                     return true;
             }
@@ -1670,7 +1681,8 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                 qDebug("%sChecking start of task %s",
                        QString().fill(' ', list.count()).latin1(),
                        id.latin1());
-            if (loopDetection(list, false, LoopDetectorInfo::fromOtherEnd))
+            if (loopDetection(list, chkedTaskList, false,
+                              LoopDetectorInfo::fromOtherEnd))
                 return true;
         }
 
@@ -1692,7 +1704,7 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                     qDebug("%sChecking parent task of %s",
                            QString().fill(' ', list.count()).latin1(),
                            id.latin1());
-                if (getParent()->loopDetection(list, true,
+                if (getParent()->loopDetection(list, chkedTaskList, true,
                                                LoopDetectorInfo::fromSub))
                     return true;
             }
@@ -1711,13 +1723,13 @@ Task::loopDetection(LDIList& list, bool atEnd, LoopDetectorInfo::FromWhere
                     qDebug("%sChecking follower %s of task %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if ((*tli)->loopDetection(list, FALSE,
+                if ((*tli)->loopDetection(list, chkedTaskList, FALSE,
                                           LoopDetectorInfo::fromPrev))
                     return true;
             }
         }
     }
-    list.removeLast();
+    chkedTaskList.append(list.popLast());
 
     if (DEBUGPF(5))
         qDebug("%sNo loops found in %s (%s)",

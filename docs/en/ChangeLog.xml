@@ -931,6 +931,10 @@ used.</para></listitem>
 mandatory. This simplifies compiling on Windows/Cygwin and Qt-only
 installs.</para></listitem>
 
+<listitem><para>Speed improvements for the loop detector. Large
+projects with many top-level tasks should be scheduled significantly
+faster now.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
