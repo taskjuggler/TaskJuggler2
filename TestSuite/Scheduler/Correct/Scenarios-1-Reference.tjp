@@ -97,6 +97,7 @@ supplement task t7 {
   priority 500
 }
 supplement resource tux {
-  plan:booking 2000-01-05-09:00:00-+0000 2000-01-05-12:00:00-+0000 t3
-  plan:booking 2000-01-05-13:00:00-+0000 2000-01-05-18:00:00-+0000 t3
+  plan:booking t3
+    2000-01-05-09:00:00-+0000 +3h,
+    2000-01-05-13:00:00-+0000 +5h
 }

@@ -2348,14 +2348,17 @@ ProjectFile::readBooking(int sc, Resource* resource)
     Task* task;
     QString token;
     TokenType tt = nextToken(token);
-    Interval iv;
+    QPtrList<Interval> intervals;
+    intervals.setAutoDelete(true);
 
     if (tt == DATE)
     {
         /* Old format: DATE TASKID [{ options }] */
         returnToken(tt, token);
 
-        if (!readInterval(iv, true))
+        Interval* iv = new Interval();
+        intervals.append(iv);
+        if (!readInterval(*iv, true))
             return false;
 
         if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
@@ -2374,8 +2377,22 @@ ProjectFile::readBooking(int sc, Resource* resource)
             errorMessage(i18n("Task ID expected"));
             return false;
         }
-        if (!readInterval(iv, true))
-            return false;
+
+        for ( ; ; )
+        {
+            Interval* iv = new Interval;
+            intervals.append(iv);
+            if (!readInterval(*iv, true))
+                return false;
+
+            /* Dates are seperated by commas. So if we find a comma, there is
+             * another date comming. */
+            if ((tt = nextToken(token)) != COMMA)
+            {
+                returnToken(tt, token);
+                break;
+            }
+        }
     }
 
 
@@ -2429,9 +2446,12 @@ ProjectFile::readBooking(int sc, Resource* resource)
     else
         returnToken(tt, token);
 
-    Booking* b = new Booking(iv, task);
-    if (!resource->addBooking(sc, b, sloppy, overtime))
-        return false;
+    for (QPtrListIterator<Interval> ivit(intervals); *ivit; ++ivit)
+    {
+        Booking* b = new Booking(**ivit, task);
+        if (!resource->addBooking(sc, b, sloppy, overtime))
+            return false;
+    }
 
     return true;
 }

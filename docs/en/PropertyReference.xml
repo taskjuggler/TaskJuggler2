@@ -302,7 +302,7 @@ HTML calendar columns. The default is to show load values.</para></descr>
   resource.</para></descr>
   <attributes>
    <attr name="task" type="ID"/>
-   <attr name="period" type="DATEINTERVAL"/>
+   <attr name="period" type="DATEINTERVAL" list="1"/>
   </attributes>
   <optattributes>
    <optattr>overtime</optattr>

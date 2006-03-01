@@ -1,6 +1,8 @@
 Work in progress:
 - less verbose booking syntax
 - Split toolbar with zoom and scheduling icons.
+- Add indentation hotkey support to GUI editor
+- Sort journal entries by date when displayed in GUI.
 
 Probably:
 - Macros to do date/time arithmetic.

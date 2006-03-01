@@ -840,6 +840,7 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
             if (bl.isEmpty())
                 continue;
 
+            Task* lastTask = 0;
             for (BookingListIterator bli(bl); *bli != 0; ++bli)
             {
                 /* Bookings are only generated for those task that have not
@@ -860,12 +861,31 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                     iv.overlap(Interval(start, end));
                     QString start = time2rfc(iv.getStart());
                     QString end = time2rfc(iv.getEnd() + 1);
-                    s << "  " << project->getScenarioId(*sit) << ":booking ";
-                    s << start << " " << end
-                        << " " << stripTaskRoot((*bli)->getTask()->getId())
-                        << endl;
+                    Task* task = (*bli)->getTask();
+                    if (lastTask != task)
+                    {
+                        if (lastTask != 0)
+                            s << endl;
+                        s << "  " << project->getScenarioId(*sit)
+                            << ":booking "
+                            << stripTaskRoot(task->getId());
+                        lastTask = task;
+                    }
+                    else
+                        s << ",";
+
+                    s << endl << "    " << start << " ";
+                    /* For intervals smaller than 10 days and multiples of 1h
+                     * we use the more compact form +Xh */
+                    int duration = iv.getDuration();
+                    if ((duration <= 10 * 24 * 60 * 60) &&
+                        (duration % (60 * 60) == 0))
+                        s << "+" << duration / (60 * 60) << "h";
+                    else
+                        s << "- " << end ;
                 }
             }
+            s << endl;
         }
         if (!first)
             s << "}" << endl;
