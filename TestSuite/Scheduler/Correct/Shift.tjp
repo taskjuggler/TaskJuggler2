@@ -5,9 +5,7 @@ project test "Test" "1.0" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
 shift s1 "Shift1" {
   workinghours mon 10:00 - 12:00, 13:00-15:00
   workinghours tue 9:00-17:00
-  workinghours wed off
-  workinghours thu off
-  workinghours fri off
+  workinghours wed - fri off
 
   shift s2 "Shift2" {
     workinghours wed 10:00 - 14:00
@@ -17,13 +15,7 @@ shift s1 "Shift1" {
 }
 
 shift s3 "Shift3" {
-	workinghours mon off
-	workinghours tue off
-	workinghours wed off
-	workinghours thu off
-	workinghours fri off
-	workinghours sat off
-	workinghours sun off
+	workinghours sun - sat off
 }
 
 resource r1 "Resource1" {

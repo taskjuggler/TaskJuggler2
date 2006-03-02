@@ -1,7 +1,8 @@
 /*
  * ParserTreeContext.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -40,6 +41,9 @@ public:
 
     void setScenario(Scenario* s) { ca = (CoreAttributes*) s; }
     Scenario* getScenario() const;
+
+    void setWeekday(int day) { weekday = day; }
+    int getWeekday() const { return weekday; }
 
     void setShift(Shift* s) { ca = (CoreAttributes*) s; }
     Shift* getShift() const;
@@ -80,6 +84,7 @@ public:
 private:
     CoreAttributes* ca;
     int scenarioIndex;
+    int weekday;
     Allocation* allocation;
     TaskDependency* taskDependency;
     Interval* interval;

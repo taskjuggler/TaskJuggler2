@@ -1,29 +1,18 @@
 project test "Test" "$Id" 2000-01-01-0:00-GMT 2000-02-31-0:00-GMT {
 	timezone "GMT"
-  workinghours mon 8:00 - 12:00, 13:00-17:00
-  workinghours tue 8:00 - 12:00, 13:00-17:00
-  workinghours wed 8:00 - 12:00, 13:00-17:00
-  workinghours thu 8:00 - 12:00, 13:00-17:00
-  workinghours fri 8:00 - 12:00, 13:00-17:00
-  workinghours sat off
-  workinghours sun off
+  workinghours mon - fri 8:00 - 12:00, 13:00-17:00
+  workinghours sat - sun off
 }
 
 
 shift s1 "Shift1" {
 	workinghours mon 8:00 - 12:00, 13:00-17:00
-	workinghours tue off
-	workinghours wed off
-	workinghours thu off
-	workinghours fri off
+	workinghours tue - fri off
 }
 
 shift s2 "Shift2" {
-	workinghours mon off
 	workinghours tue 8:00 - 12:00, 13:00-17:00
-	workinghours wed off
-	workinghours thu off
-	workinghours fri off
+	workinghours mon, wed - fri off
 }
 
 resource r1 "Resource1" {

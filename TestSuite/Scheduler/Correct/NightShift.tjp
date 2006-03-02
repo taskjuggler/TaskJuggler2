@@ -1,42 +1,19 @@
 project test "Test" "$Id" 2002-01-01-0:00-CET 2002-11-31-0:00-CET {
 	timezone "Europe/Berlin"
-  workinghours mon 8:00 - 12:00, 13:00-17:00
-  workinghours tue 8:00 - 12:00, 13:00-17:00
-  workinghours wed 8:00 - 12:00, 13:00-17:00
-  workinghours thu 8:00 - 12:00, 13:00-17:00
-  workinghours fri 8:00 - 12:00, 13:00-17:00
-  workinghours sat off
-  workinghours sun off
+  workinghours mon - fri 8:00 - 12:00, 13:00-17:00
+  workinghours sat - sun off
 }
 
 shift s1 "Shift1" {
-  workinghours mon 6:00-14:00
-  workinghours tue 6:00-14:00
-  workinghours wed 6:00-14:00
-  workinghours thu 6:00-14:00
-  workinghours fri 6:00-14:00
-  workinghours sat 6:00-14:00
-  workinghours sun 6:00-14:00
+  workinghours mon - sun 6:00-14:00
 }
 
 shift s2 "Shift2" {
-  workinghours mon 14:00 - 22:00
-  workinghours tue 14:00 - 22:00
-  workinghours wed 14:00 - 22:00
-  workinghours thu 14:00 - 22:00
-  workinghours fri 14:00 - 22:00
-  workinghours sat 14:00 - 22:00
-  workinghours sun 14:00 - 22:00
+  workinghours mon - sun 14:00 - 22:00
 }
 
 shift s3 "Shift3" {
-	workinghours mon 0:00 - 6:00, 22:00 - 24:00
-	workinghours tue 0:00 - 6:00, 22:00 - 24:00
-	workinghours wed 0:00 - 6:00, 22:00 - 24:00
-	workinghours thu 0:00 - 6:00, 22:00 - 24:00
-	workinghours fri 0:00 - 6:00, 22:00 - 24:00
-	workinghours sat 0:00 - 6:00, 22:00 - 24:00
-	workinghours sun 0:00 - 6:00, 22:00 - 24:00
+	workinghours mon - sun 0:00 - 6:00, 22:00 - 24:00
 }
 
 maxeffort 1.0

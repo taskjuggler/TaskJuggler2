@@ -246,6 +246,20 @@ Project::getScenarioIndex(const QString& id) const
     return scenarioList.getIndex(id);
 }
 
+void
+Project::setWorkingHours(int day, const QPtrList<Interval>& l)
+{
+    if (day < 0 || day > 6)
+        qFatal("day out of range");
+    delete workingHours[day];
+
+    // Create a deep copy of the interval list.
+    workingHours[day] = new QPtrList<Interval>;
+    workingHours[day]->setAutoDelete(true);
+    for (QPtrListIterator<Interval> pli(l); pli; ++pli)
+        workingHours[day]->append(new Interval(**pli));
+}
+
 bool
 Project::addId(const QString& id, bool changeCurrentId)
 {

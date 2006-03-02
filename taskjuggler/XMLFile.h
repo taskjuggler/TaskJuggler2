@@ -1,7 +1,8 @@
 /*
  * XMLFile.h - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -69,7 +70,8 @@ private:
                                    ParserNode* parentNode,
                                    ParserFunctionPtr postFunc = 0);
     void createSubTreeWorkingHours(ParserFunctionPtr func,
-                                   ParserElement* parentEl);
+                                   ParserElement* parentEl,
+                                   ParserFunctionPtr postFunc);
     void createSubTreeVacationList(ParserFunctionPtr func,
                                    ParserNode* parentNode);
     void createSubTreeCustomAttribute(ParserNode* parentNode);
@@ -86,8 +88,11 @@ private:
     bool doExtend(QDomNode& n, ParserTreeContext& n);
     bool doExtendAttribute(QDomNode& n, ParserTreeContext& n);
     bool doProjectWeekdayWorkingHours(QDomNode& n, ParserTreeContext& n);
+    bool doProjectWeekdayWorkingHoursPost(QDomNode& n, ParserTreeContext& n);
     bool doShiftWeekdayWorkingHours(QDomNode& n, ParserTreeContext& n);
+    bool doShiftWeekdayWorkingHoursPost(QDomNode& n, ParserTreeContext& n);
     bool doResourceWeekdayWorkingHours(QDomNode& n, ParserTreeContext& n);
+    bool doResourceWeekdayWorkingHoursPost(QDomNode& n, ParserTreeContext& n);
     bool doTimeInterval(QDomNode& n, ParserTreeContext& n);
     bool doTimeIntervalStart(QDomNode& n, ParserTreeContext& n);
     bool doTimeIntervalEnd(QDomNode& n, ParserTreeContext& n);

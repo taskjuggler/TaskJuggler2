@@ -4,33 +4,20 @@ project simple "Simple Project" "$Id" 2002-06-01-0:00-GMT 2002-07-31-0:00-GMT {
 }
 
 shift phonesupport "Telephone support" {
-	workinghours mon 9:00 - 12:00
-	workinghours tue 9:00 - 12:00
-	workinghours wed off
+	workinghours mon, tue 9:00 - 12:00
 	workinghours thu 14:00 - 17:00
 	workinghours fri 9:00 - 12:00
-	workinghours sat off
-	workinghours sun off
+	workinghours wed, sat, sun off
 }
 
 shift early "Early Shift" {
-	workinghours mon 7:00 - 12:00, 12:30 - 15:30
-	workinghours tue 7:00 - 12:00, 12:30 - 15:30
-	workinghours wed 7:00 - 12:00, 12:30 - 15:30
-	workinghours thu 7:00 - 12:00, 12:30 - 15:30
-	workinghours fri 7:00 - 12:00, 12:30 - 15:30
-	workinghours sat off
-	workinghours sun off
+	workinghours mon - fri 7:00 - 12:00, 12:30 - 15:30
+	workinghours sat - sun off
 }
 
 shift late "Late Shift" {
-	workinghours mon 11:00 - 14:00, 14:30 - 19:30
-	workinghours tue 11:00 - 14:00, 14:30 - 19:30
-	workinghours wed 11:00 - 14:00, 14:30 - 19:30
-	workinghours thu 11:00 - 14:00, 14:30 - 19:30
-	workinghours fri 11:00 - 14:00, 14:30 - 19:30
-	workinghours sat off
-	workinghours sun off
+	workinghours mon - fri 11:00 - 14:00, 14:30 - 19:30
+	workinghours sat - sun off
 }
 
 resource s1 "Joe Supporter" {

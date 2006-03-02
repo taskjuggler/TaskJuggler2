@@ -944,6 +944,11 @@ scenarios no longer cause accidental changes of the scheduling
 direction. This guarantees that a task has always the same scheduling
 direction in all scenarios.</para></listitem>
 
+<listitem><para>Added support for more compact workinghour
+specifications. <computeroutput>workinghours mon - fri 8:00 -
+15:00</computeroutput> as well as <computeroutput>workinghours mon,
+sat, sun off</computeroutput> are now possible.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

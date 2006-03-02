@@ -23,11 +23,9 @@ shift s3 "Part-time schedule 1" {
 	# The days that the resource doesn't work must be mentioned
 	# explicitely otherwise the defaults values are used (usually
   # full-time employment).
-  workinghours mon 9:00 - 12:00, 13:00-18:00
-  workinghours tue off
+  workinghours mon,fri 9:00 - 12:00, 13:00-18:00
   workinghours wed 9:00 - 12:00
-  workinghours thu off
-  workinghours fri 9:00 - 12:00, 13:00-18:00
+  workinghours tue, thu off
 }
 
 shift s4 "Part-time schedule 2" {
@@ -35,11 +33,8 @@ shift s4 "Part-time schedule 2" {
 	# thursdays. The days that the resource doesn't work must be
 	# mentioned explicitely, otherwise the default values are used
 	# (usually full-time employment).
-  workinghours mon off
-  workinghours tue 9:00 - 12:00, 13:00-18:00
-  workinghours wed off
-  workinghours thu 9:00 - 12:00, 13:00-18:00
-  workinghours fri off
+  workinghours tue, thu 9:00 - 12:00, 13:00-18:00
+  workinghours mon, wed, fri off
 }
 
 # Now determine when these schedules are applicable

@@ -9,13 +9,8 @@ project prj "Example Project" "1.0" 2000-01-01 2000-03-09 {
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 9:00 - 12:00, 13:00 - 18:00
-    workinghours tue 9:00 - 12:00, 13:00 - 18:00
-    workinghours wed 9:00 - 12:00, 13:00 - 18:00
-    workinghours thu 9:00 - 12:00, 13:00 - 18:00
-    workinghours fri 9:00 - 12:00, 13:00 - 18:00
-    workinghours sat off
+    workinghours mon - fri 9:00 - 12:00, 13:00 - 18:00
+    workinghours sat, sun off
   scenario plan "Plan" {
   }
 }

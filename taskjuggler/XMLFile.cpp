@@ -1,7 +1,8 @@
 /*
  * XMLFile.cpp - TaskJuggler
  *
- * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -84,8 +85,9 @@ XMLFile::createParseTree()
             new ParserElement("currencyFormat", &XMLFile::doCurrencyFormat,
                               projectNode);
             pe = new ParserElement("workingHours", 0, projectNode);
-            createSubTreeWorkingHours(&XMLFile::doProjectWeekdayWorkingHours,
-                                      pe);
+            createSubTreeWorkingHours
+                (&XMLFile::doProjectWeekdayWorkingHours, pe,
+                 &XMLFile::doProjectWeekdayWorkingHoursPost);
             pe = new ParserElement("scenario", &XMLFile::doScenario,
                                    projectNode);
             ParserNode* scenarioNode = new ParserNode(pe);
@@ -110,7 +112,8 @@ XMLFile::createParseTree()
                 shiftNode->add(pe, "shift");    // recursive link
                 pe = new ParserElement("workingHours", 0, shiftNode);
                 createSubTreeWorkingHours
-                    (&XMLFile::doShiftWeekdayWorkingHours, pe);
+                    (&XMLFile::doShiftWeekdayWorkingHours, pe,
+                     &XMLFile::doShiftWeekdayWorkingHoursPost);
             }
         }
 
@@ -127,7 +130,8 @@ XMLFile::createParseTree()
                 new ParserElement("flag", &XMLFile::doFlag, resourceNode);
                 pe = new ParserElement("workingHours", 0, resourceNode);
                 createSubTreeWorkingHours
-                    (&XMLFile::doResourceWeekdayWorkingHours, pe);
+                    (&XMLFile::doResourceWeekdayWorkingHours, pe,
+                     &XMLFile::doResourceWeekdayWorkingHoursPost);
                 createSubTreeVacationList(&XMLFile::doResourceVacation,
                                           resourceNode);
                 createSubTreeTimeInterval("shiftSelection",
@@ -240,12 +244,14 @@ XMLFile::createSubTreeTimeInterval(const QString& id,
 
 void
 XMLFile::createSubTreeWorkingHours(ParserFunctionPtr func,
-                                   ParserElement* parentEl)
+                                   ParserElement* parentEl,
+                                   ParserFunctionPtr postFunc)
 {
     ParserNode* workingHoursNode = new ParserNode(parentEl);
     {
         ParserElement* pe =
-            new ParserElement("weekdayWorkingHours", func, workingHoursNode);
+            new ParserElement("weekdayWorkingHours", func, workingHoursNode,
+                              postFunc);
         ParserNode* weekdayWorkingHoursNode = new ParserNode(pe);
         {
             createSubTreeTimeInterval("timeInterval",
@@ -427,8 +433,9 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext& ptc)
 
     /* Delete all default working hours since not all days have to be present
      * in the working hour specificiation. A missing day is a day off. */
+    QPtrList<Interval> iv;
     for (int i = 0; i < 7; ++i)
-        project->setWorkingHours(i, new QPtrList<Interval>);
+        project->setWorkingHours(i, iv);
 
     ptc.setScenario(0);
 
@@ -524,11 +531,19 @@ XMLFile::doProjectWeekdayWorkingHours(QDomNode& n, ParserTreeContext& ptc)
     QDomElement el = n.toElement();
 
     QPtrList<Interval>* wi = new QPtrList<Interval>;
-    wi->setAutoDelete(TRUE);
+    wi->setAutoDelete(true);
     ptc.setWorkingHours(wi);
-    project->setWorkingHours(el.attribute("weekday").toInt(), wi);
+    ptc.setWeekday(el.attribute("weekday").toInt());
 
-    return TRUE;
+    return true;
+}
+
+bool
+XMLFile::doProjectWeekdayWorkingHoursPost(QDomNode&, ParserTreeContext& ptc)
+{
+    project->setWorkingHours(ptc.getWeekday(), *ptc.getWorkingHours());
+    delete ptc.getWorkingHours();
+    return true;
 }
 
 bool
@@ -537,11 +552,19 @@ XMLFile::doShiftWeekdayWorkingHours(QDomNode& n, ParserTreeContext& ptc)
     QDomElement el = n.toElement();
 
     QPtrList<Interval>* wi = new QPtrList<Interval>;
-    wi->setAutoDelete(TRUE);
+    wi->setAutoDelete(true);
     ptc.setWorkingHours(wi);
-    ptc.getShift()->setWorkingHours(el.attribute("weekday").toInt(), wi);
+    ptc.setWeekday(el.attribute("weekday").toInt());
 
-    return TRUE;
+    return true;
+}
+
+bool
+XMLFile::doShiftWeekdayWorkingHoursPost(QDomNode&, ParserTreeContext& ptc)
+{
+    ptc.getShift()->setWorkingHours(ptc.getWeekday(), *ptc.getWorkingHours());
+    delete ptc.getWorkingHours();
+    return true;
 }
 
 bool
@@ -550,11 +573,20 @@ XMLFile::doResourceWeekdayWorkingHours(QDomNode& n, ParserTreeContext& ptc)
     QDomElement el = n.toElement();
 
     QPtrList<Interval>* wi = new QPtrList<Interval>;
-    wi->setAutoDelete(TRUE);
+    wi->setAutoDelete(true);
     ptc.setWorkingHours(wi);
-    ptc.getResource()->setWorkingHours(el.attribute("weekday").toInt(), wi);
+    ptc.setWeekday(el.attribute("weekday").toInt());
 
-    return TRUE;
+    return true;
+}
+
+bool
+XMLFile::doResourceWeekdayWorkingHoursPost(QDomNode&, ParserTreeContext& ptc)
+{
+    ptc.getResource()->setWorkingHours
+        (ptc.getWeekday(), *ptc.getWorkingHours());
+    delete ptc.getWorkingHours();
+    return true;
 }
 
 bool
@@ -646,8 +678,9 @@ XMLFile::doShift(QDomNode& n, ParserTreeContext& ptc)
 
     /* Delete all default working hours since not all days have to be present
      * in the working hour specificiation. A missing day is a day off. */
+    QPtrList<Interval> iv;
     for (int i = 0; i < 7; ++i)
-        shift->setWorkingHours(i, new QPtrList<Interval>);
+        shift->setWorkingHours(i, iv);
 
     return TRUE;
 }
@@ -668,8 +701,9 @@ XMLFile::doResource(QDomNode& n, ParserTreeContext& ptc)
 
     /* Delete all default working hours since not all days have to be present
      * in the working hour specificiation. A missing day is a day off. */
+    QPtrList<Interval> iv;
     for (int i = 0; i < 7; ++i)
-        r->setWorkingHours(i, new QPtrList<Interval>);
+        r->setWorkingHours(i, iv);
 
     ptc.setResource(r);
 

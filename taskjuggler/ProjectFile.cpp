@@ -597,9 +597,15 @@ ProjectFile::readProject()
                 int dow;
                 QPtrList<Interval>* l = new QPtrList<Interval>();
                 if (!readWorkingHours(dow, l))
+                {
+                    delete l;
                     return FALSE;
+                }
 
-                proj->setWorkingHours(dow, l);
+                for (int d = 0; d < 7; ++d)
+                    if (dow & (1 << d))
+                        proj->setWorkingHours(d, *l);
+                delete l;
             }
             else if (token == KW("dailyworkinghours"))
             {
@@ -2184,9 +2190,15 @@ ProjectFile::readResourceBody(Resource* r)
             int dow;
             QPtrList<Interval>* l = new QPtrList<Interval>();
             if (!readWorkingHours(dow, l))
+            {
+                delete l;
                 return FALSE;
+            }
 
-            r->setWorkingHours(dow, l);
+            for (int d = 0; d < 7; ++d)
+                if (dow & (1 << d))
+                    r->setWorkingHours(d, *l);
+            delete l;
         }
         else if (token == KW("shift"))
         {
@@ -2297,9 +2309,15 @@ ProjectFile::readShift(Shift* parent)
                 int dow;
                 QPtrList<Interval>* l = new QPtrList<Interval>();
                 if (!readWorkingHours(dow, l))
+                {
+                    delete l;
                     return FALSE;
+                }
 
-                s->setWorkingHours(dow, l);
+                for (int d = 0; d < 7; ++d)
+                    if (dow & (1 << d))
+                        s->setWorkingHours(d, *l);
+                delete l;
             }
             else if (token == KW("include"))
             {
@@ -2937,28 +2955,64 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
 }
 
 bool
-ProjectFile::readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l)
+ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
 {
     l->setAutoDelete(TRUE);
-    QString day;
-    if (nextToken(day) != ID)
-    {
-        errorMessage(i18n("Weekday expected"));
-        return FALSE;
-    }
+    l->clear(); // Just to be sure
+
+    TokenType tt;
+    QString token;
     const char* days[] = { KW("sun"), KW("mon"), KW("tue"), KW("wed"),
         KW("thu"), KW("fri"), KW("sat") };
-    for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
-        if (days[dayOfWeek] == day)
-            break;
-    if (dayOfWeek == 7)
+
+    daysOfWeek = 0;
+    int firstDay = -1;
+    for ( ; ; )
     {
-        errorMessage(i18n("Weekday expected"));
-        return FALSE;
+        if (nextToken(token) != ID)
+        {
+            errorMessage(i18n("Weekday expected"));
+            return false;
+        }
+        int dayOfWeek;
+        for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+            if (days[dayOfWeek] == token)
+                break;
+        if (dayOfWeek == 7)
+        {
+            errorMessage(i18n("Weekday expected"));
+            return false;
+        }
+
+        else if ((tt = nextToken(token)) == MINUS)
+        {
+            if (firstDay != -1)
+            {
+                errorMessage("A '-' character is not allowed here.");
+                return false;
+            }
+            firstDay = dayOfWeek;
+        }
+        else
+        {
+            if (firstDay >= 0)
+            {
+                if (dayOfWeek < firstDay)
+                    dayOfWeek += 7;
+                for (int d = firstDay; d <= dayOfWeek; ++d)
+                    daysOfWeek |= 1 << (d % 7);
+                firstDay = -1;
+            }
+            else
+                daysOfWeek |= 1 << dayOfWeek;
+            if (tt != COMMA)
+            {
+                returnToken(tt, token);
+                break;
+            }
+        }
     }
 
-    QString token;
-    TokenType tt;
     if ((tt = nextToken(token)) == ID && token == KW("off"))
         return TRUE;
     else

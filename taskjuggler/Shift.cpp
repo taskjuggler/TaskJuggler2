@@ -68,6 +68,18 @@ Shift::inheritValues()
     }
 }
 
+void
+Shift::setWorkingHours(int day, const QPtrList<Interval>& l)
+{
+    delete workingHours[day];
+
+    // Create a deep copy of the interval list.
+    workingHours[day] = new QPtrList<Interval>;
+    workingHours[day]->setAutoDelete(true);
+    for (QPtrListIterator<Interval> pli(l); pli; ++pli)
+        workingHours[day]->append(new Interval(**pli));
+}
+
 ShiftListIterator
 Shift::getSubListIterator() const
 {
