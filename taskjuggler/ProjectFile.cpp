@@ -1682,7 +1682,11 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         if (!readDate(val, 0))
             return -1;
         task->setSpecifiedStart(sc, val);
-        task->setScheduling(Task::ASAP);
+
+        /* Implicit changes of the scheduling policy only affect the top-level
+         * scenario. */
+        if (sc == 0)
+            task->setScheduling(Task::ASAP);
     }
     else if (attribute == KW("end"))
     {
@@ -1690,7 +1694,11 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         if (!readDate(val, 1))
             return -1;
         task->setSpecifiedEnd(sc, val);
-        task->setScheduling(Task::ALAP);
+
+        /* Implicit changes of the scheduling policy only affect the top-level
+         * scenario. */
+        if (sc == 0)
+            task->setScheduling(Task::ALAP);
     }
     else if (attribute == KW("minstart"))
     {

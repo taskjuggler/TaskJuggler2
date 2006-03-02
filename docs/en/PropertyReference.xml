@@ -887,7 +887,8 @@ tasks that start before this end date are listed.</para></descr>
   <example>&example_export;</example>
  </property>
  <property name="end" id="end" inheritable="Yes" scenario="Yes">
-  <descr><para>The end date of the task. This attributes also
+  <descr><para>The end date of the task. When specified for the
+  top-level (default) scenario this attributes also
   implicitely sets the scheduling policy of the tasks to
   <varname>alap</varname>.</para></descr>
   <attributes>
@@ -2369,7 +2370,8 @@ tasks that end after this end date are listed.</para></descr>
  </property>
  <property name="start" id="start" inheritable="Yes"
 scenario="Yes">
-  <descr><para>The start date of the task. This attribute also
+  <descr><para>The start date of the task. When specified for the
+  top-level (default) scenario this attribute also
   implicitely sets the scheduling policy of the task to
   <varname>asap</varname>.</para></descr>
   <attributes>

@@ -939,6 +939,11 @@ installs.</para></listitem>
 projects with many top-level tasks should be scheduled significantly
 faster now.</para></listitem>
 
+<listitem><para>'start' and 'end' attributes specified for derived 
+scenarios no longer cause accidental changes of the scheduling
+direction. This guarantees that a task has always the same scheduling
+direction in all scenarios.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
