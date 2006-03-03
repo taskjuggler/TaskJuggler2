@@ -1,5 +1,6 @@
 macro prjStart [ 2003-01-01-0:00-GMT ]
 macro prjEnd [2003-04-01-0:00-GMT ]
+macro Now [2003-02-01]
 project prj "htmltaskreport test" "$Id$" ${prjStart}  ${prjEnd} {
 	timezone "GMT"
   timeformat "%Y-%m-%d %H:%M:%S %Z"	
@@ -65,17 +66,35 @@ task t1 "Task 1" {
 }
 
 htmlstatusreport "." {
-	headline "The big headline"
-	caption "The big caption"
-	rawhead "<h1>Some raw HTML stuff as head.</h1>"
-	rawtail "<h1>Some raw HTML stuff as tail.</h1>"
+	headline "Status report for the period 2003-01-25 to 2003-02-01"
 	table 1 {
-		headline "This is the headline of the first table."
-		caption "This is the caption of the first table."
-		sorttasks indexup
-		hidetask 0
+		headline "Tasks that should have been finished already"
+		columns name, duration, end, completed, resources, follows,
+						statusnote
+		hidetask ~(istaskstatus(plan, late))
+	  timeformat "%Y-%m-%d"
 	}
 	table 2 {
-		columns seqno, name, cost, weekly
+	  headline "Work in progress"
+		columns name, duration, end, completed, resources, status,
+		        statusnote
+	  hidetask ~((istaskstatus(plan, inprogresslate) | 
+								(istaskstatus(plan, inprogress))) &
+		                endsafter(plan, ${Now}))
+	  timeformat "%Y-%m-%d"
+	}
+	table 3 {
+	  headline "Tasks that have been completed"
+		columns name, start, end, note
+		hidetask ~istaskstatus(plan, finished)
+
+	}
+	table 4 {
+	  headline "Upcoming new tasks"
+		columns name, start, duration, resources, note
+		hidetask ~(startsafter(plan, ${Now}) &
+		           startsbefore(plan, ${prjEnd}))
+		start ${Now}
+		end ${prjEnd}
 	}
 }
