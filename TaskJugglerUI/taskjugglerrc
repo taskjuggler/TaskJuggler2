@@ -49,7 +49,7 @@ Text To Search Mode=2
 Height 1200=809
 Width 1600=1218
 
-[MainWindow Toolbar NavigationBar]
+[MainWindow Toolbar NavigationBar GanttBar]
 IconText=IconOnly
 Index=1
 

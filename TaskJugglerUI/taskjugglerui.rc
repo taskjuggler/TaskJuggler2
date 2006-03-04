@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="taskjuggler" version="9">
+<kpartgui name="taskjuggler" version="10">
 
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
@@ -54,12 +54,14 @@
   <Action name="report"/>
 </ToolBar>
 
-<ToolBar name="ToolBar" noMerge="1"><text>Gantt Toolbar</text>
+<ToolBar name="ToolBar" noMerge="1"><text>Scheduling Toolbar</text>
   <Action name="schedule"/>
   <Action name="stop"/>
   <Action name="previous_problem"/>
   <Action name="next_problem"/>
-  <Separator/>
+</ToolBar>
+
+<ToolBar name="GanttBar" noMerge="1"><text>Gantt Toolbar</text>
   <Action name="zoom_in"/>
   <Action name="zoom_out"/>
 </ToolBar>
