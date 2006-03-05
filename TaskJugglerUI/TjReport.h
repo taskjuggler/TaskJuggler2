@@ -47,7 +47,8 @@ class TjReport : public TjReportBase
 {
     Q_OBJECT
 public:
-    TjReport(QWidget* p, Report* const rDef, const QString& n = QString::null);
+    TjReport(QWidget* p, ReportManager* m, Report* const rDef,
+             const QString& n = QString::null);
     virtual ~TjReport();
 
     virtual bool generateReport();
@@ -67,6 +68,8 @@ public:
 public slots:
     void zoomIn();
     void zoomOut();
+    void zoomTo(const QString& lable);
+
     virtual void show();
     virtual void hide();
 
@@ -112,6 +115,8 @@ protected:
 
     time_t stepLength() const;
     void setBestStepUnit();
+
+    void updateZoomSelector();
 
     QSplitter* splitter;
     KListView* listView;

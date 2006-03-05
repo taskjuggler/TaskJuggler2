@@ -24,7 +24,6 @@
 #include "ReportLayers.h"
 #include "ltstr.h"
 
-class QObject;
 class QPainter;
 class QRect;
 class QCanvas;
@@ -38,7 +37,8 @@ class TjGanttZoomStep;
 class Interval;
 class TjLineAccounter;
 
-class TjGanttChart {
+class TjGanttChart
+{
 public:
     enum ScaleMode { manual = 0, fitSize, autoZoom };
 
@@ -67,11 +67,15 @@ public:
     QCanvas* getChartCanvas() const { return chart; }
     QCanvas* getLegendCanvas() const { return legend; }
 
+    bool zoomTo(const QString& label);
     bool zoomIn();
     bool zoomOut();
 
     Interval stepInterval(time_t ref) const;
     QString stepIntervalName(time_t ref) const;
+
+    QStringList getZoomStepLabels() const;
+    unsigned int getCurrentZoomStep() { return currentZoomStep; }
 
     int time2x(time_t t) const;
     time_t x2time(int x) const;

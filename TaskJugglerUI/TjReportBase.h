@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.h 1181 2005-10-24 08:29:54Z cs $
+ * $Id$
  */
 
 #ifndef _TjReportBase_h_
@@ -17,12 +17,13 @@
 
 class CoreAttributes;
 class Report;
+class ReportManager;
 
 class TjReportBase : public QWidget
 {
     Q_OBJECT
 public:
-    TjReportBase(QWidget* p, Report* const rDef,
+    TjReportBase(QWidget* p, ReportManager* m, Report* const rDef,
                  const QString& n = QString::null);
     virtual ~TjReportBase() { }
 
@@ -39,6 +40,7 @@ signals:
     void signalEditCoreAttributes(CoreAttributes*);
 
 public slots:
+    virtual void zoomTo(const QString& label);
     virtual void zoomIn();
     virtual void zoomOut();
     virtual void show();
@@ -47,6 +49,7 @@ public slots:
 protected:
     TjReportBase() : reportDef(0) { }
 
+    ReportManager* manager;
     Report* const reportDef;
 
     bool loadingProject;

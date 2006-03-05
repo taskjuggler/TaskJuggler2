@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: taskjuggler.cpp 1085 2005-06-23 20:34:54Z cs $
+ * $Id$
  */
 
 #ifndef _TjGanttZoomStep_h_
@@ -22,14 +22,17 @@ class TjGanttZoomStep {
 public:
     enum StepUnits { hour = 0, day, week, month, quarter, year };
 
-    TjGanttZoomStep(StepUnits su1, const QString& pat1, const QString& f1,
+    TjGanttZoomStep(const QString& l,
+                    StepUnits su1, const QString& pat1, const QString& f1,
                     StepUnits su2, const QString& pat2, const QString& f2,
                     int r, bool wsm,
                     const QFont& f) :
-        font(f), stepUnit1(su1), pattern1(pat1), format1(f1),
+        label(l), font(f), stepUnit1(su1), pattern1(pat1), format1(f1),
         stepUnit2(su2), pattern2(pat2), format2(f2),
         ratio(r), weekStartsMonday(wsm) { }
     ~TjGanttZoomStep() { }
+
+    const QString& getLabel() const { return label; }
 
     int calcStepSize(int stepSizeHint);
     int getStepSize() const { return stepSize; }
@@ -51,6 +54,8 @@ public:
 
 private:
     TjGanttZoomStep() : font(QFont()) { }
+
+    QString label;
 
     const QFont& font;
 

@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.h 1181 2005-10-24 08:29:54Z cs $
+ * $Id$
  */
 
 #include "TjSummaryReport.h"
@@ -23,9 +23,10 @@
 #include "Account.h"
 #include "Task.h"
 
-TjSummaryReport::TjSummaryReport(QWidget* p, const Project* pr,
+TjSummaryReport::TjSummaryReport(QWidget* p, ReportManager* m,
+                                 const Project* pr,
                                  const QString& n) :
-    TjReportBase(p, 0, n), project(pr)
+    TjReportBase(p, m, 0, n), project(pr)
 {
     QVBoxLayout* hl = new QVBoxLayout(this, 1);
     hl->setAutoAdd(true);

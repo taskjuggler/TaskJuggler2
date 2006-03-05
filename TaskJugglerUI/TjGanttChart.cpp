@@ -191,75 +191,75 @@ TjGanttChart::calcStepSizes()
     clearZoomSteps();
 
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::day,
+                        (i18n("Hours"), TjGanttZoomStep::day,
                          "WWWWWWWW WWWWWWWWWWWW 00, 0000", "%A %B %d, %Y",
                          TjGanttZoomStep::hour,
                          "00", "%H", 24, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::month,
+                        (i18n("Days (Very Large)"), TjGanttZoomStep::month,
                          "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "00", "%d", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::month,
+                        (i18n("Days (Large)"), TjGanttZoomStep::month,
                          "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "00", "%d", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::month,
+                        (i18n("Days (Mid)"), TjGanttZoomStep::month,
                          "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "00", "%d", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::month,
+                        (i18n("Days (Small)"), TjGanttZoomStep::month,
                          "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::day,
                          "W", "#w", 31, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::month,
+                        (i18n("Weeks (Large)"), TjGanttZoomStep::month,
                          "WWWWWWWWWWWW 0000", "%B %Y",
                          TjGanttZoomStep::week,
                          "W00", i18n("W#W"), 5,
                          reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::month,
+                        (i18n("Weeks (Small)"), TjGanttZoomStep::month,
                          "WWW 0000", "%b %Y",
                          TjGanttZoomStep::week,
                          "W00", i18n("W#W"), 5,
                          reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::year,
+                        (i18n("Months (Large)"), TjGanttZoomStep::year,
                          "0000", "%Y",
                          TjGanttZoomStep::month,
                          "WWW", "%b", 12, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::year,
+                        (i18n("Months (Small)"), TjGanttZoomStep::year,
                          "0000", "%Y",
                          TjGanttZoomStep::month,
                          "00", "%m", 12, reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::year,
+                        (i18n("Quarter"), TjGanttZoomStep::year,
                          "0000", "%Y",
                          TjGanttZoomStep::quarter,
                          "W0", i18n("Q#Q"), 4,
                          reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::year, "", "",
+                        (i18n("Year (Large)"), TjGanttZoomStep::year, "", "",
                          TjGanttZoomStep::year, "0000", "%Y", 1,
                          reportDef->getWeekStartsMonday(),
                          headerFont));
     zoomSteps.push_back(new TjGanttZoomStep
-                        (TjGanttZoomStep::year, "", "",
+                        (i18n("Year (Small)"), TjGanttZoomStep::year, "", "",
                          TjGanttZoomStep::year, "0000", "%Y", 1,
                          reportDef->getWeekStartsMonday(),
                          headerFont));
@@ -267,9 +267,7 @@ TjGanttChart::calcStepSizes()
     int ppyHint = 24 * 365;
     for (std::vector<TjGanttZoomStep*>::iterator it = zoomSteps.begin();
          it != zoomSteps.end(); ++it)
-    {
         ppyHint = (int) ((*it)->calcStepSize(ppyHint) / 2.2);
-    }
 }
 
 int
@@ -642,6 +640,25 @@ TjGanttChart::stepIntervalName(time_t ref) const
             assert(0);
     }
     return name;
+}
+
+bool
+TjGanttChart::zoomTo(const QString& label)
+{
+    unsigned int zs = 0;
+    for (std::vector<TjGanttZoomStep*>::const_iterator it = zoomSteps.begin();
+         it != zoomSteps.end(); ++it, ++zs)
+    {
+        if ((*it)->getLabel() == label)
+        {
+            currentZoomStep = zs;
+            generate(manual);
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool
@@ -1564,6 +1581,19 @@ TjGanttChart::drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
     rect->setPen(QPen(colors[col], lineWidth));
     rect->setZ(TJRL_LOADBARS);
     rect->show();
+}
+
+QStringList
+TjGanttChart::getZoomStepLabels() const
+{
+    QStringList labels;
+    for (std::vector<TjGanttZoomStep*>::const_iterator it = zoomSteps.begin();
+         it != zoomSteps.end(); ++it)
+    {
+        labels.append((*it)->getLabel());
+    }
+
+    return labels;
 }
 
 int

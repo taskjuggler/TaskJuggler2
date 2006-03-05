@@ -7,18 +7,24 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.h 1181 2005-10-24 08:29:54Z cs $
+ * $Id$
  */
 
 #include "TjReportBase.h"
 
-TjReportBase::TjReportBase(QWidget* p, Report* const rDef, const QString& n) :
-    QWidget(p, n), reportDef(rDef)
+TjReportBase::TjReportBase(QWidget* p, ReportManager* m, Report* const rDef,
+                           const QString& n) :
+    QWidget(p, n), manager(m), reportDef(rDef)
 {
 }
 
 void
 TjReportBase::print()
+{
+}
+
+void
+TjReportBase::zoomTo(const QString&)
 {
 }
 

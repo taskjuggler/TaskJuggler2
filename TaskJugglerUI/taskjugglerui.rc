@@ -62,8 +62,9 @@
 </ToolBar>
 
 <ToolBar name="GanttBar" noMerge="1"><text>Gantt Toolbar</text>
-  <Action name="zoom_in"/>
   <Action name="zoom_out"/>
+  <Action name="zoom_to"/>
+  <Action name="zoom_in"/>
 </ToolBar>
 
 </kpartgui>

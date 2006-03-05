@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.h 1181 2005-10-24 08:29:54Z cs $
+ * $Id$
  */
 
 #include "TjHTMLReport.h"
@@ -21,9 +21,9 @@
 
 #include <HTMLReport.h>
 
-TjHTMLReport::TjHTMLReport(QWidget* p, Report* rDef,
+TjHTMLReport::TjHTMLReport(QWidget* p, ReportManager* m, Report* rDef,
                                  const QString& n) :
-    TjReportBase(p, rDef, n)
+    TjReportBase(p, m, rDef, n)
 {
     QVBoxLayout* hl = new QVBoxLayout(this, 0);
     hl->setAutoAdd(true);

@@ -33,8 +33,8 @@
 #include "TjPrintTaskReport.h"
 #include "TjGanttChart.h"
 
-TjTaskReport::TjTaskReport(QWidget* p, Report* const rDef,
-                           const QString& n) : TjReport(p, rDef, n)
+TjTaskReport::TjTaskReport(QWidget* p, ReportManager* m, Report* const rDef,
+                           const QString& n) : TjReport(p, m, rDef, n)
 {
 }
 

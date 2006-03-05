@@ -59,9 +59,11 @@
 #include "TjObjPosTable.h"
 #include "KPrinterWrapper.h"
 #include "UsageLimits.h"
+#include "ReportManager.h"
 
-TjReport::TjReport(QWidget* p, Report* const rDef, const QString& n)
-    : TjReportBase(p, rDef, n)
+TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
+                   const QString& n)
+    : TjReportBase(p, m, rDef, n)
 {
     loadingProject = FALSE;
     autoFit = true;
@@ -755,6 +757,7 @@ TjReport::prepareChart()
     ganttChart->setHeaderHeight(headerHeight);
     ganttChart->generate(autoFit ? TjGanttChart::fitSize:
                          TjGanttChart::manual);
+    updateZoomSelector();
 
     canvasFrame->setMaximumWidth(ganttChart->getWidth());
 }
@@ -1108,6 +1111,28 @@ TjReport::updateStatusBar()
 }
 
 void
+TjReport::zoomTo(const QString& label)
+{
+    if (!isVisible())
+        return;
+
+    time_t x = ganttChart->x2time(ganttChartView->contentsX());
+    int y = ganttChartView->contentsY();
+
+    if (!ganttChart->zoomTo(label))
+        return;
+
+    canvasFrame->setMaximumWidth(ganttChart->getWidth());
+
+    ganttHeaderView->repaint();
+    ganttChartView->repaint();
+    update();
+
+    ganttHeaderView->setContentsPos(ganttChart->time2x(x), 0);
+    ganttChartView->setContentsPos(ganttChart->time2x(x), y);
+}
+
+void
 TjReport::zoomIn()
 {
     if (!isVisible())
@@ -1126,6 +1151,8 @@ TjReport::zoomIn()
 
     ganttHeaderView->setContentsPos(ganttChart->time2x(x), 0);
     ganttChartView->setContentsPos(ganttChart->time2x(x), y);
+
+    updateZoomSelector();
 }
 
 void
@@ -1147,6 +1174,8 @@ TjReport::zoomOut()
 
     ganttHeaderView->setContentsPos(ganttChart->time2x(x), 0);
     ganttChartView->setContentsPos(ganttChart->time2x(x), y);
+
+    updateZoomSelector();
 }
 
 void
@@ -1156,6 +1185,8 @@ TjReport::show()
 
     if (statusBarUpdateTimer)
         statusBarUpdateTimer->start(500, FALSE);
+
+    updateZoomSelector();
 }
 
 void
@@ -1230,6 +1261,13 @@ TjReport::setGanttChartColors()
     ganttChart->setColor("chartLineCol",
                          KGlobalSettings::calculateAlternateBackgroundColor
                          (listView->colorGroup().base()).dark(130));
+}
+
+void
+TjReport::updateZoomSelector()
+{
+    manager->updateZoomSelector(ganttChart->getZoomStepLabels(),
+                                ganttChart->getCurrentZoomStep());
 }
 
 #include "TjReport.moc"

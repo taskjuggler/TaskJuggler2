@@ -24,6 +24,7 @@ class QWidgetStack;
 class QString;
 class QListViewItem;
 class KMainWindow;
+class KSelectAction;
 class KListView;
 class KListViewSearchLine;
 class KURL;
@@ -74,6 +75,8 @@ signals:
 public slots:
     void zoomIn();
     void zoomOut();
+    void zoomTo();
+    void updateZoomSelector(const QStringList& items, unsigned int current);
     void closeCurrentReport();
     void changeStatusBar(const QString& text);
     void editCoreAttributes(CoreAttributes* ca);
@@ -85,6 +88,7 @@ private:
     void updateReportBrowser();
 
     KMainWindow* mainWindow;
+    KSelectAction* zoomSelector;
 
     const Project* project;
 

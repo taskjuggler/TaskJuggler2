@@ -349,12 +349,14 @@ TaskJuggler::fileClose()
     m_view->close();
 }
 
-void TaskJuggler::filePrint()
+void
+TaskJuggler::filePrint()
 {
     m_view->print();
 }
 
-void TaskJuggler::optionsPreferences()
+void
+TaskJuggler::optionsPreferences()
 {
     // popup some sort of preference dialog, here
     TaskJugglerPreferences dlg;

@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.h 1181 2005-10-24 08:29:54Z cs $
+ * $Id$
  */
 
 #ifndef _TjSummaryReport_h_
@@ -24,7 +24,7 @@ class TjSummaryReport : public TjReportBase
     Q_OBJECT
 
 public:
-    TjSummaryReport(QWidget* p, const Project* pr,
+    TjSummaryReport(QWidget* p, ReportManager* m, const Project* pr,
                  const QString& n = QString::null);
     virtual ~TjSummaryReport() { }
 

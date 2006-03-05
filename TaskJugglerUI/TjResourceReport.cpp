@@ -32,8 +32,9 @@
 #include "TjPrintResourceReport.h"
 #include "TjGanttChart.h"
 
-TjResourceReport::TjResourceReport(QWidget* p, Report* const rDef,
-                                   const QString& n) : TjReport(p, rDef, n)
+TjResourceReport::TjResourceReport(QWidget* p, ReportManager* m,
+                                   Report* const rDef,
+                                   const QString& n) : TjReport(p, m, rDef, n)
 {
 }
 

@@ -107,9 +107,9 @@ private:
     void setupAccel();
     void setupActions();
 
-    TaskJugglerView *m_view;
+    TaskJugglerView* m_view;
 
-    KRecentFilesAction *m_recentAction;
+    KRecentFilesAction* m_recentAction;
 
     QTimer* delayTimer;
     std::set<const char*, ltstr> enabledActionsBuf;

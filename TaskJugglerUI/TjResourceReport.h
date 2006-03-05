@@ -24,7 +24,7 @@ class TjPrintReport;
 class TjResourceReport : public TjReport
 {
 public:
-    TjResourceReport(QWidget* p, Report* const rDef,
+    TjResourceReport(QWidget* p, ReportManager* m, Report* const rDef,
                      const QString& n = QString::null);
     virtual ~TjResourceReport();
 

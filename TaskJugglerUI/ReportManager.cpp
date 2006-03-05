@@ -52,10 +52,21 @@ ReportManager::ReportManager(KMainWindow* m, QWidgetStack* v,
 {
     loadingProject = FALSE;
 
-    // Hide the 2nd column. It contains the report ID that is of no interest
-    // to the user.
+    /* Hide the 2nd column. It contains the report ID that is of no interest
+     * to the user. */
     browser->setColumnWidthMode(1, QListView::Manual);
     browser->hideColumn(1);
+
+    // Setup zoom toolbar actions.
+    zoomSelector = new KSelectAction
+        (i18n("Zoom"), "viewmag", 0, this, SLOT(zoomTo()),
+         m->actionCollection(), "zoom_to");
+    zoomSelector->setEditable(false);
+    zoomSelector->setComboWidth(170);
+#if KDE_IS_VERSION(3,4,89)
+    zoomSelector->setMaxComboViewCount(15);
+#endif
+
 }
 
 ReportManager::~ReportManager()
@@ -353,12 +364,13 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
     if (tjr == 0)
     {
         if (mr->getProjectReport() == 0)
-            tjr = new TjSummaryReport(reportStack, project);
+            tjr = new TjSummaryReport(reportStack, this, project);
         else if (strcmp(mr->getProjectReport()->getType(), "QtTaskReport") == 0)
-            tjr = new TjTaskReport(reportStack, mr->getProjectReport());
+            tjr = new TjTaskReport(reportStack, this, mr->getProjectReport());
         else if (strcmp(mr->getProjectReport()->getType(),
                         "QtResourceReport") == 0)
-            tjr = new TjResourceReport(reportStack, mr->getProjectReport());
+            tjr = new TjResourceReport(reportStack, this,
+                                       mr->getProjectReport());
         else if (strncmp(mr->getProjectReport()->getType(), "CSV", 3) == 0)
         {
             CSVReport* csvReport =
@@ -377,7 +389,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             return TRUE;
         }
         else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
-            tjr = new TjHTMLReport(reportStack, mr->getProjectReport());
+            tjr = new TjHTMLReport(reportStack, this, mr->getProjectReport());
         else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
         {
             ICalReport* icalReport =
@@ -570,6 +582,16 @@ ReportManager::print()
 }
 
 void
+ReportManager::zoomTo()
+{
+    if (loadingProject)
+        return;
+
+    if (getCurrentReport())
+        getCurrentReport()->getReport()->zoomTo(zoomSelector->currentText());
+}
+
+void
 ReportManager::zoomIn()
 {
     if (loadingProject)
@@ -587,6 +609,14 @@ ReportManager::zoomOut()
 
     if (getCurrentReport())
         getCurrentReport()->getReport()->zoomOut();
+}
+
+void
+ReportManager::updateZoomSelector(const QStringList& items,
+                                  unsigned int current)
+{
+    zoomSelector->setItems(items);
+    zoomSelector->setCurrentItem(current);
 }
 
 void
