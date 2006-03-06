@@ -92,8 +92,6 @@ private slots:
     void fileNew();
     void fileNewInclude();
     void fileOpen();
-    void fileSave();
-    void fileSaveAs();
     void fileClose();
     void filePrint();
     void optionsPreferences();

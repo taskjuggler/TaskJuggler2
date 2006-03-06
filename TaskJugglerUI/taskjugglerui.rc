@@ -4,6 +4,9 @@
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
     <Action name="new_include" append="open_merge"/>
+    <DefineGroup name="revert_merge"/>
+    <DefineGroup name="save_merge"/>
+    <DefineGroup name="print_merge"/>
   </Menu>
   
   <Menu name="edit"><text>&amp;Edit</text>
@@ -30,7 +33,9 @@
     <Action name="next_problem"/>
     <Action name="previous_problem"/>
   </Menu>
-  
+ 
+  <Merge/>
+
   <Menu name="help"><text>&amp;Help</text>
     <Action name="keyword_help"/>
     <Action name="tutorial"/>

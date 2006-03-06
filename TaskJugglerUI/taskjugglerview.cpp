@@ -376,7 +376,7 @@ TaskJugglerView::newInclude()
     // Show the new file in the editor.
     showEditor();
     // Save the file so that it physically exists.
-    save();
+    fileManager->saveCurrentFile();
 }
 
 QString
@@ -489,30 +489,6 @@ TaskJugglerView::loadAfterTimerTimeout()
 {
     // This function catches the signal triggered by the timer set in openURL.
     loadProject(urlToLoad);
-}
-
-void
-TaskJugglerView::save()
-{
-    fileManager->saveCurrentFile();
-}
-
-void
-TaskJugglerView::saveAs()
-{
-    KURL url = KFileDialog::getSaveURL
-        (QString::null, "*.tjp, *.tji", this, i18n("Save file as"));
-
-    if (!url.isEmpty() && url.isValid())
-        saveAs(url);
-}
-
-void
-TaskJugglerView::saveAs(const KURL& url)
-{
-    fileManager->saveCurrentFileAs(url);
-    // Update window caption.
-    showEditor();
 }
 
 void
@@ -1023,7 +999,7 @@ TaskJugglerView::focusBigTab(QWidget*)
                     fileManager->getCurrentFile()->getUniqueName();
             fileManager->enableEditorActions(TRUE);
             mw->listViews->setCurrentIndex(lastBrowserUsedWithEditor);
-            fileManager->setFocusToEditor();
+            fileManager->showEditor();
             reportManager->enableReportActions(false);
 
             break;
@@ -1043,8 +1019,7 @@ TaskJugglerView::focusBigTab(QWidget*)
             // Enable report menu and toolbar actions.
             reportManager->enableReportActions(true);
 
-            // Disable all editor actions.
-            fileManager->enableEditorActions(FALSE);
+            hideEditor();
 
             break;
     }
@@ -1064,12 +1039,23 @@ TaskJugglerView::showEditor()
     (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
 
     mw->bigTab->showPage(mw->editorTab);
-    fileManager->setFocusToEditor();
+    fileManager->showEditor();
+}
+
+void
+TaskJugglerView::hideEditor()
+{
+    // Disable all editor actions.
+    fileManager->enableEditorActions(FALSE);
+
+    fileManager->hideEditor();
 }
 
 void
 TaskJugglerView::showReport()
 {
+    hideEditor();
+
     if (mw->listViews->currentItem() != mw->reportsPage)
         lastBrowserUsedWithEditor = mw->listViews->currentIndex();
 

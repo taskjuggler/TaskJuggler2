@@ -68,10 +68,14 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
     // We don't want the URL column to be visible. This is internal data only.
     browser->setColumnWidthMode(1, QListView::Manual);
     browser->hideColumn(1);
+
+    currentGUIClient = 0;
 }
 
 FileManager::~FileManager()
 {
+    if (currentGUIClient)
+        mainWindow->guiFactory()->removeClient(currentGUIClient);
     clear();
 }
 
@@ -393,7 +397,7 @@ FileManager::showInEditor(const KURL& url)
                         *mfi,
                         SLOT(setModifiedOnDisc(Kate::Document*, bool,
                                                unsigned char)));
-
+/*
                 // Signal to en- or disable clipboard actions
                 connect(document, SIGNAL(selectionChanged()),
                          this, SLOT(enableClipboardActions()));
@@ -401,6 +405,22 @@ FileManager::showInEditor(const KURL& url)
                 // Signal to en- or disable undo actions
                 connect(document, SIGNAL(undoChanged()),
                          this, SLOT(enableUndoActions()));
+*/
+                /* Remove some actions of the editor that we don't want to
+                 * show in the menu/toolbars */
+                KActionCollection* ac = editor->actionCollection();
+                ac->remove(ac->action("file_print"));
+                ac->action("view_folding_markers")->setShortcut(KShortcut());
+                ac->action("view_border")->setShortcut(KShortcut());
+                ac->action("view_line_numbers")->setShortcut(KShortcut());
+                ac->action("view_dynamic_word_wrap")->setShortcut(KShortcut());
+
+                KActionPtrList actionList = editor->actionCollection()->actions();
+                for (KActionPtrList::iterator it = actionList.begin();
+                     it != actionList.end(); ++it)
+                {
+                    printf("** Action found: %s\n", (*it)->name());
+                }
             }
             viewStack->raiseWidget((*mfi)->getEditor());
 
@@ -421,7 +441,7 @@ FileManager::showInEditor(const KURL& url, int line, int col)
 {
     showInEditor(url);
     setCursorPosition(line, col);
-    setFocusToEditor();
+    showEditor();
 }
 
 void
@@ -963,19 +983,21 @@ FileManager::configureEditor()
 void
 FileManager::enableEditorActions(bool enable)
 {
-    mainWindow->action(KStdAction::name(KStdAction::Save))->setEnabled(enable);
-    mainWindow->action(KStdAction::name(KStdAction::SelectAll))->
+//    mainWindow->action(KStdAction::name(KStdAction::Save))->setEnabled(enable);
+//    mainWindow->action(KStdAction::name(KStdAction::SaveAs))->
+//        setEnabled(enable);
+/*    mainWindow->action(KStdAction::name(KStdAction::SelectAll))->
         setEnabled(enable);
     mainWindow->action("configure_editor")->setEnabled(enable);
     mainWindow->action(KStdAction::name(KStdAction::Find))->setEnabled(enable);
     mainWindow->action(KStdAction::name(KStdAction::FindNext))->
         setEnabled(enable);
     mainWindow->action(KStdAction::name(KStdAction::FindPrev))->
-        setEnabled(enable);
+        setEnabled(enable);*/
     mainWindow->action("insert_date")->setEnabled(enable);
-
+/*
     enableClipboardActions(enable);
-    enableUndoActions(enable);
+    enableUndoActions(enable);*/
 }
 
 void
@@ -1025,10 +1047,28 @@ FileManager::setCursorPosition(int line, int col)
 }
 
 void
-FileManager::setFocusToEditor() const
+FileManager::showEditor()
 {
     if (getCurrentFile())
-        getCurrentFile()->getEditor()->setFocus();
+    {
+        KTextEditor::View* editor = getCurrentFile()->getEditor();
+
+        if (currentGUIClient)
+            mainWindow->guiFactory()->removeClient(currentGUIClient);
+        mainWindow->guiFactory()->addClient(editor);
+        currentGUIClient = editor;
+        editor->setFocus();
+    }
+}
+
+void
+FileManager::hideEditor()
+{
+    if (currentGUIClient)
+    {
+        mainWindow->guiFactory()->removeClient(currentGUIClient);
+        currentGUIClient = 0;
+    }
 }
 
 ManagedFileInfo*

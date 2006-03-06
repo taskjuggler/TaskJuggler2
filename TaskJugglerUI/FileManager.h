@@ -60,7 +60,8 @@ public:
 
     QWidgetStack* getViewStack() const { return viewStack; }
 
-    void setFocusToEditor() const;
+    void showEditor();
+    void hideEditor();
 
     const KURL& getMasterFileURL() const;
     ManagedFileInfo* getMasterFile() { return masterFile; }
@@ -137,6 +138,7 @@ private:
     KListViewSearchLine* searchLine;
     std::list<ManagedFileInfo*> files;
     ManagedFileInfo* masterFile;
+    KTextEditor::View* currentGUIClient;
 } ;
 
 #endif

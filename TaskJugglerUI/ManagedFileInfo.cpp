@@ -47,6 +47,14 @@ ManagedFileInfo::~ManagedFileInfo()
 }
 
 void
+ManagedFileInfo::setEditor(KTextEditor::View* e)
+{
+    editor = e;
+    connect(editor->action("file_save"), SIGNAL(activated()),
+            this, SLOT(fileSaved()));
+}
+
+void
 ManagedFileInfo::readProperties(KConfig*)
 {
 }
@@ -54,6 +62,12 @@ ManagedFileInfo::readProperties(KConfig*)
 void
 ManagedFileInfo::writeProperties(KConfig*)
 {
+}
+
+const KURL&
+ManagedFileInfo::getFileURL() const
+{
+    return fileURL;
 }
 
 const QString
@@ -123,8 +137,7 @@ ManagedFileInfo::save(bool ask)
             return;
 
         editor->document()->save();
-        modified = false;
-        browserEntry->setPixmap(2, 0);
+        fileSaved();
     }
     rec = false;
 }
@@ -135,11 +148,17 @@ ManagedFileInfo::saveAs(const KURL& url)
     if (editor)
     {
         editor->document()->saveAs(url);
-        modified = false;
-        if (browserEntry)
-            browserEntry->setPixmap(2, 0);
+        fileURL = url;
+        fileSaved();
     }
-    fileURL = url;
+}
+
+void
+ManagedFileInfo::fileSaved()
+{
+    modified = false;
+    if (browserEntry)
+        browserEntry->setPixmap(2, 0);
 }
 
 #include "ManagedFileInfo.moc"

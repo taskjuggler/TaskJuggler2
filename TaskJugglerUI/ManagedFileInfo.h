@@ -34,20 +34,16 @@ public:
 
     void writeProperties(KConfig* config);
 
-    const KURL& getFileURL() const { return fileURL; }
+    const KURL& getFileURL() const;
 
     const QString getUniqueName() const;
 
     bool isModified() { return modified; }
 
-    void save(bool ask);
-
-    void saveAs(const KURL& url);
-
     void setPartOfProject(bool p) { partOfProject = p; }
     bool isPartOfProject() const { return partOfProject; }
 
-    void setEditor(KTextEditor::View* e) { editor = e; }
+    void setEditor(KTextEditor::View* e);
     KTextEditor::View* getEditor() const { return editor; }
 
     void setBrowserEntry(KListViewItem* lvi) { browserEntry = lvi; }
@@ -55,16 +51,22 @@ public:
 
     QString getWordUnderCursor() const;
 
+    void save(bool ask);
+    void saveAs(const KURL& url);
+
 public slots:
     void setModified();
     void setModifiedOnDisc(Kate::Document*, bool modified,
                            unsigned char reason);
 
+private slots:
+    void fileSaved();
+
 private:
     ManagedFileInfo() { }
 
-    FileManager* manager;
     KURL fileURL;
+    FileManager* manager;
     bool partOfProject;
     bool modified;
 

@@ -117,8 +117,6 @@ void TaskJuggler::setupActions()
                 this, SLOT(fileNewInclude()),
                 actionCollection(), "new_include");
     KStdAction::open(this, SLOT(fileOpen()), actionCollection());
-    KStdAction::save(this, SLOT(fileSave()), actionCollection());
-    KStdAction::saveAs(this, SLOT(fileSaveAs()), actionCollection());
     KStdAction::close(this, SLOT(fileClose()), actionCollection());
     KStdAction::print(this, SLOT(filePrint()), actionCollection());
     KStdAction::quit(kapp, SLOT(closeAllWindows()), actionCollection());
@@ -129,6 +127,7 @@ void TaskJuggler::setupActions()
 
 
     // "Edit" menu
+    /*
     KStdAction::undo(m_view, SLOT(undo()), actionCollection());
     KStdAction::redo(m_view, SLOT(redo()), actionCollection());
     KStdAction::cut(m_view, SLOT(cut()), actionCollection());
@@ -138,6 +137,7 @@ void TaskJuggler::setupActions()
     KStdAction::find(m_view, SLOT(find()), actionCollection());
     KStdAction::findNext(m_view, SLOT(findNext()), actionCollection());
     KStdAction::findPrev(m_view, SLOT(findPrevious()), actionCollection());
+    */
     new KAction(i18n("Insert Date"), "", KShortcut(KKey("CTRL+d")),
                 m_view, SLOT(insertDate()),
                 actionCollection(), "insert_date");
@@ -329,18 +329,6 @@ void
 TaskJuggler::fileOpen()
 {
     m_view->openURL(KURL());
-}
-
-void
-TaskJuggler::fileSave()
-{
-    m_view->save();
-}
-
-void TaskJuggler::fileSaveAs()
-{
-    // this slot is called whenever the File->Save As menu is selected,
-    m_view->saveAs();
 }
 
 void

@@ -67,10 +67,6 @@ public:
 
     virtual void openURL(KURL url);
 
-    virtual void save();
-
-    virtual void saveAs();
-
     virtual void close();
 
     void print();
@@ -155,13 +151,13 @@ private:
 
     void closeProject();
 
-    void saveAs(const KURL& url);
     void setLoadingProject(bool lp);
 
     void addMessage(const QString& msg, const QString& file, int line,
                     bool error);
 
     void showEditor();
+    void hideEditor();
     void showReport();
 
     Project* project;
