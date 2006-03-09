@@ -35,6 +35,7 @@ public:
     const QString& getLabel() const { return label; }
 
     int calcStepSize(int stepSizeHint);
+    void setStepSize(int s) { stepSize = s; }
     int getStepSize() const { return stepSize; }
     int getPixelsPerYear() const;
     bool getWeekStartsMonday() const { return weekStartsMonday; }

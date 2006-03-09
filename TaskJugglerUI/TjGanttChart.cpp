@@ -1,7 +1,8 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -345,7 +346,20 @@ TjGanttChart::generate(ScaleMode scaleMode)
                 endTime == reportDef->getProject()->getEnd())
                 allTasksInterval();
 
-            zoomToFitWindow(width, endTime - startTime);
+            int duration = endTime - startTime;
+            zoomToFitWindow(width, duration);
+
+            /* This mode is only used for printed charts where we only
+             * generate one chart. To better fit the chart on the page we
+             * modify the static gantt chart step size so that the chart
+             * always fits the requested interval optimally on the page. */
+            TjGanttZoomStep* zs = zoomSteps[currentZoomStep];
+            double years = static_cast<double>(duration) / (60 * 60 * 24 * 365);
+            int newWidth = static_cast<int>(zs->getPixelsPerYear() * years);
+            int overSize = width - newWidth;
+            double steps = static_cast<double>(newWidth) / zs->getStepSize();
+            if (overSize > 0)
+                zs->setStepSize(static_cast<int>(width / steps));
 
             endTime = x2time(width);
             break;
@@ -1656,11 +1670,11 @@ TjGanttChart::allTasksInterval()
     }
     if (startTime <= endTime)
     {
-        /* Add 5% of the interval duration to both ends, so the tasks are not
+        /* Add 10% of the interval duration to both ends, so the tasks are not
          * cut off right at the end. */
         int duration = endTime - startTime;
-        startTime -= (time_t) (0.05 * duration);
-        endTime += (time_t) (0.05 * duration);
+        startTime -= (time_t) (0.1 * duration);
+        endTime += (time_t) (0.1 * duration);
     }
     else
     {
