@@ -60,20 +60,21 @@ system-based operating systems. Whether you want to build a skyscraper
 or plan your colleagues shifts for the next month - TaskJuggler
 is the tool for you.</para>
 
-<para>Instead of clicking yourself painfully through hundreds of
-dialog boxes you specify your TaskJuggler project in a simple text
-format.  You write down all your tasks with their dependencies and
-other properties using the graphical front-end or your favorit text
+<para>Instead of clicking painfully through hundreds of
+dialog boxes you specify a TaskJuggler project in a simple text
+format.  You write down all the tasks with their dependencies and
+other properties using the graphical front-end or your favorite text
 editor. The information is processed by the TaskJuggler program
 and you will get all sorts of reports in an interactive format or as
 HTML or XML format. The HTML files can be viewed and printed with any
 web browser that supports Cascading Style Sheets.  JavaScript support
-is recommended. The XML files are used by the Gantt- and PERT chart
+with your browser is recommended. The XML files are used by the Gantt- and
+PERT chart
 generators and the <ulink url="http://www.kde.org">KDE</ulink> <ulink
 url="http://konqueror.kde.org">Konqueror</ulink> plug-in.</para>
 
-<para>TaskJuggler does not only honor the task interdependencies but
-also takes resource constrains and prioritization into account. Using
+<para>TaskJuggler not only honors the task interdependencies but
+also takes resource constraints and prioritization into account. Using
 TaskJugglers powerful filtering and reporting algorithms you can
 create a variety of task lists, resource usage tables, status reports,
 project calendars and project accounting statements.</para>
@@ -82,7 +83,7 @@ project calendars and project accounting statements.</para>
 of real-time editing it can offer a much broader set of features not
 found in any of the WYSIWYG (What You See Is What You Get) project
 planing tools. The the project description language is easy to learn
-and supports you very effectively during your planing and tracking
+and supports you very effectively during your planning and tracking
 process.</para> 
 
 </sect1>
@@ -153,8 +154,8 @@ url="http://www.taskjuggler.org/FUDforum2">forum</ulink> for users to
 help each other.</para>
 
 <para>The TaskJuggler project has been sponsored by SUSE for several
-years. After the aquistion by <ulink
-url="www.novell.com">Novell</ulink> the sponsorship continued. They
+years. After the acquisition by <ulink
+url="www.novell.com">Novell</ulink> the sponsorship has continued. They
 kindly host our web presence and our <ulink
 url="http://bugzilla.novell.com">Bugtracking System</ulink>.</para>
 
@@ -173,7 +174,8 @@ anything? Clearly not! Though users have no legal obligation to
 contribute, you should feel a moral obligation to support Open Source
 in whatever way you can. This can range from helping out other
 users with their first Linux installation to actively contributing to
-the TaskJuggler Project. The following section describes, how you can
+the TaskJuggler Project, not just as a programmer. The following section
+describes, how you can
 contribute to any of the components that are part of the TaskJuggler
 software releases.</para>
 
@@ -185,18 +187,17 @@ contribution</title>
 snapshot from the <ulink
 url="http://www.taskjuggler.org/download.php">TaskJuggler Download
 Site</ulink>. The development snapshot is updated once a day to
-provide access to the continous development. It is important that you
-use a very recent snapshot as the developers might have made changes
+provide access to the most recent developments. It is important that you
+use a very recent snapshot as the developers have probably made changes
 in the same files as you. This increases the chance for change
-collisions which can ultimately lead to the rejection of your
-contribution.</para>
+collisions which could mean recreating your contribution from scratch.</para>
 
 <para>Unpack the tarball as described in the installation section.
 Then rename the taskjuggler directory to something like
 <varname>taskjuggler-yourname</varname>. Then unpack the tarball again
 in the same place as before. You should now have a directory that
 contains two identical directory trees, each with a slightly different
-name of the top-level directoy of each tree.</para>
+name of the top-level directory of each tree.</para>
 
 <para>Next you need to find the files where you want to make your
 modifications. Please make your changes only in the
@@ -222,9 +223,9 @@ Type
 
 <screen>make</screen>
 
-in the <varname>taskjuggler-yourname</varname> directory. In case
-there are no errors, you can inspect the result. In case everything
-builds fine, you can remove all generated files again by typing 
+in the <varname>taskjuggler-yourname</varname> directory. If
+there are no errors, you can check or test the result. If everything
+builds fine, you can then remove all generated files again by typing 
 
 <screen>make distclean</screen>
 
@@ -232,43 +233,46 @@ Now you can generate a file that just contains
 your modifications by typing
 <screen>diff -ru taskjuggler-svn taskjuggler-yourname > taskjuggler-yourname.diff</screen>
 
-Inspect the generated file
+Inspect the generated diff file
 <varname>taskjuggler-yourname.diff</varname> and make sure it only
 contains diffs for files that you have changed and the changes are the
-way you want them to be. In case there are generated files included as
-well, please remove those files and regenerate the diff.</para>
+way you want them to be. If there are generated files included in the diff,
+please remove those files and regenerate the diff.</para>
 
-<para>As you can see, the diff utility performs a line-by-line
-comparisons of the files. Therefor make sure, you only make changes
+<para>The diff utility performs a line-by-line
+comparisons of the files. Try to only make changes
 that have an impact on the generated files. Do you change indentation
 or line wrapping of paragraphs. These kind of changes increase the
 size of diff files and make it much harder to evaluate the patches.
 When making changes to the program code, please use our coding
-style. In case your contribution is large enough to justify a
-copyright claim, please indicate this in the patch. For modifications
-to existing files, we assume that your contribution falls under the
-same license as the modified file. All new files need to contain a
-license declaration.</para>
+style. If your contribution is large enough to justify a
+copyright claim, please indicate what copyright you claim in the patch. For
+modifications
+to existing files, we will assume that your contribution falls under the
+same license as the modified file. All new files will need to contain a
+license declaration, preferably GPL.</para>
 
 </sect2>
 <sect2 id="contributing_translations"><title>Contributing Translations</title>
 
 <para>Another possible area of contribution are translation of
-TaskJuggler into languages other than US english. Our development
-process is in pricinple prepared for translations, but the first
-translation will definitely be a bit bumpy to include. TaskJuggler has
-several hunderd messages and more than hundred pages of documentation.
+TaskJuggler into languages other than US English. Our development
+process is in principle prepared for translations, but the first
+translation will definitely be a bit difficult to do. TaskJuggler has
+several hundred messages and more than hundred pages of documentation.
 Any translation is a significant effort and an ongoing commitment.
-TaskJuggler is still actively developed and this requires the
+TaskJuggler is still actively developed and this will require the
 translations to be updated as well. Please understand that we do not
-want to ship partial or outdated translations to our users.</para>
+want to ship partial or outdated translations to our users,
+so please ensure you or a group of people are willing to maintain the
+translations.</para>
 
 </sect2>
 <sect2 id="some_final_words_to_contributors"><title>Some final words
 to Contributors</title>
 
 <para>We do welcome all contributions but please understand that we
-reseve the right to reject any contribution that does not follow the
+reserve the right to reject any contribution that does not follow the
 above guidelines or otherwise conflicts with the goals of the
 TaskJuggler team. It is a good idea to contact the team prior to
 making any larger efforts.</para>
@@ -288,10 +292,10 @@ http://www.taskjuggler.org</ulink></para>
 Components</title>
 
 <para>TaskJuggler consists of several modular components that you
-might need or not. TaskJuggler also uses some additional tools. We
-have avoided to re-invent the wheel again wherever possible, at the
-same time we tried to keep the dependency list reasonably small.
-Nevertheless can it be challenging to the unexperienced user to build
+may or may not need. TaskJuggler also uses some additional tools. We
+have avoided to re-invent the wheel again wherever possible.
+We tried to keep the dependency list reasonably small,
+nevertheless can it be challenging for an inexperienced user to build
 and install TaskJuggler from source code. Most users are probably
 better served by using binary packages from their distributor. Almost
 every mainstream 
@@ -334,14 +338,14 @@ version 3.3 or higher</para></listitem>
 <listitem><para> GNU Compiler Collection &mdash; We are currently
 using GCC 4.0 to develop TaskJuggler. Since we try to write the code
 platform independent and ANSI standard compliant it should work with
-other compilers as well.</para></listitem>
+most other compilers as well.</para></listitem>
 
 </itemizedlist></para>
 
-<para>These requirements are enough to build and use the command line
+<para>The requirements listed are enough to build and use the command line
 program that translates project descriptions into HTML or XML reports.
 If you want to built this documentation or use the tools to process
-the XML files you need to take care of additional dependencies. If any
+the XML files you need to install the additional dependencies. If any
 of the following dependencies are not matched, the configure script
 will issue a warning but will not fail.</para>
 
@@ -387,7 +391,7 @@ url="http://www.tug.org/teTeX">te_latex</ulink>.</para></listitem>
 </sect2>
 <sect2 id="contributed_stuff"><title>Contributed Stuff</title>
 
-<para>Serveral people have contributed useful tools for TaskJuggler
+<para>Several people have contributed useful tools for TaskJuggler
 users. These tools can be found in the Contrib directory of the source
 code package. Please refer to the included README files for
 installation information.</para>
@@ -412,13 +416,13 @@ in the base directory of the TaskJuggler distribution:</para>
 </screen></para>
 
 <para>Since TaskJuggler uses <computeroutput>autoconf</computeroutput>, you
-should have no trouble compiling it. TaskJugger has some weak or
+should have no trouble compiling it. TaskJuggler has some weak or
 non-mandatory dependencies. If any of there are not satisfied, a
 warning is issued. In case a mandatory dependency is not found, an
 error is displayed and the configuration program stops. If you have
 problems, please report them to the TaskJuggler user forum at
 <ulink url="http://www.taskjuggler.org/FUDforum2">
-http://www.taskjuggler.org/FUDforum2</ulink> in English. Maybe someone
+http://www.taskjuggler.org/FUDforum2</ulink> in English. Someone
 there can help you out.</para>
 
 <para>In case you want to build TaskJuggler without the graphical
@@ -453,7 +457,7 @@ extension for such files is
 <sect1 id="general_usage"><title>General Usage</title>
 
 <para>To use the graphical front-end simply start it from the menu.
-Depeding on your Linux Distribution you will usually find it under
+Depending on your Linux Distribution you will usually find it under
 Office/Project Management or a similar entry. To start it from a shell
 type</para>
 
@@ -511,10 +515,10 @@ all errors are displayed.</member>
 <member>--nodepcheck</member>
 <member>Do not check for dependency loops. The loop detector uses an
 algorithm that needs exponentially more time the bigger the dependency
-network gets. So for large projects it can be desireable to skip the
+network gets. So for large projects it can be desirable to skip the
 dependency loop detection. This does not affect the task scheduling
-but can lead to error messages that are difficult to associate with a
-flawed dependency specification.</member>
+but can lead to error messages that are difficult to associate with the
+dependency specification that is wrong.</member>
 
 <member>--debug N</member>
 <member>Print debug output, N must be between 0 and 4, the higher N
@@ -523,7 +527,7 @@ purposes only.</member>
 
 <member>--dbmode N</member>
 <member>Limit debug output to certain modules of the code. N is a bit
-mask. Each set bit actives output of a certain module. Currently the
+mask. Each set bit activates output of a certain module. Currently the
 following modules are supported: Project File Reader (1), Project
 Scheduler (2), Task Scheduler (4), Resource Scheduler (8), Expression
 Tree Evaluator (16). This option is for testing and debugging purposes
@@ -546,7 +550,7 @@ and Sending Feedback</title>
 
 <para>All official releases of TaskJuggler are meant to be stable
 releases unless explicitly noted differently. But our test suite is
-still very small and some features cannot be tested automatically very
+still very small and some features are not tested automatically very
 well. So it's very likely that your current version of TaskJuggler
 contains some bugs. If you find a bug please follow this
 procedure:</para>
@@ -584,27 +588,27 @@ url="http://www.taskjuggler.org/FUDforum2">http://www.taskjuggler.org/FUDforum2<
 <chapter id="migrating_from_taskjuggler_1_x_to_2_x"><title>Migrating
 from TaskJuggler 1.x to 2.x</title>
 
-<sect1 id="achiving_compatibility"><title>Achiving compatibility</title>
+<sect1 id="achieving_compatibility"><title>Achieving compatibility</title>
 
 <para>Are you also frustrated by tools that can't read the data of
 their earlier incarnations? After all those files contain your
 valuable data and the first impression that the wonderful new version
-makes is it's rejection to read your old files. With TaskJuggler we
+makes is it's failure to read your old files. With TaskJuggler we
 like to spare you such situations as much as possible. But TaskJuggler
-1.x has been written to solve the problems that we encountered. By
+1.x was written to solve the problems that we encountered. By
 releasing it to the general public we learned that TaskJuggler is also
-very usefull to many other people. Some contacted us to tell us that
-it would be even more usefull to them, if TaskJuggler would have this
+very useful to many other people. Some contacted us to tell us that
+it would be even more useful to them, if TaskJuggler could have this
 or that new feature. In many cases we added these new features but we
 learned more and more that some parts of the original TaskJuggler
 design were not flexible enough to support some new features. For
 TaskJuggler 2.x we decided to change TaskJuggler to a more flexible
-design even if this meant that some syntax constructs could no longer
+design even if this meant that some syntax constructs would no longer
 be supported.</para>
 
 <para>As TaskJuggler uses plain text file as its main data format,
 you will always to able to read in your old files. But in some
-cases, you need to change certain syntax constructs to the syntax.
+cases, you need to change certain syntax constructs to the new syntax.
 When TaskJuggler processes a file with deprecated syntax it will
 generate an error message. This usually contains a hint, how the
 statement should look like in new syntax. The following sections
@@ -694,7 +698,7 @@ allocated 8 hours per day.</para>
 
 <para>Q: Why does taskjuggler use Qt when it's not an X11
 application?</para>
-<para>A: Qt is a very powerfull library that is much more than just a
+<para>A: Qt is a very powerful library that is much more than just a
 widget library. TaskJuggler uses Qt for all kinds of internal data
 types like lists and arrays. It also uses the Unicode functions, the
 SQL database interface and the XML support of Qt.</para>
@@ -705,9 +709,9 @@ installation</title>
 
 <para>Q: Can TaskJuggler be compiled and used on Windows?</para>
 <para>A: Probably yes, but we have never tried it. It should compile
-but require possible some minor tweaks of the sources. You should have
-a good knowledge of C++ and Qt when you try this. Let us know if you
-were successfull.</para>
+but may require some minor tweaks of the source. You should have
+good knowledge of C++ and Qt when you try this. Please let us know if you
+were successful.</para>
 </sect1>
 <sect1 id="FAQ_usage"><title>Usage</title>
 <para>Nothing here yet.</para>

@@ -15,7 +15,7 @@ Hour, minutes, seconds and the
 <computeroutput>TIMEZONE</computeroutput> are optional. If not
 specified, the values are set to 0. The local timezone or the default
 <link linkend="PROPERTY_timezone">timezone</link> is used if no other
-is specified. If the timezone is not known taskjuggler will fall back
+is specified. If the timezone is not known TaskJuggler will fall back
 to UTC (GMT). The value of TIMEZONE can either be a timezone name or
 since this can be ambiguous, the offset to GMT as
 <computeroutput>+HHMM</computeroutput> or
@@ -28,7 +28,7 @@ since this can be ambiguous, the offset to GMT as
 <para>There are three ways to specify a date interval. The first is
 the most obvious. A date interval consists of a start and end <link
 linkend="TYPE_DATE">DATE</link>. The start
-and end date may be seperated by a dash character. In the second form,
+and end date may be separated by a dash character. In the second form,
 the end date is omitted. A 24 hour interval is assumed. The third form
 specifies the interval duration. In this form the start date
 is followed by a plus character. The plus character must be separated
@@ -206,7 +206,7 @@ specified ID.</para></listitem>
 <link linkend="TYPE_ID">SCENARIO_ID</link>)</term>
 
 <listitem><para>true if the resource with the specified ID is assigned
-to the task in the specified scenrio.</para></listitem>
+to the task in the specified scenario.</para></listitem>
 
 </varlistentry>
 <varlistentry><term>treeLevel()</term>

@@ -55,7 +55,7 @@ after day are optional.</para>
 
 <para>In this tutorial we would like to compare two scenarios of the
 project. The first scenario is the one that we have planned. The
-second scenario is how it really happended. The two scenarios have the
+second scenario is how it really happened. The two scenarios have the
 same task structure, but the start and end dates of the task may vary.
 In reality we assume that the project got delayed, so we call the
 second scenario "Delayed". The <link
@@ -194,7 +194,7 @@ customer payments.</para>
 
 <para><screen>
 account dev "Development" cost
-account doc "Dokumentation" cost
+account doc "Documentation" cost
 account rev "Payments" revenue
 </screen></para>
 
@@ -231,7 +231,7 @@ linkend="PROPERTY_task">task</link> keyword followed by an ID and a name
 string. All TaskJuggler properties have their own namespaces. This
 means, that it is quite OK to have a resource and a task with the same
 ID. Tasks may have optional attributes which can be tasks again, so
-tasks can be nested. In constrast to all other TaskJuggler properties,
+tasks can be nested. In contrast to all other TaskJuggler properties,
 task IDs inherit the ID of the enclosing task as a prefix to the ID.
 The full ID of the <computeroutput>spec</computeroutput> task is
 <computeroutput>AcSo.spec</computeroutput>.</para>
@@ -619,7 +619,7 @@ taskreport "Task Usage" {
 
 <para>The default title for the
 <computeroutput>effort</computeroutput> column is replaced with a
-custom tiltle. Additionally we show the cost and revenue of all tasks
+custom title. Additionally we show the cost and revenue of all tasks
 and resources. All loads are shown as resource-days.</para>
 
 <para>The next report is similar to the first one but has the

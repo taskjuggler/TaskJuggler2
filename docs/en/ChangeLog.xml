@@ -150,7 +150,7 @@ task.</para></listitem>
 <para> <itemizedlist mark='opencircle'>
 
 <listitem><para>This release features some bigger cleanup changes.
-Some of them do break compatibility with older version of taskjuggler.
+Some of them do break compatibility with older version of TaskJuggler.
 While we try very hard to avoid such situations, we do prefer to have
 a consistent and logical language. Since the TaskJuggler user base is
 still comparatively small, we decided to break compatibility now
@@ -469,7 +469,7 @@ Gantt-chart like bars.</para></listitem>
 <computeroutput>hierarchno</computeroutput> and
 <computeroutput>hierarchindex</computeroutput>.</para></listitem>
 
-<listitem><para>Serveral new query functions and operators for <link
+<listitem><para>Several new query functions and operators for <link
 linkend="TYPE_LOGICALEXPRESSION">logical expressions</link> have been
 added.</para></listitem>
 
@@ -532,7 +532,7 @@ tasks.</para></listitem>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>A new class of reports has been added. CSV reports
-(Comma separated values) are usefull to import TaskJuggler reports
+(Comma separated values) are useful to import TaskJuggler reports
 into other productivity applications such as
 spreadsheets. The new reports are called <link
 linkend="PROPERTY_csvtaskreport">csvtaskreport</link>, <link
@@ -544,7 +544,7 @@ mouse over a cell will show the date and task/resource id in the
 browser status bar.</para></listitem>
 
 <listitem><para>Background cells in HTML calendars are now merged.
-This makes taskjuggler report generation faster and reduces the size
+This makes TaskJuggler report generation faster and reduces the size
 of HTML report files.</para></listitem>
 
 <listitem><para>The <link linkend="PROPERTY_export">export report</link>
@@ -604,11 +604,11 @@ hours, vacation or other task assignments. This is controlled by the
 
 <listitem><para>Effort based tasks now correctly recognize if the
 effort was partially specified with booking attributes. The effort is
-no longer allocated ontop of the bookings.</para></listitem>
+no longer allocated on top of the bookings.</para></listitem>
 
 <listitem><para>You can now reference environment variables by
 writing <literal>$(VAR)</literal> as a means to pass runtime
-values to taskjuggler.</para></listitem>
+values to TaskJuggler.</para></listitem>
 
 <listitem><para>Several inconsistencies and off-by-one errors with
 respect to task end times have been fixed.</para></listitem>
@@ -634,14 +634,14 @@ reports.</para></listitem>
 allocations.</para></listitem>
 
 <listitem><para><link linkend="PROPERTY_macro">Macro names</link> in macro
-calls can now be prefixed by a questionmark to surpress warnings if
+calls can now be prefixed by a question mark to suppress warnings if
 the macro is undefined.</para></listitem>
 
 <listitem><para>Microsoft and MacOS text files are now read in
 correctly.</para></listitem>
 
 <listitem><para>Report cells can be left empty and URLs can be
-ommitted controlled by a logical expression. This is controlled by
+omitted controlled by a logical expression. This is controlled by
 <link linkend="PROPERTY_hidecelltext">hidecelltext</link>
 and <link
 linkend="PROPERTY_hidecellurl">hidecellurl</link>.</para></listitem>
@@ -697,7 +697,7 @@ linkend="PROPERTY_limits">limits</link>.</para></listitem>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>TaskJuggler now has a nice face. Beside the
-commandlime application <computeroutput>taskjuggler</computeroutput>,
+commandline application <computeroutput>taskjuggler</computeroutput>,
 you can now use <computeroutput>TaskJuggler</computeroutput> or
 <computeroutput>ktjview2</computeroutput> as a graphical user
 interface to enter and schedule your projects.</para></listitem>
@@ -751,7 +751,7 @@ Due to a bug in the scheduling algorithm a heavy mixture of ALAP and
 ASAP tasks with various levels of priorities, ALAP tasks were treated
 more favorable then they should have been treated. This fix can
 drastically reduce the scheduling speed when you have a heavy mixture
-of ALAP and ASAP tasks with variing priorities.</para></listitem>
+of ALAP and ASAP tasks with varying priorities.</para></listitem>
 
 <listitem><para>The error checking and reporting of logical
 expressions has been drastically improved.</para></listitem>
@@ -839,7 +839,7 @@ fully navigable by keyboard. The scaling/zooming of the Gantt chart
 has been improved.</para></listitem>
 
 <listitem><para>HTML reports are now rendered with an embedded
-browser instead of lauching an external browser.</para></listitem>
+browser instead of launching an external browser.</para></listitem>
 
 <listitem><para>Export reports are now loaded into the editor when
 selected in the report browser.</para></listitem>
@@ -919,7 +919,7 @@ or smaller than 24 hours were reported too high.</para></listitem>
 <listitem><para>No longer show dependency arrows in Gantt chart for
 inherited dependencies.</para></listitem>
 
-<listitem><para>Generate propper warning when bookings are assigned to
+<listitem><para>Generate proper warning when bookings are assigned to
 container tasks or milestones.</para></listitem>
 
 <listitem><para>It is now possible to book off-hour and vacation time

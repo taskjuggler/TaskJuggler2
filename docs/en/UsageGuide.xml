@@ -7,7 +7,7 @@ TaskJuggler can be turned from a planning tool into a tracking tools.
 You don't have to change a lot to do this. After all, as the initial
 plan is almost always just a first guess, you need to continue
 planning your project as new details become evident. So what you
-really want is a way to gradully freeze the plan as work has been
+really want is a way to gradually freeze the plan as work has been
 completed, while still having full flexibility with all future
 work.</para>
 
@@ -49,7 +49,7 @@ task impl "Implementation" {
 </screen></para>
 
 <para>This tells TaskJuggler that 50% of the task's effort has been
-completed by the current date. Tasks that have no completetion
+completed by the current date. Tasks that have no completion
 specification will be assumed to be on track. TaskJuggler calculates
 the completion degree based on the current date. Completion
 specifications only need to be supplied for tasks that are either
@@ -111,7 +111,7 @@ resource dev2 "Developer 2" {
 
 <para>The sloppy attribute defines the accuracy of your bookings. If
 it's missing or 0 the booking must only describe a continuous working
-period during working hours. With higher values the inverval may
+period during working hours. With higher values the interval may
 overlap with off-hour or vacation time slots. See <link
 linkend="PROPERTY_sloppy">details on sloppy</link>.</para>
 
@@ -233,7 +233,7 @@ values have become reality and are no longer flexible.</para>
 <para>Once a task has been completed it is a good idea to
 remove the allocation statements from the tasks to prevent accidental
 resource allocations when the bookings don't exactly sum-up to the
-required effort. If you have specifed all work on a task by bookings
+required effort. If you have specified all work on a task by bookings
 you could also remove any hardcoded start and end dates as well as
 dependencies, but this is not required. You just have
 overspecified the task. In case you have made contradicting

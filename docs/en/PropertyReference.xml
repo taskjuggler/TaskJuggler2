@@ -257,7 +257,7 @@ task.</para></descr>
   <example>&example_alternative;</example>
  </property>
  <property name="barlabels" id="barlabels" inheritable="No">
-  <descr><para>Specifies the contense of the Gantt chart like bars in
+  <descr><para>Specifies the contents of the Gantt chart like bars in
 HTML calendar columns. The default is to show load values.</para></descr>
   <attributes>
    <attr name="mode" type="ID">
@@ -341,7 +341,7 @@ otherwise all cells of the column will have the same fixed value.</para></descr>
   <example>&example_columns;</example>
  </property>
  <property name="cellurl" id="cellurl" inheritable="No">
-  <descr><para>Specifies an URL that is attached to the cell contense
+  <descr><para>Specifies an URL that is attached to the cell contents
 of the cells of the column in HTML reports.</para></descr>
   <attributes>
    <attr name="url" type="STRING"/>
@@ -359,7 +359,7 @@ report.</para>
 macro expansion, these macros are expanded during the report
 generation. So the value of the macro is being changed after each
 table cell or table line. Consequently only build in macros can be
-used. To protect the macro calls agains expansion during the initial
+used. To protect the macro calls against expansion during the initial
 file processing, the report macros must be prefixed with an additional
 <varname>$</varname>.</para></descr>
   <attributes>
@@ -437,7 +437,7 @@ file processing, the report macros must be prefixed with an additional
    
    <member><varname>hierarchindex</varname></member>
    <member>The hierarchical index of a task. The index is calculated from the
-   hierachical structure of the list as well as the start and end dates.
+   hierarchical structure of the list as well as the start and end dates.
    </member>
    
    <member><varname>hierarchno</varname></member>
@@ -449,7 +449,7 @@ file processing, the report macros must be prefixed with an additional
    
    <member><varname>index</varname></member>
    <member>The index of a task. The index is calculated from the
-   hierachical structure of the list as well as the start and end dates.
+   hierarchical structure of the list as well as the start and end dates.
    </member>
    
    <member><varname>kotrusid</varname></member>
@@ -516,8 +516,8 @@ file processing, the report macros must be prefixed with an additional
    <member><varname>resources</varname></member>
    <member>The names of the used resources</member>
    
-   <member><varname>responsibilies</varname></member>
-   <member>A list of all tasks indicies for which a resource is
+   <member><varname>responsibilities</varname></member>
+   <member>A list of all tasks indices for which a resource is
    responsible </member>
    
    <member><varname>responsible</varname></member>
@@ -588,11 +588,11 @@ id of the task.</member>
 
 </simplelist></para>
 
-<para>Additionally the original contense of other cells of the same
+<para>Additionally the original contents of other cells of the same
 report line can be accessed by the column ID. The following columns
 are supported:</para>
 
-<para><varname>index, no, hierachindex, hierachno, id,
+<para><varname>index, no, hierarchindex, hierarchno, id,
 name</varname></para>
 
 <para>For the title or sub title of the calendar columns
@@ -649,7 +649,7 @@ the reason for the transaction.</para></descr>
  </property>
  <property name="csvaccountreport" id="csvaccountreport">
   <descr><para>The report lists all specified account values as a comma
-separated list. This is usefull to export TaskJuggler data to Office
+separated list. This is useful to export TaskJuggler data to Office
 Suites like OpenOffice.org or KOffice.</para></descr>
   <attributes>
    <attr name="filename" type="STRING"/>
@@ -670,7 +670,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
  </property>
  <property name="csvresourcereport" id="csvresourcereport" inheritable="No">
   <descr><para>The report lists all specified resource values as a
-comma separated list. This is usefull to export TaskJuggler data to
+comma separated list. This is useful to export TaskJuggler data to
 Office Suites like OpenOffice.org or KOffice.</para></descr>
   <attributes>
    <attr name="filename" type="STRING"/>
@@ -692,7 +692,7 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
  </property>
  <property name="csvtaskreport" id="csvtaskreport" inheritable="No">
   <descr><para>The report lists all specified task values as a comma
-separated list. This is usefull to export TaskJuggler data to Office
+separated list. This is useful to export TaskJuggler data to Office
 Suites like OpenOffice.org or KOffice.</para></descr>
   <attributes>
    <attr name="filename" type="STRING"/>
@@ -780,7 +780,7 @@ or relative. A relative ID starts with a number of '!'. Each '!' moves
 the scope to the parent task. Global IDs do
 not contain '!', but have IDs separated by dots.</para>
 
-<para>Each task ID can have optional attribues enclosed in
+<para>Each task ID can have optional attributes enclosed in
 braces.</para>
 
 <para>By using the 'depends' attribute, the scheduling policy is
@@ -800,7 +800,7 @@ the last policy counts.</para></descr> <attributes>
   <example>&example_depends;</example>
  </property>
  <property name="disabled" id="disabled" inheritable="Yes"
- schenario="Yes">
+ scenario="Yes">
   <descr><para>Disables the scenario for scheduling.</para></descr>
   <example>&example_scenario;</example>
   <seealso>
@@ -810,7 +810,7 @@ the last policy counts.</para></descr> <attributes>
  <property name="duration" id="duration" inheritable="No"
  scenario="Yes">
   <descr><para>Specifies the time the task occupies the resources.
-This is calender time, not working time. 7d means one week. If
+This is calendar time, not working time. 7d means one week. If
 resources are specified they are allocated when available.
 Availability of resources has no impact on the duration of the task.
 It will always be the specified duration.</para>
@@ -868,7 +868,7 @@ used.</para></descr>
   <example>&example_durations;</example>
  </property>
  <property name="enabled" id="enabled" inheritable="Yes"
- schenario="Yes">
+ scenario="Yes">
   <descr><para>Enable the scenario for scheduling. This is the default
   for the top-level scenario.</para></descr>
   <seealso>
@@ -889,7 +889,7 @@ tasks that start before this end date are listed.</para></descr>
  <property name="end" id="end" inheritable="Yes" scenario="Yes">
   <descr><para>The end date of the task. When specified for the
   top-level (default) scenario this attributes also
-  implicitely sets the scheduling policy of the tasks to
+  implicitly sets the scheduling policy of the tasks to
   <varname>alap</varname>.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
@@ -936,13 +936,13 @@ at the moment the tasks ends.</para></descr>
   <example>&example_account;</example>
  </property>
  <property name="export" id="export" inheritable="No">
-  <descr><para>The export report looks like a regular taskjuggler file
+  <descr><para>The export report looks like a regular TaskJuggler file
 but contains fixed start and end dates for all tasks. The tasks only
 have start and end times, their description and their project id
 listed. No other attributes are exported unless they are requested
 using the <link
 linkend="PROPERTY_taskattributes">taskattributes</link> attribute. The
-contense also depends on the extension of the file name. If the file
+contents also depends on the extension of the file name. If the file
 name ends with <varname>.tjp</varname> a complete project with header,
 resource and shift definitions is generated. In case it ends with
 <varname>.tji</varname> only the tasks and resource allocations are
@@ -977,7 +977,7 @@ project IDs of the included tasks must be declared first with the
   <example>&example_export;</example>
  </property>
  <property name="extend" id="extend" inheritable="No">
-  <descr><para>Often it is desireable to collect more information in
+  <descr><para>Often it is desirable to collect more information in
 the project file than is necessary for task scheduling and resource
 allocation. To add such information to tasks, resources or accounts
 the user can extend these properties with user-defined attributes. The
@@ -1037,9 +1037,9 @@ expressions to filter properties from the reports.</para></descr>
  </property>
  <property name="gapduration" id="gapduration" inheritable="Yes"
  scenario="Yes">
-  <descr><para>Specifies the mininum required gap between the end of a
+  <descr><para>Specifies the minimum required gap between the end of a
   preceding task and the start of this task, or the start of a
-  following task and the end of this task.  This is calender time, not
+  following task and the end of this task.  This is calendar time, not
   working time. 7d means one week.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
@@ -1055,7 +1055,7 @@ expressions to filter properties from the reports.</para></descr>
   <descr><para>Specifies the minimum required gap between the end of a
   preceding task and the start of this task, or the start of a
   following task and the end of this task. This is working time, not
-  calender time. 7d means 7 working days, not one week.  Whether a day
+  calendar time. 7d means 7 working days, not one week.  Whether a day
   is considered a working day or not depends on the defined <link
   linkend="PROPERTY_workinghours">working hours</link> and global
   <link linkend="PROPERTY_vacation_global">vacations</link>.</para></descr>
@@ -1101,7 +1101,7 @@ account.</para></descr>
  </property>
  <property name="hidecellurl" id="hidecellurl" inheritable="No">
   <descr><para>If the expression is true, no URL will be attached to the cell
-contense.</para></descr>
+contents.</para></descr>
   <attributes>
    <attr name="expression" type="LOGICALEXPRESSION"/>
   </attributes>
@@ -1198,7 +1198,7 @@ can be listed as well.</para></descr>
   </seealso>
  </property>
  <property name="htmlstatusreport" id="htmlstatusreport" inheritable="No">
-  <descr><para>Generates a HTML status report. The report consits of 4
+  <descr><para>Generates a HTML status report. The report consists of 4
 tables: Overdue tasks, ongoing tasks, finished tasks and upcoming
 tasks. The default reporting interval is 1 week.</para></descr>
   <attributes>
@@ -1297,7 +1297,7 @@ listed as well.</para></descr>
   </seealso>
  </property>
  <property name="icalreport" id="icalreport" inheritable="No">
-  <descr><para>Generates an ICal report accoring to RFC2445. This is
+  <descr><para>Generates an ICal report according to RFC2445. This is
   standardized format used by many calendar applications such as
   KOrganizer. The filename should have a
   <varname>.ics</varname> extension.</para></descr>
@@ -1368,7 +1368,7 @@ special reserved keyword.</para></descr>
  </property>
  <property name="length" id="length" inheritable="No" scenario="Yes">
   <descr><para>Specifies the time the task occupies the resources.
-This is working time, not calender time. 7d means 7 working days, not
+This is working time, not calendar time. 7d means 7 working days, not
 one week.  Whether a day is considered a working day or not depends on
 the defined <link linkend="PROPERTY_workinghours">working hours</link>
 and global <link linkend="PROPERTY_vacation_global">vacations</link>. A task
@@ -1396,7 +1396,7 @@ the less flexible properties <link
 linkend="PROPERTY_maxeffort">maxeffort</link> and <link
 linkend="PROPERTY_load">load</link>.</para>
 <para>When applied to an allocation this limits the use of all
-alternative resources or group memembers as a whole. There has been a
+alternative resources or group members as a whole. There has been a
 bug in version 2.0.x that resulted in faulty limit computation. This
 has been fixed with version 2.1.</para></descr>
   <optattributes>
@@ -1501,7 +1501,7 @@ macro FOO [ This ${1} text ]
 <para>Macro IDs should have at least one uppercase
 letter as all lowercase letter IDs may be used in a later version for
 built-in macros like 'if', 'expr' or 'for'. Macro names can be
-prefixed by a questionmark. In this case the macro will expand to
+prefixed by a question mark. In this case the macro will expand to
 nothing if the macro is not defined. Otherwise the undefined macro
 would be flagged with an error message.</para>
 
@@ -1686,8 +1686,8 @@ should be shown at a maximum.</para></descr>
  <property name="persistent" id="persistent" inheritable="No">
   <descr><para>Specifies that once a resource is picked from the list
   of alternatives this resource is used for the whole task.
-  This is usefull when several alternative resources have been
-  specified. Normaly the selected resource can change after each
+  This is useful when several alternative resources have been
+  specified. Normally the selected resource can change after each
   break. A break is an interval of at least one timeslot where no
   resources were available.</para></descr>
   <seealso>
@@ -1915,7 +1915,7 @@ than one reference, you can create your own URL placeholders.</para></descr>
   <example>&example_extend;</example>
  </property>
  <property name="resource" id="resource" inheritable="No">
-  <descr><para>Task use resources to fullfill the specified
+  <descr><para>Task use resources to fulfil the specified
 efforts.</para></descr> <attributes> <attr name="id" type="ID"/> <attr
 name="name" type="STRING"/> </attributes>
   <optattributes>
@@ -1973,7 +1973,7 @@ listed as well.</para></descr>
  </property>
  <property name="responsible" id="responsible" inheritable="Yes">
    <descr><para>The ID of the resource that is responsible for this
-   task. This value is for documenation purposes only. It's not used
+   task. This value is for documentation purposes only. It's not used
    by the scheduler.</para></descr>
   <attributes>
    <attr name="resource" type="ID"/>
@@ -1994,7 +1994,7 @@ specified logical expression.</para></descr>
    <also>rolluptask</also>
   </seealso>
  </property>
- <property name="rollupresrouce" id="rollupresource" inheritable="No">
+ <property name="rollupresource" id="rollupresource" inheritable="No">
   <descr><para>Do not show sub-resources of resources that match the
 specified logical expression.</para></descr>
   <attributes>
@@ -2076,10 +2076,10 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
   has a hard (start) or soft (depends) criteria for the start time. A
   task can be scheduled from end to start (ALAP mode) when it has a
   hard (end) or soft (precedes) criteria for the end time.</para>
-  <para>Some task attributes set the scheduling policy implicitely.
-  This attribute can be used to explicitely set the scheduling policy
+  <para>Some task attributes set the scheduling policy implicitly.
+  This attribute can be used to explicitly set the scheduling policy
   of the task to a certain direction. To avoid it being overwritten
-  again by an implicite attribute this attribute should always be the
+  again by an implicit attribute this attribute should always be the
   last attribute of the task.</para>
   <para>A random mixture of ASAP and ALAP tasks can have unexpected
   side effects on the scheduling of the project. It increases
@@ -2093,7 +2093,7 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
   high priority tasks do not get their resources even though the
   parallel competing tasks have a much lower priority.</para>
   <para>As a general rule, try to avoid ASAP tasks whenever possible.
-  Have a close eye on tasks that have been switched implicitely to
+  Have a close eye on tasks that have been switched implicitly to
   ALAP mode because the <varname>end</varname> attribute comes after
   the <varname>start</varname> attribute.</para>
   </descr>
@@ -2124,7 +2124,7 @@ from an allocation and it's alternatives. The selection is
 re-evaluated each time the resource used in the previous time slot
 becomes unavailable.</para>
 <para>Even for non-persistent allocations a change in the resource
-selection only happends if the resource used in the previous (or next
+selection only happens if the resource used in the previous (or next
 for ASAP tasks) time slot has become unavailable.</para></descr>
   <attributes>
    <attr name="mode" type="ID">
@@ -2221,7 +2221,7 @@ contain the project ID after the load value.</para></descr>
  <property name="sloppy" id="sloppy" inheritable="No">
   <descr><para>Controls how strict TaskJuggler checks booking
   intervals for conflicts with vacation and other bookings. In case
-  the error is surpressed the booking will not overwrite the existing
+  the error is suppressed the booking will not overwrite the existing
   bookings. It will avoid the already assigned intervals during
   booking.</para></descr>
   <attributes>
@@ -2372,7 +2372,7 @@ tasks that end after this end date are listed.</para></descr>
 scenario="Yes">
   <descr><para>The start date of the task. When specified for the
   top-level (default) scenario this attribute also
-  implicitely sets the scheduling policy of the task to
+  implicitly sets the scheduling policy of the task to
   <varname>asap</varname>.</para></descr>
   <attributes>
    <attr name="date" type="DATE"/>
@@ -2389,7 +2389,7 @@ scenario="Yes">
  <property name="startbuffer" id="startbuffer" inheritable="No"
 scenario="Yes">
   <descr><para>Specifies how much slack time you expect to have at the
-begining of the task. This information has no impact on the scheduling
+beginning of the task. This information has no impact on the scheduling
 of the project. It is for documentation purposes only.</para></descr>
   <attributes>
    <attr name="percent" type="REAL">
@@ -2879,7 +2879,7 @@ respected by all resources that are defined hereafter.</para></descr>
  </property>
  <property name="version" id="version" inheritable="No">
   <descr><para>Specifies which XML format should be generated.
-Currently version 2 is highly recomended.</para></descr>
+Currently version 2 is highly recommended.</para></descr>
   <attributes>
    <attr name="number" type="INTEGER"/>
   </attributes>
