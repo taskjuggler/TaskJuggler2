@@ -9,5 +9,5 @@ DocPath=taskjuggler/index.html
 Comment=Project Management Software
 MimeType=application/x-tjp;application/x-tjx
 InitialPreference=4
-Categories=Qt;KDE;ProjectManagement
+Categories=Qt;KDE;ProjectManagement;Office
 Terminal=0
