@@ -23,19 +23,21 @@
 #define DEBUGEX(l) ((DEBUGMODE & 16) && DEBUGLEVEL >= l) // Expression Tree Ev.
 #define DEBUGMA(l) ((DEBUGMODE & 32) && DEBUGLEVEL >= l) // Macro Expander
 #define DEBUGOP(l) ((DEBUGMODE & 64) && DEBUGLEVEL >= l) // Optimizer
+#define DEBUGPA(l) ((DEBUGMODE & 128) && DEBUGLEVEL >= l) // Critical Path
+                                                          // Analyzer
 
 class DebugController
 {
 public:
     DebugController() : debugLevel(0), debugMode(-1) { }
     ~DebugController() { }
-    
+
     void setDebugLevel(int l)
     {
         debugLevel = l;
     }
     int getDebugLevel() const { return debugLevel; }
-    
+
     void setDebugMode(int m)
     {
         debugMode = m;

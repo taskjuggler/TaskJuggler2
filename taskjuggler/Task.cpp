@@ -2876,22 +2876,34 @@ Task::checkAndMarkCriticalPath(int sc, double minSlack)
     if (hasSubs() || !previous.isEmpty())
         return;
 
+    if (DEBUGPA(3))
+        qDebug("Starting critical path search at %s", id.latin1());
+
     analyzePath(sc, minSlack, getStart(sc), 0);
 }
 
 bool
 Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
 {
+    if (DEBUGPA(15))
+        qDebug("  * Checking task %s", id.latin1());
+
     bool critical = false;
 
     if (hasSubs())
     {
+        if (DEBUGPA(15))
+            qDebug("  > Sub check started for %s", id.latin1());
+
         for (TaskListIterator tli(*sub); *tli; ++tli)
             if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
             {
                 scenarios[sc].isOnCriticalPath = true;
                 critical = true;
             }
+
+        if (DEBUGPA(15))
+            qDebug("  < Sub check finished for %s", id.latin1());
     }
     else
     {
@@ -2900,13 +2912,26 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
         if (!milestone)
             busyTime += (getEnd(sc) - getStart(sc));
 
+        /* A task and its parent tasks can have the same followers. We keep a
+         * list of already checked followers, so that we check each follower
+         * only once, no matter whether it is a follower of the current task
+         * or any of its parents. */
+        TaskList checkedTasks;
         for (Task* task = this; task; task = task->getParent())
         {
             if (!task->followers.isEmpty())
             {
                 hasFollowers = true;
 
+                if (DEBUGPA(16))
+                    qDebug("  > Follower check started for %s", id.latin1());
+
                 for (TaskListIterator tli(task->followers); *tli; ++tli)
+                {
+                    // Don't check each follower more than once.
+                    if (checkedTasks.findRef(*tli))
+                        continue;
+
                     if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
                     {
                         if (!task->scenarios[sc].criticalLinks.
@@ -2916,6 +2941,11 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
                         scenarios[sc].isOnCriticalPath = true;
                         critical = true;
                     }
+                    checkedTasks.append(*tli);
+                }
+
+                if (DEBUGPA(16))
+                    qDebug("  < Follower check finished for %s", id.latin1());
             }
         }
 
@@ -2926,10 +2956,16 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
             critical = ((double) busyTime / overallDuration) >
                        (1.0 - minSlack);
             if (critical)
+            {
                 scenarios[sc].isOnCriticalPath = true;
+                if (DEBUGPA(5))
+                    qDebug("Critical path ending with %s found", id.latin1());
+            }
         }
     }
 
+    if (DEBUGPA(15))
+        qDebug("  - Check of task %s completed (%d)", id.latin1(), critical);
     return critical;
 }
 
