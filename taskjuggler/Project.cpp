@@ -850,7 +850,7 @@ Project::schedule(int sc)
     }
 
     if (error)
-        for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
+        for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->isRunaway())
                 if ((*tli)->getScheduling() == Task::ASAP)
                     (*tli)->errorMessage
