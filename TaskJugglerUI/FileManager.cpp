@@ -42,7 +42,6 @@
 #include <ktexteditor/clipboardinterface.h>
 #include <ktexteditor/undointerface.h>
 #include <ktexteditor/configinterface.h>
-#include <ktexteditor/searchinterface.h>
 #include <ktexteditor/printinterface.h>
 #include <kdatepicker.h>
 #include <kcombobox.h>
@@ -52,7 +51,6 @@
 #include "Report.h"
 #include "FileManager.h"
 #include "ManagedFileInfo.h"
-#include "FindDialog.h"
 #include "TjDatePicker.h"
 
 FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
@@ -61,9 +59,6 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
 {
     masterFile = 0;
     editorConfigured = FALSE;
-
-    findDialog = 0;
-    lastMatchLine = lastMatchCol = (uint) -1;
 
     // We don't want the URL column to be visible. This is internal data only.
     browser->setColumnWidthMode(1, QListView::Manual);
@@ -606,222 +601,6 @@ FileManager::clear()
         delete *it;
     files.clear();
     masterFile = 0;
-}
-
-void
-FileManager::find()
-{
-    if (!findDialog)
-    {
-        findDialog = new FindDialog(mainWindow);
-        findDialog->setCaption(QString("TaskJuggler"));
-        connect(findDialog->findButton, SIGNAL(clicked()),
-                this, SLOT(startSearch()));
-    }
-
-    findDialog->show();
-}
-
-void
-FileManager::findNext()
-{
-    search();
-}
-
-void
-FileManager::findPrevious()
-{
-    searchBackwards = !searchBackwards;
-    search();
-    searchBackwards = !searchBackwards;
-}
-
-void
-FileManager::startSearch()
-{
-    if (!getCurrentFile())
-        return;
-
-    searchPattern = findDialog->pattern->text();
-    searchCaseSensitive = findDialog->caseSensitiveCB->isChecked();
-    searchFromCursor = findDialog->fromCursorCB->isChecked();
-    searchBackwards = findDialog->backwardsCB->isChecked();
-    searchAllFiles = findDialog->allFilesCB->isChecked();
-    searchAndReplace = findDialog->enableReplacementCB->isChecked();
-    if (searchAndReplace)
-        replacementText = findDialog->replacement->text();
-    else
-        replacementText = QString::null;
-    replaceAll = findDialog->replaceAllCB->isChecked();
-
-    if (searchPattern.isEmpty())
-        return;
-
-    firstSearchedFile = getCurrentFile();
-    KTextEditor::View* editor = firstSearchedFile->getEditor();
-
-    if (searchFromCursor)
-    {
-        KTextEditor::viewCursorInterface(editor)->
-            cursorPositionReal(&lastMatchLine, &lastMatchCol);
-    }
-    else
-    {
-        if (searchBackwards)
-        {
-            KTextEditor::Document* document = editor->document();
-            lastMatchLine =
-                KTextEditor::editInterface(document)->numLines() - 1;
-            lastMatchCol = KTextEditor::editInterface(document)->
-                lineLength(lastMatchLine) - 1;
-            matchLen = 0;
-        }
-        else
-            lastMatchLine = lastMatchCol = matchLen = 0;
-    }
-
-    replacementCounter = 0;
-    while (search() && searchAndReplace && replaceAll)
-        ;
-    if (searchAndReplace && replaceAll)
-        mainWindow->statusBar()->message(i18n
-            ("Replaced %1 occurences").arg(replacementCounter));
-}
-
-bool
-FileManager::search()
-{
-    if (!getCurrentFile() || searchPattern.isEmpty())
-        return false;
-
-tryAgain:
-    KTextEditor::View* editor = getCurrentFile()->getEditor();
-    KTextEditor::Document* document = editor->document();
-
-    if (searchBackwards)
-    {
-        /* This is a rather ugly workaround for the strange searchText()
-         * behaviour. In backwards mode it find the string right of the
-         * position as well. So we need to move the last find position one
-         * character to the left. */
-        if (lastMatchCol > 0)
-            lastMatchCol -= 1;
-        else
-        {
-            lastMatchCol = KTextEditor::editInterface(document)->
-                lineLength(--lastMatchLine);
-        }
-    }
-    else
-        lastMatchCol += matchLen;
-
-    /* Now try to find the text pattern. */
-    if (KTextEditor::searchInterface(document)->searchText
-        (lastMatchLine, lastMatchCol, searchPattern,
-         &lastMatchLine, &lastMatchCol, &matchLen,
-         searchCaseSensitive, searchBackwards))
-    {
-        // Found it!
-        if (searchAndReplace)
-        {
-            // Replace the found text with the replacement text.
-            KTextEditor::EditInterface* ei =
-                KTextEditor::editInterface(getCurrentFile()->getEditor()->
-                                           document());
-            QString line = ei->textLine(lastMatchLine);
-            line.replace(lastMatchCol, matchLen, replacementText);
-            ei->removeLine(lastMatchLine);
-            ei->insertLine(lastMatchLine, line);
-            replacementCounter++;
-            // Place cursor after the replaced text.
-            KTextEditor::viewCursorInterface(editor)->
-                setCursorPosition(lastMatchLine,
-                                  lastMatchCol + replacementText.length());
-        }
-        else
-        {
-            KTextEditor::viewCursorInterface(editor)->
-                setCursorPosition(lastMatchLine, lastMatchCol);
-            mainWindow->statusBar()->message("");
-        }
-        return true;
-    }
-    else
-    {
-        // Nothing found. Prepare wrap-around.
-        if (searchBackwards)
-        {
-            if (searchAllFiles)
-            {
-                ManagedFileInfo* cf = getCurrentFile();
-                std::list<ManagedFileInfo*>::iterator mfi;
-                for (mfi = files.begin(); mfi != files.end() && *mfi != cf;
-                     ++mfi)
-                    ;
-                assert(mfi != files.end());
-                if (mfi == files.begin())
-                    mfi = files.end();
-                    --mfi;
-                if (*mfi == firstSearchedFile)
-                {
-                    mainWindow->statusBar()->message(i18n("Nothing found!"));
-                    return false;
-                }
-                else
-                {
-                    showInEditor((*mfi)->getFileURL());
-                    lastMatchLine =
-                        KTextEditor::editInterface(document)->numLines() - 1;
-                    lastMatchCol = KTextEditor::editInterface(document)->
-                        lineLength(lastMatchLine) - 1;
-                    goto tryAgain;
-                }
-            }
-            else
-            {
-                mainWindow->statusBar()->message
-                    (i18n("Nothing found. Press F3 again to start from "
-                          "bottom!"));
-                lastMatchLine =
-                    KTextEditor::editInterface(document)->numLines() - 1;
-                lastMatchCol = KTextEditor::editInterface(document)->
-                    lineLength(lastMatchLine) - 1;
-            }
-        }
-        else
-        {
-            if (searchAllFiles)
-            {
-                ManagedFileInfo* cf = getCurrentFile();
-                std::list<ManagedFileInfo*>::iterator mfi;
-                for (mfi = files.begin(); mfi != files.end() && *mfi != cf;
-                     ++mfi)
-                    ;
-                assert(mfi != files.end());
-                mfi++;
-                if (mfi == files.end())
-                    mfi = files.begin();
-                if (*mfi == firstSearchedFile)
-                {
-                    mainWindow->statusBar()->message(i18n("Nothing found!"));
-                    return false;
-                }
-                else
-                {
-                    showInEditor((*mfi)->getFileURL());
-                    lastMatchLine = lastMatchCol = matchLen = 0;
-                    goto tryAgain;
-                }
-            }
-            else
-            {
-                mainWindow->statusBar()->message
-                    (i18n("Nothing found. Press F3 again to start from top!"));
-                lastMatchLine = lastMatchCol = 0;
-            }
-        }
-        return false;
-    }
 }
 
 void

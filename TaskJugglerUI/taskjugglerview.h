@@ -84,9 +84,6 @@ public slots:
     void paste();
     void selectAll();
 
-    void find();
-    void findNext();
-    void findPrevious();
     void insertDate();
 
     void schedule();

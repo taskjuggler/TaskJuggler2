@@ -843,7 +843,7 @@ Project::schedule(int sc)
 
     if (breakFlag)
     {
-        setProgressInfo(i18n(""));
+        setProgressInfo("");
         setProgressBar(0, 0);
         TJMH.errorMessage(i18n("Scheduling aborted on user request"));
         return false;

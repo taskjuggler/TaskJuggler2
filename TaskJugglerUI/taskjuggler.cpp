@@ -134,9 +134,6 @@ void TaskJuggler::setupActions()
     KStdAction::copy(m_view, SLOT(copy()), actionCollection());
     KStdAction::paste(m_view, SLOT(paste()), actionCollection());
     KStdAction::selectAll(m_view, SLOT(selectAll()), actionCollection());
-    KStdAction::find(m_view, SLOT(find()), actionCollection());
-    KStdAction::findNext(m_view, SLOT(findNext()), actionCollection());
-    KStdAction::findPrev(m_view, SLOT(findPrevious()), actionCollection());
     */
     new KAction(i18n("Insert Date"), "", KShortcut(KKey("CTRL+d")),
                 m_view, SLOT(insertDate()),

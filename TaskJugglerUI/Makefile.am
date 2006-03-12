@@ -28,7 +28,7 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjHTMLReport.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	taskjuggleriface.skel \
-	MainWidget.ui RichTextDisplay.ui FindDialog.ui \
+	MainWidget.ui RichTextDisplay.ui \
 	TemplateSelector.ui TjDatePicker.ui
 
 # these are the headers for your project
@@ -37,8 +37,9 @@ noinst_HEADERS = taskjuggler.h taskjugglerview.h pref.h
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/TaskJuggler.pot
+messages: main.cpp
+	extractrc `find . -name "*.ui"` > rc.cpp
+	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/TaskJugglerUI.po *.cpp
 
 KDE_ICON = taskjuggler taskjuggler_tjp taskjuggler_tji taskjuggler_tjx
 
