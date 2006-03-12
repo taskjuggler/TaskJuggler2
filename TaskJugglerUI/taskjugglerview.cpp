@@ -1,7 +1,8 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -786,12 +787,17 @@ TaskJugglerView::loadProject(const KURL& url)
         showEditor();
         mw->messageListView->clearSelection();
         QListViewItem* lvi = mw->messageListView->firstChild();
-        mw->messageListView->setCurrentItem(lvi);
-        lvi->setSelected(true);
-        messageListClicked(lvi);
+        if (lvi)
+        {
+            /* Prevent GUI crash in case the back-end reports an error but
+             * does not provide an error message. */
+            mw->messageListView->setCurrentItem(lvi);
+            lvi->setSelected(true);
+            messageListClicked(lvi);
 
-        mainWindow->action("next_problem")->setEnabled(true);
-        mainWindow->action("previous_problem")->setEnabled(true);
+            mainWindow->action("next_problem")->setEnabled(true);
+            mainWindow->action("previous_problem")->setEnabled(true);
+        }
     }
     else
     {
