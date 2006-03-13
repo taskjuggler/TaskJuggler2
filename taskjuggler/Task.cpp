@@ -2839,10 +2839,15 @@ Task::computeBackwardCriticalness(int sc)
     double maxCriticalness = 0.0;
 
     double criticalness;
-    for (TaskListIterator tli(previous); *tli; ++tli)
-        if ((criticalness = (*tli)->computeBackwardCriticalness(sc)) >
-            maxCriticalness)
-            maxCriticalness = criticalness;
+    /* We only need to check the previous tasks of leaf tasks. Parent task
+     * dependencies have been inherited by the sub tasks and will be checked
+     * there. */
+    if (!hasSubs())
+        for (TaskListIterator tli(previous); *tli; ++tli)
+            if ((criticalness = (*tli)->computeBackwardCriticalness(sc)) >
+                maxCriticalness)
+                maxCriticalness = criticalness;
+
     if (parent &&
         ((criticalness = ((Task*) parent)->computeBackwardCriticalness(sc)) >
          maxCriticalness))
@@ -2857,10 +2862,15 @@ Task::computeForwardCriticalness(int sc)
     double maxCriticalness = 0.0;
 
     double criticalness;
-    for (TaskListIterator tli(followers); *tli; ++tli)
-        if ((criticalness = (*tli)->computeForwardCriticalness(sc)) >
-            maxCriticalness)
-            maxCriticalness = criticalness;
+    /* We only need to check the followers of leaf tasks. Parent task
+     * dependencies have been inherited by the sub tasks and will be checked
+     * there. */
+    if (!hasSubs())
+        for (TaskListIterator tli(followers); *tli; ++tli)
+            if ((criticalness = (*tli)->computeForwardCriticalness(sc)) >
+                maxCriticalness)
+                maxCriticalness = criticalness;
+
     if (parent &&
         ((criticalness = ((Task*) parent)->computeForwardCriticalness(sc)) >
          maxCriticalness))
