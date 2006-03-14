@@ -949,6 +949,19 @@ specifications. <computeroutput>workinghours mon - fri 8:00 -
 15:00</computeroutput> as well as <computeroutput>workinghours mon,
 sat, sun off</computeroutput> are now possible.</para></listitem>
 
+<listitem><para>Added man pages for taskjuggler and
+TaskJugglerUI.</para></listitem>
+
+<listitem><para>Fixed infinite loop bug in critical path detectors.
+With certain task dependencies TaskJuggler could get stuck forever
+when processing the project.</para></listitem>
+
+<listitem><para>Fixed TaskJugglerUI crash when processing a project
+with many runaway tasks.</para></listitem>
+
+<listitem><para>Better fit of report interval for printed Gantt
+charts.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

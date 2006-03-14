@@ -1,7 +1,5 @@
 Work in progress:
 - Cleanup after enabling all kate actions.
-- Scale printed Gantt chart to fit exactly without lots of extra
-  space.
 - Sort journal entries by date when displayed in GUI.
 
 Probably:
