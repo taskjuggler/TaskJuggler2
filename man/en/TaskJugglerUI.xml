@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='ISO-8859-1'
+?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+  <!ENTITY dhfirstname "<firstname>fathi</firstname>">
+  <!ENTITY dhsurname   "<surname>Boudra</surname>">
+  <!ENTITY dhdate      "<date>mars 11, 2006</date>">
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>fboudra@free.fr</email>">
+  <!ENTITY dhusername  "Fathi Boudra">
+  <!ENTITY dhucpackage "<refentrytitle>TASKJUGGLERUI</refentrytitle>">
+  <!ENTITY dhpackage   "TaskjugglerUI">
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]
+>
+<refentry>
+  <refentryinfo>
+    <address>
+       &dhemail;
+    </address>
+    <author>
+       &dhfirstname; &dhsurname;
+    </author>
+    <copyright>
+      <year>
+         2006
+      </year>
+      <holder>
+         &dhusername;
+      </holder>
+    </copyright>
+     &dhdate;
+  </refentryinfo>
+  <refmeta>
+     &dhucpackage; &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>
+       &dhpackage;
+    </refname>
+    <refpurpose>
+       a KDE graphical front-end for taskjuggler
+    </refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>
+         &dhpackage;
+      </command>
+      <arg>
+        <option>
+          <replaceable>
+             Qt-options
+          </replaceable>
+        </option>
+      </arg>
+      <arg>
+        <option>
+          <replaceable>
+            <filename>
+               KDE-options
+            </filename>
+          </replaceable>
+        </option>
+      </arg>
+      <arg>
+        <option>
+          <replaceable>
+            <filename>
+               URL
+            </filename>
+          </replaceable>
+        </option>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>
+       DESCRIPTION
+    </title>
+    <para>
+      <command>
+         &dhpackage;
+      </command>
+       is a graphical user interface for taskjuggler.
+    </para>
+    <para>
+       It's completely an integrated project management environment.
+    </para>
+  </refsect1>
+  <refsect1>
+    <title>
+       OPTIONS
+    </title>
+    <variablelist>
+      <varlistentry>
+        <term>
+          <option>
+             --help
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show help about options
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --help-qt
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show Qt specific options
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --help-kde
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show KDE specific options
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --help-all
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show all options
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --author
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show author information
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             -v
+          </option>
+          <option>
+             --version
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show version information
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --license
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show license information
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             URL
+          </option>
+        </term>
+        <listitem>
+          <para>
+             TaskJuggler Project (TJP) file to open
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+  <refsect1>
+    <title>
+       SEE ALSO
+    </title>
+    <para>
+      <filename>
+         /usr/share/doc/taskjuggler/index.html
+      </filename>
+       , taskjuggler(1)
+    </para>
+  </refsect1>
+  <refsect1>
+    <title>
+       AUTHOR
+    </title>
+    <para>
+       This manual page was written by &dhusername;
+      <email>
+         &dhemail;
+      </email>
+       based on the output of TaskjugglerUI --help for the &debian; system (but may be used by others).
+    </para>
+    <para>
+       Permission is granted to copy, distribute and/or modify this document under the terms of the &gnu; General Public License, Version 2 any later version published by the Free Software Foundation.
+    </para>
+    <para>
+       On Debian systems, the complete text of the GNU General Public License can be found in
+      <filename>
+         /usr/share/common-licenses/GPL
+      </filename>
+       .
+    </para>
+  </refsect1>
+</refentry>

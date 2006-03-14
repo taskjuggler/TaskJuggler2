@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='ISO-8859-1'
+?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+  <!ENTITY dhfirstname "<firstname>fathi</firstname>">
+  <!ENTITY dhsurname   "<surname>Boudra</surname>">
+  <!ENTITY dhdate      "<date>mars 11, 2006</date>">
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>fboudra@free.fr</email>">
+  <!ENTITY dhusername  "Fathi Boudra">
+  <!ENTITY dhucpackage "<refentrytitle>TASKJUGGLER</refentrytitle>">
+  <!ENTITY dhpackage   "taskjuggler">
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]
+>
+<refentry>
+  <refentryinfo>
+    <address>
+       &dhemail;
+    </address>
+    <author>
+       &dhfirstname; &dhsurname;
+    </author>
+    <copyright>
+      <year>
+         2006
+      </year>
+      <holder>
+         &dhusername;
+      </holder>
+    </copyright>
+     &dhdate;
+  </refentryinfo>
+  <refmeta>
+     &dhucpackage; &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>
+       &dhpackage;
+    </refname>
+    <refpurpose>
+       translates project descriptions into HTML or XML reports
+    </refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>
+         &dhpackage;
+      </command>
+      <arg>
+        <option>
+          <replaceable>
+             options
+          </replaceable>
+        </option>
+      </arg>
+      <arg>
+        <option>
+          <replaceable>
+            <filename>
+               &lt;filename1&gt;
+            </filename>
+          </replaceable>
+        </option>
+      </arg>
+      <arg>
+        <option>
+          <replaceable>
+            <filename>
+               &lt;filename2&gt; ...
+            </filename>
+          </replaceable>
+        </option>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>
+       DESCRIPTION
+    </title>
+    <para>
+      <command>
+         &dhpackage;
+      </command>
+       must be called with at least one file that contains the project description and the report definitions.
+      <para>
+         Calling it with . as input filename will cause reading from stdin.
+      </para>
+      <para>
+         To redirect output to stdout you can specify -- as filename for reports.
+      </para>
+      <para>
+         This feature can for example be used to generate dynamic HTML pages from CGI scripts.
+      </para>
+    </para>
+  </refsect1>
+  <refsect1>
+    <title>
+       OPTIONS
+    </title>
+    <variablelist>
+      <varlistentry>
+        <term>
+          <option>
+             -h
+          </option>
+          <option>
+             --help
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show summary of options.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             -v
+          </option>
+          <option>
+             --version
+          </option>
+        </term>
+        <listitem>
+          <para>
+             Show version and copyright of program
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             -s
+          </option>
+        </term>
+        <listitem>
+          <para>
+             stop after syntax check
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             -M
+          </option>
+        </term>
+        <listitem>
+          <para>
+             output include dependencies for make utilities
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --makefile
+            <filename>
+               &lt;file&gt;
+            </filename>
+          </option>
+        </term>
+        <listitem>
+          <para>
+             generate include dependencies for make utilities into the specified file
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --maxerrors N
+          </option>
+        </term>
+        <listitem>
+          <para>
+             stop after N errors. If N is 0 show all errors
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --nodepcheck
+          </option>
+        </term>
+        <listitem>
+          <para>
+             don't search for dependency loops
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --debug N
+          </option>
+        </term>
+        <listitem>
+          <para>
+             print debug output, N must be between 0 and 40, the higher N the more output is printed
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --dbmode N
+          </option>
+        </term>
+        <listitem>
+          <para>
+             activate debug mode only for certain parts of the code
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <option>
+             --updatedb
+          </option>
+        </term>
+        <listitem>
+          <para>
+             update the Kotrus database with the new resource usage information
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+  <refsect1>
+    <title>
+       SEE ALSO
+    </title>
+    <para>
+      <filename>
+         /usr/share/doc/taskjuggler/index.html
+      </filename>
+       , TaskjugglerUI(1)
+    </para>
+  </refsect1>
+  <refsect1>
+    <title>
+       AUTHOR
+    </title>
+    <para>
+       This manual page was written by &dhusername;
+      <email>
+         &dhemail;
+      </email>
+       based on the output of taskjuggler --help for the &debian; system (but may be used by others).
+    </para>
+    <para>
+       Permission is granted to copy, distribute and/or modify this document under the terms of the &gnu; General Public License, Version 2 any later version published by the Free Software Foundation.
+    </para>
+    <para>
+       On Debian systems, the complete text of the GNU General Public License can be found in
+      <filename>
+         /usr/share/common-licenses/GPL
+      </filename>
+       .
+    </para>
+  </refsect1>
+</refentry>

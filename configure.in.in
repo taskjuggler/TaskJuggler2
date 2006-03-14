@@ -134,8 +134,11 @@ rm -f $TMPFILE
 ])
 
 if test "$tj_enable_docs" != "no" ; then
-  dnl Check for the stuff needed to create the HTML manual
+  dnl Check for the stuff needed to generate man pages
   AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, no)
+  AC_CHECK_PROG(DOCBOOK_TO_MAN, docbook-to-man, docbook-to-man, no)
+
+  dnl Check for the stuff needed to create the HTML manual
   if test "$XSLTPROC" = no ; then
     AC_MSG_WARN([Documentation will not be generated])
     DO_NOT_COMPILE="${DO_NOT_COMPILE} docs"
