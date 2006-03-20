@@ -77,15 +77,6 @@ public:
     bool quit(bool force);
 
 public slots:
-    void undo();
-    void redo();
-    void cut();
-    void copy();
-    void paste();
-    void selectAll();
-
-    void insertDate();
-
     void schedule();
     void stop();
     void nextProblem();

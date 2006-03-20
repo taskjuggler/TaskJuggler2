@@ -962,6 +962,9 @@ with many runaway tasks.</para></listitem>
 <listitem><para>Better fit of report interval for printed Gantt
 charts.</para></listitem>
 
+<listitem><para>Fixed header of weekly and monthly CSV
+reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

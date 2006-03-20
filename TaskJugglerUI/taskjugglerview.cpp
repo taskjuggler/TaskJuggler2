@@ -534,48 +534,6 @@ TaskJugglerView::quit(bool force)
 }
 
 void
-TaskJugglerView::undo()
-{
-    fileManager->undo();
-}
-
-void
-TaskJugglerView::redo()
-{
-    fileManager->redo();
-}
-
-void
-TaskJugglerView::cut()
-{
-    fileManager->cut();
-}
-
-void
-TaskJugglerView::copy()
-{
-    fileManager->copy();
-}
-
-void
-TaskJugglerView::paste()
-{
-    fileManager->paste();
-}
-
-void
-TaskJugglerView::selectAll()
-{
-    fileManager->selectAll();
-}
-
-void
-TaskJugglerView::insertDate()
-{
-    fileManager->insertDate();
-}
-
-void
 TaskJugglerView::schedule()
 {
     if (!fileManager->getMasterFile())

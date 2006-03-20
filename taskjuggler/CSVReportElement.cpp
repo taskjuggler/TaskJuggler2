@@ -303,20 +303,13 @@ CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
     // Generates the 1st header line for weekly calendar views.
     bool first = TRUE;
     bool weekStartsMonday = report->getWeekStartsMonday();
-    for (time_t week = beginOfWeek(start, weekStartsMonday); week < end; )
+    for (time_t week = beginOfWeek(start, weekStartsMonday); week < end;
+         week = sameTimeNextWeek(week))
     {
         if (first)
             first = FALSE;
         else
             s() << fieldSeparator;
-
-        int currMonth = monthOfWeek(week, weekStartsMonday);
-        int left;
-        time_t wi = sameTimeNextWeek(week);
-        for (left = 1 ; wi < end &&
-             monthOfWeek(wi, weekStartsMonday) == currMonth;
-             wi = sameTimeNextWeek(wi))
-            left++;
 
         mt.setMacro(new Macro(KW("day"), QString().sprintf
                               ("%02d", dayOfMonth(week)),
@@ -338,12 +331,9 @@ CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
                               ("%04d", yearOfWeek(week, weekStartsMonday)),
                               defFileName, defFileLine));
         generateTitle(tci,
-                      QString(i18n("%1 %2/Week %3"))
-                      .arg(shortMonthName(monthOfWeek(week, weekStartsMonday)
-                                          - 1))
-                      .arg(yearOfWeek(week, weekStartsMonday))
-                      .arg(weekOfYear(week, weekStartsMonday)));
-        week = wi;
+                      QString(i18n("Week %1/%2"))
+                      .arg(weekOfYear(week, weekStartsMonday))
+                      .arg(yearOfWeek(week, weekStartsMonday)));
     }
 }
 
@@ -356,38 +346,36 @@ void
 CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
 {
     bool first = TRUE;
-    bool wsm = report->getWeekStartsMonday();
-    for (time_t week = beginOfWeek(start, wsm); week < end;
-         week = sameTimeNextWeek(week))
+    bool weekStartsMonday = report->getWeekStartsMonday();
+    for (time_t month = beginOfMonth(start); month < end;
+         month = sameTimeNextMonth(month))
     {
         if (first)
             first = FALSE;
         else
             s() << fieldSeparator;
 
-        int woy = weekOfYear(week, wsm);
-        mt.setMacro(new Macro(KW("day"), QString().sprintf
-                              ("%02d", dayOfMonth(week)),
+        int moy = monthOfYear(month);
+        mt.setMacro(new Macro(KW("day"), "01",
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("month"),
-                              QString().sprintf("%02d",
-                                                monthOfWeek(week, wsm)),
+                              QString().sprintf("%02d", moy),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("quarter"),
                               QString().sprintf
-                              ("%02d", quarterOfYear(week)),
+                              ("%02d", quarterOfYear(month)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("week"),
-                              QString().sprintf("%02d", woy),
+                              QString().sprintf
+                              ("%02d", weekOfYear(month, weekStartsMonday)),
                               defFileName, defFileLine));
         mt.setMacro(new Macro(KW("year"),
-                              QString().sprintf("%04d", yearOfWeek(week, wsm)),
+                              QString().sprintf("%04d", year(month)),
                               defFileName, defFileLine));
         generateTitle(tci,
-                      QString(i18n("%1 %2/Week %3"))
-                      .arg(shortMonthName(monthOfWeek(week, wsm)
-                                          - 1))
-                      .arg(yearOfWeek(week, wsm)).arg(woy));
+                      QString(i18n("%1 %2")
+                      .arg(shortMonthName(moy - 1))
+                      .arg(::year(month))));
     }
 }
 

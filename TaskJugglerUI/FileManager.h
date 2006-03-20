@@ -72,14 +72,6 @@ public:
     void expandMacros();
     void clear();
 
-    void undo();
-    void redo();
-    void cut();
-    void copy();
-    void paste();
-    void selectAll();
-    void insertDate();
-
     void print();
 
     void configureEditor();
@@ -96,6 +88,9 @@ public slots:
     void enableEditorActions(bool enable);
     void enableClipboardActions(bool enable = TRUE);
     void enableUndoActions(bool enable = TRUE);
+
+private slots:
+    void insertDate();
 
 private:
     FileManager() { }

@@ -60,6 +60,13 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
     masterFile = 0;
     editorConfigured = FALSE;
 
+    /* Add our own custom editor actions. */
+    KAction* insertAction =
+        new KAction(i18n("Insert Date"), "",
+                    KShortcut(KKey("CTRL+d")),
+                    this, SLOT(insertDate()),
+                    mainWindow->actionCollection(), "insert_date");
+
     // We don't want the URL column to be visible. This is internal data only.
     browser->setColumnWidthMode(1, QListView::Manual);
     browser->hideColumn(1);
@@ -392,15 +399,7 @@ FileManager::showInEditor(const KURL& url)
                         *mfi,
                         SLOT(setModifiedOnDisc(Kate::Document*, bool,
                                                unsigned char)));
-/*
-                // Signal to en- or disable clipboard actions
-                connect(document, SIGNAL(selectionChanged()),
-                         this, SLOT(enableClipboardActions()));
 
-                // Signal to en- or disable undo actions
-                connect(document, SIGNAL(undoChanged()),
-                         this, SLOT(enableUndoActions()));
-*/
                 /* Remove some actions of the editor that we don't want to
                  * show in the menu/toolbars */
                 KActionCollection* ac = editor->actionCollection();
@@ -410,12 +409,13 @@ FileManager::showInEditor(const KURL& url)
                 ac->action("view_line_numbers")->setShortcut(KShortcut());
                 ac->action("view_dynamic_word_wrap")->setShortcut(KShortcut());
 
-                KActionPtrList actionList = editor->actionCollection()->actions();
+/*                KActionPtrList actionList =
+                    editor->actionCollection()->actions();
                 for (KActionPtrList::iterator it = actionList.begin();
                      it != actionList.end(); ++it)
                 {
                     printf("** Action found: %s\n", (*it)->name());
-                }
+                }*/
             }
             viewStack->raiseWidget((*mfi)->getEditor());
 
@@ -604,51 +604,6 @@ FileManager::clear()
 }
 
 void
-FileManager::undo()
-{
-    if (getCurrentFile())
-        KTextEditor::undoInterface(getCurrentFile()->getEditor()->
-                                   document())->undo();
-}
-
-void
-FileManager::redo()
-{
-    if (getCurrentFile())
-        KTextEditor::undoInterface(getCurrentFile()->getEditor()->
-                                   document())->redo();
-}
-
-void
-FileManager::cut()
-{
-    if (getCurrentFile())
-        KTextEditor::clipboardInterface(getCurrentFile()->getEditor())->cut();
-}
-
-void
-FileManager::copy()
-{
-    if (getCurrentFile())
-        KTextEditor::clipboardInterface(getCurrentFile()->getEditor())->copy();
-}
-
-void
-FileManager::paste()
-{
-    if (getCurrentFile())
-        KTextEditor::clipboardInterface(getCurrentFile()->getEditor())->paste();
-}
-
-void
-FileManager::selectAll()
-{
-    if (getCurrentFile())
-        KTextEditor::selectionInterface(getCurrentFile()->getEditor()->
-                                        document())->selectAll();
-}
-
-void
 FileManager::insertDate()
 {
     // Create some shortcuts for the edit and cursor interface.
@@ -762,21 +717,7 @@ FileManager::configureEditor()
 void
 FileManager::enableEditorActions(bool enable)
 {
-//    mainWindow->action(KStdAction::name(KStdAction::Save))->setEnabled(enable);
-//    mainWindow->action(KStdAction::name(KStdAction::SaveAs))->
-//        setEnabled(enable);
-/*    mainWindow->action(KStdAction::name(KStdAction::SelectAll))->
-        setEnabled(enable);
-    mainWindow->action("configure_editor")->setEnabled(enable);
-    mainWindow->action(KStdAction::name(KStdAction::Find))->setEnabled(enable);
-    mainWindow->action(KStdAction::name(KStdAction::FindNext))->
-        setEnabled(enable);
-    mainWindow->action(KStdAction::name(KStdAction::FindPrev))->
-        setEnabled(enable);*/
     mainWindow->action("insert_date")->setEnabled(enable);
-/*
-    enableClipboardActions(enable);
-    enableUndoActions(enable);*/
 }
 
 void

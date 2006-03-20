@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="taskjuggler" version="10">
+<kpartgui name="taskjuggler" version="11">
 
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
@@ -10,7 +10,6 @@
   </Menu>
   
   <Menu name="edit"><text>&amp;Edit</text>
-    <Action name="find_previous"/>
     <Action name="insert_date"/>
   </Menu>
   

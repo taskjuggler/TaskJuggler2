@@ -126,19 +126,6 @@ void TaskJuggler::setupActions()
                                             actionCollection());
 
 
-    // "Edit" menu
-    /*
-    KStdAction::undo(m_view, SLOT(undo()), actionCollection());
-    KStdAction::redo(m_view, SLOT(redo()), actionCollection());
-    KStdAction::cut(m_view, SLOT(cut()), actionCollection());
-    KStdAction::copy(m_view, SLOT(copy()), actionCollection());
-    KStdAction::paste(m_view, SLOT(paste()), actionCollection());
-    KStdAction::selectAll(m_view, SLOT(selectAll()), actionCollection());
-    */
-    new KAction(i18n("Insert Date"), "", KShortcut(KKey("CTRL+d")),
-                m_view, SLOT(insertDate()),
-                actionCollection(), "insert_date");
-
     // "Goto" menu
     new KAction(i18n("Tas&ks"), "tj_task_group", KShortcut(KKey("ALT+k")),
                 m_view, SLOT(setFocusToTaskList()),
@@ -186,13 +173,6 @@ void TaskJuggler::setupActions()
     new KAction(i18n("Zoom &Out"), "viewmag-", KShortcut(KKey("F8")),
                 m_view, SLOT(zoomOut()),
                 actionCollection(), "zoom_out");
-
-    // "Settings" menu
-    /* KStdAction::preferences(this, SLOT(optionsPreferences()),
-                            actionCollection()); */
-    new KAction(i18n("Configure Editor" ), "", 0,
-                m_view, SLOT(configureEditor()),
-                actionCollection(), "configure_editor");
 
     // "Help" menu
     new KAction(i18n("Tip of the day"), "idea", 0, this,
