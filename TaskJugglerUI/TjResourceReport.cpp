@@ -92,12 +92,14 @@ TjResourceReport::generateList()
      * we have to fill the table first with all entries before we can fill
      * those columns. */
     int i = 0;
+    bool treeMode = reportElement->getResourceSorting(0) ==
+        CoreAttributesList::TreeMode;
     for (ResourceListIterator rli(resourceList); *rli; ++rli)
     {
         /* Create a new item. If it has a parent, we need to look up the
          * parent LVI, so it get's inserted as child of that parent. */
         KListViewItem* newLvi;
-        if ((*rli)->getParent() &&
+        if ((*rli)->getParent() && treeMode &&
             resourceList.findRef((*rli)->getParent()) >= 0 &&
             ca2lviDict[QString("r:") + (*rli)->getParent()->getId()])
             newLvi = new KListViewItem

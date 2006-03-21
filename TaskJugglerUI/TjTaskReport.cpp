@@ -104,10 +104,12 @@ TjTaskReport::generateList()
      * have to fill the table first with all entries before we can fill those
      * columns. */
     int i = 0;
+    bool treeMode = reportElement->getTaskSorting(0) ==
+        CoreAttributesList::TreeMode;
     for (TaskListIterator tli(taskList); *tli; ++tli)
     {
         KListViewItem* newLvi;
-        if ((*tli)->getParent() &&
+        if ((*tli)->getParent() && treeMode &&
             taskList.findRef((*tli)->getParent()) >= 0 &&
             ca2lviDict[QString("t:") + (*tli)->getParent()->getId()] &&
             (*tli)->getParent()->getId().length() >
