@@ -70,6 +70,5 @@ task t1 "Task 1" {
 
 xmlreport "." {
 	hideresource 0
-	version 2
 	notimestamp
 }

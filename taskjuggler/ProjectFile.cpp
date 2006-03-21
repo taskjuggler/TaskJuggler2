@@ -3204,7 +3204,7 @@ ProjectFile::readXMLReport()
     }
     /* We don't know yet what version of the report the user wants, so we
      * generate data structures for both reports. */
-    int version = 1;
+    int version = 2;
 
     // Data structure for version 1 format.
     ReportXML *rep = new ReportXML(proj, fileName, getFile(), getLine());

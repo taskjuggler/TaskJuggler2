@@ -903,7 +903,7 @@ were always accounted to 0.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_2_1"><title>Version 2.2.1 (Some Day)</title>
+<sect2 id="Changelog_2_3_0"><title>Version 2.3.0 (Some Day)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -964,6 +964,9 @@ charts.</para></listitem>
 
 <listitem><para>Fixed header of weekly and monthly CSV
 reports.</para></listitem>
+
+<listitem><para>XML reports now use the gzip compressed version 2 XML
+format by default.</para></listitem>
 
 </itemizedlist></para>
 
