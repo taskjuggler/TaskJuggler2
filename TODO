@@ -1,6 +1,9 @@
 Work in progress (for next version):
 - Cleanup after enabling all kate actions.
 - Sort journal entries by date when displayed in GUI.
+- Add option to generate events instead of todos in ICalReport. (see
+  http://www.taskjuggler.org/FUDforum2/index.php?t=msg&goto=6796&rid=65&S=f6e44759702ae7dc31918ca7fe3a4a7e#msg_6796)
+
 
 Probably:
 - Macros to do date/time arithmetic.
