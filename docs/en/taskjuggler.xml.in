@@ -153,12 +153,6 @@ themselves, we have created a <ulink
 url="http://www.taskjuggler.org/FUDforum2">forum</ulink> for users to
 help each other.</para>
 
-<para>The TaskJuggler project has been sponsored by SUSE for several
-years. After the acquisition by <ulink
-url="www.novell.com">Novell</ulink> the sponsorship has continued. They
-kindly host our web presence and our <ulink
-url="http://bugzilla.novell.com">Bugtracking System</ulink>.</para>
-
 </sect1>
 &ChangeLog;
 <sect1 id="how_to_contribute"><title>How to Contribute</title>
