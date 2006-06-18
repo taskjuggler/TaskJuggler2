@@ -4,6 +4,9 @@
 # Stephan Kulow <coolo@kde.org>
 # $Id$
 #
+# This Makefile is only needed when you use source directly out of the
+# subversion repository. It's not needed for the SVN snapshots.
+
 COMPILE_FIRST = taskjuggler
 
 EXTRA_DIST = admin AUTHORS COPYING ChangeLog INSTALL README TODO taskjuggler.lsm 
