@@ -2024,6 +2024,15 @@ Task::hasEndDependency() const
 bool
 Task::preScheduleOk(int sc)
 {
+    if (account && !account->isLeaf())
+    {
+        errorMessage(i18n
+                     ("Task '%1' must not have an account group ('%2') "
+                      "assigned to it.")
+                     .arg(id).arg(account->getId()));
+        return false;
+    }
+
     if (hasSubs() && !scenarios[sc].bookedResources.isEmpty())
     {
         errorMessage(i18n

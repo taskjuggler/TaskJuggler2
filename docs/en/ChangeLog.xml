@@ -968,6 +968,9 @@ reports.</para></listitem>
 <listitem><para>XML reports now use the gzip compressed version 2 XML
 format by default.</para></listitem>
 
+<listitem><para>Add check to forbid assigning account groups to
+tasks.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

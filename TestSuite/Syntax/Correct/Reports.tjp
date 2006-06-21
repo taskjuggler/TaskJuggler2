@@ -34,7 +34,7 @@ task t2 "FooTask2" {
   start 2000-01-01
   duration 1d
   startcredit 10000.0
-  account a2
+  account a4
 }
 
 task t3 "FooTask3" {

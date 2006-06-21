@@ -196,7 +196,8 @@ this type.</para></descr>
  </property>
  <property name="account" id="account_task" inheritable="Yes">
   <descr><para>All amounts associated with the task will be credited
-to the specified account.</para></descr>
+to the specified account. The account must not be an account group.
+</para></descr>
   <attributes>
    <attr name="accountid" type="ID"/>
   </attributes>
