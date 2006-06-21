@@ -3756,6 +3756,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     errorMessage(i18n("String exptected"));
                     goto exit_error;
                 }
+                report->setHeadline(token);
                 tab->setHeadline(token);
             }
             else if (token == KW("caption"))
