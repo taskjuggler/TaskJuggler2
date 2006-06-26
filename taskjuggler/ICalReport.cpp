@@ -8,7 +8,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: ICalReport.cpp 1040 2005-03-17 15:59:16Z freitag $
+ * $Id$
  */
 
 #include <config.h>

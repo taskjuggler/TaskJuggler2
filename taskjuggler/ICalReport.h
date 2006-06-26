@@ -8,7 +8,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: ICalReport.h 936 2004-12-19 22:37:52Z cs $
+ * $Id$
  */
 #ifndef _ICalReport_h_
 #define _ICalReport_h_

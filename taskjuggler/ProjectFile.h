@@ -144,7 +144,7 @@ private:
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
     UsageLimits* readLimits();
-    bool ProjectFile::readInterval(Interval& iv, bool check);
+    bool readInterval(Interval& iv, bool check);
     bool readTimeFrame(double& d, bool workingDays, bool allowZero = false);
     bool readDate(time_t& val, time_t correction, bool checkPrjInterval = TRUE);
     bool readRealFormat(RealFormat* format);
