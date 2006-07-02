@@ -60,12 +60,12 @@ ICalReport::generateTODO(Task* task, ResourceList& resourceList)
     QDateTime dt;
 
     /* Start-Time of the task */
-    dt.setTime_t(task->getStart(scenarios[0]));
+    dt.setTime_t(task->getStart(scenarios[0]), Qt::UTC);
     todo->setDtStart(dt);
     todo->setHasDueDate(TRUE);
 
     /* Due-Time of the todo -> plan End  */
-    dt.setTime_t(task->getEnd(scenarios[0]) + 1);
+    dt.setTime_t(task->getEnd(scenarios[0]) + 1, Qt::UTC);
     todo->setDtDue(dt);
     todo->setHasStartDate(TRUE);
 
