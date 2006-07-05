@@ -123,6 +123,8 @@
    "../../TestSuite/Syntax/Correct/Supplement.tjp">
   <!ENTITY example_taskroot SYSTEM
    "../../TestSuite/Syntax/Correct/TaskRoot.tjp">
+  <!ENTITY example_timezone SYSTEM
+   "../../TestSuite/Syntax/Correct/Timezone.tjp">
   <!ENTITY example_vacation SYSTEM
    "../../TestSuite/Syntax/Correct/Vacation.tjp">
   <!ENTITY example_xmlreport SYSTEM
@@ -2633,6 +2635,7 @@ defaults are assumed.</para></descr>
   <attributes>
    <attr name="zone" type="STRING"/>
   </attributes>
+  <example>&example_timezone;</example>
  </property>
  <property name="timeformat" id="timeformat" inheritable="Yes">
   <descr><para>Determines how time specifications in reports look like.</para></descr>

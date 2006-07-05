@@ -907,6 +907,10 @@ were always accounted to 0.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
+<listitem><para>Added improved error checking for 'timezone'
+attribute. Only values as determined by tools like tzselect are
+allowed, e. g. "Europe/Berlin".</para></listitem>
+
 <listitem><para>Fixed handling of tasks that have 'precedes' and
 'depends' attributes.</para></listitem>
 

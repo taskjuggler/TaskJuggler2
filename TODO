@@ -6,7 +6,15 @@ Work in progress (for next version):
 - Allow double quotes in strings with backslash escapes.
 - Fix click on XML files in UI. Show a meaning full error message or
   hide all XML reports.
-
+- Add a property to htmlcalendar that suppresses the display of tasks
+  on days where there is no time assigned to the task, for example
+  holidays and weekends.
+- Add an option to the htmlcalendar that allows you to suppress
+  selected weekdays altogether. A calendar that does not have the
+  Saturday and Sunday columns would not be as wide, and fit on the
+  display.
+   
+    
 Probably:
 - Macros to do date/time arithmetic.
 - 'limits' for tasks, not just for allocations.

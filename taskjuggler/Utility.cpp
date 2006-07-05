@@ -100,17 +100,18 @@ timezone2tz(const char* tzone)
         TZDict.insert("-1100", "GMT+11:00");
         TZDict.insert("-1200", "GMT+12:00");
         // Now some conveniance timezones. There will be more in the future.
-        TZDict.insert("PST", "GMT8:00");
-        TZDict.insert("PDT", "GMT7:00");
-        TZDict.insert("MST", "GMT7:00");
-        TZDict.insert("MDT", "GMT6:00");
-        TZDict.insert("CST", "GMT6:00");
-        TZDict.insert("CDT", "GMT5:00");
-        TZDict.insert("EST", "GMT5:00");
-        TZDict.insert("EDT", "GMT4:00");
+        TZDict.insert("PST", "GMT+8:00");
+        TZDict.insert("PDT", "GMT+7:00");
+        TZDict.insert("MST", "GMT+7:00");
+        TZDict.insert("MDT", "GMT+6:00");
+        TZDict.insert("CST", "GMT+6:00");
+        TZDict.insert("CDT", "GMT+5:00");
+        TZDict.insert("EST", "GMT+5:00");
+        TZDict.insert("EDT", "GMT+4:00");
         TZDict.insert("GMT", "GMT");
+        TZDict.insert("UTC", "GMT");
         TZDict.insert("CET", "GMT-1:00");
-        TZDict.insert("CEST", "GMT-2:00");
+        TZDict.insert("CEDT", "GMT-2:00");
 
         TZDictReady = TRUE;
     }
@@ -154,14 +155,27 @@ void exitUtility()
     LtHashTab = 0;
 }
 
-void
-setTimezone(const char* tz)
+bool
+setTimezone(const char* tZone)
 {
-    if (setenv("TZ", tz, 1) < 0)
+    if (setenv("TZ", tZone, 1) < 0)
         qFatal("Ran out of space in environment section while "
                "setting timezone.");
+
+    /* To valide the tZone value we call tzset(). It will convert the zone
+     * into a three-letter acronym in case the tZone value is good. If not, it
+     * will just copy the wrong value to tzname[0]. So, we need to validate
+     * tZone names that are already 3 letter acronyms first. timezone2tz can
+     * do this for us. */
+    tzset();
+    if (timezone2tz(tZone) == 0 && strcmp(tZone, tzname[0]) == 0)
+    {
+        UtilityError = QString(i18n("Illegal timezone '%1'")).arg(tZone);
+        return false;
+    }
+
     if (!LtHashTab)
-        return;
+        return true;
     for (long i = 0; i < LTHASHTABSIZE; ++i)
     {
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
@@ -174,6 +188,7 @@ setTimezone(const char* tz)
         if (LtHashTab[i])
             LtHashTab[i] = 0;
     }
+    return true;
 }
 
 const struct tm*

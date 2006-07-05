@@ -1,5 +1,5 @@
 project test "Test" "$Id" 2000-01-01-00:00:00-MST 2000-02-31-00:00:00-MST {
-  timezone "MST"
+  timezone "US/Mountain"
 }
 
 include "workforce.tji"

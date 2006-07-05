@@ -660,7 +660,11 @@ ProjectFile::readProject()
                     errorMessage(i18n("Timezone name expected"));
                     return FALSE;
                 }
-                proj->setTimeZone(token);
+                if (!proj->setTimeZone(token))
+                {
+                    errorMessage(getUtilityError());
+                    return FALSE;
+                }
             }
             else if (token == KW("timeformat"))
             {
@@ -5468,7 +5472,7 @@ ProjectFile::date2time(const QString& date, time_t& val)
     }
 
     if ((val = ::date2time(date)) == 0)
-        errorMessage(i18n(getUtilityError()));
+        errorMessage(getUtilityError());
     return true;
 }
 

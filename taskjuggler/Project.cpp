@@ -201,11 +201,14 @@ Project::setProgressBar(int i, int of)
     emit updateProgressBar(i, of);
 }
 
-void
+bool
 Project::setTimeZone(const QString& tz)
 {
-    setTimezone(tz);
+    if (!setTimezone(tz))
+        return false;
+
     timeZone = tz;
+    return true;
 }
 
 Scenario*

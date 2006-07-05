@@ -673,7 +673,7 @@ public:
     /**
      * Set the default time zone for the project.
      */
-    void setTimeZone(const QString& tz);
+    bool setTimeZone(const QString& tz);
     /**
      * Returns the default time zone of the project;
      */
