@@ -2651,8 +2651,11 @@ Task::prepareScenario(int sc)
         if (schedulingDone)
         {
             /* If the done flag is set, the user declares that the task is
-             * done. If no end date has been specified, set the end date to
-             * the end of the last slot. */
+             * done. If no end date has been specified, set the start and end
+             * date to the begin of the first slot and end of the last slot.
+             */
+            if (scenarios[sc].start == 0)
+                start = scenarios[sc].start = firstSlot;
             if (scenarios[sc].end == 0)
                 end = scenarios[sc].end = lastSlot;
         }
