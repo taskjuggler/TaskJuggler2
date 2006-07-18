@@ -1584,6 +1584,17 @@ the specified value, then an error is reported.</para></descr>
   </seealso>
   <example>&example_minmax;</example>
  </property>
+ <property name="minslackrate" id="minslackrate" inheritable="Yes" scenario="Yes">
+  <descr><para>Specifies the minimum percentage of slack a task path
+  can have before it is marked as critical. A path is any list of
+  explicitely or implicitely connected tasks measured from first task
+  to last task. The slack is the time between start of the first task
+  and end of the last task that is not covered by any task of the
+  path.</para></descr>
+  <attributes>
+   <attr name="rate" type="REAL"/>
+  </attributes>
+ </property>
  <property name="minstart" id="minstart" inheritable="Yes"
 scenario="Yes">
   <descr><para>Specifies the minimum wanted start time of the task.
@@ -2033,6 +2044,7 @@ specified logical expression.</para></descr>
   <optattributes>
    <optattr>baseline</optattr>
    <optattr>disabled</optattr>
+   <optattr>minslackrate</optattr>
    <optattr>projection</optattr>
    <optattr>scenario</optattr>
   </optattributes>

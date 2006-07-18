@@ -911,6 +911,9 @@ were always accounted to 0.</para></listitem>
 attribute. Only values as determined by tools like tzselect are
 allowed, e. g. "Europe/Berlin".</para></listitem>
 
+<listitem><para>The GUI now can highlight critical
+pathes.</para></listitem>
+
 <listitem><para>Fixed handling of tasks that have 'precedes' and
 'depends' attributes.</para></listitem>
 

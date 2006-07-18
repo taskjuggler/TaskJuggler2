@@ -2951,13 +2951,13 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
                 for (TaskListIterator tli(task->followers); *tli; ++tli)
                 {
                     // Don't check each follower more than once.
-                    if (checkedTasks.findRef(*tli))
+                    if (checkedTasks.findRef(*tli) >= 0)
                         continue;
 
                     if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
                     {
                         if (!task->scenarios[sc].criticalLinks.
-                            findRef(*tli) >= 0)
+                            findRef(*tli) < 0)
                             task->scenarios[sc].criticalLinks.append(*tli);
 
                         scenarios[sc].isOnCriticalPath = true;
@@ -2981,7 +2981,8 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
             {
                 scenarios[sc].isOnCriticalPath = true;
                 if (DEBUGPA(5))
-                    qDebug("Critical path ending with %s found", id.latin1());
+                    qDebug("Critical path found (%ld/%ld)",
+                           busyTime, overallDuration);
             }
         }
     }
