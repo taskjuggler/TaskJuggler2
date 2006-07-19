@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: taskjuggler.cpp 1085 2005-06-23 20:34:54Z cs $
+ * $Id$
  */
 
 #include <qstring.h>

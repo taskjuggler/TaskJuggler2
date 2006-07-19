@@ -19,8 +19,8 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-04-28 {
   # We want to compare the baseline scenario, to one with a slightly
   # delayed start.
   scenario plan "Plan" {
-    # Mark all pathes as critical that have less than 15% slack time.
-    minslackrate 10
+    # Mark all pathes as critical that have less than 10% slack time.
+    minslackrate 10.0
     scenario delayed "Delayed"
   }
 }

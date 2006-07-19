@@ -76,8 +76,6 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
 
 FileManager::~FileManager()
 {
-    if (currentGUIClient)
-        mainWindow->guiFactory()->removeClient(currentGUIClient);
     clear();
 }
 
@@ -601,6 +599,7 @@ FileManager::clear()
         delete *it;
     files.clear();
     masterFile = 0;
+    currentGUIClient = 0;
 }
 
 void
@@ -786,6 +785,9 @@ FileManager::hideEditor()
 {
     if (currentGUIClient)
     {
+        // Disable all editor actions.
+        enableEditorActions(false);
+
         mainWindow->guiFactory()->removeClient(currentGUIClient);
         currentGUIClient = 0;
     }

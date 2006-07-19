@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.cpp 1136 2005-08-13 02:49:59Z cs $
+ * $Id$
  */
 #ifndef _ltQString_h_
 #define _ltQString_h_

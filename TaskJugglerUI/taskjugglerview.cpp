@@ -497,6 +497,10 @@ TaskJugglerView::close()
 {
     fileManager->saveCurrentFile(true);
     fileManager->closeCurrentFile();
+    // If we have closed the last file, we need to hide the Editor as well.
+    if (!fileManager->getCurrentFile())
+        hideEditor();
+
     // In case we closed the master file, we will close the whole project.
     if (!fileManager->getMasterFile())
         closeProject();
@@ -529,6 +533,7 @@ bool
 TaskJugglerView::quit(bool force)
 {
     fileManager->saveAllFiles(!force);
+    fileManager->hideEditor();
 
     return true;
 }
@@ -991,9 +996,6 @@ TaskJugglerView::showEditor()
 void
 TaskJugglerView::hideEditor()
 {
-    // Disable all editor actions.
-    fileManager->enableEditorActions(FALSE);
-
     fileManager->hideEditor();
 }
 

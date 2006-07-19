@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: TjReport.cpp 1169 2005-09-29 04:19:30Z cs $
+ * $Id$
  */
 
 #ifndef _KPrinterWrapper_h_

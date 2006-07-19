@@ -37,13 +37,13 @@ ManagedFileInfo::ManagedFileInfo(FileManager* fm, const KURL& url) :
 }
 
 ManagedFileInfo::~ManagedFileInfo()
-{
+{/*
     if (editor)
     {
         KTextEditor::Document* doc = editor->document();
         delete editor;
         delete doc;
-    }
+    }*/
 }
 
 void
