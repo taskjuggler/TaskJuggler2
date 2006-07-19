@@ -161,7 +161,7 @@ Task::inheritValues()
 void
 Task::addJournalEntry(JournalEntry* entry)
 {
-    journal.append(entry);
+    journal.inSort(entry);
 }
 
 JournalIterator

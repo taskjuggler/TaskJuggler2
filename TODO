@@ -1,5 +1,4 @@
 Work in progress (for next version):
-- Sort journal entries by date when displayed in GUI.
 - Add option to generate events instead of todos in ICalReport. (see
   http://www.taskjuggler.org/FUDforum2/index.php?t=msg&goto=6796&rid=65&S=f6e44759702ae7dc31918ca7fe3a4a7e#msg_6796)
 - Allow double quotes in strings with backslash escapes.

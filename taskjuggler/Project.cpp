@@ -476,7 +476,7 @@ Project::convertToDailyLoad(long secs) const
 void
 Project::addJournalEntry(JournalEntry* entry)
 {
-    journal.append(entry);
+    journal.inSort(entry);
 }
 
 JournalIterator
