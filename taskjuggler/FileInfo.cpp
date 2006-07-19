@@ -364,36 +364,26 @@ FileInfo::nextToken(QString& token)
                 return INTEGER;
             }
         }
-        else if (c == '\'')
+        else if (c == '\'' || c == '\"')
         {
-            // single quoted string
-            while ((c = getC()).unicode() != EOFile && c != '\'')
+            // single or double quoted string
+            QChar delimiter = c;
+            bool escape = false;
+            while ((c = getC()).unicode() != EOFile &&
+                   (escape || (c != delimiter)))
             {
                 if ((c == '\n') && macroStack.isEmpty())
                 {
                     oldLine = currLine;
                     currLine++;
                 }
-                token += c;
-            }
-            if (c.unicode() == EOFile)
-            {
-                errorMessage(i18n("Non terminated string"));
-                return EndOfFile;
-            }
-            return STRING;
-        }
-        else if (c == '"')
-        {
-            // double quoted string
-            while ((c = getC()).unicode() != EOFile && c != '"')
-            {
-                if ((c == '\n') && macroStack.isEmpty())
+                if (c == '\\' && !escape)
+                    escape = true;
+                else
                 {
-                    oldLine = currLine;
-                    currLine++;
+                    escape = false;
+                    token += c;
                 }
-                token += c;
             }
             if (c.unicode() == EOFile)
             {

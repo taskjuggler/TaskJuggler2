@@ -232,7 +232,9 @@ to the task in the specified scenario.</para></listitem>
 <para>A string may contain any characters and is enclosed in single
 quotes or double quotes. A single quoted string may contain double
 quote characters and vice versa. A string may include line
-breaks.</para>
+breaks. To include single quotes in a single quoted string the single
+quotes have to be preceded by a backslash character to escape them.
+This works for double quoted strings as well.</para>
 
 </sect2>
 <sect2 id="TYPE_TIME"><title>TIME</title>

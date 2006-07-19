@@ -917,6 +917,10 @@ pathes.</para></listitem>
 <listitem><para>Fixed handling of tasks that have 'precedes' and
 'depends' attributes.</para></listitem>
 
+<listitem><para>Single and double quoted strings may now contain
+single or double quotes when escaped by a preceding
+backslash.</para></listitem>
+
 <listitem><para>Fixed 'gaplength' and 'gapduration' handling for other
 scenarios than the default one.</para></listitem>
 
