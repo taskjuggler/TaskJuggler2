@@ -21,6 +21,8 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
   timeformat "%Y-%m-%d"
   currency "EUR"
   scenario plan "Plan" {
+    # Mark all pathes as critical that have less than 10% slack time.
+    minslackrate 10.0
     scenario delayed "Delayed"
   }
 }
@@ -66,6 +68,13 @@ for the delayed scenario unless the delay scenario has it's own
 values. We'll see further down, how to specify values for a
 scenario.</para>
 
+<para>Certain attributes are scenario specific. These need to be
+included in the scenario definition. In this example we use the <link
+linkend="PROPERTY_minslackrate">minslackrate</link> attribute to
+specify the percentage of slack time a task path must at least have
+before it is considered a critical path. Tasks on critical pathes are
+mared with a red frame in the graphical user interface.</para>
+
 </sect1>
 <sect1 id="global_attributes"><title>Global Attributes</title>
 
@@ -85,7 +94,24 @@ rate 310.0
 </screen></para>
 
 <para>The <link linkend="PROPERTY_rate">rate</link> attribute can be used to
-specify the daily costs of resources.</para>
+specify the daily costs of resources. All subsequent resources will
+have this rate unless specified differently.</para>
+
+<para>You might also want to tell TaskJuggler about holidays that
+affect all resources. Global vacations are periods where TaskJuggler
+does not do any resource assignments to tasks.</para>
+
+<para><screen>
+# Register Good Friday as a global holiday for all resources.
+vacation "Good Friday" 2002-03-29
+</screen></para>
+
+<para>Use the <link linkend="PROPERTY_vacation_global">vacation</link>
+attribute to define a global vacation. Global vacation need to have a
+name and a date or date range. This is slighly different from
+vacations of individual resources. They are defined with the <link
+linkend="PROPERTY_vacation_resource">vacation</link> attribute for
+resources and are unnamed.</para>
 
 <para>Macros are another TaskJuggler feature to keep project files
 small. Macros are text patterns that can be defined once and inserted

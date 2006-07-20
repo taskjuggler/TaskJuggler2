@@ -72,10 +72,11 @@ HTMLWeeklyCalendarElement::generate()
     maxDepthResourceList = filteredResourceList.maxDepth();
 
     bool weekStartsMonday = report->getProject()->getWeekStartsMonday();
-    s() << "<table align=\"center\" cellpadding=\"2\""
+    s() << "<table align=\"center\" cellpadding=\"2\" "
         << "style=\"background-color:#000000\"";
     if (((HTMLReport*) report)->hasStyleSheet())
         s() << " class=\"tj_table\"";
+    s() << ">" << endl;
 
     s() << " <thead>" << endl
         << "   <tr style=\"background-color:"
@@ -95,6 +96,7 @@ HTMLWeeklyCalendarElement::generate()
         << " </thead>" << endl
         << " <tbody>" << endl;
 
+    QString lastMAY;
     for (time_t week = beginOfWeek(start, weekStartsMonday);
          week <= sameTimeNextWeek(beginOfWeek(end, weekStartsMonday)) - 1; )
     {
@@ -126,13 +128,23 @@ HTMLWeeklyCalendarElement::generate()
                 s() << htmlFilter(i18n("Week")) << " "
                    << QString("%1").arg(weekOfYear(wd, weekStartsMonday));
             else
-                s() << "&nbsp;";
-            s() << "    </tr>"
-                << "    <tr>"
-                << "     <td style=\"font-size:90%\">"
-                << monthAndYear(wd) << "</td>"
-                << "    </tr>"
-                << "   </table></td>" << endl;
+                s() << "<p></p>";
+            s() << "     </td>" << endl
+                << "    </tr>" << endl
+                << "    <tr>" << endl;
+            QString mAY = monthAndYear(wd);
+            if (mAY != lastMAY)
+            {
+                s() << "     <td style=\"font-size:90%\">"
+                    << monthAndYear(wd) << "</td>" << endl;
+                lastMAY = mAY;
+            }
+            s() << "    </tr>" << endl;
+            if (report->getProject()->isVacation(wd))
+                s() << "    <tr><td colspan=\"2\" style=\"font-size:80%\">"
+                    << report->getProject()->vacationName(wd)
+                    << "</td></tr>" << endl;
+            s() << "   </table></td>" << endl;
         }
         s() << "  </tr>" << endl;
 
@@ -175,13 +187,11 @@ HTMLWeeklyCalendarElement::generate()
                 }
                 if (!first)
                     s() << "     </table>" << endl;
-                else
-                    s() << "     <p>_</p>" << endl;
-                s() << "    </td>";
+                s() << "   </td>" << endl;
                 start = savedStart;
                 end = savedEnd;
             }
-            s() << "  </tr>";
+            s() << "  </tr>" << endl;
         }
 
         if (!filteredResourceList.isEmpty())
@@ -224,13 +234,11 @@ HTMLWeeklyCalendarElement::generate()
                 }
                 if (!first)
                     s() << "     </table>" << endl;
-                else
-                    s() << "     <p>_</p>" << endl;
-                s() << "   </td>";
+                s() << "   </td>" << endl;
                 start = savedStart;
                 end = savedEnd;
             }
-            s() << "  </tr>";
+            s() << "  </tr>" << endl;
         }
 
         week = wd;

@@ -13,7 +13,7 @@
 #include "VacationList.h"
 #include "VacationInterval.h"
 
-void 
+void
 VacationList::add(const QString& name, const Interval& i)
 {
     inSort(new VacationInterval(name, i));
@@ -50,4 +50,14 @@ VacationList::isVacation(time_t date) const
             return TRUE;
 
     return FALSE;
+}
+
+const QString&
+VacationList::vacationName(time_t date) const
+{
+    for (VacationListIterator vli(*this); *vli != 0; ++vli)
+        if ((*vli)->contains(date))
+            return (*vli)->getName();
+
+    return QString::null;
 }

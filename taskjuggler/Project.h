@@ -359,6 +359,16 @@ public:
      * intervals.
      */
     bool isVacation(time_t d) const { return vacationList.isVacation(d); }
+
+    /**
+     * Returns the name of the first vacation that the given date falls into.
+     * If no vacation is found QString::Null is returned.
+     */
+    const QString& vacationName(time_t d) const
+    {
+        return vacationList.vacationName(d);
+    }
+
     /**
      * Returns an iterator for the vacation list.
      */

@@ -33,6 +33,9 @@ copyright "© 2002 Crappy Software, Inc."
 # the costs of the project.
 rate 310.0
 
+# Register Good Friday as a global holiday for all resources.
+vacation "Good Friday" 2002-03-29
+
 # This is one way to form teams
 macro allocate_developers [
   allocate dev1
