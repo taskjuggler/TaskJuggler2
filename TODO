@@ -1,8 +1,6 @@
 Work in progress (for next version):
 - Add option to generate events instead of todos in ICalReport. (see
   http://www.taskjuggler.org/FUDforum2/index.php?t=msg&goto=6796&rid=65&S=f6e44759702ae7dc31918ca7fe3a4a7e#msg_6796)
-- Fix click on XML files in UI. Show a meaningful error message or
-  hide all XML reports.
 - Add a property to htmlcalendar that suppresses the display of tasks
   on days where there is no time assigned to the task, for example
   holidays and weekends.

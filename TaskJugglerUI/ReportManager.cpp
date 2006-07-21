@@ -431,11 +431,29 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             }
             return true;
         }
+        else if (strncmp(mr->getProjectReport()->getType(), "XMLReport", 9)
+                 == 0)
+        {
+            bool result = mr->getProjectReport()->generate();
+            if (result)
+            {
+                KMessageBox::information
+                    (mainWindow, i18n("The report '%1' has been generated.")
+                     .arg(mr->getProjectReport()->getFileName()),
+                     QString::null, "XMLReportGeneratedInfo");
+                changeStatusBar(i18n("The report '%1' has been generated")
+                    .arg(mr->getProjectReport()->getFileName()));
+            }
+            else
+                changeStatusBar(i18n("Could not generated report '%1'")
+                    .arg(mr->getProjectReport()->getFileName()));
+            return result;
+        }
         else
         {
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
                 << " not yet supported" << endl;
-            return FALSE;
+            return false;
         }
 
         if (tjr)
