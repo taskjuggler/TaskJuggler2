@@ -47,9 +47,9 @@ public:
     {
         return workingHours[day];
     }
-    const QPtrList<const Interval>* const * getWorkingHours() const
+    const QPtrList<Interval>* const * getWorkingHours() const
     {
-        return (const QPtrList<const Interval>* const*) workingHours;
+        return static_cast<const QPtrList<Interval>* const*>(workingHours);
     }
 
     bool isOnShift(const Interval& iv) const;

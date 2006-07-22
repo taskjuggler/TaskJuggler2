@@ -87,9 +87,9 @@ public:
     bool isOnShift(const Interval& slot) const;
 
     void setWorkingHours(int day, const QPtrList<Interval>& l);
-    const QPtrList<const Interval>* const* getWorkingHours() const
+    const QPtrList<Interval>* const* getWorkingHours() const
     {
-        return (const QPtrList<const Interval>* const*) workingHours;
+        return static_cast<const QPtrList<Interval>* const*>(workingHours);
     }
 
     bool addShift(const Interval& i, Shift* s);

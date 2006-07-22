@@ -202,7 +202,7 @@ ExportReport::generateProjectProperty()
 
 bool
 ExportReport::generateCustomAttributeDeclaration(const QString& propertyName,
-    QDictIterator<const CustomAttributeDefinition> it)
+    QDictIterator<CustomAttributeDefinition> it)
 {
     if (!it.current())
         return TRUE;
@@ -297,8 +297,8 @@ ExportReport::generateShift(const Shift* shift, int indent)
 }
 
 bool
-ExportReport::generateWorkingHours(const QPtrList<const Interval>* const* wh,
-                                   const QPtrList<const Interval>* const* ref,
+ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
+                                   const QPtrList<Interval>* const* ref,
                                    int indent)
 {
     static const char* days[] =
@@ -315,8 +315,8 @@ ExportReport::generateWorkingHours(const QPtrList<const Interval>* const* wh,
         if (ref)
         {
             bool match = TRUE;
-            QPtrListIterator<const Interval> whIt(*wh[i]);
-            QPtrListIterator<const Interval> refIt(*ref[i]);
+            QPtrListIterator<Interval> whIt(*wh[i]);
+            QPtrListIterator<Interval> refIt(*ref[i]);
             if ((*whIt == 0 && *refIt != 0) ||
                 (*whIt != 0 && *refIt == 0))
             {
@@ -342,7 +342,7 @@ ExportReport::generateWorkingHours(const QPtrList<const Interval>* const* wh,
         bool first = TRUE;
         s << QString().fill(' ', indent) <<
             "  workinghours " << days[i] << " ";
-        QPtrListIterator<const Interval> it(*wh[i]);
+        QPtrListIterator<Interval> it(*wh[i]);
         if (*it == 0)
         {
             s << "off";
@@ -938,7 +938,7 @@ ExportReport::addTaskAttribute(const QString& ta)
             if (taskAttributes.findIndex(it.key()) < 0)
                 taskAttributes.append(it.key());
         }
-        for (QDictIterator<const CustomAttributeDefinition>
+        for (QDictIterator<CustomAttributeDefinition>
              it(project->getTaskAttributeDict()); *it; ++it)
             taskAttributes.append(it.currentKey());
 

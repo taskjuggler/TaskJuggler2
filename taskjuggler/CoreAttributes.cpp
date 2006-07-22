@@ -226,9 +226,9 @@ CoreAttributes::getCustomAttribute(const QString& id) const
 
 void
 CoreAttributes::inheritCustomAttributes
-(const QDict<const CustomAttributeDefinition>& dict)
+(const QDict<CustomAttributeDefinition>& dict)
 {
-    QDictIterator<const CustomAttributeDefinition> cadi(dict);
+    QDictIterator<CustomAttributeDefinition> cadi(dict);
     for ( ; cadi.current(); ++cadi)
     {
         const CustomAttribute* custAttr;

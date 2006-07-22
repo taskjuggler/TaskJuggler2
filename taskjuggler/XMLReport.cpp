@@ -242,7 +242,7 @@ XMLReport::generateProjectProperty(QDomElement* n)
 bool
 XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
     const QString& propertyName,
-    QDictIterator<const CustomAttributeDefinition> it)
+    QDictIterator<CustomAttributeDefinition> it)
 {
     if (!it.current())
         return TRUE;
@@ -355,7 +355,7 @@ XMLReport::generateShift(QDomElement* parentEl, const Shift* shift)
 
 bool
 XMLReport::generateWorkingHours(QDomElement* parentEl,
-                                const QPtrList<const Interval>* const* wh)
+                                const QPtrList<Interval>* const* wh)
 {
     QDomElement el = doc->createElement("workingHours");
     parentEl->appendChild(el);
@@ -368,7 +368,7 @@ XMLReport::generateWorkingHours(QDomElement* parentEl,
         QDomElement dayEl = doc->createElement("weekdayWorkingHours");
         genTextAttr(&dayEl, "weekday", QString().sprintf("%d", i));
         el.appendChild(dayEl);
-        QPtrListIterator<const Interval> it(*wh[i]);
+        QPtrListIterator<Interval> it(*wh[i]);
         for ( ; *it; ++it)
         {
             QDomElement ivEl = doc->createElement("timeInterval");
@@ -804,7 +804,7 @@ XMLReport::addTaskAttribute(const QString& ta)
             if (taskAttributes.findIndex(it.key()) < 0)
                 taskAttributes.append(it.key());
         }
-        for (QDictIterator<const CustomAttributeDefinition>
+        for (QDictIterator<CustomAttributeDefinition>
              it(project->getTaskAttributeDict()); *it; ++it)
             taskAttributes.append(it.currentKey());
 

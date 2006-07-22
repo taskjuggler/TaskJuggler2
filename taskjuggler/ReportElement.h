@@ -268,7 +268,7 @@ protected:
     ReportElement() { }
 
     void addCustomAttributeColumns
-        (const QDict<const CustomAttributeDefinition>& cad);
+        (const QDict<CustomAttributeDefinition>& cad);
 
     void errorMessage(const char* msg, ... );
 

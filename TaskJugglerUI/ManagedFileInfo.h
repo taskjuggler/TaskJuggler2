@@ -65,8 +65,8 @@ private slots:
 private:
     ManagedFileInfo() { }
 
-    KURL fileURL;
     FileManager* manager;
+    KURL fileURL;
     bool partOfProject;
     bool modified;
 

@@ -50,14 +50,14 @@ private:
     bool generateProjectProperty(QDomElement* n);
     bool generateCustomAttributeDeclaration(QDomElement* parentEl,
              const QString& propertyName,
-             QDictIterator<const CustomAttributeDefinition> it);
+             QDictIterator<CustomAttributeDefinition> it);
     bool generateScenario(QDomElement* parentEl, Scenario* scenario);
 
     bool generateGlobalVacationList(QDomElement* parentNode);
     bool generateShiftList(QDomElement* parentNode);
     bool generateShift(QDomElement* parentEl, const Shift*);
     bool generateWorkingHours(QDomElement* el,
-                              const QPtrList<const Interval>* const* wh);
+                              const QPtrList<Interval>* const* wh);
     bool generateResourceList(QDomElement* parentNode, ResourceList& frl,
                               TaskList& ftl);
     bool generateResource(QDomElement* parentEl, ResourceList& frl,

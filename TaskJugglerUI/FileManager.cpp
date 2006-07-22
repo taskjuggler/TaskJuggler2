@@ -61,11 +61,10 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
     editorConfigured = FALSE;
 
     /* Add our own custom editor actions. */
-    KAction* insertAction =
-        new KAction(i18n("Insert Date"), "",
-                    KShortcut(KKey("CTRL+d")),
-                    this, SLOT(insertDate()),
-                    mainWindow->actionCollection(), "insert_date");
+    new KAction(i18n("Insert Date"), "",
+                KShortcut(KKey("CTRL+d")),
+                this, SLOT(insertDate()),
+                mainWindow->actionCollection(), "insert_date");
 
     // We don't want the URL column to be visible. This is internal data only.
     browser->setColumnWidthMode(1, QListView::Manual);

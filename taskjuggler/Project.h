@@ -239,9 +239,10 @@ public:
     /**
      * Returns a constant list of working intervals for all week days.
      */
-    const QPtrList<const Interval>* const * getWorkingHours() const
+    const QPtrList<Interval>* const * getWorkingHours() const
     {
-        return (const QPtrList<const Interval>* const*) workingHours;
+        return static_cast<const QPtrList<Interval>* const*>
+            (workingHours);
     }
     /**
      * Returns the list of working intervals for the specified weekday.
@@ -443,10 +444,10 @@ public:
      * Returns a read-only pointer to the dictionary that holds the pointers
      * to user-defined attributes of Tasks.
      */
-    const QDict<const CustomAttributeDefinition>&
+    const QDict<CustomAttributeDefinition>&
         getTaskAttributeDict() const
     {
-        return (const QDict<const CustomAttributeDefinition>&) taskAttributes;
+        return taskAttributes;
     }
 
     /**
@@ -504,11 +505,10 @@ public:
      * Returns a read-only pointer to the dictionary that holds the pointers
      * to user-defined attributes of Resources.
      */
-    const QDict<const CustomAttributeDefinition>&
+    const QDict<CustomAttributeDefinition>&
         getResourceAttributeDict() const
     {
-        return (const QDict<const CustomAttributeDefinition>&)
-            resourceAttributes;
+        return resourceAttributes;
     }
 
     /**
@@ -566,11 +566,10 @@ public:
      * Returns a read-only pointer to the dictionary that holds the pointers
      * to user-defined attributes of Accounts.
      */
-    const QDict<const CustomAttributeDefinition>&
+    const QDict<CustomAttributeDefinition>&
         getAccountAttributeDict() const
     {
-        return (const QDict<const CustomAttributeDefinition>&)
-            resourceAttributes;
+        return resourceAttributes;
     }
 
     /**

@@ -46,12 +46,12 @@ private:
 
     bool generateProjectProperty();
     bool generateCustomAttributeDeclaration(const QString& propertyName,
-             QDictIterator<const CustomAttributeDefinition> it);
+             QDictIterator<CustomAttributeDefinition> it);
     bool generateScenario(const Scenario* scenario, int indent);
     bool generateShiftList();
     bool generateShift(const Shift*, int indent);
-    bool generateWorkingHours(const QPtrList<const Interval>* const* wh,
-                              const QPtrList<const Interval>* const* ref,
+    bool generateWorkingHours(const QPtrList<Interval>* const* wh,
+                              const QPtrList<Interval>* const* ref,
                               int indent);
     bool generateProjectIds(const TaskList& tasks);
     bool generateResourceList(ResourceList& frl, TaskList& ftl);
