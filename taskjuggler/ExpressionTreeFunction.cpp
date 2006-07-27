@@ -77,6 +77,52 @@ ExpressionTreeFunction::findCoreAttributes(const CoreAttributes* ca,
 }
 
 long
+ExpressionTreeFunction::hasAssignments(ExpressionTree* et,
+                                       Operation* const ops[]) const
+{
+    /* Arguments:
+       0 : scenario ID
+       1 : interval start
+       2 : interval end */
+    if (et->getCoreAttributes()->getType() != CA_Task &&
+        et->getCoreAttributes()->getType() != CA_Resource)
+    {
+        et->errorMessage(i18n("hasAssignments: '%1' is not a task or resource")
+                         .arg(et->getCoreAttributes()->getFullId()));
+        return 0;
+    }
+
+    int scenarioId = et->getCoreAttributes()->getProject()->
+        getScenarioIndex(ops[0]->evalAsString(et)) - 1;
+    if (scenarioId < 0)
+    {
+        et->errorMessage(i18n("hasAssignments: unknown scenario '%1'")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+
+    time_t start = ops[1]->evalAsTime(et);
+    time_t end = ops[2]->evalAsTime(et);
+    if (start > end)
+    {
+        et->errorMessage(i18n("hasAssignments: start date is larger than end "
+                              "date"));
+        return 0;
+    }
+    if (et->getCoreAttributes()->getProject()->getStart() > start)
+        start = et->getCoreAttributes()->getProject()->getStart();
+    if (et->getCoreAttributes()->getProject()->getEnd() < end)
+        end = et->getCoreAttributes()->getProject()->getEnd();
+
+    if (et->getCoreAttributes()->getType() == CA_Task)
+        return ((Task*) et->getCoreAttributes())->getLoad
+            (scenarioId, Interval(start, end), 0) > 0.0;
+    else
+        return ((Resource*) et->getCoreAttributes())->getLoad
+            (scenarioId, Interval(start, end)) > 0.0;
+}
+
+long
 ExpressionTreeFunction::isChildOf(ExpressionTree* et,
                                   Operation* const ops[]) const
 {

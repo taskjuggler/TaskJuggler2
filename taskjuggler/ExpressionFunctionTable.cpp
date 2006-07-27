@@ -23,6 +23,13 @@ ExpressionFunctionTable::ExpressionFunctionTable()
     functions.setAutoDelete(TRUE);
 
     ExpressionTreeFunction* etf = new ExpressionTreeFunction
+        ("hasassignments", &ExpressionTreeFunction::hasAssignments, 2);
+    functions.insert(etf->getName(), etf);
+    etf = new ExpressionTreeFunction
+        (KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 2);
+    functions.insert(etf->getName(), etf);
+
+    etf = new ExpressionTreeFunction
         ("istask", &ExpressionTreeFunction::isTask, 1);
     functions.insert(etf->getName(), etf);
     etf = new ExpressionTreeFunction

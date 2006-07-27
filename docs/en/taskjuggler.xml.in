@@ -38,7 +38,7 @@ This document describes TaskJuggler version @VERSION@
 </keywordset>
 </bookinfo>
 
-<preface><title>About this document</title>
+<preface id="about_this_document"><title>About this document</title>
 <para>
 This document describes TaskJuggler version @VERSION@
 </para>
@@ -711,7 +711,7 @@ were successful.</para>
 <para>Nothing here yet.</para>
 </sect1>
 </chapter>
-<chapter><title>Copyright</title>
+<chapter id="copyright"><title>Copyright</title>
 
 <para>TaskJuggler Copyright 2001, 2002, 2003, 2004, 2005 Chris
 Schl&auml;ger &lt;cs@suse.de&gt;</para>

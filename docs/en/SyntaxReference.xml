@@ -79,6 +79,16 @@ A-Z, a-z, 0-9, and _.  It may not start with a number.</para>
 
 <variablelist>
 
+<varlistentry><term>hasAssignment(<link linkend="TYPE_ID">ID</link>,
+<link linkend="TYPE_DATE">DATE</link>,
+<link linkend="TYPE_DATE">DATE</link>)</term>
+
+<listitem><para>true if the task or resource has actual allocations
+during the specified time interval in the scenario with the
+specified ID.
+</para></listitem>
+
+</varlistentry>
 <varlistentry><term>isChildOf(<link linkend="TYPE_ID">ID</link>)</term>
 <listitem><para>true if the property has ID as sub.</para></listitem></varlistentry>
 

@@ -914,6 +914,12 @@ allowed, e. g. "Europe/Berlin".</para></listitem>
 <listitem><para>The GUI now can highlight critical
 pathes.</para></listitem>
 
+<listitem><para>The htmlweeklycalendar has been reworked. It now only
+list tasks if they are being worked on that day. A new attribute <link
+linkend="PROPERTY_weekdays">weekdays</link> can be used to only show
+some days of the week. This can be used to hide e. g.
+weekdays.</para></listitem>
+
 <listitem><para>Fixed handling of tasks that have 'precedes' and
 'depends' attributes.</para></listitem>
 

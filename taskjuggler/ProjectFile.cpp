@@ -17,6 +17,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qapplication.h>
+#include <qbitarray.h>
 
 #include "ProjectFile.h"
 #include "debug.h"
@@ -744,6 +745,16 @@ ProjectFile::readProject()
                     return FALSE;
 
                 proj->addJournalEntry(entry);
+            }
+            else if (token == KW("customer"))
+            {
+                QString customer;
+                if (nextToken(customer) != STRING)
+                {
+                    errorMessage("String expected");
+                    return false;
+                }
+                proj->setCustomer(customer);
             }
             else if (token == KW("include"))
             {
@@ -2959,6 +2970,69 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
 }
 
 bool
+ProjectFile::readWeekDay(int& dayOfWeek)
+{
+    const char* days[] = { KW("sun"), KW("mon"), KW("tue"), KW("wed"),
+        KW("thu"), KW("fri"), KW("sat") };
+
+    QString token;
+    dayOfWeek = -1;
+    if (nextToken(token) != ID)
+    {
+        errorMessage(i18n("Weekday (sun, mon, ...) expected"));
+        return false;
+    }
+    for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+        if (days[dayOfWeek] == token)
+            break;
+
+    if (dayOfWeek == 7)
+    {
+        errorMessage(i18n("Weekday (sun, mon, ...) expected"));
+        return false;
+    }
+
+    return true;
+}
+
+bool
+ProjectFile::readDaysToShow(QBitArray& days)
+{
+    days.resize(7);
+    for (unsigned int i = 0; i < 7; ++i)
+        days[i] = false;
+
+    TokenType tt;
+    QString token;
+    for ( ; ; )
+    {
+        int dayOfWeek;
+        if (!readWeekDay(dayOfWeek))
+            return false;
+        days[dayOfWeek] = true;
+
+        if ((tt = nextToken(token)) == MINUS)
+        {
+            int lastDayOfWeek;
+            if (!readWeekDay(lastDayOfWeek))
+                return false;
+            if (lastDayOfWeek < dayOfWeek)
+                lastDayOfWeek += 7;
+            for (int i = dayOfWeek + 1; i <= lastDayOfWeek; ++i)
+                days[i % 7] = true;
+            tt = nextToken(token);
+        }
+        if (tt != COMMA)
+        {
+            returnToken(tt, token);
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool
 ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
 {
     l->setAutoDelete(TRUE);
@@ -2966,28 +3040,14 @@ ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
 
     TokenType tt;
     QString token;
-    const char* days[] = { KW("sun"), KW("mon"), KW("tue"), KW("wed"),
-        KW("thu"), KW("fri"), KW("sat") };
 
     daysOfWeek = 0;
     int firstDay = -1;
     for ( ; ; )
     {
-        if (nextToken(token) != ID)
-        {
-            errorMessage(i18n("Weekday expected"));
-            return false;
-        }
         int dayOfWeek;
-        for (dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
-            if (days[dayOfWeek] == token)
-                break;
-        if (dayOfWeek == 7)
-        {
-            errorMessage(i18n("Weekday expected"));
+        if (!readWeekDay(dayOfWeek))
             return false;
-        }
-
         else if ((tt = nextToken(token)) == MINUS)
         {
             if (firstDay != -1)
@@ -3941,6 +4001,14 @@ ProjectFile::readHTMLReport(const QString& reportType)
                                  .arg(token));
                     goto exit_error;
                 }
+            }
+            else if (reportType == "htmlweeklycalendar" &&
+                     token == KW("weekdays"))
+            {
+                QBitArray days;
+                if (!readDaysToShow(days))
+                    goto exit_error;
+                ((HTMLWeeklyCalendarElement*) tab)->setDaysToShow(days);
             }
             else if (token == KW("notimestamp"))
             {

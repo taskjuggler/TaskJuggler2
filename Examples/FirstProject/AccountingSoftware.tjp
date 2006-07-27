@@ -276,6 +276,8 @@ resourcereport "Resource Usage" {
 # This report looks like a regular calendar that shows the tasks by
 # their dates.
 htmlweeklycalendar "Calendar.html" {
+  # Only show work days in the calendar.
+	weekdays mon - fri
 }
 
 # This report is a status report for the current week. It also

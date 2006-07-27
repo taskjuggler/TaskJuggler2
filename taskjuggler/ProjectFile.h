@@ -22,6 +22,7 @@
 #include "MacroTable.h"
 #include "FileInfo.h"
 
+class QBitArray;
 class Project;
 class Scenario;
 class CoreAttributes;
@@ -151,6 +152,8 @@ private:
     bool readReference(QString& ref, QString& label);
     bool readTimeValue(ulong& value);
     bool readPercent(double& value);
+    bool readWeekDay(int& dayOfWeek);
+    bool readDaysToShow(QBitArray& days);
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
     bool readPriority(int& priority);
     bool readReport(const QString& reportType);

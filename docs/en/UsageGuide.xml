@@ -1,6 +1,6 @@
-<chapter><title>Usage Guide</title>
+<chapter id="usage_guide"><title>Usage Guide</title>
 
-<sect1><title>Tracking the Project</title>
+<sect1 id="tracking_the_project"><title>Tracking the Project</title>
 
 <para>Once the initial plan has been made and the project has started
 TaskJuggler can be turned from a planning tool into a tracking tools.
@@ -23,7 +23,7 @@ require detailed status tracking. Both extremes probably have their
 fans and TaskJuggler offers good support for both extremes as well as
 various techniques in between.</para>
 
-<sect2><title>Recording Progress</title>
+<sect2 id="recording_progress"><title>Recording Progress</title>
 
 <para>As mentioned previously, your initial project plan is only a
 first estimate of how the project will progress. During the course of
@@ -74,7 +74,7 @@ htmlstatusreport "Status-Report.html" {
 </screen></para>
 
 </sect2>
-<sect2><title>Recording Resource Usage</title>
+<sect2 id="recording_resource_usage"><title>Recording Resource Usage</title>
 
 <para>The initial project plan should be made by entering the minimum
 necessary amount of information such as task dependencies and efforts.
@@ -210,7 +210,7 @@ add the file to the project plan.</para>
 
 </sect2>
 </sect1>
-<sect1><title>Freezing your project as it progresses</title>
+<sect1 id="freezing_your_project"><title>Freezing your project as it progresses</title>
 
 <para>During the planning phase of the project you want to specify as
 little as necessary and have TaskJuggler calculate the rest of the

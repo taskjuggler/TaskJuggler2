@@ -44,6 +44,7 @@ public:
 
     long longCall(ExpressionTree* et, Operation* const ops[]) const;
 
+    long hasAssignments(ExpressionTree* et, Operation* const ops[]) const;
     long isParentOf(ExpressionTree* et, Operation* const ops[]) const;
     long isChildOf(ExpressionTree* et, Operation* const ops[]) const;
     long isLeaf(ExpressionTree* et, Operation* const ops[]) const;

@@ -13,6 +13,8 @@
 #ifndef _HTMLWeeklyCalendarElement_h_
 #define _HTMLWeeklyCalendarElement_h_
 
+#include <qbitarray.h>
+
 #include "HTMLReportElement.h"
 
 class HTMLWeeklyCalendarElement : public HTMLReportElement
@@ -21,10 +23,25 @@ public:
     HTMLWeeklyCalendarElement(Report* r, const QString& df, int dl);
     ~HTMLWeeklyCalendarElement();
 
+    void setDaysToShow(QBitArray& days);
+
     bool generate();
-    
+
 private:
+    void generateTableHeader(bool weekStartsMonday);
+    void generateWeekHeader(bool weekStartsMonday, time_t week);
+    void generateTaksPerDay(time_t& week, TaskList& filteredTaskList,
+                            bool weekStartsMonday);
+    void generateResourcesPerDay(time_t& week,
+                                 ResourceList& filteredResourceList,
+                                 bool weekStartsMonday);
+
+    bool showThisDay(int dayIndex, bool weekStartsMonday);
+
     HTMLWeeklyCalendarElement() { }
+
+    QBitArray daysToShow;
+    unsigned int numberOfDays;
 } ;
 
 #endif

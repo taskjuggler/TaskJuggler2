@@ -1291,6 +1291,7 @@ listed as well.</para></descr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
    <optattr>timeformat</optattr>
+   <optattr>weekdays</optattr>
   </optattributes>
   <seealso>
    <also>htmlaccountreport</also>
@@ -2900,6 +2901,16 @@ Currently version 2 is highly recommended.</para></descr>
    <attr name="number" type="INTEGER"/>
   </attributes>
   <example>&example_xmlreport;</example>
+ </property>
+ <property name="weekdays" id="weekdays" inheritable="No">
+  <descr><para>This attribute specifies a list of weekdays that are
+  shown in the report.</para></descr>
+  <attributes>
+   <attr name="weekday" type="WEEKDAY" list="1"/>
+  </attributes>
+  <seealso>
+   <also>workinghours</also>
+  </seealso>
  </property>
  <property name="weeklymax" id="weeklymax" inheritable="Yes">
   <descr><para>Sets the weekly limit of a resource usage or a resource

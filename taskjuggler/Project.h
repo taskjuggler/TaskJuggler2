@@ -175,6 +175,15 @@ public:
     const QString& getCopyright() const { return copyright; }
 
     /**
+     * Set the customer information for this project.
+     */
+    void setCustomer(const QString& c) { customer = c; }
+    /**
+     * Returns the customer information of the project.
+     */
+    const QString& getCustomer() const { return customer; }
+
+    /**
      * Set the default priority for all top-level tasks. Normally this value
      * is 500.
      */
@@ -803,6 +812,9 @@ private:
     QString version;
     /// Some legal words to please the boss.
     QString copyright;
+
+    /// Some information about the customer of this project.
+    QString customer;
 
     /// The default timezone of the project.
     QString timeZone;
