@@ -42,7 +42,7 @@ public:
     const CoreAttributes* ca1;
     const CoreAttributes* ca2;
     const Task* task;
-    const Resource* resource;
+    Resource* resource;
     const Account* account;
     uint idxNo;
 

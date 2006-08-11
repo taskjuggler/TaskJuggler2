@@ -42,7 +42,7 @@ class ReportElement;
 class Report
 {
 public:
-    Report(const Project* p, const QString& f, const QString& df, int dl);
+    Report(Project* p, const QString& f, const QString& df, int dl);
     virtual ~Report();
 
     virtual const char* getType() const { return "Report"; }
@@ -180,7 +180,7 @@ protected:
      */
     QString stripTaskRoot(QString taskId) const;
 
-    const Project* project;
+    Project* project;
     QString fileName;
 
     /* We store the location of the report definition in case we need it

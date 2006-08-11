@@ -45,23 +45,12 @@ static uint* DayEndIndex = 0;
 static uint* WeekEndIndex = 0;
 static uint* MonthEndIndex = 0;
 
-/* To save memory when using large resource lists that are only scarcely used
- * for the project, we only initialize the resource scoreboard when the
- * resource is actually allocated. Since such unused resources can still be
- * used in reports, we use this faked scoreboard. It reflects the global
- * working hours and global vacations. So the reported values for unused
- * resources are not 100% correct. */
-SbBooking** Resource::FakeScoreboard = 0;
-
 Resource::Resource(Project* p, const QString& i, const QString& n,
                    Resource* pr, const QString& df, uint dl)
     : CoreAttributes(p, i, n, pr, df, dl)
 {
     sbSize = (p->getEnd() + 1 - p->getStart()) /
         p->getScheduleGranularity() + 1;
-
-    if (!FakeScoreboard)
-        initFakeScoreboard();
 
     vacations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
@@ -188,12 +177,6 @@ Resource::~Resource()
     delete [] scenarios;
 
     delete limits;
-
-    if (FakeScoreboard)
-    {
-        delete [] FakeScoreboard;
-        FakeScoreboard = 0;
-    }
 
     project->deleteResource(this);
 }
@@ -329,48 +312,6 @@ Resource::initScoreboard()
                               (*ivi)->getEnd() : project->getEnd());
         for (uint idx = startIdx; idx <= endIdx; ++idx)
             scoreboard[idx] = (SbBooking*) 2;
-    }
-}
-
-void
-Resource::initFakeScoreboard()
-{
-    FakeScoreboard = new SbBooking*[sbSize];
-
-    // First mark all FakeScoreboard slots as unavailable (1).
-    for (uint i = 0; i < sbSize; i++)
-        FakeScoreboard[i] = (SbBooking*) 1;
-
-    // Then change all worktime slots to 0 (available) again.
-    for (time_t day = project->getStart(); day < project->getEnd() + 1;
-         day += project->getScheduleGranularity())
-    {
-        int dow = dayOfWeek(day, FALSE);
-        for (QPtrListIterator<Interval>
-             ivi(project->getWorkingHoursIterator(dow)); *ivi != 0; ++ivi)
-            if ((*ivi)->contains
-                (Interval(secondsOfDay(day),
-                          secondsOfDay(day + project->getScheduleGranularity()
-                                       - 1))))
-            {
-                FakeScoreboard[sbIndex(day)] = (SbBooking*) 0;
-                break;
-            }
-    }
-
-    // Mark all global vacation slots as such (2)
-    for (VacationListIterator ivi(project->getVacationListIterator());
-         *ivi != 0; ++ivi)
-    {
-        if ((*ivi)->getStart() > project->getEnd() ||
-            (*ivi)->getEnd() < project->getStart())
-            continue;
-        uint startIdx = sbIndex((*ivi)->getStart() >= project->getStart() ?
-                                (*ivi)->getStart() : project->getStart());
-        uint endIdx = sbIndex((*ivi)->getEnd() <= project->getEnd() ?
-                              (*ivi)->getEnd() : project->getEnd());
-        for (uint idx = startIdx; idx <= endIdx; ++idx)
-            FakeScoreboard[idx] = (SbBooking*) 2;
     }
 }
 
@@ -931,19 +872,19 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
 }
 
 double
-Resource::getAvailableWorkLoad(int sc, const Interval& period) const
+Resource::getAvailableWorkLoad(int sc, const Interval& period)
 {
     return efficiency * getAvailableTimeLoad(sc, period);
 }
 
 double
-Resource::getAvailableTimeLoad(int sc, const Interval& period) const
+Resource::getAvailableTimeLoad(int sc, const Interval& period)
 {
     return project->convertToDailyLoad(getAvailableTime(sc, period));
 }
 
 long
-Resource::getAvailableTime(int sc, const Interval& period) const
+Resource::getAvailableTime(int sc, const Interval& period)
 {
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
@@ -955,7 +896,7 @@ Resource::getAvailableTime(int sc, const Interval& period) const
 }
 
 long
-Resource::getAvailableSlots(int sc, uint startIdx, uint endIdx) const
+Resource::getAvailableSlots(int sc, uint startIdx, uint endIdx)
 {
     long availSlots = 0;
 
@@ -966,20 +907,16 @@ Resource::getAvailableSlots(int sc, uint startIdx, uint endIdx) const
     }
     else
     {
-        /* If the resource hasn't been allocated, we have no scoreboard. Due
-         * to the const nature of this function we cannot generate it anymore.
-         * So we use the FakeScoreboard to get at least a reasonable estimate
-         * for the available time. */
-        if (!scoreboard || !scoreboards[sc])
+        if (!scoreboards[sc])
         {
-            for (uint i = startIdx; i <= endIdx; i++)
-                if (FakeScoreboard[i] == 0)
-                    availSlots++;
+            scoreboard = scoreboards[sc];
+            initScoreboard();
+            scoreboards[sc] = scoreboard;
         }
-        else
-            for (uint i = startIdx; i <= endIdx; i++)
-                if (scoreboards[sc][i] == 0)
-                    availSlots++;
+
+        for (uint i = startIdx; i <= endIdx; i++)
+            if (scoreboards[sc][i] == 0)
+                availSlots++;
     }
 
     return availSlots;

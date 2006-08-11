@@ -29,7 +29,7 @@
 
 #define KW(a) a
 
-Report::Report(const Project* p, const QString& f, const QString& df, int dl) :
+Report::Report(Project* p, const QString& f, const QString& df, int dl) :
         project(p), fileName(f), defFileName(df), defFileLine(dl)
 {
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
