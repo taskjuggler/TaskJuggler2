@@ -24,7 +24,7 @@ TjObjPosTable::~TjObjPosTable()
 }
 
 void
-TjObjPosTable::addEntry(const CoreAttributes* ca, const CoreAttributes* subCa,
+TjObjPosTable::addEntry(CoreAttributes* ca, CoreAttributes* subCa,
                         int pos, int height)
 {
     TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, subCa, pos, height);

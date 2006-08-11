@@ -40,13 +40,13 @@ public:
     void insertCell(TjReportCell* c, int pos);
     TjReportCell* getCell(int pos) const;
 
-    void setCoreAttributes(const CoreAttributes* c,
-                           const CoreAttributes* sc)
+    void setCoreAttributes(CoreAttributes* c,
+                           CoreAttributes* sc)
     {
         ca = c; subCA = sc;
     }
-    const CoreAttributes* getCoreAttributes() const { return ca; }
-    const CoreAttributes* getSubCoreAttributes() const { return subCA; }
+    CoreAttributes* getCoreAttributes() const { return ca; }
+    CoreAttributes* getSubCoreAttributes() const { return subCA; }
 
 private:
     TjReportRow() { }
@@ -57,8 +57,8 @@ private:
     // The vertical page number of the page this column is on.
     int yPage;
 
-    const CoreAttributes* ca;
-    const CoreAttributes* subCA;
+    CoreAttributes* ca;
+    CoreAttributes* subCA;
     bool hidden;
     // True if this row is the last row on the page.
     bool lastOnPage;

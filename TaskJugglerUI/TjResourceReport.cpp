@@ -220,8 +220,8 @@ TjResourceReport::generateList()
 
 QString
 TjResourceReport::generateStatusBarText(const QPoint& pos,
-                                        const CoreAttributes* ca,
-                                        const CoreAttributes* parent) const
+                                        CoreAttributes* ca,
+                                        CoreAttributes* parent)
 {
     QPoint chartPos = ganttChartView->viewportToContents(pos);
     time_t refTime = ganttChart->x2time(chartPos.x());
@@ -231,8 +231,8 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
     QString text;
     if (ca->getType() == CA_Task)
     {
-        const Task* t = dynamic_cast<const Task*>(ca);
-        const Resource* r = dynamic_cast<const Resource*>(parent);
+        Task* t = dynamic_cast<Task*>(ca);
+        Resource* r = dynamic_cast<Resource*>(parent);
         double load = t->getLoad(scenario, iv, r);
         double allocatedTimeLoad = t->getAllocatedTimeLoad(scenario, iv, r);
         text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time: %5  Task %6(%7)")
@@ -248,7 +248,7 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
     }
     else
     {
-        const Resource* r = dynamic_cast<const Resource*>(ca);
+        Resource* r = dynamic_cast<Resource*>(ca);
         double load = r->getLoad(scenario, iv, AllAccounts);
         double allocatedTimeLoad = r->getAllocatedTimeLoad
             (scenario, iv, AllAccounts);

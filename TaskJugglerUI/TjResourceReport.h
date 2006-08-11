@@ -36,8 +36,8 @@ protected:
     virtual bool generateList();
 
     virtual QString generateStatusBarText(const QPoint& pos,
-                                          const CoreAttributes* ca,
-                                          const CoreAttributes* parent) const;
+                                          CoreAttributes* ca,
+                                          CoreAttributes* parent);
 
 private:
     QtResourceReportElement* reportElement;

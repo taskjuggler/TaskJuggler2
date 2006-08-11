@@ -386,7 +386,7 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
 
 void
 TjPrintReport::generateResourceListRow(TjReportRow* row,
-                                       const Resource* resource,
+                                       Resource* resource,
                                        const Task* task)
 {
     int colIdx= 0;

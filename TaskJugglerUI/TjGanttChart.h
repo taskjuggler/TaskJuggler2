@@ -111,10 +111,10 @@ private:
     void drawContainterShape(int start, int end, int centerY, int height,
                              bool critical, bool outlineOnly, QCanvas* canvas);
     void drawDependencies(const Task* t1, TjLineAccounter* collisionDetector);
-    void drawTaskResource(const Resource* r, const Task* t);
-    void drawResource(const Resource* r);
-    void drawResourceTask(const Task* t, const Resource* r);
-    void drawResourceLoadColum(const Resource* r, const Task* t, time_t start,
+    void drawTaskResource(Resource* r, const Task* t);
+    void drawResource(Resource* r);
+    void drawResourceTask(const Task* t, Resource* r);
+    void drawResourceLoadColum(Resource* r, const Task* t, time_t start,
                                time_t end, int rY);
 
     void drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,

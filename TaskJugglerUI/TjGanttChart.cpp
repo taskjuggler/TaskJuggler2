@@ -1035,7 +1035,7 @@ TjGanttChart::generateGanttElements()
         else if ((*it)->getCoreAttributes()->getType() == CA_Resource
                  && (*it)->getSubCoreAttributes() == 0)
         {
-            const Resource* r = static_cast<const Resource*>
+            Resource* r = static_cast<Resource*>
                 ((*it)->getCoreAttributes());
             drawResource(r);
         }
@@ -1044,7 +1044,7 @@ TjGanttChart::generateGanttElements()
         {
             const Task* t = static_cast<const Task*>
                 ((*it)->getCoreAttributes());
-            const Resource* r = static_cast<const Resource*>
+            Resource* r = static_cast<Resource*>
                 ((*it)->getSubCoreAttributes());
             drawTaskResource(r, t);
         }
@@ -1052,7 +1052,7 @@ TjGanttChart::generateGanttElements()
                  CA_Resource &&
                  (*it)->getSubCoreAttributes()->getType() == CA_Task)
         {
-            const Resource* r = static_cast<const Resource*>
+            Resource* r = static_cast<Resource*>
                 ((*it)->getCoreAttributes());
             const Task* t = static_cast<const Task*>
                 ((*it)->getSubCoreAttributes());
@@ -1456,7 +1456,7 @@ TjGanttChart::drawDependencies(const Task* t1,
 }
 
 void
-TjGanttChart::drawTaskResource(const Resource* r, const Task* t)
+TjGanttChart::drawTaskResource(Resource* r, const Task* t)
 {
     assert(zoomSteps.size() > 0);
 
@@ -1473,7 +1473,7 @@ TjGanttChart::drawTaskResource(const Resource* r, const Task* t)
 }
 
 void
-TjGanttChart::drawResource(const Resource* r)
+TjGanttChart::drawResource(Resource* r)
 {
     assert(zoomSteps.size() > 0);
 
@@ -1489,7 +1489,7 @@ TjGanttChart::drawResource(const Resource* r)
 }
 
 void
-TjGanttChart::drawResourceLoadColum(const Resource* r, const Task* t,
+TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
                                     time_t start, time_t end, int rY)
 {
     // Determin the width of the cell that we draw the column in.

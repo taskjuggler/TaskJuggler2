@@ -59,7 +59,7 @@ public:
                               const Task* t, QListViewItem* lvi,
                               const Resource* r = 0);
     void generateResourceListLine(const QtReportElement* reportElement,
-                                  const Resource* r, QListViewItem* lvi,
+                                  Resource* r, QListViewItem* lvi,
                                   const Task* t = 0);
     void print();
 
@@ -101,9 +101,8 @@ protected:
                                  QString& cellText, QPixmap& icon) const;
 
     virtual QString generateStatusBarText(const QPoint& pos,
-                                          const CoreAttributes* ca,
-                                          const CoreAttributes* parent)
-        const = 0;
+                                          CoreAttributes* ca,
+                                          CoreAttributes* parent) = 0;
 
     QString indent(const QString& input, const QListViewItem* lvi,
                    bool right);

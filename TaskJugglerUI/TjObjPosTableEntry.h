@@ -17,20 +17,20 @@ class CoreAttributes;
 
 class TjObjPosTableEntry {
 public:
-    TjObjPosTableEntry(const CoreAttributes* c, const CoreAttributes* sc,
+    TjObjPosTableEntry(CoreAttributes* c, CoreAttributes* sc,
                        int p, int h) : ca(c), subCA(sc), pos(p), height(h) { }
     ~TjObjPosTableEntry() { }
 
-    const CoreAttributes* getCoreAttributes() const { return ca; }
-    const CoreAttributes* getSubCoreAttributes() const { return subCA; }
+    CoreAttributes* getCoreAttributes() const { return ca; }
+    CoreAttributes* getSubCoreAttributes() const { return subCA; }
     int getPos() const { return pos; }
     int getHeight() const { return height; }
 
 private:
     TjObjPosTableEntry() { }    // Don't use this
 
-    const CoreAttributes* ca;
-    const CoreAttributes* subCA;
+    CoreAttributes* ca;
+    CoreAttributes* subCA;
     int pos;
     int height;
 } ;

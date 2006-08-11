@@ -458,7 +458,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
 
 void
 TjReport::generateResourceListLine(const QtReportElement* reportElement,
-                                   const Resource* r, QListViewItem* lvi,
+                                   Resource* r, QListViewItem* lvi,
                                    const Task* t)
 {
     assert(reportElement != 0);
@@ -671,8 +671,8 @@ TjReport::prepareChart()
 
         // Reconstruct the CoreAttributes pointers.
         QStringList tokens = QStringList::split(":", (*lvit).first);
-        const CoreAttributes* ca1 = 0;
-        const CoreAttributes* ca2 = 0;
+        CoreAttributes* ca1 = 0;
+        CoreAttributes* ca2 = 0;
         const Project* project = reportDef->getProject();
         if (tokens[0] == "t")
         {

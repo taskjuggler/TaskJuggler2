@@ -55,7 +55,7 @@ protected:
     void generateTableHeader();
     void generateTaskListRow(TjReportRow* row, const Task* task,
                              const Resource* resource = 0);
-    void generateResourceListRow(TjReportRow* row, const Resource* resource,
+    void generateResourceListRow(TjReportRow* row, Resource* resource,
                                  const Task* task = 0);
 
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,

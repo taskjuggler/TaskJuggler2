@@ -69,7 +69,7 @@ TjPrintTaskReport::generate()
     for (TaskListIterator tli(filteredTaskList); *tli; ++tli)
     {
         TjReportRow* row = new TjReportRow(getNumberOfColumns(), index++);
-        row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli), 0);
+        row->setCoreAttributes(static_cast<CoreAttributes*>(*tli), 0);
         rows.push_back(row);
 
         generateTaskListRow(row, *tli);
@@ -82,8 +82,8 @@ TjPrintTaskReport::generate()
         for (ResourceListIterator rli(filteredResourceList); *rli; ++rli)
         {
             row = new TjReportRow(getNumberOfColumns(), index++);
-            row->setCoreAttributes(static_cast<const CoreAttributes*>(*tli),
-                                   static_cast<const CoreAttributes*>(*rli));
+            row->setCoreAttributes(static_cast<CoreAttributes*>(*tli),
+                                   static_cast<CoreAttributes*>(*rli));
             rows.push_back(row);
 
             generateResourceListRow(row, *rli, *tli);
