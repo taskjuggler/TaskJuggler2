@@ -1,7 +1,6 @@
 Work in progress (for next version):
-- Add option to generate events instead of todos in ICalReport. (see
-  http://www.taskjuggler.org/FUDforum2/index.php?t=msg&goto=6796&rid=65&S=f6e44759702ae7dc31918ca7fe3a4a7e#msg_6796)
-    
+  none, we are ready for 2.3.0 beta test
+
 Probably:
 - Macros to do date/time arithmetic.
 - 'limits' for tasks, not just for allocations.
