@@ -35,6 +35,7 @@ public:
 
 private:
    KCal::Todo* generateTODO(Task *task, ResourceList& resourceList);
+    KCal::Event* generateEvent(Task* task, ResourceList& resourceList);
 };
 
 #endif

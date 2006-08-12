@@ -920,6 +920,10 @@ linkend="PROPERTY_weekdays">weekdays</link> can be used to only show
 some days of the week. This can be used to hide e. g.
 weekdays.</para></listitem>
 
+<listitem><para>ICal reports now include events. The completion value
+is now shown correctly and assigned resources are
+included.</para></listitem>
+
 <listitem><para>Fixed handling of tasks that have 'precedes' and
 'depends' attributes.</para></listitem>
 
