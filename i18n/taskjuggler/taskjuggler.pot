@@ -1,0 +1,1807 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-08-21 05:43+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: CSVAccountReportElement.cpp:72 HTMLAccountReportElement.cpp:78
+msgid "Total Costs"
+msgstr ""
+
+#: CSVAccountReportElement.cpp:109 HTMLAccountReportElement.cpp:117
+msgid "Total Revenues"
+msgstr ""
+
+#: CSVAccountReportElement.cpp:125 HTMLAccountReportElement.cpp:134
+#: ReportElement.cpp:354
+msgid "Total"
+msgstr ""
+
+#: CSVReportElement.cpp:75 HTMLReportElement.cpp:103
+msgid "'costs' has been deprecated. Use 'cost' instead."
+msgstr ""
+
+#: CSVReportElement.cpp:81
+msgid "Unknown Column '%1' for CSV Report"
+msgstr ""
+
+#: CSVReportElement.cpp:334
+msgid "Week %1/%2"
+msgstr ""
+
+#: CSVReportElement.cpp:376
+msgid "%1 %2"
+msgstr ""
+
+#: CSVReportElement.cpp:392 HTMLReportElement.cpp:835
+msgid "1st Quarter"
+msgstr ""
+
+#: CSVReportElement.cpp:392 HTMLReportElement.cpp:835
+msgid "2nd Quarter"
+msgstr ""
+
+#: CSVReportElement.cpp:393 HTMLReportElement.cpp:836
+msgid "3rd Quarter"
+msgstr ""
+
+#: CSVReportElement.cpp:393 HTMLReportElement.cpp:836
+msgid "4th Quarter"
+msgstr ""
+
+#: ExpressionParser.cpp:86
+msgid "Function '%1' is unknown"
+msgstr ""
+
+#: ExpressionParser.cpp:137 ExpressionParser.cpp:222 FileInfo.cpp:554
+#: ProjectFile.cpp:4955 ProjectFile.cpp:5040 Tokenizer.cpp:565
+msgid "')' expected"
+msgstr ""
+
+#: ExpressionParser.cpp:143 ProjectFile.cpp:4961
+msgid "Logical expression expected"
+msgstr ""
+
+#: ExpressionParser.cpp:214 ProjectFile.cpp:5032
+msgid "Comma expected. Function '%1' needs %2 arguments."
+msgstr ""
+
+#: ExpressionTree.cpp:76
+msgid "Unknown identifier '%1' in logical expression"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:90
+msgid "hasAssignments: '%1' is not a task or resource"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:99
+msgid "hasAssignments: unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:108
+msgid "hasAssignments: start date is larger than end date"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:133
+msgid "isChildOf: '%1' is unknown and not a child of '%2'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:143
+msgid "isChildOf: '%1' and '%2' must be of same type"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:160
+msgid "isParentOf: '%1' is unknown and not a child of '%2'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:170
+msgid "isParentOf: '%1' and '%2' must be of same type"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:209
+msgid "isTask: task '%1' is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:246
+msgid "isResource: resource '%1' is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:273
+msgid "isAccount: account '%1' is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:302
+msgid "isTaskStatus: Unknown scenario '%1"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:323
+msgid "isTaskStatus: Unknown task status '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:345
+msgid "startsBefore: Unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:365
+msgid "startsAfter: Unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:385
+#, c-format
+msgid "endsBefore: Unknown scenario '%s'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:405
+msgid "endsAfter: Unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:425
+msgid "isSubTaskOf: task '%1' is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:444
+msgid "containsTask: task '%1' is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:464
+msgid "isTaskOfProject: project ID '%1' is unkown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:485
+msgid "isAllocated: '%1' is not a resource"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:494
+msgid "isAllocated: unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:503
+msgid "isAllocated: start date is larger than end date"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:531
+msgid "isDutyOf: resource '%1' is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:540
+msgid "isDutyOf: unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:565
+msgid "isAllocatedToProject: project ID '%1'is unknown"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:577
+msgid "isAllocatedToProject: unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:585
+msgid "isAllocatedToProject: start date is larger than end date"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:612
+msgid "isOnCriticalPath: unknown scenario '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:627
+msgid "isplanallocated: called for non-resource '%1'"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:636
+msgid "isplanallocated: there is no 'plan' scenario."
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:648
+msgid "isPlanAllocated: start date is larger than end date"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:664
+msgid "isactualallocated: called for non-resource"
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:671
+msgid "isactualallocated: there is no 'actual' scenario."
+msgstr ""
+
+#: ExpressionTreeFunction.cpp:683
+msgid "isActualAllocated: start date is larger than end date"
+msgstr ""
+
+#: FileInfo.cpp:51 Tokenizer.cpp:352 XMLFile.cpp:321
+msgid "Processing file '%1'"
+msgstr ""
+
+#: FileInfo.cpp:170 FileInfo.cpp:306 FileInfo.cpp:315 Tokenizer.cpp:140
+#: Tokenizer.cpp:149 Tokenizer.cpp:474
+msgid "Corrupted date"
+msgstr ""
+
+#: FileInfo.cpp:235 Tokenizer.cpp:73
+msgid "Unterminated comment"
+msgstr ""
+
+#: FileInfo.cpp:277 Tokenizer.cpp:111
+msgid "Unexpected end of file"
+msgstr ""
+
+#: FileInfo.cpp:355 Tokenizer.cpp:189
+msgid "2 digits minutes expected"
+msgstr ""
+
+#: FileInfo.cpp:390 Tokenizer.cpp:212 Tokenizer.cpp:228
+msgid "Non terminated string"
+msgstr ""
+
+#: FileInfo.cpp:415 Tokenizer.cpp:250
+msgid "Non terminated macro definition"
+msgstr ""
+
+#: FileInfo.cpp:474 Tokenizer.cpp:309
+msgid "Illegal character '%1'"
+msgstr ""
+
+#: FileInfo.cpp:501 ProjectFile.cpp:336 Tokenizer.cpp:514
+msgid "Macro ID expected"
+msgstr ""
+
+#: FileInfo.cpp:515 MacroTable.cpp:144 ProjectFile.cpp:1341
+#: ProjectFile.cpp:2811 Tokenizer.cpp:527
+msgid "'}' expected"
+msgstr ""
+
+#: FileInfo.cpp:547 Tokenizer.cpp:558
+msgid "Environment name expected"
+msgstr ""
+
+#: FileInfo.cpp:632 Tokenizer.cpp:619
+msgid ""
+"Error in expanded macro\n"
+"%1\n"
+"%2\n"
+"This is the macro call stack:%3"
+msgstr ""
+
+#: HTMLAccountReport.cpp:39
+msgid "Account Report"
+msgstr ""
+
+#: HTMLReportElement.cpp:109
+msgid "Unknown Column '%1' for HTML Report"
+msgstr ""
+
+#: HTMLResourceReport.cpp:32
+msgid "Resource Report"
+msgstr ""
+
+#: HTMLStatusReport.cpp:53
+msgid "Tasks that should have been finished already"
+msgstr ""
+
+#: HTMLStatusReport.cpp:74 Task.cpp:1000
+msgid "Work in progress"
+msgstr ""
+
+#: HTMLStatusReport.cpp:89
+msgid "Tasks that have been completed"
+msgstr ""
+
+#: HTMLStatusReport.cpp:107
+msgid "Upcoming new tasks"
+msgstr ""
+
+#: HTMLStatusReport.cpp:142
+msgid "Status report for the period %1 to %2"
+msgstr ""
+
+#: HTMLStatusReport.cpp:145
+msgid "Status Report"
+msgstr ""
+
+#: HTMLTaskReport.cpp:37
+msgid "Task Report"
+msgstr ""
+
+#: HTMLTimesheet.cpp:37
+msgid "Timesheet"
+msgstr ""
+
+#: HTMLTimesheetElement.cpp:132 HTMLWeeklyCalendarElement.cpp:132
+msgid "Week"
+msgstr ""
+
+#: HTMLWeeklyCalendar.cpp:37
+msgid "Weekly Calendar"
+msgstr ""
+
+#: ICalReport.cpp:157
+msgid "Can not open ICal File '%1' for writing!"
+msgstr ""
+
+#: MacroTable.cpp:58
+msgid "'?' must be followed by a valid macro name!"
+msgstr ""
+
+#: MacroTable.cpp:68
+msgid "'if' macro needs a condition and an argument"
+msgstr ""
+
+#: MacroTable.cpp:81
+msgid "'ifelse' macro needs a condition and two arguments"
+msgstr ""
+
+#: MacroTable.cpp:94
+msgid "'error' macro needs one string argument"
+msgstr ""
+
+#: MacroTable.cpp:105
+msgid "'warning' macro needs one string argument"
+msgstr ""
+
+#: MacroTable.cpp:138
+#, c-format
+msgid "Number expected: %s"
+msgstr ""
+
+#: MacroTable.cpp:150
+#, c-format
+msgid "Macro %s only has ${%s} parameters"
+msgstr ""
+
+#: MacroTable.cpp:165
+msgid "Usage of undefined macro '%1'"
+msgstr ""
+
+#: MacroTable.cpp:197
+msgid "Unexpected end of report variable: %1"
+msgstr ""
+
+#: MacroTable.cpp:204
+msgid "Macro calls must be terminated with a '}': %1"
+msgstr ""
+
+#: MacroTable.cpp:283
+msgid "Garbage at end of expression"
+msgstr ""
+
+#: MacroTable.cpp:313
+msgid "Illegal operator: %1"
+msgstr ""
+
+#: MacroTable.cpp:318
+msgid "Unexpected end of expression: %1"
+msgstr ""
+
+#: main.cpp:43
+msgid "TaskJuggler v%1 - A Project Management Software"
+msgstr ""
+
+#: main.cpp:52
+msgid ""
+"\n"
+"Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006 \n"
+"by Chris Schlaeger <cs@kde.org> and Klaas Freitag <freitag@suse.de>\n"
+"\n"
+"This program is free software; you can redistribute it and/or\n"
+"modify it under the terms of version 2 of the GNU General\n"
+"Public License as published by the Free Software Foundation.\n"
+"\n"
+"For more information about TaskJuggler see \n"
+"%1\n"
+msgstr ""
+
+#: main.cpp:66
+msgid ""
+"TaskJuggler must be called with at least one file that\n"
+"contains the project description and the report definitions.\n"
+"\n"
+"Usage: %1 [options] <filename1> [<filename2> ...]"
+msgstr ""
+
+#: main.cpp:73
+msgid ""
+"   --help               - print this message\n"
+"   --version            - print the version and copyright info\n"
+"   -v                   - same as '--version'\n"
+"   -s                   - stop after syntax check\n"
+"   -M                   - output include dependencies for\n"
+"                          make utilities\n"
+"   --makefile <file>    - generate include dependencies for make\n"
+"                          utilities into the specified file\n"
+"   --maxerrors N        - stop after N errors. If N is 0 show all\n"
+"                          errors\n"
+"   --nodepcheck         - don't search for dependency loops\n"
+"   --debug N            - print debug output, N must be between\n"
+"                          0 and 40, the higher N the more output\n"
+"                          is printed\n"
+"   --dbmode N           - activate debug mode only for certain\n"
+"                          parts of the code\n"
+"   --updatedb           - update the Kotrus database with the\n"
+"                          new resource usage information\n"
+msgstr ""
+
+#: main.cpp:93
+msgid "To report bugs please follow the instructions in the manual\n"
+msgstr ""
+
+#: main.cpp:121
+msgid "--debug needs numerical argument"
+msgstr ""
+
+#: main.cpp:130
+msgid "--dbmode needs numerical argument"
+msgstr ""
+
+#: main.cpp:139
+msgid "--makefile needs filename argument"
+msgstr ""
+
+#: main.cpp:151
+msgid "--maxerrors needs a numerical argument"
+msgstr ""
+
+#: main.cpp:217
+msgid ""
+"WARNING: %1 has an unsupported file extension. Please use '.tjp' for "
+"toplevel files, '.tji' for included files and '.tjx' for TaskJuggler XML "
+"files."
+msgstr ""
+
+#: Project.cpp:493
+msgid "The project does not contain any tasks."
+msgstr ""
+
+#: Project.cpp:550
+msgid "Checking scheduling data..."
+msgstr ""
+
+#: Project.cpp:561
+msgid "Searching for dependency loops ..."
+msgstr ""
+
+#: Project.cpp:573
+msgid "Searching for underspecified tasks ..."
+msgstr ""
+
+#: Project.cpp:595
+msgid "Scheduling scenario %1..."
+msgstr ""
+
+#: Project.cpp:603
+msgid "Scheduling errors in scenario '%1'."
+msgstr ""
+
+#: Project.cpp:645
+msgid "Scheduling scenario '%1' ..."
+msgstr ""
+
+#: Project.cpp:841
+msgid "Scheduling scenario %1 at %1"
+msgstr ""
+
+#: Project.cpp:851
+msgid "Scheduling aborted on user request"
+msgstr ""
+
+#: Project.cpp:860
+msgid ""
+"End of task '%1' does not fit into the project time frame. Try using a later "
+"project end date."
+msgstr ""
+
+#: Project.cpp:866
+msgid ""
+"Start of task '%1' does not fit into the project time frame. Try using an "
+"earlier project start date."
+msgstr ""
+
+#: Project.cpp:875
+msgid "Checking schedule of scenario %1"
+msgstr ""
+
+#: Project.cpp:902
+msgid "Too many errors in %1 scenario. Giving up."
+msgstr ""
+
+#: Project.cpp:936
+msgid "Generating report '%1' ..."
+msgstr ""
+
+#: ProjectFile.cpp:133
+msgid "Cannot read file '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:139 ProjectFile.cpp:167
+msgid "Parsing %1..."
+msgstr ""
+
+#: ProjectFile.cpp:164
+msgid "Parsing completed"
+msgstr ""
+
+#: ProjectFile.cpp:192 ProjectFile.cpp:548
+msgid ""
+"The project properties must be defined prior to any account, shift, task or "
+"resource."
+msgstr ""
+
+#: ProjectFile.cpp:243 ProjectFile.cpp:254 ProjectFile.cpp:278
+#: ProjectFile.cpp:2140 ProjectFile.cpp:2150 ProjectFile.cpp:2182
+msgid "Real value exptected"
+msgstr ""
+
+#: ProjectFile.cpp:287
+msgid ""
+"ERROR: 'currency' is no longer a property. It's now an optional project "
+"attribute. Please fix your project file."
+msgstr ""
+
+#: ProjectFile.cpp:295
+msgid ""
+"ERROR: 'currencydigits' has been deprecated. Please use 'currencyformat' "
+"instead."
+msgstr ""
+
+#: ProjectFile.cpp:302
+msgid ""
+"ERROR: 'timingresolution' is no longer a property. It's now an optional "
+"project attribute. Please fix your project file."
+msgstr ""
+
+#: ProjectFile.cpp:310
+msgid ""
+"ERROR: 'workinghours' is no longer a property. It's now an optional project "
+"attribute. Please fix your project file."
+msgstr ""
+
+#: ProjectFile.cpp:319 ProjectFile.cpp:706 ProjectFile.cpp:825
+#: ProjectFile.cpp:1161 ProjectFile.cpp:1246 ProjectFile.cpp:1400
+#: ProjectFile.cpp:1792 ProjectFile.cpp:1840 ProjectFile.cpp:1855
+#: ProjectFile.cpp:1909 ProjectFile.cpp:1916 ProjectFile.cpp:1923
+#: ProjectFile.cpp:1930 ProjectFile.cpp:1951 ProjectFile.cpp:1966
+#: ProjectFile.cpp:2019 ProjectFile.cpp:2191 ProjectFile.cpp:2290
+#: ProjectFile.cpp:2524 ProjectFile.cpp:2602 ProjectFile.cpp:2636
+#: ProjectFile.cpp:3839 ProjectFile.cpp:3848 ProjectFile.cpp:3857
+#: ProjectFile.cpp:4098 ProjectFile.cpp:4107 ProjectFile.cpp:4116
+#: ProjectFile.cpp:4232 ProjectFile.cpp:4241 ProjectFile.cpp:4387
+#: ProjectFile.cpp:4735 ProjectFile.cpp:4744 ProjectFile.cpp:5174
+#: ProjectFile.cpp:5183 ProjectFile.cpp:5192 ProjectFile.cpp:5201
+#: ProjectFile.cpp:5210 ProjectFile.cpp:5219
+msgid "String expected"
+msgstr ""
+
+#: ProjectFile.cpp:343
+msgid "Macro body expected"
+msgstr ""
+
+#: ProjectFile.cpp:349
+msgid "Macro has been defined already"
+msgstr ""
+
+#: ProjectFile.cpp:362
+msgid "flag ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:392 ProjectFile.cpp:419 ProjectFile.cpp:555
+#: ProjectFile.cpp:1613
+msgid "Project ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:399 ProjectFile.cpp:561
+msgid "Project ID %1 has already been registered"
+msgstr ""
+
+#: ProjectFile.cpp:436
+msgid ""
+"ERROR: The keyword 'xmltaskreport' is deprecated. Please use the keyword "
+"'xmlreport' instead."
+msgstr ""
+
+#: ProjectFile.cpp:496
+msgid "Unknown kotrus mode"
+msgstr ""
+
+#: ProjectFile.cpp:512
+msgid "'task' or 'resource' expected"
+msgstr ""
+
+#: ProjectFile.cpp:522
+msgid "Syntax Error at '%1'!"
+msgstr ""
+
+#: ProjectFile.cpp:539
+msgid "Illegal redefinition of project property. It can only be defined once."
+msgstr ""
+
+#: ProjectFile.cpp:567
+msgid "Project name expected"
+msgstr ""
+
+#: ProjectFile.cpp:573
+msgid "Version string expected"
+msgstr ""
+
+#: ProjectFile.cpp:591 ProjectFile.cpp:2482
+msgid "Attribute ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:615 ProjectFile.cpp:624
+msgid "Real number expected"
+msgstr ""
+
+#: ProjectFile.cpp:643
+msgid "timing resolution must be at least 5 min"
+msgstr ""
+
+#: ProjectFile.cpp:650
+msgid ""
+"timing resolution must be at least 24 times smaller than the project duration"
+msgstr ""
+
+#: ProjectFile.cpp:661
+msgid "Timezone name expected"
+msgstr ""
+
+#: ProjectFile.cpp:674 ProjectFile.cpp:683 ProjectFile.cpp:3659
+#: ProjectFile.cpp:3668 ProjectFile.cpp:3973 ProjectFile.cpp:3982
+#: ProjectFile.cpp:4347 ProjectFile.cpp:4356 ProjectFile.cpp:4837
+#: ProjectFile.cpp:4846
+msgid "Time format string expected"
+msgstr ""
+
+#: ProjectFile.cpp:766
+msgid "Unknown attribute %1"
+msgstr ""
+
+#: ProjectFile.cpp:785
+msgid "'%1' is not a property. Please use 'task' or 'resource'."
+msgstr ""
+
+#: ProjectFile.cpp:792
+msgid "'{' expected."
+msgstr ""
+
+#: ProjectFile.cpp:804
+msgid ""
+"'%1' is not a known custom attribute type. Please use 'reference' or 'text'."
+msgstr ""
+
+#: ProjectFile.cpp:812 ProjectFile.cpp:866
+msgid "Attribute ID expected."
+msgstr ""
+
+#: ProjectFile.cpp:817
+msgid ""
+"User defined attribute IDs must start with a capital letter to avoid "
+"conflicts with future TaskJuggler keywords."
+msgstr ""
+
+#: ProjectFile.cpp:842
+msgid ""
+"The custom attribute '%1' has already been declared for the property '%2'."
+msgstr ""
+
+#: ProjectFile.cpp:859
+msgid "Attribute ID exprected."
+msgstr ""
+
+#: ProjectFile.cpp:881
+msgid "Scenario ID expected. '%1' is not a scenario id."
+msgstr ""
+
+#: ProjectFile.cpp:888
+msgid "Scenario name expected. '%1' is not a valid scenario name."
+msgstr ""
+
+#: ProjectFile.cpp:938 ProjectFile.cpp:1802 ProjectFile.cpp:1813
+#: ProjectFile.cpp:2644 ProjectFile.cpp:2683 ProjectFile.cpp:2920
+msgid "Real value expected"
+msgstr ""
+
+#: ProjectFile.cpp:944
+msgid "Slack rate must be between 0 and 100"
+msgstr ""
+
+#: ProjectFile.cpp:951
+msgid "Unknown scenario attribute '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:990
+msgid "Unknown projection attribute '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:1071
+msgid "Unexpected end of file found. Probably a missing '}'."
+msgstr ""
+
+#: ProjectFile.cpp:1084 ProjectFile.cpp:3163 ProjectFile.cpp:3266
+#: ProjectFile.cpp:3715 ProjectFile.cpp:4045 ProjectFile.cpp:4142
+#: ProjectFile.cpp:4416
+msgid "File name expected"
+msgstr ""
+
+#: ProjectFile.cpp:1090
+msgid "ERROR: The include file '%1' should have a '.tji' extension."
+msgstr ""
+
+#: ProjectFile.cpp:1112 ProjectFile.cpp:1504 ProjectFile.cpp:1539
+#: ProjectFile.cpp:2408 ProjectFile.cpp:2418 ProjectFile.cpp:3687
+#: ProjectFile.cpp:4515
+msgid "Task ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:1117
+msgid "Task prefix must be a known task"
+msgstr ""
+
+#: ProjectFile.cpp:1124
+msgid "Invalid optional attribute '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:1184 ProjectFile.cpp:2013 ProjectFile.cpp:2284
+#: ProjectFile.cpp:2510
+msgid "ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:1201
+msgid "Invalid relative task ID '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:1225
+msgid "Task '%1' unknown"
+msgstr ""
+
+#: ProjectFile.cpp:1236
+msgid "Task '%1' has not been defined"
+msgstr ""
+
+#: ProjectFile.cpp:1278
+msgid ""
+"Redefinition of task '%1' with different name '%2'. Previous name was '%3'."
+msgstr ""
+
+#: ProjectFile.cpp:1286
+msgid "Task %1 has already been declared"
+msgstr ""
+
+#: ProjectFile.cpp:1308
+msgid "No name specified for task '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:1335
+msgid "Task '%1' has not been defined yet"
+msgstr ""
+
+#: ProjectFile.cpp:1366 ProjectFile.cpp:2103 ProjectFile.cpp:5484
+msgid "Scenario ID expected. '%1' is not a defined scenario."
+msgstr ""
+
+#: ProjectFile.cpp:1410
+msgid ""
+"ERROR: 'actualstart' has been deprecated. Please use 'actual:start' instead."
+msgstr ""
+
+#: ProjectFile.cpp:1417
+msgid ""
+"ERROR: 'actualend' has been deprecated. Please use 'actual:end' instead."
+msgstr ""
+
+#: ProjectFile.cpp:1424
+msgid ""
+"ERROR: 'actuallength' has been deprecated. Please use 'actual:length' "
+"instead."
+msgstr ""
+
+#: ProjectFile.cpp:1431
+msgid ""
+"ERROR: 'actualeffort' has been deprecated. Please use 'actual:effort' "
+"instead."
+msgstr ""
+
+#: ProjectFile.cpp:1438
+msgid ""
+"ERROR: 'actualduration' has been deprecated. Please use 'actual:duration' "
+"instead."
+msgstr ""
+
+#: ProjectFile.cpp:1445
+msgid ""
+"ERROR: 'planscheduled' has been deprecated. Please use 'plan:scheduled' "
+"instead."
+msgstr ""
+
+#: ProjectFile.cpp:1452
+msgid ""
+"ERROR: 'actualscheduled' has been deprecated. Please use 'actual:scheduled' "
+"instead."
+msgstr ""
+
+#: ProjectFile.cpp:1463 ProjectFile.cpp:2736
+msgid "Resource ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:1476 ProjectFile.cpp:2716
+msgid "Shift intervals may not overlap"
+msgstr ""
+
+#: ProjectFile.cpp:1494 ProjectFile.cpp:1529
+msgid ""
+"Dependencies of container tasks must be specified prior to any sub tasks."
+msgstr ""
+
+#: ProjectFile.cpp:1568
+msgid "Unknown scheduling policy"
+msgstr ""
+
+#: ProjectFile.cpp:1579
+msgid "Flag unknown"
+msgstr ""
+
+#: ProjectFile.cpp:1603
+msgid "Account ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:1629
+msgid "'task' expected"
+msgstr ""
+
+#: ProjectFile.cpp:1649
+msgid ""
+"ERROR: The 'include' attribute is no longer supported within tasks since it "
+"caused ambiguoties between flag declaration and flag attributes. Please use "
+"the 'taskprefix' attribute of 'include' ouside of tasks instead."
+msgstr ""
+
+#: ProjectFile.cpp:1658
+msgid "Illegal task attribute '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:1666
+msgid "Task attribute expected. '%1' is no known task attribute."
+msgstr ""
+
+#: ProjectFile.cpp:1773 ProjectFile.cpp:3140
+msgid "Integer value expected"
+msgstr ""
+
+#: ProjectFile.cpp:1779
+msgid "Value of complete must be between 0 and 100"
+msgstr ""
+
+#: ProjectFile.cpp:1821
+msgid "Scenario specific task attribute expected."
+msgstr ""
+
+#: ProjectFile.cpp:1876
+msgid "Date expected"
+msgstr ""
+
+#: ProjectFile.cpp:1890
+msgid "Date %1 is outside of project time frame (%2 - %3"
+msgstr ""
+
+#: ProjectFile.cpp:1937
+msgid "Number between 0 and 5 expected"
+msgstr ""
+
+#: ProjectFile.cpp:1972
+msgid "ID or '}' expected"
+msgstr ""
+
+#: ProjectFile.cpp:1991 ProjectFile.cpp:2826
+msgid "Number expected"
+msgstr ""
+
+#: ProjectFile.cpp:1997
+msgid "Value must be between 0 and 100"
+msgstr ""
+
+#: ProjectFile.cpp:2031
+msgid ""
+"Redefinition of resource '%1' with different name '%2'. Previous name was '%"
+"3'."
+msgstr ""
+
+#: ProjectFile.cpp:2039
+msgid "Resource %1 has already been defined"
+msgstr ""
+
+#: ProjectFile.cpp:2072
+msgid "Already defined resource ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:2077 ProjectFile.cpp:2774
+msgid "'{' expected"
+msgstr ""
+
+#: ProjectFile.cpp:2095 ProjectFile.cpp:2266 ProjectFile.cpp:2314
+#: ProjectFile.cpp:2347 ProjectFile.cpp:2583 ProjectFile.cpp:2674
+#: ProjectFile.cpp:2753
+msgid "Unknown attribute '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:2111
+msgid "Scenario specific resource attribute expected."
+msgstr ""
+
+#: ProjectFile.cpp:2172
+msgid "Read value expected"
+msgstr ""
+
+#: ProjectFile.cpp:2226
+msgid "Shift interval overlaps with other"
+msgstr ""
+
+#: ProjectFile.cpp:2237
+msgid "flag unknown"
+msgstr ""
+
+#: ProjectFile.cpp:2259
+msgid ""
+"ERROR: The 'include' attribute is no longer supported within resources since "
+"it caused ambiguoties between flag declaration and flag attributes."
+msgstr ""
+
+#: ProjectFile.cpp:2296
+msgid "Shift %1 has already been defined"
+msgstr ""
+
+#: ProjectFile.cpp:2340
+msgid ""
+"ERROR: The 'include' attribute is no longer supported within shifts since it "
+"caused ambiguoties between flag declaration and flag attributes."
+msgstr ""
+
+#: ProjectFile.cpp:2365
+msgid "Shift ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:2371
+msgid "Unknown shift"
+msgstr ""
+
+#: ProjectFile.cpp:2442
+msgid "'%1' is a container task. It must not have bookings assigned to it."
+msgstr ""
+
+#: ProjectFile.cpp:2448
+msgid "'%1' is a milestone task. It must not have bookings assigned to it."
+msgstr ""
+
+#: ProjectFile.cpp:2465
+msgid "Number between 0 and 3 expected"
+msgstr ""
+
+#: ProjectFile.cpp:2475
+msgid "Number between 0 and 2 expected"
+msgstr ""
+
+#: ProjectFile.cpp:2516
+msgid "Account %1 has already been defined"
+msgstr ""
+
+#: ProjectFile.cpp:2536
+msgid "Account type 'cost' or 'revenue' expected"
+msgstr ""
+
+#: ProjectFile.cpp:2552
+msgid ""
+"Redefinition of account '%1' with different name '%2'. Previous name was '%"
+"3'."
+msgstr ""
+
+#: ProjectFile.cpp:2560
+msgid "Account '%1' has already been defined"
+msgstr ""
+
+#: ProjectFile.cpp:2615 ProjectFile.cpp:3693 ProjectFile.cpp:4019
+#: ProjectFile.cpp:4123 ProjectFile.cpp:4394 ProjectFile.cpp:4622
+#: ProjectFile.cpp:4873 ProjectFile.cpp:5248
+msgid "Illegal attribute"
+msgstr ""
+
+#: ProjectFile.cpp:2660
+msgid "Resource ID '%1' is unknown"
+msgstr ""
+
+#: ProjectFile.cpp:2693
+#, c-format
+msgid "Value must be at least %f"
+msgstr ""
+
+#: ProjectFile.cpp:2747
+msgid "Invalid selction mode"
+msgstr ""
+
+#: ProjectFile.cpp:2791
+msgid "Value must be larger than scheduling granularity"
+msgstr ""
+
+#: ProjectFile.cpp:2804
+msgid "Unknown limit type '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:2832 ProjectFile.cpp:2850 ProjectFile.cpp:2943
+#: ProjectFile.cpp:2965
+msgid "Unit expected"
+msgstr ""
+
+#: ProjectFile.cpp:2878
+msgid "End date must be within the project timeframe"
+msgstr ""
+
+#: ProjectFile.cpp:2905
+msgid "End date must be after start date"
+msgstr ""
+
+#: ProjectFile.cpp:2927
+msgid "Value must not be negative."
+msgstr ""
+
+#: ProjectFile.cpp:2935
+msgid "Value must be greater than 0."
+msgstr ""
+
+#: ProjectFile.cpp:2982 ProjectFile.cpp:2991
+msgid "Weekday (sun, mon, ...) expected"
+msgstr ""
+
+#: ProjectFile.cpp:3090
+msgid "Start time as HH:MM expected"
+msgstr ""
+
+#: ProjectFile.cpp:3096
+msgid "'-' expected"
+msgstr ""
+
+#: ProjectFile.cpp:3102
+msgid "End time as HH:MM expected"
+msgstr ""
+
+#: ProjectFile.cpp:3112
+msgid "End time must be larger than start time"
+msgstr ""
+
+#: ProjectFile.cpp:3119
+msgid "Working hour intervals may not overlap"
+msgstr ""
+
+#: ProjectFile.cpp:3146
+msgid "Priority value must be between 1 and 1000"
+msgstr ""
+
+#: ProjectFile.cpp:3156
+msgid ""
+"The program was compiled without KDE support. Therefor ICal support has been "
+"disabled."
+msgstr ""
+
+#: ProjectFile.cpp:3168
+msgid "File name '%1' for ICal files must end with \".ics\" extension."
+msgstr ""
+
+#: ProjectFile.cpp:3231 ProjectFile.cpp:3349 ProjectFile.cpp:3514
+#: ProjectFile.cpp:3783 ProjectFile.cpp:4203 ProjectFile.cpp:4546
+#: ProjectFile.cpp:4680
+msgid "Scenario ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:3237 ProjectFile.cpp:3355 ProjectFile.cpp:4552
+#: ProjectFile.cpp:4686
+msgid "Unknown scenario %1"
+msgstr ""
+
+#: ProjectFile.cpp:3246 ProjectFile.cpp:3374
+msgid "Illegal attribute '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:3401 ProjectFile.cpp:3426
+msgid "End date must be later than start date"
+msgstr ""
+
+#: ProjectFile.cpp:3407 ProjectFile.cpp:3432
+msgid "Start date must be within the project time frame"
+msgstr ""
+
+#: ProjectFile.cpp:3414 ProjectFile.cpp:3439
+msgid "End date must be within the project time frame"
+msgstr ""
+
+#: ProjectFile.cpp:3452
+msgid "Report name expected"
+msgstr ""
+
+#: ProjectFile.cpp:3475
+msgid "Report type %1 not yet supported!"
+msgstr ""
+
+#: ProjectFile.cpp:3489 ProjectFile.cpp:3756 ProjectFile.cpp:4061
+#: ProjectFile.cpp:4178 ProjectFile.cpp:4453 ProjectFile.cpp:4648
+#: ProjectFile.cpp:5166 ProjectFile.cpp:5473
+msgid "Attribute ID or '}' expected"
+msgstr ""
+
+#: ProjectFile.cpp:3520 ProjectFile.cpp:3789 ProjectFile.cpp:4208
+msgid "Unknown scenario '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:3548 ProjectFile.cpp:3557 ProjectFile.cpp:3820
+#: ProjectFile.cpp:3830 ProjectFile.cpp:4080 ProjectFile.cpp:4089
+#: ProjectFile.cpp:4717 ProjectFile.cpp:4726
+msgid "String exptected"
+msgstr ""
+
+#: ProjectFile.cpp:3651 ProjectFile.cpp:3965 ProjectFile.cpp:4339
+#: ProjectFile.cpp:4829
+msgid "Illegal load unit"
+msgstr ""
+
+#: ProjectFile.cpp:3680 ProjectFile.cpp:4508
+msgid "taskroot must be a known task"
+msgstr ""
+
+#: ProjectFile.cpp:3953 ProjectFile.cpp:4817
+msgid ""
+"The 'url' attribute is no longer supported. It has been replaced by the much "
+"more flexible column URLs. Please refer to the TaskJuggler manual to get "
+"more information about optional column attributes."
+msgstr ""
+
+#: ProjectFile.cpp:3991 ProjectFile.cpp:4365 ProjectFile.cpp:4856
+msgid "Bar label mode expected"
+msgstr ""
+
+#: ProjectFile.cpp:4000 ProjectFile.cpp:4374 ProjectFile.cpp:4865
+msgid "Unknown bar label mode '%1'"
+msgstr ""
+
+#: ProjectFile.cpp:4069
+msgid "Number between 1 and 4 expected"
+msgstr ""
+
+#: ProjectFile.cpp:4422
+msgid ""
+"Illegal extension for export file name. Please use '.tjp' for standalone "
+"projects and '.tji' for sub projects."
+msgstr ""
+
+#: ProjectFile.cpp:4527
+msgid "task attribute expected"
+msgstr ""
+
+#: ProjectFile.cpp:4586
+msgid "Property name expected"
+msgstr ""
+
+#: ProjectFile.cpp:4606
+msgid "Unknown property %1"
+msgstr ""
+
+#: ProjectFile.cpp:4660 ProjectFile.cpp:5147
+msgid "Column ID expected"
+msgstr ""
+
+#: ProjectFile.cpp:4752
+msgid ""
+"ERROR: The keyword 'showactual' has been deprecated. Please use the keyword "
+"'scenarios' instead."
+msgstr ""
+
+#: ProjectFile.cpp:4910
+msgid "Function '%1' is not defined"
+msgstr ""
+
+#: ProjectFile.cpp:5084 ProjectFile.cpp:5128
+msgid ""
+"This sorting criteria is not supported for the list or it is used at the "
+"wrong position."
+msgstr ""
+
+#: ProjectFile.cpp:5152
+msgid "Unknown colon ID '%1'. Supported IDs are: %2."
+msgstr ""
+
+#: ProjectFile.cpp:5278
+#, c-format
+msgid "Unknown scenario '%s'"
+msgstr ""
+
+#: ProjectFile.cpp:5309 ProjectFile.cpp:5444
+msgid "Sorting criteria expected"
+msgstr ""
+
+#: ProjectFile.cpp:5451
+msgid ""
+"ERROR: Concatenating the scenario name and the sorting criteria has been "
+"deprecated. Please separate them by a colon. E. g. 'plan:start', 'actual:end'"
+msgstr ""
+
+#: ProjectFile.cpp:5518
+msgid "Illegal dependency attribute"
+msgstr ""
+
+#: ProjectFile.cpp:5533
+msgid "Date must be larger than 1971-01-01"
+msgstr ""
+
+#: ProjectFile.cpp:5538
+msgid "Date must be smaller than 2035-01-01"
+msgstr ""
+
+#: ProjectFile.cpp:5553
+msgid "Hour must be in the range of 0 - 24"
+msgstr ""
+
+#: ProjectFile.cpp:5559
+msgid "Minutes must be in the range of 0 - 59"
+msgstr ""
+
+#: ProjectFile.cpp:5564
+msgid "Maximum time is 24:00"
+msgstr ""
+
+#: Report.cpp:86
+msgid "Cannout open stdout"
+msgstr ""
+
+#: Report.cpp:98
+msgid "Cannot open report file %1!\n"
+msgstr ""
+
+#: ReportElement.cpp:63
+msgid "Seq. No."
+msgstr ""
+
+#: ReportElement.cpp:69 ReportElement.cpp:75 ReportElement.cpp:87
+msgid "No."
+msgstr ""
+
+#: ReportElement.cpp:81
+msgid "Index"
+msgstr ""
+
+#: ReportElement.cpp:93
+msgid "Id"
+msgstr ""
+
+#: ReportElement.cpp:99
+msgid "Name"
+msgstr ""
+
+#: ReportElement.cpp:109
+msgid "Start"
+msgstr ""
+
+#: ReportElement.cpp:114
+msgid "End"
+msgstr ""
+
+#: ReportElement.cpp:119
+msgid "Min. Start"
+msgstr ""
+
+#: ReportElement.cpp:124
+msgid "Max. Start"
+msgstr ""
+
+#: ReportElement.cpp:129
+msgid "Min. End"
+msgstr ""
+
+#: ReportElement.cpp:134
+msgid "Max. End"
+msgstr ""
+
+#: ReportElement.cpp:140
+msgid "Start Buf. End"
+msgstr ""
+
+#: ReportElement.cpp:146
+msgid "End Buf. Start"
+msgstr ""
+
+#: ReportElement.cpp:151
+msgid "Start Buf."
+msgstr ""
+
+#: ReportElement.cpp:156
+msgid "End Buf."
+msgstr ""
+
+#: ReportElement.cpp:161
+msgid "Duration"
+msgstr ""
+
+#: ReportElement.cpp:168
+msgid "Effort"
+msgstr ""
+
+#: ReportElement.cpp:177
+msgid "Free Load"
+msgstr ""
+
+#: ReportElement.cpp:184
+msgid "Utilization"
+msgstr ""
+
+#: ReportElement.cpp:191
+msgid "Criticalness"
+msgstr ""
+
+#: ReportElement.cpp:198
+msgid "Path Criticalness"
+msgstr ""
+
+#: ReportElement.cpp:204
+msgid "Project ID"
+msgstr ""
+
+#: ReportElement.cpp:208
+msgid "Project IDs"
+msgstr ""
+
+#: ReportElement.cpp:213
+msgid "Resources"
+msgstr ""
+
+#: ReportElement.cpp:220
+msgid "Responsible"
+msgstr ""
+
+#: ReportElement.cpp:226
+msgid "Responsibilities"
+msgstr ""
+
+#: ReportElement.cpp:232
+msgid "Dependencies"
+msgstr ""
+
+#: ReportElement.cpp:238
+msgid "Followers"
+msgstr ""
+
+#: ReportElement.cpp:244
+msgid "Schedule"
+msgstr ""
+
+#: ReportElement.cpp:250
+msgid "Min. Effort"
+msgstr ""
+
+#: ReportElement.cpp:255
+msgid "Max. Effort"
+msgstr ""
+
+#: ReportElement.cpp:260
+msgid "Flags"
+msgstr ""
+
+#: ReportElement.cpp:266
+msgid "Completed"
+msgstr ""
+
+#: ReportElement.cpp:272
+msgid "Status"
+msgstr ""
+
+#: ReportElement.cpp:278
+msgid "Kotrus ID"
+msgstr ""
+
+#: ReportElement.cpp:282
+msgid "Note"
+msgstr ""
+
+#: ReportElement.cpp:288
+msgid "Status Note"
+msgstr ""
+
+#: ReportElement.cpp:294
+msgid "Priority"
+msgstr ""
+
+#: ReportElement.cpp:298
+msgid "Reference"
+msgstr ""
+
+#: ReportElement.cpp:303
+msgid "Scenario"
+msgstr ""
+
+#: ReportElement.cpp:314
+msgid "Efficiency"
+msgstr ""
+
+#: ReportElement.cpp:318
+msgid "Rate"
+msgstr ""
+
+#: ReportElement.cpp:324
+msgid "Cost"
+msgstr ""
+
+#: ReportElement.cpp:334
+msgid "Revenue"
+msgstr ""
+
+#: ReportElement.cpp:344
+msgid "Profit"
+msgstr ""
+
+#: Resource.cpp:519
+msgid ""
+"Error in %1 scenario: %2 has no duty hours at %3 - %4 to be assigned to %5."
+msgstr ""
+
+#: Resource.cpp:535
+msgid ""
+"Error in %1 scenario: %2 is on vacation at %3 - %4. It cannot be assigned to "
+"%5."
+msgstr ""
+
+#: Resource.cpp:551
+msgid ""
+"Error in %1 scenario: Allocation conflict for %2 at %3 - %4. Conflicting "
+"tasks are %5 and %6."
+msgstr ""
+
+#: Resource.cpp:1277
+msgid "Group resource '%1' may not have bookings"
+msgstr ""
+
+#: Resource.cpp:1292
+msgid ""
+"Booking of resource '%1' on task '%2' at %3 is outside of task interval (%4 "
+"- %5) in scenario '%6'"
+msgstr ""
+
+#: Task.cpp:994
+msgid "Not yet started"
+msgstr ""
+
+#: Task.cpp:997
+msgid "Behind schedule"
+msgstr ""
+
+#: Task.cpp:1003
+msgid "On schedule"
+msgstr ""
+
+#: Task.cpp:1006
+msgid "Ahead of schedule"
+msgstr ""
+
+#: Task.cpp:1009
+msgid "Finished"
+msgstr ""
+
+#: Task.cpp:1012
+msgid "Late"
+msgstr ""
+
+#: Task.cpp:1015
+msgid "Unknown status"
+msgstr ""
+
+#: Task.cpp:1271 Task.cpp:1332
+msgid "Unknown dependency '%1'"
+msgstr ""
+
+#: Task.cpp:1280
+msgid "No need to specify dependency %1 multiple times."
+msgstr ""
+
+#: Task.cpp:1291
+msgid "Task '%1' cannot depend on self."
+msgstr ""
+
+#: Task.cpp:1298
+msgid "Task '%1' cannot depend on child."
+msgstr ""
+
+#: Task.cpp:1305
+msgid "Task '%1' cannot depend on parent."
+msgstr ""
+
+#: Task.cpp:1340
+msgid "No need to specify dependency '%1'multiple times"
+msgstr ""
+
+#: Task.cpp:1350
+msgid "Task '%1' cannot precede self."
+msgstr ""
+
+#: Task.cpp:1357
+msgid "Task '%1' cannot precede a child."
+msgstr ""
+
+#: Task.cpp:1364
+msgid "Task '%1' cannot precede parent."
+msgstr ""
+
+#: Task.cpp:1766
+msgid "Dependency loop detected: %1"
+msgstr ""
+
+#: Task.cpp:1787
+msgid ""
+"The start of task '%1' (scenario '%2') is underspecified. This is caused by "
+"underspecified dependent tasks. You must use more fixed dates to solve this "
+"problem."
+msgstr ""
+
+#: Task.cpp:1797
+msgid ""
+"The end of task '%1' (scenario '%2') is underspecified. This is caused by "
+"underspecified dependent tasks. You must use more fixed dates to solve this "
+"problem."
+msgstr ""
+
+#: Task.cpp:1953
+msgid "Illegal relative ID '%1'"
+msgstr ""
+
+#: Task.cpp:2030
+msgid "Task '%1' must not have an account group ('%2') assigned to it."
+msgstr ""
+
+#: Task.cpp:2039
+msgid ""
+"Task '%1' is a container task and must not have bookings assigned to it."
+msgstr ""
+
+#: Task.cpp:2047
+msgid ""
+"Task '%1' is a milestone task and must not have bookings assigned to it."
+msgstr ""
+
+#: Task.cpp:2057
+msgid ""
+"Task '%1' is marked as scheduled but does not have a fixed start and end "
+"date."
+msgstr ""
+
+#: Task.cpp:2066
+msgid "No allocations specified for effort based task '%1' in '%2' scenario"
+msgstr ""
+
+#: Task.cpp:2075
+msgid ""
+"Start and end buffers may not overlap in '%2' scenario. So their sum must be "
+"smaller then 100%."
+msgstr ""
+
+#: Task.cpp:2090
+msgid "Task '%1' may only have one duration criteria in '%2' scenario."
+msgstr ""
+
+#: Task.cpp:2111
+msgid "Container task '%1' may not have a duration criteria in '%2' scenario"
+msgstr ""
+
+#: Task.cpp:2119
+msgid "The container task '%1' may not be a milestone."
+msgstr ""
+
+#: Task.cpp:2129
+msgid "Milestone '%1' may not have a duration criteria in '%2' scenario"
+msgstr ""
+
+#: Task.cpp:2145
+msgid "Milestone '%1' must have a start or end specification in '%2' scenario."
+msgstr ""
+
+#: Task.cpp:2161
+msgid ""
+"Milestone '%1' may not have both a start and an end specification that do "
+"not match in the '%2' scenario."
+msgstr ""
+
+#: Task.cpp:2213
+msgid ""
+"Task '%1' has a start, an end and a duration specification for '%2' scenario."
+msgstr ""
+
+#: Task.cpp:2231
+msgid ""
+"Task '%1' has only a start or end specification but no duration for the '%2' "
+"scenario."
+msgstr ""
+
+#: Task.cpp:2250
+msgid ""
+"Task '%1' needs a start specification to be scheduled in ASAP mode in the '%"
+"2' scenario."
+msgstr ""
+
+#: Task.cpp:2269
+msgid ""
+"Task '%1' needs an end specification to be scheduled in ALAP mode in the '%"
+"2' scenario."
+msgstr ""
+
+#: Task.cpp:2280
+msgid ""
+"Task '%1' has a specified start- or endcredit but no account assigned in "
+"scenario '%2'."
+msgstr ""
+
+#: Task.cpp:2290
+msgid ""
+"Error in task '%1' (scenario '%2'). An ALAP task can only have bookings if "
+"it has been completely scheduled. The 'scheduled' attribute must be present. "
+"Keep in mind that certain attributes such as 'precedes' or 'end' implicitly "
+"set the scheduling mode to ALAP. Put 'scheduling asap' at the end of the "
+"task definition to avoid the problem."
+msgstr ""
+
+#: Task.cpp:2341
+msgid "Task '%1' has no start time for the '%2'scenario."
+msgstr ""
+
+#: Task.cpp:2349
+msgid ""
+"Start time '%1' of task '%2' is outside of the project interval (%3 - %4) in "
+"'%5' scenario."
+msgstr ""
+
+#: Task.cpp:2361
+msgid ""
+"'%1' start time of task '%2' is too early\n"
+"Date is:  %3\n"
+"Limit is: %4"
+msgstr ""
+
+#: Task.cpp:2371
+msgid ""
+"'%1' start time of task '%2' is too late\n"
+"Date is:  %3\n"
+"Limit is: %4"
+msgstr ""
+
+#: Task.cpp:2382
+msgid "Task '%1' has no '%2' end time."
+msgstr ""
+
+#: Task.cpp:2389
+msgid ""
+"End time '%1' of task '%2' is outside of the project interval (%3 - %4) in '%"
+"5' scenario."
+msgstr ""
+
+#: Task.cpp:2401
+msgid ""
+"'%1' end time of task '%2' is too early\n"
+"Date is:  %3\n"
+"Limit is: %4"
+msgstr ""
+
+#: Task.cpp:2412
+msgid ""
+"'%1' end time of task '%2' is too late\n"
+"Date is:  %2\n"
+"Limit is: %3"
+msgstr ""
+
+#: Task.cpp:2430
+msgid ""
+"Task '%1' has earlier '%2' start than parent\n"
+"%3 start date: %4\n"
+"%5 start date: %6"
+msgstr ""
+
+#: Task.cpp:2447
+msgid "Task '%1' has later '%2' end than parent"
+msgstr ""
+
+#: Task.cpp:2461
+msgid ""
+"Impossible dependency:\n"
+"Task '%1' ends at %2 but needs to precede\n"
+"task '%3' which has a '%4' start time of %5"
+msgstr ""
+
+#: Task.cpp:2473
+msgid ""
+"Impossible dependency:\n"
+"Task '%1' starts at %2 but needs to follow\n"
+"task %3 which has a '%4' end time of %5"
+msgstr ""
+
+#: Task.cpp:2484
+msgid ""
+"Task '%1' has not been marked completed.\n"
+"It is scheduled to last from %2 to %3.\n"
+"This might be a bug in the TaskJuggler scheduler."
+msgstr ""
+
+#: Utility.cpp:173
+msgid "Illegal timezone '%1'"
+msgstr ""
+
+#: Utility.cpp:793
+msgid "Illegal timezone %1"
+msgstr ""
+
+#: Utility.cpp:822
+msgid "Year must be larger than 1969"
+msgstr ""
+
+#: Utility.cpp:827
+msgid "Month must be between 1 and 12"
+msgstr ""
+
+#: Utility.cpp:832
+msgid "Day must be between 1 and 31"
+msgstr ""
+
+#: Utility.cpp:837
+msgid "Hour must be between 0 and 23"
+msgstr ""
+
+#: Utility.cpp:842
+msgid "Minutes must be between 0 and 59"
+msgstr ""
+
+#: Utility.cpp:847
+msgid "Seconds must be between 0 and 59"
+msgstr ""
+
+#: XMLFile.cpp:306
+msgid "Cannot open compressed STDIN for reading."
+msgstr ""
+
+#: XMLFile.cpp:314
+msgid "Cannot open compressed file %1 for reading."
+msgstr ""
+
+#: XMLFile.cpp:333
+msgid "Cannot close compressed file %1: %2"
+msgstr ""
+
+#: XMLFile.cpp:341
+msgid "Syntax error in XML file '%1'."
+msgstr ""
+
+#: XMLFile.cpp:372
+msgid "Unsupported XML element %1"
+msgstr ""
+
+#: XMLFile.cpp:515
+msgid "Unknown custom attribute %1"
+msgstr ""
+
+#: XMLFile.cpp:917
+msgid "Booking for unknown resource %1"
+msgstr ""
+
+#: XMLFile.cpp:925
+msgid "Booking for unknown scenario %1"
+msgstr ""
+
+#: XMLFile.cpp:947
+msgid "Booking for unknown task %1"
+msgstr ""
+
+#: XMLReport.cpp:164
+msgid "Cannot open compressed file %1 for writing."
+msgstr ""
+
+#: XMLReport.cpp:171
+msgid "Compression of %1 failed"
+msgstr ""
+
+#: XMLReport.cpp:177
+msgid "Closing of file %1 failed: %2"
+msgstr ""

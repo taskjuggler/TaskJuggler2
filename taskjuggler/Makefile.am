@@ -51,7 +51,7 @@ INCLUDES = $(ICAL_INCLUDES) $(all_includes)
 KDE_OPTIONS = qtonly
 
 messages: 
-	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/taskjuggler.po *.cpp
+	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/taskjuggler/taskjuggler.pot *.cpp
 
 #include ../admin/Doxyfile.am
 

@@ -39,7 +39,7 @@ METASOURCES = AUTO
 
 messages: main.cpp
 	extractrc `find . -name "*.ui"` > rc.cpp
-	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/TaskJugglerUI.po *.cpp
+	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/TaskJugglerUI/TaskJugglerUI.pot *.cpp
 
 KDE_ICON = taskjuggler taskjuggler_tjp taskjuggler_tji taskjuggler_tjx
 

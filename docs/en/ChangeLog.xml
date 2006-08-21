@@ -992,6 +992,9 @@ format by default.</para></listitem>
 <listitem><para>Add check to forbid assigning account groups to
 tasks.</para></listitem>
 
+<listitem><para>Added Turkish translations for
+TaskJugglerUI.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

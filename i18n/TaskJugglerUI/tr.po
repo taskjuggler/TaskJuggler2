@@ -1,0 +1,940 @@
+# translation of tr.po to
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the taskjuggler package.
+#
+# Tuncay Orak <tuncayorak@gmail.com>, 2006.
+# pardus <tuncayorak@gmail.com>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: tr\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-07-26 21:27+0300\n"
+"PO-Revision-Date: 2006-08-01 14:58+0300\n"
+"Last-Translator: pardus <tuncayorak@gmail.com>\n"
+"Language-Team:  <tr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11\n"
+
+#: FileManager.cpp:64
+msgid "Insert Date"
+msgstr "Tarih Ekle"
+
+#: FileManager.cpp:365
+msgid ""
+"A KDE text-editor component could not be found; please check your KDE "
+"installation."
+msgstr "KDE yazı editörünün bir bileşeni bulunamadı; lütfen KDE yüklemenizi kontrol edin."
+
+#: main.cpp:27
+msgid "A Project Management Software for Linux"
+msgstr "Linux için bir proje yönetim yazılımı"
+
+#: main.cpp:33
+msgid "Project (TJP File) to open"
+msgstr "Proje Aç (TJP Dosya)"
+
+#: main.cpp:39
+msgid "TaskJuggler"
+msgstr "TaskJuggler"
+
+#: main.cpp:43
+msgid ""
+"TaskJuggler is a project management tool for Linux and UNIX-like operating "
+"systems. Its \n"
+"new approach to project planning and tracking is superior to the commonly "
+"used Gantt chart \n"
+"editing tools. It has already been successfully used in many projects and \n"
+"scales easily to projects with hundreds of resources and thousands of tasks."
+msgstr ""
+"TaskJuggler Linux ve Unix türevi işletim sistemleri için bir proje yönetimi aracıdır.\n"
+"Proje planlamada ve izlemedeki yeni yaklaşımı günümüzde kullanılan Gantt çizelgesi \n"
+"hazırlama araçlarından daha üstündür. Şu an bir çok projede başarıyla kullanılmakta ve\n"
+"yüzlerce kaynağı ve aktivitesi olan projelere kolayca uyum sağlamaktadır."
+
+#: ManagedFileInfo.cpp:134
+msgid ""
+"The file %1 has unsaved modifications.\n"
+"Do you want to save your modifications?"
+msgstr ""
+"%1 Dosya kaydedilmemiş değişikliklere sahip.\n"
+" Değişiklikleri kaydetmek istiyor musunuz?	"
+
+#: pref.cpp:22
+msgid "TaskJuggler Preferences"
+msgstr "TaskJuggler Ayarlar"
+
+#: pref.cpp:29
+msgid "First Page"
+msgstr "ilk Sayfa"
+
+#: pref.cpp:29
+msgid "Page One Options"
+msgstr "Sayfa 1 Seçenekler"
+
+#: pref.cpp:32
+msgid "Second Page"
+msgstr "ikinci Sayfa"
+
+#: pref.cpp:32
+msgid "Page Two Options"
+msgstr "Sayfa 2 Seçenekleri"
+
+#: pref.cpp:42 pref.cpp:51
+msgid "Add something here"
+msgstr "Buraya bir şeyler ekle"
+
+#: rc.cpp:9
+#, no-c-format
+msgid "&Goto"
+msgstr "&Git"
+
+#: rc.cpp:21
+#, no-c-format
+msgid "Navigation Bar"
+msgstr "Gezinim Çubuğu"
+
+#: rc.cpp:24
+#, no-c-format
+msgid "Scheduling Toolbar"
+msgstr "Zaman Çizelgesi Araç çubuğu"
+
+#: rc.cpp:27
+#, no-c-format
+msgid "Gantt Toolbar"
+msgstr "Gantt Araç çubuğu"
+
+#: rc.cpp:30
+#, no-c-format
+msgid "TaskJuggler Main Window"
+msgstr "TaskJuggler Ana Pencere"
+
+#: rc.cpp:33 taskjuggler.cpp:144
+#, no-c-format
+msgid "F&iles"
+msgstr "D&osyalar"
+
+#: rc.cpp:36
+#, no-c-format
+msgid "File Name"
+msgstr "Dosya ismi"
+
+#: rc.cpp:39
+#, no-c-format
+msgid "URL"
+msgstr "Adres"
+
+#: rc.cpp:42
+#, no-c-format
+msgid "Modif."
+msgstr "Değişiklik."
+
+#: rc.cpp:45
+#, no-c-format
+msgid "Active"
+msgstr "Aktif"
+
+#: rc.cpp:48 rc.cpp:84 rc.cpp:102 rc.cpp:120
+#, no-c-format
+msgid "Filter "
+msgstr "Süzgeç"
+
+#: rc.cpp:51 taskjuggler.cpp:130
+#, no-c-format
+msgid "Tas&ks"
+msgstr "&Aktiviteler"
+
+#: rc.cpp:54
+#, no-c-format
+msgid "Task Name"
+msgstr "Aktivite ismi"
+
+#: rc.cpp:57 rc.cpp:75 rc.cpp:93
+#, no-c-format
+msgid "Id"
+msgstr "Id"
+
+#: rc.cpp:63 rc.cpp:81 rc.cpp:99 rc.cpp:117 rc.cpp:133
+#, no-c-format
+msgid "Line"
+msgstr "Satır"
+
+#: rc.cpp:66
+#, no-c-format
+msgid "Filter"
+msgstr "Süzgeç"
+
+#: rc.cpp:69 taskjuggler.cpp:133
+#, no-c-format
+msgid "&Resources"
+msgstr "&Kaynaklar"
+
+#: rc.cpp:72
+#, no-c-format
+msgid "Resource Name"
+msgstr "Kaynak ismi"
+
+#: rc.cpp:87 taskjuggler.cpp:137
+#, no-c-format
+msgid "&Accounts"
+msgstr "&Hesaplar"
+
+#: rc.cpp:90
+#, no-c-format
+msgid "Account Name"
+msgstr "Hesap ismi"
+
+#: rc.cpp:105 taskjuggler.cpp:141
+#, no-c-format
+msgid "Re&ports"
+msgstr "&Raporlar"
+
+#: rc.cpp:108
+#, no-c-format
+msgid "Report Name"
+msgstr "Rapor ismi"
+
+#: rc.cpp:111
+#, no-c-format
+msgid "Index"
+msgstr "Dizin"
+
+#: rc.cpp:123 taskjuggler.cpp:147
+#, no-c-format
+msgid "E&ditor"
+msgstr "Editör"
+
+#: rc.cpp:127
+#, no-c-format
+msgid "Message"
+msgstr "Mesaj"
+
+#: rc.cpp:136
+#, no-c-format
+msgid "Counter"
+msgstr "Sayaç"
+
+#: rc.cpp:139 taskjuggler.cpp:150
+#, no-c-format
+msgid "Rep&ort"
+msgstr "Rapor"
+
+#: rc.cpp:142
+#, no-c-format
+msgid "RichTextDisplay"
+msgstr "Zenginleştirilmiş Metin Görüntüsü"
+
+#: rc.cpp:148
+#, no-c-format
+msgid "Alt+O"
+msgstr "Alt+O"
+
+#: rc.cpp:151
+#, no-c-format
+msgid "Select Template for new Project"
+msgstr "Yeni proje için bir şablon seçin"
+
+#: rc.cpp:154
+#, no-c-format
+msgid "Template"
+msgstr "Şablon"
+
+#: rc.cpp:168
+#, no-c-format
+msgid "MyDialog"
+msgstr "Diyaloglarım"
+
+#: rc.cpp:179
+#, no-c-format
+msgid "Date"
+msgstr "Tarih"
+
+#: rc.cpp:182
+#, no-c-format
+msgid "Time"
+msgstr "Zaman"
+
+#: rc.cpp:185
+#, no-c-format
+msgid "0"
+msgstr "0"
+
+#: rc.cpp:188
+#, no-c-format
+msgid "1"
+msgstr "1"
+
+#: rc.cpp:191
+#, no-c-format
+msgid "2"
+msgstr "2"
+
+#: rc.cpp:194
+#, no-c-format
+msgid "3"
+msgstr "3"
+
+#: rc.cpp:197
+#, no-c-format
+msgid "4"
+msgstr "4"
+
+#: rc.cpp:200
+#, no-c-format
+msgid "5"
+msgstr "5"
+
+#: rc.cpp:203
+#, no-c-format
+msgid "6"
+msgstr "6"
+
+#: rc.cpp:206
+#, no-c-format
+msgid "7"
+msgstr "7"
+
+#: rc.cpp:209
+#, no-c-format
+msgid "8"
+msgstr "8"
+
+#: rc.cpp:212
+#, no-c-format
+msgid "9"
+msgstr "9"
+
+#: rc.cpp:215 rc.cpp:266
+#, no-c-format
+msgid "10"
+msgstr "10"
+
+#: rc.cpp:218
+#, no-c-format
+msgid "11"
+msgstr "11"
+
+#: rc.cpp:221
+#, no-c-format
+msgid "12"
+msgstr "12"
+
+#: rc.cpp:224
+#, no-c-format
+msgid "13"
+msgstr "13"
+
+#: rc.cpp:227
+#, no-c-format
+msgid "14"
+msgstr "14"
+
+#: rc.cpp:230 rc.cpp:269
+#, no-c-format
+msgid "15"
+msgstr "15"
+
+#: rc.cpp:233
+#, no-c-format
+msgid "16"
+msgstr "16"
+
+#: rc.cpp:236
+#, no-c-format
+msgid "17"
+msgstr "17"
+
+#: rc.cpp:239
+#, no-c-format
+msgid "18"
+msgstr "18"
+
+#: rc.cpp:242
+#, no-c-format
+msgid "19"
+msgstr "19"
+
+#: rc.cpp:245 rc.cpp:272
+#, no-c-format
+msgid "20"
+msgstr "20"
+
+#: rc.cpp:248
+#, no-c-format
+msgid "21"
+msgstr "21"
+
+#: rc.cpp:251
+#, no-c-format
+msgid "22"
+msgstr "22"
+
+#: rc.cpp:254
+#, no-c-format
+msgid "23"
+msgstr "23"
+
+#: rc.cpp:257
+#, no-c-format
+msgid ":"
+msgstr ":"
+
+#: rc.cpp:260
+#, no-c-format
+msgid "00"
+msgstr "00"
+
+#: rc.cpp:263
+#, no-c-format
+msgid "05"
+msgstr "05"
+
+#: rc.cpp:275
+#, no-c-format
+msgid "25"
+msgstr "25"
+
+#: rc.cpp:278
+#, no-c-format
+msgid "30"
+msgstr "30"
+
+#: rc.cpp:281
+#, no-c-format
+msgid "35"
+msgstr "35"
+
+#: rc.cpp:284
+#, no-c-format
+msgid "40"
+msgstr "40"
+
+#: rc.cpp:287
+#, no-c-format
+msgid "45"
+msgstr "45"
+
+#: rc.cpp:290
+#, no-c-format
+msgid "50"
+msgstr "50"
+
+#: rc.cpp:293
+#, no-c-format
+msgid "55"
+msgstr "55"
+
+#: ReportManager.cpp:123
+msgid "Interactive Reports"
+msgstr "Etkileşimli Raporlar"
+
+#: ReportManager.cpp:130
+msgid "HTML Reports"
+msgstr "HTML Raporlar"
+
+#: ReportManager.cpp:136
+msgid "CSV Reports"
+msgstr "CSV Raporlar"
+
+#: ReportManager.cpp:142
+msgid "XML Reports"
+msgstr "XML Raporlar"
+
+#: ReportManager.cpp:148
+msgid "iCalendars"
+msgstr "Takvim"
+
+#: ReportManager.cpp:154
+msgid "Export Reports"
+msgstr "Raporları dışa aktar"
+
+#: ReportManager.cpp:320 ReportManager.cpp:444
+msgid "The report '%1' has been generated"
+msgstr "'%1' Raporu oluşturuldu ."
+
+#: ReportManager.cpp:324
+msgid "An error occured while generating the report '%1'"
+msgstr "'%1' Rapor oluşturulurken bir hata oluştu"
+
+#: ReportManager.cpp:327
+msgid "Report Generation failed"
+msgstr "Rapor Oluşturulamadı."
+
+#: ReportManager.cpp:386
+msgid "Displaying CSV report: '%1'"
+msgstr "Görüntülenecek CSV Rapor:'%1'"
+
+#: ReportManager.cpp:405
+msgid "Displaying iCalendar: '%1'"
+msgstr "Görüntülenecek Takvim: '%1'"
+
+#: ReportManager.cpp:423
+msgid "Starting new TaskJuggler for '%1'"
+msgstr "'%1' için yeni bir TaskJuggler başlıyor"
+
+#: ReportManager.cpp:441
+msgid "The report '%1' has been generated."
+msgstr "'%1' Rapor oluşturuldu."
+
+#: ReportManager.cpp:448
+msgid "Could not generated report '%1'"
+msgstr "'%1' rapor oluşturulamadı."
+
+#: ReportManager.cpp:497
+msgid "&Show Report"
+msgstr "&Raporu Göster"
+
+#: ReportManager.cpp:498
+msgid "&Generate Report"
+msgstr "&Raporu Oluştur"
+
+#: ReportManager.cpp:499
+msgid "&Edit Report Definition"
+msgstr "&Rapor Tanımlanmasını Düzenle"
+
+#: taskjuggler.cpp:98
+msgid ""
+"The project file '%1' cannot be opened. If you continue, a new file with "
+"this name will be created."
+msgstr "'%1' proje dosyası açılamadı . Eğer devam etmek istiyorsanız, bu isimle yeni bir dosya yaratılacak."
+
+#: taskjuggler.cpp:100
+msgid "File not found"
+msgstr "Dosya bulunamadı."
+
+#: taskjuggler.cpp:116
+msgid "New &Include File"
+msgstr "Yeni &içerik dosyası"
+
+#: taskjuggler.cpp:155
+msgid "&Schedule"
+msgstr "&Zaman Çizelgesi"
+
+#: taskjuggler.cpp:158
+msgid "Stop scheduling"
+msgstr "Zaman Çizelgesini Durdur"
+
+#: taskjuggler.cpp:161
+msgid "Goto &previous Problem"
+msgstr "Git & önceki problem"
+
+#: taskjuggler.cpp:165
+msgid "Goto &next Problem"
+msgstr "Git &sonraki problem"
+
+#: taskjuggler.cpp:170
+msgid "Zoom &In"
+msgstr "&Yaklaştır"
+
+#: taskjuggler.cpp:173
+msgid "Zoom &Out"
+msgstr "&Uzaklaştır"
+
+#: taskjuggler.cpp:178
+msgid "Tip of the day"
+msgstr "Günün ipucu"
+
+#: taskjuggler.cpp:180
+msgid "Explain Keyword"
+msgstr "Anahtar Kelimeyi Açıkla"
+
+#: taskjuggler.cpp:184
+msgid "Tutorial"
+msgstr "Eğitmen"
+
+#: taskjugglerview.cpp:256
+msgid ""
+"You must close the current project before you can\n"
+"create a new project. Do you really want to do this?"
+msgstr "Yeni bir proje oluşturmadan önce şu anda açılmış projeyi kapatmak zorundasınız. Bunu gerçekten yapmak istiyor musunuz ?"
+
+#: taskjugglerview.cpp:267
+msgid "Pick a name for the new project file"
+msgstr "Yeni bir dosyası için bir isim verin"
+
+#: taskjugglerview.cpp:276
+msgid "The specified project name is not valid."
+msgstr "Belirtilen proje ismi geçerli değil."
+
+#: taskjugglerview.cpp:277 taskjugglerview.cpp:283
+msgid "Please enter a valid project file name."
+msgstr "Lütfen geçerli bir proje ismi girin ."
+
+#: taskjugglerview.cpp:282
+msgid "Project file names must have a .tjp extension."
+msgstr "Proje dosya isimleri tjp uzantılı olmak zorundadır."
+
+#: taskjugglerview.cpp:289 taskjugglerview.cpp:359
+msgid ""
+"The file %1 already exists.\n"
+"Do you really want replace the content?"
+msgstr ""
+"'%1' dosyası şu an açık.\n"
+"Gerçekten içeriğinin değişmesini istiyor musunuz?"
+
+#: taskjugglerview.cpp:325
+msgid ""
+"You need to load or create a project before\n"
+"you can create a new include file."
+msgstr "içerik dosyası oluşturmazdan önce bir projeyi yüklemelisiniz veya yeni bir proje oluşturmalısınız."
+
+#: taskjugglerview.cpp:327
+msgid "New Include File"
+msgstr "Yeni içerik dosyası"
+
+#: taskjugglerview.cpp:337
+msgid "Pick a name for the new include file"
+msgstr "Yeni içerik dosya için bir isim verin"
+
+#: taskjugglerview.cpp:346
+msgid "The specified file name is not valid."
+msgstr "Belirtilen isim geçerli değil."
+
+#: taskjugglerview.cpp:347 taskjugglerview.cpp:353
+msgid "Please enter a valid include file name."
+msgstr "Lütfen geçerli bir içerik dosyası ismi verin."
+
+#: taskjugglerview.cpp:352
+msgid "Include files must have a .tji extension."
+msgstr "içerik dosyaları .tji uzantılı olmak zorundadır."
+
+#: taskjugglerview.cpp:400
+msgid "Could not find any project templates."
+msgstr "Herhangi bir proje şablonu bulunamadı."
+
+#: taskjugglerview.cpp:401
+msgid "Please check your TaskJuggler installation."
+msgstr "Lütfen Taskjuggler yüklemenizi kontrol edin."
+
+#: taskjugglerview.cpp:443
+msgid ""
+"You must close the current project before you can load a new project.\n"
+"Do you really want to do this?"
+msgstr ""
+"Yeni bir proje yüklemezden önce açık projeyi kapatmalısınız.\n"
+"Bu işlemi yapmak istiyor musunuz?"
+
+#: taskjugglerview.cpp:446
+msgid "Load a new Project"
+msgstr "Yeni bir proje yükle"
+
+#: taskjugglerview.cpp:459
+msgid "Open a new Project"
+msgstr "Yeni bir proje aç"
+
+#: taskjugglerview.cpp:466
+msgid "The project file name must have a '.tjp' extension."
+msgstr "Proje dosyası .tjp uzantılı olmak zorundadır."
+
+#: taskjugglerview.cpp:467
+msgid "Bad file name"
+msgstr "Bozuk dosya ismi"
+
+#: taskjugglerview.cpp:525
+msgid "No Project"
+msgstr "Proje yok"
+
+#: taskjugglerview.cpp:664
+msgid "Cannot open file %1."
+msgstr "%1 dosyası açılamadı."
+
+#: taskjugglerview.cpp:666
+msgid "Error loading Project"
+msgstr "Proje yüklenirken hata oluştu."
+
+#: taskjugglerview.cpp:682
+msgid "Checking project..."
+msgstr "Proje kontrol ediliyor..."
+
+#: taskjugglerview.cpp:686
+msgid "Scheduling..."
+msgstr "Zaman çizelgesi hazırlanıyor..."
+
+#: taskjugglerview.cpp:731 taskjugglerview.cpp:1114
+msgid "The project contains problems!"
+msgstr "Projede sorunlar var."
+
+#: taskjugglerview.cpp:752
+msgid "The project has been scheduled without problems."
+msgstr "Proje sorunsuz biçimde zamanlandı."
+
+#: tips.cpp:3 tips.cpp:3
+msgid ""
+"<p>...that the TaskJuggler manual contains a tutorial that gets you\n"
+"productive with TaskJuggler in less than an hour?</p>\n"
+"<p>The TaskJuggler tutorial can be accessed through the Help menu.</p>\n"
+msgstr ""
+"<p>...Taskjuggler el kitabında bir saatten az bir sürede sizi daha üretken yapacak bir eğitmen  var.</p>\n"
+"<p>Taskjuggler eğitmenine Yardım menüsünden ulaşabilirsiniz.\n"
+
+#: tips.cpp:10 tips.cpp:10
+msgid ""
+"<p>...that pressing F2 in the editor will give you the online help for\n"
+"the keyword under the cursor?</p>\n"
+msgstr "<p>...editörde F2 tuşuna basmanız size imlecin altındaki anahtar kelime için çevrim içi yardım sağlar.</p>\n"
+
+#: tips.cpp:16 tips.cpp:16
+msgid ""
+"<p>...the editor supports keyword completion?</p>\n"
+"<p>To active it, just enable it in the Plugins section of the Editor\n"
+"Preferences dialog.</p>\n"
+msgstr ""
+
+#: tips.cpp:23 tips.cpp:23
+msgid ""
+"<p>...the editor had a graphical date selector?</p>\n"
+"<p>You can insert or change a date under the cursor by pressing\n"
+"CTRL-D.</p>\n"
+msgstr ""
+"<p>...editör grafiksel tarih seçiciye sahiptir.</p>\n"
+"<p>CTRL-D tuşlarına basarak imlecin altına tarih ekleyebilir veya tarihi \n"
+"değiştirebilirsiniz.</p>\n"
+
+#: TjGanttChart.cpp:195
+msgid "Hours"
+msgstr "Saatler"
+
+#: TjGanttChart.cpp:201
+msgid "Days (Very Large)"
+msgstr "Günler ( Çok Geniş)"
+
+#: TjGanttChart.cpp:207
+msgid "Days (Large)"
+msgstr "Günler (Geniş)"
+
+#: TjGanttChart.cpp:213
+msgid "Days (Mid)"
+msgstr "Günler (Orta)"
+
+#: TjGanttChart.cpp:219
+msgid "Days (Small)"
+msgstr "Günler (Küçük)"
+
+#: TjGanttChart.cpp:225
+msgid "Weeks (Large)"
+msgstr "Haftalar(Geniş)"
+
+#: TjGanttChart.cpp:228 TjGanttChart.cpp:235
+msgid "W#W"
+msgstr "W#W"
+
+#: TjGanttChart.cpp:232
+msgid "Weeks (Small)"
+msgstr "Haftalar(Küçük)"
+
+#: TjGanttChart.cpp:239
+msgid "Months (Large)"
+msgstr "Aylar (Geniş)"
+
+#: TjGanttChart.cpp:245
+msgid "Months (Small)"
+msgstr "Aylar (Küçük)"
+
+#: TjGanttChart.cpp:251
+msgid "Quarter"
+msgstr "Çeyrek"
+
+#: TjGanttChart.cpp:254
+msgid "Q#Q"
+msgstr "Q#Q"
+
+#: TjGanttChart.cpp:258
+msgid "Year (Large)"
+msgstr "Yıl (Geniş)"
+
+#: TjGanttChart.cpp:263
+msgid "Year (Small)"
+msgstr "Yıl (Küçük)"
+
+#: TjGanttChart.cpp:284
+msgid "Container Task"
+msgstr "Kapsayıcı Aktivite"
+
+#: TjGanttChart.cpp:285
+msgid "Milestone"
+msgstr "Ana nokta"
+
+#: TjGanttChart.cpp:286
+msgid "Planned Task"
+msgstr "Planlanmış aktivite"
+
+#: TjGanttChart.cpp:287
+msgid "In-progress Task"
+msgstr "Yürürlükteki aktivite"
+
+#: TjGanttChart.cpp:288
+msgid "Completed Task"
+msgstr "Tamamlanmış aktivite"
+
+#: TjGanttChart.cpp:289
+msgid "Task Work Load"
+msgstr "Aktivite işi Yüklenimi"
+
+#: TjGanttChart.cpp:290
+msgid "Other Work Load"
+msgstr "Diğer iş yüklenimi"
+
+#: TjGanttChart.cpp:291
+msgid "Free Load"
+msgstr "Sınırsız yüklenim"
+
+#: TjGanttChart.cpp:639
+msgid "Week %1, %2"
+msgstr "Hafta %1, %2"
+
+#: TjPrintReport.cpp:484 TjReport.cpp:537
+msgid "no Limits"
+msgstr "Sınır yok"
+
+#: TjPrintReport.cpp:489 TjReport.cpp:542
+msgid "D: %1h"
+msgstr "G: %1s"
+
+#: TjPrintReport.cpp:495 TjReport.cpp:548
+msgid "W: %1h"
+msgstr "H: %1s"
+
+#: TjPrintReport.cpp:502 TjReport.cpp:555
+#, c-format
+msgid "M: %1d"
+msgstr "A: %1g"
+
+#: TjPrintReport.cpp:978
+msgid "Page %1 of %2"
+msgstr "Sayfa %1 / %2"
+
+#: TjReport.cpp:153
+msgid "Print %1"
+msgstr "Yazdır: %1"
+
+#: TjReport.cpp:712
+msgid ""
+"The report does not contain any data. Either there were no properties "
+"defined for this report or the filter expressions have eliminated all "
+"entries."
+msgstr "Rapora herhangi bir tarih girilmemiş. Bu rapor için hiçbir özellik tanımlanmamış veya süzgeç ifadeleri bütün girişleri eledi."
+
+#: TjReport.cpp:851
+msgid "Note for Task %1 (%2) - TaskJuggler"
+msgstr "Aktivite %1-(%2) - TaskJuggler için Bilgi"
+
+#: TjReport.cpp:867
+msgid "Status Note for Task %1 (%2) - TaskJuggler"
+msgstr "Aktivite %1 (%2) - TaskJuggler için Durum Bilgisi"
+
+#: TjReport.cpp:888
+msgid "%1 for %2 %3 (%4) - TaskJuggler"
+msgstr "%2 %3 (%4) - TaskJuggler için %1"
+
+#: TjReport.cpp:890 TjTaskReport.cpp:99
+msgid "Task"
+msgstr "Aktivite"
+
+#: TjReport.cpp:891 TjResourceReport.cpp:87
+msgid "Resource"
+msgstr "Kaynak"
+
+#: TjReport.cpp:930
+msgid "&Edit Task"
+msgstr "&Aktivite Düzenle"
+
+#: TjReport.cpp:931
+msgid "Show Task &Details"
+msgstr "Aktivite &Detaylarını Göster"
+
+#: TjReport.cpp:951
+msgid "&Edit Resource"
+msgstr "&Kaynakları Düzenle"
+
+#: TjReport.cpp:952
+msgid "Show Resource &Details"
+msgstr "Kaynak &detaylarını göster"
+
+#: TjReport.cpp:972
+msgid "Details of Task %1 (%2) - TaskJuggler"
+msgstr "Aktivite %1 (%2) - TaskJuggler için Detaylar"
+
+#: TjReport.cpp:979
+msgid "<b>Date:</b> %1<br/>"
+msgstr "<b>Tarih:</b> %1<br/>"
+
+#: TjReport.cpp:983
+msgid "<b>Start:</b> %1<br/><b>End:</b> %2<br/>"
+msgstr "<b>Başlangıç:</b> %1<br/><b>Bitiş:</b> %2<br/>"
+
+#: TjReport.cpp:992
+msgid "<b>Note:</b> %1<br/>"
+msgstr "<b>Bilgi:</b> %1<br/>"
+
+#: TjReport.cpp:1016
+msgid "<b>Predecessors:</b> %1<br/>"
+msgstr "<b>Öncekiler:</b> %1<br/>"
+
+#: TjReport.cpp:1018
+msgid "<b>Successors:</b> %1<br/>"
+msgstr "<b>Sonrakiler:</b> %1<br/>"
+
+#: TjReport.cpp:1037
+msgid "Details of Resource %1 (%2) - TaskJuggler"
+msgstr "Kaynak %1 (%2) - TaskJuggler için Detaylar"
+
+#: TjResourceReport.cpp:238
+msgid "%1(%2) - %3:  Effort=%4  Allocated Time: %5  Task %6(%7)"
+msgstr "%1 (%2) - %3:  Başarım=%4  Ayrılan Zaman: %5  Aktivite %6(%7)"
+
+#: TjResourceReport.cpp:256
+msgid "%1(%2) - %3:  Effort=%4  Allocated Time: %5  Free=%6"
+msgstr "%1 (%2) - %3:  Başarım=%4  Ayrılan Zaman: %5  Boşluk=%6"
+
+#: TjSummaryReport.cpp:43
+msgid "<p><h1>Summary for Project %1 (Version %2)</h1></p><hr/>"
+msgstr "<p><h1>Proje %1 için özet (Sürüm %2)</h1></p><hr/>"
+
+#: TjSummaryReport.cpp:52
+msgid "<tr><td><b>Scenarios:</b></td><td>%1 (%2 disabled)</td></tr>"
+msgstr "<tr><td><b>Senaryolar:</b></td><td>%1 (%2 etkinleştirilmemiş)</td></tr>"
+
+#: TjSummaryReport.cpp:67
+msgid ""
+"<tr><td><b>Resources:</b></td><td>%1 (%2 Groups, %3 Workers, %4 Other)</td></"
+"tr>"
+msgstr ""
+"<tr><td><b>Kaynaklar:</b></td><td>%1 (%2 Guruplar, %3 Çalışanlar, %4 Diğer)</td></"
+"tr>"
+
+#: TjSummaryReport.cpp:83
+msgid ""
+"<tr><td><b>Accounts:</b></td><td>%1 (%2 Summary Accounts, %3 Cost Accounts, %"
+"4 Revenue Accounts)</td></tr>"
+msgstr ""
+"<tr><td><b>Hesaplar:</b></td><td>%1 (%2 Hesap Özeti, %3 Gider Hesapları, %"
+"4 Gelir Hesapları)</td></tr>"
+
+#: TjSummaryReport.cpp:99
+msgid ""
+"<tr><td><b>Tasks:</b></td><td>%1 (%2 Containers, %3 Milestones, %4 Leaves)</"
+"td></tr></table><hr/>"
+msgstr ""
+"<tr><td><b>Aktiviteler:</b></td><td>%1 (%2 Kapsayıcılar, %3 Ana Noktalar, %4 Diğer)</"
+"td></tr></table><hr/>"
+
+#: TjTaskReport.cpp:214
+msgid "%1(%2) - %3:  Effort=%4  Allocated Time=%5"
+msgstr "%1(%2) - %3:  Başarım=%4  Ayrılan Zaman=%5"
+
+#: TjTaskReport.cpp:231
+msgid "%1(%2) - %3:  Effort=%4  Allocated Time=%5  %6(%7)"
+msgstr "%1(%2) - %3:  Başarım=%4  Ayrılan Zaman=%5  %6(%7)"
+
+#: _translatorinfo.cpp:1
+msgid ""
+"_: NAME OF TRANSLATORS\n"
+"Your names"
+msgstr "Tuncay Orak"
+
+#: _translatorinfo.cpp:3
+msgid ""
+"_: EMAIL OF TRANSLATORS\n"
+"Your emails"
+msgstr "tuncayorak@gmail.com"
