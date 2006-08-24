@@ -1551,8 +1551,6 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
     }
     double otherLoad = load - taskLoad;
     double maxLoad = load + freeLoad;
-    printf("%s: freeLoad: %f, maxload: %f, load: %f\n",
-           r->getId().latin1(), freeLoad, maxLoad, load);
     if (maxLoad <= 0.0)
         return;
 
