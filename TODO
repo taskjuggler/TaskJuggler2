@@ -9,6 +9,7 @@ Probably:
 
 Maybe:
 - Make vacations and shifts scenario specific.
+- Timezone support for resources and shifts.
 - Limits for accounts.
 - support for renewable resources
 - Allocation selection by skill set.

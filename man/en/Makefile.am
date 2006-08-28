@@ -1,5 +1,9 @@
 man_MANS = taskjuggler.1 TaskJugglerUI.1
-EXTRA_DIST = $(man_MANS)
+if test "${DOCBOOK_TO_MAN}" != "no" ;then \
+  EXTRA_DIST = $(man_MANS) \
+else \
+  EXTRA_DIST = \
+fi  
 
 .xml.1:
 	if test "${DOCBOOK_TO_MAN}" != "no" ; then \
