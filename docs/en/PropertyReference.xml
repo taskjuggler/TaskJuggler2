@@ -61,6 +61,8 @@
    "../../TestSuite/Syntax/Correct/Columns.tjp">
   <!ENTITY example_complete SYSTEM
    "../../TestSuite/Syntax/Correct/Complete.tjp">
+  <!ENTITY example_criticalpath SYSTEM
+   "../../TestSuite/Syntax/Correct/CriticalPath.tjp">
   <!ENTITY example_depends SYSTEM
    "../../TestSuite/Syntax/Correct/Depends1.tjp">
   <!ENTITY example_durations SYSTEM
@@ -103,6 +105,8 @@
    "../../TestSuite/Syntax/Correct/Priority.tjp">
   <!ENTITY example_project SYSTEM
    "../../TestSuite/Syntax/Correct/Project.tjp">
+  <!ENTITY example_projectids SYSTEM
+   "../../TestSuite/Syntax/Correct/ProjectIDs.tjp">
   <!ENTITY example_reports SYSTEM
    "../../TestSuite/Syntax/Correct/Reports.tjp">
   <!ENTITY example_resource SYSTEM
@@ -283,7 +287,8 @@ HTML calendar columns. The default is to show load values.</para></descr>
    </simplelist></para>
   </freestyle>
  </property>
- <property name="baseline" id="baseline" inheritable="Yes">
+ <property name="baseline" id="baseline" inheritable="Yes"
+ scenario="Yes">
   <descr><para>Disables the projection mode for the scenario. This is
   the default for the top-level scenario. In baseline mode it is
   assumed that no bookings are provided for any task.</para></descr>
@@ -1380,7 +1385,7 @@ with a length specification may have resource allocations. Resources
 are allocated when they are available. The availability has no impact
 on the duration of the task. A day where none of the specified
 resources is available is still considered a working day, if there is
-no global vacation of or global working time defined.</para>
+no global vacation or global working time defined.</para>
 
 <para>Tasks may not have subtasks if this attribute is used.</para></descr>
   <attributes>
@@ -1595,6 +1600,7 @@ the specified value, then an error is reported.</para></descr>
   <attributes>
    <attr name="rate" type="REAL"/>
   </attributes>
+  <example>&example_criticalpath;</example>
  </property>
  <property name="minstart" id="minstart" inheritable="Yes"
 scenario="Yes">
@@ -1634,6 +1640,7 @@ detailed specification of what the task is about.</para></descr>
    <also>journalentry</also>
    <also>statusnote</also>
   </seealso>
+  <example>&example_minmax;</example>
  </property>
  <property name="monthlymax" id="monthlymax" inheritable="Yes">
   <descr><para>Sets the monthly limit of a resource usage or a resource
@@ -1716,7 +1723,7 @@ higher priority is more likely to get the requested resources. Don't
 confuse the priority of a tasks with the importance or urgency of a
 task. It only increases the chances that the tasks gets the requested
 resources. It does not mean that the task happens earlier, though that
-is usually the effect you will see. It also does not have any affect
+is usually the effect you will see. It also does not have any effect
 on tasks that don't have any resources assigned (e.g. milestones).</para>
 
 <para>This attribute is inherited by subtasks if specified prior to
@@ -1811,6 +1818,7 @@ projects that each have their own ID.</para></descr> <attributes>
    <also>project</also>
    <also>projectids</also>
   </seealso>
+  <example>&example_projectids;</example>
  </property>
  <property name="projectids" id="projectids" inheritable="No">
   <descr><para>Declares a list of project IDs.</para></descr>
@@ -1821,8 +1829,10 @@ projects that each have their own ID.</para></descr> <attributes>
    <also>project</also>
    <also>projectid</also>
   </seealso>
+  <example>&example_projectids;</example>
  </property>
- <property name="projection" id="projection" inheritable="Yes">
+ <property name="projection" id="projection" inheritable="Yes"
+ scenario="Yes">
   <descr><para>Enables the projection mode for the scenario. All tasks
 will be scheduled taking the manual bookings into account. The
 tasks will be extended by scheduling new bookings starting with the
@@ -2108,7 +2118,7 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
   have a much higher priority. This can result in situations where
   high priority tasks do not get their resources even though the
   parallel competing tasks have a much lower priority.</para>
-  <para>As a general rule, try to avoid ASAP tasks whenever possible.
+  <para>As a general rule, try to avoid ALAP tasks whenever possible.
   Have a close eye on tasks that have been switched implicitly to
   ALAP mode because the <varname>end</varname> attribute comes after
   the <varname>start</varname> attribute.</para>

@@ -55,36 +55,34 @@ reference.</para>
 <chapter id="introduction"><title>Introduction</title>
 <sect1 id="about_taskjuggler"><title>About TaskJuggler</title>
 
-<para>TaskJuggler is a project planing tool for Linux and UNIX
-system-based operating systems. Whether you want to build a skyscraper
-or plan your colleagues shifts for the next month - TaskJuggler
-is the tool for you.</para>
+<para>TaskJuggler is a modern and powerful project management tool. Its new
+approach to project planning and tracking is far superior to the
+commonly used Gantt chart editing tools. It has already been
+successfully used in many projects and scales easily to projects with
+hundreds of resources and thousands of tasks.</para>
 
-<para>Instead of clicking painfully through hundreds of
-dialog boxes you specify a TaskJuggler project in a simple text
-format.  You write down all the tasks with their dependencies and
-other properties using the graphical front-end or your favorite text
-editor. The information is processed by the TaskJuggler program
-and you will get all sorts of reports in an interactive format or as
-HTML or XML format. The HTML files can be viewed and printed with any
-web browser that supports Cascading Style Sheets.  JavaScript support
-with your browser is recommended. The XML files are used by the Gantt- and
-PERT chart
-generators and the <ulink url="http://www.kde.org">KDE</ulink> <ulink
-url="http://konqueror.kde.org">Konqueror</ulink> plug-in.</para>
+<para>TaskJuggler is an Open Source tools for serious project managers. It
+covers the complete spectrum of project management tasks from the
+first idea to the completion of the project. It assists you during
+project scoping, resource assignment, cost and revenue planing, risk
+and communication management.</para>
 
-<para>TaskJuggler not only honors the task interdependencies but
-also takes resource constraints and prioritization into account. Using
-TaskJugglers powerful filtering and reporting algorithms you can
-create a variety of task lists, resource usage tables, status reports,
-project calendars and project accounting statements.</para>
+<para>TaskJuggler provides an optimizing scheduler that computes your
+project time lines and resource assignments based on the project
+outline and the constrains that you have provided. The build-in
+resource balancer and consistency checker offload you from having to
+worry about irrelevant details and ring the alarm if the project gets
+out of hand. Its flexible "as many details as necessary"-approach
+allows you to still plan your project as you go, making it also ideal
+for new management strategies such as Extreme Programming and Agile
+Project Management.</para>
 
-<para>Since TaskJuggler is not constrained by the performance requirements
-of real-time editing it can offer a much broader set of features not
-found in any of the WYSIWYG (What You See Is What You Get) project
-planing tools. The the project description language is easy to learn
-and supports you very effectively during your planning and tracking
-process.</para> 
+<para>If you are about to build a skyscraper or just want to put together
+your colleague's shift plan for the next month, TaskJuggler is the
+right tool for you. If you just want to draw nice looking Gantt charts
+to impress your boss or your investors, TaskJuggler might not be right
+for you. It takes some effort to master its power, but it will become
+a companion you don't want to miss anymore.</para>
 
 </sect1>
 <sect1 id="features_and_highlights"><title>Features and Highlights</title>
@@ -92,51 +90,43 @@ process.</para>
 <para>
 <itemizedlist mark='opencircle'>
 
-<listitem><para>Automatic scheduling of interdependent tasks with resource
-conflict solver.</para></listitem>
+<listitem><para>Manages tasks, resources and costs in one package</para></listitem>
 
-<listitem><para>Powerful project description syntax with macro
-support.</para></listitem>
+<listitem><para>Automatic resource leveling, tasks conflict resolutions, and task filtering</para></listitem>
 
-<listitem><para>Graphical front-end to enter your project and generate
-powerful reports.</para></listitem>
+<listitem><para>Comprehensive and flexible views and reports so you can find the
+information you need when you need it</para></listitem>
 
-<listitem><para>Flexible working hours and vacation handling.</para></listitem>
+<listitem><para>Build-in templates to get you started (you can also save your own schedules as templates for future use)</para></listitem>
 
-<listitem><para>Support for shifts.</para></listitem>
+<listitem><para>Project tracking and status reporting</para></listitem>
 
-<listitem><para>Multiple time zone support.</para></listitem>
+<listitem><para>Graphical User Interface to conveniently edit your projects, view and generate Gamtt charts and reports</para></listitem>
 
-<listitem><para>Flexible resource grouping.</para></listitem>
+<listitem><para>Unlimited number of scenarios (baselines) of same project for what-if analysis</para></listitem>
 
-<listitem><para>Project accounting support.</para></listitem>
+<listitem><para>CSV data export for exchange with Office Suites</para></listitem>
+<listitem><para>Risk analysis</para></listitem>
 
-<listitem><para>Task may have initial, finishing and running
-costs.</para></listitem>
+<listitem><para>Project breakdown and management team support</para></listitem>
 
-<listitem><para>Resource may have running costs.</para></listitem>
+<listitem><para>Flexible working hours and vacation handling</para></listitem>
 
-<listitem><para>Support for simple profit and loss analysis.</para></listitem>
+<listitem><para>Support for shift working</para></listitem>
 
-<listitem><para>HTML and XML report generation.</para></listitem>
+<listitem><para>Multiple time zone support</para></listitem>
 
-<listitem><para>Gantt and PERT chart generators.</para></listitem>
+<listitem><para>Tasks may have initial costs, finishing costs</para></listitem>
 
-<listitem><para>Support for multiple project scenarios.</para></listitem>
+<listitem><para>Resources may have running costs</para></listitem>
 
-<listitem><para>Project tracking support.</para></listitem>
+<listitem><para>Support for profit/loss analysis</para></listitem>
 
-<listitem><para>Groupware support by using a revision control system
-such as CVS or RCS on the project description files.</para></listitem>
+<listitem><para>HTML and XML report generation</para></listitem>
 
-<listitem><para>Support for central resource allocation
-database.</para></listitem>
+<listitem><para>Powerful project description syntax with macro support</para></listitem>
 
-<listitem><para>Support for cascaded and nested projects.</para></listitem>
-
-<listitem><para>Import and export of sub-projects.</para></listitem>
-
-<listitem><para>Unicode support.</para></listitem>
+<listitem><para>Support for central resource allocation database</para></listitem>
 
 </itemizedlist>
 </para>
@@ -298,7 +288,7 @@ product. If not, you might like to contact them to inform them that
 they are missing an essential package.</para>
 
 <para>This version of TaskJuggler was built and tested on SuSE Linux
-9.3 and 10.0 on various hardware platforms.</para>
+10.0 and 10.1 on various hardware platforms.</para>
 
 <sect2 id="the_graphical_use_interface"><title>The Graphical User
 Interfaces</title>
@@ -398,6 +388,7 @@ Installation</title> <para>
 Before compiling TaskJuggler you need to set the
 <computeroutput>QTDIR</computeroutput> environment variable to the
 base directory of your Qt version. This is normally
+<computeroutput>/usr/lib64/qt3</computeroutput> or
 <computeroutput>/usr/lib/qt3</computeroutput>.</para>
 
 <para>To compile and install TaskJuggler on your system, type the following 

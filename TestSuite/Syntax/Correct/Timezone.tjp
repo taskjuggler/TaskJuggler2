@@ -1,5 +1,5 @@
 project tz "Timezone" "1.0" 2005-06-06-0:00-UTC 2005-06-07-0:00-UTC {
-	timezone "Europe/Athens"
+  timezone "Europe/Athens"
 }
 
 task item "Project" {

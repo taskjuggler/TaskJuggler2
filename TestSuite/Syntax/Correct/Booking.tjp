@@ -20,7 +20,7 @@ supplement resource r1 {
   # This is the work that has been done up until now by r1.
   booking t1 2003-06-06 +8h { sloppy 2 }
   booking t1 2003-06-08 +4h,
-					   2003-06-09 +4h { sloppy 2 }
+             2003-06-09 +4h { sloppy 2 }
   # Book interval that extends into off-hours.
   booking t1 2003-06-11-8:00 +10h { overtime 1 }
 }

@@ -911,8 +911,9 @@ were always accounted to 0.</para></listitem>
 attribute. Only values as determined by tools like tzselect are
 allowed, e. g. "Europe/Berlin".</para></listitem>
 
-<listitem><para>The GUI now can highlight critical
-pathes.</para></listitem>
+<listitem><para>The GUI GANTT chart now can highlight critical
+pathes. See <link linkend="PROPERTY_minslackrate">minslackrate</link>
+for details how to use the feature.</para></listitem>
 
 <listitem><para>The htmlweeklycalendar has been reworked. It now only
 list tasks if they are being worked on that day. A new attribute <link

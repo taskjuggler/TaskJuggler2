@@ -20,8 +20,8 @@ resource r1 "Resource1" {
 
 shift s3 "Part-time schedule 1" {
   # The resource works on mondays, wednesdays and fridays.
-	# The days that the resource doesn't work must be mentioned
-	# explicitely otherwise the defaults values are used (usually
+  # The days that the resource doesn't work must be mentioned
+  # explicitely otherwise the defaults values are used (usually
   # full-time employment).
   workinghours mon,fri 9:00 - 12:00, 13:00-18:00
   workinghours wed 9:00 - 12:00
@@ -30,9 +30,9 @@ shift s3 "Part-time schedule 1" {
 
 shift s4 "Part-time schedule 2" {
   # The resource changes his schedule to work on tuesday and
-	# thursdays. The days that the resource doesn't work must be
-	# mentioned explicitely, otherwise the default values are used
-	# (usually full-time employment).
+  # thursdays. The days that the resource doesn't work must be
+  # mentioned explicitely, otherwise the default values are used
+  # (usually full-time employment).
   workinghours tue, thu 9:00 - 12:00, 13:00-18:00
   workinghours mon, wed, fri off
 }

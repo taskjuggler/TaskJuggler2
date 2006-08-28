@@ -24,7 +24,7 @@ resource tuxia "Tuxia" {
  
 resource tuxus "Tuxus" {
   # Tuxus quits his job on September 1st 2005
-	vacation 2005-09-01 - 2030-01-01
+  vacation 2005-09-01 - 2030-01-01
 }
 
 task t "An important date" {
