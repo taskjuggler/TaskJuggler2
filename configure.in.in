@@ -112,7 +112,7 @@ AC_ARG_ENABLE(
   tj_enable_docs=$enableval,
 )
 if test "$tj_enable_docs" = no ; then
-  DO_NOT_COMPILE="$DO_NOT_COMPILE docs"
+  DO_NOT_COMPILE="$DO_NOT_COMPILE docs man"
 fi
 
 AC_DEFUN([CHECK_PERL_MODULE],[ 
@@ -175,6 +175,11 @@ if test "$tj_enable_docs" != "no" ; then
   
     AC_OUTPUT(docs/en/taskjuggler.xml)
   fi
+
+  if test "$DOCBOOK_TO_MAN" = no ; then
+    AC_MSG_WARN([Man pages will not be generated])
+    DO_NOT_COMPILE="${DO_NOT_COMPILE} man"
+  fi  
 fi
 
 dnl KDE_INIT_DOXYGEN([The TaskJuggler API Reference], [Version $VERSION])
