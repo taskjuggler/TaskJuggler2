@@ -74,7 +74,7 @@ TaskJuggler::TaskJuggler()
      * will find the katefiletyperc file in there. */
     KGlobal().dirs()->addResourceDir
         ("config", KGlobal().dirs()->findResourceDir
-         ("data", "taskjuggler/taskjugglerui.rc") + "/taskjuggler/");
+         ("data", "taskjuggler/katefiletyperc") + "/taskjuggler/");
 
     readProperties(kapp->config());
 
