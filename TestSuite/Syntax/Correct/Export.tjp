@@ -16,7 +16,8 @@ export "FullProject.tjp" {
 
 # Export only bookings for 1st week as resource supplements
 export "Week1Bookings.tji" {
-  properties bookings
   start 2000-01-01
   end 2000-01-08
+  properties bookings
+  hideresource 0
 }

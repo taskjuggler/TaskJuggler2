@@ -6,6 +6,8 @@
  <!ENTITY SyntaxReference SYSTEM "SyntaxReference.xml">
  <!ENTITY PropertyReference SYSTEM "GenPropertyReference.xml">
  <!ENTITY Example SYSTEM "Example.xml">
+ <!ENTITY Freeze_Example SYSTEM
+   "../../TestSuite/Syntax/Correct/Freeze.tjp">
 ]>
 <book id="index">
 <bookinfo><title>The TaskJuggler Manual</title>
