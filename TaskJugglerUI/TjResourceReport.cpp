@@ -235,7 +235,7 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
         Resource* r = dynamic_cast<Resource*>(parent);
         double load = t->getLoad(scenario, iv, r);
         double allocatedTimeLoad = t->getAllocatedTimeLoad(scenario, iv, r);
-        text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time: %5  Task %6(%7)")
+        text = i18n("%1(%2) - %3 -  Effort: %4  Allocated Time: %5  Task %6(%7)")
             .arg(r->getName())
             .arg(r->getId())
             .arg(ivName)
@@ -253,14 +253,21 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
         double allocatedTimeLoad = r->getAllocatedTimeLoad
             (scenario, iv, AllAccounts);
         double freeLoad = r->getAvailableWorkLoad(scenario, iv);
-        text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time: %5  Free=%6")
+        double freeTimeLoad = r->getAvailableTimeLoad (scenario, iv);
+        double totalLoad = load + freeLoad;
+        double totalTimeLoad = allocatedTimeLoad + freeTimeLoad;
+        text = i18n("%1(%2) - %3 -  Effort: %4 (%5%)  "
+                    "Allocated Time: %6 (%7%)  Free: %8")
             .arg(r->getName())
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
                  (load, reportDef->getNumberFormat(), true, false))
+            .arg(totalLoad > 0.0 ? (int) ((load / totalLoad) * 100.0): 100)
             .arg(reportElement->scaledLoad
                  (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
+            .arg(totalTimeLoad > 0.0 ?
+                 (int) ((allocatedTimeLoad / totalTimeLoad) * 100.0) : 100)
             .arg(reportElement->scaledLoad
                  (freeLoad, reportDef->getNumberFormat(), true, false));
     }
