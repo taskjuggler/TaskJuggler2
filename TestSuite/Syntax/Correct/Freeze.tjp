@@ -2,7 +2,7 @@ project prj  "Project" "1.0" 2000-01-01-0:00-CET 2000-03-01-0:00-CET {
   timezone "CET"
   now 2000-01-08
   scenario plan "Plan" {
-    projection
+    projection { strict }
   }
 }
 
