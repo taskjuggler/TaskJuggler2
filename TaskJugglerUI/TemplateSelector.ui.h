@@ -10,9 +10,9 @@
 ** destructor.
 *****************************************************************************/
 
-void TemplateSelector::itemSelected()
+void TemplateSelector::itemSelected(QListViewItem* lvi)
 {
-    buttonOk->setEnabled(true);
+        buttonOk->setEnabled(lvi != 0);
 }
 
 

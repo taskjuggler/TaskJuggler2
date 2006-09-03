@@ -123,9 +123,9 @@
     </connection>
     <connection>
         <sender>templateList</sender>
-        <signal>selectionChanged()</signal>
+        <signal>clicked(QListViewItem*)</signal>
         <receiver>TemplateSelector</receiver>
-        <slot>itemSelected()</slot>
+        <slot>itemSelected(QListViewItem*)</slot>
     </connection>
     <connection>
         <sender>templateList</sender>
@@ -138,7 +138,7 @@
     <include location="local" impldecl="in implementation">TemplateSelector.ui.h</include>
 </includes>
 <slots>
-    <slot>itemSelected()</slot>
+    <slot>itemSelected( QListViewItem * lvi )</slot>
     <slot>listDoubleClicked( QListViewItem * lvi )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>

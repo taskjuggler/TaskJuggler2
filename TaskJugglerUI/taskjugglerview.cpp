@@ -31,6 +31,7 @@
 #include <qprogressbar.h>
 #include <qtimer.h>
 #include <qlistview.h>
+#include <qpushbutton.h>
 
 #include <kdebug.h>
 #include <kmainwindow.h>
@@ -417,6 +418,14 @@ TaskJugglerView::pickTemplateFile(const QString& extension)
         KListViewItem* lvi = new KListViewItem(selector->templateList, name);
         lvi->setText(1, *it);
     }
+
+    // Select the first entry in the list and enable the OK button.
+    if (selector->templateList->firstChild())
+    {
+        selector->templateList->firstChild()->setSelected(true);
+        selector->buttonOk->setEnabled(true);
+    }
+
     if (selector->exec() == QDialog::Rejected)
         return QString::null;
 
