@@ -1,11 +1,12 @@
 Work in progress (for next version):
-  none, we are ready for 2.3.0 beta test
+- GUI: Put more details in the task info dialog.
 
 Probably:
 - Macros to do date/time arithmetic.
 - 'limits' for tasks, not just for allocations.
 - Interactive account report
 - Add C++ style // comments.
+- Limit iCal calendar entries to actually allocated time slots.
 
 Maybe:
 - Make vacations and shifts scenario specific.
