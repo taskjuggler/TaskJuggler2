@@ -1004,7 +1004,7 @@ TaskJugglerUI.</para></listitem>
 <itemizedlist mark='opencircle'>
 
 <listitem><para>Fixed complexity explosion in loop detector and
-critical path analyzer. Larger projects that made hevy use of
+critical path analyzer. Larger projects that made heavy use of
 inherited dependencies had an exponentially growing run time of these
 components.<para></listitem>
 
