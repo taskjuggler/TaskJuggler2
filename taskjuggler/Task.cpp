@@ -1388,6 +1388,15 @@ Task::xRef(QDict<Task>& hash)
 void
 Task::implicitXRef()
 {
+    /* Every time the scheduling related information of a single task has been
+     * changed, we have to reset the cache flags for the start and end
+     * determinability. */
+    for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
+    {
+        scenarios[sc].startCanBeDetermined = false;
+        scenarios[sc].endCanBeDetermined = false;
+    }
+
     if (!sub->isEmpty())
         return;
 
@@ -1528,8 +1537,8 @@ Task::loopDetector(LDIList& chkedTaskList) const
 }
 
 bool
-Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd, LoopDetectorInfo::FromWhere
-                    caller) const
+Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
+                    LoopDetectorInfo::FromWhere caller) const
 {
     if (DEBUGPF(10))
         qDebug("%sloopDetection at %s (%s)",
@@ -1808,8 +1817,14 @@ bool
 Task::startCanBeDetermined(LDIList& list, int sc) const
 {
     if (DEBUGPF(10))
-        qDebug("Checking if start of task %s can be determined",
-               id.latin1());
+        qDebug("Checking if start of task %s can be determined", id.latin1());
+
+    if (scenarios[sc].startCanBeDetermined)
+    {
+        if (DEBUGPF(10))
+            qDebug("Start of task %s can be determined (cached)", id.latin1());
+        return true;
+    }
 
     if (checkPathForLoops(list, false))
         return false;
@@ -1857,13 +1872,14 @@ Task::startCanBeDetermined(LDIList& list, int sc) const
 
 isNotDetermined:
     if (DEBUGPF(10))
-        qDebug("Start of task %s cannot be determined",
+        qDebug("*** Start of task %s cannot be determined",
                id.latin1());
     list.removeLast();
     return false;
 
 isDetermined:
     list.removeLast();
+    scenarios[sc].startCanBeDetermined = true;
     return true;
 }
 
@@ -1871,8 +1887,14 @@ bool
 Task::endCanBeDetermined(LDIList& list, int sc) const
 {
     if (DEBUGPF(10))
-        qDebug("Checking if end of task %s can be determined",
-               id.latin1());
+        qDebug("Checking if end of task %s can be determined", id.latin1());
+
+    if (scenarios[sc].endCanBeDetermined)
+    {
+        if (DEBUGPF(10))
+            qDebug("End of task %s can be determined", id.latin1());
+        return true;
+    }
 
     if (checkPathForLoops(list, true))
         return false;
@@ -1925,13 +1947,14 @@ Task::endCanBeDetermined(LDIList& list, int sc) const
 
 isNotDetermined:
     if (DEBUGPF(10))
-        qDebug("End of task %s cannot be determined",
+        qDebug("*** End of task %s cannot be determined",
                id.latin1());
     list.removeLast();
     return false;
 
 isDetermined:
     list.removeLast();
+    scenarios[sc].endCanBeDetermined = true;
     return true;
 }
 
@@ -2901,13 +2924,14 @@ Task::checkAndMarkCriticalPath(int sc, double minSlack)
     if (DEBUGPA(3))
         qDebug("Starting critical path search at %s", id.latin1());
 
+    LDIList list;
     analyzePath(sc, minSlack, getStart(sc), 0);
 }
 
 bool
 Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
 {
-    if (DEBUGPA(15))
+    if (DEBUGPA(14))
         qDebug("  * Checking task %s", id.latin1());
 
     bool critical = false;
@@ -2941,34 +2965,46 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
         TaskList checkedTasks;
         for (Task* task = this; task; task = task->getParent())
         {
-            if (!task->followers.isEmpty())
+            if (task->followers.isEmpty())
+                continue;
+
+            hasFollowers = true;
+
+            if (DEBUGPA(16))
+                qDebug("  > Follower check started for %s", task->id.latin1());
+
+            for (TaskListIterator tli(task->followers); *tli; ++tli)
             {
-                hasFollowers = true;
+                // Don't check each follower more than once.
+                if (checkedTasks.findRef(*tli) >= 0)
+                    continue;
 
-                if (DEBUGPA(16))
-                    qDebug("  > Follower check started for %s", id.latin1());
-
-                for (TaskListIterator tli(task->followers); *tli; ++tli)
+                /* Due to inherited dependencies we can get a complexity
+                 * explosion in the number of possible pathes. All these
+                 * pathes are essentially identical to the path through the
+                 * parent that is closest to the root. So we only check this
+                 * path. */
+                if ((*tli)->getParent() &&
+                    (*tli)->getParent()->previous.findRef(task) >= 0)
                 {
-                    // Don't check each follower more than once.
-                    if (checkedTasks.findRef(*tli) >= 0)
-                        continue;
-
-                    if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
-                    {
-                        if (!task->scenarios[sc].criticalLinks.
-                            findRef(*tli) < 0)
-                            task->scenarios[sc].criticalLinks.append(*tli);
-
-                        scenarios[sc].isOnCriticalPath = true;
-                        critical = true;
-                    }
                     checkedTasks.append(*tli);
+                    continue;
                 }
 
-                if (DEBUGPA(16))
-                    qDebug("  < Follower check finished for %s", id.latin1());
+                if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
+                {
+                    if (!task->scenarios[sc].criticalLinks.
+                        findRef(*tli) < 0)
+                        task->scenarios[sc].criticalLinks.append(*tli);
+
+                    scenarios[sc].isOnCriticalPath = true;
+                    critical = true;
+                }
+                checkedTasks.append(*tli);
             }
+
+            if (DEBUGPA(16))
+                qDebug("  < Follower check finished for %s", task->id.latin1());
         }
 
         if (!hasFollowers)
@@ -2987,7 +3023,7 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
         }
     }
 
-    if (DEBUGPA(15))
+    if (DEBUGPA(14))
         qDebug("  - Check of task %s completed (%d)", id.latin1(), critical);
     return critical;
 }

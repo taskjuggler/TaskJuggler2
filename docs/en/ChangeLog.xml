@@ -999,4 +999,16 @@ TaskJugglerUI.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2 id="Changelog_2_3_1"><title>Version 2.3.1 (Some Day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed complexity explosion in loop detector and
+critical path analyzer. Larger projects that made hevy use of
+inherited dependencies had an exponentially growing run time of these
+components.<para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

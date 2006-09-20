@@ -36,6 +36,8 @@ TaskScenario::TaskScenario()
     completionDegree = 0.0;
     scheduled = FALSE;
     criticalness = pathCriticalness = 0.0;
+    startCanBeDetermined = false;
+    endCanBeDetermined = false;
 }
 
 void

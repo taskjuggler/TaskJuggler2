@@ -160,6 +160,15 @@ private:
     /// TRUE if the task has been completely scheduled.
     bool scheduled;
 
+    /**
+     * This following variables are used to cache the result whether or not
+     * the start/end of this task can be determined. They are determined once
+     * and possible the value is used later on as the determination of once
+     * task can depend on another task.
+     */
+    bool startCanBeDetermined;
+    bool endCanBeDetermined;
+
     /// List of specified booked resources.
     ResourceList specifiedBookedResources;
 

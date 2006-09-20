@@ -391,8 +391,7 @@ private:
     double computeBackwardCriticalness(int sc);
     double computeForwardCriticalness(int sc);
 
-    bool analyzePath(int sc, double minSlack, time_t pathStart,
-                     long busyTime);
+    bool analyzePath(int sc, double minSlack, time_t pathStart, long busyTime);
 
     bool countMilestones(int sc, time_t now, int& totalMilestones,
                          int& completedMilestones,

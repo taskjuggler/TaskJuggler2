@@ -71,6 +71,14 @@ public:
         root = leaf = 0;
         items = 0;
     }
+    LDIList(LDIList& list)
+    {
+        root = leaf = 0;
+        items = 0;
+        for (LoopDetectorInfo* p = list.root; p; p = p->nextLDI)
+            append(new LoopDetectorInfo(p->t, p->atEnd));
+    }
+
     virtual ~LDIList()
     {
         for (LoopDetectorInfo* p = root; p; p = root)
