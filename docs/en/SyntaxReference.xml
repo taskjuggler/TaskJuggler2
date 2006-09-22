@@ -301,5 +301,42 @@ end time must be separated by a dash character.</para>
 
 </sect2>
 </sect1>
+<sect1 id="macros"><title>Macros</title>
+<sect2 id="automacros"><title>Automatic macros</title>
+
+<para>Automatic macros are implicitly defined and updated in
+conjuction with the setting of the corresponding project property.
+Automatic macros have always lowercase only names.</para>
+
+<para>The following automatic macros are supported by
+TaskJuggler.</para>
+
+<para><simplelist type="horiz" columns="2">
+
+<member><computeroutput>now</computeroutput></member>
+<member>The current date and time as defined in the project
+header. It defaults to the moment when TaskJuggler was invoked.</member>
+
+<member><computeroutput>projectend</computeroutput></member>
+<member>The project end date and time as defined in the project
+header. It defaults to the moment when TaskJuggler was invoked.</member>
+
+<member><computeroutput>projectstart</computeroutput></member>
+<member>The project start date and time as defined in the project
+header. It defaults to the moment when TaskJuggler was invoked.</member>
+
+</simplelist></para>
+
+</sect2>
+<sect2 id="usermacros"><title>User defined macros</title>
+
+<para>User defined macros are defined in the project file by using the
+<link linkend="PROPERTY_macro">macro</link> property. The name of a
+user defined macro must have at least one upper case character so they
+do not conflict with automatic macros that might be added with later
+versions of TaskJuggler.</para>
+
+</sect2>
+</sect1>
 </chapter>
 

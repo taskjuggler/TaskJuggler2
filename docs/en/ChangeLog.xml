@@ -1006,7 +1006,13 @@ TaskJugglerUI.</para></listitem>
 <listitem><para>Fixed complexity explosion in loop detector and
 critical path analyzer. Larger projects that made heavy use of
 inherited dependencies had an exponentially growing run time of these
-components.<para></listitem>
+components.</para></listitem>
+
+<listitem><para>Added support for automatic macros like
+<computeroutput>now</computeroutput>,
+<computeroutput>projectstart</computeroutput> and
+<computeroutput>projectend</computeroutput>.</para></listitem>
+
 
 </itemizedlist></para>
 

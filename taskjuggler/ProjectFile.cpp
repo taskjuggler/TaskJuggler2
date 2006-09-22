@@ -176,6 +176,12 @@ ProjectFile::parse()
     TokenType tt;
     QString token;
 
+    QString dummy = time2tjp(time(0));
+    QString file = openFiles.last()->getFile();
+    macros.addMacro(new Macro("projectstart", dummy, file, 1));
+    macros.addMacro(new Macro("projectend", dummy, file, 1));
+    macros.addMacro(new Macro("now", dummy, file, 1));
+
     for ( ; ; )
     {
         switch (tt = nextToken(token))
@@ -189,8 +195,8 @@ ProjectFile::parse()
                 token != KW("include"))
             {
                 errorMessage
-                    (i18n("The project properties must be defined prior to any "
-                          "account, shift, task or resource."));
+                    (i18n("The project properties must be defined prior to "
+                          "any account, shift, task or resource."));
                 return FALSE;
             }
 
@@ -580,6 +586,13 @@ ProjectFile::readProject()
     proj->setStart(iv.getStart());
     proj->setEnd(iv.getEnd());
 
+    QString file = openFiles.last()->getFile();
+    uint line = openFiles.last()->getLine();
+    macros.setMacro(new Macro("projectstart", time2tjp(iv.getStart()), file,
+                              line));
+    macros.setMacro(new Macro("projectend", time2tjp(iv.getEnd()), file,
+                              line));
+
     TokenType tt;
     bool scenariosDefined = FALSE;
     if ((tt = nextToken(token)) == LBRACE)
@@ -632,6 +645,9 @@ ProjectFile::readProject()
                 if (!readDate(now, 0))
                     return FALSE;
                 proj->setNow(now);
+                macros.setMacro(new Macro("projectend", time2tjp(now),
+                                          openFiles.last()->getFile(),
+                                          openFiles.last()->getLine()));
             }
             else if (token == KW("timingresolution"))
             {
