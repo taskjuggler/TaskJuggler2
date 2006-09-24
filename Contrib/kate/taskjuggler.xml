@@ -109,6 +109,7 @@
         <item> optimize </item>
         <item> order </item>
         <item> pathcriticalness </item>
+        <item> period</item>
         <item> persistent </item>
         <item> precedes </item>
         <item> priority </item>

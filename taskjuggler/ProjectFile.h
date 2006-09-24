@@ -145,9 +145,9 @@ private:
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
     UsageLimits* readLimits();
-    bool readInterval(Interval& iv, bool check);
+    bool readInterval(Interval& iv, bool check = true);
     bool readTimeFrame(double& d, bool workingDays, bool allowZero = false);
-    bool readDate(time_t& val, time_t correction, bool checkPrjInterval = TRUE);
+    bool readDate(time_t& val, time_t correction, bool checkPrjInterval = true);
     bool readRealFormat(RealFormat* format);
     bool readReference(QString& ref, QString& label);
     bool readTimeValue(ulong& value);

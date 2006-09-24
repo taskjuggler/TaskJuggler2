@@ -1013,6 +1013,10 @@ components.</para></listitem>
 <computeroutput>projectstart</computeroutput> and
 <computeroutput>projectend</computeroutput>.</para></listitem>
 
+<listitem><para>Added <computeroutput>period</computeroutput> property
+as a shortcut for the combined use of
+<computeroutput>start</computeroutput> and
+<computeroutput>end</computeroutput>.</para></listitem>
 
 </itemizedlist></para>
 

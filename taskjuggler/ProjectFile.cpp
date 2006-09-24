@@ -1737,6 +1737,13 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         if (sc == 0)
             task->setScheduling(Task::ALAP);
     }
+    else if (attribute == KW("period"))
+    {
+        Interval iv;
+        if (!readInterval(iv))
+            return -1;
+        task->setSpecifiedPeriod(sc, iv);
+    }
     else if (attribute == KW("minstart"))
     {
         time_t val;
@@ -3557,6 +3564,13 @@ ProjectFile::readReport(const QString& reportType)
                     return FALSE;
                 tab->setEnd(end);
             }
+            else if (token == KW("period"))
+            {
+                Interval iv;
+                if (!readInterval(iv))
+                    return FALSE;
+                tab->setPeriod(iv);
+            }
             else if (token == KW("headline"))
             {
                 if (nextToken(token) != STRING)
@@ -3828,6 +3842,13 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 if (!readDate(end, 1))
                     goto exit_error;
                 tab->setEnd(end);
+            }
+            else if (token == KW("period"))
+            {
+                Interval iv;
+                if (!readInterval(iv))
+                    return FALSE;
+                tab->setPeriod(iv);
             }
             else if (token == KW("headline"))
             {
@@ -4241,6 +4262,13 @@ ProjectFile::readCSVReport(const QString& reportType)
                     return FALSE;
                 tab->setEnd(end);
             }
+            else if (token == KW("period"))
+            {
+                Interval iv;
+                if (!readInterval(iv))
+                    return FALSE;
+                tab->setPeriod(iv);
+            }
             else if (token == KW("rawhead"))
             {
                 if (nextToken(token) != STRING)
@@ -4592,6 +4620,13 @@ ProjectFile::readExportReport()
                     return FALSE;
                 report->setEnd(end);
             }
+            else if (token == KW("period"))
+            {
+                Interval iv;;
+                if (!readInterval(iv))
+                    return false;
+                report->setPeriod(iv);
+            }
             else if (token == KW("properties"))
             {
                 report->resetContentFlags();
@@ -4725,6 +4760,13 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (!readDate(end, 1))
                     return FALSE;
                 el->setEnd(end);
+            }
+            else if(token == KW("period"))
+            {
+                Interval iv;
+                if (!readInterval(iv))
+                    return false;
+                el->setPeriod(iv);
             }
             else if (token == KW("headline"))
             {

@@ -160,6 +160,12 @@ public:
     void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
     const time_t getEnd(int sc) const { return scenarios[sc].end; }
 
+    void setSpecifiedPeriod(int sc, const Interval& iv)
+    {
+        scenarios[sc].specifiedStart = iv.getStart();
+        scenarios[sc].specifiedEnd = iv.getEnd();
+    }
+
     time_t getStartBufferEnd(int sc) const
     {
         return scenarios[sc].startBufferEnd;

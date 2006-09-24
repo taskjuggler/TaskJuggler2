@@ -24,6 +24,7 @@
 #include "taskjuggler.h"
 #include "CoreAttributesList.h"
 #include "RealFormat.h"
+#include "Interval.h"
 
 class Project;
 class CoreAttributes;
@@ -82,6 +83,12 @@ public:
 
     void setEnd(time_t e) { end = e; }
     time_t getEnd() const { return end; }
+
+    void setPeriod(const Interval& iv)
+    {
+        start = iv.getStart();
+        end = iv.getEnd();
+    }
 
     void setHeadline(const QString& hl) { headline = hl; }
     const QString& getHeadline() const { return headline; }

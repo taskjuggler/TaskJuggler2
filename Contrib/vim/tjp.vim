@@ -207,6 +207,7 @@ syn keyword tjspkeyword order
 syn keyword tjspkeyword pathcriticalness
 syn keyword tjspkeyword pathcriticalnessdown
 syn keyword tjspkeyword pathcriticalnessup
+syn keyword tjspkeyword period
 syn keyword tjspkeyword persistent
 syn keyword tjspkeyword precedes
 syn keyword tjspkeyword priority

@@ -95,6 +95,12 @@ public:
     void setEnd(time_t e) { end = e; }
     time_t getEnd() const { return end; }
 
+    void setPeriod(const Interval& iv)
+    {
+        start = iv.getStart();
+        end = iv.getEnd();
+    }
+
     bool isHidden(const CoreAttributes* c, ExpressionTree* et) const;
     bool isRolledUp(const CoreAttributes* c, ExpressionTree* et) const;
 

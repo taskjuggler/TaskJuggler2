@@ -97,6 +97,8 @@
    "../../TestSuite/Syntax/Correct/MinMax.tjp">
   <!ENTITY example_numberformat SYSTEM
    "../../TestSuite/Syntax/Correct/Numberformat.tjp">
+  <!ENTITY example_period SYSTEM
+   "../../TestSuite/Syntax/Correct/Period.tjp">
   <!ENTITY example_persistent SYSTEM
    "../../TestSuite/Syntax/Correct/Persistent.tjp">
   <!ENTITY example_precedes SYSTEM
@@ -668,6 +670,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rollupaccount</optattr>
    <optattr>hideaccount</optattr>
+   <optattr>period_report</optattr>
    <optattr>separator</optattr>
    <optattr>sortaccounts</optattr>
    <optattr>start_report</optattr>
@@ -689,6 +692,7 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rollupresource</optattr>
    <optattr>hideresource</optattr>
+   <optattr>period_report</optattr>
    <optattr>separator</optattr>
    <optattr>sortresources</optattr>
    <optattr>start_report</optattr>
@@ -711,6 +715,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rolluptask</optattr>
    <optattr>hidetask</optattr>
+   <optattr>period_report</optattr>
    <optattr>separator</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
@@ -890,6 +895,7 @@ tasks that start before this end date are listed.</para></descr>
    <attr name="date" type="DATE"/>
   </attributes>
   <seealso>
+   <also>period_report</also>
    <also>start_report</also>
   </seealso>
   <example>&example_export;</example>
@@ -903,6 +909,7 @@ tasks that start before this end date are listed.</para></descr>
    <attr name="date" type="DATE"/>
   </attributes>
   <seealso>
+   <also>period</also>
    <also>start</also>
    <also>maxend</also>
    <also>minend</also>
@@ -974,6 +981,7 @@ project IDs of the included tasks must be declared first with the
    <optattr>properties</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
+   <optattr>period_report</optattr>
    <optattr>scenarios</optattr>
    <optattr>start_report</optattr>
    <optattr>taskattributes</optattr>
@@ -1151,6 +1159,7 @@ page.</para></descr>
    <optattr>end_report</optattr>
    <optattr>headline</optattr>
    <optattr>hideaccount</optattr>
+   <optattr>period_report</optattr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
@@ -1185,6 +1194,7 @@ can be listed as well.</para></descr>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
    <optattr>loadunit</optattr>
+   <optattr>period_report</optattr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
@@ -1214,6 +1224,7 @@ tasks. The default reporting interval is 1 week.</para></descr>
   </attributes>
   <optattributes>
    <optattr>scenarios</optattr>
+   <optattr>period_report</optattr>
    <optattr>start_report</optattr>
    <optattr>end_report</optattr>
    <optattr>headline</optattr>
@@ -1249,6 +1260,7 @@ listed as well.</para></descr>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
    <optattr>loadunit</optattr>
+   <optattr>period_report</optattr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
@@ -1284,6 +1296,7 @@ listed as well.</para></descr>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
    <optattr>loadunit</optattr>
+   <optattr>period_report</optattr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
@@ -1705,6 +1718,25 @@ should be shown at a maximum.</para></descr>
   </freestyle>
   <example>&example_booking;</example>
  </property>
+ <property name="period" id="period" inheritable="yes">
+  <descr><para>This property is a shortcut for setting the start and
+  end property at the same time. In contrast to using these, it does
+  not change the scheduling direction.</para></descr>
+  <seealso>
+   <also>end</also>
+   <also>start</also>
+  </seealso>
+  <example>&example_period;</example>
+ </property>
+ <property name="period" id="period_report" inheritable="no">
+  <descr><para>This property is a shortcut for setting the start and end
+  propoerty at the same time.</para></descr>
+  <seealso>
+   <also>end_report</also>
+   <also>start_report</also>
+  </seealso>
+  <example>&example_period;</example>
+ </property>
  <property name="persistent" id="persistent" inheritable="No">
   <descr><para>Specifies that once a resource is picked from the list
   of alternatives this resource is used for the whole task.
@@ -1978,6 +2010,7 @@ listed as well.</para></descr>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
    <optattr>loadunit</optattr>
+   <optattr>period_report</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
    <optattr>scenario_report</optattr>
@@ -2134,6 +2167,7 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
     <also>end</also>
     <also>precedes</also>
     <also>start</also>
+    <also>period</also>
   </seealso>  
   <example>&example_scheduling;</example>
  </property>
@@ -2391,6 +2425,7 @@ tasks that end after this end date are listed.</para></descr>
   </attributes>
   <seealso>
    <also>end_report</also>
+   <also>period_report</also>
   </seealso>
   <example>&example_export;</example>
  </property>
@@ -2405,6 +2440,7 @@ scenario="Yes">
   </attributes>
   <seealso>
    <also>end</also>
+   <also>period</also>
    <also>maxstart</also>
    <also>minstart</also>
    <also>scheduling</also>
@@ -2539,6 +2575,7 @@ what task.</para></descr>
    <optattr>minend</optattr>
    <optattr>minstart</optattr>
    <optattr>note</optattr>
+   <optattr>period</optattr>
    <optattr>precedes</optattr>
    <optattr>priority</optattr>
    <optattr>projectid</optattr>
@@ -2614,6 +2651,7 @@ listed as well.</para></descr>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
    <optattr>loadunit</optattr>
+   <optattr>period_report</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
    <optattr>scenario_report</optattr>
