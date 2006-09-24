@@ -1,12 +1,14 @@
 Work in progress (for next version):
+- Add popup hint to show Gantt chart load values.
 - GUI: Put more details in the task info dialog.
+- Limit iCal calendar entries to actually allocated time slots.
 
 Probably:
 - Macros to do date/time arithmetic.
 - 'limits' for tasks, not just for allocations.
+- vacations for tasks (to suspend a part of a project for some time).
 - Interactive account report
 - Add C++ style // comments.
-- Limit iCal calendar entries to actually allocated time slots.
 
 Maybe:
 - Make vacations and shifts scenario specific.
