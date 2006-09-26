@@ -39,7 +39,7 @@
 #include "ExportReport.h"
 
 #include "ManagedReportInfo.h"
-#include "TjReportBase.h"
+#include "TjUIReportBase.h"
 #include "TjSummaryReport.h"
 #include "TjHTMLReport.h"
 #include "TjTaskReport.h"
@@ -360,7 +360,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
                 mr = *mri;
     }
 
-    TjReportBase* tjr = mr->getReport();
+    TjUIReportBase* tjr = mr->getReport();
     if (tjr == 0)
     {
         if (mr->getProjectReport() == 0)

@@ -7,45 +7,45 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id$
+ * $Id: TjUIReportBase.cpp 1275 2006-03-05 19:16:55Z cs $
  */
 
-#include "TjReportBase.h"
+#include "TjUIReportBase.h"
 
-TjReportBase::TjReportBase(QWidget* p, ReportManager* m, Report* const rDef,
+TjUIReportBase::TjUIReportBase(QWidget* p, ReportManager* m, Report* const rDef,
                            const QString& n) :
-    QWidget(p, n), manager(m), reportDef(rDef)
+    QWidget(p, n), ReportElementBase(rDef), manager(m)
 {
 }
 
 void
-TjReportBase::print()
+TjUIReportBase::print()
 {
 }
 
 void
-TjReportBase::zoomTo(const QString&)
+TjUIReportBase::zoomTo(const QString&)
 {
 }
 
 void
-TjReportBase::zoomIn()
+TjUIReportBase::zoomIn()
 {
 }
 
 void
-TjReportBase::zoomOut()
+TjUIReportBase::zoomOut()
 {
 }
 
 void
-TjReportBase::show()
+TjUIReportBase::show()
 {
 }
 
 void
-TjReportBase::hide()
+TjUIReportBase::hide()
 {
 }
 
-#include "TjReportBase.moc"
+#include "TjUIReportBase.moc"

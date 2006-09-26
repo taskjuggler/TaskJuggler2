@@ -17,7 +17,7 @@
 
 class KListViewItem;
 class ReportManager;
-class TjReportBase;
+class TjUIReportBase;
 class Report;
 
 class ManagedReportInfo
@@ -33,8 +33,8 @@ public:
     void setBrowserEntry(KListViewItem* lvi) { browserEntry = lvi; }
     KListViewItem* getBrowserEntry() const { return browserEntry; }
 
-    void setReport(TjReportBase* r) { report = r; }
-    TjReportBase* getReport() const { return report; }
+    void setReport(TjUIReportBase* r) { report = r; }
+    TjUIReportBase* getReport() const { return report; }
 
     void setLoadingProject(bool lp);
 
@@ -47,7 +47,7 @@ private:
     Report* const projectReport;
 
     KListViewItem* browserEntry;
-    TjReportBase* report;
+    TjUIReportBase* report;
 
     bool loadingProject;
 } ;

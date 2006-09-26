@@ -7,27 +7,28 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id$
+ * $Id: TjUIReportBase.h 1275 2006-03-05 19:16:55Z cs $
  */
 
-#ifndef _TjReportBase_h_
-#define _TjReportBase_h_
+#ifndef _TjUIReportBase_h_
+#define _TjUIReportBase_h_
 
 #include <qwidget.h>
+#include "ReportElementBase.h"
 
 class CoreAttributes;
 class Report;
 class ReportManager;
 
-class TjReportBase : public QWidget
+class TjUIReportBase : public QWidget, public ReportElementBase
 {
     Q_OBJECT
 public:
-    TjReportBase(QWidget* p, ReportManager* m, Report* const rDef,
+    TjUIReportBase(QWidget* p, ReportManager* m, Report* rDef,
                  const QString& n = QString::null);
-    virtual ~TjReportBase() { }
+    virtual ~TjUIReportBase() { }
 
-    Report* getReportDefinition() const { return reportDef; }
+    Report* getReportDefinition() const { return report; }
 
     virtual bool generateReport() = 0;
 
@@ -47,10 +48,9 @@ public slots:
     virtual void hide();
 
 protected:
-    TjReportBase() : reportDef(0) { }
+    TjUIReportBase() { }
 
     ReportManager* manager;
-    Report* const reportDef;
 
     bool loadingProject;
 } ;

@@ -26,7 +26,7 @@
 TjSummaryReport::TjSummaryReport(QWidget* p, ReportManager* m,
                                  const Project* pr,
                                  const QString& n) :
-    TjReportBase(p, m, 0, n), project(pr)
+    TjUIReportBase(p, m, 0, n), project(pr)
 {
     QVBoxLayout* hl = new QVBoxLayout(this, 1);
     hl->setAutoAdd(true);

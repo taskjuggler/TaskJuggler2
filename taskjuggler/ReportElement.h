@@ -28,6 +28,7 @@
 #include "TableColumnFormat.h"
 #include "TableColumnInfo.h"
 #include "Report.h"
+#include "ReportElementBase.h"
 
 class QStringList;
 
@@ -50,7 +51,7 @@ class CustomAttributeDefinition;
  * @short A class that forms the basic element of a report.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class ReportElement
+class ReportElement : public ReportElementBase
 {
 public:
     enum BarLabelText { BLT_EMPTY = 0, BLT_LOAD };
@@ -150,15 +151,11 @@ public:
 
     int taskRootLevel() const;
 
-    bool setLoadUnit(const QString& u);
-
     void setTimeFormat(const QString& tf) { timeFormat = tf; }
     const QString getTimeFormat() const { return timeFormat; }
 
     void setShortTimeFormat(const QString& tf) { shortTimeFormat = tf; }
     const QString& getShortTimeFormat() const { return shortTimeFormat; }
-
-    const RealFormat& getNumberFormat() const { return numberFormat; }
 
     void setShowPIDs(bool s) { showPIDs = s; }
     bool getShowPIDs() const { return showPIDs; }
@@ -187,10 +184,6 @@ public:
     const TableColumnFormat* getColumnFormat(const QString& key) const;
 
     void setMacros(TableLineInfo* tli);
-    QString scaledDuration(double t, const RealFormat& realFormat,
-                           bool showUnit = false, bool longUnit = false) const;
-    QString scaledLoad(double t, const RealFormat& realFormat,
-                       bool showUnit = false, bool longUnit = false) const;
 
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;
@@ -292,7 +285,6 @@ protected:
                         const QValueList<double>& factors) const;
     void reportValue(double value, const QString& bgcol, bool bold);
 
-    Report* report;
     QValueList<int> scenarios;
     QPtrList<TableColumnInfo> columns;
     QDict<TableColumnFormat> columnFormat;
@@ -306,8 +298,6 @@ protected:
 
     QString timeFormat;
     QString shortTimeFormat;
-    RealFormat numberFormat;
-    RealFormat currencyFormat;
 
     /* We store the location of the report definition in case we need it
      * for error reporting. */
@@ -333,8 +323,6 @@ protected:
     /* A report can be limited to the sub-tasks of a certain task. The
      * taskRoot specifies this task. If set it always ends with a '.'. */
     QString taskRoot;
-
-    LoadUnit loadUnit;
 
     bool showPIDs;
 

@@ -63,7 +63,7 @@
 
 TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
                    const QString& n)
-    : TjReportBase(p, m, rDef, n)
+    : TjUIReportBase(p, m, rDef, n)
 {
     loadingProject = FALSE;
     autoFit = true;
@@ -150,7 +150,7 @@ TjReport::print()
     printer->setResolution(300);
     printer->setCreator(QString("TaskJuggler %1 - visit %2")
                         .arg(VERSION).arg(TJURL));
-    if (!printer->setup(this, i18n("Print %1").arg(reportDef->getFileName())))
+    if (!printer->setup(this, i18n("Print %1").arg(report->getFileName())))
         goto done;
 
     /* This is a hack to workaround the problem that the KPrinter settings
@@ -537,7 +537,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                 cellText = i18n("no Limits");
             else
             {
-                int sg = reportDef->getProject()->getScheduleGranularity();
+                int sg = report->getProject()->getScheduleGranularity();
                 if (limits->getDailyMax() > 0)
                     cellText = i18n("D: %1h").arg(limits->getDailyMax() *
                                                sg / (60 * 60));
@@ -673,7 +673,7 @@ TjReport::prepareChart()
         QStringList tokens = QStringList::split(":", (*lvit).first);
         CoreAttributes* ca1 = 0;
         CoreAttributes* ca2 = 0;
-        const Project* project = reportDef->getProject();
+        const Project* project = report->getProject();
         if (tokens[0] == "t")
         {
             if (tokens[2].isEmpty())
@@ -974,17 +974,6 @@ TjReport::showTaskDetails(const Task* task)
     richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
     QString text;
-    if (task->isMilestone())
-    {
-        text += i18n("<b>Date:</b> %1<br/>")
-            .arg(time2tjp(task->getStart(scenario)));
-    }
-    else
-        text += i18n("<b>Start:</b> %1<br/>"
-                     "<b>End:</b> %2<br/>")
-            .arg(time2tjp(task->getStart(scenario)))
-            .arg(time2tjp(task->getEnd(scenario) + 1));
-
     if (!task->getNote().isEmpty())
     {
         if (!text.isEmpty())
@@ -992,36 +981,64 @@ TjReport::showTaskDetails(const Task* task)
         text += i18n("<b>Note:</b> %1<br/>").arg(task->getNote());
     }
 
+    if (task->isMilestone())
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        text += i18n("<b>Date:</b> %1<br/>")
+            .arg(time2tjp(task->getStart(scenario)));
+    }
+    else
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        text += i18n("<b>Start:</b> %1<br/>"
+                     "<b>End:</b> %2<br/>"
+                     "<b>Status:</b> %3<br/>")
+            .arg(time2tjp(task->getStart(scenario)))
+            .arg(time2tjp(task->getEnd(scenario) + 1))
+            .arg(task->getStatusText(scenario));
+
+        if (!task->getStatusNote(scenario).isEmpty())
+            text += i18n("<b>Note:</b> %1</br>")
+                .arg(task->getStatusNote(scenario));
+    }
+
     QString predecessors;
     for (TaskListIterator tli(task->getPreviousIterator()); *tli; ++tli)
-    {
-        if (!predecessors.isEmpty())
-            predecessors += ", ";
-        predecessors += (*tli)->getName() + "(" + (*tli)->getId() + ")";
-    }
+        predecessors += "<li>" + (*tli)->getName() + " (" + (*tli)->getId() +
+            ")</li>";
 
     QString successors;
     for (TaskListIterator tli(task->getFollowersIterator()); *tli; ++tli)
-    {
-        if (!successors.isEmpty())
-            successors += ", ";
-        successors += (*tli)->getName() + " (" + (*tli)->getId() + ")";
-    }
+        successors += "<li>" + (*tli)->getName() + " (" + (*tli)->getId() +
+            ")<br/>";
 
     if (!predecessors.isEmpty() || !successors.isEmpty())
     {
-        if (!text.isEmpty())
-            text += "<hr/>";
+        text += "<hr/>";
         if (!predecessors.isEmpty())
-            text += i18n("<b>Predecessors:</b> %1<br/>").arg(predecessors);
+            text += i18n("<b>Predecessors:</b><ul>%1</ul><br/>")
+                .arg(predecessors);
         if (!successors.isEmpty())
-            text += i18n("<b>Successors:</b> %1<br/>").arg(successors);
+            text += i18n("<b>Successors:</b><ul>%1</ul><br/>").arg(successors);
     }
+
+    ResourceListIterator rli = task->getBookedResourcesIterator(scenario);
+    if (*rli)
+    {
+        text += "<hr/><b>Allocated resources:</b><ul>";
+        for (; *rli; ++rli)
+            text += "<li>" + (*rli)->getName() + " (" + (*rli)->getId() +
+                ")</li>";
+        text += "</ul>";
+    }
+
+    text += generateRTCustomAttributes(task);
 
     if (task->hasJournal())
     {
-        if (!text.isEmpty())
-            text += "<hr/>";
+        text += "<hr/>";
         text += generateJournal(task->getJournalIterator());
     }
 
@@ -1030,7 +1047,7 @@ TjReport::showTaskDetails(const Task* task)
 }
 
 void
-TjReport::showResourceDetails(const Resource* resource)
+TjReport::showResourceDetails(Resource* resource)
 {
     RichTextDisplay* richTextDisplay = new RichTextDisplay(topLevelWidget());
     richTextDisplay->setCaption
@@ -1039,6 +1056,16 @@ TjReport::showResourceDetails(const Resource* resource)
     richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
     QString text;
+    Interval iv = Interval(report->getStart(),
+                           report->getEnd());
+    double load = resource->getLoad(scenario, iv);
+    double freeLoad = resource->getAvailableWorkLoad(scenario, iv);
+
+    text = i18n("<b>Effort:</b> %1 <b>Free Load:</b> %2 "
+                "<b>Utilization:</b> %3%")
+        .arg(scaledLoad(load, numberFormat, true))
+        .arg(scaledLoad(freeLoad, numberFormat, true))
+        .arg((int) (load / (load + freeLoad) * 100.0));
 
     if (resource->hasJournal())
     {
@@ -1047,8 +1074,54 @@ TjReport::showResourceDetails(const Resource* resource)
         text += generateJournal(resource->getJournalIterator());
     }
 
+    text += generateRTCustomAttributes(resource);
+
+    if (resource->hasJournal())
+    {
+        text += "<hr/>";
+        text += generateJournal(resource->getJournalIterator());
+    }
+
     richTextDisplay->textDisplay->setText(text);
     richTextDisplay->show();
+}
+
+QString
+TjReport::generateRTCustomAttributes(const CoreAttributes* ca) const
+{
+    QDict<CustomAttribute> caDict = ca->getCustomAttributeDict();
+
+    QString text = "<hr/>";
+    if (caDict.isEmpty())
+        return text;
+
+    for (QDictIterator<CustomAttribute> cadi(caDict); cadi.current(); ++cadi)
+    {
+        text += "<b>" + cadi.currentKey() + ":</b> ";
+        CustomAttribute* custAttr = cadi.current();
+        switch (cadi.current()->getType())
+        {
+            case CAT_Reference:
+            {
+                QString label = dynamic_cast<const
+                    ReferenceAttribute*>(custAttr)->getLabel();
+                QString url = dynamic_cast<const
+                    ReferenceAttribute*>(custAttr)->getURL();
+                text += "<a href=\"" + url + "\">" +
+                    (label.isEmpty() ? url : label) + "</a>";
+                break;
+            }
+            case CAT_Text:
+                text += dynamic_cast<const TextAttribute*>(custAttr)->
+                    getText();
+                break;
+            case CAT_Undefined:
+                break;
+        }
+        text += "<br/>";
+    }
+
+    return text;
 }
 
 void
@@ -1239,7 +1312,7 @@ TjReport::generateJournal(JournalIterator jit) const
 
     for ( ; *jit; ++jit)
         text += "<b><i>" + time2user((*jit)->getDate(),
-                                     reportDef->getTimeFormat()) +
+                                     report->getTimeFormat()) +
             "</i></b><br/>" + (*jit)->getText() + "<br/>";
 
     return text;

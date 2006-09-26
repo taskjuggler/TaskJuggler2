@@ -24,7 +24,7 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjReportRow.cpp TjReportCell.cpp \
 	FileManager.cpp ManagedFileInfo.cpp \
 	ReportManager.cpp ManagedReportInfo.cpp \
-	TjReportBase.cpp TjSummaryReport.cpp \
+	TjUIReportBase.cpp TjSummaryReport.cpp \
 	TjHTMLReport.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	taskjuggleriface.skel \

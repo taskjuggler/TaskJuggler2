@@ -45,7 +45,7 @@ TjTaskReport::~TjTaskReport()
 TjPrintReport*
 TjTaskReport::newPrintReport(KPrinter* pr)
 {
-    return new TjPrintTaskReport(reportDef, pr);
+    return new TjPrintTaskReport(report, pr);
 }
 
 const QtReportElement*
@@ -67,21 +67,21 @@ TjTaskReport::generateList()
         listView->removeColumn(0);
     maxDepth = 0;
 
-    if (!reportDef)
+    if (!report)
         return FALSE;
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
     reportElement =
-        (dynamic_cast<QtTaskReport*>(reportDef))->getTable();
+        (dynamic_cast<QtTaskReport*>(report))->getTable();
     scenario = reportElement->getScenario(0);
-    taskList = reportDef->getProject()->getTaskList();
+    taskList = report->getProject()->getTaskList();
 
     // QListView can hide subtasks. So we feed the list with all tasks first
     // and then later close those items that we want to roll up. This
     // expression means "roll-up none".
     ExpressionTree* et = new ExpressionTree;
-    et->setTree("0", reportDef->getProject());
+    et->setTree("0", report->getProject());
 
     if (!reportElement->filterTaskList(taskList, 0,
                                        reportElement->getHideTask(), et))
@@ -134,7 +134,7 @@ TjTaskReport::generateList()
                               loadIcon("tj_task_group", KIcon::Small));
             if (reportElement->getRollUpTask())
             {
-                if (!reportDef->isRolledUp(*tli,
+                if (!report->isRolledUp(*tli,
                                            reportElement->getRollUpTask()))
                     newLvi->setOpen(TRUE);
                 if (reportElement->getRollUpTask()->getErrorFlag())
@@ -216,9 +216,9 @@ TjTaskReport::generateStatusBarText(const QPoint& pos,
             .arg(t->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat(), true, false))
+                 (load, report->getNumberFormat(), true, false))
             .arg(reportElement->scaledLoad
-                 (allocatedTimeLoad, reportDef->getNumberFormat(), true,
+                 (allocatedTimeLoad, report->getNumberFormat(), true,
                   false));
     }
     else
@@ -233,9 +233,9 @@ TjTaskReport::generateStatusBarText(const QPoint& pos,
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat(), true, false))
+                 (load, report->getNumberFormat(), true, false))
             .arg(reportElement->scaledLoad
-                 (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
+                 (allocatedTimeLoad, report->getNumberFormat(), true, false))
             .arg(t->getName())
             .arg(t->getId());
     }

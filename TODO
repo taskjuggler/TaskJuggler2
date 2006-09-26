@@ -1,6 +1,5 @@
 Work in progress (for next version):
 - Add popup hint to show Gantt chart load values.
-- GUI: Put more details in the task info dialog.
 - Limit iCal calendar entries to actually allocated time slots.
 
 Probably:

@@ -20,7 +20,7 @@
 #include <qstring.h>
 #include <qlistview.h>
 
-#include "TjReportBase.h"
+#include "TjUIReportBase.h"
 #include "TaskList.h"
 #include "ResourceList.h"
 #include "ReportLayers.h"
@@ -43,7 +43,7 @@ class TjPrintReport;
 class TjObjPosTable;
 class TjGanttChart;
 
-class TjReport : public TjReportBase
+class TjReport : public TjUIReportBase
 {
     Q_OBJECT
 public:
@@ -95,7 +95,7 @@ protected:
     void generateListHeader(const QString& firstHeader, QtReportElement* tab);
 
     void showTaskDetails(const Task* task);
-    void showResourceDetails(const Resource* resource);
+    void showResourceDetails(Resource* resource);
 
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
                                  QString& cellText, QPixmap& icon) const;
@@ -109,6 +109,8 @@ protected:
     int treeLevel(const QListViewItem* lvi) const;
 
     QString generateJournal(JournalIterator jit) const;
+
+    QString generateRTCustomAttributes(const CoreAttributes* ca) const;
 
     void setGanttChartColors();
 

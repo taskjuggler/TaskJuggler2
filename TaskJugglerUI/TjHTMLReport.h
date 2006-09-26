@@ -13,7 +13,7 @@
 #ifndef _TjHTMLReport_h_
 #define _TjHTMLReport_h_
 
-#include "TjReportBase.h"
+#include "TjUIReportBase.h"
 
 #include <kparts/browserrun.h>
 
@@ -22,7 +22,7 @@ class KHTMLPart;
 class Project;
 class Report;
 
-class TjHTMLReport : public TjReportBase
+class TjHTMLReport : public TjUIReportBase
 {
     Q_OBJECT
 

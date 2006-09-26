@@ -13,13 +13,13 @@
 #ifndef _TjSummaryReport_h_
 #define _TjSummaryReport_h_
 
-#include "TjReportBase.h"
+#include "TjUIReportBase.h"
 
 class Project;
 class Report;
 class QTextBrowser;
 
-class TjSummaryReport : public TjReportBase
+class TjSummaryReport : public TjUIReportBase
 {
     Q_OBJECT
 

@@ -45,7 +45,7 @@ TjResourceReport::~TjResourceReport()
 TjPrintReport*
 TjResourceReport::newPrintReport(KPrinter* pr)
 {
-    return new TjPrintResourceReport(reportDef, pr);
+    return new TjPrintResourceReport(report, pr);
 }
 
 const QtReportElement*
@@ -66,16 +66,16 @@ TjResourceReport::generateList()
         listView->removeColumn(0);
     maxDepth = 0;
 
-    if (!reportDef)
+    if (!report)
         return FALSE;
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
     reportElement =
-        (dynamic_cast<QtResourceReport*>(reportDef))->getTable();
+        (dynamic_cast<QtResourceReport*>(report))->getTable();
     scenario = reportElement->getScenario(0);
-    resourceList = reportDef->getProject()->getResourceList();
-    taskList = reportDef->getProject()->getTaskList();
+    resourceList = report->getProject()->getResourceList();
+    taskList = report->getProject()->getTaskList();
 
     if (!reportElement->filterResourceList
         (resourceList, 0, reportElement->getHideResource(), 0))
@@ -125,7 +125,7 @@ TjResourceReport::generateList()
                               loadIcon("tj_resource_group", KIcon::Small));
             if (reportElement->getRollUpResource())
             {
-                if (!reportDef->isRolledUp(*rli,
+                if (!report->isRolledUp(*rli,
                                            reportElement->getRollUpResource()))
                     newLvi->setOpen(TRUE);
                 // Check if during the evaluation of the expression an error
@@ -240,9 +240,9 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat(), true, false))
+                 (load, report->getNumberFormat(), true, false))
             .arg(reportElement->scaledLoad
-                 (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
+                 (allocatedTimeLoad, report->getNumberFormat(), true, false))
             .arg(t->getName())
             .arg(t->getId());
     }
@@ -262,14 +262,14 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
             .arg(r->getId())
             .arg(ivName)
             .arg(reportElement->scaledLoad
-                 (load, reportDef->getNumberFormat(), true, false))
+                 (load, report->getNumberFormat(), true, false))
             .arg(totalLoad > 0.0 ? (int) ((load / totalLoad) * 100.0): 100)
             .arg(reportElement->scaledLoad
-                 (allocatedTimeLoad, reportDef->getNumberFormat(), true, false))
+                 (allocatedTimeLoad, report->getNumberFormat(), true, false))
             .arg(totalTimeLoad > 0.0 ?
                  (int) ((allocatedTimeLoad / totalTimeLoad) * 100.0) : 100)
             .arg(reportElement->scaledLoad
-                 (freeLoad, reportDef->getNumberFormat(), true, false));
+                 (freeLoad, report->getNumberFormat(), true, false));
     }
 
     return text;

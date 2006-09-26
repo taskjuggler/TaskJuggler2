@@ -1018,6 +1018,9 @@ as a shortcut for the combined use of
 <computeroutput>start</computeroutput> and
 <computeroutput>end</computeroutput>.</para></listitem>
 
+<listitem><para>Added more details to the pop-up info for tasks and
+resources in the UI.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -23,7 +23,7 @@
 
 TjHTMLReport::TjHTMLReport(QWidget* p, ReportManager* m, Report* rDef,
                                  const QString& n) :
-    TjReportBase(p, m, rDef, n)
+    TjUIReportBase(p, m, rDef, n)
 {
     QVBoxLayout* hl = new QVBoxLayout(this, 0);
     hl->setAutoAdd(true);
@@ -47,10 +47,10 @@ TjHTMLReport::TjHTMLReport(QWidget* p, ReportManager* m, Report* rDef,
 bool
 TjHTMLReport::generateReport()
 {
-    HTMLReport* htmlReport = dynamic_cast<HTMLReport*>(reportDef);
+    HTMLReport* htmlReport = dynamic_cast<HTMLReport*>(report);
     if (!htmlReport->generate())
         return false;
-    KURL reportURL = KURL::fromPathOrURL(reportDef->getFullFileName());
+    KURL reportURL = KURL::fromPathOrURL(report->getFullFileName());
     browser->openURL(reportURL);
 
     return true;
