@@ -3858,7 +3858,9 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     goto exit_error;
                 }
                 report->setHeadline(token);
-                tab->setHeadline(token);
+                // Not sure why I put this here. Produces double headlines for
+                // normal reports. Disabled for now.
+                // tab->setHeadline(token);
             }
             else if (token == KW("caption"))
             {
