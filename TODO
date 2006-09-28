@@ -1,6 +1,8 @@
 Work in progress (for next version):
 - Add popup hint to show Gantt chart load values.
 - Limit iCal calendar entries to actually allocated time slots.
+- Check FreeBSD repository patches
+  (http://www.freebsd.org/cgi/cvsweb.cgi/ports/deskutils/taskjuggler/files/)
 
 Probably:
 - Macros to do date/time arithmetic.

@@ -518,11 +518,15 @@ TaskJugglerView::close()
 void
 TaskJugglerView::closeProject()
 {
+    // Remove the editor component
+    hideEditor();
+
     // Give the user the option to save all modified files.
     fileManager->saveAllFiles(true);
 
     // Clear all project specific data structures.
     fileManager->clear();
+
     reportManager->clear();
     mw->taskListView->clear();
     mw->resourceListView->clear();

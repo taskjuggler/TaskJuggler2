@@ -1021,6 +1021,13 @@ as a shortcut for the combined use of
 <listitem><para>Added more details to the pop-up info for tasks and
 resources in the UI.</para></listitem>
 
+<listitem><para>Fixed problem where editor tools were doubled when
+"Open Recent" was used while editor was open. This also triggered a
+crash on program exit.</para></listitem>
+
+<listitem><para>Fixed double headline problem in most HTML
+reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
