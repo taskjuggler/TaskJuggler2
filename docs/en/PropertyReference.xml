@@ -1206,6 +1206,7 @@ can be listed as well.</para></descr>
    <optattr>sortresources</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
+   <optattr>taskroot</optattr>
    <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
@@ -1272,6 +1273,7 @@ listed as well.</para></descr>
    <optattr>sortresources</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
+   <optattr>taskroot</optattr>
    <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
@@ -1308,6 +1310,7 @@ listed as well.</para></descr>
    <optattr>sortresources</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
+   <optattr>taskroot</optattr>
    <optattr>timeformat</optattr>
    <optattr>weekdays</optattr>
   </optattributes>

@@ -4041,6 +4041,24 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     goto exit_error;
                 }
             }
+            else if (token == KW("taskroot"))
+            {
+                if ((tt = nextToken(token)) == ID ||
+                    tt == ABSOLUTE_ID)
+                {
+                    if (!proj->getTask(token))
+                    {
+                        errorMessage(i18n("taskroot must be a known task"));
+                        return FALSE;
+                    }
+                    tab->setTaskRoot(token + ".");
+                }
+                else
+                {
+                    errorMessage(i18n("Task ID expected"));
+                    return FALSE;
+                }
+            }
             else if (reportType == "htmlweeklycalendar" &&
                      token == KW("weekdays"))
             {
