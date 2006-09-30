@@ -34,7 +34,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
         projectionMode = false;
         optimize = false;
         strictBookings = false;
-        minSlackRate = 0.0;
+        minSlackRate = 10.0;
     }
 }
 

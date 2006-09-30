@@ -2943,10 +2943,7 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
 
         for (TaskListIterator tli(*sub); *tli; ++tli)
             if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
-            {
-                scenarios[sc].isOnCriticalPath = true;
                 critical = true;
-            }
 
         if (DEBUGPA(15))
             qDebug("  < Sub check finished for %s", id.latin1());
@@ -2973,31 +2970,40 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
             if (DEBUGPA(16))
                 qDebug("  > Follower check started for %s", task->id.latin1());
 
+            /* Due to inherited dependencies we can get a complexity explosion
+             * in the number of possible pathes. All these pathes are
+             * essentially identical to the path through the parent that is
+             * the furthest from the top-level task. So we only check this
+             * path. */
+            for (TaskListIterator tli(task->followers); *tli; ++tli)
+            {
+                Task* parent = (*tli)->getParent();
+                if (parent && task->followers.findRef(parent) >= 0 &&
+                    checkedTasks.find(parent) < 0)
+                {
+                    if (DEBUGPA(17))
+                        qDebug("  - Ignoring path through parent task %s",
+                               parent->getId().latin1());
+                    checkedTasks.append(parent);
+                }
+            }
+
             for (TaskListIterator tli(task->followers); *tli; ++tli)
             {
                 // Don't check each follower more than once.
                 if (checkedTasks.findRef(*tli) >= 0)
                     continue;
 
-                /* Due to inherited dependencies we can get a complexity
-                 * explosion in the number of possible pathes. All these
-                 * pathes are essentially identical to the path through the
-                 * parent that is closest to the root. So we only check this
-                 * path. */
-                if ((*tli)->getParent() &&
-                    (*tli)->getParent()->previous.findRef(task) >= 0)
-                {
-                    checkedTasks.append(*tli);
-                    continue;
-                }
-
                 if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime))
                 {
-                    if (!task->scenarios[sc].criticalLinks.
-                        findRef(*tli) < 0)
+                    if (task->scenarios[sc].criticalLinks.findRef(*tli) < 0)
+                    {
+                        if (DEBUGPA(5))
+                            qDebug("  +++ Critical link %s -> %s",
+                                   id.latin1(), (*tli)->id.latin1());
                         task->scenarios[sc].criticalLinks.append(*tli);
+                    }
 
-                    scenarios[sc].isOnCriticalPath = true;
                     critical = true;
                 }
                 checkedTasks.append(*tli);
@@ -3015,13 +3021,17 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
                        (1.0 - minSlack);
             if (critical)
             {
-                scenarios[sc].isOnCriticalPath = true;
                 if (DEBUGPA(5))
-                    qDebug("Critical path found (%ld/%ld)",
-                           busyTime, overallDuration);
+                    qDebug("Critical path with %.2lf%% slack ending at %s "
+                           "found",
+                           100.0 - ((double) busyTime / overallDuration) *
+                           100.0, id.latin1());
             }
         }
     }
+
+    if (critical)
+        scenarios[sc].isOnCriticalPath = true;
 
     if (DEBUGPA(14))
         qDebug("  - Check of task %s completed (%d)", id.latin1(), critical);

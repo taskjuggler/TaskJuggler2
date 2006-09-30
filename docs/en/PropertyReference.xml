@@ -1612,7 +1612,7 @@ the specified value, then an error is reported.</para></descr>
   explicitely or implicitely connected tasks measured from first task
   to last task. The slack is the time between start of the first task
   and end of the last task that is not covered by any task of the
-  path.</para></descr>
+  path. The default value is 10%.</para></descr>
   <attributes>
    <attr name="rate" type="REAL"/>
   </attributes>
