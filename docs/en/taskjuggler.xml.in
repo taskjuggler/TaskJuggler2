@@ -10,7 +10,8 @@
    "../../TestSuite/Syntax/Correct/Freeze.tjp">
 ]>
 <book id="index">
-<bookinfo><title>The TaskJuggler Manual</title>
+<bookinfo><title>The <ulink
+url="http://www.taskjuggler.org">TaskJuggler</ulink> Manual</title>
 <authorgroup>
 <author>
 	<firstname>Chris</firstname><surname>Schl&auml;ger</surname>
