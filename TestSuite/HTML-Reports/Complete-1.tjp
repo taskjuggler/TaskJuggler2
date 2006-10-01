@@ -1,0 +1,40 @@
+project prj "Completion status test" "1.0" 2006-10-01 +4w {
+  now 2006-10-12
+}
+
+resource tux1 "Tux1"
+resource tux2 "Tux2"
+resource tux3 "Tux3"
+
+macro taskBody [
+task ${1}${3} "${2} ${3}" {
+  ${4}
+  complete ${3}
+}
+]
+
+macro taskSet [
+${taskBody "${1}Duration" "${1} Duration" "0" "start ${2} duration 1w"}
+${taskBody "${1}Duration" "${1} Duration" "50" "start ${2} duration 1w"}
+${taskBody "${1}Duration" "${1} Duration" "100" "start ${2} duration 1w"}
+
+${taskBody "${1}Length" "${1} Length" "0" "start ${2} length 5d"}
+${taskBody "${1}Length" "${1} Length" "50" "start ${2} length 5d"}
+${taskBody "${1}Length" "${1} Length" "100" "start ${2} length 5d"}
+
+${taskBody "${1}Effort" "${1} Effort" "0" "start ${2} effort 5d allocate tux1"}
+${taskBody "${1}Effort" "${1} Effort" "50" "start ${2} effort 5d allocate tux2"}
+${taskBody "${1}Effort" "${1} Effort" "100" "start ${2} effort 5d allocate tux3"}
+]
+
+${taskSet "Past" "2006-10-02"}
+${taskSet "Present" "2006-10-09"}
+${taskSet "Future" "2006-10-16"}
+
+taskreport "Tasks" {
+  columns no, name, start, end, status, chart
+}
+
+htmltaskreport "." {
+  columns no, name, start, end, status, daily
+}

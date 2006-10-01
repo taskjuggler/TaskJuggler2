@@ -1375,7 +1375,7 @@ HTMLReportElement::selectTaskBgColor(TableCellInfo* tci, double load,
     if (tci->tli->task->isActive(tci->tli->sc, period) &&
         ((tci->tli->resource != 0 && load > 0.0) || tci->tli->resource == 0))
     {
-        if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd() - 1))
+        if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd()))
         {
             if (tci->tli->ca2 == 0)
                 bgCol = colors.getColor("completed");
@@ -1423,7 +1423,7 @@ HTMLReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
         }
         else
         {
-            if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd() - 1))
+            if (tci->tli->task->isCompleted(tci->tli->sc, period.getEnd()))
                 bgCol = colors.getColor("completed").light(130);
             else
                 bgCol = colors.getColor("booked").light(130);

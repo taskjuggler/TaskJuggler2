@@ -1032,6 +1032,9 @@ crash on program exit.</para></listitem>
 <listitem><para>Fixed double headline problem in most HTML
 reports.</para></listitem>
 
+<listitem><para>Fixed a bug in the coloring of tasks in HTML reports
+that had a 'complete' specification.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -113,6 +113,6 @@ taskreport "Tasks" {
 }
 
 htmltaskreport "." {
-  columns no, name, start, end, effort, completed, status
+  columns no, name, start, end, effort, completed, status, weekly
   loadunit days
 }

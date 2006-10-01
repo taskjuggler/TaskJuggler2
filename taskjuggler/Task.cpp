@@ -1023,20 +1023,24 @@ Task::isCompleted(int sc, time_t date) const
 {
     if (scenarios[sc].reportedCompletion >= 0.0)
     {
+        if (scenarios[sc].reportedCompletion >= 100.0)
+            return true;
+
         // some completion degree has been specified.
         if (scenarios[sc].effort > 0.0)
         {
-            if (date < scenarios[sc].start)
-                return FALSE;
             return qRound((scenarios[sc].effort *
                            (scenarios[sc].reportedCompletion / 100.0)) * 1000)
                 >= qRound(getLoad(sc, Interval(scenarios[sc].start, date), 0)
                          * 1000);
         }
         else
-            return ((scenarios[sc].reportedCompletion / 100.0) *
-                    (scenarios[sc].end - scenarios[sc].start)
-                    + scenarios[sc].start) > date;
+        {
+            return (date <=
+                    scenarios[sc].start +
+                    (int) ((scenarios[sc].reportedCompletion / 100.0) *
+                           (scenarios[sc].end - scenarios[sc].start)));
+        }
     }
 
 
