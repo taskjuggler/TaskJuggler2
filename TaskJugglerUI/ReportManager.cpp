@@ -46,6 +46,11 @@
 #include "TjResourceReport.h"
 #include "MainWidget.h"
 
+// Older versions of KDE do not have this macro
+#ifndef KDE_IS_VERSION
+#define KDE_IS_VERSION(a,b,c) 0
+#endif
+
 ReportManager::ReportManager(KMainWindow* m, QWidgetStack* v,
                              KListView* b, KListViewSearchLine* s) :
     mainWindow(m), reportStack(v), browser(b), searchLine(s)

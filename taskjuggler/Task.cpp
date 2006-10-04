@@ -2976,7 +2976,7 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
 
             /* Due to inherited dependencies we can get a complexity explosion
              * in the number of possible pathes. All these pathes are
-             * essentially identical to the path through the parent that is
+             * essentially identical to the path through the task that is
              * the furthest from the top-level task. So we only check this
              * path. */
             for (TaskListIterator tli(task->followers); *tli; ++tli)
