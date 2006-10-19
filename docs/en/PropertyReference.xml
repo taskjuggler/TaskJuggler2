@@ -2388,12 +2388,6 @@ within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1">
     <para>Possible values are 
-completeddown,
-completedup,
-criticalnessdown,
-criticalnessup,
-enddown,
-endup,
 fullnamedown,
 fullnameup,
 iddown,
@@ -2402,19 +2396,31 @@ indexdown,
 indexup,
 namedown,
 nameup,
-pathcriticalnessdown,
-pathcriticalnessup,
 prioritydown,
 priorityup,
 responsibledown,
 responsibleup,
 sequencedown,
 sequenceup,
+tree
+   </para>
+   <para>In addition the following values are supported as well. They
+   specify scenario specific values so they can be prefixed with the
+   ID of the scenario and a colon (e.g.
+   <computeroutput>plan:startup</computeroutput>). If no scenario is
+   specified, the default scenario is used. Possible values are
+completeddown,
+completedup,
+criticalnessdown,
+criticalnessup,
+enddown,
+endup,
+pathcriticalnessdown,
+pathcriticalnessup,
 startdown, 
 startup,
 statusdown,
-statusup,
-tree
+statusup
    </para>
   </attr>
   </attributes>

@@ -590,7 +590,7 @@ ProjectFile::readProject()
     uint line = openFiles.last()->getLine();
     macros.setMacro(new Macro("projectstart", time2tjp(iv.getStart()), file,
                               line));
-    macros.setMacro(new Macro("projectend", time2tjp(iv.getEnd()), file,
+    macros.setMacro(new Macro("projectend", time2tjp(iv.getEnd() + 1), file,
                               line));
 
     TokenType tt;
@@ -645,7 +645,7 @@ ProjectFile::readProject()
                 if (!readDate(now, 0))
                     return FALSE;
                 proj->setNow(now);
-                macros.setMacro(new Macro("projectend", time2tjp(now),
+                macros.setMacro(new Macro("now", time2tjp(now),
                                           openFiles.last()->getFile(),
                                           openFiles.last()->getLine()));
             }
@@ -5338,6 +5338,41 @@ exit_error:
     return 0;
 }
 
+int
+ProjectFile::checkScenarioSorting(const QString token)
+{
+    int sorting = -1;
+
+    if (token == KW("startup"))
+        sorting = CoreAttributesList::StartUp;
+    else if (token == KW("startdown"))
+        sorting = CoreAttributesList::StartDown;
+    else if (token == KW("endup"))
+        sorting = CoreAttributesList::EndUp;
+    else if (token == KW("enddown"))
+        sorting = CoreAttributesList::EndDown;
+    else if (token == KW("statusup"))
+        sorting = CoreAttributesList::StatusUp;
+    else if (token == KW("statusdown"))
+        sorting = CoreAttributesList::StatusDown;
+    else if (token == KW("completedup"))
+        sorting = CoreAttributesList::CompletedUp;
+    else if (token == KW("completeddown"))
+        sorting = CoreAttributesList::CompletedDown;
+    else if (token == KW("criticalnessup"))
+        sorting = CoreAttributesList::CriticalnessUp;
+    else if (token == KW("criticalnessdown"))
+        sorting = CoreAttributesList::CriticalnessDown;
+    else if (token == KW("pathcriticalnessup"))
+        sorting = CoreAttributesList::PathCriticalnessUp;
+    else if (token == KW("pathcriticalnessdown"))
+        sorting = CoreAttributesList::PathCriticalnessDown;
+    else
+        sorting = -1;
+
+    return sorting;
+}
+
 bool
 ProjectFile::readSortingMode(int& sorting)
 {
@@ -5358,31 +5393,7 @@ ProjectFile::readSortingMode(int& sorting)
         }
         nextToken(token);
 
-        if (token == KW("startup"))
-            sorting = CoreAttributesList::StartUp;
-        else if (token == KW("startdown"))
-            sorting = CoreAttributesList::StartDown;
-        else if (token == KW("endup"))
-            sorting = CoreAttributesList::EndUp;
-        else if (token == KW("enddown"))
-            sorting = CoreAttributesList::EndDown;
-        else if (token == KW("statusup"))
-            sorting = CoreAttributesList::StatusUp;
-        else if (token == KW("statusdown"))
-            sorting = CoreAttributesList::StatusDown;
-        else if (token == KW("completedup"))
-            sorting = CoreAttributesList::CompletedUp;
-        else if (token == KW("completeddown"))
-            sorting = CoreAttributesList::CompletedDown;
-        else if (token == KW("criticalnessup"))
-            sorting = CoreAttributesList::CriticalnessUp;
-        else if (token == KW("criticalnessdown"))
-            sorting = CoreAttributesList::CriticalnessDown;
-        else if (token == KW("pathcriticalnessup"))
-            sorting = CoreAttributesList::PathCriticalnessUp;
-        else if (token == KW("pathcriticalnessdown"))
-            sorting = CoreAttributesList::PathCriticalnessDown;
-        else
+        if ((sorting = checkScenarioSorting(token)) == -1)
         {
             errorMessage(i18n("Sorting criteria expected"));
             return FALSE;
@@ -5395,7 +5406,9 @@ ProjectFile::readSortingMode(int& sorting)
 
         bool deprecatedWarning = FALSE;
 
-        if (token == KW("tree"))
+        if ((sorting = checkScenarioSorting(token)) != -1)
+            ;
+        else if (token == KW("tree"))
             sorting = CoreAttributesList::TreeMode;
         else if (token == KW("sequenceup"))
             sorting = CoreAttributesList::SequenceUp;

@@ -169,6 +169,7 @@ private:
 
     Operation* readLogicalExpression(int precedence = 0);
     Operation* readFunctionCall(const QString& name);
+    int checkScenarioSorting(const QString token);
     bool readSorting(Report* report, int which);
     bool readSorting(ReportElement* el, int which);
     bool readSortingMode(int& sorting);

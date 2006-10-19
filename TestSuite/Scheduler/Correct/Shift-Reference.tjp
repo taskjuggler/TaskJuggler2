@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project test "Test" "1.0" 2000-01-01-00:00:00-GMT 2000-01-30-23:59:59-GMT {
+project test "Test" "1.0" 2000-01-01-00:00:00-+0000 2000-01-30-23:59:59-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
@@ -41,8 +41,8 @@ shift s3 "Shift3" {
     workinghours fri off
 }
 resource r1 "Resource1" {
-  shift s1 2000-01-01-00:00:00-GMT - 2000-01-04-00:00:00-GMT
-  shift s2 2000-01-05-00:00:00-GMT - 2000-01-20-00:00:00-GMT
+  shift s1 2000-01-01-00:00:00-+0000 - 2000-01-04-00:00:00-+0000
+  shift s2 2000-01-05-00:00:00-+0000 - 2000-01-20-00:00:00-+0000
 }
 resource r2 "Resource2" {
 }

@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project simple "Simple Project" "$Id" 2002-06-01-00:00:00-GMT 2002-07-30-23:59:59-GMT {
+project simple "Simple Project" "$Id" 2002-06-01-00:00:00-+0000 2002-07-30-23:59:59-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
@@ -43,14 +43,14 @@ shift late "Late Shift" {
     workinghours fri 11:00 - 14:00, 14:30 - 19:30
 }
 resource s1 "Joe Supporter" {
-  shift late 2002-06-14-00:00:00-GMT - 2002-07-02-00:00:00-GMT
-  shift early 2002-07-03-00:00:00-GMT - 2002-07-15-00:00:00-GMT
+  shift late 2002-06-14-00:00:00-+0000 - 2002-07-02-00:00:00-+0000
+  shift early 2002-07-03-00:00:00-+0000 - 2002-07-15-00:00:00-+0000
 }
 resource s2 "Jim Supporter" {
 }
 resource s3 "Sally Supporter" {
-  shift early 2002-06-03-00:00:00-GMT - 2002-07-02-00:00:00-GMT
-  shift late 2002-07-05-00:00:00-GMT - 2002-07-15-00:00:00-GMT
+  shift early 2002-06-03-00:00:00-+0000 - 2002-07-02-00:00:00-+0000
+  shift late 2002-07-05-00:00:00-+0000 - 2002-07-15-00:00:00-+0000
 }
 resource s4 "Karen Supporter" {
 }

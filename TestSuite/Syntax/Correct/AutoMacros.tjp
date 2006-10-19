@@ -1,4 +1,5 @@
-project prj "Auto Macro Test" "1.0" 2006-09-22 +1m {
+project prj "Auto Macro Test" "1.0" 2006-09-22-0:00-UTC +1m {
+	timezone "UTC"
 	now 2006-10-15
 }
 

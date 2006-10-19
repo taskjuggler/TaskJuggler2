@@ -158,6 +158,8 @@ void exitUtility()
 bool
 setTimezone(const char* tZone)
 {
+    UtilityError = "";
+
     if (setenv("TZ", tZone, 1) < 0)
         qFatal("Ran out of space in environment section while "
                "setting timezone.");
@@ -694,7 +696,7 @@ time2tjp(time_t t)
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
 
-    strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%Z", tms);
+    strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%z", tms);
     return QString::fromLocal8Bit(buf);
 }
 
@@ -773,6 +775,8 @@ addTimeToDate(time_t day, time_t hour)
 time_t
 date2time(const QString& date)
 {
+    UtilityError = "";
+
     int y, m, d, hour, min, sec;
     char tZone[64] = "";
     char* savedTZ = 0;
@@ -790,7 +794,10 @@ date2time(const QString& date)
             strcpy(savedTZ, tz);
         }
         if ((tz = timezone2tz(tZone)) == 0)
+        {
             UtilityError = QString(i18n("Illegal timezone %1")).arg(tZone);
+            return 0;
+        }
         else
         {
             if (setenv("TZ", tz, 1) < 0)

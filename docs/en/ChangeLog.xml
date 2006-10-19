@@ -1035,6 +1035,10 @@ reports.</para></listitem>
 <listitem><para>Fixed a bug in the coloring of tasks in HTML reports
 that had a 'complete' specification.</para></listitem>
 
+<listitem><para>Fixed documenation for usage of sorting modes for
+scenario specific columns in reports and make them work
+properly.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

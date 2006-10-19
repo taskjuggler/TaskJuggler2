@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project passive "Passive Resource" "1.0" 2004-11-21-00:00:00-GMT 2004-12-30-23:59:59-GMT {
+project passive "Passive Resource" "1.0" 2004-11-21-00:00:00-+0000 2004-12-30-23:59:59-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
