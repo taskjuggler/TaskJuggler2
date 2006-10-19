@@ -49,8 +49,8 @@ public:
 private:
     TaskDependency() { }    // Don't use this!
     /**
-     * When we read in the project file, we don't know all functions yet. So
-     * we need to store the ID of the dependency and later resolve this to the
+     * When we read in the project file, we don't know all tasks yet. So we
+     * need to store the ID of the dependency and later resolve this to the
      * pointer to the Task.
      */
     QString taskRefId;
