@@ -1039,6 +1039,9 @@ that had a 'complete' specification.</para></listitem>
 scenario specific columns in reports and make them work
 properly.</para></listitem>
 
+<listitem><para>Force <computeroutput>now</computeroutput> date to be
+aligned to the timing resolution.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

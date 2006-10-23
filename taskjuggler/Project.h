@@ -216,7 +216,7 @@ public:
      * Set the date that TaskJuggler uses as current date for all
      * computations. This mainly affects status reporting and the computation
      * of the completion degree of tasks. */
-    void setNow(time_t n) { now = n; }
+    void setNow(time_t n);
     /**
      * Get the date that TaskJuggler uses as current date.
      */

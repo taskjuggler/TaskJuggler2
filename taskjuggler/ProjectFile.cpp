@@ -669,6 +669,8 @@ ProjectFile::readProject()
                     return FALSE;
                 }
                 proj->setScheduleGranularity(resolution);
+
+                proj->setNow(proj->getNow());
             }
             else if (token == KW("timezone"))
             {

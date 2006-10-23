@@ -85,7 +85,7 @@ Project::Project()
 
     start = 0;
     end = 0;
-    now = time(0);
+    setNow(time(0));
 
     minEffort = 0.0;
     resourceLimits = 0;
@@ -247,6 +247,14 @@ int
 Project::getScenarioIndex(const QString& id) const
 {
     return scenarioList.getIndex(id);
+}
+
+void
+Project::setNow(time_t n)
+{
+    /* Align 'now' time to timing resolution. If the resolution is
+     * changed later, this has to be done again. */
+    now = (n / scheduleGranularity) * scheduleGranularity;
 }
 
 void
