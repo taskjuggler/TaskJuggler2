@@ -2587,17 +2587,17 @@ Task::overlayScenario(int base, int sc)
 {
     /* Copy all values that the scenario sc does not provide, but that are
      * provided by the base scenario to the scenario sc. */
-    if (scenarios[sc].specifiedStart == 0.0)
+    if (scenarios[sc].specifiedStart == 0)
         scenarios[sc].specifiedStart = scenarios[base].specifiedStart;
-    if (scenarios[sc].specifiedEnd == 0.0)
+    if (scenarios[sc].specifiedEnd == 0)
         scenarios[sc].specifiedEnd = scenarios[base].specifiedEnd;
-    if (scenarios[sc].minStart == 0.0)
+    if (scenarios[sc].minStart == 0)
         scenarios[sc].minStart = scenarios[base].minStart;
-    if (scenarios[sc].maxStart == 0.0)
+    if (scenarios[sc].maxStart == 0)
         scenarios[sc].maxStart = scenarios[base].maxStart;
-    if (scenarios[sc].minEnd == 0.0)
+    if (scenarios[sc].minEnd == 0)
         scenarios[sc].minEnd = scenarios[base].minEnd;
-    if (scenarios[sc].maxEnd == 0.0)
+    if (scenarios[sc].maxEnd == 0)
         scenarios[sc].maxEnd = scenarios[base].maxEnd;
     if (scenarios[sc].duration == 0.0)
         scenarios[sc].duration =  scenarios[base].duration;
@@ -2699,7 +2699,8 @@ Task::prepareScenario(int sc)
              * degree according to the overall effort. Then the end date of
              * the task is calculated. */
             if (project->getScenario(sc)->getProjectionMode() && effort > 0.0)
-            { scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
+            {
+                scenarios[sc].reportedCompletion = doneEffort / effort * 100.0;
                 if (scenarios[sc].reportedCompletion > 100.0)
                     scenarios[sc].reportedCompletion = 100.0;
 

@@ -670,7 +670,7 @@ Project::overlayScenario(int base, int sc)
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->overlayScenario(base, sc);
 
-    for (ScenarioListIterator sli(scenarioList[base]->getSubListIterator());
+    for (ScenarioListIterator sli(scenarioList[sc]->getSubListIterator());
          *sli; ++sli)
         overlayScenario(sc, (*sli)->getSequenceNo() - 1);
 }

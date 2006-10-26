@@ -1042,6 +1042,10 @@ properly.</para></listitem>
 <listitem><para>Force <computeroutput>now</computeroutput> date to be
 aligned to the timing resolution.</para></listitem>
 
+<listitem><para>Fixed a major bug in the handling of multiple
+scenarios. Values were inherited from peer scenarios instead of their
+parents.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

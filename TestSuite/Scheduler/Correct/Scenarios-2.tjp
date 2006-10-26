@@ -40,7 +40,7 @@ task t4 "Task4" {
 	task t5 "Task5" {
 		task t6 "Task6" {
 			length 5d
-			s7:length 5d
+			s6:length 5d
 		}
 	}
 }
