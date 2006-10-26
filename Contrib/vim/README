@@ -1,7 +1,30 @@
 The vim settings have been contributed by Peter Poeml <poeml@suse.de>.
 
-To use them you need to add the following lines to the respective files:
+To use them you need to do one of the following:
 
+Possibility 1
+=============
+
+For newer versions of vim it might be enough to:
+
+1) Copy the tjp.vim file into the vim syntax directory (e.g.
+/usr/share/vim/vim70/syntax)
+
+2) Add the following lines to your local vimrc file (e.g. ~/.vimrc or
+~/.vimrc.local or something similar)
+
+.vimrc
+       augroup taskjuggler
+       " taskjuggler files
+       au! BufNewFile,BufRead *.tj{p,i} set ft=tjp
+       augroup END
+
+
+Possibility 2
+=============
+
+For a more generic approach try to add the following lines to the
+respective files:
 .vimrc:
        let myfiletypefile = "~/.vim/filetypes.vim"
        let myscriptsfile  = "~/.vim/scripts.vim"
@@ -18,7 +41,7 @@ To use them you need to add the following lines to the respective files:
        " [...]
        "
        " taskjuggler files
-       au! BufNewFile,BufRead *.tjp,*.tji,*.tjp              set ft=tjp
+       au! BufNewFile,BufRead *.tj{p,i} set ft=tjp
        augroup END
 
 
