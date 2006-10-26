@@ -10,6 +10,7 @@ Probably:
 - vacations for tasks (to suspend a part of a project for some time).
 - Interactive account report
 - Add C++ style // comments.
+- 'completedeffort' and 'pendingeffort' column
 
 Maybe:
 - Make vacations and shifts scenario specific.
