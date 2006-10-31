@@ -17,7 +17,7 @@ do_testing()
   f=$1
   op=$2
   echo "Running test $f" >> ../log
-  $TASKJUGGLER --debug 1 $TJARGS $f 2>> ../log
+  $TASKJUGGLER --debug 1 --warnerror $TJARGS $f 2>> ../log
   if [ $? $op 0 ] ; then
     errors=$(( $errors + 1 ))
     echo "Test $f failed!" | tee -a ../log

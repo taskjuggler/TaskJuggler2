@@ -521,6 +521,9 @@ Scheduler (2), Task Scheduler (4), Resource Scheduler (8), Expression
 Tree Evaluator (16). This option is for testing and debugging purposes
 only.</member>
 
+<member>--warnerror</member>
+<member>Warnings are treated as errors.</member>
+
 <member>--updatedb</member>
 <member>Update the Kotrus database with the new resource usage
 information.</member>

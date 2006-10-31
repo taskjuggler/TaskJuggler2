@@ -80,6 +80,7 @@ usage(QApplication& a)
               "                          utilities into the specified file\n"
               "   --maxerrors N        - stop after N errors. If N is 0 show all\n"
               "                          errors\n"
+              "   --warnerrors         - warnings are treated as errors\n"
               "   --nodepcheck         - don't search for dependency loops\n"
               "   --debug N            - print debug output, N must be between\n"
               "                          0 and 40, the higher N the more output\n"
@@ -91,7 +92,7 @@ usage(QApplication& a)
     qWarning
         (i18n(
               "To report bugs please follow the instructions in the "
-              "manual\n"));
+              "manual.\n"));
 }
 
 int main(int argc, char *argv[])
@@ -101,25 +102,26 @@ int main(int argc, char *argv[])
     int debugLevel = 0;
     int debugMode = -1;
     int maxErrors = 10;
-    bool updateKotrusDB = FALSE;
-    bool checkOnlySyntax = FALSE;
-    bool generateMakeDepList = FALSE;
-    bool noDepCheck = FALSE;
-    bool showHelp = FALSE;
-    bool showCopyright = FALSE;
-    bool terminateProgram = FALSE;
+    bool updateKotrusDB = false;
+    bool checkOnlySyntax = false;
+    bool generateMakeDepList = false;
+    bool noDepCheck = false;
+    bool showHelp = false;
+    bool showCopyright = false;
+    bool terminateProgram = false;
+    bool warningAsErrors = false;
     QString makeDepFile;
 
     int i;
     for (i = 1 ; i < a.argc() && a.argv()[i][0] == '-'; i++)
         if (strcmp(a.argv()[i], "--help") == 0)
-            showCopyright = showHelp = TRUE;
+            showCopyright = showHelp = true;
         else if (strcmp(a.argv()[i], "--debug") == 0)
         {
             if (i + 1 >= a.argc())
             {
                 qWarning(i18n("--debug needs numerical argument"));
-                showCopyright = showHelp = terminateProgram = TRUE;
+                showCopyright = showHelp = terminateProgram = true;
             }
             debugLevel = QString(a.argv()[++i]).toInt();
         }
@@ -128,7 +130,7 @@ int main(int argc, char *argv[])
             if (i + 1 >= a.argc())
             {
                 qWarning(i18n("--dbmode needs numerical argument"));
-                showCopyright = showHelp = terminateProgram = TRUE;
+                showCopyright = showHelp = terminateProgram = true;
             }
             debugMode = QString(a.argv()[++i]).toInt();
         }
@@ -137,10 +139,10 @@ int main(int argc, char *argv[])
             if (i + 1 >= a.argc())
             {
                 qWarning(i18n("--makefile needs filename argument"));
-                showCopyright = showHelp = terminateProgram = TRUE;
+                showCopyright = showHelp = terminateProgram = true;
             }
             makeDepFile = a.argv()[++i];
-            generateMakeDepList = TRUE;
+            generateMakeDepList = true;
         }
         else if (strcmp(a.argv()[i], "--maxerrors") == 0)
         {
@@ -149,28 +151,30 @@ int main(int argc, char *argv[])
                 (maxErrors = QString(a.argv()[++i]).toInt(&ok), !ok))
             {
                 qWarning(i18n("--maxerrors needs a numerical argument"));
-                showCopyright = showHelp = terminateProgram = TRUE;
+                showCopyright = showHelp = terminateProgram = true;
             }
         }
         else if (strcmp(a.argv()[i], "--version") == 0 ||
                  strcmp(a.argv()[i], "-v") == 0)
-            showCopyright = TRUE;
+            showCopyright = true;
         else if (strcmp(a.argv()[i], "-s") == 0)
-            checkOnlySyntax = TRUE;
+            checkOnlySyntax = true;
         else if (strcmp(a.argv()[i], "-M") == 0)
-            generateMakeDepList = TRUE;
+            generateMakeDepList = true;
         else if (strcmp(a.argv()[i], "--nodepcheck") == 0)
-            noDepCheck = TRUE;
+            noDepCheck = true;
         else if (strcmp(a.argv()[i], "--updatedb") == 0)
-            updateKotrusDB = TRUE;
+            updateKotrusDB = true;
+        else if (strcmp(a.argv()[i], "--warnerror") == 0)
+            warningAsErrors = true;
         else
-            showCopyright = showHelp = terminateProgram = TRUE;
+            showCopyright = showHelp = terminateProgram = true;
 
     if (a.argc() - i < 1)
     {
         if (!showCopyright && !showHelp)
-            showCopyright = showHelp = TRUE;
-        terminateProgram = TRUE;
+            showCopyright = showHelp = true;
+        terminateProgram = true;
     }
 
     if (showCopyright)
@@ -189,21 +193,21 @@ int main(int argc, char *argv[])
     DebugCtrl.setDebugLevel(debugLevel);
     DebugCtrl.setDebugMode(debugMode);
 
-    bool parseErrors = FALSE;
+    bool parseErrors = false;
 
     char cwd[1024];
     if (getcwd(cwd, 1023) == 0)
         qFatal("main(): getcwd() failed");
     Project p;
     p.setMaxErrors(maxErrors);
-    bool first = TRUE;
+    bool first = true;
     for ( ; i < argc; i++)
     {
         QString fileName = a.argv()[i];
         if (fileName.right(4) == ".tjx")
         {
             XMLFile* xf = new XMLFile(&p);
-            if (!xf->readDOM(fileName, QFile::decodeName(cwd) + "/", "", TRUE))
+            if (!xf->readDOM(fileName, QFile::decodeName(cwd) + "/", "", true))
                 exit(EXIT_FAILURE);
             parseErrors |= !xf->parse();
             delete xf;
@@ -219,28 +223,36 @@ int main(int argc, char *argv[])
                               "for included files and '.tjx' for TaskJuggler "
                               "XML files.")
                          .arg(fileName));
-                // parseErrors = TRUE;
+                // parseErrors = true;
             }
             ProjectFile* pf = new ProjectFile(&p);
-            if (!pf->open(a.argv()[i], QFile::decodeName(cwd) + "/", "", TRUE))
+            if (!pf->open(a.argv()[i], QFile::decodeName(cwd) + "/", "", true))
                 exit(EXIT_FAILURE);
             parseErrors |= !pf->parse();
             if (generateMakeDepList)
                 pf->generateMakeDepList(makeDepFile, !first);
             if (first)
-                first = FALSE;
+                first = false;
             delete pf;
         }
     }
 
     p.readKotrus();
 
-    bool schedulingErrors = FALSE;
-    bool logicalErrors = !p.pass2(noDepCheck, schedulingErrors);
+    bool schedulingErrors = false;
+    int errors = 0;
+    int warnings = 0;
+    bool logicalErrors = !p.pass2(noDepCheck, schedulingErrors, errors,
+                                  warnings);
+    if (warningAsErrors && warnings > 0)
+        logicalErrors = true;
 
+    int oldWarnings = warnings;
     if (!schedulingErrors && !(checkOnlySyntax || generateMakeDepList))
     {
-        schedulingErrors = !p.scheduleAllScenarios();
+        schedulingErrors = !p.scheduleAllScenarios(errors, warnings);
+        if (warningAsErrors && warnings != oldWarnings)
+            schedulingErrors = true;
         if (updateKotrusDB)
             if (parseErrors || logicalErrors || schedulingErrors)
                 qWarning("Due to errors the Kotrus DB will NOT be "

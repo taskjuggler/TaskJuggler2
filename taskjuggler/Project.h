@@ -771,12 +771,12 @@ public:
      * tree has been contructed.
      * @return Only if all tests were successful TRUE is returned.
      */
-    bool pass2(bool noDepCheck, bool& fatalError);
+    bool pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings);
 
-    bool scheduleScenario(Scenario* sc);
+    bool scheduleScenario(Scenario* sc, int& errors, int& warnings);
     void breakScheduling();
     void completeBuffersAndIndices();
-    bool scheduleAllScenarios();
+    bool scheduleAllScenarios(int& errors, int& warnings);
     void generateReports() const;
 
     bool generateXMLReport() const;
@@ -790,9 +790,9 @@ private:
     void prepareScenario(int sc);
     void finishScenario(int sc);
 
-    bool schedule(int sc);
+    bool schedule(int sc, int& errors, int& warnings);
 
-    bool checkSchedule(int sc) const;
+    bool checkSchedule(int sc, int& errors, int& warnings) const;
 
     /// The start date of the project
     time_t start;

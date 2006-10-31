@@ -1270,12 +1270,11 @@ Task::getCredits(int sc, const Interval& period, AccountType acctType,
 }
 
 bool
-Task::xRef(QDict<Task>& hash)
+Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
 {
-    bool error = FALSE;
-
     if (DEBUGPF(5))
         qDebug("Creating cross references for task %s ...", id.latin1());
+    int oldErrors = errors;
 
     QPtrList<TaskDependency> brokenDeps;
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
@@ -1286,7 +1285,7 @@ Task::xRef(QDict<Task>& hash)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
             brokenDeps.append(*tdi);
-            error = TRUE;
+            errors++;
         }
         else
         {
@@ -1295,32 +1294,32 @@ Task::xRef(QDict<Task>& hash)
                 {
                     warningMessage(i18n("No need to specify dependency %1 "
                                       "multiple times.").arg(absId));
-                    error = TRUE;
+                    warnings++;
                     break;
                 }
 
-            if (!error)
+            if (errors == oldErrors)
             {
                 (*tdi)->setTaskRef(t);
                 if (t == this)
                 {
                     errorMessage(i18n("Task '%1' cannot depend on self.")
                                  .arg(id));
-                    error = TRUE;
+                    errors++;
                     break;
                 }
                 if (t->isChildOf(this))
                 {
                     errorMessage(i18n("Task '%1' cannot depend on child.")
                                  .arg(id));
-                    error = TRUE;
+                    errors++;
                     break;
                 }
                 if (isChildOf(t))
                 {
                     errorMessage(i18n("Task '%1' cannot depend on parent.")
                                  .arg(t->id));
-                    error = TRUE;
+                    errors++;
                     break;
                 }
                 // Unidirectional link
@@ -1346,7 +1345,7 @@ Task::xRef(QDict<Task>& hash)
         if ((t = hash.find(absId)) == 0)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
-            error = TRUE;
+            errors++;
         }
         else
         {
@@ -1354,32 +1353,32 @@ Task::xRef(QDict<Task>& hash)
                 if ((*tdi2)->getTaskRef() == t)
                 {
                     warningMessage(i18n("No need to specify dependency '%1'"
-                                      "multiple times").arg(absId));
-                    error = TRUE;
+                                        "multiple times").arg(absId));
+                    errors++;
                     break;
                 }
-            if (!error)
+            if (errors == oldErrors)
             {
                 (*tdi)->setTaskRef(t);
                 if (t == this)
                 {
                     errorMessage(i18n("Task '%1' cannot precede self.")
                                  .arg(id));
-                    error = TRUE;
+                    errors++;
                     break;
                 }
                 if (t->isChildOf(this))
                 {
                     errorMessage(i18n("Task '%1' cannot precede a child.")
                                  .arg(id));
-                    error = TRUE;
+                    errors++;
                     break;
                 }
                 if (isChildOf(t))
                 {
                     errorMessage(i18n("Task '%1' cannot precede parent.")
                                  .arg(t->id));
-                    error = TRUE;
+                    errors++;
                     break;
                 }
                 // Unidirectional link
@@ -1398,7 +1397,7 @@ Task::xRef(QDict<Task>& hash)
         precedes.removeRef(*tdi);
     brokenDeps.clear();
 
-    return !error;
+    return errors == oldErrors;
 }
 
 void
@@ -2341,7 +2340,7 @@ Task::preScheduleOk(int sc)
 }
 
 bool
-Task::scheduleOk(int sc, int& errors) const
+Task::scheduleOk(int sc, int& errors, int& warnings) const
 {
     const QString scenario = project->getScenarioId(sc);
 
@@ -2349,7 +2348,7 @@ Task::scheduleOk(int sc, int& errors) const
      * their sub tasks has errors. */
     int currErrors = errors;
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
-        (*tli)->scheduleOk(sc, errors);
+        (*tli)->scheduleOk(sc, errors, warnings);
     if (errors > currErrors)
     {
         if (DEBUGPS(2))
@@ -2402,7 +2401,7 @@ Task::scheduleOk(int sc, int& errors) const
                             "Limit is: %4")
                        .arg(scenario).arg(id).arg(time2tjp(start))
                        .arg(time2tjp(scenarios[sc].minStart)));
-        errors++;
+        warnings++;
         return FALSE;
     }
     if (scenarios[sc].maxStart != 0 && start > scenarios[sc].maxStart)
@@ -2413,7 +2412,7 @@ Task::scheduleOk(int sc, int& errors) const
                        .arg(scenario).arg(id)
                        .arg(time2tjp(start))
                        .arg(time2tjp(scenarios[sc].maxStart)));
-        errors++;
+        warnings++;
         return FALSE;
     }
     if (end == 0)
@@ -2443,7 +2442,7 @@ Task::scheduleOk(int sc, int& errors) const
                        .arg(scenario).arg(id)
                        .arg(time2tjp(end + 1))
                        .arg(time2tjp(scenarios[sc].minEnd + 1)));
-        errors++;
+        warnings++;
         return FALSE;
     }
     if (scenarios[sc].maxEnd != 0 && end > scenarios[sc].maxEnd)
@@ -2454,7 +2453,7 @@ Task::scheduleOk(int sc, int& errors) const
                        .arg(scenario).arg(id)
                        .arg(time2tjp(end + 1))
                        .arg(time2tjp(scenarios[sc].maxEnd + 1)));
-        errors++;
+        warnings++;
         return FALSE;
     }
     if (!sub->isEmpty())

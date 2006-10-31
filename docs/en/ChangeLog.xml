@@ -1046,6 +1046,9 @@ aligned to the timing resolution.</para></listitem>
 scenarios. Values were inherited from peer scenarios instead of their
 parents.</para></listitem>
 
+<listitem><para>Added support for warnings and turned some
+non-critical errors into warnings.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

@@ -686,19 +686,21 @@ TaskJugglerView::loadProject(const KURL& url)
 
     emit announceRecentURL(url);
 
-    bool errors = FALSE;
+    int errors = 0;
+    int warnings = 0;
     mw->messageListView->clear();
     messageCounter = 0;
     if (!pf->parse())
-        errors = TRUE;
+        errors++;
     delete pf;
     changeStatusBar(i18n("Checking project..."));
     bool fatalError = false;
-    if ((!errors && !project->pass2(FALSE, fatalError)) || fatalError)
-        errors = TRUE;
+    if (errors == 0)
+        project->pass2(false, fatalError, errors, warnings);
+
     changeStatusBar(i18n("Scheduling..."));
-    if (!errors && !project->scheduleAllScenarios())
-        errors = TRUE;
+    if (errors == 0)
+        project->scheduleAllScenarios(errors, warnings);
 
     // Load tasks into Task List View
     updateTaskList();
@@ -719,16 +721,11 @@ TaskJugglerView::loadProject(const KURL& url)
     (dynamic_cast<TaskJuggler*>(parent()))->enableActions(true);
     setLoadingProject(FALSE);
 
-    // We handle warnings like errors, so in case there any messages, we open
-    // the message window.
-    if (messageCounter)
-        errors = TRUE;
-
     // Show message list when errors have occured
     QValueList<int> vl;
     int h = mw->editorSplitter->height();
     KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
-    if (errors)
+    if (errors > 0 || warnings > 0)
     {
         // The messages should be visible, so we check whether we already have
         // a setting for the splitter that is large enough. Otherwise we make

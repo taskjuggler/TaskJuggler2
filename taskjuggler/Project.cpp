@@ -494,16 +494,18 @@ Project::getJournalIterator() const
 }
 
 bool
-Project::pass2(bool noDepCheck, bool& fatalError)
+Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
 {
+    int oldErrors = errors;
+
     if (taskList.isEmpty())
     {
         TJMH.errorMessage(i18n("The project does not contain any tasks."));
+        errors++;
         return FALSE;
     }
 
     QDict<Task> idHash;
-    bool error = FALSE;
 
     /* The optimum size for the localtime hash is twice the number of time
      * slots times 2 (because of timeslot and timeslot - 1s). */
@@ -525,10 +527,8 @@ Project::pass2(bool noDepCheck, bool& fatalError)
     }
     // Create cross links from dependency lists.
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-    {
-        if (!(*tli)->xRef(idHash))
-            error = TRUE;
-    }
+        (*tli)->xRef(idHash, errors, warnings);
+
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
     {
         // Set dates according to implicit dependencies
@@ -560,7 +560,7 @@ Project::pass2(bool noDepCheck, bool& fatalError)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if (!(*tli)->preScheduleOk((*sci)->getSequenceNo() - 1))
             {
-                error = TRUE;
+                errors++;
                 fatalError = true;
             }
 
@@ -574,6 +574,7 @@ Project::pass2(bool noDepCheck, bool& fatalError)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->loopDetector(chkedTaskList))
             {
+                errors++;
                 fatalError = true;
                 return FALSE;
             }
@@ -585,32 +586,31 @@ Project::pass2(bool noDepCheck, bool& fatalError)
             for (TaskListIterator tli(taskList); *tli != 0; ++tli)
                 if (!(*tli)->checkDetermination((*sci)->getSequenceNo() - 1))
                 {
-                    error = TRUE;
+                    errors++;
                     fatalError = true;
                 }
         if (fatalError)
             return false;
     }
 
-    return !error;
+    return errors == oldErrors;
 }
 
 bool
-Project::scheduleScenario(Scenario* sc)
+Project::scheduleScenario(Scenario* sc, int& errors, int& warnings)
 {
-    bool error = FALSE;
+    int oldErrors = errors;
 
     setProgressInfo(i18n("Scheduling scenario %1...").arg(sc->getId()));
 
     int scIdx = sc->getSequenceNo() - 1;
     prepareScenario(scIdx);
 
-    if (!schedule(scIdx))
+    if (!schedule(scIdx, errors, warnings))
     {
         if (DEBUGPS(2))
             qDebug(i18n("Scheduling errors in scenario '%1'.")
                    .arg(sc->getId()));
-        error = TRUE;
         if (breakFlag)
             return false;
     }
@@ -620,12 +620,12 @@ Project::scheduleScenario(Scenario* sc)
     {
         if (!(*rli)->bookingsOk(scIdx))
         {
-            error = TRUE;
+            errors++;
             break;
         }
     }
 
-    return !error;
+    return errors == oldErrors;
 }
 
 void
@@ -643,7 +643,7 @@ Project::completeBuffersAndIndices()
 }
 
 bool
-Project::scheduleAllScenarios()
+Project::scheduleAllScenarios(int& errors, int& warnings)
 {
     bool schedulingOk = TRUE;
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
@@ -653,7 +653,7 @@ Project::scheduleAllScenarios()
                 qDebug(i18n("Scheduling scenario '%1' ...")
                        .arg((*sci)->getId()));
 
-            if (!scheduleScenario(*sci))
+            if (!scheduleScenario(*sci, errors, warnings))
                 schedulingOk = FALSE;
             if (breakFlag)
                 return false;
@@ -730,9 +730,9 @@ Project::finishScenario(int sc)
 }
 
 bool
-Project::schedule(int sc)
+Project::schedule(int sc, int& errors, int& warnings)
 {
-    bool error = FALSE;
+    int oldErrors = errors;
 
     // The scheduling function only cares about leaf tasks. Container tasks
     // are scheduled automatically when all their childern are scheduled. So
@@ -799,7 +799,7 @@ Project::schedule(int sc)
                     if (DEBUGPS(5))
                         qDebug("Marking task '%s' as runaway",
                                (*tli)->getId().latin1());
-                    error = TRUE;
+                    errors++;
                     slot = 0;
                     continue;
                 }
@@ -857,10 +857,11 @@ Project::schedule(int sc)
         setProgressInfo("");
         setProgressBar(0, 0);
         TJMH.errorMessage(i18n("Scheduling aborted on user request"));
+        errors++;
         return false;
     }
 
-    if (error)
+    if (errors != oldErrors)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->isRunaway())
                 if ((*tli)->getScheduling() == Task::ASAP)
@@ -875,17 +876,16 @@ Project::schedule(int sc)
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
 
-    if (!error)
+    if (errors == oldErrors)
         setProgressBar(100, 100);
 
     /* Check that the resulting schedule meets all the requirements that the
      * user has specified. */
     setProgressInfo(i18n("Checking schedule of scenario %1")
                     .arg(getScenarioId(sc)));
-    if (!checkSchedule(sc))
-        error = TRUE;
+    checkSchedule(sc, errors, warnings);
 
-    return !error;
+    return errors == oldErrors;
 }
 
 void
@@ -895,15 +895,15 @@ Project::breakScheduling()
 }
 
 bool
-Project::checkSchedule(int sc) const
+Project::checkSchedule(int sc, int& errors, int& warnings) const
 {
-    int errors = 0;
+    int oldErrors = errors;
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
     {
         /* Only check top-level tasks, since they recursively check their sub
          * tasks. */
         if ((*tli)->getParent() == 0)
-            (*tli)->scheduleOk(sc, errors);
+            (*tli)->scheduleOk(sc, errors, warnings);
         if (maxErrors > 0 && errors >= maxErrors)
         {
             TJMH.errorMessage
@@ -913,7 +913,7 @@ Project::checkSchedule(int sc) const
         }
     }
 
-    return errors == 0;
+    return errors == oldErrors;
 }
 
 Report*
@@ -997,10 +997,12 @@ Project::loadFromXML( const QString& inpFile )
       qDebug("Empty !" );
    }
    bool fatalError;
-   if (!pass2(TRUE, fatalError))
+   int errors = 0;
+   int warnings = 0;
+   if (!pass2(TRUE, fatalError, errors, warnings))
        return FALSE;
-   scheduleAllScenarios();
-   return true;
+   scheduleAllScenarios(errors, warnings);
+   return errors == 0;
 }
 
 
