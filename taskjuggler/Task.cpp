@@ -205,6 +205,18 @@ Task::errorMessage(const char* msg, ...) const
 }
 
 void
+Task::warningMessage(const char* msg, ...) const
+{
+    va_list ap;
+    va_start(ap, msg);
+    char buf[2048];
+    vsnprintf(buf, sizeof(buf), msg, ap);
+    va_end(ap);
+
+    TJMH.warningMessage(buf, definitionFile, definitionLine);
+}
+
+void
 Task::schedule(int sc, time_t& date, time_t slotDuration)
 {
     // Has the task been scheduled already or is it a container?
@@ -1281,7 +1293,7 @@ Task::xRef(QDict<Task>& hash)
             for (QPtrListIterator<TaskDependency> tdi2(depends); *tdi2; ++tdi2)
                 if ((*tdi2)->getTaskRef() == t)
                 {
-                    errorMessage(i18n("No need to specify dependency %1 "
+                    warningMessage(i18n("No need to specify dependency %1 "
                                       "multiple times.").arg(absId));
                     error = TRUE;
                     break;
@@ -1341,7 +1353,7 @@ Task::xRef(QDict<Task>& hash)
             for (QPtrListIterator<TaskDependency> tdi2(precedes); *tdi2; ++tdi2)
                 if ((*tdi2)->getTaskRef() == t)
                 {
-                    errorMessage(i18n("No need to specify dependency '%1'"
+                    warningMessage(i18n("No need to specify dependency '%1'"
                                       "multiple times").arg(absId));
                     error = TRUE;
                     break;
@@ -2385,22 +2397,22 @@ Task::scheduleOk(int sc, int& errors) const
     }
     if (scenarios[sc].minStart != 0 && start < scenarios[sc].minStart)
     {
-        errorMessage(i18n("'%1' start time of task '%2' is too early\n"
-                          "Date is:  %3\n"
-                          "Limit is: %4")
-                     .arg(scenario).arg(id).arg(time2tjp(start))
-                     .arg(time2tjp(scenarios[sc].minStart)));
+        warningMessage(i18n("'%1' start time of task '%2' is too early\n"
+                            "Date is:  %3\n"
+                            "Limit is: %4")
+                       .arg(scenario).arg(id).arg(time2tjp(start))
+                       .arg(time2tjp(scenarios[sc].minStart)));
         errors++;
         return FALSE;
     }
     if (scenarios[sc].maxStart != 0 && start > scenarios[sc].maxStart)
     {
-        errorMessage(i18n("'%1' start time of task '%2' is too late\n"
-                          "Date is:  %3\n"
-                          "Limit is: %4")
-                     .arg(scenario).arg(id)
-                     .arg(time2tjp(start))
-                     .arg(time2tjp(scenarios[sc].maxStart)));
+        warningMessage(i18n("'%1' start time of task '%2' is too late\n"
+                            "Date is:  %3\n"
+                            "Limit is: %4")
+                       .arg(scenario).arg(id)
+                       .arg(time2tjp(start))
+                       .arg(time2tjp(scenarios[sc].maxStart)));
         errors++;
         return FALSE;
     }
@@ -2425,23 +2437,23 @@ Task::scheduleOk(int sc, int& errors) const
     }
     if (scenarios[sc].minEnd != 0 && end < scenarios[sc].minEnd)
     {
-        errorMessage(i18n("'%1' end time of task '%2' is too early\n"
-                          "Date is:  %3\n"
-                          "Limit is: %4")
-                     .arg(scenario).arg(id)
-                     .arg(time2tjp(end + 1))
-                     .arg(time2tjp(scenarios[sc].minEnd + 1)));
+        warningMessage(i18n("'%1' end time of task '%2' is too early\n"
+                            "Date is:  %3\n"
+                            "Limit is: %4")
+                       .arg(scenario).arg(id)
+                       .arg(time2tjp(end + 1))
+                       .arg(time2tjp(scenarios[sc].minEnd + 1)));
         errors++;
         return FALSE;
     }
     if (scenarios[sc].maxEnd != 0 && end > scenarios[sc].maxEnd)
     {
-        errorMessage(i18n("'%1' end time of task '%2' is too late\n"
-                          "Date is:  %2\n"
-                          "Limit is: %3")
-                     .arg(scenario).arg(id)
-                     .arg(time2tjp(end + 1))
-                     .arg(time2tjp(scenarios[sc].maxEnd + 1)));
+        warningMessage(i18n("'%1' end time of task '%2' is too late\n"
+                            "Date is:  %2\n"
+                            "Limit is: %3")
+                       .arg(scenario).arg(id)
+                       .arg(time2tjp(end + 1))
+                       .arg(time2tjp(scenarios[sc].maxEnd + 1)));
         errors++;
         return FALSE;
     }
