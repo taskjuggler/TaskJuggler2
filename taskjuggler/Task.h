@@ -341,7 +341,8 @@ public:
     bool checkDetermination(int sc) const;
     void computeBuffers();
     time_t nextSlot(time_t slotDuration) const;
-    void schedule(int sc, time_t& reqStart, time_t duration);
+    bool isReadyForScheduling() const;
+    bool schedule(int sc, time_t& reqStart, time_t duration);
     void propagateStart(int sc, bool safeMode = TRUE);
     void propagateEnd(int sc, bool safeMode = TRUE);
     void propagateInitialValues(int sc);

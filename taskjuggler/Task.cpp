@@ -216,12 +216,12 @@ Task::warningMessage(const char* msg, ...) const
     TJMH.warningMessage(buf, definitionFile, definitionLine);
 }
 
-void
+bool
 Task::schedule(int sc, time_t& date, time_t slotDuration)
 {
     // Has the task been scheduled already or is it a container?
     if (schedulingDone || !sub->isEmpty())
-        return;
+        return false;
 
     if (DEBUGTS(15))
         qDebug("Trying to schedule %s at %s",
@@ -231,7 +231,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
     {
         if (start == 0 ||
             (effort == 0.0 && length == 0.0 && duration == 0.0 && end == 0))
-            return;
+            return false;
 
         if (lastSlot == 0)
         {
@@ -245,7 +245,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         /* Do not schedule anything if the time slot is not directly
          * following the time slot that was previously scheduled. */
         if (!((date - slotDuration <= lastSlot) && (lastSlot < date)))
-            return;
+            return false;
 
         lastSlot = date + slotDuration - 1;
     }
@@ -253,7 +253,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
     {
         if (end == 0 ||
             (effort == 0.0 && length == 0.0 && duration == 0.0 && start == 0))
-            return;
+            return false;
 
         if (lastSlot == 0)
         {
@@ -268,7 +268,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
          * directly preceding the previously scheduled time slot. */
         if (!((date + slotDuration <= lastSlot) &&
             (lastSlot < date + 2 * slotDuration)))
-            return;
+            return false;
         lastSlot = date;
     }
 
@@ -316,7 +316,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             schedulingDone = TRUE;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
-            return;
+            return true;
         }
     }
     else if (effort > 0.0)
@@ -342,7 +342,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             schedulingDone = TRUE;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
-            return;
+            return true;
         }
     }
     else if (milestone)
@@ -358,7 +358,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             start = end + 1;
             propagateStart(sc);
         }
-        return;
+        return true;
     }
     else if (start != 0 && end != 0)
     {
@@ -372,11 +372,11 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
             schedulingDone = TRUE;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
-            return;
+            return true;
         }
     }
 
-    return;
+    return false;
 }
 
 bool
@@ -2533,12 +2533,31 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
 time_t
 Task::nextSlot(time_t slotDuration) const
 {
-    /* This function returns the start of the next time slot this task wants
-     * to be scheduled in. If there is no such slot because the tasks does not
-     * yet have all necessary information, 0 is returned. This also happens
-     * when the task has already be completely scheduled. */
+    if (scheduling == ASAP)
+    {
+        if (lastSlot == 0)
+            return start;
+        return lastSlot + 1;
+    }
+    else
+    {
+        if (lastSlot == 0)
+            return end - slotDuration + 1;
+
+        return lastSlot - slotDuration;
+    }
+
+    return 0;
+}
+
+bool
+Task::isReadyForScheduling() const
+{
+    /* This function returns true if the tasks has all the necessary
+     * information to be scheduled and has not been completely scheduled yet.
+     */
     if (schedulingDone)
-        return 0;
+        return false;
 
     if (scheduling == ASAP)
     {
@@ -2546,14 +2565,10 @@ Task::nextSlot(time_t slotDuration) const
         {
             if (effort == 0.0 && length == 0.0 && duration == 0.0 &&
                 !milestone && end == 0)
-                return 0;
+                return false;
 
-            if (lastSlot == 0)
-                return start;
-            return lastSlot + 1;
+            return true;
         }
-        else
-            return 0;
     }
     else
     {
@@ -2561,18 +2576,13 @@ Task::nextSlot(time_t slotDuration) const
         {
             if (effort == 0.0 && length == 0.0 && duration == 0.0 &&
                 !milestone && start == 0)
-                return 0;
+                return false;
 
-            if (lastSlot == 0)
-                return end - slotDuration + 1;
-
-            return lastSlot - slotDuration;
+            return true;
         }
-        else
-            return 0;
     }
 
-    return 0;
+    return false;
 }
 
 bool

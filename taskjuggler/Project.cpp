@@ -737,19 +737,29 @@ Project::schedule(int sc, int& errors, int& warnings)
     // The scheduling function only cares about leaf tasks. Container tasks
     // are scheduled automatically when all their childern are scheduled. So
     // we create a task list that only contains leaf tasks.
-    TaskList sortedTasks;
-    int leafTasks = 0;
+    TaskList allLeafTasks;
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         if (!(*tli)->hasSubs())
-        {
-            sortedTasks.append(*tli);
-            leafTasks++;
-        }
+            allLeafTasks.append(*tli);
 
-    sortedTasks.setSorting(CoreAttributesList::PrioDown, 0);
-    sortedTasks.setSorting(CoreAttributesList::PathCriticalnessDown, 1);
-    sortedTasks.setSorting(CoreAttributesList::SequenceUp, 2);
-    sortedTasks.sort();
+    allLeafTasks.setSorting(CoreAttributesList::PrioDown, 0);
+    allLeafTasks.setSorting(CoreAttributesList::PathCriticalnessDown, 1);
+    allLeafTasks.setSorting(CoreAttributesList::SequenceUp, 2);
+    allLeafTasks.sort();
+
+    /* The workItems list contains all tasks that are ready to be scheduled at
+     * any given iteration. When a tasks has been scheduled completely, this
+     * list needs to be updated again as some tasks may now have become ready
+     * to be scheduled. */
+    TaskList workItems;
+    int sortedTasks = 0;
+    for (TaskListIterator tli(allLeafTasks); *tli != 0; ++tli)
+    {
+        if ((*tli)->isReadyForScheduling())
+            workItems.append(*tli);
+        if ((*tli)->isSchedulingDone())
+            sortedTasks++;
+    }
 
     bool done;
     /* While the scheduling process progresses, the list contains more and
@@ -758,7 +768,6 @@ Project::schedule(int sc, int& errors, int& warnings)
      * the list when we start, we initialize the timer with a very large
      * number so the first round of cleanup is done right after the first
      * scheduling pass. */
-    int cleanupTimer = 100000;
     breakFlag = false;
     do
     {
@@ -772,7 +781,7 @@ Project::schedule(int sc, int& errors, int& warnings)
          * task that can be scheduled. It the determines the time slot that
          * will be scheduled during this run for all subsequent tasks as well.
          */
-        for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
+        for (TaskListIterator tli(workItems); *tli != 0; ++tli)
         {
             if (slot == 0)
             {
@@ -829,27 +838,29 @@ Project::schedule(int sc, int& errors, int& warnings)
                 break;
 
             // Schedule this task for the current time slot.
-            (*tli)->schedule(sc, slot, scheduleGranularity);
+            if ((*tli)->schedule(sc, slot, scheduleGranularity))
+            {
+                workItems.clear();
+                int oldSortedTasks = sortedTasks;
+                sortedTasks = 0;
+                for (TaskListIterator tli(allLeafTasks); *tli != 0; ++tli)
+                {
+                    if ((*tli)->isReadyForScheduling())
+                        workItems.append(*tli);
+                    if ((*tli)->isSchedulingDone())
+                        sortedTasks++;
+                }
+                // Update the progress bar after every 10th completed tasks.
+                if (oldSortedTasks / 10 != sortedTasks / 10)
+                {
+                    setProgressBar(sortedTasks - allLeafTasks.count(),
+                                   sortedTasks);
+                    setProgressInfo
+                        (i18n("Scheduling scenario %1 at %1")
+                         .arg(getScenarioId(sc)).arg(time2tjp(slot)));
+                }
+            }
         }
-
-        /* Remove all fully scheduled tasks from the list in regular
-         * intervals. This is fairly expensive, so we need to balance the
-         * frequency with the performance improvements due to the shortened
-         * list. We also provide progress feedback via a signal. */
-        if (++cleanupTimer > 4000)
-        {
-            cleanupTimer = 0;
-            TaskList tmpList;
-            for (TaskListIterator tli(sortedTasks); *tli != 0; ++tli)
-                if (!(*tli)->isSchedulingDone())
-                    tmpList.append(*tli);
-            sortedTasks = tmpList;
-            setProgressBar(leafTasks - sortedTasks.count(), leafTasks);
-            setProgressInfo
-                (i18n("Scheduling scenario %1 at %1")
-                 .arg(getScenarioId(sc)).arg(time2tjp(slot)));
-        }
-
     } while (!done && !breakFlag);
 
     if (breakFlag)

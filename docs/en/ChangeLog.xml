@@ -1049,6 +1049,9 @@ parents.</para></listitem>
 <listitem><para>Added support for warnings and turned some
 non-critical errors into warnings.</para></listitem>
 
+<listitem><para>Improved scheduling performance for projects with
+long dependency chains.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

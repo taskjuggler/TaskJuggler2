@@ -33,6 +33,10 @@ public:
         // By default we are always using the first scenario for sorting.
         sortScenario = 0;
     }
+    TaskList(const TaskList& tl) : CoreAttributesList(tl)
+    {
+        sortScenario = tl.sortScenario;
+    }
     virtual ~TaskList() { }
 
     Task* getTask(const QString& id) const;
