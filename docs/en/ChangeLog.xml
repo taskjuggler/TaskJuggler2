@@ -1052,6 +1052,10 @@ non-critical errors into warnings.</para></listitem>
 <listitem><para>Improved scheduling performance for projects with
 long dependency chains.</para></listitem>
 
+<listitem><para>More meaningful error messages for some impossible
+combinations of fixed start/end times and
+dependencies.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

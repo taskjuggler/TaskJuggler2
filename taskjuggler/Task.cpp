@@ -382,46 +382,34 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
 bool
 Task::scheduleContainer(int sc, bool safeMode)
 {
-    if (schedulingDone)
+    if (schedulingDone || !isContainer())
         return TRUE;
 
-    time_t nstart = 0;
-    time_t nend = 0;
+    time_t nStart = 0;
+    time_t nEnd = 0;
 
-    TaskListIterator tli(*sub);
-    // Check that this is really a container task
-    if (*tli != 0)
-    {
-        if ((*tli)->start == 0 || (*tli)->end == 0)
-            return TRUE;
-        nstart = (*tli)->start;
-        nend = (*tli)->end;
-    }
-    else
-        return TRUE;
-
-    for ( ++tli; *tli != 0; ++tli)
+    for (TaskListIterator tli(*sub); *tli != 0; ++tli)
     {
         /* Make sure that all sub tasks have been scheduled. If not we
          * can't yet schedule this task. */
         if ((*tli)->start == 0 || (*tli)->end == 0)
             return TRUE;
 
-        if ((*tli)->start < nstart)
-            nstart = (*tli)->start;
-        if ((*tli)->end > nend)
-            nend = (*tli)->end;
+        if (nStart == 0 || (*tli)->start < nStart)
+            nStart = (*tli)->start;
+        if ((*tli)->end > nEnd)
+            nEnd = (*tli)->end;
     }
 
-    if (start == 0 || (!depends.isEmpty() && start < nstart))
+    if (start == 0 || start > nStart)
     {
-        start = nstart;
+        start = nStart;
         propagateStart(sc, safeMode);
     }
 
-    if (end == 0 || (!precedes.isEmpty() && nend < end))
+    if (end == 0 || end < nEnd)
     {
-        end = nend;
+        end = nEnd;
         propagateEnd(sc, safeMode);
     }
 
@@ -2493,7 +2481,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
     }
 
     // Check if all previous tasks end before start of this task.
-    for (TaskListIterator tli(previous); *tli != 0; ++tli)
+    for (TaskListIterator tli(predecessors); *tli != 0; ++tli)
         if ((*tli)->end > start && !(*tli)->runAway)
         {
             errorMessage(i18n("Impossible dependency:\n"
@@ -2505,14 +2493,14 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
             return FALSE;
         }
     // Check if all following task start after this tasks end.
-    for (TaskListIterator tli(followers); *tli != 0; ++tli)
+    for (TaskListIterator tli(successors); *tli != 0; ++tli)
         if (end > (*tli)->start && !(*tli)->runAway)
         {
             errorMessage(i18n("Impossible dependency:\n"
                               "Task '%1' starts at %2 but needs to follow\n"
                               "task %3 which has a '%4' end time of %5")
                          .arg((*tli)->id).arg(time2tjp((*tli)->start))
-                         .arg(id).arg(scenario).arg(time2tjp(end)));
+                         .arg(id).arg(scenario).arg(time2tjp(end + 1)));
             errors++;
             return FALSE;
         }
@@ -2522,7 +2510,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
         errorMessage(i18n("Task '%1' has not been marked completed.\n"
                           "It is scheduled to last from %2 to %3.\n"
                           "This might be a bug in the TaskJuggler scheduler.")
-                     .arg(id).arg(time2tjp(start)).arg(time2tjp(end)));
+                     .arg(id).arg(time2tjp(start)).arg(time2tjp(end + 1)));
         errors++;
         return FALSE;
     }
