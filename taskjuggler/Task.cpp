@@ -3043,8 +3043,12 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime)
         {
             // We've reached the end of a path. Now let's see if it's critical.
             long overallDuration = getEnd(sc) - pathStart;
+            /* A path is considered critical if the ratio of busy time and
+             * overall path time is above the minSlack threshold and the path
+             * contains more than one task. */
             critical = ((double) busyTime / overallDuration) >
-                       (1.0 - minSlack);
+                       (1.0 - minSlack) &&
+                       pathStart < getStart(sc);
             if (critical)
             {
                 if (DEBUGPA(5))
