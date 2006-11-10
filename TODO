@@ -3,6 +3,7 @@ Work in progress (for next version):
 - Limit iCal calendar entries to actually allocated time slots.
 - Check FreeBSD repository patches
   (http://www.freebsd.org/cgi/cvsweb.cgi/ports/deskutils/taskjuggler/files/)
+- Add 'extend' support for accounts.
 
 Probably:
 - Macros to do date/time arithmetic.
