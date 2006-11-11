@@ -90,13 +90,14 @@ bool
 Shift::isOnShift(const Interval& iv) const
 {
     int dow = dayOfWeek(iv.getStart(), FALSE);
+    int ivStart = secondsOfDay(iv.getStart());
+    int ivEnd = secondsOfDay(iv.getEnd());
+    Interval dayIv(ivStart, ivEnd);
     for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
-    {
-        if ((*ili)->contains(Interval(secondsOfDay(iv.getStart()),
-                                  secondsOfDay(iv.getEnd()))))
-            return TRUE;
-    }
-    return FALSE;
+        if ((*ili)->contains(dayIv))
+            return true;
+
+    return false;
 }
 
 bool

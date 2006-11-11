@@ -660,12 +660,10 @@ ProjectFile::readProject()
                                       "min"));
                     return FALSE;
                 }
-                if (resolution >
-                    (ulong) ((proj->getEnd() - proj->getStart()) / 24))
+                if (resolution > 60 * 60)
                 {
-                    errorMessage(i18n("timing resolution must be at least "
-                                      "24 times smaller than the project "
-                                      "duration"));
+                    errorMessage(i18n("timing resolution may not exceed "
+                                      "1 hour"));
                     return FALSE;
                 }
                 proj->setScheduleGranularity(resolution);
