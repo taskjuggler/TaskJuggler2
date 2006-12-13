@@ -1288,7 +1288,7 @@ TjGanttChart::drawDependencies(const Task* t1,
     {
         /* If the parent has the same follower, it's an inherited dependency
          * and we don't have to draw the arrows for every sub task. */
-        if ((*tli)->getParent() && (*tli)->getParent()->hasPrevious(t1))
+        if (t1->getParent() && t1->getParent()->hasFollower(*tli))
             continue;
 
         int t2x = time2x((*tli)->getStart(scenario));

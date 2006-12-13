@@ -1063,6 +1063,9 @@ caused too many hazards in corner case situations.</para></listitem>
 <listitem><para>Fixed <computeroutput>gaplength</computeroutput> for
 time units other than days.</para></listitem>
 
+<listitem><para>Really hide all inherited dependency arrows in Gantt
+chart.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
