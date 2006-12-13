@@ -5595,7 +5595,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         else if (token == KW("gaplength"))
         {
             double d;
-            if (!readTimeFrame(d, FALSE, scenarioIdx > 0))
+            if (!readTimeFrame(d, TRUE, scenarioIdx > 0))
                 return FALSE;
             /* Set the length and round it down to be a multiple of the
              * schedule granularity. */

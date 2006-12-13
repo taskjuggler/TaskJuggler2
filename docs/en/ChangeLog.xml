@@ -1060,6 +1060,9 @@ dependencies.</para></listitem>
 timingresolution between 5 minutes and 1 hour. Larger resolutions
 caused too many hazards in corner case situations.</para></listitem>
 
+<listitem><para>Fixed <computeroutput>gaplength</computeroutput> for
+time units other than days.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
