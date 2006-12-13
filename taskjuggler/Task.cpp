@@ -2041,7 +2041,7 @@ Task::hasEndDependency() const
         return TRUE;
 
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
-        if ((*tli)->hasStartDependency())
+        if ((*tli)->hasEndDependency())
             return TRUE;
 
     return FALSE;
