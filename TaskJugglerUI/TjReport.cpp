@@ -999,8 +999,28 @@ TjReport::showTaskDetails(const Task* task)
             .arg(time2tjp(task->getEnd(scenario) + 1))
             .arg(task->getStatusText(scenario));
 
+        if (task->getEffort(scenario) > 0.0)
+        {
+            const ReportElement* reportElement = getReportElement();
+            double completion = task->getCompletionDegree(scenario) / 100.0;
+            text += i18n("<hr/><b>Effort:</b> %1<br/>"
+                         "<b>Completion degree:</b> %2%<br/>"
+                         "<b>Done effort:</b> %3<br/>"
+                         "<b>Remaining effort:</b> %4<br/>")
+                .arg(reportElement->scaledLoad
+                 (task->getEffort(scenario), report->getNumberFormat(),
+                  true, false))
+                .arg(task->getCompletionDegree(scenario))
+                .arg(reportElement->scaledLoad
+                     (task->getEffort(scenario) * completion,
+                      report->getNumberFormat(), true, false))
+                .arg(reportElement->scaledLoad
+                     (task->getEffort(scenario) * (1.0 - completion),
+                      report->getNumberFormat(), true, false));
+        }
+
         if (!task->getStatusNote(scenario).isEmpty())
-            text += i18n("<b>Note:</b> %1</br>")
+            text += i18n("<b>Note:</b> %1<br/>")
                 .arg(task->getStatusNote(scenario));
     }
 
@@ -1012,7 +1032,7 @@ TjReport::showTaskDetails(const Task* task)
     QString successors;
     for (TaskListIterator tli(task->getFollowersIterator()); *tli; ++tli)
         successors += "<li>" + (*tli)->getName() + " (" + (*tli)->getId() +
-            ")<br/>";
+            ")<li/>";
 
     if (!predecessors.isEmpty() || !successors.isEmpty())
     {

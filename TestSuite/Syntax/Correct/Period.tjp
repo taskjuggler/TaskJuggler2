@@ -1,4 +1,6 @@
-project prj "Period Project" "1.0" 2006-09-24 +3m
+project prj "Period Project" "1.0" 2006-09-24 +3m {
+	now 2006-10-02
+}
 
 task items "Project breakdown" {
   start ${projectstart}

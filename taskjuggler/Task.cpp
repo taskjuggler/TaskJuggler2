@@ -2721,6 +2721,21 @@ Task::prepareScenario(int sc)
                      * scheduled. */
                     end = scenarios[sc].end = lastSlot;
                     schedulingDone = TRUE;
+
+                    if (project->getScenario(sc)->getStrictBookings() &&
+                        doneEffort > effort)
+                    {
+                        /* In case the bookings exceed the specified effort
+                         * in strict mode, show a warning. */
+                        warningMessage(i18n("Bookings exceed effort on task "
+                                            "%1 in scenario %2\n"
+                                            "Booking: %3\n"
+                                            "Effort: %4\n")
+                                       .arg(id)
+                                       .arg(project->getScenarioId(sc))
+                                       .arg(doneEffort)
+                                       .arg(effort));
+                    }
                 }
                 else
                     lastSlot = project->getNow() - 1;

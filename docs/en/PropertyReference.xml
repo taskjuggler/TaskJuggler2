@@ -2507,7 +2507,9 @@ task.</para></descr>
   scenario. In strict mode, no bookings will be filled in for
   any task prior to the current (or now) date. In sloppy mode all task
   that don't have any bookings provided will be filled with bookings
-  according to the original schedule.</para></descr>
+  according to the original schedule. TaskJuggler will generate a
+  warning for each task where the booked effort excedes the specified
+  effort.</para></descr>
   <seealso>
    <also>booking</also>
    <also>sloppy</also>
