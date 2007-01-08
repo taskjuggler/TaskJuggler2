@@ -974,6 +974,10 @@ TjReport::showTaskDetails(const Task* task)
     richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
     QString text;
+    text = i18n("<b>Task:</b> %1 (%2)<br/>")
+        .arg(task->getName())
+        .arg(task->getId());
+
     if (!task->getNote().isEmpty())
     {
         if (!text.isEmpty())
@@ -1081,7 +1085,11 @@ TjReport::showResourceDetails(Resource* resource)
     double load = resource->getLoad(scenario, iv);
     double freeLoad = resource->getAvailableWorkLoad(scenario, iv);
 
-    text = i18n("<b>Effort:</b> %1 <b>Free Load:</b> %2 "
+    text = i18n("<b>Resource:</b> %1 (%2)<br/>")
+        .arg(resource->getName())
+        .arg(resource->getId());
+
+    text += i18n("<hr><b>Effort:</b> %1 <b>Free Load:</b> %2 "
                 "<b>Utilization:</b> %3%")
         .arg(scaledLoad(load, numberFormat, true))
         .arg(scaledLoad(freeLoad, numberFormat, true))
