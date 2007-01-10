@@ -43,6 +43,8 @@
 #include "HTMLAccountReportElement.h"
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLWeeklyCalendarElement.h"
+#include "HTMLMonthlyCalendar.h"
+#include "HTMLMonthlyCalendarElement.h"
 #include "HTMLStatusReport.h"
 #include "HTMLReportElement.h"
 #include "QtReport.h"
@@ -459,6 +461,7 @@ ProjectFile::parse()
             else if (token == KW("htmltaskreport") ||
                      token == KW("htmlresourcereport") ||
                      token == KW("htmlweeklycalendar") ||
+                     token == KW("htmlmonthlycalendar") ||
                      token == KW("htmlaccountreport"))
             {
                if (!readHTMLReport(token))
@@ -3762,6 +3765,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
     {
         report = new HTMLWeeklyCalendar(proj, token, getFile(), getLine());
         tab = ((HTMLWeeklyCalendar*) report)->getTable();
+    }
+    else if (reportType == KW("htmlmonthlycalendar"))
+    {
+        report = new HTMLMonthlyCalendar(proj, token, getFile(), getLine());
+        tab = ((HTMLMonthlyCalendar*) report)->getTable();
     }
     else if (reportType == KW("htmlaccountreport"))
     {

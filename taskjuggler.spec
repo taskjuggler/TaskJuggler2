@@ -59,7 +59,7 @@ companion you don't want to miss anymore.
 
 Authors:
 --------
-    Chris Schläger <cs@suse.de>,
+    Chris Schläger <cs@kde.org>,
     Klaas Freitag <freitag@suse.de>
     Lukas Tinkl <lukas.tinkl@suse.cz>
 

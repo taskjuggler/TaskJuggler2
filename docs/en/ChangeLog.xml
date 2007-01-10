@@ -1008,6 +1008,8 @@ critical path analyzer. Larger projects that made heavy use of
 inherited dependencies had an exponentially growing run time of these
 components.</para></listitem>
 
+<listitem><para>Added monthly calendar HTML report.</para></listitem>
+
 <listitem><para>The threshold for the critical path detection now
 defaults to 10%. All pathes that have less than 10% slack time will be
 marked as critical.</para></listitem>

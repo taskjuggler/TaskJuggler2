@@ -1,11 +1,11 @@
 Begin3
 Title:          TaskJuggler 
-Version:        2.1.1
+Version:        2.3.1
 Entered-date:   
 Description:    Project Management Software
 Keywords:       project planing, scheduling, project management, tasks, milestones, gantt
-Author:         Chris Schlaeger <cs@suse.de> 
-Maintained-by:  Chris Schlaeger <cs@suse.de> 
+Author:         Chris Schlaeger <cs@kde.org> 
+Maintained-by:  Chris Schlaeger <cs@kde.org> 
 Primary-site:   http://www.taskjuggler.org	        
 Home-page:      http://www.taskjuggler.org 
 Original-site:  http://www.taskjuggler.org

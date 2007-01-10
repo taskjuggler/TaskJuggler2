@@ -155,6 +155,7 @@ reports should be specified.</para></descr>
    <optattr>htmlresourcereport</optattr>
    <optattr>htmlstatusreport</optattr>
    <optattr>htmltaskreport</optattr>
+   <optattr>htmlmonthlycalendar</optattr>
    <optattr>htmlweeklycalendar</optattr>
    <optattr>include</optattr>
    <optattr>macro</optattr>
@@ -1177,6 +1178,46 @@ page.</para></descr>
   </seealso>
   <example>&example_account;</example>
  </property>
+ <property name="htmlmonthlycalendar" id="htmlmonthlycalendar" inheritable="No">
+  <descr><para>Generates a calendar like HTML report with one column
+  for each month.</para></descr>
+  <attributes>
+   <attr name="file" type="STRING"/>
+  </attributes>
+  <optattributes>
+   <optattr>accumulate</optattr>
+   <optattr>barlabels</optattr>
+   <optattr>caption</optattr>
+   <optattr>columns</optattr>
+   <optattr>end_report</optattr>
+   <optattr>headline</optattr>
+   <optattr>hideresource</optattr>
+   <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
+   <optattr>period_report</optattr>
+   <optattr>rawhead</optattr>
+   <optattr>rawstylesheet</optattr>
+   <optattr>rawtail</optattr>
+   <optattr>rollupresource</optattr>
+   <optattr>rolluptask</optattr>
+   <optattr>scenarios</optattr>
+   <optattr>shorttimeformat</optattr>
+   <optattr>showprojectids</optattr>
+   <optattr>sortresources</optattr>
+   <optattr>sorttasks</optattr>
+   <optattr>start_report</optattr>
+   <optattr>taskroot</optattr>
+   <optattr>timeformat</optattr>
+   <optattr>weekdays</optattr>
+  </optattributes>
+  <seealso>
+   <also>htmlaccountreport</also>
+   <also>htmlresourcereport</also>
+   <also>htmltaskreport</also>
+   <also>htmlstatusreport</also>
+   <also>htmlweeklycalendar</also>
+  </seealso>
+ </property>
  <property name="htmlresourcereport" id="htmlresourcereport" inheritable="No">
   <descr><para>The report lists all resources and their respective
 values as a HTML page. The tasks that the resources are allocated to
@@ -1241,6 +1282,7 @@ tasks. The default reporting interval is 1 week.</para></descr>
    <also>htmlaccountreport</also>
    <also>htmlresourcereport</also>
    <also>htmltaskreport</also>
+   <also>htmlmonthlycalendar</also>
    <also>htmlweeklycalendar</also>
   </seealso>
  </property>
@@ -1284,7 +1326,8 @@ listed as well.</para></descr>
   </seealso>
  </property>
  <property name="htmlweeklycalendar" id="htmlweeklycalendar" inheritable="No">
-  <descr><para>Generates a calendar like HTML report.</para></descr>
+  <descr><para>Generates a calendar like HTML report with one row for
+  each week.</para></descr>
   <attributes>
    <attr name="file" type="STRING"/>
   </attributes>
@@ -1316,6 +1359,7 @@ listed as well.</para></descr>
   </optattributes>
   <seealso>
    <also>htmlaccountreport</also>
+   <also>htmlmonthlycalendar</also>
    <also>htmlresourcereport</also>
    <also>htmltaskreport</also>
    <also>htmlstatusreport</also>
