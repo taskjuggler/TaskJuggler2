@@ -55,10 +55,13 @@ syn keyword tjspkeyword allowredefinitions
 syn keyword tjspkeyword alternative
 syn keyword tjspkeyword asap
 syn keyword tjspkeyword barlabels
+syn keyword tjspkeyword baseline
 syn keyword tjspkeyword booking
+syn keyword tjspkeyword bookings
 syn keyword tjspkeyword caption
 syn keyword tjspkeyword celltext
 syn keyword tjspkeyword cellurl
+syn keyword tjspkeyword chart
 syn keyword tjspkeyword columns
 syn keyword tjspkeyword complete
 syn keyword tjspkeyword completed
@@ -77,6 +80,7 @@ syn keyword tjspkeyword csvtaskreport
 syn keyword tjspkeyword currency
 syn keyword tjspkeyword currencydigits
 syn keyword tjspkeyword currencyformat
+syn keyword tjspkeyword customer
 syn keyword tjspkeyword d
 syn keyword tjspkeyword daily
 syn keyword tjspkeyword dailymax
@@ -90,6 +94,7 @@ syn keyword tjspkeyword duration
 syn keyword tjspkeyword efficiency
 syn keyword tjspkeyword effort
 syn keyword tjspkeyword empty
+syn keyword tjspkeyword enabled
 syn keyword tjspkeyword end
 syn keyword tjspkeyword endbuffer
 syn keyword tjspkeyword endbufferstart
@@ -110,6 +115,7 @@ syn keyword tjspkeyword fullnameup
 syn keyword tjspkeyword gapduration
 syn keyword tjspkeyword gaplength
 syn keyword tjspkeyword h
+syn keyword tjspkeyword hasAssignments
 syn keyword tjspkeyword headline
 syn keyword tjspkeyword hideaccount
 syn keyword tjspkeyword hidecelltext
@@ -120,10 +126,12 @@ syn keyword tjspkeyword hierarchindex
 syn keyword tjspkeyword hierarchno
 syn keyword tjspkeyword hours
 syn keyword tjspkeyword htmlaccountreport
+syn keyword tjspkeyword htmlmonthlycalendar
 syn keyword tjspkeyword htmlresourcereport
 syn keyword tjspkeyword htmlstatusreport
 syn keyword tjspkeyword htmltaskreport
 syn keyword tjspkeyword htmlweeklycalendar
+syn keyword tjspkeyword icalreport
 syn keyword tjspkeyword id
 syn keyword tjspkeyword iddown
 syn keyword tjspkeyword idup
@@ -147,6 +155,7 @@ syn keyword tjspkeyword isChildOf
 syn keyword tjspkeyword isDutyOf
 syn keyword tjspkeyword isLeaf
 syn keyword tjspkeyword isMilestone
+syn keyword tjspkeyword isOnCriticalPath
 syn keyword tjspkeyword isParentOf
 syn keyword tjspkeyword isplanallocated
 syn keyword tjspkeyword isResource
@@ -183,6 +192,7 @@ syn keyword tjspkeyword mineffortdown
 syn keyword tjspkeyword mineffortup
 syn keyword tjspkeyword minend
 syn keyword tjspkeyword minloaded
+syn keyword tjspkeyword minslackrate
 syn keyword tjspkeyword minstart
 syn keyword tjspkeyword minutes
 syn keyword tjspkeyword mon
@@ -202,8 +212,8 @@ syn keyword tjspkeyword now
 syn keyword tjspkeyword numberformat
 syn keyword tjspkeyword off
 syn keyword tjspkeyword ontime
-syn keyword tjspkeyword optimize
 syn keyword tjspkeyword order
+syn keyword tjspkeyword overtime
 syn keyword tjspkeyword pathcriticalness
 syn keyword tjspkeyword pathcriticalnessdown
 syn keyword tjspkeyword pathcriticalnessup
@@ -218,6 +228,7 @@ syn keyword tjspkeyword project
 syn keyword tjspkeyword projectid
 syn keyword tjspkeyword projectids
 syn keyword tjspkeyword projection
+syn keyword tjspkeyword properties
 syn keyword tjspkeyword quarter
 syn keyword tjspkeyword quarterly
 syn keyword tjspkeyword random
@@ -252,9 +263,11 @@ syn keyword tjspkeyword seqno
 syn keyword tjspkeyword sequencedown
 syn keyword tjspkeyword sequenceup
 syn keyword tjspkeyword shift
+syn keyword tjspkeyword shifts
 syn keyword tjspkeyword shortauto
 syn keyword tjspkeyword shorttimeformat
 syn keyword tjspkeyword showprojectids
+syn keyword tjspkeyword sloppy
 syn keyword tjspkeyword sortaccounts
 syn keyword tjspkeyword sortresources
 syn keyword tjspkeyword sorttasks
@@ -270,6 +283,7 @@ syn keyword tjspkeyword status
 syn keyword tjspkeyword statusdown
 syn keyword tjspkeyword statusnote
 syn keyword tjspkeyword statusup
+syn keyword tjspkeyword strict
 syn keyword tjspkeyword subtitle
 syn keyword tjspkeyword subtitleurl
 syn keyword tjspkeyword sun
@@ -281,6 +295,7 @@ syn keyword tjspkeyword taskid
 syn keyword tjspkeyword taskprefix
 syn keyword tjspkeyword taskreport
 syn keyword tjspkeyword taskroot
+syn keyword tjspkeyword tasks
 syn keyword tjspkeyword text
 syn keyword tjspkeyword thu
 syn keyword tjspkeyword timeformat
@@ -300,6 +315,7 @@ syn keyword tjspkeyword version
 syn keyword tjspkeyword w
 syn keyword tjspkeyword wed
 syn keyword tjspkeyword week
+syn keyword tjspkeyword weekdays
 syn keyword tjspkeyword weekly
 syn keyword tjspkeyword weeklymax
 syn keyword tjspkeyword weeks
@@ -313,7 +329,6 @@ syn keyword tjspkeyword year
 syn keyword tjspkeyword yearly
 syn keyword tjspkeyword yearlyworkingdays
 syn keyword tjspkeyword years
-"syn keyword tjpmilestone 	contained	  milestone
 syn region  tjpstring	start=+"+ skip=+\\"+ end=+"+ contains=tjparch 
 syn region  tjpstring	start=+`+ skip=+\\'+ end=+'+ contains=tjparch 
 syn region  tjpstring	start=+`+ skip=+\\'+ end=+`+ contains=tjparch 
@@ -355,4 +370,5 @@ endif
 let b:current_syntax = "tjp"
 
 " vim: ts=4
+
 
