@@ -16,6 +16,7 @@
 #include <time.h>
 #include <set>
 #include <map>
+#include <vector>
 
 #include <qstring.h>
 #include <qlistview.h>
@@ -42,6 +43,7 @@ class JournalIterator;
 class TjPrintReport;
 class TjObjPosTable;
 class TjGanttChart;
+class TableColumnInfo;
 
 class TjReport : public TjUIReportBase
 {
@@ -153,6 +155,12 @@ protected:
     /* For nested lists we need to be able to map the lvi to the parent
      * CoreAttributes. */
     std::map<const QString, CoreAttributes*, ltQString> lvi2ParentCaDict;
+
+    /* The interactive reports don't have a 1:1 mapping between the defintion
+     * and the column in the widget. Some special columns are not included in
+     * the widget. To link a widget column back to the TCI we need this list.
+     */
+    std::vector<TableColumnInfo*> lvCol2tci;
 
     /**
      * This is the maximum indentation of the list view. It only takes visible

@@ -774,6 +774,8 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
     listView->setSortOrder(Qt::Ascending);
     listView->setSortColumn(1);
 
+    lvCol2tci.clear();
+
     showGantt = false;
     int col = 2;
     for (QPtrListIterator<TableColumnInfo>
@@ -795,6 +797,9 @@ TjReport::generateListHeader(const QString& firstHeader, QtReportElement* tab)
             col--;
             continue;
         }
+
+        /* Store a reference to the column info in the lvCol2tci map. */
+        lvCol2tci.insert(lvCol2tci.end(), ci);
 
         const TableColumnFormat* tcf =
             tab->getColumnFormat((*ci)->getName());
@@ -837,8 +842,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
-    const TableColumnInfo* tci =
-        this->getReportElement()->columnsAt(column - 1);
+    const TableColumnInfo* tci = lvCol2tci[column - 2];
 
     if (ca->getType() == CA_Task &&
         tci->getName() == "note" &&
