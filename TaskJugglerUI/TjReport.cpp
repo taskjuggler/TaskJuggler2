@@ -838,7 +838,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
     const TableColumnInfo* tci =
-        this->getReportElement()->columnsAt(column - 2);
+        this->getReportElement()->columnsAt(column - 1);
 
     if (ca->getType() == CA_Task &&
         tci->getName() == "note" &&
