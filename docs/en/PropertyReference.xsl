@@ -7,7 +7,7 @@
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
  <xsl:template match="properties">
-  <chapter><title>Property Reference</title>
+  <chapter id="property_reference"><title>Property Reference</title>
   <xsl:apply-templates select="property"/>
   </chapter>
  </xsl:template>

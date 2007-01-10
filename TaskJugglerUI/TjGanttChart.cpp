@@ -1067,6 +1067,10 @@ TjGanttChart::generateGanttElements()
 void
 TjGanttChart::drawTask(const Task* t, const Resource* r)
 {
+    /* Make sure we only draw properly scheduled tasks. */
+    if (t->getStart(scenario) == 0 || t->getEnd(scenario) == 0)
+        return;
+
     int y;
     if (r)
         y = objPosTable->caToPos(r, t);
@@ -1286,6 +1290,10 @@ TjGanttChart::drawDependencies(const Task* t1,
     int yPos = objPosTable->caToPos(t1) + minRowHeight / 2;
     for (TaskListIterator tli(t1->getFollowersIterator()); *tli; ++tli)
     {
+        /* We only handle properly scheduled tasks. */
+        if ((*tli)->getStart(scenario) == 0 || (*tli)->getEnd(scenario) == 0)
+            continue;
+
         /* If the parent has the same follower, it's an inherited dependency
          * and we don't have to draw the arrows for every sub task. */
         if (t1->getParent() && t1->getParent()->hasFollower(*tli))
@@ -1296,6 +1304,11 @@ TjGanttChart::drawDependencies(const Task* t1,
         int i = 0;
         for (TaskListIterator stli(sortedFollowers); *stli; ++stli, ++i)
         {
+            /* We only handle properly scheduled tasks. */
+            if ((*stli)->getStart(scenario) == 0 ||
+                (*stli)->getEnd(scenario) == 0)
+                continue;
+
             int t3x = time2x((*tli)->getStart(scenario));
             int t3y = objPosTable->caToPos(*stli);
             if (t3y < 0)
@@ -1315,6 +1328,10 @@ TjGanttChart::drawDependencies(const Task* t1,
 
     for (TaskListIterator tli(sortedFollowers); *tli; ++tli)
     {
+        /* We only handle properly scheduled tasks. */
+        if ((*tli)->getStart(scenario) == 0 || (*tli)->getEnd(scenario) == 0)
+            continue;
+
         /* If the parent has the same follower, it's an inherited dependency
          * and we don't have to draw the arrows for every sub task. */
         if ((*tli)->getParent() && (*tli)->getParent()->hasPrevious(t1))
@@ -1460,6 +1477,9 @@ TjGanttChart::drawTaskResource(Resource* r, const Task* t)
 {
     assert(zoomSteps.size() > 0);
 
+    if (t->getStart(scenario) == 0 || t->getEnd(scenario) == 0)
+        return;
+
     /* For each time interval we draw a column that represents the load of the
      * resource allocated to the task. The end columns are trimmed to be in
      * the same horizontal interval as the task bar. */
@@ -1492,6 +1512,9 @@ void
 TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
                                     time_t start, time_t end, int rY)
 {
+    if (t && (t->getStart(scenario) == 0 || t->getEnd(scenario) == 0))
+        return;
+
     // Determin the width of the cell that we draw the column in.
     int cellStart = time2x(start);
     int cellEnd = time2x(end);
@@ -1639,7 +1662,8 @@ TjGanttChart::zoomToFitWindow(int width, time_t duration)
     {
         if ((*it)->getPixelsPerYear() * years < width)
             return;
-        currentZoomStep++;
+        if (currentZoomStep < zoomSteps.size() - 1)
+          currentZoomStep++;
     }
 }
 
@@ -1663,7 +1687,7 @@ TjGanttChart::allTasksInterval()
                 ((*it)->getSubCoreAttributes());
         else
             continue;
-        if (t->getStart(scenario) < startTime)
+        if (t->getStart(scenario) != 0 && t->getStart(scenario) < startTime)
             startTime = t->getStart(scenario);
         if (t->getEnd(scenario) > endTime)
             endTime = t->getEnd(scenario);

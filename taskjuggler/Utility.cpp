@@ -713,6 +713,9 @@ time2rfc(time_t t)
 QString
 time2user(time_t t, const QString& timeFormat, bool localtime)
 {
+    if (t == 0)
+        return i18n("undefined");
+
     const struct tm* tms;
     if (localtime)
         tms = clocaltime(&t);
