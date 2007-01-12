@@ -1,29 +1,27 @@
 #
-# spec file for package taskjuggler (Version 2.2.0_beta1 )
+# spec file for package taskjuggler (Version 2.2.0)
 #
-# Copyright (c) 2005 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2006 SUSE LINUX Products GmbH, Nuernberg, Germany.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
-# Please submit bugfixes or comments via http://bugs.opensuse.org
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
 # norootforbuild
-# neededforbuild  docbook-dsssl-stylesheets docbook-utils docbook-xsl-stylesheets docbook_4 jadetex kde3-devel-packages kdepim3 kdepim3-devel openjade opensp tetex
 
-BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel gettext-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv klogd less libacl libattr libcom_err libgcc libnscd libselinux libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel Mesa Mesa-devel arts arts-devel autoconf automake binutils docbook-dsssl-stylesheets docbook-utils docbook-xsl-stylesheets docbook_4 expat fam fam-devel fontconfig fontconfig-devel freeglut freeglut-devel freetype2 freetype2-devel gcc gcc-c++ gdbm gettext glib2 glib2-devel gnome-filesystem jack jack-devel jadetex kdelibs3 kdelibs3-devel kdelibs3-doc kdepim3 kdepim3-devel libacl-devel libart_lgpl libart_lgpl-devel libattr-devel libdrm libdrm-devel libgcrypt libgcrypt-devel libgpg-error libgpg-error-devel libidn libidn-devel libjpeg libjpeg-devel liblcms liblcms-devel libmng libmng-devel libpng libpng-devel libstdc++-devel libtiff libtiff-devel libtool libxml2 libxml2-devel libxslt libxslt-devel openjade opensp openssl-devel pcre pcre-devel perl pkgconfig python qt3 qt3-devel rpm te_ams te_latex tetex unsermake update-desktop-files xorg-x11-devel xorg-x11-libs
-
-Name:         taskjuggler
-URL:          http://www.taskjuggler.org
-License:      GPL
-Group:        Productivity/Office/Other
-Summary:      Project management software
-Version:      2.2.0_beta2 
-Release:      1
-Source0:      taskjuggler-%{version}.tar.bz2 
-Requires:     qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
+Name:           taskjuggler
+BuildRequires:  docbook-utils docbook-xsl-stylesheets kdelibs3-devel kdepim3-devel te_ams
+URL:            http://www.taskjuggler.org
+License:        GPL
+Group:          Productivity/Office/Other
+Summary:        Project management software
+Version:        2.3.0
+Release:        19
+Source0:        taskjuggler-%{version}.tar.bz2 
+Requires:       qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
 # Patch1:       fix-gcc41.diff
-BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
 %description
 TaskJuggler is a project management tool for Linux and UNIX-like
@@ -59,7 +57,7 @@ companion you don't want to miss anymore.
 
 Authors:
 --------
-    Chris Schläger <cs@kde.org>,
+    Chris Schläger <cs@suse.de>,
     Klaas Freitag <freitag@suse.de>
     Lukas Tinkl <lukas.tinkl@suse.cz>
 
@@ -76,7 +74,10 @@ update_admin --no-unsermake
  --libdir=/opt/kde3/%_lib \
  --with-qt-libraries=/usr/lib/qt3/%_lib \
  --disable-final
+pushd docs
 make
+popd
+make %{?jobs:-j %jobs}
 
 %install
 %define tjdocdir  $RPM_BUILD_ROOT/%{_docdir}/taskjuggler/
@@ -92,9 +93,13 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mv $RPM_BUILD_ROOT/opt/kde3/bin/taskjuggler $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/%_lib
 mv $RPM_BUILD_ROOT/opt/kde3/%_lib/libtaskjuggler* $RPM_BUILD_ROOT/usr/%_lib/
+%if %suse_version > 1000
+%suse_update_desktop_file -G "Project Management" taskjuggler ProjectManagement
+%else
 %suse_update_desktop_file taskjuggler ProjectManagement
+%endif
 # install the kate hilighting, cleanup
-cd Contrib/kate; make install
+cd Contrib/kate; make install; cd ../..
 rm -rf %{tjdocdir}/Contrib/kate
 # remove la files
 rm $RPM_BUILD_ROOT/%{_libdir}/libtaskjuggler.la
@@ -102,6 +107,7 @@ rm $RPM_BUILD_ROOT/%{_libdir}/libtaskjuggler.la
 rm %{tjdocdir}/Contrib/Makefile*
 rm %{tjdocdir}/*.html
 rm -rf %{tjdocdir}/Contrib/tjGUI
+%find_lang %name
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -126,10 +132,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/taskjuggler/Contrib/emacs
 %{_docdir}/taskjuggler/Contrib/vim
 %package kde
-Provides:     taskjuggler-kde
-Summary:      Project Management Software for KDE
-Group:        Productivity/Office/Other
-Autoreqprov:  on
+Summary:        Project Management Software for KDE
+Group:          Productivity/Office/Other
+Autoreqprov:    on
 
 %description kde
 TaskJuggler is a project management tool for Linux and UNIX based
@@ -148,7 +153,7 @@ Authors:
     Lukas Tinkl <lukas.tinkl@suse.cz>
 
 
-%files kde
+%files kde -f %name.lang
 %defattr(-,root,root)
 /opt/kde3/bin/TaskJuggler*
 /opt/kde3/share/icons/??color/??x??
@@ -163,6 +168,22 @@ Authors:
 /usr/share/applications/kde
 
 %changelog -n taskjuggler
+* Tue Aug 08 2006 - dmueller@suse.de
+- fix build
+* Wed Jun 21 2006 - dmueller@suse.de
+- Remove self-provides taskjuggler-kde (#186079)
+* Tue Jun 20 2006 - stbinner@suse.de
+- fix build for older distributions
+* Wed Jun 14 2006 - dmueller@suse.de
+- build parallel
+* Wed Feb 15 2006 - stbinner@suse.de
+- remove "Software" from GenericName in .desktop file
+* Wed Jan 25 2006 - mls@suse.de
+- converted neededforbuild to BuildRequires
+* Mon Dec 05 2005 - stbinner@suse.de
+- Update to version 2.2.0
+* Wed Nov 23 2005 - stbinner@suse.de
+- Update to version 2.2.0_beta2.
 * Sun Nov 06 2005 - cs@suse.de
 - Update to version 2.2.0_beta1.
 - Cleaned up the spec file. The Perl stuff is no longer needed.

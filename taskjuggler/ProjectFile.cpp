@@ -145,6 +145,14 @@ ProjectFile::open(const QString& file, const QString& parentPath,
 
     openFiles.append(fi);
     includedFiles.append(absFileName);
+
+    macros.setMacro(new Macro("projectstart", time2tjp(proj->getStart()),
+                              openFiles.last()->getFile(), 0));
+    macros.setMacro(new Macro("projectend", time2tjp(proj->getEnd() + 1),
+                              openFiles.last()->getFile(), 0));
+    macros.setMacro(new Macro("now", time2tjp(proj->getNow()),
+                              openFiles.last()->getFile(), 0));
+
     return TRUE;
 }
 

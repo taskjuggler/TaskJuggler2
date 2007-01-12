@@ -108,6 +108,8 @@ TjResourceReport::generateList()
         else
             newLvi = new KListViewItem(listView, (*rli)->getName());
 
+        newLvi->setText(1, QString().sprintf("%07d", i++));
+
         // Store the new LVI into the dictionary and check if we have reached
         // a new tree level maximum.
         ca2lviDict[QString("r:") + (*rli)->getId()] = newLvi;
@@ -175,6 +177,8 @@ TjResourceReport::generateList()
                     // Insert the task as child of the resource.
                     lvi = new KListViewItem(newLvi, (*tli)->getName());
                 }
+                lvi->setText(1, QString().sprintf("%07d", i++));
+
                 // The the proper icon for the task.
                 lvi->setPixmap(0, KGlobal::iconLoader()->
                                loadIcon(((*tli)->isContainer() ?
@@ -192,7 +196,6 @@ TjResourceReport::generateList()
                     maxDepth = treeLevel(lvi);
             }
         }
-        newLvi->setText(1, QString().sprintf("%05d", i++));
     }
 
     // Now we know the maximum tree depth and can fill in the rest of the

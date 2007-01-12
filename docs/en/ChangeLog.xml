@@ -1071,6 +1071,16 @@ chart.</para></listitem>
 <listitem><para>Fix several crashes when the user is viewing reports
 in the UI after an unsuccessfull scheduling run.</para></listitem>
 
+<listitem><para>Make sure that the macros
+<computeroutput>projectstart</computeroutput>,
+<computeroutput>projectend</computeroutput> and
+<computeroutput>now</computeroutput> are properly defined in all files when
+multiple files are specified on the command line.</para></listitem>
+
+<listitem><para>Fix sorting of tasks in interactive resource reports
+and sorting of resources in interactive task
+reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

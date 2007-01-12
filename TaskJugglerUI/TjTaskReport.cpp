@@ -121,6 +121,7 @@ TjTaskReport::generateList()
         }
         else
             newLvi = new KListViewItem(listView, (*tli)->getName());
+        newLvi->setText(1, QString().sprintf("%07d", i++));
 
         ca2lviDict[QString("t:") + (*tli)->getId()] = newLvi;
         lvi2caDict[QString().sprintf("%p", newLvi)] = *tli;
@@ -164,11 +165,11 @@ TjTaskReport::generateList()
                     ":" + (*rli)->getId()] = lvi;
                 lvi2caDict[QString().sprintf("%p", lvi)] = *rli;
                 lvi2ParentCaDict[QString().sprintf("%p", lvi)] = *tli;
+                lvi->setText(1, QString().sprintf("%07d", i++));
                 if (treeLevel(lvi) > maxDepth)
                     maxDepth = treeLevel(lvi);
             }
         }
-        newLvi->setText(1, QString().sprintf("%05d", i++));
     }
 
     // Now we know the maximum tree depth and can fill in the rest of the
