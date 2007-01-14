@@ -245,6 +245,7 @@ task.</para></descr>
    <optattr>limits</optattr>
    <optattr>mandatory</optattr>
    <optattr>persistent</optattr>
+   <optattr>purge</optattr>
    <optattr>select</optattr>
    <optattr>shift_selection</optattr>
   </optattributes>
@@ -1008,6 +1009,9 @@ property.</para></descr>
 resource</varname> or <varname> account</varname></para>
    </attr>
   </attributes>
+  <optattributes>
+   <optattr>inherit</optattr>
+  </optattributes>
   <freestyle>
    <para>&lt;type&gt; &lt;id&gt; &lt;name&gt;</para>
 
@@ -1126,6 +1130,10 @@ contents.</para></descr>
    <also>hidecelltext</also>
   </seealso>
   <example>&example_columns;</example>
+ </property>
+ <property name="inherit" id="inherit" inheritable="No">
+  <descr><para>If this flag is present a user defined attribute gets
+  inherited by child properties when specified for a parent.</para></descr>
  </property>
  <property name="hideresource" id="hideresource" inheritable="No">
   <descr><para>Do not show resources that match the specified logical
@@ -1961,6 +1969,16 @@ date.</para></descr> <optattributes>
   </freestyle> 
   <example>&example_export;</example>
  </property>
+ <property name="purge" id="purge" inheritable="No">
+  <descr><para>This attribute can be used to purge inherited flags or
+  allocations. Possible values for
+  <computeroutput>attributeName</computeroutput> are
+  <computeroutput>allocations</computeroutput> or
+  <computeroutput>flags</computeroutput>.</para></descr>
+  <attributes>
+   <attr name="attributeName" type="ID"/>
+  </attributes>
+ </property>
  <property name="rate" id="rate" inheritable="Yes">
   <descr><para>Specifies the daily costs of the resource. The amount
 are credited to the account specified with the task that makes use of
@@ -2634,6 +2652,7 @@ what task.</para></descr>
    <optattr>precedes</optattr>
    <optattr>priority</optattr>
    <optattr>projectid</optattr>
+   <optattr>purge</optattr>
    <optattr>reference</optattr>
    <optattr>responsible</optattr>
    <optattr>scheduled</optattr>

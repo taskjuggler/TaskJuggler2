@@ -1504,6 +1504,23 @@ ProjectFile::readTaskBody(Task* task)
                     return FALSE;
                 }
             }
+            else if (token == KW("purge"))
+            {
+                do
+                {
+                    tt= nextToken(token);
+                    if (token == KW("allocations"))
+                        task->purgeAllocations();
+                    else if (token == KW("flags"))
+                        task->purgeFlags();
+                    else
+                    {
+                        errorMessage(i18n("Unknown attribute %1").arg(token));
+                        return FALSE;
+                    }
+                } while ((tt = nextToken(token)) == COMMA);
+                returnToken(tt, token);
+            }
             else if (token == KW("allocate"))
             {
                 do
@@ -2278,6 +2295,21 @@ ProjectFile::readResourceBody(Resource* r)
                     break;
                 }
             }
+        }
+        else if (token == KW("purge"))
+        {
+            do
+            {
+                tt= nextToken(token);
+                if (token == KW("flags"))
+                    r->purgeFlags();
+                else
+                {
+                    errorMessage(i18n("Unknown attribute %1").arg(token));
+                    return FALSE;
+                }
+            } while ((tt = nextToken(token)) == COMMA);
+            returnToken(tt, token);
         }
         else if (token == KW("journalentry"))
         {

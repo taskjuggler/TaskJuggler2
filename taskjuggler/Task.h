@@ -125,6 +125,7 @@ public:
     bool addShift(const Interval& i, Shift* s);
 
     void addAllocation(Allocation* a) { allocations.append(a); }
+    void purgeAllocations() { allocations.clear(); }
     QPtrListIterator<Allocation> getAllocationIterator() const
     {
         return QPtrListIterator<Allocation>(allocations);

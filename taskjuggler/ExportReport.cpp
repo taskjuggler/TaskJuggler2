@@ -691,6 +691,8 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                     if (task->getFlagList().empty())
                         break;
 
+                    s << QString().fill(' ', indent + 2) << "purge flags"
+                        << endl;
                     s << QString().fill(' ', indent + 2) << "flags ";
                     QStringList fl = task->getFlagList();
                     bool first = TRUE;

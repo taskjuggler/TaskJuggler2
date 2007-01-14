@@ -72,6 +72,7 @@ public:
 
     bool hasSubs() const;
     void addFlag(QString flag) { flags.addFlag(flag); }
+    void purgeFlags() { flags.clear(); }
     void clearFlag(const QString& flag) { flags.clearFlag(flag); }
     bool hasFlag(const QString& flag) { return flags.hasFlag(flag); }
     FlagList getFlagList() const { return flags; }

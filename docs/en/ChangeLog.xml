@@ -1081,6 +1081,10 @@ multiple files are specified on the command line.</para></listitem>
 and sorting of resources in interactive task
 reports.</para></listitem>
 
+<listitem><para>Added new attribute
+<computeroutput>purge</computeroutput> to clear inherited allocations 
+and flags from a task or resource.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
