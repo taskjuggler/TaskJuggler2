@@ -364,7 +364,7 @@ of the cells of the column in HTML reports.</para></descr>
   <example>&example_columns;</example>
  </property>
  <property name="columns" id="columns" inheritable="No">
-  <descr><para>Specifies which columns shell be included in a
+  <descr><para>Specifies which columns shall be included in a
 report.</para>
 
 <para>All columns support macro expansion. Contrary to the normal
