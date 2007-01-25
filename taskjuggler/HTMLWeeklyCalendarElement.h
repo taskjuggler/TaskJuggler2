@@ -24,24 +24,27 @@ public:
     ~HTMLWeeklyCalendarElement();
 
     void setDaysToShow(QBitArray& days);
+    void setTaskReport(bool tRep) { taskReport = tRep; }
 
     bool generate();
 
 private:
     void generateTableHeader(bool weekStartsMonday);
     void generateWeekHeader(bool weekStartsMonday, time_t week);
-    void generateTaksPerDay(time_t& week, TaskList& filteredTaskList,
+    bool generateTaksPerDay(time_t& week, TaskList& filteredTaskList,
+                            ResourceList& filteredResourceList,
                             bool weekStartsMonday);
-    void generateResourcesPerDay(time_t& week,
+    bool generateResourcesPerDay(time_t& week,
                                  ResourceList& filteredResourceList,
+                                 TaskList& filteredTaskList,
                                  bool weekStartsMonday);
 
     bool showThisDay(int dayIndex, bool weekStartsMonday);
-
     HTMLWeeklyCalendarElement() { }
 
     QBitArray daysToShow;
     unsigned int numberOfDays;
+    bool taskReport;
 } ;
 
 #endif

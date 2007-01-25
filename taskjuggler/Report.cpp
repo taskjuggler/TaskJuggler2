@@ -382,8 +382,7 @@ const
                 if ((*rli)->getLoad(*it, Interval(start, end),
                                     AllAccounts, t) > 0.0)
                 {
-                    taskLoadedInAnyScenario =
-                        TRUE;
+                    taskLoadedInAnyScenario = TRUE;
                     break;
                 }
         }

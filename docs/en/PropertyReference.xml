@@ -1353,6 +1353,7 @@ listed as well.</para></descr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
+   <optattr>resourcereport_type</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
    <optattr>scenarios</optattr>
@@ -2093,6 +2094,10 @@ listed as well.</para></descr>
    <also>taskreport</also>
   </seealso>
   <example>&example_guireport;</example>
+ </property>
+ <property name="resourcereport" id="resourcereport_type" inheritable="No">
+  <descr><para>This attribute switches a calendar report from task
+  report mode to resource report mode.</para></descr>
  </property>
  <property name="responsible" id="responsible" inheritable="Yes">
    <descr><para>The ID of the resource that is responsible for this

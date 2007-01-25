@@ -4115,6 +4115,10 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     goto exit_error;
                 ((HTMLWeeklyCalendarElement*) tab)->setDaysToShow(days);
             }
+            else if (token == KW("resourcereport"))
+            {
+                ((HTMLWeeklyCalendarElement*) tab)->setTaskReport(false);
+            }
             else if (token == KW("notimestamp"))
             {
                 report->setTimeStamp(FALSE);

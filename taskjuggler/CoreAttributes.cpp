@@ -121,14 +121,13 @@ CoreAttributes::getHierarchIndex() const
 {
     QString text;
     const CoreAttributes* ca = this;
-    do
+    while (ca)
     {
         if (!text.isEmpty())
             text = "." + text;
         text = QString("%1").arg(ca->hierarchIndex) + text;
         ca = ca->getParent();
     }
-    while (ca);
     return text;
 }
 

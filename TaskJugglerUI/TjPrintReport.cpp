@@ -463,19 +463,19 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
         else if ((*ci)->getName() == "hierarchindex")
         {
             if (!task)
-                cellText = task->getHierarchIndex();
+                cellText = resource->getHierarchIndex();
         }
         else if ((*ci)->getName() == "hierarchno")
         {
             if (!task)
-                cellText = task->getHierarchNo();
+                cellText = resource->getHierarchNo();
         }
         else if ((*ci)->getName() == "id")
             cellText = resource->getFullId();
         else if ((*ci)->getName() == "index")
         {
             if (!task)
-                cellText.sprintf("%d.", task->getIndex());
+                cellText.sprintf("%d.", resource->getIndex());
         }
         else if ((*ci)->getName() == "maxeffort")
         {
@@ -526,7 +526,7 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
         else if ((*ci)->getName() == "seqno")
         {
             if (!task)
-                cellText.sprintf("%d.", task->getSequenceNo());
+                cellText.sprintf("%d.", resource->getSequenceNo());
         }
         else if ((*ci)->getName() == "utilization")
         {

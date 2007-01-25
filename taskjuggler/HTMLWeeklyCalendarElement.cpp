@@ -52,6 +52,7 @@ HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r,
     for (unsigned int i = 0; i < 7; ++i)
         daysToShow.setBit(i);
     numberOfDays = 7;
+    taskReport = true;
 }
 
 HTMLWeeklyCalendarElement::~HTMLWeeklyCalendarElement()
@@ -153,10 +154,10 @@ HTMLWeeklyCalendarElement::generateWeekHeader(bool weekStartsMonday,
     s() << "  </tr>" << endl;
 }
 
-void
-HTMLWeeklyCalendarElement::generateTaksPerDay(time_t& wd,
-                                              TaskList& filteredTaskList,
-                                              bool weekStartsMonday)
+bool
+HTMLWeeklyCalendarElement::generateTaksPerDay(
+   time_t& wd, TaskList& filteredTaskList, ResourceList& filteredResourceList,
+   bool weekStartsMonday)
 {
     // Generate a row with lists the tasks for each day.
     s() << "  <tr style=\"background-color:"
@@ -199,6 +200,27 @@ HTMLWeeklyCalendarElement::generateTaksPerDay(time_t& wd,
                 tli1.fontFactor = 40;
                 generateLine(&tli1, 2);
             }
+
+            if (!filterResourceList(filteredResourceList, *tli,
+                                    getHideResource(), getRollUpResource()))
+                return FALSE;
+            sortResourceList(filteredResourceList);
+            int rNo = 1;
+            for (ResourceListIterator rli(filteredResourceList); *rli != 0;
+                 ++rli, ++rNo)
+            {
+                TableLineInfo tli2;
+                tli2.ca1 = tli2.resource = *rli;
+                tli2.ca2 = tli2.task = *tli;
+                for (uint sc = 0; sc < scenarios.count(); ++sc)
+                {
+                    tli2.row = sc;
+                    tli2.sc = scenarios[sc];
+                    tli2.idxNo = rNo;
+                    tli2.fontFactor = 30;
+                    generateLine(&tli2, sc == 0 ? 4 : 5);
+                }
+            }
         }
         if (!first)
             s() << "     </table>" << endl;
@@ -207,11 +229,14 @@ HTMLWeeklyCalendarElement::generateTaksPerDay(time_t& wd,
         end = savedEnd;
     }
     s() << "  </tr>" << endl;
+
+    return true;
 }
 
-void
+bool
 HTMLWeeklyCalendarElement::generateResourcesPerDay
-    (time_t& wd, ResourceList& filteredResourceList, bool weekStartsMonday)
+    (time_t& wd, ResourceList& filteredResourceList,
+     TaskList& filteredTaskList, bool weekStartsMonday)
 {
     // Generate a table row which lists the resources for each day.
     s() << "  <tr style=\"background-color:"
@@ -253,6 +278,41 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
                 tli2.fontFactor = 40;
                 generateLine(&tli2, 4);
             }
+
+            /* We only want to show the nested task list for leaf resources.
+             * Leaf in this case means "task has no visible childs". */
+            bool hasVisibleChilds = FALSE;
+            for (ResourceListIterator cli((*rli)->getSubListIterator());
+                 *cli; ++cli)
+                if (filteredResourceList.findRef(*cli) >= 0)
+                {
+                    hasVisibleChilds = TRUE;
+                    break;
+                }
+
+            if (hasVisibleChilds)
+                continue;
+
+            if (!filterTaskList(filteredTaskList, *rli, hideTask, rollUpTask))
+                return FALSE;
+            sortTaskList(filteredTaskList);
+
+            int tNo = 1;
+            for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli,
+                 ++tNo)
+            {
+                TableLineInfo tli2;
+                tli2.ca1 = tli2.task = *tli;
+                tli2.ca2 = tli2.resource = *rli;
+                for (uint sc = 0; sc < scenarios.count(); ++sc)
+                {
+                    tli2.row = sc;
+                    tli2.sc = scenarios[sc];
+                    tli2.idxNo = tNo;
+                    tli2.fontFactor = 30;
+                    generateLine(&tli2, sc == 0 ? 2 : 3);
+                }
+            }
         }
         if (!first)
             s() << "     </table>" << endl;
@@ -261,6 +321,8 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
         end = savedEnd;
     }
     s() << "  </tr>" << endl;
+
+    return true;
 }
 
 
@@ -298,15 +360,29 @@ HTMLWeeklyCalendarElement::generate()
     {
         generateWeekHeader(weekStartsMonday, week);
 
-        time_t weekStart = week;
-        if (!filteredTaskList.isEmpty())
-            generateTaksPerDay(week, filteredTaskList, weekStartsMonday);
-
-        if (!filteredResourceList.isEmpty())
+        if (taskReport)
         {
-            week = weekStart;
-            generateResourcesPerDay(week, filteredResourceList,
-                                    weekStartsMonday);
+            if (!filteredTaskList.isEmpty())
+            {
+                if (!generateTaksPerDay(week, filteredTaskList,
+                                        filteredResourceList,
+                                        weekStartsMonday))
+                    return false;
+            }
+            else
+                week = sameTimeNextWeek(week);
+        }
+        else
+        {
+            if (!filteredResourceList.isEmpty())
+            {
+                if (!generateResourcesPerDay(week, filteredResourceList,
+                                             filteredTaskList,
+                                             weekStartsMonday))
+                    return false;
+            }
+            else
+                week = sameTimeNextWeek(week);
         }
     }
 

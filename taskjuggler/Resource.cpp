@@ -830,9 +830,13 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
 {
     long bookings = 0;
 
-    for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
-        bookings += (*rli)->getAllocatedSlots(sc, startIdx, endIdx, acctType,
-                                              task);
+    if (isGroup())
+    {
+        for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
+            bookings += (*rli)->getAllocatedSlots(sc, startIdx, endIdx,
+                                                  acctType, task);
+        return bookings;
+    }
 
     // If the scoreboard has not been initialized there is no load.
     if (!scoreboards[sc])
@@ -841,9 +845,8 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
     if (task && scenarios[sc].firstSlot >= 0 && scenarios[sc].lastSlot >= 0)
     {
         /* If the load is to be calculated for a certain task, we check
-         * whether this task is in the resource allocation list. This is much
-         * faster than iterating over the whole scoreboard without finding
-         * an allocation. */
+         * whether this task is in the resource allocation list. Only then we
+         * calculate the real number of allocated slots. */
         bool isAllocated = FALSE;
         for (TaskListIterator tli(scenarios[sc].allocatedTasks); *tli; ++tli)
             if (task == *tli)
@@ -861,10 +864,10 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
         if (b < (SbBooking*) 4)
             continue;
         if ((task == 0 ||
-            (task != 0 && task == b->getTask()) &&
-             (acctType == AllAccounts ||
-              (b->getTask()->getAccount() &&
-               b->getTask()->getAccount()->getAcctType() == acctType))))
+             (task != 0 && task == b->getTask())) &&
+            (acctType == AllAccounts ||
+             (b->getTask()->getAccount() &&
+              b->getTask()->getAccount()->getAcctType() == acctType)))
             bookings++;
     }
 

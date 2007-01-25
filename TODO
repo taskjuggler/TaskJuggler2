@@ -12,6 +12,10 @@ Probably:
 - Interactive account report
 - Add C++ style // comments.
 - 'completedeffort' and 'pendingeffort' column
+- add a search box or filter field (like in the sidebar for file task
+  and others) in UI Report, to be able to find easily tasks (by task
+  id) or task resources
+- Legend to explain meaning of HTML report Gantt elements.
 
 Maybe:
 - Make vacations and shifts scenario specific.

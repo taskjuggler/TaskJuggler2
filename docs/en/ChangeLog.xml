@@ -1085,6 +1085,19 @@ reports.</para></listitem>
 <computeroutput>purge</computeroutput> to clear inherited allocations 
 and flags from a task or resource.</para></listitem>
 
+<listitem><para>The resource reporting in htmlweeklycalendar reports
+has been fixed. The report can now be used in task or resource
+reporting mode. The default is the task reporting mode which is
+closest to the previous behaviour.</para></listitem>
+
+<listitem><para>Fixed values of the revenue and profit column in
+resource reports. Resources can never generate a revenue so the value
+must always be 0.</para></listitem>
+
+<listitem><para>Fixed crash when printing resource reports from the UI
+that had a <computeroutput>hierarchyindex</computeroutput>
+column.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
