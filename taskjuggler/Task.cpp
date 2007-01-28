@@ -3229,7 +3229,18 @@ Task::calcContainerCompletionDegree(int sc, time_t now)
             totalEffort;
         scenarios[sc].containerCompletion = reportedCompletedEffort * 100.0 /
             totalEffort;
-        return;
+    }
+    else
+    {
+        /* We can't determine the completion degree for mixed work/non-work
+         * tasks. So we use -1.0 as "in progress" value. */
+        double comp = -1.0;
+        if (scenarios[sc].start > now)
+            comp = 0.0; // not yet started
+        else if (scenarios[sc].end < now)
+            comp = 100.0; // completed
+        scenarios[sc].completionDegree =
+            scenarios[sc].containerCompletion = comp;
     }
 }
 

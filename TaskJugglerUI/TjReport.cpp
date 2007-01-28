@@ -287,17 +287,36 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
 
         if ((*ci)->getName() == "completed")
         {
-            if (t->getCompletionDegree(scenario) ==
-                t->getCalcedCompletionDegree(scenario))
+            double calcedCompletionDegree =
+                t->getCalcedCompletionDegree(scenario);
+            double providedCompletionDegree =
+                t->getCompletionDegree(scenario);
+
+            if (calcedCompletionDegree < 0)
             {
-                cellText = QString("%1%")
-                    .arg((int) t->getCompletionDegree(scenario));
+                if (calcedCompletionDegree == providedCompletionDegree)
+                {
+                    cellText = i18n("in progress");
+                }
+                else
+                {
+                    cellText = QString(i18n("%1% (in progress)"))
+                        .arg((int) providedCompletionDegree);
+                }
             }
             else
             {
-                cellText = QString("%1% (%2%)")
-                    .arg((int) t->getCompletionDegree(scenario))
-                    .arg((int) t->getCalcedCompletionDegree(scenario));
+                if (calcedCompletionDegree == providedCompletionDegree)
+                {
+                    cellText = QString("%1%")
+                        .arg((int) providedCompletionDegree);
+                }
+                else
+                {
+                    cellText = QString("%1% (%2%)")
+                            .arg((int) providedCompletionDegree)
+                            .arg((int) calcedCompletionDegree);
+                }
             }
         }
         else if ((*ci)->getName() == "cost")
@@ -1011,20 +1030,27 @@ TjReport::showTaskDetails(const Task* task)
         {
             const ReportElement* reportElement = getReportElement();
             double completion = task->getCompletionDegree(scenario) / 100.0;
-            text += i18n("<hr/><b>Effort:</b> %1<br/>"
-                         "<b>Completion degree:</b> %2%<br/>"
-                         "<b>Done effort:</b> %3<br/>"
-                         "<b>Remaining effort:</b> %4<br/>")
-                .arg(reportElement->scaledLoad
-                 (task->getEffort(scenario), report->getNumberFormat(),
-                  true, false))
-                .arg(task->getCompletionDegree(scenario))
-                .arg(reportElement->scaledLoad
-                     (task->getEffort(scenario) * completion,
-                      report->getNumberFormat(), true, false))
-                .arg(reportElement->scaledLoad
-                     (task->getEffort(scenario) * (1.0 - completion),
-                      report->getNumberFormat(), true, false));
+            text += i18n("<hr/><b>Effort:</b> %1<br/>");
+            if (completion < 0.0)
+            {
+                text += i18n("<b>Completion degree:</b> in progress<br/>");
+            }
+            else
+            {
+                text += i18n("<b>Completion degree:</b> %2%<br/>"
+                             "<b>Done effort:</b> %3<br/>"
+                             "<b>Remaining effort:</b> %4<br/>")
+                    .arg(reportElement->scaledLoad
+                         (task->getEffort(scenario), report->getNumberFormat(),
+                          true, false))
+                    .arg(task->getCompletionDegree(scenario))
+                    .arg(reportElement->scaledLoad
+                         (task->getEffort(scenario) * completion,
+                          report->getNumberFormat(), true, false))
+                    .arg(reportElement->scaledLoad
+                         (task->getEffort(scenario) * (1.0 - completion),
+                          report->getNumberFormat(), true, false));
+            }
         }
 
         if (!task->getStatusNote(scenario).isEmpty())

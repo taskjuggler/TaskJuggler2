@@ -217,17 +217,36 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
 
         if ((*ci)->getName() == "completed")
         {
-            if (task->getCompletionDegree(scenario) ==
-                task->getCalcedCompletionDegree(scenario))
+            double calcedCompletionDegree =
+                task->getCalcedCompletionDegree(scenario);
+            double providedCompletionDegree =
+                task->getCompletionDegree(scenario);
+
+            if (calcedCompletionDegree < 0)
             {
-                cellText = QString("%1%")
-                    .arg((int) task->getCompletionDegree(scenario));
+                if (calcedCompletionDegree == providedCompletionDegree)
+                {
+                    cellText = i18n("in progress");
+                }
+                else
+                {
+                    cellText = QString(i18n("%1% (in progress)"))
+                        .arg((int) providedCompletionDegree);
+                }
             }
             else
             {
-                cellText = QString("%1% (%2%)")
-                    .arg((int) task->getCompletionDegree(scenario))
-                    .arg((int) task->getCalcedCompletionDegree(scenario));
+                if (calcedCompletionDegree == providedCompletionDegree)
+                {
+                    cellText = QString("%1%")
+                        .arg((int) providedCompletionDegree);
+                }
+                else
+                {
+                    cellText = QString("%1% (%2%)")
+                            .arg((int) providedCompletionDegree)
+                            .arg((int) calcedCompletionDegree);
+                }
             }
         }
         else if ((*ci)->getName() == "cost")

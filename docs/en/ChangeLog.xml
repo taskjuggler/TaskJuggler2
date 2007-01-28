@@ -999,25 +999,16 @@ TaskJugglerUI.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_3_1"><title>Version 2.3.1 (Some Day)</title>
+<sect2 id="Changelog_2_3_1"><title>Version 2.3.1 (2007-01-30)</title>
 <para>
 <itemizedlist mark='opencircle'>
-
-<listitem><para>Fixed complexity explosion in loop detector and
-critical path analyzer. Larger projects that made heavy use of
-inherited dependencies had an exponentially growing run time of these
-components.</para></listitem>
-
-<listitem><para>Added monthly calendar HTML report.</para></listitem>
-
-<listitem><para>The threshold for the critical path detection now
-defaults to 10%. All pathes that have less than 10% slack time will be
-marked as critical.</para></listitem>
 
 <listitem><para>Added support for automatic macros like
 <computeroutput>now</computeroutput>,
 <computeroutput>projectstart</computeroutput> and
 <computeroutput>projectend</computeroutput>.</para></listitem>
+
+<listitem><para>Added monthly calendar HTML report.</para></listitem>
 
 <listitem><para>Added <computeroutput>period</computeroutput> property
 as a shortcut for the combined use of
@@ -1026,6 +1017,25 @@ as a shortcut for the combined use of
 
 <listitem><para>Added more details to the pop-up info for tasks and
 resources in the UI.</para></listitem>
+
+<listitem><para>Added support for warnings and turned some
+non-critical errors into warnings.</para></listitem>
+
+<listitem><para>Improved scheduling performance for projects with
+long dependency chains.</para></listitem>
+
+<listitem><para>Added new attribute
+<computeroutput>purge</computeroutput> to clear inherited allocations 
+and flags from a task or resource.</para></listitem>
+
+<listitem><para>Fixed complexity explosion in loop detector and
+critical path analyzer. Larger projects that made heavy use of
+inherited dependencies had an exponentially growing run time of these
+components.</para></listitem>
+
+<listitem><para>The threshold for the critical path detection now
+defaults to 10%. All pathes that have less than 10% slack time will be
+marked as critical.</para></listitem>
 
 <listitem><para>Fixed problem where editor tools were doubled when
 "Open Recent" was used while editor was open. This also triggered a
@@ -1048,12 +1058,6 @@ aligned to the timing resolution.</para></listitem>
 scenarios. Values were inherited from peer scenarios instead of their
 parents.</para></listitem>
 
-<listitem><para>Added support for warnings and turned some
-non-critical errors into warnings.</para></listitem>
-
-<listitem><para>Improved scheduling performance for projects with
-long dependency chains.</para></listitem>
-
 <listitem><para>More meaningful error messages for some impossible
 combinations of fixed start/end times and
 dependencies.</para></listitem>
@@ -1071,19 +1075,9 @@ chart.</para></listitem>
 <listitem><para>Fix several crashes when the user is viewing reports
 in the UI after an unsuccessfull scheduling run.</para></listitem>
 
-<listitem><para>Make sure that the macros
-<computeroutput>projectstart</computeroutput>,
-<computeroutput>projectend</computeroutput> and
-<computeroutput>now</computeroutput> are properly defined in all files when
-multiple files are specified on the command line.</para></listitem>
-
 <listitem><para>Fix sorting of tasks in interactive resource reports
 and sorting of resources in interactive task
 reports.</para></listitem>
-
-<listitem><para>Added new attribute
-<computeroutput>purge</computeroutput> to clear inherited allocations 
-and flags from a task or resource.</para></listitem>
 
 <listitem><para>The resource reporting in htmlweeklycalendar reports
 has been fixed. The report can now be used in task or resource
@@ -1097,6 +1091,11 @@ must always be 0.</para></listitem>
 <listitem><para>Fixed crash when printing resource reports from the UI
 that had a <computeroutput>hierarchyindex</computeroutput>
 column.</para></listitem>
+
+<listitem><para>The completion degree of container tasks that have sub
+tasks with and without resource allocations was reported as 0. This
+has been replaced with "in progress" as the completion degree cannot be
+calculated.</para></listitem>
 
 </itemizedlist></para>
 

@@ -1284,20 +1284,38 @@ HTMLReportElement::genCellFlags(TableCellInfo* tci)
 void
 HTMLReportElement::genCellCompleted(TableCellInfo* tci)
 {
-    if (tci->tli->task->getCompletionDegree(tci->tli->sc) ==
-        tci->tli->task->getCalcedCompletionDegree(tci->tli->sc))
+    double calcedCompletionDegree =
+        tci->tli->task->getCalcedCompletionDegree(tci->tli->sc);
+    double providedCompletionDegree =
+        tci->tli->task->getCompletionDegree(tci->tli->sc);
+
+    if (calcedCompletionDegree < 0)
     {
-        genCell(QString("%1%").arg((int) tci->tli->task->
-                                   getCompletionDegree(tci->tli->sc)),
-                tci, FALSE);
+        if (calcedCompletionDegree == providedCompletionDegree)
+        {
+            genCell(QString(i18n("in progress")), tci, FALSE);
+        }
+        else
+        {
+            genCell(QString(i18n("%1% (in progress)"))
+                    .arg((int) providedCompletionDegree),
+                    tci, FALSE);
+        }
     }
     else
     {
-        genCell(QString("%1% (%2%)")
-                .arg((int) tci->tli->task->getCompletionDegree(tci->tli->sc))
-                .arg((int) tci->tli->task->
-                     getCalcedCompletionDegree(tci->tli->sc)),
-                tci, FALSE);
+        if (calcedCompletionDegree == providedCompletionDegree)
+        {
+            genCell(QString("%1%").arg((int) providedCompletionDegree),
+                    tci, FALSE);
+        }
+        else
+        {
+            genCell(QString("%1% (%2%)")
+                    .arg((int) providedCompletionDegree)
+                    .arg((int) calcedCompletionDegree),
+                    tci, FALSE);
+        }
     }
 }
 
