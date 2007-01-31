@@ -1112,6 +1112,9 @@ dependencies in combination with long dependency chains.
 <listitem><para>The default minimum slack rate has been changed to
 5%.</para></listitem>
 
+<listitem><para>Fix HTML generation for HTMLWeeklyCalendar when cells
+are empty.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

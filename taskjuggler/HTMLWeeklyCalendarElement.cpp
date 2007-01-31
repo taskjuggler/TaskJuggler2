@@ -186,20 +186,20 @@ HTMLWeeklyCalendarElement::generateTaksPerDay(
         {
             if ((*tli)->getLoad(scenarios[0], Interval(start, end)) == 0.0)
                 continue;
-            if ((*tli)->isActive(scenarios[0],
-                                 Interval(wd, sameTimeNextDay(wd))))
+            if (!(*tli)->isActive(scenarios[0],
+                                  Interval(wd, sameTimeNextDay(wd))))
+                continue;
+
+            if (first)
             {
-                if (first)
-                {
-                    s() << "     <table width=\"100%\">" << endl;
-                    first = FALSE;
-                }
-                TableLineInfo tli1;
-                tli1.ca1 = tli1.task = *tli;
-                tli1.idxNo = no;
-                tli1.fontFactor = 40;
-                generateLine(&tli1, 2);
+                s() << "     <table width=\"100%\">" << endl;
+                first = FALSE;
             }
+            TableLineInfo tli1;
+            tli1.ca1 = tli1.task = *tli;
+            tli1.idxNo = no;
+            tli1.fontFactor = 40;
+            generateLine(&tli1, 2);
 
             if (!filterResourceList(filteredResourceList, *tli,
                                     getHideResource(), getRollUpResource()))
@@ -265,19 +265,19 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
         {
             if ((*rli)->getLoad(scenarios[0],
                                 Interval(wd,
-                                         sameTimeNextDay(wd))) > 0.0)
+                                         sameTimeNextDay(wd))) <= 0.0)
+                continue;
+
+            if (first)
             {
-                if (first)
-                {
-                    s() << "     <table width=\"100%\">" << endl;
-                    first = FALSE;
-                }
-                TableLineInfo tli2;
-                tli2.ca1 = tli2.resource = *rli;
-                tli2.idxNo = no;
-                tli2.fontFactor = 40;
-                generateLine(&tli2, 4);
+                s() << "     <table width=\"100%\">" << endl;
+                first = FALSE;
             }
+            TableLineInfo tli2;
+            tli2.ca1 = tli2.resource = *rli;
+            tli2.idxNo = no;
+            tli2.fontFactor = 40;
+            generateLine(&tli2, 4);
 
             /* We only want to show the nested task list for leaf resources.
              * Leaf in this case means "task has no visible childs". */
