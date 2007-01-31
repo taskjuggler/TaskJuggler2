@@ -1100,4 +1100,19 @@ calculated.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2 id="Changelog_2_3_2"><title>Version 2.3.2 (Some Day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>The critical path detector has been rewritten to
+reduce the complexity explosion that is triggered by lots of inherited
+dependencies in combination with long dependency chains.
+</para></listitem>
+
+<listitem><para>The default minimum slack rate has been changed to
+5%.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

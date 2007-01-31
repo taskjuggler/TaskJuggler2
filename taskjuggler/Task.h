@@ -297,7 +297,7 @@ public:
     void finishScenario(int sc);
     void computeCriticalness(int sc);
     double getCriticalness(int sc) const { return scenarios[sc].criticalness; }
-    void checkAndMarkCriticalPath(int sc, double minSlack);
+    void checkAndMarkCriticalPath(int sc, double minSlack, time_t maxEnd);
 
     void computePathCriticalness(int sc);
     double getPathCriticalness(int sc) const
@@ -400,7 +400,8 @@ private:
     double computeBackwardCriticalness(int sc);
     double computeForwardCriticalness(int sc);
 
-    bool analyzePath(int sc, double minSlack, time_t pathStart, long busyTime);
+    bool analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
+                     long worstMinSlackTime);
 
     bool countMilestones(int sc, time_t now, int& totalMilestones,
                          int& completedMilestones,

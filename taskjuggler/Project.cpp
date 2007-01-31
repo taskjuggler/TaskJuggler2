@@ -719,13 +719,27 @@ Project::finishScenario(int sc)
         (*rli)->finishScenario(sc);
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->finishScenario(sc);
+
     /* We need to have finished the scenario for all tasks before we can
      * calculate the completion degree. */
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-    {
         (*tli)->calcCompletionDegree(sc);
-        (*tli)->checkAndMarkCriticalPath(sc,
-                                         getScenario(sc)->getMinSlackRate());
+
+    /* If the user has not set the minSlackRate to 0 we look for critical
+     * pathes. */
+    if (getScenario(sc)->getMinSlackRate() > 0.0)
+    {
+        setProgressInfo(i18n("Computing critical pathes..."));
+        /* The critical path detector needs to know the end of the last task.
+         * So we have to find this out first. */
+        time_t maxEnd = 0;
+        for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+        if (maxEnd < (*tli)->getEnd(sc))
+            maxEnd = (*tli)->getEnd(sc);
+
+        for (TaskListIterator tli(taskList); *tli != 0; ++tli)
+            (*tli)->checkAndMarkCriticalPath
+                (sc, getScenario(sc)->getMinSlackRate(), maxEnd);
     }
 }
 
