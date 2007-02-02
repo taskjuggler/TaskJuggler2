@@ -1115,6 +1115,9 @@ dependencies in combination with long dependency chains.
 <listitem><para>Fix HTML generation for HTMLWeeklyCalendar when cells
 are empty.</para></listitem>
 
+<listitem><para>Properly report durations in printed
+reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

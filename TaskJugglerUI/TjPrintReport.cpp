@@ -271,7 +271,7 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
             }
         }
         else if ((*ci)->getName() == "duration")
-            cellText = reportElement->scaledLoad
+            cellText = reportElement->scaledDuration
                 (task->getCalcDuration(scenario), tcf->realFormat);
         else if ((*ci)->getName() == "effort")
         {
