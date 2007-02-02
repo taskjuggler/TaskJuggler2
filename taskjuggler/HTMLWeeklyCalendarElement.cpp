@@ -141,13 +141,13 @@ HTMLWeeklyCalendarElement::generateWeekHeader(bool weekStartsMonday,
         if (mAY != lastMAY)
         {
             s() << "     <td style=\"font-size:90%\">"
-                << monthAndYear(wd) << "</td>" << endl;
+                << htmlFilter(mAY) << "</td>" << endl;
             lastMAY = mAY;
         }
         s() << "    </tr>" << endl;
         if (report->getProject()->isVacation(wd))
             s() << "    <tr><td colspan=\"2\" style=\"font-size:80%\">"
-                << report->getProject()->vacationName(wd)
+                << htmlFilter(report->getProject()->vacationName(wd))
                 << "</td></tr>" << endl;
         s() << "   </table></td>" << endl;
     }
