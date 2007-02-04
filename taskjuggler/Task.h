@@ -344,8 +344,8 @@ public:
     time_t nextSlot(time_t slotDuration) const;
     bool isReadyForScheduling() const;
     bool schedule(int sc, time_t& reqStart, time_t duration);
-    void propagateStart(int sc, bool safeMode = TRUE);
-    void propagateEnd(int sc, bool safeMode = TRUE);
+    void propagateStart(int sc, time_t date);
+    void propagateEnd(int sc, time_t date);
     void propagateInitialValues(int sc);
     void setRunaway();
     bool isRunaway() const;
@@ -373,7 +373,7 @@ private:
     bool loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                        LoopDetectorInfo::FromWhere caller) const;
     bool checkPathForLoops(LDIList& list, bool atEnd) const;
-    bool scheduleContainer(int sc, bool safeMode);
+    bool scheduleContainer(int sc);
     Task* subFirst() { return (Task*) sub->first(); }
     Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,

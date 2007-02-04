@@ -304,15 +304,9 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
              qRound(doneDuration * 2048) >= qRound(duration * 2048)))
         {
             if (scheduling == ASAP)
-            {
-                end = date + slotDuration - 1;
-                propagateEnd(sc);
-            }
+                propagateEnd(sc, date + slotDuration - 1);
             else
-            {
-                start = date;
-                propagateStart(sc);
-            }
+                propagateStart(sc, date);
             schedulingDone = TRUE;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
@@ -330,15 +324,9 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         if (qRound(doneEffort * 2048) >= qRound(effort * 2048))
         {
             if (scheduling == ASAP)
-            {
-                end = tentativeEnd;
-                propagateEnd(sc);
-            }
+                propagateEnd(sc, tentativeEnd);
             else
-            {
-                start = tentativeStart;
-                propagateStart(sc);
-            }
+                propagateStart(sc, tentativeStart);
             schedulingDone = TRUE;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
@@ -349,15 +337,10 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
     {
         // Task is a milestone.
         if (scheduling == ASAP)
-        {
-            end = start - 1;
-            propagateEnd(sc);
-        }
+            propagateEnd(sc, start - 1);
         else
-        {
-            start = end + 1;
-            propagateStart(sc);
-        }
+            propagateStart(sc, end + 1);
+
         return true;
     }
     else if (start != 0 && end != 0)
@@ -380,7 +363,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
 }
 
 bool
-Task::scheduleContainer(int sc, bool safeMode)
+Task::scheduleContainer(int sc)
 {
     if (schedulingDone || !isContainer())
         return TRUE;
@@ -402,16 +385,10 @@ Task::scheduleContainer(int sc, bool safeMode)
     }
 
     if (start == 0 || start > nStart)
-    {
-        start = nStart;
-        propagateStart(sc, safeMode);
-    }
+        propagateStart(sc, nStart);
 
     if (end == 0 || end < nEnd)
-    {
-        end = nEnd;
-        propagateEnd(sc, safeMode);
-    }
+        propagateEnd(sc, nEnd);
 
     if (DEBUGTS(4))
         qDebug("Scheduling of task %s completed", id.latin1());
@@ -421,10 +398,9 @@ Task::scheduleContainer(int sc, bool safeMode)
 }
 
 void
-Task::propagateStart(int sc, bool notUpwards)
+Task::propagateStart(int sc, time_t date)
 {
-    if (start == 0)
-        return;
+    start = date;
 
     if (DEBUGTS(11))
         qDebug("PS1: Setting start of %s to %s",
@@ -436,10 +412,7 @@ Task::propagateStart(int sc, bool notUpwards)
     {
         schedulingDone = TRUE;
         if (end == 0)
-        {
-            end = start - 1;
-            propagateEnd(sc, notUpwards);
-        }
+            propagateEnd(sc, start - 1);
     }
 
     /* Set start date to all previous that have no start date yet, but are
@@ -451,12 +424,8 @@ Task::propagateStart(int sc, bool notUpwards)
              ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
-            (*tli)->end = (*tli)->latestEnd(sc);
-            if (DEBUGTS(11))
-                qDebug("PS2: Setting end of %s to %s",
-                       (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
             /* Recursively propagate the end date */
-            (*tli)->propagateEnd(sc, notUpwards);
+            propagateEnd(sc, (*tli)->latestEnd(sc));
         }
 
     /* Propagate start time to sub tasks which have only an implicit
@@ -465,28 +434,23 @@ Task::propagateStart(int sc, bool notUpwards)
     {
         if (!(*tli)->hasStartDependency() && !(*tli)->schedulingDone)
         {
-            (*tli)->start = start;
-            if (DEBUGTS(11))
-                qDebug("PS3: Setting start of %s to %s",
-                       (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
             /* Recursively propagate the start date */
-            (*tli)->propagateStart(sc, TRUE);
+            (*tli)->propagateStart(sc, start);
         }
     }
 
-    if (notUpwards && parent)
+    if (parent)
     {
         if (DEBUGTS(11))
             qDebug("Scheduling parent of %s", id.latin1());
-        getParent()->scheduleContainer(sc, TRUE);
+        getParent()->scheduleContainer(sc);
     }
 }
 
 void
-Task::propagateEnd(int sc, bool notUpwards)
+Task::propagateEnd(int sc, time_t date)
 {
-    if (end == 0)
-        return;
+    end = date;
 
     if (DEBUGTS(11))
         qDebug("PE1: Setting end of %s to %s",
@@ -500,10 +464,7 @@ Task::propagateEnd(int sc, bool notUpwards)
             qDebug("Scheduling of task %s completed", id.latin1());
         schedulingDone = TRUE;
         if (start == 0)
-        {
-            start = end + 1;
-            propagateStart(sc, notUpwards);
-        }
+            propagateStart(sc, end + 1);
     }
 
     /* Set start date to all followers that have no start date yet, but are
@@ -515,31 +476,23 @@ Task::propagateEnd(int sc, bool notUpwards)
              ((*tli)->effort == 0.0 && (*tli)->length == 0.0 &&
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
-            (*tli)->start = (*tli)->earliestStart(sc);
-            if (DEBUGTS(11))
-                qDebug("PE2: Setting start of %s to %s",
-                       (*tli)->id.latin1(), time2tjp((*tli)->start).latin1());
             /* Recursively propagate the start date */
-            (*tli)->propagateStart(sc, notUpwards);
+            (*tli)->propagateStart(sc, (*tli)->earliestStart(sc));
         }
     /* Propagate end time to sub tasks which have only an implicit
      * dependancy on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if (!(*tli)->hasEndDependency() && !(*tli)->schedulingDone)
         {
-            (*tli)->end = end;
-            if (DEBUGTS(11))
-                qDebug("PE3: Setting end of %s to %s",
-                       (*tli)->id.latin1(), time2tjp((*tli)->end).latin1());
             /* Recursively propagate the end date */
-            (*tli)->propagateEnd(sc, TRUE);
+            propagateEnd(sc, end);
         }
 
-    if (notUpwards && parent)
+    if (parent)
     {
         if (DEBUGTS(11))
             qDebug("Scheduling parent of %s", id.latin1());
-        getParent()->scheduleContainer(sc, TRUE);
+        getParent()->scheduleContainer(sc);
     }
 }
 
@@ -547,13 +500,13 @@ void
 Task::propagateInitialValues(int sc)
 {
     if (start != 0)
-        propagateStart(sc, TRUE);
+        propagateStart(sc, start);
     if (end != 0)
-        propagateEnd(sc, TRUE);
+        propagateEnd(sc, end);
 
     // Check if the some data of sub tasks can already be propagated.
     if (!sub->isEmpty())
-        scheduleContainer(sc, TRUE);
+        scheduleContainer(sc);
 }
 
 void
@@ -3664,19 +3617,19 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
       else if( elemTagName == "actualStart" )
       {
           if (project->getScenarioIndex("actual") > 0)
-              setStart(project->getScenarioIndex("actual"),
+              propagateStart(project->getScenarioIndex("actual"),
                        elem.text().toLong());
       }
       else if( elemTagName == "actualEnd" )
       {
           if (project->getScenarioIndex("actual") > 0)
-              setEnd(project->getScenarioIndex("actual"),
+              propagateEnd(project->getScenarioIndex("actual"),
                      elem.text().toLong());
       }
       else if( elemTagName == "planStart" )
-     setStart(0, elem.text().toLong() );
+     propagateStart(0, elem.text().toLong() );
       else if( elemTagName == "planEnd" )
-     setEnd(0, elem.text().toLong() );
+     propagateEnd(0, elem.text().toLong() );
 
       /* Allocations */
       else if( elemTagName == "Allocation" )
