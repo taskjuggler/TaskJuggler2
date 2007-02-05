@@ -425,7 +425,7 @@ Task::propagateStart(int sc, time_t date)
               (*tli)->duration == 0.0 && !(*tli)->milestone)))
         {
             /* Recursively propagate the end date */
-            propagateEnd(sc, (*tli)->latestEnd(sc));
+            (*tli)->propagateEnd(sc, (*tli)->latestEnd(sc));
         }
 
     /* Propagate start time to sub tasks which have only an implicit
@@ -485,7 +485,7 @@ Task::propagateEnd(int sc, time_t date)
         if (!(*tli)->hasEndDependency() && !(*tli)->schedulingDone)
         {
             /* Recursively propagate the end date */
-            propagateEnd(sc, end);
+            (*tli)->propagateEnd(sc, end);
         }
 
     if (parent)
