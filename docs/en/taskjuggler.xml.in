@@ -64,15 +64,15 @@ commonly used Gantt chart editing tools. It has already been
 successfully used in many projects and scales easily to projects with
 hundreds of resources and thousands of tasks.</para>
 
-<para>TaskJuggler is an Open Source tools for serious project managers. It
+<para>TaskJuggler is an Open Source tool for serious project managers. It
 covers the complete spectrum of project management tasks from the
 first idea to the completion of the project. It assists you during
-project scoping, resource assignment, cost and revenue planing, risk
+project scoping, resource assignment, cost and revenue planning, risk
 and communication management.</para>
 
 <para>TaskJuggler provides an optimizing scheduler that computes your
 project time lines and resource assignments based on the project
-outline and the constrains that you have provided. The build-in
+outline and the constrains that you have provided. The built-in
 resource balancer and consistency checker offload you from having to
 worry about irrelevant details and ring the alarm if the project gets
 out of hand. Its flexible "as many details as necessary"-approach
@@ -100,7 +100,7 @@ a companion you don't want to miss anymore.</para>
 <listitem><para>Comprehensive and flexible views and reports so you can find the
 information you need when you need it</para></listitem>
 
-<listitem><para>Build-in templates to get you started (you can also save your own schedules as templates for future use)</para></listitem>
+<listitem><para>Built-in templates to get you started (you can also save your own schedules as templates for future use)</para></listitem>
 
 <listitem><para>Project tracking and status reporting</para></listitem>
 
@@ -117,7 +117,7 @@ information you need when you need it</para></listitem>
 
 <listitem><para>Support for shift working</para></listitem>
 
-<listitem><para>Multiple time zone support</para></listitem>
+<listitem><para>Multiple timezone support</para></listitem>
 
 <listitem><para>Tasks may have initial costs, finishing costs</para></listitem>
 
@@ -177,12 +177,13 @@ Site</ulink>. The development snapshot is updated once a day to
 provide access to the most recent developments. It is important that you
 use a very recent snapshot as the developers have probably made changes
 in the same files as you. This increases the chance for change
-collisions which could mean recreating your contribution from scratch.</para>
+collisions, which could mean recreating your contribution from scratch.</para>
 
 <para>Unpack the tarball as described in the installation section.
 Then rename the taskjuggler directory to something like
 <varname>taskjuggler-yourname</varname>. Then unpack the tarball again
-in the same place as before. You should now have a directory that
+in the same place as before and rename it to
+<varname>taskjuggler-svn</varname>. You should now have a directory that
 contains two identical directory trees, each with a slightly different
 name of the top-level directory of each tree.</para>
 
@@ -197,9 +198,9 @@ files, some familiarity with make and other Linux tools are
 helpful. Whenever there is a file with the same base name and the extension
 <varname>.in</varname> in the same directory, then the file is
 generated from the <varname>.in</varname>-file. You need to modify the
-<varname>.in</varname>-file, not the one with just the base
-name. Another indicator is the fact that the file is not part of the
-tarball. With few exceptions that can be identified by the .in-file rule
+<varname>.in</varname>-file, not the one with just the base name. Another
+indicator is the fact that the file is not part of the tarball. With few
+exceptions that can be identified by the <varname>.in</varname>-file rule
 above, the tarball does not contain any generated files.</para>
 
 </sect2>
@@ -227,9 +228,9 @@ way you want them to be. If there are generated files included in the diff,
 please remove those files and regenerate the diff.</para>
 
 <para>The diff utility performs a line-by-line
-comparisons of the files. Try to only make changes
-that have an impact on the generated files. Do you change indentation
-or line wrapping of paragraphs. These kind of changes increase the
+comparison of the files. Try to only make changes
+that have an impact on the generated files. Do not change indentation
+or line wrapping of paragraphs. These kinds of changes increase the
 size of diff files and make it much harder to evaluate the patches.
 When making changes to the program code, please use our coding
 style. If your contribution is large enough to justify a
@@ -242,11 +243,11 @@ license declaration, preferably GPL.</para>
 </sect2>
 <sect2 id="contributing_translations"><title>Contributing Translations</title>
 
-<para>Another possible area of contribution are translation of
-TaskJuggler into languages other than US English. Our development
+<para>Another possible area of contribution are translations of
+TaskJuggler into languages other than US-English. Our development
 process is in principle prepared for translations, but the first
 translation will definitely be a bit difficult to do. TaskJuggler has
-several hundred messages and more than hundred pages of documentation.
+several hundred messages and more than two hundred pages of documentation.
 Any translation is a significant effort and an ongoing commitment.
 TaskJuggler is still actively developed and this will require the
 translations to be updated as well. Please understand that we do not
@@ -258,7 +259,7 @@ translations.</para>
 <sect2 id="some_final_words_to_contributors"><title>Some final words
 to Contributors</title>
 
-<para>We do welcome all contributions but please understand that we
+<para>We do welcome all contributions, but please understand that we
 reserve the right to reject any contribution that does not follow the
 above guidelines or otherwise conflicts with the goals of the
 TaskJuggler team. It is a good idea to contact the team prior to
@@ -280,13 +281,13 @@ Components</title>
 
 <para>TaskJuggler consists of several modular components that you
 may or may not need. TaskJuggler also uses some additional tools. We
-have avoided to re-invent the wheel again wherever possible.
-We tried to keep the dependency list reasonably small,
-nevertheless can it be challenging for an inexperienced user to build
+have avoided to re-invent the wheel wherever possible.
+We tried to keep the dependency list reasonably small, but it
+nevertheless can be challenging for an inexperienced user to build
 and install TaskJuggler from source code. Most users are probably
 better served by using binary packages from their distributor. Almost
 every mainstream 
-distribution has TaskJuggler included in recent version of their
+distribution has TaskJuggler included in recent versions of their
 product. If not, you might like to contact them to inform them that
 they are missing an essential package.</para>
 
@@ -297,17 +298,17 @@ they are missing an essential package.</para>
 Interfaces</title>
 
 <para>With version 2.2 came a new graphical front-end. It's an integrated
-Project management environment.</para>
+project management environment.</para>
 
 <para>The front-end is called
 <computeroutput>TaskJugglerUI</computeroutput>.
-Don't confuse this with <computeroutput>taskjuggler</computeroutput>
+Don't confuse this with <computeroutput>taskjuggler</computeroutput>,
 which is the commandline version. When you want to start TaskJugglerUI
 from a shell, you need to type it with the capital letters.</para>
 
-<para>The graphical front-ends make use of the libraries of the <ulink
+<para>The graphical front-end makes use of the libraries of the <ulink
 url="www.kde.org">K Desktop Environment</ulink>. We recommend to use
-at least version 3.4. Earlier version will probably work as well, but
+at least version 3.4. Earlier versions will probably work as well, but
 we have not tested them.</para>
 
 </sect2>
@@ -331,7 +332,7 @@ most other compilers as well.</para></listitem>
 
 <para>The requirements listed are enough to build and use the command line
 program that translates project descriptions into HTML or XML reports.
-If you want to built this documentation or use the tools to process
+If you want to build this documentation or use the tools to process
 the XML files you need to install the additional dependencies. If any
 of the following dependencies are not matched, the configure script
 will issue a warning but will not fail.</para>
@@ -405,7 +406,7 @@ in the base directory of the TaskJuggler distribution:</para>
 
 <para>Since TaskJuggler uses <computeroutput>autoconf</computeroutput>, you
 should have no trouble compiling it. TaskJuggler has some weak or
-non-mandatory dependencies. If any of there are not satisfied, a
+non-mandatory dependencies. If any of these are not satisfied, a
 warning is issued. In case a mandatory dependency is not found, an
 error is displayed and the configuration program stops. If you have
 problems, please report them to the TaskJuggler user forum at
@@ -414,8 +415,7 @@ http://www.taskjuggler.org/FUDforum2</ulink> in English. Someone
 there can help you out.</para>
 
 <para>In case you want to build TaskJuggler without the graphical
-front-ends, you can disable them during them configuration
-process:</para>
+front-end, you can disable it during the configuration process:</para>
 
 <para><screen>
 % ./configure --with-kde-support=no --prefix=/usr/local
@@ -436,7 +436,7 @@ files with the <computeroutput>.tji</computeroutput> extension. These
 sub-projects are included in the main project during compile
 time.</para>
 
-<para>When TaskJuggler is used with other tools the project
+<para>When TaskJuggler is used with other tools, the project
 description or the reports may also be in XML format. The recommended
 extension for such files is
 <computeroutput>.tjx</computeroutput>.</para>
@@ -487,7 +487,7 @@ description.</member>
 
 <member>-v</member><member>Same as '--version'.</member>
 
-<member>-s</member><member>Stop TaskJuggler run after syntax check.
+<member>-s</member><member>Stop TaskJuggler's run after syntax check.
 This option is for testing and debugging purposes only.</member>
 
 <member>-M</member><member>Output fragment of a Makefile that lists
@@ -509,12 +509,12 @@ but can lead to error messages that are difficult to associate with the
 dependency specification that is wrong.</member>
 
 <member>--debug N</member>
-<member>Print debug output, N must be between 0 and 4, the higher N
+<member>Print debug output; N must be between 0 and 4, the higher N
 the more output is printed. This option is for testing and debugging
 purposes only.</member>
 
 <member>--dbmode N</member>
-<member>Limit debug output to certain modules of the code. N is a bit
+<member>Limit debug output to certain modules of the code; N is a bit
 mask. Each set bit activates output of a certain module. Currently the
 following modules are supported: Project File Reader (1), Project
 Scheduler (2), Task Scheduler (4), Resource Scheduler (8), Expression
@@ -543,7 +543,7 @@ and Sending Feedback</title>
 releases unless explicitly noted differently. But our test suite is
 still very small and some features are not tested automatically very
 well. So it's very likely that your current version of TaskJuggler
-contains some bugs. If you find a bug please follow this
+contains some bugs. If you find a bug, please follow this
 procedure:</para>
 
 <para><itemizedlist mark='opencircle'>
@@ -582,9 +582,9 @@ from TaskJuggler 1.x to 2.x</title>
 <sect1 id="achieving_compatibility"><title>Achieving compatibility</title>
 
 <para>Are you also frustrated by tools that can't read the data of
-their earlier incarnations? After all those files contain your
-valuable data and the first impression that the wonderful new version
-makes is it's failure to read your old files. With TaskJuggler we
+their earlier incarnations? After all, those files contain your
+valuable data and the first impression of the wonderful new version
+is its failure to read your old files. With TaskJuggler we
 like to spare you such situations as much as possible. But TaskJuggler
 1.x was written to solve the problems that we encountered. By
 releasing it to the general public we learned that TaskJuggler is also
@@ -598,11 +598,11 @@ design even if this meant that some syntax constructs would no longer
 be supported.</para>
 
 <para>As TaskJuggler uses plain text file as its main data format,
-you will always to able to read in your old files. But in some
+you will always be able to read in your old files. But in some
 cases, you need to change certain syntax constructs to the new syntax.
 When TaskJuggler processes a file with deprecated syntax it will
 generate an error message. This usually contains a hint, how the
-statement should look like in new syntax. The following sections
+statement should look like in the new syntax. The following sections
 discuss the conceptual changes and what statements need to be
 changed.</para>
 
@@ -617,9 +617,9 @@ attributes starting with 'plan' or 'actual' have been
 deprecated.</para>
 
 <para>HTML reports are now a lot more flexible. New CSS
-elements have being used and the table elements are customizable now.
+elements are used and the table elements are customizable now.
 Old stylesheets will no longer work, since the attribute names have
-changed. A HTML report contains CSS attribute class specification if
+changed. An HTML report contains CSS attribute class specifications if
 you provide a custom stylesheet definition with <link
 linkend="PROPERTY_rawstylesheet">rawstylesheet</link>.</para>
 
@@ -644,7 +644,7 @@ properties. They are now optional attributes of the project
 property.</para>
 
 <para>Container tasks in export reports no longer have fixed
-start and end date if they have their sub tasks exported as
+start and end dates, if they have their subtasks exported as
 well.</para>
 
 <para>The functions for <link
@@ -655,9 +655,9 @@ ones with intermixed uppercase letters.
 <computeroutput>isTaskOfProject</computeroutput> was added as new
 query function.</para>
 
-<para>Support for new XML format has been added. The old
-format is still supported. TJ can read both old and new format XML
-files but will use the new XML format for output.</para>
+<para>Support for a new XML format has been added. The old format is still
+supported. TaskJuggler can read both old and new format XML files but will
+use the new XML format for output.</para>
 
 </sect2>
 <sect2 id="scheduler_changes"><title>Scheduler changes</title>
@@ -666,7 +666,7 @@ files but will use the new XML format for output.</para>
 allocations are no longer trimmed to the first and last resource
 allocation. This can lead to different schedules.</para>
 
-<para>'length' based task now use the global working hours
+<para>'length' based tasks now use the global working hours
 and global vacation settings as a criteria of what is a working day.
 The tasks now always end during working hours and not at
 midnight.</para>
@@ -675,7 +675,7 @@ midnight.</para>
 longer limited by default. <link
 linkend="PROPERTY_maxeffort">maxeffort</link> now defaults to 0
 (unlimited) instead of 1.0 (8 hours per day). To have the same
-behaviour as in TaskJuggler 1.x version you need to specify
+behaviour as in TaskJuggler 1.x, you need to specify
 <computeroutput>maxeffort 1.0</computeroutput> before any resource
 definition. This change was made since many users were confused when
 after increasing the daily working hours resources were still only
@@ -731,12 +731,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</para>
 
 <para>Linux is a registered trademark of Linus Torvalds.</para>
 
-<para>KDE and the K Desktop environment are a registered trademark of
+<para>KDE and the K Desktop environment are registered trademarks of
 KDE e. V.</para>
 
 <para>TaskJuggler is a trademark of Chris Schl&auml;er.</para>
 
-<para>UNIX is a registered trademark and The Open Group is a trademark of
+<para>UNIX is a registered trademark and The Open Group are trademarks of
 The Open Group in the US and other countries.</para>
 
 </chapter>
