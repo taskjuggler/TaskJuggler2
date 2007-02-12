@@ -27,7 +27,7 @@ uninstall-local:
 Example.xml : ../../Examples/FirstProject/AccountingSoftware.tjp
 	rm -f Example.xml
 	echo "<para><screen>" > Example.xml
-	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' ../../Examples/FirstProject/AccountingSoftware.tjp | expand -t 2 >> Example.xml
+	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/é/\&eacute;/g; s/ü/\&uuml;/g; s/©/\&copy;/g' ../../Examples/FirstProject/AccountingSoftware.tjp | expand -t 2 >> Example.xml
 	echo "</screen></para>" >> Example.xml
 
 GenPropertyReference.xml: PropertyReference.xml PropertyReference.xsl

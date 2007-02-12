@@ -1,25 +1,25 @@
 /*
  * This file contains an example project. It is part of the
  * TaskJuggler project management tool. It uses a made up software
- * development project to demontrate some of the basic features of
+ * development project to demonstrate some of the basic features of
  * TaskJuggler. Please see the TaskJuggler manual for a more detailed
  * description of the various syntax elements.
  */
 project acso "Accounting Software" "1.0" 2002-01-16 2002-04-28 {
   # Pick a day during the project that will be reported as 'today' in
-  # the project reports. If not specified the current day will be
-  # used, but this will likely be ouside of the project range, so it
+  # the project reports. If not specified, the current day will be
+  # used, but this will likely be outside of the project range, so it
   # can't be seen in the reports.
   now 2002-03-05-13:00
   # Hide the clock time. Only show the date.
   timeformat "%Y-%m-%d"
-  # The currency for all money values is EUR.
+  # The currency for all money values is the Euro.
   currency "EUR"
 
-  # We want to compare the baseline scenario, to one with a slightly
+  # We want to compare the baseline scenario to one with a slightly
   # delayed start.
   scenario plan "Plan" {
-    # Mark all pathes as critical that have less than 10% slack time.
+    # Mark all paths as critical that have less than 10% slack time.
     minslackrate 10.0
     scenario delayed "Delayed"
   }
@@ -28,7 +28,7 @@ project acso "Accounting Software" "1.0" 2002-01-16 2002-04-28 {
 # This is not a real copyright for this file. It's just used as an example.
 copyright "© 2002 Crappy Software, Inc."
 
-# The daily default rate of all resources. This can be overriden for each
+# The daily default rate of all resources. This can be overridden for each
 # resource. We specify this, so that we can do a good calculation of
 # the costs of the project.
 rate 310.0
@@ -61,61 +61,59 @@ resource misc "The Others" {
 
 # In order to do a simple profit and loss analysis of the project we
 # specify accounts. One for the development costs, one for the
-# documentation costs and one account to credit the customer payments
+# documentation costs, and one account to credit the customer payments
 # to.
 account dev "Development" cost
-account doc "Dokumentation" cost
+account doc "Documentation" cost
 account rev "Payments" revenue
 
 # Now we specify the work packages. The whole project is described as
-# a task that contains sub tasks. These sub tasks are then broken down
+# a task that contains subtasks. These subtasks are then broken down
 # into smaller tasks and so on. The innermost tasks describe the real
 # work and have resources allocated to them. Many attributes of tasks
-# are inherited from the enclosing task. This saves you a lot of
-# writing.
+# are inherited from the enclosing task. This saves you a lot of typing.
 task AcSo "Accounting Software" {
 
-  # All work related costs will be booked to this account unless the
-  # sub tasks specifies it differently.
+  # All work-related costs will be booked to this account unless the
+  # subtasks specify something different.
   account dev
 
   task spec "Specification" {
-    # The effort to finish this task is 20 man days.
+    # The effort to finish this task is 20 man-days.
     effort 20d
-    # Now we use the above declared macro to allocate the resources
-    # for this task. Since they can work in parallel, this task may be
-    # finshed earlier than 20 working days.
+    # Now we use the macro declared above to allocate the resources
+    # for this task. Because they can work in parallel, they may finish this
+    # task earlier than in 20 working-days.
     ${allocate_developers}
-    # Each task that does not have sub tasks must have a start or end
-    # criteria and a duration. For this task we use a reference to a
-    # further down defined milestone as a start criteria. So this task
-    # cannot start, before the specified milestone has been reached.
-    # References to other tasks may be relative. Each ! means 'in the
-    # scope of the enclosing task'. To descent into a task the .
-    # together with the id of the tasks have to be specified.
+    # Each task without subtasks must have a start or an end
+    # criterion and a duration. For this task we use a reference to a
+    # milestone defined further below as the start criterion. So this task
+    # can not start before the specified milestone has been reached.
+    # References to other tasks may be relative. Each exclamation mark (!)
+    # means 'in the scope of the enclosing task'. To descent into a task, the
+    # fullstop (.) together with the id of the tasks have to be specified.
     depends !deliveries.start
-}
+  }
 
   task software "Software Development" {
 
     # The software is the most critical task of the project. So we set
-    # the priority of this tasks (and all sub tasks) to 1000, the top
-    # priority. The higher the priority the more likely will the task
+    # the priority of this task (and all its subtasks) to 1000, the top
+    # priority. The higher the priority, the more likely the task will
     # get the requested resources.
     priority 1000
 
     # All subtasks depend on the specification task.
     depends !spec
+
     task database "Database coupling" {
       effort 20d
-      # This task depends on a task in the scope of the enclosing
-      # tasks enclosing task. So we need 2 ! to get there.
       allocate dev1, dev2
     }
 
     task gui "Graphical User Interface" {
       effort 35d
-      # This task has taken 5 man days more than originally planned.
+      # This task has taken 5 man-days more than originally planned.
       # We record this as well, so that we can generate reports that
       # compare the delayed schedule of the project to the original plan.
       delayed:effort 40d
@@ -125,8 +123,8 @@ task AcSo "Accounting Software" {
 
     task backend "Back-End Functions" {
       effort 30d
-      # This task is behind schedule since it should have been
-      # finished already. To document this we specify that the tasks
+      # This task is behind schedule, because it should have been
+      # finished already. To document this, we specify that the task
       # is 95% completed. If nothing is specified, TaskJuggler assumes
       # that the task is on schedule and computes the completion rate
       # according to the current day and the plan data.
@@ -139,11 +137,14 @@ task AcSo "Accounting Software" {
   task test "Software testing" {
 
     task alpha "Alpha Test" {
-      # Efforts can not only be specified as man days, but also man
-      # weeks, man hours, etc. Per default taskjuggler assumes a man
-      # week is 40 man hours or 5 man days. These values can be
-      # changed though.
+      # Efforts can not only be specified as man-days, but also as
+      # man-weeks, man-hours, etc. By default, TaskJuggler assumes
+      # that a man-week is 5 man-days or 40 man-hours. These values
+      # can be changed, of course.
       effort 1w
+      # This task depends on a task in the scope of the enclosing
+      # task's enclosing task. So we need two exclamation marks (!!)
+      # to get there.
       depends !!software
       allocate test, dev2
       note "Hopefully most bugs will be found and fixed here."
@@ -169,17 +170,17 @@ task AcSo "Accounting Software" {
     # credit these payments to the 'rev' account.
     account rev
 
-    task start "Projectstart" {
+    task start "Project start" {
       # A task that has no duration is a milestone. It only needs a
-      # start or end criteria. All other tasks depend on this task.
+      # start or end criterion. All other tasks depend on this task.
       milestone
       start 2002-01-16
       # For some reason the actual start of the project got delayed.
-      # We record this, so that we can compare the plan run to the
+      # We record this, so that we can compare the planned run to the
       # delayed run of the project.
       delayed:start 2002-01-20
-      # At the begining of this task we receive a payment from the
-      # customer. This is credited to the account assiciated with this
+      # At the beginning of this task we receive a payment from the
+      # customer. This is credited to the account associated with this
       # task when the task starts.
       startcredit 33000.0
     }
@@ -190,17 +191,17 @@ task AcSo "Accounting Software" {
       startcredit 13000.0
     }
 
-    task beta "Betaversion" {
+    task beta "Beta version" {
       milestone
       depends !!test.alpha
       startcredit 13000.0
     }
 
-    task done "Ship Product to customer" {
+    task done "Ship Product to Customer" {
       milestone
       # The next line can be uncommented to trigger a warning about
-      # the project being late. For all tasks limits for the start and
-      # end value can be specified. Those limits are checked after the
+      # the project being late. For all tasks, limits for the start and
+      # end values can be specified. Those limits are checked after the
       # project has been scheduled. For all violated limits a warning
       # is issued.
       # maxend 2002-04-17
@@ -210,7 +211,7 @@ task AcSo "Accounting Software" {
   }
 }
 
-# Now the project has been completely specified. Stopping here would
+# Now the project has been specified completely. Stopping here would
 # result in a valid TaskJuggler file that could be processed and
 # scheduled. But no reports would be generated to visualize the
 # results.
@@ -230,24 +231,24 @@ taskreport "Gantt Chart" {
 taskreport "Task Usage" {
   headline "Task Usage Report"
   columns hierarchindex, name, start, end, effort { title "Work" }, duration,
-  cost, revenue
+    cost, revenue
   timeformat "%Y-%m-%d"
   loadunit days
   hideresource ~isLeaf()
   sortresources nameup
 }
 
-# A list of all tasks with the percentage complete for each task
+# A list of all tasks with the percentage completed for each task
 taskreport "Tracking Gantt" {
   headline "Tracking Gantt Chart"
   columns hierarchindex, name, start, end, effort { title "Work" }, duration,
-  completed, chart
+    completed, chart
   timeformat "%a %Y-%m-%d"
   loadunit days
   hideresource 1
 }
 
-# A graph showing resource allocation. It idengifies whether each
+# A graph showing resource allocation. It identifies whether each
 # resource is under- or over-allocated for.
 resourcereport "Resource Graph" {
   headline "Resource Allocation Graph"
@@ -257,7 +258,7 @@ resourcereport "Resource Graph" {
 }
 
 # A list of all project resources, both human and material resources,
-# together with the costs for each.
+# together with the associated costs.
 resourcereport "Resource Sheet" {
   headline "Resource Sheet"
   columns no, name, efficiency, id, maxeffort, rate
@@ -277,7 +278,7 @@ resourcereport "Resource Usage" {
 # their dates.
 htmlweeklycalendar "Calendar.html" {
   # Only show work days in the calendar.
-	weekdays mon - fri
+  weekdays mon - fri
 }
 
 # This report is a status report for the current week. It also
@@ -292,11 +293,10 @@ htmlaccountreport "Accounting.html" {
   # for each month of the project.
   columns no, name, scenario, total, monthly
   headline "P&L for the Project"
-  caption "The table shows the profit and loss
-           analysis as well as the cashflow situation of the Accounting
-           Software Project."
-  # Since this is a cashflow calculation we show accumulated values
-  # per account.
+  caption "The table shows the profit and loss analysis as well as
+           the cashflow situation of the Accounting Software Project."
+  # Since this is a cashflow calculation, we show accumulated values
+  # for each account.
   accumulate
   scenarios plan, delayed
 }

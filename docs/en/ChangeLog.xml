@@ -1121,6 +1121,9 @@ reports.</para></listitem>
 <listitem><para>Many editorial fixes were applied to the
 manual.</para></listitem>
 
+<listitem><para>Properly handle Pacific/Auckland
+DST.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
