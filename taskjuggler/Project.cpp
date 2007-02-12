@@ -1044,7 +1044,7 @@ void Project::parseDomElem( QDomElement& parentElem )
       if( tagName == "Task" )
       {
      QString tId = elem.attribute("Id");
-     Task *t = new Task( this, tId, QString(), 0, QString(), 0 );
+     Task *t = new Task( this, tId, QString::null, 0, QString::null, 0 );
      t->inheritValues();
 
      t->loadFromXML( elem, this  );

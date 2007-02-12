@@ -3578,7 +3578,8 @@ void Task::loadFromXML( QDomElement& parent, Project *project )
         /* Recursive call for more tasks */
         QString stId = subTaskElem.attribute("Id");
         qDebug( "Recursing to elem " + stId );
-        Task *t = new Task( project, stId, QString(), this, QString(), 0 );
+        Task *t = new Task( project, stId, QString::null, this,
+                            QString::null, 0 );
         t->inheritValues();
         t->loadFromXML( subTaskElem, project );
         qDebug( "Recursing to elem " + stId + " <FIN>");
@@ -3668,7 +3669,7 @@ void Task::allocationFromXML( const QDomElement& alloElem  )
     if( ! r )
     {
         /* Resource does not yet exist, create it. */
-        r = new Resource( project, alloID, QString(), 0L );
+        r = new Resource( project, alloID, QString::null, 0L );
         project->addResource( r );
     }
 

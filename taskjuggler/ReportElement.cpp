@@ -1011,61 +1011,59 @@ ReportElement::setMacros(TableLineInfo* tli)
                               defFileName, defFileLine));
 
     // Set macros for built-in attributes.
-    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() : QString(),
+    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() :
+                          QString::null,
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("no"), tli->ca1 ?
                           QString("%1").arg(tli->ca1->getSequenceNo()) :
-                          QString(),
+                          QString::null,
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("index"), tli->ca1 ?
                           QString("%1").arg(tli->ca1->getIndex()) :
-                          QString(),
+                          QString::null,
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ?
-                          tli->ca1->getHierarchNo() : QString(),
+                          tli->ca1->getHierarchNo() : QString::null,
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("hierarchindex"),
-                          tli->ca1 ? tli->ca1->getHierarchIndex() : QString(),
+                          tli->ca1 ? tli->ca1->getHierarchIndex() :
+                          QString::null,
                           defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("name"), tli->ca1 ? tli->ca1->getName() : QString(),
+    mt.addMacro(new Macro(KW("name"),
+                          tli->ca1 ? tli->ca1->getName() : QString::null,
                           defFileName, defFileLine));
 
-    QPtrList< QDict<CustomAttributeDefinition> > dictList;
-    dictList.setAutoDelete(TRUE);
-    dictList.append(new QDict<CustomAttributeDefinition>
-                    (report->getProject()->getTaskAttributeDict()));
-    dictList.append(new QDict<CustomAttributeDefinition>
-                    (report->getProject()->getResourceAttributeDict()));
-    dictList.append(new QDict<CustomAttributeDefinition>
-                    (report->getProject()->getAccountAttributeDict()));
-
-    for (QPtrListIterator< QDict<CustomAttributeDefinition> >
-         dli(dictList); *dli; ++dli)
-    {
-        QDictIterator<CustomAttributeDefinition> cadi(**dli);
-        for ( ; cadi.current(); ++cadi)
-        {
-            const CustomAttribute* custAttr;
-            QString macroName = cadi.currentKey();
-            QString macroValue;
-            if (tli->ca1 &&
-                (custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
-            {
-                switch (custAttr->getType())
-                {
-                    case CAT_Text:
-                        macroValue = ((TextAttribute*) custAttr)->getText();
-                        break;
-                    case CAT_Reference:
-                        macroValue = ((ReferenceAttribute*) custAttr)->getURL();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            mt.addMacro(new Macro(macroName, macroValue, defFileName,
-                                  defFileLine));
-        }
-    }
+    setPropertyMacros(tli, report->getProject()->getTaskAttributeDict());
+    setPropertyMacros(tli, report->getProject()->getResourceAttributeDict());
+    setPropertyMacros(tli, report->getProject()->getAccountAttributeDict());
 }
 
+void
+ReportElement::setPropertyMacros(TableLineInfo* tli,
+   const QDictIterator<CustomAttributeDefinition>& d)
+{
+    QDictIterator<CustomAttributeDefinition> cadi(d);
+    for ( ; cadi.current(); ++cadi)
+    {
+        const CustomAttribute* custAttr;
+        QString macroName = cadi.currentKey();
+        QString macroValue;
+        if (tli->ca1 &&
+            (custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
+        {
+            switch (custAttr->getType())
+            {
+                case CAT_Text:
+                    macroValue = ((TextAttribute*) custAttr)->getText();
+                    break;
+                case CAT_Reference:
+                    macroValue = ((ReferenceAttribute*) custAttr)->getURL();
+                    break;
+                default:
+                    break;
+            }
+        }
+        mt.addMacro(new Macro(macroName, macroValue, defFileName,
+                              defFileLine));
+    }
+}

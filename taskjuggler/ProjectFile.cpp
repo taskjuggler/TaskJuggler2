@@ -133,6 +133,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
     if (!fi->open())
     {
         errorMessage(i18n("Cannot read file '%1'").arg(absFileName));
+        delete fi;
         return FALSE;
     }
 
@@ -363,7 +364,6 @@ ProjectFile::parse()
                 if (!macros.addMacro(macro))
                 {
                     errorMessage(i18n("Macro has been defined already"));
-                    delete macro;
                     return FALSE;
                 }
                 break;
@@ -869,6 +869,7 @@ ProjectFile::readExtend()
             errorMessage(i18n("The custom attribute '%1' has already been "
                          "declared for the property '%2'.")
                 .arg(attrID).arg(property));
+            delete ca;
             return FALSE;
         }
 
@@ -884,6 +885,7 @@ ProjectFile::readExtend()
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID exprected."));
+                delete ca;
                 return FALSE;
             }
             if (token == KW("inherit"))
@@ -891,6 +893,7 @@ ProjectFile::readExtend()
             else
             {
                 errorMessage(i18n("Attribute ID expected."));
+                delete ca;
                 return FALSE;
             }
         }
@@ -2248,7 +2251,10 @@ ProjectFile::readResourceBody(Resource* r)
         {
             Interval* iv = new Interval;
             if (!readInterval(*iv, false))
+            {
+                delete iv;
                 return FALSE;
+            }
             r->addVacation(iv);
         }
         else if (token == KW("workinghours"))
@@ -2464,9 +2470,12 @@ ProjectFile::readBooking(int sc, Resource* resource)
         returnToken(tt, token);
 
         Interval* iv = new Interval();
-        intervals.append(iv);
         if (!readInterval(*iv, true))
+        {
+            delete iv;
             return false;
+        }
+        intervals.append(iv);
 
         if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
             (task = proj->getTask(getTaskPrefix() + token)) == 0)
@@ -2488,9 +2497,12 @@ ProjectFile::readBooking(int sc, Resource* resource)
         for ( ; ; )
         {
             Interval* iv = new Interval;
-            intervals.append(iv);
             if (!readInterval(*iv, true))
+            {
+                delete iv;
                 return false;
+            }
+            intervals.append(iv);
 
             /* Dates are seperated by commas. So if we find a comma, there is
              * another date comming. */
@@ -3183,6 +3195,7 @@ ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
             if (iv->overlaps(**ili))
             {
                 errorMessage(i18n("Working hour intervals may not overlap"));
+                delete iv;
                 return FALSE;
             }
         l->append(iv);
@@ -3250,7 +3263,7 @@ ProjectFile::readICalTaskReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setHideTask(et);
@@ -3261,7 +3274,7 @@ ProjectFile::readICalTaskReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpTask(et);
@@ -3272,7 +3285,7 @@ ProjectFile::readICalTaskReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setHideResource(et);
@@ -3283,7 +3296,7 @@ ProjectFile::readICalTaskReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpResource(et);
@@ -3295,14 +3308,14 @@ ProjectFile::readICalTaskReport()
                 if ((tt = nextToken(scId)) != ID)
                 {
                     errorMessage(i18n("Scenario ID expected"));
-                    return FALSE;
+                    goto error;
                 }
                 int scIdx;
                 if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                 {
                     errorMessage(i18n("Unknown scenario %1")
                                  .arg(scId));
-                    return FALSE;
+                    goto error;
                 }
                 if (proj->getScenario(scIdx - 1)->getEnabled())
                     report->addScenario(proj->getScenarioIndex(scId) - 1);
@@ -3310,7 +3323,7 @@ ProjectFile::readICalTaskReport()
             else
             {
                 errorMessage(i18n("Illegal attribute '%1'").arg(token));
-                return FALSE;
+                goto error;
             }
         }
     }
@@ -3320,6 +3333,10 @@ ProjectFile::readICalTaskReport()
     proj->addReport(report);
 
     return(TRUE);
+
+error:
+    delete report;
+    return false;
 #endif
 }
 
@@ -3356,7 +3373,7 @@ ProjectFile::readXMLReport()
                 {
                     errorMessage("Currently only version 1 and 2 are "
                                  "supported.");
-                    return FALSE;
+                    goto error;
                 }
                 version = token.toInt();
             }
@@ -3366,7 +3383,7 @@ ProjectFile::readXMLReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setHideTask(et);
@@ -3377,7 +3394,7 @@ ProjectFile::readXMLReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpTask(et);
@@ -3388,7 +3405,7 @@ ProjectFile::readXMLReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setHideResource(et);
@@ -3399,7 +3416,7 @@ ProjectFile::readXMLReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpResource(et);
@@ -3413,14 +3430,14 @@ ProjectFile::readXMLReport()
                     if ((tt = nextToken(scId)) != ID)
                     {
                         errorMessage(i18n("Scenario ID expected"));
-                        return FALSE;
+                        goto error;
                     }
                     int scIdx;
                     if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                     {
                         errorMessage(i18n("Unknown scenario %1")
                                      .arg(scId));
-                        return FALSE;
+                        goto error;
                     }
                     if (proj->getScenario(scIdx - 1)->getEnabled())
                         report->addScenario(proj->getScenarioIndex(scId) - 1);
@@ -3438,7 +3455,7 @@ ProjectFile::readXMLReport()
             else
             {
                 errorMessage(i18n("Illegal attribute '%1'").arg(token));
-                return FALSE;
+                goto error;
             }
         }
     }
@@ -3457,6 +3474,11 @@ ProjectFile::readXMLReport()
     }
 
     return(TRUE);
+
+error:
+    delete rep;
+    delete report;
+    return false;
 }
 
 bool
@@ -3553,7 +3575,7 @@ ProjectFile::readReport(const QString& reportType)
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return FALSE;
+                goto error;
             }
             if (token == KW("columns"))
             {
@@ -3563,7 +3585,7 @@ ProjectFile::readReport(const QString& reportType)
                     TableColumnInfo* tci;
                     if ((tci = readColumn(proj->getMaxScenarios(),
                                           tab)) == 0)
-                        return FALSE;
+                        goto error;
                     tab->addColumn(tci);
                     if ((tt = nextToken(token)) != COMMA)
                     {
@@ -3578,14 +3600,14 @@ ProjectFile::readReport(const QString& reportType)
                 if ((tt = nextToken(scId)) != ID)
                 {
                     errorMessage(i18n("Scenario ID expected"));
-                    return FALSE;
+                    goto error;
                 }
                 int scIdx;
                 if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                 {
                     errorMessage(i18n("Unknown scenario '%1'")
                                  .arg(scId));
-                    return FALSE;
+                    goto error;
                 }
                 if (proj->getScenario(scIdx - 1)->getEnabled())
                 {
@@ -3597,21 +3619,21 @@ ProjectFile::readReport(const QString& reportType)
             {
                 time_t start;
                 if (!readDate(start, 0))
-                    return FALSE;
+                    goto error;
                 tab->setStart(start);
             }
             else if (token == KW("end"))
             {
                 time_t end;
                 if (!readDate(end, 1))
-                    return FALSE;
+                    goto error;
                 tab->setEnd(end);
             }
             else if (token == KW("period"))
             {
                 Interval iv;
                 if (!readInterval(iv))
-                    return FALSE;
+                    goto error;
                 tab->setPeriod(iv);
             }
             else if (token == KW("headline"))
@@ -3619,7 +3641,7 @@ ProjectFile::readReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setHeadline(token);
             }
@@ -3628,7 +3650,7 @@ ProjectFile::readReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setCaption(token);
             }
@@ -3642,7 +3664,7 @@ ProjectFile::readReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideTask(et);
@@ -3653,7 +3675,7 @@ ProjectFile::readReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpTask(et);
@@ -3661,7 +3683,7 @@ ProjectFile::readReport(const QString& reportType)
             else if (token == KW("sorttasks"))
             {
                 if (!readSorting(tab, 0))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("hideresource"))
             {
@@ -3669,7 +3691,7 @@ ProjectFile::readReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideResource(et);
@@ -3680,7 +3702,7 @@ ProjectFile::readReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpResource(et);
@@ -3688,7 +3710,7 @@ ProjectFile::readReport(const QString& reportType)
             else if (token == KW("sortresources"))
             {
                 if (!readSorting(tab, 1))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("hideaccount"))
             {
@@ -3696,7 +3718,7 @@ ProjectFile::readReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideAccount(et);
@@ -3707,7 +3729,7 @@ ProjectFile::readReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpAccount(et);
@@ -3715,14 +3737,14 @@ ProjectFile::readReport(const QString& reportType)
             else if (token == KW("sortaccounts"))
             {
                 if (!readSorting(tab, 2))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("loadunit"))
             {
                 if (nextToken(token) != ID || !tab->setLoadUnit(token))
                 {
                     errorMessage(i18n("Illegal load unit"));
-                    return FALSE;
+                    goto error;
                 }
             }
             else if (token == KW("timeformat"))
@@ -3730,7 +3752,7 @@ ProjectFile::readReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setTimeFormat(token);
             }
@@ -3739,7 +3761,7 @@ ProjectFile::readReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setShortTimeFormat(token);
             }
@@ -3751,20 +3773,20 @@ ProjectFile::readReport(const QString& reportType)
                     if (!proj->getTask(token))
                     {
                         errorMessage(i18n("taskroot must be a known task"));
-                        return FALSE;
+                        goto error;
                     }
                     tab->setTaskRoot(token + ".");
                 }
                 else
                 {
                     errorMessage(i18n("Task ID expected"));
-                    return FALSE;
+                    goto error;
                 }
             }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                goto error;
             }
         }
     }
@@ -3772,11 +3794,15 @@ ProjectFile::readReport(const QString& reportType)
         returnToken(tt, token);
 
     if (!checkReportInterval(tab))
-        return FALSE;
+        goto error;
 
     proj->addReport(report);
 
     return TRUE;
+
+error:
+    delete report;
+    return false;
 }
 
 bool
@@ -3895,7 +3921,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 Interval iv;
                 if (!readInterval(iv))
-                    return FALSE;
+                    goto exit_error;
                 tab->setPeriod(iv);
             }
             else if (token == KW("headline"))
@@ -4142,7 +4168,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 
 exit_error:
     delete report;
-    return FALSE;
+    return false;
 }
 
 bool
@@ -4168,7 +4194,7 @@ ProjectFile::readHTMLStatusReport()
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return FALSE;
+                goto error;
             }
             if (token == KW("table"))
             {
@@ -4176,18 +4202,18 @@ ProjectFile::readHTMLStatusReport()
                     token.toInt() > 4)
                 {
                     errorMessage(i18n("Number between 1 and 4 expected"));
-                    return FALSE;
+                    goto error;
                 }
                 HTMLReportElement* tab = report->getTable(token.toInt() - 1);
                 if (!readReportElement(tab))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("headline"))
             {
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    goto error;
                 }
                 report->setHeadline(token);
             }
@@ -4196,7 +4222,7 @@ ProjectFile::readHTMLStatusReport()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    goto error;
                 }
                 report->setCaption(token);
             }
@@ -4205,7 +4231,7 @@ ProjectFile::readHTMLStatusReport()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto error;
                 }
                 report->setRawHead(token);
             }
@@ -4214,7 +4240,7 @@ ProjectFile::readHTMLStatusReport()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto error;
                 }
                 report->setRawTail(token);
             }
@@ -4223,14 +4249,14 @@ ProjectFile::readHTMLStatusReport()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto error;
                 }
                 report->setRawStyleSheet(token);
             }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                goto error;
             }
         }
     }
@@ -4240,6 +4266,10 @@ ProjectFile::readHTMLStatusReport()
     proj->addReport(report);
 
     return TRUE;
+
+error:
+    delete report;
+    return false;
 }
 
 bool
@@ -4285,7 +4315,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return FALSE;
+                goto error;
             }
             if (token == KW("columns"))
             {
@@ -4294,7 +4324,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 {
                     TableColumnInfo* tci;
                     if ((tci = readColumn(proj->getMaxScenarios(), tab)) == 0)
-                        return FALSE;
+                        goto error;
                     tab->addColumn(tci);
                     if ((tt = nextToken(token)) != COMMA)
                     {
@@ -4310,13 +4340,13 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if ((tt = nextToken(scId)) != ID)
                 {
                     errorMessage(i18n("Scenario ID expected"));
-                    return FALSE;
+                    goto error;
                 }
                 if (proj->getScenarioIndex(scId) == -1)
                 {
                     errorMessage(i18n("Unknown scenario '%1'")
                                  .arg(scId));
-                    return FALSE;
+                    goto error;
                 }
                 tab->addScenario(proj->getScenarioIndex(scId) - 1);
             }
@@ -4324,21 +4354,21 @@ ProjectFile::readCSVReport(const QString& reportType)
             {
                 time_t start;
                 if (!readDate(start, 0))
-                    return FALSE;
+                    goto error;
                 tab->setStart(start);
             }
             else if (token == KW("end"))
             {
                 time_t end;
                 if (!readDate(end, 1))
-                    return FALSE;
+                    goto error;
                 tab->setEnd(end);
             }
             else if (token == KW("period"))
             {
                 Interval iv;
                 if (!readInterval(iv))
-                    return FALSE;
+                    goto error;
                 tab->setPeriod(iv);
             }
             else if (token == KW("rawhead"))
@@ -4346,7 +4376,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setRawHead(token);
             }
@@ -4355,7 +4385,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setRawTail(token);
             }
@@ -4373,7 +4403,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideTask(et);
@@ -4384,7 +4414,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpTask(et);
@@ -4392,7 +4422,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (token == KW("sorttasks"))
             {
                 if (!readSorting(tab, 0))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("hideresource"))
             {
@@ -4400,7 +4430,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideResource(et);
@@ -4411,7 +4441,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpResource(et);
@@ -4419,7 +4449,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (token == KW("sortresources"))
             {
                 if (!readSorting(tab, 1))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("hideaccount"))
             {
@@ -4427,7 +4457,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setHideAccount(et);
@@ -4438,7 +4468,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 tab->setRollUpAccount(et);
@@ -4446,14 +4476,14 @@ ProjectFile::readCSVReport(const QString& reportType)
             else if (token == KW("sortaccounts"))
             {
                 if (!readSorting(tab, 2))
-                    return FALSE;
+                    goto error;
             }
             else if (token == KW("loadunit"))
             {
                 if (nextToken(token) != ID || !tab->setLoadUnit(token))
                 {
                     errorMessage(i18n("Illegal load unit"));
-                    return FALSE;
+                    goto error;
                 }
             }
             else if (token == KW("timeformat"))
@@ -4461,7 +4491,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setTimeFormat(token);
             }
@@ -4470,7 +4500,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setShortTimeFormat(token);
             }
@@ -4479,7 +4509,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (nextToken(token) != ID)
                 {
                     errorMessage(i18n("Bar label mode expected"));
-                    return FALSE;
+                    goto error;
                 }
                 if (token == KW("empty"))
                     tab->setBarLabels(HTMLReportElement::BLT_EMPTY);
@@ -4489,7 +4519,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                 {
                     errorMessage(i18n("Unknown bar label mode '%1'")
                                  .arg(token));
-                    return FALSE;
+                    goto error;
                 }
             }
             else if (token == KW("notimestamp"))
@@ -4501,14 +4531,14 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    goto error;
                 }
                 tab->setFieldSeparator(token);
             }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                goto error;
             }
         }
     }
@@ -4516,11 +4546,15 @@ ProjectFile::readCSVReport(const QString& reportType)
         returnToken(tt, token);
 
     if (!checkReportInterval(tab))
-        return FALSE;
+        goto error;
 
     proj->addReport(report);
 
     return TRUE;
+
+error:
+    delete report;
+    return false;
 }
 
 bool
@@ -4567,7 +4601,7 @@ ProjectFile::readExportReport()
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return FALSE;
+                goto error;
             }
 
             if (token == KW("hidetask"))
@@ -4576,7 +4610,7 @@ ProjectFile::readExportReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setHideTask(et);
@@ -4587,7 +4621,7 @@ ProjectFile::readExportReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpTask(et);
@@ -4598,7 +4632,7 @@ ProjectFile::readExportReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setHideResource(et);
@@ -4609,7 +4643,7 @@ ProjectFile::readExportReport()
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    goto error;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpResource(et);
@@ -4622,14 +4656,14 @@ ProjectFile::readExportReport()
                     if (!proj->getTask(token))
                     {
                         errorMessage(i18n("taskroot must be a known task"));
-                        return FALSE;
+                        goto error;
                     }
                     report->setTaskRoot(token + ".");
                 }
                 else
                 {
                     errorMessage(i18n("Task ID expected"));
-                    return FALSE;
+                    goto error;
                 }
             }
             else if (token == KW("taskattributes"))
@@ -4641,7 +4675,7 @@ ProjectFile::readExportReport()
                         !report->addTaskAttribute(ta))
                     {
                         errorMessage(i18n("task attribute expected"));
-                        return FALSE;
+                        goto error;
                     }
 
                     if ((tt = nextToken(token)) != COMMA)
@@ -4660,14 +4694,14 @@ ProjectFile::readExportReport()
                     if ((tt = nextToken(scId)) != ID)
                     {
                         errorMessage(i18n("Scenario ID expected"));
-                        return FALSE;
+                        goto error;
                     }
                     int scIdx;
                     if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                     {
                         errorMessage(i18n("Unknown scenario %1")
                                      .arg(scId));
-                        return FALSE;
+                        goto error;
                     }
                     if (proj->getScenario(scIdx - 1)->getEnabled())
                         report->addScenario(proj->getScenarioIndex(scId) - 1);
@@ -4682,14 +4716,14 @@ ProjectFile::readExportReport()
             {
                 time_t start;
                 if (!readDate(start, 0))
-                    return FALSE;
+                    goto error;
                 report->setStart(start);
             }
             else if (token == KW("end"))
             {
                 time_t end;
                 if (!readDate(end, 1))
-                    return FALSE;
+                    goto error;
                 report->setEnd(end);
             }
             else if (token == KW("period"))
@@ -4707,7 +4741,7 @@ ProjectFile::readExportReport()
                     if ((tt = nextToken(token)) != ID)
                     {
                         errorMessage(i18n("Property name expected"));
-                        return FALSE;
+                        goto error;
                     }
                     if (token == KW("all"))
                     {
@@ -4727,7 +4761,7 @@ ProjectFile::readExportReport()
                     else
                     {
                         errorMessage(i18n("Unknown property %1").arg(token));
-                        return FALSE;
+                        goto error;
                     }
                     if ((tt = nextToken(token)) != COMMA)
                     {
@@ -4743,7 +4777,7 @@ ProjectFile::readExportReport()
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                goto error;
             }
         }
     }
@@ -4753,6 +4787,10 @@ ProjectFile::readExportReport()
     proj->addReport(report);
 
     return TRUE;
+
+error:
+    delete report;
+    return false;
 }
 
 bool
@@ -5083,6 +5121,7 @@ ProjectFile::readLogicalExpression(int precedence)
         if ((tt = nextToken(token)) != RBRACKET)
         {
             errorMessage(i18n("')' expected"));
+            delete op;
             return 0;
         }
     }

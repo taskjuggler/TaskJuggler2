@@ -46,6 +46,7 @@ ExpressionParser::parse(const QString& text, const Project* proj)
     Operation* op = parseLogicalExpression(0, proj);
     if (!tokenizer->close())
     {
+        delete op;
         delete tokenizer;
         tokenizer = 0;
         return 0;
@@ -135,6 +136,7 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
         if ((tt = tokenizer->nextToken(token)) != RBRACKET)
         {
             errorMessage(i18n("')' expected"));
+            delete op;
             return 0;
         }
     }

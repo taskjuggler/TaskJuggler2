@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 
-#include <qsettings.h> 
+#include <qsettings.h>
 #include <qstringlist.h>
 #include <qsqldatabase.h>
 #include <qsqlcursor.h>
@@ -40,7 +40,7 @@ CREATE TABLE ktBookings(
   startTS TimeStamp,
   endTS TimeStamp,
   projectID mediumint(9) default 0,
-  
+
   PRIMARY KEY  (bookID)
 ) ;
 
@@ -59,7 +59,7 @@ Kotrus::Kotrus()
       QSettings settings;
       settings.writeEntry( "/taskjuggler/general/datasource", "xml|database" );
       settings.writeEntry( "/taskjuggler/general/manager", "yourKotrusUser eg. phm@suse.de" );
-      
+
       settings.writeEntry( "/taskjuggler/DB/password", "setpwd" );
       settings.writeEntry( "/taskjuggler/DB/user", "root" );
       settings.writeEntry( "/taskjuggler/DB/host", "localhost" );
@@ -76,11 +76,11 @@ Kotrus::~Kotrus()
 QString Kotrus::Param( QString key ) const
 {
    QString ret;
-   
+
    QSettings settings;
    bool ok;
-      
-   ret = settings.readEntry( key, QString(), &ok );
+
+   ret = settings.readEntry( key, QString::null, &ok );
 
    return ret;
 }
@@ -91,7 +91,7 @@ int Kotrus::personID( const QString& resourcename )
    QSqlCursor cur( "persons");
    cur.select( "login_name='" + resourcename + "'" );
    int id = 0;
-   
+
    while( cur.next())
    {
       id = cur.value( "PersonID").toInt();
@@ -113,7 +113,7 @@ int Kotrus::ktID( const QString& ktName )
    cur.select( "name='" + ktName + "'" );
 
    int id = 0;
-   
+
    while( cur.next()) {
       id = cur.value( "ktNo").toInt();
       qDebug( "Found KotrusID: %d", id );
@@ -130,7 +130,7 @@ int Kotrus::lockBookings( int pid, int lockID )
 {
    if( mode != DB ) return( 0 );
    connect();
-   
+
    /* Check if the lockID > 0. If not, read it from the parameter file */
    if( lockID == 0 )
    {
@@ -148,7 +148,7 @@ int Kotrus::lockBookings( int pid, int lockID )
       /* Unlock bookings */
       lockID=0;
    }
-      
+
 
    /* This statement locks ALL bookings of the person. Not only for the
     * project */
@@ -160,11 +160,11 @@ int Kotrus::lockBookings( int pid, int lockID )
       sql += QString( "NOW()");
    else
       sql += QString( "0000-00-00 00:00:00" );
-   
+
    sql += QString( " WHERE userID=" ) + QString::number(pid);
    sql += QString( " AND lockedBy=0" ); /* Only lock unlocked ! */
    int rows = 0;
-   
+
    QSqlQuery query( sql );
    if( query.isActive() ) rows = query.numRowsAffected();
 
@@ -180,11 +180,11 @@ void Kotrus::unlockBookings( const QString& kotrusID )
 
 
 
-               
+
 BookingList Kotrus::loadBookings( const QString& kotrusID,
                   const QStringList& skipProjectIDs, int user )
 {
-   
+
    connect();
    if( mode == DB ) return( loadBookingsDB( kotrusID, skipProjectIDs, user ));
    if( mode == XML ) return( loadBookingsXML( kotrusID, skipProjectIDs, user ));
@@ -199,7 +199,7 @@ BookingList Kotrus::loadBookingsXML( const QString& /*kotrusID*/,
 {
    BookingList blist;
    /* TODO */
-   
+
    return( blist );
 }
 
@@ -209,7 +209,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
 {
    QSqlCursor cur( "ktBookings" );
    BookingList blist;
-   
+
    int pid = personID( kotrusID );
 
    if( lockBookings( pid, user ) == -1 )
@@ -217,7 +217,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
       qFatal( "ERR: Could not lock bookings!" );
       return blist;
    }
-   
+
    if( pid > 0 )
    {
       QString sql( "select kt.name, UNIX_TIMESTAMP(b.startTS), UNIX_TIMESTAMP(b.endTS),"
@@ -233,7 +233,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
      QString allSkips;
      bool needOr = false;
      int validSkips = 0;
-     
+
      for ( QStringList::ConstIterator it=skipProjectIDs.begin(); it != skipProjectIDs.end(); ++it )
      {
         QString skippy( *it );
@@ -249,19 +249,19 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
      }
 
      if( validSkips > 0 )
-        sql += " AND NOT (" + allSkips + ")"; 
+        sql += " AND NOT (" + allSkips + ")";
       }
       sql += " ORDER BY b.startTS, b.projectID";
-      
+
       qDebug( "SQL: " + sql );
       QSqlQuery query( sql );
 
-      
+
       while( query.next() )
       {
      bool ok;
      bool generalOk = true;
-     
+
      time_t start = query.value(1).toUInt(&ok);
      generalOk = generalOk && ok;
      time_t end = query.value(2).toUInt(&ok);
@@ -277,11 +277,11 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
         QString locker = query.value(5).toString();  /* email of locker */
 
         qDebug("Loaded booking for project " + project );
-        
+
         Booking *nbook = new Booking( interval, (Task*) 0L);
         nbook->setLockTS( ltime );
         nbook->setLockerId( locker );
-        
+
         blist.append( nbook );
      }
      else
@@ -293,7 +293,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
    else
    {
       if( kotrusID.isEmpty() )
-     qDebug( "WRN: Can not load bookings for empty user!"); 
+     qDebug( "WRN: Can not load bookings for empty user!");
       // else
      // qDebug( "WRN: Could not resolve user " + kotrusID );
    }
@@ -305,7 +305,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
 
 
 int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
-              const QString& projectID, 
+              const QString& projectID,
               const BookingList& blist,
               int   lockedFor )
 {
@@ -313,12 +313,12 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
    if( mode == XML ) return( saveBookingsXML( kotrusID, projectID, blist, lockedFor ));
 
    connect();
-   
+
    int pid = personID( kotrusID );
    int cnt_bookings = 0;
 
    /* It is only possible to save bookings if the users bookings are locked by the
-    * user starting to save the bookings (=lockedFor). 
+    * user starting to save the bookings (=lockedFor).
     */
 
    /* In case there are Bookings for the userID (=kotrusID) locked for somebody else,
@@ -357,7 +357,7 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
 
    /* And now insert again */
    QSqlCursor cur( "ktBookings" );
-   
+
    BookingListIterator it( blist );
    for( ; it.current(); ++it )
    {
@@ -372,12 +372,12 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
 
       cnt_bookings += cur.insert();
    }
-   
+
    return( cnt_bookings );
 }
 
 int Kotrus::saveBookingsXML( const QString& /*kotrusID*/,  /* the user id */
-              const QString& /*projectID*/, 
+              const QString& /*projectID*/,
               const BookingList& /*blist*/,
               int   /*lockedFor*/ )
 {
@@ -401,25 +401,25 @@ void Kotrus::connect()
 
    if( err.type() != QSqlError::None )
       qDebug( "An Error!" );
-   
+
    for ( QStringList::Iterator it = drivers.begin(); it != drivers.end(); ++it ) {
       qDebug( "Driver available: " + *it + "\n");
     }
-   
+
    if ( kotrusDB )
    {
-      
+
       QString db = Param(  "/taskjuggler/DB/database" );
       QString pwd = Param( "/taskjuggler/DB/password" );
       QString usr = Param( "/taskjuggler/DB/user" );
       QString host = Param("/taskjuggler/DB/host" );
 
-      
+
       kotrusDB->setDatabaseName( db );
       kotrusDB->setUserName( usr );
       kotrusDB->setPassword( pwd );
       kotrusDB->setHostName( host );
-      
+
       if ( kotrusDB->open() )
       {
      // Database successfully opened; we can now issue SQL commands.
@@ -439,7 +439,7 @@ void Kotrus::connect()
 
 void Kotrus::setKotrusMode( const QString& newKotrusMode )
 {
-   
+
    if( newKotrusMode.upper() == "XML" )
    {
       mode = XML;
@@ -452,5 +452,5 @@ void Kotrus::setKotrusMode( const QString& newKotrusMode )
    {
       mode = NoKotrus;
    }
-  
+
 }

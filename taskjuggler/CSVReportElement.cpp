@@ -471,21 +471,21 @@ CSVReportElement::genCellSequenceNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getSequenceNo()) :
-            QString(""), tci, TRUE);
+            QString::null, tci, TRUE);
 }
 
 void
 CSVReportElement::genCellNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? QString().sprintf("%d.", tci->tli->idxNo) :
-            QString(""), tci, TRUE);
+            QString::null, tci, TRUE);
 }
 
 void
 CSVReportElement::genCellHierarchNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchNo() : QString(""), tci, TRUE);
+            tci->tli->ca1->getHierarchNo() : QString::null, tci, TRUE);
 }
 
 void
@@ -493,14 +493,14 @@ CSVReportElement::genCellIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getIndex()) :
-            QString(""), tci, TRUE);
+            QString::null, tci, TRUE);
 }
 
 void
 CSVReportElement::genCellHierarchIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchIndex() : QString(""), tci, TRUE);
+            tci->tli->ca1->getHierarchIndex() : QString::null, tci, TRUE);
 }
 
 void

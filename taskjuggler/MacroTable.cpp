@@ -24,7 +24,10 @@ bool
 MacroTable::addMacro(Macro* macro)
 {
     if (macros[macro->getName()])
-        return FALSE;
+    {
+        delete macro;
+        return false;
+    }
     macros.insert(macro->getName(), macro);
     return TRUE;
 }

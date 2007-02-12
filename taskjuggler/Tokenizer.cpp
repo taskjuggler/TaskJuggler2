@@ -525,6 +525,7 @@ Tokenizer::readMacroCall()
     if (tt != RBRACE)
     {
         errorMessage(i18n("'}' expected"));
+        delete sl;
         return FALSE;
     }
 
@@ -533,7 +534,10 @@ Tokenizer::readMacroCall()
     QString macro = mt->resolve(sl);
 
     if (macro.isNull() && prefix.isEmpty())
+    {
+        delete sl;
         return FALSE;
+    }
 
     lineBuf = lineBufCopy;
 
@@ -545,6 +549,8 @@ Tokenizer::readMacroCall()
     // push expanded macro reverse into ungetC buffer.
     for (int i = macro.length() - 1; i >= 0; --i)
         ungetBuf.append(macro[i].latin1());
+
+    delete sl;
     return TRUE;
 }
 

@@ -913,21 +913,21 @@ HTMLReportElement::genCellSequenceNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getSequenceNo()) :
-            QString(""), tci, TRUE);
+            QString::null, tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? QString().sprintf("%d.", tci->tli->idxNo) :
-            QString(""), tci, TRUE);
+            QString::null, tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellHierarchNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchNo() : QString(""), tci, TRUE);
+            tci->tli->ca1->getHierarchNo() : QString::null, tci, TRUE);
 }
 
 void
@@ -935,14 +935,14 @@ HTMLReportElement::genCellIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getIndex()) :
-            QString(""), tci, TRUE);
+            QString::null, tci, TRUE);
 }
 
 void
 HTMLReportElement::genCellHierarchIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchIndex() : QString(""), tci, TRUE);
+            tci->tli->ca1->getHierarchIndex() : QString::null, tci, TRUE);
 }
 
 void

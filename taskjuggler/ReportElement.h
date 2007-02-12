@@ -284,6 +284,8 @@ protected:
                         bool showUnit, bool longUnit,
                         const QValueList<double>& factors) const;
     void reportValue(double value, const QString& bgcol, bool bold);
+    void setPropertyMacros(TableLineInfo* tli,
+                           const QDictIterator<CustomAttributeDefinition>& d);
 
     QValueList<int> scenarios;
     QPtrList<TableColumnInfo> columns;
