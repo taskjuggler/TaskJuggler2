@@ -74,6 +74,7 @@ timezone2tz(const char* tzone)
         TZDict.setAutoDelete(FALSE);
 
         // Let's start with generic timezones
+        TZDict.insert("+1300", "GMT-13:00");
         TZDict.insert("+1200", "GMT-12:00");
         TZDict.insert("+1100", "GMT-11:00");
         TZDict.insert("+1000", "GMT-10:00");
