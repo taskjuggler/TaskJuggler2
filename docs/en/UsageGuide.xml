@@ -2,8 +2,8 @@
 
 <sect1 id="tracking_the_project"><title>Tracking the Project</title>
 
-<para>Once the initial plan has been made and the project has started
-TaskJuggler can be turned from a planning tool into a tracking tools.
+<para>Once the initial plan has been made and the project has started,
+TaskJuggler can be turned from a planning tool into a tracking tool.
 You don't have to change a lot to do this. After all, as the initial
 plan is almost always just a first guess, you need to continue
 planning your project as new details become evident. So what you
@@ -12,13 +12,13 @@ completed, while still having full flexibility with all future
 work.</para>
 
 <para>While it is generally accepted to invest some amount of time
-into the project planning, it is very common that once the project has
+in project planning, it is very common that once the project has
 been started, project managers tend to avoid a proper tracking of the
 project. Our bet is that the vast majority of project plans are only
 made to get management or investor approval. After the approval phase,
 many project managers only work with their project plan again when the
 project is running really late. On the other hand there are projects
-which are done using strict project management techniques that
+that are done using strict project management techniques that
 require detailed status tracking. Both extremes probably have their
 fans and TaskJuggler offers good support for both extremes as well as
 various techniques in between.</para>
@@ -31,11 +31,11 @@ the project you will have to make changes to the plan as new
 information needs to be taken into account and you probably want to
 track the progress of the project in a formalized form. TaskJuggler
 will support you during this phase of the project as well, but it
-needs your help. You need to provide the additional information in the
+needs your help. You have to provide the additional information in the
 project file. In return you get current status reports and an updated
 project plan based on the current status of the project.</para>
 
-<para>The most simple form of capturing where you are with the project
+<para>The most simple form of capturing the current status of the project
 is to use the <link linkend="PROPERTY_complete">complete</link>
 attribute.</para>
 
@@ -58,17 +58,15 @@ completion degree does not affect the scheduling and resource
 allocation. It is only for reporting purposes. It also does not tell
 TaskJuggler which resource actually worked on the tasks.</para>
 
-<para>If you want the past work to affect scheduling you need to use
+<para>If you want the past work to affect scheduling you must use
 the booking statements as outlined in the next section.</para>
 
 <para>When your project plan reflects the current status of your
-project TaskJuggler can generate nice status reports for you. To
-generate a HTML report for the last week that lists all tasks that are
+project, TaskJuggler can generate nice status reports for you. To
+generate an HTML report for the last week listing all tasks that are
 running late, all tasks that are ongoing, tasks that have been
-completed the last week and task that will be started next week you
-just have to specify the following.</para>
-
-<para><screen>
+completed last week, and task that will be started next week, you
+just specify <screen>
 htmlstatusreport "Status-Report.html" {
 }
 </screen></para>
@@ -77,14 +75,12 @@ htmlstatusreport "Status-Report.html" {
 <sect2 id="recording_resource_usage"><title>Recording Resource Usage</title>
 
 <para>The initial project plan should be made by entering the minimum
-necessary amount of information such as task dependencies and efforts.
-TaskJuggler will then compute all the missing data based on this. This
-is your project baseline. As the project progresses you can now track
-the actually completed work by recording the work that your resources
-have done. Let's assume you had the following task in your original
-plan.</para>
-
-<para><screen>
+amount of required information such as task dependencies and efforts.
+TaskJuggler will then compute all the missing data based on this initial setup.
+This is your project baseline. As the project progresses you can now track
+the work already completed by recording the work that your resources
+have done. Let's assume you had the following task in your original plan:
+<screen>
 task impl "Implementation" {
   depends !spec
   effort 4w
@@ -110,7 +106,7 @@ resource dev2 "Developer 2" {
 </screen></para>
 
 <para>The sloppy attribute defines the accuracy of your bookings. If
-it's missing or 0 the booking must only describe a continuous working
+it's missing or 0, the booking must only describe a continuous working
 period during working hours. With higher values the interval may
 overlap with off-hour or vacation time slots. See <link
 linkend="PROPERTY_sloppy">details on sloppy</link>.</para>
@@ -123,7 +119,7 @@ companies have created a web front-end for their developers to report
 the completed work against the project plan. The reports are stored in
 a database and include files for TaskJuggler are generated from this
 database. This way the project manager gets a very current status of
-the project and can compute the current project plan based on this
+the project and can compute the current project plan based on these
 data without much effort. If you are interested in this you should
 have a look at the download section of the <ulink
 url="http://www.taskjuggler.org">TaskJuggler web site</ulink>.</para>
@@ -142,7 +138,7 @@ supplement task impl {
 
 <para>As a side note we would like to mention that the recording of
 the work time of employees is regulated by labor law in certain
-countries. You might also need approval from a Worker's Council before
+countries. You might also require approval from a Worker's Council before
 you can deploy time recording tools.</para>
 
 <para>In case your actual progress does not deviate a lot from your
@@ -175,7 +171,7 @@ definitions.</para>
 <para>To make TaskJuggler aware that you want to compute the end date
 based on the bookings and the effort you need to enable the
 <link linkend="PROPERTY_projection">projection</link> mode for the scenario.
-This needs to be done in the scenario definition in the project
+This has to be done in the scenario definition in the project
 header. If you don't have a scenario definition because you are only
 using the built-in default scenario, you have to add a scenario
 definition.</para>
@@ -190,13 +186,13 @@ project prj "Project" "1.0" 2005-04-01 2005-05-01 {
 }
 </screen></para>
 
-<para>TaskJuggler now assumes that for all tasks that have bookings all
+<para>TaskJuggler now assumes that for all tasks that have bookings, all
 work has been specified with bookings up to the current date. It then
 calculates the end date of the task based on the effort that is still
 left over. It also computes the <link
 linkend="PROPERTY_complete">complete</link> value based on the
 specified bookings. So if you specify bookings for a task you should
-not specify a a completion value as well. It will be ignored and
+not specify a completion value as well. It will be ignored and
 replaced by a value based on the specified bookings.</para>
 
 <para>When you now schedule the project again, it will take these bookings
@@ -214,12 +210,12 @@ add the file to the project plan.</para>
 
 <para>During the planning phase of the project you want to specify as
 little as necessary and have TaskJuggler calculate the rest of the
-project variables. As the project progresses more and more variables
+project variables. As the project progresses, more and more variables
 turn into constants. Whenever this happens, you should tell
-TaskJuggler about it. If you don't do it, TaskJuggler will assume that
+TaskJuggler about it. If you don't do this, TaskJuggler will assume that
 it has full freedom to pick these values and you will end up with a
 project plan that has nothing to do with the past part of the project.
-Especially when you have a fairly dense resource allocation the plan
+Especially when you have a fairly dense resource allocation, the plan
 will become very dynamic. Small changes in the plan can result in a
 significantly different scheduling result. The scheduling algorithm
 that is used by TaskJuggler is fairly complex and always tries to
@@ -231,15 +227,15 @@ changes. That is why you have to tell TaskJuggler when scheduled
 values have become reality and are no longer flexible.</para>
 
 <para>Once a task has been completed it is a good idea to
-remove the allocation statements from the tasks to prevent accidental
+remove the allocation statements from this task to prevent accidental
 resource allocations when the bookings don't exactly sum-up to the
-required effort. If you have specified all work on a task by bookings
+required effort. If you have specified all work on a task by bookings,
 you could also remove any hardcoded start and end dates as well as
 dependencies, but this is not required. You just have
 overspecified the task. In case you have made contradicting
 statements, TaskJuggler will issue an error message. This is for
 example the case when you have a fixed start date and a booking that
-starts earlier than the start date.</para>
+starts earlier than this start date.</para>
 
 <para>In general it is perfectly ok to overspecify your project. For
 example, you can have a fixed start date on a task as well as a start
@@ -260,9 +256,9 @@ got started. The scenario definition is necessary to switch the
 scheduler into projection mode. It will then assume that all resource
 allocations prior to the current date have been specified. It will
 only allocate resources after that date on its own. The export report
-exports all allocations for the time before the current date. These
+outputs all allocations for the time prior to the current date. These
 are either the allocations generated by the scheduler or the ones that
-are provided in the included file. But, keep in mind that the
+are provided in the included file. But keep in mind that the
 scheduler only generates allocations after the current date. So, when
 you start the project with an empty include file, you need to set the
 <computeroutput>now</computeroutput> date to the start of the project.
@@ -275,4 +271,3 @@ modify them to reflect what really happened.</para>
 
 </sect1>
 </chapter>
-
