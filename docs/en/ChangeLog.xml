@@ -1124,6 +1124,12 @@ manual.</para></listitem>
 <listitem><para>Properly handle Pacific/Auckland
 DST.</para></listitem>
 
+<listitem><para>Make sure that files that have been modified on disk
+while edited by the TaskJugglerUI are detected properly. Probably with
+KDE 3.5.4 the behavior of the Kate library changed so that the test no
+longer worked properly and modified files were not
+detected.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
