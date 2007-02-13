@@ -88,10 +88,10 @@ ManagedFileInfo::setModified()
 }
 
 void
-ManagedFileInfo::setModifiedOnDisc(Kate::Document* doc, bool,
-                                   unsigned char reason)
+ManagedFileInfo::setModifiedOnDisc(Kate::Document* doc, bool isModified,
+                                   unsigned char)
 {
-    if (!editor || reason != 1)
+    if (!editor || !isModified)
         return;
 
     doc->reloadFile();
