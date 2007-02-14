@@ -212,6 +212,7 @@ ICalReport::generate()
     // Dump the calendar in ICal format into a text file.
     KCal::ICalFormat *format = new KCal::ICalFormat();
     s << format->toString(&cal).utf8() << endl;
+    delete format;
     f.close();
 
     return TRUE;
