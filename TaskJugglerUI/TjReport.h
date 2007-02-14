@@ -24,6 +24,7 @@
 #include "TjUIReportBase.h"
 #include "TaskList.h"
 #include "ResourceList.h"
+#include "Journal.h"
 #include "ReportLayers.h"
 #include "ltQString.h"
 #include "ltstr.h"
@@ -110,7 +111,7 @@ protected:
                    bool right);
     int treeLevel(const QListViewItem* lvi) const;
 
-    QString generateJournal(JournalIterator jit) const;
+    QString generateJournal(Journal::Iterator jit) const;
 
     QString generateRTCustomAttributes(const CoreAttributes* ca) const;
 

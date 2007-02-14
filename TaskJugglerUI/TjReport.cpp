@@ -1030,19 +1030,27 @@ TjReport::showTaskDetails(const Task* task)
         {
             const ReportElement* reportElement = getReportElement();
             double completion = task->getCompletionDegree(scenario) / 100.0;
-            text += i18n("<hr/><b>Effort:</b> %1<br/>");
+            text += i18n("<hr/><b>Effort:</b> %1<br/>")
+                    .arg(reportElement->scaledLoad
+                         (task->getEffort(scenario), report->getNumberFormat(),
+                          true, false));
             if (completion < 0.0)
             {
                 text += i18n("<b>Completion degree:</b> in progress<br/>");
             }
+            else if (completion == 0.0)
+            {
+                text += i18n("<b>Completion degree:</b> 0%<br/>");
+            }
+            else if (completion >= 1.0)
+            {
+                text += i18n("<b>Completion degree:</b> 100%<br/>");
+            }
             else
             {
-                text += i18n("<b>Completion degree:</b> %2%<br/>"
-                             "<b>Done effort:</b> %3<br/>"
-                             "<b>Remaining effort:</b> %4<br/>")
-                    .arg(reportElement->scaledLoad
-                         (task->getEffort(scenario), report->getNumberFormat(),
-                          true, false))
+                text += i18n("<b>Completion degree:</b> %1%<br/>"
+                             "<b>Done effort:</b> %2<br/>"
+                             "<b>Remaining effort:</b> %3<br/>")
                     .arg(task->getCompletionDegree(scenario))
                     .arg(reportElement->scaledLoad
                          (task->getEffort(scenario) * completion,
@@ -1364,7 +1372,7 @@ TjReport::treeLevel(const QListViewItem* lvi) const
 }
 
 QString
-TjReport::generateJournal(JournalIterator jit) const
+TjReport::generateJournal(Journal::Iterator jit) const
 {
     QString text;
 
