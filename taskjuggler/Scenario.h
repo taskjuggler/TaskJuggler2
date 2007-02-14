@@ -20,7 +20,8 @@ class QString;
 
 class Scenario : public CoreAttributes
 {
-    friend int ScenarioList::compareItemsLevel(Scenario* r1, Scenario* r2,
+    friend int ScenarioList::compareItemsLevel(CoreAttributes* c1,
+                                               CoreAttributes* c2,
                                                int level);
 public:
     Scenario(Project* p, const QString& i, const QString& n, Scenario* p);

@@ -164,10 +164,10 @@ Task::addJournalEntry(JournalEntry* entry)
     journal.inSort(entry);
 }
 
-JournalIterator
+Journal::Iterator
 Task::getJournalIterator() const
 {
-    return JournalIterator(journal);
+    return Journal::Iterator(journal);
 }
 
 TaskDependency*

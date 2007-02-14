@@ -39,8 +39,8 @@ class UsageLimits;
  */
 class Resource : public CoreAttributes
 {
-    friend int ResourceList::compareItemsLevel(Resource* r1, Resource* r2,
-                                               int level);
+    friend int ResourceList::compareItemsLevel(CoreAttributes* c1,
+                                               CoreAttributes* c2, int level);
 public:
     Resource(Project* p, const QString& i, const QString& n, Resource* pr,
              const QString& df = QString::null, uint dl = 0);
@@ -182,7 +182,7 @@ public:
 
     bool hasJournal() const { return !journal.isEmpty(); }
 
-    JournalIterator getJournalIterator() const;
+    Journal::Iterator getJournalIterator() const;
 
 private:
     void getPIDs(int sc, const Interval& period, const Task* task,

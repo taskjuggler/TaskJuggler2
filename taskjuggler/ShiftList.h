@@ -35,10 +35,8 @@ public:
 
     Shift* getShift(const QString& id) const;
 
-    virtual int compareItemsLevel(Shift* s1, Shift* s2, int level);
-
-protected:
-    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                  int level);
 } ;
 
 /**
@@ -46,7 +44,7 @@ protected:
  * @see ShiftList
  * @author Chris Schlaeger <cs@kde.org>
  */
-class ShiftListIterator : public virtual CoreAttributesListIterator 
+class ShiftListIterator : public virtual CoreAttributesListIterator
 {
 public:
     ShiftListIterator(const CoreAttributesList& l) :

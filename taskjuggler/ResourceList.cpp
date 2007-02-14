@@ -28,19 +28,6 @@ ResourceList::ResourceList()
     sorting[1] = CoreAttributesList::IdUp;
 }
 
-int
-ResourceList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-    Resource* r1 = static_cast<Resource*>(i1);
-    Resource* r2 = static_cast<Resource*>(i2);
-
-    int res;
-    for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
-        if ((res = compareItemsLevel(r1, r2, i)) != 0)
-            return res;
-    return res;
-}
-
 bool
 ResourceList::isSupportedSortingCriteria(int sc)
 {
@@ -58,12 +45,16 @@ ResourceList::isSupportedSortingCriteria(int sc)
         return TRUE;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
-    }       
+    }
 }
 
 int
-ResourceList::compareItemsLevel(Resource* r1, Resource* r2, int level)
+ResourceList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                int level)
 {
+    Resource* r1 = static_cast<Resource*>(c1);
+    Resource* r2 = static_cast<Resource*>(c2);
+
     if (level < 0 || level >= maxSortingLevel)
         return -1;
 

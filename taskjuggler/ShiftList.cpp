@@ -26,22 +26,12 @@ ShiftList::getShift(const QString& id) const
 }
 
 int
-ShiftList::compareItems(QCollection::Item i1, QCollection::Item i2)
+ShiftList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                             int level)
 {
-    Shift* s1 = static_cast<Shift*>(i1);
-    Shift* s2 = static_cast<Shift*>(i2);
+    Shift* s1 = static_cast<Shift*>(c1);
+    Shift* s2 = static_cast<Shift*>(c2);
 
-    int res;
-    for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
-        if ((res = compareItemsLevel(s1, s2, i)) != 0)
-            return res;
-    return res;
-}
-
-int 
-ShiftList::compareItemsLevel(Shift* s1, Shift *s2,
-                                      int level)
-{
     if (level < 0 || level >= maxSortingLevel)
         return -1;
 
@@ -55,6 +45,6 @@ ShiftList::compareItemsLevel(Shift* s1, Shift *s2,
                 s1->getSequenceNo() < s2->getSequenceNo() ? -1 : 1;
     default:
         return CoreAttributesList::compareItemsLevel(s1, s2, level);
-    }       
+    }
 }
 

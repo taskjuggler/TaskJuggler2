@@ -1759,7 +1759,7 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
            << "       <th style=\"width:35%\"></th>" << endl
            << "       <th style=\"width:65%\"></th>" << endl
            << "      </tr>" << endl;
-        for (BookingListIterator bli(jobs); *bli != 0; ++bli)
+        for (BookingList::Iterator bli(jobs); *bli != 0; ++bli)
         {
             if ((tci->tli->ca2 == 0 || tci->tli->task == (*bli)->getTask()) &&
                 reportPeriod.overlaps(Interval((*bli)->getStart(),

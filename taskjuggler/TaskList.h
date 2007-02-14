@@ -43,12 +43,12 @@ public:
 
     static bool isSupportedSortingCriteria(int sc);
 
-    virtual int compareItemsLevel(Task* t1, Task* T2, int level);
+    virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                  int level);
 
     void setSortScenario(int sc) { sortScenario = sc; }
 
 protected:
-    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
     int sortScenario;
 } ;
 

@@ -31,6 +31,19 @@ CoreAttributesList::~CoreAttributesList()
 }
 
 void
+CoreAttributesList::deleteContents()
+{
+    while (!isEmpty()) {
+        for (CoreAttributesListIterator li(*this); *li; ++li)
+            if ((*li)->getParent() == 0)
+            {
+                delete *li;
+                break;
+            }
+    }
+}
+
+void
 CoreAttributesList::setSorting(int s, int level)
 {
     if (level >=0 && level < maxSortingLevel)
@@ -63,7 +76,7 @@ CoreAttributesList::createIndex(bool initial)
         for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
         {
             (*cli)->setIndex(i);
-            // Reset all hierarchIndices to 0. 
+            // Reset all hierarchIndices to 0.
             (*cli)->setHierarchIndex(0);
         }
         // Then number them again.
@@ -114,7 +127,7 @@ CoreAttributesList::isSupportedSortingCriteria(int sc)
         return TRUE;
     default:
         return FALSE;
-    }       
+    }
 }
 
 int
@@ -123,7 +136,7 @@ CoreAttributesList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
 {
     if (level < 0 || level >= maxSortingLevel)
         return -1;
-    
+
     switch (sorting[level])
     {
     case SequenceUp:

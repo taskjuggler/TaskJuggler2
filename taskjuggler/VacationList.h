@@ -32,6 +32,8 @@ public:
     VacationList() { setAutoDelete(TRUE); }
     virtual ~VacationList() {}
 
+    typedef QPtrListIterator<VacationInterval> Iterator;
+
     void add(const QString& name, const Interval& i);
     void add(VacationInterval* vi);
     bool isVacation(time_t date) const;
@@ -39,18 +41,6 @@ public:
 
 protected:
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-} ;
-
-/**
- * @short Iterator for VacationList objects.
- * @author Chris Schlaeger <cs@kde.org>
- */
-class VacationListIterator : public QPtrListIterator<VacationInterval>
-{
-public:
-    VacationListIterator(const VacationList& l) :
-        QPtrListIterator<VacationInterval>(l) { }
-    virtual ~VacationListIterator() { }
 } ;
 
 #endif

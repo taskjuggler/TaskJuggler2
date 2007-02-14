@@ -296,7 +296,7 @@ XMLReport::generateScenario(QDomElement* parentEl, Scenario* scenario)
 bool
 XMLReport::generateGlobalVacationList(QDomElement* parentNode)
 {
-    VacationListIterator vli(project->getVacationListIterator());
+    VacationList::Iterator vli(project->getVacationListIterator());
 
     if (*vli != 0)
     {
@@ -434,7 +434,8 @@ XMLReport::generateResource(QDomElement* parentEl,
     }
 
     generateWorkingHours(&el, resource->getWorkingHours());
-    for (ShiftSelectionListIterator sli(*resource->getShiftList()); *sli; ++sli)
+    for (ShiftSelectionList::Iterator sli(*resource->getShiftList()); *sli;
+         ++sli)
     {
         QDomElement sSel = doc->createElement("shiftSelection");
         el.appendChild(sSel);
@@ -772,7 +773,7 @@ XMLReport::generateBookingList(QDomElement* parentEl,
             if (bl.isEmpty())
                 continue;
 
-            for (BookingListIterator bli(bl); *bli != 0; ++bli)
+            for (BookingList::Iterator bli(bl); *bli != 0; ++bli)
             {
                 if (filteredTaskList.findRef((*bli)->getTask()) >= 0)
                 {

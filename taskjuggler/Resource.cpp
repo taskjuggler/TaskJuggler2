@@ -300,7 +300,7 @@ Resource::initScoreboard()
             scoreboard[sbIndex(date)] = (SbBooking*) 2;
 
     // Mark all global vacation slots as such (2)
-    for (VacationListIterator ivi(project->getVacationListIterator());
+    for (VacationList::Iterator ivi(project->getVacationListIterator());
          *ivi != 0; ++ivi)
     {
         if ((*ivi)->getStart() > project->getEnd() ||
@@ -1093,7 +1093,7 @@ Resource::hasVacationDay(time_t day) const
 bool
 Resource::isOnShift(const Interval& slot) const
 {
-    for (ShiftSelectionListIterator ssli(shifts); *ssli != 0; ++ssli)
+    for (ShiftSelectionList::Iterator ssli(shifts); *ssli != 0; ++ssli)
         if ((*ssli)->getPeriod().contains(slot))
             return (*ssli)->getShift()->isOnShift(slot);
 
@@ -1311,10 +1311,10 @@ Resource::addJournalEntry(JournalEntry* entry)
     journal.append(entry);
 }
 
-JournalIterator
+Journal::Iterator
 Resource::getJournalIterator() const
 {
-    return JournalIterator(journal);
+    return Journal::Iterator(journal);
 }
 
 QDomElement Resource::xmlIDElement( QDomDocument& doc ) const

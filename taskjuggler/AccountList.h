@@ -24,8 +24,8 @@ class Account;
 class AccountList : public CoreAttributesList
 {
 public:
-    AccountList() 
-    { 
+    AccountList()
+    {
         sorting[0] = CoreAttributesList::TreeMode;
         sorting[1] = CoreAttributesList::IdUp;
     }
@@ -34,11 +34,9 @@ public:
     Account* getAccount(const QString& id) const;
 
     static bool isSupportedSortingCriteria(int sc);
-    
-    virtual int compareItemsLevel(Account* a1, Account* a2, int level);
 
-protected:
-    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                  int level);
 } ;
 
 /**
@@ -46,7 +44,7 @@ protected:
  * @see AccountList
  * @author Chris Schlaeger <cs@kde.org>
  */
-class AccountListIterator : public virtual CoreAttributesListIterator 
+class AccountListIterator : public virtual CoreAttributesListIterator
 {
 public:
     AccountListIterator(const CoreAttributesList& l) :

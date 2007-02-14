@@ -45,7 +45,7 @@ VacationList::compareItems(QCollection::Item it1, QCollection::Item it2)
 bool
 VacationList::isVacation(time_t date) const
 {
-    for (VacationListIterator vli(*this); *vli != 0; ++vli)
+    for (VacationList::Iterator vli(*this); *vli != 0; ++vli)
         if ((*vli)->contains(date))
             return TRUE;
 
@@ -55,7 +55,7 @@ VacationList::isVacation(time_t date) const
 const QString&
 VacationList::vacationName(time_t date) const
 {
-    for (VacationListIterator vli(*this); *vli != 0; ++vli)
+    for (VacationList::Iterator vli(*this); *vli != 0; ++vli)
         if ((*vli)->contains(date))
             return (*vli)->getName();
 

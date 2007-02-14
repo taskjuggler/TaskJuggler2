@@ -31,23 +31,21 @@ public:
     Scenario* getScenario(const QString& id) const;
 
     static bool isSupportedSortingCriteria(int sc);
-    
-    virtual int compareItemsLevel(Scenario* r1, Scenario* r2, int level);
+
+    virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                  int level);
 
     virtual Scenario* operator[](int i)
     {
         return (Scenario*) at(i);
     }
-
-protected:
-    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 } ;
 
 /**
  * @short Iterator class for ScenarioList objects.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class ScenarioListIterator : public virtual CoreAttributesListIterator 
+class ScenarioListIterator : public virtual CoreAttributesListIterator
 {
 public:
     ScenarioListIterator(const CoreAttributesList& l) :

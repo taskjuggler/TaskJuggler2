@@ -31,12 +31,15 @@ AccountList::isSupportedSortingCriteria(int sc)
         return TRUE;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
-    }       
+    }
 }
 
 int
-AccountList::compareItemsLevel(Account* a1, Account* a2, int level)
+AccountList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                               int level)
 {
+    Account* a1 = static_cast<Account*>(c1);
+    Account* a2 = static_cast<Account*>(c2);
     if (level > 2)
         return -1;
 
@@ -60,19 +63,6 @@ AccountList::compareItemsLevel(Account* a1, Account* a2, int level)
     }
     default:
         return CoreAttributesList::compareItemsLevel(a1, a2, level);
-    }       
-}
-
-int
-AccountList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-    Account* a1 = static_cast<Account*>(i1);
-    Account* a2 = static_cast<Account*>(i2);
-
-    int res;
-    for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
-        if ((res = compareItemsLevel(a1, a2, i)) != 0)
-            return res;
-    return res;
+    }
 }
 

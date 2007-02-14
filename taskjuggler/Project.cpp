@@ -54,6 +54,7 @@ Project::Project()
     initUtility(20000);
 
     vacationList.setAutoDelete(TRUE);
+    accountAttributes.setAutoDelete(TRUE);
     taskAttributes.setAutoDelete(TRUE);
     resourceAttributes.setAutoDelete(TRUE);
     reports.setAutoDelete(TRUE);
@@ -117,56 +118,13 @@ Project::Project()
 
 Project::~Project()
 {
-    while (!taskList.isEmpty())
-    {
-        for (TaskListIterator tli(taskList); *tli; ++tli)
-            if ((*tli)->getParent() == 0)
-            {
-                delete *tli;
-                break;
-            }
-    }
-
-    while (!resourceList.isEmpty())
-    {
-        for (ResourceListIterator tli(resourceList); *tli; ++tli)
-            if ((*tli)->getParent() == 0)
-            {
-                delete *tli;
-                break;
-            }
-    }
+    taskList.deleteContents();
+    resourceList.deleteContents();
     Resource::deleteStaticData();
 
-    while (!accountList.isEmpty())
-    {
-        for (AccountListIterator tli(accountList); *tli; ++tli)
-            if ((*tli)->getParent() == 0)
-            {
-                delete *tli;
-                break;
-            }
-    }
-
-    while (!shiftList.isEmpty())
-    {
-        for (ShiftListIterator tli(shiftList); *tli; ++tli)
-            if ((*tli)->getParent() == 0)
-            {
-                delete *tli;
-                break;
-            }
-    }
-
-    while (!scenarioList.isEmpty())
-    {
-        for (ScenarioListIterator tli(scenarioList); *tli; ++tli)
-            if ((*tli)->getParent() == 0)
-            {
-                delete *tli;
-                break;
-            }
-    }
+    accountList.deleteContents();
+    shiftList.deleteContents();
+    scenarioList.deleteContents();
 
     // Remove support for 1.0 XML reports for next major release. */
     delete xmlreport;
@@ -411,17 +369,17 @@ bool
 Project::addAccountAttribute(const QString& id,
                               CustomAttributeDefinition* cad)
 {
-    if (resourceAttributes.find(id))
+    if (accountAttributes.find(id))
         return FALSE;
 
-    resourceAttributes.insert(id, cad);
+    accountAttributes.insert(id, cad);
     return TRUE;
 }
 
 const CustomAttributeDefinition*
 Project::getAccountAttribute(const QString& id) const
 {
-    return resourceAttributes[id];
+    return accountAttributes[id];
 }
 
 bool
@@ -487,10 +445,10 @@ Project::addJournalEntry(JournalEntry* entry)
     journal.inSort(entry);
 }
 
-JournalIterator
+Journal::Iterator
 Project::getJournalIterator() const
 {
-    return JournalIterator(journal);
+    return Journal::Iterator(journal);
 }
 
 bool

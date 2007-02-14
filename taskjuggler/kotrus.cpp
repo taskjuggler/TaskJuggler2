@@ -358,7 +358,7 @@ int Kotrus::saveBookings( const QString& kotrusID,  /* the user id */
    /* And now insert again */
    QSqlCursor cur( "ktBookings" );
 
-   BookingListIterator it( blist );
+   BookingList::Iterator it( blist );
    for( ; it.current(); ++it )
    {
       int kotrusNumId =

@@ -26,21 +26,11 @@ public:
     BookingList() { }
     virtual ~BookingList() { }
 
+    typedef QPtrListIterator<Booking> Iterator;
+
 protected:
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
-
-/**
- * @short Iterator class for BookingList objects.
- * @author Chris Schlaeger <cs@kde.org>
- */
-class BookingListIterator : public QPtrListIterator<Booking> 
-{
-public:
-    BookingListIterator(const BookingList& l) :
-        QPtrListIterator<Booking>(l) { }
-    virtual ~BookingListIterator() { }
-} ;
 
 #endif
 

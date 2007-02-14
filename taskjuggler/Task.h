@@ -57,7 +57,8 @@ class UsageLimits;
  */
 class Task : public CoreAttributes
 {
-    friend int TaskList::compareItemsLevel(Task*, Task*, int);
+    friend int TaskList::compareItemsLevel(CoreAttributes*, CoreAttributes*,
+                                           int);
 
 public:
     Task(Project* prj, const QString& id_, const QString& n, Task* p,
@@ -87,7 +88,7 @@ public:
 
     bool hasJournal() const { return !journal.isEmpty(); }
 
-    JournalIterator getJournalIterator() const;
+    Journal::Iterator getJournalIterator() const;
 
     void setReference(const QString& r, const QString& l)
     {

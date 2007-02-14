@@ -19,19 +19,6 @@ ScenarioList::ScenarioList()
     sorting[1] = CoreAttributesList::IdUp;
 }
 
-int
-ScenarioList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-    Scenario* r1 = static_cast<Scenario*>(i1);
-    Scenario* r2 = static_cast<Scenario*>(i2);
-
-    int res;
-    for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
-        if ((res = compareItemsLevel(r1, r2, i)) != 0)
-            return res;
-    return res;
-}
-
 bool
 ScenarioList::isSupportedSortingCriteria(int sc)
 {
@@ -41,12 +28,16 @@ ScenarioList::isSupportedSortingCriteria(int sc)
         return TRUE;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
-    }       
+    }
 }
 
 int
-ScenarioList::compareItemsLevel(Scenario* r1, Scenario* r2, int level)
+ScenarioList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                int level)
 {
+    Scenario* r1 = static_cast<Scenario*>(c1);
+    Scenario* r2 = static_cast<Scenario*>(c2);
+
     if (level < 0 || level >= maxSortingLevel)
         return -1;
 

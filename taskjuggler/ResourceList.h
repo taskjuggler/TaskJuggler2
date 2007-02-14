@@ -31,18 +31,16 @@ public:
     Resource* getResource(const QString& id) const;
 
     static bool isSupportedSortingCriteria(int sc);
-    
-    virtual int compareItemsLevel(Resource* r1, Resource* r2, int level);
 
-protected:
-    virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
+    virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
+                                  int level);
 } ;
 
 /**
  * @short Iterator class for ResourceList objects.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class ResourceListIterator : public virtual CoreAttributesListIterator 
+class ResourceListIterator : public virtual CoreAttributesListIterator
 {
 public:
     ResourceListIterator(const CoreAttributesList& l) :

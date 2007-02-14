@@ -429,7 +429,8 @@ ExportReport::generateResource(ResourceList& filteredResourceList,
                          resource->getParent()->getWorkingHours() :
                          project->getWorkingHours(), 2);
 
-    for (ShiftSelectionListIterator sli(*resource->getShiftList()); *sli; ++sli)
+    for (ShiftSelectionList::Iterator sli(*resource->getShiftList()); *sli;
+         ++sli)
     {
         s << "  shift " << (*sli)->getShift()->getId() << " "
             << time2tjp((*sli)->getPeriod().getStart()) << " - "
@@ -842,7 +843,7 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                 continue;
 
             Task* lastTask = 0;
-            for (BookingListIterator bli(bl); *bli != 0; ++bli)
+            for (BookingList::Iterator bli(bl); *bli != 0; ++bli)
             {
                 /* Bookings are only generated for those task that have not
                  * been filtered out and if the booking overlaps with the

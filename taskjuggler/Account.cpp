@@ -49,7 +49,7 @@ Account::getVolume(int sc, const Interval& period) const
             volume += (*tli)->getCredits(sc, period, acctType, 0, FALSE);
 
     // Add all transactions that are registered within the period.
-    for (TransactionListIterator tli(transactions); *tli != 0; ++tli)
+    for (TransactionList::Iterator tli(transactions); *tli != 0; ++tli)
         if (period.contains((*tli)->getDate()))
             volume += (*tli)->getAmount();
 

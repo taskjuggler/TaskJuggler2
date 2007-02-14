@@ -28,7 +28,7 @@ ShiftSelectionList::isOnShift(const Interval& iv) const
     /* Check whether any of the defined shift intervals contains the interval
      * 'iv'. If not return TRUE. If it does, check whether the interval 'iv'
      * lies within the specified working hours. */
-    for (ShiftSelectionListIterator ssli(*this); *ssli != 0; ++ssli)
+    for (ShiftSelectionList::Iterator ssli(*this); *ssli != 0; ++ssli)
         if ((*ssli)->getPeriod().contains(iv))
            return (*ssli)->getShift()->isOnShift(iv);
     return TRUE;
@@ -37,7 +37,7 @@ ShiftSelectionList::isOnShift(const Interval& iv) const
 bool
 ShiftSelectionList::isVacationDay(time_t day) const
 {
-    for (ShiftSelectionListIterator ssli(*this);
+    for (ShiftSelectionList::Iterator ssli(*this);
          *ssli != 0 && day <= (*ssli)->getPeriod().getEnd(); ++ssli)
         if ((*ssli)->isVacationDay(day))
             return TRUE;
@@ -47,7 +47,7 @@ ShiftSelectionList::isVacationDay(time_t day) const
 bool
 ShiftSelectionList::insert(ShiftSelection* s)
 {
-    for (ShiftSelectionListIterator ssli(*this); *ssli != 0; ++ssli)
+    for (ShiftSelectionList::Iterator ssli(*this); *ssli != 0; ++ssli)
         if ((*ssli)->getPeriod().overlaps(s->getPeriod()))
             return FALSE;
     append(s);

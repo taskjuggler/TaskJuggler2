@@ -28,7 +28,9 @@ class ShiftSelectionList : public QPtrList<ShiftSelection>
 {
 public:
     ShiftSelectionList() { }
-    virtual ~ShiftSelectionList() { } 
+    virtual ~ShiftSelectionList() { }
+
+    typedef QPtrListIterator<ShiftSelection> Iterator;
 
     bool insert(ShiftSelection* s);
 
@@ -40,18 +42,6 @@ private:
     friend class ShiftSelection;
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
 };
-
-/**
- * @short Iterator for ShiftSelectionList objects.
- * @author Chris Schlaeger <cs@kde.org>
- */
-class ShiftSelectionListIterator : public QPtrListIterator<ShiftSelection>
-{
-public:
-    ShiftSelectionListIterator(const ShiftSelectionList& s) :
-        QPtrListIterator<ShiftSelection>(s) { }
-    virtual ~ShiftSelectionListIterator() { }
-} ;
 
 #endif
 

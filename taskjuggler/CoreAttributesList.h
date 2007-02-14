@@ -37,7 +37,10 @@ public:
         for (int i = 0; i < maxSortingLevel; i++)
             sorting[i] = l.sorting[i];
     }
+
     virtual ~CoreAttributesList();
+
+    void deleteContents();
 
     enum SortCriteria {
         SequenceUp = 0, SequenceDown,

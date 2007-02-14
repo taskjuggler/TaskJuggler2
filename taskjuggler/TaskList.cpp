@@ -52,8 +52,11 @@ TaskList::isSupportedSortingCriteria(int sc)
 }
 
 int
-TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
+TaskList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2, int level)
 {
+    Task* t1 = static_cast<Task*>(c1);
+    Task* t2 = static_cast<Task*>(c2);
+
     if (level < 0 || level >= maxSortingLevel)
         return -1;
 
@@ -171,18 +174,4 @@ TaskList::compareItemsLevel(Task* t1, Task* t2, int level)
         return CoreAttributesList::compareItemsLevel(t1, t2, level);
     }
 }
-
-int
-TaskList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-    Task* t1 = static_cast<Task*>(i1);
-    Task* t2 = static_cast<Task*>(i2);
-
-    int res;
-    for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
-        if ((res = compareItemsLevel(t1, t2, i)) != 0)
-            return res;
-    return res;
-}
-
 

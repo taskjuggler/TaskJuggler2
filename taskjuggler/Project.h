@@ -382,9 +382,9 @@ public:
     /**
      * Returns an iterator for the vacation list.
      */
-    VacationListIterator getVacationListIterator() const
+    VacationList::Iterator getVacationListIterator() const
     {
-        return VacationListIterator(vacationList);
+        return VacationList::Iterator(vacationList);
     }
 
     /**
@@ -578,7 +578,7 @@ public:
     const QDict<CustomAttributeDefinition>&
         getAccountAttributeDict() const
     {
-        return resourceAttributes;
+        return accountAttributes;
     }
 
     /**
@@ -763,7 +763,7 @@ public:
 
     bool hasJournal() const { return !journal.isEmpty(); }
 
-    JournalIterator getJournalIterator() const;
+    Journal::Iterator getJournalIterator() const;
 
     /**
      * Generate cross references between all data structures and run a
@@ -917,6 +917,7 @@ private:
 
     QDict<CustomAttributeDefinition> taskAttributes;
     QDict<CustomAttributeDefinition> resourceAttributes;
+    QDict<CustomAttributeDefinition> accountAttributes;
 
     Kotrus* kotrus;
 

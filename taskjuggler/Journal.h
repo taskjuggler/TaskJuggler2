@@ -26,17 +26,11 @@ public:
     }
     ~Journal() { }
 
+    typedef QPtrListIterator<JournalEntry> Iterator;
+
 protected:
     virtual int compareItems(QPtrCollection::Item item1,
                              QPtrCollection::Item item2);
-} ;
-
-class JournalIterator : public QPtrListIterator<JournalEntry>
-{
-public:
-    JournalIterator(const Journal& j) :
-        QPtrListIterator<JournalEntry>(j) { }
-    virtual ~JournalIterator() { }
 } ;
 
 #endif

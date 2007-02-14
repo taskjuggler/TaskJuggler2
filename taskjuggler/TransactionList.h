@@ -52,20 +52,11 @@ class TransactionList : public QPtrList<Transaction>
 public:
     TransactionList() { }
     virtual ~TransactionList() { }
+
+    typedef QPtrListIterator<Transaction> Iterator;
+
 protected:
     virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-} ;
-
-/**
- * @short Iterator for TransactionList objects.
- * @author Chris Schlaeger <cs@kde.org>
- */
-class TransactionListIterator : public QPtrListIterator<Transaction>
-{
-public:
-    TransactionListIterator(const TransactionList& t) :
-        QPtrListIterator<Transaction>(t) {}
-    virtual ~TransactionListIterator() { }
 } ;
 
 #endif
