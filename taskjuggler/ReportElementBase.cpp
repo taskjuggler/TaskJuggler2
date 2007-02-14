@@ -11,10 +11,9 @@
  * $Id: ReportElement.h 1335 2006-09-24 13:49:05Z cs $
  */
 
+#include "tjlib-internal.h"
 #include "ReportElementBase.h"
 #include "Project.h"
-
-#define KW(a) a
 
 ReportElementBase::ReportElementBase(Report* r) : report(r)
 {

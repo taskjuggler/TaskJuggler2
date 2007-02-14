@@ -12,13 +12,12 @@
 
 #include "qdom.h"
 
+#include "tjlib-internal.h"
 #include "Resource.h"
 #include "ResourceTreeIterator.h"
 #include "Allocation.h"
 #include "ReportXML.h"
 #include "UsageLimits.h"
-
-#define KW(a) a
 
 /* -- DTD --
     <!ELEMENT Allocation (Load, Persistent)>

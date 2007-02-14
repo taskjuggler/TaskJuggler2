@@ -38,8 +38,6 @@
 #include "ReferenceAttribute.h"
 #include "MacroTable.h"
 
-#define KW(a) a
-
 ReportElement::ReportElement(Report* r, const QString& df, int dl) :
         ReportElementBase(r), defFileName(df), defFileLine(dl)
 {

@@ -27,8 +27,6 @@
 #include "ResourceTreeIterator.h"
 #include "AccountTreeIterator.h"
 
-#define KW(a) a
-
 Report::Report(Project* p, const QString& f, const QString& df, int dl) :
         project(p), fileName(f), defFileName(df), defFileLine(dl)
 {

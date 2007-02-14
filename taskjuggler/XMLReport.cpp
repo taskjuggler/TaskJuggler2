@@ -39,8 +39,6 @@
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
 
-#define KW(a) a
-
 static QMap<QString, int> TaskAttributeDict;
 typedef enum TADs {
     TA_UNDEFINED = 0,

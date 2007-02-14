@@ -76,9 +76,6 @@
 #include "ExpressionFunctionTable.h"
 #include "JournalEntry.h"
 
-// Dummy marco to mark all keywords of taskjuggler syntax
-#define KW(a) a
-
 ProjectFile::ProjectFile(Project* p)
 {
     proj = p;

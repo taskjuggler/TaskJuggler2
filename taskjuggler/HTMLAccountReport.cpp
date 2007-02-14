@@ -16,8 +16,6 @@
 #include "HTMLAccountReport.h"
 #include "HTMLAccountReportElement.h"
 
-#define KW(a) a
-
 HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f,
                                      const QString& df, int dl) :
     HTMLReport(p, f, df, dl)

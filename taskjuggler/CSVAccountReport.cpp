@@ -15,9 +15,7 @@
 #include "CSVAccountReport.h"
 #include "CSVAccountReportElement.h"
 
-#define KW(a) a
-
-CSVAccountReport::CSVAccountReport(Project* p, const QString& f, 
+CSVAccountReport::CSVAccountReport(Project* p, const QString& f,
                                      const QString& df, int dl) :
     CSVReport(p, f, df, dl)
 {

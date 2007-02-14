@@ -38,7 +38,10 @@ public:
         return functions[name]->getArgumentCount();
     }
 
-private: 
+private:
+    void addFunc(const QString& name, const ExpressionTreeFunctionLongPtr func,
+                 const int args);
+
     QDict<ExpressionTreeFunction> functions;
 } ;
 

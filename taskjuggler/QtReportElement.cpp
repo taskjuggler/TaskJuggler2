@@ -33,8 +33,6 @@
 #include "QtReport.h"
 #include "UsageLimits.h"
 
-#define KW(a) a
-
 QtReportElement::QtReportElement(Report* r, const QString& df, int dl) :
    ReportElement(r, df, dl)
 {

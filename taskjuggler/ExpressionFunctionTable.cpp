@@ -11,10 +11,9 @@
  * $Id$
  */
 
+#include "tjlib-internal.h"
 #include "ExpressionFunctionTable.h"
 
-// Dummy marco to mark all keywords of taskjuggler syntax
-#define KW(a) a
 
 ExpressionFunctionTable EFT;
 
@@ -22,183 +21,50 @@ ExpressionFunctionTable::ExpressionFunctionTable()
 {
     functions.setAutoDelete(TRUE);
 
-    ExpressionTreeFunction* etf = new ExpressionTreeFunction
-        ("hasassignments", &ExpressionTreeFunction::hasAssignments, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("istask", &ExpressionTreeFunction::isTask, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isTask"), &ExpressionTreeFunction::isTask, 1);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        (KW("isatask"), &ExpressionTreeFunction::isATask, 0);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isATask"), &ExpressionTreeFunction::isATask, 0);
-
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        ("ismilestone", &ExpressionTreeFunction::isMilestone, 0);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isMilestone"), &ExpressionTreeFunction::isMilestone, 0);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("istaskofproject", &ExpressionTreeFunction::isTaskOfProject, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isTaskOfProject"),
-         &ExpressionTreeFunction::isTaskOfProject, 1);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isresource", &ExpressionTreeFunction::isResource, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isResource"), &ExpressionTreeFunction::isResource, 1);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isaresource", &ExpressionTreeFunction::isAResource, 0);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isAResource"), &ExpressionTreeFunction::isAResource, 0);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isaccount", &ExpressionTreeFunction::isAccount, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isAccount"), &ExpressionTreeFunction::isAccount, 1);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isanaccount", &ExpressionTreeFunction::isAnAccount, 0);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isAnAccount"), &ExpressionTreeFunction::isAnAccount, 0);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("istaskstatus", &ExpressionTreeFunction::isTaskStatus, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isTaskStatus"), &ExpressionTreeFunction::isTaskStatus, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("startsbefore", &ExpressionTreeFunction::startsBefore, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("startsBefore"), &ExpressionTreeFunction::startsBefore, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("startsafter", &ExpressionTreeFunction::startsAfter, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("startsAfter"), &ExpressionTreeFunction::startsAfter, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("endsbefore", &ExpressionTreeFunction::endsBefore, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("endsBefore"), &ExpressionTreeFunction::endsBefore, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("endsafter", &ExpressionTreeFunction::endsAfter, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("endsAfter"), &ExpressionTreeFunction::endsAfter, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isparentof", &ExpressionTreeFunction::isParentOf, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isParentOf"), &ExpressionTreeFunction::isParentOf, 1);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("ischildof", &ExpressionTreeFunction::isChildOf, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isChildOf"), &ExpressionTreeFunction::isChildOf, 1);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isleaf", &ExpressionTreeFunction::isLeaf, 0);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isLeaf"), &ExpressionTreeFunction::isLeaf, 0);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("treelevel", &ExpressionTreeFunction::treeLevel, 0);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("treeLevel"), &ExpressionTreeFunction::treeLevel, 0);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isallocated", &ExpressionTreeFunction::isAllocated, 3);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isAllocated"), &ExpressionTreeFunction::isAllocated, 3);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isdutyof", &ExpressionTreeFunction::isDutyOf, 2);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isDutyOf"), &ExpressionTreeFunction::isDutyOf, 2);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isallocatedtoproject",
-         &ExpressionTreeFunction::isAllocatedToProject, 4);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isAllocatedToProject"),
-         &ExpressionTreeFunction::isAllocatedToProject, 4);
-    functions.insert(etf->getName(), etf);
-
-    etf = new ExpressionTreeFunction
-        ("isoncriticalpath", &ExpressionTreeFunction::isOnCriticalPath, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isOnCriticalPath"),
-         &ExpressionTreeFunction::isOnCriticalPath, 1);
-    functions.insert(etf->getName(), etf);
+    addFunc(KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 2);
+    addFunc(KW("isTask"), &ExpressionTreeFunction::isTask, 1);
+    addFunc(KW("isATask"), &ExpressionTreeFunction::isATask, 0);
+    addFunc(KW("isMilestone"), &ExpressionTreeFunction::isMilestone, 0);
+    addFunc(KW("isTaskOfProject"), &ExpressionTreeFunction::isTaskOfProject, 1);
+    addFunc(KW("isResource"), &ExpressionTreeFunction::isResource, 1);
+    addFunc(KW("isAResource"), &ExpressionTreeFunction::isAResource, 0);
+    addFunc(KW("isAccount"), &ExpressionTreeFunction::isAccount, 1);
+    addFunc(KW("isAnAccount"), &ExpressionTreeFunction::isAnAccount, 0);
+    addFunc(KW("isTaskStatus"), &ExpressionTreeFunction::isTaskStatus, 2);
+    addFunc(KW("startsBefore"), &ExpressionTreeFunction::startsBefore, 2);
+    addFunc(KW("startsAfter"), &ExpressionTreeFunction::startsAfter, 2);
+    addFunc(KW("endsBefore"), &ExpressionTreeFunction::endsBefore, 2);
+    addFunc(KW("endsAfter"), &ExpressionTreeFunction::endsAfter, 2);
+    addFunc(KW("isParentOf"), &ExpressionTreeFunction::isParentOf, 1);
+    addFunc(KW("isChildOf"), &ExpressionTreeFunction::isChildOf, 1);
+    addFunc(KW("isLeaf"), &ExpressionTreeFunction::isLeaf, 0);
+    addFunc(KW("treeLevel"), &ExpressionTreeFunction::treeLevel, 0);
+    addFunc(KW("isAllocated"), &ExpressionTreeFunction::isAllocated, 3);
+    addFunc(KW("isDutyOf"), &ExpressionTreeFunction::isDutyOf, 2);
+    addFunc(KW("isAllocatedToProject"),
+            &ExpressionTreeFunction::isAllocatedToProject, 4);
+    addFunc(KW("isOnCriticalPath"),
+            &ExpressionTreeFunction::isOnCriticalPath, 1);
 
     /* The following functions are for legacy support only. Their
      * use is discouraged since they will disappear some day. */
-    etf = new ExpressionTreeFunction
-        (KW("isplanallocated"),
-         &ExpressionTreeFunction::isPlanAllocated, 3);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("isactualallocated"),
-         &ExpressionTreeFunction::isActualAllocated, 3);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("issubtaskof"), &ExpressionTreeFunction::isSubTaskOf, 1);
-    functions.insert(etf->getName(), etf);
-    etf = new ExpressionTreeFunction
-        (KW("containstask"), &ExpressionTreeFunction::containsTask, 1);
-    functions.insert(etf->getName(), etf);
+    addFunc(KW("isPlanAllocated"), &ExpressionTreeFunction::isPlanAllocated, 3);
+    addFunc(KW("isActualAllocated"),
+            &ExpressionTreeFunction::isActualAllocated, 3);
+    addFunc(KW("isSubtaskOf"), &ExpressionTreeFunction::isSubTaskOf, 1);
+    addFunc(KW("containsTask"), &ExpressionTreeFunction::containsTask, 1);
 }
 
 ExpressionFunctionTable::~ExpressionFunctionTable()
 {
 }
 
+void
+ExpressionFunctionTable::addFunc(const QString& name,
+                                 const ExpressionTreeFunctionLongPtr func,
+                                 const int args)
+{
+    functions.insert(name, new ExpressionTreeFunction(name, func, args));
+    functions.insert(name.lower(), new ExpressionTreeFunction (name, func,
+                                                               args));
+}

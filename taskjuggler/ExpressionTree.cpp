@@ -23,9 +23,6 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 
-// Dummy marco to mark all keywords of taskjuggler syntax
-#define KW(a) a
-
 ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
 {
     symbolTable.setAutoDelete(TRUE);

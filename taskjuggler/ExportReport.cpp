@@ -15,6 +15,7 @@
 #include <qfile.h>
 #include <qmap.h>
 
+#include "tjlib-internal.h"
 #include "taskjuggler.h"
 #include "Project.h"
 #include "Scenario.h"
@@ -30,8 +31,6 @@
 #include "CustomAttributeDefinition.h"
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
-
-#define KW(a) a
 
 static QMap<QString, int> TaskAttributeDict;
 typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,

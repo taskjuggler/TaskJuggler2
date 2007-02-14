@@ -34,8 +34,6 @@
 #include "CSVReport.h"
 #include "UsageLimits.h"
 
-#define KW(a) a
-
 CSVReportElement::CSVReportElement(Report* r, const QString& df, int dl) :
    ReportElement(r, df, dl)
 {

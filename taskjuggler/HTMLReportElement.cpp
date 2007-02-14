@@ -34,8 +34,6 @@
 #include "HTMLReport.h"
 #include "UsageLimits.h"
 
-#define KW(a) a
-
 HTMLReportElement::HTMLReportElement(Report* r, const QString& df, int dl) :
    ReportElement(r, df, dl)
 {

@@ -23,8 +23,6 @@
 #include "debug.h"
 #include "tjlib-internal.h"
 
-#define KW(a) (a)
-
 bool
 ExpressionTreeFunction::checkCoreAttributesType(ExpressionTree* et)
 {

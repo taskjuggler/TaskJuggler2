@@ -16,5 +16,8 @@
 #define I18N_NOOP(x) (x)
 #define i18n(x) QString(x)
 
+// Dummy macro to mark TaskJuggler syntax keywords
+#define KW(a) a
+
 #endif
 
