@@ -28,7 +28,7 @@ public:
 
     ~Allocation();
 
-    void setLimits(UsageLimits* l) { limits = l; }
+    void setLimits(UsageLimits* l);
     const UsageLimits* getLimits() const { return limits; }
 
     void setPersistent(bool p) { persistent = p; }

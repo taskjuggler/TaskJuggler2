@@ -60,6 +60,13 @@ Allocation::Allocation(const Allocation& a)
         limits = 0;
 }
 
+void
+Allocation::setLimits(UsageLimits* l)
+{
+    delete limits;
+    limits = l;
+}
+
 bool
 Allocation::isWorker() const
 {
