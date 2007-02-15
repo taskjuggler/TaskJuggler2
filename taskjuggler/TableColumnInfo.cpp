@@ -16,6 +16,8 @@ TableColumnInfo::~TableColumnInfo()
 {
     delete [] sum;
     delete [] memory;
+    delete hideCellText;
+    delete hideCellURL;
 }
 
 void

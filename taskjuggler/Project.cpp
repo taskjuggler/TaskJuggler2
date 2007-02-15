@@ -126,6 +126,8 @@ Project::~Project()
     shiftList.deleteContents();
     scenarioList.deleteContents();
 
+    delete resourceLimits;
+
     // Remove support for 1.0 XML reports for next major release. */
     delete xmlreport;
 

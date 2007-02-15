@@ -211,6 +211,8 @@ CSVReportElement::generateTitle(TableCellInfo* tci, const QString& str)
     cellText = filter(cellText);
 
     s() << "\"" << cellText << "\"";
+
+    delete sl;
 }
 
 void
