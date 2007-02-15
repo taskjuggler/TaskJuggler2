@@ -32,7 +32,7 @@ public:
     Booking(Interval* iv, Task* t) : SbBooking(t), interval(iv) { }
     Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
             interval(new Interval(iv)) { }
-    ~Booking() { delete interval; }
+    virtual ~Booking() { delete interval; }
 
     time_t getStart() const { return interval->getStart(); }
     time_t getEnd() const { return interval->getEnd(); }

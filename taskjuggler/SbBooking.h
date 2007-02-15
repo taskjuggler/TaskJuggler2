@@ -26,7 +26,7 @@ public:
     SbBooking(Task* t)
         : task(t) { }
     SbBooking(const SbBooking* b) { task = b->task; }
-    ~SbBooking() { }
+    virtual ~SbBooking() { }
 
     Task* getTask() const { return task; }
 
