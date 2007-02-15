@@ -14,6 +14,7 @@
 #define _HTMLResourceReport_h_
 
 #include "HTMLReport.h"
+#include "HTMLResourceReportElement.h"
 
 class Project;
 class HTMLResourceReportElement;
@@ -26,7 +27,7 @@ class HTMLResourceReport : public HTMLReport
 {
 public:
     HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~HTMLResourceReport() { }
+    virtual ~HTMLResourceReport() { delete tab; }
 
     virtual const char* getType() const { return "HTMLResourceReport"; }
 
