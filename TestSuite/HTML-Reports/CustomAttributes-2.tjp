@@ -1,4 +1,4 @@
-project ca "Custom Attributes" "$Id$" 2003-05-28 2003-06-28 {
+project ca "Custom Attributes" "$Id: CustomAttributes-1.tjp 600 2003-10-29 21:30:24Z cs $" 2003-05-28 2003-06-28 {
 	extend task {
 		reference MyTLink "My TLink"
 		text MyTText "My TText"
@@ -52,10 +52,10 @@ task t2 "Task 2" {
 	}
 }
 
-htmltaskreport "." {
+htmlresourcereport "." {
 	columns no { celltext "Hallo" hidecelltext ~isLeaf() }, 
 	        name { celltext "[$${MyText}] $${0}" }, 
-					MyText, MyTLink, MyTText, MyRLink
-	hideresource 0
+					MyText, MyRLink, MyRText, MyTLink
+	hidetask 0
 }
 

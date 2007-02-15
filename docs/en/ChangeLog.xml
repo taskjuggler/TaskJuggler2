@@ -1124,6 +1124,12 @@ manual.</para></listitem>
 <listitem><para>Properly handle Pacific/Auckland
 DST.</para></listitem>
 
+<listitem><para>Fixed a number of memory leaks.</para></listitem>
+
+<listitem><para>Removed namespace collision for resource and account
+custom attributes and added support for user defined account
+attributes in the code.</para></listitem>
+
 <listitem><para>Make sure that files that have been modified on disk
 while edited by the TaskJugglerUI are detected properly. Probably with
 KDE 3.5.4 the behavior of the Kate library changed so that the test no

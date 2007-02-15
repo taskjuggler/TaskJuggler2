@@ -804,10 +804,11 @@ ProjectFile::readExtend()
     QString property;
 
     if (nextToken(property) != ID ||
-        (property != "task" && property != "resource"))
+        (property != "task" && property != "resource" &&
+         property != "account"))
     {
-        errorMessage(i18n("'%1' is not a property. Please use 'task' or "
-                          "'resource'.").arg(property));
+        errorMessage(i18n("'%1' is not a property. Please use 'task', "
+                          "'resource' or 'account'.").arg(property));
         return FALSE;
     }
     QString token;
@@ -861,6 +862,8 @@ ProjectFile::readExtend()
             ok = proj->addTaskAttribute(attrID, ca);
         else if (property == "resource")
             ok = proj->addResourceAttribute(attrID, ca);
+        else if (property == "account")
+            ok = proj->addAccountAttribute(attrID, ca);
         if (!ok)
         {
             errorMessage(i18n("The custom attribute '%1' has already been "
@@ -2659,7 +2662,14 @@ ProjectFile::readAccount(Account* parent)
                              .arg(token));
                 return FALSE;
             }
-            if (token == KW("account") && !cantBeParent)
+            if (proj->getAccountAttribute(token))
+            {
+                if (!readCustomAttribute(a, token,
+                                         proj->getAccountAttribute(token)->
+                                         getType()))
+                    return FALSE;
+            }
+            else if (token == KW("account") && !cantBeParent)
             {
                 if (!readAccount(a))
                     return FALSE;

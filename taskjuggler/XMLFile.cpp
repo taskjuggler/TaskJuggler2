@@ -152,6 +152,7 @@ XMLFile::createParseTree()
             {
                 accountNode->add(pe, "account"); // recursive link
                 new ParserElement("flag", &XMLFile::doFlag, accountNode);
+                createSubTreeCustomAttribute(accountNode);
             }
         }
 
@@ -520,6 +521,8 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
     if (ptc.getExtendProperty() == "task")
         project->addTaskAttribute(el.attribute("id"), ca);
     else if (ptc.getExtendProperty() == "resource")
+        project->addResourceAttribute(el.attribute("id"), ca);
+    else if (ptc.getExtendProperty() == "account")
         project->addResourceAttribute(el.attribute("id"), ca);
 
     return TRUE;
