@@ -523,7 +523,7 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
     else if (ptc.getExtendProperty() == "resource")
         project->addResourceAttribute(el.attribute("id"), ca);
     else if (ptc.getExtendProperty() == "account")
-        project->addResourceAttribute(el.attribute("id"), ca);
+        project->addAccountAttribute(el.attribute("id"), ca);
 
     return TRUE;
 }

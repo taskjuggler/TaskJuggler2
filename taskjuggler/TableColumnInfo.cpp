@@ -11,6 +11,7 @@
  */
 
 #include "TableColumnInfo.h"
+#include "ExpressionTree.h"
 
 TableColumnInfo::~TableColumnInfo()
 {
