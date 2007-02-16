@@ -16,9 +16,9 @@
 #include <time.h>
 #include <qstring.h>
 
-#define MAXTIME 0x7FFFFFFF
-#define ONEDAY (60 * 60 * 24)
-#define ONEHOUR (60 * 60)
+const int MAXTIME = 0x7FFFFFFF;
+const int ONEDAY = 60 * 60 * 24;
+const int ONEHOUR = 60 * 60;
 
 void initUtility(long dizeSize);
 
