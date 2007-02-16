@@ -31,7 +31,7 @@ static QString UtilityError;
 struct LtHashTabEntry
 {
     time_t t;
-    struct tm* tms;
+    struct tm tms;
     LtHashTabEntry* next;
 } ;
 
@@ -147,7 +147,6 @@ void exitUtility()
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
-            delete htep->tms;
             delete htep;
             htep = tmp;
         }
@@ -184,7 +183,6 @@ setTimezone(const char* tZone)
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
-            delete htep->tms;
             delete htep;
             htep = tmp;
         }
@@ -194,28 +192,29 @@ setTimezone(const char* tZone)
     return true;
 }
 
-const struct tm*
+static const struct tm * const
 clocaltime(const time_t* t)
 {
+    static struct tm tm;
+
     /* In some cases we haven't initialized the module yet. So we do not use
      * the cache. */
     if (!LtHashTab)
-        return localtime(t);
+        return localtime_r(t, &tm);
 
     long index = *t % LTHASHTABSIZE;
     if (LtHashTab[index])
         for (LtHashTabEntry* htep = LtHashTab[index]; htep;
              htep = htep->next)
             if (htep->t == *t)
-                return htep->tms;
+                return &htep->tms;
 
     LtHashTabEntry* htep = new LtHashTabEntry;
     htep->next = LtHashTab[index];
     htep->t = *t;
-    htep->tms = new struct tm;
-    memcpy(htep->tms, localtime(t), sizeof(struct tm));
+    localtime_r(t, &htep->tms);
     LtHashTab[index] = htep;
-    return htep->tms;
+    return &htep->tms;
 }
 
 const QString&
