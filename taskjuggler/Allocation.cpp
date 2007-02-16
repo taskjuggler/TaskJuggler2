@@ -28,12 +28,16 @@
 */
 
 Allocation::Allocation() :
-    lockedResource(0)
+    limits(0),
+    shifts(),
+    persistent(FALSE),
+    mandatory(FALSE),
+    lockedResource(0),
+    conflictStart(0),
+    candidates(),
+    selectionMode(minAllocationProbability)
 {
     shifts.setAutoDelete(TRUE);
-    selectionMode = minAllocationProbability;
-    limits = 0;
-    persistent = mandatory = FALSE;
 }
 
 Allocation::~Allocation()
@@ -41,23 +45,20 @@ Allocation::~Allocation()
     delete limits;
 }
 
-Allocation::Allocation(const Allocation& a)
+Allocation::Allocation(const Allocation& a) :
+    limits(a.limits ? new UsageLimits(*a.limits) : 0),
+    shifts(),
+    persistent(a.persistent),
+    mandatory(a.mandatory),
+    lockedResource(a.lockedResource),
+    conflictStart(0),
+    candidates(a.candidates),
+    selectionMode(a.selectionMode)
 {
     shifts.setAutoDelete(TRUE);
 
-    persistent = a.persistent;
-    mandatory = a.mandatory;
-    lockedResource = a.lockedResource;
-    selectionMode = a.selectionMode;
-
     for (QPtrListIterator<ShiftSelection> sli(a.shifts); *sli; ++sli)
         shifts.append(new ShiftSelection(**sli));
-
-    candidates = a.candidates;
-    if (a.limits)
-        limits = new UsageLimits(*a.limits);
-    else
-        limits = 0;
 }
 
 void

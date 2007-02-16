@@ -18,11 +18,12 @@
 
 Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
                  AccountType at, const QString& df, uint dl) :
-    CoreAttributes(p, i, n, pr, df, dl), acctType(at)
+    CoreAttributes(p, i, n, pr, df, dl),
+    kotrusId(),
+    acctType(at)
 {
     transactions.setAutoDelete(TRUE);
     p->addAccount(this);
-    kotrusId = "";
 }
 
 Account::~Account()
