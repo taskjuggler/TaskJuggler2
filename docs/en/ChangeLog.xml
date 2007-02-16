@@ -1136,6 +1136,9 @@ KDE 3.5.4 the behavior of the Kate library changed so that the test no
 longer worked properly and modified files were not
 detected.</para></listitem>
 
+<listitem><para>Fixed crash when non existant file was
+included.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

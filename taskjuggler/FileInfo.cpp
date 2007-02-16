@@ -25,6 +25,7 @@ FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp)
 {
     tokenTypeBuf = INVALID;
     file = file_;
+    f = 0;
 }
 
 FileInfo::~FileInfo()
