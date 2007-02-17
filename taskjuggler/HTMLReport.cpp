@@ -18,7 +18,10 @@
 
 HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :
-   Report(p, f, df, dl)
+    Report(p, f, df, dl),
+    rawStyleSheet(),
+    rawHead(),
+    rawTail()
 {
     s.setEncoding(QTextStream::Latin1);
 }

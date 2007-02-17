@@ -30,64 +30,96 @@ public:
         Not, And, Or,
         Greater, Smaller, Equal, GreaterOrEqual, SmallerOrEqual };
 
-    Operation(long v) : opt(Const), value(v), opsCount(0)
-    {
-        ops = 0;
-        valid = FALSE;
-    }
-    Operation(opType ot, const QString& n) : opt(ot), name(n), opsCount(0)
-    {
-        ops = 0;
-        valid = FALSE;
-    }
-    Operation(opType ot, long v) : opt(ot), value(v), opsCount(0)
-    {
-        ops = 0;
-        valid = FALSE;
-    }
+    Operation(long v) :
+        opt(Const),
+        value(v),
+        name(),
+        ops(0),
+        opsCount(0),
+        valid(FALSE)
+    { }
+
+    Operation(opType ot, const QString& n) :
+        opt(ot),
+        value(0),
+        name(n),
+        ops(0),
+        opsCount(0),
+        valid(FALSE)
+    { }
+
+    Operation(opType ot, long v) :
+        opt(ot),
+        value(v),
+        name(),
+        ops(0),
+        opsCount(0),
+        valid(FALSE)
+    { }
+
     Operation(opType ot, const QString& n, long v) :
-        opt(ot), value(v), name(n), opsCount(0)
+        opt(ot),
+        value(v),
+        name(n),
+        ops(0),
+        opsCount(0),
+        valid(FALSE)
+    { }
+
+    Operation(const QString& v) :
+        opt(Variable),
+        value(0),
+        name(v),
+        ops(0),
+        opsCount(0),
+        valid(FALSE)
+    { }
+
+    Operation(Operation* o1, opType ot, Operation* o2 = 0) :
+        opt(ot),
+        value(0),
+        name(),
+        ops(new Operation*[2]),
+        opsCount(2),
+        valid(FALSE)
     {
-        ops = 0;
-        valid = FALSE;
-    }
-    Operation(const QString& v) : opt(Variable), name(v), opsCount(0)
-    {
-        ops = 0;
-        valid = FALSE;
-    }
-    Operation(Operation* o1, opType o, Operation* o2 = 0)
-        : opt(o)
-    {
-        ops = new Operation*[2];
         ops[0] = o1;
         ops[1] = o2;
-        opsCount = 2;
-        valid = FALSE;
+
     }
-    Operation(const QString& n, Operation* o1) : name(n)
+    Operation(const QString& n, Operation* o1) :
+        opt(Function),
+        value(0),
+        name(n),
+        ops(new Operation*[1]),
+        opsCount(1),
+        valid(FALSE)
     {
-        opt = Function;
-        ops = new Operation*[1];
         ops[0] = o1;
-        opsCount = 1;
-        valid = FALSE;
     }
-    Operation(const QString& n, Operation* o1, Operation* o2) : name(n)
+
+    Operation(const QString& n, Operation* o1, Operation* o2) :
+        opt(Function),
+        value(0),
+        name(n),
+        ops(new Operation*[2]),
+        opsCount(2),
+        valid(FALSE)
     {
-        opt = Function;
-        ops = new Operation*[2];
         ops[0] = o1;
         ops[1] = o2;
-        opsCount = 2;
-        valid = FALSE;
     }
+
     Operation(const QString& n, Operation* args[], int c) :
-       opt(Function), name(n), ops(args), opsCount(c)
-    {
-        valid = FALSE;
-    }
-    Operation(const Operation& op);
+        opt(Function),
+        value(0),
+        name(n),
+        ops(args),
+        opsCount(c),
+        valid(FALSE)
+    { }
+
+    Operation(const Operation& op); // fixme, will the destructor double free ops?
     ~Operation();
 
     long evalAsInt(ExpressionTree* et) const;

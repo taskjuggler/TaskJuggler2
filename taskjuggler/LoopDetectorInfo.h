@@ -26,11 +26,20 @@ class LoopDetectorInfo
 {
     friend class LDIList;
 public:
-    LoopDetectorInfo()
-    {
-        prevLDI = nextLDI = 0;
-    }
-    LoopDetectorInfo(const Task* _t, bool ae) : t(_t), atEnd(ae) { }
+    LoopDetectorInfo() :
+        nextLDI(0),
+        prevLDI(0),
+        t(0),
+        atEnd(FALSE)
+    { }
+
+    LoopDetectorInfo(const Task* _t, bool ae) :
+        nextLDI(0),
+        prevLDI(0),
+        t(_t),
+        atEnd(ae)
+    { }
+
     ~LoopDetectorInfo() { }
 
     enum FromWhere { fromParent, fromSub, fromPrev, fromSucc, fromOtherEnd };
@@ -66,15 +75,17 @@ private:
 class LDIList
 {
 public:
-    LDIList()
+    LDIList() :
+        items(0),
+        root(0),
+        leaf(0)
+    { }
+
+    LDIList(LDIList& list) :
+        items(0),
+        root(0),
+        leaf(0)
     {
-        root = leaf = 0;
-        items = 0;
-    }
-    LDIList(LDIList& list)
-    {
-        root = leaf = 0;
-        items = 0;
         for (LoopDetectorInfo* p = list.root; p; p = p->nextLDI)
             append(new LoopDetectorInfo(p->t, p->atEnd));
     }

@@ -17,7 +17,8 @@
 
 ExpressionFunctionTable EFT;
 
-ExpressionFunctionTable::ExpressionFunctionTable()
+ExpressionFunctionTable::ExpressionFunctionTable() :
+    functions()
 {
     functions.setAutoDelete(TRUE);
 

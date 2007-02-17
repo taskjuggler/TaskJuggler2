@@ -13,13 +13,15 @@
 #include "DecisionNode.h"
 #include "debug.h"
 
-DecisionNode::DecisionNode(DecisionNode* p, const QString& t)
-    : parent(p), tag(t)
+DecisionNode::DecisionNode(DecisionNode* p, const QString& t) :
+    parent(p),
+    tag(t),
+    rating(0.0),
+    completed(FALSE),
+    bestArc(0),
+    arcs()
 {
-    rating = 0.0;
-    completed = FALSE;
     arcs.setAutoDelete(TRUE);
-    bestArc = 0;
 }
 
 DecisionNode::~DecisionNode()

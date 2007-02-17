@@ -37,10 +37,11 @@ private:
 
 template <class T>
 CoreAttributesTreeIteratorT<T>::CoreAttributesTreeIteratorT(T* r,
-                                                            IterationMode m)
+                                                            IterationMode m) :
+    current(r),
+    iMode(m),
+    root(r)
 {
-    root = current = r;
-    iMode = m;
     while (current->hasSubs())
         current = current->getSubList().getFirst();
 }

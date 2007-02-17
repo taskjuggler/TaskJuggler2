@@ -30,7 +30,10 @@
 HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r,
                                                      const QString& df,
                                                      int dl) :
-    HTMLReportElement(r, df, dl)
+    HTMLReportElement(r, df, dl),
+    daysToShow(),
+    numberOfDays(7),
+    taskReport(true)
 {
     uint sc = r->getProject()->getMaxScenarios();
     columns.append(new TableColumnInfo(sc, "name"));
@@ -51,8 +54,6 @@ HTMLWeeklyCalendarElement::HTMLWeeklyCalendarElement(Report* r,
     daysToShow.resize(7);
     for (unsigned int i = 0; i < 7; ++i)
         daysToShow.setBit(i);
-    numberOfDays = 7;
-    taskReport = true;
 }
 
 HTMLWeeklyCalendarElement::~HTMLWeeklyCalendarElement()

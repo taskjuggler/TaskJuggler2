@@ -20,12 +20,21 @@ CoreAttributes::CoreAttributes(Project* p, const QString& i,
                                const QString& n,
                                CoreAttributes* parent_, const QString& df,
                                uint dl) :
-        project(p), id(i), name(n), parent(parent_), definitionFile(df),
-        definitionLine(dl)
+    project(p),
+    id(i),
+    name(n),
+    parent(parent_),
+    definitionFile(df),
+    definitionLine(dl),
+    sequenceNo(0),
+    hierarchNo(0),
+    index(-1),
+    hierarchIndex(0),
+    sub(new CoreAttributesList()),
+    flags(),
+    customAttributes()
 {
     customAttributes.setAutoDelete(TRUE);
-    index = -1;
-    sub = new CoreAttributesList();
     if (parent_)
         parent_->sub->append(this);
 }

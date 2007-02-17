@@ -30,7 +30,11 @@ class ExpressionTreeFunction
 public:
     ExpressionTreeFunction(const QString& n, ExpressionTreeFunctionLongPtr f,
                            int a) :
-       name(n), longFunc(f), args(a) { }
+        name(n),
+        longFunc(f),
+        args(a),
+        supportedCoreAttributes()
+    { }
     ~ExpressionTreeFunction() { }
 
     const QString& getName() const { return name; }

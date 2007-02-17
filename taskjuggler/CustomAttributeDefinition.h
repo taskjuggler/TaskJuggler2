@@ -24,7 +24,10 @@ class CustomAttributeDefinition
 {
 public:
     CustomAttributeDefinition(const QString& n, CustomAttributeType t) :
-        name(n), type(t) { inherit = FALSE; }
+        name(n),
+        type(t),
+        inherit(FALSE)
+    { }
     ~CustomAttributeDefinition() { }
 
     const QString& getName() const { return name; }

@@ -39,7 +39,13 @@ typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,
 
 ExportReport::ExportReport(Project* p, const QString& f,
                            const QString& df, int dl) :
-    Report(p, f, df, dl)
+    Report(p, f, df, dl),
+    taskAttributes(),
+    masterFile(FALSE),
+    listShifts(TRUE),
+    listTasks(TRUE),
+    listResources(TRUE),
+    listBookings(TRUE)
 {
     if (TaskAttributeDict.empty())
     {
@@ -67,13 +73,6 @@ ExportReport::ExportReport(Project* p, const QString& f,
 
     // All export reports default to just showing the first scenario.
     scenarios.append(0);
-
-    masterFile = FALSE;
-
-    listShifts = TRUE;
-    listTasks = TRUE;
-    listResources = TRUE;
-    listBookings = TRUE;
 }
 
 bool

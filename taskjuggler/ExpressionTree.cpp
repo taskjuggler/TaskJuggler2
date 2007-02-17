@@ -23,24 +23,36 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 
-ExpressionTree::ExpressionTree(const Operation* op) : expression(op)
+ExpressionTree::ExpressionTree(const Operation* op) :
+    ca(0),
+    symbolTable(),
+    expression(op),
+    evalErrorFlag(FALSE),
+    defFileName(),
+    defLineNo(0)
 {
     symbolTable.setAutoDelete(TRUE);
-    evalErrorFlag = FALSE;
 }
 
-ExpressionTree::ExpressionTree(const ExpressionTree& et)
+ExpressionTree::ExpressionTree(const ExpressionTree& et) :
+    ca(et.ca),
+    symbolTable(et.symbolTable),
+    expression(new Operation(*et.expression)),
+    evalErrorFlag(FALSE),
+    defFileName(),
+    defLineNo(0)
 {
-    ca = et.ca;
-    symbolTable = et.symbolTable;
-    expression = new Operation(*et.expression);
-    evalErrorFlag = FALSE;
 }
 
-ExpressionTree::ExpressionTree()
+ExpressionTree::ExpressionTree() :
+    ca(0),
+    symbolTable(),
+    expression(0),
+    evalErrorFlag(FALSE),
+    defFileName(),
+    defLineNo(0)
 {
     symbolTable.setAutoDelete(TRUE);
-    evalErrorFlag = FALSE;
 }
 
 ExpressionTree::~ExpressionTree()
