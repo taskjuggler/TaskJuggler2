@@ -16,19 +16,22 @@
 #include "RealFormat.h"
 
 RealFormat::RealFormat(const QString& sp, const QString& ss,
-                       const QString& ts, const QString& fs, uint fd)
-    : signPrefix(sp), signSuffix(ss), thousandSep(ts), fractionSep(fs),
+                       const QString& ts, const QString& fs, uint fd) :
+    signPrefix(sp),
+    signSuffix(ss),
+    thousandSep(ts),
+    fractionSep(fs),
     fracDigits(fd)
 {
 }
 
-RealFormat::RealFormat(const RealFormat& r)
+RealFormat::RealFormat(const RealFormat& r) :
+    signPrefix(r.signPrefix),
+    signSuffix(r.signSuffix),
+    thousandSep(r.thousandSep),
+    fractionSep(r.fractionSep),
+    fracDigits(r.fracDigits)
 {
-    signPrefix = r.signPrefix;
-    signSuffix = r.signSuffix;
-    thousandSep = r.thousandSep;
-    fractionSep = r.fractionSep;
-    fracDigits = r.fracDigits;
 }
 
 QString

@@ -15,9 +15,12 @@
 #include "ReportElementBase.h"
 #include "Project.h"
 
-ReportElementBase::ReportElementBase(Report* r) : report(r)
+ReportElementBase::ReportElementBase(Report* r) :
+    report(r),
+    loadUnit(shortAuto),
+    numberFormat(),
+    currencyFormat()
 {
-    loadUnit = shortAuto;
 }
 
 bool

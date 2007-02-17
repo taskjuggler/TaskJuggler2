@@ -18,11 +18,12 @@
 #include "Task.h"
 #include "Scenario.h"
 
-TaskDependency::TaskDependency(QString tri, int maxScenarios) : taskRefId(tri)
+TaskDependency::TaskDependency(QString tri, int maxScenarios) :
+    taskRefId(tri),
+    taskRef(0),
+    gapDuration(new long[maxScenarios]),
+    gapLength(new long[maxScenarios])
 {
-    gapDuration = new long[maxScenarios];
-    gapLength = new long[maxScenarios];
-    taskRef = 0;
     for (int sc = 0; sc < maxScenarios; ++sc)
         gapDuration[sc] = gapLength[sc] = (sc == 0 ? 0 : -1);
 }

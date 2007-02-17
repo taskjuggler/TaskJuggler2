@@ -45,30 +45,37 @@ static uint* DayEndIndex = 0;
 static uint* WeekEndIndex = 0;
 static uint* MonthEndIndex = 0;
 
-Resource::Resource(Project* p, const QString& i, const QString& n,
-                   Resource* pr, const QString& df, uint dl)
-    : CoreAttributes(p, i, n, pr, df, dl)
-{
-    sbSize = (p->getEnd() + 1 - p->getStart()) /
-        p->getScheduleGranularity() + 1;
 
+Resource::Resource(Project* p, const QString& i, const QString& n,
+                   Resource* pr, const QString& df, uint dl) :
+    CoreAttributes(p, i, n, pr, df, dl),
+    minEffort(0.0),
+    journal(),
+    limits(0),
+    efficiency(0.0),
+    rate(0.0),
+    kotrusId(),
+    workingHours(),
+    shifts(),
+    vacations(),
+    scoreboard(0),
+    sbSize((p->getEnd() + 1 - p->getStart()) / p->getScheduleGranularity() + 1),
+    specifiedBookings(new SbBooking**[p->getMaxScenarios()]),
+    scoreboards(new SbBooking**[p->getMaxScenarios()]),
+    scenarios(new ResourceScenario[p->getMaxScenarios()]),
+    allocationProbability(new double[p->getMaxScenarios()])
+{
     vacations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
 
     p->addResource(this);
 
-    limits = 0;
-
-    scenarios = new ResourceScenario[p->getMaxScenarios()];
-    scoreboards = new SbBooking**[p->getMaxScenarios()];
-    specifiedBookings = new SbBooking**[p->getMaxScenarios()];
     for (int sc = 0; sc < p->getMaxScenarios(); sc++)
     {
         scoreboards[sc] = 0;
         specifiedBookings[sc] = 0;
     }
 
-    allocationProbability = new double[p->getMaxScenarios()];
     for (int i = 0; i < p->getMaxScenarios(); ++i)
         allocationProbability[i] = 0;
 

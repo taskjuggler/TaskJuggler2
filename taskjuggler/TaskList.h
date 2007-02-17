@@ -25,18 +25,20 @@ class Task;
 class TaskList : public virtual CoreAttributesList
 {
 public:
-    TaskList()
+    TaskList() :
+        CoreAttributesList(),
+        sortScenario(0)
     {
         sorting[0] = CoreAttributesList::TreeMode;
         sorting[1] = CoreAttributesList::StartUp;
         sorting[2] = CoreAttributesList::EndUp;
-        // By default we are always using the first scenario for sorting.
-        sortScenario = 0;
     }
-    TaskList(const TaskList& tl) : CoreAttributesList(tl)
-    {
-        sortScenario = tl.sortScenario;
-    }
+
+    TaskList(const TaskList& tl) :
+        CoreAttributesList(tl),
+        sortScenario(tl.sortScenario)
+    { }
+
     virtual ~TaskList() { }
 
     Task* getTask(const QString& id) const;

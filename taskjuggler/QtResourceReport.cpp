@@ -17,9 +17,9 @@
 
 QtResourceReport::QtResourceReport(Project* p, const QString& f,
                                    const QString& df, int dl) :
-    QtReport(p, f, df, dl)
+    QtReport(p, f, df, dl),
+    tab(new QtResourceReportElement(this, df, dl))
 {
-    tab = new QtResourceReportElement(this, df, dl);
 }
 
 QtResourceReport::~QtResourceReport()

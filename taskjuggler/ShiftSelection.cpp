@@ -12,10 +12,10 @@
 #include "ShiftSelection.h"
 #include "Interval.h"
 
-ShiftSelection::ShiftSelection(const ShiftSelection& sl)
+ShiftSelection::ShiftSelection(const ShiftSelection& sl) :
+    period(new Interval(*sl.period)),
+    shift(sl.shift)
 {
-    period = new Interval(*sl.period);
-    shift = sl.shift;
 }
 
 bool

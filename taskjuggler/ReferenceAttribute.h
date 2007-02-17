@@ -23,15 +23,24 @@
 class ReferenceAttribute : public CustomAttribute
 {
 public:
-    ReferenceAttribute() { }
+    ReferenceAttribute() :
+        CustomAttribute(),
+        url(),
+        label()
+    { }
+
     ReferenceAttribute(const ReferenceAttribute& ra) :
-        CustomAttribute(ra)
-    {
-        url = ra.url;
-        label = ra.label;
-    }
+        CustomAttribute(ra),
+        url(ra.url),
+        label(ra.label)
+    { }
+
     ReferenceAttribute(const QString& u, const QString& l) :
-        url(u), label(l) { }
+        CustomAttribute(),
+        url(u),
+        label(l)
+    { }
+
     virtual ~ReferenceAttribute() { }
 
     CustomAttributeType getType() const { return CAT_Reference; }

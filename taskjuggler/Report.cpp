@@ -27,8 +27,38 @@
 #include "ResourceTreeIterator.h"
 #include "AccountTreeIterator.h"
 
+
 Report::Report(Project* p, const QString& f, const QString& df, int dl) :
-        project(p), fileName(f), defFileName(df), defFileLine(dl)
+    project(p),
+    fileName(f),
+    defFileName(df),
+    defFileLine(dl),
+    f(),
+    s(),
+    scenarios(),
+    weekStartsMonday(p->getWeekStartsMonday()),
+    headline(),
+    caption(),
+    maxDepthTaskList(1),
+    maxDepthResourceList(1),
+    maxDepthAccountList(1),
+    columns(),
+    start(p->getStart()),
+    end(p->getEnd()),
+    timeFormat(p->getTimeFormat()),
+    shortTimeFormat(p->getShortTimeFormat()),
+    numberFormat(p->getNumberFormat()),
+    currencyFormat(p->getCurrencyFormat()),
+    taskSortCriteria(),
+    resourceSortCriteria(),
+    accountSortCriteria(),
+    hideTask(0),
+    hideResource(0),
+    hideAccount(0),
+    rollUpTask(0),
+    rollUpResource(0),
+    rollUpAccount(0),
+    taskRoot()
 {
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
     {
@@ -37,31 +67,9 @@ Report::Report(Project* p, const QString& f, const QString& df, int dl) :
         accountSortCriteria[i] = CoreAttributesList::SequenceUp;
     }
 
-    start = p->getStart();
-    end = p->getEnd();
-
-    weekStartsMonday = p->getWeekStartsMonday();
-    timeFormat = p->getTimeFormat();
-    shortTimeFormat = p->getShortTimeFormat();
-    numberFormat = p->getNumberFormat();
-    currencyFormat = p->getCurrencyFormat();
-
-    hideTask = 0;
-    rollUpTask = 0;
-    hideResource = 0;
-    rollUpResource = 0;
-    hideAccount = 0;
-    rollUpAccount = 0;
-
     showPIDs = FALSE;
-
     loadUnit = days;
-
     timeStamp = TRUE;
-
-    maxDepthTaskList = 1;
-    maxDepthResourceList = 1;
-    maxDepthAccountList = 1;
 }
 
 Report::~Report()

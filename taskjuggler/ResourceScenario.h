@@ -21,10 +21,12 @@ class ResourceScenario
     friend class Resource;
 
 public:
-    ResourceScenario()
-    {
-        firstSlot = lastSlot = -1;
-    }
+    ResourceScenario() :
+        allocatedTasks(),
+        firstSlot(-1),
+        lastSlot(-1)
+    { }
+
     ~ResourceScenario() { }
 
     void addTask(const Task* t)

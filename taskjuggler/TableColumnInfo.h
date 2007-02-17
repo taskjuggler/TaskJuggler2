@@ -25,15 +25,25 @@ class ExpressionTree;
 class TableColumnInfo
 {
 public:
-    TableColumnInfo(uint sc, const QString& n) : name(n)
+    TableColumnInfo(uint sc, const QString& n) :
+        name(n),
+        maxScenarios(sc),
+        title(),
+        titleURL(),
+        subTitle(),
+        subTitleURL(),
+        cellText(),
+        cellURL(),
+        hideCellText(0),
+        hideCellURL(0),
+        sum(0),
+        memory(0),
+        subColumns(0)
     {
-        hideCellText = hideCellURL = 0;
-        sum = memory = 0;
-        maxScenarios = sc;
-        subColumns = 0;
         clearSum();
         clearMemory();
     }
+
     ~TableColumnInfo();
 
     const QString& getName() const { return name; }

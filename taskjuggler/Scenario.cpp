@@ -15,8 +15,13 @@
 #include "Project.h"
 
 Scenario::Scenario(Project* p, const QString& i, const QString& n,
-                   Scenario* pr)
-    : CoreAttributes(p, i, n, pr)
+                   Scenario* pr) :
+    CoreAttributes(p, i, n, pr),
+    enabled(true),
+    projectionMode(false),
+    strictBookings(false),
+    optimize(false),
+    minSlackRate(0.05)
 {
     p->addScenario(this);
     if (pr)
@@ -27,14 +32,6 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
         optimize = pr->optimize;
         strictBookings = pr->strictBookings;
         minSlackRate = pr->minSlackRate;
-    }
-    else
-    {
-        enabled = true;
-        projectionMode = false;
-        optimize = false;
-        strictBookings = false;
-        minSlackRate = 0.05;
     }
 }
 

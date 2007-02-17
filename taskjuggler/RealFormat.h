@@ -20,13 +20,17 @@ class RealFormat
 public:
     RealFormat(const QString& sp, const QString& ss, const QString& ts,
                const QString& fs, uint fd);
+
     RealFormat(const RealFormat& r);
-    RealFormat()
-    {
-        signPrefix = "-";
-        fractionSep = ",";
-        fracDigits = 2;
-    }
+
+    RealFormat() :
+        signPrefix("-"),
+        signSuffix(),
+        thousandSep(),
+        fractionSep(","),
+        fracDigits(2)
+    { }
+
     ~RealFormat() { }
 
     void setSignPrefix(const QString& sp) { signPrefix = sp; }

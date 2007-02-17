@@ -33,7 +33,17 @@ class TaskDependency;
 class ParserTreeContext
 {
 public:
-    ParserTreeContext() { }
+    ParserTreeContext() :
+        ca(0),
+        scenarioIndex(0),
+        weekday(0),
+        allocation(0),
+        taskDependency(0),
+        interval(0),
+        workingHours(),
+        extendProperty()
+    { }
+
     ~ParserTreeContext() { }
 
     void setCoreAttributes(CoreAttributes* c) { ca = c; }

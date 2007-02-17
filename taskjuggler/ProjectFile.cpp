@@ -76,10 +76,13 @@
 #include "ExpressionFunctionTable.h"
 #include "JournalEntry.h"
 
-ProjectFile::ProjectFile(Project* p)
+ProjectFile::ProjectFile(Project* p) :
+    masterFile(),
+    proj(p),
+    openFiles(),
+    includedFiles(),
+    macros()
 {
-    proj = p;
-
     openFiles.setAutoDelete(TRUE);
 }
 

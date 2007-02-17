@@ -14,7 +14,8 @@
 #include "ParserElement.h"
 
 ParserNode::ParserNode(ParserElement* pEl) :
-    parentElement(pEl)
+    parentElement(pEl),
+    elements()
 {
     elements.setAutoDelete(TRUE);
     if (pEl)

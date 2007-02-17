@@ -15,9 +15,10 @@
 #include "DecisionNode.h"
 #include "debug.h"
 
-OptimizerRun::OptimizerRun(Optimizer* o) : optimizer(o)
+OptimizerRun::OptimizerRun(Optimizer* o) :
+    optimizer(o),
+    currentNode(optimizer->getDecisionTreeRoot())
 {
-    currentNode = optimizer->getDecisionTreeRoot();
 }
 
 OptimizerRun::~OptimizerRun()

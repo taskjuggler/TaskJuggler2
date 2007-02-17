@@ -22,9 +22,22 @@ class TableCellInfo
 public:
     TableCellInfo(TableColumnFormat* tcf_, TableLineInfo* tli_,
                   TableColumnInfo* tci_) :
-        tcf(tcf_), tli(tli_), tci(tci_), rows(1), columns(1),
-        rightPadding(-1), leftPadding(-1),
-        boldText(FALSE), fontFactor(100) { }
+        tcf(tcf_),
+        tli(tli_),
+        tci(tci_),
+        rows(1),
+        columns(1),
+        rightPadding(-1),
+        leftPadding(-1),
+        hAlign(),
+        bgColor(),
+        boldText(FALSE),
+        fontFactor(100),
+        statusText(),
+        toolTipID(),
+        toolTipText()
+    { }
+
     ~TableCellInfo() { }
 
     void setRows(int r) { rows = r; }

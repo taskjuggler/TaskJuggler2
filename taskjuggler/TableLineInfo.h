@@ -23,18 +23,21 @@ class TableLineInfo
     friend class ReportElement;
 
 public:
-    TableLineInfo()
-    {
-        row = 0;
-        sc = 0;
-        ca1 = ca2 = 0;
-        task = 0;
-        resource = 0;
-        account = 0;
-        idxNo = 0;
-        boldText = FALSE;
-        fontFactor = 100;
-    }
+    TableLineInfo() :
+        row(0),
+        sc(0),
+        ca1(0),
+        ca2(0),
+        task(0),
+        resource(0),
+        account(0),
+        idxNo(0),
+        bgCol(),
+        boldText(FALSE),
+        fontFactor(100),
+        specialName()
+    { }
+
     ~TableLineInfo() { }
 
     int row;

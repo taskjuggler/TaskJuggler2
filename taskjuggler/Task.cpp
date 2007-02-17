@@ -33,8 +33,42 @@
 #include "Journal.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
-           const QString& df, int dl)
-    : CoreAttributes(proj, id_, n, p, df, dl)
+           const QString& df, int dl) :
+    CoreAttributes(proj, id_, n, p, df, dl),
+    note(),
+    journal(),
+    ref(),
+    refLabel(),
+    depends(),
+    precedes(),
+    predecessors(),
+    successors(),
+    previous(),
+    followers(),
+    projectId(),
+    milestone(FALSE),
+    priority(0),
+    scheduling(ASAP),
+    responsible(0),
+    shifts(),
+    allocations(),
+    account(0),
+    scenarios(new TaskScenario[proj->getMaxScenarios()]),
+    start(0),
+    end(0),
+    length(0.0),
+    effort(0.0),
+    duration(0.0),
+    doneEffort(0.0),
+    doneLength(0.0),
+    doneDuration(0.0),
+    workStarted(FALSE),
+    tentativeStart(0),
+    tentativeEnd(0),
+    lastSlot(0),
+    schedulingDone(FALSE),
+    runAway(FALSE),
+    bookedResources()
 {
     allocations.setAutoDelete(TRUE);
     shifts.setAutoDelete(TRUE);
@@ -43,17 +77,6 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
 
     proj->addTask(this);
 
-    scheduling = ASAP;
-    milestone = FALSE;
-    account = 0;
-    lastSlot = 0;
-    doneEffort = 0.0;
-    doneDuration = 0.0;
-    doneLength = 0.0;
-    schedulingDone = FALSE;
-    responsible = 0;
-
-    scenarios = new TaskScenario[proj->getMaxScenarios()];
     for (int i = 0; i < proj->getMaxScenarios(); i++)
     {
         scenarios[i].task = this;
@@ -64,9 +87,6 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
     scenarios[0].endBuffer = 0.0;
     scenarios[0].startCredit = 0.0;
     scenarios[0].endCredit = 0.0;
-
-    start = end = 0;
-    duration = length = effort = 0.0;
 
     for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
     {

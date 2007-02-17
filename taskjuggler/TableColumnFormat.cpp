@@ -15,28 +15,26 @@
 
 TableColumnFormat::TableColumnFormat(const QString& i, ReportElement* e,
                                      const QString& t) :
-  id(i), el(e), title(t)
+    genHeadLine1(&ReportElement::genHeadDefault),
+    genHeadLine2(0),
+    genTaskLine1(&ReportElement::genCellEmpty),
+    genTaskLine2(0),
+    genResourceLine1(&ReportElement::genCellEmpty),
+    genResourceLine2(0),
+    genAccountLine1(&ReportElement::genCellEmpty),
+    genAccountLine2(0),
+    genSummaryLine1(&ReportElement::genCellEmpty),
+    genSummaryLine2(0),
+    hAlign(center),
+    fontFactor(100),
+    noWrap(FALSE),
+    expandable(FALSE),
+    indent(FALSE),
+    realFormat(),
+    id(i),
+    el(e),
+    title(t)
 {
-    genHeadLine1 = &ReportElement::genHeadDefault;
-    genHeadLine2 = 0;
-
-    genTaskLine1 = &ReportElement::genCellEmpty;
-    genTaskLine2 = 0;
-
-    genResourceLine1 = &ReportElement::genCellEmpty;
-    genResourceLine2 = 0;
-
-    genAccountLine1 = &ReportElement::genCellEmpty;
-    genAccountLine2 = 0;
-
-    genSummaryLine1 = &ReportElement::genCellEmpty;
-    genSummaryLine2 = 0;
-
-    fontFactor = 100;
-    noWrap = FALSE;
-    indent = FALSE;
-    hAlign = center;
-
     if (el)
         el->addColumnFormat(id, this);
 }

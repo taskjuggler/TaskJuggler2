@@ -15,11 +15,12 @@
 #include "OptimizerRun.h"
 #include "debug.h"
 
-Optimizer::Optimizer()
+Optimizer::Optimizer() :
+    decisionTree(new DecisionNode(0, "*Root*")),
+    runs(),
+    minimize(TRUE)
 {
     runs.setAutoDelete(TRUE);
-    decisionTree = new DecisionNode(0, "*Root*");
-    minimize = TRUE;
 }
 
 Optimizer::~Optimizer()

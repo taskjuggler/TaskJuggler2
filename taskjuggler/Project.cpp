@@ -47,7 +47,54 @@
 
 DebugController DebugCtrl;
 
-Project::Project()
+Project::Project() :
+    start(0),
+    end(0),
+    now(0),
+    allowRedefinitions(FALSE),
+    weekStartsMonday(TRUE),
+    name(),
+    version(),
+    copyright(),
+    customer(),
+    timeZone(),
+    timeFormat("%Y-%m-%d %H:%M"),
+    shortTimeFormat("%H:%M"),
+    currency(),
+    currencyDigits(3),
+    numberFormat("-", "", ",", ".", 1),
+    currencyFormat("(", ")", ",", ".", 0),
+    priority(500),
+    minEffort(0.0),
+    resourceLimits(0),
+    rate(0.0),
+    dailyWorkingHours(8.0),
+    yearlyWorkingDays(260.714),
+    workingHours(),
+    scheduleGranularity(ONEHOUR),
+    allowedFlags(),
+    projectIDs(),
+    currentId(),
+    maxErrors(0),
+    journal(),
+    vacationList(),
+    scenarioList(),
+    taskList(),
+    resourceList(),
+    accountList(),
+    shiftList(),
+    originalTaskList(),
+    originalResourceList(),
+    originalAccountList(),
+    taskAttributes(),
+    resourceAttributes(),
+    accountAttributes(),
+    kotrus(0),
+    xmlreport(0),
+    reports(),
+    interactiveReports(),
+    sourceFiles(),
+    breakFlag(FALSE)
 {
     /* Pick some reasonable initial number since we don't know the
      * project time frame yet. */
@@ -59,40 +106,11 @@ Project::Project()
     resourceAttributes.setAutoDelete(TRUE);
     reports.setAutoDelete(TRUE);
 
-    allowRedefinitions = FALSE;
-
-    currentId = QString::null;
-
     new Scenario(this, "plan", "Plan", 0);
     scenarioList.createIndex(TRUE);
     scenarioList.createIndex(FALSE);
 
-    /* This is the version 1.0 XML reports. It should be deleted for the next
-     * major release. */
-    xmlreport = 0;
-
-    priority = 500;
-    /* The following settings are country and culture dependent. Those
-     * defaults are probably true for many Western countries, but have to be
-     * changed in project files. */
-    dailyWorkingHours = 8.0;
-    yearlyWorkingDays = 260.714;
-    scheduleGranularity = ONEHOUR;
-    weekStartsMonday = TRUE;
-    timeFormat = "%Y-%m-%d %H:%M";
-    shortTimeFormat = "%H:%M";
-    numberFormat = RealFormat("-", "", ",", ".", 1);
-    currencyFormat = RealFormat("(", ")", ",", ".", 0);
-
-    start = 0;
-    end = 0;
     setNow(time(0));
-
-    minEffort = 0.0;
-    resourceLimits = 0;
-    rate = 0.0;
-    currencyDigits = 3;
-    kotrus = 0;
 
     /* Initialize working hours with default values that match the Monday -
      * Friday 9 - 6 (with 1 hour lunch break) pattern used by many western
@@ -112,8 +130,6 @@ Project::Project()
     // Saturday
     workingHours[6] = new QPtrList<Interval>();
     workingHours[6]->setAutoDelete(TRUE);
-
-    maxErrors = 0;
 }
 
 Project::~Project()

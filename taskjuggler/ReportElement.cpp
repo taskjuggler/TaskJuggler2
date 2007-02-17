@@ -38,21 +38,44 @@
 #include "ReferenceAttribute.h"
 #include "MacroTable.h"
 
+
 ReportElement::ReportElement(Report* r, const QString& df, int dl) :
-        ReportElementBase(r), defFileName(df), defFileLine(dl)
+    ReportElementBase(r),
+    scenarios(),
+    columns(),
+    columnFormat(),
+    start(r->getStart()),
+    end(r->getEnd()),
+    barLabels(BLT_LOAD),
+    rawHead(),
+    rawTail(),
+    timeFormat(r->getTimeFormat()),
+    shortTimeFormat(r->getShortTimeFormat()),
+    defFileName(df),
+    defFileLine(dl),
+    colors(),
+    headline(),
+    caption(),
+    taskSortCriteria(),
+    resourceSortCriteria(),
+    accountSortCriteria(),
+    hideTask(0),
+    hideResource(0),
+    hideAccount(0),
+    rollUpTask(0),
+    rollUpResource(0),
+    rollUpAccount(0),
+    taskRoot(r->getTaskRoot()),
+    showPIDs(r->getShowPIDs()),
+    accumulate(FALSE),
+    maxDepthTaskList(1),
+    maxDepthResourceList(1),
+    maxDepthAccountList(1),
+    mt()
 {
     columns.setAutoDelete(TRUE);
     columnFormat.setAutoDelete(TRUE);
 
-    maxDepthTaskList = 1;
-    maxDepthResourceList = 1;
-    maxDepthAccountList = 1;
-
-    start = r->getStart();
-    end = r->getEnd();
-
-    timeFormat = r->getTimeFormat();
-    shortTimeFormat = r->getShortTimeFormat();
     numberFormat = r->getNumberFormat();
     currencyFormat = r->getCurrencyFormat();
 
@@ -441,10 +464,6 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     // All reports default to just showing the first scenario.
     scenarios.append(0);
 
-    barLabels = BLT_LOAD;
-
-    accumulate = FALSE;
-
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
     {
         taskSortCriteria[i] = r->getTaskSorting(i);
@@ -465,9 +484,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     rollUpAccount = r->getRollUpAccount() ?
         new ExpressionTree(*r->getRollUpAccount()) : 0;
 
-    taskRoot = r->getTaskRoot();
     loadUnit = r->getLoadUnit();
-    showPIDs = r->getShowPIDs();
 }
 
 ReportElement::~ReportElement()

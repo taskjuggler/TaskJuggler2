@@ -17,10 +17,9 @@
 
 QtTaskReport::QtTaskReport(Project* p, const QString& f, const QString& df,
                                int dl) :
-    QtReport(p, f, df, dl)
+    QtReport(p, f, df, dl),
+    tab(new QtTaskReportElement(this, df, dl))
 {
-    tab = new QtTaskReportElement(this, df, dl);
-
     taskSortCriteria[0] = CoreAttributesList::TreeMode;
     taskSortCriteria[1] = CoreAttributesList::StartUp;
     taskSortCriteria[2] = CoreAttributesList::EndUp;
