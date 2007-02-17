@@ -18,9 +18,9 @@
 
 HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
                                        const QString& df, int dl) :
-    HTMLReport(p, f, df, dl)
+    HTMLReport(p, f, df, dl),
+    tab(new HTMLResourceReportElement(this, df, dl))
 {
-    tab = new HTMLResourceReportElement(this, df, dl);
 }
 
 bool

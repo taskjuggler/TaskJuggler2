@@ -35,9 +35,9 @@
 #include "UsageLimits.h"
 
 CSVReportElement::CSVReportElement(Report* r, const QString& df, int dl) :
-   ReportElement(r, df, dl)
+    ReportElement(r, df, dl),
+    fieldSeparator(";")
 {
-    fieldSeparator = ";";
 }
 
 void

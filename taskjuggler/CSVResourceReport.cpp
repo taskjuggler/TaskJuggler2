@@ -17,9 +17,9 @@
 
 CSVResourceReport::CSVResourceReport(Project* p, const QString& f,
                                        const QString& df, int dl) :
-    CSVReport(p, f, df, dl)
+    CSVReport(p, f, df, dl),
+    tab(new CSVResourceReportElement(this, df, dl))
 {
-    tab = new CSVResourceReportElement(this, df, dl);
 }
 
 bool

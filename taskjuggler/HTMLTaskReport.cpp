@@ -18,9 +18,9 @@
 
 HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, const QString& df,
                                int dl) :
-    HTMLReport(p, f, df, dl)
+    HTMLReport(p, f, df, dl),
+    tab(new HTMLTaskReportElement(this, df, dl))
 {
-    tab = new HTMLTaskReportElement(this, df, dl);
 }
 
 HTMLTaskReport::~HTMLTaskReport()

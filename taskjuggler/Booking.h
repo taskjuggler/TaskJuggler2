@@ -24,14 +24,21 @@
 class Booking : public SbBooking
 {
 public:
-    Booking(const Interval& iv, Task* t)
-        : SbBooking(t)
-    {
-        interval = new Interval(iv);
-    }
-    Booking(Interval* iv, Task* t) : SbBooking(t), interval(iv) { }
-    Booking(const Interval& iv, SbBooking* sb) : SbBooking(*sb),
-            interval(new Interval(iv)) { }
+    Booking(const Interval& iv, Task* t) :
+        SbBooking(t),
+        interval(new Interval(iv))
+    { }
+
+    Booking(Interval* iv, Task* t) :
+        SbBooking(t),
+        interval(iv)
+    { }
+
+    Booking(const Interval& iv, SbBooking* sb) :
+        SbBooking(*sb),
+        interval(new Interval(iv))
+    { }
+
     virtual ~Booking() { delete interval; }
 
     time_t getStart() const { return interval->getStart(); }

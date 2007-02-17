@@ -17,9 +17,9 @@
 
 CSVTaskReport::CSVTaskReport(Project* p, const QString& f, const QString& df, 
                                int dl) :
-    CSVReport(p, f, df, dl)
+    CSVReport(p, f, df, dl),
+    tab(new CSVTaskReportElement(this, df, dl))
 {
-    tab = new CSVTaskReportElement(this, df, dl);
 }
 
 CSVTaskReport::~CSVTaskReport()

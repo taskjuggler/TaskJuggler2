@@ -43,7 +43,7 @@ private:
 class MacroTable
 {
 public:
-    MacroTable()
+    MacroTable() : defFileName(), defFileLine(0), macros()
     {
         macros.setAutoDelete(TRUE);
     }

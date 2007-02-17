@@ -16,7 +16,8 @@
 
 Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p,
              const QString& df, uint dl) :
-    CoreAttributes(prj, i, n, p, df, dl)
+    CoreAttributes(prj, i, n, p, df, dl),
+    workingHours()
 {
     prj->addShift(this);
 

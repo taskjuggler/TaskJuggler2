@@ -18,9 +18,9 @@
 
 HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f,
                                        const QString& df, int dl) :
-    HTMLReport(p, f, df, dl)
+    HTMLReport(p, f, df, dl),
+    tab(new HTMLWeeklyCalendarElement(this, df, dl))
 {
-    tab = new HTMLWeeklyCalendarElement(this, df, dl);
 }
 
 HTMLWeeklyCalendar::~HTMLWeeklyCalendar()

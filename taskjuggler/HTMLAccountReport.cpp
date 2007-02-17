@@ -18,9 +18,9 @@
 
 HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f,
                                      const QString& df, int dl) :
-    HTMLReport(p, f, df, dl)
+    HTMLReport(p, f, df, dl),
+    tab(new HTMLAccountReportElement(this, df, dl))
 {
-    tab = new HTMLAccountReportElement(this, df, dl);
 }
 
 HTMLAccountReport::~HTMLAccountReport()

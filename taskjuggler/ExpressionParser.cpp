@@ -21,9 +21,9 @@
 #include "tjlib-internal.h"
 #include "ExpressionFunctionTable.h"
 
-ExpressionParser::ExpressionParser()
+ExpressionParser::ExpressionParser() :
+    tokenizer(0)
 {
-    tokenizer = 0;
 }
 
 ExpressionParser::~ExpressionParser()
