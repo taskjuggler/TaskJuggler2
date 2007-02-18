@@ -12,12 +12,10 @@
 #ifndef _ShiftSelection_h_
 #define _ShiftSelection_h_
 
-#include <time.h>
-
-class ShiftSelectionList;
-
 #include "Shift.h"
 #include "Interval.h"
+
+class ShiftSelectionList;
 
 /**
  * @short Stores shift selection related information.

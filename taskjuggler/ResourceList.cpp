@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "ResourceList.h"
+
 #include <stdio.h>
 
-#include "ResourceList.h"
 #include "debug.h"
 #include "TjMessageHandler.h"
 #include "ShiftSelection.h"

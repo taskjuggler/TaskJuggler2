@@ -12,22 +12,10 @@
 #ifndef _ReportElement_h_
 #define _ReportElement_h_
 
-#include <time.h>
-
-#include <qvaluelist.h>
-#include <qptrlist.h>
-#include <qtextstream.h>
-#include <qdict.h>
-#include <qmap.h>
-
-#include "taskjuggler.h"
-#include "CoreAttributesList.h"
 #include "TableColorSet.h"
 #include "MacroTable.h"
-#include "RealFormat.h"
 #include "TableColumnFormat.h"
 #include "TableColumnInfo.h"
-#include "Report.h"
 #include "ReportElementBase.h"
 
 class QStringList;

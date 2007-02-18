@@ -10,10 +10,11 @@
  * $Id$
  */
 
+#include "HTMLWeeklyCalendar.h"
+
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLWeeklyCalendar.h"
 #include "HTMLWeeklyCalendarElement.h"
 
 HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f,

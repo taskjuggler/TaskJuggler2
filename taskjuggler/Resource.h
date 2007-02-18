@@ -13,14 +13,8 @@
 #ifndef _Resource_h_
 #define _Resource_h_
 
-#include "time.h"
-
-#include "taskjuggler.h"
-#include "CoreAttributes.h"
 #include "ResourceList.h"
-#include "ShiftSelectionList.h"
 #include "ResourceScenario.h"
-#include "Journal.h"
 
 class Project;
 class Shift;

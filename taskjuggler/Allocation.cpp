@@ -10,12 +10,13 @@
  * $Id$
  */
 
+#include "Allocation.h"
+
 #include "qdom.h"
 
 #include "tjlib-internal.h"
 #include "Resource.h"
 #include "ResourceTreeIterator.h"
-#include "Allocation.h"
 #include "ReportXML.h"
 #include "UsageLimits.h"
 

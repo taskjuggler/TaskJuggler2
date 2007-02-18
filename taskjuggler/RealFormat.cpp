@@ -10,10 +10,10 @@
  * $Id$
  */
 
+#include "RealFormat.h"
+
 #include <stdlib.h>
 #include <math.h>
-
-#include "RealFormat.h"
 
 RealFormat::RealFormat(const QString& sp, const QString& ss,
                        const QString& ts, const QString& fs, uint fd) :

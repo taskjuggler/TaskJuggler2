@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "CSVResourceReport.h"
+
 #include <qfile.h>
 
-#include "CSVResourceReport.h"
 #include "CSVResourceReportElement.h"
 
 CSVResourceReport::CSVResourceReport(Project* p, const QString& f,

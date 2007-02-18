@@ -10,10 +10,11 @@
  * $Id$
  */
 
+#include "HTMLTaskReport.h"
+
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLTaskReport.h"
 #include "HTMLTaskReportElement.h"
 
 HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, const QString& df,

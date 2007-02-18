@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "QtReport.h"
+
 #include <config.h>
 
-#include "QtReport.h"
 #include "Project.h"
 #include "Utility.h"
 

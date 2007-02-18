@@ -12,13 +12,13 @@
 #ifndef _ExportReport_h_
 #define _ExportReport_h_
 
-#include <qstring.h>
-#include <qdict.h>
-
 #include <Report.h>
+#include <TaskDependency.h>
 
 class Project;
 class CustomAttributeDefinition;
+class Scenario;
+class Shift;
 
 class ExportReport : public Report
 {

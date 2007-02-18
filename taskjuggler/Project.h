@@ -14,11 +14,7 @@
 #ifndef _Project_h_
 #define _Project_h_
 
-#include <time.h>
-
 #include <qobject.h>
-#include <qptrlist.h>
-#include <qstringlist.h>
 #include <qdict.h>
 #include "config.h"
 #include "VacationList.h"
@@ -27,7 +23,6 @@
 #include "ShiftList.h"
 #include "ResourceList.h"
 #include "AccountList.h"
-#include "RealFormat.h"
 #include "QtReport.h"
 #include "Journal.h"
 

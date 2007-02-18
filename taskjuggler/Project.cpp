@@ -11,6 +11,8 @@
  * $Id$
  */
 
+#include "Project.h"
+
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +20,6 @@
 #include <qdict.h>
 
 #include "Interval.h"
-#include "Project.h"
 #include "debug.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"

@@ -12,12 +12,6 @@
 #ifndef _XMLReport_h_
 #define _XMLReport_h_
 
-#include <time.h>
-
-#include <qstring.h>
-#include <qdict.h>
-#include <qptrlist.h>
-
 #include <Report.h>
 
 class Project;

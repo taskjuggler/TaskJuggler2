@@ -12,8 +12,6 @@
 #ifndef _VacationInterval_h_
 #define _VacationInterval_h_
 
-#include <qstring.h>
-
 #include "Interval.h"
 
 /**

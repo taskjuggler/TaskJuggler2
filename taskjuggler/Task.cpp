@@ -11,11 +11,12 @@
  * $Id$
  */
 
+#include "Task.h"
+
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
 
-#include "Task.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "debug.h"

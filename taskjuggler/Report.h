@@ -13,15 +13,10 @@
 #ifndef _Report_h_
 #define _Report_h_
 
-#include <time.h>
-
-#include <qstring.h>
-#include <qstringlist.h>
 #include <qvaluelist.h>
 #include <qfile.h>
 #include <qtextstream.h>
 
-#include "taskjuggler.h"
 #include "CoreAttributesList.h"
 #include "RealFormat.h"
 #include "Interval.h"

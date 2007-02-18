@@ -11,8 +11,9 @@
  * $Id$
  */
 
-#include <stdio.h>
+#include "kotrus.h"
 
+#include <stdio.h>
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -27,7 +28,6 @@
 #include "Task.h"
 #include "Account.h"
 #include "Project.h"
-#include "kotrus.h"
 #include "Interval.h"
 /*
 

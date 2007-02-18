@@ -11,12 +11,13 @@
  * $Id$
  */
 
+#include "FileInfo.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "FileInfo.h"
 #include "ProjectFile.h"
 #include "debug.h"
 

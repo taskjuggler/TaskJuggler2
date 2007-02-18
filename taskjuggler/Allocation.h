@@ -15,7 +15,6 @@
 #include <qdom.h>
 
 #include "ShiftSelectionList.h"
-#include "ShiftSelection.h"
 
 class Resource;
 class UsageLimits;

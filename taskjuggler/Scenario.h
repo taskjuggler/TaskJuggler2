@@ -12,7 +12,6 @@
 #ifndef _Scenario_h_
 #define _Scenario_h_
 
-#include "CoreAttributes.h"
 #include "ScenarioList.h"
 
 class Project;

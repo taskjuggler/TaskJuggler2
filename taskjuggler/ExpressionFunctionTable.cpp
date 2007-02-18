@@ -11,9 +11,9 @@
  * $Id$
  */
 
-#include "tjlib-internal.h"
 #include "ExpressionFunctionTable.h"
 
+#include "tjlib-internal.h"
 
 ExpressionFunctionTable EFT;
 

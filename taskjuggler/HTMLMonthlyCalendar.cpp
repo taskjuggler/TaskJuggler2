@@ -10,10 +10,11 @@
  * $Id: HTMLMonthlyCalendar.cpp 1259 2006-01-31 12:04:00Z cs $
  */
 
+#include "HTMLMonthlyCalendar.h"
+
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLMonthlyCalendar.h"
 #include "HTMLMonthlyCalendarElement.h"
 
 HTMLMonthlyCalendar::HTMLMonthlyCalendar(Project* p, const QString& f,

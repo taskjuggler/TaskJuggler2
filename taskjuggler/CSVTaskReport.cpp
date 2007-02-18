@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "CSVTaskReport.h"
+
 #include <qfile.h>
 
-#include "CSVTaskReport.h"
 #include "CSVTaskReportElement.h"
 
 CSVTaskReport::CSVTaskReport(Project* p, const QString& f, const QString& df, 

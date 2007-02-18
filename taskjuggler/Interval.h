@@ -13,8 +13,6 @@
 #ifndef _Interval_h_
 #define _Interval_h_
 
-#include <time.h>
-
 #include <stdio.h>
 #include "Utility.h"
 

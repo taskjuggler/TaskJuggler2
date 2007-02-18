@@ -36,6 +36,7 @@
 #include "Optimizer.h"
 #include "OptimizerRun.h"
 #include "ParserElement.h"
+#include "XMLFile.h"
 #include "kotrus.h"
 
 void

@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "QtReportElement.h"
+
 #include <config.h>
 
-#include "QtReportElement.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"

@@ -11,6 +11,8 @@
  * $Id$
  */
 
+#include "ProjectFile.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,7 +21,6 @@
 #include <qapplication.h>
 #include <qbitarray.h>
 
-#include "ProjectFile.h"
 #include "debug.h"
 #include "taskjuggler.h"
 #include "TjMessageHandler.h"

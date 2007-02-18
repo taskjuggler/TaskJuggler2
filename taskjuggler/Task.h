@@ -18,18 +18,12 @@
 
 #include <stdarg.h>
 
-#include <qptrlist.h>
-#include <qdict.h>
-#include <qstring.h>
 #include <qstringlist.h>
 #include <qdom.h>
 
-#include "taskjuggler.h"
 #include "debug.h"
 #include "TaskList.h"
 #include "TaskScenario.h"
-#include "ResourceList.h"
-#include "CoreAttributes.h"
 #include "ShiftSelectionList.h"
 #include "LoopDetectorInfo.h"
 #include "TaskDependency.h"

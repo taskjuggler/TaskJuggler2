@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "QtResourceReport.h"
+
 #include <qfile.h>
 
-#include "QtResourceReport.h"
 #include "QtResourceReportElement.h"
 
 QtResourceReport::QtResourceReport(Project* p, const QString& f,

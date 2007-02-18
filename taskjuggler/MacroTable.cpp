@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include "MacroTable.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <qregexp.h>
@@ -18,7 +20,6 @@
 #include "config.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "MacroTable.h"
 
 bool
 MacroTable::addMacro(Macro* macro)

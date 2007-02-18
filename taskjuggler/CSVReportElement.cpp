@@ -10,10 +10,11 @@
  * $Id$
  */
 
+#include "CSVReportElement.h"
+
 #include <config.h>
 #include <assert.h>
 
-#include "CSVReportElement.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"

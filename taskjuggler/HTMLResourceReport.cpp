@@ -10,10 +10,11 @@
  * $Id$
  */
 
+#include "HTMLResourceReport.h"
+
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLResourceReport.h"
 #include "HTMLResourceReportElement.h"
 
 HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,

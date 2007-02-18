@@ -16,8 +16,6 @@
 
 #include <time.h>
 
-#include <qstring.h>
-
 #include "ParserElement.h"
 
 class Project;

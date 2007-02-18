@@ -15,11 +15,7 @@
 
 #include <time.h>
 
-#include <qptrlist.h>
-
 #include "taskjuggler.h"
-#include "Token.h"
-#include "MacroTable.h"
 #include "FileInfo.h"
 
 class QBitArray;

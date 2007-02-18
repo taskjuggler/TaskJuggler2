@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include "Utility.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +20,6 @@
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "Utility.h"
 
 static QDict<const char> TZDict;
 static bool TZDictReady = FALSE;

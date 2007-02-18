@@ -15,7 +15,6 @@
 
 #include <time.h>
 
-#include <qstring.h>
 #include <qdict.h>
 #include <qptrlist.h>
 

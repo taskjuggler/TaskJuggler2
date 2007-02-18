@@ -15,9 +15,6 @@
 
 #include <time.h>
 
-#include <qptrlist.h>
-
-#include "taskjuggler.h"
 #include "ResourceList.h"
 
 class Task;

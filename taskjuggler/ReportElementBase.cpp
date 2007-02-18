@@ -11,8 +11,8 @@
  * $Id: ReportElement.h 1335 2006-09-24 13:49:05Z cs $
  */
 
-#include "tjlib-internal.h"
 #include "ReportElementBase.h"
+#include "tjlib-internal.h"
 #include "Project.h"
 
 ReportElementBase::ReportElementBase(Report* r) :

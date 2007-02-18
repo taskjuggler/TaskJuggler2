@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "CSVReport.h"
+
 #include <config.h>
 
-#include "CSVReport.h"
 #include "Project.h"
 #include "Utility.h"
 

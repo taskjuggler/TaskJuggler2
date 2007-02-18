@@ -12,8 +12,6 @@
 #ifndef _Booking_h_
 #define _Booking_h_
 
-#include <qstring.h>
-
 #include "Interval.h"
 #include "SbBooking.h"
 

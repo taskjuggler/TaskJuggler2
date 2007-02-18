@@ -13,7 +13,6 @@
 #ifndef _ResourceScenario_h_
 #define _ResourceScenario_h_
 
-#include "TaskList.h"
 #include "Task.h"
 
 class ResourceScenario

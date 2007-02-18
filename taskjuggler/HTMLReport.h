@@ -13,11 +13,6 @@
 #ifndef _HTMLReport_h_
 #define _HTMLReport_h_
 
-#include <stdio.h>
-#include <time.h>
-
-#include <qstring.h>
-
 #include "Report.h"
 #include "HTMLPrimitives.h"
 

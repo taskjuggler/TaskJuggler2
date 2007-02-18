@@ -10,6 +10,8 @@
  * $Id$
  */
 
+#include "ExportReport.h"
+
 #include <config.h>
 
 #include <qfile.h>
@@ -25,7 +27,6 @@
 #include "Resource.h"
 #include "Booking.h"
 #include "BookingList.h"
-#include "ExportReport.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "CustomAttributeDefinition.h"

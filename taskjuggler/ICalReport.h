@@ -13,9 +13,6 @@
 #ifndef _ICalReport_h_
 #define _ICalReport_h_
 
-#include <time.h>
-
-#include <qstring.h>
 #include <libkcal/calendarlocal.h>
 #include <libkcal/todo.h>
 

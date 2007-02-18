@@ -10,10 +10,10 @@
  * $Id$
  */
 
+#include "CSVPrimitives.h"
+
 #include <qcstring.h>
 #include <qmap.h>
-
-#include "CSVPrimitives.h"
 
 QString
 CSVPrimitives::filter(const QString& s) const

@@ -13,13 +13,7 @@
 #ifndef _Report_xml_h_
 #define _Report_xml_h_
 
-#include <stdio.h>
-#include <time.h>
-
-#include <qstring.h>
-#include <qstringlist.h>
 #include <qcolor.h>
-#include <qtextstream.h>
 #include <qdom.h>
 
 #include "Report.h"

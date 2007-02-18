@@ -13,12 +13,12 @@
 /* The following encoding table was copied from the Qt library sources since
  * this information is not available over the public API. */
 
+#include "HTMLPrimitives.h"
+
 #include <ctype.h>
 
 #include <qcstring.h>
 #include <qmap.h>
-
-#include "HTMLPrimitives.h"
 
 QString
 HTMLPrimitives::htmlFilter(const QString& s) const

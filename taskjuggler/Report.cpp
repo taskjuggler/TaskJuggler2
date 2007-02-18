@@ -10,10 +10,11 @@
  * $Id$
  */
 
+#include "Report.h"
+
 #include <config.h>
 #include <stdio.h>
 
-#include "Report.h"
 #include "Interval.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"

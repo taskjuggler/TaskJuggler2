@@ -13,8 +13,6 @@
 #ifndef _TableColumnFormat_h_
 #define _TableColumnFormat_h_
 
-#include <qstring.h>
-
 #include "RealFormat.h"
 
 class ReportElement;

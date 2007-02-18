@@ -11,12 +11,13 @@
  * $Id$
  */
 
+#include "Tokenizer.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "Tokenizer.h"
 #include "ProjectFile.h"
 #include "debug.h"
 

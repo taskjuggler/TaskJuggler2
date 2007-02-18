@@ -10,9 +10,9 @@
  * $Id$
  */
 
+#include "TaskScenario.h"
 #include "Resource.h"
 #include "Interval.h"
-#include "TaskScenario.h"
 #include "Task.h"
 #include "ResourceTreeIterator.h"
 #include "Project.h"

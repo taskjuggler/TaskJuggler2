@@ -13,11 +13,6 @@
 #ifndef _QtReport_h_
 #define _QtReport_h_
 
-#include <stdio.h>
-#include <time.h>
-
-#include <qstring.h>
-
 #include "Report.h"
 
 class Project;

@@ -10,9 +10,10 @@
  * $Id$
  */
 
+#include "HTMLReport.h"
+
 #include <config.h>
 
-#include "HTMLReport.h"
 #include "Project.h"
 #include "Utility.h"
 

@@ -10,12 +10,13 @@
  * $Id$
  */
 
+#include "ReportElement.h"
+
 #include <config.h>
 #include <stdio.h>
 
 #include <qdict.h>
 
-#include "ReportElement.h"
 #include "Interval.h"
 #include "TableColumnFormat.h"
 #include "TableColumnInfo.h"

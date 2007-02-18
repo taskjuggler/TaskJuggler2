@@ -23,8 +23,6 @@ class XMLFile;
 
 typedef bool (XMLFile::*ParserFunctionPtr)(QDomNode&, ParserTreeContext&);
 
-#include "XMLFile.h"
-
 class ParserElement
 {
 public:

@@ -10,8 +10,9 @@
  * $Id$
  */
 
-#include "Interval.h"
 #include "ExpressionTreeFunction.h"
+
+#include "Interval.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "CoreAttributes.h"

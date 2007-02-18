@@ -13,17 +13,10 @@
 #ifndef _Account_h_
 #define _Account_h_
 
-#include <qstring.h>
-#include <qptrlist.h>
-#include <time.h>
-
-#include "CoreAttributes.h"
 #include "AccountList.h"
 #include "TransactionList.h"
 
 class Interval;
-
-#include "taskjuggler.h"
 
 /**
  * @short Stores all account related information.

@@ -13,11 +13,7 @@
 #ifndef _ReportElementBase_h_
 #define _ReportElementBase_h_
 
-#include <qstring.h>
-#include <qvaluelist.h>
-
 #include "Report.h"
-#include "RealFormat.h"
 
 /**
  * @short A class that forms the base for elements of a report.

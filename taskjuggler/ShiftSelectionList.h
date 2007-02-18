@@ -12,10 +12,6 @@
 #ifndef _ShiftSelectionList_h_
 #define _ShiftSelectionList_h_
 
-#include <time.h>
-
-#include <qptrlist.h>
-
 #include "ShiftSelection.h"
 
 class Interval;
