@@ -12,9 +12,11 @@
 
 #include "Utility.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include <string>
 
 #include <qdict.h>
 
@@ -783,7 +785,7 @@ date2time(const QString& date)
 
     int y, m, d, hour, min, sec;
     char tZone[64] = "";
-    char* savedTZ = 0;
+    std::string savedTZ;
     bool restoreTZ = FALSE;
     if (sscanf(date, "%d-%d-%d-%d:%d:%d-%s",
                &y, &m, &d, &hour, &min, &sec, tZone) == 7 ||
@@ -794,8 +796,7 @@ date2time(const QString& date)
         const char* tz;
         if ((tz = getenv("TZ")) != 0)
         {
-            savedTZ = new char[strlen(tz) + 1];
-            strcpy(savedTZ, tz);
+            savedTZ = tz;
         }
         if ((tz = timezone2tz(tZone)) == 0)
         {
@@ -868,11 +869,10 @@ date2time(const QString& date)
 
     if (restoreTZ)
     {
-        if (savedTZ)
+        if (!savedTZ.empty())
         {
-            if (setenv("TZ", savedTZ, 1) < 0)
+            if (setenv("TZ", savedTZ.c_str(), 1) < 0)
                 qFatal("date2time: Ran out of space in environment section.");
-            delete [] savedTZ;
         }
         else
             unsetenv("TZ");
