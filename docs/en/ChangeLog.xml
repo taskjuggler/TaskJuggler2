@@ -1139,6 +1139,10 @@ detected.</para></listitem>
 <listitem><para>Fixed crash when non existant file was
 included.</para></listitem>
 
+<listitem><para>Detect usage of undefined macros again. Undefined
+macros were silently ignored. This should only happen when the macro
+name is prefixed with a questionmark in the macro call.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

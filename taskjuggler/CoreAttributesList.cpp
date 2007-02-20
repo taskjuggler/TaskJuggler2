@@ -172,7 +172,7 @@ CoreAttributesList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
         return c2->getIndex() == c1->getIndex() ? 0 :
             c2->getIndex() < c1->getIndex() ? -1 : 1;
     case IndexDown:
-        return c1->getIndex() == c2->getIndex() ? 0:
+        return c1->getIndex() == c2->getIndex() ? 0 :
             c1->getIndex() > c2->getIndex() ? -1 : 1;
     case IdUp:
         return QString::compare(c1->getId(), c2->getId());

@@ -307,7 +307,7 @@ which is the commandline version. When you want to start TaskJugglerUI
 from a shell, you need to type it with the capital letters.</para>
 
 <para>The graphical front-end makes use of the libraries of the <ulink
-url="www.kde.org">K Desktop Environment</ulink>. We recommend to use
+url="http://www.kde.org">K Desktop Environment</ulink>. We recommend to use
 at least version 3.4. Earlier versions will probably work as well, but
 we have not tested them.</para>
 

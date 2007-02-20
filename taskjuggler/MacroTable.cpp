@@ -63,7 +63,7 @@ MacroTable::resolve(const QStringList* argList)
         emptyIsLegal = TRUE;
     }
 
-    QString result;
+    QString result = QString::null;
     if (name == "if")
     {
         if (!argList || argList->count() != 3)
