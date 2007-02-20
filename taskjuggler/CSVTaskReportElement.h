@@ -19,7 +19,7 @@ class CSVTaskReportElement : public CSVReportElement
 {
 public:
     CSVTaskReportElement(Report* r, const QString& df, int dl);
-    ~CSVTaskReportElement();
+    ~CSVTaskReportElement() { };
 
     bool generate();
 private:

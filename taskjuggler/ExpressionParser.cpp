@@ -21,16 +21,6 @@
 #include "tjlib-internal.h"
 #include "ExpressionFunctionTable.h"
 
-ExpressionParser::ExpressionParser() :
-    tokenizer(0)
-{
-}
-
-ExpressionParser::~ExpressionParser()
-{
-    delete tokenizer;
-}
-
 Operation*
 ExpressionParser::parse(const QString& text, const Project* proj)
 {

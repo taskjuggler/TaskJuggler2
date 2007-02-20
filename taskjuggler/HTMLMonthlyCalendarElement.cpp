@@ -50,10 +50,6 @@ HTMLMonthlyCalendarElement::HTMLMonthlyCalendarElement(Report* r,
 
 }
 
-HTMLMonthlyCalendarElement::~HTMLMonthlyCalendarElement()
-{
-}
-
 void
 HTMLMonthlyCalendarElement::generateTableHeader()
 {

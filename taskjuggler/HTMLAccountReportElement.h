@@ -18,7 +18,7 @@ class HTMLAccountReportElement : public HTMLReportElement
 {
 public:
     HTMLAccountReportElement(Report* r, const QString& df, int dl);
-    ~HTMLAccountReportElement();
+    ~HTMLAccountReportElement() { }
 
     bool generate();
 

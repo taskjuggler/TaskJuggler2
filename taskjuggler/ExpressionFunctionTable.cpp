@@ -56,10 +56,6 @@ ExpressionFunctionTable::ExpressionFunctionTable() :
     addFunc(KW("containsTask"), &ExpressionTreeFunction::containsTask, 1);
 }
 
-ExpressionFunctionTable::~ExpressionFunctionTable()
-{
-}
-
 void
 ExpressionFunctionTable::addFunc(const QString& name,
                                  const ExpressionTreeFunctionLongPtr func,

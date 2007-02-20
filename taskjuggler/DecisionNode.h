@@ -20,7 +20,7 @@ class DecisionNode
 {
 public:
     DecisionNode(DecisionNode* p, const QString& t);
-    ~DecisionNode();
+    ~DecisionNode() { }
 
     const QString& getTag() const { return tag; }
 

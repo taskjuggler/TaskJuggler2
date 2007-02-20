@@ -44,10 +44,6 @@ CSVTaskReportElement::CSVTaskReportElement(Report* r, const QString& df,
     resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 }
 
-CSVTaskReportElement::~CSVTaskReportElement()
-{
-}
-
 bool
 CSVTaskReportElement::generate()
 {

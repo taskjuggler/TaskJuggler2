@@ -21,7 +21,7 @@ class HTMLMonthlyCalendarElement : public HTMLReportElement
 {
 public:
     HTMLMonthlyCalendarElement(Report* r, const QString& df, int dl);
-    ~HTMLMonthlyCalendarElement();
+    ~HTMLMonthlyCalendarElement() { }
 
     bool generate();
 

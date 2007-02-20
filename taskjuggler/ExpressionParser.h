@@ -14,10 +14,10 @@
 #define _ExpressionParser_h_
 
 #include <qstring.h>
+#include "Tokenizer.h"
 
 class Project;
 class Operation;
-class Tokenizer;
 class ExpressionTree;
 
 /**
@@ -28,8 +28,14 @@ class ExpressionTree;
 class ExpressionParser
 {
 public:
-    ExpressionParser();
-    ~ExpressionParser();
+    ExpressionParser() :
+        tokenizer(0)
+    { }
+
+    ~ExpressionParser()
+    {
+        delete tokenizer;
+    }
 
     Operation* parse(const QString& text, const Project* proj);
 

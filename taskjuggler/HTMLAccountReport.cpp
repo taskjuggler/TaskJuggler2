@@ -15,19 +15,6 @@
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLAccountReportElement.h"
-
-HTMLAccountReport::HTMLAccountReport(Project* p, const QString& f,
-                                     const QString& df, int dl) :
-    HTMLReport(p, f, df, dl),
-    tab(new HTMLAccountReportElement(this, df, dl))
-{
-}
-
-HTMLAccountReport::~HTMLAccountReport()
-{
-    delete tab;
-}
 
 bool
 HTMLAccountReport::generate()

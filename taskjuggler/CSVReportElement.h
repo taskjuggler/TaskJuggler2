@@ -33,7 +33,11 @@ class Interval;
 class CSVReportElement : public ReportElement, public CSVPrimitives
 {
 public:
-    CSVReportElement(Report* r, const QString& df, int dl);
+    CSVReportElement(Report* r, const QString& df, int dl) :
+        ReportElement(r, df, dl),
+        CSVPrimitives(),
+        fieldSeparator(";")
+    { }
     virtual ~CSVReportElement() { }
 
     virtual bool generate() = 0;
@@ -124,8 +128,8 @@ protected:
 
     void generateTableHeader();
 
-    void generateHeader();
-    void generateFooter();
+    void generateHeader() { };
+    void generateFooter() { };
 
     void generateLine(TableLineInfo* tli, int funcSel);
 

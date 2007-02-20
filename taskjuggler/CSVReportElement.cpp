@@ -35,23 +35,6 @@
 #include "CSVReport.h"
 #include "UsageLimits.h"
 
-CSVReportElement::CSVReportElement(Report* r, const QString& df, int dl) :
-    ReportElement(r, df, dl),
-    CSVPrimitives(),
-    fieldSeparator(";")
-{
-}
-
-void
-CSVReportElement::generateHeader()
-{
-}
-
-void
-CSVReportElement::generateFooter()
-{
-}
-
 void
 CSVReportElement::generateTableHeader()
 {

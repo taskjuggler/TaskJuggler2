@@ -19,7 +19,7 @@ class CSVResourceReportElement : public CSVReportElement
 {
 public:
     CSVResourceReportElement(Report* r, const QString& df, int dl);
-    ~CSVResourceReportElement();
+    ~CSVResourceReportElement() { };
 
     bool generate();
 private:

@@ -24,10 +24,6 @@ DecisionNode::DecisionNode(DecisionNode* p, const QString& t) :
     arcs.setAutoDelete(TRUE);
 }
 
-DecisionNode::~DecisionNode()
-{
-}
-
 bool
 DecisionNode::checkArc(const QString& t)
 {

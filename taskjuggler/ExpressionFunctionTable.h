@@ -21,7 +21,7 @@ class ExpressionFunctionTable
 {
 public:
     ExpressionFunctionTable();
-    ~ExpressionFunctionTable();
+    ~ExpressionFunctionTable() { }
 
     bool isKnownFunction(const QString& name) const
     {

@@ -14,20 +14,6 @@
 
 #include <qfile.h>
 
-#include "CSVTaskReportElement.h"
-
-CSVTaskReport::CSVTaskReport(Project* p, const QString& f, const QString& df, 
-                               int dl) :
-    CSVReport(p, f, df, dl),
-    tab(new CSVTaskReportElement(this, df, dl))
-{
-}
-
-CSVTaskReport::~CSVTaskReport()
-{
-    delete tab;
-}
-
 bool
 CSVTaskReport::generate()
 {

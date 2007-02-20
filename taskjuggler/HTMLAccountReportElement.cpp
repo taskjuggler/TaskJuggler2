@@ -33,10 +33,6 @@ HTMLAccountReportElement::HTMLAccountReportElement(Report* r,
     accountSortCriteria[1] = CoreAttributesList::NameUp;
 }
 
-HTMLAccountReportElement::~HTMLAccountReportElement()
-{
-}
-
 bool
 HTMLAccountReportElement::generate()
 {

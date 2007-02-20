@@ -45,10 +45,6 @@ CSVResourceReportElement::CSVResourceReportElement(Report* r,
     resourceSortCriteria[0] = CoreAttributesList::TreeMode;
 }
 
-CSVResourceReportElement::~CSVResourceReportElement()
-{
-}
-
 bool
 CSVResourceReportElement::generate()
 {

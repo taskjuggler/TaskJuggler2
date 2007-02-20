@@ -10,27 +10,3 @@
  * $Id$
  */
 
-#include "CSVReport.h"
-
-#include <config.h>
-
-#include "Project.h"
-#include "Utility.h"
-
-CSVReport::CSVReport(Project* p, const QString& f, const QString& df, 
-                       int dl) :
-   Report(p, f, df, dl),
-   CSVPrimitives()
-{
-}
-
-void
-CSVReport::generateHeader()
-{
-}
-
-void
-CSVReport::generateFooter()
-{
-}
-

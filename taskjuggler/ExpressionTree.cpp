@@ -23,6 +23,7 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 
+// do not move this into the header, it expands the library image size
 ExpressionTree::ExpressionTree(const Operation* op) :
     ca(0),
     symbolTable(),
@@ -34,6 +35,7 @@ ExpressionTree::ExpressionTree(const Operation* op) :
     symbolTable.setAutoDelete(TRUE);
 }
 
+// do not move this into the header, it expands the library image size
 ExpressionTree::ExpressionTree(const ExpressionTree& et) :
     ca(et.ca),
     symbolTable(et.symbolTable),
@@ -44,6 +46,7 @@ ExpressionTree::ExpressionTree(const ExpressionTree& et) :
 {
 }
 
+// do not move this into the header, it expands the library image size
 ExpressionTree::ExpressionTree() :
     ca(0),
     symbolTable(),

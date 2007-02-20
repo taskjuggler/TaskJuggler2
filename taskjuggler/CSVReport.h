@@ -26,13 +26,17 @@ class ExpressionTree;
 class CSVReport : public Report, public CSVPrimitives
 {
 public:
-    CSVReport(Project* p, const QString& f, const QString& df, int dl);
+    CSVReport(Project* p, const QString& f, const QString& df, int dl) :
+        Report(p, f, df, dl),
+        CSVPrimitives()
+    { }
+
     virtual ~CSVReport() { }
 
     virtual const char* getType() const { return "CSVReport"; }
 
-    void generateHeader();
-    void generateFooter();
+    void generateHeader() { };
+    void generateFooter() { };
 
 protected:
     CSVReport(); // leave unimplemented

@@ -14,9 +14,9 @@
 #define _CSVTaskReport_h_
 
 #include "CSVReport.h"
+#include "CSVTaskReportElement.h"
 
 class Project;
-class CSVTaskReportElement;
 
 /**
  * @short Stores all information about an CSV task report.
@@ -25,8 +25,15 @@ class CSVTaskReportElement;
 class CSVTaskReport : public CSVReport
 {
 public:
-    CSVTaskReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~CSVTaskReport();
+    CSVTaskReport(Project* p, const QString& f, const QString& df, int dl) :
+        CSVReport(p, f, df, dl),
+        tab(new CSVTaskReportElement(this, df, dl))
+    { }
+
+    virtual ~CSVTaskReport()
+    {
+        delete tab;
+    }
 
     virtual const char* getType() const { return "CSVTaskReport"; }
 

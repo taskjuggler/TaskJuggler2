@@ -15,19 +15,6 @@
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLMonthlyCalendarElement.h"
-
-HTMLMonthlyCalendar::HTMLMonthlyCalendar(Project* p, const QString& f,
-                                       const QString& df, int dl) :
-    HTMLReport(p, f, df, dl),
-    tab(new HTMLMonthlyCalendarElement(this, df, dl))
-{
-}
-
-HTMLMonthlyCalendar::~HTMLMonthlyCalendar()
-{
-    delete tab;
-}
 
 bool
 HTMLMonthlyCalendar::generate()

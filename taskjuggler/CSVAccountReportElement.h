@@ -18,7 +18,7 @@ class CSVAccountReportElement : public CSVReportElement
 {
 public:
     CSVAccountReportElement(Report* r, const QString& df, int dl);
-    ~CSVAccountReportElement();
+    ~CSVAccountReportElement() { };
 
     bool generate();
 

@@ -30,10 +30,6 @@ CSVAccountReportElement::CSVAccountReportElement(Report* r,
     columns.append(new TableColumnInfo(sc, "total"));
 }
 
-CSVAccountReportElement::~CSVAccountReportElement()
-{
-}
-
 bool
 CSVAccountReportElement::generate()
 {
