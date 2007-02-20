@@ -30,7 +30,7 @@ public:
     HTMLWeeklyCalendarElement* getTable() { return tab; }
 
 private:
-    HTMLWeeklyCalendar() { }    // don't call this directly
+    HTMLWeeklyCalendar(); // leave unimplemented
 
     HTMLWeeklyCalendarElement* tab;
 } ;

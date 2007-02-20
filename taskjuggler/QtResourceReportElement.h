@@ -24,7 +24,7 @@ public:
     bool generate() { return FALSE; }
 
 private:
-    QtResourceReportElement() { }
+    QtResourceReportElement(); // leave unimplemented
 } ;
 
 #endif

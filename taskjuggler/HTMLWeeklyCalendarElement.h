@@ -40,7 +40,7 @@ private:
                                  bool weekStartsMonday);
 
     bool showThisDay(int dayIndex, bool weekStartsMonday);
-    HTMLWeeklyCalendarElement() { }
+    HTMLWeeklyCalendarElement(); // leave unimplemented
 
     QBitArray daysToShow;
     unsigned int numberOfDays;

@@ -34,7 +34,7 @@ public:
     void generateFooter();
 
 protected:
-    QtReport() { }
+    QtReport(); // leave unimplemented
 } ;
 
 #endif

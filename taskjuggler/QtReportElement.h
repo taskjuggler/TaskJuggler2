@@ -116,7 +116,7 @@ public:
     virtual void genCellSummary(TableCellInfo*) { }
 
 protected:
-    QtReportElement() { }
+    QtReportElement(); // leave unimplemented
 
 } ;
 

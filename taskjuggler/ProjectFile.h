@@ -113,7 +113,7 @@ public:
     MacroTable& getMacros() { return macros; }
 
 private:
-    ProjectFile() {};   // don't use
+    ProjectFile(); // leave unimplemented
 
     bool readProject();
     bool readExtend();

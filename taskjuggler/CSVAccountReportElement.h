@@ -23,7 +23,7 @@ public:
     bool generate();
 
 private:
-    CSVAccountReportElement() { }
+    CSVAccountReportElement(); // leave unimplemented
 } ;
 
 #endif

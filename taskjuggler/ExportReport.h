@@ -42,7 +42,7 @@ public:
     void setListBookings(bool lb) { listBookings = lb; }
 
 private:
-    ExportReport() { }
+    ExportReport(); // leave unimplemented
 
     bool generateProjectProperty();
     bool generateCustomAttributeDeclaration(const QString& propertyName,

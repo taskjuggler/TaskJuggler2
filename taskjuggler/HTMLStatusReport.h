@@ -37,7 +37,7 @@ public:
     bool generate();
 
 private:
-    HTMLStatusReport() { }  // don't call this directly
+    HTMLStatusReport(); // leave unimplemented
 
     static const int tablesCount = 4;
     HTMLReportElement* tables[tablesCount];

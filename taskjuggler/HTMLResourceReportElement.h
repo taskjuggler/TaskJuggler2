@@ -23,7 +23,7 @@ public:
 
     bool generate();
 private:
-    HTMLResourceReportElement() { }
+    HTMLResourceReportElement(); // leave unimplemented
 } ;
 
 #endif

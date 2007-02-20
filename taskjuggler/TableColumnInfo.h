@@ -102,7 +102,7 @@ protected:
     uint subColumns;
 
 private:
-    TableColumnInfo() { }
+    TableColumnInfo(); // leave unimplemented
 } ;
 
 #endif

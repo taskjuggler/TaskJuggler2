@@ -120,7 +120,7 @@ public:
     void setFieldSeparator(const QString fs) { fieldSeparator = fs; }
 
 protected:
-    CSVReportElement() { }
+    CSVReportElement(); // leave unimplemented
 
     void generateTableHeader();
 

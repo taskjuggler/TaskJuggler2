@@ -35,7 +35,7 @@ public:
     QtTaskReportElement* getTable() const { return tab; }
 
 private:
-    QtTaskReport() { }
+    QtTaskReport(); // leave unimplemented
 
     QtTaskReportElement* tab;
 } ;

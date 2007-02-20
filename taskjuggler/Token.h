@@ -39,7 +39,7 @@ public:
     ~Token() { }
 
 private:
-    Token() { } // don't use
+    Token(); // leave unimplemented
     TokenType type;
     QString text;
 } ;

@@ -172,7 +172,7 @@ public:
     virtual bool generate() = 0;
 
 protected:
-    Report() { }
+    Report(); // leave unimplemented
 
     void errorMessage(const char* msg, ... );
 

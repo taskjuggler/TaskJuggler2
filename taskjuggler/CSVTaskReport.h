@@ -34,7 +34,7 @@ public:
     CSVTaskReportElement* getTable() { return tab; }
 
 private:
-    CSVTaskReport() { }
+    CSVTaskReport(); // leave unimplemented
 
     CSVTaskReportElement* tab;
 } ;

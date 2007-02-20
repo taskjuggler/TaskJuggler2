@@ -53,7 +53,7 @@ public:
     double getVolume(int sc, const Interval& period) const;
 
 private:
-    Account() { };  // don't use this
+    Account(); // leave unimplemented
     QString kotrusId;
     TransactionList transactions;
     AccountType acctType;

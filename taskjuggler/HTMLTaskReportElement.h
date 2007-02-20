@@ -23,7 +23,7 @@ public:
 
     bool generate();
 private:
-    HTMLTaskReportElement() { }
+    HTMLTaskReportElement(); // leave unimplemented
 } ;
 
 #endif

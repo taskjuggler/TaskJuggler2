@@ -35,7 +35,7 @@ public:
     void generateFooter();
 
 protected:
-    CSVReport() { }
+    CSVReport(); // leave unimplemented
 } ;
 
 #endif

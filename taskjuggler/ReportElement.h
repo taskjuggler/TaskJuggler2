@@ -252,7 +252,7 @@ public:
     virtual void genCellSummary(TableCellInfo*) = 0;
 
 protected:
-    ReportElement() { }
+    ReportElement(); // leave unimplemented
 
     void addCustomAttributeColumns
         (const QDict<CustomAttributeDefinition>& cad);

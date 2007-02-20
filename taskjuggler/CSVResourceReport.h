@@ -34,7 +34,7 @@ public:
     CSVResourceReportElement* getTable() { return tab; }
 
 private:
-    CSVResourceReport() { }
+    CSVResourceReport(); // leave unimplemented
 
     CSVResourceReportElement* tab;
 } ;

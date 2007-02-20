@@ -136,7 +136,7 @@ public:
     QString debugString();
 
 private:
-    Operation() { } // don't use this
+    Operation(); // leave unimplemented
 
     long evalFunction(ExpressionTree* et) const;
     QString evalFunctionAsString(ExpressionTree* et) const;

@@ -35,7 +35,7 @@ public:
     HTMLResourceReportElement* getTable() { return tab; }
 
 private:
-    HTMLResourceReport() { }
+    HTMLResourceReport(); // leave unimplemented
 
     HTMLResourceReportElement* tab;
 } ;

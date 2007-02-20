@@ -117,7 +117,7 @@ public:
 
     virtual void genCellSummary(TableCellInfo* tli);
 protected:
-    HTMLReportElement() { }
+    HTMLReportElement(); // leave unimplemented
 
     void generateTableHeader();
 

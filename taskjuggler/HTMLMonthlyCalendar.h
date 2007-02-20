@@ -30,7 +30,7 @@ public:
     HTMLMonthlyCalendarElement* getTable() { return tab; }
 
 private:
-    HTMLMonthlyCalendar() { }    // don't call this directly
+    HTMLMonthlyCalendar(); // leave unimplemented
 
     HTMLMonthlyCalendarElement* tab;
 } ;

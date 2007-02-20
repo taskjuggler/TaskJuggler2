@@ -33,7 +33,7 @@ public:
                      const QString& val );
    
 protected:
-   ReportXML() { }
+   ReportXML(); // leave unimplemented
 } ;
 
 #endif

@@ -148,7 +148,7 @@ protected:
     /// User defined, optional attributes.
     QDict<CustomAttribute> customAttributes;
 
-    CoreAttributes() { }    // Don't use this!
+    CoreAttributes(); // leave unimplemented
 } ;
 
 #endif

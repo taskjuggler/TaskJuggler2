@@ -39,7 +39,7 @@ public:
     const QString& getTag() const { return tag; }
 
 private:
-    ParserElement();    // Don't use!
+    ParserElement(); // leave unimplemented
 
     QString tag;
     /* Pointer to a function that is called before the elements of the node

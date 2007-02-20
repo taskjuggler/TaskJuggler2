@@ -47,7 +47,7 @@ public:
     long getGapLengthNR(int sc) const { return gapLength[sc]; }
 
 private:
-    TaskDependency() { }    // Don't use this!
+    TaskDependency(); // leave unimplemented
     /**
      * When we read in the project file, we don't know all tasks yet. So we
      * need to store the ID of the dependency and later resolve this to the

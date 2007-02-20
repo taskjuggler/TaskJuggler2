@@ -34,7 +34,7 @@ public:
     HTMLTaskReportElement* getTable() { return tab; }
 
 private:
-    HTMLTaskReport() { }
+    HTMLTaskReport(); // leave unimplemented
 
     HTMLTaskReportElement* tab;
 } ;

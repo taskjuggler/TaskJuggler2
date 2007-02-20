@@ -34,7 +34,7 @@ public:
     HTMLAccountReportElement* getTable() { return tab; }
 
 private:
-    HTMLAccountReport() { } // Don't use this.
+    HTMLAccountReport(); // leave unimplemented
 
     HTMLAccountReportElement* tab;
 } ;

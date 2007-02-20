@@ -39,7 +39,7 @@ public:
     void setMasterFile(bool mf) { masterFile = mf; }
 
 private:
-    XMLReport() { }
+    XMLReport(); // leave unimplemented
 
     bool generateProjectProperty(QDomElement* n);
     bool generateCustomAttributeDeclaration(QDomElement* parentEl,

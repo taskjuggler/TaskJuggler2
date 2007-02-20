@@ -32,7 +32,7 @@ public:
     const uint getLine() const { return line; }
 
 private:
-    Macro() { } // don't use this
+    Macro(); // leave unimplemented
 
     QString name;
     QString value;

@@ -35,7 +35,7 @@ public:
     QtResourceReportElement* getTable() const { return tab; }
 
 private:
-    QtResourceReport() { }
+    QtResourceReport(); // leave unimplemented
 
     QtResourceReportElement* tab;
 } ;

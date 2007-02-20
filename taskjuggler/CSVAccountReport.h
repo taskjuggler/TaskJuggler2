@@ -34,7 +34,7 @@ public:
     CSVAccountReportElement* getTable() { return tab; }
 
 private:
-    CSVAccountReport() { } // Don't use this.
+    CSVAccountReport(); // leave unimplemented
 
     CSVAccountReportElement* tab;
 } ;

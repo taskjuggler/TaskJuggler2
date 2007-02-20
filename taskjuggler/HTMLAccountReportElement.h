@@ -23,7 +23,7 @@ public:
     bool generate();
 
 private:
-    HTMLAccountReportElement() { }
+    HTMLAccountReportElement(); // leave unimplemented
 } ;
 
 #endif

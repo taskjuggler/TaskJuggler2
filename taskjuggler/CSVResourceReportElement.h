@@ -23,7 +23,7 @@ public:
 
     bool generate();
 private:
-    CSVResourceReportElement() { }
+    CSVResourceReportElement(); // leave unimplemented
 } ;
 
 #endif

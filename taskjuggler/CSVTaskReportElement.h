@@ -23,7 +23,7 @@ public:
 
     bool generate();
 private:
-    CSVTaskReportElement() { }
+    CSVTaskReportElement(); // leave unimplemented
 } ;
 
 #endif
