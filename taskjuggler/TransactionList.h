@@ -25,8 +25,12 @@ class Transaction
 {
     friend class TransactionList;
 public:
-    Transaction(time_t d, double a, const QString& descr)
-        : date(d), amount(a), description(descr) { }
+    Transaction(time_t d, double a, const QString& descr) :
+        date(d),
+        amount(a),
+        description(descr)
+    { }
+
     ~Transaction() { }
 
     time_t getDate() { return date; }

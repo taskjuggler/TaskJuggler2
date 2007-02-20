@@ -119,7 +119,8 @@ public:
         valid(FALSE)
     { }
 
-    Operation(const Operation& op); // fixme, will the destructor double free ops?
+    Operation(const Operation& op);
+
     ~Operation();
 
     long evalAsInt(ExpressionTree* et) const;

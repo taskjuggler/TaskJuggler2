@@ -14,8 +14,11 @@
 #include "ParserNode.h"
 
 ParserElement::ParserElement(const QString t, ParserFunctionPtr preF, 
-                             ParserNode* pn, ParserFunctionPtr postF)
-        : tag(t), preFunc(preF), node(0), postFunc(postF)
+                             ParserNode* pn, ParserFunctionPtr postF) :
+    tag(t),
+    preFunc(preF),
+    node(0),
+    postFunc(postF)
 {
     pn->add(this, t);
 }

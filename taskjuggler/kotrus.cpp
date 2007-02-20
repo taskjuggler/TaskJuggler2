@@ -47,9 +47,9 @@ CREATE TABLE ktBookings(
 
  */
 
-Kotrus::Kotrus()
-   : kotrusDB( 0L ),
-     mode( NoKotrus )
+Kotrus::Kotrus() :
+     kotrusDB(0L),
+     mode(NoKotrus)
 {
    QSettings settings;
 

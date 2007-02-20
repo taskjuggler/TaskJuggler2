@@ -21,17 +21,36 @@
 #include "ProjectFile.h"
 #include "debug.h"
 
-Tokenizer::Tokenizer(const QString& file_, MacroTable* mt_, const QString& tp)
-    : mt(mt_), textBuffer(QString::null), taskPrefix(tp)
+Tokenizer::Tokenizer(const QString& file_, MacroTable* mt_, const QString& tp) :
+    mt(mt_),
+    file(file_),
+    fh(0),
+    textBuffer(QString::null),
+    f(0),
+    currLine(0),
+    macroStack(),
+    lineBuf(),
+    ungetBuf(),
+    tokenTypeBuf(INVALID),
+    tokenBuf(),
+    taskPrefix(tp)
 {
-    tokenTypeBuf = INVALID;
-    file = file_;
 }
 
-Tokenizer::Tokenizer(const QString& buf) : textBuffer(buf)
+Tokenizer::Tokenizer(const QString& buf) :
+    mt(0),
+    file(),
+    fh(0),
+    textBuffer(buf),
+    f(0),
+    currLine(0),
+    macroStack(),
+    lineBuf(),
+    ungetBuf(),
+    tokenTypeBuf(INVALID),
+    tokenBuf(),
+    taskPrefix()
 {
-    tokenTypeBuf = INVALID;
-    mt = 0;
 }
 
 TokenType

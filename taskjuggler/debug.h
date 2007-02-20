@@ -29,7 +29,11 @@
 class DebugController
 {
 public:
-    DebugController() : debugLevel(0), debugMode(-1) { }
+    DebugController() :
+        debugLevel(0),
+        debugMode(-1)
+    { }
+
     ~DebugController() { }
 
     void setDebugLevel(int l)

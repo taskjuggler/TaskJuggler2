@@ -61,7 +61,10 @@ typedef enum TADs {
 
 XMLReport::XMLReport(Project* p, const QString& f,
                            const QString& df, int dl) :
-    Report(p, f, df, dl)
+    Report(p, f, df, dl),
+    doc(0),
+    taskAttributes(),
+    masterFile(FALSE)
 {
     if (TaskAttributeDict.empty())
     {
@@ -94,10 +97,6 @@ XMLReport::XMLReport(Project* p, const QString& f,
 
     // All XML reports default to just showing the first scenario.
     scenarios.append(0);
-
-    doc = 0;
-
-    masterFile = FALSE;
 }
 
 XMLReport::~XMLReport()

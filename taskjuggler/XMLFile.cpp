@@ -43,12 +43,12 @@
 ParserNode* XMLFile::parserRootNode = 0;
 
 XMLFile::XMLFile(Project* p) :
-    project(p)
+    masterFile(),
+    project(p),
+    doc()
 {
     if (!parserRootNode)
         createParseTree();
-
-    doc = 0;
 }
 
 XMLFile::~XMLFile()

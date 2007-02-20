@@ -21,9 +21,16 @@
 class VacationInterval : public Interval
 {
 public:
-    VacationInterval() { }
-    VacationInterval(const QString& n, const Interval& i)
-        : Interval(i), name(n) { }
+    VacationInterval() :
+        Interval(),
+        name()
+    { }
+
+    VacationInterval(const QString& n, const Interval& i) :
+        Interval(i),
+        name(n)
+    { }
+
     virtual ~VacationInterval() { }
 
     void setStart(time_t s) { start = s; }

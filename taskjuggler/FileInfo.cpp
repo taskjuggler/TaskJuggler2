@@ -21,12 +21,21 @@
 #include "ProjectFile.h"
 #include "debug.h"
 
-FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp)
-    : pf(p), taskPrefix(tp)
+FileInfo::FileInfo(ProjectFile* p, const QString& file_, const QString& tp) :
+    pf(p),
+    file(file_),
+    fh(0),
+    f(0),
+    currLine(0),
+    macroStack(),
+    lineBuf(),
+    ungetBuf(),
+    tokenTypeBuf(INVALID),
+    tokenBuf(),
+    oldLineBuf(),
+    oldLine(0),
+    taskPrefix(tp)
 {
-    tokenTypeBuf = INVALID;
-    file = file_;
-    f = 0;
 }
 
 FileInfo::~FileInfo()

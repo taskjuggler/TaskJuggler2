@@ -25,10 +25,12 @@
 class UsageLimits
 {
     public:
-        UsageLimits()
-        {
-            dailyMax = weeklyMax = monthlyMax = 0;
-        }
+        UsageLimits() :
+            dailyMax(0),
+            weeklyMax(0),
+            monthlyMax(0)
+        { }
+
         ~UsageLimits() { }
 
         void setDailyMax(uint m) { dailyMax = m; }

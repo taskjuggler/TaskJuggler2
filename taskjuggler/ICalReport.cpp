@@ -35,7 +35,8 @@
 #endif
 
 ICalReport::ICalReport(Project* p, const QString& file, const QString& defFile,
-                       int dl) : Report(p, file, defFile, dl)
+                       int dl) :
+    Report(p, file, defFile, dl)
 {
     taskSortCriteria[0] = CoreAttributesList::TreeMode;
     taskSortCriteria[1] = CoreAttributesList::StartUp;

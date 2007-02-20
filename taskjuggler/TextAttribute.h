@@ -23,13 +23,21 @@
 class TextAttribute : public CustomAttribute
 {
 public:
-    TextAttribute() { }
+    TextAttribute() :
+        CustomAttribute(),
+        text()
+    { }
+
     TextAttribute(const TextAttribute& ta) :
-        CustomAttribute(ta)
-    {
-        text = ta.text;
-    }
-    TextAttribute(const QString& t) { text = t; }
+        CustomAttribute(ta),
+        text(ta.text)
+    { }
+
+    TextAttribute(const QString& t) :
+        CustomAttribute(),
+        text(t)
+    { }
+
     virtual ~TextAttribute() { }
 
     CustomAttributeType getType() const { return CAT_Text; }

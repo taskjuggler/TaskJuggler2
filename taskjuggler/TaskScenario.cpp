@@ -17,27 +17,43 @@
 #include "ResourceTreeIterator.h"
 #include "Project.h"
 
-TaskScenario::TaskScenario()
+
+TaskScenario::TaskScenario() :
+    task(0),
+    index(0),
+    specifiedStart(0),
+    specifiedEnd(0),
+    start(0),
+    end(0),
+    minStart(0),
+    maxStart(0),
+    minEnd(0),
+    maxEnd(0),
+    startBuffer(-1.0),
+    endBuffer(-1.0),
+    startBufferEnd(0),
+    endBufferStart(0),
+    duration(0.0),
+    length(0.0),
+    effort(0.0),
+    startCredit(-1.0),
+    endCredit(-1.0),
+    criticalness(0.0),
+    pathCriticalness(0.0),
+    isOnCriticalPath(FALSE),
+    reportedCompletion(-1.0),
+    containerCompletion(-1.0),
+    completionDegree(0.0),
+    status(Undefined),
+    statusNote(),
+    specifiedScheduled(FALSE),
+    scheduled(FALSE),
+    startCanBeDetermined(false),
+    endCanBeDetermined(false),
+    specifiedBookedResources(),
+    bookedResources(),
+    criticalLinks()
 {
-    start = specifiedStart = 0;
-    end = specifiedEnd = 0;
-    specifiedScheduled = FALSE;
-    startBuffer = -1.0;
-    endBuffer = -1.0;
-    startBufferEnd = 0;
-    endBufferStart = 0;
-    duration = 0.0;
-    length = 0.0;
-    effort = 0.0;
-    startCredit = -1.0;
-    endCredit = -1.0;
-    reportedCompletion = -1.0;
-    containerCompletion = -1.0;
-    completionDegree = 0.0;
-    scheduled = FALSE;
-    criticalness = pathCriticalness = 0.0;
-    startCanBeDetermined = false;
-    endCanBeDetermined = false;
 }
 
 void
