@@ -13,7 +13,8 @@
 #include "ScenarioList.h"
 #include "Scenario.h"
 
-ScenarioList::ScenarioList()
+ScenarioList::ScenarioList() :
+    CoreAttributesList()
 {
     sorting[0] = CoreAttributesList::TreeMode;
     sorting[1] = CoreAttributesList::IdUp;

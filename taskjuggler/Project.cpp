@@ -49,6 +49,7 @@
 DebugController DebugCtrl;
 
 Project::Project() :
+    QObject(),
     start(0),
     end(0),
     now(0),

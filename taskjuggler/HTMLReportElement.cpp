@@ -36,7 +36,8 @@
 #include "UsageLimits.h"
 
 HTMLReportElement::HTMLReportElement(Report* r, const QString& df, int dl) :
-   ReportElement(r, df, dl)
+    ReportElement(r, df, dl),
+    HTMLPrimitives()
 {
 }
 

@@ -20,6 +20,7 @@ Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
                  AccountType at, const QString& df, uint dl) :
     CoreAttributes(p, i, n, pr, df, dl),
     kotrusId(),
+    transactions(),
     acctType(at)
 {
     transactions.setAutoDelete(TRUE);

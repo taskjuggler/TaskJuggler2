@@ -20,6 +20,7 @@
 HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :
     Report(p, f, df, dl),
+    HTMLPrimitives(),
     rawStyleSheet(),
     rawHead(),
     rawTail()

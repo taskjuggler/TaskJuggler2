@@ -44,8 +44,11 @@ class ResourceListIterator : public virtual CoreAttributesListIterator
 {
 public:
     ResourceListIterator(const CoreAttributesList& l) :
-        CoreAttributesListIterator(l) { }
+        CoreAttributesListIterator(l)
+    { }
+
     ~ResourceListIterator() { }
+
     Resource* operator*() { return (Resource*) get(); }
 } ;
 

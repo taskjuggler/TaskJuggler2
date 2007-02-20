@@ -23,7 +23,8 @@
 
 HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
                                    const QString& df, int dl) :
-    HTMLReport(p, f, df, dl)
+    HTMLReport(p, f, df, dl),
+    tables()
 {
     // By default this is a weekly status report.
     end = project->getNow();

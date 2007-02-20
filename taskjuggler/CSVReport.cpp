@@ -19,7 +19,8 @@
 
 CSVReport::CSVReport(Project* p, const QString& f, const QString& df, 
                        int dl) :
-   Report(p, f, df, dl)
+   Report(p, f, df, dl),
+   CSVPrimitives()
 {
 }
 

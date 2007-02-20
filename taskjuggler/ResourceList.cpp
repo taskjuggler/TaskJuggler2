@@ -23,7 +23,8 @@
 #include "kotrus.h"
 #include "UsageLimits.h"
 
-ResourceList::ResourceList()
+ResourceList::ResourceList() :
+    CoreAttributesList()
 {
     sorting[0] = CoreAttributesList::TreeMode;
     sorting[1] = CoreAttributesList::IdUp;

@@ -35,7 +35,7 @@
 #include "UsageLimits.h"
 
 QtReportElement::QtReportElement(Report* r, const QString& df, int dl) :
-   ReportElement(r, df, dl)
+    ReportElement(r, df, dl)
 {
 }
 

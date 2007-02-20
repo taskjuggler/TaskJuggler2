@@ -49,8 +49,11 @@ class ScenarioListIterator : public virtual CoreAttributesListIterator
 {
 public:
     ScenarioListIterator(const CoreAttributesList& l) :
-        CoreAttributesListIterator(l) { }
+        CoreAttributesListIterator(l)
+    { }
+
     ~ScenarioListIterator() { }
+
     Scenario* operator*() { return (Scenario*) get(); }
 } ;
 
