@@ -214,8 +214,7 @@ MacroTable::expandReportVariable(QString text, const QStringList* argList)
                 res += (*argList)[0];
             else
             {
-                QStringList sl;
-                sl.append(varName);
+                QStringList sl(varName);
                 res += resolve(&sl);
             }
         }

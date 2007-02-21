@@ -314,19 +314,15 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         cellText = filter ? htmlFilter(text) : text;
         if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
         {
-            QStringList* sl = new QStringList();
-            sl->append(text);
-            cellText = mt.expandReportVariable(tci->tci->getCellText(), sl);
-            delete sl;
+            QStringList sl(text);
+            cellText = mt.expandReportVariable(tci->tci->getCellText(), &sl);
         }
     }
     if (!tci->tci->getCellURL().isEmpty() && (tci->tli->ca1 == 0 ||
         !isHidden(tci->tli->ca1, tci->tci->getHideCellURL())))
     {
-        QStringList* sl = new QStringList();
-        sl->append(text);
-        QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(), sl);
-        delete sl;
+        QStringList sl(text);
+        QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(), &sl);
 	if (!cellURL.isEmpty())
 	{
 	    cellText = QString("<a href=\"") + cellURL
@@ -455,16 +451,14 @@ HTMLReportElement::reportCurrency(double value, TableCellInfo* tci,
 void
 HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 {
-    QStringList* sl = new QStringList();
-    sl->append(str);
+    QStringList sl(str);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
-        cellText = mt.expandReportVariable(tci->tci->getTitle(), sl);
+        cellText = mt.expandReportVariable(tci->tci->getTitle(), &sl);
     else
         cellText = str;
     cellText = htmlFilter(cellText);
-    QString cellURL = mt.expandReportVariable(tci->tci->getTitleURL(), sl);
-    delete sl;
+    QString cellURL = mt.expandReportVariable(tci->tci->getTitleURL(), &sl);
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";
@@ -475,16 +469,14 @@ HTMLReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 void
 HTMLReportElement::generateSubTitle(TableCellInfo* tci, const QString& str)
 {
-    QStringList* sl = new QStringList();
-    sl->append(str);
+    QStringList sl(str);
     QString cellText;
     if (!tci->tci->getSubTitle().isEmpty())
-        cellText = mt.expandReportVariable(tci->tci->getSubTitle(), sl);
+        cellText = mt.expandReportVariable(tci->tci->getSubTitle(), &sl);
     else
         cellText = str;
     cellText = htmlFilter(cellText);
-    QString cellURL = mt.expandReportVariable(tci->tci->getSubTitleURL(), sl);
-    delete sl;
+    QString cellURL = mt.expandReportVariable(tci->tci->getSubTitleURL(), &sl);
     if (!cellURL.isEmpty())
         cellText = QString("<a href=\"") + cellURL
             + "\">" + cellText + "</a>";

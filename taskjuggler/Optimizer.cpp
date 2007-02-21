@@ -11,12 +11,11 @@
  */
 
 #include "Optimizer.h"
-#include "DecisionNode.h"
 #include "OptimizerRun.h"
 #include "debug.h"
 
 Optimizer::Optimizer() :
-    decisionTree(new DecisionNode(0, "*Root*")),
+    decisionTree(0, "*Root*"),
     runs(),
     minimize(TRUE)
 {
@@ -25,14 +24,12 @@ Optimizer::Optimizer() :
 
 Optimizer::~Optimizer()
 {
-    delete decisionTree;
 }
 
 bool
 Optimizer::optimumFound() const 
 {
-    return decisionTree->getCompleted();
-//    return TRUE;
+    return decisionTree.getCompleted();
 }
 
 OptimizerRun*
@@ -49,4 +46,3 @@ Optimizer::finishRun(OptimizerRun* run)
 {
     runs.remove(run);
 }
-

@@ -492,21 +492,18 @@ FileInfo::readMacroCall()
 
     QString token;
     // Store all arguments in a newly created string list.
-    QStringList* sl = new QStringList;
-    sl->append(id);
+    QStringList sl(id);
     while ((tt = nextToken(token)) == STRING || tt == ID)
-        sl->append(token);
+        sl.append(token);
     if (tt != RBRACE)
     {
-        delete sl;
         errorMessage(i18n("'}' expected"));
         return FALSE;
     }
 
     // expand the macro
     pf->getMacros().setLocation(file, currLine);
-    QString macro = pf->getMacros().resolve(sl);
-    delete sl;
+    QString macro = pf->getMacros().resolve(&sl);
 
     if (macro.isNull() && prefix.isEmpty())
         return FALSE;
@@ -631,5 +628,4 @@ FileInfo::errorMessageVA(const char* msg, va_list ap)
 
     errorMessage("%s", buf);
 }
-
 

@@ -204,11 +204,10 @@ int main(int argc, char *argv[])
         QString fileName = a.argv()[i];
         if (fileName.right(4) == ".tjx")
         {
-            XMLFile* xf = new XMLFile(&p);
-            if (!xf->readDOM(fileName, QFile::decodeName(cwd) + "/", "", true))
+            XMLFile xf(&p);
+            if (!xf.readDOM(fileName, QFile::decodeName(cwd) + "/", "", true))
                 exit(EXIT_FAILURE);
-            parseErrors |= !xf->parse();
-            delete xf;
+            parseErrors |= !xf.parse();
         }
         else
         {
@@ -223,15 +222,14 @@ int main(int argc, char *argv[])
                          .arg(fileName));
                 // parseErrors = true;
             }
-            ProjectFile* pf = new ProjectFile(&p);
-            if (!pf->open(a.argv()[i], QFile::decodeName(cwd) + "/", "", true))
+            ProjectFile pf(&p);
+            if (!pf.open(a.argv()[i], QFile::decodeName(cwd) + "/", "", true))
                 exit(EXIT_FAILURE);
-            parseErrors |= !pf->parse();
+            parseErrors |= !pf.parse();
             if (generateMakeDepList)
-                pf->generateMakeDepList(makeDepFile, !first);
+                pf.generateMakeDepList(makeDepFile, !first);
             if (first)
                 first = false;
-            delete pf;
         }
     }
 

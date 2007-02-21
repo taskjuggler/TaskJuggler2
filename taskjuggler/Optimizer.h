@@ -22,7 +22,7 @@ public:
     Optimizer();
     ~Optimizer();
 
-    DecisionNode* getDecisionTreeRoot() const { return decisionTree; }
+    DecisionNode* getDecisionTreeRoot() { return &decisionTree; }
 
     bool getMinimize() const { return minimize; }
 
@@ -32,7 +32,7 @@ public:
     void finishRun(OptimizerRun* run);
 
 private:
-    DecisionNode* decisionTree;
+    DecisionNode decisionTree;
     QPtrList<OptimizerRun> runs;
     bool minimize;
 } ;

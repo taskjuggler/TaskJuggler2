@@ -31,7 +31,7 @@ public:
     bool followArc(const QString& tag);
 
 private:
-    const Optimizer* optimizer;
+    Optimizer* optimizer;
     DecisionNode* currentNode;
 } ;
         

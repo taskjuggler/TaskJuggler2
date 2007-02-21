@@ -617,17 +617,15 @@ ProjectFile::readProject()
             if (token == KW("workinghours"))
             {
                 int dow;
-                QPtrList<Interval>* l = new QPtrList<Interval>();
-                if (!readWorkingHours(dow, l))
+                QPtrList<Interval> l;
+                if (!readWorkingHours(dow, &l))
                 {
-                    delete l;
                     return FALSE;
                 }
 
                 for (int d = 0; d < 7; ++d)
                     if (dow & (1 << d))
-                        proj->setWorkingHours(d, *l);
-                delete l;
+                        proj->setWorkingHours(d, l);
             }
             else if (token == KW("dailyworkinghours"))
             {
@@ -2259,17 +2257,15 @@ ProjectFile::readResourceBody(Resource* r)
         else if (token == KW("workinghours"))
         {
             int dow;
-            QPtrList<Interval>* l = new QPtrList<Interval>();
-            if (!readWorkingHours(dow, l))
+            QPtrList<Interval> l;
+            if (!readWorkingHours(dow, &l))
             {
-                delete l;
                 return FALSE;
             }
 
             for (int d = 0; d < 7; ++d)
                 if (dow & (1 << d))
-                    r->setWorkingHours(d, *l);
-            delete l;
+                    r->setWorkingHours(d, l);
         }
         else if (token == KW("shift"))
         {
@@ -2393,17 +2389,15 @@ ProjectFile::readShift(Shift* parent)
             else if (token == KW("workinghours"))
             {
                 int dow;
-                QPtrList<Interval>* l = new QPtrList<Interval>();
-                if (!readWorkingHours(dow, l))
+                QPtrList<Interval> l;
+                if (!readWorkingHours(dow, &l))
                 {
-                    delete l;
                     return FALSE;
                 }
 
                 for (int d = 0; d < 7; ++d)
                     if (dow & (1 << d))
-                        s->setWorkingHours(d, *l);
-                delete l;
+                        s->setWorkingHours(d, l);
             }
             else if (token == KW("include"))
             {

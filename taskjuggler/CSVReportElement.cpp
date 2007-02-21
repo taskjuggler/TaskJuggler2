@@ -139,11 +139,10 @@ CSVReportElement::genCell(const QString& text, TableCellInfo* tci,
         cellText = filterText ? filter(text) : text;
         if (tci->tli->ca1 && !tci->tci->getCellText().isEmpty())
         {
-            QStringList* sl = new QStringList();
-            sl->append(text);
-            cellText = mt.expandReportVariable(tci->tci->getCellText(), sl);
+            QStringList sl(text);
+            cellText = mt.expandReportVariable(tci->tci->getCellText(), &sl);
             QString cellURL = mt.expandReportVariable(tci->tci->getCellURL(),
-                                                      sl);
+                                                      &sl);
         }
     }
     s() << "\"" << cellText << "\"";
@@ -178,23 +177,20 @@ CSVReportElement::reportCurrency(double value, TableCellInfo* tci, time_t)
 void
 CSVReportElement::generateTitle(TableCellInfo* tci, const QString& str)
 {
-    QStringList* sl = new QStringList();
-    sl->append(str);
+    QStringList sl(str);
     QString cellText;
     if (!tci->tci->getTitle().isEmpty())
     {
-        cellText = mt.expandReportVariable(tci->tci->getTitle(), sl);
+        cellText = mt.expandReportVariable(tci->tci->getTitle(), &sl);
         if (!tci->tci->getSubTitle().isEmpty())
             cellText += " " + mt.expandReportVariable(tci->tci->getSubTitle(),
-                                                      sl);
+                                                      &sl);
     }
     else
         cellText = str;
     cellText = filter(cellText);
 
     s() << "\"" << cellText << "\"";
-
-    delete sl;
 }
 
 void

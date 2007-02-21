@@ -536,24 +536,21 @@ Tokenizer::readMacroCall()
 
     QString token;
     // Store all arguments in a newly created string list.
-    QStringList* sl = new QStringList;
-    sl->append(id);
+    QStringList sl(id);
     while ((tt = nextToken(token)) == STRING || tt == ID)
-        sl->append(token);
+        sl.append(token);
     if (tt != RBRACE)
     {
         errorMessage(i18n("'}' expected"));
-        delete sl;
         return FALSE;
     }
 
     // expand the macro
     mt->setLocation(file, currLine);
-    QString macro = mt->resolve(sl);
+    QString macro = mt->resolve(&sl);
 
     if (macro.isNull() && prefix.isEmpty())
     {
-        delete sl;
         return FALSE;
     }
 
@@ -568,7 +565,6 @@ Tokenizer::readMacroCall()
     for (int i = macro.length() - 1; i >= 0; --i)
         ungetBuf.append(macro[i].latin1());
 
-    delete sl;
     return TRUE;
 }
 
