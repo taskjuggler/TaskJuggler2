@@ -26,14 +26,14 @@ FileInfo::open()
 {
     if (file.right(2) == "/.")
     {
-        f = new QTextStream(stdin, IO_ReadOnly);
+        f.reset(new QTextStream(stdin, IO_ReadOnly));
         fh = stdin;
     }
     else
     {
         if ((fh = fopen(file, "r")) == 0)
             return FALSE;
-        f = new QTextStream(fh, IO_ReadOnly);
+        f.reset(new QTextStream(fh, IO_ReadOnly));
     }
 
     if (DEBUGLEVEL > 0)
@@ -47,8 +47,6 @@ FileInfo::open()
 bool
 FileInfo::close()
 {
-    delete f;
-    f = 0;
     if (fh == stdin)
         return TRUE;
 

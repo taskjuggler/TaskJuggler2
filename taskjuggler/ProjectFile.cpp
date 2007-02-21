@@ -1058,18 +1058,18 @@ ProjectFile::getTaskPrefix()
 bool
 ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
 {
-    QTextStream* f;
+    std::auto_ptr<QTextStream> f;
     FILE* fh;
     if (fileName.isEmpty())
     {
-        f = new QTextStream(stdout, IO_WriteOnly);
+        f.reset(new QTextStream(stdout, IO_WriteOnly));
         fh = stdout;
     }
     else
     {
         if ((fh = fopen(fileName, append ? "a" : "w")) == 0)
             return FALSE;
-        f = new QTextStream(fh, append ? IO_Append : IO_WriteOnly);
+        f.reset(new QTextStream(fh, append ? IO_Append : IO_WriteOnly));
     }
     *f << masterFile << ": \\" << endl;
     bool first = TRUE;
@@ -1085,7 +1085,6 @@ ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
 
     if (!fileName.isEmpty())
         fclose(fh);
-    delete f;
 
     return TRUE;
 }

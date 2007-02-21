@@ -44,9 +44,7 @@ public:
     { }
 
     ~FileInfo()
-    {
-        delete f;
-    }
+    { }
 
     bool open();
     bool close();
@@ -88,7 +86,7 @@ private:
     FILE* fh;
 
     // The stream used to read the file.
-    QTextStream* f;
+    std::auto_ptr<QTextStream> f;
 
     // The number of the line currently being read.
     int currLine;

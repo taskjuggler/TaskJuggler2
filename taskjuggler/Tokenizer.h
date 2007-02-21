@@ -76,7 +76,7 @@ private:
     QString textBuffer;
 
     // The stream used to read the file.
-    QTextStream* f;
+    std::auto_ptr<QTextStream> f;
 
     // The number of the line currently being read.
     int currLine;

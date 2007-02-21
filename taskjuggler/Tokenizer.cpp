@@ -357,7 +357,7 @@ Tokenizer::open()
         if (file.right(2) == "/.")
         {
             // read from stdin
-            f = new QTextStream(stdin, IO_ReadOnly);
+            f.reset(new QTextStream(stdin, IO_ReadOnly));
             fh = stdin;
         }
         else
@@ -365,14 +365,14 @@ Tokenizer::open()
             // read from file system
             if ((fh = fopen(file, "r")) == 0)
                 return FALSE;
-            f = new QTextStream(fh, IO_ReadOnly);
+            f.reset(new QTextStream(fh, IO_ReadOnly));
         }
 
         if (DEBUGLEVEL > 0)
             qWarning(i18n("Processing file \'%1\'").arg(file));
     }
     else
-        f = new QTextStream(textBuffer, IO_ReadOnly);
+        f.reset(new QTextStream(textBuffer, IO_ReadOnly));
 
     lineBuf = QString::null;
     currLine = 1;
@@ -391,8 +391,6 @@ Tokenizer::close()
         if (fclose(fh) == EOF)
             return FALSE;
     }
-    else
-        delete f;
 
     return TRUE;
 }
