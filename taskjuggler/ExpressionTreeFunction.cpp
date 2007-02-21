@@ -15,13 +15,11 @@
 #include "Interval.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
-#include "CoreAttributes.h"
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
 #include "Shift.h"
-#include "debug.h"
 #include "tjlib-internal.h"
 
 bool

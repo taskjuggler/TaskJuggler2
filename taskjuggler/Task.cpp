@@ -19,7 +19,6 @@
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "debug.h"
 #include "Resource.h"
 #include "Account.h"
 #include "Project.h"
@@ -31,7 +30,6 @@
 #include "CustomAttributeDefinition.h"
 #include "UsageLimits.h"
 #include "OptimizerRun.h"
-#include "Journal.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& df, int dl) :

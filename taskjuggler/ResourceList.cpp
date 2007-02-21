@@ -14,7 +14,6 @@
 
 #include <stdio.h>
 
-#include "debug.h"
 #include "TjMessageHandler.h"
 #include "ShiftSelection.h"
 #include "Task.h"

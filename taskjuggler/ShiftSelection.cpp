@@ -9,8 +9,8 @@
  *
  * $Id$
  */
+
 #include "ShiftSelection.h"
-#include "Interval.h"
 
 ShiftSelection::ShiftSelection(const ShiftSelection& sl) :
     period(new Interval(*sl.period)),

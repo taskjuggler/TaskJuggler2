@@ -16,7 +16,6 @@
 #include "Project.h"
 #include "Resource.h"
 #include "Utility.h"
-#include "HTMLReportElement.h"
 #include "HTMLTaskReportElement.h"
 #include "TableColumnInfo.h"
 #include "tjlib-internal.h"

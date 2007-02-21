@@ -14,8 +14,6 @@
 #include "Project.h"
 #include "Operation.h"
 #include "Utility.h"
-#include "Token.h"
-#include "Tokenizer.h"
 #include "debug.h"
 #include "ExpressionTree.h"
 #include "tjlib-internal.h"

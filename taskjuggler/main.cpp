@@ -16,7 +16,6 @@
  * $Id$
  */
 
-#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -27,15 +26,12 @@
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "taskjuggler.h"
 #include "debug.h"
 #include "Project.h"
 #include "ProjectFile.h"
-#include "ScenarioList.h"
 #include "Scenario.h"
 #include "Optimizer.h"
 #include "OptimizerRun.h"
-#include "ParserElement.h"
 #include "XMLFile.h"
 #include "kotrus.h"
 

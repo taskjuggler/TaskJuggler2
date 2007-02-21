@@ -13,7 +13,6 @@
 #ifndef _ExpressionParser_h_
 #define _ExpressionParser_h_
 
-#include <qstring.h>
 #include "Tokenizer.h"
 
 class Project;

@@ -13,17 +13,13 @@
 
 #include "kotrus.h"
 
-#include <stdio.h>
-
 #include <qsettings.h>
-#include <qstringlist.h>
 #include <qsqldatabase.h>
 #include <qsqlcursor.h>
 #include <qsqlrecord.h>
 #include <qfileinfo.h>
 #include <qdir.h>
 
-#include "ResourceList.h"
 #include "BookingList.h"
 #include "Task.h"
 #include "Account.h"

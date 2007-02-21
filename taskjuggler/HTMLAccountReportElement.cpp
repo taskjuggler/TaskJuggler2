@@ -15,9 +15,7 @@
 #include "TableLineInfo.h"
 #include "tjlib-internal.h"
 #include "Project.h"
-#include "Report.h"
 #include "Account.h"
-#include "AccountList.h"
 
 HTMLAccountReportElement::HTMLAccountReportElement(Report* r,
                                                    const QString& df,

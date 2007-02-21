@@ -11,7 +11,6 @@
  */
 
 #include "CoreAttributesList.h"
-#include "CoreAttributes.h"
 
 CoreAttributesList::~CoreAttributesList()
 {

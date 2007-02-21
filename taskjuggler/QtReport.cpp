@@ -12,10 +12,7 @@
 
 #include "QtReport.h"
 
-#include <config.h>
-
 #include "Project.h"
-#include "Utility.h"
 
 QtReport::QtReport(Project* p, const QString& f, const QString& df,
                        int dl) :

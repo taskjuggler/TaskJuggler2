@@ -15,7 +15,6 @@
 #define _Project_h_
 
 #include <qobject.h>
-#include <qdict.h>
 #include "config.h"
 #include "VacationList.h"
 #include "ScenarioList.h"

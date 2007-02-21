@@ -11,7 +11,6 @@
  */
 
 #include "Scenario.h"
-#include "ScenarioList.h"
 #include "Project.h"
 
 Scenario::Scenario(Project* p, const QString& i, const QString& n,

@@ -11,7 +11,6 @@
  */
 
 #include "ShiftSelectionList.h"
-#include "ShiftSelection.h"
 
 int
 ShiftSelectionList::compareItems(QCollection::Item i1, QCollection::Item i2)

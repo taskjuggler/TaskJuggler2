@@ -12,7 +12,6 @@
 
 #include "OptimizerRun.h"
 #include "Optimizer.h"
-#include "DecisionNode.h"
 #include "debug.h"
 
 OptimizerRun::OptimizerRun(Optimizer* o) :

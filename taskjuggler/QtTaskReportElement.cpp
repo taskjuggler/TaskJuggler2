@@ -18,9 +18,7 @@
 #include "Report.h"
 #include "Project.h"
 #include "Task.h"
-#include "TaskList.h"
 #include "Resource.h"
-#include "ResourceList.h"
 #include "CoreAttributes.h"
 
 QtTaskReportElement::QtTaskReportElement(Report* r, const QString& df,

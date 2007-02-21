@@ -15,7 +15,6 @@
 #include "Shift.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Task.h"
 #include "VacationInterval.h"
 
 Scenario*

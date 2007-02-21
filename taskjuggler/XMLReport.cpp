@@ -12,24 +12,17 @@
 
 #include "XMLReport.h"
 
-#include <config.h>
 #include <zlib.h>
 
 #include <qfile.h>
 #include <qmap.h>
-#include <qdom.h>
 
 #include "tjlib-internal.h"
-#include "taskjuggler.h"
 #include "Project.h"
 #include "Scenario.h"
-#include "VacationList.h"
-#include "VacationInterval.h"
-#include "Shift.h"
 #include "ShiftSelection.h"
 #include "Task.h"
 #include "Resource.h"
-#include "Booking.h"
 #include "BookingList.h"
 #include "Allocation.h"
 #include "XMLReport.h"

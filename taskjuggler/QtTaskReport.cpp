@@ -11,9 +11,6 @@
  */
 
 #include "QtTaskReport.h"
-
-#include <qfile.h>
-
 #include "QtTaskReportElement.h"
 
 QtTaskReport::QtTaskReport(Project* p, const QString& f, const QString& df,

@@ -12,16 +12,12 @@
 
 #include "QtReportElement.h"
 
-#include <config.h>
-
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Report.h"
-#include "Booking.h"
 #include "BookingList.h"
 #include "Utility.h"
 #include "MacroTable.h"
@@ -31,7 +27,6 @@
 #include "TableCellInfo.h"
 #include "ReferenceAttribute.h"
 #include "TextAttribute.h"
-#include "QtReport.h"
 #include "UsageLimits.h"
 
 QtReportElement::QtReportElement(Report* r, const QString& df, int dl) :

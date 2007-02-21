@@ -12,17 +12,12 @@
 
 #include "Report.h"
 
-#include <config.h>
-#include <stdio.h>
-
-#include "Interval.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Utility.h"
 #include "ExpressionTree.h"
 #include "TaskTreeIterator.h"
 #include "ResourceTreeIterator.h"

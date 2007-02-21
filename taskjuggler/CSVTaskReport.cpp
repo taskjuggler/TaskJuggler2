@@ -12,8 +12,6 @@
 
 #include "CSVTaskReport.h"
 
-#include <qfile.h>
-
 bool
 CSVTaskReport::generate()
 {

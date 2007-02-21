@@ -17,7 +17,6 @@
 #include "Task.h"
 #include "Resource.h"
 #include "Utility.h"
-#include "debug.h"
 #include "ExpressionParser.h"
 #include "ExpressionFunctionTable.h"
 #include "TjMessageHandler.h"

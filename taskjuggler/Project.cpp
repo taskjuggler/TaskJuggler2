@@ -13,14 +13,8 @@
 
 #include "Project.h"
 
-#include <config.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <qdom.h>
-#include <qdict.h>
 
-#include "Interval.h"
-#include "debug.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Scenario.h"
@@ -28,7 +22,6 @@
 #include "Account.h"
 #include "Task.h"
 #include "Resource.h"
-#include "Utility.h"
 #include "VacationInterval.h"
 #include "Optimizer.h"
 #include "OptimizerRun.h"

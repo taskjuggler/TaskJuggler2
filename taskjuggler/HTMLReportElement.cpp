@@ -12,7 +12,6 @@
 
 #include "HTMLReportElement.h"
 
-#include <config.h>
 #include <assert.h>
 
 #include "TjMessageHandler.h"
@@ -21,8 +20,6 @@
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Report.h"
-#include "Booking.h"
 #include "BookingList.h"
 #include "Utility.h"
 #include "MacroTable.h"

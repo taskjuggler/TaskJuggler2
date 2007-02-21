@@ -12,9 +12,6 @@
 
 #include "CSVResourceReport.h"
 
-#include <qfile.h>
-
-
 bool
 CSVResourceReport::generate()
 {

@@ -12,8 +12,6 @@
 
 #include "HTMLReport.h"
 
-#include <config.h>
-
 #include "Project.h"
 #include "Utility.h"
 

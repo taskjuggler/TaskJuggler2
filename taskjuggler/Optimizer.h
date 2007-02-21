@@ -12,9 +12,8 @@
 #ifndef _Optimizer_h_
 #define _Optimizer_h_
 
-#include <qptrlist.h>
+#include "DecisionNode.h"
 
-class DecisionNode;
 class OptimizerRun;
 
 class Optimizer

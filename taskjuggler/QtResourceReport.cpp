@@ -11,9 +11,6 @@
  */
 
 #include "QtResourceReport.h"
-
-#include <qfile.h>
-
 #include "QtResourceReportElement.h"
 
 QtResourceReport::QtResourceReport(Project* p, const QString& f,

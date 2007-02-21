@@ -37,7 +37,6 @@
 #include "ReportXML.h"
 
 #include <qfile.h>
-#include <config.h>
 
 #include "Project.h"
 #include "Task.h"

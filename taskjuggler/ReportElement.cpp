@@ -12,14 +12,7 @@
 
 #include "ReportElement.h"
 
-#include <config.h>
-#include <stdio.h>
-
-#include <qdict.h>
-
 #include "Interval.h"
-#include "TableColumnFormat.h"
-#include "TableColumnInfo.h"
 #include "TableCellInfo.h"
 #include "TableLineInfo.h"
 #include "TjMessageHandler.h"
@@ -29,7 +22,6 @@
 #include "Task.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Utility.h"
 #include "ExpressionTree.h"
 #include "TaskTreeIterator.h"
 #include "ResourceTreeIterator.h"
@@ -37,8 +29,6 @@
 #include "CustomAttributeDefinition.h"
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
-#include "MacroTable.h"
-
 
 ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     ReportElementBase(r),

@@ -11,7 +11,6 @@
  */
 
 #include "VacationList.h"
-#include "VacationInterval.h"
 
 void
 VacationList::add(const QString& name, const Interval& i)

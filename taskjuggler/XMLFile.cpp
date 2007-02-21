@@ -17,13 +17,10 @@
 #include <unistd.h>
 #include <zlib.h>
 
-#include <qdom.h>
 #include <qtextstream.h>
 
 #include "tjlib-internal.h"
-#include "debug.h"
 #include "ParserNode.h"
-#include "ParserElement.h"
 #include "ParserTreeContext.h"
 #include "Project.h"
 #include "Utility.h"
@@ -32,7 +29,6 @@
 #include "Resource.h"
 #include "Account.h"
 #include "Task.h"
-#include "TaskScenario.h"
 #include "Allocation.h"
 #include "VacationInterval.h"
 #include "Booking.h"

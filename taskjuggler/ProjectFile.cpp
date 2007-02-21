@@ -13,16 +13,12 @@
 
 #include "ProjectFile.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qapplication.h>
-#include <qbitarray.h>
 
-#include "debug.h"
-#include "taskjuggler.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
