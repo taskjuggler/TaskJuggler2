@@ -97,9 +97,10 @@ void
 ExpressionTree::errorMessage(const char* msg, ...)
 {
     va_list ap;
-    char* buf = new char[32 + 2 * strlen(msg)];
+    size_t bufsize = 32 + 2 * strlen(msg);
+    char* buf = new char[bufsize];
     va_start(ap, msg);
-    vsnprintf(buf, 1024, msg, ap);
+    vsnprintf(buf, bufsize, msg, ap);
     va_end(ap);
 
     TJMH.errorMessage(buf, defFileName, defLineNo);
