@@ -16,9 +16,6 @@
 #include "HTMLReport.h"
 #include "HTMLResourceReportElement.h"
 
-class Project;
-class HTMLResourceReportElement;
-
 /**
  * @short Stores all information about an HTML resource report.
  * @author Chris Schlaeger <cs@kde.org>
@@ -27,17 +24,17 @@ class HTMLResourceReport : public HTMLReport
 {
 public:
     HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~HTMLResourceReport() { delete tab; }
+    virtual ~HTMLResourceReport() { }
 
     virtual const char* getType() const { return "HTMLResourceReport"; }
 
     bool generate();
-    HTMLResourceReportElement* getTable() { return tab; }
+    HTMLResourceReportElement* getTable() { return &tab; }
 
 private:
     HTMLResourceReport(); // leave unimplemented
 
-    HTMLResourceReportElement* tab;
-} ;
+    HTMLResourceReportElement tab;
+};
 
 #endif

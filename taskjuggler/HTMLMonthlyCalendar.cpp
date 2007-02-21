@@ -23,10 +23,9 @@ HTMLMonthlyCalendar::generate()
         return FALSE;
 
     generateHeader(i18n("Weekly Calendar"));
-    tab->generate();
+    tab.generate();
     generateFooter();
 
     f.close();
     return TRUE;
 }
-

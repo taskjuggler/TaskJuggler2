@@ -19,7 +19,7 @@ CSVTaskReport::generate()
         return FALSE;
 
     generateHeader();
-    tab->generate();
+    tab.generate();
     generateFooter();
 
     f.close();

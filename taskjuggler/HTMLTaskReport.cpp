@@ -12,21 +12,17 @@
 
 #include "HTMLTaskReport.h"
 
-#include <qfile.h>
-
 #include "tjlib-internal.h"
-#include "HTMLTaskReportElement.h"
 
 HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, const QString& df,
                                int dl) :
     HTMLReport(p, f, df, dl),
-    tab(new HTMLTaskReportElement(this, df, dl))
+    tab(this, df, dl)
 {
 }
 
 HTMLTaskReport::~HTMLTaskReport()
 {
-    delete tab;
 }
 
 bool
@@ -36,7 +32,7 @@ HTMLTaskReport::generate()
         return FALSE;
 
     generateHeader(i18n("Task Report"));
-    tab->generate();
+    tab.generate();
     generateFooter();
 
     f.close();

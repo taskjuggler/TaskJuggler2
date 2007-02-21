@@ -14,9 +14,7 @@
 #define _HTMLWeeklyCalendar_h_
 
 #include "HTMLReport.h"
-
-class Project;
-class HTMLWeeklyCalendarElement;
+#include "HTMLWeeklyCalendarElement.h"
 
 class HTMLWeeklyCalendar : public HTMLReport
 {
@@ -27,13 +25,13 @@ public:
     virtual const char* getType() const { return "HTMLWeeklyCalendar"; }
 
     bool generate();
-    HTMLWeeklyCalendarElement* getTable() { return tab; }
+    HTMLWeeklyCalendarElement* getTable() { return &tab; }
 
 private:
     HTMLWeeklyCalendar(); // leave unimplemented
 
-    HTMLWeeklyCalendarElement* tab;
-} ;
+    HTMLWeeklyCalendarElement tab;
+};
 
 #endif
 

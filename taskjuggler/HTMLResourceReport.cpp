@@ -15,12 +15,11 @@
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLResourceReportElement.h"
 
 HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
                                        const QString& df, int dl) :
     HTMLReport(p, f, df, dl),
-    tab(new HTMLResourceReportElement(this, df, dl))
+    tab(this, df, dl)
 {
 }
 
@@ -31,7 +30,7 @@ HTMLResourceReport::generate()
         return FALSE;
 
     generateHeader(i18n("Resource Report"));
-    tab->generate();
+    tab.generate();
     generateFooter();
 
     f.close();

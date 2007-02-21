@@ -15,18 +15,16 @@
 #include <qfile.h>
 
 #include "tjlib-internal.h"
-#include "HTMLWeeklyCalendarElement.h"
 
 HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f,
                                        const QString& df, int dl) :
     HTMLReport(p, f, df, dl),
-    tab(new HTMLWeeklyCalendarElement(this, df, dl))
+    tab(this, df, dl)
 {
 }
 
 HTMLWeeklyCalendar::~HTMLWeeklyCalendar()
 {
-    delete tab;
 }
 
 bool
@@ -36,10 +34,9 @@ HTMLWeeklyCalendar::generate()
         return FALSE;
 
     generateHeader(i18n("Weekly Calendar"));
-    tab->generate();
+    tab.generate();
     generateFooter();
 
     f.close();
     return TRUE;
 }
-

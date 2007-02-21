@@ -16,8 +16,6 @@
 #include "HTMLReport.h"
 #include "HTMLAccountReportElement.h"
 
-class Project;
-
 /**
  * @short Stores all information about an HTML account report.
  * @author Chris Schlaeger <cs@kde.org>
@@ -27,24 +25,22 @@ class HTMLAccountReport : public HTMLReport
 public:
     HTMLAccountReport(Project* p, const QString& f, const QString& df, int dl) :
         HTMLReport(p, f, df, dl),
-        tab(new HTMLAccountReportElement(this, df, dl))
+        tab(this, df, dl)
     { }
 
     virtual ~HTMLAccountReport()
-    {
-        delete tab;
-    }
+    { }
 
 
     virtual const char* getType() const { return "HTMLAccountReport"; }
 
     bool generate();
-    HTMLAccountReportElement* getTable() { return tab; }
+    HTMLAccountReportElement* getTable() { return &tab; }
 
 private:
     HTMLAccountReport(); // leave unimplemented
 
-    HTMLAccountReportElement* tab;
-} ;
+    HTMLAccountReportElement tab;
+};
 
 #endif

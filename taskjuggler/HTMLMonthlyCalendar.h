@@ -23,23 +23,21 @@ class HTMLMonthlyCalendar : public HTMLReport
 public:
     HTMLMonthlyCalendar(Project* p, const QString& f, const QString& df, int dl) :
         HTMLReport(p, f, df, dl),
-        tab(new HTMLMonthlyCalendarElement(this, df, dl))
+        tab(this, df, dl)
     { }
 
     virtual ~HTMLMonthlyCalendar()
-    {
-        delete tab;
-    }
+    { }
 
     virtual const char* getType() const { return "HTMLMonthlyCalendar"; }
 
     bool generate();
-    HTMLMonthlyCalendarElement* getTable() { return tab; }
+    HTMLMonthlyCalendarElement* getTable() { return &tab; }
 
 private:
     HTMLMonthlyCalendar(); // leave unimplemented
 
-    HTMLMonthlyCalendarElement* tab;
+    HTMLMonthlyCalendarElement tab;
 } ;
 
 #endif

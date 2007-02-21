@@ -14,9 +14,7 @@
 #define _HTMLTaskReport_h_
 
 #include "HTMLReport.h"
-
-class Project;
-class HTMLTaskReportElement;
+#include "HTMLTaskReportElement.h"
 
 /**
  * @short Stores all information about an HTML task report.
@@ -31,12 +29,12 @@ public:
     virtual const char* getType() const { return "HTMLTaskReport"; }
 
     bool generate();
-    HTMLTaskReportElement* getTable() { return tab; }
+    HTMLTaskReportElement* getTable() { return &tab; }
 
 private:
     HTMLTaskReport(); // leave unimplemented
 
-    HTMLTaskReportElement* tab;
-} ;
+    HTMLTaskReportElement tab;
+};
 
 #endif

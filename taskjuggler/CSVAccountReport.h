@@ -16,8 +16,6 @@
 #include "CSVReport.h"
 #include "CSVAccountReportElement.h"
 
-class Project;
-
 /**
  * @short Stores all information about an CSV account report.
  * @author Chris Schlaeger <cs@kde.org>
@@ -27,23 +25,21 @@ class CSVAccountReport : public CSVReport
 public:
     CSVAccountReport(Project* p, const QString& f, const QString& df, int dl) :
         CSVReport(p, f, df, dl),
-        tab(new CSVAccountReportElement(this, df, dl))
+        tab(this, df, dl)
     { }
 
     virtual ~CSVAccountReport()
-    {
-        delete tab;
-    }
+    { }
 
     virtual const char* getType() const { return "CSVAccountReport"; }
 
     bool generate();
-    CSVAccountReportElement* getTable() { return tab; }
+    CSVAccountReportElement* getTable() { return &tab; }
 
 private:
     CSVAccountReport(); // leave unimplemented
 
-    CSVAccountReportElement* tab;
-} ;
+    CSVAccountReportElement tab;
+};
 
 #endif

@@ -23,10 +23,9 @@ HTMLAccountReport::generate()
         return FALSE;
 
     generateHeader(i18n("Account Report"));
-    tab->generate();
+    tab.generate();
     generateFooter();
 
     f.close();
     return TRUE;
 }
-
