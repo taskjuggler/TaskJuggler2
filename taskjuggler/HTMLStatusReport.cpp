@@ -23,7 +23,7 @@
 HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
                                    const QString& df, int dl) :
     HTMLReport(p, f, df, dl),
-    tables()
+    tables( 4 )
 {
     // By default this is a weekly status report.
     end = project->getNow();
@@ -37,8 +37,9 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     taskSortCriteria[2] = CoreAttributesList::EndDown;
     setHideResource(new ExpressionTree(new Operation(1)));
 
-    for (int i = 0; i < tablesCount; ++i)
-        tables[i] = new HTMLTaskReportElement(this, df, dl);
+    tables.setAutoDelete( TRUE );
+    for (uint i = 0; i < tables.size(); ++i)
+        tables.insert(i, new HTMLTaskReportElement(this, df, dl));
 
     QString scenarioName = project->getScenarioId(0);
     /* Create table that contains the tasks that should be finished, but
@@ -115,15 +116,11 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
 
 HTMLStatusReport::~HTMLStatusReport()
 {
-    for (int i = 0; i < tablesCount; i++)
-        delete tables[i];
 }
 
 void HTMLStatusReport::setTable(int tabIdx, HTMLReportElement* tab)
 {
-    if (tables[tabIdx] && tables[tabIdx] != tab)
-        delete tables[tabIdx];
-    tables[tabIdx] = tab;
+    tables.insert(tabIdx, tab);
 }
 
 HTMLReportElement*
@@ -144,7 +141,7 @@ HTMLStatusReport::generate()
 
     generateHeader(i18n("Status Report"));
 
-    for (int i = 0; i < tablesCount; ++i)
+    for (uint i = 0; i < tables.size(); ++i)
     {
         tables[i]->generate();
         s << "<br/>" << endl;

@@ -15,6 +15,8 @@
 
 #include "HTMLReport.h"
 
+#include <qptrvector.h>
+
 class Project;
 class TaskList;
 class HTMLReportElement;
@@ -39,8 +41,7 @@ public:
 private:
     HTMLStatusReport(); // leave unimplemented
 
-    static const int tablesCount = 4;
-    HTMLReportElement* tables[tablesCount];
+    QPtrVector< HTMLReportElement > tables;
 } ;
 
 #endif
