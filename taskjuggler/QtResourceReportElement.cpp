@@ -11,17 +11,9 @@
  */
 
 #include "QtResourceReportElement.h"
-#include "TableColumnInfo.h"
-#include "TableLineInfo.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
-#include "Report.h"
 #include "Project.h"
-#include "Task.h"
-#include "TaskList.h"
-#include "Resource.h"
-#include "ResourceList.h"
-#include "CoreAttributes.h"
 
 QtResourceReportElement::QtResourceReportElement(Report* r, const QString& df,
                                              int dl) :

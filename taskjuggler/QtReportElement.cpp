@@ -12,23 +12,6 @@
 
 #include "QtReportElement.h"
 
-#include "TjMessageHandler.h"
-#include "tjlib-internal.h"
-#include "Project.h"
-#include "Task.h"
-#include "Resource.h"
-#include "Account.h"
-#include "BookingList.h"
-#include "Utility.h"
-#include "MacroTable.h"
-#include "TableColumnFormat.h"
-#include "TableLineInfo.h"
-#include "TableColumnInfo.h"
-#include "TableCellInfo.h"
-#include "ReferenceAttribute.h"
-#include "TextAttribute.h"
-#include "UsageLimits.h"
-
 QtReportElement::QtReportElement(Report* r, const QString& df, int dl) :
     ReportElement(r, df, dl)
 {
