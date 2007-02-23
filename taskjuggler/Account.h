@@ -31,7 +31,7 @@ public:
 
     virtual CAType getType() const { return CA_Account; }
 
-    Account* getParent() const { return (Account*) parent; }
+    Account* getParent() const { return static_cast<Account*>(parent); }
 
     AccountListIterator getSubListIterator() const
     {

@@ -35,10 +35,7 @@ public:
     virtual int compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
                                   int level);
 
-    virtual Scenario* operator[](int i)
-    {
-        return (Scenario*) at(i);
-    }
+    virtual Scenario* operator[](int i);
 } ;
 
 /**
@@ -54,7 +51,7 @@ public:
 
     ~ScenarioListIterator() { }
 
-    Scenario* operator*() { return (Scenario*) get(); }
+    Scenario* operator*() { return static_cast<Scenario*>(get()); }
 } ;
 
 #endif

@@ -342,7 +342,7 @@ HTMLWeeklyCalendarElement::generate()
     bool weekStartsMonday = report->getProject()->getWeekStartsMonday();
     s() << "<table align=\"center\" cellpadding=\"2\" "
         << "style=\"background-color:#000000\"";
-    if (((HTMLReport*) report)->hasStyleSheet())
+    if (static_cast<HTMLReport*>(report)->hasStyleSheet())
         s() << " class=\"tj_table\"";
     s() << ">" << endl;
 

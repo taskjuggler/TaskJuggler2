@@ -247,11 +247,11 @@ CoreAttributes::inheritCustomAttributes
             {
             case CAT_Text:
                 addCustomAttribute(cadi.currentKey(), new TextAttribute
-                                   (*((TextAttribute*) custAttr)));
+                                   (*(static_cast<const TextAttribute*>(custAttr))));
                 break;
             case CAT_Reference:
                 addCustomAttribute(cadi.currentKey(), new ReferenceAttribute
-                                   (*((ReferenceAttribute*) custAttr)));
+                                   (*(static_cast<const ReferenceAttribute*>(custAttr))));
                 break;
             default:
                 qFatal("CoreAttributes::inheritCustomAttributes: "

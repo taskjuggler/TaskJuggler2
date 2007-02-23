@@ -22,10 +22,10 @@ public:
         : CoreAttributesTreeIterator(r, m) { }
     virtual ~AccountTreeIterator() { }
 
-    Account* operator*() { return (Account*) current; }
+    Account* operator*() { return static_cast<Account*>(current); }
     Account* operator++()
     {
-        return (Account*) CoreAttributesTreeIterator::operator++();
+        return static_cast<Account*>(CoreAttributesTreeIterator::operator++());
     }
 } ;
 

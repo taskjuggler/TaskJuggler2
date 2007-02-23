@@ -103,7 +103,7 @@ Task::~Task()
 void
 Task::inheritValues()
 {
-    Task* p = (Task*) parent;
+    Task* p = static_cast<Task*>(parent);
     if (p)
     {
         // Inherit flags from parent task.
@@ -1010,7 +1010,7 @@ Task::isCompleted(int sc, time_t date) const
         {
             return (date <=
                     scenarios[sc].start +
-                    (int) ((scenarios[sc].reportedCompletion / 100.0) *
+                    static_cast<int>((scenarios[sc].reportedCompletion / 100.0) *
                            (scenarios[sc].end - scenarios[sc].start)));
         }
     }
@@ -1131,7 +1131,7 @@ Task::getCalcDuration(int sc) const
     if (milestone)
         return 0.0;
 
-    return (double) (scenarios[sc].end + 1 - scenarios[sc].start) / ONEDAY;
+    return static_cast<double>(scenarios[sc].end + 1 - scenarios[sc].start) / ONEDAY;
 }
 
 double
@@ -2885,7 +2885,7 @@ Task::computeBackwardCriticalness(int sc)
                 maxCriticalness = criticalness;
 
     if (parent &&
-        ((criticalness = ((Task*) parent)->computeBackwardCriticalness(sc)) >
+        ((criticalness = static_cast<Task*>(parent)->computeBackwardCriticalness(sc)) >
          maxCriticalness))
         maxCriticalness = criticalness;
 
@@ -2908,7 +2908,7 @@ Task::computeForwardCriticalness(int sc)
                 maxCriticalness = criticalness;
 
     if (parent &&
-        ((criticalness = ((Task*) parent)->computeForwardCriticalness(sc)) >
+        ((criticalness = static_cast<Task*>(parent)->computeForwardCriticalness(sc)) >
          maxCriticalness))
         maxCriticalness = criticalness;
 
@@ -2925,7 +2925,7 @@ Task::checkAndMarkCriticalPath(int sc, double minSlack, time_t maxEnd)
     if (DEBUGPA(3))
         qDebug("Starting critical path search at %s", id.latin1());
 
-    long worstMinSlackTime = (long) ((maxEnd - getStart(sc)) * minSlack);
+    long worstMinSlackTime = static_cast<long>((maxEnd - getStart(sc)) * minSlack);
     analyzePath(sc, minSlack, getStart(sc), 0, worstMinSlackTime);
 }
 
@@ -3086,11 +3086,11 @@ Task::computeBuffers()
         {
             if (scenarios[sc].startBuffer > 0.0)
                 scenarios[sc].startBufferEnd = scenarios[sc].start +
-                    (time_t) ((scenarios[sc].end - scenarios[sc].start) *
+                    static_cast<time_t>((scenarios[sc].end - scenarios[sc].start) *
                               scenarios[sc].startBuffer / 100.0);
             if (scenarios[sc].endBuffer > 0.0)
                 scenarios[sc].endBufferStart = scenarios[sc].end -
-                    (time_t) ((scenarios[sc].end - scenarios[sc].start) *
+                    static_cast<time_t>((scenarios[sc].end - scenarios[sc].start) *
                               scenarios[sc].endBuffer / 100.0);
         }
         else if (length > 0.0)
@@ -3247,7 +3247,7 @@ Task::countMilestones(int sc, time_t now, int& totalMilestones,
         /* A reported completion for a container always overrides the computed
          * completion. */
         if (scenarios[sc].reportedCompletion >= 0.0)
-            reportedCompletedMilestones = (int) (totalMilestones *
+            reportedCompletedMilestones = static_cast<int>(totalMilestones *
                 scenarios[sc].reportedCompletion / 100.0);
 
         return true;
@@ -3710,7 +3710,7 @@ void Task::allocationFromXML( const QDomElement& alloElem  )
             {
                 UsageLimits* limits = new UsageLimits;
                 limits->setDailyMax
-                    ((uint) ((subElem.text().toDouble() *
+                    (static_cast<uint>((subElem.text().toDouble() *
                               project->getDailyWorkingHours() * 3600) /
                              project->getScheduleGranularity()));
                 allocation->setLimits(limits);

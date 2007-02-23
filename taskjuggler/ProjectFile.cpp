@@ -256,7 +256,7 @@ ProjectFile::parse()
                 }
                 UsageLimits* limits = new UsageLimits;
                 limits->setDailyMax
-                    ((uint) ((token.toDouble() *
+                    (static_cast<uint>((token.toDouble() *
                               proj->getDailyWorkingHours() * 3600) /
                              proj->getScheduleGranularity()));
                 proj->setResourceLimits(limits);
@@ -2189,7 +2189,7 @@ ProjectFile::readResourceBody(Resource* r)
             }
             UsageLimits* limits = new UsageLimits;
             limits->setDailyMax
-                ((uint) ((token.toDouble() *
+                (static_cast<uint>((token.toDouble() *
                           proj->getDailyWorkingHours() * 3600) /
                          proj->getScheduleGranularity()));
             r->setLimits(limits);
@@ -2749,7 +2749,7 @@ ProjectFile::readAllocate(Task* t)
                 }
                 UsageLimits* limits = new UsageLimits;
                 limits->setDailyMax
-                    ((uint) ((token.toDouble() *
+                    (static_cast<uint>((token.toDouble() *
                               proj->getDailyWorkingHours() * 3600) /
                              proj->getScheduleGranularity()));
                 if (limits->getDailyMax() == 0)
@@ -2848,7 +2848,7 @@ ProjectFile::readLimits()
             delete limits;
             return 0;
         }
-        uint uval = (uint) ((val * proj->getDailyWorkingHours() * 3600) /
+        uint uval = static_cast<uint>((val * proj->getDailyWorkingHours() * 3600) /
                             proj->getScheduleGranularity());
         if (uval == 0)
         {
@@ -2915,7 +2915,7 @@ ProjectFile::readTimeValue(ulong& value)
         return FALSE;
     }
 
-    value = (ulong) (val.toDouble() * factor);
+    value = static_cast<ulong>(val.toDouble() * factor);
     return TRUE;
 }
 
@@ -3532,17 +3532,17 @@ ProjectFile::readReport(const QString& reportType)
     if (reportType == KW("taskreport"))
     {
         report = new QtTaskReport(proj, token, getFile(), getLine());
-        tab = ((QtTaskReport*) report)->getTable();
+        tab = static_cast<QtTaskReport*>(report)->getTable();
     }
     else if (reportType == KW("resourcereport"))
     {
         report = new QtResourceReport(proj, token, getFile(), getLine());
-        tab = ((QtResourceReport*) report)->getTable();
+        tab = static_cast<QtResourceReport*>(report)->getTable();
     }
 /*    else if (reportType == KW("accountreport"))
     {
         report = new QtReport(proj, token, getFile(), getLine());
-        tab = ((QtReportElement*) report)->getTable();
+        tab = static_cast<QtReportElement*>(report)->getTable();
     }*/
     else
     {
@@ -3806,27 +3806,27 @@ ProjectFile::readHTMLReport(const QString& reportType)
     if (reportType == KW("htmltaskreport"))
     {
         report = new HTMLTaskReport(proj, token, getFile(), getLine());
-        tab = ((HTMLTaskReport*) report)->getTable();
+        tab = static_cast<HTMLTaskReport*>(report)->getTable();
     }
     else if (reportType == KW("htmlresourcereport"))
     {
         report = new HTMLResourceReport(proj, token, getFile(), getLine());
-        tab = ((HTMLResourceReport*) report)->getTable();
+        tab = static_cast<HTMLResourceReport*>(report)->getTable();
     }
     else if (reportType == KW("htmlweeklycalendar"))
     {
         report = new HTMLWeeklyCalendar(proj, token, getFile(), getLine());
-        tab = ((HTMLWeeklyCalendar*) report)->getTable();
+        tab = static_cast<HTMLWeeklyCalendar*>(report)->getTable();
     }
     else if (reportType == KW("htmlmonthlycalendar"))
     {
         report = new HTMLMonthlyCalendar(proj, token, getFile(), getLine());
-        tab = ((HTMLMonthlyCalendar*) report)->getTable();
+        tab = static_cast<HTMLMonthlyCalendar*>(report)->getTable();
     }
     else if (reportType == KW("htmlaccountreport"))
     {
         report = new HTMLAccountReport(proj, token, getFile(), getLine());
-        tab = ((HTMLAccountReport*) report)->getTable();
+        tab = static_cast<HTMLAccountReport*>(report)->getTable();
     }
     else
     {
@@ -4125,11 +4125,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 QBitArray days;
                 if (!readDaysToShow(days))
                     goto exit_error;
-                ((HTMLWeeklyCalendarElement*) tab)->setDaysToShow(days);
+                static_cast<HTMLWeeklyCalendarElement*>(tab)->setDaysToShow(days);
             }
             else if (token == KW("resourcereport"))
             {
-                ((HTMLWeeklyCalendarElement*) tab)->setTaskReport(false);
+                static_cast<HTMLWeeklyCalendarElement*>(tab)->setTaskReport(false);
             }
             else if (token == KW("notimestamp"))
             {
@@ -4273,17 +4273,17 @@ ProjectFile::readCSVReport(const QString& reportType)
     if (reportType == KW("csvtaskreport"))
     {
         report = new CSVTaskReport(proj, token, getFile(), getLine());
-        tab = ((CSVTaskReport*) report)->getTable();
+        tab = static_cast<CSVTaskReport*>(report)->getTable();
     }
     else if (reportType == KW("csvresourcereport"))
     {
         report = new CSVResourceReport(proj, token, getFile(), getLine());
-        tab = ((CSVResourceReport*) report)->getTable();
+        tab = static_cast<CSVResourceReport*>(report)->getTable();
     }
     else if (reportType == KW("csvaccountreport"))
     {
         report = new CSVAccountReport(proj, token, getFile(), getLine());
-        tab = ((CSVAccountReport*) report)->getTable();
+        tab = static_cast<CSVAccountReport*>(report)->getTable();
     }
     else
     {
@@ -5665,7 +5665,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
                 return FALSE;
             /* Set the duration and round it down to be a multiple of the
              * schedule granularity. */
-            td->setGapDuration(scenarioIdx, (((long) (d * 60 * 60 * 24)) /
+            td->setGapDuration(scenarioIdx, ((static_cast<long>(d * 60 * 60 * 24)) /
                                 proj->getScheduleGranularity()) *
                                proj->getScheduleGranularity());
         }
@@ -5676,7 +5676,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
                 return FALSE;
             /* Set the length and round it down to be a multiple of the
              * schedule granularity. */
-            td->setGapLength(scenarioIdx, (((long) (d * 60 * 60 *
+            td->setGapLength(scenarioIdx, ((static_cast<long>(d * 60 * 60 *
                                        proj->getDailyWorkingHours())) /
                               proj->getScheduleGranularity()) *
                              proj->getScheduleGranularity());

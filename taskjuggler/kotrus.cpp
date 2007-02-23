@@ -274,7 +274,7 @@ BookingList Kotrus::loadBookingsDB( const QString& kotrusID,
 
         qDebug("Loaded booking for project " + project );
 
-        Booking *nbook = new Booking( interval, (Task*) 0L);
+        Booking *nbook = new Booking( interval, static_cast<Task*>(0L));
         nbook->setLockTS( ltime );
         nbook->setLockerId( locker );
 

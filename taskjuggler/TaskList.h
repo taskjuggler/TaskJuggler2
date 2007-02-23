@@ -65,7 +65,7 @@ public:
     TaskListIterator(const CoreAttributesList& l) :
         CoreAttributesListIterator(l) { }
     virtual ~TaskListIterator() { }
-    Task* operator*() { return (Task*) get(); }
+    Task* operator*() { return static_cast<Task*>(get()); }
 } ;
 
 #endif

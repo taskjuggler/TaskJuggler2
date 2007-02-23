@@ -28,7 +28,7 @@ public:
 
     virtual CAType getType() const { return CA_Scenario; }
 
-    Scenario* getParent() const { return (Scenario*) parent; }
+    Scenario* getParent() const { return static_cast<Scenario*>(parent); }
 
     ScenarioListIterator getSubListIterator() const;
 

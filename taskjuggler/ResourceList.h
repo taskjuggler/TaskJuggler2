@@ -49,7 +49,7 @@ public:
 
     ~ResourceListIterator() { }
 
-    Resource* operator*() { return (Resource*) get(); }
+    Resource* operator*() { return static_cast<Resource*>(get()); }
 } ;
 
 #endif

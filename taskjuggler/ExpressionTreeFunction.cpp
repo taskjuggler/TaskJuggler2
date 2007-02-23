@@ -112,11 +112,11 @@ ExpressionTreeFunction::hasAssignments(ExpressionTree* et,
         end = et->getCoreAttributes()->getProject()->getEnd();
 
     if (et->getCoreAttributes()->getType() == CA_Task)
-        return ((Task*) et->getCoreAttributes())->getLoad
-            (scenarioId, Interval(start, end), 0) > 0.0;
+        return static_cast<const Task*>(et->getCoreAttributes())
+            ->getLoad(scenarioId, Interval(start, end), 0) > 0.0;
     else
-        return ((Resource*) et->getCoreAttributes())->getLoad
-            (scenarioId, Interval(start, end)) > 0.0;
+        return static_cast<const Resource*>(et->getCoreAttributes())
+            ->getLoad(scenarioId, Interval(start, end)) > 0.0;
 }
 
 long
@@ -228,7 +228,8 @@ ExpressionTreeFunction::isMilestone(ExpressionTree* et,
     if (et->getCoreAttributes()->getType() != CA_Task)
         return 0;
 
-    return ((Task*) et->getCoreAttributes())->isMilestone();
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->isMilestone();
 }
 
 long
@@ -324,7 +325,7 @@ ExpressionTreeFunction::isTaskStatus(ExpressionTree* et,
         ops[1]->setValid();
     }
 
-    return strcmp(stati[((Task*) et->getCoreAttributes())
+    return strcmp(stati[static_cast<const Task*>(et->getCoreAttributes())
                   ->getStatus(scenario)], ops[1]->evalAsString(et)) == 0;
 }
 
@@ -344,8 +345,8 @@ ExpressionTreeFunction::startsBefore(ExpressionTree* et,
         return 0;
     }
 
-    return ((Task*) et->getCoreAttributes())->getStart(scenario) <
-        ops[1]->evalAsTime(et);
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->getStart(scenario) < ops[1]->evalAsTime(et);
 }
 
 long
@@ -364,8 +365,8 @@ ExpressionTreeFunction::startsAfter(ExpressionTree* et,
         return 0;
     }
 
-    return ((Task*) et->getCoreAttributes())->getStart(scenario) >=
-        ops[1]->evalAsTime(et);
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->getStart(scenario) >= ops[1]->evalAsTime(et);
 }
 
 long
@@ -384,8 +385,8 @@ ExpressionTreeFunction::endsBefore(ExpressionTree* et,
         return 0;
     }
 
-    return ((Task*) et->getCoreAttributes())->getEnd(scenario) <
-        ops[1]->evalAsTime(et);
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->getEnd(scenario) < ops[1]->evalAsTime(et);
 }
 
 long
@@ -404,8 +405,8 @@ ExpressionTreeFunction::endsAfter(ExpressionTree* et,
         return 0;
     }
 
-    return ((Task*) et->getCoreAttributes())->getEnd(scenario) >
-        ops[1]->evalAsTime(et);
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->getEnd(scenario) > ops[1]->evalAsTime(et);
 }
 
 long
@@ -424,7 +425,7 @@ ExpressionTreeFunction::isSubTaskOf(ExpressionTree* et,
         return 0;
     }
 
-    return p->isSubTask((Task*) et->getCoreAttributes());
+    return p->isSubTask(const_cast<Task*>(static_cast<const Task*>(et->getCoreAttributes())));
 }
 
 long
@@ -443,7 +444,8 @@ ExpressionTreeFunction::containsTask(ExpressionTree* et,
         return 0;
     }
 
-    return ((Task*) et->getCoreAttributes())->isSubTask(st);
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->isSubTask(st);
 }
 
 long
@@ -466,7 +468,7 @@ ExpressionTreeFunction::isTaskOfProject(ExpressionTree* et,
     }
 
     return ops[0]->evalAsString(et) ==
-        ((Task*) (et->getCoreAttributes()))->getProjectId();
+        static_cast<const Task*> (et->getCoreAttributes())->getProjectId();
 }
 
 long
@@ -506,9 +508,8 @@ ExpressionTreeFunction::isAllocated(ExpressionTree* et,
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
 
-    return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end),
-         QString::null);
+    return static_cast<const Resource*>(et->getCoreAttributes())
+        ->isAllocated (scenarioId, Interval(start, end), QString::null);
 }
 
 long
@@ -539,7 +540,8 @@ ExpressionTreeFunction::isDutyOf(ExpressionTree* et,
         return 0;
     }
 
-    return ((Task*) et->getCoreAttributes())->isDutyOf(scenarioId, resource);
+    return static_cast<const Task *>(et->getCoreAttributes())
+        ->isDutyOf(scenarioId, resource);
 }
 
 long
@@ -588,9 +590,8 @@ ExpressionTreeFunction::isAllocatedToProject(ExpressionTree* et,
     if (et->getCoreAttributes()->getProject()->getEnd() < end)
         end = et->getCoreAttributes()->getProject()->getEnd();
 
-    return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end),
-         ops[0]->evalAsString(et));
+    return static_cast<const Resource*>(et->getCoreAttributes())
+        ->isAllocated (scenarioId, Interval(start, end), ops[0]->evalAsString(et));
 }
 
 long
@@ -611,8 +612,8 @@ ExpressionTreeFunction::isOnCriticalPath(ExpressionTree* et,
         return 0;
     }
 
-    Task* task = ((Task*) et->getCoreAttributes());
-    return task->isOnCriticalPath(scenarioId);
+    return static_cast<const Task*>(et->getCoreAttributes())
+        ->isOnCriticalPath(scenarioId);
 }
 
 long
@@ -647,8 +648,8 @@ ExpressionTreeFunction::isPlanAllocated(ExpressionTree* et,
         return 0;
     }
 
-    return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end),
+    return static_cast<const Resource*>(et->getCoreAttributes())
+        ->isAllocated (scenarioId, Interval(start, end),
          ops[0]->evalAsString(et));
 }
 
@@ -682,8 +683,8 @@ ExpressionTreeFunction::isActualAllocated(ExpressionTree* et,
         return 0;
     }
 
-    return ((Resource*) et->getCoreAttributes())->isAllocated
-        (scenarioId, Interval(start, end),
+    return static_cast<const Resource*>(et->getCoreAttributes())
+        ->isAllocated (scenarioId, Interval(start, end),
          ops[0]->evalAsString(et));
 }
 

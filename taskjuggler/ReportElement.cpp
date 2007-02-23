@@ -1060,10 +1060,10 @@ ReportElement::setPropertyMacros(TableLineInfo* tli,
             switch (custAttr->getType())
             {
                 case CAT_Text:
-                    macroValue = ((TextAttribute*) custAttr)->getText();
+                    macroValue = static_cast<const TextAttribute*>(custAttr)->getText();
                     break;
                 case CAT_Reference:
-                    macroValue = ((ReferenceAttribute*) custAttr)->getURL();
+                    macroValue = static_cast<const ReferenceAttribute*>(custAttr)->getURL();
                     break;
                 default:
                     break;

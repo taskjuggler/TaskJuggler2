@@ -901,13 +901,13 @@ ExportReport::generateCustomAttributeValue(const QString& id,
     switch (ca->getType())
     {
         case CAT_Text:
-            s << "\"" << ((const TextAttribute*) ca)->getText()
+            s << "\"" << (static_cast<const TextAttribute*>(ca))->getText()
                 << "\"" << endl;
             break;
         case CAT_Reference:
             {
                 const ReferenceAttribute* a =
-                    (const ReferenceAttribute*) ca;
+                    static_cast<const ReferenceAttribute*>(ca);
                 s << "\"" << a->getURL() << "\" { label \""
                     << a->getLabel() << "\" }" << endl;
                 break;

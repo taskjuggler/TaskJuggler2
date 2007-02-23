@@ -50,7 +50,7 @@ public:
     ShiftListIterator(const CoreAttributesList& l) :
         CoreAttributesListIterator(l) { }
     virtual ~ShiftListIterator() { }
-    Shift* operator*() { return (Shift*) get(); }
+    Shift* operator*() { return static_cast<Shift*>(get()); }
 } ;
 
 #endif

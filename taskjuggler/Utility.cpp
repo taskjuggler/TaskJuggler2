@@ -895,7 +895,7 @@ int setenv(const char* var, const char* val, int ignore)
    int valLen = strlen(val);
    char *buffer = NULL;
 
-   if ((buffer = (char*) malloc (varLen + valLen + 2)) == NULL)
+   if ((buffer = malloc (varLen + valLen + 2)) == NULL)
       return -1;
 
    sprintf (buffer, "%s=%s", var, val);

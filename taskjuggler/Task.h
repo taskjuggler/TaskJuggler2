@@ -61,7 +61,7 @@ public:
 
     virtual CAType getType() const { return CA_Task; }
 
-    Task* getParent() const { return (Task*) parent; }
+    Task* getParent() const { return static_cast<Task*>(parent); }
 
     TaskListIterator getSubListIterator() const
     {

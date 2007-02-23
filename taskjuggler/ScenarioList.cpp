@@ -20,6 +20,12 @@ ScenarioList::ScenarioList() :
     sorting[1] = CoreAttributesList::IdUp;
 }
 
+Scenario*
+ScenarioList::operator[](int i)
+{
+    return static_cast<Scenario*>(at(i));
+}
+
 bool
 ScenarioList::isSupportedSortingCriteria(int sc)
 {

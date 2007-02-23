@@ -717,8 +717,8 @@ CSVReportElement::genCellText(TableCellInfo* tci)
         return;
     }
 
-    const TextAttribute* ta = (const TextAttribute*)
-        tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
+    const TextAttribute* ta = static_cast<const TextAttribute*>
+        (tci->tli->ca1->getCustomAttribute(tci->tcf->getId()));
     if (!ta || ta->getText().isEmpty())
         genCell("", tci, TRUE);
     else
@@ -875,8 +875,8 @@ CSVReportElement::genCellReference(TableCellInfo* tci)
         return;
     }
 
-    const ReferenceAttribute* ra =  (const ReferenceAttribute*)
-        tci->tli->ca1->getCustomAttribute(tci->tcf->getId());
+    const ReferenceAttribute* ra = static_cast<const ReferenceAttribute*>
+        (tci->tli->ca1->getCustomAttribute(tci->tcf->getId()));
     if (!ra || ra->getURL().isEmpty())
         genCell("", tci, TRUE);
     else

@@ -22,10 +22,10 @@ public:
         : CoreAttributesTreeIterator(r, m) { }
     virtual ~TaskTreeIterator() { }
 
-    Task* operator*() { return (Task*) current; }
+    Task* operator*() { return static_cast<Task*>(current); }
     Task* operator++()
     {
-        return (Task*) CoreAttributesTreeIterator::operator++();
+        return static_cast<Task*>(CoreAttributesTreeIterator::operator++());
     }
 } ;
 

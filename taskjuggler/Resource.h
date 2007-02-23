@@ -44,7 +44,7 @@ public:
 
     virtual CAType getType() const { return CA_Resource; }
 
-    Resource* getParent() const { return (Resource*) parent; }
+    Resource* getParent() const { return static_cast<Resource*>(parent); }
 
     ResourceListIterator getSubListIterator() const
     {

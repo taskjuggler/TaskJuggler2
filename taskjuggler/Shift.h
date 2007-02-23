@@ -35,7 +35,7 @@ public:
 
     virtual CAType getType() const { return CA_Shift; }
 
-    Shift* getParent() const { return (Shift*) parent; }
+    Shift* getParent() const { return static_cast<Shift*>(parent); }
 
     ShiftListIterator getSubListIterator() const;
 

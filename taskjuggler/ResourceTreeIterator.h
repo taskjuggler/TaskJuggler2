@@ -23,10 +23,10 @@ public:
         : T(r, m) { }
     virtual ~ResourceTreeIteratorT() { }
 
-    R* operator*() { return (R*) T::current; }
+    R* operator*() { return static_cast<R*>(T::current); }
     R* operator++()
     {
-        return (R*) T::operator++();
+        return static_cast<R*>(T::operator++());
     }
 } ;
 

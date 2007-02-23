@@ -17,13 +17,13 @@
 #include <qptrlist.h>
 #include <qstring.h>
 
+#include "Scenario.h"
+#include "Shift.h"
+#include "Resource.h"
+#include "Account.h"
+#include "Task.h"
+
 class CoreAttributes;
-class Scenario;
-class Shift;
-class Resource;
-class Account;
-class Task;
-class Resource;
 class TaskScenario;
 class Allocation;
 class VacationInterval;
@@ -49,22 +49,22 @@ public:
     void setCoreAttributes(CoreAttributes* c) { ca = c; }
     CoreAttributes* getCoreAttributes() const { return ca; }
 
-    void setScenario(Scenario* s) { ca = (CoreAttributes*) s; }
+    void setScenario(Scenario* s) { ca = static_cast<CoreAttributes*>(s); }
     Scenario* getScenario() const;
 
     void setWeekday(int day) { weekday = day; }
     int getWeekday() const { return weekday; }
 
-    void setShift(Shift* s) { ca = (CoreAttributes*) s; }
+    void setShift(Shift* s) { ca = static_cast<CoreAttributes*>(s); }
     Shift* getShift() const;
 
-    void setResource(Resource* r) { ca = (CoreAttributes*) r; }
+    void setResource(Resource* r) { ca = static_cast<CoreAttributes*>(r); }
     Resource* getResource() const;
 
-    void setAccount(Account* a) { ca = (CoreAttributes*) a; }
+    void setAccount(Account* a) { ca = static_cast<CoreAttributes*>(a); }
     Account* getAccount() const;
 
-    void setTask(Task* t) { ca = (CoreAttributes*) t; }
+    void setTask(Task* t) { ca = static_cast<CoreAttributes*>(t); }
     Task* getTask() const;
 
     void setScenarioIndex(int i) { scenarioIndex = i; }

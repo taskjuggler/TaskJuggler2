@@ -50,7 +50,7 @@ public:
     AccountListIterator(const CoreAttributesList& l) :
         CoreAttributesListIterator(l) { }
     virtual ~AccountListIterator() { }
-    Account* operator*() { return (Account*) get(); }
+    Account* operator*() { return static_cast<Account*>(get()); }
 } ;
 
 #endif

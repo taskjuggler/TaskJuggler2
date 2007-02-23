@@ -86,7 +86,7 @@ ICalReport::generateTODO(Task* task, ResourceList& resourceList)
     todo->setPriority(1 + ((1000 - task->getPriority()) / 100));
 
     todo->setPercentComplete
-        ((int) (task->getCalcedCompletionDegree(scenarios[0])));
+        (static_cast<int>(task->getCalcedCompletionDegree(scenarios[0])));
 
     /* Resources */
     ResourceListIterator rli = task->getBookedResourcesIterator(scenarios[0]);

@@ -156,7 +156,7 @@ XMLReport::generate()
         return FALSE;
     }
     int bytes;
-    if ((bytes = gzputs(zf, (const char*) (doc->toCString()))) == 0)
+    if ((bytes = gzputs(zf, static_cast<const char*>(doc->toCString()))) == 0)
     {
         qWarning(i18n("Compression of %1 failed").arg(fileName));
         return FALSE;
@@ -697,7 +697,7 @@ XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
             QDomElement cEl = doc->createElement("textAttribute");
             el.appendChild(cEl);
 
-            genTextAttr(&cEl, "text", ((const TextAttribute*) ca)->getText());
+            genTextAttr(&cEl, "text", static_cast<const TextAttribute*>(ca)->getText());
             break;
         }
         case CAT_Reference:
@@ -706,7 +706,7 @@ XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
             el.appendChild(cEl);
 
             const ReferenceAttribute* a =
-                (const ReferenceAttribute*) ca;
+                static_cast<const ReferenceAttribute*>(ca);
             genTextAttr(&cEl, "url", a->getURL());
             genTextAttr(&cEl, "label", a->getLabel());
             break;

@@ -56,8 +56,8 @@ RealFormat::format(double val, bool showZeroFract) const
     text.replace(QChar(' '), QChar('0'));
     if (!fractionSep.isEmpty() && fracDigits > 0)
     {
-        double v = fabs(val) - abs((int) val);
-        int fract = (int) (v * pow(10, fracDigits));
+        double v = fabs(val) - abs(static_cast<int>(val));
+        int fract = static_cast<int>(v * pow(10, fracDigits));
         text += fractionSep + QString("%1").arg(fract);
         /* If showZeroFract is false, we remove all zeros from the right end
          * of the text string. */

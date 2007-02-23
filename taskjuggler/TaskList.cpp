@@ -110,8 +110,8 @@ TaskList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2, int level)
     }
     case CompletedDown:
     {
-        int cd1 = (int) (t1->getCompletionDegree(sortScenario) * 1000);
-        int cd2 = (int) (t2->getCompletionDegree(sortScenario) * 1000);
+        int cd1 = static_cast<int> (t1->getCompletionDegree(sortScenario) * 1000);
+        int cd2 = static_cast<int> (t2->getCompletionDegree(sortScenario) * 1000);
         return cd1 == cd2 ? 0 : cd1 > cd2 ? -1 : 1;
     }
     case PrioUp:

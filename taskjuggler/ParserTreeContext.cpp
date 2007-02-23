@@ -20,36 +20,36 @@
 Scenario*
 ParserTreeContext::getScenario() const
 {
-    return dynamic_cast<Scenario*>(ca);
+    return static_cast<Scenario*>(ca);
 }
 
 Shift*
 ParserTreeContext::getShift() const
 {
-    return dynamic_cast<Shift*>(ca);
+    return static_cast<Shift*>(ca);
 }
 
 Resource*
 ParserTreeContext::getResource() const
 {
-    return dynamic_cast<Resource*>(ca);
+    return static_cast<Resource*>(ca);
 }
 
 Account*
 ParserTreeContext::getAccount() const
 {
-    return dynamic_cast<Account*>(ca);
+    return static_cast<Account*>(ca);
 }
 
 Task*
 ParserTreeContext::getTask() const
 {
-    return dynamic_cast<Task*>(ca);
+    return static_cast<Task*>(ca);
 }
 
 VacationInterval*
 ParserTreeContext::getVacationInterval() const
 {
-    return dynamic_cast<VacationInterval*>(interval);
+    return static_cast<VacationInterval*>(interval);
 }
 
