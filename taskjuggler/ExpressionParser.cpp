@@ -20,50 +20,40 @@
 #include "ExpressionFunctionTable.h"
 
 Operation*
-ExpressionParser::parse(const QString& text, const Project* proj)
+ExpressionParser::parse()
 {
-    tokenizer = new Tokenizer(text);
+    Operation* op( 0 );
 
-    if (!tokenizer->open())
+    if (tokenizer.open())
     {
-        delete tokenizer;
-        tokenizer = 0;
-        return 0;
+        op = parseLogicalExpression(0);
+        if (!tokenizer.close())
+        {
+            delete op;
+            op = 0;
+        }
     }
-
-    Operation* op = parseLogicalExpression(0, proj);
-    if (!tokenizer->close())
-    {
-        delete op;
-        delete tokenizer;
-        tokenizer = 0;
-        return 0;
-    }
-
-    delete tokenizer;
-    tokenizer = 0;
-
     return op;
 }
 
 Operation*
-ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
+ExpressionParser::parseLogicalExpression(int precedence)
 {
     Operation* op;
     QString token;
     TokenType tt;
 
-    tt = tokenizer->nextToken(token);
+    tt = tokenizer.nextToken(token);
     if (DEBUGEX(5))
         qDebug("parseLogicalExpression(%d): %s", precedence, token.latin1());
     if (tt == ID || tt == ABSOLUTE_ID)
     {
         QString lookAhead;
-        if ((tt = tokenizer->nextToken(lookAhead)) == LBRACKET)
+        if ((tt = tokenizer.nextToken(lookAhead)) == LBRACKET)
         {
             if (EFT.isKnownFunction(token))
             {
-                if ((op = parseFunctionCall(token, proj)) == 0)
+                if ((op = parseFunctionCall(token)) == 0)
                 {
                     if (DEBUGEX(5))
                         qDebug("exit after function call");
@@ -78,7 +68,7 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
         }
         else
         {
-            tokenizer->returnToken(tt, lookAhead);
+            tokenizer.returnToken(tt, lookAhead);
             /* We can't test here, whether the ID is known or not. So this has
              * to be checked at evaluation time. */
             op = new Operation(Operation::Id, token);
@@ -105,7 +95,7 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
     }
     else if (tt == TILDE)
     {
-        if ((op = parseLogicalExpression(1, proj)) == 0)
+        if ((op = parseLogicalExpression(1)) == 0)
         {
             if (DEBUGEX(5))
                 qDebug("exit after NOT");
@@ -115,13 +105,13 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
     }
     else if (tt == LBRACKET)
     {
-        if ((op = parseLogicalExpression(0, proj)) == 0)
+        if ((op = parseLogicalExpression(0)) == 0)
         {
             if (DEBUGEX(5))
                 qDebug("exit after ()");
             return 0;
         }
-        if ((tt = tokenizer->nextToken(token)) != RBRACKET)
+        if ((tt = tokenizer.nextToken(token)) != RBRACKET)
         {
             errorMessage(i18n("')' expected"));
             delete op;
@@ -136,46 +126,46 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
 
     if (precedence < 1)
     {
-        tt = tokenizer->nextToken(token);
+        tt = tokenizer.nextToken(token);
         if (DEBUGEX(5))
             qDebug("Second operator %s", token.latin1());
         if (tt == AND)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::And, op2);
         }
         else if (tt == OR)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::Or, op2);
         }
         else if (tt == GREATER)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::Greater, op2);
         }
         else if (tt == SMALLER)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::Smaller, op2);
         }
         else if (tt == EQUAL)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::Equal, op2);
         }
         else if (tt == GREATEROREQUAL)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::GreaterOrEqual, op2);
         }
         else if (tt == SMALLEROREQUAL)
         {
-            Operation* op2 = parseLogicalExpression(0, proj);
+            Operation* op2 = parseLogicalExpression(0);
             op = new Operation(op, Operation::SmallerOrEqual, op2);
         }
         else
-            tokenizer->returnToken(tt, token);
+            tokenizer.returnToken(tt, token);
      }
 
     if (DEBUGEX(5))
@@ -184,7 +174,7 @@ ExpressionParser::parseLogicalExpression(int precedence, const Project* proj)
 }
 
 Operation*
-ExpressionParser::parseFunctionCall(const QString& name, const Project* proj)
+ExpressionParser::parseFunctionCall(const QString& name)
 {
     QString token;
     TokenType tt;
@@ -195,11 +185,11 @@ ExpressionParser::parseFunctionCall(const QString& name, const Project* proj)
         if (DEBUGEX(5))
             qDebug("Reading function '%s' arg %d", name.latin1(), i);
         Operation* op;
-        if ((op = parseLogicalExpression(0, proj)) == 0)
+        if ((op = parseLogicalExpression(0)) == 0)
             return 0;
         args.append(op);
         if ((i < EFT.getArgumentCount(name) - 1) &&
-            tokenizer->nextToken(token) != COMMA)
+            tokenizer.nextToken(token) != COMMA)
         {
             errorMessage(i18n("Comma expected. "
                               "Function '%1' needs %2 arguments.")
@@ -207,7 +197,7 @@ ExpressionParser::parseFunctionCall(const QString& name, const Project* proj)
             return 0;
         }
     }
-    if ((tt = tokenizer->nextToken(token)) != RBRACKET)
+    if ((tt = tokenizer.nextToken(token)) != RBRACKET)
     {
         errorMessage(i18n("')' expected"));
         return 0;
@@ -226,8 +216,6 @@ ExpressionParser::errorMessage(const char* msg, ...)
 {
     va_list ap;
     va_start(ap, msg);
-
-    tokenizer->errorMessageVA(msg, ap);
+    tokenizer.errorMessageVA(msg, ap);
     va_end(ap);
 }
-

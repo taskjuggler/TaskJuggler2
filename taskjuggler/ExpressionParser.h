@@ -27,24 +27,20 @@ class ExpressionTree;
 class ExpressionParser
 {
 public:
-    ExpressionParser() :
-        tokenizer(0)
+    ExpressionParser(const QString& text, const Project* proj) :
+        tokenizer(text), project(proj)
     { }
 
-    ~ExpressionParser()
-    {
-        delete tokenizer;
-    }
-
-    Operation* parse(const QString& text, const Project* proj);
+    Operation* parse();
 
 private:
-    Operation* parseLogicalExpression(int precedence, const Project* proj);
-    Operation* parseFunctionCall(const QString& token, const Project* proj);
+    Operation* parseLogicalExpression(int precedence);
+    Operation* parseFunctionCall(const QString& token);
 
     void errorMessage(const char* msg, ...);
 
-    Tokenizer* tokenizer;
+    Tokenizer tokenizer;
+    const Project* project;
 };
 
 #endif

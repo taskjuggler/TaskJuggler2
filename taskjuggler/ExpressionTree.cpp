@@ -65,8 +65,8 @@ ExpressionTree::~ExpressionTree()
 bool
 ExpressionTree::setTree(const QString& expr, const Project* proj)
 {
-    ExpressionParser parser;
-    return (expression = parser.parse(expr, proj)) != 0;
+    ExpressionParser parser(expr, proj);
+    return (expression = parser.parse()) != 0;
 }
 
 long
