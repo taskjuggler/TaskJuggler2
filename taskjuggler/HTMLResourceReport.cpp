@@ -16,13 +16,6 @@
 
 #include "tjlib-internal.h"
 
-HTMLResourceReport::HTMLResourceReport(Project* p, const QString& f,
-                                       const QString& df, int dl) :
-    HTMLReport(p, f, df, dl),
-    tab(this, df, dl)
-{
-}
-
 bool
 HTMLResourceReport::generate()
 {

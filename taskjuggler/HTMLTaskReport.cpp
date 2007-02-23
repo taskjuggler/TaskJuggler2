@@ -14,17 +14,6 @@
 
 #include "tjlib-internal.h"
 
-HTMLTaskReport::HTMLTaskReport(Project* p, const QString& f, const QString& df,
-                               int dl) :
-    HTMLReport(p, f, df, dl),
-    tab(this, df, dl)
-{
-}
-
-HTMLTaskReport::~HTMLTaskReport()
-{
-}
-
 bool
 HTMLTaskReport::generate()
 {

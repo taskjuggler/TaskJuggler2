@@ -23,8 +23,12 @@
 class HTMLResourceReport : public HTMLReport
 {
 public:
-    HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~HTMLResourceReport() { }
+    HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl) :
+	    HTMLReport(p, f, df, dl ),
+	    tab(this, df, dl)
+    { }
+    virtual ~HTMLResourceReport()
+    { }
 
     virtual const char* getType() const { return "HTMLResourceReport"; }
 

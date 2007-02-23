@@ -16,8 +16,6 @@
 #include "CSVReport.h"
 #include "CSVResourceReportElement.h"
 
-class Project;
-
 /**
  * @short Stores all information about an CSV resource report.
  * @author Chris Schlaeger <cs@kde.org>
@@ -27,7 +25,7 @@ class CSVResourceReport : public CSVReport
 public:
     CSVResourceReport(Project* p, const QString& f, const QString& df, int dl) :
         CSVReport(p, f, df, dl),
-        tab(new CSVResourceReportElement(this, df, dl))
+        tab(this, df, dl)
     { }
 
     virtual ~CSVResourceReport() { }
@@ -35,12 +33,12 @@ public:
     virtual const char* getType() const { return "CSVResourceReport"; }
 
     bool generate();
-    CSVResourceReportElement* getTable() { return tab; }
+    CSVResourceReportElement* getTable() { return &tab; }
 
 private:
     CSVResourceReport(); // leave unimplemented
 
-    CSVResourceReportElement* tab;
+    CSVResourceReportElement tab;
 } ;
 
 #endif

@@ -23,8 +23,12 @@
 class HTMLTaskReport : public HTMLReport
 {
 public:
-    HTMLTaskReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~HTMLTaskReport();
+    HTMLTaskReport(Project* p, const QString& f, const QString& df, int dl) :
+	    HTMLReport(p, f, df, dl),
+	    tab(this, df, dl)
+    { }
+    virtual ~HTMLTaskReport()
+    { }
 
     virtual const char* getType() const { return "HTMLTaskReport"; }
 
