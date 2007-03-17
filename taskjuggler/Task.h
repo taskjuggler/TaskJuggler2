@@ -354,8 +354,6 @@ public:
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
-    void loadFromXML( QDomElement& parent, Project *p );
-    void allocationFromXML( const QDomElement& );
 private:
     /**
      * Checks for loops in task interdependencies starting with the current

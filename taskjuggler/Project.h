@@ -722,9 +722,6 @@ public:
     Report* getReport(uint idx) const;
     QPtrListIterator<Report> getReportListIterator() const;
 
-    bool loadFromXML( const QString& file );
-    void parseDomElem( QDomElement& parentElem );
-
     void addAllowedFlag(QString flag)
     {
         if (!isAllowedFlag(flag))
