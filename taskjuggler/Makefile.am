@@ -15,7 +15,7 @@ TaskList.cpp ResourceList.cpp AccountList.cpp ShiftList.cpp \
 Task.cpp Resource.cpp Account.cpp Shift.cpp \
 Allocation.cpp \
 Journal.cpp \
-MacroTable.cpp FileInfo.cpp ProjectFile.cpp \
+MacroTable.cpp FileInfo.cpp FileToken.cpp ProjectFile.cpp \
 XMLFile.cpp \
 ReportElementBase.cpp ReportElement.cpp Report.cpp ReportXML.cpp \
 QtReportElement.cpp QtReport.cpp \

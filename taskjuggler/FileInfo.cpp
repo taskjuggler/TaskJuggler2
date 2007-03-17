@@ -21,36 +21,43 @@
 #include "ProjectFile.h"
 #include "debug.h"
 
+FileInfo::FileInfo(ProjectFile* p, const QString& file, const QString& tp) :
+    FileToken(file, tp),
+    pf(p),
+    oldLineBuf(),
+    oldLine(0)
+{ }
+
 bool
 FileInfo::open()
 {
-    if (file.right(2) == "/.")
+    if (m_file.right(2) == "/.")
     {
-        f.reset(new QTextStream(stdin, IO_ReadOnly));
-        fh = stdin;
+        m_f.reset(new QTextStream(stdin, IO_ReadOnly));
+        m_fh = stdin;
     }
     else
     {
-        if ((fh = fopen(file, "r")) == 0)
+        if ((m_fh = fopen(m_file, "r")) == 0)
             return FALSE;
-        f.reset(new QTextStream(fh, IO_ReadOnly));
+        m_f.reset(new QTextStream(m_fh, IO_ReadOnly));
     }
 
     if (DEBUGLEVEL > 0)
-        qWarning(i18n("Processing file \'%1\'").arg(file));
+        qWarning(i18n("Processing file \'%1\'").arg(m_file));
 
-    lineBuf = oldLineBuf = QString::null;
-    currLine = oldLine = 1;
+    m_lineBuf = oldLineBuf = QString::null;
+    m_currLine = oldLine = 1;
     return TRUE;
 }
 
 bool
 FileInfo::close()
 {
-    if (fh == stdin)
+    if (m_fh == stdin)
         return TRUE;
 
-    if (fclose(fh) == EOF)
+    if (fclose(m_fh) == EOF)
         return FALSE;
 
     return TRUE;
@@ -61,24 +68,24 @@ FileInfo::getC(bool expandMacros)
 {
  BEGIN:
     QChar c;
-    if (ungetBuf.isEmpty())
+    if (m_ungetBuf.isEmpty())
     {
-        if (feof(fh))
+        if (feof(m_fh))
             c = QChar(EOFile);
         else
         {
-            *f >> c;
+            *m_f >> c;
             if (c == QChar('\r'))
             {
-                if (!feof(fh))
+                if (!feof(m_fh))
                 {
                     // Test for CR/LF Windows line breaks.
                     QChar cb;
-                    *f >> cb;
+                    *m_f >> cb;
                     if (cb != QChar('\n'))
                     {
                         // Probably a MacOS LF only line break
-                        ungetBuf.append(cb);
+                        m_ungetBuf.append(cb);
                     }
                 }
                 c = QChar('\n');
@@ -87,16 +94,16 @@ FileInfo::getC(bool expandMacros)
     }
     else
     {
-        c = ungetBuf.last();
-        ungetBuf.pop_back();
+        c = m_ungetBuf.last();
+        m_ungetBuf.pop_back();
         if (c.unicode() == EOMacro)
         {
-            macroStack.removeLast();
+            m_macroStack.removeLast();
             goto BEGIN;
         }
     }
-    oldLineBuf = lineBuf;
-    lineBuf += c;
+    oldLineBuf = m_lineBuf;
+    m_lineBuf += c;
 
     if (expandMacros)
     {
@@ -105,17 +112,17 @@ FileInfo::getC(bool expandMacros)
             QChar d;
             if ((d = getC(FALSE)) == '{')
             {
-                // remove ${ from lineBuf;
-                oldLineBuf = lineBuf;
-                lineBuf = lineBuf.left(lineBuf.length() - 2);
+                // remove ${ from m_lineBuf;
+                oldLineBuf = m_lineBuf;
+                m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 2);
                 readMacroCall();
                 goto BEGIN;
             }
             else if (d == '(')
             {
-                // remove $( from lineBuf;
-                oldLineBuf = lineBuf;
-                lineBuf = lineBuf.left(lineBuf.length() - 2);
+                // remove $( from m_lineBuf;
+                oldLineBuf = m_lineBuf;
+                m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 2);
                 readEnvironment();
                 goto BEGIN;
             }
@@ -141,47 +148,19 @@ FileInfo::getC(bool expandMacros)
 void
 FileInfo::ungetC(QChar c)
 {
-    oldLineBuf = lineBuf;
-    lineBuf = lineBuf.left(lineBuf.length() - 1);
-    ungetBuf.append(c);
-}
-
-bool
-FileInfo::getDateFragment(QString& token, QChar& c)
-{
-    token += c;
-    c = getC();
-    // c must be a digit
-    if (!c.isDigit())
-    {
-        errorMessage(i18n("Corrupted date"));
-        return FALSE;
-    }
-    token += c;
-    // read other digits
-    while ((c = getC()).unicode() != EOFile && c.isDigit())
-        token += c;
-
-    return TRUE;
-}
-
-QString
-FileInfo::getPath() const
-{
-    if (file.find('/') >= 0)
-        return file.left(file.findRev('/') + 1);
-    else
-        return "";
+    oldLineBuf = m_lineBuf;
+    m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 1);
+    m_ungetBuf.append(c);
 }
 
 TokenType
 FileInfo::nextToken(QString& token)
 {
-    if (tokenTypeBuf != INVALID)
+    if (m_tokenTypeBuf != INVALID)
     {
-        token = tokenBuf;
-        TokenType tt = tokenTypeBuf;
-        tokenTypeBuf = INVALID;
+        token = m_tokenBuf;
+        TokenType tt = m_tokenTypeBuf;
+        m_tokenTypeBuf = INVALID;
         return tt;
     }
 
@@ -207,15 +186,15 @@ FileInfo::nextToken(QString& token)
                 {
                     if (c == '\n')
                     {
-                        oldLine = currLine;
-                        currLine++;
+                        oldLine = m_currLine;
+                        m_currLine++;
                     }
                     while ((c = getC(FALSE)) != '*')
                     {
                         if (c == '\n')
                         {
-                            oldLine = currLine;
-                            currLine++;
+                            oldLine = m_currLine;
+                            m_currLine++;
                         }
                         else if (c.unicode() == EOFile)
                         {
@@ -243,13 +222,13 @@ FileInfo::nextToken(QString& token)
             // break missing on purpose
         case '\n':
             // Increase line counter only when not replaying a macro.
-            if (macroStack.isEmpty())
+            if (m_macroStack.isEmpty())
             {
-                oldLine = currLine;
-                currLine++;
+                oldLine = m_currLine;
+                m_currLine++;
             }
-            oldLineBuf = lineBuf;
-            lineBuf = "";
+            oldLineBuf = m_lineBuf;
+            m_lineBuf = "";
             break;
         default:
             ungetC(c);
@@ -362,10 +341,10 @@ FileInfo::nextToken(QString& token)
             while ((c = getC()).unicode() != EOFile &&
                    (escape || (c != delimiter)))
             {
-                if ((c == '\n') && macroStack.isEmpty())
+                if ((c == '\n') && m_macroStack.isEmpty())
                 {
-                    oldLine = currLine;
-                    currLine++;
+                    oldLine = m_currLine;
+                    m_currLine++;
                 }
                 if (c == '\\' && !escape)
                     escape = true;
@@ -395,8 +374,8 @@ FileInfo::nextToken(QString& token)
                     nesting--;
                 if (c == '\n')
                 {
-                    oldLine = currLine;
-                    currLine++;			// macroStack.isEmpty ??
+                    oldLine = m_currLine;
+                    m_currLine++; // m_macroStack.isEmpty ??
                 }
                 token += c;
             }
@@ -468,121 +447,6 @@ FileInfo::nextToken(QString& token)
     }
 }
 
-bool
-FileInfo::readMacroCall()
-{
-    QString id;
-    TokenType tt;
-    /* For error reporting we need to replace the macro call with the macro
-     * text. So we save a copy of the current line buf (the ${ has already
-     * been removed) and copy it over the lineBuf again after we have read the
-     * complete macro call. */
-    QString lineBufCopy = lineBuf;
-    QString prefix;
-    if ((tt = nextToken(id)) == QUESTIONMARK)
-    {
-        prefix = "?";
-    }
-    else
-        returnToken(tt, id);
-
-    if ((tt = nextToken(id)) != ID && tt != INTEGER)
-    {
-        errorMessage(i18n("Macro ID expected"));
-        return FALSE;
-    }
-    id = prefix + id;
-
-    QString token;
-    // Store all arguments in a newly created string list.
-    QStringList sl(id);
-    while ((tt = nextToken(token)) == STRING || tt == ID)
-        sl.append(token);
-    if (tt != RBRACE)
-    {
-        errorMessage(i18n("'}' expected"));
-        return FALSE;
-    }
-
-    // expand the macro
-    pf->getMacros().setLocation(file, currLine);
-    QString macro = pf->getMacros().resolve(&sl);
-
-    if (macro.isNull() && prefix.isEmpty())
-        return FALSE;
-
-    lineBuf = lineBufCopy;
-
-    // Push pointer to macro on stack. Needed for error handling.
-    macroStack.append(pf->getMacros().getMacro(id));
-
-    // mark end of macro
-    ungetBuf.append(QChar(EOMacro));
-    // push expanded macro reverse into ungetC buffer.
-    for (int i = macro.length() - 1; i >= 0; --i)
-        ungetBuf.append(macro[i].latin1());
-    return TRUE;
-}
-
-bool
-FileInfo::readEnvironment()
-{
-    QString id;
-
-    if (nextToken(id) != ID)
-    {
-        errorMessage(i18n("Environment name expected"));
-        return FALSE;
-    }
-
-    QString token;
-    if (nextToken(token) != RBRACKET)
-    {
-        errorMessage(i18n("')' expected"));
-        return FALSE;
-    }
-
-    char *value = getenv (id.ascii());
-
-    if (value != 0)
-    {
-        id = value;
-    }
-    else
-    {
-        id = "";
-    }
-
-    // push expanded macro reverse into ungetC buffer.
-    for (int i = id.length() - 1; i >= 0; --i)
-        ungetBuf.append(id[i].latin1());
-
-    return TRUE;
-}
-
-void
-FileInfo::returnToken(TokenType tt, const QString& buf)
-{
-    if (tokenTypeBuf != INVALID)
-    {
-        qFatal("Internal Error: Token buffer overflow!");
-        return;
-    }
-    tokenTypeBuf = tt;
-    tokenBuf = buf;
-}
-
-QString
-FileInfo::cleanupLine(const QString& line)
-{
-    QString res;
-    for (uint i = 0; i < line.length(); ++i)
-        if (line[i] != QChar(EOMacro))
-            res += line[i];
-
-    return res;
-}
-
 void
 FileInfo::errorMessage(const char* msg, ...)
 {
@@ -592,16 +456,16 @@ FileInfo::errorMessage(const char* msg, ...)
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
 
-    if (macroStack.isEmpty())
+    if (m_macroStack.isEmpty())
     {
-        if (tokenTypeBuf == INVALID)
+        if (m_tokenTypeBuf == INVALID)
             TJMH.errorMessage(QString("%1\n%2").arg(buf)
-                              .arg(cleanupLine(lineBuf)),
-                              file, currLine);
+                              .arg(cleanupLine(m_lineBuf)),
+                              m_file, m_currLine);
         else
             TJMH.errorMessage(QString("%1\n%2").arg(buf)
                               .arg(cleanupLine(oldLineBuf)),
-                              file, oldLine);
+                              m_file, oldLine);
     }
     else
     {
@@ -609,7 +473,7 @@ FileInfo::errorMessage(const char* msg, ...)
         int i = 0;
         QString file;
         int line = 0;
-        for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
+        for (QPtrListIterator<Macro> mli(m_macroStack); *mli; ++mli, ++i)
         {
             stackDump += "\n  ${" + (*mli)->getName() + " ... }";
 
@@ -618,17 +482,22 @@ FileInfo::errorMessage(const char* msg, ...)
         }
         TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
                                "\nThis is the macro call stack:%3").
-                          arg(buf).arg(cleanupLine(lineBuf)).arg(stackDump),
+                          arg(buf).arg(cleanupLine(m_lineBuf)).arg(stackDump),
                           file, line);
     }
 }
 
-void
-FileInfo::errorMessageVA(const char* msg, va_list ap)
+void FileInfo::setLocation(const QString& df, int dl)
 {
-    char buf[1024];
-    vsnprintf(buf, 1024, msg, ap);
-
-    errorMessage("%s", buf);
+    pf->getMacros().setLocation(df, dl);
 }
 
+QString FileInfo::resolve(const QStringList* argList)
+{
+    return pf->getMacros().resolve(argList);
+}
+
+Macro* FileInfo::getMacro(const QString& name) const
+{
+    return pf->getMacros().getMacro(name);
+}

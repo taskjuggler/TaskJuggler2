@@ -21,46 +21,34 @@
 #include "ProjectFile.h"
 #include "debug.h"
 
-Tokenizer::Tokenizer(const QString& file_, MacroTable* mt_, const QString& tp) :
+Tokenizer::Tokenizer(const QString& file, MacroTable* mt_, const QString& tp) :
+    FileToken(file, tp),
     mt(mt_),
-    file(file_),
-    fh(0),
-    textBuffer(QString::null),
-    f(0),
-    currLine(0),
-    macroStack(),
-    lineBuf(),
-    ungetBuf(),
-    tokenTypeBuf(INVALID),
-    tokenBuf(),
-    taskPrefix(tp)
+    textBuffer(QString::null)
 {
 }
+#if 0
+    FileToken(file, tp),
+    m_mt(mt),
+    m_textBuffer(QString::null)
+{ }
+#endif
 
 Tokenizer::Tokenizer(const QString& buf) :
+    FileToken(),
     mt(0),
-    file(),
-    fh(0),
-    textBuffer(buf),
-    f(0),
-    currLine(0),
-    macroStack(),
-    lineBuf(),
-    ungetBuf(),
-    tokenTypeBuf(INVALID),
-    tokenBuf(),
-    taskPrefix()
+    textBuffer(buf)
 {
 }
 
 TokenType
 Tokenizer::nextToken(QString& token)
 {
-    if (tokenTypeBuf != INVALID)
+    if (m_tokenTypeBuf != INVALID)
     {
-        token = tokenBuf;
-        TokenType tt = tokenTypeBuf;
-        tokenTypeBuf = INVALID;
+        token = m_tokenBuf;
+        TokenType tt = m_tokenTypeBuf;
+        m_tokenTypeBuf = INVALID;
         return tt;
     }
 
@@ -87,7 +75,7 @@ Tokenizer::nextToken(QString& token)
                     while ((c = getC(FALSE)) != '*')
                     {
                         if (c == '\n')
-                            currLine++;
+                            m_currLine++;
                         else if (c.unicode() == EOFile)
                         {
                             errorMessage(i18n("Unterminated comment"));
@@ -114,9 +102,9 @@ Tokenizer::nextToken(QString& token)
             // break missing on purpose
         case '\n':
             // Increase line counter only when not replaying a macro.
-            if (macroStack.isEmpty())
-                currLine++;
-            lineBuf = "";
+            if (m_macroStack.isEmpty())
+                m_currLine++;
+            m_lineBuf = "";
             break;
         default:
             ungetC(c);
@@ -226,8 +214,8 @@ Tokenizer::nextToken(QString& token)
             // single quoted string
             while ((c = getC()).unicode() != EOFile && c != '\'')
             {
-                if ((c == '\n') && macroStack.isEmpty())
-                    currLine++;
+                if ((c == '\n') && m_macroStack.isEmpty())
+                    m_currLine++;
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -242,8 +230,8 @@ Tokenizer::nextToken(QString& token)
             // double quoted string
             while ((c = getC()).unicode() != EOFile && c != '"')
             {
-                if ((c == '\n') && macroStack.isEmpty())
-                    currLine++;
+                if ((c == '\n') && m_macroStack.isEmpty())
+                    m_currLine++;
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -265,7 +253,7 @@ Tokenizer::nextToken(QString& token)
                 else if (c == ']')
                     nesting--;
                 if (c == '\n')
-                    currLine++;			// macroStack.isEmpty ??
+                    m_currLine++; // m_macroStack.isEmpty ??
                 token += c;
             }
             if (c.unicode() == EOFile)
@@ -336,49 +324,37 @@ Tokenizer::nextToken(QString& token)
     }
 }
 
-void
-Tokenizer::returnToken(TokenType tt, const QString& buf)
-{
-    if (tokenTypeBuf != INVALID)
-    {
-        qFatal("Internal Error: Token buffer overflow!");
-        return;
-    }
-    tokenTypeBuf = tt;
-    tokenBuf = buf;
-}
-
 bool
 Tokenizer::open()
 {
-    if (!file.isEmpty())
+    if (!m_file.isEmpty())
     {
         /* The calling functions always prepend the name of the parent file or
          * the current directory of the application. We use '.' as name for
          * reading stdin. So in this case the last 2 characters of the file
          * name are "/.". */
-        if (file.right(2) == "/.")
+        if (m_file.right(2) == "/.")
         {
             // read from stdin
-            f.reset(new QTextStream(stdin, IO_ReadOnly));
-            fh = stdin;
+            m_f.reset(new QTextStream(stdin, IO_ReadOnly));
+            m_fh = stdin;
         }
         else
         {
             // read from file system
-            if ((fh = fopen(file, "r")) == 0)
+            if ((m_fh = fopen(m_file, "r")) == 0)
                 return FALSE;
-            f.reset(new QTextStream(fh, IO_ReadOnly));
+            m_f.reset(new QTextStream(m_fh, IO_ReadOnly));
         }
 
         if (DEBUGLEVEL > 0)
-            qWarning(i18n("Processing file \'%1\'").arg(file));
+            qWarning(i18n("Processing file \'%1\'").arg(m_file));
     }
     else
-        f.reset(new QTextStream(textBuffer, IO_ReadOnly));
+        m_f.reset(new QTextStream(textBuffer, IO_ReadOnly));
 
-    lineBuf = QString::null;
-    currLine = 1;
+    m_lineBuf = QString::null;
+    m_currLine = 1;
 
     return TRUE;
 }
@@ -386,12 +362,12 @@ Tokenizer::open()
 bool
 Tokenizer::close()
 {
-    if (!file.isEmpty())
+    if (!m_file.isEmpty())
     {
-        if (fh == stdin)
+        if (m_fh == stdin)
             return TRUE;
 
-        if (fclose(fh) == EOF)
+        if (fclose(m_fh) == EOF)
             return FALSE;
     }
 
@@ -403,24 +379,24 @@ Tokenizer::getC(bool expandMacros)
 {
  BEGIN:
     QChar c;
-    if (ungetBuf.isEmpty())
+    if (m_ungetBuf.isEmpty())
     {
-        if (f->atEnd())
+        if (m_f->atEnd())
             c = QChar(EOFile);
         else
         {
-            *f >> c;
+            *m_f >> c;
             if (c == QChar('\r'))
             {
-                if (!f->atEnd())
+                if (!m_f->atEnd())
                 {
                     // Test for CR/LF Windows line breaks.
                     QChar cb;
-                    *f >> cb;
+                    *m_f >> cb;
                     if (cb != QChar('\n'))
                     {
                         // Probably a MacOS LF only line break
-                        ungetBuf.append(cb);
+                        m_ungetBuf.append(cb);
                     }
                 }
                 c = QChar('\n');
@@ -429,15 +405,15 @@ Tokenizer::getC(bool expandMacros)
     }
     else
     {
-        c = ungetBuf.last();
-        ungetBuf.pop_back();
+        c = m_ungetBuf.last();
+        m_ungetBuf.pop_back();
         if (c.unicode() == EOMacro)
         {
-            macroStack.removeLast();
+            m_macroStack.removeLast();
             goto BEGIN;
         }
     }
-    lineBuf += c;
+    m_lineBuf += c;
 
     if (expandMacros)
     {
@@ -446,15 +422,15 @@ Tokenizer::getC(bool expandMacros)
             QChar d;
             if ((d = getC(FALSE)) == '{')
             {
-                // remove ${ from lineBuf;
-                lineBuf = lineBuf.left(lineBuf.length() - 2);
+                // remove ${ from m_lineBuf;
+                m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 2);
                 readMacroCall();
                 goto BEGIN;
             }
             else if (d == '(')
             {
-                // remove $( from lineBuf;
-                lineBuf = lineBuf.left(lineBuf.length() - 2);
+                // remove $( from m_lineBuf;
+                m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 2);
                 readEnvironment();
                 goto BEGIN;
             }
@@ -480,138 +456,8 @@ Tokenizer::getC(bool expandMacros)
 void
 Tokenizer::ungetC(QChar c)
 {
-    lineBuf = lineBuf.left(lineBuf.length() - 1);
-    ungetBuf.append(c);
-}
-
-bool
-Tokenizer::getDateFragment(QString& token, QChar& c)
-{
-    token += c;
-    c = getC();
-    // c must be a digit
-    if (!c.isDigit())
-    {
-        errorMessage(i18n("Corrupted date"));
-        return FALSE;
-    }
-    token += c;
-    // read other digits
-    while ((c = getC()).unicode() != EOFile && c.isDigit())
-        token += c;
-
-    return TRUE;
-}
-
-QString
-Tokenizer::getPath() const
-{
-    if (file.find('/') >= 0)
-        return file.left(file.findRev('/') + 1);
-    else
-        return "";
-}
-
-bool
-Tokenizer::readMacroCall()
-{
-    QString id;
-    TokenType tt;
-    /* For error reporting we need to replace the macro call with the macro
-     * text. So we save a copy of the current line buf (the ${ has already
-     * been removed) and copy it over the lineBuf again after we have read the
-     * complete macro call. */
-    QString lineBufCopy = lineBuf;
-    QString prefix;
-    if ((tt = nextToken(id)) == QUESTIONMARK)
-    {
-        prefix = "?";
-    }
-    else
-        returnToken(tt, id);
-
-    if ((tt = nextToken(id)) != ID && tt != INTEGER)
-    {
-        errorMessage(i18n("Macro ID expected"));
-        return FALSE;
-    }
-    id = prefix + id;
-
-    QString token;
-    // Store all arguments in a newly created string list.
-    QStringList sl(id);
-    while ((tt = nextToken(token)) == STRING || tt == ID)
-        sl.append(token);
-    if (tt != RBRACE)
-    {
-        errorMessage(i18n("'}' expected"));
-        return FALSE;
-    }
-
-    // expand the macro
-    mt->setLocation(file, currLine);
-    QString macro = mt->resolve(&sl);
-
-    if (macro.isNull() && prefix.isEmpty())
-    {
-        return FALSE;
-    }
-
-    lineBuf = lineBufCopy;
-
-    // Push pointer to macro on stack. Needed for error handling.
-    macroStack.append(mt->getMacro(id));
-
-    // mark end of macro
-    ungetBuf.append(QChar(EOMacro));
-    // push expanded macro reverse into ungetC buffer.
-    for (int i = macro.length() - 1; i >= 0; --i)
-        ungetBuf.append(macro[i].latin1());
-
-    return TRUE;
-}
-
-bool
-Tokenizer::readEnvironment()
-{
-    QString id;
-
-    if (nextToken(id) != ID)
-    {
-        errorMessage(i18n("Environment name expected"));
-        return FALSE;
-    }
-
-    QString token;
-    if (nextToken(token) != RBRACKET)
-    {
-        errorMessage(i18n("')' expected"));
-        return FALSE;
-    }
-
-    char *value = getenv (id.ascii());
-
-    if (value != 0)
-        id = value;
-    else
-        id = "";
-
-    // push expanded macro reverse into ungetC buffer.
-    for (int i = id.length() - 1; i >= 0; --i)
-        ungetBuf.append(id[i].latin1());
-
-    return TRUE;
-}
-
-QString
-Tokenizer::cleanupLine(const QString& line)
-{
-    QString res;
-    for (uint i = 0; i < line.length(); ++i)
-        if (line[i] != QChar(EOMacro))
-            res += line[i];
-
-    return res;
+    m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 1);
+    m_ungetBuf.append(c);
 }
 
 void
@@ -623,16 +469,16 @@ Tokenizer::errorMessage(const char* msg, ...)
     vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
 
-    if (macroStack.isEmpty())
-        TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(lineBuf)),
-                          file, currLine);
+    if (m_macroStack.isEmpty())
+        TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(m_lineBuf)),
+                          m_file, m_currLine);
     else
     {
         QString stackDump;
         int i = 0;
         QString file;
         int line = 0;
-        for (QPtrListIterator<Macro> mli(macroStack); *mli; ++mli, ++i)
+        for (QPtrListIterator<Macro> mli(m_macroStack); *mli; ++mli, ++i)
         {
             stackDump += "\n  ${" + (*mli)->getName() + " ... }";
 
@@ -641,17 +487,22 @@ Tokenizer::errorMessage(const char* msg, ...)
         }
         TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
                                "\nThis is the macro call stack:%3").
-                          arg(buf).arg(cleanupLine(lineBuf)).arg(stackDump),
+                          arg(buf).arg(cleanupLine(m_lineBuf)).arg(stackDump),
                           file, line);
     }
 }
 
-void
-Tokenizer::errorMessageVA(const char* msg, va_list ap)
+void Tokenizer::setLocation(const QString& df, int dl)
 {
-    char buf[1024];
-    vsnprintf(buf, 1024, msg, ap);
-
-    errorMessage("%s", buf);
+    mt->setLocation(df, dl);
 }
 
+QString Tokenizer::resolve(const QStringList* argList)
+{
+    return mt->resolve(argList);
+}
+
+Macro* Tokenizer::getMacro(const QString& name) const
+{
+    return mt->getMacro(name);
+}
