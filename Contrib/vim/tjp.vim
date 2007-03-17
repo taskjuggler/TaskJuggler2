@@ -164,10 +164,6 @@ syn keyword tjspkeyword isTask
 syn keyword tjspkeyword isTaskOfProject
 syn keyword tjspkeyword isTaskStatus
 syn keyword tjspkeyword journalentry
-syn keyword tjspkeyword kotrusid
-syn keyword tjspkeyword kotrusiddown
-syn keyword tjspkeyword kotrusidup
-syn keyword tjspkeyword kotrusmode
 syn keyword tjspkeyword label
 syn keyword tjspkeyword late
 syn keyword tjspkeyword length
@@ -204,7 +200,6 @@ syn keyword tjspkeyword name
 syn keyword tjspkeyword namedown
 syn keyword tjspkeyword nameup
 syn keyword tjspkeyword no
-syn keyword tjspkeyword nokotrus
 syn keyword tjspkeyword note
 syn keyword tjspkeyword notimestamp
 syn keyword tjspkeyword notstarted

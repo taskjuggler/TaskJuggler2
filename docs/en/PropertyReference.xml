@@ -180,8 +180,7 @@ reports should be specified.</para></descr>
 of tasks or the whole project. Account declaration may be nested, but
 only the top level accounts may have a type attribute specified. An
 account that has sub-accounts may not have a <link
-linkend="PROPERTY_credit">credit</link> or a <link
-linkend="PROPERTY_kotrusid">kotrusid</link>.  sub-accounts inherit
+linkend="PROPERTY_credit">credit</link>.  sub-accounts inherit
 this type.</para></descr>
   <attributes>
    <attr name="id" type="ID">
@@ -195,7 +194,6 @@ this type.</para></descr>
   <optattributes>
    <optattr>account</optattr>
    <optattr>credit</optattr>
-   <optattr>kotrusid</optattr>
   </optattributes>
   <seealso>
    <also>csvaccountreport</also>
@@ -463,9 +461,6 @@ file processing, the report macros must be prefixed with an additional
    <member>The index of a task. The index is calculated from the
    hierarchical structure of the list as well as the start and end dates.
    </member>
-   
-   <member><varname>kotrusid</varname></member>
-   <member>The KotrRUs ID of the resource</member>
    
    <member><varname>maxeffort</varname></member>
    <member>The maximum daily load wanted for the resource</member>
@@ -1428,13 +1423,6 @@ is defined within the included file.</para></descr> <attributes>
   </seealso>
   <example>&example_journalentry;</example>
  </property>
- <property name="kotrusid" id="kotrusid" inheritable="Yes">
-  <descr><para>The KoTrus ID of the account (cost object). This is a
-special reserved keyword.</para></descr>
-  <attributes>
-    <attr name="id" type="STRING"/>
-  </attributes>
- </property>
  <property name="label" id="label" inheritable="No">
   <descr><para>Specifies the text for the URL in HTML reports. If no
   label is specified, the URL will be displayed. If a label has been
@@ -2055,7 +2043,6 @@ name="name" type="STRING"/> </attributes>
    <optattr>efficiency</optattr>
    <optattr>flags</optattr>
    <optattr>journalentry</optattr>
-   <optattr>kotrusid</optattr>
    <optattr>maxeffort</optattr>
    <optattr>limits</optattr>
    <optattr>rate</optattr>

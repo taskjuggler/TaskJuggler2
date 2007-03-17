@@ -83,8 +83,6 @@
         <item> inherit </item>
         <item> inprogress </item>
         <item> journalentry </item>
-        <item> kotrusid </item>
-        <item> kotrusmode </item>
         <item> label </item>
         <item> late </item>
         <item> length </item>
@@ -103,7 +101,6 @@
         <item> monthlymax </item>
         <item> name </item>
         <item> no </item>
-        <item> nokotrus </item>
         <item> note </item>
         <item> notimestamp </item>
         <item> notstarted </item>
@@ -239,8 +236,6 @@
         <item> isTask </item>
         <item> isTaskOfProject </item>
         <item> isTaskStatus </item>
-        <item> kotrusiddown </item>
-        <item> kotrusidup </item>
         <item> longauto </item>
         <item> maxeffortdown </item>
         <item> maxeffortup </item>

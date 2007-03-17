@@ -524,10 +524,6 @@ only.</member>
 <member>--warnerror</member>
 <member>Warnings are treated as errors.</member>
 
-<member>--updatedb</member>
-<member>Update the Kotrus database with the new resource usage
-information.</member>
-
 </simplelist></para>
 
 <para>Calling TaskJuggler with . as input filename will cause reading

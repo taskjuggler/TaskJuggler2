@@ -427,8 +427,6 @@ msgid ""
 "                          is printed\n"
 "   --dbmode N           - activate debug mode only for certain\n"
 "                          parts of the code\n"
-"   --updatedb           - update the Kotrus database with the\n"
-"                          new resource usage information\n"
 msgstr ""
 
 #: main.cpp:93
@@ -606,10 +604,6 @@ msgstr ""
 msgid ""
 "ERROR: The keyword 'xmltaskreport' is deprecated. Please use the keyword "
 "'xmlreport' instead."
-msgstr ""
-
-#: ProjectFile.cpp:496
-msgid "Unknown kotrus mode"
 msgstr ""
 
 #: ProjectFile.cpp:512
@@ -1393,10 +1387,6 @@ msgstr ""
 
 #: ReportElement.cpp:272
 msgid "Status"
-msgstr ""
-
-#: ReportElement.cpp:278
-msgid "Kotrus ID"
 msgstr ""
 
 #: ReportElement.cpp:282

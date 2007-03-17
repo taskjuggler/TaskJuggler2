@@ -218,18 +218,6 @@
           </para>
         </listitem>
       </varlistentry>
-      <varlistentry>
-        <term>
-          <option>
-             --updatedb
-          </option>
-        </term>
-        <listitem>
-          <para>
-             update the Kotrus database with the new resource usage information
-          </para>
-        </listitem>
-      </varlistentry>
     </variablelist>
   </refsect1>
   <refsect1>
