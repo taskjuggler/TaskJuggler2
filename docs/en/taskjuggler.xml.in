@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.3//EN" "/usr/share/xml/docbook/schema/dtd/4.3/docbookx.dtd" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" [
  <!ENTITY ChangeLog SYSTEM "ChangeLog.xml">
  <!ENTITY FirstProject SYSTEM "FirstProject.xml">
  <!ENTITY UsageGuide SYSTEM "UsageGuide.xml">
