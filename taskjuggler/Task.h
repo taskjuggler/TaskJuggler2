@@ -337,8 +337,6 @@ public:
     time_t nextSlot(time_t slotDuration) const;
     bool isReadyForScheduling() const;
     bool schedule(int sc, time_t& reqStart, time_t duration);
-    void propagateStart(int sc, time_t date);
-    void propagateEnd(int sc, time_t date);
     void propagateInitialValues(int sc);
     void setRunaway();
     bool isRunaway() const;
@@ -353,6 +351,8 @@ public:
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
 private:
+    void propagateStart(int sc, time_t date);
+    void propagateEnd(int sc, time_t date);
     /**
      * Checks for loops in task interdependencies starting with the current
      * task under ASAP or ALAP scheduling.
