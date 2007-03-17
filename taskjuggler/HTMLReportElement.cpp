@@ -111,7 +111,7 @@ HTMLReportElement::generateTableHeader()
     s() << "  </tr>" << endl;
 
     // Header line 2
-    bool first = TRUE;
+    bool first = true;
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
         if (columnFormat[(*it)->getName()])
@@ -123,7 +123,7 @@ HTMLReportElement::generateTableHeader()
                     if (static_cast<HTMLReport*>(report)->hasStyleSheet())
                         s() << " class=\"tj_header_row\"";
                     s() << ">" << endl;
-                    first = FALSE;
+                    first = false;
                 }
 
                 TableCellInfo tci(columnFormat[(*it)->getName()], 0, *it);
@@ -412,7 +412,7 @@ HTMLReportElement::reportTaskLoad(double load, TableCellInfo* tci,
     {
         tci->setStatusText("");
     }
-    genCell(text, tci, FALSE);
+    genCell(text, tci, false);
 }
 
 void
@@ -435,7 +435,7 @@ HTMLReportElement::reportResourceLoad(double load, TableCellInfo* tci,
     {
         tci->setStatusText("");
     }
-    genCell(text, tci, FALSE);
+    genCell(text, tci, false);
 }
 
 void
@@ -445,7 +445,7 @@ HTMLReportElement::reportCurrency(double value, TableCellInfo* tci,
     tci->setStatusText(time2user(iv_start, "%Y-%m-%d / [") +
                        tci->tli->account->getId() + "] " +
                        htmlFilter(tci->tli->account->getName()));
-    genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
+    genCell(tci->tcf->realFormat.format(value, tci), tci, false);
 }
 
 void
@@ -510,7 +510,7 @@ HTMLReportElement::generateRightIndented(TableCellInfo* tci, const QString& str)
     tci->setRightPadding(2 + topIndent +
                          (maxDepth - 1 - tci->tli->ca1->treeLevel()) *
                          subIndent);
-    genCell(str, tci, FALSE);
+    genCell(str, tci, false);
 }
 
 void
@@ -894,7 +894,7 @@ HTMLReportElement::genHeadYear(TableCellInfo* tci)
 void
 HTMLReportElement::genCellEmpty(TableCellInfo* tci)
 {
-    genCell("", tci, TRUE);
+    genCell("", tci, true);
 }
 
 void
@@ -902,21 +902,21 @@ HTMLReportElement::genCellSequenceNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getSequenceNo()) :
-            QString::null, tci, TRUE);
+            QString::null, tci, true);
 }
 
 void
 HTMLReportElement::genCellNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ? QString().sprintf("%d.", tci->tli->idxNo) :
-            QString::null, tci, TRUE);
+            QString::null, tci, true);
 }
 
 void
 HTMLReportElement::genCellHierarchNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchNo() : QString::null, tci, TRUE);
+            tci->tli->ca1->getHierarchNo() : QString::null, tci, true);
 }
 
 void
@@ -924,20 +924,20 @@ HTMLReportElement::genCellIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
             QString().sprintf("%d.", tci->tli->ca1->getIndex()) :
-            QString::null, tci, TRUE);
+            QString::null, tci, true);
 }
 
 void
 HTMLReportElement::genCellHierarchIndex(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?
-            tci->tli->ca1->getHierarchIndex() : QString::null, tci, TRUE);
+            tci->tli->ca1->getHierarchIndex() : QString::null, tci, true);
 }
 
 void
 HTMLReportElement::genCellId(TableCellInfo* tci)
 {
-    genCell(tci->tli->ca1->getId(), tci, TRUE);
+    genCell(tci->tli->ca1->getId(), tci, true);
 }
 
 void
@@ -984,7 +984,7 @@ HTMLReportElement::genCellName(TableCellInfo* tci)
     }
     else
         text = tci->tli->specialName;
-    genCell(text, tci, TRUE);
+    genCell(text, tci, true);
 }
 
 void
@@ -993,7 +993,7 @@ HTMLReportElement::genCellStart(TableCellInfo* tci)
     if (!tci->tli->task->isStartOk(tci->tli->sc))
         tci->setBgColor(colors.getColor("error"));
     genCell(time2user(tci->tli->task->getStart(tci->tli->sc), timeFormat),
-            tci, FALSE);
+            tci, false);
 }
 
 void
@@ -1002,7 +1002,7 @@ HTMLReportElement::genCellEnd(TableCellInfo* tci)
     if (!tci->tli->task->isEndOk(tci->tli->sc))
         tci->setBgColor(colors.getColor("error"));
     genCell(time2user(tci->tli->task->getEnd(tci->tli->sc) + 1, timeFormat),
-            tci, FALSE);
+            tci, false);
 }
 
 #define GCMMSE(a, b) \
@@ -1011,7 +1011,7 @@ HTMLReportElement::genCell##a(TableCellInfo* tci) \
 { \
     genCell(tci->tli->task->get##a(tci->tli->sc) == 0 ? QString() : \
             time2user(tci->tli->task->get##a(tci->tli->sc) + b, timeFormat), \
-            tci, FALSE); \
+            tci, false); \
 }
 
 GCMMSE(MinStart, 0)
@@ -1025,7 +1025,7 @@ HTMLReportElement::genCell##a##Buffer(TableCellInfo* tci) \
 { \
     genCell(QString().sprintf \
             ("%3.0f", tci->tli->task->get##a##Buffer(tci->tli->sc)), \
-            tci, FALSE); \
+            tci, false); \
 }
 
 GCSEBUFFER(Start)
@@ -1035,14 +1035,14 @@ void
 HTMLReportElement::genCellStartBufferEnd(TableCellInfo* tci)
 {
     genCell(time2user(tci->tli->task->getStartBufferEnd
-                         (tci->tli->sc), timeFormat), tci, FALSE);
+                         (tci->tli->sc), timeFormat), tci, false);
 }
 
 void
 HTMLReportElement::genCellEndBufferStart(TableCellInfo* tci)
 {
     genCell(time2user(tci->tli->task->getStartBufferEnd
-                      (tci->tli->sc) + 1, timeFormat), tci, FALSE);
+                      (tci->tli->sc) + 1, timeFormat), tci, false);
 }
 
 void
@@ -1050,7 +1050,7 @@ HTMLReportElement::genCellDuration(TableCellInfo* tci)
 {
     genCell(scaledDuration(tci->tli->task->getCalcDuration(tci->tli->sc),
                            tci->tcf->realFormat),
-            tci, FALSE);
+            tci, false);
 }
 
 void
@@ -1127,14 +1127,14 @@ HTMLReportElement::genCellProjectId(TableCellInfo* tci)
     genCell(tci->tli->task->getProjectId() + " (" +
             report->getProject()->getIdIndex(tci->tli->task->
                                              getProjectId()) + ")", tci,
-            TRUE);
+            true);
 }
 
 void
 HTMLReportElement::genCellProjectIDs(TableCellInfo* tci)
 {
     genCell(tci->tli->resource->getProjectIDs(tci->tli->sc,
-                                              Interval(start, end)), tci, TRUE);
+                                              Interval(start, end)), tci, true);
 }
 
 void
@@ -1150,7 +1150,7 @@ HTMLReportElement::genCellResources(TableCellInfo* tci)
 
         text += (*rli)->getName();
     }
-    genCell(text, tci, FALSE);
+    genCell(text, tci, false);
 }
 
 void
@@ -1158,9 +1158,9 @@ HTMLReportElement::genCellResponsible(TableCellInfo* tci)
 {
     if (tci->tli->task->getResponsible())
         genCell(tci->tli->task->getResponsible()->getName(),
-                tci, TRUE);
+                tci, true);
     else
-        genCell("", tci, TRUE);
+        genCell("", tci, true);
 }
 
 void
@@ -1169,28 +1169,28 @@ HTMLReportElement::genCellText(TableCellInfo* tci)
     if (tci->tcf->getId() == "note")
     {
         if (tci->tli->task->getNote().isEmpty())
-            genCell("", tci, TRUE);
+            genCell("", tci, true);
         else
-            genCell(tci->tli->task->getNote(), tci, TRUE);
+            genCell(tci->tli->task->getNote(), tci, true);
         return;
     }
 
     const TextAttribute* ta = static_cast<const TextAttribute*>
         (tci->tli->ca1->getCustomAttribute(tci->tcf->getId()));
     if (!ta || ta->getText().isEmpty())
-        genCell("", tci, TRUE);
+        genCell("", tci, true);
     else
-        genCell(ta->getText(), tci, TRUE);
+        genCell(ta->getText(), tci, true);
 }
 
 void
 HTMLReportElement::genCellStatusNote(TableCellInfo* tci)
 {
     if (tci->tli->task->getStatusNote(tci->tli->sc).isEmpty())
-        genCell("", tci, TRUE);
+        genCell("", tci, true);
     else
         genCell(tci->tli->task->getStatusNote(tci->tli->sc),
-                tci, TRUE);
+                tci, true);
 }
 
 void
@@ -1252,7 +1252,7 @@ void
 HTMLReportElement::genCellPriority(TableCellInfo* tci)
 {
     genCell(QString().sprintf("%d", tci->tli->task->getPriority()),
-            tci, TRUE);
+            tci, true);
 }
 
 void
@@ -1267,7 +1267,7 @@ HTMLReportElement::genCellFlags(TableCellInfo* tci)
             flagStr += ", ";
         flagStr += *it;
     }
-    genCell(flagStr, tci, TRUE);
+    genCell(flagStr, tci, true);
 }
 
 void
@@ -1282,13 +1282,13 @@ HTMLReportElement::genCellCompleted(TableCellInfo* tci)
     {
         if (calcedCompletionDegree == providedCompletionDegree)
         {
-            genCell(QString(i18n("in progress")), tci, FALSE);
+            genCell(QString(i18n("in progress")), tci, false);
         }
         else
         {
             genCell(QString(i18n("%1% (in progress)"))
                     .arg((int) providedCompletionDegree),
-                    tci, FALSE);
+                    tci, false);
         }
     }
     else
@@ -1296,14 +1296,14 @@ HTMLReportElement::genCellCompleted(TableCellInfo* tci)
         if (calcedCompletionDegree == providedCompletionDegree)
         {
             genCell(QString("%1%").arg((int) providedCompletionDegree),
-                    tci, FALSE);
+                    tci, false);
         }
         else
         {
             genCell(QString("%1% (%2%)")
                     .arg((int) providedCompletionDegree)
                     .arg((int) calcedCompletionDegree),
-                    tci, FALSE);
+                    tci, false);
         }
     }
 }
@@ -1311,7 +1311,7 @@ HTMLReportElement::genCellCompleted(TableCellInfo* tci)
 void
 HTMLReportElement::genCellStatus(TableCellInfo* tci)
 {
-    genCell(tci->tli->task->getStatusText(tci->tli->sc), tci, FALSE);
+    genCell(tci->tli->task->getStatusText(tci->tli->sc), tci, false);
 }
 
 void
@@ -1320,7 +1320,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
     if (tci->tcf->getId() == "reference")
     {
         if (tci->tli->task->getReference().isEmpty())
-            genCell("", tci, TRUE);
+            genCell("", tci, true);
         else
         {
             QString text ="<a href=\"" + tci->tli->task->getReference() + "\">";
@@ -1329,7 +1329,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
             else
                 text += htmlFilter(tci->tli->task->getReferenceLabel());
             text += "</a>";
-            genCell(text, tci, TRUE, FALSE);
+            genCell(text, tci, true, false);
         }
         return;
     }
@@ -1337,7 +1337,7 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
     const ReferenceAttribute* ra = static_cast<const ReferenceAttribute*>
         (tci->tli->ca1->getCustomAttribute(tci->tcf->getId()));
     if (!ra || ra->getURL().isEmpty())
-        genCell("", tci, TRUE);
+        genCell("", tci, true);
     else
     {
         QString text ="<a href=\"" + ra->getURL() + "\">";
@@ -1346,14 +1346,14 @@ HTMLReportElement::genCellReference(TableCellInfo* tci)
         else
             text += htmlFilter(ra->getLabel());
         text += "</a>";
-        genCell(text, tci, TRUE, FALSE);
+        genCell(text, tci, true, false);
     }
 }
 
 void
 HTMLReportElement::genCellScenario(TableCellInfo* tci)
 {
-    genCell(report->getProject()->getScenarioName(tci->tli->sc), tci, FALSE);
+    genCell(report->getProject()->getScenarioName(tci->tli->sc), tci, false);
 }
 
 #define GCDEPFOL(a, b) \
@@ -1368,7 +1368,7 @@ HTMLReportElement::genCell##a(TableCellInfo* tci) \
             text += ", "; \
         text += (*it)->getId(); \
     } \
-    genCell(text, tci, TRUE); \
+    genCell(text, tci, true); \
 }
 
 GCDEPFOL(Depends, Previous)
@@ -1550,13 +1550,13 @@ HTMLReportElement::genCellAccountFunc(TableCellInfo* tci,
 void
 HTMLReportElement::genCellDailyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, TRUE, midnight, sameTimeNextDay);
+    genCellTaskFunc(tci, true, midnight, sameTimeNextDay);
 }
 
 void
 HTMLReportElement::genCellDailyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, TRUE, midnight, sameTimeNextDay);
+    genCellResourceFunc(tci, true, midnight, sameTimeNextDay);
 }
 
 void
@@ -1575,7 +1575,7 @@ HTMLReportElement::genCellWeeklyTask(TableCellInfo* tci)
         Interval period = Interval(week, sameTimeNextWeek(week) - 1);
         double load = tci->tli->task->getLoad(tci->tli->sc, period,
                                               tci->tli->resource);
-        QColor bgCol = selectTaskBgColor(tci, load, period, FALSE);
+        QColor bgCol = selectTaskBgColor(tci, load, period, false);
 
         int runLength = 1;
         if (!tci->tli->task->isActive(tci->tli->sc, period))
@@ -1590,7 +1590,7 @@ HTMLReportElement::genCellWeeklyTask(TableCellInfo* tci)
                                                            periodProbe,
                                                            tci->tli->resource);
                 QColor bgColProbe = selectTaskBgColor(tci, loadProbe,
-                                                      periodProbe, FALSE);
+                                                      periodProbe, false);
                 if (load != loadProbe || bgCol != bgColProbe)
                     break;
                 lastEndWeek = endWeek;
@@ -1615,7 +1615,7 @@ HTMLReportElement::genCellWeeklyResource(TableCellInfo* tci)
         Interval period = Interval(week, sameTimeNextWeek(week) - 1);
         double load = tci->tli->resource->getLoad(tci->tli->sc, period,
                                                   AllAccounts, tci->tli->task);
-        QColor bgCol = selectResourceBgColor(tci, load, period, FALSE);
+        QColor bgCol = selectResourceBgColor(tci, load, period, false);
 
         int runLength = 1;
         if (load == 0.0)
@@ -1630,7 +1630,7 @@ HTMLReportElement::genCellWeeklyResource(TableCellInfo* tci)
                     tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
                                                 AllAccounts, tci->tli->task);
                 QColor bgColProbe = selectResourceBgColor(tci, loadProbe,
-                                                          periodProbe, FALSE);
+                                                          periodProbe, false);
                 if (load != loadProbe || bgCol != bgColProbe)
                     break;
                 lastEndWeek = endWeek;
@@ -1665,13 +1665,13 @@ HTMLReportElement::genCellWeeklyAccount(TableCellInfo* tci)
 void
 HTMLReportElement::genCellMonthlyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, FALSE, beginOfMonth, sameTimeNextMonth);
+    genCellTaskFunc(tci, false, beginOfMonth, sameTimeNextMonth);
 }
 
 void
 HTMLReportElement::genCellMonthlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, FALSE, beginOfMonth, sameTimeNextMonth);
+    genCellResourceFunc(tci, false, beginOfMonth, sameTimeNextMonth);
 }
 
 void
@@ -1683,13 +1683,13 @@ HTMLReportElement::genCellMonthlyAccount(TableCellInfo* tci)
 void
 HTMLReportElement::genCellQuarterlyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, FALSE, beginOfQuarter, sameTimeNextQuarter);
+    genCellTaskFunc(tci, false, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
 HTMLReportElement::genCellQuarterlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, FALSE, beginOfQuarter, sameTimeNextQuarter);
+    genCellResourceFunc(tci, false, beginOfQuarter, sameTimeNextQuarter);
 }
 
 void
@@ -1701,13 +1701,13 @@ HTMLReportElement::genCellQuarterlyAccount(TableCellInfo* tci)
 void
 HTMLReportElement::genCellYearlyTask(TableCellInfo* tci)
 {
-    genCellTaskFunc(tci, FALSE, beginOfYear, sameTimeNextYear);
+    genCellTaskFunc(tci, false, beginOfYear, sameTimeNextYear);
 }
 
 void
 HTMLReportElement::genCellYearlyResource(TableCellInfo* tci)
 {
-    genCellResourceFunc(tci, FALSE, beginOfYear, sameTimeNextYear);
+    genCellResourceFunc(tci, false, beginOfYear, sameTimeNextYear);
 }
 
 void
@@ -1730,7 +1730,7 @@ HTMLReportElement::genCellResponsibilities(TableCellInfo* tci)
             text += (*it)->getId();
         }
     }
-    genCell(text, tci, TRUE);
+    genCell(text, tci, true);
 }
 
 void
@@ -1741,7 +1741,7 @@ HTMLReportElement::genCellSchedule(TableCellInfo* tci)
     if (tci->tli->resource)
     {
         BookingList jobs = tci->tli->resource->getJobs(tci->tli->sc);
-        jobs.setAutoDelete(TRUE);
+        jobs.setAutoDelete(true);
         time_t prevTime = 0;
         Interval reportPeriod(start, end);
         s() << "    <table style=\"width:150px; font-size:100%; "
@@ -1798,8 +1798,8 @@ void \
 HTMLReportElement::genCell##a##Effort(TableCellInfo* tci) \
 { \
     genCell(tci->tcf->realFormat.format \
-            (tci->tli->resource->get##a##Effort(), FALSE), \
-            tci, TRUE); \
+            (tci->tli->resource->get##a##Effort(), false), \
+            tci, true); \
 }
 
 GCEFFORT(Min)
@@ -1809,28 +1809,28 @@ HTMLReportElement::genCellMaxEffort(TableCellInfo* tci)
 {
     genCell(tci->tcf->realFormat.format
             (tci->tli->resource->getLimits() ?
-             tci->tli->resource->getLimits()->getDailyMax() : 0, FALSE),
-            tci, TRUE);
+             tci->tli->resource->getLimits()->getDailyMax() : 0, false),
+            tci, true);
 }
 
 void
 HTMLReportElement::genCellEfficiency(TableCellInfo* tci)
 {
     genCell(tci->tcf->realFormat.format(tci->tli->resource->getEfficiency(),
-                                        tci), tci, TRUE);
+                                        tci), tci, true);
 }
 
 void
 HTMLReportElement::genCellRate(TableCellInfo* tci)
 {
     genCell(tci->tcf->realFormat.format(tci->tli->resource->getRate(), tci),
-            tci, TRUE);
+            tci, true);
 }
 
 void
 HTMLReportElement::genCellKotrusId(TableCellInfo* tci)
 {
-    genCell(tci->tli->resource->getKotrusId(), tci, TRUE);
+    genCell(tci->tli->resource->getKotrusId(), tci, true);
 }
 
 void
@@ -1840,7 +1840,7 @@ HTMLReportElement::genCellTotal(TableCellInfo* tci)
                                                 Interval(start, end));
     if (tci->tli->account->isLeaf())
         tci->tci->addToSum(tci->tli->sc, "total", value);
-    genCell(tci->tcf->realFormat.format(value, tci), tci, FALSE);
+    genCell(tci->tcf->realFormat.format(value, tci), tci, false);
 }
 
 void
@@ -1860,7 +1860,7 @@ HTMLReportElement::genCellSummary(TableCellInfo* tci)
                 val += *it;
             else
                 val = *it;
-            genCell(tci->tcf->realFormat.format(val, tci), tci, FALSE);
+            genCell(tci->tcf->realFormat.format(val, tci), tci, false);
         }
     }
     else
@@ -1869,9 +1869,9 @@ HTMLReportElement::genCellSummary(TableCellInfo* tci)
         // column cases.
         if (tci->tci->getSubColumns() > 0)
             for (uint col = 0; col < tci->tci->getSubColumns(); ++col)
-                genCell(tci->tcf->realFormat.format(0.0, tci), tci, FALSE);
+                genCell(tci->tcf->realFormat.format(0.0, tci), tci, false);
         else
-            genCell(tci->tcf->realFormat.format(0.0, tci), tci, FALSE);
+            genCell(tci->tcf->realFormat.format(0.0, tci), tci, false);
     }
 }
 

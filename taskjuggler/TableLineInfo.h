@@ -33,7 +33,7 @@ public:
         account(0),
         idxNo(0),
         bgCol(),
-        boldText(FALSE),
+        boldText(false),
         fontFactor(100),
         specialName()
     { }

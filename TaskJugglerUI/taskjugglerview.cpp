@@ -78,7 +78,7 @@
 TaskJugglerView::TaskJugglerView(QWidget *parent)
     : DCOPObject("TaskJugglerIface"), QWidget(parent)
 {
-    TJMH.setConsoleMode(FALSE);
+    TJMH.setConsoleMode(false);
 
     // setup our layout manager to automatically add our widgets
     QHBoxLayout *top_layout = new QHBoxLayout(this);
@@ -96,7 +96,7 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     mw->fileListViewSearch->setListView(mw->fileListView);
 
     project = 0;
-    loadingProject = FALSE;
+    loadingProject = false;
 
     loadDelayTimer = new QTimer(this);
 
@@ -177,7 +177,7 @@ TaskJugglerView::TaskJugglerView(QWidget *parent)
     KStatusBar* statusBar = (static_cast<KMainWindow*>(parent))->statusBar();
     progressBar = new QProgressBar(statusBar);
     progressBar->setMaximumSize(150, progressBar->maximumHeight());
-    statusBar->addWidget(progressBar, 0, TRUE);
+    statusBar->addWidget(progressBar, 0, true);
 
     // Add icons to the toolbox tab headers
     mw->listViews->setItemIconSet(mw->listViews->indexOf(mw->tasksPage),
@@ -489,9 +489,9 @@ TaskJugglerView::openURL(KURL url)
      * So the GUI won't show up before all files are loaded and scheduled.
      * With a timer we delay the load so we are sure app->exec has been
      * called. */
-    loadDelayTimer->start(200, TRUE);
+    loadDelayTimer->start(200, true);
     urlToLoad = url;
-    showReportAfterLoad = TRUE;
+    showReportAfterLoad = true;
 }
 
 void
@@ -569,7 +569,7 @@ TaskJugglerView::schedule()
     if (vl[1] > 0)
         editorSplitterSizes = vl;
 
-    showReportAfterLoad = TRUE;
+    showReportAfterLoad = true;
     loadProject(fileManager->getMasterFileURL());
 }
 
@@ -655,14 +655,14 @@ TaskJugglerView::loadProject(const KURL& url)
     {
         kdDebug() << "TaskJugglerView::loadProject(): Project loading flag is "
                                                       "already set" << endl;
-        return TRUE;
+        return true;
     }
 
     QString fileName = url.path();
 
     delete project;
     project = 0;
-    setLoadingProject(TRUE);
+    setLoadingProject(true);
     project = new Project();
     connect(project, SIGNAL(updateProgressInfo(const QString&)),
             this, SLOT(showProgressInfo(const QString&)));
@@ -672,16 +672,16 @@ TaskJugglerView::loadProject(const KURL& url)
     ProjectFile* pf = new ProjectFile(project);
     (dynamic_cast<TaskJuggler*>(parent()))->enableActions(false);
     setCursor(KCursor::waitCursor());
-    if (!pf->open(fileName, "", "", TRUE))
+    if (!pf->open(fileName, "", "", true))
     {
         KMessageBox::error(this, i18n("Cannot open file %1.")
                            .arg(url.prettyURL()),
                            i18n("Error loading Project") );
         setCursor(KCursor::arrowCursor());
         (dynamic_cast<TaskJuggler*>(parent()))->enableActions(true);
-        setLoadingProject(FALSE);
+        setLoadingProject(false);
         delete pf;
-        return FALSE;
+        return false;
     }
 
     emit announceRecentURL(url);
@@ -719,7 +719,7 @@ TaskJugglerView::loadProject(const KURL& url)
 
     setCursor(KCursor::arrowCursor());
     (dynamic_cast<TaskJuggler*>(parent()))->enableActions(true);
-    setLoadingProject(FALSE);
+    setLoadingProject(false);
 
     // Show message list when errors have occured
     QValueList<int> vl;
@@ -777,21 +777,21 @@ TaskJugglerView::loadProject(const KURL& url)
             showEditor();
     }
 
-    return TRUE;
+    return true;
 }
 
 void
 TaskJugglerView::addWarningMessage(const QString& msg, const QString& file,
                                    int line)
 {
-    addMessage(msg, file, line, FALSE);
+    addMessage(msg, file, line, false);
 }
 
 void
 TaskJugglerView::addErrorMessage(const QString& msg, const QString& file,
                                  int line)
 {
-    addMessage(msg, file, line, TRUE);
+    addMessage(msg, file, line, true);
 }
 
 void
@@ -833,7 +833,7 @@ TaskJugglerView::addMessage(const QString& msg, const QString& file,
                     (mw->messageListView, "", textLine, "", "",
                      QString().sprintf("%03d", ++messageCounter));
 
-            parent->setOpen(TRUE);
+            parent->setOpen(true);
             parent->setPixmap(0, KGlobal::iconLoader()->
                               loadIcon(error ? "tj_error" : "tj_warning",
                                        KIcon::Small));
@@ -958,7 +958,7 @@ TaskJugglerView::focusBigTab(QWidget*)
             if (fileManager->getCurrentFile())
                 windowCaption +=
                     fileManager->getCurrentFile()->getUniqueName();
-            fileManager->enableEditorActions(TRUE);
+            fileManager->enableEditorActions(true);
             mw->listViews->setCurrentIndex(lastBrowserUsedWithEditor);
             fileManager->showEditor();
             reportManager->enableReportActions(false);
@@ -1099,8 +1099,8 @@ TaskJugglerView::reportListClicked(int button, QListViewItem* lvi,
     if (!lvi)
         return;
 
-    bool errors = FALSE;
-    bool showReportTab = TRUE;
+    bool errors = false;
+    bool showReportTab = true;
     switch (button)
     {
         case Qt::LeftButton:

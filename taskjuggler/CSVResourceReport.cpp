@@ -16,12 +16,12 @@ bool
 CSVResourceReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     generateHeader();
     tab.generate();
     generateFooter();
 
     f.close();
-    return TRUE;
+    return true;
 }

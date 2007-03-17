@@ -84,8 +84,6 @@ public:
     int getWidth() const { return width; }
 
 private:
-    TjGanttChart() { }
-
     void clearZoomSteps();
     void calcStepSizes();
     void generateHeaderAndGrid();

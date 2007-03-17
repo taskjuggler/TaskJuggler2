@@ -37,7 +37,7 @@ HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
     taskSortCriteria[2] = CoreAttributesList::EndDown;
     setHideResource(new ExpressionTree(new Operation(1)));
 
-    tables.setAutoDelete( TRUE );
+    tables.setAutoDelete( true );
     for (uint i = 0; i < tables.size(); ++i)
         tables.insert(i, new HTMLTaskReportElement(this, df, dl));
 
@@ -133,7 +133,7 @@ bool
 HTMLStatusReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     if (headline.isEmpty())
         headline = i18n("Status report for the period %1 to %2")
@@ -150,6 +150,6 @@ HTMLStatusReport::generate()
     generateFooter();
 
     f.close();
-    return TRUE;
+    return true;
 }
 

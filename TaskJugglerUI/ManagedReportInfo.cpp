@@ -22,7 +22,7 @@ ManagedReportInfo::ManagedReportInfo(ReportManager* rm, Report* r) :
 {
     report = 0;
     browserEntry = 0;
-    loadingProject = FALSE;
+    loadingProject = false;
 }
 
 ManagedReportInfo::~ManagedReportInfo()

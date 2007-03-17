@@ -57,8 +57,6 @@ public:
     bool isVacationDay(time_t day) const;
 
 private:
-    Shift(); // leave unimplemented
-
     QPtrList<Interval>* workingHours[7];
 };
 

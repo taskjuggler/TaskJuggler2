@@ -20,12 +20,12 @@ bool
 HTMLAccountReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     generateHeader(i18n("Account Report"));
     tab.generate();
     generateFooter();
 
     f.close();
-    return TRUE;
+    return true;
 }

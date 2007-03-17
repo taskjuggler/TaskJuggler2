@@ -60,7 +60,7 @@ public:
 
     static const int maxSortingLevel = 3;
     void setSorting(int s, int level);
-    void createIndex(bool initial = FALSE);
+    void createIndex(bool initial = false);
     int getIndex(const QString& id) const;
     uint maxDepth() const;
 

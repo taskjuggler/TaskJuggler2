@@ -75,14 +75,14 @@ bool FileToken::readEnvironment()
     if (nextToken(id) != ID)
     {
         errorMessage(i18n("Environment name expected"));
-        return FALSE;
+        return false;
     }
 
     QString token;
     if (nextToken(token) != RBRACKET)
     {
         errorMessage(i18n("')' expected"));
-        return FALSE;
+        return false;
     }
 
     char *value = getenv (id.ascii());
@@ -92,7 +92,7 @@ bool FileToken::readEnvironment()
     for (int i = id.length() - 1; i >= 0; --i)
         m_ungetBuf.append(id[i].latin1());
 
-    return TRUE;
+    return true;
 }
 
 void FileToken::errorMessageVA(const char* msg, va_list ap)
@@ -111,14 +111,14 @@ bool FileToken::getDateFragment(QString& token, QChar& c)
     if (!c.isDigit())
     {
         errorMessage(i18n("Corrupted date"));
-        return FALSE;
+        return false;
     }
     token += c;
     // read other digits
     while ((c = getC()).unicode() != EOFile && c.isDigit())
         token += c;
 
-    return TRUE;
+    return true;
 }
 
 bool FileToken::readMacroCall()
@@ -141,7 +141,7 @@ bool FileToken::readMacroCall()
     if ((tt = nextToken(id)) != ID && tt != INTEGER)
     {
         errorMessage(i18n("Macro ID expected"));
-        return FALSE;
+        return false;
     }
     id = prefix + id;
 
@@ -153,7 +153,7 @@ bool FileToken::readMacroCall()
     if (tt != RBRACE)
     {
         errorMessage(i18n("'}' expected"));
-        return FALSE;
+        return false;
     }
 
     // expand the macro
@@ -161,7 +161,7 @@ bool FileToken::readMacroCall()
     QString macro = resolve(&sl);
 
     if (macro.isNull() && prefix.isEmpty())
-        return FALSE;
+        return false;
 
     m_lineBuf = lineBufCopy;
 
@@ -173,5 +173,5 @@ bool FileToken::readMacroCall()
     // push expanded macro reverse into ungetC buffer.
     for (int i = macro.length() - 1; i >= 0; --i)
         m_ungetBuf.append(macro[i].latin1());
-    return TRUE;
+    return true;
 }

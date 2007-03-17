@@ -46,8 +46,8 @@ Project::Project() :
     start(0),
     end(0),
     now(0),
-    allowRedefinitions(FALSE),
-    weekStartsMonday(TRUE),
+    allowRedefinitions(false),
+    weekStartsMonday(true),
     name(),
     version(),
     copyright(),
@@ -89,21 +89,21 @@ Project::Project() :
     reports(),
     interactiveReports(),
     sourceFiles(),
-    breakFlag(FALSE)
+    breakFlag(false)
 {
     /* Pick some reasonable initial number since we don't know the
      * project time frame yet. */
     initUtility(20000);
 
-    vacationList.setAutoDelete(TRUE);
-    accountAttributes.setAutoDelete(TRUE);
-    taskAttributes.setAutoDelete(TRUE);
-    resourceAttributes.setAutoDelete(TRUE);
-    reports.setAutoDelete(TRUE);
+    vacationList.setAutoDelete(true);
+    accountAttributes.setAutoDelete(true);
+    taskAttributes.setAutoDelete(true);
+    resourceAttributes.setAutoDelete(true);
+    reports.setAutoDelete(true);
 
     new Scenario(this, "plan", "Plan", 0);
-    scenarioList.createIndex(TRUE);
-    scenarioList.createIndex(FALSE);
+    scenarioList.createIndex(true);
+    scenarioList.createIndex(false);
 
     setNow(time(0));
 
@@ -112,19 +112,19 @@ Project::Project() :
      * countries. */
     // Sunday
     workingHours[0] = new QPtrList<Interval>();
-    workingHours[0]->setAutoDelete(TRUE);
+    workingHours[0]->setAutoDelete(true);
 
     for (int i = 1; i < 6; ++i)
     {
         workingHours[i] = new QPtrList<Interval>();
-        workingHours[i]->setAutoDelete(TRUE);
+        workingHours[i]->setAutoDelete(true);
         workingHours[i]->append(new Interval(9 * ONEHOUR, 12 * ONEHOUR - 1));
         workingHours[i]->append(new Interval(13 * ONEHOUR, 18 * ONEHOUR - 1));
     }
 
     // Saturday
     workingHours[6] = new QPtrList<Interval>();
-    workingHours[6]->setAutoDelete(TRUE);
+    workingHours[6]->setAutoDelete(true);
 }
 
 Project::~Project()
@@ -246,14 +246,14 @@ bool
 Project::addId(const QString& id, bool changeCurrentId)
 {
     if (projectIDs.findIndex(id) != -1)
-        return FALSE;
+        return false;
     else
         projectIDs.append(id);
 
     if (changeCurrentId)
         currentId = id;
 
-    return TRUE;
+    return true;
 }
 
 QString
@@ -279,8 +279,8 @@ Project::addScenario(Scenario* s)
 
     /* This is not too efficient, but since there are usually only a few
      * scenarios in a project, this doesn't hurt too much. */
-    scenarioList.createIndex(TRUE);
-    scenarioList.createIndex(FALSE);
+    scenarioList.createIndex(true);
+    scenarioList.createIndex(false);
 }
 
 void
@@ -313,10 +313,10 @@ bool
 Project::addTaskAttribute(const QString& id, CustomAttributeDefinition* cad)
 {
     if (taskAttributes.find(id))
-        return FALSE;
+        return false;
 
     taskAttributes.insert(id, cad);
-    return TRUE;
+    return true;
 }
 
 const CustomAttributeDefinition*
@@ -354,10 +354,10 @@ Project::addResourceAttribute(const QString& id,
                               CustomAttributeDefinition* cad)
 {
     if (resourceAttributes.find(id))
-        return FALSE;
+        return false;
 
     resourceAttributes.insert(id, cad);
-    return TRUE;
+    return true;
 }
 
 const CustomAttributeDefinition*
@@ -383,10 +383,10 @@ Project::addAccountAttribute(const QString& id,
                               CustomAttributeDefinition* cad)
 {
     if (accountAttributes.find(id))
-        return FALSE;
+        return false;
 
     accountAttributes.insert(id, cad);
-    return TRUE;
+    return true;
 }
 
 const CustomAttributeDefinition*
@@ -398,7 +398,7 @@ Project::getAccountAttribute(const QString& id) const
 bool
 Project::isWorkingDay(time_t d) const
 {
-    return !(workingHours[dayOfWeek(d, FALSE)]->isEmpty() ||
+    return !(workingHours[dayOfWeek(d, false)]->isEmpty() ||
              isVacation(d));
 }
 
@@ -406,31 +406,31 @@ bool
 Project::isWorkingTime(time_t d) const
 {
     if (isVacation(d))
-        return FALSE;
+        return false;
 
-    int dow = dayOfWeek(d, FALSE);
+    int dow = dayOfWeek(d, false);
     for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
     {
         if ((*ili)->contains(secondsOfDay(d)))
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool
 Project::isWorkingTime(const Interval& iv) const
 {
     if (isVacation(iv.getStart()))
-        return FALSE;
+        return false;
 
-    int dow = dayOfWeek(iv.getStart(), FALSE);
+    int dow = dayOfWeek(iv.getStart(), false);
     for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
     {
         if ((*ili)->contains(Interval(secondsOfDay(iv.getStart()),
                                   secondsOfDay(iv.getEnd()))))
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 int
@@ -473,7 +473,7 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
     {
         TJMH.errorMessage(i18n("The project does not contain any tasks."));
         errors++;
-        return FALSE;
+        return false;
     }
 
     QDict<Task> idHash;
@@ -483,10 +483,10 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
     initUtility(4 * ((end - start) / scheduleGranularity));
 
     // Generate sequence numbers for all lists.
-    taskList.createIndex(TRUE);
-    resourceList.createIndex(TRUE);
-    accountList.createIndex(TRUE);
-    shiftList.createIndex(TRUE);
+    taskList.createIndex(true);
+    resourceList.createIndex(true);
+    accountList.createIndex(true);
+    shiftList.createIndex(true);
 
     // Initialize random generator.
     srand((int) start);
@@ -547,7 +547,7 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
             {
                 errors++;
                 fatalError = true;
-                return FALSE;
+                return false;
             }
 
         setProgressInfo(i18n("Searching for underspecified tasks ..."));
@@ -616,7 +616,7 @@ Project::completeBuffersAndIndices()
 bool
 Project::scheduleAllScenarios(int& errors, int& warnings)
 {
-    bool schedulingOk = TRUE;
+    bool schedulingOk = true;
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
         if ((*sci)->getEnabled())
         {
@@ -625,7 +625,7 @@ Project::scheduleAllScenarios(int& errors, int& warnings)
                        .arg((*sci)->getId()));
 
             if (!scheduleScenario(*sci, errors, warnings))
-                schedulingOk = FALSE;
+                schedulingOk = false;
             if (breakFlag)
                 return false;
         }
@@ -756,7 +756,7 @@ Project::schedule(int sc, int& errors, int& warnings)
     breakFlag = false;
     do
     {
-        done = TRUE;
+        done = true;
         time_t slot = 0;
         int priority = 0;
         Task::SchedulingInfo schedulingInfo = Task::ASAP;
@@ -798,7 +798,7 @@ Project::schedule(int sc, int& errors, int& warnings)
                     continue;
                 }
             }
-            done = FALSE;
+            done = false;
             /* Each task has a scheduling direction (forward or backward)
              * depending on it's constrains. The task with the highest
              * priority determins the time slot and hence the scheduling
@@ -905,7 +905,7 @@ Project::checkSchedule(int sc, int& errors, int& warnings) const
             TJMH.errorMessage
                 (i18n("Too many errors in %1 scenario. Giving up.")
                  .arg(getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
     }
 
@@ -959,18 +959,18 @@ bool
 Project::readKotrus()
 {
     if (!kotrus)
-        return TRUE;
+        return true;
 
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->dbLoadBookings((*rli)->getKotrusId(), 0);
 
-    return TRUE;
+    return true;
 }
 
 bool
 Project::updateKotrus()
 {
-    return TRUE;
+    return true;
 }
 
 bool
@@ -995,8 +995,8 @@ Project::loadFromXML( const QString& inpFile )
    bool fatalError;
    int errors = 0;
    int warnings = 0;
-   if (!pass2(TRUE, fatalError, errors, warnings))
-       return FALSE;
+   if (!pass2(true, fatalError, errors, warnings))
+       return false;
    scheduleAllScenarios(errors, warnings);
    return errors == 0;
 }

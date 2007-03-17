@@ -24,7 +24,7 @@ Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p,
     for (int i = 0; i < 7; i++)
     {
         workingHours[i] = new QPtrList<Interval>();
-        workingHours[i]->setAutoDelete(TRUE);
+        workingHours[i]->setAutoDelete(true);
     }
 }
 
@@ -47,7 +47,7 @@ Shift::inheritValues()
         {
             delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
-            workingHours[i]->setAutoDelete(TRUE);
+            workingHours[i]->setAutoDelete(true);
             for (QPtrListIterator<Interval> ivi(*(p->workingHours[i]));
                  *ivi != 0; ++ivi)
                 workingHours[i]->append(new Interval(**ivi));
@@ -60,7 +60,7 @@ Shift::inheritValues()
         {
             delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
-            workingHours[i]->setAutoDelete(TRUE);
+            workingHours[i]->setAutoDelete(true);
             for (QPtrListIterator<Interval>
                  ivi(project->getWorkingHoursIterator(i));
                  *ivi != 0; ++ivi)
@@ -90,7 +90,7 @@ Shift::getSubListIterator() const
 bool
 Shift::isOnShift(const Interval& iv) const
 {
-    int dow = dayOfWeek(iv.getStart(), FALSE);
+    int dow = dayOfWeek(iv.getStart(), false);
     int ivStart = secondsOfDay(iv.getStart());
     int ivEnd = secondsOfDay(iv.getEnd());
     Interval dayIv(ivStart, ivEnd);
@@ -104,6 +104,6 @@ Shift::isOnShift(const Interval& iv) const
 bool
 Shift::isVacationDay(time_t day) const
 {
-    return workingHours[dayOfWeek(day, FALSE)]->isEmpty();
+    return workingHours[dayOfWeek(day, false)]->isEmpty();
 }
 

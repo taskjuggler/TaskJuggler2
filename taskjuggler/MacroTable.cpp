@@ -30,7 +30,7 @@ MacroTable::addMacro(Macro* macro)
         return false;
     }
     macros.insert(macro->getName(), macro);
-    return TRUE;
+    return true;
 }
 
 void
@@ -51,7 +51,7 @@ MacroTable::resolve(const QStringList* argList)
     }
 
     QString name = nameWithPrefix;
-    bool emptyIsLegal = FALSE;
+    bool emptyIsLegal = false;
 
     if (name[0].latin1() == '?')
     {
@@ -60,7 +60,7 @@ MacroTable::resolve(const QStringList* argList)
         name = name.mid(1);
         if (name.isEmpty())
             errorMessage(i18n("'?' must be followed by a valid macro name!"));
-        emptyIsLegal = TRUE;
+        emptyIsLegal = true;
     }
 
     QString result = QString::null;
@@ -284,7 +284,7 @@ MacroTable::evalExpression(const QString expr) const
     {
         errorMessage
             (i18n("Garbage at end of expression"));
-        return FALSE;
+        return false;
     }
 
     if (op == "=")
@@ -314,12 +314,12 @@ MacroTable::evalExpression(const QString expr) const
     else
     {
        errorMessage(i18n("Illegal operator: %1").arg(op.latin1()));
-       return FALSE;
+       return false;
     }
 
 UNEXPEND:
     errorMessage(i18n("Unexpected end of expression: %1").arg(expr.left(i)));
-    return FALSE;
+    return false;
 }
 
 void

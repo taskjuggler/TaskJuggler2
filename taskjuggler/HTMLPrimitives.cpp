@@ -24,7 +24,7 @@ QString
 HTMLPrimitives::htmlFilter(const QString& s) const
 {
     QString out;
-    bool parTags = FALSE;
+    bool parTags = false;
     for (uint i = 0; i < s.length(); i++)
     {
         QString repl;
@@ -57,7 +57,7 @@ HTMLPrimitives::htmlFilter(const QString& s) const
         {
             // Expand double line breaks to HTML paragraphs.
             repl = "</p><p>";
-            parTags = TRUE;
+            parTags = true;
             i++;
         }
         else if(s[i].row() != 0 || s[i].cell() >= 128)

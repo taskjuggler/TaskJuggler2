@@ -20,12 +20,12 @@ bool
 HTMLMonthlyCalendar::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     generateHeader(i18n("Weekly Calendar"));
     tab.generate();
     generateFooter();
 
     f.close();
-    return TRUE;
+    return true;
 }

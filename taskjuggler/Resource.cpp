@@ -61,8 +61,8 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     scenarios(new ResourceScenario[p->getMaxScenarios()]),
     allocationProbability(new double[p->getMaxScenarios()])
 {
-    vacations.setAutoDelete(TRUE);
-    shifts.setAutoDelete(TRUE);
+    vacations.setAutoDelete(true);
+    shifts.setAutoDelete(true);
 
     p->addResource(this);
 
@@ -130,7 +130,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     for (int i = 0; i < 7; i++)
     {
         workingHours[i] = new QPtrList<Interval>();
-        workingHours[i]->setAutoDelete(TRUE);
+        workingHours[i]->setAutoDelete(true);
     }
 }
 
@@ -218,7 +218,7 @@ Resource::inheritValues()
         {
             delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
-            workingHours[i]->setAutoDelete(TRUE);
+            workingHours[i]->setAutoDelete(true);
             for (QPtrListIterator<Interval> ivi(*pr->workingHours[i]);
                  *ivi != 0; ++ivi)
                 workingHours[i]->append(new Interval(**ivi));
@@ -249,7 +249,7 @@ Resource::inheritValues()
         {
             delete workingHours[i];
             workingHours[i] = new QPtrList<Interval>();
-            workingHours[i]->setAutoDelete(TRUE);
+            workingHours[i]->setAutoDelete(true);
             for (QPtrListIterator<Interval>
                  ivi(project->getWorkingHoursIterator(i));
                  *ivi != 0; ++ivi)
@@ -472,7 +472,7 @@ Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
     if (scoreboard[idx] > (SbBooking*) overtime)
     {
         delete nb;
-        return FALSE;
+        return false;
     }
 
     SbBooking* b;
@@ -482,7 +482,7 @@ Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
     {
         scoreboard[idx] = b;
         delete nb;
-        return TRUE;
+        return true;
     }
     // Try to merge the booking with the booking in the following slot.
     if (idx < sbSize - 1 && (b = scoreboard[idx + 1]) > (SbBooking*) 3 &&
@@ -490,10 +490,10 @@ Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
     {
         scoreboard[idx] = b;
         delete nb;
-        return TRUE;
+        return true;
     }
     scoreboard[idx] = nb;
-    return TRUE;
+    return true;
 }
 
 bool
@@ -502,7 +502,7 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
     uint sIdx = sbIndex(nb->getStart());
     uint eIdx = sbIndex(nb->getEnd());
 
-    bool conflict = FALSE;
+    bool conflict = false;
 
     for (uint i = sIdx; i <= eIdx; i++)
         if (scoreboard[i] > (SbBooking*) overtime)
@@ -561,18 +561,18 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
                      .arg(nb->getTask()->getId().latin1()));
             }
 
-            conflict = TRUE;
+            conflict = true;
             i = j;
         }
 
     if (conflict)
-        return FALSE;
+        return false;
 
     for (uint i = sIdx; i <= eIdx; i++)
         if (scoreboard[i] <= (SbBooking*) overtime)
             bookSlot(i, new SbBooking(*nb), overtime);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -850,11 +850,11 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
         /* If the load is to be calculated for a certain task, we check
          * whether this task is in the resource allocation list. Only then we
          * calculate the real number of allocated slots. */
-        bool isAllocated = FALSE;
+        bool isAllocated = false;
         for (TaskListIterator tli(scenarios[sc].allocatedTasks); *tli; ++tli)
             if (task == *tli)
             {
-                isAllocated = TRUE;
+                isAllocated = true;
                 break;
             }
         if (!isAllocated)
@@ -942,7 +942,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
 {
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-        return FALSE;
+        return false;
 
     uint startIdx = sbIndex(iv.getStart());
     uint endIdx = sbIndex(iv.getEnd());
@@ -955,7 +955,7 @@ Resource::isAllocated(int sc, const Interval& period, const QString& prjId)
     }
 
     if (endIdx < startIdx)
-        return FALSE;
+        return false;
 
     return isAllocatedSub(sc, startIdx, endIdx, prjId);
 }
@@ -967,19 +967,19 @@ Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const QString&
     /* If resource is a group, check members first. */
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
         if ((*rli)->isAllocatedSub(sc, startIdx, endIdx, prjId))
-            return TRUE;
+            return true;
 
     if (!scoreboards[sc])
-        return FALSE;
+        return false;
     for (uint i = startIdx; i <= endIdx; i++)
     {
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
         if (prjId.isNull() || b->getTask()->getProjectId() == prjId)
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool
@@ -987,7 +987,7 @@ Resource::isAllocated(int sc, const Interval& period, const Task* task) const
 {
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-        return FALSE;
+        return false;
 
     uint startIdx = sbIndex(iv.getStart());
     uint endIdx = sbIndex(iv.getEnd());
@@ -999,7 +999,7 @@ Resource::isAllocated(int sc, const Interval& period, const Task* task) const
             endIdx = scenarios[sc].lastSlot;
     }
     if (endIdx < startIdx)
-        return FALSE;
+        return false;
 
     return isAllocatedSub(sc, startIdx, endIdx, task);
 }
@@ -1011,19 +1011,19 @@ Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const Task* task)
     /* If resource is a group, check members first. */
     for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
         if ((*rli)->isAllocatedSub(sc, startIdx, endIdx, task))
-            return TRUE;
+            return true;
 
     if (!scoreboards[sc])
-        return FALSE;
+        return false;
     for (uint i = startIdx; i <= endIdx; i++)
     {
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
         if (task == 0 || b->getTask() == task)
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 void
@@ -1072,7 +1072,7 @@ Resource::dbLoadBookings(const QString& kotrusID,
     /* retrieve all bookings _not_ belonging to this project */
     BookingList blist = project->getKotrus()->loadBookings
         (kotrusID, skipProjectIDs);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -1082,15 +1082,15 @@ Resource::hasVacationDay(time_t day) const
                      sameTimeNextDay(midnight(day)) - 1);
     for (QPtrListIterator<Interval> vli(vacations); *vli != 0; ++vli)
         if ((*vli)->overlaps(fullDay))
-            return TRUE;
+            return true;
 
     if (shifts.isVacationDay(day))
-        return TRUE;
+        return true;
 
-    if (workingHours[dayOfWeek(day, FALSE)]->isEmpty())
-        return TRUE;
+    if (workingHours[dayOfWeek(day, false)]->isEmpty())
+        return true;
 
-    return FALSE;
+    return false;
 }
 
 bool
@@ -1100,13 +1100,13 @@ Resource::isOnShift(const Interval& slot) const
         if ((*ssli)->getPeriod().contains(slot))
             return (*ssli)->getShift()->isOnShift(slot);
 
-    int dow = dayOfWeek(slot.getStart(), FALSE);
+    int dow = dayOfWeek(slot.getStart(), false);
     for (QPtrListIterator<Interval> ivi(*workingHours[dow]); *ivi != 0; ++ivi)
         if ((*ivi)->contains(Interval(secondsOfDay(slot.getStart()),
                                       secondsOfDay(slot.getEnd()))))
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 void
@@ -1275,13 +1275,13 @@ bool
 Resource::bookingsOk(int sc)
 {
     if (scoreboards[sc] == 0)
-        return TRUE;
+        return true;
 
     if (hasSubs())
     {
        TJMH.errorMessage
           (i18n("Group resource '%1' may not have bookings") .arg(id));
-       return FALSE;
+       return false;
     }
 
     for (uint i = 0; i < sbSize; ++i)
@@ -1301,11 +1301,11 @@ Resource::bookingsOk(int sc)
                      .arg(id).arg(scoreboards[sc][i]->getTask()->getId())
                      .arg(time2ISO(start)).arg(time2ISO(tStart))
                      .arg(time2ISO(tEnd)).arg(project->getScenarioId(sc)));
-                return FALSE;
+                return false;
             }
         }
 
-    return TRUE;
+    return true;
 }
 
 void

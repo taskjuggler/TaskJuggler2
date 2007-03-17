@@ -51,7 +51,7 @@ CSVTaskReportElement::generate()
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, getHideTask(), getRollUpTask()))
-        return FALSE;
+        return false;
     sortTaskList(filteredTaskList);
     maxDepthTaskList = filteredTaskList.maxDepth();
 
@@ -74,6 +74,6 @@ CSVTaskReportElement::generate()
 
     generateFooter();
 
-    return TRUE;
+    return true;
 }
 

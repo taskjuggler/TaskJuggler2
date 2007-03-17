@@ -58,7 +58,7 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
     mainWindow(m), viewStack(v), browser(b), searchLine(s)
 {
     masterFile = 0;
-    editorConfigured = FALSE;
+    editorConfigured = false;
 
     /* Add our own custom editor actions. */
     new KAction(i18n("Insert Date"), "",
@@ -87,7 +87,7 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
     // First we mark all files as no longer part of the project.
     for (std::list<ManagedFileInfo*>::iterator fli = files.begin();
          fli != files.end(); ++fli)
-        (*fli)->setPartOfProject(FALSE);
+        (*fli)->setPartOfProject(false);
 
     /* Then we add the new ones and mark the existing ones as part of the
      * project again. */
@@ -96,15 +96,15 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
         KURL url;
         url.setPath(*sli);
 
-        bool newFile = TRUE;
+        bool newFile = true;
         // Is this file being managed already?
         for (std::list<ManagedFileInfo*>::iterator mfi = files.begin();
              mfi != files.end(); ++mfi)
         {
             if ((*mfi)->getFileURL() == url)
             {
-                (*mfi)->setPartOfProject(TRUE);
-                newFile = FALSE;
+                (*mfi)->setPartOfProject(true);
+                newFile = false;
                 break;
             }
         }
@@ -114,7 +114,7 @@ FileManager::updateFileList(const QStringList& fl, const KURL& url)
             // No, so let's add it to our internal list.
             ManagedFileInfo* mfi =
                 new ManagedFileInfo(this, KURL::fromPathOrURL(*sli));
-            mfi->setPartOfProject(TRUE);
+            mfi->setPartOfProject(true);
             files.push_back(mfi);
         }
     }
@@ -370,7 +370,7 @@ FileManager::showInEditor(const KURL& url)
                 if (!editorConfigured)
                 {
                     KTextEditor::configInterface(document)->readConfig(config);
-                    editorConfigured = TRUE;
+                    editorConfigured = true;
                 }
 
                 KTextEditor::View* editor =
@@ -383,8 +383,8 @@ FileManager::showInEditor(const KURL& url)
                                                   editor->sizePolicy()
                                                   .hasHeightForWidth()));
                 document->openURL(url);
-                document->setReadWrite(TRUE);
-                document->setModified(FALSE);
+                document->setReadWrite(true);
+                document->setModified(false);
 
                 // Signal to update the file-modified status
                 connect(document, SIGNAL(textChanged()),
@@ -721,7 +721,7 @@ FileManager::enableEditorActions(bool enable)
 void
 FileManager::enableClipboardActions(bool enable)
 {
-    bool hasSelection = FALSE;
+    bool hasSelection = false;
     if (getCurrentFile())
         hasSelection = KTextEditor::selectionInterface
             (getCurrentFile()->getEditor()->document())->hasSelection();
@@ -739,12 +739,12 @@ FileManager::enableClipboardActions(bool enable)
 void
 FileManager::enableUndoActions(bool enable)
 {
-    bool undoEnable = FALSE;
+    bool undoEnable = false;
     if (getCurrentFile())
         undoEnable = (KTextEditor::undoInterface
                       (getCurrentFile()->getEditor()->document())->
                       undoCount() > 0 );
-    bool redoEnable = FALSE;
+    bool redoEnable = false;
     if (getCurrentFile())
         redoEnable = (KTextEditor::undoInterface
                       (getCurrentFile()->getEditor()->document())->

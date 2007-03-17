@@ -38,8 +38,6 @@ public:
     HTMLAccountReportElement* getTable() { return &tab; }
 
 private:
-    HTMLAccountReport(); // leave unimplemented
-
     HTMLAccountReportElement tab;
 };
 

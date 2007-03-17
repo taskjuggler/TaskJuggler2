@@ -86,15 +86,13 @@ public slots:
     void setCursorPosition(int line, int col);
 
     void enableEditorActions(bool enable);
-    void enableClipboardActions(bool enable = TRUE);
-    void enableUndoActions(bool enable = TRUE);
+    void enableClipboardActions(bool enable = true);
+    void enableUndoActions(bool enable = true);
 
 private slots:
     void insertDate();
 
 private:
-    FileManager() { }
-
     KMainWindow* mainWindow;
 
     KConfig* config;

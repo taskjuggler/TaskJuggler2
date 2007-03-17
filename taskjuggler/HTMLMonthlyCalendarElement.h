@@ -28,8 +28,6 @@ public:
 private:
     void generateTableHeader();
     void generateTaksPerMonth(TaskList& filteredTaskList);
-
-    HTMLMonthlyCalendarElement(); // leave unimplemented
 } ;
 
 #endif

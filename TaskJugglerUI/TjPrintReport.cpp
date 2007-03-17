@@ -170,7 +170,7 @@ TjPrintReport::generateTableHeader()
     if (showGantt)
     {
         TjReportColumn* col = new TjReportColumn;
-        col->setIsGantt(TRUE);
+        col->setIsGantt(true);
         columns.push_back(col);
     }
 }
@@ -254,7 +254,7 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
             double val = task->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, resource);
-            cellText = tcf->realFormat.format(val, FALSE);
+            cellText = tcf->realFormat.format(val, false);
         }
         else if ((*ci)->getName() == "criticalness")
         {
@@ -352,7 +352,7 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
                  resource) - task->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, resource);
-            cellText = tcf->realFormat.format(val, FALSE);
+            cellText = tcf->realFormat.format(val, false);
         }
         else if ((*ci)->getName() == "resources")
         {
@@ -376,7 +376,7 @@ TjPrintReport::generateTaskListRow(TjReportRow* row, const Task* task,
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Revenue,
                  resource);
-            cellText = tcf->realFormat.format(val, FALSE);
+            cellText = tcf->realFormat.format(val, false);
         }
         else if ((*ci)->getName() == "seqno")
         {
@@ -448,7 +448,7 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
             double val = resource->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, task);
-            cellText = tcf->realFormat.format(val, FALSE);
+            cellText = tcf->realFormat.format(val, false);
         }
         else if ((*ci)->getName() == "efficiency")
         {
@@ -533,14 +533,14 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
                                     reportElement->getEnd()));
         else if ((*ci)->getName() == "rate")
         {
-            cellText = tcf->realFormat.format(resource->getRate(), FALSE);
+            cellText = tcf->realFormat.format(resource->getRate(), false);
         }
         else if ((*ci)->getName() == "revenue")
         {
             double val = resource->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Revenue, task);
-            cellText = tcf->realFormat.format(val, FALSE);
+            cellText = tcf->realFormat.format(val, false);
         }
         else if ((*ci)->getName() == "seqno")
         {
@@ -908,7 +908,7 @@ TjPrintReport::printReportPage(int x, int y)
                leftMargin + pageWidth, headerY + headerHeight - 1);
 
     // Draw the table cells for this page
-    bool ganttChartPainted = FALSE;
+    bool ganttChartPainted = false;
     for (std::vector<TjReportRow*>::iterator rit = rows.begin();
          rit != rows.end(); ++rit)
         if ((*rit)->getYPage() == y)

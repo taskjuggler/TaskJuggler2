@@ -43,13 +43,13 @@ public:
         {
             // Intervals do not overlap.
             end = start - 1;
-            return FALSE;
+            return false;
         }
         if (start < i.start)
             start = i.start;
         if (end > i.end)
             end = i.end;
-        return TRUE;
+        return true;
     }
     bool overlaps(const Interval& i) const
     {
@@ -62,18 +62,18 @@ public:
         if (((i.end + 1) == start) && (i.start < start))
         {
             start = i.start;
-            return TRUE;
+            return true;
         }
-        return FALSE;
+        return false;
     }
     bool append(const Interval& i)
     {
         if (((end + 1) == i.start) && ((end + 1) <= i.end))
         {
             end = i.end;
-            return TRUE;
+            return true;
         }
-        return FALSE;
+        return false;
     }
     int compare(const Interval& i) const
     {

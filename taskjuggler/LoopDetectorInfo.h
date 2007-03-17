@@ -30,7 +30,7 @@ public:
         nextLDI(0),
         prevLDI(0),
         t(0),
-        atEnd(FALSE)
+        atEnd(false)
     { }
 
     LoopDetectorInfo(const Task* _t, bool ae) :

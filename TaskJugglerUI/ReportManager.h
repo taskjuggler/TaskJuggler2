@@ -83,8 +83,6 @@ public slots:
     void editReport(const Report* report);
 
 private:
-    ReportManager() { }
-
     void updateReportBrowser();
 
     KMainWindow* mainWindow;

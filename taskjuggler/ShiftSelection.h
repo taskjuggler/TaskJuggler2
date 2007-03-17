@@ -49,8 +49,6 @@ public:
     bool isVacationDay(time_t day) const;
 
 private:
-    ShiftSelection(); // leave unimplemented
-
     Interval* period;
     Shift* shift;
 };

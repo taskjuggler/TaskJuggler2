@@ -31,7 +31,7 @@ public:
         leftPadding(-1),
         hAlign(),
         bgColor(),
-        boldText(FALSE),
+        boldText(false),
         fontFactor(100),
         statusText(),
         toolTipID(),

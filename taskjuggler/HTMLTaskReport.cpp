@@ -18,12 +18,12 @@ bool
 HTMLTaskReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     generateHeader(i18n("Task Report"));
     tab.generate();
     generateFooter();
 
     f.close();
-    return TRUE;
+    return true;
 }

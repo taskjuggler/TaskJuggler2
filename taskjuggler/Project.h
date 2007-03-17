@@ -70,7 +70,7 @@ public:
      * project ID. So, you have to add at least one ID before you add any
      * tasks.
      */
-    bool addId(const QString& i, bool changeCurrentId = TRUE);
+    bool addId(const QString& i, bool changeCurrentId = true);
 
     /**
      * Returns the first (default) ID of the project.
@@ -92,7 +92,7 @@ public:
      */
     QStringList getProjectIdList() const { return projectIDs; }
     /**
-     * Returns TRUE if the passed ID is a registered project ID.
+     * Returns true if the passed ID is a registered project ID.
      */
     bool isValidId(const QString& i) const
     {
@@ -226,7 +226,7 @@ public:
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
     /**
      * Get the setting for the first day of the week.
-     * @return TRUE of weeks should start on Monday.
+     * @return true of weeks should start on Monday.
      */
     bool getWeekStartsMonday() const { return weekStartsMonday; }
 
@@ -274,13 +274,13 @@ public:
 
     /**
      * If date is contained in a vacation day or the date is outside
-     * of the defined working hours, FALSE is returned. Otherwise TRUE.
+     * of the defined working hours, false is returned. Otherwise true.
      */
     bool isWorkingTime(time_t d) const;
 
     /**
      * If the interval overlaps with a vacation day or the interval is outside
-     * of the defined working hours, FALSE is returned. Otherwise TRUE.
+     * of the defined working hours, false is returned. Otherwise true.
      */
     bool isWorkingTime(const Interval& iv) const;
 
@@ -359,7 +359,7 @@ public:
         vacationList.add(vi);
     }
     /**
-     * Returns TRUE if the passed moment falls within any of the vacation
+     * Returns true if the passed moment falls within any of the vacation
      * intervals.
      */
     bool isVacation(time_t d) const { return vacationList.isVacation(d); }
@@ -763,7 +763,7 @@ public:
      * Generate cross references between all data structures and run a
      * consistency check. This function must be called after the project data
      * tree has been contructed.
-     * @return Only if all tests were successful TRUE is returned.
+     * @return Only if all tests were successful true is returned.
      */
     bool pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings);
 

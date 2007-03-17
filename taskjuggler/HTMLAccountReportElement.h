@@ -21,9 +21,6 @@ public:
     ~HTMLAccountReportElement() { }
 
     bool generate();
-
-private:
-    HTMLAccountReportElement(); // leave unimplemented
 } ;
 
 #endif

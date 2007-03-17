@@ -34,8 +34,6 @@ public:
     const RealFormat& getNumberFormat() const { return numberFormat; }
 
 protected:
-    ReportElementBase(); // leave unimplemented
-
     QString scaledValue(double t, const RealFormat& realFormat,
                         bool showUnit, bool longUnit,
                         const QValueList<double>& factors) const;

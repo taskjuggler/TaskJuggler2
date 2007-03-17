@@ -36,9 +36,6 @@ public slots:
     virtual void show();
     virtual void hide();
 
-protected:
-    TjSummaryReport() { }
-
 private:
     const Project* project;
     QTextBrowser* textBrowser;

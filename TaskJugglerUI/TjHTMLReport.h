@@ -42,9 +42,6 @@ public slots:
     void showURLinStatusBar(const QString& url);
     void openURLRequest(const KURL &url, const KParts::URLArgs&);
 
-protected:
-    TjHTMLReport() { }
-
 private:
     KHTMLPart* browser;
 } ;

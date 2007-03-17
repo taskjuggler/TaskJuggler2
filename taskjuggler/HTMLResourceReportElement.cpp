@@ -59,13 +59,13 @@ HTMLResourceReportElement::generate()
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, hideResource,
                             rollUpResource))
-        return FALSE;
+        return false;
     sortResourceList(filteredResourceList);
     maxDepthResourceList = filteredResourceList.maxDepth();
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
-        return FALSE;
+        return false;
     maxDepthTaskList = filteredTaskList.maxDepth();
     
     int rNo = 1;
@@ -85,12 +85,12 @@ HTMLResourceReportElement::generate()
 
         /* We only want to show the nested task list for leaf resources. Leaf
          * in this case means "task has no visible childs". */
-        bool hasVisibleChilds = FALSE;
+        bool hasVisibleChilds = false;
         for (ResourceListIterator cli((*rli)->getSubListIterator());
              *cli; ++cli)
              if (filteredResourceList.findRef(*cli) >= 0)
              {
-                 hasVisibleChilds = TRUE;
+                 hasVisibleChilds = true;
                  break;
              }
 
@@ -98,7 +98,7 @@ HTMLResourceReportElement::generate()
             continue;
 
         if (!filterTaskList(filteredTaskList, *rli, hideTask, rollUpTask))
-            return FALSE;
+            return false;
         sortTaskList(filteredTaskList);
 
         int tNo = 1;
@@ -122,6 +122,6 @@ HTMLResourceReportElement::generate()
     s() << "</table>" << endl;
     generateFooter();
 
-    return TRUE;
+    return true;
 }
 

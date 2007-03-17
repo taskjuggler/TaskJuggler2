@@ -63,8 +63,6 @@ private slots:
     void fileSaved();
 
 private:
-    ManagedFileInfo() { }
-
     FileManager* manager;
     KURL fileURL;
     bool partOfProject;

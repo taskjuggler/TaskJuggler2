@@ -31,9 +31,6 @@ public:
 
    static QDomElement createXMLElem( QDomDocument& doc, const QString& name,
                      const QString& val );
-   
-protected:
-   ReportXML(); // leave unimplemented
 } ;
 
 #endif

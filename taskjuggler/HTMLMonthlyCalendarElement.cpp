@@ -83,7 +83,7 @@ HTMLMonthlyCalendarElement::generateTaksPerMonth(TaskList& filteredTaskList)
         end = sameTimeNextMonth(month);
 
         s() << "   <td style=\"vertical-align:top\">" << endl;
-        bool first = TRUE;
+        bool first = true;
         int no = 1;
         for (TaskListIterator tli(filteredTaskList); *tli != 0;
              ++tli, ++no)
@@ -96,7 +96,7 @@ HTMLMonthlyCalendarElement::generateTaksPerMonth(TaskList& filteredTaskList)
                 if (first)
                 {
                     s() << "     <table width=\"100%\">" << endl;
-                    first = FALSE;
+                    first = false;
                 }
                 TableLineInfo tli1;
                 tli1.ca1 = tli1.task = *tli;
@@ -121,7 +121,7 @@ HTMLMonthlyCalendarElement::generate()
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
-        return FALSE;
+        return false;
     sortTaskList(filteredTaskList);
     maxDepthTaskList = filteredTaskList.maxDepth();
 
@@ -143,6 +143,6 @@ HTMLMonthlyCalendarElement::generate()
 
     generateFooter();
 
-    return TRUE;
+    return true;
 }
 

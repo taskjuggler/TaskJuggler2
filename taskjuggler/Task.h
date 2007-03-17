@@ -101,7 +101,7 @@ public:
     void setResponsible(Resource* r) { responsible = r; }
     Resource* getResponsible() const { return responsible; }
 
-    void setMilestone(bool ms = TRUE) { milestone = ms; }
+    void setMilestone(bool ms = true) { milestone = ms; }
     bool isMilestone() const { return milestone; }
 
     void setAccount(Account* a) { account = a; }
@@ -234,7 +234,7 @@ public:
     double getCalcDuration(int sc) const;
 
     double getCredits(int sc, const Interval& period, AccountType acctType,
-                      const Resource* resource = 0, bool recursive = TRUE)
+                      const Resource* resource = 0, bool recursive = true)
         const;
 
     bool isActive(int sc, const Interval& period) const;
@@ -515,7 +515,7 @@ private:
     double doneDuration;
 
     /**
-     * Set to TRUE when the first time slots have with resource usage
+     * Set to true when the first time slots have with resource usage
      * have been allocated. */
     bool workStarted;
 

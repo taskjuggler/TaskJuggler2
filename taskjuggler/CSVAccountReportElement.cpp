@@ -38,12 +38,12 @@ CSVAccountReportElement::generate()
     AccountList filteredList;
     if (!filterAccountList(filteredList, AllAccounts, hideAccount,
                            rollUpAccount))
-        return FALSE;
+        return false;
     maxDepthAccountList = filteredList.maxDepth();
 
     /* Generate table of cost accounts. */
     if (!filterAccountList(filteredList, Cost, hideAccount, rollUpAccount))
-        return FALSE;
+        return false;
     sortAccountList(filteredList);
     maxDepthAccountList = filteredList.maxDepth();
 
@@ -62,7 +62,7 @@ CSVAccountReportElement::generate()
     }
 
     /* Generate summary line for cost accounts. */
-    tli.boldText = TRUE;
+    tli.boldText = true;
     tli.specialName = i18n("Total Costs");
     for (uint sc = 0; sc < scenarios.count(); ++sc)
     {
@@ -74,17 +74,17 @@ CSVAccountReportElement::generate()
 
     for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
     {
-        (*ci)->addSumToMemory(TRUE);
+        (*ci)->addSumToMemory(true);
         (*ci)->clearSum();
     }
 
     /* Generate table of revenue accounts. */
     if (!filterAccountList(filteredList, Revenue, hideAccount, rollUpAccount))
-        return FALSE;
+        return false;
     sortAccountList(filteredList);
     maxDepthAccountList = filteredList.maxDepth();
 
-    tli.boldText = FALSE;
+    tli.boldText = false;
     tli.specialName = QString::null;
     for (AccountListIterator ali(filteredList); *ali != 0; ++ali, ++aNo)
     {
@@ -99,7 +99,7 @@ CSVAccountReportElement::generate()
     }
 
     /* Generate summary line for revenue accounts. */
-    tli.boldText = TRUE;
+    tli.boldText = true;
     tli.specialName = i18n("Total Revenues");
     for (uint sc = 0; sc < scenarios.count(); ++sc)
     {
@@ -111,7 +111,7 @@ CSVAccountReportElement::generate()
 
     for (QPtrListIterator<TableColumnInfo> ci(columns); *ci != 0; ++ci)
     {
-        (*ci)->addSumToMemory(FALSE);
+        (*ci)->addSumToMemory(false);
         (*ci)->recallMemory();
     }
 
@@ -125,6 +125,6 @@ CSVAccountReportElement::generate()
         generateLine(&tli, sc == 0 ? 8 : 9);
     }
 
-    return TRUE;
+    return true;
 }
 

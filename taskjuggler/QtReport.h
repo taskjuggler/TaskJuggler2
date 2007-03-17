@@ -32,9 +32,6 @@ public:
 
     void generateHeader();
     void generateFooter();
-
-protected:
-    QtReport(); // leave unimplemented
 } ;
 
 #endif

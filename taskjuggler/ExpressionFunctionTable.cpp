@@ -20,7 +20,7 @@ ExpressionFunctionTable EFT;
 ExpressionFunctionTable::ExpressionFunctionTable() :
     functions()
 {
-    functions.setAutoDelete(TRUE);
+    functions.setAutoDelete(true);
 
     addFunc(KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 2);
     addFunc(KW("isTask"), &ExpressionTreeFunction::isTask, 1);

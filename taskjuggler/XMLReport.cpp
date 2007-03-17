@@ -57,7 +57,7 @@ XMLReport::XMLReport(Project* p, const QString& f,
     Report(p, f, df, dl),
     doc(0),
     taskAttributes(),
-    masterFile(FALSE)
+    masterFile(false)
 {
     if (TaskAttributeDict.empty())
     {
@@ -101,7 +101,7 @@ bool
 XMLReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     doc = new QDomDocument
         ("taskjuggler PUBLIC "
@@ -126,51 +126,51 @@ XMLReport::generate()
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
-        return FALSE;
+        return false;
     sortTaskList(filteredTaskList);
 
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, hideResource,
                             rollUpResource))
-        return FALSE;
+        return false;
     sortResourceList(filteredResourceList);
 
     if (!generateProjectProperty(&tjEl))
-        return FALSE;
+        return false;
     if (!generateGlobalVacationList(&tjEl))
-        return FALSE;
+        return false;
     if (!generateShiftList(&tjEl))
-        return FALSE;
+        return false;
     if (!generateResourceList(&tjEl, filteredResourceList, filteredTaskList))
-        return FALSE;
+        return false;
     if (!generateTaskList(&tjEl, filteredTaskList, filteredResourceList))
-        return FALSE;
+        return false;
     if (!generateBookingList(&tjEl, filteredTaskList, filteredResourceList))
-       return FALSE;
+       return false;
 
     gzFile zf = gzdopen(dup(f.handle()), "wb");
     if (!zf)
     {
         qWarning(i18n("Cannot open compressed file %1 for writing.")
                  .arg(fileName));
-        return FALSE;
+        return false;
     }
     int bytes;
     if ((bytes = gzputs(zf, static_cast<const char*>(doc->toCString()))) == 0)
     {
         qWarning(i18n("Compression of %1 failed").arg(fileName));
-        return FALSE;
+        return false;
     }
     int zError;
     if ((zError = gzclose(zf)) != 0)
     {
         qWarning(i18n("Closing of file %1 failed: %2").arg(fileName)
                  .arg(gzerror(zf, &zError)));
-        return FALSE;
+        return false;
     }
     f.close();
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -188,13 +188,13 @@ XMLReport::generateProjectProperty(QDomElement* n)
     // Generate custom attribute definitions
     if (!generateCustomAttributeDeclaration
         (&el, "task", project->getTaskAttributeDict()))
-        return FALSE;
+        return false;
     if (!generateCustomAttributeDeclaration
         (&el, "resource", project->getResourceAttributeDict()))
-        return FALSE;
+        return false;
     if (!generateCustomAttributeDeclaration
         (&el, "account", project->getAccountAttributeDict()))
-        return FALSE;
+        return false;
 
     // Generate date/time related settings
     genLongAttr(&el, "weekStartMonday",
@@ -226,7 +226,7 @@ XMLReport::generateProjectProperty(QDomElement* n)
 
     generateScenario(&el, project->getScenario(0));
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -235,7 +235,7 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
     QDictIterator<CustomAttributeDefinition> it)
 {
     if (!it.current())
-        return TRUE;
+        return true;
     QDomElement el = doc->createElement("extend");
     parentEl->appendChild(el);
     genTextAttr(&el, "property", propertyName);
@@ -254,7 +254,7 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
             default:
                 qFatal("XMLReport::generateCustomAttributeDeclaration: "
                        "Unknown CAT %d", it.current()->getType());
-                return FALSE;
+                return false;
         }
         QDomElement exEl = doc->createElement("extendAttributeDefinition");
         el.appendChild(exEl);
@@ -263,7 +263,7 @@ XMLReport::generateCustomAttributeDeclaration(QDomElement* parentEl,
         genTextAttr(&exEl, "type", exElType);
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -282,7 +282,7 @@ XMLReport::generateScenario(QDomElement* parentEl, Scenario* scenario)
          *sci != 0; ++sci)
         generateScenario(&el, *sci);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -306,7 +306,7 @@ XMLReport::generateGlobalVacationList(QDomElement* parentNode)
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -320,10 +320,10 @@ XMLReport::generateShiftList(QDomElement* parentNode)
     {
         if ((*sli)->getParent() == 0)
             if (!generateShift(&el, *sli))
-                return FALSE;
+                return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -338,9 +338,9 @@ XMLReport::generateShift(QDomElement* parentEl, const Shift* shift)
 
     for (ShiftListIterator sli(shift->getSubListIterator()); *sli; ++sli)
         if (!generateShift(&el, *sli))
-            return FALSE;
+            return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -368,7 +368,7 @@ XMLReport::generateWorkingHours(QDomElement* parentEl,
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -383,9 +383,9 @@ XMLReport::generateResourceList(QDomElement* parentNode,
         if ((*rli)->getParent() == 0)
             if (!generateResource(&el, filteredResourceList,
                                   filteredTaskList, *rli))
-                return FALSE;
+                return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -407,7 +407,7 @@ XMLReport::generateResource(QDomElement* parentEl,
         {
             if (!generateResource(&el, filteredResourceList, filteredTaskList,
                                   *srli))
-                return FALSE;
+                return false;
         }
     }
 
@@ -437,7 +437,7 @@ XMLReport::generateResource(QDomElement* parentEl,
         genDateElement(&sSel, "end", (*sli)->getPeriod().getEnd() + 1);
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -451,9 +451,9 @@ XMLReport::generateTaskList(QDomElement* parentNode, TaskList& filteredTaskList,
         if ((*tli)->getParent() == 0 ||
             (*tli)->getParent()->getId() + "." == taskRoot)
             if (!generateTask(&el, filteredTaskList, *tli))
-                return FALSE;
+                return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -525,22 +525,22 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
             default:
                 qDebug("XMLReport::generateTask(): "
                        "Unknown task attribute %s", (*it).latin1());
-                return FALSE;
+                return false;
         }
 
     }
 
     /* If a container task has sub tasks that are exported as well, we do
      * not export start/end date for those container tasks. */
-    bool taskHasNoSubTasks = TRUE;
+    bool taskHasNoSubTasks = true;
     for (TaskListIterator stli(task->getSubListIterator());
          *stli != 0; ++stli)
     {
         if (filteredTaskList.findRef(*stli) >= 0)
         {
-            taskHasNoSubTasks = FALSE;
+            taskHasNoSubTasks = false;
             if (!generateTask(&el, filteredTaskList, *stli))
-                return FALSE;
+                return false;
         }
     }
 
@@ -622,7 +622,7 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
 
     generateAllocate(&el, task);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -676,7 +676,7 @@ XMLReport::generateDepList(QDomElement* parentEl, TaskList& filteredTaskList,
         filteredTaskList.findRef(curr);
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -718,7 +718,7 @@ XMLReport::generateCustomAttributeValue(QDomElement* parentEl,
                    ca->getType());
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -739,7 +739,7 @@ XMLReport::generateAllocate(QDomElement* parentEl, const Task* t)
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -761,7 +761,7 @@ XMLReport::generateBookingList(QDomElement* parentEl,
             genTextAttr(&scEl, "scenarioId", project->getScenarioId(*sit));
 
             BookingList bl = (*rli)->getJobs(*sit);
-            bl.setAutoDelete(TRUE);
+            bl.setAutoDelete(true);
             if (bl.isEmpty())
                 continue;
 
@@ -780,7 +780,7 @@ XMLReport::generateBookingList(QDomElement* parentEl,
             }
         }
     }
-    return TRUE;
+    return true;
 }
 
 bool
@@ -799,7 +799,7 @@ XMLReport::addTaskAttribute(const QString& ta)
              it(project->getTaskAttributeDict()); *it; ++it)
             taskAttributes.append(it.currentKey());
 
-        return TRUE;
+        return true;
     }
 
     /* Make sure the 'ta' is a valid attribute name and that we don't
@@ -807,12 +807,12 @@ XMLReport::addTaskAttribute(const QString& ta)
      * error though. */
     if (TaskAttributeDict.find(ta) == TaskAttributeDict.end() &&
         project->getTaskAttribute(ta) == 0)
-        return FALSE;
+        return false;
 
     if (taskAttributes.findIndex(ta) >= 0)
-        return TRUE;
+        return true;
     taskAttributes.append(ta);
-    return TRUE;
+    return true;
 }
 
 void
@@ -876,7 +876,7 @@ XMLReport::genTimeElement(QDomElement* parentEl, const QString& name,
    el.appendChild(tEl);
 
    QDomAttr at = doc->createAttribute("humanReadable");
-   at.setValue(time2user(val, shortTimeFormat, FALSE));
+   at.setValue(time2user(val, shortTimeFormat, false));
    el.setAttributeNode(at);
 
    parentEl->appendChild(el);

@@ -21,10 +21,7 @@ public:
     QtTaskReportElement(Report* r, const QString& df, int dl);
     ~QtTaskReportElement();
 
-    bool generate() { return FALSE; }
-
-private:
-    QtTaskReportElement(); // leave unimplemented
+    bool generate() { return false; }
 } ;
 
 #endif

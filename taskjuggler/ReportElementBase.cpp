@@ -43,9 +43,9 @@ ReportElementBase::setLoadUnit(const QString& u)
     else if (u == KW("longauto"))
         loadUnit = longAuto;
     else
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 QString
@@ -99,7 +99,7 @@ ReportElementBase::scaledValue(double t, const RealFormat& realFormat,
         for (QValueList<double>::ConstIterator it = factors.begin();
              it != factors.end(); ++it)
         {
-            str = realFormat.format(t * *it, FALSE);
+            str = realFormat.format(t * *it, false);
             int idx = factors.findIndex(*it);
             if ((*it != 1.0 && str == "0") ||
                 (max[idx] != 0 && max[idx] < (t * *it)))
@@ -135,22 +135,22 @@ ReportElementBase::scaledValue(double t, const RealFormat& realFormat,
         switch (loadUnit)
         {
             case minutes:
-                str = realFormat.format(t * factors[0], FALSE);
+                str = realFormat.format(t * factors[0], false);
                 break;
             case hours:
-                str = realFormat.format(t * factors[1], FALSE);
+                str = realFormat.format(t * factors[1], false);
                 break;
             case days:
-                str = realFormat.format(t * factors[2], FALSE);
+                str = realFormat.format(t * factors[2], false);
                 break;
             case weeks:
-                str = realFormat.format(t * factors[3], FALSE);
+                str = realFormat.format(t * factors[3], false);
                 break;
             case months:
-                str = realFormat.format(t * factors[4], FALSE);
+                str = realFormat.format(t * factors[4], false);
                 break;
             case years:
-                str = realFormat.format(t * factors[5], FALSE);
+                str = realFormat.format(t * factors[5], false);
                 break;
             case shortAuto:
             case longAuto:

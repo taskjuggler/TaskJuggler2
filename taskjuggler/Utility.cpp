@@ -24,7 +24,7 @@
 #include "tjlib-internal.h"
 
 static QDict<const char> TZDict;
-static bool TZDictReady = FALSE;
+static bool TZDictReady = false;
 
 static QString UtilityError;
 
@@ -48,21 +48,21 @@ isRichText(const QString& str)
      * not. It looks for xml tags marks and does a simple validation on them.
      */
 
-    bool hasTags = FALSE;
-    bool inTag = FALSE;
+    bool hasTags = false;
+    bool inTag = false;
     for (uint i = 0; i < str.length(); ++i)
     {
         if (str[i] == '<')
         {
             if (inTag)
-                return FALSE;
-            inTag = hasTags = TRUE;
+                return false;
+            inTag = hasTags = true;
         }
         else if (str[i] == '>')
         {
             if (!inTag)
-                return FALSE;
-            inTag = FALSE;
+                return false;
+            inTag = false;
         }
     }
 
@@ -74,7 +74,7 @@ timezone2tz(const char* tzone)
 {
     if (!TZDictReady)
     {
-        TZDict.setAutoDelete(FALSE);
+        TZDict.setAutoDelete(false);
 
         // Let's start with generic timezones
         TZDict.insert("+1300", "GMT-13:00");
@@ -117,7 +117,7 @@ timezone2tz(const char* tzone)
         TZDict.insert("CET", "GMT-1:00");
         TZDict.insert("CEDT", "GMT-2:00");
 
-        TZDictReady = TRUE;
+        TZDictReady = true;
     }
 
     return TZDict[tzone];
@@ -786,7 +786,7 @@ date2time(const QString& date)
     int y, m, d, hour, min, sec;
     char tZone[64] = "";
     std::string savedTZ;
-    bool restoreTZ = FALSE;
+    bool restoreTZ = false;
     if (sscanf(date, "%d-%d-%d-%d:%d:%d-%s",
                &y, &m, &d, &hour, &min, &sec, tZone) == 7 ||
         (sec = 0) ||    // set sec to 0
@@ -807,7 +807,7 @@ date2time(const QString& date)
         {
             if (setenv("TZ", tz, 1) < 0)
                 qFatal("date2time: Ran out of space in environment section.");
-            restoreTZ = TRUE;
+            restoreTZ = true;
         }
     }
     else if (sscanf(date, "%d-%d-%d-%d:%d:%d",

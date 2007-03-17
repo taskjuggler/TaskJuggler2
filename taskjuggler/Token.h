@@ -39,7 +39,6 @@ public:
     ~Token() { }
 
 private:
-    Token(); // leave unimplemented
     TokenType type;
     QString text;
 } ;

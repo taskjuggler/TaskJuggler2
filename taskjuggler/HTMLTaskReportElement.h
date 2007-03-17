@@ -22,8 +22,6 @@ public:
     ~HTMLTaskReportElement();
 
     bool generate();
-private:
-    HTMLTaskReportElement(); // leave unimplemented
 } ;
 
 #endif

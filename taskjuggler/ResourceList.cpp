@@ -43,7 +43,7 @@ ResourceList::isSupportedSortingCriteria(int sc)
     case RateDown:
     case KotrusIdUp:
     case KotrusIdDown:
-        return TRUE;
+        return true;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
     }

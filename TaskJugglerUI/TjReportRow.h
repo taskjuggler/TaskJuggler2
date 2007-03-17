@@ -49,8 +49,6 @@ public:
     CoreAttributes* getSubCoreAttributes() const { return subCA; }
 
 private:
-    TjReportRow() { }
-
     int columns;
     int topY;
     int height;

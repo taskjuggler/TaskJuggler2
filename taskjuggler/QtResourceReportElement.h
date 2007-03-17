@@ -21,10 +21,7 @@ public:
     QtResourceReportElement(Report* r, const QString& df, int dl);
     ~QtResourceReportElement();
 
-    bool generate() { return FALSE; }
-
-private:
-    QtResourceReportElement(); // leave unimplemented
+    bool generate() { return false; }
 } ;
 
 #endif

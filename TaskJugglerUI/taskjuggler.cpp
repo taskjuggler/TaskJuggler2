@@ -82,7 +82,7 @@ TaskJuggler::TaskJuggler()
     delayTimer = new QTimer(this);
     connect(delayTimer, SIGNAL(timeout()),
             this, SLOT(showTipOnStart()));
-    delayTimer->start(200, TRUE);
+    delayTimer->start(200, true);
 }
 
 TaskJuggler::~TaskJuggler()
@@ -280,7 +280,7 @@ TaskJuggler::dropEvent(QDropEvent *event)
 bool
 TaskJuggler::queryClose()
 {
-    return TRUE;
+    return true;
 }
 
 bool
@@ -288,7 +288,7 @@ TaskJuggler::queryExit()
 {
     m_view->quit(false);
     saveProperties(kapp->config());
-    return TRUE;
+    return true;
 }
 
 void

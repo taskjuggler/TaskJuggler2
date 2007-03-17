@@ -37,9 +37,6 @@ public:
 
     void generateHeader() { };
     void generateFooter() { };
-
-protected:
-    CSVReport(); // leave unimplemented
 } ;
 
 #endif

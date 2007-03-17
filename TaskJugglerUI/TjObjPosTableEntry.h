@@ -27,8 +27,6 @@ public:
     int getHeight() const { return height; }
 
 private:
-    TjObjPosTableEntry() { }    // Don't use this
-
     CoreAttributes* ca;
     CoreAttributes* subCA;
     int pos;

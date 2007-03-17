@@ -88,8 +88,6 @@ private slots:
     void updateStatusBar();
 
 protected:
-    TjReport() { }
-
     virtual bool event(QEvent* ev);
     virtual bool generateList() = 0;
 

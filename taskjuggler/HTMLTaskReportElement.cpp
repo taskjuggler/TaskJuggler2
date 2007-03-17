@@ -57,14 +57,14 @@ HTMLTaskReportElement::generate()
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, getHideTask(), getRollUpTask()))
-        return FALSE;
+        return false;
     sortTaskList(filteredTaskList);
     maxDepthTaskList = filteredTaskList.maxDepth();
 
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, getHideResource(),
                        getRollUpResource()))
-        return FALSE;
+        return false;
     maxDepthResourceList = filteredResourceList.maxDepth();
     
     int tNo = 1;
@@ -84,7 +84,7 @@ HTMLTaskReportElement::generate()
 
         if (!filterResourceList(filteredResourceList, *tli, 
                                 getHideResource(), getRollUpResource()))
-            return FALSE;
+            return false;
         sortResourceList(filteredResourceList);
         int rNo = 1;
         for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
@@ -109,6 +109,6 @@ HTMLTaskReportElement::generate()
 
     generateFooter();
 
-    return TRUE;
+    return true;
 }
 

@@ -65,18 +65,18 @@ TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
                    const QString& n)
     : TjUIReportBase(p, m, rDef, n)
 {
-    loadingProject = FALSE;
+    loadingProject = false;
     autoFit = true;
 
     QHBoxLayout* hl = new QHBoxLayout(this, 0, 0);
     splitter = new QSplitter(Horizontal, this);
 
     listView = new KListView(splitter);
-    listView->setRootIsDecorated(TRUE);
+    listView->setRootIsDecorated(true);
     listView->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-    listView->setAllColumnsShowFocus(TRUE);
+    listView->setAllColumnsShowFocus(true);
     // The sorting does not work yet properly.
-    listView->header()->setClickEnabled(FALSE);
+    listView->header()->setClickEnabled(false);
     listView->setItemMargin(2);
 
     canvasFrame = new QWidget(splitter);
@@ -169,12 +169,12 @@ TjReport::print()
 
     // This block avoids a compile error due to gotos crossing 'first'.
     {
-        bool first = TRUE;
+        bool first = true;
         for (int y = 0; y < yPages; ++y)
             for (int x = 0; x < xPages; ++x)
             {
                 if (first)
-                    first = FALSE;
+                    first = false;
                 else
                     printer->newPage();
                 tjpr->printReportPage(x, y);
@@ -203,16 +203,16 @@ TjReport::event(QEvent* ev)
 bool
 TjReport::generateReport()
 {
-    setLoadingProject(TRUE);
+    setLoadingProject(true);
 
     setCursor(KCursor::waitCursor());
     if (!this->generateList())
     {
-        setLoadingProject(FALSE);
+        setLoadingProject(false);
         setCursor(KCursor::arrowCursor());
-        return FALSE;
+        return false;
     }
-    setLoadingProject(FALSE);
+    setLoadingProject(false);
     setCursor(KCursor::arrowCursor());
 
     /* The first time we generate the report, the window has not been fully
@@ -222,15 +222,15 @@ TjReport::generateReport()
     delayTimer = new QTimer(this);
     connect(delayTimer, SIGNAL(timeout()),
             this, SLOT(regenerateChart()));
-    delayTimer->start(200, TRUE);
+    delayTimer->start(200, true);
 
     delete statusBarUpdateTimer;
     statusBarUpdateTimer = new QTimer(this);
     connect(statusBarUpdateTimer, SIGNAL(timeout()),
             this, SLOT(updateStatusBar()));
-    statusBarUpdateTimer->start(500, FALSE);
+    statusBarUpdateTimer->start(500, false);
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -324,7 +324,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             double val = t->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, r);
-            cellText = indent(tcf->realFormat.format(val, FALSE),
+            cellText = indent(tcf->realFormat.format(val, false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
@@ -416,7 +416,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 t->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, r);
-            cellText = indent(tcf->realFormat.format(val, FALSE),
+            cellText = indent(tcf->realFormat.format(val, false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
@@ -441,7 +441,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             double val = t->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Revenue, r);
-            cellText = indent(tcf->realFormat.format(val, FALSE),
+            cellText = indent(tcf->realFormat.format(val, false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
@@ -510,7 +510,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
             double val = r->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Cost, t);
-            cellText = indent(tcf->realFormat.format(val, FALSE),
+            cellText = indent(tcf->realFormat.format(val, false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
@@ -582,7 +582,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                                     reportElement->getEnd()));
         else if ((*ci)->getName() == "rate")
         {
-            cellText = indent(tcf->realFormat.format(r->getRate(), FALSE),
+            cellText = indent(tcf->realFormat.format(r->getRate(), false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
@@ -591,7 +591,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
             double val = r->getCredits
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()), Revenue, t);
-            cellText = indent(tcf->realFormat.format(val, FALSE),
+            cellText = indent(tcf->realFormat.format(val, false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
@@ -1323,7 +1323,7 @@ TjReport::show()
     QWidget::show();
 
     if (statusBarUpdateTimer)
-        statusBarUpdateTimer->start(500, FALSE);
+        statusBarUpdateTimer->start(500, false);
 
     updateZoomSelector();
 }

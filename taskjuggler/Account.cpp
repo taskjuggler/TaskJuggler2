@@ -23,7 +23,7 @@ Account::Account(Project* p, const QString& i, const QString& n, Account* pr,
     transactions(),
     acctType(at)
 {
-    transactions.setAutoDelete(TRUE);
+    transactions.setAutoDelete(true);
     p->addAccount(this);
 }
 
@@ -49,7 +49,7 @@ Account::getVolume(int sc, const Interval& period) const
     // Add plan credits for all tasks that should be credited to this account.
     for (TaskListIterator tli(project->getTaskListIterator()); *tli != 0; ++tli)
         if ((*tli)->getAccount() == this)
-            volume += (*tli)->getCredits(sc, period, acctType, 0, FALSE);
+            volume += (*tli)->getCredits(sc, period, acctType, 0, false);
 
     // Add all transactions that are registered within the period.
     for (TransactionList::Iterator tli(transactions); *tli != 0; ++tli)

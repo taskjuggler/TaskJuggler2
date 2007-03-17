@@ -68,11 +68,11 @@ Tokenizer::nextToken(QString& token)
         case '/':
             /* This code skips c-style comments like the one you are just
              * reading. */
-            if ((c = getC(FALSE)) == '*')
+            if ((c = getC(false)) == '*')
             {
                 do
                 {
-                    while ((c = getC(FALSE)) != '*')
+                    while ((c = getC(false)) != '*')
                     {
                         if (c == '\n')
                             m_currLine++;
@@ -82,7 +82,7 @@ Tokenizer::nextToken(QString& token)
                             return EndOfFile;
                         }
                     }
-                } while ((c = getC(FALSE)) != '/');
+                } while ((c = getC(false)) != '/');
                 break;
             }
             // This code skips C++-style comments like the one you are reading
@@ -95,7 +95,7 @@ Tokenizer::nextToken(QString& token)
             }
             // break missing on purpose
         case '#':   // Comments start with '#' and reach towards end of line
-            while ((c = getC(FALSE)) != '\n' && c.unicode() != EOFile)
+            while ((c = getC(false)) != '\n' && c.unicode() != EOFile)
                 ;
             if (c.unicode() == EOFile)
                 return EndOfFile;
@@ -245,7 +245,7 @@ Tokenizer::nextToken(QString& token)
         {
             token = "";
             int nesting = 0;
-            while ((c = getC(FALSE)).unicode() != EOFile &&
+            while ((c = getC(false)).unicode() != EOFile &&
                    (c != ']' || nesting > 0))
             {
                 if (c == '[')
@@ -343,7 +343,7 @@ Tokenizer::open()
         {
             // read from file system
             if ((m_fh = fopen(m_file, "r")) == 0)
-                return FALSE;
+                return false;
             m_f.reset(new QTextStream(m_fh, IO_ReadOnly));
         }
 
@@ -356,7 +356,7 @@ Tokenizer::open()
     m_lineBuf = QString::null;
     m_currLine = 1;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -365,13 +365,13 @@ Tokenizer::close()
     if (!m_file.isEmpty())
     {
         if (m_fh == stdin)
-            return TRUE;
+            return true;
 
         if (fclose(m_fh) == EOF)
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 QChar
@@ -420,7 +420,7 @@ Tokenizer::getC(bool expandMacros)
         if (c == '$')
         {
             QChar d;
-            if ((d = getC(FALSE)) == '{')
+            if ((d = getC(false)) == '{')
             {
                 // remove ${ from m_lineBuf;
                 m_lineBuf = m_lineBuf.left(m_lineBuf.length() - 2);
@@ -437,7 +437,7 @@ Tokenizer::getC(bool expandMacros)
             else if (d == '$')
             {
                 QChar e;
-                if ((e = getC(FALSE)) == '{')
+                if ((e = getC(false)) == '{')
                 {
                     // Convert "$${" into "%{"
                     c = '%';

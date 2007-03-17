@@ -21,9 +21,6 @@ public:
     ~CSVAccountReportElement() { };
 
     bool generate();
-
-private:
-    CSVAccountReportElement(); // leave unimplemented
 } ;
 
 #endif

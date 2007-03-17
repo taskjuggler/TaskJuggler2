@@ -23,8 +23,6 @@ public:
     ~TjLine() { }
 
 private:
-    TjLine() { }
-
     int coord;
     int start;
     int end;
@@ -40,8 +38,6 @@ public:
     bool collision(bool vertical, int coord, int start, int end);
 
 private:
-    TjLineAccounter() { }
-
     int minDist;
     std::list<TjLine*> vertLines;
     std::list<TjLine*> horizLines;

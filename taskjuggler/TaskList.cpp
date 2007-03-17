@@ -45,7 +45,7 @@ TaskList::isSupportedSortingCriteria(int sc)
     case CriticalnessDown:
     case PathCriticalnessUp:
     case PathCriticalnessDown:
-        return TRUE;
+        return true;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
     }

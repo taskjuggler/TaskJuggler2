@@ -12,7 +12,7 @@
 
 #include "TjMessageHandler.h"
 
-TjMessageHandler TJMH(TRUE);
+TjMessageHandler TJMH(true);
 
 void
 TjMessageHandler::warningMessage(const QString& msg, const QString& file, int

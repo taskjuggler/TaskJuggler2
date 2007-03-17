@@ -22,8 +22,6 @@ public:
     ~CSVTaskReportElement() { };
 
     bool generate();
-private:
-    CSVTaskReportElement(); // leave unimplemented
 } ;
 
 #endif

@@ -30,13 +30,11 @@ public:
 
     virtual const char* getType() const { return "QtTaskReport"; }
 
-    bool generate() { return FALSE; }
+    bool generate() { return false; }
 
     QtTaskReportElement* getTable() const { return tab; }
 
 private:
-    QtTaskReport(); // leave unimplemented
-
     QtTaskReportElement* tab;
 } ;
 

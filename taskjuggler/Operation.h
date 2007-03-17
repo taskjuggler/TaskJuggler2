@@ -36,7 +36,7 @@ public:
         name(),
         ops(0),
         opsCount(0),
-        valid(FALSE)
+        valid(false)
     { }
 
     Operation(opType ot, const QString& n) :
@@ -45,7 +45,7 @@ public:
         name(n),
         ops(0),
         opsCount(0),
-        valid(FALSE)
+        valid(false)
     { }
 
     Operation(opType ot, long v) :
@@ -54,7 +54,7 @@ public:
         name(),
         ops(0),
         opsCount(0),
-        valid(FALSE)
+        valid(false)
     { }
 
     Operation(opType ot, const QString& n, long v) :
@@ -63,7 +63,7 @@ public:
         name(n),
         ops(0),
         opsCount(0),
-        valid(FALSE)
+        valid(false)
     { }
 
     Operation(const QString& v) :
@@ -72,7 +72,7 @@ public:
         name(v),
         ops(0),
         opsCount(0),
-        valid(FALSE)
+        valid(false)
     { }
 
     Operation(Operation* o1, opType ot, Operation* o2 = 0) :
@@ -81,7 +81,7 @@ public:
         name(),
         ops(new Operation*[2]),
         opsCount(2),
-        valid(FALSE)
+        valid(false)
     {
         ops[0] = o1;
         ops[1] = o2;
@@ -93,7 +93,7 @@ public:
         name(n),
         ops(new Operation*[1]),
         opsCount(1),
-        valid(FALSE)
+        valid(false)
     {
         ops[0] = o1;
     }
@@ -104,7 +104,7 @@ public:
         name(n),
         ops(new Operation*[2]),
         opsCount(2),
-        valid(FALSE)
+        valid(false)
     {
         ops[0] = o1;
         ops[1] = o2;
@@ -116,7 +116,7 @@ public:
         name(n),
         ops(args),
         opsCount(c),
-        valid(FALSE)
+        valid(false)
     { }
 
     Operation(const Operation& op);
@@ -127,7 +127,7 @@ public:
     time_t evalAsTime(ExpressionTree* et) const;
     QString evalAsString(ExpressionTree* et) const;
 
-    void setValid(bool v = TRUE)
+    void setValid(bool v = true)
     {
         valid = v;
     }
@@ -136,8 +136,6 @@ public:
     QString debugString();
 
 private:
-    Operation(); // leave unimplemented
-
     long evalFunction(ExpressionTree* et) const;
     QString evalFunctionAsString(ExpressionTree* et) const;
 

@@ -26,15 +26,15 @@ bool
 ExpressionTreeFunction::checkCoreAttributesType(ExpressionTree* et)
 {
     if (supportedCoreAttributes.isEmpty())
-        return TRUE;
+        return true;
 
     QValueList<CAType>::iterator it;
     for (it = supportedCoreAttributes.begin(); it !=
          supportedCoreAttributes.end(); ++it)
        if (et->getCoreAttributes()->getType() == *it)
-           return TRUE;
+           return true;
 
-    return FALSE;
+    return false;
 }
 
 long
@@ -245,7 +245,7 @@ ExpressionTreeFunction::isResource(ExpressionTree* et,
                 arg(ops[0]->evalAsString(et)));
             return 0;
         }
-        ops[0]->setValid(TRUE);
+        ops[0]->setValid(true);
     }
 
     return et->getCoreAttributes()->getType() == CA_Resource &&
@@ -272,7 +272,7 @@ ExpressionTreeFunction::isAccount(ExpressionTree* et,
                 arg(ops[0]->evalAsString(et)));
             return 0;
         }
-        ops[0]->setValid(TRUE);
+        ops[0]->setValid(true);
     }
 
     return et->getCoreAttributes()->getType() == CA_Account &&
@@ -309,11 +309,11 @@ ExpressionTreeFunction::isTaskStatus(ExpressionTree* et,
     };
     if (!ops[1]->isValid())
     {
-        bool ok = FALSE;
+        bool ok = false;
         for (uint i = 0; i < (sizeof(stati) / sizeof(char*)); i++)
             if (ops[1]->evalAsString(et) == stati[i])
             {
-                ok = TRUE;
+                ok = true;
                 break;
             }
         if (!ok)

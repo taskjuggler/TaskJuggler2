@@ -28,7 +28,7 @@ AccountList::isSupportedSortingCriteria(int sc)
     switch (sc)
     {
     case TreeMode:
-        return TRUE;
+        return true;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
     }

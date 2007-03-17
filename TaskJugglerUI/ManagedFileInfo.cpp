@@ -81,7 +81,7 @@ ManagedFileInfo::getUniqueName() const
 void
 ManagedFileInfo::setModified()
 {
-    modified = TRUE;
+    modified = true;
     if (browserEntry)
         browserEntry->setPixmap(2, KGlobal::iconLoader()->loadIcon
                                 ("filesaveas", KIcon::Small));

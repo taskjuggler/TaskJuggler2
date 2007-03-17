@@ -63,9 +63,9 @@ Report::Report(Project* p, const QString& f, const QString& df, int dl) :
         accountSortCriteria[i] = CoreAttributesList::SequenceUp;
     }
 
-    showPIDs = FALSE;
+    showPIDs = false;
     loadUnit = days;
-    timeStamp = TRUE;
+    timeStamp = true;
 }
 
 Report::~Report()
@@ -86,7 +86,7 @@ Report::open()
         if (!f.open(IO_WriteOnly, stdout))
         {
             TJMH.errorMessage(i18n("Cannout open stdout"));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -99,11 +99,11 @@ Report::open()
             TJMH.errorMessage
                 (QString(i18n("Cannot open report file %1!\n"))
                  .arg(fullFileName.latin1()));
-            return FALSE;
+            return false;
         }
     }
     s.setDevice(&f);
-    return TRUE;
+    return true;
 }
 
 QString
@@ -132,12 +132,12 @@ Report::setTaskSorting(int sc, int level)
     {
         if ((sc == CoreAttributesList::TreeMode && level > 0) ||
             !TaskList::isSupportedSortingCriteria(sc & 0xFFFF))
-            return FALSE;
+            return false;
         taskSortCriteria[level] = sc;
     }
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 bool
@@ -147,12 +147,12 @@ Report::setResourceSorting(int sc, int level)
     {
         if ((sc == CoreAttributesList::TreeMode && level > 0) ||
             !ResourceList::isSupportedSortingCriteria(sc & 0xFFFF))
-            return FALSE;
+            return false;
         resourceSortCriteria[level] = sc;
     }
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 bool
@@ -162,12 +162,12 @@ Report::setAccountSorting(int sc, int level)
     {
         if ((sc == CoreAttributesList::TreeMode && level > 0) ||
             !AccountList::isSupportedSortingCriteria(sc & 0xFFFF))
-            return FALSE;
+            return false;
         accountSortCriteria[level] = sc;
     }
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 bool
@@ -176,24 +176,24 @@ Report::isHidden(const CoreAttributes* c, ExpressionTree* et) const
     if (!taskRoot.isEmpty() && c->getType() == CA_Task &&
         taskRoot != c->getId().left(taskRoot.length()))
     {
-        return TRUE;
+        return true;
     }
 
     if (!et)
-        return FALSE;
+        return false;
 
     et->clearSymbolTable();
     QStringList allFlags = project->getAllowedFlags();
     for (QStringList::Iterator ait = allFlags.begin(); ait != allFlags.end();
          ++ait)
     {
-        bool found = FALSE;
+        bool found = false;
         QStringList flags = c->getFlagList();
         for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
             if (*it == *ait)
             {
                 et->registerSymbol(*it, 1);
-                found = TRUE;
+                found = true;
                 break;
             }
         if (!found)
@@ -206,20 +206,20 @@ bool
 Report::isRolledUp(const CoreAttributes* c, ExpressionTree* et) const
 {
     if (!et)
-        return FALSE;
+        return false;
 
     et->clearSymbolTable();
     QStringList allFlags = project->getAllowedFlags();
     for (QStringList::Iterator ait = allFlags.begin(); ait != allFlags.end();
          ++ait)
     {
-        bool found = FALSE;
+        bool found = false;
         QStringList flags = c->getFlagList();
         for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
             if (*it == *ait)
             {
                 et->registerSymbol(*it, 1);
-                found = TRUE;
+                found = true;
                 break;
             }
         if (!found)
@@ -281,18 +281,18 @@ const
     for (TaskListIterator tli(project->getTaskListIterator());
          *tli != 0; ++tli)
     {
-        bool resourceLoadedInAnyScenario = FALSE;
+        bool resourceLoadedInAnyScenario = false;
         if (r != 0)
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
                 if ((*tli)->isBookedResource(*it, r))
                 {
-                    resourceLoadedInAnyScenario = TRUE;
+                    resourceLoadedInAnyScenario = true;
                     break;
                 }
         }
-        bool taskOverlapsInAnyScenario = FALSE;
+        bool taskOverlapsInAnyScenario = false;
         Interval iv(start, end);
         QValueList<int>::const_iterator it;
         for (it = scenarios.begin(); it != scenarios.end(); ++it)
@@ -302,7 +302,7 @@ const
                                  (*tli)->getStart(*it) :
                                  (*tli)->getEnd(*it))))
             {
-                taskOverlapsInAnyScenario = TRUE;
+                taskOverlapsInAnyScenario = true;
                 break;
             }
         if (taskOverlapsInAnyScenario &&
@@ -312,7 +312,7 @@ const
             filteredList.append(tli);
         }
         if (hideExp && hideExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
     /* In tasktree sorting mode we need to make sure that we don't hide
@@ -333,7 +333,7 @@ const
     filteredList = list;
 
     if (!rollUpExp)
-        return TRUE;
+        return true;
 
     /* Now we have to remove all sub tasks of rolled-up tasks
      * from the filtered list */
@@ -346,10 +346,10 @@ const
                 if (*tti != *tli)
                     filteredList.removeRef(*tti);
         if (rollUpExp && rollUpExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -375,7 +375,7 @@ const
     for (ResourceListIterator rli(project->getResourceListIterator());
          *rli != 0; ++rli)
     {
-        bool taskLoadedInAnyScenario = FALSE;
+        bool taskLoadedInAnyScenario = false;
         if (t != 0)
         {
             QValueList<int>::const_iterator it;
@@ -384,7 +384,7 @@ const
                 if ((*rli)->getLoad(*it, Interval(start, end),
                                     AllAccounts, t) > 0.0)
                 {
-                    taskLoadedInAnyScenario = TRUE;
+                    taskLoadedInAnyScenario = true;
                     break;
                 }
         }
@@ -394,7 +394,7 @@ const
             filteredList.append(*rli);
         }
         if (hideExp && hideExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
     /* In resourcetree sorting mode we need to make sure that we don't
@@ -412,7 +412,7 @@ const
     filteredList = list;
 
     if (!rollUpExp)
-        return TRUE;
+        return true;
 
     /* Now we have to remove all sub resources of resource in the
      * roll-up list from the filtered list */
@@ -425,10 +425,10 @@ const
                 if (*rti != *rli)
                     filteredList.removeRef(*rti);
         if (rollUpExp && rollUpExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -453,7 +453,7 @@ const
         if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
             filteredList.append(*ali);
         if (hideExp && hideExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
     /* In accounttree sorting mode we need to make sure that we don't hide
@@ -471,7 +471,7 @@ const
     filteredList = list;
 
     if (!rollUpExp)
-        return TRUE;
+        return true;
 
     /* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */
@@ -484,10 +484,10 @@ const
                 if (*ati != *ali)
                     filteredList.removeRef(*ati);
         if (rollUpExp && rollUpExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -520,9 +520,9 @@ Report::setLoadUnit(const QString& u)
     else if (u == KW("longauto"))
         loadUnit = longAuto;
     else
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 void

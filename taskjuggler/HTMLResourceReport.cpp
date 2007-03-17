@@ -20,12 +20,12 @@ bool
 HTMLResourceReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     generateHeader(i18n("Resource Report"));
     tab.generate();
     generateFooter();
 
     f.close();
-    return TRUE;
+    return true;
 }

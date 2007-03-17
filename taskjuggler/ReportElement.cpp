@@ -58,14 +58,14 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     rollUpAccount(0),
     taskRoot(r->getTaskRoot()),
     showPIDs(r->getShowPIDs()),
-    accumulate(FALSE),
+    accumulate(false),
     maxDepthTaskList(1),
     maxDepthResourceList(1),
     maxDepthAccountList(1),
     mt()
 {
-    columns.setAutoDelete(TRUE);
-    columnFormat.setAutoDelete(TRUE);
+    columns.setAutoDelete(true);
+    columnFormat.setAutoDelete(true);
 
     numberFormat = r->getNumberFormat();
     currencyFormat = r->getCurrencyFormat();
@@ -113,8 +113,8 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genAccountLine1 = &ReportElement::genCellName;
     tcf->genSummaryLine1 = &ReportElement::genCellName;
     tcf->hAlign = TableColumnFormat::left;
-    tcf->indent = TRUE;
-    tcf->noWrap = TRUE;
+    tcf->indent = true;
+    tcf->noWrap = true;
     tcf->expandable = true;
 
     tcf = new TableColumnFormat(KW("start"), this, i18n("Start"));
@@ -174,7 +174,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine2 = &ReportElement::genCellDuration;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("effort"), this, i18n("Effort"));
     tcf->genTaskLine1 = &ReportElement::genCellEffort;
@@ -183,21 +183,21 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellEffort;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("freeload"), this, i18n("Free Load"));
     tcf->genResourceLine1 = &ReportElement::genCellFreeLoad;
     tcf->genResourceLine2 = &ReportElement::genCellFreeLoad;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("utilization"), this, i18n("Utilization"));
     tcf->genResourceLine1 = &ReportElement::genCellUtilization;
     tcf->genResourceLine2 = &ReportElement::genCellUtilization;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = numberFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("criticalness"), this, i18n("Criticalness"));
     tcf->genTaskLine1 = &ReportElement::genCellCriticalness;
@@ -278,7 +278,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genTaskLine1 = &ReportElement::genCellCompleted;
     tcf->genTaskLine2 = &ReportElement::genCellCompleted;
     tcf->hAlign = TableColumnFormat::right;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("status"), this, i18n("Status"));
     tcf->genTaskLine1 = &ReportElement::genCellStatus;
@@ -340,7 +340,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellCost;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = currencyFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("revenue"), this, i18n("Revenue"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
@@ -350,7 +350,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellRevenue;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = currencyFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("profit"), this, i18n("Profit"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
@@ -360,7 +360,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genResourceLine2 = &ReportElement::genCellProfit;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = currencyFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("total"), this, i18n("Total"));
     tcf->genHeadLine1 = &ReportElement::genHeadCurrency;
@@ -370,7 +370,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genSummaryLine2 = &ReportElement::genCellSummary;
     tcf->hAlign = TableColumnFormat::right;
     tcf->realFormat = currencyFormat;
-    tcf->indent = TRUE;
+    tcf->indent = true;
 
     tcf = new TableColumnFormat(KW("daily"), this, "");
     tcf->genHeadLine1 = &ReportElement::genHeadDaily1;
@@ -551,12 +551,12 @@ ReportElement::setTaskSorting(int sc, int level)
     {
         if ((sc == CoreAttributesList::TreeMode && level > 0) ||
             !TaskList::isSupportedSortingCriteria(sc & 0xFFFF))
-            return FALSE;
+            return false;
         taskSortCriteria[level] = sc;
     }
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 bool
@@ -566,12 +566,12 @@ ReportElement::setResourceSorting(int sc, int level)
     {
         if ((sc == CoreAttributesList::TreeMode && level > 0) ||
             !ResourceList::isSupportedSortingCriteria(sc & 0xFFFF))
-            return FALSE;
+            return false;
         resourceSortCriteria[level] = sc;
     }
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 bool
@@ -581,12 +581,12 @@ ReportElement::setAccountSorting(int sc, int level)
     {
         if ((sc == CoreAttributesList::TreeMode && level > 0) ||
             !AccountList::isSupportedSortingCriteria(sc & 0xFFFF))
-            return FALSE;
+            return false;
         accountSortCriteria[level] = sc;
     }
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 bool
@@ -600,12 +600,12 @@ ReportElement::isHidden(const CoreAttributes* c, ExpressionTree* et) const
     if (c->getType() == CA_Task && !taskRoot.isEmpty() &&
         taskRoot != c->getId().left(taskRoot.length()))
     {
-        return TRUE;
+        return true;
     }
 
     // If we don't have an ExpressionTree the object is always visible.
     if (!et)
-        return FALSE;
+        return false;
 
     // Pump all flags into the symbol table.
     et->clearSymbolTable();
@@ -613,13 +613,13 @@ ReportElement::isHidden(const CoreAttributes* c, ExpressionTree* et) const
     for (QStringList::Iterator ait = allFlags.begin(); ait != allFlags.end();
          ++ait)
     {
-        bool found = FALSE;
+        bool found = false;
         QStringList flags = c->getFlagList();
         for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
             if (*it == *ait)
             {
                 et->registerSymbol(*it, 1);
-                found = TRUE;
+                found = true;
                 break;
             }
         if (!found)
@@ -638,7 +638,7 @@ ReportElement::isRolledUp(const CoreAttributes* c, ExpressionTree* et) const
     /* If we don't have an ExpressionTree the object's descendants are always
      * visible. */
     if (!et)
-        return FALSE;
+        return false;
 
     // Pump all flags into the symbol table.
     et->clearSymbolTable();
@@ -646,13 +646,13 @@ ReportElement::isRolledUp(const CoreAttributes* c, ExpressionTree* et) const
     for (QStringList::Iterator ait = allFlags.begin(); ait != allFlags.end();
          ++ait)
     {
-        bool found = FALSE;
+        bool found = false;
         QStringList flags = c->getFlagList();
         for (QStringList::Iterator it = flags.begin(); it != flags.end(); ++it)
             if (*it == *ait)
             {
                 et->registerSymbol(*it, 1);
-                found = TRUE;
+                found = true;
                 break;
             }
         if (!found)
@@ -715,18 +715,18 @@ const
     for (TaskListIterator tli(report->getProject()->getTaskListIterator());
          *tli != 0; ++tli)
     {
-        bool resourceLoadedInAnyScenario = FALSE;
+        bool resourceLoadedInAnyScenario = false;
         if (r != 0)
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
                 if ((*tli)->isBookedResource(*it, r))
                 {
-                    resourceLoadedInAnyScenario = TRUE;
+                    resourceLoadedInAnyScenario = true;
                     break;
                 }
         }
-        bool taskOverlapsInAnyScenario = FALSE;
+        bool taskOverlapsInAnyScenario = false;
         Interval iv(start, end);
         QValueList<int>::const_iterator it;
         for (it = scenarios.begin(); it != scenarios.end(); ++it)
@@ -736,7 +736,7 @@ const
                                      (*tli)->getStart(*it) :
                                      (*tli)->getEnd(*it))))
             {
-                taskOverlapsInAnyScenario = TRUE;
+                taskOverlapsInAnyScenario = true;
                 break;
             }
 
@@ -747,7 +747,7 @@ const
             filteredList.append(tli);
         }
         if (hideExp && hideExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
     /* In tasktree sorting mode we need to make sure that we don't hide
      * parents of shown tasks. */
@@ -767,7 +767,7 @@ const
     filteredList = list;
 
     if (!rollUpExp)
-        return TRUE;
+        return true;
 
     /* Now we have to remove all sub tasks of rolled-up tasks
      * from the filtered list */
@@ -780,10 +780,10 @@ const
                 if (*tti != *tli)
                     filteredList.removeRef(*tti);
         if (rollUpExp && rollUpExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -810,14 +810,14 @@ const
                                   getResourceListIterator());
          *rli != 0; ++rli)
     {
-        bool taskLoadedInAnyScenario = FALSE;
+        bool taskLoadedInAnyScenario = false;
         if (t != 0)
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
                 if ((*rli)->isAllocated(*it, Interval(start, end), t) > 0.0)
                 {
-                    taskLoadedInAnyScenario = TRUE;
+                    taskLoadedInAnyScenario = true;
                     break;
                 }
         }
@@ -827,7 +827,7 @@ const
             filteredList.append(*rli);
         }
         if (hideExp && hideExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
     /* In resourcetree sorting mode we need to make sure that we don't
@@ -845,7 +845,7 @@ const
     filteredList = list;
 
     if (!rollUpExp)
-        return TRUE;
+        return true;
 
     /* Now we have to remove all sub resources of resource in the
      * roll-up list from the filtered list */
@@ -859,10 +859,10 @@ const
                 if (*rti != *rli)
                     filteredList.removeRef(*rti);
         if (rollUpExp && rollUpExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -888,7 +888,7 @@ const
         if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
             filteredList.append(*ali);
         if (hideExp && hideExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
     /* In accounttree sorting mode we need to make sure that we don't hide
@@ -906,7 +906,7 @@ const
     filteredList = list;
 
     if (!rollUpExp)
-        return TRUE;
+        return true;
 
     /* Now we have to remove all sub accounts of account in the roll-up list
      * from the filtered list */
@@ -920,10 +920,10 @@ const
                 if (*ati != *ali)
                     filteredList.removeRef(*ati);
         if (rollUpExp && rollUpExp->getErrorFlag())
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void

@@ -22,8 +22,6 @@ public:
     ~HTMLResourceReportElement();
 
     bool generate();
-private:
-    HTMLResourceReportElement(); // leave unimplemented
 } ;
 
 #endif

@@ -787,7 +787,7 @@ TjGanttChart::generateHeaderAndGrid()
         reportDef->getProject()->getStart() &&
         reportDef->getProject()->getNow() < reportDef->getProject()->getEnd())
         markBoundary(time2x(reportDef->getProject()->getNow()),
-                            TRUE, TJRL_NOWLINE);
+                            true, TJRL_NOWLINE);
 }
 
 void
@@ -1002,7 +1002,7 @@ TjGanttChart::generateGanttBackground()
     rect->setZ(TJRL_BACKGROUND);
     rect->show();
 
-    bool toggle = FALSE;
+    bool toggle = false;
     for (int y = 0; y < chartHeight; y += 25) // Just temporary
     {
         toggle = !toggle;

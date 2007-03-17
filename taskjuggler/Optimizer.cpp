@@ -17,9 +17,9 @@
 Optimizer::Optimizer() :
     decisionTree(0, "*Root*"),
     runs(),
-    minimize(TRUE)
+    minimize(true)
 {
-    runs.setAutoDelete(TRUE);
+    runs.setAutoDelete(true);
 }
 
 Optimizer::~Optimizer()

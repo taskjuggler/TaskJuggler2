@@ -25,7 +25,7 @@ public:
         leftX = width = 0;
         xPage = -1;
         maxIndentLevel = 1;
-        isGantt = lastOnPage = FALSE;
+        isGantt = lastOnPage = false;
     }
     ~TjReportColumn() { }
 

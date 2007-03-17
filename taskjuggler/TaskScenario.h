@@ -149,12 +149,12 @@ private:
     QString statusNote;
 
     /**
-     * TRUE if the user has specified the task for the scenario as already
+     * true if the user has specified the task for the scenario as already
      * fully scheduled.
      */
     bool specifiedScheduled;
 
-    /// TRUE if the task has been completely scheduled.
+    /// true if the task has been completely scheduled.
     bool scheduled;
 
     /**

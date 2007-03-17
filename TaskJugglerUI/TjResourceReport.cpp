@@ -67,7 +67,7 @@ TjResourceReport::generateList()
     maxDepth = 0;
 
     if (!report)
-        return FALSE;
+        return false;
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
@@ -79,10 +79,10 @@ TjResourceReport::generateList()
 
     if (!reportElement->filterResourceList
         (resourceList, 0, reportElement->getHideResource(), 0))
-        return FALSE;
+        return false;
 
     if (resourceList.isEmpty())
-        return TRUE;
+        return true;
 
     generateListHeader(i18n("Resource"), reportElement);
 
@@ -129,14 +129,14 @@ TjResourceReport::generateList()
             {
                 if (!report->isRolledUp(*rli,
                                            reportElement->getRollUpResource()))
-                    newLvi->setOpen(TRUE);
+                    newLvi->setOpen(true);
                 // Check if during the evaluation of the expression an error
                 // had occured.
                 if (reportElement->getRollUpResource()->getErrorFlag())
-                    return FALSE;
+                    return false;
             }
             else
-                newLvi->setOpen(TRUE);
+                newLvi->setOpen(true);
         }
         else
         {
@@ -144,13 +144,13 @@ TjResourceReport::generateList()
             newLvi->setPixmap(0, KGlobal::iconLoader()->loadIcon
                               ("tj_resource", KIcon::Small));
 
-            newLvi->setOpen(FALSE);
+            newLvi->setOpen(false);
             // Now we add all tasks that this resource is working on, if the
             // user did not want to hide this task.
             TaskList filteredTaskList = taskList;
             if (!reportElement->filterTaskList
                 (filteredTaskList, *rli, reportElement->getHideTask(), 0))
-                return FALSE;
+                return false;
             reportElement->sortTaskList(filteredTaskList);
 
             for (TaskListIterator tli(filteredTaskList); *tli; ++tli)
@@ -218,7 +218,7 @@ TjResourceReport::generateList()
             }
         }
     }
-    return TRUE;
+    return true;
 }
 
 QString

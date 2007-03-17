@@ -36,8 +36,6 @@ public:
     int getIndentLevel() const { return indentLevel; }
 
 private:
-    TjReportCell() { }
-
     TjReportRow* row;
     TjReportColumn* column;
 

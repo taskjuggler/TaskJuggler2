@@ -21,7 +21,7 @@ Operation::Operation(const Operation& op) :
     name(op.name),
     ops(0),
     opsCount(op.opsCount),
-    valid(FALSE)
+    valid(false)
 {
     if (opsCount > 0)
     {

@@ -65,16 +65,16 @@ ICalReport::generateTODO(Task* task, ResourceList& resourceList)
         /* Start-Time of the task */
         dt.setTime_t(task->getStart(scenarios[0]), Qt::UTC);
         todo->setDtStart(dt);
-        todo->setHasDueDate(TRUE);
+        todo->setHasDueDate(true);
     }
 
     /* Due-Time of the todo -> plan End  */
     dt.setTime_t(task->getEnd(scenarios[0]) + 1, Qt::UTC);
     todo->setDtDue(dt);
-    todo->setHasStartDate(TRUE);
+    todo->setHasStartDate(true);
 
     // Make sure that the time is not ignored.
-    todo->setFloats(FALSE);
+    todo->setFloats(false);
 
     /* Description and summary -> project ID */
     todo->setDescription(task->getNote());
@@ -157,12 +157,12 @@ ICalReport::generate()
     {
         qWarning(i18n("Can not open ICal File '%1' for writing!")
                  .arg(fileName));
-        return FALSE;
+        return false;
     }
 
     TaskList filteredList;
     if (!filterTaskList(filteredList, 0, getHideTask(), getRollUpTask()))
-        return FALSE;
+        return false;
 
     // Make sure that parents are in front of childs. We need this later to set
     // the relation.
@@ -173,7 +173,7 @@ ICalReport::generate()
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, hideResource,
                             rollUpResource))
-        return FALSE;
+        return false;
     sortResourceList(filteredResourceList);
 
     QPtrDict<KCal::Todo> toDoDict;
@@ -215,7 +215,7 @@ ICalReport::generate()
     s << format.toString(&cal).utf8() << endl;
     f.close();
 
-    return TRUE;
+    return true;
 }
 
 #endif

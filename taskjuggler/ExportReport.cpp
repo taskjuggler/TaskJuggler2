@@ -37,11 +37,11 @@ ExportReport::ExportReport(Project* p, const QString& f,
                            const QString& df, int dl) :
     Report(p, f, df, dl),
     taskAttributes(),
-    masterFile(FALSE),
-    listShifts(TRUE),
-    listTasks(TRUE),
-    listResources(TRUE),
-    listBookings(TRUE)
+    masterFile(false),
+    listShifts(true),
+    listTasks(true),
+    listResources(true),
+    listBookings(true)
 {
     if (TaskAttributeDict.empty())
     {
@@ -75,7 +75,7 @@ bool
 ExportReport::generate()
 {
     if (!open())
-        return FALSE;
+        return false;
 
     if (timeStamp)
         s << "/*" << endl
@@ -89,7 +89,7 @@ ExportReport::generate()
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
-        return FALSE;
+        return false;
     sortTaskList(filteredTaskList);
 
     ResourceList filteredResourceList;
@@ -98,35 +98,35 @@ ExportReport::generate()
 
     if (masterFile)
         if (!generateProjectProperty())
-            return FALSE;
+            return false;
 
     if (listShifts)
         if (!generateShiftList())
-            return FALSE;
+            return false;
 
     if (listResources)
         if (!generateResourceList(filteredResourceList, filteredTaskList))
-            return FALSE;
+            return false;
 
     if (listTasks)
     {
         if (!generateProjectIds(filteredTaskList))
-            return FALSE;
+            return false;
 
         if (!generateTaskList(filteredTaskList, filteredResourceList))
-            return FALSE;
+            return false;
 
         if (!generateTaskAttributeList(filteredTaskList))
-            return FALSE;
+            return false;
     }
 
     if (listBookings)
         if (!generateResourceAttributesList(filteredTaskList,
                                             filteredResourceList))
-            return FALSE;
+            return false;
 
     f.close();
-    return TRUE;
+    return true;
 }
 
 bool
@@ -139,13 +139,13 @@ ExportReport::generateProjectProperty()
 
     if (!generateCustomAttributeDeclaration
         ("task", project->getTaskAttributeDict()))
-        return FALSE;
+        return false;
     if (!generateCustomAttributeDeclaration
         ("resource", project->getResourceAttributeDict()))
-        return FALSE;
+        return false;
     if (!generateCustomAttributeDeclaration
         ("account", project->getAccountAttributeDict()))
-        return FALSE;
+        return false;
 
     if (!project->getTimeZone().isEmpty())
         s << "  timezone \"" << project->getTimeZone() << "\"" << endl;
@@ -191,7 +191,7 @@ ExportReport::generateProjectProperty()
 
     s << "}" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -199,7 +199,7 @@ ExportReport::generateCustomAttributeDeclaration(const QString& propertyName,
     QDictIterator<CustomAttributeDefinition> it)
 {
     if (!it.current())
-        return TRUE;
+        return true;
     s << "  extend " << propertyName << " {" << endl;
     for ( ; it.current(); ++it)
     {
@@ -215,14 +215,14 @@ ExportReport::generateCustomAttributeDeclaration(const QString& propertyName,
             default:
                 qFatal("ExportReport::generateCustomAttributeDeclaration: "
                        "Unknown CAT %d", it.current()->getType());
-                return FALSE;
+                return false;
         }
         s << " " << it.currentKey()
             << " \"" << it.current()->getName() << "\" " << endl;
     }
     s << "  }" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -231,7 +231,7 @@ ExportReport::generateScenario(const Scenario* scenario, int indent)
     /* Only include the scenario definition if it was in the list of requested
      * scenarios. */
     if (scenarios.contains(scenario->getIndex() - 1) == 0)
-        return TRUE;
+        return true;
 
     s << QString().fill(' ', indent) << "scenario " << scenario->getId()
         << " \"" << scenario->getName() << "\" {" << endl;
@@ -248,11 +248,11 @@ ExportReport::generateScenario(const Scenario* scenario, int indent)
     for (ScenarioListIterator sci(scenario->getSubListIterator());
          *sci != 0; ++sci)
         if (!generateScenario(*sci, indent))
-            return FALSE;
+            return false;
 
     s << QString().fill(' ', indent - 2) << "}" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -263,10 +263,10 @@ ExportReport::generateShiftList()
     {
         if ((*sli)->getParent() == 0)
             if (!generateShift(*sli, 0))
-                return FALSE;
+                return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -283,11 +283,11 @@ ExportReport::generateShift(const Shift* shift, int indent)
 
     for (ShiftListIterator sli(shift->getSubListIterator()); *sli; ++sli)
         if (!generateShift(*sli, indent + 2))
-            return FALSE;
+            return false;
 
     s << QString().fill(' ', indent) << "}" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -308,13 +308,13 @@ ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
          * it is not listed. */
         if (ref)
         {
-            bool match = TRUE;
+            bool match = true;
             QPtrListIterator<Interval> whIt(*wh[i]);
             QPtrListIterator<Interval> refIt(*ref[i]);
             if ((*whIt == 0 && *refIt != 0) ||
                 (*whIt != 0 && *refIt == 0))
             {
-                match = FALSE;
+                match = false;
             }
             else
             {
@@ -322,18 +322,18 @@ ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
                 {
                     if (*refIt == 0 || **whIt != **refIt)
                     {
-                        match = FALSE;
+                        match = false;
                         break;
                     }
                 }
                 if (*refIt != 0)
-                    match = FALSE;
+                    match = false;
             }
             if (match)
                 continue;
         }
 
-        bool first = TRUE;
+        bool first = true;
         s << QString().fill(' ', indent) <<
             "  workinghours " << days[i] << " ";
         QPtrListIterator<Interval> it(*wh[i]);
@@ -348,7 +348,7 @@ ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
                 if (!first)
                     s << ", ";
                 else
-                    first = FALSE;
+                    first = false;
 
                 s << QString().sprintf("%ld:%02ld",
                                        (*it)->getStart() / (60 * 60),
@@ -363,7 +363,7 @@ ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
         s << endl;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -376,18 +376,18 @@ ExportReport::generateProjectIds(const TaskList& tasks)
             pids.append((*tli)->getProjectId());
 
     s << "projectids ";
-    bool first = TRUE;
+    bool first = true;
     for (QStringList::iterator it = pids.begin(); it != pids.end(); ++it)
     {
         if (first)
-            first = FALSE;
+            first = false;
         else
             s << ", ";
         s << *it;
     }
     s << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -397,9 +397,9 @@ ExportReport::generateResourceList(ResourceList& filteredResourceList,
     for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
         if ((*rli)->getParent() == 0)
             if (!generateResource(filteredResourceList, *rli, 0))
-                return FALSE;
+                return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -415,7 +415,7 @@ ExportReport::generateResource(ResourceList& filteredResourceList,
         if (filteredResourceList.findRef(*srli) >= 0)
         {
             if (!generateResource(filteredResourceList, *srli, indent + 2))
-                return FALSE;
+                return false;
         }
     }
 
@@ -434,7 +434,7 @@ ExportReport::generateResource(ResourceList& filteredResourceList,
 
     s << QString().fill(' ', indent) << "}" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -445,9 +445,9 @@ ExportReport::generateTaskList(TaskList& filteredTaskList,
         if ((*tli)->getParent() == 0 ||
             (*tli)->getParent()->getId() + "." == taskRoot)
             if (!generateTask(filteredTaskList, *tli, 0))
-                return FALSE;
+                return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -492,15 +492,15 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
 
     /* If a container task has sub tasks that are exported as well, we do
      * not export start/end date for those container tasks. */
-    bool taskHasNoSubTasks = TRUE;
+    bool taskHasNoSubTasks = true;
     for (TaskListIterator stli(task->getSubListIterator());
          *stli != 0; ++stli)
     {
         if (filteredTaskList.findRef(*stli) >= 0)
         {
-            taskHasNoSubTasks = FALSE;
+            taskHasNoSubTasks = false;
             if (!generateTask(filteredTaskList, *stli, indent + 2))
-                return FALSE;
+                return false;
         }
     }
     if (taskHasNoSubTasks)
@@ -535,7 +535,7 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
 
     s << QString().fill(' ', indent) << "}" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -543,7 +543,7 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
                               QPtrListIterator<TaskDependency> depIt,
                               const char* tag, int indent)
 {
-    bool first = TRUE;
+    bool first = true;
     bool prev = (tag == "depends");
     for ( ; *depIt != 0; ++depIt)
 
@@ -563,18 +563,18 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
             {
                 s << QString().fill(' ', indent + 2)
                     << tag << " ";
-                first = FALSE;
+                first = false;
             }
             else
                 s << ", ";
             s << stripTaskRoot(((*depIt)->getTaskRef())->getId());
 
-            bool showOptionals = FALSE;
+            bool showOptionals = false;
             for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
                 if ((*depIt)->getGapDuration(sc) != 0 ||
                     (*depIt)->getGapLength(sc) != 0)
                 {
-                    showOptionals = TRUE;
+                    showOptionals = true;
                     break;
                 }
             if (showOptionals)
@@ -603,14 +603,14 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
     if (!first)
         s << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
 ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
 {
     if (taskAttributes.isEmpty())
-        return TRUE;
+        return true;
 
     if (taskAttributes.contains("flags"))
     {
@@ -644,9 +644,9 @@ ExportReport::generateTaskAttributeList(TaskList& filteredTaskList)
         if ((*tli)->getParent() == 0 ||
             (*tli)->getParent()->getId() + "." == taskRoot)
             if (!generateTaskSupplement(filteredTaskList, *tli, 0))
-                return FALSE;
+                return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -666,7 +666,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
         if (filteredTaskList.findRef(*stli) >= 0)
         {
             if (!generateTaskSupplement(filteredTaskList, *stli, indent + 2))
-                return FALSE;
+                return false;
         }
     }
 
@@ -690,14 +690,14 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                         << endl;
                     s << QString().fill(' ', indent + 2) << "flags ";
                     QStringList fl = task->getFlagList();
-                    bool first = TRUE;
+                    bool first = true;
                     for (QStringList::Iterator jt = fl.begin();
                          jt != fl.end(); ++jt)
                     {
                         if (!first)
                             s << ", ";
                         else
-                            first = FALSE;
+                            first = false;
                         s << *jt;
                     }
                     s << endl;
@@ -813,13 +813,13 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
             default:
                 qDebug("ExportReport::generateTaskSupplement(): "
                        "Unknown task attribute %s", (*it).latin1());
-                return FALSE;
+                return false;
         }
     }
 
     s << QString().fill(' ', indent) << "}" << endl;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -828,12 +828,12 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
 {
     for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
     {
-        bool first = TRUE;
+        bool first = true;
         for (QValueListIterator<int> sit = scenarios.begin();
              sit != scenarios.end(); ++sit)
         {
             BookingList bl = (*rli)->getJobs(*sit);
-            bl.setAutoDelete(TRUE);
+            bl.setAutoDelete(true);
             if (bl.isEmpty())
                 continue;
 
@@ -850,7 +850,7 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                     {
                         s << "supplement resource " << (*rli)->getId()
                             << " {" << endl;
-                        first = FALSE;
+                        first = false;
                     }
                     /* Trim the booking interval so that it does not extend
                      * out of the report interval. */
@@ -888,7 +888,7 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
             s << "}" << endl;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -919,7 +919,7 @@ ExportReport::generateCustomAttributeValue(const QString& id,
                    ca->getType());
     }
 
-    return TRUE;
+    return true;
 }
 
 
@@ -939,7 +939,7 @@ ExportReport::addTaskAttribute(const QString& ta)
              it(project->getTaskAttributeDict()); *it; ++it)
             taskAttributes.append(it.currentKey());
 
-        return TRUE;
+        return true;
     }
 
     /* Make sure the 'ta' is a valid attribute name and that we don't
@@ -947,20 +947,20 @@ ExportReport::addTaskAttribute(const QString& ta)
      * error though. */
     if (TaskAttributeDict.find(ta) == TaskAttributeDict.end() &&
         project->getTaskAttribute(ta) == 0)
-        return FALSE;
+        return false;
 
     if (taskAttributes.findIndex(ta) >= 0)
-        return TRUE;
+        return true;
     taskAttributes.append(ta);
-    return TRUE;
+    return true;
 }
 
 void
 ExportReport::resetContentFlags()
 {
-    listShifts = FALSE;
-    listTasks = FALSE;
-    listResources = FALSE;
-    listBookings = FALSE;
+    listShifts = false;
+    listTasks = false;
+    listResources = false;
+    listBookings = false;
 }
 

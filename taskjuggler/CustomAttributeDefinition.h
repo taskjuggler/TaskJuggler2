@@ -26,7 +26,7 @@ public:
     CustomAttributeDefinition(const QString& n, CustomAttributeType t) :
         name(n),
         type(t),
-        inherit(FALSE)
+        inherit(false)
     { }
     ~CustomAttributeDefinition() { }
 

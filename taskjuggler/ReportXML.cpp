@@ -63,7 +63,7 @@ QDomElement ReportXML::createXMLElem( QDomDocument& doc, const QString& name, co
 
 bool ReportXML::generate()
 {
-   if( ! project ) return FALSE;
+   if( ! project ) return false;
    QDomDocument doc( "Project" );
    doc.appendChild( doc.createProcessingInstruction(
         "xml", "version=\"1.0\" encoding=\"UTF-8\""));
@@ -132,6 +132,6 @@ bool ReportXML::generate()
    }
    // qDebug( "XML: %s", xml.latin1() );
 
-    return TRUE;
+    return true;
 }
 

@@ -63,8 +63,6 @@ public:
     const QString& getId() const { return id; }
 
 protected:
-    TableColumnFormat(); // leave unimplemented
-
     QString id;
     ReportElement* el;
     QString title;

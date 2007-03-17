@@ -75,7 +75,7 @@ public:
     long evalAsInt(const CoreAttributes* c);
     long resolve(const QString& symbol);
 
-    void setErrorFlag(bool flag = TRUE)
+    void setErrorFlag(bool flag = true)
     {
         evalErrorFlag = flag;
     }

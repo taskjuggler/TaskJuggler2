@@ -18,14 +18,14 @@ CoreAttributesList::~CoreAttributesList()
     {
         /* We need to make sure that the CoreAttributes are first removed from
          * the list and then deleted. */
-        setAutoDelete(FALSE);
+        setAutoDelete(false);
         while (!isEmpty())
         {
             CoreAttributes* tp = getFirst();
             removeRef(tp);
             delete tp;
         }
-        setAutoDelete(TRUE);
+        setAutoDelete(true);
     }
 }
 
@@ -123,9 +123,9 @@ CoreAttributesList::isSupportedSortingCriteria(int sc)
     case IdUp:
     case NameUp:
     case NameDown:
-        return TRUE;
+        return true;
     default:
-        return FALSE;
+        return false;
     }
 }
 

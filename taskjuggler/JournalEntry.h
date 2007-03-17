@@ -27,8 +27,6 @@ public:
     const QString& getText() const { return text; }
 
 private:
-    JournalEntry(); // leave unimplemented
-
     time_t date;
     QString text;
 } ;

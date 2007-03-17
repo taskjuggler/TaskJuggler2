@@ -32,8 +32,6 @@ public:
     const uint getLine() const { return line; }
 
 private:
-    Macro(); // leave unimplemented
-
     QString name;
     QString value;
     QString file;
@@ -45,7 +43,7 @@ class MacroTable
 public:
     MacroTable() : defFileName(), defFileLine(0), macros()
     {
-        macros.setAutoDelete(TRUE);
+        macros.setAutoDelete(true);
     }
     ~MacroTable() { }
 

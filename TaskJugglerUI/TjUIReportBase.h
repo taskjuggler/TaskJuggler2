@@ -48,8 +48,6 @@ public slots:
     virtual void hide();
 
 protected:
-    TjUIReportBase() { }
-
     ReportManager* manager;
 
     bool loadingProject;

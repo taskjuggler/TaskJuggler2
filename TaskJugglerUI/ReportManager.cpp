@@ -55,7 +55,7 @@ ReportManager::ReportManager(KMainWindow* m, QWidgetStack* v,
                              KListView* b, KListViewSearchLine* s) :
     mainWindow(m), reportStack(v), browser(b), searchLine(s)
 {
-    loadingProject = FALSE;
+    loadingProject = false;
 
     /* Hide the 2nd column. It contains the report ID that is of no interest
      * to the user. */
@@ -276,7 +276,7 @@ ReportManager::generateReport(QListViewItem* lvi)
             mr = *mri;
 
     if (!mr)
-        return TRUE;
+        return true;
 
     bool retVal = true;
     if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
@@ -318,7 +318,7 @@ ReportManager::generateReport(QListViewItem* lvi)
     {
         kdDebug() << "Report type " << mr->getProjectReport()->getType()
             << " not yet supported" << endl;
-        return FALSE;
+        return false;
     }
 
     if (retVal)
@@ -381,7 +381,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             CSVReport* csvReport =
                 dynamic_cast<CSVReport*>(mr->getProjectReport());
             if (!csvReport->generate())
-                return FALSE;
+                return false;
             // show the CSV file in preferred CSV handler
             KURL reportUrl =
                 KURL::fromPathOrURL(mr->getProjectReport()->
@@ -391,7 +391,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             changeStatusBar(i18n("Displaying CSV report: '%1'")
                             .arg(mr->getProjectReport()->getFileName()));
             KRun::runURL(reportUrl, "text/x-csv");
-            return TRUE;
+            return true;
         }
         else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
             tjr = new TjHTMLReport(reportStack, this, mr->getProjectReport());
@@ -400,7 +400,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             ICalReport* icalReport =
                 dynamic_cast<ICalReport*>(mr->getProjectReport());
             if (!icalReport->generate())
-                return FALSE;
+                return false;
             // show the TODO list in Korganizer
             KURL reportUrl =
                 KURL::fromPathOrURL(mr->getProjectReport()->
@@ -410,7 +410,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             changeStatusBar(i18n("Displaying iCalendar: '%1'")
                             .arg(mr->getProjectReport()->getFileName()));
             KRun::runURL(reportUrl, "text/calendar");
-            return TRUE;
+            return true;
         }
         else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
         {
@@ -471,7 +471,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             if (!tjr->generateReport())
             {
                 delete tjr;
-                return FALSE;
+                return false;
             }
 
             reportStack->addWidget(tjr);
@@ -481,7 +481,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
     if (tjr)
         reportStack->raiseWidget(tjr);
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -505,11 +505,11 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
 
     // The XML reports cannot be be viewed, so we disable the entry.
     if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
-        menu.setItemEnabled(1, FALSE);
+        menu.setItemEnabled(1, false);
 
     // The interactive reports can not be generated, so we disable the entry.
     if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
-        menu.setItemEnabled(2, FALSE);
+        menu.setItemEnabled(2, false);
 
     switch (menu.exec(pos))
     {
@@ -521,11 +521,11 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
         }
         case 2:
             errors = !generateReport(lvi);
-            showReportTab = FALSE;
+            showReportTab = false;
             break;
         case 3:
             editReport(mr->getProjectReport());
-            showReportTab = FALSE;
+            showReportTab = false;
             break;
         default:
             break;

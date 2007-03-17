@@ -27,11 +27,11 @@ ExpressionTree::ExpressionTree(const Operation* op) :
     ca(0),
     symbolTable(),
     expression(op),
-    evalErrorFlag(FALSE),
+    evalErrorFlag(false),
     defFileName(),
     defLineNo(0)
 {
-    symbolTable.setAutoDelete(TRUE);
+    symbolTable.setAutoDelete(true);
 }
 
 // do not move this into the header, it expands the library image size
@@ -39,7 +39,7 @@ ExpressionTree::ExpressionTree(const ExpressionTree& et) :
     ca(et.ca),
     symbolTable(et.symbolTable),
     expression(new Operation(*et.expression)),
-    evalErrorFlag(FALSE),
+    evalErrorFlag(false),
     defFileName(),
     defLineNo(0)
 {
@@ -50,11 +50,11 @@ ExpressionTree::ExpressionTree() :
     ca(0),
     symbolTable(),
     expression(0),
-    evalErrorFlag(FALSE),
+    evalErrorFlag(false),
     defFileName(),
     defLineNo(0)
 {
-    symbolTable.setAutoDelete(TRUE);
+    symbolTable.setAutoDelete(true);
 }
 
 ExpressionTree::~ExpressionTree()
@@ -72,7 +72,7 @@ ExpressionTree::setTree(const QString& expr, const Project* proj)
 long
 ExpressionTree::evalAsInt(const CoreAttributes* c)
 {
-    evalErrorFlag = FALSE;
+    evalErrorFlag = false;
     ca = c;
     long val = expression->evalAsInt(this);
 
@@ -104,6 +104,6 @@ ExpressionTree::errorMessage(const char* msg, ...)
 
     TJMH.errorMessage(buf, defFileName, defLineNo);
     delete [] buf;
-    evalErrorFlag = TRUE;
+    evalErrorFlag = true;
 }
 

@@ -38,7 +38,6 @@ public:
     const QString& getDescription() { return description; }
 
 private:
-    Transaction(); // leave unimplemented
     /// The moment when the transaction happened.
     time_t date;
     /// The amount deposited or withdrawn.

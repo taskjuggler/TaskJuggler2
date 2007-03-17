@@ -47,12 +47,12 @@ TjPrintTaskReport::generate()
     if (!reportElement->filterTaskList(filteredTaskList, 0,
                                        reportElement->getHideTask(),
                                        reportElement->getRollUpTask()))
-        return FALSE;
+        return false;
     maxDepthTaskList = filteredTaskList.maxDepth();
     (static_cast<const QtTaskReportElement*>(reportElement))->
         sortTaskList(filteredTaskList);
     if (filteredTaskList.isEmpty())
-        return TRUE;
+        return true;
 
     /* Same for resource list. Just that we don't have to sort it. It needs to
      * be regenerated per task later on. */
@@ -60,7 +60,7 @@ TjPrintTaskReport::generate()
     if (!reportElement->filterResourceList(filteredResourceList, 0,
                                            reportElement->getHideResource(),
                                            reportElement->getRollUpResource()))
-        return FALSE;
+        return false;
     maxDepthResourceList = filteredResourceList.maxDepth();
 
     generateTableHeader();
@@ -77,7 +77,7 @@ TjPrintTaskReport::generate()
         if (!reportElement->filterResourceList
             (filteredResourceList, *tli, reportElement->getHideResource(),
              reportElement->getRollUpResource()))
-            return FALSE;
+            return false;
         reportElement->sortResourceList(filteredResourceList);
         for (ResourceListIterator rli(filteredResourceList); *rli; ++rli)
         {
@@ -92,6 +92,6 @@ TjPrintTaskReport::generate()
 
     layoutPages();
 
-    return TRUE;
+    return true;
 }
 

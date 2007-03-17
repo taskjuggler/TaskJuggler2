@@ -45,10 +45,10 @@ OptimizerRun::followArc(const QString& tag)
     if (dn)
     {
         currentNode = dn;
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void 

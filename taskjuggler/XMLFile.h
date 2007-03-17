@@ -51,7 +51,7 @@ public:
      * This is a file, that is not included by any other file.
      */
     bool readDOM(const QString& file, const QString& parentPath,
-                 const QString& taskPrefix, bool masterfile = FALSE);
+                 const QString& taskPrefix, bool masterfile = false);
 
     /**
      * Calling the parse function will start the processing of the DOM tree

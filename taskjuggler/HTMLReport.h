@@ -51,8 +51,6 @@ public:
     }
 
 protected:
-    HTMLReport(); // leave unimplemented
-
     QString rawStyleSheet;
     QString rawHead;
     QString rawTail;

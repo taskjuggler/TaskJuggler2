@@ -174,7 +174,7 @@ HTMLWeeklyCalendarElement::generateTaksPerDay(
 
         s() << "   <td width=\"" << cellWidth
             << "\" style=\"vertical-align:top\">" << endl;
-        bool first = TRUE;
+        bool first = true;
         int no = 1;
         for (TaskListIterator tli(filteredTaskList); *tli != 0;
              ++tli, ++no)
@@ -188,7 +188,7 @@ HTMLWeeklyCalendarElement::generateTaksPerDay(
             if (first)
             {
                 s() << "     <table width=\"100%\">" << endl;
-                first = FALSE;
+                first = false;
             }
             TableLineInfo tli1;
             tli1.ca1 = tli1.task = *tli;
@@ -198,7 +198,7 @@ HTMLWeeklyCalendarElement::generateTaksPerDay(
 
             if (!filterResourceList(filteredResourceList, *tli,
                                     getHideResource(), getRollUpResource()))
-                return FALSE;
+                return false;
             sortResourceList(filteredResourceList);
             int rNo = 1;
             for (ResourceListIterator rli(filteredResourceList); *rli != 0;
@@ -253,7 +253,7 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
         s() << "   <td width=\"" << cellWidth
             << "\" style=\"vertical-align:top\">"
             << endl;
-        bool first = TRUE;
+        bool first = true;
         int no = 1;
         for (ResourceListIterator rli(filteredResourceList);
              *rli != 0; ++rli, ++no)
@@ -266,7 +266,7 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
             if (first)
             {
                 s() << "     <table width=\"100%\">" << endl;
-                first = FALSE;
+                first = false;
             }
             TableLineInfo tli2;
             tli2.ca1 = tli2.resource = *rli;
@@ -276,12 +276,12 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
 
             /* We only want to show the nested task list for leaf resources.
              * Leaf in this case means "task has no visible childs". */
-            bool hasVisibleChilds = FALSE;
+            bool hasVisibleChilds = false;
             for (ResourceListIterator cli((*rli)->getSubListIterator());
                  *cli; ++cli)
                 if (filteredResourceList.findRef(*cli) >= 0)
                 {
-                    hasVisibleChilds = TRUE;
+                    hasVisibleChilds = true;
                     break;
                 }
 
@@ -289,7 +289,7 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
                 continue;
 
             if (!filterTaskList(filteredTaskList, *rli, hideTask, rollUpTask))
-                return FALSE;
+                return false;
             sortTaskList(filteredTaskList);
 
             int tNo = 1;
@@ -328,14 +328,14 @@ HTMLWeeklyCalendarElement::generate()
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
-        return FALSE;
+        return false;
     sortTaskList(filteredTaskList);
     maxDepthTaskList = filteredTaskList.maxDepth();
 
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, hideResource,
                             rollUpResource))
-        return FALSE;
+        return false;
     sortResourceList(filteredResourceList);
     maxDepthResourceList = filteredResourceList.maxDepth();
 
@@ -385,7 +385,7 @@ HTMLWeeklyCalendarElement::generate()
 
     generateFooter();
 
-    return TRUE;
+    return true;
 }
 
 bool

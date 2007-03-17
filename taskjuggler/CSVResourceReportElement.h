@@ -22,8 +22,6 @@ public:
     ~CSVResourceReportElement() { };
 
     bool generate();
-private:
-    CSVResourceReportElement(); // leave unimplemented
 } ;
 
 #endif

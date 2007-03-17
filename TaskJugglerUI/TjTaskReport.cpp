@@ -68,7 +68,7 @@ TjTaskReport::generateList()
     maxDepth = 0;
 
     if (!report)
-        return FALSE;
+        return false;
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
@@ -87,14 +87,14 @@ TjTaskReport::generateList()
                                        reportElement->getHideTask(), et))
     {
         delete et;
-        return FALSE;
+        return false;
     }
     delete et;
 
     reportElement->sortTaskList(taskList);
 
     if (taskList.isEmpty())
-        return TRUE;
+        return true;
 
     generateListHeader(i18n("Task"), reportElement);
 
@@ -137,12 +137,12 @@ TjTaskReport::generateList()
             {
                 if (!report->isRolledUp(*tli,
                                            reportElement->getRollUpTask()))
-                    newLvi->setOpen(TRUE);
+                    newLvi->setOpen(true);
                 if (reportElement->getRollUpTask()->getErrorFlag())
-                    return FALSE;
+                    return false;
             }
             else
-                newLvi->setOpen(TRUE);
+                newLvi->setOpen(true);
         }
         else if ((*tli)->isMilestone())
         {
@@ -193,7 +193,7 @@ TjTaskReport::generateList()
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 QString

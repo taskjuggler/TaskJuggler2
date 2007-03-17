@@ -117,8 +117,6 @@ public:
 
     virtual void genCellSummary(TableCellInfo* tli);
 protected:
-    HTMLReportElement(); // leave unimplemented
-
     void generateTableHeader();
 
     void generateHeader();
@@ -127,7 +125,7 @@ protected:
     void generateLine(TableLineInfo* tli, int funcSel);
 
     void genCell(const QString& text, TableCellInfo* tli, bool multi,
-                 bool filter = TRUE);
+                 bool filter = true);
 
     void generateTitle(TableCellInfo* tci, const QString& str);
 

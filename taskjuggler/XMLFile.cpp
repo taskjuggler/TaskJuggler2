@@ -303,7 +303,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
         if ((zf = gzdopen(dup(STDIN_FILENO), "rb")) == NULL)
         {
             qWarning(i18n("Cannot open compressed STDIN for reading."));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -312,7 +312,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
         {
             qWarning(i18n("Cannot open compressed file %1 for "
                           "reading.").arg(file));
-            return FALSE;
+            return false;
         }
     }
 
@@ -331,17 +331,17 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
     {
         qWarning(i18n("Cannot close compressed file %1: %2")
                  .arg(file).arg(gzerror(zf, &zError)));
-        return FALSE;
+        return false;
     }
 
     doc = new QDomDocument(file);
     if (!doc->setContent(buf))
     {
         qWarning(i18n("Syntax error in XML file '%1'.").arg(file));
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -358,7 +358,7 @@ XMLFile::parse()
 bool
 XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
 {
-    bool ret = TRUE;
+    bool ret = true;
 
     while (!n.isNull())
     {
@@ -369,7 +369,7 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
             if (!pEl)
             {
                 qWarning(i18n("Unsupported XML element %1").arg(el.tagName()));
-                ret = FALSE;
+                ret = false;
             }
             else
             {
@@ -381,18 +381,18 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
                  * and pass it the ptc. */
                 if (pEl->getPreFunc())
                     if (!((*this).*(pEl->getPreFunc()))(n, ptcCopy))
-                        return FALSE;
+                        return false;
                 /* If sub-elements of this node have been defined in the
                  * parse tree, call this function again to process the
                  * sub-elements. */
                 if (pEl->getNode())
                     if (!parseNode(pEl->getNode(), n.firstChild(), ptcCopy))
-                        return FALSE;
+                        return false;
                 /* If a node post function has been specified, call this
                  * function and pass it the ptc. */
                 if (pEl->getPostFunc())
                     if (!((*this).*(pEl->getPostFunc()))(n, ptcCopy))
-                        return FALSE;
+                        return false;
             }
         }
         n = n.nextSibling();
@@ -404,7 +404,7 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
 bool
 XMLFile::doTaskJuggler(QDomNode&, ParserTreeContext&)
 {
-    return TRUE;
+    return true;
 }
 
 bool
@@ -438,28 +438,28 @@ XMLFile::doProject(QDomNode& n, ParserTreeContext& ptc)
 
     ptc.setScenario(0);
 
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doProjectStart(QDomNode& n, ParserTreeContext&)
 {
     project->setStart(n.toElement().text().toLong());
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doProjectEnd(QDomNode& n, ParserTreeContext&)
 {
     project->setEnd(n.toElement().text().toLong() - 1);
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doProjectNow(QDomNode& n, ParserTreeContext&)
 {
     project->setNow(n.toElement().text().toLong());
-    return TRUE;
+    return true;
 }
 
 bool
@@ -475,7 +475,7 @@ XMLFile::doScenario(QDomNode& n, ParserTreeContext& ptc)
                                       el.attribute("name"), ptc.getScenario());
     ptc.setScenario(scenario);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -487,14 +487,14 @@ XMLFile::doCurrencyFormat(QDomNode& n, ParserTreeContext&)
         (RealFormat(el.attribute("signPrefix"), el.attribute("signSuffix"),
                     el.attribute("thousandSep"), el.attribute("fractionSep"),
                     el.attribute("fracDigits").toInt()));
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doExtend(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.setExtendProperty(n.toElement().attribute("property"));
-    return TRUE;
+    return true;
 }
 
 bool
@@ -513,7 +513,7 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
     {
         qWarning(i18n("Unknown custom attribute %1")
                  .arg(el.attribute("name")));
-        return FALSE;
+        return false;
     }
     ca->setInherit(el.attribute("inherit").toInt());
     if (ptc.getExtendProperty() == "task")
@@ -523,7 +523,7 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
     else if (ptc.getExtendProperty() == "account")
         project->addAccountAttribute(el.attribute("id"), ca);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -597,21 +597,21 @@ XMLFile::doTimeInterval(QDomNode&, ParserTreeContext& ptc)
     ptc.getWorkingHours()->append(iv);
     ptc.setInterval(iv);
 
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doTimeIntervalStart(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getInterval()->setStart(n.toElement().text().toLong());
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doTimeIntervalEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getInterval()->setEnd(n.toElement().text().toLong() - 1);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -622,7 +622,7 @@ XMLFile::doProjectVacation(QDomNode& n, ParserTreeContext& ptc)
     vi->setName(el.attribute("name"));
     ptc.setVacationInterval(vi);
     project->addVacation(vi);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -632,14 +632,14 @@ XMLFile::doResourceVacation(QDomNode& n, ParserTreeContext& ptc)
     Interval* vi = new Interval();
     ptc.setInterval(vi);
     ptc.getResource()->addVacation(vi);
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doCustomAttribute(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.setExtendProperty(n.toElement().attribute("id"));
-    return TRUE;
+    return true;
 }
 
 bool
@@ -649,7 +649,7 @@ XMLFile::doTextAttribute(QDomNode& n, ParserTreeContext& ptc)
     TextAttribute* ta =
         new TextAttribute(el.attribute("text"));
     ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProperty(), ta);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -659,14 +659,14 @@ XMLFile::doReferenceAttribute(QDomNode& n, ParserTreeContext& ptc)
     ReferenceAttribute* ra =
         new ReferenceAttribute(el.attribute("url"), el.attribute("label"));
     ptc.getCoreAttributes()->addCustomAttribute(ptc.getExtendProperty(), ra);
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doShiftList(QDomNode&, ParserTreeContext& ptc)
 {
     ptc.setShift(0);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -683,14 +683,14 @@ XMLFile::doShift(QDomNode& n, ParserTreeContext& ptc)
     for (int i = 0; i < 7; ++i)
         shift->setWorkingHours(i, iv);
 
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doResourceList(QDomNode&, ParserTreeContext& ptc)
 {
     ptc.setResource(0);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -708,7 +708,7 @@ XMLFile::doResource(QDomNode& n, ParserTreeContext& ptc)
 
     ptc.setResource(r);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -721,14 +721,14 @@ XMLFile::doShiftSelection(QDomNode& n, ParserTreeContext& ptc)
         (iv, project->getShift(n.toElement().attribute("shiftId")));
     ptc.getResource()->addShift(ss);
 
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doAccountList(QDomNode&, ParserTreeContext& ptc)
 {
     ptc.setAccount(0);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -743,14 +743,14 @@ XMLFile::doAccount(QDomNode& n, ParserTreeContext& ptc)
                              Cost : Revenue);
     ptc.setAccount(a);
 
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doTaskList(QDomNode&, ParserTreeContext& ptc)
 {
     ptc.setTask(0);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -772,7 +772,7 @@ XMLFile::doTask(QDomNode& n, ParserTreeContext& ptc)
     if (!el.attribute("account").isEmpty())
         t->setAccount(project->getAccount(el.attribute("account")));
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -791,7 +791,7 @@ XMLFile::doTaskScenario(QDomNode& n, ParserTreeContext& ptc)
      * read in. */
     t->setStatusNote(sc, el.attribute("statusNote", ""));
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -799,7 +799,7 @@ XMLFile::doTaskScenarioStart(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setSpecifiedStart(ptc.getScenarioIndex(),
                                      n.toElement().text().toLong());
-    return TRUE;
+    return true;
 }
 
 bool
@@ -807,7 +807,7 @@ XMLFile::doTaskScenarioEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setSpecifiedEnd(ptc.getScenarioIndex(),
                                    n.toElement().text().toLong() - 1);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -815,7 +815,7 @@ XMLFile::doTaskScenarioMaxEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setMaxEnd(ptc.getScenarioIndex(),
                              n.toElement().text().toLong() - 1);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -823,7 +823,7 @@ XMLFile::doTaskScenarioMinEnd(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setMinEnd(ptc.getScenarioIndex(),
                              n.toElement().text().toLong() - 1);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -831,7 +831,7 @@ XMLFile::doTaskScenarioMaxStart(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setMaxStart(ptc.getScenarioIndex(),
                                n.toElement().text().toLong());
-    return TRUE;
+    return true;
 }
 
 bool
@@ -839,7 +839,7 @@ XMLFile::doTaskScenarioMinStart(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setMinStart(ptc.getScenarioIndex(),
                                n.toElement().text().toLong());
-    return TRUE;
+    return true;
 }
 
 bool
@@ -849,7 +849,7 @@ XMLFile::doAllocate(QDomNode&, ParserTreeContext& ptc)
     ptc.getTask()->addAllocation(a);
     ptc.setAllocation(a);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -859,7 +859,7 @@ XMLFile::doCandidate(QDomNode& n, ParserTreeContext& ptc)
     ptc.getAllocation()->addCandidate
         (project->getResource(el.attribute("resourceId")));
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -869,7 +869,7 @@ XMLFile::doFlag(QDomNode& n, ParserTreeContext& ptc)
 
     ptc.getCoreAttributes()->addFlag(el.text());
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -877,7 +877,7 @@ XMLFile::doDepends(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.setTaskDependency
         (ptc.getTask()->addDepends(n.toElement().text()));
-    return TRUE;
+    return true;
 }
 
 bool
@@ -885,7 +885,7 @@ XMLFile::doPrecedes(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.setTaskDependency
         (ptc.getTask()->addPrecedes(n.toElement().text()));
-    return TRUE;
+    return true;
 }
 
 bool
@@ -898,14 +898,14 @@ XMLFile::doDependencyGapScenario(QDomNode& n, ParserTreeContext& ptc)
     ptc.getTaskDependency()->setGapLength
         (sc, el.attribute("gapLength", "0").toLong());
 
-    return TRUE;
+    return true;
 }
 
 bool
 XMLFile::doNote(QDomNode& n, ParserTreeContext& ptc)
 {
     ptc.getTask()->setNote(n.toElement().text());
-    return TRUE;
+    return true;
 }
 
 bool
@@ -917,7 +917,7 @@ XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
     {
         qWarning(i18n("Booking for unknown resource %1")
                  .arg(el.attribute("resourceId")));
-        return FALSE;
+        return false;
     }
     ptc.setResource(resource);
     int sc = project->getScenarioIndex(el.attribute("scenarioId")) - 1;
@@ -925,10 +925,10 @@ XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
     {
         qWarning(i18n("Booking for unknown scenario %1")
                  .arg(el.attribute("scenarioId")));
-        return FALSE;
+        return false;
     }
     ptc.setScenarioIndex(sc);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -936,7 +936,7 @@ XMLFile::doBooking(QDomNode&, ParserTreeContext& ptc)
 {
     Interval* iv = new Interval();
     ptc.setInterval(iv);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -947,11 +947,11 @@ XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
     {
         qWarning(i18n("Booking for unknown task %1")
                  .arg(n.toElement().attribute("taskId")));
-        return FALSE;
+        return false;
     }
     ptc.getResource()->addBooking(ptc.getScenarioIndex(),
                                   new Booking(ptc.getInterval(), t));
 
-    return TRUE;
+    return true;
 }
 

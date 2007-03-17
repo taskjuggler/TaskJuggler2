@@ -46,9 +46,9 @@ VacationList::isVacation(time_t date) const
 {
     for (VacationList::Iterator vli(*this); *vli != 0; ++vli)
         if ((*vli)->contains(date))
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 const QString&

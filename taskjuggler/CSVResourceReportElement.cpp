@@ -53,7 +53,7 @@ CSVResourceReportElement::generate()
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, hideResource,
                             rollUpResource))
-        return FALSE;
+        return false;
     sortResourceList(filteredResourceList);
     maxDepthResourceList = filteredResourceList.maxDepth();
 
@@ -75,6 +75,6 @@ CSVResourceReportElement::generate()
     }
     generateFooter();
 
-    return TRUE;
+    return true;
 }
 

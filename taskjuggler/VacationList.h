@@ -26,7 +26,7 @@ class Interval;
 class VacationList : public QPtrList<VacationInterval>
 {
 public:
-    VacationList() { setAutoDelete(TRUE); }
+    VacationList() { setAutoDelete(true); }
     virtual ~VacationList() {}
 
     typedef QPtrListIterator<VacationInterval> Iterator;

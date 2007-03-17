@@ -35,7 +35,7 @@ public:
     QtReportElement(Report* r, const QString& df, int dl);
     virtual ~QtReportElement() { }
 
-    virtual bool generate()  { return FALSE; }
+    virtual bool generate()  { return false; }
 
     virtual void genHeadDefault(TableCellInfo*) { }
     virtual void genHeadCurrency(TableCellInfo*) { }
@@ -114,10 +114,6 @@ public:
     virtual void genCellKotrusId(TableCellInfo*) { }
     virtual void genCellTotal(TableCellInfo*) { }
     virtual void genCellSummary(TableCellInfo*) { }
-
-protected:
-    QtReportElement(); // leave unimplemented
-
 } ;
 
 #endif

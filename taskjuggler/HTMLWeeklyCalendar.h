@@ -28,8 +28,6 @@ public:
     HTMLWeeklyCalendarElement* getTable() { return &tab; }
 
 private:
-    HTMLWeeklyCalendar(); // leave unimplemented
-
     HTMLWeeklyCalendarElement tab;
 };
 

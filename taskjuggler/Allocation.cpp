@@ -29,14 +29,14 @@
 Allocation::Allocation() :
     limits(0),
     shifts(),
-    persistent(FALSE),
-    mandatory(FALSE),
+    persistent(false),
+    mandatory(false),
     lockedResource(0),
     conflictStart(0),
     candidates(),
     selectionMode(minAllocationProbability)
 {
-    shifts.setAutoDelete(TRUE);
+    shifts.setAutoDelete(true);
 }
 
 Allocation::~Allocation()
@@ -54,7 +54,7 @@ Allocation::Allocation(const Allocation& a) :
     candidates(a.candidates),
     selectionMode(a.selectionMode)
 {
-    shifts.setAutoDelete(TRUE);
+    shifts.setAutoDelete(true);
 
     for (QPtrListIterator<ShiftSelection> sli(a.shifts); *sli; ++sli)
         shifts.append(new ShiftSelection(**sli));
@@ -105,7 +105,7 @@ Allocation::setSelectionMode(const QString& smt)
     else if (smt == KW("random"))
         selectionMode = random;
     else
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 

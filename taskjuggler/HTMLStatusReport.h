@@ -39,8 +39,6 @@ public:
     bool generate();
 
 private:
-    HTMLStatusReport(); // leave unimplemented
-
     QPtrVector< HTMLReportElement > tables;
 } ;
 

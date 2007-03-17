@@ -17,7 +17,7 @@ ParserNode::ParserNode(ParserElement* pEl) :
     parentElement(pEl),
     elements()
 {
-    elements.setAutoDelete(TRUE);
+    elements.setAutoDelete(true);
     if (pEl)
         pEl->setNode(this);
 }

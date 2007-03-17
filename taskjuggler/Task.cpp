@@ -45,7 +45,7 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
     previous(),
     followers(),
     projectId(),
-    milestone(FALSE),
+    milestone(false),
     priority(0),
     scheduling(ASAP),
     responsible(0),
@@ -61,18 +61,18 @@ Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
     doneEffort(0.0),
     doneLength(0.0),
     doneDuration(0.0),
-    workStarted(FALSE),
+    workStarted(false),
     tentativeStart(0),
     tentativeEnd(0),
     lastSlot(0),
-    schedulingDone(FALSE),
-    runAway(FALSE),
+    schedulingDone(false),
+    runAway(false),
     bookedResources()
 {
-    allocations.setAutoDelete(TRUE);
-    shifts.setAutoDelete(TRUE);
-    depends.setAutoDelete(TRUE);
-    precedes.setAutoDelete(TRUE);
+    allocations.setAutoDelete(true);
+    shifts.setAutoDelete(true);
+    depends.setAutoDelete(true);
+    precedes.setAutoDelete(true);
 
     proj->addTask(this);
 
@@ -326,7 +326,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
                 propagateEnd(sc, date + slotDuration - 1);
             else
                 propagateStart(sc, date);
-            schedulingDone = TRUE;
+            schedulingDone = true;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
             return true;
@@ -346,7 +346,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
                 propagateEnd(sc, tentativeEnd);
             else
                 propagateStart(sc, tentativeStart);
-            schedulingDone = TRUE;
+            schedulingDone = true;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
             return true;
@@ -371,7 +371,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
         if ((scheduling == ASAP && (date + slotDuration) >= end) ||
             (scheduling == ALAP && date <= start))
         {
-            schedulingDone = TRUE;
+            schedulingDone = true;
             if (DEBUGTS(4))
                 qDebug("Scheduling of task %s completed", id.latin1());
             return true;
@@ -385,7 +385,7 @@ bool
 Task::scheduleContainer(int sc)
 {
     if (schedulingDone || !isContainer())
-        return TRUE;
+        return true;
 
     time_t nStart = 0;
     time_t nEnd = 0;
@@ -395,7 +395,7 @@ Task::scheduleContainer(int sc)
         /* Make sure that all sub tasks have been scheduled. If not we
          * can't yet schedule this task. */
         if ((*tli)->start == 0 || (*tli)->end == 0)
-            return TRUE;
+            return true;
 
         if (nStart == 0 || (*tli)->start < nStart)
             nStart = (*tli)->start;
@@ -411,9 +411,9 @@ Task::scheduleContainer(int sc)
 
     if (DEBUGTS(4))
         qDebug("Scheduling of task %s completed", id.latin1());
-    schedulingDone = TRUE;
+    schedulingDone = true;
 
-    return FALSE;
+    return false;
 }
 
 void
@@ -429,7 +429,7 @@ Task::propagateStart(int sc, time_t date)
      * well. */
     if (milestone)
     {
-        schedulingDone = TRUE;
+        schedulingDone = true;
         if (end == 0)
             propagateEnd(sc, start - 1);
     }
@@ -481,7 +481,7 @@ Task::propagateEnd(int sc, time_t date)
     {
         if (DEBUGTS(4))
             qDebug("Scheduling of task %s completed", id.latin1());
-        schedulingDone = TRUE;
+        schedulingDone = true;
         if (start == 0)
             propagateStart(sc, end + 1);
     }
@@ -531,8 +531,8 @@ Task::propagateInitialValues(int sc)
 void
 Task::setRunaway()
 {
-    schedulingDone = TRUE;
-    runAway = TRUE;
+    schedulingDone = true;
+    runAway = true;
 }
 
 bool
@@ -543,7 +543,7 @@ Task::isRunaway() const
      */
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->isRunaway())
-            return FALSE;
+            return false;
 
     return runAway;
 }
@@ -579,13 +579,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
     /* If any of the resources is marked as being mandatory, we have to check
      * if this resource is available. In case it's not available we do not
      * allocate any of the other resources for the time slot. */
-    bool allMandatoriesAvailables = TRUE;
+    bool allMandatoriesAvailables = true;
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
         if ((*ali)->isMandatory())
         {
             if (!(*ali)->isOnShift(Interval(date, date + slotDuration - 1)))
             {
-                allMandatoriesAvailables = FALSE;
+                allMandatoriesAvailables = false;
                 break;
             }
             if ((*ali)->isPersistent() && (*ali)->getLockedResource())
@@ -594,7 +594,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 if ((availability = (*ali)->getLockedResource()->
                      isAvailable(date)) > 0)
                 {
-                    allMandatoriesAvailables = FALSE;
+                    allMandatoriesAvailables = false;
                     if (availability >= 4 && !(*ali)->getConflictStart())
                         (*ali)->setConflictStart(date);
                     break;
@@ -604,7 +604,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             {
                 /* For a mandatory allocation with alternatives at least one
                  * of the resources or resource groups must be available. */
-                bool found = FALSE;
+                bool found = false;
                 int maxAvailability = 0;
                 QPtrList<Resource> candidates = (*ali)->getCandidates();
                 for (QPtrListIterator<Resource> rli(candidates);
@@ -613,23 +613,23 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                     /* If a resource group is marked mandatory, all members
                      * of the group must be available. */
                     int availability;
-                    bool allAvailable = TRUE;
+                    bool allAvailable = true;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
                         if ((availability =
                              (*rti)->isAvailable(date)) > 0)
                         {
-                            allAvailable = FALSE;
+                            allAvailable = false;
                             if (availability >= maxAvailability)
                                 maxAvailability = availability;
                         }
                     if (allAvailable)
-                        found = TRUE;
+                        found = true;
                 }
                 if (!found)
                 {
                     if (maxAvailability >= 4 && !(*ali)->getConflictStart())
                         (*ali)->setConflictStart(date);
-                    allMandatoriesAvailables = FALSE;
+                    allMandatoriesAvailables = false;
                     break;
                 }
             }
@@ -725,13 +725,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
         {
             QPtrList<Resource> cl = createCandidateList(sc, date, *ali);
 
-            bool found = FALSE;
+            bool found = false;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                 if (bookResource((*rli), date, slotDuration,
                                  maxAvailability))
                 {
                     (*ali)->setLockedResource(*rli);
-                    found = TRUE;
+                    found = true;
                     break;
                 }
             if (!found && maxAvailability >= 4 && !(*ali)->getConflictStart())
@@ -741,11 +741,11 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 if (DEBUGRS(2))
                 {
                     QString candidates;
-                    bool first = TRUE;
+                    bool first = true;
                     for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                     {
                         if (first)
-                            first = FALSE;
+                            first = false;
                         else
                             candidates += ", ";
                         candidates += (*rli)->getId();
@@ -767,7 +767,7 @@ bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
                    int& maxAvailability)
 {
-    bool booked = FALSE;
+    bool booked = false;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
 
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
@@ -790,7 +790,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
                     end = date + slotDuration - 1;
                 else
                     qFatal("Unknown scheduling mode");
-                workStarted = TRUE;
+                workStarted = true;
             }
 
             tentativeStart = date;
@@ -800,7 +800,7 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
             if (DEBUGTS(6))
                 qDebug(" Booked resource %s (Effort: %f)",
                        (*rti)->getId().latin1(), doneEffort);
-            booked = TRUE;
+            booked = true;
         }
         else if (availability > maxAvailability)
             maxAvailability = availability;
@@ -1437,21 +1437,21 @@ Task::implicitXRef()
          * when in the early stage of a project draft, when you just want to
          * specify the project outline and fill in subtasks and details
          * later. */
-        bool hasStartSpec = FALSE;
-        bool hasEndSpec = FALSE;
-        bool hasDurationSpec = FALSE;
+        bool hasStartSpec = false;
+        bool hasEndSpec = false;
+        bool hasDurationSpec = false;
         for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
         {
             if (scenarios[sc].specifiedStart != 0 || !depends.isEmpty())
-                hasStartSpec = TRUE;
+                hasStartSpec = true;
             if (scenarios[sc].specifiedEnd != 0 || !precedes.isEmpty())
-                hasEndSpec = TRUE;
+                hasEndSpec = true;
             if (scenarios[sc].duration != 0 || scenarios[sc].length != 0 ||
                 scenarios[sc].effort != 0)
-                hasDurationSpec = TRUE;
+                hasDurationSpec = true;
         }
         if  (!hasDurationSpec && (hasStartSpec ^ hasEndSpec))
-            milestone = TRUE;
+            milestone = true;
     }
 }
 
@@ -1498,17 +1498,17 @@ Task::loopDetector(LDIList& chkedTaskList) const
     /* Only check top-level tasks. All other tasks will be checked then as
      * well. */
     if (parent)
-        return FALSE;
+        return false;
     if (DEBUGPF(2))
         qDebug("Running loop detector for task %s", id.latin1());
     // Check ASAP tasks
     LDIList list;
-    if (loopDetection(list, chkedTaskList, FALSE, LoopDetectorInfo::fromParent))
-        return TRUE;
+    if (loopDetection(list, chkedTaskList, false, LoopDetectorInfo::fromParent))
+        return true;
     // Check ALAP tasks
-    if (loopDetection(list, chkedTaskList, TRUE, LoopDetectorInfo::fromParent))
-        return TRUE;
-    return FALSE;
+    if (loopDetection(list, chkedTaskList, true, LoopDetectorInfo::fromParent))
+        return true;
+    return false;
 }
 
 bool
@@ -1580,9 +1580,9 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                 qDebug("%sChecking end of task %s",
                        QString().fill(' ', list.count()).latin1(),
                        id.latin1());
-            if (loopDetection(list, chkedTaskList, TRUE,
+            if (loopDetection(list, chkedTaskList, true,
                               LoopDetectorInfo::fromOtherEnd))
-                return TRUE;
+                return true;
         }
 
         if (caller == LoopDetectorInfo::fromSub ||
@@ -1622,7 +1622,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                     qDebug("%sChecking previous %s of task %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if((*tli)->loopDetection(list, chkedTaskList, TRUE,
+                if((*tli)->loopDetection(list, chkedTaskList, true,
                                          LoopDetectorInfo::fromSucc))
                     return true;
             }
@@ -1707,7 +1707,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                     qDebug("%sChecking follower %s of task %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if ((*tli)->loopDetection(list, chkedTaskList, FALSE,
+                if ((*tli)->loopDetection(list, chkedTaskList, false,
                                           LoopDetectorInfo::fromPrev))
                     return true;
             }
@@ -1719,7 +1719,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
         qDebug("%sNo loops found in %s (%s)",
                  QString().fill(' ', list.count()).latin1(),
                  id.latin1(), atEnd ? "End" : "Start");
-    return FALSE;
+    return false;
 }
 
 bool
@@ -1967,11 +1967,11 @@ Task::hasStartDependency(int sc) const
      * task's end or an implicit dependency on the fixed start time of a
      * parent task. */
     if (scenarios[sc].specifiedStart != 0 || !depends.isEmpty())
-        return TRUE;
+        return true;
     for (Task* p = getParent(); p; p = p->getParent())
         if (p->scenarios[sc].specifiedStart != 0)
-            return TRUE;
-    return FALSE;
+            return true;
+    return false;
 }
 
 bool
@@ -1982,11 +1982,11 @@ Task::hasEndDependency(int sc) const
      * task's start or an implicit dependency on the fixed end time of a
      * parent task. */
     if (scenarios[sc].specifiedEnd != 0 || !precedes.isEmpty())
-        return TRUE;
+        return true;
     for (Task* p = getParent(); p; p = p->getParent())
         if (p->scenarios[sc].specifiedEnd != 0)
-            return TRUE;
-    return FALSE;
+            return true;
+    return false;
 }
 
 bool
@@ -1995,13 +1995,13 @@ Task::hasStartDependency() const
     /* Check whether the task or any of it's sub tasks has a start
      * dependency. */
     if (start != 0 || !previous.isEmpty() || scheduling == ALAP)
-        return TRUE;
+        return true;
 
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->hasStartDependency())
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 bool
@@ -2010,13 +2010,13 @@ Task::hasEndDependency() const
     /* Check whether the task or any of it's sub tasks has an end
      * dependency. */
     if (end != 0 || !followers.isEmpty() || scheduling == ASAP)
-        return TRUE;
+        return true;
 
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if ((*tli)->hasEndDependency())
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 bool
@@ -2054,7 +2054,7 @@ Task::preScheduleOk(int sc)
         errorMessage(i18n
                      ("Task '%1' is marked as scheduled but does not have "
                       "a fixed start and end date.").arg(id));
-        return FALSE;
+        return false;
     }
 
     if (scenarios[sc].effort > 0.0 && allocations.count() == 0 &&
@@ -2064,7 +2064,7 @@ Task::preScheduleOk(int sc)
                      ("No allocations specified for effort based task '%1' "
                       "in '%2' scenario")
                      .arg(id).arg(project->getScenarioId(sc)));
-        return FALSE;
+        return false;
     }
 
     if (scenarios[sc].startBuffer + scenarios[sc].endBuffer >= 100.0)
@@ -2073,7 +2073,7 @@ Task::preScheduleOk(int sc)
                      ("Start and end buffers may not overlap in '%2' "
                       "scenario. So their sum must be smaller then 100%.")
                      .arg(project->getScenarioId(sc)));
-        return FALSE;
+        return false;
     }
 
     int durationSpec = 0;
@@ -2088,7 +2088,7 @@ Task::preScheduleOk(int sc)
         errorMessage(i18n("Task '%1' may only have one duration "
                           "criteria in '%2' scenario.").arg(id)
                      .arg(project->getScenarioId(sc)));
-        return FALSE;
+        return false;
     }
 
     /*
@@ -2109,14 +2109,14 @@ Task::preScheduleOk(int sc)
                          ("Container task '%1' may not have a duration "
                           "criteria in '%2' scenario").arg(id)
                          .arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
         if (milestone)
         {
             errorMessage(i18n
                          ("The container task '%1' may not be a "
                           "milestone.").arg(id));
-            return FALSE;
+            return false;
         }
     }
     else if (milestone)
@@ -2127,7 +2127,7 @@ Task::preScheduleOk(int sc)
                          ("Milestone '%1' may not have a duration "
                           "criteria in '%2' scenario").arg(id)
                          .arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
         /*
         |  M -   ok     |D M -   ok     - M -   err1   -D M -   ok
@@ -2143,7 +2143,7 @@ Task::preScheduleOk(int sc)
             errorMessage(i18n("Milestone '%1' must have a start or end "
                               "specification in '%2' scenario.")
                          .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
         /* err2: different start and end
         |  M |
@@ -2160,7 +2160,7 @@ Task::preScheduleOk(int sc)
                           "and an end specification that do not "
                           "match in the '%2' scenario.").arg(id)
                          .arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -2211,7 +2211,7 @@ Task::preScheduleOk(int sc)
             errorMessage(i18n("Task '%1' has a start, an end and a "
                               "duration specification for '%2' scenario.")
                          .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
         /*
         err2: Underspecified (6 cases)
@@ -2229,7 +2229,7 @@ Task::preScheduleOk(int sc)
                          ("Task '%1' has only a start or end specification "
                           "but no duration for the '%2' scenario.")
                          .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
         /*
         err3: ASAP + Duration must have fixed start (8 cases)
@@ -2248,7 +2248,7 @@ Task::preScheduleOk(int sc)
                          ("Task '%1' needs a start specification to be "
                           "scheduled in ASAP mode in the '%2' scenario.")
                          .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
         /*
         err4: ALAP + Duration must have fixed end (8 cases)
@@ -2267,7 +2267,7 @@ Task::preScheduleOk(int sc)
                          ("Task '%1' needs an end specification to be "
                           "scheduled in ALAP mode in the '%2' scenario.")
                          .arg(id).arg(project->getScenarioId(sc)));
-            return FALSE;
+            return false;
         }
     }
 
@@ -2278,7 +2278,7 @@ Task::preScheduleOk(int sc)
                      ("Task '%1' has a specified start- or endcredit "
                       "but no account assigned in scenario '%2'.")
                      .arg(id).arg(project->getScenarioId(sc)));
-        return FALSE;
+        return false;
     }
 
     if (!scenarios[sc].bookedResources.isEmpty() && scheduling == ALAP &&
@@ -2293,10 +2293,10 @@ Task::preScheduleOk(int sc)
                   "to ALAP. Put 'scheduling asap' at the end of the task "
                   "definition to avoid the problem.")
              .arg(id).arg(project->getScenarioId(sc)));
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2314,13 +2314,13 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
         if (DEBUGPS(2))
             qDebug(QString("Scheduling errors in sub tasks of '%1'.")
                    .arg(id));
-        return FALSE;
+        return false;
     }
 
     /* Runaway errors have already been reported. Since the data of this task
-     * is very likely completely bogus, we just return FALSE. */
+     * is very likely completely bogus, we just return false. */
     if (runAway)
-        return FALSE;
+        return false;
 
     if (DEBUGPS(3))
         qDebug("Checking task %s", id.latin1());
@@ -2329,10 +2329,10 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
      * other error messages. */
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
         if ((*tdi)->getTaskRef()->runAway)
-            return FALSE;
+            return false;
     for (QPtrListIterator<TaskDependency> tdi(precedes); *tdi; ++tdi)
         if ((*tdi)->getTaskRef()->runAway)
-            return FALSE;
+            return false;
 
     if (start == 0)
     {
@@ -2340,7 +2340,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                           "scenario.")
                      .arg(id).arg(scenario));
         errors++;
-        return FALSE;
+        return false;
     }
     if (start < project->getStart() || start > project->getEnd())
     {
@@ -2352,7 +2352,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                      .arg(time2tjp(project->getEnd()))
                      .arg(scenario));
         errors++;
-        return FALSE;
+        return false;
     }
     if (scenarios[sc].minStart != 0 && start < scenarios[sc].minStart)
     {
@@ -2362,7 +2362,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(scenario).arg(id).arg(time2tjp(start))
                        .arg(time2tjp(scenarios[sc].minStart)));
         warnings++;
-        return FALSE;
+        return false;
     }
     if (scenarios[sc].maxStart != 0 && start > scenarios[sc].maxStart)
     {
@@ -2373,14 +2373,14 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(time2tjp(start))
                        .arg(time2tjp(scenarios[sc].maxStart)));
         warnings++;
-        return FALSE;
+        return false;
     }
     if (end == 0)
     {
         errorMessage(i18n("Task '%1' has no '%2' end time.")
                      .arg(id).arg(scenario.lower()));
         errors++;
-        return FALSE;
+        return false;
     }
     if ((end + 1) < project->getStart() || (end > project->getEnd()))
     {
@@ -2392,7 +2392,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                      .arg(time2tjp(project->getEnd() + 1))
                      .arg(scenario));
         errors++;
-        return FALSE;
+        return false;
     }
     if (scenarios[sc].minEnd != 0 && end < scenarios[sc].minEnd)
     {
@@ -2403,7 +2403,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(time2tjp(end + 1))
                        .arg(time2tjp(scenarios[sc].minEnd + 1)));
         warnings++;
-        return FALSE;
+        return false;
     }
     if (scenarios[sc].maxEnd != 0 && end > scenarios[sc].maxEnd)
     {
@@ -2414,7 +2414,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(time2tjp(end + 1))
                        .arg(time2tjp(scenarios[sc].maxEnd + 1)));
         warnings++;
-        return FALSE;
+        return false;
     }
     if (!sub->isEmpty())
     {
@@ -2436,7 +2436,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                                  .arg(time2ISO((*tli)->start).latin1()));
                     errors++;
                 }
-                return FALSE;
+                return false;
             }
             if (end < (*tli)->end)
             {
@@ -2447,7 +2447,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                                  .arg(id).arg(scenario));
                     errors++;
                 }
-                return FALSE;
+                return false;
             }
         }
     }
@@ -2462,7 +2462,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                          .arg((*tli)->id).arg(time2tjp((*tli)->end).latin1())
                          .arg(id).arg(scenario).arg(time2tjp(start)));
             errors++;
-            return FALSE;
+            return false;
         }
     // Check if all following task start after this tasks end.
     for (TaskListIterator tli(successors); *tli != 0; ++tli)
@@ -2474,7 +2474,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                          .arg((*tli)->id).arg(time2tjp((*tli)->start))
                          .arg(id).arg(scenario).arg(time2tjp(end + 1)));
             errors++;
-            return FALSE;
+            return false;
         }
 
     if (!schedulingDone)
@@ -2484,10 +2484,10 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                           "This might be a bug in the TaskJuggler scheduler.")
                      .arg(id).arg(time2tjp(start)).arg(time2tjp(end + 1)));
         errors++;
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 time_t
@@ -2558,9 +2558,9 @@ Task::isSubTask(Task* tsk) const
 {
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if (*tli == tsk || (*tli)->isSubTask(tsk))
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 void
@@ -2624,8 +2624,8 @@ Task::prepareScenario(int sc)
     doneDuration = 0.0;
     doneLength = 0.0;
     tentativeStart = tentativeEnd = 0;
-    workStarted = FALSE;
-    runAway = FALSE;
+    workStarted = false;
+    runAway = false;
     bookedResources.clear();
     bookedResources = scenarios[sc].specifiedBookedResources;
 
@@ -2671,7 +2671,7 @@ Task::prepareScenario(int sc)
         {
             /* Some bookings have been specified for the task, but it is not
              * marked completed yet. */
-            workStarted = TRUE;
+            workStarted = true;
             // Trim start to first booked time slot.
             start = firstSlot;
 
@@ -2692,7 +2692,7 @@ Task::prepareScenario(int sc)
                      * end to the last booking and mark the task as completely
                      * scheduled. */
                     end = scenarios[sc].end = lastSlot;
-                    schedulingDone = TRUE;
+                    schedulingDone = true;
 
                     if (project->getScenario(sc)->getStrictBookings() &&
                         doneEffort > effort)

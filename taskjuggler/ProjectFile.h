@@ -65,7 +65,7 @@ public:
      * This is a file, that is not included by any other file.
      */
     bool open(const QString& file, const QString& parentPath,
-              const QString& taskPrefix, bool masterfile = FALSE);
+              const QString& taskPrefix, bool masterfile = false);
     /**
      * Close the just read input file.
      */
@@ -113,8 +113,6 @@ public:
     MacroTable& getMacros() { return macros; }
 
 private:
-    ProjectFile(); // leave unimplemented
-
     bool readProject();
     bool readExtend();
     bool readScenario(Scenario* parent);
@@ -132,7 +130,7 @@ private:
     bool readResourceBody(Resource* r);
 
     JournalEntry* readJournalEntry();
-    bool readVacation(time_t& from, time_t& to, bool readName = FALSE,
+    bool readVacation(time_t& from, time_t& to, bool readName = false,
                       QString* = 0);
     bool readAccount(Account* parent);
     bool readShift(Shift* parent);

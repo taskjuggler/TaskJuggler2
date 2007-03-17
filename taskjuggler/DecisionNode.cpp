@@ -17,25 +17,25 @@ DecisionNode::DecisionNode(DecisionNode* p, const QString& t) :
     parent(p),
     tag(t),
     rating(0.0),
-    completed(FALSE),
+    completed(false),
     bestArc(0),
     arcs()
 {
-    arcs.setAutoDelete(TRUE);
+    arcs.setAutoDelete(true);
 }
 
 bool
 DecisionNode::checkArc(const QString& t)
 {
     if (completed)
-        return TRUE;
+        return true;
 
     for (QPtrListIterator<DecisionNode> dni(arcs); *dni; ++dni)
         if ((*dni)->tag == t)
             return !(*dni)->completed;
    
     arcs.append(new DecisionNode(this, t));
-    return TRUE;
+    return true;
 }
 
 DecisionNode* 
@@ -60,11 +60,11 @@ DecisionNode::terminateBranch(double r, bool minimize)
         if (DEBUGOP(5))
             qDebug("Completing leaf node %s with rating %f", tag.latin1(), r);
         rating = r;
-        completed = TRUE;
+        completed = true;
     }
     else
     {
-        bool allComleted = TRUE;
+        bool allComleted = true;
         double topRating = 0.0;
         for (QPtrListIterator<DecisionNode> dni(arcs); *dni; ++dni)
         {
@@ -72,7 +72,7 @@ DecisionNode::terminateBranch(double r, bool minimize)
             {
                 if (DEBUGOP(5))
                     qDebug("%s not yet completed", (*dni)->tag.latin1());
-                allComleted = FALSE;
+                allComleted = false;
                 break;
             }
             if (topRating == 0.0 || 
@@ -89,7 +89,7 @@ DecisionNode::terminateBranch(double r, bool minimize)
                 qDebug("Completing node %s with rating %f", tag.latin1(),
                        topRating);
             rating = topRating;
-            completed = TRUE;
+            completed = true;
         }
     }
 

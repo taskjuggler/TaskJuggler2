@@ -34,7 +34,7 @@ CoreAttributes::CoreAttributes(Project* p, const QString& i,
     flags(),
     customAttributes()
 {
-    customAttributes.setAutoDelete(TRUE);
+    customAttributes.setAutoDelete(true);
     if (parent_)
         parent_->sub->append(this);
 }
@@ -163,7 +163,7 @@ bool
 CoreAttributes::hasSameAncestor(const CoreAttributes* c) const
 {
     if (c == 0)
-        return FALSE;
+        return false;
 
     CoreAttributes const* p1;
     for (p1 = this; p1->parent; p1 = p1->parent)
@@ -178,26 +178,26 @@ bool
 CoreAttributes::isDescendentOf(const CoreAttributes* c) const
 {
     if (c == 0)
-        return FALSE;
+        return false;
 
     for (CoreAttributes const* p = this; p; p = p->parent)
         if (p == c)
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 bool
 CoreAttributes::isParentOf(const CoreAttributes* c) const
 {
     if (!c)
-        return FALSE;
+        return false;
 
     for (CoreAttributes const* p = c->parent; p; p = p->parent)
         if (p == this)
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 bool

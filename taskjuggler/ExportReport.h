@@ -42,8 +42,6 @@ public:
     void setListBookings(bool lb) { listBookings = lb; }
 
 private:
-    ExportReport(); // leave unimplemented
-
     bool generateProjectProperty();
     bool generateCustomAttributeDeclaration(const QString& propertyName,
              QDictIterator<CustomAttributeDefinition> it);

@@ -100,9 +100,6 @@ protected:
     QMap<QString, double>* memory;
 
     uint subColumns;
-
-private:
-    TableColumnInfo(); // leave unimplemented
 } ;
 
 #endif

@@ -48,7 +48,7 @@ public:
     void setFracDigits(uint fd) { fracDigits = fd; }
     uint getFracDigits() const { return fracDigits; }
     
-    QString format(double val, bool showZeroFract = TRUE) const;
+    QString format(double val, bool showZeroFract = true) const;
 
 private:
     QString signPrefix;

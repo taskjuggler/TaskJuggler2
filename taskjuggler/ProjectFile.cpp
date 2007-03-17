@@ -66,7 +66,7 @@ ProjectFile::ProjectFile(Project* p) :
     includedFiles(),
     macros()
 {
-    openFiles.setAutoDelete(TRUE);
+    openFiles.setAutoDelete(true);
 }
 
 bool
@@ -108,7 +108,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
         if (DEBUGPF(2))
             qDebug("Ignoring already read file %s",
                      absFileName.latin1());
-        return TRUE;
+        return true;
     }
 
     FileInfo* fi = new FileInfo(this, absFileName, taskPrefix);
@@ -117,7 +117,7 @@ ProjectFile::open(const QString& file, const QString& parentPath,
     {
         errorMessage(i18n("Cannot read file '%1'").arg(absFileName));
         delete fi;
-        return FALSE;
+        return false;
     }
 
     // Register source file
@@ -137,18 +137,18 @@ ProjectFile::open(const QString& file, const QString& parentPath,
     macros.setMacro(new Macro("now", time2tjp(proj->getNow()),
                               openFiles.last()->getFile(), 0));
 
-    return TRUE;
+    return true;
 }
 
 bool
 ProjectFile::close()
 {
-    bool error = FALSE;
+    bool error = false;
 
     FileInfo* fi = openFiles.getLast();
 
     if (!fi->close())
-        error = TRUE;
+        error = true;
     if (DEBUGPF(2))
         qDebug("Finished file %s", fi->getFile().latin1());
     openFiles.removeLast();
@@ -181,7 +181,7 @@ ProjectFile::parse()
         switch (tt = nextToken(token))
         {
         case EndOfFile:
-            return TRUE;
+            return true;
         case ID:
             // Only macro and include are allowed prior to the project header.
             if (proj->getEnd() == 0 &&
@@ -191,39 +191,39 @@ ProjectFile::parse()
                 errorMessage
                     (i18n("The project properties must be defined prior to "
                           "any account, shift, task or resource."));
-                return FALSE;
+                return false;
             }
 
             if (token == KW("task"))
             {
                 if (!readTask(0))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("account"))
             {
                 if (!readAccount(0))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("resource"))
             {
                 if (!readResource(0))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("shift"))
             {
                 if (!readShift(0))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("vacation"))
             {
                 time_t from, to;
                 QString name;
-                if (!readVacation(from, to, TRUE, &name))
-                    return FALSE;
+                if (!readVacation(from, to, true, &name))
+                    return false;
                 proj->addVacation(name, Interval(from, to));
                 break;
             }
@@ -231,7 +231,7 @@ ProjectFile::parse()
             {
                 int priority;
                 if (!readPriority(priority))
-                    return FALSE;
+                    return false;
                 proj->setPriority(priority);
                 break;
             }
@@ -241,7 +241,7 @@ ProjectFile::parse()
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value exptected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setMinEffort(token.toDouble());
                 break;
@@ -252,7 +252,7 @@ ProjectFile::parse()
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value exptected"));
-                    return FALSE;
+                    return false;
                 }
                 UsageLimits* limits = new UsageLimits;
                 limits->setDailyMax
@@ -266,7 +266,7 @@ ProjectFile::parse()
             {
                 UsageLimits* limits;
                 if ((limits = readLimits()) == 0)
-                    return FALSE;
+                    return false;
                 proj->setResourceLimits(limits);
                 break;
             }
@@ -276,7 +276,7 @@ ProjectFile::parse()
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value exptected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setRate(token.toDouble());
                 break;
@@ -287,14 +287,14 @@ ProjectFile::parse()
                     (i18n("ERROR: 'currency' is no longer a property. It's "
                           "now an optional project attribute. Please fix "
                           "your project file."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("currencydigits"))
             {
                 errorMessage
                     (i18n("ERROR: 'currencydigits' has been deprecated. "
                           "Please use 'currencyformat' instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "timingresolution")
             {
@@ -302,7 +302,7 @@ ProjectFile::parse()
                     (i18n("ERROR: 'timingresolution' is no longer a "
                           "property. It's now an optional project attribute. "
                           "Please fix your project file."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("workinghours"))
             {
@@ -310,14 +310,14 @@ ProjectFile::parse()
                     (i18n("ERROR: 'workinghours' is no longer a property. "
                           "It's now an optional project attribute. Please fix "
                           "your project file."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("copyright"))
             {
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setCopyright(token);
                 break;
@@ -325,7 +325,7 @@ ProjectFile::parse()
             else if (token == KW("include"))
             {
                 if (!readInclude())
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("macro"))
@@ -334,20 +334,20 @@ ProjectFile::parse()
                 if (nextToken(id) != ID)
                 {
                     errorMessage(i18n("Macro ID expected"));
-                    return FALSE;
+                    return false;
                 }
                 QString file = openFiles.last()->getFile();
                 uint line = openFiles.last()->getLine();
                 if (nextToken(token) != MacroBody)
                 {
                     errorMessage(i18n("Macro body expected"));
-                    return FALSE;
+                    return false;
                 }
                 Macro* macro = new Macro(id, token, file, line);
                 if (!macros.addMacro(macro))
                 {
                     errorMessage(i18n("Macro has been defined already"));
-                    return FALSE;
+                    return false;
                 }
                 break;
             }
@@ -359,7 +359,7 @@ ProjectFile::parse()
                     if (nextToken(flag) != ID)
                     {
                         errorMessage(i18n("flag ID expected"));
-                        return FALSE;
+                        return false;
                     }
 
                     /* Flags can be declared multiple times, but we
@@ -378,7 +378,7 @@ ProjectFile::parse()
             else if (token == KW("project"))
             {
                 if (!readProject())
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("projectid"))
@@ -389,7 +389,7 @@ ProjectFile::parse()
                     if (nextToken(id) != ID)
                     {
                         errorMessage(i18n("Project ID expected"));
-                        return FALSE;
+                        return false;
                     }
 
                     if (!proj->addId(id))
@@ -397,7 +397,7 @@ ProjectFile::parse()
                         errorMessage
                             (i18n("Project ID %1 has already been registered")
                              .arg(id));
-                        return FALSE;
+                        return false;
                     }
 
                     if ((tt = nextToken(token)) != COMMA)
@@ -416,10 +416,10 @@ ProjectFile::parse()
                     if (nextToken(id) != ID)
                     {
                         errorMessage(i18n("Project ID expected"));
-                        return FALSE;
+                        return false;
                     }
 
-                    proj->addId(id, FALSE);
+                    proj->addId(id, false);
 
                     if ((tt = nextToken(token)) != COMMA)
                     {
@@ -435,18 +435,18 @@ ProjectFile::parse()
                     (i18n("ERROR: The keyword 'xmltaskreport' is "
                           "deprecated. Please use the keyword 'xmlreport' "
                           "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("xmlreport"))
             {
                if(!readXMLReport())
-                  return FALSE;
+                  return false;
                break;
             }
             else if (token == KW("icalreport"))
             {
                if( !readICalTaskReport())
-                  return FALSE;
+                  return false;
                break;
             }
             else if (token == KW("htmltaskreport") ||
@@ -456,7 +456,7 @@ ProjectFile::parse()
                      token == KW("htmlaccountreport"))
             {
                if (!readHTMLReport(token))
-                   return FALSE;
+                   return false;
                break;
             }
             else if (token == KW("taskreport") ||
@@ -464,13 +464,13 @@ ProjectFile::parse()
                      token == KW("accountreport"))
             {
                 if (!readReport(token))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("htmlstatusreport"))
             {
                 if (!readHTMLStatusReport())
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("csvtaskreport") ||
@@ -478,13 +478,13 @@ ProjectFile::parse()
                      token == KW("csvaccountreport"))
             {
                 if (!readCSVReport(token))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("export"))
             {
                 if (!readExportReport())
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("kotrusmode"))
@@ -494,7 +494,7 @@ ProjectFile::parse()
                      token != KW("nokotrus")))
                 {
                     errorMessage(i18n("Unknown kotrus mode"));
-                    return FALSE;
+                    return false;
                 }
                 if (token != KW("nokotrus"))
                 {
@@ -510,22 +510,22 @@ ProjectFile::parse()
                     (token != KW("task") && (token != KW("resource"))))
                 {
                     errorMessage(i18n("'task' or 'resource' expected"));
-                    return FALSE;
+                    return false;
                 }
                 if ((token == "task" && !readTaskSupplement("")) ||
                     (token == "resource" && !readResourceSupplement()))
-                    return FALSE;
+                    return false;
                 break;
             }
             // break missing on purpose!
         default:
             errorMessage(i18n("Syntax Error at '%1'!").arg(token));
-            return FALSE;
+            return false;
         }
         qApp->processEvents();
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -538,7 +538,7 @@ ProjectFile::readProject()
         errorMessage
             (i18n("Illegal redefinition of project property. It can only "
                   "be defined once."));
-        return FALSE;
+        return false;
     }
 
     if (proj->accountCount() > 0 || proj->resourceCount() > 0 ||
@@ -547,31 +547,31 @@ ProjectFile::readProject()
         errorMessage
             (i18n("The project properties must be defined prior to any "
                   "account, shift, task or resource."));
-        return FALSE;
+        return false;
     }
 
     if (nextToken(token) != ID)
     {
         errorMessage(i18n("Project ID expected"));
-        return FALSE;
+        return false;
     }
     if (!proj->addId(token))
     {
         errorMessage
             (i18n("Project ID %1 has already been registered")
              .arg(token));
-        return FALSE;
+        return false;
     }
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("Project name expected"));
-        return FALSE;
+        return false;
     }
     proj->setName(token);
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("Version string expected"));
-        return FALSE;
+        return false;
     }
     proj->setVersion(token);
     Interval iv;
@@ -588,7 +588,7 @@ ProjectFile::readProject()
                               line));
 
     TokenType tt;
-    bool scenariosDefined = FALSE;
+    bool scenariosDefined = false;
     if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
@@ -596,7 +596,7 @@ ProjectFile::readProject()
             if ((tt = nextToken(token)) != ID && tt != RBRACE)
             {
                 errorMessage(i18n("Attribute ID expected"));
-                return FALSE;
+                return false;
             }
             if (tt == RBRACE)
                 break;
@@ -606,7 +606,7 @@ ProjectFile::readProject()
                 QPtrList<Interval> l;
                 if (!readWorkingHours(dow, &l))
                 {
-                    return FALSE;
+                    return false;
                 }
 
                 for (int d = 0; d < 7; ++d)
@@ -618,7 +618,7 @@ ProjectFile::readProject()
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real number expected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setDailyWorkingHours(token.toDouble());
             }
@@ -627,7 +627,7 @@ ProjectFile::readProject()
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real number expected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setYearlyWorkingDays(token.toDouble());
             }
@@ -635,7 +635,7 @@ ProjectFile::readProject()
             {
                 time_t now;
                 if (!readDate(now, 0))
-                    return FALSE;
+                    return false;
                 proj->setNow(now);
                 macros.setMacro(new Macro("now", time2tjp(now),
                                           openFiles.last()->getFile(),
@@ -645,18 +645,18 @@ ProjectFile::readProject()
             {
                 ulong resolution;
                 if (!readTimeValue(resolution))
-                    return FALSE;
+                    return false;
                 if (resolution < 60 * 5)
                 {
                     errorMessage(i18n("timing resolution must be at least 5 "
                                       "min"));
-                    return FALSE;
+                    return false;
                 }
                 if (resolution > 60 * 60)
                 {
                     errorMessage(i18n("timing resolution may not exceed "
                                       "1 hour"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setScheduleGranularity(resolution);
 
@@ -667,12 +667,12 @@ ProjectFile::readProject()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Timezone name expected"));
-                    return FALSE;
+                    return false;
                 }
                 if (!proj->setTimeZone(token))
                 {
                     errorMessage(getUtilityError());
-                    return FALSE;
+                    return false;
                 }
             }
             else if (token == KW("timeformat"))
@@ -680,7 +680,7 @@ ProjectFile::readProject()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setTimeFormat(token);
             }
@@ -689,7 +689,7 @@ ProjectFile::readProject()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setShortTimeFormat(token);
             }
@@ -697,14 +697,14 @@ ProjectFile::readProject()
             {
                 RealFormat format;
                 if (!readRealFormat(&format))
-                    return FALSE;
+                    return false;
                 proj->setNumberFormat(format);
             }
             else if (token == KW("currencyformat"))
             {
                 RealFormat format;
                 if (!readRealFormat(&format))
-                    return FALSE;
+                    return false;
                 proj->setCurrencyFormat(format);
             }
             else if (token == KW("currency"))
@@ -712,22 +712,22 @@ ProjectFile::readProject()
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
                 proj->setCurrency(token);
             }
             else if (token == KW("weekstartsmonday"))
             {
-                proj->setWeekStartsMonday(TRUE);
+                proj->setWeekStartsMonday(true);
             }
             else if (token == KW("weekstartssunday"))
             {
-                proj->setWeekStartsMonday(FALSE);
+                proj->setWeekStartsMonday(false);
             }
             else if (token == KW("extend"))
             {
                 if (!readExtend())
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("scenario"))
             {
@@ -736,21 +736,21 @@ ProjectFile::readProject()
                     errorMessage("There can only be one top-level scenario. "
                                  "All other scenarios must be nested into "
                                  "the top-level scenario.");
-                    return FALSE;
+                    return false;
                 }
                 if (!readScenario(0))
-                    return FALSE;
-                scenariosDefined = TRUE;
+                    return false;
+                scenariosDefined = true;
             }
             else if (token == KW("allowredefinitions"))
             {
-                proj->setAllowRedefinitions(TRUE);
+                proj->setAllowRedefinitions(true);
             }
             else if (token == KW("journalentry"))
             {
                 JournalEntry* entry;
                 if ((entry = readJournalEntry()) == 0)
-                    return FALSE;
+                    return false;
 
                 proj->addJournalEntry(entry);
             }
@@ -767,19 +767,19 @@ ProjectFile::readProject()
             else if (token == KW("include"))
             {
                 if (!readInclude())
-                    return FALSE;
+                    return false;
             }
             else
             {
                 errorMessage(i18n("Unknown attribute %1").arg(token));
-                return FALSE;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -793,13 +793,13 @@ ProjectFile::readExtend()
     {
         errorMessage(i18n("'%1' is not a property. Please use 'task', "
                           "'resource' or 'account'.").arg(property));
-        return FALSE;
+        return false;
     }
     QString token;
     if (nextToken(token) != LBRACE)
     {
         errorMessage(i18n("'{' expected."));
-        return FALSE;
+        return false;
     }
     TokenType tt;
     for ( ; ; )
@@ -813,33 +813,33 @@ ProjectFile::readExtend()
             errorMessage(i18n("'%1' is not a known custom attribute type. "
                               "Please use 'reference' or 'text'.")
                          .arg(attrType));
-            return FALSE;
+            return false;
         }
         QString attrID;
         if (nextToken(attrID) != ID)
         {
             errorMessage(i18n("Attribute ID expected."));
-            return FALSE;
+            return false;
         }
         if (attrID[0].upper() != attrID[0])
         {
             errorMessage(i18n("User defined attribute IDs must start with "
                               "a capital letter to avoid conflicts with "
                               "future TaskJuggler keywords."));
-            return FALSE;
+            return false;
         }
         QString attrName;
         if (nextToken(attrName) != STRING)
         {
             errorMessage(i18n("String expected"));
-            return FALSE;
+            return false;
         }
         CustomAttributeType cat = CAT_Undefined;
         if (attrType == KW("reference"))
             cat = CAT_Reference;
         else if (attrType == KW("text"))
             cat = CAT_Text;
-        bool ok = FALSE;
+        bool ok = false;
         CustomAttributeDefinition* ca =
             new CustomAttributeDefinition(attrName, cat);
         if (property == "task")
@@ -854,7 +854,7 @@ ProjectFile::readExtend()
                          "declared for the property '%2'.")
                 .arg(attrID).arg(property));
             delete ca;
-            return FALSE;
+            return false;
         }
 
         if ((tt = nextToken(token)) != LBRACE)
@@ -870,20 +870,20 @@ ProjectFile::readExtend()
             {
                 errorMessage(i18n("Attribute ID exprected."));
                 delete ca;
-                return FALSE;
+                return false;
             }
             if (token == KW("inherit"))
-                ca->setInherit(TRUE);
+                ca->setInherit(true);
             else
             {
                 errorMessage(i18n("Attribute ID expected."));
                 delete ca;
-                return FALSE;
+                return false;
             }
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -894,14 +894,14 @@ ProjectFile::readScenario(Scenario* parent)
     {
         errorMessage(i18n("Scenario ID expected. '%1' is not a scenario "
                           "id.").arg(id));
-        return FALSE;
+        return false;
     }
     QString name;
     if (nextToken(name) != STRING)
     {
         errorMessage(i18n("Scenario name expected. '%1' is not a valid "
                           "scenario name.").arg(name));
-        return FALSE;
+        return false;
     }
 
     /* If the scenario has no parent, we delete the old top-level scenario and
@@ -919,12 +919,12 @@ ProjectFile::readScenario(Scenario* parent)
             tt = nextToken(token);
             if (tt == RBRACE)
             {
-                return TRUE;
+                return true;
             }
             else if (token == KW("scenario"))
             {
                 if (!readScenario(scenario))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("disabled"))
             {
@@ -964,14 +964,14 @@ ProjectFile::readScenario(Scenario* parent)
             {
                 errorMessage(i18n("Unknown scenario attribute '%1'")
                              .arg(token));
-                return FALSE;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -1052,16 +1052,16 @@ ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
     else
     {
         if ((fh = fopen(fileName, append ? "a" : "w")) == 0)
-            return FALSE;
+            return false;
         f.reset(new QTextStream(fh, append ? IO_Append : IO_WriteOnly));
     }
     *f << masterFile << ": \\" << endl;
-    bool first = TRUE;
+    bool first = true;
     for (QStringList::ConstIterator it = includedFiles.begin();
          it != includedFiles.end(); ++it)
     {
         if (first)
-            first = FALSE;
+            first = false;
         else
             *f << " \\" << endl;
         *f << "  " << *it;
@@ -1070,7 +1070,7 @@ ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
     if (!fileName.isEmpty())
         fclose(fh);
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -1095,14 +1095,14 @@ ProjectFile::readInclude()
     if (nextToken(fileName) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
     if (fileName.right(4) != ".tji" &&
         fileName.right(5) != ".tjsp")
     {
         errorMessage(i18n("ERROR: The include file '%1' should have a "
                           "'.tji' extension.").arg(fileName));
-        return FALSE;
+        return false;
     }
 
     QString token;
@@ -1123,12 +1123,12 @@ ProjectFile::readInclude()
                 if ((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID)
                 {
                     errorMessage(i18n("Task ID expected"));
-                    return FALSE;
+                    return false;
                 }
                 if (!proj->getTask(getTaskPrefix() + token))
                 {
                     errorMessage(i18n("Task prefix must be a known task"));
-                    return FALSE;
+                    return false;
                 }
                 taskPrefix = getTaskPrefix() + token + ".";
             }
@@ -1136,7 +1136,7 @@ ProjectFile::readInclude()
             {
                 errorMessage(i18n("Invalid optional attribute \'%1\'")
                              .arg(token));
-                return FALSE;
+                return false;
             }
         }
     }
@@ -1144,9 +1144,9 @@ ProjectFile::readInclude()
         returnToken(tt, token);
 
     if (!open(fileName, parentPath, taskPrefix))
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -1157,7 +1157,7 @@ ProjectFile::readCustomAttribute(CoreAttributes* property, const QString& id,
     {
         QString ref, label;
         if (!readReference(ref, label))
-            return FALSE;
+            return false;
         ReferenceAttribute* ra = new ReferenceAttribute(ref, label);
         property->addCustomAttribute(id, ra);
     }
@@ -1172,13 +1172,13 @@ ProjectFile::readCustomAttribute(CoreAttributes* property, const QString& id,
         else
         {
             errorMessage(i18n("String expected"));
-            return FALSE;
+            return false;
         }
     }
     else
         qFatal("ProjectFile::readCustomAttribute(): unknown type");
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -1195,7 +1195,7 @@ ProjectFile::readTask(Task* parent)
         (tt != ABSOLUTE_ID) && (tt != RELATIVE_ID))
     {
         errorMessage(i18n("ID expected"));
-        return FALSE;
+        return false;
     }
 
     if (tt == RELATIVE_ID)
@@ -1213,7 +1213,7 @@ ProjectFile::readTask(Task* parent)
                 {
                     errorMessage(i18n("Invalid relative task ID '%1'")
                                  .arg(id));
-                    return FALSE;
+                    return false;
                 }
                 id = id.right(id.length() - 1);
             }
@@ -1221,7 +1221,7 @@ ProjectFile::readTask(Task* parent)
             {
                 QString tn = (parent ? parent->getId() + "." : QString())
                     + id.left(id.find('.'));
-                bool found = FALSE;
+                bool found = false;
                 for (TaskListIterator tli(parent ?
                                           parent->getSubListIterator() :
                                           proj->getTaskListIterator());
@@ -1230,13 +1230,13 @@ ProjectFile::readTask(Task* parent)
                     {
                         parent = *tli;
                         id = id.right(id.length() - id.find('.') - 1);
-                        found = TRUE;
+                        found = true;
                         break;
                     }
                 if (!found)
                 {
                     errorMessage(i18n("Task '%1' unknown").arg(tn));
-                    return FALSE;
+                    return false;
                 }
             }
         } while (id[0] == '!' || id.find('.') >= 0);
@@ -1248,7 +1248,7 @@ ProjectFile::readTask(Task* parent)
         {
             errorMessage(i18n("Task '%1' has not been defined")
                          .arg(path));
-            return FALSE;
+            return false;
         }
         id = id.right(id.length() - id.findRev('.', -1) - 1);
     }
@@ -1257,7 +1257,7 @@ ProjectFile::readTask(Task* parent)
     if ((tt = nextToken(name)) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
 
     /*
@@ -1291,14 +1291,14 @@ ProjectFile::readTask(Task* parent)
                          ("Redefinition of task '%1' with different name '%2'. "
                           "Previous name was '%3'.")
                      .arg(id).arg(name).arg(task->getName()));
-                return FALSE;
+                return false;
             }
         }
         else
         {
             errorMessage(i18n("Task %1 has already been declared")
                          .arg(id));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -1311,7 +1311,7 @@ ProjectFile::readTask(Task* parent)
     if ((tt = nextToken(token)) == LBRACE)
     {
         if (!readTaskBody(task))
-            return FALSE;
+            return false;
     }
     else
         returnToken(tt, token);
@@ -1319,10 +1319,10 @@ ProjectFile::readTask(Task* parent)
     if (task->getName().isEmpty())
     {
         errorMessage(i18n("No name specified for task '%1'").arg(id));
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -1347,12 +1347,12 @@ ProjectFile::readTaskSupplement(QString prefix)
     {
         errorMessage(i18n("Task '%1' has not been defined yet")
             .arg(prefix.isEmpty() ? token : prefix + token));
-        return FALSE;
+        return false;
     }
     if (nextToken(token) != LBRACE)
     {
         errorMessage(i18n("'}' expected"));
-        return FALSE;
+        return false;
     }
     return readTaskBody(task);
 }
@@ -1378,11 +1378,11 @@ ProjectFile::readTaskBody(Task* task)
                 {
                     errorMessage(i18n("Scenario ID expected. '%1' is not "
                                       "a defined scenario.").arg(token));
-                    return FALSE;
+                    return false;
                 }
                 tt = nextToken(token);
-                if (readTaskScenarioAttribute(token, task, sc - 1, TRUE) < 1)
-                    return FALSE;
+                if (readTaskScenarioAttribute(token, task, sc - 1, true) < 1)
+                    return false;
                 continue;
             }
             else
@@ -1392,9 +1392,9 @@ ProjectFile::readTaskBody(Task* task)
                 if (!readCustomAttribute(task, token,
                                          proj->getTaskAttribute(token)->
                                          getType()))
-                    return FALSE;
+                    return false;
             }
-            else if ((res = readTaskScenarioAttribute(token, task, 0, FALSE))
+            else if ((res = readTaskScenarioAttribute(token, task, 0, false))
                      > 0)
                 ;   // intentionally empty statement
             else if (res < 0)
@@ -1402,7 +1402,7 @@ ProjectFile::readTaskBody(Task* task)
             else if (token == KW("task"))
             {
                 if (!readTask(task))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("note"))
             {
@@ -1411,7 +1411,7 @@ ProjectFile::readTaskBody(Task* task)
                 else
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
             }
             else if (token == KW("milestone"))
@@ -1423,49 +1423,49 @@ ProjectFile::readTaskBody(Task* task)
                 errorMessage(i18n("ERROR: 'actualstart' has been "
                                   "deprecated. Please use 'actual:start' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "actualend")
             {
                 errorMessage(i18n("ERROR: 'actualend' has been "
                                   "deprecated. Please use 'actual:end' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "actuallength")
             {
                 errorMessage(i18n("ERROR: 'actuallength' has been "
                                   "deprecated. Please use 'actual:length' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "actualeffort")
             {
                 errorMessage(i18n("ERROR: 'actualeffort' has been "
                                   "deprecated. Please use 'actual:effort' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "actualduration")
             {
                 errorMessage(i18n("ERROR: 'actualduration' has been "
                                   "deprecated. Please use 'actual:duration' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "planscheduled")
             {
                 errorMessage(i18n("ERROR: 'planscheduled' has been "
                                   "deprecated. Please use 'plan:scheduled' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == "actualscheduled")
             {
                 errorMessage(i18n("ERROR: 'actualscheduled' has been "
                                   "deprecated. Please use 'actual:scheduled' "
                                   "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("responsible"))
             {
@@ -1474,7 +1474,7 @@ ProjectFile::readTaskBody(Task* task)
                     (r = proj->getResource(token)) == 0)
                 {
                     errorMessage(i18n("Resource ID expected"));
-                    return FALSE;
+                    return false;
                 }
                 task->setResponsible(r);
             }
@@ -1483,11 +1483,11 @@ ProjectFile::readTaskBody(Task* task)
                 Interval iv(proj->getStart(), proj->getEnd());
                 Shift* s;
                 if ((s = readShiftSelection(iv)) == 0)
-                    return FALSE;
+                    return false;
                 if (!task->addShift(iv, s))
                 {
                     errorMessage(i18n("Shift intervals may not overlap"));
-                    return FALSE;
+                    return false;
                 }
             }
             else if (token == KW("purge"))
@@ -1502,7 +1502,7 @@ ProjectFile::readTaskBody(Task* task)
                     else
                     {
                         errorMessage(i18n("Unknown attribute %1").arg(token));
-                        return FALSE;
+                        return false;
                     }
                 } while ((tt = nextToken(token)) == COMMA);
                 returnToken(tt, token);
@@ -1512,7 +1512,7 @@ ProjectFile::readTaskBody(Task* task)
                 do
                 {
                     if (!readAllocate(task))
-                        return FALSE;
+                        return false;
                 } while ((tt = nextToken(token)) == COMMA);
                 returnToken(tt, token);
             }
@@ -1523,7 +1523,7 @@ ProjectFile::readTaskBody(Task* task)
                     errorMessage
                         (i18n("Dependencies of container tasks must be "
                               "specified prior to any sub tasks."));
-                    return FALSE;
+                    return false;
                 }
                 for ( ; ; )
                 {
@@ -1532,7 +1532,7 @@ ProjectFile::readTaskBody(Task* task)
                         tt != RELATIVE_ID && tt != ABSOLUTE_ID)
                     {
                         errorMessage(i18n("Task ID expected"));
-                        return FALSE;
+                        return false;
                     }
                     if (tt == ABSOLUTE_ID || tt == ID)
                         id = getTaskPrefix() + id;
@@ -1541,7 +1541,7 @@ ProjectFile::readTaskBody(Task* task)
                     if ((tt = nextToken(token)) == LBRACE)
                     {
                         if (!readTaskDepOptions(td))
-                            return FALSE;
+                            return false;
                         tt = nextToken(token);
                     }
                     if (tt != COMMA)
@@ -1558,7 +1558,7 @@ ProjectFile::readTaskBody(Task* task)
                     errorMessage
                         (i18n("Dependencies of container tasks must be "
                               "specified prior to any sub tasks."));
-                    return FALSE;
+                    return false;
                 }
                 for ( ; ; )
                 {
@@ -1567,7 +1567,7 @@ ProjectFile::readTaskBody(Task* task)
                         tt != RELATIVE_ID && tt != ABSOLUTE_ID)
                     {
                         errorMessage(i18n("Task ID expected"));
-                        return FALSE;
+                        return false;
                     }
                     if (tt == ABSOLUTE_ID || tt == ID)
                         id = getTaskPrefix() + id;
@@ -1576,7 +1576,7 @@ ProjectFile::readTaskBody(Task* task)
                     if ((tt = nextToken(token)) == LBRACE)
                     {
                         if (!readTaskDepOptions(td))
-                            return FALSE;
+                            return false;
                         tt = nextToken(token);
                     }
                     if (tt != COMMA)
@@ -1596,7 +1596,7 @@ ProjectFile::readTaskBody(Task* task)
                 else
                 {
                     errorMessage(i18n("Unknown scheduling policy"));
-                    return FALSE;
+                    return false;
                 }
             }
             else if (token == KW("flags"))
@@ -1607,7 +1607,7 @@ ProjectFile::readTaskBody(Task* task)
                     if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
                     {
                         errorMessage(i18n("Flag unknown"));
-                        return FALSE;
+                        return false;
                     }
                     task->addFlag(flag);
                     if ((tt = nextToken(token)) != COMMA)
@@ -1621,7 +1621,7 @@ ProjectFile::readTaskBody(Task* task)
             {
                 int priority;
                 if (!readPriority(priority))
-                    return FALSE;
+                    return false;
                 task->setPriority(priority);
             }
             else if (token == KW("account"))
@@ -1631,7 +1631,7 @@ ProjectFile::readTaskBody(Task* task)
                     proj->getAccount(account) == 0)
                 {
                     errorMessage(i18n("Account ID expected"));
-                    return FALSE;
+                    return false;
                 }
                 task->setAccount(proj->getAccount(account));
             }
@@ -1641,7 +1641,7 @@ ProjectFile::readTaskBody(Task* task)
                     !proj->isValidId(token))
                 {
                     errorMessage(i18n("Project ID expected"));
-                    return FALSE;
+                    return false;
                 }
                 task->setProjectId(token);
             }
@@ -1649,7 +1649,7 @@ ProjectFile::readTaskBody(Task* task)
             {
                 QString ref, label;
                 if (!readReference(ref, label))
-                    return FALSE;
+                    return false;
                 task->setReference(ref, label);
             }
             else if (token == KW("supplement"))
@@ -1657,18 +1657,18 @@ ProjectFile::readTaskBody(Task* task)
                 if (nextToken(token) != ID || (token != KW("task")))
                 {
                     errorMessage(i18n("'task' expected"));
-                    return FALSE;
+                    return false;
                 }
                 if ((token == "task" &&
                      !readTaskSupplement(task->getId())))
-                    return FALSE;
+                    return false;
                 break;
             }
             else if (token == KW("journalentry"))
             {
                 JournalEntry* entry;
                 if ((entry = readJournalEntry()) == 0)
-                    return FALSE;
+                    return false;
 
                 task->addJournalEntry(entry);
                 break;
@@ -1681,12 +1681,12 @@ ProjectFile::readTaskBody(Task* task)
                           "between flag declaration and flag attributes. "
                           "Please use the 'taskprefix' attribute of 'include' "
                           "ouside of tasks instead."));
-                return FALSE;
+                return false;
             }
             else
             {
                 errorMessage(i18n("Illegal task attribute '%1'").arg(token));
-                return FALSE;
+                return false;
             }
             break;
         case RBRACE:
@@ -1695,11 +1695,11 @@ ProjectFile::readTaskBody(Task* task)
         default:
             errorMessage(i18n("Task attribute expected. '%1' is no "
                               "known task attribute.").arg(token));
-            return FALSE;
+            return false;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 int
@@ -1709,21 +1709,21 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
     if (attribute == KW("length"))
     {
         double d;
-        if (!readTimeFrame(d, TRUE))
+        if (!readTimeFrame(d, true))
             return -1;
         task->setLength(sc, d);
     }
     else if (attribute == KW("effort"))
     {
         double d;
-        if (!readTimeFrame(d, TRUE))
+        if (!readTimeFrame(d, true))
             return -1;
         task->setEffort(sc, d);
     }
     else if (attribute == KW("duration"))
     {
         double d;
-        if (!readTimeFrame(d, FALSE))
+        if (!readTimeFrame(d, false))
             return -1;
         task->setDuration(sc, d);
     }
@@ -1787,7 +1787,7 @@ ProjectFile::readTaskScenarioAttribute(const QString attribute, Task* task,
         task->setMaxEnd(sc, val);
     }
     else if (attribute == KW("scheduled"))
-        task->setSpecifiedScheduled(sc, TRUE);
+        task->setSpecifiedScheduled(sc, true);
     else if (attribute == KW("startbuffer"))
     {
         double value;
@@ -1868,7 +1868,7 @@ JournalEntry*
 ProjectFile::readJournalEntry()
 {
     time_t date;
-    if (!readDate(date, 0, FALSE))
+    if (!readDate(date, 0, false))
         return 0;
 
     QString text;
@@ -1890,7 +1890,7 @@ ProjectFile::readVacation(time_t& from, time_t& to, bool readName,
         if ((tt = nextToken(*n)) != STRING)
         {
             errorMessage(i18n("String expected"));
-            return FALSE;
+            return false;
         }
     }
     Interval iv;
@@ -1944,39 +1944,39 @@ ProjectFile::readRealFormat(RealFormat* format)
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
     format->setSignPrefix(token);
 
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
     format->setSignSuffix(token);
 
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
     format->setThousandSep(token);
 
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
     format->setFractionSep(token);
 
     if (nextToken(token) != INTEGER || token.toInt() < 0 || token.toInt() > 5)
     {
         errorMessage(i18n("Number between 0 and 5 expected"));
-        return FALSE;
+        return false;
     }
     format->setFracDigits(token.toInt());
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -1986,7 +1986,7 @@ ProjectFile::readReference(QString& ref, QString& label)
     if (nextToken(ref) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
     label = ref;
 
@@ -2001,20 +2001,20 @@ ProjectFile::readReference(QString& ref, QString& label)
                 if (nextToken(label) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
             }
             else
             {
                 errorMessage(i18n("ID or '}' expected"));
-                return FALSE;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2026,15 +2026,15 @@ ProjectFile::readPercent(double& value)
     if ((tt = nextToken(token)) != INTEGER && tt != REAL)
     {
         errorMessage(i18n("Number expected"));
-        return FALSE;
+        return false;
     }
     value = token.toDouble();
     if (value < 0.0 || value > 100.0)
     {
         errorMessage(i18n("Value must be between 0 and 100"));
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2048,13 +2048,13 @@ ProjectFile::readResource(Resource* parent)
     if (nextToken(id) != ID)
     {
         errorMessage(i18n("ID expected"));
-        return FALSE;
+        return false;
     }
     QString name;
     if (nextToken(name) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
 
     Resource* r;
@@ -2068,14 +2068,14 @@ ProjectFile::readResource(Resource* parent)
                          ("Redefinition of resource '%1' with different "
                           "name '%2'. Previous name was '%3'.")
                      .arg(id).arg(name).arg(r->getName()));
-                return FALSE;
+                return false;
             }
         }
         else
         {
             errorMessage(i18n("Resource %1 has already been defined")
                          .arg(id));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -2091,12 +2091,12 @@ ProjectFile::readResource(Resource* parent)
     {
         // read optional attributes
         if (!readResourceBody(r))
-            return FALSE;
+            return false;
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2107,12 +2107,12 @@ ProjectFile::readResourceSupplement()
     if (nextToken(token) != ID || (r = proj->getResource(token)) == 0)
     {
         errorMessage(i18n("Already defined resource ID expected"));
-        return FALSE;
+        return false;
     }
     if (nextToken(token) != LBRACE)
     {
         errorMessage(i18n("'{' expected"));
-        return FALSE;
+        return false;
     }
     return readResourceBody(r);
 }
@@ -2130,7 +2130,7 @@ ProjectFile::readResourceBody(Resource* r)
         if (tt != ID)
         {
             errorMessage(i18n("Unknown attribute '%1'").arg(token));
-            return FALSE;
+            return false;
         }
         int sc = 0;
         if ((nextTT = nextToken(next)) == COLON)
@@ -2139,7 +2139,7 @@ ProjectFile::readResourceBody(Resource* r)
             {
                 errorMessage(i18n("Scenario ID expected. '%1' is not "
                                   "a defined scenario.").arg(token));
-                return FALSE;
+                return false;
             }
             tt = nextToken(token);
             // Now make sure that the attribute is really scenario specific.
@@ -2157,7 +2157,7 @@ ProjectFile::readResourceBody(Resource* r)
             if (!readCustomAttribute(r, token,
                                      proj->getResourceAttribute(token)->
                                      getType()))
-                return FALSE;
+                return false;
         }
         else if (token == KW("booking"))
         {
@@ -2167,7 +2167,7 @@ ProjectFile::readResourceBody(Resource* r)
         else if (token == KW("resource"))
         {
             if (!readResource(r))
-                return FALSE;
+                return false;
         }
         else if (token == KW("mineffort"))
         {
@@ -2175,7 +2175,7 @@ ProjectFile::readResourceBody(Resource* r)
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Real value exptected"));
-                return FALSE;
+                return false;
             }
             r->setMinEffort(token.toDouble());
         }
@@ -2185,7 +2185,7 @@ ProjectFile::readResourceBody(Resource* r)
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Real value exptected"));
-                return FALSE;
+                return false;
             }
             UsageLimits* limits = new UsageLimits;
             limits->setDailyMax
@@ -2198,7 +2198,7 @@ ProjectFile::readResourceBody(Resource* r)
         {
             UsageLimits* limits;
             if ((limits = readLimits()) == 0)
-                return FALSE;
+                return false;
             r->setLimits(limits);
         }
         else if (token == KW("efficiency"))
@@ -2207,7 +2207,7 @@ ProjectFile::readResourceBody(Resource* r)
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Read value expected"));
-                return FALSE;
+                return false;
             }
             r->setEfficiency(token.toDouble());
         }
@@ -2217,7 +2217,7 @@ ProjectFile::readResourceBody(Resource* r)
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
                 errorMessage(i18n("Real value exptected"));
-                return FALSE;
+                return false;
             }
             r->setRate(token.toDouble());
         }
@@ -2226,7 +2226,7 @@ ProjectFile::readResourceBody(Resource* r)
             if (nextToken(token) != STRING)
             {
                 errorMessage(i18n("String expected"));
-                return FALSE;
+                return false;
             }
             r->setKotrusId(token);
         }
@@ -2236,7 +2236,7 @@ ProjectFile::readResourceBody(Resource* r)
             if (!readInterval(*iv, false))
             {
                 delete iv;
-                return FALSE;
+                return false;
             }
             r->addVacation(iv);
         }
@@ -2246,7 +2246,7 @@ ProjectFile::readResourceBody(Resource* r)
             QPtrList<Interval> l;
             if (!readWorkingHours(dow, &l))
             {
-                return FALSE;
+                return false;
             }
 
             for (int d = 0; d < 7; ++d)
@@ -2258,11 +2258,11 @@ ProjectFile::readResourceBody(Resource* r)
             Interval iv(proj->getStart(), proj->getEnd());
             Shift* s;
             if ((s = readShiftSelection(iv)) == 0)
-                return FALSE;
+                return false;
             if (!r->addShift(iv, s))
             {
                 errorMessage(i18n("Shift interval overlaps with other"));
-                return FALSE;
+                return false;
             }
         }
         else if (token == KW("flags"))
@@ -2273,7 +2273,7 @@ ProjectFile::readResourceBody(Resource* r)
                 if (nextToken(flag) != ID || !proj->isAllowedFlag(flag))
                 {
                     errorMessage(i18n("flag unknown"));
-                    return FALSE;
+                    return false;
                 }
                 r->addFlag(flag);
                 if ((tt = nextToken(token)) != COMMA)
@@ -2293,7 +2293,7 @@ ProjectFile::readResourceBody(Resource* r)
                 else
                 {
                     errorMessage(i18n("Unknown attribute %1").arg(token));
-                    return FALSE;
+                    return false;
                 }
             } while ((tt = nextToken(token)) == COMMA);
             returnToken(tt, token);
@@ -2302,7 +2302,7 @@ ProjectFile::readResourceBody(Resource* r)
         {
             JournalEntry* entry;
             if ((entry = readJournalEntry()) == 0)
-                return FALSE;
+                return false;
 
             r->addJournalEntry(entry);
         }
@@ -2312,16 +2312,16 @@ ProjectFile::readResourceBody(Resource* r)
                 (i18n("ERROR: The 'include' attribute is no longer "
                       "supported within resources since it caused ambiguoties "
                       "between flag declaration and flag attributes."));
-            return FALSE;
+            return false;
         }
         else
         {
             errorMessage(i18n("Unknown attribute '%1'").arg(token));
-            return FALSE;
+            return false;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2335,20 +2335,20 @@ ProjectFile::readShift(Shift* parent)
     if (nextToken(id) != ID)
     {
         errorMessage(i18n("ID expected"));
-        return FALSE;
+        return false;
     }
     QString name;
     if (nextToken(name) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
 
     if (proj->getShift(id))
     {
         errorMessage(i18n("Shift %1 has already been defined")
                      .arg(id));
-        return FALSE;
+        return false;
     }
 
     Shift* s = new Shift(proj, id, name, parent, definitionFile,
@@ -2365,12 +2365,12 @@ ProjectFile::readShift(Shift* parent)
             if (tt != ID)
             {
                 errorMessage(i18n("Unknown attribute '%1'").arg(token));
-                return FALSE;
+                return false;
             }
             if (token == KW("shift"))
             {
                 if (!readShift(s))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("workinghours"))
             {
@@ -2378,7 +2378,7 @@ ProjectFile::readShift(Shift* parent)
                 QPtrList<Interval> l;
                 if (!readWorkingHours(dow, &l))
                 {
-                    return FALSE;
+                    return false;
                 }
 
                 for (int d = 0; d < 7; ++d)
@@ -2391,19 +2391,19 @@ ProjectFile::readShift(Shift* parent)
                     (i18n("ERROR: The 'include' attribute is no longer "
                           "supported within shifts since it caused ambiguoties "
                           "between flag declaration and flag attributes."));
-                return FALSE;
+                return false;
             }
             else
             {
                 errorMessage(i18n("Unknown attribute '%1'").arg(token));
-                return FALSE;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 Shift*
@@ -2565,21 +2565,21 @@ ProjectFile::readAccount(Account* parent)
     if (nextToken(id) != ID)
     {
         errorMessage(i18n("ID expected"));
-        return FALSE;
+        return false;
     }
 
     if (proj->getAccount(id))
     {
         errorMessage(i18n("Account %1 has already been defined")
                      .arg(id));
-        return FALSE;
+        return false;
     }
 
     QString name;
     if (nextToken(name) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
     AccountType acctType;
     if (parent == 0)
@@ -2591,7 +2591,7 @@ ProjectFile::readAccount(Account* parent)
                                     at != KW("revenue")))
         {
             errorMessage(i18n("Account type 'cost' or 'revenue' expected"));
-            return FALSE;
+            return false;
         }
         acctType = at == KW("cost") ? Cost : Revenue;
     }
@@ -2609,14 +2609,14 @@ ProjectFile::readAccount(Account* parent)
                          ("Redefinition of account '%1' with different "
                           "name '%2'. Previous name was '%3'.")
                      .arg(id).arg(name).arg(a->getName()));
-                return FALSE;
+                return false;
             }
         }
         else
         {
             errorMessage(i18n("Account '%1' has already been defined")
                          .arg(id));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -2630,8 +2630,8 @@ ProjectFile::readAccount(Account* parent)
     QString token;
     if ((tt = nextToken(token)) == LBRACE)
     {
-        bool hasSubAccounts = FALSE;
-        bool cantBeParent = FALSE;
+        bool hasSubAccounts = false;
+        bool cantBeParent = false;
         // read optional attributes
         while ((tt = nextToken(token)) != RBRACE)
         {
@@ -2639,52 +2639,52 @@ ProjectFile::readAccount(Account* parent)
             {
                 errorMessage(i18n("Unknown attribute '%1'")
                              .arg(token));
-                return FALSE;
+                return false;
             }
             if (proj->getAccountAttribute(token))
             {
                 if (!readCustomAttribute(a, token,
                                          proj->getAccountAttribute(token)->
                                          getType()))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("account") && !cantBeParent)
             {
                 if (!readAccount(a))
-                    return FALSE;
-                hasSubAccounts = TRUE;
+                    return false;
+                hasSubAccounts = true;
             }
             else if (token == KW("credit"))
             {
                 if (!readCredit(a))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("kotrusid") && !hasSubAccounts)
             {
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
                 a->setKotrusId(token);
-                cantBeParent = TRUE;
+                cantBeParent = true;
             }
             else if (token == KW("include"))
             {
                 if (!readInclude())
-                    return FALSE;
+                    return false;
             }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2692,13 +2692,13 @@ ProjectFile::readCredit(Account* a)
 {
     time_t date;
     if (!readDate(date, 0))
-        return FALSE;
+        return false;
 
     QString description;
     if (nextToken(description) != STRING)
     {
         errorMessage(i18n("String expected"));
-        return FALSE;
+        return false;
     }
 
     QString token;
@@ -2706,12 +2706,12 @@ ProjectFile::readCredit(Account* a)
     if ((tt = nextToken(token)) != REAL && tt != INTEGER)
     {
         errorMessage(i18n("Real value expected"));
-        return FALSE;
+        return false;
     }
     Transaction* t = new Transaction(date, token.toDouble(), description);
     a->credit(t);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2722,7 +2722,7 @@ ProjectFile::readAllocate(Task* t)
     if (nextToken(id) != ID || (r = proj->getResource(id)) == 0)
     {
         errorMessage(i18n("Resource ID '%1' is unknown").arg(id));
-        return FALSE;
+        return false;
     }
     Allocation* a = new Allocation();
     a->addCandidate(r);
@@ -2737,7 +2737,7 @@ ProjectFile::readAllocate(Task* t)
             {
                 errorMessage(i18n("Unknown attribute '%1'")
                              .arg(token));
-                return FALSE;
+                return false;
             }
             if (token == KW("load"))
             {
@@ -2745,7 +2745,7 @@ ProjectFile::readAllocate(Task* t)
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
                     errorMessage(i18n("Real value expected"));
-                    return FALSE;
+                    return false;
                 }
                 UsageLimits* limits = new UsageLimits;
                 limits->setDailyMax
@@ -2758,7 +2758,7 @@ ProjectFile::readAllocate(Task* t)
                                  .arg(proj->convertToDailyLoad
                                       (proj->getScheduleGranularity())));
                     delete limits;
-                    return FALSE;
+                    return false;
                 }
                 a->setLimits(limits);
             }
@@ -2766,7 +2766,7 @@ ProjectFile::readAllocate(Task* t)
             {
                 UsageLimits* limits;
                 if ((limits = readLimits()) == 0)
-                    return FALSE;
+                    return false;
                 a->setLimits(limits);
             }
             else if (token == KW("shift"))
@@ -2774,20 +2774,20 @@ ProjectFile::readAllocate(Task* t)
                 Interval iv(proj->getStart(), proj->getEnd());
                 Shift* s;
                 if ((s = readShiftSelection(iv)) == 0)
-                    return FALSE;
+                    return false;
                 if (!a->addShift(iv, s))
                 {
                     errorMessage(i18n("Shift intervals may not overlap"));
-                    return FALSE;
+                    return false;
                 }
             }
             else if (token == KW("persistent"))
             {
-                a->setPersistent(TRUE);
+                a->setPersistent(true);
             }
             else if (token == KW("mandatory"))
             {
-                a->setMandatory(TRUE);
+                a->setMandatory(true);
             }
             else if (token == KW("alternative"))
             {
@@ -2798,7 +2798,7 @@ ProjectFile::readAllocate(Task* t)
                         (r = proj->getResource(token)) == 0)
                     {
                         errorMessage(i18n("Resource ID expected"));
-                        return FALSE;
+                        return false;
                     }
                     a->addCandidate(r);
                 } while ((tt = nextToken(token)) == COMMA);
@@ -2809,14 +2809,14 @@ ProjectFile::readAllocate(Task* t)
                 if (nextToken(token) != ID || !a->setSelectionMode(token))
                 {
                     errorMessage(i18n("Invalid selction mode"));
-                    return FALSE;
+                    return false;
                 }
             }
             else
             {
                 errorMessage(i18n("Unknown attribute '%1'")
                              .arg(token));
-                return FALSE;
+                return false;
             }
         }
     }
@@ -2824,7 +2824,7 @@ ProjectFile::readAllocate(Task* t)
         returnToken(tt, token);
     t->addAllocation(a);
 
-    return TRUE;
+    return true;
 }
 
 UsageLimits*
@@ -2843,7 +2843,7 @@ ProjectFile::readLimits()
     while ((tt = nextToken(token)) == ID)
     {
         double val;
-        if (!readTimeFrame(val, TRUE))
+        if (!readTimeFrame(val, true))
         {
             delete limits;
             return 0;
@@ -2888,13 +2888,13 @@ ProjectFile::readTimeValue(ulong& value)
     if ((tt = nextToken(val)) != INTEGER && tt != REAL)
     {
         errorMessage(i18n("Number expected"));
-        return FALSE;
+        return false;
     }
     QString unit;
     if (nextToken(unit) != ID)
     {
         errorMessage(i18n("Unit expected"));
-        return FALSE;
+        return false;
     }
     int factor = 0;
     if (unit == KW("min"))
@@ -2912,11 +2912,11 @@ ProjectFile::readTimeValue(ulong& value)
     else
     {
         errorMessage(i18n("Unit expected"));
-        return FALSE;
+        return false;
     }
 
     value = static_cast<ulong>(val.toDouble() * factor);
-    return TRUE;
+    return true;
 }
 
 bool
@@ -2982,14 +2982,14 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
     if ((tt = nextToken(val)) != REAL && tt != INTEGER)
     {
         errorMessage(i18n("Real value expected"));
-        return FALSE;
+        return false;
     }
     if (allowZero)
     {
         if (val.toDouble() < 0.0)
         {
             errorMessage(i18n("Value must not be negative."));
-            return FALSE;
+            return false;
         }
     }
     else
@@ -2997,7 +2997,7 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
         if (val.toDouble() <= 0.0)
         {
             errorMessage(i18n("Value must be greater than 0."));
-            return FALSE;
+            return false;
         }
     }
 
@@ -3005,7 +3005,7 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
     if (nextToken(unit) != ID)
     {
         errorMessage(i18n("Unit expected"));
-        return FALSE;
+        return false;
     }
     if (unit == KW("min"))
         value = val.toDouble() /
@@ -3027,10 +3027,10 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
     else
     {
         errorMessage(i18n("Unit expected"));
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -3099,7 +3099,7 @@ ProjectFile::readDaysToShow(QBitArray& days)
 bool
 ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
 {
-    l->setAutoDelete(TRUE);
+    l->setAutoDelete(true);
     l->clear(); // Just to be sure
 
     TokenType tt;
@@ -3142,7 +3142,7 @@ ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
     }
 
     if ((tt = nextToken(token)) == ID && token == KW("off"))
-        return TRUE;
+        return true;
     else
         returnToken(tt, token);
 
@@ -3152,29 +3152,29 @@ ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
         if (nextToken(start) != HOUR)
         {
             errorMessage(i18n("Start time as HH:MM expected"));
-            return FALSE;
+            return false;
         }
         QString token;
         if (nextToken(token) != MINUS)
         {
             errorMessage(i18n("'-' expected"));
-            return FALSE;
+            return false;
         }
         QString end;
         if (nextToken(end) != HOUR)
         {
             errorMessage(i18n("End time as HH:MM expected"));
-            return FALSE;
+            return false;
         }
         time_t st, et;
         if ((st = hhmm2time(start)) < 0)
-            return FALSE;
+            return false;
         if ((et = hhmm2time(end)) < 0)
-            return FALSE;
+            return false;
         if (et <= st)
         {
             errorMessage(i18n("End time must be larger than start time"));
-            return FALSE;
+            return false;
         }
         Interval* iv = new Interval(st, et - 1);
         for (QPtrListIterator<Interval> ili(*l); *ili != 0; ++ili)
@@ -3182,7 +3182,7 @@ ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
             {
                 errorMessage(i18n("Working hour intervals may not overlap"));
                 delete iv;
-                return FALSE;
+                return false;
             }
         l->append(iv);
         TokenType tt;
@@ -3192,7 +3192,7 @@ ProjectFile::readWorkingHours(int& daysOfWeek, QPtrList<Interval>* l)
             break;
         }
     }
-    return TRUE;
+    return true;
 }
 
 bool
@@ -3203,15 +3203,15 @@ ProjectFile::readPriority(int& priority)
     if (nextToken(token) != INTEGER)
     {
         errorMessage(i18n("Integer value expected"));
-        return FALSE;
+        return false;
     }
     priority = token.toInt();
     if (priority < 1 || priority > 1000)
     {
         errorMessage(i18n("Priority value must be between 1 and 1000"));
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
 bool
@@ -3220,19 +3220,19 @@ ProjectFile::readICalTaskReport()
 #ifndef HAVE_KDE
     errorMessage(i18n("The program was compiled without KDE support. "
                       "Therefor ICal support has been disabled."));
-    return FALSE;
+    return false;
 #else
     QString fileName;
     if (nextToken(fileName) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
     if (fileName.right(4) != ".ics" && fileName.right(4) != ".ICS")
     {
         errorMessage(i18n("File name '%1' for ICal files must end with "
                           "\".ics\" extension.").arg(fileName));
-        return FALSE;
+        return false;
     }
 
     ICalReport* report;
@@ -3318,7 +3318,7 @@ ProjectFile::readICalTaskReport()
 
     proj->addReport(report);
 
-    return(TRUE);
+    return(true);
 
 error:
     delete report;
@@ -3333,7 +3333,7 @@ ProjectFile::readXMLReport()
     if (nextToken(fileName) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
     /* We don't know yet what version of the report the user wants, so we
      * generate data structures for both reports. */
@@ -3344,7 +3344,7 @@ ProjectFile::readXMLReport()
     // Data structure for version 2 format.
     XMLReport* report;
     report = new XMLReport(proj, fileName, getFile(), getLine());
-    report->setMasterFile(TRUE);
+    report->setMasterFile(true);
     report->addTaskAttribute("all");
     TokenType tt;
     QString token;
@@ -3436,7 +3436,7 @@ ProjectFile::readXMLReport()
             }
             else if (token == KW("notimestamp"))
             {
-                report->setTimeStamp(FALSE);
+                report->setTimeStamp(false);
             }
             else
             {
@@ -3459,7 +3459,7 @@ ProjectFile::readXMLReport()
         proj->addReport(report);
     }
 
-    return(TRUE);
+    return(true);
 
 error:
     delete rep;
@@ -3473,23 +3473,23 @@ ProjectFile::checkReportInterval(ReportElement* tab)
     if (tab->getEnd() < tab->getStart())
     {
         errorMessage(i18n("End date must be later than start date"));
-        return FALSE;
+        return false;
     }
     if (proj->getStart() > tab->getStart() ||
         tab->getStart() > proj->getEnd())
     {
         errorMessage(i18n("Start date must be within the project time "
                           "frame"));
-        return FALSE;
+        return false;
     }
     if (proj->getStart() > tab->getEnd() ||
         tab->getEnd() > proj->getEnd())
     {
         errorMessage(i18n("End date must be within the project time frame"));
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -3498,23 +3498,23 @@ ProjectFile::checkReportInterval(HTMLReport* report)
     if (report->getEnd() < report->getStart())
     {
         errorMessage(i18n("End date must be later than start date"));
-        return FALSE;
+        return false;
     }
     if (proj->getStart() > report->getStart() ||
         report->getStart() > proj->getEnd())
     {
         errorMessage(i18n("Start date must be within the project time "
                           "frame"));
-        return FALSE;
+        return false;
     }
     if (proj->getStart() > report->getEnd() ||
         report->getEnd() > proj->getEnd())
     {
         errorMessage(i18n("End date must be within the project time frame"));
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -3524,7 +3524,7 @@ ProjectFile::readReport(const QString& reportType)
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("Report name expected"));
-        return FALSE;
+        return false;
     }
 
     Report* report = 0;
@@ -3548,7 +3548,7 @@ ProjectFile::readReport(const QString& reportType)
     {
         errorMessage(i18n("Report type %1 not yet supported!")
                      .arg(reportType));
-        return FALSE;
+        return false;
     }
 
     TokenType tt;
@@ -3642,7 +3642,7 @@ ProjectFile::readReport(const QString& reportType)
             }
             else if (token == KW("showprojectids"))
             {
-                tab->setShowPIDs(TRUE);
+                tab->setShowPIDs(true);
             }
             else if (token == KW("hidetask"))
             {
@@ -3784,7 +3784,7 @@ ProjectFile::readReport(const QString& reportType)
 
     proj->addReport(report);
 
-    return TRUE;
+    return true;
 
 error:
     delete report;
@@ -3798,7 +3798,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
 
     HTMLReport* report = 0;
@@ -3831,7 +3831,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
     else
     {
         qFatal("readHTMLReport: bad report type");
-        return FALSE;   // Just to please the compiler.
+        return false;   // Just to please the compiler.
     }
 
     TokenType tt;
@@ -3960,11 +3960,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
             }
             else if (token == KW("showprojectids"))
             {
-                tab->setShowPIDs(TRUE);
+                tab->setShowPIDs(true);
             }
             else if (token == KW("accumulate"))
             {
-                tab->setAccumulate(TRUE);
+                tab->setAccumulate(true);
             }
             else if (token == KW("hidetask"))
             {
@@ -4109,14 +4109,14 @@ ProjectFile::readHTMLReport(const QString& reportType)
                     if (!proj->getTask(token))
                     {
                         errorMessage(i18n("taskroot must be a known task"));
-                        return FALSE;
+                        return false;
                     }
                     tab->setTaskRoot(token + ".");
                 }
                 else
                 {
                     errorMessage(i18n("Task ID expected"));
-                    return FALSE;
+                    return false;
                 }
             }
             else if (reportType == "htmlweeklycalendar" &&
@@ -4133,7 +4133,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             }
             else if (token == KW("notimestamp"))
             {
-                report->setTimeStamp(FALSE);
+                report->setTimeStamp(false);
             }
             else
             {
@@ -4150,7 +4150,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
 
     proj->addReport(report);
 
-    return TRUE;
+    return true;
 
 exit_error:
     delete report;
@@ -4164,7 +4164,7 @@ ProjectFile::readHTMLStatusReport()
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
 
     HTMLStatusReport* report;
@@ -4251,7 +4251,7 @@ ProjectFile::readHTMLStatusReport()
 
     proj->addReport(report);
 
-    return TRUE;
+    return true;
 
 error:
     delete report;
@@ -4265,7 +4265,7 @@ ProjectFile::readCSVReport(const QString& reportType)
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
 
     CSVReport* report = 0;
@@ -4288,7 +4288,7 @@ ProjectFile::readCSVReport(const QString& reportType)
     else
     {
         qFatal("readCSVReport: bad report type");
-        return FALSE;   // Just to please the compiler.
+        return false;   // Just to please the compiler.
     }
 
     TokenType tt;
@@ -4377,11 +4377,11 @@ ProjectFile::readCSVReport(const QString& reportType)
             }
             else if (token == KW("showprojectids"))
             {
-                tab->setShowPIDs(TRUE);
+                tab->setShowPIDs(true);
             }
             else if (token == KW("accumulate"))
             {
-                tab->setAccumulate(TRUE);
+                tab->setAccumulate(true);
             }
             else if (token == KW("hidetask"))
             {
@@ -4510,7 +4510,7 @@ ProjectFile::readCSVReport(const QString& reportType)
             }
             else if (token == KW("notimestamp"))
             {
-                report->setTimeStamp(FALSE);
+                report->setTimeStamp(false);
             }
             else if (token == KW("separator"))
             {
@@ -4536,7 +4536,7 @@ ProjectFile::readCSVReport(const QString& reportType)
 
     proj->addReport(report);
 
-    return TRUE;
+    return true;
 
 error:
     delete report;
@@ -4550,7 +4550,7 @@ ProjectFile::readExportReport()
     if (nextToken(token) != STRING)
     {
         errorMessage(i18n("File name expected"));
-        return FALSE;
+        return false;
     }
 
     if (token.right(4) != ".tjp" && token.right(4) != ".tji")
@@ -4558,7 +4558,7 @@ ProjectFile::readExportReport()
         errorMessage(i18n("Illegal extension for export file name. "
                           "Please use '.tjp' for standalone projects and "
                           "'.tji' for sub projects."));
-        return FALSE;
+        return false;
     }
 
     ExportReport* report;
@@ -4566,14 +4566,14 @@ ProjectFile::readExportReport()
 
     if (token.right(4) == ".tjp")
     {
-        report->setMasterFile(TRUE);
-        report->setListShifts(TRUE);
-        report->setListResources(TRUE);
+        report->setMasterFile(true);
+        report->setListShifts(true);
+        report->setListResources(true);
     }
     else
     {
-        report->setListShifts(FALSE);
-        report->setListResources(FALSE);
+        report->setListShifts(false);
+        report->setListResources(false);
     }
 
 
@@ -4731,19 +4731,19 @@ ProjectFile::readExportReport()
                     }
                     if (token == KW("all"))
                     {
-                        report->setListShifts(TRUE);
-                        report->setListTasks(TRUE);
-                        report->setListResources(TRUE);
-                        report->setListBookings(TRUE);
+                        report->setListShifts(true);
+                        report->setListTasks(true);
+                        report->setListResources(true);
+                        report->setListBookings(true);
                     }
                     else if (token == KW("shifts"))
-                        report->setListShifts(TRUE);
+                        report->setListShifts(true);
                     else if (token == KW("tasks"))
-                        report->setListTasks(TRUE);
+                        report->setListTasks(true);
                     else if (token == KW("resources"))
-                        report->setListResources(TRUE);
+                        report->setListResources(true);
                     else if (token == KW("bookings"))
-                        report->setListBookings(TRUE);
+                        report->setListBookings(true);
                     else
                     {
                         errorMessage(i18n("Unknown property %1").arg(token));
@@ -4758,7 +4758,7 @@ ProjectFile::readExportReport()
             }
             else if (token == KW("notimestamp"))
             {
-                report->setTimeStamp(FALSE);
+                report->setTimeStamp(false);
             }
             else
             {
@@ -4772,7 +4772,7 @@ ProjectFile::readExportReport()
 
     proj->addReport(report);
 
-    return TRUE;
+    return true;
 
 error:
     delete report;
@@ -4793,7 +4793,7 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (tt != ID)
             {
                 errorMessage(i18n("Attribute ID or '}' expected"));
-                return FALSE;
+                return false;
             }
 
             if (token == KW("columns"))
@@ -4805,7 +4805,7 @@ ProjectFile::readReportElement(ReportElement* el)
                     if ((tt = nextToken(col)) != ID)
                     {
                         errorMessage(i18n("Column ID expected"));
-                        return FALSE;
+                        return false;
                     }
                     el->addColumn(new TableColumnInfo(proj->getMaxScenarios(),
                                                       col));
@@ -4825,14 +4825,14 @@ ProjectFile::readReportElement(ReportElement* el)
                     if ((tt = nextToken(scId)) != ID)
                     {
                         errorMessage(i18n("Scenario ID expected"));
-                        return FALSE;
+                        return false;
                     }
                     int scIdx;
                     if ((scIdx = proj->getScenarioIndex(scId)) == -1)
                     {
                         errorMessage(i18n("Unknown scenario %1")
                                      .arg(scId));
-                        return FALSE;
+                        return false;
                     }
                     if (proj->getScenario(scIdx - 1)->getEnabled())
                         el->addScenario(proj->getScenarioIndex(scId) - 1);
@@ -4847,14 +4847,14 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 time_t start;
                 if (!readDate(start, 0))
-                    return FALSE;
+                    return false;
                 el->setStart(start);
             }
             else if (token == KW("end"))
             {
                 time_t end;
                 if (!readDate(end, 1))
-                    return FALSE;
+                    return false;
                 el->setEnd(end);
             }
             else if(token == KW("period"))
@@ -4869,7 +4869,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    return false;
                 }
                 el->setHeadline(token);
             }
@@ -4878,7 +4878,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String exptected"));
-                    return FALSE;
+                    return false;
                 }
                 el->setCaption(token);
             }
@@ -4887,7 +4887,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
                 el->setRawHead(token);
             }
@@ -4896,7 +4896,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return FALSE;
+                    return false;
                 }
                 el->setRawTail(token);
             }
@@ -4906,11 +4906,11 @@ ProjectFile::readReportElement(ReportElement* el)
                     (i18n("ERROR: The keyword 'showactual' has been "
                           "deprecated. Please use the keyword 'scenarios' "
                           "instead."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("showprojectids"))
             {
-                el->setShowPIDs(TRUE);
+                el->setShowPIDs(true);
             }
             else if (token == KW("hidetask"))
             {
@@ -4918,7 +4918,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    return false;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 el->setHideTask(et);
@@ -4929,7 +4929,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    return false;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 el->setRollUpTask(et);
@@ -4937,7 +4937,7 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == KW("sorttasks"))
             {
                 if (!readSorting(el, 0))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("hideresource"))
             {
@@ -4945,7 +4945,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    return false;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 el->setHideResource(et);
@@ -4956,7 +4956,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 QString fileName = openFiles.last()->getFile();
                 int lineNo = openFiles.last()->getLine();
                 if ((op = readLogicalExpression()) == 0)
-                    return FALSE;
+                    return false;
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 el->setRollUpResource(et);
@@ -4964,7 +4964,7 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == KW("sortresources"))
             {
                 if (!readSorting(el, 1))
-                    return FALSE;
+                    return false;
             }
             else if (token == KW("url"))
             {
@@ -4974,14 +4974,14 @@ ProjectFile::readReportElement(ReportElement* el)
                                   "refer to the TaskJuggler manual to get "
                                   "more information about optional column "
                                   "attributes."));
-                return FALSE;
+                return false;
             }
             else if (token == KW("loadunit"))
             {
                 if (nextToken(token) != ID || !el->setLoadUnit(token))
                 {
                     errorMessage(i18n("Illegal load unit"));
-                    return FALSE;
+                    return false;
                 }
             }
             else if (token == KW("timeformat"))
@@ -4989,7 +4989,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    return false;
                 }
                 el->setTimeFormat(token);
             }
@@ -4998,7 +4998,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("Time format string expected"));
-                    return FALSE;
+                    return false;
                 }
                 el->setShortTimeFormat(token);
             }
@@ -5008,7 +5008,7 @@ ProjectFile::readReportElement(ReportElement* el)
                 if (nextToken(token) != ID)
                 {
                     errorMessage(i18n("Bar label mode expected"));
-                    return FALSE;
+                    return false;
                 }
                 if (token == KW("empty"))
                     el->setBarLabels(ReportHtml::BLT_EMPTY);
@@ -5018,21 +5018,21 @@ ProjectFile::readReportElement(ReportElement* el)
                 {
                     errorMessage(i18n("Unknown bar label mode '%1'")
                                  .arg(token));
-                    return FALSE;
+                    return false;
                 }
             }
 #endif
             else
             {
                 errorMessage(i18n("Illegal attribute"));
-                return FALSE;
+                return false;
             }
         }
     }
     else
         returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 Operation*
@@ -5215,9 +5215,9 @@ ProjectFile::readSorting(Report* report, int which)
     {
         int sorting;
         if (!readSortingMode(sorting))
-            return FALSE;
+            return false;
 
-        bool ok = TRUE;
+        bool ok = true;
         switch (which)
         {
             case 0:
@@ -5231,21 +5231,21 @@ ProjectFile::readSorting(Report* report, int which)
                 break;
             default:
                 qFatal("readSorting: Unknown sorting attribute");
-                return FALSE;
+                return false;
         }
         if (!ok)
         {
             errorMessage
                 (i18n("This sorting criteria is not supported for the list "
                       "or it is used at the wrong position."));
-            return FALSE;
+            return false;
         }
         tt = nextToken(token);
     } while (++i < CoreAttributesList::maxSortingLevel && tt == COMMA);
 
     returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -5259,9 +5259,9 @@ ProjectFile::readSorting(ReportElement* tab, int which)
     {
         int sorting;
         if (!readSortingMode(sorting))
-            return FALSE;
+            return false;
 
-        bool ok = TRUE;
+        bool ok = true;
         switch (which)
         {
             case 0:
@@ -5275,21 +5275,21 @@ ProjectFile::readSorting(ReportElement* tab, int which)
                 break;
             default:
                 qFatal("readSorting: Unknown sorting attribute");
-                return FALSE;
+                return false;
         }
         if (!ok)
         {
             errorMessage
                 (i18n("This sorting criteria is not supported for the list "
                       "or it is used at the wrong position."));
-            return FALSE;
+            return false;
         }
         tt = nextToken(token);
     } while (++i < CoreAttributesList::maxSortingLevel && tt == COMMA);
 
     returnToken(tt, token);
 
-    return TRUE;
+    return true;
 }
 
 TableColumnInfo*
@@ -5466,14 +5466,14 @@ ProjectFile::readSortingMode(int& sorting)
         {
             errorMessage
                 (i18n("Unknown scenario '%s'").arg(token));
-            return FALSE;
+            return false;
         }
         nextToken(token);
 
         if ((sorting = checkScenarioSorting(token)) == -1)
         {
             errorMessage(i18n("Sorting criteria expected"));
-            return FALSE;
+            return false;
         }
         sorting += (scenarioIdx - 1) << 16;
     }
@@ -5481,7 +5481,7 @@ ProjectFile::readSortingMode(int& sorting)
     {
         returnToken(tt, laToken);
 
-        bool deprecatedWarning = FALSE;
+        bool deprecatedWarning = false;
 
         if ((sorting = checkScenarioSorting(token)) != -1)
             ;
@@ -5550,67 +5550,67 @@ ProjectFile::readSortingMode(int& sorting)
         else if (token == "planstartup")
         {
             sorting = CoreAttributesList::StartUp;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "planstartdown")
         {
             sorting = CoreAttributesList::StartDown;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "planendup")
         {
             sorting = CoreAttributesList::EndUp;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "planenddown")
         {
             sorting = CoreAttributesList::EndDown;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "actualstartup")
         {
             sorting = CoreAttributesList::StartUp + 0x1FFFF;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "actualstartdown")
         {
             sorting = CoreAttributesList::StartDown + 0x1FFFF;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "actualendup")
         {
             sorting = CoreAttributesList::EndUp + 0x1FFFF;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "actualenddown")
         {
             sorting = CoreAttributesList::EndDown + 0x1FFFF;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "planstatusup")
         {
             sorting = CoreAttributesList::StatusUp;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "planstatusdown")
         {
             sorting = CoreAttributesList::StatusDown;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "plancompletedup")
         {
             sorting = CoreAttributesList::CompletedUp;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else if (token == "plancompleteddown")
         {
             sorting = CoreAttributesList::CompletedDown;
-            deprecatedWarning = TRUE;
+            deprecatedWarning = true;
         }
         else
         {
             errorMessage(i18n("Sorting criteria expected"));
-            return FALSE;
+            return false;
         }
 
         if (deprecatedWarning)
@@ -5619,11 +5619,11 @@ ProjectFile::readSortingMode(int& sorting)
                 (i18n("ERROR: Concatenating the scenario name and the "
                       "sorting criteria has been deprecated. Please separate "
                       "them by a colon. E. g. 'plan:start', 'actual:end'"));
-            return FALSE;
+            return false;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
@@ -5639,7 +5639,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         else if (tt != ID)
         {
             errorMessage(i18n("Attribute ID or '}' expected"));
-            return FALSE;
+            return false;
         }
 
         int scenarioIdx = 0;
@@ -5651,7 +5651,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
             {
                 errorMessage(i18n("Scenario ID expected. '%1' is not "
                                   "a defined scenario.").arg(token));
-                return FALSE;
+                return false;
             }
             tt = nextToken(token);
         }
@@ -5661,8 +5661,8 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         if (token == KW("gapduration"))
         {
             double d;
-            if (!readTimeFrame(d, FALSE, scenarioIdx > 0))
-                return FALSE;
+            if (!readTimeFrame(d, false, scenarioIdx > 0))
+                return false;
             /* Set the duration and round it down to be a multiple of the
              * schedule granularity. */
             td->setGapDuration(scenarioIdx, ((static_cast<long>(d * 60 * 60 * 24)) /
@@ -5672,8 +5672,8 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         else if (token == KW("gaplength"))
         {
             double d;
-            if (!readTimeFrame(d, TRUE, scenarioIdx > 0))
-                return FALSE;
+            if (!readTimeFrame(d, true, scenarioIdx > 0))
+                return false;
             /* Set the length and round it down to be a multiple of the
              * schedule granularity. */
             td->setGapLength(scenarioIdx, ((static_cast<long>(d * 60 * 60 *
@@ -5684,11 +5684,11 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
         else
         {
             errorMessage(i18n("Illegal dependency attribute"));
-            return FALSE;
+            return false;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool
