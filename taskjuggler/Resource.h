@@ -142,12 +142,6 @@ public:
     time_t getStartOfFirstSlot(int sc, const Task* task);
     time_t getEndOfLastSlot(int sc, const Task* task);
 
-    void setKotrusId(const QString k) { kotrusId = k; }
-    const QString& getKotrusId() const { return kotrusId; }
-
-    bool dbLoadBookings(const QString& kotrusID,
-                        const QStringList& skipProjectIDs);
-
     QDomElement xmlIDElement( QDomDocument& doc ) const;
 
     void copyBookings(int sc, SbBooking*** srd, SbBooking*** dst);
@@ -217,9 +211,6 @@ private:
 
     /// The daily costs of this resource.
     double rate;
-
-    /// KoTrus ID, ID by which the resource is known to KoTrus.
-    QString kotrusId;
 
     /// The list of standard working or opening hours for the resource.
     QPtrList<Interval>* workingHours[7];

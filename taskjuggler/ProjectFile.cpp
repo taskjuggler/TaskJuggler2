@@ -31,7 +31,6 @@
 #include "Operation.h"
 #include "Allocation.h"
 #include "Booking.h"
-#include "kotrus.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"
@@ -485,23 +484,6 @@ ProjectFile::parse()
             {
                 if (!readExportReport())
                     return false;
-                break;
-            }
-            else if (token == KW("kotrusmode"))
-            {
-                if (nextToken(token) != STRING ||
-                    (token != KW("db") && token != KW("xml") &&
-                     token != KW("nokotrus")))
-                {
-                    errorMessage(i18n("Unknown kotrus mode"));
-                    return false;
-                }
-                if (token != KW("nokotrus"))
-                {
-                    Kotrus* kotrus = new Kotrus();
-                    kotrus->setKotrusMode(token);
-                    proj->setKotrus(kotrus);
-                }
                 break;
             }
             else if (token == KW("supplement"))
@@ -2221,15 +2203,6 @@ ProjectFile::readResourceBody(Resource* r)
             }
             r->setRate(token.toDouble());
         }
-        else if (token == KW("kotrusid"))
-        {
-            if (nextToken(token) != STRING)
-            {
-                errorMessage(i18n("String expected"));
-                return false;
-            }
-            r->setKotrusId(token);
-        }
         else if (token == KW("vacation"))
         {
             Interval* iv = new Interval;
@@ -2658,16 +2631,6 @@ ProjectFile::readAccount(Account* parent)
             {
                 if (!readCredit(a))
                     return false;
-            }
-            else if (token == KW("kotrusid") && !hasSubAccounts)
-            {
-                if (nextToken(token) != STRING)
-                {
-                    errorMessage(i18n("String expected"));
-                    return false;
-                }
-                a->setKotrusId(token);
-                cantBeParent = true;
             }
             else if (token == KW("include"))
             {
@@ -5527,10 +5490,6 @@ ProjectFile::readSortingMode(int& sorting)
             sorting = CoreAttributesList::RateUp;
         else if (token == KW("ratedown"))
             sorting = CoreAttributesList::RateDown;
-        else if (token == KW("kotrusidup"))
-            sorting = CoreAttributesList::KotrusIdUp;
-        else if (token == KW("kotrusiddown"))
-            sorting = CoreAttributesList::KotrusIdDown;
         else if (token == KW("startup"))
             sorting = CoreAttributesList::StartUp;
         else if (token == KW("startdown"))

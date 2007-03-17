@@ -1828,12 +1828,6 @@ HTMLReportElement::genCellRate(TableCellInfo* tci)
 }
 
 void
-HTMLReportElement::genCellKotrusId(TableCellInfo* tci)
-{
-    genCell(tci->tli->resource->getKotrusId(), tci, true);
-}
-
-void
 HTMLReportElement::genCellTotal(TableCellInfo* tci)
 {
     double value = tci->tli->account->getVolume(tci->tli->sc,

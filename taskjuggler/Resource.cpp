@@ -25,7 +25,6 @@
 #include "UsageLimits.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
-#include "kotrus.h"
 #include "ReportXML.h"
 #include "CustomAttributeDefinition.h"
 
@@ -50,7 +49,6 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     limits(0),
     efficiency(0.0),
     rate(0.0),
-    kotrusId(),
     workingHours(),
     shifts(),
     vacations(),
@@ -1063,16 +1061,6 @@ Resource::getProjectIDs(int sc, const Interval& period, const Task* task) const
         pidStr += QString(it != pids.begin() ? ", " : "") + *it;
 
     return pidStr;
-}
-
-bool
-Resource::dbLoadBookings(const QString& kotrusID,
-                         const QStringList& skipProjectIDs)
-{
-    /* retrieve all bookings _not_ belonging to this project */
-    BookingList blist = project->getKotrus()->loadBookings
-        (kotrusID, skipProjectIDs);
-    return true;
 }
 
 bool

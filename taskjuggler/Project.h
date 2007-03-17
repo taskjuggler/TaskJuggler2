@@ -30,7 +30,6 @@ class QDomElement;
 
 class ReportXML;
 class Report;
-class Kotrus;
 class CustomAttributeDefinition;
 class VacationInterval;
 class UsageLimits;
@@ -742,12 +741,6 @@ public:
      */
     double convertToDailyLoad(long secs) const;
 
-    void setKotrus(Kotrus* k);
-    Kotrus* getKotrus() const { return kotrus; }
-
-    bool readKotrus();
-    bool updateKotrus();
-
     void setMaxErrors(int me) { maxErrors = me; }
 
     void addJournalEntry(JournalEntry* entry);
@@ -909,8 +902,6 @@ private:
     QDict<CustomAttributeDefinition> taskAttributes;
     QDict<CustomAttributeDefinition> resourceAttributes;
     QDict<CustomAttributeDefinition> accountAttributes;
-
-    Kotrus* kotrus;
 
     /* This is for version 1.0 XML reports and should be removed before the
      * next major release. */

@@ -35,7 +35,7 @@ CSVResourceReport.cpp CSVResourceReportElement.cpp \
 CSVAccountReport.cpp CSVAccountReportElement.cpp \
 ExportReport.cpp \
 XMLReport.cpp \
-Project.cpp ICalReport.cpp kotrus.cpp
+Project.cpp ICalReport.cpp
 
 libtaskjuggler_la_LDFLAGS = $(all_libraries) $(QT_LDFLAGS) -version-info 3:3:0 -no-undefined
 libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS) $(LIBKCAL) 

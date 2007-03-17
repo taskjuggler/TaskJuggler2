@@ -19,7 +19,6 @@
 #include "Task.h"
 #include "Resource.h"
 #include "Project.h"
-#include "kotrus.h"
 #include "UsageLimits.h"
 
 ResourceList::ResourceList() :
@@ -41,8 +40,6 @@ ResourceList::isSupportedSortingCriteria(int sc)
     case MaxEffortDown:
     case RateUp:
     case RateDown:
-    case KotrusIdUp:
-    case KotrusIdDown:
         return true;
     default:
         return CoreAttributesList::isSupportedSortingCriteria(sc);
@@ -83,10 +80,6 @@ ResourceList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
         return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? 1 : -1;
     case RateDown:
         return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? -1 : 1;
-    case KotrusIdUp:
-        return r2->kotrusId.compare(r1->kotrusId);
-    case KotrusIdDown:
-        return r1->kotrusId.compare(r2->kotrusId);
     default:
         return CoreAttributesList::compareItemsLevel(r1, r2, level);
     }

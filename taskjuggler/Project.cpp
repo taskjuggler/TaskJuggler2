@@ -36,7 +36,6 @@
 #include "ExportReport.h"
 #include "ReportXML.h"
 #include "UsageLimits.h"
-#include "kotrus.h"
 #include "CustomAttributeDefinition.h"
 
 DebugController DebugCtrl;
@@ -84,7 +83,6 @@ Project::Project() :
     taskAttributes(),
     resourceAttributes(),
     accountAttributes(),
-    kotrus(0),
     xmlreport(0),
     reports(),
     interactiveReports(),
@@ -945,32 +943,6 @@ Project::generateReports() const
     }
 
     generateXMLReport();
-}
-
-void
-Project::setKotrus(Kotrus* k)
-{
-    if (kotrus)
-        delete kotrus;
-    kotrus = k;
-}
-
-bool
-Project::readKotrus()
-{
-    if (!kotrus)
-        return true;
-
-    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
-        (*rli)->dbLoadBookings((*rli)->getKotrusId(), 0);
-
-    return true;
-}
-
-bool
-Project::updateKotrus()
-{
-    return true;
 }
 
 bool Project::generateXMLReport() const

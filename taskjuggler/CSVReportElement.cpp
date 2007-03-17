@@ -1245,12 +1245,6 @@ CSVReportElement::genCellRate(TableCellInfo* tci)
 }
 
 void
-CSVReportElement::genCellKotrusId(TableCellInfo* tci)
-{
-    genCell(tci->tli->resource->getKotrusId(), tci, true);
-}
-
-void
 CSVReportElement::genCellTotal(TableCellInfo* tci)
 {
     double value = tci->tli->account->getVolume(tci->tli->sc,

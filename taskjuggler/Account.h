@@ -40,9 +40,6 @@ public:
 
     void inheritValues();
 
-    void setKotrusId(const QString& k) { kotrusId = k; }
-    const QString& getKotrusId() const { return kotrusId; }
-
     void setAcctType(AccountType at) { acctType = at; }
     AccountType getAcctType() const { return acctType; }
 

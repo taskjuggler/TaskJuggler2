@@ -1146,6 +1146,8 @@ name is prefixed with a questionmark in the macro call.</para></listitem>
 <listitem><para>Added support for C++ style single line comments.
 Comment lines can now start with // or #.</para></listitem>
 
+<listitem><para>Removed support for KoTrus database.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

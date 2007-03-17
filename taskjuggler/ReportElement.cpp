@@ -286,10 +286,6 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = TableColumnFormat::left;
     tcf->expandable = true;
 
-    tcf = new TableColumnFormat(KW("kotrusid"), this, i18n("Kotrus ID"));
-    tcf->genResourceLine1 = &ReportElement::genCellKotrusId;
-    tcf->hAlign = TableColumnFormat::left;
-
     tcf = new TableColumnFormat(KW("note"), this, i18n("Note"));
     tcf->genTaskLine1 = &ReportElement::genCellText;
     tcf->hAlign = TableColumnFormat::left;

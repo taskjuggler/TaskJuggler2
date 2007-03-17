@@ -33,7 +33,6 @@
 #include "Optimizer.h"
 #include "OptimizerRun.h"
 #include "XMLFile.h"
-#include "kotrus.h"
 
 void
 banner()
@@ -84,9 +83,7 @@ usage(QApplication& a)
               "                          0 and 40, the higher N the more output\n"
               "                          is printed\n"
               "   --dbmode N           - activate debug mode only for certain\n"
-              "                          parts of the code\n"
-              "   --updatedb           - update the Kotrus database with the\n"
-              "                          new resource usage information\n"));
+              "                          parts of the code\n"));
     qWarning
         (i18n(
               "To report bugs please follow the instructions in the "
@@ -100,7 +97,6 @@ int main(int argc, char *argv[])
     int debugLevel = 0;
     int debugMode = -1;
     int maxErrors = 10;
-    bool updateKotrusDB = false;
     bool checkOnlySyntax = false;
     bool generateMakeDepList = false;
     bool noDepCheck = false;
@@ -161,8 +157,6 @@ int main(int argc, char *argv[])
             generateMakeDepList = true;
         else if (strcmp(a.argv()[i], "--nodepcheck") == 0)
             noDepCheck = true;
-        else if (strcmp(a.argv()[i], "--updatedb") == 0)
-            updateKotrusDB = true;
         else if (strcmp(a.argv()[i], "--warnerror") == 0)
             warningAsErrors = true;
         else
@@ -233,8 +227,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    p.readKotrus();
-
     bool schedulingErrors = false;
     int errors = 0;
     int warnings = 0;
@@ -249,12 +241,6 @@ int main(int argc, char *argv[])
         schedulingErrors = !p.scheduleAllScenarios(errors, warnings);
         if (warningAsErrors && warnings != oldWarnings)
             schedulingErrors = true;
-        if (updateKotrusDB)
-            if (parseErrors || logicalErrors || schedulingErrors)
-                qWarning("Due to errors the Kotrus DB will NOT be "
-                         "updated.");
-            else
-                p.updateKotrus();
 
         p.generateReports();
     }

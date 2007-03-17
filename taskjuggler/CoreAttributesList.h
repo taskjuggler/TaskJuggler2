@@ -52,7 +52,6 @@ public:
         MinEffortUp, MinEffortDown,
         MaxEffortUp, MaxEffortDown,
         RateUp, RateDown,
-        KotrusIdUp, KotrusIdDown,
         StartUp, StartDown, EndUp, EndDown,
         CriticalnessUp, CriticalnessDown,
         PathCriticalnessUp, PathCriticalnessDown

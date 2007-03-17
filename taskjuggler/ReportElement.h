@@ -247,7 +247,6 @@ public:
     virtual void genCellMaxEffort(TableCellInfo*) = 0;
     virtual void genCellEfficiency(TableCellInfo*) = 0;
     virtual void genCellRate(TableCellInfo*) = 0;
-    virtual void genCellKotrusId(TableCellInfo*) = 0;
     virtual void genCellTotal(TableCellInfo*) = 0;
     virtual void genCellSummary(TableCellInfo*) = 0;
 
