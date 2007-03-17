@@ -2599,16 +2599,6 @@ Task::overlayScenario(int base, int sc)
         scenarios[sc].reportedCompletion = scenarios[base].reportedCompletion;
 }
 
-bool
-Task::hasExtraValues(int sc) const
-{
-    return scenarios[sc].start != 0 || scenarios[sc].end != 0 ||
-        scenarios[sc].length != 0 || scenarios[sc].duration != 0 ||
-        scenarios[sc].effort != 0 || scenarios[sc].reportedCompletion >= 0.0 ||
-        scenarios[sc].startBuffer >= 0.0 || scenarios[sc].endBuffer >= 0.0 ||
-        scenarios[sc].startCredit >= 0.0 || scenarios[sc].endCredit >= 0.0;
-}
-
 void
 Task::prepareScenario(int sc)
 {

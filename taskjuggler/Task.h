@@ -313,8 +313,6 @@ public:
         return scenarios[sc].criticalLinks.containsRef(t);
     }
 
-    bool hasExtraValues(int sc) const;
-
     bool isContainer() const { return !sub->isEmpty(); }
 
     bool xRef(QDict<Task>& hash, int& errors, int& warnings);
