@@ -1,8 +1,9 @@
 <chapter id="reference"><title>Language Reference</title>
 <sect1 id="comments"><title>Comments</title>
 
-<para>There are two ways to annotate a project file with comments. All text
-after a hash mark '#' will be ignored. Comments that span multiple rows must be
+<para>There are three ways to annotate a project file with comments. All text
+in a line after a hash mark '#' or a pair of slashes '//' will be ignored.
+Comments that span multiple rows must be
 started with '/*' and ended with '*/'.</para>
 
 </sect1>

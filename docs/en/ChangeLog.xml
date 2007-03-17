@@ -1143,6 +1143,9 @@ included.</para></listitem>
 macros were silently ignored. This should only happen when the macro
 name is prefixed with a questionmark in the macro call.</para></listitem>
 
+<listitem><para>Added support for C++ style single line comments.
+Comment lines can now start with // or #.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

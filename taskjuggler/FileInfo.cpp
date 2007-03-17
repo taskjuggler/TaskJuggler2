@@ -224,14 +224,17 @@ FileInfo::nextToken(QString& token)
                         }
                     }
                 } while ((c = getC(FALSE)) != '/');
+                break;
             }
-            else
+            // This code skips C++-style comments like the one you are
+            // reading here.
+            else if (c != '/')
             {
                 ungetC(c);
                 ungetC('/');
                 goto BLANKS_DONE;
             }
-            break;
+            // break missing on purpose
         case '#':   // Comments start with '#' and reach towards end of line
             while ((c = getC(FALSE)) != '\n' && c.unicode() != EOFile)
                 ;

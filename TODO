@@ -10,7 +10,6 @@ Probably:
 - 'limits' for tasks, not just for allocations.
 - vacations for tasks (to suspend a part of a project for some time).
 - Interactive account report
-- Add C++ style // comments.
 - 'completedeffort' and 'pendingeffort' column
 - add a search box or filter field (like in the sidebar for file task
   and others) in UI Report, to be able to find easily tasks (by task
