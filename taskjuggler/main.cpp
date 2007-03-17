@@ -30,8 +30,6 @@
 #include "Project.h"
 #include "ProjectFile.h"
 #include "Scenario.h"
-#include "Optimizer.h"
-#include "OptimizerRun.h"
 #include "XMLFile.h"
 
 void

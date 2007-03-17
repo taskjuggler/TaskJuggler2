@@ -22,7 +22,7 @@
 #define DEBUGRS(l) ((DEBUGMODE & 8) && DEBUGLEVEL >= l) // Resource Scheduler
 #define DEBUGEX(l) ((DEBUGMODE & 16) && DEBUGLEVEL >= l) // Expression Tree Ev.
 #define DEBUGMA(l) ((DEBUGMODE & 32) && DEBUGLEVEL >= l) // Macro Expander
-#define DEBUGOP(l) ((DEBUGMODE & 64) && DEBUGLEVEL >= l) // Optimizer
+#define DEBUGXX(l) ((DEBUGMODE & 64) && DEBUGLEVEL >= l) // Unused
 #define DEBUGPA(l) ((DEBUGMODE & 128) && DEBUGLEVEL >= l) // Critical Path
                                                           // Analyzer
 

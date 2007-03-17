@@ -23,8 +23,6 @@
 #include "Task.h"
 #include "Resource.h"
 #include "VacationInterval.h"
-#include "Optimizer.h"
-#include "OptimizerRun.h"
 #include "HTMLTaskReport.h"
 #include "HTMLResourceReport.h"
 #include "HTMLAccountReport.h"

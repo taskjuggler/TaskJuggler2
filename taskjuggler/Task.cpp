@@ -29,7 +29,6 @@
 #include "Scenario.h"
 #include "CustomAttributeDefinition.h"
 #include "UsageLimits.h"
-#include "OptimizerRun.h"
 
 Task::Task(Project* proj, const QString& id_, const QString& n, Task* p,
            const QString& df, int dl) :
