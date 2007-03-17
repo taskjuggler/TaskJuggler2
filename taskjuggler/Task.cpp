@@ -1305,6 +1305,7 @@ Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
         if ((t = hash.find(absId)) == 0)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
+            brokenDeps.append(*tdi);
             errors++;
         }
         else
