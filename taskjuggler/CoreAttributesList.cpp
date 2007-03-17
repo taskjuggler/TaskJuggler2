@@ -80,7 +80,7 @@ CoreAttributesList::createIndex(bool initial)
         }
         // Then number them again.
         uint hNo = 1;
-        for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli, ++i)
+        for (CoreAttributesListIterator cli(*this); *cli != 0; ++cli)
         {
             (*cli)->setHierarchIndex(hNo);
             if ((*cli)->getParent() == 0)

@@ -841,7 +841,7 @@ Project::schedule(int sc, int& errors, int& warnings)
                     setProgressBar(sortedTasks - allLeafTasks.count(),
                                    sortedTasks);
                     setProgressInfo
-                        (i18n("Scheduling scenario %1 at %1")
+                        (i18n("Scheduling scenario %1 at %2")
                          .arg(getScenarioId(sc)).arg(time2tjp(slot)));
                 }
             }
