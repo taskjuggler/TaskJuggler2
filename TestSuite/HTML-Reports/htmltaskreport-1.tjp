@@ -10,12 +10,10 @@ include "html-test-macros.tji"
 
 resource tux1 "Tux 1" {
 	rate 300.0
-	kotrusid "tux1"
 }
 
 resource tux2 "Tux 2" {
 	rate 500.0
-	kotrusid "tux der 2."
 }
 
 resource tux3 "Tux 3" {

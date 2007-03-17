@@ -1,7 +1,7 @@
 macro AllColumns [	
 	columns completed, cost, depends, duration, effort, criticalness,
 	pathcriticalness, efficiency, end, endbuffer,
-	endbufferstart, flags, follows, freeload, id, index, kotrusid, maxeffort,
+	endbufferstart, flags, follows, freeload, id, index, maxeffort,
 	maxend, maxstart, mineffort, minend, minstart, name, no, note,
 	priority, profit, projectid, rate, reference, resources,
 	responsibilities, responsible, revenue, scenario, seqno, start,

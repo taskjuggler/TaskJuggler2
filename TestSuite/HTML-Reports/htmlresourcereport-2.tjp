@@ -16,12 +16,10 @@ resource tuxies "Tux Team" {
 	resource tux1 "tux 1" {
 		rate 300.0
 		flags flag3
-		kotrusid "tux1"
 	}
 
 	resource tux2 "tux 2" {
 		rate 500.0
-		kotrusid "tux der 2."
 	}
 
 	resource tux4 "tux 4" {
