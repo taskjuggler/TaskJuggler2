@@ -95,6 +95,15 @@ if test "$cv_option_kdesupport" = yes ;then
     AC_SUBST(KDE_LIBS)
     dnl These libs are part of KDEPIM
     LIBKCAL="-lkcal"
+    dnl Some distros split off a KDEPIM devel package most people
+    dnl forget to install.
+    KDE_CHECK_HEADERS(libkcal/calendarlocal.h libkcal/todo.h)
+    if test "$ac_cv_header_libkcal_calendarlocal_h" = "no" -o \
+            "$ac_cv_header_libkcal_todo_h" = "no" ; then
+      AC_MSG_ERROR([KDEPIM header files no found. Please make sure
+you have KDEPIM and the corresponding development packages
+installed!])
+    fi
     DO_NOT_COMPILE=""
 else
     kde_htmldir=${datadir}/taskjuggler
