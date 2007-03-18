@@ -786,10 +786,29 @@ Resource::getCurrentMonthSlots(time_t date, const Task* t)
 }
 
 double
-Resource::getLoad(int sc, const Interval& period, AccountType acctType,
-                  const Task* task) const
+Resource::getEffectiveLoad(int sc, const Interval& period, AccountType acctType,
+                           const Task* task) const
 {
-    return efficiency * getAllocatedTimeLoad(sc, period, acctType, task);
+    double load = 0.0;
+    Interval iv(period);
+    if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+        return 0.0;
+
+    if (hasSubs())
+    {
+        for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
+            load += (*rli)->getEffectiveLoad(sc, iv, acctType, task);
+    }
+    else
+    {
+        uint startIdx = sbIndex(iv.getStart());
+        uint endIdx = sbIndex(iv.getEnd());
+        load = project->convertToDailyLoad
+            (getAllocatedSlots(sc, startIdx, endIdx, acctType, task) *
+             project->getScheduleGranularity()) * efficiency;
+    }
+
+    return load;
 }
 
 double
@@ -839,22 +858,30 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
     if (!scoreboards[sc])
         return bookings;
 
-    if (task && scenarios[sc].firstSlot >= 0 && scenarios[sc].lastSlot >= 0)
+    if (scenarios[sc].firstSlot > 0 && scenarios[sc].lastSlot > 0)
     {
-        /* If the load is to be calculated for a certain task, we check
-         * whether this task is in the resource allocation list. Only then we
-         * calculate the real number of allocated slots. */
-        bool isAllocated = false;
-        for (TaskListIterator tli(scenarios[sc].allocatedTasks); *tli; ++tli)
-            if (task == *tli)
-            {
-                isAllocated = true;
-                break;
-            }
-        if (!isAllocated)
-            return bookings;
-    }
+        if (task)
+        {
+            /* If the load is to be calculated for a certain task, we check
+             * whether this task is in the resource allocation list. Only then
+             * we calculate the real number of allocated slots. */
+            bool isAllocated = false;
+            for (TaskListIterator tli(scenarios[sc].allocatedTasks); *tli;
+                 ++tli)
+                if (task == *tli)
+                {
+                    isAllocated = true;
+                    break;
+                }
+            if (!isAllocated)
+                return bookings;
+        }
 
+        if (startIdx < (uint) scenarios[sc].firstSlot)
+            startIdx = scenarios[sc].firstSlot;
+        if (endIdx > (uint) scenarios[sc].lastSlot)
+            endIdx = scenarios[sc].lastSlot;
+    }
     for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
     {
         SbBooking* b = scoreboards[sc][i];
@@ -872,9 +899,28 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
 }
 
 double
-Resource::getAvailableWorkLoad(int sc, const Interval& period)
+Resource::getEffectiveFreeLoad(int sc, const Interval& period)
 {
-    return efficiency * getAvailableTimeLoad(sc, period);
+    double load = 0.0;
+    Interval iv(period);
+    if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
+        return 0.0;
+
+    if (hasSubs())
+    {
+        for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
+            load += (*rli)->getEffectiveFreeLoad(sc, iv);
+    }
+    else
+    {
+        uint startIdx = sbIndex(iv.getStart());
+        uint endIdx = sbIndex(iv.getEnd());
+        load = project->convertToDailyLoad
+            (getAvailableSlots(sc, startIdx, endIdx) *
+             project->getScheduleGranularity()) * efficiency;
+    }
+
+    return load;
 }
 
 double

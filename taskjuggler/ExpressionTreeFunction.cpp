@@ -116,7 +116,7 @@ ExpressionTreeFunction::hasAssignments(ExpressionTree* et,
             ->getLoad(scenarioId, Interval(start, end), 0) > 0.0;
     else
         return static_cast<const Resource*>(et->getCoreAttributes())
-            ->getLoad(scenarioId, Interval(start, end)) > 0.0;
+            ->getEffectiveLoad(scenarioId, Interval(start, end)) > 0.0;
 }
 
 long

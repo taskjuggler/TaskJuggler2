@@ -1149,11 +1149,11 @@ Task::getLoad(int sc, const Interval& period, const Resource* resource) const
     else
     {
         if (resource)
-            load += resource->getLoad(sc, period, AllAccounts, this);
+            load += resource->getEffectiveLoad(sc, period, AllAccounts, this);
         else
             for (ResourceListIterator rli(scenarios[sc].bookedResources);
                  *rli != 0; ++rli)
-                load += (*rli)->getLoad(sc, period, AllAccounts, this);
+                load += (*rli)->getEffectiveLoad(sc, period, AllAccounts, this);
     }
 
     return load;
@@ -2627,10 +2627,9 @@ Task::prepareScenario(int sc)
     time_t firstSlot = 0;
     for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
     {
-        doneEffort += (*rli)->getLoad(sc,
-                                      Interval(project->getStart(),
-                                               project->getEnd()),
-                                      AllAccounts, this);
+        doneEffort += (*rli)->getEffectiveLoad
+            (sc, Interval(project->getStart(), project->getEnd()),
+             AllAccounts, this);
         if (doneEffort > 0.0)
         {
             if (firstSlot == 0 ||

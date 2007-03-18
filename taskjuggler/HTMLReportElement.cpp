@@ -1064,8 +1064,8 @@ HTMLReportElement::genCellEffort(TableCellInfo* tci)
     }
     else if (tci->tli->ca1->getType() == CA_Resource)
     {
-        val = tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end),
-                                          AllAccounts, tci->tli->task);
+        val = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, Interval(start, end), AllAccounts, tci->tli->task);
     }
 
     generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
@@ -1077,7 +1077,7 @@ HTMLReportElement::genCellFreeLoad(TableCellInfo* tci)
     double val = 0.0;
     if (tci->tli->ca1->getType() == CA_Resource)
     {
-        val = tci->tli->resource->getAvailableWorkLoad
+        val = tci->tli->resource->getEffectiveFreeLoad
             (tci->tli->sc, Interval(start, end));
     }
 
@@ -1090,12 +1090,12 @@ HTMLReportElement::genCellUtilization(TableCellInfo* tci)
     double val = 0.0;
     if (tci->tli->ca1->getType() == CA_Resource)
     {
-        double load =
-            tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end));
+        double load = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, Interval(start, end));
         if (load > 0.0)
         {
             double availableLoad =
-                tci->tli->resource->getAvailableWorkLoad
+                tci->tli->resource->getEffectiveFreeLoad
                 (tci->tli->sc, Interval(start, end));
 
             val = 100.0 / (1.0 + availableLoad / load);
@@ -1440,8 +1440,9 @@ HTMLReportElement::selectResourceBgColor(TableCellInfo* tci, double load,
     {
         bgCol = colors.getColor("today");
     }
-    else if (tci->tli->resource->getLoad(tci->tli->sc, period) == 0.0 &&
-             tci->tli->resource->getAvailableWorkLoad(tci->tli->sc, period) ==
+    else if (tci->tli->resource->getEffectiveLoad
+             (tci->tli->sc, period) == 0.0 &&
+             tci->tli->resource->getEffectiveFreeLoad(tci->tli->sc, period) ==
              0.0)
     {
             bgCol = colors.getColor("vacation");
@@ -1497,8 +1498,8 @@ HTMLReportElement::genCellResourceFunc(TableCellInfo* tci, bool daily,
     for (time_t t = beginOfT(start); t < end; t = sameTimeNextT(t))
     {
         Interval period = Interval(t, sameTimeNextT(t) - 1);
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
+        double load = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, period, AllAccounts, tci->tli->task);
         QColor bgCol = selectResourceBgColor(tci, load, period, daily);
 
         int runLength = 1;
@@ -1509,9 +1510,8 @@ HTMLReportElement::genCellResourceFunc(TableCellInfo* tci, bool daily,
                  endT = sameTimeNextT(endT))
             {
                 Interval periodProbe = Interval(endT, sameTimeNextT(endT) - 1);
-                double loadProbe =
-                    tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
-                                                AllAccounts, tci->tli->task);
+                double loadProbe = tci->tli->resource->getEffectiveLoad
+                    (tci->tli->sc, periodProbe, AllAccounts, tci->tli->task);
                 QColor bgColProbe = selectResourceBgColor(tci, loadProbe,
                                                           periodProbe, daily);
 
@@ -1613,8 +1613,8 @@ HTMLReportElement::genCellWeeklyResource(TableCellInfo* tci)
          week = sameTimeNextWeek(week))
     {
         Interval period = Interval(week, sameTimeNextWeek(week) - 1);
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
+        double load = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, period, AllAccounts, tci->tli->task);
         QColor bgCol = selectResourceBgColor(tci, load, period, false);
 
         int runLength = 1;
@@ -1626,9 +1626,8 @@ HTMLReportElement::genCellWeeklyResource(TableCellInfo* tci)
             {
                 Interval periodProbe = Interval(endWeek)
                     .firstWeek(weekStartsMonday);
-                double loadProbe =
-                    tci->tli->resource->getLoad(tci->tli->sc, periodProbe,
-                                                AllAccounts, tci->tli->task);
+                double loadProbe = tci->tli->resource->getEffectiveLoad
+                    (tci->tli->sc, periodProbe, AllAccounts, tci->tli->task);
                 QColor bgColProbe = selectResourceBgColor(tci, loadProbe,
                                                           periodProbe, false);
                 if (load != loadProbe || bgCol != bgColProbe)

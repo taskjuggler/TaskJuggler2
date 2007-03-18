@@ -258,9 +258,8 @@ HTMLWeeklyCalendarElement::generateResourcesPerDay
         for (ResourceListIterator rli(filteredResourceList);
              *rli != 0; ++rli, ++no)
         {
-            if ((*rli)->getLoad(scenarios[0],
-                                Interval(wd,
-                                         sameTimeNextDay(wd))) <= 0.0)
+            if ((*rli)->getEffectiveLoad
+                (scenarios[0], Interval(wd, sameTimeNextDay(wd))) <= 0.0)
                 continue;
 
             if (first)

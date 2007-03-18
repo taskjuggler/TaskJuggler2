@@ -252,10 +252,10 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
     else
     {
         Resource* r = dynamic_cast<Resource*>(ca);
-        double load = r->getLoad(scenario, iv, AllAccounts);
+        double load = r->getEffectiveLoad(scenario, iv, AllAccounts);
         double allocatedTimeLoad = r->getAllocatedTimeLoad
             (scenario, iv, AllAccounts);
-        double freeLoad = r->getAvailableWorkLoad(scenario, iv);
+        double freeLoad = r->getEffectiveFreeLoad(scenario, iv);
         double freeTimeLoad = r->getAvailableTimeLoad (scenario, iv);
         double totalLoad = load + freeLoad;
         double totalTimeLoad = allocatedTimeLoad + freeTimeLoad;

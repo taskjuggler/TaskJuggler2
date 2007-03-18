@@ -113,16 +113,24 @@ public:
     uint getCurrentWeekSlots(time_t date, const Task* t);
     uint getCurrentMonthSlots(time_t date, const Task* t);
 
-    double getLoad(int sc, const Interval& i,
-                   AccountType acctType = AllAccounts,
-                   const Task* task = 0) const;
+    /***
+     * Return the load of the resource (and its children) weighted by their
+     * efficiency.
+     */
+    double getEffectiveLoad(int sc, const Interval& i,
+                            AccountType acctType = AllAccounts,
+                             const Task* task = 0) const;
     double getAllocatedTimeLoad(int sc, const Interval& period,
                                 AccountType acctType, const Task* task = 0)
         const;
     long getAllocatedTime(int sc, const Interval& period, AccountType acctType,
                           const Task* task = 0) const;
 
-    double getAvailableWorkLoad(int sc, const Interval& period);
+    /***
+     * Return the unallocated load of the resource and its children wheighted
+     * by their efficiency.
+     */
+    double getEffectiveFreeLoad(int sc, const Interval& period);
     double getAvailableTimeLoad(int sc, const Interval& period);
     long getAvailableTime(int sc, const Interval& period);
 

@@ -606,8 +606,8 @@ CSVReportElement::genCellEffort(TableCellInfo* tci)
     }
     else if (tci->tli->ca1->getType() == CA_Resource)
     {
-        val = tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end),
-                                          AllAccounts, tci->tli->task);
+        val = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, Interval(start, end), AllAccounts, tci->tli->task);
     }
 
     generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
@@ -619,7 +619,7 @@ CSVReportElement::genCellFreeLoad(TableCellInfo* tci)
     double val = 0.0;
     if (tci->tli->ca1->getType() == CA_Resource)
     {
-        val = tci->tli->resource->getAvailableWorkLoad
+        val = tci->tli->resource->getEffectiveFreeLoad
             (tci->tli->sc, Interval(start, end));
     }
 
@@ -632,12 +632,12 @@ CSVReportElement::genCellUtilization(TableCellInfo* tci)
     double val = 0.0;
     if (tci->tli->ca1->getType() == CA_Resource)
     {
-        double load =
-            tci->tli->resource->getLoad(tci->tli->sc, Interval(start, end));
+        double load = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, Interval(start, end));
         if (load > 0.0)
         {
             double availableLoad =
-                tci->tli->resource->getAvailableWorkLoad
+                tci->tli->resource->getEffectiveFreeLoad
                 (tci->tli->sc, Interval(start, end));
 
             val = 100.0 / (1.0 + availableLoad / load);
@@ -1023,8 +1023,8 @@ CSVReportElement::genCellResourceFunc(TableCellInfo* tci,
             s() << fieldSeparator;
 
         Interval period = Interval(t, sameTimeNextT(t) - 1);
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
+        double load = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, period, AllAccounts, tci->tli->task);
         reportResourceLoad(load, tci, period);
     }
 }
@@ -1105,8 +1105,8 @@ CSVReportElement::genCellWeeklyResource(TableCellInfo* tci)
             s() << fieldSeparator;
 
         Interval period = Interval(week).firstWeek(weekStartsMonday);
-        double load = tci->tli->resource->getLoad(tci->tli->sc, period,
-                                                  AllAccounts, tci->tli->task);
+        double load = tci->tli->resource->getEffectiveLoad
+            (tci->tli->sc, period, AllAccounts, tci->tli->task);
         reportResourceLoad(load, tci, period);
     }
 }

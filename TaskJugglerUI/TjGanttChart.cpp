@@ -1553,16 +1553,16 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
     // Now we are calculation the load of the resource with respect to this
     // task, to all tasks, and we calculate the not yet allocated load.
     Interval period(start, end);
-    double freeLoad = r->getAvailableWorkLoad(scenario, period);
+    double freeLoad = r->getEffectiveFreeLoad(scenario, period);
     double taskLoad;
     double load;
     Qt::BrushStyle pattern1 , pattern2, pattern3;
 
     if (r->getEfficiency() > 0.0)
     {
-        freeLoad = r->getAvailableWorkLoad(scenario, period);
-        taskLoad = r->getLoad(scenario, period, AllAccounts, t);
-        load = r->getLoad(scenario, period, AllAccounts);
+        freeLoad = r->getEffectiveFreeLoad(scenario, period);
+        taskLoad = r->getEffectiveLoad(scenario, period, AllAccounts, t);
+        load = r->getEffectiveLoad(scenario, period, AllAccounts);
         pattern1 = pattern2 = pattern3 = Qt::Dense4Pattern;
     }
     else

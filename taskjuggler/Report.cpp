@@ -381,8 +381,8 @@ const
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end();
                  ++it)
-                if ((*rli)->getLoad(*it, Interval(start, end),
-                                    AllAccounts, t) > 0.0)
+                if ((*rli)->getEffectiveLoad(*it, Interval(start, end),
+                                             AllAccounts, t) > 0.0)
                 {
                     taskLoadedInAnyScenario = true;
                     break;

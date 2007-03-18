@@ -226,7 +226,7 @@ TjTaskReport::generateStatusBarText(const QPoint& pos,
     {
         Resource* r = dynamic_cast<Resource*>(ca);
         Task* t = dynamic_cast<Task*>(parent);
-        double load = r->getLoad(scenario, iv, AllAccounts, t);
+        double load = r->getEffectiveLoad(scenario, iv, AllAccounts, t);
         double allocatedTimeLoad = r->getAllocatedTimeLoad
             (scenario, iv, AllAccounts, t);
         text = i18n("%1(%2) - %3:  Effort=%4  Allocated Time=%5  %6(%7)")

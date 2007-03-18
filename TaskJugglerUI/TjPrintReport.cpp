@@ -458,14 +458,14 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
         {
             double val = 0.0;
             if (task)
-                val = resource->getLoad(scenario,
-                                        Interval(task->getStart(scenario),
-                                                 task->getEnd(scenario)),
-                                        AllAccounts, task);
+                val = resource->getEffectiveLoad
+                    (scenario, Interval(task->getStart(scenario),
+                                        task->getEnd(scenario)),
+                     AllAccounts, task);
             else
-                val = resource->getLoad(scenario,
-                                        Interval(reportElement->getStart(),
-                                                 reportElement->getEnd()));
+                val = resource->getEffectiveLoad
+                    (scenario, Interval(reportElement->getStart(),
+                                        reportElement->getEnd()));
             cellText = reportElement->scaledLoad(val, tcf->realFormat);
         }
         else if ((*ci)->getName() == "freeload")
@@ -473,7 +473,7 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
             if (!task)
             {
                 double val = 0.0;
-                val = resource->getAvailableWorkLoad
+                val = resource->getEffectiveFreeLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
                 cellText = reportElement->scaledLoad(val, tcf->realFormat);
@@ -551,10 +551,10 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
         {
             if (!task)
             {
-                double load = resource->getLoad
+                double load = resource->getEffectiveLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
-                double freeLoad = resource->getAvailableWorkLoad
+                double freeLoad = resource->getEffectiveFreeLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
                 double val = 100.0 / (1.0 + (freeLoad / load));

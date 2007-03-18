@@ -522,12 +522,15 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
         {
             double val = 0.0;
             if (t)
-                val = r->getLoad(scenario, Interval(t->getStart(scenario),
-                                                    t->getEnd(scenario)),
-                                 AllAccounts, t);
+                val = r->getEffectiveLoad
+                    (scenario, Interval(t->getStart(scenario),
+                                        t->getEnd(scenario)),
+                     AllAccounts, t);
             else
-                val = r->getLoad(scenario, Interval(reportElement->getStart(),
-                                                    reportElement->getEnd()));
+                val = r->getEffectiveLoad
+                    (scenario, Interval(reportElement->getStart(),
+                                        reportElement->getEnd()));
+
             cellText = indent
                 (reportElement->scaledLoad(val, tcf->realFormat), lvi,
                  tcf->getHAlign() == TableColumnFormat::right);
@@ -537,7 +540,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
             if (!t)
             {
                 double val = 0.0;
-                val = r->getAvailableWorkLoad
+                val = r->getEffectiveFreeLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
                 cellText = indent
@@ -599,7 +602,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
         {
             if (!t)
             {
-                double load = r->getLoad
+                double load = r->getEffectiveLoad
                     (scenario, Interval(reportElement->getStart(),
                                         reportElement->getEnd()));
                 double val;
@@ -607,7 +610,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                     val = 0.0;
                 else
                 {
-                    double freeLoad = r->getAvailableWorkLoad
+                    double freeLoad = r->getEffectiveFreeLoad
                         (scenario, Interval(reportElement->getStart(),
                                             reportElement->getEnd()));
                     val = 100.0 / (1.0 + (freeLoad / load));
@@ -1120,8 +1123,8 @@ TjReport::showResourceDetails(Resource* resource)
     QString text;
     Interval iv = Interval(report->getStart(),
                            report->getEnd());
-    double load = resource->getLoad(scenario, iv);
-    double freeLoad = resource->getAvailableWorkLoad(scenario, iv);
+    double load = resource->getEffectiveLoad(scenario, iv);
+    double freeLoad = resource->getEffectiveFreeLoad(scenario, iv);
 
     text = i18n("<b>Resource:</b> %1 (%2)<br/>")
         .arg(resource->getName())

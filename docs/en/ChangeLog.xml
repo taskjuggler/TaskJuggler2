@@ -1100,7 +1100,7 @@ calculated.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_3_2"><title>Version 2.3.2 (Some Day)</title>
+<sect2 id="Changelog_2_4_0"><title>Version 2.4.0 (Some Day)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -1150,6 +1150,10 @@ Comment lines can now start with // or #.</para></listitem>
 
 <listitem><para>Added a warning when the working hours do not align
 with the timing resolution.</para></listitem>
+
+<listitem><para>Properly report effort and load of group resources
+that have children with an efficiency different than
+0.</para></listitem>
 
 </itemizedlist></para>
 
