@@ -16,7 +16,7 @@ URL:            http://www.taskjuggler.org
 License:        GPL
 Group:          Productivity/Office/Other
 Summary:        Project management software
-Version:        2.3.0
+Version:        2.3.1
 Release:        19
 Source0:        taskjuggler-%{version}.tar.bz2 
 Requires:       qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
@@ -57,7 +57,7 @@ companion you don't want to miss anymore.
 
 Authors:
 --------
-    Chris Schläger <cs@suse.de>,
+    Chris Schlaeger <cs@kde.org>,
     Klaas Freitag <freitag@suse.de>
     Lukas Tinkl <lukas.tinkl@suse.cz>
 
@@ -135,7 +135,7 @@ rm -rf $RPM_BUILD_ROOT
 Summary:        Project Management Software for KDE
 Group:          Productivity/Office/Other
 Autoreqprov:    on
-
+Requires:       taskjuggler = %{version}
 %description kde
 TaskJuggler is a project management tool for Linux and UNIX based
 operating systems. Whether you want to plan your college's shifts for
@@ -148,7 +148,7 @@ This package provides an XML viewer for files exported by taskjuggler.
 
 Authors:
 --------
-    Chris Schläger <cs@suse.de>,
+    Chris Schlaeger <cs@kde.org>,
     Klaas Freitag <freitag@suse.de>
     Lukas Tinkl <lukas.tinkl@suse.cz>
 
