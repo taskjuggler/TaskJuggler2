@@ -291,11 +291,6 @@ Resource::initScoreboard()
                                t + project->getScheduleGranularity() - 1)))
             scoreboard[sbIndex(t)] = (SbBooking*) 0;
     }
-#if 0
-    if (id == "r1")
-      for (uint i = 0; i < sbSize; i++)
-          qDebug("%s:%d: %ld", time2ISO(index2start(i)).latin1(), i, scoreboard[i]);
-#endif
     // Then mark all resource specific vacation slots as such (2).
     for (QPtrListIterator<Interval> ivi(vacations); *ivi != 0; ++ivi)
         for (time_t date = (*ivi)->getStart() > project->getStart() ?
