@@ -142,8 +142,6 @@ QString time2ISO(time_t t);
 
 QString time2tjp(time_t t);
 
-QString time2rfc(time_t t);
-
 QString time2user(time_t t, const QString& timeFormat, bool localtime = true);
 
 QString time2time(time_t t);

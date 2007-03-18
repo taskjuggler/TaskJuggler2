@@ -508,8 +508,8 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
         for (QValueListIterator<int> it = scenarios.begin();
              it != scenarios.end(); ++it)
         {
-            QString start = time2rfc(task->getStart(*it));
-            QString end = time2rfc(task->getEnd(*it) + 1);
+            QString start = time2tjp(task->getStart(*it));
+            QString end = time2tjp(task->getEnd(*it) + 1);
             s << QString().fill(' ', indent + 2) <<
                 project->getScenarioId(*it) << ":"
                 << "start " << start << endl;
@@ -730,7 +730,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "minstart "
-                                << time2rfc(task->getMinStart(*it))
+                                << time2tjp(task->getMinStart(*it))
                                 << endl;
                         }
                     }
@@ -746,7 +746,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "maxstart "
-                                << time2rfc(task->getMaxStart(*it))
+                                << time2tjp(task->getMaxStart(*it))
                                 << endl;
                         }
                     }
@@ -762,7 +762,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "minend "
-                                << time2rfc(task->getMinEnd(*it) + 1)
+                                << time2tjp(task->getMinEnd(*it) + 1)
                                 << endl;
                         }
                     }
@@ -778,7 +778,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                             s << QString().fill(' ', indent + 2)
                                 << project->getScenarioId(*it) << ":"
                                 << "maxend "
-                                << time2rfc(task->getMaxEnd(*it) + 1)
+                                << time2tjp(task->getMaxEnd(*it) + 1)
                                 << endl;
                         }
                     }
@@ -856,8 +856,8 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                      * out of the report interval. */
                     Interval iv((*bli)->getInterval());
                     iv.overlap(Interval(start, end));
-                    QString start = time2rfc(iv.getStart());
-                    QString end = time2rfc(iv.getEnd() + 1);
+                    QString start = time2tjp(iv.getStart());
+                    QString end = time2tjp(iv.getEnd() + 1);
                     Task* task = (*bli)->getTask();
                     if (lastTask != task)
                     {

@@ -23,6 +23,11 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 
+#if defined(__SVR4) && defined(__sun)
+int setenv(const char* var, const char* val, int ignore)
+int unsetenv (const char *var)
+#endif
+
 static QDict<const char> TZDict;
 static bool TZDictReady = false;
 
@@ -695,16 +700,6 @@ time2ISO(time_t t)
 
 QString
 time2tjp(time_t t)
-{
-    const struct tm* tms = clocaltime(&t);
-    static char buf[128];
-
-    strftime(buf, 127, "%Y-%m-%d-%H:%M:%S-%z", tms);
-    return QString::fromLocal8Bit(buf);
-}
-
-QString
-time2rfc(time_t t)
 {
     const struct tm* tms = clocaltime(&t);
     static char buf[128];
