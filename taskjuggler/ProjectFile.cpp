@@ -571,6 +571,7 @@ ProjectFile::readProject()
 
     TokenType tt;
     bool scenariosDefined = false;
+    bool timeResChangeOk = true;
     if ((tt = nextToken(token)) == LBRACE)
     {
         for ( ; ; )
@@ -594,6 +595,7 @@ ProjectFile::readProject()
                 for (int d = 0; d < 7; ++d)
                     if (dow & (1 << d))
                         proj->setWorkingHours(d, l);
+                timeResChangeOk = false;
             }
             else if (token == KW("dailyworkinghours"))
             {
@@ -622,9 +624,17 @@ ProjectFile::readProject()
                 macros.setMacro(new Macro("now", time2tjp(now),
                                           openFiles.last()->getFile(),
                                           openFiles.last()->getLine()));
+                timeResChangeOk = false;
             }
             else if (token == KW("timingresolution"))
             {
+                if (!timeResChangeOk)
+                {
+                    errorMessage(i18n("The timing resolution must be changed "
+                                      "prior to a 'now' or 'workinghours' "
+                                      "attribute."));
+                    return false;
+                }
                 ulong resolution;
                 if (!readTimeValue(resolution))
                     return false;
@@ -1063,6 +1073,20 @@ ProjectFile::errorMessage(const char* msg, ...)
 
     if (openFiles.isEmpty())
         TJMH.errorMessage
+            (i18n("Unexpected end of file found. Probably a missing '}'."));
+    else
+        openFiles.last()->errorMessageVA(msg, ap);
+    va_end(ap);
+}
+
+void
+ProjectFile::warningMessage(const char* msg, ...)
+{
+    va_list ap;
+    va_start(ap, msg);
+
+    if (openFiles.isEmpty())
+        TJMH.warningMessage
             (i18n("Unexpected end of file found. Probably a missing '}'."));
     else
         openFiles.last()->errorMessageVA(msg, ap);
@@ -5624,7 +5648,8 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
                 return false;
             /* Set the duration and round it down to be a multiple of the
              * schedule granularity. */
-            td->setGapDuration(scenarioIdx, ((static_cast<long>(d * 60 * 60 * 24)) /
+            td->setGapDuration(scenarioIdx,
+                               ((static_cast<long>(d * 60 * 60 * 24)) /
                                 proj->getScheduleGranularity()) *
                                proj->getScheduleGranularity());
         }
@@ -5636,7 +5661,7 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
             /* Set the length and round it down to be a multiple of the
              * schedule granularity. */
             td->setGapLength(scenarioIdx, ((static_cast<long>(d * 60 * 60 *
-                                       proj->getDailyWorkingHours())) /
+                                             proj->getDailyWorkingHours())) /
                               proj->getScheduleGranularity()) *
                              proj->getScheduleGranularity());
         }
@@ -5668,6 +5693,13 @@ ProjectFile::date2time(const QString& date, time_t& val)
 
     if ((val = ::date2time(date)) == 0)
         errorMessage(getUtilityError());
+    if (val % proj->getScheduleGranularity() != 0)
+    {
+        warningMessage(i18n("The time value must be aligned with the "
+                            "timing resolution (%1 min)")
+                       .arg(proj->getScheduleGranularity() / 60));
+        return false;
+    }
     return true;
 }
 
@@ -5691,5 +5723,13 @@ ProjectFile::hhmm2time(const QString& hhmm)
         errorMessage(i18n("Maximum time is 24:00"));
         return -1;
     }
-    return hour * 60 * 60 + min * 60;
+    int time = hour * 60 * 60 + min * 60;
+    if (time % proj->getScheduleGranularity() != 0)
+    {
+        warningMessage(i18n("Working hours must be aligned with timing "
+                            "resolution (%1 min).")
+                       .arg(proj->getScheduleGranularity() / 60));
+        return -1;
+    }
+    return time;
 }

@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project limits1 "Limits1" "$Id" 2004-03-01-00:00:00-+0000 2004-04-30-23:59:59-+0000 {
+project limits1 "Limits1" "$Id" 2004-03-01-00:00:00-+0000 2004-05-01-00:00:00-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714

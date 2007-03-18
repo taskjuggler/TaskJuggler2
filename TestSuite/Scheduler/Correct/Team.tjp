@@ -40,28 +40,28 @@ task t2 "Task2" {
 	task s1 "sub1" {
 		effort 5d
 		allocate tuxies2 { limits { dailymax 8h } }
-		minend 2000-01-14-17:59:59
+		minend 2000-01-14-18:00:00
 		maxend 2000-01-14-18:00:00	
 		priority 600
 	}
 	task s2 "sub2" {
 		effort 5d
 		allocate tuxies2 { limits { dailymax 8h } }
-		minend 2000-01-14-15:59:59
+		minend 2000-01-14-16:00:00
 		maxend 2000-01-14-16:00:00
 		priority 601
 	}
 	task s3 "sub3" {
 		effort 5d
 		allocate tuxies2 { limits { dailymax 8h } }
-		minend 2000-01-14-13:59:59
+		minend 2000-01-14-14:00:00
 		maxend 2000-01-14-14:00:00
 		priority 602
 	}
 	task s4 "sub4" {
 		effort 5d
 		allocate tuxies2 { limits { dailymax 8h } }
-		minend 2000-01-14-10:59:59
+		minend 2000-01-14-11:00:00
 		maxend 2000-01-14-11:00:00
 		priority 603
 	}

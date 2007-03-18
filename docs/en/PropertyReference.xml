@@ -2963,7 +2963,10 @@ smallest value is 5 min.</para>
 has a severe impact on memory usage and scheduling performance. You
 should set this value to the minimum required resolution. Make sure
 that all values that you specify are aligned with the
-resolution.</para></descr>
+resolution.</para>
+
+<para>The timing resolution should be set prior to any value that
+represents a time value like now or workinghours.</para></descr>
   <attributes>
    <attr name="value" type="INTEGER"/>
    <attr name="unit" type="UNIT"/>

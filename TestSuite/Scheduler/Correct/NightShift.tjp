@@ -88,7 +88,7 @@ task t1 "Task1" {
   start 2002-01-01-22:00
   effort 60d
   allocate r3 { alternative r1, r2 }
-	minend 2002-01-25-21:59:59
+	minend 2002-01-25-22:00:00
 	maxend 2002-01-25-22:00:00
 }
 
@@ -97,8 +97,8 @@ task t2 "Task2" {
   start 2002-03-09-22:00
   effort 60d
   allocate r3 { alternative r1, r2 }
-	minend 2002-04-03-08:59:59
-	maxend 2002-04-03-09:00:00
+	minend 2002-04-03-9:00:00
+	maxend 2002-04-03-9:00:00
 }
 
 # DST to ST switch
@@ -117,6 +117,8 @@ taskreport "Tasks" {
 }
 
 resourcereport "Resources" {
+  columns name, chart
+  period 2002-03-30 +4d
   hidetask 0
 }
 

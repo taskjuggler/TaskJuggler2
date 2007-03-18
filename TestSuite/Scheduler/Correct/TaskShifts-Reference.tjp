@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project test "Test" "$Id" 2000-01-01-00:00:00-+0000 2000-03-01-23:59:59-+0000 {
+project test "Test" "$Id" 2000-01-01-00:00:00-+0000 2000-03-02-00:00:00-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
@@ -52,12 +52,12 @@ task t2 "Task2" {
 }
 supplement task t1 {
   plan:maxend 2000-01-31-17:00:00-+0000
-  plan:minend 2000-01-31-16:59:00-+0000
+  plan:minend 2000-01-31-17:00:00-+0000
   priority 500
 }
 supplement task t2 {
   plan:maxend 2000-02-01-17:00:00-+0000
-  plan:minend 2000-02-01-16:59:00-+0000
+  plan:minend 2000-02-01-17:00:00-+0000
   priority 500
 }
 supplement resource r1 {

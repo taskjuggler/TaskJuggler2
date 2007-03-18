@@ -109,6 +109,7 @@ public:
     bool generateMakeDepList(const QString& fileName, bool append) const;
 
     void errorMessage(const char* msg, ...);
+    void warningMessage(const char* msg, ...);
 
     MacroTable& getMacros() { return macros; }
 

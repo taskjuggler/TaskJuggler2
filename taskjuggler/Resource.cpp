@@ -284,14 +284,18 @@ Resource::initScoreboard()
         scoreboard[i] = (SbBooking*) 1;
 
     // Then change all worktime slots to 0 (available) again.
-    for (time_t day = project->getStart(); day < project->getEnd() + 1;
-         day += project->getScheduleGranularity())
+    for (time_t t = project->getStart(); t < project->getEnd() + 1;
+         t += project->getScheduleGranularity())
     {
-        if (isOnShift(Interval(day,
-                               day + project->getScheduleGranularity() - 1)))
-            scoreboard[sbIndex(day)] = (SbBooking*) 0;
+        if (isOnShift(Interval(t,
+                               t + project->getScheduleGranularity() - 1)))
+            scoreboard[sbIndex(t)] = (SbBooking*) 0;
     }
-
+#if 0
+    if (id == "r1")
+      for (uint i = 0; i < sbSize; i++)
+          qDebug("%s:%d: %ld", time2ISO(index2start(i)).latin1(), i, scoreboard[i]);
+#endif
     // Then mark all resource specific vacation slots as such (2).
     for (QPtrListIterator<Interval> ivi(vacations); *ivi != 0; ++ivi)
         for (time_t date = (*ivi)->getStart() > project->getStart() ?
@@ -518,11 +522,10 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
                 }
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
-                          "%2 has no duty hours at %3 - %4 "
-                          "to be assigned to %5.")
+                          "%2 has no duty hours at %3 "
+                          "to be assigned to %4.")
                      .arg(project->getScenarioId(sc))
                      .arg(id).arg(time2ISO(index2start(i)))
-                     .arg(time2ISO(index2end(j  - 1)))
                      .arg(nb->getTask()->getId().latin1()));
             }
             else if (scoreboard[i] == (SbBooking*) 2)
@@ -534,11 +537,10 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
                 }
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
-                          "%2 is on vacation at %3 - %4. "
-                          "It cannot be assigned to %5.")
+                          "%2 is on vacation at %3. "
+                          "It cannot be assigned to %4444.")
                      .arg(project->getScenarioId(sc))
                      .arg(id).arg(time2ISO(index2start(i)))
-                     .arg(time2ISO(index2end(j - 1)))
                      .arg(nb->getTask()->getId().latin1()));
             }
             else
@@ -550,11 +552,10 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
                 }
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
-                          "Allocation conflict for %2 at %3 - %4. "
-                          "Conflicting tasks are %5 and %6.")
+                          "Allocation conflict for %2 at %3. "
+                          "Conflicting tasks are %4 and %5.")
                      .arg(project->getScenarioId(sc))
                      .arg(id).arg(time2ISO(index2start(i)))
-                     .arg(time2ISO(index2end(j - 1)))
                      .arg(scoreboard[i]->getTask()->getId().latin1())
                      .arg(nb->getTask()->getId().latin1()));
             }

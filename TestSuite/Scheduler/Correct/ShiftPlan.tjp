@@ -46,7 +46,7 @@ task t1 "Installation Support" {
 	priority 500
 	shift phonesupport
 	allocate s1 { alternative s3, s4 select minloaded }
-	minend 2002-07-29-10:59:59
+	minend 2002-07-29-11:00:00
 	maxend 2002-07-29-11:00:00
 }
 
@@ -55,7 +55,7 @@ task t2 "Printer Support" {
   effort 2m
 	priority 600
 	allocate s2 { alternative s1, s3 select minloaded }
-	minend 2002-07-23-15:29:59
+	minend 2002-07-23-15:30:00
 	maxend 2002-07-23-15:30:00
 }
 
@@ -64,7 +64,7 @@ task t3 "Network Support" {
   effort 7w
 	priority 700
 	allocate s4 { alternative s1, s3, s2 select minloaded shift late }
-	minend 2002-07-30-16:29
+	minend 2002-07-30-16:30
 	maxend 2002-07-30-16:30
 }
 

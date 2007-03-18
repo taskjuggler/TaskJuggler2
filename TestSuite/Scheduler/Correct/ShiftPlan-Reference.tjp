@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project simple "Simple Project" "$Id" 2002-06-01-00:00:00-+0000 2002-07-30-23:59:59-+0000 {
+project simple "Simple Project" "$Id" 2002-06-01-00:00:00-+0000 2002-07-31-00:00:00-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714
@@ -91,17 +91,17 @@ supplement task start {
 }
 supplement task t2 {
   plan:maxend 2002-07-23-15:30:00-+0000
-  plan:minend 2002-07-23-15:29:59-+0000
+  plan:minend 2002-07-23-15:30:00-+0000
   priority 600
 }
 supplement task t1 {
   plan:maxend 2002-07-29-11:00:00-+0000
-  plan:minend 2002-07-29-10:59:59-+0000
+  plan:minend 2002-07-29-11:00:00-+0000
   priority 500
 }
 supplement task t3 {
   plan:maxend 2002-07-30-16:30:00-+0000
-  plan:minend 2002-07-30-16:29:00-+0000
+  plan:minend 2002-07-30-16:30:00-+0000
   priority 700
 }
 supplement resource s1 {

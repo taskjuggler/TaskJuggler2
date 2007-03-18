@@ -1,5 +1,6 @@
 project prj "Milestone Test" "$Id" 2003-01-01-0:00-GMT 2003-02-01-0:00-GMT {
 	timezone "GMT"
+	timingresolution 5min
 }
 
 task t1 "Task1" {
@@ -8,18 +9,18 @@ task t1 "Task1" {
 }
 
 task t2 "Task2" {
-	end 2003-01-01-0:00:01-GMT
+	end 2003-01-01-0:00:00-GMT
 	scheduling alap
 	milestone
 }
 
 task t3 "Task3" {
-	start 2003-01-31-23:59:59-GMT
+	start 2003-01-31-23:55:00-GMT
 	milestone
 }
 
 task t4 "Task4" {
-	end 2003-01-31-23:59:59-GMT
+	end 2003-01-31-23:55:00-GMT
 	scheduling alap
 	milestone
 }

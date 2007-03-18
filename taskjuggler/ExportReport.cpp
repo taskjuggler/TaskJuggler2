@@ -135,7 +135,7 @@ ExportReport::generateProjectProperty()
     s << "project " << project->getId() << " \"" << project->getName()
         << "\" \"" << project->getVersion() << "\" "
         << time2tjp(getStart()) << " "
-        << time2tjp(getEnd()) << " {" << endl;
+        << time2tjp(getEnd() + 1) << " {" << endl;
 
     if (!generateCustomAttributeDeclaration
         ("task", project->getTaskAttributeDict()))

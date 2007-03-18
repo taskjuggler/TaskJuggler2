@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project prj "Strict Bookings Test" "1.0" 2005-11-20-00:00:00-+0000 2006-05-18-23:59:59-+0000 {
+project prj "Strict Bookings Test" "1.0" 2005-11-20-00:00:00-+0000 2006-05-19-00:00:00-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714

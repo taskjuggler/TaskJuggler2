@@ -38,7 +38,8 @@ HTMLReport::generateHeader(const QString& title)
       << TJURL << " -->" << endl
       << "<html>" << endl
       << "<head>" << endl
-      << "<title>" << (headline.isEmpty() ? title : headline) << "</title>"
+      << "<title>" << htmlFilter(headline.isEmpty() ? title : headline)
+      << "</title>"
       << endl
       << "<meta http-equiv=\"Content-Type\" content=\"text/html; "
       << "charset=utf-8\"/>" << endl;

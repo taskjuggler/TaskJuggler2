@@ -1148,6 +1148,9 @@ Comment lines can now start with // or #.</para></listitem>
 
 <listitem><para>Removed support for KoTrus database.</para></listitem>
 
+<listitem><para>Added a warning when the working hours do not align
+with the timing resolution.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
