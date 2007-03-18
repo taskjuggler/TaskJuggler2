@@ -1,0 +1,9 @@
+project tr "Timingresolution" "1.0" 2007-03-18-13:30-UTC +2m {
+	workinghours mon - fri 9:00 - 17:00
+	timingresolution 30min
+}
+
+task item "Project" {
+  start 2007-04-06-12:00
+}
+
