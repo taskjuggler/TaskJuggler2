@@ -7,7 +7,7 @@
  * it under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
  *
- * $Id: Utility.cpp 1440 2007-03-18 17:00:37Z cs $
+ * $Id$
  */
 
 #include "Utility.h"
@@ -39,7 +39,7 @@ static QString UtilityError;
 struct LtHashTabEntry
 {
     time_t t;
-    struct tm tms;
+    struct tm* tms;
     LtHashTabEntry* next;
 } ;
 
@@ -155,7 +155,7 @@ void exitUtility()
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
-            delete htep;
+            delete htep->tms;
             htep = tmp;
         }
 
@@ -191,7 +191,7 @@ setTimezone(const char* tZone)
         for (LtHashTabEntry* htep = LtHashTab[i]; htep; )
         {
             LtHashTabEntry* tmp = htep->next;
-            delete htep;
+            delete htep->tms;
             htep = tmp;
         }
         if (LtHashTab[i])
@@ -200,30 +200,28 @@ setTimezone(const char* tZone)
     return true;
 }
 
-static const struct tm * const
+const struct tm * const
 clocaltime(const time_t* t)
 {
-    static struct tm tm;
-
     /* In some cases we haven't initialized the module yet. So we do not use
      * the cache. */
     if (!LtHashTab)
-        return localtime_r(t, &tm);
+        return localtime(t);
 
     long index = *t % LTHASHTABSIZE;
     if (LtHashTab[index])
         for (LtHashTabEntry* htep = LtHashTab[index]; htep;
              htep = htep->next)
             if (htep->t == *t)
-                return &htep->tms;
+                return htep->tms;
 
     LtHashTabEntry* htep = new LtHashTabEntry;
     htep->next = LtHashTab[index];
     htep->t = *t;
-    localtime_r(t, &htep->tms);
-
+    htep->tms = new struct tm;
+    memcpy(htep->tms, localtime(t), sizeof(struct tm));
     LtHashTab[index] = htep;
-    return &htep->tms;
+    return htep->tms;
 }
 
 const QString&
