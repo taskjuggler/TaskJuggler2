@@ -16,7 +16,7 @@ Allocation.cpp \
 Journal.cpp \
 MacroTable.cpp FileInfo.cpp FileToken.cpp ProjectFile.cpp \
 XMLFile.cpp \
-ReportElementBase.cpp ReportElement.cpp Report.cpp ReportXML.cpp \
+ReportElementBase.cpp ReportElement.cpp ElementHolder.cpp Report.cpp ReportXML.cpp \
 QtReportElement.cpp QtReport.cpp \
 QtTaskReport.cpp QtTaskReportElement.cpp \
 QtResourceReport.cpp QtResourceReportElement.cpp \

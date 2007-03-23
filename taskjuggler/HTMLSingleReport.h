@@ -41,18 +41,13 @@ public:
         return m_element.get();
     }
 
-    void generateBody()
-    {
-        getTable()->generate();
-    }
-
     virtual bool generate()
     {
         if (!open())
             return false;
 
         generateHeader();
-        generateBody();
+        getTable()->generate();
         generateFooter();
 
         return close();

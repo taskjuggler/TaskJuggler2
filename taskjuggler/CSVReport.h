@@ -44,21 +44,12 @@ public:
         return m_element.get();
     }
 
-    void generateHeader() { };
-    void generateFooter() { };
-    void generateBody()
-    {
-        getTable()->generate();
-    }
-
     virtual bool generate()
     {
         if (!open())
             return false;
 
-        generateHeader();
-        generateBody();
-        generateFooter();
+        getTable()->generate();
 
         return close();
     }

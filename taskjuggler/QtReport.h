@@ -45,9 +45,6 @@ public:
         return m_element.get();
     }
 
-    void generateHeader() { };
-    void generateFooter() { };
-
     virtual bool generate()
     {
         return false;
