@@ -46,6 +46,10 @@ public:
         getTable()->generate();
     }
 
+    virtual QString getTitle() const = 0;
+
+    bool generate();
+
 private:
     std::auto_ptr<HTMLReportElement> m_element;
 } ;

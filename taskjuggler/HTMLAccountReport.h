@@ -33,8 +33,7 @@ public:
     { }
 
     virtual const char* getType() const { return "HTMLAccountReport"; }
-
-    bool generate();
+    virtual QString getTitle() const { return i18n("Account Report"); }
 };
 
 #endif

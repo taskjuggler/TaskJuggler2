@@ -10,22 +10,3 @@
  * $Id$
  */
 
-#include "HTMLResourceReport.h"
-
-#include <qfile.h>
-
-#include "tjlib-internal.h"
-
-bool
-HTMLResourceReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader(i18n("Resource Report"));
-    generateBody();
-    generateFooter();
-
-    f.close();
-    return true;
-}

@@ -3788,32 +3788,32 @@ ProjectFile::readHTMLReport(const QString& reportType)
         return false;
     }
 
-    HTMLReport* report = 0;
+    HTMLSingleReport* report = 0;
     HTMLReportElement* tab = 0;
     if (reportType == KW("htmltaskreport"))
     {
         report = new HTMLTaskReport(proj, token, getFile(), getLine());
-        tab = static_cast<HTMLTaskReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("htmlresourcereport"))
     {
         report = new HTMLResourceReport(proj, token, getFile(), getLine());
-        tab = static_cast<HTMLResourceReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("htmlweeklycalendar"))
     {
         report = new HTMLWeeklyCalendar(proj, token, getFile(), getLine());
-        tab = static_cast<HTMLWeeklyCalendar*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("htmlmonthlycalendar"))
     {
         report = new HTMLMonthlyCalendar(proj, token, getFile(), getLine());
-        tab = static_cast<HTMLMonthlyCalendar*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("htmlaccountreport"))
     {
         report = new HTMLAccountReport(proj, token, getFile(), getLine());
-        tab = static_cast<HTMLAccountReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else
     {

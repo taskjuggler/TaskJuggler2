@@ -10,20 +10,3 @@
  * $Id$
  */
 
-#include "HTMLTaskReport.h"
-
-#include "tjlib-internal.h"
-
-bool
-HTMLTaskReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader(i18n("Task Report"));
-    generateBody();
-    generateFooter();
-
-    f.close();
-    return true;
-}

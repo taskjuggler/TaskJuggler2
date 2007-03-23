@@ -10,22 +10,3 @@
  * $Id: HTMLMonthlyCalendar.cpp 1259 2006-01-31 12:04:00Z cs $
  */
 
-#include "HTMLMonthlyCalendar.h"
-
-#include <qfile.h>
-
-#include "tjlib-internal.h"
-
-bool
-HTMLMonthlyCalendar::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader(i18n("Weekly Calendar"));
-    generateBody();
-    generateFooter();
-
-    f.close();
-    return true;
-}

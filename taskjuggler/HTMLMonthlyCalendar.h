@@ -29,8 +29,7 @@ public:
     { }
 
     virtual const char* getType() const { return "HTMLMonthlyCalendar"; }
-
-    bool generate();
+    virtual QString getTitle() const { return i18n("Monthly Calendar"); }
 } ;
 
 #endif

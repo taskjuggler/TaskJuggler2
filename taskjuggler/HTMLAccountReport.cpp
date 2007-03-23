@@ -10,22 +10,3 @@
  * $Id$
  */
 
-#include "HTMLAccountReport.h"
-
-#include <qfile.h>
-
-#include "tjlib-internal.h"
-
-bool
-HTMLAccountReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader(i18n("Account Report"));
-    generateBody();
-    generateFooter();
-
-    f.close();
-    return true;
-}

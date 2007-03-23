@@ -10,22 +10,3 @@
  * $Id$
  */
 
-#include "HTMLWeeklyCalendar.h"
-
-#include <qfile.h>
-
-#include "tjlib-internal.h"
-
-bool
-HTMLWeeklyCalendar::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader(i18n("Weekly Calendar"));
-    generateBody();
-    generateFooter();
-
-    f.close();
-    return true;
-}
