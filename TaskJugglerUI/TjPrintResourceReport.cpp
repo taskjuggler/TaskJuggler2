@@ -29,8 +29,8 @@ TjPrintResourceReport::initialize()
 {
     // We need those values frequently. So let's store them in a more
     // accessible place.
-    reportElement = const_cast<QtResourceReport*>(
-        (dynamic_cast<const QtResourceReport*>(reportDef)))->getTable();
+    reportElement = dynamic_cast<QtReportElement*>(const_cast<QtResourceReport*>(
+                dynamic_cast<const QtResourceReport*>(reportDef))->getTable());
     scenario = reportElement->getScenario(0);
 }
 

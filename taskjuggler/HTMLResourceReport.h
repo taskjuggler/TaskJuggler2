@@ -15,6 +15,7 @@
 
 #include "HTMLSingleReport.h"
 #include "HTMLResourceReportElement.h"
+#include "tjlib-internal.h"
 
 /**
  * @short Stores all information about an HTML resource report.

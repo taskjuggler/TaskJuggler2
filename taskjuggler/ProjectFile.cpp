@@ -20,7 +20,6 @@
 #include <qapplication.h>
 
 #include "TjMessageHandler.h"
-#include "tjlib-internal.h"
 #include "Project.h"
 #include "Scenario.h"
 #include "Task.h"
@@ -38,9 +37,7 @@
 #include "HTMLMonthlyCalendar.h"
 #include "HTMLStatusReport.h"
 #include "QtTaskReport.h"
-#include "QtTaskReportElement.h"
 #include "QtResourceReport.h"
-#include "QtResourceReportElement.h"
 #include "CSVTaskReport.h"
 #include "CSVResourceReport.h"
 #include "CSVAccountReport.h"
@@ -3515,7 +3512,7 @@ ProjectFile::readReport(const QString& reportType)
     }
 
     QtReport* report = 0;
-    QtReportElement* tab;
+    ReportElement* tab;
     if (reportType == KW("taskreport"))
     {
         report = new QtTaskReport(proj, token, getFile(), getLine());
@@ -3789,7 +3786,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
     }
 
     HTMLSingleReport* report = 0;
-    HTMLReportElement* tab = 0;
+    ReportElement* tab = 0;
     if (reportType == KW("htmltaskreport"))
     {
         report = new HTMLTaskReport(proj, token, getFile(), getLine());
@@ -4256,7 +4253,7 @@ ProjectFile::readCSVReport(const QString& reportType)
     }
 
     CSVReport* report = 0;
-    CSVReportElement* tab = 0;
+    ReportElement* tab = 0;
     if (reportType == KW("csvtaskreport"))
     {
         report = new CSVTaskReport(proj, token, getFile(), getLine());
@@ -4506,7 +4503,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                     errorMessage(i18n("String expected"));
                     goto error;
                 }
-                tab->setFieldSeparator(token);
+                dynamic_cast<CSVReportElement*>(tab)->setFieldSeparator(token);
             }
             else
             {

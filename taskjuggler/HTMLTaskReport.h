@@ -15,6 +15,7 @@
 
 #include "HTMLSingleReport.h"
 #include "HTMLTaskReportElement.h"
+#include "tjlib-internal.h"
 
 /**
  * @short Stores all information about an HTML task report.

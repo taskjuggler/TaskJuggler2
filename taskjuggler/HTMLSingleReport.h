@@ -15,14 +15,13 @@
 
 #include "HTMLReport.h"
 #include "HTMLReportElement.h"
-
-#include <memory>
+#include "ElementHolder.h"
 
 /**
  * @short Stores the common "m_element" data member.
  * @author Andreas Scherer <andreas_hacker@freenet.de>
  */
-class HTMLSingleReport : public HTMLReport
+class HTMLSingleReport : public HTMLReport, public ElementHolder
 {
 public:
     HTMLSingleReport(Project* p, const QString& f, const QString& df, int dl) :
@@ -30,16 +29,6 @@ public:
     { }
 
     virtual ~HTMLSingleReport() { }
-
-    void setTable(HTMLReportElement* element)
-    {
-        m_element.reset(element);
-    }
-
-    HTMLReportElement* getTable()
-    {
-        return m_element.get();
-    }
 
     virtual bool generate()
     {
@@ -52,9 +41,6 @@ public:
 
         return close();
     }
-
-private:
-    std::auto_ptr<HTMLReportElement> m_element;
 } ;
 
 #endif

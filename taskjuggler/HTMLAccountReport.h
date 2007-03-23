@@ -15,6 +15,7 @@
 
 #include "HTMLSingleReport.h"
 #include "HTMLAccountReportElement.h"
+#include "tjlib-internal.h"
 
 /**
  * @short Stores all information about an HTML account report.

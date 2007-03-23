@@ -47,6 +47,8 @@ public:
     ReportElement(Report* r, const QString& df, int dl);
     virtual ~ReportElement();
 
+    virtual bool generate() = 0;
+
     Report* getReport() const { return report; }
 
     void addScenario(int sc) { scenarios.append(sc); }

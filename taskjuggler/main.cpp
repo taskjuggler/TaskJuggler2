@@ -22,7 +22,6 @@
 
 #include <qapplication.h>
 #include <qglobal.h>
-#include <qfile.h>
 
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"

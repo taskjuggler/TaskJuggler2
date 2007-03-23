@@ -14,15 +14,13 @@
 #define _QtReport_h_
 
 #include "QtReportElement.h"
-#include "Report.h"
-
-#include <memory>
+#include "ElementHolder.h"
 
 /**
  * @short Stores all information about a Qt report.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class QtReport : public Report
+class QtReport : public Report, public ElementHolder
 {
 public:
     QtReport(Project* p, const QString& f, const QString& df, int dl) :
@@ -35,23 +33,10 @@ public:
 
     virtual const char* getType() const { return "QtReport"; }
 
-    void setTable(QtReportElement* element)
-    {
-        m_element.reset(element);
-    }
-
-    QtReportElement* getTable()
-    {
-        return m_element.get();
-    }
-
     virtual bool generate()
     {
         return false;
     }
-
-private:
-    std::auto_ptr<QtReportElement> m_element;
 } ;
 
 #endif

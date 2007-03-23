@@ -11,10 +11,6 @@
  */
 
 #include "ParserTreeContext.h"
-#include "Scenario.h"
-#include "Shift.h"
-#include "Resource.h"
-#include "Account.h"
 #include "VacationInterval.h"
 
 Scenario*

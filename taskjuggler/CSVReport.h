@@ -14,15 +14,13 @@
 #define _CSVReport_h_
 
 #include "CSVReportElement.h"
-#include "Report.h"
-
-#include <memory>
+#include "ElementHolder.h"
 
 /**
  * @short Stores all information about an CSV report.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class CSVReport : public Report, public CSVPrimitives
+class CSVReport : public Report, public CSVPrimitives, public ElementHolder
 {
 public:
     CSVReport(Project* p, const QString& f, const QString& df, int dl) :
@@ -34,16 +32,6 @@ public:
 
     virtual const char* getType() const { return "CSVReport"; }
 
-    void setTable(CSVReportElement* element)
-    {
-        m_element.reset(element);
-    }
-
-    CSVReportElement* getTable()
-    {
-        return m_element.get();
-    }
-
     virtual bool generate()
     {
         if (!open())
@@ -53,9 +41,6 @@ public:
 
         return close();
     }
-
-private:
-    std::auto_ptr<CSVReportElement> m_element;
 } ;
 
 #endif

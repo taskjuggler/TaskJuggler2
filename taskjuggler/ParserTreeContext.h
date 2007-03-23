@@ -14,14 +14,10 @@
 #ifndef _ParserTreeContext_h_
 #define _ParserTreeContext_h_
 
-#include <qptrlist.h>
-#include <qstring.h>
-
 #include "Scenario.h"
 #include "Shift.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Task.h"
 
 class CoreAttributes;
 class TaskScenario;

@@ -15,6 +15,7 @@
 
 #include "HTMLSingleReport.h"
 #include "HTMLMonthlyCalendarElement.h"
+#include "tjlib-internal.h"
 
 class HTMLMonthlyCalendar : public HTMLSingleReport
 {

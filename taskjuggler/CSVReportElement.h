@@ -40,8 +40,6 @@ public:
     { }
     virtual ~CSVReportElement() { }
 
-    virtual bool generate() = 0;
-
     virtual void genHeadDefault(TableCellInfo* tcf);
     virtual void genHeadCurrency(TableCellInfo* tcf);
     virtual void genHeadDaily1(TableCellInfo* tcf);

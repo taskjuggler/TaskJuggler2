@@ -16,7 +16,6 @@
 #include <stdlib.h>
 
 #include "TjMessageHandler.h"
-#include "tjlib-internal.h"
 #include "Scenario.h"
 #include "Shift.h"
 #include "Account.h"
