@@ -13,10 +13,10 @@
 #ifndef _QtReport_h_
 #define _QtReport_h_
 
+#include "QtReportElement.h"
 #include "Report.h"
 
-class Project;
-class ExpressionTree;
+#include <memory>
 
 /**
  * @short Stores all information about a Qt report.
@@ -25,13 +25,36 @@ class ExpressionTree;
 class QtReport : public Report
 {
 public:
-    QtReport(Project* p, const QString& f, const QString& df, int dl);
+    QtReport(Project* p, const QString& f, const QString& df, int dl) :
+        Report(p, f, df, dl)
+    {
+        loadUnit = shortAuto;
+    }
+
     virtual ~QtReport() { }
 
     virtual const char* getType() const { return "QtReport"; }
 
-    void generateHeader();
-    void generateFooter();
+    void setTable(QtReportElement* element)
+    {
+        m_element.reset(element);
+    }
+
+    QtReportElement* getTable()
+    {
+        return m_element.get();
+    }
+
+    void generateHeader() { };
+    void generateFooter() { };
+
+    virtual bool generate()
+    {
+        return false;
+    }
+
+private:
+    std::auto_ptr<QtReportElement> m_element;
 } ;
 
 #endif

@@ -3514,22 +3514,22 @@ ProjectFile::readReport(const QString& reportType)
         return false;
     }
 
-    Report* report = 0;
-    ReportElement* tab;
+    QtReport* report = 0;
+    QtReportElement* tab;
     if (reportType == KW("taskreport"))
     {
         report = new QtTaskReport(proj, token, getFile(), getLine());
-        tab = static_cast<QtTaskReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("resourcereport"))
     {
         report = new QtResourceReport(proj, token, getFile(), getLine());
-        tab = static_cast<QtResourceReport*>(report)->getTable();
+        tab = report->getTable();
     }
 /*    else if (reportType == KW("accountreport"))
     {
         report = new QtReport(proj, token, getFile(), getLine());
-        tab = static_cast<QtReportElement*>(report)->getTable();
+        tab = report->getTable();
     }*/
     else
     {

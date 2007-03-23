@@ -10,24 +10,3 @@
  * $Id$
  */
 
-#include "QtReport.h"
-
-#include "Project.h"
-
-QtReport::QtReport(Project* p, const QString& f, const QString& df,
-                       int dl) :
-   Report(p, f, df, dl)
-{
-    loadUnit = shortAuto;
-}
-
-void
-QtReport::generateHeader()
-{
-}
-
-void
-QtReport::generateFooter()
-{
-}
-

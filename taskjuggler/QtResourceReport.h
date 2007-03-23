@@ -14,9 +14,7 @@
 #define _QtResourceReport_h_
 
 #include "QtReport.h"
-
-class Project;
-class QtResourceReportElement;
+#include "QtResourceReportElement.h"
 
 /**
  * @short Stores all information about an Qt task report.
@@ -25,17 +23,16 @@ class QtResourceReportElement;
 class QtResourceReport : public QtReport
 {
 public:
-    QtResourceReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~QtResourceReport();
+    QtResourceReport(Project* p, const QString& f, const QString& df, int dl) :
+        QtReport(p, f, df, dl)
+    { 
+        setTable(new QtResourceReportElement(this, df, dl));
+    }
+
+    virtual ~QtResourceReport()
+    { }
 
     virtual const char* getType() const { return "QtResourceReport"; }
-
-    bool generate() { return false; }
-
-    QtResourceReportElement* getTable() const { return tab; }
-
-private:
-    QtResourceReportElement* tab;
 } ;
 
 #endif

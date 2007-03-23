@@ -72,8 +72,8 @@ TjTaskReport::generateList()
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
-    reportElement =
-        (dynamic_cast<QtTaskReport*>(report))->getTable();
+    reportElement = dynamic_cast<QtTaskReportElement*>(
+        dynamic_cast<QtTaskReport*>(report)->getTable());
     scenario = reportElement->getScenario(0);
     taskList = report->getProject()->getTaskList();
 

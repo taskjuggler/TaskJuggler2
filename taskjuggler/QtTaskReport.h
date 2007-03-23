@@ -14,9 +14,7 @@
 #define _QtTaskReport_h_
 
 #include "QtReport.h"
-
-class Project;
-class QtTaskReportElement;
+#include "QtTaskReportElement.h"
 
 /**
  * @short Stores all information about an Qt task report.
@@ -25,17 +23,20 @@ class QtTaskReportElement;
 class QtTaskReport : public QtReport
 {
 public:
-    QtTaskReport(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~QtTaskReport();
+    QtTaskReport(Project* p, const QString& f, const QString& df, int dl) :
+        QtReport(p, f, df, dl)
+    { 
+        setTable(new QtTaskReportElement(this, df, dl));
+        taskSortCriteria[0] = CoreAttributesList::TreeMode;
+        taskSortCriteria[1] = CoreAttributesList::StartUp;
+        taskSortCriteria[2] = CoreAttributesList::EndUp;
+        resourceSortCriteria[0] = CoreAttributesList::TreeMode;
+    }
+
+    virtual ~QtTaskReport()
+    { }
 
     virtual const char* getType() const { return "QtTaskReport"; }
-
-    bool generate() { return false; }
-
-    QtTaskReportElement* getTable() const { return tab; }
-
-private:
-    QtTaskReportElement* tab;
 } ;
 
 #endif
