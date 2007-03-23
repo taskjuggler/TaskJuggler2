@@ -10,17 +10,3 @@
  * $Id: $
  */
 
-#include "HTMLSingleReport.h"
-
-bool
-HTMLSingleReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader(getTitle());
-    generateBody();
-    generateFooter();
-
-    return close();
-}

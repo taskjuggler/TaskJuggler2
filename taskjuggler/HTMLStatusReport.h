@@ -15,6 +15,8 @@
 
 #include "HTMLReport.h"
 
+#include "tjlib-internal.h"
+
 #include <qptrvector.h>
 
 class Project;
@@ -32,6 +34,7 @@ public:
     virtual ~HTMLStatusReport();
 
     virtual const char* getType() const { return "HTMLStatusReport"; }
+    virtual QString getTitle() const { return i18n("Status Report"); }
 
     void setTable(int tabIdx, HTMLReportElement* tab);
     HTMLReportElement* getTable(int tabIdx) const;

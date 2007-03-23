@@ -27,7 +27,7 @@ HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
 }
 
 void
-HTMLReport::generateHeader(const QString& title)
+HTMLReport::generateHeader()
 {
     s << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
         " \"http://www.w3.org/TR/REC-html40/loose.dtd\">"
@@ -38,7 +38,7 @@ HTMLReport::generateHeader(const QString& title)
       << TJURL << " -->" << endl
       << "<html>" << endl
       << "<head>" << endl
-      << "<title>" << htmlFilter(headline.isEmpty() ? title : headline)
+      << "<title>" << htmlFilter(headline.isEmpty() ? getTitle() : headline)
       << "</title>"
       << endl
       << "<meta http-equiv=\"Content-Type\" content=\"text/html; "

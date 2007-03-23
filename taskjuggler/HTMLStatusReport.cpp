@@ -18,7 +18,6 @@
 #include "Utility.h"
 #include "HTMLTaskReportElement.h"
 #include "TableColumnInfo.h"
-#include "tjlib-internal.h"
 
 HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
                                    const QString& df, int dl) :
@@ -139,7 +138,7 @@ HTMLStatusReport::generate()
         headline = i18n("Status report for the period %1 to %2")
             .arg(time2user(start, timeFormat)).arg(time2user(end, timeFormat));
 
-    generateHeader(i18n("Status Report"));
+    generateHeader();
 
     for (uint i = 0; i < tables.size(); ++i)
     {

@@ -30,8 +30,9 @@ public:
     virtual ~HTMLReport() { }
 
     virtual const char* getType() const { return "HTMLReport"; }
+    virtual QString getTitle() const = 0;
 
-    void generateHeader(const QString& title);
+    void generateHeader();
     void generateFooter();
 
     void setRawStyleSheet(const QString& ss)
