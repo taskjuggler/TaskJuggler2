@@ -1155,6 +1155,9 @@ with the timing resolution.</para></listitem>
 that have children with an efficiency different than
 0.</para></listitem>
 
+<listitem><para>Fixed a crash when an illegal date was specified in a
+project file.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

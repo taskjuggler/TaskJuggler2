@@ -1767,21 +1767,28 @@ Task::checkDetermination(int sc) const
 
     if (!startCanBeDetermined(list, sc))
     {
-        errorMessage
-            (i18n("The start of task '%1' (scenario '%2') is underspecified. "
-                  "This is caused by underspecified dependent tasks. You "
-                  "must use more fixed dates to solve this problem.")
-             .arg(id).arg(project->getScenarioId(sc)));
+        /* The error message must only be shown if the task has prececessors.
+         * If not, is has been reported before already. */
+        if (!previous.isEmpty())
+            errorMessage
+                (i18n("The start of task '%1' (scenario '%2') is "
+                      "underspecified. This is caused by underspecified "
+                      "dependent tasks. You must use more fixed dates to "
+                      "solve this problem.")
+                 .arg(id).arg(project->getScenarioId(sc)));
         return false;
     }
 
     if (!endCanBeDetermined(list, sc))
     {
-        errorMessage
-            (i18n("The end of task '%1' (scenario '%2') is underspecified. "
-                  "This is caused by underspecified dependent tasks. You "
-                  "must use more fixed dates to solve this problem.")
-             .arg(id).arg(project->getScenarioId(sc)));
+        /* The error message must only be shown if the task has followers.
+         * If not, is has been reported before already. */
+        if (!followers.isEmpty())
+            errorMessage
+                (i18n("The end of task '%1' (scenario '%2') is underspecified. "
+                      "This is caused by underspecified dependent tasks. You "
+                      "must use more fixed dates to solve this problem.")
+                 .arg(id).arg(project->getScenarioId(sc)));
         return false;
     }
 

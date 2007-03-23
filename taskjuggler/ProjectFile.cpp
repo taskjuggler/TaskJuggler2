@@ -5692,7 +5692,11 @@ ProjectFile::date2time(const QString& date, time_t& val)
     }
 
     if ((val = ::date2time(date)) == 0)
+    {
         errorMessage(getUtilityError());
+        return false;
+    }
+
     if (val % proj->getScheduleGranularity() != 0)
     {
         warningMessage(i18n("The time value must be aligned with the "
