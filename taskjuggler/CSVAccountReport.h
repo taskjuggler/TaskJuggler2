@@ -24,20 +24,15 @@ class CSVAccountReport : public CSVReport
 {
 public:
     CSVAccountReport(Project* p, const QString& f, const QString& df, int dl) :
-        CSVReport(p, f, df, dl),
-        tab(this, df, dl)
-    { }
+        CSVReport(p, f, df, dl)
+    {
+        setTable(new CSVAccountReportElement(this, df, dl));
+    }
 
     virtual ~CSVAccountReport()
     { }
 
     virtual const char* getType() const { return "CSVAccountReport"; }
-
-    bool generate();
-    CSVAccountReportElement* getTable() { return &tab; }
-
-private:
-    CSVAccountReportElement tab;
 };
 
 #endif

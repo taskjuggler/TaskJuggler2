@@ -10,19 +10,3 @@
  * $Id$
  */
 
-#include "CSVAccountReport.h"
-
-bool
-CSVAccountReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader();
-    tab.generate();
-    generateFooter();
-
-    f.close();
-    return true;
-}
-

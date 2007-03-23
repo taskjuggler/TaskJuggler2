@@ -4260,17 +4260,17 @@ ProjectFile::readCSVReport(const QString& reportType)
     if (reportType == KW("csvtaskreport"))
     {
         report = new CSVTaskReport(proj, token, getFile(), getLine());
-        tab = static_cast<CSVTaskReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("csvresourcereport"))
     {
         report = new CSVResourceReport(proj, token, getFile(), getLine());
-        tab = static_cast<CSVResourceReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else if (reportType == KW("csvaccountreport"))
     {
         report = new CSVAccountReport(proj, token, getFile(), getLine());
-        tab = static_cast<CSVAccountReport*>(report)->getTable();
+        tab = report->getTable();
     }
     else
     {

@@ -10,18 +10,3 @@
  * $Id$
  */
 
-#include "CSVResourceReport.h"
-
-bool
-CSVResourceReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader();
-    tab.generate();
-    generateFooter();
-
-    f.close();
-    return true;
-}

@@ -24,20 +24,15 @@ class CSVTaskReport : public CSVReport
 {
 public:
     CSVTaskReport(Project* p, const QString& f, const QString& df, int dl) :
-        CSVReport(p, f, df, dl),
-        tab(this, df, dl)
-    { }
+        CSVReport(p, f, df, dl)
+    {
+        setTable(new CSVTaskReportElement(this, df, dl));
+    }
 
     virtual ~CSVTaskReport()
     { }
 
     virtual const char* getType() const { return "CSVTaskReport"; }
-
-    bool generate();
-    CSVTaskReportElement* getTable() { return &tab; }
-
-private:
-    CSVTaskReportElement tab;
 };
 
 #endif

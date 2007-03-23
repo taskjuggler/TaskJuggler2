@@ -10,18 +10,3 @@
  * $Id$
  */
 
-#include "CSVTaskReport.h"
-
-bool
-CSVTaskReport::generate()
-{
-    if (!open())
-        return false;
-
-    generateHeader();
-    tab.generate();
-    generateFooter();
-
-    f.close();
-    return true;
-}

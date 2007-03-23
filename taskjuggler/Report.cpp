@@ -106,6 +106,13 @@ Report::open()
     return true;
 }
 
+bool
+Report::close()
+{
+    f.close();
+    return true;
+}
+
 QString
 Report::getFullFileName() const
 {

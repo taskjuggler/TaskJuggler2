@@ -24,19 +24,12 @@ class CSVResourceReport : public CSVReport
 {
 public:
     CSVResourceReport(Project* p, const QString& f, const QString& df, int dl) :
-        CSVReport(p, f, df, dl),
-        tab(this, df, dl)
-    { }
+        CSVReport(p, f, df, dl)
+    {
+        setTable(new CSVResourceReportElement(this, df, dl));
+    }
 
     virtual ~CSVResourceReport() { }
-
-    virtual const char* getType() const { return "CSVResourceReport"; }
-
-    bool generate();
-    CSVResourceReportElement* getTable() { return &tab; }
-
-private:
-    CSVResourceReportElement tab;
 } ;
 
 #endif

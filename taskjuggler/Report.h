@@ -44,6 +44,7 @@ public:
     virtual const char* getType() const { return "Report"; }
 
     bool open();
+    bool close();
 
     QTextStream& stream() { return s; }
 

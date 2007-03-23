@@ -13,11 +13,10 @@
 #ifndef _CSVReport_h_
 #define _CSVReport_h_
 
-#include "CSVPrimitives.h"
+#include "CSVReportElement.h"
 #include "Report.h"
 
-class Project;
-class ExpressionTree;
+#include <memory>
 
 /**
  * @short Stores all information about an CSV report.
@@ -35,8 +34,37 @@ public:
 
     virtual const char* getType() const { return "CSVReport"; }
 
+    void setTable(CSVReportElement* element)
+    {
+        m_element.reset(element);
+    }
+
+    CSVReportElement* getTable()
+    {
+        return m_element.get();
+    }
+
     void generateHeader() { };
     void generateFooter() { };
+    void generateBody()
+    {
+        getTable()->generate();
+    }
+
+    virtual bool generate()
+    {
+        if (!open())
+            return false;
+
+        generateHeader();
+        generateBody();
+        generateFooter();
+
+        return close();
+    }
+
+private:
+    std::auto_ptr<CSVReportElement> m_element;
 } ;
 
 #endif
