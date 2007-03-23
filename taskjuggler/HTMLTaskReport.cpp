@@ -21,7 +21,7 @@ HTMLTaskReport::generate()
         return false;
 
     generateHeader(i18n("Task Report"));
-    tab.generate();
+    generateBody();
     generateFooter();
 
     f.close();

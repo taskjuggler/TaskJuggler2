@@ -13,30 +13,28 @@
 #ifndef _HTMLResourceReport_h_
 #define _HTMLResourceReport_h_
 
-#include "HTMLReport.h"
+#include "HTMLSingleReport.h"
 #include "HTMLResourceReportElement.h"
 
 /**
  * @short Stores all information about an HTML resource report.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class HTMLResourceReport : public HTMLReport
+class HTMLResourceReport : public HTMLSingleReport
 {
 public:
     HTMLResourceReport(Project* p, const QString& f, const QString& df, int dl) :
-	    HTMLReport(p, f, df, dl ),
-	    tab(this, df, dl)
-    { }
+	    HTMLSingleReport(p, f, df, dl)
+    {
+	    setTable(new HTMLResourceReportElement(this, df, dl));
+    }
+
     virtual ~HTMLResourceReport()
     { }
 
     virtual const char* getType() const { return "HTMLResourceReport"; }
 
     bool generate();
-    HTMLResourceReportElement* getTable() { return &tab; }
-
-private:
-    HTMLResourceReportElement tab;
 };
 
 #endif

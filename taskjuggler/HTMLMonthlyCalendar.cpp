@@ -23,7 +23,7 @@ HTMLMonthlyCalendar::generate()
         return false;
 
     generateHeader(i18n("Weekly Calendar"));
-    tab.generate();
+    generateBody();
     generateFooter();
 
     f.close();

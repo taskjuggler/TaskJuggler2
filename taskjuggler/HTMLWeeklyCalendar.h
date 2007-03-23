@@ -13,22 +13,24 @@
 #ifndef _HTMLWeeklyCalendar_h_
 #define _HTMLWeeklyCalendar_h_
 
-#include "HTMLReport.h"
+#include "HTMLSingleReport.h"
 #include "HTMLWeeklyCalendarElement.h"
 
-class HTMLWeeklyCalendar : public HTMLReport
+class HTMLWeeklyCalendar : public HTMLSingleReport
 {
 public:
-    HTMLWeeklyCalendar(Project* p, const QString& f, const QString& df, int dl);
-    virtual ~HTMLWeeklyCalendar();
+    HTMLWeeklyCalendar(Project* p, const QString& f, const QString& df, int dl) :
+        HTMLSingleReport(p, f, df, dl)
+    {
+        setTable(new HTMLWeeklyCalendarElement(this, df, dl));
+    }
+
+    virtual ~HTMLWeeklyCalendar()
+    { }
 
     virtual const char* getType() const { return "HTMLWeeklyCalendar"; }
 
     bool generate();
-    HTMLWeeklyCalendarElement* getTable() { return &tab; }
-
-private:
-    HTMLWeeklyCalendarElement tab;
 };
 
 #endif

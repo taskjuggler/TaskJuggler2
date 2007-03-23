@@ -16,17 +16,6 @@
 
 #include "tjlib-internal.h"
 
-HTMLWeeklyCalendar::HTMLWeeklyCalendar(Project* p, const QString& f,
-                                       const QString& df, int dl) :
-    HTMLReport(p, f, df, dl),
-    tab(this, df, dl)
-{
-}
-
-HTMLWeeklyCalendar::~HTMLWeeklyCalendar()
-{
-}
-
 bool
 HTMLWeeklyCalendar::generate()
 {
@@ -34,7 +23,7 @@ HTMLWeeklyCalendar::generate()
         return false;
 
     generateHeader(i18n("Weekly Calendar"));
-    tab.generate();
+    generateBody();
     generateFooter();
 
     f.close();

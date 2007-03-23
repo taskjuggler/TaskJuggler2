@@ -23,7 +23,7 @@ HTMLAccountReport::generate()
         return false;
 
     generateHeader(i18n("Account Report"));
-    tab.generate();
+    generateBody();
     generateFooter();
 
     f.close();

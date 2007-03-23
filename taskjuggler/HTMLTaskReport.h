@@ -13,30 +13,28 @@
 #ifndef _HTMLTaskReport_h_
 #define _HTMLTaskReport_h_
 
-#include "HTMLReport.h"
+#include "HTMLSingleReport.h"
 #include "HTMLTaskReportElement.h"
 
 /**
  * @short Stores all information about an HTML task report.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class HTMLTaskReport : public HTMLReport
+class HTMLTaskReport : public HTMLSingleReport
 {
 public:
     HTMLTaskReport(Project* p, const QString& f, const QString& df, int dl) :
-	    HTMLReport(p, f, df, dl),
-	    tab(this, df, dl)
-    { }
+	    HTMLSingleReport(p, f, df, dl)
+    {
+	    setTable(new HTMLTaskReportElement(this, df, dl));
+    }
+
     virtual ~HTMLTaskReport()
     { }
 
     virtual const char* getType() const { return "HTMLTaskReport"; }
 
     bool generate();
-    HTMLTaskReportElement* getTable() { return &tab; }
-
-private:
-    HTMLTaskReportElement tab;
 };
 
 #endif

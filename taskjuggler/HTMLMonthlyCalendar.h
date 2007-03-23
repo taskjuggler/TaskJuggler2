@@ -13,18 +13,17 @@
 #ifndef _HTMLMonthlyCalendar_h_
 #define _HTMLMonthlyCalendar_h_
 
-#include "HTMLReport.h"
+#include "HTMLSingleReport.h"
 #include "HTMLMonthlyCalendarElement.h"
 
-class Project;
-
-class HTMLMonthlyCalendar : public HTMLReport
+class HTMLMonthlyCalendar : public HTMLSingleReport
 {
 public:
     HTMLMonthlyCalendar(Project* p, const QString& f, const QString& df, int dl) :
-        HTMLReport(p, f, df, dl),
-        tab(this, df, dl)
-    { }
+        HTMLSingleReport(p, f, df, dl)
+    {
+        setTable(new HTMLMonthlyCalendarElement(this, df, dl));
+    }
 
     virtual ~HTMLMonthlyCalendar()
     { }
@@ -32,10 +31,6 @@ public:
     virtual const char* getType() const { return "HTMLMonthlyCalendar"; }
 
     bool generate();
-    HTMLMonthlyCalendarElement* getTable() { return &tab; }
-
-private:
-    HTMLMonthlyCalendarElement tab;
 } ;
 
 #endif

@@ -21,7 +21,7 @@ QtReportElement.cpp QtReport.cpp \
 QtTaskReport.cpp QtTaskReportElement.cpp \
 QtResourceReport.cpp QtResourceReportElement.cpp \
 HTMLPrimitives.cpp TableColumnFormat.cpp TableColumnInfo.cpp \
-HTMLReport.cpp HTMLReportElement.cpp \
+HTMLReport.cpp HTMLReportElement.cpp HTMLSingleReport.cpp \
 HTMLTaskReport.cpp HTMLTaskReportElement.cpp \
 HTMLResourceReport.cpp HTMLResourceReportElement.cpp \
 HTMLWeeklyCalendar.cpp HTMLWeeklyCalendarElement.cpp \

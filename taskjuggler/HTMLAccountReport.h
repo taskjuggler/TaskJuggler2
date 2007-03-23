@@ -13,32 +13,28 @@
 #ifndef _HTMLAccountReport_h_
 #define _HTMLAccountReport_h_
 
-#include "HTMLReport.h"
+#include "HTMLSingleReport.h"
 #include "HTMLAccountReportElement.h"
 
 /**
  * @short Stores all information about an HTML account report.
  * @author Chris Schlaeger <cs@kde.org>
  */
-class HTMLAccountReport : public HTMLReport
+class HTMLAccountReport : public HTMLSingleReport
 {
 public:
     HTMLAccountReport(Project* p, const QString& f, const QString& df, int dl) :
-        HTMLReport(p, f, df, dl),
-        tab(this, df, dl)
-    { }
+        HTMLSingleReport(p, f, df, dl)
+    {
+        setTable(new HTMLAccountReportElement(this, df, dl));
+    }
 
     virtual ~HTMLAccountReport()
     { }
 
-
     virtual const char* getType() const { return "HTMLAccountReport"; }
 
     bool generate();
-    HTMLAccountReportElement* getTable() { return &tab; }
-
-private:
-    HTMLAccountReportElement tab;
 };
 
 #endif

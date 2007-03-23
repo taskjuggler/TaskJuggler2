@@ -23,7 +23,7 @@ HTMLResourceReport::generate()
         return false;
 
     generateHeader(i18n("Resource Report"));
-    tab.generate();
+    generateBody();
     generateFooter();
 
     f.close();
