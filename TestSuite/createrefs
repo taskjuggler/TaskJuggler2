@@ -1,8 +1,8 @@
 #! /bin/sh
 
 # Use a well defined LOCALE to create the reference files.
-export LANG=en_US
-export LC_COLLATE=POSIX 
+LANG=en_US ; export LANG
+LC_COLLATE=POSIX ; export LC_COLLATE
 
 cd Misc
 dirs=`find . -type d`

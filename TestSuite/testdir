@@ -1,16 +1,17 @@
 #! /bin/sh
 
-export LANG=en_US
-export LC_ALL=en_US
-export LC_COLLATE=POSIX
+LANG=en_US ; export LANG
+LC_ALL=en_US ; export LC_ALL
+LC_COLLATE=POSIX ; export LC_COLLATE
 
 errors=0
-export TASKJUGGLER=../../taskjuggler/taskjuggler
+TASKJUGGLER=../../taskjuggler/taskjuggler
 if test ! -x $TASKJUGGLER ; then
-  export TASKJUGGLER=taskjuggler
+  TASKJUGGLER=taskjuggler
 else
-  export TASKJUGGLER=../$TASKJUGGLER
+  TASKJUGGLER=../$TASKJUGGLER
 fi
+export TASKJUGGLER
 
 do_testing()
 {

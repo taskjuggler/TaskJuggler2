@@ -1,13 +1,14 @@
-#! /bin/sh
+#! /bin/bash
 
 # Run the test suite in a differnt time zone then the reference files
 # were generated. This catches all test cases without timezone
 # specification.
-export TZ="UTC-3"
+TZ="UTC-3"
+export TZ
 
 set errors=0
 
-dirs=`find * -maxdepth 0 -type d`
+dirs=`find * -prune -type d`
 
 for d in $dirs ; do
   if [ $d != "CVS" ] ; then
