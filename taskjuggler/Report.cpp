@@ -457,7 +457,8 @@ const
     for (AccountListIterator ali(project->getAccountListIterator());
          *ali != 0; ++ali)
     {
-        if (!isHidden(*ali, hideExp) && (*ali)->getAcctType() == at)
+        if (!isHidden(*ali, hideExp) &&
+            (at == AllAccounts || (*ali)->getAcctType() == at))
             filteredList.append(*ali);
         if (hideExp && hideExp->getErrorFlag())
             return false;

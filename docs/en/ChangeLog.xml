@@ -1158,6 +1158,9 @@ that have children with an efficiency different than
 <listitem><para>Fixed a crash when an illegal date was specified in a
 project file.</para></listitem>
 
+<listitem><para>The XML reports now also include the
+accounts.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

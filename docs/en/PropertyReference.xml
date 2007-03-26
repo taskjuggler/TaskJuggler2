@@ -3094,8 +3094,10 @@ Site</ulink>.</para></descr>
   <optattributes>
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
+   <optattr>hideaccount</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
+   <optattr>rollupaccount</optattr>
    <optattr>scenarios</optattr>
    <optattr>version</optattr>
   </optattributes>

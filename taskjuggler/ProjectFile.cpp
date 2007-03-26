@@ -3329,6 +3329,7 @@ ProjectFile::readXMLReport()
     XMLReport* report;
     report = new XMLReport(proj, fileName, getFile(), getLine());
     report->setMasterFile(true);
+    report->addAccountAttribute("all");
     report->addTaskAttribute("all");
     TokenType tt;
     QString token;
@@ -3390,6 +3391,28 @@ ProjectFile::readXMLReport()
                 ExpressionTree* et = new ExpressionTree(op);
                 et->setDefLocation(fileName, lineNo);
                 report->setRollUpResource(et);
+            }
+            else if (token == KW("hideaccount"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    goto error;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setHideAccount(et);
+            }
+            else if (token == KW("rollupaccount"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    goto error;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setRollUpAccount(et);
             }
             else if (token == KW("scenarios"))
             {

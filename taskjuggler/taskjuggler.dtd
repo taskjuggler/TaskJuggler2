@@ -13,7 +13,7 @@ elments added, but the existing ones will not change anymore. -->
 manual at http://www.taskjuggler.org/docs.php -->
 
 <!ELEMENT taskjuggler (project, vacationList?, shiftList?,
-                       resourceList?, taskList, bookingList?)>
+                       resourceList?, accountList?, taskList, bookingList?)>
 
 <!ELEMENT project (start, end, extend*, now?, currencyFormat,
                    workingHours, scenario?)>
@@ -114,7 +114,7 @@ manual at http://www.taskjuggler.org/docs.php -->
 
 <!ELEMENT accountList (account*)>
 
-<!ELEMENT account (account*)>
+<!ELEMENT account (customAttribute*, account*)>
 <!ATTLIST account
   id CDATA #REQUIRED
   name CDATA #REQUIRED

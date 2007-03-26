@@ -21,6 +21,7 @@
 #include "Project.h"
 #include "Scenario.h"
 #include "ShiftSelection.h"
+#include "Account.h"
 #include "Task.h"
 #include "Resource.h"
 #include "BookingList.h"
@@ -49,13 +50,15 @@ typedef enum TADs {
     TA_PRIORITY,
     TA_RESPONSIBLE,
     TA_STATUS,
-    TA_STATUSNOTE
+    TA_STATUSNOTE,
+    TA_ACCOUNT
 };
 
 XMLReport::XMLReport(Project* p, const QString& f,
                            const QString& df, int dl) :
     Report(p, f, df, dl),
     doc(0),
+    accountAttributes(),
     taskAttributes(),
     masterFile(false)
 {
@@ -76,17 +79,22 @@ XMLReport::XMLReport(Project* p, const QString& f,
         TaskAttributeDict[KW("responsible")] = TA_RESPONSIBLE;
         TaskAttributeDict[KW("status")] = TA_STATUS;
         TaskAttributeDict[KW("statusnote")] = TA_STATUSNOTE;
+        TaskAttributeDict[KW("account")] = TA_ACCOUNT;
     }
     // show all tasks
     hideTask = new ExpressionTree(new Operation(0));
     // show all resources
     hideResource = new ExpressionTree(new Operation(0));
+    // show all accounts
+    hideAccount = new ExpressionTree(new Operation(0));
 
     taskSortCriteria[0] = CoreAttributesList::TreeMode;
     taskSortCriteria[1] = CoreAttributesList::StartUp;
     taskSortCriteria[2] = CoreAttributesList::EndUp;
     resourceSortCriteria[0] = CoreAttributesList::TreeMode;
     resourceSortCriteria[1] = CoreAttributesList::IdUp;
+    accountSortCriteria[0] = CoreAttributesList::TreeMode;
+    accountSortCriteria[1] = CoreAttributesList::IdUp;
 
     // All XML reports default to just showing the first scenario.
     scenarios.append(0);
@@ -135,6 +143,12 @@ XMLReport::generate()
         return false;
     sortResourceList(filteredResourceList);
 
+    AccountList filteredAccountList;
+    if (!filterAccountList(filteredAccountList, AllAccounts, hideAccount,
+                           rollUpAccount))
+        return false;
+    sortAccountList(filteredAccountList);
+
     if (!generateProjectProperty(&tjEl))
         return false;
     if (!generateGlobalVacationList(&tjEl))
@@ -142,6 +156,8 @@ XMLReport::generate()
     if (!generateShiftList(&tjEl))
         return false;
     if (!generateResourceList(&tjEl, filteredResourceList, filteredTaskList))
+        return false;
+    if (!generateAccountList(&tjEl, filteredAccountList, filteredTaskList))
         return false;
     if (!generateTaskList(&tjEl, filteredTaskList, filteredResourceList))
         return false;
@@ -441,6 +457,69 @@ XMLReport::generateResource(QDomElement* parentEl,
 }
 
 bool
+XMLReport::generateAccountList(QDomElement* parentNode,
+                               AccountList& filteredAccountList,
+                               TaskList& filteredTaskList)
+{
+    QDomElement el = doc->createElement("accountList");
+    parentNode->appendChild(el);
+
+    for (AccountListIterator ali(filteredAccountList); *ali != 0; ++ali) {
+        if ((*ali)->getParent() == 0) {
+            if (!generateAccount(&el, filteredAccountList,
+                                 filteredTaskList, *ali))
+                return false;
+        }
+    }
+    return true;
+}
+
+bool
+XMLReport::generateAccount(QDomElement* parentEl,
+                           AccountList& filteredAccountList,
+                           TaskList& filteredTaskList,
+                           const Account* account)
+{
+    QDomElement el = doc->createElement("account");
+    parentEl->appendChild(el);
+
+    genTextAttr(&el, "id", account->getId());
+    genTextAttr(&el, "name", account->getName());
+
+    switch (account->getAcctType()) {
+    case Cost:
+        genTextAttr(&el, "type", "cost");
+        break;
+    case Revenue:
+        genTextAttr(&el, "type", "revenue");
+        break;
+    default:
+        qFatal("XMLReport::generateAccount: Unknown AccountType %d",
+               account->getAcctType());
+        return false;
+    }
+
+    for (QStringList::Iterator it = accountAttributes.begin();
+         it != accountAttributes.end(); ++it)
+    {
+        if (account->getCustomAttribute(*it))
+            generateCustomAttributeValue(&el, *it, account);
+    }
+
+    for (AccountListIterator srli(account->getSubListIterator());
+         *srli != 0; ++srli)
+    {
+        if (filteredAccountList.findRef(*srli) >= 0)
+        {
+            if (!generateAccount(&el, filteredAccountList, filteredTaskList,
+                                 *srli))
+                return false;
+        }
+    }
+    return true;
+}
+
+bool
 XMLReport::generateTaskList(QDomElement* parentNode, TaskList& filteredTaskList,
                             ResourceList&)
 {
@@ -521,6 +600,11 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                                 task->getDependsIterator(), "depends");
                 generateDepList(&el, filteredTaskList, task,
                                 task->getPrecedesIterator(), "precedes");
+                break;
+            case TA_ACCOUNT:
+                if (task->getAccount())
+                    genTextAttr(&el, "account",
+                                task->getAccount()->getId());
                 break;
             default:
                 qDebug("XMLReport::generateTask(): "
@@ -780,6 +864,32 @@ XMLReport::generateBookingList(QDomElement* parentEl,
             }
         }
     }
+    return true;
+}
+
+bool
+XMLReport::addAccountAttribute(const QString& aa)
+{
+    if (aa == KW("all"))
+    {
+        for (QDictIterator<CustomAttributeDefinition>
+             it(project->getAccountAttributeDict()); *it; ++it)
+        {
+            accountAttributes.append(it.currentKey());
+        }
+
+        return true;
+    }
+
+    /* Make sure the 'ta' is a valid attribute name and that we don't
+     * insert it twice into the list. Trying to insert it twice it not an
+     * error though. */
+    if (project->getAccountAttribute(aa) == 0)
+        return false;
+
+    if (accountAttributes.findIndex(aa) >= 0)
+        return true;
+    accountAttributes.append(aa);
     return true;
 }
 

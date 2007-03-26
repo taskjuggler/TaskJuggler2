@@ -20,6 +20,7 @@ class QDomElement;
 class CustomAttributeDefinition;
 class Scenario;
 class Shift;
+class Account;
 class Interval;
 class TaskDependency;
 
@@ -32,6 +33,9 @@ public:
     virtual const char* getType() const { return "XMLReport"; }
 
     bool generate();
+
+    bool addAccountAttribute(const QString& aa);
+    QStringList getAccountAttributes() const { return accountAttributes; }
 
     bool addTaskAttribute(const QString& ta);
     QStringList getTaskAttributes() const { return taskAttributes; }
@@ -54,6 +58,10 @@ private:
                               TaskList& ftl);
     bool generateResource(QDomElement* parentEl, ResourceList& frl,
                           TaskList& ftl, const Resource* r);
+    bool generateAccountList(QDomElement* parentNode, AccountList& fal,
+                             TaskList& ftl);
+    bool generateAccount(QDomElement* parentEl, AccountList& fal,
+                         TaskList& ftl, const Account* a);
     bool generateTaskList(QDomElement* parentNode, TaskList& ftl,
                           ResourceList& frl);
     bool generateTask(QDomElement* parentEl, TaskList& ftl, const Task* task);
@@ -79,6 +87,7 @@ private:
 
     QDomDocument* doc;
 
+    QStringList accountAttributes;
     QStringList taskAttributes;
 
     // True if the file should be a standalone project (*.tjp file).
