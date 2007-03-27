@@ -416,6 +416,10 @@ XMLReport::generateResource(QDomElement* parentEl,
     genTextAttr(&el, "id", resource->getId());
     genTextAttr(&el, "name", resource->getName());
 
+    QStringList fl = resource->getFlagList();
+    for (QStringList::Iterator jt = fl.begin(); jt != fl.end(); ++jt)
+        genTextElement(&el, "flag", *jt);
+
     for (ResourceListIterator srli(resource->getSubListIterator());
          *srli != 0; ++srli)
     {
@@ -464,12 +468,12 @@ XMLReport::generateAccountList(QDomElement* parentNode,
     QDomElement el = doc->createElement("accountList");
     parentNode->appendChild(el);
 
-    for (AccountListIterator ali(filteredAccountList); *ali != 0; ++ali) {
-        if ((*ali)->getParent() == 0) {
+    for (AccountListIterator ali(filteredAccountList); *ali != 0; ++ali)
+    {
+        if ((*ali)->getParent() == 0)
             if (!generateAccount(&el, filteredAccountList,
                                  filteredTaskList, *ali))
                 return false;
-        }
     }
     return true;
 }
@@ -486,7 +490,8 @@ XMLReport::generateAccount(QDomElement* parentEl,
     genTextAttr(&el, "id", account->getId());
     genTextAttr(&el, "name", account->getName());
 
-    switch (account->getAcctType()) {
+    switch (account->getAcctType())
+    {
     case Cost:
         genTextAttr(&el, "type", "cost");
         break;
