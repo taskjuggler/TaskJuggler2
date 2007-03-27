@@ -2690,8 +2690,12 @@ Task::prepareScenario(int sc)
                     end = scenarios[sc].end = lastSlot;
                     schedulingDone = true;
 
+                    /* We allow up to one time slot fuzziness before we
+                     * generate a warning. */
                     if (project->getScenario(sc)->getStrictBookings() &&
-                        doneEffort > effort)
+                        doneEffort > effort +
+                        project->convertToDailyLoad
+                        (project->getScheduleGranularity() - 1))
                     {
                         /* In case the bookings exceed the specified effort
                          * in strict mode, show a warning. */
