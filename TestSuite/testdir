@@ -20,7 +20,7 @@ do_testing()
   echo "Running test $f" >> ../log
   $TASKJUGGLER --debug 1 --warnerror $TJARGS $f 2>> ../log
   if [ $? $op 0 ] ; then
-    errors=$(( $errors + 1 ))
+    errors=`expr $errors + 1`
     echo "Test $f failed!" | tee -a ../log
   fi
   checkscript=`echo $f | sed s/\\\\\(.*\\\\\).tjp/\\\1.sh/g`
@@ -29,14 +29,14 @@ do_testing()
   if [ -x $checkscript ] ; then
     ./$checkscript 2>&1 >> ../log 
     if [ $? -ne 0 ] ; then
-      errors=$(( $errors + 1 ))
+      errors=`expr $errors + 1`
       echo "Test $f failed (check script)!" | tee -a ../log
     fi
   fi
   if [ -f $referenceFile ] ; then
     cmp $exportFile $referenceFile 2>> ../log
     if [ $? -ne 0 ] ; then
-      errors=$(( $errors + 1 ))
+      errors=`$errors + 1`
       echo "Test $f failed (Reference file differs)!" | tee -a ../log
       diff -u $referenceFile $exportFile | head -n 20 | tee -a ../log
     else

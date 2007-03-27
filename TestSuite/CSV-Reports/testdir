@@ -14,7 +14,7 @@ for f in *.tjp ; do
   cmp $csvFile $referenceFile
   if test $? -ne 0 ; then
     diff -u $csvFile $referenceFile | head -n 10
-    errors=$(($errors + 1))
+    errors=`$errors + 1`
   else
     rm $csvFile
   fi

@@ -17,14 +17,14 @@ for f in *.tjp ; do
   # TJ will generate an xmlreport that must match the reference file
   ../../taskjuggler/taskjuggler $f > $tjxFile
   if test $? -ne 0 ; then
-    errors=$(($errors + 1))
+    errors=`expr $errors + 1`
   fi
   cmp $tjxFile $referenceFile
   if test $? -ne 0 ; then
     zcat $tjxFile > ${tjxFile}.asc
     zcat $referenceFile > ${referenceFile}.asc
     diff -u ${tjxFile}.asc ${referenceFile}.asc | head -n 10
-    errors=$(($errors + 1))
+    errors=`expr $errors + 1`
   fi
 
   # Process the output of the first run and generate another xml
@@ -37,14 +37,14 @@ for f in *.tjp ; do
   }
 EOF
   if test $? -ne 0 ; then
-    errors=$(($errors + 1))
+    errors=`expr $errors + 1`
   fi
   cmp $tjxFile $tjxFile2
   if test $? -ne 0 ; then
     zcat $tjxFile > ${tjxFile}.asc
     zcat $tjxFile2 > ${tjxFile2}.asc
     diff ${tjxFile}.asc ${tjxFile2}.asc | head -n 10
-    errors=$(($errors + 1))
+    errors=`expr $errors + 1`
   fi
 
   # In case there were no errors with this test case, then remove the

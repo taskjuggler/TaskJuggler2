@@ -19,7 +19,7 @@ for d in $dirs ; do
     else
       ../testdir
     fi
-    errors=$(( $errors + $? ))
+    errors=`expr $errors + $?`
     cd ..
   fi
 done
