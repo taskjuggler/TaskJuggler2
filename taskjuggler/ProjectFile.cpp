@@ -5669,8 +5669,8 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
             /* Set the duration and round it down to be a multiple of the
              * schedule granularity. */
             td->setGapDuration(scenarioIdx,
-                               ((static_cast<long>(d * 60 * 60 * 24)) /
-                                proj->getScheduleGranularity()) *
+                               (qRound(d * 60 * 60 * 24 /
+                                       proj->getScheduleGranularity())) *
                                proj->getScheduleGranularity());
         }
         else if (token == KW("gaplength"))
@@ -5680,9 +5680,10 @@ ProjectFile::readTaskDepOptions(TaskDependency* td)
                 return false;
             /* Set the length and round it down to be a multiple of the
              * schedule granularity. */
-            td->setGapLength(scenarioIdx, ((static_cast<long>(d * 60 * 60 *
-                                             proj->getDailyWorkingHours())) /
-                              proj->getScheduleGranularity()) *
+            td->setGapLength(scenarioIdx,
+                             (qRound(d * 60 * 60 *
+                                     proj->getDailyWorkingHours() /
+                              proj->getScheduleGranularity())) *
                              proj->getScheduleGranularity());
         }
         else

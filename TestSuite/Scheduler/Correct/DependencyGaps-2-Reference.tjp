@@ -31,9 +31,9 @@ task t1 "task 1" {
     scheduling asap
   }
   task t1_2 "task 1.2" {
-    depends t1.t1_1 { plan:gaplength 119h }
-    plan:start 2006-12-25-17:00:00-+0000
-    plan:end 2006-12-26-17:00:00-+0000
+    depends t1.t1_1 { plan:gaplength 120h }
+    plan:start 2006-12-25-18:00:00-+0000
+    plan:end 2006-12-26-18:00:00-+0000
     plan:scheduled
     scheduling asap
   }

@@ -1161,6 +1161,9 @@ project file.</para></listitem>
 <listitem><para>The XML reports now also include the
 accounts.</para></listitem>
 
+<listitem><para>Fixed a rounding error that caused dependency gaps to
+be one time slot short.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
