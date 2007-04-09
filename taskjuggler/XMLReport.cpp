@@ -183,9 +183,8 @@ XMLReport::generate()
                  .arg(gzerror(zf, &zError)));
         return false;
     }
-    f.close();
 
-    return true;
+    return close();
 }
 
 bool

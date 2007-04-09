@@ -148,7 +148,6 @@ HTMLStatusReport::generate()
 
     generateFooter();
 
-    f.close();
-    return true;
+    return close();
 }
 

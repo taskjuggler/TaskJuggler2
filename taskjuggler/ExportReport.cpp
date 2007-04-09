@@ -125,8 +125,7 @@ ExportReport::generate()
                                             filteredResourceList))
             return false;
 
-    f.close();
-    return true;
+    return close();
 }
 
 bool
