@@ -45,7 +45,7 @@
 ReportXML::ReportXML(Project* p, const QString& f, const QString& df, int dl) :
    Report(p, f, df, dl)
 {
-
+    s.setEncoding( QTextStream::UnicodeUTF8 );
 }
 
 
@@ -63,6 +63,9 @@ QDomElement ReportXML::createXMLElem( QDomDocument& doc, const QString& name, co
 
 bool ReportXML::generate()
 {
+    if (!open())
+        return false;
+
    if( ! project ) return false;
    QDomDocument doc( "Project" );
    doc.appendChild( doc.createProcessingInstruction(
@@ -118,20 +121,9 @@ bool ReportXML::generate()
        if((*tli)->getParent() == 0)
            proj.appendChild( (*tli)->xmlElement( doc ));
    }
-   QString xml = doc.toString();
 
-   if( ! fileName.isEmpty())
-   {
-      QFile fi( fileName );
-      if ( fi.open(IO_WriteOnly) ) {    // file opened successfully
-        QTextStream t( &fi );        // use a text stream
-    t.setEncoding( QTextStream::UnicodeUTF8 );
-    t << xml;
-    fi.close();
-      }
-   }
-   // qDebug( "XML: %s", xml.latin1() );
+   s << doc.toString();
 
-    return true;
+    return close();
 }
 
