@@ -36,7 +36,7 @@ do_testing()
   if [ -f $referenceFile ] ; then
     cmp $exportFile $referenceFile 2>> ../log
     if [ $? -ne 0 ] ; then
-      errors=`$errors + 1`
+      errors=`expr $errors + 1`
       echo "Test $f failed (Reference file differs)!" | tee -a ../log
       diff -u $referenceFile $exportFile | head -n 20 | tee -a ../log
     else
