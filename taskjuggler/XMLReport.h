@@ -40,8 +40,6 @@ public:
     bool addTaskAttribute(const QString& ta);
     QStringList getTaskAttributes() const { return taskAttributes; }
 
-    void setMasterFile(bool mf) { masterFile = mf; }
-
 private:
     bool generateProjectProperty(QDomElement* n);
     bool generateCustomAttributeDeclaration(QDomElement* parentEl,
@@ -89,9 +87,6 @@ private:
 
     QStringList accountAttributes;
     QStringList taskAttributes;
-
-    // True if the file should be a standalone project (*.tjp file).
-    bool masterFile;
 };
 
 #endif

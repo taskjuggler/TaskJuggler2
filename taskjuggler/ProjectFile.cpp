@@ -3328,7 +3328,6 @@ ProjectFile::readXMLReport()
     // Data structure for version 2 format.
     XMLReport* report;
     report = new XMLReport(proj, fileName, getFile(), getLine());
-    report->setMasterFile(true);
     report->addAccountAttribute("all");
     report->addTaskAttribute("all");
     TokenType tt;

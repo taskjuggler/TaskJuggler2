@@ -59,8 +59,7 @@ XMLReport::XMLReport(Project* p, const QString& f,
     Report(p, f, df, dl),
     doc(0),
     accountAttributes(),
-    taskAttributes(),
-    masterFile(false)
+    taskAttributes()
 {
     if (TaskAttributeDict.empty())
     {
