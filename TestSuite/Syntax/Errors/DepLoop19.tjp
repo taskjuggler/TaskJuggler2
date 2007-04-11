@@ -1,4 +1,4 @@
-project prj "Loop Detector Test" "$Id" 2005-10-25 2005-12-01
+project prj "Loop Detector Test" "$Id" 2005-10-25 - 2005-12-01
 
 task a "Task A" {
 	start 2005-10-25

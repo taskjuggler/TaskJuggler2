@@ -1,4 +1,4 @@
-project prj "Loop Detector Test" "$Id" 2000-01-01 2000-01-08
+project prj "Loop Detector Test" "$Id" 2000-01-01 - 2000-01-08
 
 # a.b1.c1 (Start) -> a.b1.c1 (End) -> a.b1.c2 (Start) -> a.b1.c2 (End)
 # -> a.b2.c2 (Start) -> a.b2.c2 (End) -> a.b2 (End) -> a.b1.c1 (Start)
