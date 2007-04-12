@@ -42,8 +42,6 @@ public:
 
     ~LoopDetectorInfo() { }
 
-    enum FromWhere { fromParent, fromSub, fromPrev, fromSucc, fromOtherEnd };
-
     bool operator==(const LoopDetectorInfo& ldi) const
     {
         return t == ldi.t && atEnd == ldi.atEnd;

@@ -362,7 +362,7 @@ private:
      * @retval false otherwise.
      */
     bool loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
-                       LoopDetectorInfo::FromWhere caller) const;
+                       bool fromOutside) const;
     bool checkPathForLoops(LDIList& list, bool atEnd) const;
     bool scheduleContainer(int sc);
     Task* subFirst() { return (Task*) sub->first(); }

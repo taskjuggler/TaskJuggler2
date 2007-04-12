@@ -1503,17 +1503,17 @@ Task::loopDetector(LDIList& chkedTaskList) const
         qDebug("Running loop detector for task %s", id.latin1());
     // Check ASAP tasks
     LDIList list;
-    if (loopDetection(list, chkedTaskList, false, LoopDetectorInfo::fromParent))
+    if (loopDetection(list, chkedTaskList, false, true))
         return true;
     // Check ALAP tasks
-    if (loopDetection(list, chkedTaskList, true, LoopDetectorInfo::fromParent))
+    if (loopDetection(list, chkedTaskList, true, true))
         return true;
     return false;
 }
 
 bool
 Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
-                    LoopDetectorInfo::FromWhere caller) const
+                    bool fromOutside) const
 {
     if (DEBUGPF(10))
         qDebug("%sloopDetection at %s (%s)",
@@ -1544,8 +1544,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
      * relationship. */
     if (!atEnd)
     {
-        if (caller == LoopDetectorInfo::fromPrev ||
-            caller == LoopDetectorInfo::fromParent)
+        if (fromOutside)
         {
             /*
                  |
@@ -1564,8 +1563,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(),
                            id.latin1());
-                if ((*tli)->loopDetection(list, chkedTaskList, false,
-                                          LoopDetectorInfo::fromParent))
+                if ((*tli)->loopDetection(list, chkedTaskList, false, true))
                     return true;
             }
 
@@ -1580,13 +1578,10 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                 qDebug("%sChecking end of task %s",
                        QString().fill(' ', list.count()).latin1(),
                        id.latin1());
-            if (loopDetection(list, chkedTaskList, true,
-                              LoopDetectorInfo::fromOtherEnd))
+            if (loopDetection(list, chkedTaskList, true, false))
                 return true;
         }
-
-        if (caller == LoopDetectorInfo::fromSub ||
-            caller == LoopDetectorInfo::fromOtherEnd)
+        else
         {
             /*
                  ^
@@ -1604,7 +1599,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                            QString().fill(' ', list.count()).latin1(),
                            id.latin1());
                 if (getParent()->loopDetection(list, chkedTaskList, false,
-                                               LoopDetectorInfo::fromSub))
+                                               false))
                     return true;
             }
 
@@ -1622,16 +1617,14 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                     qDebug("%sChecking previous %s of task %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if((*tli)->loopDetection(list, chkedTaskList, true,
-                                         LoopDetectorInfo::fromSucc))
+                if((*tli)->loopDetection(list, chkedTaskList, true, true))
                     return true;
             }
         }
     }
     else
     {
-        if (caller == LoopDetectorInfo::fromSucc ||
-            caller == LoopDetectorInfo::fromParent)
+        if (fromOutside)
         {
             /*
                   |
@@ -1649,8 +1642,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                     qDebug("%sChecking sub task %s of %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if ((*tli)->loopDetection(list, chkedTaskList, true,
-                                          LoopDetectorInfo::fromParent))
+                if ((*tli)->loopDetection(list, chkedTaskList, true, true))
                     return true;
             }
 
@@ -1665,13 +1657,10 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                 qDebug("%sChecking start of task %s",
                        QString().fill(' ', list.count()).latin1(),
                        id.latin1());
-            if (loopDetection(list, chkedTaskList, false,
-                              LoopDetectorInfo::fromOtherEnd))
+            if (loopDetection(list, chkedTaskList, false, false))
                 return true;
         }
-
-        if (caller == LoopDetectorInfo::fromOtherEnd ||
-            caller == LoopDetectorInfo::fromSub)
+        else
         {
             /*
                   ^
@@ -1689,7 +1678,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                            QString().fill(' ', list.count()).latin1(),
                            id.latin1());
                 if (getParent()->loopDetection(list, chkedTaskList, true,
-                                               LoopDetectorInfo::fromSub))
+                                               false))
                     return true;
             }
 
@@ -1707,8 +1696,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
                     qDebug("%sChecking follower %s of task %s",
                            QString().fill(' ', list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
-                if ((*tli)->loopDetection(list, chkedTaskList, false,
-                                          LoopDetectorInfo::fromPrev))
+                if ((*tli)->loopDetection(list, chkedTaskList, false, true))
                     return true;
             }
         }
