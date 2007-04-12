@@ -5,12 +5,12 @@ task t1 "Task1" {
 	
 	task s1 "Sub1" {
 		length 1d
-		preceeds !!t3.s1
+		precedes !!t3.s1
 	}
 }
 
 task t2 "Task2" {
-	preceeds !t1
+	precedes !t1
 	task s1 "Sub1" {
 		length 1d
 	}
@@ -19,7 +19,7 @@ task t2 "Task2" {
 task t3 "Task3" {
 	task s1 "Sub1" {
 		length 1d
-		preceeds !!t2
+		precedes !!t2
 	}
 }
 
