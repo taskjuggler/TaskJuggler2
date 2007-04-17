@@ -604,6 +604,9 @@ FileManager::clear()
 void
 FileManager::insertDate()
 {
+    if (!getCurrentFile())
+        return;
+
     // Create some shortcuts for the edit and cursor interface.
     KTextEditor::EditInterface* ei =
         KTextEditor::editInterface(getCurrentFile()->getEditor()->
@@ -782,11 +785,11 @@ FileManager::showEditor()
 void
 FileManager::hideEditor()
 {
+    // Disable all editor actions.
+    enableEditorActions(false);
+
     if (currentGUIClient)
     {
-        // Disable all editor actions.
-        enableEditorActions(false);
-
         mainWindow->guiFactory()->removeClient(currentGUIClient);
         currentGUIClient = 0;
     }
