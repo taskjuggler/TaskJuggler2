@@ -166,20 +166,20 @@ XMLReport::generate()
     gzFile zf = gzdopen(dup(f.handle()), "wb");
     if (!zf)
     {
-        qWarning(i18n("Cannot open compressed file %1 for writing.")
+        tjWarning(i18n("Cannot open compressed file %1 for writing.")
                  .arg(fileName));
         return false;
     }
     int bytes;
     if ((bytes = gzputs(zf, static_cast<const char*>(doc->toCString()))) == 0)
     {
-        qWarning(i18n("Compression of %1 failed").arg(fileName));
+        tjWarning(i18n("Compression of %1 failed").arg(fileName));
         return false;
     }
     int zError;
     if ((zError = gzclose(zf)) != 0)
     {
-        qWarning(i18n("Closing of file %1 failed: %2").arg(fileName)
+        tjWarning(i18n("Closing of file %1 failed: %2").arg(fileName)
                  .arg(gzerror(zf, &zError)));
         return false;
     }

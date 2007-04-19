@@ -71,7 +71,7 @@ public:
 
 private:
     bool evalExpression(const QString expr) const;
-    void errorMessage(const char* txt, ... ) const;
+    void errorMessage(const QString& msg) const;
 
     /* We store a file name and a line number in case we need this for
      * error reports or warnings. This is the location of the macro reference,

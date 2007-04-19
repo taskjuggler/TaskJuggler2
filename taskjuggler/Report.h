@@ -173,7 +173,7 @@ public:
     virtual bool generate() = 0;
 
 protected:
-    void errorMessage(const char* msg, ... );
+    void errorMessage(const QString& msg);
 
     /**
      * This utility function removes the path that matches the taskRoot

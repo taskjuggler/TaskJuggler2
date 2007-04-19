@@ -92,7 +92,7 @@ public:
 
     const CoreAttributes* getCoreAttributes() const { return ca; }
 
-    void errorMessage(const char* msg, ...);
+    void errorMessage(const QString& msg);
 
 private:
     void generateFunctionTable();

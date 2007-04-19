@@ -34,14 +34,14 @@
 void
 banner()
 {
-    qWarning(i18n("TaskJuggler v%1 - A Project Management Software")
+    tjWarning(i18n("TaskJuggler v%1 - A Project Management Software")
              .arg(VERSION));
 }
 
 void
 copyright()
 {
-    qWarning
+    tjWarning
         (i18n(
               "\nCopyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007\n"
               "by Chris Schlaeger <cs@kde.org> and Klaas Freitag <freitag@suse.de>\n\n"
@@ -55,14 +55,14 @@ copyright()
 void
 usage(QApplication& a)
 {
-    qWarning
+    tjWarning
         (i18n(
               "TaskJuggler must be called with at least one file that\n"
               "contains the project description and the report definitions.\n"
               "\n"
               "Usage: %1 [options] <filename1> [<filename2> ...]")
              .arg(a.argv()[0]));
-    qWarning
+    tjWarning
         (i18n(
               "   --help               - print this message\n"
               "   --version            - print the version and copyright info\n"
@@ -81,7 +81,7 @@ usage(QApplication& a)
               "                          is printed\n"
               "   --dbmode N           - activate debug mode only for certain\n"
               "                          parts of the code\n"));
-    qWarning
+    tjWarning
         (i18n(
               "To report bugs please follow the instructions in the "
               "manual.\n"));
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         {
             if (i + 1 >= a.argc())
             {
-                qWarning(i18n("--debug needs numerical argument"));
+                tjWarning(i18n("--debug needs numerical argument"));
                 showCopyright = showHelp = terminateProgram = true;
             }
             debugLevel = QString(a.argv()[++i]).toInt();
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         {
             if (i + 1 >= a.argc())
             {
-                qWarning(i18n("--dbmode needs numerical argument"));
+                tjWarning(i18n("--dbmode needs numerical argument"));
                 showCopyright = showHelp = terminateProgram = true;
             }
             debugMode = QString(a.argv()[++i]).toInt();
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
         {
             if (i + 1 >= a.argc())
             {
-                qWarning(i18n("--makefile needs filename argument"));
+                tjWarning(i18n("--makefile needs filename argument"));
                 showCopyright = showHelp = terminateProgram = true;
             }
             makeDepFile = a.argv()[++i];
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
             if (i + 1 >= a.argc() ||
                 (maxErrors = QString(a.argv()[++i]).toInt(&ok), !ok))
             {
-                qWarning(i18n("--maxerrors needs a numerical argument"));
+                tjWarning(i18n("--maxerrors needs a numerical argument"));
                 showCopyright = showHelp = terminateProgram = true;
             }
         }
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
                 fileName.right(4) != ".tjp" &&
                 fileName.right(4) != ".tji")
             {
-                qWarning(i18n("WARNING: %1 has an unsupported file extension. "
+                tjWarning(i18n("WARNING: %1 has an unsupported file extension. "
                               "Please use '.tjp' for toplevel files, '.tji' "
                               "for included files and '.tjx' for TaskJuggler "
                               "XML files.")

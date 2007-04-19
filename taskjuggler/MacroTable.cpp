@@ -323,15 +323,9 @@ UNEXPEND:
 }
 
 void
-MacroTable::errorMessage(const char* msg, ... ) const
+MacroTable::errorMessage(const QString& msg) const
 {
-    va_list ap;
-    va_start(ap, msg);
-    char buf[1024];
-    vsnprintf(buf, 1024, msg, ap);
-    va_end(ap);
-
-    TJMH.errorMessage(buf, defFileName, defFileLine);
+    TJMH.errorMessage(msg, defFileName, defFileLine);
 }
 
 

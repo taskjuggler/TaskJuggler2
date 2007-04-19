@@ -941,15 +941,9 @@ ReportElement::taskRootLevel() const
 }
 
 void
-ReportElement::errorMessage(const char* msg, ... )
+ReportElement::errorMessage(const QString& msg)
 {
-    va_list ap;
-    va_start(ap, msg);
-    char buf[1024];
-    vsnprintf(buf, 1024, msg, ap);
-    va_end(ap);
-
-    TJMH.errorMessage(buf, defFileName, defFileLine);
+    TJMH.errorMessage(msg, defFileName, defFileLine);
 }
 
 QString

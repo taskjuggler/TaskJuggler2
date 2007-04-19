@@ -44,7 +44,7 @@ FileInfo::open()
     }
 
     if (DEBUGLEVEL > 0)
-        qWarning(i18n("Processing file \'%1\'").arg(m_file));
+        tjWarning(i18n("Processing file \'%1\'").arg(m_file));
 
     m_lineBuf = oldLineBuf = QString::null;
     m_currLine = oldLine = 1;
@@ -448,22 +448,16 @@ FileInfo::nextToken(QString& token)
 }
 
 void
-FileInfo::errorMessage(const char* msg, ...)
+FileInfo::errorMessage(const QString& msg)
 {
-    va_list ap;
-    char buf[1024];
-    va_start(ap, msg);
-    vsnprintf(buf, 1024, msg, ap);
-    va_end(ap);
-
     if (m_macroStack.isEmpty())
     {
         if (m_tokenTypeBuf == INVALID)
-            TJMH.errorMessage(QString("%1\n%2").arg(buf)
+            TJMH.errorMessage(QString("%1\n%2").arg(msg)
                               .arg(cleanupLine(m_lineBuf)),
                               m_file, m_currLine);
         else
-            TJMH.errorMessage(QString("%1\n%2").arg(buf)
+            TJMH.errorMessage(QString("%1\n%2").arg(msg)
                               .arg(cleanupLine(oldLineBuf)),
                               m_file, oldLine);
     }
@@ -482,7 +476,7 @@ FileInfo::errorMessage(const char* msg, ...)
         }
         TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
                                "\nThis is the macro call stack:%3").
-                          arg(buf).arg(cleanupLine(m_lineBuf)).arg(stackDump),
+                          arg(msg).arg(cleanupLine(m_lineBuf)).arg(stackDump),
                           file, line);
     }
 }

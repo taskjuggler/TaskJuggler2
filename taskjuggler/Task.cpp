@@ -211,27 +211,15 @@ Task::addShift(const Interval& i, Shift* s)
 }
 
 void
-Task::errorMessage(const char* msg, ...) const
+Task::errorMessage(const QString& msg) const
 {
-    va_list ap;
-    va_start(ap, msg);
-    char buf[2048];
-    vsnprintf(buf, sizeof(buf), msg, ap);
-    va_end(ap);
-
-    TJMH.errorMessage(buf, definitionFile, definitionLine);
+    TJMH.errorMessage(msg, definitionFile, definitionLine);
 }
 
 void
-Task::warningMessage(const char* msg, ...) const
+Task::warningMessage(const QString& msg) const
 {
-    va_list ap;
-    va_start(ap, msg);
-    char buf[2048];
-    vsnprintf(buf, sizeof(buf), msg, ap);
-    va_end(ap);
-
-    TJMH.warningMessage(buf, definitionFile, definitionLine);
+    TJMH.warningMessage(msg, definitionFile, definitionLine);
 }
 
 bool
@@ -2307,7 +2295,7 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
     if (errors > currErrors)
     {
         if (DEBUGPS(2))
-            qDebug(QString("Scheduling errors in sub tasks of '%1'.")
+            tjDebug(QString("Scheduling errors in sub tasks of '%1'.")
                    .arg(id));
         return false;
     }

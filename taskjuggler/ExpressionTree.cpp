@@ -93,17 +93,9 @@ ExpressionTree::resolve(const QString& symbol)
 }
 
 void
-ExpressionTree::errorMessage(const char* msg, ...)
+ExpressionTree::errorMessage(const QString& msg)
 {
-    va_list ap;
-    size_t bufsize = 32 + 2 * strlen(msg);
-    char* buf = new char[bufsize];
-    va_start(ap, msg);
-    vsnprintf(buf, bufsize, msg, ap);
-    va_end(ap);
-
-    TJMH.errorMessage(buf, defFileName, defLineNo);
-    delete [] buf;
+    TJMH.errorMessage(msg, defFileName, defLineNo);
     evalErrorFlag = true;
 }
 

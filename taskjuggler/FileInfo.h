@@ -39,7 +39,7 @@ public:
     virtual QString resolve(const QStringList* argList);
     virtual Macro* getMacro(const QString& name) const;
 
-    virtual void errorMessage(const char* msg, ...);
+    virtual void errorMessage(const QString& msg);
 
 private:
     /**

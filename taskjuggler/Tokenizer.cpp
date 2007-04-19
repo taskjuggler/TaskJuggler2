@@ -348,7 +348,7 @@ Tokenizer::open()
         }
 
         if (DEBUGLEVEL > 0)
-            qWarning(i18n("Processing file \'%1\'").arg(m_file));
+            tjWarning(i18n("Processing file \'%1\'").arg(m_file));
     }
     else
         m_f.reset(new QTextStream(textBuffer, IO_ReadOnly));
@@ -461,16 +461,11 @@ Tokenizer::ungetC(QChar c)
 }
 
 void
-Tokenizer::errorMessage(const char* msg, ...)
+Tokenizer::errorMessage(const QString& msg)
 {
-    va_list ap;
-    char buf[1024];
-    va_start(ap, msg);
-    vsnprintf(buf, 1024, msg, ap);
-    va_end(ap);
-
     if (m_macroStack.isEmpty())
-        TJMH.errorMessage(QString("%1\n%2").arg(buf).arg(cleanupLine(m_lineBuf)),
+        TJMH.errorMessage(QString("%1\n%2").arg(msg)
+                          .arg(cleanupLine(m_lineBuf)),
                           m_file, m_currLine);
     else
     {
@@ -487,7 +482,7 @@ Tokenizer::errorMessage(const char* msg, ...)
         }
         TJMH.errorMessage(i18n("Error in expanded macro\n%1\n%2"
                                "\nThis is the macro call stack:%3").
-                          arg(buf).arg(cleanupLine(m_lineBuf)).arg(stackDump),
+                          arg(msg).arg(cleanupLine(m_lineBuf)).arg(stackDump),
                           file, line);
     }
 }

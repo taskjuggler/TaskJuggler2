@@ -13,6 +13,8 @@
 #ifndef _Tokenizer_h_
 #define _Tokenizer_h_
 
+#include <qstring.h>
+
 #include "FileToken.h"
 
 class ProjectFile;
@@ -41,7 +43,7 @@ public:
     virtual QString resolve(const QStringList* argList);
     virtual Macro* getMacro(const QString& name) const;
 
-    virtual void errorMessage(const char* msg, ...);
+    virtual void errorMessage(const QString& msg);
 
 private:
     /**

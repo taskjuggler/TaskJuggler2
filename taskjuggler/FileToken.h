@@ -29,11 +29,6 @@ public:
     FileToken();
     virtual ~FileToken() {}
 
-#if 0
-    bool open();
-    bool close();
-#endif
-
     const QString& getFile() const { return m_file; }
     QString getPath() const;
 
@@ -44,14 +39,10 @@ public:
 
     const QString& getTaskPrefix() const { return m_taskPrefix; }
 
-    void errorMessageVA(const char* msg, va_list ap);
-    virtual void errorMessage(const char* msg, ...) = 0;
+    virtual void errorMessage(const QString& msg) = 0;
 
 protected:
     virtual QChar getC(bool expandMacros = true ) = 0;
-#if 0
-    void ungetC(QChar c);
-#endif
 
     virtual void  setLocation(const QString& df, int dl) = 0;
     virtual QString resolve(const QStringList* argList) = 0;
@@ -62,7 +53,7 @@ protected:
     bool readEnvironment();
 
     QString cleanupLine(const QString& line);
- 
+
     // The name of the file.
     QString m_file;
 

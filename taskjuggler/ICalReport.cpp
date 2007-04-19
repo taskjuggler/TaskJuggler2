@@ -22,6 +22,7 @@
 #include <klocale.h>
 #include <libkcal/icalformat.h>
 
+#include "tjlib-internal.h"
 #include "Project.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
@@ -155,7 +156,7 @@ ICalReport::generate()
 
     if( !open())
     {
-        qWarning(i18n("Can not open ICal File '%1' for writing!")
+        tjWarning(i18n("Can not open ICal File '%1' for writing!")
                  .arg(fileName));
         return false;
     }

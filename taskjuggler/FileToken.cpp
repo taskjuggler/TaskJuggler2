@@ -95,14 +95,6 @@ bool FileToken::readEnvironment()
     return true;
 }
 
-void FileToken::errorMessageVA(const char* msg, va_list ap)
-{
-    char buf[1024];
-    vsnprintf(buf, 1024, msg, ap);
-
-    errorMessage("%s", buf);
-}
-
 bool FileToken::getDateFragment(QString& token, QChar& c)
 {
     token += c;

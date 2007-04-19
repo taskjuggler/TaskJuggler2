@@ -83,7 +83,7 @@ ExpressionParser::parseLogicalExpression(int precedence)
         time_t date;
         if ((date = date2time(token)) == 0)
         {
-            errorMessage("%s", getUtilityError().latin1());
+            errorMessage(getUtilityError());
             return 0;
         }
         else
@@ -212,10 +212,7 @@ ExpressionParser::parseFunctionCall(const QString& name)
 }
 
 void
-ExpressionParser::errorMessage(const char* msg, ...)
+ExpressionParser::errorMessage(const QString& msg)
 {
-    va_list ap;
-    va_start(ap, msg);
-    tokenizer.errorMessageVA(msg, ap);
-    va_end(ap);
+    tokenizer.errorMessage(msg);
 }

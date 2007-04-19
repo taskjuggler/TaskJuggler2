@@ -1063,31 +1063,23 @@ ProjectFile::generateMakeDepList(const QString& fileName, bool append) const
 }
 
 void
-ProjectFile::errorMessage(const char* msg, ...)
+ProjectFile::errorMessage(const QString& msg)
 {
-    va_list ap;
-    va_start(ap, msg);
-
     if (openFiles.isEmpty())
         TJMH.errorMessage
             (i18n("Unexpected end of file found. Probably a missing '}'."));
     else
-        openFiles.last()->errorMessageVA(msg, ap);
-    va_end(ap);
+        openFiles.last()->errorMessage(msg);
 }
 
 void
-ProjectFile::warningMessage(const char* msg, ...)
+ProjectFile::warningMessage(const QString& msg)
 {
-    va_list ap;
-    va_start(ap, msg);
-
     if (openFiles.isEmpty())
         TJMH.warningMessage
             (i18n("Unexpected end of file found. Probably a missing '}'."));
     else
-        openFiles.last()->errorMessageVA(msg, ap);
-    va_end(ap);
+        openFiles.last()->errorMessage(msg);
 }
 
 bool

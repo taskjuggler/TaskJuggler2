@@ -297,7 +297,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
     {
         if ((zf = gzdopen(dup(STDIN_FILENO), "rb")) == NULL)
         {
-            qWarning(i18n("Cannot open compressed STDIN for reading."));
+            tjWarning(i18n("Cannot open compressed STDIN for reading."));
             return false;
         }
     }
@@ -305,14 +305,14 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
     {
         if ((zf = gzopen(file, "rb")) == NULL)
         {
-            qWarning(i18n("Cannot open compressed file %1 for "
+            tjWarning(i18n("Cannot open compressed file %1 for "
                           "reading.").arg(file));
             return false;
         }
     }
 
     if (DEBUGLEVEL > 0)
-        qWarning(i18n("Processing file \'%1\'").arg(file));
+        tjWarning(i18n("Processing file \'%1\'").arg(file));
 
     QString buf;
     while (!gzeof(zf))
@@ -324,7 +324,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
     int zError;
     if ((zError = gzclose(zf)) != 0)
     {
-        qWarning(i18n("Cannot close compressed file %1: %2")
+        tjWarning(i18n("Cannot close compressed file %1: %2")
                  .arg(file).arg(gzerror(zf, &zError)));
         return false;
     }
@@ -332,7 +332,7 @@ XMLFile::readDOM(const QString& file, const QString&, const QString&,
     doc = new QDomDocument(file);
     if (!doc->setContent(buf))
     {
-        qWarning(i18n("Syntax error in XML file '%1'.").arg(file));
+        tjWarning(i18n("Syntax error in XML file '%1'.").arg(file));
         return false;
     }
 
@@ -363,7 +363,7 @@ XMLFile::parseNode(const ParserNode* pn, QDomNode n, ParserTreeContext ptc)
             const ParserElement* pEl = pn->getElement(el.tagName());
             if (!pEl)
             {
-                qWarning(i18n("Unsupported XML element %1").arg(el.tagName()));
+                tjWarning(i18n("Unsupported XML element %1").arg(el.tagName()));
                 ret = false;
             }
             else
@@ -506,7 +506,7 @@ XMLFile::doExtendAttribute(QDomNode& n, ParserTreeContext& ptc)
         new CustomAttributeDefinition(el.attribute("name"), cat);
     if (!ca)
     {
-        qWarning(i18n("Unknown custom attribute %1")
+        tjWarning(i18n("Unknown custom attribute %1")
                  .arg(el.attribute("name")));
         return false;
     }
@@ -910,7 +910,7 @@ XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
     Resource* resource = project->getResource(el.attribute("resourceId"));
     if (!resource)
     {
-        qWarning(i18n("Booking for unknown resource %1")
+        tjWarning(i18n("Booking for unknown resource %1")
                  .arg(el.attribute("resourceId")));
         return false;
     }
@@ -918,7 +918,7 @@ XMLFile::doResourceBooking(QDomNode& n, ParserTreeContext& ptc)
     int sc = project->getScenarioIndex(el.attribute("scenarioId")) - 1;
     if (sc < 0)
     {
-        qWarning(i18n("Booking for unknown scenario %1")
+        tjWarning(i18n("Booking for unknown scenario %1")
                  .arg(el.attribute("scenarioId")));
         return false;
     }
@@ -940,7 +940,7 @@ XMLFile::doBookingPost(QDomNode& n, ParserTreeContext& ptc)
     Task* t = project->getTask(n.toElement().attribute("taskId"));
     if (!t)
     {
-        qWarning(i18n("Booking for unknown task %1")
+        tjWarning(i18n("Booking for unknown task %1")
                  .arg(n.toElement().attribute("taskId")));
         return false;
     }

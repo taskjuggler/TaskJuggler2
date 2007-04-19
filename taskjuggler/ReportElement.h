@@ -256,7 +256,7 @@ protected:
     void addCustomAttributeColumns
         (const QDict<CustomAttributeDefinition>& cad);
 
-    void errorMessage(const char* msg, ... );
+    void errorMessage(const QString& msg);
 
     QTextStream& s() const;
     void puts(const QString& str) { report->puts(str); }

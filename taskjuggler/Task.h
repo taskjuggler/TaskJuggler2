@@ -345,8 +345,8 @@ public:
 
     bool isSchedulingDone() const { return schedulingDone; }
 
-    void errorMessage(const char*, ...) const;
-    void warningMessage(const char*, ...) const;
+    void errorMessage(const QString& msg) const;
+    void warningMessage(const QString& msg) const;
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 

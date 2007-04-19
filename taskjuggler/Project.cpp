@@ -534,7 +534,7 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
     {
         setProgressInfo(i18n("Searching for dependency loops ..."));
         if (DEBUGPS(1))
-            qDebug("Searching for dependency loops ...");
+            tjDebug("Searching for dependency loops ...");
         // Check all tasks for dependency loops.
         LDIList chkedTaskList;
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
@@ -547,7 +547,7 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
 
         setProgressInfo(i18n("Searching for underspecified tasks ..."));
         if (DEBUGPS(1))
-            qDebug("Searching for underspecified tasks ...");
+            tjDebug("Searching for underspecified tasks ...");
         for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
             for (TaskListIterator tli(taskList); *tli != 0; ++tli)
                 if (!(*tli)->checkDetermination((*sci)->getSequenceNo() - 1))
@@ -575,7 +575,7 @@ Project::scheduleScenario(Scenario* sc, int& errors, int& warnings)
     if (!schedule(scIdx, errors, warnings))
     {
         if (DEBUGPS(2))
-            qDebug(i18n("Scheduling errors in scenario '%1'.")
+            tjDebug(i18n("Scheduling errors in scenario '%1'.")
                    .arg(sc->getId()));
         if (breakFlag)
             return false;
@@ -616,7 +616,7 @@ Project::scheduleAllScenarios(int& errors, int& warnings)
         if ((*sci)->getEnabled())
         {
             if (DEBUGPS(1))
-                qDebug(i18n("Scheduling scenario '%1' ...")
+                tjDebug(i18n("Scheduling scenario '%1' ...")
                        .arg((*sci)->getId()));
 
             if (!scheduleScenario(*sci, errors, warnings))
@@ -664,12 +664,12 @@ Project::prepareScenario(int sc)
         (*rli)->prepareScenario(sc);
     if (DEBUGTS(4))
     {
-        qDebug("Allocation probabilities for the resources:");
+        tjDebug("Allocation probabilities for the resources:");
         for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
             qDebug("Resource %s: %f%%",
                    (*rli)->getId().latin1(),
                    (*rli)->getAllocationProbability(sc));
-        qDebug("Criticalnesses of the tasks with respect to resource "
+        tjDebug("Criticalnesses of the tasks with respect to resource "
                "availability:");
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             qDebug("Task %s: %-5.1f %-5.1f", (*tli)->getId().latin1(),
@@ -932,7 +932,7 @@ Project::generateReports() const
         if (strncmp((*ri)->getType(), "Qt", 2) != 0)
         {
             if (DEBUGPS(1))
-                qDebug(i18n("Generating report '%1' ...")
+                tjDebug(i18n("Generating report '%1' ...")
                        .arg((*ri)->getFileName()));
 
             (*ri)->generate();
