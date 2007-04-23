@@ -2084,6 +2084,8 @@ Task::preScheduleOk(int sc)
     -->: ASAP task without duration criteria
     <--: ALAP task without duration criteria
      */
+    bool hasStartDep = hasStartDependency(sc);
+    bool hasEndDep = hasEndDependency(sc);
     if (!sub->isEmpty())
     {
         if (durationSpec != 0)
@@ -2121,7 +2123,7 @@ Task::preScheduleOk(int sc)
         /* err1: no start and end
         - M -
          */
-        if (!hasStartDependency(sc) && !hasEndDependency(sc))
+        if (!hasStartDep && !hasEndDep)
         {
             errorMessage(i18n("Milestone '%1' must have a start or end "
                               "specification in '%2' scenario.")
@@ -2185,10 +2187,10 @@ Task::preScheduleOk(int sc)
          */
         if (((scenarios[sc].specifiedStart != 0 &&
               scenarios[sc].specifiedEnd != 0) ||
-             (hasStartDependency(sc) && scenarios[sc].specifiedStart == 0 &&
+             (hasStartDep && scenarios[sc].specifiedStart == 0 &&
               scenarios[sc].specifiedEnd != 0 && scheduling == ASAP) ||
              (scenarios[sc].specifiedStart != 0 && scheduling == ALAP &&
-              hasEndDependency(sc) && scenarios[sc].specifiedEnd == 0)) &&
+              hasEndDep && scenarios[sc].specifiedEnd == 0)) &&
             durationSpec != 0 && !scenarios[sc].specifiedScheduled)
         {
             errorMessage(i18n("Task '%1' has a start, an end and a "
@@ -2205,8 +2207,7 @@ Task::preScheduleOk(int sc)
         -  <-- |D
         -  <-- -D
          */
-        if ((hasStartDependency(sc) ^ hasEndDependency(sc)) &&
-            durationSpec == 0)
+        if ((hasStartDep ^ hasEndDep) && durationSpec == 0)
         {
             errorMessage(i18n
                          ("Task '%1' has only a start or end specification "
@@ -2225,7 +2226,7 @@ Task::preScheduleOk(int sc)
         -  --> -D
         -  --> |D
          */
-        if (!hasStartDependency(sc) && scheduling == ASAP)
+        if (!hasStartDep && scheduling == ASAP)
         {
             errorMessage(i18n
                          ("Task '%1' needs a start specification to be "
@@ -2244,7 +2245,7 @@ Task::preScheduleOk(int sc)
         -D <-- -
         |D <-- -
          */
-        if (!hasEndDependency(sc) && scheduling == ALAP)
+        if (!hasEndDep && scheduling == ALAP)
         {
             errorMessage(i18n
                          ("Task '%1' needs an end specification to be "
