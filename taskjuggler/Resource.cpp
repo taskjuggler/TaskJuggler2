@@ -533,7 +533,7 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
                 TJMH.errorMessage
                     (i18n("Error in %1 scenario: "
                           "%2 is on vacation at %3. "
-                          "It cannot be assigned to %4444.")
+                          "It cannot be assigned to %4.")
                      .arg(project->getScenarioId(sc))
                      .arg(id).arg(time2ISO(index2start(i)))
                      .arg(nb->getTask()->getId().latin1()));
