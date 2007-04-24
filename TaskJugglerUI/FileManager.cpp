@@ -369,6 +369,18 @@ FileManager::showInEditor(const KURL& url)
                 }
                 if (!editorConfigured)
                 {
+                    if (!KTextEditor::configInterface(document))
+                    {
+                        KMessageBox::error
+                            (viewStack,
+                             i18n("You have selected a KDE Editor component "
+                                  "that is not powerful enough for "
+                                  "TaskJuggler. "
+                                  "Please select the 'Embedded Advanced Text "
+                                  "Editor' component in the KDE Control "
+                                  "Panel."));
+                        return;
+                    }
                     KTextEditor::configInterface(document)->readConfig(config);
                     editorConfigured = true;
                 }
@@ -400,11 +412,18 @@ FileManager::showInEditor(const KURL& url)
                 /* Remove some actions of the editor that we don't want to
                  * show in the menu/toolbars */
                 KActionCollection* ac = editor->actionCollection();
-                ac->remove(ac->action("file_print"));
-                ac->action("view_folding_markers")->setShortcut(KShortcut());
-                ac->action("view_border")->setShortcut(KShortcut());
-                ac->action("view_line_numbers")->setShortcut(KShortcut());
-                ac->action("view_dynamic_word_wrap")->setShortcut(KShortcut());
+                if (ac->action("file_print"))
+                    ac->remove(ac->action("file_print"));
+                if (ac->action("view_folding_markers"))
+                    ac->action("view_folding_markers")->
+                        setShortcut(KShortcut());
+                if (ac->action("view_border"))
+                    ac->action("view_border")->setShortcut(KShortcut());
+                if (ac->action("view_line_numbers"))
+                    ac->action("view_line_numbers")->setShortcut(KShortcut());
+                if (ac->action("view_dynamic_word_wrap"))
+                    ac->action("view_dynamic_word_wrap")->
+                        setShortcut(KShortcut());
 
 /*                KActionPtrList actionList =
                     editor->actionCollection()->actions();
