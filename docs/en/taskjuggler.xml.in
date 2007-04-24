@@ -241,6 +241,18 @@ same license as the modified file. All new files will need to contain a
 license declaration, preferably GPL.</para>
 
 </sect2>
+<sect2 id="other_patch_tools"><title>Other patch tools</title>
+
+<para>If you are familiar with <ulink
+url="http://subversion.tigris.org/">Subversion</ulink> you can use
+the <computeroutput>svn diff</computeroutput> command to create your
+patch. We also accept <ulink
+url="http://www.kernel.org/pub/software/scm/git/docs/tutorial.html">git</ulink>
+patches. The latter is actually our preferred format. git can be used
+very effectively ontop of Subversion with the
+<computeroutput>git-svn</computeroutput> command.</para>
+
+</sect2>
 <sect2 id="contributing_translations"><title>Contributing Translations</title>
 
 <para>Another possible area of contribution are translations of
@@ -254,6 +266,15 @@ translations to be updated as well. Please understand that we do not
 want to ship partial or outdated translations to our users,
 so please ensure you or a group of people are willing to maintain the
 translations.</para>
+
+</sect2>
+<sect2 id="submitting_your_patch"><title>Submitting your Patch</title>
+
+<para>Once you have prepared your patch file, please post it with an
+explanation in our <ulink
+url="http://www.taskjuggler.org/FUDforum2/index.php?t=thread&amp;rm_id=5">Developer
+Forum</ulink>. Please, make sure to attach the file, don't paste it
+into the entry form.</para>
 
 </sect2>
 <sect2 id="some_final_words_to_contributors"><title>Some final words
