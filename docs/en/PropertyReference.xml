@@ -2370,10 +2370,6 @@ contain the project ID after the load value.</para></descr>
    <member>Period may contain off-duty hours and vacation, but no
    other task assignments.</member>
 
-   <member><varname>sloppy 3:</varname></member>
-   <member>Period may overlap with off-duty hours, vacation or other
-   task assignments. These are silently skipped.</member>
-   
    </simplelist></para>
   </freestyle>
   <example>&example_booking;</example>

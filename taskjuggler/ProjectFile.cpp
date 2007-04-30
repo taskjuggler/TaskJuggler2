@@ -2502,8 +2502,9 @@ ProjectFile::readBooking(int sc, Resource* resource)
         {
             if (token == KW("sloppy"))
             {
+                /* TODO: drop support for 3 after the 2.4 series. */
                 if (nextToken(token) != INTEGER ||
-                    token.toInt() < 0 || token.toInt() > 3)
+                    token.toInt() < 0 || token.toInt() > 2)
                 {
                     errorMessage(i18n("Number between 0 and 3 expected"));
                     return 0;

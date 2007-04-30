@@ -1164,6 +1164,16 @@ accounts.</para></listitem>
 <listitem><para>Fixed a rounding error that caused dependency gaps to
 be one time slot short.</para></listitem>
 
+<listitem><para>The booking statements in export reports now include a
+<computeroutput>overtime 2</computeroutput> attribute. This avoids the
+error messages when the scheduling was based on overtime bookings and
+the export file is read-in again.</para></listitem>
+
+<listitem><para>The sloppiness 3 for booking statements is no longer
+supported. The booking statements are processed in no particular
+order, so it's undefined which booking will actually get the resource
+in a conflict.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

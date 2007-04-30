@@ -861,7 +861,7 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                     if (lastTask != task)
                     {
                         if (lastTask != 0)
-                            s << endl;
+                            s << " { overtime 2 }" << endl;
                         s << "  " << project->getScenarioId(*sit)
                             << ":booking "
                             << stripTaskRoot(task->getId());
