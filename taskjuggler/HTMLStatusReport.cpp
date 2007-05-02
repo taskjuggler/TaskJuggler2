@@ -140,14 +140,16 @@ HTMLStatusReport::generate()
 
     generateHeader();
 
+    bool ok = true;
     for (uint i = 0; i < tables.size(); ++i)
     {
-        tables[i]->generate();
+        if (!tables[i]->generate())
+            ok = false;
         s << "<br/>" << endl;
     }
 
     generateFooter();
 
-    return close();
+    return close() && ok;
 }
 

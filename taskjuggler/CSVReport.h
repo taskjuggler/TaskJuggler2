@@ -37,9 +37,9 @@ public:
         if (!open())
             return false;
 
-        getTable()->generate();
+        bool ok = getTable()->generate();
 
-        return close();
+        return close() && ok;
     }
 } ;
 

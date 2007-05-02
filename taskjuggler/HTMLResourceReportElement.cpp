@@ -55,7 +55,7 @@ HTMLResourceReportElement::generate()
     generateTableHeader();
 
     s() << "<tbody>" << endl;
-    
+
     ResourceList filteredResourceList;
     if (!filterResourceList(filteredResourceList, 0, hideResource,
                             rollUpResource))
@@ -67,9 +67,9 @@ HTMLResourceReportElement::generate()
     if (!filterTaskList(filteredTaskList, 0, hideTask, rollUpTask))
         return false;
     maxDepthTaskList = filteredTaskList.maxDepth();
-    
+
     int rNo = 1;
-    for (ResourceListIterator rli(filteredResourceList); *rli != 0; 
+    for (ResourceListIterator rli(filteredResourceList); *rli != 0;
          ++rli, ++rNo)
     {
         TableLineInfo tli1;

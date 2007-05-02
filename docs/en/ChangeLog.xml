@@ -1174,6 +1174,14 @@ supported. The booking statements are processed in no particular
 order, so it's undefined which booking will actually get the resource
 in a conflict.</para></listitem>
 
+<listitem><para>Added a <computeroutput>Generate all
+Reports</computeroutput> option to the menu of the
+GUI.</para></listitem>
+
+<listitem><para>The commandline version now properly returns a
+non-zero value if the report generation caused an
+error.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

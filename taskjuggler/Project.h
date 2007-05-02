@@ -761,7 +761,7 @@ public:
     void breakScheduling();
     void completeBuffersAndIndices();
     bool scheduleAllScenarios(int& errors, int& warnings);
-    void generateReports() const;
+    bool generateReports() const;
 
     bool generateXMLReport() const;
 

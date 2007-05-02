@@ -79,6 +79,7 @@ public:
 public slots:
     void schedule();
     void stop();
+    void generate();
     void nextProblem();
     void previousProblem();
     void setFocusToTaskList();
@@ -133,6 +134,7 @@ private:
     QString pickTemplateFile(const QString& extention);
     bool loadProject(const KURL& url);
 
+    void showErrorMessages();
     void updateTaskList();
     void updateResourceList();
     void updateAccountList();

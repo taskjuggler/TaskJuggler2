@@ -581,6 +581,32 @@ TaskJugglerView::stop()
 }
 
 void
+TaskJugglerView::generate()
+{
+    if (!fileManager->getMasterFile())
+    {
+        kdDebug() << "TaskJugglerView::schedule(): No master file set" << endl;
+        return;
+    }
+
+    fileManager->saveAllFiles();
+
+    /* If the message list is visible we store the settings of the editor
+     * splitter into a value list. This is reused for later errors and also
+     * stored as property in the config file. */
+    QValueList<int> vl = mw->editorSplitter->sizes();
+    if (vl[1] > 0)
+        editorSplitterSizes = vl;
+
+    showReportAfterLoad = false;
+    loadProject(fileManager->getMasterFileURL());
+    changeStatusBar(i18n("Generating Reports..."));
+    if (!project->generateReports())
+        showErrorMessages();
+    changeStatusBar(i18n("All reports generated."));
+}
+
+void
 TaskJugglerView::nextProblem()
 {
     QListViewItem* lvi = mw->messageListView->currentItem();
@@ -722,46 +748,20 @@ TaskJugglerView::loadProject(const KURL& url)
     setLoadingProject(false);
 
     // Show message list when errors have occured
-    QValueList<int> vl;
-    int h = mw->editorSplitter->height();
-    KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
     if (errors > 0 || warnings > 0)
-    {
-        // The messages should be visible, so we check whether we already have
-        // a setting for the splitter that is large enough. Otherwise we make
-        // the message list 15% of the splitter size.
-        if (editorSplitterSizes.isEmpty() || editorSplitterSizes[1] < 120)
-        {
-            vl.append(int(h * 0.85));
-            vl.append(int(h * 0.15));
-        }
-        else
-            vl = editorSplitterSizes;
-        mw->editorSplitter->setSizes(vl);
-        changeStatusBar(i18n("The project contains problems!"));
-        showEditor();
-        mw->messageListView->clearSelection();
-        QListViewItem* lvi = mw->messageListView->firstChild();
-        if (lvi)
-        {
-            /* Prevent GUI crash in case the back-end reports an error but
-             * does not provide an error message. */
-            mw->messageListView->setCurrentItem(lvi);
-            lvi->setSelected(true);
-            messageListClicked(lvi);
-
-            mainWindow->action("next_problem")->setEnabled(true);
-            mainWindow->action("previous_problem")->setEnabled(true);
-        }
-    }
+        showErrorMessages();
     else
     {
+        QValueList<int> vl;
+        int h = mw->editorSplitter->height();
+
         vl.append(int(h));
         vl.append(int(0));
         mw->editorSplitter->setSizes(vl);
         changeStatusBar(i18n("The project has been scheduled "
                              "without problems."));
 
+        KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
         mainWindow->action("next_problem")->setEnabled(false);
         mainWindow->action("previous_problem")->setEnabled(false);
 
@@ -1173,6 +1173,40 @@ void
 TaskJugglerView::tutorial()
 {
     kapp->invokeHelp("tutorial");
+}
+
+void
+TaskJugglerView::showErrorMessages()
+{
+    // The messages should be visible, so we check whether we already have
+    // a setting for the splitter that is large enough. Otherwise we make
+    // the message list 15% of the splitter size.
+    QValueList<int> vl;
+    int h = mw->editorSplitter->height();
+    if (editorSplitterSizes.isEmpty() || editorSplitterSizes[1] < 120)
+    {
+        vl.append(int(h * 0.85));
+        vl.append(int(h * 0.15));
+    }
+    else
+        vl = editorSplitterSizes;
+    mw->editorSplitter->setSizes(vl);
+    changeStatusBar(i18n("The project contains problems!"));
+    showEditor();
+    mw->messageListView->clearSelection();
+    QListViewItem* lvi = mw->messageListView->firstChild();
+    if (lvi)
+    {
+        /* Prevent GUI crash in case the back-end reports an error but
+         * does not provide an error message. */
+        mw->messageListView->setCurrentItem(lvi);
+        lvi->setSelected(true);
+        messageListClicked(lvi);
+
+        KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
+        mainWindow->action("next_problem")->setEnabled(true);
+        mainWindow->action("previous_problem")->setEnabled(true);
+    }
 }
 
 void

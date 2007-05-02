@@ -159,6 +159,9 @@ void TaskJuggler::setupActions()
     new KAction(i18n("Stop scheduling"), "stop", 0,
                 m_view, SLOT(stop()),
                 actionCollection(), "stop");
+    new KAction(i18n("&Generate all Reports"), 0, 0,
+                m_view, SLOT(generate()),
+                actionCollection(), "generate");
     new KAction(i18n("Goto &previous Problem"), "tj_previous_problem",
                 KShortcut(KKey("F10")),
                 m_view, SLOT(previousProblem()),

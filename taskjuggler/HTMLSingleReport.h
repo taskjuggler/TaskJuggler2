@@ -36,10 +36,10 @@ public:
             return false;
 
         generateHeader();
-        getTable()->generate();
+        bool ok = getTable()->generate();
         generateFooter();
 
-        return close();
+        return close() && ok;
     }
 } ;
 

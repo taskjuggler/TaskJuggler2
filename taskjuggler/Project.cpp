@@ -922,10 +922,11 @@ Project::getReportListIterator() const
     return QPtrListIterator<Report>(reports);
 }
 
-void
+bool
 Project::generateReports() const
 {
     // Generate reports
+    int errors = 0;
     for (QPtrListIterator<Report> ri(reports); *ri != 0; ++ri)
     {
         // We generate all but Qt*Reports. Those are for the GUI version.
@@ -935,11 +936,14 @@ Project::generateReports() const
                 tjDebug(i18n("Generating report '%1' ...")
                        .arg((*ri)->getFileName()));
 
-            (*ri)->generate();
+            if (!(*ri)->generate())
+                errors++;
         }
     }
 
     generateXMLReport();
+
+    return errors == 0;
 }
 
 bool Project::generateXMLReport() const

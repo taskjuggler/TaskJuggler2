@@ -239,7 +239,8 @@ int main(int argc, char *argv[])
         if (warningAsErrors && warnings != oldWarnings)
             schedulingErrors = true;
 
-        p.generateReports();
+        if (!p.generateReports())
+            schedulingErrors = true;
     }
 
     return (parseErrors || logicalErrors || schedulingErrors ?

@@ -28,6 +28,7 @@
   <Menu name="tools"><text>&amp;Tools</text>
     <Action name="schedule"/>
     <Action name="stop"/>
+    <Action name="generate"/>
     <Separator/>
     <Action name="next_problem"/>
     <Action name="previous_problem"/>
