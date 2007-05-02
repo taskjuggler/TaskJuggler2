@@ -493,6 +493,12 @@ linkend="PROPERTY_htmltaskreport">htmltaskreport</link>, <link
 linkend="PROPERTY_htmlresourcereport">htmlresourcereport</link> or other report
 properties in the input file.</para>
 
+<para>In contrast to the commandline version the GUI does not generate
+all reports directly after scheduling. Only the report that was
+visible previously will be generated. All other reports including export
+reports will be generated when viewed or requested by the right mouse
+button menu.</para>
+
 </sect1> 
 <sect1 id="the_command_line_options"><title> The Command Line
 Options</title>
