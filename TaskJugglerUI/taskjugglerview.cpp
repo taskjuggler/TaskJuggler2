@@ -771,7 +771,8 @@ TaskJugglerView::loadProject(const KURL& url)
             showReport();
             mw->listViews->setCurrentItem(mw->reportsPage);
             bool dummy;
-            reportManager->showReport(0, dummy);
+            if (!reportManager->showReport(0, dummy))
+                showErrorMessages();
         }
         else
             showEditor();
