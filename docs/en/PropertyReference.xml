@@ -234,7 +234,11 @@ construct is the recommended way to do this.</para></descr>
  </property>
  <property name="allocate" id="allocate" inheritable="Yes">
   <descr><para>Specify which resources should be allocated to the
-task.</para></descr>
+task. The optional attributes provide numerous ways to control which
+resource is used and when exactly it will be assigned to the task.
+Shifts and limits can be used to restrict the allocation to certain
+time intervals or to limit them to a certain maximum per time period.
+</para></descr>
   <attributes>
    <attr name="resource" type="ID"/>
   </attributes>
@@ -2146,7 +2150,14 @@ specified logical expression.</para></descr>
   the enclosing scenario. There can only be one top-level scenario. It
   is usually called <computeroutput>plan</computeroutput> scenario. By
   default this scenario is pre-defined but can be overwritten with any
-  other scenario.</para></descr>
+  other scenario. In this documenation each attribute is listed as
+  scenario specific or not. A scenario specific attribute can be
+  overwritten in a child scenario thereby creating a new, slightly
+  different variant of the parent scenario. This can be helpful to do
+  plan/actual comparisons if what-if-anlysises.</para>
+  <para>By using bookings and enabling the projection mode you can
+  capture the progress of your project and constantly get updated
+  project plans for the future work.</para></descr>
   <attributes>
    <attr name="id" type="ID"/>
    <attr name="name" type="STRING"/>
