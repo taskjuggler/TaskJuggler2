@@ -644,6 +644,9 @@ Project::overlayScenario(int base, int sc)
 void
 Project::prepareScenario(int sc)
 {
+    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
+        (*rli)->prepareScenario(sc);
+
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->prepareScenario(sc);
 
@@ -660,8 +663,6 @@ Project::prepareScenario(int sc)
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->propagateInitialValues(sc);
 
-    for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
-        (*rli)->prepareScenario(sc);
     if (DEBUGTS(4))
     {
         tjDebug("Allocation probabilities for the resources:");

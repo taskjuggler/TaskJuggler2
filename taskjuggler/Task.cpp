@@ -2611,11 +2611,12 @@ Task::prepareScenario(int sc)
     time_t firstSlot = 0;
     for (ResourceListIterator rli(bookedResources); *rli != 0; ++rli)
     {
-        doneEffort += (*rli)->getEffectiveLoad
+        double effort = (*rli)->getEffectiveLoad
             (sc, Interval(project->getStart(), project->getEnd()),
              AllAccounts, this);
-        if (doneEffort > 0.0)
+        if (effort > 0.0)
         {
+            doneEffort += effort;
             if (firstSlot == 0 ||
                 firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
             {

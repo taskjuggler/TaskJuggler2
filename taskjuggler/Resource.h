@@ -197,6 +197,7 @@ private:
                         prjId) const;
     bool isAllocatedSub(int sc, uint startIdx, uint endIdx, const Task* task)
         const;
+    void updateSlotMarks(int sc);
 
     uint sbIndex(time_t date) const;
 

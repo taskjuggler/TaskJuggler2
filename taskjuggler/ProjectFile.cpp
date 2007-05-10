@@ -2506,7 +2506,7 @@ ProjectFile::readBooking(int sc, Resource* resource)
                 if (nextToken(token) != INTEGER ||
                     token.toInt() < 0 || token.toInt() > 2)
                 {
-                    errorMessage(i18n("Number between 0 and 3 expected"));
+                    errorMessage(i18n("Number between 0 and 2 expected"));
                     return 0;
                 }
                 sloppy = token.toInt();

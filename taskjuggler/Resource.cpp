@@ -585,6 +585,7 @@ Resource::addBooking(int sc, Booking* nb, int sloppy, int overtime)
     delete nb;
     scoreboards[sc] = scoreboard;
     scoreboard = tmp;
+
     return retVal;
 }
 
@@ -1273,32 +1274,15 @@ Resource::prepareScenario(int sc)
 {
     copyBookings(sc, specifiedBookings, scoreboards);
     scoreboard = scoreboards[sc];
-    scenarios[sc].allocatedTasks.clear();
 
-    scenarios[sc].firstSlot = -1;
-    scenarios[sc].lastSlot = -1;
+    updateSlotMarks(sc);
 }
 
 void
 Resource::finishScenario(int sc)
 {
     scoreboards[sc] = scoreboard;
-
-    if (!scoreboard)
-        return;
-
-    scenarios[sc].firstSlot = -1;
-    scenarios[sc].lastSlot = -1;
-    /* Create a list of all tasks that the resource is allocated to in this
-     * scenario. */
-    for (uint i = 0; i < sbSize; i++)
-        if (scoreboard[i] > (SbBooking*) 4)
-        {
-            if (scenarios[sc].firstSlot == -1)
-                scenarios[sc].firstSlot = i;
-            scenarios[sc].lastSlot = i;
-            scenarios[sc].addTask(scoreboard[i]->getTask());
-        }
+    updateSlotMarks(sc);
 }
 
 bool
@@ -1348,6 +1332,26 @@ Journal::Iterator
 Resource::getJournalIterator() const
 {
     return Journal::Iterator(journal);
+}
+
+void
+Resource::updateSlotMarks(int sc)
+{
+    scenarios[sc].allocatedTasks.clear();
+    scenarios[sc].firstSlot = -1;
+    scenarios[sc].lastSlot = -1;
+
+    if (scoreboard)
+    {
+        for (uint i = 0; i < sbSize; i++)
+            if (scoreboard[i] > (SbBooking*) 4)
+            {
+                if (scenarios[sc].firstSlot == -1)
+                    scenarios[sc].firstSlot = i;
+                scenarios[sc].lastSlot = i;
+                scenarios[sc].addTask(scoreboard[i]->getTask());
+            }
+    }
 }
 
 QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
