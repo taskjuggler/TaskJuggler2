@@ -2165,6 +2165,7 @@ specified logical expression.</para></descr>
   <optattributes>
    <optattr>baseline</optattr>
    <optattr>disabled</optattr>
+   <optattr>enabled</optattr>
    <optattr>minslackrate</optattr>
    <optattr>projection</optattr>
    <optattr>scenario</optattr>
