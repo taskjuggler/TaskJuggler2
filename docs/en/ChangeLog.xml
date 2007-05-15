@@ -1185,6 +1185,9 @@ error.</para></listitem>
 <listitem><para>Fixed the reversed sorting order for resource specific
 sorting criteria.</para></listitem>
 
+<listitem><para>Add workaround for new bahviour of tzset function in
+glibc 2.5.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

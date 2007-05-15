@@ -172,14 +172,16 @@ setTimezone(const char* tZone)
         qFatal("Ran out of space in environment section while "
                "setting timezone.");
 
-    /* To valide the tZone value we call tzset(). It will convert the zone
+    /* To validate the tZone value we call tzset(). It will convert the zone
      * into a three-letter acronym in case the tZone value is good. If not, it
-     * will just copy the wrong value to tzname[0]. So, we need to validate
-     * tZone names that are already 3 letter acronyms first. timezone2tz can
-     * do this for us. */
+     * will just copy the wrong value to tzname[0] (glibc < 2.5) or fall back
+     * to UTC. */
     tzset();
-    if (timezone2tz(tZone) == 0 && strcmp(tZone, tzname[0]) == 0)
+    if (timezone2tz(tZone) == 0 &&
+        (strcmp(tzname[0], tZone) == 0 ||
+         (strcmp(tZone, "UTC") != 0 && strcmp(tzname[0], "UTC") == 0)))
     {
+        qDebug("1: %s, 2: %s", tzname[0], tzname[1]);
         UtilityError = QString(i18n("Illegal timezone '%1'")).arg(tZone);
         return false;
     }
