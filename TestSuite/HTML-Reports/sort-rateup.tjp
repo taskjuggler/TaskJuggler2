@@ -1,0 +1,13 @@
+project test "Test" "1.0" 2007-05-15 +1m
+
+resource foo "Foo" { rate 20.0 }
+resource bar "Bar" { rate 7.0 }
+resource tux "Tux" { rate 5.0 }
+resource bill "Bill" { rate 10000 }
+
+task t "T" { start 2007-05-15 }
+
+htmlresourcereport "." {
+  columns name, rate
+	sortresources rateup
+}

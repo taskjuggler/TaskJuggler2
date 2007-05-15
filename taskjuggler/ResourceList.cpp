@@ -66,20 +66,20 @@ ResourceList::compareItemsLevel(CoreAttributes* c1, CoreAttributes* c2,
                 r1->getSequenceNo() < r2->getSequenceNo() ? -1 : 1;
     case MinEffortUp:
         return r1->minEffort == r2->minEffort ? 0 :
-            r1->minEffort < r2->minEffort ? 1 : -1;
+            r1->minEffort < r2->minEffort ? -1 : 1;
     case MinEffortDown:
         return r1->minEffort == r2->minEffort ? 0 :
-            r1->minEffort < r2->minEffort ? -1 : 1;
+            r1->minEffort < r2->minEffort ? 1 : -1;
     case MaxEffortUp:
         return r1->limits->getDailyMax() == r2->limits->getDailyMax() ? 0 :
-            r1->limits->getDailyMax() < r2->limits->getDailyMax() ? 1 : -1;
+            r1->limits->getDailyMax() < r2->limits->getDailyMax() ? -1 : 1;
     case MaxEffortDown:
         return r1->limits->getDailyMax() == r2->limits->getDailyMax() ? 0 :
-            r1->limits->getDailyMax() < r2->limits->getDailyMax() ? -1 : 1;
+            r1->limits->getDailyMax() < r2->limits->getDailyMax() ? 1 : -1;
     case RateUp:
-        return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? 1 : -1;
-    case RateDown:
         return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? -1 : 1;
+    case RateDown:
+        return r1->rate == r2->rate ? 0 : r1->rate < r2->rate ? 1 : -1;
     default:
         return CoreAttributesList::compareItemsLevel(r1, r2, level);
     }

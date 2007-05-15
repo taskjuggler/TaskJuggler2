@@ -1182,6 +1182,9 @@ GUI.</para></listitem>
 non-zero value if the report generation caused an
 error.</para></listitem>
 
+<listitem><para>Fixed the reversed sorting order for resource specific
+sorting criteria.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
