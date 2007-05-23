@@ -1112,6 +1112,28 @@ dependencies in combination with long dependency chains.
 <listitem><para>The default minimum slack rate has been changed to
 5%.</para></listitem>
 
+<listitem><para>Added support for C++ style single line comments.
+Comment lines can now start with // or #.</para></listitem>
+
+<listitem><para>Added a warning when the working hours do not align
+with the timing resolution.</para></listitem>
+
+<listitem><para>The booking statements in export reports now include a
+<computeroutput>overtime 2</computeroutput> attribute. This avoids the
+error messages when the scheduling was based on overtime bookings and
+the export file is read-in again.</para></listitem>
+
+<listitem><para>Added a <computeroutput>Generate all
+Reports</computeroutput> option to the menu of the
+GUI.</para></listitem>
+
+<listitem><para>The sloppiness 3 for booking statements is no longer
+supported. The booking statements are processed in no particular
+order, so it's undefined which booking will actually get the resource
+in a conflict.</para></listitem>
+
+<listitem><para>Removed support for KoTrus database.</para></listitem>
+
 <listitem><para>Fix HTML generation for HTMLWeeklyCalendar when cells
 are empty.</para></listitem>
 
@@ -1143,14 +1165,6 @@ included.</para></listitem>
 macros were silently ignored. This should only happen when the macro
 name is prefixed with a questionmark in the macro call.</para></listitem>
 
-<listitem><para>Added support for C++ style single line comments.
-Comment lines can now start with // or #.</para></listitem>
-
-<listitem><para>Removed support for KoTrus database.</para></listitem>
-
-<listitem><para>Added a warning when the working hours do not align
-with the timing resolution.</para></listitem>
-
 <listitem><para>Properly report effort and load of group resources
 that have children with an efficiency different than
 0.</para></listitem>
@@ -1163,20 +1177,6 @@ accounts.</para></listitem>
 
 <listitem><para>Fixed a rounding error that caused dependency gaps to
 be one time slot short.</para></listitem>
-
-<listitem><para>The booking statements in export reports now include a
-<computeroutput>overtime 2</computeroutput> attribute. This avoids the
-error messages when the scheduling was based on overtime bookings and
-the export file is read-in again.</para></listitem>
-
-<listitem><para>The sloppiness 3 for booking statements is no longer
-supported. The booking statements are processed in no particular
-order, so it's undefined which booking will actually get the resource
-in a conflict.</para></listitem>
-
-<listitem><para>Added a <computeroutput>Generate all
-Reports</computeroutput> option to the menu of the
-GUI.</para></listitem>
 
 <listitem><para>The commandline version now properly returns a
 non-zero value if the report generation caused an
