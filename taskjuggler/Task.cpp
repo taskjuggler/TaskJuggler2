@@ -639,47 +639,59 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
 
         /* Now check the limits set for this allocation. */
         const UsageLimits* limits = (*ali)->getLimits();
+        /* This variable holds the number of slots that are still available to
+         * hit the nearest limit. -1 means unlimited slots. */
+        int slotsToLimit = -1;
         if (limits)
         {
             QPtrList<Resource> resources = (*ali)->getCandidates();
             if (limits->getDailyMax() > 0)
             {
-                uint timeSlots = 0;
+                uint slotCount = 0;
                 for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
-                    timeSlots += (*rli)->getCurrentDaySlots(date, this);
-                if (timeSlots > limits->getDailyMax())
+                    slotCount += (*rli)->getCurrentDaySlots(date, this);
+                int freeSlots = limits->getDailyMax() - slotCount;
+                if (freeSlots <= 0)
                 {
                     if (DEBUGRS(6))
                         qDebug("  Allocation overloaded today for task %s",
                                id.latin1());
                     continue;
                 }
+                else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
+                    slotsToLimit = freeSlots;
             }
             if (limits->getWeeklyMax() > 0)
             {
-                uint timeSlots = 0;
+                uint slotCount = 0;
                 for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
-                    timeSlots += (*rli)->getCurrentWeekSlots(date, this);
-                if (timeSlots > limits->getWeeklyMax())
+                    slotCount += (*rli)->getCurrentWeekSlots(date, this);
+                int freeSlots = limits->getWeeklyMax() - slotCount;
+                if (freeSlots <= 0)
                 {
                     if (DEBUGRS(6))
                         qDebug("  Allocation overloaded this week for task %s",
                                id.latin1());
                     continue;
                 }
+                else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
+                    slotsToLimit = freeSlots;
             }
             if (limits->getMonthlyMax() > 0)
             {
-                uint timeSlots = 0;
+                uint slotCount = 0;
                 for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
-                    timeSlots += (*rli)->getCurrentMonthSlots(date, this);
-                if (timeSlots > limits->getMonthlyMax())
+                    slotCount += (*rli)->getCurrentMonthSlots(date, this);
+                int freeSlots = limits->getMonthlyMax() - slotCount;
+                if (freeSlots <= 0)
                 {
                     if (DEBUGRS(6))
                         qDebug("  Allocation overloaded this month for task %s",
                                id.latin1());
                     continue;
                 }
+                else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
+                    slotsToLimit = freeSlots;
             }
         }
 
@@ -691,7 +703,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
         if ((*ali)->isPersistent() && (*ali)->getLockedResource())
         {
             if (!bookResource((*ali)->getLockedResource(), date, slotDuration,
-                              maxAvailability))
+                              slotsToLimit, maxAvailability))
             {
                 if (maxAvailability >= 4 && !(*ali)->getConflictStart())
                     (*ali)->setConflictStart(date);
@@ -714,7 +726,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
 
             bool found = false;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
-                if (bookResource((*rli), date, slotDuration,
+                if (bookResource((*rli), date, slotDuration, slotsToLimit,
                                  maxAvailability))
                 {
                     (*ali)->setLockedResource(*rli);
@@ -752,7 +764,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
 
 bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
-                   int& maxAvailability)
+                   int& slotsToLimit, int& maxAvailability)
 {
     bool booked = false;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
@@ -788,6 +800,9 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
                 qDebug(" Booked resource %s (Effort: %f)",
                        (*rti)->getId().latin1(), doneEffort);
             booked = true;
+
+            if (slotsToLimit > 0 && --slotsToLimit <= 0)
+                return true;
         }
         else if (availability > maxAvailability)
             maxAvailability = availability;
@@ -2863,8 +2878,8 @@ Task::computeBackwardCriticalness(int sc)
                 maxCriticalness = criticalness;
 
     if (parent &&
-        ((criticalness = static_cast<Task*>(parent)->computeBackwardCriticalness(sc)) >
-         maxCriticalness))
+        ((criticalness = static_cast<Task*>
+          (parent)->computeBackwardCriticalness(sc)) > maxCriticalness))
         maxCriticalness = criticalness;
 
     return scenarios[sc].criticalness + maxCriticalness;
@@ -3064,11 +3079,13 @@ Task::computeBuffers()
         {
             if (scenarios[sc].startBuffer > 0.0)
                 scenarios[sc].startBufferEnd = scenarios[sc].start +
-                    static_cast<time_t>((scenarios[sc].end - scenarios[sc].start) *
+                    static_cast<time_t>((scenarios[sc].end -
+                                         scenarios[sc].start) *
                               scenarios[sc].startBuffer / 100.0);
             if (scenarios[sc].endBuffer > 0.0)
                 scenarios[sc].endBufferStart = scenarios[sc].end -
-                    static_cast<time_t>((scenarios[sc].end - scenarios[sc].start) *
+                    static_cast<time_t>((scenarios[sc].end -
+                                         scenarios[sc].start) *
                               scenarios[sc].endBuffer / 100.0);
         }
         else if (length > 0.0)

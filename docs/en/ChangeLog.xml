@@ -1188,6 +1188,9 @@ sorting criteria.</para></listitem>
 <listitem><para>Add workaround for new bahviour of tzset function in
 glibc 2.5.</para></listitem>
 
+<listitem><para>Fixed off-by-one-slot bug for limits on allocations
+with multiple resources.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

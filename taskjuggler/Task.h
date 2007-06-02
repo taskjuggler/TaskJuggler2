@@ -368,7 +368,7 @@ private:
     Task* subFirst() { return (Task*) sub->first(); }
     Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
-                      int& availability);
+                      int& slotsToLimit, int& availability);
     void bookResources(int sc, time_t day, time_t duration);
     void addBookedResource(Resource* r)
     {

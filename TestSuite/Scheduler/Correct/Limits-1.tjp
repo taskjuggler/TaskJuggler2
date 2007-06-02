@@ -22,8 +22,8 @@ task t2 "Task 2" {
 	allocate r2 { limits { dailymax 2h weeklymax 6h monthlymax 14h } }
 }
 
-htmltaskreport "Limits-1.html" {
-	columns id, name, effort, daily
+taskreport "Limits-1.html" {
+	columns id, name, effort, chart
 }
 
 export "Limits-1-Export.tjp" {

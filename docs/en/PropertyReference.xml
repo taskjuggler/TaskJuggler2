@@ -1272,18 +1272,11 @@ tasks. The default reporting interval is 1 week.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>scenarios</optattr>
-   <optattr>period_report</optattr>
-   <optattr>start_report</optattr>
-   <optattr>end_report</optattr>
    <optattr>headline</optattr>
    <optattr>caption</optattr>
    <optattr>rawhead</optattr>
    <optattr>rawstylesheet</optattr>
    <optattr>rawtail</optattr>
-   <optattr>loadunit</optattr>
-   <optattr>timeformat</optattr>
-   <optattr>shorttimeformat</optattr>
   </optattributes>
   <seealso>
    <also>htmlaccountreport</also>

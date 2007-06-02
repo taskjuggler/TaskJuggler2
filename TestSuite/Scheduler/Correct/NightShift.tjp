@@ -77,7 +77,7 @@ resource r3 "Resource3" {
 	vacation 2002-11-08-22:00 - 2002-11-10-22:00
 	shift s2 2002-11-10-22:00 - 2002-11-17-22:00
 
-	# need extra hour for switch	
+	# need extra hour for switch
 	maxeffort 1.2
 }
 
@@ -106,14 +106,15 @@ task t3 "task3" {
 	start 2002-10-24-22:00
 	effort 20d
 	# needs extended load for switch day
-	allocate r3 { alternative r1, r2 limits { dailymax 10h } }
-	minend 2002-11-17-2:00:00
-	maxend 2002-11-17-2:00:00
+	allocate r3 { alternative r1, r2 }
+ 	minend 2002-11-02-13:00:00
+ 	maxend 2002-11-02-13:00:00
 }
 
 taskreport "Tasks" {
-  columns start, end, effort, duration
+  columns start, end, effort, duration, chart
   hideresource 0
+  period 2002-10-24 +20d
 }
 
 resourcereport "Resources" {
@@ -126,7 +127,7 @@ htmltaskreport "NightShift.html" {
   columns no, name, start, end, daily
 	loadunit hours
 	hideresource 0
-	notimestamp
+  notimestamp
 }
 
 htmlweeklycalendar "NightShiftTimes.html" {

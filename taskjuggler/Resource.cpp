@@ -672,9 +672,7 @@ Resource::getCurrentDaySlots(time_t date, const Task* t)
 
     uint sbIdx = sbIndex(date);
 
-    // Now check that the resource is not overloaded on this day.
     uint bookedSlots = 0;
-    uint bookedTaskSlots = 0;
 
     for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
     {
@@ -682,18 +680,11 @@ Resource::getCurrentDaySlots(time_t date, const Task* t)
         if (b < (SbBooking*) 4)
             continue;
 
-        bookedSlots++;
-        if (b->getTask() == t)
-            bookedTaskSlots++;
-    }
-    // If the current slot is still available we count this as booked as well.
-    if (scoreboard[sbIdx] < ((SbBooking*) 4))
-    {
-        bookedSlots++;
-        bookedTaskSlots++;
+        if (!t || b->getTask() == t)
+            bookedSlots++;
     }
 
-    return t ? bookedTaskSlots : bookedSlots;
+    return bookedSlots;
 }
 
 uint
@@ -716,9 +707,7 @@ Resource::getCurrentWeekSlots(time_t date, const Task* t)
 
     uint sbIdx = sbIndex(date);
 
-    // Now check that the resource is not overloaded on this day.
     uint bookedSlots = 0;
-    uint bookedTaskSlots = 0;
 
     for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
     {
@@ -726,19 +715,11 @@ Resource::getCurrentWeekSlots(time_t date, const Task* t)
         if (b < (SbBooking*) 4)
             continue;
 
-        bookedSlots++;
-        if (b->getTask() == t)
-            bookedTaskSlots++;
+        if (!t || b->getTask() == t)
+            bookedSlots++;
     }
 
-    // If the current slot is still available we count this as booked as well.
-    if (scoreboard[sbIdx] < ((SbBooking*) 4))
-    {
-        bookedSlots++;
-        bookedTaskSlots++;
-    }
-
-    return t ? bookedTaskSlots : bookedSlots;
+    return bookedSlots;
 }
 
 uint
@@ -761,9 +742,7 @@ Resource::getCurrentMonthSlots(time_t date, const Task* t)
 
     uint sbIdx = sbIndex(date);
 
-    // Now check that the resource is not overloaded on this day.
     uint bookedSlots = 0;
-    uint bookedTaskSlots = 0;
 
     for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
     {
@@ -771,19 +750,11 @@ Resource::getCurrentMonthSlots(time_t date, const Task* t)
         if (b < (SbBooking*) 4)
             continue;
 
-        bookedSlots++;
-        if (b->getTask() == t)
-            bookedTaskSlots++;
+        if (!t || b->getTask() == t)
+            bookedSlots++;
     }
 
-    // If the current slot is still available we count this as booked as well.
-    if (scoreboard[sbIdx] < ((SbBooking*) 4))
-    {
-        bookedSlots++;
-        bookedTaskSlots++;
-    }
-
-    return t ? bookedTaskSlots : bookedSlots;
+    return bookedSlots;
 }
 
 double
