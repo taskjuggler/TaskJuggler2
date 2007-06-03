@@ -392,7 +392,8 @@ private:
     double computeForwardCriticalness(int sc);
 
     bool analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
-                     long worstMinSlackTime);
+                     long worstMinSlackTime, long& checked, long& found);
+    void collectTransientFollowers(TaskList& list);
 
     bool countMilestones(int sc, time_t now, int& totalMilestones,
                          int& completedMilestones,

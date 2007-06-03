@@ -2604,6 +2604,7 @@ Task::prepareScenario(int sc)
     end = scenarios[sc].end = scenarios[sc].specifiedEnd;
     schedulingDone = scenarios[sc].scheduled = scenarios[sc].specifiedScheduled;
     scenarios[sc].isOnCriticalPath = false;
+    scenarios[sc].pathAnalysisCompleted = false;
 
     duration = scenarios[sc].duration;
     length = scenarios[sc].length;
@@ -2918,18 +2919,49 @@ Task::checkAndMarkCriticalPath(int sc, double minSlack, time_t maxEnd)
     if (DEBUGPA(3))
         qDebug("Starting critical path search at %s", id.latin1());
 
-    long worstMinSlackTime = static_cast<long>((maxEnd - getStart(sc)) * minSlack);
-    analyzePath(sc, minSlack, getStart(sc), 0, worstMinSlackTime);
+    long worstMinSlackTime = static_cast<long>((maxEnd - getStart(sc)) *
+                                               minSlack);
+    long checks = 0;
+    long found = 0;
+    analyzePath(sc, minSlack, getStart(sc), 0, worstMinSlackTime, checks,
+                found);
 }
 
 bool
 Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
-                  long worstMinSlackTime)
+                  long worstMinSlackTime, long& checks, long& found)
 {
     if (DEBUGPA(14))
         qDebug("  * Checking task %s", id.latin1());
 
     bool critical = false;
+
+    /* If all pathes following this task have been analyzed and the result
+     * matches the criticalness of the current path up to this task, we don't
+     * have to check the followers again. */
+    if (scenarios[sc].pathAnalysisCompleted)
+    {
+        long overallDuration = getStart(sc) - pathStart;
+        /* A path is considered critical if the ratio of busy time and
+         * overall path time is above the minSlack threshold and the path
+         * contains more than one task. */
+        if (overallDuration > 0)
+        {
+            critical = ((double) busyTime / overallDuration) > (1.0 - minSlack);
+            if (critical == scenarios[sc].isOnCriticalPath)
+            {
+                if (DEBUGPA(7))
+                    qDebug("Hit known path that matches in task %s",
+                           id.latin1());
+                if (critical)
+                    found++;
+                if (++checks % 100000 == 0 && DEBUGPA(1))
+                    qDebug("Already check %ld paths. %ld critical found.",
+                           checks, found);
+                return critical;
+            }
+        }
+    }
 
     if (hasSubs())
     {
@@ -2938,7 +2970,7 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
 
         for (TaskListIterator tli(*sub); *tli; ++tli)
             if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime,
-                                    worstMinSlackTime))
+                                    worstMinSlackTime, checks, found))
                 critical = true;
 
         if (DEBUGPA(15))
@@ -2946,19 +2978,30 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
     }
     else
     {
-        if (!milestone)
-            busyTime += (getEnd(sc) + 1 - getStart(sc));
+        busyTime += (getEnd(sc) + 1 - getStart(sc));
 
         /* If we have enough slack already that the path cannot be critical,
          * we stop looking at the rest of the path. */
         long currentSlack = (getEnd(sc) + 1 - pathStart) - busyTime;
         if (currentSlack > worstMinSlackTime)
         {
-            if (DEBUGPA(11))
+            checks++;
+            if (DEBUGPA(6))
                 qDebug("Path cannot be critical. Stopping at task %s",
                        id.latin1());
             return false;
         }
+
+        /* Find out if any of the followers is a sibling of the parent of this
+         * task. */
+        bool hasBrotherFollower = false;
+        for (TaskListIterator tli(followers); tli && !hasBrotherFollower; ++tli)
+            for (Task* t = *tli; t; t = t->getParent())
+                if (t == getParent())
+                {
+                    hasBrotherFollower = true;
+                    break;
+                }
 
         /* We first have to gather a list of all followers of this task. This
          * list must also include the followers registered for all parent
@@ -2969,42 +3012,40 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
             for (TaskListIterator tli(task->followers); *tli; ++tli)
                 if (allFollowers.findRef(*tli) < 0)
                     allFollowers.append(*tli);
+            /* If the task has a follower that is a sibling of the same parent
+             * we ignore the parent followers. */
+            if (hasBrotherFollower)
+                break;
         }
 
-        /* We don't want to follow dependencies that were only specified to
-         * pass them on to the sub tasks. Such parent tasks are put in the
-         * ignore list. */
+        /* Get a list of all transient followers that follow the direct and
+         * indirect followers of this task. If the allFollowers list contain
+         * any of the transient followers, we can ignore it later. */
+        TaskList transientFollowers;
+        for (TaskListIterator tli(allFollowers); *tli; ++tli)
+            (*tli)->collectTransientFollowers(transientFollowers);
+
+        /* For inherited dependencies we only follow the bottommost task that
+         * is a follower. All parents in the allFollowers list are ignored. */
         TaskList ignoreList;
         for (TaskListIterator tli(allFollowers); *tli; ++tli)
-        {
-            /* If allFollowers contains any parent of *tli we can ignore
-             * the parent. */
-            for (Task* t = (*tli)->getParent(); t; t = t->getParent())
-                if (allFollowers.findRef(t) >= 0)
-                    ignoreList.append(t);
-        }
+            for (Task* p = (*tli)->getParent(); p; p = p->getParent())
+                if (allFollowers.findRef(p) >= 0 && ignoreList.findRef(p) < 0)
+                    ignoreList.append(p);
 
-        /* Compose a new list that contains the allFollowers minus the ignore
-         * list. */
-        TaskList followers;
+        /* Now we can check the paths through the remaining followers. */
         for (TaskListIterator tli(allFollowers); *tli; ++tli)
-            if (ignoreList.findRef(*tli) < 0)
-                followers.append(*tli);
-
-        if (DEBUGPA(10))
-            if (followers.count() < allFollowers.count())
-                qDebug("Ignoring %d followers of task %s",
-                       allFollowers.count() - followers.count(), id.latin1());
-
-        /* Now we can check the pathes through the remaining followers. */
-        for (TaskListIterator tli(followers); *tli; ++tli)
         {
+            if (ignoreList.findRef(*tli) >= 0 ||
+                transientFollowers.findRef(*tli) >= 0)
+                continue;
+
             if (DEBUGPA(16))
                 qDebug("  > Follower check started for %s",
                        (*tli)->id.latin1());
 
             if ((*tli)->analyzePath(sc, minSlack, pathStart, busyTime,
-                                    worstMinSlackTime))
+                                    worstMinSlackTime, checks, found))
             {
                 if (scenarios[sc].criticalLinks.findRef(*tli) < 0)
                 {
@@ -3022,33 +3063,66 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
                        (*tli)->id.latin1());
         }
 
-        if (followers.isEmpty())
+        if (allFollowers.isEmpty())
         {
             // We've reached the end of a path. Now let's see if it's critical.
             long overallDuration = getEnd(sc) + 1 - pathStart;
             /* A path is considered critical if the ratio of busy time and
              * overall path time is above the minSlack threshold and the path
              * contains more than one task. */
-            critical = ((double) busyTime / overallDuration) >
-                       (1.0 - minSlack) &&
-                       pathStart < getStart(sc);
+            critical = overallDuration > 0 &&
+                ((double) busyTime / overallDuration) > (1.0 - minSlack);
             if (critical)
             {
+                found++;
                 if (DEBUGPA(5))
                     qDebug("Critical path with %.2lf%% slack ending at %s "
                            "found",
                            100.0 - ((double) busyTime / overallDuration) *
                            100.0, id.latin1());
             }
+            else
+            {
+                if (DEBUGPA(11))
+                    qDebug("Path ending at %s is not critical", id.latin1());
+            }
+            if (++checks % 100000 == 0 && DEBUGPA(1))
+                qDebug("Already check %ld paths. %ld critical found.",
+                       checks, found);
         }
     }
 
     if (critical)
-        scenarios[sc].isOnCriticalPath = true;
+       scenarios[sc].isOnCriticalPath = true;
+
+    scenarios[sc].pathAnalysisCompleted = true;
 
     if (DEBUGPA(14))
         qDebug("  - Check of task %s completed (%d)", id.latin1(), critical);
     return critical;
+}
+
+void
+Task::collectTransientFollowers(TaskList& list)
+{
+    if (hasSubs())
+    {
+        for (TaskListIterator tli(followers); *tli; ++tli)
+            if (list.findRef(*tli) < 0)
+            {
+                list.append(*tli);
+                (*tli)->collectTransientFollowers(list);
+            }
+    }
+    else
+    {
+        for (Task* task = getParent(); task; task = task->getParent())
+            for (TaskListIterator tli(task->followers); *tli; ++tli)
+            {
+                list.append(*tli);
+                (*tli)->collectTransientFollowers(list);
+            }
+    }
 }
 
 void

@@ -1646,18 +1646,18 @@ the specified value, then an error is reported.</para></descr>
  </property>
  <property name="minslackrate" id="minslackrate" inheritable="Yes" scenario="Yes">
   <descr><para>Specifies the minimum percentage of slack a task path
-  can have before it is marked as critical. A path is any list of
+  must have before it is marked as critical. A path is any list of
   explicitely or implicitely connected tasks measured from first task
-  to last task. The slack is the time between start of the first task
-  and end of the last task that is not covered by any task of the
-  path. The default value is 5%.</para>
+  to last task. The slack is the time between start of the
+  first task and end of the last task that is not covered by any task
+  of the path. The default value is 5%.</para>
   <para>Larger values in combination with a project that uses lots of
   inherited dependencies and long dependency pathes can result in very
-  long scheduling times. The more slack you allow, the more pathes
-  have to be searched till the end. An increase of 5% can turn a 10
-  second scheduling run into a 1 hour scheduling run. If you need
-  larger slack rate values, avoid the use of inherited
-  dependencies.</para>
+  long scheduling times. The more slack you require, the more pathes
+  have to be searched till the end. For larger projects an increase of
+  5% can turn a 10 second scheduling run into a 1 hour or more
+  scheduling run. If you need larger slack rate values, avoid the use
+  of inherited dependencies.</para>
   <para>A value of 0 turns off the critical path detector.</para>
   </descr>
   <attributes>

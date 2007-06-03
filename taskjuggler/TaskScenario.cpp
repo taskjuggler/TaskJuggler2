@@ -100,7 +100,8 @@ TaskScenario::calcCompletionDegree(time_t now)
 bool TaskScenario::isDutyOf(const Resource* r) const
 {
     for (ConstResourceTreeIterator rti(r); *rti; ++rti)
-        if (bookedResources.containsRef(static_cast<const CoreAttributes*>(*rti)) > 0)
+        if (bookedResources.containsRef
+            (static_cast<const CoreAttributes*>(*rti)) > 0)
             return true;
 
     return false;
