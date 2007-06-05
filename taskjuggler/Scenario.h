@@ -47,12 +47,16 @@ public:
     void setMinSlackRate(double msr) { minSlackRate = msr; }
     double getMinSlackRate() const { return minSlackRate; }
 
+    void setMaxPaths(long l) { maxPaths = l; }
+    long getMaxPaths() const { return maxPaths; }
+
 private:
     bool enabled;
     bool projectionMode;
     bool strictBookings;
     bool optimize;
     double minSlackRate;
+    long maxPaths;
 } ;
 
 #endif

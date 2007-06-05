@@ -1106,8 +1106,11 @@ calculated.</para></listitem>
 
 <listitem><para>The critical path detector has been rewritten to
 reduce the complexity explosion that is triggered by lots of inherited
-dependencies in combination with long dependency chains.
-</para></listitem>
+dependencies in combination with long dependency chains. The number of
+searched paths is now limited to 10 million to avoid very long
+scheduling runs by default. This limit can be changed with the
+<computeroutput>maxpaths</computeroutput> attribute. A value of 0
+means no limit.</para></listitem>
 
 <listitem><para>The default minimum slack rate has been changed to
 5%.</para></listitem>

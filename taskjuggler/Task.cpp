@@ -2604,7 +2604,6 @@ Task::prepareScenario(int sc)
     end = scenarios[sc].end = scenarios[sc].specifiedEnd;
     schedulingDone = scenarios[sc].scheduled = scenarios[sc].specifiedScheduled;
     scenarios[sc].isOnCriticalPath = false;
-    scenarios[sc].pathAnalysisCompleted = false;
 
     duration = scenarios[sc].duration;
     length = scenarios[sc].length;
@@ -2931,37 +2930,15 @@ bool
 Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
                   long worstMinSlackTime, long& checks, long& found)
 {
+    /* Saveguard to limit the runtime for this NP hard algorithm. */
+    long maxPaths = project->getScenario(sc)->getMaxPaths();
+    if (maxPaths > 0 && checks >= maxPaths)
+        return false;
+
     if (DEBUGPA(14))
         qDebug("  * Checking task %s", id.latin1());
 
     bool critical = false;
-
-    /* If all pathes following this task have been analyzed and the result
-     * matches the criticalness of the current path up to this task, we don't
-     * have to check the followers again. */
-    if (scenarios[sc].pathAnalysisCompleted)
-    {
-        long overallDuration = getStart(sc) - pathStart;
-        /* A path is considered critical if the ratio of busy time and
-         * overall path time is above the minSlack threshold and the path
-         * contains more than one task. */
-        if (overallDuration > 0)
-        {
-            critical = ((double) busyTime / overallDuration) > (1.0 - minSlack);
-            if (critical == scenarios[sc].isOnCriticalPath)
-            {
-                if (DEBUGPA(7))
-                    qDebug("Hit known path that matches in task %s",
-                           id.latin1());
-                if (critical)
-                    found++;
-                if (++checks % 100000 == 0 && DEBUGPA(1))
-                    qDebug("Already check %ld paths. %ld critical found.",
-                           checks, found);
-                return critical;
-            }
-        }
-    }
 
     if (hasSubs())
     {
@@ -3086,7 +3063,15 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
                 if (DEBUGPA(11))
                     qDebug("Path ending at %s is not critical", id.latin1());
             }
-            if (++checks % 100000 == 0 && DEBUGPA(1))
+            if (maxPaths > 0 && ++checks == maxPaths)
+            {
+                warningMessage(i18n("Maximum number of paths reached during "
+                                    "critical path analysis. Set 'maxPaths' "
+                                    "to 0 if you want an exhaustive search. "
+                                    "Aborting critical paths detection."));
+                return false;
+            }
+            if (checks % 100000 == 0 && DEBUGPA(1))
                 qDebug("Already check %ld paths. %ld critical found.",
                        checks, found);
         }
@@ -3094,8 +3079,6 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
 
     if (critical)
        scenarios[sc].isOnCriticalPath = true;
-
-    scenarios[sc].pathAnalysisCompleted = true;
 
     if (DEBUGPA(14))
         qDebug("  - Check of task %s completed (%d)", id.latin1(), critical);

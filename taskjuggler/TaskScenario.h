@@ -131,11 +131,6 @@ private:
      * result of the post-scheduling analysis. */
     bool isOnCriticalPath;
 
-    /** This flag is only used during the post-scheduling critical path
-     * detection. It's set to true when all following path segments have been
-     * checked and isOnCriticalPath has its final value. */
-    bool pathAnalysisCompleted;
-
     /// User specified percentage of completion of the task
     double reportedCompletion;
 

@@ -1613,6 +1613,24 @@ the specified value, then an error is reported.</para></descr>
   </seealso>
   <example>&example_minmax;</example>
  </property>
+ <property name="maxpaths" id="maxpaths" inheritable="Yes"
+ scenario="Yes">
+  <descr><para>The scheduler contains a critical path detector.
+  Detecting a critical path requires the analysis of every possible
+  path between 2 end tasks. The number of paths that have to be
+  checked can grow exponentially with the number of tasks and their
+  dependencies. By default, only 10 million paths will be checked.
+  With this parameter the user can define how many paths should be
+  checked. Using 0 as value will trigger an exhaustive search under
+  all circumstances. Scheduling times of hours if not days are
+  certainly possible for large projects.</para></descr>
+  <attributes>
+   <attr name="paths" type="INTEGER"/>
+  </attributes> 
+  <seealso>
+   <also>minslackrate</also>
+  </seealso>  
+ </property>
  <property name="maxstart" id="maxstart" inheritable="Yes"
 scenario="Yes">
   <descr><para>Specifies the maximum wanted start time of the task.
@@ -1663,6 +1681,9 @@ the specified value, then an error is reported.</para></descr>
   <attributes>
    <attr name="rate" type="REAL"/>
   </attributes>
+  <seealso>
+   <also>maxpaths</also>
+  </seealso>  
   <example>&example_criticalpath;</example>
  </property>
  <property name="minstart" id="minstart" inheritable="Yes"
@@ -2159,6 +2180,7 @@ specified logical expression.</para></descr>
    <optattr>baseline</optattr>
    <optattr>disabled</optattr>
    <optattr>enabled</optattr>
+   <optattr>maxpaths</optattr>
    <optattr>minslackrate</optattr>
    <optattr>projection</optattr>
    <optattr>scenario</optattr>

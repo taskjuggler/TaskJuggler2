@@ -949,6 +949,15 @@ ProjectFile::readScenario(Scenario* parent)
                 }
                 scenario->setMinSlackRate(rate / 100.0);
             }
+            else if (token == KW("maxpaths"))
+            {
+                if (nextToken(token) != INTEGER)
+                {
+                    errorMessage(i18n("Integer number expected"));
+                    return -1;
+                }
+                scenario->setMaxPaths(token.toLong());
+            }
             else
             {
                 errorMessage(i18n("Unknown scenario attribute '%1'")

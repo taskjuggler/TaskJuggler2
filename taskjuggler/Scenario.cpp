@@ -20,7 +20,8 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
     projectionMode(false),
     strictBookings(false),
     optimize(false),
-    minSlackRate(0.05)
+    minSlackRate(0.05),
+    maxPaths(10000000)
 {
     p->addScenario(this);
     if (pr)
@@ -31,6 +32,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
         optimize = pr->optimize;
         strictBookings = pr->strictBookings;
         minSlackRate = pr->minSlackRate;
+        maxPaths = pr->maxPaths;
     }
 }
 
