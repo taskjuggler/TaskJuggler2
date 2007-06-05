@@ -460,14 +460,13 @@ Project::getJournalIterator() const
 }
 
 bool
-Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
+Project::pass2(bool noDepCheck)
 {
-    int oldErrors = errors;
+    int oldErrors = TJMH.getErrors();
 
     if (taskList.isEmpty())
     {
         TJMH.errorMessage(i18n("The project does not contain any tasks."));
-        errors++;
         return false;
     }
 
@@ -493,7 +492,7 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
     }
     // Create cross links from dependency lists.
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
-        (*tli)->xRef(idHash, errors, warnings);
+        (*tli)->xRef(idHash);
 
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
     {
@@ -522,13 +521,15 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
 
     // Now check that all tasks have sufficient data to be scheduled.
     setProgressInfo(i18n("Checking scheduling data..."));
+    bool error = false;
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if (!(*tli)->preScheduleOk((*sci)->getSequenceNo() - 1))
             {
-                errors++;
-                fatalError = true;
+                error = true;
             }
+    if (error)
+        return false;
 
     if (!noDepCheck)
     {
@@ -539,11 +540,7 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
         LDIList chkedTaskList;
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->loopDetector(chkedTaskList))
-            {
-                errors++;
-                fatalError = true;
                 return false;
-            }
 
         setProgressInfo(i18n("Searching for underspecified tasks ..."));
         if (DEBUGPS(1))
@@ -551,28 +548,26 @@ Project::pass2(bool noDepCheck, bool& fatalError, int& errors, int& warnings)
         for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
             for (TaskListIterator tli(taskList); *tli != 0; ++tli)
                 if (!(*tli)->checkDetermination((*sci)->getSequenceNo() - 1))
-                {
-                    errors++;
-                    fatalError = true;
-                }
-        if (fatalError)
+                    error = true;
+
+        if (error)
             return false;
     }
 
-    return errors == oldErrors;
+    return TJMH.getErrors() == oldErrors;
 }
 
 bool
-Project::scheduleScenario(Scenario* sc, int& errors, int& warnings)
+Project::scheduleScenario(Scenario* sc)
 {
-    int oldErrors = errors;
+    int oldErrors = TJMH.getErrors();
 
     setProgressInfo(i18n("Scheduling scenario %1...").arg(sc->getId()));
 
     int scIdx = sc->getSequenceNo() - 1;
     prepareScenario(scIdx);
 
-    if (!schedule(scIdx, errors, warnings))
+    if (!schedule(scIdx))
     {
         if (DEBUGPS(2))
             tjDebug(i18n("Scheduling errors in scenario '%1'.")
@@ -585,13 +580,10 @@ Project::scheduleScenario(Scenario* sc, int& errors, int& warnings)
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
     {
         if (!(*rli)->bookingsOk(scIdx))
-        {
-            errors++;
             break;
-        }
     }
 
-    return errors == oldErrors;
+    return TJMH.getErrors() == oldErrors;
 }
 
 void
@@ -609,7 +601,7 @@ Project::completeBuffersAndIndices()
 }
 
 bool
-Project::scheduleAllScenarios(int& errors, int& warnings)
+Project::scheduleAllScenarios()
 {
     bool schedulingOk = true;
     for (ScenarioListIterator sci(scenarioList); *sci; ++sci)
@@ -619,7 +611,7 @@ Project::scheduleAllScenarios(int& errors, int& warnings)
                 tjDebug(i18n("Scheduling scenario '%1' ...")
                        .arg((*sci)->getId()));
 
-            if (!scheduleScenario(*sci, errors, warnings))
+            if (!scheduleScenario(*sci))
                 schedulingOk = false;
             if (breakFlag)
                 return false;
@@ -711,9 +703,9 @@ Project::finishScenario(int sc)
 }
 
 bool
-Project::schedule(int sc, int& errors, int& warnings)
+Project::schedule(int sc)
 {
-    int oldErrors = errors;
+    int oldErrors = TJMH.getErrors();
 
     // The scheduling function only cares about leaf tasks. Container tasks
     // are scheduled automatically when all their childern are scheduled. So
@@ -750,6 +742,7 @@ Project::schedule(int sc, int& errors, int& warnings)
      * number so the first round of cleanup is done right after the first
      * scheduling pass. */
     breakFlag = false;
+    bool runAwayFound = false;
     do
     {
         done = true;
@@ -786,10 +779,7 @@ Project::schedule(int sc, int& errors, int& warnings)
                     slot > (end - (time_t) scheduleGranularity + 1))
                 {
                     (*tli)->setRunaway();
-                    if (DEBUGPS(5))
-                        qDebug("Marking task '%s' as runaway",
-                               (*tli)->getId().latin1());
-                    errors++;
+                    runAwayFound = true;
                     slot = 0;
                     continue;
                 }
@@ -849,11 +839,10 @@ Project::schedule(int sc, int& errors, int& warnings)
         setProgressInfo("");
         setProgressBar(0, 0);
         TJMH.errorMessage(i18n("Scheduling aborted on user request"));
-        errors++;
         return false;
     }
 
-    if (errors != oldErrors)
+    if (runAwayFound)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->isRunaway())
                 if ((*tli)->getScheduling() == Task::ASAP)
@@ -868,16 +857,16 @@ Project::schedule(int sc, int& errors, int& warnings)
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
 
-    if (errors == oldErrors)
+    if (TJMH.getErrors() == oldErrors)
         setProgressBar(100, 100);
 
     /* Check that the resulting schedule meets all the requirements that the
      * user has specified. */
     setProgressInfo(i18n("Checking schedule of scenario %1")
                     .arg(getScenarioId(sc)));
-    checkSchedule(sc, errors, warnings);
+    checkSchedule(sc);
 
-    return errors == oldErrors;
+    return TJMH.getErrors() == oldErrors;
 }
 
 void
@@ -887,16 +876,16 @@ Project::breakScheduling()
 }
 
 bool
-Project::checkSchedule(int sc, int& errors, int& warnings) const
+Project::checkSchedule(int sc) const
 {
-    int oldErrors = errors;
+    int oldErrors = TJMH.getErrors();
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
     {
         /* Only check top-level tasks, since they recursively check their sub
          * tasks. */
         if ((*tli)->getParent() == 0)
-            (*tli)->scheduleOk(sc, errors, warnings);
-        if (maxErrors > 0 && errors >= maxErrors)
+            (*tli)->scheduleOk(sc);
+        if (maxErrors > 0 && TJMH.getErrors() >= maxErrors)
         {
             TJMH.errorMessage
                 (i18n("Too many errors in %1 scenario. Giving up.")
@@ -905,7 +894,7 @@ Project::checkSchedule(int sc, int& errors, int& warnings) const
         }
     }
 
-    return errors == oldErrors;
+    return TJMH.getErrors() == oldErrors;
 }
 
 Report*

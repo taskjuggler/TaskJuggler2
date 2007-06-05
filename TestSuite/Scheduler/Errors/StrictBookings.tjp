@@ -15,8 +15,8 @@ task prj "Project" {
   task t1 "T1" {
     effort 10d
     allocate tux1
-    minend 2005-12-26-18:00
-    maxend 2005-12-26-18:00
+    minend 2005-12-19-18:00
+    maxend 2005-12-19-18:00
   }
   task t2 "T2" {
     effort 20d
@@ -34,22 +34,10 @@ task prj "Project" {
 
 supplement resource tux1 {
   # Overbook prj.t1
-  booking 2005-11-20 2005-12-02 prj.t1 { sloppy 2 }
+  booking 2005-11-20 2005-12-20 prj.t1 { sloppy 2 }
 }
 
 supplement resource tux2 {
   booking 2005-11-20 2005-11-25 prj.t2 { sloppy 2 }
-}
-
-taskreport "Tasks" {
-  columns no, name, start, end, effort, completed, status, chart
-  hideresource 0
-}
-
-export "StrictBookings-Export.tjp" {
-	hidetask 0
-	hideresource 0
-	taskattributes all
-	notimestamp
 }
 

@@ -315,14 +315,14 @@ public:
 
     bool isContainer() const { return !sub->isEmpty(); }
 
-    bool xRef(QDict<Task>& hash, int& errors, int& warnings);
+    bool xRef(QDict<Task>& hash);
     void implicitXRef();
     void sortAllocations();
     void saveSpecifiedBookedResources();
     QString resolveId(QString relId);
 
     bool preScheduleOk(int sc);
-    bool scheduleOk(int sc, int& errors, int& warnings) const;
+    bool scheduleOk(int sc) const;
     /**
      * Checks for loops in task interdependencies starting with the current
      * task.

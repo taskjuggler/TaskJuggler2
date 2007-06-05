@@ -44,7 +44,8 @@ copyright()
     tjWarning
         (i18n(
               "\nCopyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007\n"
-              "by Chris Schlaeger <cs@kde.org> and Klaas Freitag <freitag@suse.de>\n\n"
+              "by Chris Schlaeger <cs@kde.org> and Klaas Freitag "
+              "<freitag@suse.de>\n\n"
               "This program is free software; you can redistribute it and/or\n"
               "modify it under the terms of version 2 of the GNU General\n"
               "Public License as published by the Free Software Foundation.\n\n"
@@ -70,14 +71,18 @@ usage(QApplication& a)
               "   -s                   - stop after syntax check\n"
               "   -M                   - output include dependencies for\n"
               "                          make utilities\n"
-              "   --makefile <file>    - generate include dependencies for make\n"
+              "   --makefile <file>    - generate include dependencies for "
+              "make\n"
               "                          utilities into the specified file\n"
-              "   --maxerrors N        - stop after N errors. If N is 0 show all\n"
+              "   --maxerrors N        - stop after N errors. If N is 0 show "
+              "all\n"
               "                          errors\n"
               "   --warnerrors         - warnings are treated as errors\n"
               "   --nodepcheck         - don't search for dependency loops\n"
-              "   --debug N            - print debug output, N must be between\n"
-              "                          0 and 40, the higher N the more output\n"
+              "   --debug N            - print debug output, N must be "
+              "between\n"
+              "                          0 and 40, the higher N the more "
+              "output\n"
               "                          is printed\n"
               "   --dbmode N           - activate debug mode only for certain\n"
               "                          parts of the code\n"));
@@ -224,25 +229,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    bool schedulingErrors = false;
-    int errors = 0;
-    int warnings = 0;
-    bool logicalErrors = !p.pass2(noDepCheck, schedulingErrors, errors,
-                                  warnings);
-    if (warningAsErrors && warnings > 0)
-        logicalErrors = true;
-
-    int oldWarnings = warnings;
-    if (!schedulingErrors && !(checkOnlySyntax || generateMakeDepList))
+    !p.pass2(noDepCheck);
+    if (!(TJMH.getErrors() > 0 ||
+          (warningAsErrors && TJMH.getWarnings() > 0)) &&
+        !(checkOnlySyntax || generateMakeDepList))
     {
-        schedulingErrors = !p.scheduleAllScenarios(errors, warnings);
-        if (warningAsErrors && warnings != oldWarnings)
-            schedulingErrors = true;
-
-        if (!p.generateReports())
-            schedulingErrors = true;
+        p.scheduleAllScenarios();
+        p.generateReports();
     }
 
-    return (parseErrors || logicalErrors || schedulingErrors ?
+    return (TJMH.getErrors() > 0 ||
+            (warningAsErrors && TJMH.getWarnings() > 0) ?
             EXIT_FAILURE : EXIT_SUCCESS);
 }

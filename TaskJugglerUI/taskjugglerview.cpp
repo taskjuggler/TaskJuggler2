@@ -712,21 +712,20 @@ TaskJugglerView::loadProject(const KURL& url)
 
     emit announceRecentURL(url);
 
-    int errors = 0;
-    int warnings = 0;
     mw->messageListView->clear();
     messageCounter = 0;
-    if (!pf->parse())
-        errors++;
+    // Reset error and warning counters
+    TJMH.resetCounters();
+
+    pf->parse();
     delete pf;
     changeStatusBar(i18n("Checking project..."));
-    bool fatalError = false;
-    if (errors == 0)
-        project->pass2(false, fatalError, errors, warnings);
+    if (TJMH.getErrors() == 0)
+        project->pass2(false);
 
     changeStatusBar(i18n("Scheduling..."));
-    if (errors == 0)
-        project->scheduleAllScenarios(errors, warnings);
+    if (TJMH.getErrors() == 0)
+        project->scheduleAllScenarios();
 
     // Load tasks into Task List View
     updateTaskList();
@@ -748,7 +747,7 @@ TaskJugglerView::loadProject(const KURL& url)
     setLoadingProject(false);
 
     // Show message list when errors have occured
-    if (errors > 0 || warnings > 0)
+    if (TJMH.getErrors() > 0 || TJMH.getWarnings() > 0)
         showErrorMessages();
     else
     {

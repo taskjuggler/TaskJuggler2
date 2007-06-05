@@ -1232,11 +1232,11 @@ Task::getCredits(int sc, const Interval& period, AccountType acctType,
 }
 
 bool
-Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
+Task::xRef(QDict<Task>& hash)
 {
     if (DEBUGPF(5))
         qDebug("Creating cross references for task %s ...", id.latin1());
-    int oldErrors = errors;
+    int errors = 0;
 
     QPtrList<TaskDependency> brokenDeps;
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
@@ -1256,32 +1256,28 @@ Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
                 {
                     warningMessage(i18n("No need to specify dependency %1 "
                                       "multiple times.").arg(absId));
-                    warnings++;
                     break;
                 }
 
-            if (errors == oldErrors)
+            if (errors == 0)
             {
                 (*tdi)->setTaskRef(t);
                 if (t == this)
                 {
                     errorMessage(i18n("Task '%1' cannot depend on self.")
                                  .arg(id));
-                    errors++;
                     break;
                 }
                 if (t->isChildOf(this))
                 {
                     errorMessage(i18n("Task '%1' cannot depend on child.")
                                  .arg(id));
-                    errors++;
                     break;
                 }
                 if (isChildOf(t))
                 {
                     errorMessage(i18n("Task '%1' cannot depend on parent.")
                                  .arg(t->id));
-                    errors++;
                     break;
                 }
                 // Unidirectional link
@@ -1308,7 +1304,6 @@ Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
         {
             errorMessage(i18n("Unknown dependency '%1'").arg(absId));
             brokenDeps.append(*tdi);
-            errors++;
         }
         else
         {
@@ -1317,31 +1312,27 @@ Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
                 {
                     warningMessage(i18n("No need to specify dependency '%1'"
                                         "multiple times").arg(absId));
-                    errors++;
                     break;
                 }
-            if (errors == oldErrors)
+            if (errors == 0)
             {
                 (*tdi)->setTaskRef(t);
                 if (t == this)
                 {
                     errorMessage(i18n("Task '%1' cannot precede self.")
                                  .arg(id));
-                    errors++;
                     break;
                 }
                 if (t->isChildOf(this))
                 {
                     errorMessage(i18n("Task '%1' cannot precede a child.")
                                  .arg(id));
-                    errors++;
                     break;
                 }
                 if (isChildOf(t))
                 {
                     errorMessage(i18n("Task '%1' cannot precede parent.")
                                  .arg(t->id));
-                    errors++;
                     break;
                 }
                 // Unidirectional link
@@ -1360,7 +1351,7 @@ Task::xRef(QDict<Task>& hash, int& errors, int& warnings)
         precedes.removeRef(*tdi);
     brokenDeps.clear();
 
-    return errors == oldErrors;
+    return errors > 0;
 }
 
 void
@@ -2299,16 +2290,16 @@ Task::preScheduleOk(int sc)
 }
 
 bool
-Task::scheduleOk(int sc, int& errors, int& warnings) const
+Task::scheduleOk(int sc) const
 {
     const QString scenario = project->getScenarioId(sc);
 
     /* It is of little use to report errors of container tasks, if any of
      * their sub tasks has errors. */
-    int currErrors = errors;
+    int oldErrors = TJMH.getErrors();
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
-        (*tli)->scheduleOk(sc, errors, warnings);
-    if (errors > currErrors)
+        (*tli)->scheduleOk(sc);
+    if (oldErrors != TJMH.getErrors())
     {
         if (DEBUGPS(2))
             tjDebug(QString("Scheduling errors in sub tasks of '%1'.")
@@ -2338,7 +2329,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
         errorMessage(i18n("Task '%1' has no start time for the '%2'"
                           "scenario.")
                      .arg(id).arg(scenario));
-        errors++;
         return false;
     }
     if (start < project->getStart() || start > project->getEnd())
@@ -2350,7 +2340,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                      .arg(time2tjp(project->getStart()))
                      .arg(time2tjp(project->getEnd()))
                      .arg(scenario));
-        errors++;
         return false;
     }
     if (scenarios[sc].minStart != 0 && start < scenarios[sc].minStart)
@@ -2360,7 +2349,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                             "Limit is: %4")
                        .arg(scenario).arg(id).arg(time2tjp(start))
                        .arg(time2tjp(scenarios[sc].minStart)));
-        warnings++;
         return false;
     }
     if (scenarios[sc].maxStart != 0 && start > scenarios[sc].maxStart)
@@ -2371,14 +2359,12 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(scenario).arg(id)
                        .arg(time2tjp(start))
                        .arg(time2tjp(scenarios[sc].maxStart)));
-        warnings++;
         return false;
     }
     if (end == 0)
     {
         errorMessage(i18n("Task '%1' has no '%2' end time.")
                      .arg(id).arg(scenario.lower()));
-        errors++;
         return false;
     }
     if ((end + 1) < project->getStart() || (end > project->getEnd()))
@@ -2390,7 +2376,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                      .arg(time2tjp(project->getStart()))
                      .arg(time2tjp(project->getEnd() + 1))
                      .arg(scenario));
-        errors++;
         return false;
     }
     if (scenarios[sc].minEnd != 0 && end < scenarios[sc].minEnd)
@@ -2401,7 +2386,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(scenario).arg(id)
                        .arg(time2tjp(end + 1))
                        .arg(time2tjp(scenarios[sc].minEnd + 1)));
-        warnings++;
         return false;
     }
     if (scenarios[sc].maxEnd != 0 && end > scenarios[sc].maxEnd)
@@ -2412,7 +2396,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                        .arg(scenario).arg(id)
                        .arg(time2tjp(end + 1))
                        .arg(time2tjp(scenarios[sc].maxEnd + 1)));
-        warnings++;
         return false;
     }
     if (!sub->isEmpty())
@@ -2433,7 +2416,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                                  .arg(time2ISO(start).latin1())
                                  .arg((*tli)->getId().latin1())
                                  .arg(time2ISO((*tli)->start).latin1()));
-                    errors++;
                 }
                 return false;
             }
@@ -2444,7 +2426,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                     errorMessage(i18n("Task '%1' has later '%2' end than "
                                       "parent")
                                  .arg(id).arg(scenario));
-                    errors++;
                 }
                 return false;
             }
@@ -2460,7 +2441,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                               "task '%3' which has a '%4' start time of %5")
                          .arg((*tli)->id).arg(time2tjp((*tli)->end).latin1())
                          .arg(id).arg(scenario).arg(time2tjp(start)));
-            errors++;
             return false;
         }
     // Check if all following task start after this tasks end.
@@ -2472,7 +2452,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                               "task %3 which has a '%4' end time of %5")
                          .arg((*tli)->id).arg(time2tjp((*tli)->start))
                          .arg(id).arg(scenario).arg(time2tjp(end + 1)));
-            errors++;
             return false;
         }
 
@@ -2482,7 +2461,6 @@ Task::scheduleOk(int sc, int& errors, int& warnings) const
                           "It is scheduled to last from %2 to %3.\n"
                           "This might be a bug in the TaskJuggler scheduler.")
                      .arg(id).arg(time2tjp(start)).arg(time2tjp(end + 1)));
-        errors++;
         return false;
     }
 
@@ -3063,7 +3041,7 @@ Task::analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
                 if (DEBUGPA(11))
                     qDebug("Path ending at %s is not critical", id.latin1());
             }
-            if (maxPaths > 0 && ++checks == maxPaths)
+            if (++checks == maxPaths)
             {
                 warningMessage(i18n("Maximum number of paths reached during "
                                     "critical path analysis. Set 'maxPaths' "
