@@ -1,4 +1,4 @@
-project test "Persistent Bookings Test" "1.0" 2005-11-18-00:00-GMT 2006-05-17-00:00-GMT {
+project test "Persistent Bookings Test" "1.0" 2005-11-18-00:00-GMT - 2006-05-17-00:00-GMT {
 	timezone "GMT"
 }
 
@@ -40,11 +40,11 @@ task t2 "Task 2" {
 }
 
 supplement resource r4 {
-  booking 2005-11-18 2005-11-22 t1 { sloppy 2 }
+  booking 2005-11-18 - 2005-11-22 t1 { sloppy 2 }
 }
 
 supplement resource r11 {
-  booking 2005-11-18 2005-11-23 t2 { sloppy 2 }
+  booking 2005-11-18 - 2005-11-23 t2 { sloppy 2 }
 }
 
 taskreport "Tasks" {

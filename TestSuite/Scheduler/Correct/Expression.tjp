@@ -1,4 +1,4 @@
-project test "Test Project" "$Id" 2000-01-01 2000-01-06 {
+project test "Test Project" "$Id" 2000-01-01 - 2000-01-06 {
 	now 2000-01-04-12:00
 }
 

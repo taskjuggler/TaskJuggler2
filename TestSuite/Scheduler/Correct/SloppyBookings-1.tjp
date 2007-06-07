@@ -1,4 +1,4 @@
-project test "Sloppy Bookings" "1.0" 2003-08-07-0:00-GMT 2003-10-01-0:00-GMT {
+project test "Sloppy Bookings" "1.0" 2003-08-07-0:00-GMT - 2003-10-01-0:00-GMT {
   timezone "GMT"
   now 2003-09-01
   scenario plan "Plan" {
@@ -17,7 +17,7 @@ task t1 "Task 1" {
 }
 
 supplement resource r1 {
-	booking 2003-08-07 2003-08-17 t1 { sloppy 2 }
+	booking 2003-08-07 - 2003-08-17 t1 { sloppy 2 }
 }
 
 export "SloppyBookings-1-Export.tjp" {

@@ -1,4 +1,4 @@
-project limits1 "Limits1" "$Id" 2004-03-01-0:00-GMT 2004-05-01-0:00-GMT
+project limits1 "Limits1" "$Id" 2004-03-01-0:00-GMT - 2004-05-01-0:00-GMT
 {
 	timezone "GMT"
 	now 2004-03-01

@@ -3,7 +3,7 @@
  * software. It illustrates the versatility of the tool by creating a
  * load balanced shift schedule for a team of system administrators.
  */
-project shifts "Duty Schedule SysAdmin Team" "$Id$" 2002-06-01 2002-08-01 {
+project shifts "Duty Schedule SysAdmin Team" "$Id$" 2002-06-01 - 2002-08-01 {
 	dailyworkinghours 8
 	yearlyworkingdays 256
 }	

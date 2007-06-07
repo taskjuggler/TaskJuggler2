@@ -1,4 +1,4 @@
-project ca "Custom Attributes" "1.0" 2003-05-28 2003-06-28 {
+project ca "Custom Attributes" "1.0" 2003-05-28 - 2003-06-28 {
   extend task {
     reference MyLink "My Link"
     text MyText "My Text" { inherit }

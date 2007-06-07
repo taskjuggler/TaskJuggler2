@@ -1,4 +1,4 @@
-project utf8 "UTF-8 Test Project" "1.0" 2005-08-05 2005-09-01
+project utf8 "UTF-8 Test Project" "1.0" 2005-08-05 - 2005-09-01
 
 resource r1 "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß"
 resource r2 "ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğ"

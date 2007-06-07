@@ -1,4 +1,4 @@
-project test "test" "1.0" 2003-01-01 2003-01-31
+project test "test" "1.0" 2003-01-01 - 2003-01-31
 
 task m "Milestone" {
 	milestone

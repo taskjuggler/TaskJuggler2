@@ -1,4 +1,4 @@
-project prj "Milestone Test" "$Id" 2003-01-01-0:00-GMT 2003-02-01-0:00-GMT {
+project prj "Milestone Test" "$Id" 2003-01-01-0:00-GMT - 2003-02-01-0:00-GMT {
 	timezone "GMT"
 	timingresolution 5min
 }

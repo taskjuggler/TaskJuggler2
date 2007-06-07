@@ -1,4 +1,4 @@
-project test "Test" "$Id" 2002-01-01-0:00-CET 2002-11-31-0:00-CET {
+project test "Test" "$Id" 2002-01-01-0:00-CET - 2002-11-31-0:00-CET {
 	timezone "Europe/Berlin"
   workinghours mon - fri 8:00 - 12:00, 13:00-17:00
   workinghours sat - sun off

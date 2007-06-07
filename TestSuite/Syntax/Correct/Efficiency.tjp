@@ -1,4 +1,4 @@
-project prj "Resource Efficiency Example" "1.0" 2005-07-21 2005-07-22
+project prj "Resource Efficiency Example" "1.0" 2005-07-21 - 2005-07-22
 
 # A team of 5 people. They can only be assigned en block. Either all
 # or nobody works.

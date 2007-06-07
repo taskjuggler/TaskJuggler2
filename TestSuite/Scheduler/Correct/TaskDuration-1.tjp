@@ -1,4 +1,4 @@
-project test "Task Duration" "1.0" 2003-06-20-0:00-GMT 2003-07-30-0:00-GMT {
+project test "Task Duration" "1.0" 2003-06-20-0:00-GMT - 2003-07-30-0:00-GMT {
 	timezone "GMT"
 }
 

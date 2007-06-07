@@ -1,4 +1,4 @@
-project prj "htmltaskreport test" "1.0" 2003-07-01-0:00-GMT 2003-09-01-00:00-GMT {
+project prj "htmltaskreport test" "1.0" 2003-07-01-0:00-GMT - 2003-09-01-00:00-GMT {
  	timezone "GMT"
   timeformat "%Y-%m-%d %H:%M:%S %Z"	
 	now 2003-07-20

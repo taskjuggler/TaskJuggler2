@@ -1088,7 +1088,7 @@ ProjectFile::warningMessage(const QString& msg)
         TJMH.warningMessage
             (i18n("Unexpected end of file found. Probably a missing '}'."));
     else
-        openFiles.last()->errorMessage(msg);
+        openFiles.last()->warningMessage(msg);
 }
 
 bool
@@ -2932,7 +2932,13 @@ ProjectFile::readInterval(Interval& iv, bool check)
     else
     {
         // Ignore the MINUS token, it's redundant.
-        if (tt == MINUS)
+        if (tt == DATE)
+        {
+            warningMessage(i18n("For consistency reasons all date to date "
+                                "intervals should have a '-' to separate "
+                                "the dates."));
+        }
+        else if (tt == MINUS)
             tt = nextToken(token);
 
         if (tt != DATE)

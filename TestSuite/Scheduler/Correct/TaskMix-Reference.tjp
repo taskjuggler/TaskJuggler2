@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project simple "Simple Project" "$Id" 2003-01-01-00:00:00-+0000 2003-01-31-00:00:00-+0000 {
+project simple "Simple Project" "$Id" 2003-01-01-00:00:00-+0000 - 2003-01-31-00:00:00-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714

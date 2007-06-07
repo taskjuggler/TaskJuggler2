@@ -1,7 +1,7 @@
 /*
  * For details about TaskJuggler see http://www.taskjuggler.org
  */
-project dg "Dependency Gaps" "$Id" 2004-12-19-00:00:00-+0000 2005-02-01-00:00:00-+0000 {
+project dg "Dependency Gaps" "$Id" 2004-12-19-00:00:00-+0000 - 2005-02-01-00:00:00-+0000 {
   timezone "GMT"
   dailyworkinghours 8
   yearlyworkingdays 260.714

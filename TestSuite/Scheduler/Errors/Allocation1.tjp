@@ -1,4 +1,4 @@
-project alloc "Allocation" "1.0" 2003-07-02 2003-08-01
+project alloc "Allocation" "1.0" 2003-07-02 - 2003-08-01
 
 task dummy1 "Dummy" {
 	start 2003-07-02

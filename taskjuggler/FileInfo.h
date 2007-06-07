@@ -40,6 +40,7 @@ public:
     virtual Macro* getMacro(const QString& name) const;
 
     virtual void errorMessage(const QString& msg);
+    virtual void warningMessage(const QString& msg);
 
 private:
     /**

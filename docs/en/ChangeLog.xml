@@ -1104,6 +1104,12 @@ calculated.</para></listitem>
 <para>
 <itemizedlist mark='opencircle'>
 
+<listitem><para>For consistency and readability the notation of
+intervals without a dash between start and end date is slowly being
+deprecated. It was silently accepted in the project header and booking
+statements. This is not flagged with a warning. The project will still
+schedule fine.</para></listitem>
+
 <listitem><para>The critical path detector has been rewritten to
 reduce the complexity explosion that is triggered by lots of inherited
 dependencies in combination with long dependency chains. The number of

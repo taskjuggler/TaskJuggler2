@@ -1,4 +1,4 @@
-project simple "Simple Project" "$Id" 2000-01-01-12:00 2000-01-04-18:00
+project simple "Simple Project" "$Id" 2000-01-01-12:00 - 2000-01-04-18:00
 
 resource tux "Tux"
 

@@ -1,4 +1,4 @@
-project passive "Passive Resource" "1.0" 2004-11-21-0:00-GMT 2004-12-31-0:00-GMT {
+project passive "Passive Resource" "1.0" 2004-11-21-0:00-GMT - 2004-12-31-0:00-GMT {
 	timezone "GMT"
 	now 2004-12-01
 }

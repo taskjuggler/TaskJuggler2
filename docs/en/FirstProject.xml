@@ -16,7 +16,7 @@ linkend="reference"/>.</para>
 <link linkend="PROPERTY_project">project</link> property.</para>
 
 <para><screen>
-project acso "Accounting Software" "1.0" 2002-01-16 2002-04-26 {
+project acso "Accounting Software" "1.0" 2002-01-16 - 2002-04-26 {
   now 2002-03-04
   timeformat "%Y-%m-%d"
   currency "EUR"

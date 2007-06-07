@@ -1,4 +1,4 @@
-project duration "Duration Example" "1.0" 2005-06-06 2005-06-26
+project duration "Duration Example" "1.0" 2005-06-06 - 2005-06-26
 
 resource tux "Tux"
 

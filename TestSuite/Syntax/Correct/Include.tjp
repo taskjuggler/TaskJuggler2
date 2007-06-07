@@ -1,4 +1,4 @@
-project simple "Simple Project" "$Id" 2000-01-01 2000-01-04
+project simple "Simple Project" "$Id" 2000-01-01 - 2000-01-04
 
 include "Include1.tjsp"
 include "../../Syntax/Correct/Include2.tjsp"

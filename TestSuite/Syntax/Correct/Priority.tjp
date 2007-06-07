@@ -1,4 +1,4 @@
-project prj "Priority Demo" "1.0" 2005-07-15 2005-10-01
+project prj "Priority Demo" "1.0" 2005-07-15 - 2005-10-01
 
 resource tux "Tux"
 

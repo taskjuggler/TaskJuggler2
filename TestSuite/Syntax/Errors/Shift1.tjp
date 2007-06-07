@@ -1,4 +1,4 @@
-project test "Test" "$Id" 2000-01-01 2000-01-31
+project test "Test" "$Id" 2000-01-01 - 2000-01-31
 
 shift s1 "Shift1" {
   workinghours wed off

@@ -1,4 +1,4 @@
-project relPlan "Release Plan" "1.0" 2003-08-22 2003-12-31 {
+project relPlan "Release Plan" "1.0" 2003-08-22 - 2003-12-31 {
 }
 
 flags hidden

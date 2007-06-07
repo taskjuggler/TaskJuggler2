@@ -1,4 +1,4 @@
-project prj "Example" "1.0" 2000-01-01 2000-03-31
+project prj "Example" "1.0" 2000-01-01 - 2000-03-31
 
 shift s1 "Shift1" {
   # Special working hours Monday to Wednesday. Use program defaults

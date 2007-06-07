@@ -1,4 +1,4 @@
-project test "Complete Test Case" "1.0" 2005-10-19 2006-05-18 {
+project test "Complete Test Case" "1.0" 2005-10-19 - 2006-05-18 {
   now 2005-11-19
 }
 

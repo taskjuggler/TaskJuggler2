@@ -1,4 +1,4 @@
-project redefs "Redefinition Test" "1.0" 2003-07-30 2003-08-30 {
+project redefs "Redefinition Test" "1.0" 2003-07-30 - 2003-08-30 {
   allowredefinitions
 }
 

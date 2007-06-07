@@ -1,4 +1,4 @@
-project journal "Project" "$Id" 2000-01-01 2000-01-04 {
+project journal "Project" "$Id" 2000-01-01 - 2000-01-04 {
   journalentry 2000-01-02 "The project started."
   journalentry 2000-01-03 "We made some progress."
 }

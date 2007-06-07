@@ -1,4 +1,4 @@
-project ca "Custom Attributes" "$Id$" 2003-05-28 2003-06-28 {
+project ca "Custom Attributes" "$Id$" 2003-05-28 - 2003-06-28 {
 	extend task {
 		reference MyTLink "My TLink"
 		text MyTText "My TText"

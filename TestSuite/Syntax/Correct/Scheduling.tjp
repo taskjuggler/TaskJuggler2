@@ -1,4 +1,4 @@
-project prj "Scheduling Example" "1.0" 2005-07-23 2005-09-01
+project prj "Scheduling Example" "1.0" 2005-07-23 - 2005-09-01
 
 task items "Project breakdown" {
   task t1 "Task 1" {

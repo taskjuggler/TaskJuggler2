@@ -1,4 +1,4 @@
-project yourId "Your Project" "1.0" 2005-04-05 2005-05-01
+project yourId "Your Project" "1.0" 2005-04-05 - 2005-05-01
 
 task main "Main task" {
 }

@@ -1,4 +1,4 @@
-project prj  "Project" "1.0" 2005-01-01 2005-03-01
+project prj  "Project" "1.0" 2005-01-01 - 2005-03-01
 
 resource r "Resource"
 

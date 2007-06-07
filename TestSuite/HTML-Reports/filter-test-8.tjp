@@ -1,4 +1,4 @@
-project id "Filtertest" "$Id$" 2003-01-01 2003-02-01 {
+project id "Filtertest" "$Id$" 2003-01-01 - 2003-02-01 {
 }
 
 resource r1 "Resource 1"

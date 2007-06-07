@@ -1,4 +1,4 @@
-project optimize "Simple Project" "$Id" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+project optimize "Simple Project" "$Id" 2000-01-01-0:00-GMT - 2000-01-31-0:00-GMT {
 	timezone "GMT"
 }
 

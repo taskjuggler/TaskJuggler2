@@ -187,8 +187,6 @@ int main(int argc, char *argv[])
     DebugCtrl.setDebugLevel(debugLevel);
     DebugCtrl.setDebugMode(debugMode);
 
-    bool parseErrors = false;
-
     char cwd[1024];
     if (getcwd(cwd, 1023) == 0)
         qFatal("main(): getcwd() failed");
@@ -203,7 +201,7 @@ int main(int argc, char *argv[])
             XMLFile xf(&p);
             if (!xf.readDOM(fileName, QFile::decodeName(cwd) + "/", "", true))
                 exit(EXIT_FAILURE);
-            parseErrors |= !xf.parse();
+            xf.parse();
         }
         else
         {
@@ -216,12 +214,11 @@ int main(int argc, char *argv[])
                               "for included files and '.tjx' for TaskJuggler "
                               "XML files.")
                          .arg(fileName));
-                // parseErrors = true;
             }
             ProjectFile pf(&p);
             if (!pf.open(a.argv()[i], QFile::decodeName(cwd) + "/", "", true))
                 exit(EXIT_FAILURE);
-            parseErrors |= !pf.parse();
+            pf.parse();
             if (generateMakeDepList)
                 pf.generateMakeDepList(makeDepFile, !first);
             if (first)
@@ -229,7 +226,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    !p.pass2(noDepCheck);
+    p.pass2(noDepCheck);
     if (!(TJMH.getErrors() > 0 ||
           (warningAsErrors && TJMH.getWarnings() > 0)) &&
         !(checkOnlySyntax || generateMakeDepList))

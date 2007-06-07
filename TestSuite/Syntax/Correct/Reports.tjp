@@ -1,4 +1,4 @@
-project test "Test Project" "$Id" 2000-01-01 2000-03-01
+project test "Test Project" "$Id" 2000-01-01 - 2000-03-01
 
 flags flag1, flag2, flag3, flag4
 

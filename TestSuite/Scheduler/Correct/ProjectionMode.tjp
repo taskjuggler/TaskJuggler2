@@ -1,4 +1,4 @@
-project prj "Sloppy Bookings Test" "1.0" 2005-11-20-00:00:00-GMT 2006-05-19-00:00:00-GMT {
+project prj "Sloppy Bookings Test" "1.0" 2005-11-20-00:00:00-GMT - 2006-05-19-00:00:00-GMT {
   now 2005-12-24
   timezone "GMT"
   scenario plan "Plan" {
@@ -34,11 +34,11 @@ task prj "Project" {
 
 supplement resource tux1 {
   # Overbook prj.t1
-  booking 2005-11-20 2005-12-20 prj.t1 { sloppy 2 }
+  booking 2005-11-20 - 2005-12-20 prj.t1 { sloppy 2 }
 }
 
 supplement resource tux2 {
-  booking 2005-11-20 2005-11-25 prj.t2 { sloppy 2 }
+  booking 2005-11-20 - 2005-11-25 prj.t2 { sloppy 2 }
 }
 
 taskreport "Tasks" {

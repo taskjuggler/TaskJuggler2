@@ -1,4 +1,4 @@
-project project1 "First sub project" "1.0" 2002-01-16 2002-06-30
+project project1 "First sub project" "1.0" 2002-01-16 - 2002-06-30
 
 include "../Common/Resources.tji"
 

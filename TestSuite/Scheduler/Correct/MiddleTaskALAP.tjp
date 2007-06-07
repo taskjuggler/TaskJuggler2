@@ -1,4 +1,4 @@
-project prj "Middle Task ASAP Test" "1.0" 2005-05-01-00:00-GMT 2007-07-01-00:00-GMT {
+project prj "Middle Task ASAP Test" "1.0" 2005-05-01-00:00-GMT - 2007-07-01-00:00-GMT {
 	timezone "GMT"
 }
 

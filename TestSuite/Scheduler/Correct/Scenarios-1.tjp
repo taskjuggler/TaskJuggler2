@@ -1,4 +1,4 @@
-project sc "Multiple Scenarios" "1.0" 2000-01-01-0:00-GMT 2000-01-31-0:00-GMT {
+project sc "Multiple Scenarios" "1.0" 2000-01-01-0:00-GMT - 2000-01-31-0:00-GMT {
 	timezone "GMT"
 	scenario plan "Plan" {
 	}

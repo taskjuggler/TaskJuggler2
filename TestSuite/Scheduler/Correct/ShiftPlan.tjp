@@ -1,4 +1,4 @@
-project simple "Simple Project" "$Id" 2002-06-01-0:00-GMT 2002-07-31-0:00-GMT {
+project simple "Simple Project" "$Id" 2002-06-01-0:00-GMT - 2002-07-31-0:00-GMT {
 	timingresolution 30min
 	timezone "GMT"
 }

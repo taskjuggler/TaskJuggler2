@@ -1,4 +1,4 @@
-project project2 "Second sub project" "1.0" 2002-01-16 2002-06-30
+project project2 "Second sub project" "1.0" 2002-01-16 - 2002-06-30
 
 include "../Common/Resources.tji"
 /* This project depends on tasks from project1. So we include a file

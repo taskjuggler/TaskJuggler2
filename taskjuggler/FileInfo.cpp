@@ -481,6 +481,40 @@ FileInfo::errorMessage(const QString& msg)
     }
 }
 
+void
+FileInfo::warningMessage(const QString& msg)
+{
+    if (m_macroStack.isEmpty())
+    {
+        if (m_tokenTypeBuf == INVALID)
+            TJMH.warningMessage(QString("%1\n%2").arg(msg)
+                                .arg(cleanupLine(m_lineBuf)),
+                                m_file, m_currLine);
+        else
+            TJMH.warningMessage(QString("%1\n%2").arg(msg)
+                                .arg(cleanupLine(oldLineBuf)),
+                                m_file, oldLine);
+    }
+    else
+    {
+        QString stackDump;
+        int i = 0;
+        QString file;
+        int line = 0;
+        for (QPtrListIterator<Macro> mli(m_macroStack); *mli; ++mli, ++i)
+        {
+            stackDump += "\n  ${" + (*mli)->getName() + " ... }";
+
+            file = (*mli)->getFile();
+            line = (*mli)->getLine();
+        }
+        TJMH.warningMessage(i18n("Warning in expanded macro\n%1\n%2"
+                                 "\nThis is the macro call stack:%3").
+                            arg(msg).arg(cleanupLine(m_lineBuf)).arg(stackDump),
+                            file, line);
+    }
+}
+
 void FileInfo::setLocation(const QString& df, int dl)
 {
     pf->getMacros().setLocation(df, dl);

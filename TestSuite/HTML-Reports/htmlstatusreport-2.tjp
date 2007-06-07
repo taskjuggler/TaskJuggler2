@@ -1,7 +1,7 @@
 macro prjStart [ 2003-01-01-0:00-GMT ]
 macro prjEnd [2003-04-01-0:00-GMT ]
 macro Now [2003-02-01]
-project prj "htmltaskreport test" "$Id$" ${prjStart}  ${prjEnd} {
+project prj "htmltaskreport test" "$Id$" ${prjStart} - ${prjEnd} {
 	timezone "GMT"
   timeformat "%Y-%m-%d %H:%M:%S %Z"	
 	now 2003-02-01

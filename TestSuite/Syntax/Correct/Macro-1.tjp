@@ -1,7 +1,7 @@
 macro prjstart [ 2000-01-01 ]
 macro prjend [ 2000-01-04 ]
 
-project macro "Macro Test" "$Id$" ${prjstart} ${prjend}
+project macro "Macro Test" "$Id$" ${prjstart} - ${prjend}
 
 macro resourcedef [
   resource ${1} "${2}"
