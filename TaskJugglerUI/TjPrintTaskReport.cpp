@@ -15,16 +15,11 @@
 #include <assert.h>
 
 #include <qpaintdevice.h>
-#include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
-#include "ResourceList.h"
-#include "ReportElement.h"
 #include "QtTaskReport.h"
-#include "QtTaskReportElement.h"
 
 void
 TjPrintTaskReport::initialize()

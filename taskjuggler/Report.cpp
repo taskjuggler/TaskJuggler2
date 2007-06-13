@@ -15,7 +15,6 @@
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
 #include "Account.h"
 #include "ExpressionTree.h"

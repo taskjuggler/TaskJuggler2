@@ -13,7 +13,6 @@
 #include "HTMLReport.h"
 
 #include "Project.h"
-#include "Utility.h"
 
 HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :

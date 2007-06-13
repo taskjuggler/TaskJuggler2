@@ -14,15 +14,12 @@
 
 #include <zlib.h>
 
-#include <qfile.h>
 #include <qmap.h>
 
 #include "tjlib-internal.h"
 #include "Project.h"
 #include "Scenario.h"
-#include "ShiftSelection.h"
 #include "Account.h"
-#include "Task.h"
 #include "Resource.h"
 #include "BookingList.h"
 #include "Allocation.h"

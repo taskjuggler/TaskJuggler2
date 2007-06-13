@@ -15,7 +15,6 @@
 #define _ParserTreeContext_h_
 
 #include "Scenario.h"
-#include "Shift.h"
 #include "Resource.h"
 #include "Account.h"
 

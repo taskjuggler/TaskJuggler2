@@ -21,7 +21,6 @@
 #include "Scenario.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Task.h"
 
 TjSummaryReport::TjSummaryReport(QWidget* p, ReportManager* m,
                                  const Project* pr,

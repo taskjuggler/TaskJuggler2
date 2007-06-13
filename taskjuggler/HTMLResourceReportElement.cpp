@@ -11,15 +11,11 @@
  */
 
 #include "HTMLResourceReportElement.h"
-#include "TableColumnInfo.h"
 #include "TableLineInfo.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
-#include "Report.h"
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
-#include "CoreAttributes.h"
 
 HTMLResourceReportElement::HTMLResourceReportElement(Report* r,
                                                      const QString& df,

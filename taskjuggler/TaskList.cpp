@@ -10,7 +10,6 @@
  * $Id$
  */
 #include "TaskList.h"
-#include "Task.h"
 #include "Resource.h"
 
 Task*

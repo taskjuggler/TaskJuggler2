@@ -13,7 +13,6 @@
 
 #include "XMLFile.h"
 
-#include <stdio.h>
 #include <unistd.h>
 #include <zlib.h>
 
@@ -23,9 +22,7 @@
 #include "ParserNode.h"
 #include "ParserTreeContext.h"
 #include "Project.h"
-#include "Utility.h"
 #include "Allocation.h"
-#include "VacationInterval.h"
 #include "Booking.h"
 #include "CustomAttributeDefinition.h"
 #include "ReferenceAttribute.h"

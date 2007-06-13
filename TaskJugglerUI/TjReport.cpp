@@ -16,13 +16,11 @@
 
 #include <qsplitter.h>
 #include <qlayout.h>
-#include <qfont.h>
 #include <qheader.h>
 #include <qcanvas.h>
 #include <qdatetime.h>
 #include <qtimer.h>
 #include <qpopupmenu.h>
-#include <qdict.h>
 #include <qpaintdevicemetrics.h>
 
 #include <klistview.h>
@@ -35,13 +33,11 @@
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
 #include <krun.h>
-#include <kprinter.h>
 #include <kmessagebox.h>
 
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
-#include "Journal.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
 #include "Report.h"
@@ -49,10 +45,7 @@
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
 #include "QtTaskReport.h"
-#include "QtTaskReportElement.h"
 #include "QtResourceReport.h"
-#include "QtResourceReportElement.h"
-#include "ReportLayers.h"
 #include "RichTextDisplay.h"
 #include "TjPrintReport.h"
 #include "TjGanttChart.h"

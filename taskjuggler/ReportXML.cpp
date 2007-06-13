@@ -36,11 +36,8 @@
 
 #include "ReportXML.h"
 
-#include <qfile.h>
-
 #include "Project.h"
 #include "Task.h"
-#include "Utility.h"
 
 ReportXML::ReportXML(Project* p, const QString& f, const QString& df, int dl) :
    Report(p, f, df, dl)

@@ -18,13 +18,11 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <kurl.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/editinterface.h>
-#include <kate/document.h>
 
 #include "FileManager.h"
 

@@ -15,9 +15,7 @@
 #include "Project.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
-#include "Task.h"
 #include "Resource.h"
-#include "TableColumnInfo.h"
 #include "TableLineInfo.h"
 #include "HTMLReport.h"
 

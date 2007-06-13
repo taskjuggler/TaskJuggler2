@@ -12,7 +12,6 @@
 
 #include "TjResourceReport.h"
 
-#include <qdict.h>
 #include <qcanvas.h>
 
 #include <klistview.h>
@@ -23,12 +22,9 @@
 #include <kcursor.h>
 #include <kmessagebox.h>
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
 #include "ExpressionTree.h"
 #include "QtResourceReport.h"
-#include "QtResourceReportElement.h"
-#include "ReportLayers.h"
 #include "TjPrintResourceReport.h"
 #include "TjGanttChart.h"
 

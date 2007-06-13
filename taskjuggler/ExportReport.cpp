@@ -12,14 +12,11 @@
 
 #include "ExportReport.h"
 
-#include <qfile.h>
 #include <qmap.h>
 
 #include "tjlib-internal.h"
 #include "Project.h"
 #include "Scenario.h"
-#include "ShiftSelection.h"
-#include "Task.h"
 #include "Resource.h"
 #include "BookingList.h"
 #include "ExpressionTree.h"

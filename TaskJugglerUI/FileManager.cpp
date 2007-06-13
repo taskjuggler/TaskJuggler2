@@ -11,11 +11,8 @@
  */
 
 #include <assert.h>
-#include <time.h>
 
 #include <qwidgetstack.h>
-#include <qstring.h>
-#include <qstringlist.h>
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qpushbutton.h>
@@ -46,11 +43,8 @@
 #include <kdatepicker.h>
 #include <kcombobox.h>
 
-#include "Utility.h"
-#include "CoreAttributes.h"
 #include "Report.h"
 #include "FileManager.h"
-#include "ManagedFileInfo.h"
 #include "TjDatePicker.h"
 
 FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,

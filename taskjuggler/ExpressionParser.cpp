@@ -13,7 +13,6 @@
 #include "ExpressionParser.h"
 #include "Project.h"
 #include "Operation.h"
-#include "Utility.h"
 #include "debug.h"
 #include "ExpressionTree.h"
 #include "tjlib-internal.h"

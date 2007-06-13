@@ -13,7 +13,6 @@
 #ifndef _Resource_h_
 #define _Resource_h_
 
-#include "ResourceList.h"
 #include "ResourceScenario.h"
 
 class Project;

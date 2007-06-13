@@ -11,7 +11,6 @@
  */
 
 #include "Shift.h"
-#include "Interval.h"
 #include "Project.h"
 
 Shift::Shift(Project* prj, const QString& i, const QString& n, Shift* p,

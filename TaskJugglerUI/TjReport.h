@@ -13,12 +13,10 @@
 #ifndef _TjReport_h_
 #define _TjReport_h_
 
-#include <time.h>
 #include <set>
 #include <map>
 #include <vector>
 
-#include <qstring.h>
 #include <qlistview.h>
 
 #include "TjUIReportBase.h"

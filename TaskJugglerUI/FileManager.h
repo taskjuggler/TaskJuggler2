@@ -15,8 +15,6 @@
 
 #include <list>
 
-#include <qobject.h>
-
 #include "ManagedFileInfo.h"
 
 class QWidgetStack;

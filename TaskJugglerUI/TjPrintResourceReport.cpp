@@ -13,16 +13,11 @@
 #include "TjPrintResourceReport.h"
 
 #include <qpaintdevice.h>
-#include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
-#include "ResourceList.h"
-#include "ReportElement.h"
 #include "QtResourceReport.h"
-#include "QtResourceReportElement.h"
 
 void
 TjPrintResourceReport::initialize()

@@ -11,7 +11,6 @@
  */
 
 #include "HTMLAccountReportElement.h"
-#include "TableColumnInfo.h"
 #include "TableLineInfo.h"
 #include "tjlib-internal.h"
 #include "Project.h"

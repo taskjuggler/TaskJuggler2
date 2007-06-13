@@ -12,7 +12,6 @@
 
 #include "TjTaskReport.h"
 
-#include <qdict.h>
 #include <qcanvas.h>
 
 #include <klistview.h>
@@ -24,12 +23,9 @@
 #include <kmessagebox.h>
 
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
 #include "ExpressionTree.h"
 #include "QtTaskReport.h"
-#include "QtTaskReportElement.h"
-#include "ReportLayers.h"
 #include "TjPrintTaskReport.h"
 #include "TjGanttChart.h"
 

@@ -26,12 +26,8 @@
 #include <kglobal.h>
 
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
-#include "TaskList.h"
-#include "ResourceList.h"
 #include "QtReport.h"
-#include "QtReportElement.h"
 #include "TjObjPosTable.h"
 #include "TjGanttZoomStep.h"
 #include "TjLineAccounter.h"

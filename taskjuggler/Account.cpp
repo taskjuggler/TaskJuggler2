@@ -11,7 +11,6 @@
  */
 
 #include "Account.h"
-#include "Interval.h"
 #include "Task.h"
 #include "Project.h"
 #include "CustomAttributeDefinition.h"

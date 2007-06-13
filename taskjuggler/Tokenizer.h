@@ -13,8 +13,6 @@
 #ifndef _Tokenizer_h_
 #define _Tokenizer_h_
 
-#include <qstring.h>
-
 #include "FileToken.h"
 
 class ProjectFile;

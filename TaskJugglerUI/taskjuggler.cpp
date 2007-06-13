@@ -34,7 +34,6 @@
 #include <kio/netaccess.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
-#include <kurl.h>
 #include <kurldrag.h>
 #include <kurlrequesterdlg.h>
 #include <kedittoolbar.h>

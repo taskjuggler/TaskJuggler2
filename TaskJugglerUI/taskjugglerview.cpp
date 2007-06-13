@@ -21,7 +21,6 @@
 #include <qsplitter.h>
 #include <qtabwidget.h>
 #include <qtoolbox.h>
-#include <qvaluelist.h>
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qtooltip.h>
@@ -34,10 +33,8 @@
 #include <qpushbutton.h>
 
 #include <kdebug.h>
-#include <kmainwindow.h>
 #include <kapp.h>
 #include <kaction.h>
-#include <kurl.h>
 #include <ktrader.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
@@ -66,14 +63,10 @@
 #include "TableColumnInfo.h"
 #include "Report.h"
 #include "QtTaskReport.h"
-#include "QtTaskReportElement.h"
 #include "FileManager.h"
-#include "ManagedFileInfo.h"
 #include "ReportManager.h"
-#include "ManagedReportInfo.h"
 #include "TemplateSelector.h"
 #include "taskjuggler.h"
-#include "ltstr.h"
 
 TaskJugglerView::TaskJugglerView(QWidget *parent)
     : DCOPObject("TaskJugglerIface"), QWidget(parent)

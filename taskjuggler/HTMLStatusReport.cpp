@@ -15,9 +15,7 @@
 #include "Operation.h"
 #include "Project.h"
 #include "Resource.h"
-#include "Utility.h"
 #include "HTMLTaskReportElement.h"
-#include "TableColumnInfo.h"
 
 HTMLStatusReport::HTMLStatusReport(Project* p, const QString& f,
                                    const QString& df, int dl) :

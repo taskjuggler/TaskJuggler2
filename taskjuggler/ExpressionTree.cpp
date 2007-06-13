@@ -12,11 +12,8 @@
 
 #include "ExpressionTree.h"
 #include "Operation.h"
-#include "CoreAttributes.h"
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
-#include "Utility.h"
 #include "ExpressionParser.h"
 #include "ExpressionFunctionTable.h"
 #include "TjMessageHandler.h"

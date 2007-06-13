@@ -12,11 +12,7 @@
 
 #include "ResourceList.h"
 
-#include <stdio.h>
-
 #include "TjMessageHandler.h"
-#include "ShiftSelection.h"
-#include "Task.h"
 #include "Resource.h"
 #include "Project.h"
 #include "UsageLimits.h"

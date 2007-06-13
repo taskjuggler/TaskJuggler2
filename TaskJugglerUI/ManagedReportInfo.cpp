@@ -14,7 +14,6 @@
 
 #include "klocale.h"
 
-#include "Report.h"
 #include "TjReport.h"
 
 ManagedReportInfo::ManagedReportInfo(ReportManager* rm, Report* r) :

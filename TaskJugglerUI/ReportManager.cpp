@@ -15,7 +15,6 @@
 #include <assert.h>
 
 #include <qwidgetstack.h>
-#include <qstring.h>
 #include <qpopupmenu.h>
 
 #include <kmainwindow.h>
@@ -31,15 +30,12 @@
 #include <kmessagebox.h>
 
 #include "Project.h"
-#include "Report.h"
 #include "HTMLReport.h"
 #include "ICalReport.h"
 #include "CSVReport.h"
 #include "XMLReport.h"
 #include "ExportReport.h"
 
-#include "ManagedReportInfo.h"
-#include "TjUIReportBase.h"
 #include "TjSummaryReport.h"
 #include "TjHTMLReport.h"
 #include "TjTaskReport.h"

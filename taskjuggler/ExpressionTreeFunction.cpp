@@ -12,14 +12,11 @@
 
 #include "ExpressionTreeFunction.h"
 
-#include "Interval.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
 #include "Account.h"
-#include "Shift.h"
 #include "tjlib-internal.h"
 
 bool

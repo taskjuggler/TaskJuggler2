@@ -15,27 +15,15 @@
 
 #include <config.h>
 #include <assert.h>
-#include <memory>
 
-#include <qptrlist.h>
-#include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 #include <qfontmetrics.h>
 
 #include <klocale.h>
 
-#include "Report.h"
-#include "QtReportElement.h"
-#include "QtReport.h"
-#include "TableColumnInfo.h"
 #include "TableColumnFormat.h"
-#include "ReportElement.h"
 #include "Project.h"
-#include "Task.h"
 #include "Resource.h"
-#include "TjReportCell.h"
-#include "TjReportRow.h"
-#include "TjReportColumn.h"
 #include "TextAttribute.h"
 #include "ReferenceAttribute.h"
 #include "TjGanttChart.h"

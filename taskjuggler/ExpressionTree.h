@@ -29,7 +29,8 @@ class Project;
  * @short This class represents the logical expressions that can be used to
  * filter @see CoreAttributesList objects.
  * @author Chris Schlaeger <cs@kde.org>
- * @descr To filter certain elements out of CoreAttributes lists one needs to
+ *
+ * @details To filter certain elements out of CoreAttributes lists one needs to
  * specify a logical expression that describes the elements that should remain
  * in the list. The ExpressionTree stores such a logical expression. To filter
  * out the unwanted elements the ExpressionTree is evaluated against each of

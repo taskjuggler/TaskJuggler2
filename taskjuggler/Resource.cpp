@@ -17,11 +17,9 @@
 #include "ResourceTreeIterator.h"
 
 #include "Project.h"
-#include "VacationInterval.h"
 #include "ShiftSelection.h"
 #include "BookingList.h"
 #include "Account.h"
-#include "Task.h"
 #include "UsageLimits.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"

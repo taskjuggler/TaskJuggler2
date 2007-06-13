@@ -18,7 +18,6 @@
 
 #include <stdarg.h>
 
-#include <qstringlist.h>
 #include <qdom.h>
 
 #include "debug.h"
