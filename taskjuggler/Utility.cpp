@@ -24,8 +24,8 @@
 #include "tjlib-internal.h"
 
 #if defined(__SVR4) && defined(__sun)
-int setenv(const char* var, const char* val, int ignore)
-int unsetenv (const char *var)
+int setenv(const char* var, const char* val, int ignore);
+int unsetenv (const char *var);
 #endif
 
 static QDict<const char> TZDict;
@@ -891,7 +891,7 @@ int setenv(const char* var, const char* val, int ignore)
    int valLen = strlen(val);
    char *buffer = NULL;
 
-   if ((buffer = malloc (varLen + valLen + 2)) == NULL)
+   if ((buffer = static_cast<char*> malloc(varLen + valLen + 2)) == NULL)
       return -1;
 
    sprintf (buffer, "%s=%s", var, val);
