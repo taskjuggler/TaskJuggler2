@@ -1,5 +1,5 @@
 #
-# spec file for package taskjuggler (Version 2.2.0)
+# spec file for package taskjuggler (Stable version)
 #
 # Copyright (c) 2006 SUSE LINUX Products GmbH, Nuernberg, Germany.
 # This file and all modifications and additions to the pristine
@@ -11,17 +11,69 @@
 # norootforbuild
 
 Name:           taskjuggler
-BuildRequires:  docbook-utils docbook-xsl-stylesheets kdelibs3-devel kdepim3-devel te_ams
 URL:            http://www.taskjuggler.org
 License:        GPL
 Group:          Productivity/Office/Other
 Summary:        Project management software
-Version:        2.3.1
+Version:        2.4.0
 Release:        19
 Source0:        taskjuggler-%{version}.tar.bz2 
-Requires:       qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
 # Patch1:       fix-gcc41.diff
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
+################################################################################
+# SuSE, openSUSE
+################################################################################
+%if 0%{?suse_version}
+
+%if %suse_version > 1020
+BuildRequires:  docbook-utils docbook-xsl-stylesheets kdelibs3-devel kdepim3-devel texlive
+%else 
+BuildRequires:  docbook-utils docbook-xsl-stylesheets kdelibs3-devel kdepim3-devel te_ams
+%endif
+Requires:       qt3 >= %( echo `rpm -q --queryformat '%{VERSION}' qt3`)
+%endif
+
+################################################################################
+# Fedora
+################################################################################
+%if 0%{?fedora_version}
+%define debug 0
+%define final 0
+%define qt_epoch 1
+%define kdelibs_epoch 6
+
+%define make_cvs 1
+
+%define disable_gcc_check_and_hidden_visibility 1
+BuildRequires:  docbook-utils docbook-xsl-stylesheets kdelibs-devel kdepim-devel tetex
+Requires:       qt
+%endif
+
+################################################################################
+# Mandriva
+################################################################################
+%if 0%{?mandriva_version}
+%define __libtoolize    /bin/true
+
+%define use_enable_final 0
+%{?_no_enable_final: %{expand: %%global use_enable_final 0}}
+
+%define compile_apidox 0
+%{?_no_apidox: %{expand: %%global compile_apidox 0}}
+
+%define unstable 0
+%{?_unstable: %{expand: %%global unstable 1}}
+
+%if %unstable
+%define dont_strip 1
+%endif
+BuildRequires:  docbook-utils openjade kdepim-devel tetex
+BuildRequires:  kdelibs-devel >= %{kde_version}
+BuildRequires:  libqt3 >= %{qt_version}
+Requires: qt3 >= %{qt_version}
+%endif
+
 
 %description
 TaskJuggler is a project management tool for Linux and UNIX-like
@@ -93,10 +145,12 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mv $RPM_BUILD_ROOT/opt/kde3/bin/taskjuggler $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/%_lib
 mv $RPM_BUILD_ROOT/opt/kde3/%_lib/libtaskjuggler* $RPM_BUILD_ROOT/usr/%_lib/
+%if 0%{?suse_version}
 %if %suse_version > 1000
 %suse_update_desktop_file -G "Project Management" taskjuggler ProjectManagement
 %else
 %suse_update_desktop_file taskjuggler ProjectManagement
+%endif
 %endif
 # install the kate hilighting, cleanup
 cd Contrib/kate; make install; cd ../..
@@ -168,6 +222,10 @@ Authors:
 /usr/share/applications/kde
 
 %changelog -n taskjuggler
+* Fri Jul 22 2007 - cs@kde.org
+- Update to version 2.4.0
+* Mon Jan 01 2007 - cs@kde.org
+- Update to version 2.3.1
 * Tue Aug 08 2006 - dmueller@suse.de
 - fix build
 * Wed Jun 21 2006 - dmueller@suse.de

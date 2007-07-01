@@ -3079,10 +3079,11 @@ Task::collectTransientFollowers(TaskList& list)
     {
         for (Task* task = getParent(); task; task = task->getParent())
             for (TaskListIterator tli(task->followers); *tli; ++tli)
-            {
-                list.append(*tli);
-                (*tli)->collectTransientFollowers(list);
-            }
+                if (list.findRef(*tli) < 0)
+                {
+                    list.append(*tli);
+                    (*tli)->collectTransientFollowers(list);
+                }
     }
 }
 

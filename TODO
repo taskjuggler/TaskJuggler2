@@ -15,6 +15,7 @@ Probably:
   and others) in UI Report, to be able to find easily tasks (by task
   id) or task resources
 - Legend to explain meaning of HTML report Gantt elements.
+- add LogExp functions like 'dependsOn' or 'precedes'.
 
 Maybe:
 - Make vacations and shifts scenario specific.
