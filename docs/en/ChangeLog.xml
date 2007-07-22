@@ -1203,4 +1203,17 @@ with multiple resources.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2 id="Changelog_2_4_1"><title>Version 2.4.1 (Some Day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Fixed a serious bug in the optimizer part of the
+scheduling algorithm. When many tasks had the same priority, the path
+criticalness was not always respected resulting in longer running
+projects than necessary. The effect mostly showed under heavy resource
+pressure.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

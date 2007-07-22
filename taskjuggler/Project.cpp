@@ -746,6 +746,7 @@ Project::schedule(int sc)
         done = true;
         time_t slot = 0;
         int priority = 0;
+        double pathCriticalness = 0.0;
         Task::SchedulingInfo schedulingInfo = Task::ASAP;
 
         /* The task list is sorted by priority. The priority decreases towards
@@ -761,6 +762,7 @@ Project::schedule(int sc)
                  * scheduled and provides a suggestion. */
                 slot = (*tli)->nextSlot(scheduleGranularity);
                 priority = (*tli)->getPriority();
+                pathCriticalness = (*tli)->getPathCriticalness(sc);
                 schedulingInfo = (*tli)->getScheduling();
                 /* If not, try the next task. */
                 if (slot == 0)
@@ -785,12 +787,12 @@ Project::schedule(int sc)
             done = false;
             /* Each task has a scheduling direction (forward or backward)
              * depending on it's constrains. The task with the highest
-             * priority determins the time slot and hence the scheduling
-             * direction. Since tasks that have the other direction cannot the
-             * scheduled then, we have to stop this run as soon as we hit a
-             * task that runs in the other direction. If we would not do this,
-             * tasks with lower priority would grab resources form tasks with
-             * higher priority. */
+             * priority/pathCriticalness determins the time slot and hence the
+             * scheduling direction. Since tasks that have the other direction
+             * cannot the scheduled then, we have to stop this run as soon as
+             * we hit a task that runs in the other direction. If we would not
+             * do this, tasks with lower priority/pathCriticalness  would grab
+             * resources form tasks with higher priority. */
             if ((*tli)->getScheduling() != schedulingInfo &&
                 !(*tli)->isMilestone())
             {
@@ -802,8 +804,11 @@ Project::schedule(int sc)
             }
             /* We must avoid that lower priority tasks get resources even
              * though there are higher priority tasks that are ready to be
-             * scheduled but have a non-adjacent last slot. */
-            if ((*tli)->getPriority() < priority)
+             * scheduled but have a non-adjacent last slot. If two tasks have
+             * the same priority the pathCriticalness is being used. */
+            if ((*tli)->getPriority() < priority ||
+                ((*tli)->getPriority() == priority &&
+                 (*tli)->getPathCriticalness(sc) < pathCriticalness))
                 break;
 
             // Schedule this task for the current time slot.
