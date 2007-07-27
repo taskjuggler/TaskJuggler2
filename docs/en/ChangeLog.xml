@@ -1213,6 +1213,9 @@ criticalness was not always respected resulting in longer running
 projects than necessary. The effect mostly showed under heavy resource
 pressure.</para></listitem>
 
+<listitem><para>Add <computeroutput>taskroot</computeroutput> support
+for XML reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

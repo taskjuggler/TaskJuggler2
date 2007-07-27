@@ -3122,6 +3122,7 @@ Site</ulink>.</para></descr>
    <optattr>rolluptask</optattr>
    <optattr>rollupaccount</optattr>
    <optattr>scenarios</optattr>
+   <optattr>taskroot</optattr>
    <optattr>version</optattr>
   </optattributes>
   <example>&example_xmlreport;</example>
