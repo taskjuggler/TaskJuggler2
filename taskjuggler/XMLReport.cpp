@@ -544,8 +544,7 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
 
     QString taskId = task->getId();
     if (!taskRoot.isEmpty())
-        taskId = taskId.right(taskId.length() - 1 -
-                              taskRoot.length());
+        taskId = stripTaskRoot(taskId);
     genTextAttr(&el, "id", taskId);
     genTextAttr(&el, "name", task->getName());
     genTextAttr(&el, "projectId", task->getProjectId());
@@ -736,7 +735,8 @@ XMLReport::generateDepList(QDomElement* parentEl, TaskList& filteredTaskList,
                            (stripTaskRoot(((*depIt)->getTaskRef())->getId())));
             parentEl->appendChild(te);
 
-            genTextAttr(&te, "task", (*depIt)->getTaskRef()->getId());
+            genTextAttr(&te, "task",
+                        stripTaskRoot((*depIt)->getTaskRef()->getId()));
 
             for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
                 if ((*depIt)->getGapDuration(sc) != 0 ||
