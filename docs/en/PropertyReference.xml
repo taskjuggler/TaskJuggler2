@@ -542,13 +542,13 @@ file processing, the report macros must be prefixed with an additional
    scenarios are shown in the table. See also <link
    linkend="PROPERTY_scenarios">scenarios</link>.</member>
    
+   <member><varname>schedule</varname></member>
+   <member>A detailed schedule of the allocations for the resource.</member>
+   
    <member><varname>seqno</varname></member>
    <member>The task index in the order of declaration. Each
    time a task declaration is completed, the sequence number is increased
    by 1. </member>
-   
-   <member><varname>schedule</varname></member>
-   <member>A detailed schedule of the allocations for the resource.</member>
    
    <member><varname>start</varname></member>
    <member>The start date of a task</member>
@@ -565,6 +565,9 @@ file processing, the report macros must be prefixed with an additional
    linkend="PROPERTY_now">now</link> and the degree of completion. The
    degree of completion is either computed or has been specified by <link
    linkend="PROPERTY_complete">complete</link>.</member>
+  
+   <member><varname>statusnote</varname></member>
+   <member>Some comment about the current status of the task.</member>
    
    <member><varname>total</varname></member>
    <member>Total accumulated values</member>
