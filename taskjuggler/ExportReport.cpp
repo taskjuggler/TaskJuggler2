@@ -12,6 +12,7 @@
 
 #include "ExportReport.h"
 
+#include <string.h>
 #include <qmap.h>
 
 #include "tjlib-internal.h"
@@ -540,7 +541,7 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
                               const char* tag, int indent)
 {
     bool first = true;
-    bool prev = (tag == "depends");
+    bool prev = strcmp(tag, "depends") == 0;
     for ( ; *depIt != 0; ++depIt)
 
     {
