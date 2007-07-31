@@ -59,8 +59,8 @@ private:
     bool generateTaskAttributeList(TaskList& ftl);
     bool generateTaskSupplement(TaskList& ftl, const Task* task, int indent);
     bool generateDepList(TaskList& filteredTaskList, const Task* task,
-                         QPtrListIterator<TaskDependency> depIt,
-                         const char* tag, int indent);
+                         QPtrListIterator<TaskDependency> depIt, bool prev,
+                         int indent);
     bool generateResourceAttributesList(TaskList& ftl, ResourceList& frl);
     bool generateCustomAttributeValue(const QString& id,
                                       const CoreAttributes* property,

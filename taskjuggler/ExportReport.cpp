@@ -477,10 +477,9 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
         {
             case TA_DEPENDS:
                 generateDepList(filteredTaskList, task,
-                                task->getDependsIterator(), "depends", indent);
+                                task->getDependsIterator(), true, indent);
                 generateDepList(filteredTaskList, task,
-                                task->getPrecedesIterator(), "precedes",
-                                indent);
+                                task->getPrecedesIterator(), false, indent);
                 break;
             default:
                 break;
@@ -538,10 +537,9 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
 bool
 ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
                               QPtrListIterator<TaskDependency> depIt,
-                              const char* tag, int indent)
+                              bool prev, int indent)
 {
     bool first = true;
-    bool prev = strcmp(tag, "depends") == 0;
     for ( ; *depIt != 0; ++depIt)
 
     {
@@ -559,7 +557,7 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
             if (first)
             {
                 s << QString().fill(' ', indent + 2)
-                    << tag << " ";
+                    << (prev ? "depends" : "precedes") << " ";
                 first = false;
             }
             else
