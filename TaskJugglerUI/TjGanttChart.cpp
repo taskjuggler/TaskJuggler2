@@ -68,6 +68,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["taskLoadCol"] = QColor("#FD13C6");
     colors["otherLoadCol"] = QColor("#FF8D13");
     colors["freeLoadCol"] = QColor("#00AC00");
+    colors["loadFrameCol"] = Qt::black;
 
     currentZoomStep = 0;
     clipped = false;
@@ -1044,15 +1045,14 @@ TjGanttChart::generateGanttElements()
                 ((*it)->getSubCoreAttributes());
             drawTaskResource(r, t);
         }
-        else if ((*it)->getCoreAttributes()->getType() ==
-                 CA_Resource &&
+        else if ((*it)->getCoreAttributes()->getType() == CA_Resource &&
                  (*it)->getSubCoreAttributes()->getType() == CA_Task)
         {
             Resource* r = static_cast<Resource*>
                 ((*it)->getCoreAttributes());
             const Task* t = static_cast<const Task*>
                 ((*it)->getSubCoreAttributes());
-            drawTask(t, r);
+            drawResourceTask(r, t);
         }
         else
             assert(0);
@@ -1489,6 +1489,26 @@ TjGanttChart::drawTaskResource(Resource* r, const Task* t)
 }
 
 void
+TjGanttChart::drawResourceTask(Resource* r, const Task* t)
+{
+    assert(zoomSteps.size() > 0);
+
+    if (t->getStart(scenario) == 0 || t->getEnd(scenario) == 0)
+        return;
+
+    /* For each time interval we draw a column that represents the load of the
+     * resource allocated to the task. The load bar height is normalized on
+     * the total allocatable load of the task for that time slot. */
+    Interval iv;
+    TjGanttZoomStep* czs = zoomSteps[currentZoomStep];
+    int rY = objPosTable->caToPos(r, t);
+    for (time_t i = czs->intervalStart(false, t->getStart(scenario));
+         i <= (t->getEnd(scenario)); i = czs->nextIntervalStart(false, i))
+        drawResourceLoadColum(r, t, i, czs->nextIntervalStart(false, i) - 1,
+                              rY, true);
+}
+
+void
 TjGanttChart::drawResource(Resource* r)
 {
     assert(zoomSteps.size() > 0);
@@ -1506,7 +1526,8 @@ TjGanttChart::drawResource(Resource* r)
 
 void
 TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
-                                    time_t start, time_t end, int rY)
+                                    time_t start, time_t end, int rY,
+                                    bool taskLoadOnly)
 {
     if (t && (t->getStart(scenario) == 0 || t->getEnd(scenario) == 0))
         return;
@@ -1546,7 +1567,7 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
     if (cx + cw > cellEnd - mmToXPixels(0.6))
         cw = cellEnd - mmToXPixels(0.6) - cx;
 
-    // Now we are calculation the load of the resource with respect to this
+    // Now we are calculating the load of the resource with respect to this
     // task, to all tasks, and we calculate the not yet allocated load.
     Interval period(start, end);
     double freeLoad = r->getEffectiveFreeLoad(scenario, period);
@@ -1589,6 +1610,12 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
                     "taskLoadCol", pattern1, chart);
     }
 
+    if (taskLoadOnly)
+    {
+        drawLoadFrame(cx, colTop, cw, colBottom - colTop, chart);
+        return;
+    }
+
     if (otherLoad > 0.0)
     {
         // Load for other tasks.
@@ -1613,6 +1640,17 @@ TjGanttChart::drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
     rect->setBrush(QBrush(colors[col], pattern));
     rect->setPen(QPen(colors[col], lineWidth));
     rect->setZ(TJRL_LOADBARS);
+    rect->show();
+}
+
+void
+TjGanttChart::drawLoadFrame(int cx, int cy, int cw, int ch, QCanvas* canvas)
+{
+    QCanvasRectangle* rect = new QCanvasRectangle
+        (cx, cy, cw, ch, canvas);
+    rect->setBrush(QBrush(Qt::NoBrush));
+    rect->setPen(QPen(colors["loadFrameCol"], lineWidth));
+    rect->setZ(TJRL_LOADBARFRAMES);
     rect->show();
 }
 

@@ -1216,6 +1216,10 @@ pressure.</para></listitem>
 <listitem><para>Add <computeroutput>taskroot</computeroutput> support
 for XML reports.</para></listitem>
 
+<listitem><para>The task outlines in the UI resource reports have been
+replaced with relative load bars. One can now see what load is
+assigned to what resource at which point of time.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

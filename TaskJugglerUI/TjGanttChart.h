@@ -111,12 +111,14 @@ private:
     void drawDependencies(const Task* t1, TjLineAccounter* collisionDetector);
     void drawTaskResource(Resource* r, const Task* t);
     void drawResource(Resource* r);
-    void drawResourceTask(const Task* t, Resource* r);
+    void drawResourceTask(Resource* r, const Task* t);
+    void drawTaskResource(const Task* t, Resource* r);
     void drawResourceLoadColum(Resource* r, const Task* t, time_t start,
-                               time_t end, int rY);
+                               time_t end, int rY, bool taskLoadOnly = false);
 
     void drawLoadBar(int cx, int cy, int cw, int ch, const QString& col,
                      Qt::BrushStyle pattern, QCanvas* canvas);
+    void drawLoadFrame(int cx, int cy, int cw, int ch, QCanvas* canvas);
     void zoomToFitWindow(int width, time_t duration);
     void allTasksInterval();
 

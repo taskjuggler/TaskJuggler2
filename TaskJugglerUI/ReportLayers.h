@@ -22,6 +22,7 @@
 #define TJRL_TASKCOMP 15
 #define TJRL_DEPARROWS 16
 #define TJRL_LOADBARS 10
+#define TJRL_LOADBARFRAMES 11
 
 #endif
 
