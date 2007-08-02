@@ -596,9 +596,9 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
                 break;
             case TA_DEPENDS:
                 generateDepList(&el, filteredTaskList, task,
-                                task->getDependsIterator(), "depends");
+                                task->getDependsIterator(), true);
                 generateDepList(&el, filteredTaskList, task,
-                                task->getPrecedesIterator(), "precedes");
+                                task->getPrecedesIterator(), false);
                 break;
             case TA_ACCOUNT:
                 if (task->getAccount())
@@ -712,9 +712,8 @@ bool
 XMLReport::generateDepList(QDomElement* parentEl, TaskList& filteredTaskList,
                            const Task* task,
                            QPtrListIterator<TaskDependency> depIt,
-                           const char* tag)
+                           bool prev)
 {
-    bool prev = (tag == "depends");
     for ( ; *depIt != 0; ++depIt)
     {
         /* Save current list item since findRef() modifies
@@ -725,7 +724,7 @@ XMLReport::generateDepList(QDomElement* parentEl, TaskList& filteredTaskList,
               (prev ? task->getParent()->hasPrevious((*depIt)->getTaskRef()) :
                task->getParent()->hasFollower((*depIt)->getTaskRef()))))
         {
-            QDomElement te= doc->createElement(tag);
+            QDomElement te= doc->createElement(prev ? "depends" : "precedes");
             /* Putting the task ID as PCDATA in the depends/precedes element
              * was a mistake. We now store this information as 'task'
              * attribute. The PCDATA is now deprecated and should no longer be

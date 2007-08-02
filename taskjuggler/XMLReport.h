@@ -65,8 +65,7 @@ private:
     bool generateTask(QDomElement* parentEl, TaskList& ftl, const Task* task);
     bool generateDepList(QDomElement* el, TaskList& filteredTaskList,
                          const Task* task,
-                         QPtrListIterator<TaskDependency> dl,
-                         const char* tag);
+                         QPtrListIterator<TaskDependency> dl, bool prev);
     bool generateCustomAttributeValue(QDomElement* parentEl,
                                       const QString& id,
                                       const CoreAttributes* property);
