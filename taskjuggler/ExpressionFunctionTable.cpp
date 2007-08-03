@@ -37,7 +37,7 @@ ExpressionFunctionTable::ExpressionFunctionTable() :
     addFunc(KW("endsBefore"), &ExpressionTreeFunction::endsBefore, 2);
     addFunc(KW("endsAfter"), &ExpressionTreeFunction::endsAfter, 2);
     addFunc(KW("isParentOf"), &ExpressionTreeFunction::isParentOf, 1);
-    addFunc(KW("isChildOf"), &ExpressionTreeFunction::isChildOf, 1);
+    addFunc(KW("isChildOf"), &ExpressionTreeFunction::isDescendantOf, 1);
     addFunc(KW("isLeaf"), &ExpressionTreeFunction::isLeaf, 0);
     addFunc(KW("treeLevel"), &ExpressionTreeFunction::treeLevel, 0);
     addFunc(KW("isAllocated"), &ExpressionTreeFunction::isAllocated, 3);

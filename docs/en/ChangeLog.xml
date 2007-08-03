@@ -1220,6 +1220,12 @@ for XML reports.</para></listitem>
 replaced with relative load bars. One can now see what load is
 assigned to what resource at which point of time.</para></listitem>
 
+<listitem><para>Fixed calculation of effort based values in group task
+line items of resource reports.</para></listitem>
+
+<listitem><para>The isChildOf() function no longer returns true for
+self.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

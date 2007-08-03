@@ -27,7 +27,7 @@ task t1 "Task 1" {
 }
 
 htmltaskreport "." {
-	headline "ischildof(t1.t1) (Should be 7 tasks)"
+	headline "ischildof(t1.t1) (Should be 6 tasks)"
 	sorttasks indexup
 	hidetask ~(ischildof(t1.t1))
 }

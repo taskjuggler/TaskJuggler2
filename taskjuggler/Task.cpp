@@ -1268,13 +1268,13 @@ Task::xRef(QDict<Task>& hash)
                                  .arg(id));
                     break;
                 }
-                if (t->isChildOf(this))
+                if (t->isDescendantOf(this))
                 {
                     errorMessage(i18n("Task '%1' cannot depend on child.")
                                  .arg(id));
                     break;
                 }
-                if (isChildOf(t))
+                if (isDescendantOf(t))
                 {
                     errorMessage(i18n("Task '%1' cannot depend on parent.")
                                  .arg(t->id));
@@ -1323,13 +1323,13 @@ Task::xRef(QDict<Task>& hash)
                                  .arg(id));
                     break;
                 }
-                if (t->isChildOf(this))
+                if (t->isDescendantOf(this))
                 {
                     errorMessage(i18n("Task '%1' cannot precede a child.")
                                  .arg(id));
                     break;
                 }
-                if (isChildOf(t))
+                if (isDescendantOf(t))
                 {
                     errorMessage(i18n("Task '%1' cannot precede parent.")
                                  .arg(t->id));

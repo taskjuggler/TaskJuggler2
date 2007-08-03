@@ -175,12 +175,12 @@ CoreAttributes::hasSameAncestor(const CoreAttributes* c) const
 }
 
 bool
-CoreAttributes::isDescendentOf(const CoreAttributes* c) const
+CoreAttributes::isDescendantOf(const CoreAttributes* c) const
 {
     if (c == 0)
         return false;
 
-    for (CoreAttributes const* p = this; p; p = p->parent)
+    for (CoreAttributes const* p = this->parent; p; p = p->parent)
         if (p == c)
             return true;
 
@@ -196,20 +196,6 @@ CoreAttributes::isParentOf(const CoreAttributes* c) const
     for (CoreAttributes const* p = c->parent; p; p = p->parent)
         if (p == this)
             return true;
-
-    return false;
-}
-
-bool
-CoreAttributes::isChildOf(const CoreAttributes* c) const
-{
-    const CoreAttributes* ca = parent;
-    while (ca)
-    {
-        if (ca == c)
-            return true;
-        ca = ca->parent;
-    }
 
     return false;
 }

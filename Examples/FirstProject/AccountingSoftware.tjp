@@ -269,7 +269,7 @@ resourcereport "Resource Sheet" {
 # A list of resources and each task associated with each resource.
 resourcereport "Resource Usage" {
   headline "Resource Usage Report"
-  columns no, name, utilization, freeload, cost
+  columns no, name, utilization, freeload, cost, chart
   loadunit days
   hidetask 0
 }

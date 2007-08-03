@@ -78,9 +78,8 @@ public:
     FlagList getFlagList() const { return flags; }
 
     bool hasSameAncestor(const CoreAttributes* c) const;
-    bool isDescendentOf(const CoreAttributes* c) const;
+    bool isDescendantOf(const CoreAttributes* c) const;
     bool isParentOf(const CoreAttributes* c) const;
-    bool isChildOf(const CoreAttributes* c) const;
 
     bool isRoot() const { return parent == 0; }
     bool isLeaf() const;

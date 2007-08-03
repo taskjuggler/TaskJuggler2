@@ -838,7 +838,7 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
             bool isAllocated = false;
             for (TaskListIterator tli(scenarios[sc].allocatedTasks); *tli;
                  ++tli)
-                if (task == *tli)
+                if (task == *tli || (*tli)->isDescendantOf(task))
                 {
                     isAllocated = true;
                     break;
@@ -858,7 +858,8 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
         if (b < (SbBooking*) 4)
             continue;
         if ((task == 0 ||
-             (task != 0 && task == b->getTask())) &&
+             (task != 0 && (task == b->getTask() ||
+                            b->getTask()->isDescendantOf(task)))) &&
             (acctType == AllAccounts ||
              (b->getTask()->getAccount() &&
               b->getTask()->getAccount()->getAcctType() == acctType)))

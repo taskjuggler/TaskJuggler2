@@ -117,8 +117,8 @@ ExpressionTreeFunction::hasAssignments(ExpressionTree* et,
 }
 
 long
-ExpressionTreeFunction::isChildOf(ExpressionTree* et,
-                                  Operation* const ops[]) const
+ExpressionTreeFunction::isDescendantOf(ExpressionTree* et,
+                                       Operation* const ops[]) const
 {
     const CoreAttributes* p;
     if ((p = findCoreAttributes(et->getCoreAttributes(),
@@ -140,7 +140,7 @@ ExpressionTreeFunction::isChildOf(ExpressionTree* et,
         return 0;
     }
 
-    return et->getCoreAttributes()->isDescendentOf(p);
+    return et->getCoreAttributes()->isDescendantOf(p);
 }
 
 long

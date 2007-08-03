@@ -1804,7 +1804,7 @@ should be shown at a maximum.</para></descr>
  </property>
  <property name="period" id="period_report" inheritable="no">
   <descr><para>This property is a shortcut for setting the start and end
-  propoerty at the same time.</para></descr>
+  property at the same time.</para></descr>
   <seealso>
    <also>end_report</also>
    <also>start_report</also>
@@ -2443,8 +2443,8 @@ tree
  <property name="sortresources" id="sortresources" inheritable="No">
   <descr><para>Determines how the resources are sorted in the report. Up to 3
 criteria can be specified. If one criteria is not sufficient to sort a
-group of accounts, the next criteria will be used to sort the accounts
-within this group.</para></descr>
+group of resources, the next criteria will be used to sort the
+resources within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1">
     <para>Possible values are 
@@ -2472,7 +2472,7 @@ tree
  <property name="sorttasks" id="sorttasks" inheritable="No">
   <descr><para>Determines how the tasks are sorted in the report. Up to 3
 criteria can be specified. If one criteria is not sufficient to sort a
-group of accounts, the next criteria will be used to sort the accounts
+group of tasks, the next criteria will be used to sort the tasks 
 within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1">
@@ -2811,9 +2811,9 @@ defaults are assumed.</para></descr>
   </seealso>
   <freestyle>
 <para>
-Ordinary characters placed in the format string are copied to s
-without conversion. Conversion specifiers are introduced by  a
-`%' character, and are replaced in s as follows:</para>
+Ordinary characters placed in the format string are copied without
+conversion. Conversion specifiers are introduced by  a `%' character,
+and are replaced in s as follows:</para>
 
 <para><simplelist type="horiz" columns="2">
 
