@@ -45,6 +45,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
 
     project = 0;
     objPosTable = 0;
+    selectedObject = 0;
 
     dpiX = dpiY = 0;
     headerMargin = 0;
@@ -69,6 +70,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["otherLoadCol"] = QColor("#FF8D13");
     colors["freeLoadCol"] = QColor("#00AC00");
     colors["loadFrameCol"] = Qt::black;
+    colors["hightlightCol"] = Qt::white;
 
     currentZoomStep = 0;
     clipped = false;
@@ -108,6 +110,18 @@ TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w,
 
     header->resize(width, headerHeight);
     chart->resize(width, chartHeight);
+}
+
+void
+TjGanttChart::setSelection(const TjObjPosTableEntry* selObj)
+{
+    // Make sure that setProjectAndReportData() has been called first.
+    assert(project != 0);
+
+    // Make sure that we have an option position translation table.
+    assert(objPosTable != 0);
+
+    selectedObject = selObj;
 }
 
 void
@@ -777,7 +791,7 @@ TjGanttChart::generateHeaderAndGrid()
                 markQuarterBoundaries();
             break;
     }
-    //generateGanttBackground();
+    generateGanttBackground();
 
     // Draw a red line to mark the current time.
     if (reportDef->getProject()->getNow() >=
@@ -990,6 +1004,7 @@ TjGanttChart::markQuarterBoundaries()
 void
 TjGanttChart::generateGanttBackground()
 {
+    // Paint the whole chart with the background color.
     QCanvasRectangle* rect =
         new QCanvasRectangle(0, 0, chart->width(), chart->height(),
                              chart);
@@ -999,17 +1014,35 @@ TjGanttChart::generateGanttBackground()
     rect->setZ(TJRL_BACKGROUND);
     rect->show();
 
+    /* Now paint every other line with the alternative background color. This
+     * only works if the chart has the same height for all lines. If this is
+     * not the case the alterntive color should be identical to the background
+     * color. */
+    if (colors["chartBackgroundCol"] == colors["chartAltBackgroundCol"])
+        return;
+
     bool toggle = false;
-    for (int y = 0; y < chartHeight; y += 25) // Just temporary
+    for (int y = 0; y < chartHeight; y += minRowHeight)
     {
         toggle = !toggle;
         if (toggle)
             continue;
 
-        rect = new QCanvasRectangle(0, y, width, 25, chart);
+        rect = new QCanvasRectangle(0, y, width, minRowHeight, chart);
         rect->setPen(QPen(Qt::NoPen));
         rect->setBrush(QBrush(colors["chartAltBackgroundCol"]));
         rect->setZ(TJRL_BACKLINES);
+        rect->show();
+    }
+
+    // Highlight the selected object
+    if (selectedObject)
+    {
+        rect = new QCanvasRectangle(0, selectedObject->getPos(),
+                                    width, selectedObject->getHeight(), chart);
+        rect->setPen(QPen(Qt::NoPen));
+        rect->setBrush(QBrush(colors["hightlightCol"], Qt::Dense4Pattern));
+        rect->setZ(TJRL_HIGHLIGHT);
         rect->show();
     }
 }

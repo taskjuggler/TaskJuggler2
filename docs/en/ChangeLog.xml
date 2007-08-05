@@ -1226,6 +1226,12 @@ line items of resource reports.</para></listitem>
 <listitem><para>The isChildOf() function no longer returns true for
 self.</para></listitem>
 
+<listitem><para>Use alternating background pattern for Gantt chart to
+enhance readability.</para></listitem>
+
+<listitem><para>Make tasks and resources in Gantt charts selectable
+and enable RMB menu to edit and view them quickly.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

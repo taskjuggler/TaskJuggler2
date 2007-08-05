@@ -1,7 +1,8 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -31,6 +32,7 @@ class QSplitter;
 class QCanvas;
 class QCanvasView;
 class QTimer;
+class QListViewItem;
 class KListView;
 class KPrinter;
 class Report;
@@ -98,6 +100,9 @@ protected:
 
     void generateCustomAttribute(const CoreAttributes* ca, const QString name,
                                  QString& cellText, QPixmap& icon) const;
+    void handleMouseEvent(const QMouseEvent* ev);
+
+    QListViewItem* getChartItemBelowCursor(QPoint& pos);
 
     virtual QString generateStatusBarText(const QPoint& pos,
                                           CoreAttributes* ca,

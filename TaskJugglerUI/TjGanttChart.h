@@ -37,6 +37,7 @@ class TjObjPosTable;
 class TjGanttZoomStep;
 class Interval;
 class TjLineAccounter;
+class TjObjPosTableEntry;
 
 class TjGanttChart
 {
@@ -49,6 +50,7 @@ public:
     void setProjectAndReportData(const QtReportElement* r);
     void setSizes(const TjObjPosTable* opt, int headerHeight, int chartHeight,
                   int width, int minRowHeight);
+    void setSelection(const TjObjPosTableEntry* selObj);
     void setDPI(int dx, int dy);
 
     void setColor(const char* name, QColor col);
@@ -145,6 +147,8 @@ private:
     bool clipped;
 
     const TjObjPosTable* objPosTable;
+
+    const TjObjPosTableEntry* selectedObject;
 
     int headerMargin;
     int headerHeight;

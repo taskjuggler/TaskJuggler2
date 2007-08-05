@@ -29,8 +29,8 @@ public:
     TjObjPosTable() { }
     ~TjObjPosTable();
 
-    void addEntry(CoreAttributes* ca, CoreAttributes* subCa,
-                  int pos, int height);
+    TjObjPosTableEntry* addEntry(CoreAttributes* ca, CoreAttributes* subCa,
+                                 int pos, int height);
 
     int caToPos(const CoreAttributes* ca, const CoreAttributes* subCa = 0)
         const;

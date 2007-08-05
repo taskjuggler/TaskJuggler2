@@ -1,7 +1,8 @@
 /*
  * The TaskJuggler Project Management Software
  *
- * Copyright (c) 2001, 2002, 2003, 2004, 2005 by Chris Schlaeger <cs@kde.org>
+ * Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+ * by Chris Schlaeger <cs@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -96,6 +97,8 @@ TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
 
     statusBarUpdateTimer = delayTimer = 0;
 
+    connect(listView, SIGNAL(selectionChanged()),
+            this, SLOT(regenerateChart()));
     connect(listView, SIGNAL(expanded(QListViewItem*)),
             this, SLOT(expandReportItem(QListViewItem*)));
     connect(listView, SIGNAL(collapsed(QListViewItem*)),
@@ -189,6 +192,8 @@ TjReport::event(QEvent* ev)
         setGanttChartColors();
         regenerateChart();
     }
+    else if (ev->type() == QEvent::MouseButtonPress)
+        handleMouseEvent(static_cast<QMouseEvent*>(ev));
 
     return QWidget::event(ev);
 }
@@ -664,6 +669,8 @@ TjReport::prepareChart()
      * re-generation. So we delete it and create a new one. */
     delete objPosTable;
     objPosTable = new TjObjPosTable;
+    TjObjPosTableEntry* selectedObject = 0;
+
     for (std::map<const QString, QListViewItem*, ltQString>::iterator
          lvit = ca2lviDict.begin(); lvit != ca2lviDict.end(); ++lvit)
     {
@@ -712,7 +719,11 @@ TjReport::prepareChart()
             }
         }
         assert(ca1 != 0);
-        objPosTable->addEntry(ca1, ca2, lvi->itemPos(), lvi->height());
+        TjObjPosTableEntry* tableEntry =
+            objPosTable->addEntry(ca1, ca2, lvi->itemPos(), lvi->height());
+
+        if (lvi == listView->selectedItem())
+            selectedObject = tableEntry;
     }
 
     // Make sure that we only prepare the chart if the listView isn't empty.
@@ -766,6 +777,7 @@ TjReport::prepareChart()
                          sizes[1] == 0 ? static_cast<int>(width() * 2.0/3.0) :
                          sizes[1],
                          itemHeight);
+    ganttChart->setSelection(selectedObject);
     QPaintDeviceMetrics metrics(ganttChartView);
     ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
     setGanttChartColors();
@@ -1218,21 +1230,24 @@ TjReport::syncVSlidersList2Gantt(int, int y)
 }
 
 void
+TjReport::handleMouseEvent(const QMouseEvent* ev)
+{
+    QPoint pos;
+    QListViewItem* lvi = getChartItemBelowCursor(pos);
+    if (!lvi)
+        return;
+
+    if (ev->button() == Qt::LeftButton)
+        listView->setSelected(lvi, true);
+    else if (ev->button() == Qt::RightButton)
+        doPopupMenu(lvi, QCursor::pos(), 0);
+}
+
+void
 TjReport::updateStatusBar()
 {
-    if (loadingProject || !isVisible() || !ganttChartView->isVisible())
-        return;
-
-    QPoint pos = ganttChartView->mapFromGlobal(QCursor::pos());
-    if (pos.x() < 0 || pos.y() < 0 ||
-        pos.x() > ganttChartView->width() ||
-        pos.y() > ganttChartView->height())
-    {
-        emit signalChangeStatusBar("");
-        return;
-    }
-
-    QListViewItem* lvi = listView->itemAt(QPoint(50, pos.y()));
+    QPoint pos;
+    QListViewItem* lvi = getChartItemBelowCursor(pos);
     if (!lvi)
     {
         emit signalChangeStatusBar("");
@@ -1243,6 +1258,25 @@ TjReport::updateStatusBar()
     CoreAttributes* parent = lvi2ParentCaDict[QString().sprintf("%p", lvi)];
 
     emit signalChangeStatusBar(this->generateStatusBarText(pos, ca, parent));
+}
+
+QListViewItem*
+TjReport::getChartItemBelowCursor(QPoint& pos)
+{
+    if (loadingProject || !isVisible() || !ganttChartView->isVisible())
+        return 0;
+
+    /* Since it is easier to map the global cursor position to the
+     * ganttChartView coordinates than using the event position we'll got for
+     * the easy way. */
+    pos = ganttChartView->mapFromGlobal(QCursor::pos());
+    // Make sure the cursor is really above the ganttChartView.
+    if (pos.x() < 0 || pos.y() < 0 ||
+        pos.x() > ganttChartView->width() ||
+        pos.y() > ganttChartView->height())
+        return 0;
+
+    return listView->itemAt(QPoint(50, pos.y()));
 }
 
 void
@@ -1388,14 +1422,12 @@ TjReport::setGanttChartColors()
     ganttChart->setColor("headerShadowCol", colorGroup().mid());
     ganttChart->setColor("chartBackgroundCol", listView->colorGroup().base());
     ganttChart->setColor("chartAltBackgroundCol",
-                         KGlobalSettings::calculateAlternateBackgroundColor
-                         (listView->colorGroup().base()));
+                         listView->alternateBackground());
     ganttChart->setColor("chartTimeOffCol",
-                         KGlobalSettings::calculateAlternateBackgroundColor
-                         (listView->colorGroup().base()).dark(110));
+                         listView->alternateBackground().dark(110));
     ganttChart->setColor("chartLineCol",
-                         KGlobalSettings::calculateAlternateBackgroundColor
-                         (listView->colorGroup().base()).dark(130));
+                         listView->alternateBackground().dark(130));
+    ganttChart->setColor("hightlightCol", colorGroup().highlight());
 }
 
 void

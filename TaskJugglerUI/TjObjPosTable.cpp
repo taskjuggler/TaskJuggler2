@@ -23,12 +23,14 @@ TjObjPosTable::~TjObjPosTable()
     entries.clear();
 }
 
-void
+TjObjPosTableEntry*
 TjObjPosTable::addEntry(CoreAttributes* ca, CoreAttributes* subCa,
                         int pos, int height)
 {
     TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, subCa, pos, height);
     entries[generateKey(ca, subCa)] = entry;
+
+    return entry;
 }
 
 int
