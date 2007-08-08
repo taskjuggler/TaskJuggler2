@@ -645,6 +645,9 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
         if (limits)
         {
             QPtrList<Resource> resources = (*ali)->getCandidates();
+            QString resStr = "";
+            for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
+                resStr += (*rli)->getId() + " ";
             if (limits->getDailyMax() > 0)
             {
                 uint slotCount = 0;
@@ -654,8 +657,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 if (freeSlots <= 0)
                 {
                     if (DEBUGRS(6))
-                        qDebug("  Allocation overloaded today for task %s",
-                               id.latin1());
+                        qDebug("  Resource(s) %soverloaded", resStr.latin1());
                     continue;
                 }
                 else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
@@ -670,8 +672,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 if (freeSlots <= 0)
                 {
                     if (DEBUGRS(6))
-                        qDebug("  Allocation overloaded this week for task %s",
-                               id.latin1());
+                        qDebug("  Resource(s) %soverloaded", resStr.latin1());
                     continue;
                 }
                 else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
@@ -686,8 +687,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 if (freeSlots <= 0)
                 {
                     if (DEBUGRS(6))
-                        qDebug("  Allocation overloaded this month for task %s",
-                               id.latin1());
+                        qDebug("  Resource(s) %soverloaded", resStr.latin1());
                     continue;
                 }
                 else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
