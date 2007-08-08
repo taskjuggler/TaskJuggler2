@@ -9,8 +9,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>662</width>
-            <height>525</height>
+            <width>1116</width>
+            <height>713</height>
         </rect>
     </property>
     <property name="caption">
@@ -33,6 +33,14 @@
             <widget class="QToolBox">
                 <property name="name">
                     <cstring>listViews</cstring>
+                </property>
+                <property name="sizePolicy">
+                    <sizepolicy>
+                        <hsizetype>5</hsizetype>
+                        <vsizetype>5</vsizetype>
+                        <horstretch>10</horstretch>
+                        <verstretch>0</verstretch>
+                    </sizepolicy>
                 </property>
                 <property name="currentIndex">
                     <number>0</number>
@@ -510,8 +518,8 @@
                 <property name="sizePolicy">
                     <sizepolicy>
                         <hsizetype>4</hsizetype>
-                        <vsizetype>7</vsizetype>
-                        <horstretch>0</horstretch>
+                        <vsizetype>5</vsizetype>
+                        <horstretch>80</horstretch>
                         <verstretch>0</verstretch>
                     </sizepolicy>
                 </property>
@@ -650,7 +658,7 @@
                             <number>0</number>
                         </property>
                         <property name="spacing">
-                            <number>0</number>
+                            <number>1</number>
                         </property>
                         <widget class="QWidgetStack">
                             <property name="name">
@@ -672,6 +680,89 @@
                                     <number>0</number>
                                 </attribute>
                             </widget>
+                        </widget>
+                        <widget class="QFrame">
+                            <property name="name">
+                                <cstring>frame4</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>5</hsizetype>
+                                    <vsizetype>1</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="frameShape">
+                                <enum>StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>Raised</enum>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel1_3</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Filter</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLineEdit">
+                                    <property name="name">
+                                        <cstring>reportSearch</cstring>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer1</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>20</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel2</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Start</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>WordBreak|AlignVCenter</set>
+                                    </property>
+                                </widget>
+                                <widget class="KDateEdit">
+                                    <property name="name">
+                                        <cstring>reportStart</cstring>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel3</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>End</string>
+                                    </property>
+                                </widget>
+                                <widget class="KDateEdit">
+                                    <property name="name">
+                                        <cstring>reportEnd</cstring>
+                                    </property>
+                                </widget>
+                            </hbox>
                         </widget>
                     </vbox>
                 </widget>
@@ -705,5 +796,7 @@
     <includehint>klistview.h</includehint>
     <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
+    <includehint>libkdepim/kdateedit.h</includehint>
+    <includehint>libkdepim/kdateedit.h</includehint>
 </includehints>
 </UI>

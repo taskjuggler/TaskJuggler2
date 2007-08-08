@@ -2672,12 +2672,16 @@ Task::prepareScenario(int sc)
                          * in strict mode, show a warning. */
                         warningMessage(i18n("Bookings exceed effort on task "
                                             "%1 in scenario %2\n"
-                                            "Booking: %3\n"
-                                            "Effort: %4\n")
+                                            "Reported Bookings: %3d (%4h)\n"
+                                            "Specified Effort: %5d (%6h)\n")
                                        .arg(id)
                                        .arg(project->getScenarioId(sc))
                                        .arg(doneEffort)
-                                       .arg(effort));
+                                       .arg(doneEffort *
+                                            project->getDailyWorkingHours())
+                                       .arg(effort)
+                                       .arg(effort *
+                                            project->getDailyWorkingHours()));
                     }
                 }
                 else
