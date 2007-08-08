@@ -4,11 +4,13 @@ project limits1 "Limits1" "$Id" 2004-03-01-0:00-GMT - 2004-05-01-0:00-GMT
 	now 2004-03-01
 }
 
-resource r1 "R1" { 
+resource r1 "R1" {
 	limits { dailymax 2h weeklymax 6h monthlymax 14h }
 }
 
 resource r2 "R2"
+resource r3 "R3"
+resource r4 "R4"
 
 task t1 "Task 1" {
 	start 2004-03-01
@@ -20,6 +22,13 @@ task t2 "Task 2" {
 	start 2004-03-01
 	duration 60d
 	allocate r2 { limits { dailymax 2h weeklymax 6h monthlymax 14h } }
+}
+
+task t3 "Task 3" {
+  start 2004-03-01
+  duration 60d
+	allocate r3 { limits { weeklymax 2d } }
+	allocate r4 { limits { weeklymax 2d } }
 }
 
 taskreport "Limits-1.html" {

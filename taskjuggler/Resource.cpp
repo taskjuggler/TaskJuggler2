@@ -643,7 +643,7 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
         SbBooking* b = scoreboard[i];
         if (b < (SbBooking*) 4)
             continue;
-        if (task == 0 || task == b->getTask())
+        if (!task || task == b->getTask() || b->getTask()->isDescendantOf(task))
             bookings++;
     }
 
@@ -678,7 +678,7 @@ Resource::getCurrentDaySlots(time_t date, const Task* t)
         if (b < (SbBooking*) 4)
             continue;
 
-        if (!t || b->getTask() == t)
+        if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
             bookedSlots++;
     }
 
@@ -713,7 +713,7 @@ Resource::getCurrentWeekSlots(time_t date, const Task* t)
         if (b < (SbBooking*) 4)
             continue;
 
-        if (!t || b->getTask() == t)
+        if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
             bookedSlots++;
     }
 
@@ -748,7 +748,7 @@ Resource::getCurrentMonthSlots(time_t date, const Task* t)
         if (b < (SbBooking*) 4)
             continue;
 
-        if (!t || b->getTask() == t)
+        if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
             bookedSlots++;
     }
 
@@ -1031,7 +1031,7 @@ Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const Task* task)
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
-        if (task == 0 || b->getTask() == task)
+        if (!task || b->getTask() == task || b->getTask()->isDescendantOf(task))
             return true;
     }
     return false;
@@ -1056,7 +1056,8 @@ Resource::getPIDs(int sc, const Interval& period, const Task* task,
         SbBooking* b = scoreboards[sc][i];
         if (b < (SbBooking*) 4)
             continue;
-        if ((task == 0 || task == b->getTask()) &&
+        if ((!task || task == b->getTask() ||
+             b->getTask()->isDescendantOf(task)) &&
             pids.findIndex(b->getTask()->getProjectId()) == -1)
         {
             pids.append(b->getTask()->getProjectId());

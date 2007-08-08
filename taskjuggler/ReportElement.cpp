@@ -711,7 +711,7 @@ const
          *tli != 0; ++tli)
     {
         bool resourceLoadedInAnyScenario = false;
-        if (r != 0)
+        if (r != 0 && (*tli)->isLeaf())
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
@@ -806,7 +806,7 @@ const
          *rli != 0; ++rli)
     {
         bool taskLoadedInAnyScenario = false;
-        if (t != 0)
+        if (t != 0 && t->isLeaf())
         {
             QValueList<int>::const_iterator it;
             for (it = scenarios.begin(); it != scenarios.end(); ++it)
