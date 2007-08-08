@@ -30,6 +30,8 @@ public:
 
     Report* getReportDefinition() const { return report; }
 
+    virtual void setFocus() = 0;
+
     virtual bool generateReport() = 0;
 
     void setLoadingProject(bool lp) { loadingProject = lp; }

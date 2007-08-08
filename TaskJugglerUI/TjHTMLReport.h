@@ -31,6 +31,8 @@ public:
                  const QString& n = QString::null);
     virtual ~TjHTMLReport() { }
 
+    virtual void setFocus() { }
+
     virtual bool generateReport();
 
     virtual void print();

@@ -28,6 +28,8 @@ public:
                  const QString& n = QString::null);
     virtual ~TjSummaryReport() { }
 
+    virtual void setFocus() { }
+
     virtual bool generateReport();
 
     virtual void print();

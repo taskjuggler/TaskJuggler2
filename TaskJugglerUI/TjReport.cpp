@@ -183,6 +183,12 @@ done:
     delete printer;
 }
 
+void
+TjReport::setFocus()
+{
+    listView->setFocus();
+}
+
 bool
 TjReport::event(QEvent* ev)
 {

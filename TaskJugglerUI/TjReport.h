@@ -58,6 +58,8 @@ public:
 
     virtual const QtReportElement* getReportElement() const = 0;
 
+    virtual void setFocus();
+
     void generateTaskListLine(const QtReportElement* reportElement,
                               const Task* t, QListViewItem* lvi,
                               const Resource* r = 0);
