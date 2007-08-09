@@ -44,7 +44,7 @@ TjTaskReport::newPrintReport(KPrinter* pr)
     return new TjPrintTaskReport(report, pr);
 }
 
-const QtReportElement*
+QtReportElement*
 TjTaskReport::getReportElement() const
 {
     return reportElement;

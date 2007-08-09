@@ -35,6 +35,7 @@
 #include <ktextbrowser.h>
 #include <krun.h>
 #include <kmessagebox.h>
+#include <klistviewsearchline.h>
 
 #include "Project.h"
 #include "Task.h"
@@ -54,16 +55,21 @@
 #include "KPrinterWrapper.h"
 #include "UsageLimits.h"
 #include "ReportManager.h"
+#include "ReportController.h"
+#include "kdateedit.h"
 
-TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
+TjReport::TjReport(QWidget* p, ReportManager* m, Report* rDef,
                    const QString& n)
     : TjUIReportBase(p, m, rDef, n)
 {
     loadingProject = false;
-    autoFit = true;
+    scaleMode = TjGanttChart::fitSize;
 
-    QHBoxLayout* hl = new QHBoxLayout(this, 0, 0);
-    splitter = new QSplitter(Horizontal, this);
+    QVBoxLayout* vl = new QVBoxLayout(this, 0, 0);
+    reportFrame = new QWidget(this);
+
+    QHBoxLayout* hl = new QHBoxLayout(reportFrame, 0, 0);
+    splitter = new QSplitter(Horizontal, reportFrame);
 
     listView = new KListView(splitter);
     listView->setRootIsDecorated(true);
@@ -74,10 +80,10 @@ TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
     listView->setItemMargin(2);
 
     canvasFrame = new QWidget(splitter);
-    QVBoxLayout* vl = new QVBoxLayout(canvasFrame, 0, 0);
+    QVBoxLayout* vlChart = new QVBoxLayout(canvasFrame, 0, 0);
     canvasFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
-    ganttChart = new TjGanttChart(this);
+    ganttChart = new TjGanttChart(reportFrame);
     objPosTable = 0;
 
     ganttHeaderView = new QCanvasView(ganttChart->getHeaderCanvas(),
@@ -89,10 +95,15 @@ TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
                                      canvasFrame);
     ganttChartView->setVScrollBarMode(QScrollView::AlwaysOff);
 
-    startTime = endTime = 0;
+    reportController = new ReportController(this);
+    reportController->reportSearch->setListView(listView);
+    reportController->reportStart->setDate(time2qdate(rDef->getStart()));
+    reportController->reportEnd->setDate(time2qdate(rDef->getEnd()));
 
-    vl->addWidget(ganttHeaderView);
-    vl->addWidget(ganttChartView);
+    vl->addWidget(reportFrame);
+    vl->addWidget(reportController);
+    vlChart->addWidget(ganttHeaderView);
+    vlChart->addWidget(ganttChartView);
     hl->addWidget(splitter);
 
     statusBarUpdateTimer = delayTimer = 0;
@@ -114,6 +125,12 @@ TjReport::TjReport(QWidget* p, ReportManager* m, Report* const rDef,
             this, SLOT(syncVSlidersGantt2List(int, int)));
     connect(listView, SIGNAL(contentsMoving(int, int)),
             this, SLOT(syncVSlidersList2Gantt(int, int)));
+    connect(reportController->reportSearch, SIGNAL(textChanged(const QString&)),
+            this, SLOT(reportSearchTriggered(const QString&)));
+    connect(reportController->reportStart, SIGNAL(dateChanged(const QDate&)),
+            this, SLOT(setReportStart(const QDate&)));
+    connect(reportController->reportEnd, SIGNAL(dateChanged(const QDate&)),
+            this, SLOT(setReportEnd(const QDate&)));
 
     indexColumns.insert("index");
     indexColumns.insert("hierarchindex");
@@ -223,10 +240,7 @@ TjReport::generateReport()
      * layouted yet. So we can't set the splitter to a good size and generate
      * the gantt report immediately. We use a 200ms timer to delay the
      * rendering. Hopefully by then the window has been layouted properly. */
-    delayTimer = new QTimer(this);
-    connect(delayTimer, SIGNAL(timeout()),
-            this, SLOT(regenerateChart()));
-    delayTimer->start(200, true);
+    triggerChartRegeneration(200);
 
     delete statusBarUpdateTimer;
     statusBarUpdateTimer = new QTimer(this);
@@ -235,6 +249,18 @@ TjReport::generateReport()
     statusBarUpdateTimer->start(500, false);
 
     return true;
+}
+
+void
+TjReport::triggerChartRegeneration(int msDelay)
+{
+    if (delayTimer == 0)
+    {
+        delayTimer = new QTimer(this);
+        connect(delayTimer, SIGNAL(timeout()),
+                this, SLOT(regenerateChart()));
+    }
+    delayTimer->start(msDelay, true);
 }
 
 void
@@ -248,8 +274,8 @@ TjReport::regenerateChart()
     prepareChart();
 
     // When we are here, we have rendered the widgets at least once. So we can
-    // turn off autoFit mode.
-    autoFit = false;
+    // turn off manual mode.
+    scaleMode = TjGanttChart::manual;
 
     ganttChart->getHeaderCanvas()->update();
     ganttChart->getChartCanvas()->update();
@@ -681,7 +707,7 @@ TjReport::prepareChart()
          lvit = ca2lviDict.begin(); lvit != ca2lviDict.end(); ++lvit)
     {
         const QListViewItem* lvi = (*lvit).second;
-        if (!lvi)
+        if (!lvi || !lvi->isVisible())
             continue;
 
         // Find out if the list entry is visible at all.
@@ -732,39 +758,27 @@ TjReport::prepareChart()
             selectedObject = tableEntry;
     }
 
-    // Make sure that we only prepare the chart if the listView isn't empty.
-
-    if (!listView->firstChild())
-    {
-        QValueList<int> sizes;
-        sizes.append(width());
-        sizes.append(0);
-        splitter->setSizes(sizes);
-        KMessageBox::information
-            (this, i18n("The report does not contain any data. Either there "
-                        "were no properties defined for this report or the "
-                        "filter expressions have eliminated all entries."),
-             QString::null, "EmptyReportInfo");
-        return;
-    }
-
     // Calculate some commenly used values;
     headerHeight = listView->header()->height();
-    itemHeight = listView->firstChild()->height();
     QListViewItem* lvi;
-    for (lvi = listView->firstChild(); lvi && lvi->itemBelow();
-         lvi = lvi->itemBelow())
-        ;
-    listHeight = lvi->itemPos() + itemHeight;
+    itemHeight = 0;
+    listHeight = 0;
+    for (lvi = listView->firstChild(); lvi; lvi = lvi->itemBelow())
+        if (lvi->isVisible())
+        {
+            if (lvi->height() > itemHeight)
+                itemHeight = lvi->height();
+            listHeight = lvi->itemPos() + itemHeight - 1;
+        }
 
     // Resize header canvas to new size.
     ganttHeaderView->setFixedHeight(headerHeight);
 
     ganttChart->setProjectAndReportData(getReportElement());
     QValueList<int> sizes = splitter->sizes();
-    if (autoFit)
+    if (scaleMode == TjGanttChart::fitSize)
     {
-        /* In autoFit mode we show 1/3 table and 2/3 gantt chart. Otherwise we
+        /* In fitSize mode we show 1/3 table and 2/3 gantt chart. Otherwise we
          * just keep the current size of the splitter. */
         if (showGantt)
         {
@@ -788,8 +802,7 @@ TjReport::prepareChart()
     ganttChart->setDPI(metrics.logicalDpiX(), metrics.logicalDpiY());
     setGanttChartColors();
     ganttChart->setHeaderHeight(headerHeight);
-    ganttChart->generate(autoFit ? TjGanttChart::fitSize:
-                         TjGanttChart::manual);
+    ganttChart->generate(scaleMode);
     updateZoomSelector();
 
     canvasFrame->setMaximumWidth(ganttChart->getWidth());
@@ -1132,8 +1145,9 @@ TjReport::showResourceDetails(Resource* resource)
     richTextDisplay->textDisplay->setTextFormat(Qt::RichText);
 
     QString text;
-    Interval iv = Interval(report->getStart(),
-                           report->getEnd());
+    const ReportElement* reportElement = this->getReportElement();
+    Interval iv = Interval(reportElement->getStart(),
+                           reportElement->getEnd());
     double load = resource->getEffectiveLoad(scenario, iv);
     double freeLoad = resource->getEffectiveFreeLoad(scenario, iv);
 
@@ -1264,6 +1278,72 @@ TjReport::updateStatusBar()
     CoreAttributes* parent = lvi2ParentCaDict[QString().sprintf("%p", lvi)];
 
     emit signalChangeStatusBar(this->generateStatusBarText(pos, ca, parent));
+}
+
+void
+TjReport::reportSearchTriggered(const QString&)
+{
+    triggerChartRegeneration(200);
+}
+
+void
+TjReport::setReportStart(const QDate& d)
+{
+    ReportElement* reportElement = this->getReportElement();
+    time_t start = qdate2time(d);
+
+    bool clipped = false;
+    if (start < date2time("2000-01-01"))
+    {
+        start = date2time("2000-01-01");
+        clipped = true;
+    }
+    if (start > date2time("2030-01-01"))
+    {
+        start = date2time("2030-01-01");
+        clipped = true;
+    }
+    if (start + (24 * 60 * 60) > reportElement->getEnd())
+    {
+        start = reportElement->getEnd() - (24 * 60 * 60);
+        clipped = true;
+    }
+    if (clipped)
+        reportController->reportStart->setDate(time2qdate(start));
+
+    reportElement->setStart(start);
+    scaleMode = TjGanttChart::autoZoom;
+    generateReport();
+}
+
+void
+TjReport::setReportEnd(const QDate& d)
+{
+    ReportElement* reportElement = this->getReportElement();
+    time_t end = qdate2time(d);
+
+    bool clipped = false;
+    if (end < date2time("2000-01-01"))
+    {
+        end = date2time("2000-01-01");
+        clipped = true;
+    }
+    if (end > date2time("2030-01-01"))
+    {
+        end = date2time("2030-01-01");
+        clipped = true;
+    }
+    if (end - (24 * 60 * 60) < reportElement->getStart())
+    {
+        end = reportElement->getStart() + (24 * 60 * 60);
+        clipped = true;
+    }
+    if (clipped)
+        reportController->reportEnd->setDate(time2qdate(end));
+
+    reportElement->setEnd(end);
+    scaleMode = TjGanttChart::autoZoom;
+    generateReport();
 }
 
 QListViewItem*

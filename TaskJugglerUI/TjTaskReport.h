@@ -29,7 +29,7 @@ public:
                  const QString& n = QString::null);
     virtual ~TjTaskReport();
 
-    virtual const QtReportElement* getReportElement() const;
+    virtual QtReportElement* getReportElement() const;
 
     virtual TjPrintReport* newPrintReport(KPrinter* pr);
 

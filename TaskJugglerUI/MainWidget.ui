@@ -9,8 +9,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>1116</width>
-            <height>713</height>
+            <width>662</width>
+            <height>525</height>
         </rect>
     </property>
     <property name="caption">
@@ -34,16 +34,8 @@
                 <property name="name">
                     <cstring>listViews</cstring>
                 </property>
-                <property name="sizePolicy">
-                    <sizepolicy>
-                        <hsizetype>7</hsizetype>
-                        <vsizetype>5</vsizetype>
-                        <horstretch>10</horstretch>
-                        <verstretch>0</verstretch>
-                    </sizepolicy>
-                </property>
                 <property name="currentIndex">
-                    <number>4</number>
+                    <number>0</number>
                 </property>
                 <widget class="QWidget">
                     <property name="name">
@@ -132,14 +124,6 @@
                             <property name="name">
                                 <cstring>fileListViewSearch</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
                             <property name="urlDropsEnabled" stdset="0">
                                 <bool>false</bool>
                             </property>
@@ -224,14 +208,6 @@
                         <widget class="KListViewSearchLine" row="1" column="1">
                             <property name="name">
                                 <cstring>taskListViewSearch</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
                             </property>
                             <property name="urlDropsEnabled" stdset="0">
                                 <bool>false</bool>
@@ -325,14 +301,6 @@
                         <widget class="KListViewSearchLine" row="1" column="1">
                             <property name="name">
                                 <cstring>resourceListViewSearch</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
                             </property>
                             <property name="urlDropsEnabled" stdset="0">
                                 <bool>false</bool>
@@ -435,14 +403,6 @@
                             <property name="name">
                                 <cstring>accountListViewSearch</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
                             <property name="urlDropsEnabled" stdset="0">
                                 <bool>false</bool>
                             </property>
@@ -536,14 +496,6 @@
                             <property name="name">
                                 <cstring>reportListViewSearch</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
                             <property name="urlDropsEnabled" stdset="0">
                                 <bool>false</bool>
                             </property>
@@ -557,9 +509,9 @@
                 </property>
                 <property name="sizePolicy">
                     <sizepolicy>
-                        <hsizetype>7</hsizetype>
-                        <vsizetype>5</vsizetype>
-                        <horstretch>10</horstretch>
+                        <hsizetype>4</hsizetype>
+                        <vsizetype>7</vsizetype>
+                        <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                     </sizepolicy>
                 </property>
@@ -593,7 +545,7 @@
                                 </property>
                                 <property name="sizePolicy">
                                     <sizepolicy>
-                                        <hsizetype>4</hsizetype>
+                                        <hsizetype>5</hsizetype>
                                         <vsizetype>7</vsizetype>
                                         <horstretch>0</horstretch>
                                         <verstretch>0</verstretch>
@@ -698,7 +650,7 @@
                             <number>0</number>
                         </property>
                         <property name="spacing">
-                            <number>1</number>
+                            <number>0</number>
                         </property>
                         <widget class="QWidgetStack">
                             <property name="name">
@@ -706,8 +658,8 @@
                             </property>
                             <property name="sizePolicy">
                                 <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>7</vsizetype>
+                                    <hsizetype>2</hsizetype>
+                                    <vsizetype>2</vsizetype>
                                     <horstretch>0</horstretch>
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -720,89 +672,6 @@
                                     <number>0</number>
                                 </attribute>
                             </widget>
-                        </widget>
-                        <widget class="QFrame">
-                            <property name="name">
-                                <cstring>frame4</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>1</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                                <enum>StyledPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Raised</enum>
-                            </property>
-                            <hbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel1_3</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Filter</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLineEdit">
-                                    <property name="name">
-                                        <cstring>reportSearch</cstring>
-                                    </property>
-                                </widget>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer1</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Expanding</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>20</width>
-                                            <height>21</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel2</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Start</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>WordBreak|AlignVCenter</set>
-                                    </property>
-                                </widget>
-                                <widget class="KDateEdit">
-                                    <property name="name">
-                                        <cstring>reportStart</cstring>
-                                    </property>
-                                </widget>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel3</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>End</string>
-                                    </property>
-                                </widget>
-                                <widget class="KDateEdit">
-                                    <property name="name">
-                                        <cstring>reportEnd</cstring>
-                                    </property>
-                                </widget>
-                            </hbox>
                         </widget>
                     </vbox>
                 </widget>
@@ -836,7 +705,7 @@
     <includehint>klistview.h</includehint>
     <includehint>klistviewsearchline.h</includehint>
     <includehint>klistview.h</includehint>
-    <includehint>libkdepim/kdateedit.h</includehint>
-    <includehint>libkdepim/kdateedit.h</includehint>
+    <includehint>kdateedit.h</includehint>
+    <includehint>kdateedit.h</includehint>
 </includehints>
 </UI>

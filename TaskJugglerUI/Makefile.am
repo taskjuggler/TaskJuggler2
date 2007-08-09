@@ -29,7 +29,7 @@ TaskJugglerUI_SOURCES = main.cpp taskjuggler.cpp taskjugglerview.cpp pref.cpp \
 	TjReport.cpp TjTaskReport.cpp TjResourceReport.cpp \
 	kdateedit.cpp kdatepickerpopup.cpp \
 	taskjuggleriface.skel \
-	MainWidget.ui RichTextDisplay.ui \
+	MainWidget.ui RichTextDisplay.ui ReportController.ui \
 	TemplateSelector.ui TjDatePicker.ui 
 
 # these are the headers for your project

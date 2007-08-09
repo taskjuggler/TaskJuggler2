@@ -877,6 +877,25 @@ date2time(const QString& date)
     return localTime;
 }
 
+QDate
+time2qdate(time_t t)
+{
+    return QDate(year(t), monthOfYear(t), dayOfMonth(t));
+}
+
+time_t
+qdate2time(const QDate& d)
+{
+#if defined(__CYGWIN__) || (defined(__SVR4) && defined(__sun))
+    struct tm t = { 0, 0, 0, d.day(), d.month() - 1, d.year() - 1900,
+                    0, 0, -1 };
+#else
+    struct tm t = { 0, 0, 0, d.day(), d.month() - 1, d.year() - 1900,
+                    0, 0, -1, 0, 0 };
+#endif
+    return mktime(&t);
+}
+
 #if defined(__SVR4) && defined(__sun)
 /*
  * Note: a proper implementation of a "setenv" function for Solaris

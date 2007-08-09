@@ -329,12 +329,6 @@ TjGanttChart::calcLegendHeight(int width)
 void
 TjGanttChart::generate(ScaleMode scaleMode)
 {
-    // Make sure setSizes() has been called first();
-    assert(objPosTable != 0);
-    /* Make sure that setHeaderHeight() or calcHeaderHeight() have been called
-     * first. */
-    assert(headerMargin > 0);
-
     // Clear ganttHeader canvas.
     QCanvasItemList cis = header->allItems();
     for (QCanvasItemList::Iterator it = cis.begin(); it != cis.end(); ++it)
@@ -344,6 +338,12 @@ TjGanttChart::generate(ScaleMode scaleMode)
     cis = chart->allItems();
     for (QCanvasItemList::Iterator it = cis.begin(); it != cis.end(); ++it)
         delete *it;
+
+    // Make sure setSizes() has been called first();
+    assert(objPosTable != 0);
+    /* Make sure that setHeaderHeight() or calcHeaderHeight() have been called
+     * first. */
+    assert(headerMargin > 0);
 
     switch (scaleMode)
     {
@@ -392,7 +392,6 @@ TjGanttChart::generate(ScaleMode scaleMode)
                 endTime = unclippedEndTime;
                 clipped = false;
             }
-
             break;
         }
         default:
@@ -423,7 +422,8 @@ TjGanttChart::generate(ScaleMode scaleMode)
 
     generateHeaderAndGrid();
 
-    generateGanttElements();
+    if (!objPosTable->isEmpty())
+        generateGanttElements();
 
     header->update();
     chart->update();
@@ -749,6 +749,11 @@ TjGanttChart::generateHeaderAndGrid()
 
     generateHeaderLine(0);
     generateHeaderLine(headerHeight / 2);
+
+    // For empty reports we only draw the header.
+    if (objPosTable->isEmpty())
+        return;
+
     TjGanttZoomStep* czs = zoomSteps[currentZoomStep];
     switch (czs->getStepUnit(false))
     {

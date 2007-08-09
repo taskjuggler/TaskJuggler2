@@ -38,6 +38,8 @@ public:
     int caToHeight(const CoreAttributes* ca, const CoreAttributes* subCa = 0)
         const;
 
+    bool isEmpty() const { return entries.empty(); }
+
 private:
     QString generateKey(const CoreAttributes* ca,
                         const CoreAttributes* subCa) const;

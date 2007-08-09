@@ -44,7 +44,7 @@ TjResourceReport::newPrintReport(KPrinter* pr)
     return new TjPrintResourceReport(report, pr);
 }
 
-const QtReportElement*
+QtReportElement*
 TjResourceReport::getReportElement() const
 {
     return reportElement;

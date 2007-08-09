@@ -12,7 +12,7 @@
 
 #include "TjUIReportBase.h"
 
-TjUIReportBase::TjUIReportBase(QWidget* p, ReportManager* m, Report* const rDef,
+TjUIReportBase::TjUIReportBase(QWidget* p, ReportManager* m, Report* rDef,
                            const QString& n) :
     QWidget(p, n), ReportElementBase(rDef), manager(m)
 {

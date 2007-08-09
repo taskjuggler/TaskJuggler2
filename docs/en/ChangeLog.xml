@@ -1232,6 +1232,12 @@ enhance readability.</para></listitem>
 <listitem><para>Make tasks and resources in Gantt charts selectable
 and enable RMB menu to edit and view them quickly.</para></listitem>
 
+<listitem><para>Added filter for GUI report list
+items.</para></listitem>
+
+<listitem><para>The report interval of interactive reports can now be
+changed from the GUI temporarily.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

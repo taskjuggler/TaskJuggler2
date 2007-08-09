@@ -25,6 +25,7 @@
 #include "ResourceList.h"
 #include "Journal.h"
 #include "ReportLayers.h"
+#include "TjGanttChart.h"
 #include "ltQString.h"
 #include "ltstr.h"
 
@@ -43,20 +44,20 @@ class Interval;
 class JournalIterator;
 class TjPrintReport;
 class TjObjPosTable;
-class TjGanttChart;
 class TableColumnInfo;
+class ReportController;
 
 class TjReport : public TjUIReportBase
 {
     Q_OBJECT
 public:
-    TjReport(QWidget* p, ReportManager* m, Report* const rDef,
+    TjReport(QWidget* p, ReportManager* m, Report* rDef,
              const QString& n = QString::null);
     virtual ~TjReport();
 
     virtual bool generateReport();
 
-    virtual const QtReportElement* getReportElement() const = 0;
+    virtual QtReportElement* getReportElement() const = 0;
 
     virtual void setFocus();
 
@@ -88,12 +89,17 @@ private slots:
     void syncVSlidersGantt2List(int, int);
     void syncVSlidersList2Gantt(int, int);
     void updateStatusBar();
+    void reportSearchTriggered(const QString&);
+    void setReportStart(const QDate& d);
+    void setReportEnd(const QDate& d);
 
 protected:
     virtual bool event(QEvent* ev);
     virtual bool generateList() = 0;
 
     void prepareChart();
+
+    void triggerChartRegeneration(int msDelay);
 
     void generateListHeader(const QString& firstHeader, QtReportElement* tab);
 
@@ -128,6 +134,8 @@ protected:
     QSplitter* splitter;
     KListView* listView;
     QWidget* canvasFrame;
+    QWidget* reportFrame;
+    ReportController* reportController;
 
     TjObjPosTable* objPosTable;
     TjGanttChart* ganttChart;
@@ -140,7 +148,7 @@ protected:
      * widget is rendered on the screen. We use the following variable to keep
      * track of this.
      */
-    bool autoFit;
+    TjGanttChart::ScaleMode scaleMode;
 
     /**
      * We often need to find out if a CoreAttribute is in the ListView and
@@ -178,8 +186,6 @@ protected:
     int listHeight;
     int itemHeight;
     int canvasWidth;
-    time_t startTime;
-    time_t endTime;
 
     QTimer* statusBarUpdateTimer;
     QTimer* delayTimer;

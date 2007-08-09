@@ -28,7 +28,7 @@ public:
                      const QString& n = QString::null);
     virtual ~TjResourceReport();
 
-    virtual const QtReportElement* getReportElement() const;
+    virtual QtReportElement* getReportElement() const;
 
     virtual TjPrintReport* newPrintReport(KPrinter* pr);
 
