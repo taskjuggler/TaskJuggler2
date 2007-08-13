@@ -37,7 +37,7 @@
             <property name="sizePolicy">
                 <sizepolicy>
                     <hsizetype>7</hsizetype>
-                    <vsizetype>1</vsizetype>
+                    <vsizetype>0</vsizetype>
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                 </sizepolicy>
@@ -130,7 +130,7 @@
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>klistviewsearchline.h</includehint>
-    <includehint>libkdepim/kdateedit.h</includehint>
-    <includehint>libkdepim/kdateedit.h</includehint>
+    <includehint>kdateedit.h</includehint>
+    <includehint>kdateedit.h</includehint>
 </includehints>
 </UI>
