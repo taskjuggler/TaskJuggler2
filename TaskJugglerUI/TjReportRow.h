@@ -37,6 +37,9 @@ public:
     void setLastOnPage(bool lop) { lastOnPage = lop; }
     bool getLastOnPage() const { return lastOnPage; }
 
+    void setAlternate(bool alt) { alternate = alt; }
+    bool isAlternate() const { return alternate; }
+
     void insertCell(TjReportCell* c, int pos);
     TjReportCell* getCell(int pos) const;
 
@@ -60,6 +63,7 @@ private:
     bool hidden;
     // True if this row is the last row on the page.
     bool lastOnPage;
+    bool alternate;
     TjReportCell** cells;
 
     int index;

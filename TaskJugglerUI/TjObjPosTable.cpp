@@ -25,9 +25,10 @@ TjObjPosTable::~TjObjPosTable()
 
 TjObjPosTableEntry*
 TjObjPosTable::addEntry(CoreAttributes* ca, CoreAttributes* subCa,
-                        int pos, int height)
+                        int pos, int height, bool alternate)
 {
-    TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, subCa, pos, height);
+    TjObjPosTableEntry* entry = new TjObjPosTableEntry(ca, subCa, pos, height,
+                                                       alternate);
     entries[generateKey(ca, subCa)] = entry;
 
     return entry;

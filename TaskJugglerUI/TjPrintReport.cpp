@@ -662,6 +662,7 @@ TjPrintReport::layoutPages()
     int absTopOfRow = 0;
     int minRowHeight = 0;
     int yPage = 0;
+    bool alternate = false;
     TjReportRow* prevRow = 0;
     for (std::vector<TjReportRow*>::iterator rit = rows.begin();
          rit != rows.end(); prevRow = *rit, ++rit)
@@ -716,13 +717,15 @@ TjPrintReport::layoutPages()
         if (showGantt)
             objPosTable->addEntry((*rit)->getCoreAttributes(),
                                   (*rit)->getSubCoreAttributes(), absTopOfRow,
-                                  maxHeight);
+                                  maxHeight, alternate);
 
         (*rit)->setTopY(topOfRow);
         topOfRow += maxHeight;
         absTopOfRow += maxHeight;
         (*rit)->setYPage(yPage);
         (*rit)->setHeight(maxHeight);
+        (*rit)->setAlternate(alternate);
+        alternate = !alternate;
     }
     if (prevRow)
         prevRow->setLastOnPage(true);
@@ -907,12 +910,23 @@ TjPrintReport::printReportPage(int x, int y)
 
                 /* The first column is repeated as left column on each page.
                  * On the first page we of course don't have to do this. */
-                if ((reportColumn->getXPage() == x || col == 0) &&
-                    !reportColumn->getIsGantt())
+                if (reportColumn->getXPage() != x && col != 0)
+                    continue;
+
+                if (!reportColumn->getIsGantt())
                 {
+                    if ((*rit)->isAlternate())
+                    {
+                        p.setPen(QColor(Qt::lightGray).light(125));
+                        p.setBrush(QColor(Qt::lightGray).light(125));
+                        p.drawRect(reportColumn->getLeftX(), (*rit)->getTopY(),
+                                   reportColumn->getWidth(),
+                                   (*rit)->getHeight());
+                    }
+
                     printReportCell(*rit, col);
 
-                    // Draw lower border line for row
+                    /* // Draw lower border line for row
                     if (col == 0 || (*rit)->getLastOnPage())
                         p.setPen(QPen(Qt::black, 1));
                     else
@@ -922,7 +936,18 @@ TjPrintReport::printReportPage(int x, int y)
                                (*rit)->getTopY() + (*rit)->getHeight() - 1,
                                reportColumn->getLeftX() +
                                reportColumn->getWidth() - 1,
-                               (*rit)->getTopY() + (*rit)->getHeight() - 1);
+                               (*rit)->getTopY() + (*rit)->getHeight() - 1);*/
+                    // Draw lower border line only for last row
+                    if ((*rit)->getLastOnPage())
+                    {
+                        p.setPen(QPen(Qt::black, 1));
+
+                        p.drawLine(reportColumn->getLeftX(),
+                                   (*rit)->getTopY() + (*rit)->getHeight() - 1,
+                                   reportColumn->getLeftX() +
+                                   reportColumn->getWidth() - 1,
+                                   (*rit)->getTopY() + (*rit)->getHeight() - 1);
+                    }
 
                     // Draw right cell border
                     if (!columns[col]->getLastOnPage())
@@ -936,8 +961,7 @@ TjPrintReport::printReportPage(int x, int y)
                                    (*rit)->getTopY() + (*rit)->getHeight());
                     }
                 }
-                else if (reportColumn->getIsGantt() &&
-                         reportColumn->getXPage() == x && !ganttChartPainted)
+                else if (!ganttChartPainted)
                 {
                     ganttChartPainted = true;
                     /* Compute the height of the table on this page and the

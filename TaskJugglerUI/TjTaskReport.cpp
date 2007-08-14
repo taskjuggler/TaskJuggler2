@@ -153,7 +153,7 @@ TjTaskReport::generateList()
                                           getBookedResourcesIterator(scenario));
                  *rli; ++rli)
             {
-                QListViewItem* lvi =
+                KListViewItem* lvi =
                     new KListViewItem(newLvi, (*rli)->getName());
                 lvi->setPixmap(0, KGlobal::iconLoader()->
                                loadIcon("tj_resource", KIcon::Small));
@@ -172,7 +172,7 @@ TjTaskReport::generateList()
     // columns.
     for (TaskListIterator tli(taskList); *tli; ++tli)
     {
-        QListViewItem* lvi = ca2lviDict[QString("t:") + (*tli)->getId()];
+        KListViewItem* lvi = ca2lviDict[QString("t:") + (*tli)->getId()];
         generateTaskListLine(reportElement, *tli, lvi);
         if (!(*tli)->isContainer() && !(*tli)->isMilestone())
         {
@@ -180,7 +180,7 @@ TjTaskReport::generateList()
                                           getBookedResourcesIterator(scenario));
                  *rli; ++rli)
             {
-                QListViewItem* lvi = ca2lviDict[QString("r:") +
+                KListViewItem* lvi = ca2lviDict[QString("r:") +
                     (*tli)->getId() + ":" + (*rli)->getId()];
                 // Make sure that the resource is not hidden.
                 if (lvi)

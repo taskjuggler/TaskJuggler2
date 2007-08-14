@@ -154,7 +154,7 @@ TjResourceReport::generateList()
                 /* We iterate through the filtered task list and check whether
                  * we need to insert the tasks in a tree or not. */
                 int parentIdx = 0;
-                QListViewItem* lvi;
+                KListViewItem* lvi;
                 if ((*tli)->getParent() &&
                     reportElement->showTaskTree() &&
                     (parentIdx =
@@ -163,7 +163,7 @@ TjResourceReport::generateList()
                     // Find the corresponding parent LVI and insert the task
                     // as a child of it.
                     CoreAttributes* parent = filteredTaskList.at(parentIdx);
-                    QListViewItem* parentLvi =
+                    KListViewItem* parentLvi =
                         ca2lviDict[QString("t:") + (*rli)->getId() +
                         ":" + parent->getId()];
                     lvi = new KListViewItem(parentLvi, (*tli)->getName());
@@ -206,7 +206,7 @@ TjResourceReport::generateList()
             for (TaskListIterator tli((*rli)->getTaskListIterator(scenario));
                  *tli; ++tli)
             {
-                QListViewItem* lvi = ca2lviDict[QString("t:") +
+                KListViewItem* lvi = ca2lviDict[QString("t:") +
                     (*rli)->getId() + ":" + (*tli)->getId()];
                 // Some tasks may be hidden, so we have to ignore those.
                 if (lvi)

@@ -18,19 +18,22 @@ class CoreAttributes;
 class TjObjPosTableEntry {
 public:
     TjObjPosTableEntry(CoreAttributes* c, CoreAttributes* sc,
-                       int p, int h) : ca(c), subCA(sc), pos(p), height(h) { }
+                       int p, int h, bool alt) :
+        ca(c), subCA(sc), pos(p), height(h), alternate(alt) { }
     ~TjObjPosTableEntry() { }
 
     CoreAttributes* getCoreAttributes() const { return ca; }
     CoreAttributes* getSubCoreAttributes() const { return subCA; }
     int getPos() const { return pos; }
     int getHeight() const { return height; }
+    bool isAlternate() { return alternate; }
 
 private:
     CoreAttributes* ca;
     CoreAttributes* subCA;
     int pos;
     int height;
+    bool alternate;
 } ;
 
 #endif

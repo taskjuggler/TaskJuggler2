@@ -33,7 +33,7 @@ class QSplitter;
 class QCanvas;
 class QCanvasView;
 class QTimer;
-class QListViewItem;
+class KListViewItem;
 class KListView;
 class KPrinter;
 class Report;
@@ -62,10 +62,10 @@ public:
     virtual void setFocus();
 
     void generateTaskListLine(const QtReportElement* reportElement,
-                              const Task* t, QListViewItem* lvi,
+                              const Task* t, KListViewItem* lvi,
                               const Resource* r = 0);
     void generateResourceListLine(const QtReportElement* reportElement,
-                                  Resource* r, QListViewItem* lvi,
+                                  Resource* r, KListViewItem* lvi,
                                   const Task* t = 0);
     void print();
 
@@ -158,7 +158,7 @@ protected:
      * character plus colon prefix to create a unified namespace. So
      * t:mytask.subtask is a task and r:team.nick is a resource.
      */
-    std::map<const QString, QListViewItem*, ltQString> ca2lviDict;
+    std::map<const QString, KListViewItem*, ltQString> ca2lviDict;
 
     /* And the same in the other direction. We use the hex-ed address of the
      * LVI as key. */

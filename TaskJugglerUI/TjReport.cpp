@@ -67,6 +67,7 @@ TjReport::TjReport(QWidget* p, ReportManager* m, Report* rDef,
 
     QVBoxLayout* vl = new QVBoxLayout(this, 0, 0);
     reportFrame = new QWidget(this);
+    reportFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QHBoxLayout* hl = new QHBoxLayout(reportFrame, 0, 0);
     splitter = new QSplitter(Horizontal, reportFrame);
@@ -285,7 +286,7 @@ TjReport::regenerateChart()
 
 void
 TjReport::generateTaskListLine(const QtReportElement* reportElement,
-                               const Task* t, QListViewItem* lvi,
+                               const Task* t, KListViewItem* lvi,
                                const Resource* r)
 {
     assert(reportElement != 0);
@@ -507,7 +508,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
 
 void
 TjReport::generateResourceListLine(const QtReportElement* reportElement,
-                                   Resource* r, QListViewItem* lvi,
+                                   Resource* r, KListViewItem* lvi,
                                    const Task* t)
 {
     assert(reportElement != 0);
@@ -703,10 +704,10 @@ TjReport::prepareChart()
     objPosTable = new TjObjPosTable;
     TjObjPosTableEntry* selectedObject = 0;
 
-    for (std::map<const QString, QListViewItem*, ltQString>::iterator
+    for (std::map<const QString, KListViewItem*, ltQString>::iterator
          lvit = ca2lviDict.begin(); lvit != ca2lviDict.end(); ++lvit)
     {
-        const QListViewItem* lvi = (*lvit).second;
+        KListViewItem* lvi = (*lvit).second;
         if (!lvi || !lvi->isVisible())
             continue;
 
@@ -752,7 +753,8 @@ TjReport::prepareChart()
         }
         assert(ca1 != 0);
         TjObjPosTableEntry* tableEntry =
-            objPosTable->addEntry(ca1, ca2, lvi->itemPos(), lvi->height());
+            objPosTable->addEntry(ca1, ca2, lvi->itemPos(), lvi->height(),
+                                  lvi->isAlternate());
 
         if (lvi == listView->selectedItem())
             selectedObject = tableEntry;

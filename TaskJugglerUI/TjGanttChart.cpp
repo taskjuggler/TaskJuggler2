@@ -55,7 +55,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["headerLineCol"] = Qt::black;
     colors["headerShadowCol"] = Qt::white;
     colors["chartBackgroundCol"] = Qt::white;
-    colors["chartAltBackgroundCol"] = Qt::white;
+    colors["chartAltBackgroundCol"] = Qt::lightGray.light(125);
     colors["chartTimeOffCol"] = QColor("#CECECE");
     colors["chartLineCol"] = QColor("#4F4F4F");
     colors["todayLineCol"] = Qt::green;
@@ -105,7 +105,6 @@ TjGanttChart::setSizes(const TjObjPosTable* opt, int hh, int ch, int w,
     minRowHeight = mrh;
 
     assert(headerHeight > 0);
-    assert(chartHeight > 0);
     assert(width > 0);
 
     header->resize(width, headerHeight);
@@ -1023,22 +1022,23 @@ TjGanttChart::generateGanttBackground()
      * only works if the chart has the same height for all lines. If this is
      * not the case the alterntive color should be identical to the background
      * color. */
-    if (colors["chartBackgroundCol"] == colors["chartAltBackgroundCol"])
-        return;
-
-    bool toggle = false;
-    for (int y = 0; y < chartHeight; y += minRowHeight)
-    {
-        toggle = !toggle;
-        if (toggle)
-            continue;
-
-        rect = new QCanvasRectangle(0, y, width, minRowHeight, chart);
-        rect->setPen(QPen(Qt::NoPen));
-        rect->setBrush(QBrush(colors["chartAltBackgroundCol"]));
-        rect->setZ(TJRL_BACKLINES);
-        rect->show();
-    }
+    if (colors["chartBackgroundCol"] != colors["chartAltBackgroundCol"])
+        for (TjObjPosTableConstIterator it(*objPosTable); *it; ++it)
+        {
+            /* The isAlternate() method is the cleaner code, but does not work
+             * reliably as the alternate setting seems to lag the LVI
+             * positioning.
+            if (!(*it)->isAlternate())
+                continue;*/
+            if (((*it)->getPos() / (*it)->getHeight()) % 2 == 0)
+                continue;
+            rect = new QCanvasRectangle(0, (*it)->getPos(), width,
+                                        (*it)->getHeight(), chart);
+            rect->setPen(QPen(Qt::NoPen));
+            rect->setBrush(QBrush(colors["chartAltBackgroundCol"]));
+            rect->setZ(TJRL_BACKLINES);
+            rect->show();
+        }
 
     // Highlight the selected object
     if (selectedObject)
