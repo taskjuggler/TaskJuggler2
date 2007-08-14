@@ -1012,11 +1012,20 @@ Task::isCompleted(int sc, time_t date) const
         {
             return (date <=
                     scenarios[sc].start +
-                    static_cast<int>((scenarios[sc].reportedCompletion / 100.0) *
-                           (scenarios[sc].end - scenarios[sc].start)));
+                    static_cast<int>((scenarios[sc].reportedCompletion /
+                                      100.0) * (scenarios[sc].end -
+                                                scenarios[sc].start)));
         }
     }
 
+    if (isContainer())
+    {
+        return (date <=
+                scenarios[sc].start +
+                static_cast<int>((scenarios[sc].containerCompletion /
+                                  100.0) * (scenarios[sc].end -
+                                            scenarios[sc].start)));
+    }
 
     return (project->getNow() > date);
 }

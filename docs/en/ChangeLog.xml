@@ -1238,6 +1238,9 @@ items.</para></listitem>
 <listitem><para>The report interval of interactive reports can now be
 changed from the GUI temporarily.</para></listitem>
 
+<listitem><para>Fixed the coloring of completed part of a container
+task in HTML task reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
