@@ -675,6 +675,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>rollupaccount</optattr>
    <optattr>hideaccount</optattr>
    <optattr>period_report</optattr>
+   <optattr>scenario_report</optattr>
    <optattr>separator</optattr>
    <optattr>sortaccounts</optattr>
    <optattr>start_report</optattr>
@@ -696,10 +697,14 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rollupresource</optattr>
    <optattr>hideresource</optattr>
+   <optattr>loadunit</optattr>
    <optattr>period_report</optattr>
+   <optattr>scenario_report</optattr>
    <optattr>separator</optattr>
+   <optattr>shorttimeformat</optattr>
    <optattr>sortresources</optattr>
    <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
    <also>htmlresourcereport</also>
@@ -719,10 +724,14 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>end_report</optattr>
    <optattr>rolluptask</optattr>
    <optattr>hidetask</optattr>
+   <optattr>loadunit</optattr>
    <optattr>period_report</optattr>
+   <optattr>scenario_report</optattr>
    <optattr>separator</optattr>
+   <optattr>shorttimeformat</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
+   <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
    <also>htmltaskreport</also>
