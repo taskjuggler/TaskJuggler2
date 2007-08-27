@@ -545,6 +545,11 @@ file processing, the report macros must be prefixed with an additional
    <member><varname>schedule</varname></member>
    <member>A detailed schedule of the allocations for the resource.</member>
    
+   <member><varname>scheduling</varname></member>
+   <member>The scheduling direction of the task. ASAP (As Soon As
+   Possible) tasks are scheduled from start to end, ALAP (As Late As
+   Possible) are scheduled from end to start.</member>
+   
    <member><varname>seqno</varname></member>
    <member>The task index in the order of declaration. Each
    time a task declaration is completed, the sequence number is increased

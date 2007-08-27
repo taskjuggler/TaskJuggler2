@@ -1205,6 +1205,11 @@ CSVReportElement::genCellSchedule(TableCellInfo*)
 {
 }
 
+void
+CSVReportElement::genCellScheduling(TableCellInfo*)
+{
+}
+
 #define GCEFFORT(a) \
 void \
 CSVReportElement::genCell##a##Effort(TableCellInfo* tci) \

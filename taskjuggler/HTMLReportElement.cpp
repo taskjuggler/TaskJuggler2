@@ -1730,6 +1730,12 @@ HTMLReportElement::genCellResponsibilities(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellScheduling(TableCellInfo* tci)
+{
+    genCell(tci->tli->task->getSchedulingText(), tci, true);
+}
+
+void
 HTMLReportElement::genCellSchedule(TableCellInfo* tci)
 {
     s() << "   <td>" << endl;

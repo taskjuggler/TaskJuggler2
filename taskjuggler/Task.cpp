@@ -959,6 +959,32 @@ Task::createCandidateList(int sc, time_t date, Allocation* a)
 }
 
 QString
+Task::getSchedulingText() const
+{
+    if (isLeaf())
+    {
+        return scheduling == ASAP ? "ASAP |-->|" : "ALAP |<--|";
+    }
+    else
+    {
+        QString text;
+
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
+        {
+            if (text.isEmpty())
+                text = (*tli)->getSchedulingText();
+            else if (text != (*tli)->getSchedulingText())
+            {
+                text = "Mixed";
+                break;
+            }
+        }
+        return text;
+    }
+    return QString::null;
+}
+
+QString
 Task::getStatusText(int sc) const
 {
     QString text;

@@ -257,6 +257,11 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = TableColumnFormat::left;
     tcf->expandable = true;
 
+    tcf = new TableColumnFormat(KW("scheduling"), this, i18n("Scheduling"));
+    tcf->genTaskLine1 = &ReportElement::genCellScheduling;
+    tcf->hAlign = TableColumnFormat::left;
+    tcf->expandable = true;
+
     tcf = new TableColumnFormat(KW("mineffort"), this, i18n("Min. Effort"));
     tcf->genResourceLine1 = &ReportElement::genCellMinEffort;
     tcf->hAlign = TableColumnFormat::right;

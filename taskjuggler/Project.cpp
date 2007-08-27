@@ -761,16 +761,18 @@ Project::schedule(int sc)
                 /* No time slot has been set yet. Check if this task can be
                  * scheduled and provides a suggestion. */
                 slot = (*tli)->nextSlot(scheduleGranularity);
-                priority = (*tli)->getPriority();
-                pathCriticalness = (*tli)->getPathCriticalness(sc);
-                schedulingInfo = (*tli)->getScheduling();
                 /* If not, try the next task. */
                 if (slot == 0)
                     continue;
+                priority = (*tli)->getPriority();
+                pathCriticalness = (*tli)->getPathCriticalness(sc);
+                schedulingInfo = (*tli)->getScheduling();
 
                 if (DEBUGPS(4))
-                    qDebug("Task '%s' (Prio %d) requests slot %s",
+                    qDebug("Task '%s' (Prio %d, Direction: %d) requests "
+                           "slot %s",
                            (*tli)->getId().latin1(), (*tli)->getPriority(),
+                           (*tli)->getScheduling(),
                            time2ISO(slot).latin1());
                 /* If the task wants a time slot outside of the project time
                  * frame, we flag this task as a runaway and go to the next

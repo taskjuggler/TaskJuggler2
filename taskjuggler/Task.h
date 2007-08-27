@@ -240,6 +240,8 @@ public:
     TaskStatus getStatus(int sc) const { return scenarios[sc].status; }
     QString getStatusText(int sc) const;
 
+    QString getSchedulingText() const;
+
     bool isCompleted(int sc, time_t date) const;
     void calcCompletionDegree(int sc);
     void calcContainerCompletionDegree(int sc, time_t now);

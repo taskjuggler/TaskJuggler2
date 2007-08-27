@@ -476,6 +476,8 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
+        else if ((*ci)->getName() == "scheduling")
+            cellText = t->getSchedulingText();
         else if ((*ci)->getName() == "start")
             cellText = time2user(t->getStart(scenario),
                                  reportElement->getTimeFormat());

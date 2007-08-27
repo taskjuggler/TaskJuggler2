@@ -4,7 +4,7 @@ macro AllColumns [
 	endbufferstart, flags, follows, freeload, id, index, maxeffort,
 	maxend, maxstart, mineffort, minend, minstart, name, no, note,
 	priority, profit, projectid, rate, reference, resources,
-	responsibilities, responsible, revenue, scenario, seqno, start,
+	responsibilities, responsible, revenue, scenario, scheduling, seqno, start,
 	startbuffer, startbufferend, status, utilization, daily, weekly, monthly
 ]
 

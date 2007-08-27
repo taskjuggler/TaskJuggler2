@@ -1241,6 +1241,11 @@ changed from the GUI temporarily.</para></listitem>
 <listitem><para>Fixed the coloring of completed part of a container
 task in HTML task reports.</para></listitem>
 
+<listitem><para>Added new column
+<computeroutput>scheduling</computeroutput> to reports. It shows the
+scheduling direction of tasks and can be used to find potential
+sources for priority inversions.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

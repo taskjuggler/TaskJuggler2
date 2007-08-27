@@ -107,6 +107,7 @@ public:
     virtual void genCellYearlyAccount(TableCellInfo*) { }
     virtual void genCellResponsibilities(TableCellInfo*) { }
     virtual void genCellSchedule(TableCellInfo*) { }
+    virtual void genCellScheduling(TableCellInfo*) { }
     virtual void genCellMinEffort(TableCellInfo*) { }
     virtual void genCellMaxEffort(TableCellInfo*) { }
     virtual void genCellEfficiency(TableCellInfo*) { }
