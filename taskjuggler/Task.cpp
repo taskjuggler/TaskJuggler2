@@ -3301,6 +3301,20 @@ Task::calcContainerCompletionDegree(int sc, time_t now)
     }
 }
 
+double
+Task::getCompletedLoad(int sc) const
+{
+    return getLoad(sc, Interval(project->getStart(), project->getEnd())) *
+        getCompletionDegree(sc) / 100.0;
+}
+
+double
+Task::getRemainingLoad(int sc) const
+{
+    return getLoad(sc, Interval(project->getStart(), project->getEnd())) *
+        (1.0 - getCompletionDegree(sc) / 100.0);
+}
+
 bool
 Task::countMilestones(int sc, time_t now, int& totalMilestones,
                       int& completedMilestones,

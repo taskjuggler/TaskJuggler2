@@ -1306,6 +1306,69 @@ HTMLReportElement::genCellCompleted(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellCompletedEffort(TableCellInfo* tci)
+{
+    double val = 0.0;
+
+    if (!tci->tli->resource && tci->tli->task->isLeaf())
+    {
+        // Task line, no resource.
+        val = tci->tli->task->getCompletedLoad(tci->tli->sc);
+    }
+    else if (tci->tli->ca2->getType() == CA_Resource &&
+             tci->tli->task && tci->tli->task->isLeaf())
+    {
+        // Task line, nested into a resource
+        const Project* project = report->getProject();
+        time_t now = project->getNow();
+        if (now < project->getStart())
+            now = project->getStart();
+        if (now > project->getEnd())
+            now = project->getEnd();
+        Interval iv = Interval(project->getStart(), now);
+        val = tci->tli->task->getLoad(tci->tli->sc, iv, tci->tli->resource);
+    }
+    else
+    {
+        genCell("", tci, false);
+        return;
+    }
+    generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
+}
+
+void
+HTMLReportElement::genCellRemainingEffort(TableCellInfo* tci)
+{
+    double val = 0.0;
+
+    if (!tci->tli->resource && tci->tli->task->isLeaf())
+    {
+        // Task line, no resource.
+        val = tci->tli->task->getRemainingLoad(tci->tli->sc);
+    }
+    else if (tci->tli->ca2->getType() == CA_Resource &&
+             tci->tli->task && tci->tli->task->isLeaf())
+    {
+        // Task line, nested into a resource
+        const Project* project = report->getProject();
+        time_t now = project->getNow();
+        if (now < project->getStart())
+            now = project->getStart();
+        if (now > project->getEnd())
+            now = project->getEnd();
+        Interval iv = Interval(now, project->getEnd());
+        val = tci->tli->task->getLoad(tci->tli->sc, iv, tci->tli->resource);
+    }
+    else
+    {
+        genCell("", tci, false);
+        return;
+    }
+
+    generateRightIndented(tci, scaledLoad(val, tci->tcf->realFormat));
+}
+
+void
 HTMLReportElement::genCellStatus(TableCellInfo* tci)
 {
     genCell(tci->tli->task->getStatusText(tci->tli->sc), tci, false);

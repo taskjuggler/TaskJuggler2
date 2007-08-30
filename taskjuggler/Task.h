@@ -251,6 +251,8 @@ public:
     {
         return scenarios[sc].status;
     }
+    double getCompletedLoad(int sc) const;
+    double getRemainingLoad(int sc) const;
 
     double getLoad(int sc, const Interval& period, const Resource* resource = 0)
         const;

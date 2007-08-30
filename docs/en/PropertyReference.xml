@@ -406,6 +406,9 @@ file processing, the report macros must be prefixed with an additional
    linkend="PROPERTY_now">now</link>) and the length, duration or
    effort.</member>
    
+   <member><varname>completedeffort</varname></member>
+   <member>The effort of a task that has already been completed.</member>
+   
    <member><varname>cost</varname></member>
    <member>The accumulated costs of the task and its sub tasks</member>
    
@@ -523,6 +526,10 @@ file processing, the report macros must be prefixed with an additional
    
    <member><varname>reference</varname></member>
    <member>A reference to a URL that contains further information.</member>
+   
+   <member><varname>remainingeffort</varname></member>
+   <member>The effort of a task that still needs to be done to
+   complete the task..</member>
    
    <member><varname>resources</varname></member>
    <member>The names of the used resources</member>

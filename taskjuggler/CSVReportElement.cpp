@@ -846,6 +846,16 @@ CSVReportElement::genCellCompleted(TableCellInfo* tci)
 }
 
 void
+CSVReportElement::genCellCompletedEffort(TableCellInfo* tci)
+{
+}
+
+void
+CSVReportElement::genCellRemainingEffort(TableCellInfo* tci)
+{
+}
+
+void
 CSVReportElement::genCellStatus(TableCellInfo* tci)
 {
     genCell(tci->tli->task->getStatusText(tci->tli->sc), tci, false);

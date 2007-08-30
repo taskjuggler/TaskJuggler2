@@ -350,6 +350,30 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 }
             }
         }
+        else if ((*ci)->getName() == "completedeffort")
+        {
+            double val = 0.0;
+            if (!r && t->isLeaf())
+            {
+                // Task line, no resource.
+                val = t->getCompletedLoad(scenario);
+            }
+            else if (t && t->isLeaf())
+            {
+                // Task line, nested into a resource
+                const Project* project = report->getProject();
+                time_t now = project->getNow();
+                if (now < project->getStart())
+                    now = project->getStart();
+                if (now > project->getEnd())
+                    now = project->getEnd();
+                Interval iv = Interval(project->getStart(), now);
+                val = t->getLoad(scenario, iv, r);
+            }
+            cellText = indent
+                (reportElement->scaledLoad(val, tcf->realFormat),
+                 lvi, tcf->getHAlign() == TableColumnFormat::right);
+        }
         else if ((*ci)->getName() == "cost")
         {
             double val = t->getCredits
@@ -450,6 +474,30 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             cellText = indent(tcf->realFormat.format(val, false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
+        }
+        else if ((*ci)->getName() == "remainingeffort")
+        {
+            double val = 0.0;
+            if (!r && t->isLeaf())
+            {
+                // Task line, no resource.
+                val = t->getRemainingLoad(scenario);
+            }
+            else if (t && t->isLeaf())
+            {
+                // Task line, nested into a resource
+                const Project* project = report->getProject();
+                time_t now = project->getNow();
+                if (now < project->getStart())
+                    now = project->getStart();
+                if (now > project->getEnd())
+                    now = project->getEnd();
+                Interval iv = Interval(now, project->getEnd());
+                val = t->getLoad(scenario, iv, r);
+            }
+            cellText = indent
+                (reportElement->scaledLoad(val, tcf->realFormat),
+                 lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
         else if ((*ci)->getName() == "resources")
         {

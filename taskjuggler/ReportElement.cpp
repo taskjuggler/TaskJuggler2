@@ -284,6 +284,20 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->hAlign = TableColumnFormat::right;
     tcf->indent = true;
 
+    tcf = new TableColumnFormat(KW("completedeffort"), this,
+                                i18n("Compl. Effort"));
+    tcf->genTaskLine1 = &ReportElement::genCellCompletedEffort;
+    tcf->genTaskLine2 = &ReportElement::genCellCompletedEffort;
+    tcf->hAlign = TableColumnFormat::right;
+    tcf->indent = true;
+
+    tcf = new TableColumnFormat(KW("remainingeffort"), this,
+                                i18n("Rem. Effort"));
+    tcf->genTaskLine1 = &ReportElement::genCellRemainingEffort;
+    tcf->genTaskLine2 = &ReportElement::genCellRemainingEffort;
+    tcf->hAlign = TableColumnFormat::right;
+    tcf->indent = true;
+
     tcf = new TableColumnFormat(KW("status"), this, i18n("Status"));
     tcf->genTaskLine1 = &ReportElement::genCellStatus;
     tcf->genTaskLine2 = &ReportElement::genCellStatus;

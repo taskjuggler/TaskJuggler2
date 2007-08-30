@@ -223,6 +223,8 @@ public:
     virtual void genCellPriority(TableCellInfo*) = 0;
     virtual void genCellFlags(TableCellInfo*) = 0;
     virtual void genCellCompleted(TableCellInfo*) = 0;
+    virtual void genCellCompletedEffort(TableCellInfo*) = 0;
+    virtual void genCellRemainingEffort(TableCellInfo*) = 0;
     virtual void genCellStatus(TableCellInfo*) = 0;
     virtual void genCellReference(TableCellInfo*) = 0;
     virtual void genCellScenario(TableCellInfo*) = 0;

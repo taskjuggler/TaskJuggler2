@@ -1242,9 +1242,12 @@ changed from the GUI temporarily.</para></listitem>
 task in HTML task reports.</para></listitem>
 
 <listitem><para>Added new column
-<computeroutput>scheduling</computeroutput> to reports. It shows the
+<computeroutput>scheduling</computeroutput>,
+<computeroutput>completedeffort</computeroutput> and
+<computeroutput>remainingeffort</computeroutput> to reports. The first shows the
 scheduling direction of tasks and can be used to find potential
-sources for priority inversions.</para></listitem>
+sources for priority inversions. The other two show the task effort
+that has been completed already and the remaining effort.</para></listitem>
 
 </itemizedlist></para>
 

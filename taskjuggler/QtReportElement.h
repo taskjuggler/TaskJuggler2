@@ -85,6 +85,8 @@ public:
     virtual void genCellPriority(TableCellInfo*) { }
     virtual void genCellFlags(TableCellInfo*) { }
     virtual void genCellCompleted(TableCellInfo*) { }
+    virtual void genCellCompletedEffort(TableCellInfo*) { }
+    virtual void genCellRemainingEffort(TableCellInfo*) { }
     virtual void genCellStatus(TableCellInfo*) { }
     virtual void genCellReference(TableCellInfo*) { }
     virtual void genCellScenario(TableCellInfo*) { }
