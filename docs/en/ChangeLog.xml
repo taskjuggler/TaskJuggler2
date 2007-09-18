@@ -1249,6 +1249,9 @@ scheduling direction of tasks and can be used to find potential
 sources for priority inversions. The other two show the task effort
 that has been completed already and the remaining effort.</para></listitem>
 
+<listitem><para>iCalendar files are now properly encoded when Unicode
+characters are used.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

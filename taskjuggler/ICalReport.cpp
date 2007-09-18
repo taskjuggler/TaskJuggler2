@@ -213,7 +213,7 @@ ICalReport::generate()
 
     // Dump the calendar in ICal format into a text file.
     KCal::ICalFormat format;
-    s << format.toString(&cal).utf8() << endl;
+    s << format.toString(&cal) << endl;
 
     return close();
 }

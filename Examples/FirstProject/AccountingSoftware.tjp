@@ -307,3 +307,5 @@ xmlreport "XML-Report.tjx" {
   hideresource 0
   scenarios plan, delayed
 }
+
+icalreport "Calendar.ics"
