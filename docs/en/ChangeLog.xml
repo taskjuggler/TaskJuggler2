@@ -1252,6 +1252,10 @@ that has been completed already and the remaining effort.</para></listitem>
 <listitem><para>iCalendar files are now properly encoded when Unicode
 characters are used.</para></listitem>
 
+<listitem><para>The <computeroutput>hasAssignment()</computeroutput>
+		function for logical expressions now properly accepts
+		3 parameters as documented.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

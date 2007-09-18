@@ -22,7 +22,7 @@ ExpressionFunctionTable::ExpressionFunctionTable() :
 {
     functions.setAutoDelete(true);
 
-    addFunc(KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 2);
+    addFunc(KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 3);
     addFunc(KW("isTask"), &ExpressionTreeFunction::isTask, 1);
     addFunc(KW("isATask"), &ExpressionTreeFunction::isATask, 0);
     addFunc(KW("isMilestone"), &ExpressionTreeFunction::isMilestone, 0);
