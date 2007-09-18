@@ -4496,6 +4496,24 @@ ProjectFile::readCSVReport(const QString& reportType)
                 if (!readSorting(tab, 2))
                     goto error;
             }
+            else if (token == KW("taskroot"))
+            {
+                if ((tt = nextToken(token)) == ID ||
+                    tt == ABSOLUTE_ID)
+                {
+                    if (!proj->getTask(token))
+                    {
+                        errorMessage(i18n("taskroot must be a known task"));
+                        goto error;
+                    }
+                    report->setTaskRoot(token + ".");
+                }
+                else
+                {
+                    errorMessage(i18n("Task ID expected"));
+                    goto error;
+                }
+            }
             else if (token == KW("loadunit"))
             {
                 if (nextToken(token) != ID || !tab->setLoadUnit(token))

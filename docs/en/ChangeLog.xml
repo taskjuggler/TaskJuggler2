@@ -1256,6 +1256,9 @@ characters are used.</para></listitem>
 		function for logical expressions now properly accepts
 		3 parameters as documented.</para></listitem>
 
+<listitem><para>Enable <computeroutput>taskroot</computeroutput>
+		support for csvtaskreports as well.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

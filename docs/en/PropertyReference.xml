@@ -743,6 +743,7 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <optattr>shorttimeformat</optattr>
    <optattr>sorttasks</optattr>
    <optattr>start_report</optattr>
+   <optattr>taskroot</optattr>
    <optattr>timeformat</optattr>
   </optattributes>
   <seealso>
