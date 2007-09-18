@@ -1315,7 +1315,7 @@ HTMLReportElement::genCellCompletedEffort(TableCellInfo* tci)
         // Task line, no resource.
         val = tci->tli->task->getCompletedLoad(tci->tli->sc);
     }
-    else if (tci->tli->ca2->getType() == CA_Resource &&
+    else if (tci->tli->ca2 && tci->tli->ca2->getType() == CA_Resource &&
              tci->tli->task && tci->tli->task->isLeaf())
     {
         // Task line, nested into a resource
@@ -1346,7 +1346,7 @@ HTMLReportElement::genCellRemainingEffort(TableCellInfo* tci)
         // Task line, no resource.
         val = tci->tli->task->getRemainingLoad(tci->tli->sc);
     }
-    else if (tci->tli->ca2->getType() == CA_Resource &&
+    else if (tci->tli->ca2 && tci->tli->ca2->getType() == CA_Resource &&
              tci->tli->task && tci->tli->task->isLeaf())
     {
         // Task line, nested into a resource
