@@ -4506,7 +4506,7 @@ ProjectFile::readCSVReport(const QString& reportType)
                         errorMessage(i18n("taskroot must be a known task"));
                         goto error;
                     }
-                    report->setTaskRoot(token + ".");
+                    tab->setTaskRoot(token + ".");
                 }
                 else
                 {
