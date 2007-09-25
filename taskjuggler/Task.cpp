@@ -285,7 +285,7 @@ Task::schedule(int sc, time_t& date, time_t slotDuration)
     if ((duration > 0.0) || (length > 0.0))
     {
         /* Length specifies the number of working days (as daily load)
-         * and duration specifies the number of calender days. */
+         * and duration specifies the number of calendar days. */
         if (!allocations.isEmpty())
             bookResources(sc, date, slotDuration);
 

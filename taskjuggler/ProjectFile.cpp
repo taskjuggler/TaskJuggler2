@@ -1929,7 +1929,7 @@ ProjectFile::readDate(time_t& val, time_t correction, bool checkPrjInterval)
             val > proj->getEnd())
         {
             errorMessage(i18n("Date %1 is outside of project time frame "
-                              "(%2 - %3")
+                              "(%2 - %3)")
                          .arg(time2tjp(val))
                          .arg(time2tjp(proj->getStart()))
                          .arg(time2tjp(proj->getEnd())));
@@ -3211,7 +3211,7 @@ ProjectFile::readICalTaskReport()
 {
 #ifndef HAVE_KDE
     errorMessage(i18n("The program was compiled without KDE support. "
-                      "Therefor ICal support has been disabled."));
+                      "Therefore ICal support has been disabled."));
     return false;
 #else
     QString fileName;
@@ -5354,7 +5354,7 @@ ProjectFile::readColumn(uint maxScenarios, ReportElement* tab)
     }
     if (!tab->isSupportedColumn(token))
     {
-        errorMessage(i18n("Unknown colon ID '%1'. Supported IDs are: %2.")
+        errorMessage(i18n("Unknown column ID '%1'. Supported IDs are: %2.")
                      .arg(token).arg(tab->getSupportedColumnList().join(", ")));
         return 0;
     }
@@ -5749,7 +5749,7 @@ ProjectFile::date2time(const QString& date, time_t& val)
         errorMessage(i18n("Date must be larger than 1971-01-01"));
         return false;
     }
-    if (year > 2035)
+    if (year >= 2035)
     {
         errorMessage(i18n("Date must be smaller than 2035-01-01"));
         return false;
