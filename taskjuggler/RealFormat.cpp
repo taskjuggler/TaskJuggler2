@@ -58,14 +58,19 @@ RealFormat::format(double val, bool showZeroFract) const
     {
         double v = fabs(val) - abs(static_cast<int>(val));
         int fract = static_cast<int>(v * pow(10, fracDigits));
-        text += fractionSep + QString("%1").arg(fract);
+        QString fracStr = QString("%1").arg(fract);
+        /* Prepend zeros if fractStr is not fracDigits long */
+        if (fracStr.length() < fracDigits)
+          fracStr = QString().fill('0', fracDigits - fracStr.length()) +
+              fracStr;
+        text += fractionSep + fracStr;
         /* If showZeroFract is false, we remove all zeros from the right end
          * of the text string. */
         if (!showZeroFract)
             while (text[text.length() - 1] == '0')
                 text = text.left(text.length() - 1);
         /* If we have removed the whole fractional part, we remove the
-         * fraction seperator as well. */
+         * fraction separator as well. */
         if (text.right(fractionSep.length()) == fractionSep)
             text = text.left(text.length() - fractionSep.length());
     }

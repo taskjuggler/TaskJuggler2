@@ -29,3 +29,6 @@ Maybe:
 - Gap with snap on weekdays.
 - Macros like ${TODAY}, ${ProjectStart}, ...
 - Hammock tasks (tasks that have logical childs outside the WBS)
+- Folding support for /* */ style comments in the editor.
+- New report that contains a tasks vs. resource matrix with
+  customizable resource columns.

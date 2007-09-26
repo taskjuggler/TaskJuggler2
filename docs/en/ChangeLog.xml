@@ -1259,6 +1259,10 @@ characters are used.</para></listitem>
 <listitem><para>Enable <computeroutput>taskroot</computeroutput>
 		support for csvtaskreports as well.</para></listitem>
 
+<listitem><para>Fixed a serious bug in the floating point formatter.
+		Zeros right after the decimal separator were
+		lost.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
