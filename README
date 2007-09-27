@@ -1,6 +1,9 @@
 See the documentation in the docs/en folder or the TaskJuggler Web
 Page at http://www.taskjuggler.org for more information.
 
+The following applies to users who build and distribute TaskJuggler
+on Windows or MacOS:
+
 As a special exception, you have permission to link this program with
 the Qt3 library and distribute executables, as long as you follow the
 requirements of the GNU GPL version 2 in regard to all of the software
