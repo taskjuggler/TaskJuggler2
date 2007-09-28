@@ -16,6 +16,9 @@ Probably:
   id) or task resources
 - Legend to explain meaning of HTML report Gantt elements.
 - add LogExp functions like 'dependsOn' or 'precedes'.
+- Fix conceptually broken limits for allocations. They should be
+  resource limits for tasks. Inheritance should be reconsidered as
+  well.
 
 Maybe:
 - Make vacations and shifts scenario specific.
