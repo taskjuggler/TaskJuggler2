@@ -19,9 +19,9 @@ Probably:
 - Fix conceptually broken limits for allocations. They should be
   resource limits for tasks. Inheritance should be reconsidered as
   well.
+- Make vacations and shifts scenario specific.
 
 Maybe:
-- Make vacations and shifts scenario specific.
 - Timezone support for resources and shifts.
 - Limits for accounts.
 - support for renewable resources
