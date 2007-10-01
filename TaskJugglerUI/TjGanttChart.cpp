@@ -1160,7 +1160,12 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
     /* Workaround for a QCanvasView problem. In Qt3.x it can only handle 32767
      * pixels per dimension. */
     if (start < 0)
+    {
+        barWidth += start;
+        if (barWidth < 0)
+            barWidth = 0;
         start = 0;
+    }
     else if (start > 32767)
         start = 32767;
     if (end < 0)
@@ -1186,6 +1191,9 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
     // The black progress bar.
     if (barWidth > 0)
     {
+        if (barWidth > (end - start))
+            qDebug("Bar too wide!");
+
         rect = new QCanvasRectangle
             (start, centerY - (int) (height * 0.12), barWidth,
              (int) (height * 0.24) + 1, canvas);

@@ -1263,6 +1263,10 @@ characters are used.</para></listitem>
 		Zeros right after the decimal separator were
 		lost.</para></listitem>
 
+<listitem><para>Fixed display of progress bar in GUI Gantt chart. It
+		sometimes extended the task bar in higher zooms.
+</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
