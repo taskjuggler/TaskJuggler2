@@ -170,28 +170,49 @@ software releases.</para>
 <sect2 id="preparing_a_contribution"><title>Preparing a
 contribution</title>
 
-<para>To get started you need to download the most current development
-snapshot from the <ulink
-url="http://www.taskjuggler.org/download.php">TaskJuggler Download
-Site</ulink>. The development snapshot is updated once a day to
-provide access to the most recent developments. It is important that you
-use a very recent snapshot as the developers have probably made changes
-in the same files as you. This increases the chance for change
-collisions, which could mean recreating your contribution from scratch.</para>
+<para>All TaskJuggler development is coordinated using the <ulink
+url="http://git.or.cz/">git</ulink> revision control system. All
+changes must be submitted using git so that we can track the
+authorship of each submission. To contribute you need to have at
+least git version 1.5.0 installed. As a first step, you need to
+checkout the latest version of the TaskJuggler. This will create a
+directory called <varname>taskjuggler</varname> in your current
+directory. It not only contains the latest sources, but also the full
+revision history of the code. It is your local copy of the TaskJuggler
+source repository.</para>
 
-<para>Unpack the tarball as described in the installation section.
-Then rename the taskjuggler directory to something like
-<varname>taskjuggler-yourname</varname>. Then unpack the tarball again
-in the same place as before and rename it to
-<varname>taskjuggler-svn</varname>. You should now have a directory that
-contains two identical directory trees, each with a slightly different
-name of the top-level directory of each tree.</para>
+<screen>git clone http://www.taskjuggler.org/git-repos/taskjuggler.git
+</screen>
+
+<para>If you have never used git before, you need to configure it
+first. You need to set your name and email address. This information
+will be present in all patches that you submit.</para>
+
+<screen>git config --global user.name "Your Name"
+git config --global user.email "firstname.lastname@domain.org"
+</screen>
+
+<para>You then need to configure and install the TaskJuggler version.
+Make sure, you have removed all other instances of TaskJuggler removed
+from you system before doing so. It is a common mistake to have an old
+version of the TaskJuggler library used by a newer version of the
+executables.</para>
+
+<screen>cd taskjuggler
+make -f Makefile.cvs
+./configure # Put your options here (see ./configure --help
+for details)
+make
+# Run as root
+make install
+</screen>
+
+<para>Do not use the development snapshots and send your patches as
+plain diff files. After having switched to git, we no longer accept
+such patches.</para>
 
 <para>Next you need to find the files where you want to make your
-modifications. Please make your changes only in the
-<varname>taskjuggler-yourname</varname> directory. The other directory
-must be left unmodified. We need it later on to create a file that
-just contains your changes. Sometimes files will be generated from
+modifications. Sometimes files will be generated from
 other files. Do not change those generated files. Your changes will be
 overwritten the next time you call the make utility. To identify those
 files, some familiarity with make and other Linux tools are
@@ -199,58 +220,78 @@ helpful. Whenever there is a file with the same base name and the extension
 <varname>.in</varname> in the same directory, then the file is
 generated from the <varname>.in</varname>-file. You need to modify the
 <varname>.in</varname>-file, not the one with just the base name. Another
-indicator is the fact that the file is not part of the tarball. With few
-exceptions that can be identified by the <varname>.in</varname>-file rule
-above, the tarball does not contain any generated files.</para>
+indicator is the fact that the file is not part of the repository. With few
+exceptions the repository does not contain any generated files.</para>
 
 </sect2>
 <sect2 id="creating_a_patch"><title>Creating a Patch</title>
 
-<para>When you are done with your changes, it's a good idea to test them.
-Type
+<para>When you are done with your changes, it's a good idea to test
+them. In the <varname>taskjuggler</varname> directory run the
+following commands. </para>
 
-<screen>make</screen>
+<screen>make
+# Run as root
+make install
+</screen>
 
-in the <varname>taskjuggler-yourname</varname> directory. If
-there are no errors, you can check or test the result. If everything
-builds fine, you can then remove all generated files again by typing 
+<para>If there are no errors, you can check or test the result. If
+everything works fine, you can lock at your changes again.</para>
 
-<screen>make distclean</screen>
+<screen>git diff</screen>
 
-Now you can generate a file that just contains
-your modifications by typing
-<screen>diff -ru taskjuggler-svn taskjuggler-yourname > taskjuggler-yourname.diff</screen>
+<para>The git-diff utility performs a line-by-line comparison of the
+files against the latest version in you local repository. Try to only
+make changes that have an impact on the generated files. Do not change
+indentation or line wrapping of paragraphs unless absolutely
+necessary. These kinds of changes increase the size of diff files and
+make it much harder to evaluate the patches.  When making changes to
+the program code, please use exactly the same coding style. If your
+contribution is large enough to justify a copyright claim, please
+indicate what copyright you claim in the patch. For modifications to
+existing files, we will assume that your contribution falls under the
+same license as the modified file. All new files will need to contain
+a license declaration, preferably GPL version 2. In any case, the
+license must be an <ulink url="http://www.opensource.org/licenses">OSI
+accepted license</ulink> and be compatible with the rest of the
+project.</para>
 
-Inspect the generated diff file
-<varname>taskjuggler-yourname.diff</varname> and make sure it only
-contains diffs for files that you have changed and the changes are the
-way you want them to be. If there are generated files included in the diff,
-please remove those files and regenerate the diff.</para>
+<para>Review all changes carefully. In case you have created new
+source files, you need to register them with your repository.</para>
 
-<para>The diff utility performs a line-by-line
-comparison of the files. Try to only make changes
-that have an impact on the generated files. Do not change indentation
-or line wrapping of paragraphs. These kinds of changes increase the
-size of diff files and make it much harder to evaluate the patches.
-When making changes to the program code, please use our coding
-style. If your contribution is large enough to justify a
-copyright claim, please indicate what copyright you claim in the patch. For
-modifications
-to existing files, we will assume that your contribution falls under the
-same license as the modified file. All new files will need to contain a
-license declaration, preferably GPL.</para>
+<screen>git add FILENAME</screen>
 
-</sect2>
-<sect2 id="other_patch_tools"><title>Other patch tools</title>
+<para>If you think you are done, you can commit your changes to your local
+repository.</para>
 
-<para>If you are familiar with <ulink
-url="http://subversion.tigris.org/">Subversion</ulink> you can use
-the <computeroutput>svn diff</computeroutput> command to create your
-patch. We also accept <ulink
-url="http://www.kernel.org/pub/software/scm/git/docs/tutorial.html">git</ulink>
-patches. The latter is actually our preferred format. git can be used
-very effectively ontop of Subversion with the
-<computeroutput>git-svn</computeroutput> command.</para>
+<screen>git commit -a</screen>
+
+<para>Whenever you have made a certain change or added a certain
+feature, you should commit your changes to your local repository. This
+keeps patches small and makes reviewing them easier. The easier your
+patches can be reviewed, the more likely they will get in.</para>
+
+<para>The final step to submit your changes is to package them up and
+sign them. It is always a good idea to check for upstream changes
+again.</para>
+
+<screen>git pull</screen>
+
+<para>This makes sure you are really committing your patches against
+the latest version of the source code. In case there were upstream
+changes, you need to merge them first. Usually git does this
+automatically. Refer to the <ulink
+url="http://www.kernel.org/pub/software/scm/git/docs/user-manual.html">git
+manual</ulink> for details on resolving conflicts during merges. Now
+you can create the patch or patch-set.</para>
+
+<screen>git format-patch -s origin</screen>
+
+<para>This will generate a number of files starting with 5-digit file
+names. You then need to attach these files to a posting in the
+<ulink
+url="http://www.taskjuggler.org/FUDforum2/index.php?t=thread&amp;frm_id=5">TaskJuggler
+Developer Forum</ulink>.</para>
 
 </sect2>
 <sect2 id="contributing_translations"><title>Contributing Translations</title>
@@ -266,15 +307,6 @@ translations to be updated as well. Please understand that we do not
 want to ship partial or outdated translations to our users,
 so please ensure you or a group of people are willing to maintain the
 translations.</para>
-
-</sect2>
-<sect2 id="submitting_your_patch"><title>Submitting your Patch</title>
-
-<para>Once you have prepared your patch file, please post it with an
-explanation in our <ulink
-url="http://www.taskjuggler.org/FUDforum2/index.php?t=thread&amp;rm_id=5">Developer
-Forum</ulink>. Please, make sure to attach the file, don't paste it
-into the entry form.</para>
 
 </sect2>
 <sect2 id="some_final_words_to_contributors"><title>Some final words
