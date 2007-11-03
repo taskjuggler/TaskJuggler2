@@ -1267,6 +1267,13 @@ characters are used.</para></listitem>
 		sometimes extended the task bar in higher zooms.
 </para></listitem>
 
+<listitem><para>Changed the how-to-contribute section of the manual to
+		use git instead of subversion. We no longer accept
+		non-git patches now.</para></listitem>
+
+<listitem><para>Added 'criticalpath' attribute to task scenario
+		section of XML reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

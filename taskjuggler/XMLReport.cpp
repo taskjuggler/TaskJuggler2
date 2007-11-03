@@ -638,6 +638,7 @@ XMLReport::generateTask(QDomElement* parentEl, TaskList& filteredTaskList,
             genDateElement(&scEl, "start", task->getStart(*it));
         if (task->getEnd(*it) && !task->isMilestone())
             genDateElement(&scEl, "end", task->getEnd(*it) + 1);
+        genLongAttr(&scEl, "criticalpath", task->isOnCriticalPath(*it) ? 1 : 0);
         genLongAttr(&scEl, "scheduled", task->getScheduled(*it) ? 1 : 0);
 
         for (QStringList::Iterator atIt = taskAttributes.begin();
