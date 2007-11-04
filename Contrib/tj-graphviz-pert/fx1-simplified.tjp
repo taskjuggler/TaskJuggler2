@@ -1,0 +1,134 @@
+macro project_begin [ 2007-10-29 ]
+project fx "Project MyProject" "1.0" ${project_begin} - 2008-02-01 {
+  now ${project_begin}
+  timeformat "%Y-%m-%d"
+  currency "EUR"
+  scenario plan "Plan" {
+    # Mark all pathes as critical that have less than 10% slack time.
+    minslackrate 30.0
+  }
+}
+
+resource worker "Hard worker" {
+  limits { dailymax 8h weeklymax 5d monthlymax 20d }
+}
+
+task x "Things to do" {
+  start ${project_begin}
+  task choice "Really decide what to do" {
+      task needs "Assess needs" {
+        effort 1.5d
+        allocate worker
+      }
+      task choice_prep "Prepare decision" {
+        depends !needs
+        effort 5d
+        allocate worker
+      }
+      task choice_meeting "Decision meeting" {
+        depends !choice_prep
+        effort 1.5d
+        allocate worker
+      }
+    }
+
+    task build_cycle "Build" {
+      depends !choice
+      task build1 "Iteration 1 : pilot" {
+        task design "Design" {
+          effort 4d
+          allocate worker
+        }
+        task code "Implement and test" {
+          depends !design
+          effort 6d
+          allocate worker
+        }
+        task packaging "Package" {
+          depends !code
+          effort 3d
+          allocate worker
+        }
+        task depl "Deploy" {
+          depends !packaging
+          effort 5d
+          allocate worker
+        }
+      }
+      task build2 "Iteration 2 : pilot quick fixes" {
+        depends !build1
+        task code "Implement and test" {
+          effort 3d
+          allocate worker
+        }
+        task packaging "Package" {
+          depends !code
+          effort 0.25d
+          allocate worker
+        }
+        task depl "Deploy" {
+          depends !packaging
+          effort 1.75d
+          allocate worker
+        }
+      }
+      task build3 "Iteration 3 : target" {
+        depends !build2
+        task design "Design" {
+          effort 2.5d
+          allocate worker
+        }
+        task code "Implement and test" {
+          depends !design
+          effort 9d
+          allocate worker
+        }
+        task packaging "Package" {
+          depends !code
+          effort 3d
+          allocate worker
+        }
+        task depl "Deploy" {
+          depends !packaging
+          effort 2.5d
+          allocate worker
+        }
+      }
+    }
+
+    task xfco "Competence transfer" {
+      depends !build_cycle.build1
+      task op "Operation competence transfer" {
+        task doc "Operation documentation" {
+          effort 5d
+          allocate worker
+        }
+        task pres "Opearation presentation" {
+          depends !doc
+          effort 2d
+          allocate worker
+        }
+      }
+      task maint "Maintenance formation" {
+        effort 5d
+        allocate worker
+      }
+    }
+
+    task done "Job's done" {
+      depends !build_cycle,!xfco
+    }
+}
+
+xmlreport "v2.tjx" {
+  version 2
+}
+
+taskreport "gantt" {
+  headline "Gantt"
+  columns name, chart
+#  timeformat "%a %Y-%m-%d"
+#  loadunit days
+#  hideresource 1
+#  sorttasks tree,sequenceup
+}
