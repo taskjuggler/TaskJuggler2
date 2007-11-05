@@ -67,14 +67,14 @@ public:
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }
     bool getWeekStartsMonday() const { return weekStartsMonday; }
 
-    void setShowPIDs(bool s) { showPIDs = s; }
+    void setShowPIDs(bool sp) { showPIDs = sp; }
     bool getShowPIDs() const { return showPIDs; }
 
     void addReportColumn(const QString& c) { columns.append(c); }
     const QString& columnsAt(uint idx) { return columns[idx]; }
     void clearColumns() { columns.clear(); }
 
-    void setStart(time_t s) { start = s; }
+    void setStart(time_t st) { start = st; }
     time_t getStart() const { return start; }
 
     void setEnd(time_t e) { end = e; }

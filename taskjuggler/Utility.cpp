@@ -17,6 +17,7 @@
 #include <cstring>
 
 #include <string>
+#include <stdlib.h>
 
 #include <qdict.h>
 
@@ -910,7 +911,7 @@ int setenv(const char* var, const char* val, int ignore)
    int valLen = strlen(val);
    char *buffer = NULL;
 
-   if ((buffer = static_cast<char*> malloc(varLen + valLen + 2)) == NULL)
+   if ((buffer = static_cast<char*>(malloc(varLen + valLen + 2))) == NULL)
       return -1;
 
    sprintf (buffer, "%s=%s", var, val);

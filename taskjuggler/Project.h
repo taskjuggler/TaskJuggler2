@@ -329,7 +329,7 @@ public:
      * the vacation settings. This function sets the value which also affects
      * the monthly working days and the weekly working days.
      */
-    void setYearlyWorkingDays(double d) { yearlyWorkingDays = d; }
+    void setYearlyWorkingDays(double wd) { yearlyWorkingDays = wd; }
     /**
      * Returns the specified number of working days per year.
      */
@@ -361,15 +361,15 @@ public:
      * Returns true if the passed moment falls within any of the vacation
      * intervals.
      */
-    bool isVacation(time_t d) const { return vacationList.isVacation(d); }
+    bool isVacation(time_t vd) const { return vacationList.isVacation(vd); }
 
     /**
      * Returns the name of the first vacation that the given date falls into.
      * If no vacation is found QString::Null is returned.
      */
-    const QString& vacationName(time_t d) const
+    const QString& vacationName(time_t vd) const
     {
-        return vacationList.vacationName(d);
+        return vacationList.vacationName(vd);
     }
 
     /**
@@ -661,7 +661,7 @@ public:
      * Sets the number of decimal digits used for all currency values of the
      * project.
      */
-    void setCurrencyDigits(uint d) { currencyFormat.setFracDigits(d); }
+    void setCurrencyDigits(uint cd) { currencyFormat.setFracDigits(cd); }
 
     /**
      * Sets the default number format for load and other values.

@@ -12,6 +12,8 @@
 #ifndef _FileToken_h_
 #define _FileToken_h_
 
+#include <memory>
+
 #include <qtextstream.h>
 #include <qptrlist.h>
 

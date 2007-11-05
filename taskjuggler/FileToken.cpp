@@ -11,6 +11,8 @@
  */
 #include "FileToken.h"
 
+#include <stdlib.h>
+
 #include "tjlib-internal.h"
 
 FileToken::FileToken(const QString& file, const QString& tp) :

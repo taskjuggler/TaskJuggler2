@@ -23,7 +23,7 @@ class Scenario : public CoreAttributes
                                                CoreAttributes* c2,
                                                int level);
 public:
-    Scenario(Project* p, const QString& i, const QString& n, Scenario* p);
+    Scenario(Project* p, const QString& i, const QString& n, Scenario* s);
     virtual ~Scenario();
 
     virtual CAType getType() const { return CA_Scenario; }

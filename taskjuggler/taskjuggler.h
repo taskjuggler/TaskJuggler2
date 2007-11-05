@@ -18,25 +18,25 @@
 typedef enum CAType
 {
     CA_Undefined = 0, CA_Task, CA_Resource, CA_Account, CA_Shift, CA_Scenario
-};
+} CAType;
 
 typedef enum CustomAttributeType
 {
     CAT_Undefined = 0, CAT_Reference, CAT_Text
-};
+} CustomAttributeType;
 
 typedef enum TaskStatus
 {
     Undefined = 0, NotStarted, InProgressLate, InProgress, OnTime,
     InProgressEarly, Finished, Late
-};
+} TaskStatus;
 
-typedef enum AccountType { AllAccounts = 0, Cost, Revenue };
+typedef enum AccountType { AllAccounts = 0, Cost, Revenue } AccountType;
 
 typedef enum LoadUnit
 {
     minutes = 0, hours, days, weeks, months, years, shortAuto, longAuto
-};
+} LoadUnit;
 
 #endif
 

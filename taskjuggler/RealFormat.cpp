@@ -39,7 +39,7 @@ RealFormat::format(double val, bool showZeroFract) const
 {
     /* The algorithm further down does only truncation after fracDigits. So we
      * have to do real rounding first. */
-    val = qRound(val * pow(10, fracDigits)) / pow(10, fracDigits);
+    val = qRound(val * pow(10.0f, (int)fracDigits)) / pow(10.0f, (int)fracDigits);
 
     QString text;
     for (double v = fabs(val); v >= 1.0; v /= 1000)
@@ -57,7 +57,7 @@ RealFormat::format(double val, bool showZeroFract) const
     if (!fractionSep.isEmpty() && fracDigits > 0)
     {
         double v = fabs(val) - abs(static_cast<int>(val));
-        int fract = static_cast<int>(v * pow(10, fracDigits));
+        int fract = static_cast<int>(v * pow(10.0f, (int)fracDigits));
         QString fracStr = QString("%1").arg(fract);
         /* Prepend zeros if fractStr is not fracDigits long */
         if (fracStr.length() < fracDigits)

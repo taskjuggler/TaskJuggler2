@@ -389,22 +389,22 @@ Project::getAccountAttribute(const QString& id) const
 }
 
 bool
-Project::isWorkingDay(time_t d) const
+Project::isWorkingDay(time_t wd) const
 {
-    return !(workingHours[dayOfWeek(d, false)]->isEmpty() ||
-             isVacation(d));
+    return !(workingHours[dayOfWeek(wd, false)]->isEmpty() ||
+             isVacation(wd));
 }
 
 bool
-Project::isWorkingTime(time_t d) const
+Project::isWorkingTime(time_t wd) const
 {
-    if (isVacation(d))
+    if (isVacation(wd))
         return false;
 
-    int dow = dayOfWeek(d, false);
+    int dow = dayOfWeek(wd, false);
     for (QPtrListIterator<Interval> ili(*(workingHours[dow])); *ili != 0; ++ili)
     {
-        if ((*ili)->contains(secondsOfDay(d)))
+        if ((*ili)->contains(secondsOfDay(wd)))
             return true;
     }
     return false;

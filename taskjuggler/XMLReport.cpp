@@ -13,6 +13,7 @@
 #include "XMLReport.h"
 
 #include <zlib.h>
+#include <unistd.h>
 
 #include <qmap.h>
 
@@ -49,7 +50,7 @@ typedef enum TADs {
     TA_STATUS,
     TA_STATUSNOTE,
     TA_ACCOUNT
-};
+} TADs;
 
 XMLReport::XMLReport(Project* p, const QString& f,
                            const QString& df, int dl) :
