@@ -3107,8 +3107,8 @@ AC_DEFUN([AC_CHECK_COMPILERS],
         fi
         rm -f conftest.h conftest.h.gch
     fi
-    AM_CONDITIONAL(unsermake_enable_pch, test "$kde_use_pch" = "yes" && test "$kde_gcc_supports_pch" = "yes")
   fi
+  AM_CONDITIONAL(unsermake_enable_pch, test "$kde_use_pch" = "yes" && test "$kde_gcc_supports_pch" = "yes")
   if test "$CXX" = "KCC"; then
     dnl unfortunately we currently cannot disable exception support in KCC
     dnl because doing so is binary incompatible and Qt by default links with exceptions :-(
