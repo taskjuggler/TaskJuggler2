@@ -1,4 +1,4 @@
-<!-- DTD for TaskJuggler 2.0 XML Files -->
+<!-- DTD for TaskJuggler 2.1 XML Files -->
 <!-- Valid TaskJuggler files have the extension ".tjx" and are
 compressed according to RFC1951 and RFC1952 (zlib). -->
 <!-- (c) 2003, 2004, 2005 Chris Schlaeger <cs@suse.de> -->
@@ -184,6 +184,7 @@ removed at some point with future versions of the software. -->
   effort CDATA #IMPLIED
   duration CDATA #IMPLIED
   length CDATA #IMPLIED
+  criticalpath (0|1) "0"
   scheduled (0|1) "0"
   complete CDATA #IMPLIED
   <!-- Possible status values:
