@@ -577,16 +577,20 @@ ExportReport::generateDepList(TaskList& filteredTaskList, const Task* task,
                 s << " { ";
                 for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
                 {
-                    if ((sc == 0 && (*depIt)->getGapDurationNR(sc) > 0) ||
-                        (sc > 0 && (*depIt)->getGapDurationNR(sc) >= 0))
-                        s << project->getScenarioId(sc)
-                            << ":gapduration "
-                            << (*depIt)->getGapDurationNR(sc) / 3600.0 << "h ";
-                    if ((sc == 0 && (*depIt)->getGapLengthNR(sc) > 0) ||
-                        (sc > 0 && (*depIt)->getGapLengthNR(sc) >= 0))
-                        s << project->getScenarioId(sc)
-                            << ":gaplength "
-                            << (*depIt)->getGapLengthNR(sc) / 3600.0 << "h ";
+                    if (sc == 0 && (*depIt)->getGapDurationNR(sc) > 0)
+                      s << "gapduration "
+                        << (*depIt)->getGapDurationNR(sc) / 3600.0 << "h ";
+                    else if (sc > 0 && (*depIt)->getGapDurationNR(sc) >= 0)
+                      s << project->getScenarioId(sc)
+                        << ":gapduration "
+                        << (*depIt)->getGapDurationNR(sc) / 3600.0 << "h ";
+                    if (sc == 0 && (*depIt)->getGapLengthNR(sc) > 0)
+                      s << "gaplength "
+                        << (*depIt)->getGapLengthNR(sc) / 3600.0 << "h ";
+                    else if (sc > 0 && (*depIt)->getGapLengthNR(sc) >= 0)
+                      s << project->getScenarioId(sc)
+                        << ":gaplength "
+                        << (*depIt)->getGapLengthNR(sc) / 3600.0 << "h ";
                 }
                 s << "}";
             }
