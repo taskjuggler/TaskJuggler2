@@ -1178,13 +1178,7 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
             barWidth = (int) ((end - start) *
                               (t->getCompletionDegree(scenario) / 100.0));
 
-	bool critical = t->isOnCriticalPath(scenario, false);
-	if (t->isContainer()) { // container drawn as normal task
-	  // TODO
-	  printf("*** GREG: container shown as task on critical path: %s\n",
-		 critical?"true":"false");
-	  fflush(stdout);
-	}
+	bool critical = t->isOrHasDescendantOnCriticalPath(scenario);
         drawTaskShape(start, end, centerY, minRowHeight, barWidth,
                       critical, r != 0, chart);
     }

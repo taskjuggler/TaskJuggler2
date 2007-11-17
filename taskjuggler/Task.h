@@ -316,6 +316,12 @@ public:
         return scenarios[sc].criticalLinks.containsRef(t);
     }
 
+    /**
+     * @retval true if itself or one of its subtasks (recursively) is on the critical path
+     * @retval false otherwise.
+     */
+    bool isOrHasDescendantOnCriticalPath(int sc) const;
+
     bool isContainer() const { return !sub->isEmpty(); }
 
     bool xRef(QDict<Task>& hash);

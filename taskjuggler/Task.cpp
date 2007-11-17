@@ -3664,3 +3664,19 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
 
    return( taskElem );
 }
+
+bool Task::isOrHasDescendantOnCriticalPath(int sc) const
+{
+  if (isOnCriticalPath(sc, false))
+    return true;
+  if (isContainer()) {
+    TaskListIterator i = getSubListIterator();
+    Task *t;
+    while ((t = dynamic_cast<Task *>(i.current())) != NULL) {
+      ++i;
+      if (t->isOrHasDescendantOnCriticalPath(sc))
+	return true;
+    }
+  }
+  return false;
+}
