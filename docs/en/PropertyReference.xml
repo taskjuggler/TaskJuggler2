@@ -811,6 +811,9 @@ linkend="PROPERTY_workinghours">workinghours</link>.</para></descr>
   </seealso>
   <example>&example_project;</example>
  </property>
+ <property name="drawemptycontainersastasks" id="drawemptycontainersastasks" inheritable="No">
+  <descr><para>If set, every container that has no subtask visible will be drawn as a regular task. The default behaviour is to draw containers as containers even if all their subtasks are hidden.</para></descr>
+ </property>
  <property name="depends" id="depends" inheritable="No">
   <descr><para>Specifies that the task cannot start before the task
 with the specified IDs have been finished. If multiple IDs are
@@ -1916,6 +1919,7 @@ number from a revision control system.</para>
    <optattr>currencyformat</optattr>
    <optattr>currency</optattr>
    <optattr>dailyworkinghours</optattr>
+   <optattr>drawemptycontainersastasks</optattr>
    <optattr>extend</optattr>
    <optattr>include</optattr>
    <optattr>journalentry</optattr>

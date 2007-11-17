@@ -228,7 +228,22 @@ public:
      * @return true of weeks should start on Monday.
      */
     bool getWeekStartsMonday() const { return weekStartsMonday; }
-
+    /**
+     * Decides if containers which subtasks are all hidden should be
+     * drawn as normal tasks or not.
+     */
+    void setDrawEmptyContainersAsTasks(bool decat)
+    {
+        drawEmptyContainerAsTasks = decat;
+    }
+    /**
+     * @return true if containers which subtasks are all hidden should be
+     * drawn as normal tasks
+     */
+    bool getDrawEmptyContainersAsTasks() const
+    {
+         return drawEmptyContainerAsTasks;
+    }
     /**
      * Set the working hours of the specified weekday.
      * @param day The day of the week. Independently of the weekStartsMonday
@@ -789,6 +804,9 @@ private:
 
     /// True if week based calculations use Monday as first day of week.
     bool weekStartsMonday;
+
+    /// True if containers w/o visible subtask should be drawn as normal tasks
+    bool drawEmptyContainerAsTasks;
 
     /// The name of the Project
     QString name;

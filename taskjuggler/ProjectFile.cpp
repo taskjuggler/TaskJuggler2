@@ -713,6 +713,10 @@ ProjectFile::readProject()
             {
                 proj->setWeekStartsMonday(false);
             }
+            else if (token == KW("drawemptycontainersastasks"))
+            {
+                proj->setDrawEmptyContainersAsTasks(true);
+            }
             else if (token == KW("extend"))
             {
                 if (!readExtend())

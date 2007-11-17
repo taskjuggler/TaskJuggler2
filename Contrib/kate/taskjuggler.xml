@@ -43,6 +43,7 @@
         <item> db </item>
         <item> depends </item>
         <item> disabled </item>
+        <item> drawemptycontainersastasks </item>
         <item> duration </item>
         <item> efficiency </item>
         <item> effort </item>

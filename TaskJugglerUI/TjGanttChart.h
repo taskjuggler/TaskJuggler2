@@ -102,6 +102,7 @@ private:
     void markQuarterBoundaries();
 
     void generateGanttElements();
+    bool shouldTaskBeDrawnAsContainer(const Task* t);
     void drawTask(const Task* t, const Resource* r);
     void drawTaskShape(int start, int end, int centerY, int height,
                        int barWidth, bool critical, bool outlineOnly,

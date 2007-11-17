@@ -344,7 +344,7 @@ public:
     void setRunaway();
     bool isRunaway() const;
 
-    bool isSubTask(Task* t) const;
+    bool isSubTask(const Task* t) const;
 
     bool isSchedulingDone() const { return schedulingDone; }
 

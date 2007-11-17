@@ -91,6 +91,7 @@ syn keyword tjspkeyword db
 syn keyword tjspkeyword depends
 syn keyword tjspkeyword disabled
 syn keyword tjspkeyword duration
+syn keyword tjspkeyword drawemptycontainersastasks
 syn keyword tjspkeyword efficiency
 syn keyword tjspkeyword effort
 syn keyword tjspkeyword empty

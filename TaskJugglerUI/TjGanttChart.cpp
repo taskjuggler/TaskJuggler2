@@ -1098,6 +1098,37 @@ TjGanttChart::generateGanttElements()
     delete collisionDetector;
 }
 
+bool
+TjGanttChart::shouldTaskBeDrawnAsContainer(const Task* t)
+{
+  // a non-container task should not be drawn as a container
+  if (!t->isContainer())
+    return false;
+  // a container should allways be drawn as a container if
+  // 'drawemptycontainersastasks' is not set
+  if (!project->getDrawEmptyContainersAsTasks())
+    return true;
+  // otherwise, it should be drawn as a container if and only
+  // none of its subtasks are shown
+  for (TjObjPosTableConstIterator it(*objPosTable); *it; ++it)
+    {
+      const Task* t2;
+      if ((*it)->getCoreAttributes()->getType() == CA_Task)
+	t2 = static_cast<const Task*>
+	  ((*it)->getCoreAttributes());
+      else if ((*it)->getSubCoreAttributes() &&
+	       (*it)->getSubCoreAttributes()->getType() ==
+                 CA_Task)
+	t2 = static_cast<const Task*>
+	  ((*it)->getSubCoreAttributes());
+      else
+	continue;
+      if (t->isSubTask(t2))
+	return true;
+    }
+  return false;
+}
+
 void
 TjGanttChart::drawTask(const Task* t, const Resource* r)
 {
@@ -1120,7 +1151,7 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
         drawMilestoneShape(centerX, centerY, minRowHeight,
                            t->isOnCriticalPath(scenario), r != 0, chart);
     }
-    else if (t->isContainer())
+    else if (shouldTaskBeDrawnAsContainer(t))
     {
         int start = time2x(t->getStart(scenario));
         int end = time2x(t->getEnd(scenario));
@@ -1147,8 +1178,15 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
             barWidth = (int) ((end - start) *
                               (t->getCompletionDegree(scenario) / 100.0));
 
+	bool critical = t->isOnCriticalPath(scenario, false);
+	if (t->isContainer()) { // container drawn as normal task
+	  // TODO
+	  printf("*** GREG: container shown as task on critical path: %s\n",
+		 critical?"true":"false");
+	  fflush(stdout);
+	}
         drawTaskShape(start, end, centerY, minRowHeight, barWidth,
-                      t->isOnCriticalPath(scenario, true), r != 0, chart);
+                      critical, r != 0, chart);
     }
 }
 

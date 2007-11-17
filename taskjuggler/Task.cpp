@@ -2571,7 +2571,7 @@ Task::isActive(int sc, const Interval& period) const
 }
 
 bool
-Task::isSubTask(Task* tsk) const
+Task::isSubTask(const Task* tsk) const
 {
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if (*tli == tsk || (*tli)->isSubTask(tsk))
