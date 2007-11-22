@@ -567,6 +567,7 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
      * if this resource is available. In case it's not available we do not
      * allocate any of the other resources for the time slot. */
     bool allMandatoriesAvailables = true;
+    QPtrList<Resource> mandatoryResources;
     for (QPtrListIterator<Allocation> ali(allocations); *ali != 0; ++ali)
         if ((*ali)->isMandatory())
         {
@@ -603,12 +604,16 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                     bool allAvailable = true;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
                         if ((availability =
-                             (*rti)->isAvailable(date)) > 0)
+                             (*rti)->isAvailable(date)) > 0 ||
+                            mandatoryResources.findRef(*rti) >= 0)
                         {
                             allAvailable = false;
                             if (availability >= maxAvailability)
                                 maxAvailability = availability;
                         }
+                        else
+                            mandatoryResources.append(*rti);
+
                     if (allAvailable)
                         found = true;
                 }

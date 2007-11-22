@@ -1274,6 +1274,9 @@ characters are used.</para></listitem>
 <listitem><para>Added 'criticalpath' attribute to task scenario
 		section of XML reports.</para></listitem>
 
+<listitem><para>Fixed handling of multiple allocation with same
+		mandatory resource set.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
