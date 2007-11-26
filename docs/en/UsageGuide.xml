@@ -97,11 +97,11 @@ definition, not the task definition.</para>
 
 <para><screen>
 resource dev1 "Developer 1" {
-  booking 2005-04-11 2005-04-16 impl { sloppy 2 }
+  booking impl 2005-04-11 2005-04-16 { sloppy 2 }
 }
 
 resource dev2 "Developer 2" {
-  booking 2005-04-11 2005-04-16 impl { sloppy 2 }
+  booking impl 2005-04-11 2005-04-16 { sloppy 2 }
 }
 </screen></para>
 

@@ -1277,6 +1277,9 @@ characters are used.</para></listitem>
 <listitem><para>Fixed handling of multiple allocation with same
 		mandatory resource set.</para></listitem>
 
+<listitem><para>Added new Pertt chart generator from Gregoire Barbier
+		to the contrib directory.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
