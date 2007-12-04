@@ -2622,6 +2622,7 @@ Task::prepareScenario(int sc)
     end = scenarios[sc].end = scenarios[sc].specifiedEnd;
     schedulingDone = scenarios[sc].scheduled = scenarios[sc].specifiedScheduled;
     scenarios[sc].isOnCriticalPath = false;
+    scenarios[sc].pathCriticalness = -1.0;
 
     duration = scenarios[sc].duration;
     length = scenarios[sc].length;
@@ -2866,7 +2867,7 @@ Task::computeCriticalness(int sc)
 
 }
 
-void
+double
 Task::computePathCriticalness(int sc)
 {
     /*
@@ -2875,41 +2876,11 @@ Task::computePathCriticalness(int sc)
      * of a chain of effort-based task raises all the task in the chain to a
      * higher criticalness level than the individual tasks. In fact, the path
      * criticalness of this chain is equal to the sum of the individual
-     * criticalnesses of the tasks.
-     *
-     * Since both the forward and backward functions include the
-     * criticalness of this function we have to subtract it again.
+     * criticalnesses of the tasks that are trailing this task.
      */
-    scenarios[sc].pathCriticalness = computeBackwardCriticalness(sc) -
-        scenarios[sc].criticalness + computeForwardCriticalness(sc);
-}
+    if (scenarios[sc].pathCriticalness >= 0.0)
+        return scenarios[sc].pathCriticalness;
 
-double
-Task::computeBackwardCriticalness(int sc)
-{
-    double maxCriticalness = 0.0;
-
-    double criticalness;
-    /* We only need to check the previous tasks of leaf tasks. Parent task
-     * dependencies have been inherited by the sub tasks and will be checked
-     * there. */
-    if (!hasSubs())
-        for (TaskListIterator tli(previous); *tli; ++tli)
-            if ((criticalness = (*tli)->computeBackwardCriticalness(sc)) >
-                maxCriticalness)
-                maxCriticalness = criticalness;
-
-    if (parent &&
-        ((criticalness = static_cast<Task*>
-          (parent)->computeBackwardCriticalness(sc)) > maxCriticalness))
-        maxCriticalness = criticalness;
-
-    return scenarios[sc].criticalness + maxCriticalness;
-}
-
-double
-Task::computeForwardCriticalness(int sc)
-{
     double maxCriticalness = 0.0;
 
     double criticalness;
@@ -2918,16 +2889,21 @@ Task::computeForwardCriticalness(int sc)
      * there. */
     if (!hasSubs())
         for (TaskListIterator tli(followers); *tli; ++tli)
-            if ((criticalness = (*tli)->computeForwardCriticalness(sc)) >
+            if ((criticalness = (*tli)->computePathCriticalness(sc)) >
                 maxCriticalness)
                 maxCriticalness = criticalness;
 
+    /* This does not make any sense to me!
     if (parent &&
-        ((criticalness = static_cast<Task*>(parent)->computeForwardCriticalness(sc)) >
+        ((criticalness =
+          static_cast<Task*>(parent)->computePathCriticalness(sc)) >
          maxCriticalness))
-        maxCriticalness = criticalness;
+        maxCriticalness = criticalness; */
 
-    return scenarios[sc].criticalness + maxCriticalness;
+    scenarios[sc].pathCriticalness = scenarios[sc].criticalness +
+        maxCriticalness;
+
+    return scenarios[sc].pathCriticalness;
 }
 
 void

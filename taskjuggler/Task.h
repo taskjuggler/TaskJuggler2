@@ -297,7 +297,7 @@ public:
     double getCriticalness(int sc) const { return scenarios[sc].criticalness; }
     void checkAndMarkCriticalPath(int sc, double minSlack, time_t maxEnd);
 
-    void computePathCriticalness(int sc);
+    double computePathCriticalness(int sc);
     double getPathCriticalness(int sc) const
     {
         return scenarios[sc].pathCriticalness;
@@ -396,9 +396,6 @@ private:
 
     bool hasStartDependency() const;
     bool hasEndDependency() const;
-
-    double computeBackwardCriticalness(int sc);
-    double computeForwardCriticalness(int sc);
 
     bool analyzePath(int sc, double minSlack, time_t pathStart, long busyTime,
                      long worstMinSlackTime, long& checked, long& found);

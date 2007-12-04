@@ -846,12 +846,12 @@ CSVReportElement::genCellCompleted(TableCellInfo* tci)
 }
 
 void
-CSVReportElement::genCellCompletedEffort(TableCellInfo* tci)
+CSVReportElement::genCellCompletedEffort(TableCellInfo*)
 {
 }
 
 void
-CSVReportElement::genCellRemainingEffort(TableCellInfo* tci)
+CSVReportElement::genCellRemainingEffort(TableCellInfo*)
 {
 }
 

@@ -1280,6 +1280,10 @@ characters are used.</para></listitem>
 <listitem><para>Added new Pertt chart generator from Gregoire Barbier
 		to the contrib directory.</para></listitem>
 
+<listitem><para>Improved the scheduling heuristic to generate projects
+		with overall smaller project
+		durations.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
