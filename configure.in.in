@@ -62,7 +62,7 @@ AC_ENABLE_SHARED(yes)
 AC_ENABLE_STATIC(no)
 KDE_PROG_LIBTOOL
 
-PACKAGES_DIR=/usr/share/doc/packages/taskjuggler/
+PACKAGES_DIR=${prefix}/share/doc/packages/taskjuggler/
 AC_ARG_WITH(
   docdir,
   AC_HELP_STRING([--with-docdir=DIR],[Directory where additional
