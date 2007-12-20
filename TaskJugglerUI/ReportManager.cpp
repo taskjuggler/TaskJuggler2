@@ -223,6 +223,11 @@ ReportManager::updateReportBrowser()
             subTypeIcon =
                 KGlobal::iconLoader()->loadIcon("tj_calendar_report",
                                                 KIcon::Small);
+        else if (strncmp(subType, "MonthlyCalendar",
+                         strlen("MonthlyCalendar")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_calendar_report",
+                                                KIcon::Small);
         else if (strncmp(subType, "Status", strlen("Status")) == 0)
             subTypeIcon =
                 KGlobal::iconLoader()->loadIcon("tj_status_report",
