@@ -704,7 +704,6 @@ Office Suites like OpenOffice.org or KOffice.</para></descr>
    <attr name="filename" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>accumulate</optattr>
    <optattr>columns</optattr>
    <optattr>end_report</optattr>
    <optattr>rollupresource</optattr>
@@ -731,7 +730,6 @@ Suites like OpenOffice.org or KOffice.</para></descr>
    <attr name="filename" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>accumulate</optattr>
    <optattr>columns</optattr>
    <optattr>end_report</optattr>
    <optattr>rolluptask</optattr>
@@ -1220,7 +1218,6 @@ page.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>accumulate</optattr>
    <optattr>barlabels</optattr>
    <optattr>caption</optattr>
    <optattr>columns</optattr>
@@ -1261,7 +1258,6 @@ can be listed as well.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>accumulate</optattr>
    <optattr>barlabels</optattr>
    <optattr>caption</optattr>
    <optattr>columns</optattr>
@@ -1322,7 +1318,6 @@ listed as well.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>accumulate</optattr>
    <optattr>barlabels</optattr>
    <optattr>caption</optattr>
    <optattr>columns</optattr>
@@ -1360,7 +1355,6 @@ listed as well.</para></descr>
    <attr name="file" type="STRING"/>
   </attributes>
   <optattributes>
-   <optattr>accumulate</optattr>
    <optattr>barlabels</optattr>
    <optattr>caption</optattr>
    <optattr>columns</optattr>
