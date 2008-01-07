@@ -355,13 +355,16 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
          * summary report. The summary report has no report definition, so it
          * can be identified by a 0 pointer. */
         for (std::list<ManagedReportInfo*>::const_iterator
-             mri = reports.begin();
-             mri != reports.end(); ++mri)
+             mri = reports.begin(); mri != reports.end(); ++mri)
             if ((*mri)->getProjectReport() == 0)
+            {
                 mr = *mri;
+                break;
+            }
     }
 
     TjUIReportBase* tjr = mr->getReport();
+    bool result = true;
     if (tjr == 0)
     {
         if (mr->getProjectReport() == 0)
@@ -377,7 +380,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             CSVReport* csvReport =
                 dynamic_cast<CSVReport*>(mr->getProjectReport());
             if (!csvReport->generate())
-                return false;
+                result = false;
             // show the CSV file in preferred CSV handler
             KURL reportUrl =
                 KURL::fromPathOrURL(mr->getProjectReport()->
@@ -387,7 +390,6 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             changeStatusBar(i18n("Displaying CSV report: '%1'")
                             .arg(mr->getProjectReport()->getFileName()));
             KRun::runURL(reportUrl, "text/x-csv");
-            return true;
         }
         else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
             tjr = new TjHTMLReport(reportStack, this, mr->getProjectReport());
@@ -396,17 +398,19 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             ICalReport* icalReport =
                 dynamic_cast<ICalReport*>(mr->getProjectReport());
             if (!icalReport->generate())
-                return false;
-            // show the TODO list in Korganizer
-            KURL reportUrl =
-                KURL::fromPathOrURL(mr->getProjectReport()->
-                                    getDefinitionFile());
-            reportUrl.setFileName(mr->getProjectReport()->getFileName());
+                result = false;
+            else
+            {
+                // show the TODO list in Korganizer
+                KURL reportUrl =
+                    KURL::fromPathOrURL(mr->getProjectReport()->
+                                        getDefinitionFile());
+                reportUrl.setFileName(mr->getProjectReport()->getFileName());
 
-            changeStatusBar(i18n("Displaying iCalendar: '%1'")
-                            .arg(mr->getProjectReport()->getFileName()));
-            KRun::runURL(reportUrl, "text/calendar");
-            return true;
+                changeStatusBar(i18n("Displaying iCalendar: '%1'")
+                                .arg(mr->getProjectReport()->getFileName()));
+                KRun::runURL(reportUrl, "text/calendar");
+            }
         }
         else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
         {
@@ -414,23 +418,26 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             ExportReport* exportReport =
                 dynamic_cast<ExportReport*>(mr->getProjectReport());
             if (!exportReport->generate())
-                return false;
-
-            // Get the full file name as URL and show it in the editor
-            KURL reportUrl =
-                KURL::fromPathOrURL(mr->getProjectReport()->getFullFileName());
-            if (reportUrl.url().right(4) == ".tjp")
-            {
-                changeStatusBar(i18n("Starting new TaskJuggler for '%1'")
-                    .arg(mr->getProjectReport()->getFileName()));
-                KRun::runURL(reportUrl, "application/x-tjp");
-            }
+                result = false;
             else
             {
-                emit signalEditFile(reportUrl);
-                showReportTab = false;
+                // Get the full file name as URL and show it in the editor
+                KURL reportUrl =
+                    KURL::fromPathOrURL(mr->getProjectReport()->
+                                        getFullFileName());
+                if (reportUrl.url().right(4) == ".tjp")
+                {
+                    changeStatusBar(i18n("Starting new TaskJuggler for '%1'")
+                                    .arg(mr->getProjectReport()->
+                                         getFileName()));
+                    KRun::runURL(reportUrl, "application/x-tjp");
+                }
+                else
+                {
+                    emit signalEditFile(reportUrl);
+                    showReportTab = false;
+                }
             }
-            return true;
         }
         else if (strncmp(mr->getProjectReport()->getType(), "XMLReport", 9)
                  == 0)
@@ -448,36 +455,44 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             else
                 changeStatusBar(i18n("Could not generated report '%1'")
                     .arg(mr->getProjectReport()->getFileName()));
-            return result;
         }
         else
         {
             kdDebug() << "Report type " << mr->getProjectReport()->getType()
                 << " not yet supported" << endl;
+            result = false;
+        }
+
+        if (!tjr)
+        {
+            /* A report with no widget that can be embedded in the report view
+             * has been selected. We fall back to show the summary report and
+             * unselect the selected browser item. */
+            if (browser->currentItem())
+                browser->setSelected(browser->currentItem(), false);
+            tjr = new TjSummaryReport(reportStack, this, project);
+        }
+
+        connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
+                this, SLOT(changeStatusBar(const QString&)));
+        connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
+                this, SLOT(editCoreAttributes(CoreAttributes*)));
+
+        if (!tjr->generateReport())
+        {
+            delete tjr;
+            if (browser->currentItem())
+                browser->setSelected(browser->currentItem(), false);
             return false;
         }
 
-        if (tjr)
-        {
-            connect(tjr, SIGNAL(signalChangeStatusBar(const QString&)),
-                    this, SLOT(changeStatusBar(const QString&)));
-            connect(tjr, SIGNAL(signalEditCoreAttributes(CoreAttributes*)),
-                    this, SLOT(editCoreAttributes(CoreAttributes*)));
-
-            if (!tjr->generateReport())
-            {
-                delete tjr;
-                return false;
-            }
-
-            reportStack->addWidget(tjr);
-            mr->setReport(tjr);
-        }
+        reportStack->addWidget(tjr);
+        mr->setReport(tjr);
     }
-    if (tjr)
-        reportStack->raiseWidget(tjr);
 
-    return true;
+    reportStack->raiseWidget(tjr);
+
+    return result;
 }
 
 void
