@@ -27,6 +27,7 @@
    <xsl:apply-templates select="project"/>
    <xsl:apply-templates select="taskList"/>
    <xsl:apply-templates select="descendant::depends"/>
+   <xsl:apply-templates select="descendant::precedes"/>
   <xsl:text>}</xsl:text>
  </xsl:template>
 
@@ -105,6 +106,21 @@
     <xsl:text>cluster_</xsl:text>
   </xsl:if>
   <xsl:value-of select="../@id"/>
+  <xsl:text>" [arrowhead=vee];
+  </xsl:text>
+ </xsl:template>
+
+ <xsl:template match="precedes">
+  <xsl:text>"</xsl:text>
+  <xsl:if test="../child::task"> <!-- is a supertask -->
+    <xsl:text>cluster_</xsl:text>
+  </xsl:if>
+  <xsl:value-of select="../@id"/>
+  <xsl:text>" -- "</xsl:text>
+  <xsl:if test="key('task',@task)/child::task"> <!-- is a supertask -->
+    <xsl:text>cluster_</xsl:text>
+  </xsl:if>
+  <xsl:value-of select="@task"/>
   <xsl:text>" [arrowhead=vee];
   </xsl:text>
  </xsl:template>

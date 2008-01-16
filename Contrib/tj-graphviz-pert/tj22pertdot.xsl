@@ -24,6 +24,7 @@
    <xsl:apply-templates select="project"/>
    <xsl:apply-templates select="taskList"/>
    <xsl:apply-templates select="/descendant::depends"/>
+   <xsl:apply-templates select="/descendant::precedes"/>
   <xsl:text>}</xsl:text>
  </xsl:template>
 
@@ -72,6 +73,17 @@
   <xsl:text>" [arrowhead=vee];
   </xsl:text>
  </xsl:template>
+
+ <xsl:template match="precedes">
+  <xsl:text>"</xsl:text>
+  <xsl:value-of select="../@id"/>
+  <xsl:text>"</xsl:text>
+  <xsl:text> -- "</xsl:text>
+  <xsl:value-of select="@task"/>
+  <xsl:text>" [arrowhead=vee];
+  </xsl:text>
+ </xsl:template>
+
 
  <xsl:template match="taskScenario">
   <xsl:value-of select="@scenarioId"/>
