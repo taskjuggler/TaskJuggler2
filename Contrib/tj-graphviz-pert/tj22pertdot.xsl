@@ -43,13 +43,16 @@
   <xsl:text>"</xsl:text>
   <xsl:value-of select="@id"/>
   <xsl:text>"</xsl:text>
-  <xsl:text> [label="</xsl:text>
+  <xsl:text> [fillcolor=white,style=filled,label="</xsl:text>
   <xsl:value-of select="@name"/>
   <xsl:text>\n</xsl:text>
   <xsl:apply-templates select="taskScenario"/>
   <xsl:text>"</xsl:text>
   <xsl:if test="taskScenario/@criticalpath='1'">
-    <xsl:text> fontcolor=red, color=red, style=bold</xsl:text>
+   <xsl:text>, fontcolor=red, color=red, style="bold,filled"</xsl:text>
+  </xsl:if>
+  <xsl:if test="@milestone='1'">
+   <xsl:text>, fillcolor="#ffffb0"</xsl:text>
   </xsl:if>
   <xsl:text>];</xsl:text>
   <xsl:if test="../self::task"> <!-- if this task is a subtask -->
@@ -89,8 +92,15 @@
   <xsl:value-of select="@scenarioId"/>
   <xsl:text>: </xsl:text>
   <xsl:value-of select="start/@humanReadable"/>
-  <xsl:text> - </xsl:text>
-  <xsl:value-of select="end/@humanReadable"/>
+  <xsl:choose>
+   <xsl:when test="../@milestone='1'"> <!-- if this task is a supertask -->
+    <xsl:text> (milestone)</xsl:text>
+   </xsl:when>
+   <xsl:otherwise>
+    <xsl:text> - </xsl:text>
+    <xsl:value-of select="end/@humanReadable"/>
+   </xsl:otherwise>
+  </xsl:choose>
   <xsl:text>\n</xsl:text>
  </xsl:template>
 
