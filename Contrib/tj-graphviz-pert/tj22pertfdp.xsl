@@ -109,7 +109,11 @@
     <xsl:text>cluster_</xsl:text>
   </xsl:if>
   <xsl:value-of select="../@id"/>
-  <xsl:text>" [arrowhead=vee];
+  <xsl:text>" [arrowhead=vee</xsl:text>
+  <xsl:if test="key('task',@task)/taskScenario/@criticalpath='1'">
+   <xsl:text>, color=red, style=bold</xsl:text>
+  </xsl:if>
+  <xsl:text>];
   </xsl:text>
  </xsl:template>
 
@@ -124,7 +128,11 @@
     <xsl:text>cluster_</xsl:text>
   </xsl:if>
   <xsl:value-of select="@task"/>
-  <xsl:text>" [arrowhead=vee];
+  <xsl:text>" [arrowhead=vee</xsl:text>
+  <xsl:if test="../taskScenario/@criticalpath='1'">
+   <xsl:text>, color=red, style=bold</xsl:text>
+  </xsl:if>
+  <xsl:text>];
   </xsl:text>
  </xsl:template>
 

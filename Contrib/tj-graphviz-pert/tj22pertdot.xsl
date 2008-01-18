@@ -17,6 +17,8 @@
 
  <xsl:output method="text" indent="yes" encoding="UTF-8"/>
 
+ <xsl:key name="task" match="task" use="@id"/>
+
  <xsl:template match="/taskjuggler">
   <xsl:text>graph g {
     node[shape=box];
@@ -73,7 +75,11 @@
   <xsl:text>"</xsl:text>
   <xsl:text> -- "</xsl:text>
   <xsl:value-of select="../@id"/>
-  <xsl:text>" [arrowhead=vee];
+  <xsl:text>" [arrowhead=vee</xsl:text>
+  <xsl:if test="key('task',@task)/taskScenario/@criticalpath='1'">
+   <xsl:text>, color=red, style=bold</xsl:text>
+  </xsl:if>
+  <xsl:text>];
   </xsl:text>
  </xsl:template>
 
@@ -83,10 +89,13 @@
   <xsl:text>"</xsl:text>
   <xsl:text> -- "</xsl:text>
   <xsl:value-of select="@task"/>
-  <xsl:text>" [arrowhead=vee];
+  <xsl:text>" [arrowhead=vee</xsl:text>
+  <xsl:if test="../taskScenario/@criticalpath='1'">
+   <xsl:text>, color=red, style=bold</xsl:text>
+  </xsl:if>
+  <xsl:text>];
   </xsl:text>
  </xsl:template>
-
 
  <xsl:template match="taskScenario">
   <xsl:value-of select="@scenarioId"/>
