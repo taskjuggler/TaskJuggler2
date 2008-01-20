@@ -2,7 +2,7 @@
 <!--
   XSLT stylesheet for converting TaskJuggler XML v2 report to Pert graph in
   Graphviz' dot format, for fdp output (since node - cluster edges are not
-  supported with other renderers)
+  supported in the same way with other renderers)
 
   should be used for instance as follow (with xmlsoft.org's libxslt):
   zcat v2.tjx | xsltproc -novalid tj22pertfdp.xsl - | fdp -T png > v2fdp.png
