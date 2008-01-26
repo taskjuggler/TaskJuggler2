@@ -490,6 +490,8 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
         mr->setReport(tjr);
     }
 
+    // in older versions of KDE, this produces a (seemingly harmless) warning
+    //    ASSERT: "id < (int)d->m_list.count()" in ./kdeui/kactionclasses.cpp (433)
     reportStack->raiseWidget(tjr);
 
     return result;
