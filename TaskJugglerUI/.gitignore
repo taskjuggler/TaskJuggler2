@@ -1,0 +1,24 @@
+#
+# The main compilation artifact
+#
+TaskJugglerUI
+
+#
+# Generated from *.ui files
+#
+MainWidget.cpp
+MainWidget.h
+ReportController.cpp
+ReportController.h
+RichTextDisplay.cpp
+RichTextDisplay.h
+TemplateSelector.cpp
+TemplateSelector.h
+TjDatePicker.cpp
+TjDatePicker.h
+
+#
+# Other artifacts
+#
+taskjuggleriface.kidl
+taskjuggleriface_skel.cpp
