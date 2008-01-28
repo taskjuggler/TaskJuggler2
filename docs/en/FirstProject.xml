@@ -73,7 +73,7 @@ included in the scenario definition. In this example, we use the <link
 linkend="PROPERTY_minslackrate">minslackrate</link> attribute to
 specify the percentage of slack time a task path must at least have
 before it is considered a critical path. Tasks on critical paths are
-mared with a red frame in the graphical user interface.</para>
+marked with a red frame in the graphical user interface.</para>
 
 </sect1>
 <sect1 id="global_attributes"><title>Global Attributes</title>
