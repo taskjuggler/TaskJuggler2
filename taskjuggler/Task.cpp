@@ -2876,29 +2876,53 @@ Task::computePathCriticalness(int sc)
      * of a chain of effort-based task raises all the task in the chain to a
      * higher criticalness level than the individual tasks. In fact, the path
      * criticalness of this chain is equal to the sum of the individual
-     * criticalnesses of the tasks that are trailing this task.
+     * criticalnesses of the tasks that are trailing this task. It does not
+     * take the user-defined priorities into account.
      */
+    // If the value has been computed already, just return it.
     if (scenarios[sc].pathCriticalness >= 0.0)
         return scenarios[sc].pathCriticalness;
 
     double maxCriticalness = 0.0;
+    if (hasSubs())
+    {
+        double criticalness;
+        for (TaskListIterator tli(getSubListIterator()); *tli; ++tli)
+        {
+            criticalness = (*tli)->computePathCriticalness(sc);
 
-    double criticalness;
-    /* We only need to check the followers of leaf tasks. Parent task
-     * dependencies have been inherited by the sub tasks and will be checked
-     * there. */
-    if (!hasSubs())
-        for (TaskListIterator tli(followers); *tli; ++tli)
-            if ((criticalness = (*tli)->computePathCriticalness(sc)) >
-                maxCriticalness)
+            if (criticalness > maxCriticalness)
                 maxCriticalness = criticalness;
+        }
+    }
+    else
+    {
+        /* We only care about leaf tasks because that's were the resources are
+         * actually used. Container tasks are respected during path tracking,
+         * though.
+         * Therefore, we generate a list of all successors to this task. These
+         * are directly specified successors or successors of any of the
+         * parent tasks of this task. */
+        TaskList followerList;
+        Task* t = this;
+        while (t)
+        {
+            for (TaskListIterator tli(t->followers); *tli; ++tli)
+                if (followerList.findRef(*tli) == -1)
+                    followerList.append(*tli);
+            t = static_cast<Task*>(t->parent);
+        }
 
-    /* This does not make any sense to me!
-    if (parent &&
-        ((criticalness =
-          static_cast<Task*>(parent)->computePathCriticalness(sc)) >
-         maxCriticalness))
-        maxCriticalness = criticalness; */
+
+        double criticalness;
+        for (TaskListIterator tli(followerList); *tli; ++tli)
+        {
+            criticalness = (*tli)->computePathCriticalness(sc);
+
+            if (criticalness > maxCriticalness)
+                maxCriticalness = criticalness;
+        }
+    }
 
     scenarios[sc].pathCriticalness = scenarios[sc].criticalness +
         maxCriticalness;
@@ -3641,18 +3665,17 @@ QDomElement Task::xmlElement( QDomDocument& doc, bool /* absId */ )
    return( taskElem );
 }
 
-bool Task::isOrHasDescendantOnCriticalPath(int sc) const
+bool
+Task::isOrHasDescendantOnCriticalPath(int sc) const
 {
-  if (isOnCriticalPath(sc, false))
-    return true;
-  if (isContainer()) {
-    TaskListIterator i = getSubListIterator();
-    Task *t;
-    while ((t = dynamic_cast<Task *>(i.current())) != NULL) {
-      ++i;
-      if (t->isOrHasDescendantOnCriticalPath(sc))
-	return true;
+    if (isOnCriticalPath(sc, false))
+        return true;
+    if (isContainer())
+    {
+        for (TaskListIterator tli = getSubListIterator(); *tli; ++tli)
+            if ((*tli)->isOrHasDescendantOnCriticalPath(sc))
+                return true;
     }
-  }
-  return false;
+    return false;
 }
+
