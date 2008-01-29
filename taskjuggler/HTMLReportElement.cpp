@@ -932,6 +932,13 @@ HTMLReportElement::genCellHierarchIndex(TableCellInfo* tci)
 }
 
 void
+HTMLReportElement::genCellHierarchLevel(TableCellInfo* tci)
+{
+    genCell(tci->tli->ca2 == 0 ?
+            tci->tli->ca1->getHierarchLevel() : QString::null, tci, true);
+}
+
+void
 HTMLReportElement::genCellId(TableCellInfo* tci)
 {
     genCell(tci->tli->ca1->getId(), tci, true);

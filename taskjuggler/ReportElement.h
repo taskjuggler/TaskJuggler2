@@ -193,6 +193,7 @@ public:
     virtual void genCellHierarchNo(TableCellInfo*) = 0;
     virtual void genCellIndex(TableCellInfo*) = 0;
     virtual void genCellHierarchIndex(TableCellInfo*) = 0;
+    virtual void genCellHierarchLevel(TableCellInfo*) = 0;
     virtual void genCellId(TableCellInfo*) = 0;
     virtual void genCellName(TableCellInfo*) = 0;
     virtual void genCellStart(TableCellInfo*) = 0;

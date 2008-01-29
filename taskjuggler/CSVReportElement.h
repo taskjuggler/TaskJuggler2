@@ -58,6 +58,7 @@ public:
     virtual void genCellHierarchNo(TableCellInfo* tli);
     virtual void genCellIndex(TableCellInfo* tli);
     virtual void genCellHierarchIndex(TableCellInfo* tli);
+    virtual void genCellHierarchLevel(TableCellInfo* tli);
     virtual void genCellId(TableCellInfo* tli);
     virtual void genCellName(TableCellInfo* tli);
     virtual void genCellStart(TableCellInfo* tli);

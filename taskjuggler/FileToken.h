@@ -19,7 +19,7 @@
 
 #include "MacroTable.h"
 #include "Token.h"
-
+#include <memory>
 /**
  * @short Common base of FileInfo and Tokenizer.
  * @author Andreas Scherer <andreas_hacker@freenet.de>

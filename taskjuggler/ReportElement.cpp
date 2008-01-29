@@ -94,10 +94,16 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     tcf->genAccountLine1 = &ReportElement::genCellIndex;
     tcf->hAlign = TableColumnFormat::right;
 
-    tcf = new TableColumnFormat(KW("hierarchindex"), this, i18n("No."));
+    tcf = new TableColumnFormat(KW("hierarchindex"), this, i18n("HierarchIndex"));
     tcf->genTaskLine1 = &ReportElement::genCellHierarchIndex;
     tcf->genResourceLine1 = &ReportElement::genCellHierarchIndex;
     tcf->genAccountLine1 = &ReportElement::genCellHierarchIndex;
+    tcf->hAlign = TableColumnFormat::left;
+
+    tcf = new TableColumnFormat(KW("hierarchlevel"), this, i18n("HierarchLevel"));
+    tcf->genTaskLine1 = &ReportElement::genCellHierarchLevel;
+    tcf->genResourceLine1 = &ReportElement::genCellHierarchLevel;
+    tcf->genAccountLine1 = &ReportElement::genCellHierarchLevel;
     tcf->hAlign = TableColumnFormat::left;
 
     tcf = new TableColumnFormat(KW("id"), this, i18n("Id"));
@@ -1041,6 +1047,10 @@ ReportElement::setMacros(TableLineInfo* tli)
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("hierarchindex"),
                           tli->ca1 ? tli->ca1->getHierarchIndex() :
+                          QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("hierarchlevel"),
+                          tli->ca1 ? tli->ca1->getHierarchLevel() :
                           QString::null,
                           defFileName, defFileLine));
     mt.addMacro(new Macro(KW("name"),

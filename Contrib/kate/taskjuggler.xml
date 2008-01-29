@@ -70,6 +70,7 @@
         <item> hideresource </item>
         <item> hidetask </item>
         <item> hierarchindex </item>
+        <item> hierarchlevel </item>
         <item> hierarchno </item>
         <item> htmlaccountreport </item>
         <item> htmlmonthlycalendar </item>

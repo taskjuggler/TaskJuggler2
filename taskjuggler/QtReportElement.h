@@ -55,6 +55,7 @@ public:
     virtual void genCellHierarchNo(TableCellInfo*) { }
     virtual void genCellIndex(TableCellInfo*) { }
     virtual void genCellHierarchIndex(TableCellInfo*) { }
+    virtual void genCellHierarchLevel(TableCellInfo*) { }
     virtual void genCellId(TableCellInfo*) { }
     virtual void genCellName(TableCellInfo*) { }
     virtual void genCellStart(TableCellInfo*) { }

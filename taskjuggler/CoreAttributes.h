@@ -56,6 +56,7 @@ public:
 
     void setHierarchIndex(uint no);
     QString getHierarchIndex() const;
+    QString getHierarchLevel() const;
 
     Project* getProject() const { return project; }
 

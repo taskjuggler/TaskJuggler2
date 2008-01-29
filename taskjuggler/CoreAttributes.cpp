@@ -140,6 +140,12 @@ CoreAttributes::getHierarchIndex() const
     return text;
 }
 
+QString
+CoreAttributes::getHierarchLevel() const
+{
+    return QString("%1").arg(treeLevel());
+}
+
 void
 CoreAttributes::getFullName(QString& fullName) const
 {
