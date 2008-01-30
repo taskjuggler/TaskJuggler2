@@ -1284,6 +1284,10 @@ characters are used.</para></listitem>
 		with overall smaller project
 		durations.</para></listitem>
 
+<listitem><para>New report column
+		<computeroutput>hierarchlevel</computeroutput> was
+		included.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
