@@ -1288,6 +1288,10 @@ characters are used.</para></listitem>
 		<computeroutput>hierarchlevel</computeroutput> was
 		included.</para></listitem>
 
+<listitem><para>Hotkey for date/time picker in the GUI editor has
+		been remapped to CTRL-SHIFT-T to avoid a conflict with
+		built-in CTRL-D.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
