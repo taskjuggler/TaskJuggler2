@@ -76,6 +76,7 @@ TjResourceReport::generateList()
     if (!reportElement->filterResourceList
         (resourceList, 0, reportElement->getHideResource(), 0))
         return false;
+    reportElement->sortResourceList(resourceList);
 
     if (resourceList.isEmpty())
         return true;
