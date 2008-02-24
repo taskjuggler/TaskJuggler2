@@ -55,8 +55,8 @@ FileManager::FileManager(KMainWindow* m, QWidgetStack* v, KListView* b,
     editorConfigured = false;
 
     /* Add our own custom editor actions. */
-    new KAction(i18n("Insert Date"), "",
-                KShortcut(KKey("CTRL+d")),
+    new KAction(i18n("Insert Date/Time"), "",
+                KShortcut(KKey("CTRL+SHIFT+t")),
                 this, SLOT(insertDate()),
                 mainWindow->actionCollection(), "insert_date");
 
