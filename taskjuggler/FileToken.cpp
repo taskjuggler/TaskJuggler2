@@ -166,6 +166,6 @@ bool FileToken::readMacroCall()
     m_ungetBuf.append(QChar(EOMacro));
     // push expanded macro reverse into ungetC buffer.
     for (int i = macro.length() - 1; i >= 0; --i)
-        m_ungetBuf.append(macro[i].latin1());
+        m_ungetBuf.append(macro[i]);
     return true;
 }

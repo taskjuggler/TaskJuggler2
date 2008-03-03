@@ -1295,6 +1295,9 @@ characters are used.</para></listitem>
 <listitem><para>Fixed sorting of resources in GUI resource
 		reports.</para></listitem>
 
+<listitem><para>Unicode characters in macros no longer get
+		corrupted.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
