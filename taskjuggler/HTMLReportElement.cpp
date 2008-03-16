@@ -285,13 +285,13 @@ HTMLReportElement::genCell(const QString& text, TableCellInfo* tci,
         {
             puts("padding-left:");
             puts(QString("%1").arg(tci->getLeftPadding()));
-            puts("; ");
+            puts("px; ");
         }
         if (tci->getRightPadding() > 0)
         {
             puts("padding-right:");
             puts(QString("%1").arg(tci->getRightPadding()));
-            puts("; ");
+            puts("px; ");
         }
         if (tci->getBoldText())
             puts("font-weight:bold; ");
