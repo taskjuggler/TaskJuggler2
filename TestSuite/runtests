@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# Run the test suite in a differnt time zone then the reference files
+# Run the test suite in a different time zone than the reference files
 # were generated. This catches all test cases without timezone
 # specification.
 TZ="UTC-3"
