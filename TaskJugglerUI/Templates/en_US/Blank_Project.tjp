@@ -1,4 +1,4 @@
-project myProjectId "My Project" "1.0" @@projectstart@@ @@projectend@@
+project myProjectId "My Project" "1.0" @@projectstart@@ - @@projectend@@
 
 task start "Project Start" {
   start @@projectstart@@

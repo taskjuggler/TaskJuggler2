@@ -18,7 +18,7 @@
  * description of the various syntax elements. You can find more
  * information about TaskJuggler at http://www.taskjuggler.org!
  */
-project yourID "Your Project" "1.0" @@projectstart@@ @@projectend@@ {
+project yourID "Your Project" "1.0" @@projectstart@@ - @@projectend@@ {
   # Hide the clock time. Only show the date.
   timeformat "%Y-%m-%d"
   # The currency for all money values is EUR.
