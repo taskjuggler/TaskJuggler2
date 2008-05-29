@@ -440,6 +440,14 @@ CSVReportElement::genCellEmpty(TableCellInfo* tci)
 }
 
 void
+CSVReportElement::genCellAccounts(TableCellInfo* tci)
+{
+    genCell(QString().sprintf("%s", tci->tli->task->getAccount() ?
+                              tci->tli->task->getAccount()->getId().latin1() :
+                              ""), tci, true);
+}
+
+void
 CSVReportElement::genCellSequenceNo(TableCellInfo* tci)
 {
     genCell(tci->tli->ca2 == 0 ?

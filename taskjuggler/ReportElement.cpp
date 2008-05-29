@@ -70,7 +70,12 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     currencyFormat = r->getCurrencyFormat();
 
     TableColumnFormat* tcf =
-        new TableColumnFormat(KW("seqno"), this, i18n("Seq. No."));
+        new TableColumnFormat(KW("accounts"), this, i18n("Accounts"));
+    tcf->genTaskLine1 = &ReportElement::genCellAccounts;
+    tcf->genTaskLine2 = &ReportElement::genCellAccounts;
+    tcf->hAlign = TableColumnFormat::left;
+
+    tcf = new TableColumnFormat(KW("seqno"), this, i18n("Seq. No."));
     tcf->genTaskLine1 = &ReportElement::genCellSequenceNo;
     tcf->genResourceLine1 = &ReportElement::genCellSequenceNo;
     tcf->genAccountLine1 = &ReportElement::genCellSequenceNo;

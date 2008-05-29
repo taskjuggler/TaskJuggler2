@@ -188,6 +188,7 @@ public:
     virtual void genHeadYear(TableCellInfo*) = 0;
 
     virtual void genCellEmpty(TableCellInfo*) = 0;
+    virtual void genCellAccounts(TableCellInfo*) = 0;
     virtual void genCellSequenceNo(TableCellInfo*) = 0;
     virtual void genCellNo(TableCellInfo*) = 0;
     virtual void genCellHierarchNo(TableCellInfo*) = 0;

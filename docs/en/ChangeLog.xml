@@ -1301,4 +1301,13 @@ characters are used.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
+<sect2 id="Changelog_2_4_2"><title>Version 2.4.2 (Some day)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Added 'accounts' column to reports.</para></listitem>
+
+</itemizedlist></para>
+
+</sect2>
 </sect1>

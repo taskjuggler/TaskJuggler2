@@ -394,6 +394,11 @@ file processing, the report macros must be prefixed with an additional
   <freestyle>
    <para><simplelist type="horiz" columns="2">
    
+   <member><varname>accounts</varname></member>
+   <member>This columns lists the account that is assigned to the
+	   respective task. It is called 'accounts' because later
+	   versions will have support for multiple accounts.</member>
+   
    <member><varname>chart</varname></member>
    <member>Use this column to get Gantt and resource charts. It's only
    supported by the interactive reports in the GUI.</member>

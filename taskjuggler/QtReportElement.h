@@ -50,6 +50,7 @@ public:
     virtual void genHeadYear(TableCellInfo*) { }
 
     virtual void genCellEmpty(TableCellInfo*) { }
+    virtual void genCellAccounts(TableCellInfo*) { }
     virtual void genCellSequenceNo(TableCellInfo*) { }
     virtual void genCellNo(TableCellInfo*) { }
     virtual void genCellHierarchNo(TableCellInfo*) { }

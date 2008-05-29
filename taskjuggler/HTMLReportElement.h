@@ -49,6 +49,7 @@ public:
     virtual void genHeadYear(TableCellInfo* tcf);
 
     virtual void genCellEmpty(TableCellInfo*);
+    virtual void genCellAccounts(TableCellInfo* tli);
     virtual void genCellSequenceNo(TableCellInfo* tli);
     virtual void genCellNo(TableCellInfo* tli);
     virtual void genCellHierarchNo(TableCellInfo* tli);
