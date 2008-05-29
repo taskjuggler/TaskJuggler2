@@ -40,6 +40,7 @@
 #include "Project.h"
 #include "Task.h"
 #include "Resource.h"
+#include "Account.h"
 #include "Utility.h"
 #include "ExpressionTree.h"
 #include "Report.h"
@@ -316,7 +317,12 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         const TableColumnFormat* tcf =
             reportElement->getColumnFormat((*ci)->getName());
 
-        if ((*ci)->getName() == "completed")
+        if ((*ci)->getName() == "accounts")
+        {
+            if (t->getAccount())
+                cellText = t->getAccount()->getId();
+        }
+        else if ((*ci)->getName() == "completed")
         {
             double calcedCompletionDegree =
                 t->getCalcedCompletionDegree(scenario);
