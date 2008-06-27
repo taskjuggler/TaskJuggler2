@@ -35,7 +35,7 @@ public:
 
     virtual bool generate()
     {
-        return false;
+        return true;
     }
 } ;
 

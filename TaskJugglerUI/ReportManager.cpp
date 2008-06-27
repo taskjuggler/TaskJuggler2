@@ -279,48 +279,7 @@ ReportManager::generateReport(QListViewItem* lvi)
     if (!mr)
         return true;
 
-    bool retVal = true;
-    if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
-    {
-        // Nothing to do
-        return true;
-    }
-    else if (strncmp(mr->getProjectReport()->getType(), "CSV", 3) == 0)
-    {
-        CSVReport* csvReport =
-            dynamic_cast<CSVReport*>(mr->getProjectReport());
-        retVal = csvReport->generate();
-    }
-    else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
-    {
-        ExportReport* exportReport =
-            dynamic_cast<ExportReport*>(mr->getProjectReport());
-        retVal = exportReport->generate();
-    }
-    else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
-    {
-        HTMLReport* htmlReport =
-            dynamic_cast<HTMLReport*>(mr->getProjectReport());
-        retVal = htmlReport->generate();
-    }
-    else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
-    {
-        ICalReport* icalReport =
-            dynamic_cast<ICalReport*>(mr->getProjectReport());
-        retVal = icalReport->generate();
-    }
-    else if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
-    {
-        XMLReport* xmlReport =
-            dynamic_cast<XMLReport*>(mr->getProjectReport());
-        retVal = xmlReport->generate();
-    }
-    else
-    {
-        kdDebug() << "Report type " << mr->getProjectReport()->getType()
-            << " not yet supported" << endl;
-        return false;
-    }
+    bool retVal = mr->getProjectReport()->generate();
 
     if (retVal)
         KMessageBox::information(0, i18n("The report '%1' has been generated")
