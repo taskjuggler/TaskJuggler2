@@ -271,6 +271,8 @@ TjReport::regenerateChart()
     delete delayTimer;
     delayTimer = 0;
 
+    if (loadingProject) return;
+
     setCursor(KCursor::waitCursor());
 
     prepareChart();
@@ -942,7 +944,7 @@ TjReport::listClicked(QListViewItem* lvi, const QPoint&, int column)
     // The first column is always the name and the second column is the hidden
     // sort index. Both are not in the TCI table. All clickable columns have
     // an icon.
-    if (!lvi || column <= 1 || !lvi->pixmap(column))
+    if (loadingProject || !lvi || column <= 1 || !lvi->pixmap(column))
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
@@ -1026,7 +1028,7 @@ TjReport::listHeaderClicked(int)
 void
 TjReport::doPopupMenu(QListViewItem* lvi, const QPoint& pos, int)
 {
-    if (!lvi)
+    if (loadingProject || !lvi)
         return;
 
     CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];

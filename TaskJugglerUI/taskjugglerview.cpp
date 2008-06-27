@@ -1090,7 +1090,7 @@ void
 TaskJugglerView::reportListClicked(int button, QListViewItem* lvi,
                                    const QPoint& p, int col)
 {
-    if (!lvi)
+    if (loadingProject || !lvi)
         return;
 
     bool errors = false;
