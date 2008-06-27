@@ -44,20 +44,9 @@ public:
     time_t getDuration() const { return interval->getDuration(); }
     Interval& getInterval() { return *interval; }
 
-    void setLockTS( const QString& ts ) { lockTS = ts; }
-    const QString& getLockTS() const { return lockTS; }
-
-    void setLockerId( const QString& id ) { lockerId = id; }
-    const QString& getLockerId() const { return lockerId; }
-
 private:
     /// The booked time period.
     Interval* interval;
-    /// The database lock timestamp
-    QString lockTS;
-
-    /// the lockers ID
-    QString lockerId;
 } ;
 
 #endif
