@@ -50,7 +50,6 @@ public:
     double getVolume(int sc, const Interval& period) const;
 
 private:
-    QString kotrusId;
     TransactionList transactions;
     AccountType acctType;
 } ;
