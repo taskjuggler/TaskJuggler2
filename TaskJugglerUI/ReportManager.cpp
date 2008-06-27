@@ -369,72 +369,62 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
     }
 
     TjUIReportBase* tjr = mr->getReport();
+    Report *rep = mr->getProjectReport();
+    const char * type = rep->getType();
     bool result = true;
     if (tjr == 0)
     {
-        if (mr->getProjectReport() == 0)
+        if (rep == 0)
             tjr = new TjSummaryReport(reportStack, this, project);
-        else if (strcmp(mr->getProjectReport()->getType(), "QtTaskReport") == 0)
-            tjr = new TjTaskReport(reportStack, this, mr->getProjectReport());
-        else if (strcmp(mr->getProjectReport()->getType(),
-                        "QtResourceReport") == 0)
-            tjr = new TjResourceReport(reportStack, this,
-                                       mr->getProjectReport());
-        else if (strncmp(mr->getProjectReport()->getType(), "CSV", 3) == 0)
+        else if (strcmp(type, "QtTaskReport") == 0)
+            tjr = new TjTaskReport(reportStack, this, rep);
+        else if (strcmp(type, "QtResourceReport") == 0)
+            tjr = new TjResourceReport(reportStack, this, rep);
+        else if (strncmp(type, "CSV", 3) == 0)
         {
-            CSVReport* csvReport =
-                dynamic_cast<CSVReport*>(mr->getProjectReport());
-            if (!csvReport->generate())
+            if (!rep->generate())
                 result = false;
             // show the CSV file in preferred CSV handler
             KURL reportUrl =
-                KURL::fromPathOrURL(mr->getProjectReport()->
-                                    getDefinitionFile());
-            reportUrl.setFileName(mr->getProjectReport()->getFileName());
+                KURL::fromPathOrURL(rep->getDefinitionFile());
+            reportUrl.setFileName(rep->getFileName());
 
             changeStatusBar(i18n("Displaying CSV report: '%1'")
-                            .arg(mr->getProjectReport()->getFileName()));
+                            .arg(rep->getFileName()));
             KRun::runURL(reportUrl, "text/x-csv");
         }
-        else if (strncmp(mr->getProjectReport()->getType(), "HTML", 4) == 0)
-            tjr = new TjHTMLReport(reportStack, this, mr->getProjectReport());
-        else if (strncmp(mr->getProjectReport()->getType(), "ICal", 4) == 0)
+        else if (strncmp(type, "HTML", 4) == 0)
+            tjr = new TjHTMLReport(reportStack, this, rep);
+        else if (strncmp(type, "ICal", 4) == 0)
         {
-            ICalReport* icalReport =
-                dynamic_cast<ICalReport*>(mr->getProjectReport());
-            if (!icalReport->generate())
+            if (!rep->generate())
                 result = false;
             else
             {
                 // show the TODO list in Korganizer
                 KURL reportUrl =
-                    KURL::fromPathOrURL(mr->getProjectReport()->
-                                        getDefinitionFile());
-                reportUrl.setFileName(mr->getProjectReport()->getFileName());
+                    KURL::fromPathOrURL(rep->getDefinitionFile());
+                reportUrl.setFileName(rep->getFileName());
 
                 changeStatusBar(i18n("Displaying iCalendar: '%1'")
-                                .arg(mr->getProjectReport()->getFileName()));
+                                .arg(rep->getFileName()));
                 KRun::runURL(reportUrl, "text/calendar");
             }
         }
-        else if (strncmp(mr->getProjectReport()->getType(), "Export", 6) == 0)
+        else if (strncmp(type, "Export", 6) == 0)
         {
             // Generate the report file
-            ExportReport* exportReport =
-                dynamic_cast<ExportReport*>(mr->getProjectReport());
-            if (!exportReport->generate())
+            if (!rep->generate())
                 result = false;
             else
             {
                 // Get the full file name as URL and show it in the editor
                 KURL reportUrl =
-                    KURL::fromPathOrURL(mr->getProjectReport()->
-                                        getFullFileName());
+                    KURL::fromPathOrURL(rep->getFullFileName());
                 if (reportUrl.url().right(4) == ".tjp")
                 {
                     changeStatusBar(i18n("Starting new TaskJuggler for '%1'")
-                                    .arg(mr->getProjectReport()->
-                                         getFileName()));
+                                    .arg(rep->getFileName()));
                     KRun::runURL(reportUrl, "application/x-tjp");
                 }
                 else
@@ -444,27 +434,25 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
                 }
             }
         }
-        else if (strncmp(mr->getProjectReport()->getType(), "XMLReport", 9)
-                 == 0)
+        else if (strncmp(type, "XMLReport", 9) == 0)
         {
-            bool result = mr->getProjectReport()->generate();
+            bool result = rep->generate();
             if (result)
             {
                 KMessageBox::information
                     (mainWindow, i18n("The report '%1' has been generated.")
-                     .arg(mr->getProjectReport()->getFileName()),
+                     .arg(rep->getFileName()),
                      QString::null, "XMLReportGeneratedInfo");
                 changeStatusBar(i18n("The report '%1' has been generated")
-                    .arg(mr->getProjectReport()->getFileName()));
+                    .arg(rep->getFileName()));
             }
             else
                 changeStatusBar(i18n("Could not generated report '%1'")
-                    .arg(mr->getProjectReport()->getFileName()));
+                    .arg(rep->getFileName()));
         }
         else
         {
-            kdDebug() << "Report type " << mr->getProjectReport()->getType()
-                << " not yet supported" << endl;
+            kdDebug() << "Report type " << type << " not yet supported" << endl;
             result = false;
         }
 
