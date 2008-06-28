@@ -30,6 +30,7 @@ class QRect;
 class QCanvas;
 class Project;
 class Task;
+class Report;
 class Resource;
 class QtReport;
 class QtReportElement;
@@ -163,7 +164,7 @@ private:
     unsigned int currentZoomStep;
 
     const Project* project;
-    const QtReport* reportDef;
+    const Report* reportDef;
     const QtReportElement* reportElement;
     int scenario;
 

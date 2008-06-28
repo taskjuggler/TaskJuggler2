@@ -85,7 +85,7 @@ void
 TjGanttChart::setProjectAndReportData(const QtReportElement* r)
 {
     reportElement = r;
-    reportDef = static_cast<const QtReport*>(reportElement->getReport());
+    reportDef = reportElement->getReport();
     project = reportDef->getProject();
     scenario = reportElement->getScenario(0);
 }
