@@ -925,7 +925,6 @@ private:
     ReportXML* xmlreport;
 
     QPtrList<Report> reports;
-    QPtrList<QtReport> interactiveReports;
     QStringList sourceFiles;
 
     // This flag is raised to abort the scheduling.

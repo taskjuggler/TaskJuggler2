@@ -80,7 +80,6 @@ Project::Project() :
     accountAttributes(),
     xmlreport(0),
     reports(),
-    interactiveReports(),
     sourceFiles(),
     breakFlag(false)
 {
