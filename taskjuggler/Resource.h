@@ -82,7 +82,7 @@ public:
     void setWorkingHours(int day, const QPtrList<Interval>& l);
     const QPtrList<Interval>* const* getWorkingHours() const
     {
-        return static_cast<const QPtrList<Interval>* const*>(workingHours);
+        return workingHours;
     }
 
     bool addShift(const Interval& i, Shift* s);
