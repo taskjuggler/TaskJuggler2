@@ -302,12 +302,14 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
+        const QString& name((*ci)->getName());
+
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar and chart columns get special treatment as well. */
-        if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
-            specialColumns.find((*ci)->getName()) != specialColumns.end() ||
-            (*ci)->getName() == "chart")
+        if (indexColumns.find(name) != indexColumns.end() ||
+            specialColumns.find(name) != specialColumns.end() ||
+            name == "chart")
         {
             column--;
             continue;
@@ -317,14 +319,14 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
         QPixmap icon;
 
         const TableColumnFormat* tcf =
-            reportElement->getColumnFormat((*ci)->getName());
+            reportElement->getColumnFormat(name);
 
-        if ((*ci)->getName() == "accounts")
+        if (name == "accounts")
         {
             if (t->getAccount())
                 cellText = t->getAccount()->getId();
         }
-        else if ((*ci)->getName() == "completed")
+        else if (name == "completed")
         {
             double calcedCompletionDegree =
                 t->getCalcedCompletionDegree(scenario);
@@ -358,7 +360,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 }
             }
         }
-        else if ((*ci)->getName() == "completedeffort")
+        else if (name == "completedeffort")
         {
             double val = 0.0;
             if (!r && t->isLeaf())
@@ -382,7 +384,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 (reportElement->scaledLoad(val, tcf->realFormat),
                  lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "cost")
+        else if (name == "cost")
         {
             double val = t->getCredits
                 (scenario, Interval(reportElement->getStart(),
@@ -391,14 +393,14 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "criticalness")
+        else if (name == "criticalness")
         {
             cellText = indent(QString().sprintf("%f",
                                                 t->getCriticalness(scenario)),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "depends")
+        else if (name == "depends")
         {
             for (TaskListIterator it(t->getPreviousIterator()); *it != 0; ++it)
             {
@@ -407,10 +409,10 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 cellText += (*it)->getId();
             }
         }
-        else if ((*ci)->getName() == "duration")
+        else if (name == "duration")
             cellText = reportElement->scaledDuration
                 (t->getCalcDuration(scenario), tcf->realFormat);
-        else if ((*ci)->getName() == "effort")
+        else if (name == "effort")
         {
             double val = 0.0;
             val = t->getLoad(scenario, Interval(t->getStart(scenario),
@@ -419,15 +421,15 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 (reportElement->scaledLoad(val, tcf->realFormat),
                  lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "end")
+        else if (name == "end")
             cellText = time2user(t->getEnd(scenario) + 1,
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "endbuffer")
+        else if (name == "endbuffer")
             cellText.sprintf("%3.0f", t->getEndBuffer(scenario));
-        else if ((*ci)->getName() == "endbufferstart")
+        else if (name == "endbufferstart")
             cellText = time2user(t->getEndBufferStart(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "follows")
+        else if (name == "follows")
         {
             for (TaskListIterator it(t->getFollowersIterator()); *it != 0; ++it)
             {
@@ -436,21 +438,21 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 cellText += (*it)->getId();
             }
         }
-        else if ((*ci)->getName() == "id")
+        else if (name == "id")
             cellText = t->getId();
-        else if ((*ci)->getName() == "maxend")
+        else if (name == "maxend")
             cellText = time2user(t->getMaxEnd(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "maxstart")
+        else if (name == "maxstart")
             cellText = time2user(t->getMaxStart(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "minend")
+        else if (name == "minend")
             cellText = time2user(t->getMinEnd(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "minstart")
+        else if (name == "minstart")
             cellText = time2user(t->getMinStart(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "note" && !t->getNote().isEmpty())
+        else if (name == "note" && !t->getNote().isEmpty())
         {
             if (t->getNote().length() > 25 || isRichText(t->getNote()))
                 icon = KGlobal::iconLoader()->
@@ -458,20 +460,20 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
             else
                 cellText = t->getNote();
         }
-        else if ((*ci)->getName() == "pathcriticalness")
+        else if (name == "pathcriticalness")
             cellText = indent(QString().sprintf
                               ("%f", t->getPathCriticalness(scenario)),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
-        else if ((*ci)->getName() == "priority")
+        else if (name == "priority")
             cellText = indent(QString().sprintf("%d", t->getPriority()),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
-        else if ((*ci)->getName() == "projectid")
+        else if (name == "projectid")
             cellText = t->getProjectId() + " (" +
                 reportElement->getReport()->getProject()->getIdIndex
                 (t->getProjectId()) + ")";
-        else if ((*ci)->getName() == "profit")
+        else if (name == "profit")
         {
             double val = t->getCredits
                 (scenario, Interval(reportElement->getStart(),
@@ -483,7 +485,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "remainingeffort")
+        else if (name == "remainingeffort")
         {
             double val = 0.0;
             if (!r && t->isLeaf())
@@ -507,7 +509,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 (reportElement->scaledLoad(val, tcf->realFormat),
                  lvi, tcf->getHAlign() == TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "resources")
+        else if (name == "resources")
         {
             for (ResourceListIterator rli
                  (t->getBookedResourcesIterator(scenario)); *rli != 0; ++rli)
@@ -518,12 +520,12 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 cellText += (*rli)->getName();
             }
         }
-        else if ((*ci)->getName() == "responsible")
+        else if (name == "responsible")
         {
             if (t->getResponsible())
                 cellText = t->getResponsible()->getName();
         }
-        else if ((*ci)->getName() == "revenue")
+        else if (name == "revenue")
         {
             double val = t->getCredits
                 (scenario, Interval(reportElement->getStart(),
@@ -532,21 +534,21 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "scheduling")
+        else if (name == "scheduling")
             cellText = t->getSchedulingText();
-        else if ((*ci)->getName() == "start")
+        else if (name == "start")
             cellText = time2user(t->getStart(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "startbuffer")
+        else if (name == "startbuffer")
             cellText.sprintf("%3.0f", t->getStartBuffer(scenario));
-        else if ((*ci)->getName() == "startbufferend")
+        else if (name == "startbufferend")
             cellText = time2user(t->getStartBufferEnd(scenario),
                                  reportElement->getTimeFormat());
-        else if ((*ci)->getName() == "status")
+        else if (name == "status")
         {
             cellText = t->getStatusText(scenario);
         }
-        else if ((*ci)->getName() == "statusnote")
+        else if (name == "statusnote")
         {
             if (t->getStatusNote(scenario).length() > 25 ||
                 isRichText(t->getStatusNote(scenario)))
@@ -556,7 +558,7 @@ TjReport::generateTaskListLine(const QtReportElement* reportElement,
                 cellText = t->getStatusNote(scenario);
         }
         else
-            generateCustomAttribute(t, (*ci)->getName(), cellText, icon);
+            generateCustomAttribute(t, name, cellText, icon);
 
         lvi->setText(column, cellText);
         if (!icon.isNull())
@@ -578,12 +580,14 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
     for (QPtrListIterator<TableColumnInfo>
          ci = reportElement->getColumnsIterator(); *ci; ++ci, ++column)
     {
+        const QString& name((*ci)->getName());
+
         /* The name and indices columns are automatically added as first
          * columns, so we will just ignore them if the user has requested them
          * as well. Calendar and chart columns get special treatment as well. */
-        if (indexColumns.find((*ci)->getName()) != indexColumns.end() ||
-            specialColumns.find((*ci)->getName()) != specialColumns.end() ||
-            (*ci)->getName() == "chart")
+        if (indexColumns.find(name) != indexColumns.end() ||
+            specialColumns.find(name) != specialColumns.end() ||
+            name == "chart")
         {
             column--;
             continue;
@@ -592,9 +596,9 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
         QString cellText;
         QPixmap icon;
         const TableColumnFormat* tcf =
-            reportElement->getColumnFormat((*ci)->getName());
+            reportElement->getColumnFormat(name);
 
-        if ((*ci)->getName() == "cost")
+        if (name == "cost")
         {
             double val = r->getCredits
                 (scenario, Interval(reportElement->getStart(),
@@ -603,11 +607,11 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "efficiency")
+        else if (name == "efficiency")
         {
             cellText = QString().sprintf("%.1lf", r->getEfficiency());
         }
-        else if ((*ci)->getName() == "effort")
+        else if (name == "effort")
         {
             double val = 0.0;
             if (t)
@@ -624,7 +628,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                 (reportElement->scaledLoad(val, tcf->realFormat), lvi,
                  tcf->getHAlign() == TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "freeload")
+        else if (name == "freeload")
         {
             if (!t)
             {
@@ -637,11 +641,11 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                      tcf->getHAlign() == TableColumnFormat::right);
             }
         }
-        else if ((*ci)->getName() == "id")
+        else if (name == "id")
         {
             cellText = r->getFullId();
         }
-        else if ((*ci)->getName() == "maxeffort")
+        else if (name == "maxeffort")
         {
             const UsageLimits* limits = r->getLimits();
             if (limits == 0)
@@ -668,17 +672,17 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                 }
             }
         }
-        else if ((*ci)->getName() == "projectids")
+        else if (name == "projectids")
             cellText = r->getProjectIDs
                 (scenario, Interval(reportElement->getStart(),
                                     reportElement->getEnd()));
-        else if ((*ci)->getName() == "rate")
+        else if (name == "rate")
         {
             cellText = indent(tcf->realFormat.format(r->getRate(), false),
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "revenue")
+        else if (name == "revenue")
         {
             double val = r->getCredits
                 (scenario, Interval(reportElement->getStart(),
@@ -687,7 +691,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                               lvi, tcf->getHAlign() ==
                               TableColumnFormat::right);
         }
-        else if ((*ci)->getName() == "utilization")
+        else if (name == "utilization")
         {
             if (!t)
             {
@@ -709,7 +713,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
             }
         }
         else
-            generateCustomAttribute(r, (*ci)->getName(), cellText, icon);
+            generateCustomAttribute(r, name, cellText, icon);
 
         lvi->setText(column, cellText);
         if (!icon.isNull())
