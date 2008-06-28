@@ -28,8 +28,7 @@ TjPrintTaskReport::initialize()
 
     // We need those values frequently. So let's store them in a more
     // accessible place.
-    reportElement = dynamic_cast<QtReportElement*>(const_cast<QtTaskReport*>(
-                dynamic_cast<const QtTaskReport*>(reportDef))->getTable());
+    reportElement = dynamic_cast<QtReportElement*>(dynamic_cast<const QtReport*>(reportDef)->getTable());
     scenario = reportElement->getScenario(0);
 }
 

@@ -34,7 +34,7 @@ public:
         m_element.reset(element);
     }
 
-    ReportElement* getTable()
+    ReportElement* getTable() const
     {
         return m_element.get();
     }
