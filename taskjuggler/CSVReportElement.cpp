@@ -33,10 +33,10 @@ CSVReportElement::generateTableHeader()
     bool first = true;
     for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
     {
-        if (!first)
-            s() << fieldSeparator;
-        else
+        if (first)
             first = false;
+        else
+            s() << fieldSeparator;
 
         if (columnFormat[(*it)->getName()])
         {
@@ -58,6 +58,15 @@ CSVReportElement::generateTableHeader()
             return;
         }
     }
+    // This is just needed to get the correct sub column count.
+    for (QPtrListIterator<TableColumnInfo> it(columns); it; ++it )
+        if (columnFormat[(*it)->getName()] &&
+            columnFormat[(*it)->getName()]->genHeadLine2)
+        {
+            TableCellInfo tci(columnFormat[(*it)->getName()], 0, *it);
+            (*this.*(columnFormat[(*it)->getName()]->genHeadLine2))
+                (&tci);
+        }
 
     if (!first)
         s() << endl;
@@ -266,8 +275,10 @@ CSVReportElement::genHeadDaily1(TableCellInfo* tci)
 }
 
 void
-CSVReportElement::genHeadDaily2(TableCellInfo*)
+CSVReportElement::genHeadDaily2(TableCellInfo* tci)
 {
+    for (time_t day = midnight(start); day < end; day = sameTimeNextDay(day))
+        tci->tci->increaseSubColumns();
 }
 
 void
@@ -311,8 +322,12 @@ CSVReportElement::genHeadWeekly1(TableCellInfo* tci)
 }
 
 void
-CSVReportElement::genHeadWeekly2(TableCellInfo*)
+CSVReportElement::genHeadWeekly2(TableCellInfo* tci)
 {
+    bool wsm = report->getWeekStartsMonday();
+    for (time_t week = beginOfWeek(start, wsm); week < end;
+         week = sameTimeNextWeek(week))
+        tci->tci->increaseSubColumns();
 }
 
 void
@@ -353,8 +368,11 @@ CSVReportElement::genHeadMonthly1(TableCellInfo* tci)
 }
 
 void
-CSVReportElement::genHeadMonthly2(TableCellInfo*)
+CSVReportElement::genHeadMonthly2(TableCellInfo* tci)
 {
+    for (time_t month = beginOfMonth(start); month < end;
+         month = sameTimeNextMonth(month))
+        tci->tci->increaseSubColumns();
 }
 
 void
@@ -399,8 +417,11 @@ CSVReportElement::genHeadQuarterly1(TableCellInfo* tci)
 }
 
 void
-CSVReportElement::genHeadQuarterly2(TableCellInfo*)
+CSVReportElement::genHeadQuarterly2(TableCellInfo* tci)
 {
+    for (time_t quarter = beginOfQuarter(start); quarter < end;
+         quarter = sameTimeNextQuarter(quarter))
+        tci->tci->increaseSubColumns();
 }
 
 void
@@ -1288,10 +1309,16 @@ CSVReportElement::genCellSummary(TableCellInfo* tci)
 
     uint sc = tci->tli->sc;
     double val = 0.0;
+    bool first = true;
     if (sum[sc].begin() != sum[sc].end())
     {
         for (it = sum[sc].begin(); it != sum[sc].end(); ++it)
         {
+            if (first)
+                first = false;
+            else
+                s() << fieldSeparator;
+
             if (accumulate)
                 val += *it;
             else
@@ -1305,7 +1332,14 @@ CSVReportElement::genCellSummary(TableCellInfo* tci)
         // column cases.
         if (tci->tci->getSubColumns() > 0)
             for (uint col = 0; col < tci->tci->getSubColumns(); ++col)
+            {
+                if (first)
+                    first = false;
+                else
+                    s() << fieldSeparator;
+
                 genCell(tci->tcf->realFormat.format(0.0, tci), tci, false);
+            }
         else
             genCell(tci->tcf->realFormat.format(0.0, tci), tci, false);
     }
