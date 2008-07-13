@@ -26,7 +26,7 @@ public:
     ManagedReportInfo(ReportManager* rm, Report* const r);
     ~ManagedReportInfo();
 
-    Report* const getProjectReport() const { return projectReport; }
+    Report* getProjectReport() const { return projectReport; }
 
     const QString& getName() const;
 

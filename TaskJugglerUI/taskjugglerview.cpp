@@ -415,7 +415,8 @@ TaskJugglerView::pickTemplateFile(const QString& extension)
     // Select the first entry in the list and enable the OK button.
     if (selector->templateList->firstChild())
     {
-        selector->templateList->firstChild()->setSelected(true);
+        selector->templateList->setSelected
+            (selector->templateList->firstChild(), true);
         selector->buttonOk->setEnabled(true);
     }
 
