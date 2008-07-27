@@ -177,7 +177,7 @@ using the built-in default scenario, you have to add a scenario
 definition.</para>
 
 <para><screen>
-project prj "Project" "1.0" 2005-04-01 2005-05-01 {
+project prj "Project" "1.0" 2005-04-01 - 2005-05-01 {
   scenario plan "Plan" {
     # Compute when the task will be ready based on the already
     # done work and the current date.
