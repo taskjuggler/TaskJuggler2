@@ -29,7 +29,7 @@ public:
     const QString& getName() const { return name; }
     const QString& getValue() const { return value; }
     const QString& getFile() const { return file; }
-    const uint getLine() const { return line; }
+    uint getLine() const { return line; }
 
 private:
     QString name;

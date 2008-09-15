@@ -140,20 +140,22 @@ public:
     bool hasPrevious(const Task* t) { return previous.findRef(t) != -1; }
     bool hasFollower(const Task* t) { return followers.findRef(t) != -1; }
 
+    void collectDependencies(TaskList& list, long depth) const;
+
     // The following group of functions operates only on scenario variables.
     void setSpecifiedStart(int sc, time_t s)
     {
         scenarios[sc].specifiedStart = s;
     }
     void setStart(int sc, time_t s) { scenarios[sc].start = s; }
-    const time_t getStart(int sc) const { return scenarios[sc].start; }
+    time_t getStart(int sc) const { return scenarios[sc].start; }
 
     void setSpecifiedEnd(int sc, time_t s)
     {
         scenarios[sc].specifiedEnd = s;
     }
     void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
-    const time_t getEnd(int sc) const { return scenarios[sc].end; }
+    time_t getEnd(int sc) const { return scenarios[sc].end; }
 
     void setSpecifiedPeriod(int sc, const Interval& iv)
     {

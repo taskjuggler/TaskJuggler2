@@ -1307,6 +1307,9 @@ characters are used.</para></listitem>
 
 <listitem><para>Added 'accounts' column to reports.</para></listitem>
 
+<listitem><para>Added 'isDependencyOf()' function for logical
+		expressions.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

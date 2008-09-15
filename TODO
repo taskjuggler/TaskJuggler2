@@ -15,7 +15,6 @@ Probably:
   and others) in UI Report, to be able to find easily tasks (by task
   id) or task resources
 - Legend to explain meaning of HTML report Gantt elements.
-- add LogExp functions like 'dependsOn' or 'precedes'.
 - Fix conceptually broken limits for allocations. They should be
   resource limits for tasks. Inheritance should be reconsidered as
   well.

@@ -141,6 +141,13 @@ the scenario with the specified ID.
 </para></listitem>
 
 </varlistentry>
+<varlistentry><term>isDependentOn(<link linkend="TYPE_ID">TASK</link>,
+		<link linkend="TYPE_INTEGER">HOPS</link>)</term>
+
+<listitem><para>true if the task is no more than the specified number
+		of hops away from the specified task</para></listitem>
+
+</varlistentry>
 <varlistentry><term>isMilestone()</term>
 
 <listitem><para>true if the task is a milestone.</para></listitem>

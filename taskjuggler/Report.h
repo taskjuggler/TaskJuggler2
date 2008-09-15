@@ -61,7 +61,7 @@ public:
 
     void addScenario(int sc) { scenarios.append(sc); }
     void clearScenarios() { scenarios.clear(); }
-    uint getScenarioCount() const { return scenarios.count(); }
+    size_t getScenarioCount() const { return scenarios.count(); }
     int getScenario(int sc) const { return scenarios[sc]; }
 
     void setWeekStartsMonday(bool wsm) { weekStartsMonday = wsm; }

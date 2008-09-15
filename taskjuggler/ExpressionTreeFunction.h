@@ -50,6 +50,7 @@ public:
 
     long hasAssignments(ExpressionTree* et, Operation* const ops[]) const;
     long isParentOf(ExpressionTree* et, Operation* const ops[]) const;
+    long isDependencyOf(ExpressionTree* et, Operation* const ops[]) const;
     long isDescendantOf(ExpressionTree* et, Operation* const ops[]) const;
     long isLeaf(ExpressionTree* et, Operation* const ops[]) const;
     long treeLevel(ExpressionTree* et, Operation* const ops[]) const;
