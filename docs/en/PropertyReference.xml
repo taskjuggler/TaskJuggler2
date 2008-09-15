@@ -2407,7 +2407,7 @@ contain the project ID after the load value.</para></descr>
   booking.</para></descr>
   <attributes>
    <attr name="value" type="INTEGER">
-    <para>Number between 0 and 3. See table below.</para>
+    <para>Number between 0 and 2. See table below.</para>
    </attr>
   </attributes>
   <freestyle>

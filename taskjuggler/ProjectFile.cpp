@@ -3214,8 +3214,8 @@ bool
 ProjectFile::readICalTaskReport()
 {
 #ifndef HAVE_KDE
-    errorMessage(i18n("The program was compiled without KDE support. "
-                      "Therefore ICal support has been disabled."));
+    warningMessage(i18n("The program was compiled without KDE support. "
+                        "Therefore ICal support has been disabled."));
     return false;
 #else
     QString fileName;

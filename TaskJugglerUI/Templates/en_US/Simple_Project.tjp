@@ -80,17 +80,22 @@ task myProject "My Project" {
   # sub tasks specifies it differently.
   account costs
 
-  task a "Task A"
+  task a "Task A" {
+    # In case you want booking on this task,
+    # uncomment the following two lines and booking statement below.
+    # allocate dev1
+    # effort 3h
+  }
   task b "Task B"
   task c "Task C"
 }
 
 # Bookings should be put here
-# supplement resource r1 {
-#   This is the work that has been done up until now by r1.
-#   booking 2003-06-06 2003-06-07 t1 { sloppy 2 }
-#   booking 2003-06-08 2003-06-09 t1 { sloppy 2 }
-#   booking 2003-06-11 2003-06-12 t1 { sloppy 2 }
+# supplement resource dev1 {
+#   This is the work that has been done up until now by dev1.
+#   booking myProject.a 2003-06-06 - 2003-06-07 { sloppy 2 }
+#   booking myProject.a 2003-06-08 - 2003-06-09 { sloppy 2 }
+#   booking myProject.a 2003-06-11 - 2003-06-12 { sloppy 2 }
 # }
 
 # A traditional Gantt Chart for the TaskJugglerUI

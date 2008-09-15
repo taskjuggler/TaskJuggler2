@@ -1310,6 +1310,14 @@ characters are used.</para></listitem>
 <listitem><para>Added 'isDependencyOf()' function for logical
 		expressions.</para></listitem>
 
+<listitem><para>Fixed crash when existing template dialog with
+		unchanged selection. This only happened on systems
+		with older Qt versions.</para></listitem>
+
+<listitem><para>Properly report summary columns in CSV account reports
+		and use separators between all
+		columns.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
