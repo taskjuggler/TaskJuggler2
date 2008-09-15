@@ -16,22 +16,22 @@ Allocation.cpp \
 Journal.cpp \
 MacroTable.cpp FileInfo.cpp FileToken.cpp ProjectFile.cpp \
 XMLFile.cpp \
-ReportElementBase.cpp ReportElement.cpp ElementHolder.cpp Report.cpp ReportXML.cpp \
-QtReportElement.cpp QtReport.cpp \
-QtTaskReport.cpp QtTaskReportElement.cpp \
+ReportElementBase.cpp ReportElement.cpp Report.cpp ReportXML.cpp \
+QtReportElement.cpp \
+QtTaskReportElement.cpp \
 QtResourceReport.cpp QtResourceReportElement.cpp \
 HTMLPrimitives.cpp TableColumnFormat.cpp TableColumnInfo.cpp \
-HTMLReport.cpp HTMLReportElement.cpp HTMLSingleReport.cpp \
-HTMLTaskReport.cpp HTMLTaskReportElement.cpp \
-HTMLResourceReport.cpp HTMLResourceReportElement.cpp \
-HTMLWeeklyCalendar.cpp HTMLWeeklyCalendarElement.cpp \
+HTMLReport.cpp HTMLReportElement.cpp \
+HTMLTaskReportElement.cpp \
+HTMLResourceReportElement.cpp \
+HTMLWeeklyCalendarElement.cpp \
 HTMLMonthlyCalendar.cpp HTMLMonthlyCalendarElement.cpp \
-HTMLAccountReport.cpp HTMLAccountReportElement.cpp \
+HTMLAccountReportElement.cpp \
 HTMLStatusReport.cpp \
-CSVPrimitives.cpp CSVReport.cpp CSVReportElement.cpp \
+CSVPrimitives.cpp CSVReportElement.cpp \
 CSVTaskReport.cpp CSVTaskReportElement.cpp \
 CSVResourceReport.cpp CSVResourceReportElement.cpp \
-CSVAccountReport.cpp CSVAccountReportElement.cpp \
+CSVAccountReportElement.cpp \
 ExportReport.cpp \
 XMLReport.cpp \
 Project.cpp ICalReport.cpp
