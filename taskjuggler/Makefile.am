@@ -28,10 +28,10 @@ HTMLWeeklyCalendar.cpp HTMLWeeklyCalendarElement.cpp \
 HTMLMonthlyCalendar.cpp HTMLMonthlyCalendarElement.cpp \
 HTMLAccountReport.cpp HTMLAccountReportElement.cpp \
 HTMLStatusReport.cpp \
-CSVPrimitives.cpp CSVReport.cpp CSVReportElement.cpp \
+CSVPrimitives.cpp CSVReportElement.cpp \
 CSVTaskReport.cpp CSVTaskReportElement.cpp \
 CSVResourceReport.cpp CSVResourceReportElement.cpp \
-CSVAccountReport.cpp CSVAccountReportElement.cpp \
+CSVAccountReportElement.cpp \
 ExportReport.cpp \
 XMLReport.cpp \
 Project.cpp ICalReport.cpp

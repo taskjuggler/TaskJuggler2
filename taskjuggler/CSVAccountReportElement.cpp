@@ -25,6 +25,9 @@ CSVAccountReportElement::CSVAccountReportElement(Report* r,
     columns.append(new TableColumnInfo(sc, "no"));
     columns.append(new TableColumnInfo(sc, "name"));
     columns.append(new TableColumnInfo(sc, "total"));
+
+    accountSortCriteria[0] = CoreAttributesList::TreeMode;
+    accountSortCriteria[1] = CoreAttributesList::NameUp;
 }
 
 bool
