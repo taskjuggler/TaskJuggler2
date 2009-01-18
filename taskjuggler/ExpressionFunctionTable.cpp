@@ -25,6 +25,7 @@ ExpressionFunctionTable::ExpressionFunctionTable() :
     addFunc(KW("hasAssignments"), &ExpressionTreeFunction::hasAssignments, 3);
     addFunc(KW("isTask"), &ExpressionTreeFunction::isTask, 1);
     addFunc(KW("isATask"), &ExpressionTreeFunction::isATask, 0);
+    addFunc(KW("isDependencyOf"), &ExpressionTreeFunction::isDependencyOf, 2);
     addFunc(KW("isMilestone"), &ExpressionTreeFunction::isMilestone, 0);
     addFunc(KW("isTaskOfProject"), &ExpressionTreeFunction::isTaskOfProject, 1);
     addFunc(KW("isResource"), &ExpressionTreeFunction::isResource, 1);

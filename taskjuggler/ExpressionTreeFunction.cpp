@@ -117,6 +117,37 @@ ExpressionTreeFunction::hasAssignments(ExpressionTree* et,
 }
 
 long
+ExpressionTreeFunction::isDependencyOf(ExpressionTree* et,
+                                       Operation* const ops[]) const
+{
+    /* Arguments:
+       0 : Task ID
+       1 : depth of the depency chain to be considered */
+    // This function only works for Tasks.
+    if (et->getCoreAttributes()->getType() != CA_Task)
+        return 0;
+
+    const Task* target =
+        static_cast<const Task*>(findCoreAttributes(et->getCoreAttributes(),
+                                                    ops[0]->evalAsString(et)));
+    if (!target)
+    {
+        et->errorMessage(i18n("isDependencyOf: '%1' is not a known Task")
+                         .arg(ops[0]->evalAsString(et)));
+        return 0;
+    }
+    long depth = ops[1]->evalAsInt(et);
+    const Task* task = static_cast<const Task*>(et->getCoreAttributes());
+    // Do not match on self.
+    if (task == target)
+        return 0;
+
+    TaskList tasks;
+    target->collectDependencies(tasks, depth);
+    return tasks.findRef(task) >= 0;
+}
+
+long
 ExpressionTreeFunction::isDescendantOf(ExpressionTree* et,
                                        Operation* const ops[]) const
 {
@@ -126,8 +157,8 @@ ExpressionTreeFunction::isDescendantOf(ExpressionTree* et,
     {
         et->errorMessage(i18n("isChildOf: '%1' is unknown and not a "
                               "child of '%2'")
-                         .arg(et->getCoreAttributes()->getFullId())
-                         .arg(ops[0]->evalAsString(et)));
+                         .arg(ops[0]->evalAsString(et))
+                         .arg(et->getCoreAttributes()->getFullId()));
         return 0;
     }
 

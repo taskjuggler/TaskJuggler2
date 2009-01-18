@@ -204,6 +204,32 @@ Task::addPrecedes(const QString& rid)
     return td;
 }
 
+void
+Task::collectDependencies(TaskList& list, long depth) const
+{
+    // Dependencies can show up multiple times. We only have to include it
+    // once.
+    if (list.findRef(this) >= 0)
+        return;
+
+    // Add the current task to the list of collected tasks.
+    list.append(this);
+
+    // Stop if the depth counter has been decreased to 0.
+    if (depth == 0)
+        return;
+
+    /* Iterate over all predecessors of this task and recursively call
+     * collectDependencies(). */
+    for (TaskListIterator tli(previous); *tli != 0; ++tli)
+        (*tli)->collectDependencies(list, depth - 1);
+
+    // Do the same for all predecessors of all parent tasks.
+    for (Task* p = getParent(); p; p = p->getParent())
+        for (TaskListIterator tli(p->previous); *tli != 0; ++tli)
+            (*tli)->collectDependencies(list, depth - 1);
+}
+
 bool
 Task::addShift(const Interval& i, Shift* s)
 {
@@ -435,7 +461,7 @@ Task::propagateStart(int sc, time_t date)
         }
 
     /* Propagate start time to sub tasks which have only an implicit
-     * dependancy on the parent task. Do not touch container tasks. */
+     * dependency on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
     {
         if (!(*tli)->hasStartDependency() && !(*tli)->schedulingDone)
@@ -486,7 +512,7 @@ Task::propagateEnd(int sc, time_t date)
             (*tli)->propagateStart(sc, (*tli)->earliestStart(sc));
         }
     /* Propagate end time to sub tasks which have only an implicit
-     * dependancy on the parent task. Do not touch container tasks. */
+     * dependency on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
         if (!(*tli)->hasEndDependency() && !(*tli)->schedulingDone)
         {
@@ -2355,7 +2381,7 @@ Task::scheduleOk(int sc) const
     if (DEBUGPS(3))
         qDebug("Checking task %s", id.latin1());
 
-    /* If any of the dependant tasks is a runAway, we can safely surpress all
+    /* If any of the dependent tasks is a runAway, we can safely surpress all
      * other error messages. */
     for (QPtrListIterator<TaskDependency> tdi(depends); *tdi; ++tdi)
         if ((*tdi)->getTaskRef()->runAway)
