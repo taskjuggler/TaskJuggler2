@@ -888,12 +888,18 @@ TaskJugglerView::setFocusToReport()
 void
 TaskJugglerView::zoomIn()
 {
+    if (loadingProject)
+        return;
+
     reportManager->zoomIn();
 }
 
 void
 TaskJugglerView::zoomOut()
 {
+    if (loadingProject)
+        return;
+
     reportManager->zoomOut();
 }
 
@@ -982,7 +988,7 @@ TaskJugglerView::showEditor()
     if (project)
         windowCaption = project->getName() + " - ";
 
-    if (fileManager->getCurrentFile())
+    if (fileManager && fileManager->getCurrentFile())
         windowCaption += fileManager->getCurrentFile()->getUniqueName();
 
     (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
@@ -1010,7 +1016,7 @@ TaskJugglerView::showReport()
     if (project)
         windowCaption = project->getName() + " - ";
 
-    if (reportManager->getCurrentReport())
+    if (reportManager && reportManager->getCurrentReport())
         windowCaption += reportManager->getCurrentReport()->getName();
 
     (dynamic_cast<TaskJuggler*>(parent()))->changeCaption(windowCaption);
@@ -1201,7 +1207,8 @@ void
 TaskJugglerView::setLoadingProject(bool lp)
 {
     loadingProject = lp;
-    reportManager->setLoadingProject(lp);
+    if (reportManager)
+        reportManager->setLoadingProject(lp);
 }
 
 void
