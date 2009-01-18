@@ -1315,6 +1315,12 @@ characters are used.</para></listitem>
 		and use separators between all
 		columns.</para></listitem>
 
+<listitem><para>Fixed missing start time for certain tasks in ICal reports.</para></listitem>
+
+<listitem><para>Fixed wrong total values in CSV account reports when tree mode (default) was used.</para></listitem>
+
+<listitem><para>Fixed crash when pressing F9 at a high rate in the GUI.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

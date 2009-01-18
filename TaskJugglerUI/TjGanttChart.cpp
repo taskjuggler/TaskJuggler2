@@ -1758,7 +1758,8 @@ TjGanttChart::time2x(time_t t) const
 time_t
 TjGanttChart::x2time(int x) const
 {
-    assert(zoomSteps.size() > 0);
+    if (zoomSteps.size() <= 0)
+        return -1;
 
     return (time_t) (startTime + ((float) x * 60 * 60 * 24 * 365) /
                      zoomSteps[currentZoomStep]->getPixelsPerYear());

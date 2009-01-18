@@ -274,6 +274,7 @@ TjReport::regenerateChart()
     if (loadingProject) return;
 
     setCursor(KCursor::waitCursor());
+    setLoadingProject(true);
 
     prepareChart();
 
@@ -284,6 +285,7 @@ TjReport::regenerateChart()
     ganttChart->getHeaderCanvas()->update();
     ganttChart->getChartCanvas()->update();
 
+    setLoadingProject(false);
     setCursor(KCursor::arrowCursor());
 }
 
@@ -1432,11 +1434,13 @@ TjReport::getChartItemBelowCursor(QPoint& pos)
 void
 TjReport::zoomTo(const QString& label)
 {
-    if (!isVisible())
+    if (loadingProject || !isVisible())
         return;
 
     time_t x = ganttChart->x2time(ganttChartView->contentsX());
     int y = ganttChartView->contentsY();
+    if (x <= 0 && y <= 0)
+        return;
 
     if (!ganttChart->zoomTo(label))
         return;
@@ -1454,7 +1458,7 @@ TjReport::zoomTo(const QString& label)
 void
 TjReport::zoomIn()
 {
-    if (!isVisible())
+    if (loadingProject || !isVisible())
         return;
 
     time_t x = ganttChart->x2time(ganttChartView->contentsX());
@@ -1477,7 +1481,7 @@ TjReport::zoomIn()
 void
 TjReport::zoomOut()
 {
-    if (!isVisible())
+    if (loadingProject || !isVisible())
         return;
 
     time_t x = ganttChart->x2time(ganttChartView->contentsX());
