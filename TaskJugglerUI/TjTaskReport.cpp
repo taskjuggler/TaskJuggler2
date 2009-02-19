@@ -73,19 +73,9 @@ TjTaskReport::generateList()
     scenario = reportElement->getScenario(0);
     taskList = report->getProject()->getTaskList();
 
-    // QListView can hide subtasks. So we feed the list with all tasks first
-    // and then later close those items that we want to roll up. This
-    // expression means "roll-up none".
-    ExpressionTree* et = new ExpressionTree;
-    et->setTree("0", report->getProject());
-
     if (!reportElement->filterTaskList(taskList, 0,
-                                       reportElement->getHideTask(), et))
-    {
-        delete et;
+                                       reportElement->getHideTask(), 0))
         return false;
-    }
-    delete et;
 
     reportElement->sortTaskList(taskList);
 
