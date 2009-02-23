@@ -1324,6 +1324,8 @@ characters are used.</para></listitem>
 
 <listitem><para>Fixed crash when pressing F9 at a high rate in the GUI.</para></listitem>
 
+<listitem><para>Don't overwrite table boundaries with alternating background in printed reports.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

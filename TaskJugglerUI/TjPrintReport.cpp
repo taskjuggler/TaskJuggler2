@@ -919,8 +919,9 @@ TjPrintReport::printReportPage(int x, int y)
                     {
                         p.setPen(QColor(Qt::lightGray).light(125));
                         p.setBrush(QColor(Qt::lightGray).light(125));
-                        p.drawRect(reportColumn->getLeftX(), (*rit)->getTopY(),
-                                   reportColumn->getWidth(),
+                        p.drawRect(reportColumn->getLeftX() + 1,
+                                   (*rit)->getTopY(),
+                                   reportColumn->getWidth() - 1,
                                    (*rit)->getHeight());
                     }
 
@@ -992,6 +993,11 @@ TjPrintReport::printReportPage(int x, int y)
                 }
             }
         }
+
+    // Repeat outer frame to cover the alternating background again.
+    p.setPen(QPen(Qt::black, 1));
+    p.setBrush(Qt::NoBrush);
+    p.drawRect(leftMargin, topMargin, pageWidth, pageHeight);
 
     // Draw footer
     p.setPen(QPen(Qt::black, 1));
