@@ -329,7 +329,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
 
     TjUIReportBase* tjr = mr->getReport();
     Report *rep = mr->getProjectReport();
-    const char * type = rep->getType();
+    const char * type = rep ? rep->getType() : "";
     bool result = true;
     if (tjr == 0)
     {
