@@ -60,7 +60,7 @@ Project::Project() :
     dailyWorkingHours(8.0),
     yearlyWorkingDays(260.714),
     workingHours(),
-    scheduleGranularity(ONEHOUR),
+    scheduleGranularity(suggestTimingResolution()),
     allowedFlags(),
     projectIDs(),
     currentId(),

@@ -1328,6 +1328,9 @@ characters are used.</para></listitem>
 
 <listitem><para>Fixed crash when the UI was started with a project without reports.</para></listitem>
 
+<listitem><para>Added support for timezones where the difference to
+		UTC is not a multiple of 60 minutes.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
