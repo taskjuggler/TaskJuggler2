@@ -1,5 +1,5 @@
 project test "Test" "$Id" 2000-01-01-00:00:00-MST - 2000-03-10-00:00:00-MST {
-	timezone "US/Mountain"
+	timezone "America/Denver"
 	extend task {
 		text UserText "User Text"
 		reference UserRef "User Reference"
