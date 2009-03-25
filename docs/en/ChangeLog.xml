@@ -1331,6 +1331,11 @@ characters are used.</para></listitem>
 <listitem><para>Added support for timezones where the difference to
 		UTC is not a multiple of 60 minutes.</para></listitem>
 
+<listitem><para>Corrected a bug that caused tasks with no end date
+		when the specified bookings matched exactly the
+		specified effort but the daily working hours were not
+		in sync with the declaration.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

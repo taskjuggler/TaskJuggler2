@@ -444,6 +444,13 @@ Project::convertToDailyLoad(long secs) const
     return ((double) secs / (dailyWorkingHours * ONEHOUR));
 }
 
+long int
+Project::convertToSlots(double effort) const
+{
+    return (long int) ((effort * dailyWorkingHours * ONEHOUR) /
+                     scheduleGranularity);
+}
+
 void
 Project::addJournalEntry(JournalEntry* entry)
 {

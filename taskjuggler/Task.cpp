@@ -2719,7 +2719,8 @@ Task::prepareScenario(int sc)
                 if (scenarios[sc].reportedCompletion > 100.0)
                     scenarios[sc].reportedCompletion = 100.0;
 
-                if (doneEffort >= effort)
+                if (project->convertToSlots(doneEffort) >=
+                    project->convertToSlots(effort))
                 {
                     /* In case the required effort is reached or exceeded by
                      * the specified bookings for this task, we set the task
