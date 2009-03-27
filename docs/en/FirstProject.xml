@@ -161,15 +161,16 @@ resource misc "The Others" {
 
 <para>This snippet of the example shows the <link
 linkend="PROPERTY_resource">resource</link> property. Resources always
-have an ID and a Name. IDs may only consist of ASCII characters,
-numbers and the underline character. All global TaskJuggler properties
-have IDs. They need to be unique within their property class. The ID
-is necessary so that we can reference the property again later without
-having to write the potentially much longer name. Names are
-strings and as such enclosed in double quotes.  Strings may contain
-any character, even non-ASCII characters. As you can see, resource
-properties can be nested: <computeroutput>dev</computeroutput> is a
-virtual resource, a team that consists of three other resources.</para>
+have an ID and a Name. IDs may only consist of the characters a to z,
+A to Z and the underscore. All but the first characters may be digits 0
+to 9 as well.  All global TaskJuggler properties have IDs. They need
+to be unique within their property class. The ID is necessary so that
+we can reference the property again later without having to write the
+potentially much longer name. Names are strings and as such enclosed
+in double quotes.  Strings may contain any character, even non-ASCII
+characters. As you can see, resource properties can be nested:
+<computeroutput>dev</computeroutput> is a virtual resource, a team
+that consists of three other resources.</para>
 
 <para><computeroutput>dev1</computeroutput>, alias Paul Smith, costs
 more than the normal employee. So the declaration of
