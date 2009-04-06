@@ -755,6 +755,11 @@ public:
      */
     double convertToDailyLoad(long secs) const;
 
+    /**
+     * Converts load values (effort) to time slots.
+     */
+    long int convertToSlots(double effort) const;
+
     void setMaxErrors(int me) { maxErrors = me; }
 
     void addJournalEntry(JournalEntry* entry);

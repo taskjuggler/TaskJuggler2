@@ -6,7 +6,7 @@ project test "Test" "$Id" 2000-01-01-00:00:00--0700 - 2000-03-10-00:00:00--0700 
     text UserText "User Text" 
     reference UserRef "User Reference" 
   }
-  timezone "US/Mountain"
+  timezone "America/Denver"
   dailyworkinghours 8
   yearlyworkingdays 260.714
   timingresolution 60min

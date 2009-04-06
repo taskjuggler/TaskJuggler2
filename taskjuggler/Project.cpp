@@ -60,7 +60,7 @@ Project::Project() :
     dailyWorkingHours(8.0),
     yearlyWorkingDays(260.714),
     workingHours(),
-    scheduleGranularity(ONEHOUR),
+    scheduleGranularity(suggestTimingResolution()),
     allowedFlags(),
     projectIDs(),
     currentId(),
@@ -442,6 +442,13 @@ double
 Project::convertToDailyLoad(long secs) const
 {
     return ((double) secs / (dailyWorkingHours * ONEHOUR));
+}
+
+long int
+Project::convertToSlots(double effort) const
+{
+    return (long int) ((effort * dailyWorkingHours * ONEHOUR) /
+                     scheduleGranularity);
 }
 
 void

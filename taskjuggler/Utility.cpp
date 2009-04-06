@@ -83,16 +83,26 @@ timezone2tz(const char* tzone)
         TZDict.setAutoDelete(false);
 
         // Let's start with generic timezones
+        TZDict.insert("+1400", "GMT-14:00");
         TZDict.insert("+1300", "GMT-13:00");
+        TZDict.insert("+1245", "GMT-12:45");
         TZDict.insert("+1200", "GMT-12:00");
+        TZDict.insert("+1130", "GMT-11:30");
         TZDict.insert("+1100", "GMT-11:00");
+        TZDict.insert("+1030", "GMT-10:30");
         TZDict.insert("+1000", "GMT-10:00");
+        TZDict.insert("+0930", "GMT-9:30");
         TZDict.insert("+0900", "GMT-9:00");
+        TZDict.insert("+0845", "GMT-8:45");
         TZDict.insert("+0800", "GMT-8:00");
         TZDict.insert("+0700", "GMT-7:00");
+        TZDict.insert("+0630", "GMT-6:30");
         TZDict.insert("+0600", "GMT-6:00");
+        TZDict.insert("+0545", "GMT-5:45");
+        TZDict.insert("+0530", "GMT-5:30");
         TZDict.insert("+0500", "GMT-5:00");
         TZDict.insert("+0400", "GMT-4:00");
+        TZDict.insert("+0330", "GMT-3:30");
         TZDict.insert("+0300", "GMT-3:00");
         TZDict.insert("+0200", "GMT-2:00");
         TZDict.insert("+0100", "GMT-1:00");
@@ -100,7 +110,9 @@ timezone2tz(const char* tzone)
         TZDict.insert("-0100", "GMT+1:00");
         TZDict.insert("-0200", "GMT+2:00");
         TZDict.insert("-0300", "GMT+3:00");
+        TZDict.insert("-0330", "GMT+3:30");
         TZDict.insert("-0400", "GMT+4:00");
+        TZDict.insert("-0430", "GMT+4:30");
         TZDict.insert("-0500", "GMT+5:00");
         TZDict.insert("-0600", "GMT+6:00");
         TZDict.insert("-0700", "GMT+7:00");
@@ -162,6 +174,24 @@ void exitUtility()
 
     delete [] LtHashTab;
     LtHashTab = 0;
+}
+
+int
+suggestTimingResolution()
+{
+     time_t now = time(0);
+     struct tm* tmb = localtime(&now);
+     int minutes = tmb->tm_min;
+     tmb = gmtime(&now);
+     int difference = abs(minutes - tmb->tm_min);
+     if (difference == 0)
+         return 60 * 60;
+     else if (difference == 30)
+         return 60 * 30;
+     else if (difference == 15 || difference == 45)
+         return 60 * 15;
+
+     qFatal("Your timezone is not 15, 30 or 60 minutes aligned to UTC!");
 }
 
 bool

@@ -31,6 +31,8 @@ bool setTimezone(const char* tz);
 
 const QString& getUtilityError();
 
+int suggestTimingResolution();
+
 const char* timezone2tz(const char* tzone);
 
 QString monthAndYear(time_t d);
