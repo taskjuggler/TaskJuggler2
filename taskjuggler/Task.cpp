@@ -3445,7 +3445,7 @@ Task::sumUpEffort(int sc, time_t now, double& totalEffort,
         else
             reportedCompletedEffort += load;
 
-        return true;
+        return totalEffort > 0.0;
     }
     if (isMilestone())
     {

@@ -1336,6 +1336,10 @@ characters are used.</para></listitem>
 		specified effort but the daily working hours were not
 		in sync with the declaration.</para></listitem>
 
+<listitem><para>Fixed the completion reporting for container tasks
+		which subtasks had allocated resources but got no
+		slots allocated.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
