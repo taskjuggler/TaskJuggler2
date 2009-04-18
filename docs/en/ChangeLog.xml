@@ -1340,6 +1340,9 @@ characters are used.</para></listitem>
 		which subtasks had allocated resources but got no
 		slots allocated.</para></listitem>
 
+<listitem><para>Fixed a crash on vacation dates that were outside of
+		the project time interval.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
