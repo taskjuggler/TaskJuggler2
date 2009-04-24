@@ -756,6 +756,11 @@ public:
     double convertToDailyLoad(long secs) const;
 
     /**
+     * Adjust load for rounding errors.
+     */
+    double quantizeLoad(double load) const;
+
+    /**
      * Converts load values (effort) to time slots.
      */
     long int convertToSlots(double effort) const;

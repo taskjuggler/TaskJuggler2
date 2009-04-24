@@ -441,14 +441,24 @@ Project::calcWorkingDays(const Interval& iv) const
 double
 Project::convertToDailyLoad(long secs) const
 {
-    return ((double) secs / (dailyWorkingHours * ONEHOUR));
+    return (((double) secs) / (dailyWorkingHours * ONEHOUR));
+}
+
+double
+Project::quantizeLoad(double load) const
+{
+    return load;
+    return ((double) (((long) (load * dailyWorkingHours * (double) ONEHOUR)) /
+                               scheduleGranularity)) /
+                      ((dailyWorkingHours * (double) ONEHOUR)) *
+                       (double) scheduleGranularity;
 }
 
 long int
 Project::convertToSlots(double effort) const
 {
-    return (long int) ((effort * dailyWorkingHours * ONEHOUR) /
-                     scheduleGranularity);
+    return ((long int) ((effort * dailyWorkingHours * (double) ONEHOUR)) /
+            scheduleGranularity);
 }
 
 void
@@ -856,6 +866,7 @@ Project::schedule(int sc)
     if (runAwayFound)
         for (TaskListIterator tli(taskList); *tli != 0; ++tli)
             if ((*tli)->isRunaway())
+            {
                 if ((*tli)->getScheduling() == Task::ASAP)
                     (*tli)->errorMessage
                         (i18n("End of task '%1' does not fit into the "
@@ -867,6 +878,7 @@ Project::schedule(int sc)
                         (i18n("Start of task '%1' does not fit into the "
                               "project time frame. Try using an earlier "
                               "project start date.").arg((*tli)->getId()));
+            }
 
     if (TJMH.getErrors() == oldErrors)
         setProgressBar(100, 100);
