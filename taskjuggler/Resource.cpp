@@ -778,7 +778,7 @@ Resource::getEffectiveLoad(int sc, const Interval& period, AccountType acctType,
              project->getScheduleGranularity()) * efficiency;
     }
 
-    return load;
+    return project->quantizeLoad(load);
 }
 
 double
