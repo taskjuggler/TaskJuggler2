@@ -217,7 +217,8 @@ TjReport::event(QEvent* ev)
         setGanttChartColors();
         regenerateChart();
     }
-    else if (ev->type() == QEvent::MouseButtonPress)
+    // Double click facility
+    else if (ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick)
         handleMouseEvent(static_cast<QMouseEvent*>(ev));
 
     return QWidget::event(ev);
@@ -1320,10 +1321,31 @@ TjReport::handleMouseEvent(const QMouseEvent* ev)
 {
     QPoint pos;
     QListViewItem* lvi = getChartItemBelowCursor(pos);
-    if (!lvi)
+    if (loadingProject || !lvi)
         return;
 
-    if (ev->button() == Qt::LeftButton)
+    CoreAttributes* ca = lvi2caDict[QString().sprintf("%p", lvi)];
+
+    // Middle button facility
+    if (ev->button() == Qt::MidButton)
+    {
+        emit signalEditCoreAttributes(ca);
+    }
+    // Double click
+    else if (ev->type() == QEvent::MouseButtonDblClick)
+    {
+        if (ca->getType() == CA_Task)
+        {
+            Task* t = dynamic_cast<Task*>(ca);
+            if (t) showTaskDetails(t);
+        }
+        else
+        {
+            Resource* r = dynamic_cast<Resource*>(ca);
+            if (r) showResourceDetails(r);
+        }
+    }
+    else if (ev->button() == Qt::LeftButton)
         listView->setSelected(lvi, true);
     else if (ev->button() == Qt::RightButton)
         doPopupMenu(lvi, QCursor::pos(), 0);
