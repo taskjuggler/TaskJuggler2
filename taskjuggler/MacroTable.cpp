@@ -40,7 +40,7 @@ MacroTable::setMacro(Macro* macro)
 }
 
 QString
-MacroTable::resolve(const QStringList* argList)
+MacroTable::resolve(const QStringList* argList) const
 {
     QString nameWithPrefix = (*argList)[0];
     if (DEBUGMA(10))
@@ -175,7 +175,7 @@ MacroTable::resolve(const QStringList* argList)
 }
 
 QString
-MacroTable::expandReportVariable(QString text, const QStringList* argList)
+MacroTable::expandReportVariable(QString text, const QStringList* argList) const
 {
     if (DEBUGMA(5))
         qDebug("MacroTable::expandReportVariable(%s)", text.latin1());

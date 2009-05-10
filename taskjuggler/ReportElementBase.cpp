@@ -12,14 +12,23 @@
  */
 
 #include "ReportElementBase.h"
+#include "TableLineInfo.h"
 #include "tjlib-internal.h"
 #include "Project.h"
+#include "Account.h"
+#include "Task.h"
+#include "Resource.h"
+#include "TextAttribute.h"
+#include "ReferenceAttribute.h"
 
-ReportElementBase::ReportElementBase(Report* r) :
+ReportElementBase::ReportElementBase(Report* r, const QString& df, int dl) :
     report(r),
     loadUnit(shortAuto),
     numberFormat(),
-    currencyFormat()
+    currencyFormat(),
+    mt(),
+    defFileName(df),
+    defFileLine(dl)
 {
 }
 
@@ -164,4 +173,137 @@ ReportElementBase::scaledValue(double t, const RealFormat& realFormat,
     return str;
 }
 
+void
+ReportElementBase::setMacros(TableLineInfo* tli)
+{
+    mt.clear();
+
+    /* In some cases it might be useful to have not only the ID of the current
+     * property but also the assigned property (e. g. in task reports with
+     * resources, we want the task ID while processing the resource line. */
+    if (tli->task)
+    {
+        if (tli->task->getAccount()) mt.addMacro(new Macro(KW("accounts"), tli->task->getAccount()->getName(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("completed"), tli->task->getComplete(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("completedeffort"), tli->task->getCompletedLoad(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("criticalness"), tli->task->getCriticalness(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("duration"), tli->task->getDuration(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("effort"), tli->task->getEffort(tli->sc), defFileName, defFileLine));
+        if (tli->task->getEnd(tli->sc))
+            mt.addMacro(new Macro(KW("end"), time2user(tli->task->getEnd(tli->sc), tli->task->getProject()->getTimeFormat()), defFileName, defFileLine));
+        if (tli->task->getMaxEnd(tli->sc))
+            mt.addMacro(new Macro(KW("maxend"), time2user(tli->task->getMaxEnd(tli->sc), tli->task->getProject()->getTimeFormat()), defFileName, defFileLine));
+        if (tli->task->getMaxStart(tli->sc))
+            mt.addMacro(new Macro(KW("maxstart"), time2user(tli->task->getMaxStart(tli->sc), tli->task->getProject()->getTimeFormat()), defFileName, defFileLine));
+        if (tli->task->getMinEnd(tli->sc))
+            mt.addMacro(new Macro(KW("minend"), time2user(tli->task->getMinEnd(tli->sc), tli->task->getProject()->getTimeFormat()), defFileName, defFileLine));
+        if (tli->task->getMinStart(tli->sc))
+            mt.addMacro(new Macro(KW("minstart"), time2user(tli->task->getMinStart(tli->sc), tli->task->getProject()->getTimeFormat()), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("note"), tli->task->getNote(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("pathcriticalness"), tli->task->getPathCriticalness(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("priority"), tli->task->getPriority(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("reference"), tli->task->getReference(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("remainingeffort"), tli->task->getRemainingLoad(tli->sc), defFileName, defFileLine));
+        if (tli->task->getResponsible())
+            mt.addMacro(new Macro(KW("responsible"), tli->task->getResponsible()->getName(), defFileName, defFileLine));
+        if (tli->task->getStart(tli->sc))
+            mt.addMacro(new Macro(KW("start"), time2user(tli->task->getStart(tli->sc), tli->task->getProject()->getTimeFormat()), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("status"), tli->task->getStatusText(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("statusnote"), tli->task->getStatusNote(tli->sc), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("taskid"), tli->task->getId(), defFileName, defFileLine));
+
+        QString label = "";
+        for (ResourceListIterator rli
+                (tli->task->getBookedResourcesIterator(tli->sc)); *rli != 0; ++rli)
+        {
+            if (!label.isEmpty())
+                label += ", ";
+
+            label += (*rli)->getName();
+        }
+        mt.addMacro(new Macro(KW("resources"), label, defFileName, defFileLine));
+    }
+    if (tli->resource)
+    {
+        mt.addMacro(new Macro(KW("efficiency"), tli->resource->getEfficiency(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("mineffort"), tli->resource->getMinEffort(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("rate"), tli->resource->getRate(), defFileName, defFileLine));
+        mt.addMacro(new Macro(KW("resourceid"), tli->resource->getId(), defFileName, defFileLine));
+    }
+
+    if (tli->account)
+    {
+        mt.addMacro(new Macro(KW("accountid"), tli->account->getId(), defFileName, defFileLine));
+    }
+                              
+    // Set macros for built-in attributes.
+    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() :
+                          QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("no"), tli->ca1 ?
+                          QString("%1").arg(tli->ca1->getSequenceNo()) :
+                          QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("index"), tli->ca1 ?
+                          QString("%1").arg(tli->ca1->getIndex()) :
+                          QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ?
+                          tli->ca1->getHierarchNo() : QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("hierarchindex"),
+                          tli->ca1 ? tli->ca1->getHierarchIndex() :
+                          QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("hierarchlevel"),
+                          tli->ca1 ? tli->ca1->getHierarchLevel() :
+                          QString::null,
+                          defFileName, defFileLine));
+    mt.addMacro(new Macro(KW("name"),
+                          tli->ca1 ? tli->ca1->getName() : QString::null,
+                          defFileName, defFileLine));
+
+
+    setPropertyMacros(tli, report->getProject()->getTaskAttributeDict());
+    setPropertyMacros(tli, report->getProject()->getResourceAttributeDict());
+    setPropertyMacros(tli, report->getProject()->getAccountAttributeDict());
+}
+
+void
+ReportElementBase::setPropertyMacros(TableLineInfo* tli,
+   const QDictIterator<CustomAttributeDefinition>& d)
+{
+    QDictIterator<CustomAttributeDefinition> cadi(d);
+    for ( ; cadi.current(); ++cadi)
+    {
+        const CustomAttribute* custAttr;
+        QString macroName = cadi.currentKey();
+        QString macroValue;
+        if (tli->ca1 &&
+            (custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
+        {
+            switch (custAttr->getType())
+            {
+                case CAT_Text:
+                    macroValue = static_cast<const TextAttribute*>(custAttr)->getText();
+                    break;
+                case CAT_Reference:
+                    macroValue = static_cast<const ReferenceAttribute*>(custAttr)->getURL();
+                    break;
+                default:
+                    break;
+            }
+        }
+        mt.addMacro(new Macro(macroName, macroValue, defFileName,
+                              defFileLine));
+    }
+}
+
+const QString
+ReportElementBase::expandReportVariable(const QString& t) const
+{
+//     printf ("ReportElementBase::expandReportVariable <%s>", t.latin1());
+    QStringList sl("");
+    return mt.expandReportVariable(t, &sl);
+}
 

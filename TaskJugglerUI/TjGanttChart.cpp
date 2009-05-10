@@ -32,6 +32,8 @@
 #include "TjGanttZoomStep.h"
 #include "TjLineAccounter.h"
 
+#include "TableLineInfo.h"
+
 TjGanttChart::TjGanttChart(QObject* obj)
 {
     header = new QCanvas(obj);
@@ -1132,6 +1134,13 @@ TjGanttChart::shouldTaskBeDrawnAsContainer(const Task* t)
 void
 TjGanttChart::drawTask(const Task* t, const Resource* r)
 {
+    TableLineInfo tlinfo;
+    tlinfo.sc = scenario;
+    tlinfo.ca1 = tlinfo.task = t;
+    tlinfo.ca2 = tlinfo.resource = (Resource*) r;
+
+    ((QtReportElement*)reportElement)->setMacros(&tlinfo);
+
     /* Make sure we only draw properly scheduled tasks. */
     if (t->getStart(scenario) == 0 || t->getEnd(scenario) == 0)
         return;
@@ -1181,7 +1190,59 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
 	bool critical = t->isOrHasDescendantOnCriticalPath(scenario);
         drawTaskShape(start, end, centerY, minRowHeight, barWidth,
                       critical, r != 0, chart);
+
     }
+
+    // Draw task name an status note on the left
+    QString label;
+    int x = time2x(t->getStart(scenario));
+    QFontMetrics fm(headerFont);
+    label = reportElement->expandReportVariable(reportElement->getTaskBarPrefix());
+    QCanvasText* text = new QCanvasText(label, chart);
+    text->setColor(Qt::black);
+    text->setFont(headerFont);
+    text->setX(x - minRowHeight / 2 - fm.width(label) );
+    text->setY(y + minRowHeight - fm.height() );
+    text->setZ(TJRL_TASKS);
+    text->show();
+
+    // Draw resources and note on the right
+    label = reportElement->expandReportVariable(reportElement->getTaskBarPostfix());
+
+    if (!label.isEmpty())
+    {
+        QCanvasText* text2 = new QCanvasText(label, chart);
+        text2->setColor(Qt::black);
+        text2->setFont(headerFont);
+        x = time2x(t->getEnd(scenario));
+        text2->setX(x + minRowHeight / 2);
+        text2->setY(y + minRowHeight - fm.height() );
+        text2->setZ(TJRL_TASKS);
+        text2->show();
+    }
+
+    // Draw min and max start and end if not null and different of effective dates
+    if (t->getMaxStart(scenario) != 0 && t->getStart(scenario) != t->getMaxStart(scenario)) {
+        int centerX = time2x(t->getMaxStart(scenario));
+
+        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+    }
+    if (t->getMinStart(scenario) != 0 && t->getStart(scenario) != t->getMinStart(scenario)) {
+        int centerX = time2x(t->getMinStart(scenario));
+
+        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+    }
+    if (t->getMaxEnd(scenario) != 0 && t->getStart(scenario) != t->getMaxEnd(scenario)) {
+        int centerX = time2x(t->getMaxEnd(scenario));
+
+        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+    }
+    if (t->getMinEnd(scenario) != 0 && t->getStart(scenario) != t->getMinEnd(scenario)) {
+        int centerX = time2x(t->getMinEnd(scenario));
+
+        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+    }
+
 }
 
 void

@@ -24,6 +24,12 @@ class Macro
 public:
     Macro(const QString& n, const QString& v, const QString& f, uint l)
         : name(n), value(v), file(f), line(l) { }
+    Macro(const QString& n, const int v, const QString& f, uint l)
+        : name(n), value(QString::number(v)), file(f), line(l) { }
+    Macro(const QString& n, const long v, const QString& f, uint l)
+        : name(n), value(QString::number(v)), file(f), line(l) { }
+    Macro(const QString& n, const double v, const QString& f, uint l)
+        : name(n), value(QString::number(v)), file(f), line(l) { }
     ~Macro() { }
 
     const QString& getName() const { return name; }
@@ -59,8 +65,8 @@ public:
     {
         macros.clear();
     }
-    QString resolve(const QStringList* argList);
-    QString expandReportVariable(QString text, const QStringList* argList);
+    QString resolve(const QStringList* argList) const;
+    QString expandReportVariable(QString text, const QStringList* argList) const;
     Macro* getMacro(const QString& name) const { return macros[name]; }
 
     void setLocation(const QString& df, int dl)

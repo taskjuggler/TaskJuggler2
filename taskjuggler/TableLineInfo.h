@@ -13,6 +13,8 @@
 #ifndef _TableLineInfo_h_
 #define _TableLineInfo_h_
 
+#include <qcolor.h>
+
 class CoreAttributes;
 class Task;
 class Resource;

@@ -14,7 +14,6 @@
 
 #include "Interval.h"
 #include "TableCellInfo.h"
-#include "TableLineInfo.h"
 #include "TjMessageHandler.h"
 #include "tjlib-internal.h"
 #include "Project.h"
@@ -26,11 +25,9 @@
 #include "ResourceTreeIterator.h"
 #include "AccountTreeIterator.h"
 #include "CustomAttributeDefinition.h"
-#include "TextAttribute.h"
-#include "ReferenceAttribute.h"
 
 ReportElement::ReportElement(Report* r, const QString& df, int dl) :
-    ReportElementBase(r),
+    ReportElementBase(r, df, dl),
     scenarios(),
     columns(),
     columnFormat(),
@@ -41,8 +38,6 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     rawTail(),
     timeFormat(r->getTimeFormat()),
     shortTimeFormat(r->getShortTimeFormat()),
-    defFileName(df),
-    defFileLine(dl),
     colors(),
     headline(),
     caption(),
@@ -60,8 +55,7 @@ ReportElement::ReportElement(Report* r, const QString& df, int dl) :
     accumulate(false),
     maxDepthTaskList(1),
     maxDepthResourceList(1),
-    maxDepthAccountList(1),
-    mt()
+    maxDepthAccountList(1)
 {
     columns.setAutoDelete(true);
     columnFormat.setAutoDelete(true);
@@ -1017,82 +1011,3 @@ ReportElement::getColumnFormat(const QString& key) const
     return columnFormat[key];
 }
 
-void
-ReportElement::setMacros(TableLineInfo* tli)
-{
-    mt.clear();
-
-    /* In some cases it might be useful to have not only the ID of the current
-     * property but also the assigned property (e. g. in task reports with
-     * resources, we want the task ID while processing the resource line. */
-    if (tli->task)
-        mt.addMacro(new Macro(KW("taskid"), tli->task->getId(),
-                              defFileName, defFileLine));
-    if (tli->resource)
-        mt.addMacro(new Macro(KW("resourceid"), tli->resource->getId(),
-                              defFileName, defFileLine));
-    if (tli->account)
-        mt.addMacro(new Macro(KW("accountid"), tli->account->getId(),
-                              defFileName, defFileLine));
-
-    // Set macros for built-in attributes.
-    mt.addMacro(new Macro(KW("id"), tli->ca1 ? tli->ca1->getId() :
-                          QString::null,
-                          defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("no"), tli->ca1 ?
-                          QString("%1").arg(tli->ca1->getSequenceNo()) :
-                          QString::null,
-                          defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("index"), tli->ca1 ?
-                          QString("%1").arg(tli->ca1->getIndex()) :
-                          QString::null,
-                          defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("hierarchno"), tli->ca1 ?
-                          tli->ca1->getHierarchNo() : QString::null,
-                          defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("hierarchindex"),
-                          tli->ca1 ? tli->ca1->getHierarchIndex() :
-                          QString::null,
-                          defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("hierarchlevel"),
-                          tli->ca1 ? tli->ca1->getHierarchLevel() :
-                          QString::null,
-                          defFileName, defFileLine));
-    mt.addMacro(new Macro(KW("name"),
-                          tli->ca1 ? tli->ca1->getName() : QString::null,
-                          defFileName, defFileLine));
-
-    setPropertyMacros(tli, report->getProject()->getTaskAttributeDict());
-    setPropertyMacros(tli, report->getProject()->getResourceAttributeDict());
-    setPropertyMacros(tli, report->getProject()->getAccountAttributeDict());
-}
-
-void
-ReportElement::setPropertyMacros(TableLineInfo* tli,
-   const QDictIterator<CustomAttributeDefinition>& d)
-{
-    QDictIterator<CustomAttributeDefinition> cadi(d);
-    for ( ; cadi.current(); ++cadi)
-    {
-        const CustomAttribute* custAttr;
-        QString macroName = cadi.currentKey();
-        QString macroValue;
-        if (tli->ca1 &&
-            (custAttr = tli->ca1->getCustomAttribute(macroName)) != 0)
-        {
-            switch (custAttr->getType())
-            {
-                case CAT_Text:
-                    macroValue = static_cast<const TextAttribute*>(custAttr)->getText();
-                    break;
-                case CAT_Reference:
-                    macroValue = static_cast<const ReferenceAttribute*>(custAttr)->getURL();
-                    break;
-                default:
-                    break;
-            }
-        }
-        mt.addMacro(new Macro(macroName, macroValue, defFileName,
-                              defFileLine));
-    }
-}

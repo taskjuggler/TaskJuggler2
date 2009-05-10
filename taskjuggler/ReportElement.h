@@ -13,7 +13,6 @@
 #define _ReportElement_h_
 
 #include "TableColorSet.h"
-#include "MacroTable.h"
 #include "TableColumnFormat.h"
 #include "TableColumnInfo.h"
 #include "ReportElementBase.h"
@@ -32,7 +31,6 @@ class Account;
 class AccountList;
 class TableCellFormat;
 class TableColumnFormat;
-class TableLineInfo;
 class CustomAttributeDefinition;
 
 /**
@@ -173,7 +171,11 @@ public:
     }
     const TableColumnFormat* getColumnFormat(const QString& key) const;
 
-    void setMacros(TableLineInfo* tli);
+    void setTaskBarPrefix(const QString& t) { taskBarPrefix = t; }
+    const QString getTaskBarPrefix() const { return taskBarPrefix; }
+
+    void setTaskBarPostfix(const QString& t) { taskBarPostfix = t; }
+    const QString getTaskBarPostfix() const { return taskBarPostfix; }
 
     virtual void genHeadDefault(TableCellInfo*) = 0;
     virtual void genHeadCurrency(TableCellInfo*) = 0;
@@ -276,8 +278,6 @@ protected:
                         bool showUnit, bool longUnit,
                         const QValueList<double>& factors) const;
     void reportValue(double value, const QString& bgcol, bool bold);
-    void setPropertyMacros(TableLineInfo* tli,
-                           const QDictIterator<CustomAttributeDefinition>& d);
 
     QValueList<int> scenarios;
     QPtrList<TableColumnInfo> columns;
@@ -292,11 +292,6 @@ protected:
 
     QString timeFormat;
     QString shortTimeFormat;
-
-    /* We store the location of the report definition in case we need it
-     * for error reporting. */
-    QString defFileName;
-    int defFileLine;
 
     TableColorSet colors;
 
@@ -328,7 +323,8 @@ protected:
     uint maxDepthResourceList;
     uint maxDepthAccountList;
 
-    MacroTable mt;
+    QString taskBarPrefix;
+    QString taskBarPostfix;
 } ;
 
 #endif

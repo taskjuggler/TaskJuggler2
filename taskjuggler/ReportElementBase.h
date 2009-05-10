@@ -14,6 +14,9 @@
 #define _ReportElementBase_h_
 
 #include "Report.h"
+#include "MacroTable.h"
+
+class TableLineInfo;
 
 /**
  * @short A class that forms the base for elements of a report.
@@ -21,7 +24,7 @@
  */
 class ReportElementBase {
 public:
-    ReportElementBase(Report* r);
+    ReportElementBase(Report* r, const QString& df = "", int dl = 0);
     virtual ~ReportElementBase() { }
 
     QString scaledDuration(double t, const RealFormat& realFormat,
@@ -32,6 +35,13 @@ public:
     bool setLoadUnit(const QString& u);
 
     const RealFormat& getNumberFormat() const { return numberFormat; }
+
+    void setMacros(TableLineInfo* tli);
+
+    void setPropertyMacros(TableLineInfo* tli,
+                           const QDictIterator<CustomAttributeDefinition>& d);
+
+    const QString expandReportVariable(const QString& t) const;
 
 protected:
     QString scaledValue(double t, const RealFormat& realFormat,
@@ -44,6 +54,15 @@ protected:
 
     RealFormat numberFormat;
     RealFormat currencyFormat;
+
+    MacroTable mt;
+
+    /* We store the location of the report definition in case we need it
+     * for error reporting. */
+    QString defFileName;
+    int defFileLine;
+
+
 };
 
 #endif

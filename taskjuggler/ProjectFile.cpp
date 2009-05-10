@@ -3805,6 +3805,24 @@ ProjectFile::readReport(const QString& reportType)
                     goto error;
                 }
             }
+            else if (token == KW("taskbarprefix"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                tab->setTaskBarPrefix(token);
+            }
+            else if (token == KW("taskbarpostfix"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                tab->setTaskBarPostfix(token);
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
