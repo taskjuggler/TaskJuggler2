@@ -1102,12 +1102,43 @@ TjReport::showTaskDetails(const Task* task)
         text += i18n("<b>Note:</b> %1<br/>").arg(task->getNote());
     }
 
+    // Display status note if not empty.
+    if (!task->getStatusNote(scenario).isEmpty())
+    {
+        if (!text.isEmpty())
+            text += "<hr/>";
+        text += i18n("<b>Status note:</b> %1<br/>")
+            .arg(task->getStatusNote(scenario));
+    }
+
     if (task->isMilestone())
     {
         if (!text.isEmpty())
             text += "<hr/>";
         text += i18n("<b>Date:</b> %1<br/>")
-            .arg(time2tjp(task->getStart(scenario)));
+            .arg(time2user(task->getStart(scenario), task->getProject()->getTimeFormat()));
+
+        // Display min and max start and end dates.
+        if (task->getMinStart(scenario)!=0)
+        {
+            text += i18n("<b>Min Start:</b> %1<br/>")
+                .arg(time2user(task->getMinStart(scenario), task->getProject()->getTimeFormat()));
+        }
+        if (task->getMinEnd(scenario)!=0)
+        {
+            text += i18n("<b>Min End:</b> %1<br/>")
+                .arg(time2user(task->getMinEnd(scenario), task->getProject()->getTimeFormat()));
+        }
+        if (task->getMaxStart(scenario)!=0)
+        {
+            text += i18n("<b>Max Start:</b> %1<br/>")
+                .arg(time2user(task->getMaxStart(scenario), task->getProject()->getTimeFormat()));
+        }
+        if (task->getMaxEnd(scenario)!=0)
+        {
+            text += i18n("<b>Max End :</b> %1<br/>")
+                .arg(time2user(task->getMaxEnd(scenario), task->getProject()->getTimeFormat()));
+        }
     }
     else
     {
@@ -1116,8 +1147,8 @@ TjReport::showTaskDetails(const Task* task)
         text += i18n("<b>Start:</b> %1<br/>"
                      "<b>End:</b> %2<br/>"
                      "<b>Status:</b> %3<br/>")
-            .arg(time2tjp(task->getStart(scenario)))
-            .arg(time2tjp(task->getEnd(scenario) + 1))
+            .arg(time2user(task->getStart(scenario), task->getProject()->getTimeFormat()))
+            .arg(time2user(task->getEnd(scenario) + 1, task->getProject()->getTimeFormat()))
             .arg(task->getStatusText(scenario));
 
         if (task->getEffort(scenario) > 0.0)
@@ -1154,10 +1185,6 @@ TjReport::showTaskDetails(const Task* task)
                           report->getNumberFormat(), true, false));
             }
         }
-
-        if (!task->getStatusNote(scenario).isEmpty())
-            text += i18n("<b>Note:</b> %1<br/>")
-                .arg(task->getStatusNote(scenario));
     }
 
     QString predecessors;
@@ -1242,6 +1269,68 @@ TjReport::showResourceDetails(Resource* resource)
         text += "<hr/>";
         text += generateJournal(resource->getJournalIterator());
     }
+
+    // Display of vacations
+    text += i18n("<hr><b>Vacations:</b>");
+    {
+        QPtrListIterator<Interval> vli(resource->getVacationListIterator());
+
+        if (*vli != 0)
+        {
+            text += i18n("<p/><p>Personnal vacations:</p>");
+            for (QPtrListIterator<Interval> vli(resource->getVacationListIterator()); *vli != 0; ++vli)
+            {
+                if ((*vli)->getEnd() - (*vli)->getStart() == 86399 && secondsOfDay((*vli)->getStart()) == 0)
+                    text += i18n("<li>%1</li>")
+                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()));
+                else if (secondsOfDay((*vli)->getStart()) == 0 && secondsOfDay((*vli)->getEnd()) == 86399)  // 86399 = 23h59m59s
+                    text += i18n("<li>%1 -> %2</li>")
+                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
+                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()));
+                else
+                    text += i18n("<li>%1 -> %2</li>")
+                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
+                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()));
+            }
+        }
+        else
+        {
+            text += i18n("<p>No personnal vacations.</p>");
+        }
+    }
+
+    {
+        VacationList::Iterator vli(resource->getProject()->getVacationListIterator());
+        if (*vli != 0)
+        {
+            text += i18n("<p>Global vacations:</p>");
+            // Because the global vacation list is in reverse order and we want to display in original order, we use a temp string.
+            QString tmpText;
+            for ( ; *vli != 0; ++vli)
+            {
+                if ((*vli)->getEnd() - (*vli)->getStart() == 86399 && secondsOfDay((*vli)->getStart()) == 0)
+                    tmpText = i18n("<li>%1 : %2</li>")
+                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
+                        .arg((*vli)->getName()) + tmpText;
+                else if (secondsOfDay((*vli)->getStart()) == 0 && secondsOfDay((*vli)->getEnd()) == 86399) // 86399 = 23h59m59s
+                    tmpText = i18n("<li>%1 -> %2 : %3</li>")
+                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
+                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()))
+                        .arg((*vli)->getName()) + tmpText;
+                else
+                    tmpText = i18n("<li>%1 -> %2 : %3</li>")
+                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
+                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()))
+                        .arg((*vli)->getName()) + tmpText;
+            }
+            text += tmpText;
+        }
+        else
+        {
+            text += i18n("<p>No global vacations:.</p>");
+        }
+    }
+    text += "<hr/>";
 
     richTextDisplay->textDisplay->setText(text);
     richTextDisplay->show();
