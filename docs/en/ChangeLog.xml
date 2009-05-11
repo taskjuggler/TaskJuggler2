@@ -1343,6 +1343,9 @@ characters are used.</para></listitem>
 <listitem><para>Fixed a crash on vacation dates that were outside of
 		the project time interval.</para></listitem>
 
+<listitem><para>The end date of duration tasks with bookings was not
+		properly calculated. Fixed.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

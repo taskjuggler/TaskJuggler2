@@ -1577,7 +1577,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
 {
     if (DEBUGPF(10))
         qDebug("%sloopDetection at %s (%s)",
-               QString().fill(' ', list.count() + 1).latin1(), id.latin1(),
+               QString().fill(' ', (int) list.count() + 1).latin1(), id.latin1(),
                atEnd ? "End" : "Start");
 
     // First, check whether the task has already been checked for loops.
@@ -1620,7 +1620,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking sub task %s of %s",
-                           QString().fill(' ', list.count()).latin1(),
+                           QString().fill(' ', (int) list.count()).latin1(),
                            (*tli)->getId().latin1(),
                            id.latin1());
                 if ((*tli)->loopDetection(list, chkedTaskList, false, true))
@@ -1636,7 +1636,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             */
             if (DEBUGPF(15))
                 qDebug("%sChecking end of task %s",
-                       QString().fill(' ', list.count()).latin1(),
+                       QString().fill(' ', (int) list.count()).latin1(),
                        id.latin1());
             if (loopDetection(list, chkedTaskList, true, false))
                 return true;
@@ -1656,7 +1656,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking parent task of %s",
-                           QString().fill(' ', list.count()).latin1(),
+                           QString().fill(' ', (int) list.count()).latin1(),
                            id.latin1());
                 if (getParent()->loopDetection(list, chkedTaskList, false,
                                                false))
@@ -1675,7 +1675,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking previous %s of task %s",
-                           QString().fill(' ', list.count()).latin1(),
+                           QString().fill(' ', (int) list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
                 if((*tli)->loopDetection(list, chkedTaskList, true, true))
                     return true;
@@ -1700,7 +1700,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking sub task %s of %s",
-                           QString().fill(' ', list.count()).latin1(),
+                           QString().fill(' ', (int) list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
                 if ((*tli)->loopDetection(list, chkedTaskList, true, true))
                     return true;
@@ -1715,7 +1715,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             */
             if (DEBUGPF(15))
                 qDebug("%sChecking start of task %s",
-                       QString().fill(' ', list.count()).latin1(),
+                       QString().fill(' ', (int) list.count()).latin1(),
                        id.latin1());
             if (loopDetection(list, chkedTaskList, false, false))
                 return true;
@@ -1735,7 +1735,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking parent task of %s",
-                           QString().fill(' ', list.count()).latin1(),
+                           QString().fill(' ', (int) list.count()).latin1(),
                            id.latin1());
                 if (getParent()->loopDetection(list, chkedTaskList, true,
                                                false))
@@ -1754,7 +1754,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
             {
                 if (DEBUGPF(15))
                     qDebug("%sChecking follower %s of task %s",
-                           QString().fill(' ', list.count()).latin1(),
+                           QString().fill(' ', (int) list.count()).latin1(),
                            (*tli)->getId().latin1(), id.latin1());
                 if ((*tli)->loopDetection(list, chkedTaskList, false, true))
                     return true;
@@ -1765,7 +1765,7 @@ Task::loopDetection(LDIList& list, LDIList& chkedTaskList, bool atEnd,
 
     if (DEBUGPF(5))
         qDebug("%sNo loops found in %s (%s)",
-                 QString().fill(' ', list.count()).latin1(),
+                 QString().fill(' ', (int) list.count()).latin1(),
                  id.latin1(), atEnd ? "End" : "Start");
     return false;
 }
@@ -2755,6 +2755,11 @@ Task::prepareScenario(int sc)
                 else
                     lastSlot = project->getNow() - 1;
             }
+        }
+        if (duration > 0.0)
+        {
+            doneDuration = (project->getNow() - scenarios[sc].start) /
+                           (60 * 60 * 24.0);
         }
     }
 
