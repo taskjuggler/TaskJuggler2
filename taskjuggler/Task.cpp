@@ -2675,17 +2675,16 @@ Task::prepareScenario(int sc)
             (sc, Interval(project->getStart(), project->getEnd()),
              AllAccounts, this);
         if (effort > 0.0)
-        {
             doneEffort += effort;
-            if (firstSlot == 0 ||
-                firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
-            {
-                firstSlot = (*rli)->getStartOfFirstSlot(sc, this);
-            }
-            time_t ls = (*rli)->getEndOfLastSlot(sc, this);
-            if (ls > lastSlot)
-                lastSlot = ls;
+
+        if (firstSlot == 0 ||
+            firstSlot > (*rli)->getStartOfFirstSlot(sc, this))
+        {
+            firstSlot = (*rli)->getStartOfFirstSlot(sc, this);
         }
+        time_t ls = (*rli)->getEndOfLastSlot(sc, this);
+        if (ls > lastSlot)
+            lastSlot = ls;
     }
 
     if (lastSlot > 0)
@@ -2756,20 +2755,21 @@ Task::prepareScenario(int sc)
                     lastSlot = project->getNow() - 1;
             }
         }
-        if (duration > 0.0)
+        if (duration > 0.0 && !schedulingDone)
         {
             time_t endDate;
             /* In projection mode we use the 'now' date as potential end date,
              * otherwise the end date of the last booking. */
             endDate = project->getScenario(sc)->getProjectionMode() ?
-                project->getNow() : lastSlot;
+                project->getNow() : lastSlot + 1;
             doneDuration = (endDate - scenarios[sc].start) / (60 * 60 * 24.0);
 
             /* In case the task duration reaches or excedes the required
              * duration we mark the task as completed. */
             if (doneDuration >= duration)
             {
-                end = scenarios[sc].end = endDate;
+                end = scenarios[sc].end = max(scenarios[sc].start + duration,
+                                              lastSlot + 1);
                 schedulingDone = true;
             }
         }
