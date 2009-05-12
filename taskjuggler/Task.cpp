@@ -2758,8 +2758,20 @@ Task::prepareScenario(int sc)
         }
         if (duration > 0.0)
         {
-            doneDuration = (project->getNow() - scenarios[sc].start) /
-                           (60 * 60 * 24.0);
+            time_t endDate;
+            /* In projection mode we use the 'now' date as potential end date,
+             * otherwise the end date of the last booking. */
+            endDate = project->getScenario(sc)->getProjectionMode() ?
+                project->getNow() : lastSlot;
+            doneDuration = (endDate - scenarios[sc].start) / (60 * 60 * 24.0);
+
+            /* In case the task duration reaches or excedes the required
+             * duration we mark the task as completed. */
+            if (doneDuration >= duration)
+            {
+                end = scenarios[sc].end = endDate;
+                schedulingDone = true;
+            }
         }
     }
 
