@@ -79,6 +79,8 @@
    "../../TestSuite/Syntax/Correct/Gap.tjp">
   <!ENTITY example_guireport SYSTEM
    "../../TestSuite/Syntax/Correct/GUIReport.tjp">
+  <!ENTITY example_taskbarprefixpostfix SYSTEM
+   "../../TestSuite/Syntax/Correct/TaskbarPrefixPostfix.tjp">
   <!ENTITY example_htmltaskreport SYSTEM
    "../../TestSuite/Syntax/Correct/HtmlTaskReport.tjp">
   <!ENTITY example_icalreport SYSTEM
@@ -2748,6 +2750,32 @@ attributes.</para></descr>
   </attributes>
   <example>&example_export;</example>
  </property>
+
+ <property name="taskbarprefix" id="taskbarprefix" inheritable="No">
+  <descr><para>Display on the <varname>taskreport</varname>, on the left of the task area, the data as specified int the runtime macro. The runtime macro follows same rule as 
+<varname>celltext</varname>.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>taskreport</also><also>celltext</also>
+  </seealso>
+  <example>&example_taskbarprefixpostfix;</example>
+ </property>
+
+ <property name="taskbarpostfix" id="taskbarpostfix" inheritable="No">
+  <descr><para>Display on the <varname>taskreport</varname>, on the right of the task area, the data as specified int the runtime macro. The runtime macro follows same rule as 
+<varname>celltext</varname>.</para></descr>
+  <attributes>
+   <attr name="text" type="STRING"/>
+  </attributes>
+  <seealso>
+   <also>taskreport</also><also>celltext</also>
+  </seealso>
+  <example>&example_taskbarprefixpostfix;</example>
+ </property>
+
+
  <property name="taskprefix" id="taskprefix" inheritable="No">
   <descr><para>All tasks in the included file are added as sub-tasks of the
 task specified by <varname>taskprefix</varname>. The
@@ -2761,6 +2789,7 @@ already defined task.</para></descr>
   </seealso>
   <example>&example_include;</example>
  </property>
+
  <property name="taskreport" id="taskreport" inheritable="No">
   <descr><para>This report is intended for the TaskJuggler graphical
   user interface. The report lists all tasks and their respective values
@@ -2788,6 +2817,8 @@ listed as well.</para></descr>
    <optattr>start_report</optattr>
    <optattr>taskroot</optattr>
    <optattr>timeformat</optattr>
+   <optattr>taskbarprefix</optattr>
+   <optattr>taskbarpostfix</optattr>
   </optattributes>
   <seealso>
    <also>csvtaskreport</also>

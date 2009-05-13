@@ -1346,6 +1346,11 @@ characters are used.</para></listitem>
 <listitem><para>The end date of duration tasks with bookings was not
 		properly calculated. Fixed.</para></listitem>
 
+<listitem><para>Added double and middle click facility in interactive 
+		report.</para></listitem>
+
+<listitem><para>Added taskbarprefix and taskbarpostfix properties in taskreport.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>
