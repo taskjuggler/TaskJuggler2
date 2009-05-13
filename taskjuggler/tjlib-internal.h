@@ -24,8 +24,6 @@
 // Dummy macro to mark TaskJuggler syntax keywords
 #define KW(a) a
 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
 #include <qstring.h>
 
 inline void
