@@ -2761,15 +2761,16 @@ Task::prepareScenario(int sc)
              * otherwise the end date of the last booking. */
             if (project->getScenario(sc)->getProjectionMode())
                 lastSlot = project->getNow() - 1;
-            doneDuration = (lastSlot + 1 - scenarios[sc].start) /
-                ((double) (ONEDAY));
+            doneDuration = (lastSlot + 1 - start) / ((double) (ONEDAY));
 
             /* In case the task duration reaches or excedes the required
              * duration we mark the task as completed. */
             if (doneDuration >= duration)
             {
-                lastSlot = std::min(lastSlot, scenarios[sc].start +
-                                    ((int) doneDuration * ONEDAY) - 1);
+                lastSlot = std::min(lastSlot, start + (int)
+                                    ((((unsigned int) (duration * ONEDAY)) /
+                                      project->getScheduleGranularity()) *
+                                     project->getScheduleGranularity() - 1));
                 end = scenarios[sc].end = lastSlot;
                 schedulingDone = true;
             }

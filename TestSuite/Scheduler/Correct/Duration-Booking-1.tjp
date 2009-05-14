@@ -11,8 +11,8 @@ resource bar1 "Bar1"
 
 task task1 "task1" {
   start ${projectstart}
-  duration 5m
-  ${fixEnd "2009-06-02-03:00"}
+  duration 2m
+  ${fixEnd "2009-03-02-20:00"}
 }
 
 task task2 "task2" {
@@ -23,14 +23,14 @@ task task2 "task2" {
 
 task task3 "task3" {
   start ${projectstart}
-  duration 2m
-  ${fixEnd "2009-03-31-01:00"}
+  duration 5m
+  ${fixEnd "2009-06-02-03:00"}
 }
 
 supplement resource bar1 {
-  booking task1 2009-02-02-9:00 +3h
-  booking task2 2009-05-01-9:00 +3h
-  booking task3 2009-02-03-9:00 +3h
+  booking task1 2009-01-02-9:00 +3h
+  booking task2 2009-02-02-9:00 +3h
+  booking task3 2009-05-01-9:00 +3h
 }
 
 taskreport "Tasks" {
