@@ -212,7 +212,6 @@ setTimezone(const char* tZone)
         (strcmp(tzname[0], tZone) == 0 ||
          (strcmp(tZone, "UTC") != 0 && strcmp(tzname[0], "UTC") == 0)))
     {
-        qDebug("1: %s, 2: %s", tzname[0], tzname[1]);
         UtilityError = QString(i18n("Illegal timezone '%1'")).arg(tZone);
         return false;
     }
