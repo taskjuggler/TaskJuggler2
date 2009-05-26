@@ -141,7 +141,7 @@ the scenario with the specified ID.
 </para></listitem>
 
 </varlistentry>
-<varlistentry><term>isDependentOn(<link linkend="TYPE_ID">TASK</link>,
+<varlistentry><term>isDependencyOf(<link linkend="TYPE_ID">TASK</link>,
 		<link linkend="TYPE_INTEGER">HOPS</link>)</term>
 
 <listitem><para>true if the task is no more than the specified number
@@ -277,7 +277,7 @@ end times must be separated by a hyphen character.</para>
 	the setting of <link
 	linkend="PROPERTY_dailyworkinghours">dailyworkinghours</link>.</para>
 
-</sect2>	
+</sect2>
 <sect2 id="TYPE_WEEKDAY"><title>WEEKDAY</title>
 <para>May be one of
 <simplelist type="horiz" columns="4">
