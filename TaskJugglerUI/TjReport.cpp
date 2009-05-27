@@ -1285,7 +1285,7 @@ TjReport::showResourceDetails(Resource* resource)
                     text += i18n("<li>%1</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()));
                 else
-                    text += i18n("<li>%1 -> %2</li>")
+                    text += i18n("<li>%1 - %2</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
                         .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()));
             }
@@ -1316,7 +1316,7 @@ TjReport::showResourceDetails(Resource* resource)
                 // Otherwise, display the two vacation dates in user datetime format.
                 else
                 {
-                    tmpText = i18n("<li>%1 -> %2 : %3</li>")
+                    tmpText = i18n("<li>%1 - %2 : %3</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
                         .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()))
                         .arg((*vli)->getName()) + tmpText;
