@@ -1271,7 +1271,7 @@ TjReport::showResourceDetails(Resource* resource)
     }
 
     // Display of vacations
-    text += i18n("<hr><b>Vacations:</b>");
+    text += i18n("<hr/><b>Vacations:</b>");
     {
         QPtrListIterator<Interval> vli(resource->getVacationListIterator());
 
@@ -1280,13 +1280,10 @@ TjReport::showResourceDetails(Resource* resource)
             text += i18n("<p/><p>Personnal vacations:</p>");
             for (QPtrListIterator<Interval> vli(resource->getVacationListIterator()); *vli != 0; ++vli)
             {
-                if ((*vli)->getEnd() - (*vli)->getStart() == 86399 && secondsOfDay((*vli)->getStart()) == 0)
+                if (sameTimeNextDay((*vli)->getStart()) == 1 + (*vli)->getEnd()
+                    && midnight((*vli)->getStart()))
                     text += i18n("<li>%1</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()));
-                else if (secondsOfDay((*vli)->getStart()) == 0 && secondsOfDay((*vli)->getEnd()) == 86399)  // 86399 = 23h59m59s
-                    text += i18n("<li>%1 -> %2</li>")
-                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
-                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()));
                 else
                     text += i18n("<li>%1 -> %2</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
@@ -1308,20 +1305,22 @@ TjReport::showResourceDetails(Resource* resource)
             QString tmpText;
             for ( ; *vli != 0; ++vli)
             {
-                if ((*vli)->getEnd() - (*vli)->getStart() == 86399 && secondsOfDay((*vli)->getStart()) == 0)
+                // Only display one day when vacation duration is one day, starting at midnight.
+                if (sameTimeNextDay((*vli)->getStart()) == 1 + (*vli)->getEnd()
+                    && midnight((*vli)->getStart()))
+                {
                     tmpText = i18n("<li>%1 : %2</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
                         .arg((*vli)->getName()) + tmpText;
-                else if (secondsOfDay((*vli)->getStart()) == 0 && secondsOfDay((*vli)->getEnd()) == 86399) // 86399 = 23h59m59s
-                    tmpText = i18n("<li>%1 -> %2 : %3</li>")
-                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
-                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()))
-                        .arg((*vli)->getName()) + tmpText;
+                }
+                // Otherwise, display the two vacation dates in user datetime format.
                 else
+                {
                     tmpText = i18n("<li>%1 -> %2 : %3</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
                         .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()))
                         .arg((*vli)->getName()) + tmpText;
+                }
             }
             text += tmpText;
         }
@@ -1341,9 +1340,11 @@ TjReport::generateRTCustomAttributes(const CoreAttributes* ca) const
 {
     QDict<CustomAttribute> caDict = ca->getCustomAttributeDict();
 
-    QString text = "<hr/>";
+    QString text = "";
     if (caDict.isEmpty())
         return text;
+
+    text += "<hr/>";
 
     for (QDictIterator<CustomAttribute> cadi(caDict); cadi.current(); ++cadi)
     {
