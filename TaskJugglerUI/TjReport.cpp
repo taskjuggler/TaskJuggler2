@@ -1281,7 +1281,7 @@ TjReport::showResourceDetails(Resource* resource)
             for (QPtrListIterator<Interval> vli(resource->getVacationListIterator()); *vli != 0; ++vli)
             {
                 if (sameTimeNextDay((*vli)->getStart()) == 1 + (*vli)->getEnd()
-                    && midnight((*vli)->getStart()))
+                    && secondsOfDay((*vli)->getStart()) == 0 )
                     text += i18n("<li>%1</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()));
                 else
@@ -1307,7 +1307,7 @@ TjReport::showResourceDetails(Resource* resource)
             {
                 // Only display one day when vacation duration is one day, starting at midnight.
                 if (sameTimeNextDay((*vli)->getStart()) == 1 + (*vli)->getEnd()
-                    && midnight((*vli)->getStart()))
+                    && secondsOfDay((*vli)->getStart()) == 0 )
                 {
                     tmpText = i18n("<li>%1 : %2</li>")
                         .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
