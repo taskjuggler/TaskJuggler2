@@ -9,6 +9,8 @@ Makefile
 *.la
 *.lo
 *.o
+*~
+*.patch
 
 #
 # Top level objects
