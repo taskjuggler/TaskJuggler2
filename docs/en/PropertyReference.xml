@@ -11,7 +11,7 @@
  <!ATTLIST property
    name CDATA #REQUIRED
    id CDATA #REQUIRED
-   inheritable (Yes|No) "No" 
+   inheritable (Yes|No) "No"
    scenario (Yes|No) "No"
  >
 
@@ -46,7 +46,7 @@
  >
  <!ELEMENT member (#PCDATA|para|varname|link)*>
  <!ELEMENT screen (#PCDATA)>
- 
+
   <!ENTITY example_account SYSTEM
    "../../TestSuite/Syntax/Correct/Account.tjp">
   <!ENTITY example_allocate SYSTEM
@@ -187,7 +187,7 @@ this type.</para></descr>
   <attributes>
    <attr name="id" type="ID">
     <para>Each account must have a unique ID.</para>
-   </attr> 
+   </attr>
    <attr name="name" type="STRING"/>
    <attr name="type" type="ID" optional="1">
     <para>The type may be <varname>cost</varname> or
@@ -285,13 +285,13 @@ HTML calendar columns. The default is to show load values.</para></descr>
   </seealso>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
-   
+
    <member><varname>empty</varname></member>
    <member>Do not show any values on calendar bars.</member>
-   
+
    <member><varname>load</varname></member>
    <member>Show task or resource load on calendar bars.</member>
-   
+
    </simplelist></para>
   </freestyle>
  </property>
@@ -395,16 +395,16 @@ file processing, the report macros must be prefixed with an additional
   </optattributes>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
-   
+
    <member><varname>accounts</varname></member>
    <member>This columns lists the account that is assigned to the
 	   respective task. It is called 'accounts' because later
 	   versions will have support for multiple accounts.</member>
-   
+
    <member><varname>chart</varname></member>
    <member>Use this column to get Gantt and resource charts. It's only
    supported by the interactive reports in the GUI.</member>
-   
+
    <member><varname>completed</varname></member>
    <member>The percentage the task has been completed already. This is
    either the value specified by <link
@@ -412,195 +412,195 @@ file processing, the report macros must be prefixed with an additional
    to the current date (or the date specified by <link
    linkend="PROPERTY_now">now</link>) and the length, duration or
    effort.</member>
-   
+
    <member><varname>completedeffort</varname></member>
    <member>The effort of a task that has already been completed.</member>
-   
+
    <member><varname>cost</varname></member>
    <member>The accumulated costs of the task and its sub tasks</member>
-   
+
    <member><varname>criticalness</varname></member>
    <member>The criticalness of the task. It is a measure for the
    probability that an effort task gets the requested resources
    early.</member>
-   
+
    <member><varname>daily</varname></member>
    <member>A day-by-day calendar view of the tasks</member>
-   
+
    <member><varname>depends</varname></member>
    <member>The task index of the tasks on which this task
    depends</member>
-   
+
    <member><varname>duration</varname></member>
    <member>The duration of the task</member>
-   
+
    <member><varname>efficiency</varname></member>
    <member>The efficiency of the resource. It's a measurement of how
    much the resource can contribute to the workload of tasks.</member>
-   
+
    <member><varname>effort</varname></member>
    <member>The effort put into the task</member>
-   
+
    <member><varname>end</varname></member>
    <member>The end date of a task</member>
-   
+
    <member><varname>endbuffer</varname></member>
    <member>The percentage of the endbuffer</member>
-   
+
    <member><varname>endbufferstart</varname></member>
    <member>The start time of the end buffer</member>
-   
+
    <member><varname>flags</varname></member>
    <member>The list of flags assigned to the task or resource</member>
-   
+
    <member><varname>follows</varname></member>
    <member>The task index of the tasks that depend on this task</member>
-   
+
    <member><varname>freeload</varname></member>
    <member>The workload of the resource that has not been allocated.</member>
-   
+
    <member><varname>hierarchindex</varname></member>
    <member>The hierarchical index of a task. The index is calculated from the
    hierarchical structure of the list as well as the start and end dates.
    </member>
-   
+
    <member><varname>hierarchno</varname></member>
    <member>The hierarchical number of a task. It is based on the order of
    declaration.</member>
-   
+
    <member><varname>id</varname></member>
    <member>The global ID of a task</member>
-   
+
    <member><varname>index</varname></member>
    <member>The index of a task. The index is calculated from the
    hierarchical structure of the list as well as the start and end dates.
    </member>
-   
+
    <member><varname>maxeffort</varname></member>
    <member>The maximum daily load wanted for the resource</member>
-   
+
    <member><varname>maxend</varname></member>
    <member>The latest desired end date</member>
-   
+
    <member><varname>maxstart</varname></member>
    <member>The latest desired start date</member>
-   
+
    <member><varname>mineffort</varname></member>
    <member>The minimum daily load wanted for the resource</member>
-   
+
    <member><varname>minend</varname></member>
    <member>The earliest desired end date</member>
-   
+
    <member><varname>minstart</varname></member>
    <member>The earliest desired start date</member>
-   
+
    <member><varname>monthly</varname></member>
    <member>A month-by-month calendar view of the tasks</member>
-   
+
    <member><varname>name</varname></member>
    <member>The name of a task, resource, or account</member>
-   
+
    <member><varname>no</varname></member>
    <member>The task index in the list. It starts with 1 and increases for
    every listed item by 1.</member>
-   
+
    <member><varname>note</varname></member>
    <member>The description of the task</member>
-   
+
    <member><varname>pathcriticalness</varname></member>
    <member>The overall criticalness of the task. It is a measure for the
    probability that an effort task gets scheduled as early as
    possible. The tasks of the most critical path have the highest path
    criticalness.</member>
-   
+
    <member><varname>priority</varname></member>
    <member>The scheduling priority</member>
-   
+
    <member><varname>profit</varname></member>
    <member>The accumulated profit of the task and its sub tasks</member>
-   
+
    <member><varname>projectid</varname></member>
    <member>The project ID of the task</member>
-   
+
    <member><varname>projectids</varname></member>
    <member>The project IDs of the projects a resource is allocated to</member>
-   
+
    <member><varname>quarterly</varname></member>
    <member>A quarter-by-quarter calendar view of the tasks</member>
-   
+
    <member><varname>rate</varname></member>
    <member>The daily rate of the resource</member>
-   
+
    <member><varname>reference</varname></member>
    <member>A reference to a URL that contains further information.</member>
-   
+
    <member><varname>remainingeffort</varname></member>
    <member>The effort of a task that still needs to be done to
    complete the task..</member>
-   
+
    <member><varname>resources</varname></member>
    <member>The names of the used resources</member>
-   
+
    <member><varname>responsibilities</varname></member>
    <member>A list of all tasks indices for which a resource is
    responsible </member>
-   
+
    <member><varname>responsible</varname></member>
    <member>The name of the resource responsible for a task</member>
-   
+
    <member><varname>revenue</varname></member>
    <member>The accumulated revenue of the task and its sub tasks</member>
-   
+
    <member><varname>scenario</varname></member>
    <member>The name of the scenario. This column is helpful when multiple
    scenarios are shown in the table. See also <link
    linkend="PROPERTY_scenarios">scenarios</link>.</member>
-   
+
    <member><varname>schedule</varname></member>
    <member>A detailed schedule of the allocations for the resource.</member>
-   
+
    <member><varname>scheduling</varname></member>
    <member>The scheduling direction of the task. ASAP (As Soon As
    Possible) tasks are scheduled from start to end, ALAP (As Late As
    Possible) are scheduled from end to start.</member>
-   
+
    <member><varname>seqno</varname></member>
    <member>The task index in the order of declaration. Each
    time a task declaration is completed, the sequence number is increased
    by 1. </member>
-   
+
    <member><varname>start</varname></member>
    <member>The start date of a task</member>
-   
+
    <member><varname>startbuffer</varname></member>
    <member>The percentage of the start buffer</member>
-   
+
    <member><varname>startbufferend</varname></member>
    <member>The end time of the start buffer</member>
-   
+
    <member><varname>status</varname></member>
    <member>The current status of the task. This is derived from the
    current date or the date specified by <link
    linkend="PROPERTY_now">now</link> and the degree of completion. The
    degree of completion is either computed or has been specified by <link
    linkend="PROPERTY_complete">complete</link>.</member>
-  
+
    <member><varname>statusnote</varname></member>
    <member>Some comment about the current status of the task.</member>
-   
+
    <member><varname>total</varname></member>
    <member>Total accumulated values</member>
-   
+
    <member><varname>utilization</varname></member>
    <member>The ratio between the allocated work load of the resource
    and it's overall available work load.</member>
-   
+
    <member><varname>weekly</varname></member>
    <member>A week-by-week calendar view of the tasks</member>
-   
+
    <member><varname>yearly</varname></member>
    <member>A year-by-year calendar view of the tasks</member>
-   
+
    </simplelist></para>
 <para>The following macros are supported for normal table cells:</para>
 
@@ -852,7 +852,7 @@ the last policy counts.</para></descr> <attributes>
   <example>&example_scenario;</example>
   <seealso>
    <also>enabled</also>
-  </seealso> 
+  </seealso>
  </property>
  <property name="duration" id="duration" inheritable="No"
  scenario="Yes">
@@ -920,7 +920,7 @@ used.</para></descr>
   for the top-level scenario.</para></descr>
   <seealso>
    <also>disabled</also>
-  </seealso> 
+  </seealso>
  </property>
  <property name="end" id="end_report" inheritable="No">
   <descr><para>Specifies the end date of the report. In task reports only
@@ -1061,7 +1061,7 @@ capital letter.</member>
 
 <member>name:</member>
 <member>A short description of the attribute. It will be used as
-default column header in reports.</member> 
+default column header in reports.</member>
 
 </simplelist></para>
   </freestyle>
@@ -1534,30 +1534,30 @@ report.</para></descr>
 
    <member><varname>days</varname></member>
    <member>Show load in man or resource-days.</member>
-   
+
    <member><varname>hours</varname></member>
    <member>Show load in man resource-hours.</member>
-   
+
    <member><varname>longauto</varname></member>
    <member>Show load in the most appropriate unit and show long
    unit name.</member>
-   
+
    <member><varname>minutes</varname></member>
    <member>Show load in man or resource-minutes.</member>
-   
+
    <member><varname>months</varname></member>
    <member>Show load in man or resource-months.</member>
-   
+
    <member><varname>shortauto</varname></member>
    <member>Show load in the most appropriate unit and show short
    unit name.</member>
-   
+
    <member><varname>weeks</varname></member>
    <member>Show load in man or resource-weeks.</member>
-   
+
    <member><varname>years</varname></member>
    <member>Show load in man or resource-years.</member>
-   
+
    </simplelist></para>
   </freestyle>
  </property>
@@ -1655,10 +1655,10 @@ the specified value, then an error is reported.</para></descr>
   certainly possible for large projects.</para></descr>
   <attributes>
    <attr name="paths" type="INTEGER"/>
-  </attributes> 
+  </attributes>
   <seealso>
    <also>minslackrate</also>
-  </seealso>  
+  </seealso>
  </property>
  <property name="maxstart" id="maxstart" inheritable="Yes"
 scenario="Yes">
@@ -1712,7 +1712,7 @@ the specified value, then an error is reported.</para></descr>
   </attributes>
   <seealso>
    <also>maxpaths</also>
-  </seealso>  
+  </seealso>
   <example>&example_criticalpath;</example>
  </property>
  <property name="minstart" id="minstart" inheritable="Yes"
@@ -1804,13 +1804,13 @@ should be shown at a maximum.</para></descr>
   </attributes>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
-   
+
    <member><varname>overtime 0:</varname></member>
    <member>You can only book available working hours. (Default)</member>
 
    <member><varname>overtime 1:</varname></member>
    <member>You can book off-hours as well.</member>
-   
+
    <member><varname>overtime 2:</varname></member>
    <member>You can book normal working hours, off-hours and vacations.</member>
 
@@ -1976,7 +1976,7 @@ the current date. No bookings will be added prior to the current
 date.</para></descr> <optattributes>
 <optattr>sloppy_projection</optattr>
    <optattr>strict</optattr>
-  </optattributes> 
+  </optattributes>
   <seealso>
    <also>baseline</also>
    <also>booking</also>
@@ -1989,30 +1989,30 @@ date.</para></descr> <optattributes>
   <attributes>
    <attr name="property" type="ID" list="1">
     <para>See table below for possible values.</para>
-   </attr> 
+   </attr>
   </attributes>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
-   
+
    <member><varname>all</varname></member>
    <member>Include all properties.</member>
-   
+
    <member><varname>bookings</varname></member>
    <member>Include all bookings for the report interval. Only bookings
    for non-filtered resources will be included.</member>
-   
+
    <member><varname>shifts</varname></member>
    <member>Include all shift definitions.</member>
-   
+
    <member><varname>tasks</varname></member>
    <member>Include all task definitions for non-filtered tasks.</member>
-   
+
    <member><varname>resources</varname></member>
    <member>Include all resource definitions for non-filtered
    resources.</member>
-   
+
    </simplelist></para>
-  </freestyle> 
+  </freestyle>
   <example>&example_export;</example>
  </property>
  <property name="purge" id="purge" inheritable="No">
@@ -2234,7 +2234,7 @@ report.</para></descr>
  </property>
  <property name="scenarios" id="scenarios" inheritable="No">
   <descr><para>List of scenarios that should be included in the
-report.</para></descr>
+report. The wild character * (star) can be used, meaning all enabled scenarios.</para></descr>
   <attributes>
    <attr name="scenarioid" type="ID" list="1">
     <para>The ID of the scenario.</para>
@@ -2291,7 +2291,7 @@ end to start (As Late As Possible, <varname>alap</varname>).</para>
     <also>precedes</also>
     <also>start</also>
     <also>period</also>
-  </seealso>  
+  </seealso>
   <example>&example_scheduling;</example>
  </property>
  <property name="separator" id="separator" inheritable="No">
@@ -2319,26 +2319,26 @@ for ASAP tasks) time slot has become unavailable.</para></descr>
   </seealso>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
-   
+
    <member><varname>maxloaded</varname></member>
    <member>Pick the available resource that has been used the most so
    far.</member>
-   
+
    <member><varname>minloaded</varname></member>
    <member>Pick the available resource that has been used the least so
    far.</member>
-   
+
    <member><varname>minallocated</varname></member>
    <member>Pick the resource that has the smallest allocation factor.
    The allocation factor is calculated from the various allocations of
    the resource across the tasks. This is the default setting.</member>
-   
+
    <member><varname>order</varname></member>
    <member>Pick the first available resource from the list.</member>
-   
+
    <member><varname>random</varname></member>
    <member>Pick a random resource from the list.</member>
-   
+
    </simplelist></para>
   </freestyle>
   <example>&example_select;</example>
@@ -2414,7 +2414,7 @@ contain the project ID after the load value.</para></descr>
   </attributes>
   <freestyle>
    <para><simplelist type="horiz" columns="2">
-   
+
    <member><varname>sloppy 0:</varname></member>
    <member>Period may not contain any off-duty hours, vacation or
    other task assignments. (Default)</member>
@@ -2422,7 +2422,7 @@ contain the project ID after the load value.</para></descr>
    <member><varname>sloppy 1:</varname></member>
    <member>Period may contain off-duty hours, but not vacation or
    other task assignments.</member>
-   
+
    <member><varname>sloppy 2:</varname></member>
    <member>Period may contain off-duty hours and vacation, but no
    other task assignments.</member>
@@ -2443,7 +2443,7 @@ contain the project ID after the load value.</para></descr>
    <also>projection</also>
    <also>strict</also>
   </seealso>
- </property> 
+ </property>
  <property name="sortaccounts" id="sortaccounts" inheritable="No">
   <descr><para>Determines how the accounts are sorted in the report. Up to 3
 criteria can be specified. If one criteria is not sufficient to sort a
@@ -2451,7 +2451,7 @@ group of accounts, the next criteria will be used to sort the accounts
 within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1">
-    <para>Possible values are 
+    <para>Possible values are
 fullnamedown,
 fullnameup,
 iddown,
@@ -2474,7 +2474,7 @@ group of resources, the next criteria will be used to sort the
 resources within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1">
-    <para>Possible values are 
+    <para>Possible values are
 fullnamedown,
 fullnameup,
 iddown,
@@ -2499,11 +2499,11 @@ tree
  <property name="sorttasks" id="sorttasks" inheritable="No">
   <descr><para>Determines how the tasks are sorted in the report. Up to 3
 criteria can be specified. If one criteria is not sufficient to sort a
-group of tasks, the next criteria will be used to sort the tasks 
+group of tasks, the next criteria will be used to sort the tasks
 within this group.</para></descr>
   <attributes>
    <attr name="criteria" type="SORTINGCRITERIA" list="1">
-    <para>Possible values are 
+    <para>Possible values are
 fullnamedown,
 fullnameup,
 iddown,
@@ -2533,7 +2533,7 @@ enddown,
 endup,
 pathcriticalnessdown,
 pathcriticalnessup,
-startdown, 
+startdown,
 startup,
 statusdown,
 statusup
@@ -2631,7 +2631,7 @@ task.</para></descr>
    <also>sloppy</also>
    <also>projection</also>
   </seealso>
- </property> 
+ </property>
  <property name="subtitle" id="subtitle" inheritable="No">
   <descr><para>Specifies an alternative subtitle for a report
 column.</para></descr> <attributes>
@@ -2752,7 +2752,7 @@ attributes.</para></descr>
  </property>
 
  <property name="taskbarprefix" id="taskbarprefix" inheritable="No">
-  <descr><para>Display on the <varname>taskreport</varname>, on the left of the task area, the data as specified int the runtime macro. The runtime macro follows same rule as 
+  <descr><para>Display on the <varname>taskreport</varname>, on the left of the task area, the data as specified int the runtime macro. The runtime macro follows same rule as
 <varname>celltext</varname>.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
@@ -2764,7 +2764,7 @@ attributes.</para></descr>
  </property>
 
  <property name="taskbarpostfix" id="taskbarpostfix" inheritable="No">
-  <descr><para>Display on the <varname>taskreport</varname>, on the right of the task area, the data as specified int the runtime macro. The runtime macro follows same rule as 
+  <descr><para>Display on the <varname>taskreport</varname>, on the right of the task area, the data as specified int the runtime macro. The runtime macro follows same rule as
 <varname>celltext</varname>.</para></descr>
   <attributes>
    <attr name="text" type="STRING"/>
@@ -2883,28 +2883,28 @@ current locale.</member>
 current locale.</member>
 
 <member>%B</member><member> The full month name according to
-the current locale.</member>  
+the current locale.</member>
 
 <member>%c</member><member> The preferred date and time
 representation for the current locale.</member>
 
 <member>%C</member><member> The century number (year/100) as a 2-digit
 integer. (SU)</member>
-	
+
 <member>%d</member><member>The day of the month as a decimal number
 (range  01 to 31).</member>
 
 <member>%D</member><member>Equivalent  to  %m/%d/%y.  (Yecch  -  for
-Americans only.  Americans should note that in other countries %d/%m/%y 
+Americans only.  Americans should note that in other countries %d/%m/%y
 is rather common.  This means that in international context this format is
 ambiguous  and should not be used.) (SU)</member>
 
 <member>%e</member><member>Like  %d, the day of the month as a decimal number,
 but a leading zero is replaced by a space. (SU)</member>
-	
+
 <member>%E</member><member>Modifier: use alternative format, see
 below. (SU)</member>
-	
+
 <member>%F</member><member>Equivalent to %Y-%m-%d (the ISO 8601 date
 format). (C99)</member>
 
@@ -2913,12 +2913,12 @@ number.  The 4-digit year corresponding to the ISO week number  (see
 %V). This has the same format and value as %y, except that if the ISO week
 number belongs to  the previous or next year, that year is used
 instead. (TZ)</member>
-	
+
 <member>%g</member><member>Like %G, but without century, i.e., with a  2-digit
 year (00-99). (TZ)</member>
-	
+
 <member>%h</member><member>Equivalent to %b. (SU)</member>
-	
+
 <member>%H</member><member>The  hour as a decimal number using a
 24-hour clock (range 00 to 23).</member>
 
@@ -2966,7 +2966,7 @@ i.e.,  since 1970-01-01 00:00:00 UTC. (TZ)</member>
 
 <member>%S</member><member>The second as a decimal number (range 00 to
 61).</member>
-	 
+
 <member>%t</member><member>A tab character. (SU)</member>
 
 <member>%T</member><member>The time in 24-hour notation (%H:%M:%S).
@@ -3211,7 +3211,7 @@ working days it is 260.714 (the default), for 6 working days it is
   </seealso>
   <example>&example_project;</example>
  </property>
-<!-- 
+<!--
  <property name="" id="" inheritable="No">
   <descr><para></para></descr>
   <attributes>

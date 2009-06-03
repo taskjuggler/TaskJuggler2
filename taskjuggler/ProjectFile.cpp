@@ -3446,27 +3446,38 @@ ProjectFile::readXMLReport()
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        goto error;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario %1")
-                                     .arg(scId));
-                        goto error;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        report->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto error;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -3919,27 +3930,41 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("scenarios"))
             {
                 tab->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            tab->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        goto exit_error;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario '%1'")
-                                     .arg(scId));
-                        goto exit_error;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        tab->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto exit_error;
+                        }
+                        else
+                        {
+                            int scIdx;
+                            if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                            {
+                                errorMessage(i18n("Unknown scenario '%1'")
+                                            .arg(scId));
+                                goto exit_error;
+                            }
+                            if (proj->getScenario(scIdx - 1)->getEnabled())
+                                tab->addScenario(proj->getScenarioIndex(scId) - 1);
+                            if ((tt = nextToken(token)) != COMMA)
+                            {
+                                returnToken(tt, token);
+                                break;
+                            }
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -4746,27 +4771,38 @@ ProjectFile::readExportReport()
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        goto error;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario %1")
-                                     .arg(scId));
-                        goto error;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        report->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto error;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -4891,27 +4927,38 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == KW("scenarios"))
             {
                 el->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            el->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        return false;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario %1")
-                                     .arg(scId));
-                        return false;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        el->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            return false;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            return false;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            el->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }

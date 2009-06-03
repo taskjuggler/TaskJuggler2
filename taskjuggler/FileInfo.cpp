@@ -439,6 +439,8 @@ FileInfo::nextToken(QString& token)
             }
             case '=':
                 return EQUAL;
+            case '*':
+                return STAR;
             default:
                 errorMessage(i18n("Illegal character '%1'").arg(c));
                 return INVALID;
