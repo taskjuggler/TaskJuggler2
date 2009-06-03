@@ -1159,8 +1159,8 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
     bool hasError = false;
     if ((t->getMaxStart(scenario) != 0 && t->getStart(scenario) > t->getMaxStart(scenario))
     ||  (t->getMinStart(scenario) != 0 && t->getStart(scenario) < t->getMinStart(scenario) )
-    ||  (t->getMaxEnd(scenario) != 0 && t->getStart(scenario) > t->getMaxEnd(scenario))
-    ||  (t->getMinEnd(scenario) != 0 && t->getStart(scenario) < t->getMinEnd(scenario)))
+    ||  (t->getMaxEnd(scenario) != 0 && t->getEnd(scenario) > t->getMaxEnd(scenario))
+    ||  (t->getMinEnd(scenario) != 0 && t->getEnd(scenario) < t->getMinEnd(scenario)))
     {
         hasError = true;
     }
