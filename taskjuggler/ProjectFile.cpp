@@ -3644,7 +3644,7 @@ ProjectFile::checkReportInterval(HTMLReport* report)
 }
 
 bool
-ProjectFile::readReport(const QString& reportType)
+ProjectFile::readReport(const QString& reportType, QtReport* parentReport)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -3654,7 +3654,8 @@ ProjectFile::readReport(const QString& reportType)
     }
 
     QtReport* report = 0;
-    ReportElement* tab;
+    ReportElement* tab = 0;
+
     if (reportType == KW("taskreport"))
     {
         report = new QtTaskReport(proj, token, getFile(), getLine());
@@ -3673,8 +3674,18 @@ ProjectFile::readReport(const QString& reportType)
     else
     {
         errorMessage(i18n("Report type %1 not yet supported!")
-                     .arg(reportType));
+                    .arg(reportType));
         return false;
+    }
+
+    // Set link to parent report if any
+    report->setParentReport(parentReport);
+    if (parentReport) parentReport->addChildrenReport(report);
+
+    // If report is inherited, retrieve parent values
+    if (parentReport)
+    {
+        report->inheritValues();
     }
 
     TokenType tt;
@@ -3912,6 +3923,10 @@ ProjectFile::readReport(const QString& reportType)
                     goto error;
                 }
                 tab->setTaskBarPostfix(token);
+            }
+            else if (token == reportType)
+            {
+                readReport(reportType, report);
             }
             else
             {

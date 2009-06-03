@@ -30,6 +30,7 @@ class Booking;
 class Interval;
 class Operation;
 class Report;
+class QtReport;
 class HTMLReport;
 class ReportElement;
 class RealFormat;
@@ -158,7 +159,7 @@ private:
     bool readDaysToShow(QBitArray& days);
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
     bool readPriority(int& priority);
-    bool readReport(const QString& reportType);
+    bool readReport(const QString& reportType, QtReport* parentReport = 0);
     bool readHTMLReport(const QString& reportType);
     bool readHTMLStatusReport();
     bool readCSVReport(const QString& reportType);

@@ -53,7 +53,9 @@ Report::Report(Project* p, const QString& f, const QString& df, int dl) :
     rollUpTask(0),
     rollUpResource(0),
     rollUpAccount(0),
-    taskRoot()
+    taskRoot(),
+    parentReport(0),
+    childrenReport()
 {
     for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
     {
@@ -545,5 +547,46 @@ Report::stripTaskRoot(QString taskId) const
         return taskId.right(taskId.length() - taskRoot.length());
     else
         return taskId;
+}
+
+void
+Report::inheritValues()
+{
+    if (parentReport)
+    {
+        for (unsigned int sc = 0; sc < parentReport->getScenarioCount(); ++sc)
+        {
+            addScenario(parentReport->getScenario(sc));
+        }
+
+        setWeekStartsMonday(parentReport->getWeekStartsMonday());
+        setShowPIDs(parentReport->getShowPIDs());
+
+        setStart(parentReport->getStart());
+        setEnd(parentReport->getEnd());
+        setHeadline(parentReport->getHeadline());
+        setCaption(parentReport->getCaption());
+        setHideTask(parentReport->getHideTask());
+        setHideResource(parentReport->getHideResource());
+        setHideAccount(parentReport->getHideAccount());
+        setRollUpTask(parentReport->getRollUpTask());
+        setRollUpResource(parentReport->getRollUpResource());
+        setRollUpAccount(parentReport->getRollUpAccount());
+
+        for (int i = 0; i < CoreAttributesList::maxSortingLevel; ++i)
+        {
+            setTaskSorting(parentReport->getTaskSorting(i),i);
+            setResourceSorting(parentReport->getResourceSorting(i),i);
+            setAccountSorting(parentReport->getAccountSorting(i),i);
+        }
+
+        setTaskRoot(parentReport->getTaskRoot());
+        loadUnit = parentReport->getLoadUnit();
+        setTimeFormat(parentReport->getTimeFormat());
+        setShortTimeFormat(parentReport->getShortTimeFormat());
+        setNumberFormat(parentReport->getNumberFormat());
+        setCurrencyFormat(parentReport->getCurrencyFormat());
+        setTimeStamp(parentReport->getTimeStamp());
+    }
 }
 

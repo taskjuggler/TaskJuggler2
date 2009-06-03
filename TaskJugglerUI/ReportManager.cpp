@@ -116,7 +116,7 @@ ReportManager::updateReportBrowser()
                 openReports.append((*lvi)->text(0));
     QString currentReport;
     if (browser->currentItem() && browser->currentItem()->firstChild() == 0)
-        currentReport = browser->currentItem()->text(0);
+        currentReport = browser->currentItem()->text(0) + browser->currentItem()->text(1) + browser->currentItem()->text(2) + browser->currentItem()->text(3);
 
     browser->clear();
 
@@ -163,112 +163,25 @@ ReportManager::updateReportBrowser()
     exportReports->setOpen(openReports.find(exportReports->text(0)) !=
                            openReports.end());
 
-    int i = 0;
     for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
          mri != reports.end(); ++mri)
     {
-        Report* r = (*mri)->getProjectReport();
-
-        // The summary report has no report definition.
-        if (!r)
+        if ((*mri)->getBrowserEntry())
             continue;
 
-        KListViewItem* parent = 0;
-        int prefix = 0;
-        if (strncmp(r->getType(), "Qt", 2) == 0)
-        {
-            prefix = 2;
-            parent = qtReports;
-        }
-        else if (strncmp(r->getType(), "HTML", 4) == 0)
-        {
-            prefix = 4;
-            parent = htmlReports;
-        }
-        else if (strncmp(r->getType(), "CSV", 3) == 0)
-        {
-            prefix = 3;
-            parent = csvReports;
-        }
-        else if (strncmp(r->getType(), "SVG", 3) == 0)
-        {
-            prefix = 3;
-            parent = svgReports;
-        }
-        else if (strncmp(r->getType(), "XML", 3) == 0)
-        {
-            prefix = 3;
-            parent = xmlReports;
-        }
-        else if (strncmp(r->getType(), "ICal", 4) == 0)
-        {
-            prefix = 4;
-            parent = icalReports;
-        }
-        else if (strncmp(r->getType(), "Export", 6) == 0)
-        {
-            prefix = 6;
-            parent = exportReports;
-        }
-        else
-            kdError() << "ReportManager::updateReportBrowser(): "
-                << "Unsupported report type " << r->getType() << endl;
+        Report* r = (*mri)->getProjectReport();
 
-        QPixmap subTypeIcon;
-        const char* subType = r->getType() + prefix;
-        if (strncmp(subType, "Task", strlen("Task")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_task_group",
-                                                KIcon::Small);
-        else if (strncmp(subType, "Resource", strlen("Resource")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_resource_group",
-                                                KIcon::Small);
-        else if (strncmp(subType, "Account", strlen("Account")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_account_group",
-                                                KIcon::Small);
-        else if (strncmp(subType, "WeeklyCalendar",
-                         strlen("WeeklyCalendar")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_calendar_report",
-                                                KIcon::Small);
-        else if (strncmp(subType, "MonthlyCalendar",
-                         strlen("MonthlyCalendar")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_calendar_report",
-                                                KIcon::Small);
-        else if (strncmp(subType, "Status", strlen("Status")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_status_report",
-                                                KIcon::Small);
-        else if (strncmp(subType, "Report", strlen("Report")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_file_tji",
-                                                KIcon::Small);
-        else if (strncmp(subType, "TimeTime", strlen("TimeTime")) == 0)
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_file_tji",
-                                                KIcon::Small);
-        else
-        {
-            qDebug("Unknown type: %s", r->getType());
-            subTypeIcon =
-                KGlobal::iconLoader()->loadIcon("tj_report",
-                                                KIcon::Small);
-        }
+        addReportItem(r, currentReport);
 
-        KListViewItem* item = new KListViewItem
-            (parent, r->getFileName(), QString::number(i),
-             r->getDefinitionFile(), QString::number(r->getDefinitionLine()));
-        item->setPixmap(0, subTypeIcon);
-
-        // Restore current report.
-        if (item->text(0) == currentReport)
-            browser->setCurrentItem(item);
-
-        // Save the pointer to the list view item for future references.
-        (*mri)->setBrowserEntry(item);
+//         // Then add all children reports
+//         if (r->getChildrenReportListIterator())
+//         {
+//             for (QPtrListIterator<Report> rc = r->getChildrenReportListIterator();
+//                 *rc; ++rc)
+//             {
+//                 addReportItem(*rc);
+//             }
+//         }
     }
 
     // Make sure that we have a current report. If the current report is a
@@ -279,6 +192,138 @@ ReportManager::updateReportBrowser()
             browser->setCurrentItem(qtReports->firstChild());
 
     searchLine->updateSearch();
+}
+
+void
+ReportManager::addReportItem (Report* r, QString currentReport)
+{
+    // The summary report has no report definition.
+    if (!r)
+        return;
+
+    KListViewItem* parent = 0;
+    int prefix = 0;
+    if (strncmp(r->getType(), "Qt", 2) == 0)
+    {
+        prefix = 2;
+        parent = qtReports;
+    }
+    else if (strncmp(r->getType(), "HTML", 4) == 0)
+    {
+        prefix = 4;
+        parent = htmlReports;
+    }
+    else if (strncmp(r->getType(), "CSV", 3) == 0)
+    {
+        prefix = 3;
+        parent = csvReports;
+    }
+    else if (strncmp(r->getType(), "SVG", 3) == 0)
+    {
+        prefix = 3;
+        parent = svgReports;
+    }
+    else if (strncmp(r->getType(), "XML", 3) == 0)
+    {
+        prefix = 3;
+        parent = xmlReports;
+    }
+    else if (strncmp(r->getType(), "ICal", 4) == 0)
+    {
+        prefix = 4;
+        parent = icalReports;
+    }
+    else if (strncmp(r->getType(), "Export", 6) == 0)
+    {
+        prefix = 6;
+        parent = exportReports;
+    }
+    else
+        kdError() << "ReportManager::updateReportBrowser(): "
+            << "Unsupported report type " << r->getType() << endl;
+
+    if (r->getParentReport() && getMRI(r->getParentReport())->getBrowserEntry())
+    {
+        parent = getMRI(r->getParentReport())->getBrowserEntry();
+    }
+
+    QPixmap subTypeIcon;
+    const char* subType = r->getType() + prefix;
+    if (strncmp(subType, "Task", strlen("Task")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_task_group",
+                                            KIcon::Small);
+    else if (strncmp(subType, "Resource", strlen("Resource")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_resource_group",
+                                            KIcon::Small);
+    else if (strncmp(subType, "Account", strlen("Account")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_account_group",
+                                            KIcon::Small);
+    else if (strncmp(subType, "WeeklyCalendar",
+                        strlen("WeeklyCalendar")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_calendar_report",
+                                            KIcon::Small);
+    else if (strncmp(subType, "MonthlyCalendar",
+                        strlen("MonthlyCalendar")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_calendar_report",
+                                            KIcon::Small);
+    else if (strncmp(subType, "Status", strlen("Status")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_status_report",
+                                            KIcon::Small);
+    else if (strncmp(subType, "Report", strlen("Report")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_file_tji",
+                                            KIcon::Small);
+    else if (strncmp(subType, "TimeTime", strlen("TimeTime")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_file_tji",
+                                            KIcon::Small);
+    else
+    {
+        qDebug("Unknown type: %s", r->getType());
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_report",
+                                            KIcon::Small);
+    }
+
+    KListViewItem* item = new KListViewItem
+        (parent, r->getFileName(), QString::number(0),
+            r->getDefinitionFile(), QString::number(r->getDefinitionLine()));
+    item->setPixmap(0, subTypeIcon);
+
+    // Restore current report.
+    if (currentReport == item->text(0) + item->text(1) + item->text(2) + item->text(3))
+        browser->setCurrentItem(item);
+
+    // Save the pointer to the list view item for future references.
+    setBrowserEntry(item, r);
+}
+
+ManagedReportInfo*
+ReportManager::getMRI(Report* r)
+{
+    for (std::list<ManagedReportInfo*>::const_iterator mri = reports.begin();
+         mri != reports.end(); ++mri)
+    {
+        if ((*mri)->getProjectReport() == r)
+        {
+            return (*mri);
+        }
+    }
+
+    return 0;
+}
+
+void
+ReportManager::setBrowserEntry(KListViewItem* item, Report* r)
+{
+    ManagedReportInfo* mri;
+    if ((mri = getMRI(r))) mri->setBrowserEntry(item);
 }
 
 bool

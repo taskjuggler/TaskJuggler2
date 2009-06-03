@@ -789,6 +789,8 @@ public:
 
     bool generateXMLReport() const;
 
+    void inheritValues();
+
 signals:
     void updateProgressInfo(const QString& i);
     void updateProgressBar(int i, int of);
