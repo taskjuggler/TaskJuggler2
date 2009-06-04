@@ -73,6 +73,8 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["freeLoadCol"] = QColor("#00AC00");
     colors["loadFrameCol"] = Qt::black;
     colors["hightlightCol"] = Qt::white;
+    colors["errorCol"] = Qt::red;
+    colors["datelLimitCol"] = QColor("#00AC00");
 
     currentZoomStep = 0;
     clipped = false;
@@ -1153,12 +1155,22 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
 
     int centerY = y + minRowHeight / 2;
 
+    // Draw min and max start and end if not null and different of effective dates
+    bool hasError = false;
+    if ((t->getMaxStart(scenario) != 0 && t->getStart(scenario) > t->getMaxStart(scenario))
+    ||  (t->getMinStart(scenario) != 0 && t->getStart(scenario) < t->getMinStart(scenario) )
+    ||  (t->getMaxEnd(scenario) != 0 && t->getStart(scenario) > t->getMaxEnd(scenario))
+    ||  (t->getMinEnd(scenario) != 0 && t->getStart(scenario) < t->getMinEnd(scenario)))
+    {
+        hasError = true;
+    }
+
     if (t->isMilestone())
     {
         int centerX = time2x(t->getStart(scenario));
 
         drawMilestoneShape(centerX, centerY, minRowHeight,
-                           t->isOnCriticalPath(scenario), r != 0, chart);
+                           t->isOnCriticalPath(scenario), r != 0, chart, hasError);
     }
     else if (shouldTaskBeDrawnAsContainer(t))
     {
@@ -1187,9 +1199,9 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
             barWidth = (int) ((end - start) *
                               (t->getCompletionDegree(scenario) / 100.0));
 
-	bool critical = t->isOrHasDescendantOnCriticalPath(scenario);
+        bool critical = t->isOrHasDescendantOnCriticalPath(scenario);
         drawTaskShape(start, end, centerY, minRowHeight, barWidth,
-                      critical, r != 0, chart);
+                      critical, r != 0, chart, hasError);
 
     }
 
@@ -1225,22 +1237,22 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
     if (t->getMaxStart(scenario) != 0 && t->getStart(scenario) != t->getMaxStart(scenario)) {
         int centerX = time2x(t->getMaxStart(scenario));
 
-        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+        drawTaskLimit(centerX, centerY, minRowHeight, true, chart, t->getStart(scenario) > t->getMaxStart(scenario));
     }
     if (t->getMinStart(scenario) != 0 && t->getStart(scenario) != t->getMinStart(scenario)) {
         int centerX = time2x(t->getMinStart(scenario));
 
-        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+        drawTaskLimit(centerX, centerY, minRowHeight, true, chart, t->getStart(scenario) < t->getMinStart(scenario));
     }
-    if (t->getMaxEnd(scenario) != 0 && t->getStart(scenario) != t->getMaxEnd(scenario)) {
+    if (t->getMaxEnd(scenario) != 0 && t->getEnd(scenario) != t->getMaxEnd(scenario)) {
         int centerX = time2x(t->getMaxEnd(scenario));
 
-        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+        drawTaskLimit(centerX, centerY, minRowHeight, false, chart, t->getEnd(scenario) > t->getMaxEnd(scenario));
     }
-    if (t->getMinEnd(scenario) != 0 && t->getStart(scenario) != t->getMinEnd(scenario)) {
+    if (t->getMinEnd(scenario) != 0 && t->getEnd(scenario) != t->getMinEnd(scenario)) {
         int centerX = time2x(t->getMinEnd(scenario));
 
-        drawMilestoneShape(centerX, centerY, minRowHeight, true, true, chart);
+        drawTaskLimit(centerX, centerY, minRowHeight, false, chart, t->getEnd(scenario) < t->getMinEnd(scenario));
     }
 
 }
@@ -1248,7 +1260,7 @@ TjGanttChart::drawTask(const Task* t, const Resource* r)
 void
 TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
                             int barWidth, bool critical, bool outlineOnly,
-                            QCanvas* canvas)
+                            QCanvas* canvas, bool error)
 {
     /* Workaround for a QCanvasView problem. In Qt3.x it can only handle 32767
      * pixels per dimension. */
@@ -1276,7 +1288,7 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
                              end - start, (int) (height * 0.6) + 1, canvas);
 
     rect->setPen(QPen(colors[critical ? "critTaskCol" : "taskCol"], lineWidth));
-    rect->setBrush(QBrush(colors["taskCol"], outlineOnly ?
+    rect->setBrush(QBrush(colors[error ? "errorCol" : "taskCol"], outlineOnly ?
                           Qt::Dense6Pattern : Qt::Dense4Pattern));
     rect->setZ(TJRL_TASKS);
     rect->show();
@@ -1302,7 +1314,7 @@ TjGanttChart::drawTaskShape(int start, int end, int centerY, int height,
 void
 TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
                                  bool critical, bool outlineOnly,
-                                 QCanvas* canvas)
+                                 QCanvas* canvas, bool error)
 {
     int radius = (int) (height * 0.375);
 
@@ -1317,7 +1329,7 @@ TjGanttChart::drawMilestoneShape(int centerX, int centerY, int height,
 
     QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
     polygon->setPoints(a);
-    polygon->setBrush(QBrush(colors["milestoneCol"],
+    polygon->setBrush(QBrush(colors[error ? "errorCol" : "milestoneCol"],
                              outlineOnly ? Qt::Dense4Pattern :
                              Qt::SolidPattern));
 
@@ -1405,6 +1417,28 @@ TjGanttChart::drawContainterShape(int start, int end, int centerY, int height,
     polygon->setPoints(a);
     polygon->setBrush(QBrush(colors["containerCol"], outlineOnly ?
                              Qt::Dense4Pattern : Qt::SolidPattern));
+    polygon->setZ(TJRL_TASKS);
+    polygon->show();
+}
+
+/** Draws a [ for minstart and maxstart, and a ] for ends.
+ Color is red and width 3 when limit fails, so that error is clearly visible. */
+void
+TjGanttChart::drawTaskLimit(int cx, int cy, int height, bool start, QCanvas* canvas, bool error)
+{
+    int radius = (int) (height * 0.375);
+
+    // Half a red or green diamond.
+    QPointArray a(3);
+    a.setPoint(0, cx, cy - radius);
+    a.setPoint(1, cx + (start ? -radius : +radius), cy);
+    a.setPoint(2, cx, cy + radius);
+
+    QCanvasPolygon* polygon = new QCanvasPolygon(canvas);
+    polygon->setPoints(a);
+    polygon->setBrush(QBrush(colors[error ? "errorCol" : "datelLimitCol"],
+                             error ? Qt::SolidPattern : Qt::Dense4Pattern
+                             ));
     polygon->setZ(TJRL_TASKS);
     polygon->show();
 }
