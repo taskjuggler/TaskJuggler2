@@ -50,6 +50,9 @@ public:
     void setMaxPaths(long l) { maxPaths = l; }
     long getMaxPaths() const { return maxPaths; }
 
+    void setDate(time_t d) { date = d; }
+    time_t getDate() const { return date; }
+
 private:
     bool enabled;
     bool projectionMode;
@@ -57,6 +60,7 @@ private:
     bool optimize;
     double minSlackRate;
     long maxPaths;
+    time_t date;
 } ;
 
 #endif

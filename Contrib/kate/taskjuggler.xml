@@ -163,6 +163,7 @@
         <item> subtitle </item>
         <item> subtitleurl </item>
         <item> supplement </item>
+        <item> svgtimetimereport </item>
         <item> table </item>
         <item> taskattributes </item>
         <item> taskid </item>
@@ -299,7 +300,7 @@
 	<!-- Time values -->
 	<RegExpr attribute="Time" name="Time"
 	 String="\d{1-2}:\d{2}(:\d{2}|)"/>
-	<!-- Duration specifications --> 
+	<!-- Duration specifications -->
 	<RegExpr attribute="Duration" name="Duration"
 	 String="\d(min|h|d|w|m|y)"/>
 
@@ -307,14 +308,14 @@
 	<keyword attribute="Builtin Function" String="builtinfuncs" context="#stay"/>
 	<keyword attribute="Keyword" String="keywords" context="#stay"/>
 	<keyword attribute="Data Types" String="types" context="#stay"/>
-	
+
 	<!-- region (brace) folding -->
 	<DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace2" />
         <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace2" />
-	
+
 	<DetectChar attribute="Symbol" context="#stay" char="[" beginRegion="Brace1" />
         <DetectChar attribute="Symbol" context="#stay" char="]" endRegion="Brace1" />
-	
+
 	<!-- number hilighting -->
 	<Float attribute="Float" context="#stay">
     	    <AnyChar String="fF" attribute="Float" context="#stay"/>
@@ -329,16 +330,16 @@
           <StringDetect attribute="Decimal" context="#stay" String="U" insensitive="TRUE"/>
           <StringDetect attribute="Decimal" context="#stay" String="L" insensitive="TRUE"/>
 	</Int>
-	
+
 	<!-- strings -->
 	<DetectChar attribute="String" context="String1" char="&apos;"/>
 	<DetectChar attribute="String" context="String2" char="&quot;"/>
-	
+
 	<!-- comments -->
 	<DetectChar attribute="Comment" context="Comment1" char="#"/>
         <Detect2Chars attribute="Comment" context="Comment2" char="/" char1="*"/>
       </context>
-      
+
       <context attribute="String" lineEndContext="#stay" name="String1">
         <DetectChar attribute="String" context="#pop" char="&apos;"/>
       </context>
