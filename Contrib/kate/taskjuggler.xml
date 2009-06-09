@@ -164,6 +164,7 @@
         <item> subtitle </item>
         <item> subtitleurl </item>
         <item> supplement </item>
+        <item> svggantttaskreport </item>
         <item> svgtimetimereport </item>
         <item> table </item>
         <item> taskattributes </item>

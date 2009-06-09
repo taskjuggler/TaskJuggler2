@@ -186,22 +186,13 @@ const char* svgColors[] = {
     "yellow"
 };
 
+
 SVGTimeTimeReport::SVGTimeTimeReport(Project* p, const QString& file, const QString& defFile,
                        int dl) :
-    Report(p, file, defFile, dl)
+    SVGReport(p, file, defFile, dl)
 {
-    // By default, use all scenarios.
-    unsigned int i = 0;
-    for (ScenarioListIterator sli(project->getScenarioIterator()); *sli ; ++sli, ++i)
-    {
-        if ((*sli)->getEnabled())
-            scenarios.append(i);
-    }
-
-    taskSortCriteria[0] = CoreAttributesList::NameUp;
-
     // default headline
-    setHeadline(getProject()->getName() + " Milestones.");
+    setHeadline(getProject()->getName() + " time/time report.");
 }
 
 bool
@@ -234,7 +225,7 @@ SVGTimeTimeReport::generate()
         return false;
     sortTaskList(filteredTaskList);
 
-    // List loop to get min and max dates
+    // Loop to get min and max dates
     for (it = scenarios.begin(); it != scenarios.end(); ++it)
     {
         date = getProject()->getScenario(*it)->getDate();
@@ -290,8 +281,6 @@ SVGTimeTimeReport::generate()
     // Add stavdart svg attributes
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     svg.setAttribute("version", "1.1");
-    svg.setAttribute("width", "100%");
-    svg.setAttribute("height", "100%");
 
     // Add javascript code
     QDomElement script = doc.createElement("script");
@@ -386,6 +375,9 @@ SVGTimeTimeReport::generate()
     time_t x = 0, y = 0;
     QString polylinepoints;
     unsigned int nbLegendPerColumn = (width + getProject()->getTimeFormat().length() * fontHeight) / fontHeight / 2;
+
+    svg.setAttribute("width", margex + width + 2 * gap + ( 1 + filteredTaskList.count() / nbLegendPerColumn) * maxTaskNameLength * fontHeight);
+    svg.setAttribute("height", margey + width + 2 * gap + 10 * fontHeight);
 
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, i++)
     {
@@ -516,7 +508,7 @@ SVGTimeTimeReport::generate()
             axeUnit == eMonth? sameTimeNextMonth(beginOfMonth(datemin-1)):
             axeUnit == eQuarter? sameTimeNextQuarter(beginOfQuarter(datemin-1)):
                 sameTimeNextYear(beginOfYear(datemin-1));
-        axeDate <= datemax;
+        axeDate <= datemax + 1;
         axeDate =
             axeUnit == eDay? sameTimeNextDay(axeDate) :
             axeUnit == eWeek? sameTimeNextWeek(axeDate) :
@@ -541,7 +533,6 @@ SVGTimeTimeReport::generate()
         milestonedate.setAttribute("transform", rotate);
         milestonedate.setAttribute("font-family", "Courrier");
         milestonedate.setAttribute("font-size", fontHeight);
-        milestonedate.setAttribute("fill", "black");
 
         // Add Y axe legent
         milestonedate = doc.createElement("text");
@@ -553,7 +544,6 @@ SVGTimeTimeReport::generate()
         milestonedate.setAttribute("fill", "black");
         milestonedate.setAttribute("font-family", "Courrier");
         milestonedate.setAttribute("font-size", fontHeight);
-        milestonedate.setAttribute("fill", "black");
     }
 
     // Write xml string to out file.

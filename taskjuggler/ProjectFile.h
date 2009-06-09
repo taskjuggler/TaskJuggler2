@@ -164,6 +164,7 @@ private:
     bool readHTMLStatusReport();
     bool readCSVReport(const QString& reportType);
     bool readSVGTimeTimeReport(const QString& reportType);
+    bool readSVGGanttTaskReport(const QString& reportType);
     bool readExportReport();
     bool readXMLReport();
     bool readReportElement(ReportElement* el);

@@ -373,6 +373,9 @@ public:
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
+    void setSvgGanttReportIndex(int sc, int i) { scenarios[sc].svgGanttReportIndex = i; }
+    int getSvgGanttReportIndex(int sc) { return scenarios[sc].svgGanttReportIndex;  }
+
 private:
     void propagateStart(int sc, time_t date);
     void propagateEnd(int sc, time_t date);

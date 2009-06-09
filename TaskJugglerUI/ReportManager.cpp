@@ -283,6 +283,10 @@ ReportManager::addReportItem (Report* r, QString currentReport)
         subTypeIcon =
             KGlobal::iconLoader()->loadIcon("tj_file_tji",
                                             KIcon::Small);
+    else if (strncmp(subType, "GanttTask", strlen("GanttTask")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_task_group",
+                                            KIcon::Small);
     else
     {
         qDebug("Unknown type: %s", r->getType());

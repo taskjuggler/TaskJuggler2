@@ -50,7 +50,8 @@ TaskScenario::TaskScenario() :
     endCanBeDetermined(false),
     specifiedBookedResources(),
     bookedResources(),
-    criticalLinks()
+    criticalLinks(),
+    svgGanttReportIndex(-1)
 {
 }
 

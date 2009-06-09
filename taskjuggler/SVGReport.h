@@ -1,5 +1,5 @@
 /*
- * SVGTimeTimeReport.h - TaskJuggler
+ * SVGReport.h - TaskJuggler
  *
  * Copyright (c) 2001, 2002, 2003, 2004 by Chris Schlaeger <cs@kde.org>
  *
@@ -10,28 +10,27 @@
  * $Id$
  */
 
-#ifndef _SVGTimeTimeReport_h_
-#define _SVGTimeTimeReport_h_
+#ifndef _SVGReport_h_
+#define _SVGReport_h_
 
-#include "SVGReport.h"
+#include "Report.h"
 
 /**
- * @short Stores all information about an SVG time/time report.
+ * @short Stores all information about an SVG report.
  */
-class SVGTimeTimeReport : public SVGReport
+class SVGReport : public Report
 {
 public:
-    SVGTimeTimeReport(Project* p, const QString& f, const QString& df, int dl);
+    SVGReport(Project* p, const QString& f, const QString& df, int dl);
 
-    virtual ~SVGTimeTimeReport()
+    virtual ~SVGReport()
     { }
-
-    bool generate();
-
-    virtual const char* getType() const { return "SVGTimeTimeReport"; }
 
     void setCaption(const QString& s) { caption = s; }
     const QString& getCaption() const { return caption; }
+
+protected:
+
 
 private:
     QString caption;
