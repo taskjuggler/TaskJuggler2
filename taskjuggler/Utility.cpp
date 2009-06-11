@@ -192,6 +192,7 @@ suggestTimingResolution()
          return 60 * 15;
 
      qFatal("Your timezone is not 15, 30 or 60 minutes aligned to UTC!");
+     return -1;
 }
 
 bool
