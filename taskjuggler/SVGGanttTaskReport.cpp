@@ -297,7 +297,7 @@ SVGGanttTaskReport::generate()
             // Add comment, scenario name
             svg.appendChild(doc.createComment("Scenario : " + getProject()->getScenario(*it)->getName()));
 
-            x = setInLimits(DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
+            x = setInLimits((unsigned int)DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
             y = (unsigned int)(margey + (i + 1) * lh);
 
             bool hasError = false;
@@ -429,7 +429,7 @@ SVGGanttTaskReport::generate()
                 if (task->getStart(scenario) == 0 || task->getEnd(scenario) == 0 || task->getSvgGanttReportIndex(scenario) < 0)
                     continue;
 
-                x = setInLimits(DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
+                x = setInLimits((unsigned int)DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
                 y = (unsigned int)(margey + (i + 1) * lh);
                 w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));
                 if (x + w > maxdatex) w = maxdatex - x;
@@ -447,7 +447,7 @@ SVGGanttTaskReport::generate()
                     if (task2->getParent() && task2->getParent()->hasPrevious(task))
                         continue;
 
-                    x2 = setInLimits(DATE_TO_X(task2->getStart(*it)), mindatex, maxdatex);
+                    x2 = setInLimits((unsigned int)DATE_TO_X(task2->getStart(*it)), mindatex, maxdatex);
                     y2 = (unsigned int)(margey + (task2->getSvgGanttReportIndex(scenario) + 1) * lh);
 
                     h = ((int)y2 - (int)y) < 0 ? y - y2 : y2 - y;

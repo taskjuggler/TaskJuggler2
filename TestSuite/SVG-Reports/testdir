@@ -19,6 +19,6 @@ cmp ganttreport_1.svg ganttreport_1_reference.svg || exit 1
 cmp ganttreport_2.svg ganttreport_2_reference.svg || exit 1
 cmp ganttreport_3.svg ganttreport_3_reference.svg || exit 1
 
-rm ganttreport_*.svg
-rm project_a_*.svg
+rm ganttreport_?.svg
+rm project_a_?.svg
 

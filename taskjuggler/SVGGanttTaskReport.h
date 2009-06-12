@@ -36,10 +36,19 @@ public:
     void setHideLinks(int i) { hideLinks = i; }
     int getHideLinks() { return hideLinks; }
 
+    void setTaskBarPrefix(const QString& t) { taskBarPrefix = t; }
+    const QString getTaskBarPrefix() const { return taskBarPrefix; }
+
+    void setTaskBarPostfix(const QString& t) { taskBarPostfix = t; }
+    const QString getTaskBarPostfix() const { return taskBarPostfix; }
+
 private:
     QString caption;
 
     int hideLinks;
+
+    QString taskBarPrefix;
+    QString taskBarPostfix;
 };
 
 #endif

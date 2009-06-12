@@ -5043,6 +5043,24 @@ ProjectFile::readSVGGanttTaskReport(const QString& reportType)
                 if (!readSorting(report, 0))
                     return false;
             }
+            else if (token == KW("taskbarprefix"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                report->setTaskBarPrefix(token);
+            }
+            else if (token == KW("taskbarpostfix"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                report->setTaskBarPostfix(token);
+            }
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();
