@@ -553,4 +553,16 @@ SVGTimeTimeReport::generate()
     return close();
 }
 
+void SVGTimeTimeReport::inheritValues()
+{
+    SVGReport::inheritValues();
+
+    SVGTimeTimeReport* parent = dynamic_cast<SVGTimeTimeReport*>(getParentReport());
+
+    if (parent)
+    {
+        // In fact, for the moment, there is no SVGTimeTimeReport specfic attributes
+    }
+}
+
 #endif

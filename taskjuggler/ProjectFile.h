@@ -162,7 +162,7 @@ private:
     bool readHTMLReport(const QString& reportType);
     bool readHTMLStatusReport();
     bool readCSVReport(const QString& reportType);
-    bool readSVGTimeTimeReport(const QString& reportType);
+    bool readSVGTimeTimeReport(const QString& reportType, Report* parentReport = 0);
     bool readSVGGanttTaskReport(const QString& reportType, Report* parentReport = 0);
     bool readExportReport();
     bool readXMLReport();

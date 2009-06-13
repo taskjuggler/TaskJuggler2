@@ -30,11 +30,9 @@ public:
 
     virtual const char* getType() const { return "SVGTimeTimeReport"; }
 
-    void setCaption(const QString& s) { caption = s; }
-    const QString& getCaption() const { return caption; }
+    virtual void inheritValues();
 
 private:
-    QString caption;
 };
 
 #endif

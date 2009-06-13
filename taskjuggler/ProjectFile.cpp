@@ -4742,7 +4742,7 @@ error:
 }
 
 bool
-ProjectFile::readSVGTimeTimeReport(const QString& reportType)
+ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentReport)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -4762,6 +4762,16 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType)
         return false;   // Just to please the compiler.
     }
 
+    // Set link to parent report if any
+    report->setParentReport(parentReport);
+    if (parentReport) parentReport->addChildrenReport(report);
+
+    // If report is inherited, retrieve parent values
+    if (parentReport)
+    {
+        report->inheritValues();
+    }
+
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
     {
@@ -4774,7 +4784,11 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType)
                 errorMessage(i18n("Attribute ID or '}' expected"));
                 goto error;
             }
-            if (token == KW("start"))
+            if (token == reportType)
+            {
+                readSVGTimeTimeReport(reportType, report);
+            }
+            else if (token == KW("start"))
             {
                 time_t start;
                 if (!readDate(start, 0))

@@ -430,7 +430,7 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
 
             changeStatusBar(i18n("Displaying SVG report: '%1'")
                             .arg(rep->getFileName()));
-            KRun::runURL(reportUrl, "text/x-svg");
+            KRun::runURL(reportUrl, "image/svg+xml");
         }
         else if (strncmp(type, "HTML", 4) == 0)
             tjr = new TjHTMLReport(reportStack, this, rep);
