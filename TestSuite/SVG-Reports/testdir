@@ -18,6 +18,7 @@ cmp project_a_5.svg projectReference_a_5.svg || exit 1
 cmp ganttreport_1.svg ganttreport_1_reference.svg || exit 1
 cmp ganttreport_2.svg ganttreport_2_reference.svg || exit 1
 cmp ganttreport_3.svg ganttreport_3_reference.svg || exit 1
+cmp ganttreport_4.svg ganttreport_4_reference.svg || exit 1
 
 rm ganttreport_?.svg
 rm project_a_?.svg

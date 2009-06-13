@@ -115,5 +115,9 @@ svggantttaskreport "ganttreport_3.svg" {
     scenarios plan
     taskroot myProject.planning
     hidelinks 1
+    svggantttaskreport "ganttreport_4.svg" {
+        headline "Gantt report with links."
+        hidelinks 0
+    }
 }
 
